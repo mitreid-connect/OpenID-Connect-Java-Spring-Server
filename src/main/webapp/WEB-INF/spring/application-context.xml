@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd
+		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.0.4.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<import resource="data-context.xml" />
+	<import resource="security-context.xml" />
+		
+	<tx:annotation-driven transaction-manager="transactionManager" />
+
+	<!-- Root Context: defines shared resources visible to all other web components -->
+	<bean id="jpaAdapter" class="org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter">
+		<property name="databasePlatform" value="org.eclipse.persistence.platform.database.MySQLPlatform" />
+		<property name="showSql" value="true" />
+	</bean>
+	
+	<!-- Map our custom exception classes to named views -->
+	<bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+	   <property name="exceptionMappings">
+	     <props>
+	     </props>
+	   </property>
+	</bean>
+ 
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="entityManagerFactory" />
+	</bean>
+
+	<bean id="entityManagerFactory"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="persistenceUnitName" value="openidPersistenceUnit" />
+		<property name="dataSource" ref="dataSource" />
+        <property name="jpaVendorAdapter" ref="jpaAdapter" />
+		<property name="jpaPropertyMap">
+			<map>
+				<entry key="eclipselink.weaving" value="false" />
+				<entry key="eclipselink.logging.level" value="FINEST" />
+				<entry key="eclipselink.logging.level.sql" value="FINEST" />
+			</map>
+		</property>
+	</bean>
+
+	<!-- scheduled tasks -->
+	<task:scheduler id="taskScheduler" pool-size="10" />
+	<task:executor id="taskExecutor" pool-size="5" />
+	<task:annotation-driven scheduler="taskScheduler" executor="taskExecutor" />
+
+    <context:component-scan annotation-config="true" base-package="org.mitre.openid" />
+
+</beans>
