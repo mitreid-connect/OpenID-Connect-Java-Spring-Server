@@ -1,3 +1,6 @@
 [submodule "mitre-local"]
 	path = mitre-local
 	url = git@barrel.mitre.org:openstack/openid-connect.git
+[submodule "spring-security-oauth"]
+	path = spring-security-oauth
+	url = https://github.com/SpringSource/spring-security-oauth.git
