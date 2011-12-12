@@ -1,0 +1,3 @@
+[submodule "mitre-local"]
+	path = mitre-local
+	url = git@barrel.mitre.org:openstack/openid-connect.git
