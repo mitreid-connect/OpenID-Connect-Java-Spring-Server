@@ -1,5 +1,6 @@
 package org.mitre.openid.connect.web;
 
+import org.mitre.openid.connect.model.UserInfo;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
