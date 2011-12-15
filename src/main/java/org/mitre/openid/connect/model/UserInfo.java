@@ -5,6 +5,8 @@ import javax.persistence.Entity;
 @Entity
 public class UserInfo {
 
+	// TODO: underbars are awkward in java, should we switch all this to camel case and put in underbars in the serialization view?
+	
 	private String user_id;
 	private String name;
 	private String given_name;

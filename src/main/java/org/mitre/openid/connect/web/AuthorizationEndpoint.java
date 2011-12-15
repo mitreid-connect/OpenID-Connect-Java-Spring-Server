@@ -7,4 +7,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/authorize")
 public class AuthorizationEndpoint {
 
+	/*
+	 * handle "code" flow
+	 * 
+	 */
+	
+	
+	/* 
+	 * handle "idtoken token" flow
+	 * 
+	 */
+	
 }
