@@ -17,5 +17,9 @@ public class AuthorizationEndpoint {
 	 * handle "idtoken token" flow
 	 * 
 	 */
+
 	
+	/*
+	 * Other flows get handled outside of our endpoints by SSOA
+	 */
 }

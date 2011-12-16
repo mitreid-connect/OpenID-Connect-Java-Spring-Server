@@ -6,4 +6,6 @@ public interface UserInfoRepository {
 
 	public UserInfo getByUserId(String user_id);
 	
+	public UserInfo save(UserInfo user);
+	
 }
