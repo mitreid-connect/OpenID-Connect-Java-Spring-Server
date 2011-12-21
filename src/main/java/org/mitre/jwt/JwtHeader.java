@@ -2,11 +2,17 @@ package org.mitre.jwt;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 public class JwtHeader {
 
+	/*
+	 * TODO: Should we instead be using a generic claims map with well-named accessor methods?
+	 */
+	
 	private String type;
 	
 	private String algorithm;
@@ -16,10 +22,32 @@ public class JwtHeader {
 	private Map<String, Object> claims = new HashMap<String, Object>();
 
 	
+	/**
+	 * Make an empty header
+	 */
 	public JwtHeader() {
 		
     }
-
+	
+	/**
+	 * Build a header from a JSON object
+	 * @param json
+	 */
+	public JwtHeader(JsonObject json) {
+		
+		for (Entry<String, JsonElement> element : json.entrySet()) {
+	        if (element.getKey().equals("typ")) {
+	        	this.type = json.get("typ").getAsString();
+	        } else if (element.getKey().equals("alg")) {
+	        	this.algorithm = json.get("alg").getAsString();
+	        } else if (element.getKey().equals("enc")) {	        	
+	        	this.encryptionMethod = json.get("enc").getAsString();
+	        } else {
+	        	// TODO: this assumes string encoding for extensions, probably not quite correct
+	        	claims.put(element.getKey(), element.getValue().getAsString());
+	        }
+        }
+	}
 
 	/**
      * @return the type
@@ -97,7 +125,9 @@ public class JwtHeader {
 	public JsonObject getAsJsonObject() {
 		JsonObject o = new JsonObject();
 		
-		o.addProperty("typ", this.type);
+		if (this.type != null) {
+			o.addProperty("typ", this.type);
+		}
 		if (this.algorithm != null) {
 			o.addProperty("alg", this.algorithm);
 		}
@@ -129,5 +159,14 @@ public class JwtHeader {
 		return o;
 	}
 
+	/* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+	    return "JwtHeader [type=" + type + ", algorithm=" + algorithm + ", encryptionMethod=" + encryptionMethod + ", claims=" + claims + "]";
+    }
 
+
+	
 }

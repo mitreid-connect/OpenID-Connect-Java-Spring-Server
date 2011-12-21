@@ -1,20 +1,28 @@
 package org.mitre.jwt;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 public class JwtClaims {
 	
 	/**
 	 * ISO8601 / RFC3339 Date Format
 	 */
-	public static DateFormat dateFormat = new SimpleDateFormat("YYYY-MM-DD'T'HH:mm:ssz");
+	public static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz");
 
+	/*
+	 * TODO: Should we instead be using a generic claims map with well-named accessor methods?
+	 */
+	
 	private Date expiration;
 	
 	private Date notBefore;
@@ -37,6 +45,42 @@ public class JwtClaims {
 		
 	}
 	
+	public JwtClaims(JsonObject json) {
+		for (Entry<String, JsonElement> element : json.entrySet()) {
+	        if (element.getKey().equals("exp")) {
+                expiration = new Date(element.getValue().getAsLong() * 1000L);
+	        } else if (element.getKey().equals("nbf")) {
+                notBefore = new Date(element.getValue().getAsLong() * 1000L);
+	        } else if (element.getKey().equals("iat")) {	        	
+                issuedAt = new Date(element.getValue().getAsLong() * 1000L);
+	        } else if (element.getKey().equals("iss")) {	        	
+	        	issuer = element.getValue().getAsString();
+	        } else if (element.getKey().equals("aud")) {	        	
+	        	audience = element.getValue().getAsString();
+	        } else if (element.getKey().equals("prn")) {	        	
+	        	principal = element.getValue().getAsString();
+	        } else if (element.getKey().equals("jti")) {	        	
+	        	jwtId = element.getValue().getAsString();
+	        } else if (element.getKey().equals("typ")) {	        	
+	        	type = element.getValue().getAsString();
+	        } else if (element.getValue().isJsonPrimitive()){
+	        	// we handle all primitives in here
+	        	JsonPrimitive prim = element.getValue().getAsJsonPrimitive();
+	        	
+	        	if (prim.isBoolean()) {
+	        		claims.put(element.getKey(), prim.getAsBoolean());
+	        	} else if (prim.isNumber()) {
+	        		claims.put(element.getKey(), prim.getAsNumber());
+	        	} else if (prim.isString()) {
+	        		claims.put(element.getKey(), prim.getAsString());
+	        	}
+	        } else {
+	        	// everything else gets handled as a raw JsonElement
+	        	claims.put(element.getKey(), element.getValue());
+	        }
+        }
+    }
+
 	/**
      * @return the expiration
      */
@@ -179,15 +223,15 @@ public class JwtClaims {
 		JsonObject o = new JsonObject();
 
 		if (this.expiration != null) {
-			o.addProperty("exp", dateFormat.format(this.expiration));
+			o.addProperty("exp", this.expiration.getTime() / 1000L);
 		}
 		
 		if (this.notBefore != null) {
-			o.addProperty("nbf", dateFormat.format(this.notBefore));
+			o.addProperty("nbf", this.notBefore.getTime() / 1000L);
 		}
 		
 		if (this.issuedAt != null) {
-			o.addProperty("iat", dateFormat.format(this.issuedAt));
+			o.addProperty("iat", this.issuedAt.getTime() / 1000L);
 		}
 		
 		if (this.issuer != null) {
@@ -212,7 +256,9 @@ public class JwtClaims {
 		
 		if (this.claims != null) {
 			for (Map.Entry<String, Object> claim : this.claims.entrySet()) {
-				if (claim.getValue() instanceof String) {
+				if (claim.getValue() instanceof JsonElement) {
+					o.add(claim.getKey(), (JsonElement)claim.getValue());
+				} else if (claim.getValue() instanceof String) {
 					o.addProperty(claim.getKey(), (String)claim.getValue());
 				} else if (claim.getValue() instanceof Number) {
 					o.addProperty(claim.getKey(), (Number)claim.getValue());
@@ -232,5 +278,15 @@ public class JwtClaims {
 		
 		return o;
 	}
+
+	/* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+	    return "JwtClaims [expiration=" + expiration + ", notBefore=" + notBefore + ", issuedAt=" + issuedAt + ", issuer=" + issuer + ", audience=" + audience + ", principal=" + principal + ", jwtId=" + jwtId + ", type=" + type + ", claims=" + claims + "]";
+    }
+
+
 
 }
