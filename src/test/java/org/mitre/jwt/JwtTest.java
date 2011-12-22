@@ -92,6 +92,15 @@ public class JwtTest {
 		
 		JwtSigner signer = new Hmac256Signer(key);
 
+		/*
+		 * Token string based on the following strucutres, serialized exactly as follows and base64 encoded:
+		 * 
+		 * header: {"typ":"JWT","alg":"HS256"}
+		 * claims: {"exp":1300819380,"iss":"joe","http://example.com/is_root":true}
+		 * 
+		 * Expected signature: iGBPJj47S5q_HAhSoQqAdcS6A_1CFj3zrLaImqNbt9E
+		 *
+		 */
 		String jwtString = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjEzMDA4MTkzODAsImlzcyI6ImpvZSIsImh0dHA6Ly9leGFtcGxlLmNvbS9pc19yb290Ijp0cnVlfQ.iGBPJj47S5q_HAhSoQqAdcS6A_1CFj3zrLaImqNbt9E";
 		
 		boolean valid = signer.verify(jwtString);
