@@ -1,8 +1,13 @@
 package org.mitre.jwt;
 
-import com.google.common.base.Objects;
+import java.util.List;
 
-public class AbstractJwtSigner implements JwtSigner {
+import com.google.common.base.Objects;
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+
+public abstract class AbstractJwtSigner implements JwtSigner {
 
 	public static final String PLAINTEXT = "none";
 	public static final String HS256 = "HS256";
@@ -40,8 +45,36 @@ public class AbstractJwtSigner implements JwtSigner {
 			// for now, we fix the Jwt
 			jwt.getHeader().setAlgorithm(algorithm);			
 		}
-		
+	    
+	    String sig = generateSignature(jwt.getSignatureBase());
+        
+        jwt.setSignature(sig);		
 	}
+
+	/* (non-Javadoc)
+     * @see org.mitre.jwt.JwtSigner#verify(java.lang.String)
+     */
+    @Override
+    public boolean verify(String jwtString) {
+		// split on the dots
+		List<String> parts = Lists.newArrayList(Splitter.on(".").split(jwtString));
+		
+		if (parts.size() != 3) {
+			throw new IllegalArgumentException("Invalid JWT format.");
+		}
+		
+		String h64 = parts.get(0);
+		String c64 = parts.get(1);
+		String s64 = parts.get(2);
+    	
+		String expectedSignature = generateSignature(h64 + "." + c64 + ".");
+		
+		return Strings.nullToEmpty(s64).equals(Strings.nullToEmpty(expectedSignature));
+    	
+    }
+	
+    
+    protected abstract String generateSignature(String signatureBase);
 
 
 }

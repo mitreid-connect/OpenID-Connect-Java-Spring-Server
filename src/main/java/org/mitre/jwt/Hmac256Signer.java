@@ -34,15 +34,10 @@ public class Hmac256Signer extends AbstractJwtSigner {
         
 	}
 
-	/* (non-Javadoc)
-     * @see org.mitre.jwt.AbstractJwtSigner#sign(org.mitre.jwt.Jwt)
-     */
-    @Override
-    public void sign(Jwt jwt) {
-	    super.sign(jwt);
-	    
+	@Override
+    protected String generateSignature(String signatureBase) {
 	    if (passphrase == null) {
-	    	return; // TODO: probably throw some kind of exception
+	    	return null; // TODO: probably throw some kind of exception
 	    }
 	    
 	    try {
@@ -53,7 +48,7 @@ public class Hmac256Signer extends AbstractJwtSigner {
         }
         
         try {
-	        mac.update(jwt.getSignatureBase().getBytes("UTF-8"));
+	        mac.update(signatureBase.getBytes("UTF-8"));
         } catch (IllegalStateException e) {
 	        // TODO Auto-generated catch block
 	        e.printStackTrace();
@@ -68,8 +63,7 @@ public class Hmac256Signer extends AbstractJwtSigner {
 	    
         // strip off any padding
         sig = sig.replace("=", "");
-        
-        jwt.setSignature(sig);
+	    return sig;
     }
 
 	/**
@@ -85,7 +79,8 @@ public class Hmac256Signer extends AbstractJwtSigner {
     public void setPassphrase(byte[] passphrase) {
     	this.passphrase = passphrase;
     }
-	
+
+
 	
 
 }

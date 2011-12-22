@@ -39,7 +39,7 @@ public class JwtTest {
 	}
 
 	@Test
-	public void testHmacSignature() {
+	public void testGenerateHmacSignature() {
 		Jwt jwt = new Jwt();
 		jwt.getHeader().setType("JWT");
 		jwt.getHeader().setAlgorithm("HS256");
@@ -76,6 +76,27 @@ public class JwtTest {
 
 		assertThat(actual, equalTo(expected));
 		assertThat(jwt.getSignature(), equalTo(signature));
+		
+	}
+	
+	@Test
+	public void testValidateHmacSignature() {
+		// sign it
+		byte[] key = null;
+        try {
+	        key = "secret".getBytes("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+	        // TODO Auto-generated catch block
+	        e.printStackTrace();
+        }
+		
+		JwtSigner signer = new Hmac256Signer(key);
+
+		String jwtString = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjEzMDA4MTkzODAsImlzcyI6ImpvZSIsImh0dHA6Ly9leGFtcGxlLmNvbS9pc19yb290Ijp0cnVlfQ.iGBPJj47S5q_HAhSoQqAdcS6A_1CFj3zrLaImqNbt9E";
+		
+		boolean valid = signer.verify(jwtString);
+		
+		assertThat(valid, equalTo(Boolean.TRUE));
 		
 	}
 	

@@ -7,11 +7,8 @@ public class PlaintextSigner extends AbstractJwtSigner {
     }
 
 	@Override
-	public void sign(Jwt jwt) {
-		super.sign(jwt);
-		
-		jwt.setSignature("");
-		
-	}
+    protected String generateSignature(String signatureBase) {
+	    return null;
+    }
 
 }
