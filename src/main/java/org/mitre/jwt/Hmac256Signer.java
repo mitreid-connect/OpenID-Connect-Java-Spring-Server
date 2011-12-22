@@ -1,5 +1,7 @@
 package org.mitre.jwt;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
@@ -50,7 +52,15 @@ public class Hmac256Signer extends AbstractJwtSigner {
 	        e.printStackTrace();
         }
         
-        mac.update(jwt.getSignatureBase().getBytes());
+        try {
+	        mac.update(jwt.getSignatureBase().getBytes("UTF-8"));
+        } catch (IllegalStateException e) {
+	        // TODO Auto-generated catch block
+	        e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+	        // TODO Auto-generated catch block
+	        e.printStackTrace();
+        }
         
         byte[] sigBytes = mac.doFinal();
         

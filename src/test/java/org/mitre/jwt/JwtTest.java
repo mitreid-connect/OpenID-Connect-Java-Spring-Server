@@ -3,6 +3,7 @@ package org.mitre.jwt;
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Date;
 
 import org.junit.Test;
@@ -24,7 +25,7 @@ public class JwtTest {
 		signer.sign(jwt);
 		
 		/*
-		 * Expected string based on the following structures, serialized exactly as folows and base64 encoded:
+		 * Expected string based on the following structures, serialized exactly as follows and base64 encoded:
 		 * 
 		 * header: {"alg":"none"}
 		 * claims: {"exp":1300819380,"iss":"joe","http://example.com/is_root":true}
@@ -47,16 +48,35 @@ public class JwtTest {
 		jwt.getClaims().setClaim("http://example.com/is_root", Boolean.TRUE);
 
 		// sign it
-		byte[] key = "secret".getBytes();
+		byte[] key = null;
+        try {
+	        key = "secret".getBytes("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+	        // TODO Auto-generated catch block
+	        e.printStackTrace();
+        }
 		
 		JwtSigner signer = new Hmac256Signer(key);
 
 		signer.sign(jwt);
-		                   
-		String expected = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjEzMDA4MTkzODAsImlzcyI6ImpvZSIsImh0dHA6Ly9leGFtcGxlLmNvbS9pc19yb290Ijp0cnVlfQ.vQqHHhblAtGiFs7q7nPt9Q";
+
+		/*
+		 * Expected string based on the following strucutres, serialized exactly as follows and base64 encoded:
+		 * 
+		 * header: {"typ":"JWT","alg":"HS256"}
+		 * claims: {"exp":1300819380,"iss":"joe","http://example.com/is_root":true}
+		 * 
+		 * Expected signature: iGBPJj47S5q_HAhSoQqAdcS6A_1CFj3zrLaImqNbt9E
+		 *
+		 */
+		String signature = "iGBPJj47S5q_HAhSoQqAdcS6A_1CFj3zrLaImqNbt9E";
+		String expected = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjEzMDA4MTkzODAsImlzcyI6ImpvZSIsImh0dHA6Ly9leGFtcGxlLmNvbS9pc19yb290Ijp0cnVlfQ.iGBPJj47S5q_HAhSoQqAdcS6A_1CFj3zrLaImqNbt9E";
 		
 		String actual = jwt.toString();
-				
+
+		assertThat(actual, equalTo(expected));
+		assertThat(jwt.getSignature(), equalTo(signature));
+		
 	}
 	
 	@Test
