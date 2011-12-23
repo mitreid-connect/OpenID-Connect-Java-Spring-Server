@@ -20,8 +20,12 @@ public class Hmac256Signer extends AbstractJwtSigner {
 		this(null);
 	}
 	
+	
 	public Hmac256Signer(byte[] passphrase) {
 		super(HS256);
+		
+		//TODO: set up a factory for other signature methods
+		
 		setPassphrase(passphrase);
 		
 		try {

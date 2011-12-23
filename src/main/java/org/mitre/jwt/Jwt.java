@@ -103,12 +103,15 @@ public class Jwt {
     }
 	
 	/**
-	 * Return the canonical encoded string of this JWT
+	 * Return the canonical encoded string of this JWT, the header in Base64, a period ".", the claims in Base64, a period ".", and the signature in Base64.
 	 */
 	public String toString() {
-		return getSignatureBase() + Strings.nullToEmpty(this.signature);
+		return getSignatureBase() + "." + Strings.nullToEmpty(this.signature);
 	}
 
+	/**
+	 * The signature base of a JWT is the header in Base64, a period ".", and the claims in Base64.
+	 */
 	public String getSignatureBase() {
 		JsonObject h = header.getAsJsonObject();
 		JsonObject c = claims.getAsJsonObject();
@@ -116,7 +119,7 @@ public class Jwt {
 		String h64 = new String(Base64.encodeBase64URLSafe(h.toString().getBytes()));
 		String c64 = new String(Base64.encodeBase64URLSafe(c.toString().getBytes()));
 		
-		return h64 + "." + c64 + ".";		
+		return h64 + "." + c64;		
 	}
 	
 
@@ -142,6 +145,8 @@ public class Jwt {
 		
 		// shuttle for return value
 		Jwt jwt = new Jwt(new JwtHeader(hjo), new JwtClaims(cjo), s64);
+		
+		// TODO: save the wire-encoded string in the Jwt object itself?
 		
 		return jwt;
 		
