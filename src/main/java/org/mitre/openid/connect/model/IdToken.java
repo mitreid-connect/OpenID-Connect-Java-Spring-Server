@@ -2,11 +2,13 @@ package org.mitre.openid.connect.model;
 
 import javax.persistence.Entity;
 
+import org.mitre.jwt.Jwt;
+
 /*
  * TODO: This class needs to be encoded as a JWT
  */
 @Entity
-public class IdToken {
+public class IdToken extends Jwt {
 
 	private String iss;
 	private String user_id;
