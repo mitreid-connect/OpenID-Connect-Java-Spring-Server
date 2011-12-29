@@ -2,7 +2,7 @@ package org.mitre.openid.connect.model;
 
 import javax.persistence.Entity;
 
-import org.mitre.jwt.Jwt;
+import org.mitre.jwt.model.Jwt;
 
 /*
  * TODO: This class needs to be encoded as a JWT

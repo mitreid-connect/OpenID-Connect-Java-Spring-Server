@@ -8,6 +8,11 @@ import java.util.Date;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mitre.jwt.model.Jwt;
+import org.mitre.jwt.signer.AbstractJwtSigner;
+import org.mitre.jwt.signer.JwtSigner;
+import org.mitre.jwt.signer.impl.Hmac256Signer;
+import org.mitre.jwt.signer.impl.PlaintextSigner;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 public class JwtTest {
