@@ -5,11 +5,10 @@
 		<wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
         <wb-resource deploy-path="/" source-path="/src/main/webapp"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/spring-security-oauth/spring-security-oauth2/src/main/java"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/spring-security-oauth/spring-security-oauth2/src/main/resources"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/spring-security-oauth/spring-security-oauth2/src/test/java"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/spring-security-oauth/spring-security-oauth2/src/test/resources"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/spring-security-oauth/spring-security-oauth/src/main/java"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/mitre-local/src/main/java"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/spring-security-oauth/spring-security-oauth2/src/main/resources"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/spring-security-oauth/spring-security-oauth/src/main/java"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/spring-security-oauth/spring-security-oauth/src/main/resources"/>
 		<property name="java-output-path" value="target/classes"/>
         <property name="context-root" value="openid"/>
 	</wb-module>

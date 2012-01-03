@@ -236,6 +236,11 @@
         	<artifactId>bcprov-jdk16</artifactId>
         	<version>1.46</version>
         </dependency>
+        <dependency>
+        	<groupId>org.codehaus.jackson</groupId>
+        	<artifactId>jackson-mapper-asl</artifactId>
+        	<version>1.9.2</version>
+        </dependency>
     </dependencies>
     <repositories>
         <!-- For testing against latest Spring snapshots -->
