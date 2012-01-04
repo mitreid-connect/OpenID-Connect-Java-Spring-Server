@@ -6,6 +6,7 @@ import java.util.Date;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 import org.springframework.security.oauth2.provider.ClientDetails;
 
@@ -19,7 +20,7 @@ public class WhitelistedSite {
 
     // unique id
 	@Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
     // who added this site to the whitelist (should be an admin)
@@ -30,5 +31,6 @@ public class WhitelistedSite {
 	
 	// what scopes be allowed by default
 	// this should include all information for what data to access
+	@ManyToOne
 	private Collection<String> allowedScopes;
 }
