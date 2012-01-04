@@ -12,34 +12,21 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
-public class JwtClaims {
+public class JwtClaims extends ClaimSet {
 	
+	public static final String TYPE = "typ";
+	public static final String JWT_ID = "jti";
+	public static final String PRINCIPAL = "prn";
+	public static final String AUDIENCE = "aud";
+	public static final String ISSUER = "iss";
+	public static final String ISSUED_AT = "iat";
+	public static final String NOT_BEFORE = "nbf";
+	public static final String EXPIRATION = "exp";
+
 	/**
 	 * ISO8601 / RFC3339 Date Format
 	 */
-	public static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz");
-
-	/*
-	 * TODO: Should we instead be using a generic claims map with well-named accessor methods?
-	 */
-	
-	private Date expiration;
-	
-	private Date notBefore;
-	
-	private Date issuedAt;
-	
-	private String issuer;
-	
-	private String audience;
-	
-	private String principal;
-	
-	private String jwtId;
-	
-	private String type;
-	
-	private Map<String, Object> claims = new HashMap<String, Object>();
+	//public static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz");
 
 	public JwtClaims() {
 		
@@ -47,36 +34,28 @@ public class JwtClaims {
 	
 	public JwtClaims(JsonObject json) {
 		for (Entry<String, JsonElement> element : json.entrySet()) {
-	        if (element.getKey().equals("exp")) {
-                expiration = new Date(element.getValue().getAsLong() * 1000L);
-	        } else if (element.getKey().equals("nbf")) {
-                notBefore = new Date(element.getValue().getAsLong() * 1000L);
-	        } else if (element.getKey().equals("iat")) {	        	
-                issuedAt = new Date(element.getValue().getAsLong() * 1000L);
-	        } else if (element.getKey().equals("iss")) {	        	
-	        	issuer = element.getValue().getAsString();
-	        } else if (element.getKey().equals("aud")) {	        	
-	        	audience = element.getValue().getAsString();
-	        } else if (element.getKey().equals("prn")) {	        	
-	        	principal = element.getValue().getAsString();
-	        } else if (element.getKey().equals("jti")) {	        	
-	        	jwtId = element.getValue().getAsString();
-	        } else if (element.getKey().equals("typ")) {	        	
-	        	type = element.getValue().getAsString();
+	        if (element.getKey().equals(EXPIRATION)) {
+                setExpiration(new Date(element.getValue().getAsLong() * 1000L));
+	        } else if (element.getKey().equals(NOT_BEFORE)) {
+                setNotBefore(new Date(element.getValue().getAsLong() * 1000L));
+	        } else if (element.getKey().equals(ISSUED_AT)) {	        	
+                setIssuedAt(new Date(element.getValue().getAsLong() * 1000L));
+	        } else if (element.getKey().equals(ISSUER)) {	        	
+	        	setIssuer(element.getValue().getAsString());
+	        } else if (element.getKey().equals(AUDIENCE)) {	        	
+	        	setAudience(element.getValue().getAsString());
+	        } else if (element.getKey().equals(PRINCIPAL)) {	        	
+	        	setPrincipal(element.getValue().getAsString());
+	        } else if (element.getKey().equals(JWT_ID)) {	        	
+	        	setJwtId(element.getValue().getAsString());
+	        } else if (element.getKey().equals(TYPE)) {	        	
+	        	setType(element.getValue().getAsString());
 	        } else if (element.getValue().isJsonPrimitive()){
 	        	// we handle all primitives in here
 	        	JsonPrimitive prim = element.getValue().getAsJsonPrimitive();
-	        	
-	        	if (prim.isBoolean()) {
-	        		claims.put(element.getKey(), prim.getAsBoolean());
-	        	} else if (prim.isNumber()) {
-	        		claims.put(element.getKey(), prim.getAsNumber());
-	        	} else if (prim.isString()) {
-	        		claims.put(element.getKey(), prim.getAsString());
-	        	}
+	        	setClaim(element.getKey(), prim);
 	        } else {
-	        	// everything else gets handled as a raw JsonElement
-	        	claims.put(element.getKey(), element.getValue());
+	        	setClaim(element.getKey(), element.getValue());
 	        }
         }
     }
@@ -85,208 +64,113 @@ public class JwtClaims {
      * @return the expiration
      */
     public Date getExpiration() {
-    	return expiration;
+    	return getClaimAsDate(EXPIRATION);
     }
 
 	/**
      * @param expiration the expiration to set
      */
     public void setExpiration(Date expiration) {
-    	this.expiration = expiration;
+    	setClaim(EXPIRATION, expiration);
     }
 
 	/**
      * @return the notBefore
      */
     public Date getNotBefore() {
-    	return notBefore;
+    	return getClaimAsDate(NOT_BEFORE);
     }
 
 	/**
      * @param notBefore the notBefore to set
      */
     public void setNotBefore(Date notBefore) {
-    	this.notBefore = notBefore;
+    	setClaim(NOT_BEFORE, notBefore);
     }
 
 	/**
      * @return the issuedAt
      */
     public Date getIssuedAt() {
-    	return issuedAt;
+    	return getClaimAsDate(ISSUED_AT);
     }
 
 	/**
      * @param issuedAt the issuedAt to set
      */
     public void setIssuedAt(Date issuedAt) {
-    	this.issuedAt = issuedAt;
+    	setClaim(ISSUED_AT, issuedAt);
     }
 
 	/**
      * @return the issuer
      */
     public String getIssuer() {
-    	return issuer;
+    	return getClaimAsString(ISSUER);
     }
 
 	/**
      * @param issuer the issuer to set
      */
     public void setIssuer(String issuer) {
-    	this.issuer = issuer;
+    	setClaim(ISSUER, issuer);
     }
 
 	/**
      * @return the audience
      */
     public String getAudience() {
-    	return audience;
+    	return getClaimAsString(AUDIENCE);
     }
 
 	/**
      * @param audience the audience to set
      */
     public void setAudience(String audience) {
-    	this.audience = audience;
+    	setClaim(AUDIENCE, audience);
     }
 
 	/**
      * @return the principal
      */
     public String getPrincipal() {
-    	return principal;
+    	return getClaimAsString(PRINCIPAL);
     }
 
 	/**
      * @param principal the principal to set
      */
     public void setPrincipal(String principal) {
-    	this.principal = principal;
+    	setClaim(AUDIENCE, principal);
     }
 
 	/**
      * @return the jwtId
      */
     public String getJwtId() {
-    	return jwtId;
+    	return getClaimAsString(JWT_ID);
     }
 
 	/**
      * @param jwtId the jwtId to set
      */
     public void setJwtId(String jwtId) {
-    	this.jwtId = jwtId;
+    	setClaim(JWT_ID, jwtId);
     }
 
 	/**
      * @return the type
      */
     public String getType() {
-    	return type;
+    	return getClaimAsString(TYPE);
     }
 
 	/**
      * @param type the type to set
      */
     public void setType(String type) {
-    	this.type = type;
-    }
-	
-    /**
-     * Get an extension claim
-     */
-    public Object getClaim(String key) {
-    	return claims.get(key);
+    	setClaim(TYPE, type);
     }
     
-    /**
-     * Set an extension claim
-     */
-    public void setClaim(String key, Object value) {
-    	claims.put(key, value);
-    }
-
-    /**
-     * Remove an extension claim
-     */
-    public Object removeClaim(String key) {
-    	return claims.remove(key);
-    }
-    
-	/**
-	 * Get a copy of this header as a JsonObject. The JsonObject is not
-	 * backed by a live copy of this JwtHeader.
-	 * @return a copy of the data in this header in a JsonObject
-	 */
-	public JsonObject getAsJsonObject() {
-		JsonObject o = new JsonObject();
-
-		if (this.expiration != null) {
-			o.addProperty("exp", this.expiration.getTime() / 1000L);
-		}
-		
-		if (this.notBefore != null) {
-			o.addProperty("nbf", this.notBefore.getTime() / 1000L);
-		}
-		
-		if (this.issuedAt != null) {
-			o.addProperty("iat", this.issuedAt.getTime() / 1000L);
-		}
-		
-		if (this.issuer != null) {
-			o.addProperty("iss", this.issuer);
-		}
-		
-		if (this.audience != null) {
-			o.addProperty("aud", this.audience);
-		}
-		
-		if (this.principal != null) {
-			o.addProperty("prn", this.principal);
-		}
-		
-		if (this.jwtId != null) {
-			o.addProperty("jti", this.jwtId);
-		}
-		
-		if (this.type != null) {
-			o.addProperty("typ", this.type);
-		}
-		
-		if (this.claims != null) {
-			for (Map.Entry<String, Object> claim : this.claims.entrySet()) {
-				if (claim.getValue() instanceof JsonElement) {
-					o.add(claim.getKey(), (JsonElement)claim.getValue());
-				} else if (claim.getValue() instanceof String) {
-					o.addProperty(claim.getKey(), (String)claim.getValue());
-				} else if (claim.getValue() instanceof Number) {
-					o.addProperty(claim.getKey(), (Number)claim.getValue());
-				} else if (claim.getValue() instanceof Boolean) {
-					o.addProperty(claim.getKey(), (Boolean)claim.getValue());
-				} else if (claim.getValue() instanceof Character) {
-					o.addProperty(claim.getKey(), (Character)claim.getValue());
-				} else if (claim.getValue() != null) {
-					// try to put it in as a string
-					o.addProperty(claim.getKey(), claim.getValue().toString());
-				} else {
-					// otherwise add in as a null
-					o.add(claim.getKey(), null);
-				}
-	        }
-		}
-		
-		return o;
-	}
-
-	/* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-	    return "JwtClaims [expiration=" + expiration + ", notBefore=" + notBefore + ", issuedAt=" + issuedAt + ", issuer=" + issuer + ", audience=" + audience + ", principal=" + principal + ", jwtId=" + jwtId + ", type=" + type + ", claims=" + claims + "]";
-    }
-
-
 
 }

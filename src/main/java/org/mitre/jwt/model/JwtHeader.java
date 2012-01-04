@@ -7,21 +7,12 @@ import java.util.Map.Entry;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-public class JwtHeader {
+public class JwtHeader extends ClaimSet {
 
-	/*
-	 * TODO: Should we instead be using a generic claims map with well-named accessor methods?
-	 */
-	
-	private String type;
-	
-	private String algorithm;
-	
-	private String encryptionMethod;
-	
-	private Map<String, Object> claims = new HashMap<String, Object>();
+	public static final String TYPE = "typ";
+	public static final String ALGORITHM = "alg";
+	public static final String ENCRYPTION_METHOD = "enc";
 
-	
 	/**
 	 * Make an empty header
 	 */
@@ -36,15 +27,15 @@ public class JwtHeader {
 	public JwtHeader(JsonObject json) {
 		
 		for (Entry<String, JsonElement> element : json.entrySet()) {
-	        if (element.getKey().equals("typ")) {
-	        	this.type = json.get("typ").getAsString();
-	        } else if (element.getKey().equals("alg")) {
-	        	this.algorithm = json.get("alg").getAsString();
-	        } else if (element.getKey().equals("enc")) {	        	
-	        	this.encryptionMethod = json.get("enc").getAsString();
+	        if (element.getKey().equals(TYPE)) {
+	        	this.setType(json.get(TYPE).getAsString());
+	        } else if (element.getKey().equals(ALGORITHM)) {
+	        	this.setAlgorithm(json.get(ALGORITHM).getAsString());
+	        } else if (element.getKey().equals(ENCRYPTION_METHOD)) {	        	
+	        	this.setEncryptionMethod(json.get(ENCRYPTION_METHOD).getAsString());
 	        } else {
 	        	// TODO: this assumes string encoding for extensions, probably not quite correct
-	        	claims.put(element.getKey(), element.getValue().getAsString());
+	        	setClaim(element.getKey(), element.getValue().getAsString());
 	        }
         }
 	}
@@ -53,7 +44,7 @@ public class JwtHeader {
      * @return the type
      */
     public String getType() {
-    	return type;
+    	return getClaimAsString(TYPE);
     }
 
 
@@ -61,7 +52,7 @@ public class JwtHeader {
      * @param type the type to set
      */
     public void setType(String type) {
-    	this.type = type;
+    	setClaim(TYPE, type);
     }
 
 
@@ -69,7 +60,7 @@ public class JwtHeader {
      * @return the algorithm
      */
     public String getAlgorithm() {
-    	return algorithm;
+    	return getClaimAsString(ALGORITHM);
     }
 
 
@@ -77,7 +68,7 @@ public class JwtHeader {
      * @param algorithm the algorithm to set
      */
     public void setAlgorithm(String algorithm) {
-    	this.algorithm = algorithm;
+    	setClaim(ALGORITHM, algorithm);
     }
 
 
@@ -85,7 +76,7 @@ public class JwtHeader {
      * @return the encryptionMethod
      */
     public String getEncryptionMethod() {
-    	return encryptionMethod;
+    	return getClaimAsString(ENCRYPTION_METHOD);
     }
 
 
@@ -93,80 +84,7 @@ public class JwtHeader {
      * @param encryptionMethod the encryptionMethod to set
      */
     public void setEncryptionMethod(String encryptionMethod) {
-    	this.encryptionMethod = encryptionMethod;
+    	setClaim(ENCRYPTION_METHOD, encryptionMethod);
     }
 
-    /**
-     * Get an extension claim
-     */
-    public Object getClaim(String key) {
-    	return claims.get(key);
-    }
-    
-    /**
-     * Set an extension claim
-     */
-    public void setClaim(String key, Object value) {
-    	claims.put(key, value);
-    }
-
-    /**
-     * Remove an extension claim
-     */
-    public Object removeClaim(String key) {
-    	return claims.remove(key);
-    }
-    
-	/**
-	 * Get a copy of this header as a JsonObject. The JsonObject is not
-	 * backed by a live copy of this JwtHeader.
-	 * @return a copy of the data in this header in a JsonObject
-	 */
-	public JsonObject getAsJsonObject() {
-		JsonObject o = new JsonObject();
-		
-		if (this.type != null) {
-			o.addProperty("typ", this.type);
-		}
-		if (this.algorithm != null) {
-			o.addProperty("alg", this.algorithm);
-		}
-		
-		if (this.encryptionMethod != null) {
-			o.addProperty("enc", this.encryptionMethod);
-		}
-		
-		if (this.claims != null) {
-			for (Map.Entry<String, Object> claim : this.claims.entrySet()) {
-				if (claim.getValue() instanceof String) {
-					o.addProperty(claim.getKey(), (String)claim.getValue());
-				} else if (claim.getValue() instanceof Number) {
-					o.addProperty(claim.getKey(), (Number)claim.getValue());
-				} else if (claim.getValue() instanceof Boolean) {
-					o.addProperty(claim.getKey(), (Boolean)claim.getValue());
-				} else if (claim.getValue() instanceof Character) {
-					o.addProperty(claim.getKey(), (Character)claim.getValue());
-				} else if (claim.getValue() != null) {
-					// try to put it in as a string
-					o.addProperty(claim.getKey(), claim.getValue().toString());
-				} else {
-					// otherwise add in as a null
-					o.add(claim.getKey(), null);
-				}
-	        }
-		}
-		
-		return o;
-	}
-
-	/* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-	    return "JwtHeader [type=" + type + ", algorithm=" + algorithm + ", encryptionMethod=" + encryptionMethod + ", claims=" + claims + "]";
-    }
-
-
-	
 }
