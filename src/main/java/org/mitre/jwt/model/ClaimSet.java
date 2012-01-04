@@ -8,8 +8,16 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
+/**
+ * Generic container for JSON-based claims. Backed with a {@link Map} that preserves
+ * insertion order. Several convenience methods for getting and setting claims in different
+ * formats.
+ * @author jricher
+ *
+ */
 public class ClaimSet {
 
+	// the LinkedHashMap preserves insertion order
 	private Map<String, Object> claims = new LinkedHashMap<String, Object>();
 	
     /**
@@ -85,9 +93,16 @@ public class ClaimSet {
 	public JsonObject getAsJsonObject() {
 		JsonObject o = new JsonObject();
 		
+		
+		/*
+		 * We step through the claims object and serialize the internal values as 
+		 * appropriate to JsonElements. 
+		 */
+		
 		if (this.claims != null) {
 			for (Map.Entry<String, Object> claim : this.claims.entrySet()) {
 				if (claim.getValue() instanceof JsonElement) {
+					// raw JSON elements get passed through directly
 					o.add(claim.getKey(), (JsonElement)claim.getValue());
 				} else if (claim.getValue() instanceof String) {
 					o.addProperty(claim.getKey(), (String)claim.getValue());
