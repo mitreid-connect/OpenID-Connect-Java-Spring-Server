@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 public class JwtHeader extends ClaimSet {
 
@@ -34,8 +35,13 @@ public class JwtHeader extends ClaimSet {
 	        } else if (element.getKey().equals(ENCRYPTION_METHOD)) {	        	
 	        	this.setEncryptionMethod(json.get(ENCRYPTION_METHOD).getAsString());
 	        } else {
-	        	// TODO: this assumes string encoding for extensions, probably not quite correct
-	        	setClaim(element.getKey(), element.getValue().getAsString());
+	        	if (element.getValue().isJsonPrimitive()){
+		        	// we handle all primitives in here
+		        	JsonPrimitive prim = element.getValue().getAsJsonPrimitive();
+		        	setClaim(element.getKey(), prim);
+		        } else {
+		        	setClaim(element.getKey(), element.getValue());
+		        }
 	        }
         }
 	}

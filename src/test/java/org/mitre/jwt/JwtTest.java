@@ -21,8 +21,8 @@ public class JwtTest {
 	public void testToStringPlaintext() {
 		Jwt jwt = new Jwt();
 		jwt.getHeader().setAlgorithm("none");
-		jwt.getClaims().setIssuer("joe");
 		jwt.getClaims().setExpiration(new Date(1300819380L * 1000L));
+		jwt.getClaims().setIssuer("joe");
 		jwt.getClaims().setClaim("http://example.com/is_root", Boolean.TRUE);
 
 		// sign it with a blank signature
@@ -48,8 +48,8 @@ public class JwtTest {
 		Jwt jwt = new Jwt();
 		jwt.getHeader().setType("JWT");
 		jwt.getHeader().setAlgorithm("HS256");
-		jwt.getClaims().setIssuer("joe");
 		jwt.getClaims().setExpiration(new Date(1300819380L * 1000L));
+		jwt.getClaims().setIssuer("joe");
 		jwt.getClaims().setClaim("http://example.com/is_root", Boolean.TRUE);
 
 		// sign it

@@ -50,12 +50,14 @@ public class JwtClaims extends ClaimSet {
 	        	setJwtId(element.getValue().getAsString());
 	        } else if (element.getKey().equals(TYPE)) {	        	
 	        	setType(element.getValue().getAsString());
-	        } else if (element.getValue().isJsonPrimitive()){
-	        	// we handle all primitives in here
-	        	JsonPrimitive prim = element.getValue().getAsJsonPrimitive();
-	        	setClaim(element.getKey(), prim);
 	        } else {
-	        	setClaim(element.getKey(), element.getValue());
+	        	if (element.getValue().isJsonPrimitive()){
+		        	// we handle all primitives in here
+		        	JsonPrimitive prim = element.getValue().getAsJsonPrimitive();
+		        	setClaim(element.getKey(), prim);
+		        } else {
+		        	setClaim(element.getKey(), element.getValue());
+		        }
 	        }
         }
     }
