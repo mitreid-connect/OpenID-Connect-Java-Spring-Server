@@ -17,11 +17,17 @@ public class Hmac256Signer extends AbstractJwtSigner {
 	
 	private byte[] passphrase;
 	
+	/**
+	 * Create a signer with no passphrase
+	 */
 	public Hmac256Signer() {
 		this(null);
 	}
 	
-	
+	/**
+	 * Create a signer with the given passphrase
+	 * @param passphrase
+	 */
 	public Hmac256Signer(byte[] passphrase) {
 		super(HS256);
 		

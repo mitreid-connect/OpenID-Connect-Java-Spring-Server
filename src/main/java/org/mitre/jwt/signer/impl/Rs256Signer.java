@@ -22,20 +22,19 @@ import com.google.common.collect.Lists;
  */
 public class Rs256Signer extends AbstractJwtSigner {
 
-	//TODO: should this class generate a new private key or get one passed into the constructor?
 	private PrivateKey privateKey;
-	//TODO: where does the publicKey come from?
 	private PublicKey publicKey;
-	
+
 	private Signature signer;
 	
 	public Rs256Signer() {
-		this(null);
+		this(null, null);
 	}
 	
-	public Rs256Signer(PrivateKey privateKey) {
+	public Rs256Signer(PublicKey publicKey, PrivateKey privateKey) {
 		super("RS256");
 		
+		setPublicKey(publicKey);
 		setPrivateKey(privateKey);
 		
 		try {
@@ -96,7 +95,7 @@ public class Rs256Signer extends AbstractJwtSigner {
 		String c64 = parts.get(1);
 		String s64 = parts.get(2);
     	
-		String signingInput = h64 + "." + c64 + ".";
+		String signingInput = h64 + "." + c64;
 		
 		try {
 			signer.initVerify(publicKey);
@@ -137,6 +136,14 @@ public class Rs256Signer extends AbstractJwtSigner {
 
 	public void setPrivateKey(PrivateKey privateKey) {
 		this.privateKey = privateKey;
+	}
+	
+	public PublicKey getPublicKey() {
+		return publicKey;
+	}
+
+	public void setPublicKey(PublicKey publicKey) {
+		this.publicKey = publicKey;
 	}
 	
 }
