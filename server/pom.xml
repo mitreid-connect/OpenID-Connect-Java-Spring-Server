@@ -3,8 +3,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.mitre</groupId>
-    <artifactId>openid</artifactId>
-    <name>OpenIdConnect</name>
+    <artifactId>openid-connect-server</artifactId>
+    <name>OpenIdConnect Server</name>
     <packaging>war</packaging>
     <version>0.1</version>
     <properties>
@@ -15,7 +15,7 @@
     </properties>
     <parent>
     	<groupId>org.mitre</groupId>
-    	<artifactId>openid-parent</artifactId>
+    	<artifactId>openid-connect-parent</artifactId>
     	<version>0.1</version>	
     </parent>
     <dependencies>
