@@ -13,7 +13,7 @@
     </modules>
     <properties>
         <java-version>1.6</java-version>
-        <spring-version>3.1.0.RELEASE</spring-version>
+        <spring.version>3.1.0.RELEASE</spring.version>
         <org.slf4j-version>1.5.10</org.slf4j-version>
         <spring.security.version>3.1.0.RELEASE</spring.security.version>
     </properties>

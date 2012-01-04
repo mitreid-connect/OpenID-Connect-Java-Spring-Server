@@ -14,6 +14,14 @@
 <!-- 		<security:intercept-url pattern="/oauth/user/**" access="hasRole('ROLE_USER')"/> -->
 		<security:openid-login login-page="/j_spring_openid_security_check?openid_identifier=OPENID_IDENTIFIER" />
 	</security:http>
-
 	
+	<security:authentication-manager>
+		<security:authentication-provider>
+			<security:user-service id="userDetailsService">
+		    	<security:user name="jimi" password="jimispassword" authorities="ROLE_USER, ROLE_ADMIN" />
+		    	<security:user name="bob" password="bobspassword" authorities="ROLE_USER" />
+		  	</security:user-service>
+		</security:authentication-provider>
+	</security:authentication-manager>
+
 </beans>
