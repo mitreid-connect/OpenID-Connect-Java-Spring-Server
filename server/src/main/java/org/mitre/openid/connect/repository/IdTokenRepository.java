@@ -1,11 +1,11 @@
 package org.mitre.openid.connect.repository;
 
-import org.mitre.openid.connect.model.IdToken;
+import org.mitre.openid.connect.model.IdTokenClaims;
 
 public interface IdTokenRepository {
 
-	public IdToken getById(Long id);
+	public IdTokenClaims getById(Long id);
 	
-	public IdToken save(IdToken idToken);
+	public IdTokenClaims save(IdTokenClaims idToken);
 	
 }

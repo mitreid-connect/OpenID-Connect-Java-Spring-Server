@@ -1,5 +1,7 @@
 package org.mitre.openid.connect.model;
 
+import java.util.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -12,10 +14,10 @@ import org.mitre.jwt.model.JwtClaims;
  * TODO: This class needs to be encoded as a JWT
  */
 @Entity
-public class IdToken extends JwtClaims {
+public class IdTokenClaims extends JwtClaims {
 
 	public static final String USER_ID = "user_id";
-	public static final String ISO29115 = "iso29115";
+	public static final String AUTHENTICATION_CONTEXT_CLASS_REFERENCE = "acr";
 	public static final String NONCE = "nonce";
 	public static final String AUTH_TIME = "auth_time";
 
@@ -46,6 +48,30 @@ public class IdToken extends JwtClaims {
 	}
 	
 
-	// TODO: add in other fields
+	public String getAuthContext() {
+		return getClaimAsString(AUTHENTICATION_CONTEXT_CLASS_REFERENCE);		
+	}
+	
+	public void setAuthContext(String acr) {
+		setClaim(AUTHENTICATION_CONTEXT_CLASS_REFERENCE, acr);
+	}
+	
+	
+	public String getNonce() {
+		return getClaimAsString(NONCE);
+	}
+	
+	public void setNonce(String nonce) {
+		setClaim(NONCE, nonce);
+	}
+	
+	
+	public Date getAuthTime() {
+		return getClaimAsDate(AUTH_TIME);
+	}
+	
+	public void setAuthTime(Date authTime) {
+		setClaim(AUTH_TIME, authTime);
+	}
 	
 }
