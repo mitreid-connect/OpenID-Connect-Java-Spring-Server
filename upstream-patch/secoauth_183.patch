@@ -1,0 +1,113 @@
+diff --git a/spring-security-oauth2/src/main/java/org/springframework/security/oauth2/common/ExpiringOAuth2RefreshToken.java b/spring-security-oauth2/src/main/java/org/springframework/security/oauth2/common/ExpiringOAuth2RefreshToken.java
+index 20d2512..a773b29 100644
+--- a/spring-security-oauth2/src/main/java/org/springframework/security/oauth2/common/ExpiringOAuth2RefreshToken.java
++++ b/spring-security-oauth2/src/main/java/org/springframework/security/oauth2/common/ExpiringOAuth2RefreshToken.java
+@@ -9,9 +9,17 @@ public class ExpiringOAuth2RefreshToken extends OAuth2RefreshToken {
+ 
+ 	private static final long serialVersionUID = 3449554332764129719L;
+ 
+-	private final Date expiration;
++	private Date expiration;
+ 
+ 	/**
++	 * Create an expiring refresh token with a null value and no expiration
++	 * @param expiration
++	 */
++	public ExpiringOAuth2RefreshToken() {
++		this(null, null);
++	}
++	
++	/**
+ 	 * @param value
+ 	 */
+ 	public ExpiringOAuth2RefreshToken(String value, Date expiration) {
+@@ -28,4 +36,11 @@ public class ExpiringOAuth2RefreshToken extends OAuth2RefreshToken {
+ 		return expiration;
+ 	}
+ 
++	/**
++	 * Set the expiration of this token
++	 */
++	public void setExpiration(Date expiration) {
++		this.expiration = expiration;
++	}
++	
+ }
+diff --git a/spring-security-oauth2/src/main/java/org/springframework/security/oauth2/common/OAuth2AccessToken.java b/spring-security-oauth2/src/main/java/org/springframework/security/oauth2/common/OAuth2AccessToken.java
+index 791780f..25edf77 100644
+--- a/spring-security-oauth2/src/main/java/org/springframework/security/oauth2/common/OAuth2AccessToken.java
++++ b/spring-security-oauth2/src/main/java/org/springframework/security/oauth2/common/OAuth2AccessToken.java
+@@ -57,7 +57,7 @@ public class OAuth2AccessToken implements Serializable {
+ 	 */
+ 	public static String SCOPE = "scope";
+ 
+-	private final String value;
++	private String value;
+ 
+ 	private Date expiration;
+ 
+@@ -74,8 +74,10 @@ public class OAuth2AccessToken implements Serializable {
+ 		this.value = value;
+ 	}
+ 
+-	@SuppressWarnings("unused")
+-	private OAuth2AccessToken() {
++	/**
++	 * Create an access token with no value
++	 */
++	public OAuth2AccessToken() {
+ 		this(null);
+ 	}
+ 
+@@ -88,6 +90,14 @@ public class OAuth2AccessToken implements Serializable {
+ 		return value;
+ 	}
+ 
++	/**
++	 * Set the value of the token.
++	 * @param value the token value
++	 */
++	public void setValue(String value) {
++		this.value = value;
++	}
++	
+ 	public int getExpiresIn() {
+ 		return expiration != null ? Long.valueOf((expiration.getTime() - System.currentTimeMillis()) / 1000L)
+ 				.intValue() : 0;
+diff --git a/spring-security-oauth2/src/main/java/org/springframework/security/oauth2/common/OAuth2RefreshToken.java b/spring-security-oauth2/src/main/java/org/springframework/security/oauth2/common/OAuth2RefreshToken.java
+index 00b002c..96f3f1b 100644
+--- a/spring-security-oauth2/src/main/java/org/springframework/security/oauth2/common/OAuth2RefreshToken.java
++++ b/spring-security-oauth2/src/main/java/org/springframework/security/oauth2/common/OAuth2RefreshToken.java
+@@ -15,9 +15,16 @@ public class OAuth2RefreshToken implements Serializable {
+ 
+ 	private static final long serialVersionUID = 8349970621900575838L;
+ 
+-	private final String value;
++	private String value;
+ 
+ 	/**
++	 * Create an empty token with no value
++	 */
++	public OAuth2RefreshToken() {
++		this(null);
++	}
++	
++	/**
+ 	 * Create a new refresh token.
+ 	 */
+ 	@JsonCreator
+@@ -35,6 +42,14 @@ public class OAuth2RefreshToken implements Serializable {
+ 		return value;
+ 	}
+ 
++	/**
++	 * Set the value of the token
++	 * @param value the value of the token
++	 */
++	public void setValue(String value) {
++		this.value = value;
++	}
++	
+ 	@Override
+ 	public String toString() {
+ 		return getValue();

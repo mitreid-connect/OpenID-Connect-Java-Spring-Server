@@ -1,6 +1,7 @@
 package org.mitre.openid.connect.model;
 
 import javax.persistence.Entity;
+import javax.persistence.Id;
 
 @Entity
 public class UserInfo {
@@ -29,6 +30,7 @@ public class UserInfo {
 	/**
 	 * @return the user_id
 	 */
+	@Id
 	public String getUser_id() {
 		return user_id;
 	}

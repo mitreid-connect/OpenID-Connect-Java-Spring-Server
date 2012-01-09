@@ -8,6 +8,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 
 import org.springframework.security.oauth2.provider.ClientDetails;
@@ -48,7 +50,7 @@ public class ApprovedSite {
      * @return the id
      */
 	@Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long getId() {
     	return id;
     }
@@ -63,6 +65,7 @@ public class ApprovedSite {
 	/**
      * @return the userInfo
      */
+    @ManyToOne
     public UserInfo getUserInfo() {
     	return userInfo;
     }
@@ -123,6 +126,7 @@ public class ApprovedSite {
 	/**
      * @return the allowedScopes
      */
+    @OneToMany
     public Collection<String> getAllowedScopes() {
     	return allowedScopes;
     }

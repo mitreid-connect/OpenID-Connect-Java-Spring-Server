@@ -1,16 +1,22 @@
 package org.mitre.openid.connect.model;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 @Entity
 public class Address {
 
+	private Long id;
 	private String formatted;
 	private String street_address;
 	private String locality;
 	private String region;
 	private String postal_code;
 	private String country;
+	
+	
 	
 	/**
 	 * @return the formatted
@@ -84,5 +90,21 @@ public class Address {
 	public void setCountry(String country) {
 		this.country = country;
 	}
+
+	/**
+     * @return the id
+     */
+	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	public Long getId() {
+    	return id;
+    }
+
+	/**
+     * @param id the id to set
+     */
+    public void setId(Long id) {
+    	this.id = id;
+    }
 		
 }
