@@ -1,32 +1,71 @@
 package org.mitre.openid.connect.model;
 
+import javax.persistence.Basic;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 @Entity
+@Table(name="userinfo")
 public class UserInfo {
 
-	// TODO: underbars are awkward in java, should we switch all this to camel case and put in underbars in the serialization view?
+	// unique object id for persistence
+	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	private Long id;
 	
+	// TODO: underbars are awkward in java, should we switch all this to camel case and put in underbars in the serialization view?
+	@Basic
 	private String user_id;
+	@Basic
 	private String name;
+	@Basic
 	private String given_name;
+	@Basic
 	private String family_name;
+	@Basic
 	private String middle_name;
+	@Basic
 	private String nickname;
+	@Basic
 	private String profile;
+	@Basic
 	private String picture;
+	@Basic
 	private String website;
+	@Basic
 	private String email;
+	@Basic
 	private Boolean verified;
+	@Basic
 	private String gender;
+	@Basic
 	private String zoneinfo;
+	@Basic
 	private String locale;
+	@Basic
 	private String phone_number;
+	@OneToOne
 	private Address address;
+	@Basic
 	private String updated_time;
 	
 	
+	/**
+	 * @return the id
+	 */
+	public Long getId() {
+		return id;
+	}
+	/**
+	 * @param id the id to set
+	 */
+	public void setId(Long id) {
+		this.id = id;
+	}
 	/**
 	 * @return the user_id
 	 */

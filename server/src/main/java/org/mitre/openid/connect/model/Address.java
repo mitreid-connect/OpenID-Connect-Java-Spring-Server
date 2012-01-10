@@ -1,5 +1,6 @@
 package org.mitre.openid.connect.model;
 
+import javax.persistence.Basic;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -8,24 +9,43 @@ import javax.persistence.Id;
 @Entity
 public class Address {
 
+	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
+	
+	@Basic
 	private String formatted;
+	
+	@Basic
 	private String street_address;
+	
+	@Basic
 	private String locality;
+	
+	@Basic
 	private String region;
+	
+	@Basic
 	private String postal_code;
+	
+	@Basic
 	private String country;
 	
-	
+	/**
+	 * Empty constructor
+	 */
+	public Address() {
+		
+	}
 	
 	/**
-	 * @return the formatted
+	 * @return the formatted address string
 	 */
 	public String getFormatted() {
 		return formatted;
 	}
 	/**
-	 * @param formatted the formatted to set
+	 * @param formatted the formatted address to set
 	 */
 	public void setFormatted(String formatted) {
 		this.formatted = formatted;

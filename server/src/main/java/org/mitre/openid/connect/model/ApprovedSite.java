@@ -8,40 +8,56 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.springframework.security.oauth2.provider.ClientDetails;
 
 @Entity
+@Table(name="approvedsite")
 public class ApprovedSite {
 
     // unique id
+	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
     
     // which user made the approval
+	@ManyToOne
+	@JoinColumn(name="userinfo_id")
 	private UserInfo userInfo;
 	
 	// which OAuth2 client is this tied to
+	@ManyToOne
+	@JoinColumn(name="clientdetails_id")
 	private ClientDetails clientDetails;
 	
 	// when was this first approved?
+	@Temporal(TemporalType.DATE)
 	private Date creationDate;
 	
 	// when was this last accessed?
+	@Temporal(TemporalType.DATE)
 	private Date accessDate;
 	
 	// if this is a time-limited access, when does it run out?
+	@Temporal(TemporalType.DATE)
 	private Date timeoutDate;
 	
 	// what scopes have been allowed
 	// this should include all information for what data to access
+	@OneToMany(mappedBy = "approvedsite")
 	private Collection<String> allowedScopes;
 	
 	// TODO: should we store the OAuth2 tokens and IdTokens here?
 	
-
+	/**
+	 * Empty constructor
+	 */
 	public ApprovedSite() {
 
     }
