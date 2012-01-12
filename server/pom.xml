@@ -266,6 +266,11 @@
         	<artifactId>jackson-mapper-asl</artifactId>
         	<version>1.9.2</version>
         </dependency>
+        <dependency>
+        	<groupId>com.google.code.maven-replacer-plugin</groupId>
+        	<artifactId>maven-replacer-plugin</artifactId>
+        	<version>1.3.8</version>
+        </dependency>
     </dependencies>
     <repositories>
         <!-- For testing against latest Spring snapshots -->
@@ -387,6 +392,24 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+            	<groupId>com.google.code.maven-replacer-plugin</groupId>
+            	<artifactId>maven-replacer-plugin</artifactId>
+            	<version>1.3.8</version>
+            	<executions>
+            		<execution>
+            			<phase>prepare-package</phase>
+            			<goals>
+            				<goal>replace</goal>
+            			</goals>
+            		</execution>
+            	</executions>
+            	<!-- Replace database key/value pairs if there -->
+            	<configuration>
+            		<filesToInclude>target/${project.artifactId}-${project.version}/WEB-INF/spring/data-context.xml,target/${project.artifactId}-${project.version}/WEB-INF/spring/security-context.xml</filesToInclude>
+            		<tokenValueMap>local-values.conf</tokenValueMap>
+            	</configuration>
             </plugin>
         </plugins>
     </build>
