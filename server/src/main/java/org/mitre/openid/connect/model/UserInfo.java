@@ -3,6 +3,7 @@ package org.mitre.openid.connect.model;
 import javax.persistence.Basic;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
@@ -233,6 +234,7 @@ public class UserInfo {
 	 * @return the address
 	 */
 	@OneToOne
+	@JoinColumn(name="address_id")
 	public Address getAddress() {
 		return address;
 	}
