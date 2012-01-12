@@ -270,6 +270,11 @@ public class ClientDetailsEntity implements ClientDetails {
 	/**
      * @return the resourceIds
      */
+	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(
+			name="resource_ids",
+			joinColumns=@JoinColumn(name="owner_id")
+	)
     public Set<String> getResourceIds() {
     	return resourceIds;
     }
@@ -277,11 +282,6 @@ public class ClientDetailsEntity implements ClientDetails {
 	/**
      * @param resourceIds the resourceIds to set
      */
-	@ElementCollection(fetch = FetchType.EAGER)
-	@CollectionTable(
-			name="resource_ids",
-			joinColumns=@JoinColumn(name="owner_id")
-	)
     public void setResourceIds(Set<String> resourceIds) {
     	this.resourceIds = resourceIds;
     }

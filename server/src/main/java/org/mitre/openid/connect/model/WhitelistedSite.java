@@ -1,17 +1,20 @@
 package org.mitre.openid.connect.model;
 
-import java.util.Collection;
+import java.util.Set;
 
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
-import org.springframework.security.oauth2.provider.ClientDetails;
+import org.mitre.oauth2.model.ClientDetailsEntity;
 
 /**
  * Indicator that login to a site should be automatically granted 
@@ -21,27 +24,23 @@ import org.springframework.security.oauth2.provider.ClientDetails;
  */
 @Entity
 @Table(name="whitelistedsite")
+@NamedQueries({
+	@NamedQuery(name = "WhitelistedSite.getAll", query = "select w from WhitelistedSite w")
+})
 public class WhitelistedSite {
 
     // unique id
-	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
     // who added this site to the whitelist (should be an admin)
-	@ManyToOne
-	@JoinColumn(name="userinfo_id")
 	private UserInfo userInfo;
 	
 	// which OAuth2 client is this tied to
-	@ManyToOne
-	@JoinColumn(name="clientdetails_id")
-	private ClientDetails clientDetails;
+	private ClientDetailsEntity clientDetails;
 	
 	// what scopes be allowed by default
 	// this should include all information for what data to access
-	@OneToMany(mappedBy="whitelistedsite")
-	private Collection<String> allowedScopes;
+	private Set<String> allowedScopes;
 
 	/**
 	 * Empty constructor
@@ -53,6 +52,8 @@ public class WhitelistedSite {
 	/**
 	 * @return the id
 	 */
+	@Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)	
 	public Long getId() {
 		return id;
 	}
@@ -67,6 +68,8 @@ public class WhitelistedSite {
 	/**
 	 * @return the userInfo
 	 */
+	@ManyToOne
+	@JoinColumn(name="userinfo_id")
 	public UserInfo getUserInfo() {
 		return userInfo;
 	}
@@ -81,28 +84,31 @@ public class WhitelistedSite {
 	/**
 	 * @return the clientDetails
 	 */
-	public ClientDetails getClientDetails() {
+	@ManyToOne
+	@JoinColumn(name="clientdetails_id")
+	public ClientDetailsEntity getClientDetails() {
 		return clientDetails;
 	}
 
 	/**
 	 * @param clientDetails the clientDetails to set
 	 */
-	public void setClientDetails(ClientDetails clientDetails) {
+	public void setClientDetails(ClientDetailsEntity clientDetails) {
 		this.clientDetails = clientDetails;
 	}
 
 	/**
 	 * @return the allowedScopes
 	 */
-	public Collection<String> getAllowedScopes() {
+	@ElementCollection(fetch = FetchType.EAGER)
+	public Set<String> getAllowedScopes() {
 		return allowedScopes;
 	}
 
 	/**
 	 * @param allowedScopes the allowedScopes to set
 	 */
-	public void setAllowedScopes(Collection<String> allowedScopes) {
+	public void setAllowedScopes(Set<String> allowedScopes) {
 		this.allowedScopes = allowedScopes;
 	}
 }

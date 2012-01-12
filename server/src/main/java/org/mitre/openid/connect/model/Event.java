@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.persistence.Temporal;
 
 /**
@@ -17,6 +18,7 @@ import javax.persistence.Temporal;
  */
 
 @Entity
+@Table(name="event")
 public class Event {
 
 	public static enum EventType { LOGIN, AUTHORIZATION, ACCESS }

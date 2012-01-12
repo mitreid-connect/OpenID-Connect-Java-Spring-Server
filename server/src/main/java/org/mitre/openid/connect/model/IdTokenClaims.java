@@ -6,14 +6,14 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
-import org.mitre.jwt.model.Jwt;
 import org.mitre.jwt.model.JwtClaims;
 
-/*
- * TODO: This class needs to be encoded as a JWT
- */
+
 @Entity
+@Table(name="idtokenclaims")
 public class IdTokenClaims extends JwtClaims {
 
 	public static final String USER_ID = "user_id";
@@ -38,7 +38,7 @@ public class IdTokenClaims extends JwtClaims {
     	this.id = id;
     }
 
-
+    @Transient
 	public String getUserId() {
 		return getClaimAsString(USER_ID);
 	}
@@ -47,7 +47,7 @@ public class IdTokenClaims extends JwtClaims {
 		setClaim(USER_ID, user_id);
 	}
 	
-
+	@Transient
 	public String getAuthContext() {
 		return getClaimAsString(AUTHENTICATION_CONTEXT_CLASS_REFERENCE);		
 	}
@@ -56,7 +56,7 @@ public class IdTokenClaims extends JwtClaims {
 		setClaim(AUTHENTICATION_CONTEXT_CLASS_REFERENCE, acr);
 	}
 	
-	
+	@Transient
 	public String getNonce() {
 		return getClaimAsString(NONCE);
 	}
@@ -65,7 +65,7 @@ public class IdTokenClaims extends JwtClaims {
 		setClaim(NONCE, nonce);
 	}
 	
-	
+	@Transient
 	public Date getAuthTime() {
 		return getClaimAsDate(AUTH_TIME);
 	}

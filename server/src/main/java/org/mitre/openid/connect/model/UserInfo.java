@@ -2,86 +2,55 @@ package org.mitre.openid.connect.model;
 
 import javax.persistence.Basic;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
 @Table(name="userinfo")
+@NamedQueries({
+	@NamedQuery(name="UserInfo.getAll", query = "select u from UserInfo u")
+})
 public class UserInfo {
-
-	// unique object id for persistence
-	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	private Long id;
 	
-	// TODO: underbars are awkward in java, should we switch all this to camel case and put in underbars in the serialization view?
-	@Basic
-	private String user_id;
-	@Basic
-	private String name;
-	@Basic
-	private String given_name;
-	@Basic
-	private String family_name;
-	@Basic
-	private String middle_name;
-	@Basic
-	private String nickname;
-	@Basic
+	private String userId;	
+	private String name;	
+	private String givenName;	
+	private String familyName;	
+	private String middleName;	
+	private String nickname;	
 	private String profile;
-	@Basic
-	private String picture;
-	@Basic
+	private String picture;	
 	private String website;
-	@Basic
 	private String email;
-	@Basic
 	private Boolean verified;
-	@Basic
 	private String gender;
-	@Basic
 	private String zoneinfo;
-	@Basic
 	private String locale;
-	@Basic
-	private String phone_number;
-	@OneToOne
+	private String phoneNumber;
 	private Address address;
-	@Basic
-	private String updated_time;
+	private String updatedTime;
 	
 	
 	/**
-	 * @return the id
-	 */
-	public Long getId() {
-		return id;
-	}
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(Long id) {
-		this.id = id;
-	}
-	/**
-	 * @return the user_id
+	 * @return the userId
 	 */
 	@Id
-	public String getUser_id() {
-		return user_id;
+	public String getUserId() {
+		return userId;
 	}
 	/**
-	 * @param user_id the user_id to set
+	 * @param userId the userId to set
 	 */
-	public void setUser_id(String user_id) {
-		this.user_id = user_id;
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 	/**
 	 * @return the name
 	 */
+	@Basic
 	public String getName() {
 		return name;
 	}
@@ -92,44 +61,48 @@ public class UserInfo {
 		this.name = name;
 	}
 	/**
-	 * @return the given_name
+	 * @return the givenName
 	 */
-	public String getGiven_name() {
-		return given_name;
+	@Basic
+	public String getGivenName() {
+		return givenName;
 	}
 	/**
-	 * @param given_name the given_name to set
+	 * @param givenName the givenName to set
 	 */
-	public void setGiven_name(String given_name) {
-		this.given_name = given_name;
+	public void setGivenName(String givenName) {
+		this.givenName = givenName;
 	}
 	/**
-	 * @return the family_name
+	 * @return the familyName
 	 */
-	public String getFamily_name() {
-		return family_name;
+	@Basic
+	public String getFamilyName() {
+		return familyName;
 	}
 	/**
-	 * @param family_name the family_name to set
+	 * @param familyName the familyName to set
 	 */
-	public void setFamily_name(String family_name) {
-		this.family_name = family_name;
+	public void setFamilyName(String familyName) {
+		this.familyName = familyName;
 	}
 	/**
-	 * @return the middle_name
+	 * @return the middleName
 	 */
-	public String getMiddle_name() {
-		return middle_name;
+	@Basic
+	public String getMiddleName() {
+		return middleName;
 	}
 	/**
-	 * @param middle_name the middle_name to set
+	 * @param middleName the middleName to set
 	 */
-	public void setMiddle_name(String middle_name) {
-		this.middle_name = middle_name;
+	public void setMiddleName(String middleName) {
+		this.middleName = middleName;
 	}
 	/**
 	 * @return the nickname
 	 */
+	@Basic
 	public String getNickname() {
 		return nickname;
 	}
@@ -142,6 +115,7 @@ public class UserInfo {
 	/**
 	 * @return the profile
 	 */
+	@Basic
 	public String getProfile() {
 		return profile;
 	}
@@ -154,6 +128,7 @@ public class UserInfo {
 	/**
 	 * @return the picture
 	 */
+	@Basic
 	public String getPicture() {
 		return picture;
 	}
@@ -166,6 +141,7 @@ public class UserInfo {
 	/**
 	 * @return the website
 	 */
+	@Basic
 	public String getWebsite() {
 		return website;
 	}
@@ -178,6 +154,7 @@ public class UserInfo {
 	/**
 	 * @return the email
 	 */
+	@Basic
 	public String getEmail() {
 		return email;
 	}
@@ -190,6 +167,7 @@ public class UserInfo {
 	/**
 	 * @return the verified
 	 */
+	@Basic
 	public Boolean getVerified() {
 		return verified;
 	}
@@ -202,6 +180,7 @@ public class UserInfo {
 	/**
 	 * @return the gender
 	 */
+	@Basic
 	public String getGender() {
 		return gender;
 	}
@@ -214,6 +193,7 @@ public class UserInfo {
 	/**
 	 * @return the zoneinfo
 	 */
+	@Basic
 	public String getZoneinfo() {
 		return zoneinfo;
 	}
@@ -226,6 +206,7 @@ public class UserInfo {
 	/**
 	 * @return the locale
 	 */
+	@Basic
 	public String getLocale() {
 		return locale;
 	}
@@ -236,20 +217,22 @@ public class UserInfo {
 		this.locale = locale;
 	}
 	/**
-	 * @return the phone_number
+	 * @return the phoneNumber
 	 */
-	public String getPhone_number() {
-		return phone_number;
+	@Basic
+	public String getPhoneNumber() {
+		return phoneNumber;
 	}
 	/**
-	 * @param phone_number the phone_number to set
+	 * @param phoneNumber the phoneNumber to set
 	 */
-	public void setPhone_number(String phone_number) {
-		this.phone_number = phone_number;
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
 	}
 	/**
 	 * @return the address
 	 */
+	@OneToOne
 	public Address getAddress() {
 		return address;
 	}
@@ -260,16 +243,17 @@ public class UserInfo {
 		this.address = address;
 	}
 	/**
-	 * @return the updated_time
+	 * @return the updatedTime
 	 */
-	public String getUpdated_time() {
-		return updated_time;
+	@Basic
+	public String getUpdatedTime() {
+		return updatedTime;
 	}
 	/**
-	 * @param updated_time the updated_time to set
+	 * @param updatedTime the updatedTime to set
 	 */
-	public void setUpdated_time(String updated_time) {
-		this.updated_time = updated_time;
+	public void setUpdatedTime(String updatedTime) {
+		this.updatedTime = updatedTime;
 	}
 	
 }

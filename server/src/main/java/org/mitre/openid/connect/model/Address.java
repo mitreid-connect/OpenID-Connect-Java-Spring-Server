@@ -9,26 +9,13 @@ import javax.persistence.Id;
 @Entity
 public class Address {
 
-	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	
 	private Long id;
-	
-	@Basic
 	private String formatted;
-	
-	@Basic
-	private String street_address;
-	
-	@Basic
+	private String streetAddress;
 	private String locality;
-	
-	@Basic
 	private String region;
-	
-	@Basic
-	private String postal_code;
-	
-	@Basic
+	private String postalCode;
 	private String country;
 	
 	/**
@@ -41,6 +28,7 @@ public class Address {
 	/**
 	 * @return the formatted address string
 	 */
+	@Basic
 	public String getFormatted() {
 		return formatted;
 	}
@@ -51,20 +39,22 @@ public class Address {
 		this.formatted = formatted;
 	}
 	/**
-	 * @return the street_address
+	 * @return the streetAddress
 	 */
-	public String getStreet_address() {
-		return street_address;
+	@Basic
+	public String getStreetAddress() {
+		return streetAddress;
 	}
 	/**
-	 * @param street_address the street_address to set
+	 * @param streetAddress the streetAddress to set
 	 */
-	public void setStreet_address(String street_address) {
-		this.street_address = street_address;
+	public void setStreetAddress(String streetAddress) {
+		this.streetAddress = streetAddress;
 	}
 	/**
 	 * @return the locality
 	 */
+	@Basic
 	public String getLocality() {
 		return locality;
 	}
@@ -77,6 +67,7 @@ public class Address {
 	/**
 	 * @return the region
 	 */
+	@Basic
 	public String getRegion() {
 		return region;
 	}
@@ -87,20 +78,22 @@ public class Address {
 		this.region = region;
 	}
 	/**
-	 * @return the postal_code
+	 * @return the postalCode
 	 */
-	public String getPostal_code() {
-		return postal_code;
+	@Basic
+	public String getPostalCode() {
+		return postalCode;
 	}
 	/**
-	 * @param postal_code the postal_code to set
+	 * @param postalCode the postalCode to set
 	 */
-	public void setPostal_code(String postal_code) {
-		this.postal_code = postal_code;
+	public void setPostalCode(String postalCode) {
+		this.postalCode = postalCode;
 	}
 	/**
 	 * @return the country
 	 */
+	@Basic
 	public String getCountry() {
 		return country;
 	}
