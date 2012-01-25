@@ -139,12 +139,8 @@ public class Jwt {
 		String c64 = parts.get(1);
 		String s64 = parts.get(2);
 		
-		JsonParser parser = new JsonParser();
-		JsonObject hjo = parser.parse(new InputStreamReader(new ByteArrayInputStream(Base64.decodeBase64(h64)))).getAsJsonObject();
-		JsonObject cjo = parser.parse(new InputStreamReader(new ByteArrayInputStream(Base64.decodeBase64(c64)))).getAsJsonObject();		
-		
 		// shuttle for return value
-		Jwt jwt = new Jwt(new JwtHeader(hjo), new JwtClaims(cjo), s64);
+		Jwt jwt = new Jwt(new JwtHeader(h64), new JwtClaims(c64), s64);
 		
 		// TODO: save the wire-encoded string in the Jwt object itself?
 		

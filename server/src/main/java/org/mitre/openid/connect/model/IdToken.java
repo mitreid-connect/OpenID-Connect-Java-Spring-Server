@@ -1,5 +1,7 @@
 package org.mitre.openid.connect.model;
 
+import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -10,6 +12,11 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.mitre.jwt.model.Jwt;
+import org.mitre.jwt.model.JwtClaims;
+import org.mitre.jwt.model.JwtHeader;
+
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
 
 @Entity
 @Table(name="idtoken")
@@ -17,6 +24,24 @@ import org.mitre.jwt.model.Jwt;
 	@NamedQuery(name = "IdToken.getAll", query = "select i from IdToken i")
 })
 public class IdToken extends Jwt {
+
+	/**
+	 * Create a blank IdToken
+	 */
+	public IdToken() {
+	    super();
+    }
+
+	/**
+	 * Create an IdToken from the requisite pieces.
+	 * @param header
+	 * @param claims
+	 * @param signature
+	 */
+	public IdToken(JwtHeader header, JwtClaims claims, String signature) {
+	    super(header, claims, signature);
+    }
+
 
 	private Long id;
 
@@ -52,5 +77,33 @@ public class IdToken extends Jwt {
 	}
 	
 	
+	/**
+	 * Parse a wire-encoded IdToken.
+	 * 
+	 */
+	public static IdToken parse(String s) {
+		
+		// TODO: this code was copied nearly verbatim from Jwt.parse, and
+		//       we should figure out how to re-use and abstract bits, likely
+		
+		// split on the dots
+		List<String> parts = Lists.newArrayList(Splitter.on(".").split(s));
+		
+		if (parts.size() != 3) {
+			throw new IllegalArgumentException("Invalid JWT format.");
+		}
+		
+		String h64 = parts.get(0);
+		String c64 = parts.get(1);
+		String s64 = parts.get(2);
+		
+		// shuttle for return value
+		IdToken idToken = new IdToken(new JwtHeader(h64), new IdTokenClaims(c64), s64);
+		
+		// TODO: save the wire-encoded string in the Jwt object itself?
+		
+		return idToken;
+		
+	}
 	
 }

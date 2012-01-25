@@ -29,10 +29,21 @@ public class JwtClaims extends ClaimSet {
 	//public static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz");
 
 	public JwtClaims() {
-		
+		super();
 	}
 	
 	public JwtClaims(JsonObject json) {
+		super(json);
+	}
+	
+	public JwtClaims(String b64) {
+		super(b64);
+	}
+
+	@Override
+	public void loadFromJsonObject(JsonObject json) {
+		JsonObject pass = new JsonObject();
+		
 		for (Entry<String, JsonElement> element : json.entrySet()) {
 	        if (element.getKey().equals(EXPIRATION)) {
                 setExpiration(new Date(element.getValue().getAsLong() * 1000L));
@@ -51,15 +62,12 @@ public class JwtClaims extends ClaimSet {
 	        } else if (element.getKey().equals(TYPE)) {	        	
 	        	setType(element.getValue().getAsString());
 	        } else {
-	        	if (element.getValue().isJsonPrimitive()){
-		        	// we handle all primitives in here
-		        	JsonPrimitive prim = element.getValue().getAsJsonPrimitive();
-		        	setClaim(element.getKey(), prim);
-		        } else {
-		        	setClaim(element.getKey(), element.getValue());
-		        }
+	        	pass.add(element.getKey(), element.getValue());
 	        }
         }
+		
+		// load all the generic claims into this object
+		super.loadFromJsonObject(pass);
     }
 
 	/**

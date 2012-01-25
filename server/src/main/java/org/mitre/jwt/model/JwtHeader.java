@@ -18,7 +18,7 @@ public class JwtHeader extends ClaimSet {
 	 * Make an empty header
 	 */
 	public JwtHeader() {
-		
+		super();
     }
 	
 	/**
@@ -26,7 +26,22 @@ public class JwtHeader extends ClaimSet {
 	 * @param json
 	 */
 	public JwtHeader(JsonObject json) {
+		super(json);
+	}
 		
+	
+	public JwtHeader(String b64) {
+		super(b64);
+    }
+
+	/**
+	 * Load all claims from the given json object into this object
+     */
+    @Override
+    public void loadFromJsonObject(JsonObject json) {
+    	
+    	JsonObject pass = new JsonObject();
+    	
 		for (Entry<String, JsonElement> element : json.entrySet()) {
 	        if (element.getKey().equals(TYPE)) {
 	        	this.setType(json.get(TYPE).getAsString());
@@ -35,15 +50,12 @@ public class JwtHeader extends ClaimSet {
 	        } else if (element.getKey().equals(ENCRYPTION_METHOD)) {	        	
 	        	this.setEncryptionMethod(json.get(ENCRYPTION_METHOD).getAsString());
 	        } else {
-	        	if (element.getValue().isJsonPrimitive()){
-		        	// we handle all primitives in here
-		        	JsonPrimitive prim = element.getValue().getAsJsonPrimitive();
-		        	setClaim(element.getKey(), prim);
-		        } else {
-		        	setClaim(element.getKey(), element.getValue());
-		        }
+	        	pass.add(element.getKey(), element.getValue());
 	        }
         }
+		
+		// now load all the ones we didn't handly specially
+		super.loadFromJsonObject(pass);
 	}
 
 	/**

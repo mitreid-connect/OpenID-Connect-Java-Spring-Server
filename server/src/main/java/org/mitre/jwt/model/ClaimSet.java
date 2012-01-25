@@ -1,11 +1,17 @@
 package org.mitre.jwt.model;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStreamReader;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+
+import org.apache.commons.codec.binary.Base64;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 
 /**
@@ -20,7 +26,19 @@ public class ClaimSet {
 	// the LinkedHashMap preserves insertion order
 	private Map<String, Object> claims = new LinkedHashMap<String, Object>();
 	
-    /**
+	public ClaimSet() {
+		
+	}
+	
+	public ClaimSet(JsonObject json) {
+		loadFromJsonObject(json);
+	}
+	
+	public ClaimSet(String b64) {
+		loadFromBase64JsonObjectString(b64);
+	}
+	
+	/**
      * Get an extension claim
      */
     public Object getClaim(String key) {
@@ -86,6 +104,14 @@ public class ClaimSet {
     
 	
 	/**
+     * Clear all claims from this ClaimSet 
+     * @see java.util.Map#clear()
+     */
+    public void clear() {
+	    claims.clear();
+    }
+
+    /**
 	 * Get a copy of this claim set as a JsonObject. The JsonObject is not
 	 * backed by a live copy of this ClaimSet.
 	 * @return a copy of the data in this header in a JsonObject
@@ -128,5 +154,32 @@ public class ClaimSet {
 		return o;
 	}
 
+	/**
+	 * Load new claims from the given json object. Will replace any existing claims, but does not clear claim set.  
+	 * @param json
+	 */
+	public void loadFromJsonObject(JsonObject json) {
+		for (Entry<String, JsonElement> element : json.entrySet()) {
+        	if (element.getValue().isJsonPrimitive()){
+	        	// we handle all primitives in here
+	        	JsonPrimitive prim = element.getValue().getAsJsonPrimitive();
+	        	setClaim(element.getKey(), prim);
+	        } else {
+	        	setClaim(element.getKey(), element.getValue());
+	        }
+        }
+	}
+
+	/**
+	 * Load a new claims set from a Base64 encoded JSON Object string
+	 */
+	public void loadFromBase64JsonObjectString(String b64) {
+		byte[] b64decoded = Base64.decodeBase64(b64);
+		
+		JsonParser parser = new JsonParser();
+		JsonObject json = parser.parse(new InputStreamReader(new ByteArrayInputStream(b64decoded))).getAsJsonObject();
+		
+		loadFromJsonObject(json);
+	}
 	
 }

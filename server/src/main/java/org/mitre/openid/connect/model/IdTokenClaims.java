@@ -1,7 +1,9 @@
 package org.mitre.openid.connect.model;
 
 import java.util.Date;
+import java.util.Map.Entry;
 
+import javax.persistence.Basic;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -10,6 +12,10 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.mitre.jwt.model.JwtClaims;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 
 @Entity
@@ -23,6 +29,20 @@ public class IdTokenClaims extends JwtClaims {
 
 	private Long id;
 	
+	
+	
+	public IdTokenClaims() {
+	    super();
+    }
+
+	public IdTokenClaims(JsonObject json) {
+	    super(json);
+    }
+
+	public IdTokenClaims(String b64) {
+	    super(b64);
+    }
+
 	/**
      * @return the id
      */
@@ -74,4 +94,55 @@ public class IdTokenClaims extends JwtClaims {
 		setClaim(AUTH_TIME, authTime);
 	}
 	
+	
+	/**
+	 * Get the seraialized form of this claim set
+	 */
+	@Basic
+    public String getSerializedForm() {
+	    // TODO Auto-generated method stub
+	    JsonObject o = super.getAsJsonObject();
+	    
+	    return o.toString();
+    }
+	
+	/**
+	 * Set up the claims in this object from the serialized form. This clears all current claims from the object.
+	 * @param s a JSON Object string to load into this object
+	 * @throws IllegalArgumentException if s is not a valid JSON object string
+	 */
+	public void setSerializedForm(String s) {
+		JsonParser parser = new JsonParser(); 
+		JsonElement json = parser.parse(s);
+		if (json != null && json.isJsonObject()) {
+			loadFromJsonObject(json.getAsJsonObject());
+		} else {
+			throw new IllegalArgumentException("Could not parse: " + s);
+		}
+	}
+	
+
+	/**
+	 * Load this IdToken from a JSON Object
+     */
+    @Override
+    public void loadFromJsonObject(JsonObject json) {
+    	JsonObject pass = new JsonObject();
+    	
+		for (Entry<String, JsonElement> element : json.entrySet()) {
+			if (element.getKey().equals(USER_ID)) {
+				setUserId(element.getValue().getAsString());
+			} else if (element.getKey().equals(AUTHENTICATION_CONTEXT_CLASS_REFERENCE)) {
+				setAuthContext(element.getValue().getAsString());
+			} else if (element.getKey().equals(NONCE)) {
+				setNonce(element.getValue().getAsString());
+			} else if (element.getKey().equals(AUTH_TIME)) {
+				setAuthTime(new Date(element.getValue().getAsLong() * 1000L));
+	        } else {
+	        	pass.add(element.getKey(), element.getValue());
+	        }
+        }    	
+    	
+	    super.loadFromJsonObject(pass);
+    }
 }
