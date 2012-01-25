@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- *  * JPA UserInfo repository implementation
+ * JPA UserInfo repository implementation
  * 
  * @author Michael Joseph Walsh
  *
@@ -24,7 +24,13 @@ public class JpaUserInfoRepository implements UserInfoRepository {
 
 	@PersistenceContext
     private EntityManager manager;
-
+	
+	@Override
+    @Transactional	
+	public UserInfo getByUserId(String userId) {
+		return manager.find(UserInfo.class, userId);
+	}	
+	
 	@Override
 	@Transactional	
 	public UserInfo save(UserInfo userInfo) {
@@ -45,6 +51,18 @@ public class JpaUserInfoRepository implements UserInfoRepository {
 	}
 
 	@Override
+	@Transactional		
+	public void removeByUserId(String userId) {
+		UserInfo found = manager.find(UserInfo.class, userId);
+		
+		if (found != null) {
+			manager.remove(found);
+		} else {
+			throw new IllegalArgumentException();
+		}			
+	}
+	
+	@Override
 	@Transactional	
 	public Collection<UserInfo> getAll() {
 		
@@ -53,4 +71,5 @@ public class JpaUserInfoRepository implements UserInfoRepository {
 		
 		return query.getResultList();
 	}
+
 }

@@ -1,3 +1,5 @@
 #Wed Jan 25 10:37:18 EST 2012
-com.springsource.sts.maven.maven.automatically.update=true
+activeProfiles=
 eclipse.preferences.version=1
+resolveWorkspaceProjects=true
+version=1
