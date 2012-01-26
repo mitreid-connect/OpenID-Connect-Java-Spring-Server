@@ -9,6 +9,12 @@ import org.mitre.openid.connect.model.IdToken;
 import org.mitre.openid.connect.repository.IdTokenRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * JPA IdToken repository implementation
+ * 
+ * @author Michael Joseph Walsh
+ *
+ */
 public class JpaIdTokenRepository implements IdTokenRepository {
 
 	@PersistenceContext

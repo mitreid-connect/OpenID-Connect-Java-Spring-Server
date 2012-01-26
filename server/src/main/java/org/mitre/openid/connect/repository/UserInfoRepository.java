@@ -13,6 +13,15 @@ import org.mitre.openid.connect.model.UserInfo;
 public interface UserInfoRepository {
 	
 	/**
+	 * Returns the UserInfo for the given user id
+	 * 
+	 * @param userId
+	 *            userId the user id of the UserInfo
+	 * @return a valid UserInfo if it exists, null otherwise
+	 */	
+	public UserInfo getByUserId(String userId);		
+	
+	/**
 	 * Persists a UserInfo 
 	 *
 	 * @param user
@@ -28,6 +37,14 @@ public interface UserInfoRepository {
 	 */
 	public void remove(UserInfo userInfo);
 
+	/**
+	 * Removes the UserInfo from the repository for the given user id
+	 * 
+	 * @param userId
+	 *            the user id for the UserInfo object to remove
+	 */
+	public void removeByUserId(String userId);	
+	
 	/**
 	 * Return a collection of all UserInfos managed by this repository
 	 * 

@@ -31,7 +31,7 @@ public interface ApprovedSiteRepository {
 	public Collection<ApprovedSite> getAll();
 
 	/**
-	 * Return a collection of UserInfo managed by this repository matching the
+	 * Return a collection of ApprovedSite managed by this repository matching the
 	 * provided ClientDetailsEntity
 	 * 
 	 * @param userId
@@ -41,7 +41,7 @@ public interface ApprovedSiteRepository {
 			ClientDetailsEntity clientDetails);
 
 	/**
-	 * Return a collection of UserInfo managed by this repository matching the
+	 * Return a collection of ApprovedSite managed by this repository matching the
 	 * provided UserInfo
 	 * 
 	 * @param userId
