@@ -1,7 +1,7 @@
 package org.mitre.openid.connect.service.impl;
 
 import org.mitre.openid.connect.model.UserInfo;
-import org.mitre.openid.connect.repository.impl.JpaUserInfoRepository;
+import org.mitre.openid.connect.repository.UserInfoRepository;
 import org.mitre.openid.connect.service.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserInfoServiceImpl implements UserInfoService {
 
 	@Autowired
-	private JpaUserInfoRepository userInfoRepository;
+	private UserInfoRepository userInfoRepository;
 
 	/**
 	 * Default constructor
@@ -32,7 +32,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 	 * 
 	 * @param repository
 	 */
-	public UserInfoServiceImpl(JpaUserInfoRepository userInfoRepository) {
+	public UserInfoServiceImpl(UserInfoRepository userInfoRepository) {
 		this.userInfoRepository = userInfoRepository;
 	}
 

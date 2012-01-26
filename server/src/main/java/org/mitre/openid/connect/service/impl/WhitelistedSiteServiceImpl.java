@@ -1,7 +1,7 @@
 package org.mitre.openid.connect.service.impl;
 
 import org.mitre.openid.connect.model.WhitelistedSite;
-import org.mitre.openid.connect.repository.impl.JpaWhitelistedSiteRepository;
+import org.mitre.openid.connect.repository.WhitelistedSiteRepository;
 import org.mitre.openid.connect.service.WhitelistedSiteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class WhitelistedSiteServiceImpl implements WhitelistedSiteService {
 
 	@Autowired
-	private JpaWhitelistedSiteRepository whitelistedSiteRepository;
+	private WhitelistedSiteRepository whitelistedSiteRepository;
 
 	/**
 	 * Default constructor
@@ -33,7 +33,7 @@ public class WhitelistedSiteServiceImpl implements WhitelistedSiteService {
 	 * @param repository
 	 */
 	public WhitelistedSiteServiceImpl(
-			JpaWhitelistedSiteRepository whitelistedSiteRepository) {
+			WhitelistedSiteRepository whitelistedSiteRepository) {
 		this.whitelistedSiteRepository = whitelistedSiteRepository;
 	}	
 	

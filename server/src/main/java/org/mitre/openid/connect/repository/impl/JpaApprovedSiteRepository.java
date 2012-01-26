@@ -13,6 +13,7 @@ import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.openid.connect.model.ApprovedSite;
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.repository.ApprovedSiteRepository;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Michael Joseph Walsh
  *
  */
+@Repository
 public class JpaApprovedSiteRepository implements ApprovedSiteRepository {
 
 	@PersistenceContext

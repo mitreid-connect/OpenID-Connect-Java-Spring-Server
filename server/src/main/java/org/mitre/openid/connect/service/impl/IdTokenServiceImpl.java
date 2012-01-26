@@ -1,7 +1,7 @@
 package org.mitre.openid.connect.service.impl;
 
 import org.mitre.openid.connect.model.IdToken;
-import org.mitre.openid.connect.repository.impl.JpaIdTokenRepository;
+import org.mitre.openid.connect.repository.IdTokenRepository;
 import org.mitre.openid.connect.service.IdTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class IdTokenServiceImpl implements IdTokenService {
 
 	@Autowired
-	private JpaIdTokenRepository idTokenRepository;
+	private IdTokenRepository idTokenRepository;
 
 	/**
 	 * Default constructor
@@ -32,7 +32,7 @@ public class IdTokenServiceImpl implements IdTokenService {
      * 
      * @param repository
      */	
-	public IdTokenServiceImpl(JpaIdTokenRepository idTokenRepository) {
+	public IdTokenServiceImpl(IdTokenRepository idTokenRepository) {
 		this.idTokenRepository = idTokenRepository;
 	}	
 	

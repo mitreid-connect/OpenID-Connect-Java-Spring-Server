@@ -1,7 +1,7 @@
 package org.mitre.openid.connect.service.impl;
 
 import org.mitre.openid.connect.model.Event;
-import org.mitre.openid.connect.repository.impl.JpaEventRepository;
+import org.mitre.openid.connect.repository.EventRepository;
 import org.mitre.openid.connect.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class EventServiceImpl implements EventService {
 
 	@Autowired
-	private JpaEventRepository eventRepository;
+	private EventRepository eventRepository;
 
 	/**
 	 * Default constructor
@@ -32,7 +32,7 @@ public class EventServiceImpl implements EventService {
      * 
      * @param repository
      */	
-	public EventServiceImpl(JpaEventRepository eventRepository) {
+	public EventServiceImpl(EventRepository eventRepository) {
 		this.eventRepository = eventRepository;
 	}
 

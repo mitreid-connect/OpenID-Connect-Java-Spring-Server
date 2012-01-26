@@ -5,7 +5,7 @@ import java.util.Collection;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.openid.connect.model.ApprovedSite;
 import org.mitre.openid.connect.model.UserInfo;
-import org.mitre.openid.connect.repository.impl.JpaApprovedSiteRepository;
+import org.mitre.openid.connect.repository.ApprovedSiteRepository;
 import org.mitre.openid.connect.service.ApprovedSiteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ApprovedSiteServiceImpl implements ApprovedSiteService {
 
 	@Autowired
-	private JpaApprovedSiteRepository approvedSiteRepository;
+	private ApprovedSiteRepository approvedSiteRepository;
 
 	/**
 	 * Default constructor
@@ -36,7 +36,7 @@ public class ApprovedSiteServiceImpl implements ApprovedSiteService {
      * 
      * @param repository
      */	
-	public ApprovedSiteServiceImpl(JpaApprovedSiteRepository approvedSiteRepository) {
+	public ApprovedSiteServiceImpl(ApprovedSiteRepository approvedSiteRepository) {
 		this.approvedSiteRepository = approvedSiteRepository;
 	}	
 	

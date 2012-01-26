@@ -10,8 +10,16 @@ import javax.persistence.TypedQuery;
 
 import org.mitre.openid.connect.model.WhitelistedSite;
 import org.mitre.openid.connect.repository.WhitelistedSiteRepository;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * JPA WhitelistedSite repository implementation
+ * 
+ * @author Michael Joseph Walsh
+ *
+ */
+@Repository
 public class JpaWhitelistedSiteRepository implements WhitelistedSiteRepository {
 
 	@PersistenceContext

@@ -1,7 +1,7 @@
 package org.mitre.openid.connect.service.impl;
 
 import org.mitre.openid.connect.model.Address;
-import org.mitre.openid.connect.repository.impl.JpaAddressRepository;
+import org.mitre.openid.connect.repository.AddressRepository;
 import org.mitre.openid.connect.service.AddressService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AddressServiceImpl implements AddressService {
 
 		@Autowired
-		private JpaAddressRepository addressRepository;
+		private AddressRepository addressRepository;
 
 		/**
 		 * Default constructor
@@ -32,7 +32,7 @@ public class AddressServiceImpl implements AddressService {
          * 
          * @param repository
          */		
-		public AddressServiceImpl(JpaAddressRepository addressRepository) {
+		public AddressServiceImpl(AddressRepository addressRepository) {
 			this.addressRepository = addressRepository;
 		}
 

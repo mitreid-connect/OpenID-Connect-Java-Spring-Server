@@ -7,6 +7,7 @@ import javax.persistence.PersistenceContext;
 
 import org.mitre.openid.connect.model.Event;
 import org.mitre.openid.connect.repository.EventRepository;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Michael Joseph Walsh
  * 
  */
+@Repository
 public class JpaEventRepository implements EventRepository {
 	
 	@PersistenceContext
