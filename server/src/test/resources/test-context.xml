@@ -23,9 +23,7 @@
 				<value>file:src/main/webapp/db/tables/userinfo.sql</value>
 				<value>file:src/main/webapp/db/tables/whitelistedsite.sql</value>      
                 <!-- Preloaded data -->
-                <!--
                 <value>classpath:test-data.sql</value> 
-                // -->
             </list>
         </property>
         <property name="dateConversionPatterns">
