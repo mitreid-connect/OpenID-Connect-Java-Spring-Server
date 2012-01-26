@@ -23,8 +23,8 @@ import org.mitre.oauth2.model.ClientDetailsEntity;
 @Table(name="approvedsite")
 @NamedQueries({
 	@NamedQuery(name = "ApprovedSite.getAll", query = "select a from ApprovedSite a"),
-	@NamedQuery(name = "ApprovedSite.getByUserInfo", query = "select a from ApprovedSite a if a.userInfo = :approvedSiteUserInfo"),
-	@NamedQuery(name = "ApprovedSite.getByClientDetails", query = "select a from approvedSite if a.clientDetails = :approvedSiteClientDetails")
+	@NamedQuery(name = "ApprovedSite.getByUserInfo", query = "select a from ApprovedSite a where a.userInfo = :approvedSiteUserInfo"),
+	@NamedQuery(name = "ApprovedSite.getByClientDetails", query = "select a from ApprovedSite a where a.clientDetails = :approvedSiteClientDetails")
 })
 public class ApprovedSite {
 
