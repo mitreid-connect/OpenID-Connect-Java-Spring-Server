@@ -10,5 +10,9 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
 	<!-- Scans within the base package of the application for @Components to configure as beans -->
-	<!-- <context:component-scan base-package="org.mitre.pushee.hub.web" /> -->
+	
+	<context:component-scan base-package="org.mitre">
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+	</context:component-scan>
+	
 </beans>

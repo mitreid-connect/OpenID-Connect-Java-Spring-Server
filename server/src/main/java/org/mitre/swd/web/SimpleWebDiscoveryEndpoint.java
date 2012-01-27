@@ -1,6 +1,10 @@
 package org.mitre.swd.web;
 
+import java.util.HashMap;
 import java.util.Map;
+
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -8,12 +12,28 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
 @Controller
 public class SimpleWebDiscoveryEndpoint {
 
 	@RequestMapping(value="/.well-known/simple-web-discovery", 
 					params={"principal", "service=http://openid.net/specs/connect/1.0/issuer"})
-	public ModelAndView openIdConnectIssuerDiscovery(@RequestParam("principal") String principal, ModelAndView modelAndView) {
+	public ModelAndView openIdConnectIssuerDiscovery(@RequestParam("principal") String principal, ModelAndView modelAndView, HttpServletRequest request) {
+		
+		String baseUrl = findBaseUrl(request);
+		
+		// look up user, see if they're local
+		// if so, return this server
+
+		Map<String, Object> m = new HashMap<String, Object>();
+		m.put("locations", Lists.newArrayList(baseUrl));
+		
+		modelAndView.getModel().put("entity", m);
+
+		modelAndView.setViewName("jsonSwdResponseView");
+
 		return modelAndView;
 	}
 	
@@ -43,13 +63,43 @@ public class SimpleWebDiscoveryEndpoint {
 	 * 	token_endpoint_auth_algs_supported 	array 	A JSON array containing a list of the JWS [JWS] signing algorithms supported by the Token Endpoint for the private_key_jwt method to encode the JWT [JWT]. Servers SHOULD support RS256.
 	 */
 	@RequestMapping("/.well-known/openid-configuration")
-	public ModelAndView providerConfiguration(ModelAndView modelAndView) {
+	public ModelAndView providerConfiguration(ModelAndView modelAndView, HttpServletRequest request) {
 
-		Map m = modelAndView.getModel();
+		String baseUrl = findBaseUrl(request);
+		
+		Map<String, Object> m = new HashMap<String, Object>();
 		m.put("version", "3.0");
+		m.put("issuer", baseUrl);
+		m.put("authorization_endpoint", baseUrl + "/authorize");
+		m.put("token_endpoint", baseUrl + "/oauth");
+		m.put("userinfo_endpoint", baseUrl + "/userinfo");
+		m.put("check_id_endpoint", baseUrl + "/checkid");
+		m.put("refresh_session_endpoint", baseUrl + "/refresh_session");
+		m.put("end_session_endpoint", baseUrl + "/end_session");
+		m.put("jwk_url", baseUrl + "/jwk");
+		m.put("registration_endpoint", baseUrl + "/register_client");
+		m.put("scopes_supported", Lists.newArrayList("openid"));
+		m.put("response_types_supported", Lists.newArrayList("code"));
+				
+		
+		modelAndView.getModel().put("entity", m);
 		// TODO: everything in the list up there
+		
+		modelAndView.setViewName("jsonOpenIdConfigurationView");
 		
 		return modelAndView;
 	}
+
+
+	private String findBaseUrl(HttpServletRequest request) {
+	    String baseUrl = String.format("%s://%s%s", request.getScheme(),  request.getServerName(), request.getContextPath());
+		
+		if ((request.getScheme().equals("http") && request.getServerPort() != 80)
+				|| (request.getScheme().equals("https") && request.getServerPort() != 443)) {
+			// nonstandard port, need to include it
+			baseUrl = String.format("%s://%s:%d%s", request.getScheme(),  request.getServerName(), request.getServerPort(), request.getContextPath());
+		}
+	    return baseUrl;
+    }
 	
 }

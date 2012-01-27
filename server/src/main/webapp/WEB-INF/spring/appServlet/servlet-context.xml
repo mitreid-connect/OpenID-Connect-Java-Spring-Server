@@ -22,15 +22,17 @@
 		<beans:property name="order" value="2"/>
 	</beans:bean>
 	
-	<context:component-scan base-package="org.mitre.openid" />
-	
-	<!-- Resolve views based on string names -->
+		<!-- Resolve views based on string names -->
 	<beans:bean class="org.springframework.web.servlet.view.BeanNameViewResolver" >
 		<beans:property name="order" value="1"/>
 	</beans:bean>
 
 	<!-- JSON views for each type of model object -->
+	<beans:bean id="jsonOpenIdConfigurationView" class="org.mitre.swd.view.JsonOpenIdConfigurationView" />
+	<beans:bean id="jsonSwdResponseView" class="org.mitre.swd.view.SwdResponse" />
 <!-- 	<beans:bean id="jsonUserInfoView" class="org.mitre.openid.connect.model.serializer.JSONUserInfoView"/> -->
 <!-- 	<beans:bean id="jsonIdTokenView" class="org.mitre.openid.connect.model.serializer.JSONIdTokenView"/> -->
+	
+	<beans:import resource="controllers.xml" />
 	
 </beans:beans>
