@@ -1,4 +1,4 @@
-package org.mitre.oauth2.model.serializer;
+package org.mitre.oauth2.view;
 
 import java.io.Writer;
 import java.lang.reflect.Type;
