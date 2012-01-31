@@ -1,5 +1,8 @@
 package org.mitre.openid.connect.service;
 
+import java.util.Collection;
+import java.util.Date;
+
 import org.mitre.openid.connect.model.Event;
 
 /**
@@ -9,14 +12,21 @@ import org.mitre.openid.connect.model.Event;
  * 
  */
 public interface EventService {
-
 	/**
-	 * Save Event
+	 * Returns the Events for a given Date range
 	 * 
-	 * @param event
-	 *            Event to be saved
+	 * @param start
+	 *            the Date to start from
+	 * @param end
+	 *            the Date to end at
+	 * @param startChunk
+	 *            the start chuck of a list you desire
+	 * @param chunkSize
+	 *            the size of the chunk you desire           
+	 *            
+	 * @return a Collection of Events
 	 */
-	public void save(Event event);
+	public Collection<Event> getEventsDuringPeriod(Date start, Date end, int startChunk, int chunkSize);
 
 	/**
 	 * Get Event by id
@@ -42,4 +52,12 @@ public interface EventService {
 	 *            id for Event to remove
 	 */
 	public void removeById(Long id);
+	
+	/**
+	 * Save Event
+	 * 
+	 * @param event
+	 *            Event to be saved
+	 */
+	public void save(Event event);
 }

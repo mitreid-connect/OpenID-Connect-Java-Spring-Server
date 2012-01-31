@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>OpenID Connect</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le styles -->
+    <link href="../bootstrap/bootstrap.css" rel="stylesheet">
+    <style type="text/css">
+        body {
+            padding-top: 60px;
+        }
+
+        .logo {
+            background: url("../images/openid_small.png") no-repeat left center;
+            padding-left: 30px;
+        }
+    </style>
+
+    <!-- Le fav and touch icons -->
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+</head>
+
+<body>
+
+<div class="topbar">
+    <div class="topbar-inner">
+        <div class="container-fluid">
+            <a class="brand" href="#"><span class="logo">OpenID Connect Server</span></a>
+            <ul class="nav">
+                <li class="active"><a href="#">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#about">Statistics</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            <p class="pull-right">Logged in as <a href="#">username</a></p>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="sidebar">
+        <div class="well">
+            <h5>Administrative</h5>
+            <ul>
+                <li><a href="#">Manage Clients</a></li>
+                <li><a href="#">White Lists</a></li>
+                <li><a href="#">Black Lists</a></li>
+            </ul>
+            <h5>Personal</h5>
+            <ul>
+                <li><a href="#">Manage Sites</a></li>
+                <li><a href="#">Manage Active Tokens</a></li>
+                <li><a href="#">Profile</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="content">
+        <!-- Main hero unit for a primary marketing message or call to action -->
+        <div class="">
+            <ul class="breadcrumb">
+                <li><a href="#">Home</a> <span class="divider">/</span></li>
+                <li class="active">Manage Clients</li>
+            </ul>
+
+
+            <h1>Manage Clients</h1>
+
+            <div class="well">
+                <a class="btn small primary" href="#">New Client</a>
+            </div>
+
+            <table>
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Redirect URL</th>
+                    <th>Grant Types</th>
+                    <th>Scope</th>
+                    <th>Authority</th>
+                    <th class="span8">Description</th>
+                    <th>Refresh Tokens</th>
+                    <th class="span1"></th>
+                    <th class="span1"></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Client Name</td>
+                    <td>http://redirecturl.domain</td>
+                    <td>
+                        <ul>
+                            <li>Grant Type</li>
+                            <li>Grant Type</li>
+                            <li>Grant Type</li>
+                            <li>Grant Type</li>
+                        </ul>
+                    </td>
+                    <td>
+                        <ul>
+                            <li>email</li>
+                            <li>first name</li>
+                            <li>address</li>
+                            <li>last name</li>
+                        </ul>
+                    </td>
+                    <td>My Authority</td>
+                    <td>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo,
+                        tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.
+                    </td>
+                    <td><input type="checkbox" checked="checked" value="" id="" name="" disabled></td>
+                    <td>
+                        <button class="btn">edit</button>
+                    </td>
+                    <td>
+                        <button class="btn danger">delete</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Client Name</td>
+                    <td>http://redirecturl.domain</td>
+                    <td>
+                        <ul>
+                            <li>Grant Type</li>
+                            <li>Grant Type</li>
+                            <li>Grant Type</li>
+                            <li>Grant Type</li>
+                        </ul>
+                    </td>
+                    <td>
+                        <ul>
+                            <li>email</li>
+                            <li>first name</li>
+                            <li>address</li>
+                            <li>last name</li>
+                        </ul>
+                    </td>
+                    <td>My Authority</td>
+                    <td>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo,
+                        tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.
+                    </td>
+                    <td><input type="checkbox" checked="checked" value="" id="" name="" disabled></td>
+                    <td>
+                        <button class="btn">edit</button>
+                    </td>
+                    <td>
+                        <button class="btn danger">delete</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Client Name</td>
+                    <td>http://redirecturl.domain</td>
+                    <td>
+                        <ul>
+                            <li>Grant Type</li>
+                            <li>Grant Type</li>
+                            <li>Grant Type</li>
+                            <li>Grant Type</li>
+                        </ul>
+                    </td>
+                    <td>
+                        <ul>
+                            <li>email</li>
+                            <li>first name</li>
+                            <li>address</li>
+                            <li>last name</li>
+                        </ul>
+                    </td>
+                    <td>My Authority</td>
+                    <td>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo,
+                        tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.
+                    </td>
+                    <td><input type="checkbox" checked="checked" value="" id="" name="" disabled></td>
+                    <td>
+                        <button class="btn">edit</button>
+                    </td>
+                    <td>
+                        <button class="btn danger">delete</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Client Name</td>
+                    <td>http://redirecturl.domain</td>
+                    <td>
+                        <ul>
+                            <li>Grant Type</li>
+                            <li>Grant Type</li>
+                            <li>Grant Type</li>
+                            <li>Grant Type</li>
+                        </ul>
+                    </td>
+                    <td>
+                        <ul>
+                            <li>email</li>
+                            <li>first name</li>
+                            <li>address</li>
+                            <li>last name</li>
+                        </ul>
+                    </td>
+                    <td>My Authority</td>
+                    <td>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo,
+                        tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.
+                    </td>
+                    <td><input type="checkbox" checked="checked" value="" id="" name="" disabled></td>
+                    <td>
+                        <button class="btn">edit</button>
+                    </td>
+                    <td>
+                        <button class="btn danger">delete</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div class="well">
+                <a class="btn small primary" href="#">New Client</a>
+            </div>
+        </div>
+
+
+        <footer>
+            <p>&copy; Company 2012</p>
+        </footer>
+    </div>
+</div>
+
+</body>
+</html>

@@ -6,6 +6,10 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+
+import java.util.Date;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -13,15 +17,17 @@ import javax.persistence.PersistenceContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mitre.openid.connect.model.Address;
+import org.mitre.openid.connect.model.Event;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.collect.Lists;
+
 /**
- * AddressRepository unit test
+ * EventRepository unit test
  * 
  * @author Michael Joseph Walsh
  * 
@@ -29,97 +35,98 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"file:src/main/webapp/WEB-INF/spring/application-context.xml", "classpath:test-context.xml"})
-public class AddressRepositoryTest {
+public class EventRepositoryTest {
 	
     @Autowired
-    private AddressRepository repository;
+    private EventRepository repository;
     
     @PersistenceContext
     private EntityManager sharedManager;  
     
-    private Address address1;
-    private Address address2;
+    private Event event1;
+    private Event event2;
     
     @Before
     public void setup() {
     	//Use existing test-data.sql
-    	address1 = new Address();
-    	address1.setId(1L);
-    	// too lazy to create formatted...
-    	address1.setStreetAddress("7443 Et Road");
-    	address1.setLocality("Pass Christian");
-    	address1.setRegion("ID");
-    	address1.setPostalCode("16183");
-    	address1.setCountry("Jordan");
-    	
-    	address2 = new Address();
-    	address2.setId(2L);    	
-    	address2.setStreetAddress("P.O. Box 893, 2523 Felis Rd.");
-    	address2.setLocality("New Kensington");
-    	address2.setRegion("NT");
-    	address2.setPostalCode("I5V 3Z7");
-    	address2.setCountry("Israel");    	
+    	event1 = new Event();
+    	event1.setId(1L);
+    	event1.setType(Event.EventType.LOGIN);
+    	event1.setTimestamp(new Date(86400000*5)); // 1 day = 86 400 000 milliseconds
+ 	
+    	event2 = new Event();
+    	event2.setId(2L);
+    	event2.setType(Event.EventType.AUTHORIZATION);
+    	event2.setTimestamp(new Date(86400000*10));
     }
     
     @Test
     public void getById_valid() {
-            Address retrieved = repository.getById(1L);
+            Event retrieved = repository.getById(1L);
             assertThat(retrieved, is(not(nullValue())));
-            assertThat(retrieved.getId(), equalTo(address1.getId()));
+            assertThat(retrieved.getId(), equalTo(event1.getId()));
     }
     
     @Test
     public void getById_invalid() {
-            Address nullAddress = repository.getById(42L);
+            Event nullAddress = repository.getById(42L);
             assertThat(nullAddress, is(nullValue()));
+    }
+    
+    @Test
+    public void getEventsDuringPeriod() {
+    	List<Event> allEvents = Lists.newArrayList(event1, event2);
+    	
+    	List<Event> retrieved = (List<Event>) repository.getEventsDuringPeriod(new Date(0L), new Date(86400000*11), 0, 10);
+    	
+    	if (allEvents.size() != retrieved.size()) {
+            fail("Retrieved and expected are not of equal size!");
+    	}
     }
     
     @Test
     @Rollback
     public void save_validNew() {
-    	// See: http://openid.net/specs/openid-connect-basic-1_0.html#address_claim
-        Address newAddress = new Address();
-        newAddress.setStreetAddress("P.O. Box 517, 8158 Elementum Rd.");
-        newAddress.setLocality("Whittier");
-        newAddress.setRegion("YT");
-        newAddress.setPostalCode("U6Q 3F2");
-        newAddress.setCountry("Cyprus");
 
-        Address saved = repository.save(newAddress);
+        Event newEvent = new Event();
+        newEvent.setType(Event.EventType.LOGIN);
+        newEvent.setTimestamp(new Date());
+        
+        Event saved = repository.save(newEvent);
         sharedManager.flush();
 
-        assertThat(saved, is(sameInstance(newAddress)));
+        assertThat(saved, is(sameInstance(newEvent)));
         assertThat(saved.getId(), not(nullValue()));
     }
 
     @Test
     @Rollback
     public void save_validExisting() {
-            address1.setStreetAddress("A New address");
+            event1.setType(Event.EventType.ACCESS);
             
-            Address saved = repository.save(address1);
+            Event saved = repository.save(event1);
             
             assertThat(saved, not(nullValue()));
-            assertThat(saved.getId(), equalTo(address1.getId()));
-            assertThat(saved.getStreetAddress(), equalTo(address1.getStreetAddress()));
+            assertThat(saved.getId(), equalTo(event1.getId()));
+            assertThat(saved.getType(), equalTo(event1.getType()));
     }
     
     @Test
     @Rollback
     public void remove_valid() {
             
-            Address managed = repository.getById((address1.getId()));
+            Event managed = repository.getById((event1.getId()));
             
             repository.remove(managed);
             
-            Address nullAddress = repository.getById(address1.getId());
+            Event nullAddress = repository.getById(event1.getId());
             
             assertThat(nullAddress, is(nullValue()));
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void remove_invalid() {
-            Address doesNotExist = new Address();
+            Event doesNotExist = new Event();
             doesNotExist.setId(42L);
             
             repository.remove(doesNotExist);
@@ -128,9 +135,9 @@ public class AddressRepositoryTest {
     @Test
     @Rollback
     public void removeById_valid() {
-            repository.removeById(address1.getId());
+            repository.removeById(event1.getId());
             
-            Address nullagg = repository.getById(address1.getId());
+            Event nullagg = repository.getById(event1.getId());
             
             assertThat(nullagg, is(nullValue()));
     }
@@ -140,4 +147,5 @@ public class AddressRepositoryTest {
             
             repository.removeById(42L);
     }    
+
 }
