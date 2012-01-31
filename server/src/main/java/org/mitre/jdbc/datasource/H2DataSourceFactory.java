@@ -253,6 +253,7 @@ public class H2DataSourceFactory implements FactoryBean {
             result =  e.getMessage().toLowerCase().matches("table \".*\" not found.*\n*.*");
         }
         logger.debug("Executed query " + executeScriptQuery + " with result " + result);
+        
         return result;
     }
 
@@ -269,6 +270,7 @@ public class H2DataSourceFactory implements FactoryBean {
     protected static ResultSet executeQuery(Connection conn, String executeScriptQuery) throws SQLException {
         Statement statement = conn.createStatement();
         return statement.executeQuery(executeScriptQuery);
+        
     }
 
 

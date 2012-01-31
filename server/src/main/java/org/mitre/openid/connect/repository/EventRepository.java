@@ -1,12 +1,15 @@
 package org.mitre.openid.connect.repository;
 
+import java.util.Collection;
+import java.util.Date;
+
 import org.mitre.openid.connect.model.Event;
 
 /**
  * Event repository interface
- *
+ * 
  * @author Michael Joseph Walsh
- *
+ * 
  */
 public interface EventRepository {
 
@@ -18,6 +21,22 @@ public interface EventRepository {
 	 * @return a valid Event if it exists, null otherwise
 	 */
 	public Event getById(Long id);
+
+	/**
+	 * Returns the Events for a given Date range
+	 * 
+	 * @param start
+	 *            the Date to start from
+	 * @param end
+	 *            the Date to end at
+	 * @param startChunk
+	 *            the start chuck of a list you desire
+	 * @param chunkSize
+	 *            the size of the chunk you desire           
+	 *            
+	 * @return a Collection of Events
+	 */
+	public Collection<Event> getEventsDuringPeriod(Date start, Date end, int startChunk, int chunkSize);
 
 	/**
 	 * Removes the given Event from the repository
@@ -43,4 +62,5 @@ public interface EventRepository {
 	 * @return
 	 */
 	public Event save(Event event);
+
 }

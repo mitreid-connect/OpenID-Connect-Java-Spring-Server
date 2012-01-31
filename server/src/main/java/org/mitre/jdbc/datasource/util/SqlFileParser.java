@@ -76,6 +76,10 @@ public class SqlFileParser {
 		stateStack.push(State.INIT);
 		processFile(resourceFile, sql);
 		stateStack.pop();
+		
+		//System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>");
+		//System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>> SQL:: " + sql);
+		//System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>");
 		return sql.toString();
 	}
 

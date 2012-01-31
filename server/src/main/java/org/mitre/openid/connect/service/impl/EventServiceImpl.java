@@ -1,5 +1,8 @@
 package org.mitre.openid.connect.service.impl;
 
+import java.util.Collection;
+import java.util.Date;
+
 import org.mitre.openid.connect.model.Event;
 import org.mitre.openid.connect.repository.EventRepository;
 import org.mitre.openid.connect.service.EventService;
@@ -37,10 +40,12 @@ public class EventServiceImpl implements EventService {
 	}
 
 	@Override
-	public void save(Event event) {
-		eventRepository.save(event);
-	}
+	public Collection<Event> getEventsDuringPeriod(Date start, Date end,
+			int startChunk, int chunkSize) {
 
+		return eventRepository.getEventsDuringPeriod(start, end, startChunk, chunkSize); 
+	}
+	
 	@Override
 	public Event getById(Long id) {
 		return eventRepository.getById(id);
@@ -54,6 +59,11 @@ public class EventServiceImpl implements EventService {
 	@Override
 	public void removeById(Long id) {
 		eventRepository.removeById(id);
+	}
+
+	@Override
+	public void save(Event event) {
+		eventRepository.save(event);
 	}
 
 }
