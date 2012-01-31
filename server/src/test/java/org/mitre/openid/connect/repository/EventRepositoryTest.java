@@ -58,10 +58,6 @@ public class EventRepositoryTest {
     	event2.setId(2L);
     	event2.setType(Event.EventType.AUTHORIZATION);
     	event2.setTimestamp(new Date(86400000*10));
-    	
-    	//repository.save(event1);
-    	//repository.save(event2);    	
-    	
     }
     
     @Test
