@@ -22,6 +22,19 @@
 		<property name="showSql" value="true" />
 	</bean>
 	
+	<!-- Authorization Code Service, used by TokenGranter -->
+	<bean id="jdbcAuthCodeServices" class="org.springframework.security.oauth2.provider.code.JdbcAuthorizationCodeServices">
+		<constructor-arg>
+			<bean class="org.apache.commons.dbcp.BasicDataSource"/>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="clientCredentialsChecker" class="org.springframework.security.oauth2.provider.ClientCredentialsChecker">
+		<constructor-arg>
+			<bean class="org.mitre.oauth2.service.impl.DefaultOAuth2ClientDetailsEntityService"/>
+		</constructor-arg>
+	</bean>
+	
 	<!-- Map our custom exception classes to named views -->
 	<bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
 	   <property name="exceptionMappings">
@@ -53,6 +66,6 @@
 	<task:executor id="taskExecutor" pool-size="5" />
 	<task:annotation-driven scheduler="taskScheduler" executor="taskExecutor" />
 
-    <context:component-scan annotation-config="true" base-package="org.mitre.openid" />
+    <context:component-scan annotation-config="true" base-package="org.mitre" />
 
 </beans>
