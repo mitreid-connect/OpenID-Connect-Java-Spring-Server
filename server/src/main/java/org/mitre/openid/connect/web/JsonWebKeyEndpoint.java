@@ -1,6 +1,8 @@
 package org.mitre.openid.connect.web;
 
 import java.security.PublicKey;
+import java.security.interfaces.ECPublicKey;
+import java.security.interfaces.RSAPublicKey;
 import java.util.List;
 
 import org.mitre.jwt.service.JwtSigningAndValidationService;
@@ -22,7 +24,7 @@ public class JsonWebKeyEndpoint {
 		
 		// TODO: check if keys are empty, return a 404 here?
 		
-		return new ModelAndView("jwkView", "keys", keys); // TODO: make a view
+		return new ModelAndView("jwkKeyList", "keys", keys); // TODO: make a view
 	}
 	
 }

@@ -1,4 +1,4 @@
-package org.mitre.openid.connect.model.serializer;
+package org.mitre.openid.connect.view;
 
 import java.io.Writer;
 import java.util.Map;
@@ -14,8 +14,8 @@ import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public class JSONIdTokenView extends AbstractView {
-
+public class JSONUserInfoView extends AbstractView{
+	
 	/* (non-Javadoc)
 	 * @see org.springframework.web.servlet.view.AbstractView#renderMergedOutputModel(java.util.Map, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
 	 */
@@ -52,5 +52,5 @@ public class JSONIdTokenView extends AbstractView {
 		
 		gson.toJson(obj, out);
 	}
-	
+
 }
