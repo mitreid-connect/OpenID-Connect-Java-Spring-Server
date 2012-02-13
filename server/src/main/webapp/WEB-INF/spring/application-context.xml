@@ -5,13 +5,16 @@
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:security="http://www.springframework.org/schema/security"
 	xmlns:task="http://www.springframework.org/schema/task"
-	xsi:schemaLocation="http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd
-		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd
-		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
-
-	<import resource="data-context.xml" />
+	xmlns:oauth="http://www.springframework.org/schema/security/oauth2"
+	xsi:schemaLocation=
+	   "http://www.springframework.org/schema/security/oauth2 http://www.springframework.org/schema/security/spring-security-oauth2-1.0.xsd
+		http://www.springframework.org/schema/task            http://www.springframework.org/schema/task/spring-task-3.0.xsd
+		http://www.springframework.org/schema/security        http://www.springframework.org/schema/security/spring-security-3.1.xsd
+		http://www.springframework.org/schema/beans           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/tx              http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+		http://www.springframework.org/schema/context         http://www.springframework.org/schema/context/spring-context.xsd">
+		
+	<import resource="data-context.xml" />	
 	<import resource="security-context.xml" />
 		
 	<tx:annotation-driven transaction-manager="transactionManager" />
@@ -34,6 +37,13 @@
 			<bean class="org.mitre.oauth2.service.impl.DefaultOAuth2ClientDetailsEntityService"/>
 		</constructor-arg>
 	</bean>
+	
+	<!-- SECOAUTH Authorization Server, with our custom token granter plugged in -->
+	<oauth:authorization-server client-details-service-ref="defaultOAuth2ClientDetailsEntityService" 
+		token-services-ref="defaultOAuth2ProviderTokenService" token-granter-ref="connectAuthCodeTokenGranter"
+		authorization-endpoint-url="/openidconnect/auth*">
+		<!-- <oauth:authorization-code disabled="true"/> -->
+	</oauth:authorization-server>
 	
 	<!-- Map our custom exception classes to named views -->
 	<bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
