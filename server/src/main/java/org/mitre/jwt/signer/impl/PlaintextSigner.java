@@ -4,6 +4,8 @@ import org.mitre.jwt.signer.AbstractJwtSigner;
 
 public class PlaintextSigner extends AbstractJwtSigner {
 
+	public static final String PLAINTEXT = "none";
+	
 	public PlaintextSigner() {
 	    super(PLAINTEXT);
     }

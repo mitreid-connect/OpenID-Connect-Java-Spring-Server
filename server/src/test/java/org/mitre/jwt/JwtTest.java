@@ -1,19 +1,16 @@
 package org.mitre.jwt;
 
-import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertThat;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mitre.jwt.model.Jwt;
-import org.mitre.jwt.signer.AbstractJwtSigner;
 import org.mitre.jwt.signer.JwtSigner;
-import org.mitre.jwt.signer.impl.Hmac256Signer;
+import org.mitre.jwt.signer.impl.HmacSigner;
 import org.mitre.jwt.signer.impl.PlaintextSigner;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 public class JwtTest {
 
@@ -60,8 +57,8 @@ public class JwtTest {
 	        // TODO Auto-generated catch block
 	        e.printStackTrace();
         }
-		
-		JwtSigner signer = new Hmac256Signer(key);
+        
+        JwtSigner signer = new HmacSigner(key);
 
 		signer.sign(jwt);
 
@@ -95,7 +92,7 @@ public class JwtTest {
 	        e.printStackTrace();
         }
 		
-		JwtSigner signer = new Hmac256Signer(key);
+		JwtSigner signer = new HmacSigner(key);
 
 		/*
 		 * Token string based on the following strucutres, serialized exactly as follows and base64 encoded:
@@ -121,7 +118,7 @@ public class JwtTest {
 		
 		Jwt jwt = Jwt.parse(source);
 		
-		assertThat(jwt.getHeader().getAlgorithm(), equalTo(AbstractJwtSigner.PLAINTEXT));
+		assertThat(jwt.getHeader().getAlgorithm(), equalTo(PlaintextSigner.PLAINTEXT));
 		assertThat(jwt.getClaims().getIssuer(), equalTo("joe"));
 		assertThat(jwt.getClaims().getExpiration(), equalTo(new Date(1300819380L * 1000L)));
 		assertThat((Boolean)jwt.getClaims().getClaim("http://example.com/is_root"), equalTo(Boolean.TRUE));

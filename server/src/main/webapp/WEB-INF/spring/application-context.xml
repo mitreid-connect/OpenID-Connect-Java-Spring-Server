@@ -5,6 +5,7 @@
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:security="http://www.springframework.org/schema/security"
 	xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:jwt-signer="http://www.mitre.org/schema/openid-connect/jwt-signer"
 	xmlns:oauth="http://www.springframework.org/schema/security/oauth2"
 	xsi:schemaLocation=
 	   "http://www.springframework.org/schema/security/oauth2 http://www.springframework.org/schema/security/spring-security-oauth2-1.0.xsd
@@ -12,9 +13,11 @@
 		http://www.springframework.org/schema/security        http://www.springframework.org/schema/security/spring-security-3.1.xsd
 		http://www.springframework.org/schema/beans           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 		http://www.springframework.org/schema/tx              http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
-		http://www.springframework.org/schema/context         http://www.springframework.org/schema/context/spring-context.xsd">
+		http://www.springframework.org/schema/context         http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.mitre.org/schema/openid-connect/jwt-signer http://www.mitre.org/schema/openid-connect/jwt-signer/jwt-signer.xsd">
 		
 	<import resource="data-context.xml" />	
+
 	<import resource="security-context.xml" />
 		
 	<tx:annotation-driven transaction-manager="transactionManager" />
@@ -70,7 +73,15 @@
 			</map>
 		</property>
 	</bean>
+	
+	<jwt-signer:keystore id="ping" location="file:src/main/webapp/WEB-INF/spring/keystore.jks" password="changeit" type="JKS" />
+	
+	<jwt-signer:service id="defaultSignerService">
+		 <jwt-signer:rsa bits="256" keystore-ref="ping" key-alias="test" password="changeit" />
+		<jwt-signer:hmac bits="256" passphrase="changeit" />		
+	</jwt-signer:service>
 
+	 
 	<!-- scheduled tasks -->
 	<task:scheduler id="taskScheduler" pool-size="10" />
 	<task:executor id="taskExecutor" pool-size="5" />

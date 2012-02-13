@@ -10,12 +10,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 public abstract class AbstractJwtSigner implements JwtSigner {
-
-	public static final String PLAINTEXT = "none";
-	public static final String HS256 = "HS256";
-	public static final String HS384 = "HS384";
-	public static final String HS512 = "HS512";
-	
+		
 	private String algorithm;
 
 	public AbstractJwtSigner(String algorithm) {
@@ -77,6 +72,4 @@ public abstract class AbstractJwtSigner implements JwtSigner {
 	
     
     protected abstract String generateSignature(String signatureBase);
-
-
 }

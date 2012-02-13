@@ -1,6 +1,6 @@
 package org.mitre.openid.connect.web;
 
-import org.mitre.jwt.service.JwtSigningAndValidationService;
+import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.openid.connect.exception.ExpiredTokenException;
 import org.mitre.openid.connect.exception.InvalidJwtIssuerException;
 import org.mitre.openid.connect.exception.InvalidJwtSignatureException;
