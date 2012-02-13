@@ -46,6 +46,7 @@ public class ConnectAuthCodeTokenGranter implements TokenGranter {
 	@Autowired
 	private ClientCredentialsChecker clientCredentialsChecker;
 
+	//TODO: Do we need to modify/update this?	
 	@Autowired
 	private DefaultOAuth2ProviderTokenService tokenServices;
 	
@@ -114,12 +115,11 @@ public class ConnectAuthCodeTokenGranter implements TokenGranter {
 			throw new InvalidClientException("Client ID mismatch");
 		}
 
-		// Secret is not required in the authorization request, so it won't be available
+		// From SECOAUTH: Secret is not required in the authorization request, so it won't be available
 		// in the unconfirmedAuthorizationCodeAuth. We do want to check that a secret is provided
 		// in the new request, but that happens elsewhere.
 
-		// Similarly scopes are not required in the authorization request, so we don't make a comparison here, just
-		// enforce validity through the ClientCredentialsChecker
+		//Validate credentials
 		AuthorizationRequest authorizationRequest = clientCredentialsChecker.validateCredentials(grantType, clientId,
 				unconfirmedAuthorizationRequest.getScope());
 		if (authorizationRequest == null) {
@@ -130,11 +130,20 @@ public class ConnectAuthCodeTokenGranter implements TokenGranter {
 		
 		OAuth2AccessTokenEntity token = tokenServices.createAccessToken(new OAuth2Authentication(authorizationRequest, userAuth));
 		
-		IdToken idToken = new IdToken();
-		
-		//TODO: build IdToken
-		
-		//TODO: insert IdToken into OAuth2AccessTokenEntity
+		/**
+		 * Authorization request scope MUST include "openid", but access token request 
+		 * may or may not include the scope parameter. As long as the AuthorizationRequest 
+		 * has the proper scope, we can consider this a valid OpenID Connect request.
+		 */
+		if (authorizationRequest.getScope().contains("openid")) {
+			IdToken idToken = new IdToken();
+			
+			//TODO: build IdToken 
+			
+			//Where does the data for the IdToken come from? 
+			
+			//TODO: insert IdToken into OAuth2AccessTokenEntity
+		}		
 		
 		return token;
 	}
