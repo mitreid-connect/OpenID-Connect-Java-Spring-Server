@@ -104,8 +104,8 @@ public class ConnectAuthCodeTokenGranter implements TokenGranter {
 		}
 
 		AuthorizationRequest unconfirmedAuthorizationRequest = storedAuth.getAuthenticationRequest();
-		if (unconfirmedAuthorizationRequest.getRedirectUri() != null
-				&& !unconfirmedAuthorizationRequest.getRedirectUri().equals(redirectUri)) {
+		if (unconfirmedAuthorizationRequest.getRequestedRedirect() != null
+				&& !unconfirmedAuthorizationRequest.getRequestedRedirect().equals(redirectUri)) {
 			throw new RedirectMismatchException("Redirect URI mismatch.");
 		}
 
