@@ -74,10 +74,10 @@
 		</property>
 	</bean>
 	
-	<jwt-signer:keystore id="ping" location="file:src/main/webapp/WEB-INF/spring/keystore.jks" password="changeit" type="JKS" />
+	<jwt-signer:keystore id="defaultKeystore" location="file:src/main/webapp/WEB-INF/spring/keystore.jks" password="changeit" type="JKS" />
 	
 	<jwt-signer:service id="defaultSignerService">
-		 <jwt-signer:rsa bits="256" keystore-ref="ping" key-alias="test" password="changeit" />
+		 <jwt-signer:rsa bits="256" keystore-ref="defaultKeystore" key-alias="test" password="changeit" />
 		<jwt-signer:hmac bits="256" passphrase="changeit" />		
 	</jwt-signer:service>
 
