@@ -74,12 +74,11 @@
 	</bean>
 
 	<jwt-signer:keystore id="defaultKeystore" location="WEB-INF/spring/keystore.jks" password="changeit" type="JKS" />
-	
+
 	<jwt-signer:service id="defaultSignerService">
-		 <jwt-signer:rsa bits="256" keystore-ref="defaultKeystore" key-alias="test" password="changeit" />
+		<jwt-signer:rsa bits="256" keystore-ref="defaultKeystore" key-alias="test" password="changeit" /> 
 		<jwt-signer:hmac bits="256" passphrase="changeit" />		
 	</jwt-signer:service>
-
 	 
 	<!-- scheduled tasks -->
 	<task:scheduler id="taskScheduler" pool-size="10" />
