@@ -19,8 +19,6 @@ import java.security.PublicKey;
 import java.security.Security;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.security.interfaces.RSAPrivateKey;
-import java.security.interfaces.RSAPublicKey;
 import java.util.Date;
 
 import org.apache.commons.logging.Log;
@@ -52,24 +50,24 @@ public class KeyStore implements InitializingBean {
 	/**
 	 * Creates a certificate.
 	 * 
-	 * @param domainName
+	 * @param commonName
 	 * @param daysNotValidBefore
 	 * @param daysNotValidAfter
 	 * @return
 	 */
 	private static X509V3CertificateGenerator createCertificate(
-			String domainName, int daysNotValidBefore, int daysNotValidAfter) {
+			String commonName, int daysNotValidBefore, int daysNotValidAfter) {
 		// BC docs say to use another, but it seemingly isn't included...
 		X509V3CertificateGenerator v3CertGen = new X509V3CertificateGenerator();	
 
 		v3CertGen.setSerialNumber(BigInteger.valueOf(System.currentTimeMillis()));
-		v3CertGen.setIssuerDN(new X509Principal("CN=" + domainName
+		v3CertGen.setIssuerDN(new X509Principal("CN=" + commonName
 				+ ", OU=None, O=None L=None, C=None"));
 		v3CertGen.setNotBefore(new Date(System.currentTimeMillis()
 				- (1000L * 60 * 60 * 24 * daysNotValidBefore)));
 		v3CertGen.setNotAfter(new Date(System.currentTimeMillis()
 				+ (1000L * 60 * 60 * 24 * daysNotValidAfter)));
-		v3CertGen.setSubjectDN(new X509Principal("CN=" + domainName
+		v3CertGen.setSubjectDN(new X509Principal("CN=" + commonName
 				+ ", OU=None, O=None L=None, C=None"));
 		return v3CertGen;
 	}
@@ -78,7 +76,7 @@ public class KeyStore implements InitializingBean {
 	 * Create an RSA KeyPair and insert into specified KeyStore
 	 * 
 	 * @param location
-	 * @param domainName
+	 * @param commonName
 	 * @param alias
 	 * @param keystorePassword
 	 * @param aliasPassword
@@ -89,32 +87,29 @@ public class KeyStore implements InitializingBean {
 	 * @throws IOException
 	 */
 	public static java.security.KeyStore generateRsaKeyPair(String location,
-			String domainName, String alias, String keystorePassword,
+			String commonName, String alias, String keystorePassword,
 			String aliasPassword, int daysNotValidBefore, int daysNotValidAfter)
 			throws GeneralSecurityException, IOException {
 
 		java.security.KeyStore ks = loadJceKeyStore(location, keystorePassword);
 
 		KeyPairGenerator rsaKeyPairGenerator = KeyPairGenerator
-				.getInstance("RSA");
+				.getInstance("RSA", "BC");
 		rsaKeyPairGenerator.initialize(2048);
 		KeyPair rsaKeyPair = rsaKeyPairGenerator.generateKeyPair();
 
-		X509V3CertificateGenerator v3CertGen = createCertificate(domainName,
+		X509V3CertificateGenerator v3CertGen = createCertificate(commonName,
 				daysNotValidBefore, daysNotValidAfter);
 
-		RSAPublicKey rsaPublicKey = (RSAPublicKey) rsaKeyPair.getPublic();
-		RSAPrivateKey rsaPrivateKey = (RSAPrivateKey) rsaKeyPair.getPrivate();
-
-		v3CertGen.setPublicKey(rsaPublicKey);
+		v3CertGen.setPublicKey(rsaKeyPair.getPublic());
 		v3CertGen.setSignatureAlgorithm("SHA1withRSA"); // "MD5WithRSAEncryption");
 
 		// BC docs say to use another, but it seemingly isn't included...		
 		X509Certificate certificate = v3CertGen
-				.generateX509Certificate(rsaPrivateKey);
+				.generateX509Certificate(rsaKeyPair.getPrivate());
 
 		// if exist, overwrite
-		ks.setKeyEntry(alias, rsaPrivateKey, aliasPassword.toCharArray(),
+		ks.setKeyEntry(alias, rsaKeyPair.getPrivate(), aliasPassword.toCharArray(),
 				new java.security.cert.Certificate[] { certificate });
 
 		storeJceKeyStore(location, keystorePassword, ks);
