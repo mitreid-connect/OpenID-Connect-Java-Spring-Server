@@ -2,4 +2,13 @@
 /target
 *~
 /bin
+*.idea
+*.gitignore
 
+.gitignore
+
+OpenIDConnect.iml
+
+server/openid.iml
+
+.gitignore
