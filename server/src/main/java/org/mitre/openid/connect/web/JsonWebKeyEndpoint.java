@@ -22,9 +22,9 @@ public class JsonWebKeyEndpoint {
 		
 		List<PublicKey> keys = jwtService.getAllPublicKeys();
 		
-		// TODO: check if keys are empty, return a 404 here?
+		// TODO: check if keys are empty, return a 404 here or just an empty list?
 		
-		return new ModelAndView("jwkKeyList", "keys", keys); // TODO: make a view
+		return new ModelAndView("jwkKeyList", "entity", keys);
 	}
 	
 }
