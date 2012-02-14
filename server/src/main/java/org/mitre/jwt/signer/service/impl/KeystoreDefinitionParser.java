@@ -52,11 +52,6 @@ public class KeystoreDefinitionParser extends
 				builder.addConstructorArgValue(resource);
 			}
 		}
-
-		String type = element.getAttribute("type");
-		if (StringUtils.hasText(type)) {
-			builder.addConstructorArgValue(type);
-		}	
 	}
 
 	/*

@@ -18,7 +18,6 @@
 				<xs:extension base="beans:identifiedType">
 					<xs:attribute name="location" type="xs:string" use="required" />
 					<xs:attribute name="password" type="xs:string" />
-					<xs:attribute name="type" type="xs:string" />
 				</xs:extension>
 			</xs:complexContent>
 		</xs:complexType>
