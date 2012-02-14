@@ -1,7 +1,5 @@
 package org.mitre.jdbc.datasource.util;
 
-import org.springframework.core.io.Resource;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -12,6 +10,10 @@ import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.core.io.Resource;
+
 /**
  * @author Matt Franklin
  * 
@@ -21,6 +23,9 @@ import java.util.regex.Pattern;
  * 
  */
 public class SqlFileParser {
+	
+	private static Log logger = LogFactory.getLog(SqlFileParser.class);
+	
 	private static final Pattern WORD_PATTERN = Pattern
 			.compile("^([a-zA-Z]*)[ ;]");
 	private static final String CHILD_SCRIPT_INDICATOR = "@@";
@@ -77,9 +82,8 @@ public class SqlFileParser {
 		processFile(resourceFile, sql);
 		stateStack.pop();
 		
-		//System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>");
-		//System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>> SQL:: " + sql);
-		//System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>");
+		logger.debug(" SQL:: " + sql);
+
 		return sql.toString();
 	}
 

@@ -5,13 +5,18 @@
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:security="http://www.springframework.org/schema/security"
 	xmlns:task="http://www.springframework.org/schema/task"
-	xsi:schemaLocation="http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd
+	xmlns:jwt-signer="http://www.mitre.org/schema/openid-connect/jwt-signer"
+	xmlns:oauth="http://www.springframework.org/schema/security/oauth2"
+	xsi:schemaLocation="http://www.springframework.org/schema/security/oauth2 http://www.springframework.org/schema/security/spring-security-oauth2-1.0.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.1.xsd
 		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd
-		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+		http://www.mitre.org/schema/openid-connect/jwt-signer classpath:/org/mitre/jwt/signer/service/impl/jwt-signer.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+		
+	<import resource="data-context.xml" />	
 
-	<import resource="data-context.xml" />
 	<import resource="security-context.xml" />
 		
 	<tx:annotation-driven transaction-manager="transactionManager" />
@@ -21,6 +26,26 @@
 		<property name="databasePlatform" value="org.eclipse.persistence.platform.database.MySQLPlatform" />
 		<property name="showSql" value="true" />
 	</bean>
+	
+	<!-- Authorization Code Service, used by TokenGranter -->
+	<bean id="jdbcAuthCodeServices" class="org.springframework.security.oauth2.provider.code.JdbcAuthorizationCodeServices">
+		<constructor-arg>
+			<bean class="org.apache.commons.dbcp.BasicDataSource"/>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="clientCredentialsChecker" class="org.springframework.security.oauth2.provider.ClientCredentialsChecker">
+		<constructor-arg>
+			<bean class="org.mitre.oauth2.service.impl.DefaultOAuth2ClientDetailsEntityService"/>
+		</constructor-arg>
+	</bean>
+	
+	<!-- SECOAUTH Authorization Server, with our custom token granter plugged in -->
+	<oauth:authorization-server client-details-service-ref="defaultOAuth2ClientDetailsEntityService" 
+		token-services-ref="defaultOAuth2ProviderTokenService" token-granter-ref="connectAuthCodeTokenGranter"
+		authorization-endpoint-url="/openidconnect/auth*">
+		<!-- <oauth:authorization-code disabled="true"/> -->
+	</oauth:authorization-server>
 	
 	<!-- Map our custom exception classes to named views -->
 	<bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
@@ -47,12 +72,19 @@
 			</map>
 		</property>
 	</bean>
+	
+	<jwt-signer:keystore id="defaultKeystore" location="file:src/main/webapp/WEB-INF/spring/keystore.jks" password="changeit" />
 
+	<jwt-signer:service id="defaultSignerService">
+		<jwt-signer:rsa bits="256" keystore-ref="defaultKeystore" key-alias="test" password="changeit" /> 
+		<jwt-signer:hmac bits="256" passphrase="changeit" />		
+	</jwt-signer:service>
+	 
 	<!-- scheduled tasks -->
 	<task:scheduler id="taskScheduler" pool-size="10" />
 	<task:executor id="taskExecutor" pool-size="5" />
 	<task:annotation-driven scheduler="taskScheduler" executor="taskExecutor" />
 
-    <context:component-scan annotation-config="true" base-package="org.mitre.openid" />
+    <context:component-scan annotation-config="true" base-package="org.mitre" />
 
 </beans>

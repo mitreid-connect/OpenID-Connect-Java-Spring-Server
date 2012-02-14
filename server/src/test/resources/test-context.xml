@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd" >
+	xmlns:jwt-signer="http://www.mitre.org/schema/openid-connect/jwt-signer"
+	xsi:schemaLocation=
+	   "http://www.springframework.org/schema/beans           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	    http://www.mitre.org/schema/openid-connect/jwt-signer http://www.mitre.org/schema/openid-connect/jwt-signer/jwt-signer.xsd" >
 
     <!-- Creates an in-memory database populated with test jdbc -->    
     <bean id="dataSource" class="org.mitre.jdbc.datasource.H2DataSourceFactory">
@@ -33,4 +36,7 @@
             </map>
         </property>
     </bean>
+    
+ 	<jwt-signer:keystore id="testKeystore" location="file:src/test/resources/keystore.jks" password="changeit" />
+ 
 </beans>
