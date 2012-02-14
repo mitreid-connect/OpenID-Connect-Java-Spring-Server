@@ -1,12 +1,9 @@
 package org.mitre.jwt;
 
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import java.io.UnsupportedEncodingException;
-import java.security.Security;
 import java.util.Date;
 
 import org.junit.Test;
@@ -16,7 +13,6 @@ import org.mitre.jwt.signer.JwtSigner;
 import org.mitre.jwt.signer.impl.HmacSigner;
 import org.mitre.jwt.signer.impl.PlaintextSigner;
 import org.mitre.jwt.signer.impl.RsaSigner;
-import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.jwt.signer.service.impl.KeyStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -82,7 +78,7 @@ public class JwtTest {
 		signer.sign(jwt);
 
 		/*
-		 * Expected string based on the following strucutres, serialized exactly as follows and base64 encoded:
+		 * Expected string based on the following structures, serialized exactly as follows and base64 encoded:
 		 * 
 		 * header: {"typ":"JWT","alg":"HS256"}
 		 * claims: {"exp":1300819380,"iss":"joe","http://example.com/is_root":true}
@@ -100,8 +96,18 @@ public class JwtTest {
 		
 	}
 	
+	/**
+	 * @throws Exception
+	 */
 	@Test
-	public void testGenerateRsaSignature() {
+	public void testGenerateRsaSignature() throws Exception {
+		
+//		java.security.KeyStore ks = KeyStore.generateRsaKeyPair(keystore
+//				.getLocation().getFile().getPath(), "OpenID Connect Server",
+//				"twentyYears", KeyStore.PASSWORD, KeyStore.PASSWORD, 30, 365*20);
+//
+//		keystore.setKeystore(ks);
+		
 		Jwt jwt = new Jwt();
 		jwt.getHeader().setType("JWT");
 		jwt.getHeader().setAlgorithm("RS256");
@@ -109,27 +115,18 @@ public class JwtTest {
 		jwt.getClaims().setIssuer("joe");
 		jwt.getClaims().setClaim("http://example.com/is_root", Boolean.TRUE);
 
-        JwtSigner signer = new RsaSigner(RsaSigner.Algorithm.DEFAULT, keystore, "test");
+        JwtSigner signer = new RsaSigner(RsaSigner.Algorithm.DEFAULT, keystore, "twentyYears");
+        ((RsaSigner) signer).afterPropertiesSet();
 
 		signer.sign(jwt);
-
-		System.out.println("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
-		System.out.println("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
-		System.out.println("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
-		System.out.println(jwt.getSignature());
-		System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-		System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-		System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");		
-
-//		String signature = "p-63Jzz7mgi3H4hvW6MFB7lmPRZjhsL666MYkmpX33Y";
-//		String expected = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjEzMDA4MTkzODAsImlzcyI6ImpvZSIsImh0dHA6Ly9leGFtcGxlLmNvbS9pc19yb290Ijp0cnVlfQ." + signature;
-//		
-//		String actual = jwt.toString();
-//
-//		assertThat(actual, equalTo(expected));
-//		assertThat(jwt.getSignature(), equalTo(signature));
 		
-		assertThat(signer, not(nullValue()));
+		String signature = "TW0nOd_vr1rnV7yIS-lIV2-00V_zJMWxzOc3Z7k3gvMO2aIjIGjZ9nByZMI0iL5komMxYXPl_RCkbd9OKiPkk4iK5CDj7Mawbzu95LgEOOqdXO1f7-IqX9dIvJhVXXInLD3RsGvavyheIqNeFEVidLrJo30tBchB_niljEW7VeX8nSZfiCOdbOTW3hu0ycnon7wFpejb-cRP_S0iqGxCgbYXJzqPT192EHmRy_wmFxxIy9Lc84uqNkAZSIn1jVIeAemm22RoWbq0xLVLTRyiZoxJTUzac_VteiSPRNFlUQuOdxqNf0Hxqh_wVfX1mfXUzv0D8vHJVy6aIqTISmn-qg";
+		String expected = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJleHAiOjEzMDA4MTkzODAsImlzcyI6ImpvZSIsImh0dHA6Ly9leGFtcGxlLmNvbS9pc19yb290Ijp0cnVlfQ.TW0nOd_vr1rnV7yIS-lIV2-00V_zJMWxzOc3Z7k3gvMO2aIjIGjZ9nByZMI0iL5komMxYXPl_RCkbd9OKiPkk4iK5CDj7Mawbzu95LgEOOqdXO1f7-IqX9dIvJhVXXInLD3RsGvavyheIqNeFEVidLrJo30tBchB_niljEW7VeX8nSZfiCOdbOTW3hu0ycnon7wFpejb-cRP_S0iqGxCgbYXJzqPT192EHmRy_wmFxxIy9Lc84uqNkAZSIn1jVIeAemm22RoWbq0xLVLTRyiZoxJTUzac_VteiSPRNFlUQuOdxqNf0Hxqh_wVfX1mfXUzv0D8vHJVy6aIqTISmn-qg";
+		
+		String actual = jwt.toString();
+
+		assertThat(actual, equalTo(expected));
+		assertThat(jwt.getSignature(), equalTo(signature));
 		
 	}	
 	

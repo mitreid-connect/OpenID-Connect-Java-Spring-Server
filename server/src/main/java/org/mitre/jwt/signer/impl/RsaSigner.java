@@ -1,6 +1,7 @@
 package org.mitre.jwt.signer.impl;
 
 import java.io.UnsupportedEncodingException;
+import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
@@ -129,48 +130,42 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 		setKeystore(keystore);
 		setAlias(alias);
 		setPassword(password);
-
+		
 		try {
 			signer = Signature.getInstance(Algorithm.getByName(algorithmName).getStandardName(), "BC");
-		} catch (NoSuchAlgorithmException e) {
+		} catch (GeneralSecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (NoSuchProviderException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} 
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		KeyPair keyPair = keystore.getKeyPairForAlias(alias, password);
 
-		publicKey = (RSAPublicKey) keyPair.getPublic();
+		publicKey = ((RSAPublicKey) keyPair.getPublic());
 		privateKey = (RSAPrivateKey) keyPair.getPrivate();
-
+		
 		logger.debug("RSA Signer ready for business");
 
 	}
 
+	/* (non-Javadoc)
+	 * @see org.mitre.jwt.signer.AbstractJwtSigner#generateSignature(java.lang.String)
+	 */
 	@Override
 	protected String generateSignature(String signatureBase) {
-
-		try {
+		
+		try {			
 			signer.initSign(privateKey);
-		} catch (InvalidKeyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		try {
 			signer.update(signatureBase.getBytes("UTF-8"));
-		} catch (SignatureException e) {
+		} catch (GeneralSecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		} 
 
 		byte[] sigBytes;
 		String sig = "";
@@ -247,34 +242,24 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 
 		try {
 			signer.initVerify(publicKey);
-		} catch (InvalidKeyException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-			return false;
-		}
-
-		try {
 			signer.update(signingInput.getBytes("UTF-8"));
-		} catch (SignatureException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (UnsupportedEncodingException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
-		try {
 			signer.verify(s64.getBytes("UTF-8"));
-		} catch (SignatureException e) {
+		} catch (GeneralSecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return false;
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return false;
 		}
 
 		return true;
+	}
+
+	public RSAPrivateKey getPrivateKey() {
+		return privateKey;
+	}
+
+	public void setPrivateKey(RSAPrivateKey privateKey) {
+		this.privateKey = privateKey;
 	}
 }

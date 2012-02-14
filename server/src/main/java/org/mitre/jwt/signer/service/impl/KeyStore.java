@@ -19,6 +19,8 @@ import java.security.PublicKey;
 import java.security.Security;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
 import java.util.Date;
 
 import org.apache.commons.logging.Log;
@@ -76,7 +78,7 @@ public class KeyStore implements InitializingBean {
 	 * Create an RSA KeyPair and insert into specified KeyStore
 	 * 
 	 * @param location
-	 * @param commonName
+	 * @param domainName
 	 * @param alias
 	 * @param keystorePassword
 	 * @param aliasPassword
@@ -87,7 +89,7 @@ public class KeyStore implements InitializingBean {
 	 * @throws IOException
 	 */
 	public static java.security.KeyStore generateRsaKeyPair(String location,
-			String commonName, String alias, String keystorePassword,
+			String domainName, String alias, String keystorePassword,
 			String aliasPassword, int daysNotValidBefore, int daysNotValidAfter)
 			throws GeneralSecurityException, IOException {
 
@@ -98,18 +100,20 @@ public class KeyStore implements InitializingBean {
 		rsaKeyPairGenerator.initialize(2048);
 		KeyPair rsaKeyPair = rsaKeyPairGenerator.generateKeyPair();
 
-		X509V3CertificateGenerator v3CertGen = createCertificate(commonName,
+		X509V3CertificateGenerator v3CertGen = createCertificate(domainName,
 				daysNotValidBefore, daysNotValidAfter);
 
+		RSAPrivateKey rsaPrivateKey = (RSAPrivateKey) rsaKeyPair.getPrivate();
+
 		v3CertGen.setPublicKey(rsaKeyPair.getPublic());
-		v3CertGen.setSignatureAlgorithm("SHA1withRSA"); // "MD5WithRSAEncryption");
+		v3CertGen.setSignatureAlgorithm("SHA256WithRSAEncryption"); // "MD5WithRSAEncryption");
 
 		// BC docs say to use another, but it seemingly isn't included...		
 		X509Certificate certificate = v3CertGen
-				.generateX509Certificate(rsaKeyPair.getPrivate());
+				.generateX509Certificate(rsaPrivateKey);
 
 		// if exist, overwrite
-		ks.setKeyEntry(alias, rsaKeyPair.getPrivate(), aliasPassword.toCharArray(),
+		ks.setKeyEntry(alias, rsaPrivateKey, aliasPassword.toCharArray(),
 				new java.security.cert.Certificate[] { certificate });
 
 		storeJceKeyStore(location, keystorePassword, ks);
@@ -267,7 +271,7 @@ public class KeyStore implements InitializingBean {
 			// Get public key
 			PublicKey publicKey = cert.getPublicKey();
 
-			return new KeyPair(publicKey, (PrivateKey) key);
+			return new KeyPair(publicKey, (RSAPrivateKey) key);
 		}
 
 		return null;
