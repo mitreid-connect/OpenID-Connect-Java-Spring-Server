@@ -25,7 +25,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-@SuppressWarnings({ "restriction", "deprecation" }) // I know... 
+@SuppressWarnings("deprecation")
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
 		"classpath:test-context.xml" })
@@ -36,7 +36,7 @@ public class KeyStoreTest {
 	KeyStore keystore;
 
 	static {
-		// Need to create the certificate
+		// Needed to create the certificate
 		Security.addProvider(new BouncyCastleProvider());
 	}
 
@@ -48,7 +48,7 @@ public class KeyStoreTest {
 	 * @param daysNotValidAfter
 	 * @return
 	 */
-	private X509V3CertificateGenerator createCertificate(
+	private static X509V3CertificateGenerator createCertificate(
 			String commonName, int daysNotValidBefore, int daysNotValidAfter) {
 		// BC sez X509V3CertificateGenerator is deprecated and the docs say to
 		// use another, but it seemingly isn't included jar...
@@ -81,7 +81,7 @@ public class KeyStoreTest {
 	 * @throws GeneralSecurityException
 	 * @throws IOException
 	 */
-	public java.security.KeyStore generateRsaKeyPair(
+	public static java.security.KeyStore generateRsaKeyPair(KeyStore keystore,
 			String domainName, String alias, String aliasPassword, int daysNotValidBefore, int daysNotValidAfter)
 			throws GeneralSecurityException, IOException {
 
@@ -117,13 +117,14 @@ public class KeyStoreTest {
 		return ks;
 	}
 	
+
 	@Test
 	public void storeKeyPair() throws GeneralSecurityException, IOException {
 
 		java.security.KeyStore ks  = null;
 			
 		try {
-			ks = generateRsaKeyPair("OpenID Connect Server", "storeKeyPair", "changeit", 30, 365);
+			ks = KeyStoreTest.generateRsaKeyPair(keystore, "OpenID Connect Server", "storeKeyPair", "changeit", 30, 365);
 
 		} catch (GeneralSecurityException e) {
 			// TODO Auto-generated catch block
@@ -135,19 +136,13 @@ public class KeyStoreTest {
 		
 		assertThat(ks, not(nullValue()));
 	}
-
+	
 	@Test
 	public void readKey() throws GeneralSecurityException {
-
+		
 		Key key = keystore.getKeystore().getKey("storeKeyPair",
 				KeyStore.PASSWORD.toCharArray());
-
-		System.out.println("-----BEGIN PRIVATE KEY-----");
-		System.out
-				.println(new sun.misc.BASE64Encoder().encode(key.getEncoded()));
-		System.out.println("-----END PRIVATE KEY-----");
-
+		
 		assertThat(key, not(nullValue()));
-		assertThat(true, not(false));
 	}
 }
