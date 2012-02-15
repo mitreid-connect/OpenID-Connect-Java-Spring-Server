@@ -73,7 +73,7 @@
 		</property>
 	</bean>
 
-	<jwt-signer:keystore id="defaultKeystore" location="WEB-INF/spring/keystore.jks" password="changeit" />
+	<jwt-signer:keystore id="defaultKeystore" location="classpath:keystore.jks" password="changeit" />
 
 	<jwt-signer:service id="defaultSignerService">
 		<jwt-signer:rsa bits="256" keystore-ref="defaultKeystore" key-alias="test" password="changeit" /> 

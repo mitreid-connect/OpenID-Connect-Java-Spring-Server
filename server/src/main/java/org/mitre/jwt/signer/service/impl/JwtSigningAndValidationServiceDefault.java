@@ -46,6 +46,8 @@ public class JwtSigningAndValidationServiceDefault implements
 		if (!signers.isEmpty()) {
 			logger.info(this.toString());	
 		}
+		
+		logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> JwtSigningAndValidationServiceDefault is open for business");
 	}
 
 	/*

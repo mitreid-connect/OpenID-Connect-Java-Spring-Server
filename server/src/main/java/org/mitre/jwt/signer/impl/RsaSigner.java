@@ -2,12 +2,9 @@ package org.mitre.jwt.signer.impl;
 
 import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
-import java.security.InvalidKeyException;
 import java.security.KeyPair;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
+import java.security.KeyPairGenerator;
 import java.security.PublicKey;
-import java.security.Security;
 import java.security.Signature;
 import java.security.SignatureException;
 import java.security.interfaces.RSAPrivateKey;
@@ -17,7 +14,6 @@ import java.util.List;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.mitre.jwt.signer.AbstractJwtSigner;
 import org.mitre.jwt.signer.service.impl.KeyStore;
 import org.springframework.beans.factory.InitializingBean;
@@ -87,11 +83,12 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 
 	private static Log logger = LogFactory.getLog(RsaSigner.class);
 
+	public static final String PROVIDER = "BC";
 	public static final String DEFAULT_PASSWORD = "changeit";
 
-	static {
-		Security.addProvider(new BouncyCastleProvider());
-	}
+//	static {
+//		Security.addProvider(new BouncyCastleProvider());
+//	}
 
 	private KeyStore keystore;
 	private String alias;
@@ -132,7 +129,7 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 		setPassword(password);
 		
 		try {
-			signer = Signature.getInstance(Algorithm.getByName(algorithmName).getStandardName(), "BC");
+			signer = Signature.getInstance(Algorithm.getByName(algorithmName).getStandardName()); //, PROVIDER);
 		} catch (GeneralSecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

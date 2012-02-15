@@ -46,7 +46,7 @@ public class KeystoreDefinitionParser extends
 			
 			if (!resource.exists()) {
 				parserContext.getReaderContext().error(
-						"The location supplied on the keystore element must exist.",
+						"The location supplied (" + location + ") on the keystore element must exist.",
 						element);				
 			} else {
 				builder.addConstructorArgValue(resource);
