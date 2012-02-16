@@ -103,7 +103,7 @@ public class KeyStore implements InitializingBean {
 
 			// Get public key
 			PublicKey publicKey = cert.getPublicKey();
-			
+
 			return new KeyPair(publicKey, (PrivateKey) key);
 		}
 
@@ -152,5 +152,5 @@ public class KeyStore implements InitializingBean {
 		return "KeyStore [password=" + password + ", location=" + location
 				+ ", keystore=" + keystore + "]";
 	}
-	
+
 }

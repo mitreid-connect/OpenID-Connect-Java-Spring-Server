@@ -3,13 +3,11 @@ package org.mitre.jwt.signer.impl;
 import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
-import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
 import java.security.SignatureException;
 import java.security.interfaces.RSAPrivateKey;
-import java.security.interfaces.RSAPublicKey;
 import java.util.List;
 
 import org.apache.commons.codec.binary.Base64;
@@ -84,6 +82,7 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 
 	private static Log logger = LogFactory.getLog(RsaSigner.class);
 
+	public static final String KEYPAIR_ALGORITHM = "RSA";
 	public static final String DEFAULT_PASSWORD = "changeit";
 
 	private KeyStore keystore;
@@ -132,10 +131,13 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 		} 
 	}
 
+
 	/**
-	 * Default constructor
+	 * @param algorithmName
+	 * @param publicKey
+	 * @param privateKey
 	 */
-	public RsaSigner(String algorithmName, RSAPublicKey publicKey, RSAPrivateKey privateKey) {
+	public RsaSigner(String algorithmName, PublicKey publicKey, PrivateKey privateKey) {
 		super(algorithmName);
 		this.publicKey = publicKey;
 		this.privateKey = privateKey;
@@ -162,12 +164,10 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 			signer.initSign(privateKey);
 			signer.update(signatureBase.getBytes("UTF-8"));
 		} catch (GeneralSecurityException e) {
-			System.out.println("boooom 1");
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
-			System.out.println("boooom 2");
 			e.printStackTrace();
 		} 
 
@@ -235,6 +235,9 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 				+ ", publicKey=" + publicKey + ", signer=" + signer + "]";
 	}
 
+	/* (non-Javadoc)
+	 * @see org.mitre.jwt.signer.AbstractJwtSigner#verify(java.lang.String)
+	 */
 	/* (non-Javadoc)
 	 * @see org.mitre.jwt.signer.AbstractJwtSigner#verify(java.lang.String)
 	 */

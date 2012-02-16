@@ -16,6 +16,7 @@ import org.mitre.jwt.signer.impl.HmacSigner;
 import org.mitre.jwt.signer.impl.PlaintextSigner;
 import org.mitre.jwt.signer.impl.RsaSigner;
 import org.mitre.jwt.signer.service.impl.KeyStore;
+import org.mitre.jwt.signer.service.impl.KeyStoreTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -85,7 +86,12 @@ public class JwtTest {
 		jwt.getClaims().setIssuer("joe");
 		jwt.getClaims().setClaim("http://example.com/is_root", Boolean.TRUE);
 
-		JwtSigner signer = new RsaSigner(RsaSigner.Algorithm.RS256.toString(), keystore, "test", "changeit");
+		KeyStoreTest.generateKeyPair(keystore,
+				RsaSigner.KEYPAIR_ALGORITHM, 2048,
+				"SHA256WithRSAEncryption", "OpenID Connect Server",
+				"rsa", RsaSigner.DEFAULT_PASSWORD, 30, 365);
+		
+		JwtSigner signer = new RsaSigner(RsaSigner.Algorithm.RS256.toString(), keystore, "rsa", RsaSigner.DEFAULT_PASSWORD);
 		((RsaSigner)signer).afterPropertiesSet();
         
 		signer.sign(jwt);

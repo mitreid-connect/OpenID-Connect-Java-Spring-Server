@@ -1,14 +1,26 @@
 package org.mitre.jwt.signer.impl;
 
+import java.io.UnsupportedEncodingException;
+import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
+import java.security.SignatureException;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
+import java.util.List;
 
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mitre.jwt.signer.AbstractJwtSigner;
 import org.mitre.jwt.signer.service.impl.KeyStore;
 import org.springframework.beans.factory.InitializingBean;
+
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
 
 public class EcdsaSigner extends AbstractJwtSigner implements InitializingBean {
 
@@ -63,6 +75,11 @@ public class EcdsaSigner extends AbstractJwtSigner implements InitializingBean {
     	}
 	};	
 	
+	private static Log logger = LogFactory.getLog(EcdsaSigner.class);
+	
+	public static final String KEYPAIR_ALGORITHM = "EC";	
+	public static final String DEFAULT_PASSWORD = "changeit";	
+	
 	private KeyStore keystore;
 	private String alias;
 	private String password;
@@ -71,10 +88,28 @@ public class EcdsaSigner extends AbstractJwtSigner implements InitializingBean {
 	private PublicKey publicKey;
 	private Signature signer;	
 	
+	/**
+	 * Default constructor
+	 */
 	public EcdsaSigner() {
-		this(Algorithm.DEFAULT, null, null, null);
+		this(Algorithm.DEFAULT, null, null, DEFAULT_PASSWORD);
 	}
-
+	
+	/**
+	 * @param algorithmName
+	 * @param keystore
+	 * @param alias
+	 */
+	public EcdsaSigner(String algorithmName, KeyStore keystore, String alias) {
+		this(algorithmName, keystore, alias, DEFAULT_PASSWORD);
+	}
+	
+	/**
+	 * @param algorithmName
+	 * @param keystore
+	 * @param alias
+	 * @param password
+	 */
 	public EcdsaSigner(String algorithmName, KeyStore keystore, String alias, String password) {
 		super(algorithmName);
 
@@ -83,36 +118,65 @@ public class EcdsaSigner extends AbstractJwtSigner implements InitializingBean {
 		setPassword(password);
 
 		try {
-			signer = Signature.getInstance(Algorithm.getByName(algorithmName).getStandardName());
+			signer = Signature.getInstance(Algorithm.getByName(algorithmName).getStandardName()); //, PROVIDER)
 		} catch (NoSuchAlgorithmException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}	
 	
+	/**
+	 * @param algorithmName
+	 * @param publicKey
+	 * @param privateKey
+	 */
+	public EcdsaSigner(String algorithmName, PublicKey publicKey, PrivateKey privateKey) {
+		super(algorithmName);
+		this.publicKey = publicKey;
+		this.privateKey = privateKey;
+	}
 	
-
+	/* (non-Javadoc)
+	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+	 */
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		KeyPair keyPair = keystore.getKeyPairForAlias(alias, password);
 		
 		publicKey = keyPair.getPublic();
 		privateKey = keyPair.getPrivate();
+		
+		logger.debug( Algorithm.getByName(getAlgorithm()).getStandardName() + " ECDSA Signer ready for business");
 	}
 
 	@Override
 	protected String generateSignature(String signatureBase) {
 
-		/*
-		1) Generate a digital signature of the UTF-8 representation of the JWS Signing Input 
-			using ECDSA P-256 SHA-256 with the desired private key. The output will be the 
-			EC point (R, S), where R and S are unsigned integers.
-		2) Turn R and S into byte arrays in big endian order. Each array will be 32 bytes long.
-		3) Concatenate the two byte arrays in the order R and then S.
-		4) Base64url encode the resulting 64 byte array.
-		 */
+		try {			
+			signer.initSign(privateKey);
+			signer.update(signatureBase.getBytes("UTF-8"));
+		} catch (GeneralSecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
 
-		return null;
+		byte[] sigBytes;
+		String sig = "";
+
+		try {
+			sigBytes = signer.sign();
+			sig = new String(Base64.encodeBase64URLSafe(sigBytes));
+			// strip off any padding
+			sig = sig.replace("=", "");
+		} catch (SignatureException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
+		return sig;
 	}
 	
 	public String getAlias() {
@@ -142,23 +206,51 @@ public class EcdsaSigner extends AbstractJwtSigner implements InitializingBean {
 	public void setPassword(String password) {
 		this.password = password;
 	}
+	
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "EcdsaSigner [keystore=" + keystore + ", alias=" + alias
+				+ ", password=" + password + ", privateKey=" + privateKey
+				+ ", publicKey=" + publicKey + ", signer=" + signer + "]";
+	}
+
+	/* (non-Javadoc)
+	 * @see org.mitre.jwt.signer.AbstractJwtSigner#verify(java.lang.String)
+	 */
 	@Override
 	public boolean verify(String jwtString) {
+		
+		// split on the dots
+		List<String> parts = Lists.newArrayList(Splitter.on(".").split(
+				jwtString));
 
-		/*
-		1) Take the Encoded JWS Signature and base64url decode it into a byte array. 
-			If decoding fails, the signed content MUST be rejected.
-		2) The output of the base64url decoding MUST be a 64 byte array.
-		3) Split the 64 byte array into two 32 byte arrays. The first array will be R and 
-			the second S. Remember that the byte arrays are in big endian byte order; 
-			please check the ECDSA validator in use to see what byte order it requires.
-		4) Submit the UTF-8 representation of the JWS Signing Input, R, S and the public 
-			key (x, y) to the ECDSA P-256 SHA-256 validator.
-		5) If the validation fails, the signed content MUST be rejected.
-		*/
+		if (parts.size() != 3) {
+			throw new IllegalArgumentException("Invalid JWT format.");
+		}
 
-		return false;
+		String h64 = parts.get(0);
+		String c64 = parts.get(1);
+		String s64 = parts.get(2);
+
+		String signingInput = h64 + "." + c64;
+
+		try {
+			signer.initVerify(publicKey);
+			signer.update(signingInput.getBytes("UTF-8"));
+			signer.verify(s64.getBytes("UTF-8"));
+		} catch (GeneralSecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return true;
 	}	
 
 }
