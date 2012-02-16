@@ -72,7 +72,9 @@ public class JwkKeyListView extends AbstractView {
 					String e64 = Base64.encodeBase64URLSafeString(exp.toByteArray());
 					
 					JsonObject o = new JsonObject();
-					
+
+					o.addProperty("use", "sig");
+					o.addProperty("alg", "RSA");
 					o.addProperty("mod", m64);
 					o.addProperty("exp", e64);
 					

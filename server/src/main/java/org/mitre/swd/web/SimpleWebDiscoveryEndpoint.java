@@ -3,17 +3,15 @@ package org.mitre.swd.web;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mitre.util.Utility;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 @Controller
 public class SimpleWebDiscoveryEndpoint {
@@ -22,7 +20,7 @@ public class SimpleWebDiscoveryEndpoint {
 					params={"principal", "service=http://openid.net/specs/connect/1.0/issuer"})
 	public ModelAndView openIdConnectIssuerDiscovery(@RequestParam("principal") String principal, ModelAndView modelAndView, HttpServletRequest request) {
 		
-		String baseUrl = findBaseUrl(request);
+		String baseUrl = Utility.findBaseUrl(request);
 		
 		// look up user, see if they're local
 		// if so, return this server
@@ -42,7 +40,7 @@ public class SimpleWebDiscoveryEndpoint {
 	@RequestMapping("/.well-known/openid-configuration")
 	public ModelAndView providerConfiguration(ModelAndView modelAndView, HttpServletRequest request) {
 
-		String baseUrl = findBaseUrl(request);
+		String baseUrl = Utility.findBaseUrl(request);
 		
 		/*	
 		 * version 	string 	Version of the provider response. "3.0" is the default.
@@ -90,17 +88,5 @@ public class SimpleWebDiscoveryEndpoint {
 		
 		return modelAndView;
 	}
-
-
-	private String findBaseUrl(HttpServletRequest request) {
-	    String baseUrl = String.format("%s://%s%s", request.getScheme(),  request.getServerName(), request.getContextPath());
-		
-		if ((request.getScheme().equals("http") && request.getServerPort() != 80)
-				|| (request.getScheme().equals("https") && request.getServerPort() != 443)) {
-			// nonstandard port, need to include it
-			baseUrl = String.format("%s://%s:%d%s", request.getScheme(),  request.getServerName(), request.getServerPort(), request.getContextPath());
-		}
-	    return baseUrl;
-    }
 	
 }

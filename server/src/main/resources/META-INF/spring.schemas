@@ -1,1 +1,2 @@
-http\://www.mitre.org/schema/openid-connect/jwt-signer/jwt-signer.xsd=org/mitre/jwt/signer/service/impl/jwt-signer.xsd
+http\://www.mitre.org/schema/openid-connect/jwt-signer/jwt-signer-1.0.xsd=org/mitre/jwt/signer/service/impl/jwt-signer-1.0.xsd
+http\://www.mitre.org/schema/openid-connect/jwt-signer/jwt-signer.xsd=org/mitre/jwt/signer/service/impl/jwt-signer-1.0.xsd

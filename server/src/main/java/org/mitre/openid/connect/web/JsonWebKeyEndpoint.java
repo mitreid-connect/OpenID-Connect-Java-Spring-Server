@@ -3,7 +3,9 @@ package org.mitre.openid.connect.web;
 import java.security.PublicKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.interfaces.RSAPublicKey;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +26,10 @@ public class JsonWebKeyEndpoint {
 		
 		// TODO: check if keys are empty, return a 404 here or just an empty list?
 		
-		return new ModelAndView("jwkKeyList", "entity", keys);
+		Map<String, Object> jwk = new HashMap<String, Object>();
+		jwk.put("jwk", keys);
+		
+		return new ModelAndView("jwkKeyList", "entity", jwk);
 	}
 	
 }

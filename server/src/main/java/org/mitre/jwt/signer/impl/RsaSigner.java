@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
 import java.security.SignatureException;
@@ -83,19 +84,14 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 
 	private static Log logger = LogFactory.getLog(RsaSigner.class);
 
-	public static final String PROVIDER = "BC";
 	public static final String DEFAULT_PASSWORD = "changeit";
-
-//	static {
-//		Security.addProvider(new BouncyCastleProvider());
-//	}
 
 	private KeyStore keystore;
 	private String alias;
 	private String password;
 
-	private RSAPrivateKey privateKey;
-	private RSAPublicKey publicKey;
+	private PrivateKey privateKey;
+	private PublicKey publicKey;
 	private Signature signer;
 
 	/**
@@ -113,7 +109,7 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 	public RsaSigner(String algorithmName, KeyStore keystore, String alias) {
 		this(algorithmName, keystore, alias, DEFAULT_PASSWORD);
 	}
-
+	
 	/**
 	 * @param algorithmName
 	 * @param keystore
@@ -136,14 +132,23 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 		} 
 	}
 
+	/**
+	 * Default constructor
+	 */
+	public RsaSigner(String algorithmName, RSAPublicKey publicKey, RSAPrivateKey privateKey) {
+		super(algorithmName);
+		this.publicKey = publicKey;
+		this.privateKey = privateKey;
+	}
+
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		KeyPair keyPair = keystore.getKeyPairForAlias(alias, password);
 
-		publicKey = ((RSAPublicKey) keyPair.getPublic());
-		privateKey = (RSAPrivateKey) keyPair.getPrivate();
+		publicKey = keyPair.getPublic();
+		privateKey = keyPair.getPrivate();
 		
-		logger.debug("RSA Signer ready for business");
+		logger.debug( Algorithm.getByName(getAlgorithm()).getStandardName() + " RSA Signer ready for business");
 
 	}
 
@@ -152,15 +157,17 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 	 */
 	@Override
 	protected String generateSignature(String signatureBase) {
-		
+
 		try {			
 			signer.initSign(privateKey);
 			signer.update(signatureBase.getBytes("UTF-8"));
 		} catch (GeneralSecurityException e) {
+			System.out.println("boooom 1");
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
+			System.out.println("boooom 2");
 			e.printStackTrace();
 		} 
 
@@ -176,7 +183,7 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+	
 		return sig;
 	}
 
@@ -190,6 +197,10 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 
 	public String getPassword() {
 		return password;
+	}
+
+	public PrivateKey getPrivateKey() {
+		return privateKey;
 	}
 
 	public PublicKey getPublicKey() {
@@ -208,6 +219,10 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 		this.password = password;
 	}
 
+	public void setPrivateKey(RSAPrivateKey privateKey) {
+		this.privateKey = privateKey;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -220,6 +235,9 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 				+ ", publicKey=" + publicKey + ", signer=" + signer + "]";
 	}
 
+	/* (non-Javadoc)
+	 * @see org.mitre.jwt.signer.AbstractJwtSigner#verify(java.lang.String)
+	 */
 	@Override
 	public boolean verify(String jwtString) {
 
@@ -250,13 +268,5 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 		}
 
 		return true;
-	}
-
-	public RSAPrivateKey getPrivateKey() {
-		return privateKey;
-	}
-
-	public void setPrivateKey(RSAPrivateKey privateKey) {
-		this.privateKey = privateKey;
 	}
 }

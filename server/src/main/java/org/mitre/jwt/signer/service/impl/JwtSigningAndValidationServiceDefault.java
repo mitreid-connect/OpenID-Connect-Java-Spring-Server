@@ -1,8 +1,12 @@
 package org.mitre.jwt.signer.service.impl;
 
 import java.security.PublicKey;
+import java.security.interfaces.RSAPublicKey;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -16,6 +20,7 @@ import org.springframework.beans.factory.InitializingBean;
 public class JwtSigningAndValidationServiceDefault implements
 		JwtSigningAndValidationService, InitializingBean {
 
+	
 	private List<? extends JwtSigner> signers = new ArrayList<JwtSigner>();
 
 	private static Log logger = LogFactory
@@ -23,31 +28,36 @@ public class JwtSigningAndValidationServiceDefault implements
 
 	/**
 	 * default constructor
-	 */	
-	public JwtSigningAndValidationServiceDefault() {	
+	 */
+	public JwtSigningAndValidationServiceDefault() {
 	}
 
 	/**
 	 * Create JwtSigningAndValidationServiceDefault
 	 * 
-	 * @param signer List of JwtSigners to associate with this service
+	 * @param signer
+	 *            List of JwtSigners to associate with this service
 	 */
-	public JwtSigningAndValidationServiceDefault(List<? extends JwtSigner> signer) {	
+	public JwtSigningAndValidationServiceDefault(
+			List<? extends JwtSigner> signer) {
 		setSigners(signer);
 	}
 	
-	
-	/* (non-Javadoc)
-	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
 	 */
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		// used for debugging...
 		if (!signers.isEmpty()) {
-			logger.info(this.toString());	
+			logger.info(this.toString());
 		}
-		
-		logger.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> JwtSigningAndValidationServiceDefault is open for business");
+
+		logger.info("JwtSigningAndValidationServiceDefault is open for business");
+
 	}
 
 	/*
@@ -59,30 +69,31 @@ public class JwtSigningAndValidationServiceDefault implements
 	 */
 	@Override
 	public List<PublicKey> getAllPublicKeys() {
-		// TODO Iterate through the signers, gather up, and return all the PublicKeys
-		
-		List<PublicKey> publicKeys = new ArrayList<PublicKey>(); 
-		PublicKey publicKey;		
-		
-		for (JwtSigner signer: signers) {
-			
+
+		Map<String, PublicKey> map = new HashMap<String, PublicKey>();
+
+		PublicKey publicKey;
+
+		for (JwtSigner signer : signers) {
+
 			if (signer instanceof RsaSigner) {
-			
+
 				publicKey = ((RsaSigner) signer).getPublicKey();
-				
+
 				if (publicKey != null)
-					publicKeys.add(((RsaSigner) signer).getPublicKey());
-			
+					map.put(((RSAPublicKey) publicKey).getModulus()
+							.toString(16).toUpperCase()
+							+ ((RSAPublicKey) publicKey).getPublicExponent()
+									.toString(16).toUpperCase(), publicKey);
+
 			} else if (signer instanceof EcdsaSigner) {
-				
-				publicKey = ((EcdsaSigner) signer).getPublicKey();
-				
-				if (publicKey != null)
-					publicKeys.add(publicKey);
+
+				// TODO
 			}
 		}
-		
-		return publicKeys;
+
+		return new ArrayList<PublicKey>(map.values());
+
 	}
 
 	/**
@@ -103,10 +114,16 @@ public class JwtSigningAndValidationServiceDefault implements
 	 */
 	@Override
 	public boolean isJwtExpired(Jwt jwt) {
-		// TODO Auto-generated method stub
-		return false;
+
+		Date expiration = jwt.getClaims().getExpiration();
+
+		if (expiration != null)
+			return new Date().after(expiration);
+		else
+			return false;
+
 	}
-	
+
 	/**
 	 * Set the JwtSigners associated with this service
 	 * 
@@ -117,6 +134,9 @@ public class JwtSigningAndValidationServiceDefault implements
 		this.signers = signers;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString() {
 		return "JwtSigningAndValidationServiceDefault [signers=" + signers
@@ -131,14 +151,10 @@ public class JwtSigningAndValidationServiceDefault implements
 	 * (org.mitre.jwt.model.Jwt)
 	 */
 	@Override
-	public boolean validateIssuedJwt(Jwt jwt) {
-		
-		// TODO Verify this is correct...
+	public boolean validateIssuedJwt(Jwt jwt, String expectedIssuer) {
 
-		for (JwtSigner signer: signers) {
-			if (signer.verify(jwt.toString()))
-				return true;
-		}
+		if (jwt.getClaims().getIssuer() == expectedIssuer)
+			return true;
 		
 		return false;
 	}
@@ -153,11 +169,11 @@ public class JwtSigningAndValidationServiceDefault implements
 	@Override
 	public boolean validateSignature(String jwtString) {
 
-		for (JwtSigner signer: signers) {
+		for (JwtSigner signer : signers) {
 			if (signer.verify(jwtString))
 				return true;
 		}
-		
+
 		return false;
 	}
 }

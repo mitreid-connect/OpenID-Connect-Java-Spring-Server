@@ -1,30 +1,15 @@
 package org.mitre.jwt.signer.service.impl;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigInteger;
 import java.security.GeneralSecurityException;
 import java.security.Key;
 import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.Provider;
 import java.security.PublicKey;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-import java.security.interfaces.RSAPrivateKey;
-import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.bouncycastle.jce.X509Principal;
-import org.bouncycastle.x509.X509V3CertificateGenerator;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
 
@@ -34,13 +19,11 @@ import org.springframework.core.io.Resource;
  * @author nemonik
  * 
  */
-@SuppressWarnings("deprecation")
 public class KeyStore implements InitializingBean {
 
 	private static Log logger = LogFactory.getLog(KeyStore.class);
 
-	public static final String TYPE = java.security.KeyStore.getDefaultType(); // "BKS";
-	public static final String PROVIDER = "BC";
+	public static final String TYPE = java.security.KeyStore.getDefaultType();
 	public static final String PASSWORD = "changeit";
 
 	private String password;
@@ -81,7 +64,7 @@ public class KeyStore implements InitializingBean {
 		InputStream inputStream = null;
 
 		try {
-			keystore = java.security.KeyStore.getInstance(TYPE); //, PROVIDER);
+			keystore = java.security.KeyStore.getInstance(TYPE);
 			inputStream = location.getInputStream();
 			keystore.load(inputStream, this.password.toCharArray());
 
@@ -120,8 +103,8 @@ public class KeyStore implements InitializingBean {
 
 			// Get public key
 			PublicKey publicKey = cert.getPublicKey();
-
-			return new KeyPair(publicKey, (RSAPrivateKey) key);
+			
+			return new KeyPair(publicKey, (PrivateKey) key);
 		}
 
 		return null;
@@ -169,4 +152,5 @@ public class KeyStore implements InitializingBean {
 		return "KeyStore [password=" + password + ", location=" + location
 				+ ", keystore=" + keystore + "]";
 	}
+	
 }
