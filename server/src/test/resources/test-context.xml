@@ -4,7 +4,7 @@
 	xmlns:jwt-signer="http://www.mitre.org/schema/openid-connect/jwt-signer"
 	xsi:schemaLocation=
 	   "http://www.springframework.org/schema/beans           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-	    http://www.mitre.org/schema/openid-connect/jwt-signer http://www.mitre.org/schema/openid-connect/jwt-signer/jwt-signer.xsd" >
+	    http://www.mitre.org/schema/openid-connect/jwt-signer http://www.mitre.org/schema/openid-connect/jwt-signer/jwt-signer-1.0.xsd" >
 
     <!-- Creates an in-memory database populated with test jdbc -->    
     <bean id="dataSource" class="org.mitre.jdbc.datasource.H2DataSourceFactory">

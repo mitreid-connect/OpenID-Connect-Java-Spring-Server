@@ -1,8 +1,5 @@
 package org.mitre.jwt.signer.service.impl;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.security.GeneralSecurityException;
 import java.security.Key;
@@ -10,7 +7,6 @@ import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.Provider;
 import java.security.PublicKey;
-import java.security.interfaces.RSAPrivateKey;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -107,8 +103,8 @@ public class KeyStore implements InitializingBean {
 
 			// Get public key
 			PublicKey publicKey = cert.getPublicKey();
-
-			return new KeyPair(publicKey, (RSAPrivateKey) key);
+			
+			return new KeyPair(publicKey, (PrivateKey) key);
 		}
 
 		return null;
