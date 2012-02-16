@@ -30,9 +30,11 @@ public interface JwtSigningAndValidationService {
 	 * 
 	 * @param jwt
 	 *            the JWT to check the issuer of
-	 * @return true if the JWT was issued by this AS, false if not
+	 * @param expectedIssuer
+	 *            the expected issuer
+	 * @return true if the JWT was issued by this expected issuer, false if not
 	 */
-	public boolean validateIssuedJwt(Jwt jwt);
+	public boolean validateIssuedJwt(Jwt jwt, String expectedIssuer);
 
 	/**
 	 * Checks the signature of the given JWT against all configured signers,

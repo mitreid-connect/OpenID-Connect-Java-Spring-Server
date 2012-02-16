@@ -11,7 +11,7 @@
 		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.1.xsd
 		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
-		http://www.mitre.org/schema/openid-connect/jwt-signer http://www.mitre.org/schema/openid-connect/jwt-signer/jwt-signer.xsd
+		http://www.mitre.org/schema/openid-connect/jwt-signer http://www.mitre.org/schema/openid-connect/jwt-signer/jwt-signer-1.0.xsd
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
 		
@@ -72,6 +72,8 @@
 			</map>
 		</property>
 	</bean>
+
+	<!-- TODO: working remove red X's see: http://forum.springsource.org/showthread.php?123193-STS-not-respecting-META-INF-spring-schemas-for-validation&p=401926#post401926 -->
 
 	<jwt-signer:keystore id="defaultKeystore" location="classpath:keystore.jks" password="changeit" />
 

@@ -3,6 +3,7 @@ package org.mitre.jwt.signer.service.impl;
 import java.security.PublicKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,7 @@ import org.springframework.beans.factory.InitializingBean;
 public class JwtSigningAndValidationServiceDefault implements
 		JwtSigningAndValidationService, InitializingBean {
 
+	
 	private List<? extends JwtSigner> signers = new ArrayList<JwtSigner>();
 
 	private static Log logger = LogFactory
@@ -40,7 +42,7 @@ public class JwtSigningAndValidationServiceDefault implements
 			List<? extends JwtSigner> signer) {
 		setSigners(signer);
 	}
-
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -55,6 +57,7 @@ public class JwtSigningAndValidationServiceDefault implements
 		}
 
 		logger.info("JwtSigningAndValidationServiceDefault is open for business");
+
 	}
 
 	/*
@@ -111,8 +114,14 @@ public class JwtSigningAndValidationServiceDefault implements
 	 */
 	@Override
 	public boolean isJwtExpired(Jwt jwt) {
-		// TODO Auto-generated method stub
-		return false;
+
+		Date expiration = jwt.getClaims().getExpiration();
+
+		if (expiration != null)
+			return new Date().after(expiration);
+		else
+			return false;
+
 	}
 
 	/**
@@ -125,6 +134,9 @@ public class JwtSigningAndValidationServiceDefault implements
 		this.signers = signers;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString() {
 		return "JwtSigningAndValidationServiceDefault [signers=" + signers
@@ -139,15 +151,11 @@ public class JwtSigningAndValidationServiceDefault implements
 	 * (org.mitre.jwt.model.Jwt)
 	 */
 	@Override
-	public boolean validateIssuedJwt(Jwt jwt) {
+	public boolean validateIssuedJwt(Jwt jwt, String expectedIssuer) {
 
-		// TODO Verify this is correct...
-
-		for (JwtSigner signer : signers) {
-			if (signer.verify(jwt.toString()))
-				return true;
-		}
-
+		if (jwt.getClaims().getIssuer() == expectedIssuer)
+			return true;
+		
 		return false;
 	}
 

@@ -1,11 +1,13 @@
 package org.mitre.openid.connect.web;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.openid.connect.exception.ExpiredTokenException;
 import org.mitre.openid.connect.exception.InvalidJwtIssuerException;
 import org.mitre.openid.connect.exception.InvalidJwtSignatureException;
 import org.mitre.openid.connect.model.IdToken;
-import org.mitre.openid.connect.model.IdTokenClaims;
+import org.mitre.util.Utility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,9 +20,8 @@ public class CheckIDEndpoint {
 	@Autowired
 	JwtSigningAndValidationService jwtSignerService;
 	
-	
 	@RequestMapping("/checkid")
-	public ModelAndView checkID(@RequestParam("id_token") String tokenString, ModelAndView mav) {
+	public ModelAndView checkID(@RequestParam("id_token") String tokenString, ModelAndView mav, HttpServletRequest request) {
 		
 		if (!jwtSignerService.validateSignature(tokenString)) {
 			// can't validate 
@@ -37,7 +38,7 @@ public class CheckIDEndpoint {
 		}
 		
 		// check the issuer (sanity check)
-		if (!jwtSignerService.validateIssuedJwt(token)) {
+		if (!jwtSignerService.validateIssuedJwt(token,  Utility.findBaseUrl(request))) {
 			throw new InvalidJwtIssuerException(); // TODO: create a view for this exception
 		}
 		
