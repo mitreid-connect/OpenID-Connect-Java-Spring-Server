@@ -15,7 +15,6 @@ import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
 import java.security.Security;
 import java.security.cert.X509Certificate;
-import java.security.interfaces.RSAPrivateKey;
 import java.util.Date;
 
 import org.bouncycastle.jce.X509Principal;
@@ -39,8 +38,9 @@ public class KeyStoreTest {
 	@Qualifier("testKeystore")
 	KeyStore keystore;
 
+	static final String PROVIDER = "BC";
+	
 	static {
-		// Needed to create the certificate
 		Security.addProvider(new BouncyCastleProvider());
 	}
 

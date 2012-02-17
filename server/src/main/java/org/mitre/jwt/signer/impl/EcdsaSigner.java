@@ -3,13 +3,10 @@ package org.mitre.jwt.signer.impl;
 import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
-import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
 import java.security.SignatureException;
-import java.security.interfaces.RSAPrivateKey;
-import java.security.interfaces.RSAPublicKey;
 import java.util.List;
 
 import org.apache.commons.codec.binary.Base64;
@@ -22,6 +19,14 @@ import org.springframework.beans.factory.InitializingBean;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 
+/**
+ * JWT Signer using either the ECDSA SHA-256, SHA-384, SHA-512 hash algorithm
+ * 
+ * @author AANGANES, nemonik
+ * 
+ * Requires static install of BC
+ *
+ */
 public class EcdsaSigner extends AbstractJwtSigner implements InitializingBean {
 
 	/**
@@ -37,7 +42,8 @@ public class EcdsaSigner extends AbstractJwtSigner implements InitializingBean {
 		ES384("SHA384withECDSA"),
 		ES512("SHA512withECDSA");
 
-		private static final String DEFAULT = Algorithm.ES256.toString();
+		public static final String DEFAULT = Algorithm.ES256.toString();
+		public static final String PREPEND = "ES";
 		
 		/**
     	 * Returns the Algorithm for the name
@@ -74,6 +80,8 @@ public class EcdsaSigner extends AbstractJwtSigner implements InitializingBean {
     		return standardName;
     	}
 	};	
+	
+	static final String PROVIDER = "BC";
 	
 	private static Log logger = LogFactory.getLog(EcdsaSigner.class);
 	
@@ -118,8 +126,8 @@ public class EcdsaSigner extends AbstractJwtSigner implements InitializingBean {
 		setPassword(password);
 
 		try {
-			signer = Signature.getInstance(Algorithm.getByName(algorithmName).getStandardName()); //, PROVIDER)
-		} catch (NoSuchAlgorithmException e) {
+			signer = Signature.getInstance(Algorithm.getByName(algorithmName).getStandardName(), PROVIDER);
+		} catch (GeneralSecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

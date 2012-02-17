@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mitre.jwt.signer.impl.EcdsaSigner;
 import org.mitre.jwt.signer.impl.HmacSigner;
 import org.mitre.jwt.signer.impl.RsaSigner;
 import org.springframework.beans.BeanMetadataElement;
@@ -42,7 +43,7 @@ public class ServiceDefinitionParser extends AbstractSingleBeanDefinitionParser 
 		ManagedList<BeanMetadataElement> signers = new ManagedList<BeanMetadataElement>();
 
 		List<Element> signerElements = DomUtils.getChildElementsByTagName(
-				element, new String[] { "rsa", "hmac" });
+				element, new String[] { "rsa", "ecdsa", "hmac" });
 
 		for (Element signerElement : signerElements) {
 			
@@ -55,7 +56,7 @@ public class ServiceDefinitionParser extends AbstractSingleBeanDefinitionParser 
 
 				String bits = signerElement.getAttribute("bits");
 				if (StringUtils.hasText(bits)) {
-					signer.addConstructorArgValue("RS".concat(bits));
+					signer.addConstructorArgValue(RsaSigner.Algorithm.PREPEND.concat(bits));
 				} else {
 					signer.addConstructorArgValue(RsaSigner.Algorithm.DEFAULT);
 				}
@@ -89,6 +90,49 @@ public class ServiceDefinitionParser extends AbstractSingleBeanDefinitionParser 
 
 				signers.add(signer.getBeanDefinition());
 
+			} else if (signerElement.getTagName().contains("ecdsa")) {
+				
+				logger.debug("parsing ecdsa element");
+				
+				BeanDefinitionBuilder signer = BeanDefinitionBuilder
+						.rootBeanDefinition(EcdsaSigner.class);
+
+				String bits = signerElement.getAttribute("bits");
+				if (StringUtils.hasText(bits)) {
+					signer.addConstructorArgValue(EcdsaSigner.Algorithm.PREPEND.concat(bits));
+				} else {
+					signer.addConstructorArgValue(EcdsaSigner.Algorithm.DEFAULT);
+				}
+				
+				String keystoreRef = signerElement.getAttribute("keystore-ref");
+				if (!StringUtils.hasText(keystoreRef)) {
+					parserContext
+							.getReaderContext()
+							.error("A keystore-ref must be supplied with the definition of a ecdsa.",
+									signerElement);
+				} else {
+					signer.addConstructorArgReference(keystoreRef);				
+				}
+
+				String alias = signerElement.getAttribute("key-alias");
+				if (!StringUtils.hasText(alias)) {
+					parserContext
+							.getReaderContext()
+							.error("An key-alias must be supplied with the definition of a ecdsa.",
+									signerElement);
+				} else {
+					signer.addConstructorArgValue(alias);
+				}
+
+				String password = signerElement.getAttribute("password");
+				if (StringUtils.hasText(password)) {
+					signer.addConstructorArgValue(password);
+				} else {
+					signer.addConstructorArgValue(EcdsaSigner.DEFAULT_PASSWORD);
+				}
+
+				signers.add(signer.getBeanDefinition());
+
 			} else if (signerElement.getTagName().contains("hmac")) {
 				
 				logger.debug("parsing hmac element");
@@ -114,7 +158,7 @@ public class ServiceDefinitionParser extends AbstractSingleBeanDefinitionParser 
 				}
 
 				signers.add(signer.getBeanDefinition());
-			}
+			} 
 		}
 
 		builder.addPropertyValue("signers", signers);
