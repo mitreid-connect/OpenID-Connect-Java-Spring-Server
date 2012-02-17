@@ -71,6 +71,40 @@
 								</xsd:attribute>
 							</xsd:complexType>
 						</xsd:element>
+						<xsd:element name="ecdsa">
+							<xsd:annotation>
+								<xsd:documentation>
+									Configures an ECDSA signer.
+								</xsd:documentation>
+							</xsd:annotation>
+							<xsd:complexType>
+								<xsd:attribute name="bits" type="xsd:string" />
+								<xsd:attribute name="keystore-ref" type="xsd:string" use="required">
+									<xsd:annotation>
+										<xsd:documentation>
+											The reference to the bean that defines the
+											KeyStore.
+										</xsd:documentation>
+									</xsd:annotation>
+								</xsd:attribute>
+								<xsd:attribute name="key-alias" type="xsd:string" use="required">
+									<xsd:annotation>
+										<xsd:documentation>
+											The alias to the KeyPair to use for
+											signing/verifying.
+										</xsd:documentation>
+									</xsd:annotation>
+								</xsd:attribute>
+								<xsd:attribute name="password" type="xsd:string">
+									<xsd:annotation>
+										<xsd:documentation>
+											The password to the KeyPair to use for
+											signing/verifying.
+										</xsd:documentation>
+									</xsd:annotation>
+								</xsd:attribute>
+							</xsd:complexType>
+						</xsd:element>
 						<xsd:element name="hmac">
 							<xsd:annotation>
 								<xsd:documentation>

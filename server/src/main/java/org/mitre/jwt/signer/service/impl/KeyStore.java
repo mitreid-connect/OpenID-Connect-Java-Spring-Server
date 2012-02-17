@@ -22,7 +22,7 @@ import org.springframework.core.io.Resource;
 public class KeyStore implements InitializingBean {
 
 	private static Log logger = LogFactory.getLog(KeyStore.class);
-
+	
 	public static final String TYPE = java.security.KeyStore.getDefaultType();
 	public static final String PASSWORD = "changeit";
 

@@ -40,7 +40,9 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 		RS256("SHA256withRSA"), RS384("SHA384withRSA"), RS512("SHA512withRSA");
 
 		public static final String DEFAULT = Algorithm.RS256.toString();
+		public static final String PREPEND = "RS";
 
+		
 		/**
 		 * Returns the Algorithm for the name
 		 * 
