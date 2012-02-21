@@ -1,5 +1,20 @@
 Changelog
 
+Updated on 2/21/2012
+
+OAuth2: 
+* Renamed "Access Code Flow" to "Authorization Code Flow".
+
+* Changed all references to "User" to "Resource Owner".
+
+* Changed final "Response"s to "JSON respones object"s.
+
+* Added initial "Authenticate Resource Owner" step to Authorization Code Flow
+
+Connect:
+
+* Changed final "Response"s to "JSON respones object"s.
+
 Updated on 2/7/2012
 
 OAuth2:
