@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  */
 
 @Controller
-public class MangerController {
+public class ManagerController {
 
     @RequestMapping({"/", "/home", "/index"})
     public String showHomePage() {
