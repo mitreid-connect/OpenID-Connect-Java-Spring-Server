@@ -1,14 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="o" tagdir="/WEB-INF/tags" %>
 <%@ page session="false" %>
-<html>
-<head>
-	<title>Home</title>
-</head>
-<body>
-<h1>
-	Hello world!  
-</h1>
 
-<P>  The time on the server is ${serverTime}. </P>
-</body>
-</html>
+<o:header/>
+<o:topbar/>
+<o:footer/>
