@@ -1,7 +1,5 @@
 package org.mitre.jwt.model;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStreamReader;
 import java.util.List;
 
 import org.apache.commons.codec.binary.Base64;
@@ -9,9 +7,7 @@ import org.apache.commons.codec.binary.Base64;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 public class Jwt {
 

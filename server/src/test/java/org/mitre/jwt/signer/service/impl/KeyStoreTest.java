@@ -52,7 +52,7 @@ public class KeyStoreTest {
 	 * @param daysNotValidAfter
 	 * @return
 	 */
-	private static X509V3CertificateGenerator createCertificate(
+	public static X509V3CertificateGenerator createCertificate(
 			String commonName, int daysNotValidBefore, int daysNotValidAfter) {
 		// BC sez X509V3CertificateGenerator is deprecated and the docs say to
 		// use another, but it seemingly isn't included jar...
