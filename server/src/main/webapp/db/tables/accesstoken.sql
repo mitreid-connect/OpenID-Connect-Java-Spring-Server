@@ -4,5 +4,6 @@ CREATE TABLE accesstoken (
 	tokenType VARCHAR(256),
 	refresh_token_id VARCHAR(256),
 	client_id VARCHAR(256),
-	authentication LONGBLOB
+	authentication LONGBLOB,
+	idTokenString VARCHAR(256)
 );

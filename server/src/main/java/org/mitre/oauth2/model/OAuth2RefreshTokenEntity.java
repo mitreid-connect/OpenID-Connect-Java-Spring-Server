@@ -21,6 +21,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.Transient;
 
+import org.mitre.jwt.model.Jwt;
 import org.springframework.security.oauth2.common.ExpiringOAuth2RefreshToken;
 
 /**
@@ -37,6 +38,9 @@ public class OAuth2RefreshTokenEntity extends ExpiringOAuth2RefreshToken {
 
 	private ClientDetailsEntity client;
 
+	//JWT-encoded representation of this access token entity
+	private Jwt jwt;
+	
 	private  Set<String> scope; // we save the scope issued to the refresh token so that we can reissue a new access token	
 	
 	/**
@@ -44,6 +48,7 @@ public class OAuth2RefreshTokenEntity extends ExpiringOAuth2RefreshToken {
 	 */
 	public OAuth2RefreshTokenEntity() {
 		// TODO Auto-generated constructor stub
+		super(null, null);
 	}
 
 	/* (non-Javadoc)
@@ -54,16 +59,15 @@ public class OAuth2RefreshTokenEntity extends ExpiringOAuth2RefreshToken {
     @Column(name="id")
     public String getValue() {
 	    // TODO Auto-generated method stub
-	    return super.getValue();
+	    return jwt.toString();
     }
 
 	/* (non-Javadoc)
      * @see org.springframework.security.oauth2.common.OAuth2RefreshToken#setValue(java.lang.String)
      */
-    @Override
     public void setValue(String value) {
 	    // TODO Auto-generated method stub
-	    super.setValue(value);
+	    setJwt(Jwt.parse(value));
     }
 
 	/* (non-Javadoc)
@@ -80,10 +84,10 @@ public class OAuth2RefreshTokenEntity extends ExpiringOAuth2RefreshToken {
 	/* (non-Javadoc)
      * @see org.springframework.security.oauth2.common.ExpiringOAuth2RefreshToken#setExpiration(java.util.Date)
      */
-    @Override
+    
     public void setExpiration(Date expiration) {
 	    // TODO Auto-generated method stub
-	    super.setExpiration(expiration);
+	    //super.setExpiration(expiration);
     }
 
     /**
@@ -131,6 +135,19 @@ public class OAuth2RefreshTokenEntity extends ExpiringOAuth2RefreshToken {
     	this.scope = scope;
     }
     
-
+    /**
+     * @return the jwt
+     */
+    @Transient
+    public Jwt getJwt() {
+    	return jwt;
+    }
+    
+    /**
+     * @param jwt the jwt to set
+     */
+    public void setJwt(Jwt jwt) {
+    	this.jwt = jwt;
+    }
     
 }

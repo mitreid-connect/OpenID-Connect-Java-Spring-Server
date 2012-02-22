@@ -470,4 +470,14 @@ public class ClientDetailsEntity implements ClientDetails {
 		
 	}
 
+	/**
+	 * TODO: Implement
+	 * See github issue #3
+	 */
+	@Override
+	public int getAccessTokenValiditySeconds() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }

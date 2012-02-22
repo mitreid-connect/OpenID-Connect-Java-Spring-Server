@@ -4,6 +4,7 @@
 package org.mitre.oauth2.model;
 
 import java.util.Date;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.Basic;
@@ -18,11 +19,12 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.Transient;
 
+import org.mitre.jwt.model.Jwt;
+import org.mitre.openid.connect.model.IdToken;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2RefreshToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -40,9 +42,16 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 })
 public class OAuth2AccessTokenEntity extends OAuth2AccessToken {
 
+	public static String ID_TOKEN = "id_token";
+	
 	private ClientDetailsEntity client;
 	
 	private OAuth2Authentication authentication; // the authentication that made this access
+	
+	private String idTokenString;
+	
+	//JWT-encoded representation of this access token entity
+	private Jwt jwt;
 	
 	/**
 	 * 
@@ -50,6 +59,18 @@ public class OAuth2AccessTokenEntity extends OAuth2AccessToken {
 	public OAuth2AccessTokenEntity() {
 		super(null);
 	}
+	
+	/**
+	 * Override this method to insert the ID Token
+	 */
+	@Override
+	@Transient
+	public Map<String, Object> getAdditionalInformation() {
+		Map<String, Object> map = super.getAdditionalInformation();
+		map.put(ID_TOKEN, idTokenString);
+		return map;
+	}
+	
 	
 	
 	/**
@@ -94,17 +115,21 @@ public class OAuth2AccessTokenEntity extends OAuth2AccessToken {
     @Id
     @Column(name="id")
     public String getValue() {
-	    // TODO Auto-generated method stub
-	    return super.getValue();
+	    return jwt.toString();
     }
 
-	/* (non-Javadoc)
-     * @see org.springframework.security.oauth2.common.OAuth2AccessToken#setValue(java.lang.String)
+    /**
+     * Set the "value" of this Access Token
+     * 
+     * @param value
      */
-    @Override
     public void setValue(String value) {
-	    // TODO Auto-generated method stub
-	    super.setValue(value);
+	   try {
+		   Jwt valueJwt = Jwt.parse(value);
+		   setJwt(valueJwt);
+	   } catch (IllegalArgumentException e) {
+		   //TODO: What to do in this case?
+	   }
     }
 
 	/* (non-Javadoc)
@@ -207,4 +232,52 @@ public class OAuth2AccessTokenEntity extends OAuth2AccessToken {
 	}
 
 
+	/**
+	 * This is transient b/c the IdToken is not serializable. Instead,
+	 * the toString of the IdToken is persisted in idTokenString 
+	 * @return the idToken
+	 */
+    @Transient
+	public IdToken getIdToken() {
+		return IdToken.parse(idTokenString);
+	}
+
+
+	/**
+	 * @param idToken the idToken to set
+	 */
+	public void setIdToken(IdToken idToken) {
+		this.idTokenString = idToken.toString();
+	}
+	
+	/**
+	 * @return the idTokenString
+	 */
+	@Basic
+	public String getIdTokenString() {
+		return idTokenString;
+	}
+
+	/**
+	 * @param idTokenString the idTokenString to set
+	 */
+	public void setIdTokenString(String idTokenString) {
+		this.idTokenString = idTokenString;
+	}
+
+	/**
+	 * @return the jwt
+	 */
+	@Transient
+	public Jwt getJwt() {
+		return jwt;
+	}
+
+
+	/**
+	 * @param jwt the jwt to set
+	 */
+	public void setJwt(Jwt jwt) {
+		this.jwt = jwt;
+	}
 }

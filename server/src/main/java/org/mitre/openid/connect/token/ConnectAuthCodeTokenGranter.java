@@ -109,8 +109,8 @@ public class ConnectAuthCodeTokenGranter implements TokenGranter {
 		}
 
 		AuthorizationRequest unconfirmedAuthorizationRequest = storedAuth.getAuthenticationRequest();
-		if (unconfirmedAuthorizationRequest.getRequestedRedirect() != null
-				&& !unconfirmedAuthorizationRequest.getRequestedRedirect().equals(redirectUri)) {
+		if (unconfirmedAuthorizationRequest.getRedirectUri() != null
+				&& !unconfirmedAuthorizationRequest.getRedirectUri().equals(redirectUri)) {
 			throw new RedirectMismatchException("Redirect URI mismatch.");
 		}
 
@@ -147,8 +147,7 @@ public class ConnectAuthCodeTokenGranter implements TokenGranter {
 			//See github issue #1
 			IdToken idToken = idTokenService.generateIdToken(userId, "http://id.mitre.org/openidconnect");
 			
-			
-			//TODO: insert IdToken into OAuth2AccessTokenEntity
+			token.setIdToken(idToken);
 		}		
 		
 		return token;

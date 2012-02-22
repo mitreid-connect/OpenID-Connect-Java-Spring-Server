@@ -25,7 +25,6 @@ import org.springframework.security.oauth2.common.exceptions.InvalidClientExcept
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
-import org.springframework.security.oauth2.provider.client.ClientAuthenticationToken;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Sets;
@@ -216,6 +215,18 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		}
     }
 
+	/**
+	 * TODO: Implement
+	 * See github issue #2
+	 */
+	@Override
+	public OAuth2AccessTokenEntity getAccessToken(OAuth2Authentication authentication) {
+		
+		OAuth2AccessTokenEntity accessToken = new OAuth2AccessTokenEntity();
+		
+		return accessToken;
+	}
+	
 	@Override
     public OAuth2RefreshTokenEntity getRefreshToken(String refreshTokenValue) throws AuthenticationException {
 		OAuth2RefreshTokenEntity refreshToken = tokenRepository.getRefreshTokenByValue(refreshTokenValue);
