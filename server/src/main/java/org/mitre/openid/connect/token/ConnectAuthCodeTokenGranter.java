@@ -9,6 +9,7 @@ import java.util.Set;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.service.impl.DefaultOAuth2ProviderTokenService;
 import org.mitre.openid.connect.model.IdToken;
+import org.mitre.util.Utility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
@@ -49,6 +50,9 @@ public class ConnectAuthCodeTokenGranter implements TokenGranter {
 	//TODO: Do we need to modify/update this?	
 	@Autowired
 	private DefaultOAuth2ProviderTokenService tokenServices;
+	
+	@Autowired
+	private IdTokenGeneratorService idTokenService;
 	
 	
 	/**
@@ -136,11 +140,13 @@ public class ConnectAuthCodeTokenGranter implements TokenGranter {
 		 * has the proper scope, we can consider this a valid OpenID Connect request.
 		 */
 		if (authorizationRequest.getScope().contains("openid")) {
-			IdToken idToken = new IdToken();
+
+			String userId = parameters.get("user_id");
 			
-			//TODO: build IdToken 
+			//TODO: need to get base url, but Utility.findBaseUrl() needs access to a request object, which we don't have
+			//See github issue #1
+			IdToken idToken = idTokenService.generateIdToken(userId, "http://id.mitre.org/openidconnect");
 			
-			//Where does the data for the IdToken come from? 
 			
 			//TODO: insert IdToken into OAuth2AccessTokenEntity
 		}		
