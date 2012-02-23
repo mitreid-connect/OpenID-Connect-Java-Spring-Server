@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  */
 
 @Controller
-@RequestMapping("/manager")
+@RequestMapping("/")
 public class ManagerController {
 
     @RequestMapping({"/", "/home", "/index"})
