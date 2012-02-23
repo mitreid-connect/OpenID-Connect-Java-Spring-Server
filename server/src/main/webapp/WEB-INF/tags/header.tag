@@ -1,8 +1,9 @@
+<%@attribute name="title" required="false" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>OpenID Connect</title>
+    <title>OpenID Connect - ${title}</title>
     <meta name="description" content="">
     <meta name="author" content="">
 
