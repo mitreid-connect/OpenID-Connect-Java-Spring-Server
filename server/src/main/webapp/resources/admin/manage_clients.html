@@ -16,8 +16,23 @@
     <script src="../bootstrap/js/bootstrap-scrollspy.js"></script>
     <script src="../bootstrap/js/bootstrap-tabs.js"></script>
     <script src="../bootstrap/js/bootstrap-buttons.js"></script>
+    <script src="../js/tmpl.js"></script>
 
     <script>$(function () {
+
+        var ExampleOpenIdClient = {
+            name:"A name",
+            redirectURL:"http://myURL.domain",
+            grantType:["my grant type 1", "my grant type 2"],
+            scope:["scope 1", "scope 2"],
+            authority:"my authority",
+            description:"my description",
+            refreshTokens:false
+        };
+
+        console.log(tmpl('client_tmpl',ExampleOpenIdClient));
+
+        $('#client-table').append(tmpl('client_tmpl',ExampleOpenIdClient));
 
     })</script>
 
@@ -48,6 +63,40 @@
 
 <body>
 
+<script type="text/html" id="client_tmpl">
+    <tr>
+        <td><%=name%></td>
+        <td><%=redirectURL%></td>
+        <td>
+            <ul>
+                <% for (var i in grantType) { %>
+                <li><%=grantType[i]%></li>
+                <% } %>
+            </ul>
+        </td>
+        <td>
+            <ul>
+                <% for (var i in scope) { %>
+                <li><%=scope[i]%></li>
+                <% } %>
+            </ul>
+        </td>
+        <td><%=authority%></td>
+        <td><%=description%>
+        </td>
+        <td><input type="checkbox" checked="<%=(refreshTokens == 1 ? 'checked' : '')%>" value="" id="" name="" disabled></td>
+        <td>
+            <button data-controls-modal="modal-from-dom" data-backdrop="true" data-keyboard="true"
+                    class="btn">edit
+            </button>
+        </td>
+        <td>
+            <button class="btn danger">delete</button>
+        </td>
+    </tr>
+</script>
+
+
 <div id="modal-from-dom" class="modal hide fade" style="width: 577px; max-height: none; top: 35%">
     <div class="modal-header">
         <a href="#" class="close">&times;</a>
@@ -58,7 +107,7 @@
 
         <form>
             <fieldset>
-                <legend>OpenID Client</legend>
+                <!--<legend>OpenID Client</legend>-->
                 <div class="clearfix">
                     <label for="xlInput">Client Name</label>
 
@@ -214,7 +263,7 @@
                 <a class="btn small primary" href="#">New Client</a>
             </div>
 
-            <table>
+            <table id="client-table">
                 <thead>
                 <tr>
                     <th>Name</th>
