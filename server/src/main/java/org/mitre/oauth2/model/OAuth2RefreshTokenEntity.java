@@ -23,6 +23,7 @@ import javax.persistence.Transient;
 
 import org.mitre.jwt.model.Jwt;
 import org.springframework.security.oauth2.common.ExpiringOAuth2RefreshToken;
+import org.springframework.security.oauth2.common.OAuth2RefreshToken;
 
 /**
  * @author jricher
@@ -34,26 +35,33 @@ import org.springframework.security.oauth2.common.ExpiringOAuth2RefreshToken;
 	@NamedQuery(name = "OAuth2RefreshTokenEntity.getByClient", query = "select r from OAuth2RefreshTokenEntity r where r.client = :client"),
 	@NamedQuery(name = "OAuth2RefreshTokenEntity.getExpired", query = "select r from OAuth2RefreshTokenEntity r where r.expiration is not null and r.expiration < current_timestamp")
 })
-public class OAuth2RefreshTokenEntity extends ExpiringOAuth2RefreshToken {
+public class OAuth2RefreshTokenEntity extends OAuth2RefreshToken {
 
 	private ClientDetailsEntity client;
 
 	//JWT-encoded representation of this access token entity
 	private Jwt jwt;
 	
+	// our refresh tokens might expire
+	private Date expiration;
+
 	private  Set<String> scope; // we save the scope issued to the refresh token so that we can reissue a new access token	
 	
 	/**
 	 * 
 	 */
 	public OAuth2RefreshTokenEntity() {
-		// TODO Auto-generated constructor stub
-		super(null, null);
+		// we ignore the superclass's Value field
+		super(null);
+		setJwt(new Jwt()); // start with a blank JWT value
 	}
 
 	/* (non-Javadoc)
      * @see org.springframework.security.oauth2.common.OAuth2RefreshToken#getValue()
      */
+	/**
+	 * Get the JWT-encoded value of this token
+	 */
     @Override
     @Id
     @Column(name="id")
@@ -62,23 +70,20 @@ public class OAuth2RefreshTokenEntity extends ExpiringOAuth2RefreshToken {
 	    return jwt.toString();
     }
 
-	/* (non-Javadoc)
-     * @see org.springframework.security.oauth2.common.OAuth2RefreshToken#setValue(java.lang.String)
+    /**
+     * Set the value of this token as a string. Parses the string into a JWT.
+     * @param value
+     * @throws IllegalArgumentException if the value is not a valid JWT string
      */
     public void setValue(String value) {
 	    // TODO Auto-generated method stub
 	    setJwt(Jwt.parse(value));
     }
 
-	/* (non-Javadoc)
-     * @see org.springframework.security.oauth2.common.ExpiringOAuth2RefreshToken#getExpiration()
-     */
-    @Override
     @Basic
     @Temporal(javax.persistence.TemporalType.TIMESTAMP)
     public Date getExpiration() {
-	    // TODO Auto-generated method stub
-	    return super.getExpiration();
+    	return expiration;
     }
 
 	/* (non-Javadoc)
@@ -86,8 +91,7 @@ public class OAuth2RefreshTokenEntity extends ExpiringOAuth2RefreshToken {
      */
     
     public void setExpiration(Date expiration) {
-	    // TODO Auto-generated method stub
-	    //super.setExpiration(expiration);
+    	this.expiration = expiration;
     }
 
     /**
@@ -136,6 +140,7 @@ public class OAuth2RefreshTokenEntity extends ExpiringOAuth2RefreshToken {
     }
     
     /**
+     * Get the JWT object directly
      * @return the jwt
      */
     @Transient
