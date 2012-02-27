@@ -48,32 +48,37 @@ public class OAuth2AccessTokenEntity extends OAuth2AccessToken {
 	
 	private OAuth2Authentication authentication; // the authentication that made this access
 	
-	private String idTokenString;
-	
-	//JWT-encoded representation of this access token entity
-	private Jwt jwt;
+	// JWT-encoded access token value
+	private Jwt jwtValue;
+
+	// JWT-encoded OpenID Connect IdToken
+	private IdToken idToken;
 	
 	/**
-	 * 
+	 * Create a new, blank access token
 	 */
 	public OAuth2AccessTokenEntity() {
+		// we ignore the "value" field in the superclass because we can't cleanly override it
 		super(null);
+		setJwt(new Jwt()); // give us a blank jwt to work with at least
+		setIdToken(new IdToken()); // and a blank IdToken
 	}
 	
 	/**
-	 * Override this method to insert the ID Token
+	 * Get all additional information to be sent to the serializer. Inserts a copy of the IdToken (in JWT String form). 
 	 */
 	@Override
 	@Transient
 	public Map<String, Object> getAdditionalInformation() {
 		Map<String, Object> map = super.getAdditionalInformation();
-		map.put(ID_TOKEN, idTokenString);
+		map.put(ID_TOKEN, getIdTokenString());
 		return map;
 	}
 	
 	
 	
 	/**
+	 * The authentication in place when this token was created.
      * @return the authentication
      */
 	@Lob
@@ -111,25 +116,24 @@ public class OAuth2AccessTokenEntity extends OAuth2AccessToken {
 	/* (non-Javadoc)
      * @see org.springframework.security.oauth2.common.OAuth2AccessToken#getValue()
      */
+    /**
+     * Get the string-encoded value of this access token. 
+     */
     @Override
     @Id
     @Column(name="id")
     public String getValue() {
-	    return jwt.toString();
+	    return jwtValue.toString();
     }
 
     /**
      * Set the "value" of this Access Token
      * 
-     * @param value
+     * @param value the JWT string
+     * @throws IllegalArgumentException if "value" is not a properly formatted JWT string
      */
     public void setValue(String value) {
-	   try {
-		   Jwt valueJwt = Jwt.parse(value);
-		   setJwt(valueJwt);
-	   } catch (IllegalArgumentException e) {
-		   //TODO: What to do in this case?
-	   }
+    	setJwt(Jwt.parse(value));
     }
 
 	/* (non-Javadoc)
@@ -239,7 +243,7 @@ public class OAuth2AccessTokenEntity extends OAuth2AccessToken {
 	 */
     @Transient
 	public IdToken getIdToken() {
-		return IdToken.parse(idTokenString);
+		return idToken;
 	}
 
 
@@ -247,7 +251,7 @@ public class OAuth2AccessTokenEntity extends OAuth2AccessToken {
 	 * @param idToken the idToken to set
 	 */
 	public void setIdToken(IdToken idToken) {
-		this.idTokenString = idToken.toString();
+		this.idToken = idToken;
 	}
 	
 	/**
@@ -255,29 +259,30 @@ public class OAuth2AccessTokenEntity extends OAuth2AccessToken {
 	 */
 	@Basic
 	public String getIdTokenString() {
-		return idTokenString;
+		return idToken.toString();
 	}
 
 	/**
 	 * @param idTokenString the idTokenString to set
+     * @throws IllegalArgumentException if "value" is not a properly formatted JWT string
 	 */
 	public void setIdTokenString(String idTokenString) {
-		this.idTokenString = idTokenString;
+		this.idToken = IdToken.parse(idTokenString);
 	}
 
 	/**
-	 * @return the jwt
+	 * @return the jwtValue
 	 */
 	@Transient
 	public Jwt getJwt() {
-		return jwt;
+		return jwtValue;
 	}
 
 
 	/**
-	 * @param jwt the jwt to set
+	 * @param jwtValue the jwtValue to set
 	 */
 	public void setJwt(Jwt jwt) {
-		this.jwt = jwt;
+		this.jwtValue = jwt;
 	}
 }
