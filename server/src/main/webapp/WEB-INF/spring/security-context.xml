@@ -32,7 +32,7 @@
 	<!-- SECOAUTH Authorization Server, with our custom token granter plugged in -->
 	<oauth2:authorization-server client-details-service-ref="defaultOAuth2ClientDetailsEntityService" 
 		token-services-ref="defaultOAuth2ProviderTokenService" token-granter-ref="connectAuthCodeTokenGranter"
-		authorization-endpoint-url="/openidconnect/auth*">
+		authorization-endpoint-url="/openidconnect/auth">
 		<oauth2:authorization-code />
 	</oauth2:authorization-server>
 	

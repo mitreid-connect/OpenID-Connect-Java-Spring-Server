@@ -9,6 +9,8 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.google.gson.JsonObject;
+
 @Entity
 @Table(name="userinfo")
 @NamedQueries({
@@ -34,6 +36,38 @@ public class UserInfo {
 	private Address address;
 	private String updatedTime;
 	
+	
+	public JsonObject toJson() {
+		JsonObject obj = new JsonObject();
+		
+		obj.addProperty("user_id", getUserId());
+		obj.addProperty("name", getName());
+		obj.addProperty("given_name", getGivenName());
+		obj.addProperty("family_name", getFamilyName());
+		obj.addProperty("middle_name", getMiddleName());
+		obj.addProperty("nickname", getNickname());
+		obj.addProperty("profile", getProfile());
+		obj.addProperty("picture", getPicture());
+		obj.addProperty("website", getWebsite());
+		obj.addProperty("verified", getVerified());
+		obj.addProperty("gender", getGender());
+		obj.addProperty("zone_info", getZoneinfo());
+		obj.addProperty("locale", getLocale());
+		obj.addProperty("phone_number", getPhoneNumber());
+		obj.addProperty("updated_time", getUpdatedTime());
+		
+		JsonObject addr = new JsonObject();
+		addr.addProperty("formatted", getAddress().getFormatted());
+		addr.addProperty("street_address", getAddress().getStreetAddress());
+		addr.addProperty("locality", getAddress().getLocality());
+		addr.addProperty("region", getAddress().getRegion());
+		addr.addProperty("postal_code", getAddress().getPostalCode());
+		addr.addProperty("country", getAddress().getCountry());
+		
+		obj.add("address", addr);
+		
+		return obj;
+	}
 	
 	/**
 	 * @return the userId

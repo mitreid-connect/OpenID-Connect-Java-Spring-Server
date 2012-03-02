@@ -39,6 +39,10 @@ public class ClientDetailsEntity implements ClientDetails {
 		
 	}
 
+	public enum AuthType {
+		client_secret_post, client_secret_basic, client_secret_jwt, private_key_jwt
+	};
+	
 	private String clientId;	
 	private String clientSecret;
 	private Set<String> scope;
@@ -53,6 +57,48 @@ public class ClientDetailsEntity implements ClientDetails {
 	private String registeredRedirectUri;
 	private Set<String> resourceIds;
 
+	//Additional properties added by OpenID Connect Dynamic Client Registration spec
+	//http://openid.net/specs/openid-connect-registration-1_0.html
+	
+	/**
+	 * List of email addresses for people allowed to administer the information for
+	 * this Client. This is used by some providers to enable a web UI to modify the
+	 * Client information.
+	 */
+	private Set<String> contacts; 	
+	
+	private String applicationType;//native or web
+	private String applicationName;
+	private String logo_url;
+	private Set<String> redirectUris; //Connect allows clients to have more than one redirectUri registered
+	private AuthType tokenEndpointAuthType = AuthType.client_secret_basic;
+	private String policyUrl;
+	private String jwk_url;
+	private String jwk_encryption_url;
+	private String x509Url;
+	private String x509EncryptionUrl;
+	private String sectorIdentifierUrl;
+	private String userIdType;
+	
+	/** 
+	 * OPTIONAL. The JWS [JWS] signature algorithm that MUST be required 
+	 * by the Authorization Server. All OpenID Request Objects from 
+	 * this client_id MUST be rejected if not signed by this algorithm.
+	 */
+	private String requireSignedRequestObject;
+	
+	private String userInfoSignedResponseAlg;
+	private Set<String> userInfoEncryptedResponseAlgs;
+	private String idTokenSignedResponseAlg;
+	private Set<String> idTokenEncryptedResponseAlgs;
+	
+	//Maximum age for any authentications
+	private Integer defaultMaxAge;
+	
+	private Boolean requireAuthTime;
+	
+	private String defaultACR;
+	
 	// TODO:
 	/*
 	private boolean allowMultipleAccessTokens; // do we allow multiple access tokens, or not?
@@ -478,6 +524,302 @@ public class ClientDetailsEntity implements ClientDetails {
 	public int getAccessTokenValiditySeconds() {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	/**
+	 * @return the contacts
+	 */
+	public Set<String> getContacts() {
+		return contacts;
+	}
+
+	/**
+	 * @param contacts the contacts to set
+	 */
+	public void setContacts(Set<String> contacts) {
+		this.contacts = contacts;
+	}
+
+	/**
+	 * @return the applicationType
+	 */
+	public String getApplicationType() {
+		return applicationType;
+	}
+
+	/**
+	 * @param applicationType the applicationType to set
+	 */
+	public void setApplicationType(String applicationType) {
+		this.applicationType = applicationType;
+	}
+
+	/**
+	 * @return the applicationName
+	 */
+	public String getApplicationName() {
+		return applicationName;
+	}
+
+	/**
+	 * @param applicationName the applicationName to set
+	 */
+	public void setApplicationName(String applicationName) {
+		this.applicationName = applicationName;
+	}
+
+	/**
+	 * @return the logo_url
+	 */
+	public String getLogo_url() {
+		return logo_url;
+	}
+
+	/**
+	 * @param logo_url the logo_url to set
+	 */
+	public void setLogo_url(String logo_url) {
+		this.logo_url = logo_url;
+	}
+
+	/**
+	 * @return the redirectUris
+	 */
+	public Set<String> getRedirectUris() {
+		return redirectUris;
+	}
+
+	/**
+	 * @param redirectUris the redirectUris to set
+	 */
+	public void setRedirectUris(Set<String> redirectUris) {
+		this.redirectUris = redirectUris;
+	}
+
+	/**
+	 * @return the tokenEndpointAuthType
+	 */
+	public AuthType getTokenEndpointAuthType() {
+		return tokenEndpointAuthType;
+	}
+
+	/**
+	 * @param tokenEndpointAuthType the tokenEndpointAuthType to set
+	 */
+	public void setTokenEndpointAuthType(AuthType tokenEndpointAuthType) {
+		this.tokenEndpointAuthType = tokenEndpointAuthType;
+	}
+
+	/**
+	 * @return the policyUrl
+	 */
+	public String getPolicyUrl() {
+		return policyUrl;
+	}
+
+	/**
+	 * @param policyUrl the policyUrl to set
+	 */
+	public void setPolicyUrl(String policyUrl) {
+		this.policyUrl = policyUrl;
+	}
+
+	/**
+	 * @return the jwk_url
+	 */
+	public String getJwk_url() {
+		return jwk_url;
+	}
+
+	/**
+	 * @param jwk_url the jwk_url to set
+	 */
+	public void setJwk_url(String jwk_url) {
+		this.jwk_url = jwk_url;
+	}
+
+	/**
+	 * @return the jwk_encryption_url
+	 */
+	public String getJwk_encryption_url() {
+		return jwk_encryption_url;
+	}
+
+	/**
+	 * @param jwk_encryption_url the jwk_encryption_url to set
+	 */
+	public void setJwk_encryption_url(String jwk_encryption_url) {
+		this.jwk_encryption_url = jwk_encryption_url;
+	}
+
+	/**
+	 * @return the x509Url
+	 */
+	public String getX509Url() {
+		return x509Url;
+	}
+
+	/**
+	 * @param x509Url the x509Url to set
+	 */
+	public void setX509Url(String x509Url) {
+		this.x509Url = x509Url;
+	}
+
+	/**
+	 * @return the x509EncryptionUrl
+	 */
+	public String getX509EncryptionUrl() {
+		return x509EncryptionUrl;
+	}
+
+	/**
+	 * @param x509EncryptionUrl the x509EncryptionUrl to set
+	 */
+	public void setX509EncryptionUrl(String x509EncryptionUrl) {
+		this.x509EncryptionUrl = x509EncryptionUrl;
+	}
+
+	/**
+	 * @return the sectorIdentifierUrl
+	 */
+	public String getSectorIdentifierUrl() {
+		return sectorIdentifierUrl;
+	}
+
+	/**
+	 * @param sectorIdentifierUrl the sectorIdentifierUrl to set
+	 */
+	public void setSectorIdentifierUrl(String sectorIdentifierUrl) {
+		this.sectorIdentifierUrl = sectorIdentifierUrl;
+	}
+
+	/**
+	 * @return the userIdType
+	 */
+	public String getUserIdType() {
+		return userIdType;
+	}
+
+	/**
+	 * @param userIdType the userIdType to set
+	 */
+	public void setUserIdType(String userIdType) {
+		this.userIdType = userIdType;
+	}
+
+	/**
+	 * @return the requireSignedRequestObject
+	 */
+	public String getRequireSignedRequestObject() {
+		return requireSignedRequestObject;
+	}
+
+	/**
+	 * @param requireSignedRequestObject the requireSignedRequestObject to set
+	 */
+	public void setRequireSignedRequestObject(String requireSignedRequestObject) {
+		this.requireSignedRequestObject = requireSignedRequestObject;
+	}
+
+	/**
+	 * @return the userInfoSignedResponseAlg
+	 */
+	public String getUserInfoSignedResponseAlg() {
+		return userInfoSignedResponseAlg;
+	}
+
+	/**
+	 * @param userInfoSignedResponseAlg the userInfoSignedResponseAlg to set
+	 */
+	public void setUserInfoSignedResponseAlg(String userInfoSignedResponseAlg) {
+		this.userInfoSignedResponseAlg = userInfoSignedResponseAlg;
+	}
+
+	/**
+	 * @return the userInfoEncryptedResponseAlgs
+	 */
+	public Set<String> getUserInfoEncryptedResponseAlgs() {
+		return userInfoEncryptedResponseAlgs;
+	}
+
+	/**
+	 * @param userInfoEncryptedResponseAlgs the userInfoEncryptedResponseAlgs to set
+	 */
+	public void setUserInfoEncryptedResponseAlgs(
+			Set<String> userInfoEncryptedResponseAlgs) {
+		this.userInfoEncryptedResponseAlgs = userInfoEncryptedResponseAlgs;
+	}
+
+	/**
+	 * @return the idTokenEncryptedResponseAlgs
+	 */
+	public Set<String> getIdTokenEncryptedResponseAlgs() {
+		return idTokenEncryptedResponseAlgs;
+	}
+
+	/**
+	 * @param idTokenEncryptedResponseAlgs the idTokenEncryptedResponseAlgs to set
+	 */
+	public void setIdTokenEncryptedResponseAlgs(
+			Set<String> idTokenEncryptedResponseAlgs) {
+		this.idTokenEncryptedResponseAlgs = idTokenEncryptedResponseAlgs;
+	}
+
+	/**
+	 * @return the idTokenSignedResponseAlg
+	 */
+	public String getIdTokenSignedResponseAlg() {
+		return idTokenSignedResponseAlg;
+	}
+
+	/**
+	 * @param idTokenSignedResponseAlg the idTokenSignedResponseAlg to set
+	 */
+	public void setIdTokenSignedResponseAlg(String idTokenSignedResponseAlg) {
+		this.idTokenSignedResponseAlg = idTokenSignedResponseAlg;
+	}
+
+	/**
+	 * @return the defaultMaxAge
+	 */
+	public Integer getDefaultMaxAge() {
+		return defaultMaxAge;
+	}
+
+	/**
+	 * @param defaultMaxAge the defaultMaxAge to set
+	 */
+	public void setDefaultMaxAge(Integer defaultMaxAge) {
+		this.defaultMaxAge = defaultMaxAge;
+	}
+
+	/**
+	 * @return the requireAuthTime
+	 */
+	public Boolean getRequireAuthTime() {
+		return requireAuthTime;
+	}
+
+	/**
+	 * @param requireAuthTime the requireAuthTime to set
+	 */
+	public void setRequireAuthTime(Boolean requireAuthTime) {
+		this.requireAuthTime = requireAuthTime;
+	}
+
+	/**
+	 * @return the defaultACR
+	 */
+	public String getDefaultACR() {
+		return defaultACR;
+	}
+
+	/**
+	 * @param defaultACR the defaultACR to set
+	 */
+	public void setDefaultACR(String defaultACR) {
+		this.defaultACR = defaultACR;
 	}
 
 }
