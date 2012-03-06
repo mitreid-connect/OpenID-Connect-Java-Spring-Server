@@ -15,14 +15,14 @@
 
     <!-- Le javascript -->
     <script src="http://code.jquery.com/jquery-1.7.min.js"></script>
-    <script src="/resources/bootstrap/js/bootstrap-modal.js"></script>
-    <script src="/resources/bootstrap/js/bootstrap-alerts.js"></script>
-    <script src="/resources/bootstrap/js/bootstrap-twipsy.js"></script>
-    <script src="/resources/bootstrap/js/bootstrap-popover.js"></script>
-    <script src="/resources/bootstrap/js/bootstrap-dropdown.js"></script>
-    <script src="/resources/bootstrap/js/bootstrap-scrollspy.js"></script>
-    <script src="/resources/bootstrap/js/bootstrap-tabs.js"></script>
-    <script src="/resources/bootstrap/js/bootstrap-buttons.js"></script>
+    <script src="resources/bootstrap/js/bootstrap-modal.js"></script>
+    <script src="resources/bootstrap/js/bootstrap-alerts.js"></script>
+    <script src="resources/bootstrap/js/bootstrap-twipsy.js"></script>
+    <script src="resources/bootstrap/js/bootstrap-popover.js"></script>
+    <script src="resources/bootstrap/js/bootstrap-dropdown.js"></script>
+    <script src="resources/bootstrap/js/bootstrap-scrollspy.js"></script>
+    <script src="resources/bootstrap/js/bootstrap-tabs.js"></script>
+    <script src="resources/bootstrap/js/bootstrap-buttons.js"></script>
 
     <script>$(function () {
 
@@ -34,14 +34,14 @@
     <![endif]-->
 
     <!-- Le styles -->
-    <link href="/resources/bootstrap/bootstrap.css" rel="stylesheet">
+    <link href="resources/bootstrap/bootstrap.css" rel="stylesheet">
     <style type="text/css">
         body {
             padding-top: 60px;
         }
 
         .logo {
-            background: url("/resources/images/openid_small.png") no-repeat left center;
+            background: url("resources/images/openid_small.png") no-repeat left center;
             padding-left: 30px;
         }
     </style>
