@@ -1,5 +1,10 @@
 Changelog
 
+Updated on 3/6/2012
+
+Connect:
+* "Authorization Code Flow" diagram: changed step B to be a redirect rather than a JSON response object.
+
 Updated on 2/21/2012
 
 OAuth2: 
