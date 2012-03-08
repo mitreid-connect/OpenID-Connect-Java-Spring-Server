@@ -1,6 +1,5 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="o" tagdir="/WEB-INF/tags" %>
-<%@ page session="false" %>
 
 <o:header title="welcome" />
 <o:topbar/>
@@ -57,9 +56,7 @@
             </div>
         </div>
 
-        <footer>
-            <p>&copy; Company 2012</p>
-        </footer>
+        <o:copyright/>
     </div>
 </div>
 <o:footer/>
