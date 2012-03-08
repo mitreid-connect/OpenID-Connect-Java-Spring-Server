@@ -27,7 +27,7 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.mitre.util.Utility;
+import org.mitre.openid.connect.model.IdToken;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -204,7 +204,7 @@ public class OpenIdConnectAuthenticationFilter extends
 			throw new IllegalArgumentException(
 					"A Client Secret must be supplied");
 		}
-		
+
 		KeyPairGenerator keyPairGenerator;
 		try {
 			keyPairGenerator = KeyPairGenerator.getInstance("RSA");
@@ -212,16 +212,16 @@ public class OpenIdConnectAuthenticationFilter extends
 			KeyPair keyPair = keyPairGenerator.generateKeyPair();
 			publicKey = keyPair.getPublic();
 			privateKey = keyPair.getPrivate();
-			
+
 			signer = Signature.getInstance(SIGNING_ALGORITHM);
 		} catch (GeneralSecurityException generalSecurityException) {
 			// generalSecurityException.printStackTrace();
 			throw new IllegalStateException(generalSecurityException);
 		}
-		
+
+		// prepend the spec necessary scope
 		setScope(SCOPE + scope);
 	}
-
 
 	/*
 	 * (non-Javadoc)
@@ -243,12 +243,6 @@ public class OpenIdConnectAuthenticationFilter extends
 			String error = request.getParameter("error");
 			String errorDescription = request.getParameter("error_description");
 			String errorURI = request.getParameter("error_uri");
-
-			@SuppressWarnings("unused")
-			String state = request.getParameter("state"); // required by
-															// specification.
-															// doesn't say what
-															// to do w/
 
 			Map<String, String> requestParams = new HashMap<String, String>();
 
@@ -289,8 +283,7 @@ public class OpenIdConnectAuthenticationFilter extends
 				MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
 				form.add("grant_type", "authorization_code");
 				form.add("code", authorizationGrant);
-				//form.add("redirect_uri", buildRedirectURI(request));
-				form.add("redirect_uri", Utility.findBaseUrl(request));
+				form.add("redirect_uri", buildRedirectURI(request));
 
 				String jsonString = null;
 
@@ -298,6 +291,8 @@ public class OpenIdConnectAuthenticationFilter extends
 					jsonString = restTemplate.postForObject(tokenEndpointURI,
 							form, String.class);
 				} catch (HttpClientErrorException httpClientErrorException) {
+
+					// Handle error
 
 					logger.error("Token Endpoint error response:  "
 							+ httpClientErrorException.getStatusText() + " : "
@@ -309,6 +304,7 @@ public class OpenIdConnectAuthenticationFilter extends
 				JsonElement jsonRoot = new JsonParser().parse(jsonString);
 
 				if (jsonRoot.getAsJsonObject().get("error") != null) {
+
 					// Handle error
 
 					String error = jsonRoot.getAsJsonObject().get("error")
@@ -319,6 +315,35 @@ public class OpenIdConnectAuthenticationFilter extends
 					return null;
 
 				} else {
+
+					// Extract the id_token to insert into the
+					// OpenIdConnectAuthenticationToken
+
+					IdToken idToken = null;
+
+					if (jsonRoot.getAsJsonObject().get("id_token") != null) {
+
+						try {
+							idToken = IdToken.parse(jsonRoot.getAsJsonObject()
+									.get("id_token").getAsString());
+						} catch (Exception e) {
+
+							// I suspect this could happen
+
+							logger.error("Problem parsing id_token:  " + e);
+							// e.printStackTrace();
+
+							return null;
+						}
+
+					} else {
+
+						// An error is unlikely, but it good security to check
+
+						logger.error("Token Endpoint did not return a token_id");
+
+						return null;
+					}
 
 					// Handle Check ID Endpoint interaction
 
@@ -340,6 +365,8 @@ public class OpenIdConnectAuthenticationFilter extends
 								checkIDEndpointURI, form, String.class);
 					} catch (HttpClientErrorException httpClientErrorException) {
 
+						// Handle error
+						
 						logger.error("Check ID Endpoint error response:  "
 								+ httpClientErrorException.getStatusText()
 								+ " : " + httpClientErrorException.getMessage());
@@ -349,19 +376,16 @@ public class OpenIdConnectAuthenticationFilter extends
 
 					jsonRoot = new JsonParser().parse(jsonString);
 
-					@SuppressWarnings("unused")
-					String iss = jsonRoot.getAsJsonObject().get("iss")
+					// String iss = jsonRoot.getAsJsonObject().get("iss")
+					// .getAsString();
+					String userId = jsonRoot.getAsJsonObject().get("user_id")
 							.getAsString();
-					String user_id = jsonRoot.getAsJsonObject().get("user_id")
-							.getAsString();
-					@SuppressWarnings("unused")
-					String aud = jsonRoot.getAsJsonObject().get("aud")
-							.getAsString();
+					// String aud = jsonRoot.getAsJsonObject().get("aud")
+					// .getAsString();
 					String nonce = jsonRoot.getAsJsonObject().get("nonce")
 							.getAsString();
-					@SuppressWarnings("unused")
-					String exp = jsonRoot.getAsJsonObject().get("exp")
-							.getAsString();
+					// String exp = jsonRoot.getAsJsonObject().get("exp")
+					// .getAsString();
 
 					// Compare returned ID Token to signed session cookie
 					// to detect ID Token replay by third parties.
@@ -404,7 +428,7 @@ public class OpenIdConnectAuthenticationFilter extends
 					// return.
 
 					OpenIdConnectAuthenticationToken token = new OpenIdConnectAuthenticationToken(
-							user_id);
+							idToken, userId);
 
 					Authentication authentication = this
 							.getAuthenticationManager().authenticate(token);
@@ -424,8 +448,7 @@ public class OpenIdConnectAuthenticationFilter extends
 				urlVariables.put("response_type", "code");
 				urlVariables.put("client_id", clientId);
 				urlVariables.put("scope", scope);
-				//urlVariables.put("redirect_uri", buildRedirectURI(request));
-				urlVariables.put("redirect_uri", Utility.findBaseUrl(request));
+				urlVariables.put("redirect_uri", buildRedirectURI(request));
 
 				// Create a string value used to associate a user agent session
 				// with an ID Token to mitigate replay attacks. The value is
@@ -450,62 +473,62 @@ public class OpenIdConnectAuthenticationFilter extends
 						urlVariables));
 			}
 		}
-		
+
 		return null;
 	}
-	
-    /**
-     * Builds the redirect_uri that will be sent to the Authorization Endpoint.
-     * By default returns the URL of the current request.
-     *
-     * @param request the current request which is being processed by this filter
-     * @return The redirect_uri.
-     */
-    @SuppressWarnings("unused")
+
+	/**
+	 * Builds the redirect_uri that will be sent to the Authorization Endpoint.
+	 * By default returns the URL of the current request.
+	 * 
+	 * @param request
+	 *            the current request which is being processed by this filter
+	 * @return The redirect_uri.
+	 */
 	private String buildRedirectURI(HttpServletRequest request) {
-    	
-    	boolean isFirst = true;
-        
-    	StringBuffer sb = request.getRequestURL();
-        
-        for (Enumeration<?> e = request.getParameterNames() ; e.hasMoreElements(); ) {
-        
-            String name = (String) e.nextElement();
-            // Assume for simplicity that there is only one value
-            String value = request.getParameter(name);
 
-            if (value == null) {
-                continue;
-            }
+		boolean isFirst = true;
 
-            if (isFirst) {
-                sb.append("?");
-                isFirst = false;
-            }
-            
-            sb.append(name).append("=").append(value);
+		StringBuffer sb = request.getRequestURL();
 
-            if (e.hasMoreElements()) {
-                sb.append("&");
-            }
-        }
+		for (Enumeration<?> e = request.getParameterNames(); e
+				.hasMoreElements();) {
 
-        return sb.toString();
-    }	
-	
+			String name = (String) e.nextElement();
+			// Assume for simplicity that there is only one value
+			String value = request.getParameter(name);
+
+			if (value == null) {
+				continue;
+			}
+
+			if (isFirst) {
+				sb.append("?");
+				isFirst = false;
+			}
+
+			sb.append(name).append("=").append(value);
+
+			if (e.hasMoreElements()) {
+				sb.append("&");
+			}
+		}
+
+		return sb.toString();
+	}
 
 	public void setAuthorizationEndpointURI(String authorizationEndpointURI) {
 		this.authorizationEndpointURI = authorizationEndpointURI;
 	}
-	
+
 	public void setCheckIDEndpointURI(String checkIDEndpointURI) {
 		this.checkIDEndpointURI = checkIDEndpointURI;
 	}
-	
+
 	public void setClientId(String clientId) {
 		this.clientId = clientId;
 	}
-	
+
 	public void setClientSecret(String clientSecret) {
 		this.clientSecret = clientSecret;
 	}
