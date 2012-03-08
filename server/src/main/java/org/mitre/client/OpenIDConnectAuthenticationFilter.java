@@ -10,6 +10,7 @@ import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -46,11 +47,11 @@ import com.google.gson.JsonParser;
  * @author nemonik
  * 
  */
-public class OpenIDConnectAuthenticationFilter extends
+public class OpenIdConnectAuthenticationFilter extends
 		AbstractAuthenticationProcessingFilter {
 
 	private static Log logger = LogFactory
-			.getLog(OpenIDConnectAuthenticationFilter.class);
+			.getLog(OpenIdConnectAuthenticationFilter.class);
 
 	private final static String SCOPE = "openid";
 	private final static int KEY_SIZE = 1024;
@@ -138,54 +139,31 @@ public class OpenIDConnectAuthenticationFilter extends
 		}
 	}
 
-	private final String errorRedirectURI;
-	private final String authorizationEndpointURI;
-	private final String tokenEndpointURI;
-	private final String checkIDEndpointURI;
-	private final String clientSecret;
-	private final String clientId;
+	private String errorRedirectURI;
+
+	private String authorizationEndpointURI;
+
+	private String tokenEndpointURI;
+
+	private String checkIDEndpointURI;
+
+	private String clientSecret;
+
+	private String clientId;
+
 	private String scope;
+
 	private PublicKey publicKey;
+
 	private PrivateKey privateKey;
+
 	private Signature signer;
 
 	/**
-	 * @param defaultFilterProcessesUrl
-	 * @param authorizationEndpointURI
-	 * @param tokenEndpointURI
-	 * @param checkIDEndpointURI
-	 * @param clientId
-	 * @param scope
+	 * 
 	 */
-	protected OpenIDConnectAuthenticationFilter(String errorRedirectURI,
-			String clientSecret, String defaultFilterProcessesUrl,
-			String authorizationEndpointURI, String tokenEndpointURI,
-			String checkIDEndpointURI, String clientId, String scope,
-			String privateModulus, String privateExponent,
-			String publicModulus, String publicExponent) {
-		super(defaultFilterProcessesUrl);
-
-		this.clientSecret = clientSecret;
-		this.errorRedirectURI = errorRedirectURI;
-		this.authorizationEndpointURI = authorizationEndpointURI;
-		this.tokenEndpointURI = tokenEndpointURI;
-		this.checkIDEndpointURI = checkIDEndpointURI;
-		this.clientId = clientId;
-		this.scope = SCOPE + " " + scope;
-
-		KeyPairGenerator keyPairGenerator;
-		try {
-			keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-			keyPairGenerator.initialize(KEY_SIZE);
-			KeyPair keyPair = keyPairGenerator.generateKeyPair();
-			publicKey = keyPair.getPublic();
-			privateKey = keyPair.getPrivate();
-
-			signer = Signature.getInstance(SIGNING_ALGORITHM);
-		} catch (GeneralSecurityException generalSecurityException) {
-			// generalSecurityException.printStackTrace();
-			throw new IllegalStateException(generalSecurityException);
-		}
+	protected OpenIdConnectAuthenticationFilter() {
+		super("/j_spring_openid_connect_security_check");
 	}
 
 	/*
@@ -226,7 +204,24 @@ public class OpenIDConnectAuthenticationFilter extends
 			throw new IllegalArgumentException(
 					"A Client Secret must be supplied");
 		}
+		
+		KeyPairGenerator keyPairGenerator;
+		try {
+			keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+			keyPairGenerator.initialize(KEY_SIZE);
+			KeyPair keyPair = keyPairGenerator.generateKeyPair();
+			publicKey = keyPair.getPublic();
+			privateKey = keyPair.getPrivate();
+			
+			signer = Signature.getInstance(SIGNING_ALGORITHM);
+		} catch (GeneralSecurityException generalSecurityException) {
+			// generalSecurityException.printStackTrace();
+			throw new IllegalStateException(generalSecurityException);
+		}
+		
+		setScope(SCOPE + scope);
 	}
+
 
 	/*
 	 * (non-Javadoc)
@@ -271,11 +266,12 @@ public class OpenIDConnectAuthenticationFilter extends
 
 		} else {
 
-			// Handle Authorization Endpoint redirect response
+			// Determine if the Authorization Endpoint issued an
+			// authorization grant
 
-			String code = request.getParameter("code");
+			String authorizationGrant = request.getParameter("code");
 
-			if (code != null) {
+			if (authorizationGrant != null) {
 
 				// Handle Token Endpoint interaction
 
@@ -292,7 +288,8 @@ public class OpenIDConnectAuthenticationFilter extends
 
 				MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
 				form.add("grant_type", "authorization_code");
-				form.add("code", code);
+				form.add("code", authorizationGrant);
+				//form.add("redirect_uri", buildRedirectURI(request));
 				form.add("redirect_uri", Utility.findBaseUrl(request));
 
 				String jsonString = null;
@@ -357,9 +354,8 @@ public class OpenIDConnectAuthenticationFilter extends
 					String nonce = jsonRoot.getAsJsonObject().get("nonce")
 							.getAsString();
 
-					// The nonce in the returned ID Token is compared to the
-					// signed session cookie to detect ID Token replay by third
-					// parties.
+					// Compare returned ID Token to signed session cookie
+					// to detect ID Token replay by third parties.
 
 					Cookie nonceSignatureCookie = WebUtils.getCookie(request,
 							NONCE_SIGNATURE_COOKIE_NAME);
@@ -398,7 +394,7 @@ public class OpenIDConnectAuthenticationFilter extends
 					// Create an Authentication object for the token, and
 					// return.
 
-					OpenIDConnectAuthenticationToken token = new OpenIDConnectAuthenticationToken(
+					OpenIdConnectAuthenticationToken token = new OpenIdConnectAuthenticationToken(
 							user_id);
 
 					Authentication authentication = this
@@ -410,7 +406,7 @@ public class OpenIDConnectAuthenticationFilter extends
 
 			} else {
 
-				// Handle an Authorization request
+				// Initiate an Authorization request
 
 				Map<String, String> urlVariables = new HashMap<String, String>();
 
@@ -419,6 +415,7 @@ public class OpenIDConnectAuthenticationFilter extends
 				urlVariables.put("response_type", "code");
 				urlVariables.put("client_id", clientId);
 				urlVariables.put("scope", scope);
+				//urlVariables.put("redirect_uri", buildRedirectURI(request));
 				urlVariables.put("redirect_uri", Utility.findBaseUrl(request));
 
 				// Create a string value used to associate a user agent session
@@ -444,6 +441,75 @@ public class OpenIDConnectAuthenticationFilter extends
 						urlVariables));
 			}
 		}
+		
 		return null;
+	}
+	
+    /**
+     * Builds the redirect_uri that will be sent to the Authorization Endpoint.
+     * By default returns the URL of the current request.
+     *
+     * @param request the current request which is being processed by this filter
+     * @return The redirect_uri.
+     */
+    @SuppressWarnings("unused")
+	private String buildRedirectURI(HttpServletRequest request) {
+    	
+    	boolean isFirst = true;
+        
+    	StringBuffer sb = request.getRequestURL();
+        
+        for (Enumeration<?> e = request.getParameterNames() ; e.hasMoreElements(); ) {
+        
+            String name = (String) e.nextElement();
+            // Assume for simplicity that there is only one value
+            String value = request.getParameter(name);
+
+            if (value == null) {
+                continue;
+            }
+
+            if (isFirst) {
+                sb.append("?");
+                isFirst = false;
+            }
+            
+            sb.append(name).append("=").append(value);
+
+            if (e.hasMoreElements()) {
+                sb.append("&");
+            }
+        }
+
+        return sb.toString();
+    }	
+	
+
+	public void setAuthorizationEndpointURI(String authorizationEndpointURI) {
+		this.authorizationEndpointURI = authorizationEndpointURI;
+	}
+	
+	public void setCheckIDEndpointURI(String checkIDEndpointURI) {
+		this.checkIDEndpointURI = checkIDEndpointURI;
+	}
+	
+	public void setClientId(String clientId) {
+		this.clientId = clientId;
+	}
+	
+	public void setClientSecret(String clientSecret) {
+		this.clientSecret = clientSecret;
+	}
+
+	public void setErrorRedirectURI(String errorRedirectURI) {
+		this.errorRedirectURI = errorRedirectURI;
+	}
+
+	public void setScope(String scope) {
+		this.scope = scope;
+	}
+
+	public void setTokenEndpointURI(String tokenEndpointURI) {
+		this.tokenEndpointURI = tokenEndpointURI;
 	}
 }

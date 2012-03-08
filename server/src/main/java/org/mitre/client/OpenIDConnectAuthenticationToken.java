@@ -12,7 +12,7 @@ import org.springframework.security.core.SpringSecurityCoreVersion;
  * @author nemonik
  *
  */
-public class OpenIDConnectAuthenticationToken extends
+public class OpenIdConnectAuthenticationToken extends
 		AbstractAuthenticationToken {
 
 	private final String userId;
@@ -22,7 +22,7 @@ public class OpenIDConnectAuthenticationToken extends
 	/**
 	 * @param userId
 	 */
-	public OpenIDConnectAuthenticationToken(String userId) {
+	public OpenIdConnectAuthenticationToken(String userId) {
 		super(new ArrayList<GrantedAuthority>(0));
 		this.userId = userId;
 		setAuthenticated(true);
