@@ -4,17 +4,17 @@
 	xmlns:beans="http://www.springframework.org/schema/beans"
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:oauth="http://www.springframework.org/schema/security/oauth2"
 	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
 		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+		http://www.springframework.org/schema/security/oauth2 http://www.springframework.org/schema/security/spring-security-oauth2.xsd">
 
 	<!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
 	
 	<!-- Enables the Spring MVC @Controller programming model -->
 	<annotation-driven />
-
-	<security:global-method-security pre-post-annotations="enabled" proxy-target-class="true"/>
 
 	<!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources directory -->
 	<resources mapping="/resources/**" location="/resources/" />
@@ -41,5 +41,12 @@
 <!-- 	<beans:bean id="jsonIdTokenView" class="org.mitre.openid.connect.view.JSONIdTokenView"/> -->
 	
 	<beans:import resource="controllers.xml" />
+
+	<!-- SECOAUTH Authorization Server, with our custom token granter plugged in -->
+	<oauth:authorization-server client-details-service-ref="defaultOAuth2ClientDetailsEntityService" 
+		token-services-ref="defaultOAuth2ProviderTokenService" token-granter-ref="connectAuthCodeTokenGranter"
+		authorization-endpoint-url="/openidconnect/auth">
+		<oauth:authorization-code authorization-code-services-ref="authCodeServices"/>
+	</oauth:authorization-server>
 	
 </beans:beans>

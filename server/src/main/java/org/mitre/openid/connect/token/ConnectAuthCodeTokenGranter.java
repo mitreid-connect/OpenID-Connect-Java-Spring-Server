@@ -9,7 +9,6 @@ import java.util.Set;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.service.impl.DefaultOAuth2ProviderTokenService;
 import org.mitre.openid.connect.model.IdToken;
-import org.mitre.util.Utility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
@@ -22,8 +21,8 @@ import org.springframework.security.oauth2.provider.ClientCredentialsChecker;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.TokenGranter;
+import org.springframework.security.oauth2.provider.code.AuthorizationCodeServices;
 import org.springframework.security.oauth2.provider.code.AuthorizationRequestHolder;
-import org.springframework.security.oauth2.provider.code.JdbcAuthorizationCodeServices;
 import org.springframework.stereotype.Component;
 
 /**
@@ -42,7 +41,7 @@ public class ConnectAuthCodeTokenGranter implements TokenGranter {
 	private static final String GRANT_TYPE = "authorization_code";
 	
 	@Autowired
-	private JdbcAuthorizationCodeServices authorizationCodeServices;
+	private AuthorizationCodeServices authorizationCodeServices;
 
 	@Autowired
 	private ClientCredentialsChecker clientCredentialsChecker;
@@ -70,7 +69,7 @@ public class ConnectAuthCodeTokenGranter implements TokenGranter {
 	 */
 	public ConnectAuthCodeTokenGranter(
 			DefaultOAuth2ProviderTokenService tokenServices,
-			JdbcAuthorizationCodeServices authorizationCodeServices,
+			AuthorizationCodeServices authorizationCodeServices,
 			ClientDetailsService clientDetailsService) {
 		
 		setTokenServices(tokenServices);
@@ -156,14 +155,14 @@ public class ConnectAuthCodeTokenGranter implements TokenGranter {
 	/**
 	 * @return the authorizationCodeServices
 	 */
-	public JdbcAuthorizationCodeServices getAuthorizationCodeServices() {
+	public AuthorizationCodeServices getAuthorizationCodeServices() {
 		return authorizationCodeServices;
 	}
 
 	/**
 	 * @param authorizationCodeServices the authorizationCodeServices to set
 	 */
-	public void setAuthorizationCodeServices(JdbcAuthorizationCodeServices authorizationCodeServices) {
+	public void setAuthorizationCodeServices(AuthorizationCodeServices authorizationCodeServices) {
 		this.authorizationCodeServices = authorizationCodeServices;
 	}
 
