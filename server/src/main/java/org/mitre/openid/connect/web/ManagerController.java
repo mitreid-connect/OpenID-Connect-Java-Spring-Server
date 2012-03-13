@@ -15,4 +15,10 @@ public class ManagerController {
     public String showHomePage() {
         return "home";
     }
+
+    @RequestMapping("/admin/manage/clients")
+    public String showClientManager() {
+        return "admin/manage/clients";
+    }
+
 }

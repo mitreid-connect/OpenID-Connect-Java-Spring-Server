@@ -2,7 +2,7 @@
         <div class="well">
             <h5>Administrative</h5>
             <ul>
-                <li><a href="#">Manage Clients</a></li>
+                <li><a href="admin/manage/clients">Manage Clients</a></li>
                 <li><a href="#">White Lists</a></li>
                 <li><a href="#">Black Lists</a></li>
             </ul>
