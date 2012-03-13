@@ -15,6 +15,9 @@
 
     <!-- Le javascript -->
     <script src="http://code.jquery.com/jquery-1.7.min.js"></script>
+    <script src="resources/js/app.js"></script>
+    <script src="resources/js/tmpl.js"></script>
+
     <script src="resources/bootstrap/js/bootstrap-modal.js"></script>
     <script src="resources/bootstrap/js/bootstrap-alerts.js"></script>
     <script src="resources/bootstrap/js/bootstrap-twipsy.js"></script>
@@ -24,9 +27,6 @@
     <script src="resources/bootstrap/js/bootstrap-tabs.js"></script>
     <script src="resources/bootstrap/js/bootstrap-buttons.js"></script>
 
-    <script>$(function () {
-
-    })</script>
 
     <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
     <!--[if lt IE 9]>
