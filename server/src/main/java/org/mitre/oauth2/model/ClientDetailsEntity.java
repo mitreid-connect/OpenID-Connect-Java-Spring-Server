@@ -4,7 +4,6 @@
 package org.mitre.oauth2.model;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Basic;

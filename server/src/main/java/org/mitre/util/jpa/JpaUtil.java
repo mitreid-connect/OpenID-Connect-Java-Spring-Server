@@ -1,10 +1,10 @@
 package org.mitre.util.jpa;
 
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
 
 import javax.persistence.EntityManager;
-import java.util.List;
+
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 /**
  * @author mfranklin

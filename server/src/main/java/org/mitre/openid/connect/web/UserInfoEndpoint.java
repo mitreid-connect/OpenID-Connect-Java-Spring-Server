@@ -1,8 +1,5 @@
 package org.mitre.openid.connect.web;
 
-import org.mitre.jwt.model.Jwt;
-import org.mitre.jwt.model.JwtClaims;
-import org.mitre.jwt.model.JwtHeader;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;

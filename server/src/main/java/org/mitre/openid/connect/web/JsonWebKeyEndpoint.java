@@ -1,8 +1,6 @@
 package org.mitre.openid.connect.web;
 
 import java.security.PublicKey;
-import java.security.interfaces.ECPublicKey;
-import java.security.interfaces.RSAPublicKey;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

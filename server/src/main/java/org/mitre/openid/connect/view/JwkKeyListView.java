@@ -7,7 +7,6 @@ import java.io.Writer;
 import java.lang.reflect.Type;
 import java.math.BigInteger;
 import java.security.PublicKey;
-import java.security.interfaces.DSAPublicKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Map;
@@ -81,6 +80,7 @@ public class JwkKeyListView extends AbstractView {
 					return o;
 				} else if (src instanceof ECPublicKey) {
 					
+					@SuppressWarnings("unused")
 					ECPublicKey ec = (ECPublicKey)src;
 
 					// TODO: serialize the EC

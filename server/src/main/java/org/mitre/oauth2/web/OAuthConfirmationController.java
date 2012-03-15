@@ -23,6 +23,7 @@ import org.springframework.web.servlet.ModelAndView;
 @SessionAttributes(types = AuthorizationRequest.class)
 public class OAuthConfirmationController {
 
+	@Autowired
 	private ClientDetailsEntityService clientService;
 	
 	public OAuthConfirmationController() {
@@ -61,7 +62,6 @@ public class OAuthConfirmationController {
 	/**
      * @param clientService the clientService to set
      */
-    @Autowired
     public void setClientService(ClientDetailsEntityService clientService) {
     	this.clientService = clientService;
     }

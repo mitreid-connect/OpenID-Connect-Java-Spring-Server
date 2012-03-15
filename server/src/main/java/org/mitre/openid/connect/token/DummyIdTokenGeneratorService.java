@@ -4,7 +4,6 @@ import java.util.Date;
 
 import org.mitre.openid.connect.model.IdToken;
 import org.mitre.openid.connect.model.IdTokenClaims;
-import org.mitre.util.Utility;
 import org.springframework.stereotype.Service;
 
 /**

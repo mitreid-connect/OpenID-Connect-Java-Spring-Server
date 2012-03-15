@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
@@ -325,6 +326,12 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		public OAuth2TokenEntityService finish() {
 			return instance;
 		}
+	}
+
+	@Override
+	public OAuth2AccessToken readAccessToken(String accessToken) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

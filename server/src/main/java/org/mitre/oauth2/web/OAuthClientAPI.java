@@ -1,7 +1,6 @@
 package org.mitre.oauth2.web;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 
 import org.mitre.oauth2.exception.ClientNotFoundException;
@@ -13,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.GrantedAuthorityImpl;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,7 +21,6 @@ import org.springframework.web.servlet.ModelAndView;
 import com.google.common.base.Function;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 @Controller
@@ -74,7 +72,7 @@ public class OAuthClientAPI {
     			Iterables.transform(spaceDelimited.split(authorities), new Function<String, GrantedAuthority>() {
     				@Override
     				public GrantedAuthority apply(String auth) {
-    					return new GrantedAuthorityImpl(auth);
+    					return new SimpleGrantedAuthority(auth);
     				}
     			}));
     	logger.info("apiAddClient - printing client details");
@@ -154,7 +152,7 @@ public class OAuthClientAPI {
     			Iterables.transform(spaceDelimited.split(authorities), new Function<String, GrantedAuthority>() {
     				@Override
     				public GrantedAuthority apply(String auth) {
-    					return new GrantedAuthorityImpl(auth);
+    					return new SimpleGrantedAuthority(auth);
     				}
     			}));
     	Set<String> resourceIdSet = Sets.newHashSet(spaceDelimited.split(resourceIds));

@@ -1,7 +1,6 @@
 package org.mitre.oauth2.service.impl;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 
 import org.mitre.oauth2.model.ClientDetailsEntity;

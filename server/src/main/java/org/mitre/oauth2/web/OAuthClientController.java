@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.GrantedAuthorityImpl;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -106,7 +106,7 @@ public class OAuthClientController {
 	public ModelAndView addClientPage(ModelAndView modelAndView) {
 		
 		Set<GrantedAuthority> auth = Sets.newHashSet();
-		auth.add(new GrantedAuthorityImpl("ROLE_CLIENT"));
+		auth.add(new SimpleGrantedAuthority("ROLE_CLIENT"));
 		
 		ClientDetailsEntity client = ClientDetailsEntity.makeBuilder()
 				.setScope(Sets.newHashSet("scope"))

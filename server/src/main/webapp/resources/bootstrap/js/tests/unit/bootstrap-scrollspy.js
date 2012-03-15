@@ -25,7 +25,7 @@ $(function () {
           + '</div>'
           , $topbar = $(topbarHTML).topbar()
 
-        ok(topbar.find('.active', true)
+        ok(topbar.find('.active', true))
       })
 
 })
