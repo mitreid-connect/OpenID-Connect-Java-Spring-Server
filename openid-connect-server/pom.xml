@@ -13,6 +13,11 @@
     </parent>
     <dependencies>
 		<dependency>
+			<groupId>org.springframework.security.oauth</groupId>
+			<version>1.0.0.BUILD-SNAPSHOT</version>
+			<artifactId>spring-security-oauth2</artifactId>
+		</dependency>  
+		<dependency>
 			<groupId>org.mitre</groupId>
 			<artifactId>openid-connect-common</artifactId>
 			<version>0.1</version>

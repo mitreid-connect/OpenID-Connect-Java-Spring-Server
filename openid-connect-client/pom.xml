@@ -15,5 +15,23 @@
 		<artifactId>openid-connect-common</artifactId>
 		<version>0.1</version>
 	</dependency>
+		<dependency>
+			<groupId>org.springframework.security.oauth</groupId>
+			<version>1.0.0.BUILD-SNAPSHOT</version>
+			<artifactId>spring-security-oauth2</artifactId>
+		</dependency>  
   </dependencies>
+  <packaging>jar</packaging>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${java-version}</source>
+                    <target>${java-version}</target>
+                </configuration>
+            </plugin>
+	</plugins>
+    </build>
 </project>

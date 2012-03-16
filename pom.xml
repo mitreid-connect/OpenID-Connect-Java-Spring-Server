@@ -34,11 +34,6 @@
     <url></url>
     
     <dependencies>
-		<dependency>
-			<groupId>org.springframework.security.oauth</groupId>
-			<version>1.0.0.BUILD-SNAPSHOT</version>
-			<artifactId>spring-security-oauth2</artifactId>
-		</dependency>
         <!-- Spring -->
         <dependency>
             <groupId>org.springframework</groupId>
