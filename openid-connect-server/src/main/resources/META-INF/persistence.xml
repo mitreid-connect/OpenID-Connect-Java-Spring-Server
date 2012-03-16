@@ -5,6 +5,6 @@
              version="2.0">
     <persistence-unit name="openidPersistenceUnit" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-        <!-- <class>org.mitre.pushee.hub.model.Subscriber</class> -->
+        <class>org.mitre.oauth2.model.ClientDetailsEntity</class>
     </persistence-unit>
 </persistence>
