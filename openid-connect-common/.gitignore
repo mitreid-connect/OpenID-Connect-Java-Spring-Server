@@ -1,0 +1,5 @@
+/local-values.conf
+/target
+*~
+connect.h2.db
+connect.trace.db
