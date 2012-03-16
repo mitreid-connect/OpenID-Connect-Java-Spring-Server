@@ -1,4 +1,4 @@
-package org.mitre.client;
+package org.mitre.openid.connect.client;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;

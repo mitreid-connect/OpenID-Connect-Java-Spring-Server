@@ -1,4 +1,4 @@
-package org.mitre.client;
+package org.mitre.openid.connect.client;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.security.authentication.AuthenticationProvider;
