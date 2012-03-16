@@ -31,15 +31,6 @@
 			<bean class="org.mitre.oauth2.service.impl.DefaultOAuth2ClientDetailsEntityService"/>
 		</constructor-arg>
 	</bean>	
-		
-	<!-- Authorization Code Service, used by TokenGranter -->
-<!-- 	<bean id="jdbcAuthCodeServices" class="org.springframework.security.oauth2.provider.code.JdbcAuthorizationCodeServices"> -->
-<!-- 		<constructor-arg> -->
-<!-- 			<ref bean="dataSource"/> -->
-<!-- 		</constructor-arg> -->
-<!-- 	</bean> -->
-
-	
 
 	<bean id="authCodeServices" class="org.springframework.security.oauth2.provider.code.InMemoryAuthorizationCodeServices"/>
 
