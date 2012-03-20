@@ -35,7 +35,7 @@ public class OAuthConfirmationController {
 	}
 	
 	@PreAuthorize("hasRole('ROLE_USER')")
-	@RequestMapping("/oauth/user/approve")
+	@RequestMapping("/oauth/confirm_access")
 	public ModelAndView confimAccess(@ModelAttribute AuthorizationRequest clientAuth, 
 			ModelAndView modelAndView) {
 		

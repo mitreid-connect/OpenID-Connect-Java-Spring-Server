@@ -19,13 +19,28 @@
 		
 	<import resource="data-context.xml" />	
 
+
+
 	<security:global-method-security pre-post-annotations="enabled" proxy-target-class="true" authentication-manager-ref="springSecurityAuthenticationManager"/>
+
 	<security:http use-expressions="true" auto-config="true" authentication-manager-ref="springSecurityAuthenticationManager">
-<!-- 		<security:intercept-url pattern="/oauth/user/**" access="hasRole('ROLE_USER')"/> -->
-		<security:intercept-url pattern="/*" access="permitAll"/>
-		
+ 		<security:intercept-url pattern="/oauth/authorize**" access="hasRole('ROLE_USER')"/> 
+<!--  		<security:intercept-url pattern="/openidconnect/token**" access="hasRole('ROLE_USER')"/>  -->
+		<security:intercept-url pattern="/**" access="permitAll"/>
 	</security:http>
-		
+
+<!-- 	<security:http pattern="/oauth/**" use-expressions="true" auto-config="true" authentication-manager-ref="springSecurityAuthenticationManager"> -->
+<!--  		<security:intercept-url pattern="/oauth/**" access="hasRole('ROLE_USER')"/>	 -->
+<!-- 	</security:http> -->
+
+<!-- 	<security:http pattern="/resources/**" security="none" authentication-manager-ref="springSecurityAuthenticationManager"/> -->
+
+<!-- 	<security:http pattern="/oauth/authorize" security="none" authentication-manager-ref="springSecurityAuthenticationManager"/> -->
+	
+<!-- 	<security:http pattern="/openidconnect/auth" security="none" authentication-manager-ref="springSecurityAuthenticationManager"/> -->
+
+<!-- 	<security:http pattern="/**" security="none" authentication-manager-ref="springSecurityAuthenticationManager"/> -->
+
 	<bean id="clientCredentialsChecker" class="org.springframework.security.oauth2.provider.ClientCredentialsChecker">
 		<constructor-arg>
 			<bean class="org.mitre.oauth2.service.impl.DefaultOAuth2ClientDetailsEntityService"/>
