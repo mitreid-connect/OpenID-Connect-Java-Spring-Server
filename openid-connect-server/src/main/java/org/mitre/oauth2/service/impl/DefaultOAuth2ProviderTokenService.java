@@ -336,4 +336,22 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		return null;
 	}
 
+	/* (non-Javadoc)
+     * @see org.mitre.oauth2.service.OAuth2TokenEntityService#saveAccessToken(org.mitre.oauth2.model.OAuth2AccessTokenEntity)
+     */
+    @Override
+    public OAuth2AccessTokenEntity saveAccessToken(OAuth2AccessTokenEntity accessToken) {
+	    return tokenRepository.saveAccessToken(accessToken);	    
+    }
+
+	/* (non-Javadoc)
+     * @see org.mitre.oauth2.service.OAuth2TokenEntityService#saveRefreshToken(org.mitre.oauth2.model.OAuth2RefreshTokenEntity)
+     */
+    @Override
+    public OAuth2RefreshTokenEntity saveRefreshToken(OAuth2RefreshTokenEntity refreshToken) {
+    	return tokenRepository.saveRefreshToken(refreshToken);
+    }
+	
+	
+
 }

@@ -82,9 +82,14 @@ public class IdToken extends Jwt {
 	 * 
 	 */
 	public static IdToken parse(String s) {
-		
+
 		// TODO: this code was copied nearly verbatim from Jwt.parse, and
 		//       we should figure out how to re-use and abstract bits, likely
+		
+		// null string is a null token
+		if (s == null) {
+			return null;
+		}
 		
 		// split on the dots
 		List<String> parts = Lists.newArrayList(Splitter.on(".").split(s));

@@ -4,6 +4,7 @@
 package org.mitre.oauth2.model;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -44,8 +45,8 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 	@NamedQuery(name = "OAuth2AccessTokenEntity.getByClient", query = "select a from OAuth2AccessTokenEntity a where a.client = :client"),
 	@NamedQuery(name = "OAuth2AccessTokenEntity.getExpired", query = "select a from OAuth2AccessTokenEntity a where a.expiration is not null and a.expiration < current_timestamp")
 })
-@JsonSerialize(using = OAuth2AccessTokenSerializer.class)
-@JsonDeserialize(using = OAuth2AccessTokenDeserializer.class)
+//@JsonSerialize(using = OAuth2AccessTokenSerializer.class)
+//@JsonDeserialize(using = OAuth2AccessTokenDeserializer.class)
 public class OAuth2AccessTokenEntity extends OAuth2AccessToken {
 
 	public static String ID_TOKEN = "id_token";
@@ -67,7 +68,7 @@ public class OAuth2AccessTokenEntity extends OAuth2AccessToken {
 		// we ignore the "value" field in the superclass because we can't cleanly override it
 		super(null);
 		setJwt(new Jwt()); // give us a blank jwt to work with at least
-		setIdToken(new IdToken()); // and a blank IdToken
+		//setIdToken(new IdToken()); // ID Tokens aren't there unless we need them
 	}
 	
 	/**
@@ -76,7 +77,7 @@ public class OAuth2AccessTokenEntity extends OAuth2AccessToken {
 	@Override
 	@Transient
 	public Map<String, Object> getAdditionalInformation() {
-		Map<String, Object> map = super.getAdditionalInformation();
+		Map<String, Object> map = new HashMap<String, Object>(); //super.getAdditionalInformation();
 		map.put(ID_TOKEN, getIdTokenString());
 		return map;
 	}
@@ -265,7 +266,11 @@ public class OAuth2AccessTokenEntity extends OAuth2AccessToken {
 	 */
 	@Basic
 	public String getIdTokenString() {
-		return idToken.toString();
+		if (idToken != null) {
+			return idToken.toString();
+		} else {
+			return null;
+		}
 	}
 
 	/**

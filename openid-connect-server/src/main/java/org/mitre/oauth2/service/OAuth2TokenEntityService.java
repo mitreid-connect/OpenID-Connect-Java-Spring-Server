@@ -23,4 +23,9 @@ public interface OAuth2TokenEntityService extends AuthorizationServerTokenServic
 	public List<OAuth2RefreshTokenEntity> getRefreshTokensForClient(ClientDetailsEntity client);
 
 	public void clearExpiredTokens();
+	
+	public OAuth2AccessTokenEntity saveAccessToken(OAuth2AccessTokenEntity accessToken);
+	
+	public OAuth2RefreshTokenEntity saveRefreshToken(OAuth2RefreshTokenEntity refreshToken);
+	
 }

@@ -124,6 +124,11 @@ public class Jwt {
 	 */
 	public static Jwt parse(String s) {
 		
+		// null string is a null token
+		if (s == null) {
+			return null;
+		}
+		
 		// split on the dots
 		List<String> parts = Lists.newArrayList(Splitter.on(".").split(s));
 		

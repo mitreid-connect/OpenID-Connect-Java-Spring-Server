@@ -3,6 +3,7 @@
  */
 package org.mitre.openid.connect.token;
 
+import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
@@ -47,7 +48,7 @@ public class ConnectAuthCodeTokenGranter implements TokenGranter {
 	@Autowired
 	private ClientCredentialsChecker clientCredentialsChecker;
 
-	
+	private String issuer;
 
 	//TODO: Do we need to modify/update this?	
 	@Autowired
@@ -55,7 +56,6 @@ public class ConnectAuthCodeTokenGranter implements TokenGranter {
 	
 	@Autowired
 	private IdTokenGeneratorService idTokenService;
-	
 	
 	/**
 	 * Default empty constructor
@@ -137,7 +137,15 @@ public class ConnectAuthCodeTokenGranter implements TokenGranter {
 		//TODO: should not need cast
 		OAuth2AccessTokenEntity token = (OAuth2AccessTokenEntity) tokenServices.createAccessToken(new OAuth2Authentication(authorizationRequest, userAuth));
 		
-		//set audience, auth time, issuer
+		token.getJwt().getClaims().setAudience(clientId);
+
+		//TODO: need to get base url, but Utility.findBaseUrl() needs access to a request object, which we don't have
+		//See github issue #1
+		token.getJwt().getClaims().setIssuer(issuer);
+
+		token.getJwt().getClaims().setIssuedAt(new Date());
+		// handle expiration
+		//token.getJwt().getClaims().setExpiration(token.getExpiration());
 		
 		/**
 		 * Authorization request scope MUST include "openid", but access token request 
@@ -146,15 +154,19 @@ public class ConnectAuthCodeTokenGranter implements TokenGranter {
 		 */
 		if (authorizationRequest.getScope().contains("openid")) {
 
-			String userId = parameters.get("user_id");
+			String userId = userAuth.getName();
 			
 			//TODO: need to get base url, but Utility.findBaseUrl() needs access to a request object, which we don't have
 			//See github issue #1
-			IdToken idToken = idTokenService.generateIdToken(userId, "http://id.mitre.org/openidconnect");
+			IdToken idToken = idTokenService.generateIdToken(userId, issuer);
 			idToken.getClaims().setAudience(clientId);
+			idToken.getClaims().setIssuedAt(new Date());
+			// TODO: expiration? other fields?
 			
 			token.setIdToken(idToken);
-		}		
+		}
+
+		tokenServices.saveAccessToken(token);
 		
 		return token;
 	}
@@ -194,5 +206,19 @@ public class ConnectAuthCodeTokenGranter implements TokenGranter {
 	public void setTokenServices(OAuth2TokenEntityService tokenServices) {
 		this.tokenServices = tokenServices;
 	}
+
+	/**
+     * @return the issuer
+     */
+    public String getIssuer() {
+    	return issuer;
+    }
+
+	/**
+     * @param issuer the issuer to set
+     */
+    public void setIssuer(String issuer) {
+    	this.issuer = issuer;
+    }
 	
 }

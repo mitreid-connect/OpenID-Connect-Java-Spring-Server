@@ -121,7 +121,11 @@ public class IdTokenClaims extends JwtClaims {
 		}
 	}
 	
-
+	//
+	// FIXME: 
+	// This doesn't handle loading JsonNull values from the claims set, and this is endemic to the whole claims structure!!!!
+	// 
+	
 	/**
 	 * Load this IdToken from a JSON Object
      */

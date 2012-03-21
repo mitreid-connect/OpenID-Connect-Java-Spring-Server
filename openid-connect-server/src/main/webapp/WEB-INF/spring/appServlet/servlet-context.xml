@@ -53,4 +53,8 @@
 		<oauth:authorization-code authorization-code-services-ref="authCodeServices"/>
 	</oauth:authorization-server>
 	
+	<beans:bean id="connectAuthCodeTokenGranter" class="org.mitre.openid.connect.token.ConnectAuthCodeTokenGranter">
+		<beans:property name="issuer" value="http://localhost/" />
+	</beans:bean>
+	
 </beans:beans>
