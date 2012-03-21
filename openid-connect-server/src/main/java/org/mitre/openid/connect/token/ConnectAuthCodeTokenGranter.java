@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
+import org.mitre.oauth2.service.OAuth2TokenEntityService;
 import org.mitre.oauth2.service.impl.DefaultOAuth2ProviderTokenService;
 import org.mitre.openid.connect.model.IdToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,9 +47,11 @@ public class ConnectAuthCodeTokenGranter implements TokenGranter {
 	@Autowired
 	private ClientCredentialsChecker clientCredentialsChecker;
 
+	
+
 	//TODO: Do we need to modify/update this?	
 	@Autowired
-	private DefaultOAuth2ProviderTokenService tokenServices;
+	private OAuth2TokenEntityService tokenServices;
 	
 	@Autowired
 	private IdTokenGeneratorService idTokenService;
@@ -131,7 +134,10 @@ public class ConnectAuthCodeTokenGranter implements TokenGranter {
 
 		Authentication userAuth = storedAuth.getUserAuthentication();
 		
-		OAuth2AccessTokenEntity token = tokenServices.createAccessToken(new OAuth2Authentication(authorizationRequest, userAuth));
+		//TODO: should not need cast
+		OAuth2AccessTokenEntity token = (OAuth2AccessTokenEntity) tokenServices.createAccessToken(new OAuth2Authentication(authorizationRequest, userAuth));
+		
+		//set audience, auth time, issuer
 		
 		/**
 		 * Authorization request scope MUST include "openid", but access token request 
@@ -145,6 +151,7 @@ public class ConnectAuthCodeTokenGranter implements TokenGranter {
 			//TODO: need to get base url, but Utility.findBaseUrl() needs access to a request object, which we don't have
 			//See github issue #1
 			IdToken idToken = idTokenService.generateIdToken(userId, "http://id.mitre.org/openidconnect");
+			idToken.getClaims().setAudience(clientId);
 			
 			token.setIdToken(idToken);
 		}		
@@ -180,20 +187,12 @@ public class ConnectAuthCodeTokenGranter implements TokenGranter {
 		this.clientCredentialsChecker = clientCredentialsChecker;
 	}
 
-	/**
-	 * @return the tokenServices
-	 */
-	public DefaultOAuth2ProviderTokenService getTokenServices() {
+	public OAuth2TokenEntityService getTokenServices() {
 		return tokenServices;
 	}
 
-	/**
-	 * @param tokenServices the tokenServices to set
-	 */
-	public void setTokenServices(DefaultOAuth2ProviderTokenService tokenServices) {
+	public void setTokenServices(OAuth2TokenEntityService tokenServices) {
 		this.tokenServices = tokenServices;
 	}
-
-	
 	
 }

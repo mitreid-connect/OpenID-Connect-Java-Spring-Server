@@ -27,6 +27,7 @@ import org.springframework.security.oauth2.common.exceptions.InvalidTokenExcepti
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Sets;
 
@@ -36,6 +37,7 @@ import com.google.common.collect.Sets;
  * 
  */
 @Service
+@Transactional
 public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityService {
 	
 	private static Logger logger = LoggerFactory.getLogger(DefaultOAuth2ProviderTokenService.class);
@@ -65,7 +67,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 				throw new InvalidClientException("Client not found: " + clientAuth.getClientId());
 			}
 			
-			OAuth2AccessTokenEntity token = accessTokenFactory.createNewAccessToken();
+			OAuth2AccessTokenEntity token = new OAuth2AccessTokenEntity();//accessTokenFactory.createNewAccessToken();
 		    
 		    // attach the client
 	    	token.setClient(client);

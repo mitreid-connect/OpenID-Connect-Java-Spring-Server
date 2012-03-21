@@ -6,5 +6,14 @@
     <persistence-unit name="openidPersistenceUnit" transaction-type="RESOURCE_LOCAL">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <class>org.mitre.oauth2.model.ClientDetailsEntity</class>
+        <class>org.mitre.oauth2.model.OAuth2AccessTokenEntity</class>
+        <class>org.mitre.oauth2.model.OAuth2RefreshTokenEntity</class>
+        <class>org.mitre.openid.connect.model.Address</class>
+        <class>org.mitre.openid.connect.model.ApprovedSite</class>
+        <class>org.mitre.openid.connect.model.Event</class>
+        <class>org.mitre.openid.connect.model.IdToken</class>
+        <class>org.mitre.openid.connect.model.IdTokenClaims</class>
+        <class>org.mitre.openid.connect.model.UserInfo</class>
+        <class>org.mitre.openid.connect.model.WhitelistedSite</class>
     </persistence-unit>
 </persistence>

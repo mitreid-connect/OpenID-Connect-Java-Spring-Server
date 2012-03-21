@@ -19,27 +19,43 @@
 		
 	<import resource="data-context.xml" />	
 
-
-
 	<security:global-method-security pre-post-annotations="enabled" proxy-target-class="true" authentication-manager-ref="springSecurityAuthenticationManager"/>
 
-	<security:http use-expressions="true" auto-config="true" authentication-manager-ref="springSecurityAuthenticationManager">
- 		<security:intercept-url pattern="/oauth/authorize**" access="hasRole('ROLE_USER')"/> 
-<!--  		<security:intercept-url pattern="/openidconnect/token**" access="hasRole('ROLE_USER')"/>  -->
+	<http pattern="/oauth/token" create-session="stateless" authentication-manager-ref="clientAuthenticationManager" 
+		xmlns="http://www.springframework.org/schema/security">
+		<intercept-url pattern="/oauth/token" access="IS_AUTHENTICATED_FULLY" />
+		<anonymous enabled="false" />
+		<http-basic entry-point-ref="oauthAuthenticationEntryPoint" />
+		<!-- include this only if you need to authenticate clients via request parameters -->
+		<custom-filter ref="clientCredentialsTokenEndpointFilter" before="BASIC_AUTH_FILTER" />
+		<access-denied-handler ref="oauthAccessDeniedHandler" />
+	</http>
+
+	<security:http use-expressions="true" auto-config="true" pattern="/oauth/authorize" authentication-manager-ref="springSecurityAuthenticationManager">
+ 		<security:intercept-url pattern="/oauth/authorize" access="hasRole('ROLE_USER')"/> 
+ 		<!-- intercept-url with access=permitall means a permissive (lets everything through) filter will be applied -->
+	</security:http>
+
+	<!-- means no filter will be applied -->
+	<security:http auto-config="true" pattern="/openidconnect/token" authentication-manager-ref="springSecurityAuthenticationManager" security="none"/>
+	
+	<security:http auto-config="true" use-expressions="true" authentication-manager-ref="springSecurityAuthenticationManager">
 		<security:intercept-url pattern="/**" access="permitAll"/>
 	</security:http>
 
-<!-- 	<security:http pattern="/oauth/**" use-expressions="true" auto-config="true" authentication-manager-ref="springSecurityAuthenticationManager"> -->
-<!--  		<security:intercept-url pattern="/oauth/**" access="hasRole('ROLE_USER')"/>	 -->
-<!-- 	</security:http> -->
+	<bean id="oauthAuthenticationEntryPoint" class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint">
+		<property name="realmName" value="openidconnect" />
+	</bean>
 
-<!-- 	<security:http pattern="/resources/**" security="none" authentication-manager-ref="springSecurityAuthenticationManager"/> -->
+	<bean id="oauthAccessDeniedHandler" class="org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler" />
 
-<!-- 	<security:http pattern="/oauth/authorize" security="none" authentication-manager-ref="springSecurityAuthenticationManager"/> -->
-	
-<!-- 	<security:http pattern="/openidconnect/auth" security="none" authentication-manager-ref="springSecurityAuthenticationManager"/> -->
+	<bean id="clientCredentialsTokenEndpointFilter" class="org.springframework.security.oauth2.provider.client.ClientCredentialsTokenEndpointFilter">
+		<property name="authenticationManager" ref="clientAuthenticationManager" />
+	</bean>
 
-<!-- 	<security:http pattern="/**" security="none" authentication-manager-ref="springSecurityAuthenticationManager"/> -->
+	<authentication-manager id="clientAuthenticationManager" xmlns="http://www.springframework.org/schema/security">
+		<authentication-provider user-service-ref="clientUserDetailsService" />
+	</authentication-manager>
 
 	<bean id="clientCredentialsChecker" class="org.springframework.security.oauth2.provider.ClientCredentialsChecker">
 		<constructor-arg>
@@ -49,14 +65,14 @@
 
 	<bean id="authCodeServices" class="org.springframework.security.oauth2.provider.code.InMemoryAuthorizationCodeServices"/>
 
-	<security:authentication-manager id="springSecurityAuthenticationManager">
+	<security:authentication-manager alias="springSecurityAuthenticationManager">
 		<security:authentication-provider>
 			<security:user-service id="userDetailsService">
 		    	<security:user name="jimi" password="jimispassword" authorities="ROLE_USER, ROLE_ADMIN" />
 		    	<security:user name="bob" password="bobspassword" authorities="ROLE_USER" />
 		  	</security:user-service>
 		</security:authentication-provider>
-	</security:authentication-manager>	
+	</security:authentication-manager>
 		
 	<tx:annotation-driven transaction-manager="transactionManager" />
 	

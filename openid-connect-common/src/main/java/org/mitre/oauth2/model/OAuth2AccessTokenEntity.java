@@ -23,9 +23,13 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.Transient;
 
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.mitre.jwt.model.Jwt;
 import org.mitre.openid.connect.model.IdToken;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.common.OAuth2AccessTokenDeserializer;
+import org.springframework.security.oauth2.common.OAuth2AccessTokenSerializer;
 import org.springframework.security.oauth2.common.OAuth2RefreshToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 
@@ -40,6 +44,8 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 	@NamedQuery(name = "OAuth2AccessTokenEntity.getByClient", query = "select a from OAuth2AccessTokenEntity a where a.client = :client"),
 	@NamedQuery(name = "OAuth2AccessTokenEntity.getExpired", query = "select a from OAuth2AccessTokenEntity a where a.expiration is not null and a.expiration < current_timestamp")
 })
+@JsonSerialize(using = OAuth2AccessTokenSerializer.class)
+@JsonDeserialize(using = OAuth2AccessTokenDeserializer.class)
 public class OAuth2AccessTokenEntity extends OAuth2AccessToken {
 
 	public static String ID_TOKEN = "id_token";
