@@ -185,15 +185,17 @@ public class JwtSigningAndValidationServiceDefault implements
 		return false;
 	}
 
+	/**
+	 * Sign a jwt in place using the configured default signer.
+	 */
 	@Override
-	public Jwt signJwt(Jwt jwt) {
+	public void signJwt(Jwt jwt) {
 		String signerId = configBean.getDefaultJwtSigner();
 		
-		//JwtSigner signer = map.get(signerId);
+		JwtSigner signer = signers.get(signerId);
 		
-		//signer.sign(jwt);
-		
-		return null;
+		signer.sign(jwt);
+
 	}
 
 	/**

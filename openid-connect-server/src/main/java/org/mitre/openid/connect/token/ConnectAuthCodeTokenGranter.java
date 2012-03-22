@@ -153,6 +153,8 @@ public class ConnectAuthCodeTokenGranter implements TokenGranter {
 		// handle expiration
 		token.getJwt().getClaims().setExpiration(token.getExpiration());
 		
+		jwtService.signJwt(token.getJwt());
+		
 		/**
 		 * Authorization request scope MUST include "openid", but access token request 
 		 * may or may not include the scope parameter. As long as the AuthorizationRequest 
@@ -173,7 +175,7 @@ public class ConnectAuthCodeTokenGranter implements TokenGranter {
 			//TODO: check client to see if they have a preferred alg, attempt to use that
 			
 			//TODO: uncomment line below once RsaSigner bean has been set up and added to the configBean
-			//idToken = (IdToken) jwtService.signJwt(idToken);
+			jwtService.signJwt(idToken);
 			
 			token.setIdToken(idToken);
 		}

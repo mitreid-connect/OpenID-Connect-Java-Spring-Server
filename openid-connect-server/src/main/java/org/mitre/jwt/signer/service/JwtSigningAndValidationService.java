@@ -48,13 +48,13 @@ public interface JwtSigningAndValidationService {
 	public boolean validateSignature(String jwtString);
 	
 	/**
-	 * Called to sign a jwt for a client that hasn't registered a preferred signing algorithm.
+	 * Called to sign a jwt in place for a client that hasn't registered a preferred signing algorithm.
 	 * Use the default algorithm to sign.
 	 * 
 	 * @param jwt the jwt to sign
 	 * @return the signed jwt
 	 */
-	public Jwt signJwt(Jwt jwt);
+	public void signJwt(Jwt jwt);
 	
 	/**
 	 * Sign a jwt using the selected algorithm. The algorithm is selected using the String parameter values specified
