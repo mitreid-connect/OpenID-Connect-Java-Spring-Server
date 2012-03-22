@@ -86,7 +86,10 @@ public class ClaimSet {
      * Set a primitive claim
      */
     public void setClaim(String key, JsonPrimitive prim) {
-    	if (prim.isBoolean()) {
+    	if (prim == null) {
+    		// in case we get here with a primitive null
+    		claims.put(key, prim);
+    	} else if (prim.isBoolean()) {
     		claims.put(key, prim.getAsBoolean());
     	} else if (prim.isNumber()) {
     		claims.put(key, prim.getAsNumber());
@@ -160,7 +163,10 @@ public class ClaimSet {
 	 */
 	public void loadFromJsonObject(JsonObject json) {
 		for (Entry<String, JsonElement> element : json.entrySet()) {
-        	if (element.getValue().isJsonPrimitive()){
+			if (element.getValue().isJsonNull()) {
+				// nulls get stored as java nulls
+				setClaim(element.getKey(), null);
+			} else if (element.getValue().isJsonPrimitive()){
 	        	// we handle all primitives in here
 	        	JsonPrimitive prim = element.getValue().getAsJsonPrimitive();
 	        	setClaim(element.getKey(), prim);

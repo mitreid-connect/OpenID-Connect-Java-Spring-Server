@@ -45,7 +45,9 @@ public class JwtClaims extends ClaimSet {
 		JsonObject pass = new JsonObject();
 		
 		for (Entry<String, JsonElement> element : json.entrySet()) {
-	        if (element.getKey().equals(EXPIRATION)) {
+			if (element.getValue().isJsonNull()) {
+				pass.add(element.getKey(), element.getValue());
+			} else if (element.getKey().equals(EXPIRATION)) {
                 setExpiration(new Date(element.getValue().getAsLong() * 1000L));
 	        } else if (element.getKey().equals(NOT_BEFORE)) {
                 setNotBefore(new Date(element.getValue().getAsLong() * 1000L));

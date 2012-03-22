@@ -145,7 +145,7 @@ public class ConnectAuthCodeTokenGranter implements TokenGranter {
 
 		token.getJwt().getClaims().setIssuedAt(new Date());
 		// handle expiration
-		//token.getJwt().getClaims().setExpiration(token.getExpiration());
+		token.getJwt().getClaims().setExpiration(token.getExpiration());
 		
 		/**
 		 * Authorization request scope MUST include "openid", but access token request 

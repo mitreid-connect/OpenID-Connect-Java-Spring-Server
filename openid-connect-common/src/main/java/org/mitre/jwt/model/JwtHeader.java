@@ -43,7 +43,9 @@ public class JwtHeader extends ClaimSet {
     	JsonObject pass = new JsonObject();
     	
 		for (Entry<String, JsonElement> element : json.entrySet()) {
-	        if (element.getKey().equals(TYPE)) {
+			if (element.getValue().isJsonNull()) {
+				pass.add(element.getKey(), element.getValue());
+			} else if (element.getKey().equals(TYPE)) {
 	        	this.setType(json.get(TYPE).getAsString());
 	        } else if (element.getKey().equals(ALGORITHM)) {
 	        	this.setAlgorithm(json.get(ALGORITHM).getAsString());
@@ -54,7 +56,7 @@ public class JwtHeader extends ClaimSet {
 	        }
         }
 		
-		// now load all the ones we didn't handly specially
+		// now load all the ones we didn't handle specially
 		super.loadFromJsonObject(pass);
 	}
 

@@ -134,7 +134,9 @@ public class IdTokenClaims extends JwtClaims {
     	JsonObject pass = new JsonObject();
     	
 		for (Entry<String, JsonElement> element : json.entrySet()) {
-			if (element.getKey().equals(USER_ID)) {
+			if (element.getValue().isJsonNull()) {
+				pass.add(element.getKey(), element.getValue());
+			} else if (element.getKey().equals(USER_ID)) {
 				setUserId(element.getValue().getAsString());
 			} else if (element.getKey().equals(AUTHENTICATION_CONTEXT_CLASS_REFERENCE)) {
 				setAuthContext(element.getValue().getAsString());
