@@ -20,8 +20,8 @@ import org.springframework.beans.factory.InitializingBean;
 public class JwtSigningAndValidationServiceDefault implements
 		JwtSigningAndValidationService, InitializingBean {
 
-	
-	private List<? extends JwtSigner> signers = new ArrayList<JwtSigner>();
+	// map of identifier to signer
+	private Map<String, ? extends JwtSigner> signers = new HashMap<String, JwtSigner>();
 
 	private static Log logger = LogFactory
 			.getLog(JwtSigningAndValidationServiceDefault.class);
@@ -39,7 +39,7 @@ public class JwtSigningAndValidationServiceDefault implements
 	 *            List of JwtSigners to associate with this service
 	 */
 	public JwtSigningAndValidationServiceDefault(
-			List<? extends JwtSigner> signer) {
+			Map<String, ? extends JwtSigner> signer) {
 		setSigners(signer);
 	}
 	
@@ -74,7 +74,7 @@ public class JwtSigningAndValidationServiceDefault implements
 
 		PublicKey publicKey;
 
-		for (JwtSigner signer : signers) {
+		for (JwtSigner signer : signers.values()) {
 
 			if (signer instanceof RsaSigner) {
 
@@ -101,7 +101,7 @@ public class JwtSigningAndValidationServiceDefault implements
 	 * 
 	 * @return
 	 */
-	public List<? extends JwtSigner> getSigners() {
+	public Map<String, ? extends JwtSigner> getSigners() {
 		return signers;
 	}
 
@@ -130,7 +130,7 @@ public class JwtSigningAndValidationServiceDefault implements
 	 * @param signers
 	 *            List of JwtSigners to associate with this service
 	 */
-	public void setSigners(List<? extends JwtSigner> signers) {
+	public void setSigners(Map<String, ? extends JwtSigner> signers) {
 		this.signers = signers;
 	}
 
@@ -169,7 +169,7 @@ public class JwtSigningAndValidationServiceDefault implements
 	@Override
 	public boolean validateSignature(String jwtString) {
 
-		for (JwtSigner signer : signers) {
+		for (JwtSigner signer : signers.values()) {
 			if (signer.verify(jwtString))
 				return true;
 		}
