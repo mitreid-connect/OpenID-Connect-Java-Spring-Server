@@ -25,7 +25,7 @@ public class CheckIDEndpoint {
 	private ConfigurationPropertiesBean configBean;
 	
 	@RequestMapping("/checkid")
-	public ModelAndView checkID(@RequestParam("auth_token") String tokenString, ModelAndView mav, HttpServletRequest request) {
+	public ModelAndView checkID(@RequestParam("access_token") String tokenString, ModelAndView mav, HttpServletRequest request) {
 		
 		if (!jwtSignerService.validateSignature(tokenString)) {
 			// can't validate 
