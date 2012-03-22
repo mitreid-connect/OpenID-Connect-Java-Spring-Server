@@ -76,7 +76,7 @@ public class JwkKeyListView extends AbstractView {
 					o.addProperty("alg", "RSA");
 					o.addProperty("mod", m64);
 					o.addProperty("exp", e64);
-					
+					// TODO: get the key ID from the map
 					return o;
 				} else if (src instanceof ECPublicKey) {
 					

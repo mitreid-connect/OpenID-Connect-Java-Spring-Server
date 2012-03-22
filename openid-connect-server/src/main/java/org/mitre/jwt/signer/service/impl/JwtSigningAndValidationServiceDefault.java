@@ -25,7 +25,8 @@ public class JwtSigningAndValidationServiceDefault implements
 	@Autowired
 	private ConfigurationPropertiesBean configBean;
 	
-	private List<? extends JwtSigner> signers = new ArrayList<JwtSigner>();
+	// map of identifier to signer
+	private Map<String, ? extends JwtSigner> signers = new HashMap<String, JwtSigner>();
 
 	private static Log logger = LogFactory
 			.getLog(JwtSigningAndValidationServiceDefault.class);
@@ -43,7 +44,7 @@ public class JwtSigningAndValidationServiceDefault implements
 	 *            List of JwtSigners to associate with this service
 	 */
 	public JwtSigningAndValidationServiceDefault(
-			List<? extends JwtSigner> signer) {
+			Map<String, ? extends JwtSigner> signer) {
 		setSigners(signer);
 	}
 	
@@ -72,23 +73,25 @@ public class JwtSigningAndValidationServiceDefault implements
 	 * ()
 	 */
 	@Override
-	public List<PublicKey> getAllPublicKeys() {
+	public Map<String, PublicKey> getAllPublicKeys() {
 
 		Map<String, PublicKey> map = new HashMap<String, PublicKey>();
 
 		PublicKey publicKey;
 
-		for (JwtSigner signer : signers) {
+		for (JwtSigner signer : signers.values()) {
 
 			if (signer instanceof RsaSigner) {
 
 				publicKey = ((RsaSigner) signer).getPublicKey();
 
-				if (publicKey != null)
+				if (publicKey != null) {
+					// what's the index of this map for?
 					map.put(((RSAPublicKey) publicKey).getModulus()
 							.toString(16).toUpperCase()
 							+ ((RSAPublicKey) publicKey).getPublicExponent()
 									.toString(16).toUpperCase(), publicKey);
+				}
 
 			} else if (signer instanceof EcdsaSigner) {
 
@@ -96,8 +99,7 @@ public class JwtSigningAndValidationServiceDefault implements
 			}
 		}
 
-		return new ArrayList<PublicKey>(map.values());
-
+		return map;
 	}
 
 	/**
@@ -105,7 +107,7 @@ public class JwtSigningAndValidationServiceDefault implements
 	 * 
 	 * @return
 	 */
-	public List<? extends JwtSigner> getSigners() {
+	public Map<String, ? extends JwtSigner> getSigners() {
 		return signers;
 	}
 
@@ -134,7 +136,7 @@ public class JwtSigningAndValidationServiceDefault implements
 	 * @param signers
 	 *            List of JwtSigners to associate with this service
 	 */
-	public void setSigners(List<? extends JwtSigner> signers) {
+	public void setSigners(Map<String, ? extends JwtSigner> signers) {
 		this.signers = signers;
 	}
 
@@ -175,7 +177,7 @@ public class JwtSigningAndValidationServiceDefault implements
 	@Override
 	public boolean validateSignature(String jwtString) {
 
-		for (JwtSigner signer : signers) {
+		for (JwtSigner signer : signers.values()) {
 			if (signer.verify(jwtString))
 				return true;
 		}

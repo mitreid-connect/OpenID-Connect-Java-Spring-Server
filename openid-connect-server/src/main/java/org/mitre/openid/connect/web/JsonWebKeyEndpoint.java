@@ -1,6 +1,7 @@
 package org.mitre.openid.connect.web;
 
 import java.security.PublicKey;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +21,7 @@ public class JsonWebKeyEndpoint {
 	@RequestMapping("/jwk")
 	public ModelAndView getJwk() {
 		
-		List<PublicKey> keys = jwtService.getAllPublicKeys();
+		Collection<PublicKey> keys = jwtService.getAllPublicKeys().values();
 		
 		// TODO: check if keys are empty, return a 404 here or just an empty list?
 		

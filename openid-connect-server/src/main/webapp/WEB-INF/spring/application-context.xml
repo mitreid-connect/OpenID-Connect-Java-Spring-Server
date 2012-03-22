@@ -119,12 +119,40 @@
 
 	<!-- TODO: working remove red X's see: http://forum.springsource.org/showthread.php?123193-STS-not-respecting-META-INF-spring-schemas-for-validation&p=401926#post401926 -->
 
-	<jwt-signer:keystore id="defaultKeystore" location="classpath:keystore.jks" password="changeit" />
 
-	<jwt-signer:service id="defaultSignerService">
-		<jwt-signer:rsa bits="256" keystore-ref="defaultKeystore" key-alias="rsa" password="changeit" /> 
-		<jwt-signer:hmac bits="256" passphrase="changeit" />		
-	</jwt-signer:service>
+	<bean id="defaultKeystore" class="org.mitre.jwt.signer.service.impl.KeyStore">
+		<constructor-arg name="location" value="classpath:keystore.jks" />
+		<constructor-arg name="password" value="changeit" />
+	</bean>
+
+	<bean id="defaultsignerService" class="org.mitre.jwt.signer.service.impl.JwtSigningAndValidationServiceDefault">
+		<property name="signers">
+			<map>
+				<entry key="rsa1">
+					<bean id="rsaSigner" class="org.mitre.jwt.signer.impl.RsaSigner">
+						<property name="algorithm" value="RS256" />
+						<property name="keystore" ref="defaultKeystore" />
+						<property name="alias" value="rsa" />
+						<property name="password" value="changeit" />
+					</bean>
+				</entry>
+				<entry key="hmac1">
+					<bean id="hmacSigner" class="org.mitre.jwt.signer.impl.HmacSigner">
+						<property name="algorithm" value="HMACSHA256" />
+						<property name="passphrase" value="changeit" />
+					</bean>
+				</entry>
+			</map>
+		</property>	
+	</bean>	
+
+	
+<!-- 	<jwt-signer:keystore id="defaultKeystore" location="classpath:keystore.jks" password="changeit" /> -->
+
+<!-- 	<jwt-signer:service id="defaultSignerService"> -->
+<!-- 		<jwt-signer:rsa bits="256" keystore-ref="defaultKeystore" key-alias="rsa" password="changeit" />  -->
+<!-- 		<jwt-signer:hmac bits="256" passphrase="changeit" />		 -->
+<!-- 	</jwt-signer:service> -->
 	 
 	<!-- scheduled tasks -->
 <!-- 	<task:scheduler id="taskScheduler" pool-size="10" /> -->
