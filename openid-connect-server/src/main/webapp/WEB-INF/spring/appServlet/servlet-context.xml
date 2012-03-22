@@ -41,8 +41,8 @@
 	<beans:bean id="jsonSwdResponseView" class="org.mitre.swd.view.SwdResponse" />
 	<beans:bean id="jwkKeyList" class="org.mitre.openid.connect.view.JwkKeyListView" />
 	
-<!-- 	<beans:bean id="jsonUserInfoView" class="org.mitre.openid.connect.view.JSONUserInfoView"/> -->
-<!-- 	<beans:bean id="jsonIdTokenView" class="org.mitre.openid.connect.view.JSONIdTokenView"/> -->
+ 	<beans:bean id="jsonUserInfoView" class="org.mitre.openid.connect.view.JSONUserInfoView"/>
+ 	<beans:bean id="jsonIdTokenView" class="org.mitre.openid.connect.view.JSONIdTokenView"/> 
 	
 	<beans:import resource="controllers.xml" />
 
@@ -53,8 +53,5 @@
 		<oauth:authorization-code authorization-code-services-ref="authCodeServices"/>
 	</oauth:authorization-server>
 	
-	<beans:bean id="connectAuthCodeTokenGranter" class="org.mitre.openid.connect.token.ConnectAuthCodeTokenGranter">
-		<beans:property name="issuer" value="http://localhost/" />
-	</beans:bean>
-	
+
 </beans:beans>

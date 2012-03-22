@@ -33,9 +33,13 @@ public abstract class AbstractJwtSigner implements JwtSigner {
 
     /**
      * Ensures that the 'alg' of the given JWT matches the {@link #algorithm} of this signer
+     * and signs the jwt.
+     * 
+     * @param jwt the jwt to sign
+     * @return the signed jwt
      */
 	@Override
-	public void sign(Jwt jwt) {
+	public Jwt sign(Jwt jwt) {
 		if (!Objects.equal(algorithm, jwt.getHeader().getAlgorithm())) {
 			// algorithm type doesn't match
 			// TODO: should this be an error or should we just fix it in the incoming jwt?
@@ -45,7 +49,9 @@ public abstract class AbstractJwtSigner implements JwtSigner {
 	    
 	    String sig = generateSignature(jwt.getSignatureBase());
         
-        jwt.setSignature(sig);		
+        jwt.setSignature(sig);	
+        
+        return jwt;
 	}
 
 	/* (non-Javadoc)

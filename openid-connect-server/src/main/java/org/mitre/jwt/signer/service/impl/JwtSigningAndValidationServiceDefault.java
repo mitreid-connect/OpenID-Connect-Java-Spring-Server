@@ -15,11 +15,15 @@ import org.mitre.jwt.signer.JwtSigner;
 import org.mitre.jwt.signer.impl.EcdsaSigner;
 import org.mitre.jwt.signer.impl.RsaSigner;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
+import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class JwtSigningAndValidationServiceDefault implements
 		JwtSigningAndValidationService, InitializingBean {
 
+	@Autowired
+	private ConfigurationPropertiesBean configBean;
 	
 	private List<? extends JwtSigner> signers = new ArrayList<JwtSigner>();
 
@@ -153,7 +157,9 @@ public class JwtSigningAndValidationServiceDefault implements
 	@Override
 	public boolean validateIssuedJwt(Jwt jwt, String expectedIssuer) {
 
-		if (jwt.getClaims().getIssuer() == expectedIssuer)
+		String iss = jwt.getClaims().getIssuer();
+		
+		if (iss.equals(expectedIssuer))
 			return true;
 		
 		return false;
@@ -175,5 +181,30 @@ public class JwtSigningAndValidationServiceDefault implements
 		}
 
 		return false;
+	}
+
+	@Override
+	public Jwt signJwt(Jwt jwt) {
+		String signerId = configBean.getDefaultJwtSigner();
+		
+		//JwtSigner signer = map.get(signerId);
+		
+		//signer.sign(jwt);
+		
+		return null;
+	}
+
+	/**
+	 * @return the configBean
+	 */
+	public ConfigurationPropertiesBean getConfigBean() {
+		return configBean;
+	}
+
+	/**
+	 * @param configBean the configBean to set
+	 */
+	public void setConfigBean(ConfigurationPropertiesBean configBean) {
+		this.configBean = configBean;
 	}
 }

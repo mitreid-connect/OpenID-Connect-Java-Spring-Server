@@ -45,4 +45,28 @@ public interface JwtSigningAndValidationService {
 	 * @return true if the signature is valid, false if not
 	 */
 	public boolean validateSignature(String jwtString);
+	
+	/**
+	 * Called to sign a jwt for a client that hasn't registered a preferred signing algorithm.
+	 * Use the default algorithm to sign.
+	 * 
+	 * @param jwt the jwt to sign
+	 * @return the signed jwt
+	 */
+	public Jwt signJwt(Jwt jwt);
+	
+	/**
+	 * Sign a jwt using the selected algorithm. The algorithm is selected using the String parameter values specified
+	 * in the JWT spec, section 6. I.E., "HS256" means HMAC with SHA-256 and corresponds to our HmacSigner class.
+	 * 
+	 * @param jwt the jwt to sign
+	 * @param alg the name of the algorithm to use, as specified in JWS s.6
+	 * @return the signed jwt
+	 */
+	//TODO: implement later; only need signJwt(Jwt jwt) for now
+	//public Jwt signJwt(Jwt jwt, String alg);
+	
+	/**
+	 * TODO: method to sign a jwt using a specified algorithm and a key id
+	 */
 }

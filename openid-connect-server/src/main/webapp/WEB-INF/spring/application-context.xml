@@ -80,6 +80,16 @@
 		<property name="databasePlatform" value="org.eclipse.persistence.platform.database.MySQLPlatform" />
 		<property name="showSql" value="true" />
 	</bean>
+	
+	
+<!-- TODO: get signer set up -->
+<!-- 	<bean id="rsaSigner1" class="org.mitre.jwt.signer.impl.RsaSigner"/>  -->
+
+	<bean id="configBean" class="org.mitre.openid.connect.config.ConfigurationPropertiesBean">
+		<property name="issuer" value="http://localhost/" />
+		<!-- TODO: plug in default signer -->
+<!-- 		<property name="defaultJwtSigner"  value="rsaSigner1"/> -->
+	</bean>
 
 	<!-- Map our custom exception classes to named views -->
 	<bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
