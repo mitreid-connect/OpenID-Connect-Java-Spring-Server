@@ -46,7 +46,8 @@ public class CheckIDEndpoint {
 			throw new InvalidJwtIssuerException(); // TODO: create a view for this exception
 		}
 		
-		return new ModelAndView("jsonIdTokenView", "checkId", token); // TODO: create a view for this
+		// pass the claims directly (the view doesn't care about other fields)
+		return new ModelAndView("jsonIdTokenView", "entity", token.getClaims());
 	}
 
 	public JwtSigningAndValidationService getJwtSignerService() {
