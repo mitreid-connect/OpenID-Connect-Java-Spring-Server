@@ -7,9 +7,11 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
+import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
 import org.mitre.oauth2.service.impl.DefaultOAuth2ProviderTokenService;
+import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.mitre.openid.connect.model.IdToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -48,7 +50,8 @@ public class ConnectAuthCodeTokenGranter implements TokenGranter {
 	@Autowired
 	private ClientCredentialsChecker clientCredentialsChecker;
 
-	private String issuer;
+	@Autowired
+	private ConfigurationPropertiesBean configBean;
 
 	//TODO: Do we need to modify/update this?	
 	@Autowired
@@ -56,6 +59,9 @@ public class ConnectAuthCodeTokenGranter implements TokenGranter {
 	
 	@Autowired
 	private IdTokenGeneratorService idTokenService;
+	
+	@Autowired
+	private JwtSigningAndValidationService jwtService;
 	
 	/**
 	 * Default empty constructor
@@ -141,7 +147,7 @@ public class ConnectAuthCodeTokenGranter implements TokenGranter {
 
 		//TODO: need to get base url, but Utility.findBaseUrl() needs access to a request object, which we don't have
 		//See github issue #1
-		token.getJwt().getClaims().setIssuer(issuer);
+		token.getJwt().getClaims().setIssuer(configBean.getIssuer());
 
 		token.getJwt().getClaims().setIssuedAt(new Date());
 		// handle expiration
@@ -155,17 +161,23 @@ public class ConnectAuthCodeTokenGranter implements TokenGranter {
 		if (authorizationRequest.getScope().contains("openid")) {
 
 			String userId = userAuth.getName();
-			
-			//TODO: need to get base url, but Utility.findBaseUrl() needs access to a request object, which we don't have
-			//See github issue #1
-			IdToken idToken = idTokenService.generateIdToken(userId, issuer);
+		
+			IdToken idToken = idTokenService.generateIdToken(userId, configBean.getIssuer());
 			idToken.getClaims().setAudience(clientId);
 			idToken.getClaims().setIssuedAt(new Date());
+			idToken.getClaims().setIssuer(configBean.getIssuer());
 			// TODO: expiration? other fields?
+			
+			//Sign
+			
+			//TODO: check client to see if they have a preferred alg, attempt to use that
+			
+			//TODO: uncomment line below once RsaSigner bean has been set up and added to the configBean
+			//idToken = (IdToken) jwtService.signJwt(idToken);
 			
 			token.setIdToken(idToken);
 		}
-
+		
 		tokenServices.saveAccessToken(token);
 		
 		return token;
@@ -207,18 +219,28 @@ public class ConnectAuthCodeTokenGranter implements TokenGranter {
 		this.tokenServices = tokenServices;
 	}
 
-	/**
-     * @return the issuer
-     */
-    public String getIssuer() {
-    	return issuer;
-    }
+	public ConfigurationPropertiesBean getConfigBean() {
+		return configBean;
+	}
 
-	/**
-     * @param issuer the issuer to set
-     */
-    public void setIssuer(String issuer) {
-    	this.issuer = issuer;
-    }
+	public void setConfigBean(ConfigurationPropertiesBean configBean) {
+		this.configBean = configBean;
+	}
+
+	public IdTokenGeneratorService getIdTokenService() {
+		return idTokenService;
+	}
+
+	public void setIdTokenService(IdTokenGeneratorService idTokenService) {
+		this.idTokenService = idTokenService;
+	}
+
+	public JwtSigningAndValidationService getJwtService() {
+		return jwtService;
+	}
+
+	public void setJwtService(JwtSigningAndValidationService jwtService) {
+		this.jwtService = jwtService;
+	}
 	
 }

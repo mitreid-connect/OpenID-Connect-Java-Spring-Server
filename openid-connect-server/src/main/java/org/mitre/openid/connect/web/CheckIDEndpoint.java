@@ -3,6 +3,7 @@ package org.mitre.openid.connect.web;
 import javax.servlet.http.HttpServletRequest;
 
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
+import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.mitre.openid.connect.exception.ExpiredTokenException;
 import org.mitre.openid.connect.exception.InvalidJwtIssuerException;
 import org.mitre.openid.connect.exception.InvalidJwtSignatureException;
@@ -19,6 +20,9 @@ public class CheckIDEndpoint {
 
 	@Autowired
 	JwtSigningAndValidationService jwtSignerService;
+	
+	@Autowired
+	private ConfigurationPropertiesBean configBean;
 	
 	@RequestMapping("/checkid")
 	public ModelAndView checkID(@RequestParam("id_token") String tokenString, ModelAndView mav, HttpServletRequest request) {
@@ -38,11 +42,27 @@ public class CheckIDEndpoint {
 		}
 		
 		// check the issuer (sanity check)
-		if (!jwtSignerService.validateIssuedJwt(token,  Utility.findBaseUrl(request))) {
+		if (!jwtSignerService.validateIssuedJwt(token, configBean.getIssuer())) {
 			throw new InvalidJwtIssuerException(); // TODO: create a view for this exception
 		}
 		
 		return new ModelAndView("jsonIdTokenView", "checkId", token); // TODO: create a view for this
+	}
+
+	public JwtSigningAndValidationService getJwtSignerService() {
+		return jwtSignerService;
+	}
+
+	public void setJwtSignerService(JwtSigningAndValidationService jwtSignerService) {
+		this.jwtSignerService = jwtSignerService;
+	}
+
+	public ConfigurationPropertiesBean getConfigBean() {
+		return configBean;
+	}
+
+	public void setConfigBean(ConfigurationPropertiesBean configBean) {
+		this.configBean = configBean;
 	}
 	
 }
