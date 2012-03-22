@@ -68,7 +68,7 @@ public class JwtSigningAndValidationServiceDefault implements
 	 * ()
 	 */
 	@Override
-	public List<PublicKey> getAllPublicKeys() {
+	public Map<String, PublicKey> getAllPublicKeys() {
 
 		Map<String, PublicKey> map = new HashMap<String, PublicKey>();
 
@@ -80,11 +80,13 @@ public class JwtSigningAndValidationServiceDefault implements
 
 				publicKey = ((RsaSigner) signer).getPublicKey();
 
-				if (publicKey != null)
+				if (publicKey != null) {
+					// what's the index of this map for?
 					map.put(((RSAPublicKey) publicKey).getModulus()
 							.toString(16).toUpperCase()
 							+ ((RSAPublicKey) publicKey).getPublicExponent()
 									.toString(16).toUpperCase(), publicKey);
+				}
 
 			} else if (signer instanceof EcdsaSigner) {
 
@@ -92,8 +94,7 @@ public class JwtSigningAndValidationServiceDefault implements
 			}
 		}
 
-		return new ArrayList<PublicKey>(map.values());
-
+		return map;
 	}
 
 	/**

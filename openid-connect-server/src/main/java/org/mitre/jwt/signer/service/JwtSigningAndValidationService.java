@@ -2,17 +2,18 @@ package org.mitre.jwt.signer.service;
 
 import java.security.PublicKey;
 import java.util.List;
+import java.util.Map;
 
 import org.mitre.jwt.model.Jwt;
 
 public interface JwtSigningAndValidationService {
 
 	/**
-	 * Returns all public keys this service is configured with.
+	 * Returns all public keys this service is configured with, indexed by key id
 	 * 
 	 * @return
 	 */
-	public List<PublicKey> getAllPublicKeys();
+	public Map<String, PublicKey> getAllPublicKeys();
 
 	/**
 	 * Check to see if this JWT has expired or not
