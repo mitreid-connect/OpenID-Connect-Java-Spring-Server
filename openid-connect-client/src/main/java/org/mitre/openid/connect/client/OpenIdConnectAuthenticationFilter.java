@@ -44,6 +44,29 @@ import com.google.gson.JsonParser;
 /**
  * The OpenID Connect Authentication Filter
  * 
+ * See:  
+ * 
+ * http://static.springsource.org/spring-security/site/docs/3.0.x/reference/ns-config.html#ns-custom-filters
+ * 
+ * <http>
+ *    <custom-filter position="FORM_LOGIN_FILTER" ref="openIdConnectAuthenticationFilter">
+ * </http>
+ * 
+ * <beans:bean id="openIdConnectAuthenticationFilter" 
+ * 			class="org.mitre.openid.connect.client.OpenIdConnectAuthenticationFilter">
+ *   <property name="errorRedirectURI" value=""/>
+ *   <property name="authorizationEndpointURI" 
+ *   		value="http://server.example.com:8080/openid-connect-server/openidconnect/auth"/>
+ *   <property name="tokenEndpointURI" 
+ *   		value=http://server.example.com:8080/openid-connect-server/checkid""/>
+ *   <property name="checkIDEndpointURI" 
+ *   		value="http://server.example.comg:8080/openid-connect-server/checkid"/>
+ *   <property name="clientId" 
+ *   		value=""/>
+ *   <property name="clientSecret" 
+ *   		value=""/>
+ * </bean>
+ * 
  * @author nemonik
  * 
  */
@@ -57,6 +80,7 @@ public class OpenIdConnectAuthenticationFilter extends
 	private final static int KEY_SIZE = 1024;
 	private final static String SIGNING_ALGORITHM = "SHA256withRSA";
 	private final static String NONCE_SIGNATURE_COOKIE_NAME = "nonce";
+	private final static String FILTER_PROCESSES_URL ="/j_spring_openid_connect_security_check";
 
 	/**
 	 * Return the URL w/ GET parameters
@@ -163,7 +187,7 @@ public class OpenIdConnectAuthenticationFilter extends
 	 * 
 	 */
 	protected OpenIdConnectAuthenticationFilter() {
-		super("/j_spring_openid_connect_security_check");
+		super(FILTER_PROCESSES_URL);
 	}
 
 	/*
@@ -204,7 +228,7 @@ public class OpenIdConnectAuthenticationFilter extends
 			throw new IllegalArgumentException(
 					"A Client Secret must be supplied");
 		}
-
+		
 		KeyPairGenerator keyPairGenerator;
 		try {
 			keyPairGenerator = KeyPairGenerator.getInstance("RSA");
@@ -536,7 +560,7 @@ public class OpenIdConnectAuthenticationFilter extends
 	public void setErrorRedirectURI(String errorRedirectURI) {
 		this.errorRedirectURI = errorRedirectURI;
 	}
-
+	
 	public void setScope(String scope) {
 		this.scope = scope;
 	}
