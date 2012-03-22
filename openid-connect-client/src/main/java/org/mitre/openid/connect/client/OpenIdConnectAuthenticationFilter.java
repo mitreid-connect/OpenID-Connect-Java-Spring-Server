@@ -44,42 +44,40 @@ import com.google.gson.JsonParser;
 /**
  * The OpenID Connect Authentication Filter
  * 
- * Configured like:  
- *   
- *	<security:http auto-config="false" use-expressions="true"
- *		disable-url-rewriting="true" entry-point-ref="authenticationEntryPoint" pattern="/**">
- *
- *		<security:intercept-url pattern="/somepath/**"
- *			access="denyAll" />
- *
- *		<security:custom-filter before="PRE_AUTH_FILTER "
- *			ref="openIdConnectAuthenticationFilter" />
- *
- *		<security:intercept-url pattern="/**"
- * 			access="hasAnyRole('ROLE_USER','ROLE_ADMIN')" />
- *		<security:logout />
- *	</security:http>
- *
- *	<bean id="authenticationEntryPoint"
- *     	class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">		
- * 		<property name="loginFormUrl" value="/openid_connect_login"/>
- *	</bean>
- *
- *	<security:authentication-manager alias="authenticationManager" />
- *	<bean id="openIdConnectAuthenticationFilter"
- *		class="org.mitre.openid.connect.client.OpenIdConnectAuthenticationFilter">
- *		
- *		<property name="authenticationManager" ref="authenticationManager" />
- *		<property name="errorRedirectURI" value="/login.jsp?authfail=openid" /> <!-- TODO: or would this be value="/login.jsp?authfail=openid_connect" -->
- *		<property name="authorizationEndpointURI"
- *			value="http://sever.example.com:8080/openid-connect-server/openidconnect/auth" />
- *		<property name="tokenEndpointURI"
- *			value="http://sever.example.com:8080/openid-connect-server/checkid" />
- *		<property name="checkIDEndpointURI"
- *			value="http://sever.example.com:8080/openid-connect-server/checkid" />
- *		<property name="clientId" value="someClientId" />
- *		<property name="clientSecret" value="someClientSecret" />
- *	</bean>
+ * Configured like:
+ * 
+ * <security:http auto-config="false" use-expressions="true"
+ * disable-url-rewriting="true" entry-point-ref="authenticationEntryPoint"
+ * pattern="/**">
+ * 
+ * <security:intercept-url pattern="/somepath/**" access="denyAll" />
+ * 
+ * <security:custom-filter before="PRE_AUTH_FILTER "
+ * ref="openIdConnectAuthenticationFilter" />
+ * 
+ * <security:intercept-url pattern="/**"
+ * access="hasAnyRole('ROLE_USER','ROLE_ADMIN')" /> <security:logout />
+ * </security:http>
+ * 
+ * <bean id="authenticationEntryPoint" class=
+ * "org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint"
+ * > <property name="loginFormUrl" value="/openid_connect_login"/> </bean>
+ * 
+ * <security:authentication-manager alias="authenticationManager" /> <bean
+ * id="openIdConnectAuthenticationFilter"
+ * class="org.mitre.openid.connect.client.OpenIdConnectAuthenticationFilter">
+ * 
+ * <property name="authenticationManager" ref="authenticationManager" />
+ * <property name="errorRedirectURI" value="/login.jsp?authfail=openid" /> <!--
+ * TODO: or would this be value="/login.jsp?authfail=openid_connect" -->
+ * <property name="authorizationEndpointURI" value=
+ * "http://sever.example.com:8080/openid-connect-server/openidconnect/auth" />
+ * <property name="tokenEndpointURI"
+ * value="http://sever.example.com:8080/openid-connect-server/checkid" />
+ * <property name="checkIDEndpointURI"
+ * value="http://sever.example.com:8080/openid-connect-server/checkid" />
+ * <property name="clientId" value="someClientId" /> <property
+ * name="clientSecret" value="someClientSecret" /> </bean>
  * 
  * @author nemonik
  * 
@@ -95,7 +93,7 @@ public class OpenIdConnectAuthenticationFilter extends
 	private final static int KEY_SIZE = 1024;
 	private final static String SIGNING_ALGORITHM = "SHA256withRSA";
 	private final static String NONCE_SIGNATURE_COOKIE_NAME = "nonce";
-	private final static String FILTER_PROCESSES_URL ="/openid_connect_login";
+	private final static String FILTER_PROCESSES_URL = "/openid_connect_login";
 
 	/**
 	 * Return the URL w/ GET parameters
@@ -191,7 +189,7 @@ public class OpenIdConnectAuthenticationFilter extends
 	private String clientId;
 
 	private String scope;
-	
+
 	private int httpSocketTimeout = HTTP_SOCKET_TIMEOUT;
 
 	private PublicKey publicKey;
@@ -245,7 +243,7 @@ public class OpenIdConnectAuthenticationFilter extends
 			throw new IllegalArgumentException(
 					"A Client Secret must be supplied");
 		}
-		
+
 		KeyPairGenerator keyPairGenerator;
 		try {
 			keyPairGenerator = KeyPairGenerator.getInstance("RSA");
@@ -261,11 +259,7 @@ public class OpenIdConnectAuthenticationFilter extends
 		}
 
 		// prepend the spec necessary scope
-		if (scope != null && !scope.isEmpty() ) { 
-			setScope(SCOPE + scope);
-		} else { 
-			setScope(SCOPE);
-		}	
+		setScope(SCOPE + ((scope != null && !scope.isEmpty()) ? " " + scope : ""));
 	}
 
 	/*
@@ -315,9 +309,10 @@ public class OpenIdConnectAuthenticationFilter extends
 				// Handle Token Endpoint interaction
 
 				HttpClient httpClient = new DefaultHttpClient();
-				
-				httpClient.getParams().setParameter("http.socket.timeout", new Integer(httpSocketTimeout));
-				
+
+				httpClient.getParams().setParameter("http.socket.timeout",
+						new Integer(httpSocketTimeout));
+
 				UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(
 						clientId, clientSecret);
 				((DefaultHttpClient) httpClient).getCredentialsProvider()
@@ -396,9 +391,10 @@ public class OpenIdConnectAuthenticationFilter extends
 					// Handle Check ID Endpoint interaction
 
 					httpClient = new DefaultHttpClient();
-					
-					httpClient.getParams().setParameter("http.socket.timeout", new Integer(httpSocketTimeout));
-					
+
+					httpClient.getParams().setParameter("http.socket.timeout",
+							new Integer(httpSocketTimeout));
+
 					factory = new HttpComponentsClientHttpRequestFactory(
 							httpClient);
 					restTemplate = new RestTemplate(factory);
@@ -417,7 +413,7 @@ public class OpenIdConnectAuthenticationFilter extends
 					} catch (HttpClientErrorException httpClientErrorException) {
 
 						// Handle error
-						
+
 						logger.error("Check ID Endpoint error response:  "
 								+ httpClientErrorException.getStatusText()
 								+ " : " + httpClientErrorException.getMessage());
@@ -587,7 +583,7 @@ public class OpenIdConnectAuthenticationFilter extends
 	public void setErrorRedirectURI(String errorRedirectURI) {
 		this.errorRedirectURI = errorRedirectURI;
 	}
-	
+
 	public void setScope(String scope) {
 		this.scope = scope;
 	}
@@ -596,4 +592,3 @@ public class OpenIdConnectAuthenticationFilter extends
 		this.tokenEndpointURI = tokenEndpointURI;
 	}
 }
-
