@@ -68,8 +68,13 @@
 	<security:authentication-manager alias="springSecurityAuthenticationManager">
 		<security:authentication-provider>
 			<security:user-service id="userDetailsService">
-		    	<security:user name="jimi" password="jimispassword" authorities="ROLE_USER, ROLE_ADMIN" />
-		    	<security:user name="bob" password="bobspassword" authorities="ROLE_USER" />
+				<security:user name="jricher" password="password" authorities="ROLE_USER, ROLE_ADMIN" />
+				<security:user name="mfranklin" password="password" authorities="ROLE_USER, ROLE_ADMIN" />
+				<security:user name="dcuomo" password="password" authorities="ROLE_USER, ROLE_ADMIN" />
+				<security:user name="mjett" password="password" authorities="ROLE_USER, ROLE_ADMIN" />
+				<security:user name="aanganes" password="password" authorities="ROLE_USER, ROLE_ADMIN" />
+				<security:user name="mjwalsh" password="password" authorities="ROLE_USER, ROLE_ADMIN" />
+				<security:user name="srmoore" password="password" authorities="ROLE_USER, ROLE_ADMIN" />
 		  	</security:user-service>
 		</security:authentication-provider>
 	</security:authentication-manager>
