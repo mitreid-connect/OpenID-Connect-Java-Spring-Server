@@ -1,6 +1,7 @@
 package org.mitre.openid.connect.client;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import org.mitre.openid.connect.model.IdToken;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
@@ -16,25 +17,46 @@ import org.springframework.security.core.SpringSecurityCoreVersion;
 public class OpenIdConnectAuthenticationToken extends
 		AbstractAuthenticationToken {
 
+	private final Object principle;
 	private final IdToken idToken;
 	private final String userId;
 
 	private static final long serialVersionUID = SpringSecurityCoreVersion.SERIAL_VERSION_UID;
 	
 	/**
+	 * @param principle
+	 * @param authorities
+	 * @param userId
+	 * @param idToken
+	 */
+	public OpenIdConnectAuthenticationToken(Object principle,
+			Collection<? extends GrantedAuthority> authorities,
+			String userId, IdToken idToken) {
+
+		super(authorities);
+		
+		this.principle = principle;
+		this.userId = userId;
+		this.idToken = idToken;
+		
+		setAuthenticated(true);		
+	}
+
+	/**
 	 * @param idToken
 	 * @param userId
 	 */
-	public OpenIdConnectAuthenticationToken(IdToken idToken, String userId) {
+	public OpenIdConnectAuthenticationToken(String userId, IdToken idToken) {
+		
 		super(new ArrayList<GrantedAuthority>(0));
-		this.idToken = idToken;
-		this.userId = userId;
-		
-		// what do I set for the principle?  the idToken?
-		
-		setAuthenticated(true);
-	}
 
+		this.principle = userId;
+		this.userId = userId;
+		this.idToken = idToken;
+		
+		setAuthenticated(false);
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.springframework.security.core.Authentication#getCredentials()
 	 */
@@ -53,12 +75,10 @@ public class OpenIdConnectAuthenticationToken extends
 	@Override
 	public Object getPrincipal() {
 		// TODO Auto-generated method stub
-		return null;
+		return principle;
 	}
 
 	public String getUserId() {
 		return userId;
 	}
-	
-	
 }

@@ -10,8 +10,10 @@ import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -21,14 +23,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.mitre.openid.connect.model.IdToken;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
@@ -84,9 +85,6 @@ import com.google.gson.JsonParser;
  */
 public class OpenIdConnectAuthenticationFilter extends
 		AbstractAuthenticationProcessingFilter {
-
-	private static Log logger = LogFactory
-			.getLog(OpenIdConnectAuthenticationFilter.class);
 
 	private final static int HTTP_SOCKET_TIMEOUT = 30000;
 	private final static String SCOPE = "openid";
@@ -259,9 +257,18 @@ public class OpenIdConnectAuthenticationFilter extends
 		}
 
 		// prepend the spec necessary scope
-		setScope(SCOPE + ((scope != null && !scope.isEmpty()) ? " " + scope : ""));
+		setScope((scope != null && !scope.isEmpty()) ? SCOPE + " " + scope
+				: SCOPE);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.springframework.security.web.authentication.
+	 * AbstractAuthenticationProcessingFilter
+	 * #attemptAuthentication(javax.servlet.http.HttpServletRequest,
+	 * javax.servlet.http.HttpServletResponse)
+	 */
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -274,6 +281,8 @@ public class OpenIdConnectAuthenticationFilter extends
 	public Authentication attemptAuthentication(HttpServletRequest request,
 			HttpServletResponse response) throws AuthenticationException,
 			IOException, ServletException {
+
+		final boolean debug = logger.isDebugEnabled();
 
 		if (request.getParameter("error") != null) {
 
@@ -313,10 +322,12 @@ public class OpenIdConnectAuthenticationFilter extends
 				httpClient.getParams().setParameter("http.socket.timeout",
 						new Integer(httpSocketTimeout));
 
-				UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(
-						clientId, clientSecret);
-				((DefaultHttpClient) httpClient).getCredentialsProvider()
-						.setCredentials(AuthScope.ANY, credentials);
+//
+// TODO: basic auth is untested (it wasn't working last I tested)
+//				UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(
+//						clientId, clientSecret);
+//				((DefaultHttpClient) httpClient).getCredentialsProvider()
+//						.setCredentials(AuthScope.ANY, credentials);
 
 				HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(
 						httpClient);
@@ -326,7 +337,18 @@ public class OpenIdConnectAuthenticationFilter extends
 				MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
 				form.add("grant_type", "authorization_code");
 				form.add("code", authorizationGrant);
-				form.add("redirect_uri", buildRedirectURI(request));
+				form.add("redirect_uri",
+						buildRedirectURI(request, new String[] { "code" }));
+				
+// pass clientId and clientSecret in post of request				
+				form.add("client_id", clientId);
+				form.add("client_secret", clientSecret);
+				
+
+				if (debug) {
+					logger.debug("tokenEndpointURI = " + tokenEndpointURI);
+					logger.debug("form = " + form);
+				}
 
 				String jsonString = null;
 
@@ -341,7 +363,8 @@ public class OpenIdConnectAuthenticationFilter extends
 							+ httpClientErrorException.getStatusText() + " : "
 							+ httpClientErrorException.getMessage());
 
-					return null;
+					throw new AuthenticationServiceException(
+							"Unable to obtain Access Token.");
 				}
 
 				JsonElement jsonRoot = new JsonParser().parse(jsonString);
@@ -355,7 +378,9 @@ public class OpenIdConnectAuthenticationFilter extends
 
 					logger.error("Token Endpoint returned: " + error);
 
-					return null;
+					throw new AuthenticationServiceException(
+							"Unable to obtain Access Token.  Token Endpoint returned: "
+									+ error);
 
 				} else {
 
@@ -376,7 +401,8 @@ public class OpenIdConnectAuthenticationFilter extends
 							logger.error("Problem parsing id_token:  " + e);
 							// e.printStackTrace();
 
-							return null;
+							throw new AuthenticationServiceException(
+									"Problem parsing id_token return from Token endpoint: " + e);
 						}
 
 					} else {
@@ -385,7 +411,8 @@ public class OpenIdConnectAuthenticationFilter extends
 
 						logger.error("Token Endpoint did not return a token_id");
 
-						return null;
+						throw new AuthenticationServiceException(
+								"Token Endpoint did not return a token_id");
 					}
 
 					// Handle Check ID Endpoint interaction
@@ -418,7 +445,8 @@ public class OpenIdConnectAuthenticationFilter extends
 								+ httpClientErrorException.getStatusText()
 								+ " : " + httpClientErrorException.getMessage());
 
-						return null;
+						throw new AuthenticationServiceException(
+								"Unable check token.");
 					}
 
 					jsonRoot = new JsonParser().parse(jsonString);
@@ -453,14 +481,20 @@ public class OpenIdConnectAuthenticationFilter extends
 										+ NONCE_SIGNATURE_COOKIE_NAME
 										+ " failed.");
 
-								return null;
+								throw new AuthenticationServiceException(
+										"Possible replay attack detected! "
+												+ "The comparison of the nonce in the returned "
+												+ "ID Token to the signed session "
+												+ NONCE_SIGNATURE_COOKIE_NAME
+												+ " failed.");							
 							}
 
 						} else {
 							logger.error(NONCE_SIGNATURE_COOKIE_NAME
 									+ " was found, but was null or empty.");
 
-							return null;
+							throw new AuthenticationServiceException(NONCE_SIGNATURE_COOKIE_NAME
+									+ " was found, but was null or empty.");
 						}
 
 					} else {
@@ -468,14 +502,15 @@ public class OpenIdConnectAuthenticationFilter extends
 						logger.error(NONCE_SIGNATURE_COOKIE_NAME
 								+ " cookie was not found.");
 
-						return null;
+						throw new AuthenticationServiceException(NONCE_SIGNATURE_COOKIE_NAME
+								+ " cookie was not found.");
 					}
 
 					// Create an Authentication object for the token, and
 					// return.
 
 					OpenIdConnectAuthenticationToken token = new OpenIdConnectAuthenticationToken(
-							idToken, userId);
+							userId, idToken);
 
 					Authentication authentication = this
 							.getAuthenticationManager().authenticate(token);
@@ -495,7 +530,8 @@ public class OpenIdConnectAuthenticationFilter extends
 				urlVariables.put("response_type", "code");
 				urlVariables.put("client_id", clientId);
 				urlVariables.put("scope", scope);
-				urlVariables.put("redirect_uri", buildRedirectURI(request));
+				urlVariables.put("redirect_uri",
+						buildRedirectURI(request, null));
 
 				// Create a string value used to associate a user agent session
 				// with an ID Token to mitigate replay attacks. The value is
@@ -530,9 +566,15 @@ public class OpenIdConnectAuthenticationFilter extends
 	 * 
 	 * @param request
 	 *            the current request which is being processed by this filter
-	 * @return The redirect_uri.
+	 * @param ingoreParameters
+	 *            an array of parameter names to ignore.
+	 * @return
 	 */
-	private String buildRedirectURI(HttpServletRequest request) {
+	private String buildRedirectURI(HttpServletRequest request,
+			String[] ingoreParameters) {
+
+		List<String> ignore = (ingoreParameters != null) ? Arrays
+				.asList(ingoreParameters) : null;
 
 		boolean isFirst = true;
 
@@ -542,22 +584,25 @@ public class OpenIdConnectAuthenticationFilter extends
 				.hasMoreElements();) {
 
 			String name = (String) e.nextElement();
-			// Assume for simplicity that there is only one value
-			String value = request.getParameter(name);
 
-			if (value == null) {
-				continue;
-			}
+			if ((ignore == null) || (!ignore.contains(name))) {
+				// Assume for simplicity that there is only one value
+				String value = request.getParameter(name);
 
-			if (isFirst) {
-				sb.append("?");
-				isFirst = false;
-			}
+				if (value == null) {
+					continue;
+				}
 
-			sb.append(name).append("=").append(value);
+				if (isFirst) {
+					sb.append("?");
+					isFirst = false;
+				}
 
-			if (e.hasMoreElements()) {
-				sb.append("&");
+				sb.append(name).append("=").append(value);
+
+				if (e.hasMoreElements()) {
+					sb.append("&");
+				}
 			}
 		}
 
