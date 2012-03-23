@@ -29,6 +29,8 @@ import org.springframework.security.oauth2.provider.code.AuthorizationCodeServic
 import org.springframework.security.oauth2.provider.code.AuthorizationRequestHolder;
 import org.springframework.stereotype.Component;
 
+import com.google.common.base.Strings;
+
 /**
  * AccessToken granter for Authorization Code flow. 
  * 
@@ -106,7 +108,6 @@ public class ConnectAuthCodeTokenGranter implements TokenGranter {
 
 		String authorizationCode = parameters.get("code");
 		String redirectUri = parameters.get("redirect_uri");
-		String nonce = parameters.get("nonce");
 
 		if (authorizationCode == null) {
 			throw new OAuth2Exception("An authorization code must be supplied.");
@@ -167,18 +168,17 @@ public class ConnectAuthCodeTokenGranter implements TokenGranter {
 			idToken.getClaims().setAudience(clientId);
 			idToken.getClaims().setIssuedAt(new Date());
 			idToken.getClaims().setIssuer(configBean.getIssuer());
-			if (nonce != null && nonce.length() > 0) {
+			
+			
+			String nonce = unconfirmedAuthorizationRequest.getParameters().get("nonce");
+			if (!Strings.isNullOrEmpty(nonce)) {
 				idToken.getClaims().setNonce(nonce);
 			}
 			// TODO: expiration? other fields?
 			
-			idToken.getClaims().setClaim("nonce", unconfirmedAuthorizationRequest.getParameters().get("nonce"));
-			
 			//Sign
-			
 			//TODO: check client to see if they have a preferred alg, attempt to use that
 			
-			//TODO: uncomment line below once RsaSigner bean has been set up and added to the configBean
 			jwtService.signJwt(idToken);
 			
 			token.setIdToken(idToken);
