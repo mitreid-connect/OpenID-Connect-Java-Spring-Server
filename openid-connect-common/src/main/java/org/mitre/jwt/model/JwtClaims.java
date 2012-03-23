@@ -22,6 +22,7 @@ public class JwtClaims extends ClaimSet {
 	public static final String ISSUED_AT = "iat";
 	public static final String NOT_BEFORE = "nbf";
 	public static final String EXPIRATION = "exp";
+	public static final String NONCE = "nonce";
 
 	/**
 	 * ISO8601 / RFC3339 Date Format
@@ -63,7 +64,9 @@ public class JwtClaims extends ClaimSet {
 	        	setJwtId(element.getValue().getAsString());
 	        } else if (element.getKey().equals(TYPE)) {	        	
 	        	setType(element.getValue().getAsString());
-	        } else {
+	        } else if (element.getKey().equals(NONCE)){
+	        	setType(element.getValue().getAsString());
+	        }else {
 	        	pass.add(element.getKey(), element.getValue());
 	        }
         }
@@ -184,5 +187,18 @@ public class JwtClaims extends ClaimSet {
     	setClaim(TYPE, type);
     }
     
+    /**
+     * @return the nonce
+     */
+    public String getNonce() {
+    	return getClaimAsString(NONCE);
+    }
+    
+    /**
+     * @param nonce the nonce to set
+     */
+    public void setNonce(String nonce) {
+    	setClaim(NONCE, nonce);
+    }
 
 }

@@ -106,6 +106,7 @@ public class ConnectAuthCodeTokenGranter implements TokenGranter {
 
 		String authorizationCode = parameters.get("code");
 		String redirectUri = parameters.get("redirect_uri");
+		String nonce = parameters.get("nonce");
 
 		if (authorizationCode == null) {
 			throw new OAuth2Exception("An authorization code must be supplied.");
@@ -144,9 +145,7 @@ public class ConnectAuthCodeTokenGranter implements TokenGranter {
 		OAuth2AccessTokenEntity token = (OAuth2AccessTokenEntity) tokenServices.createAccessToken(new OAuth2Authentication(authorizationRequest, userAuth));
 		
 		token.getJwt().getClaims().setAudience(clientId);
-
-		//TODO: need to get base url, but Utility.findBaseUrl() needs access to a request object, which we don't have
-		//See github issue #1
+		
 		token.getJwt().getClaims().setIssuer(configBean.getIssuer());
 
 		token.getJwt().getClaims().setIssuedAt(new Date());
@@ -168,6 +167,9 @@ public class ConnectAuthCodeTokenGranter implements TokenGranter {
 			idToken.getClaims().setAudience(clientId);
 			idToken.getClaims().setIssuedAt(new Date());
 			idToken.getClaims().setIssuer(configBean.getIssuer());
+			if (nonce != null && nonce.length() > 0) {
+				idToken.getClaims().setNonce(nonce);
+			}
 			// TODO: expiration? other fields?
 			
 			idToken.getClaims().setClaim("nonce", unconfirmedAuthorizationRequest.getParameters().get("nonce"));
