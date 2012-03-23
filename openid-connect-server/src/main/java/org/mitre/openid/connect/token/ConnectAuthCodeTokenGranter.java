@@ -170,6 +170,8 @@ public class ConnectAuthCodeTokenGranter implements TokenGranter {
 			idToken.getClaims().setIssuer(configBean.getIssuer());
 			// TODO: expiration? other fields?
 			
+			idToken.getClaims().setClaim("nonce", unconfirmedAuthorizationRequest.getParameters().get("nonce"));
+			
 			//Sign
 			
 			//TODO: check client to see if they have a preferred alg, attempt to use that
