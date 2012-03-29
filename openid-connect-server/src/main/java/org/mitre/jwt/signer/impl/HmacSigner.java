@@ -168,7 +168,7 @@ public class HmacSigner extends AbstractJwtSigner implements InitializingBean {
 	 * )
 	 */
 	@Override
-	protected String generateSignature(String signatureBase) {
+	public String generateSignature(String signatureBase) {
 		if (passphrase == null) {
 			throw new IllegalArgumentException("Passphrase cannot be null");
 		}

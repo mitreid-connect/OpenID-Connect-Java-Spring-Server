@@ -3,8 +3,10 @@ package org.mitre.jwt;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
@@ -54,7 +56,10 @@ public class JwtTest {
 		try {
 			key = "secret".getBytes("UTF-8");
 
-			signer = new HmacSigner(key);
+			signer = new HmacSigner();
+			((HmacSigner) signer).setPassphrase(key);
+			((HmacSigner) signer).afterPropertiesSet();
+			
 			signer.sign(jwt);
 	
 			/*
@@ -77,9 +82,10 @@ public class JwtTest {
 
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
-		} catch (NoSuchAlgorithmException e) {
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		} 
 	}
 
 	/**
@@ -225,10 +231,12 @@ public class JwtTest {
 		try {
 			key = "secret".getBytes("UTF-8");
 
-			signer = new HmacSigner(key);
+			signer = new HmacSigner();
+			((HmacSigner) signer).setPassphrase(key);
+			((HmacSigner) signer).afterPropertiesSet();
 
 			/*
-			 * Token string based on the following strucutres, serialized exactly as
+			 * Token string based on the following structures, serialized exactly as
 			 * follows and base64 encoded:
 			 * 
 			 * header: {"typ":"JWT","alg":"HS256"} claims:
@@ -245,44 +253,9 @@ public class JwtTest {
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (NoSuchAlgorithmException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-
-	@Test
-	public void testValidateRsaSignature() throws Exception {
-
-		/*
-		 * Expected string based on the following structures, serialized exactly
-		 * as follows and base64 encoded:
-		 * 
-		 * header: {"typ":"JWT","alg":"HS256"} claims:
-		 * {"exp":1300819380,"iss":"joe","http://example.com/is_root":true}
-		 * 
-		 * Expected signature: dSRvtD-ExzGN-
-		 * fRXd1wRZOPo1JFPuqgwvaIKp8jgcyMXJegy6IUjssfUfUcICN5yvh0ggOMWMeWkwQ7
-		 * -PlXMJWymdhXVI3BOpNt7ZOB2vMFYSOOHNBJUunQoe1lmNxuHQdhxqoHahn3u1cLDXz
-		 * -xx-
-		 * JELduuMmaDWqnTFPodVPl45WBKHaQhlOiFWj3ZClUV2k5p2yBT8TmxekL8gWwgVbQk5yPnYOs
-		 * -PcMjzODc9MZX4yI10ZSCSDciwf-
-		 * rgkQLT7wW4uZCoqTZ7187sCodHd6nw3nghqbtqN05fQ3Yq7ykwaR8pdQBFb2L9l7DhLLuXIREDKIFUHBSUs8OnvXFMg
-		 */
-
-		// uses the "testGenerateRsaSignature" alias added just previously in
-		// the testGenerateRsaSignature unit test
-
-		JwtSigner signer = new RsaSigner(RsaSigner.Algorithm.RS256.toString(),
-				keystore, "testGenerateRsaSignature",
-				RsaSigner.DEFAULT_PASSWORD);
-		((RsaSigner) signer).afterPropertiesSet();
-
-		String jwtString = "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJleHAiOjEzMDA4MTkzODAsImlzcyI6ImpvZSIsImh0dHA6Ly9leGFtcGxlLmNvbS9pc19yb290Ijp0cnVlfQ.dSRvtD-ExzGN-fRXd1wRZOPo1JFPuqgwvaIKp8jgcyMXJegy6IUjssfUfUcICN5yvh0ggOMWMeWkwQ7-PlXMJWymdhXVI3BOpNt7ZOB2vMFYSOOHNBJUunQoe1lmNxuHQdhxqoHahn3u1cLDXz-xx-JELduuMmaDWqnTFPodVPl45WBKHaQhlOiFWj3ZClUV2k5p2yBT8TmxekL8gWwgVbQk5yPnYOs-PcMjzODc9MZX4yI10ZSCSDciwf-rgkQLT7wW4uZCoqTZ7187sCodHd6nw3nghqbtqN05fQ3Yq7ykwaR8pdQBFb2L9l7DhLLuXIREDKIFUHBSUs8OnvXFMg";
-
-		boolean valid = signer.verify(jwtString);
-
-		assertThat(valid, equalTo(Boolean.TRUE));
-
 	}
 }

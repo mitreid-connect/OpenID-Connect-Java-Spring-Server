@@ -91,7 +91,14 @@ public class KeyStoreTest {
 			int daysNotValidBefore, int daysNotValidAfter)
 			throws GeneralSecurityException, IOException {
 
-		java.security.KeyStore ks = keystore.getKeystore();
+		java.security.KeyStore ks;
+		
+		if (keystore != null ) {
+			ks = keystore.getKeystore();
+		} else {
+			ks = java.security.KeyStore.getInstance(java.security.KeyStore.getDefaultType());
+			ks.load(null, null);
+		}
 
 		KeyPairGenerator rsaKeyPairGenerator = null;
 
@@ -118,7 +125,9 @@ public class KeyStoreTest {
 		ks.setKeyEntry(alias, privateKey, aliasPassword.toCharArray(),
 				new java.security.cert.Certificate[] { certificate });
 
-		keystore.setKeystore(ks);
+		if (keystore != null) {
+			keystore.setKeystore(ks);
+		}
 
 		return ks;
 	}

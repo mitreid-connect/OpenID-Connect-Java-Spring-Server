@@ -148,9 +148,10 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 
 		KeyPair keyPair = keystore.getKeyPairForAlias(alias, password);
 
+		Assert.notNull(keyPair, "Either alias and/or password is not correct for keystore");
+		
 		publicKey = keyPair.getPublic();
 		privateKey = keyPair.getPrivate();
-
 	}
 
 	/**
@@ -202,7 +203,7 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 	 * )
 	 */
 	@Override
-	protected String generateSignature(String signatureBase) {
+	public String generateSignature(String signatureBase) {
 
 		String sig = null;
 

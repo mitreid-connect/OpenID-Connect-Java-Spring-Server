@@ -33,6 +33,12 @@ public class KeyStore implements InitializingBean {
 	private java.security.KeyStore keystore;
 
 	/**
+	 * Default Constructor
+	 */
+	public KeyStore() {
+	}
+
+	/**
 	 * KeyStore constructor
 	 * 
 	 * @param password

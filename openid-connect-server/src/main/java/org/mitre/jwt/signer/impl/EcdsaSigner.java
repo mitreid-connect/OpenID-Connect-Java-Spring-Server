@@ -199,7 +199,7 @@ public class EcdsaSigner extends AbstractJwtSigner implements InitializingBean {
 	 * @see org.mitre.jwt.signer.AbstractJwtSigner#generateSignature(java.lang.String)
 	 */
 	@Override
-	protected String generateSignature(String signatureBase) {
+	public String generateSignature(String signatureBase) {
 
 		String sig = null;
 
