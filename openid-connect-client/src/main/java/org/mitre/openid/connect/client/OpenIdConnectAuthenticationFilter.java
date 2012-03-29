@@ -38,6 +38,8 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.WebUtils;
 
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
@@ -324,7 +326,7 @@ public class OpenIdConnectAuthenticationFilter extends
 	public Authentication attemptAuthentication(HttpServletRequest request,
 			HttpServletResponse response) throws AuthenticationException,
 			IOException, ServletException {
-
+		
 		if (request.getParameter("error") != null) {
 
 			handleError(request, response);
@@ -443,6 +445,25 @@ public class OpenIdConnectAuthenticationFilter extends
 				try {
 					idToken = IdToken.parse(jsonRoot.getAsJsonObject()
 							.get("id_token").getAsString());
+
+					List<String> parts = Lists.newArrayList(Splitter.on(".")
+							.split(jsonRoot.getAsJsonObject().get("id_token")
+									.getAsString()));
+
+					if (parts.size() != 3) {
+						throw new IllegalArgumentException(
+								"Invalid JWT format.");
+					}
+
+					String h64 = parts.get(0);
+					String c64 = parts.get(1);
+					String s64 = parts.get(2);
+					
+					logger.debug("h64 = " + h64);
+					logger.debug("c64 = " + c64);
+					logger.debug("s64 = " + s64);
+					
+
 				} catch (Exception e) {
 
 					// I suspect this could happen

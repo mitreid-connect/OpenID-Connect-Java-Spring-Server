@@ -2,7 +2,7 @@ package org.mitre.jwt.signer.impl;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
-import java.security.InvalidKeyException;
+import java.security.GeneralSecurityException;
 import java.security.NoSuchAlgorithmException;
 
 import javax.crypto.Mac;
@@ -12,6 +12,8 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mitre.jwt.signer.AbstractJwtSigner;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
 
 /**
  * JWT Signer using either the HMAC SHA-256, SHA-384, SHA-512 hash algorithm
@@ -19,7 +21,7 @@ import org.mitre.jwt.signer.AbstractJwtSigner;
  * @author AANGANES, nemonik
  * 
  */
-public class HmacSigner extends AbstractJwtSigner {
+public class HmacSigner extends AbstractJwtSigner implements InitializingBean {
 
 	/**
 	 * an enum for mapping a JWS name to standard algorithm name
@@ -71,16 +73,18 @@ public class HmacSigner extends AbstractJwtSigner {
 		public String getStandardName() {
 			return standardName;
 		}
-	};
+	}
 
-	private static Log logger = LogFactory.getLog(HmacSigner.class);	
-	
+	public static final String DEFAULT_PASSPHRASE = "changeit";;
+
+	private static Log logger = LogFactory.getLog(HmacSigner.class);
+
 	private Mac mac;
 
-	private String passphrase;
+	private String passphrase = DEFAULT_PASSPHRASE;
 
 	/**
-	 * Create a signer with no passphrase
+	 * Default constructor
 	 */
 	public HmacSigner() {
 		super(Algorithm.DEFAULT);
@@ -90,30 +94,34 @@ public class HmacSigner extends AbstractJwtSigner {
 	 * Create HMAC singer with default algorithm and passphrase as raw bytes
 	 * 
 	 * @param passphraseAsRawBytes
+	 *            The passphrase as raw bytes
 	 */
-	public HmacSigner(byte[] passphraseAsRawBytes) {
+	public HmacSigner(byte[] passphraseAsRawBytes)
+			throws NoSuchAlgorithmException {
 		this(Algorithm.DEFAULT, new String(passphraseAsRawBytes,
 				Charset.forName("UTF-8")));
 	}
-	
+
 	/**
 	 * Create HMAC singer with default algorithm and passphrase
 	 * 
 	 * @param passwordAsRawBytes
+	 *            The passphrase as raw bytes
 	 */
-	public HmacSigner(String passphrase) {
+	public HmacSigner(String passphrase) throws NoSuchAlgorithmException {
 		this(Algorithm.DEFAULT, passphrase);
-	}	
+	}
 
 	/**
 	 * Create HMAC singer with given algorithm and password as raw bytes
 	 * 
 	 * @param algorithmName
-	 *            the JWS name for the standard name of the requested MAC
-	 *            algorithm
+	 *            The Java standard name of the requested MAC algorithm
 	 * @param passphraseAsRawBytes
+	 *            The passphrase as raw bytes
 	 */
-	public HmacSigner(String algorithmName, byte[] passphraseAsRawBytes) {
+	public HmacSigner(String algorithmName, byte[] passphraseAsRawBytes)
+			throws NoSuchAlgorithmException {
 		this(algorithmName, new String(passphraseAsRawBytes,
 				Charset.forName("UTF-8")));
 	}
@@ -122,26 +130,36 @@ public class HmacSigner extends AbstractJwtSigner {
 	 * Create HMAC singer with given algorithm and passwords
 	 * 
 	 * @param algorithmName
-	 *            the JWS name for the standard name of the requested MAC
-	 *            algorithm
+	 *            The Java standard name of the requested MAC algorithm
 	 * @param passphrase
 	 *            the passphrase
 	 */
 	public HmacSigner(String algorithmName, String passphrase) {
 		super(algorithmName);
 
+		Assert.notNull(passphrase, "A passphrase must be supplied");
+		
 		setPassphrase(passphrase);
 
-		try {
-			mac = Mac.getInstance(Algorithm.getByName(algorithmName)
-					.getStandardName());
-		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
-		
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+	 */
+	@Override
+	public void afterPropertiesSet() throws Exception {
+
+		mac = Mac.getInstance(Algorithm.getByName(super.getAlgorithm())
+				.getStandardName());
+		
+		logger.debug(Algorithm.getByName(getAlgorithm()).getStandardName()
+				+ " ECDSA Signer ready for business");
+	}	
+	
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -152,25 +170,18 @@ public class HmacSigner extends AbstractJwtSigner {
 	@Override
 	protected String generateSignature(String signatureBase) {
 		if (passphrase == null) {
-			return null; // TODO: probably throw some kind of exception
+			throw new IllegalArgumentException("Passphrase cannot be null");
 		}
 
 		try {
 			mac.init(new SecretKeySpec(getPassphrase().getBytes(), mac
 					.getAlgorithm()));
-		} catch (InvalidKeyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 
-		try {
 			mac.update(signatureBase.getBytes("UTF-8"));
-		} catch (IllegalStateException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (GeneralSecurityException e) {
+			logger.error(e);
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e);
 		}
 
 		byte[] sigBytes = mac.doFinal();
@@ -179,6 +190,7 @@ public class HmacSigner extends AbstractJwtSigner {
 
 		// strip off any padding
 		sig = sig.replace("=", "");
+
 		return sig;
 	}
 
@@ -191,14 +203,12 @@ public class HmacSigner extends AbstractJwtSigner {
 	}
 
 	public void setPassphrase(String passphrase) {
-		
-		if (passphrase.isEmpty())
-			throw new IllegalArgumentException("passphrase must be set");
-
 		this.passphrase = passphrase;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	@Override

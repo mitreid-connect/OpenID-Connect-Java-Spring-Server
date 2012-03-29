@@ -6,7 +6,6 @@ import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
-import java.security.SignatureException;
 import java.security.interfaces.RSAPrivateKey;
 import java.util.List;
 
@@ -16,6 +15,7 @@ import org.apache.commons.logging.LogFactory;
 import org.mitre.jwt.signer.AbstractJwtSigner;
 import org.mitre.jwt.signer.service.impl.KeyStore;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.Assert;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
@@ -42,7 +42,6 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 		public static final String DEFAULT = Algorithm.RS256.toString();
 		public static final String PREPEND = "RS";
 
-		
 		/**
 		 * Returns the Algorithm for the name
 		 * 
@@ -89,7 +88,7 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 
 	private KeyStore keystore;
 	private String alias;
-	private String password;
+	private String password = DEFAULT_PASSWORD;
 
 	private PrivateKey privateKey;
 	private PublicKey publicKey;
@@ -99,93 +98,128 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 	 * Default constructor
 	 */
 	public RsaSigner() {
-		this(Algorithm.DEFAULT, null, null, DEFAULT_PASSWORD);
+		super(Algorithm.DEFAULT);
 	}
 
 	/**
+	 * Creates an RsaSigner from an algorithm name, a Java Keystore, an alias
+	 * for the key pair, and the default password to access. Key pairs created
+	 * with larger bit sizes obviously create larger signatures.
+	 * 
 	 * @param algorithmName
+	 *            The algorithm name
 	 * @param keystore
+	 *            A Java Keystore containing the key pair
 	 * @param alias
+	 *            The alias for the key pair
+	 * @throws GeneralSecurityException
 	 */
-	public RsaSigner(String algorithmName, KeyStore keystore, String alias) {
+	public RsaSigner(String algorithmName, KeyStore keystore, String alias)
+			throws GeneralSecurityException {
 		this(algorithmName, keystore, alias, DEFAULT_PASSWORD);
 	}
-	
+
 	/**
+	 * Creates an RsaSigner from an algorithm name, a Java Keystore, an alias
+	 * for the key pair, and the password to access. Key pairs created with
+	 * larger bit sizes obviously create larger signatures.
+	 * 
 	 * @param algorithmName
+	 *            The algorithm name
 	 * @param keystore
+	 *            A Java Keystore containing the key pair
 	 * @param alias
+	 *            The alias for the key pair
 	 * @param password
+	 *            The password used to access and retrieve the key pair.
+	 * @throws GeneralSecurityException
 	 */
 	public RsaSigner(String algorithmName, KeyStore keystore, String alias,
-			String password) {
+			String password) throws GeneralSecurityException {
 		super(algorithmName);
+
+		Assert.notNull(keystore, "An keystore must be supplied");
+		Assert.notNull(alias, "A alias must be supplied");
+		Assert.notNull(password, "A password must be supplied");
 
 		setKeystore(keystore);
 		setAlias(alias);
 		setPassword(password);
-		
-		try {
-			signer = Signature.getInstance(Algorithm.getByName(algorithmName).getStandardName()); //, PROVIDER);
-		} catch (GeneralSecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
-	}
 
-
-	/**
-	 * @param algorithmName
-	 * @param publicKey
-	 * @param privateKey
-	 */
-	public RsaSigner(String algorithmName, PublicKey publicKey, PrivateKey privateKey) {
-		super(algorithmName);
-		this.publicKey = publicKey;
-		this.privateKey = privateKey;
-	}
-
-	@Override
-	public void afterPropertiesSet() throws Exception {
 		KeyPair keyPair = keystore.getKeyPairForAlias(alias, password);
 
 		publicKey = keyPair.getPublic();
 		privateKey = keyPair.getPrivate();
-		
-		logger.debug( Algorithm.getByName(getAlgorithm()).getStandardName() + " RSA Signer ready for business");
 
 	}
 
-	/* (non-Javadoc)
-	 * @see org.mitre.jwt.signer.AbstractJwtSigner#generateSignature(java.lang.String)
+	/**
+	 * Creates an RsaSigner from an algorithm name, and key pair. Key pairs
+	 * created with larger bit sizes obviously create larger signatures.
+	 * 
+	 * @param algorithmName
+	 *            The algorithm name
+	 * @param publicKey
+	 *            The public key
+	 * @param privateKey
+	 *            The private key
+	 */
+	public RsaSigner(String algorithmName, PublicKey publicKey,
+			PrivateKey privateKey) {
+		super(algorithmName);
+
+		Assert.notNull(publicKey, "An publicKey must be supplied");
+		Assert.notNull(privateKey, "A privateKey must be supplied");
+
+		this.publicKey = publicKey;
+		this.privateKey = privateKey;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+	 */
+	@Override
+	public void afterPropertiesSet() throws Exception {
+
+		// unsupported algorithm will throw a NoSuchAlgorithmException
+		signer = Signature.getInstance(Algorithm
+				.getByName(super.getAlgorithm()).getStandardName()); // ,
+																		// PROVIDER);
+
+		logger.debug(Algorithm.getByName(getAlgorithm()).getStandardName()
+				+ " RSA Signer ready for business");
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.mitre.jwt.signer.AbstractJwtSigner#generateSignature(java.lang.String
+	 * )
 	 */
 	@Override
 	protected String generateSignature(String signatureBase) {
 
-		try {			
-			signer.initSign(privateKey);
-			signer.update(signatureBase.getBytes("UTF-8"));
-		} catch (GeneralSecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
-
-		byte[] sigBytes;
-		String sig = "";
+		String sig = null;
 
 		try {
-			sigBytes = signer.sign();
-			sig = new String(Base64.encodeBase64URLSafe(sigBytes));
-			// strip off any padding
-			sig = sig.replace("=", "");
-		} catch (SignatureException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			signer.initSign(privateKey);
+			signer.update(signatureBase.getBytes("UTF-8"));
+
+			byte[] sigBytes = signer.sign();
+
+			sig = (new String(Base64.encodeBase64URLSafe(sigBytes))).replace(
+					"=", "");
+		} catch (GeneralSecurityException e) {
+			logger.error(e);
+		} catch (UnsupportedEncodingException e) {
+			logger.error(e);
 		}
-	
+
 		return sig;
 	}
 
@@ -237,14 +271,15 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 				+ ", publicKey=" + publicKey + ", signer=" + signer + "]";
 	}
 
-	/* (non-Javadoc)
-	 * @see org.mitre.jwt.signer.AbstractJwtSigner#verify(java.lang.String)
-	 */
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.mitre.jwt.signer.AbstractJwtSigner#verify(java.lang.String)
 	 */
 	@Override
 	public boolean verify(String jwtString) {
+
+		boolean value = false;
 
 		// split on the dots
 		List<String> parts = Lists.newArrayList(Splitter.on(".").split(
@@ -263,15 +298,15 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 		try {
 			signer.initVerify(publicKey);
 			signer.update(signingInput.getBytes("UTF-8"));
-			signer.verify(s64.getBytes("UTF-8"));
+			value = signer.verify(s64.getBytes("UTF-8"));
 		} catch (GeneralSecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e);
+			return false;
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e);
+			return false;
 		}
 
-		return true;
+		return value;
 	}
 }
