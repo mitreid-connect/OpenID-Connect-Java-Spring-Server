@@ -6,6 +6,7 @@ import static org.junit.Assert.assertThat;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.cert.X509Certificate;
@@ -46,37 +47,39 @@ public class JwtTest {
 		jwt.getClaims().setIssuer("joe");
 		jwt.getClaims().setClaim("http://example.com/is_root", Boolean.TRUE);
 
-		// sign it
 		byte[] key = null;
+		JwtSigner signer;
+
+		// sign it
 		try {
 			key = "secret".getBytes("UTF-8");
+
+			signer = new HmacSigner(key);
+			signer.sign(jwt);
+	
+			/*
+			 * Expected string based on the following structures, serialized exactly
+			 * as follows and base64 encoded:
+			 * 
+			 * header: {"typ":"JWT","alg":"HS256"} claims:
+			 * {"exp":1300819380,"iss":"joe","http://example.com/is_root":true}
+			 * 
+			 * Expected signature: iGBPJj47S5q_HAhSoQqAdcS6A_1CFj3zrLaImqNbt9E
+			 */
+			String signature = "p-63Jzz7mgi3H4hvW6MFB7lmPRZjhsL666MYkmpX33Y";
+			String expected = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjEzMDA4MTkzODAsImlzcyI6ImpvZSIsImh0dHA6Ly9leGFtcGxlLmNvbS9pc19yb290Ijp0cnVlfQ."
+					+ signature;
+	
+			String actual = jwt.toString();
+	
+			assertThat(actual, equalTo(expected));
+			assertThat(jwt.getSignature(), equalTo(signature));
+
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		}
-
-		JwtSigner signer = new HmacSigner(key);
-
-		signer.sign(jwt);
-
-		/*
-		 * Expected string based on the following structures, serialized exactly
-		 * as follows and base64 encoded:
-		 * 
-		 * header: {"typ":"JWT","alg":"HS256"} claims:
-		 * {"exp":1300819380,"iss":"joe","http://example.com/is_root":true}
-		 * 
-		 * Expected signature: iGBPJj47S5q_HAhSoQqAdcS6A_1CFj3zrLaImqNbt9E
-		 */
-		String signature = "p-63Jzz7mgi3H4hvW6MFB7lmPRZjhsL666MYkmpX33Y";
-		String expected = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjEzMDA4MTkzODAsImlzcyI6ImpvZSIsImh0dHA6Ly9leGFtcGxlLmNvbS9pc19yb290Ijp0cnVlfQ."
-				+ signature;
-
-		String actual = jwt.toString();
-
-		assertThat(actual, equalTo(expected));
-		assertThat(jwt.getSignature(), equalTo(signature));
-
 	}
 
 	/**
@@ -214,32 +217,38 @@ public class JwtTest {
 
 	@Test
 	public void testValidateHmacSignature() {
-		// sign it
+		
 		byte[] key = null;
+		JwtSigner signer;
+		
+		// sign it
 		try {
 			key = "secret".getBytes("UTF-8");
+
+			signer = new HmacSigner(key);
+
+			/*
+			 * Token string based on the following strucutres, serialized exactly as
+			 * follows and base64 encoded:
+			 * 
+			 * header: {"typ":"JWT","alg":"HS256"} claims:
+			 * {"exp":1300819380,"iss":"joe","http://example.com/is_root":true}
+			 * 
+			 * Expected signature: iGBPJj47S5q_HAhSoQqAdcS6A_1CFj3zrLaImqNbt9E
+			 */
+			String jwtString = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjEzMDA4MTkzODAsImlzcyI6ImpvZSIsImh0dHA6Ly9leGFtcGxlLmNvbS9pc19yb290Ijp0cnVlfQ.iGBPJj47S5q_HAhSoQqAdcS6A_1CFj3zrLaImqNbt9E";
+	
+			boolean valid = signer.verify(jwtString);
+	
+			assertThat(valid, equalTo(Boolean.TRUE));
+
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-
-		JwtSigner signer = new HmacSigner(key);
-
-		/*
-		 * Token string based on the following strucutres, serialized exactly as
-		 * follows and base64 encoded:
-		 * 
-		 * header: {"typ":"JWT","alg":"HS256"} claims:
-		 * {"exp":1300819380,"iss":"joe","http://example.com/is_root":true}
-		 * 
-		 * Expected signature: iGBPJj47S5q_HAhSoQqAdcS6A_1CFj3zrLaImqNbt9E
-		 */
-		String jwtString = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjEzMDA4MTkzODAsImlzcyI6ImpvZSIsImh0dHA6Ly9leGFtcGxlLmNvbS9pc19yb290Ijp0cnVlfQ.iGBPJj47S5q_HAhSoQqAdcS6A_1CFj3zrLaImqNbt9E";
-
-		boolean valid = signer.verify(jwtString);
-
-		assertThat(valid, equalTo(Boolean.TRUE));
-
 	}
 
 	@Test
