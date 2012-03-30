@@ -10,6 +10,7 @@ import java.security.interfaces.RSAPrivateKey;
 import java.util.List;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mitre.jwt.signer.AbstractJwtSigner;
@@ -57,7 +58,7 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 
 			// corresponding type not found
 			throw new IllegalArgumentException(
-					"Algorithm name does not have a corresponding Algorithm");
+					"Algorithm name " + name + " does not have a corresponding Algorithm: expected one of [" + StringUtils.join(Algorithm.values(), ", ") + "]");
 		}
 
 		private final String standardName;

@@ -138,7 +138,7 @@
 				</entry>
 				<entry key="hmac1">
 					<bean id="hmacSigner" class="org.mitre.jwt.signer.impl.HmacSigner">
-						<property name="algorithm" value="HMACSHA256" />
+						<property name="algorithm" value="HS256" />
 						<property name="passphrase" value="changeit" />
 					</bean>
 				</entry>

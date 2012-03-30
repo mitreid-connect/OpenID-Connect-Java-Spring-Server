@@ -3,13 +3,13 @@ package org.mitre.jwt.signer.impl;
 import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
-import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
 import java.util.List;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mitre.jwt.signer.AbstractJwtSigner;
@@ -60,7 +60,7 @@ public class EcdsaSigner extends AbstractJwtSigner implements InitializingBean {
 
 			// corresponding type not found
 			throw new IllegalArgumentException(
-					"Algorithm name does not have a corresponding Algorithm");
+					"Algorithm name " + name + " does not have a corresponding Algorithm: expected one of [" + StringUtils.join(Algorithm.values(), ", ") + "]");
 		}
 
 		private final String standardName;

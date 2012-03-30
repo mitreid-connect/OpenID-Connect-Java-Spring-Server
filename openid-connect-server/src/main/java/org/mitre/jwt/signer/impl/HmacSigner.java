@@ -4,11 +4,13 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.security.GeneralSecurityException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mitre.jwt.signer.AbstractJwtSigner;
@@ -43,15 +45,21 @@ public class HmacSigner extends AbstractJwtSigner implements InitializingBean {
 		 * @return
 		 */
 		public static Algorithm getByName(String name) {
+			
 			for (Algorithm correspondingType : Algorithm.values()) {
 				if (correspondingType.toString().equals(name)) {
 					return correspondingType;
 				}
 			}
 
+			ArrayList<String> longValues = new ArrayList<String>();
+			for (Algorithm v : Algorithm.values()) {
+				longValues.add(v.standardName);
+			}
+			
 			// corresponding type not found
 			throw new IllegalArgumentException(
-					"Algorithm name does not have a corresponding Algorithm");
+					"Algorithm name " + name + " does not have a corresponding Algorithm: expected one of [" + StringUtils.join(Algorithm.values(), ", ") + "]");
 		}
 
 		private final String standardName;
