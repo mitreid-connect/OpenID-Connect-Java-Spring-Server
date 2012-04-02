@@ -87,20 +87,11 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 	public RsaSigner(String algorithmName, KeyStore keystore, String alias, String password) throws GeneralSecurityException {
 		super(algorithmName);
 
-		Assert.notNull(keystore, "An keystore must be supplied");
-		Assert.notNull(alias, "A alias must be supplied");
-		Assert.notNull(password, "A password must be supplied");
-
 		setKeystore(keystore);
 		setAlias(alias);
 		setPassword(password);
 
-		KeyPair keyPair = keystore.getKeyPairForAlias(alias, password);
-
-		Assert.notNull(keyPair, "Either alias and/or password is not correct for keystore");
-		
-		publicKey = keyPair.getPublic();
-		privateKey = keyPair.getPrivate();
+		loadKeysFromKeystore();
 	}
 
 	/**
@@ -136,9 +127,28 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 		// unsupported algorithm will throw a NoSuchAlgorithmException
 		signer = Signature.getInstance(JwsAlgorithm.getByName(super.getAlgorithm()).getStandardName()); // ,PROVIDER);
 
+		loadKeysFromKeystore();
+		
 		logger.debug(JwsAlgorithm.getByName(getAlgorithm()).getStandardName() + " RSA Signer ready for business");
 
 	}
+
+	/**
+	 * Load the public and private keys from the keystore, identified with the configured alias and accessed with the configured password.
+	 * @throws GeneralSecurityException
+	 */
+	private void loadKeysFromKeystore() throws GeneralSecurityException {
+		Assert.notNull(keystore, "An keystore must be supplied");
+		Assert.notNull(alias, "A alias must be supplied");
+		Assert.notNull(password, "A password must be supplied");
+
+	    KeyPair keyPair = keystore.getKeyPairForAlias(alias, password);
+
+		Assert.notNull(keyPair, "Either alias and/or password is not correct for keystore");
+		
+		publicKey = keyPair.getPublic();
+		privateKey = keyPair.getPrivate();
+    }
 
 	/*
 	 * (non-Javadoc)
