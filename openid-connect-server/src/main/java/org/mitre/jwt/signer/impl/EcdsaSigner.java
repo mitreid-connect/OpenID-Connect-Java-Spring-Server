@@ -9,10 +9,10 @@ import java.security.Signature;
 import java.util.List;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mitre.jwt.signer.AbstractJwtSigner;
+import org.mitre.jwt.signer.JwsAlgorithm;
 import org.mitre.jwt.signer.service.impl.KeyStore;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
@@ -30,60 +30,6 @@ import com.google.common.collect.Lists;
  */
 public class EcdsaSigner extends AbstractJwtSigner implements InitializingBean {
 
-	/**
-	 * an enum for mapping a JWS name to standard algorithm name
-	 * 
-	 * @author nemonik
-	 * 
-	 */
-	public enum Algorithm {
-
-		// Algorithm constants
-		ES256("SHA256withECDSA"), ES384("SHA384withECDSA"), ES512(
-				"SHA512withECDSA");
-
-		public static final String DEFAULT = Algorithm.ES256.toString();
-		public static final String PREPEND = "ES";
-
-		/**
-		 * Returns the Algorithm for the name
-		 * 
-		 * @param name
-		 * @return
-		 */
-		public static Algorithm getByName(String name) {
-			for (Algorithm correspondingType : Algorithm.values()) {
-				if (correspondingType.toString().equals(name)) {
-					return correspondingType;
-				}
-			}
-
-			// corresponding type not found
-			throw new IllegalArgumentException(
-					"Algorithm name " + name + " does not have a corresponding Algorithm: expected one of [" + StringUtils.join(Algorithm.values(), ", ") + "]");
-		}
-
-		private final String standardName;
-
-		/**
-		 * Constructor of Algorithm
-		 * 
-		 * @param standardName
-		 */
-		Algorithm(String standardName) {
-			this.standardName = standardName;
-		}
-
-		/**
-		 * Return the Java standard algorithm name
-		 * 
-		 * @return
-		 */
-		public String getStandardName() {
-			return standardName;
-		}
-	};
-
 	private static Log logger = LogFactory.getLog(EcdsaSigner.class);
 
 	public static final String KEYPAIR_ALGORITHM = "EC";
@@ -97,11 +43,14 @@ public class EcdsaSigner extends AbstractJwtSigner implements InitializingBean {
 	private PublicKey publicKey;
 	private Signature signer;
 
+	public static final String DEFAULT_ALGORITHM = JwsAlgorithm.ES256.toString();
+	//public static final String PREPEND = "ES";
+
 	/**
 	 * Default constructor
 	 */
 	public EcdsaSigner() {
-		super(Algorithm.DEFAULT);
+		super(DEFAULT_ALGORITHM);
 	}
 
 	/**
@@ -167,8 +116,7 @@ public class EcdsaSigner extends AbstractJwtSigner implements InitializingBean {
 	 * @param privateKey
 	 *            The private key
 	 */
-	public EcdsaSigner(String algorithmName, PublicKey publicKey,
-			PrivateKey privateKey) {
+	public EcdsaSigner(String algorithmName, PublicKey publicKey, PrivateKey privateKey) {
 		super(algorithmName);
 		
 		Assert.notNull(publicKey, "A publicKey must be supplied");	
@@ -188,11 +136,9 @@ public class EcdsaSigner extends AbstractJwtSigner implements InitializingBean {
 	public void afterPropertiesSet() throws Exception {
 		
 		// Can throw a GeneralException
-		signer = Signature.getInstance(Algorithm.getByName(super.getAlgorithm())
-				.getStandardName()); // PROVIDER);
+		signer = Signature.getInstance(JwsAlgorithm.getByName(super.getAlgorithm()).getStandardName()); // PROVIDER);
 		
-		logger.debug(Algorithm.getByName(getAlgorithm()).getStandardName()
-				+ " ECDSA Signer ready for business");
+		logger.debug(JwsAlgorithm.getByName(getAlgorithm()).getStandardName() + " ECDSA Signer ready for business");
 	}
 
 	/* (non-Javadoc)

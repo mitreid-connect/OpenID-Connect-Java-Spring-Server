@@ -4,16 +4,15 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.security.GeneralSecurityException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mitre.jwt.signer.AbstractJwtSigner;
+import org.mitre.jwt.signer.JwsAlgorithm;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
@@ -25,65 +24,9 @@ import org.springframework.util.Assert;
  */
 public class HmacSigner extends AbstractJwtSigner implements InitializingBean {
 
-	/**
-	 * an enum for mapping a JWS name to standard algorithm name
-	 * 
-	 * @author nemonik
-	 * 
-	 */
-	public enum Algorithm {
+	public static final String DEFAULT_PASSPHRASE = "changeit";
 
-		// Algorithm constants
-		HS256("HMACSHA256"), HS384("HMACSHA384"), HS512("HMACSHA512");
-
-		public static final String DEFAULT = Algorithm.HS256.toString();
-
-		/**
-		 * Returns the Algorithm for the name
-		 * 
-		 * @param name
-		 * @return
-		 */
-		public static Algorithm getByName(String name) {
-			
-			for (Algorithm correspondingType : Algorithm.values()) {
-				if (correspondingType.toString().equals(name)) {
-					return correspondingType;
-				}
-			}
-
-			ArrayList<String> longValues = new ArrayList<String>();
-			for (Algorithm v : Algorithm.values()) {
-				longValues.add(v.standardName);
-			}
-			
-			// corresponding type not found
-			throw new IllegalArgumentException(
-					"Algorithm name " + name + " does not have a corresponding Algorithm: expected one of [" + StringUtils.join(Algorithm.values(), ", ") + "]");
-		}
-
-		private final String standardName;
-
-		/**
-		 * Constructor of Algorithm
-		 * 
-		 * @param standardName
-		 */
-		Algorithm(String standardName) {
-			this.standardName = standardName;
-		}
-
-		/**
-		 * Return the Java standard algorithm name
-		 * 
-		 * @return
-		 */
-		public String getStandardName() {
-			return standardName;
-		}
-	}
-
-	public static final String DEFAULT_PASSPHRASE = "changeit";;
+	public static final String DEFAULT_ALGORITHM = JwsAlgorithm.HS256.toString();
 
 	private static Log logger = LogFactory.getLog(HmacSigner.class);
 
@@ -95,7 +38,7 @@ public class HmacSigner extends AbstractJwtSigner implements InitializingBean {
 	 * Default constructor
 	 */
 	public HmacSigner() {
-		super(Algorithm.DEFAULT);
+		super(DEFAULT_ALGORITHM);
 	}
 
 	/**
@@ -106,8 +49,7 @@ public class HmacSigner extends AbstractJwtSigner implements InitializingBean {
 	 */
 	public HmacSigner(byte[] passphraseAsRawBytes)
 			throws NoSuchAlgorithmException {
-		this(Algorithm.DEFAULT, new String(passphraseAsRawBytes,
-				Charset.forName("UTF-8")));
+		this(DEFAULT_ALGORITHM, new String(passphraseAsRawBytes, Charset.forName("UTF-8")));
 	}
 
 	/**
@@ -117,7 +59,7 @@ public class HmacSigner extends AbstractJwtSigner implements InitializingBean {
 	 *            The passphrase as raw bytes
 	 */
 	public HmacSigner(String passphrase) throws NoSuchAlgorithmException {
-		this(Algorithm.DEFAULT, passphrase);
+		this(DEFAULT_ALGORITHM, passphrase);
 	}
 
 	/**
@@ -130,8 +72,7 @@ public class HmacSigner extends AbstractJwtSigner implements InitializingBean {
 	 */
 	public HmacSigner(String algorithmName, byte[] passphraseAsRawBytes)
 			throws NoSuchAlgorithmException {
-		this(algorithmName, new String(passphraseAsRawBytes,
-				Charset.forName("UTF-8")));
+		this(algorithmName, new String(passphraseAsRawBytes, Charset.forName("UTF-8")));
 	}
 
 	/**
@@ -160,11 +101,9 @@ public class HmacSigner extends AbstractJwtSigner implements InitializingBean {
 	@Override
 	public void afterPropertiesSet() throws Exception {
 
-		mac = Mac.getInstance(Algorithm.getByName(super.getAlgorithm())
-				.getStandardName());
+		mac = Mac.getInstance(JwsAlgorithm.getByName(super.getAlgorithm()).getStandardName());
 		
-		logger.debug(Algorithm.getByName(getAlgorithm()).getStandardName()
-				+ " ECDSA Signer ready for business");
+		logger.debug(JwsAlgorithm.getByName(getAlgorithm()).getStandardName() + " ECDSA Signer ready for business");
 	}	
 	
 	
@@ -182,8 +121,7 @@ public class HmacSigner extends AbstractJwtSigner implements InitializingBean {
 		}
 
 		try {
-			mac.init(new SecretKeySpec(getPassphrase().getBytes(), mac
-					.getAlgorithm()));
+			mac.init(new SecretKeySpec(getPassphrase().getBytes(), mac.getAlgorithm()));
 
 			mac.update(signatureBase.getBytes("UTF-8"));
 		} catch (GeneralSecurityException e) {

@@ -10,10 +10,10 @@ import java.security.interfaces.RSAPrivateKey;
 import java.util.List;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mitre.jwt.signer.AbstractJwtSigner;
+import org.mitre.jwt.signer.JwsAlgorithm;
 import org.mitre.jwt.signer.service.impl.KeyStore;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
@@ -29,64 +29,13 @@ import com.google.common.collect.Lists;
  */
 public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 
-	/**
-	 * an enum for mapping a JWS name to standard algorithm name
-	 * 
-	 * @author nemonik
-	 * 
-	 */
-	public enum Algorithm {
-
-		// Algorithm constants
-		RS256("SHA256withRSA"), RS384("SHA384withRSA"), RS512("SHA512withRSA");
-
-		public static final String DEFAULT = Algorithm.RS256.toString();
-		public static final String PREPEND = "RS";
-
-		/**
-		 * Returns the Algorithm for the name
-		 * 
-		 * @param name
-		 * @return
-		 */
-		public static Algorithm getByName(String name) {
-			for (Algorithm correspondingType : Algorithm.values()) {
-				if (correspondingType.toString().equals(name)) {
-					return correspondingType;
-				}
-			}
-
-			// corresponding type not found
-			throw new IllegalArgumentException(
-					"Algorithm name " + name + " does not have a corresponding Algorithm: expected one of [" + StringUtils.join(Algorithm.values(), ", ") + "]");
-		}
-
-		private final String standardName;
-
-		/**
-		 * Constructor of Algorithm
-		 * 
-		 * @param standardName
-		 */
-		Algorithm(String standardName) {
-			this.standardName = standardName;
-		}
-
-		/**
-		 * Return the Java standard algorithm name
-		 * 
-		 * @return
-		 */
-		public String getStandardName() {
-			return standardName;
-		}
-	};
-
 	private static Log logger = LogFactory.getLog(RsaSigner.class);
 
 	public static final String KEYPAIR_ALGORITHM = "RSA";
 	public static final String DEFAULT_PASSWORD = "changeit";
 
+	public static final String DEFAULT_ALGORITHM = JwsAlgorithm.RS256.toString();
+	
 	private KeyStore keystore;
 	private String alias;
 	private String password = DEFAULT_PASSWORD;
@@ -99,7 +48,7 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 	 * Default constructor
 	 */
 	public RsaSigner() {
-		super(Algorithm.DEFAULT);
+		super(DEFAULT_ALGORITHM);
 	}
 
 	/**
@@ -135,8 +84,7 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 	 *            The password used to access and retrieve the key pair.
 	 * @throws GeneralSecurityException
 	 */
-	public RsaSigner(String algorithmName, KeyStore keystore, String alias,
-			String password) throws GeneralSecurityException {
+	public RsaSigner(String algorithmName, KeyStore keystore, String alias, String password) throws GeneralSecurityException {
 		super(algorithmName);
 
 		Assert.notNull(keystore, "An keystore must be supplied");
@@ -166,8 +114,7 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 	 * @param privateKey
 	 *            The private key
 	 */
-	public RsaSigner(String algorithmName, PublicKey publicKey,
-			PrivateKey privateKey) {
+	public RsaSigner(String algorithmName, PublicKey publicKey, PrivateKey privateKey) {
 		super(algorithmName);
 
 		Assert.notNull(publicKey, "An publicKey must be supplied");
@@ -187,12 +134,9 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 	public void afterPropertiesSet() throws Exception {
 
 		// unsupported algorithm will throw a NoSuchAlgorithmException
-		signer = Signature.getInstance(Algorithm
-				.getByName(super.getAlgorithm()).getStandardName()); // ,
-																		// PROVIDER);
+		signer = Signature.getInstance(JwsAlgorithm.getByName(super.getAlgorithm()).getStandardName()); // ,PROVIDER);
 
-		logger.debug(Algorithm.getByName(getAlgorithm()).getStandardName()
-				+ " RSA Signer ready for business");
+		logger.debug(JwsAlgorithm.getByName(getAlgorithm()).getStandardName() + " RSA Signer ready for business");
 
 	}
 
@@ -214,8 +158,7 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 
 			byte[] sigBytes = signer.sign();
 
-			sig = (new String(Base64.encodeBase64URLSafe(sigBytes))).replace(
-					"=", "");
+			sig = (new String(Base64.encodeBase64URLSafe(sigBytes))).replace("=", "");
 		} catch (GeneralSecurityException e) {
 			logger.error(e);
 		} catch (UnsupportedEncodingException e) {

@@ -3,12 +3,9 @@ package org.mitre.jwt;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
-import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
-import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.cert.X509Certificate;
@@ -20,6 +17,7 @@ import org.bouncycastle.x509.X509V3CertificateGenerator;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mitre.jwt.model.Jwt;
+import org.mitre.jwt.signer.JwsAlgorithm;
 import org.mitre.jwt.signer.JwtSigner;
 import org.mitre.jwt.signer.impl.HmacSigner;
 import org.mitre.jwt.signer.impl.PlaintextSigner;
@@ -72,8 +70,7 @@ public class JwtTest {
 			 * Expected signature: iGBPJj47S5q_HAhSoQqAdcS6A_1CFj3zrLaImqNbt9E
 			 */
 			String signature = "p-63Jzz7mgi3H4hvW6MFB7lmPRZjhsL666MYkmpX33Y";
-			String expected = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjEzMDA4MTkzODAsImlzcyI6ImpvZSIsImh0dHA6Ly9leGFtcGxlLmNvbS9pc19yb290Ijp0cnVlfQ."
-					+ signature;
+			String expected = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjEzMDA4MTkzODAsImlzcyI6ImpvZSIsImh0dHA6Ly9leGFtcGxlLmNvbS9pc19yb290Ijp0cnVlfQ." + signature;
 	
 			String actual = jwt.toString();
 	
@@ -118,21 +115,17 @@ public class JwtTest {
 
 		// BC sez X509V3CertificateGenerator is deprecated and the docs say to
 		// use another, but it seemingly isn't included jar...
-		X509V3CertificateGenerator v3CertGen = KeyStoreTest.createCertificate(
-				"testGenerateRsaSignature", 30, 30);
+		X509V3CertificateGenerator v3CertGen = KeyStoreTest.createCertificate("testGenerateRsaSignature", 30, 30);
 
 		v3CertGen.setPublicKey(publicKey);
 		v3CertGen.setSignatureAlgorithm("SHA256WithRSAEncryption");
 
 		// BC docs say to use another, but it seemingly isn't included...
-		X509Certificate certificate = v3CertGen
-				.generateX509Certificate(privateKey);
+		X509Certificate certificate = v3CertGen.generateX509Certificate(privateKey);
 
 		// if exist, overwrite
 		java.security.KeyStore ks = keystore.getKeystore();
-		ks.setKeyEntry("testGenerateRsaSignature", privateKey,
-				RsaSigner.DEFAULT_PASSWORD.toCharArray(),
-				new java.security.cert.Certificate[] { certificate });
+		ks.setKeyEntry("testGenerateRsaSignature", privateKey, RsaSigner.DEFAULT_PASSWORD.toCharArray(), new java.security.cert.Certificate[] { certificate });
 
 		keystore.setKeystore(ks);
 
@@ -143,9 +136,7 @@ public class JwtTest {
 		jwt.getClaims().setIssuer("joe");
 		jwt.getClaims().setClaim("http://example.com/is_root", Boolean.TRUE);
 
-		JwtSigner signer = new RsaSigner(RsaSigner.Algorithm.RS256.toString(),
-				keystore, "testGenerateRsaSignature",
-				RsaSigner.DEFAULT_PASSWORD);
+		JwtSigner signer = new RsaSigner(JwsAlgorithm.RS256.toString(),	keystore, "testGenerateRsaSignature", RsaSigner.DEFAULT_PASSWORD);
 		((RsaSigner) signer).afterPropertiesSet();
 
 		/*
@@ -182,15 +173,10 @@ public class JwtTest {
 
 		Jwt jwt = Jwt.parse(source);
 
-		assertThat(jwt.getHeader().getAlgorithm(),
-				equalTo(PlaintextSigner.PLAINTEXT));
+		assertThat(jwt.getHeader().getAlgorithm(), equalTo(PlaintextSigner.PLAINTEXT));
 		assertThat(jwt.getClaims().getIssuer(), equalTo("joe"));
-		assertThat(jwt.getClaims().getExpiration(), equalTo(new Date(
-				1300819380L * 1000L)));
-		assertThat(
-				(Boolean) jwt.getClaims()
-						.getClaim("http://example.com/is_root"),
-				equalTo(Boolean.TRUE));
+		assertThat(jwt.getClaims().getExpiration(), equalTo(new Date(1300819380L * 1000L)));
+		assertThat((Boolean) jwt.getClaims().getClaim("http://example.com/is_root"), equalTo(Boolean.TRUE));
 
 	}
 
@@ -258,4 +244,5 @@ public class JwtTest {
 			e.printStackTrace();
 		}
 	}
+	
 }
