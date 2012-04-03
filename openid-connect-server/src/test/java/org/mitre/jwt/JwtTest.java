@@ -76,6 +76,7 @@ public class JwtTest {
 	
 			assertThat(actual, equalTo(expected));
 			assertThat(jwt.getSignature(), equalTo(signature));
+			assertThat(signer.verify(actual), equalTo(true));
 
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();

@@ -26,7 +26,8 @@ public class HmacSigner extends AbstractJwtSigner implements InitializingBean {
 
 	public static final String DEFAULT_PASSPHRASE = "changeit";
 
-	public static final String DEFAULT_ALGORITHM = JwsAlgorithm.HS256.toString();
+	public static final String DEFAULT_ALGORITHM = JwsAlgorithm.HS256
+			.toString();
 
 	private static Log logger = LogFactory.getLog(HmacSigner.class);
 
@@ -49,7 +50,8 @@ public class HmacSigner extends AbstractJwtSigner implements InitializingBean {
 	 */
 	public HmacSigner(byte[] passphraseAsRawBytes)
 			throws NoSuchAlgorithmException {
-		this(DEFAULT_ALGORITHM, new String(passphraseAsRawBytes, Charset.forName("UTF-8")));
+		this(DEFAULT_ALGORITHM, new String(passphraseAsRawBytes,
+				Charset.forName("UTF-8")));
 	}
 
 	/**
@@ -72,7 +74,8 @@ public class HmacSigner extends AbstractJwtSigner implements InitializingBean {
 	 */
 	public HmacSigner(String algorithmName, byte[] passphraseAsRawBytes)
 			throws NoSuchAlgorithmException {
-		this(algorithmName, new String(passphraseAsRawBytes, Charset.forName("UTF-8")));
+		this(algorithmName, new String(passphraseAsRawBytes,
+				Charset.forName("UTF-8")));
 	}
 
 	/**
@@ -87,7 +90,7 @@ public class HmacSigner extends AbstractJwtSigner implements InitializingBean {
 		super(algorithmName);
 
 		Assert.notNull(passphrase, "A passphrase must be supplied");
-		
+
 		setPassphrase(passphrase);
 
 	}
@@ -101,12 +104,13 @@ public class HmacSigner extends AbstractJwtSigner implements InitializingBean {
 	@Override
 	public void afterPropertiesSet() throws Exception {
 
-		mac = Mac.getInstance(JwsAlgorithm.getByName(super.getAlgorithm()).getStandardName());
-		
-		logger.debug(JwsAlgorithm.getByName(getAlgorithm()).getStandardName() + " ECDSA Signer ready for business");
-	}	
-	
-	
+		mac = Mac.getInstance(JwsAlgorithm.getByName(super.getAlgorithm())
+				.getStandardName());
+
+		logger.debug(JwsAlgorithm.getByName(getAlgorithm()).getStandardName()
+				+ " ECDSA Signer ready for business");
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -121,7 +125,8 @@ public class HmacSigner extends AbstractJwtSigner implements InitializingBean {
 		}
 
 		try {
-			mac.init(new SecretKeySpec(getPassphrase().getBytes(), mac.getAlgorithm()));
+			mac.init(new SecretKeySpec(getPassphrase().getBytes(), mac
+					.getAlgorithm()));
 
 			mac.update(signatureBase.getBytes("UTF-8"));
 		} catch (GeneralSecurityException e) {

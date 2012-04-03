@@ -70,7 +70,7 @@ public abstract class AbstractJwtSigner implements JwtSigner {
 		String c64 = parts.get(1);
 		String s64 = parts.get(2);
     	
-		String expectedSignature = generateSignature(h64 + "." + c64 + ".");
+		String expectedSignature = generateSignature(h64 + "." + c64);
 		
 		return Strings.nullToEmpty(s64).equals(Strings.nullToEmpty(expectedSignature));
     	
