@@ -253,13 +253,11 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 		try {
 			signer.initVerify(publicKey);
 			signer.update(signingInput.getBytes("UTF-8"));
-			value = signer.verify(s64.getBytes("UTF-8"));
+			value = signer.verify(Base64.decodeBase64(s64));
 		} catch (GeneralSecurityException e) {
 			logger.error(e);
-			return false;
 		} catch (UnsupportedEncodingException e) {
 			logger.error(e);
-			return false;
 		}
 
 		return value;

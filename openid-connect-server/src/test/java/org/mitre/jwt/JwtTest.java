@@ -162,7 +162,8 @@ public class JwtTest {
 		signer.sign(jwt);
 
 		String actual = jwt.toString();
-
+		
+		assertThat(signer.verify(actual), equalTo(true));
 		assertThat(actual, equalTo(expected));
 		assertThat(jwt.getSignature(), equalTo(signature));
 	}

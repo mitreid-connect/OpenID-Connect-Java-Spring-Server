@@ -217,6 +217,8 @@ public class EcdsaSigner extends AbstractJwtSigner implements InitializingBean {
 	@Override
 	public boolean verify(String jwtString) {
 
+		boolean value = false;
+		
 		// split on the dots
 		List<String> parts = Lists.newArrayList(Splitter.on(".").split(
 				jwtString));
@@ -234,13 +236,13 @@ public class EcdsaSigner extends AbstractJwtSigner implements InitializingBean {
 		try {
 			signer.initVerify(publicKey);
 			signer.update(signingInput.getBytes("UTF-8"));
-			signer.verify(s64.getBytes("UTF-8"));
+			value = signer.verify(Base64.decodeBase64(s64));
 		} catch (GeneralSecurityException e) {
 			logger.error(e);
 		} catch (UnsupportedEncodingException e) {
 			logger.error(e);
 		}
 
-		return true;
+		return value;
 	}
 }
