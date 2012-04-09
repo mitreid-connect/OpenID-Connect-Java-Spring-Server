@@ -52,6 +52,5 @@
 		authorization-endpoint-url="/openidconnect/auth" token-endpoint-url="/openidconnect/token">
 		<oauth:authorization-code authorization-code-services-ref="authCodeServices"/>
 	</oauth:authorization-server>
-	
 
 </beans:beans>
