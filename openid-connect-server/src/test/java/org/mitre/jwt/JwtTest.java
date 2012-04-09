@@ -230,7 +230,16 @@ public class JwtTest {
 			 * header: {"typ":"JWT","alg":"HS256"} claims:
 			 * {"exp":1300819380,"iss":"joe","http://example.com/is_root":true}
 			 * 
-			 * Expected signature: iGBPJj47S5q_HAhSoQqAdcS6A_1CFj3zrLaImqNbt9E
+			 * Python script to generate signature:
+			 * 
+			 * import hashlib
+			 * import hmac
+			 * import base64
+			 * 
+			 * m = hmac.new('secret', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjEzMDA4MTkzODAsImlzcyI6ImpvZSIsImh0dHA6Ly9leGFtcGxlLmNvbS9pc19yb290Ijp0cnVlfQ', hashlib.sha256)
+			 * base64.urlsafe_b64encode(m.digest())
+			 * 
+			 * Expected signature: p-63Jzz7mgi3H4hvW6MFB7lmPRZjhsL666MYkmpX33Y
 			 */
 			String jwtString = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjEzMDA4MTkzODAsImlzcyI6ImpvZSIsImh0dHA6Ly9leGFtcGxlLmNvbS9pc19yb290Ijp0cnVlfQ.p-63Jzz7mgi3H4hvW6MFB7lmPRZjhsL666MYkmpX33Y";
 	
