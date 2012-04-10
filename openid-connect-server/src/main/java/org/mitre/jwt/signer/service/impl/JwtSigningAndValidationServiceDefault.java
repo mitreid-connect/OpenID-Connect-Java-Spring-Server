@@ -2,17 +2,14 @@ package org.mitre.jwt.signer.service.impl;
 
 import java.security.PublicKey;
 import java.security.interfaces.RSAPublicKey;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mitre.jwt.model.Jwt;
 import org.mitre.jwt.signer.JwtSigner;
-import org.mitre.jwt.signer.impl.EcdsaSigner;
 import org.mitre.jwt.signer.impl.RsaSigner;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
@@ -93,9 +90,6 @@ public class JwtSigningAndValidationServiceDefault implements
 									.toString(16).toUpperCase(), publicKey);
 				}
 
-			} else if (signer instanceof EcdsaSigner) {
-
-				// TODO
 			}
 		}
 

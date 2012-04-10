@@ -22,7 +22,6 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.x509.X509V3CertificateGenerator;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mitre.jwt.signer.impl.EcdsaSigner;
 import org.mitre.jwt.signer.impl.RsaSigner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -150,30 +149,6 @@ public class KeyStoreTest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		assertThat(ks, not(nullValue()));
-	}
-
-	@Test
-	public void storeEcKeyPair() throws GeneralSecurityException, IOException {
-
-		java.security.KeyStore ks = null;
-
-		try {
-			ks = KeyStoreTest.generateKeyPair(keystore,
-					EcdsaSigner.KEYPAIR_ALGORITHM, 256, "SHA1withECDSA",
-					"OpenID Connect Server", "ec", EcdsaSigner.DEFAULT_PASSWORD, 30,
-					365);
-
-		} catch (GeneralSecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		//KeyStoreTest.persistKeystoreToFile(ks, System.getProperty("java.io.tmpdir") + System.getProperty("path.separator") + "keystore.jks" , KeyStore.PASSWORD);
 
 		assertThat(ks, not(nullValue()));
 	}

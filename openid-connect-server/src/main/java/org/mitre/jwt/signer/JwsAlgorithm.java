@@ -17,13 +17,8 @@ public enum JwsAlgorithm {
 	// RSA
 	RS256("SHA256withRSA"), 
 	RS384("SHA384withRSA"), 
-	RS512("SHA512withRSA"),
-	// ECDSA
-	ES256("SHA256withECDSA"), 
-	ES384("SHA384withECDSA"), 
-	ES512("SHA512withECDSA");
+	RS512("SHA512withRSA");
 	
-
 	/**
 	 * Returns the Algorithm for the name
 	 * 
