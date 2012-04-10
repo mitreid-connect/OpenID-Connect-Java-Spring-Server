@@ -5,6 +5,7 @@ import java.util.List;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
 
 public interface OAuth2TokenRepository {
 
@@ -32,4 +33,6 @@ public interface OAuth2TokenRepository {
 
 	public List<OAuth2RefreshTokenEntity> getExpiredRefreshTokens();
 
+	public OAuth2AccessTokenEntity getByAuthentication(OAuth2Authentication auth);
+	
 }

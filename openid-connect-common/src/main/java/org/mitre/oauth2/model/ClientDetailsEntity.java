@@ -53,7 +53,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	private Long accessTokenTimeout; // in seconds
 	private Long refreshTokenTimeout; // in seconds
 	private String owner; // userid of who registered it
-	private String registeredRedirectUri;
+	private Set<String> registeredRedirectUri;
 	private Set<String> resourceIds;
 
 	//Additional properties added by OpenID Connect Dynamic Client Registration spec
@@ -300,15 +300,20 @@ public class ClientDetailsEntity implements ClientDetails {
 	/**
      * @return the registeredRedirectUri
      */
-	@Basic
-    public String getRegisteredRedirectUri() {
+	//@Basic
+    @ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(
+			name="redirect_uris",
+			joinColumns=@JoinColumn(name="owner_id")
+	)
+    public Set<String> getRegisteredRedirectUri() {
     	return registeredRedirectUri;
     }
 
 	/**
      * @param registeredRedirectUri the registeredRedirectUri to set
      */
-    public void setRegisteredRedirectUri(String registeredRedirectUri) {
+    public void setRegisteredRedirectUri(Set<String> registeredRedirectUri) {
     	this.registeredRedirectUri = registeredRedirectUri;
     }
 
@@ -499,7 +504,7 @@ public class ClientDetailsEntity implements ClientDetails {
          * @param registeredRedirectUri
          * @see org.mitre.oauth2.model.ClientDetailsEntity#setRegisteredRedirectUri(java.lang.String)
          */
-        public ClientDetailsEntityBuilder setRegisteredRedirectUri(String registeredRedirectUri) {
+        public ClientDetailsEntityBuilder setRegisteredRedirectUri(Set<String> registeredRedirectUri) {
 	        instance.setRegisteredRedirectUri(registeredRedirectUri);
 	        return this;
         }

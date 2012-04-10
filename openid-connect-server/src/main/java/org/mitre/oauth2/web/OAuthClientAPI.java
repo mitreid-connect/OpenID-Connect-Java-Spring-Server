@@ -1,6 +1,7 @@
 package org.mitre.oauth2.web;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.mitre.oauth2.exception.ClientNotFoundException;
@@ -161,7 +162,12 @@ public class OAuthClientAPI {
     	client.setClientSecret(clientSecret);
     	client.setScope(scopeSet);
     	client.setAuthorizedGrantTypes(grantTypesSet);
-    	client.setRegisteredRedirectUri(redirectUri);
+    	
+    	//AANGANES 4/9/2012 client.redirectUri is now a Set<String>
+    	Set<String> redirectUris = new HashSet<String>();
+    	redirectUris.add(redirectUri);
+    	
+    	client.setRegisteredRedirectUri(redirectUris);
     	client.setAuthorities(authoritiesSet);
     	client.setResourceIds(resourceIdSet);
     	client.setClientName(name);

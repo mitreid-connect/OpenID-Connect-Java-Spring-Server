@@ -218,14 +218,10 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		}
     }
 
-	/**
-	 * TODO: Implement
-	 * See github issue #2
-	 */
 	@Override
 	public OAuth2AccessTokenEntity getAccessToken(OAuth2Authentication authentication) {
 		
-		OAuth2AccessTokenEntity accessToken = new OAuth2AccessTokenEntity();
+		OAuth2AccessTokenEntity accessToken = tokenRepository.getByAuthentication(authentication);
 		
 		return accessToken;
 	}

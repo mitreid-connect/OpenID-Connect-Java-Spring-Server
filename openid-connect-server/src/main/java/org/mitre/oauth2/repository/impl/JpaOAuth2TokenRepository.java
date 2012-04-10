@@ -11,6 +11,7 @@ import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
 import org.mitre.util.jpa.JpaUtil;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -133,6 +134,14 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 		TypedQuery<OAuth2RefreshTokenEntity> queryR = manager.createNamedQuery("OAuth2RefreshTokenEntity.getExpired", OAuth2RefreshTokenEntity.class);
 	    List<OAuth2RefreshTokenEntity> refreshTokens = queryR.getResultList();
 	    return refreshTokens;
-    }	
+    }
+    
+    @Override
+    public OAuth2AccessTokenEntity getByAuthentication(OAuth2Authentication auth) {
+    	TypedQuery<OAuth2AccessTokenEntity> queryA = manager.createNamedQuery("OAuth2AccessTokenEntity.getByAuthentication", OAuth2AccessTokenEntity.class);
+	    queryA.setParameter("authentication", auth);
+	    List<OAuth2AccessTokenEntity> accessTokens = queryA.getResultList();
+	    return JpaUtil.getSingleResult(accessTokens);
+    }
 
 }

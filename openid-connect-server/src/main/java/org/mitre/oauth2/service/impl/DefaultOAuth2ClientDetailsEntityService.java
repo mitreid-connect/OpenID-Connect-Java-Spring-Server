@@ -1,6 +1,7 @@
 package org.mitre.oauth2.service.impl;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.mitre.oauth2.model.ClientDetailsEntity;
@@ -74,7 +75,10 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 		ClientDetailsEntity client = clientFactory.createClient(clientId, clientSecret);
 		client.setScope(scope);
 		client.setAuthorizedGrantTypes(grantTypes);
-		client.setRegisteredRedirectUri(redirectUri);
+		//client.setRegisteredRedirectUri(redirectUri);
+		Set<String> redirectUris = new HashSet<String>();
+		redirectUris.add(redirectUri);
+		client.setRegisteredRedirectUri(redirectUris);
 		client.setAuthorities(authorities);
 		client.setClientName(name);
 		client.setClientDescription(description);
