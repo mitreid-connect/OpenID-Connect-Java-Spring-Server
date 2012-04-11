@@ -54,7 +54,9 @@
 	<oauth:authorization-server client-details-service-ref="defaultOAuth2ClientDetailsEntityService" 
 		token-services-ref="defaultOAuth2ProviderTokenService" token-granter-ref="connectAuthCodeTokenGranter"
 		user-approval-handler-ref="userApprovalHandler"
-		authorization-endpoint-url="/openidconnect/auth" token-endpoint-url="/openidconnect/token">
+		authorization-endpoint-url="/openidconnect/auth" token-endpoint-url="/openidconnect/token"
+		user-approval-page="redirect:/oauth/confirm_access"
+		>
 		<oauth:authorization-code authorization-code-services-ref="authCodeServices" />
 	</oauth:authorization-server>
 

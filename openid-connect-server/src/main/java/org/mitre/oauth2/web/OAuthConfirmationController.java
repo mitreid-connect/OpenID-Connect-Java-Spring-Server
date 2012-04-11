@@ -34,7 +34,7 @@ public class OAuthConfirmationController {
 		this.clientService = clientService;
 	}
 	
-	@PreAuthorize("hasRole('ROLE_USER')")
+	//@PreAuthorize("hasRole('ROLE_USER')")
 	@RequestMapping("/oauth/confirm_access")
 	public ModelAndView confimAccess(@ModelAttribute AuthorizationRequest clientAuth, 
 			ModelAndView modelAndView) {
