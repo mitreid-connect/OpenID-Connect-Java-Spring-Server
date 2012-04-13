@@ -1,39 +1,73 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <artifactId>openid-connect-parent</artifactId>
     <groupId>org.mitre</groupId>
-    <version>0.1</version>
+    <version>0.1-SNAPSHOT</version>
     <relativePath>..</relativePath>
   </parent>
+  <groupId>org.mitre</groupId>  
   <artifactId>openid-connect-common</artifactId>
+  <version>0.1-SNAPSHOT</version>  
   <description>OpenID Connect Common modules</description>
   <name>OpenID Connect Common</name>
   <dependencies>
-		<dependency>
-			<groupId>org.springframework.security.oauth</groupId>
-			<version>1.0.0.BUILD-SNAPSHOT</version>
-			<artifactId>spring-security-oauth2</artifactId>
-		</dependency>  
+    <dependency>
+      <groupId>org.springframework.security.oauth</groupId>
+      <version>1.0.0.BUILD-SNAPSHOT</version>
+      <artifactId>spring-security-oauth2</artifactId>
+    </dependency>
   </dependencies>
-    <properties>
-        <java-version>1.6</java-version>
-        <org.springframework-version>3.1.1.RELEASE</org.springframework-version>
-        <org.slf4j-version>1.5.10</org.slf4j-version>
-        <spring.security.version>3.1.0.RELEASE</spring.security.version>
-    </properties>
+  <properties>
+    <java-version>1.6</java-version>
+    <org.springframework-version>
+    3.1.1.RELEASE</org.springframework-version>
+    <org.slf4j-version>1.5.10</org.slf4j-version>
+    <spring.security.version>
+    3.1.0.RELEASE</spring.security.version>
+  </properties>
   <packaging>jar</packaging>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>${java-version}</source>
-                    <target>${java-version}</target>
-                </configuration>
-            </plugin>
-	</plugins>
-    </build>
-
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>${java-version}</source>
+          <target>${java-version}</target>
+        </configuration>
+      </plugin>
+      <!-- BUILD SOURCE FILES -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>2.1.2</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- BUILD JavaDoc FILES -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.7</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>
