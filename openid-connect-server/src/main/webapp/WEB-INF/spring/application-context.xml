@@ -23,8 +23,7 @@
 
 	<security:global-method-security pre-post-annotations="enabled" proxy-target-class="true" authentication-manager-ref="springSecurityAuthenticationManager"/>
 
-<!-- 4/11 AANGANES trying:remove "create-session="stateless"" from below statement -->
-	<http pattern="/oauth/token" authentication-manager-ref="clientAuthenticationManager" 
+	<security:http pattern="/oauth/token" create-session="stateless" authentication-manager-ref="clientAuthenticationManager" 
 		xmlns="http://www.springframework.org/schema/security">
 		<intercept-url pattern="/oauth/token" access="IS_AUTHENTICATED_FULLY" />
 		<anonymous enabled="false" />
@@ -32,7 +31,7 @@
 		<!-- include this only if you need to authenticate clients via request parameters -->
 		<custom-filter ref="clientCredentialsTokenEndpointFilter" before="BASIC_AUTH_FILTER" />
 		<access-denied-handler ref="oauthAccessDeniedHandler" />
-	</http>
+	</security:http>
 
 	<security:http use-expressions="true" auto-config="true" pattern="/oauth/authorize" authentication-manager-ref="springSecurityAuthenticationManager">
  		<security:intercept-url pattern="/oauth/authorize" access="hasRole('ROLE_USER')"/> 
