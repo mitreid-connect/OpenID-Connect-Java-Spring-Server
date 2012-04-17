@@ -1,53 +1,70 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:tx="http://www.springframework.org/schema/tx"
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:security="http://www.springframework.org/schema/security"
 	xmlns:task="http://www.springframework.org/schema/task"
-	xmlns:jwt-signer="http://www.mitre.org/schema/openid-connect/jwt-signer"
 	xmlns:oauth="http://www.springframework.org/schema/security/oauth2"
-	xsi:schemaLocation="http://www.springframework.org/schema/security/oauth2 http://www.springframework.org/schema/security/spring-security-oauth2-1.0.xsd
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+		http://www.springframework.org/schema/security/oauth2 http://www.springframework.org/schema/security/spring-security-oauth2-1.0.xsd
 		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.1.xsd
 		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
-		http://www.mitre.org/schema/openid-connect/jwt-signer http://www.mitre.org/schema/openid-connect/jwt-signer/jwt-signer-1.0.xsd
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+
+	<!-- Scan for components -->
+	<context:component-scan annotation-config="true" base-package="org.mitre"/>
 	
-	<!-- Root Context: defines shared resources visible to all other web components -->
-		
+	<!-- Enables the Spring MVC @Controller programming model -->
+	<tx:annotation-driven transaction-manager="transactionManager" />
+	<mvc:annotation-driven />
+	<mvc:default-servlet-handler />
+
+	<!-- Bean to hold configuration propreties -->
+	<bean id="configBean" class="org.mitre.openid.connect.config.ConfigurationPropertiesBean">
+		<property name="issuer" value="http://localhost/" />
+ 		<property name="defaultJwtSigner"  value="rsa1"/>
+	</bean>
+	
+	<!-- Import the data context -->
 	<import resource="data-context.xml" />	
 
-	<!-- Begin Spring Security configuration -->
-
+<!-- Spring Security configuration -->
 	<security:global-method-security pre-post-annotations="enabled" proxy-target-class="true" authentication-manager-ref="springSecurityAuthenticationManager"/>
 
 	<security:http pattern="/oauth/token" create-session="stateless" authentication-manager-ref="clientAuthenticationManager" 
-		xmlns="http://www.springframework.org/schema/security">
-		<intercept-url pattern="/oauth/token" access="IS_AUTHENTICATED_FULLY" />
-		<anonymous enabled="false" />
-		<http-basic entry-point-ref="oauthAuthenticationEntryPoint" />
+		entry-point-ref="oauthAuthenticationEntryPoint">
+		<security:intercept-url pattern="/oauth/token" access="IS_AUTHENTICATED_FULLY" />
+		<security:anonymous enabled="false" />
+		<security:http-basic entry-point-ref="oauthAuthenticationEntryPoint" />
 		<!-- include this only if you need to authenticate clients via request parameters -->
-		<custom-filter ref="clientCredentialsTokenEndpointFilter" before="BASIC_AUTH_FILTER" />
-		<access-denied-handler ref="oauthAccessDeniedHandler" />
+		<security:custom-filter ref="clientCredentialsTokenEndpointFilter" before="BASIC_AUTH_FILTER" />
+		<security:access-denied-handler ref="oauthAccessDeniedHandler" />
 	</security:http>
 
-	<security:http use-expressions="true" auto-config="true" pattern="/oauth/authorize" authentication-manager-ref="springSecurityAuthenticationManager">
- 		<security:intercept-url pattern="/oauth/authorize" access="hasRole('ROLE_USER')"/> 
- 		<!-- intercept-url with access=permitall means a permissive (lets everything through) filter will be applied -->
+	<security:http auto-config="true" disable-url-rewriting="true"> <!-- authentication-manager-ref="springSecurityAuthenticationManager" -->
+		<security:intercept-url pattern="/oauth/**" access="ROLE_USER" />
+		<security:intercept-url pattern="/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+		<security:anonymous />
 	</security:http>
-
-	<!-- means no filter will be applied -->
-	<security:http auto-config="true" pattern="/openidconnect/token" authentication-manager-ref="springSecurityAuthenticationManager" security="none"/>
 	
-	<security:http auto-config="true" use-expressions="true" authentication-manager-ref="springSecurityAuthenticationManager">
-		<security:intercept-url pattern="/**" access="permitAll"/>
-	</security:http>
+	<bean class="org.springframework.security.oauth2.provider.approval.TokenServicesUserApprovalHandler" id="userApprovalHandler">
+		<property name="tokenServices" ref="defaultOAuth2ProviderTokenService"/>
+	</bean>
 
 	<bean id="oauthAuthenticationEntryPoint" class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint">
 		<property name="realmName" value="openidconnect" />
 	</bean>
+
+	<!-- SECOAUTH Authorization Server, with our custom token granter plugged in -->
+	<oauth:authorization-server client-details-service-ref="defaultOAuth2ClientDetailsEntityService" 
+		token-services-ref="defaultOAuth2ProviderTokenService" token-granter-ref="connectAuthCodeTokenGranter"
+		user-approval-handler-ref="userApprovalHandler">
+		<oauth:authorization-code authorization-code-services-ref="authCodeServices" />
+	</oauth:authorization-server>
 
 	<bean id="oauthAccessDeniedHandler" class="org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler" />
 
@@ -67,7 +84,7 @@
 
 	<bean id="authCodeServices" class="org.springframework.security.oauth2.provider.code.InMemoryAuthorizationCodeServices"/>
 
-	<security:authentication-manager alias="springSecurityAuthenticationManager">
+	<security:authentication-manager alias="authenticationManager">
 		<security:authentication-provider>
 			<security:user-service id="userDetailsService">
 				<security:user name="jricher" password="password" authorities="ROLE_USER, ROLE_ADMIN" />
@@ -81,28 +98,15 @@
 		</security:authentication-provider>
 	</security:authentication-manager>
 		
-	<!-- End Spring Security configuration -->	
+<!-- End Spring Security configuration -->	
 		
-	<tx:annotation-driven transaction-manager="transactionManager" />
+<!-- JPA  -->
 	
 	<bean id="jpaAdapter" class="org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter">
 		<property name="databasePlatform" value="org.eclipse.persistence.platform.database.MySQLPlatform" />
 		<property name="showSql" value="true" />
 	</bean>
 
-	<bean id="configBean" class="org.mitre.openid.connect.config.ConfigurationPropertiesBean">
-		<property name="issuer" value="http://localhost/" />
- 		<property name="defaultJwtSigner"  value="rsa1"/>
-	</bean>
-
-	<!-- Map our custom exception classes to named views -->
-	<bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
-	   <property name="exceptionMappings">
-	     <props>
-	     </props>
-	   </property>
-	</bean>
- 
 	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
 		<property name="entityManagerFactory" ref="entityManagerFactory" />
 	</bean>
@@ -121,6 +125,10 @@
 		</property>
 	</bean>
 
+<!-- End JPA -->
+
+<!-- Crypto -->
+	
 	<bean id="defaultKeystore" class="org.mitre.jwt.signer.service.impl.KeyStore">
 		<constructor-arg name="location" value="classpath:keystore.jks" />
 		<constructor-arg name="password" value="changeit" />
@@ -147,14 +155,45 @@
 		</property>	
 	</bean>	
 
+<!-- End Crypto -->
+
+<!-- View configuration -->
+
+	<!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources directory -->
+	<mvc:resources mapping="/resources/**" location="/resources/" />
+
+	<!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
+		<property name="prefix" value="/WEB-INF/views/" />
+		<property name="suffix" value=".jsp" />
+		<property name="order" value="2"/>
+	</bean>
+	
+	<!-- Resolve views based on string names -->
+	<bean class="org.springframework.web.servlet.view.BeanNameViewResolver" >
+		<property name="order" value="1"/>
+	</bean>
+
+	<!-- Map our custom exception classes to named views -->
+<!-- 	<bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver"> -->
+<!-- 	   <property name="exceptionMappings"> -->
+<!-- 	   </property> -->
+<!-- 	</bean> -->
+
+	<!-- JSON views for each type of model object -->
+	<bean id="jsonOpenIdConfigurationView" class="org.mitre.swd.view.JsonOpenIdConfigurationView" />
+	<bean id="jsonSwdResponseView" class="org.mitre.swd.view.SwdResponse" />
+	<bean id="jwkKeyList" class="org.mitre.openid.connect.view.JwkKeyListView" />
+	
+ 	<bean id="jsonUserInfoView" class="org.mitre.openid.connect.view.JSONUserInfoView"/>
+ 	<bean id="jsonIdTokenView" class="org.mitre.openid.connect.view.JSONIdTokenView"/> 
+
+<!-- End view configuration -->
+
 	<!-- scheduled tasks -->
 <!-- 	<task:scheduler id="taskScheduler" pool-size="10" /> -->
 <!-- 	<task:executor id="taskExecutor" pool-size="5" /> -->
 <!-- 	<task:annotation-driven scheduler="taskScheduler" executor="taskExecutor" /> -->
-	
-	<!-- load everything except controllers (those get handled elsewhere) -->
-    <context:component-scan annotation-config="true" base-package="org.mitre">
-		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" />
-	</context:component-scan>
-    
+
 </beans>
