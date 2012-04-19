@@ -15,6 +15,7 @@
             padding-top: 60px;
             padding-bottom: 40px;
         }
+
         .sidebar-nav {
             padding: 9px 0;
         }
@@ -33,7 +34,7 @@
             padding-top: 60px;
         }
 
-        h1,label {
+        h1, label {
             text-shadow: 1px 1px 1px #FFFFFF;
         }
 
@@ -62,6 +63,7 @@
                 <span class="icon-bar"></span>
             </a>
             <a class="brand" href="#">Project name</a>
+
             <div class="nav-collapse">
                 <ul class="nav">
                     <li class="active"><a href="#">Home</a></li>
@@ -69,210 +71,185 @@
                     <li><a href="#contact">Contact</a></li>
                 </ul>
                 <p class="navbar-text pull-right">Logged in as <a href="#">username</a></p>
-            </div><!--/.nav-collapse -->
+            </div>
+            <!--/.nav-collapse -->
         </div>
     </div>
 </div>
 
 <div class="container-fluid">
     <div class="row-fluid">
-    <div class="sidebar span-3">
-        <div class="well">
-            <h5>Administrative</h5>
-            <ul>
-                <li><a href="#">Manage Clients</a></li>
-                <li><a href="#">White Lists</a></li>
-                <li><a href="#">Black Lists</a></li>
-            </ul>
-            <h5>Personal</h5>
-            <ul>
-                <li><a href="#">Manage Sites</a></li>
-                <li><a href="#">Manage Active Tokens</a></li>
-                <li><a href="#">Profile</a></li>
-            </ul>
+        <div class="sidebar span-3">
+            <div class="well">
+                <h5>Administrative</h5>
+                <ul>
+                    <li><a href="#">Manage Clients</a></li>
+                    <li><a href="#">White Lists</a></li>
+                    <li><a href="#">Black Lists</a></li>
+                </ul>
+                <h5>Personal</h5>
+                <ul>
+                    <li><a href="#">Manage Sites</a></li>
+                    <li><a href="#">Manage Active Tokens</a></li>
+                    <li><a href="#">Profile</a></li>
+                </ul>
+            </div>
         </div>
-    </div>
 
 
+        <div class="span9">
+            <div class="">
+                <ul class="breadcrumb">
+                    <li><a href="#">Home</a> <span class="divider">/</span></li>
+                    <li class="active"><a href="#">Manage Clients</a><span class="divider">/</span></li>
+                    Edit Client
+                </ul>
 
-    <div class="span-9">
-        <div class="">
-            <ul class="breadcrumb">
-                <li><a href="#">Home</a> <span class="divider">/</span></li>
-                <li class="active"><a href="#">Manage Clients</a><span class="divider">/</span></li>
-                Edit Client
-            </ul>
+
+                <h1>Edit Client</h1>
 
 
-            <h1>Edit Client</h1>
-
-            <div id="edit-client-form">
-                <div>
-
+                <div class="">
                     <form>
                         <fieldset>
-                            <legend>OpenID Client</legend>
-                        </fieldset>
-                        <div class="control-group">
-                            <label for="xlInput">Client Name</label>
+                            <legend>Details</legend>
 
-                            <div class="input">
-                                <input type="text" size="30" name="xlInput" id="xlInput" class="xlarge">
-                            </div>
-                        </div>
+                            <div class="well">
 
-                        <div class="control-group">
-                            <label for="prependedInput">Redirect Url</label>
+                                <div class="row-fluid">
+                                    <div class="span6">
+                                        <label>Client name</label>
+                                        <input type="text" class="span3" placeholder="Type something"> <span class="help-inline">Associated help text!</span>
 
-                            <div class="input">
-                                <div class="input-prepend">
-                                    <span class="add-on">http://</span>
-                                    <input type="text" size="16" name="prependedInput" id="prependedInput"
-                                           class="medium">
+                                        <label>Refresh URL</label>
+                                        <input type="text" class="span3" placeholder="http://"><span class="help-inline">Associated help text!</span>
+                                    </div>
+                                    <div class="span6">
+                                        <label>Description</label>
+                                        <textarea class="input-xlarge" id="textarea" placeholder="Type a description" rows="3"></textarea> <span class="help-inline">Associated help text!</span>
+                                    </div>
                                 </div>
-                                <span class="help-block">Url to be redirected</span>
+
+                                <hr>
+
+                                <div class="">
+                                    <p class="help-block">Refresh tokens allow clients to request another authorization
+                                        token after it
+                                        expires.</p>
+                                    <label class="checkbox">
+                                        <input type="checkbox"> Allow refresh tokens?
+                                    </label>
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                </div>
                             </div>
-                        </div>
+                        </fieldset>
+                        <fieldset>
+                            <legend>Additional Options</legend>
 
-                        <div class="control-group">
-                            <label id="optionsCheckboxes">Grant Types:</label>
+                            <div class="row-fluid">
 
-                            <div class="input">
-                                <ul class="inputs-list">
-                                    <li>
-                                        <label>
-                                            <input type="checkbox" value="option1" name="optionsCheckboxes">
-                                            <span>Grant Type Blah</span>
+                                <div class="span4 control-group">
+
+                                    <label class="control-label">Grant Types</label>
+
+                                    <div class="controls">
+                                        <label class="checkbox">
+                                            <input type="checkbox" name="grant-type-checkbox-list1" value="option1">
+                                            Option one
                                         </label>
-                                    </li>
-                                    <li>
-                                        <label>
-                                            <input type="checkbox" value="option2" name="optionsCheckboxes">
-                                            <span>Grant Type Blah</span>
+                                        <label class="checkbox">
+                                            <input type="checkbox" name="grant-type-checkbox-list2" value="option2">
+                                            Option two
                                         </label>
-                                    </li>
-                                    <li>
-                                        <label>
-                                            <input type="checkbox" value="option2" name="optionsCheckboxes">
-                                            <span>Grant Type Blah</span>
+                                        <label class="checkbox">
+                                            <input type="checkbox" name="grant-type-checkbox-list3" value="option3">
+                                            Option three
                                         </label>
-                                    </li>
-                                </ul>
-              <span class="help-block">
-                <strong>Note:</strong> Grant type help text.
-              </span>
-                            </div>
-                        </div>
 
-                        <div class="control-group">
-                            <label for="textarea2">Scope</label>
+                                        <p class="help-block"><strong>Note:</strong> Labels surround all the options for
+                                            much larger click areas and a more usable form.</p>
+                                    </div>
 
-                            <div class="input">
-                                <textarea rows="3" name="textarea2" id="textarea2" class="xlarge">email,first
-                                    name</textarea>
+                                </div>
+
+                                <div class="span4 control-group">
+
+                                    <label class="control-label">Auth Types</label>
+
+                                    <div class="controls">
+                                        <label class="checkbox">
+                                            <input type="checkbox" name="auth-type-checkbox-list1" value="option1">
+                                            Option one
+                                        </label>
+                                        <label class="checkbox">
+                                            <input type="checkbox" name="auth-type-checkbox-list2" value="option2">
+                                            Option two
+                                        </label>
+                                        <label class="checkbox">
+                                            <input type="checkbox" name="auth-type-checkbox-list3" value="option3">
+                                            Option three
+                                        </label>
+
+                                        <p class="help-block"><strong>Note:</strong> Labels surround all the options for
+                                            much larger click areas and a more usable form.</p>
+                                    </div>
+
+                                </div>
+
+                                <div class="span4 control-group">
+                                    <label class="control-label" for="access-token-timeout-seconds" style="">Access Token Timeout</label>
+
+                                    <div class="controls form-horizontal" style="">
+                                        <div class="input-append">
+                                            <input type="text" class="span2" id="access-token-timeout-seconds" size="16"><span class="add-on">seconds</span>
+                                        </div>
+                                        <span class="help-inline">Here's more help text</span>
+                                    </div>
+
+                                    <label class="control-label" for="refresh-token-timeout-seconds" style="">Refresh Token Timeout</label>
+
+                                    <div class="controls form-horizontal" style="">
+                                        <div class="input-append">
+                                            <input type="text" class="span2" id="refresh-token-timeout-seconds" size="16"><span class="add-on">seconds</span>
+                                        </div>
+                                        <span class="help-inline">Here's more help text</span>
+                                    </div>
+
+                                </div>
+
+
+                                <div class="span12 control-group">
+                                    <label for="textarea2">Scope</label>
+
+                                    <div class="input">
+                                        <textarea rows="3" class="xlarge span10" placeholder="email,first name, last name" id="textarea2" name="textarea2"></textarea>
               <span class="help-block">
                 Please enter scopes separated by commas
               </span>
-                            </div>
-                        </div>
-
-                        <div class="control-group">
-                            <label id="authorities">Authorities:</label>
-
-                            <div class="input">
-                                <ul class="inputs-list">
-                                    <li>
-                                        <label>
-                                            <input type="checkbox" name="optionsCheckboxes" value="option1">
-                                            <span>Authority Type Blah</span>
-                                        </label>
-                                    </li>
-                                    <li>
-                                        <label>
-                                            <input type="checkbox" name="optionsCheckboxes" value="option2">
-                                            <span>Authority Type Blah</span>
-                                        </label>
-                                    </li>
-                                    <li>
-                                        <label>
-                                            <input type="checkbox" name="optionsCheckboxes" value="option2">
-                                            <span>Authority Type Blah</span>
-                                        </label>
-                                    </li>
-                                </ul>
-              <span class="help-block">
-                <strong>Note:</strong> Authority type help text.
-              </span>
-                            </div>
-                        </div>
-
-                        <div class="control-group">
-                            <label for="appendedInput">Access Token Timeout</label>
-
-                            <div class="input">
-                                <div class="input-append">
-                                    <input type="text" size="16" name="appendedInput" id="appendedInput" class="mini">
-                                    <label class="add-on">seconds</label>
+                                    </div>
                                 </div>
+
+
                             </div>
-                        </div>
-
-                        <div class="control-group">
-                            <label for="form-description">Description</label>
-
-                            <div class="input">
-                                <input type="text" size="30" name="form-description" id="form-description"
-                                       class="xlarge">
-                            </div>
-                        </div>
-
-                        <div class="control-group">
-                            <label id="form-allow-tokens">Allow refresh tokens?</label>
-
-                            <div class="input">
-                                <ul class="inputs-list">
-                                    <li>
-                                        <label>
-                                            <input type="checkbox" value="option1" name="form-allow-tokens">
-                                            <span>&nbsp;</span>
-                                        </label>
-                                    </li>
-                                </ul>
-              <span class="help-block">
-                <strong>Note:</strong> Labels surround all the options for much larger click areas and a more usable form.
-              </span>
-                            </div>
-                        </div>
-
-                        <div class="control-group">
-                            <label for="appendedInput">Refresh Token Timeout</label>
-
-                            <div class="input">
-                                <div class="input-append">
-                                    <input type="text" size="16" name="appendedInput" id="refresh-token-timout"
-                                           class="mini">
-                                    <label class="add-on">seconds</label>
-                                </div>
-                            </div>
-                        </div>
+                        </fieldset>
                     </form>
                 </div>
-                <div class="modal-footer">
-                    <a href="#" class="btn primary">Save</a>
-                    <a href="#" class="btn secondary">Cancel</a>
-                </div>
+
+
             </div>
 
 
         </div>
 
 
-        <footer>
-            <p>&copy; Company 2012</p>
-        </footer>
+
     </div>
-        </div>
+
+    <footer>
+        <p>&copy; Company 2012</p>
+    </footer>
 </div>
+
 
 </body>
 </html>
