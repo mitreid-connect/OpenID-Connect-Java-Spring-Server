@@ -10,47 +10,42 @@
 
     <meta charset="utf-8">
     <title>OpenID Connect - ${title}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <!-- Le javascript -->
-    <script src="http://code.jquery.com/jquery-1.7.min.js"></script>
-    <script src="resources/js/app.js"></script>
-    <script src="resources/js/tmpl.js"></script>
+    <!-- Le styles -->
+    <link href="resources/boostrap2/css/bootstrap.css" rel="stylesheet">
+    <link href="resources/boostrap2/css/bootstrap-responsive.css" rel="stylesheet">
 
-    <script src="resources/bootstrap/js/bootstrap-modal.js"></script>
-    <script src="resources/bootstrap/js/bootstrap-alerts.js"></script>
-    <script src="resources/bootstrap/js/bootstrap-twipsy.js"></script>
-    <script src="resources/bootstrap/js/bootstrap-popover.js"></script>
-    <script src="resources/bootstrap/js/bootstrap-dropdown.js"></script>
-    <script src="resources/bootstrap/js/bootstrap-scrollspy.js"></script>
-    <script src="resources/bootstrap/js/bootstrap-tabs.js"></script>
-    <script src="resources/bootstrap/js/bootstrap-buttons.js"></script>
+    <style type="text/css">
+        body {
+            padding-top: 60px;
+            padding-bottom: 40px;
+        }
+        .sidebar-nav {
+            padding: 9px 0;
+        }
 
+        h1,label {
+            text-shadow: 1px 1px 1px #FFFFFF;
+        }
 
-    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+        .brand {
+            background: url("resources/images/openid_small.png") no-repeat scroll 7px 7px transparent;
+        }
+    </style>
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
     <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
 
-    <!-- Le styles -->
-    <link href="resources/bootstrap/bootstrap.css" rel="stylesheet">
-    <style type="text/css">
-        body {
-            padding-top: 60px;
-        }
-
-        .logo {
-            background: url("resources/images/openid_small.png") no-repeat left center;
-            padding-left: 30px;
-        }
-    </style>
-
     <!-- Le fav and touch icons -->
-    <link rel="shortcut icon" href="images/favicon.ico">
-    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+    <link rel="shortcut icon" href="../boostrap2/ico/favicon.ico">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../boostrap2/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../boostrap2/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../boostrap2/ico/apple-touch-icon-57-precomposed.png">
 </head>
 
 <body>
