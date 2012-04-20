@@ -39,12 +39,10 @@
             <#=(refreshTokens == 1 ? 'checked' : '')#> value="" id="" name="" disabled>
         </td>
         <td>
-            <button data-controls-modal="modal-from-dom" data-backdrop="true" data-keyboard="true"
-                    class="btn">edit
-            </button>
+            <button class="btn">edit</button>
         </td>
         <td>
-            <button class="btn danger">delete</button>
+            <button class="btn btn-danger">delete</button>
         </td>
     </tr>
 </script>
@@ -52,37 +50,40 @@
 
 <o:topbar/>
 <div class="container-fluid">
-    <o:sidebar/>
+    <div class="row-fluid">
+        <o:sidebar/>
+        <div class="span10">
+            <div class="content">
+                <o:breadcrumbs crumb="Manage Clients"/>
 
-    <div class="content">
-        <o:breadcrumbs crumb="Manage Clients"/>
+                <div class="well">
+                    <a class="btn btn-small btn-primary" href="#">New Client</a>
+                </div>
 
-        <div class="well">
-            <a class="btn small primary" href="#">New Client</a>
+                <table id="client-table">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Redirect URL</th>
+                        <th>Grant Types</th>
+                        <th>Scope</th>
+                        <th>Authority</th>
+                        <th class="span8">Description</th>
+                        <th>Refresh Tokens</th>
+                        <th class="span1"></th>
+                        <th class="span1"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+
+                <div class="well">
+                    <a class="btn btn-small btn-primary" href="#">New Client</a>
+                </div>
+                <o:copyright/>
+            </div>
         </div>
-
-        <table id="client-table">
-            <thead>
-            <tr>
-                <th>Name</th>
-                <th>Redirect URL</th>
-                <th>Grant Types</th>
-                <th>Scope</th>
-                <th>Authority</th>
-                <th class="span8">Description</th>
-                <th>Refresh Tokens</th>
-                <th class="span1"></th>
-                <th class="span1"></th>
-            </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-
-        <div class="well">
-            <a class="btn small primary" href="#">New Client</a>
-        </div>
-        <o:copyright/>
     </div>
 </div>
 <o:footer/>
