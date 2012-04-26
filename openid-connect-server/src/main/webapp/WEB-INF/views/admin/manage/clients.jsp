@@ -3,49 +3,6 @@
 
 <o:header title="welcome"/>
 
-<script type="text/html" id="client_tmpl">
-    <tr>
-        <td>
-            <#=name#>
-        </td>
-        <td>
-            <#=redirectURL#>
-        </td>
-        <td>
-            <ul>
-                <# for (var i in grantType) { #>
-                    <li>
-                        <#=grantType[i]#>
-                    </li>
-                    <# } #>
-            </ul>
-        </td>
-        <td>
-            <ul>
-                <# for (var i in scope) { #>
-                    <li>
-                        <#=scope[i]#>
-                    </li>
-                    <# } #>
-            </ul>
-        </td>
-        <td>
-            <#=authority#>
-        </td>
-        <td>
-            <#=description#>
-        </td>
-        <td><input type="checkbox" "
-            <#=(refreshTokens == 1 ? 'checked' : '')#> value="" id="" name="" disabled>
-        </td>
-        <td>
-            <button class="btn">edit</button>
-        </td>
-        <td>
-            <button class="btn btn-danger">delete</button>
-        </td>
-    </tr>
-</script>
 
 
 <o:topbar/>
