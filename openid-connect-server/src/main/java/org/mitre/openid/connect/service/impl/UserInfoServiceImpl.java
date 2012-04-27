@@ -56,4 +56,18 @@ public class UserInfoServiceImpl implements UserInfoService {
 		userInfoRepository.removeByUserId(userId);
 	}
 
+	/**
+     * @return the userInfoRepository
+     */
+    public UserInfoRepository getUserInfoRepository() {
+    	return userInfoRepository;
+    }
+
+	/**
+     * @param userInfoRepository the userInfoRepository to set
+     */
+    public void setUserInfoRepository(UserInfoRepository userInfoRepository) {
+    	this.userInfoRepository = userInfoRepository;
+    }
+
 }
