@@ -1,8 +1,7 @@
-$(function () {
+//$(function () {
 
 
-
-    var Client = Backbone.Model.extend({
+    var ClientModel = Backbone.Model.extend({
 
         // We can pass it default values.
         defaults:{
@@ -20,7 +19,7 @@ $(function () {
     });
 
     var ClientCollection = Backbone.Collection.extend({
-        model:Client,
+        model:ClientModel,
         url:"../api/clients"
     });
 
@@ -39,30 +38,27 @@ $(function () {
                 });
             }
 
-            //this.model.bind("change", this.render, this);
-            debugger;
+            this.model.bind("change", this.render, this);
         },
 
         render:function (eventName) {
-            $(this.el).html(this.template(this.model.toJSON()));
+
+            $(this.el).append(this.template(this.model.toJSON()));
+
             return this;
         },
 
         events:{
-            "change input":"change",
-            "click .save":"saveClient",
-            "click .delete":"deleteClient"
+            "click .btn-edit":"editClient",
+            "click .btn-delete":"deleteClient"
         },
 
-        change:function (event) {
-        },
-
-        saveClient:function () {
-
+        editClient:function () {
+            alert('edit');
         },
 
         deleteClient:function () {
-
+            alert('delete');
         },
 
         close:function () {
@@ -71,8 +67,13 @@ $(function () {
         }
     });
 
-    var view = new ClientView;
+    var view = new ClientView({
+        el:$('#client-table tbody'),
+        model: new ClientModel()
+    });
 
-});
+    view.model.set({name:'hello world'});
+
+//});
 
 
