@@ -25,18 +25,20 @@
 
     var ClientView = Backbone.View.extend({
 
+        tagName: 'tr',
 
         initialize:function () {
 
-            this.template = _.template($('#tmpl-client').html());
+            if (!this.template) {
+                this.template = _.template($('#tmpl-client').html());
+            }
+
             this.model.bind('change', this.render, this);
             //this.model.on('change', this.render)
         },
 
         render:function (eventName) {
-
-            $(this.el).append(this.template(this.model.toJSON()));
-
+            this.$el.html(this.template(this.model.toJSON()));
             return this;
         },
 
@@ -59,20 +61,30 @@
         }
     });
 
+    var ClientListView = Backbone.View.extend({
+
+        el: $("#client-table"),
+
+        addOne: function(todo) {
+
+            var view = new ClientView({
+                model:new ClientModel()
+            });
+
+            var chilly = view.render().el;
+            this.$('tbody').append(view.render().el);
+
+            view.model.set({name:'hello world'});
+        }
+    });
+
 
     $(function () {
 
         // load templates and append them to the body
-
         $.get('resources/template/client.html', function (templates) {
             $('body').append(templates);
 
-            var view = new ClientView({
-                el:$('#client-table tbody'),
-                model:new ClientModel()
-            });
-
-            view.model.set({name:'hello world'});
         });
 
 
