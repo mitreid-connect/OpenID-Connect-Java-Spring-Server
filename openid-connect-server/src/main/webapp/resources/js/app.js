@@ -1,4 +1,3 @@
-//$(function () {
 
 
     var ClientModel = Backbone.Model.extend({
@@ -29,16 +28,9 @@
 
         initialize:function () {
 
-            var self = this;
-
-            if (!($.isFunction(self.template))) {
-                $.get('resources/template/client.html', function (templates) {
-                    $('body').append(templates);
-                    self.template = _.template($('#tmpl-client').html());
-                });
-            }
-
-            this.model.bind("change", this.render, this);
+            this.template = _.template($('#tmpl-client').html());
+            this.model.bind('change', this.render, this);
+            //this.model.on('change', this.render)
         },
 
         render:function (eventName) {
@@ -67,13 +59,23 @@
         }
     });
 
-    var view = new ClientView({
-        el:$('#client-table tbody'),
-        model: new ClientModel()
+
+    $(function () {
+
+        // load templates and append them to the body
+
+        $.get('resources/template/client.html', function (templates) {
+            $('body').append(templates);
+
+            var view = new ClientView({
+                el:$('#client-table tbody'),
+                model:new ClientModel()
+            });
+
+            view.model.set({name:'hello world'});
+        });
+
+
     });
-
-    view.model.set({name:'hello world'});
-
-//});
 
 
