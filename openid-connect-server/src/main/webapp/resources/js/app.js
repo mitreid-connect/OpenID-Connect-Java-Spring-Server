@@ -13,13 +13,13 @@
             refreshTokens:false
         },
 
-        urlRoot:"../api/clients"
+        urlRoot:"/resources/test/json/clients.js"
 
     });
 
     var ClientCollection = Backbone.Collection.extend({
         model:ClientModel,
-        url:"../api/clients"
+        url:"/resources/test/json/clients.js"
     });
 
 
@@ -65,26 +65,56 @@
 
         el: $("#client-table"),
 
-        addOne: function(todo) {
+        initialize:function () {
+            this.model.bind("reset", this.render, this);
+        },
 
-            var view = new ClientView({
-                model:new ClientModel()
-            });
-
-            var chilly = view.render().el;
-            this.$('tbody').append(view.render().el);
-
-            view.model.set({name:'hello world'});
+        render:function (eventName) {
+            _.each(this.model.models, function (client) {
+                $(this.el).append(new ClientView({model:client}).render().el);
+            }, this);
+            return this;
         }
     });
 
+    // Router
+    var AppRouter = Backbone.Router.extend({
 
+        routes:{
+            "":"list"
+        },
+
+        initialize:function () {
+            //$('#header').html(new HeaderView().render().el);
+        },
+
+        list:function () {
+            this.clientList = new ClientCollection();
+            this.clientListView = new ClientListView({model:this.clientList});
+            this.clientList.fetch({
+                dataType:"json",
+                success:function (collection, response) {
+                    //console.dir(response);
+                },
+                error:function (collection, response) {
+                    //console.dir(response);
+                }
+            });
+
+            //debugger;
+        }
+
+    });
+
+    // main
     $(function () {
 
         // load templates and append them to the body
         $.get('resources/template/client.html', function (templates) {
             $('body').append(templates);
-
+            
+            var app = new AppRouter();
+            Backbone.history.start();
         });
 
 
