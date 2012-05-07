@@ -63,16 +63,28 @@
 
     var ClientListView = Backbone.View.extend({
 
-        el: $("#client-table"),
+        el: $(".content"),
 
         initialize:function () {
             this.model.bind("reset", this.render, this);
         },
 
+        events:{
+            "click .btn-primary":"newClient"
+        },
+
+        newClient:function () {
+            alert('new client');
+        },
+
         render:function (eventName) {
+
+            $(this.el).find(".breadcrumb").after($('#tmpl-client-table').html());
+
             _.each(this.model.models, function (client) {
-                $(this.el).append(new ClientView({model:client}).render().el);
+                $("#client-table").append(new ClientView({model:client}).render().el);
             }, this);
+
             return this;
         }
     });
@@ -112,7 +124,7 @@
         // load templates and append them to the body
         $.get('resources/template/client.html', function (templates) {
             $('body').append(templates);
-            
+
             var app = new AppRouter();
             Backbone.history.start();
         });

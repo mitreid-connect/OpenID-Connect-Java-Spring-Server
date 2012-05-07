@@ -1,44 +1,72 @@
 <script type="text/html" id="tmpl-client">
 
-        <td>
-            <%=name%>
-        </td>
-        <td>
-            <%=redirectURL%>
-        </td>
-        <td>
-            <ul>
-                <% for (var i in grantType) { %>
-                    <li>
-                        <%=grantType[i]%>
-                    </li>
-                    <% } %>
-            </ul>
-        </td>
-        <td>
-            <ul>
-                <% for (var i in scope) { %>
-                    <li>
-                        <%=scope[i]%>
-                    </li>
-                    <% } %>
-            </ul>
-        </td>
-        <td>
-            <%=authority%>
-        </td>
-        <td>
-            <%=description%>
-        </td>
-        <td><input type="checkbox"
-            <%=(refreshTokens == 1 ? 'checked' : '')%>
-            value="" id="" name="" disabled>
-        </td>
-        <td>
-            <button class="btn btn-edit">edit</button>
-        </td>
-        <td>
-            <button class="btn btn-danger btn-delete">delete</button>
-        </td>
+    <td>
+        <%=name%>
+    </td>
+    <td>
+        <%=redirectURL%>
+    </td>
+    <td>
+        <ul>
+            <% for (var i in grantType) { %>
+            <li>
+                <%=grantType[i]%>
+            </li>
+            <% } %>
+        </ul>
+    </td>
+    <td>
+        <ul>
+            <% for (var i in scope) { %>
+            <li>
+                <%=scope[i]%>
+            </li>
+            <% } %>
+        </ul>
+    </td>
+    <td>
+        <%=authority%>
+    </td>
+    <td>
+        <%=description%>
+    </td>
+    <td><input type="checkbox"
+        <%=(refreshTokens == 1 ? 'checked' : '')%>
+        value="" id="" name="" disabled>
+    </td>
+    <td>
+        <button class="btn btn-edit">edit</button>
+    </td>
+    <td>
+        <button class="btn btn-danger btn-delete">delete</button>
+    </td>
 
+</script>
+
+<script type="text/html" id="tmpl-client-table">
+    <div class="well">
+        <a class="btn btn-small btn-primary" href="#">New Client</a>
+    </div>
+
+    <table id="client-table" class="table">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Redirect URL</th>
+            <th>Grant Types</th>
+            <th>Scope</th>
+            <th>Authority</th>
+            <th>Description</th>
+            <th>Refresh Tokens</th>
+            <th class="span1"></th>
+            <th class="span1"></th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+    <div class="well">
+        <a class="btn btn-small btn-primary" href="#">New Client</a>
+    </div>
 </script>
