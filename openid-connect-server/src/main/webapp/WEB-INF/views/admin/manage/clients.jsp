@@ -13,7 +13,7 @@
             <div class="content">
                 <o:breadcrumbs crumb="Manage Clients"/>
 
-
+                <span id="content"></span>
                 <o:copyright/>
             </div>
         </div>

@@ -63,7 +63,7 @@
 
     var ClientListView = Backbone.View.extend({
 
-        el: $(".content"),
+        tagName: 'span',
 
         initialize:function () {
             this.model.bind("reset", this.render, this);
@@ -74,12 +74,14 @@
         },
 
         newClient:function () {
-            alert('new client');
+            this.remove();
+            document.location.hash = 'new_client';
         },
 
         render:function (eventName) {
 
-            $(this.el).find(".breadcrumb").after($('#tmpl-client-table').html());
+            // append and render table structure
+            $(this.el).html($('#tmpl-client-table').html());
 
             _.each(this.model.models, function (client) {
                 $("#client-table").append(new ClientView({model:client}).render().el);
@@ -89,31 +91,54 @@
         }
     });
 
+    var ClientFormView = Backbone.View.extend({
+
+        tagName:"span",
+
+        initialize:function () {
+
+            if (!this.template) {
+                this.template = _.template($('#tmpl-client-form').html());
+            }
+        },
+
+        render:function (eventName) {
+
+            var action = "Edit";
+
+            if (!this.model) {
+                 action = "New";
+            }
+
+            $(this.el).html(this.template({action: action}));
+            return this;
+        }
+    });
+
     // Router
     var AppRouter = Backbone.Router.extend({
 
         routes:{
-            "":"list"
+            "":"list",
+            "new_client":"newClient"
         },
 
         initialize:function () {
-            //$('#header').html(new HeaderView().render().el);
+
         },
 
         list:function () {
+
             this.clientList = new ClientCollection();
             this.clientListView = new ClientListView({model:this.clientList});
-            this.clientList.fetch({
-                dataType:"json",
-                success:function (collection, response) {
-                    //console.dir(response);
-                },
-                error:function (collection, response) {
-                    //console.dir(response);
-                }
-            });
+            this.clientList.fetch();
 
-            //debugger;
+            $('#content').html(this.clientListView.render().el);
+        },
+
+        newClient:function() {
+            this.clientFormView = new ClientFormView();
+            $('#content').html(this.clientFormView.render().el);
         }
 
     });

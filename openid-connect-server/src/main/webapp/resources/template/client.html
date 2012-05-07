@@ -70,3 +70,143 @@
         <button class="btn btn-small btn-primary">New Client</button>
     </div>
 </script>
+
+
+<script type="text/html" id="tmpl-client-form">
+
+    <h1><%=action%> Client</h1>
+
+
+    <div class="">
+        <form>
+            <fieldset>
+                <legend>Details</legend>
+
+                <div class="well">
+
+                    <div class="row-fluid">
+                        <div class="span6">
+                            <label>Client name</label>
+                            <input type="text" class="span3" placeholder="Type something"> <span class="help-inline">Associated help text!</span>
+
+                            <label>Refresh URL</label>
+                            <input type="text" class="span3" placeholder="http://"><span class="help-inline">Associated help text!</span>
+                        </div>
+                        <div class="span6">
+                            <label>Description</label>
+                            <textarea class="input-xlarge" id="textarea" placeholder="Type a description"
+                                      rows="3"></textarea> <span class="help-inline">Associated help text!</span>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="">
+                        <p class="help-block">Refresh tokens allow clients to request another authorization
+                            token after it
+                            expires.</p>
+                        <label class="checkbox">
+                            <input type="checkbox"> Allow refresh tokens?
+                        </label>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend>Additional Options</legend>
+
+                <div class="row-fluid">
+
+                    <div class="span4 control-group">
+
+                        <label class="control-label">Grant Types</label>
+
+                        <div class="controls">
+                            <label class="checkbox">
+                                <input type="checkbox" name="grant-type-checkbox-list1" value="option1">
+                                Option one
+                            </label>
+                            <label class="checkbox">
+                                <input type="checkbox" name="grant-type-checkbox-list2" value="option2">
+                                Option two
+                            </label>
+                            <label class="checkbox">
+                                <input type="checkbox" name="grant-type-checkbox-list3" value="option3">
+                                Option three
+                            </label>
+
+                            <p class="help-block"><strong>Note:</strong> Labels surround all the options for
+                                much larger click areas and a more usable form.</p>
+                        </div>
+
+                    </div>
+
+                    <div class="span4 control-group">
+
+                        <label class="control-label">Auth Types</label>
+
+                        <div class="controls">
+                            <label class="checkbox">
+                                <input type="checkbox" name="auth-type-checkbox-list1" value="option1">
+                                Option one
+                            </label>
+                            <label class="checkbox">
+                                <input type="checkbox" name="auth-type-checkbox-list2" value="option2">
+                                Option two
+                            </label>
+                            <label class="checkbox">
+                                <input type="checkbox" name="auth-type-checkbox-list3" value="option3">
+                                Option three
+                            </label>
+
+                            <p class="help-block"><strong>Note:</strong> Labels surround all the options for
+                                much larger click areas and a more usable form.</p>
+                        </div>
+
+                    </div>
+
+                    <div class="span4 control-group">
+                        <label class="control-label" for="access-token-timeout-seconds" style="">Access Token
+                            Timeout</label>
+
+                        <div class="controls form-horizontal" style="">
+                            <div class="input-append">
+                                <input type="text" class="span2" id="access-token-timeout-seconds" size="16"><span
+                                    class="add-on">seconds</span>
+                            </div>
+                            <span class="help-inline">Here's more help text</span>
+                        </div>
+
+                        <label class="control-label" for="refresh-token-timeout-seconds" style="">Refresh Token
+                            Timeout</label>
+
+                        <div class="controls form-horizontal" style="">
+                            <div class="input-append">
+                                <input type="text" class="span2" id="refresh-token-timeout-seconds" size="16"><span
+                                    class="add-on">seconds</span>
+                            </div>
+                            <span class="help-inline">Here's more help text</span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="span12 control-group">
+                        <label for="textarea2">Scope</label>
+
+                        <div class="input">
+                            <textarea rows="3" class="xlarge span10" placeholder="email,first name, last name"
+                                      id="textarea2" name="textarea2"></textarea>
+              <span class="help-block">
+                Please enter scopes separated by commas
+              </span>
+                        </div>
+                    </div>
+
+
+                </div>
+            </fieldset>
+        </form>
+    </div>
+
+</script>
