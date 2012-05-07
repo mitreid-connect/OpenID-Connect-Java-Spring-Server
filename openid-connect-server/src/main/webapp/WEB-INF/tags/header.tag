@@ -15,8 +15,8 @@
     <meta name="author" content="">
 
     <!-- Le styles -->
-    <link href="resources/boostrap2/css/bootstrap.css" rel="stylesheet">
-    <link href="resources/boostrap2/css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="resources/bootstrap2/css/bootstrap.css" rel="stylesheet">
+    <link href="resources/bootstrap2/css/bootstrap-responsive.css" rel="stylesheet">
 
     <style type="text/css">
         body {
@@ -42,10 +42,10 @@
     <![endif]-->
 
     <!-- Le fav and touch icons -->
-    <link rel="shortcut icon" href="../boostrap2/ico/favicon.ico">
-    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../boostrap2/ico/apple-touch-icon-114-precomposed.png">
-    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../boostrap2/ico/apple-touch-icon-72-precomposed.png">
-    <link rel="apple-touch-icon-precomposed" href="../boostrap2/ico/apple-touch-icon-57-precomposed.png">
+    <link rel="shortcut icon" href="../bootstrap2/ico/favicon.ico">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../bootstrap2/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../bootstrap2/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../bootstrap2/ico/apple-touch-icon-57-precomposed.png">
 </head>
 
 <body>
