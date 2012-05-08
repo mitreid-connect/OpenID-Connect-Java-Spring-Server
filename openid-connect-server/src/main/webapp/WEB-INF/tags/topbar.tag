@@ -1,3 +1,4 @@
+<%@ taglib prefix="security" uri="http://www.springframework.org/security/tags" %>
 <div class="navbar navbar-fixed-top">
     <div class="navbar-inner">
         <div class="container-fluid">
@@ -14,7 +15,11 @@
                     <li><a href="#contact">Statistics</a></li>
                     <li><a href="#contact">Contact</a></li>
                 </ul>
-                <p class="navbar-text pull-right">Logged in as <a href="#">username</a></p>
+                <p class="navbar-text pull-right">
+                    <security:authorize ifAllGranted="ROLE_USER">
+                        Logged in as <a href="#"><%= request.getUserPrincipal().getName() %></a>
+                    </security:authorize>
+                </p>
             </div><!--/.nav-collapse -->
         </div>
     </div>
