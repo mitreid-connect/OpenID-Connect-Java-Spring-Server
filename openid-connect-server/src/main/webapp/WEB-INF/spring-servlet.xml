@@ -45,16 +45,6 @@
 		<security:access-denied-handler ref="oauthAccessDeniedHandler" />
 	</security:http>
 
-	<security:http auto-config="true" disable-url-rewriting="true"> <!-- authentication-manager-ref="springSecurityAuthenticationManager" -->
-		<security:intercept-url pattern="/oauth/**" access="ROLE_USER" />
-		<security:intercept-url pattern="/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
-		<security:anonymous />
-	</security:http>
-	
-	<bean class="org.springframework.security.oauth2.provider.approval.TokenServicesUserApprovalHandler" id="userApprovalHandler">
-		<property name="tokenServices" ref="defaultOAuth2ProviderTokenService"/>
-	</bean>
-
 	<bean id="oauthAuthenticationEntryPoint" class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint">
 		<property name="realmName" value="openidconnect" />
 	</bean>
@@ -82,22 +72,15 @@
 		</constructor-arg>
 	</bean>	
 
+	<bean class="org.springframework.security.oauth2.provider.approval.TokenServicesUserApprovalHandler" id="userApprovalHandler">
+		<property name="tokenServices" ref="defaultOAuth2ProviderTokenService"/>
+	</bean>
+
 	<bean id="authCodeServices" class="org.springframework.security.oauth2.provider.code.InMemoryAuthorizationCodeServices"/>
 
-	<security:authentication-manager alias="authenticationManager">
-		<security:authentication-provider>
-			<security:user-service id="userDetailsService">
-				<security:user name="jricher" password="password" authorities="ROLE_USER, ROLE_ADMIN" />
-				<security:user name="mfranklin" password="password" authorities="ROLE_USER, ROLE_ADMIN" />
-				<security:user name="dcuomo" password="password" authorities="ROLE_USER, ROLE_ADMIN" />
-				<security:user name="mjett" password="password" authorities="ROLE_USER, ROLE_ADMIN" />
-				<security:user name="aanganes" password="password" authorities="ROLE_USER, ROLE_ADMIN" />
-				<security:user name="mjwalsh" password="password" authorities="ROLE_USER, ROLE_ADMIN" />
-				<security:user name="srmoore" password="password" authorities="ROLE_USER, ROLE_ADMIN" />
-		  	</security:user-service>
-		</security:authentication-provider>
-	</security:authentication-manager>
-		
+	<!-- user services -->
+	<import resource="user-context.xml" />
+
 <!-- End Spring Security configuration -->	
 		
 <!-- JPA  -->
