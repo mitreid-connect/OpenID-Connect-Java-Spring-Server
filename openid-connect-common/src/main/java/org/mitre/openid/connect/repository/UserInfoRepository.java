@@ -65,6 +65,6 @@ public interface UserInfoRepository {
 	 * 
 	 * @return the UserInfo collection, or null
 	 */
-	public Collection<UserInfo> getAll();	
+	public Collection<? extends UserInfo> getAll();	
 	
 }
