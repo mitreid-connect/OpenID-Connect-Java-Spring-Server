@@ -188,7 +188,7 @@
 	
  	<bean id="jsonUserInfoView" class="org.mitre.openid.connect.view.JSONUserInfoView"/>
  	<bean id="jsonIdTokenView" class="org.mitre.openid.connect.view.JSONIdTokenView"/>
-    <bean id="jsonClientView" class="org.mitre.openid.connect.view.JSONOAuthClientView" />
+    <bean id="jsonClientView" class="org.mitre.openid.connect.view.JSONClientView" />
 
 <!-- End view configuration -->
 

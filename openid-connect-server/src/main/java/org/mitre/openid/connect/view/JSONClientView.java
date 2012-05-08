@@ -19,7 +19,7 @@ import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public class JSONOAuthClientView extends AbstractView{
+public class JSONClientView extends AbstractView{
 
     /* (non-Javadoc)
       * @see org.springframework.web.servlet.view.AbstractView#renderMergedOutputModel(java.util.Map, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
