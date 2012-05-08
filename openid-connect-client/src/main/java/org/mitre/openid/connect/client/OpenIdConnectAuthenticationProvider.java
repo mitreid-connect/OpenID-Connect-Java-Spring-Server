@@ -26,7 +26,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.Assert;
 
 /**
- * @author mjwalsh
+ * @author nemonik
  *
  */
 public class OpenIdConnectAuthenticationProvider implements

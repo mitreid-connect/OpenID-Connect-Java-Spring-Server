@@ -38,6 +38,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.mitre.openid.connect.model.IdToken;
@@ -61,40 +62,7 @@ import com.google.gson.JsonParser;
 /**
  * The OpenID Connect Authentication Filter
  * 
- * Configured like:
- * 
- * <security:http auto-config="false" use-expressions="true"
- * disable-url-rewriting="true" entry-point-ref="authenticationEntryPoint"
- * pattern="/**">
- * 
- * <security:intercept-url pattern="/somepath/**" access="denyAll" />
- * 
- * <security:custom-filter before="PRE_AUTH_FILTER "
- * ref="openIdConnectAuthenticationFilter" />
- * 
- * <security:intercept-url pattern="/**"
- * access="hasAnyRole('ROLE_USER','ROLE_ADMIN')" /> <security:logout />
- * </security:http>
- * 
- * <bean id="authenticationEntryPoint" class=
- * "org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint"
- * > <property name="loginFormUrl" value="/openid_connect_login"/> </bean>
- * 
- * <security:authentication-manager alias="authenticationManager" /> <bean
- * id="openIdConnectAuthenticationFilter"
- * class="org.mitre.openid.connect.client.OpenIdConnectAuthenticationFilter">
- * 
- * <property name="authenticationManager" ref="authenticationManager" />
- * <property name="errorRedirectURI" value="/login.jsp?authfail=openid" /> <!--
- * TODO: or would this be value="/login.jsp?authfail=openid_connect" -->
- * <property name="authorizationEndpointURI" value=
- * "http://sever.example.com:8080/openid-connect-server/openidconnect/auth" />
- * <property name="tokenEndpointURI"
- * value="http://sever.example.com:8080/openid-connect-server/checkid" />
- * <property name="checkIDEndpointURI"
- * value="http://sever.example.com:8080/openid-connect-server/checkid" />
- * <property name="clientId" value="someClientId" /> <property
- * name="clientSecret" value="someClientSecret" /> </bean>
+ * See README.md to to configure
  * 
  * @author nemonik
  * 
@@ -107,6 +75,7 @@ public class OpenIdConnectAuthenticationFilter extends
 	private final static int KEY_SIZE = 1024;
 	private final static String SIGNING_ALGORITHM = "SHA256withRSA";
 	private final static String NONCE_SIGNATURE_COOKIE_NAME = "nonce";
+	private final static String OIDC_ALIAS_COOKIE_NAME = "oidc_alias";
 	private final static String FILTER_PROCESSES_URL = "/openid_connect_login";
 
 	/**
@@ -257,15 +226,11 @@ public class OpenIdConnectAuthenticationFilter extends
 
 	private String errorRedirectURI;
 
-	private String authorizationEndpointURI;
+	private OIDCServerConfiguration oidcServerConfig;
 
-	private String tokenEndpointURI;
+	private String accountChooserURI;
 
-	private String checkIDEndpointURI;
-
-	private String clientSecret;
-
-	private String clientId;
+	private Map<String, ? extends OIDCServerConfiguration> oidcServerConfigs = new HashMap<String, OIDCServerConfiguration>();
 
 	private String scope;
 
@@ -282,14 +247,10 @@ public class OpenIdConnectAuthenticationFilter extends
 	 */
 	protected OpenIdConnectAuthenticationFilter() {
 		super(FILTER_PROCESSES_URL);
+
+		oidcServerConfig = new OIDCServerConfiguration();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.springframework.security.web.authentication.
-	 * AbstractAuthenticationProcessingFilter#afterPropertiesSet()
-	 */
 	@Override
 	public void afterPropertiesSet() {
 		super.afterPropertiesSet();
@@ -297,20 +258,42 @@ public class OpenIdConnectAuthenticationFilter extends
 		Assert.notNull(errorRedirectURI,
 				"An Error Redirect URI must be supplied");
 
-		Assert.notNull(authorizationEndpointURI,
-				"An Authorization Endpoint URI must be supplied");
+		try {
 
-		Assert.notNull(tokenEndpointURI,
-				"A Token ID Endpoint URI must be supplied");
+			// Validating configuration w/ Account Chooser UI Application
+			// settings
 
-		Assert.notNull(checkIDEndpointURI,
-				"A Check ID Endpoint URI must be supplied");
+			Assert.notNull(
+					oidcServerConfigs,
+					"Server Configurations must be supplied if the Account Chooser UI Application is to be used.");
 
-		Assert.notNull(clientId, "A Client ID must be supplied");
+			Assert.notNull(
+					accountChooserURI,
+					"Account Chooser URI must be supplied if the Account Chooser UI Application is to be used.");
 
-		Assert.notNull(clientSecret, "A Client Secret must be supplied");
+		} catch (Exception e) {
+
+			// Failing over to validating configuration w/o Account Chooser UI
+			// Application settings
+
+			Assert.notNull(oidcServerConfig.getAuthorizationEndpointURI(),
+					"An Authorization Endpoint URI must be supplied");
+
+			Assert.notNull(oidcServerConfig.getTokenEndpointURI(),
+					"A Token ID Endpoint URI must be supplied");
+
+			Assert.notNull(oidcServerConfig.getCheckIDEndpointURI(),
+					"A Check ID Endpoint URI must be supplied");
+
+			Assert.notNull(oidcServerConfig.getClientId(),
+					"A Client ID must be supplied");
+
+			Assert.notNull(oidcServerConfig.getClientSecret(),
+					"A Client Secret must be supplied");
+		}
 
 		KeyPairGenerator keyPairGenerator;
+
 		try {
 			keyPairGenerator = KeyPairGenerator.getInstance("RSA");
 			keyPairGenerator.initialize(KEY_SIZE);
@@ -341,27 +324,71 @@ public class OpenIdConnectAuthenticationFilter extends
 	public Authentication attemptAuthentication(HttpServletRequest request,
 			HttpServletResponse response) throws AuthenticationException,
 			IOException, ServletException {
-		
-		if (request.getParameter("error") != null) {
+
+		// Enter AuthenticationFilter here...
+
+		if (StringUtils.isNotBlank(request.getParameter("error"))) {
 
 			handleError(request, response);
 
-		} else {
+		} else if (request.getParameter("code") != null) {
 
-			// Determine if the Authorization Endpoint issued an
-			// authorization grant
+			return handleAuthorizationGrantResponse(request);
 
-			if (request.getParameter("code") != null) {
+		} else if (StringUtils.isNotBlank(accountChooserURI)) {
 
-				return handleAuthorizationGrantResponse(request);
+			String oidcAlias = request.getParameter("oidc_alias");
+
+			if (StringUtils.isNotBlank(oidcAlias)) {
+
+				// Account Chooser UI selects the appropriate OIDC Server configuration
+				
+				OIDCServerConfiguration oidcServerConfig = oidcServerConfigs
+						.get(oidcAlias);
+
+				if (oidcServerConfig != null) {
+					
+					Cookie oidcAliasCookie = new Cookie(OIDC_ALIAS_COOKIE_NAME, oidcAlias);
+					response.addCookie(oidcAliasCookie);
+					
+					handleAuthorizationRequest(request, response, oidcServerConfig);
+					
+				} else {
+
+					throw new AuthenticationServiceException(
+							"Security Filter not configured for OIDC Alias: "
+									+ oidcAlias);
+				}
 
 			} else {
-
-				handleAuthorizationRequest(request, response);
+				
+				// redirect the End-User to the configured Account Chooser UI
+				
+				Map<String, String> urlVariables = new HashMap<String, String>();
+				
+				urlVariables.put("redirect_uri", OpenIdConnectAuthenticationFilter
+						.buildRedirectURI(request, null));
+				
+				response.sendRedirect(OpenIdConnectAuthenticationFilter.buildURL(
+						accountChooserURI, urlVariables));
 			}
+			
+	    } else {
+			
+			// Use configuration that doesn't involve the Account Chooser UI.
+
+			handleAuthorizationRequest(request, response, this.oidcServerConfig);
 		}
 
 		return null;
+	}
+
+	public String getAccountChooserURI() {
+		return accountChooserURI;
+	}
+
+	public Map<String, ? extends OIDCServerConfiguration> getOidcServerConfigs() {
+		return oidcServerConfigs;
 	}
 
 	/**
@@ -377,7 +404,16 @@ public class OpenIdConnectAuthenticationFilter extends
 			HttpServletRequest request) {
 
 		final boolean debug = logger.isDebugEnabled();
-
+		
+		OIDCServerConfiguration serverConfig = this.oidcServerConfig;
+		
+		// Which OIDC configuration?
+		Cookie oidcAliasCookie = WebUtils.getCookie(request, OIDC_ALIAS_COOKIE_NAME);
+		
+		if (oidcAliasCookie != null) {
+			serverConfig = oidcServerConfigs.get(oidcAliasCookie.getValue());
+		}
+		
 		String authorizationGrant = request.getParameter("code");
 
 		// Handle Token Endpoint interaction
@@ -408,18 +444,18 @@ public class OpenIdConnectAuthenticationFilter extends
 				.buildRedirectURI(request, new String[] { "code" }));
 
 		// pass clientId and clientSecret in post of request
-		form.add("client_id", clientId);
-		form.add("client_secret", clientSecret);
+		form.add("client_id", serverConfig.getClientId());
+		form.add("client_secret", serverConfig.getClientSecret());
 
 		if (debug) {
-			logger.debug("tokenEndpointURI = " + tokenEndpointURI);
+			logger.debug("tokenEndpointURI = " + serverConfig.getTokenEndpointURI());
 			logger.debug("form = " + form);
 		}
 
 		String jsonString = null;
 
 		try {
-			jsonString = restTemplate.postForObject(tokenEndpointURI, form,
+			jsonString = restTemplate.postForObject(serverConfig.getTokenEndpointURI(), form,
 					String.class);
 		} catch (HttpClientErrorException httpClientErrorException) {
 
@@ -473,11 +509,10 @@ public class OpenIdConnectAuthenticationFilter extends
 					String h64 = parts.get(0);
 					String c64 = parts.get(1);
 					String s64 = parts.get(2);
-					
+
 					logger.debug("h64 = " + h64);
 					logger.debug("c64 = " + c64);
 					logger.debug("s64 = " + s64);
-					
 
 				} catch (Exception e) {
 
@@ -519,7 +554,7 @@ public class OpenIdConnectAuthenticationFilter extends
 			jsonString = null;
 
 			try {
-				jsonString = restTemplate.postForObject(checkIDEndpointURI,
+				jsonString = restTemplate.postForObject(serverConfig.getCheckIDEndpointURI(),
 						form, String.class);
 			} catch (HttpClientErrorException httpClientErrorException) {
 
@@ -612,18 +647,20 @@ public class OpenIdConnectAuthenticationFilter extends
 	 * @param response
 	 *            The response, needed to set a cookie and do a redirect as part
 	 *            of a multi-stage authentication process
+	 * @param serverConfiguration
 	 * @throws IOException
 	 *             If an input or output exception occurs
 	 */
 	private void handleAuthorizationRequest(HttpServletRequest request,
-			HttpServletResponse response) throws IOException {
+			HttpServletResponse response,
+			OIDCServerConfiguration serverConfiguration) throws IOException {
 
 		Map<String, String> urlVariables = new HashMap<String, String>();
 
 		// Required parameters:
 
 		urlVariables.put("response_type", "code");
-		urlVariables.put("client_id", clientId);
+		urlVariables.put("client_id", serverConfiguration.getClientId());
 		urlVariables.put("scope", scope);
 		urlVariables.put("redirect_uri", OpenIdConnectAuthenticationFilter
 				.buildRedirectURI(request, null));
@@ -648,7 +685,7 @@ public class OpenIdConnectAuthenticationFilter extends
 		// TODO: display, prompt, request, request_uri
 
 		response.sendRedirect(OpenIdConnectAuthenticationFilter.buildURL(
-				authorizationEndpointURI, urlVariables));
+				serverConfiguration.getAuthorizationEndpointURI(), urlVariables));
 	}
 
 	/**
@@ -685,24 +722,33 @@ public class OpenIdConnectAuthenticationFilter extends
 				errorRedirectURI, requestParams));
 	}
 
+	public void setAccountChooserURI(String accountChooserURI) {
+		this.accountChooserURI = accountChooserURI;
+	}
+
 	public void setAuthorizationEndpointURI(String authorizationEndpointURI) {
-		this.authorizationEndpointURI = authorizationEndpointURI;
+		oidcServerConfig.setAuthorizationEndpointURI(authorizationEndpointURI);
 	}
 
 	public void setCheckIDEndpointURI(String checkIDEndpointURI) {
-		this.checkIDEndpointURI = checkIDEndpointURI;
+		oidcServerConfig.setCheckIDEndpointURI(checkIDEndpointURI);
 	}
 
 	public void setClientId(String clientId) {
-		this.clientId = clientId;
+		oidcServerConfig.setClientId(clientId);
 	}
 
 	public void setClientSecret(String clientSecret) {
-		this.clientSecret = clientSecret;
+		oidcServerConfig.setClientSecret(clientSecret);
 	}
 
 	public void setErrorRedirectURI(String errorRedirectURI) {
 		this.errorRedirectURI = errorRedirectURI;
+	}
+
+	public void setOidcServerConfigs(
+			Map<String, ? extends OIDCServerConfiguration> oidcServerConfigs) {
+		this.oidcServerConfigs = oidcServerConfigs;
 	}
 
 	public void setScope(String scope) {
@@ -710,6 +756,6 @@ public class OpenIdConnectAuthenticationFilter extends
 	}
 
 	public void setTokenEndpointURI(String tokenEndpointURI) {
-		this.tokenEndpointURI = tokenEndpointURI;
+		oidcServerConfig.setTokenEndpointURI(tokenEndpointURI);
 	}
 }

@@ -1,0 +1,145 @@
+<?xml version="1.0"?>
+<!DOCTYPE coverage SYSTEM "http://cobertura.sourceforge.net/xml/coverage-04.dtd">
+
+<coverage line-rate="0.0" branch-rate="0.0" lines-covered="0" lines-valid="24" branches-covered="0" branches-valid="2" complexity="1.1111111111111112" version="1.9.4.1" timestamp="1336520977887">
+	<sources>
+		<source>--source</source>
+		<source>/Users/walsh/Development/workspace/OpenID-Connect-Java-Spring-Server/account-chooser/src/main/java</source>
+	</sources>
+	<packages>
+		<package name="org.mitre.account_chooser" line-rate="0.0" branch-rate="0.0" complexity="1.1111111111111112">
+			<classes>
+				<class name="org.mitre.account_chooser.AccountChooserController" filename="org/mitre/account_chooser/AccountChooserController.java" line-rate="0.0" branch-rate="1.0" complexity="1.0">
+					<methods>
+						<method name="&lt;clinit&gt;" signature="()V" line-rate="0.0" branch-rate="1.0">
+							<lines>
+								<line number="45" hits="0" branch="false"/>
+							</lines>
+						</method>
+						<method name="&lt;init&gt;" signature="()V" line-rate="0.0" branch-rate="1.0">
+							<lines>
+								<line number="40" hits="0" branch="false"/>
+							</lines>
+						</method>
+						<method name="handleChooserRequest" signature="(Ljava/lang/String;)Lorg/springframework/web/servlet/ModelAndView;" line-rate="0.0" branch-rate="1.0">
+							<lines>
+								<line number="60" hits="0" branch="false"/>
+								<line number="61" hits="0" branch="false"/>
+								<line number="62" hits="0" branch="false"/>
+								<line number="63" hits="0" branch="false"/>
+								<line number="65" hits="0" branch="false"/>
+							</lines>
+						</method>
+						<method name="processSubmit" signature="(Ljava/lang/String;Ljava/lang/String;Ljavax/servlet/http/HttpServletResponse;)V" line-rate="0.0" branch-rate="1.0">
+							<lines>
+								<line number="87" hits="0" branch="false"/>
+								<line number="88" hits="0" branch="false"/>
+							</lines>
+						</method>
+					</methods>
+					<lines>
+						<line number="40" hits="0" branch="false"/>
+						<line number="45" hits="0" branch="false"/>
+						<line number="60" hits="0" branch="false"/>
+						<line number="61" hits="0" branch="false"/>
+						<line number="62" hits="0" branch="false"/>
+						<line number="63" hits="0" branch="false"/>
+						<line number="65" hits="0" branch="false"/>
+						<line number="87" hits="0" branch="false"/>
+						<line number="88" hits="0" branch="false"/>
+					</lines>
+				</class>
+				<class name="org.mitre.account_chooser.OIDCServer" filename="org/mitre/account_chooser/OIDCServer.java" line-rate="0.0" branch-rate="1.0" complexity="1.0">
+					<methods>
+						<method name="&lt;init&gt;" signature="()V" line-rate="0.0" branch-rate="1.0">
+							<lines>
+								<line number="22" hits="0" branch="false"/>
+							</lines>
+						</method>
+						<method name="getName" signature="()Ljava/lang/String;" line-rate="0.0" branch-rate="1.0">
+							<lines>
+								<line number="27" hits="0" branch="false"/>
+							</lines>
+						</method>
+						<method name="setName" signature="(Ljava/lang/String;)V" line-rate="0.0" branch-rate="1.0">
+							<lines>
+								<line number="31" hits="0" branch="false"/>
+								<line number="32" hits="0" branch="false"/>
+							</lines>
+						</method>
+						<method name="toString" signature="()Ljava/lang/String;" line-rate="0.0" branch-rate="1.0">
+							<lines>
+								<line number="36" hits="0" branch="false"/>
+							</lines>
+						</method>
+					</methods>
+					<lines>
+						<line number="22" hits="0" branch="false"/>
+						<line number="27" hits="0" branch="false"/>
+						<line number="31" hits="0" branch="false"/>
+						<line number="32" hits="0" branch="false"/>
+						<line number="36" hits="0" branch="false"/>
+					</lines>
+				</class>
+				<class name="org.mitre.account_chooser.OIDCServers" filename="org/mitre/account_chooser/OIDCServers.java" line-rate="0.0" branch-rate="0.0" complexity="1.25">
+					<methods>
+						<method name="&lt;clinit&gt;" signature="()V" line-rate="0.0" branch-rate="1.0">
+							<lines>
+								<line number="33" hits="0" branch="false"/>
+							</lines>
+						</method>
+						<method name="&lt;init&gt;" signature="()V" line-rate="0.0" branch-rate="1.0">
+							<lines>
+								<line number="29" hits="0" branch="false"/>
+								<line number="31" hits="0" branch="false"/>
+							</lines>
+						</method>
+						<method name="afterPropertiesSet" signature="()V" line-rate="0.0" branch-rate="0.0">
+							<lines>
+								<line number="44" hits="0" branch="true" condition-coverage="0% (0/2)">
+									<conditions>
+										<condition number="0" type="jump" coverage="0%"/>
+									</conditions>
+								</line>
+								<line number="45" hits="0" branch="false"/>
+								<line number="47" hits="0" branch="false"/>
+							</lines>
+						</method>
+						<method name="getServers" signature="()Ljava/util/Map;" line-rate="0.0" branch-rate="1.0">
+							<lines>
+								<line number="55" hits="0" branch="false"/>
+							</lines>
+						</method>
+						<method name="setServers" signature="(Ljava/util/Map;)V" line-rate="0.0" branch-rate="1.0">
+							<lines>
+								<line number="65" hits="0" branch="false"/>
+								<line number="66" hits="0" branch="false"/>
+							</lines>
+						</method>
+						<method name="toString" signature="()Ljava/lang/String;" line-rate="0.0" branch-rate="1.0">
+							<lines>
+								<line number="73" hits="0" branch="false"/>
+							</lines>
+						</method>
+					</methods>
+					<lines>
+						<line number="29" hits="0" branch="false"/>
+						<line number="31" hits="0" branch="false"/>
+						<line number="33" hits="0" branch="false"/>
+						<line number="44" hits="0" branch="true" condition-coverage="0% (0/2)">
+							<conditions>
+								<condition number="0" type="jump" coverage="0%"/>
+							</conditions>
+						</line>
+						<line number="45" hits="0" branch="false"/>
+						<line number="47" hits="0" branch="false"/>
+						<line number="55" hits="0" branch="false"/>
+						<line number="65" hits="0" branch="false"/>
+						<line number="66" hits="0" branch="false"/>
+						<line number="73" hits="0" branch="false"/>
+					</lines>
+				</class>
+			</classes>
+		</package>
+	</packages>
+</coverage>
