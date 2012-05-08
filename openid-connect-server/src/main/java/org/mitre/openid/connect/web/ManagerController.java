@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/")
 public class ManagerController {
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @RequestMapping({"", "/home", "/index"})
     public String showHomePage() {
         return "home";
