@@ -15,7 +15,7 @@
     <meta name="author" content="">
 
     <!-- Le styles -->
-    <link href="resources/bootstrap2/css/bootstrap.css" rel="stylesheet">
+    <link href="resources/bootstrap2/css/bootstrap.min.css" rel="stylesheet">
     <link href="resources/bootstrap2/css/bootstrap-responsive.css" rel="stylesheet">
 
     <style type="text/css">

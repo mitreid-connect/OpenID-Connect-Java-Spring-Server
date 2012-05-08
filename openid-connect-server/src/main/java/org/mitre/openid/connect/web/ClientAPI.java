@@ -15,19 +15,27 @@
  ******************************************************************************/
 package org.mitre.openid.connect.web;
 
+import org.mitre.oauth2.model.ClientDetailsEntity;
+import org.mitre.oauth2.service.ClientDetailsEntityService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.Collection;
+
 /**
  * @author Michael Jett <mjett@mitre.org>
  */
 
 @Controller
-@RequestMapping("/manager/clients/api")
+@RequestMapping("/api/clients")
 public class ClientAPI {
+
+    @Autowired
+    private ClientDetailsEntityService clientService;
 
     /**
      * constructor
@@ -36,7 +44,20 @@ public class ClientAPI {
 
     }
 
-    /**
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @RequestMapping("")
+    public ModelAndView apiGetAllClients(ModelAndView modelAndView) {
+
+        Collection<ClientDetailsEntity> clients = clientService.getAllClients();
+        modelAndView.addObject("entity", clients);
+        modelAndView.setViewName("jsonClientView");
+
+        return modelAndView;
+    }
+
+/*
+    */
+/**
      *
      * @param modelAndView
      * @param clientId
@@ -52,7 +73,8 @@ public class ClientAPI {
      * @param refreshTokenTimeout
      * @param owner
      * @return
-     */
+     *//*
+
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @RequestMapping("/add")
     public ModelAndView apiAddClient(ModelAndView modelAndView,
@@ -71,31 +93,25 @@ public class ClientAPI {
         return null;
     }
 
-    /**
+    */
+/**
      *
      * @param modelAndView
      * @param clientId
      * @return
-     */
+     *//*
+
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @RequestMapping("/delete")
     public ModelAndView apiDeleteClient(ModelAndView modelAndView,
                                         @RequestParam String clientId) {
         return null;
     }
+*/
 
-    /**
-     *
-     * @param modelAndView
-     * @return
-     */
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @RequestMapping("/getAll")
-    public ModelAndView apiGetAllClients(ModelAndView modelAndView) {
-        return null;
-    }
 
-    /**
+
+  /*  *//**
      *
      * @param modelAndView
      * @param clientId
@@ -111,7 +127,7 @@ public class ClientAPI {
      * @param refreshTokenTimeout
      * @param owner
      * @return
-     */
+     *//*
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @RequestMapping("/update")
     public ModelAndView apiUpdateClient(ModelAndView modelAndView,
@@ -128,5 +144,5 @@ public class ClientAPI {
                                         @RequestParam(required = false) String owner
     ) {
         return null;
-    }
+    }*/
 }
