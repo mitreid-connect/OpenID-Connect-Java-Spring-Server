@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.mitre.openid.connect.web;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -31,6 +32,7 @@ public class ManagerController {
         return "home";
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @RequestMapping("/admin/manage/clients")
     public String showClientManager() {
         return "admin/manage/clients";

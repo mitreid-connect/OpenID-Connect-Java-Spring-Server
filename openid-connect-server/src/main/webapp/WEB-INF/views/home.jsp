@@ -1,15 +1,18 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="o" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="security" uri="http://www.springframework.org/security/tags" %>
 
 <o:header title="welcome"/>
 <o:topbar/>
-<div class="container-fluid">
-    <div class="row-fluid">
-        <o:sidebar/>
-        <div class="span10">
+<div class="container<security:authorize ifAllGranted="ROLE_USER">-fluid</security:authorize>">
+    <div class="row<security:authorize ifAllGranted="ROLE_USER">-fluid</security:authorize>">
+        <security:authorize ifAllGranted="ROLE_USER">
+            <o:sidebar/>
+        </security:authorize>
+        <div<security:authorize ifAllGranted="ROLE_USER"> class="span10"</security:authorize>>
             <!-- Main hero unit for a primary marketing message or call to action -->
             <div class="hero-unit">
-                <h1>Welcome, User Name!</h1>
+                <h1>Welcome!</h1>
 
                 <p>Can't remember your passwords? Tired of filling out registration forms?
                     OpenID is a <strong>safe</strong>, <strong>faster</strong>, and <strong>easier</strong> way to log
@@ -19,7 +22,7 @@
                 <p><a class="btn btn-primary btn-large" href="http://openid.net/connect/">Learn more &raquo;</a></p>
             </div>
             <!-- Example row of columns -->
-            <div class="row">
+            <div class="row<security:authorize ifAllGranted="ROLE_USER">-fluid</security:authorize>">
                 <div class="span6">
                     <h2>About</h2>
 
@@ -46,7 +49,7 @@
             </div>
             <hr>
             <!-- Example row of columns -->
-            <div class="row">
+            <div class="row<security:authorize ifAllGranted="ROLE_USER">-fluid</security:authorize>">
                 <div class="span12">
                     <h2>Current Statistics</h2>
 
