@@ -82,8 +82,8 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
     public ClientDetailsEntity createClient(String clientId, String clientSecret, 
     		Set<String> scope, Set<String> grantTypes, String redirectUri, Set<GrantedAuthority> authorities,
     		Set<String> resourceIds,
-    		String name, String description, boolean allowRefresh, Long accessTokenTimeout, 
-    		Long refreshTokenTimeout, String owner) {
+    		String name, String description, boolean allowRefresh, Integer accessTokenTimeout, 
+    		Integer refreshTokenTimeout, String owner) {
 		
 		// TODO: check "owner" locally?
 
