@@ -28,16 +28,16 @@
 
         <p>
 
-        <form id="confirmationForm" name="confirmationForm"
+        <form name="confirmationForm" style="display:inline"
               action="<%=request.getContextPath()%>/oauth/authorize" method="post">
             <input name="user_oauth_approval" value="true" type="hidden"/>
-            <input name="authorize" value="Authorize" type="submit" class="btn success large"/>
+            <input name="authorize" value="Authorize" type="submit" class="btn btn-success btn-large"/>
         </form>
         &nbsp;
-        <form id="denialForm" name="denialForm" action="<%=request.getContextPath()%>/oauth/authorize"
+        <form name="denialForm" style="display:inline" action="<%=request.getContextPath()%>/oauth/authorize"
               method="post">
             <input name="user_oauth_approval" value="false" type="hidden"/>
-            <input name="deny" value="Deny" type="submit" class="btn secondary large"/>
+            <input name="deny" value="Deny" type="submit" class="btn btn-secondary btn-large"/>
         </form>
         </p>
         <a href="#" class="small">learn more</a>
