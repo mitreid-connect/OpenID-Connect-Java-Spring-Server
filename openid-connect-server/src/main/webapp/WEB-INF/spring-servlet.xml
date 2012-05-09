@@ -24,11 +24,8 @@
 	<mvc:default-servlet-handler />
 
 	<!-- Bean to hold configuration propreties -->
-	<bean id="configBean" class="org.mitre.openid.connect.config.ConfigurationPropertiesBean">
-		<property name="issuer" value="http://localhost/" />
- 		<property name="defaultJwtSigner"  value="rsa1"/>
-	</bean>
-	
+	<import resource="server-config.xml" />
+
 	<!-- Import the data context -->
 	<import resource="data-context.xml" />	
 
