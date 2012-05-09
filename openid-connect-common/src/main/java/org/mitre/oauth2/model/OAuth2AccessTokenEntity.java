@@ -39,13 +39,9 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.Transient;
 
-import org.codehaus.jackson.map.annotate.JsonDeserialize;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.mitre.jwt.model.Jwt;
 import org.mitre.openid.connect.model.IdToken;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
-import org.springframework.security.oauth2.common.OAuth2AccessTokenDeserializer;
-import org.springframework.security.oauth2.common.OAuth2AccessTokenSerializer;
 import org.springframework.security.oauth2.common.OAuth2RefreshToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 
@@ -63,7 +59,7 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 })
 //@JsonSerialize(using = OAuth2AccessTokenSerializer.class)
 //@JsonDeserialize(using = OAuth2AccessTokenDeserializer.class)
-public class OAuth2AccessTokenEntity extends OAuth2AccessToken {
+public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 
 	public static String ID_TOKEN = "id_token";
 	
@@ -71,34 +67,34 @@ public class OAuth2AccessTokenEntity extends OAuth2AccessToken {
 	
 	private OAuth2Authentication authentication; // the authentication that made this access
 	
-	// JWT-encoded access token value
-	private Jwt jwtValue;
+	private Jwt jwtValue; // JWT-encoded access token value
 
-	// JWT-encoded OpenID Connect IdToken
-	private IdToken idToken;
+	private IdToken idToken; // JWT-encoded OpenID Connect IdToken
+	
+	private Date expiration;
+
+	private String tokenType = OAuth2AccessToken.BEARER_TYPE;
+
+	private OAuth2RefreshTokenEntity refreshToken;
+
+	private Set<String> scope;
 	
 	/**
 	 * Create a new, blank access token
 	 */
 	public OAuth2AccessTokenEntity() {
-		// we ignore the "value" field in the superclass because we can't cleanly override it
-		super(null);
 		setJwt(new Jwt()); // give us a blank jwt to work with at least
-		//setIdToken(new IdToken()); // ID Tokens aren't there unless we need them
 	}
 	
 	/**
 	 * Get all additional information to be sent to the serializer. Inserts a copy of the IdToken (in JWT String form). 
 	 */
-	@Override
 	@Transient
 	public Map<String, Object> getAdditionalInformation() {
 		Map<String, Object> map = new HashMap<String, Object>(); //super.getAdditionalInformation();
 		map.put(ID_TOKEN, getIdTokenString());
 		return map;
 	}
-	
-	
 	
 	/**
 	 * The authentication in place when this token was created.
@@ -110,14 +106,12 @@ public class OAuth2AccessTokenEntity extends OAuth2AccessToken {
     	return authentication;
     }
 
-
 	/**
      * @param authentication the authentication to set
      */
     public void setAuthentication(OAuth2Authentication authentication) {
     	this.authentication = authentication;
     }
-
 
 	/**
      * @return the client
@@ -128,7 +122,6 @@ public class OAuth2AccessTokenEntity extends OAuth2AccessToken {
     	return client;
     }
 
-
 	/**
      * @param client the client to set
      */
@@ -136,13 +129,9 @@ public class OAuth2AccessTokenEntity extends OAuth2AccessToken {
     	this.client = client;
     }
 	
-	/* (non-Javadoc)
-     * @see org.springframework.security.oauth2.common.OAuth2AccessToken#getValue()
-     */
     /**
      * Get the string-encoded value of this access token. 
      */
-    @Override
     @Id
     @Column(name="id")
     public String getValue() {
@@ -159,68 +148,35 @@ public class OAuth2AccessTokenEntity extends OAuth2AccessToken {
     	setJwt(Jwt.parse(value));
     }
 
-	/* (non-Javadoc)
-     * @see org.springframework.security.oauth2.common.OAuth2AccessToken#getExpiration()
-     */
-    @Override
     @Basic
     @Temporal(javax.persistence.TemporalType.TIMESTAMP)
     public Date getExpiration() {
-	    // TODO Auto-generated method stub
-	    return super.getExpiration();
+	    return expiration;
     }
 
-	/* (non-Javadoc)
-     * @see org.springframework.security.oauth2.common.OAuth2AccessToken#setExpiration(java.util.Date)
-     */
-    @Override
     public void setExpiration(Date expiration) {
-	    // TODO Auto-generated method stub
-	    super.setExpiration(expiration);
+	    this.expiration = expiration;
     }
 
-	/* (non-Javadoc)
-     * @see org.springframework.security.oauth2.common.OAuth2AccessToken#getTokenType()
-     */
-    @Override
     @Basic
     public String getTokenType() {
-	    // TODO Auto-generated method stub
-	    return super.getTokenType();
+	    return tokenType;
     }
 
-	/* (non-Javadoc)
-     * @see org.springframework.security.oauth2.common.OAuth2AccessToken#setTokenType(java.lang.String)
-     */
-    @Override
     public void setTokenType(String tokenType) {
-	    // TODO Auto-generated method stub
-	    super.setTokenType(tokenType);
+	   this.tokenType = tokenType;
     }
 
-	/* (non-Javadoc)
-     * @see org.springframework.security.oauth2.common.OAuth2AccessToken#getRefreshToken()
-     */
-    @Override
     @ManyToOne
     @JoinColumn(name="refresh_token_id")
     public OAuth2RefreshTokenEntity getRefreshToken() {
-	    // TODO Auto-generated method stub
-	    return (OAuth2RefreshTokenEntity) super.getRefreshToken();
+	    return refreshToken;
     }
 
-	/* (non-Javadoc)
-     * @see org.springframework.security.oauth2.common.OAuth2AccessToken#setRefreshToken(org.springframework.security.oauth2.common.OAuth2RefreshToken)
-     */
     public void setRefreshToken(OAuth2RefreshTokenEntity refreshToken) {
-	    // TODO Auto-generated method stub
-	    super.setRefreshToken(refreshToken);
+	    this.refreshToken = refreshToken;
     }
 
-	/* (non-Javadoc)
-     * @see org.springframework.security.oauth2.common.OAuth2AccessToken#setRefreshToken(org.springframework.security.oauth2.common.OAuth2RefreshToken)
-     */
-    @Override
     public void setRefreshToken(OAuth2RefreshToken refreshToken) {
     	if (!(refreshToken instanceof OAuth2RefreshTokenEntity)) {
     		// TODO: make a copy constructor instead....
@@ -230,35 +186,24 @@ public class OAuth2AccessTokenEntity extends OAuth2AccessToken {
     	setRefreshToken((OAuth2RefreshTokenEntity)refreshToken);
     }
 	
-	/* (non-Javadoc)
-     * @see org.springframework.security.oauth2.common.OAuth2AccessToken#getScope()
-     */
-    @Override
     @ElementCollection(fetch=FetchType.EAGER)
     @CollectionTable(
     		joinColumns=@JoinColumn(name="owner_id"),
     		name="scope"
     )
     public Set<String> getScope() {
-	    // TODO Auto-generated method stub
-	    return super.getScope();
+	    return scope;
     }
 
-	/* (non-Javadoc)
-     * @see org.springframework.security.oauth2.common.OAuth2AccessToken#setScope(java.util.Set)
-     */
-    @Override
     public void setScope(Set<String> scope) {
-	    // TODO Auto-generated method stub
-	    super.setScope(scope);
+	    this.scope = scope;
     }
 
     @Transient
 	public boolean isExpired() {
 		return getExpiration() == null ? false : System.currentTimeMillis() > getExpiration().getTime();
 	}
-
-
+    
 	/**
 	 * This is transient b/c the IdToken is not serializable. Instead,
 	 * the toString of the IdToken is persisted in idTokenString 
@@ -268,7 +213,6 @@ public class OAuth2AccessTokenEntity extends OAuth2AccessToken {
 	public IdToken getIdToken() {
 		return idToken;
 	}
-
 
 	/**
 	 * @param idToken the idToken to set
@@ -305,11 +249,16 @@ public class OAuth2AccessTokenEntity extends OAuth2AccessToken {
 		return jwtValue;
 	}
 
-
 	/**
 	 * @param jwtValue the jwtValue to set
 	 */
 	public void setJwt(Jwt jwt) {
 		this.jwtValue = jwt;
+	}
+
+	@Override
+	public int getExpiresIn() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

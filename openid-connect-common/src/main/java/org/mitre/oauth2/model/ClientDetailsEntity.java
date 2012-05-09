@@ -65,8 +65,8 @@ public class ClientDetailsEntity implements ClientDetails {
 	private String clientName;
 	private String clientDescription;
 	private boolean allowRefresh = false; // do we allow refresh tokens for this client?
-	private Long accessTokenTimeout; // in seconds
-	private Long refreshTokenTimeout; // in seconds
+	private Integer accessTokenTimeout; // in seconds
+	private Integer refreshTokenTimeout; // in seconds
 	private String owner; // userid of who registered it
 	private Set<String> registeredRedirectUri;
 	private Set<String> resourceIds;
@@ -271,14 +271,14 @@ public class ClientDetailsEntity implements ClientDetails {
      * @param accessTokenTimeout Lifetime of access tokens, in seconds (optional - leave null for no timeout)
      */
 	@Basic
-    public Long getAccessTokenTimeout() {
+    public Integer getAccessTokenTimeout() {
     	return accessTokenTimeout;
     }
 
 	/**
      * @param accessTokenTimeout the accessTokenTimeout to set
      */
-    public void setAccessTokenTimeout(Long accessTokenTimeout) {
+    public void setAccessTokenTimeout(Integer accessTokenTimeout) {
     	this.accessTokenTimeout = accessTokenTimeout;
     }
 
@@ -286,14 +286,14 @@ public class ClientDetailsEntity implements ClientDetails {
      * @return the refreshTokenTimeout
      */
 	@Basic
-    public Long getRefreshTokenTimeout() {
+    public Integer getRefreshTokenTimeout() {
     	return refreshTokenTimeout;
     }
 
 	/**
      * @param refreshTokenTimeout Lifetime of refresh tokens, in seconds (optional - leave null for no timeout)
      */
-    public void setRefreshTokenTimeout(Long refreshTokenTimeout) {
+    public void setRefreshTokenTimeout(Integer refreshTokenTimeout) {
     	this.refreshTokenTimeout = refreshTokenTimeout;
     }
 
@@ -482,7 +482,7 @@ public class ClientDetailsEntity implements ClientDetails {
          * @param accessTokenTimeout
          * @see org.mitre.oauth2.model.ClientDetailsEntity#setAccessTokenTimeout(java.lang.Long)
          */
-        public ClientDetailsEntityBuilder setAccessTokenTimeout(Long accessTokenTimeout) {
+        public ClientDetailsEntityBuilder setAccessTokenTimeout(int accessTokenTimeout) {
 	        instance.setAccessTokenTimeout(accessTokenTimeout);
 			return this;
         }
@@ -491,7 +491,7 @@ public class ClientDetailsEntity implements ClientDetails {
          * @param refreshTokenTimeout
          * @see org.mitre.oauth2.model.ClientDetailsEntity#setRefreshTokenTimeout(java.lang.Long)
          */
-        public ClientDetailsEntityBuilder setRefreshTokenTimeout(Long refreshTokenTimeout) {
+        public ClientDetailsEntityBuilder setRefreshTokenTimeout(int refreshTokenTimeout) {
 	        instance.setRefreshTokenTimeout(refreshTokenTimeout);
 			return this;
         }
@@ -504,8 +504,6 @@ public class ClientDetailsEntity implements ClientDetails {
 	        instance.setOwner(owner);
 			return this;
         }
-
-        
         
         /**
          * Complete the builder
@@ -535,14 +533,15 @@ public class ClientDetailsEntity implements ClientDetails {
 		
 	}
 
-	/**
-	 * TODO: Implement
-	 * See github issue #3
-	 */
 	@Override
 	public int getAccessTokenValiditySeconds() {
-		// TODO Auto-generated method stub
-		return 0;
+		return accessTokenTimeout;
+	}
+
+
+	@Override
+	public int getRefreshTokenValiditySeconds() {
+		return refreshTokenTimeout;
 	}
 
 /*	*//**

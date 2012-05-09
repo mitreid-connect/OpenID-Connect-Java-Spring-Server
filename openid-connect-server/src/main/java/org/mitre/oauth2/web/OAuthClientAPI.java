@@ -69,8 +69,8 @@ public class OAuthClientAPI {
     		@RequestParam(required=false) String name, 
     		@RequestParam(required=false) String description, 
     		@RequestParam(required=false, defaultValue="false") boolean allowRefresh,
-    		@RequestParam(required=false) Long accessTokenTimeout, 
-    		@RequestParam(required=false) Long refreshTokenTimeout, 
+    		@RequestParam(required=false) Integer accessTokenTimeout, 
+    		@RequestParam(required=false) Integer refreshTokenTimeout, 
     		@RequestParam(required=false) String owner
     		) {
     	logger.info("apiAddClient - start");
@@ -150,8 +150,8 @@ public class OAuthClientAPI {
     		@RequestParam(required=false) String name, 
     		@RequestParam(required=false) String description, 
     		@RequestParam(required=false, defaultValue="false") boolean allowRefresh,
-    		@RequestParam(required=false) Long accessTokenTimeout, 
-    		@RequestParam(required=false) Long refreshTokenTimeout, 
+    		@RequestParam(required=false) Integer accessTokenTimeout, 
+    		@RequestParam(required=false) Integer refreshTokenTimeout, 
     		@RequestParam(required=false) String owner			
     ) {
     	ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
