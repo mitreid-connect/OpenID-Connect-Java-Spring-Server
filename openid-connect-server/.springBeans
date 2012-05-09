@@ -8,6 +8,7 @@
 	<enableImports><![CDATA[false]]></enableImports>
 	<configs>
 		<config>src/main/webapp/WEB-INF/user-context.xml</config>
+		<config>src/main/webapp/WEB-INF/server-config.xml</config>
 	</configs>
 	<configSets>
 	</configSets>
