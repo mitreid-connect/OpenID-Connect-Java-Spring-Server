@@ -27,7 +27,7 @@ public interface ClientDetailsEntityService extends ClientDetailsService {
 
 	public ClientDetailsEntity loadClientByClientId(String clientId) throws OAuth2Exception;
 
-	public ClientDetailsEntity createClient(String clientId, String clientSecret, Set<String> scope, Set<String> grantTypes, String redirectUri, Set<GrantedAuthority> authorities, Set<String> resourceIds, String name, String description, boolean allowRefresh, Long accessTokenTimeout, Long refreshTokenTimeout, String owner);
+	public ClientDetailsEntity createClient(String clientId, String clientSecret, Set<String> scope, Set<String> grantTypes, String redirectUri, Set<GrantedAuthority> authorities, Set<String> resourceIds, String name, String description, boolean allowRefresh, Integer accessTokenTimeout, Integer refreshTokenTimeout, String owner);
 	
 	public void deleteClient(ClientDetailsEntity client);
 	

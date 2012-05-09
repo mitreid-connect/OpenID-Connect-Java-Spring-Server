@@ -37,7 +37,6 @@ import javax.persistence.Temporal;
 import javax.persistence.Transient;
 
 import org.mitre.jwt.model.Jwt;
-import org.springframework.security.oauth2.common.ExpiringOAuth2RefreshToken;
 import org.springframework.security.oauth2.common.OAuth2RefreshToken;
 
 /**
@@ -50,7 +49,7 @@ import org.springframework.security.oauth2.common.OAuth2RefreshToken;
 	@NamedQuery(name = "OAuth2RefreshTokenEntity.getByClient", query = "select r from OAuth2RefreshTokenEntity r where r.client = :client"),
 	@NamedQuery(name = "OAuth2RefreshTokenEntity.getExpired", query = "select r from OAuth2RefreshTokenEntity r where r.expiration is not null and r.expiration < current_timestamp")
 })
-public class OAuth2RefreshTokenEntity extends OAuth2RefreshToken {
+public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
 
 	private ClientDetailsEntity client;
 
@@ -66,18 +65,12 @@ public class OAuth2RefreshTokenEntity extends OAuth2RefreshToken {
 	 * 
 	 */
 	public OAuth2RefreshTokenEntity() {
-		// we ignore the superclass's Value field
-		super(null);
 		setJwt(new Jwt()); // start with a blank JWT value
 	}
 
-	/* (non-Javadoc)
-     * @see org.springframework.security.oauth2.common.OAuth2RefreshToken#getValue()
-     */
 	/**
 	 * Get the JWT-encoded value of this token
 	 */
-    @Override
     @Id
     @Column(name="id")
     public String getValue() {
@@ -91,7 +84,6 @@ public class OAuth2RefreshTokenEntity extends OAuth2RefreshToken {
      * @throws IllegalArgumentException if the value is not a valid JWT string
      */
     public void setValue(String value) {
-	    // TODO Auto-generated method stub
 	    setJwt(Jwt.parse(value));
     }
 
@@ -126,7 +118,6 @@ public class OAuth2RefreshTokenEntity extends OAuth2RefreshToken {
     public ClientDetailsEntity getClient() {
     	return client;
     }
-
 
 	/**
      * @param client the client to set
