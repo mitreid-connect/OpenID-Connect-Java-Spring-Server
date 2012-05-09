@@ -51,9 +51,9 @@ Configure the OpenIDConnectAuthenticationFilter by adding the XML to your applic
 		<property name="errorRedirectURI" 
 			value="/login.jsp?authfail=openid" />
 		<property name="authorizationEndpointURI" 
-			value="http://sever.example.com:8080/openid-connect-server/openidconnect/auth" />
+			value="http://sever.example.com:8080/openid-connect-server/oauth/authorize" />
 		<property name="tokenEndpointURI" 
-			value="http://sever.example.com:8080/openid-connect-server/checkid" />
+			value="http://sever.example.com:8080/openid-connect-server/oauth/token" />
 		<property name="checkIDEndpointURI" 
 			value="http://sever.example.com:8080/openid-connect-server/checkid" />
 		<property name="clientId" 
@@ -170,9 +170,9 @@ The configuration of the filter would change by adding a OIDCServers property to
 				<entry key="OIDC Server 1">
 					<bean class="org.mitre.openid.connect.client.OIDCServerConfiguration">
 						<property name="authorizationEndpointURI" 
-							value="http://sever.example.com:8080/openid-connect-server/openidconnect/auth" />
+							value="http://sever.example.com:8080/openid-connect-server/oauth/authorize" />
 						<property name="tokenEndpointURI" 
-							value="http://sever.example.com:8080/openid-connect-server/checkid" />
+							value="http://sever.example.com:8080/openid-connect-server/oauth/token" />
 						<property name="checkIDEndpointURI" 
 							value="http://sever.example.com:8080/openid-connect-server/checkid" />
 						<property name="clientId" 
