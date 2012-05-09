@@ -40,14 +40,15 @@ The keys must match those found in the OpenIdConnectAuthenticationFilter's confi
 			<map>
 				<entry key="1">
 					<property name="authorizationEndpointURI" 
-						value="http://sever.example.com:8080/openid-connect-server/openidconnect/auth" />
+						value="http://sever.example.com:8080/openid-connect-server/oauth/authorize" />
 					<property name="tokenEndpointURI" 
-						value="http://sever.example.com:8080/openid-connect-server/checkid" />
+						value="http://sever.example.com:8080/openid-connect-server/oauth/token" />
 					<property name="checkIDEndpointURI" 
 						value="http://sever.example.com:8080/openid-connect-server/checkid" />
 					<property name="clientId" 
 						value="someClientId" /> 
 					<property name="clientSecret" value="someClientSecret" />
 				</entry>
+				…
 
 [Issue #39]: http://github.com/jricher/OpenID-Connect-Java-Spring-Server/issues/39 "Issue #39 -- Multiple Point Client"
