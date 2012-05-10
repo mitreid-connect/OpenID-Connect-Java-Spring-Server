@@ -47,7 +47,7 @@ public class ApprovedSite {
     private Long id;
     
     // which user made the approval
-	private UserInfo userInfo;
+	private String userInfo;
 	
 	// which OAuth2 client is this tied to
 	private ClientDetailsEntity clientDetails;
@@ -93,16 +93,15 @@ public class ApprovedSite {
 	/**
      * @return the userInfo
      */
-    @ManyToOne
-	@JoinColumn(name="userinfo_id")
-    public UserInfo getUserInfo() {
+    @Basic
+    public String getUserInfo() {
     	return userInfo;
     }
 
 	/**
      * @param userInfo the userInfo to set
      */
-    public void setUserInfo(UserInfo userInfo) {
+    public void setUserInfo(String userInfo) {
     	this.userInfo = userInfo;
     }
 

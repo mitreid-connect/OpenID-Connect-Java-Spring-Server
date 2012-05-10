@@ -23,6 +23,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
+import org.mitre.openid.connect.model.DefaultUserInfo;
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.repository.UserInfoRepository;
 import org.springframework.stereotype.Repository;
@@ -43,12 +44,12 @@ public class JpaUserInfoRepository implements UserInfoRepository {
 	@Override
     @Transactional	
 	public UserInfo getByUserId(String userId) {
-		return manager.find(UserInfo.class, userId);
+		return manager.find(DefaultUserInfo.class, userId);
 	}	
 	
 	@Override
 	@Transactional	
-	public UserInfo save(UserInfo userInfo) {
+	public UserInfo save(DefaultUserInfo userInfo) {
 		return saveOrUpdate(userInfo.getUserId(), manager, userInfo);
 	}
 
@@ -56,7 +57,7 @@ public class JpaUserInfoRepository implements UserInfoRepository {
 	@Transactional	
 	public void remove(UserInfo userInfo) {
 		
-		UserInfo found = manager.find(UserInfo.class, userInfo.getUserId());
+		UserInfo found = manager.find(DefaultUserInfo.class, userInfo.getUserId());
 		
 		if (found != null) {
 			manager.remove(userInfo);
@@ -68,7 +69,7 @@ public class JpaUserInfoRepository implements UserInfoRepository {
 	@Override
 	@Transactional		
 	public void removeByUserId(String userId) {
-		UserInfo found = manager.find(UserInfo.class, userId);
+		UserInfo found = manager.find(DefaultUserInfo.class, userId);
 		
 		if (found != null) {
 			manager.remove(found);
@@ -79,10 +80,10 @@ public class JpaUserInfoRepository implements UserInfoRepository {
 	
 	@Override
 	@Transactional	
-	public Collection<UserInfo> getAll() {
+	public Collection<DefaultUserInfo> getAll() {
 		
-		TypedQuery<UserInfo> query = manager.createNamedQuery(
-				"UserInfo.getAll", UserInfo.class);
+		TypedQuery<DefaultUserInfo> query = manager.createNamedQuery(
+				"DefaultUserInfo.getAll", DefaultUserInfo.class);
 		
 		return query.getResultList();
 	}

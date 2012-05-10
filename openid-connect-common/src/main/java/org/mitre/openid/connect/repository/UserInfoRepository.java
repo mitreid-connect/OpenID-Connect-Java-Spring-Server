@@ -17,6 +17,7 @@ package org.mitre.openid.connect.repository;
 
 import java.util.Collection;
 
+import org.mitre.openid.connect.model.DefaultUserInfo;
 import org.mitre.openid.connect.model.UserInfo;
 
 /**
@@ -42,7 +43,7 @@ public interface UserInfoRepository {
 	 * @param user
 	 * @return
 	 */
-	public UserInfo save(UserInfo userInfo);
+	public UserInfo save(DefaultUserInfo userInfo);
 	
 	/**
 	 * Removes the given UserInfo from the repository

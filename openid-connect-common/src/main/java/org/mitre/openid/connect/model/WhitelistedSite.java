@@ -17,6 +17,7 @@ package org.mitre.openid.connect.model;
 
 import java.util.Set;
 
+import javax.persistence.Basic;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -48,7 +49,7 @@ public class WhitelistedSite {
     private Long id;
     
     // who added this site to the whitelist (should be an admin)
-	private UserInfo userInfo;
+	private String userInfo;
 	
 	// which OAuth2 client is this tied to
 	private ClientDetailsEntity clientDetails;
@@ -83,16 +84,15 @@ public class WhitelistedSite {
 	/**
 	 * @return the userInfo
 	 */
-	@ManyToOne
-	@JoinColumn(name="userinfo_id")
-	public UserInfo getUserInfo() {
+	@Basic
+	public String getUserInfo() {
 		return userInfo;
 	}
 
 	/**
 	 * @param userInfo the userInfo to set
 	 */
-	public void setUserInfo(UserInfo userInfo) {
+	public void setUserInfo(String userInfo) {
 		this.userInfo = userInfo;
 	}
 
