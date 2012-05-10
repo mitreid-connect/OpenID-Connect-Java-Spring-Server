@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.mitre.openid.connect.service;
 
+import org.mitre.openid.connect.model.DefaultUserInfo;
 import org.mitre.openid.connect.model.UserInfo;
 
 /**
@@ -31,7 +32,7 @@ public interface UserInfoService {
 	 * @param userInfo
 	 *            the UserInfo to be saved
 	 */
-	public void save(UserInfo userInfo);
+	public void save(DefaultUserInfo userInfo);
 
 	/**
 	 * Get UserInfo for user id
