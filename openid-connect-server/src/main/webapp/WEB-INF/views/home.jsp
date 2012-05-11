@@ -4,12 +4,12 @@
 
 <o:header title="welcome"/>
 <o:topbar/>
-<div class="container<security:authorize ifAllGranted="ROLE_USER">-fluid</security:authorize>">
-    <div class="row<security:authorize ifAllGranted="ROLE_USER">-fluid</security:authorize>">
-        <security:authorize ifAllGranted="ROLE_USER">
+<div class="container<security:authorize ifAnyGranted="ROLE_USER">-fluid</security:authorize>">
+    <div class="row<security:authorize ifAnyGranted="ROLE_USER">-fluid</security:authorize>">
+        <security:authorize ifAnyGranted="ROLE_USER">
             <o:sidebar/>
         </security:authorize>
-        <div<security:authorize ifAllGranted="ROLE_USER"> class="span10"</security:authorize>>
+        <div<security:authorize ifAnyGranted="ROLE_USER"> class="span10"</security:authorize>>
             <!-- Main hero unit for a primary marketing message or call to action -->
             <div class="hero-unit">
                 <h1>Welcome!</h1>
@@ -22,7 +22,7 @@
                 <p><a class="btn btn-primary btn-large" href="http://openid.net/connect/">Learn more &raquo;</a></p>
             </div>
             <!-- Example row of columns -->
-            <div class="row<security:authorize ifAllGranted="ROLE_USER">-fluid</security:authorize>">
+            <div class="row<security:authorize ifAnyGranted="ROLE_USER">-fluid</security:authorize>">
                 <div class="span6">
                     <h2>About</h2>
 
@@ -49,7 +49,7 @@
             </div>
             <hr>
             <!-- Example row of columns -->
-            <div class="row<security:authorize ifAllGranted="ROLE_USER">-fluid</security:authorize>">
+            <div class="row<security:authorize ifAnyGranted="ROLE_USER">-fluid</security:authorize>">
                 <div class="span12">
                     <h2>Current Statistics</h2>
 
