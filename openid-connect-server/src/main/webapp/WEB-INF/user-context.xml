@@ -13,6 +13,8 @@
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd">
 
 
+	<security:global-method-security pre-post-annotations="enabled" proxy-target-class="true" authentication-manager-ref="authenticationManager"/>
+
 	<security:authentication-manager alias="authenticationManager">
 		<security:authentication-provider>
 			<security:user-service id="userDetailsService">
