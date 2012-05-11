@@ -30,8 +30,6 @@
 	<import resource="data-context.xml" />	
 
 <!-- Spring Security configuration -->
-	<security:global-method-security pre-post-annotations="enabled" proxy-target-class="true" authentication-manager-ref="springSecurityAuthenticationManager"/>
-
 	<security:http pattern="/oauth/token" create-session="stateless" authentication-manager-ref="clientAuthenticationManager" 
 		entry-point-ref="oauthAuthenticationEntryPoint">
 		<security:intercept-url pattern="/oauth/token" access="IS_AUTHENTICATED_FULLY" />
