@@ -3,7 +3,7 @@
 <div class="span2">
     <div class="well sidebar-nav">
         <ul class="nav nav-list">
-            <security:authorize ifAllGranted="ROLE_ADMIN">
+            <security:authorize ifAnyGranted="ROLE_ADMIN">
                 <li class="nav-header">Administrative</li>
                 <li><a href="admin/manage/clients">Manage Clients</a></li>
                 <li><a href="#">White Lists</a></li>

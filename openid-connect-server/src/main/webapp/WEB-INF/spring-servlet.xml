@@ -29,7 +29,7 @@
 	<!-- Import the data context -->
 	<import resource="data-context.xml" />	
 
-<!-- Spring Security configuration -->
+    <!-- Spring Security configuration -->
 	<security:http pattern="/oauth/token" create-session="stateless" authentication-manager-ref="clientAuthenticationManager" 
 		entry-point-ref="oauthAuthenticationEntryPoint">
 		<security:intercept-url pattern="/oauth/token" access="IS_AUTHENTICATED_FULLY" />
