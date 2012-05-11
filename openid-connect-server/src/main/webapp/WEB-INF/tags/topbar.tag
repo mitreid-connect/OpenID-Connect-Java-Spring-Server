@@ -1,3 +1,4 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="security" uri="http://www.springframework.org/security/tags" %>
 <div class="navbar navbar-fixed-top">
     <div class="navbar-inner">
@@ -16,6 +17,9 @@
                     <li><a href="#contact">Contact</a></li>
                 </ul>
                 <p class="navbar-text pull-right">
+                
+                	<security:authentication property="authorities" var="roles"/>
+
                     <security:authorize ifAllGranted="ROLE_USER">
                         Logged in as <a href="#"><%= request.getUserPrincipal().getName() %></a>
                     </security:authorize>
