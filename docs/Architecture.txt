@@ -21,4 +21,22 @@ Managing OAuth clients:
 
 
 
+Modules
+-------
+
+The project uses a multi-level Maven and git repository sutrcture. The main project is split into the following modules:
+
+ - openid-connect-common: common classes, service and repository interfaces, and model code. Also includes full JWT library.
+ - openid-connect-server: IdP/server implementation, includes implementations of services and repositories for use by server.
+ - openid-connect-client: RP/client implementation, built around spring security filters.
+ - spring-security-oauth: Git submodule that points to the Spring Security OAuth Git repository. Will be removed once a reliable milestone is reached upstream (see note above).
+
+
+
+Maven War Overlay
+-----------------
+
+One of the best ways to build a custom deployment of this system is to use the Maven War Overlay mechanism. In essence, you make a new Maven project with a "war" disposition and make it depend on the openid-connect-server module with the Maven Overlay plugin configured. Any files in your new project will be built and injected into the war from the other project. This action will also overwrite any existing files. 
+
+For instance, to overwrite the data source configuration in the main server war file, create a file named src/main/webapp/WEB-INF/data-context.xml that contains the dataSource bean. This file will completely replace the one that's in the originally built war.
 
