@@ -102,6 +102,34 @@
             }
         },
 
+        events:{
+            "click .btn-primary":"saveClient"
+        },
+
+        saveClient:function () {
+            this.model.set({
+                name:$('#name').val(),
+                redirectURL:$('#redirectURL').val(),
+                description:$('#description').val()
+            });
+            if (this.model.isNew()) {
+                var self = this;
+                app.clientList.create(this.model, {
+                    success:function () {
+                        alert('bravo!');
+                    },
+                    error: function () {
+                        alert('boo!');
+                    }
+                });
+
+            } else {
+                this.model.save();
+            }
+
+            return false;
+        },
+
         render:function (eventName) {
 
             var action = "Edit";
@@ -137,11 +165,15 @@
         },
 
         newClient:function() {
-            this.clientFormView = new ClientFormView();
+            this.clientFormView = new ClientFormView({model:new ClientModel()});
             $('#content').html(this.clientFormView.render().el);
         }
 
     });
+
+    // holds the global app.
+    // this gets init after the templates load
+    var app = null;
 
     // main
     $(function () {
@@ -150,7 +182,7 @@
         $.get('resources/template/client.html', function (templates) {
             $('body').append(templates);
 
-            var app = new AppRouter();
+            app = new AppRouter();
             Backbone.history.start();
         });
 
