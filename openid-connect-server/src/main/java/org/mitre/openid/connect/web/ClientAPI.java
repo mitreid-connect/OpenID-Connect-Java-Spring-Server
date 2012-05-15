@@ -18,6 +18,8 @@ package org.mitre.openid.connect.web;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -56,9 +58,22 @@ public class ClientAPI {
 
     @RequestMapping(method = RequestMethod.POST, headers="Accept=application/json")
     @ResponseBody
-    public ClientDetailsEntity addClient(@RequestBody ClientDetailsEntity c) {
-        /*ClientDetailsEntity created = clientService.createClient()
-        return created;*/
+    public ClientDetailsEntity apiAddClient(@RequestBody ClientDetailsEntity c) {
+
         return null;
+    }
+
+    @RequestMapping(value="/{id}", method=RequestMethod.GET, headers="Accept=application/json")
+    @ResponseBody
+    public Object apiShowClient(@PathVariable("id") Long id, ModelAndView modelAndView) {
+        ClientDetailsEntity client = clientService.loadClientByClientId(id.toString());
+        if (client == null) {
+            return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
+        }
+
+        modelAndView.addObject("entity", client);
+        modelAndView.setViewName("jsonClientView");
+
+        return modelAndView;
     }
 }
