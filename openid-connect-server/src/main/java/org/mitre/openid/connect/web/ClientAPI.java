@@ -33,6 +33,7 @@ import java.util.Collection;
 
 @Controller
 @RequestMapping("/api/clients")
+@PreAuthorize("hasRole('ROLE_ADMIN')")
 public class ClientAPI {
 
     @Autowired
@@ -45,7 +46,6 @@ public class ClientAPI {
 
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @RequestMapping(method = RequestMethod.GET, headers="Accept=application/json")
     public ModelAndView apiGetAllClients(ModelAndView modelAndView) {
 
