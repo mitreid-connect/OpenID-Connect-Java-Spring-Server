@@ -44,7 +44,7 @@ public class ClientAPI {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @RequestMapping(method = RequestMethod.GET, headers="application/json")
+    @RequestMapping(method = RequestMethod.GET, headers="Accept=application/json")
     public ModelAndView apiGetAllClients(ModelAndView modelAndView) {
 
         Collection<ClientDetailsEntity> clients = clientService.getAllClients();
@@ -54,7 +54,7 @@ public class ClientAPI {
         return modelAndView;
     }
 
-    @RequestMapping(method = RequestMethod.POST, headers="application/json")
+    @RequestMapping(method = RequestMethod.POST, headers="Accept=application/json")
     @ResponseBody
     public ClientDetailsEntity addClient(@RequestBody ClientDetailsEntity c) {
         /*ClientDetailsEntity created = clientService.createClient()
