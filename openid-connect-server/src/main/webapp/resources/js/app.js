@@ -13,13 +13,13 @@
             refreshTokens:false
         },
 
-        urlRoot:"/resources/test/json/clients.js"
+        urlRoot:"/api/clients"
 
     });
 
     var ClientCollection = Backbone.Collection.extend({
         model:ClientModel,
-        url:"/resources/test/json/clients.js"
+        url:"/api/clients"
     });
 
 
