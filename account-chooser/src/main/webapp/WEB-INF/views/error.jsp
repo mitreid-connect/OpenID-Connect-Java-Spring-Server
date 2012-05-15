@@ -4,9 +4,6 @@
 <%@page import="java.util.Map"%>
 <%@page import="java.util.Iterator"%>
 
-<jsp:useBean id="issuers" type="java.util.Map"
-	scope="request" />
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -35,39 +32,12 @@ body {
 	<div class="container">
 		<div class="row">
 			<div class="span12">
-				<form name="chooser" class="form-horizontal" action="selected" method="get">
-					<div class="control-group">
-						<label class="control-label" for="select01">Account:</label>
-						<div class="controls">
-							<select name="issuer">
-								<%
-									Iterator entries = issuers.entrySet().iterator();
-
-									while (entries.hasNext()) {
-										Map.Entry entry = (Map.Entry) entries.next();
-
-										String id = (String) entry.getKey();
-										OIDCServer issuer = (OIDCServer) entry.getValue();										
-								%>
-								<option value="<%= id %>"><%= issuer.getName() %></option>
-								<%
-									}
-								%>
-							</select>
-							<p class="help-block">Select the Account you'd like to authenticate with.</p>
-						</div>
-					</div>
-					<div class="control-group">
-						<div class="controls">
-							<input name="redirect_uri" type="hidden" value="${redirect_uri}">
-							<input name="client_id" type="hidden" value="${client_id}">
-						</div>
-					</div>
-					<div class="form-actions">
-						<a class="btn btn-primary" href="javascript: submitForm('selected')">Submit</a>
-						<a class="btn" href="javascript: submitForm('cancel')">Cancel</a>
-					</div>
-				</form>
+				<h1>
+				${error}<br>
+				<small>${error_description}</small>
+				</h1>
+				
+				<a href="${client_uri}">Return to client</a>
 			</div>
 		</div>
 	</div>
@@ -92,11 +62,6 @@ body {
 
 	<script type="text/javascript" language="JavaScript">
 		// <![CDATA [
-		  
-		function submitForm(action){
-			$('.form-horizontal').attr( 'action' , action  );
-			$('.form-horizontal').submit();
-		}
 		  
 		// ]]>
 	</script>
