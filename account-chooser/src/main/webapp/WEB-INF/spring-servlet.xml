@@ -35,26 +35,17 @@
  
 <!-- End view configuration -->
 
-	<bean class="org.mitre.account_chooser.OIDCServers">
-		<property name="servers">
+	<bean name="AccountChooserConfig" class="org.mitre.account_chooser.AccountChooserConfig">
+		<property name="issuers">
 			<map>
-				<entry key="1">
+				<entry key="http://sever.example.com:8080/openid-connect-server">
 					<bean class="org.mitre.account_chooser.OIDCServer">
-						<property name="name" value="OIDC Server 1" />
-					</bean>
-				</entry>
-				<entry key="2">
-					<bean class="org.mitre.account_chooser.OIDCServer">
-						<property name="name" value="OIDC Server 2" />
-					</bean>
-				</entry>
-				<entry key="3">
-					<bean class="org.mitre.account_chooser.OIDCServer">
-						<property name="name" value="OIDC Server 3" />
+						<property name="name" value="Example Server" />
 					</bean>
 				</entry>
 			</map>
 		</property>
+		<property name="validClientIds" value="FGWEUIASJK, IUYTTYEV, GFHDSFYD" />
 	</bean>
  
 </beans>
