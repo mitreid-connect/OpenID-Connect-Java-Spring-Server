@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.mitre.openid.connect.web;
 
+import com.google.gson.Gson;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -56,12 +58,18 @@ public class ClientAPI {
         return modelAndView;
     }
 
-    @RequestMapping(method = RequestMethod.POST, headers="Accept=application/json")
-    @ResponseBody
-    public ClientDetailsEntity apiAddClient(@RequestBody ClientDetailsEntity c) {
+    @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
+    public String apiAddClient(@RequestBody String json, Model m) {
 
-        return null;
+        ClientDetailsEntity client = new Gson().fromJson(json, ClientDetailsEntity.class);
+
+        m.addAttribute("entity", client);
+
+        clientService.createClient(client);
+
+        return "jsonClientView";
     }
+
 
     @RequestMapping(value="/{id}", method=RequestMethod.GET, headers="Accept=application/json")
     @ResponseBody

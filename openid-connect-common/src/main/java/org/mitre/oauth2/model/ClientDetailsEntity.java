@@ -55,21 +55,21 @@ public class ClientDetailsEntity implements ClientDetails {
 
 	public enum AuthType {
 		client_secret_post, client_secret_basic, client_secret_jwt, private_key_jwt
-	};
+	}
 	
-	private String clientId;	
-	private String clientSecret;
-	private Set<String> scope;
-	private Set<String> authorizedGrantTypes;
+	private String clientId = "";
+	private String clientSecret  = "";
+	private Set<String> scope= Collections.emptySet();
+	private Set<String> authorizedGrantTypes= Collections.emptySet();
 	private Set<GrantedAuthority> authorities = Collections.emptySet();
-	private String clientName;
-	private String clientDescription;
+	private String clientName= "";
+	private String clientDescription = "";
 	private boolean allowRefresh = false; // do we allow refresh tokens for this client?
-	private Integer accessTokenTimeout; // in seconds
-	private Integer refreshTokenTimeout; // in seconds
-	private String owner; // userid of who registered it
-	private Set<String> registeredRedirectUri;
-	private Set<String> resourceIds;
+	private Integer accessTokenTimeout = 0; // in seconds
+	private Integer refreshTokenTimeout = 0; // in seconds
+	private String owner = ""; // userid of who registered it
+	private Set<String> registeredRedirectUri = Collections.emptySet();
+	private Set<String> resourceIds = Collections.emptySet();
 
 	//Additional properties added by OpenID Connect Dynamic Client Registration spec
 	//http://openid.net/specs/openid-connect-registration-1_0.html

@@ -108,6 +108,15 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 		return client;
 		
 	}
+
+    @Override
+    public ClientDetailsEntity createClient(ClientDetailsEntity client) {
+
+        clientRepository.saveClient(client);
+
+        return client;
+
+    }
 	
 	/**
 	 * Delete a client and all its associated tokens
