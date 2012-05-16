@@ -4,6 +4,51 @@
 
         idAttribute: "clientId",
 
+        initialize: function () {
+
+            this.bind('error:clientName', function(model, errs) {
+                $('#clientName').addClass('error');
+            });
+
+            this.bind('error:clientDescription', function(model, errs) {
+                $('#clientDescription').addClass('error');
+            });
+
+            this.bind('error:registeredRedirectUri', function(model, errs) {
+                $('#registeredRedirectUri').addClass('error');
+            });
+        },
+
+        validate:{
+            clientName:{
+                required:true,
+                pattern:/^[a-zA-Z ]+$/,
+                minlength:3,
+                maxlength:100
+            },
+            clientDescription:{
+                required:true,
+                pattern:/^[a-zA-Z ]+$/,
+                minlength:3,
+                maxlength:100
+            },
+            registeredRedirectUri: {
+                custom: 'validateURI'
+            }
+        },
+
+        validateURI: function(attributeName, attributeValue) {
+
+            var expression = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
+            var regex = new RegExp(expression);
+
+            return attributeValue.every(function (url) {
+                if (!url.match(regex)) {
+                    return false;
+                }
+            });
+        },
+
         // We can pass it default values.
         defaults:{
             clientName:"",
@@ -51,7 +96,7 @@
         },
 
         editClient:function () {
-            alert('edit');
+            document.location.hash = 'client/' + this.model.id;
         },
 
         deleteClient:function () {
@@ -90,7 +135,7 @@
 
         newClient:function () {
             this.remove();
-            document.location.hash = 'new_client';
+            document.location.hash = 'client/new';
         },
 
         render:function (eventName) {
@@ -121,25 +166,36 @@
             "click .btn-primary":"saveClient"
         },
 
-        saveClient:function () {
+        saveClient:function (event) {
+
+            event.preventDefault();
+
             this.model.set({
-                clientName:$('#clientName').val(),
-                registeredRedirectUri:[$('#registeredRedirectUri').val()],
-                clientDescription:$('#clientDescription').val()
+                clientName:$('#clientName input').val(),
+                registeredRedirectUri:[$('#registeredRedirectUri input').val()],
+                clientDescription:$('#clientDescription textarea').val(),
+                allowRefresh:$('#allowRefresh').is(':checked')
             });
             if (this.model.isNew()) {
                 var self = this;
                 app.clientList.create(this.model, {
                     success:function () {
-                        alert('bravo!');
+                        document.location.hash = '';
                     },
                     error: function () {
-                        alert('boo!');
+                        //alert('boo!');
                     }
                 });
 
             } else {
-                this.model.save();
+                this.model.save(this.model, {
+                    success:function () {
+                        document.location.hash = '';
+                    },
+                    error: function () {
+                        //alert('boo!');
+                    }
+                });
             }
 
             return false;
@@ -147,13 +203,7 @@
 
         render:function (eventName) {
 
-            var action = "Edit";
-
-            if (!this.model) {
-                 action = "New";
-            }
-
-            $(this.el).html(this.template({action: action}));
+            $(this.el).html(this.template(this.model.toJSON()));
             return this;
         }
     });
@@ -163,7 +213,8 @@
 
         routes:{
             "":"list",
-            "new_client":"newClient"
+            "client/new":"newClient",
+            "client/:id":"editClient"
         },
 
         initialize:function () {
@@ -181,6 +232,12 @@
 
         newClient:function() {
             this.clientFormView = new ClientFormView({model:new ClientModel()});
+            $('#content').html(this.clientFormView.render().el);
+        },
+
+        editClient:function(id) {
+            var client = this.clientList.get(id);
+            this.clientFormView = new ClientFormView({model:client});
             $('#content').html(this.clientFormView.render().el);
         }
 
