@@ -2,6 +2,8 @@
 
     var ClientModel = Backbone.Model.extend({
 
+        idAttribute: "clientId",
+
         // We can pass it default values.
         defaults:{
             clientName:"",
@@ -53,7 +55,19 @@
         },
 
         deleteClient:function () {
-            alert('delete');
+
+            var self = this;
+
+            this.model.destroy({
+                success:function () {
+                    self.$el.fadeTo("slow", 0.00, function(){ //fade
+                        $(this).slideUp("slow", function() { //slide up
+                            $(this).remove(); //then remove from the DOM
+                        });
+                    });
+                }
+            });
+            return false;
         },
 
         close:function () {
