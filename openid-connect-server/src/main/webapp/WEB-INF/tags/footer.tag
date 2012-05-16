@@ -5,6 +5,7 @@
 <script type="text/javascript" src="resources/bootstrap2/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="resources/js/underscore-min.js"></script>
 <script type="text/javascript" src="resources/js/backbone-min.js"></script>
+<script type="text/javascript" src="resources/js/backbone.validations.js"></script>
 <script type="text/javascript" src="resources/js/app.js"></script>
 
 </body>
