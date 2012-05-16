@@ -1,16 +1,16 @@
 <script type="text/html" id="tmpl-client">
 
     <td>
-        <%=name%>
+        <%=clientName%>
     </td>
     <td>
-        <%=redirectURL%>
+        <%=registeredRedirectUri[0]%>
     </td>
     <td>
         <ul>
-            <% for (var i in grantType) { %>
+            <% for (var i in authorizedGrantTypes) { %>
             <li>
-                <%=grantType[i]%>
+                <%=authorizedGrantTypes[i]%>
             </li>
             <% } %>
         </ul>
@@ -25,13 +25,13 @@
         </ul>
     </td>
     <td>
-        <%=authority%>
+        <%=authorities[0]%>
     </td>
     <td>
-        <%=description%>
+        <%=clientDescription%>
     </td>
     <td><input type="checkbox"
-        <%=(refreshTokens == 1 ? 'checked' : '')%>
+        <%=(allowRefresh == 1 ? 'checked' : '')%>
         value="" id="" name="" disabled>
     </td>
     <td>

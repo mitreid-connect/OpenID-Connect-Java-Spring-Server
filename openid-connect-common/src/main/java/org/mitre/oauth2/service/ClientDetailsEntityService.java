@@ -35,5 +35,7 @@ public interface ClientDetailsEntityService extends ClientDetailsService {
 	
 	public ClientDetailsEntity updateClient(ClientDetailsEntity oldClient, ClientDetailsEntity newClient);
 
+    public ClientDetailsEntity saveClient(ClientDetailsEntity client);
+
 	public Collection<ClientDetailsEntity> getAllClients();
 }
