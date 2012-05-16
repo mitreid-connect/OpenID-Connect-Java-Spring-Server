@@ -74,7 +74,7 @@
 
 <script type="text/html" id="tmpl-client-form">
 
-    <h1><%=action%> Client</h1>
+    <h1><%=(clientId == null ? 'New' : 'Edit')%> Client</h1>
 
 
     <div class="">
@@ -86,16 +86,21 @@
 
                     <div class="row-fluid">
                         <div class="span6">
+                            <span class="control-group" id="clientName">
                             <label>Client name</label>
-                            <input id="clientName" type="text" class="" placeholder="Type something"> <span class="help-inline">Associated help text!</span>
-
+                            <input value="<%=clientName%>" type="text" class="" placeholder="Type something"> <span class="help-inline">Associated help text!</span>
+                            </span>
+                            <span class="control-group" id="registeredRedirectUri">
                             <label>Redirect URL</label>
-                            <input id="registeredRedirectUri" type="text" class="" placeholder="http://"><span class="help-inline">Associated help text!</span>
+                            <input type="text" class="" placeholder="http://"><span class="help-inline">Associated help text!</span>
+                            </span>
                         </div>
                         <div class="span6">
+                            <span class="control-group" id="clientDescription">
                             <label>Description</label>
-                            <textarea id="clientDescription" class="input-xlarge" placeholder="Type a description"
-                                      rows="3"></textarea> <span class="help-inline">Associated help text!</span>
+                            <textarea class="input-xlarge" placeholder="Type a description"
+                                      rows="3"><%=clientDescription%></textarea> <span class="help-inline">Associated help text!</span>
+                            </span>
                         </div>
                     </div>
 
@@ -106,7 +111,7 @@
                             token after it
                             expires.</p>
                         <label class="checkbox">
-                            <input type="checkbox"> Allow refresh tokens?
+                            <input type="checkbox" id="allowRefresh" <%=(allowRefresh == true ? 'checked' : '')%>> Allow refresh tokens?
                         </label>
                         <button class="btn btn-primary">Submit</button>
                     </div>
