@@ -15,27 +15,35 @@
  ******************************************************************************/
 package org.mitre.account_chooser;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
+ * Used to the configure AccountChooserController
+ * 
  * @author nemonik
- * 
- * Holdes properties of the Issuer, e.g. name, icon URL, description, et cetera
- * 
+ *
  */
-public class OIDCServer {
+public class AccountChooserConfig {
 
-	private String name;
+	private String[] validClientIds;
 
-	public String getName() {
-		return name;
+	private Map<String, ? extends OIDCServer> issuers = new HashMap<String, OIDCServer>();
+
+	public Map<String, ? extends OIDCServer> getIssuers() {
+		return issuers;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public String[] getValidClientIds() {
+		return validClientIds;
 	}
 
-	@Override
-	public String toString() {
-		return "OIDCServer [name=" + name + "]";
+	public void setIssuers(Map<String, ? extends OIDCServer> issuers) {
+		this.issuers = issuers;
 	}
 
+	public void setValidClientIds(String[] validClientIds) {
+		
+		this.validClientIds = validClientIds;
+	}
 }
