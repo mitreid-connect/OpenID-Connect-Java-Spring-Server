@@ -16,6 +16,7 @@
 package org.mitre.openid.connect.web;
 
 import com.google.gson.Gson;
+import org.mitre.oauth2.exception.ClientNotFoundException;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.Collection;
+import java.util.UUID;
 
 /**
  * @author Michael Jett <mjett@mitre.org>
@@ -62,10 +64,7 @@ public class ClientAPI {
     public String apiAddClient(@RequestBody String json, Model m) {
 
         ClientDetailsEntity client = new Gson().fromJson(json, ClientDetailsEntity.class);
-
-        m.addAttribute("entity", client);
-
-        clientService.createClient(client);
+        m.addAttribute("entity", clientService.saveClient(client));
 
         return "jsonClientView";
     }

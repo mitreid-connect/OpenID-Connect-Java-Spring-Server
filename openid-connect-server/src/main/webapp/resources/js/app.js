@@ -4,14 +4,14 @@
 
         // We can pass it default values.
         defaults:{
-            clientName:"my name",
-            //registeredRedirectUri:["http://myURL.domain"],
-            /*grantType:["my grant type 1", "my grant type 2"],
-            scope:["scope 1", "scope 2"],
-            authority:"my authority",*/
-            clientDescription:"my description",
-            clientId:"123"
-            //refreshTokens:false
+            clientName:"",
+            registeredRedirectUri:[],
+            authorizedGrantTypes:[],
+            scope:[],
+            authorities:[],
+            clientDescription:"",
+            clientId:null,
+            allowRefresh:false
         },
 
         urlRoot:"/api/clients"
@@ -110,7 +110,7 @@
         saveClient:function () {
             this.model.set({
                 clientName:$('#clientName').val(),
-                //registeredRedirectUri:[$('#registeredRedirectUri').val()],
+                registeredRedirectUri:[$('#registeredRedirectUri').val()],
                 clientDescription:$('#clientDescription').val()
             });
             if (this.model.isNew()) {
