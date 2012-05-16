@@ -69,6 +69,15 @@ public class ClientAPI {
         return "jsonClientView";
     }
 
+    @RequestMapping(method = RequestMethod.DELETE, headers = "Accept=application/json")
+    public String apiDeleteClient(@RequestBody String json, Model m) {
+
+        ClientDetailsEntity client = new Gson().fromJson(json, ClientDetailsEntity.class);
+        clientService.deleteClient(client);
+
+        return "jsonClientView";
+    }
+
 
     @RequestMapping(value="/{id}", method=RequestMethod.GET, headers="Accept=application/json")
     @ResponseBody
