@@ -95,9 +95,11 @@ public class OIDCAuthenticationFilter extends AbstractOIDCAuthenticationFilter {
 
 			handleError(request, response);
 
-		} else if (request.getParameter("code") != null) {
+		} else if (StringUtils.isNotBlank(request.getParameter("code"))) {
 
-			return handleAuthorizationGrantResponse(request, oidcServerConfig);
+			return handleAuthorizationGrantResponse(
+					request.getParameter("code"), new SanatizedRequest(request,
+							new String[] { "code" }), oidcServerConfig);
 
 		} else {
 
