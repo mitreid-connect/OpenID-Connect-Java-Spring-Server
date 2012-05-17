@@ -6,31 +6,28 @@
 
         initialize: function () {
 
-            this.bind('error:clientName', function(model, errs) {
-                $('#clientName').addClass('error');
+            // bind validation errors to dom elements
+            // this will display form elements in red if they are not valid
+            this.bind('error', function(model, errs) {
+                _.map(errs, function (val, elID) {
+                    $('#' + elID).addClass('error');
+                });
             });
 
-            this.bind('error:clientDescription', function(model, errs) {
-                $('#clientDescription').addClass('error');
-            });
-
-            this.bind('error:registeredRedirectUri', function(model, errs) {
-                $('#registeredRedirectUri').addClass('error');
-            });
         },
 
         validate:{
             clientName:{
                 required:true,
-                pattern:/^[a-zA-Z ]+$/,
+                pattern:/^[\w ]+$/,
                 minlength:3,
                 maxlength:100
             },
             clientDescription:{
                 required:true,
-                pattern:/^[a-zA-Z ]+$/,
+                pattern:/^[\w ]+$/,
                 minlength:3,
-                maxlength:100
+                maxlength:200
             },
             registeredRedirectUri: {
                 custom: 'validateURI'
@@ -42,17 +39,19 @@
             var expression = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
             var regex = new RegExp(expression);
 
-            return attributeValue.every(function (url) {
-                if (!url.match(regex)) {
-                    return false;
+            if (!attributeValue.every(function (url) {
+                if (url.match(regex)) {
+                    return true;
                 }
-            });
+            })) return "Invalid URI";
+
+
         },
 
         // We can pass it default values.
         defaults:{
             clientName:"",
-            registeredRedirectUri:[],
+            registeredRedirectUri:[""],
             authorizedGrantTypes:[],
             scope:[],
             authorities:[],
@@ -61,13 +60,18 @@
             allowRefresh:false
         },
 
-        urlRoot:"/api/clients"
+        urlRoot:"api/clients"
 
     });
 
     var ClientCollection = Backbone.Collection.extend({
+
+        initialize: function() {
+            this.fetch();
+        },
+
         model:ClientModel,
-        url:"/api/clients"
+        url:"api/clients"
     });
 
 
@@ -82,7 +86,6 @@
             }
 
             this.model.bind('change', this.render, this);
-            //this.model.on('change', this.render)
         },
 
         render:function (eventName) {
@@ -96,7 +99,7 @@
         },
 
         editClient:function () {
-            document.location.hash = 'client/' + this.model.id;
+            app.navigate('client/' + this.model.id, {trigger: true});
         },
 
         deleteClient:function () {
@@ -105,8 +108,8 @@
 
             this.model.destroy({
                 success:function () {
-                    self.$el.fadeTo("slow", 0.00, function(){ //fade
-                        $(this).slideUp("slow", function() { //slide up
+                    self.$el.fadeTo("fast", 0.00, function(){ //fade
+                        $(this).slideUp("fast", function() { //slide up
                             $(this).remove(); //then remove from the DOM
                         });
                     });
@@ -135,7 +138,7 @@
 
         newClient:function () {
             this.remove();
-            document.location.hash = 'client/new';
+            app.navigate('client/new', {trigger: true});
         },
 
         render:function (eventName) {
@@ -144,7 +147,7 @@
             $(this.el).html($('#tmpl-client-table').html());
 
             _.each(this.model.models, function (client) {
-                $("#client-table").append(new ClientView({model:client}).render().el);
+                $("#client-table",this.el).append(new ClientView({model:client}).render().el);
             }, this);
 
             return this;
@@ -168,7 +171,7 @@
 
         saveClient:function (event) {
 
-            event.preventDefault();
+            $('.control-group').removeClass('error');
 
             this.model.set({
                 clientName:$('#clientName input').val(),
@@ -176,26 +179,21 @@
                 clientDescription:$('#clientDescription textarea').val(),
                 allowRefresh:$('#allowRefresh').is(':checked')
             });
-            if (this.model.isNew()) {
+
+            this.model.save(this.model, {
+                success:function () {
+                    app.navigate('clients', {trigger: true});
+                }
+            });
+
+            if (this.model.isNew() && this.model.isValid()) {
                 var self = this;
                 app.clientList.create(this.model, {
                     success:function () {
-                        document.location.hash = '';
-                    },
-                    error: function () {
-                        //alert('boo!');
+                        app.navigate('clients', {trigger: true});
                     }
                 });
 
-            } else {
-                this.model.save(this.model, {
-                    success:function () {
-                        document.location.hash = '';
-                    },
-                    error: function () {
-                        //alert('boo!');
-                    }
-                });
             }
 
             return false;
@@ -212,20 +210,31 @@
     var AppRouter = Backbone.Router.extend({
 
         routes:{
-            "":"list",
+            "clients":"list",
             "client/new":"newClient",
             "client/:id":"editClient"
         },
 
         initialize:function () {
 
+            this.clientList = new ClientCollection();
+            this.clientListView = new ClientListView({model:this.clientList});
+
+            this.startAfter([this.clientList]);
+
+        },
+
+        startAfter:function (collections) {
+            // Start history when required collections are loaded
+            var start = _.after(collections.length, _.once(function () {
+                Backbone.history.start()
+            }));
+            _.each(collections, function (collection) {
+                collection.bind('reset', start, Backbone.history)
+            });
         },
 
         list:function () {
-
-            this.clientList = new ClientCollection();
-            this.clientListView = new ClientListView({model:this.clientList});
-            this.clientList.fetch();
 
             $('#content').html(this.clientListView.render().el);
         },
@@ -255,7 +264,6 @@
             $('body').append(templates);
 
             app = new AppRouter();
-            Backbone.history.start();
         });
 
 
