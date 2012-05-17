@@ -31,6 +31,14 @@
             },
             registeredRedirectUri: {
                 custom: 'validateURI'
+            },
+            accessTokenTimeout: {
+                required: true,
+                type:"number"
+            },
+            refreshTokenTimeout: {
+                required: true,
+                type:"number"
             }
         },
 
@@ -57,7 +65,9 @@
             authorities:[],
             clientDescription:"",
             clientId:null,
-            allowRefresh:false
+            allowRefresh:false,
+            accessTokenTimeout: 0,
+            refreshTokenTimeout: 0
         },
 
         urlRoot:"api/clients"
@@ -115,6 +125,8 @@
                     });
                 }
             });
+
+            app.clientListView.delegateEvents();
             return false;
         },
 
@@ -177,12 +189,17 @@
                 clientName:$('#clientName input').val(),
                 registeredRedirectUri:[$('#registeredRedirectUri input').val()],
                 clientDescription:$('#clientDescription textarea').val(),
-                allowRefresh:$('#allowRefresh').is(':checked')
+                allowRefresh:$('#allowRefresh').is(':checked'),
+                accessTokenTimeout: $('#accessTokenTimeout input').val(),
+                refreshTokenTimeout: $('#refreshTokenTimeout input').val()
             });
 
             this.model.save(this.model, {
                 success:function () {
                     app.navigate('clients', {trigger: true});
+                },
+                error:function() {
+
                 }
             });
 
@@ -191,6 +208,9 @@
                 app.clientList.create(this.model, {
                     success:function () {
                         app.navigate('clients', {trigger: true});
+                    },
+                    error:function() {
+
                     }
                 });
 
@@ -237,6 +257,7 @@
         list:function () {
 
             $('#content').html(this.clientListView.render().el);
+            this.clientListView.delegateEvents();
         },
 
         newClient:function() {
