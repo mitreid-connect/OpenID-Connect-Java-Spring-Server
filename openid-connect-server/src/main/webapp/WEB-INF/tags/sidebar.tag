@@ -5,7 +5,7 @@
         <ul class="nav nav-list">
             <security:authorize ifAnyGranted="ROLE_ADMIN">
                 <li class="nav-header">Administrative</li>
-                <li><a href="admin/manage/clients">Manage Clients</a></li>
+                <li><a href="admin/manage/#clients">Manage Clients</a></li>
                 <li><a href="#">White Lists</a></li>
                 <li><a href="#">Black Lists</a></li>
             </security:authorize>

@@ -25,18 +25,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("/")
+@PreAuthorize("hasRole('ROLE_USER')")
 public class ManagerController {
 
-    @PreAuthorize("hasRole('ROLE_USER')")
+
     @RequestMapping({"", "/home", "/index"})
     public String showHomePage() {
         return "home";
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @RequestMapping("/admin/manage/clients")
+    @RequestMapping("/admin/manage/")
     public String showClientManager() {
-        return "admin/manage/clients";
+        return "admin/manage";
     }
 
 }
