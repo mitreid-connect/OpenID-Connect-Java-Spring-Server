@@ -105,22 +105,24 @@ public class OIDCAuthenticationUsingChooserFilter extends
 		} else if (request.getParameter("code") != null) {
 
 			// Which OIDC configuration?
-			Cookie oidcAliasCookie = WebUtils.getCookie(request,
+			Cookie issuerCookie = WebUtils.getCookie(request,
 					ISSUER_COOKIE_NAME);
 
-			return handleAuthorizationGrantResponse(request,
-					oidcServerConfigs.get(oidcAliasCookie.getValue()));
+			return handleAuthorizationGrantResponse(
+					request.getParameter("code"), new SanatizedRequest(request,
+							new String[] { "code" }),
+					oidcServerConfigs.get(issuerCookie.getValue()));
 
 		} else {
 
-			String issuerId = request.getParameter("issuer");
+			String issuer = request.getParameter("issuer");
 
-			if (StringUtils.isNotBlank(issuerId)) {
+			if (StringUtils.isNotBlank(issuer)) {
 
 				// Account Chooser UI provided and Issuer Identifier
 
 				OIDCServerConfiguration oidcServerConfig = oidcServerConfigs
-						.get(issuerId);
+						.get(issuer);
 
 				if (oidcServerConfig != null) {
 
@@ -128,10 +130,11 @@ public class OIDCAuthenticationUsingChooserFilter extends
 					// Identifier
 
 					Cookie issuerCookie = new Cookie(ISSUER_COOKIE_NAME,
-							issuerId);
+							issuer);
 					response.addCookie(issuerCookie);
 
-					handleAuthorizationRequest(request, response,
+					handleAuthorizationRequest(new SanatizedRequest(request,
+							new String[] { "issuer" }), response,
 							oidcServerConfig);
 
 				} else {
@@ -140,8 +143,8 @@ public class OIDCAuthenticationUsingChooserFilter extends
 					// Identifier
 
 					throw new AuthenticationServiceException(
-							"Security Filter not configured for OIDC Alias: "
-									+ issuerId);
+							"Security Filter not configured for issuer: "
+									+ issuer);
 				}
 
 			} else {
@@ -154,6 +157,8 @@ public class OIDCAuthenticationUsingChooserFilter extends
 				urlVariables.put("redirect_uri",
 						OIDCAuthenticationUsingChooserFilter.buildRedirectURI(
 								request, null));
+				
+				urlVariables.put("client_id", accountChooserClientID);
 
 				response.sendRedirect(OIDCAuthenticationUsingChooserFilter
 						.buildURL(accountChooserURI, urlVariables));

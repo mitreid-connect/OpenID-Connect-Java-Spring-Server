@@ -163,7 +163,7 @@ public class AccountChooserController {
 
 		Map<String, String> urlVariables = new HashMap<String, String>();
 		urlVariables.put("issuer", issuer);
-
+		
 		response.sendRedirect(AccountChooserController.buildURL(redirectUri,
 				urlVariables));
 	}
@@ -194,8 +194,8 @@ public class AccountChooserController {
 		Map<String, String> urlVariables = new HashMap<String, String>();
 		urlVariables.put("error", "end_user_cancelled");
 		urlVariables.put("error_description",
-				"The end-user refused to select an Account.");
-
+				"The end-user refused to select an Account.");	
+		
 		response.sendRedirect(AccountChooserController.buildURL(redirectUri,
 				urlVariables));
 

@@ -26,7 +26,9 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.Signature;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +37,7 @@ import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.binary.Base64;
@@ -70,6 +73,63 @@ import com.google.gson.JsonParser;
 public class AbstractOIDCAuthenticationFilter extends
 		AbstractAuthenticationProcessingFilter {
 
+	/**
+	 * Used to remove parameters from a Request before passing it down the chain...
+	 * 
+	 * @author nemonik
+	 *
+	 */
+	class SanatizedRequest extends HttpServletRequestWrapper {
+
+		private List<String> paramsToBeSanatized;
+
+		public SanatizedRequest(HttpServletRequest request,
+				String[] paramsToBeSanatized) {
+			super(request);
+
+			this.paramsToBeSanatized = Arrays.asList(paramsToBeSanatized);
+		}
+
+		public String getParameter(String name) {
+			if (paramsToBeSanatized.contains(name)) {
+				return null;
+			} else {
+				return super.getParameter(name);
+			}
+		}
+
+		public Map<String, String[]> getParameterMap() {
+			Map<String, String[]> params = super.getParameterMap();
+
+			for (String paramToBeSanatized : paramsToBeSanatized) {
+				params.remove(paramToBeSanatized);
+			}
+
+			return params;
+		}
+
+		public Enumeration<String> getParameterNames() {
+
+			ArrayList<String> paramNames = Collections.list(super
+					.getParameterNames());
+
+			for (String paramToBeSanatized : paramsToBeSanatized) {
+				paramNames.remove(paramToBeSanatized);
+			}
+
+			return Collections.enumeration(paramNames);
+		}
+
+		public String[] getParameterValues(String name) {
+
+			if (paramsToBeSanatized.contains(name)) {
+				return null;
+			} else {
+				return super.getParameterValues(name);
+			}
+		}
+	}	
+	
 	protected final static int HTTP_SOCKET_TIMEOUT = 30000;
 	protected final static String SCOPE = "openid";
 	protected final static int KEY_SIZE = 1024;
@@ -105,9 +165,9 @@ public class AbstractOIDCAuthenticationFilter extends
 			String name = (String) e.nextElement();
 
 			if ((ignore == null) || (!ignore.contains(name))) {
-				
+
 				// Assume for simplicity that there is only one value
-				
+
 				String value = request.getParameter(name);
 
 				if (value == null) {
@@ -152,19 +212,19 @@ public class AbstractOIDCAuthenticationFilter extends
 		char appendChar = '?';
 
 		for (Map.Entry<String, String> param : queryStringFields.entrySet()) {
-			
+
 			try {
-			
+
 				URLBuilder.append(appendChar).append(param.getKey())
 						.append('=')
 						.append(URLEncoder.encode(param.getValue(), "UTF-8"));
-			
+
 			} catch (UnsupportedEncodingException uee) {
-			
+
 				throw new IllegalStateException(uee);
-			
+
 			}
-			
+
 			appendChar = '&';
 		}
 
@@ -196,11 +256,11 @@ public class AbstractOIDCAuthenticationFilter extends
 					.replace("=", "");
 
 		} catch (GeneralSecurityException generalSecurityException) {
-			
+
 			// generalSecurityException.printStackTrace();
-			
+
 			throw new IllegalStateException(generalSecurityException);
-			
+
 		}
 
 		return signature;
@@ -227,17 +287,17 @@ public class AbstractOIDCAuthenticationFilter extends
 			return signer.verify(sigBytes);
 
 		} catch (GeneralSecurityException generalSecurityException) {
-			
+
 			// generalSecurityException.printStackTrace();
-			
+
 			throw new IllegalStateException(generalSecurityException);
-			
+
 		} catch (UnsupportedEncodingException unsupportedEncodingException) {
-			
+
 			// unsupportedEncodingException.printStackTrace();
-			
+
 			throw new IllegalStateException(unsupportedEncodingException);
-			
+
 		}
 	}
 
@@ -296,9 +356,12 @@ public class AbstractOIDCAuthenticationFilter extends
 	 * javax.servlet.http.HttpServletResponse)
 	 */
 	@Override
-	public Authentication attemptAuthentication(HttpServletRequest arg0,
-			HttpServletResponse arg1) throws AuthenticationException,
+	public Authentication attemptAuthentication(HttpServletRequest request,
+			HttpServletResponse response) throws AuthenticationException,
 			IOException, ServletException {
+
+		logger.debug("Request: " + request.getRequestURI() + (StringUtils.isNotBlank(request.getQueryString()) ? "?"
+				+ request.getQueryString() : "") );
 
 		return null;
 	}
@@ -306,18 +369,20 @@ public class AbstractOIDCAuthenticationFilter extends
 	/**
 	 * Handles the authorization grant response
 	 * 
+	 * @param authorizationGrant
+	 *            The Authorization grant code
 	 * @param request
 	 *            The request from which to extract parameters and perform the
 	 *            authentication
 	 * @return The authenticated user token, or null if authentication is
 	 *         incomplete.
+	 * @throws UnsupportedEncodingException
 	 */
 	protected Authentication handleAuthorizationGrantResponse(
-			HttpServletRequest request, OIDCServerConfiguration serverConfig) {
+			String authorizationGrant, HttpServletRequest request,
+			OIDCServerConfiguration serverConfig) {
 
 		final boolean debug = logger.isDebugEnabled();
-
-		String authorizationGrant = request.getParameter("code");
 
 		// Handle Token Endpoint interaction
 		HttpClient httpClient = new DefaultHttpClient();
@@ -329,11 +394,11 @@ public class AbstractOIDCAuthenticationFilter extends
 		// TODO: basic auth is untested (it wasn't working last I
 		// tested)
 		// UsernamePasswordCredentials credentials = new
-		// UsernamePasswordCredentials(
-		// clientId, clientSecret);
-		// ((DefaultHttpClient) httpClient).getCredentialsProvider()
-		// .setCredentials(AuthScope.ANY, credentials);
-		//
+		// UsernamePasswordCredentials(serverConfig.getClientId(),
+		// serverConfig.getClientSecret());
+		// ((DefaultHttpClient)
+		// httpClient).getCredentialsProvider().setCredentials(AuthScope.ANY,
+		// credentials);
 
 		HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(
 				httpClient);
@@ -344,7 +409,7 @@ public class AbstractOIDCAuthenticationFilter extends
 		form.add("grant_type", "authorization_code");
 		form.add("code", authorizationGrant);
 		form.add("redirect_uri", AbstractOIDCAuthenticationFilter
-				.buildRedirectURI(request, new String[] { "code" }));
+				.buildRedirectURI(request, null));
 
 		// pass clientId and clientSecret in post of request
 		form.add("client_id", serverConfig.getClientId());
@@ -589,8 +654,13 @@ public class AbstractOIDCAuthenticationFilter extends
 
 		// TODO: display, prompt, request, request_uri
 
-		response.sendRedirect(AbstractOIDCAuthenticationFilter.buildURL(
-				serverConfiguration.getAuthorizationEndpointURI(), urlVariables));
+		String authRequest = AbstractOIDCAuthenticationFilter
+				.buildURL(serverConfiguration.getAuthorizationEndpointURI(),
+						urlVariables);
+
+		logger.debug("Auth Request:  " + authRequest);
+
+		response.sendRedirect(authRequest);
 	}
 
 	/**

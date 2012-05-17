@@ -38,9 +38,9 @@
 	<bean name="AccountChooserConfig" class="org.mitre.account_chooser.AccountChooserConfig">
 		<property name="issuers">
 			<map>
-				<entry key="http://sever.example.com:8080/openid-connect-server">
+				<entry key="http://idsandbox.vislab.mitre.org/openid-connect-server">
 					<bean class="org.mitre.account_chooser.OIDCServer">
-						<property name="name" value="Example Server" />
+						<property name="name" value="idsandbox openid-connect-server" />
 					</bean>
 				</entry>
 			</map>
