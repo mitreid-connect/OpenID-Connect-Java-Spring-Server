@@ -29,9 +29,6 @@
                 minlength:3,
                 maxlength:200
             },
-            registeredRedirectUri: {
-                custom: 'validateURI'
-            },
             accessTokenTimeout: {
                 required: true,
                 type:"number"
@@ -39,6 +36,9 @@
             refreshTokenTimeout: {
                 required: true,
                 type:"number"
+            },
+            registeredRedirectUri: {
+                custom: 'validateURI'
             }
         },
 
@@ -61,7 +61,7 @@
             clientName:"",
             registeredRedirectUri:[""],
             authorizedGrantTypes:[],
-            scope:[],
+            scope:[""],
             authorities:[],
             clientDescription:"",
             clientId:null,
@@ -187,11 +187,12 @@
 
             this.model.set({
                 clientName:$('#clientName input').val(),
-                registeredRedirectUri:[$('#registeredRedirectUri input').val()],
+                registeredRedirectUri:$.trim($('#registeredRedirectUri textarea').val()).replace(/ /g,'').split("\n"),
                 clientDescription:$('#clientDescription textarea').val(),
                 allowRefresh:$('#allowRefresh').is(':checked'),
                 accessTokenTimeout: $('#accessTokenTimeout input').val(),
-                refreshTokenTimeout: $('#refreshTokenTimeout input').val()
+                refreshTokenTimeout: $('#refreshTokenTimeout input').val(),
+                scope:$.map($('#scope textarea').val().replace(/,$/,'').replace(/\s/g,' ').split(","), $.trim)
             });
 
             this.model.save(this.model, {
