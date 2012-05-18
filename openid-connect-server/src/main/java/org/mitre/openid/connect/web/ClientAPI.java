@@ -28,6 +28,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.security.Principal;
 import java.util.Collection;
 import java.util.UUID;
 
@@ -61,19 +62,23 @@ public class ClientAPI {
     }
 
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
-    public String apiAddClient(@RequestBody String json, Model m) {
+    public String apiAddClient(@RequestBody String json, Model m, Principal principal) {
 
         ClientDetailsEntity client = new Gson().fromJson(json, ClientDetailsEntity.class);
+        // set owners as current logged in user
+        client.setOwner(principal.getName());
         m.addAttribute("entity", clientService.saveClient(client));
 
         return "jsonClientView";
     }
 
     @RequestMapping(value="/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")
-    public String apiUpdateClient(@PathVariable("id") String id, @RequestBody String json, Model m) {
+    public String apiUpdateClient(@PathVariable("id") String id, @RequestBody String json, Model m, Principal principal) {
 
         ClientDetailsEntity client = new Gson().fromJson(json, ClientDetailsEntity.class);
         client.setClientId(id);
+        // set owners as current logged in user
+        client.setOwner(principal.getName());
         
         m.addAttribute("entity", clientService.saveClient(client));
 
