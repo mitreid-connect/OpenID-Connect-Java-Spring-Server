@@ -4,7 +4,13 @@
         <%=clientName%>
     </td>
     <td>
-        <%=registeredRedirectUri[0]%>
+        <ul>
+            <% for (var i in registeredRedirectUri) { %>
+            <li>
+                <%=registeredRedirectUri[i]%>
+            </li>
+            <% } %>
+        </ul>
     </td>
     <td>
         <ul>
@@ -52,7 +58,7 @@
         <thead>
         <tr>
             <th>Name</th>
-            <th>Redirect URL</th>
+            <th>Redirect URI(s)</th>
             <th>Grant Types</th>
             <th>Scope</th>
             <th>Authority</th>
@@ -88,18 +94,19 @@
                         <div class="span6">
                             <span class="control-group" id="clientName">
                             <label>Client name</label>
-                            <input value="<%=clientName%>" type="text" class="" placeholder="Type something"> <span class="help-inline">Associated help text!</span>
+                            <input value="<%=clientName%>" type="text" class="" placeholder="Type something"> <span class="help-inline">This must be more than three characters and can only be alpha-numeric </span>
                             </span>
                             <span class="control-group" id="registeredRedirectUri">
-                            <label>Redirect URL</label>
-                            <input type="text" class="" value="<%=registeredRedirectUri[0]%>" placeholder="http://"><span class="help-inline">Associated help text!</span>
+                            <label>Redirect URI(s)</label>
+                                 <textarea class="input-xlarge" placeholder="http://"
+                                           rows="3"><% for (var i in registeredRedirectUri) { %><%=registeredRedirectUri[i]+"\n"%><% } %></textarea> <span class="help-inline">You may enter multiple URLs separated by a new lines</span>
                             </span>
                         </div>
                         <div class="span6">
                             <span class="control-group" id="clientDescription">
                             <label>Description</label>
                             <textarea class="input-xlarge" placeholder="Type a description"
-                                      rows="3"><%=clientDescription%></textarea> <span class="help-inline">Associated help text!</span>
+                                      rows="3"><%=clientDescription%></textarea> <span class="help-inline">This must be more than three characters and can only be alpha-numeric</span>
                             </span>
                         </div>
                     </div>
@@ -198,12 +205,12 @@
                     </div>
 
 
-                    <div class="span12 control-group">
+                    <div id="scope" class="span12 control-group">
                         <label for="textarea2">Scope</label>
 
                         <div class="input">
                             <textarea rows="3" class="xlarge span10" placeholder="email,first name, last name"
-                                      id="textarea2" name="textarea2"></textarea>
+                                      id="textarea2" name="textarea2"><% for (var i in scope) { %><%=scope[i]+","%><% } %></textarea>
               <span class="help-block">
                 Please enter scopes separated by commas
               </span>
