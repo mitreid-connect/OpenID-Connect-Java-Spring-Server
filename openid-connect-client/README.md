@@ -2,11 +2,11 @@
 
 ## Overview 
 
-This is the Client, a Spring Security AuthenticationFilter, to OpenID Connect Java Spring Server described by [OpenID Connect Standard].
+This is the Client, a Spring Security AuthenticationFilter, to the OpenID Connect Java Spring Server following the [OpenID Connect Standard] described protocol.
 
 ## Configuration of OIDCAuthenticationFilter
 
-Configure the OIDCAuthenticationFilter by adding the XML to your application context security like so:
+Configure the OIDCAuthenticationFilter by adding the XML to your application context security like so making changes where necessary for your deployment:
 
 	<security:http auto-config="false" 
 		use-expressions="true"
@@ -67,7 +67,7 @@ You will need to implement your own UserDetailsService and configure as the abov
 
 The OIDCAuthenticationUsingChooserFilter was written in response to [Issue #39].
 
-Th Authentication Filter use the *oidcServerConfigs* property, a map of OIDC servers, an *accountChooserURI* property to denote the URI of the Account Chooser, and an *accountChooserClient* property to identify the Client to the Account Chooser UI application like so:
+The Authentication Filter uses the *oidcServerConfigs* property, a map of OIDC servers; an *accountChooserURI* property to denote the URI of the Account Chooser; and an *accountChooserClient* property to identify the Client to the Account Chooser UI application like so with modifications specific to your deployment:
 	
 	<bean id="openIdConnectAuthenticationFilter"
 		class="org.mitre.openid.connect.client.OIDCAuthenticationUsingChooserFilter">
