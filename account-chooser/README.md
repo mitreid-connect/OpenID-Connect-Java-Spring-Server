@@ -56,6 +56,6 @@ To test the default config, deploy to a servlet container, and request:
 
 http://localhost:8080/account-chooser/?redirect_uri=http://www.google.com&client_id=FGWEUIASJK
 
-Click **Submit** or **Cancel**, and you will be Google will open.  Study the URL parameters of each.
+Click **Submit** or **Cancel**, and Google will open.  Study the URL parameters of each.
 
 [Issue #39]: http://github.com/jricher/OpenID-Connect-Java-Spring-Server/issues/39 "Issue #39 -- Multiple Point Client"
