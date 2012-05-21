@@ -364,6 +364,7 @@ public class ClientDetailsEntity implements ClientDetails {
      */
     @Override
     public int hashCode() {
+    	//TODO mcron - why is 31 selected?
 	    final int prime = 31;
 	    int result = 1;
 	    result = prime * result + ((clientId == null) ? 0 : clientId.hashCode());

@@ -44,10 +44,10 @@ public class ClientUserDetailsService implements UserDetailsService {
 	ClientDetailsService clientDetailsService;
 
 	@Override
-    public UserDetails loadUserByUsername(String clientId) throws  UsernameNotFoundException, DataAccessException {
+    public UserDetails loadUserByUsername(String clientId) throws  UsernameNotFoundException, 
+    	DataAccessException {
 
 		ClientDetails client = clientDetailsService.loadClientByClientId(clientId);
-		
 		
         String password = client.getClientSecret();
         boolean enabled = true;
@@ -58,8 +58,8 @@ public class ClientUserDetailsService implements UserDetailsService {
         GrantedAuthority roleClient = new SimpleGrantedAuthority("ROLE_CLIENT");
         authorities.add(roleClient);
 
-        return new User(clientId, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
-
+        return new User(clientId, password, enabled, accountNonExpired, 
+        		credentialsNonExpired, accountNonLocked, authorities);
     }
 
 	public ClientDetailsService getClientDetailsService() {
