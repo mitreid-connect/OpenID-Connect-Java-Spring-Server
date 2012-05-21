@@ -13,6 +13,7 @@ import org.mitre.oauth2.model.OAuth2RefreshTokenEntityFactory;
 import org.mitre.oauth2.repository.OAuth2ClientRepository;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
+import org.mitre.oauth2.service.impl.DefaultOAuth2ProviderTokenService.DefaultOAuth2ProviderTokenServicesBuilder;
 
 
 import org.hamcrest.CoreMatchers;
@@ -30,6 +31,8 @@ import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,10 +66,13 @@ public class DefaultOAuth2ProviderTokenServiceTest {
         logger.info("setUp of DefaultOAuth2ProviderTokenServiceTest");
         
         tokenRepository = createNiceMock(OAuth2TokenRepository.class);
-        tokenService = new DefaultOAuth2ProviderTokenService();
         clientDetailsService = createNiceMock(ClientDetailsEntityService.class);
         accessTokenFactory = createNiceMock(OAuth2AccessTokenEntityFactory.class);
         refreshTokenFactory = createNiceMock(OAuth2RefreshTokenEntityFactory.class);
+        
+        //TODO is this the right constructor?
+        //tokenService = new DefaultOAuth2ProviderTokenServicesBuilder();
+        tokenService = new DefaultOAuth2ProviderTokenService();
 	}
 
 	@After
@@ -78,11 +84,19 @@ public class DefaultOAuth2ProviderTokenServiceTest {
         
 	}
 
-	@Test
-	public final void testCreateAccessToken() {
+	@Test(expected = AuthenticationException.class)
+	public final void testCreateAccessToken_AuthExp() {
 		fail("Not yet implemented"); // TODO
 	}
+	
+	@Test(expected = InvalidClientException.class)
+	public final void testCreateAccessToken_InvalidclientExp() {	
+		fail("Not yet implemented"); // TODO
+	}	
+	
+	
 
+	
 	@Test
 	public final void testRefreshAccessToken() {
 		fail("Not yet implemented"); // TODO

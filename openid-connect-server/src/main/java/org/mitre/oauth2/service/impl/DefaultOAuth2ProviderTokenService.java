@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-/**
- * 
- */
+
 package org.mitre.oauth2.service.impl;
 
 import java.util.Date;
@@ -45,7 +43,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Sets;
-
 
 /**
  * @author jricher
@@ -221,7 +218,6 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	    return accessToken.getAuthentication();
     }
 
-
 	@Override
     public OAuth2AccessTokenEntity getAccessToken(String accessTokenValue) throws AuthenticationException {
 		OAuth2AccessTokenEntity accessToken = tokenRepository.getAccessTokenByValue(accessTokenValue);
@@ -263,7 +259,6 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		tokenRepository.removeAccessToken(accessToken);	    
     }
 	
-
 	/* (non-Javadoc)
      * @see org.mitre.oauth2.service.OAuth2TokenEntityService#getAccessTokensForClient(org.mitre.oauth2.model.ClientDetailsEntity)
      */
@@ -363,6 +358,4 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
     	return tokenRepository.saveRefreshToken(refreshToken);
     }
 	
-	
-
 }

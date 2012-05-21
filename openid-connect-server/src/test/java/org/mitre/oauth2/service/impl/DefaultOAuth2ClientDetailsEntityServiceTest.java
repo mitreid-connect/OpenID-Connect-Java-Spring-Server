@@ -21,6 +21,7 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -247,10 +248,18 @@ public class DefaultOAuth2ClientDetailsEntityServiceTest {
 
 	@Test
 	public void testGetAllClients() {
-		Collection<ClientDetailsEntity> collCDEs = entityService.getAllClients();
 		
-		
-		fail("Not yet implemented"); //TODO 
+	    Collection<ClientDetailsEntity> itr =  entityService.getAllClients();
+	    //iterate through the ClientDetailsEntityCollection values using Iterator's hasNext and next methods
+	    Iterator<ClientDetailsEntity> iterator = itr.iterator();
+
+		 // while loop
+		 while (iterator.hasNext()) {
+		    // System.out.println("value= " + iterator.next());
+		 }
+	    
+	    
+		fail("Not yet implemented - Have to create iterator, and the orignal objects to check against"); //TODO 
 	}
 	
 	private ClientDetailsEntity makeFakeClient(int whichFake) {
