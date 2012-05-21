@@ -85,11 +85,14 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
     		String name, String description, boolean allowRefresh, Long accessTokenTimeout, 
     		Long refreshTokenTimeout, String owner) {
 		
+		//TODO should there be error exceptions? 
+		//TODO should there be data validation and sizing; long to int, validate strings
+		
 		// TODO: check "owner" locally?
-
 		ClientDetailsEntity client = clientFactory.createClient(clientId, clientSecret);
 		client.setScope(scope);
 		client.setAuthorizedGrantTypes(grantTypes);
+		// TODO why is this commented out?
 		//client.setRegisteredRedirectUri(redirectUri);
 		Set<String> redirectUris = new HashSet<String>();
 		redirectUris.add(redirectUri);
@@ -102,11 +105,8 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 		client.setRefreshTokenTimeout(refreshTokenTimeout);
 		client.setResourceIds(resourceIds);
 		client.setOwner(owner);
-
 		clientRepository.saveClient(client);
-		
 		return client;
-		
 	}
 	
 	/**
