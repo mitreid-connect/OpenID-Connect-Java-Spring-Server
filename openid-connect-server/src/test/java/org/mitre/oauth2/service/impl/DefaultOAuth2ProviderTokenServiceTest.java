@@ -31,8 +31,12 @@ import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
+import org.springframework.security.oauth2.provider.AuthorizationRequest;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,7 +74,7 @@ public class DefaultOAuth2ProviderTokenServiceTest {
         accessTokenFactory = createNiceMock(OAuth2AccessTokenEntityFactory.class);
         refreshTokenFactory = createNiceMock(OAuth2RefreshTokenEntityFactory.class);
         
-        //TODO is this the right constructor?
+        //TODO what is the right constructor?
         //tokenService = new DefaultOAuth2ProviderTokenServicesBuilder();
         tokenService = new DefaultOAuth2ProviderTokenService();
 	}
@@ -84,18 +88,32 @@ public class DefaultOAuth2ProviderTokenServiceTest {
         
 	}
 
-	@Test(expected = AuthenticationException.class)
-	public final void testCreateAccessToken_AuthExp() {
-		fail("Not yet implemented"); // TODO
+	@Test(expected = AuthenticationCredentialsNotFoundException.class)
+	public final void testCreateAccessToken_AuthCredNotFoundExp() {
+		tokenService.createAccessToken(null);
 	}
 	
 	@Test(expected = InvalidClientException.class)
 	public final void testCreateAccessToken_InvalidclientExp() {	
-		fail("Not yet implemented"); // TODO
+		AuthorizationRequest authorizationRequest = null;
+		Authentication userAuthentication = null;
+		OAuth2Authentication authentication = new OAuth2Authentication(authorizationRequest, userAuthentication);
+		tokenService.createAccessToken(authentication);
 	}	
-	
-	
-
+	@Test(expected = AuthenticationException.class)
+	public final void testCreateAccessToken_AuthExcep() {
+		AuthorizationRequest authorizationRequest = null;
+		Authentication userAuthentication = null;
+		OAuth2Authentication authentication = new OAuth2Authentication(authorizationRequest, userAuthentication);		
+		tokenService.createAccessToken(authentication);
+	}	
+	@Test
+	public final void testCreateAccessToken_valid() {
+		AuthorizationRequest authorizationRequest = null;
+		Authentication userAuthentication = null;
+		OAuth2Authentication authentication = new OAuth2Authentication(authorizationRequest, userAuthentication);		
+		tokenService.createAccessToken(authentication);
+	}		
 	
 	@Test
 	public final void testRefreshAccessToken() {
