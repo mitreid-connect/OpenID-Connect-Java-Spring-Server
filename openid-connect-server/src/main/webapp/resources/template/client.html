@@ -94,7 +94,7 @@
                         <div class="span6">
                             <span class="control-group" id="clientName">
                             <label>Client name</label>
-                            <input value="<%=clientName%>" type="text" class="" placeholder="Type something"> <span class="help-inline">This must be more than three characters and can only be alpha-numeric </span>
+                            <input value="<%=clientName%>" maxlength="100" type="text" class="" placeholder="Type something"> <span class="help-inline"></span>
                             </span>
                             <span class="control-group" id="registeredRedirectUri">
                             <label>Redirect URI(s)</label>
@@ -105,8 +105,8 @@
                         <div class="span6">
                             <span class="control-group" id="clientDescription">
                             <label>Description</label>
-                            <textarea class="input-xlarge" placeholder="Type a description"
-                                      rows="3"><%=clientDescription%></textarea> <span class="help-inline">This must be more than three characters and can only be alpha-numeric</span>
+                            <textarea class="input-xlarge" placeholder="Type a description" maxlength="200"
+                                      rows="3"><%=clientDescription%></textarea> <span class="help-inline"></span>
                             </span>
                         </div>
                     </div>
