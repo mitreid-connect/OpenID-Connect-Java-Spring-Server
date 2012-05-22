@@ -18,15 +18,15 @@
 
         validate:{
             clientName:{
-                required:true,
+               /* required:true,
                 pattern:/^[\w ]+$/,
-                minlength:3,
+                minlength:3,*/
                 maxlength:100
             },
             clientDescription:{
-                required:true,
+                /*required:true,
                 pattern:/^[\w ]+$/,
-                minlength:3,
+                minlength:3,*/
                 maxlength:200
             },
             accessTokenTimeout: {
@@ -44,7 +44,7 @@
 
         validateURI: function(attributeName, attributeValue) {
 
-            var expression = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
+            var expression = /^(?:([a-z0-9+.-]+:\/\/)((?:(?:[a-z0-9-._~!$&'()*+,;=:]|%[0-9A-F]{2})*)@)?((?:[a-z0-9-._~!$&'()*+,;=]|%[0-9A-F]{2})*)(:(?:\d*))?(\/(?:[a-z0-9-._~!$&'()*+,;=:@\/]|%[0-9A-F]{2})*)?|([a-z0-9+.-]+:)(\/?(?:[a-z0-9-._~!$&'()*+,;=:@]|%[0-9A-F]{2})+(?:[a-z0-9-._~!$&'()*+,;=:@\/]|%[0-9A-F]{2})*)?)(\?(?:[a-z0-9-._~!$&'()*+,;=:\/?@]|%[0-9A-F]{2})*)?(#(?:[a-z0-9-._~!$&'()*+,;=:\/?@]|%[0-9A-F]{2})*)?$/i;
             var regex = new RegExp(expression);
 
             if (!attributeValue.every(function (url) {
