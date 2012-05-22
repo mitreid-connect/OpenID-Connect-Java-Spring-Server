@@ -190,7 +190,7 @@
 
             $('.control-group').removeClass('error');
 
-            this.model.set({
+            var valid = this.model.set({
                 clientName:$('#clientName input').val(),
                 clientSecret:$('#clientSecret input').val(),
                 registeredRedirectUri:$.trim($('#registeredRedirectUri textarea').val()).replace(/ /g,'').split("\n"),
@@ -201,26 +201,28 @@
                 scope:$.map($('#scope textarea').val().replace(/,$/,'').replace(/\s/g,' ').split(","), $.trim)
             });
 
-            this.model.save(this.model, {
-                success:function () {
-                    app.navigate('clients', {trigger: true});
-                },
-                error:function() {
-
-                }
-            });
-
-            if (this.model.isNew() && this.model.isValid()) {
-                var self = this;
-                app.clientList.create(this.model, {
+            if (valid) {
+                this.model.save(this.model, {
                     success:function () {
-                        app.navigate('clients', {trigger: true});
+                        app.navigate('clients', {trigger:true});
                     },
-                    error:function() {
+                    error:function () {
 
                     }
                 });
 
+                if (this.model.isNew()) {
+                    var self = this;
+                    app.clientList.create(this.model, {
+                        success:function () {
+                            app.navigate('clients', {trigger:true});
+                        },
+                        error:function () {
+
+                        }
+                    });
+
+                }
             }
 
             return false;
