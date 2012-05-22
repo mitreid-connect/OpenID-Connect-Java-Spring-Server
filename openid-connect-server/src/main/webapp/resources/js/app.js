@@ -59,6 +59,7 @@
         // We can pass it default values.
         defaults:{
             clientName:"",
+            clientSecret:"",
             registeredRedirectUri:[""],
             authorizedGrantTypes:[],
             scope:["openid"],
@@ -190,6 +191,7 @@
 
             this.model.set({
                 clientName:$('#clientName input').val(),
+                clientSecret:$('#clientSecret input').val(),
                 registeredRedirectUri:$.trim($('#registeredRedirectUri textarea').val()).replace(/ /g,'').split("\n"),
                 clientDescription:$('#clientDescription textarea').val(),
                 allowRefresh:$('#allowRefresh').is(':checked'),
