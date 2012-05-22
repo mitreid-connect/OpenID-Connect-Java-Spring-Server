@@ -61,7 +61,7 @@
             clientName:"",
             registeredRedirectUri:[""],
             authorizedGrantTypes:[],
-            scope:[""],
+            scope:["openid"],
             authorities:[],
             clientDescription:"",
             clientId:null,
