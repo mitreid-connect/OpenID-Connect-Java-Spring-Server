@@ -30,9 +30,7 @@
             <% } %>
         </ul>
     </td>
-    <td>
-        <%=authorities[0]%>
-    </td>
+
     <td>
         <%=clientDescription%>
     </td>
@@ -61,7 +59,6 @@
             <th>Redirect URI(s)</th>
             <th>Grant Types</th>
             <th>Scope</th>
-            <th>Authority</th>
             <th>Description</th>
             <th>Refresh Tokens</th>
             <th class="span1"></th>
@@ -107,6 +104,12 @@
                             <label>Description</label>
                             <textarea class="input-xlarge" placeholder="Type a description" maxlength="200"
                                       rows="3"><%=clientDescription%></textarea> <span class="help-inline"></span>
+                            </span>
+
+                            <span class="control-group" id="clientSecret">
+                            <label>Client Secret</label>
+                            <input value="<%=clientSecret%>" maxlength="100" type="text" class=""
+                                   placeholder="Type a secret"> <span class="help-inline">If you leave this blank a client secret will be generated for you automatically.</span>
                             </span>
                         </div>
                     </div>
