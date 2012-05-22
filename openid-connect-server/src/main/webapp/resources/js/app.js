@@ -114,19 +114,22 @@
 
         deleteClient:function () {
 
-            var self = this;
+            if (confirm("Are you sure sure you would like to delete this client?")) {
+                var self = this;
 
-            this.model.destroy({
-                success:function () {
-                    self.$el.fadeTo("fast", 0.00, function(){ //fade
-                        $(this).slideUp("fast", function() { //slide up
-                            $(this).remove(); //then remove from the DOM
+                this.model.destroy({
+                    success:function () {
+                        self.$el.fadeTo("fast", 0.00, function () { //fade
+                            $(this).slideUp("fast", function () { //slide up
+                                $(this).remove(); //then remove from the DOM
+                            });
                         });
-                    });
-                }
-            });
+                    }
+                });
 
-            app.clientListView.delegateEvents();
+                app.clientListView.delegateEvents();
+            }
+
             return false;
         },
 
