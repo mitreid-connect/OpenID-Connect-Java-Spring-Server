@@ -19,18 +19,10 @@
 package org.mitre.oauth2.model;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.Basic;
-import javax.persistence.CollectionTable;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.provider.ClientDetails;
@@ -55,23 +47,23 @@ public class ClientDetailsEntity implements ClientDetails {
 
 	public enum AuthType {
 		client_secret_post, client_secret_basic, client_secret_jwt, private_key_jwt
-	};
-	
-	private String clientId;	
-	private String clientSecret;
-	private Set<String> scope;
-	private Set<String> authorizedGrantTypes;
-	private Set<GrantedAuthority> authorities = Collections.emptySet();
-	private String clientName;
-	private String clientDescription;
-	private boolean allowRefresh = false; // do we allow refresh tokens for this client?
-	private Integer accessTokenTimeout; // in seconds
-	private Integer refreshTokenTimeout; // in seconds
-	private String owner; // userid of who registered it
-	private Set<String> registeredRedirectUri;
-	private Set<String> resourceIds;
+	}
 
-	//Additional properties added by OpenID Connect Dynamic Client Registration spec
+    private String clientId = "";
+    private String clientSecret = "";
+    private Set<String> scope = new HashSet<String>();
+    private Set<String> authorizedGrantTypes = new HashSet<String>();
+    private Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
+    private String clientName = "";
+    private String clientDescription = "";
+    private boolean allowRefresh = false; // do we allow refresh tokens for this client?
+    private Integer accessTokenTimeout = 0; // in seconds
+    private Integer refreshTokenTimeout = 0; // in seconds
+    private String owner = ""; // userid of who registered it
+    private Set<String> registeredRedirectUri = new HashSet<String>();
+    private Set<String> resourceIds = new HashSet<String>();
+
+    //Additional properties added by OpenID Connect Dynamic Client Registration spec
 	//http://openid.net/specs/openid-connect-registration-1_0.html
 	
 	/**
@@ -122,7 +114,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	/**
      * @return the clientId
      */
-	@Id
+	@Id @GeneratedValue
     public String getClientId() {
     	return clientId;
     }
