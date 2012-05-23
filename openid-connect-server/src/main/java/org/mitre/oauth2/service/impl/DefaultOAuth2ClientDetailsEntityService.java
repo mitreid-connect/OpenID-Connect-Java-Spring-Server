@@ -18,6 +18,7 @@ package org.mitre.oauth2.service.impl;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.ClientDetailsEntityFactory;
@@ -108,6 +109,15 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 		return client;
 		
 	}
+
+    @Override
+    public ClientDetailsEntity createClient(ClientDetailsEntity client) {
+
+        clientRepository.saveClient(client);
+
+        return client;
+
+    }
 	
 	/**
 	 * Delete a client and all its associated tokens
@@ -137,6 +147,29 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 			return clientRepository.updateClient(oldClient.getClientId(), newClient);
 		}
 		throw new IllegalArgumentException("Neither old client or new client can be null!");
+    }
+
+    /**
+     *
+     * @param client object to be saved
+     * @return ClientDetailsEntity the saved object
+     */
+    @Override
+    public ClientDetailsEntity saveClient(ClientDetailsEntity client) {
+
+        if (client.getClientSecret().equals("")) {
+            client.setClientSecret(UUID.randomUUID().toString());
+        }
+
+        // this must be a new client if we don't have a clientID
+        // assign it a new ID
+        if (client.getClientId() == null || client.getClientId().equals("") || this.loadClientByClientId(client.getClientId()) == null) {
+            client.setClientId(UUID.randomUUID().toString());
+            return this.createClient(client);
+        }  else {
+            return clientRepository.updateClient(client.getClientId(), client);
+        }
+
     }
 
 	/**
