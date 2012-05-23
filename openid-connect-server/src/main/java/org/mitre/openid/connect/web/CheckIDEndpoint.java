@@ -25,6 +25,9 @@ import org.mitre.openid.connect.exception.InvalidJwtSignatureException;
 import org.mitre.openid.connect.model.IdToken;
 import org.mitre.util.Utility;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -39,8 +42,11 @@ public class CheckIDEndpoint {
 	@Autowired
 	private ConfigurationPropertiesBean configBean;
 	
+	@PreAuthorize("hasRole('ROLE_USER')")
 	@RequestMapping("/checkid")
 	public ModelAndView checkID(@RequestParam("access_token") String tokenString, ModelAndView mav, HttpServletRequest request) {
+		
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		
 		if (!jwtSignerService.validateSignature(tokenString)) {
 			// can't validate 
