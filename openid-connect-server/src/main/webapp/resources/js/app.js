@@ -2,24 +2,88 @@
 
     var ClientModel = Backbone.Model.extend({
 
-        // We can pass it default values.
-        defaults:{
-            name:null,
-            redirectURL:"http://myURL.domain",
-            grantType:["my grant type 1", "my grant type 2"],
-            scope:["scope 1", "scope 2"],
-            authority:"my authority",
-            description:"my description",
-            refreshTokens:false
+        idAttribute: "clientId",
+
+        initialize: function () {
+
+            // bind validation errors to dom elements
+            // this will display form elements in red if they are not valid
+            this.bind('error', function(model, errs) {
+                _.map(errs, function (val, elID) {
+                    $('#' + elID).addClass('error');
+                });
+            });
+
         },
 
-        urlRoot:"/resources/test/json/clients.js"
+        validate:{
+            clientName:{
+               /* required:true,
+                pattern:/^[\w ]+$/,
+                minlength:3,*/
+                maxlength:100
+            },
+            clientDescription:{
+                /*required:true,
+                pattern:/^[\w ]+$/,
+                minlength:3,*/
+                maxlength:200
+            },
+            accessTokenTimeout: {
+                required: true,
+                type:"number"
+            },
+            refreshTokenTimeout: {
+                required: true,
+                type:"number"
+            },
+            registeredRedirectUri: {
+                custom: 'validateURI'
+            }
+        },
+
+        validateURI: function(attributeName, attributeValue) {
+
+            var expression = /^(?:([a-z0-9+.-]+:\/\/)((?:(?:[a-z0-9-._~!$&'()*+,;=:]|%[0-9A-F]{2})*)@)?((?:[a-z0-9-._~!$&'()*+,;=]|%[0-9A-F]{2})*)(:(?:\d*))?(\/(?:[a-z0-9-._~!$&'()*+,;=:@\/]|%[0-9A-F]{2})*)?|([a-z0-9+.-]+:)(\/?(?:[a-z0-9-._~!$&'()*+,;=:@]|%[0-9A-F]{2})+(?:[a-z0-9-._~!$&'()*+,;=:@\/]|%[0-9A-F]{2})*)?)(\?(?:[a-z0-9-._~!$&'()*+,;=:\/?@]|%[0-9A-F]{2})*)?(#(?:[a-z0-9-._~!$&'()*+,;=:\/?@]|%[0-9A-F]{2})*)?$/i;
+            var regex = new RegExp(expression);
+
+
+            for (var i in attributeValue) {
+                if (!attributeValue[i].match(regex)) {
+                    return "Invalid URI";
+                }
+            }
+
+
+        },
+
+        // We can pass it default values.
+        defaults:{
+            clientName:"",
+            clientSecret:"",
+            registeredRedirectUri:[""],
+            authorizedGrantTypes:[],
+            scope:["openid"],
+            authorities:[],
+            clientDescription:"",
+            clientId:null,
+            allowRefresh:false,
+            accessTokenTimeout: 0,
+            refreshTokenTimeout: 0
+        },
+
+        urlRoot:"api/clients"
 
     });
 
     var ClientCollection = Backbone.Collection.extend({
+
+        initialize: function() {
+            this.fetch();
+        },
+
         model:ClientModel,
-        url:"/resources/test/json/clients.js"
+        url:"api/clients"
     });
 
 
@@ -34,7 +98,6 @@
             }
 
             this.model.bind('change', this.render, this);
-            //this.model.on('change', this.render)
         },
 
         render:function (eventName) {
@@ -48,11 +111,28 @@
         },
 
         editClient:function () {
-            alert('edit');
+            app.navigate('client/' + this.model.id, {trigger: true});
         },
 
         deleteClient:function () {
-            alert('delete');
+
+            if (confirm("Are you sure sure you would like to delete this client?")) {
+                var self = this;
+
+                this.model.destroy({
+                    success:function () {
+                        self.$el.fadeTo("fast", 0.00, function () { //fade
+                            $(this).slideUp("fast", function () { //slide up
+                                $(this).remove(); //then remove from the DOM
+                            });
+                        });
+                    }
+                });
+
+                app.clientListView.delegateEvents();
+            }
+
+            return false;
         },
 
         close:function () {
@@ -75,7 +155,7 @@
 
         newClient:function () {
             this.remove();
-            document.location.hash = 'new_client';
+            app.navigate('client/new', {trigger: true});
         },
 
         render:function (eventName) {
@@ -84,7 +164,7 @@
             $(this.el).html($('#tmpl-client-table').html());
 
             _.each(this.model.models, function (client) {
-                $("#client-table").append(new ClientView({model:client}).render().el);
+                $("#client-table",this.el).append(new ClientView({model:client}).render().el);
             }, this);
 
             return this;
@@ -102,15 +182,55 @@
             }
         },
 
-        render:function (eventName) {
+        events:{
+            "click .btn-primary":"saveClient"
+        },
 
-            var action = "Edit";
+        saveClient:function (event) {
 
-            if (!this.model) {
-                 action = "New";
+            $('.control-group').removeClass('error');
+
+            var valid = this.model.set({
+                clientName:$('#clientName input').val(),
+                clientSecret:$('#clientSecret input').val(),
+                registeredRedirectUri:$.trim($('#registeredRedirectUri textarea').val()).replace(/ /g,'').split("\n"),
+                clientDescription:$('#clientDescription textarea').val(),
+                allowRefresh:$('#allowRefresh').is(':checked'),
+                accessTokenTimeout: $('#accessTokenTimeout input').val(),
+                refreshTokenTimeout: $('#refreshTokenTimeout input').val(),
+                scope:$.map($('#scope textarea').val().replace(/,$/,'').replace(/\s/g,' ').split(","), $.trim)
+            });
+
+            if (valid) {
+                this.model.save(this.model, {
+                    success:function () {
+                        app.navigate('clients', {trigger:true});
+                    },
+                    error:function () {
+
+                    }
+                });
+
+                if (this.model.isNew()) {
+                    var self = this;
+                    app.clientList.create(this.model, {
+                        success:function () {
+                            app.navigate('clients', {trigger:true});
+                        },
+                        error:function () {
+
+                        }
+                    });
+
+                }
             }
 
-            $(this.el).html(this.template({action: action}));
+            return false;
+        },
+
+        render:function (eventName) {
+
+            $(this.el).html(this.template(this.model.toJSON()));
             return this;
         }
     });
@@ -119,29 +239,52 @@
     var AppRouter = Backbone.Router.extend({
 
         routes:{
-            "":"list",
-            "new_client":"newClient"
+            "clients":"list",
+            "client/new":"newClient",
+            "client/:id":"editClient"
         },
 
         initialize:function () {
 
+            this.clientList = new ClientCollection();
+            this.clientListView = new ClientListView({model:this.clientList});
+
+            this.startAfter([this.clientList]);
+
+        },
+
+        startAfter:function (collections) {
+            // Start history when required collections are loaded
+            var start = _.after(collections.length, _.once(function () {
+                Backbone.history.start()
+            }));
+            _.each(collections, function (collection) {
+                collection.bind('reset', start, Backbone.history)
+            });
         },
 
         list:function () {
 
-            this.clientList = new ClientCollection();
-            this.clientListView = new ClientListView({model:this.clientList});
-            this.clientList.fetch();
-
             $('#content').html(this.clientListView.render().el);
+            this.clientListView.delegateEvents();
         },
 
         newClient:function() {
-            this.clientFormView = new ClientFormView();
+            this.clientFormView = new ClientFormView({model:new ClientModel()});
+            $('#content').html(this.clientFormView.render().el);
+        },
+
+        editClient:function(id) {
+            var client = this.clientList.get(id);
+            this.clientFormView = new ClientFormView({model:client});
             $('#content').html(this.clientFormView.render().el);
         }
 
     });
+
+    // holds the global app.
+    // this gets init after the templates load
+    var app = null;
 
     // main
     $(function () {
@@ -150,8 +293,7 @@
         $.get('resources/template/client.html', function (templates) {
             $('body').append(templates);
 
-            var app = new AppRouter();
-            Backbone.history.start();
+            app = new AppRouter();
         });
 
 

@@ -15,16 +15,22 @@
  ******************************************************************************/
 package org.mitre.openid.connect.web;
 
+import com.google.gson.Gson;
+import org.mitre.oauth2.exception.ClientNotFoundException;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.security.Principal;
 import java.util.Collection;
+import java.util.UUID;
 
 /**
  * @author Michael Jett <mjett@mitre.org>
@@ -32,6 +38,7 @@ import java.util.Collection;
 
 @Controller
 @RequestMapping("/api/clients")
+@PreAuthorize("hasRole('ROLE_ADMIN')")
 public class ClientAPI {
 
     @Autowired
@@ -44,8 +51,7 @@ public class ClientAPI {
 
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @RequestMapping("")
+    @RequestMapping(method = RequestMethod.GET, headers="Accept=application/json")
     public ModelAndView apiGetAllClients(ModelAndView modelAndView) {
 
         Collection<ClientDetailsEntity> clients = clientService.getAllClients();
@@ -55,94 +61,51 @@ public class ClientAPI {
         return modelAndView;
     }
 
-/*
-    */
-/**
-     *
-     * @param modelAndView
-     * @param clientId
-     * @param clientSecret
-     * @param scope
-     * @param grantTypes
-     * @param redirectUri
-     * @param authorities
-     * @param name
-     * @param description
-     * @param allowRefresh
-     * @param accessTokenTimeout
-     * @param refreshTokenTimeout
-     * @param owner
-     * @return
-     *//*
+    @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
+    public String apiAddClient(@RequestBody String json, Model m, Principal principal) {
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @RequestMapping("/add")
-    public ModelAndView apiAddClient(ModelAndView modelAndView,
-                                     @RequestParam String clientId, @RequestParam String clientSecret,
-                                     @RequestParam String scope, // space delimited
-                                     @RequestParam String grantTypes, // space delimited
-                                     @RequestParam(required = false) String redirectUri,
-                                     @RequestParam String authorities, // space delimited
-                                     @RequestParam(required = false) String name,
-                                     @RequestParam(required = false) String description,
-                                     @RequestParam(required = false, defaultValue = "false") boolean allowRefresh,
-                                     @RequestParam(required = false) Long accessTokenTimeout,
-                                     @RequestParam(required = false) Long refreshTokenTimeout,
-                                     @RequestParam(required = false) String owner
-    ) {
-        return null;
+        ClientDetailsEntity client = new Gson().fromJson(json, ClientDetailsEntity.class);
+        // set owners as current logged in user
+        client.setOwner(principal.getName());
+        m.addAttribute("entity", clientService.saveClient(client));
+
+        return "jsonClientView";
     }
 
-    */
-/**
-     *
-     * @param modelAndView
-     * @param clientId
-     * @return
-     *//*
+    @RequestMapping(value="/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")
+    public String apiUpdateClient(@PathVariable("id") String id, @RequestBody String json, Model m, Principal principal) {
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @RequestMapping("/delete")
-    public ModelAndView apiDeleteClient(ModelAndView modelAndView,
-                                        @RequestParam String clientId) {
-        return null;
+        ClientDetailsEntity client = new Gson().fromJson(json, ClientDetailsEntity.class);
+        client.setClientId(id);
+        // set owners as current logged in user
+        client.setOwner(principal.getName());
+        
+        m.addAttribute("entity", clientService.saveClient(client));
+
+        return "jsonClientView";
     }
-*/
+
+    @RequestMapping(value="/{id}", method=RequestMethod.DELETE, headers="Accept=application/json")
+    public String apiDeleteClient(@PathVariable("id") String id, ModelAndView modelAndView) {
+
+        ClientDetailsEntity client = clientService.loadClientByClientId(id);
+        clientService.deleteClient(client);
+
+        return "jsonClientView";
+    }
 
 
+    @RequestMapping(value="/{id}", method=RequestMethod.GET, headers="Accept=application/json")
+    @ResponseBody
+    public Object apiShowClient(@PathVariable("id") Long id, ModelAndView modelAndView) {
+        ClientDetailsEntity client = clientService.loadClientByClientId(id.toString());
+        if (client == null) {
+            return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
+        }
 
-  /*  *//**
-     *
-     * @param modelAndView
-     * @param clientId
-     * @param clientSecret
-     * @param scope
-     * @param grantTypes
-     * @param redirectUri
-     * @param authorities
-     * @param name
-     * @param description
-     * @param allowRefresh
-     * @param accessTokenTimeout
-     * @param refreshTokenTimeout
-     * @param owner
-     * @return
-     *//*
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @RequestMapping("/update")
-    public ModelAndView apiUpdateClient(ModelAndView modelAndView,
-                                        @RequestParam String clientId, @RequestParam String clientSecret,
-                                        @RequestParam String scope, // space delimited
-                                        @RequestParam String grantTypes, // space delimited
-                                        @RequestParam(required = false) String redirectUri,
-                                        @RequestParam String authorities, // space delimited
-                                        @RequestParam(required = false) String name,
-                                        @RequestParam(required = false) String description,
-                                        @RequestParam(required = false, defaultValue = "false") boolean allowRefresh,
-                                        @RequestParam(required = false) Long accessTokenTimeout,
-                                        @RequestParam(required = false) Long refreshTokenTimeout,
-                                        @RequestParam(required = false) String owner
-    ) {
-        return null;
-    }*/
+        modelAndView.addObject("entity", client);
+        modelAndView.setViewName("jsonClientView");
+
+        return modelAndView;
+    }
 }

@@ -18,6 +18,8 @@ package org.mitre.account_chooser;
 /**
  * @author nemonik
  * 
+ * Holdes properties of the Issuer, e.g. name, icon URL, description, et cetera
+ * 
  */
 public class OIDCServer {
 

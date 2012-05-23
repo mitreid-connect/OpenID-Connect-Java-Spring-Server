@@ -13,30 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package org.mitre.openid.connect.web;
+package org.mitre.account_chooser;
 
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * @author Michael Jett <mjett@mitre.org>
+ * Used to the configure AccountChooserController
+ * 
+ * @author nemonik
+ *
  */
+public class AccountChooserConfig {
 
-@Controller
-@RequestMapping("/")
-@PreAuthorize("hasRole('ROLE_USER')")
-public class ManagerController {
+	private String[] validClientIds;
 
+	private Map<String, ? extends OIDCServer> issuers = new HashMap<String, OIDCServer>();
 
-    @RequestMapping({"", "/home", "/index"})
-    public String showHomePage() {
-        return "home";
-    }
+	public Map<String, ? extends OIDCServer> getIssuers() {
+		return issuers;
+	}
 
-    @RequestMapping("/admin/manage/")
-    public String showClientManager() {
-        return "admin/manage";
-    }
+	public String[] getValidClientIds() {
+		return validClientIds;
+	}
 
+	public void setIssuers(Map<String, ? extends OIDCServer> issuers) {
+		this.issuers = issuers;
+	}
+
+	public void setValidClientIds(String[] validClientIds) {
+		
+		this.validClientIds = validClientIds;
+	}
 }
