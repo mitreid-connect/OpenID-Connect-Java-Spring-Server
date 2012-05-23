@@ -30,6 +30,9 @@
 	<import resource="data-context.xml" />	
 
     <!-- Spring Security configuration -->
+    
+    <oauth:resource-server id="resourceServerFilter" token-services-ref="defaultOAuth2ProviderTokenService" />
+    
 	<security:http pattern="/oauth/token" create-session="stateless" authentication-manager-ref="clientAuthenticationManager" 
 		entry-point-ref="oauthAuthenticationEntryPoint">
 		<security:intercept-url pattern="/oauth/token" access="IS_AUTHENTICATED_FULLY" />
@@ -75,7 +78,7 @@
 
 	<!-- user services -->
 	<import resource="user-context.xml" />
-
+	
 <!-- End Spring Security configuration -->	
 		
 <!-- JPA  -->

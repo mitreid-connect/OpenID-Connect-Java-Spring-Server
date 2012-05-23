@@ -22,6 +22,8 @@ import org.mitre.oauth2.exception.ClientNotFoundException;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.stereotype.Controller;
