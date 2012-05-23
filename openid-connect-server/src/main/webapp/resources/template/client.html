@@ -1,4 +1,7 @@
 <script type="text/html" id="tmpl-client">
+    <td>
+        <%=clientId%>
+    </td>
 
     <td>
         <%=clientName%>
@@ -55,6 +58,7 @@
     <table id="client-table" class="table">
         <thead>
         <tr>
+            <th>ID</th>
             <th>Name</th>
             <th>Redirect URI(s)</th>
             <th>Grant Types</th>
@@ -83,7 +87,7 @@
     <div class="">
         <form>
             <fieldset>
-                <legend>Details</legend>
+                <legend>Details for <%=clientId%></legend>
 
                 <div class="well">
 
