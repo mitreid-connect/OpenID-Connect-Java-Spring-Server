@@ -21,6 +21,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.mitre.openid.connect.model.UserInfo;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.servlet.view.AbstractView;
 
@@ -28,6 +29,7 @@ import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 
 public class JSONUserInfoView extends AbstractView{
 	
@@ -37,6 +39,8 @@ public class JSONUserInfoView extends AbstractView{
 	protected void renderMergedOutputModel(Map<String, Object> model,
 			HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
+		
+		UserInfo userInfo = (UserInfo) model.get("userInfo");
 
 		Gson gson = new GsonBuilder()
 			.setExclusionStrategies(new ExclusionStrategy() {
@@ -57,15 +61,43 @@ public class JSONUserInfoView extends AbstractView{
 			}).create();
 
 		response.setContentType("application/json");
-		
 		Writer out = response.getWriter();
+		gson.toJson(toJson(userInfo),out);
+	}
+	
+	private JsonObject toJson(UserInfo ui) {
+		JsonObject obj = new JsonObject();
 		
-		Object obj = model.get("entity");
-		if (obj == null) {
-			obj = model;
-		}
+		obj.addProperty("user_id", ui.getUserId());
+		obj.addProperty("name", ui.getName());
+		obj.addProperty("given_name", ui.getGivenName());
+		obj.addProperty("family_name", ui.getFamilyName());
+		obj.addProperty("middle_name", ui.getMiddleName());
+		obj.addProperty("nickname", ui.getNickname());
+		obj.addProperty("profile", ui.getProfile());
+		obj.addProperty("picture", ui.getPicture());
+		obj.addProperty("email", ui.getEmail());
+		obj.addProperty("website", ui.getWebsite());
+		obj.addProperty("verified", ui.getVerified());
+		obj.addProperty("gender", ui.getGender());
+		obj.addProperty("zone_info", ui.getZoneinfo());
+		obj.addProperty("locale", ui.getLocale());
+		obj.addProperty("phone_number", ui.getPhoneNumber());
+		obj.addProperty("updated_time", ui.getUpdatedTime());
 		
-		gson.toJson(obj, out);
+		if (ui.getAddress() != null) {
+			JsonObject addr = new JsonObject();
+			addr.addProperty("formatted", ui.getAddress().getFormatted());
+			addr.addProperty("street_address", ui.getAddress().getStreetAddress());
+			addr.addProperty("locality", ui.getAddress().getLocality());
+			addr.addProperty("region", ui.getAddress().getRegion());
+			addr.addProperty("postal_code", ui.getAddress().getPostalCode());
+			addr.addProperty("country", ui.getAddress().getCountry());
+		
+			obj.add("address", addr);
+		}	
+		
+		return obj;
 	}
 
 }
