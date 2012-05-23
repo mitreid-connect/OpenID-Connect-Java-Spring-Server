@@ -74,6 +74,7 @@ public class JSONUserInfoView extends AbstractView{
 		obj.addProperty("family_name", ui.getFamilyName());
 		obj.addProperty("middle_name", ui.getMiddleName());
 		obj.addProperty("nickname", ui.getNickname());
+		obj.addProperty("email", ui.getEmail());
 		obj.addProperty("profile", ui.getProfile());
 		obj.addProperty("picture", ui.getPicture());
 		obj.addProperty("website", ui.getWebsite());
@@ -84,16 +85,17 @@ public class JSONUserInfoView extends AbstractView{
 		obj.addProperty("phone_number", ui.getPhoneNumber());
 		obj.addProperty("updated_time", ui.getUpdatedTime());
 		
-		JsonObject addr = new JsonObject();
-		addr.addProperty("formatted", ui.getAddress().getFormatted());
-		addr.addProperty("street_address", ui.getAddress().getStreetAddress());
-		addr.addProperty("locality", ui.getAddress().getLocality());
-		addr.addProperty("region", ui.getAddress().getRegion());
-		addr.addProperty("postal_code", ui.getAddress().getPostalCode());
-		addr.addProperty("country", ui.getAddress().getCountry());
-		
-		obj.add("address", addr);
-		
+		if(ui.getAddress() != null) {
+			JsonObject addr = new JsonObject();
+			addr.addProperty("formatted", ui.getAddress().getFormatted());
+			addr.addProperty("street_address", ui.getAddress().getStreetAddress());
+			addr.addProperty("locality", ui.getAddress().getLocality());
+			addr.addProperty("region", ui.getAddress().getRegion());
+			addr.addProperty("postal_code", ui.getAddress().getPostalCode());
+			addr.addProperty("country", ui.getAddress().getCountry());
+			
+			obj.add("address", addr);
+		}
 		return obj;
 	}
 
