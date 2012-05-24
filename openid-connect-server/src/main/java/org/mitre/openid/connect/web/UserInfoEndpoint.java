@@ -20,6 +20,7 @@ import java.security.Principal;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
+import org.mitre.openid.connect.exception.UnknownUserInfoSchemaException;
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.service.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,15 +74,11 @@ public class UserInfoEndpoint {
 		} else if (schema.equalsIgnoreCase( pocoSchema )) {
 			viewName = pocoUserInfoViewName;
 		} else {
-			//TODO: Create an Error class *UnknownSchema*
+			throw new UnknownUserInfoSchemaException("Unknown User Info Schema: " + schema );
 		}
-		
 		String userId = p.getName(); 
-		
 		UserInfo userInfo = userInfoService.getByUserId(userId);
-		
 		return new ModelAndView(viewName, "userInfo", userInfo);
-		
 
 	}
 	

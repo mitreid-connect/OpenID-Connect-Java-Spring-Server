@@ -165,6 +165,7 @@
 	<bean id="jwkKeyList" class="org.mitre.openid.connect.view.JwkKeyListView" />
 	
  	<bean id="jsonUserInfoView" class="org.mitre.openid.connect.view.JSONUserInfoView"/>
+ 	<bean id="pocoUserInfoView" class="org.mitre.openid.connect.view.POCOUserInfoView"/>
  	<bean id="jsonIdTokenView" class="org.mitre.openid.connect.view.JSONIdTokenView"/>
     <bean id="jsonClientView" class="org.mitre.openid.connect.view.JSONClientView" />
 
