@@ -81,11 +81,13 @@ public class POCOUserInfoView extends AbstractView{
 		
 		if(ui.getFamilyName() != null 
 				|| ui.getGivenName() != null 
-				|| ui.getMiddleName() != null) {
+				|| ui.getMiddleName() != null
+				|| ui.getName() != null) {
 			JsonObject name = new JsonObject();
 			name.addProperty("familyName", ui.getFamilyName());
 			name.addProperty("givenName", ui.getGivenName());
 			name.addProperty("middleName", ui.getMiddleName());
+			name.addProperty("formatted", ui.getName());
 			entry.add("name", name);
 		}
 		
