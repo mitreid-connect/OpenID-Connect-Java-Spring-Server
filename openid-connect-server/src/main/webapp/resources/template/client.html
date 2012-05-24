@@ -1,4 +1,7 @@
 <script type="text/html" id="tmpl-client">
+    <td>
+        <%=clientId%>
+    </td>
 
     <td>
         <%=clientName%>
@@ -55,6 +58,7 @@
     <table id="client-table" class="table">
         <thead>
         <tr>
+            <th>ID</th>
             <th>Name</th>
             <th>Redirect URI(s)</th>
             <th>Grant Types</th>
@@ -83,7 +87,7 @@
     <div class="">
         <form>
             <fieldset>
-                <legend>Details</legend>
+                <legend>Details <%=(clientId != null ? 'for ' + clientId : '')%></legend>
 
                 <div class="well">
 
@@ -158,7 +162,7 @@
                                 <input type="text" class="" value="<%=accessTokenTimeout%>" id="access-token-timeout-seconds" size="16"><span
                                     class="add-on">seconds</span>
                             </div>
-                            <span class="help-inline">Here's more help text</span>
+                            <span class="help-inline">Enter this time in seconds</span>
                         </div>
                         </span>
                         <span class="control-group" id="refreshTokenTimeout">
@@ -170,7 +174,7 @@
                                 <input type="text" class="" value="<%=refreshTokenTimeout%>" id="refresh-token-timeout-seconds" size="16"><span
                                     class="add-on">seconds</span>
                             </div>
-                            <span class="help-inline">Here's more help text</span>
+                            <span class="help-inline">Enter this time in seconds</span>
                         </div>
                         </span>
                     </div>

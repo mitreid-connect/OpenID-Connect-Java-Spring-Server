@@ -32,6 +32,7 @@
 	<security:http auto-config="true" disable-url-rewriting="true"> <!-- authentication-manager-ref="springSecurityAuthenticationManager" -->
 		<security:intercept-url pattern="/oauth/**" access="ROLE_USER" />
 		<security:intercept-url pattern="/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+		<security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
 		<security:anonymous />
 	</security:http>	
 

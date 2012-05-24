@@ -77,6 +77,7 @@ public class JSONUserInfoView extends AbstractView{
 		obj.addProperty("email", ui.getEmail());
 		obj.addProperty("profile", ui.getProfile());
 		obj.addProperty("picture", ui.getPicture());
+		obj.addProperty("email", ui.getEmail());
 		obj.addProperty("website", ui.getWebsite());
 		obj.addProperty("verified", ui.getVerified());
 		obj.addProperty("gender", ui.getGender());
@@ -85,7 +86,8 @@ public class JSONUserInfoView extends AbstractView{
 		obj.addProperty("phone_number", ui.getPhoneNumber());
 		obj.addProperty("updated_time", ui.getUpdatedTime());
 		
-		if(ui.getAddress() != null) {
+		if (ui.getAddress() != null) {
+
 			JsonObject addr = new JsonObject();
 			addr.addProperty("formatted", ui.getAddress().getFormatted());
 			addr.addProperty("street_address", ui.getAddress().getStreetAddress());
@@ -96,7 +98,8 @@ public class JSONUserInfoView extends AbstractView{
 			
 			obj.add("address", addr);
 		}
+
+		
 		return obj;
 	}
-
 }
