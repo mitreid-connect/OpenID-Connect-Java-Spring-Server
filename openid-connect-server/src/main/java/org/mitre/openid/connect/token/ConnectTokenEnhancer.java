@@ -1,26 +1,39 @@
+/*******************************************************************************
+ * Copyright 2012 The MITRE Corporation
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ******************************************************************************/
 package org.mitre.openid.connect.token;
 
 import java.util.Date;
 
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
-import org.mitre.oauth2.service.OAuth2TokenEntityService;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.mitre.openid.connect.model.IdToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
+import org.springframework.stereotype.Service;
 
 import com.google.common.base.Strings;
 
+@Service
 public class ConnectTokenEnhancer implements TokenEnhancer {
 
 	@Autowired
 	private ConfigurationPropertiesBean configBean;
-	
-	@Autowired
-	private OAuth2TokenEntityService tokenServices;
 	
 	@Autowired
 	private IdTokenGeneratorService idTokenService;
@@ -33,15 +46,17 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 		
 		OAuth2AccessTokenEntity token = (OAuth2AccessTokenEntity) accessToken;
 		
-		String clientId = "";
+		String clientId = authentication.getAuthorizationRequest().getClientId();
+		
 		token.getJwt().getClaims().setAudience(clientId);
 		
 		token.getJwt().getClaims().setIssuer(configBean.getIssuer());
 
 		token.getJwt().getClaims().setIssuedAt(new Date());
-		// handle expiration
+		
 		token.getJwt().getClaims().setExpiration(token.getExpiration());
 		
+		//TODO: check for client's preferred signer alg and use that
 		jwtService.signJwt(token.getJwt());
 		
 		/**
@@ -58,22 +73,43 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 			idToken.getClaims().setIssuedAt(new Date());
 			idToken.getClaims().setIssuer(configBean.getIssuer());
 			
-			String nonce = authentication.getAuthorizationRequest().getParameters().get("nonce");
+			String nonce = authentication.getAuthorizationRequest().getAuthorizationParameters().get("nonce");
 			if (!Strings.isNullOrEmpty(nonce)) {
 				idToken.getClaims().setNonce(nonce);
 			}
 			// TODO: expiration? other fields?
-			
-			//Sign
-			//TODO: check client to see if they have a preferred alg, attempt to use that
-			
+
+			//TODO: check for client's preferred signer alg and use that
 			jwtService.signJwt(idToken);
 			
 			token.setIdToken(idToken);
 		}
 		
-		tokenServices.saveAccessToken(token);
 		return token;
+	}
+
+	public ConfigurationPropertiesBean getConfigBean() {
+		return configBean;
+	}
+
+	public void setConfigBean(ConfigurationPropertiesBean configBean) {
+		this.configBean = configBean;
+	}
+
+	public IdTokenGeneratorService getIdTokenService() {
+		return idTokenService;
+	}
+
+	public void setIdTokenService(IdTokenGeneratorService idTokenService) {
+		this.idTokenService = idTokenService;
+	}
+
+	public JwtSigningAndValidationService getJwtService() {
+		return jwtService;
+	}
+
+	public void setJwtService(JwtSigningAndValidationService jwtService) {
+		this.jwtService = jwtService;
 	}
 
 }
