@@ -2,17 +2,23 @@ package org.mitre.oauth2.service.impl;
 
 import static org.junit.Assert.*;
 
+
+import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mitre.oauth2.model.ClientDetailsEntity;
+import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntityFactory;
+import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
 import org.mitre.oauth2.model.OAuth2RefreshTokenEntityFactory;
 import org.mitre.oauth2.repository.OAuth2ClientRepository;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
+import org.mitre.oauth2.service.OAuth2TokenEntityService;
 import org.mitre.oauth2.service.impl.DefaultOAuth2ProviderTokenService.DefaultOAuth2ProviderTokenServicesBuilder;
 
 
@@ -34,6 +40,8 @@ import static org.easymock.EasyMock.verify;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -46,10 +54,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 @ContextConfiguration(locations={"file:src/main/webapp/WEB-INF/spring-servlet.xml", "classpath:test-context.xml"})
 
 public class DefaultOAuth2ProviderTokenServiceTest {
-
-
-	private DefaultOAuth2ProviderTokenService tokenService;
 	private Logger logger; 
+	
+    private ClientDetailsEntity clienttest = new ClientDetailsEntity();
+	private OAuth2TokenEntityService tokenService;
+	private OAuth2AccessTokenEntity accessToken;
+    private OAuth2RefreshTokenEntity refreshToken;
+    private AuthorizationRequest authorizationRequest;
+    private Authentication userAuthentication;
 	
 	@Autowired
 	private OAuth2TokenRepository tokenRepository;
@@ -63,7 +75,6 @@ public class DefaultOAuth2ProviderTokenServiceTest {
 	@Autowired
 	private OAuth2RefreshTokenEntityFactory refreshTokenFactory;
 	
-	
 	@Before
 	public void setUp() throws Exception {
 		logger = LoggerFactory.getLogger(this.getClass());
@@ -74,36 +85,120 @@ public class DefaultOAuth2ProviderTokenServiceTest {
         accessTokenFactory = createNiceMock(OAuth2AccessTokenEntityFactory.class);
         refreshTokenFactory = createNiceMock(OAuth2RefreshTokenEntityFactory.class);
         
-        //TODO what is the right constructor?
-        //tokenService = new DefaultOAuth2ProviderTokenServicesBuilder();
-        tokenService = new DefaultOAuth2ProviderTokenService();
+        clienttest.setClientId("XVX42QQA9CA348S46TNJ00NP8MRO37FHO1UW748T59BAT74LN9");
+        clienttest.setClientSecret("password");
+        clienttest.setClientName("a test client service");
+        clienttest.setOwner("some owner person"); // why not set/get ClientOwner? 
+        clienttest.setClientDescription("Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Curabitur sed tortor. Integer aliquam adipiscing lacus. Ut nec urna");
+
+       //TODO model question: should seconds be in LONG? Wouldn't INT be better
+        clienttest.setAccessTokenTimeout((long) 10);
+        clienttest.setRefreshTokenTimeout((long) 360);
+        clienttest.setAllowRefresh(true); // db handles actual value
+
+     
+        //TODO model question: what are correct values for this field?
+		Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
+        GrantedAuthority roleClient = new SimpleGrantedAuthority("ROLE_CLIENT");
+        authorities.add(roleClient);
+        clienttest.setAuthorities(authorities);
+       
+		Set<String> resourceIds = new HashSet<String>();
+			resourceIds.add("https://www.whatg.com/some/"+ " # % & * { } : ' < > ? +" + "\\" + "\\/");
+	        resourceIds.add("https://www.whatg.com/thing/");
+	        resourceIds.add("https://www.whatg.com/else/");
+	        resourceIds.add("https://www.whatg.com/some/");
+	        resourceIds.add("htts://www.whatg.com/thing/");
+	        resourceIds.add("htps://www.whatg.com/else/");
+	        resourceIds.add("hts://www.someRedirectURI.com/redirectURI");
+        clienttest.setResourceIds(resourceIds);
+
+        Set<String> authorizedGrantTypes = new HashSet<String>();
+        //TODO model question: what are correct values for this field?
+    	authorizedGrantTypes.add("authorization_code");
+		authorizedGrantTypes.add("refresh_token");
+		clienttest.setAuthorizedGrantTypes(authorizedGrantTypes);
+
+		Set<String> scope = new HashSet<String>();
+		scope.add(""); //TODO model question: what are correct values for this field?
+		clienttest.setScope(scope);
+		
+		authorizationRequest =  new AuthorizationRequest(
+				clienttest.getClientId(),clienttest.getScope(), authorities, clienttest.getResourceIds());
+
+	    userAuthentication = null; // user authentication may be null
+	    
+        refreshToken = new OAuth2RefreshTokenEntity();
+        refreshToken.setValue("REFRESH-TOKEN-VALUE");
+        refreshToken.setClient(clienttest);
+        refreshToken.setScope(clienttest.getScope());
+        
+        accessToken = new OAuth2AccessTokenEntity();
+        accessToken.setValue("ACCESS-TOKEN-VALUE");
+        accessToken.setClient(clienttest);
+        accessToken.setScope(clienttest.getScope());
+        accessToken.setRefreshToken(refreshToken);
+        accessToken.setTokenType("bearer");
+        
+        tokenService =  DefaultOAuth2ProviderTokenService.makeBuilder()
+                .setTokenRepository(tokenRepository)
+                .setClientDetailsService(clientDetailsService)
+                .setAccessTokenFactory(accessTokenFactory)
+                .setRefreshTokenFactory(refreshTokenFactory)
+                .finish();
 	}
 
 	@After
 	public void tearDown() throws Exception {
 		tokenService = null;
-		
+		clienttest = null;
 		logger = LoggerFactory.getLogger(this.getClass());
         logger.info("teardown of DefaultOAuth2ProviderTokenServiceTest");
         
 	}
 
 	@Test(expected = AuthenticationCredentialsNotFoundException.class)
-	public final void testCreateAccessToken_AuthCredNotFoundExp() {
+	public final void testCreateAccessToken_throwAuthenticationCredentialsNotFoundException_withnull() {
 		tokenService.createAccessToken(null);
 	}
 	
-	@Test(expected = InvalidClientException.class)
-	public final void testCreateAccessToken_InvalidclientExp() {	
-		AuthorizationRequest authorizationRequest = null;
-		Authentication userAuthentication = null;
+	@Test(expected = AuthenticationCredentialsNotFoundException.class)
+	public final void testCreateAccessToken_throwAuthenticationCredentialsNotFoundException() {
+
 		OAuth2Authentication authentication = new OAuth2Authentication(authorizationRequest, userAuthentication);
+        accessToken.setAuthentication(authentication);
+
+        expect(clientDetailsService.loadClientByClientId(clienttest.getClientId())).andReturn(clienttest).once();            
+        replay(clientDetailsService);
+         
+        expect(accessTokenFactory.createNewAccessToken()).andReturn(accessToken).once();
+        replay(accessTokenFactory);
+         
+        expect(refreshTokenFactory.createNewRefreshToken()).andReturn(refreshToken).once();
+        replay(refreshTokenFactory);
+         
+        expect(tokenRepository.saveRefreshToken(refreshToken)).andReturn(refreshToken).once();
+        expect(tokenRepository.saveAccessToken(accessToken)).andReturn(accessToken).once();
+        replay(tokenRepository);
+
+		OAuth2AccessTokenEntity token = (OAuth2AccessTokenEntity) tokenService.createAccessToken(authentication);
+        
+        verify(tokenRepository);
+        verify(clientDetailsService);
+        verify(accessTokenFactory);
+        verify(refreshTokenFactory);
+        
+        assertThat(token, is(accessToken));
+	}
+		
+	@Test(expected = InvalidClientException.class)
+	public final void testCreateAccessToken_throwInvalidClientException_withNullAuthReq() {	
+		AuthorizationRequest authorizationRequest = null;
+		OAuth2Authentication authentication = new OAuth2Authentication(authorizationRequest, null);
 		tokenService.createAccessToken(authentication);
 	}	
 	@Test(expected = AuthenticationException.class)
-	public final void testCreateAccessToken_AuthExcep() {
-		AuthorizationRequest authorizationRequest = null;
-		Authentication userAuthentication = null;
+	public final void testCreateAccessToken_throwAuthenticationException() {
 		OAuth2Authentication authentication = new OAuth2Authentication(authorizationRequest, userAuthentication);		
 		tokenService.createAccessToken(authentication);
 	}	

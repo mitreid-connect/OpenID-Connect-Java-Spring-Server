@@ -29,38 +29,61 @@ import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 
+import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+//not testing getter and setter
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"file:src/main/webapp/WEB-INF/spring-servlet.xml", "classpath:test-context.xml"})
 
 public class ClientUserDetailsServiceTest {
-
+	private Logger logger; 
+	
+	@Autowired
+	private ClientUserDetailsService clientUserDetailsService;
+	
 	@Before
 	public void setUp() throws Exception {
+		logger = LoggerFactory.getLogger(this.getClass());
+        logger.info("setUp of ClientUserDetailsServiceTest");
+		clientUserDetailsService = createNiceMock(ClientUserDetailsService.class);
+		
+		
+        
 	}
 
 	@After
 	public void tearDown() throws Exception {
+		clientUserDetailsService = null;
+		logger = LoggerFactory.getLogger(this.getClass());
+        logger.info("tearDown of ClientUserDetailsServiceTest");
 	}
 
-	@Test
-	public final void testLoadUserByUsername() {
+	@Test(expected = UsernameNotFoundException.class)
+	public final void testLoadUserByUsername_throwsUsernameNotFoundException() {
 		fail("Not yet implemented"); // TODO
+		
 	}
-
-	@Test
-	public final void testGetClientDetailsService() {
+	@Test(expected = DataAccessException.class)
+	public final void testLoadUserByUsername_throwsDataAccessException() {
 		fail("Not yet implemented"); // TODO
+		
 	}
-
 	@Test
-	public final void testSetClientDetailsService() {
+	public final void testLoadUserByUsername_withValidUserName() {
 		fail("Not yet implemented"); // TODO
-	}
-
+		
+	}	
+	@Test
+	public final void testLoadUserByUsername_withINVALIDUserName() {
+		fail("Not yet implemented"); // TODO
+		
+	}	
 }
