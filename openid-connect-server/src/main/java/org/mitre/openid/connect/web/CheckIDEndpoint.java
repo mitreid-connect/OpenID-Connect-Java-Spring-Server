@@ -50,7 +50,7 @@ public class CheckIDEndpoint {
 		
 		if (!jwtSignerService.validateSignature(tokenString)) {
 			// can't validate 
-			throw new InvalidJwtSignatureException(); // TODO: attach a view to this exception
+			throw new InvalidJwtSignatureException("The Signature could not be validated.");
 		}
 		
 		// it's a valid signature, parse the token
@@ -59,12 +59,12 @@ public class CheckIDEndpoint {
 		// check the expiration
 		if (jwtSignerService.isJwtExpired(token)) {
 			// token has expired
-			throw new ExpiredTokenException(); // TODO create a view for this exception
+			throw new ExpiredTokenException("The token has expired.");
 		}
 		
 		// check the issuer (sanity check)
 		if (!jwtSignerService.validateIssuedJwt(token, configBean.getIssuer())) {
-			throw new InvalidJwtIssuerException(); // TODO: create a view for this exception
+			throw new InvalidJwtIssuerException("The JWT issuer is invalid.");
 		}
 		
 		// pass the claims directly (the view doesn't care about other fields)
