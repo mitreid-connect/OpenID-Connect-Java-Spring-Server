@@ -15,14 +15,20 @@
  ******************************************************************************/
 package org.mitre.openid.connect.exception;
 
+/**
+ * @author aanganes, nemonik
+ *
+ */
 public class UnknownUserInfoSchemaException extends RuntimeException {
 	
-	public UnknownUserInfoSchemaException(String string) {
-		super(string);
+	private static final long serialVersionUID = 1L;
+	
+	public UnknownUserInfoSchemaException() {
+		super();
 	}
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	public UnknownUserInfoSchemaException(String message) {
+		super(message);
+	}
+	
 }
