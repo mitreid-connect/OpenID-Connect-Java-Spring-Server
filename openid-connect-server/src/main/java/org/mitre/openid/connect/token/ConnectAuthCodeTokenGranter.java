@@ -36,7 +36,7 @@ import org.springframework.security.oauth2.common.exceptions.InvalidGrantExcepti
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.oauth2.common.exceptions.RedirectMismatchException;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
-import org.springframework.security.oauth2.provider.ClientCredentialsChecker;
+import org.springframework.security.oauth2.provider.AuthorizationRequestFactory;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.TokenGranter;
@@ -65,7 +65,7 @@ public class ConnectAuthCodeTokenGranter implements TokenGranter {
 	private AuthorizationCodeServices authorizationCodeServices;
 
 	@Autowired
-	private ClientCredentialsChecker clientCredentialsChecker;
+	private AuthorizationRequestFactory authorizationRequestFactory;
 
 	@Autowired
 	private ConfigurationPropertiesBean configBean;
@@ -96,14 +96,13 @@ public class ConnectAuthCodeTokenGranter implements TokenGranter {
 	public ConnectAuthCodeTokenGranter(
 			DefaultOAuth2ProviderTokenService tokenServices,
 			AuthorizationCodeServices authorizationCodeServices,
-			ClientDetailsService clientDetailsService) {
+			ClientDetailsService clientDetailsService, AuthorizationRequestFactory authorizationRequestFactory) {
 		
 		setTokenServices(tokenServices);
 		setAuthorizationCodeServices(authorizationCodeServices);
-		setClientCredentialsChecker(new ClientCredentialsChecker(clientDetailsService));
+		setAuthorizationRequestFactory(authorizationRequestFactory);
 
 	}
-	
 
 	/**
 	 * Grant an OpenID Connect Access Token 
@@ -149,8 +148,8 @@ public class ConnectAuthCodeTokenGranter implements TokenGranter {
 		// in the new request, but that happens elsewhere.
 
 		//Validate credentials
-		AuthorizationRequest authorizationRequest = clientCredentialsChecker.validateCredentials(grantType, clientId,
-				unconfirmedAuthorizationRequest.getScope());
+		AuthorizationRequest authorizationRequest = authorizationRequestFactory.createAuthorizationRequest(parameters, clientId,
+				grantType, unconfirmedAuthorizationRequest.getScope());
 		if (authorizationRequest == null) {
 			return null;
 		}
@@ -185,7 +184,7 @@ public class ConnectAuthCodeTokenGranter implements TokenGranter {
 			idToken.getClaims().setIssuer(configBean.getIssuer());
 			
 			
-			String nonce = unconfirmedAuthorizationRequest.getParameters().get("nonce");
+			String nonce = unconfirmedAuthorizationRequest.getAuthorizationParameters().get("nonce");
 			if (!Strings.isNullOrEmpty(nonce)) {
 				idToken.getClaims().setNonce(nonce);
 			}
@@ -218,18 +217,12 @@ public class ConnectAuthCodeTokenGranter implements TokenGranter {
 		this.authorizationCodeServices = authorizationCodeServices;
 	}
 
-	/**
-	 * @return the clientCredentialsChecker
-	 */
-	public ClientCredentialsChecker getClientCredentialsChecker() {
-		return clientCredentialsChecker;
+	public AuthorizationRequestFactory getAuthorizationRequestFactory() {
+		return this.authorizationRequestFactory;
 	}
-
-	/**
-	 * @param clientCredentialsChecker the clientCredentialsChecker to set
-	 */
-	public void setClientCredentialsChecker(ClientCredentialsChecker clientCredentialsChecker) {
-		this.clientCredentialsChecker = clientCredentialsChecker;
+	
+	public void setAuthorizationRequestFactory(AuthorizationRequestFactory authorizationRequestFactory) {
+		this.authorizationRequestFactory = authorizationRequestFactory;
 	}
 
 	public OAuth2TokenEntityService getTokenServices() {
