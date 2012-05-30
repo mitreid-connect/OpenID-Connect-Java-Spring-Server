@@ -41,6 +41,7 @@ import org.springframework.security.oauth2.common.exceptions.InvalidClientExcept
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -68,6 +69,9 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	
 	@Autowired
 	private OAuth2RefreshTokenEntityFactory refreshTokenFactory;
+	
+	@Autowired
+	private TokenEnhancer tokenEnhancer;
 	
 	@Override
     public OAuth2AccessTokenEntity createAccessToken(OAuth2Authentication authentication) throws AuthenticationException, InvalidClientException {
@@ -134,6 +138,8 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 			    
 	    		token.setRefreshToken(refreshToken);
 	    	}
+	    	
+	    	tokenEnhancer.enhance(token, authentication);
 	    	
 		    tokenRepository.saveAccessToken(token);		    
 		    
@@ -336,6 +342,11 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 			return this;
 		}
 		
+		public DefaultOAuth2ProviderTokenServicesBuilder setTokenEnhancer(TokenEnhancer tokenEnhancer) {
+			instance.tokenEnhancer = tokenEnhancer;
+			return this;
+		}
+		
 		public OAuth2TokenEntityService finish() {
 			return instance;
 		}
@@ -362,6 +373,20 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
     public OAuth2RefreshTokenEntity saveRefreshToken(OAuth2RefreshTokenEntity refreshToken) {
     	return tokenRepository.saveRefreshToken(refreshToken);
     }
+
+	/**
+	 * @return the tokenEnhancer
+	 */
+	public TokenEnhancer getTokenEnhancer() {
+		return tokenEnhancer;
+	}
+
+	/**
+	 * @param tokenEnhancer the tokenEnhancer to set
+	 */
+	public void setTokenEnhancer(TokenEnhancer tokenEnhancer) {
+		this.tokenEnhancer = tokenEnhancer;
+	}
 	
 	
 

@@ -44,9 +44,16 @@
 		<property name="realmName" value="openidconnect" />
 	</bean>
 
-	<!-- SECOAUTH Authorization Server, with our custom token granter plugged in -->
+	<!-- Now using default SECOAUTH token granter -->
+	<bean id="authCodeTokenGranter" class="org.springframework.security.oauth2.provider.code.AuthorizationCodeTokenGranter">
+		<constructor-arg name="tokenServices" ref="defaultOAuth2ProviderTokenService"/>
+		<constructor-arg name="authorizationRequestFactory" ref="authorizationRequestFactory"/>
+		<constructor-arg name="authorizationCodeServices" ref="authCodeServices"/>
+	</bean>
+
+	<!-- SECOAUTH Authorization Server -->
 	<oauth:authorization-server client-details-service-ref="defaultOAuth2ClientDetailsEntityService" 
-		token-services-ref="defaultOAuth2ProviderTokenService" token-granter-ref="connectAuthCodeTokenGranter"
+		token-services-ref="defaultOAuth2ProviderTokenService" token-granter-ref="authCodeTokenGranter"
 		user-approval-handler-ref="userApprovalHandler" authorization-endpoint-url="/openidconnect/auth" token-endpoint-url="/openidconnect/token">
 		<oauth:authorization-code authorization-code-services-ref="authCodeServices" />
 	</oauth:authorization-server>
@@ -61,7 +68,7 @@
 		<authentication-provider user-service-ref="clientUserDetailsService" />
 	</authentication-manager>
 
-	<bean id="clientCredentialsChecker" class="org.springframework.security.oauth2.provider.ClientCredentialsChecker">
+	<bean id="authorizationRequestFactory" class="org.springframework.security.oauth2.provider.DefaultAuthorizationRequestFactory">
 		<constructor-arg>
 			<bean class="org.mitre.oauth2.service.impl.DefaultOAuth2ClientDetailsEntityService"/>
 		</constructor-arg>
