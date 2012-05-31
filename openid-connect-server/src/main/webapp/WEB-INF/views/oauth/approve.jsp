@@ -26,22 +26,31 @@
 
         <p>I hereby authorize "<c:out value="${client.clientId}"/>" to access my protected resources.</p>
 
-        <p>
 
-        <form name="confirmationForm" style="display:inline"
-              action="<%=request.getContextPath()%>/oauth/authorize" method="post">
-            <input name="user_oauth_approval" value="true" type="hidden"/>
-            <input name="authorize" value="Authorize" type="submit" class="btn btn-success btn-large"/>
+
+        <form name="confirmationForm" style="display:inline" action="<%=request.getContextPath()%>/oauth/authorize" method="post">
+
+            <div class="row">
+                <input id="user_oauth_approval" name="user_oauth_approval" value="true" type="hidden"/>
+                <input name="authorize" value="Authorize" type="submit"
+                       onclick="$('#user_oauth_approval').attr('value',true)" class="btn btn-success btn-large"/>
+
+                &nbsp;
+                <input name="deny" value="Deny" type="submit" onclick="$('#user_oauth_approval').attr('value',false)"
+                       class="btn btn-secondary btn-large"/>
+            </div>
+            <div class="row control-group">
+                <label for="option1"></label>
+                <input name="option1" id="option1" type="checkbox"> Check me out
+
+                <label for="option2"></label>
+                <input name="option1" id="option2" type="checkbox"> Check me out
+
+            </div>
         </form>
-        &nbsp;
-        <form name="denialForm" style="display:inline" action="<%=request.getContextPath()%>/oauth/authorize"
-              method="post">
-            <input name="user_oauth_approval" value="false" type="hidden"/>
-            <input name="deny" value="Deny" type="submit" class="btn btn-secondary btn-large"/>
-        </form>
-        </p>
+        <div>
         <a href="#" class="small">learn more</a>
-
+        </div>
 
         </authz:authorize>
 
