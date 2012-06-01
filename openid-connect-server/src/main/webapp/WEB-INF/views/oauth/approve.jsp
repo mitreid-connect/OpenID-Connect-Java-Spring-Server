@@ -44,7 +44,7 @@
                 <input name="option1" id="option1" type="checkbox"> Check me out
 
                 <label for="option2"></label>
-                <input name="option1" id="option2" type="checkbox"> Check me out
+                <input name="option2" id="option2" type="checkbox"> Check me out
 
             </div>
         </form>
