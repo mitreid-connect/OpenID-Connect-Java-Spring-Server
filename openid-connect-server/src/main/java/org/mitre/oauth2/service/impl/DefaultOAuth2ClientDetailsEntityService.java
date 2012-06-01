@@ -80,48 +80,31 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 	 */
 	@Override
     public ClientDetailsEntity createClient(String clientId, String clientSecret, 
-    		Set<String> scope, Set<String> grantTypes, 
-    		String redirectUri, Set<GrantedAuthority> authorities,
+    		Set<String> scope, Set<String> grantTypes, String redirectUri, Set<GrantedAuthority> authorities,
     		Set<String> resourceIds,
-    		String name, String description, 
-    		boolean allowRefresh, Long accessTokenTimeout, 
+    		String name, String description, boolean allowRefresh, Long accessTokenTimeout, 
     		Long refreshTokenTimeout, String owner) {
 		
-		//TODO should there be thrown InvalidClient error exceptions? 
-		//TODO data validation validate strings 
-		//TODO validate that clientId and clientSecret are checked for invalid characters
+		//TODO should there be error exceptions? 
+		//TODO should there be data validation and sizing; long to int, validate strings
 		
-		//TODO: check "owner" locally?
+		// TODO: check "owner" locally?
 		ClientDetailsEntity client = clientFactory.createClient(clientId, clientSecret);
-		//TODO model question: what are valid values for scope?
 		client.setScope(scope);
-		//TODO model question: what are valid values for grantTypes?
 		client.setAuthorizedGrantTypes(grantTypes);
-		
-		//TODO why is this commented out?
-		// client.setRegisteredRedirectUri(redirectUri);
-		
-		//TODO Issue in testing redirectURIs
-		//     this method accepts String redirectURI, not a <Set>Strings as described  
-		//     in the ClientDetailsEntity declaration. createClient should to support Set
+		// TODO why is this commented out?
+		//client.setRegisteredRedirectUri(redirectUri);
 		Set<String> redirectUris = new HashSet<String>();
 		redirectUris.add(redirectUri);
 		client.setRegisteredRedirectUri(redirectUris);
-		
-		//TODO model question: what are correct values for this field?
 		client.setAuthorities(authorities);
-
 		client.setClientName(name);
 		client.setClientDescription(description);
-		client.setAllowRefresh(allowRefresh);  // db handles actual boolean equivalant value
-		 //TODO model question: sizing? could be an int, and range between 1 - 9999?
+		client.setAllowRefresh(allowRefresh);
 		client.setAccessTokenTimeout(accessTokenTimeout);
 		client.setRefreshTokenTimeout(refreshTokenTimeout);
-		
 		client.setResourceIds(resourceIds);
-		//TODO all the other sets were in this convention setClientOwner, change name of method?
 		client.setOwner(owner);
-		
 		clientRepository.saveClient(client);
 		return client;
 	}
@@ -138,6 +121,7 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 		
 		// clean out any tokens that this client had issued
 		tokenRepository.clearTokensForClient(client);
+		
 		// take care of the client itself
 		clientRepository.deleteClient(client);
 		

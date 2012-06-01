@@ -55,8 +55,6 @@ public class ClientUserDetailsServiceTest {
         logger.info("setUp of ClientUserDetailsServiceTest");
 		clientUserDetailsService = createNiceMock(ClientUserDetailsService.class);
 		
-		
-        
 	}
 
 	@After
