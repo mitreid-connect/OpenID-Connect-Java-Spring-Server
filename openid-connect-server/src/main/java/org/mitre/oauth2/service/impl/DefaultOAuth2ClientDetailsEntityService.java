@@ -80,31 +80,37 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 	 */
 	@Override
     public ClientDetailsEntity createClient(String clientId, String clientSecret, 
-    		Set<String> scope, Set<String> grantTypes, String redirectUri, Set<GrantedAuthority> authorities,
+    		Set<String> scope, Set<String> grantTypes, 
+    		String redirectUri, Set<GrantedAuthority> authorities,
     		Set<String> resourceIds,
-    		String name, String description, boolean allowRefresh, Long accessTokenTimeout, 
+    		String name, String description, boolean allowRefresh, 
+    		Long accessTokenTimeout, 
     		Long refreshTokenTimeout, String owner) {
 		
-		//TODO should there be error exceptions? 
-		//TODO should there be data validation and sizing; long to int, validate strings
+		//TODO should throw invalid client error exceptions, data validation and sizing
 		
 		// TODO: check "owner" locally?
 		ClientDetailsEntity client = clientFactory.createClient(clientId, clientSecret);
-		client.setScope(scope);
-		client.setAuthorizedGrantTypes(grantTypes);
-		// TODO why is this commented out?
+		
+		client.setScope(scope);  //check for valid values
+		client.setAuthorizedGrantTypes(grantTypes); //check for valid values
+		
+		// why is this commented out?
 		//client.setRegisteredRedirectUri(redirectUri);
 		Set<String> redirectUris = new HashSet<String>();
 		redirectUris.add(redirectUri);
-		client.setRegisteredRedirectUri(redirectUris);
-		client.setAuthorities(authorities);
-		client.setClientName(name);
-		client.setClientDescription(description);
-		client.setAllowRefresh(allowRefresh);
-		client.setAccessTokenTimeout(accessTokenTimeout);
-		client.setRefreshTokenTimeout(refreshTokenTimeout);
+		client.setRegisteredRedirectUri(redirectUris);  //check for valid values, whitelist, and blacklist
+		
+		client.setAuthorities(authorities); //check for valid values
+		
+		client.setClientName(name); // check for xss
+		client.setClientDescription(description); // check for xss
+		client.setAllowRefresh(allowRefresh); // db handles actual value
+		client.setAccessTokenTimeout(accessTokenTimeout);  //INT range should be 0 - 3600, if in seconds
+		client.setRefreshTokenTimeout(refreshTokenTimeout); //INT range should be 0 - 3600, if in seconds
 		client.setResourceIds(resourceIds);
-		client.setOwner(owner);
+		client.setOwner(owner); // why not set/get ClientOwner like the other text string fields?
+		
 		clientRepository.saveClient(client);
 		return client;
 	}

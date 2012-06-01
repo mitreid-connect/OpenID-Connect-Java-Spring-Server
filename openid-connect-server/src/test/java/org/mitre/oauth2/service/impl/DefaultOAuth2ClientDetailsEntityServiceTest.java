@@ -18,6 +18,8 @@ package org.mitre.oauth2.service.impl;
 
 import static org.junit.Assert.*;
 
+import java.awt.List;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -62,8 +64,6 @@ import org.mitre.oauth2.repository.OAuth2TokenRepository;
 public class DefaultOAuth2ClientDetailsEntityServiceTest {
 
 	private Logger logger; 
-
-    private ClientDetailsEntity clienttest = new ClientDetailsEntity();
     
 	@Autowired
 	private DefaultOAuth2ClientDetailsEntityService entityService;
@@ -82,54 +82,19 @@ public class DefaultOAuth2ClientDetailsEntityServiceTest {
 		logger = LoggerFactory.getLogger(this.getClass());
         logger.info("setUp of DefaultOAuth2ClientDetailsEntityServiceTest");
 
-        
         clientRepository = createNiceMock(OAuth2ClientRepository.class);
         tokenRepository = createNiceMock(OAuth2TokenRepository.class);
         clientFactory = createNiceMock(ClientDetailsEntityFactory.class);
         
-               
         entityService = new DefaultOAuth2ClientDetailsEntityService(
         		clientRepository, 
     			tokenRepository, 
-    			clientFactory);
-        
-        //setup a basic client with details
-        clienttest.setClientId("XVX42QQA9CA348S46TNJ00NP8MRO37FHO1UW748T59BAT74LN9");
-        clienttest.setClientSecret("password");
-        clienttest.setClientName("a test client service");
-        clienttest.setOwner("some owner person"); // why not set/get ClientOwner? 
-        clienttest.setClientDescription("Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Curabitur sed tortor. Integer aliquam adipiscing lacus. Ut nec urna");
-        //TODO model question: should seconds be in LONG? Wouldn't INT be better
-        clienttest.setAccessTokenTimeout((long) 10);
-        clienttest.setRefreshTokenTimeout((long) 360);
-        clienttest.setAllowRefresh(true); // db handles actual value
-        //TODO model question: what are correct values for this field?
-		Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
-        GrantedAuthority roleClient = new SimpleGrantedAuthority("ROLE_CLIENT");
-        authorities.add(roleClient);
-        clienttest.setAuthorities(authorities);
-		Set<String> resourceIds = new HashSet<String>();
-			resourceIds.add("https://www.whatg.com/some/"+ " # % & * { } : ' < > ? +" + "\\" + "\\/");
-	        resourceIds.add("https://www.whatg.com/thing/");
-	        resourceIds.add("htts://www.whatg.com/thing/");
-	        resourceIds.add("htps://www.whatg.com/else/");
-	        resourceIds.add("hts://www.someRedirectURI.com/redirectURI");
-        clienttest.setResourceIds(resourceIds);
-        Set<String> authorizedGrantTypes = new HashSet<String>();
-        //TODO model question: what are correct values for this field?
-    	authorizedGrantTypes.add("authorization_code");
-		authorizedGrantTypes.add("refresh_token");
-		clienttest.setAuthorizedGrantTypes(authorizedGrantTypes);
-		Set<String> scope = new HashSet<String>();
-		scope.add("openid"); //TODO model question: what are correct values for this field?
-		clienttest.setScope(scope);
-	        
+    			clientFactory);     
 	}
 
 	@After
 	public void tearDown() throws Exception {
 		entityService = null;
-		clienttest = null;
 		logger = LoggerFactory.getLogger(this.getClass());
         logger.info("tearDown of DefaultOAuth2ClientDetailsEntityServiceTest");
         
@@ -148,12 +113,9 @@ public class DefaultOAuth2ClientDetailsEntityServiceTest {
     
     @Test(expected = InvalidClientException.class)
     public void testLoadClientByClientId_throwInvalidClientException_withNonExistantClient() {
-    	clienttest.setClientId("Idon'texist/client");
-       						
-        expect(clientRepository.getClientById(clienttest.getClientId())).andReturn(null).once();
+        expect(clientRepository.getClientById("Idon'texist/client")).andReturn(null).once();
         replay(clientRepository);
-        
-        entityService.loadClientByClientId(clienttest.getClientId());
+        entityService.loadClientByClientId("Idon'texist/client");
         verify(clientRepository);
     }
     	
@@ -166,160 +128,193 @@ public class DefaultOAuth2ClientDetailsEntityServiceTest {
     
     @Test
 	public void testLoadClientByClientId_withValidID() {
-        expect(clientRepository.getClientById(clienttest.getClientId())).andReturn(clienttest).once();
+        ClientDetailsEntity testClient = new ClientDetailsEntity();
+	        testClient.setClientId("111222333");
+	        testClient.setClientSecret("password");
+    	expect(clientRepository.getClientById(testClient.getClientId())).andReturn(testClient).once();
         replay(clientRepository);
+        
         ClientDetailsEntity clientFromService = null;
         try {
-			clientFromService = entityService.loadClientByClientId(clienttest.getClientId());
-		} catch (InvalidClientException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (OAuth2Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
+			clientFromService = entityService.loadClientByClientId(testClient.getClientId());
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
         verify(clientRepository);
         
-        //test that the returned object (clientbysrv) is not null
         assertThat(clientFromService, is(not(nullValue())));
-        // test that the clientid is not null
         assertThat(clientFromService.getClientId(), is(not(nullValue())));
-        // TODO need make a test for all fields
-        assertThat(clientFromService.getClientId(), equalTo(clienttest.getClientId()));
-        // test objects are equal
-        assertThat(clientFromService, CoreMatchers.equalTo(clienttest));		
+        assertThat(clientFromService, CoreMatchers.equalTo(testClient));		
+        assertThat(clientFromService.getClientId(), equalTo(testClient.getClientId()));
+        testClient = null;
 	}
        
     @Test
     public void testCreateClient_withValidClientData() {
+    	ClientDetailsEntity testClient = new ClientDetailsEntity();
+    	testClient.setClientId("111222333");
+        testClient.setClientName("a test client service");
+        testClient.setOwner("some owner person"); 
+        testClient.setClientDescription("Lorem ipsum dolor sit ametr aliquam adipiscing lacus. Ut nec urna");
+        testClient.setAccessTokenTimeout((long) 10);
+        testClient.setRefreshTokenTimeout((long) 360);
+        testClient.setAllowRefresh(true); 
+		Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
+        GrantedAuthority roleClient = new SimpleGrantedAuthority("ROLE_CLIENT");
+        authorities.add(roleClient);
+        testClient.setAuthorities(authorities);
+		Set<String> resourceIds = new HashSet<String>();
+	        resourceIds.add("http://127.0.0.1/whatg/thing/");
+	        resourceIds.add("https://www.someRedirectURI.com/redirectURI");
+	        testClient.setResourceIds(resourceIds);
+        Set<String> authorizedGrantTypes = new HashSet<String>();
+    	authorizedGrantTypes.add("authorization_code");
+		authorizedGrantTypes.add("refresh_token");
+		testClient.setAuthorizedGrantTypes(authorizedGrantTypes);
+		Set<String> scope = new HashSet<String>();
+		scope.add("openid");
+		testClient.setScope(scope);
+		
         ClientDetailsEntity clientFromService = null;
-    	expect(clientRepository.getClientById(clienttest.getClientId())).andReturn(clienttest).once();
-        expect(clientFactory.createClient(clienttest.getClientId(), clienttest.getClientSecret())).andReturn(clienttest).once();
+    	expect(clientRepository.getClientById(testClient.getClientId())).andReturn(testClient).once();
+        expect(clientFactory.createClient(testClient.getClientId(), testClient.getClientSecret())).andReturn(testClient).once();
+        expect(clientRepository.saveClient(testClient));
+    	replay(clientRepository);
         replay(clientFactory);
-        replay(clientRepository);
         verify(clientRepository);
         verify(clientFactory);
-        expect(clientRepository.saveClient(clientFromService));
-    	replay(clientRepository);
 	    expectLastCall();	 	  	
 	        
         try { 	        	
 			clientFromService = entityService.createClient(
-					clienttest.getClientId(), 
-					clienttest.getClientSecret(), 
-					clienttest.getScope(), 
-					clienttest.getAuthorizedGrantTypes(), 
+					testClient.getClientId(), 
+					testClient.getClientSecret(), 
+					testClient.getScope(), 
+					testClient.getAuthorizedGrantTypes(), 
 					"", //TODO the get method doesn't work for redirecturi back in
-					clienttest.getAuthorities(), 
-					clienttest.getResourceIds(), 
-					clienttest.getClientName(), 
-					clienttest.getClientDescription(), 
-					clienttest.isAllowRefresh(), 
-					clienttest.getAccessTokenTimeout(), 
-					clienttest.getRefreshTokenTimeout(), 
-					clienttest.getOwner()
+					testClient.getAuthorities(), 
+					testClient.getResourceIds(), 
+					testClient.getClientName(), 
+					testClient.getClientDescription(), 
+					testClient.isAllowRefresh(), 
+					testClient.getAccessTokenTimeout(), 
+					testClient.getRefreshTokenTimeout(), 
+					testClient.getOwner()
 			);
-
-		 	           
+		 	          
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
         verify(clientRepository);
         verify(clientFactory);
 
-            
-        //test that the returned object (clientbysrv) is not null
         assertThat(clientFromService, is(not(nullValue())));
-        // test that the clientid is not null
         assertThat(clientFromService.getClientId(), is(not(nullValue())));
         // TODO need make a test for all fields
-        assertThat(clientFromService.getClientId(), equalTo(clienttest.getClientId()));
-        // test objects are equal
-        assertThat(clientFromService, CoreMatchers.equalTo(clienttest));
+        assertThat(clientFromService.getClientId(), equalTo(testClient.getClientId()));
+        assertThat(clientFromService, CoreMatchers.equalTo(testClient));
     }
         
 	@Test
 	public void testCreateClient_withINVALIDClientData() {
 		// Test new client create with INVALID data
         logger.warn("What should we get if we submit invalid data?");
-        
-        clienttest.setClientId(" # % & * { } : ' < > ? +" + "\\" + "\\/");
-        clienttest.setClientDescription("<script type=\"text/javascript\">alert(\"I am an alert box!\");</script>");
-        clienttest.setAccessTokenTimeout(Long.MIN_VALUE);
-        clienttest.setRefreshTokenTimeout(Long.MAX_VALUE);
+    	ClientDetailsEntity testClient = new ClientDetailsEntity();
+    	testClient.setClientId(" # % & * { } : ' < > ? +" + "\\" + "\\/");
+        testClient.setClientName("a test client service");
+        testClient.setOwner("some owner person"); 
+        testClient.setClientDescription("<script type=\"text/javascript\">alert(\"I am an alert box!\");</script>");
+        testClient.setAccessTokenTimeout(Long.MIN_VALUE);
+        testClient.setRefreshTokenTimeout(Long.MIN_VALUE);
+        testClient.setAllowRefresh(false); 
+		Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
+        GrantedAuthority roleClient = new SimpleGrantedAuthority("ADMIN");
+        authorities.add(roleClient);
+        testClient.setAuthorities(authorities);
+		Set<String> resourceIds = new HashSet<String>();
+			resourceIds.add("https://www.whatg.com/some/ # % & * { } : ' < > ? + \\ \\/");
+	        resourceIds.add("http://127.0.0.1/whatg/thing/");
+	        resourceIds.add("htts://www.whatg.com/thing/");
+	        resourceIds.add("htps://www.whatg.com/else/");
+	        resourceIds.add("https://www.someRedirectURI.com/redirectURI");
+	        testClient.setResourceIds(resourceIds);
+        Set<String> authorizedGrantTypes = new HashSet<String>();
+    	authorizedGrantTypes.add("authorization_code");
+		authorizedGrantTypes.add("refresh_token");
+		testClient.setAuthorizedGrantTypes(authorizedGrantTypes);
+		Set<String> scope = new HashSet<String>();
+		scope.add("openid");
+		testClient.setScope(scope);
+		        
 		
-        expect(clientRepository.getClientById(clienttest.getClientId())).andReturn(clienttest).once();
+    	expect(clientRepository.getClientById(testClient.getClientId())).andReturn(testClient).once();
+        expect(clientFactory.createClient(testClient.getClientId(), testClient.getClientSecret())).andReturn(testClient).once();
+        expect(clientRepository.saveClient(testClient));
+        replay(clientFactory);
         replay(clientRepository);
+        verify(clientFactory);
+	    expectLastCall();	 	
+	    
 	    ClientDetailsEntity clientFromService = null;
 		 try {
 			clientFromService = entityService.createClient(
-					clienttest.getClientId(), 
-					clienttest.getClientSecret(), 
-					clienttest.getScope(), 
-					clienttest.getAuthorizedGrantTypes(), 
+					testClient.getClientId(), 
+					testClient.getClientSecret(), 
+					testClient.getScope(), 
+					testClient.getAuthorizedGrantTypes(), 
 					"", 
-					clienttest.getAuthorities(), 
-					clienttest.getResourceIds(), 
-					clienttest.getClientName(), 
-					clienttest.getClientDescription(), 
-					clienttest.isAllowRefresh(), 
-					clienttest.getAccessTokenTimeout(), 
-					clienttest.getRefreshTokenTimeout(), 
-					clienttest.getOwner()
+					testClient.getAuthorities(), 
+					testClient.getResourceIds(), 
+					testClient.getClientName(), 
+					testClient.getClientDescription(), 
+					testClient.isAllowRefresh(), 
+					testClient.getAccessTokenTimeout(), 
+					testClient.getRefreshTokenTimeout(), 
+					testClient.getOwner()
 			);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	    verify(clientRepository);
-        
-	    // test that the clientid is not null
+
         assertThat(clientFromService.getClientId(), is(not(nullValue())));
         // TODO need make a test for all fields
-        assertThat(clientFromService.getClientId(), equalTo(clienttest.getClientId()));
-        assertThat(clientFromService.getClientName(), equalTo(clienttest.getClientName()));   
-        // test that the objects are equal
-        assertThat(clientFromService, CoreMatchers.equalTo(clienttest));
+        assertThat(clientFromService.getClientId(), equalTo(testClient.getClientId()));
+        assertThat(clientFromService.getClientName(), equalTo(testClient.getClientName()));   
+        assertThat(clientFromService, CoreMatchers.equalTo(testClient));
         
 	}	
 
     @Test(expected = InvalidClientException.class)
 	public void testDeleteClient_throwInvalidClientException() {
-		//TODO  delete existing entry
-        expect(clientRepository.getClientById(clienttest.getClientId())).andReturn(clienttest).once();
-       //TODO tokenRepository.clearTokensForClient(clienttest);
 
-        
-        try {
-			clientRepository.deleteClient(clienttest);
+    	ClientDetailsEntity testClient = new ClientDetailsEntity();
+    	testClient.setClientId("111222333");
+    	expect(clientRepository.getClientById(testClient.getClientId())).andReturn(testClient).once();
+        expect(clientRepository.getClientById(testClient.getClientId())).andReturn(null).once(); 
+        replay(clientRepository);
+    	
+    	try {
+    		// this function is going to return void      
+    		entityService.deleteClient(testClient);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-        expectLastCall();
-        expect(clientRepository.getClientById(clienttest.getClientId())).andReturn(null).once(); 
-        replay(clientRepository);
-       
-		// this function is going to return void        
-        entityService.deleteClient(clienttest);		
         verify(clientRepository);
-        
-        expect(clientRepository.getClientById(clienttest.getClientId())).andReturn(null).once();
-        replay(clientRepository);
-        // test that client doesn't not exist 
-        entityService.loadClientByClientId(clienttest.getClientId());
+               
+       // can't assert that the object is gone because its a mock throughout
+       // has to be done in repository tests
 	}
 
     @Test(expected = IllegalArgumentException.class)
 	public void testUpdateClient_oldnull() {		
-		entityService.updateClient(null, clienttest);		
+    	ClientDetailsEntity testClient = new ClientDetailsEntity();
+		entityService.updateClient(null, testClient);		
 	}
     @Test(expected = IllegalArgumentException.class)
 	public void testUpdateClient_newnull() {		
-		entityService.updateClient(clienttest, null);
+    	ClientDetailsEntity testClient = new ClientDetailsEntity();
+		entityService.updateClient(testClient, null);
 	}    
     @Test(expected = IllegalArgumentException.class)
 	public void testUpdateClient_nullnull() {		
@@ -329,36 +324,44 @@ public class DefaultOAuth2ClientDetailsEntityServiceTest {
 	@Test
 	public void testUpdateClient() {
 		// get an existing client, change a field, verify field changed from service	
-		ClientDetailsEntity originalClient =  clienttest;
-		ClientDetailsEntity newClient = originalClient;
-		newClient.setOwner("");
+		ClientDetailsEntity originalClient =  new ClientDetailsEntity();
+		originalClient.setOwner("first client owner");
+		originalClient.setClientId("TPH83YEA4CE763Z21WSE83NL0LGM65SKD0GN945L46EEB14EA1");
+		ClientDetailsEntity newClient = new ClientDetailsEntity();
+		newClient.setOwner("new client order");
 		newClient.setClientId("TPH83YEA4CE763Z21WSE83NL0LGM65SKD0GN945L46EEB14EA1");
 
 		expect(clientRepository.getClientById(originalClient.getClientId())).andReturn(originalClient).once();
         replay(clientRepository);
-		entityService.updateClient(originalClient, newClient);        
+        
+        expect(clientRepository.updateClient(originalClient.getClientId(), newClient));
+        replay(clientRepository);
+		entityService.updateClient(originalClient, newClient);      
+		verify(clientRepository);
 		ClientDetailsEntity currClient = entityService.loadClientByClientId(originalClient.getClientId());
         verify(clientRepository);
        
         assertThat(currClient.getOwner(), equalTo(newClient.getOwner()));   
         assertSame(newClient, currClient);
         assertThat(currClient.getOwner(), not(equalTo(originalClient.getOwner())));
-        // TODO pass by ref behavior how to fix so it really is two diff objects??
      	assertNotSame(originalClient, currClient);
+     	
 	}
 
 	@Test
-	public void testGetAllClients() {
-		//instantiate and set all of them    	
+	public void testGetAllClients() { 	
     	ClientDetailsEntity currentClient[] = new ClientDetailsEntity[4];
     	currentClient[0] = new ClientDetailsEntity();
 		currentClient[0].setClientId("TPH83YEA4CE763Z21WSE83NL0LGM65SKD0GN945L46EEB14EA1");
-    	currentClient[1] = clienttest;
+    	currentClient[1] = new ClientDetailsEntity();
     	currentClient[1].setClientId("FRY83YEA4CE763Z21WSE83NL0LGM65SKD0GN945L56EEB14000");
-    	currentClient[2] = clienttest;
+    	currentClient[2] = new ClientDetailsEntity();
     	currentClient[2].setClientId("GST55YEA4CE763Z21WSE83NL0LGM65SKD0GN945L66EEB19999");
-    	currentClient[3] = clienttest;
+    	currentClient[3] = new ClientDetailsEntity();
     	currentClient[3].setClientId("H57T8YEA4CE763Z21WSE83NL0LGM65SKD0GN945L76EEB19999");        
+    	
+    	
+    	Collection<ClientDetailsEntity> cdeColl = Arrays.asList(currentClient);
     	
     	int foundcnt = currentClient.length; // number of matches we need to 
     	
@@ -366,7 +369,7 @@ public class DefaultOAuth2ClientDetailsEntityServiceTest {
         expect(clientRepository.getClientById(currentClient[1].getClientId())).andReturn(currentClient[1]).once();
         expect(clientRepository.getClientById(currentClient[2].getClientId())).andReturn(currentClient[2]).once();
         expect(clientRepository.getClientById(currentClient[3].getClientId())).andReturn(currentClient[3]).once();
-        expect(clientRepository.getAllClients()).andReturn(currentClient);
+        expect(clientRepository.getAllClients()).andReturn(cdeColl);
         replay(clientRepository);		
 	    verify(clientRepository);
         //check that each one exists in this loop only once
