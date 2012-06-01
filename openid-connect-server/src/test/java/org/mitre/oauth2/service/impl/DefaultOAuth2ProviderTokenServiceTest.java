@@ -88,10 +88,8 @@ public class DefaultOAuth2ProviderTokenServiceTest {
         clienttest.setClientId("XVX42QQA9CA348S46TNJ00NP8MRO37FHO1UW748T59BAT74LN9");
         clienttest.setClientSecret("password");
         clienttest.setClientName("a test client service");
-        clienttest.setOwner("some owner person"); // why not set/get ClientOwner? 
-        clienttest.setClientDescription("Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Curabitur sed tortor. Integer aliquam adipiscing lacus. Ut nec urna");
-
-       //TODO model question: should seconds be in LONG? Wouldn't INT be better
+        clienttest.setOwner("some owner person"); 
+        clienttest.setClientDescription("Lorem ipsum dolor sit amet, er aliquam adipiscing lacus. Ut nec urna");
         clienttest.setAccessTokenTimeout((long) 10);
         clienttest.setRefreshTokenTimeout((long) 360);
         clienttest.setAllowRefresh(true); // db handles actual value
@@ -104,13 +102,9 @@ public class DefaultOAuth2ProviderTokenServiceTest {
         clienttest.setAuthorities(authorities);
        
 		Set<String> resourceIds = new HashSet<String>();
-			resourceIds.add("https://www.whatg.com/some/"+ " # % & * { } : ' < > ? +" + "\\" + "\\/");
 	        resourceIds.add("https://www.whatg.com/thing/");
 	        resourceIds.add("https://www.whatg.com/else/");
 	        resourceIds.add("https://www.whatg.com/some/");
-	        resourceIds.add("htts://www.whatg.com/thing/");
-	        resourceIds.add("htps://www.whatg.com/else/");
-	        resourceIds.add("hts://www.someRedirectURI.com/redirectURI");
         clienttest.setResourceIds(resourceIds);
 
         Set<String> authorizedGrantTypes = new HashSet<String>();
