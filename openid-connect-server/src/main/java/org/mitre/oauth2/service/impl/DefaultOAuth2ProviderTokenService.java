@@ -68,13 +68,13 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	
 	@Override
     public OAuth2AccessTokenEntity createAccessToken(OAuth2Authentication authentication) throws AuthenticationException, InvalidClientException {
-		if (authentication != null && 
-				authentication.getAuthorizationRequest() != null) {
+		if (authentication != null || authentication.getAuthorizationRequest() != null) {
+		    throw new AuthenticationCredentialsNotFoundException("No authentication credentials found");
+		}
 			// look up our client
 			AuthorizationRequest clientAuth = authentication.getAuthorizationRequest();
 			
 			ClientDetailsEntity client = clientDetailsService.loadClientByClientId(clientAuth.getClientId());
-		
 			if (client == null) {
 				throw new InvalidClientException("Client not found: " + clientAuth.getClientId());
 			}
@@ -135,9 +135,6 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		    tokenRepository.saveAccessToken(token);		    
 		    
 		    return token;
-		}
-		
-	    throw new AuthenticationCredentialsNotFoundException("No authentication credentials found");
     }
 
 	@Override
