@@ -41,7 +41,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 //not testing getter and setter
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"file:src/main/webapp/WEB-INF/spring-servlet.xml", "classpath:test-context.xml"})
+//TODO add the testing context 
+// @ContextConfiguration(locations={"file:src/main/webapp/WEB-INF/spring-servlet.xml", "classpath:test-context.xml"})
 
 public class ClientUserDetailsServiceTest {
 	private Logger logger; 

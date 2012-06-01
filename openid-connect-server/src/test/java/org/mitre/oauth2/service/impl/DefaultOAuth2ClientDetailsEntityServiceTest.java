@@ -351,7 +351,7 @@ public class DefaultOAuth2ClientDetailsEntityServiceTest {
 	public void testGetAllClients() {
 		//instantiate and set all of them    	
     	ClientDetailsEntity currentClient[] = new ClientDetailsEntity[4];
-    	currentClient[0] = clienttest;
+    	currentClient[0] = new ClientDetailsEntity();
 		currentClient[0].setClientId("TPH83YEA4CE763Z21WSE83NL0LGM65SKD0GN945L46EEB14EA1");
     	currentClient[1] = clienttest;
     	currentClient[1].setClientId("FRY83YEA4CE763Z21WSE83NL0LGM65SKD0GN945L56EEB14000");
@@ -366,7 +366,7 @@ public class DefaultOAuth2ClientDetailsEntityServiceTest {
         expect(clientRepository.getClientById(currentClient[1].getClientId())).andReturn(currentClient[1]).once();
         expect(clientRepository.getClientById(currentClient[2].getClientId())).andReturn(currentClient[2]).once();
         expect(clientRepository.getClientById(currentClient[3].getClientId())).andReturn(currentClient[3]).once();
-
+        expect(clientRepository.getAllClients()).andReturn(currentClient);
         replay(clientRepository);		
 	    verify(clientRepository);
         //check that each one exists in this loop only once

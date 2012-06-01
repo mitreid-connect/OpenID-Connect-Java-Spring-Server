@@ -42,6 +42,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -85,17 +86,14 @@ public class DefaultOAuth2ProviderTokenServiceTest {
         accessTokenFactory = createNiceMock(OAuth2AccessTokenEntityFactory.class);
         refreshTokenFactory = createNiceMock(OAuth2RefreshTokenEntityFactory.class);
         
-        clienttest.setClientId("XVX42QQA9CA348S46TNJ00NP8MRO37FHO1UW748T59BAT74LN9");
+        clienttest.setClientId("1client1D");
         clienttest.setClientSecret("password");
         clienttest.setClientName("a test client service");
         clienttest.setOwner("some owner person"); 
         clienttest.setClientDescription("Lorem ipsum dolor sit amet, er aliquam adipiscing lacus. Ut nec urna");
         clienttest.setAccessTokenTimeout((long) 10);
         clienttest.setRefreshTokenTimeout((long) 360);
-        clienttest.setAllowRefresh(true); // db handles actual value
-
-     
-        //TODO model question: what are correct values for this field?
+        clienttest.setAllowRefresh(true); 
 		Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
         GrantedAuthority roleClient = new SimpleGrantedAuthority("ROLE_CLIENT");
         authorities.add(roleClient);
@@ -108,13 +106,12 @@ public class DefaultOAuth2ProviderTokenServiceTest {
         clienttest.setResourceIds(resourceIds);
 
         Set<String> authorizedGrantTypes = new HashSet<String>();
-        //TODO model question: what are correct values for this field?
     	authorizedGrantTypes.add("authorization_code");
 		authorizedGrantTypes.add("refresh_token");
 		clienttest.setAuthorizedGrantTypes(authorizedGrantTypes);
 
 		Set<String> scope = new HashSet<String>();
-		scope.add(""); //TODO model question: what are correct values for this field?
+		scope.add("openid"); 
 		clienttest.setScope(scope);
 		
 		authorizationRequest =  new AuthorizationRequest(
@@ -149,11 +146,12 @@ public class DefaultOAuth2ProviderTokenServiceTest {
 		logger = LoggerFactory.getLogger(this.getClass());
         logger.info("teardown of DefaultOAuth2ProviderTokenServiceTest");
         
+        
 	}
 
 	@Test(expected = AuthenticationCredentialsNotFoundException.class)
 	public final void testCreateAccessToken_throwAuthenticationCredentialsNotFoundException_withnull() {
-		tokenService.createAccessToken(null);
+		OAuth2AccessToken token = tokenService.createAccessToken(null);
 	}
 	
 	@Test(expected = AuthenticationCredentialsNotFoundException.class)
@@ -183,6 +181,7 @@ public class DefaultOAuth2ProviderTokenServiceTest {
         verify(refreshTokenFactory);
         
         assertThat(token, is(accessToken));
+        fail("Not yet implemented"); // TODO
 	}
 		
 	@Test(expected = InvalidClientException.class)
@@ -190,11 +189,13 @@ public class DefaultOAuth2ProviderTokenServiceTest {
 		AuthorizationRequest authorizationRequest = null;
 		OAuth2Authentication authentication = new OAuth2Authentication(authorizationRequest, null);
 		tokenService.createAccessToken(authentication);
+		fail("Not yet implemented"); // TODO
 	}	
 	@Test(expected = AuthenticationException.class)
 	public final void testCreateAccessToken_throwAuthenticationException() {
 		OAuth2Authentication authentication = new OAuth2Authentication(authorizationRequest, userAuthentication);		
 		tokenService.createAccessToken(authentication);
+		fail("Not yet implemented"); // TODO
 	}	
 	@Test
 	public final void testCreateAccessToken_valid() {
@@ -202,6 +203,7 @@ public class DefaultOAuth2ProviderTokenServiceTest {
 		Authentication userAuthentication = null;
 		OAuth2Authentication authentication = new OAuth2Authentication(authorizationRequest, userAuthentication);		
 		tokenService.createAccessToken(authentication);
+		fail("Not yet implemented"); // TODO
 	}		
 	
 	@Test
