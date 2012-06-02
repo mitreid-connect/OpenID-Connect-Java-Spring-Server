@@ -95,11 +95,10 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 		client.setScope(scope);  //check for valid values
 		client.setAuthorizedGrantTypes(grantTypes); //check for valid values
 		
-		// why is this commented out?
-		//client.setRegisteredRedirectUri(redirectUri);
+		// TODO problem found in testing the client.getRegisteredRedirectUri() doesn't return same datatype as expected by this method
 		Set<String> redirectUris = new HashSet<String>();
 		redirectUris.add(redirectUri);
-		client.setRegisteredRedirectUri(redirectUris);  //check for valid values, whitelist, and blacklist
+		client.setRegisteredRedirectUri(redirectUris);  //check for valid values, whitelist, and blacklist, valid URI and also require HTTPS
 		
 		client.setAuthorities(authorities); //check for valid values
 		
@@ -108,8 +107,8 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 		client.setAllowRefresh(allowRefresh); // db handles actual value
 		client.setAccessTokenTimeout(accessTokenTimeout);  //INT range should be 0 - 3600, if in seconds
 		client.setRefreshTokenTimeout(refreshTokenTimeout); //INT range should be 0 - 3600, if in seconds
-		client.setResourceIds(resourceIds);
-		client.setOwner(owner); // why not set/get ClientOwner like the other text string fields?
+		client.setResourceIds(resourceIds); 
+		client.setOwner(owner); // why not rename to setClientOwner like the other text string fields?
 		
 		clientRepository.saveClient(client);
 		return client;
