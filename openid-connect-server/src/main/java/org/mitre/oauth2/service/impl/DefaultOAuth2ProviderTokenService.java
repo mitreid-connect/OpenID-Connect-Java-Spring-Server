@@ -95,7 +95,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	                if (client.getScope().contains(requested)) {
 	                	validScopes.add(requested);
 	                } else {
-	                	logger.warn("Client " + client.getClientId() + " requested out of permission scope: " + requested);
+	                	logger.warn("SECURITY-EVENT Client " + client.getClientId() + " requested out of permission scope: " + requested);
 	                }
                 }
 		    	

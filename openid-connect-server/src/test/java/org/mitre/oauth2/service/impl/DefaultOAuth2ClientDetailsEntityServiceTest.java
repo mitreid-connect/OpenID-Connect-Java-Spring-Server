@@ -356,7 +356,8 @@ public class DefaultOAuth2ClientDetailsEntityServiceTest {
     	currentClient[3] = new ClientDetailsEntity();
     	currentClient[3].setClientId("H57T8YEA4CE763Z21WSE83NL0LGM65SKD0GN945L76EEB19999");        
     	
-    	
+    	//technically we might not even need to do this whole test
+    	//because the method call goes striaght to a repository call anyway.
     	Collection<ClientDetailsEntity> cdeColl = Arrays.asList(currentClient);
     	
     	int foundcnt = currentClient.length; // number of matches we need to 
@@ -374,7 +375,6 @@ public class DefaultOAuth2ClientDetailsEntityServiceTest {
 		}
 	    verify(clientRepository);
 	    assertSame((int) 0, foundcnt);
-//		fail("Not yet implemented - Have to create orignal objects and check entityservice results against them"); //TODO 
 	}
 	
 }
