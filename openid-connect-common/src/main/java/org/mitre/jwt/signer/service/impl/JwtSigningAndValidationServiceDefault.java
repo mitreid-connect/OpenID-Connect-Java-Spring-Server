@@ -89,20 +89,18 @@ public class JwtSigningAndValidationServiceDefault implements
 
 		Map<String, PublicKey> map = new HashMap<String, PublicKey>();
 
-		PublicKey publicKey;
+		for (String signerId : signers.keySet()) {
 
-		for (JwtSigner signer : signers.values()) {
-
+			JwtSigner signer = signers.get(signerId);
+			
 			if (signer instanceof RsaSigner) {
 
-				publicKey = ((RsaSigner) signer).getPublicKey();
+				RsaSigner rsa = (RsaSigner)signer;
+				
+				PublicKey publicKey = rsa.getPublicKey();
 
 				if (publicKey != null) {
-					// what's the index of this map for?
-					map.put(((RSAPublicKey) publicKey).getModulus()
-							.toString(16).toUpperCase()
-							+ ((RSAPublicKey) publicKey).getPublicExponent()
-									.toString(16).toUpperCase(), publicKey);
+					map.put(signerId, publicKey);
 				}
 
 			}

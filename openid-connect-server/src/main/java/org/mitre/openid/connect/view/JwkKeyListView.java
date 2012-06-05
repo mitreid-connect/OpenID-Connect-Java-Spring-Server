@@ -33,10 +33,12 @@ import org.apache.commons.codec.binary.Base64;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.servlet.view.AbstractView;
 
+import com.google.common.collect.BiMap;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
@@ -68,50 +70,6 @@ public class JwkKeyListView extends AbstractView {
 			}
 							
 		})
-		.registerTypeHierarchyAdapter(PublicKey.class, new JsonSerializer<PublicKey>() {
-
-			@Override
-            public JsonElement serialize(PublicKey src, Type typeOfSrc, JsonSerializationContext context) {
-				
-				
-				if (src instanceof RSAPublicKey) {
-				
-					RSAPublicKey rsa = (RSAPublicKey)src;
-					
-					
-					BigInteger mod = rsa.getModulus();
-					BigInteger exp = rsa.getPublicExponent();
-					
-					String m64 = Base64.encodeBase64URLSafeString(mod.toByteArray());
-					String e64 = Base64.encodeBase64URLSafeString(exp.toByteArray());
-					
-					JsonObject o = new JsonObject();
-
-					o.addProperty("use", "sig");
-					o.addProperty("alg", "RSA");
-					o.addProperty("mod", m64);
-					o.addProperty("exp", e64);
-					// TODO: get the key ID from the map
-					return o;
-				} else if (src instanceof ECPublicKey) {
-					
-					@SuppressWarnings("unused")
-					ECPublicKey ec = (ECPublicKey)src;
-
-					// TODO: serialize the EC
-					
-					return null;
-					
-				} else {
-					
-					// skip this class ... we shouldn't have any keys in here that aren't encodable by this serializer
-					return null;
-				}
-				
-				
-            }
-			
-		})
 		.create();
 
 		
@@ -119,10 +77,38 @@ public class JwkKeyListView extends AbstractView {
 		
 		Writer out = response.getWriter();
 		
-		Object obj = model.get("entity");
-		if (obj == null) {
-			obj = model;
-		}
+		BiMap<String, PublicKey> keyMap = (BiMap<String, PublicKey>) model.get("keys");
+		
+		JsonObject obj = new JsonObject();
+		JsonArray keys = new JsonArray();
+		obj.add("keys", keys);
+		
+		for (String keyId : keyMap.keySet()) {
+
+			PublicKey src = keyMap.get(keyId);
+
+			if (src instanceof RSAPublicKey) {
+				
+				RSAPublicKey rsa = (RSAPublicKey)src;
+				
+				
+				BigInteger mod = rsa.getModulus();
+				BigInteger exp = rsa.getPublicExponent();
+				
+				String m64 = Base64.encodeBase64URLSafeString(mod.toByteArray());
+				String e64 = Base64.encodeBase64URLSafeString(exp.toByteArray());
+				
+				JsonObject o = new JsonObject();
+
+				o.addProperty("use", "sig"); // since we don't do encryption yet
+				o.addProperty("alg", "RSA"); // we know this is RSA
+				o.addProperty("mod", m64);
+				o.addProperty("exp", e64);
+				o.addProperty("kid", keyId);
+
+				keys.add(o);
+			}
+        }
 		
 		gson.toJson(obj, out);
 
