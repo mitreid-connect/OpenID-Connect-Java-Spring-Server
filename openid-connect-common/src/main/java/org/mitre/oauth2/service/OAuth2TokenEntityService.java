@@ -20,6 +20,7 @@ import java.util.List;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
 
@@ -42,5 +43,7 @@ public interface OAuth2TokenEntityService extends AuthorizationServerTokenServic
 	public OAuth2AccessTokenEntity saveAccessToken(OAuth2AccessTokenEntity accessToken);
 	
 	public OAuth2RefreshTokenEntity saveRefreshToken(OAuth2RefreshTokenEntity refreshToken);
+	
+	public OAuth2AccessTokenEntity getAccessToken(OAuth2Authentication authentication);
 	
 }
