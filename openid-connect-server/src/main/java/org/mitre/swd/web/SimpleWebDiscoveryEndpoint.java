@@ -20,7 +20,9 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.mitre.util.Utility;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,11 +33,14 @@ import com.google.common.collect.Lists;
 @Controller
 public class SimpleWebDiscoveryEndpoint {
 
+	@Autowired
+	ConfigurationPropertiesBean config;
+	
 	@RequestMapping(value="/.well-known/simple-web-discovery", 
 					params={"principal", "service=http://openid.net/specs/connect/1.0/issuer"})
-	public ModelAndView openIdConnectIssuerDiscovery(@RequestParam("principal") String principal, ModelAndView modelAndView, HttpServletRequest request) {
+	public ModelAndView openIdConnectIssuerDiscovery(@RequestParam("principal") String principal, ModelAndView modelAndView) {
 		
-		String baseUrl = Utility.findBaseUrl(request);
+		String baseUrl = config.getIssuer();
 		
 		// look up user, see if they're local
 		// if so, return this server
@@ -51,11 +56,24 @@ public class SimpleWebDiscoveryEndpoint {
 		return modelAndView;
 	}
 	
+	@RequestMapping(value="/.well-known/host-meta",
+			params={"resource", "rel=http://openid.net/specs/connect/1.0/issuer"})
+	public ModelAndView xrdDiscovery(@RequestParam("resource") String resource, ModelAndView modelAndView) {
+		
+		Map<String, String> relMap = new HashMap<String, String>();
+		relMap.put("http://openid.net/specs/connect/1.0/issuer", config.getIssuer());
+		
+		modelAndView.getModel().put("links", relMap);
+		
+		modelAndView.setViewName("jsonXrdResponseView");
+		
+		return modelAndView;
+	}
 
 	@RequestMapping("/.well-known/openid-configuration")
-	public ModelAndView providerConfiguration(ModelAndView modelAndView, HttpServletRequest request) {
+	public ModelAndView providerConfiguration(ModelAndView modelAndView) {
 
-		String baseUrl = Utility.findBaseUrl(request);
+		String baseUrl = config.getIssuer();
 		
 		/*	
 		 * version 	string 	Version of the provider response. "3.0" is the default.
@@ -84,15 +102,15 @@ public class SimpleWebDiscoveryEndpoint {
 		Map<String, Object> m = new HashMap<String, Object>();
 		m.put("version", "3.0");
 		m.put("issuer", baseUrl);
-		m.put("authorization_endpoint", baseUrl + "/authorize");
-		m.put("token_endpoint", baseUrl + "/oauth");
+		m.put("authorization_endpoint", baseUrl + "/openidconnect/auth");
+		m.put("token_endpoint", baseUrl + "/openidconnect/token");
 		m.put("userinfo_endpoint", baseUrl + "/userinfo");
 		m.put("check_id_endpoint", baseUrl + "/checkid");
-		m.put("refresh_session_endpoint", baseUrl + "/refresh_session");
-		m.put("end_session_endpoint", baseUrl + "/end_session");
+		//m.put("refresh_session_endpoint", baseUrl + "/refresh_session");
+		//m.put("end_session_endpoint", baseUrl + "/end_session");
 		m.put("jwk_url", baseUrl + "/jwk");
-		m.put("registration_endpoint", baseUrl + "/register_client");
-		m.put("scopes_supported", Lists.newArrayList("openid"));
+		//m.put("registration_endpoint", baseUrl + "/register_client");
+		m.put("scopes_supported", Lists.newArrayList("openid", "email", "profile", "address", "phone"));
 		m.put("response_types_supported", Lists.newArrayList("code"));
 				
 		
