@@ -25,7 +25,7 @@ import org.springframework.security.oauth2.provider.token.ResourceServerTokenSer
 
 public interface OAuth2TokenEntityService extends AuthorizationServerTokenServices, ResourceServerTokenServices {
 
-	public OAuth2AccessTokenEntity getAccessToken(String accessTokenValue);
+	public OAuth2AccessTokenEntity readAccessToken(String accessTokenValue);
 	
 	public OAuth2RefreshTokenEntity getRefreshToken(String refreshTokenValue);
 
