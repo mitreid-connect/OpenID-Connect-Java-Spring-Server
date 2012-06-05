@@ -343,8 +343,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 
 	@Override
 	public OAuth2AccessToken readAccessToken(String accessToken) {
-		// TODO Auto-generated method stub
-		return null;
+		return tokenRepository.getAccessTokenByValue(accessToken);
 	}
 
 	/* (non-Javadoc)
