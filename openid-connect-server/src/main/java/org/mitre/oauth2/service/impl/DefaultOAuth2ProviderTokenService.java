@@ -222,8 +222,11 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
     }
 
 
+	/**
+	 * Get an access token from its token value.
+	 */
 	@Override
-    public OAuth2AccessTokenEntity getAccessToken(String accessTokenValue) throws AuthenticationException {
+    public OAuth2AccessTokenEntity readAccessToken(String accessTokenValue) throws AuthenticationException {
 		OAuth2AccessTokenEntity accessToken = tokenRepository.getAccessTokenByValue(accessTokenValue);
 		if (accessToken == null) {
 			throw new InvalidTokenException("Access token for value " + accessTokenValue + " was not found");
@@ -233,6 +236,9 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		}
     }
 
+	/**
+	 * Get an access token by its authentication object.
+	 */
 	@Override
 	public OAuth2AccessTokenEntity getAccessToken(OAuth2Authentication authentication) {
 		
@@ -241,6 +247,9 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		return accessToken;
 	}
 	
+	/**
+	 * Get a refresh token by its token value.
+	 */
 	@Override
     public OAuth2RefreshTokenEntity getRefreshToken(String refreshTokenValue) throws AuthenticationException {
 		OAuth2RefreshTokenEntity refreshToken = tokenRepository.getRefreshTokenByValue(refreshTokenValue);
@@ -252,12 +261,18 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		}
     }
 	
+	/**
+	 * Revoke a refresh token and all access tokens issued to it.
+	 */
 	@Override
     public void revokeRefreshToken(OAuth2RefreshTokenEntity refreshToken) {
 	    tokenRepository.clearAccessTokensForRefreshToken(refreshToken);
 	    tokenRepository.removeRefreshToken(refreshToken);	    
     }
 
+	/**
+	 * Revoke an access token. 
+	 */
 	@Override
     public void revokeAccessToken(OAuth2AccessTokenEntity accessToken) {
 		tokenRepository.removeAccessToken(accessToken);	    
@@ -341,11 +356,6 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		}
 	}
 
-	@Override
-	public OAuth2AccessToken readAccessToken(String accessToken) {
-		return tokenRepository.getAccessTokenByValue(accessToken);
-	}
-
 	/* (non-Javadoc)
      * @see org.mitre.oauth2.service.OAuth2TokenEntityService#saveAccessToken(org.mitre.oauth2.model.OAuth2AccessTokenEntity)
      */
@@ -360,8 +370,6 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
     @Override
     public OAuth2RefreshTokenEntity saveRefreshToken(OAuth2RefreshTokenEntity refreshToken) {
     	return tokenRepository.saveRefreshToken(refreshToken);
-    }
-	
-	
+    }	
 
 }
