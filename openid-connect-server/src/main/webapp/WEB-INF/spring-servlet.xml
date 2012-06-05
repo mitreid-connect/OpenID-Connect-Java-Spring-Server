@@ -190,8 +190,11 @@
 	<!-- </bean> -->
 
 	<!-- JSON views for each type of model object -->
+	
 	<bean id="jsonOpenIdConfigurationView" class="org.mitre.swd.view.JsonOpenIdConfigurationView" />
 	<bean id="jsonSwdResponseView" class="org.mitre.swd.view.SwdResponse" />
+	<bean id="jsonXrdResponseView" class="org.mitre.swd.view.XrdJsonResponse" />
+	
 	<bean id="jwkKeyList" class="org.mitre.openid.connect.view.JwkKeyListView" />
 
 	<bean id="jsonUserInfoView" class="org.mitre.openid.connect.view.JSONUserInfoView" />
