@@ -41,7 +41,7 @@ public class IntrospectionEndpoint {
 	@RequestMapping("/oauth/verify")
 	public ModelAndView verify(@RequestParam("token") String tokenValue, 
 			ModelAndView modelAndView) {
-		OAuth2AccessTokenEntity token = tokenServices.getAccessToken(tokenValue);
+		OAuth2AccessTokenEntity token = tokenServices.readAccessToken(tokenValue);
 		
 		if (token == null) {
 			// if it's not a valid token, we'll print a 404
