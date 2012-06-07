@@ -45,7 +45,7 @@ import org.bouncycastle.jce.provider.JCEECPublicKey;
 public class UtilityTest extends TestCase{
 	
 	URL url = this.getClass().getResource("/jwk/jwkSuccess");
-	URL certUrl = this.getClass().getResource("/x509/certTest");
+	URL certUrl = this.getClass().getResource("/x509/x509Cert");
 	URL rsaUrl = this.getClass().getResource("/jwk/rsaOnly");
 	
 	/**

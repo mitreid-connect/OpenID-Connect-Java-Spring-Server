@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.mitre.jwt.signer.service;
 
+import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.util.List;
 import java.util.Map;
@@ -59,8 +60,9 @@ public interface JwtSigningAndValidationService {
 	 * @param jwtString
 	 *            the string representation of the JWT as sent on the wire
 	 * @return true if the signature is valid, false if not
+	 * @throws NoSuchAlgorithmException 
 	 */
-	public boolean validateSignature(String jwtString);
+	public boolean validateSignature(String jwtString) throws NoSuchAlgorithmException;
 	
 	/**
 	 * Called to sign a jwt in place for a client that hasn't registered a preferred signing algorithm.
@@ -68,8 +70,9 @@ public interface JwtSigningAndValidationService {
 	 * 
 	 * @param jwt the jwt to sign
 	 * @return the signed jwt
+	 * @throws NoSuchAlgorithmException 
 	 */
-	public void signJwt(Jwt jwt);
+	public void signJwt(Jwt jwt) throws NoSuchAlgorithmException;
 	
 	/**
 	 * Sign a jwt using the selected algorithm. The algorithm is selected using the String parameter values specified
