@@ -16,102 +16,75 @@
 /**
  * 
  */
-package org.mitre.openid.connect.view;
+package org.mitre.swd.view;
 
 import java.io.Writer;
-import java.lang.reflect.Type;
-import java.math.BigInteger;
-import java.security.PublicKey;
-import java.security.interfaces.ECPublicKey;
-import java.security.interfaces.RSAPublicKey;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.codec.binary.Base64;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.servlet.view.AbstractView;
 
-import com.google.common.collect.BiMap;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
 
 /**
  * @author jricher
  *
  */
-public class JwkKeyListView extends AbstractView {
+public class XrdJsonResponse extends AbstractView {
 
+	/* (non-Javadoc)
+	 * @see org.springframework.web.servlet.view.AbstractView#renderMergedOutputModel(java.util.Map, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+	 */
 	@Override
 	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) throws Exception {
+		Gson gson = new GsonBuilder().setExclusionStrategies(new ExclusionStrategy() {
 
-		Gson gson = new GsonBuilder()
-		.setExclusionStrategies(new ExclusionStrategy() {
-			
+			@Override
 			public boolean shouldSkipField(FieldAttributes f) {
-				
 				return false;
 			}
-			
+
+			@Override
 			public boolean shouldSkipClass(Class<?> clazz) {
 				// skip the JPA binding wrapper
 				if (clazz.equals(BeanPropertyBindingResult.class)) {
 					return true;
+				} else {
+					return false;
 				}
-				return false;
 			}
-							
+
 		})
 		.create();
 
-		
 		response.setContentType("application/json");
-		
+
 		Writer out = response.getWriter();
-		
-		BiMap<String, PublicKey> keyMap = (BiMap<String, PublicKey>) model.get("keys");
-		
+
+		Map<String, String> links = (Map<String, String>) model.get("links");
+
 		JsonObject obj = new JsonObject();
-		JsonArray keys = new JsonArray();
-		obj.add("keys", keys);
+		JsonArray linksList = new JsonArray();
+		obj.add("links", linksList);
 		
-		for (String keyId : keyMap.keySet()) {
-
-			PublicKey src = keyMap.get(keyId);
-
-			if (src instanceof RSAPublicKey) {
-				
-				RSAPublicKey rsa = (RSAPublicKey)src;
-				
-				
-				BigInteger mod = rsa.getModulus();
-				BigInteger exp = rsa.getPublicExponent();
-				
-				String m64 = Base64.encodeBase64URLSafeString(mod.toByteArray());
-				String e64 = Base64.encodeBase64URLSafeString(exp.toByteArray());
-				
-				JsonObject o = new JsonObject();
-
-				o.addProperty("use", "sig"); // since we don't do encryption yet
-				o.addProperty("alg", "RSA"); // we know this is RSA
-				o.addProperty("mod", m64);
-				o.addProperty("exp", e64);
-				o.addProperty("kid", keyId);
-
-				keys.add(o);
-			}
+		// map of "rel" -> "link" values
+		for (Map.Entry<String, String> link : links.entrySet()) {
+	        JsonObject l = new JsonObject();
+	        l.addProperty("rel", link.getKey());
+	        l.addProperty("link", link.getValue());
+	        
+	        linksList.add(l);
         }
 		
 		gson.toJson(obj, out);
-
 	}
 
 }

@@ -21,14 +21,56 @@
 
     <authz:authorize ifAnyGranted="ROLE_USER">
 
-    <div class="hero-unit" style="text-align:center">
-        <h1>Please Confirm!</h1>
+    <div class="well" style="text-align:center">
+        <h1>Approve New Site</h1>
 
-        <p>I hereby authorize "<c:out value="${client.clientId}"/>" to access my protected resources.</p>
+        <form name="confirmationForm" style="display:inline" action="<%=request.getContextPath()%>/oauth/authorize"
+              method="post">
+            <div class="row">
+                <div class="span4 offset2 well-small" style="text-align:left">Do you authorize
+                    "<c:choose>
+                        <c:when test="${empty client.clientName}">
+                            <c:out value="${client.clientId}"/>
+                        </c:when>
+                        <c:otherwise>
+                            <c:out value="${client.clientName}"/>
+                        </c:otherwise>
+                    </c:choose>" to sign you into their site
+                    using your identity?
+                    <a class="small" href="#" onclick="$('#description').toggle('fast')">more information</a>
 
+                    <p>
+                    <blockquote id="description" style="display: none">
+                        <c:choose>
+                            <c:when test="${empty client.clientDescription}">
+                                No additional information available.
+                            </c:when>
+                            <c:otherwise>
+                                <c:out value="${client.clientDescription}"/>
+                            </c:otherwise>
+                        </c:choose>
 
+                    </blockquote>
+                    </p>
+                </div>
+                <div class="span4">
+                    <fieldset style="text-align:left" class="well">
+                        <legend style="margin-bottom: 0;">Access to:</legend>
+                        <label for="option1"></label>
+                        <input type="checkbox" name="option1" id="option1" checked="checked"> basic profile information
+                        <label for="option2"></label>
+                        <input type="checkbox" name="option1" id="option2" checked="checked"> email address
+                        <label for="option3"></label>
+                        <input type="checkbox" name="option3" id="option3" checked="checked"> address
+                        <label for="option4"></label>
+                        <input type="checkbox" name="option4" id="option4" checked="checked"> phone number
+                        <label for="option5"></label>
+                        <input type="checkbox" name="option5" id="option5" checked="checked"> offline access
+                    </fieldset>
+                </div>
 
-        <form name="confirmationForm" style="display:inline" action="<%=request.getContextPath()%>/oauth/authorize" method="post">
+            </div>
+
 
             <div class="row">
                 <input id="user_oauth_approval" name="user_oauth_approval" value="true" type="hidden"/>
@@ -39,18 +81,8 @@
                 <input name="deny" value="Deny" type="submit" onclick="$('#user_oauth_approval').attr('value',false)"
                        class="btn btn-secondary btn-large"/>
             </div>
-            <div class="row control-group">
-                <label for="option1"></label>
-                <input name="option1" id="option1" type="checkbox"> Check me out
 
-                <label for="option2"></label>
-                <input name="option1" id="option2" type="checkbox"> Check me out
-
-            </div>
         </form>
-        <div>
-        <a href="#" class="small">learn more</a>
-        </div>
 
         </authz:authorize>
 

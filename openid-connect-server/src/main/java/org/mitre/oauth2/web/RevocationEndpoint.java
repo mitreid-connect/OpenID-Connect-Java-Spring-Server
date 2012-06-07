@@ -15,6 +15,8 @@
  ******************************************************************************/
 package org.mitre.oauth2.web;
 
+import java.security.Principal;
+
 import org.mitre.oauth2.exception.PermissionDeniedException;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
@@ -47,23 +49,35 @@ public class RevocationEndpoint {
 	// TODO
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
 	@RequestMapping("/oauth/revoke")
-	public ModelAndView revoke(@RequestParam("token") String tokenValue, 
+	public ModelAndView revoke(@RequestParam("token") String tokenValue, Principal principal,
 			ModelAndView modelAndView) {
 
-		OAuth2RefreshTokenEntity refreshToken = tokenServices.getRefreshToken(tokenValue);
-		OAuth2AccessTokenEntity accessToken = tokenServices.getAccessToken(tokenValue);
+		
+		OAuth2RefreshTokenEntity refreshToken = null;
+		OAuth2AccessTokenEntity accessToken = null;
+		try {
+	        refreshToken = tokenServices.getRefreshToken(tokenValue);
+        } catch (InvalidTokenException e) {
+	        // it's OK if either of these tokens are bad
+        }
 
+		try {
+	        accessToken = tokenServices.readAccessToken(tokenValue);
+        } catch (InvalidTokenException e) {
+	        // it's OK if either of these tokens are bad
+        }
+		
 		if (refreshToken == null && accessToken == null) {
 			// TODO: this should throw a 400 with a JSON error code
 			throw new InvalidTokenException("Invalid OAuth token: " + tokenValue);
 		}
 		
-		// TODO: there should be a way to do this in SPEL, right?
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		if (auth instanceof OAuth2Authentication) {
+		if (principal instanceof OAuth2Authentication) {
+			OAuth2AccessTokenEntity tok = tokenServices.getAccessToken((OAuth2Authentication) principal);
+			
 			// we've got a client acting on its own behalf, not an admin
 			//ClientAuthentication clientAuth = (ClientAuthenticationToken) ((OAuth2Authentication) auth).getClientAuthentication();
-			AuthorizationRequest clientAuth = ((OAuth2Authentication) auth).getAuthorizationRequest();
+			AuthorizationRequest clientAuth = ((OAuth2Authentication) principal).getAuthorizationRequest();
 
 			if (refreshToken != null) {
 				if (!refreshToken.getClient().getClientId().equals(clientAuth.getClientId())) {

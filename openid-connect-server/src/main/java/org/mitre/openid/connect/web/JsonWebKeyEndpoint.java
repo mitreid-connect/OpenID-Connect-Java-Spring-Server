@@ -27,6 +27,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Maps;
+
 @Controller
 public class JsonWebKeyEndpoint {
 
@@ -36,14 +40,16 @@ public class JsonWebKeyEndpoint {
 	@RequestMapping("/jwk")
 	public ModelAndView getJwk() {
 		
-		Collection<PublicKey> keys = jwtService.getAllPublicKeys().values();
+		// get all public keys for display
+		// map from key id to public key for that signer
+		Map<String, PublicKey> keys = jwtService.getAllPublicKeys();
+
+		// put them into a bidirectional map to get at key IDs
+		BiMap<String, PublicKey> biKeys = HashBiMap.create(keys);
 		
 		// TODO: check if keys are empty, return a 404 here or just an empty list?
 		
-		Map<String, Object> jwk = new HashMap<String, Object>();
-		jwk.put("jwk", keys);
-		
-		return new ModelAndView("jwkKeyList", "entity", jwk);
+		return new ModelAndView("jwkKeyList", "keys", biKeys);
 	}
 	
 }
