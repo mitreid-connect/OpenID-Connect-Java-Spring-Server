@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.mitre.jwt.signer;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import org.mitre.jwt.model.Jwt;
@@ -52,9 +53,10 @@ public abstract class AbstractJwtSigner implements JwtSigner {
      * 
      * @param jwt the jwt to sign
      * @return the signed jwt
+     * @throws NoSuchAlgorithmException 
      */
 	@Override
-	public Jwt sign(Jwt jwt) {
+	public Jwt sign(Jwt jwt) throws NoSuchAlgorithmException {
 		if (!Objects.equal(algorithm, jwt.getHeader().getAlgorithm())) {
 			// algorithm type doesn't match
 			// TODO: should this be an error or should we just fix it in the incoming jwt?
@@ -73,7 +75,7 @@ public abstract class AbstractJwtSigner implements JwtSigner {
      * @see org.mitre.jwt.JwtSigner#verify(java.lang.String)
      */
     @Override
-    public boolean verify(String jwtString) {
+    public boolean verify(String jwtString) throws NoSuchAlgorithmException {
 		// split on the dots
 		List<String> parts = Lists.newArrayList(Splitter.on(".").split(jwtString));
 		
@@ -92,5 +94,5 @@ public abstract class AbstractJwtSigner implements JwtSigner {
     }
 	
     
-    protected abstract String generateSignature(String signatureBase);
+    protected abstract String generateSignature(String signatureBase) throws NoSuchAlgorithmException;
 }
