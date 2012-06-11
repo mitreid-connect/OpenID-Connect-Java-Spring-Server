@@ -29,9 +29,10 @@ import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-public class JSONUserInfoView extends AbstractView{
+public class POCOUserInfoView extends AbstractView{
 	
 	/* (non-Javadoc)
 	 * @see org.springframework.web.servlet.view.AbstractView#renderMergedOutputModel(java.util.Map, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
@@ -62,44 +63,92 @@ public class JSONUserInfoView extends AbstractView{
 
 		response.setContentType("application/json");
 		Writer out = response.getWriter();
-		gson.toJson(toJson(userInfo),out);
+		gson.toJson(toPoco(userInfo),out);
 	}
 	
-	private JsonObject toJson(UserInfo ui) {
-		JsonObject obj = new JsonObject();
+	private JsonObject toPoco(UserInfo ui) {
+		JsonObject poco = new JsonObject();
 		
-		obj.addProperty("user_id", ui.getUserId());
-		obj.addProperty("name", ui.getName());
-		obj.addProperty("given_name", ui.getGivenName());
-		obj.addProperty("family_name", ui.getFamilyName());
-		obj.addProperty("middle_name", ui.getMiddleName());
-		obj.addProperty("nickname", ui.getNickname());
-		obj.addProperty("email", ui.getEmail());
-		obj.addProperty("profile", ui.getProfile());
-		obj.addProperty("picture", ui.getPicture());
-		obj.addProperty("email", ui.getEmail());
-		obj.addProperty("website", ui.getWebsite());
-		obj.addProperty("verified", ui.getVerified());
-		obj.addProperty("gender", ui.getGender());
-		obj.addProperty("zone_info", ui.getZoneinfo());
-		obj.addProperty("locale", ui.getLocale());
-		obj.addProperty("phone_number", ui.getPhoneNumber());
-		obj.addProperty("updated_time", ui.getUpdatedTime());
+		// Envelope Info
+		poco.addProperty("startIndex", 0);
+		poco.addProperty("itemsPerPage", 1);
+		poco.addProperty("totalResults", 1);
 		
-		if (ui.getAddress() != null) {
-
+		// Build the entry for this userInfo, then add it to entries, then add it to poco
+		JsonObject entry = new JsonObject();
+		entry.addProperty("id", ui.getUserId());
+		entry.addProperty("displayName", ui.getNickname());
+		
+		if(ui.getFamilyName() != null 
+				|| ui.getGivenName() != null 
+				|| ui.getMiddleName() != null
+				|| ui.getName() != null) {
+			JsonObject name = new JsonObject();
+			name.addProperty("familyName", ui.getFamilyName());
+			name.addProperty("givenName", ui.getGivenName());
+			name.addProperty("middleName", ui.getMiddleName());
+			name.addProperty("formatted", ui.getName());
+			entry.add("name", name);
+		}
+		
+		entry.addProperty("gender", ui.getGender());
+		
+		if(ui.getEmail() != null) {
+			JsonObject email = new JsonObject();
+			email.addProperty("value", ui.getEmail());
+			
+			JsonArray emailArray = new JsonArray();
+			emailArray.add(email);
+			entry.add("emails", emailArray);
+		}
+		
+		if(ui.getPhoneNumber() != null){
+			JsonObject phone = new JsonObject();
+			phone.addProperty("value", ui.getPhoneNumber());
+			
+			JsonArray phoneArray = new JsonArray();
+			phoneArray.add(phone);
+			entry.add("phoneNumbers", phoneArray);
+		}
+		
+		if(ui.getPicture() != null){
+			JsonObject photo = new JsonObject();
+			photo.addProperty("value", ui.getPicture());
+			
+			JsonArray photoArray = new JsonArray();
+			photoArray.add(photo);
+			entry.add("photos", photoArray);
+		}
+		
+		if(ui.getWebsite() != null) {
+			JsonObject website = new JsonObject();
+			website.addProperty("value", ui.getWebsite());
+			
+			JsonArray websiteArray = new JsonArray();
+			websiteArray.add(website);
+			entry.add("urls", websiteArray);
+		}
+		
+		if(ui.getAddress() != null) {
 			JsonObject addr = new JsonObject();
 			addr.addProperty("formatted", ui.getAddress().getFormatted());
-			addr.addProperty("street_address", ui.getAddress().getStreetAddress());
+			addr.addProperty("streetAddress", ui.getAddress().getStreetAddress());
 			addr.addProperty("locality", ui.getAddress().getLocality());
 			addr.addProperty("region", ui.getAddress().getRegion());
-			addr.addProperty("postal_code", ui.getAddress().getPostalCode());
+			addr.addProperty("postalCode", ui.getAddress().getPostalCode());
 			addr.addProperty("country", ui.getAddress().getCountry());
 			
-			obj.add("address", addr);
+			JsonArray addrArray = new JsonArray();
+			addrArray.add(addr);
+			entry.add("addresses", addrArray);
 		}
-
 		
-		return obj;
+		entry.addProperty("updated", ui.getUpdatedTime());
+		
+		JsonArray entryArray = new JsonArray();
+		entryArray.add(entry);
+		poco.add("entry", entryArray);
+		return poco;
 	}
+
 }

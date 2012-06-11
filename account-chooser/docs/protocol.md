@@ -74,7 +74,7 @@ The following is non-normative example of a responses. Line wraps are for displa
 	
 A sequence diagram of a successful interaction would be:
 
-![Success](./success.png)	
+![Success](https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server/raw/master/account-chooser/docs/success.png)	
 
 #### The Client ID is not Supported by the Account Chooser Application
 
@@ -97,7 +97,7 @@ The following is a non-normative example. Line wraps after the second line are f
 	
 A sequence diagram of the interaction where the Account Chooser was not configured to support the Client would be:
 
-![Not supported](./not_supported.png)		
+![Not supported](https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server/raw/master/account-chooser/docs/not_supported.png)		
  
 #### End-User refuses to select an Account
 
@@ -119,7 +119,7 @@ The following is a non-normative example. Line wraps after the second line are f
 	
 A sequence diagram of an interaction where the End-User refused to select an Account would be:
 
-![Cancel](./cancel.png)		
+![Cancel](https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server/raw/master/account-chooser/docs/cancel.png)		
 
 [OpenID Connect Standard]: http://openid.net/specs/openid-connect-standard-1_0.html "OpenID Connect Standard 1.0"
 [OpenID Connect Standard]: http://openid.net/specs/openid-connect-standard-1_0.html#code_flow "Authorization Code Flow, OpenID Connect Standard"

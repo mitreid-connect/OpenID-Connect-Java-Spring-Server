@@ -19,15 +19,15 @@ package org.mitre.openid.connect.exception;
  * @author aanganes, nemonik
  *
  */
-public class ExpiredTokenException extends RuntimeException {
-
+public class UnknownUserInfoSchemaException extends RuntimeException {
+	
 	private static final long serialVersionUID = 1L;
-
-	public ExpiredTokenException() {
+	
+	public UnknownUserInfoSchemaException() {
 		super();
 	}
 
-	public ExpiredTokenException(String message) {
+	public UnknownUserInfoSchemaException(String message) {
 		super(message);
 	}
 	

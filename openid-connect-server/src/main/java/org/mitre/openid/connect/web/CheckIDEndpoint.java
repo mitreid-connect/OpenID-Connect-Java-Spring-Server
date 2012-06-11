@@ -25,6 +25,9 @@ import org.mitre.openid.connect.exception.InvalidJwtSignatureException;
 import org.mitre.openid.connect.model.IdToken;
 import org.mitre.util.Utility;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -39,12 +42,15 @@ public class CheckIDEndpoint {
 	@Autowired
 	private ConfigurationPropertiesBean configBean;
 	
+	@PreAuthorize("hasRole('ROLE_USER')")
 	@RequestMapping("/checkid")
 	public ModelAndView checkID(@RequestParam("access_token") String tokenString, ModelAndView mav, HttpServletRequest request) {
 		
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		
 		if (!jwtSignerService.validateSignature(tokenString)) {
 			// can't validate 
-			throw new InvalidJwtSignatureException(); // TODO: attach a view to this exception
+			throw new InvalidJwtSignatureException("The Signature could not be validated.");
 		}
 		
 		// it's a valid signature, parse the token
@@ -53,12 +59,12 @@ public class CheckIDEndpoint {
 		// check the expiration
 		if (jwtSignerService.isJwtExpired(token)) {
 			// token has expired
-			throw new ExpiredTokenException(); // TODO create a view for this exception
+			throw new ExpiredTokenException("The token has expired.");
 		}
 		
 		// check the issuer (sanity check)
 		if (!jwtSignerService.validateIssuedJwt(token, configBean.getIssuer())) {
-			throw new InvalidJwtIssuerException(); // TODO: create a view for this exception
+			throw new InvalidJwtIssuerException("The JWT issuer is invalid.");
 		}
 		
 		// pass the claims directly (the view doesn't care about other fields)

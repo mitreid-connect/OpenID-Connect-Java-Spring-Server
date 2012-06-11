@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:tx="http://www.springframework.org/schema/tx" 
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:security="http://www.springframework.org/schema/security"
-	xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:task="http://www.springframework.org/schema/task" 
 	xmlns:oauth="http://www.springframework.org/schema/security/oauth2"
 	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
 		http://www.springframework.org/schema/security/oauth2 http://www.springframework.org/schema/security/spring-security-oauth2-1.0.xsd
@@ -16,8 +16,9 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
 
 	<!-- Scan for components -->
-	<context:component-scan annotation-config="true" base-package="org.mitre"/>
-	
+	<context:component-scan annotation-config="true"
+		base-package="org.mitre" />
+
 	<!-- Enables the Spring MVC @Controller programming model -->
 	<tx:annotation-driven transaction-manager="transactionManager" />
 	<mvc:annotation-driven />
@@ -27,20 +28,29 @@
 	<import resource="server-config.xml" />
 
 	<!-- Import the data context -->
-	<import resource="data-context.xml" />	
+	<import resource="data-context.xml" />
 
-    <!-- Spring Security configuration -->
-	<security:http pattern="/oauth/token" create-session="stateless" authentication-manager-ref="clientAuthenticationManager" 
+	<!-- Spring Security configuration -->
+
+	<oauth:resource-server id="resourceServerFilter"
+		token-services-ref="defaultOAuth2ProviderTokenService" />
+
+	<security:http pattern="/oauth/token" create-session="stateless"
+		authentication-manager-ref="clientAuthenticationManager"
 		entry-point-ref="oauthAuthenticationEntryPoint">
-		<security:intercept-url pattern="/oauth/token" access="IS_AUTHENTICATED_FULLY" />
+		<security:intercept-url pattern="/oauth/token"
+			access="IS_AUTHENTICATED_FULLY" />
 		<security:anonymous enabled="false" />
 		<security:http-basic entry-point-ref="oauthAuthenticationEntryPoint" />
-		<!-- include this only if you need to authenticate clients via request parameters -->
-		<security:custom-filter ref="clientCredentialsTokenEndpointFilter" before="BASIC_AUTH_FILTER" />
+		<!-- include this only if you need to authenticate clients via request 
+			parameters -->
+		<security:custom-filter ref="clientCredentialsTokenEndpointFilter"
+			before="BASIC_AUTH_FILTER" />
 		<security:access-denied-handler ref="oauthAccessDeniedHandler" />
 	</security:http>
 
-	<bean id="oauthAuthenticationEntryPoint" class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint">
+	<bean id="oauthAuthenticationEntryPoint"
+		class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint">
 		<property name="realmName" value="openidconnect" />
 	</bean>
 
@@ -58,37 +68,46 @@
 		<oauth:authorization-code authorization-code-services-ref="authCodeServices" />
 	</oauth:authorization-server>
 
-	<bean id="oauthAccessDeniedHandler" class="org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler" />
+	<bean id="oauthAccessDeniedHandler"
+		class="org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler" />
 
-	<bean id="clientCredentialsTokenEndpointFilter" class="org.springframework.security.oauth2.provider.client.ClientCredentialsTokenEndpointFilter">
+	<bean id="clientCredentialsTokenEndpointFilter"
+		class="org.springframework.security.oauth2.provider.client.ClientCredentialsTokenEndpointFilter">
 		<property name="authenticationManager" ref="clientAuthenticationManager" />
 	</bean>
 
-	<authentication-manager id="clientAuthenticationManager" xmlns="http://www.springframework.org/schema/security">
+	<authentication-manager id="clientAuthenticationManager"
+		xmlns="http://www.springframework.org/schema/security">
 		<authentication-provider user-service-ref="clientUserDetailsService" />
 	</authentication-manager>
 
 	<bean id="authorizationRequestFactory" class="org.springframework.security.oauth2.provider.DefaultAuthorizationRequestFactory">
 		<constructor-arg>
-			<bean class="org.mitre.oauth2.service.impl.DefaultOAuth2ClientDetailsEntityService"/>
+			<bean
+				class="org.mitre.oauth2.service.impl.DefaultOAuth2ClientDetailsEntityService" />
 		</constructor-arg>
-	</bean>	
-
-	<bean class="org.springframework.security.oauth2.provider.approval.TokenServicesUserApprovalHandler" id="userApprovalHandler">
-		<property name="tokenServices" ref="defaultOAuth2ProviderTokenService"/>
 	</bean>
 
-	<bean id="authCodeServices" class="org.springframework.security.oauth2.provider.code.InMemoryAuthorizationCodeServices"/>
+	<bean
+		class="org.springframework.security.oauth2.provider.approval.TokenServicesUserApprovalHandler"
+		id="userApprovalHandler">
+		<property name="tokenServices" ref="defaultOAuth2ProviderTokenService" />
+	</bean>
+
+	<bean id="authCodeServices"
+		class="org.springframework.security.oauth2.provider.code.InMemoryAuthorizationCodeServices" />
 
 	<!-- user services -->
 	<import resource="user-context.xml" />
 
-<!-- End Spring Security configuration -->	
-		
-<!-- JPA  -->
-	
-	<bean id="jpaAdapter" class="org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter">
-		<property name="databasePlatform" value="org.eclipse.persistence.platform.database.MySQLPlatform" />
+	<!-- End Spring Security configuration -->
+
+	<!-- JPA -->
+
+	<bean id="jpaAdapter"
+		class="org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter">
+		<property name="databasePlatform"
+			value="org.eclipse.persistence.platform.database.MySQLPlatform" />
 		<property name="showSql" value="true" />
 	</bean>
 
@@ -100,7 +119,7 @@
 		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
 		<property name="persistenceUnitName" value="openidPersistenceUnit" />
 		<property name="dataSource" ref="dataSource" />
-        <property name="jpaVendorAdapter" ref="jpaAdapter" />
+		<property name="jpaVendorAdapter" ref="jpaAdapter" />
 		<property name="jpaPropertyMap">
 			<map>
 				<entry key="eclipselink.weaving" value="false" />
@@ -110,16 +129,17 @@
 		</property>
 	</bean>
 
-<!-- End JPA -->
+	<!-- End JPA -->
 
-<!-- Crypto -->
-	
+	<!-- Crypto -->
+
 	<bean id="defaultKeystore" class="org.mitre.jwt.signer.service.impl.KeyStore">
 		<constructor-arg name="location" value="classpath:keystore.jks" />
 		<constructor-arg name="password" value="changeit" />
 	</bean>
 
-	<bean id="defaultsignerService" class="org.mitre.jwt.signer.service.impl.JwtSigningAndValidationServiceDefault">
+	<bean id="defaultsignerService"
+		class="org.mitre.jwt.signer.service.impl.JwtSigningAndValidationServiceDefault">
 		<property name="signers">
 			<map>
 				<entry key="rsa1">
@@ -137,49 +157,77 @@
 					</bean>
 				</entry>
 			</map>
-		</property>	
-	</bean>	
+		</property>
+	</bean>
 
-<!-- End Crypto -->
+	<!-- End Crypto -->
 
-<!-- View configuration -->
+	<!-- View configuration -->
 
-	<!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources directory -->
+	<!-- Handles HTTP GET requests for /resources/** by efficiently serving 
+		up static resources in the ${webappRoot}/resources directory -->
 	<mvc:resources mapping="/resources/**" location="/resources/" />
 
-	<!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
-	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
+	<!-- Resolves views selected for rendering by @Controllers to .jsp resources 
+		in the /WEB-INF/views directory -->
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="viewClass"
+			value="org.springframework.web.servlet.view.JstlView" />
 		<property name="prefix" value="/WEB-INF/views/" />
 		<property name="suffix" value=".jsp" />
-		<property name="order" value="2"/>
+		<property name="order" value="2" />
 	</bean>
-	
+
 	<!-- Resolve views based on string names -->
-	<bean class="org.springframework.web.servlet.view.BeanNameViewResolver" >
-		<property name="order" value="1"/>
+	<bean class="org.springframework.web.servlet.view.BeanNameViewResolver">
+		<property name="order" value="1" />
 	</bean>
 
 	<!-- Map our custom exception classes to named views -->
-<!-- 	<bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver"> -->
-<!-- 	   <property name="exceptionMappings"> -->
-<!-- 	   </property> -->
-<!-- 	</bean> -->
+	<!-- <bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver"> -->
+	<!-- <property name="exceptionMappings"> -->
+	<!-- </property> -->
+	<!-- </bean> -->
 
 	<!-- JSON views for each type of model object -->
+	
 	<bean id="jsonOpenIdConfigurationView" class="org.mitre.swd.view.JsonOpenIdConfigurationView" />
 	<bean id="jsonSwdResponseView" class="org.mitre.swd.view.SwdResponse" />
-	<bean id="jwkKeyList" class="org.mitre.openid.connect.view.JwkKeyListView" />
+	<bean id="jsonXrdResponseView" class="org.mitre.swd.view.XrdJsonResponse" />
 	
- 	<bean id="jsonUserInfoView" class="org.mitre.openid.connect.view.JSONUserInfoView"/>
- 	<bean id="jsonIdTokenView" class="org.mitre.openid.connect.view.JSONIdTokenView"/>
-    <bean id="jsonClientView" class="org.mitre.openid.connect.view.JSONClientView" />
+	<bean id="jwkKeyList" class="org.mitre.openid.connect.view.JwkKeyListView" />
 
-<!-- End view configuration -->
+	<bean id="jsonUserInfoView" class="org.mitre.openid.connect.view.JSONUserInfoView" />
+	<bean id="pocoUserInfoView" class="org.mitre.openid.connect.view.POCOUserInfoView" />
+	<bean id="jsonIdTokenView" class="org.mitre.openid.connect.view.JSONIdTokenView" />
+	<bean id="jsonClientView" class="org.mitre.openid.connect.view.JSONClientView" />
+
+	<bean name="exceptionAsJSONView" class="org.mitre.openid.connect.view.ExceptionAsJSONView" />
+
+	<bean
+		class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+		<property name="exceptionMappings">
+			<props>
+				<prop key="org.mitre.openid.connect.web.InvalidJwtSignatureException">
+					exceptionAsJSONView
+				</prop>
+				<prop key="org.mitre.openid.connect.web.ExpiredTokenException">
+					exceptionAsJSONView
+				</prop>
+				<prop key="org.mitre.openid.connect.web.InvalidJwtIssuerException">
+					exceptionAsJSONView
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<!-- End view configuration -->
 
 	<!-- scheduled tasks -->
-<!-- 	<task:scheduler id="taskScheduler" pool-size="10" /> -->
-<!-- 	<task:executor id="taskExecutor" pool-size="5" /> -->
-<!-- 	<task:annotation-driven scheduler="taskScheduler" executor="taskExecutor" /> -->
+	<!-- <task:scheduler id="taskScheduler" pool-size="10" /> -->
+	<!-- <task:executor id="taskExecutor" pool-size="5" /> -->
+	<!-- <task:annotation-driven scheduler="taskScheduler" executor="taskExecutor" 
+		/> -->
 
 </beans>
