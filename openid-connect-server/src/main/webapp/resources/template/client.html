@@ -1,4 +1,7 @@
 <script type="text/html" id="tmpl-client">
+    <td>
+        <%=clientId%>
+    </td>
 
     <td>
         <%=clientName%>
@@ -30,9 +33,7 @@
             <% } %>
         </ul>
     </td>
-    <td>
-        <%=authorities[0]%>
-    </td>
+
     <td>
         <%=clientDescription%>
     </td>
@@ -57,11 +58,11 @@
     <table id="client-table" class="table">
         <thead>
         <tr>
+            <th>ID</th>
             <th>Name</th>
             <th>Redirect URI(s)</th>
             <th>Grant Types</th>
             <th>Scope</th>
-            <th>Authority</th>
             <th>Description</th>
             <th>Refresh Tokens</th>
             <th class="span1"></th>
@@ -86,7 +87,7 @@
     <div class="">
         <form>
             <fieldset>
-                <legend>Details</legend>
+                <legend>Details <%=(clientId != null ? 'for ' + clientId : '')%></legend>
 
                 <div class="well">
 
@@ -94,20 +95,22 @@
                         <div class="span6">
                             <span class="control-group" id="clientName">
                             <label>Client name</label>
-                            <input value="<%=clientName%>" type="text" class="" placeholder="Type something"> <span class="help-inline">This must be more than three characters and can only be alpha-numeric </span>
+                            <input value="<%=clientName%>" maxlength="100" type="text" class="" placeholder="Type something"> <span class="help-inline"></span>
                             </span>
                             <span class="control-group" id="registeredRedirectUri">
                             <label>Redirect URI(s)</label>
                                  <textarea class="input-xlarge" placeholder="http://"
-                                           rows="3"><% for (var i in registeredRedirectUri) { %><%=registeredRedirectUri[i]+"\n"%><% } %></textarea> <span class="help-inline">You may enter multiple URLs separated by a new lines</span>
+                                           rows="3"><% for (var i in registeredRedirectUri) { %><%=registeredRedirectUri[i]+"\n"%><% } %></textarea> <span class="help-inline">You may enter multiple URIs separated by a new lines</span>
                             </span>
                         </div>
                         <div class="span6">
                             <span class="control-group" id="clientDescription">
                             <label>Description</label>
-                            <textarea class="input-xlarge" placeholder="Type a description"
-                                      rows="3"><%=clientDescription%></textarea> <span class="help-inline">This must be more than three characters and can only be alpha-numeric</span>
+                            <textarea class="input-xlarge" placeholder="Type a description" maxlength="200"
+                                      rows="3"><%=clientDescription%></textarea> <span class="help-inline"></span>
                             </span>
+
+
                         </div>
                     </div>
 
@@ -129,51 +132,23 @@
 
                 <div class="row-fluid">
 
-                    <div class="span4 control-group">
+                    <div class="span4 control-group" id="scope">
 
-                        <label class="control-label">Grant Types</label>
+                        <label class="control-label">Scope</label>
 
-                        <div class="controls">
-                            <label class="checkbox">
-                                <input type="checkbox" name="grant-type-checkbox-list1" value="option1">
-                                Option one
-                            </label>
-                            <label class="checkbox">
-                                <input type="checkbox" name="grant-type-checkbox-list2" value="option2">
-                                Option two
-                            </label>
-                            <label class="checkbox">
-                                <input type="checkbox" name="grant-type-checkbox-list3" value="option3">
-                                Option three
-                            </label>
-
-                            <p class="help-block"><strong>Note:</strong> Labels surround all the options for
-                                much larger click areas and a more usable form.</p>
-                        </div>
+                        <textarea rows="3" class="xlarge" placeholder="openid"
+                                  id="textarea2" name="textarea2"><% for (var i in scope) { %><%=scope[i]+","%><% }%></textarea>
+                          <span class="help-block">
+                            Please enter scopes separated by commas
+                          </span>
 
                     </div>
 
-                    <div class="span4 control-group">
+                    <div class="span4 control-group" id="clientSecret">
 
-                        <label class="control-label">Auth Types</label>
-
-                        <div class="controls">
-                            <label class="checkbox">
-                                <input type="checkbox" name="auth-type-checkbox-list1" value="option1">
-                                Option one
-                            </label>
-                            <label class="checkbox">
-                                <input type="checkbox" name="auth-type-checkbox-list2" value="option2">
-                                Option two
-                            </label>
-                            <label class="checkbox">
-                                <input type="checkbox" name="auth-type-checkbox-list3" value="option3">
-                                Option three
-                            </label>
-
-                            <p class="help-block"><strong>Note:</strong> Labels surround all the options for
-                                much larger click areas and a more usable form.</p>
-                        </div>
+                        <label>Client Secret</label>
+                        <input value="<%=clientSecret%>" maxlength="100" type="text" class=""
+                               placeholder="Type a secret"> <span class="help-inline">If you leave this blank a client secret will be generated for you automatically.</span>
 
                     </div>
 
@@ -187,7 +162,7 @@
                                 <input type="text" class="" value="<%=accessTokenTimeout%>" id="access-token-timeout-seconds" size="16"><span
                                     class="add-on">seconds</span>
                             </div>
-                            <span class="help-inline">Here's more help text</span>
+                            <span class="help-inline">Enter this time in seconds</span>
                         </div>
                         </span>
                         <span class="control-group" id="refreshTokenTimeout">
@@ -199,24 +174,10 @@
                                 <input type="text" class="" value="<%=refreshTokenTimeout%>" id="refresh-token-timeout-seconds" size="16"><span
                                     class="add-on">seconds</span>
                             </div>
-                            <span class="help-inline">Here's more help text</span>
+                            <span class="help-inline">Enter this time in seconds</span>
                         </div>
                         </span>
                     </div>
-
-
-                    <div id="scope" class="span12 control-group">
-                        <label for="textarea2">Scope</label>
-
-                        <div class="input">
-                            <textarea rows="3" class="xlarge span10" placeholder="email,first name, last name"
-                                      id="textarea2" name="textarea2"><% for (var i in scope) { %><%=scope[i]+","%><% } %></textarea>
-              <span class="help-block">
-                Please enter scopes separated by commas
-              </span>
-                        </div>
-                    </div>
-
 
                 </div>
             </fieldset>

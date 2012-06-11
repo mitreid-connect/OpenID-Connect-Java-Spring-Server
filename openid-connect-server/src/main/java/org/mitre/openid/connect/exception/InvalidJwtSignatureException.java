@@ -15,11 +15,20 @@
  ******************************************************************************/
 package org.mitre.openid.connect.exception;
 
+/**
+ * @author aanganes, nemonik
+ *
+ */
 public class InvalidJwtSignatureException extends RuntimeException {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
+	
+	public InvalidJwtSignatureException() {
+		super();
+	}
 
+	public InvalidJwtSignatureException(String message) {
+		super(message);
+	}
+	
 }

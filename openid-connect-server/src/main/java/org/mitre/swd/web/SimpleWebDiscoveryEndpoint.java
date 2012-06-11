@@ -20,7 +20,9 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.mitre.util.Utility;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,11 +33,14 @@ import com.google.common.collect.Lists;
 @Controller
 public class SimpleWebDiscoveryEndpoint {
 
+	@Autowired
+	ConfigurationPropertiesBean config;
+	
 	@RequestMapping(value="/.well-known/simple-web-discovery", 
 					params={"principal", "service=http://openid.net/specs/connect/1.0/issuer"})
-	public ModelAndView openIdConnectIssuerDiscovery(@RequestParam("principal") String principal, ModelAndView modelAndView, HttpServletRequest request) {
+	public ModelAndView openIdConnectIssuerDiscovery(@RequestParam("principal") String principal, ModelAndView modelAndView) {
 		
-		String baseUrl = Utility.findBaseUrl(request);
+		String baseUrl = config.getIssuer();
 		
 		// look up user, see if they're local
 		// if so, return this server
@@ -51,15 +56,26 @@ public class SimpleWebDiscoveryEndpoint {
 		return modelAndView;
 	}
 	
+	@RequestMapping(value="/.well-known/host-meta",
+			params={"resource", "rel=http://openid.net/specs/connect/1.0/issuer"})
+	public ModelAndView xrdDiscovery(@RequestParam("resource") String resource, ModelAndView modelAndView) {
+		
+		Map<String, String> relMap = new HashMap<String, String>();
+		relMap.put("http://openid.net/specs/connect/1.0/issuer", config.getIssuer());
+		
+		modelAndView.getModel().put("links", relMap);
+		
+		modelAndView.setViewName("jsonXrdResponseView");
+		
+		return modelAndView;
+	}
 
 	@RequestMapping("/.well-known/openid-configuration")
-	public ModelAndView providerConfiguration(ModelAndView modelAndView, HttpServletRequest request) {
+	public ModelAndView providerConfiguration(ModelAndView modelAndView) {
 
-		String baseUrl = Utility.findBaseUrl(request);
-		
 		/*	
 		 * version 	string 	Version of the provider response. "3.0" is the default.
-		 * issuer 	string 	The https: URL with no path component that the OP asserts as its Issuer Identifier
+		 * issuer 	string 	The https: URL that the OP asserts as its Issuer Identifier
 		 * authorization_endpoint 	string 	URL of the OP's Authentication and Authorization Endpoint [OpenID.Messages]
 		 * 	token_endpoint 	string 	URL of the OP's OAuth 2.0 Token Endpoint [OpenID.Messages]
 		 * 	userinfo_endpoint 	string 	URL of the OP's UserInfo Endpoint [OpenID.Messages]
@@ -81,18 +97,24 @@ public class SimpleWebDiscoveryEndpoint {
 		 * 	token_endpoint_auth_types_supported 	array 	A JSON array containing a list of authentication types supported by this Token Endpoint. The options are client_secret_post, client_secret_basic, client_secret_jwt, and private_key_jwt, as described in Section 2.2.1 of OpenID Connect Messages 1.0 [OpenID.Messages]. Other Authentication types may be defined by extension. If unspecified or omitted, the default is client_secret_basic HTTP Basic Authentication Scheme as specified in section 2.3.1 of OAuth 2.0 [OAuth2.0].
 		 * 	token_endpoint_auth_algs_supported 	array 	A JSON array containing a list of the JWS [JWS] signing algorithms supported by the Token Endpoint for the private_key_jwt method to encode the JWT [JWT]. Servers SHOULD support RS256.
 		 */
+		String baseUrl = config.getIssuer();
+		
+		if (!baseUrl.endsWith("/")) {
+			baseUrl = baseUrl.concat("/");
+		}
+
 		Map<String, Object> m = new HashMap<String, Object>();
 		m.put("version", "3.0");
-		m.put("issuer", baseUrl);
-		m.put("authorization_endpoint", baseUrl + "/authorize");
-		m.put("token_endpoint", baseUrl + "/oauth");
-		m.put("userinfo_endpoint", baseUrl + "/userinfo");
-		m.put("check_id_endpoint", baseUrl + "/checkid");
-		m.put("refresh_session_endpoint", baseUrl + "/refresh_session");
-		m.put("end_session_endpoint", baseUrl + "/end_session");
-		m.put("jwk_url", baseUrl + "/jwk");
-		m.put("registration_endpoint", baseUrl + "/register_client");
-		m.put("scopes_supported", Lists.newArrayList("openid"));
+		m.put("issuer", config.getIssuer());
+		m.put("authorization_endpoint", baseUrl + "openidconnect/auth");
+		m.put("token_endpoint", baseUrl + "openidconnect/token");
+		m.put("userinfo_endpoint", baseUrl + "userinfo");
+		m.put("check_id_endpoint", baseUrl + "checkid");
+		//m.put("refresh_session_endpoint", baseUrl + "/refresh_session");
+		//m.put("end_session_endpoint", baseUrl + "/end_session");
+		m.put("jwk_url", baseUrl + "jwk");
+		//m.put("registration_endpoint", baseUrl + "/register_client");
+		m.put("scopes_supported", Lists.newArrayList("openid", "email", "profile", "address", "phone"));
 		m.put("response_types_supported", Lists.newArrayList("code"));
 				
 		
