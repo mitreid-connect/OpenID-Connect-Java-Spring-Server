@@ -12,19 +12,19 @@
         <property name="scriptLocations" >
             <list>
             	<!-- OpenID Connect Data model -->
-                <value>file:src/main/webapp/db/tables/accesstoken.sql</value>
-                <value>file:src/main/webapp/db/tables/address.sql</value>
-                <value>file:src/main/webapp/db/tables/approvedsite.sql</value>
-                <value>file:src/main/webapp/db/tables/authorities.sql</value>
-                <value>file:src/main/webapp/db/tables/clientdetails.sql</value>
-                <value>file:src/main/webapp/db/tables/event.sql</value>
-                <value>file:src/main/webapp/db/tables/granttypes.sql</value>
-                <value>file:src/main/webapp/db/tables/idtoken.sql</value>
-				<value>file:src/main/webapp/db/tables/idtokenclaims.sql</value>
-				<value>file:src/main/webapp/db/tables/refreshtoken.sql</value>
-				<value>file:src/main/webapp/db/tables/scope.sql</value>
-				<value>file:src/main/webapp/db/tables/userinfo.sql</value>
-				<value>file:src/main/webapp/db/tables/whitelistedsite.sql</value>      
+                <value>file:db/tables/accesstoken.sql</value>
+                <value>file:db/tables/address.sql</value>
+                <value>file:db/tables/approvedsite.sql</value>
+                <value>file:db/tables/authorities.sql</value>
+                <value>file:db/tables/clientdetails.sql</value>
+                <value>file:db/tables/event.sql</value>
+                <value>file:db/tables/granttypes.sql</value>
+                <value>file:db/tables/idtoken.sql</value>
+				<value>file:db/tables/idtokenclaims.sql</value>
+				<value>file:db/tables/refreshtoken.sql</value>
+				<value>file:db/tables/scope.sql</value>
+				<value>file:db/tables/userinfo.sql</value>
+				<value>file:db/tables/whitelistedsite.sql</value>      
                 <!-- Preloaded data -->
                 <value>classpath:test-data.sql</value> 
             </list>

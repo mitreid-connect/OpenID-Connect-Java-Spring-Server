@@ -18,15 +18,15 @@
 
         validate:{
             clientName:{
-                required:true,
+               /* required:true,
                 pattern:/^[\w ]+$/,
-                minlength:3,
+                minlength:3,*/
                 maxlength:100
             },
             clientDescription:{
-                required:true,
+                /*required:true,
                 pattern:/^[\w ]+$/,
-                minlength:3,
+                minlength:3,*/
                 maxlength:200
             },
             accessTokenTimeout: {
@@ -44,14 +44,15 @@
 
         validateURI: function(attributeName, attributeValue) {
 
-            var expression = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
+            var expression = /^(?:([a-z0-9+.-]+:\/\/)((?:(?:[a-z0-9-._~!$&'()*+,;=:]|%[0-9A-F]{2})*)@)?((?:[a-z0-9-._~!$&'()*+,;=]|%[0-9A-F]{2})*)(:(?:\d*))?(\/(?:[a-z0-9-._~!$&'()*+,;=:@\/]|%[0-9A-F]{2})*)?|([a-z0-9+.-]+:)(\/?(?:[a-z0-9-._~!$&'()*+,;=:@]|%[0-9A-F]{2})+(?:[a-z0-9-._~!$&'()*+,;=:@\/]|%[0-9A-F]{2})*)?)(\?(?:[a-z0-9-._~!$&'()*+,;=:\/?@]|%[0-9A-F]{2})*)?(#(?:[a-z0-9-._~!$&'()*+,;=:\/?@]|%[0-9A-F]{2})*)?$/i;
             var regex = new RegExp(expression);
 
-            if (!attributeValue.every(function (url) {
-                if (url.match(regex)) {
-                    return true;
+
+            for (var i in attributeValue) {
+                if (!attributeValue[i].match(regex)) {
+                    return "Invalid URI";
                 }
-            })) return "Invalid URI";
+            }
 
 
         },
@@ -59,9 +60,10 @@
         // We can pass it default values.
         defaults:{
             clientName:"",
+            clientSecret:"",
             registeredRedirectUri:[""],
             authorizedGrantTypes:[],
-            scope:[""],
+            scope:["openid"],
             authorities:[],
             clientDescription:"",
             clientId:null,
@@ -114,19 +116,22 @@
 
         deleteClient:function () {
 
-            var self = this;
+            if (confirm("Are you sure sure you would like to delete this client?")) {
+                var self = this;
 
-            this.model.destroy({
-                success:function () {
-                    self.$el.fadeTo("fast", 0.00, function(){ //fade
-                        $(this).slideUp("fast", function() { //slide up
-                            $(this).remove(); //then remove from the DOM
+                this.model.destroy({
+                    success:function () {
+                        self.$el.fadeTo("fast", 0.00, function () { //fade
+                            $(this).slideUp("fast", function () { //slide up
+                                $(this).remove(); //then remove from the DOM
+                            });
                         });
-                    });
-                }
-            });
+                    }
+                });
 
-            app.clientListView.delegateEvents();
+                app.clientListView.delegateEvents();
+            }
+
             return false;
         },
 
@@ -185,8 +190,9 @@
 
             $('.control-group').removeClass('error');
 
-            this.model.set({
+            var valid = this.model.set({
                 clientName:$('#clientName input').val(),
+                clientSecret:$('#clientSecret input').val(),
                 registeredRedirectUri:$.trim($('#registeredRedirectUri textarea').val()).replace(/ /g,'').split("\n"),
                 clientDescription:$('#clientDescription textarea').val(),
                 allowRefresh:$('#allowRefresh').is(':checked'),
@@ -195,26 +201,28 @@
                 scope:$.map($('#scope textarea').val().replace(/,$/,'').replace(/\s/g,' ').split(","), $.trim)
             });
 
-            this.model.save(this.model, {
-                success:function () {
-                    app.navigate('clients', {trigger: true});
-                },
-                error:function() {
-
-                }
-            });
-
-            if (this.model.isNew() && this.model.isValid()) {
-                var self = this;
-                app.clientList.create(this.model, {
+            if (valid) {
+                this.model.save(this.model, {
                     success:function () {
-                        app.navigate('clients', {trigger: true});
+                        app.navigate('clients', {trigger:true});
                     },
-                    error:function() {
+                    error:function () {
 
                     }
                 });
 
+                if (this.model.isNew()) {
+                    var self = this;
+                    app.clientList.create(this.model, {
+                        success:function () {
+                            app.navigate('clients', {trigger:true});
+                        },
+                        error:function () {
+
+                        }
+                    });
+
+                }
             }
 
             return false;

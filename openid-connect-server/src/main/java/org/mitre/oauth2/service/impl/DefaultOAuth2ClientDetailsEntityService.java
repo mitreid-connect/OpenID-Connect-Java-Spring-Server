@@ -157,9 +157,13 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
     @Override
     public ClientDetailsEntity saveClient(ClientDetailsEntity client) {
 
+        if (client.getClientSecret().equals("")) {
+            client.setClientSecret(UUID.randomUUID().toString());
+        }
+
         // this must be a new client if we don't have a clientID
         // assign it a new ID
-        if (client.getClientId() == null || this.loadClientByClientId(client.getClientId()) == null) {
+        if (client.getClientId() == null || client.getClientId().equals("") || this.loadClientByClientId(client.getClientId()) == null) {
             client.setClientId(UUID.randomUUID().toString());
             return this.createClient(client);
         }  else {
