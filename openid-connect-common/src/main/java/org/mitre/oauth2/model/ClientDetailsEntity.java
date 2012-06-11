@@ -18,11 +18,23 @@
  */
 package org.mitre.oauth2.model;
 
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.CollectionTable;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.provider.ClientDetails;
@@ -62,6 +74,7 @@ public class ClientDetailsEntity implements ClientDetails {
     private String owner = ""; // userid of who registered it
     private Set<String> registeredRedirectUri = new HashSet<String>();
     private Set<String> resourceIds = new HashSet<String>();
+	private Map<String, Object> additionalInformation = new HashMap<String, Object>();
 
     //Additional properties added by OpenID Connect Dynamic Client Registration spec
 	//http://openid.net/specs/openid-connect-registration-1_0.html
@@ -534,6 +547,17 @@ public class ClientDetailsEntity implements ClientDetails {
 	@Override
 	public int getRefreshTokenValiditySeconds() {
 		return refreshTokenTimeout;
+	}
+
+	public void setAdditionalInformation(Map<String, Object> map) {
+		this.additionalInformation = map;
+	}
+	
+	//TODO: implement fully with db table or get removed from interface
+	@Override
+	@Transient
+	public Map<String, Object> getAdditionalInformation() {
+		return this.additionalInformation;
 	}
 
 /*	*//**
