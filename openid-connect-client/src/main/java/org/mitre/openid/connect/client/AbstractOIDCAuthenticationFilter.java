@@ -28,6 +28,7 @@ import java.security.SecureRandom;
 import java.security.Signature;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -42,9 +43,16 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.Validate;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.mitre.openid.connect.model.IdToken;
+import org.mitre.jwt.model.Jwt;
+import org.mitre.jwt.model.JwtHeader;
+import org.mitre.jwt.model.JwtClaims;
+import org.mitre.jwt.signer.AbstractJwtSigner;
+import org.mitre.jwt.signer.impl.HmacSigner;
+import org.mitre.jwt.signer.service.impl.DynamicJwtSigningAndValidationService;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
@@ -60,6 +68,7 @@ import org.springframework.web.util.WebUtils;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
@@ -376,11 +385,12 @@ public class AbstractOIDCAuthenticationFilter extends
 	 *            authentication
 	 * @return The authenticated user token, or null if authentication is
 	 *         incomplete.
+	 * @throws Exception 
 	 * @throws UnsupportedEncodingException
 	 */
 	protected Authentication handleAuthorizationGrantResponse(
 			String authorizationGrant, HttpServletRequest request,
-			OIDCServerConfiguration serverConfig) {
+			OIDCServerConfiguration serverConfig) throws Exception {
 
 		final boolean debug = logger.isDebugEnabled();
 
@@ -457,42 +467,45 @@ public class AbstractOIDCAuthenticationFilter extends
 
 			// Extract the id_token to insert into the
 			// OpenIdConnectAuthenticationToken
-
+			
+			Cookie nonceSignatureCookie = WebUtils.getCookie(request,
+					NONCE_SIGNATURE_COOKIE_NAME);
+			
 			IdToken idToken = null;
-
+			DynamicJwtSigningAndValidationService dynamic = new DynamicJwtSigningAndValidationService(null, null, null);
+			OIDCServerConfiguration oidc = new OIDCServerConfiguration();
+			
 			if (jsonRoot.getAsJsonObject().get("id_token") != null) {
 
-				try {
-					idToken = IdToken.parse(jsonRoot.getAsJsonObject()
-							.get("id_token").getAsString());
+				if(dynamic.validateSignature(jsonRoot.getAsJsonObject().get("id_token").getAsString())
+					&&
+					dynamic.validateIssuedJwt(idToken, oidc.getIssuer())
+					&&
+					dynamic.validateAudience(idToken, oidc.getClientId())
+					&&
+					dynamic.isJwtExpired(idToken)
+					&&
+					dynamic.validateIssuedAt(idToken)
+					&&
+					dynamic.validateNonce(idToken, nonceSignatureCookie.getValue())){
+					
+					try {
+						idToken = IdToken.parse(jsonRoot.getAsJsonObject().get("id_token").getAsString());
+					
+					} catch (Exception e) {
 
-					List<String> parts = Lists.newArrayList(Splitter.on(".")
-							.split(jsonRoot.getAsJsonObject().get("id_token")
-									.getAsString()));
+						// I suspect this could happen
 
-					if (parts.size() != 3) {
-						throw new IllegalArgumentException(
-								"Invalid JWT format.");
+						logger.error("Problem parsing id_token:  " + e);
+						// e.printStackTrace();
+
+						throw new AuthenticationServiceException(
+								"Problem parsing id_token return from Token endpoint: "
+										+ e);
 					}
-
-					String h64 = parts.get(0);
-					String c64 = parts.get(1);
-					String s64 = parts.get(2);
-
-					logger.debug("h64 = " + h64);
-					logger.debug("c64 = " + c64);
-					logger.debug("s64 = " + s64);
-
-				} catch (Exception e) {
-
-					// I suspect this could happen
-
-					logger.error("Problem parsing id_token:  " + e);
-					// e.printStackTrace();
-
-					throw new AuthenticationServiceException(
-							"Problem parsing id_token return from Token endpoint: "
-									+ e);
+				}
+				else{
+					throw new AuthenticationServiceException("Problem verifying id_token");
 				}
 
 			} else {
@@ -505,100 +518,58 @@ public class AbstractOIDCAuthenticationFilter extends
 						"Token Endpoint did not return a token_id");
 			}
 
-			// Handle Check ID Endpoint interaction
+	
 
-			httpClient = new DefaultHttpClient();
 
-			httpClient.getParams().setParameter("http.socket.timeout",
-					new Integer(httpSocketTimeout));
-
-			factory = new HttpComponentsClientHttpRequestFactory(httpClient);
-			restTemplate = new RestTemplate(factory);
-
-			form = new LinkedMultiValueMap<String, String>();
-
-			form.add("access_token", jsonRoot.getAsJsonObject().get("id_token")
-					.getAsString());
-
-			jsonString = null;
-
-			try {
-				jsonString = restTemplate.postForObject(
-						serverConfig.getCheckIDEndpointURI(), form,
-						String.class);
-			} catch (HttpClientErrorException httpClientErrorException) {
-
-				// Handle error
-
-				logger.error("Check ID Endpoint error response:  "
-						+ httpClientErrorException.getStatusText() + " : "
-						+ httpClientErrorException.getMessage());
-
-				throw new AuthenticationServiceException("Unable check token.");
-			}
-
-			jsonRoot = new JsonParser().parse(jsonString);
 
 			// String iss = jsonRoot.getAsJsonObject().get("iss")
 			// .getAsString();
-			String userId = jsonRoot.getAsJsonObject().get("user_id")
-					.getAsString();
+			//String userId = jsonRoot.getAsJsonObject().get("user_id")
+			//		.getAsString();
 			// String aud = jsonRoot.getAsJsonObject().get("aud")
 			// .getAsString();
-			String nonce = jsonRoot.getAsJsonObject().get("nonce")
-					.getAsString();
+			//String nonce = jsonRoot.getAsJsonObject().get("nonce")
+			//		.getAsString();
 			// String exp = jsonRoot.getAsJsonObject().get("exp")
 			// .getAsString();
 
 			// Compare returned ID Token to signed session cookie
 			// to detect ID Token replay by third parties.
 
-			Cookie nonceSignatureCookie = WebUtils.getCookie(request,
-					NONCE_SIGNATURE_COOKIE_NAME);
 
-			if (nonceSignatureCookie != null) {
 
-				String sigText = nonceSignatureCookie.getValue();
+			String sigText = nonceSignatureCookie.getValue();
 
-				if (sigText != null && !sigText.isEmpty()) {
+			if (sigText != null && !sigText.isEmpty()) {
 
-					if (!verify(signer, publicKey, nonce, sigText)) {
-						logger.error("Possible replay attack detected! "
-								+ "The comparison of the nonce in the returned "
-								+ "ID Token to the signed session "
-								+ NONCE_SIGNATURE_COOKIE_NAME + " failed.");
-
-						throw new AuthenticationServiceException(
-								"Possible replay attack detected! "
-										+ "The comparison of the nonce in the returned "
-										+ "ID Token to the signed session "
-										+ NONCE_SIGNATURE_COOKIE_NAME
-										+ " failed.");
-					}
-
-				} else {
-					logger.error(NONCE_SIGNATURE_COOKIE_NAME
-							+ " was found, but was null or empty.");
+				if (!verify(signer, publicKey, idToken.getClaims().getNonce(), sigText)) {
+					logger.error("Possible replay attack detected! "
+							+ "The comparison of the nonce in the returned "
+							+ "ID Token to the signed session "
+							+ NONCE_SIGNATURE_COOKIE_NAME + " failed.");
 
 					throw new AuthenticationServiceException(
-							NONCE_SIGNATURE_COOKIE_NAME
-									+ " was found, but was null or empty.");
+							"Possible replay attack detected! "
+									+ "The comparison of the nonce in the returned "
+									+ "ID Token to the signed session "
+									+ NONCE_SIGNATURE_COOKIE_NAME
+									+ " failed.");
 				}
 
 			} else {
-
 				logger.error(NONCE_SIGNATURE_COOKIE_NAME
-						+ " cookie was not found.");
+						+ " was found, but was null or empty.");
 
 				throw new AuthenticationServiceException(
-						NONCE_SIGNATURE_COOKIE_NAME + " cookie was not found.");
+						NONCE_SIGNATURE_COOKIE_NAME
+								+ " was found, but was null or empty.");
 			}
 
 			// Create an Authentication object for the token, and
 			// return.
 
 			OpenIdConnectAuthenticationToken token = new OpenIdConnectAuthenticationToken(
-					userId, idToken);
+					idToken.getTokenClaims().getUserId(), idToken);
 
 			Authentication authentication = this.getAuthenticationManager()
 					.authenticate(token);

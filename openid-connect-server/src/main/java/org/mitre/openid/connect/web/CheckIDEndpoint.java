@@ -15,6 +15,8 @@
  ******************************************************************************/
 package org.mitre.openid.connect.web;
 
+import java.security.NoSuchAlgorithmException;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
@@ -44,7 +46,7 @@ public class CheckIDEndpoint {
 	
 	@PreAuthorize("hasRole('ROLE_USER')")
 	@RequestMapping("/checkid")
-	public ModelAndView checkID(@RequestParam("access_token") String tokenString, ModelAndView mav, HttpServletRequest request) {
+	public ModelAndView checkID(@RequestParam("access_token") String tokenString, ModelAndView mav, HttpServletRequest request) throws NoSuchAlgorithmException {
 		
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		

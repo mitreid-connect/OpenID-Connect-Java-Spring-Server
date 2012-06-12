@@ -17,7 +17,7 @@ package org.mitre.jwt.signer.service.impl;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
-import java.security.interfaces.RSAPublicKey;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -162,5 +162,36 @@ public class JwtSigningAndValidationServiceDefault extends AbstractJwtSigningAnd
 	 */
 	public Map<String, ? extends JwtSigner> getSigners() {
 		return signers;
+	}
+
+	@Override
+	public boolean validateIssuedAt(Jwt jwt) {
+		Date issuedAt = jwt.getClaims().getIssuedAt();
+		
+		if (issuedAt != null)
+			return new Date().before(issuedAt);
+		else
+			return false;
+	}
+
+	@Override
+	public boolean validateAudience(Jwt jwt, String clientId) {
+		
+		if(clientId.equals(jwt.getClaims().getAudience())){
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+
+	@Override
+	public boolean validateNonce(Jwt jwt, String nonce) {
+		if(nonce.equals(jwt.getClaims().getNonce())){
+			return true;
+		}
+		else{
+			return false;
+		}
 	}
 }

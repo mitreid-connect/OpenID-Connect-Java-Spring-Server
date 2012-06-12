@@ -101,4 +101,14 @@ public class OIDCServerConfigurationTest extends TestCase {
 		Key key3 = oidc.getEncryptionKey();
 		assertEquals(key3, null);
 	}
+	
+	@Test
+	public void testGetDynamic() throws Exception {
+		oidc.setX509SigningUrl(x509Url.getPath());
+		oidc.setJwkSigningUrl(jwkUrl.getPath());
+		oidc.setClientSecret("foo");
+		assertEquals(oidc.getDynamic().getSigningX509Url(), x509Url.getPath());
+		assertEquals(oidc.getDynamic().getSigningJwkUrl(), jwkUrl.getPath());
+		assertEquals(oidc.getDynamic().getClientSecret(), "foo");
+	}
 }

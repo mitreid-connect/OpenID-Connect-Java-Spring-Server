@@ -16,19 +16,19 @@
 package org.mitre.openid.connect.client;
 
 import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.Key;
 
+import org.mitre.jwt.signer.service.impl.DynamicJwtSigningAndValidationService;
 import org.mitre.util.Utility;
-
-import com.google.gson.JsonObject;
 
 /**
  * @author nemonik
  * 
  */
 public class OIDCServerConfiguration {
+	
+	DynamicJwtSigningAndValidationService dynamic;
 
 	private String authorizationEndpointURI;
 
@@ -39,6 +39,8 @@ public class OIDCServerConfiguration {
 	private String clientSecret;
 
 	private String clientId;
+	
+	private String issuer;
 	
 	private String x509EncryptUrl;
 	
@@ -63,6 +65,10 @@ public class OIDCServerConfiguration {
 	public String getClientId() {
 		return clientId;
 	}
+	
+	public String getIssuer() {
+		return issuer;
+	}
 
 	public String getClientSecret() {
 		return clientSecret;
@@ -82,6 +88,10 @@ public class OIDCServerConfiguration {
 
 	public void setClientId(String clientId) {
 		this.clientId = clientId;
+	}
+
+	public void setIssuer(String issuer) {
+		this.issuer = issuer;
 	}
 
 	public void setClientSecret(String clientSecret) {
@@ -169,11 +179,18 @@ public class OIDCServerConfiguration {
 				+ authorizationEndpointURI + ", tokenEndpointURI="
 				+ tokenEndpointURI + ", checkIDEndpointURI="
 				+ checkIDEndpointURI + ", clientSecret=" + clientSecret
-				+ ", clientId=" + clientId + ", x509EncryptedUrl=" 
+				+ ", clientId=" + clientId + ", issuer=" + issuer 
+				+", x509EncryptedUrl=" 
 				+ x509EncryptUrl + ", jwkEncryptedUrl=" 
 				+ jwkEncryptUrl + ", x509SigningUrl="
 				+ x509SigningUrl + ", jwkSigningUrl="
 				+ jwkSigningUrl + "]";
 	}
+	
+	public DynamicJwtSigningAndValidationService getDynamic() throws Exception{
+		dynamic = new DynamicJwtSigningAndValidationService(getX509SigningUrl(), getJwkSigningUrl(), getClientSecret());
+		return dynamic;
+	}
+
 
 }
