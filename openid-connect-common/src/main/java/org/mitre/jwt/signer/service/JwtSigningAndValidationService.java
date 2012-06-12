@@ -17,7 +17,6 @@ package org.mitre.jwt.signer.service;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
-import java.util.List;
 import java.util.Map;
 
 import org.mitre.jwt.model.Jwt;
@@ -71,6 +70,39 @@ public interface JwtSigningAndValidationService {
 	 * @param jwt the jwt to sign
 	 * @return the signed jwt
 	 * @throws NoSuchAlgorithmException 
+	 */
+	public boolean validateIssuedAt(Jwt jwt);
+	
+	/**
+	 * Checks to see when this JWT was issued
+	 * 
+	 * @param jwt
+	 * 		the JWT to check
+	 * @return true if the issued at is valid, false if not
+	 * @throws NoSuchAlgorithmException
+	 */
+	public boolean validateAudience(Jwt jwt, String clientId);
+	
+	/**
+	 * Checks the audience that the given JWT against the client_id of the Client
+	 * 
+	 * @param jwt
+	 * @param clientId
+	 * 			the string representation of the client_id
+	 * @return true if the audience matches the clinet_id, false if otherwise
+	 * @throws NoSuchAlgorithmException
+	 */
+	public boolean validateNonce(Jwt jwt, String nonce);
+	
+	/**
+	 * Checks to see if the nonce parameter sent in the Authorization Request 
+	 * is equal to the nonce parameter in the id token
+	 * 
+	 * @param jwt
+	 * @param nonce
+	 * 			the string representation of the Nonce
+	 * @return true if both nonce parameters are equal, false if otherwise 
+	 * @throws NoSuchAlgorithmException
 	 */
 	public void signJwt(Jwt jwt) throws NoSuchAlgorithmException;
 	

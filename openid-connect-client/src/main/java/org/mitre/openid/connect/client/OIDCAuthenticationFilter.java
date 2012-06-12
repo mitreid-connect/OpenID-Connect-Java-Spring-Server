@@ -97,9 +97,14 @@ public class OIDCAuthenticationFilter extends AbstractOIDCAuthenticationFilter {
 
 		} else if (StringUtils.isNotBlank(request.getParameter("code"))) {
 
-			return handleAuthorizationGrantResponse(
-					request.getParameter("code"), new SanatizedRequest(request,
-							new String[] { "code" }), oidcServerConfig);
+			try {
+				return handleAuthorizationGrantResponse(
+						request.getParameter("code"), new SanatizedRequest(request,
+								new String[] { "code" }), oidcServerConfig);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
 		} else {
 

@@ -21,6 +21,7 @@ import static org.junit.Assert.assertThat;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.cert.X509Certificate;
@@ -198,7 +199,7 @@ public class JwtTest {
 	}
 
 	@Test
-	public void testToStringPlaintext() {
+	public void testToStringPlaintext() throws NoSuchAlgorithmException {
 		Jwt jwt = new Jwt();
 		jwt.getHeader().setAlgorithm("none");
 		jwt.getClaims().setExpiration(new Date(1300819380L * 1000L));

@@ -50,5 +50,36 @@ public abstract class AbstractJwtSigningAndValidationService implements JwtSigni
 	
 		return false;
 	}
+	
+	@Override
+	public boolean validateIssuedAt(Jwt jwt) {
+		Date issuedAt = jwt.getClaims().getIssuedAt();
+		
+		if (issuedAt != null)
+			return new Date().before(issuedAt);
+		else
+			return false;
+	}
+
+	@Override
+	public boolean validateAudience(Jwt jwt, String clientId) {
+		
+		if(jwt.getClaims().getAudience().equals(clientId)){
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+
+	@Override
+	public boolean validateNonce(Jwt jwt, String nonce) {
+		if(jwt.getClaims().getNonce().equals(nonce)){
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
 
 }

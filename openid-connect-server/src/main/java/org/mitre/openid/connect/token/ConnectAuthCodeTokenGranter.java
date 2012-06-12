@@ -18,6 +18,7 @@
  */
 package org.mitre.openid.connect.token;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
@@ -30,6 +31,7 @@ import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.mitre.openid.connect.model.IdToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.security.oauth2.common.exceptions.InvalidGrantException;
@@ -112,10 +114,13 @@ public class ConnectAuthCodeTokenGranter implements TokenGranter {
 	 * @param parameters
 	 * @param clientId
 	 * @param scope
+	 * @throws NoSuchAlgorithmException 
+	 * @throws AuthenticationException 
+	 * @throws InvalidGrantException 
 	 */
 	@Override
 	public OAuth2AccessToken grant(String grantType,
-			Map<String, String> parameters, String clientId, Set<String> scope) {
+			Map<String, String> parameters, String clientId, Set<String> scope) throws NoSuchAlgorithmException, InvalidGrantException, AuthenticationException {
 		
 		if (!GRANT_TYPE.equals(grantType)) {
 			return null;
