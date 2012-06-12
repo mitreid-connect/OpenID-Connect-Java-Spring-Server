@@ -15,9 +15,9 @@
  ******************************************************************************/
 package org.mitre.jwt.signer.service.impl;
 
+import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.interfaces.RSAPublicKey;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,14 +31,13 @@ import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class JwtSigningAndValidationServiceDefault implements
+public class JwtSigningAndValidationServiceDefault extends AbstractJwtSigningAndValidationService implements
 		JwtSigningAndValidationService, InitializingBean {
 
-	@Autowired
-	private ConfigurationPropertiesBean configBean;
+	@Autowired ConfigurationPropertiesBean configBean;
 	
 	// map of identifier to signer
-	private Map<String, ? extends JwtSigner> signers = new HashMap<String, JwtSigner>();
+	Map<String, ? extends JwtSigner> signers = new HashMap<String, JwtSigner>();
 
 	private static Log logger = LogFactory
 			.getLog(JwtSigningAndValidationServiceDefault.class);
@@ -110,34 +109,6 @@ public class JwtSigningAndValidationServiceDefault implements
 	}
 
 	/**
-	 * Return the JwtSigners associated with this service
-	 * 
-	 * @return
-	 */
-	public Map<String, ? extends JwtSigner> getSigners() {
-		return signers;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.mitre.jwt.signer.service.JwtSigningAndValidationService#isJwtExpired
-	 * (org.mitre.jwt.model.Jwt)
-	 */
-	@Override
-	public boolean isJwtExpired(Jwt jwt) {
-
-		Date expiration = jwt.getClaims().getExpiration();
-
-		if (expiration != null)
-			return new Date().after(expiration);
-		else
-			return false;
-
-	}
-
-	/**
 	 * Set the JwtSigners associated with this service
 	 * 
 	 * @param signers
@@ -156,55 +127,6 @@ public class JwtSigningAndValidationServiceDefault implements
 				+ "]";
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.mitre.jwt.signer.service.JwtSigningAndValidationService#validateIssuedJwt
-	 * (org.mitre.jwt.model.Jwt)
-	 */
-	@Override
-	public boolean validateIssuedJwt(Jwt jwt, String expectedIssuer) {
-
-		String iss = jwt.getClaims().getIssuer();
-		
-		if (iss.equals(expectedIssuer))
-			return true;
-		
-		return false;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.mitre.jwt.signer.service.JwtSigningAndValidationService#validateSignature
-	 * (java.lang.String)
-	 */
-	@Override
-	public boolean validateSignature(String jwtString) {
-
-		for (JwtSigner signer : signers.values()) {
-			if (signer.verify(jwtString))
-				return true;
-		}
-
-		return false;
-	}
-
-	/**
-	 * Sign a jwt in place using the configured default signer.
-	 */
-	@Override
-	public void signJwt(Jwt jwt) {
-		String signerId = configBean.getDefaultJwtSigner();
-		
-		JwtSigner signer = signers.get(signerId);
-		
-		signer.sign(jwt);
-
-	}
-
 	/**
 	 * @return the configBean
 	 */
@@ -217,5 +139,28 @@ public class JwtSigningAndValidationServiceDefault implements
 	 */
 	public void setConfigBean(ConfigurationPropertiesBean configBean) {
 		this.configBean = configBean;
+	}
+	
+	/**
+	 * Sign a jwt in place using the configured default signer.
+	 * @throws NoSuchAlgorithmException 
+	 */
+	@Override
+	public void signJwt(Jwt jwt) throws NoSuchAlgorithmException {
+		String signerId = configBean.getDefaultJwtSigner();
+		
+		JwtSigner signer = getSigners().get(signerId);
+		
+		signer.sign(jwt);
+	
+	}
+	
+	/**
+	 * Return the JwtSigners associated with this service
+	 * 
+	 * @return
+	 */
+	public Map<String, ? extends JwtSigner> getSigners() {
+		return signers;
 	}
 }

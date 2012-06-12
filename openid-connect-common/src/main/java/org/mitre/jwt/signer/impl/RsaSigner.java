@@ -18,6 +18,7 @@ package org.mitre.jwt.signer.impl;
 import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
@@ -173,15 +174,16 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 	 * )
 	 */
 	@Override
-	public String generateSignature(String signatureBase) {
+	public String generateSignature(String signatureBase) throws NoSuchAlgorithmException {
 
 		String sig = null;
+		Signature _signer = getSigner();
 
 		try {
-			signer.initSign(privateKey);
-			signer.update(signatureBase.getBytes("UTF-8"));
+			_signer.initSign(privateKey);
+			_signer.update(signatureBase.getBytes("UTF-8"));
 
-			byte[] sigBytes = signer.sign();
+			byte[] sigBytes = _signer.sign();
 
 			sig = (new String(Base64.encodeBase64URLSafe(sigBytes))).replace("=", "");
 		} catch (GeneralSecurityException e) {
@@ -227,6 +229,13 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 
 	public void setPrivateKey(RSAPrivateKey privateKey) {
 		this.privateKey = privateKey;
+	}
+	
+	private Signature getSigner() throws NoSuchAlgorithmException{
+		if(signer == null){
+			signer = Signature.getInstance(JwsAlgorithm.getByName(super.getAlgorithm()).getStandardName());
+		}
+		return signer;
 	}
 
 	/*
