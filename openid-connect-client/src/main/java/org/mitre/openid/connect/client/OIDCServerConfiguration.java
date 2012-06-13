@@ -25,18 +25,12 @@ public class OIDCServerConfiguration {
 
 	private String tokenEndpointURI;
 
-	private String checkIDEndpointURI;
-
 	private String clientSecret;
 
 	private String clientId;
 
 	public String getAuthorizationEndpointURI() {
 		return authorizationEndpointURI;
-	}
-
-	public String getCheckIDEndpointURI() {
-		return checkIDEndpointURI;
 	}
 
 	public String getClientId() {
@@ -49,16 +43,12 @@ public class OIDCServerConfiguration {
 
 	public String getTokenEndpointURI() {
 		return tokenEndpointURI;
-	}
+	} 
 
 	public void setAuthorizationEndpointURI(String authorizationEndpointURI) {
 		this.authorizationEndpointURI = authorizationEndpointURI;
 	}
-
-	public void setCheckIDEndpointURI(String checkIDEndpointURI) {
-		this.checkIDEndpointURI = checkIDEndpointURI;
-	}
-
+ 
 	public void setClientId(String clientId) {
 		this.clientId = clientId;
 	}
@@ -75,8 +65,7 @@ public class OIDCServerConfiguration {
 	public String toString() {
 		return "OIDCServerConfiguration [authorizationEndpointURI="
 				+ authorizationEndpointURI + ", tokenEndpointURI="
-				+ tokenEndpointURI + ", checkIDEndpointURI="
-				+ checkIDEndpointURI + ", clientSecret=" + clientSecret
+				+ tokenEndpointURI + ", clientSecret=" + clientSecret
 				+ ", clientId=" + clientId + "]";
 	}
 

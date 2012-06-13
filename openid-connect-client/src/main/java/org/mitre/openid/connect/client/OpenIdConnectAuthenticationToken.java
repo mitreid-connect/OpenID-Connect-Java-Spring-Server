@@ -25,9 +25,8 @@ import org.springframework.security.core.SpringSecurityCoreVersion;
 
 /**
  * 
- * 
  * @author nemonik
- *
+ * 
  */
 public class OpenIdConnectAuthenticationToken extends
 		AbstractAuthenticationToken {
@@ -37,42 +36,48 @@ public class OpenIdConnectAuthenticationToken extends
 	private final String userId;
 
 	private static final long serialVersionUID = SpringSecurityCoreVersion.SERIAL_VERSION_UID;
-	
+
 	/**
+	 * Constructs OpenIdConnectAuthenticationToken provided
+	 * 
 	 * @param principle
 	 * @param authorities
 	 * @param userId
 	 * @param idToken
 	 */
 	public OpenIdConnectAuthenticationToken(Object principle,
-			Collection<? extends GrantedAuthority> authorities,
-			String userId, IdToken idToken) {
+			Collection<? extends GrantedAuthority> authorities, String userId,
+			IdToken idToken) {
 
 		super(authorities);
-		
+
 		this.principle = principle;
 		this.userId = userId;
 		this.idToken = idToken;
-		
-		setAuthenticated(true);		
+
+		setAuthenticated(true);
 	}
 
 	/**
+	 * Constructs OpenIdConnectAuthenticationToken provided
+	 * 
 	 * @param idToken
 	 * @param userId
 	 */
 	public OpenIdConnectAuthenticationToken(String userId, IdToken idToken) {
-		
+
 		super(new ArrayList<GrantedAuthority>(0));
 
 		this.principle = userId;
 		this.userId = userId;
 		this.idToken = idToken;
-		
+
 		setAuthenticated(false);
 	}
-	
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.springframework.security.core.Authentication#getCredentials()
 	 */
 	@Override
@@ -84,7 +89,9 @@ public class OpenIdConnectAuthenticationToken extends
 		return idToken;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.springframework.security.core.Authentication#getPrincipal()
 	 */
 	@Override

@@ -63,9 +63,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
 /**
- * The OpenID Connect Authentication Filter
- * 
- * See README.md to to configure
+ * Abstract OpenID Connect Authentication Filter class
  * 
  * @author nemonik
  * 
@@ -74,10 +72,11 @@ public class AbstractOIDCAuthenticationFilter extends
 		AbstractAuthenticationProcessingFilter {
 
 	/**
-	 * Used to remove parameters from a Request before passing it down the chain...
+	 * Used to remove parameters from a Request before passing it down the
+	 * chain...
 	 * 
 	 * @author nemonik
-	 *
+	 * 
 	 */
 	class SanatizedRequest extends HttpServletRequestWrapper {
 
@@ -128,8 +127,8 @@ public class AbstractOIDCAuthenticationFilter extends
 				return super.getParameterValues(name);
 			}
 		}
-	}	
-	
+	}
+
 	protected final static int HTTP_SOCKET_TIMEOUT = 30000;
 	protected final static String SCOPE = "openid";
 	protected final static int KEY_SIZE = 1024;
@@ -154,7 +153,7 @@ public class AbstractOIDCAuthenticationFilter extends
 
 		List<String> ignore = (ignoreFields != null) ? Arrays
 				.asList(ignoreFields) : null;
-
+ 
 		boolean isFirst = true;
 
 		StringBuffer sb = request.getRequestURL();
@@ -360,8 +359,10 @@ public class AbstractOIDCAuthenticationFilter extends
 			HttpServletResponse response) throws AuthenticationException,
 			IOException, ServletException {
 
-		logger.debug("Request: " + request.getRequestURI() + (StringUtils.isNotBlank(request.getQueryString()) ? "?"
-				+ request.getQueryString() : "") );
+		logger.debug("Request: "
+				+ request.getRequestURI()
+				+ (StringUtils.isNotBlank(request.getQueryString()) ? "?"
+						+ request.getQueryString() : ""));
 
 		return null;
 	}
@@ -399,6 +400,7 @@ public class AbstractOIDCAuthenticationFilter extends
 		// ((DefaultHttpClient)
 		// httpClient).getCredentialsProvider().setCredentials(AuthScope.ANY,
 		// credentials);
+		//
 
 		HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(
 				httpClient);
@@ -438,6 +440,8 @@ public class AbstractOIDCAuthenticationFilter extends
 					"Unable to obtain Access Token.");
 		}
 
+		logger.debug("from TokenEndpoint jsonString = " + jsonString);
+		
 		JsonElement jsonRoot = new JsonParser().parse(jsonString);
 
 		if (jsonRoot.getAsJsonObject().get("error") != null) {
@@ -455,8 +459,7 @@ public class AbstractOIDCAuthenticationFilter extends
 
 		} else {
 
-			// Extract the id_token to insert into the
-			// OpenIdConnectAuthenticationToken
+			// Extract the id_token
 
 			IdToken idToken = null;
 
@@ -504,54 +507,22 @@ public class AbstractOIDCAuthenticationFilter extends
 				throw new AuthenticationServiceException(
 						"Token Endpoint did not return a token_id");
 			}
-
-			// Handle Check ID Endpoint interaction
-
-			httpClient = new DefaultHttpClient();
-
-			httpClient.getParams().setParameter("http.socket.timeout",
-					new Integer(httpSocketTimeout));
-
-			factory = new HttpComponentsClientHttpRequestFactory(httpClient);
-			restTemplate = new RestTemplate(factory);
-
-			form = new LinkedMultiValueMap<String, String>();
-
-			form.add("access_token", jsonRoot.getAsJsonObject().get("id_token")
-					.getAsString());
-
-			jsonString = null;
-
-			try {
-				jsonString = restTemplate.postForObject(
-						serverConfig.getCheckIDEndpointURI(), form,
-						String.class);
-			} catch (HttpClientErrorException httpClientErrorException) {
-
-				// Handle error
-
-				logger.error("Check ID Endpoint error response:  "
-						+ httpClientErrorException.getStatusText() + " : "
-						+ httpClientErrorException.getMessage());
-
-				throw new AuthenticationServiceException("Unable check token.");
-			}
-
-			jsonRoot = new JsonParser().parse(jsonString);
-
-			// String iss = jsonRoot.getAsJsonObject().get("iss")
-			// .getAsString();
-			String userId = jsonRoot.getAsJsonObject().get("user_id")
-					.getAsString();
-			// String aud = jsonRoot.getAsJsonObject().get("aud")
-			// .getAsString();
-			String nonce = jsonRoot.getAsJsonObject().get("nonce")
-					.getAsString();
-			// String exp = jsonRoot.getAsJsonObject().get("exp")
-			// .getAsString();
-
-			// Compare returned ID Token to signed session cookie
-			// to detect ID Token replay by third parties.
+			
+			// Clients are required to compare nonce claim in ID token to 
+			// the nonce sent in the Authorization request.  The client 
+			// stores this value as a signed session cookie to detect a 
+			// replay by third parties.
+			//
+			// See: OpenID Connect Messages
+			//
+			// Specifically, Section 2.1.1 entitled "ID Token"
+			//
+			// http://openid.net/specs/openid-connect-messages-1_0.html#id_token
+			//
+			// Read the paragraph describing "nonce". Required w/ implicit flow.
+			//
+			
+			String nonce = idToken.getClaims().getNonce();
 
 			Cookie nonceSignatureCookie = WebUtils.getCookie(request,
 					NONCE_SIGNATURE_COOKIE_NAME);
@@ -572,8 +543,7 @@ public class AbstractOIDCAuthenticationFilter extends
 								"Possible replay attack detected! "
 										+ "The comparison of the nonce in the returned "
 										+ "ID Token to the signed session "
-										+ NONCE_SIGNATURE_COOKIE_NAME
-										+ " failed.");
+										+ NONCE_SIGNATURE_COOKIE_NAME + " failed.");
 					}
 
 				} else {
@@ -587,16 +557,19 @@ public class AbstractOIDCAuthenticationFilter extends
 
 			} else {
 
-				logger.error(NONCE_SIGNATURE_COOKIE_NAME
-						+ " cookie was not found.");
+				logger.error(NONCE_SIGNATURE_COOKIE_NAME + " cookie was not found.");
 
 				throw new AuthenticationServiceException(
 						NONCE_SIGNATURE_COOKIE_NAME + " cookie was not found.");
-			}
+			}			
 
-			// Create an Authentication object for the token, and
-			// return.
-
+			// pull the user_id out as a claim on the id_token
+			
+			String userId = idToken.getTokenClaims().getUserId();
+			
+			// construct an OpenIdConnectAuthenticationToken and return 
+			// a Authentication object w/
+			
 			OpenIdConnectAuthenticationToken token = new OpenIdConnectAuthenticationToken(
 					userId, idToken);
 
