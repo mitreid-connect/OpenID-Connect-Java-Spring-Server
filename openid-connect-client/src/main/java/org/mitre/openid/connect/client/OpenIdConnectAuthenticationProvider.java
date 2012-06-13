@@ -27,7 +27,7 @@ import org.springframework.util.Assert;
 
 /**
  * @author nemonik
- *
+ * 
  */
 public class OpenIdConnectAuthenticationProvider implements
 		AuthenticationProvider, InitializingBean {

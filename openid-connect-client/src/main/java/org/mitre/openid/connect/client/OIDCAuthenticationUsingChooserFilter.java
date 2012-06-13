@@ -129,8 +129,7 @@ public class OIDCAuthenticationUsingChooserFilter extends
 					// The Client is configured to support this Issuer
 					// Identifier
 
-					Cookie issuerCookie = new Cookie(ISSUER_COOKIE_NAME,
-							issuer);
+					Cookie issuerCookie = new Cookie(ISSUER_COOKIE_NAME, issuer);
 					response.addCookie(issuerCookie);
 
 					handleAuthorizationRequest(new SanatizedRequest(request,
@@ -157,7 +156,7 @@ public class OIDCAuthenticationUsingChooserFilter extends
 				urlVariables.put("redirect_uri",
 						OIDCAuthenticationUsingChooserFilter.buildRedirectURI(
 								request, null));
-				
+
 				urlVariables.put("client_id", accountChooserClientID);
 
 				response.sendRedirect(OIDCAuthenticationUsingChooserFilter

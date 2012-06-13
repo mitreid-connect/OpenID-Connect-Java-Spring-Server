@@ -64,10 +64,7 @@ public class OIDCAuthenticationFilter extends AbstractOIDCAuthenticationFilter {
 
 		Assert.notNull(oidcServerConfig.getTokenEndpointURI(),
 				"A Token ID Endpoint URI must be supplied");
-
-		Assert.notNull(oidcServerConfig.getCheckIDEndpointURI(),
-				"A Check ID Endpoint URI must be supplied");
-
+		
 		Assert.notNull(oidcServerConfig.getClientId(),
 				"A Client ID must be supplied");
 
@@ -111,10 +108,6 @@ public class OIDCAuthenticationFilter extends AbstractOIDCAuthenticationFilter {
 
 	public void setAuthorizationEndpointURI(String authorizationEndpointURI) {
 		oidcServerConfig.setAuthorizationEndpointURI(authorizationEndpointURI);
-	}
-
-	public void setCheckIDEndpointURI(String checkIDEndpointURI) {
-		oidcServerConfig.setCheckIDEndpointURI(checkIDEndpointURI);
 	}
 
 	public void setClientId(String clientId) {
