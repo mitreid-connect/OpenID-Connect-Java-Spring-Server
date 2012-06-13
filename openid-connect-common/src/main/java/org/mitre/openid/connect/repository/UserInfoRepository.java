@@ -43,7 +43,7 @@ public interface UserInfoRepository {
 	 * @param user
 	 * @return
 	 */
-	public UserInfo save(DefaultUserInfo userInfo);
+	public UserInfo save(UserInfo userInfo);
 	
 	/**
 	 * Removes the given UserInfo from the repository
