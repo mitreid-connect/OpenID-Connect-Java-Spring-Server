@@ -230,4 +230,8 @@
 	<!-- <task:annotation-driven scheduler="taskScheduler" executor="taskExecutor" 
 		/> -->
 
+
+	<!-- import application-local configuration information (such as bean definitions) -->
+	<import resource="local-config.xml" />
+
 </beans>

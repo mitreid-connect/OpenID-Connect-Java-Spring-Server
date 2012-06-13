@@ -49,7 +49,7 @@ public class JpaUserInfoRepository implements UserInfoRepository {
 	
 	@Override
 	@Transactional	
-	public UserInfo save(DefaultUserInfo userInfo) {
+	public UserInfo save(UserInfo userInfo) {
 		return saveOrUpdate(userInfo.getUserId(), manager, userInfo);
 	}
 
