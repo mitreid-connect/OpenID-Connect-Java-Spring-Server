@@ -133,7 +133,7 @@ public class Jwt {
 		return h64 + "." + c64;		
 	}
 	
-
+	
 	/**
 	 * Parse a wire-encoded JWT
 	 */

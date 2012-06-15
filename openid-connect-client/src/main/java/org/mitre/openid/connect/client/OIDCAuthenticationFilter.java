@@ -94,9 +94,12 @@ public class OIDCAuthenticationFilter extends AbstractOIDCAuthenticationFilter {
 
 		} else if (StringUtils.isNotBlank(request.getParameter("code"))) {
 
-			return handleAuthorizationGrantResponse(
-					request.getParameter("code"), new SanatizedRequest(request,
-							new String[] { "code" }), oidcServerConfig);
+			try {
+				return handleAuthorizationGrantResponse(request.getParameter("code"), new SanatizedRequest(request,	new String[] { "code" }), oidcServerConfig);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
 		} else {
 
@@ -124,5 +127,21 @@ public class OIDCAuthenticationFilter extends AbstractOIDCAuthenticationFilter {
 
 	public void setTokenEndpointURI(String tokenEndpointURI) {
 		oidcServerConfig.setTokenEndpointURI(tokenEndpointURI);
+	}
+	
+	public void setX509EncryptUrl(String x509EncryptUrl) {
+		oidcServerConfig.setX509EncryptUrl(x509EncryptUrl);
+	}
+	
+	public void setX509SigningUrl(String x509SigningUrl) {
+		oidcServerConfig.setX509SigningUrl(x509SigningUrl);
+	}
+	
+	public void setJwkEncryptUrl(String jwkEncryptUrl) {
+		oidcServerConfig.setJwkEncryptUrl(jwkEncryptUrl);
+	}
+	
+	public void setJwkSigningUrl(String jwkSigningUrl) {
+		oidcServerConfig.setJwkSigningUrl(jwkSigningUrl);
 	}
 }
