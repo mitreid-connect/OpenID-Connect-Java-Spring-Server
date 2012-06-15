@@ -110,7 +110,8 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		    }
 
 		    // make it expire if necessary
-	    	if (client.getAccessTokenTimeout() != null) {
+		    // TODO: pending upstream updates, check for 0 or -1 value here
+	    	if (client.getAccessTokenTimeout() != null && client.getAccessTokenTimeout() > 0) {
 	    		Date expiration = new Date(System.currentTimeMillis() + (client.getAccessTokenTimeout() * 1000L));
 	    		token.setExpiration(expiration);
 	    	}

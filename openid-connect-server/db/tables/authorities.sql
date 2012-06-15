@@ -1,4 +1,4 @@
 CREATE TABLE authorities (
-	owner_id VARCHAR(256),
+	owner_id VARCHAR(4096),
 	authorities LONGBLOB
 );

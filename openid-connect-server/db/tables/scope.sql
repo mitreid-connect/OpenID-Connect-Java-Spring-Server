@@ -1,4 +1,4 @@
 CREATE TABLE scope (
-	owner_id VARCHAR(256),
-	scope VARCHAR(2000)
+	owner_id VARCHAR(4096),
+	scope VARCHAR(2048)
 );
