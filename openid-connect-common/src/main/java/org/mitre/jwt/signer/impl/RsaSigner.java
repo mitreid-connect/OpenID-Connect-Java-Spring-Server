@@ -138,7 +138,7 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 	 * org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
 	 */
 	@Override
-	public void afterPropertiesSet() throws Exception {
+	public void afterPropertiesSet() throws NoSuchAlgorithmException, GeneralSecurityException {
 
 		// unsupported algorithm will throw a NoSuchAlgorithmException
 		signer = Signature.getInstance(JwsAlgorithm.getByName(super.getAlgorithm()).getStandardName()); // ,PROVIDER);
@@ -230,7 +230,8 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 	public void setPrivateKey(RSAPrivateKey privateKey) {
 		this.privateKey = privateKey;
 	}
-	
+
+	// TODO: this this indirection to a lazy constructor really necessary?
 	private Signature getSigner() throws NoSuchAlgorithmException{
 		if(signer == null){
 			signer = Signature.getInstance(JwsAlgorithm.getByName(super.getAlgorithm()).getStandardName());

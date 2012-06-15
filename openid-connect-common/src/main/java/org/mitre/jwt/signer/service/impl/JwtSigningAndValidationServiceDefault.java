@@ -34,10 +34,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class JwtSigningAndValidationServiceDefault extends AbstractJwtSigningAndValidationService implements
 		JwtSigningAndValidationService, InitializingBean {
 
-	@Autowired ConfigurationPropertiesBean configBean;
+	@Autowired 
+	private ConfigurationPropertiesBean configBean;
 	
 	// map of identifier to signer
-	Map<String, ? extends JwtSigner> signers = new HashMap<String, JwtSigner>();
+	private Map<String, ? extends JwtSigner> signers = new HashMap<String, JwtSigner>();
 
 	private static Log logger = LogFactory
 			.getLog(JwtSigningAndValidationServiceDefault.class);

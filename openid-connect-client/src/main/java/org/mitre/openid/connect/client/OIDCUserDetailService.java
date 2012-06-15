@@ -11,6 +11,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+
+// TODO: what is this class for?
+
+
 public class OIDCUserDetailService implements UserDetailsService,
 		AuthenticationUserDetailsService<OpenIdConnectAuthenticationToken> {
 	

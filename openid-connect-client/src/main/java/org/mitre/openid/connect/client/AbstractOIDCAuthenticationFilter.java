@@ -388,7 +388,7 @@ public class AbstractOIDCAuthenticationFilter extends
 	 */
 	protected Authentication handleAuthorizationGrantResponse(
 			String authorizationGrant, HttpServletRequest request,
-			OIDCServerConfiguration serverConfig) throws Exception {
+			OIDCServerConfiguration serverConfig) {
 
 		final boolean debug = logger.isDebugEnabled();
 

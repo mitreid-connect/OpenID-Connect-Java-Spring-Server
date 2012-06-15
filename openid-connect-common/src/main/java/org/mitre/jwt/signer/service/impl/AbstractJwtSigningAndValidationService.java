@@ -22,11 +22,11 @@ public abstract class AbstractJwtSigningAndValidationService implements JwtSigni
 	
 		Date expiration = jwt.getClaims().getExpiration();
 	
-		if (expiration != null)
+		if (expiration != null) {
 			return new Date().after(expiration);
-		else
+		} else {
 			return false;
-	
+		}
 	}
 
 	@Override
@@ -34,8 +34,9 @@ public abstract class AbstractJwtSigningAndValidationService implements JwtSigni
 	
 		String iss = jwt.getClaims().getIssuer();
 		
-		if (iss.equals(expectedIssuer))
+		if (iss.equals(expectedIssuer)) {
 			return true;
+		}
 		
 		return false;
 	}
@@ -44,10 +45,10 @@ public abstract class AbstractJwtSigningAndValidationService implements JwtSigni
 	public boolean validateSignature(String jwtString) throws NoSuchAlgorithmException {
 	
 		for (JwtSigner signer : getSigners().values()) {
-			if (signer.verify(jwtString))
+			if (signer.verify(jwtString)) {
 				return true;
+			}
 		}
-	
 		return false;
 	}
 	
@@ -55,19 +56,19 @@ public abstract class AbstractJwtSigningAndValidationService implements JwtSigni
 	public boolean validateIssuedAt(Jwt jwt) {
 		Date issuedAt = jwt.getClaims().getIssuedAt();
 		
-		if (issuedAt != null)
+		if (issuedAt != null) {
 			return new Date().before(issuedAt);
-		else
+		} else {
 			return false;
+		}
 	}
 
 	@Override
-	public boolean validateAudience(Jwt jwt, String clientId) {
+	public boolean validateAudience(Jwt jwt, String expectedAudience) {
 		
-		if(jwt.getClaims().getAudience().equals(clientId)){
+		if(jwt.getClaims().getAudience().equals(expectedAudience)){
 			return true;
-		}
-		else{
+		} else {
 			return false;
 		}
 	}
@@ -76,8 +77,7 @@ public abstract class AbstractJwtSigningAndValidationService implements JwtSigni
 	public boolean validateNonce(Jwt jwt, String nonce) {
 		if(jwt.getClaims().getNonce().equals(nonce)){
 			return true;
-		}
-		else{
+		} else {
 			return false;
 		}
 	}

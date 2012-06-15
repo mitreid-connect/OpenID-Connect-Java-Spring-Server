@@ -70,6 +70,7 @@ public class Utility {
 		return issuer;
 	}
 	
+	// FIXME: this should use a rest template and sould not throw Exception
 	public static List<Jwk> retrieveJwk(URL path) throws Exception {
 		List<Jwk> keys = new ArrayList<Jwk>();
 		
@@ -95,6 +96,7 @@ public class Utility {
 		return keys;
 	}
 	
+	// FIXME: this should use a rest template and sould not throw Exception
 	public static Key retrieveX509Key(URL url) throws Exception {
 		
 		CertificateFactory factory = CertificateFactory.getInstance("X.509");
@@ -104,6 +106,7 @@ public class Utility {
 		return key;
 	}
 	
+	// FIXME: this should use a rest template and sould not throw Exception
 	public static Key retrieveJwkKey(URL url) throws Exception {
 		
 		JsonParser parser = new JsonParser();

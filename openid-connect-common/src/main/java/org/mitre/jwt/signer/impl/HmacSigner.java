@@ -173,6 +173,7 @@ public class HmacSigner extends AbstractJwtSigner implements InitializingBean {
 		this.passphrase = passphrase;
 	}
 	
+	// TODO: this this indirection to a lazy constructor necessary?
 	private Mac getMac() throws NoSuchAlgorithmException {
 		if(mac == null){
 			mac = Mac.getInstance(JwsAlgorithm.getByName(super.getAlgorithm())
