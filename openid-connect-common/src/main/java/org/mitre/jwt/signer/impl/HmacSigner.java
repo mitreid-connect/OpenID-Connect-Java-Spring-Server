@@ -134,23 +134,24 @@ public class HmacSigner extends AbstractJwtSigner implements InitializingBean {
 	 * )
 	 */
 	@Override
-	public String generateSignature(String signatureBase) {
+	public String generateSignature(String signatureBase) throws NoSuchAlgorithmException {
+		Mac _mac = getMac();
 		if (passphrase == null) {
 			throw new IllegalArgumentException("Passphrase cannot be null");
 		}
 
 		try {
-			mac.init(new SecretKeySpec(getPassphrase().getBytes(), mac
+			_mac.init(new SecretKeySpec(getPassphrase().getBytes(), mac
 					.getAlgorithm()));
 
-			mac.update(signatureBase.getBytes("UTF-8"));
+			_mac.update(signatureBase.getBytes("UTF-8"));
 		} catch (GeneralSecurityException e) {
 			logger.error(e);
 		} catch (UnsupportedEncodingException e) {
 			logger.error(e);
 		}
 
-		byte[] sigBytes = mac.doFinal();
+		byte[] sigBytes = _mac.doFinal();
 
 		String sig = new String(Base64.encodeBase64URLSafe(sigBytes));
 
@@ -170,6 +171,14 @@ public class HmacSigner extends AbstractJwtSigner implements InitializingBean {
 
 	public void setPassphrase(String passphrase) {
 		this.passphrase = passphrase;
+	}
+	
+	private Mac getMac() throws NoSuchAlgorithmException {
+		if(mac == null){
+			mac = Mac.getInstance(JwsAlgorithm.getByName(super.getAlgorithm())
+					.getStandardName());
+		}
+		return mac;
 	}
 
 	/*

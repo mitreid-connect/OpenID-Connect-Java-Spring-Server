@@ -108,10 +108,13 @@ public class OIDCAuthenticationUsingChooserFilter extends
 			Cookie issuerCookie = WebUtils.getCookie(request,
 					ISSUER_COOKIE_NAME);
 
-			return handleAuthorizationGrantResponse(
-					request.getParameter("code"), new SanatizedRequest(request,
-							new String[] { "code" }),
-					oidcServerConfigs.get(issuerCookie.getValue()));
+			try {
+				return handleAuthorizationGrantResponse(request.getParameter("code"), new SanatizedRequest(request,	new String[] { "code" }),
+						oidcServerConfigs.get(issuerCookie.getValue()));
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
 		} else {
 

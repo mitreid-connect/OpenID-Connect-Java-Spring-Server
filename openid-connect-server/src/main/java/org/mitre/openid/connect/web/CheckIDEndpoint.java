@@ -15,6 +15,8 @@
  ******************************************************************************/
 package org.mitre.openid.connect.web;
 
+import java.security.NoSuchAlgorithmException;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
@@ -48,10 +50,14 @@ public class CheckIDEndpoint {
 		
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		
-		if (!jwtSignerService.validateSignature(tokenString)) {
-			// can't validate 
-			throw new InvalidJwtSignatureException("The Signature could not be validated.");
-		}
+		try {
+	        if (!jwtSignerService.validateSignature(tokenString)) {
+	        	// can't validate 
+	        	throw new InvalidJwtSignatureException("The Signature could not be validated.");
+	        }
+        } catch (NoSuchAlgorithmException e) {
+        	throw new InvalidJwtSignatureException("The Signature could not be validated: no such algorithm.");
+        }
 		
 		// it's a valid signature, parse the token
 		IdToken token = IdToken.parse(tokenString);
