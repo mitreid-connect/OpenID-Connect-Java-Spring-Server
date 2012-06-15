@@ -71,8 +71,6 @@ public interface JwtSigningAndValidationService {
 	 * @return the signed jwt
 	 * @throws NoSuchAlgorithmException 
 	 */
-	public boolean validateIssuedAt(Jwt jwt);
-	
 	/**
 	 * Checks to see when this JWT was issued
 	 * 
@@ -81,7 +79,7 @@ public interface JwtSigningAndValidationService {
 	 * @return true if the issued at is valid, false if not
 	 * @throws NoSuchAlgorithmException
 	 */
-	public boolean validateAudience(Jwt jwt, String clientId);
+	public boolean validateIssuedAt(Jwt jwt);
 	
 	/**
 	 * Checks the audience that the given JWT against the client_id of the Client
@@ -92,7 +90,7 @@ public interface JwtSigningAndValidationService {
 	 * @return true if the audience matches the clinet_id, false if otherwise
 	 * @throws NoSuchAlgorithmException
 	 */
-	public boolean validateNonce(Jwt jwt, String nonce);
+	public boolean validateAudience(Jwt jwt, String clientId);
 	
 	/**
 	 * Checks to see if the nonce parameter sent in the Authorization Request 
@@ -104,7 +102,7 @@ public interface JwtSigningAndValidationService {
 	 * @return true if both nonce parameters are equal, false if otherwise 
 	 * @throws NoSuchAlgorithmException
 	 */
-	public void signJwt(Jwt jwt) throws NoSuchAlgorithmException;
+	public boolean validateNonce(Jwt jwt, String nonce);
 	
 	/**
 	 * Sign a jwt using the selected algorithm. The algorithm is selected using the String parameter values specified
@@ -114,6 +112,8 @@ public interface JwtSigningAndValidationService {
 	 * @param alg the name of the algorithm to use, as specified in JWS s.6
 	 * @return the signed jwt
 	 */
+	public void signJwt(Jwt jwt) throws NoSuchAlgorithmException;
+	
 	//TODO: implement later; only need signJwt(Jwt jwt) for now
 	//public Jwt signJwt(Jwt jwt, String alg);
 	

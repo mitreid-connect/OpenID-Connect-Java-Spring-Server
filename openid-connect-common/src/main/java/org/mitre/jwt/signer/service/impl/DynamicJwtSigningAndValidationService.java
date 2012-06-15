@@ -34,12 +34,13 @@ public class DynamicJwtSigningAndValidationService extends AbstractJwtSigningAnd
 	
 	private Map<String, ? extends JwtSigner> signers;
 	
-	public DynamicJwtSigningAndValidationService(String x509SigningUrl, String jwkSigningUrl, String clientSecret) throws Exception {
+	public DynamicJwtSigningAndValidationService(String x509SigningUrl, String jwkSigningUrl, String clientSecret) {
 		setX509SigningUrl(x509SigningUrl);
 		setJwkSigningUrl(jwkSigningUrl);
 		setClientSecret(clientSecret);
 	}
 	
+	// FIXME: this function should not throw Exception
 	public Key getSigningKey() throws Exception {
 		if(signingKey == null){
 			if(x509SigningUrl != null){
@@ -118,24 +119,27 @@ public class DynamicJwtSigningAndValidationService extends AbstractJwtSigningAnd
 		
 	}
 	
-	public JwtSigner getSigner(String str) throws Exception {
+	public JwtSigner getSigner(String str) {
 		JwtHeader header = Jwt.parse(str).getHeader();
 		String alg = header.getAlgorithm();
 		JwtSigner signer = null;
 		
 		if(alg.equals("HS256") || alg.equals("HS384") || alg.equals("HS512")){
 			signer = new HmacSigner(alg, clientSecret); // TODO: huh? no, we're not signing with the client secret
-		}
-		
-		else if (alg.equals("RS256") || alg.equals("RS384") || alg.equals("RS512")){
-			signer = new RsaSigner(alg, (PublicKey) getSigningKey(), null);
-		}
-		
-		else if (alg.equals("none")){
+		} else if (alg.equals("RS256") || alg.equals("RS384") || alg.equals("RS512")){
+			
+			PublicKey rsaSigningKey = null;
+            try {
+	            rsaSigningKey = (PublicKey) getSigningKey();
+            } catch (Exception e) {
+	            // FIXME this function call should not throw Exception
+	            e.printStackTrace();
+	            return null;
+            }
+			signer = new RsaSigner(alg, rsaSigningKey, null);
+		} else if (alg.equals("none")){
 			signer = new PlaintextSigner();
-		}
-		
-		else{
+		} else {
 			throw new IllegalArgumentException("Not an existing algorithm type");
 		}
 		

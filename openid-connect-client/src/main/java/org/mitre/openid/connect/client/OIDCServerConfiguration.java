@@ -48,6 +48,8 @@ public class OIDCServerConfiguration {
 	
 	private String jwkSigningUrl;
 	
+	
+	// TODO: these keys should be settable through other means beyond discovery
 	private Key encryptKey;
 	
 	private Key signingKey;
@@ -124,6 +126,7 @@ public class OIDCServerConfiguration {
 		this.jwkSigningUrl = jwkSigningUrl;
 	}
 	
+	// FIXME: this should not throw Exception
 	public Key getSigningKey() throws Exception {
 		if(signingKey == null){
 			if(x509SigningUrl != null){
@@ -140,6 +143,7 @@ public class OIDCServerConfiguration {
 		return signingKey;
 	}
 	
+	// FIXME: this should not throw Exception
 	public Key getEncryptionKey() throws Exception {
 		if(encryptKey == null){
 			if(x509EncryptUrl != null){
@@ -156,6 +160,7 @@ public class OIDCServerConfiguration {
 		return encryptKey;
 	}
 	
+	// FIXME: this should not throw exception
 	public void checkKeys() throws Exception {
 		encryptKey = null;
 		signingKey = null;
@@ -176,6 +181,7 @@ public class OIDCServerConfiguration {
 				+ jwkSigningUrl + "]";
 	}
 	
+	// TODO: what is this function for? nobody uses it, and it seems backwards for construction
 	public DynamicJwtSigningAndValidationService getDynamic() throws Exception{
 		dynamic = new DynamicJwtSigningAndValidationService(getX509SigningUrl(), getJwkSigningUrl(), getClientSecret());
 		return dynamic;
