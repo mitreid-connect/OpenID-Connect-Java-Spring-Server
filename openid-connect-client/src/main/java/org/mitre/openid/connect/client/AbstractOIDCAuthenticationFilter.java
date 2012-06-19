@@ -522,8 +522,18 @@ public class AbstractOIDCAuthenticationFilter extends
 			// Read the paragraph describing "nonce". Required w/ implicit flow.
 			//
 			
-			String nonce = idToken.getClaims().getNonce();
+			//String nonce = idToken.getClaims().getClaimAsString("nonce");
 
+			String nonce = idToken.getClaims().getNonce();
+			
+			if (StringUtils.isBlank(nonce)) {
+				
+				logger.error("ID token did not contain a nonce claim.");
+
+				throw new AuthenticationServiceException(
+						"ID token did not contain a nonce claim.");
+			}
+			
 			Cookie nonceSignatureCookie = WebUtils.getCookie(request,
 					NONCE_SIGNATURE_COOKIE_NAME);
 
