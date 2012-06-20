@@ -11,6 +11,7 @@
 		<config>src/main/webapp/WEB-INF/server-config.xml</config>
 		<config>src/main/webapp/WEB-INF/local-config.xml</config>
 		<config>src/main/webapp/WEB-INF/data-context.xml</config>
+		<config>src/main/webapp/WEB-INF/crypto-config.xml</config>
 	</configs>
 	<configSets>
 	</configSets>
