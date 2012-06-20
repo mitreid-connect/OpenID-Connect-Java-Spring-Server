@@ -6,7 +6,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.security.NoSuchAlgorithmException;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 
 import org.junit.After;
 import org.junit.Before;
@@ -15,6 +18,7 @@ import org.junit.runner.RunWith;
 import org.mitre.jwt.model.Jwt;
 import org.mitre.jwt.model.JwtClaims;
 import org.mitre.jwt.model.JwtHeader;
+import org.mitre.jwt.signer.JwsAlgorithm;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -25,13 +29,18 @@ import com.google.gson.JsonSyntaxException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:test-context.xml" })
-public class PlaintextSignerTest{
+public class Rsa512Test {
 	
 	URL claimsUrl = this.getClass().getResource("/jwt/claims");
-	URL plaintextUrl = this.getClass().getResource("/jwt/plaintext");
+	URL rs512Url = this.getClass().getResource("/jwt/rs512");
+
 	Jwt jwt = null;
 	JwtClaims claims = null;
 	JwtHeader header = null;
+	KeyPairGenerator keyGen;
+	KeyPair keyPair;
+	PublicKey publicKey;
+	PrivateKey privateKey;
 	
 	/**
 	 * @throws IOException 
@@ -40,10 +49,10 @@ public class PlaintextSignerTest{
 	 * @throws java.lang.Exception
 	 */
 	@Before
-	public void setUp() throws JsonIOException, JsonSyntaxException, IOException {
+	public void setUp() throws JsonIOException, JsonSyntaxException, IOException{
 		JsonParser parser = new JsonParser();
 		JsonObject claimsObject = parser.parse(new BufferedReader(new InputStreamReader(claimsUrl.openStream()))).getAsJsonObject();
-		JsonObject headerObject = parser.parse(new BufferedReader(new InputStreamReader(plaintextUrl.openStream()))).getAsJsonObject();
+		JsonObject headerObject = parser.parse(new BufferedReader(new InputStreamReader(rs512Url.openStream()))).getAsJsonObject();
 		claims = new JwtClaims(claimsObject);
 		header = new JwtHeader(headerObject);
 		jwt = new Jwt(header, claims, null);
@@ -53,15 +62,20 @@ public class PlaintextSignerTest{
 	 * @throws java.lang.Exception
 	 */
 	@After
-	public void tearDown() {
+	public void tearDown(){
 	}
 	
 	@Test
-	public void testPlaintextSigner() throws JsonIOException, JsonSyntaxException, IOException, NoSuchAlgorithmException {
+	public void testRsaSigner512() throws Exception{
 		setUp();
-		PlaintextSigner plaintext = new PlaintextSigner();
-		jwt = plaintext.sign(jwt);
-		assertEquals(plaintext.verify(jwt.toString()), true);
+		keyGen = KeyPairGenerator.getInstance("RSA");
+		keyPair = keyGen.generateKeyPair();
+		publicKey = keyPair.getPublic();
+		privateKey = keyPair.getPrivate();
+		RsaSigner rsa = new RsaSigner(JwsAlgorithm.RS512.toString(), publicKey, privateKey);
+		jwt = rsa.sign(jwt);
+		assertEquals(rsa.verify(jwt.toString()), true);
+
 	}
 
 }

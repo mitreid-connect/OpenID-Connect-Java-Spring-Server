@@ -1,10 +1,14 @@
 package org.mitre.jwt.signer.service.impl;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.Key;
+import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
+import java.security.cert.CertificateException;
 import java.security.interfaces.RSAPublicKey;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,6 +19,7 @@ import org.mitre.jwt.signer.JwtSigner;
 import org.mitre.jwt.signer.impl.HmacSigner;
 import org.mitre.jwt.signer.impl.PlaintextSigner;
 import org.mitre.jwt.signer.impl.RsaSigner;
+import org.mitre.key.fetch.KeyFetcher;
 import org.mitre.util.Utility;
 
 
@@ -40,18 +45,38 @@ public class DynamicJwtSigningAndValidationService extends AbstractJwtSigningAnd
 		setClientSecret(clientSecret);
 	}
 	
-	// FIXME: this function should not throw Exception
-	public Key getSigningKey() throws Exception {
+	public Key getSigningKey() {
 		if(signingKey == null){
 			if(x509SigningUrl != null){
 				File file = new File(x509SigningUrl);
-				URL url = file.toURI().toURL();
-				signingKey = Utility.retrieveX509Key(url);
+				URL url;
+				try {
+					url = file.toURI().toURL();
+					signingKey = KeyFetcher.retrieveX509Key();
+				} catch (MalformedURLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (CertificateException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 			else if (jwkSigningUrl != null){
 				File file = new File(jwkSigningUrl);
-				URL url = file.toURI().toURL();
-				signingKey = Utility.retrieveJwkKey(url);
+				URL url;
+				try {
+					url = file.toURI().toURL();
+					signingKey = KeyFetcher.retrieveJwkKey();
+				} catch (MalformedURLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (NoSuchAlgorithmException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InvalidKeySpecException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 		return signingKey;
@@ -154,17 +179,6 @@ public class DynamicJwtSigningAndValidationService extends AbstractJwtSigningAnd
 			return new Date().before(issuedAt);
 		else
 			return false;
-	}
-
-	@Override
-	public boolean validateAudience(Jwt jwt, String clientId) {
-		
-		if(jwt.getClaims().getAudience().equals(clientId)){
-			return true;
-		}
-		else{
-			return false;
-		}
 	}
 
 	@Override

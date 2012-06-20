@@ -117,10 +117,15 @@ public class HmacSigner extends AbstractJwtSigner implements InitializingBean {
 	 * org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
 	 */
 	@Override
-	public void afterPropertiesSet() throws Exception {
+	public void afterPropertiesSet(){
 
-		mac = Mac.getInstance(JwsAlgorithm.getByName(super.getAlgorithm())
-				.getStandardName());
+		try {
+			mac = Mac.getInstance(JwsAlgorithm.getByName(super.getAlgorithm())
+					.getStandardName());
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		logger.debug(JwsAlgorithm.getByName(getAlgorithm()).getStandardName()
 				+ " ECDSA Signer ready for business");
@@ -135,23 +140,23 @@ public class HmacSigner extends AbstractJwtSigner implements InitializingBean {
 	 */
 	@Override
 	public String generateSignature(String signatureBase) throws NoSuchAlgorithmException {
-		Mac _mac = getMac();
+		afterPropertiesSet();
 		if (passphrase == null) {
 			throw new IllegalArgumentException("Passphrase cannot be null");
 		}
 
 		try {
-			_mac.init(new SecretKeySpec(getPassphrase().getBytes(), mac
+			mac.init(new SecretKeySpec(getPassphrase().getBytes(), mac
 					.getAlgorithm()));
 
-			_mac.update(signatureBase.getBytes("UTF-8"));
+			mac.update(signatureBase.getBytes("UTF-8"));
 		} catch (GeneralSecurityException e) {
 			logger.error(e);
 		} catch (UnsupportedEncodingException e) {
 			logger.error(e);
 		}
 
-		byte[] sigBytes = _mac.doFinal();
+		byte[] sigBytes = mac.doFinal();
 
 		String sig = new String(Base64.encodeBase64URLSafe(sigBytes));
 
@@ -172,15 +177,7 @@ public class HmacSigner extends AbstractJwtSigner implements InitializingBean {
 	public void setPassphrase(String passphrase) {
 		this.passphrase = passphrase;
 	}
-	
-	// TODO: this this indirection to a lazy constructor necessary?
-	private Mac getMac() throws NoSuchAlgorithmException {
-		if(mac == null){
-			mac = Mac.getInstance(JwsAlgorithm.getByName(super.getAlgorithm())
-					.getStandardName());
-		}
-		return mac;
-	}
+
 
 	/*
 	 * (non-Javadoc)

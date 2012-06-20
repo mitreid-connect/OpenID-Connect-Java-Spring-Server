@@ -15,20 +15,17 @@
  ******************************************************************************/
 package org.mitre.openid.connect.client;
 
-import java.io.File;
-import java.net.URL;
 import java.security.Key;
-
-import org.mitre.jwt.signer.service.impl.DynamicJwtSigningAndValidationService;
-import org.mitre.util.Utility;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.spec.InvalidKeySpecException;
+import org.mitre.key.fetch.KeyFetcher;
 
 /**
  * @author nemonik
  * 
  */
 public class OIDCServerConfiguration {
-	
-	private DynamicJwtSigningAndValidationService dynamic;
 
 	private String authorizationEndpointURI;
 
@@ -126,42 +123,57 @@ public class OIDCServerConfiguration {
 		this.jwkSigningUrl = jwkSigningUrl;
 	}
 	
-	// FIXME: this should not throw Exception
-	public Key getSigningKey() throws Exception {
+	public Key getSigningKey(){
 		if(signingKey == null){
 			if(x509SigningUrl != null){
-				File file = new File(x509SigningUrl);
-				URL url = file.toURI().toURL();
-				signingKey = Utility.retrieveX509Key(url);
+				try {
+					signingKey = KeyFetcher.retrieveX509Key();
+				} catch (CertificateException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 			else if (jwkSigningUrl != null){
-				File file = new File(jwkSigningUrl);
-				URL url = file.toURI().toURL();
-				signingKey = Utility.retrieveJwkKey(url);
+				try {
+					signingKey = KeyFetcher.retrieveJwkKey();
+				} catch (NoSuchAlgorithmException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InvalidKeySpecException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 		return signingKey;
 	}
 	
-	// FIXME: this should not throw Exception
-	public Key getEncryptionKey() throws Exception {
+	public Key getEncryptionKey(){
 		if(encryptKey == null){
 			if(x509EncryptUrl != null){
-				File file = new File(x509EncryptUrl);
-				URL url = file.toURI().toURL();
-				encryptKey = Utility.retrieveX509Key(url);
+				try {
+					encryptKey = KeyFetcher.retrieveX509Key();
+				} catch (CertificateException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 			else if (jwkEncryptUrl != null){
-				File file = new File(jwkEncryptUrl);
-				URL url = file.toURI().toURL();
-				encryptKey = Utility.retrieveJwkKey(url);
+				try {
+					encryptKey = KeyFetcher.retrieveJwkKey();
+				} catch (NoSuchAlgorithmException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InvalidKeySpecException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 		return encryptKey;
 	}
-	
-	// FIXME: this should not throw exception
-	public void checkKeys() throws Exception {
+
+	public void checkKeys(){
 		encryptKey = null;
 		signingKey = null;
 		getEncryptionKey();
@@ -180,12 +192,5 @@ public class OIDCServerConfiguration {
 				+ x509SigningUrl + ", jwkSigningUrl="
 				+ jwkSigningUrl + "]";
 	}
-	
-	// TODO: what is this function for? nobody uses it, and it seems backwards for construction
-	public DynamicJwtSigningAndValidationService getDynamic() throws Exception{
-		dynamic = new DynamicJwtSigningAndValidationService(getX509SigningUrl(), getJwkSigningUrl(), getClientSecret());
-		return dynamic;
-	}
-
 
 }

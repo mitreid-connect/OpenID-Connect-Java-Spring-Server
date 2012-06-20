@@ -177,13 +177,18 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 	public String generateSignature(String signatureBase) throws NoSuchAlgorithmException {
 
 		String sig = null;
-		Signature _signer = getSigner();
+		try {
+			initializeSigner();
+		} catch (GeneralSecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		try {
-			_signer.initSign(privateKey);
-			_signer.update(signatureBase.getBytes("UTF-8"));
+			signer.initSign(privateKey);
+			signer.update(signatureBase.getBytes("UTF-8"));
 
-			byte[] sigBytes = _signer.sign();
+			byte[] sigBytes = signer.sign();
 
 			sig = (new String(Base64.encodeBase64URLSafe(sigBytes))).replace("=", "");
 		} catch (GeneralSecurityException e) {
@@ -230,13 +235,9 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 	public void setPrivateKey(RSAPrivateKey privateKey) {
 		this.privateKey = privateKey;
 	}
-
-	// TODO: this this indirection to a lazy constructor really necessary?
-	private Signature getSigner() throws NoSuchAlgorithmException{
-		if(signer == null){
-			signer = Signature.getInstance(JwsAlgorithm.getByName(super.getAlgorithm()).getStandardName());
-		}
-		return signer;
+	
+	public void initializeSigner() throws NoSuchAlgorithmException{
+		signer = Signature.getInstance(JwsAlgorithm.getByName(super.getAlgorithm()).getStandardName());
 	}
 
 	/*

@@ -3,6 +3,8 @@
  */
 package org.mitre.util;
 
+import static org.junit.Assert.assertEquals;
+
 import java.security.Key;
 import java.security.KeyFactory;
 import java.security.PublicKey;
@@ -23,10 +25,14 @@ import junit.framework.TestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mitre.jwk.model.Jwk;
 import org.mitre.jwk.model.Rsa;
 import org.mitre.jwk.model.EC;
+import org.mitre.key.fetch.KeyFetcher;
 import org.mitre.util.Utility;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -42,7 +48,9 @@ import org.bouncycastle.jce.provider.JCEECPublicKey;
  * @author DERRYBERRY
  *
  */
-public class UtilityTest extends TestCase{
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "classpath:test-context.xml" })
+public class UtilityTest {
 	
 	URL url = this.getClass().getResource("/jwk/jwkSuccess");
 	URL certUrl = this.getClass().getResource("/x509/x509Cert");
@@ -53,7 +61,6 @@ public class UtilityTest extends TestCase{
 	 */
 	@Before
 	public void setUp() throws Exception {
-		super.setUp();
 	}
 
 	/**
@@ -74,7 +81,7 @@ public class UtilityTest extends TestCase{
 		JsonObject json = parser.parse(new BufferedReader(new InputStreamReader(url.openStream()))).getAsJsonObject();
 		JsonArray getArray = json.getAsJsonArray("jwk");
 		
-		List<Jwk> list = Utility.retrieveJwk(url);
+		List<Jwk> list = KeyFetcher.retrieveJwk();
 
 		for(int i = 0; i < list.size(); i++){
 			
@@ -108,7 +115,7 @@ public class UtilityTest extends TestCase{
 		JsonObject json = parser.parse(new BufferedReader(new InputStreamReader(url.openStream()))).getAsJsonObject();
 		JsonArray getArray = json.getAsJsonArray("jwk");
 		
-		List<Jwk> list = Utility.retrieveJwk(url);
+		List<Jwk> list = KeyFetcher.retrieveJwk();
 		
 		for(int i = 0; i < list.size(); i++){
 			Jwk jwk = list.get(i);
@@ -133,14 +140,14 @@ public class UtilityTest extends TestCase{
 	public void testRetriveX509Key() throws Exception {
 		CertificateFactory factory = CertificateFactory.getInstance("X.509");
 		X509Certificate x509 = (X509Certificate) factory.generateCertificate(certUrl.openStream());
-		Key key = Utility.retrieveX509Key(certUrl);
+		Key key = KeyFetcher.retrieveX509Key();
 		assertEquals(x509.getPublicKey(), key);
 		assertEquals("RSA", key.getAlgorithm());
 		assertEquals("X.509", key.getFormat());
 	}
 	
 	public void testRetriveJwkKey() throws Exception {
-		Key key = Utility.retrieveJwkKey(rsaUrl);
+		Key key = KeyFetcher.retrieveJwkKey();
 		
 		JsonParser parser = new JsonParser();
 		JsonObject json = parser.parse(new BufferedReader(new InputStreamReader(rsaUrl.openStream()))).getAsJsonObject();
