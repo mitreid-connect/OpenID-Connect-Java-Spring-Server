@@ -10,5 +10,9 @@
 			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
 		</attributes>
 	</classpathentry>
+	<classpathentry combineaccessrules="false" kind="src" path="/account-chooser"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/openid-connect-common"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/openid-connect-server"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/spring-security-oauth2"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

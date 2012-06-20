@@ -30,18 +30,6 @@ public abstract class AbstractJwtSigningAndValidationService implements JwtSigni
 	}
 
 	@Override
-	public boolean validateIssuedJwt(Jwt jwt, String expectedIssuer) {
-	
-		String iss = jwt.getClaims().getIssuer();
-		
-		if (iss.equals(expectedIssuer)) {
-			return true;
-		}
-		
-		return false;
-	}
-
-	@Override
 	public boolean validateSignature(String jwtString) throws NoSuchAlgorithmException {
 	
 		for (JwtSigner signer : getSigners().values()) {
@@ -58,16 +46,6 @@ public abstract class AbstractJwtSigningAndValidationService implements JwtSigni
 		
 		if (issuedAt != null) {
 			return new Date().before(issuedAt);
-		} else {
-			return false;
-		}
-	}
-
-	@Override
-	public boolean validateAudience(Jwt jwt, String expectedAudience) {
-		
-		if(jwt.getClaims().getAudience().equals(expectedAudience)){
-			return true;
 		} else {
 			return false;
 		}

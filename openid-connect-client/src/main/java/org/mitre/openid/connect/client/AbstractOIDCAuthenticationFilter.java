@@ -426,7 +426,7 @@ public class AbstractOIDCAuthenticationFilter extends
 			logger.debug("tokenEndpointURI = " + serverConfig.getTokenEndpointURI());
 			logger.debug("form = " + form);
 		}
-
+;
 		String jsonString = null;
 
 		try {
@@ -470,25 +470,27 @@ public class AbstractOIDCAuthenticationFilter extends
 			DynamicJwtSigningAndValidationService jwtValidator = new DynamicJwtSigningAndValidationService(serverConfig.getX509SigningUrl(), serverConfig.getJwkSigningUrl(), serverConfig.getClientSecret()); 
 			
 			if (jsonRoot.getAsJsonObject().get("id_token") != null) {
+				
+				try {
+					idToken = IdToken.parse(jsonRoot.getAsJsonObject().get("id_token").getAsString());
+				
+				} catch (AuthenticationServiceException e) {
+
+					// I suspect this could happen
+
+					logger.error("Problem parsing id_token:  " + e);
+					// e.printStackTrace();
+
+					throw new AuthenticationServiceException("Problem parsing id_token return from Token endpoint: " + e);
+				}
 
 				if(jwtValidator.validateSignature(jsonRoot.getAsJsonObject().get("id_token").getAsString())
-					&& jwtValidator.validateIssuedJwt(idToken, serverConfig.getIssuer())
-					&& jwtValidator.validateAudience(idToken, serverConfig.getClientId())
+					&& idToken.getClaims().getIssuer().equals(serverConfig.getIssuer())
+					&& idToken.getClaims().getIssuer().equals(serverConfig.getClientId())
 					&& jwtValidator.isJwtExpired(idToken)
 					&& jwtValidator.validateIssuedAt(idToken)){
 					
-					try {
-						idToken = IdToken.parse(jsonRoot.getAsJsonObject().get("id_token").getAsString());
-					
-					} catch (Exception e) {
-
-						// I suspect this could happen
-
-						logger.error("Problem parsing id_token:  " + e);
-						// e.printStackTrace();
-
-						throw new AuthenticationServiceException("Problem parsing id_token return from Token endpoint: " + e);
-					}
+	
 				}
 				else{
 					throw new AuthenticationServiceException("Problem verifying id_token");

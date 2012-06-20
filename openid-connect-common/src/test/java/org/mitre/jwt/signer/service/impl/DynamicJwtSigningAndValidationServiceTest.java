@@ -1,5 +1,7 @@
 package org.mitre.jwt.signer.service.impl;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -10,12 +12,17 @@ import junit.framework.TestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mitre.jwt.signer.JwtSigner;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-public class DynamicJwtSigningAndValidationServiceTest extends TestCase {
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "classpath:test-context.xml" })
+public class DynamicJwtSigningAndValidationServiceTest {
 	
 	URL x509Url = this.getClass().getResource("/x509/x509Cert");
 	URL jwkUrl = this.getClass().getResource("/jwk/rsaOnly");
@@ -29,7 +36,6 @@ public class DynamicJwtSigningAndValidationServiceTest extends TestCase {
 	 */
 	@Before
 	public void setUp() throws Exception {
-		super.setUp();
 	}
 
 	/**

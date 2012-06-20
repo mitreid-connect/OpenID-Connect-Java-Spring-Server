@@ -67,7 +67,7 @@ public class JwtSigningAndValidationServiceDefault extends AbstractJwtSigningAnd
 	 * org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
 	 */
 	@Override
-	public void afterPropertiesSet() throws Exception {
+	public void afterPropertiesSet(){
 		// used for debugging...
 		if (!signers.isEmpty()) {
 			logger.info(this.toString());
@@ -173,17 +173,6 @@ public class JwtSigningAndValidationServiceDefault extends AbstractJwtSigningAnd
 			return new Date().before(issuedAt);
 		else
 			return false;
-	}
-
-	@Override
-	public boolean validateAudience(Jwt jwt, String clientId) {
-		
-		if(clientId.equals(jwt.getClaims().getAudience())){
-			return true;
-		}
-		else{
-			return false;
-		}
 	}
 
 	@Override

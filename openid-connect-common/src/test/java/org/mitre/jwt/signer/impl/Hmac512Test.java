@@ -6,7 +6,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.security.NoSuchAlgorithmException;
 
 import org.junit.After;
 import org.junit.Before;
@@ -25,10 +24,11 @@ import com.google.gson.JsonSyntaxException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:test-context.xml" })
-public class PlaintextSignerTest{
+public class Hmac512Test {
 	
 	URL claimsUrl = this.getClass().getResource("/jwt/claims");
-	URL plaintextUrl = this.getClass().getResource("/jwt/plaintext");
+	URL hs512Url = this.getClass().getResource("/jwt/hs512");
+
 	Jwt jwt = null;
 	JwtClaims claims = null;
 	JwtHeader header = null;
@@ -40,28 +40,29 @@ public class PlaintextSignerTest{
 	 * @throws java.lang.Exception
 	 */
 	@Before
-	public void setUp() throws JsonIOException, JsonSyntaxException, IOException {
+	public void setUp() throws JsonIOException, JsonSyntaxException, IOException{
 		JsonParser parser = new JsonParser();
 		JsonObject claimsObject = parser.parse(new BufferedReader(new InputStreamReader(claimsUrl.openStream()))).getAsJsonObject();
-		JsonObject headerObject = parser.parse(new BufferedReader(new InputStreamReader(plaintextUrl.openStream()))).getAsJsonObject();
+		JsonObject headerObject = parser.parse(new BufferedReader(new InputStreamReader(hs512Url.openStream()))).getAsJsonObject();
 		claims = new JwtClaims(claimsObject);
 		header = new JwtHeader(headerObject);
 		jwt = new Jwt(header, claims, null);
+		
 	}
 
 	/**
 	 * @throws java.lang.Exception
 	 */
 	@After
-	public void tearDown() {
+	public void tearDown(){
 	}
 	
 	@Test
-	public void testPlaintextSigner() throws JsonIOException, JsonSyntaxException, IOException, NoSuchAlgorithmException {
+	public void testHmacSigner512() throws Exception {
 		setUp();
-		PlaintextSigner plaintext = new PlaintextSigner();
-		jwt = plaintext.sign(jwt);
-		assertEquals(plaintext.verify(jwt.toString()), true);
+		HmacSigner hmac = new HmacSigner(header.getAlgorithm(), "secret");
+		jwt = hmac.sign(jwt);
+		assertEquals(hmac.verify(jwt.toString()), true);
 	}
 
 }

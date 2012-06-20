@@ -69,9 +69,9 @@ public class CheckIDEndpoint {
 		}
 		
 		// check the issuer (sanity check)
-		if (!jwtSignerService.validateIssuedJwt(token, configBean.getIssuer())) {
-			throw new InvalidJwtIssuerException("The JWT issuer is invalid.");
-		}
+		//if (!jwtSignerService.validateIssuedJwt(token, configBean.getIssuer())) {
+		//	throw new InvalidJwtIssuerException("The JWT issuer is invalid.");
+		//}
 		
 		// pass the claims directly (the view doesn't care about other fields)
 		return new ModelAndView("jsonIdTokenView", "entity", token.getClaims());

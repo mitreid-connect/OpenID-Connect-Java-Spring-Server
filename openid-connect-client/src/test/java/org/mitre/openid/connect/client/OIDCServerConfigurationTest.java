@@ -1,16 +1,25 @@
 package org.mitre.openid.connect.client;
 
+import static org.junit.Assert.assertEquals;
+
 import java.net.URL;
 import java.security.Key;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.spec.InvalidKeySpecException;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mitre.key.fetch.KeyFetcher;
 import org.mitre.util.Utility;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import junit.framework.TestCase;
-
-public class OIDCServerConfigurationTest extends TestCase {
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "classpath:test-context.xml" })
+public class OIDCServerConfigurationTest{
 	
 	private URL jwkUrl = this.getClass().getResource("/jwk/jwk");
 	private URL x509Url = this.getClass().getResource("/x509/x509");
@@ -22,16 +31,15 @@ public class OIDCServerConfigurationTest extends TestCase {
 	 * @throws java.lang.Exception
 	 */
 	@Before
-	public void setUp() throws Exception {
+	public void setUp(){
 		oidc = new OIDCServerConfiguration();
-		super.setUp();
 	}
 
 	/**
 	 * @throws java.lang.Exception
 	 */
 	@After
-	public void tearDown() throws Exception {
+	public void tearDown(){
 	}
 
 	/**
@@ -39,31 +47,49 @@ public class OIDCServerConfigurationTest extends TestCase {
 	 * @throws Exception 
 	 */
 	@Test
-	public void testGetSigningKeyBoth() throws Exception {
+	public void testGetSigningKeyBoth(){
 		oidc.setX509SigningUrl(x509Url.getPath());
 		oidc.setJwkSigningUrl(jwkUrl.getPath());
 		Key key = oidc.getSigningKey();
-		assertEquals(key, Utility.retrieveX509Key(x509Url));
+		try {
+			assertEquals(key, KeyFetcher.retrieveX509Key());
+		} catch (CertificateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	@Test
-	public void testGetSigningKeyJwk() throws Exception {
+	public void testGetSigningKeyJwk(){
 		oidc.setX509SigningUrl(null);
 		oidc.setJwkSigningUrl(jwkUrl.getPath());
 		Key key1 = oidc.getSigningKey();
-		assertEquals(key1, Utility.retrieveJwkKey(jwkUrl));
+		try {
+			assertEquals(key1, KeyFetcher.retrieveJwkKey());
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvalidKeySpecException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	@Test
-	public void testGetSigningKeyX509() throws Exception {
+	public void testGetSigningKeyX509(){
 		oidc.setX509SigningUrl(x509Url.getPath());
 		oidc.setJwkSigningUrl(null);
 		Key key2 = oidc.getSigningKey();
-		assertEquals(key2, Utility.retrieveX509Key(x509Url));
+		try {
+			assertEquals(key2, KeyFetcher.retrieveX509Key());
+		} catch (CertificateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	@Test
-	public void testGetSigningKeyNone() throws Exception {
+	public void testGetSigningKeyNone(){
 		oidc.setX509SigningUrl(null);
 		oidc.setJwkSigningUrl(null);
 		Key key3 = oidc.getSigningKey();
@@ -71,44 +97,52 @@ public class OIDCServerConfigurationTest extends TestCase {
 	}
 	
 	@Test
-	public void testGetEncryptionKeyBoth() throws Exception {
+	public void testGetEncryptionKeyBoth(){
 		oidc.setX509EncryptUrl(x509EncryptedUrl.getPath());
 		oidc.setJwkEncryptUrl(jwkEncryptedUrl.getPath());
 		Key key = oidc.getEncryptionKey();
-		assertEquals(key, Utility.retrieveX509Key(x509EncryptedUrl));
+		try {
+			assertEquals(key, KeyFetcher.retrieveX509Key());
+		} catch (CertificateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	@Test
-	public void testGetEncryptionKeyJwk() throws Exception {
+	public void testGetEncryptionKeyJwk(){
 		oidc.setX509EncryptUrl(null);
 		oidc.setJwkEncryptUrl(jwkEncryptedUrl.getPath());
 		Key key1 = oidc.getEncryptionKey();
-		assertEquals(key1, Utility.retrieveJwkKey(jwkEncryptedUrl));
+		try {
+			assertEquals(key1, KeyFetcher.retrieveJwkKey());
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvalidKeySpecException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	@Test
-	public void testGetEncryptionKeyX509() throws Exception {
+	public void testGetEncryptionKeyX509(){
 		oidc.setX509EncryptUrl(x509EncryptedUrl.getPath());
 		oidc.setJwkEncryptUrl(null);
 		Key key2 = oidc.getEncryptionKey();
-		assertEquals(key2, Utility.retrieveX509Key(x509EncryptedUrl));
+		try {
+			assertEquals(key2, KeyFetcher.retrieveX509Key());
+		} catch (CertificateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	@Test
-	public void testGetEncryptionKeyNone() throws Exception {
+	public void testGetEncryptionKeyNone(){
 		oidc.setX509EncryptUrl(null);
 		oidc.setJwkEncryptUrl(null);
 		Key key3 = oidc.getEncryptionKey();
 		assertEquals(key3, null);
-	}
-	
-	@Test
-	public void testGetDynamic() throws Exception {
-		oidc.setX509SigningUrl(x509Url.getPath());
-		oidc.setJwkSigningUrl(jwkUrl.getPath());
-		oidc.setClientSecret("foo");
-		assertEquals(oidc.getDynamic().getSigningX509Url(), x509Url.getPath());
-		assertEquals(oidc.getDynamic().getSigningJwkUrl(), jwkUrl.getPath());
-		assertEquals(oidc.getDynamic().getClientSecret(), "foo");
 	}
 }

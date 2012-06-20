@@ -42,17 +42,6 @@ public interface JwtSigningAndValidationService {
 	public boolean isJwtExpired(Jwt jwt);
 
 	/**
-	 * Checks to see if this JWT has been issued by us
-	 * 
-	 * @param jwt
-	 *            the JWT to check the issuer of
-	 * @param expectedIssuer
-	 *            the expected issuer
-	 * @return true if the JWT was issued by this expected issuer, false if not
-	 */
-	public boolean validateIssuedJwt(Jwt jwt, String expectedIssuer);
-
-	/**
 	 * Checks the signature of the given JWT against all configured signers,
 	 * returns true if at least one of the signers validates it.
 	 * 
@@ -63,14 +52,7 @@ public interface JwtSigningAndValidationService {
 	 */
 	public boolean validateSignature(String jwtString) throws NoSuchAlgorithmException;
 	
-	/**
-	 * Called to sign a jwt in place for a client that hasn't registered a preferred signing algorithm.
-	 * Use the default algorithm to sign.
-	 * 
-	 * @param jwt the jwt to sign
-	 * @return the signed jwt
-	 * @throws NoSuchAlgorithmException 
-	 */
+
 	/**
 	 * Checks to see when this JWT was issued
 	 * 
@@ -80,17 +62,6 @@ public interface JwtSigningAndValidationService {
 	 * @throws NoSuchAlgorithmException
 	 */
 	public boolean validateIssuedAt(Jwt jwt);
-	
-	/**
-	 * Checks the audience that the given JWT against the client_id of the Client
-	 * 
-	 * @param jwt
-	 * @param clientId
-	 * 			the string representation of the client_id
-	 * @return true if the audience matches the clinet_id, false if otherwise
-	 * @throws NoSuchAlgorithmException
-	 */
-	public boolean validateAudience(Jwt jwt, String clientId);
 	
 	/**
 	 * Checks to see if the nonce parameter sent in the Authorization Request 
@@ -111,6 +82,15 @@ public interface JwtSigningAndValidationService {
 	 * @param jwt the jwt to sign
 	 * @param alg the name of the algorithm to use, as specified in JWS s.6
 	 * @return the signed jwt
+	 */
+	
+	/**
+	 * Called to sign a jwt in place for a client that hasn't registered a preferred signing algorithm.
+	 * Use the default algorithm to sign.
+	 * 
+	 * @param jwt the jwt to sign
+	 * @return the signed jwt
+	 * @throws NoSuchAlgorithmException 
 	 */
 	public void signJwt(Jwt jwt) throws NoSuchAlgorithmException;
 	
