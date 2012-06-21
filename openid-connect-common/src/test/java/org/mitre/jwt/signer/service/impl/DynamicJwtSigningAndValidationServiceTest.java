@@ -2,23 +2,15 @@ package org.mitre.jwt.signer.service.impl;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.security.Key;
-
-import junit.framework.TestCase;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mitre.jwt.signer.JwtSigner;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:test-context.xml" })
@@ -35,14 +27,14 @@ public class DynamicJwtSigningAndValidationServiceTest {
 	 * @throws java.lang.Exception
 	 */
 	@Before
-	public void setUp() throws Exception {
+	public void setUp(){
 	}
 
 	/**
 	 * @throws java.lang.Exception
 	 */
 	@After
-	public void tearDown() throws Exception {
+	public void tearDown(){
 	}
 
 	/**
@@ -50,7 +42,7 @@ public class DynamicJwtSigningAndValidationServiceTest {
 	 * @throws Exception 
 	 */
 	@Test
-	public void testGetSigner() throws Exception {
+	public void testGetSigner(){
 		//create key, sign it, for both x509 and jwk. 
 	/*	jsvs.setX509SigningUrl(x509Url.getPath());
 		x509Key = jsvs.getSigningKey();

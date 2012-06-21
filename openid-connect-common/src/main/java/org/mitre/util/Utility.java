@@ -15,33 +15,7 @@
  ******************************************************************************/
 package org.mitre.util;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.math.BigInteger;
-import java.net.URL;
-import java.security.Key;
-import java.security.KeyFactory;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
-import java.security.spec.RSAPublicKeySpec;
-import java.security.PublicKey;
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.codec.binary.Base64;
-import org.mitre.jwk.model.AbstractJwk;
-import org.mitre.jwk.model.EC;
-import org.mitre.jwk.model.Jwk;
-import org.mitre.jwk.model.Rsa;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
 
 /**
  * A collection of utility methods.

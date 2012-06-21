@@ -15,12 +15,6 @@
  ******************************************************************************/
 package org.mitre.openid.connect.client;
 
-import java.security.Key;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-import java.security.spec.InvalidKeySpecException;
-import org.mitre.key.fetch.KeyFetcher;
-
 /**
  * @author nemonik
  * 
@@ -44,12 +38,6 @@ public class OIDCServerConfiguration {
 	private String jwkEncryptUrl;
 	
 	private String jwkSigningUrl;
-	
-	
-	// TODO: these keys should be settable through other means beyond discovery
-	private Key encryptKey;
-	
-	private Key signingKey;
 
 	public String getAuthorizationEndpointURI() {
 		return authorizationEndpointURI;
@@ -121,63 +109,6 @@ public class OIDCServerConfiguration {
 	
 	public void setJwkSigningUrl(String jwkSigningUrl) {
 		this.jwkSigningUrl = jwkSigningUrl;
-	}
-	
-	public Key getSigningKey(){
-		if(signingKey == null){
-			if(x509SigningUrl != null){
-				try {
-					signingKey = KeyFetcher.retrieveX509Key();
-				} catch (CertificateException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			else if (jwkSigningUrl != null){
-				try {
-					signingKey = KeyFetcher.retrieveJwkKey();
-				} catch (NoSuchAlgorithmException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (InvalidKeySpecException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}
-		return signingKey;
-	}
-	
-	public Key getEncryptionKey(){
-		if(encryptKey == null){
-			if(x509EncryptUrl != null){
-				try {
-					encryptKey = KeyFetcher.retrieveX509Key();
-				} catch (CertificateException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			else if (jwkEncryptUrl != null){
-				try {
-					encryptKey = KeyFetcher.retrieveJwkKey();
-				} catch (NoSuchAlgorithmException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (InvalidKeySpecException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}
-		return encryptKey;
-	}
-
-	public void checkKeys(){
-		encryptKey = null;
-		signingKey = null;
-		getEncryptionKey();
-		getSigningKey();
 	}
 
 	@Override

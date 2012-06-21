@@ -36,11 +36,5 @@
             </map>
         </property>
     </bean>
-    
-
-	<bean id="testKeystore" class="org.mitre.jwt.signer.service.impl.KeyStore">
-		<constructor-arg name="location" value="file:src/test/resources/keystore.jks" />
-		<constructor-arg name="password" value="changeit" />
-	</bean>
  
 </beans>
