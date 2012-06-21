@@ -20,15 +20,18 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.URLEncoder;
 import java.security.GeneralSecurityException;
+import java.security.Key;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.Signature;
+import java.security.cert.CertificateException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -43,16 +46,20 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.Validate;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.mitre.openid.connect.model.IdToken;
+import org.mitre.jwk.model.Jwk;
 import org.mitre.jwt.model.Jwt;
 import org.mitre.jwt.model.JwtHeader;
-import org.mitre.jwt.model.JwtClaims;
 import org.mitre.jwt.signer.AbstractJwtSigner;
+import org.mitre.jwt.signer.JwtSigner;
 import org.mitre.jwt.signer.impl.HmacSigner;
+import org.mitre.jwt.signer.impl.PlaintextSigner;
+import org.mitre.jwt.signer.impl.RsaSigner;
+import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.jwt.signer.service.impl.DynamicJwtSigningAndValidationService;
+import org.mitre.key.fetch.KeyFetcher;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
@@ -145,6 +152,9 @@ public class AbstractOIDCAuthenticationFilter extends
 
 	protected final static String FILTER_PROCESSES_URL = "/openid_connect_login";
 
+	
+	private Map<OIDCServerConfiguration, JwtSigningAndValidationService> validationServices = new HashMap<OIDCServerConfiguration, JwtSigningAndValidationService>();
+	
 	/**
 	 * Builds the redirect_uri that will be sent to the Authorization Endpoint.
 	 * By default returns the URL of the current request minus zero or more
@@ -658,4 +668,77 @@ public class AbstractOIDCAuthenticationFilter extends
 	public void setScope(String scope) {
 		this.scope = scope;
 	}
+	
+	
+	protected JwtSigningAndValidationService getValidatorForServer(OIDCServerConfiguration serverConfig) throws CertificateException, NoSuchAlgorithmException, InvalidKeySpecException {
+
+		if(getValidationServices().containsKey(serverConfig)){
+			return validationServices.get(serverConfig);
+		} else {
+						
+			HttpClient httpClient = new DefaultHttpClient();
+			HttpComponentsClientHttpRequestFactory httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
+			RestTemplate restTemplate = new RestTemplate(httpFactory);
+			KeyFetcher keyFetch = new KeyFetcher();
+			PublicKey signingKey = null;
+			
+			String jsonString;
+
+			
+			if(serverConfig.getX509SigningUrl() != null) {
+				try {
+					jsonString = restTemplate.getForObject(
+							serverConfig.getX509SigningUrl(), String.class);
+				} catch (HttpClientErrorException httpClientErrorException) {
+
+					throw new AuthenticationServiceException(
+							"Unable to obtain Access Token.");
+				}
+				
+				signingKey = (PublicKey) keyFetch.retrieveX509Key(serverConfig);
+				
+			} else {
+				try {
+					jsonString = restTemplate.getForObject(serverConfig.getX509SigningUrl(), String.class);
+				} catch (HttpClientErrorException httpClientErrorException) {
+					
+					throw new AuthenticationServiceException("Unable to obtain Access Token.");
+				}
+				
+				signingKey = (PublicKey) keyFetch.retrieveJwkKey(serverConfig);
+			}
+			
+			DynamicJwtSigningAndValidationService signingAndValidationService = new DynamicJwtSigningAndValidationService(serverConfig.getX509SigningUrl(), serverConfig.getJwkSigningUrl(), serverConfig.getClientSecret());
+			
+			JwtHeader header = Jwt.parse(jsonString).getHeader();
+			String alg = header.getAlgorithm();
+			JwtSigner signer = null;
+			
+			if(alg.equals("HS256") || alg.equals("HS384") || alg.equals("HS512")){
+				signer = new HmacSigner(alg, signingKey.toString());
+			} else if (alg.equals("RS256") || alg.equals("RS384") || alg.equals("RS512")){
+				signer = new RsaSigner(alg, signingKey, null);
+			} else if (alg.equals("none")){
+				signer = new PlaintextSigner();
+			} else {
+				throw new IllegalArgumentException("Not an existing algorithm type");
+			}
+			
+			validationServices.put(serverConfig, signingAndValidationService);
+			return signingAndValidationService;
+		}
+
+	}
+
+	public Map<OIDCServerConfiguration, JwtSigningAndValidationService> getValidationServices() {
+		return validationServices;
+	}
+
+	public void setValidationServices(
+			Map<OIDCServerConfiguration, JwtSigningAndValidationService> validationServices) {
+		this.validationServices = validationServices;
+	}
+	
+	
+	
 }

@@ -9,6 +9,7 @@ import java.security.PublicKey;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.RSAPublicKeySpec;
 import java.util.ArrayList;
@@ -24,10 +25,7 @@ import org.mitre.openid.connect.client.OIDCServerConfiguration;
 
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.security.authentication.AuthenticationServiceException;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.ResponseExtractor;
 import org.springframework.web.client.RestTemplate;
 
 import com.google.gson.JsonArray;
@@ -36,22 +34,19 @@ import com.google.gson.JsonParser;
 
 public class KeyFetcher {
 	
-	public static List<Jwk> retrieveJwk(){
-		
-		OIDCServerConfiguration serverConfig = new OIDCServerConfiguration();
+	HttpClient httpClient = new DefaultHttpClient();
+	HttpComponentsClientHttpRequestFactory httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
+	RestTemplate restTemplate = new RestTemplate(httpFactory);
+	
+	public List<Jwk> retrieveJwk(OIDCServerConfiguration serverConfig){
 		
 		List<Jwk> keys = new ArrayList<Jwk>();
-		
-		HttpClient httpClient = new DefaultHttpClient();
-		HttpComponentsClientHttpRequestFactory httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
-		RestTemplate restTemplate = new RestTemplate(httpFactory);
-		MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
 		
 		String jsonString = null;
 
 		try {
-			jsonString = restTemplate.postForObject(
-					serverConfig.getTokenEndpointURI(), form, String.class);
+			jsonString = restTemplate.getForObject(
+					serverConfig.getTokenEndpointURI(), String.class);
 		} catch (HttpClientErrorException httpClientErrorException) {
 
 			throw new AuthenticationServiceException(
@@ -61,17 +56,15 @@ public class KeyFetcher {
 		JsonObject json = (JsonObject) new JsonParser().parse(jsonString);
 		JsonArray getArray = json.getAsJsonArray("jwk");
 		
-		for(int i = 0; i < getArray.size(); i++){
+		for (int i = 0; i < getArray.size(); i++){
 			
 			JsonObject object = getArray.get(i).getAsJsonObject();
 			String algorithm = object.get("alg").getAsString();
 			
-			if(algorithm.equals("RSA")){
+			if (algorithm.equals("RSA")){
 				Rsa rsa = new Rsa(object);
 				keys.add(rsa);
-			}
-
-			else{
+			} else {
 				EC ec = new EC(object);
 				keys.add(ec);
 			}
@@ -79,20 +72,13 @@ public class KeyFetcher {
 		return keys;
 	}
 	
-	public static Key retrieveX509Key() throws CertificateException {
+	public Key retrieveX509Key(OIDCServerConfiguration serverConfig) throws CertificateException {
 		
-		OIDCServerConfiguration serverConfig = new OIDCServerConfiguration();
-		
-		HttpClient httpClient = new DefaultHttpClient();
-		HttpComponentsClientHttpRequestFactory httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
-		RestTemplate restTemplate = new RestTemplate(httpFactory);
-		MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
-		
-		InputStream jsonStream = null;
+		InputStream x509Stream = null;
 
 		try {
-			jsonStream = restTemplate.postForObject(
-					serverConfig.getTokenEndpointURI(), form, InputStream.class);
+			x509Stream = restTemplate.getForObject(
+					serverConfig.getTokenEndpointURI(), InputStream.class);
 		} catch (HttpClientErrorException httpClientErrorException) {
 
 			throw new AuthenticationServiceException(
@@ -100,33 +86,26 @@ public class KeyFetcher {
 		}
 		
 		CertificateFactory factory = CertificateFactory.getInstance("X.509");
-		X509Certificate cert = (X509Certificate) factory.generateCertificate(jsonStream);
+		X509Certificate cert = (X509Certificate) factory.generateCertificate(x509Stream);
 		Key key = cert.getPublicKey();
 
 		return key;
 	}
 	
-	public static Key retrieveJwkKey() throws NoSuchAlgorithmException, InvalidKeySpecException{
+	public Key retrieveJwkKey(OIDCServerConfiguration serverConfig) throws NoSuchAlgorithmException, InvalidKeySpecException{
 		
-		OIDCServerConfiguration serverConfig = new OIDCServerConfiguration();
-		
-		HttpClient httpClient = new DefaultHttpClient();
-		HttpComponentsClientHttpRequestFactory httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
-		RestTemplate restTemplate = new RestTemplate(httpFactory);
-		MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
-		
-		String jsonString = null;
+		String jwkString = null;
 
 		try {
-			jsonString = restTemplate.postForObject(
-					serverConfig.getTokenEndpointURI(), form, String.class);
+			jwkString = restTemplate.getForObject(
+					serverConfig.getTokenEndpointURI(), String.class);
 		} catch (HttpClientErrorException httpClientErrorException) {
 
 			throw new AuthenticationServiceException(
 					"Unable to obtain Access Token.");
 		}
 		
-		JsonObject json = (JsonObject) new JsonParser().parse(jsonString);
+		JsonObject json = (JsonObject) new JsonParser().parse(jwkString);
 		JsonArray getArray = json.getAsJsonArray("jwk");
 		JsonObject object = getArray.get(0).getAsJsonObject();
 			
@@ -137,7 +116,7 @@ public class KeyFetcher {
 				
 		RSAPublicKeySpec spec = new RSAPublicKeySpec(modulus, exponent);
 		KeyFactory factory = KeyFactory.getInstance("RSA");
-		PublicKey pub = factory.generatePublic(spec);
+		RSAPublicKey pub = (RSAPublicKey) factory.generatePublic(spec);
 
 		return pub;
 	}
