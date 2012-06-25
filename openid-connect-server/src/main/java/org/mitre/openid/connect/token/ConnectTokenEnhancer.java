@@ -15,12 +15,16 @@
  ******************************************************************************/
 package org.mitre.openid.connect.token;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.mitre.openid.connect.model.IdToken;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.spi.LoggerFactoryBinder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -32,6 +36,8 @@ import com.google.common.base.Strings;
 @Service
 public class ConnectTokenEnhancer implements TokenEnhancer {
 
+	Logger logger = LoggerFactory.getLogger(ConnectTokenEnhancer.class);
+	
 	@Autowired
 	private ConfigurationPropertiesBean configBean;
 	
@@ -57,7 +63,12 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 		token.getJwt().getClaims().setExpiration(token.getExpiration());
 		
 		//TODO: check for client's preferred signer alg and use that
-		jwtService.signJwt(token.getJwt());
+		try {
+	        jwtService.signJwt(token.getJwt());
+        } catch (NoSuchAlgorithmException e) {
+	        // couldn't sign token
+        	logger.warn("Couldn't sign access token", e);
+        }
 		
 		/**
 		 * Authorization request scope MUST include "openid", but access token request 
@@ -80,7 +91,11 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 			// TODO: expiration? other fields?
 
 			//TODO: check for client's preferred signer alg and use that
-			jwtService.signJwt(idToken);
+			try {
+	            jwtService.signJwt(idToken);
+            } catch (NoSuchAlgorithmException e) {
+            	logger.warn("Couldn't sign id token", e);
+            }
 			
 			token.setIdToken(idToken);
 		}

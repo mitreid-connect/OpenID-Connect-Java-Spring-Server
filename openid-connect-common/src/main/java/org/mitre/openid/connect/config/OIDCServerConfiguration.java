@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package org.mitre.openid.connect.client;
+package org.mitre.openid.connect.config;
 
 /**
  * @author nemonik
@@ -28,6 +28,16 @@ public class OIDCServerConfiguration {
 	private String clientSecret;
 
 	private String clientId;
+	
+	private String issuer;
+	
+	private String x509EncryptUrl;
+	
+	private String x509SigningUrl;
+	
+	private String jwkEncryptUrl;
+	
+	private String jwkSigningUrl;
 
 	public String getAuthorizationEndpointURI() {
 		return authorizationEndpointURI;
@@ -35,6 +45,10 @@ public class OIDCServerConfiguration {
 
 	public String getClientId() {
 		return clientId;
+	}
+	
+	public String getIssuer() {
+		return issuer;
 	}
 
 	public String getClientSecret() {
@@ -53,6 +67,10 @@ public class OIDCServerConfiguration {
 		this.clientId = clientId;
 	}
 
+	public void setIssuer(String issuer) {
+		this.issuer = issuer;
+	}
+
 	public void setClientSecret(String clientSecret) {
 		this.clientSecret = clientSecret;
 	}
@@ -60,13 +78,50 @@ public class OIDCServerConfiguration {
 	public void setTokenEndpointURI(String tokenEndpointURI) {
 		this.tokenEndpointURI = tokenEndpointURI;
 	}
+	
+	public String getX509EncryptUrl() {
+		return x509EncryptUrl;
+	}
+	
+	public String getX509SigningUrl() {
+		return x509SigningUrl;
+	}
+	
+	public String getJwkEncryptUrl() {
+		return jwkEncryptUrl;
+	}
+	
+	public String getJwkSigningUrl() {
+		return jwkSigningUrl;
+	}
+	
+	public void setX509EncryptUrl(String x509EncryptUrl) {
+		this.x509EncryptUrl = x509EncryptUrl;
+	}
+	
+	public void setX509SigningUrl(String x509SigningUrl) {
+		this.x509SigningUrl = x509SigningUrl;
+	}
+	
+	public void setJwkEncryptUrl(String jwkEncryptUrl) {
+		this.jwkEncryptUrl = jwkEncryptUrl;
+	}
+	
+	public void setJwkSigningUrl(String jwkSigningUrl) {
+		this.jwkSigningUrl = jwkSigningUrl;
+	}
 
 	@Override
 	public String toString() {
 		return "OIDCServerConfiguration [authorizationEndpointURI="
 				+ authorizationEndpointURI + ", tokenEndpointURI="
 				+ tokenEndpointURI + ", clientSecret=" + clientSecret
-				+ ", clientId=" + clientId + "]";
+				+ ", clientId=" + clientId + ", issuer=" + issuer 
+				+", x509EncryptedUrl=" 
+				+ x509EncryptUrl + ", jwkEncryptedUrl=" 
+				+ jwkEncryptUrl + ", x509SigningUrl="
+				+ x509SigningUrl + ", jwkSigningUrl="
+				+ jwkSigningUrl + "]";
 	}
 
 }

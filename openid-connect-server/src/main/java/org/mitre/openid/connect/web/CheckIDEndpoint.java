@@ -15,6 +15,8 @@
  ******************************************************************************/
 package org.mitre.openid.connect.web;
 
+import java.security.NoSuchAlgorithmException;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
@@ -48,10 +50,10 @@ public class CheckIDEndpoint {
 		
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		
-		if (!jwtSignerService.validateSignature(tokenString)) {
-			// can't validate 
-			throw new InvalidJwtSignatureException("The Signature could not be validated.");
-		}
+        if (!jwtSignerService.validateSignature(tokenString)) {
+        	// can't validate 
+        	throw new InvalidJwtSignatureException("The Signature could not be validated.");
+        }
 		
 		// it's a valid signature, parse the token
 		IdToken token = IdToken.parse(tokenString);
@@ -63,9 +65,9 @@ public class CheckIDEndpoint {
 		}
 		
 		// check the issuer (sanity check)
-		if (!jwtSignerService.validateIssuedJwt(token, configBean.getIssuer())) {
-			throw new InvalidJwtIssuerException("The JWT issuer is invalid.");
-		}
+		//if (!jwtSignerService.validateIssuedJwt(token, configBean.getIssuer())) {
+		//	throw new InvalidJwtIssuerException("The JWT issuer is invalid.");
+		//}
 		
 		// pass the claims directly (the view doesn't care about other fields)
 		return new ModelAndView("jsonIdTokenView", "entity", token.getClaims());

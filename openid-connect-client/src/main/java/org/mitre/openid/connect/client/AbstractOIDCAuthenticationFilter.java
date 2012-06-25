@@ -22,10 +22,14 @@ import java.net.URLEncoder;
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.Signature;
+import java.security.cert.CertificateException;
+import java.security.interfaces.RSAPublicKey;
+import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -44,6 +48,12 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.mitre.jwt.signer.JwtSigner;
+import org.mitre.jwt.signer.impl.RsaSigner;
+import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
+import org.mitre.jwt.signer.service.impl.JwtSigningAndValidationServiceDefault;
+import org.mitre.key.fetch.KeyFetcher;
+import org.mitre.openid.connect.config.OIDCServerConfiguration;
 import org.mitre.openid.connect.model.IdToken;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -57,8 +67,6 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.WebUtils;
 
-import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
@@ -78,7 +86,7 @@ public class AbstractOIDCAuthenticationFilter extends
 	 * @author nemonik
 	 * 
 	 */
-	class SanatizedRequest extends HttpServletRequestWrapper {
+	protected class SanatizedRequest extends HttpServletRequestWrapper {
 
 		private List<String> paramsToBeSanatized;
 
@@ -109,8 +117,7 @@ public class AbstractOIDCAuthenticationFilter extends
 
 		public Enumeration<String> getParameterNames() {
 
-			ArrayList<String> paramNames = Collections.list(super
-					.getParameterNames());
+			ArrayList<String> paramNames = Collections.list(super.getParameterNames());
 
 			for (String paramToBeSanatized : paramsToBeSanatized) {
 				paramNames.remove(paramToBeSanatized);
@@ -137,6 +144,9 @@ public class AbstractOIDCAuthenticationFilter extends
 
 	protected final static String FILTER_PROCESSES_URL = "/openid_connect_login";
 
+	
+	private Map<OIDCServerConfiguration, JwtSigningAndValidationService> validationServices = new HashMap<OIDCServerConfiguration, JwtSigningAndValidationService>();
+	
 	/**
 	 * Builds the redirect_uri that will be sent to the Authorization Endpoint.
 	 * By default returns the URL of the current request minus zero or more
@@ -203,8 +213,7 @@ public class AbstractOIDCAuthenticationFilter extends
 	 *         http://server/path/program?query_string from the messaged
 	 *         parameters.
 	 */
-	public static String buildURL(String baseURI,
-			Map<String, String> queryStringFields) {
+	public static String buildURL(String baseURI, Map<String, String> queryStringFields) {
 
 		StringBuilder URLBuilder = new StringBuilder(baseURI);
 
@@ -214,9 +223,10 @@ public class AbstractOIDCAuthenticationFilter extends
 
 			try {
 
-				URLBuilder.append(appendChar).append(param.getKey())
-						.append('=')
-						.append(URLEncoder.encode(param.getValue(), "UTF-8"));
+				URLBuilder.append(appendChar)
+					.append(param.getKey())
+					.append('=')
+					.append(URLEncoder.encode(param.getValue(), "UTF-8"));
 
 			} catch (UnsupportedEncodingException uee) {
 
@@ -241,8 +251,7 @@ public class AbstractOIDCAuthenticationFilter extends
 	 *            The data to be signed
 	 * @return The signature text
 	 */
-	public static String sign(Signature signer, PrivateKey privateKey,
-			byte[] data) {
+	public static String sign(Signature signer, PrivateKey privateKey, byte[] data) {
 		String signature;
 
 		try {
@@ -323,8 +332,7 @@ public class AbstractOIDCAuthenticationFilter extends
 	public void afterPropertiesSet() {
 		super.afterPropertiesSet();
 
-		Assert.notNull(errorRedirectURI,
-				"An Error Redirect URI must be supplied");
+		Assert.notNull(errorRedirectURI, "An Error Redirect URI must be supplied");
 
 		KeyPairGenerator keyPairGenerator;
 
@@ -377,6 +385,7 @@ public class AbstractOIDCAuthenticationFilter extends
 	 *            authentication
 	 * @return The authenticated user token, or null if authentication is
 	 *         incomplete.
+	 * @throws Exception 
 	 * @throws UnsupportedEncodingException
 	 */
 	protected Authentication handleAuthorizationGrantResponse(
@@ -388,8 +397,7 @@ public class AbstractOIDCAuthenticationFilter extends
 		// Handle Token Endpoint interaction
 		HttpClient httpClient = new DefaultHttpClient();
 
-		httpClient.getParams().setParameter("http.socket.timeout",
-				new Integer(httpSocketTimeout));
+		httpClient.getParams().setParameter("http.socket.timeout", new Integer(httpSocketTimeout));
 
 		//
 		// TODO: basic auth is untested (it wasn't working last I
@@ -402,8 +410,7 @@ public class AbstractOIDCAuthenticationFilter extends
 		// credentials);
 		//
 
-		HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(
-				httpClient);
+		HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
 
 		RestTemplate restTemplate = new RestTemplate(factory);
 
@@ -418,11 +425,10 @@ public class AbstractOIDCAuthenticationFilter extends
 		form.add("client_secret", serverConfig.getClientSecret());
 
 		if (debug) {
-			logger.debug("tokenEndpointURI = "
-					+ serverConfig.getTokenEndpointURI());
+			logger.debug("tokenEndpointURI = " + serverConfig.getTokenEndpointURI());
 			logger.debug("form = " + form);
 		}
-
+;
 		String jsonString = null;
 
 		try {
@@ -459,53 +465,47 @@ public class AbstractOIDCAuthenticationFilter extends
 
 		} else {
 
-			// Extract the id_token
-
+			// Extract the id_token to insert into the
+			// OpenIdConnectAuthenticationToken
+			
 			IdToken idToken = null;
-
+			JwtSigningAndValidationService jwtValidator = getValidatorForServer(serverConfig); 
+			
 			if (jsonRoot.getAsJsonObject().get("id_token") != null) {
-
+				
 				try {
-					idToken = IdToken.parse(jsonRoot.getAsJsonObject()
-							.get("id_token").getAsString());
-
-					List<String> parts = Lists.newArrayList(Splitter.on(".")
-							.split(jsonRoot.getAsJsonObject().get("id_token")
-									.getAsString()));
-
-					if (parts.size() != 3) {
-						throw new IllegalArgumentException(
-								"Invalid JWT format.");
-					}
-
-					String h64 = parts.get(0);
-					String c64 = parts.get(1);
-					String s64 = parts.get(2);
-
-					logger.debug("h64 = " + h64);
-					logger.debug("c64 = " + c64);
-					logger.debug("s64 = " + s64);
-
-				} catch (Exception e) {
+					idToken = IdToken.parse(jsonRoot.getAsJsonObject().get("id_token").getAsString());
+				
+				} catch (AuthenticationServiceException e) {
 
 					// I suspect this could happen
 
 					logger.error("Problem parsing id_token:  " + e);
 					// e.printStackTrace();
 
-					throw new AuthenticationServiceException(
-							"Problem parsing id_token return from Token endpoint: "
-									+ e);
+					throw new AuthenticationServiceException("Problem parsing id_token return from Token endpoint: " + e);
+				}
+
+				if(jwtValidator.validateSignature(jsonRoot.getAsJsonObject().get("id_token").getAsString())
+					&& idToken.getClaims().getIssuer() != null
+					&& idToken.getClaims().getIssuer().equals(serverConfig.getIssuer())
+					&& idToken.getClaims().getIssuer().equals(serverConfig.getClientId())
+					&& !jwtValidator.isJwtExpired(idToken)
+					&& jwtValidator.validateIssuedAt(idToken)){
+					
+	
+				}
+				else{
+					throw new AuthenticationServiceException("Problem verifying id_token");
 				}
 
 			} else {
 
 				// An error is unlikely, but it good security to check
 
-				logger.error("Token Endpoint did not return a token_id");
+				logger.error("Token Endpoint did not return an id_token");
 
-				throw new AuthenticationServiceException(
-						"Token Endpoint did not return a token_id");
+				throw new AuthenticationServiceException("Token Endpoint did not return an id_token");
 			}
 			
 			// Clients are required to compare nonce claim in ID token to 
@@ -513,13 +513,9 @@ public class AbstractOIDCAuthenticationFilter extends
 			// stores this value as a signed session cookie to detect a 
 			// replay by third parties.
 			//
-			// See: OpenID Connect Messages
-			//
-			// Specifically, Section 2.1.1 entitled "ID Token"
+			// See: OpenID Connect Messages Section 2.1.1 entitled "ID Token"
 			//
 			// http://openid.net/specs/openid-connect-messages-1_0.html#id_token
-			//
-			// Read the paragraph describing "nonce". Required w/ implicit flow.
 			//
 			
 			//String nonce = idToken.getClaims().getClaimAsString("nonce");
@@ -534,57 +530,49 @@ public class AbstractOIDCAuthenticationFilter extends
 						"ID token did not contain a nonce claim.");
 			}
 			
-			Cookie nonceSignatureCookie = WebUtils.getCookie(request,
-					NONCE_SIGNATURE_COOKIE_NAME);
+			Cookie nonceSignatureCookie = WebUtils.getCookie(request, NONCE_SIGNATURE_COOKIE_NAME);
 
 			if (nonceSignatureCookie != null) {
 
 				String sigText = nonceSignatureCookie.getValue();
-
+	
 				if (sigText != null && !sigText.isEmpty()) {
-
+	
 					if (!verify(signer, publicKey, nonce, sigText)) {
 						logger.error("Possible replay attack detected! "
 								+ "The comparison of the nonce in the returned "
 								+ "ID Token to the signed session "
 								+ NONCE_SIGNATURE_COOKIE_NAME + " failed.");
-
+	
 						throw new AuthenticationServiceException(
 								"Possible replay attack detected! "
 										+ "The comparison of the nonce in the returned "
 										+ "ID Token to the signed session "
-										+ NONCE_SIGNATURE_COOKIE_NAME + " failed.");
+										+ NONCE_SIGNATURE_COOKIE_NAME
+										+ " failed.");
 					}
-
 				} else {
-					logger.error(NONCE_SIGNATURE_COOKIE_NAME
-							+ " was found, but was null or empty.");
-
-					throw new AuthenticationServiceException(
-							NONCE_SIGNATURE_COOKIE_NAME
-									+ " was found, but was null or empty.");
+					logger.error(NONCE_SIGNATURE_COOKIE_NAME + " cookie was found but value was null or empty");					
+					throw new AuthenticationServiceException(NONCE_SIGNATURE_COOKIE_NAME + " cookie was found but value was null or empty");
 				}
-
+	
 			} else {
 
 				logger.error(NONCE_SIGNATURE_COOKIE_NAME + " cookie was not found.");
 
-				throw new AuthenticationServiceException(
-						NONCE_SIGNATURE_COOKIE_NAME + " cookie was not found.");
-			}			
+				throw new AuthenticationServiceException(NONCE_SIGNATURE_COOKIE_NAME + " cookie was not found.");
+			}
 
 			// pull the user_id out as a claim on the id_token
 			
 			String userId = idToken.getTokenClaims().getUserId();
 			
 			// construct an OpenIdConnectAuthenticationToken and return 
-			// a Authentication object w/
+			// a Authentication object w/the userId and the idToken
 			
-			OpenIdConnectAuthenticationToken token = new OpenIdConnectAuthenticationToken(
-					userId, idToken);
+			OpenIdConnectAuthenticationToken token = new OpenIdConnectAuthenticationToken(userId, idToken);
 
-			Authentication authentication = this.getAuthenticationManager()
-					.authenticate(token);
+			Authentication authentication = this.getAuthenticationManager().authenticate(token);
 
 			return authentication;
 
@@ -615,8 +603,7 @@ public class AbstractOIDCAuthenticationFilter extends
 		urlVariables.put("response_type", "code");
 		urlVariables.put("client_id", serverConfiguration.getClientId());
 		urlVariables.put("scope", scope);
-		urlVariables.put("redirect_uri", AbstractOIDCAuthenticationFilter
-				.buildRedirectURI(request, null));
+		urlVariables.put("redirect_uri", AbstractOIDCAuthenticationFilter.buildRedirectURI(request, null));
 
 		// Create a string value used to associate a user agent session
 		// with an ID Token to mitigate replay attacks. The value is
@@ -626,8 +613,7 @@ public class AbstractOIDCAuthenticationFilter extends
 
 		String nonce = new BigInteger(50, new SecureRandom()).toString(16);
 
-		Cookie nonceCookie = new Cookie(NONCE_SIGNATURE_COOKIE_NAME, sign(
-				signer, privateKey, nonce.getBytes()));
+		Cookie nonceCookie = new Cookie(NONCE_SIGNATURE_COOKIE_NAME, sign(signer, privateKey, nonce.getBytes()));
 
 		response.addCookie(nonceCookie);
 
@@ -637,9 +623,7 @@ public class AbstractOIDCAuthenticationFilter extends
 
 		// TODO: display, prompt, request, request_uri
 
-		String authRequest = AbstractOIDCAuthenticationFilter
-				.buildURL(serverConfiguration.getAuthorizationEndpointURI(),
-						urlVariables);
+		String authRequest = AbstractOIDCAuthenticationFilter.buildURL(serverConfiguration.getAuthorizationEndpointURI(), urlVariables);
 
 		logger.debug("Auth Request:  " + authRequest);
 
@@ -687,4 +671,63 @@ public class AbstractOIDCAuthenticationFilter extends
 	public void setScope(String scope) {
 		this.scope = scope;
 	}
+	
+	
+	protected JwtSigningAndValidationService getValidatorForServer(OIDCServerConfiguration serverConfig) {
+
+		if(getValidationServices().containsKey(serverConfig)){
+			return validationServices.get(serverConfig);
+		} else {
+						
+			KeyFetcher keyFetch = new KeyFetcher();
+			PublicKey signingKey = null;
+			
+			// If the config has the X509 url, prefer that to the JWK
+			if(serverConfig.getX509SigningUrl() != null) {
+				signingKey = keyFetch.retrieveX509Key(serverConfig);
+				
+			} else {
+				// otherwise prefer the JWK
+				signingKey = keyFetch.retrieveJwkKey(serverConfig);
+			}
+			
+			if (signingKey != null) {
+				Map<String, JwtSigner> signers = new HashMap<String, JwtSigner>();
+				
+				if (signingKey instanceof RSAPublicKey) {
+					
+					RSAPublicKey rsaKey = (RSAPublicKey)signingKey;
+					
+					// build an RSA signer
+					// FIXME: where do we get the algorithm name?
+					RsaSigner signer = new RsaSigner("RS256", rsaKey, null);
+					
+					signers.put(serverConfig.getIssuer(), signer);
+				}
+				
+				JwtSigningAndValidationService signingAndValidationService = new JwtSigningAndValidationServiceDefault(signers);
+				
+				validationServices.put(serverConfig, signingAndValidationService);
+				
+				return signingAndValidationService;
+				
+			} else {
+				// if we can't build a validation service, return null
+				return null;
+			}
+		}
+
+	}
+
+	public Map<OIDCServerConfiguration, JwtSigningAndValidationService> getValidationServices() {
+		return validationServices;
+	}
+
+	public void setValidationServices(
+			Map<OIDCServerConfiguration, JwtSigningAndValidationService> validationServices) {
+		this.validationServices = validationServices;
+	}
+	
+	
+	
 }

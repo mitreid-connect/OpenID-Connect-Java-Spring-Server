@@ -15,12 +15,14 @@
  ******************************************************************************/
 package org.mitre.jwt.signer;
 
+import java.security.NoSuchAlgorithmException;
+
 import org.mitre.jwt.model.Jwt;
 
 public interface JwtSigner {
 
-	public Jwt sign(Jwt jwt);
+	public Jwt sign(Jwt jwt) throws NoSuchAlgorithmException;
 	
-	public boolean verify(String jwtString);
+	public boolean verify(String jwtString) throws NoSuchAlgorithmException;
 	
 }

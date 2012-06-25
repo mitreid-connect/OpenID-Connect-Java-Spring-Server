@@ -89,6 +89,7 @@ public class KeyStore implements InitializingBean {
 			}
 		}
 
+		// TODO: a more specific exception perhaps? is an empty keystore even an exception?
 		if (keystore.size() == 0) {
 			throw new Exception("Keystore is empty; it has no entries");
 		}

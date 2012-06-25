@@ -117,10 +117,15 @@ public class HmacSigner extends AbstractJwtSigner implements InitializingBean {
 	 * org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
 	 */
 	@Override
-	public void afterPropertiesSet() throws Exception {
+	public void afterPropertiesSet(){
 
-		mac = Mac.getInstance(JwsAlgorithm.getByName(super.getAlgorithm())
-				.getStandardName());
+		try {
+			mac = Mac.getInstance(JwsAlgorithm.getByName(super.getAlgorithm())
+					.getStandardName());
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		logger.debug(JwsAlgorithm.getByName(getAlgorithm()).getStandardName()
 				+ " ECDSA Signer ready for business");
@@ -134,7 +139,8 @@ public class HmacSigner extends AbstractJwtSigner implements InitializingBean {
 	 * )
 	 */
 	@Override
-	public String generateSignature(String signatureBase) {
+	public String generateSignature(String signatureBase) throws NoSuchAlgorithmException {
+		afterPropertiesSet();
 		if (passphrase == null) {
 			throw new IllegalArgumentException("Passphrase cannot be null");
 		}
@@ -171,6 +177,7 @@ public class HmacSigner extends AbstractJwtSigner implements InitializingBean {
 	public void setPassphrase(String passphrase) {
 		this.passphrase = passphrase;
 	}
+
 
 	/*
 	 * (non-Javadoc)

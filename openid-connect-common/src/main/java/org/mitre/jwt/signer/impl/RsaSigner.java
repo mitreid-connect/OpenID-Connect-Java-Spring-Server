@@ -18,6 +18,7 @@ package org.mitre.jwt.signer.impl;
 import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
@@ -123,9 +124,6 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 	public RsaSigner(String algorithmName, PublicKey publicKey, PrivateKey privateKey) {
 		super(algorithmName);
 
-		Assert.notNull(publicKey, "An publicKey must be supplied");
-		Assert.notNull(privateKey, "A privateKey must be supplied");
-
 		this.publicKey = publicKey;
 		this.privateKey = privateKey;
 	}
@@ -137,7 +135,7 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 	 * org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
 	 */
 	@Override
-	public void afterPropertiesSet() throws Exception {
+	public void afterPropertiesSet() throws NoSuchAlgorithmException, GeneralSecurityException {
 
 		// unsupported algorithm will throw a NoSuchAlgorithmException
 		signer = Signature.getInstance(JwsAlgorithm.getByName(super.getAlgorithm()).getStandardName()); // ,PROVIDER);
@@ -173,9 +171,15 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 	 * )
 	 */
 	@Override
-	public String generateSignature(String signatureBase) {
+	public String generateSignature(String signatureBase) throws NoSuchAlgorithmException {
 
 		String sig = null;
+		try {
+			initializeSigner();
+		} catch (GeneralSecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		try {
 			signer.initSign(privateKey);
@@ -228,6 +232,10 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 	public void setPrivateKey(RSAPrivateKey privateKey) {
 		this.privateKey = privateKey;
 	}
+	
+	public void initializeSigner() throws NoSuchAlgorithmException{
+		signer = Signature.getInstance(JwsAlgorithm.getByName(super.getAlgorithm()).getStandardName());
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -266,6 +274,7 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 		String signingInput = h64 + "." + c64;
 
 		try {
+			initializeSigner();
 			signer.initVerify(publicKey);
 			signer.update(signingInput.getBytes("UTF-8"));
 			value = signer.verify(Base64.decodeBase64(s64));

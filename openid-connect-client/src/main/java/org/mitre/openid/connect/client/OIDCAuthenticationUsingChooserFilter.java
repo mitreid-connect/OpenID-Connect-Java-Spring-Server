@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.mitre.openid.connect.config.OIDCServerConfiguration;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -108,10 +109,13 @@ public class OIDCAuthenticationUsingChooserFilter extends
 			Cookie issuerCookie = WebUtils.getCookie(request,
 					ISSUER_COOKIE_NAME);
 
-			return handleAuthorizationGrantResponse(
-					request.getParameter("code"), new SanatizedRequest(request,
-							new String[] { "code" }),
-					oidcServerConfigs.get(issuerCookie.getValue()));
+			try {
+				return handleAuthorizationGrantResponse(request.getParameter("code"), new SanatizedRequest(request,	new String[] { "code" }),
+						oidcServerConfigs.get(issuerCookie.getValue()));
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
 		} else {
 

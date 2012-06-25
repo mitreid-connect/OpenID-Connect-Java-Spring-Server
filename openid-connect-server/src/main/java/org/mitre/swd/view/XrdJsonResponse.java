@@ -18,6 +18,7 @@
  */
 package org.mitre.swd.view;
 
+import java.io.IOException;
 import java.io.Writer;
 import java.util.Map;
 
@@ -44,7 +45,7 @@ public class XrdJsonResponse extends AbstractView {
 	 * @see org.springframework.web.servlet.view.AbstractView#renderMergedOutputModel(java.util.Map, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
 	 */
 	@Override
-	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) throws Exception {
+	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
 		Gson gson = new GsonBuilder().setExclusionStrategies(new ExclusionStrategy() {
 
 			@Override
@@ -67,7 +68,14 @@ public class XrdJsonResponse extends AbstractView {
 
 		response.setContentType("application/json");
 
-		Writer out = response.getWriter();
+		Writer out;
+        try {
+	        out = response.getWriter();
+        } catch (IOException e) {
+	        // TODO Auto-generated catch block
+	        e.printStackTrace();
+	        return; // if we can't get the writer, this is pointless
+        }
 
 		Map<String, String> links = (Map<String, String>) model.get("links");
 

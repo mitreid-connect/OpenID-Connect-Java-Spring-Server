@@ -15,8 +15,8 @@
  ******************************************************************************/
 package org.mitre.jwt.signer.service;
 
+import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
-import java.util.List;
 import java.util.Map;
 
 import org.mitre.jwt.model.Jwt;
@@ -42,34 +42,38 @@ public interface JwtSigningAndValidationService {
 	public boolean isJwtExpired(Jwt jwt);
 
 	/**
-	 * Checks to see if this JWT has been issued by us
-	 * 
-	 * @param jwt
-	 *            the JWT to check the issuer of
-	 * @param expectedIssuer
-	 *            the expected issuer
-	 * @return true if the JWT was issued by this expected issuer, false if not
-	 */
-	public boolean validateIssuedJwt(Jwt jwt, String expectedIssuer);
-
-	/**
 	 * Checks the signature of the given JWT against all configured signers,
 	 * returns true if at least one of the signers validates it.
 	 * 
 	 * @param jwtString
 	 *            the string representation of the JWT as sent on the wire
 	 * @return true if the signature is valid, false if not
+	 * @throws NoSuchAlgorithmException 
 	 */
 	public boolean validateSignature(String jwtString);
 	
+
 	/**
-	 * Called to sign a jwt in place for a client that hasn't registered a preferred signing algorithm.
-	 * Use the default algorithm to sign.
+	 * Checks to see when this JWT was issued
 	 * 
-	 * @param jwt the jwt to sign
-	 * @return the signed jwt
+	 * @param jwt
+	 * 		the JWT to check
+	 * @return true if the issued at is valid, false if not
+	 * @throws NoSuchAlgorithmException
 	 */
-	public void signJwt(Jwt jwt);
+	public boolean validateIssuedAt(Jwt jwt);
+	
+	/**
+	 * Checks to see if the nonce parameter sent in the Authorization Request 
+	 * is equal to the nonce parameter in the id token
+	 * 
+	 * @param jwt
+	 * @param nonce
+	 * 			the string representation of the Nonce
+	 * @return true if both nonce parameters are equal, false if otherwise 
+	 * @throws NoSuchAlgorithmException
+	 */
+	public boolean validateNonce(Jwt jwt, String nonce);
 	
 	/**
 	 * Sign a jwt using the selected algorithm. The algorithm is selected using the String parameter values specified
@@ -79,6 +83,17 @@ public interface JwtSigningAndValidationService {
 	 * @param alg the name of the algorithm to use, as specified in JWS s.6
 	 * @return the signed jwt
 	 */
+	
+	/**
+	 * Called to sign a jwt in place for a client that hasn't registered a preferred signing algorithm.
+	 * Use the default algorithm to sign.
+	 * 
+	 * @param jwt the jwt to sign
+	 * @return the signed jwt
+	 * @throws NoSuchAlgorithmException 
+	 */
+	public void signJwt(Jwt jwt) throws NoSuchAlgorithmException;
+	
 	//TODO: implement later; only need signJwt(Jwt jwt) for now
 	//public Jwt signJwt(Jwt jwt, String alg);
 	

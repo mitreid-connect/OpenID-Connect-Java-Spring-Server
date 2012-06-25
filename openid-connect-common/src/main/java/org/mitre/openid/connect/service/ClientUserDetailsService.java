@@ -18,7 +18,6 @@ package org.mitre.openid.connect.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.core.GrantedAuthority;
