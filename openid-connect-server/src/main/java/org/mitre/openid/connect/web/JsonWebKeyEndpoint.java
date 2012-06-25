@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.mitre.jwt.signer.JwtSigner;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -40,16 +41,12 @@ public class JsonWebKeyEndpoint {
 	@RequestMapping("/jwk")
 	public ModelAndView getJwk() {
 		
-		// get all public keys for display
-		// map from key id to public key for that signer
-		Map<String, PublicKey> keys = jwtService.getAllPublicKeys();
-
-		// put them into a bidirectional map to get at key IDs
-		BiMap<String, PublicKey> biKeys = HashBiMap.create(keys);
+		// map from key id to signer
+		Map<String, JwtSigner> signers = jwtService.getAllSigners();
 		
 		// TODO: check if keys are empty, return a 404 here or just an empty list?
 		
-		return new ModelAndView("jwkKeyList", "keys", biKeys);
+		return new ModelAndView("jwkKeyList", "signers", signers);
 	}
 	
 }

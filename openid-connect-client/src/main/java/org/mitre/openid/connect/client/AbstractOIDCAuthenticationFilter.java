@@ -489,7 +489,6 @@ public class AbstractOIDCAuthenticationFilter extends
 				if(jwtValidator.validateSignature(jsonRoot.getAsJsonObject().get("id_token").getAsString())
 					&& idToken.getClaims().getIssuer() != null
 					&& idToken.getClaims().getIssuer().equals(serverConfig.getIssuer())
-					&& idToken.getClaims().getIssuer().equals(serverConfig.getClientId())
 					&& !jwtValidator.isJwtExpired(idToken)
 					&& jwtValidator.validateIssuedAt(idToken)){
 					

@@ -77,34 +77,20 @@ public class JwtSigningAndValidationServiceDefault extends AbstractJwtSigningAnd
 
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * 
+	 * Returns a copy of the collection of signers.
 	 * 
 	 * @see
 	 * org.mitre.jwt.signer.service.JwtSigningAndValidationService#getAllPublicKeys
 	 * ()
 	 */
 	@Override
-	public Map<String, PublicKey> getAllPublicKeys() {
+	public Map<String, JwtSigner> getAllSigners() {
 
-		Map<String, PublicKey> map = new HashMap<String, PublicKey>();
+		Map<String, JwtSigner> map = new HashMap<String, JwtSigner>();
 
-		for (String signerId : signers.keySet()) {
-
-			JwtSigner signer = signers.get(signerId);
-			
-			if (signer instanceof RsaSigner) {
-
-				RsaSigner rsa = (RsaSigner)signer;
-				
-				PublicKey publicKey = rsa.getPublicKey();
-
-				if (publicKey != null) {
-					map.put(signerId, publicKey);
-				}
-
-			}
-		}
+		map.putAll(signers);
 
 		return map;
 	}
@@ -165,23 +151,4 @@ public class JwtSigningAndValidationServiceDefault extends AbstractJwtSigningAnd
 		return signers;
 	}
 
-	@Override
-	public boolean validateIssuedAt(Jwt jwt) {
-		Date issuedAt = jwt.getClaims().getIssuedAt();
-		
-		if (issuedAt != null)
-			return new Date().before(issuedAt);
-		else
-			return false;
-	}
-
-	@Override
-	public boolean validateNonce(Jwt jwt, String nonce) {
-		if(nonce.equals(jwt.getClaims().getNonce())){
-			return true;
-		}
-		else{
-			return false;
-		}
-	}
 }

@@ -20,6 +20,7 @@ import java.security.PublicKey;
 import java.util.Map;
 
 import org.mitre.jwt.model.Jwt;
+import org.mitre.jwt.signer.JwtSigner;
 
 public interface JwtSigningAndValidationService {
 
@@ -28,7 +29,7 @@ public interface JwtSigningAndValidationService {
 	 * 
 	 * @return
 	 */
-	public Map<String, PublicKey> getAllPublicKeys();
+	public Map<String, JwtSigner> getAllSigners();
 
 	/**
 	 * Check to see if this JWT has expired or not

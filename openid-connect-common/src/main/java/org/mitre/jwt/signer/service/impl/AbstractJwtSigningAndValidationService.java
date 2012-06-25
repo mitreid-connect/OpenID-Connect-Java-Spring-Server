@@ -50,7 +50,8 @@ public abstract class AbstractJwtSigningAndValidationService implements JwtSigni
 		Date issuedAt = jwt.getClaims().getIssuedAt();
 		
 		if (issuedAt != null) {
-			return new Date().before(issuedAt);
+			// make sure the token was issued in the past
+			return new Date().after(issuedAt);
 		} else {
 			return false;
 		}

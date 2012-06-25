@@ -30,6 +30,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.binary.Base64;
+import org.mitre.jwt.signer.JwtSigner;
+import org.mitre.jwt.signer.impl.RsaSigner;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.servlet.view.AbstractView;
 
@@ -77,19 +79,22 @@ public class JwkKeyListView extends AbstractView {
 		
 		Writer out = response.getWriter();
 		
-		BiMap<String, PublicKey> keyMap = (BiMap<String, PublicKey>) model.get("keys");
+		//BiMap<String, PublicKey> keyMap = (BiMap<String, PublicKey>) model.get("keys");
+		Map<String, JwtSigner> signers = (Map<String, JwtSigner>) model.get("signers");
 		
 		JsonObject obj = new JsonObject();
 		JsonArray keys = new JsonArray();
 		obj.add("keys", keys);
 		
-		for (String keyId : keyMap.keySet()) {
+		for (String keyId : signers.keySet()) {
 
-			PublicKey src = keyMap.get(keyId);
+			JwtSigner src = signers.get(keyId);
 
-			if (src instanceof RSAPublicKey) {
+			if (src instanceof RsaSigner) {
 				
-				RSAPublicKey rsa = (RSAPublicKey)src;
+				RsaSigner rsaSigner = (RsaSigner) src;
+				
+				RSAPublicKey rsa = (RSAPublicKey) rsaSigner.getPublicKey(); // we're sure this is an RSAPublicKey b/c this is an RsaSigner
 				
 				
 				BigInteger mod = rsa.getModulus();
@@ -101,13 +106,13 @@ public class JwkKeyListView extends AbstractView {
 				JsonObject o = new JsonObject();
 
 				o.addProperty("use", "sig"); // since we don't do encryption yet
-				o.addProperty("alg", "RS" + rsa.getModulus().bitLength()); // we know this is RSA
+				o.addProperty("alg", rsaSigner.getAlgorithm()); // we know this is RSA
 				o.addProperty("mod", m64);
 				o.addProperty("exp", e64);
 				o.addProperty("kid", keyId);
 
 				keys.add(o);
-			}
+			} // TODO: deal with non-RSA key types
         }
 		
 		gson.toJson(obj, out);
