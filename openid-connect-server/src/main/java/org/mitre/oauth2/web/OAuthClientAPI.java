@@ -188,8 +188,8 @@ public class OAuthClientAPI {
     	client.setClientName(name);
     	client.setClientDescription(description);
     	client.setAllowRefresh(allowRefresh);
-    	client.setAccessTokenTimeout(accessTokenTimeout);
-    	client.setRefreshTokenTimeout(refreshTokenTimeout);
+    	client.setAccessTokenValiditySeconds(accessTokenTimeout);
+    	client.setRefreshTokenValiditySeconds(refreshTokenTimeout);
     	client.setOwner(owner);		
     	
     	clientService.updateClient(client, client);

@@ -55,10 +55,12 @@ public class UserInfoEndpoint {
 	/**
 	 * Get information about the user as specified in the accessToken->idToken included in this request
 	 * 
-	 * @param accessToken	the Access Token associated with this request
-	 * @param schema		the data schema to use, default is openid	
-	 * @param mav			the ModelAndView object associated with this request
-	 * @return				JSON or JWT response containing UserInfo data
+	 * @param accessToken						the Access Token associated with this request
+	 * @param schema							the data schema to use, default is openid	
+	 * @param mav								the ModelAndView object associated with this request
+	 * @return									JSON or JWT response containing UserInfo data
+	 * @throws UsernameNotFoundException		if the user does not exist or cannot be found
+	 * @throws UnknownUserInfoSchemaException	if an unknown schema is used
 	 */
 	@RequestMapping(value="/userinfo", method= {RequestMethod.GET, RequestMethod.POST})
 	public ModelAndView getInfo(Principal p, @RequestParam("schema") String schema, ModelAndView mav) {
@@ -78,6 +80,11 @@ public class UserInfoEndpoint {
 		}
 		String userId = p.getName(); 
 		UserInfo userInfo = userInfoService.getByUserId(userId);
+		
+		if (userInfo == null) {
+			throw new UsernameNotFoundException("Invalid User"); 
+		}
+		
 		return new ModelAndView(viewName, "userInfo", userInfo);
 
 	}

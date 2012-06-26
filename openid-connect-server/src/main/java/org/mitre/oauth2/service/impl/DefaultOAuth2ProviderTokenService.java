@@ -111,8 +111,8 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 
 		    // make it expire if necessary
 		    // TODO: pending upstream updates, check for 0 or -1 value here
-	    	if (client.getAccessTokenTimeout() != null && client.getAccessTokenTimeout() > 0) {
-	    		Date expiration = new Date(System.currentTimeMillis() + (client.getAccessTokenTimeout() * 1000L));
+	    	if (client.getAccessTokenValiditySeconds() != null && client.getAccessTokenValiditySeconds() > 0) {
+	    		Date expiration = new Date(System.currentTimeMillis() + (client.getAccessTokenValiditySeconds() * 1000L));
 	    		token.setExpiration(expiration);
 	    	}
 		    
@@ -124,8 +124,8 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	    		OAuth2RefreshTokenEntity refreshToken = refreshTokenFactory.createNewRefreshToken();
 	    		
 	    		// make it expire if necessary
-	    		if (client.getRefreshTokenTimeout() != null) {
-		    		Date expiration = new Date(System.currentTimeMillis() + (client.getRefreshTokenTimeout() * 1000L));
+	    		if (client.getRefreshTokenValiditySeconds() != null) {
+		    		Date expiration = new Date(System.currentTimeMillis() + (client.getRefreshTokenValiditySeconds() * 1000L));
 		    		refreshToken.setExpiration(expiration);
 	    		}
 	    		
@@ -198,8 +198,8 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	    
     	token.setClient(client);
     	
-    	if (client.getAccessTokenTimeout() != null) {
-    		Date expiration = new Date(System.currentTimeMillis() + (client.getAccessTokenTimeout() * 1000L));
+    	if (client.getAccessTokenValiditySeconds() != null) {
+    		Date expiration = new Date(System.currentTimeMillis() + (client.getAccessTokenValiditySeconds() * 1000L));
     		token.setExpiration(expiration);
     	}
     	
