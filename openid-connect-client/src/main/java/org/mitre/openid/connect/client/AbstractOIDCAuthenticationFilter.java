@@ -726,7 +726,4 @@ public class AbstractOIDCAuthenticationFilter extends
 			Map<OIDCServerConfiguration, JwtSigningAndValidationService> validationServices) {
 		this.validationServices = validationServices;
 	}
-	
-	
-	
 }
