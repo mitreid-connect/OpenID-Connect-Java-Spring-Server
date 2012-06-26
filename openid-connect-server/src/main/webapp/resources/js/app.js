@@ -235,19 +235,47 @@
         }
     });
 
+    var URLListView = Backbone.View.extend({
+
+        tagName: 'span',
+
+        initialize:function () {
+        },
+
+        events:{
+            "click .btn-primary":"save"
+        },
+
+        save:function () {
+
+        },
+
+        render:function (eventName) {
+
+            // append and render
+            $(this.el).html($('#tmpl-url-list').html());
+            return this;
+        }
+    });
+
+
     // Router
     var AppRouter = Backbone.Router.extend({
 
         routes:{
-            "clients":"list",
+            "clients":"listClients",
             "client/new":"newClient",
-            "client/:id":"editClient"
+            "client/:id":"editClient",
+            "white_list":"whiteList"
         },
 
         initialize:function () {
 
             this.clientList = new ClientCollection();
             this.clientListView = new ClientListView({model:this.clientList});
+
+            this.whiteListView = new URLListView();
+            this.blackListView = new URLListView();
 
             this.startAfter([this.clientList]);
 
@@ -263,7 +291,7 @@
             });
         },
 
-        list:function () {
+        listClients:function () {
 
             $('#content').html(this.clientListView.render().el);
             this.clientListView.delegateEvents();
@@ -278,7 +306,12 @@
             var client = this.clientList.get(id);
             this.clientFormView = new ClientFormView({model:client});
             $('#content').html(this.clientFormView.render().el);
+        },
+
+        whiteList:function () {
+            $('#content').html(this.whiteListView.render().el);
         }
+
 
     });
 
@@ -289,12 +322,18 @@
     // main
     $(function () {
 
-        // load templates and append them to the body
-        $.get('resources/template/client.html', function (templates) {
-            $('body').append(templates);
+        jQuery.ajaxSetup({async:false});
 
-            app = new AppRouter();
-        });
+        var _load = function (templates) {
+            $('body').append(templates);
+        };
+
+        // load templates and append them to the body
+        $.get('resources/template/client.html', _load);
+        $.get('resources/template/list.html', _load);
+
+        jQuery.ajaxSetup({async:true});
+        app = new AppRouter();
 
 
     });
