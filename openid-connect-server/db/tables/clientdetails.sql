@@ -4,7 +4,7 @@ CREATE TABLE clientdetails (
 	clientName VARCHAR(256),
 	clientDescription VARCHAR(2000),
 	allowRefresh TINYINT,
-	accessTokenTimeout BIGINT,
-	refreshTokenTimeout BIGINT,
+	accessTokenValiditySeconds BIGINT,
+	refreshTokenValiditySeconds BIGINT,
 	owner VARCHAR(256)
 );

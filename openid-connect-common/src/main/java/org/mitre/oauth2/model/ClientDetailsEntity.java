@@ -69,8 +69,8 @@ public class ClientDetailsEntity implements ClientDetails {
     private String clientName = "";
     private String clientDescription = "";
     private boolean allowRefresh = false; // do we allow refresh tokens for this client?
-    private Integer accessTokenTimeout = 0; // in seconds
-    private Integer refreshTokenTimeout = 0; // in seconds
+    private Integer accessTokenValiditySeconds = 0; // in seconds
+    private Integer refreshTokenValiditySeconds = 0; // in seconds
     private String owner = ""; // userid of who registered it
     private Set<String> registeredRedirectUri = new HashSet<String>();
     private Set<String> resourceIds = new HashSet<String>();
@@ -272,35 +272,43 @@ public class ClientDetailsEntity implements ClientDetails {
     	this.allowRefresh = allowRefresh;
     }
 
-	/**
-     * @param accessTokenTimeout Lifetime of access tokens, in seconds (optional - leave null for no timeout)
-     */
+	@Override
 	@Basic
-    public Integer getAccessTokenTimeout() {
-    	return accessTokenTimeout;
-    }
-
+	public Integer getAccessTokenValiditySeconds() {
+		return accessTokenValiditySeconds;
+	}
+	
 	/**
      * @param accessTokenTimeout the accessTokenTimeout to set
      */
-    public void setAccessTokenTimeout(Integer accessTokenTimeout) {
-    	this.accessTokenTimeout = accessTokenTimeout;
+    public void setAccessTokenValiditySeconds(Integer accessTokenValiditySeconds) {
+    	this.accessTokenValiditySeconds = accessTokenValiditySeconds;
     }
 
-	/**
-     * @return the refreshTokenTimeout
-     */
+
+	@Override
 	@Basic
-    public Integer getRefreshTokenTimeout() {
-    	return refreshTokenTimeout;
-    }
-
+	public Integer getRefreshTokenValiditySeconds() {
+		return refreshTokenValiditySeconds;
+	}
+	
 	/**
      * @param refreshTokenTimeout Lifetime of refresh tokens, in seconds (optional - leave null for no timeout)
      */
-    public void setRefreshTokenTimeout(Integer refreshTokenTimeout) {
-    	this.refreshTokenTimeout = refreshTokenTimeout;
+    public void setRefreshTokenValiditySeconds(Integer refreshTokenValiditySeconds) {
+    	this.refreshTokenValiditySeconds = refreshTokenValiditySeconds;
     }
+	
+	//TODO: implement fully with db table or get removed from interface
+	@Override
+	@Transient
+	public Map<String, Object> getAdditionalInformation() {
+		return this.additionalInformation;
+	}
+	
+	public void setAdditionalInformation(Map<String, Object> map) {
+		this.additionalInformation = map;
+	}
 
 	/**
      * @return the owner
@@ -487,8 +495,8 @@ public class ClientDetailsEntity implements ClientDetails {
          * @param accessTokenTimeout
          * @see org.mitre.oauth2.model.ClientDetailsEntity#setAccessTokenTimeout(java.lang.Long)
          */
-        public ClientDetailsEntityBuilder setAccessTokenTimeout(int accessTokenTimeout) {
-	        instance.setAccessTokenTimeout(accessTokenTimeout);
+        public ClientDetailsEntityBuilder setAccessValiditySeconds(int accessTokenValiditySeconds) {
+	        instance.setAccessTokenValiditySeconds(accessTokenValiditySeconds);
 			return this;
         }
 
@@ -496,8 +504,8 @@ public class ClientDetailsEntity implements ClientDetails {
          * @param refreshTokenTimeout
          * @see org.mitre.oauth2.model.ClientDetailsEntity#setRefreshTokenTimeout(java.lang.Long)
          */
-        public ClientDetailsEntityBuilder setRefreshTokenTimeout(int refreshTokenTimeout) {
-	        instance.setRefreshTokenTimeout(refreshTokenTimeout);
+        public ClientDetailsEntityBuilder setRefreshTokenValiditySeconds(int refreshTokenValiditySeconds) {
+	        instance.setRefreshTokenValiditySeconds(refreshTokenValiditySeconds);
 			return this;
         }
 
@@ -536,28 +544,6 @@ public class ClientDetailsEntity implements ClientDetails {
 	        return this;
         }
 		
-	}
-
-	@Override
-	public int getAccessTokenValiditySeconds() {
-		return accessTokenTimeout;
-	}
-
-
-	@Override
-	public int getRefreshTokenValiditySeconds() {
-		return refreshTokenTimeout;
-	}
-
-	public void setAdditionalInformation(Map<String, Object> map) {
-		this.additionalInformation = map;
-	}
-	
-	//TODO: implement fully with db table or get removed from interface
-	@Override
-	@Transient
-	public Map<String, Object> getAdditionalInformation() {
-		return this.additionalInformation;
 	}
 
 /*	*//**

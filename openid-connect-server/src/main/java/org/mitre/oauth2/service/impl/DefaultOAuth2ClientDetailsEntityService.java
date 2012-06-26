@@ -99,8 +99,8 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 		client.setClientName(name);
 		client.setClientDescription(description);
 		client.setAllowRefresh(allowRefresh);
-		client.setAccessTokenTimeout(accessTokenTimeout);
-		client.setRefreshTokenTimeout(refreshTokenTimeout);
+		client.setAccessTokenValiditySeconds(accessTokenTimeout);
+		client.setRefreshTokenValiditySeconds(refreshTokenTimeout);
 		client.setResourceIds(resourceIds);
 		client.setOwner(owner);
 
