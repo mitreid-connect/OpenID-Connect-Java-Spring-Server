@@ -1,37 +1,30 @@
 package org.mitre.jwt.encryption.impl;
 
 import java.security.InvalidKeyException;
-import java.security.Key;
-import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.interfaces.RSAPrivateKey;
-import java.security.interfaces.RSAPublicKey;
-import java.security.spec.InvalidKeySpecException;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import javax.crypto.spec.SecretKeySpec;
 
-public class RsaJwtEncrypter {
+public class RsaJwtClaimsDecrypter {
 	
-	private PublicKey publicKey;
+	private byte[] cipherText;
 	private PrivateKey privateKey;
 	
-	public RsaJwtEncrypter(RSAPublicKey pubKey, RSAPrivateKey privateKey){
-		setPublicKey(pubKey);
+	public RsaJwtClaimsDecrypter(byte[] cipherText, PrivateKey privateKey) {
+		setCipherText(cipherText);
 		setPrivateKey(privateKey);
 	}
 
-	public PublicKey getPublicKey() {
-		return publicKey;
+	public byte[] getCipherText() {
+		return cipherText;
 	}
 
-	public void setPublicKey(PublicKey pubKey) {
-		this.publicKey = pubKey;
+	public void setCipherText(byte[] cipherText) {
+		this.cipherText = cipherText;
 	}
 
 	public PrivateKey getPrivateKey() {
@@ -41,17 +34,16 @@ public class RsaJwtEncrypter {
 	public void setPrivateKey(PrivateKey privateKey) {
 		this.privateKey = privateKey;
 	}
-
-	public Key createEncryptedKey() {
+	
+	public String decryptCipherText() {
 		Cipher cipher;
+		String clearTextString = null;
 		try {
-			cipher = Cipher.getInstance("RSA");
-			cipher.init(Cipher.ENCRYPT_MODE, publicKey);
-			byte[] wrappedKey = cipher.doFinal(privateKey.getEncoded());
 			
-			KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-			SecretKeySpec keySpec = new SecretKeySpec(wrappedKey, "RSA");
-			privateKey = keyFactory.generatePrivate(keySpec);
+			cipher = Cipher.getInstance("RSA");
+			cipher.init(Cipher.DECRYPT_MODE, privateKey);
+			byte[] clearText = cipher.doFinal(cipherText);
+			clearTextString = new String(clearText);
 			
 		} catch (NoSuchAlgorithmException e) {
 			// TODO Auto-generated catch block
@@ -65,17 +57,13 @@ public class RsaJwtEncrypter {
 		} catch (IllegalBlockSizeException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (InvalidKeySpecException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (BadPaddingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		return privateKey;
+		return clearTextString;
+		
 	}
-	
-
 
 }
