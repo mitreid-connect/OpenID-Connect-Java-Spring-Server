@@ -15,7 +15,11 @@
  ******************************************************************************/
 package org.mitre.openid.connect.service;
 
+import java.util.Collection;
+
+import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.model.WhitelistedSite;
+import org.springframework.security.oauth2.provider.ClientDetails;
 
 /**
  * Interface for WhitelistedSite service
@@ -26,6 +30,13 @@ import org.mitre.openid.connect.model.WhitelistedSite;
 public interface WhitelistedSiteService {
 
 	/**
+	 * Return a collection of all WhitelistedSite managed by this service
+	 * 
+	 * @return the WhitelistedSite collection, or null
+	 */
+	public Collection<WhitelistedSite> getAll();
+	
+	/**
 	 * Returns the WhitelistedSite for the given id
 	 * 
 	 * @param id
@@ -34,6 +45,22 @@ public interface WhitelistedSiteService {
 	 */
 	public WhitelistedSite getById(Long id);
 
+	/**
+	 * Find a WhitelistedSite by its associated ClientDetails reference
+	 * 
+	 * @param client	the Relying Party
+	 * @return			the corresponding WhitelistedSite if one exists for the RP, or null
+	 */
+	public WhitelistedSite getByClientDetails(ClientDetails client);
+	
+	/**
+	 * Return a collection of the WhitelistedSites created by a given user
+	 * 
+	 * @param creator	the UserInfo representing an admin who may have made some WhitelistedSites
+	 * @return			the collection of corresponding WhitelistedSites, if any, or null
+	 */
+	public Collection<WhitelistedSite> getByCreator(UserInfo creator);
+	
 	/**
 	 * Removes the given WhitelistedSite from the repository
 	 * 

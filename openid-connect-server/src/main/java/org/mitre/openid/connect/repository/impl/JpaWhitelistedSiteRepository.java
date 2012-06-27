@@ -23,8 +23,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
+import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.model.WhitelistedSite;
 import org.mitre.openid.connect.repository.WhitelistedSiteRepository;
+import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -79,5 +81,23 @@ public class JpaWhitelistedSiteRepository implements WhitelistedSiteRepository {
 	@Transactional
 	public WhitelistedSite save(WhitelistedSite whiteListedSite) {
 		return saveOrUpdate(whiteListedSite.getId(), manager, whiteListedSite);
+	}
+
+	@Override
+	@Transactional
+	public WhitelistedSite getByClientDetails(ClientDetails client) {
+		TypedQuery<WhitelistedSite> query = manager.createNamedQuery("WhitelistedSite.getByClientDetails", WhitelistedSite.class);
+		query.setParameter("clientDetails", client);
+		
+		return query.getSingleResult();
+	}
+
+	@Override
+	@Transactional
+	public Collection<WhitelistedSite> getByCreator(UserInfo creator) {
+		TypedQuery<WhitelistedSite> query = manager.createNamedQuery("WhitelistedSite.getByUserInfo", WhitelistedSite.class);
+		query.setParameter("userInfo", creator);
+		
+		return query.getResultList();
 	}
 }

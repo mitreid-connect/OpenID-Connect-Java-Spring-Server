@@ -15,10 +15,14 @@
  ******************************************************************************/
 package org.mitre.openid.connect.service.impl;
 
+import java.util.Collection;
+
+import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.model.WhitelistedSite;
 import org.mitre.openid.connect.repository.WhitelistedSiteRepository;
 import org.mitre.openid.connect.service.WhitelistedSiteService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -69,6 +73,21 @@ public class WhitelistedSiteServiceImpl implements WhitelistedSiteService {
 	@Override
 	public WhitelistedSite save(WhitelistedSite whitelistedSite) {
 		return whitelistedSiteRepository.save(whitelistedSite);
+	}
+
+	@Override
+	public Collection<WhitelistedSite> getAll() {
+		return whitelistedSiteRepository.getAll();
+	}
+
+	@Override
+	public WhitelistedSite getByClientDetails(ClientDetails client) {
+		return whitelistedSiteRepository.getByClientDetails(client);
+	}
+
+	@Override
+	public Collection<WhitelistedSite> getByCreator(UserInfo creator) {
+		return whitelistedSiteRepository.getByCreator(creator);
 	}
 
 }

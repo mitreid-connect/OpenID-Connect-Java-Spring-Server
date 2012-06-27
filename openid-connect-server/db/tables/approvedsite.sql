@@ -4,5 +4,6 @@ CREATE TABLE approvedsite (
 	clientdetails_id VARCHAR(256),
 	creationDate DATE,
 	accessDate DATE,
-	timeoutDate DATE
+	timeoutDate DATE,
+	whitelistedsite_id VARCHAR(256)
 );

@@ -47,7 +47,7 @@ public class ApprovedSite {
     private Long id;
     
     // which user made the approval
-	private String userInfo;
+	private UserInfo userInfo;
 	
 	// which OAuth2 client is this tied to
 	private ClientDetailsEntity clientDetails;
@@ -64,6 +64,9 @@ public class ApprovedSite {
 	// what scopes have been allowed
 	// this should include all information for what data to access
 	private Set<String> allowedScopes;
+	
+	// If this AP is a WS, link to the WS
+	private WhitelistedSite whitelistedSite;
 	
 	// TODO: should we store the OAuth2 tokens and IdTokens here?
 	
@@ -93,15 +96,16 @@ public class ApprovedSite {
 	/**
      * @return the userInfo
      */
-    @Basic
-    public String getUserInfo() {
+    @ManyToOne
+    @JoinColumn(name="userinfo_id")
+    public UserInfo getUserInfo() {
     	return userInfo;
     }
 
 	/**
      * @param userInfo the userInfo to set
      */
-    public void setUserInfo(String userInfo) {
+    public void setUserInfo(UserInfo userInfo) {
     	this.userInfo = userInfo;
     }
 
@@ -183,7 +187,25 @@ public class ApprovedSite {
     public void setTimeoutDate(Date timeoutDate) {
     	this.timeoutDate = timeoutDate;
     }
-	
-	
+
+    /**
+     * Does this AP entry correspond to a WS?
+     * @return
+     */
+    @Basic
+	public Boolean getIsWhitelisted() {
+		return (whitelistedSite != null);
+	}
+
+
+	@ManyToOne
+	@JoinColumn(name="whitelistedsite_id")
+	public WhitelistedSite getWhitelistedSite() {
+		return whitelistedSite;
+	}
+
+	public void setWhitelistedSite(WhitelistedSite whitelistedSite) {
+		this.whitelistedSite = whitelistedSite;
+	}
 	
 }

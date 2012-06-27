@@ -17,7 +17,6 @@ package org.mitre.openid.connect.model;
 
 import java.util.Set;
 
-import javax.persistence.Basic;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -35,22 +34,24 @@ import org.mitre.oauth2.model.ClientDetailsEntity;
 /**
  * Indicator that login to a site should be automatically granted 
  * without user interaction.
- * @author jricher
+ * @author jricher, aanganes
  *
  */
 @Entity
 @Table(name="whitelistedsite")
 @NamedQueries({
-	@NamedQuery(name = "WhitelistedSite.getAll", query = "select w from WhitelistedSite w")
+	@NamedQuery(name = "WhitelistedSite.getAll", query = "select w from WhitelistedSite w"), 
+	@NamedQuery(name = "WhitelistedSite.getByClientDetails", query = "select w from WhitelistedSite w where w.clientDetails = :clientDetails"),
+	@NamedQuery(name = "WhitelistedSite.getByUserInfo", query = "select w from WhitelistedSite w where w.creator = :userInfo")
 })
 public class WhitelistedSite {
 
     // unique id
     private Long id;
     
-    // who added this site to the whitelist (should be an admin)
-	private String userInfo;
-	
+    // Reference to the admin user who created this entry
+	private UserInfo creator;
+    
 	// which OAuth2 client is this tied to
 	private ClientDetailsEntity clientDetails;
 	
@@ -82,21 +83,6 @@ public class WhitelistedSite {
 	}
 
 	/**
-	 * @return the userInfo
-	 */
-	@Basic
-	public String getUserInfo() {
-		return userInfo;
-	}
-
-	/**
-	 * @param userInfo the userInfo to set
-	 */
-	public void setUserInfo(String userInfo) {
-		this.userInfo = userInfo;
-	}
-
-	/**
 	 * @return the clientDetails
 	 */
 	@ManyToOne
@@ -125,5 +111,15 @@ public class WhitelistedSite {
 	 */
 	public void setAllowedScopes(Set<String> allowedScopes) {
 		this.allowedScopes = allowedScopes;
+	}
+
+	@ManyToOne
+	@JoinColumn(name="userinfo_id")
+	public UserInfo getCreator() {
+		return creator;
+	}
+
+	public void setCreator(UserInfo creator) {
+		this.creator = creator;
 	}
 }
