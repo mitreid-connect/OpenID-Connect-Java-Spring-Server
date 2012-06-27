@@ -2,31 +2,36 @@ package org.mitre.jwe.model;
 
 import java.util.List;
 
-import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
+import org.apache.commons.codec.binary.Base64;
+import org.mitre.jwt.model.Jwt;
 
-public class Jwe {
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import com.google.gson.JsonObject;
+
+public class Jwe extends Jwt {
 
 	private JweHeader header;
 	
-	private String encryptedKey;
+	private byte[] encryptedKey;
 	
-	private String ciphertext;
+	private byte[] ciphertext;
 	
-	private String integrityValue;
+	private String signature;
 	
 	public Jwe() {
 		this.header = new JweHeader();
 		this.encryptedKey = null;
 		this.ciphertext = null;
-		this.integrityValue = null;
+		this.signature = null;
 	}
 	
-	public Jwe(JweHeader header, String encryptedKey, String ciphertext, String integrityValue) {
+	public Jwe(JweHeader header, byte[] encryptedKey, byte[] ciphertext, String integrityValue) {
 		this.header = header;
 		this.encryptedKey = encryptedKey;
 		this.ciphertext = ciphertext;
-		this.integrityValue = integrityValue;
+		this.signature = integrityValue;
 	}
 	
 	public JweHeader getHeader() {
@@ -37,29 +42,48 @@ public class Jwe {
 		this.header = header;
 	}
 
-	public String getEncryptedKey() {
+	public byte[] getEncryptedKey() {
 		return encryptedKey;
 	}
 
-	public void setEncryptedKey(String encryptedKey) {
+	public void setEncryptedKey(byte[] encryptedKey) {
 		this.encryptedKey = encryptedKey;
 	}
 
-	public String getCiphertext() {
+	public byte[] getCiphertext() {
 		return ciphertext;
 	}
 
-	public void setCiphertext(String ciphertext) {
+	public void setCiphertext(byte[] ciphertext) {
 		this.ciphertext = ciphertext;
 	}
 
-	public String getIntegrityValue() {
-		return integrityValue;
+	public String getSignature() {
+		return signature;
 	}
 
-	public void setIntegrityValue(String integrityValue) {
-		this.integrityValue = integrityValue;
+	public void setSignature(String signature) {
+		this.signature = signature;
 	}
+	
+	@Override
+	public String toString() {
+		return getSignatureBase() + "." + Strings.nullToEmpty(this.signature);
+	}
+	
+	@Override
+	public String getSignatureBase() {
+		JsonObject h = header.getAsJsonObject();
+		byte[] c = ciphertext;
+		byte[] e = encryptedKey;
+
+		String h64 = new String(Base64.encodeBase64URLSafe(h.toString().getBytes()));
+		String c64 = new String(Base64.encodeBase64URLSafe(c));
+		String e64 = new String(Base64.encodeBase64URLSafe(e));
+		
+		return h64 + "." + e64 + "." + c64;	
+	}
+	
 	
 	public static Jwe parse(String s) {
 		
@@ -71,7 +95,7 @@ public class Jwe {
 		// split on the dots
 		List<String> parts = Lists.newArrayList(Splitter.on(".").split(s));
 		
-		if (parts.size() != 3) {
+		if (parts.size() != 4) {
 			throw new IllegalArgumentException("Invalid JWE format.");
 		}
 		
@@ -80,7 +104,7 @@ public class Jwe {
 		String c64 = parts.get(2);
 		String i64 = parts.get(3);
 
-		Jwe jwe = new Jwe(new JweHeader(h64), e64, c64, i64);
+		Jwe jwe = new Jwe(new JweHeader(h64), e64.getBytes(), c64.getBytes(), i64);
 		
 		return jwe;
 		
