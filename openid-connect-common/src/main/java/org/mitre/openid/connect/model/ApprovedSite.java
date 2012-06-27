@@ -31,6 +31,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
+import javax.persistence.Transient;
 
 import org.mitre.oauth2.model.ClientDetailsEntity;
 
@@ -47,7 +48,7 @@ public class ApprovedSite {
     private Long id;
     
     // which user made the approval
-	private UserInfo userInfo;
+	private DefaultUserInfo userInfo;
 	
 	// which OAuth2 client is this tied to
 	private ClientDetailsEntity clientDetails;
@@ -98,14 +99,14 @@ public class ApprovedSite {
      */
     @ManyToOne
     @JoinColumn(name="userinfo_id")
-    public UserInfo getUserInfo() {
+    public DefaultUserInfo getUserInfo() {
     	return userInfo;
     }
 
 	/**
      * @param userInfo the userInfo to set
      */
-    public void setUserInfo(UserInfo userInfo) {
+    public void setUserInfo(DefaultUserInfo userInfo) {
     	this.userInfo = userInfo;
     }
 
@@ -192,7 +193,7 @@ public class ApprovedSite {
      * Does this AP entry correspond to a WS?
      * @return
      */
-    @Basic
+    @Transient
 	public Boolean getIsWhitelisted() {
 		return (whitelistedSite != null);
 	}

@@ -50,7 +50,7 @@ public class WhitelistedSite {
     private Long id;
     
     // Reference to the admin user who created this entry
-	private UserInfo creator;
+	private DefaultUserInfo creator;
     
 	// which OAuth2 client is this tied to
 	private ClientDetailsEntity clientDetails;
@@ -115,11 +115,11 @@ public class WhitelistedSite {
 
 	@ManyToOne
 	@JoinColumn(name="userinfo_id")
-	public UserInfo getCreator() {
+	public DefaultUserInfo getCreator() {
 		return creator;
 	}
 
-	public void setCreator(UserInfo creator) {
+	public void setCreator(DefaultUserInfo creator) {
 		this.creator = creator;
 	}
 }
