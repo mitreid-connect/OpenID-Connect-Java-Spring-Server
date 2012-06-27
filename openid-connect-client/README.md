@@ -1,12 +1,14 @@
-# OpenID Connect Client
+# OpenID Connect Client #
 
-## Overview 
+## Overview ##
 
-This is the Client, a Spring Security AuthenticationFilter, to the OpenID Connect Java Spring Server following the [OpenID Connect Standard] described protocol.
+You are reading the documentation for the OIDC Client implemented as a Spring Security AuthenticationFilter.  The client facilitates a user's authentication into the secured application to an OpenID Connect Java Spring Server following the [OpenID Connect Standard] described protocol.
 
-## Configuration of OIDCAuthenticationFilter
+## Configuring ##
 
-Configure the OIDCAuthenticationFilter by adding the XML to your application context security like so making changes where necessary for your deployment:
+Configure the client by adding the following XML to your application context security making changes where necessary for your specific deployment.
+
+Open and define an HTTP security configuration with a reference to a bean defined custom ***AuthenticationEntryPoint***:
 
 	<security:http auto-config="false" 
 		use-expressions="true"
@@ -14,22 +16,29 @@ Configure the OIDCAuthenticationFilter by adding the XML to your application con
 		entry-point-ref="authenticationEntryPoint" 
 		pattern="/**">
 
+Specify the access attributes and/or filter list for a particular set of URLs needing protection:
+
 		<security:intercept-url 
-			pattern="/somepath/**" 
-			access="denyAll" />
+			pattern="/**" 
+			access="hasAnyRole('ROLE_USER','ROLE_ADMIN')" /> 
+
+Indicate that ***OpenIdConnectAuthenticationFilter*** authentication filter should be incorporated into the security filter chain:
 
 		<security:custom-filter 
 			before="PRE_AUTH_FILTER 
 			ref="openIdConnectAuthenticationFilter" />
-	
-		<security:intercept-url 
-			pattern="/**" 
-			access="hasAnyRole('ROLE_USER','ROLE_ADMIN')" /> 
+
+Set up remember-me authentication referencing the yet to be defined ***UserDetailsService***:
 		
-		<security:logout />
+		<security:remember-me user-service-ref="myUserDetailsService"
 		
-		<securityLremember-me user-service-ref="myUserDetailsService"
+NOTE:  See the last section as how to implement your own ***UserDetailsService*** necessary to complete authentication.
+		
+Then close the HTTP security configuration:
+		
 	</security:http>
+
+Define a custom ***AuthenticationEntryPoint*** via a bean declaration:
 	
 	<bean id="authenticationEntryPoint" 
 		class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint"> 
@@ -37,12 +46,33 @@ Configure the OIDCAuthenticationFilter by adding the XML to your application con
 			value="/openid_connect_login"/> 
 	</bean>
 	
-	<security:authentication-manager alias="authenticationManager" /> 
+NOTE:  The ***loginFormUrl*** value is post-pended to the URI of the application being secured to define the ***redirect_uri***, the value passed to the OIDC Server and, if the ***OIDCAuthenticationUsingChooserFilter*** is configured, also the Account Chooser Application.  
+		
+Define an ***AuthenticationManager*** with a reference to a custom authentication provider, ***OpenIDConnectAuthenticationProvider***:
+		
+	<security:authentication-manager alias="authenticationManager">
+		<security:authentication-provider ref="openIDConnectAuthenticationProvider" />
+	</security:authentication-manager> 
+
+Define the custom authentication provider referencing the your yet to be defined implementation of a ***UserDetailsService***:
 
 	<bean id="openIdConnectAuthenticationProvider"
 		class='org.mitre.openid.connect.client.OIDCAuthenticationProvider">
-		<property name="userDetaulsService" ref="myUserDetailsService"/>
+		<property name="userDetailsService" ref="myUserDetailsService"/>
 	</bean>
+
+### Configuring the OIDCAuthenticationFilter ###
+
+The ***OpenIdConnectAuthenticationFilter*** filter is defined with the following properties:
+
+*	***authenticationManager*** -- a reference to the  ***AuthenticationManager***,
+*	***errorRedirectURI*** -- the URI of the Error redirect,
+*   ***authorizationEndpointURI*** -- the URI of the Authorization Endpoint, 
+*   ***tokenEndpointURI*** -- the URI of the Token Endpoint, 
+*   ***clientId*** -- the registered client identifier, and 
+*   ***clientSecret*** -- the registered client secret.
+
+Configure like so: 
 
 	<bean id="openIdConnectAuthenticationFilter"
 		class="org.mitre.openid.connect.client.OpenIdConnectAuthenticationFilter">
@@ -54,20 +84,31 @@ Configure the OIDCAuthenticationFilter by adding the XML to your application con
 			value="http://sever.example.com:8080/openid-connect-server/oauth/authorize" />
 		<property name="tokenEndpointURI" 
 			value="http://sever.example.com:8080/openid-connect-server/oauth/token" />
-		<property name="checkIDEndpointURI" 
-			value="http://sever.example.com:8080/openid-connect-server/checkid" />
 		<property name="clientId" 
 			value="someClientId" /> 
 		<property name="clientSecret" value="someClientSecret" /> 
-	</bean>
+	</bean>	
 
-You will need to implement your own UserDetailsService and configure as the above does with the reference to *myUserDetailsService*.
+NOTE:  Again, you will need your own implementation of a ***UserDetailsService*** specific to your deployment. See the last section of this document.
 
-## Configuration of OIDCAuthenticationUsingChooserFilter
+### Or Alternatively, Configuring the OIDCAuthenticationUsingChooserFilter ###
 
-The OIDCAuthenticationUsingChooserFilter was written in response to [Issue #39].
+Alternatively, the ***OIDCAuthenticationUsingChooserFilter*** can be configured and used.  It was written in response to [Issue #39]. [The Client -- Account Chooser protocol] documentation details the protocol used between the Client and an Account Chooser application.  
 
-The Authentication Filter uses the *oidcServerConfigs* property, a map of OIDC servers; an *accountChooserURI* property to denote the URI of the Account Chooser; and an *accountChooserClient* property to identify the Client to the Account Chooser UI application like so with modifications specific to your deployment:
+The ***OIDCAuthenticationUsingChooserFilter*** Authentication Filter has the following properties:
+
+*   ***oidcServerConfigs*** -- a map of ***OIDCserverConfiguration***s to encapsulate the settings necesary for the client to communicate with each respective OIDC server,
+*   ***accountChooserURI*** -- to denote the URI of the Account Chooser, and 
+*   ***accountChooserClient*** -- to identify the Client to the Account Chooser UI application. 
+
+Each ***OIDCServerConfiguration*** entry in ***OIDCserverConfiguration*** map is keyed to the ***issuer*** returned from the Account Chooser Application and enumerates the following properties: 
+
+*   ***authorizationEndpointURI*** -- the URI of the Authorization Endpoint, 
+*   ***tokenEndpointURI*** -- the URI of the Token Endpoint, 
+*   ***clientId*** -- the registered client identifier, and 
+*   ***clientSecret*** -- the registered client secret.
+
+Configure like so: 
 	
 	<bean id="openIdConnectAuthenticationFilter"
 		class="org.mitre.openid.connect.client.OIDCAuthenticationUsingChooserFilter">
@@ -84,8 +125,6 @@ The Authentication Filter uses the *oidcServerConfigs* property, a map of OIDC s
 							value="http://sever.example.com:8080/openid-connect-server/oauth/authorize" />
 						<property name="tokenEndpointURI" 
 							value="http://sever.example.com:8080/openid-connect-server/oauth/token" />
-						<property name="checkIDEndpointURI" 
-							value="http://sever.example.com:8080/openid-connect-server/checkid" />
 						<property name="clientId" 
 							value="someClientId" /> 
 						<property name="clientSecret" value="someClientSecret" />
@@ -96,11 +135,12 @@ The Authentication Filter uses the *oidcServerConfigs* property, a map of OIDC s
 		</property>
 	</bean>
 	
-Again, you will need to implement your own UserDetailsService and configure as the above does with the reference to *myUserDetailsService*.	
+Again, you will need your own implementation of a ***UserDetailsService***. See the next section.	
+## Implementing your own UserDetailsService ##
 
-## Implementing your own UserDetailsService
+You need to implement your own ***UserDetailsService*** to complete the authentication.
 
-An example UserDetailsService for the Rave Portal follows:
+An example ***UserDetailsService*** for the Rave Portal follows:
 
         package org.mitre.mpn.service.impl;
         
@@ -191,3 +231,4 @@ An example UserDetailsService for the Rave Portal follows:
 [OpenID Connect Standard]: http://openid.net/specs/openid-connect-standard-1_0.html#code_flow "Authorization Code Flow, OpenID Connect Standard"
 [Issuer Identifier]: http://openid.net/specs/openid-connect-messages-1_0.html#issuer_identifier "Issuer Identifier"
 [Issue #39]: http://github.com/jricher/OpenID-Connect-Java-Spring-Server/issues/39 "Issue #39 -- Multiple Point Client"
+[The Client -- Account Chooser protocol]: https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server/blob/master/account-chooser/docs/protocol.md
