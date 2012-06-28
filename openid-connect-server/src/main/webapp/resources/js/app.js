@@ -61,7 +61,7 @@
         defaults:{
             clientName:"",
             clientSecret:"",
-            registeredRedirectUri:[""],
+            registeredRedirectUri:[],
             authorizedGrantTypes:[],
             scope:["openid"],
             authorities:[],
@@ -190,10 +190,16 @@
 
             $('.control-group').removeClass('error');
 
+            // do some trimming to the redirect URI to allow null value
+            var registeredRedirectUri = $.trim($('#registeredRedirectUri textarea').val()).replace(/ /g,'').split("\n");
+            if (registeredRedirectUri.length == 1 && registeredRedirectUri[0] == "") {
+                registeredRedirectUri = [];
+            }
+
             var valid = this.model.set({
                 clientName:$('#clientName input').val(),
                 clientSecret:$('#clientSecret input').val(),
-                registeredRedirectUri:$.trim($('#registeredRedirectUri textarea').val()).replace(/ /g,'').split("\n"),
+                registeredRedirectUri:registeredRedirectUri,
                 clientDescription:$('#clientDescription textarea').val(),
                 allowRefresh:$('#allowRefresh').is(':checked'),
                 accessTokenValiditySeconds: $('#accessTokenValiditySeconds input').val(),
