@@ -29,11 +29,11 @@
                 minlength:3,*/
                 maxlength:200
             },
-            accessTokenTimeout: {
+            accessTokenValiditySeconds: {
                 required: true,
                 type:"number"
             },
-            refreshTokenTimeout: {
+            refreshTokenValiditySeconds: {
                 required: true,
                 type:"number"
             },
@@ -68,8 +68,8 @@
             clientDescription:"",
             clientId:null,
             allowRefresh:false,
-            accessTokenTimeout: 0,
-            refreshTokenTimeout: 0
+            accessTokenValiditySeconds: 0,
+            refreshTokenValiditySeconds: 0
         },
 
         urlRoot:"api/clients"
@@ -196,8 +196,8 @@
                 registeredRedirectUri:$.trim($('#registeredRedirectUri textarea').val()).replace(/ /g,'').split("\n"),
                 clientDescription:$('#clientDescription textarea').val(),
                 allowRefresh:$('#allowRefresh').is(':checked'),
-                accessTokenTimeout: $('#accessTokenTimeout input').val(),
-                refreshTokenTimeout: $('#refreshTokenTimeout input').val(),
+                accessTokenValiditySeconds: $('#accessTokenValiditySeconds input').val(),
+                refreshTokenValiditySeconds: $('#refreshTokenValiditySeconds input').val(),
                 scope:$.map($('#scope textarea').val().replace(/,$/,'').replace(/\s/g,' ').split(","), $.trim)
             });
 
@@ -206,8 +206,8 @@
                     success:function () {
                         app.navigate('clients', {trigger:true});
                     },
-                    error:function () {
-
+                    error:function (model,resp) {
+                        console.error("Oops! The object didn't save correctly.",resp);
                     }
                 });
 
@@ -217,8 +217,8 @@
                         success:function () {
                             app.navigate('clients', {trigger:true});
                         },
-                        error:function () {
-
+                        error:function (model,resp) {
+                            console.error("Oops! The object didn't create correctly.",resp);
                         }
                     });
 
