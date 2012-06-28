@@ -11,9 +11,9 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
 import org.mitre.jwe.model.Jwe;
-import org.mitre.jwt.model.JwtClaims;
+import org.mitre.jwt.encryption.AbstractJweDecrypter;
 
-public class RsaDecrypter {
+public class RsaDecrypter extends AbstractJweDecrypter {
 	
 	private Jwe jwe;
 	
@@ -48,8 +48,9 @@ public class RsaDecrypter {
 	public void setPublicKey(PublicKey publicKey) {
 		this.publicKey = publicKey;
 	}
-
-	public String decryptCipherText() {
+	
+	@Override
+	public String decryptCipherText(Jwe jwe) {
 		Cipher cipher;
 		String clearTextString = null;
 		try {
@@ -80,7 +81,8 @@ public class RsaDecrypter {
 		
 	}
 	
-	public byte[] decryptEncryptionKey() {
+	@Override
+	public byte[] decryptEncryptionKey(Jwe jwe) {
 		Cipher cipher;
 		byte[] unencryptedKey = null;
 		
@@ -108,14 +110,6 @@ public class RsaDecrypter {
 		}
 
 		return unencryptedKey;
-	}
-	
-	public Jwe decrypt(Jwe jwe) {
-		
-		jwe.setClaims(new JwtClaims(decryptCipherText()));
-		jwe.setEncryptedKey(decryptEncryptionKey());
-		
-		return jwe;
 	}
 
 }

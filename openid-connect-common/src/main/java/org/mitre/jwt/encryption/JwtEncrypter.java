@@ -9,6 +9,6 @@ public interface JwtEncrypter {
 	
 	public byte[] encryptClaims(Jwe jwe);
 
-	public Jwe encrypt(Jwe jwe);
+	public Jwe encryptAndSign(Jwe jwe);
 
 }
