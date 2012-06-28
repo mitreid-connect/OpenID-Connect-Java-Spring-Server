@@ -37,7 +37,7 @@
                         </c:otherwise>
                     </c:choose>" to sign you into their site
                     using your identity?
-                    <a class="small" href="#" onclick="$('#description').toggle('fast')">more information</a>
+                    <a class="small" href="#" onclick="$('#description').toggle('fast'); return false;">more information</a>
 
                     <p>
                     <blockquote id="description" style="display: none">
