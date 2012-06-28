@@ -17,6 +17,7 @@ package org.mitre.openid.connect.token;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
+import java.util.UUID;
 
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
@@ -61,6 +62,12 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 		token.getJwt().getClaims().setIssuedAt(new Date());
 		
 		token.getJwt().getClaims().setExpiration(token.getExpiration());
+
+		token.getJwt().getClaims().setNonce(UUID.randomUUID().toString()); // set a random NONCE in the middle of it
+		
+		if (token.getRefreshToken() != null) {
+			token.getRefreshToken().getJwt().getClaims().setNonce(UUID.randomUUID().toString()); // set a random nonce in the middle of it
+		}
 		
 		//TODO: check for client's preferred signer alg and use that
 		try {
