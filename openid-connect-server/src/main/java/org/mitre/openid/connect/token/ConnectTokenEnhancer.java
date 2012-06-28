@@ -65,7 +65,7 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 
 		token.getJwt().getClaims().setNonce(UUID.randomUUID().toString()); // set a random NONCE in the middle of it
 		
-		if (token.getRefreshToken() != null) {
+		if (token.getRefreshToken() != null && Strings.isNullOrEmpty(token.getRefreshToken().getJwt().getClaims().getNonce())) {
 			token.getRefreshToken().getJwt().getClaims().setNonce(UUID.randomUUID().toString()); // set a random nonce in the middle of it
 		}
 		
