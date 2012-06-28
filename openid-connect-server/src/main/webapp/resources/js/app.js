@@ -62,7 +62,7 @@
             clientName:"",
             clientSecret:"",
             registeredRedirectUri:[],
-            authorizedGrantTypes:[],
+            authorizedGrantTypes:["authorization_code"],
             scope:["openid"],
             authorities:[],
             clientDescription:"",
@@ -196,12 +196,21 @@
                 registeredRedirectUri = [];
             }
 
+            // build the grant type object
+            var authorizedGrantTypes = [];
+            $.each(["authorization_code","client_credentials","password","implicit"],function(index,type) {
+                if ($('#authorizedGrantTypes-' + type).is(':checked')) {
+                    authorizedGrantTypes.push(type);
+                }
+            });
+
             var valid = this.model.set({
                 clientName:$('#clientName input').val(),
                 clientSecret:$('#clientSecret input').val(),
                 registeredRedirectUri:registeredRedirectUri,
                 clientDescription:$('#clientDescription textarea').val(),
                 allowRefresh:$('#allowRefresh').is(':checked'),
+                authorizedGrantTypes: authorizedGrantTypes,
                 accessTokenValiditySeconds: $('#accessTokenValiditySeconds input').val(),
                 refreshTokenValiditySeconds: $('#refreshTokenValiditySeconds input').val(),
                 scope:$.map($('#scope textarea').val().replace(/,$/,'').replace(/\s/g,' ').split(","), $.trim)

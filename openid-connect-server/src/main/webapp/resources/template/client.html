@@ -144,13 +144,34 @@
 
                     </div>
 
-                    <div class="span4 control-group" id="clientSecret">
+                    <div class="span4 control-group">
 
-                        <label>Client Secret</label>
-                        <input value="<%=clientSecret%>" maxlength="100" type="text" class=""
-                               placeholder="Type a secret"> <span class="help-inline">If you leave this blank a client secret will be generated for you automatically.</span>
+                        <div id="clientSecret">
+                            <label>Client Secret</label>
+                            <input value="<%=clientSecret%>" maxlength="100" type="text" class=""
+                                   placeholder="Type a secret"> <span class="help-inline">If you leave this blank a client secret will be generated for you automatically.</span>
+                        </div>
+                        <br/>
+
+                        <div id="authorizedGrantTypes">
+                            <label>Authorized Grant Types</label>
+                            <label class="checkbox">
+                                <input id="authorizedGrantTypes-authorization_code" type="checkbox" <%=($.inArray("authorization_code", authorizedGrantTypes) > -1 ? 'checked' : '')%>> authorization code
+                            </label>
+                            <label class="checkbox">
+                                <input id="authorizedGrantTypes-client_credentials" type="checkbox" <%=($.inArray("client_credentials", authorizedGrantTypes) > -1 ? 'checked' : '')%>> client credentials
+                            </label>
+                            <label class="checkbox">
+                                <input id="authorizedGrantTypes-password" type="checkbox" <%=($.inArray("password", authorizedGrantTypes) > -1 ? 'checked' : '')%>> password
+                            </label>
+                            <label class="checkbox">
+                                <input id="authorizedGrantTypes-implicit" type="checkbox" <%=($.inArray("implicit", authorizedGrantTypes) > -1 ? 'checked' : '')%>> implicit
+                            </label>
+                        </div>
+
 
                     </div>
+
 
                     <div class="span4">
                         <span class="control-group" id="accessTokenValiditySeconds">
