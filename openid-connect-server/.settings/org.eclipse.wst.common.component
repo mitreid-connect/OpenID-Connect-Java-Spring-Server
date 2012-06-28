@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project-modules id="moduleCoreId" project-version="1.5.0">
-    <wb-module deploy-name="openid">
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
+    <wb-module deploy-name="openid-connect-server-MITRE">
         <wb-resource deploy-path="/" source-path="/target/m2e-wtp/web-resources"/>
         <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
-        <dependent-module archiveName="spring-security-oauth2-1.0.0.BUILD-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/spring-security-oauth2/spring-security-oauth2">
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/test/java"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/test/resources"/>
+        <dependent-module archiveName="spring-security-oauth2-1.0.0.BUILD-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/spring-security-oauth2-MITRE/spring-security-oauth2-MITRE">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="openid-connect-common-0.1-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/openid-connect-common/openid-connect-common">
+        <dependent-module archiveName="openid-connect-common-0.1-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/openid-connect-common-MITRE/openid-connect-common-MITRE">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <property name="java-output-path" value="/openid/target/classes"/>
         <property name="context-root" value="openid-connect-server"/>
+        <property name="java-output-path" value="/openid-connect-server-MITRE/target/classes"/>
     </wb-module>
 </project-modules>

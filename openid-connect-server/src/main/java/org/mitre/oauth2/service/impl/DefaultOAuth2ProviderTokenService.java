@@ -21,6 +21,7 @@ package org.mitre.oauth2.service.impl;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
@@ -65,18 +66,11 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	private ClientDetailsEntityService clientDetailsService;
 	
 	@Autowired
-	private OAuth2AccessTokenEntityFactory accessTokenFactory;
-	
-	@Autowired
-	private OAuth2RefreshTokenEntityFactory refreshTokenFactory;
-	
-	@Autowired
 	private TokenEnhancer tokenEnhancer;
 	
 	@Override
     public OAuth2AccessTokenEntity createAccessToken(OAuth2Authentication authentication) throws AuthenticationException, InvalidClientException {
-		if (authentication != null && 
-				authentication.getAuthorizationRequest() != null) {
+		if (authentication != null && authentication.getAuthorizationRequest() != null) {
 			// look up our client
 			AuthorizationRequest clientAuth = authentication.getAuthorizationRequest();
 			
@@ -121,8 +115,8 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	    	
 	    	// attach a refresh token, if this client is allowed to request them
 	    	if (client.isAllowRefresh()) {
-	    		OAuth2RefreshTokenEntity refreshToken = refreshTokenFactory.createNewRefreshToken();
-	    		
+	    		OAuth2RefreshTokenEntity refreshToken = new OAuth2RefreshTokenEntity(); //refreshTokenFactory.createNewRefreshToken();
+
 	    		// make it expire if necessary
 	    		if (client.getRefreshTokenValiditySeconds() != null) {
 		    		Date expiration = new Date(System.currentTimeMillis() + (client.getRefreshTokenValiditySeconds() * 1000L));
@@ -132,17 +126,22 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	    		// save our scopes so that we can reuse them later for more auth tokens
 	    		// TODO: save the auth instead of the just the scope?
 			    if (client.isScoped()) {
-			    	refreshToken.setScope(clientAuth.getScope());
+			    	refreshToken.setScope(token.getScope());
 			    }
-			
+
+			    // save the token first so that we can set it to a member of the access token (NOTE: is this step necessary?)
 			    tokenRepository.saveRefreshToken(refreshToken);
 			    
 	    		token.setRefreshToken(refreshToken);
-	    	}
-	    	
+	    	}	    	
+
 	    	tokenEnhancer.enhance(token, authentication);
 	    	
-		    tokenRepository.saveAccessToken(token);		    
+		    tokenRepository.saveAccessToken(token);
+		    
+		    if (token.getRefreshToken() != null) {
+		    	tokenRepository.saveRefreshToken(token.getRefreshToken()); // make sure we save any changes that might have been enhanced
+		    }
 		    
 		    return token;
 		}
@@ -178,14 +177,14 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		// TODO: have the option to recycle the refresh token here, too
 		// for now, we just reuse it as long as it's valid, which is the original intent
 
-		OAuth2AccessTokenEntity token = accessTokenFactory.createNewAccessToken();
+		OAuth2AccessTokenEntity token = new OAuth2AccessTokenEntity(); //accessTokenFactory.createNewAccessToken();
 
 		
 		if (scope != null && !scope.isEmpty()) { 
 			// ensure a proper subset of scopes 
 			if (refreshToken.getScope() != null && refreshToken.getScope().containsAll(scope)) {
 				// set the scope of the new access token if requested
-				refreshToken.setScope(scope);
+				token.setScope(scope);
 			} else {
 				// up-scoping is not allowed
 				// (TODO: should this throw InvalidScopeException? For now just pass through)
@@ -204,6 +203,9 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
     	}
     	
     	token.setRefreshToken(refreshToken);
+
+    	// TODO: call the token enhancer on refresh, too
+    	//tokenEnhancer.enhance(token, refreshToken.get)
     	
     	tokenRepository.saveAccessToken(token);
     	
@@ -345,16 +347,6 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		
 		public DefaultOAuth2ProviderTokenServicesBuilder setClientDetailsService(ClientDetailsEntityService clientDetailsService) {
 			instance.clientDetailsService = clientDetailsService;
-			return this;
-		}
-		
-		public DefaultOAuth2ProviderTokenServicesBuilder setAccessTokenFactory(OAuth2AccessTokenEntityFactory accessTokenFactory) {
-			instance.accessTokenFactory = accessTokenFactory;
-			return this;
-		}
-		
-		public DefaultOAuth2ProviderTokenServicesBuilder setRefreshTokenFactory(OAuth2RefreshTokenEntityFactory refreshTokenFactory) {
-			instance.refreshTokenFactory = refreshTokenFactory;
 			return this;
 		}
 		
