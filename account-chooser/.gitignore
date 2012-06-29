@@ -1,8 +1,10 @@
-/local-values.conf
-/target
+local-values.conf
+target
 *~
-/bin
+bin
 *.idea
-
 *.iml
 *.eml
+.project
+.settings
+.classpath

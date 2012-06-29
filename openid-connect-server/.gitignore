@@ -1,5 +1,10 @@
-/local-values.conf
-/target
+local-values.conf
+target
 *~
-connect.h2.db
-connect.trace.db
+bin
+*.idea
+*.iml
+*.eml
+.project
+.settings
+.classpath
