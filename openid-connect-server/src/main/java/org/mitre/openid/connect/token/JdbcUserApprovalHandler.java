@@ -15,11 +15,12 @@
  ******************************************************************************/
 package org.mitre.openid.connect.token;
 
-import java.util.Date;
 import java.util.Collection;
+import java.util.Date;
+import java.util.Set;
 
 import org.mitre.openid.connect.model.ApprovedSite;
-import org.mitre.openid.connect.model.UserInfo;
+import org.mitre.openid.connect.model.DefaultUserInfo;
 import org.mitre.openid.connect.model.WhitelistedSite;
 import org.mitre.openid.connect.service.ApprovedSiteService;
 import org.mitre.openid.connect.service.UserInfoService;
@@ -81,7 +82,7 @@ public class JdbcUserApprovalHandler implements UserApprovalHandler {
 		ClientDetails client = clientDetailsService.loadClientByClientId(authorizationRequest.getClientId());
 		
 		//lookup ApprovedSites by userId
-		UserInfo user = userInfoService.getByUserId(userId);
+		DefaultUserInfo user = (DefaultUserInfo)userInfoService.getByUserId(userId);
 		
 		Collection<ApprovedSite> approvedSites = approvedSiteService.getByUserInfo(user);
 		
@@ -105,6 +106,14 @@ public class JdbcUserApprovalHandler implements UserApprovalHandler {
 			approvedSiteService.save(newAP);
 			
 			return true;
+		}
+		
+		if (authorizationRequest.isApproved() && !authorizationRequest.getApprovalParameters().isEmpty()) {
+			//Make a new AP
+			ApprovedSite newAP = new ApprovedSite();
+			newAP.setAccessDate(new Date());
+			//Set<String> allowedScopes = authorizationRequest.getApprovalParameters().get("scope");
+			//newAP.setAllowedScopes(allowedScopes);
 		}
 
 		return false;
