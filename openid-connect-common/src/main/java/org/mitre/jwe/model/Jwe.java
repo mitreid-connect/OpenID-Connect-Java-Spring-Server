@@ -66,6 +66,11 @@ public class Jwe extends Jwt {
 		this.signature = signature;
 	}
 	
+	
+	/**
+	 * Return the canonical encoded string of this JWE, the header in Base64, a period ".", the encrypted key in Base64, a period ".",
+	 * the ciphertext in Base64, a period ".", and the signature, or integrity value, in Base64.
+	 */
 	@Override
 	public String toString() {
 		return getSignatureBase() + "." + Strings.nullToEmpty(this.signature);
@@ -105,6 +110,7 @@ public class Jwe extends Jwt {
 		String i64 = parts.get(3);
 
 		Jwe jwe = new Jwe(new JweHeader(h64), e64.getBytes(), c64.getBytes(), i64);
+		//Jwe jwe = new Jwe(new JweHeader(h64), e64.getBytes(), new ClaimSet(c64), i64);
 		
 		return jwe;
 		

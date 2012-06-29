@@ -4,7 +4,7 @@ import org.mitre.jwe.model.Jwe;
 
 public interface JwtDecrypter {
 	
-	public Jwe decrypt(Jwe jwe);
+	public Jwe decrypt(String encryptedJwe);
 	
 	public String decryptCipherText(Jwe jwe);
 	

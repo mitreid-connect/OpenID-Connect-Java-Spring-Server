@@ -1,29 +1,111 @@
 package org.mitre.jwt.encryption;
 
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+
 import org.mitre.jwe.model.Jwe;
-import org.mitre.jwt.encryption.impl.RsaDecrypter;
 
 
 public abstract class AbstractJweDecrypter implements JwtDecrypter {
+
+	private Jwe jwe;
 	
-	@Override
-	public Jwe decrypt(Jwe jwe) {
-		String alg = jwe.getHeader().getAlgorithm();
-		if(alg.equals("RS256") || alg.equals("RS384") || alg.equals("RS512")) {
-			
-			RsaDecrypter decrypter = new RsaDecrypter(jwe);
-			jwe.setCiphertext(decrypter.decryptCipherText(jwe).getBytes()); //TODO: When decrypting, should it return a jwe or jwt?
-			jwe.setEncryptedKey(decrypter.decryptEncryptionKey(jwe));
-			
-		} else if(alg.equals("HS256") || alg.equals("HS384") || alg.equals("HS512")){
-			
-			throw new IllegalArgumentException("Cannot use Hmac for decryption");
-			
-		} else {
-			throw new IllegalArgumentException("Not a valid decrypting algorithm");
-		}
-		
+	private PrivateKey privateKey;
+	
+	private PublicKey publicKey;
+
+	public Jwe getJwe() {
 		return jwe;
 	}
 
+	public void setJwe(Jwe jwe) {
+		this.jwe = jwe;
+	}
+	
+	public PrivateKey getPrivateKey() {
+		return privateKey;
+	}
+
+	public void setPrivateKey(PrivateKey privateKey) {
+		this.privateKey = privateKey;
+	}
+
+	public PublicKey getPublicKey() {
+		return publicKey;
+	}
+
+	public void setPublicKey(PublicKey publicKey) {
+		this.publicKey = publicKey;
+	}
+	
+	
+	@Override
+	public String decryptCipherText(Jwe jwe) {
+		Cipher cipher;
+		String clearTextString = null;
+		try {
+			
+			cipher = Cipher.getInstance("RSA");
+			cipher.init(Cipher.DECRYPT_MODE, privateKey);
+			byte[] clearText = cipher.doFinal(jwe.getCiphertext());
+			clearTextString = new String(clearText);
+			
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchPaddingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvalidKeyException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalBlockSizeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (BadPaddingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return clearTextString;
+		
+	}
+	
+	@Override
+	public byte[] decryptEncryptionKey(Jwe jwe) {
+		Cipher cipher;
+		byte[] unencryptedKey = null;
+		
+		try {
+			
+			cipher = Cipher.getInstance("RSA");
+			cipher.init(Cipher.DECRYPT_MODE, privateKey);//TODO: Keys are null, get them from keystore. Placeholder 
+			unencryptedKey = cipher.doFinal(jwe.getEncryptedKey());
+			
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchPaddingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvalidKeyException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalBlockSizeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (BadPaddingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return unencryptedKey;
+	}
 }

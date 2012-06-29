@@ -11,31 +11,19 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
 import org.mitre.jwe.model.Jwe;
-import org.mitre.jwe.model.JweHeader;
-import org.mitre.jwt.model.JwtClaims;
 
 
 public abstract class AbstractJweEncrypter implements JwtEncrypter {
-	
-	private Jwe jwe;
-	
-	private JweHeader header;
-	
-	private JwtClaims claims;
-	
-	private String signature;
 	
 	private byte[] encryptedKey; 
 	
 	private byte[] cipherText;
 	
-	public Jwe getJwe() {
-		return jwe;
-	}
+	private RSAPublicKey publicKey;
+	
+	private RSAPrivateKey privateKey;
+	
 
-	public void setJwe(Jwe jwe) {
-		this.jwe = jwe;
-	}
 	
 	public byte[] getEncryptecKey() {
 		return encryptedKey;
@@ -44,31 +32,7 @@ public abstract class AbstractJweEncrypter implements JwtEncrypter {
 	public void setEncryptedKey(byte[] encryptedKey) {
 		this.encryptedKey = encryptedKey;
 	}
-	
-	public JweHeader getHeader() {
-		return header;
-	}
 
-	public void setHeader(JweHeader header) {
-		this.header = header;
-	}
-
-	public JwtClaims getClaims() {
-		return claims;
-	}
-
-	public void setClaims(JwtClaims claims) {
-		this.claims = claims;
-	}
-
-	public String getSignature() {
-		return signature;
-	}
-
-	public void setSignature(String signature) {
-		this.signature = signature;
-	}
-	
 	public byte[] getCipherText() {
 		return cipherText;
 	}
@@ -79,10 +43,9 @@ public abstract class AbstractJweEncrypter implements JwtEncrypter {
 
 	
 	public byte[] encryptKey(Jwe jwe){
-
-		RSAPublicKey publicKey = null; // TODO: placeholder
-		RSAPrivateKey privateKey = null;
 		
+		
+		//TODO:Get keys from keystore, currently null
 		Cipher cipher;
 		try {
 			cipher = Cipher.getInstance("RSA");
@@ -112,13 +75,13 @@ public abstract class AbstractJweEncrypter implements JwtEncrypter {
 	
 	public byte[] encryptClaims(Jwe jwe) {
 
-		RSAPublicKey publicKey = null; // TODO: placeholder
-
+		
+		//TODO:Get keys from keystore, currently null
 		Cipher cipher;
 		try {
 			cipher = Cipher.getInstance("RSA");
 			cipher.init(Cipher.ENCRYPT_MODE, publicKey);
-			cipherText = cipher.doFinal(claims.toString().getBytes());
+			cipherText = cipher.doFinal(jwe.getClaims().toString().getBytes());
 			
 		} catch (NoSuchAlgorithmException e) {
 			// TODO Auto-generated catch block
@@ -140,6 +103,8 @@ public abstract class AbstractJweEncrypter implements JwtEncrypter {
 		return cipherText;
 		
 	}
+	
+	public abstract Jwe encryptAndSign(Jwe jwe);
 
 
 }

@@ -20,6 +20,9 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
       <version>1.0.0.BUILD-SNAPSHOT</version>
       <artifactId>spring-security-oauth2</artifactId>
     </dependency>
+    <dependency>
+    	<artifactId></artifactId>
+    </dependency>
   </dependencies>
   <properties>
     <java-version>1.6</java-version>

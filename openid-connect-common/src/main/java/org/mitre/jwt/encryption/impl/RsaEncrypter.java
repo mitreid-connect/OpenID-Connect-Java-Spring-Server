@@ -3,16 +3,59 @@ package org.mitre.jwt.encryption.impl;
 import java.security.NoSuchAlgorithmException;
 
 import org.mitre.jwe.model.Jwe;
+import org.mitre.jwe.model.JweHeader;
 import org.mitre.jwt.encryption.AbstractJweEncrypter;
+import org.mitre.jwt.model.JwtClaims;
 import org.mitre.jwt.signer.impl.RsaSigner;
 
 public class RsaEncrypter extends AbstractJweEncrypter {
+	
+	private Jwe jwe;
+	
+	private JweHeader header;
+	
+	private JwtClaims claims;
+	
+	private String signature;
 	
 	public RsaEncrypter(Jwe jwe) {
 		setJwe(jwe);
 		setHeader(jwe.getHeader());
 		setClaims(jwe.getClaims());
 		setSignature(jwe.getSignature());
+	}
+	
+	public Jwe getJwe() {
+		return jwe;
+	}
+
+	public void setJwe(Jwe jwe) {
+		this.jwe = jwe;
+	}
+	
+	
+	public JweHeader getHeader() {
+		return header;
+	}
+
+	public void setHeader(JweHeader header) {
+		this.header = header;
+	}
+
+	public JwtClaims getClaims() {
+		return claims;
+	}
+
+	public void setClaims(JwtClaims claims) {
+		this.claims = claims;
+	}
+
+	public String getSignature() {
+		return signature;
+	}
+
+	public void setSignature(String signature) {
+		this.signature = signature;
 	}
 
 	@Override
