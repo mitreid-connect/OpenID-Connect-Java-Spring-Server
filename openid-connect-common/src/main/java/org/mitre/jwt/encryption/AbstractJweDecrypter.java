@@ -15,19 +15,11 @@ import org.mitre.jwe.model.Jwe;
 
 public abstract class AbstractJweDecrypter implements JwtDecrypter {
 
-	private Jwe jwe;
+
 	
 	private PrivateKey privateKey;
 	
 	private PublicKey publicKey;
-
-	public Jwe getJwe() {
-		return jwe;
-	}
-
-	public void setJwe(Jwe jwe) {
-		this.jwe = jwe;
-	}
 	
 	public PrivateKey getPrivateKey() {
 		return privateKey;

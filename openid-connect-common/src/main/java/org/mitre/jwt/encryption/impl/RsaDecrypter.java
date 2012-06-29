@@ -7,8 +7,18 @@ import org.mitre.jwt.model.JwtHeader;
 
 public class RsaDecrypter extends AbstractJweDecrypter {
 	
+	private Jwe jwe;
+	
 	public RsaDecrypter(Jwe jwe) {
 		setJwe(jwe);
+	}
+	
+	public Jwe getJwe() {
+		return jwe;
+	}
+
+	public void setJwe(Jwe jwe) {
+		this.jwe = jwe;
 	}
 	
 	@Override
