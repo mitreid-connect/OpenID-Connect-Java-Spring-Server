@@ -81,12 +81,14 @@ Configure like so:
 		<property name="errorRedirectURI" 
 			value="/login.jsp?authfail=openid" />
 		<property name="authorizationEndpointURI" 
-			value="http://sever.example.com:8080/openid-connect-server/oauth/authorize" />
+			value="http://sever.example.com:8080/openid-connect-server/openidconnect/auth" />
 		<property name="tokenEndpointURI" 
-			value="http://sever.example.com:8080/openid-connect-server/oauth/token" />
+			value="http://sever.example.com:8080/openid-connect-server/openidconnect/token" />
 		<property name="clientId" 
 			value="someClientId" /> 
 		<property name="clientSecret" value="someClientSecret" /> 
+                <property name="issuer" value="http://server.example.com:8080/openid-connect-server/" />
+		<property name="jwkSigningUrl" value="http://server.example.com:8080/openid-connect-server/jwk" />
 	</bean>	
 
 NOTE:  Again, you will need your own implementation of a ***UserDetailsService*** specific to your deployment. See the last section of this document.
