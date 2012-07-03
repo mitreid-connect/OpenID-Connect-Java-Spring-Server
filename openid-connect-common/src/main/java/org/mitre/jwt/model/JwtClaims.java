@@ -74,7 +74,7 @@ public class JwtClaims extends ClaimSet {
 	        } else if (element.getKey().equals(TYPE)) {	        	
 	        	setType(element.getValue().getAsString());
 	        } else if (element.getKey().equals(NONCE)){
-	        	setType(element.getValue().getAsString());
+	        	setNonce(element.getValue().getAsString());
 	        }else {
 	        	pass.add(element.getKey(), element.getValue());
 	        }
