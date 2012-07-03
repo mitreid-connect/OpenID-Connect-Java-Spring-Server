@@ -58,11 +58,11 @@ public class JwtHeader extends ClaimSet {
 			if (element.getValue().isJsonNull()) {
 				pass.add(element.getKey(), element.getValue());
 			} else if (element.getKey().equals(TYPE)) {
-	        	this.setType(json.get(TYPE).getAsString());
+	        	this.setType(element.getValue().getAsString());
 	        } else if (element.getKey().equals(ALGORITHM)) {
-	        	this.setAlgorithm(json.get(ALGORITHM).getAsString());
+	        	this.setAlgorithm(element.getValue().getAsString());
 	        } else if (element.getKey().equals(ENCRYPTION_METHOD)) {	        	
-	        	this.setEncryptionMethod(json.get(ENCRYPTION_METHOD).getAsString());
+	        	this.setEncryptionMethod(element.getValue().getAsString());
 	        } else {
 	        	pass.add(element.getKey(), element.getValue());
 	        }
