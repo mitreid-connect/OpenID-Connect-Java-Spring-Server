@@ -17,6 +17,7 @@ package org.mitre.openid.connect.view;
 
 import java.io.Writer;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -42,6 +43,8 @@ public class JSONUserInfoView extends AbstractView{
 		
 		UserInfo userInfo = (UserInfo) model.get("userInfo");
 
+		Set<String> scope = (Set<String>) model.get("scope");
+		
 		Gson gson = new GsonBuilder()
 			.setExclusionStrategies(new ExclusionStrategy() {
 				
@@ -62,31 +65,42 @@ public class JSONUserInfoView extends AbstractView{
 
 		response.setContentType("application/json");
 		Writer out = response.getWriter();
-		gson.toJson(toJson(userInfo),out);
+		gson.toJson(toJson(userInfo, scope), out);
 	}
 	
-	private JsonObject toJson(UserInfo ui) {
+	private JsonObject toJson(UserInfo ui, Set<String> scope) {
 		JsonObject obj = new JsonObject();
 		
-		obj.addProperty("user_id", ui.getUserId());
-		obj.addProperty("name", ui.getName());
-		obj.addProperty("given_name", ui.getGivenName());
-		obj.addProperty("family_name", ui.getFamilyName());
-		obj.addProperty("middle_name", ui.getMiddleName());
-		obj.addProperty("nickname", ui.getNickname());
-		obj.addProperty("email", ui.getEmail());
-		obj.addProperty("profile", ui.getProfile());
-		obj.addProperty("picture", ui.getPicture());
-		obj.addProperty("email", ui.getEmail());
-		obj.addProperty("website", ui.getWebsite());
-		obj.addProperty("verified", ui.getVerified());
-		obj.addProperty("gender", ui.getGender());
-		obj.addProperty("zone_info", ui.getZoneinfo());
-		obj.addProperty("locale", ui.getLocale());
-		obj.addProperty("phone_number", ui.getPhoneNumber());
-		obj.addProperty("updated_time", ui.getUpdatedTime());
+		if (scope.contains("openid")) {
+			obj.addProperty("user_id", ui.getUserId());
+		}
 		
-		if (ui.getAddress() != null) {
+		if (scope.contains("profile")) {
+			obj.addProperty("name", ui.getName());
+			obj.addProperty("given_name", ui.getGivenName());
+			obj.addProperty("family_name", ui.getFamilyName());
+			obj.addProperty("middle_name", ui.getMiddleName());
+			obj.addProperty("nickname", ui.getNickname());
+			obj.addProperty("profile", ui.getProfile());
+			obj.addProperty("picture", ui.getPicture());
+			obj.addProperty("website", ui.getWebsite());
+			obj.addProperty("gender", ui.getGender());
+			obj.addProperty("zone_info", ui.getZoneinfo());
+			obj.addProperty("locale", ui.getLocale());
+			obj.addProperty("updated_time", ui.getUpdatedTime());
+			// TODO: preferred_username
+		}
+		
+		if (scope.contains("email")) {
+			obj.addProperty("email", ui.getEmail());
+			obj.addProperty("verified", ui.getVerified());
+		}
+		
+		if (scope.contains("phone")) {
+			obj.addProperty("phone_number", ui.getPhoneNumber());
+		}
+		
+		if (scope.contains("address") && ui.getAddress() != null) {
 
 			JsonObject addr = new JsonObject();
 			addr.addProperty("formatted", ui.getAddress().getFormatted());

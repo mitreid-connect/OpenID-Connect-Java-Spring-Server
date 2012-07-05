@@ -17,6 +17,8 @@ package org.mitre.openid.connect.model;
 
 import javax.persistence.Basic;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
@@ -54,43 +56,12 @@ public class DefaultUserInfo implements UserInfo {
 	private String updatedTime;
 	
 	
-	public JsonObject toJson() {
-		JsonObject obj = new JsonObject();
-		
-		obj.addProperty("user_id", getUserId());
-		obj.addProperty("name", getName());
-		obj.addProperty("given_name", getGivenName());
-		obj.addProperty("family_name", getFamilyName());
-		obj.addProperty("middle_name", getMiddleName());
-		obj.addProperty("nickname", getNickname());
-		obj.addProperty("profile", getProfile());
-		obj.addProperty("picture", getPicture());
-		obj.addProperty("website", getWebsite());
-		obj.addProperty("verified", getVerified());
-		obj.addProperty("gender", getGender());
-		obj.addProperty("zone_info", getZoneinfo());
-		obj.addProperty("locale", getLocale());
-		obj.addProperty("phone_number", getPhoneNumber());
-		obj.addProperty("updated_time", getUpdatedTime());
-		
-		JsonObject addr = new JsonObject();
-		addr.addProperty("formatted", getAddress().getFormatted());
-		addr.addProperty("street_address", getAddress().getStreetAddress());
-		addr.addProperty("locality", getAddress().getLocality());
-		addr.addProperty("region", getAddress().getRegion());
-		addr.addProperty("postal_code", getAddress().getPostalCode());
-		addr.addProperty("country", getAddress().getCountry());
-		
-		obj.add("address", addr);
-		
-		return obj;
-	}
-	
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.model.UserInfo#getUserId()
 	 */
 	@Override
 	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	public String getUserId() {
 		return userId;
 	}

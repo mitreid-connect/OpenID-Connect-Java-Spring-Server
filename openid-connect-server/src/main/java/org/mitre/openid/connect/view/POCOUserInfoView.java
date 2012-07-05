@@ -17,6 +17,7 @@ package org.mitre.openid.connect.view;
 
 import java.io.Writer;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -43,6 +44,8 @@ public class POCOUserInfoView extends AbstractView{
 		
 		UserInfo userInfo = (UserInfo) model.get("userInfo");
 
+		Set<String> scope = (Set<String>) model.get("scope");
+		
 		Gson gson = new GsonBuilder()
 			.setExclusionStrategies(new ExclusionStrategy() {
 				
@@ -63,10 +66,10 @@ public class POCOUserInfoView extends AbstractView{
 
 		response.setContentType("application/json");
 		Writer out = response.getWriter();
-		gson.toJson(toPoco(userInfo),out);
+		gson.toJson(toPoco(userInfo, scope), out);
 	}
 	
-	private JsonObject toPoco(UserInfo ui) {
+	private JsonObject toPoco(UserInfo ui, Set<String> scope) {
 		JsonObject poco = new JsonObject();
 		
 		// Envelope Info
@@ -76,74 +79,88 @@ public class POCOUserInfoView extends AbstractView{
 		
 		// Build the entry for this userInfo, then add it to entries, then add it to poco
 		JsonObject entry = new JsonObject();
-		entry.addProperty("id", ui.getUserId());
-		entry.addProperty("displayName", ui.getNickname());
 		
-		if(ui.getFamilyName() != null 
-				|| ui.getGivenName() != null 
-				|| ui.getMiddleName() != null
-				|| ui.getName() != null) {
-			JsonObject name = new JsonObject();
-			name.addProperty("familyName", ui.getFamilyName());
-			name.addProperty("givenName", ui.getGivenName());
-			name.addProperty("middleName", ui.getMiddleName());
-			name.addProperty("formatted", ui.getName());
-			entry.add("name", name);
+		if (scope.contains("openid")) {
+			entry.addProperty("id", ui.getUserId());
 		}
 		
-		entry.addProperty("gender", ui.getGender());
-		
-		if(ui.getEmail() != null) {
-			JsonObject email = new JsonObject();
-			email.addProperty("value", ui.getEmail());
+		if (scope.contains("profile")) {
+			entry.addProperty("displayName", ui.getNickname());
 			
-			JsonArray emailArray = new JsonArray();
-			emailArray.add(email);
-			entry.add("emails", emailArray);
-		}
+			if(ui.getFamilyName() != null 
+					|| ui.getGivenName() != null 
+					|| ui.getMiddleName() != null
+					|| ui.getName() != null) {
+				JsonObject name = new JsonObject();
+				name.addProperty("familyName", ui.getFamilyName());
+				name.addProperty("givenName", ui.getGivenName());
+				name.addProperty("middleName", ui.getMiddleName());
+				name.addProperty("formatted", ui.getName());
+				entry.add("name", name);
+			}
 		
-		if(ui.getPhoneNumber() != null){
-			JsonObject phone = new JsonObject();
-			phone.addProperty("value", ui.getPhoneNumber());
+			entry.addProperty("gender", ui.getGender());
+			// TODO: preferred_username
+			if(ui.getPicture() != null){
+				JsonObject photo = new JsonObject();
+				photo.addProperty("value", ui.getPicture());
+				
+				JsonArray photoArray = new JsonArray();
+				photoArray.add(photo);
+				entry.add("photos", photoArray);
+			}
 			
-			JsonArray phoneArray = new JsonArray();
-			phoneArray.add(phone);
-			entry.add("phoneNumbers", phoneArray);
-		}
-		
-		if(ui.getPicture() != null){
-			JsonObject photo = new JsonObject();
-			photo.addProperty("value", ui.getPicture());
+			if(ui.getWebsite() != null) {
+				JsonObject website = new JsonObject();
+				website.addProperty("value", ui.getWebsite());
+				
+				JsonArray websiteArray = new JsonArray();
+				websiteArray.add(website);
+				entry.add("urls", websiteArray);
+			}
+
+			entry.addProperty("updated", ui.getUpdatedTime());
 			
-			JsonArray photoArray = new JsonArray();
-			photoArray.add(photo);
-			entry.add("photos", photoArray);
 		}
 		
-		if(ui.getWebsite() != null) {
-			JsonObject website = new JsonObject();
-			website.addProperty("value", ui.getWebsite());
-			
-			JsonArray websiteArray = new JsonArray();
-			websiteArray.add(website);
-			entry.add("urls", websiteArray);
+		if (scope.contains("email")) {
+			if(ui.getEmail() != null) {
+				JsonObject email = new JsonObject();
+				email.addProperty("value", ui.getEmail());
+				
+				JsonArray emailArray = new JsonArray();
+				emailArray.add(email);
+				entry.add("emails", emailArray);
+			}
 		}
 		
-		if(ui.getAddress() != null) {
-			JsonObject addr = new JsonObject();
-			addr.addProperty("formatted", ui.getAddress().getFormatted());
-			addr.addProperty("streetAddress", ui.getAddress().getStreetAddress());
-			addr.addProperty("locality", ui.getAddress().getLocality());
-			addr.addProperty("region", ui.getAddress().getRegion());
-			addr.addProperty("postalCode", ui.getAddress().getPostalCode());
-			addr.addProperty("country", ui.getAddress().getCountry());
-			
-			JsonArray addrArray = new JsonArray();
-			addrArray.add(addr);
-			entry.add("addresses", addrArray);
+		if (scope.contains("phone")) {
+			if(ui.getPhoneNumber() != null){
+				JsonObject phone = new JsonObject();
+				phone.addProperty("value", ui.getPhoneNumber());
+				
+				JsonArray phoneArray = new JsonArray();
+				phoneArray.add(phone);
+				entry.add("phoneNumbers", phoneArray);
+			}
+		
 		}
 		
-		entry.addProperty("updated", ui.getUpdatedTime());
+		if (scope.contains("address")) {
+			if(ui.getAddress() != null) {
+				JsonObject addr = new JsonObject();
+				addr.addProperty("formatted", ui.getAddress().getFormatted());
+				addr.addProperty("streetAddress", ui.getAddress().getStreetAddress());
+				addr.addProperty("locality", ui.getAddress().getLocality());
+				addr.addProperty("region", ui.getAddress().getRegion());
+				addr.addProperty("postalCode", ui.getAddress().getPostalCode());
+				addr.addProperty("country", ui.getAddress().getCountry());
+				
+				JsonArray addrArray = new JsonArray();
+				addrArray.add(addr);
+				entry.add("addresses", addrArray);
+			}
+		}
 		
 		JsonArray entryArray = new JsonArray();
 		entryArray.add(entry);

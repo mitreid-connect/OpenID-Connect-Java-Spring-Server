@@ -16,16 +16,21 @@
 package org.mitre.openid.connect.web;
 
 import java.security.Principal;
+import java.util.Set;
 
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
 import org.mitre.openid.connect.exception.UnknownUserInfoSchemaException;
+import org.mitre.openid.connect.model.DefaultUserInfo;
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.service.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -55,21 +60,17 @@ public class UserInfoEndpoint {
 	/**
 	 * Get information about the user as specified in the accessToken->idToken included in this request
 	 * 
-	 * @param accessToken						the Access Token associated with this request
-	 * @param schema							the data schema to use, default is openid	
-	 * @param mav								the ModelAndView object associated with this request
-	 * @return									JSON or JWT response containing UserInfo data
 	 * @throws UsernameNotFoundException		if the user does not exist or cannot be found
 	 * @throws UnknownUserInfoSchemaException	if an unknown schema is used
 	 */
+	@PreAuthorize("hasRole('ROLE_USER')") // TODO: need to add the check for the "openid" scope, which is REQUIRED
 	@RequestMapping(value="/userinfo", method= {RequestMethod.GET, RequestMethod.POST})
-	public ModelAndView getInfo(Principal p, @RequestParam("schema") String schema, ModelAndView mav) {
+	public String getInfo(Principal p, @RequestParam("schema") String schema, Model model) {
 
-		
 		if (p == null) {
 			throw new UsernameNotFoundException("Invalid User"); 
 		}
-		
+
 		String viewName = null;
 		if (schema.equalsIgnoreCase( openIdSchema )){
 			viewName = jsonUserInfoViewName;
@@ -85,8 +86,18 @@ public class UserInfoEndpoint {
 			throw new UsernameNotFoundException("Invalid User"); 
 		}
 		
-		return new ModelAndView(viewName, "userInfo", userInfo);
+		if (p instanceof OAuth2Authentication) {
+	        OAuth2Authentication authentication = (OAuth2Authentication)p;
+	        
+	        model.addAttribute("scope", authentication.getAuthorizationRequest().getScope());
+        }
+
+		model.addAttribute("userInfo", userInfo);
+		
+		//return new ModelAndView(viewName, "userInfo", userInfo);
+		
+		return viewName;
 
 	}
-	
+
 }
