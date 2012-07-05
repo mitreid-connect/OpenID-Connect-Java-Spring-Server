@@ -20,7 +20,7 @@
                 
                 	<security:authentication property="authorities" var="roles"/>
 
-                    <security:authorize ifAnyGranted="ROLE_USER">
+                    <security:authorize access="hasRole('ROLE_USER')">
                         Logged in as <a href="#"><%= request.getUserPrincipal().getName() %></a>
                     </security:authorize>
                 </p>

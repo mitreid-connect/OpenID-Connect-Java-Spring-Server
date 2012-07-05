@@ -63,7 +63,7 @@ public class UserInfoEndpoint {
 	 * @throws UsernameNotFoundException		if the user does not exist or cannot be found
 	 * @throws UnknownUserInfoSchemaException	if an unknown schema is used
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')") // TODO: need to add the check for the "openid" scope, which is REQUIRED
+	@PreAuthorize("hasRole('ROLE_USER') and #oauth2.hasScope('openid')") // TODO: need to add the check for the "openid" scope, which is REQUIRED
 	@RequestMapping(value="/userinfo", method= {RequestMethod.GET, RequestMethod.POST})
 	public String getInfo(Principal p, @RequestParam("schema") String schema, Model model) {
 

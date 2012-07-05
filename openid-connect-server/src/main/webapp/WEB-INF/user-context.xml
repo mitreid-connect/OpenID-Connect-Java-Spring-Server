@@ -13,7 +13,14 @@
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd">
 
 
-	<security:global-method-security pre-post-annotations="enabled" proxy-target-class="true" authentication-manager-ref="authenticationManager"/>
+	<security:global-method-security pre-post-annotations="enabled" proxy-target-class="true" authentication-manager-ref="authenticationManager">
+		<!--you could also wire in the expression handler up at the layer of the http filters. See https://jira.springsource.org/browse/SEC-1452 -->
+		<security:expression-handler ref="oauthExpressionHandler" />
+	</security:global-method-security>
+
+	<oauth2:expression-handler id="oauthExpressionHandler" />
+
+	<oauth2:web-expression-handler id="oauthWebExpressionHandler" />
 
 	<security:authentication-manager alias="authenticationManager">
 		<security:authentication-provider>
@@ -29,11 +36,12 @@
 		</security:authentication-provider>
 	</security:authentication-manager>
 		
-	<security:http auto-config="true" disable-url-rewriting="true"> <!-- authentication-manager-ref="springSecurityAuthenticationManager" -->
-		<security:intercept-url pattern="/oauth/**" access="ROLE_USER" />
-		<security:intercept-url pattern="/**" access="IS_AUTHENTICATED_ANONYMOUSLY" />
+	<security:http auto-config="true" disable-url-rewriting="true" use-expressions="true"> <!-- authentication-manager-ref="springSecurityAuthenticationManager" -->
+		<security:intercept-url pattern="/oauth/**" access="hasRole('ROLE_USER')" />
+		<security:intercept-url pattern="/**" access="permitAll" />
 		<security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
 		<security:anonymous />
+		<security:expression-handler ref="oauthWebExpressionHandler" />
 	</security:http>	
 
 </beans>
