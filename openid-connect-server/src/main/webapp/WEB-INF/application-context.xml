@@ -52,23 +52,17 @@
 		<property name="realmName" value="openidconnect" />
 	</bean>
 
-	<!-- Now using default SECOAUTH token granter -->
-	<bean id="authCodeTokenGranter" class="org.springframework.security.oauth2.provider.code.AuthorizationCodeTokenGranter">
-		<constructor-arg name="tokenServices" ref="defaultOAuth2ProviderTokenService"/>
-		<constructor-arg name="authorizationRequestFactory" ref="authorizationRequestFactory"/>
-		<constructor-arg name="authorizationCodeServices" ref="authCodeServices"/>
-	</bean>
-
 	<!-- SECOAUTH Authorization Server -->
 	<oauth:authorization-server 
-		client-details-service-ref="defaultOAuth2ClientDetailsEntityService" 
+		client-details-service-ref="defaultOAuth2ClientDetailsEntityService"
+		authorization-request-factory-ref="authorizationRequestFactory" 
 		token-services-ref="defaultOAuth2ProviderTokenService" 
-		token-granter-ref="authCodeTokenGranter"
 		user-approval-handler-ref="userApprovalHandler" 
 		authorization-endpoint-url="/openidconnect/auth" 
 		token-endpoint-url="/openidconnect/token">
 		
-		<oauth:authorization-code authorization-code-services-ref="authCodeServices" />
+		<oauth:authorization-code />
+		<oauth:implicit />
 		
 	</oauth:authorization-server>
 
