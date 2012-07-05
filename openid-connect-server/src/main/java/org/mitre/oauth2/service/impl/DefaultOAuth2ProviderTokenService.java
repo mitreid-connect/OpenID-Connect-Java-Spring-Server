@@ -113,6 +113,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	    	// attach the authorization so that we can look it up later
 	    	token.setAuthentication(authentication);
 	    	
+	    	// TODO: tie this to the offline_access scope
 	    	// attach a refresh token, if this client is allowed to request them
 	    	if (client.isAllowRefresh()) {
 	    		OAuth2RefreshTokenEntity refreshToken = new OAuth2RefreshTokenEntity(); //refreshTokenFactory.createNewRefreshToken();
