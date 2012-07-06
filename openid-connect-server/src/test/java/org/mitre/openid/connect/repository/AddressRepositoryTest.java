@@ -43,7 +43,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Transactional
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"file:src/main/webapp/WEB-INF/spring-servlet.xml", "classpath:test-context.xml"})
+@ContextConfiguration(locations={"file:src/main/webapp/WEB-INF/application-context.xml", "classpath:test-context.xml"})
 public class AddressRepositoryTest {
 	
     @Autowired
