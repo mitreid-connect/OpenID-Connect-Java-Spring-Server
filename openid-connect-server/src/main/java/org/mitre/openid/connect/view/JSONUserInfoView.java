@@ -93,7 +93,7 @@ public class JSONUserInfoView extends AbstractView{
 		
 		if (scope.contains("email")) {
 			obj.addProperty("email", ui.getEmail());
-			obj.addProperty("verified", ui.getVerified());
+			obj.addProperty("email_verified", ui.getEmailVerified());
 		}
 		
 		if (scope.contains("phone")) {

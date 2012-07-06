@@ -10,7 +10,7 @@ CREATE TABLE userinfo (
 	picture VARCHAR(256),
 	website VARCHAR(256),
 	email VARCHAR(256),
-	verified BOOLEAN,
+	emailVerified BOOLEAN,
 	gender VARCHAR(256),
 	zoneinfo VARCHAR(256),
 	locale VARCHAR(256),

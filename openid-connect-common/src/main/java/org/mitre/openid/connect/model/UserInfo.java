@@ -126,12 +126,12 @@ public interface UserInfo {
 	 * @return the verified
 	 */
 	@Basic
-	public abstract Boolean getVerified();
+	public abstract Boolean getEmailVerified();
 
 	/**
 	 * @param verified the verified to set
 	 */
-	public abstract void setVerified(Boolean verified);
+	public abstract void setEmailVerified(Boolean emailVerified);
 
 	/**
 	 * @return the gender
