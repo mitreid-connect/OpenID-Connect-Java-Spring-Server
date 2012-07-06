@@ -5,7 +5,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
 @Entity
@@ -22,6 +21,17 @@ public interface UserInfo {
 	 * @param userId the userId to set
 	 */
 	public abstract void setUserId(String userId);
+	
+	/**
+	 * @return the preferred username
+	 */
+	@Basic
+	public abstract String getPreferredUsername();
+	
+	/**
+	 * @param preferredUsername the preferredUsername to set
+	 */
+	public abstract void setPreferredUsername(String preferredUsername);
 
 	/**
 	 * @return the name

@@ -77,6 +77,7 @@ public class JSONUserInfoView extends AbstractView{
 		
 		if (scope.contains("profile")) {
 			obj.addProperty("name", ui.getName());
+			obj.addProperty("preferred_username", ui.getPreferredUsername());
 			obj.addProperty("given_name", ui.getGivenName());
 			obj.addProperty("family_name", ui.getFamilyName());
 			obj.addProperty("middle_name", ui.getMiddleName());
@@ -88,7 +89,6 @@ public class JSONUserInfoView extends AbstractView{
 			obj.addProperty("zone_info", ui.getZoneinfo());
 			obj.addProperty("locale", ui.getLocale());
 			obj.addProperty("updated_time", ui.getUpdatedTime());
-			// TODO: preferred_username
 		}
 		
 		if (scope.contains("email")) {

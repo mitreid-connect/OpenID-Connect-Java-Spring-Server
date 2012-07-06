@@ -100,7 +100,7 @@ public class POCOUserInfoView extends AbstractView{
 			}
 		
 			entry.addProperty("gender", ui.getGender());
-			// TODO: preferred_username
+			entry.addProperty("preferredUsername", ui.getPreferredUsername());
 			if(ui.getPicture() != null){
 				JsonObject photo = new JsonObject();
 				photo.addProperty("value", ui.getPicture());

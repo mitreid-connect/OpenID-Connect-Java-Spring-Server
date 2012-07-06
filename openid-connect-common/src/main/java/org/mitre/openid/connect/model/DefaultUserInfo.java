@@ -20,15 +20,11 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-
-import com.google.gson.JsonObject;
 
 @Entity
 @Table(name="userinfo")
@@ -38,6 +34,7 @@ import com.google.gson.JsonObject;
 public class DefaultUserInfo implements UserInfo {
 	
 	private String userId;	
+	private String preferredUsername;
 	private String name;	
 	private String givenName;	
 	private String familyName;	
@@ -71,6 +68,20 @@ public class DefaultUserInfo implements UserInfo {
 	@Override
 	public void setUserId(String userId) {
 		this.userId = userId;
+	}
+	/* (non-Javadoc)
+	 * @see org.mitre.openid.connect.model.UserInfo#getPreferredUsername
+	 */
+	@Override
+	public String getPreferredUsername() {
+		return this.preferredUsername;
+	}
+	/* (non-Javadoc)
+	 * @see org.mitre.openid.connect.model.UserInfo#setPreferredUsername(java.lang.String)
+	 */
+	@Override
+	public void setPreferredUsername(String preferredUsername) {
+		this.preferredUsername = preferredUsername;
 	}
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.model.UserInfo#getName()

@@ -1,6 +1,7 @@
 CREATE TABLE userinfo (
 	id BIGINT AUTO_INCREMENT PRIMARY KEY,
 	userId VARCHAR(256),
+	preferredUsername VARCHAR(256),
 	name VARCHAR(256),
 	givenName VARCHAR(256),
 	familyName VARCHAR(256),
