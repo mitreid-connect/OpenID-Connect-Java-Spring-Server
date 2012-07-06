@@ -25,6 +25,7 @@ public class JwtHeader extends ClaimSet {
 	public static final String TYPE = "typ";
 	public static final String ALGORITHM = "alg";
 	public static final String ENCRYPTION_METHOD = "enc";
+	public static final String CONTENT_TYPE = "cty";
 
 	/**
 	 * Make an empty header
@@ -118,5 +119,13 @@ public class JwtHeader extends ClaimSet {
     public void setEncryptionMethod(String encryptionMethod) {
     	setClaim(ENCRYPTION_METHOD, encryptionMethod);
     }
+
+	public static String getContentType() {
+		return CONTENT_TYPE;
+	}
+	
+	public void setContentType(String cty) {
+		setClaim(CONTENT_TYPE, cty);
+	}
 
 }
