@@ -6,9 +6,9 @@ import org.mitre.jwe.model.Jwe;
 import org.mitre.jwe.model.JweHeader;
 import org.mitre.jwt.encryption.AbstractJweEncrypter;
 import org.mitre.jwt.model.JwtClaims;
-import org.mitre.jwt.signer.impl.RsaSigner;
+import org.mitre.jwt.signer.impl.HmacSigner;
 
-public class RsaEncrypter extends AbstractJweEncrypter {
+public class Encrypter extends AbstractJweEncrypter {
 	
 	private Jwe jwe;
 	
@@ -18,7 +18,7 @@ public class RsaEncrypter extends AbstractJweEncrypter {
 	
 	private String signature;
 	
-	public RsaEncrypter(Jwe jwe) {
+	public Encrypter(Jwe jwe) {
 		setJwe(jwe);
 		setHeader(jwe.getHeader());
 		setClaims(jwe.getClaims());
@@ -62,18 +62,28 @@ public class RsaEncrypter extends AbstractJweEncrypter {
 	public Jwe encryptAndSign(Jwe jwe) {
 		
 		String alg = jwe.getHeader().getAlgorithm();
+		String iv = jwe.getHeader().getIntegrity();
+		
 		if(alg.equals("RS256") || alg.equals("RS384") || alg.equals("RS512")) {
 			
 			jwe.setCiphertext(encryptClaims(jwe));
 			jwe.setEncryptedKey(encryptKey(jwe));
 			
-			RsaSigner rsaSigner = new RsaSigner(); //TODO: Add parameters to RsaSigner. ie: keys from keystore (null at the moment)
-			try {
-				jwe = (Jwe) rsaSigner.sign(jwe);
-			} catch (NoSuchAlgorithmException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			if(iv.equals("HS256") || iv.equals("HS384") || iv.equals("HS512")){
+			
+				HmacSigner hmacSigner = new HmacSigner(); //TODO: Add parameters to RsaSigner. ie: keys from keystore (null at the moment)
+				try {
+					jwe = (Jwe) hmacSigner.sign(jwe);
+				} catch (NoSuchAlgorithmException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			} else if(iv.equals("RS256") || iv.equals("RS384") || iv.equals("RS512")) {
+				throw new IllegalArgumentException("Integrity Value must use Hmac signing");
+			} else {
+				throw new IllegalArgumentException("Not a valid integrity value algorithm");
 			}
+			
 		} else if(alg.equals("HS256") || alg.equals("HS384") || alg.equals("HS512")){
 			
 			throw new IllegalArgumentException("Cannot use Hmac for encryption");

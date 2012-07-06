@@ -5,11 +5,11 @@ import org.mitre.jwe.model.Jwe;
 import org.mitre.jwt.encryption.AbstractJweDecrypter;
 import org.mitre.jwt.model.JwtHeader;
 
-public class RsaDecrypter extends AbstractJweDecrypter {
+public class Decrypter extends AbstractJweDecrypter {
 	
 	private Jwe jwe;
 	
-	public RsaDecrypter(Jwe jwe) {
+	public Decrypter(Jwe jwe) {
 		setJwe(jwe);
 	}
 	
@@ -29,9 +29,19 @@ public class RsaDecrypter extends AbstractJweDecrypter {
 		String alg = jwe.getHeader().getAlgorithm();
 		if(alg.equals("RS256") || alg.equals("RS384") || alg.equals("RS512")) {
 			
+			//Base 64 decode each part of the jwe
 			String decodedHeader = new String(Base64.decodeBase64(jwe.getHeader().toString()));
 			JwtHeader unencryptedHeader = new JwtHeader(decodedHeader);
+			
+			String decodedEncryptionKey = new String(Base64.decodeBase64(jwe.getEncryptedKey().toString()));
+			jwe.setEncryptedKey(decodedEncryptionKey.getBytes());
+			
+			String decodedCiphertext = new String(Base64.decodeBase64(jwe.getCiphertext().toString()));
+			jwe.setCiphertext(decodedCiphertext.getBytes());
+			
 			String decodedSig = new String(Base64.decodeBase64(jwe.getSignature()));
+			
+			//create new jwe using the decoded header and signature, and decrypt the ciphertext and key
 			
 			jwe.setHeader(unencryptedHeader);
 			jwe.setCiphertext(decryptCipherText(jwe).getBytes());

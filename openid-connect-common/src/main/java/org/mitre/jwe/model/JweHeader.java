@@ -70,6 +70,46 @@ public class JweHeader extends JwtHeader{
 		super.loadFromJsonObject(pass);
 	}
 	
+	public String getIntegrity() {
+		return INTEGRITY;
+	}
+
+	public String getInitializationVector() {
+		return INITIALIZATION_VECTOR;
+	}
+
+	public String getEphemeralPublicKey() {
+		return EPHEMERAL_PUBLIC_KEY;
+	}
+
+	public String getCompressionAlgorithm() {
+		return COMPRESSION_ALGORITHM;
+	}
+
+	public String getJsonSetUrl() {
+		return JSON_SET_URL;
+	}
+
+	public String getJsonWebKey() {
+		return JSON_WEB_KEY;
+	}
+
+	public String getX509Url() {
+		return X509_URL;
+	}
+
+	public String getX509CertificateThumbprint() {
+		return X509_CERTIFICATE_THUMBPRINT;
+	}
+
+	public String getX509CertificateChain() {
+		return X509_CERTIFICATE_CHAIN;
+	}
+
+	public String getKeyId() {
+		return KEY_ID;
+	}
+
 	public void setIv(String iv) {
 		setClaim(INITIALIZATION_VECTOR, iv);
 	}

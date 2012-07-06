@@ -36,6 +36,8 @@ import org.springframework.util.Assert;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 /**
  * JWT Signer using either the RSA SHA-256, SHA-384, SHA-512 hash algorithm
@@ -174,13 +176,13 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 	public String generateSignature(String signatureBase) throws NoSuchAlgorithmException {
 
 		String sig = null;
-		try {
+		List<String> parts = Lists.newArrayList(Splitter.on(".").split(signatureBase));
+		
+		if(parts.size() == 2) {
 			initializeSigner();
-		} catch (GeneralSecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} else if (parts.size() == 3) {
+			initializeSignerJwe(signatureBase);
 		}
-
 		try {
 			signer.initSign(privateKey);
 			signer.update(signatureBase.getBytes("UTF-8"));
@@ -235,6 +237,16 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 	
 	public void initializeSigner() throws NoSuchAlgorithmException{
 		signer = Signature.getInstance(JwsAlgorithm.getByName(super.getAlgorithm()).getStandardName());
+	}
+	
+	public void initializeSignerJwe(String signatureBase) throws NoSuchAlgorithmException {
+		
+		List<String> parts = Lists.newArrayList(Splitter.on(".").split(signatureBase));
+		String header = parts.get(0);
+		JsonParser parser = new JsonParser();
+		JsonObject object = (JsonObject) parser.parse(header);
+		
+		signer = Signature.getInstance(JwsAlgorithm.getByName(object.get("int").getAsString()).getStandardName());
 	}
 
 	/*
