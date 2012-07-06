@@ -2,8 +2,9 @@ package org.mitre.jwt.encryption.impl;
 
 import org.apache.commons.codec.binary.Base64;
 import org.mitre.jwe.model.Jwe;
+import org.mitre.jwe.model.JweHeader;
 import org.mitre.jwt.encryption.AbstractJweDecrypter;
-import org.mitre.jwt.model.JwtHeader;
+
 
 public class Decrypter extends AbstractJweDecrypter {
 	
@@ -31,18 +32,19 @@ public class Decrypter extends AbstractJweDecrypter {
 			
 			//Base 64 decode each part of the jwe
 			String decodedHeader = new String(Base64.decodeBase64(jwe.getHeader().toString()));
-			JwtHeader unencryptedHeader = new JwtHeader(decodedHeader);
+			JweHeader unencryptedHeader = new JweHeader(decodedHeader);
 			
 			String decodedEncryptionKey = new String(Base64.decodeBase64(jwe.getEncryptedKey().toString()));
+			//sets decoded key on jwe so that it can be decrypted
 			jwe.setEncryptedKey(decodedEncryptionKey.getBytes());
 			
 			String decodedCiphertext = new String(Base64.decodeBase64(jwe.getCiphertext().toString()));
+			//sets decoded ciphertext on jwe so that it can be decrypted
 			jwe.setCiphertext(decodedCiphertext.getBytes());
 			
 			String decodedSig = new String(Base64.decodeBase64(jwe.getSignature()));
 			
 			//create new jwe using the decoded header and signature, and decrypt the ciphertext and key
-			
 			jwe.setHeader(unencryptedHeader);
 			jwe.setCiphertext(decryptCipherText(jwe).getBytes());
 			jwe.setEncryptedKey(decryptEncryptionKey(jwe));
