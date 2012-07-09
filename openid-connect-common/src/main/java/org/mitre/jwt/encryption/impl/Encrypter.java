@@ -1,6 +1,10 @@
 package org.mitre.jwt.encryption.impl;
 
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 
 import org.mitre.jwe.model.Jwe;
 import org.mitre.jwe.model.JweHeader;
@@ -59,25 +63,38 @@ public class Encrypter extends AbstractJweEncrypter {
 	}
 
 	@Override
-	public Jwe encryptAndSign(Jwe jwe) {
+	public Jwe encryptAndSign(Jwe jwe) throws NoSuchAlgorithmException {
 		
 		String alg = jwe.getHeader().getAlgorithm();
 		String iv = jwe.getHeader().getIntegrity();
 		
 		if(alg.equals("RS256") || alg.equals("RS384") || alg.equals("RS512")) {
 			
-			jwe.setCiphertext(encryptClaims(jwe));
+			//generate CEK and CIK
+			
+			PrivateKey contentEncryptionKey = null;
+			PublicKey contentIntegrityKey = null;
+			
+			try {
+				
+				KeyPairGenerator keyGen = KeyPairGenerator.getInstance(jwe.getHeader().getKeyDerivationFunction());
+				KeyPair keyPair = keyGen.genKeyPair();
+				contentEncryptionKey = keyPair.getPrivate();
+				contentIntegrityKey = keyPair.getPublic();
+				
+			} catch (NoSuchAlgorithmException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
+			jwe.setCiphertext(encryptClaims(jwe, contentEncryptionKey));
 			jwe.setEncryptedKey(encryptKey(jwe));
 			
 			if(iv.equals("HS256") || iv.equals("HS384") || iv.equals("HS512")){
 			
-				HmacSigner hmacSigner = new HmacSigner(); //TODO: Add parameters to RsaSigner. ie: keys from keystore (null at the moment)
-				try {
-					jwe = (Jwe) hmacSigner.sign(jwe);
-				} catch (NoSuchAlgorithmException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				HmacSigner hmacSigner = new HmacSigner(contentIntegrityKey.getEncoded()); 
+				jwe = (Jwe) hmacSigner.sign(jwe);
+				
 			} else if(iv.equals("RS256") || iv.equals("RS384") || iv.equals("RS512")) {
 				throw new IllegalArgumentException("Integrity Value must use Hmac signing");
 			} else {
@@ -85,9 +102,7 @@ public class Encrypter extends AbstractJweEncrypter {
 			}
 			
 		} else if(alg.equals("HS256") || alg.equals("HS384") || alg.equals("HS512")){
-			
 			throw new IllegalArgumentException("Cannot use Hmac for encryption");
-			
 		} else {
 			throw new IllegalArgumentException("Not a valid signing algorithm");
 		}

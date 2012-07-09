@@ -20,7 +20,6 @@ public class JweHeader extends JwtHeader{
 	public static final String X509_CERTIFICATE_CHAIN = "x5c";
 	public static final String KEY_ID = "kid";
 	public static final String KEY_DERIVATION_FUNCTION = "kdf";
-	public static final String CONTENT_TYPE = "cty";
 
 	public JweHeader(){
 		super();
@@ -112,12 +111,8 @@ public class JweHeader extends JwtHeader{
 		return KEY_ID;
 	}
 	
-	public static String getKeyDerivationFunction() {
+	public String getKeyDerivationFunction() {
 		return KEY_DERIVATION_FUNCTION;
-	}
-
-	public static String getContentType() {
-		return CONTENT_TYPE;
 	}
 
 	public void setIv(String iv) {
@@ -162,9 +157,5 @@ public class JweHeader extends JwtHeader{
 	
 	public void setKeyDerivationFunction(String kdf) {
 		setClaim(KEY_DERIVATION_FUNCTION, kdf);
-	}
-	
-	public void setContentType(String cty) {
-		setClaim(CONTENT_TYPE, cty);
 	}
 }

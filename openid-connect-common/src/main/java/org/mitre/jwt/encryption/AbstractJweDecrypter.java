@@ -1,6 +1,7 @@
 package org.mitre.jwt.encryption;
 
 import java.security.InvalidKeyException;
+import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -39,13 +40,13 @@ public abstract class AbstractJweDecrypter implements JwtDecrypter {
 	
 	
 	@Override
-	public String decryptCipherText(Jwe jwe) {
+	public String decryptCipherText(Jwe jwe, Key cek) {
 		Cipher cipher;
 		String clearTextString = null;
 		try {
 			
 			cipher = Cipher.getInstance("RSA");
-			cipher.init(Cipher.DECRYPT_MODE, privateKey);
+			cipher.init(Cipher.DECRYPT_MODE, cek);
 			byte[] clearText = cipher.doFinal(jwe.getCiphertext());
 			clearTextString = new String(clearText);
 			
@@ -73,13 +74,13 @@ public abstract class AbstractJweDecrypter implements JwtDecrypter {
 	@Override
 	public byte[] decryptEncryptionKey(Jwe jwe) {
 		Cipher cipher;
-		byte[] unencryptedKey = null;
+		byte[] contentMasterKey = null;
 		
 		try {
 			
 			cipher = Cipher.getInstance("RSA");
-			cipher.init(Cipher.DECRYPT_MODE, privateKey);//TODO: Keys are null, get them from keystore. Placeholder 
-			unencryptedKey = cipher.doFinal(jwe.getEncryptedKey());
+			cipher.init(Cipher.DECRYPT_MODE, privateKey);//TODO: Get private key from key store. Placeholder
+			contentMasterKey = cipher.doFinal(jwe.getEncryptedKey());
 			
 		} catch (NoSuchAlgorithmException e) {
 			// TODO Auto-generated catch block
@@ -98,6 +99,6 @@ public abstract class AbstractJweDecrypter implements JwtDecrypter {
 			e.printStackTrace();
 		}
 
-		return unencryptedKey;
+		return contentMasterKey;
 	}
 }
