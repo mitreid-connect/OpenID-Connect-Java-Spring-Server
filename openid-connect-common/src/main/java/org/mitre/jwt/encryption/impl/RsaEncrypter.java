@@ -115,9 +115,9 @@ public class RsaEncrypter extends AbstractJweEncrypter {
 		
 		Cipher cipher;
 		try {
-			cipher = Cipher.getInstance(JwtAlgorithm.getByName(jwe.getHeader().getAlgorithm()).getStandardName());
+			cipher = Cipher.getInstance(JwtAlgorithm.getByName(jwe.getHeader().getEncryptionMethod()).getStandardName());
 			
-			cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(contentEncryptionKey, 0, contentEncryptionKey.length, "RSA"));
+			cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(contentEncryptionKey, "RSA"));
 			cipherText = cipher.doFinal(jwe.getClaims().toString().getBytes());
 			
 		} catch (NoSuchAlgorithmException e) {

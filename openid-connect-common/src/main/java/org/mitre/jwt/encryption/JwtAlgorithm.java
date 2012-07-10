@@ -6,15 +6,18 @@ public enum JwtAlgorithm {
 	
 	//TODO:Fill in values for each standard name
 	// RSA
-	RSA1_5(""), 
-	RSA_OAEP(""), 
+	RSA1_5("RSA"), 
+	RSA_OAEP("RSA"), 
 	//EC
-	ECDH_ES(""),
+	ECDH_ES("EC"),
 	//AES
-	A128KW(""),
-	A256KW(""),
-	A128GCM(""),
-	A256GCM("");
+	A128KW("AES"),
+	A256KW("AES"),
+	A128CBC("AES"),
+	A256CBC("AES"),
+	A128GCM("AES"),
+	A256GCM("AES");
+	
 	
 	
 	/**

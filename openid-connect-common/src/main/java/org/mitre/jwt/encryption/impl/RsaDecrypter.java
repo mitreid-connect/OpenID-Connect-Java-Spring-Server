@@ -1,20 +1,17 @@
 package org.mitre.jwt.encryption.impl;
 
 import java.security.InvalidKeyException;
-import java.security.Key;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.SecretKeySpec;
 
 import org.mitre.jwe.model.Jwe;
 import org.mitre.jwt.encryption.AbstractJweDecrypter;
+import org.mitre.jwt.encryption.AlgorithmLength;
 import org.mitre.jwt.signer.impl.HmacSigner;
 
 
@@ -31,29 +28,23 @@ public class RsaDecrypter extends AbstractJweDecrypter {
 		
 		String alg = jwe.getHeader().getAlgorithm();
 		if(alg.equals("RS256") || alg.equals("RS384") || alg.equals("RS512")) {
-
-			PrivateKey contentEncryptionKey = null;
-			PublicKey contentIntegrityKey = null;
 			
-			try {
-				
-				KeyPairGenerator keyGen = KeyPairGenerator.getInstance(jwe.getHeader().getKeyDerivationFunction());
-				KeyPair keyPair = keyGen.genKeyPair();
-				contentEncryptionKey = keyPair.getPrivate();
-				contentIntegrityKey = keyPair.getPublic();
-				
-			} catch (NoSuchAlgorithmException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			
-			jwe.setCiphertext(decryptCipherText(jwe, contentEncryptionKey).getBytes());
+			//decrypt to get cmk to be used for cek and cik
 			jwe.setEncryptedKey(decryptEncryptionKey(jwe));
+			
+			//generation of cek and cik
+			String algorithmLength = AlgorithmLength.getByName(jwe.getHeader().getEncryptionMethod()).getStandardName();
+			int keyLength = Integer.parseInt(algorithmLength);
+			byte[] contentEncryptionKey = generateContentKey(jwe.getEncryptedKey(), keyLength, new String("Encryption").getBytes());
+			byte[] contentIntegrityKey = generateContentKey(jwe.getEncryptedKey(), keyLength, new String("Integrity").getBytes());
+			
+			//decrypt ciphertext to get claims
+			jwe.setCiphertext(decryptCipherText(jwe, contentEncryptionKey));
 			
 			//generate signature for decrypted signature base in order to verify that decryption worked
 			String signature = null;
 			try {
-				HmacSigner hmacSigner = new HmacSigner(contentIntegrityKey.getEncoded());
+				HmacSigner hmacSigner = new HmacSigner(contentIntegrityKey);
 				signature = hmacSigner.generateSignature(jwe.getSignatureBase());
 			} catch (NoSuchAlgorithmException e) {
 				// TODO Auto-generated catch block
@@ -76,15 +67,14 @@ public class RsaDecrypter extends AbstractJweDecrypter {
 	}
 
 	@Override
-	public String decryptCipherText(Jwe jwe, Key cek) {
+	public byte[] decryptCipherText(Jwe jwe, byte[] cek) {
 		Cipher cipher;
-		String clearTextString = null;
+		byte[] clearText = null;
 		try {
 			
 			cipher = Cipher.getInstance("RSA");
-			cipher.init(Cipher.DECRYPT_MODE, cek);
-			byte[] clearText = cipher.doFinal(jwe.getCiphertext());
-			clearTextString = new String(clearText);
+			cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(cek, "RSA"));
+			clearText = cipher.doFinal(jwe.getCiphertext());
 			
 		} catch (NoSuchAlgorithmException e) {
 			// TODO Auto-generated catch block
@@ -103,7 +93,7 @@ public class RsaDecrypter extends AbstractJweDecrypter {
 			e.printStackTrace();
 		}
 		
-		return clearTextString;
+		return clearText;
 		
 	}
 
