@@ -106,7 +106,7 @@ public class JwkKeyListView extends AbstractView {
 				JsonObject o = new JsonObject();
 
 				o.addProperty("use", "sig"); // since we don't do encryption yet
-				o.addProperty("alg", rsaSigner.getAlgorithm()); // we know this is RSA
+				o.addProperty("alg", "RSA"); //rsaSigner.getAlgorithm()); // we know this is RSA
 				o.addProperty("mod", m64);
 				o.addProperty("exp", e64);
 				o.addProperty("kid", keyId);

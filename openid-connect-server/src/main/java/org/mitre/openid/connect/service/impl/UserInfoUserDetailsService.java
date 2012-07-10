@@ -53,7 +53,8 @@ public class UserInfoUserDetailsService implements UserDetailsService {
 	        	authorities.add(ROLE_ADMIN);
 	        }
 	        
-			User user = new User(userInfo.getUserId(), password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
+	        // TODO: this should really be our own UserDetails wrapper class, shouldn't it?
+			User user = new User(userInfo.getPreferredUsername(), password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
 			return user;
 		} else {
 			return null;
