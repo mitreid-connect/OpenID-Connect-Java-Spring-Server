@@ -6,10 +6,18 @@ import org.apache.commons.codec.binary.Base64;
 import org.mitre.jwt.model.Jwt;
 
 import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
 
+/**
+ * 
+ * 
+	 * Return the canonical encoded string of this JWE, the header in Base64, a period ".", the encrypted key in Base64, a period ".",
+	 * the ciphertext in Base64, a period ".", and the signature, or integrity value, in Base64.
+
+ * @author DERRYBERRY
+ *
+ */
 public class Jwe extends Jwt {
 
 	private JweHeader header;
@@ -18,20 +26,30 @@ public class Jwe extends Jwt {
 	
 	private byte[] ciphertext;
 	
-	private String signature;
-	
 	public Jwe() {
+		super();
 		this.header = new JweHeader();
 		this.encryptedKey = null;
 		this.ciphertext = null;
-		this.signature = null;
 	}
 	
 	public Jwe(JweHeader header, byte[] encryptedKey, byte[] ciphertext, String integrityValue) {
+		super(null, null, integrityValue);
 		this.header = header;
 		this.encryptedKey = encryptedKey;
 		this.ciphertext = ciphertext;
-		this.signature = integrityValue;
+	}
+	
+	public Jwe(String headerBase64, String encryptedKeyBase64, String cipherTextBase64, String integrityValueBase64) {
+		super(null, null, new String(Base64.decodeBase64(integrityValueBase64)));
+		String decodedHeader = new String(Base64.decodeBase64(headerBase64));
+		String decodedEncryptedKey = new String(Base64.decodeBase64(encryptedKeyBase64));
+		String decodedCipherText = new String(Base64.decodeBase64(cipherTextBase64));
+		String decodedIntegrityValue = new String(Base64.decodeBase64(integrityValueBase64));
+		this.header = new JweHeader(decodedHeader);
+		this.encryptedKey = decodedEncryptedKey.getBytes();
+		this.ciphertext = decodedCipherText.getBytes();
+		setSignature(decodedIntegrityValue);
 	}
 	
 	public JweHeader getHeader() {
@@ -58,24 +76,6 @@ public class Jwe extends Jwt {
 		this.ciphertext = ciphertext;
 	}
 
-	public String getSignature() {
-		return signature;
-	}
-
-	public void setSignature(String signature) {
-		this.signature = signature;
-	}
-	
-	
-	/**
-	 * Return the canonical encoded string of this JWE, the header in Base64, a period ".", the encrypted key in Base64, a period ".",
-	 * the ciphertext in Base64, a period ".", and the signature, or integrity value, in Base64.
-	 */
-	@Override
-	public String toString() {
-		return getSignatureBase() + "." + Strings.nullToEmpty(this.signature);
-	}
-	
 	@Override
 	public String getSignatureBase() {
 		JsonObject h = header.getAsJsonObject();
@@ -109,8 +109,7 @@ public class Jwe extends Jwt {
 		String c64 = parts.get(2);
 		String i64 = parts.get(3);
 
-		Jwe jwe = new Jwe(new JweHeader(h64), e64.getBytes(), c64.getBytes(), i64);
-		//Jwe jwe = new Jwe(new JweHeader(h64), e64.getBytes(), new ClaimSet(c64), i64);
+		Jwe jwe = new Jwe(h64, e64, c64, i64);
 		
 		return jwe;
 		

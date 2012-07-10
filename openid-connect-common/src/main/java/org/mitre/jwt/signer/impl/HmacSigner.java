@@ -124,17 +124,7 @@ public class HmacSigner extends AbstractJwtSigner implements InitializingBean {
 	 */
 	@Override
 	public void afterPropertiesSet(){
-
-		try {
-			mac = Mac.getInstance(JwsAlgorithm.getByName(super.getAlgorithm())
-					.getStandardName());
-		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		logger.debug(JwsAlgorithm.getByName(getAlgorithm()).getStandardName()
-				+ " ECDSA Signer ready for business");
+		initializeMac();
 	}
 
 	/*
@@ -147,14 +137,7 @@ public class HmacSigner extends AbstractJwtSigner implements InitializingBean {
 	@Override
 	public String generateSignature(String signatureBase) throws NoSuchAlgorithmException {
 		
-		List<String> parts = Lists.newArrayList(Splitter.on(".").split(signatureBase));
-		
-		if (parts.size() == 2) {
-			initializeMac();
-		}
-		else if (parts.size() == 3) {
-			initializeMacJwe(signatureBase);
-		}
+		afterPropertiesSet();
 		
 		if (passphrase == null) {
 			throw new IllegalArgumentException("Passphrase cannot be null");
@@ -194,6 +177,7 @@ public class HmacSigner extends AbstractJwtSigner implements InitializingBean {
 	}
 	
 	public void initializeMac() {
+		// TODO: check if it's already been done
 		try {
 			mac = Mac.getInstance(JwsAlgorithm.getByName(super.getAlgorithm()).getStandardName());
 		} catch (NoSuchAlgorithmException e) {
@@ -201,7 +185,7 @@ public class HmacSigner extends AbstractJwtSigner implements InitializingBean {
 			e.printStackTrace();
 		}
 	}
-	
+	// TODO: nuke and clean up
 	public void initializeMacJwe(String signatureBase) {
 		List<String> parts = Lists.newArrayList(Splitter.on(".").split(signatureBase));
 		String header = parts.get(0);

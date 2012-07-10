@@ -1,32 +1,17 @@
 package org.mitre.jwt.encryption;
 
-import java.security.InvalidKeyException;
-import java.security.Key;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
+import java.security.MessageDigest;
 import java.security.PublicKey;
-import java.security.SecureRandom;
-import java.security.interfaces.RSAPublicKey;
-import java.security.spec.InvalidParameterSpecException;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.spec.IvParameterSpec;
-
-import org.mitre.jwe.model.Jwe;
-import org.springframework.security.crypto.codec.Base64;
-
 
 public abstract class AbstractJweEncrypter implements JwtEncrypter {
 	
-	private byte[] encryptedKey; 
+	protected byte[] encryptedKey; 
 	
-	private byte[] cipherText;
+	protected byte[] cipherText;
 	
-	private RSAPublicKey publicKey;
+	protected PublicKey publicKey;
+	
+	public MessageDigest md;
 	
 	public byte[] getEncryptecKey() {
 		return encryptedKey;
@@ -43,93 +28,48 @@ public abstract class AbstractJweEncrypter implements JwtEncrypter {
 	public void setCipherText(byte[] cipherText) {
 		this.cipherText = cipherText;
 	}
+	
+	public byte[] generateContentKey(byte[] cmk, int keyDataLen, byte[] type) {
 
-	
-	public byte[] encryptKey(Jwe jwe){
-		
-		//generate random content master key
-		PublicKey contentMasterKey = null;
-		
-		try {
-			
-			KeyPairGenerator keyGen = KeyPairGenerator.getInstance(jwe.getHeader().getAlgorithm());
-			SecureRandom random = SecureRandom.getInstance(jwe.getHeader().getAlgorithm());
-			keyGen.initialize(1024, random);
-			KeyPair pair = keyGen.generateKeyPair();
-			contentMasterKey = pair.getPublic();
-			
-		} catch (NoSuchAlgorithmException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		
-		
-		//TODO:Get public key from keystore, currently null
-		Cipher cipher;
-		try {
-			cipher = Cipher.getInstance("RSA");
-			cipher.init(Cipher.ENCRYPT_MODE, publicKey);
-			encryptedKey = cipher.doFinal(contentMasterKey.getEncoded());
-			
-		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchPaddingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvalidKeyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalBlockSizeException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (BadPaddingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return encryptedKey;
-		
+		long MAX_HASH_INPUTLEN = Long.MAX_VALUE;
+		long UNSIGNED_INT_MAX_VALUE = 4294967395L;
+
+		keyDataLen = keyDataLen / 8;
+        byte[] key = new byte[keyDataLen];
+        int hashLen = md.getDigestLength();
+        int reps = keyDataLen / hashLen;
+        if (reps > UNSIGNED_INT_MAX_VALUE) {
+            throw new IllegalArgumentException("Key derivation failed");
+        }
+        int counter = 1;
+        byte[] counterInBytes = intToFourBytes(counter);
+        if ((counterInBytes.length + cmk.length + type.length) * 8 > MAX_HASH_INPUTLEN) {
+            throw new IllegalArgumentException("Key derivation failed");
+        }
+        for (int i = 0; i <= reps; i++) {
+            md.reset();
+            md.update(intToFourBytes(i + 1));
+            md.update(cmk);
+            md.update(type);
+            byte[] hash = md.digest();
+            if (i < reps) {
+                System.arraycopy(hash, 0, key, hashLen * i, hashLen);
+            } else {
+                System.arraycopy(hash, 0, key, hashLen * i, keyDataLen % hashLen);
+            }
+        }
+        return key;
+    
 	}
 	
-	public byte[] encryptClaims(Jwe jwe, Key cek) {
-		
-		Cipher cipher;
-		try {
-			cipher = Cipher.getInstance("RSA");
-			
-			//TODO: generated the iv, but not sure how to use it to encrypt?
-			IvParameterSpec spec = cipher.getParameters().getParameterSpec(IvParameterSpec.class);
-			byte[] iv = spec.getIV();
-			
-			cipher.init(Cipher.ENCRYPT_MODE, cek);
-			cipherText = cipher.doFinal(jwe.getClaims().toString().getBytes());
-			
-		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchPaddingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvalidKeyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalBlockSizeException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (BadPaddingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvalidParameterSpecException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return cipherText;
-		
-	}
-	
-	public abstract Jwe encryptAndSign(Jwe jwe) throws NoSuchAlgorithmException;
+    public byte[] intToFourBytes(int i) {
+        byte[] res = new byte[4];
+        res[0] = (byte) (i >>> 24);
+        res[1] = (byte) ((i >>> 16) & 0xFF);
+        res[2] = (byte) ((i >>> 8) & 0xFF);
+        res[3] = (byte) (i & 0xFF);
+        return res;
+    }
 
 
 }
