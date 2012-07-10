@@ -61,9 +61,12 @@ public class OAuthConfirmationController {
 		if (client == null) {
 			throw new ClientNotFoundException("Client not found: " + clientAuth.getClientId());
 		}
+
+        String redirect_uri = clientAuth.getAuthorizationParameters().get("redirect_uri");
 		
 		modelAndView.addObject("auth_request", clientAuth);
 	    modelAndView.addObject("client", client);
+        modelAndView.addObject("redirect_uri", redirect_uri);
 	    modelAndView.setViewName("oauth/approve");
 	    
 	    return modelAndView;

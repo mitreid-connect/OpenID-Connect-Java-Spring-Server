@@ -76,11 +76,14 @@
                 <input id="user_oauth_approval" name="user_oauth_approval" value="true" type="hidden"/>
                 <input name="authorize" value="Authorize" type="submit"
                        onclick="$('#user_oauth_approval').attr('value',true)" class="btn btn-success btn-large"/>
-
                 &nbsp;
                 <input name="deny" value="Deny" type="submit" onclick="$('#user_oauth_approval').attr('value',false)"
                        class="btn btn-secondary btn-large"/>
             </div>
+
+            <small>
+            <strong>Redirect URI: </strong><c:out value="${redirect_uri}"/>
+            </small>
 
         </form>
 
