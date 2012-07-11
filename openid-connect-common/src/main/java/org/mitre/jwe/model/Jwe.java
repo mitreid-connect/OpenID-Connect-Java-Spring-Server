@@ -42,11 +42,10 @@ public class Jwe extends Jwt {
 	
 	public Jwe(String headerBase64, String encryptedKeyBase64, String cipherTextBase64, String integrityValueBase64) {
 		super(null, null, new String(Base64.decodeBase64(integrityValueBase64)));
-		String decodedHeader = new String(Base64.decodeBase64(headerBase64));
 		String decodedEncryptedKey = new String(Base64.decodeBase64(encryptedKeyBase64));
 		String decodedCipherText = new String(Base64.decodeBase64(cipherTextBase64));
 		String decodedIntegrityValue = new String(Base64.decodeBase64(integrityValueBase64));
-		this.header = new JweHeader(decodedHeader);
+		this.header = new JweHeader(headerBase64);
 		this.encryptedKey = decodedEncryptedKey.getBytes();
 		this.ciphertext = decodedCipherText.getBytes();
 		setSignature(decodedIntegrityValue);

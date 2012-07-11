@@ -5,6 +5,7 @@ import java.security.Key;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
 import java.security.SecureRandom;
 
 import javax.crypto.BadPaddingException;
@@ -16,7 +17,6 @@ import javax.crypto.spec.SecretKeySpec;
 import org.mitre.jwe.model.Jwe;
 import org.mitre.jwt.encryption.AbstractJweEncrypter;
 import org.mitre.jwt.encryption.AlgorithmLength;
-import org.mitre.jwt.encryption.JwtAlgorithm;
 import org.mitre.jwt.signer.impl.HmacSigner;
 
 public class RsaEncrypter extends AbstractJweEncrypter {
@@ -31,15 +31,15 @@ public class RsaEncrypter extends AbstractJweEncrypter {
 		String alg = jwe.getHeader().getAlgorithm();
 		String iv = jwe.getHeader().getIntegrity();
 		
-		if(alg.equals("RS256") || alg.equals("RS384") || alg.equals("RS512")) {
+		if(alg.equals("RSA1_5") || alg.equals("RSA-OAEP") || alg.equals("ECDH-ES") || alg.equals("A128KW") || alg.equals("A256KW")) {
 			
 			//generate random content master key
 			Key contentMasterKey = null;
 			
 			try {
 				
-				KeyPairGenerator keyGen = KeyPairGenerator.getInstance(jwe.getHeader().getAlgorithm());
-				SecureRandom random = SecureRandom.getInstance(jwe.getHeader().getAlgorithm());
+				KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+				SecureRandom random = SecureRandom.getInstance("RSA");
 				keyGen.initialize(1024, random);
 				KeyPair pair = keyGen.generateKeyPair();
 				contentMasterKey = pair.getPublic();
@@ -51,7 +51,7 @@ public class RsaEncrypter extends AbstractJweEncrypter {
 			
 			//generate CEK and CIK
 			
-			String algorithmLength = AlgorithmLength.getByName(jwe.getHeader().getEncryptionMethod()).getStandardName();
+			String algorithmLength = AlgorithmLength.getByName(jwe.getHeader().getEncryptionMethod()).toString();
 			int keyLength = Integer.parseInt(algorithmLength);
 			byte[] contentEncryptionKey = generateContentKey(contentMasterKey.getEncoded(), keyLength, new String("Encryption").getBytes());
 			byte[] contentIntegrityKey = generateContentKey(contentMasterKey.getEncoded(), keyLength, new String("Integrity").getBytes());
@@ -66,14 +66,10 @@ public class RsaEncrypter extends AbstractJweEncrypter {
 				HmacSigner hmacSigner = new HmacSigner(contentIntegrityKey); 
 				jwe = (Jwe) hmacSigner.sign(jwe);
 				
-			} else if(iv.equals("RS256") || iv.equals("RS384") || iv.equals("RS512")) {
-				throw new IllegalArgumentException("Integrity Value must use Hmac signing");
 			} else {
 				throw new IllegalArgumentException("Not a valid integrity value algorithm");
 			}
 			
-		} else if(alg.equals("HS256") || alg.equals("HS384") || alg.equals("HS512")){
-			throw new IllegalArgumentException("Cannot use Hmac for encryption");
 		} else {
 			throw new IllegalArgumentException("Not a valid signing algorithm");
 		}
@@ -83,10 +79,25 @@ public class RsaEncrypter extends AbstractJweEncrypter {
 
 	public byte[] encryptKey(Jwe jwe, Key cmk) {
 		
-		//TODO:Get public key from keystore, currently null
-		Cipher cipher;
+		//TODO:Get public key from keystore, for now randomly generate key pair
+		
+		PublicKey publicKey = null;
+		
 		try {
-			cipher = Cipher.getInstance(JwtAlgorithm.getByName(jwe.getHeader().getAlgorithm()).getStandardName());
+			KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+			keyGen.initialize(1024);
+			KeyPair pair = keyGen.generateKeyPair();
+			publicKey = pair.getPublic();
+		} catch (NoSuchAlgorithmException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		Cipher cipher;
+		byte[] encryptedKey = null;
+		
+		try {
+			cipher = Cipher.getInstance("RSA");
 			cipher.init(Cipher.ENCRYPT_MODE, publicKey);
 			encryptedKey = cipher.doFinal(cmk.getEncoded());
 			
@@ -114,8 +125,10 @@ public class RsaEncrypter extends AbstractJweEncrypter {
 	public byte[] encryptClaims(Jwe jwe, byte[] contentEncryptionKey) {
 		
 		Cipher cipher;
+		byte[] cipherText = null;
+		
 		try {
-			cipher = Cipher.getInstance(JwtAlgorithm.getByName(jwe.getHeader().getEncryptionMethod()).getStandardName());
+			cipher = Cipher.getInstance("RSA");
 			
 			cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(contentEncryptionKey, "RSA"));
 			cipherText = cipher.doFinal(jwe.getClaims().toString().getBytes());

@@ -2,6 +2,7 @@ package org.mitre.jwt.encryption.impl;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -27,7 +28,7 @@ public class RsaDecrypter extends AbstractJweDecrypter {
 		Jwe jwe = Jwe.parse(encryptedJwe);
 		
 		String alg = jwe.getHeader().getAlgorithm();
-		if(alg.equals("RS256") || alg.equals("RS384") || alg.equals("RS512")) {
+		if(alg.equals("RSA1_5") || alg.equals("RSA-OAEP") || alg.equals("ECDH-ES") || alg.equals("A128KW") || alg.equals("A256KW")) {
 			
 			//decrypt to get cmk to be used for cek and cik
 			jwe.setEncryptedKey(decryptEncryptionKey(jwe));
@@ -55,10 +56,6 @@ public class RsaDecrypter extends AbstractJweDecrypter {
 			if(signature != jwe.getSignature()){
 				throw new IllegalArgumentException("Didn't decrypt correctly. Decoded Sig and generated Sig do not match");
 			}
-			
-		} else if(alg.equals("HS256") || alg.equals("HS384") || alg.equals("HS512")){
-			
-			throw new IllegalArgumentException("Cannot use Hmac for decryption");
 			
 		} else {
 			throw new IllegalArgumentException("Not a valid decrypting algorithm");
@@ -101,6 +98,7 @@ public class RsaDecrypter extends AbstractJweDecrypter {
 	public byte[] decryptEncryptionKey(Jwe jwe) {
 		Cipher cipher;
 		byte[] contentMasterKey = null;
+		PrivateKey privateKey = null;
 		
 		try {
 			

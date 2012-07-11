@@ -1,37 +1,23 @@
 package org.mitre.jwt.encryption;
 
 import java.security.MessageDigest;
-import java.security.PrivateKey;
-import java.security.PublicKey;
+import java.security.NoSuchAlgorithmException;
 
 public abstract class AbstractJweDecrypter implements JwtDecrypter {
 	
-	protected PrivateKey privateKey;
-	
-	private PublicKey publicKey;
-	
-	public MessageDigest md;
-	
-	public PrivateKey getPrivateKey() {
-		return privateKey;
-	}
-
-	public void setPrivateKey(PrivateKey privateKey) {
-		this.privateKey = privateKey;
-	}
-
-	public PublicKey getPublicKey() {
-		return publicKey;
-	}
-
-	public void setPublicKey(PublicKey publicKey) {
-		this.publicKey = publicKey;
-	}
+	long MAX_HASH_INPUTLEN = Long.MAX_VALUE;
+	long UNSIGNED_INT_MAX_VALUE = 4294967395L;
 	
 	public byte[] generateContentKey(byte[] cmk, int keyDataLen, byte[] type) {
+		
+		MessageDigest md = null;
+		try {
+			md = MessageDigest.getInstance("SHA-256"); //TODO: should figure out this getInstance itself, not always 256
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
-		long MAX_HASH_INPUTLEN = Long.MAX_VALUE;
-		long UNSIGNED_INT_MAX_VALUE = 4294967395L;
 
 		keyDataLen = keyDataLen / 8;
         byte[] key = new byte[keyDataLen];

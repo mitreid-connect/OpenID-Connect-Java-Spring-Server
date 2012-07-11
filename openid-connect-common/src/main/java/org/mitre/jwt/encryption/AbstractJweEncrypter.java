@@ -1,33 +1,10 @@
 package org.mitre.jwt.encryption;
 
 import java.security.MessageDigest;
-import java.security.PublicKey;
 
 public abstract class AbstractJweEncrypter implements JwtEncrypter {
 	
-	protected byte[] encryptedKey; 
-	
-	protected byte[] cipherText;
-	
-	protected PublicKey publicKey;
-	
 	public MessageDigest md;
-	
-	public byte[] getEncryptecKey() {
-		return encryptedKey;
-	}
-
-	public void setEncryptedKey(byte[] encryptedKey) {
-		this.encryptedKey = encryptedKey;
-	}
-
-	public byte[] getCipherText() {
-		return cipherText;
-	}
-
-	public void setCipherText(byte[] cipherText) {
-		this.cipherText = cipherText;
-	}
 	
 	public byte[] generateContentKey(byte[] cmk, int keyDataLen, byte[] type) {
 
