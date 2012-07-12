@@ -64,6 +64,8 @@ public class JwtHeader extends ClaimSet {
 	        	this.setAlgorithm(element.getValue().getAsString());
 	        } else if (element.getKey().equals(ENCRYPTION_METHOD)) {	        	
 	        	this.setEncryptionMethod(element.getValue().getAsString());
+	        } else if (element.getKey().equals(CONTENT_TYPE)) {
+	        	this.setContentType(element.getValue().getAsString());
 	        } else {
 	        	pass.add(element.getKey(), element.getValue());
 	        }

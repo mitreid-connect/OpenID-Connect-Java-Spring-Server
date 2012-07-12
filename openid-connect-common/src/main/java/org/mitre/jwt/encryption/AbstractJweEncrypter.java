@@ -1,12 +1,15 @@
 package org.mitre.jwt.encryption;
 
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public abstract class AbstractJweEncrypter implements JwtEncrypter {
 	
 	public MessageDigest md;
 	
-	public byte[] generateContentKey(byte[] cmk, int keyDataLen, byte[] type) {
+	public byte[] generateContentKey(byte[] cmk, int keyDataLen, byte[] type) throws NoSuchAlgorithmException {
+		//TODO: make this work for any key size
+		md = MessageDigest.getInstance("SHA-256");
 
 		long MAX_HASH_INPUTLEN = Long.MAX_VALUE;
 		long UNSIGNED_INT_MAX_VALUE = 4294967395L;

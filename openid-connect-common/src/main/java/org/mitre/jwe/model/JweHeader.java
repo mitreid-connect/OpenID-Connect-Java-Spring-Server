@@ -72,47 +72,47 @@ public class JweHeader extends JwtHeader{
 	}
 	
 	public String getIntegrity() {
-		return INTEGRITY;
+		return getClaimAsString(INTEGRITY);
 	}
 
 	public String getInitializationVector() {
-		return INITIALIZATION_VECTOR;
+		return getClaimAsString(INITIALIZATION_VECTOR);
 	}
 
 	public String getEphemeralPublicKey() {
-		return EPHEMERAL_PUBLIC_KEY;
+		return getClaimAsString(EPHEMERAL_PUBLIC_KEY);
 	}
 
 	public String getCompressionAlgorithm() {
-		return COMPRESSION_ALGORITHM;
+		return getClaimAsString(COMPRESSION_ALGORITHM);
 	}
 
 	public String getJsonSetUrl() {
-		return JSON_SET_URL;
+		return getClaimAsString(JSON_SET_URL);
 	}
 
 	public String getJsonWebKey() {
-		return JSON_WEB_KEY;
+		return getClaimAsString(JSON_WEB_KEY);
 	}
 
 	public String getX509Url() {
-		return X509_URL;
+		return getClaimAsString(X509_URL);
 	}
 
 	public String getX509CertificateThumbprint() {
-		return X509_CERTIFICATE_THUMBPRINT;
+		return getClaimAsString(X509_CERTIFICATE_THUMBPRINT);
 	}
 
 	public String getX509CertificateChain() {
-		return X509_CERTIFICATE_CHAIN;
+		return getClaimAsString(X509_CERTIFICATE_CHAIN);
 	}
 
 	public String getKeyId() {
-		return KEY_ID;
+		return getClaimAsString(KEY_ID);
 	}
 	
 	public String getKeyDerivationFunction() {
-		return KEY_DERIVATION_FUNCTION;
+		return getClaimAsString(KEY_DERIVATION_FUNCTION);
 	}
 
 	public void setIv(String iv) {
