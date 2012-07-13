@@ -3,12 +3,8 @@ package org.mitre.jwe.encryption.impl;
 import static org.junit.Assert.assertEquals;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.URL;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -44,10 +40,7 @@ import com.google.gson.JsonSyntaxException;
 public class RsaEncrypterDecrypterTest {
 	
 	URL jweHeaderUrl = this.getClass().getResource("/jwe/jweHeader");
-	URL jwePlaintextUrl = this.getClass().getResource("/jwe/jwePlaintext");
-	URL jweEncryptedUrl = this.getClass().getResource("/jwe/encryptedJwe");
-	String jweEncryptedUrlString = jweEncryptedUrl.toString();
-	File jweEncryptedFile = new File(jweEncryptedUrlString);
+	String jwePlaintextString = new String("Why couldn't the bike move? It was two tired.");
 	
 	@Before
 	public void setUp(){
@@ -59,40 +52,33 @@ public class RsaEncrypterDecrypterTest {
 	
 	@Test
 	public void encryptDecryptTest() throws JsonIOException, JsonSyntaxException, IOException, NoSuchAlgorithmException, InvalidKeyException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, InvalidKeySpecException {
-		
+		//read in header and plaintext from files
 		JsonParser parser = new JsonParser();
 		JsonObject jweHeaderObject = parser.parse(new BufferedReader(new InputStreamReader(jweHeaderUrl.openStream()))).getAsJsonObject();
-		String jwePlaintextString = parser.parse(new BufferedReader(new InputStreamReader(jwePlaintextUrl.openStream()))).toString();
-		
+		//create jwe based on header and plaintext
 		Jwe jwe = new Jwe(new JweHeader(jweHeaderObject), null, jwePlaintextString.getBytes(), null);
-		
+		//generate key pair. this will be passed in from the user
 		KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
-		keyGen.initialize(2048);
+		keyGen.initialize(4096);
 		KeyPair pair = keyGen.generateKeyPair();
 		PublicKey publicKey = pair.getPublic();
 		PrivateKey privateKey = pair.getPrivate();
 		//encrypt
 		RsaEncrypter rsaEncrypter = new RsaEncrypter();
 		jwe = rsaEncrypter.encryptAndSign(jwe, publicKey);
-		//put encrypted jwe in text file to then be decrypted
-		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("C:/Users/derryberry/projects/OpenID-Connect-Java-Spring-Server-2/openid-connect-common/target/test-classes/jwe/encryptedJwe")));
-		out.println(jwe.toString());
-		out.close();
-		
-		String jweEncryptedString = parser.parse(new BufferedReader(new InputStreamReader(jweEncryptedUrl.openStream()))).toString();
-		jweEncryptedString = jweEncryptedString.replaceAll("^\"|\"$", "");
-		
-		assertEquals(jwe.toString(), jweEncryptedString);
+
 		//decrypt
 		RsaDecrypter rsaDecrypter = new RsaDecrypter();
 		String encryptedJweString = jwe.toString();
 		jwe = rsaDecrypter.decrypt(encryptedJweString, privateKey);
 		
-		assertEquals(new String(jwe.getCiphertext()), jwePlaintextString);
-		assertEquals(jwe.getHeader().getAlgorithm(), "RSA1_5");
-		assertEquals(jwe.getHeader().getEncryptionMethod(), "A128CBC");
-		assertEquals(jwe.getHeader().getIntegrity(), "HS256");
-		assertEquals(jwe.getHeader().getInitializationVector(), "AxY8DCtDaGlsbGljb3RoZQ");
+		String jweDecryptedCleartext = new String(jwe.getCiphertext());
+		//test ALL THE THINGS
+		assertEquals(jweDecryptedCleartext, jwePlaintextString);	
+		assertEquals(jwe.getHeader().getAlgorithm(), jweHeaderObject.get("alg").getAsString());
+		assertEquals(jwe.getHeader().getEncryptionMethod(), jweHeaderObject.get("enc").getAsString());
+		assertEquals(jwe.getHeader().getIntegrity(), jweHeaderObject.get("int").getAsString());
+		assertEquals(jwe.getHeader().getInitializationVector(), jweHeaderObject.get("iv").getAsString());
 		
 	}
 

@@ -35,28 +35,22 @@ public class RsaEncrypter extends AbstractJweEncrypter {
 			
 			//generate random content master key
 
-			byte[] contentMasterKey = new byte[128];
+			//check what the key length is
+			String encMethod = jwe.getHeader().getEncryptionMethod();
+			char[] array = encMethod.toCharArray();
+			String keyBitLengthString = String.copyValueOf(array, 1, 3);
+			int keyBitLength = Integer.parseInt(keyBitLengthString);
+			
+			byte[] contentMasterKey = new byte[keyBitLength];
 			new Random().nextBytes(contentMasterKey);
 
-			//generate CEK and CIK
-			
 			byte[] contentEncryptionKey = null;
 			byte[] contentIntegrityKey = null;
 			
-			//check what the key length is
-			if(jwe.getHeader().getEncryptionMethod().equals("A128CBC") || jwe.getHeader().getEncryptionMethod().equals("A128GCM")){
-				contentEncryptionKey = generateContentKey(contentMasterKey, 128, "Encryption".getBytes());
-				contentIntegrityKey = generateContentKey(contentMasterKey, 128, "Integrity".getBytes());
-			} else if(jwe.getHeader().getEncryptionMethod().equals("A256CBC") || jwe.getHeader().getEncryptionMethod().equals("A256GCM")){
-				contentEncryptionKey = generateContentKey(contentMasterKey, 256, new String("Encryption").getBytes());
-				contentIntegrityKey = generateContentKey(contentMasterKey, 256, new String("Integrity").getBytes());
-			} else if(jwe.getHeader().getEncryptionMethod().equals("A384CBC") || jwe.getHeader().getEncryptionMethod().equals("A384GCM")){
-				contentEncryptionKey = generateContentKey(contentMasterKey, 384, new String("Encryption").getBytes());
-				contentIntegrityKey = generateContentKey(contentMasterKey, 384, new String("Integrity").getBytes());
-			} else if(jwe.getHeader().getEncryptionMethod().equals("A512CBC") || jwe.getHeader().getEncryptionMethod().equals("A512GCM")){
-				contentEncryptionKey = generateContentKey(contentMasterKey, 512, new String("Encryption").getBytes());
-				contentIntegrityKey = generateContentKey(contentMasterKey, 512, new String("Integrity").getBytes());
-			}
+
+			//generate cek and cik
+			contentEncryptionKey = generateContentKey(contentMasterKey, keyBitLength, "Encryption".getBytes());
+			contentIntegrityKey = generateContentKey(contentMasterKey, keyBitLength, "Integrity".getBytes());
 			
 			//encrypt claims and cmk to get ciphertext and encrypted key
 			jwe.setCiphertext(encryptClaims(jwe, contentEncryptionKey));
@@ -109,7 +103,7 @@ public class RsaEncrypter extends AbstractJweEncrypter {
 		String encMethod = jwe.getHeader().getEncryptionMethod();
 		
 		if(encMethod.equals("A128CBC") || encMethod.equals("A256CBC") || encMethod.equals("A128GCM") || encMethod.equals("A128GCM")) {
-			
+
 			Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
 			cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(contentEncryptionKey, "AES"), new IvParameterSpec(iv));
 			byte[] cipherText = cipher.doFinal(jwe.getCiphertext());

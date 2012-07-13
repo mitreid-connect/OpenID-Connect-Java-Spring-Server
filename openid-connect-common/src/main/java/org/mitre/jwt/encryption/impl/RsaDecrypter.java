@@ -38,16 +38,14 @@ public class RsaDecrypter extends AbstractJweDecrypter {
 			//generation of cek and cik
 			byte[] contentEncryptionKey = null;
 			byte[] contentIntegrityKey = null;
-			//check whether the key length is 128 or 256
-			if(jwe.getHeader().getEncryptionMethod().equals("A128CBC") || jwe.getHeader().getEncryptionMethod().equals("A128GCM")){
-				contentEncryptionKey = generateContentKey(jwe.getEncryptedKey(), 128, new String("Encryption").getBytes());
-				contentIntegrityKey = generateContentKey(jwe.getEncryptedKey(), 128, new String("Integrity").getBytes());
-			} else if(jwe.getHeader().getEncryptionMethod().equals("A256CBC") || jwe.getHeader().getEncryptionMethod().equals("A256GCM")){
-				contentEncryptionKey = generateContentKey(jwe.getEncryptedKey(), 256, new String("Encryption").getBytes());
-				contentIntegrityKey = generateContentKey(jwe.getEncryptedKey(), 256, new String("Integrity").getBytes());
-			} else {
-				throw new IllegalArgumentException(jwe.getHeader().getEncryptionMethod() + " is not a valid encryption method");
-			}
+			//check what the key length is
+			String encMethod = jwe.getHeader().getEncryptionMethod();
+			char[] array = encMethod.toCharArray();
+			String keyBitLengthString = String.copyValueOf(array, 1, 3);
+			int keyBitLength = Integer.parseInt(keyBitLengthString);
+			//generate cek and cik
+			contentEncryptionKey = generateContentKey(jwe.getEncryptedKey(), keyBitLength, "Encryption".getBytes());
+			contentIntegrityKey = generateContentKey(jwe.getEncryptedKey(), keyBitLength, "Integrity".getBytes());
 			
 			//decrypt ciphertext to get claims
 			jwe.setCiphertext(decryptCipherText(jwe, contentEncryptionKey));
@@ -83,12 +81,12 @@ public class RsaDecrypter extends AbstractJweDecrypter {
 		String encMethod = jwe.getHeader().getEncryptionMethod();
 		
 		if(encMethod.equals("A128CBC") || encMethod.equals("A256CBC") || encMethod.equals("A128GCM") || encMethod.equals("A128GCM")) {
+
+			Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+			cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(cek, "AES"), new IvParameterSpec(iv));
+			byte[] clearText = cipher.doFinal(jwe.getCiphertext());
 			
-		Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
-		cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(cek, "AES"), new IvParameterSpec(iv));
-		byte[] clearText = cipher.doFinal(jwe.getCiphertext());
-			
-		return clearText;
+			return clearText;
 			
 		} else {
 			throw new IllegalArgumentException(jwe.getHeader().getAlgorithm() + " is not an implemented algorithm");

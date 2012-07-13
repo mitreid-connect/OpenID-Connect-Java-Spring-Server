@@ -8,16 +8,14 @@ public abstract class AbstractJweDecrypter implements JwtDecrypter {
 	long MAX_HASH_INPUTLEN = Long.MAX_VALUE;
 	long UNSIGNED_INT_MAX_VALUE = 4294967395L;
 	
-	public byte[] generateContentKey(byte[] cmk, int keyDataLen, byte[] type) {
+	public byte[] generateContentKey(byte[] cmk, int keyDataLen, byte[] type) throws NoSuchAlgorithmException {
 		
 		MessageDigest md = null;
-		try {
-			md = MessageDigest.getInstance("SHA-256"); //TODO: should figure out this getInstance itself, not always 256
-		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
+		//HUGE DISCLAIMER: this won't work on windows machines that don't have jce unlimited security files installed.
+		//without it, keys can't be over 128 bit in length, and SHA-128 doesn't work for message digest.
+		
+		//this is what it should be
+		md = MessageDigest.getInstance("SHA-" + Integer.toString(keyDataLen));
 
 		keyDataLen = keyDataLen / 8;
         byte[] key = new byte[keyDataLen];
