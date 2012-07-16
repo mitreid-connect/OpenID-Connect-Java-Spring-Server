@@ -173,7 +173,7 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 	public String generateSignature(String signatureBase) throws NoSuchAlgorithmException {
 
 		String sig = null;
-		
+
 		initializeSigner();
 		
 		try {
@@ -234,7 +234,9 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 			loadKeysFromKeystore();
 		}
 		
-		signer = Signature.getInstance(JwsAlgorithm.getByName(super.getAlgorithm()).getStandardName());
+		if (signer == null) {
+			signer = Signature.getInstance(JwsAlgorithm.getByName(super.getAlgorithm()).getStandardName());
+		}
 	}
 
 	/*

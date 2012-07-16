@@ -177,32 +177,16 @@ public class HmacSigner extends AbstractJwtSigner implements InitializingBean {
 	}
 	
 	private void initializeMac() {
-		// TODO: check if it's already been done
-		try {
-			mac = Mac.getInstance(JwsAlgorithm.getByName(super.getAlgorithm()).getStandardName());
-		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if (mac == null) {
+			try {
+				mac = Mac.getInstance(JwsAlgorithm.getByName(super.getAlgorithm()).getStandardName());
+			} catch (NoSuchAlgorithmException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 	
-	// TODO: nuke and clean up
-//	public void initializeMacJwe(String signatureBase) {
-//		List<String> parts = Lists.newArrayList(Splitter.on(".").split(signatureBase));
-//		String header = parts.get(0);
-//		JsonParser parser = new JsonParser();
-//		JsonObject object = (JsonObject) parser.parse(header);
-//		
-//		try {
-//			mac = Mac.getInstance(JwsAlgorithm.getByName(object.get("int").getAsString())
-//					.getStandardName());
-//		} catch (NoSuchAlgorithmException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//	}
-
-
 	/*
 	 * (non-Javadoc)
 	 * 

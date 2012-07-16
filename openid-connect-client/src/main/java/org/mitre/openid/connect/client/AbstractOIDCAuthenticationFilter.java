@@ -45,9 +45,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.mitre.openid.connect.model.IdToken;
-import org.mitre.jwt.model.Jwt;
-import org.mitre.jwt.model.JwtHeader;
+import org.mitre.jwt.signer.JwsAlgorithm;
 import org.mitre.jwt.signer.JwtSigner;
 import org.mitre.jwt.signer.impl.RsaSigner;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
@@ -486,16 +484,20 @@ public class AbstractOIDCAuthenticationFilter extends
 					throw new AuthenticationServiceException("Problem parsing id_token return from Token endpoint: " + e);
 				}
 
-				if(jwtValidator.validateSignature(jsonRoot.getAsJsonObject().get("id_token").getAsString())
-					&& idToken.getClaims().getIssuer() != null
-					&& idToken.getClaims().getIssuer().equals(serverConfig.getIssuer())
-					&& !jwtValidator.isJwtExpired(idToken)
-					&& jwtValidator.validateIssuedAt(idToken)){
-					
-	
+				if(jwtValidator.validateSignature(jsonRoot.getAsJsonObject().get("id_token").getAsString()) == false) {
+					throw new AuthenticationServiceException("Signature not validated");
 				}
-				else{
-					throw new AuthenticationServiceException("Problem verifying id_token");
+				if(idToken.getClaims().getIssuer() == null) {
+					throw new AuthenticationServiceException("Issuer is null");
+				}
+				if(!idToken.getClaims().getIssuer().equals(serverConfig.getIssuer())){
+					throw new AuthenticationServiceException("Issuers do not match");
+				}
+				if(jwtValidator.isJwtExpired(idToken)) {
+					throw new AuthenticationServiceException("Id Token is expired");
+				}
+				if(jwtValidator.validateIssuedAt(idToken) == false) {
+					throw new AuthenticationServiceException("Id Token issuedAt failed");
 				}
 
 			} else {
@@ -698,10 +700,13 @@ public class AbstractOIDCAuthenticationFilter extends
 					RSAPublicKey rsaKey = (RSAPublicKey)signingKey;
 					
 					// build an RSA signer
-					// FIXME: where do we get the algorithm name?
-					RsaSigner signer = new RsaSigner("RS256", rsaKey, null);
-					
-					signers.put(serverConfig.getIssuer(), signer);
+					RsaSigner signer256 = new RsaSigner(JwsAlgorithm.RS256.toString(), rsaKey, null);
+					RsaSigner signer384 = new RsaSigner(JwsAlgorithm.RS384.toString(), rsaKey, null);
+					RsaSigner signer512 = new RsaSigner(JwsAlgorithm.RS512.toString(), rsaKey, null);
+
+					signers.put(serverConfig.getIssuer(), signer256);
+					signers.put(serverConfig.getIssuer(), signer384);
+					signers.put(serverConfig.getIssuer(), signer512);
 				}
 				
 				JwtSigningAndValidationService signingAndValidationService = new JwtSigningAndValidationServiceDefault(signers);
