@@ -11,14 +11,8 @@ public abstract class AbstractJweEncrypter implements JwtEncrypter {
 		//HUGE DISCLAIMER: this won't work on windows machines that don't have jce unlimited security files installed.
 		//without it, keys can't be over 128 bit in length, and SHA-128 doesn't work for message digest.
 		
-		//SHA-128 is not a valid instance, therefore change to 256
-		if(keyDataLen == 128){
-			md = MessageDigest.getInstance("SHA-256");
-		}
 		//Use keyDataLen to determine instance
-		else {
-			md = MessageDigest.getInstance("SHA-" + Integer.toString(keyDataLen));
-		}
+		md = MessageDigest.getInstance("SHA-" + Integer.toString(keyDataLen));
 		
 		long MAX_HASH_INPUTLEN = Long.MAX_VALUE;
 		long UNSIGNED_INT_MAX_VALUE = 4294967395L;
@@ -59,6 +53,5 @@ public abstract class AbstractJweEncrypter implements JwtEncrypter {
         res[3] = (byte) (i & 0xFF);
         return res;
     }
-
 
 }

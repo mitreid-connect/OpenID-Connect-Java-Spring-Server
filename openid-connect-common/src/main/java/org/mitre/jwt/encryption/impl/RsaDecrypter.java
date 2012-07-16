@@ -39,9 +39,9 @@ public class RsaDecrypter extends AbstractJweDecrypter {
 			byte[] contentEncryptionKey = null;
 			byte[] contentIntegrityKey = null;
 			//check what the key length is
-			String encMethod = jwe.getHeader().getEncryptionMethod();
+			String encMethod = jwe.getHeader().getKeyDerivationFunction();
 			char[] array = encMethod.toCharArray();
-			String keyBitLengthString = String.copyValueOf(array, 1, 3);
+			String keyBitLengthString = new String("" + array[2] + array[3] + array[4]);
 			int keyBitLength = Integer.parseInt(keyBitLengthString);
 			//generate cek and cik
 			contentEncryptionKey = generateContentKey(jwe.getEncryptedKey(), keyBitLength, "Encryption".getBytes());
@@ -79,10 +79,13 @@ public class RsaDecrypter extends AbstractJweDecrypter {
 		iv = Base64.decodeBase64(jwe.getHeader().getInitializationVector());
 		
 		String encMethod = jwe.getHeader().getEncryptionMethod();
-		
-		if(encMethod.equals("A128CBC") || encMethod.equals("A256CBC") || encMethod.equals("A128GCM") || encMethod.equals("A256GCM")) {
+		//TODO: should also check for A128GCM and A256GCM, but Cipher.getInstance() does not support the GCM mode. For now, don't use them
+		if(encMethod.equals("A128CBC") || encMethod.equals("A256CBC")) {
 
-			Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+			String delims = "[8,6]+";
+			String[] mode = encMethod.split(delims);
+			
+			Cipher cipher = Cipher.getInstance("AES/" + mode[1] + "/PKCS5Padding");
 			cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(contentEncryptionKey, "AES"), new IvParameterSpec(iv));
 			byte[] clearText = cipher.doFinal(jwe.getCiphertext());
 			

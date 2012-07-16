@@ -57,14 +57,15 @@ public abstract class AbstractJwtSigner implements JwtSigner {
      */
 	@Override
 	public Jwt sign(Jwt jwt) throws NoSuchAlgorithmException {
-		//TODO: this check changes the algorithm param of a jwe to the int param. not sure why?
+		
+		//TODO: need a seperate check for Jwe. As is, it will change the alg param to be the enc param
 		/*if (!Objects.equal(algorithm, jwt.getHeader().getAlgorithm())) {
 			// algorithm type doesn't match
 			// TODO: should this be an error or should we just fix it in the incoming jwt?
 			// for now, we fix the Jwt
 			jwt.getHeader().setAlgorithm(algorithm);			
-		}*/
-	    
+		}*/ 
+		
 	    String sig = generateSignature(jwt.getSignatureBase());
         
         jwt.setSignature(sig);	
