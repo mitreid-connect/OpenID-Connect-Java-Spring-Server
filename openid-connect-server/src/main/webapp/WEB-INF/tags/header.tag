@@ -32,7 +32,7 @@
         }
 
         .brand {
-            background: url("resources/images/openid_small.png") no-repeat scroll 7px 7px transparent;
+            background: url("resources/images/openid_connect_small.png") no-repeat scroll 7px 7px transparent;
         }
     </style>
 
