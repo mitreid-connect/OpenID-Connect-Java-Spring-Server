@@ -14,9 +14,15 @@ public abstract class AbstractJweDecrypter implements JwtDecrypter {
 		//HUGE DISCLAIMER: this won't work on windows machines that don't have jce unlimited security files installed.
 		//without it, keys can't be over 128 bit in length, and SHA-128 doesn't work for message digest.
 		
-		//this is what it should be
-		md = MessageDigest.getInstance("SHA-" + Integer.toString(keyDataLen));
-
+		//SHA-128 is not a valid instance, therefore change to 256
+		if(keyDataLen == 128){
+			md = MessageDigest.getInstance("SHA-256");
+		}
+		//use keyDataLen to determine instance
+		else {
+			md = MessageDigest.getInstance("SHA-" + Integer.toString(keyDataLen));
+		}
+		
 		keyDataLen = keyDataLen / 8;
         byte[] key = new byte[keyDataLen];
         int hashLen = md.getDigestLength();

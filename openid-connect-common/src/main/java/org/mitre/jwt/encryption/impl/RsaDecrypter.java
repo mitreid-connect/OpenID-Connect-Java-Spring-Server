@@ -73,23 +73,23 @@ public class RsaDecrypter extends AbstractJweDecrypter {
 	}
 
 	@Override
-	public byte[] decryptCipherText(Jwe jwe, byte[] cek) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
+	public byte[] decryptCipherText(Jwe jwe, byte[] contentEncryptionKey) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
 		
 		byte[] iv = new byte[16];
 		iv = Base64.decodeBase64(jwe.getHeader().getInitializationVector());
 		
 		String encMethod = jwe.getHeader().getEncryptionMethod();
 		
-		if(encMethod.equals("A128CBC") || encMethod.equals("A256CBC") || encMethod.equals("A128GCM") || encMethod.equals("A128GCM")) {
+		if(encMethod.equals("A128CBC") || encMethod.equals("A256CBC") || encMethod.equals("A128GCM") || encMethod.equals("A256GCM")) {
 
 			Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
-			cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(cek, "AES"), new IvParameterSpec(iv));
+			cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(contentEncryptionKey, "AES"), new IvParameterSpec(iv));
 			byte[] clearText = cipher.doFinal(jwe.getCiphertext());
 			
 			return clearText;
 			
 		} else {
-			throw new IllegalArgumentException(jwe.getHeader().getAlgorithm() + " is not an implemented algorithm");
+			throw new IllegalArgumentException(jwe.getHeader().getEncryptionMethod() + " is not an implemented encryption method");
 		}
 
 		
@@ -101,7 +101,6 @@ public class RsaDecrypter extends AbstractJweDecrypter {
 		if(jwe.getHeader().getAlgorithm().equals("RSA1_5")){
 			Cipher cipher = Cipher.getInstance("RSA");
 			cipher.init(Cipher.DECRYPT_MODE, privateKey);
-			//TODO: Get private key from key store. Placeholder
 			byte[] contentMasterKey = cipher.doFinal(jwe.getEncryptedKey());
 		
 			return contentMasterKey;

@@ -47,7 +47,6 @@ public class RsaEncrypter extends AbstractJweEncrypter {
 			byte[] contentEncryptionKey = null;
 			byte[] contentIntegrityKey = null;
 			
-
 			//generate cek and cik
 			contentEncryptionKey = generateContentKey(contentMasterKey, keyBitLength, "Encryption".getBytes());
 			contentIntegrityKey = generateContentKey(contentMasterKey, keyBitLength, "Integrity".getBytes());
@@ -63,24 +62,23 @@ public class RsaEncrypter extends AbstractJweEncrypter {
 				jwe = (Jwe) hmacSigner.sign(jwe);
 				
 			} else {
-				throw new IllegalArgumentException(integrityAlg + " is not a valid integrity value algorithm");
+				throw new IllegalArgumentException(integrityAlg + " is not a valid integrity value algorithm for signing.");
 			}
 			
 		} else {
-			throw new IllegalArgumentException(alg + " is not a valid signing algorithm");
+			throw new IllegalArgumentException(alg + " is not a valid encrypting algorithm.");
 		}
 		
 		return jwe;
 	}
 
-	public byte[] encryptKey(Jwe jwe, byte[] cmk, Key publicKey) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+	public byte[] encryptKey(Jwe jwe, byte[] contentMasterKey, Key publicKey) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
 		
-		//TODO:Get public key from keystore, for now randomly generate key pair
 		if(jwe.getHeader().getAlgorithm().equals("RSA1_5")){
 		
 		Cipher cipher = Cipher.getInstance("RSA");
 		cipher.init(Cipher.ENCRYPT_MODE, publicKey);
-		byte[] encryptedKey = cipher.doFinal(cmk);
+		byte[] encryptedKey = cipher.doFinal(contentMasterKey);
 		return encryptedKey;
 		
 		} else {
@@ -102,7 +100,7 @@ public class RsaEncrypter extends AbstractJweEncrypter {
 		
 		String encMethod = jwe.getHeader().getEncryptionMethod();
 		
-		if(encMethod.equals("A128CBC") || encMethod.equals("A256CBC") || encMethod.equals("A128GCM") || encMethod.equals("A128GCM")) {
+		if(encMethod.equals("A128CBC") || encMethod.equals("A256CBC") || encMethod.equals("A128GCM") || encMethod.equals("A256GCM")) {
 
 			Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
 			cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(contentEncryptionKey, "AES"), new IvParameterSpec(iv));
@@ -110,11 +108,8 @@ public class RsaEncrypter extends AbstractJweEncrypter {
 			return cipherText;
 
 		} else {
-			throw new IllegalArgumentException(jwe.getHeader().getAlgorithm() + " is not a supported algorithm");
+			throw new IllegalArgumentException(jwe.getHeader().getEncryptionMethod() + " is not a supported encryption method");
 		}
 
 	}
-	
-
-
 }
