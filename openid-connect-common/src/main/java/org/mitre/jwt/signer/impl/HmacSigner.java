@@ -19,6 +19,7 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.security.GeneralSecurityException;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -30,6 +31,11 @@ import org.mitre.jwt.signer.AbstractJwtSigner;
 import org.mitre.jwt.signer.JwsAlgorithm;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
+
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 /**
  * JWT Signer using either the HMAC SHA-256, SHA-384, SHA-512 hash algorithm
@@ -118,17 +124,7 @@ public class HmacSigner extends AbstractJwtSigner implements InitializingBean {
 	 */
 	@Override
 	public void afterPropertiesSet(){
-
-		try {
-			mac = Mac.getInstance(JwsAlgorithm.getByName(super.getAlgorithm())
-					.getStandardName());
-		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		logger.debug(JwsAlgorithm.getByName(getAlgorithm()).getStandardName()
-				+ " ECDSA Signer ready for business");
+		initializeMac();
 	}
 
 	/*
@@ -140,7 +136,9 @@ public class HmacSigner extends AbstractJwtSigner implements InitializingBean {
 	 */
 	@Override
 	public String generateSignature(String signatureBase) throws NoSuchAlgorithmException {
+		
 		afterPropertiesSet();
+		
 		if (passphrase == null) {
 			throw new IllegalArgumentException("Passphrase cannot be null");
 		}
@@ -176,6 +174,31 @@ public class HmacSigner extends AbstractJwtSigner implements InitializingBean {
 
 	public void setPassphrase(String passphrase) {
 		this.passphrase = passphrase;
+	}
+	
+	public void initializeMac() {
+		// TODO: check if it's already been done
+		try {
+			mac = Mac.getInstance(JwsAlgorithm.getByName(super.getAlgorithm()).getStandardName());
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	// TODO: nuke and clean up
+	public void initializeMacJwe(String signatureBase) {
+		List<String> parts = Lists.newArrayList(Splitter.on(".").split(signatureBase));
+		String header = parts.get(0);
+		JsonParser parser = new JsonParser();
+		JsonObject object = (JsonObject) parser.parse(header);
+		
+		try {
+			mac = Mac.getInstance(JwsAlgorithm.getByName(object.get("int").getAsString())
+					.getStandardName());
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 

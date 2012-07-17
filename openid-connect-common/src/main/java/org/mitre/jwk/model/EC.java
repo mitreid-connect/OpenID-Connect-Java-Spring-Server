@@ -10,12 +10,8 @@ import java.security.spec.InvalidKeySpecException;
 
 import org.apache.commons.codec.binary.Base64;
 import org.bouncycastle.jce.ECNamedCurveTable;
-import org.bouncycastle.jce.provider.JCEECPublicKey;
 import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec;
-import org.bouncycastle.jce.spec.ECParameterSpec;
-import org.bouncycastle.jce.spec.ECPublicKeySpec;
 import org.bouncycastle.math.ec.ECCurve;
-import org.bouncycastle.math.ec.ECPoint;
 
 import com.google.gson.JsonObject;
 

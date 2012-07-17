@@ -136,14 +136,7 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 	 */
 	@Override
 	public void afterPropertiesSet() throws NoSuchAlgorithmException, GeneralSecurityException {
-
-		// unsupported algorithm will throw a NoSuchAlgorithmException
-		signer = Signature.getInstance(JwsAlgorithm.getByName(super.getAlgorithm()).getStandardName()); // ,PROVIDER);
-
-		loadKeysFromKeystore();
-		
-		logger.debug(JwsAlgorithm.getByName(getAlgorithm()).getStandardName() + " RSA Signer ready for business");
-
+		initializeSigner();
 	}
 
 	/**
@@ -175,12 +168,12 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 
 		String sig = null;
 		try {
-			initializeSigner();
-		} catch (GeneralSecurityException e) {
+			afterPropertiesSet();
+		} catch (GeneralSecurityException e1) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			e1.printStackTrace();
 		}
-
+		
 		try {
 			signer.initSign(privateKey);
 			signer.update(signatureBase.getBytes("UTF-8"));

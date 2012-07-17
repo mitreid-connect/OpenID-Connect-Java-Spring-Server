@@ -22,14 +22,11 @@ import java.net.URLEncoder;
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.Signature;
-import java.security.cert.CertificateException;
 import java.security.interfaces.RSAPublicKey;
-import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -48,6 +45,9 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.mitre.openid.connect.model.IdToken;
+import org.mitre.jwt.model.Jwt;
+import org.mitre.jwt.model.JwtHeader;
 import org.mitre.jwt.signer.JwtSigner;
 import org.mitre.jwt.signer.impl.RsaSigner;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
@@ -726,7 +726,4 @@ public class AbstractOIDCAuthenticationFilter extends
 			Map<OIDCServerConfiguration, JwtSigningAndValidationService> validationServices) {
 		this.validationServices = validationServices;
 	}
-	
-	
-	
 }

@@ -33,6 +33,7 @@ public class JwtClaims extends ClaimSet {
 	public static final String EXPIRATION = "exp";
 	public static final String NONCE = "nonce";
 
+
 	/**
 	 * ISO8601 / RFC3339 Date Format
 	 */
