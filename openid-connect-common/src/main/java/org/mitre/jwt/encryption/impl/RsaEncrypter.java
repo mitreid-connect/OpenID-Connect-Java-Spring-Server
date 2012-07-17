@@ -21,11 +21,6 @@ import org.mitre.jwt.signer.impl.HmacSigner;
 
 public class RsaEncrypter extends AbstractJweEncrypter {
 
-	
-	public RsaEncrypter() {
-		//TODO: Put something here
-	}
-
 	public Jwe encryptAndSign(Jwe jwe, Key publicKey) throws NoSuchAlgorithmException, InvalidKeyException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, InvalidKeySpecException {
 		
 		String alg = jwe.getHeader().getAlgorithm();

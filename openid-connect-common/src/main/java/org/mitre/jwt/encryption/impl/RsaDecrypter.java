@@ -20,10 +20,6 @@ import org.mitre.jwt.signer.impl.HmacSigner;
 
 public class RsaDecrypter extends AbstractJweDecrypter {
 	
-	public RsaDecrypter() {
-		//TODO: Put something here
-	}
-	
 	@Override
 	public Jwe decrypt(String encryptedJwe, Key privateKey) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
 		
