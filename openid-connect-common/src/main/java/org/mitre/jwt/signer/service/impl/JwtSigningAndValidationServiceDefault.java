@@ -16,8 +16,6 @@
 package org.mitre.jwt.signer.service.impl;
 
 import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,7 +23,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mitre.jwt.model.Jwt;
 import org.mitre.jwt.signer.JwtSigner;
-import org.mitre.jwt.signer.impl.RsaSigner;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.springframework.beans.factory.InitializingBean;

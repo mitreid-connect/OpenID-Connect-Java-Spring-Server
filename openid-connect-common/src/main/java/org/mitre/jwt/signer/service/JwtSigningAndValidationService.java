@@ -16,7 +16,6 @@
 package org.mitre.jwt.signer.service;
 
 import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
 import java.util.Map;
 
 import org.mitre.jwt.model.Jwt;

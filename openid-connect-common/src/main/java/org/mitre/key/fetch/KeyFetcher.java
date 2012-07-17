@@ -2,7 +2,6 @@ package org.mitre.key.fetch;
 
 import java.io.InputStream;
 import java.math.BigInteger;
-import java.security.Key;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
