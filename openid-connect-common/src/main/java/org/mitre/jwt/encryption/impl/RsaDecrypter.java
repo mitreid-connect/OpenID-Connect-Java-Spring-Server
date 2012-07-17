@@ -51,7 +51,7 @@ public class RsaDecrypter extends AbstractJweDecrypter {
 			jwe.setCiphertext(decryptCipherText(jwe, contentEncryptionKey));
 			
 			//generate signature for decrypted signature base in order to verify that decryption worked
-			String signature = null;
+			/*String signature = null;
 			try {
 				HmacSigner hmacSigner = new HmacSigner(contentIntegrityKey);
 				signature = hmacSigner.generateSignature(jwe.getSignatureBase());
@@ -61,7 +61,7 @@ public class RsaDecrypter extends AbstractJweDecrypter {
 			}
 			
 			//verifys that the signature base was decrypted correctly
-			/*if(signature != jwe.getSignature()){
+			if(signature != jwe.getSignature()){
 				throw new IllegalArgumentException("Didn't decrypt correctly. Decoded Sig and generated Sig do not match. " +
 						"Generated Signature is: " + signature + " while decoded sig is: " + jwe.getSignature());
 			}*/
