@@ -426,7 +426,7 @@ public class AbstractOIDCAuthenticationFilter extends
 			logger.debug("tokenEndpointURI = " + serverConfig.getTokenEndpointURI());
 			logger.debug("form = " + form);
 		}
-;
+
 		String jsonString = null;
 
 		try {
@@ -716,7 +716,6 @@ public class AbstractOIDCAuthenticationFilter extends
 				return signingAndValidationService;
 				
 			} else {
-				// if we can't build a validation service, return null
 				return null;
 			}
 		}
