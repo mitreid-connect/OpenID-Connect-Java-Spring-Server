@@ -49,7 +49,6 @@ public class Rsa extends AbstractJwk{
 
 	@Override
 	public PublicKey getKey() throws NoSuchAlgorithmException, InvalidKeySpecException {
-		// TODO Auto-generated method stub
 		byte[] modulusByte = Base64.decodeBase64(mod);
 		BigInteger modulus = new BigInteger(modulusByte);
 		byte[] exponentByte = Base64.decodeBase64(exp);

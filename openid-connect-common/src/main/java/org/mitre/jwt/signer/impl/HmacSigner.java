@@ -119,13 +119,7 @@ public class HmacSigner extends AbstractJwtSigner implements InitializingBean {
 	@Override
 	public void afterPropertiesSet(){
 
-		try {
-			mac = Mac.getInstance(JwsAlgorithm.getByName(super.getAlgorithm())
-					.getStandardName());
-		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		initializeMac();
 
 		logger.debug(JwsAlgorithm.getByName(getAlgorithm()).getStandardName()
 				+ " ECDSA Signer ready for business");
@@ -176,6 +170,17 @@ public class HmacSigner extends AbstractJwtSigner implements InitializingBean {
 
 	public void setPassphrase(String passphrase) {
 		this.passphrase = passphrase;
+	}
+	
+	public void initializeMac() {
+		if(mac == null){
+			try {
+				mac = Mac.getInstance(JwsAlgorithm.getByName(super.getAlgorithm()).getStandardName());
+			} catch (NoSuchAlgorithmException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 
