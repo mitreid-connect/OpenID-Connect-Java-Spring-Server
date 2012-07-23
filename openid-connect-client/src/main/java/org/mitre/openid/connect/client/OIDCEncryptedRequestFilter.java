@@ -21,11 +21,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.util.Assert;
 
-public class OIDCSignedRequestFilter extends AbstractOIDCAuthenticationFilter {
-	
+public class OIDCEncryptedRequestFilter extends AbstractOIDCAuthenticationFilter {
 	protected OIDCServerConfiguration oidcServerConfig;
 
-	protected OIDCSignedRequestFilter() {
+	protected OIDCEncryptedRequestFilter() {
 		super();
 
 		oidcServerConfig = new OIDCServerConfiguration();
@@ -87,9 +86,9 @@ public class OIDCSignedRequestFilter extends AbstractOIDCAuthenticationFilter {
 		
 		if(StringUtils.isNotBlank(request.getParameter("token"))) {
 			
-			Jwt jwt = new Jwt();
-			JwtHeader header = jwt.getHeader();
-			JwtClaims claims = jwt.getClaims();
+			Jwe jwe = new Jwe();
+			JweHeader header = jwe.getHeader();
+			JwtClaims claims = jwe.getClaims();
 			
 			//set parameters to JwtHeader
 			header.setAlgorithm(JwsAlgorithm.getByName(SIGNING_ALGORITHM).toString());
