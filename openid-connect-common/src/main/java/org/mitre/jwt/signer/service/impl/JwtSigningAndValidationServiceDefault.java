@@ -135,6 +135,9 @@ public class JwtSigningAndValidationServiceDefault extends AbstractJwtSigningAnd
 		
 		JwtSigner signer = getSigners().get(signerId);
 		
+		// set the signing algorithm in the JWT
+		jwt.getHeader().setAlgorithm(signer.getAlgorithm());
+		
 		signer.sign(jwt);
 	
 	}

@@ -11,7 +11,7 @@ import javax.crypto.NoSuchPaddingException;
 
 import org.mitre.jwe.model.Jwe;
 
-public interface JwtDecrypter {
+public interface JweDecrypter {
 	
 	public Jwe decrypt(String encryptedJwe, Key privateKey) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException;
 	

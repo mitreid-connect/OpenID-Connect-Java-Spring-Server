@@ -24,6 +24,9 @@ import org.apache.commons.lang.StringUtils;
  *
  */
 public enum JwsAlgorithm {
+	
+	// PLAINTEXT
+	NONE("plaintext"),
 
 	// HMAC
 	HS256("HMACSHA256"), 

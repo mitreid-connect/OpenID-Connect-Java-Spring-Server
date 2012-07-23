@@ -3,7 +3,7 @@ package org.mitre.jwt.encryption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public abstract class AbstractJweDecrypter implements JwtDecrypter {
+public abstract class AbstractJweDecrypter implements JweDecrypter {
 	
 	long MAX_HASH_INPUTLEN = Long.MAX_VALUE;
 	long UNSIGNED_INT_MAX_VALUE = 4294967395L;

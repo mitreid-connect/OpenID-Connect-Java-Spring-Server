@@ -3,7 +3,7 @@ package org.mitre.jwt.encryption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public abstract class AbstractJweEncrypter implements JwtEncrypter {
+public abstract class AbstractJweEncrypter implements JweEncrypter {
 	
 	public MessageDigest md;
 	
@@ -45,7 +45,8 @@ public abstract class AbstractJweEncrypter implements JwtEncrypter {
     
 	}
 	
-    public byte[] intToFourBytes(int i) {
+	// this is a utility function, shouldn't be in the public interface for this class
+    protected byte[] intToFourBytes(int i) {
         byte[] res = new byte[4];
         res[0] = (byte) (i >>> 24);
         res[1] = (byte) ((i >>> 16) & 0xFF);

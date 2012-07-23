@@ -17,7 +17,7 @@ import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 
 
-public interface JwtEncrypter {
+public interface JweEncrypter {
 	
 	public byte[] encryptKey(Jwe jwe, byte[] cmk, Key publicKey) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException;
 	
@@ -27,6 +27,4 @@ public interface JwtEncrypter {
 	
 	public byte[] generateContentKey(byte[] cmk, int keyDataLen, byte[] type) throws NoSuchAlgorithmException;
 	
-	public byte[] intToFourBytes(int i);
-
 }

@@ -143,12 +143,18 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 	 * Load the public and private keys from the keystore, identified with the configured alias and accessed with the configured password.
 	 * @throws GeneralSecurityException
 	 */
-	private void loadKeysFromKeystore() throws GeneralSecurityException {
+	private void loadKeysFromKeystore() {
 		Assert.notNull(keystore, "An keystore must be supplied");
 		Assert.notNull(alias, "A alias must be supplied");
 		Assert.notNull(password, "A password must be supplied");
 
-	    KeyPair keyPair = keystore.getKeyPairForAlias(alias, password);
+	    KeyPair keyPair = null;
+		try {
+			keyPair = keystore.getKeyPairForAlias(alias, password);
+		} catch (GeneralSecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		Assert.notNull(keyPair, "Either alias and/or password is not correct for keystore");
 		
@@ -167,12 +173,8 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 	public String generateSignature(String signatureBase) throws NoSuchAlgorithmException {
 
 		String sig = null;
-		try {
-			afterPropertiesSet();
-		} catch (GeneralSecurityException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		
+		initializeSigner();
 		
 		try {
 			signer.initSign(privateKey);
@@ -226,7 +228,12 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 		this.privateKey = privateKey;
 	}
 	
-	public void initializeSigner() throws NoSuchAlgorithmException{
+	private void initializeSigner() throws NoSuchAlgorithmException{
+		if (this.keystore != null && this.alias != null && this.password != null) {
+			// if it looks like we're configured with a keystore, load it here
+			loadKeysFromKeystore();
+		}
+		
 		signer = Signature.getInstance(JwsAlgorithm.getByName(super.getAlgorithm()).getStandardName());
 	}
 

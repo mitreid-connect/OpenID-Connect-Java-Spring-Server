@@ -25,6 +25,7 @@ import com.google.common.collect.Lists;
 
 public abstract class AbstractJwtSigner implements JwtSigner {
 		
+	// TODO: make this a JwsAlgorithm enum value?
 	private String algorithm;
 
 	public AbstractJwtSigner(String algorithm) {

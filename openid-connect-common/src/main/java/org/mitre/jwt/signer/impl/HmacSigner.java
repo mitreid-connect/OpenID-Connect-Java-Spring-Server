@@ -137,7 +137,7 @@ public class HmacSigner extends AbstractJwtSigner implements InitializingBean {
 	@Override
 	public String generateSignature(String signatureBase) throws NoSuchAlgorithmException {
 		
-		afterPropertiesSet();
+		initializeMac();
 		
 		if (passphrase == null) {
 			throw new IllegalArgumentException("Passphrase cannot be null");
@@ -176,7 +176,7 @@ public class HmacSigner extends AbstractJwtSigner implements InitializingBean {
 		this.passphrase = passphrase;
 	}
 	
-	public void initializeMac() {
+	private void initializeMac() {
 		// TODO: check if it's already been done
 		try {
 			mac = Mac.getInstance(JwsAlgorithm.getByName(super.getAlgorithm()).getStandardName());
@@ -185,21 +185,22 @@ public class HmacSigner extends AbstractJwtSigner implements InitializingBean {
 			e.printStackTrace();
 		}
 	}
+	
 	// TODO: nuke and clean up
-	public void initializeMacJwe(String signatureBase) {
-		List<String> parts = Lists.newArrayList(Splitter.on(".").split(signatureBase));
-		String header = parts.get(0);
-		JsonParser parser = new JsonParser();
-		JsonObject object = (JsonObject) parser.parse(header);
-		
-		try {
-			mac = Mac.getInstance(JwsAlgorithm.getByName(object.get("int").getAsString())
-					.getStandardName());
-		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+//	public void initializeMacJwe(String signatureBase) {
+//		List<String> parts = Lists.newArrayList(Splitter.on(".").split(signatureBase));
+//		String header = parts.get(0);
+//		JsonParser parser = new JsonParser();
+//		JsonObject object = (JsonObject) parser.parse(header);
+//		
+//		try {
+//			mac = Mac.getInstance(JwsAlgorithm.getByName(object.get("int").getAsString())
+//					.getStandardName());
+//		} catch (NoSuchAlgorithmException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
 
 
 	/*
