@@ -87,39 +87,7 @@ public class OIDCSignedRequestFilter extends AbstractOIDCAuthenticationFilter {
 		
 		if(StringUtils.isNotBlank(request.getParameter("token"))) {
 			
-			Jwt jwt = new Jwt();
-			JwtHeader header = jwt.getHeader();
-			JwtClaims claims = jwt.getClaims();
-			
-			//set parameters to JwtHeader
-			header.setAlgorithm(JwsAlgorithm.getByName(SIGNING_ALGORITHM).toString());
-			
-			//set parameters to JwtClaims
-			claims.setClaim("response_type", "token");
-			claims.setClaim("client_id", serverConfiguration.getClientId());
-			claims.setClaim("scope", scope);
-			claims.setClaim("redirect_uri", AbstractOIDCAuthenticationFilter.buildRedirectURI(request, null));
-			claims.setClaim("nonce", NONCE_SIGNATURE_COOKIE_NAME);
-			
-			if(header.getAlgorithm().equals("RS256") || header.getAlgorithm().equals("RS384") || header.getAlgorithm().equals("RS512")) {
-				RsaSigner jwtSigner = new RsaSigner();
-				try {
-					jwt = jwtSigner.sign(jwt);
-				} catch (NoSuchAlgorithmException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			} else if(header.getAlgorithm().equals("HS256") || header.getAlgorithm().equals("HS384") || header.getAlgorithm().equals("HS512")) {
-				HmacSigner jwtSigner = new HmacSigner();
-				try {
-					jwt = jwtSigner.sign(jwt);
-				} catch (NoSuchAlgorithmException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			} else {
-				throw new IllegalArgumentException(header.getAlgorithm() + " is not a valid signing algorithm.");
-			}
+			Jwt jwt = createAndSignRequestJwt(request, serverConfiguration);
 			
 			Map<String, String> urlVariables = new HashMap<String, String>();
 			
@@ -132,6 +100,44 @@ public class OIDCSignedRequestFilter extends AbstractOIDCAuthenticationFilter {
 			response.sendRedirect(authRequest);
 		}
 
+	}
+	
+	public Jwt createAndSignRequestJwt(HttpServletRequest request, OIDCServerConfiguration serverConfiguration) {
+		Jwt jwt = new Jwt();
+		JwtHeader header = jwt.getHeader();
+		JwtClaims claims = jwt.getClaims();
+		
+		//set parameters to JwtHeader
+		header.setAlgorithm(JwsAlgorithm.getByName(SIGNING_ALGORITHM).toString());
+		
+		//set parameters to JwtClaims
+		claims.setClaim("response_type", "token");
+		claims.setClaim("client_id", serverConfiguration.getClientId());
+		claims.setClaim("scope", scope);
+		claims.setClaim("redirect_uri", AbstractOIDCAuthenticationFilter.buildRedirectURI(request, null));
+		claims.setClaim("nonce", NONCE_SIGNATURE_COOKIE_NAME);
+		
+		if(header.getAlgorithm().equals("RS256") || header.getAlgorithm().equals("RS384") || header.getAlgorithm().equals("RS512")) {
+			RsaSigner jwtSigner = new RsaSigner();
+			try {
+				jwt = jwtSigner.sign(jwt);
+			} catch (NoSuchAlgorithmException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else if(header.getAlgorithm().equals("HS256") || header.getAlgorithm().equals("HS384") || header.getAlgorithm().equals("HS512")) {
+			HmacSigner jwtSigner = new HmacSigner();
+			try {
+				jwt = jwtSigner.sign(jwt);
+			} catch (NoSuchAlgorithmException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			throw new IllegalArgumentException(header.getAlgorithm() + " is not a valid signing algorithm.");
+		}
+		
+		return jwt;
 	}
 
 }
