@@ -29,6 +29,7 @@ import java.security.spec.RSAPrivateKeySpec;
 import java.security.spec.RSAPublicKeySpec;
 import java.util.Date;
 
+import org.bouncycastle.jce.X509Principal;
 import org.bouncycastle.x509.X509V3CertificateGenerator;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,7 +40,6 @@ import org.mitre.jwt.signer.impl.HmacSigner;
 import org.mitre.jwt.signer.impl.PlaintextSigner;
 import org.mitre.jwt.signer.impl.RsaSigner;
 import org.mitre.jwt.signer.service.impl.KeyStore;
-import org.mitre.jwt.signer.service.impl.KeyStoreTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -132,7 +132,7 @@ public class JwtTest {
 
 		// BC sez X509V3CertificateGenerator is deprecated and the docs say to
 		// use another, but it seemingly isn't included jar...
-		X509V3CertificateGenerator v3CertGen = KeyStoreTest.createCertificate("testGenerateRsaSignature", 30, 30);
+		X509V3CertificateGenerator v3CertGen = createCertificate("testGenerateRsaSignature", 30, 30);
 
 		v3CertGen.setPublicKey(publicKey);
 		v3CertGen.setSignatureAlgorithm("SHA256WithRSAEncryption");
@@ -191,7 +191,7 @@ public class JwtTest {
 
 		Jwt jwt = Jwt.parse(source);
 
-		assertThat(jwt.getHeader().getAlgorithm(), equalTo(PlaintextSigner.PLAINTEXT));
+		assertThat(jwt.getHeader().getAlgorithm(), equalTo(JwsAlgorithm.NONE.toString()));
 		assertThat(jwt.getClaims().getIssuer(), equalTo("joe"));
 		assertThat(jwt.getClaims().getExpiration(), equalTo(new Date(1300819380L * 1000L)));
 		assertThat((Boolean) jwt.getClaims().getClaim("http://example.com/is_root"), equalTo(Boolean.TRUE));
@@ -270,6 +270,34 @@ public class JwtTest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+
+	/**
+	 * Creates a certificate.
+	 * 
+	 * @param commonName
+	 * @param daysNotValidBefore
+	 * @param daysNotValidAfter
+	 * @return
+	 */
+	public static X509V3CertificateGenerator createCertificate(
+			String commonName, int daysNotValidBefore, int daysNotValidAfter) {
+		// BC sez X509V3CertificateGenerator is deprecated and the docs say to
+		// use another, but it seemingly isn't included jar...
+		X509V3CertificateGenerator v3CertGen = new X509V3CertificateGenerator();
+
+		v3CertGen
+				.setSerialNumber(BigInteger.valueOf(System.currentTimeMillis()));
+		v3CertGen.setIssuerDN(new X509Principal("CN=" + commonName
+				+ ", OU=None, O=None L=None, C=None"));
+		v3CertGen.setNotBefore(new Date(System.currentTimeMillis()
+				- (1000L * 60 * 60 * 24 * daysNotValidBefore)));
+		v3CertGen.setNotAfter(new Date(System.currentTimeMillis()
+				+ (1000L * 60 * 60 * 24 * daysNotValidAfter)));
+		v3CertGen.setSubjectDN(new X509Principal("CN=" + commonName
+				+ ", OU=None, O=None L=None, C=None"));
+		return v3CertGen;
 	}
 	
 }

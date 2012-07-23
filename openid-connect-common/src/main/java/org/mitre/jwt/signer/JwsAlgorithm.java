@@ -26,16 +26,16 @@ import org.apache.commons.lang.StringUtils;
 public enum JwsAlgorithm {
 	
 	// PLAINTEXT
-	NONE("plaintext"),
+	NONE("plaintext", "none"),
 
 	// HMAC
-	HS256("HMACSHA256"), 
-	HS384("HMACSHA384"), 
-	HS512("HMACSHA512"),
+	HS256("HMACSHA256", "HS256"), 
+	HS384("HMACSHA384", "HS384"), 
+	HS512("HMACSHA512", "HS512"),
 	// RSA
-	RS256("SHA256withRSA"), 
-	RS384("SHA384withRSA"), 
-	RS512("SHA512withRSA");
+	RS256("SHA256withRSA", "RS256"), 
+	RS384("SHA384withRSA", "RS384"), 
+	RS512("SHA512withRSA", "RS512");
 	
 	/**
 	 * Returns the Algorithm for the name
@@ -56,14 +56,16 @@ public enum JwsAlgorithm {
 	}
 
 	private final String standardName;
-
+	private final String jwaName;
+	
 	/**
 	 * Constructor of JwsAlgorithm
 	 * 
 	 * @param standardName
 	 */
-	JwsAlgorithm(String standardName) {
+	JwsAlgorithm(String standardName, String jwaName) {
 		this.standardName = standardName;
+		this.jwaName = jwaName;
 	}
 
 	/**
