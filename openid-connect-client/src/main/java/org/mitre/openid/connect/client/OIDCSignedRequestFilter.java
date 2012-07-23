@@ -134,44 +134,4 @@ public class OIDCSignedRequestFilter extends AbstractOIDCAuthenticationFilter {
 
 	}
 
-	public void setAuthorizationEndpointURI(String authorizationEndpointURI) {
-		oidcServerConfig.setAuthorizationEndpointURI(authorizationEndpointURI);
-	}
-
-	public void setClientId(String clientId) {
-		oidcServerConfig.setClientId(clientId);
-	}
-
-	public void setClientSecret(String clientSecret) {
-		oidcServerConfig.setClientSecret(clientSecret);
-	}
-
-	public void setErrorRedirectURI(String errorRedirectURI) {
-		this.errorRedirectURI = errorRedirectURI;
-	}
-
-	public void setTokenEndpointURI(String tokenEndpointURI) {
-		oidcServerConfig.setTokenEndpointURI(tokenEndpointURI);
-	}
-	
-	public void setX509EncryptUrl(String x509EncryptUrl) {
-		oidcServerConfig.setX509EncryptUrl(x509EncryptUrl);
-	}
-	
-	public void setX509SigningUrl(String x509SigningUrl) {
-		oidcServerConfig.setX509SigningUrl(x509SigningUrl);
-	}
-	
-	public void setJwkEncryptUrl(String jwkEncryptUrl) {
-		oidcServerConfig.setJwkEncryptUrl(jwkEncryptUrl);
-	}
-	
-	public void setJwkSigningUrl(String jwkSigningUrl) {
-		oidcServerConfig.setJwkSigningUrl(jwkSigningUrl);
-	}
-
-    public void setIssuer(String issuer) {
-	    oidcServerConfig.setIssuer(issuer);
-    }
-
 }

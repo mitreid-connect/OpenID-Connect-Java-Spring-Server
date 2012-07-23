@@ -86,43 +86,30 @@ public class OIDCEncryptedRequestFilter extends AbstractOIDCAuthenticationFilter
 		
 		if(StringUtils.isNotBlank(request.getParameter("token"))) {
 			
+			//TODO: encryption pull request needs to be accepted for these classes to be imported
 			Jwe jwe = new Jwe();
 			JweHeader header = jwe.getHeader();
 			JwtClaims claims = jwe.getClaims();
 			
-			//set parameters to JwtHeader
+			//set parameters to JweHeader
 			header.setAlgorithm(JwsAlgorithm.getByName(SIGNING_ALGORITHM).toString());
+			header.setIntegrity(/*TODO: put something here*/);
+			header.setKeyDerivationFunction(/*TODO: put something here*/);
+			header.setEncryptionMethod(/*TODO: put something here*/);
 			
-			//set parameters to JwtClaims
+			//set parameters to JweClaims
 			claims.setClaim("response_type", "token");
 			claims.setClaim("client_id", serverConfiguration.getClientId());
 			claims.setClaim("scope", scope);
 			claims.setClaim("redirect_uri", AbstractOIDCAuthenticationFilter.buildRedirectURI(request, null));
 			claims.setClaim("nonce", NONCE_SIGNATURE_COOKIE_NAME);
 			
-			if(header.getAlgorithm().equals("RS256") || header.getAlgorithm().equals("RS384") || header.getAlgorithm().equals("RS512")) {
-				RsaSigner jwtSigner = new RsaSigner();
-				try {
-					jwt = jwtSigner.sign(jwt);
-				} catch (NoSuchAlgorithmException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			} else if(header.getAlgorithm().equals("HS256") || header.getAlgorithm().equals("HS384") || header.getAlgorithm().equals("HS512")) {
-				HmacSigner jwtSigner = new HmacSigner();
-				try {
-					jwt = jwtSigner.sign(jwt);
-				} catch (NoSuchAlgorithmException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			} else {
-				throw new IllegalArgumentException(header.getAlgorithm() + " is not a valid signing algorithm.");
-			}
+			//encrypt and sign jwe
+			encryptAndSign(jwe, publicKey);
 			
 			Map<String, String> urlVariables = new HashMap<String, String>();
 			
-			urlVariables.put("request", jwt.toString());
+			urlVariables.put("request", jwe.toString());
 			
 			String authRequest = AbstractOIDCAuthenticationFilter.buildURL(serverConfiguration.getAuthorizationEndpointURI(), urlVariables);
 
@@ -132,45 +119,5 @@ public class OIDCEncryptedRequestFilter extends AbstractOIDCAuthenticationFilter
 		}
 
 	}
-
-	public void setAuthorizationEndpointURI(String authorizationEndpointURI) {
-		oidcServerConfig.setAuthorizationEndpointURI(authorizationEndpointURI);
-	}
-
-	public void setClientId(String clientId) {
-		oidcServerConfig.setClientId(clientId);
-	}
-
-	public void setClientSecret(String clientSecret) {
-		oidcServerConfig.setClientSecret(clientSecret);
-	}
-
-	public void setErrorRedirectURI(String errorRedirectURI) {
-		this.errorRedirectURI = errorRedirectURI;
-	}
-
-	public void setTokenEndpointURI(String tokenEndpointURI) {
-		oidcServerConfig.setTokenEndpointURI(tokenEndpointURI);
-	}
-	
-	public void setX509EncryptUrl(String x509EncryptUrl) {
-		oidcServerConfig.setX509EncryptUrl(x509EncryptUrl);
-	}
-	
-	public void setX509SigningUrl(String x509SigningUrl) {
-		oidcServerConfig.setX509SigningUrl(x509SigningUrl);
-	}
-	
-	public void setJwkEncryptUrl(String jwkEncryptUrl) {
-		oidcServerConfig.setJwkEncryptUrl(jwkEncryptUrl);
-	}
-	
-	public void setJwkSigningUrl(String jwkSigningUrl) {
-		oidcServerConfig.setJwkSigningUrl(jwkSigningUrl);
-	}
-
-    public void setIssuer(String issuer) {
-	    oidcServerConfig.setIssuer(issuer);
-    }
 
 }
