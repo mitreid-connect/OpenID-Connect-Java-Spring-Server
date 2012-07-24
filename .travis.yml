@@ -3,3 +3,5 @@ before_install:
   - git submodule update --init --recursive
 jdk:
   - openjdk6
+install: mvn install -Dmaven.javadoc.skip=true -dskipTests=true
+script: mvn -Dmaven.javadoc.skip=true test
