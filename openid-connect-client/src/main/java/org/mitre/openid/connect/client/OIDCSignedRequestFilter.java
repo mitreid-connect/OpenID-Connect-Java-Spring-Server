@@ -84,9 +84,7 @@ public class OIDCSignedRequestFilter extends AbstractOIDCAuthenticationFilter {
 	@Override
 	public void handleAuthorizationRequest(HttpServletRequest request, HttpServletResponse response, 
 			OIDCServerConfiguration serverConfiguration) throws IOException {
-		
-		if(StringUtils.isNotBlank(request.getParameter("token"))) {
-			
+
 			Jwt jwt = createAndSignRequestJwt(request, serverConfiguration);
 			
 			Map<String, String> urlVariables = new HashMap<String, String>();
@@ -98,8 +96,6 @@ public class OIDCSignedRequestFilter extends AbstractOIDCAuthenticationFilter {
 			logger.debug("Auth Request:  " + authRequest);
 
 			response.sendRedirect(authRequest);
-		}
-
 	}
 	
 	public Jwt createAndSignRequestJwt(HttpServletRequest request, OIDCServerConfiguration serverConfiguration) {
