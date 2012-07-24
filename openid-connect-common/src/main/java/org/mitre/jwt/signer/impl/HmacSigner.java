@@ -47,8 +47,7 @@ public class HmacSigner extends AbstractJwtSigner implements InitializingBean {
 
 	public static final String DEFAULT_PASSPHRASE = "changeit";
 
-	public static final String DEFAULT_ALGORITHM = JwsAlgorithm.HS256
-			.toString();
+	public static final JwsAlgorithm DEFAULT_ALGORITHM = JwsAlgorithm.HS256;
 
 	private static Log logger = LogFactory.getLog(HmacSigner.class);
 
@@ -71,7 +70,7 @@ public class HmacSigner extends AbstractJwtSigner implements InitializingBean {
 	 */
 	public HmacSigner(byte[] passphraseAsRawBytes)
 			throws NoSuchAlgorithmException {
-		this(DEFAULT_ALGORITHM, new String(passphraseAsRawBytes,
+		this(DEFAULT_ALGORITHM.getJwaName(), new String(passphraseAsRawBytes,
 				Charset.forName("UTF-8")));
 	}
 
@@ -82,7 +81,7 @@ public class HmacSigner extends AbstractJwtSigner implements InitializingBean {
 	 *            The passphrase as raw bytes
 	 */
 	public HmacSigner(String passphrase) throws NoSuchAlgorithmException {
-		this(DEFAULT_ALGORITHM, passphrase);
+		this(DEFAULT_ALGORITHM.getJwaName(), passphrase);
 	}
 
 	/**
@@ -108,7 +107,7 @@ public class HmacSigner extends AbstractJwtSigner implements InitializingBean {
 	 *            the passphrase
 	 */
 	public HmacSigner(String algorithmName, String passphrase) {
-		super(algorithmName);
+		super(JwsAlgorithm.getByName(algorithmName));
 
 		Assert.notNull(passphrase, "A passphrase must be supplied");
 
@@ -179,7 +178,7 @@ public class HmacSigner extends AbstractJwtSigner implements InitializingBean {
 	private void initializeMac() {
 		if (mac == null) {
 			try {
-				mac = Mac.getInstance(JwsAlgorithm.getByName(super.getAlgorithm()).getStandardName());
+				mac = Mac.getInstance(getAlgorithm().getStandardName());
 			} catch (NoSuchAlgorithmException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

@@ -76,4 +76,13 @@ public enum JwsAlgorithm {
 	public String getStandardName() {
 		return standardName;
 	}
+
+	/**
+	 * Return the JWA Standard name
+	 * @return
+	 */
+	public String getJwaName() {
+		return jwaName;
+	}
+
 }

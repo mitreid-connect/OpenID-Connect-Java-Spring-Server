@@ -21,7 +21,7 @@ import org.mitre.jwt.signer.JwsAlgorithm;
 public class PlaintextSigner extends AbstractJwtSigner {
 
 	public PlaintextSigner() {
-	    super(JwsAlgorithm.NONE.toString());
+	    super(JwsAlgorithm.NONE);
     }
 
 	@Override

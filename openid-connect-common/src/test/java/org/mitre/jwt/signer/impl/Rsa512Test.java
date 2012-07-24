@@ -72,7 +72,7 @@ public class Rsa512Test {
 		keyPair = keyGen.generateKeyPair();
 		publicKey = keyPair.getPublic();
 		privateKey = keyPair.getPrivate();
-		RsaSigner rsa = new RsaSigner(JwsAlgorithm.RS512.toString(), publicKey, privateKey);
+		RsaSigner rsa = new RsaSigner(JwsAlgorithm.RS512.getJwaName(), publicKey, privateKey);
 		jwt = rsa.sign(jwt);
 		assertEquals(rsa.verify(jwt.toString()), true);
 

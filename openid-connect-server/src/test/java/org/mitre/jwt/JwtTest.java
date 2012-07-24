@@ -153,7 +153,7 @@ public class JwtTest {
 		jwt.getClaims().setIssuer("joe");
 		jwt.getClaims().setClaim("http://example.com/is_root", Boolean.TRUE);
 
-		JwtSigner signer = new RsaSigner(JwsAlgorithm.RS256.toString(),	keystore, "testGenerateRsaSignature", RsaSigner.DEFAULT_PASSWORD);
+		JwtSigner signer = new RsaSigner(JwsAlgorithm.RS256.getJwaName(), keystore, "testGenerateRsaSignature", RsaSigner.DEFAULT_PASSWORD);
 		((RsaSigner) signer).afterPropertiesSet();
 
 		/*
@@ -191,7 +191,7 @@ public class JwtTest {
 
 		Jwt jwt = Jwt.parse(source);
 
-		assertThat(jwt.getHeader().getAlgorithm(), equalTo(JwsAlgorithm.NONE.toString()));
+		assertThat(jwt.getHeader().getAlgorithm(), equalTo(JwsAlgorithm.NONE.getJwaName()));
 		assertThat(jwt.getClaims().getIssuer(), equalTo("joe"));
 		assertThat(jwt.getClaims().getExpiration(), equalTo(new Date(1300819380L * 1000L)));
 		assertThat((Boolean) jwt.getClaims().getClaim("http://example.com/is_root"), equalTo(Boolean.TRUE));

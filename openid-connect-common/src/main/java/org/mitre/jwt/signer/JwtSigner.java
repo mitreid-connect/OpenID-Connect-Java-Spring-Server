@@ -21,7 +21,7 @@ import org.mitre.jwt.model.Jwt;
 
 public interface JwtSigner {
 
-	public String getAlgorithm();
+	public JwsAlgorithm getAlgorithm();
 	
 	public Jwt sign(Jwt jwt) throws NoSuchAlgorithmException;
 	

@@ -50,7 +50,7 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 	public static final String KEYPAIR_ALGORITHM = "RSA";
 	public static final String DEFAULT_PASSWORD = "changeit";
 
-	public static final String DEFAULT_ALGORITHM = JwsAlgorithm.RS256.toString();
+	public static final JwsAlgorithm DEFAULT_ALGORITHM = JwsAlgorithm.RS256;
 	
 	private KeyStore keystore;
 	private String alias;
@@ -101,7 +101,7 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 	 * @throws GeneralSecurityException
 	 */
 	public RsaSigner(String algorithmName, KeyStore keystore, String alias, String password) throws GeneralSecurityException {
-		super(algorithmName);
+		super(JwsAlgorithm.getByName(algorithmName));
 
 		setKeystore(keystore);
 		setAlias(alias);
@@ -115,14 +115,14 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 	 * created with larger bit sizes obviously create larger signatures.
 	 * 
 	 * @param algorithmName
-	 *            The algorithm name
+	 *            The JWA algorithm name
 	 * @param publicKey
 	 *            The public key
 	 * @param privateKey
 	 *            The private key
 	 */
 	public RsaSigner(String algorithmName, PublicKey publicKey, PrivateKey privateKey) {
-		super(algorithmName);
+		super(JwsAlgorithm.getByName(algorithmName));
 
 		this.publicKey = publicKey;
 		this.privateKey = privateKey;
@@ -235,7 +235,7 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 		}
 		
 		if (signer == null) {
-			signer = Signature.getInstance(JwsAlgorithm.getByName(super.getAlgorithm()).getStandardName());
+			signer = Signature.getInstance(getAlgorithm().getStandardName());
 		}
 	}
 

@@ -25,24 +25,23 @@ import com.google.common.collect.Lists;
 
 public abstract class AbstractJwtSigner implements JwtSigner {
 		
-	// TODO: make this a JwsAlgorithm enum value?
-	private String algorithm;
+	private JwsAlgorithm algorithm;
 
-	public AbstractJwtSigner(String algorithm) {
+	public AbstractJwtSigner(JwsAlgorithm algorithm) {
 	    this.algorithm = algorithm;
     }
 
 	/**
      * @return the algorithm
      */
-    public String getAlgorithm() {
+    public JwsAlgorithm getAlgorithm() {
     	return algorithm;
     }
 
 	/**
      * @param algorithm the algorithm to set
      */
-    public void setAlgorithm(String algorithm) {
+    public void setAlgorithm(JwsAlgorithm algorithm) {
     	this.algorithm = algorithm;
     }
 
