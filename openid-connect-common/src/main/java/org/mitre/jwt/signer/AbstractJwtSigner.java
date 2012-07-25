@@ -19,6 +19,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import org.mitre.jwt.model.Jwt;
+
+import com.google.common.base.Objects;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -61,7 +63,7 @@ public abstract class AbstractJwtSigner implements JwtSigner {
 			// algorithm type doesn't match
 			// TODO: should this be an error or should we just fix it in the incoming jwt?
 			// for now, we fix the Jwt
-			jwt.getHeader().setAlgorithm(algorithm);			
+			jwt.getHeader().setAlgorithm(algorithm.getJwaName());			
 		}*/
 		
 	    String sig = generateSignature(jwt.getSignatureBase());
