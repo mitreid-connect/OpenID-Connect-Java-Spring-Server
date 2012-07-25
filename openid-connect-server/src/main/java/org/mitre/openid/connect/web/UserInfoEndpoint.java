@@ -16,11 +16,9 @@
 package org.mitre.openid.connect.web;
 
 import java.security.Principal;
-import java.util.Set;
 
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
 import org.mitre.openid.connect.exception.UnknownUserInfoSchemaException;
-import org.mitre.openid.connect.model.DefaultUserInfo;
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.service.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +30,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.ModelAndView;
 
 /**
  * OpenID Connect UserInfo endpoint, as specified in Standard sec 5 and Messages sec 2.4.
