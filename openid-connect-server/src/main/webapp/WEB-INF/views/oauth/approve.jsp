@@ -37,21 +37,27 @@
                         </c:otherwise>
                     </c:choose>" to sign you into their site
                     using your identity?
-                    <a class="small" href="#" onclick="$('#description').toggle('fast'); return false;">more information</a>
-
+                    <div>
+                    	<a class="small" href="#" onclick="$('#description').toggle('fast'); return false;">more information</a>
+					</div>
                     <p>
-                    <blockquote id="description" style="display: none">
-                        <c:choose>
-                            <c:when test="${empty client.clientDescription}">
-                                No additional information available.
-                            </c:when>
-                            <c:otherwise>
-                                <c:out value="${client.clientDescription}"/>
-                            </c:otherwise>
-                        </c:choose>
-
-                    </blockquote>
+	                    <blockquote id="description" style="display: none">
+	                        <c:choose>
+	                            <c:when test="${empty client.clientDescription}">
+	                                No additional information available.
+	                            </c:when>
+	                            <c:otherwise>
+	                                <c:out value="${client.clientDescription}"/>
+	                            </c:otherwise>
+	                        </c:choose>
+	
+	                    </blockquote>
                     </p>
+                    <div>
+			            <small>
+			            	<strong>Redirect URI: </strong><c:out value="${redirect_uri}"/>
+			            </small>
+					</div>
                 </div>
                 <div class="span4">
                     <fieldset style="text-align:left" class="well">
@@ -80,10 +86,6 @@
                 <input name="deny" value="Deny" type="submit" onclick="$('#user_oauth_approval').attr('value',false)"
                        class="btn btn-secondary btn-large"/>
             </div>
-
-            <small>
-            <strong>Redirect URI: </strong><c:out value="${redirect_uri}"/>
-            </small>
 
         </form>
 

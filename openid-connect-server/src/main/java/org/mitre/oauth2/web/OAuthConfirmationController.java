@@ -53,18 +53,17 @@ public class OAuthConfirmationController {
 	
 	//@PreAuthorize("hasRole('ROLE_USER')")
 	@RequestMapping("/oauth/confirm_access")
-	public ModelAndView confimAccess(@ModelAttribute AuthorizationRequest clientAuth, 
-			ModelAndView modelAndView) {
+	public ModelAndView confimAccess(@ModelAttribute AuthorizationRequest authRequest, ModelAndView modelAndView) {
 		
-		ClientDetails client = clientService.loadClientByClientId(clientAuth.getClientId());
+		ClientDetails client = clientService.loadClientByClientId(authRequest.getClientId());
 		
 		if (client == null) {
-			throw new ClientNotFoundException("Client not found: " + clientAuth.getClientId());
+			throw new ClientNotFoundException("Client not found: " + authRequest.getClientId());
 		}
 
-        String redirect_uri = clientAuth.getAuthorizationParameters().get("redirect_uri");
+        String redirect_uri = authRequest.getAuthorizationParameters().get("redirect_uri");
 		
-		modelAndView.addObject("auth_request", clientAuth);
+		modelAndView.addObject("auth_request", authRequest);
 	    modelAndView.addObject("client", client);
         modelAndView.addObject("redirect_uri", redirect_uri);
 	    modelAndView.setViewName("oauth/approve");
