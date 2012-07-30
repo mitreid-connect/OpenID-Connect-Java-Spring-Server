@@ -16,10 +16,13 @@ import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 
 import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
+import org.easymock.internal.matchers.GreaterThan;
 import org.junit.After;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,7 +46,10 @@ public class RsaEncrypterDecrypterTest {
 	String jwePlaintextString = new String("Why couldn't the bike move? It was two tired.");
 	
 	@Before
-	public void setUp(){
+	public void setUp() throws NoSuchAlgorithmException{
+		
+		Assume.assumeTrue(Cipher.getMaxAllowedKeyLength("AES") > 128); // if we're capped at 128 bits then we can't run these tests
+		
 	}
 	
 	@After
@@ -52,6 +58,9 @@ public class RsaEncrypterDecrypterTest {
 	
 	@Test
 	public void encryptDecryptTest() throws JsonIOException, JsonSyntaxException, IOException, NoSuchAlgorithmException, InvalidKeyException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, InvalidKeySpecException {
+
+		// 
+		
 		//read in header and plaintext from files
 		JsonParser parser = new JsonParser();
 		JsonObject jweHeaderObject = parser.parse(new BufferedReader(new InputStreamReader(jweHeaderUrl.openStream()))).getAsJsonObject();
@@ -59,7 +68,7 @@ public class RsaEncrypterDecrypterTest {
 		Jwe jwe = new Jwe(new JweHeader(jweHeaderObject), null, jwePlaintextString.getBytes(), null);
 		//generate key pair. this will be passed in from the user
 		KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
-		keyGen.initialize(512);
+		keyGen.initialize(4096);
 		KeyPair pair = keyGen.generateKeyPair();
 		PublicKey publicKey = pair.getPublic();
 		PrivateKey privateKey = pair.getPrivate();

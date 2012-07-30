@@ -71,10 +71,10 @@ public class RsaEncrypter extends AbstractJweEncrypter {
 		
 		if(jwe.getHeader().getAlgorithm().equals("RSA1_5")){
 		
-		Cipher cipher = Cipher.getInstance("RSA");
-		cipher.init(Cipher.ENCRYPT_MODE, publicKey);
-		byte[] encryptedKey = cipher.doFinal(contentMasterKey);
-		return encryptedKey;
+			Cipher cipher = Cipher.getInstance("RSA");
+			cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+			byte[] encryptedKey = cipher.doFinal(contentMasterKey);
+			return encryptedKey;
 		
 		} else {
 			throw new IllegalArgumentException(jwe.getHeader().getAlgorithm() + " is not a supported algorithm");
