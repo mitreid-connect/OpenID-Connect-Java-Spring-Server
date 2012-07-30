@@ -130,22 +130,6 @@ public class JwtTest {
 
 		PublicKey publicKey = keyFactory.generatePublic(publicSpec);
 
-		// BC sez X509V3CertificateGenerator is deprecated and the docs say to
-		// use another, but it seemingly isn't included jar...
-		X509V3CertificateGenerator v3CertGen = createCertificate("testGenerateRsaSignature", 30, 30);
-
-		v3CertGen.setPublicKey(publicKey);
-		v3CertGen.setSignatureAlgorithm("SHA256WithRSAEncryption");
-
-		// BC docs say to use another, but it seemingly isn't included...
-		X509Certificate certificate = v3CertGen.generateX509Certificate(privateKey);
-
-		// if exist, overwrite
-		java.security.KeyStore ks = keystore.getKeystore();
-		ks.setKeyEntry("testGenerateRsaSignature", privateKey, RsaSigner.DEFAULT_PASSWORD.toCharArray(), new java.security.cert.Certificate[] { certificate });
-
-		keystore.setKeystore(ks);
-
 		Jwt jwt = new Jwt();
 		jwt.getHeader().setType("JWT");
 		jwt.getHeader().setAlgorithm("RS256");
@@ -153,7 +137,7 @@ public class JwtTest {
 		jwt.getClaims().setIssuer("joe");
 		jwt.getClaims().setClaim("http://example.com/is_root", Boolean.TRUE);
 
-		JwtSigner signer = new RsaSigner(JwsAlgorithm.RS256.getJwaName(), keystore, "testGenerateRsaSignature", RsaSigner.DEFAULT_PASSWORD);
+		JwtSigner signer = new RsaSigner(JwsAlgorithm.RS256.getJwaName(), publicKey, privateKey);
 		((RsaSigner) signer).afterPropertiesSet();
 
 		/*
