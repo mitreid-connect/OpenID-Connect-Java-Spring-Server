@@ -58,8 +58,8 @@
 		authorization-request-factory-ref="authorizationRequestFactory" 
 		token-services-ref="defaultOAuth2ProviderTokenService" 
 		user-approval-handler-ref="userApprovalHandler" 
-		authorization-endpoint-url="/openidconnect/auth" 
-		token-endpoint-url="/openidconnect/token">
+		authorization-endpoint-url="/auth" 
+		token-endpoint-url="/token">
 		
 		<oauth:authorization-code />
 		<oauth:implicit />
