@@ -23,6 +23,7 @@ import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.mitre.openid.connect.model.IdToken;
+import org.mitre.openid.connect.model.IdTokenClaims;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.spi.LoggerFactoryBinder;
@@ -41,9 +42,6 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 	
 	@Autowired
 	private ConfigurationPropertiesBean configBean;
-	
-	@Autowired
-	private IdTokenGeneratorService idTokenService;
 	
 	@Autowired
 	private JwtSigningAndValidationService jwtService;
@@ -69,7 +67,6 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 			token.getRefreshToken().getJwt().getClaims().setNonce(UUID.randomUUID().toString()); // set a random nonce in the middle of it
 		}
 		
-		//TODO: check for client's preferred signer alg and use that
 		try {
 	        jwtService.signJwt(token.getJwt());
         } catch (NoSuchAlgorithmException e) {
@@ -86,18 +83,26 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 
 			String userId = authentication.getName();
 		
-			IdToken idToken = idTokenService.generateIdToken(userId, configBean.getIssuer());
-			idToken.getClaims().setAudience(clientId);
-			idToken.getClaims().setIssuedAt(new Date());
-			idToken.getClaims().setIssuer(configBean.getIssuer());
+			IdToken idToken = new IdToken();
+			
+			IdTokenClaims claims = new IdTokenClaims();
+			claims.setAuthTime(new Date());
+			claims.setIssuedAt(new Date());
+			//TODO: Set expiration
+			//claims.setExpiration(new Date());
+			claims.setIssuer(configBean.getIssuer());
+			claims.setUserId(userId);
+			claims.setAudience(clientId);
+			
+			idToken.setClaims(claims);
 			
 			String nonce = authentication.getAuthorizationRequest().getAuthorizationParameters().get("nonce");
 			if (!Strings.isNullOrEmpty(nonce)) {
 				idToken.getClaims().setNonce(nonce);
 			}
-			// TODO: expiration? other fields?
 
 			//TODO: check for client's preferred signer alg and use that
+			
 			try {
 	            jwtService.signJwt(idToken);
             } catch (NoSuchAlgorithmException e) {
@@ -116,14 +121,6 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 
 	public void setConfigBean(ConfigurationPropertiesBean configBean) {
 		this.configBean = configBean;
-	}
-
-	public IdTokenGeneratorService getIdTokenService() {
-		return idTokenService;
-	}
-
-	public void setIdTokenService(IdTokenGeneratorService idTokenService) {
-		this.idTokenService = idTokenService;
 	}
 
 	public JwtSigningAndValidationService getJwtService() {
