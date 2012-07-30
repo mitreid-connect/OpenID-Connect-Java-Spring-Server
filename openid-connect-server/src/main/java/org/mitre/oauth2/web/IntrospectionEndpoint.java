@@ -15,9 +15,13 @@
  ******************************************************************************/
 package org.mitre.oauth2.web;
 
+import java.security.Principal;
+
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -37,19 +41,28 @@ public class IntrospectionEndpoint {
 		this.tokenServices = tokenServices;
 	}
 	
-	// TODO
 	@RequestMapping("/oauth/verify")
-	public ModelAndView verify(@RequestParam("token") String tokenValue, 
-			ModelAndView modelAndView) {
-		OAuth2AccessTokenEntity token = tokenServices.readAccessToken(tokenValue);
+	public ModelAndView verify(Principal p, ModelAndView modelAndView) {
 		
-		if (token == null) {
-			// if it's not a valid token, we'll print a 404
-			modelAndView.setViewName("tokenNotFound");
-		} else {
-			// if it's a valid token, we'll print out the scope and expiration
-			modelAndView.setViewName("tokenIntrospection");
-			modelAndView.addObject("entity", token);
+		// assume the token's not valid until proven otherwise
+		modelAndView.setViewName("tokenNotFound");
+		
+		if (p != null && p instanceof OAuth2Authentication) {
+			OAuth2Authentication auth = (OAuth2Authentication)p;
+			
+			if (auth.getDetails() != null && auth.getDetails() instanceof OAuth2AuthenticationDetails) {
+				OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails)auth.getDetails();
+				
+				String tokenValue = details.getTokenValue();
+				
+				OAuth2AccessTokenEntity token = tokenServices.readAccessToken(tokenValue);
+		
+				if (token != null) {
+					// if it's a valid token, we'll print out the scope and expiration
+					modelAndView.setViewName("tokenIntrospection");
+					modelAndView.addObject("entity", token);
+				}
+			}
 		}
 		
 		return modelAndView;
