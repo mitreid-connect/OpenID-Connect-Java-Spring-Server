@@ -59,7 +59,7 @@ public class RsaEncrypterDecrypterTest {
 		Jwe jwe = new Jwe(new JweHeader(jweHeaderObject), null, jwePlaintextString.getBytes(), null);
 		//generate key pair. this will be passed in from the user
 		KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
-		keyGen.initialize(4096);
+		keyGen.initialize(512);
 		KeyPair pair = keyGen.generateKeyPair();
 		PublicKey publicKey = pair.getPublic();
 		PrivateKey privateKey = pair.getPrivate();

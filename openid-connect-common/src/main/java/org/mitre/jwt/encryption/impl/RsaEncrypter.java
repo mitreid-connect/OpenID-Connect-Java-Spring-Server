@@ -96,7 +96,7 @@ public class RsaEncrypter extends AbstractJweEncrypter {
 		String encMethod = jwe.getHeader().getEncryptionMethod();
 		//TODO: should also check for A128GCM and A256GCM, but Cipher.getInstance() does not support the GCM mode. For now, don't use them
 		if(encMethod.equals("A128CBC") || encMethod.equals("A256CBC")) {
-			
+			// FIXME: this is fragile
 			String delims = "[8,6]+";
 			String[] mode = encMethod.split(delims);
 			
