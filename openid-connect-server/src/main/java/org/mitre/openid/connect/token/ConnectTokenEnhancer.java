@@ -26,7 +26,6 @@ import org.mitre.openid.connect.model.IdToken;
 import org.mitre.openid.connect.model.IdTokenClaims;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.spi.LoggerFactoryBinder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
