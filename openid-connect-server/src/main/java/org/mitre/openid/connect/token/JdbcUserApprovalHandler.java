@@ -17,7 +17,6 @@ package org.mitre.openid.connect.token;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.Set;
 
 import org.mitre.openid.connect.model.ApprovedSite;
 import org.mitre.openid.connect.model.DefaultUserInfo;
