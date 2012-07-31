@@ -68,11 +68,13 @@ public class AuthorizationEndpointRequestObject extends AbstractEndpoint impleme
 		// Manually initialize auth request instead of using @ModelAttribute
 		// to make sure it comes from request instead of the session
 		
-		Map<String, String> jwtRequest = new HashMap<String, String>();
+		Map<String, String> jwtParameters = new HashMap<String, String>();
 		
-		jwtRequest.put("jwt", jwtString);
+		jwtParameters.put("client_id", claims.getClaimAsString("client_id"));
+		jwtParameters.put("redirect_uri", claims.getClaimAsString("redirect_uri"));
+		jwtParameters.put("scope", claims.getClaimAsString("scope"));
 		
-		AuthorizationRequest authorizationRequest = new AuthorizationRequest(jwtRequest);
+		AuthorizationRequest authorizationRequest = new AuthorizationRequest(jwtParameters);
 
 		if (claims.getClaim("client_id") == null) {
 			sessionStatus.setComplete();
@@ -119,11 +121,8 @@ public class AuthorizationEndpointRequestObject extends AbstractEndpoint impleme
 	@RequestMapping(method = RequestMethod.POST, params = AuthorizationRequest.USER_OAUTH_APPROVAL)
 	public View approveOrDeny(@RequestParam Map<String, String> approvalParameters,
 			@ModelAttribute AuthorizationRequest authorizationRequest, SessionStatus sessionStatus, Principal principal) {
-		
-		String jwtString = authorizationRequest.getApprovalParameters().get("jwt");
-		Jwt jwt = Jwt.parse(jwtString);
 
-		if (jwt.getClaims().getClaim("client_id").toString() == null) {
+		if (authorizationRequest.getClientId() == null) {
 			sessionStatus.setComplete();
 			throw new InvalidClientException("A client_id must be supplied.");
 		}
@@ -158,15 +157,16 @@ public class AuthorizationEndpointRequestObject extends AbstractEndpoint impleme
 
 	}
 	
-	//change to use jwt rather than authRequest
+	//
+	// TODO: Remove when possible
+	// COPIED FROM SECOAUTH AuthorizationEndpoint
+	// 
+
 	private AuthorizationRequest resolveRedirectUriAndCheckApproval(AuthorizationRequest authorizationRequest, 
 			Authentication authentication) throws OAuth2Exception {
 		
-		String jwtString = authorizationRequest.getApprovalParameters().get("jwt");
-		Jwt jwt = Jwt.parse(jwtString);
-		
-		String requestedRedirect = redirectResolver.resolveRedirect(jwt.getClaims().getClaim("redirect_uri").toString(),
-				clientDetailsService.loadClientByClientId(jwt.getClaims().getClaim("client_id").toString()));
+		String requestedRedirect = redirectResolver.resolveRedirect(authorizationRequest.getRedirectUri(),
+				clientDetailsService.loadClientByClientId(authorizationRequest.getClientId()));
 		authorizationRequest = authorizationRequest.resolveRedirectUri(requestedRedirect);
 
 		boolean approved = authorizationRequest.isApproved();
@@ -179,15 +179,16 @@ public class AuthorizationEndpointRequestObject extends AbstractEndpoint impleme
 
 	}
 	
-	//change to use a jwt rather than authRequest
+	//
+	// TODO: Remove when possible
+	// COPIED FROM SECOAUTH AuthorizationEndpoint
+	// 
+
 	private ModelAndView getImplicitGrantResponse(AuthorizationRequest authorizationRequest) {
-		
-		String jwtString = authorizationRequest.getApprovalParameters().get("jwt");
-		Jwt jwt = Jwt.parse(jwtString);
 		
 		try {
 			OAuth2AccessToken accessToken = getTokenGranter().grant("implicit",
-					authorizationRequest.getAuthorizationParameters(), jwt.getClaims().getClaimAsString("client_id").toString(),
+					authorizationRequest.getAuthorizationParameters(), authorizationRequest.getClientId(),
 					authorizationRequest.getScope());
 			if (accessToken == null) {
 				throw new UnsupportedGrantTypeException("Unsupported grant type: implicit");
@@ -199,12 +200,14 @@ public class AuthorizationEndpointRequestObject extends AbstractEndpoint impleme
 		}
 	}
 	
+	//
+	// TODO: Remove when possible
+	// COPIED FROM SECOAUTH AuthorizationEndpoint
+	// 
+
 	private String appendAccessToken(AuthorizationRequest authorizationRequest, OAuth2AccessToken accessToken) {
 		
-		String jwtString = authorizationRequest.getApprovalParameters().get("jwt");
-		Jwt jwt = Jwt.parse(jwtString);
-		
-		String requestedRedirect = jwt.getClaims().getClaim("redirect_uri").toString();
+		String requestedRedirect = authorizationRequest.getRedirectUri();
 		if (accessToken == null) {
 			throw new InvalidGrantException("An implicit grant could not be made");
 		}
@@ -237,6 +240,11 @@ public class AuthorizationEndpointRequestObject extends AbstractEndpoint impleme
 		return url.toString();
 	}
 	
+	//
+	// TODO: Remove when possible
+	// COPIED FROM SECOAUTH AuthorizationEndpoint
+	// 
+
 	private View getAuthorizationCodeResponse(AuthorizationRequest authorizationRequest, Authentication authUser) {
 		try {
 			return new RedirectView(getSuccessfulRedirect(authorizationRequest,
@@ -247,6 +255,11 @@ public class AuthorizationEndpointRequestObject extends AbstractEndpoint impleme
 		}
 	}
 	
+	//
+	// TODO: Remove when possible
+	// COPIED FROM SECOAUTH AuthorizationEndpoint
+	// 
+
 	private String generateCode(AuthorizationRequest authorizationRequest, Authentication authentication)
 			throws AuthenticationException {
 
@@ -270,19 +283,21 @@ public class AuthorizationEndpointRequestObject extends AbstractEndpoint impleme
 		}
 	}
 	
+	//
+	// TODO: Remove when possible
+	// COPIED FROM SECOAUTH AuthorizationEndpoint
+	// 
+
 	private String getUnsuccessfulRedirect(AuthorizationRequest authorizationRequest, OAuth2Exception failure,
 			boolean fragment) {
-		
-		String jwtString = authorizationRequest.getApprovalParameters().get("jwt");
-		Jwt jwt = Jwt.parse(jwtString);
 
 		// TODO: allow custom failure handling?
-		if (authorizationRequest == null || jwt.getClaims().getClaim("redirect_uri").toString() == null) {
+		if (authorizationRequest == null || authorizationRequest.getRedirectUri() == null) {
 			// we have no redirect for the user. very sad.
 			throw new UnapprovedClientAuthenticationException("Authorization failure, and no redirect URI.", failure);
 		}
 
-		String redirectUri = jwt.getClaims().getClaim("redirect_uri").toString();
+		String redirectUri = authorizationRequest.getRedirectUri();
 
 		// extract existing fragments if any
 		String[] fragments = redirectUri.split("#");
@@ -325,6 +340,11 @@ public class AuthorizationEndpointRequestObject extends AbstractEndpoint impleme
 
 	}
 	
+	//
+	// TODO: Remove when possible
+	// COPIED FROM SECOAUTH AuthorizationEndpoint
+	// 
+
 	private ModelAndView getUserApprovalPageResponse(Map<String, Object> model,
 			AuthorizationRequest authorizationRequest) {
 		logger.debug("Loading user approval page: " + userApprovalPage);
@@ -333,16 +353,18 @@ public class AuthorizationEndpointRequestObject extends AbstractEndpoint impleme
 		return new ModelAndView(userApprovalPage, model);
 	}
 	
+	//
+	// TODO: Remove when possible
+	// COPIED FROM SECOAUTH AuthorizationEndpoint
+	// 
+
 	private String getSuccessfulRedirect(AuthorizationRequest authorizationRequest, String authorizationCode) {
-		
-		String jwtString = authorizationRequest.getApprovalParameters().get("jwt");
-		Jwt jwt = Jwt.parse(jwtString);
 
 		if (authorizationCode == null) {
 			throw new IllegalStateException("No authorization code found in the current request scope.");
 		}
 
-		String requestedRedirect = jwt.getClaims().getClaim("redirect_uri").toString();
+		String requestedRedirect = authorizationRequest.getRedirectUri();
 		String[] fragments = requestedRedirect.split("#");
 		String state = authorizationRequest.getState();
 
