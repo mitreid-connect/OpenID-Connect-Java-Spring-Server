@@ -274,7 +274,7 @@ public class ClientDetailsEntity implements ClientDetails {
 
 	@Override
 	@Basic
-	public int getAccessTokenValiditySeconds() {
+	public Integer getAccessTokenValiditySeconds() {
 		return accessTokenValiditySeconds;
 	}
 	
@@ -288,7 +288,7 @@ public class ClientDetailsEntity implements ClientDetails {
 
 	@Override
 	@Basic
-	public int getRefreshTokenValiditySeconds() {
+	public Integer getRefreshTokenValiditySeconds() {
 		return refreshTokenValiditySeconds;
 	}
 	
