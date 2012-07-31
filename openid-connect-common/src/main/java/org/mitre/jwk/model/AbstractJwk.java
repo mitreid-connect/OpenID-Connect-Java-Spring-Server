@@ -51,6 +51,14 @@ public abstract class AbstractJwk implements Jwk{
 	public void setUse(String use) {
 		this.use = use;
 	}
+	
+	public JsonObject toJsonObject() {
+		JsonObject export = new JsonObject();
+		export.addProperty(ALGORITHM, getAlg());
+		export.addProperty(USE, getUse());
+		export.addProperty(KEY_ID, getKid());
+		return export;
+	}
 
 	protected void init(JsonObject object){
 		if(object.get(ALGORITHM) != null){

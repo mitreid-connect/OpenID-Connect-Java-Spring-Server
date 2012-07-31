@@ -56,7 +56,7 @@ public class SimpleWebDiscoveryEndpoint {
 		return modelAndView;
 	}
 	
-	@RequestMapping(value="/.well-known/host-meta",
+	@RequestMapping(value={"/.well-known/host-meta", "/.well-known/host-meta.json"},
 			params={"resource", "rel=http://openid.net/specs/connect/1.0/issuer"})
 	public ModelAndView xrdDiscovery(@RequestParam("resource") String resource, ModelAndView modelAndView) {
 		
