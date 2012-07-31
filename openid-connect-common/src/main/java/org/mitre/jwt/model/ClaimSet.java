@@ -37,6 +37,8 @@ import com.google.gson.JsonPrimitive;
  *
  */
 public class ClaimSet {
+	
+	private String jsonString;
 
 	// the LinkedHashMap preserves insertion order
 	private Map<String, Object> claims = new LinkedHashMap<String, Object>();
@@ -94,6 +96,7 @@ public class ClaimSet {
      * Set an extension claim
      */
     public void setClaim(String key, Object value) {
+    	jsonString = null;
     	claims.put(key, value);
     }
 
@@ -101,6 +104,7 @@ public class ClaimSet {
      * Set a primitive claim
      */
     public void setClaim(String key, JsonPrimitive prim) {
+    	jsonString = null;
     	if (prim == null) {
     		// in case we get here with a primitive null
     		claims.put(key, prim);
@@ -111,6 +115,7 @@ public class ClaimSet {
     	} else if (prim.isString()) {
     		claims.put(key, prim.getAsString());
     	}    	
+    	
     }
     
     /**
@@ -201,6 +206,13 @@ public class ClaimSet {
 		JsonObject json = parser.parse(new InputStreamReader(new ByteArrayInputStream(b64decoded))).getAsJsonObject();
 		
 		loadFromJsonObject(json);
+	}
+	
+	public String toString() {
+		if(jsonString == null) {
+			jsonString = this.getAsJsonObject().toString();
+		}
+		return jsonString;
 	}
 	
 }

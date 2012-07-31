@@ -2,8 +2,9 @@ package org.mitre.jwt.encryption.impl;
 
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
-import java.security.Key;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Random;
 
@@ -17,11 +18,15 @@ import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.codec.binary.Base64;
 import org.mitre.jwe.model.Jwe;
 import org.mitre.jwt.encryption.AbstractJweEncrypter;
+import org.mitre.jwt.encryption.JweAlgorithms;
 import org.mitre.jwt.signer.impl.HmacSigner;
 
 public class RsaEncrypter extends AbstractJweEncrypter {
+	
+	private PublicKey publicKey;
+	private PrivateKey privateKey;
 
-	public Jwe encryptAndSign(Jwe jwe, Key publicKey) throws NoSuchAlgorithmException, InvalidKeyException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, InvalidKeySpecException {
+	public Jwe encryptAndSign(Jwe jwe) throws NoSuchAlgorithmException, InvalidKeyException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, InvalidKeySpecException {
 		
 		String alg = jwe.getHeader().getAlgorithm();
 		String integrityAlg = jwe.getHeader().getIntegrity();
@@ -31,10 +36,9 @@ public class RsaEncrypter extends AbstractJweEncrypter {
 			//generate random content master key
 
 			//check what the key length is
-			String encMethod = jwe.getHeader().getKeyDerivationFunction();
-			char[] array = encMethod.toCharArray();
-			String keyBitLengthString = new String("" + array[2] + array[3] + array[4]);
-			int keyBitLength = Integer.parseInt(keyBitLengthString);
+			String kdf = jwe.getHeader().getKeyDerivationFunction();
+			String keyLength = JweAlgorithms.getByName(kdf);
+			int keyBitLength = Integer.parseInt(keyLength);
 			
 			byte[] contentMasterKey = new byte[keyBitLength];
 			new Random().nextBytes(contentMasterKey);
@@ -48,7 +52,7 @@ public class RsaEncrypter extends AbstractJweEncrypter {
 			
 			//encrypt claims and cmk to get ciphertext and encrypted key
 			jwe.setCiphertext(encryptClaims(jwe, contentEncryptionKey));
-			jwe.setEncryptedKey(encryptKey(jwe, contentMasterKey, publicKey));
+			jwe.setEncryptedKey(encryptKey(jwe, contentMasterKey));
 			
 			//Signer must be hmac
 			if(integrityAlg.equals("HS256") || integrityAlg.equals("HS384") || integrityAlg.equals("HS512")){
@@ -67,12 +71,12 @@ public class RsaEncrypter extends AbstractJweEncrypter {
 		return jwe;
 	}
 
-	public byte[] encryptKey(Jwe jwe, byte[] contentMasterKey, Key publicKey) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+	public byte[] encryptKey(Jwe jwe, byte[] contentMasterKey) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
 		
 		if(jwe.getHeader().getAlgorithm().equals("RSA1_5")){
 		
 			Cipher cipher = Cipher.getInstance("RSA");
-			cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+			cipher.init(Cipher.ENCRYPT_MODE, getPublicKey());
 			byte[] encryptedKey = cipher.doFinal(contentMasterKey);
 			return encryptedKey;
 		
@@ -96,11 +100,10 @@ public class RsaEncrypter extends AbstractJweEncrypter {
 		String encMethod = jwe.getHeader().getEncryptionMethod();
 		//TODO: should also check for A128GCM and A256GCM, but Cipher.getInstance() does not support the GCM mode. For now, don't use them
 		if(encMethod.equals("A128CBC") || encMethod.equals("A256CBC")) {
-			// FIXME: this is fragile
-			String delims = "[8,6]+";
-			String[] mode = encMethod.split(delims);
 			
-			Cipher cipher = Cipher.getInstance("AES/" + mode[1] + "/PKCS5Padding");
+			String mode = JweAlgorithms.getByName(encMethod);
+			
+			Cipher cipher = Cipher.getInstance("AES/" + mode + "/PKCS5Padding");
 			cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(contentEncryptionKey, "AES"), new IvParameterSpec(iv));
 			byte[] cipherText = cipher.doFinal(jwe.getCiphertext());
 			return cipherText;
@@ -109,5 +112,21 @@ public class RsaEncrypter extends AbstractJweEncrypter {
 			throw new IllegalArgumentException(jwe.getHeader().getEncryptionMethod() + " is not a supported encryption method");
 		}
 
+	}
+
+	public PublicKey getPublicKey() {
+		return publicKey;
+	}
+
+	public void setPublicKey(PublicKey publicKey) {
+		this.publicKey = publicKey;
+	}
+
+	public PrivateKey getPrivateKey() {
+		return privateKey;
+	}
+
+	public void setPrivateKey(PrivateKey privateKey) {
+		this.privateKey = privateKey;
 	}
 }
