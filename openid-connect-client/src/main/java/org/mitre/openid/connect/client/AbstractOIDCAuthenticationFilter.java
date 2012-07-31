@@ -700,16 +700,16 @@ public class AbstractOIDCAuthenticationFilter extends
 					RSAPublicKey rsaKey = (RSAPublicKey)signingKey;
 					
 					// build an RSA signer
-					RsaSigner signer256 = new RsaSigner(JwsAlgorithm.RS256.toString(), rsaKey, null);
-					RsaSigner signer384 = new RsaSigner(JwsAlgorithm.RS384.toString(), rsaKey, null);
-					RsaSigner signer512 = new RsaSigner(JwsAlgorithm.RS512.toString(), rsaKey, null);
+					RsaSigner signer256 = new RsaSigner(JwsAlgorithm.RS256.getJwaName(), rsaKey, null);
+					RsaSigner signer384 = new RsaSigner(JwsAlgorithm.RS384.getJwaName(), rsaKey, null);
+					RsaSigner signer512 = new RsaSigner(JwsAlgorithm.RS512.getJwaName(), rsaKey, null);
 
-					signers.put(serverConfig.getIssuer(), signer256);
-					signers.put(serverConfig.getIssuer(), signer384);
-					signers.put(serverConfig.getIssuer(), signer512);
+					signers.put(serverConfig.getIssuer() + JwsAlgorithm.RS256.getJwaName(), signer256);
+					signers.put(serverConfig.getIssuer() + JwsAlgorithm.RS384.getJwaName(), signer384);
+					signers.put(serverConfig.getIssuer() + JwsAlgorithm.RS512.getJwaName(), signer512);
 				}
-				
-				JwtSigningAndValidationService signingAndValidationService = new JwtSigningAndValidationServiceDefault(signers);
+
+                                JwtSigningAndValidationService signingAndValidationService = new JwtSigningAndValidationServiceDefault(signers);
 				
 				validationServices.put(serverConfig, signingAndValidationService);
 				
