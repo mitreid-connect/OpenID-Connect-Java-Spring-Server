@@ -46,6 +46,17 @@ public class Rsa extends AbstractJwk{
 		setMod(object.get(MODULUS).getAsString());
 		setExp(object.get(EXPONENT).getAsString());
 	}
+	
+	
+
+	@Override
+	public JsonObject toJsonObject() {
+		JsonObject export = super.toJsonObject();
+		export.addProperty(MODULUS, getMod());
+		export.addProperty(EXPONENT, getExp());
+		return export;
+		
+	}
 
 	@Override
 	public PublicKey getKey() throws NoSuchAlgorithmException, InvalidKeySpecException {

@@ -55,6 +55,17 @@ public class EC extends AbstractJwk{
 		super(object);
 	}
 	
+	
+	
+	@Override
+	public JsonObject toJsonObject() {
+		JsonObject obj = super.toJsonObject();
+		obj.addProperty(CURVE, getCrv());
+		obj.addProperty(X, getX());
+		obj.addProperty(Y, getY());
+		return obj;
+	}
+
 	public void init(JsonObject object){
 		super.init(object);
 		setCrv(object.get(CURVE).getAsString());
