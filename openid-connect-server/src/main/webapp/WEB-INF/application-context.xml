@@ -58,7 +58,7 @@
 		authorization-request-factory-ref="authorizationRequestFactory" 
 		token-services-ref="defaultOAuth2ProviderTokenService" 
 		user-approval-handler-ref="userApprovalHandler" 
-		authorization-endpoint-url="/auth" 
+		authorization-endpoint-url="/authorize" 
 		token-endpoint-url="/token">
 		
 		<oauth:authorization-code />

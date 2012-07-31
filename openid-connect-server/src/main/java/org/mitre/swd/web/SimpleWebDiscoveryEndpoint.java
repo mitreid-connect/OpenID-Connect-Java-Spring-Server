@@ -18,10 +18,7 @@ package org.mitre.swd.web;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
-import org.mitre.util.Utility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -106,10 +103,9 @@ public class SimpleWebDiscoveryEndpoint {
 		Map<String, Object> m = new HashMap<String, Object>();
 		m.put("version", "3.0");
 		m.put("issuer", config.getIssuer());
-		m.put("authorization_endpoint", baseUrl + "openidconnect/auth");
-		m.put("token_endpoint", baseUrl + "openidconnect/token");
+		m.put("authorization_endpoint", baseUrl + "authorize");
+		m.put("token_endpoint", baseUrl + "token");
 		m.put("userinfo_endpoint", baseUrl + "userinfo");
-		m.put("check_id_endpoint", baseUrl + "checkid");
 		//m.put("refresh_session_endpoint", baseUrl + "/refresh_session");
 		//m.put("end_session_endpoint", baseUrl + "/end_session");
 		m.put("jwk_url", baseUrl + "jwk");
