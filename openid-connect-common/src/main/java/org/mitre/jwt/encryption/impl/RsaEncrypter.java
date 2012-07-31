@@ -2,8 +2,9 @@ package org.mitre.jwt.encryption.impl;
 
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
-import java.security.Key;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Random;
 
@@ -21,8 +22,11 @@ import org.mitre.jwt.encryption.JweAlgorithms;
 import org.mitre.jwt.signer.impl.HmacSigner;
 
 public class RsaEncrypter extends AbstractJweEncrypter {
+	
+	private PublicKey publicKey;
+	private PrivateKey privateKey;
 
-	public Jwe encryptAndSign(Jwe jwe, Key publicKey) throws NoSuchAlgorithmException, InvalidKeyException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, InvalidKeySpecException {
+	public Jwe encryptAndSign(Jwe jwe) throws NoSuchAlgorithmException, InvalidKeyException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException, InvalidKeySpecException {
 		
 		String alg = jwe.getHeader().getAlgorithm();
 		String integrityAlg = jwe.getHeader().getIntegrity();
@@ -48,7 +52,7 @@ public class RsaEncrypter extends AbstractJweEncrypter {
 			
 			//encrypt claims and cmk to get ciphertext and encrypted key
 			jwe.setCiphertext(encryptClaims(jwe, contentEncryptionKey));
-			jwe.setEncryptedKey(encryptKey(jwe, contentMasterKey, publicKey));
+			jwe.setEncryptedKey(encryptKey(jwe, contentMasterKey));
 			
 			//Signer must be hmac
 			if(integrityAlg.equals("HS256") || integrityAlg.equals("HS384") || integrityAlg.equals("HS512")){
@@ -67,12 +71,12 @@ public class RsaEncrypter extends AbstractJweEncrypter {
 		return jwe;
 	}
 
-	public byte[] encryptKey(Jwe jwe, byte[] contentMasterKey, Key publicKey) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+	public byte[] encryptKey(Jwe jwe, byte[] contentMasterKey) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
 		
 		if(jwe.getHeader().getAlgorithm().equals("RSA1_5")){
 		
 			Cipher cipher = Cipher.getInstance("RSA");
-			cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+			cipher.init(Cipher.ENCRYPT_MODE, getPublicKey());
 			byte[] encryptedKey = cipher.doFinal(contentMasterKey);
 			return encryptedKey;
 		
@@ -108,5 +112,21 @@ public class RsaEncrypter extends AbstractJweEncrypter {
 			throw new IllegalArgumentException(jwe.getHeader().getEncryptionMethod() + " is not a supported encryption method");
 		}
 
+	}
+
+	public PublicKey getPublicKey() {
+		return publicKey;
+	}
+
+	public void setPublicKey(PublicKey publicKey) {
+		this.publicKey = publicKey;
+	}
+
+	public PrivateKey getPrivateKey() {
+		return privateKey;
+	}
+
+	public void setPrivateKey(PrivateKey privateKey) {
+		this.privateKey = privateKey;
 	}
 }

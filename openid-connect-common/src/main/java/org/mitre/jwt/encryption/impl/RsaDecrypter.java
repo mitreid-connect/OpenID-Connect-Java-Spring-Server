@@ -2,8 +2,9 @@ package org.mitre.jwt.encryption.impl;
 
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
-import java.security.Key;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -20,8 +21,11 @@ import org.mitre.jwt.encryption.JweAlgorithms;
 
 public class RsaDecrypter extends AbstractJweDecrypter {
 	
+	private PublicKey publicKey;
+	private PrivateKey privateKey;
+	
 	@Override
-	public Jwe decrypt(String encryptedJwe, Key privateKey) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
+	public Jwe decrypt(String encryptedJwe) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
 		
 		Jwe jwe = Jwe.parse(encryptedJwe);
 		
@@ -29,7 +33,7 @@ public class RsaDecrypter extends AbstractJweDecrypter {
 		if(alg.equals("RSA1_5") || alg.equals("RSA-OAEP") || alg.equals("ECDH-ES") || alg.equals("A128KW") || alg.equals("A256KW")) {
 			
 			//decrypt to get cmk to be used for cek and cik
-			jwe.setEncryptedKey(decryptEncryptionKey(jwe, privateKey));
+			jwe.setEncryptedKey(decryptEncryptionKey(jwe));
 			
 			//generation of cek and cik
 			byte[] contentEncryptionKey = null;
@@ -75,11 +79,11 @@ public class RsaDecrypter extends AbstractJweDecrypter {
 	}
 
 	@Override
-	public byte[] decryptEncryptionKey(Jwe jwe, Key privateKey) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+	public byte[] decryptEncryptionKey(Jwe jwe) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
 		
 		if(jwe.getHeader().getAlgorithm().equals("RSA1_5")){
 			Cipher cipher = Cipher.getInstance("RSA");
-			cipher.init(Cipher.DECRYPT_MODE, privateKey);
+			cipher.init(Cipher.DECRYPT_MODE, getPrivateKey());
 			byte[] contentMasterKey = cipher.doFinal(jwe.getEncryptedKey());
 		
 			return contentMasterKey;
@@ -87,6 +91,22 @@ public class RsaDecrypter extends AbstractJweDecrypter {
 			throw new IllegalArgumentException(jwe.getHeader().getAlgorithm() + " is not an implemented algorithm");
 		}
 
+	}
+
+	public PublicKey getPublicKey() {
+		return publicKey;
+	}
+
+	public void setPublicKey(PublicKey publicKey) {
+		this.publicKey = publicKey;
+	}
+
+	public PrivateKey getPrivateKey() {
+		return privateKey;
+	}
+
+	public void setPrivateKey(PrivateKey privateKey) {
+		this.privateKey = privateKey;
 	}
 
 }

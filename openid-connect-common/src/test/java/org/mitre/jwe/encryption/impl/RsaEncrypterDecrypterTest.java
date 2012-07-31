@@ -73,12 +73,16 @@ public class RsaEncrypterDecrypterTest {
 		Jwe jwe = new Jwe(new JweHeader(jweHeaderObject), null, jwePlaintextString.getBytes(), null);
 		//encrypt
 		RsaEncrypter rsaEncrypter = new RsaEncrypter();
-		jwe = rsaEncrypter.encryptAndSign(jwe, publicKey);
+		rsaEncrypter.setPublicKey(publicKey);
+		rsaEncrypter.setPrivateKey(privateKey);
+		jwe = rsaEncrypter.encryptAndSign(jwe);
 
 		//decrypt
 		RsaDecrypter rsaDecrypter = new RsaDecrypter();
+		rsaDecrypter.setPublicKey(publicKey);
+		rsaDecrypter.setPrivateKey(privateKey);
 		String encryptedJweString = jwe.toString();
-		jwe = rsaDecrypter.decrypt(encryptedJweString, privateKey);
+		jwe = rsaDecrypter.decrypt(encryptedJweString);
 		
 		String jweDecryptedCleartext = new String(jwe.getCiphertext());
 		//test ALL THE THINGS
