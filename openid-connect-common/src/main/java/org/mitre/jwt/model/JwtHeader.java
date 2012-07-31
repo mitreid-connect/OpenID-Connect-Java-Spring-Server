@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.mitre.jwt.model;
 
+import java.text.ParseException;
 import java.util.Map.Entry;
 
 import com.google.gson.JsonElement;
@@ -59,7 +60,12 @@ public class JwtHeader extends ClaimSet {
 			if (element.getValue().isJsonNull()) {
 				pass.add(element.getKey(), element.getValue());
 			} else if (element.getKey().equals(TYPE)) {
-	        	this.setType(element.getValue().getAsString());
+	        	try {
+					this.setType(element.getValue().getAsString());
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 	        } else if (element.getKey().equals(ALGORITHM)) {
 	        	this.setAlgorithm(element.getValue().getAsString());
 	        } else if (element.getKey().equals(ENCRYPTION_METHOD)) {	        	
@@ -85,9 +91,13 @@ public class JwtHeader extends ClaimSet {
 
 	/**
      * @param type the type to set
+	 * @throws ParseException 
      */
-    public void setType(String type) {
-    	setClaim(TYPE, type);
+    public void setType(String type) throws ParseException {
+    	if(type == null) {
+    		throw new NullPointerException("JWT header type value must not be null");
+    	}
+    	setClaim(TYPE, Type.parse(type));
     }
 
 

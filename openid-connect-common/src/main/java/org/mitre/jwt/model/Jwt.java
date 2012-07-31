@@ -22,7 +22,6 @@ import org.apache.commons.codec.binary.Base64;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.google.gson.JsonObject;
 
 public class Jwt {
 
@@ -124,11 +123,9 @@ public class Jwt {
 	 * The signature base of a JWT is the header in Base64, a period ".", and the claims in Base64.
 	 */
 	public String getSignatureBase() {
-		JsonObject h = header.getAsJsonObject();
-		JsonObject c = claims.getAsJsonObject();
-
-		String h64 = new String(Base64.encodeBase64URLSafe(h.toString().getBytes()));
-		String c64 = new String(Base64.encodeBase64URLSafe(c.toString().getBytes()));
+		
+		String h64 = new String(Base64.encodeBase64URLSafe(header.toString().getBytes()));
+		String c64 = new String(Base64.encodeBase64URLSafe(claims.toString().getBytes()));
 		
 		return h64 + "." + c64;		
 	}
