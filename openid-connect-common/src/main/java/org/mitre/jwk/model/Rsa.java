@@ -19,8 +19,6 @@ public class Rsa extends AbstractJwk{
 	private String mod;
 	private String exp;
 	
-	JsonObject object = new JsonObject();
-	
 	public String getMod() {
 		return mod;
 	}
