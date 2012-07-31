@@ -20,7 +20,6 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
-import org.easymock.internal.matchers.GreaterThan;
 import org.junit.After;
 import org.junit.Assume;
 import org.junit.Before;
@@ -64,14 +63,14 @@ public class RsaEncrypterDecrypterTest {
 		//read in header and plaintext from files
 		JsonParser parser = new JsonParser();
 		JsonObject jweHeaderObject = parser.parse(new BufferedReader(new InputStreamReader(jweHeaderUrl.openStream()))).getAsJsonObject();
-		//create jwe based on header and plaintext
-		Jwe jwe = new Jwe(new JweHeader(jweHeaderObject), null, jwePlaintextString.getBytes(), null);
 		//generate key pair. this will be passed in from the user
 		KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
 		keyGen.initialize(4096);
 		KeyPair pair = keyGen.generateKeyPair();
 		PublicKey publicKey = pair.getPublic();
 		PrivateKey privateKey = pair.getPrivate();
+		//create jwe based on header and plaintext
+		Jwe jwe = new Jwe(new JweHeader(jweHeaderObject), null, jwePlaintextString.getBytes(), null);
 		//encrypt
 		RsaEncrypter rsaEncrypter = new RsaEncrypter();
 		jwe = rsaEncrypter.encryptAndSign(jwe, publicKey);

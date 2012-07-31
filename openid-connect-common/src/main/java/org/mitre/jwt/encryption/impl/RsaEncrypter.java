@@ -17,6 +17,7 @@ import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.codec.binary.Base64;
 import org.mitre.jwe.model.Jwe;
 import org.mitre.jwt.encryption.AbstractJweEncrypter;
+import org.mitre.jwt.encryption.JweAlgorithms;
 import org.mitre.jwt.signer.impl.HmacSigner;
 
 public class RsaEncrypter extends AbstractJweEncrypter {
@@ -31,10 +32,9 @@ public class RsaEncrypter extends AbstractJweEncrypter {
 			//generate random content master key
 
 			//check what the key length is
-			String encMethod = jwe.getHeader().getKeyDerivationFunction();
-			char[] array = encMethod.toCharArray();
-			String keyBitLengthString = new String("" + array[2] + array[3] + array[4]);
-			int keyBitLength = Integer.parseInt(keyBitLengthString);
+			String kdf = jwe.getHeader().getKeyDerivationFunction();
+			String keyLength = JweAlgorithms.getByName(kdf);
+			int keyBitLength = Integer.parseInt(keyLength);
 			
 			byte[] contentMasterKey = new byte[keyBitLength];
 			new Random().nextBytes(contentMasterKey);
@@ -96,11 +96,10 @@ public class RsaEncrypter extends AbstractJweEncrypter {
 		String encMethod = jwe.getHeader().getEncryptionMethod();
 		//TODO: should also check for A128GCM and A256GCM, but Cipher.getInstance() does not support the GCM mode. For now, don't use them
 		if(encMethod.equals("A128CBC") || encMethod.equals("A256CBC")) {
-			// FIXME: this is fragile
-			String delims = "[8,6]+";
-			String[] mode = encMethod.split(delims);
 			
-			Cipher cipher = Cipher.getInstance("AES/" + mode[1] + "/PKCS5Padding");
+			String mode = JweAlgorithms.getByName(encMethod);
+			
+			Cipher cipher = Cipher.getInstance("AES/" + mode + "/PKCS5Padding");
 			cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(contentEncryptionKey, "AES"), new IvParameterSpec(iv));
 			byte[] cipherText = cipher.doFinal(jwe.getCiphertext());
 			return cipherText;

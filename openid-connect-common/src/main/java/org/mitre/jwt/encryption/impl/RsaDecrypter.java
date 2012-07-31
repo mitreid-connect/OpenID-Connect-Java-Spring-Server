@@ -15,7 +15,7 @@ import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.codec.binary.Base64;
 import org.mitre.jwe.model.Jwe;
 import org.mitre.jwt.encryption.AbstractJweDecrypter;
-import org.mitre.jwt.signer.impl.HmacSigner;
+import org.mitre.jwt.encryption.JweAlgorithms;
 
 
 public class RsaDecrypter extends AbstractJweDecrypter {
@@ -33,34 +33,15 @@ public class RsaDecrypter extends AbstractJweDecrypter {
 			
 			//generation of cek and cik
 			byte[] contentEncryptionKey = null;
-			byte[] contentIntegrityKey = null;
 			//check what the key length is
-			String encMethod = jwe.getHeader().getKeyDerivationFunction();
-			char[] array = encMethod.toCharArray();
-			String keyBitLengthString = new String("" + array[2] + array[3] + array[4]);
-			int keyBitLength = Integer.parseInt(keyBitLengthString);
+			String kdf = jwe.getHeader().getKeyDerivationFunction();
+			String keyLength = JweAlgorithms.getByName(kdf);
+			int keyBitLength = Integer.parseInt(keyLength);
 			//generate cek and cik
 			contentEncryptionKey = generateContentKey(jwe.getEncryptedKey(), keyBitLength, "Encryption".getBytes());
-			contentIntegrityKey = generateContentKey(jwe.getEncryptedKey(), keyBitLength, "Integrity".getBytes());
 			
 			//decrypt ciphertext to get claims
 			jwe.setCiphertext(decryptCipherText(jwe, contentEncryptionKey));
-			
-			//generate signature for decrypted signature base in order to verify that decryption worked
-			/*String signature = null;
-			try {
-				HmacSigner hmacSigner = new HmacSigner(contentIntegrityKey);
-				signature = hmacSigner.generateSignature(jwe.getSignatureBase());
-			} catch (NoSuchAlgorithmException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			//verifys that the signature base was decrypted correctly
-			if(signature != jwe.getSignature()){
-				throw new IllegalArgumentException("Didn't decrypt correctly. Decoded Sig and generated Sig do not match. " +
-						"Generated Signature is: " + signature + " while decoded sig is: " + jwe.getSignature());
-			}*/
 			
 		} else {
 			throw new IllegalArgumentException(jwe.getHeader().getEncryptionMethod() + " is not a valid decrypting algorithm");
@@ -78,10 +59,9 @@ public class RsaDecrypter extends AbstractJweDecrypter {
 		//TODO: should also check for A128GCM and A256GCM, but Cipher.getInstance() does not support the GCM mode. For now, don't use them
 		if(encMethod.equals("A128CBC") || encMethod.equals("A256CBC")) {
 
-			String delims = "[8,6]+";
-			String[] mode = encMethod.split(delims);
+			String mode = JweAlgorithms.getByName(encMethod);
 			
-			Cipher cipher = Cipher.getInstance("AES/" + mode[1] + "/PKCS5Padding");
+			Cipher cipher = Cipher.getInstance("AES/" + mode + "/PKCS5Padding");
 			cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(contentEncryptionKey, "AES"), new IvParameterSpec(iv));
 			byte[] clearText = cipher.doFinal(jwe.getCiphertext());
 			
