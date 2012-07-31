@@ -124,8 +124,8 @@ public class Jwt {
 	 */
 	public String getSignatureBase() {
 		
-		String h64 = new String(Base64.encodeBase64URLSafe(header.toString().getBytes()));
-		String c64 = new String(Base64.encodeBase64URLSafe(claims.toString().getBytes()));
+		String h64 = new String(Base64.encodeBase64URLSafe(header.toJsonString().getBytes()));
+		String c64 = new String(Base64.encodeBase64URLSafe(claims.toJsonString().getBytes()));
 		
 		return h64 + "." + c64;		
 	}

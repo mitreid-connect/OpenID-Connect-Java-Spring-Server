@@ -96,7 +96,7 @@ public class ClaimSet {
      * Set an extension claim
      */
     public void setClaim(String key, Object value) {
-    	jsonString = null;
+    	invalidateString();
     	claims.put(key, value);
     }
 
@@ -104,7 +104,7 @@ public class ClaimSet {
      * Set a primitive claim
      */
     public void setClaim(String key, JsonPrimitive prim) {
-    	jsonString = null;
+    	invalidateString();
     	if (prim == null) {
     		// in case we get here with a primitive null
     		claims.put(key, prim);
@@ -117,11 +117,16 @@ public class ClaimSet {
     	}    	
     	
     }
+
+	private void invalidateString() {
+	    jsonString = null;
+    }
     
     /**
      * Remove an extension claim
      */
     public Object removeClaim(String key) {
+    	invalidateString();
     	return claims.remove(key);
     }
     
@@ -131,6 +136,7 @@ public class ClaimSet {
      * @see java.util.Map#clear()
      */
     public void clear() {
+    	invalidateString();
 	    claims.clear();
     }
 
@@ -197,7 +203,7 @@ public class ClaimSet {
 	}
 
 	/**
-	 * Load a new claims set from a Base64 encoded JSON Object string
+	 * Load a new claims set from a Base64 encoded JSON Object string and caches the string used
 	 */
 	public void loadFromBase64JsonObjectString(String b64) {
 		byte[] b64decoded = Base64.decodeBase64(b64);
@@ -206,9 +212,12 @@ public class ClaimSet {
 		JsonObject json = parser.parse(new InputStreamReader(new ByteArrayInputStream(b64decoded))).getAsJsonObject();
 		
 		loadFromJsonObject(json);
+
+		// save the string we were passed in (decoded from base64)
+		jsonString = new String(b64decoded);
 	}
 	
-	public String toString() {
+	public String toJsonString() {
 		if(jsonString == null) {
 			jsonString = this.getAsJsonObject().toString();
 		}

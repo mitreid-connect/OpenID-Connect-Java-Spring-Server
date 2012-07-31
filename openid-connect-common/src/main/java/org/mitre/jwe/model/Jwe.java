@@ -40,6 +40,7 @@ public class Jwe extends Jwt {
 		this.ciphertext = ciphertext;
 	}
 	
+	/*
 	public Jwe(String headerBase64, String encryptedKeyBase64, String cipherTextBase64, String integrityValueBase64) {
 		byte[] decodedEncryptedKey = Base64.decodeBase64(encryptedKeyBase64.getBytes());
 		byte[] decodedCipherText = Base64.decodeBase64(cipherTextBase64.getBytes());
@@ -48,6 +49,7 @@ public class Jwe extends Jwt {
 		this.ciphertext = decodedCipherText;
 		setSignature(integrityValueBase64);
 	}
+	*/
 	
 	public JweHeader getHeader() {
 		return header;
@@ -75,11 +77,10 @@ public class Jwe extends Jwt {
 
 	@Override
 	public String getSignatureBase() {
-		JsonObject h = header.getAsJsonObject();
 		byte[] c = ciphertext;
 		byte[] e = encryptedKey;
 
-		String h64 = new String(Base64.encodeBase64URLSafe(h.toString().getBytes()));
+		String h64 = new String(Base64.encodeBase64URLSafe(header.toJsonString().getBytes()));
 		String e64 = new String(Base64.encodeBase64URLSafe(e));
 		String c64 = new String(Base64.encodeBase64URLSafe(c));
 		
@@ -106,7 +107,10 @@ public class Jwe extends Jwt {
 		String c64 = parts.get(2);
 		String i64 = parts.get(3);
 
-		Jwe jwe = new Jwe(h64, e64, c64, i64);
+		byte[] decodedEncryptedKey = Base64.decodeBase64(e64.getBytes());
+		byte[] decodedCipherText = Base64.decodeBase64(c64.getBytes());
+		
+		Jwe jwe = new Jwe(new JweHeader(h64), decodedEncryptedKey, decodedCipherText, i64);
 		
 		return jwe;
 		
