@@ -112,6 +112,7 @@ public class OIDCSignedRequestFilter extends AbstractOIDCAuthenticationFilter {
 		claims.setClaim("scope", scope);
 		claims.setClaim("redirect_uri", AbstractOIDCAuthenticationFilter.buildRedirectURI(request, null));
 		claims.setClaim("nonce", NONCE_SIGNATURE_COOKIE_NAME);
+		claims.setClaim("state", "af0ifjsldkj");
 		
 		if(header.getAlgorithm().equals("RS256") || header.getAlgorithm().equals("RS384") || header.getAlgorithm().equals("RS512")) {
 			RsaSigner jwtSigner = new RsaSigner();
