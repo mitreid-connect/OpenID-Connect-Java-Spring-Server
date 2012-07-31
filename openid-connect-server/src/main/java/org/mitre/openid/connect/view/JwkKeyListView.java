@@ -18,11 +18,9 @@
  */
 package org.mitre.openid.connect.view;
 
+import java.io.IOException;
 import java.io.Writer;
-import java.lang.reflect.Type;
 import java.math.BigInteger;
-import java.security.PublicKey;
-import java.security.interfaces.ECPublicKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Map;
 
@@ -35,16 +33,12 @@ import org.mitre.jwt.signer.impl.RsaSigner;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.servlet.view.AbstractView;
 
-import com.google.common.collect.BiMap;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
 
 /**
  * @author jricher
@@ -53,7 +47,7 @@ import com.google.gson.JsonSerializer;
 public class JwkKeyListView extends AbstractView {
 
 	@Override
-	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) throws Exception {
+	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
 
 		Gson gson = new GsonBuilder()
 		.setExclusionStrategies(new ExclusionStrategy() {
@@ -73,11 +67,9 @@ public class JwkKeyListView extends AbstractView {
 							
 		})
 		.create();
-
 		
 		response.setContentType("application/json");
 		
-		Writer out = response.getWriter();
 		
 		//BiMap<String, PublicKey> keyMap = (BiMap<String, PublicKey>) model.get("keys");
 		Map<String, JwtSigner> signers = (Map<String, JwtSigner>) model.get("signers");
@@ -115,7 +107,19 @@ public class JwkKeyListView extends AbstractView {
 			} // TODO: deal with non-RSA key types
         }
 		
-		gson.toJson(obj, out);
+		Writer out;
+		
+		try {
+			
+			out = response.getWriter();
+			gson.toJson(obj, out);
+			
+		} catch (IOException e) {
+			
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			
+		}
 
 	}
 

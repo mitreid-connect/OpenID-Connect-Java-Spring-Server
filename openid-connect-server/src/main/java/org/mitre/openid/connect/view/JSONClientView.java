@@ -5,6 +5,7 @@ package org.mitre.openid.connect.view;
  */
 
 
+import java.io.IOException;
 import java.io.Writer;
 import java.util.Map;
 
@@ -19,14 +20,12 @@ import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public class JSONClientView extends AbstractView{
+public class JSONClientView extends AbstractView {
 
     /* (non-Javadoc)
       * @see org.springframework.web.servlet.view.AbstractView#renderMergedOutputModel(java.util.Map, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
       */
-    protected void renderMergedOutputModel(Map<String, Object> model,
-                                           HttpServletRequest request, HttpServletResponse response)
-            throws Exception {
+    protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
 
         Gson gson = new GsonBuilder()
                 .setExclusionStrategies(new ExclusionStrategy() {
@@ -48,14 +47,23 @@ public class JSONClientView extends AbstractView{
 
         response.setContentType("application/json");
 
-        Writer out = response.getWriter();
+        Writer out;
+        
+		try {
+			
+			out = response.getWriter();
+			Object obj = model.get("entity");
+	        if (obj == null) {
+	            obj = model;
+	        }
 
-        Object obj = model.get("entity");
-        if (obj == null) {
-            obj = model;
-        }
-
-        gson.toJson(obj, out);
+	        gson.toJson(obj, out);
+	        
+		} catch (IOException e) {
+			
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			
+		}
     }
-
 }

@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.mitre.openid.connect.view;
 
+import java.io.IOException;
 import java.io.Writer;
 import java.util.Map;
 import java.util.Set;
@@ -38,9 +39,7 @@ public class POCOUserInfoView extends AbstractView{
 	/* (non-Javadoc)
 	 * @see org.springframework.web.servlet.view.AbstractView#renderMergedOutputModel(java.util.Map, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
 	 */
-	protected void renderMergedOutputModel(Map<String, Object> model,
-			HttpServletRequest request, HttpServletResponse response)
-			throws Exception {
+	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
 		
 		UserInfo userInfo = (UserInfo) model.get("userInfo");
 
@@ -65,8 +64,21 @@ public class POCOUserInfoView extends AbstractView{
 			}).create();
 
 		response.setContentType("application/json");
-		Writer out = response.getWriter();
-		gson.toJson(toPoco(userInfo, scope), out);
+		
+		Writer out;
+		
+		try {
+			
+			out = response.getWriter();
+			gson.toJson(toPoco(userInfo, scope), out);
+			
+		} catch (IOException e) {
+			
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			
+		}
+		
 	}
 	
 	private JsonObject toPoco(UserInfo ui, Set<String> scope) {

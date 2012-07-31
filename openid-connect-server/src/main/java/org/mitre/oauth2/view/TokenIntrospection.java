@@ -15,16 +15,15 @@
  ******************************************************************************/
 package org.mitre.oauth2.view;
 
+import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.Type;
-import java.text.DateFormat;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.servlet.view.AbstractView;
 
@@ -42,7 +41,7 @@ import com.google.gson.JsonSerializer;
 public class TokenIntrospection extends AbstractView {
 
 	@Override
-    protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
 
 		Gson gson = new GsonBuilder().setExclusionStrategies(new ExclusionStrategy() {
 
@@ -101,15 +100,25 @@ public class TokenIntrospection extends AbstractView {
 
 		response.setContentType("application/json");
 
-		Writer out = response.getWriter();
+		Writer out;
+		
+		try {
+		
+			out = response.getWriter();
+			Object obj = model.get("entity");
+			if (obj == null) {
+				obj = model;
+			}
 
-		Object obj = model.get("entity");
-		if (obj == null) {
-			obj = model;
+			gson.toJson(obj, out);
+		
+		} catch (IOException e) {
+		
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		
 		}
 
-		gson.toJson(obj, out);
-		
     }
 
 }

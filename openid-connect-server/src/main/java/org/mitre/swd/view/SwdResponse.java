@@ -18,6 +18,7 @@
  */
 package org.mitre.swd.view;
 
+import java.io.IOException;
 import java.io.Writer;
 import java.util.Map;
 
@@ -42,7 +43,7 @@ public class SwdResponse extends AbstractView {
 	 * @see org.springframework.web.servlet.view.AbstractView#renderMergedOutputModel(java.util.Map, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
 	 */
 	@Override
-	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) throws Exception {
+	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
 		Gson gson = new GsonBuilder().setExclusionStrategies(new ExclusionStrategy() {
 
 			@Override
@@ -65,14 +66,25 @@ public class SwdResponse extends AbstractView {
 
 		response.setContentType("application/json");
 
-		Writer out = response.getWriter();
-
 		Object obj = model.get("entity");
 		if (obj == null) {
 			obj = model;
 		}
-
-		gson.toJson(obj, out);
+		
+		Writer out;
+		
+		try {
+			
+			out = response.getWriter();
+			gson.toJson(obj, out);
+			
+		} catch (IOException e) {
+			
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			
+		}
+		
 	}
 
 }

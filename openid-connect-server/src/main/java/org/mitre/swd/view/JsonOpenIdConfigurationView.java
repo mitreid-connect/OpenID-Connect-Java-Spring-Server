@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.mitre.swd.view;
 
+import java.io.IOException;
 import java.io.Writer;
 import java.util.Map;
 
@@ -32,7 +33,7 @@ import com.google.gson.GsonBuilder;
 public class JsonOpenIdConfigurationView extends AbstractView {
 
 	@Override
-	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) throws Exception {
+	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
 		Gson gson = new GsonBuilder().setExclusionStrategies(new ExclusionStrategy() {
 
 			@Override
@@ -55,15 +56,24 @@ public class JsonOpenIdConfigurationView extends AbstractView {
 
 		response.setContentType("application/json");
 
-		Writer out = response.getWriter();
-
 		Object obj = model.get("entity");
 		if (obj == null) {
 			obj = model;
 		}
-
-		gson.toJson(obj, out);
 		
+		Writer out;
+		
+		try {
+			
+			out = response.getWriter();
+			gson.toJson(obj, out);
+		
+		} catch (IOException e) {
+		
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			
+		}
 
 	}
 

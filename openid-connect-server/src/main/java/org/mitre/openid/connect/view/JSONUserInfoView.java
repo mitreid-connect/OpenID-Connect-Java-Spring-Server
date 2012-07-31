@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.mitre.openid.connect.view;
 
+import java.io.IOException;
 import java.io.Writer;
 import java.util.Map;
 import java.util.Set;
@@ -37,9 +38,7 @@ public class JSONUserInfoView extends AbstractView{
 	/* (non-Javadoc)
 	 * @see org.springframework.web.servlet.view.AbstractView#renderMergedOutputModel(java.util.Map, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
 	 */
-	protected void renderMergedOutputModel(Map<String, Object> model,
-			HttpServletRequest request, HttpServletResponse response)
-			throws Exception {
+	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
 		
 		UserInfo userInfo = (UserInfo) model.get("userInfo");
 
@@ -64,11 +63,25 @@ public class JSONUserInfoView extends AbstractView{
 			}).create();
 
 		response.setContentType("application/json");
-		Writer out = response.getWriter();
-		gson.toJson(toJson(userInfo, scope), out);
+		
+		Writer out;
+		
+		try {
+			
+			out = response.getWriter();
+			gson.toJson(toJson(userInfo, scope), out);
+			
+		} catch (IOException e) {
+			
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			
+		}
+
 	}
 	
 	private JsonObject toJson(UserInfo ui, Set<String> scope) {
+		
 		JsonObject obj = new JsonObject();
 		
 		if (scope.contains("openid")) {

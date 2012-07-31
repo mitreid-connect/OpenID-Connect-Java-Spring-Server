@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.mitre.openid.connect.view;
 
+import java.io.IOException;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -39,9 +40,7 @@ public class ExceptionAsJSONView extends AbstractView {
 	 * javax.servlet.http.HttpServletResponse)
 	 */
 	@Override
-	protected void renderMergedOutputModel(Map<String, Object> model,
-			HttpServletRequest requesr, HttpServletResponse response)
-			throws Exception {
+	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest requesr, HttpServletResponse response) {
 
 		response.setContentType("application/json");
 
@@ -53,7 +52,16 @@ public class ExceptionAsJSONView extends AbstractView {
 		jsonObject.addProperty("error_description",
 				((Exception) ex).getMessage());
 
-		response.getWriter().write(jsonObject.toString());
+		try {
+			
+			response.getWriter().write(jsonObject.toString());
+			
+		} catch (IOException e) {
+			
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			
+		}
 	}
 
 }
