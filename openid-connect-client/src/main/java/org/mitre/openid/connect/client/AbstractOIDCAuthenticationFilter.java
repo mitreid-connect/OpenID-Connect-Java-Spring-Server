@@ -709,7 +709,7 @@ public class AbstractOIDCAuthenticationFilter extends
 					signers.put(serverConfig.getIssuer() + JwsAlgorithm.RS512.getJwaName(), signer512);
 				}
 
-                                JwtSigningAndValidationService signingAndValidationService = new JwtSigningAndValidationServiceDefault(signers);
+                JwtSigningAndValidationService signingAndValidationService = new JwtSigningAndValidationServiceDefault(signers);
 				
 				validationServices.put(serverConfig, signingAndValidationService);
 				
