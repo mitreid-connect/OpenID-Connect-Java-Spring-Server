@@ -49,4 +49,14 @@ public class JsonWebKeyEndpoint {
 		return new ModelAndView("jwkKeyList", "signers", signers);
 	}
 	
+	@RequestMapping("/x509")
+	public ModelAndView getX509() {
+		// map from key id to signer
+		Map<String, JwtSigner> signers = jwtService.getAllSigners();
+		
+		// TODO: check if keys are empty, return a 404 here or just an empty list?
+		
+		return new ModelAndView("x509certs", "signers", signers);
+	}
+	
 }

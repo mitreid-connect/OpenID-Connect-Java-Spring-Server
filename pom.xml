@@ -269,8 +269,8 @@
         </dependency>
         <dependency>
         	<groupId>org.bouncycastle</groupId>
-        	<artifactId>bcprov-ext-jdk16</artifactId>
-        	<version>1.46</version>
+        	<artifactId>bcprov-ext-jdk15on</artifactId>
+        	<version>1.47</version>
         </dependency>
         <dependency>
         	<groupId>org.codehaus.jackson</groupId>
@@ -291,7 +291,12 @@
         	<groupId>org.springframework</groupId>
         	<artifactId>spring-oxm</artifactId>
         	<version>${org.springframework-version}</version>
-        </dependency>    
+        </dependency>
+        <dependency>
+        	<groupId>org.bouncycastle</groupId>
+        	<artifactId>bcpkix-jdk15on</artifactId>
+        	<version>1.47</version>
+        </dependency>
     </dependencies>
     <repositories>
         <repository>
