@@ -9,11 +9,13 @@ import java.math.BigInteger;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.security.Security;
 import java.security.SignatureException;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.UUID;
@@ -50,16 +52,21 @@ public class X509CertificateView extends AbstractView {
 	
 	@Autowired
 	private ConfigurationPropertiesBean config;
+	private long daysNotValidBefore = 30;
+	private long daysNotValidAfter = 365;
 
 	@Override
-	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
+	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
+		Security.addProvider(new BouncyCastleProvider());
+		
 		Map<String, JwtSigner> signers = (Map<String, JwtSigner>) model.get("signers");
 		
-		JsonObject obj = new JsonObject();
-		JsonArray keys = new JsonArray();
-		obj.add("keys", keys);
+		response.setContentType("application/x-pem-file");
 		
+        OutputStreamWriter writer = new OutputStreamWriter(response.getOutputStream());
+        PEMWriter pemWriter = new PEMWriter(writer);
+        
 		for (String keyId : signers.keySet()) {
 
 			JwtSigner src = signers.get(keyId);
@@ -68,72 +75,20 @@ public class X509CertificateView extends AbstractView {
 				
 				RsaSigner rsaSigner = (RsaSigner) src;
 				
-				RSAPublicKey rsa = (RSAPublicKey) rsaSigner.getPublicKey(); // we're sure this is an RSAPublicKey b/c this is an RsaSigner
-		
-		        UUID uuid = UUID.randomUUID();
-		        
-		        X509V3CertificateGenerator generator = new X509V3CertificateGenerator();
+				X509V3CertificateGenerator v3CertGen = new X509V3CertificateGenerator();
 
-		        Calendar calendar = Calendar.getInstance();
+				v3CertGen.setSerialNumber(BigInteger.valueOf(System.currentTimeMillis()));
+				v3CertGen.setIssuerDN(new X509Principal("CN=" + config.getIssuer() + ", OU=None, O=None L=None, C=None"));
+				v3CertGen.setNotBefore(new Date(System.currentTimeMillis() - (1000L * 60 * 60 * 24 * daysNotValidBefore )));
+				v3CertGen.setNotAfter(new Date(System.currentTimeMillis() + (1000L * 60 * 60 * 24 * daysNotValidAfter )));
+				v3CertGen.setSubjectDN(new X509Principal("CN=" + config.getIssuer() + ", OU=None, O=None L=None, C=None"));
+				
+				v3CertGen.setPublicKey(rsaSigner.getPublicKey());
+				v3CertGen.setSignatureAlgorithm("SHA256WithRSAEncryption");
 
-		        Vector<DERObjectIdentifier> attrsVector = new Vector<DERObjectIdentifier>();
-		        Hashtable<DERObjectIdentifier, String> attrsHash = new Hashtable<DERObjectIdentifier, String>();
-
-		        attrsHash.put(X509Principal.CN, config.getIssuer());
-		        attrsVector.add(X509Principal.CN);
-
-		        attrsHash.put(X509Principal.UID, config.getIssuer());
-		        attrsVector.add(X509Principal.UID);
-
-		        
-		        attrsHash.put(X509Principal.EmailAddress, "no@email.com");
-		        attrsVector.add(X509Principal.EmailAddress);
-
-		        attrsHash.put(X509Principal.OU, Joiner.on(',').join(new String[] {"group"}));
-		        attrsVector.add(X509Principal.OU);
-		        
-		        generator.setSubjectDN(new X509Principal(attrsVector, attrsHash));
-
-		        int hoursBefore = 24 * 7 * 52;
-				calendar.add(Calendar.HOUR, -hoursBefore );
-		        generator.setNotBefore(calendar.getTime());
-
-		        int hoursAfter = 24 * 7 * 52;
-		        calendar.add(Calendar.HOUR, hoursBefore + hoursAfter);
-		        generator.setNotAfter(calendar.getTime());
-
-		        generator.setSerialNumber(BigInteger.ONE);
-
-		        //generator.addExtension(X509Extensions.AuthorityKeyIdentifier, false, new AuthorityKeyIdentifierStructure(caCert));
-
-		        try {
-	                generator.addExtension(X509Extensions.SubjectKeyIdentifier, false, new SubjectKeyIdentifierStructure(rsa));
-                } catch (InvalidKeyException e1) {
-	                // TODO Auto-generated catch block
-	                e1.printStackTrace();
-                }
-
-		        StringBuilder hostnameAndUUIDBuilder = new StringBuilder(config.getIssuer());
-		        hostnameAndUUIDBuilder.append(':');
-		        hostnameAndUUIDBuilder.append(uuid.toString());
-		        generator.addExtension(X509Extensions.IssuingDistributionPoint, false, hostnameAndUUIDBuilder.toString().getBytes());
-
-		        // Not a CA
-		        generator.addExtension(X509Extensions.BasicConstraints, true, new BasicConstraints(false));
-
-		        //generator.setIssuerDN(caCert.getSubjectX500Principal());
-		        generator.setPublicKey(rsa);
-		        //generator.setSignatureAlgorithm(SIGNATURE_ALGORITHM);
-
-		        try {
-	                X509Certificate cert = generator.generate(rsaSigner.getPrivateKey(), BouncyCastleProvider.PROVIDER_NAME);
-
-	                OutputStreamWriter writer = new OutputStreamWriter(response.getOutputStream());
-			        
-	                PEMWriter pemWriter = new PEMWriter(writer);
-	                
+                try {
+                	X509Certificate cert = v3CertGen.generate(rsaSigner.getPrivateKey());
 	                pemWriter.writeObject(cert);
-			        
                 } catch (CertificateEncodingException e) {
 	                // TODO Auto-generated catch block
 	                e.printStackTrace();
@@ -143,29 +98,18 @@ public class X509CertificateView extends AbstractView {
                 } catch (IllegalStateException e) {
 	                // TODO Auto-generated catch block
 	                e.printStackTrace();
-                } catch (NoSuchProviderException e) {
-	                // TODO Auto-generated catch block
-	                e.printStackTrace();
                 } catch (NoSuchAlgorithmException e) {
 	                // TODO Auto-generated catch block
 	                e.printStackTrace();
                 } catch (SignatureException e) {
 	                // TODO Auto-generated catch block
 	                e.printStackTrace();
-                } catch (IOException e) {
-	                // TODO Auto-generated catch block
-	                e.printStackTrace();
+                } finally {
+                	pemWriter.flush();
+                	writer.flush();
                 }
-
-		        /*
-		        if (this.checkCert) {
-		            cert.checkValidity();
-		            cert.verify(caCert.getPublicKey());
-		        }
-		        */
-
-		        
-		        
+				
+				
 			}
 			
 		}
