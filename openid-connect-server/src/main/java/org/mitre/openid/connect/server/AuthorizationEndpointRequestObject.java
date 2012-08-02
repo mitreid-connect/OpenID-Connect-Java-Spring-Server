@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.mitre.jwt.model.Jwt;
 import org.mitre.jwt.model.JwtClaims;
@@ -21,6 +22,7 @@ import org.springframework.security.oauth2.common.exceptions.InvalidGrantExcepti
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.oauth2.common.exceptions.UnapprovedClientAuthenticationException;
 import org.springframework.security.oauth2.common.exceptions.UnsupportedGrantTypeException;
+import org.springframework.security.oauth2.common.exceptions.UserDeniedAuthorizationException;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.approval.DefaultUserApprovalHandler;
@@ -33,7 +35,9 @@ import org.springframework.security.oauth2.provider.endpoint.DefaultRedirectReso
 import org.springframework.security.oauth2.provider.endpoint.RedirectResolver;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.ClassUtils;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
@@ -72,7 +76,7 @@ public class AuthorizationEndpointRequestObject extends AbstractEndpoint impleme
 		
 		AuthorizationRequest authorizationRequest = new AuthorizationRequest(parameters, null, clientId, scope);
 
-		if (claims.getClaim("client_id") == null) {
+		if (authorizationRequest.getClientId() == null) {
 			sessionStatus.setComplete();
 			throw new InvalidClientException("A client_id must be supplied.");
 		}
@@ -84,17 +88,17 @@ public class AuthorizationEndpointRequestObject extends AbstractEndpoint impleme
 		}
 
 		if (!authorizationRequest.getResponseTypes().contains("token") && !authorizationRequest.getResponseTypes().contains("code")) {
-			throw new UnsupportedGrantTypeException("Unsupported response types: " + claims.getClaim("response_type"));
+			throw new UnsupportedGrantTypeException("Unsupported response types: " + authorizationRequest.getResponseTypes());
 		}
 
 		try {
 
 			authorizationRequest = resolveRedirectUriAndCheckApproval(authorizationRequest, (Authentication) principal);
 			if (authorizationRequest.isApproved()) {
-				if (claims.getClaim("response_type").equals("token")) {
+				if (authorizationRequest.getResponseTypes().contains("token")) {
 					return getImplicitGrantResponse(authorizationRequest);
 				}
-				if (claims.getClaim("response_type").equals("code")) {
+				if (authorizationRequest.getResponseTypes().contains("code")) {
 					return new ModelAndView(getAuthorizationCodeResponse(authorizationRequest,
 							(Authentication) principal));
 				}
@@ -112,6 +116,50 @@ public class AuthorizationEndpointRequestObject extends AbstractEndpoint impleme
 			sessionStatus.setComplete();
 			throw e;
 		}	
+	}
+	
+	//
+	// TODO: Remove when possible
+	// COPIED FROM SECOAUTH AuthorizationEndpoint
+	// 
+	
+	@RequestMapping(method = RequestMethod.POST, params = AuthorizationRequest.USER_OAUTH_APPROVAL)
+	public View approveOrDeny(@RequestParam Map<String, String> approvalParameters,
+			@ModelAttribute AuthorizationRequest authorizationRequest, SessionStatus sessionStatus, Principal principal) {
+
+		if (authorizationRequest.getClientId() == null) {
+			sessionStatus.setComplete();
+			throw new InvalidClientException("A client_id must be supplied.");
+		}
+
+		if (!(principal instanceof Authentication)) {
+			sessionStatus.setComplete();
+			throw new InsufficientAuthenticationException(
+					"User must be authenticated with Spring Security before authorizing an access token.");
+		}
+
+		try {
+			Set<String> responseTypes = authorizationRequest.getResponseTypes();
+
+			authorizationRequest = authorizationRequest.addApprovalParameters(approvalParameters);
+			authorizationRequest = resolveRedirectUriAndCheckApproval(authorizationRequest, (Authentication) principal);
+
+			if (!authorizationRequest.isApproved()) {
+				return new RedirectView(getUnsuccessfulRedirect(authorizationRequest,
+						new UserDeniedAuthorizationException("User denied access"), responseTypes.contains("token")),
+						false);
+			}
+
+			if (responseTypes.contains("token")) {
+				return getImplicitGrantResponse(authorizationRequest).getView();
+			}
+
+			return getAuthorizationCodeResponse(authorizationRequest, (Authentication) principal);
+		}
+		finally {
+			sessionStatus.setComplete();
+		}
+
 	}
 	
 	//
