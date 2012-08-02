@@ -22,6 +22,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.stereotype.Component;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.servlet.view.AbstractView;
 
@@ -30,6 +31,7 @@ import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+@Component("jsonOpenIdConfigurationView")
 public class JsonOpenIdConfigurationView extends AbstractView {
 
 	@Override

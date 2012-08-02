@@ -21,6 +21,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.view.AbstractView;
 
 import com.google.gson.JsonObject;
@@ -29,6 +30,7 @@ import com.google.gson.JsonObject;
  * @author nemonik
  *
  */
+@Component("exceptionAsJSONView")
 public class ExceptionAsJSONView extends AbstractView {
 
 	/*

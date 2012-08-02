@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.mitre.openid.connect.model.UserInfo;
+import org.springframework.stereotype.Component;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.servlet.view.AbstractView;
 
@@ -34,6 +35,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+@Component("pocoUserInfoView")
 public class POCOUserInfoView extends AbstractView{
 	
 	/* (non-Javadoc)

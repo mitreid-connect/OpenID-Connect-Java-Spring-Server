@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.codec.binary.Base64;
 import org.mitre.jwt.signer.JwtSigner;
 import org.mitre.jwt.signer.impl.RsaSigner;
+import org.springframework.stereotype.Component;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.servlet.view.AbstractView;
 
@@ -44,6 +45,7 @@ import com.google.gson.JsonObject;
  * @author jricher
  *
  */
+@Component("jwkKeyList")
 public class JwkKeyListView extends AbstractView {
 
 	@Override

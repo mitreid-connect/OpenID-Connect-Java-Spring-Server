@@ -16,8 +16,7 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
 
 	<!-- Scan for components -->
-	<context:component-scan annotation-config="true"
-		base-package="org.mitre" />
+	<context:component-scan annotation-config="true" base-package="org.mitre" />
 
 	<!-- Enables the Spring MVC @Controller programming model -->
 	<tx:annotation-driven transaction-manager="transactionManager" />
@@ -32,8 +31,7 @@
 
 	<!-- Spring Security configuration -->
 
-	<oauth:resource-server id="resourceServerFilter"
-		token-services-ref="defaultOAuth2ProviderTokenService" />
+	<oauth:resource-server id="resourceServerFilter" token-services-ref="defaultOAuth2ProviderTokenService" />
 
 	<security:http pattern="/oauth/token" 
 		create-session="stateless"
@@ -145,24 +143,8 @@
 		<property name="order" value="1" />
 	</bean>
 
-	<!-- JSON views for each type of model object -->
-	
-	<bean id="jsonOpenIdConfigurationView" class="org.mitre.swd.view.JsonOpenIdConfigurationView" />
-	<bean id="jsonSwdResponseView" class="org.mitre.swd.view.SwdResponse" />
-	<bean id="jsonXrdResponseView" class="org.mitre.swd.view.XrdJsonResponse" />
-	
-	<bean id="jwkKeyList" class="org.mitre.openid.connect.view.JwkKeyListView" />
-
-	<bean id="jsonUserInfoView" class="org.mitre.openid.connect.view.JSONUserInfoView" />
-	<bean id="pocoUserInfoView" class="org.mitre.openid.connect.view.POCOUserInfoView" />
-	<bean id="jsonIdTokenView" class="org.mitre.openid.connect.view.JSONIdTokenView" />
-	<bean id="jsonClientView" class="org.mitre.openid.connect.view.JSONClientView" />
-
 	<!-- Map our custom exception classes to named views -->
-	<bean name="exceptionAsJSONView" class="org.mitre.openid.connect.view.ExceptionAsJSONView" />
-
-	<bean
-		class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+	<bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
 		<property name="exceptionMappings">
 			<props>
 				<prop key="org.mitre.openid.connect.web.InvalidJwtSignatureException">exceptionAsJSONView</prop>
