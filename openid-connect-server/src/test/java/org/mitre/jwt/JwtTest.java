@@ -27,7 +27,6 @@ import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 import java.security.spec.RSAPrivateKeySpec;
 import java.security.spec.RSAPublicKeySpec;
-import java.text.ParseException;
 import java.util.Date;
 
 import org.bouncycastle.jce.X509Principal;
@@ -58,12 +57,7 @@ public class JwtTest {
 	@Test
 	public void testGenerateHmacSignature() {
 		Jwt jwt = new Jwt();
-		try {
-			jwt.getHeader().setType("JWT");
-		} catch (ParseException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		jwt.getHeader().setType("JWT");
 		jwt.getHeader().setAlgorithm("HS256");
 		jwt.getClaims().setExpiration(new Date(1300819380L * 1000L));
 		jwt.getClaims().setIssuer("joe");
