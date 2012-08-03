@@ -17,6 +17,8 @@ package org.mitre.openid.connect.model;
 
 import java.util.Set;
 
+import javax.persistence.Basic;
+import javax.persistence.CollectionTable;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -42,7 +44,7 @@ import org.mitre.oauth2.model.ClientDetailsEntity;
 @NamedQueries({
 	@NamedQuery(name = "WhitelistedSite.getAll", query = "select w from WhitelistedSite w"), 
 	@NamedQuery(name = "WhitelistedSite.getByClientDetails", query = "select w from WhitelistedSite w where w.clientDetails = :clientDetails"),
-	@NamedQuery(name = "WhitelistedSite.getByUserInfo", query = "select w from WhitelistedSite w where w.creator = :userInfo")
+	@NamedQuery(name = "WhitelistedSite.getByCreatoruserId", query = "select w from WhitelistedSite w where w.creatorUserId = :userId")
 })
 public class WhitelistedSite {
 
@@ -50,7 +52,7 @@ public class WhitelistedSite {
     private Long id;
     
     // Reference to the admin user who created this entry
-	private DefaultUserInfo creator;
+	private String creatorUserId;
     
 	// which OAuth2 client is this tied to
 	private ClientDetailsEntity clientDetails;
@@ -102,6 +104,10 @@ public class WhitelistedSite {
 	 * @return the allowedScopes
 	 */
 	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(
+    		name="allowed_scopes",
+    		joinColumns=@JoinColumn(name="owner_id")
+    )
 	public Set<String> getAllowedScopes() {
 		return allowedScopes;
 	}
@@ -113,13 +119,12 @@ public class WhitelistedSite {
 		this.allowedScopes = allowedScopes;
 	}
 
-	@ManyToOne
-	@JoinColumn(name="userinfo_id")
-	public DefaultUserInfo getCreator() {
-		return creator;
+	@Basic
+	public String getCreatorUserId() {
+		return creatorUserId;
 	}
 
-	public void setCreator(DefaultUserInfo creator) {
-		this.creator = creator;
+	public void setCreatorUserId(String creatorUserId) {
+		this.creatorUserId = creatorUserId;
 	}
 }

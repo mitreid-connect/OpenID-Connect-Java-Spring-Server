@@ -17,7 +17,6 @@ package org.mitre.openid.connect.repository;
 
 import java.util.Collection;
 
-import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.model.WhitelistedSite;
 import org.springframework.security.oauth2.provider.ClientDetails;
 
@@ -56,10 +55,10 @@ public interface WhitelistedSiteRepository {
 	/**
 	 * Return a collection of the WhitelistedSites created by a given user
 	 * 
-	 * @param creator	the UserInfo representing an admin who may have made some WhitelistedSites
+	 * @param creator	the id of the admin who may have created some WhitelistedSites
 	 * @return			the collection of corresponding WhitelistedSites, if any, or null
 	 */
-	public Collection<WhitelistedSite> getByCreator(UserInfo creator);
+	public Collection<WhitelistedSite> getByCreator(String creatorId);
 
 	/**
 	 * Removes the given IdToken from the repository

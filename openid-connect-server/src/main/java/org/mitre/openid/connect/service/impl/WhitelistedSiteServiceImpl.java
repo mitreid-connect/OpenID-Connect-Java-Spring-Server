@@ -17,7 +17,6 @@ package org.mitre.openid.connect.service.impl;
 
 import java.util.Collection;
 
-import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.model.WhitelistedSite;
 import org.mitre.openid.connect.repository.WhitelistedSiteRepository;
 import org.mitre.openid.connect.service.WhitelistedSiteService;
@@ -86,8 +85,8 @@ public class WhitelistedSiteServiceImpl implements WhitelistedSiteService {
 	}
 
 	@Override
-	public Collection<WhitelistedSite> getByCreator(UserInfo creator) {
-		return whitelistedSiteRepository.getByCreator(creator);
+	public Collection<WhitelistedSite> getByCreator(String creatorId) {
+		return whitelistedSiteRepository.getByCreator(creatorId);
 	}
 
 }

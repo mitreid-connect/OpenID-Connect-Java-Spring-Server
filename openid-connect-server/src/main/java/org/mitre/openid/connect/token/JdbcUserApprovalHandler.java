@@ -17,6 +17,7 @@ package org.mitre.openid.connect.token;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.Map;
 import java.util.Set;
 
 import org.mitre.oauth2.model.ClientDetailsEntity;
@@ -113,18 +114,30 @@ public class JdbcUserApprovalHandler implements UserApprovalHandler {
 		
 		if (approved && !authorizationRequest.getApprovalParameters().isEmpty()) {
 			
-			//TODO: check approval parameters to see if we should store this request or not
-			
-			//Make a new AP
-			ApprovedSite newAP = new ApprovedSite();
-			newAP.setAccessDate(new Date());
-			String scopes = authorizationRequest.getAuthorizationParameters().get("scope");
-			Set<String> allowedScopes = Sets.newHashSet(Splitter.on(" ").split(scopes));
-			newAP.setAllowedScopes(allowedScopes);
-			newAP.setClientDetails((ClientDetailsEntity)client);
-			newAP.setUserId(userId);
-			newAP.setCreationDate(new Date());
-			approvedSiteService.save(newAP);
+			//Only store an ApprovedSite if the user has checked "remember this decision":
+			if (authorizationRequest.getApprovalParameters().get("remember") != null) {
+				
+				//Make a new AP
+				ApprovedSite newAP = new ApprovedSite();
+				newAP.setAccessDate(new Date());
+				
+				Set<String> allowedScopes = Sets.newHashSet();
+				Map<String,String> approvalParams = authorizationRequest.getApprovalParameters();
+				
+				for (String key : approvalParams.keySet()) {
+					if (key.contains("scope")) {
+						//This is a scope parameter from the approval page. The value sent back should
+						//be the scope string.
+						allowedScopes.add(approvalParams.get(key));
+					}
+				}
+				
+				newAP.setAllowedScopes(allowedScopes);
+				newAP.setClientDetails((ClientDetailsEntity)client);
+				newAP.setUserId(userId);
+				newAP.setCreationDate(new Date());
+				approvedSiteService.save(newAP);
+			}
 			
 			return true;
 		}
@@ -143,7 +156,7 @@ public class JdbcUserApprovalHandler implements UserApprovalHandler {
 	private boolean sitesMatch(ApprovedSite ap, AuthorizationRequest authReq, String userId) {
 		
 		ClientDetails client = clientDetailsService.loadClientByClientId(authReq.getClientId());
-		
+
 		String scopes = authReq.getAuthorizationParameters().get("scope");
 		Set<String> allowedScopes = Sets.newHashSet(Splitter.on(" ").split(scopes));
 		

@@ -23,7 +23,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
-import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.model.WhitelistedSite;
 import org.mitre.openid.connect.repository.WhitelistedSiteRepository;
 import org.mitre.util.jpa.JpaUtil;
@@ -94,9 +93,9 @@ public class JpaWhitelistedSiteRepository implements WhitelistedSiteRepository {
 
 	@Override
 	@Transactional
-	public Collection<WhitelistedSite> getByCreator(UserInfo creator) {
-		TypedQuery<WhitelistedSite> query = manager.createNamedQuery("WhitelistedSite.getByUserInfo", WhitelistedSite.class);
-		query.setParameter("userInfo", creator);
+	public Collection<WhitelistedSite> getByCreator(String creatorId) {
+		TypedQuery<WhitelistedSite> query = manager.createNamedQuery("WhitelistedSite.getByCreaterUserId", WhitelistedSite.class);
+		query.setParameter("userId", creatorId);
 		
 		return query.getResultList();
 	}

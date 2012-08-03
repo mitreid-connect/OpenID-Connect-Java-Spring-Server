@@ -63,15 +63,19 @@
                     <fieldset style="text-align:left" class="well">
                         <legend style="margin-bottom: 0;">Access to:</legend>
                         
-                        <input type="checkbox" name="scope_profile" id="scope_profile" value="true" checked="checked"><label for="scope_profile">basic profile information</label>
+                        <input type="hidden" name="scope_openid" id="scope_openid" value="openid"/>
+                        <input type="checkbox" name="scope_profile" id="scope_profile" value="profile" checked="checked"><label for="scope_profile">basic profile information</label>
                         
-                        <input type="checkbox" name="scope_email" id="scope_email" value="true" checked="checked"><label for="scope_email">email address</label>
+                        <input type="checkbox" name="scope_email" id="scope_email" value="email" checked="checked"><label for="scope_email">email address</label>
                         
-                        <input type="checkbox" name="scope_address" id="scope_address" value="true" checked="checked"><label for="scope_address">address</label>
+                        <input type="checkbox" name="scope_address" id="scope_address" value="address" checked="checked"><label for="scope_address">address</label>
                         
-                        <input type="checkbox" name="scope_phone" id="scope_phone" value="true" checked="checked"><label for="scope_phone">phone number</label>
+                        <input type="checkbox" name="scope_phone" id="scope_phone" value="phone" checked="checked"><label for="scope_phone">phone number</label>
                         
-                        <input type="checkbox" name="scope_offline" id="scope_offline" value="true" checked="checked"><label for="scope_offline">offline access</label>
+                        <input type="checkbox" name="scope_offline" id="scope_offline" value="offline" checked="checked"><label for="scope_offline">offline access</label>
+                    
+                    	<input type="checkbox" name="remember" id="remember" value="true" checked="checked"><label for="remember">remember this decision</label>
+                    
                     </fieldset>
                 </div>
 
