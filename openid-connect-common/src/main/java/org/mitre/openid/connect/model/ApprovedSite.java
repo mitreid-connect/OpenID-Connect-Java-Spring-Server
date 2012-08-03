@@ -19,6 +19,7 @@ import java.util.Date;
 import java.util.Set;
 
 import javax.persistence.Basic;
+import javax.persistence.CollectionTable;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -162,6 +163,10 @@ public class ApprovedSite {
      * @return the allowedScopes
      */
     @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+    		name="allowed_scopes",
+    		joinColumns=@JoinColumn(name="owner_id")
+    )
     public Set<String> getAllowedScopes() {
     	return allowedScopes;
     }

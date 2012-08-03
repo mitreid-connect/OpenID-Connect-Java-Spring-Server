@@ -57,7 +57,7 @@
 		client-details-service-ref="defaultOAuth2ClientDetailsEntityService"
 		authorization-request-factory-ref="authorizationRequestFactory" 
 		token-services-ref="defaultOAuth2ProviderTokenService" 
-		user-approval-handler-ref="userApprovalHandler" 
+		user-approval-handler-ref="jdbcUserApprovalHandler" 
 		authorization-endpoint-url="/authorize" 
 		token-endpoint-url="/token">
 		
@@ -82,8 +82,7 @@
 		</constructor-arg>
 	</bean>
 
-	<bean class="org.springframework.security.oauth2.provider.approval.TokenServicesUserApprovalHandler" id="userApprovalHandler">
-		<property name="tokenServices" ref="defaultOAuth2ProviderTokenService" />
+	<bean class="org.mitre.openid.connect.token.JdbcUserApprovalHandler" id="jdbcUserApprovalHandler">
 	</bean>
 
 	<bean id="authCodeServices" class="org.springframework.security.oauth2.provider.code.InMemoryAuthorizationCodeServices" />

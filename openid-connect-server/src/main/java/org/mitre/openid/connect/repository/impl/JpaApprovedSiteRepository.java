@@ -76,7 +76,7 @@ public class JpaApprovedSiteRepository implements ApprovedSiteRepository {
 	public Collection<ApprovedSite> getByUserInfo(UserInfo userInfo) {
 		TypedQuery<ApprovedSite> query = manager.createNamedQuery(
 				"ApprovedSite.getByUserInfo", ApprovedSite.class);
-		query.setParameter("approvedSiteUserInfo", userInfo.getUserId());
+		query.setParameter("approvedSiteUserInfo", userInfo);
 		
 		List<ApprovedSite> found = query.getResultList();
 		

@@ -17,7 +17,9 @@ package org.mitre.openid.connect.token;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.Set;
 
+import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.openid.connect.model.ApprovedSite;
 import org.mitre.openid.connect.model.DefaultUserInfo;
 import org.mitre.openid.connect.model.WhitelistedSite;
@@ -30,6 +32,9 @@ import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.approval.UserApprovalHandler;
+
+import com.google.common.base.Splitter;
+import com.google.common.collect.Sets;
 
 /**
  * Custom User Approval Handler implementation which uses a concept of a whitelist, 
@@ -75,19 +80,22 @@ public class JdbcUserApprovalHandler implements UserApprovalHandler {
 	@Override
 	public boolean isApproved(AuthorizationRequest authorizationRequest, Authentication userAuthentication) {
 		
-		//Check database to see if the user identified by the userAuthentication has stored an approval decision
+		//First, check database to see if the user identified by the userAuthentication has stored an approval decision
+		
 		String userId = userAuthentication.getName();
-		
 		ClientDetails client = clientDetailsService.loadClientByClientId(authorizationRequest.getClientId());
-		
-		//lookup ApprovedSites by userId
 		DefaultUserInfo user = (DefaultUserInfo)userInfoService.getByUserId(userId);
 		
+		//lookup ApprovedSites by userId		
 		Collection<ApprovedSite> approvedSites = approvedSiteService.getByUserInfo(user);
 		
 		for (ApprovedSite ap : approvedSites) {
-			if (ap.getClientDetails().getClientId() == client.getClientId()) {
-				//TODO need to test more than just id
+			if (sitesMatch(ap, authorizationRequest, user)) {
+				
+				//We have a match; update the access date on the AP entry and return true.
+				ap.setAccessDate(new Date());
+				approvedSiteService.save(ap);
+				
 				return true;
 			}
 		}
@@ -107,15 +115,57 @@ public class JdbcUserApprovalHandler implements UserApprovalHandler {
 			return true;
 		}
 		
-		if (authorizationRequest.isApproved() && !authorizationRequest.getApprovalParameters().isEmpty()) {
+		boolean approved = Boolean.parseBoolean(authorizationRequest.getApprovalParameters().get("user_oauth_approval"));
+		
+		if (approved && !authorizationRequest.getApprovalParameters().isEmpty()) {
+			
+			//TODO: check approval parameters to see if we should store this request or not
+			
 			//Make a new AP
 			ApprovedSite newAP = new ApprovedSite();
 			newAP.setAccessDate(new Date());
-			//Set<String> allowedScopes = authorizationRequest.getApprovalParameters().get("scope");
-			//newAP.setAllowedScopes(allowedScopes);
+			String scopes = authorizationRequest.getAuthorizationParameters().get("scope");
+			Set<String> allowedScopes = Sets.newHashSet(Splitter.on(" ").split(scopes));
+			newAP.setAllowedScopes(allowedScopes);
+			newAP.setClientDetails((ClientDetailsEntity)client);
+			newAP.setUserInfo((DefaultUserInfo)user);
+			newAP.setCreationDate(new Date());
+			approvedSiteService.save(newAP);
+			
+			return true;
 		}
 
 		return false;
+	}
+	
+	/**
+	 * Check if a given ApprovedSite entry matches the information about the current request.
+	 * 
+	 * @param ap		the ApprovedSite to compare
+	 * @param authReq	the AuthorizationRequest for this requst
+	 * @param user		the User making the request
+	 * @return			true if everything matches, false otherwise
+	 */
+	private boolean sitesMatch(ApprovedSite ap, AuthorizationRequest authReq, DefaultUserInfo user) {
+		
+		ClientDetails client = clientDetailsService.loadClientByClientId(authReq.getClientId());
+		
+		String scopes = authReq.getAuthorizationParameters().get("scope");
+		Set<String> allowedScopes = Sets.newHashSet(Splitter.on(" ").split(scopes));
+		
+		if (!(ap.getClientDetails().getClientId()).equalsIgnoreCase(client.getClientId())) {
+			return false;
+		}
+		if (!(ap.getUserInfo().getUserId()).equalsIgnoreCase(user.getUserId())) {
+			return false;
+		}
+		for (String scope : allowedScopes) {
+			if (!ap.getAllowedScopes().contains(scope)) {
+				return false;
+			}
+		}
+		
+		return true;
 	}
 
 }
