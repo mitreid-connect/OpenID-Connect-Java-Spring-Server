@@ -26,7 +26,6 @@ import javax.persistence.TypedQuery;
 
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.openid.connect.model.ApprovedSite;
-import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.repository.ApprovedSiteRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,7 +57,7 @@ public class JpaApprovedSiteRepository implements ApprovedSiteRepository {
 
 		TypedQuery<ApprovedSite> query = manager.createNamedQuery(
 				"ApprovedSite.getByClientDetails", ApprovedSite.class);
-		query.setParameter("approvedSiteClientDetails", clientDetails);
+		query.setParameter("clientDetails", clientDetails);
 
 		List<ApprovedSite> found = query.getResultList();
 
@@ -73,10 +72,10 @@ public class JpaApprovedSiteRepository implements ApprovedSiteRepository {
 
 	@Override
 	@Transactional
-	public Collection<ApprovedSite> getByUserInfo(UserInfo userInfo) {
+	public Collection<ApprovedSite> getByUserId(String userId) {
 		TypedQuery<ApprovedSite> query = manager.createNamedQuery(
-				"ApprovedSite.getByUserInfo", ApprovedSite.class);
-		query.setParameter("approvedSiteUserInfo", userInfo);
+				"ApprovedSite.getByUserId", ApprovedSite.class);
+		query.setParameter("userId", userId);
 		
 		List<ApprovedSite> found = query.getResultList();
 		

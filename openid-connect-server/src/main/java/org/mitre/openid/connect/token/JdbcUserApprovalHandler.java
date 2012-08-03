@@ -21,10 +21,8 @@ import java.util.Set;
 
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.openid.connect.model.ApprovedSite;
-import org.mitre.openid.connect.model.DefaultUserInfo;
 import org.mitre.openid.connect.model.WhitelistedSite;
 import org.mitre.openid.connect.service.ApprovedSiteService;
-import org.mitre.openid.connect.service.UserInfoService;
 import org.mitre.openid.connect.service.WhitelistedSiteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -52,9 +50,6 @@ import com.google.common.collect.Sets;
  *
  */
 public class JdbcUserApprovalHandler implements UserApprovalHandler {
-
-	@Autowired
-	UserInfoService userInfoService;
 	
 	@Autowired
 	ApprovedSiteService approvedSiteService;
@@ -84,13 +79,12 @@ public class JdbcUserApprovalHandler implements UserApprovalHandler {
 		
 		String userId = userAuthentication.getName();
 		ClientDetails client = clientDetailsService.loadClientByClientId(authorizationRequest.getClientId());
-		DefaultUserInfo user = (DefaultUserInfo)userInfoService.getByUserId(userId);
 		
 		//lookup ApprovedSites by userId		
-		Collection<ApprovedSite> approvedSites = approvedSiteService.getByUserInfo(user);
+		Collection<ApprovedSite> approvedSites = approvedSiteService.getByUserId(userId);
 		
 		for (ApprovedSite ap : approvedSites) {
-			if (sitesMatch(ap, authorizationRequest, user)) {
+			if (sitesMatch(ap, authorizationRequest, userId)) {
 				
 				//We have a match; update the access date on the AP entry and return true.
 				ap.setAccessDate(new Date());
@@ -108,7 +102,7 @@ public class JdbcUserApprovalHandler implements UserApprovalHandler {
 			newAP.setWhitelistedSite(ws);
 			newAP.setAllowedScopes(ws.getAllowedScopes());
 			newAP.setCreationDate(new Date());
-			newAP.setUserInfo(user);
+			newAP.setUserId(userId);
 			//TODO set timeout date?
 			approvedSiteService.save(newAP);
 			
@@ -128,7 +122,7 @@ public class JdbcUserApprovalHandler implements UserApprovalHandler {
 			Set<String> allowedScopes = Sets.newHashSet(Splitter.on(" ").split(scopes));
 			newAP.setAllowedScopes(allowedScopes);
 			newAP.setClientDetails((ClientDetailsEntity)client);
-			newAP.setUserInfo((DefaultUserInfo)user);
+			newAP.setUserId(userId);
 			newAP.setCreationDate(new Date());
 			approvedSiteService.save(newAP);
 			
@@ -146,7 +140,7 @@ public class JdbcUserApprovalHandler implements UserApprovalHandler {
 	 * @param user		the User making the request
 	 * @return			true if everything matches, false otherwise
 	 */
-	private boolean sitesMatch(ApprovedSite ap, AuthorizationRequest authReq, DefaultUserInfo user) {
+	private boolean sitesMatch(ApprovedSite ap, AuthorizationRequest authReq, String userId) {
 		
 		ClientDetails client = clientDetailsService.loadClientByClientId(authReq.getClientId());
 		
@@ -156,7 +150,7 @@ public class JdbcUserApprovalHandler implements UserApprovalHandler {
 		if (!(ap.getClientDetails().getClientId()).equalsIgnoreCase(client.getClientId())) {
 			return false;
 		}
-		if (!(ap.getUserInfo().getUserId()).equalsIgnoreCase(user.getUserId())) {
+		if (!(ap.getUserId()).equalsIgnoreCase(userId)) {
 			return false;
 		}
 		for (String scope : allowedScopes) {

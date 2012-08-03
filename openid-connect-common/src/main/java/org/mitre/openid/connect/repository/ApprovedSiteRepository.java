@@ -19,7 +19,6 @@ import java.util.Collection;
 
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.openid.connect.model.ApprovedSite;
-import org.mitre.openid.connect.model.UserInfo;
 
 /**
  * ApprovedSite repository interface
@@ -57,12 +56,12 @@ public interface ApprovedSiteRepository {
 
 	/**
 	 * Return a collection of ApprovedSite managed by this repository matching the
-	 * provided UserInfo
+	 * provided user id
 	 * 
 	 * @param userId
 	 * @return
 	 */
-	public Collection<ApprovedSite> getByUserInfo(UserInfo userInfo);
+	public Collection<ApprovedSite> getByUserId(String userId);
 
 	/**
 	 * Removes the given ApprovedSite from the repository

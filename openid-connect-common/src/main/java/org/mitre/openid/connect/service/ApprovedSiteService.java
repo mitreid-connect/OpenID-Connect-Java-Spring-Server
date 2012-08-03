@@ -19,7 +19,6 @@ import java.util.Collection;
 
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.openid.connect.model.ApprovedSite;
-import org.mitre.openid.connect.model.UserInfo;
 
 /**
  * Interface for ApprovedSite service
@@ -53,7 +52,7 @@ public interface ApprovedSiteService {
 	 * @param userId
 	 * @return
 	 */
-	public Collection<ApprovedSite> getByUserInfo(UserInfo userInfo);	
+	public Collection<ApprovedSite> getByUserId(String userId);	
 	
 	/**
 	 * Save an ApprovedSite

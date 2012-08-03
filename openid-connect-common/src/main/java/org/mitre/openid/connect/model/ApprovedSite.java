@@ -40,8 +40,8 @@ import org.mitre.oauth2.model.ClientDetailsEntity;
 @Table(name="approvedsite")
 @NamedQueries({
 	@NamedQuery(name = "ApprovedSite.getAll", query = "select a from ApprovedSite a"),
-	@NamedQuery(name = "ApprovedSite.getByUserInfo", query = "select a from ApprovedSite a where a.userInfo = :approvedSiteUserInfo"),
-	@NamedQuery(name = "ApprovedSite.getByClientDetails", query = "select a from ApprovedSite a where a.clientDetails = :approvedSiteClientDetails")
+	@NamedQuery(name = "ApprovedSite.getByUserId", query = "select a from ApprovedSite a where a.userId = :userId"),
+	@NamedQuery(name = "ApprovedSite.getByClientDetails", query = "select a from ApprovedSite a where a.clientDetails = :clientDetails")
 })
 public class ApprovedSite {
 
@@ -49,7 +49,7 @@ public class ApprovedSite {
     private Long id;
     
     // which user made the approval
-	private DefaultUserInfo userInfo;
+	private String userId;
 	
 	// which OAuth2 client is this tied to
 	private ClientDetailsEntity clientDetails;
@@ -98,17 +98,16 @@ public class ApprovedSite {
 	/**
      * @return the userInfo
      */
-    @ManyToOne
-    @JoinColumn(name="userinfo_id")
-    public DefaultUserInfo getUserInfo() {
-    	return userInfo;
+    @Basic
+    public String getUserId() {
+    	return userId;
     }
 
 	/**
      * @param userInfo the userInfo to set
      */
-    public void setUserInfo(DefaultUserInfo userInfo) {
-    	this.userInfo = userInfo;
+    public void setUserId(String userId) {
+    	this.userId = userId;
     }
 
 	/**

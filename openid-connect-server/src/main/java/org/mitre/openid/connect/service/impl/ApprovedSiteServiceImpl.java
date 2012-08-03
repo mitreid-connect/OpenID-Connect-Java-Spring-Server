@@ -19,7 +19,6 @@ import java.util.Collection;
 
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.openid.connect.model.ApprovedSite;
-import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.repository.ApprovedSiteRepository;
 import org.mitre.openid.connect.service.ApprovedSiteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,8 +66,8 @@ public class ApprovedSiteServiceImpl implements ApprovedSiteService {
 	}
 
 	@Override
-	public Collection<ApprovedSite> getByUserInfo(UserInfo userInfo) {
-		return approvedSiteRepository.getByUserInfo(userInfo);
+	public Collection<ApprovedSite> getByUserId(String userId) {
+		return approvedSiteRepository.getByUserId(userId);
 	}
 
 	@Override
