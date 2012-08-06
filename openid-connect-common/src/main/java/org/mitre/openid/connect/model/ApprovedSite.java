@@ -34,14 +34,12 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.Transient;
 
-import org.mitre.oauth2.model.ClientDetailsEntity;
-
 @Entity
 @Table(name="approvedsite")
 @NamedQueries({
 	@NamedQuery(name = "ApprovedSite.getAll", query = "select a from ApprovedSite a"),
 	@NamedQuery(name = "ApprovedSite.getByUserId", query = "select a from ApprovedSite a where a.userId = :userId"),
-	@NamedQuery(name = "ApprovedSite.getByClientDetails", query = "select a from ApprovedSite a where a.clientDetails = :clientDetails")
+	@NamedQuery(name = "ApprovedSite.getByClientIdAndUserId", query = "select a from ApprovedSite a where a.clientId = :clientId and a.userId = :userId")
 })
 public class ApprovedSite {
 
@@ -52,7 +50,7 @@ public class ApprovedSite {
 	private String userId;
 	
 	// which OAuth2 client is this tied to
-	private ClientDetailsEntity clientDetails;
+	private String clientId;
 	
 	// when was this first approved?
 	private Date creationDate;
@@ -111,19 +109,18 @@ public class ApprovedSite {
     }
 
 	/**
-     * @return the clientDetails
+     * @return the clientId
      */
-    @ManyToOne
-	@JoinColumn(name="clientdetails_id")
-    public ClientDetailsEntity getClientDetails() {
-    	return clientDetails;
+    @Basic
+    public String getClientId() {
+    	return clientId;
     }
 
 	/**
-     * @param clientDetails the clientDetails to set
+     * @param clientId the clientId to set
      */
-    public void setClientDetails(ClientDetailsEntity clientDetails) {
-    	this.clientDetails = clientDetails;
+    public void setClientId(String clientId) {
+    	this.clientId = clientId;
     }
 
 	/**

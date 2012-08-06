@@ -26,12 +26,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-
-import org.mitre.oauth2.model.ClientDetailsEntity;
 
 /**
  * Indicator that login to a site should be automatically granted 
@@ -43,7 +40,7 @@ import org.mitre.oauth2.model.ClientDetailsEntity;
 @Table(name="whitelistedsite")
 @NamedQueries({
 	@NamedQuery(name = "WhitelistedSite.getAll", query = "select w from WhitelistedSite w"), 
-	@NamedQuery(name = "WhitelistedSite.getByClientDetails", query = "select w from WhitelistedSite w where w.clientDetails = :clientDetails"),
+	@NamedQuery(name = "WhitelistedSite.getByClientId", query = "select w from WhitelistedSite w where w.clientId = :clientId"),
 	@NamedQuery(name = "WhitelistedSite.getByCreatoruserId", query = "select w from WhitelistedSite w where w.creatorUserId = :userId")
 })
 public class WhitelistedSite {
@@ -55,7 +52,7 @@ public class WhitelistedSite {
 	private String creatorUserId;
     
 	// which OAuth2 client is this tied to
-	private ClientDetailsEntity clientDetails;
+	private String clientId;
 	
 	// what scopes be allowed by default
 	// this should include all information for what data to access
@@ -85,19 +82,18 @@ public class WhitelistedSite {
 	}
 
 	/**
-	 * @return the clientDetails
+	 * @return the clientId
 	 */
-	@ManyToOne
-	@JoinColumn(name="clientdetails_id")
-	public ClientDetailsEntity getClientDetails() {
-		return clientDetails;
+	@Basic
+	public String getClientId() {
+		return clientId;
 	}
 
 	/**
-	 * @param clientDetails the clientDetails to set
+	 * @param clientId the clientId to set
 	 */
-	public void setClientDetails(ClientDetailsEntity clientDetails) {
-		this.clientDetails = clientDetails;
+	public void setClientId(String clientId) {
+		this.clientId = clientId;
 	}
 
 	/**

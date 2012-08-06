@@ -21,14 +21,13 @@ import org.mitre.openid.connect.model.WhitelistedSite;
 import org.mitre.openid.connect.repository.WhitelistedSiteRepository;
 import org.mitre.openid.connect.service.WhitelistedSiteService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Implementation of the WhitelistedSiteService
  * 
- * @author Michael Joseph Walsh
+ * @author Michael Joseph Walsh, aanganes
  * 
  */
 @Service
@@ -80,8 +79,8 @@ public class WhitelistedSiteServiceImpl implements WhitelistedSiteService {
 	}
 
 	@Override
-	public WhitelistedSite getByClientDetails(ClientDetails client) {
-		return whitelistedSiteRepository.getByClientDetails(client);
+	public WhitelistedSite getByClientId(String clientId) {
+		return whitelistedSiteRepository.getByClientId(clientId);
 	}
 
 	@Override

@@ -18,12 +18,11 @@ package org.mitre.openid.connect.repository;
 import java.util.Collection;
 
 import org.mitre.openid.connect.model.WhitelistedSite;
-import org.springframework.security.oauth2.provider.ClientDetails;
 
 /**
  * WhitelistedSite repository interface
  * 
- * @author Michael Joseph Walsh
+ * @author Michael Joseph Walsh, aanganes
  * 
  */
 public interface WhitelistedSiteRepository {
@@ -50,7 +49,7 @@ public interface WhitelistedSiteRepository {
 	 * @param client	the Relying Party
 	 * @return			the corresponding WhitelistedSite if one exists for the RP, or null
 	 */
-	public WhitelistedSite getByClientDetails(ClientDetails client);
+	public WhitelistedSite getByClientId(String clientId);
 	
 	/**
 	 * Return a collection of the WhitelistedSites created by a given user

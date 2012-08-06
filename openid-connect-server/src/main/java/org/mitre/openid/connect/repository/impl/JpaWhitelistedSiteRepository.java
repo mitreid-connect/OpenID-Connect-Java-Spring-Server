@@ -26,14 +26,13 @@ import javax.persistence.TypedQuery;
 import org.mitre.openid.connect.model.WhitelistedSite;
 import org.mitre.openid.connect.repository.WhitelistedSiteRepository;
 import org.mitre.util.jpa.JpaUtil;
-import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
  * JPA WhitelistedSite repository implementation
  * 
- * @author Michael Joseph Walsh
+ * @author Michael Joseph Walsh, aanganes
  *
  */
 @Repository
@@ -85,9 +84,9 @@ public class JpaWhitelistedSiteRepository implements WhitelistedSiteRepository {
 
 	@Override
 	@Transactional
-	public WhitelistedSite getByClientDetails(ClientDetails client) {
-		TypedQuery<WhitelistedSite> query = manager.createNamedQuery("WhitelistedSite.getByClientDetails", WhitelistedSite.class);
-		query.setParameter("clientDetails", client);
+	public WhitelistedSite getByClientId(String clientId) {
+		TypedQuery<WhitelistedSite> query = manager.createNamedQuery("WhitelistedSite.getByClientId", WhitelistedSite.class);
+		query.setParameter("clientId", clientId);
 		return JpaUtil.getSingleResult(query.getResultList());
 	}
 
