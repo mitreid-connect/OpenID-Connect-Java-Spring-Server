@@ -17,14 +17,12 @@ package org.mitre.openid.connect.repository;
 
 import java.util.Collection;
 
-import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.openid.connect.model.ApprovedSite;
-import org.mitre.openid.connect.model.UserInfo;
 
 /**
  * ApprovedSite repository interface
  *
- * @author Michael Joseph Walsh
+ * @author Michael Joseph Walsh, aanganes
  *
  */
 public interface ApprovedSiteRepository {
@@ -47,22 +45,13 @@ public interface ApprovedSiteRepository {
 
 	/**
 	 * Return a collection of ApprovedSite managed by this repository matching the
-	 * provided ClientDetailsEntity
+	 * provided client ID and user ID
 	 * 
+	 * @param clientId
 	 * @param userId
 	 * @return
-	 */
-	public Collection<ApprovedSite> getByClientDetails(
-			ClientDetailsEntity clientDetails);
-
-	/**
-	 * Return a collection of ApprovedSite managed by this repository matching the
-	 * provided UserInfo
-	 * 
-	 * @param userId
-	 * @return
-	 */
-	public Collection<ApprovedSite> getByUserInfo(UserInfo userInfo);
+	 */	
+	public ApprovedSite getByClientIdAndUserId(String clientId, String userId);
 
 	/**
 	 * Removes the given ApprovedSite from the repository

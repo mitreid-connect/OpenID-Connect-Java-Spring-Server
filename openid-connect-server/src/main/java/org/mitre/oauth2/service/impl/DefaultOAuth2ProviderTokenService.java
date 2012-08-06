@@ -42,8 +42,6 @@ import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.common.collect.Sets;
-
 
 /**
  * @author jricher
@@ -82,22 +80,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	    	token.setClient(client);
 	    	
 		    // inherit the scope from the auth
-	    	// this lets us match which scope is requested 
-		    if (client.isScoped()) {
-		    	
-		    	// restrict granted scopes to a valid subset of those 
-		    	Set<String> validScopes = Sets.newHashSet();
-		    	
-		    	for (String requested : clientAuth.getScope()) {
-	                if (client.getScope().contains(requested)) {
-	                	validScopes.add(requested);
-	                } else {
-	                	logger.warn("Client " + client.getClientId() + " requested out of permission scope: " + requested);
-	                }
-                }
-		    	
-		    	token.setScope(validScopes);
-		    }
+		    token.setScope(clientAuth.getScope());
 
 		    // make it expire if necessary
 		    // TODO: pending upstream updates, check for 0 or -1 value here

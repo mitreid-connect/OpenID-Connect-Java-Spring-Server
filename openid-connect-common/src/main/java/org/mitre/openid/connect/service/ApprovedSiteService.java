@@ -16,19 +16,22 @@
 package org.mitre.openid.connect.service;
 
 import java.util.Collection;
+import java.util.Date;
+import java.util.Set;
 
-import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.openid.connect.model.ApprovedSite;
-import org.mitre.openid.connect.model.UserInfo;
+import org.mitre.openid.connect.model.WhitelistedSite;
 
 /**
  * Interface for ApprovedSite service
  * 
- * @author Michael Joseph Walsh
+ * @author Michael Joseph Walsh, aanganes
  * 
  */
 public interface ApprovedSiteService {
 	
+	
+	public ApprovedSite createApprovedSite(String clientId, String userId, Date timeoutDate, Set<String> allowedScopes, WhitelistedSite whitelistedSite);
 	
 	/**
 	 * Return a collection of all ApprovedSites
@@ -39,21 +42,13 @@ public interface ApprovedSiteService {
 	
 	/**
 	 * Return a collection of ApprovedSite managed by this repository matching the
-	 * provided ClientDetailsEntity
+	 * provided client ID and user ID
 	 * 
+	 * @param clientId
 	 * @param userId
 	 * @return
 	 */	
-	public Collection<ApprovedSite> getByClientDetails(ClientDetailsEntity clientDetails);
-	
-	/**
-	 * Return a collection of ApprovedSite managed by this repository matching the
-	 * provided UserInfo
-	 * 
-	 * @param userId
-	 * @return
-	 */
-	public Collection<ApprovedSite> getByUserInfo(UserInfo userInfo);	
+	public ApprovedSite getByClientIdAndUserId(String clientId, String userId);
 	
 	/**
 	 * Save an ApprovedSite
@@ -61,7 +56,7 @@ public interface ApprovedSiteService {
 	 * @param approvedSite
 	 *            the ApprovedSite to be saved
 	 */
-	public void save(ApprovedSite approvedSite);
+	public ApprovedSite save(ApprovedSite approvedSite);
 
 	/**
 	 * Get ApprovedSite for id

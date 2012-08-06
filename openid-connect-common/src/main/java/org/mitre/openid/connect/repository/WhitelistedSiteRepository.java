@@ -22,7 +22,7 @@ import org.mitre.openid.connect.model.WhitelistedSite;
 /**
  * WhitelistedSite repository interface
  * 
- * @author Michael Joseph Walsh
+ * @author Michael Joseph Walsh, aanganes
  * 
  */
 public interface WhitelistedSiteRepository {
@@ -42,6 +42,22 @@ public interface WhitelistedSiteRepository {
 	 * @return a valid WhitelistedSite if it exists, null otherwise
 	 */
 	public WhitelistedSite getById(Long id);
+	
+	/**
+	 * Find a WhitelistedSite by its associated ClientDetails reference
+	 * 
+	 * @param client	the Relying Party
+	 * @return			the corresponding WhitelistedSite if one exists for the RP, or null
+	 */
+	public WhitelistedSite getByClientId(String clientId);
+	
+	/**
+	 * Return a collection of the WhitelistedSites created by a given user
+	 * 
+	 * @param creator	the id of the admin who may have created some WhitelistedSites
+	 * @return			the collection of corresponding WhitelistedSites, if any, or null
+	 */
+	public Collection<WhitelistedSite> getByCreator(String creatorId);
 
 	/**
 	 * Removes the given IdToken from the repository

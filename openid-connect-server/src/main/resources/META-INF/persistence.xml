@@ -14,6 +14,7 @@
         <class>org.mitre.openid.connect.model.IdToken</class>
         <class>org.mitre.openid.connect.model.IdTokenClaims</class>
         <class>org.mitre.openid.connect.model.DefaultUserInfo</class>
+<!--         <class>org.mitre.openid.connect.model.UserInfo</class> -->
         <class>org.mitre.openid.connect.model.WhitelistedSite</class>
         <shared-cache-mode>NONE</shared-cache-mode>
     </persistence-unit>

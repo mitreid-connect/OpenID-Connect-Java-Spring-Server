@@ -19,6 +19,7 @@ import java.util.Date;
 import java.util.Set;
 
 import javax.persistence.Basic;
+import javax.persistence.CollectionTable;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -31,15 +32,14 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
-
-import org.mitre.oauth2.model.ClientDetailsEntity;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name="approvedsite")
 @NamedQueries({
 	@NamedQuery(name = "ApprovedSite.getAll", query = "select a from ApprovedSite a"),
-	@NamedQuery(name = "ApprovedSite.getByUserInfo", query = "select a from ApprovedSite a where a.userInfo = :approvedSiteUserInfo"),
-	@NamedQuery(name = "ApprovedSite.getByClientDetails", query = "select a from ApprovedSite a where a.clientDetails = :approvedSiteClientDetails")
+	@NamedQuery(name = "ApprovedSite.getByUserId", query = "select a from ApprovedSite a where a.userId = :userId"),
+	@NamedQuery(name = "ApprovedSite.getByClientIdAndUserId", query = "select a from ApprovedSite a where a.clientId = :clientId and a.userId = :userId")
 })
 public class ApprovedSite {
 
@@ -47,10 +47,10 @@ public class ApprovedSite {
     private Long id;
     
     // which user made the approval
-	private String userInfo;
+	private String userId;
 	
 	// which OAuth2 client is this tied to
-	private ClientDetailsEntity clientDetails;
+	private String clientId;
 	
 	// when was this first approved?
 	private Date creationDate;
@@ -64,6 +64,9 @@ public class ApprovedSite {
 	// what scopes have been allowed
 	// this should include all information for what data to access
 	private Set<String> allowedScopes;
+	
+	// If this AP is a WS, link to the WS
+	private WhitelistedSite whitelistedSite;
 	
 	// TODO: should we store the OAuth2 tokens and IdTokens here?
 	
@@ -94,31 +97,30 @@ public class ApprovedSite {
      * @return the userInfo
      */
     @Basic
-    public String getUserInfo() {
-    	return userInfo;
+    public String getUserId() {
+    	return userId;
     }
 
 	/**
      * @param userInfo the userInfo to set
      */
-    public void setUserInfo(String userInfo) {
-    	this.userInfo = userInfo;
+    public void setUserId(String userId) {
+    	this.userId = userId;
     }
 
 	/**
-     * @return the clientDetails
+     * @return the clientId
      */
-    @ManyToOne
-	@JoinColumn(name="clientdetails_id")
-    public ClientDetailsEntity getClientDetails() {
-    	return clientDetails;
+    @Basic
+    public String getClientId() {
+    	return clientId;
     }
 
 	/**
-     * @param clientDetails the clientDetails to set
+     * @param clientId the clientId to set
      */
-    public void setClientDetails(ClientDetailsEntity clientDetails) {
-    	this.clientDetails = clientDetails;
+    public void setClientId(String clientId) {
+    	this.clientId = clientId;
     }
 
 	/**
@@ -157,6 +159,10 @@ public class ApprovedSite {
      * @return the allowedScopes
      */
     @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+    		name="allowed_scopes",
+    		joinColumns=@JoinColumn(name="owner_id")
+    )
     public Set<String> getAllowedScopes() {
     	return allowedScopes;
     }
@@ -183,7 +189,25 @@ public class ApprovedSite {
     public void setTimeoutDate(Date timeoutDate) {
     	this.timeoutDate = timeoutDate;
     }
-	
-	
+
+    /**
+     * Does this AP entry correspond to a WS?
+     * @return
+     */
+    @Transient
+	public Boolean getIsWhitelisted() {
+		return (whitelistedSite != null);
+	}
+
+
+	@ManyToOne
+	@JoinColumn(name="whitelistedsite_id")
+	public WhitelistedSite getWhitelistedSite() {
+		return whitelistedSite;
+	}
+
+	public void setWhitelistedSite(WhitelistedSite whitelistedSite) {
+		this.whitelistedSite = whitelistedSite;
+	}
 	
 }

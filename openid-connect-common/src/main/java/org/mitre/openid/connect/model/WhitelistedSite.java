@@ -18,6 +18,7 @@ package org.mitre.openid.connect.model;
 import java.util.Set;
 
 import javax.persistence.Basic;
+import javax.persistence.CollectionTable;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -25,34 +26,33 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
-import org.mitre.oauth2.model.ClientDetailsEntity;
-
 /**
  * Indicator that login to a site should be automatically granted 
  * without user interaction.
- * @author jricher
+ * @author jricher, aanganes
  *
  */
 @Entity
 @Table(name="whitelistedsite")
 @NamedQueries({
-	@NamedQuery(name = "WhitelistedSite.getAll", query = "select w from WhitelistedSite w")
+	@NamedQuery(name = "WhitelistedSite.getAll", query = "select w from WhitelistedSite w"), 
+	@NamedQuery(name = "WhitelistedSite.getByClientId", query = "select w from WhitelistedSite w where w.clientId = :clientId"),
+	@NamedQuery(name = "WhitelistedSite.getByCreatoruserId", query = "select w from WhitelistedSite w where w.creatorUserId = :userId")
 })
 public class WhitelistedSite {
 
     // unique id
     private Long id;
     
-    // who added this site to the whitelist (should be an admin)
-	private String userInfo;
-	
+    // Reference to the admin user who created this entry
+	private String creatorUserId;
+    
 	// which OAuth2 client is this tied to
-	private ClientDetailsEntity clientDetails;
+	private String clientId;
 	
 	// what scopes be allowed by default
 	// this should include all information for what data to access
@@ -82,40 +82,28 @@ public class WhitelistedSite {
 	}
 
 	/**
-	 * @return the userInfo
+	 * @return the clientId
 	 */
 	@Basic
-	public String getUserInfo() {
-		return userInfo;
+	public String getClientId() {
+		return clientId;
 	}
 
 	/**
-	 * @param userInfo the userInfo to set
+	 * @param clientId the clientId to set
 	 */
-	public void setUserInfo(String userInfo) {
-		this.userInfo = userInfo;
-	}
-
-	/**
-	 * @return the clientDetails
-	 */
-	@ManyToOne
-	@JoinColumn(name="clientdetails_id")
-	public ClientDetailsEntity getClientDetails() {
-		return clientDetails;
-	}
-
-	/**
-	 * @param clientDetails the clientDetails to set
-	 */
-	public void setClientDetails(ClientDetailsEntity clientDetails) {
-		this.clientDetails = clientDetails;
+	public void setClientId(String clientId) {
+		this.clientId = clientId;
 	}
 
 	/**
 	 * @return the allowedScopes
 	 */
 	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(
+    		name="allowed_scopes",
+    		joinColumns=@JoinColumn(name="owner_id")
+    )
 	public Set<String> getAllowedScopes() {
 		return allowedScopes;
 	}
@@ -125,5 +113,14 @@ public class WhitelistedSite {
 	 */
 	public void setAllowedScopes(Set<String> allowedScopes) {
 		this.allowedScopes = allowedScopes;
+	}
+
+	@Basic
+	public String getCreatorUserId() {
+		return creatorUserId;
+	}
+
+	public void setCreatorUserId(String creatorUserId) {
+		this.creatorUserId = creatorUserId;
 	}
 }

@@ -16,10 +16,11 @@
 package org.mitre.openid.connect.service.impl;
 
 import java.util.Collection;
+import java.util.Date;
+import java.util.Set;
 
-import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.openid.connect.model.ApprovedSite;
-import org.mitre.openid.connect.model.UserInfo;
+import org.mitre.openid.connect.model.WhitelistedSite;
 import org.mitre.openid.connect.repository.ApprovedSiteRepository;
 import org.mitre.openid.connect.service.ApprovedSiteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Implementation of the ApprovedSiteService
  * 
- * @author Michael Joseph Walsh
+ * @author Michael Joseph Walsh, aanganes
  *
  */
 @Service
@@ -61,19 +62,8 @@ public class ApprovedSiteServiceImpl implements ApprovedSiteService {
 	}
 
 	@Override
-	public Collection<ApprovedSite> getByClientDetails(
-			ClientDetailsEntity clientDetails) {
-		return approvedSiteRepository.getByClientDetails(clientDetails);
-	}
-
-	@Override
-	public Collection<ApprovedSite> getByUserInfo(UserInfo userInfo) {
-		return approvedSiteRepository.getByUserInfo(userInfo);
-	}
-
-	@Override
-	public void save(ApprovedSite approvedSite) {
-		approvedSiteRepository.save(approvedSite);
+	public ApprovedSite save(ApprovedSite approvedSite) {
+		return approvedSiteRepository.save(approvedSite);
 	}
 
 	@Override
@@ -89,6 +79,33 @@ public class ApprovedSiteServiceImpl implements ApprovedSiteService {
 	@Override
 	public void removeById(Long id) {
 		approvedSiteRepository.removeById(id);
+	}
+
+	@Override
+	public ApprovedSite createApprovedSite(String clientId, String userId, Date timeoutDate, Set<String> allowedScopes,
+											WhitelistedSite whitelistedSite) {
+		
+		ApprovedSite as = new ApprovedSite();
+		
+		Date now = new Date();
+		as.setCreationDate(now);
+		as.setAccessDate(now);
+		as.setClientId(clientId);
+		as.setUserId(userId);
+		as.setTimeoutDate(timeoutDate);
+		as.setAllowedScopes(allowedScopes);
+		as.setWhitelistedSite(whitelistedSite);
+		
+		return save(as);
+		
+	}
+
+	@Override
+	public ApprovedSite getByClientIdAndUserId(String clientId,
+			String userId) {
+		
+		return approvedSiteRepository.getByClientIdAndUserId(clientId, userId);
+		
 	}
 
 }

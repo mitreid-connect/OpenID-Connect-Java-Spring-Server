@@ -15,7 +15,6 @@
  ******************************************************************************/
 package org.mitre.openid.connect.service.impl;
 
-import org.mitre.openid.connect.model.DefaultUserInfo;
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.repository.UserInfoRepository;
 import org.mitre.openid.connect.service.UserInfoService;
@@ -53,7 +52,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 	}
 
 	@Override
-	public void save(DefaultUserInfo userInfo) {
+	public void save(UserInfo userInfo) {
 		userInfoRepository.save(userInfo);
 	}
 

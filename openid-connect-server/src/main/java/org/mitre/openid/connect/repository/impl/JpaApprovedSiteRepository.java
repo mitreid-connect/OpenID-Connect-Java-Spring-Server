@@ -18,23 +18,21 @@ package org.mitre.openid.connect.repository.impl;
 import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
 
 import java.util.Collection;
-import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
-import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.openid.connect.model.ApprovedSite;
-import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.repository.ApprovedSiteRepository;
+import org.mitre.util.jpa.JpaUtil;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
  * JPA ApprovedSite repository implementation
  * 
- * @author Michael Joseph Walsh
+ * @author Michael Joseph Walsh, aanganes
  *
  */
 @Repository
@@ -50,37 +48,11 @@ public class JpaApprovedSiteRepository implements ApprovedSiteRepository {
 				"ApprovedSite.getAll", ApprovedSite.class);
 		return query.getResultList();
 	}
-
-	@Override
-	@Transactional
-	public Collection<ApprovedSite> getByClientDetails(
-			ClientDetailsEntity clientDetails) {
-
-		TypedQuery<ApprovedSite> query = manager.createNamedQuery(
-				"ApprovedSite.getByClientDetails", ApprovedSite.class);
-		query.setParameter("approvedSiteClientDetails", clientDetails);
-
-		List<ApprovedSite> found = query.getResultList();
-
-		return found;
-	}
 	
 	@Override
 	@Transactional
 	public ApprovedSite getById(Long id) {
 		return manager.find(ApprovedSite.class, id);
-	}
-
-	@Override
-	@Transactional
-	public Collection<ApprovedSite> getByUserInfo(UserInfo userInfo) {
-		TypedQuery<ApprovedSite> query = manager.createNamedQuery(
-				"ApprovedSite.getByUserInfo", ApprovedSite.class);
-		query.setParameter("approvedSiteUserInfo", userInfo.getUserId());
-		
-		List<ApprovedSite> found = query.getResultList();
-		
-		return found;
 	}
 
 	@Override
@@ -108,5 +80,15 @@ public class JpaApprovedSiteRepository implements ApprovedSiteRepository {
 	@Transactional
 	public ApprovedSite save(ApprovedSite approvedSite) {
 		return saveOrUpdate(approvedSite.getId(), manager, approvedSite);
+	}
+
+	@Override
+	public ApprovedSite getByClientIdAndUserId(String clientId, String userId) {
+		
+		TypedQuery<ApprovedSite> query = manager.createNamedQuery("ApprovedSite.getByClientIdAndUserId", ApprovedSite.class);
+		query.setParameter("userId", userId);
+		query.setParameter("clientId", clientId);
+		
+		return JpaUtil.getSingleResult(query.getResultList());
 	}
 }

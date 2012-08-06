@@ -15,6 +15,8 @@
  ******************************************************************************/
 package org.mitre.openid.connect.service.impl;
 
+import java.util.Collection;
+
 import org.mitre.openid.connect.model.WhitelistedSite;
 import org.mitre.openid.connect.repository.WhitelistedSiteRepository;
 import org.mitre.openid.connect.service.WhitelistedSiteService;
@@ -25,7 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Implementation of the WhitelistedSiteService
  * 
- * @author Michael Joseph Walsh
+ * @author Michael Joseph Walsh, aanganes
  * 
  */
 @Service
@@ -69,6 +71,21 @@ public class WhitelistedSiteServiceImpl implements WhitelistedSiteService {
 	@Override
 	public WhitelistedSite save(WhitelistedSite whitelistedSite) {
 		return whitelistedSiteRepository.save(whitelistedSite);
+	}
+
+	@Override
+	public Collection<WhitelistedSite> getAll() {
+		return whitelistedSiteRepository.getAll();
+	}
+
+	@Override
+	public WhitelistedSite getByClientId(String clientId) {
+		return whitelistedSiteRepository.getByClientId(clientId);
+	}
+
+	@Override
+	public Collection<WhitelistedSite> getByCreator(String creatorId) {
+		return whitelistedSiteRepository.getByCreator(creatorId);
 	}
 
 }
