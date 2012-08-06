@@ -27,6 +27,7 @@ import org.mitre.openid.connect.service.ApprovedSiteService;
 import org.mitre.openid.connect.service.WhitelistedSiteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.common.exceptions.InvalidScopeException;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
@@ -78,6 +79,7 @@ public class JdbcUserApprovalHandler implements UserApprovalHandler {
 		
 		//First, check database to see if the user identified by the userAuthentication has stored an approval decision
 		
+		//getName may not be filled in? TODO: investigate
 		String userId = userAuthentication.getName();
 		ClientDetails client = clientDetailsService.loadClientByClientId(authorizationRequest.getClientId());
 		
@@ -96,15 +98,15 @@ public class JdbcUserApprovalHandler implements UserApprovalHandler {
 		}
 		
 		WhitelistedSite ws = whitelistedSiteService.getByClientDetails(client);
-		if (ws != null) {
+		if (ws != null && scopesMatch(ws, authorizationRequest)) {
 			//Create an approved site
 			ApprovedSite newAP = new ApprovedSite();
+			newAP.setClientDetails((ClientDetailsEntity)client);
 			newAP.setAccessDate(new Date());
 			newAP.setWhitelistedSite(ws);
 			newAP.setAllowedScopes(ws.getAllowedScopes());
 			newAP.setCreationDate(new Date());
 			newAP.setUserId(userId);
-			//TODO set timeout date?
 			approvedSiteService.save(newAP);
 			
 			return true;
@@ -116,6 +118,9 @@ public class JdbcUserApprovalHandler implements UserApprovalHandler {
 			
 			//Only store an ApprovedSite if the user has checked "remember this decision":
 			if (authorizationRequest.getApprovalParameters().get("remember") != null) {
+				
+				//TODO: Remember may eventually have an option to remember for a specific amount
+				//of time; this would set the ApprovedSite.timeout.
 				
 				//Make a new AP
 				ApprovedSite newAP = new ApprovedSite();
@@ -158,15 +163,15 @@ public class JdbcUserApprovalHandler implements UserApprovalHandler {
 		ClientDetails client = clientDetailsService.loadClientByClientId(authReq.getClientId());
 
 		String scopes = authReq.getAuthorizationParameters().get("scope");
-		Set<String> allowedScopes = Sets.newHashSet(Splitter.on(" ").split(scopes));
+		Set<String> requestedScopes = Sets.newHashSet(Splitter.on(" ").split(scopes));
 		
-		if (!(ap.getClientDetails().getClientId()).equalsIgnoreCase(client.getClientId())) {
+		if (!(ap.getClientDetails().getClientId()).equals(client.getClientId())) {
 			return false;
 		}
-		if (!(ap.getUserId()).equalsIgnoreCase(userId)) {
+		if (!(ap.getUserId()).equals(userId)) {
 			return false;
 		}
-		for (String scope : allowedScopes) {
+		for (String scope : requestedScopes) {
 			if (!ap.getAllowedScopes().contains(scope)) {
 				return false;
 			}
@@ -175,4 +180,21 @@ public class JdbcUserApprovalHandler implements UserApprovalHandler {
 		return true;
 	}
 
+	private boolean scopesMatch(WhitelistedSite ws, AuthorizationRequest authorizationRequest) {
+		
+		String scopes = authorizationRequest.getAuthorizationParameters().get("scope");
+		Set<String> authRequestScopes = Sets.newHashSet(Splitter.on(" ").split(scopes));
+		
+		Set<String> wsScopes = ws.getAllowedScopes();
+		
+		for (String scope : authRequestScopes) {
+			if (!wsScopes.contains(scope)) {
+				throw new InvalidScopeException("Invalid scope: " + scope, wsScopes);
+			}
+		}
+		
+		
+		return true;
+	}
+	
 }
