@@ -48,7 +48,7 @@ import org.springframework.web.servlet.view.RedirectView;
 @Controller
 @SessionAttributes(types = AuthorizationRequest.class)
 @RequestMapping(value = "/oauth/authorize")
-public class AuthorizationEndpointRequestObject extends AbstractEndpoint implements InitializingBean {
+public class AuthorizationEndpointRequestObject extends AbstractEndpoint implements InitializingBean{
 	
 	private RedirectResolver redirectResolver = new DefaultRedirectResolver();
 	
