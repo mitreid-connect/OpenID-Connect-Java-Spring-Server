@@ -13,11 +13,11 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.RSAPublicKeySpec;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.mitre.openid.connect.config.OIDCServerConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.web.client.HttpClientErrorException;
@@ -33,7 +33,7 @@ public class KeyFetcher {
 	private HttpComponentsClientHttpRequestFactory httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
 	private RestTemplate restTemplate = new RestTemplate(httpFactory);
 	
-	private static Log logger = LogFactory.getLog(KeyFetcher.class);
+	private static Logger logger = LoggerFactory.getLogger(KeyFetcher.class);
 	
 	public JsonArray retrieveJwk(OIDCServerConfiguration serverConfig){
 		
@@ -64,11 +64,10 @@ public class KeyFetcher {
 			CertificateFactory factory = CertificateFactory.getInstance("X.509");
 			X509Certificate cert = (X509Certificate) factory.generateCertificate(x509Stream);
 			key = cert.getPublicKey();
-		} catch (HttpClientErrorException httpClientErrorException) {
-			logger.error(httpClientErrorException);
+		} catch (HttpClientErrorException e) {
+			logger.error("HttpClientErrorException in KeyFetcher.java: " + e.getStackTrace());
 		} catch (CertificateException e) {
-	        // TODO Auto-generated catch block
-	        e.printStackTrace();
+			logger.error("CertificateException in KeyFetcher.java: " + e.getStackTrace());
         }
 
 		return key;
@@ -97,14 +96,12 @@ public class KeyFetcher {
 				}
 			}
 
-		} catch (HttpClientErrorException httpClientErrorException) {
-			logger.error(httpClientErrorException);
+		} catch (HttpClientErrorException e) {
+			logger.error("HttpClientErrorException in KeyFetcher.java: " + e.getStackTrace());
 		} catch (NoSuchAlgorithmException e) {
-	        // TODO Auto-generated catch block
-	        e.printStackTrace();
+			logger.error("NoSuchAlgorithmException in KeyFetcher.java: " + e.getStackTrace());
         } catch (InvalidKeySpecException e) {
-	        // TODO Auto-generated catch block
-	        e.printStackTrace();
+        	logger.error("InvalidKeySpecException in KeyFetcher.java: " + e.getStackTrace());
         }
 		return pub;
 	}

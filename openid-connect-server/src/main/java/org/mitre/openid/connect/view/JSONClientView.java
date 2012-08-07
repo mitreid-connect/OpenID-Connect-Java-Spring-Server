@@ -12,6 +12,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.servlet.view.AbstractView;
@@ -23,6 +25,8 @@ import com.google.gson.GsonBuilder;
 
 @Component("jsonClientView")
 public class JSONClientView extends AbstractView {
+	
+	private static Logger logger = LoggerFactory.getLogger(JSONClientView.class);
 
     /* (non-Javadoc)
       * @see org.springframework.web.servlet.view.AbstractView#renderMergedOutputModel(java.util.Map, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
@@ -63,8 +67,7 @@ public class JSONClientView extends AbstractView {
 	        
 		} catch (IOException e) {
 			
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("IOException in JSONClientView.java: " + e.getStackTrace());
 			
 		}
     }

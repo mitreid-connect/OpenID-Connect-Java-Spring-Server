@@ -26,11 +26,11 @@ import java.security.interfaces.RSAPrivateKey;
 import java.util.List;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.mitre.jwt.signer.AbstractJwtSigner;
 import org.mitre.jwt.signer.JwsAlgorithm;
 import org.mitre.jwt.signer.service.impl.KeyStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
@@ -45,7 +45,7 @@ import com.google.common.collect.Lists;
  */
 public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 
-	private static Log logger = LogFactory.getLog(RsaSigner.class);
+	private static Logger logger = LoggerFactory.getLogger(RsaSigner.class);
 
 	public static final String KEYPAIR_ALGORITHM = "RSA";
 	public static final String DEFAULT_PASSWORD = "changeit";
@@ -184,9 +184,9 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 
 			sig = (new String(Base64.encodeBase64URLSafe(sigBytes))).replace("=", "");
 		} catch (GeneralSecurityException e) {
-			logger.error(e);
+			logger.error("GeneralSecurityException in RsaSigner.java: " + e.getStackTrace());
 		} catch (UnsupportedEncodingException e) {
-			logger.error(e);
+			logger.error("UnsupportedEncodingException in RsaSigner.java: " + e.getStackTrace());
 		}
 
 		return sig;
@@ -281,9 +281,9 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 			signer.update(signingInput.getBytes("UTF-8"));
 			value = signer.verify(Base64.decodeBase64(s64));
 		} catch (GeneralSecurityException e) {
-			logger.error(e);
+			logger.error("GeneralSecurityException in RsaSigner.java: " + e.getStackTrace());
 		} catch (UnsupportedEncodingException e) {
-			logger.error(e);
+			logger.error("UnsupportedEncodingException in RsaSigner.java: " + e.getStackTrace());
 		}
 
 		return value;

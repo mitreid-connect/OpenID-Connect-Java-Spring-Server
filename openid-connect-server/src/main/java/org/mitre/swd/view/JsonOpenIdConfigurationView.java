@@ -22,6 +22,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.servlet.view.AbstractView;
@@ -34,6 +36,8 @@ import com.google.gson.GsonBuilder;
 @Component("jsonOpenIdConfigurationView")
 public class JsonOpenIdConfigurationView extends AbstractView {
 
+	private static Logger logger = LoggerFactory.getLogger(JsonOpenIdConfigurationView.class);
+	
 	@Override
 	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
 		Gson gson = new GsonBuilder().setExclusionStrategies(new ExclusionStrategy() {
@@ -72,8 +76,7 @@ public class JsonOpenIdConfigurationView extends AbstractView {
 		
 		} catch (IOException e) {
 		
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("IOException in JsonOpenIdConfigurationView.java: " + e.getStackTrace());
 			
 		}
 

@@ -24,6 +24,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.mitre.openid.connect.model.UserInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.servlet.view.AbstractView;
@@ -36,7 +38,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 @Component("pocoUserInfoView")
-public class POCOUserInfoView extends AbstractView{
+public class POCOUserInfoView extends AbstractView {
+	
+	private static Logger logger = LoggerFactory.getLogger(POCOUserInfoView.class);
 	
 	/* (non-Javadoc)
 	 * @see org.springframework.web.servlet.view.AbstractView#renderMergedOutputModel(java.util.Map, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
@@ -76,8 +80,7 @@ public class POCOUserInfoView extends AbstractView{
 			
 		} catch (IOException e) {
 			
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("IOException in POCOUserInfoView.java: " + e.getStackTrace());
 			
 		}
 		
@@ -101,7 +104,7 @@ public class POCOUserInfoView extends AbstractView{
 		if (scope.contains("profile")) {
 			entry.addProperty("displayName", ui.getNickname());
 			
-			if(ui.getFamilyName() != null 
+			if (ui.getFamilyName() != null 
 					|| ui.getGivenName() != null 
 					|| ui.getMiddleName() != null
 					|| ui.getName() != null) {
@@ -115,7 +118,7 @@ public class POCOUserInfoView extends AbstractView{
 		
 			entry.addProperty("gender", ui.getGender());
 			entry.addProperty("preferredUsername", ui.getPreferredUsername());
-			if(ui.getPicture() != null){
+			if (ui.getPicture() != null){
 				JsonObject photo = new JsonObject();
 				photo.addProperty("value", ui.getPicture());
 				
@@ -124,7 +127,7 @@ public class POCOUserInfoView extends AbstractView{
 				entry.add("photos", photoArray);
 			}
 			
-			if(ui.getWebsite() != null) {
+			if (ui.getWebsite() != null) {
 				JsonObject website = new JsonObject();
 				website.addProperty("value", ui.getWebsite());
 				
@@ -138,7 +141,7 @@ public class POCOUserInfoView extends AbstractView{
 		}
 		
 		if (scope.contains("email")) {
-			if(ui.getEmail() != null) {
+			if (ui.getEmail() != null) {
 				JsonObject email = new JsonObject();
 				email.addProperty("value", ui.getEmail());
 				
@@ -149,7 +152,7 @@ public class POCOUserInfoView extends AbstractView{
 		}
 		
 		if (scope.contains("phone")) {
-			if(ui.getPhoneNumber() != null){
+			if (ui.getPhoneNumber() != null){
 				JsonObject phone = new JsonObject();
 				phone.addProperty("value", ui.getPhoneNumber());
 				
@@ -161,7 +164,7 @@ public class POCOUserInfoView extends AbstractView{
 		}
 		
 		if (scope.contains("address")) {
-			if(ui.getAddress() != null) {
+			if (ui.getAddress() != null) {
 				JsonObject addr = new JsonObject();
 				addr.addProperty("formatted", ui.getAddress().getFormatted());
 				addr.addProperty("streetAddress", ui.getAddress().getStreetAddress());

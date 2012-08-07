@@ -23,8 +23,8 @@ import java.security.PrivateKey;
 import java.security.Provider;
 import java.security.PublicKey;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
 
@@ -36,7 +36,7 @@ import org.springframework.core.io.Resource;
  */
 public class KeyStore implements InitializingBean {
 
-	private static Log logger = LogFactory.getLog(KeyStore.class);
+	private static Logger logger = LoggerFactory.getLogger(KeyStore.class);
 	
 	public static final String TYPE = java.security.KeyStore.getDefaultType();
 	public static final String PASSWORD = "changeit";

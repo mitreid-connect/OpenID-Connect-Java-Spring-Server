@@ -25,6 +25,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.servlet.view.AbstractView;
@@ -42,6 +44,8 @@ import com.google.gson.JsonObject;
  */
 @Component("jsonXrdResponseView")
 public class XrdJsonResponse extends AbstractView {
+	
+	private static Logger logger = LoggerFactory.getLogger(XrdJsonResponse.class);
 
 	/* (non-Javadoc)
 	 * @see org.springframework.web.servlet.view.AbstractView#renderMergedOutputModel(java.util.Map, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
@@ -70,15 +74,6 @@ public class XrdJsonResponse extends AbstractView {
 
 		response.setContentType("application/json");
 
-		Writer out;
-        try {
-	        out = response.getWriter();
-        } catch (IOException e) {
-	        // TODO Auto-generated catch block
-	        e.printStackTrace();
-	        return; // if we can't get the writer, this is pointless
-        }
-
 		Map<String, String> links = (Map<String, String>) model.get("links");
 
 		JsonObject obj = new JsonObject();
@@ -94,7 +89,17 @@ public class XrdJsonResponse extends AbstractView {
 	        linksList.add(l);
         }
 		
-		gson.toJson(obj, out);
+		Writer out;
+		
+        try {
+        	
+	        out = response.getWriter();
+	        gson.toJson(obj, out);
+	        
+        } catch (IOException e) {
+	        
+        	logger.error("IOException in XrdJsonResponse.java: " + e.getStackTrace());
+        	
+        }		
 	}
-
 }

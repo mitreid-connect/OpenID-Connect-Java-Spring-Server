@@ -26,9 +26,9 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.mitre.jdbc.datasource.util.SqlFileParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -61,7 +61,7 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
  */
 public class H2DataSourceFactory implements FactoryBean {
 
-    private static Log logger = LogFactory.getLog(H2DataSourceFactory.class);
+    private static Logger logger = LoggerFactory.getLogger(H2DataSourceFactory.class);
 
     protected String databaseName;
     protected Boolean persist;

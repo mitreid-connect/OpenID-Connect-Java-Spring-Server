@@ -19,23 +19,17 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.security.GeneralSecurityException;
 import java.security.NoSuchAlgorithmException;
-import java.util.List;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.mitre.jwt.signer.AbstractJwtSigner;
 import org.mitre.jwt.signer.JwsAlgorithm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
-
-import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 /**
  * JWT Signer using either the HMAC SHA-256, SHA-384, SHA-512 hash algorithm
@@ -49,7 +43,7 @@ public class HmacSigner extends AbstractJwtSigner implements InitializingBean {
 
 	public static final JwsAlgorithm DEFAULT_ALGORITHM = JwsAlgorithm.HS256;
 
-	private static Log logger = LogFactory.getLog(HmacSigner.class);
+	private static Logger logger = LoggerFactory.getLogger(HmacSigner.class);
 
 	private Mac mac;
 
@@ -148,9 +142,9 @@ public class HmacSigner extends AbstractJwtSigner implements InitializingBean {
 
 			mac.update(signatureBase.getBytes("UTF-8"));
 		} catch (GeneralSecurityException e) {
-			logger.error(e);
+			logger.error("GeneralSecurityException in HmacSigner.java: " + e.getStackTrace());
 		} catch (UnsupportedEncodingException e) {
-			logger.error(e);
+			logger.error("UnsupportedEncodingException in HmacSigner.java: " + e.getStackTrace());
 		}
 
 		byte[] sigBytes = mac.doFinal();

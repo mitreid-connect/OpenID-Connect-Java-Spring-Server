@@ -30,6 +30,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.codec.binary.Base64;
 import org.mitre.jwt.signer.JwtSigner;
 import org.mitre.jwt.signer.impl.RsaSigner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.servlet.view.AbstractView;
@@ -48,6 +50,8 @@ import com.google.gson.JsonObject;
 @Component("jwkKeyList")
 public class JwkKeyListView extends AbstractView {
 
+	private static Logger logger = LoggerFactory.getLogger(JwkKeyListView.class);
+	
 	@Override
 	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
 
@@ -118,8 +122,7 @@ public class JwkKeyListView extends AbstractView {
 			
 		} catch (IOException e) {
 			
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("IOException in JwkKeyListView.java: " + e.getStackTrace());
 			
 		}
 

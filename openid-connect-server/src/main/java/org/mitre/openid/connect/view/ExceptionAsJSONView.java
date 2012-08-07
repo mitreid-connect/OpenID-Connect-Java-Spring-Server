@@ -21,6 +21,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.view.AbstractView;
 
@@ -33,6 +35,8 @@ import com.google.gson.JsonObject;
 @Component("exceptionAsJSONView")
 public class ExceptionAsJSONView extends AbstractView {
 
+	private static Logger logger = LoggerFactory.getLogger(ExceptionAsJSONView.class);
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -60,8 +64,7 @@ public class ExceptionAsJSONView extends AbstractView {
 			
 		} catch (IOException e) {
 			
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("IOException in ExceptionAsJSONView.java: " + e.getStackTrace());
 			
 		}
 	}

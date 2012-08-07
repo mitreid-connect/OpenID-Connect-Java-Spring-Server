@@ -24,6 +24,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.servlet.view.AbstractView;
 
@@ -39,6 +41,8 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 public class TokenIntrospection extends AbstractView {
+	
+	private static Logger logger = LoggerFactory.getLogger(TokenIntrospection.class);
 
 	@Override
     protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
@@ -114,8 +118,7 @@ public class TokenIntrospection extends AbstractView {
 		
 		} catch (IOException e) {
 		
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("IOException occurred in TokenIntrospection.java: " + e.getStackTrace());
 		
 		}
 

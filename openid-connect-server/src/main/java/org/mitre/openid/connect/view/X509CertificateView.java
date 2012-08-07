@@ -35,6 +35,8 @@ import org.bouncycastle.x509.extension.SubjectKeyIdentifierStructure;
 import org.mitre.jwt.signer.JwtSigner;
 import org.mitre.jwt.signer.impl.RsaSigner;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.view.AbstractView;
@@ -49,6 +51,8 @@ import com.google.gson.JsonObject;
  */
 @Component("x509certs")
 public class X509CertificateView extends AbstractView {
+	
+	private static Logger logger = LoggerFactory.getLogger(X509CertificateView.class);
 	
 	@Autowired
 	private ConfigurationPropertiesBean config;
@@ -90,20 +94,15 @@ public class X509CertificateView extends AbstractView {
                 	X509Certificate cert = v3CertGen.generate(rsaSigner.getPrivateKey());
 	                pemWriter.writeObject(cert);
                 } catch (CertificateEncodingException e) {
-	                // TODO Auto-generated catch block
-	                e.printStackTrace();
+	                logger.error("CertificateEncodingException in X509CertificateView.java: " + e.getStackTrace());
                 } catch (InvalidKeyException e) {
-	                // TODO Auto-generated catch block
-	                e.printStackTrace();
+		            logger.error("InvalidKeyException in X509CertificateView.java: " + e.getStackTrace());
                 } catch (IllegalStateException e) {
-	                // TODO Auto-generated catch block
-	                e.printStackTrace();
+	                logger.error("IllegalStateException in X509CertificateView.java" + e.getStackTrace());
                 } catch (NoSuchAlgorithmException e) {
-	                // TODO Auto-generated catch block
-	                e.printStackTrace();
+                	logger.error("NoSuchAlgorithmException in X509CertificateView.java" + e.getStackTrace());
                 } catch (SignatureException e) {
-	                // TODO Auto-generated catch block
-	                e.printStackTrace();
+                	logger.error("SignatureException in X509CertificateView.java" + e.getStackTrace());
                 } finally {
                 	pemWriter.flush();
                 	writer.flush();

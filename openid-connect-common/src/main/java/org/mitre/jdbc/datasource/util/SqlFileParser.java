@@ -25,8 +25,8 @@ import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
 /**
@@ -39,7 +39,7 @@ import org.springframework.core.io.Resource;
  */
 public class SqlFileParser {
 	
-	private static Log logger = LogFactory.getLog(SqlFileParser.class);
+	private static Logger logger = LoggerFactory.getLogger(SqlFileParser.class);
 	
 	private static final Pattern WORD_PATTERN = Pattern
 			.compile("^([a-zA-Z]*)[ ;]");

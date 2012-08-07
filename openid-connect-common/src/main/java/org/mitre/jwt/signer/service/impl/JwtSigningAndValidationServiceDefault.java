@@ -19,12 +19,12 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.mitre.jwt.model.Jwt;
 import org.mitre.jwt.signer.JwtSigner;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -37,8 +37,7 @@ public class JwtSigningAndValidationServiceDefault extends AbstractJwtSigningAnd
 	// map of identifier to signer
 	private Map<String, ? extends JwtSigner> signers = new HashMap<String, JwtSigner>();
 
-	private static Log logger = LogFactory
-			.getLog(JwtSigningAndValidationServiceDefault.class);
+	private static Logger logger = LoggerFactory.getLogger(JwtSigningAndValidationServiceDefault.class);
 
 	/**
 	 * default constructor
