@@ -5,7 +5,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="o" tagdir="/WEB-INF/tags" %>
 
-<o:header title="approve access"/>
+<o:header title="Approve Access"/>
 <o:topbar/>
 <div class="container">
     <% if (session.getAttribute(AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY) != null && !(session.getAttribute(AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY) instanceof UnapprovedClientAuthenticationException)) { %>
@@ -98,4 +98,4 @@
         <o:copyright/>
     </div>
 </div>
-<o:footer/>
+<o:footer loadapp="false"/>
