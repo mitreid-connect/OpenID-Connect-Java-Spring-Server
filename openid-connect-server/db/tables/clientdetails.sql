@@ -1,4 +1,5 @@
 CREATE TABLE clientdetails (
+	id VARCHAR(256),
 	clientId VARCHAR(256),
 	clientSecret VARCHAR(2000),
 	clientName VARCHAR(256),

@@ -29,6 +29,7 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
@@ -36,6 +37,8 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.mitre.jwt.encryption.JweAlgorithms;
+import org.mitre.jwt.signer.JwsAlgorithm;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.provider.ClientDetails;
 
@@ -46,10 +49,95 @@ import org.springframework.security.oauth2.provider.ClientDetails;
 @Entity
 @Table(name="clientdetails")
 @NamedQueries({
-	@NamedQuery(name = "ClientDetailsEntity.findAll", query = "SELECT c FROM ClientDetailsEntity c")
+	@NamedQuery(name = "ClientDetailsEntity.findAll", query = "SELECT c FROM ClientDetailsEntity c"),
+	@NamedQuery(name = "ClientDetailsEntity.getByClientId", query = "select c from ClientDetailsEntity c where c.clientId = :clientId")
 })
 public class ClientDetailsEntity implements ClientDetails {
 
+	private Long id;
+	
+	/** Our own fields **/
+	private String clientDescription = "";//this is ours
+	private Boolean allowRefresh = false; // do we allow refresh tokens for this client?
+	private Boolean allowMultipleAccessTokens; // do we allow multiple access tokens, or not?
+	private Boolean reuseRefreshToken; // do we let someone reuse a refresh token?
+	
+	/** Fields from ClientDetails interface **/
+    private String clientId = "";
+    private String clientSecret = "";
+    private Set<String> scope = new HashSet<String>();
+    private Set<String> authorizedGrantTypes = new HashSet<String>();
+	private Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
+    private Integer accessTokenValiditySeconds = 0; // in seconds 
+    private Integer refreshTokenValiditySeconds = 0; // in seconds 
+    private Set<String> registeredRedirectUri = new HashSet<String>();
+    private Set<String> resourceIds = new HashSet<String>();
+	private Map<String, Object> additionalInformation = new HashMap<String, Object>();
+
+    /** Fields from Client Registration Specification **/
+	private AppType applicationType;
+	private String applicationName;
+	private AuthType tokenEndpointAuthType = AuthType.SECRET_BASIC;
+	private String userIdType;
+	
+	private Set<String> contacts; 	
+	
+	private String logoUrl;
+	private String policyUrl;
+	private String jwkUrl;
+	private String jwkEncryptionUrl;
+	private String x509Url;
+	private String x509EncryptionUrl;
+	private String sectorIdentifierUrl;
+	
+	private JwsAlgorithm requireSignedRequestObject;
+	
+	private JwsAlgorithm userInfoSignedResponseAlg;
+	private JweAlgorithms userInfoEncryptedResponseAlg;
+	private JweAlgorithms userInfoEncryptedResponseEnc;
+	private JweAlgorithms userInfoEncryptedResponseInt;
+	
+	private JwsAlgorithm idTokenSignedResponseAlg;
+	private JweAlgorithms idTokenEncryptedResponseAlg;
+	private JweAlgorithms idTokenEncryptedReponseEnc;
+	private JweAlgorithms idTokenEncryptedResponseInt;
+	
+	private Integer defaultMaxAge;
+	private Boolean requireAuthTime;
+	private String defaultACR;
+	
+	
+	public enum AuthType {
+		SECRET_POST("client_secret_post"), 
+		SECRET_BASIC("client_secret_basic"), 
+		SECRET_JWT("client_secret_jwt"), 
+		PRIVATE_KEY("private_key_jwt");
+		
+		private final String value;
+		
+		AuthType(String value) {
+			this.value = value;
+		}
+		
+		public String getValue() {
+			return value;
+		}
+	}
+	
+	public enum AppType {
+		WEB("web"), NATIVE("native");
+		
+		private final String value;
+		
+		AppType(String value) {
+			this.value = value;
+		}
+		
+		public String getValue() {
+			return value;
+		}
+	}
+	
 	/**
 	 * Create a blank ClientDetailsEntity
 	 */
@@ -57,77 +145,148 @@ public class ClientDetailsEntity implements ClientDetails {
 		
 	}
 
-	public enum AuthType {
-		client_secret_post, client_secret_basic, client_secret_jwt, private_key_jwt
+	public static ClientDetailsEntityBuilder makeBuilder() {
+    	return new ClientDetailsEntityBuilder();
+    }
+    
+	public static class ClientDetailsEntityBuilder {
+		private ClientDetailsEntity instance;
+		
+		private ClientDetailsEntityBuilder() {
+			instance = new ClientDetailsEntity();
+		}
+
+		/**
+         * @param clientId
+         * @see org.mitre.oauth2.model.ClientDetailsEntity#setClientId(java.lang.String)
+         */
+        public ClientDetailsEntityBuilder setClientId(String clientId) {
+	        instance.setClientId(clientId);
+			return this;
+        }
+
+		/**
+         * @param clientSecret
+         * @see org.mitre.oauth2.model.ClientDetailsEntity#setClientSecret(java.lang.String)
+         */
+        public ClientDetailsEntityBuilder setClientSecret(String clientSecret) {
+	        instance.setClientSecret(clientSecret);
+			return this;
+        }
+
+		/**
+         * @param scope
+         * @see org.mitre.oauth2.model.ClientDetailsEntity#setScope(java.util.List)
+         */
+        public ClientDetailsEntityBuilder setScope(Set<String> scope) {
+	        instance.setScope(scope);
+			return this;
+        }
+
+		/**
+         * @param authorizedGrantTypes
+         * @see org.mitre.oauth2.model.ClientDetailsEntity#setAuthorizedGrantTypes(java.util.List)
+         */
+        public ClientDetailsEntityBuilder setAuthorizedGrantTypes(Set<String> authorizedGrantTypes) {
+	        instance.setAuthorizedGrantTypes(authorizedGrantTypes);
+			return this;
+        }
+
+		/**
+         * @param authorities
+         * @see org.mitre.oauth2.model.ClientDetailsEntity#setAuthorities(java.util.List)
+         */
+        public ClientDetailsEntityBuilder setAuthorities(Set<GrantedAuthority> authorities) {
+	        instance.setAuthorities(authorities);
+			return this;
+        }
+
+		/**
+         * @param clientDescription
+         * @see org.mitre.oauth2.model.ClientDetailsEntity#setClientDescription(java.lang.String)
+         */
+        public ClientDetailsEntityBuilder setClientDescription(String clientDescription) {
+	        instance.setClientDescription(clientDescription);
+			return this;
+        }
+
+		/**
+         * @param allowRefresh
+         * @see org.mitre.oauth2.model.ClientDetailsEntity#setAllowRefresh(Boolean)
+         */
+        public ClientDetailsEntityBuilder setAllowRefresh(Boolean allowRefresh) {
+	        instance.setAllowRefresh(allowRefresh);
+			return this;
+        }
+
+		/**
+         * @param accessTokenTimeout
+         * @see org.mitre.oauth2.model.ClientDetailsEntity#setAccessTokenTimeout(java.lang.Long)
+         */
+        public ClientDetailsEntityBuilder setAccessValiditySeconds(int accessTokenValiditySeconds) {
+	        instance.setAccessTokenValiditySeconds(accessTokenValiditySeconds);
+			return this;
+        }
+
+		/**
+         * @param refreshTokenTimeout
+         * @see org.mitre.oauth2.model.ClientDetailsEntity#setRefreshTokenTimeout(java.lang.Long)
+         */
+        public ClientDetailsEntityBuilder setRefreshTokenValiditySeconds(int refreshTokenValiditySeconds) {
+	        instance.setRefreshTokenValiditySeconds(refreshTokenValiditySeconds);
+			return this;
+        }
+        
+        /**
+         * Complete the builder
+         * @return
+         */
+		public ClientDetailsEntity finish() {
+			return instance;
+		}
+
+		/**
+         * @param registeredRedirectUri
+         * @see org.mitre.oauth2.model.ClientDetailsEntity#setRegisteredRedirectUri(java.lang.String)
+         */
+        public ClientDetailsEntityBuilder setRegisteredRedirectUri(Set<String> registeredRedirectUri) {
+	        instance.setRegisteredRedirectUri(registeredRedirectUri);
+	        return this;
+        }
+
+		/**
+         * @param resourceIds
+         * @see org.mitre.oauth2.model.ClientDetailsEntity#setResourceIds(java.util.List)
+         */
+        public ClientDetailsEntityBuilder setResourceIds(Set<String> resourceIds) {
+	        instance.setResourceIds(resourceIds);
+	        return this;
+        }
+		
 	}
-
-    private String clientId = "";
-    private String clientSecret = "";
-    private Set<String> scope = new HashSet<String>();
-    private Set<String> authorizedGrantTypes = new HashSet<String>();
-    private Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
-    private String clientName = "";
-    private String clientDescription = "";
-    private boolean allowRefresh = false; // do we allow refresh tokens for this client?
-    private Integer accessTokenValiditySeconds = 0; // in seconds
-    private Integer refreshTokenValiditySeconds = 0; // in seconds
-    private String owner = ""; // userid of who registered it
-    private Set<String> registeredRedirectUri = new HashSet<String>();
-    private Set<String> resourceIds = new HashSet<String>();
-	private Map<String, Object> additionalInformation = new HashMap<String, Object>();
-
-    //Additional properties added by OpenID Connect Dynamic Client Registration spec
-	//http://openid.net/specs/openid-connect-registration-1_0.html
 	
 	/**
-	 * List of email addresses for people allowed to administer the information for
-	 * this Client. This is used by some providers to enable a web UI to modify the
-	 * Client information.
+	 * 
+	 * @return the id
 	 */
-//	private Set<String> contacts; 	
-//	
-//	private String applicationType;//native or web
-//	private String applicationName;
-//	private String logo_url;
-//	private Set<String> redirectUris; //Connect allows clients to have more than one redirectUri registered
-//	private AuthType tokenEndpointAuthType = AuthType.client_secret_basic;
-//	private String policyUrl;
-//	private String jwk_url;
-//	private String jwk_encryption_url;
-//	private String x509Url;
-//	private String x509EncryptionUrl;
-//	private String sectorIdentifierUrl;
-//	private String userIdType;
-	
-	/** 
-	 * OPTIONAL. The JWS [JWS] signature algorithm that MUST be required 
-	 * by the Authorization Server. All OpenID Request Objects from 
-	 * this client_id MUST be rejected if not signed by this algorithm.
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	public Long getId() {
+		return id;
+	}
+
+	/**
+	 * 
+	 * @param id the id to set
 	 */
-//	private String requireSignedRequestObject;
-//	
-//	private String userInfoSignedResponseAlg;
-//	private Set<String> userInfoEncryptedResponseAlgs;
-//	private String idTokenSignedResponseAlg;
-//	private Set<String> idTokenEncryptedResponseAlgs;
-	
-	//Maximum age for any authentications
-//	private Integer defaultMaxAge;
-//	
-//	private Boolean requireAuthTime;
-//	
-//	private String defaultACR;
-	
-	// TODO:
-	/*
-	private boolean allowMultipleAccessTokens; // do we allow multiple access tokens, or not?
-	private boolean reuseRefreshToken; // do we let someone reuse a refresh token?
-	*/
+	public void setId(Long id) {
+		this.id = id;
+	}
 	
 	/**
      * @return the clientId
      */
-	@Id @GeneratedValue
+	@Basic
     public String getClientId() {
     	return clientId;
     }
@@ -228,21 +387,6 @@ public class ClientDetailsEntity implements ClientDetails {
     }
 
 	/**
-     * @return the clientName
-     */
-	@Basic
-    public String getClientName() {
-    	return clientName;
-    }
-
-	/**
-     * @param clientName Human-readable name of the client (optional)
-     */
-    public void setClientName(String clientName) {
-    	this.clientName = clientName;
-    }
-
-	/**
      * @return the clientDescription
      */
 	@Basic
@@ -261,14 +405,14 @@ public class ClientDetailsEntity implements ClientDetails {
      * @return the allowRefresh
      */
 	@Basic
-    public boolean isAllowRefresh() {
+    public Boolean isAllowRefresh() {
     	return allowRefresh;
     }
 
 	/**
      * @param allowRefresh Whether to allow for issuance of refresh tokens or not (defaults to false)
      */
-    public void setAllowRefresh(boolean allowRefresh) {
+    public void setAllowRefresh(Boolean allowRefresh) {
     	this.allowRefresh = allowRefresh;
     }
 
@@ -299,36 +443,20 @@ public class ClientDetailsEntity implements ClientDetails {
     	this.refreshTokenValiditySeconds = refreshTokenValiditySeconds;
     }
 	
-	//TODO: implement fully with db table or get removed from interface
+	/**
+	 * We're not using this field, so it is not stored with JPA.
+	 * 
+	 * @return an empty map
+	 */
 	@Override
 	@Transient
 	public Map<String, Object> getAdditionalInformation() {
 		return this.additionalInformation;
 	}
-	
-	public void setAdditionalInformation(Map<String, Object> map) {
-		this.additionalInformation = map;
-	}
-
-	/**
-     * @return the owner
-     */
-	@Basic
-    public String getOwner() {
-    	return owner;
-    }
-
-	/**
-     * @param owner User ID of the person who registered this client (optional)
-     */
-    public void setOwner(String owner) {
-    	this.owner = owner;
-    }
 
 	/**
      * @return the registeredRedirectUri
      */
-	//@Basic
     @ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(
 			name="redirect_uris",
@@ -364,482 +492,688 @@ public class ClientDetailsEntity implements ClientDetails {
     	this.resourceIds = resourceIds;
     }
 
-	/* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-	    return "ClientDetailsEntity [" + (clientId != null ? "clientId=" + clientId + ", " : "") + (scope != null ? "scope=" + scope + ", " : "") + (clientName != null ? "clientName=" + clientName + ", " : "") + (owner != null ? "owner=" + owner : "") + "]";
-    }
-
-	/* (non-Javadoc)
-     * @see java.lang.Object#hashCode()
-     */
-    @Override
-    public int hashCode() {
-	    final int prime = 31;
-	    int result = 1;
-	    result = prime * result + ((clientId == null) ? 0 : clientId.hashCode());
-	    return result;
-    }
-
-	/* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    @Override
-    public boolean equals(Object obj) {
-	    if (this == obj) {
-		    return true;
-	    }
-	    if (obj == null) {
-		    return false;
-	    }
-	    if (getClass() != obj.getClass()) {
-		    return false;
-	    }
-	    ClientDetailsEntity other = (ClientDetailsEntity) obj;
-	    if (clientId == null) {
-		    if (other.clientId != null) {
-			    return false;
-		    }
-	    } else if (!clientId.equals(other.clientId)) {
-		    return false;
-	    }
-	    return true;
-    }
-
-    public static ClientDetailsEntityBuilder makeBuilder() {
-    	return new ClientDetailsEntityBuilder();
-    }
-    
-	public static class ClientDetailsEntityBuilder {
-		private ClientDetailsEntity instance;
-		
-		private ClientDetailsEntityBuilder() {
-			instance = new ClientDetailsEntity();
-		}
-
-		/**
-         * @param clientId
-         * @see org.mitre.oauth2.model.ClientDetailsEntity#setClientId(java.lang.String)
-         */
-        public ClientDetailsEntityBuilder setClientId(String clientId) {
-	        instance.setClientId(clientId);
-			return this;
-        }
-
-		/**
-         * @param clientSecret
-         * @see org.mitre.oauth2.model.ClientDetailsEntity#setClientSecret(java.lang.String)
-         */
-        public ClientDetailsEntityBuilder setClientSecret(String clientSecret) {
-	        instance.setClientSecret(clientSecret);
-			return this;
-        }
-
-		/**
-         * @param scope
-         * @see org.mitre.oauth2.model.ClientDetailsEntity#setScope(java.util.List)
-         */
-        public ClientDetailsEntityBuilder setScope(Set<String> scope) {
-	        instance.setScope(scope);
-			return this;
-        }
-
-		/**
-         * @param authorizedGrantTypes
-         * @see org.mitre.oauth2.model.ClientDetailsEntity#setAuthorizedGrantTypes(java.util.List)
-         */
-        public ClientDetailsEntityBuilder setAuthorizedGrantTypes(Set<String> authorizedGrantTypes) {
-	        instance.setAuthorizedGrantTypes(authorizedGrantTypes);
-			return this;
-        }
-
-		/**
-         * @param authorities
-         * @see org.mitre.oauth2.model.ClientDetailsEntity#setAuthorities(java.util.List)
-         */
-        public ClientDetailsEntityBuilder setAuthorities(Set<GrantedAuthority> authorities) {
-	        instance.setAuthorities(authorities);
-			return this;
-        }
-
-		/**
-         * @param clientName
-         * @see org.mitre.oauth2.model.ClientDetailsEntity#setClientName(java.lang.String)
-         */
-        public ClientDetailsEntityBuilder setClientName(String clientName) {
-	        instance.setClientName(clientName);
-			return this;
-        }
-
-		/**
-         * @param clientDescription
-         * @see org.mitre.oauth2.model.ClientDetailsEntity#setClientDescription(java.lang.String)
-         */
-        public ClientDetailsEntityBuilder setClientDescription(String clientDescription) {
-	        instance.setClientDescription(clientDescription);
-			return this;
-        }
-
-		/**
-         * @param allowRefresh
-         * @see org.mitre.oauth2.model.ClientDetailsEntity#setAllowRefresh(boolean)
-         */
-        public ClientDetailsEntityBuilder setAllowRefresh(boolean allowRefresh) {
-	        instance.setAllowRefresh(allowRefresh);
-			return this;
-        }
-
-		/**
-         * @param accessTokenTimeout
-         * @see org.mitre.oauth2.model.ClientDetailsEntity#setAccessTokenTimeout(java.lang.Long)
-         */
-        public ClientDetailsEntityBuilder setAccessValiditySeconds(int accessTokenValiditySeconds) {
-	        instance.setAccessTokenValiditySeconds(accessTokenValiditySeconds);
-			return this;
-        }
-
-		/**
-         * @param refreshTokenTimeout
-         * @see org.mitre.oauth2.model.ClientDetailsEntity#setRefreshTokenTimeout(java.lang.Long)
-         */
-        public ClientDetailsEntityBuilder setRefreshTokenValiditySeconds(int refreshTokenValiditySeconds) {
-	        instance.setRefreshTokenValiditySeconds(refreshTokenValiditySeconds);
-			return this;
-        }
-
-		/**
-         * @param owner
-         * @see org.mitre.oauth2.model.ClientDetailsEntity#setOwner(java.lang.String)
-         */
-        public ClientDetailsEntityBuilder setOwner(String owner) {
-	        instance.setOwner(owner);
-			return this;
-        }
-        
-        /**
-         * Complete the builder
-         * @return
-         */
-		public ClientDetailsEntity finish() {
-			return instance;
-		}
-
-		/**
-         * @param registeredRedirectUri
-         * @see org.mitre.oauth2.model.ClientDetailsEntity#setRegisteredRedirectUri(java.lang.String)
-         */
-        public ClientDetailsEntityBuilder setRegisteredRedirectUri(Set<String> registeredRedirectUri) {
-	        instance.setRegisteredRedirectUri(registeredRedirectUri);
-	        return this;
-        }
-
-		/**
-         * @param resourceIds
-         * @see org.mitre.oauth2.model.ClientDetailsEntity#setResourceIds(java.util.List)
-         */
-        public ClientDetailsEntityBuilder setResourceIds(Set<String> resourceIds) {
-	        instance.setResourceIds(resourceIds);
-	        return this;
-        }
-		
+    @Basic
+    public Boolean isAllowMultipleAccessTokens() {
+		return allowMultipleAccessTokens;
 	}
 
-/*	*//**
-	 * @return the contacts
-	 *//*
-	public Set<String> getContacts() {
-		return contacts;
+	public void setAllowMultipleAccessTokens(Boolean allowMultipleAccessTokens) {
+		this.allowMultipleAccessTokens = allowMultipleAccessTokens;
 	}
 
-	*//**
-	 * @param contacts the contacts to set
-	 *//*
-	public void setContacts(Set<String> contacts) {
-		this.contacts = contacts;
+	@Basic
+	public Boolean isReuseRefreshToken() {
+		return reuseRefreshToken;
 	}
 
-	*//**
-	 * @return the applicationType
-	 *//*
-	public String getApplicationType() {
+	public void setReuseRefreshToken(Boolean reuseRefreshToken) {
+		this.reuseRefreshToken = reuseRefreshToken;
+	}
+
+	@Basic
+	public AppType getApplicationType() {
 		return applicationType;
 	}
 
-	*//**
-	 * @param applicationType the applicationType to set
-	 *//*
-	public void setApplicationType(String applicationType) {
+	public void setApplicationType(AppType applicationType) {
 		this.applicationType = applicationType;
 	}
 
-	*//**
-	 * @return the applicationName
-	 *//*
+	@Basic
 	public String getApplicationName() {
 		return applicationName;
 	}
 
-	*//**
-	 * @param applicationName the applicationName to set
-	 *//*
 	public void setApplicationName(String applicationName) {
 		this.applicationName = applicationName;
 	}
 
-	*//**
-	 * @return the logo_url
-	 *//*
-	public String getLogo_url() {
-		return logo_url;
-	}
-
-	*//**
-	 * @param logo_url the logo_url to set
-	 *//*
-	public void setLogo_url(String logo_url) {
-		this.logo_url = logo_url;
-	}
-
-	*//**
-	 * @return the redirectUris
-	 *//*
-	public Set<String> getRedirectUris() {
-		return redirectUris;
-	}
-
-	*//**
-	 * @param redirectUris the redirectUris to set
-	 *//*
-	public void setRedirectUris(Set<String> redirectUris) {
-		this.redirectUris = redirectUris;
-	}
-
-	*//**
-	 * @return the tokenEndpointAuthType
-	 *//*
+	@Basic
 	public AuthType getTokenEndpointAuthType() {
 		return tokenEndpointAuthType;
 	}
 
-	*//**
-	 * @param tokenEndpointAuthType the tokenEndpointAuthType to set
-	 *//*
 	public void setTokenEndpointAuthType(AuthType tokenEndpointAuthType) {
 		this.tokenEndpointAuthType = tokenEndpointAuthType;
 	}
 
-	*//**
-	 * @return the policyUrl
-	 *//*
-	public String getPolicyUrl() {
-		return policyUrl;
-	}
-
-	*//**
-	 * @param policyUrl the policyUrl to set
-	 *//*
-	public void setPolicyUrl(String policyUrl) {
-		this.policyUrl = policyUrl;
-	}
-
-	*//**
-	 * @return the jwk_url
-	 *//*
-	public String getJwk_url() {
-		return jwk_url;
-	}
-
-	*//**
-	 * @param jwk_url the jwk_url to set
-	 *//*
-	public void setJwk_url(String jwk_url) {
-		this.jwk_url = jwk_url;
-	}
-
-	*//**
-	 * @return the jwk_encryption_url
-	 *//*
-	public String getJwk_encryption_url() {
-		return jwk_encryption_url;
-	}
-
-	*//**
-	 * @param jwk_encryption_url the jwk_encryption_url to set
-	 *//*
-	public void setJwk_encryption_url(String jwk_encryption_url) {
-		this.jwk_encryption_url = jwk_encryption_url;
-	}
-
-	*//**
-	 * @return the x509Url
-	 *//*
-	public String getX509Url() {
-		return x509Url;
-	}
-
-	*//**
-	 * @param x509Url the x509Url to set
-	 *//*
-	public void setX509Url(String x509Url) {
-		this.x509Url = x509Url;
-	}
-
-	*//**
-	 * @return the x509EncryptionUrl
-	 *//*
-	public String getX509EncryptionUrl() {
-		return x509EncryptionUrl;
-	}
-
-	*//**
-	 * @param x509EncryptionUrl the x509EncryptionUrl to set
-	 *//*
-	public void setX509EncryptionUrl(String x509EncryptionUrl) {
-		this.x509EncryptionUrl = x509EncryptionUrl;
-	}
-
-	*//**
-	 * @return the sectorIdentifierUrl
-	 *//*
-	public String getSectorIdentifierUrl() {
-		return sectorIdentifierUrl;
-	}
-
-	*//**
-	 * @param sectorIdentifierUrl the sectorIdentifierUrl to set
-	 *//*
-	public void setSectorIdentifierUrl(String sectorIdentifierUrl) {
-		this.sectorIdentifierUrl = sectorIdentifierUrl;
-	}
-
-	*//**
-	 * @return the userIdType
-	 *//*
+	@Basic
 	public String getUserIdType() {
 		return userIdType;
 	}
 
-	*//**
-	 * @param userIdType the userIdType to set
-	 *//*
 	public void setUserIdType(String userIdType) {
 		this.userIdType = userIdType;
 	}
 
-	*//**
-	 * @return the requireSignedRequestObject
-	 *//*
-	public String getRequireSignedRequestObject() {
+	@Basic
+	public Set<String> getContacts() {
+		return contacts;
+	}
+
+	public void setContacts(Set<String> contacts) {
+		this.contacts = contacts;
+	}
+
+	@Basic
+	public String getPolicyUrl() {
+		return policyUrl;
+	}
+
+	public void setPolicyUrl(String policyUrl) {
+		this.policyUrl = policyUrl;
+	}
+
+	@Basic
+	public String getX509Url() {
+		return x509Url;
+	}
+
+	public void setX509Url(String x509Url) {
+		this.x509Url = x509Url;
+	}
+	
+	@Basic
+	public String getX509EncryptionUrl() {
+		return x509EncryptionUrl;
+	}
+
+	public void setX509EncryptionUrl(String x509EncryptionUrl) {
+		this.x509EncryptionUrl = x509EncryptionUrl;
+	}
+
+	@Basic
+	public String getSectorIdentifierUrl() {
+		return sectorIdentifierUrl;
+	}
+
+	public void setSectorIdentifierUrl(String sectorIdentifierUrl) {
+		this.sectorIdentifierUrl = sectorIdentifierUrl;
+	}
+
+	@Basic
+	public JwsAlgorithm getRequireSignedRequestObject() {
 		return requireSignedRequestObject;
 	}
 
-	*//**
-	 * @param requireSignedRequestObject the requireSignedRequestObject to set
-	 *//*
-	public void setRequireSignedRequestObject(String requireSignedRequestObject) {
+	public void setRequireSignedRequestObject(
+			JwsAlgorithm requireSignedRequestObject) {
 		this.requireSignedRequestObject = requireSignedRequestObject;
 	}
 
-	*//**
-	 * @return the userInfoSignedResponseAlg
-	 *//*
-	public String getUserInfoSignedResponseAlg() {
+	@Basic
+	public JwsAlgorithm getUserInfoSignedResponseAlg() {
 		return userInfoSignedResponseAlg;
 	}
 
-	*//**
-	 * @param userInfoSignedResponseAlg the userInfoSignedResponseAlg to set
-	 *//*
-	public void setUserInfoSignedResponseAlg(String userInfoSignedResponseAlg) {
+	public void setUserInfoSignedResponseAlg(JwsAlgorithm userInfoSignedResponseAlg) {
 		this.userInfoSignedResponseAlg = userInfoSignedResponseAlg;
 	}
 
-	*//**
-	 * @return the userInfoEncryptedResponseAlgs
-	 *//*
-	public Set<String> getUserInfoEncryptedResponseAlgs() {
-		return userInfoEncryptedResponseAlgs;
+	@Basic
+	public JweAlgorithms getUserInfoEncryptedResponseAlg() {
+		return userInfoEncryptedResponseAlg;
 	}
 
-	*//**
-	 * @param userInfoEncryptedResponseAlgs the userInfoEncryptedResponseAlgs to set
-	 *//*
-	public void setUserInfoEncryptedResponseAlgs(
-			Set<String> userInfoEncryptedResponseAlgs) {
-		this.userInfoEncryptedResponseAlgs = userInfoEncryptedResponseAlgs;
+	public void setUserInfoEncryptedResponseAlg(
+			JweAlgorithms userInfoEncryptedResponseAlg) {
+		this.userInfoEncryptedResponseAlg = userInfoEncryptedResponseAlg;
 	}
 
-	*//**
-	 * @return the idTokenEncryptedResponseAlgs
-	 *//*
-	public Set<String> getIdTokenEncryptedResponseAlgs() {
-		return idTokenEncryptedResponseAlgs;
+	@Basic
+	public JweAlgorithms getUserInfoEncryptedResponseEnc() {
+		return userInfoEncryptedResponseEnc;
 	}
 
-	*//**
-	 * @param idTokenEncryptedResponseAlgs the idTokenEncryptedResponseAlgs to set
-	 *//*
-	public void setIdTokenEncryptedResponseAlgs(
-			Set<String> idTokenEncryptedResponseAlgs) {
-		this.idTokenEncryptedResponseAlgs = idTokenEncryptedResponseAlgs;
+	public void setUserInfoEncryptedResponseEnc(
+			JweAlgorithms userInfoEncryptedResponseEnc) {
+		this.userInfoEncryptedResponseEnc = userInfoEncryptedResponseEnc;
 	}
 
-	*//**
-	 * @return the idTokenSignedResponseAlg
-	 *//*
-	public String getIdTokenSignedResponseAlg() {
+	@Basic
+	public JweAlgorithms getUserInfoEncryptedResponseInt() {
+		return userInfoEncryptedResponseInt;
+	}
+
+	public void setUserInfoEncryptedResponseInt(
+			JweAlgorithms userInfoEncryptedResponseInt) {
+		this.userInfoEncryptedResponseInt = userInfoEncryptedResponseInt;
+	}
+
+	@Basic
+	public JwsAlgorithm getIdTokenSignedResponseAlg() {
 		return idTokenSignedResponseAlg;
 	}
 
-	*//**
-	 * @param idTokenSignedResponseAlg the idTokenSignedResponseAlg to set
-	 *//*
-	public void setIdTokenSignedResponseAlg(String idTokenSignedResponseAlg) {
+	public void setIdTokenSignedResponseAlg(JwsAlgorithm idTokenSignedResponseAlg) {
 		this.idTokenSignedResponseAlg = idTokenSignedResponseAlg;
 	}
 
-	*//**
-	 * @return the defaultMaxAge
-	 *//*
+	@Basic
+	public JweAlgorithms getIdTokenEncryptedResponseAlg() {
+		return idTokenEncryptedResponseAlg;
+	}
+
+	public void setIdTokenEncryptedResponseAlg(
+			JweAlgorithms idTokenEncryptedResponseAlg) {
+		this.idTokenEncryptedResponseAlg = idTokenEncryptedResponseAlg;
+	}
+
+	@Basic
+	public JweAlgorithms getIdTokenEncryptedReponseEnc() {
+		return idTokenEncryptedReponseEnc;
+	}
+
+	public void setIdTokenEncryptedReponseEnc(
+			JweAlgorithms idTokenEncryptedReponseEnc) {
+		this.idTokenEncryptedReponseEnc = idTokenEncryptedReponseEnc;
+	}
+
+	@Basic
+	public JweAlgorithms getIdTokenEncryptedResponseInt() {
+		return idTokenEncryptedResponseInt;
+	}
+
+	public void setIdTokenEncryptedResponseInt(
+			JweAlgorithms idTokenEncryptedResponseInt) {
+		this.idTokenEncryptedResponseInt = idTokenEncryptedResponseInt;
+	}
+
+	@Basic
 	public Integer getDefaultMaxAge() {
 		return defaultMaxAge;
 	}
 
-	*//**
-	 * @param defaultMaxAge the defaultMaxAge to set
-	 *//*
 	public void setDefaultMaxAge(Integer defaultMaxAge) {
 		this.defaultMaxAge = defaultMaxAge;
 	}
 
-	*//**
-	 * @return the requireAuthTime
-	 *//*
+	@Basic
 	public Boolean getRequireAuthTime() {
 		return requireAuthTime;
 	}
 
-	*//**
-	 * @param requireAuthTime the requireAuthTime to set
-	 *//*
 	public void setRequireAuthTime(Boolean requireAuthTime) {
 		this.requireAuthTime = requireAuthTime;
 	}
 
-	*//**
-	 * @return the defaultACR
-	 *//*
+	@Basic
 	public String getDefaultACR() {
 		return defaultACR;
 	}
 
-	*//**
-	 * @param defaultACR the defaultACR to set
-	 *//*
 	public void setDefaultACR(String defaultACR) {
 		this.defaultACR = defaultACR;
 	}
-*/
+	
+	@Basic
+	public String getLogoUrl() {
+		return logoUrl;
+	}
+
+	public void setLogoUrl(String logoUrl) {
+		this.logoUrl = logoUrl;
+	}
+
+	@Basic
+	public String getJwkUrl() {
+		return jwkUrl;
+	}
+
+	public void setJwkUrl(String jwkUrl) {
+		this.jwkUrl = jwkUrl;
+	}
+
+	@Basic
+	public String getJwkEncryptionUrl() {
+		return jwkEncryptionUrl;
+	}
+
+	public void setJwkEncryptionUrl(String jwkEncryptionUrl) {
+		this.jwkEncryptionUrl = jwkEncryptionUrl;
+	}
+	
+    @Override
+	public String toString() {
+		return "ClientDetailsEntity ["
+				+ (id != null ? "id=" + id + ", " : "")
+				+ (clientDescription != null ? "clientDescription="
+						+ clientDescription + ", " : "")
+				+ "allowRefresh="
+				+ allowRefresh
+				+ ", allowMultipleAccessTokens="
+				+ allowMultipleAccessTokens
+				+ ", reuseRefreshToken="
+				+ reuseRefreshToken
+				+ ", "
+				+ (clientId != null ? "clientId=" + clientId + ", " : "")
+				+ (clientSecret != null ? "clientSecret=" + clientSecret + ", "
+						: "")
+				+ (scope != null ? "scope=" + scope + ", " : "")
+				+ (authorizedGrantTypes != null ? "authorizedGrantTypes="
+						+ authorizedGrantTypes + ", " : "")
+				+ (authorities != null ? "authorities=" + authorities + ", "
+						: "")
+				+ (accessTokenValiditySeconds != null ? "accessTokenValiditySeconds="
+						+ accessTokenValiditySeconds + ", "
+						: "")
+				+ (refreshTokenValiditySeconds != null ? "refreshTokenValiditySeconds="
+						+ refreshTokenValiditySeconds + ", "
+						: "")
+				+ (registeredRedirectUri != null ? "registeredRedirectUri="
+						+ registeredRedirectUri + ", " : "")
+				+ (resourceIds != null ? "resourceIds=" + resourceIds + ", "
+						: "")
+				+ (additionalInformation != null ? "additionalInformation="
+						+ additionalInformation + ", " : "")
+				+ (applicationType != null ? "applicationType="
+						+ applicationType + ", " : "")
+				+ (applicationName != null ? "applicationName="
+						+ applicationName + ", " : "")
+				+ (tokenEndpointAuthType != null ? "tokenEndpointAuthType="
+						+ tokenEndpointAuthType + ", " : "")
+				+ (userIdType != null ? "userIdType=" + userIdType + ", " : "")
+				+ (contacts != null ? "contacts=" + contacts + ", " : "")
+				+ (logoUrl != null ? "logoUrl=" + logoUrl + ", " : "")
+				+ (policyUrl != null ? "policyUrl=" + policyUrl + ", " : "")
+				+ (jwkUrl != null ? "jwkUrl=" + jwkUrl + ", " : "")
+				+ (jwkEncryptionUrl != null ? "jwkEncryptionUrl="
+						+ jwkEncryptionUrl + ", " : "")
+				+ (x509Url != null ? "x509Url=" + x509Url + ", " : "")
+				+ (x509EncryptionUrl != null ? "x509EncryptionUrl="
+						+ x509EncryptionUrl + ", " : "")
+				+ (sectorIdentifierUrl != null ? "sectorIdentifierUrl="
+						+ sectorIdentifierUrl + ", " : "")
+				+ (requireSignedRequestObject != null ? "requireSignedRequestObject="
+						+ requireSignedRequestObject + ", "
+						: "")
+				+ (userInfoSignedResponseAlg != null ? "userInfoSignedResponseAlg="
+						+ userInfoSignedResponseAlg + ", "
+						: "")
+				+ (userInfoEncryptedResponseAlg != null ? "userInfoEncryptedResponseAlg="
+						+ userInfoEncryptedResponseAlg + ", "
+						: "")
+				+ (userInfoEncryptedResponseEnc != null ? "userInfoEncryptedResponseEnc="
+						+ userInfoEncryptedResponseEnc + ", "
+						: "")
+				+ (userInfoEncryptedResponseInt != null ? "userInfoEncryptedResponseInt="
+						+ userInfoEncryptedResponseInt + ", "
+						: "")
+				+ (idTokenSignedResponseAlg != null ? "idTokenSignedResponseAlg="
+						+ idTokenSignedResponseAlg + ", "
+						: "")
+				+ (idTokenEncryptedResponseAlg != null ? "idTokenEncryptedResponseAlg="
+						+ idTokenEncryptedResponseAlg + ", "
+						: "")
+				+ (idTokenEncryptedReponseEnc != null ? "idTokenEncryptedReponseEnc="
+						+ idTokenEncryptedReponseEnc + ", "
+						: "")
+				+ (idTokenEncryptedResponseInt != null ? "idTokenEncryptedResponseInt="
+						+ idTokenEncryptedResponseInt + ", "
+						: "")
+				+ (defaultMaxAge != null ? "defaultMaxAge=" + defaultMaxAge
+						+ ", " : "")
+				+ (requireAuthTime != null ? "requireAuthTime="
+						+ requireAuthTime + ", " : "")
+				+ (defaultACR != null ? "defaultACR=" + defaultACR : "") + "]";
+	}
+
+    
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime
+				* result
+				+ ((accessTokenValiditySeconds == null) ? 0
+						: accessTokenValiditySeconds.hashCode());
+		result = prime
+				* result
+				+ ((additionalInformation == null) ? 0 : additionalInformation
+						.hashCode());
+		result = prime * result + (allowMultipleAccessTokens ? 1231 : 1237);
+		result = prime * result + (allowRefresh ? 1231 : 1237);
+		result = prime * result
+				+ ((applicationName == null) ? 0 : applicationName.hashCode());
+		result = prime * result
+				+ ((applicationType == null) ? 0 : applicationType.hashCode());
+		result = prime * result
+				+ ((authorities == null) ? 0 : authorities.hashCode());
+		result = prime
+				* result
+				+ ((authorizedGrantTypes == null) ? 0 : authorizedGrantTypes
+						.hashCode());
+		result = prime
+				* result
+				+ ((clientDescription == null) ? 0 : clientDescription
+						.hashCode());
+		result = prime * result
+				+ ((clientId == null) ? 0 : clientId.hashCode());
+		result = prime * result
+				+ ((clientSecret == null) ? 0 : clientSecret.hashCode());
+		result = prime * result
+				+ ((contacts == null) ? 0 : contacts.hashCode());
+		result = prime * result
+				+ ((defaultACR == null) ? 0 : defaultACR.hashCode());
+		result = prime * result
+				+ ((defaultMaxAge == null) ? 0 : defaultMaxAge.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime
+				* result
+				+ ((idTokenEncryptedReponseEnc == null) ? 0
+						: idTokenEncryptedReponseEnc.hashCode());
+		result = prime
+				* result
+				+ ((idTokenEncryptedResponseAlg == null) ? 0
+						: idTokenEncryptedResponseAlg.hashCode());
+		result = prime
+				* result
+				+ ((idTokenEncryptedResponseInt == null) ? 0
+						: idTokenEncryptedResponseInt.hashCode());
+		result = prime
+				* result
+				+ ((idTokenSignedResponseAlg == null) ? 0
+						: idTokenSignedResponseAlg.hashCode());
+		result = prime
+				* result
+				+ ((jwkEncryptionUrl == null) ? 0 : jwkEncryptionUrl.hashCode());
+		result = prime * result + ((jwkUrl == null) ? 0 : jwkUrl.hashCode());
+		result = prime * result + ((logoUrl == null) ? 0 : logoUrl.hashCode());
+		result = prime * result
+				+ ((policyUrl == null) ? 0 : policyUrl.hashCode());
+		result = prime
+				* result
+				+ ((refreshTokenValiditySeconds == null) ? 0
+						: refreshTokenValiditySeconds.hashCode());
+		result = prime
+				* result
+				+ ((registeredRedirectUri == null) ? 0 : registeredRedirectUri
+						.hashCode());
+		result = prime * result
+				+ ((requireAuthTime == null) ? 0 : requireAuthTime.hashCode());
+		result = prime
+				* result
+				+ ((requireSignedRequestObject == null) ? 0
+						: requireSignedRequestObject.hashCode());
+		result = prime * result
+				+ ((resourceIds == null) ? 0 : resourceIds.hashCode());
+		result = prime * result + (reuseRefreshToken ? 1231 : 1237);
+		result = prime * result + ((scope == null) ? 0 : scope.hashCode());
+		result = prime
+				* result
+				+ ((sectorIdentifierUrl == null) ? 0 : sectorIdentifierUrl
+						.hashCode());
+		result = prime
+				* result
+				+ ((tokenEndpointAuthType == null) ? 0 : tokenEndpointAuthType
+						.hashCode());
+		result = prime * result
+				+ ((userIdType == null) ? 0 : userIdType.hashCode());
+		result = prime
+				* result
+				+ ((userInfoEncryptedResponseAlg == null) ? 0
+						: userInfoEncryptedResponseAlg.hashCode());
+		result = prime
+				* result
+				+ ((userInfoEncryptedResponseEnc == null) ? 0
+						: userInfoEncryptedResponseEnc.hashCode());
+		result = prime
+				* result
+				+ ((userInfoEncryptedResponseInt == null) ? 0
+						: userInfoEncryptedResponseInt.hashCode());
+		result = prime
+				* result
+				+ ((userInfoSignedResponseAlg == null) ? 0
+						: userInfoSignedResponseAlg.hashCode());
+		result = prime
+				* result
+				+ ((x509EncryptionUrl == null) ? 0 : x509EncryptionUrl
+						.hashCode());
+		result = prime * result + ((x509Url == null) ? 0 : x509Url.hashCode());
+		return result;
+	}
+
+
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		ClientDetailsEntity other = (ClientDetailsEntity) obj;
+		if (accessTokenValiditySeconds == null) {
+			if (other.accessTokenValiditySeconds != null) {
+				return false;
+			}
+		} else if (!accessTokenValiditySeconds
+				.equals(other.accessTokenValiditySeconds)) {
+			return false;
+		}
+		if (additionalInformation == null) {
+			if (other.additionalInformation != null) {
+				return false;
+			}
+		} else if (!additionalInformation.equals(other.additionalInformation)) {
+			return false;
+		}
+		if (allowMultipleAccessTokens != other.allowMultipleAccessTokens) {
+			return false;
+		}
+		if (allowRefresh != other.allowRefresh) {
+			return false;
+		}
+		if (applicationName == null) {
+			if (other.applicationName != null) {
+				return false;
+			}
+		} else if (!applicationName.equals(other.applicationName)) {
+			return false;
+		}
+		if (applicationType != other.applicationType) {
+			return false;
+		}
+		if (authorities == null) {
+			if (other.authorities != null) {
+				return false;
+			}
+		} else if (!authorities.equals(other.authorities)) {
+			return false;
+		}
+		if (authorizedGrantTypes == null) {
+			if (other.authorizedGrantTypes != null) {
+				return false;
+			}
+		} else if (!authorizedGrantTypes.equals(other.authorizedGrantTypes)) {
+			return false;
+		}
+		if (clientDescription == null) {
+			if (other.clientDescription != null) {
+				return false;
+			}
+		} else if (!clientDescription.equals(other.clientDescription)) {
+			return false;
+		}
+		if (clientId == null) {
+			if (other.clientId != null) {
+				return false;
+			}
+		} else if (!clientId.equals(other.clientId)) {
+			return false;
+		}
+		if (clientSecret == null) {
+			if (other.clientSecret != null) {
+				return false;
+			}
+		} else if (!clientSecret.equals(other.clientSecret)) {
+			return false;
+		}
+		if (contacts == null) {
+			if (other.contacts != null) {
+				return false;
+			}
+		} else if (!contacts.equals(other.contacts)) {
+			return false;
+		}
+		if (defaultACR == null) {
+			if (other.defaultACR != null) {
+				return false;
+			}
+		} else if (!defaultACR.equals(other.defaultACR)) {
+			return false;
+		}
+		if (defaultMaxAge == null) {
+			if (other.defaultMaxAge != null) {
+				return false;
+			}
+		} else if (!defaultMaxAge.equals(other.defaultMaxAge)) {
+			return false;
+		}
+		if (id == null) {
+			if (other.id != null) {
+				return false;
+			}
+		} else if (!id.equals(other.id)) {
+			return false;
+		}
+		if (idTokenEncryptedReponseEnc != other.idTokenEncryptedReponseEnc) {
+			return false;
+		}
+		if (idTokenEncryptedResponseAlg != other.idTokenEncryptedResponseAlg) {
+			return false;
+		}
+		if (idTokenEncryptedResponseInt != other.idTokenEncryptedResponseInt) {
+			return false;
+		}
+		if (idTokenSignedResponseAlg != other.idTokenSignedResponseAlg) {
+			return false;
+		}
+		if (jwkEncryptionUrl == null) {
+			if (other.jwkEncryptionUrl != null) {
+				return false;
+			}
+		} else if (!jwkEncryptionUrl.equals(other.jwkEncryptionUrl)) {
+			return false;
+		}
+		if (jwkUrl == null) {
+			if (other.jwkUrl != null) {
+				return false;
+			}
+		} else if (!jwkUrl.equals(other.jwkUrl)) {
+			return false;
+		}
+		if (logoUrl == null) {
+			if (other.logoUrl != null) {
+				return false;
+			}
+		} else if (!logoUrl.equals(other.logoUrl)) {
+			return false;
+		}
+		if (policyUrl == null) {
+			if (other.policyUrl != null) {
+				return false;
+			}
+		} else if (!policyUrl.equals(other.policyUrl)) {
+			return false;
+		}
+		if (refreshTokenValiditySeconds == null) {
+			if (other.refreshTokenValiditySeconds != null) {
+				return false;
+			}
+		} else if (!refreshTokenValiditySeconds
+				.equals(other.refreshTokenValiditySeconds)) {
+			return false;
+		}
+		if (registeredRedirectUri == null) {
+			if (other.registeredRedirectUri != null) {
+				return false;
+			}
+		} else if (!registeredRedirectUri.equals(other.registeredRedirectUri)) {
+			return false;
+		}
+		if (requireAuthTime == null) {
+			if (other.requireAuthTime != null) {
+				return false;
+			}
+		} else if (!requireAuthTime.equals(other.requireAuthTime)) {
+			return false;
+		}
+		if (requireSignedRequestObject != other.requireSignedRequestObject) {
+			return false;
+		}
+		if (resourceIds == null) {
+			if (other.resourceIds != null) {
+				return false;
+			}
+		} else if (!resourceIds.equals(other.resourceIds)) {
+			return false;
+		}
+		if (reuseRefreshToken != other.reuseRefreshToken) {
+			return false;
+		}
+		if (scope == null) {
+			if (other.scope != null) {
+				return false;
+			}
+		} else if (!scope.equals(other.scope)) {
+			return false;
+		}
+		if (sectorIdentifierUrl == null) {
+			if (other.sectorIdentifierUrl != null) {
+				return false;
+			}
+		} else if (!sectorIdentifierUrl.equals(other.sectorIdentifierUrl)) {
+			return false;
+		}
+		if (tokenEndpointAuthType != other.tokenEndpointAuthType) {
+			return false;
+		}
+		if (userIdType == null) {
+			if (other.userIdType != null) {
+				return false;
+			}
+		} else if (!userIdType.equals(other.userIdType)) {
+			return false;
+		}
+		if (userInfoEncryptedResponseAlg != other.userInfoEncryptedResponseAlg) {
+			return false;
+		}
+		if (userInfoEncryptedResponseEnc != other.userInfoEncryptedResponseEnc) {
+			return false;
+		}
+		if (userInfoEncryptedResponseInt != other.userInfoEncryptedResponseInt) {
+			return false;
+		}
+		if (userInfoSignedResponseAlg != other.userInfoSignedResponseAlg) {
+			return false;
+		}
+		if (x509EncryptionUrl == null) {
+			if (other.x509EncryptionUrl != null) {
+				return false;
+			}
+		} else if (!x509EncryptionUrl.equals(other.x509EncryptionUrl)) {
+			return false;
+		}
+		if (x509Url == null) {
+			if (other.x509Url != null) {
+				return false;
+			}
+		} else if (!x509Url.equals(other.x509Url)) {
+			return false;
+		}
+		return true;
+	}
+	
 }
