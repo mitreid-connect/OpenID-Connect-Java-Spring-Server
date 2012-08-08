@@ -34,6 +34,7 @@ import org.springframework.security.oauth2.provider.approval.UserApprovalHandler
 import org.springframework.security.oauth2.provider.code.AuthorizationCodeServices;
 import org.springframework.security.oauth2.provider.code.AuthorizationRequestHolder;
 import org.springframework.security.oauth2.provider.code.InMemoryAuthorizationCodeServices;
+import org.springframework.security.oauth2.provider.endpoint.AbstractEndpoint;
 import org.springframework.security.oauth2.provider.endpoint.DefaultRedirectResolver;
 import org.springframework.security.oauth2.provider.endpoint.RedirectResolver;
 import org.springframework.stereotype.Controller;
@@ -52,7 +53,7 @@ import org.springframework.web.servlet.view.RedirectView;
 @Controller
 @SessionAttributes(types = AuthorizationRequest.class)
 @RequestMapping(value = "/oauth/authorize")
-public class AuthorizationEndpointRequestObject implements InitializingBean{
+public class AuthorizationEndpointRequestObject extends AbstractEndpoint implements InitializingBean{
 	
 	@Autowired
 	private TokenGranter tokenGranter;
@@ -402,14 +403,10 @@ public class AuthorizationEndpointRequestObject implements InitializingBean{
 		return url.toString();
 	}
 	
-	public TokenGranter getTokenGranter() {
-		return tokenGranter;
-	}
-
-	public void setTokenGranter(TokenGranter tokenGranter) {
-		this.tokenGranter = tokenGranter;
-	}
-
+	//
+	// TODO: Remove when possible
+	// COPIED FROM SECOAUTH AbstractEndpoint
+	// 
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		Assert.state(tokenGranter != null, "TokenGranter must be provided");
