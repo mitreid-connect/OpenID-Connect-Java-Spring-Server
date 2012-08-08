@@ -65,14 +65,17 @@ public class RequestObjectAuthorizationEndpoint extends AbstractEndpoint impleme
 	
 	protected final Log logger = LogFactory.getLog(getClass());
 	
-	private RedirectResolver redirectResolver = new DefaultRedirectResolver();
+	@Autowired
+	private RedirectResolver redirectResolver;
 	
 	@Autowired
 	private ClientDetailsService clientDetailsService;
 	
-	private UserApprovalHandler userApprovalHandler = new DefaultUserApprovalHandler();
+	@Autowired
+	private UserApprovalHandler userApprovalHandler;
 	
-	private AuthorizationCodeServices authorizationCodeServices = new InMemoryAuthorizationCodeServices();
+	@Autowired
+	private AuthorizationCodeServices authorizationCodeServices;
 	
 	private String userApprovalPage = "forward:/oauth/confirm_access";
 	
