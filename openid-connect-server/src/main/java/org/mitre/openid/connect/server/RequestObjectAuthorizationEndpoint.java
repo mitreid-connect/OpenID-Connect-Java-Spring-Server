@@ -53,7 +53,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Sets;
 
-@Controller
+@Controller("requestObjectAuthorzationEndpoint")
 @SessionAttributes(types = AuthorizationRequest.class)
 @RequestMapping(value = "/oauth/authorize")
 public class RequestObjectAuthorizationEndpoint extends AbstractEndpoint implements InitializingBean{
@@ -86,6 +86,8 @@ public class RequestObjectAuthorizationEndpoint extends AbstractEndpoint impleme
 		Jwt jwt = Jwt.parse(jwtString);
 		JwtClaims claims = jwt.getClaims();
 		
+		// TODO: validate JWT signature
+		
 		String clientId = claims.getClaimAsString("client_id");
 		Set<String> scopes = Sets.newHashSet(Splitter.on(" ").split(claims.getClaimAsString("scope")));
 		
@@ -93,9 +95,75 @@ public class RequestObjectAuthorizationEndpoint extends AbstractEndpoint impleme
 		// to make sure it comes from request instead of the session
 		
 		// TODO: check parameter consistency, move keys to constants
+		
+		/*
+		 * if (in Claims):
+		 * 		if (in params):
+		 * 			if (equal):
+		 * 				all set
+		 * 			else (not equal):
+		 * 				error
+		 * 		else (not in params):
+		 * 			add to params
+		 * else (not in claims):
+		 * 		we don't care
+		 */
+		
 		String responseTypes = claims.getClaimAsString("response_type");
 		if (responseTypes != null) {
 			parameters.put("response_type", responseTypes);
+		}
+		
+		if (clientId != null) {
+			parameters.put("client_id", clientId);
+		}
+		
+		if (claims.getClaimAsString("redirect_uri") != null) {
+			if (parameters.containsKey("redirect_uri") == false) {
+				parameters.put("redirect_uri", claims.getClaimAsString("redirect_uri"));
+			}
+		}
+		
+		String state = claims.getClaimAsString("state");
+		if(state != null) {
+			if (parameters.containsKey("state") == false) {
+				parameters.put("state", state);
+			}
+		}
+		
+		String nonce = claims.getClaimAsString("nonce");
+		if(nonce != null) {
+			if (parameters.containsKey("nonce") == false) {
+				parameters.put("nonce", nonce);
+			}
+		}
+		
+		String display = claims.getClaimAsString("display");
+		if (display != null) {
+			if (parameters.containsKey("display") == false) {
+				parameters.put("display", display);
+			}
+		}
+		
+		String prompt = claims.getClaimAsString("prompt");
+		if (prompt != null) {
+			if (parameters.containsKey("prompt") == false) {
+				parameters.put("prompt", prompt);
+			}
+		}
+		
+		String request = claims.getClaimAsString("request");
+		if (request != null) {
+			if (parameters.containsKey("request") == false) {
+				parameters.put("request", request);
+			}
+		}
+		
+		String requestUri = claims.getClaimAsString("request_uri");
+		if (requestUri != null) {
+			if (parameters.containsKey("request_uri") == false) {
+				parameters.put("request_uri", requestUri);
+			}
 		}
 		
 		AuthorizationRequest authorizationRequest = new AuthorizationRequest(parameters, null, clientId, scopes);
@@ -425,5 +493,90 @@ public class RequestObjectAuthorizationEndpoint extends AbstractEndpoint impleme
 	public void afterPropertiesSet() throws Exception {
 		Assert.state(tokenGranter != null, "TokenGranter must be provided");
 		
+	}
+
+	/**
+	 * @return the tokenGranter
+	 */
+	public TokenGranter getTokenGranter() {
+		return tokenGranter;
+	}
+
+	/**
+	 * @param tokenGranter the tokenGranter to set
+	 */
+	public void setTokenGranter(TokenGranter tokenGranter) {
+		this.tokenGranter = tokenGranter;
+	}
+
+	/**
+	 * @return the redirectResolver
+	 */
+	public RedirectResolver getRedirectResolver() {
+		return redirectResolver;
+	}
+
+	/**
+	 * @param redirectResolver the redirectResolver to set
+	 */
+	public void setRedirectResolver(RedirectResolver redirectResolver) {
+		this.redirectResolver = redirectResolver;
+	}
+
+	/**
+	 * @return the clientDetailsService
+	 */
+	public ClientDetailsService getClientDetailsService() {
+		return clientDetailsService;
+	}
+
+	/**
+	 * @param clientDetailsService the clientDetailsService to set
+	 */
+	public void setClientDetailsService(ClientDetailsService clientDetailsService) {
+		this.clientDetailsService = clientDetailsService;
+	}
+
+	/**
+	 * @return the userApprovalHandler
+	 */
+	public UserApprovalHandler getUserApprovalHandler() {
+		return userApprovalHandler;
+	}
+
+	/**
+	 * @param userApprovalHandler the userApprovalHandler to set
+	 */
+	public void setUserApprovalHandler(UserApprovalHandler userApprovalHandler) {
+		this.userApprovalHandler = userApprovalHandler;
+	}
+
+	/**
+	 * @return the authorizationCodeServices
+	 */
+	public AuthorizationCodeServices getAuthorizationCodeServices() {
+		return authorizationCodeServices;
+	}
+
+	/**
+	 * @param authorizationCodeServices the authorizationCodeServices to set
+	 */
+	public void setAuthorizationCodeServices(
+			AuthorizationCodeServices authorizationCodeServices) {
+		this.authorizationCodeServices = authorizationCodeServices;
+	}
+
+	/**
+	 * @return the userApprovalPage
+	 */
+	public String getUserApprovalPage() {
+		return userApprovalPage;
+	}
+
+	/**
+	 * @param userApprovalPage the userApprovalPage to set
+	 */
+	public void setUserApprovalPage(String userApprovalPage) {
+		this.userApprovalPage = userApprovalPage;
 	}
 }
