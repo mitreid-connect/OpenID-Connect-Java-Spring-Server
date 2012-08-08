@@ -16,6 +16,7 @@ import org.mitre.jwt.model.JwtHeader;
 import org.mitre.jwt.signer.JwsAlgorithm;
 import org.mitre.jwt.signer.impl.HmacSigner;
 import org.mitre.jwt.signer.impl.RsaSigner;
+import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.openid.connect.config.OIDCServerConfiguration;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -24,6 +25,8 @@ import org.springframework.util.Assert;
 public class OIDCSignedRequestFilter extends AbstractOIDCAuthenticationFilter {
 	
 	protected OIDCServerConfiguration oidcServerConfig;
+	
+	private JwtSigningAndValidationService signingAndValidationService;
 
 	protected OIDCSignedRequestFilter() {
 		super();
@@ -104,7 +107,7 @@ public class OIDCSignedRequestFilter extends AbstractOIDCAuthenticationFilter {
 		JwtClaims claims = jwt.getClaims();
 		
 		//set parameters to JwtHeader
-		header.setAlgorithm(JwsAlgorithm.getByName(SIGNING_ALGORITHM).toString());
+//		header.setAlgorithm(JwsAlgorithm.getByName(SIGNING_ALGORITHM).toString());
 		
 		//set parameters to JwtClaims
 		claims.setClaim("response_type", "token");
@@ -114,27 +117,28 @@ public class OIDCSignedRequestFilter extends AbstractOIDCAuthenticationFilter {
 		claims.setClaim("nonce", NONCE_SIGNATURE_COOKIE_NAME);
 		claims.setClaim("state", "af0ifjsldkj");
 		
-		if(header.getAlgorithm().equals("RS256") || header.getAlgorithm().equals("RS384") || header.getAlgorithm().equals("RS512")) {
-			RsaSigner jwtSigner = new RsaSigner();
-			try {
-				jwt = jwtSigner.sign(jwt);
-			} catch (NoSuchAlgorithmException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} else if(header.getAlgorithm().equals("HS256") || header.getAlgorithm().equals("HS384") || header.getAlgorithm().equals("HS512")) {
-			HmacSigner jwtSigner = new HmacSigner();
-			try {
-				jwt = jwtSigner.sign(jwt);
-			} catch (NoSuchAlgorithmException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} else {
-			throw new IllegalArgumentException(header.getAlgorithm() + " is not a valid signing algorithm.");
+		try {
+			signingAndValidationService.signJwt(jwt);
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
 		return jwt;
+	}
+
+	/**
+	 * @return the signingAndValidationService
+	 */
+	public JwtSigningAndValidationService getSigningAndValidationService() {
+		return signingAndValidationService;
+	}
+
+	/**
+	 * @param signingAndValidationService the signingAndValidationService to set
+	 */
+	public void setSigningAndValidationService(JwtSigningAndValidationService signingAndValidationService) {
+		this.signingAndValidationService = signingAndValidationService;
 	}
 
 }
