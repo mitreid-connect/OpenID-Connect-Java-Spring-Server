@@ -75,10 +75,9 @@ public class OIDCSignedRequestFilter extends AbstractOIDCAuthenticationFilter {
 				e.printStackTrace();
 			}
 
-		} else if (StringUtils.isNotBlank(request.getParameter("token"))) {
-			
+		} else {
+
 			handleAuthorizationRequest(request, response, oidcServerConfig);
-		
 		}
 
 		return null;
@@ -139,6 +138,78 @@ public class OIDCSignedRequestFilter extends AbstractOIDCAuthenticationFilter {
 	 */
 	public void setSigningAndValidationService(JwtSigningAndValidationService signingAndValidationService) {
 		this.signingAndValidationService = signingAndValidationService;
+	}
+
+	/**
+	 * @param authorizationEndpointURI
+	 * @see org.mitre.openid.connect.config.OIDCServerConfiguration#setAuthorizationEndpointURI(java.lang.String)
+	 */
+	public void setAuthorizationEndpointURI(String authorizationEndpointURI) {
+		oidcServerConfig.setAuthorizationEndpointURI(authorizationEndpointURI);
+	}
+
+	/**
+	 * @param clientId
+	 * @see org.mitre.openid.connect.config.OIDCServerConfiguration#setClientId(java.lang.String)
+	 */
+	public void setClientId(String clientId) {
+		oidcServerConfig.setClientId(clientId);
+	}
+
+	/**
+	 * @param issuer
+	 * @see org.mitre.openid.connect.config.OIDCServerConfiguration#setIssuer(java.lang.String)
+	 */
+	public void setIssuer(String issuer) {
+		oidcServerConfig.setIssuer(issuer);
+	}
+
+	/**
+	 * @param clientSecret
+	 * @see org.mitre.openid.connect.config.OIDCServerConfiguration#setClientSecret(java.lang.String)
+	 */
+	public void setClientSecret(String clientSecret) {
+		oidcServerConfig.setClientSecret(clientSecret);
+	}
+
+	/**
+	 * @param tokenEndpointURI
+	 * @see org.mitre.openid.connect.config.OIDCServerConfiguration#setTokenEndpointURI(java.lang.String)
+	 */
+	public void setTokenEndpointURI(String tokenEndpointURI) {
+		oidcServerConfig.setTokenEndpointURI(tokenEndpointURI);
+	}
+
+	/**
+	 * @param x509EncryptUrl
+	 * @see org.mitre.openid.connect.config.OIDCServerConfiguration#setX509EncryptUrl(java.lang.String)
+	 */
+	public void setX509EncryptUrl(String x509EncryptUrl) {
+		oidcServerConfig.setX509EncryptUrl(x509EncryptUrl);
+	}
+
+	/**
+	 * @param x509SigningUrl
+	 * @see org.mitre.openid.connect.config.OIDCServerConfiguration#setX509SigningUrl(java.lang.String)
+	 */
+	public void setX509SigningUrl(String x509SigningUrl) {
+		oidcServerConfig.setX509SigningUrl(x509SigningUrl);
+	}
+
+	/**
+	 * @param jwkEncryptUrl
+	 * @see org.mitre.openid.connect.config.OIDCServerConfiguration#setJwkEncryptUrl(java.lang.String)
+	 */
+	public void setJwkEncryptUrl(String jwkEncryptUrl) {
+		oidcServerConfig.setJwkEncryptUrl(jwkEncryptUrl);
+	}
+
+	/**
+	 * @param jwkSigningUrl
+	 * @see org.mitre.openid.connect.config.OIDCServerConfiguration#setJwkSigningUrl(java.lang.String)
+	 */
+	public void setJwkSigningUrl(String jwkSigningUrl) {
+		oidcServerConfig.setJwkSigningUrl(jwkSigningUrl);
 	}
 
 }

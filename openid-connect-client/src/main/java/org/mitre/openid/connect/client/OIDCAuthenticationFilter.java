@@ -122,10 +122,6 @@ public class OIDCAuthenticationFilter extends AbstractOIDCAuthenticationFilter {
 		oidcServerConfig.setClientSecret(clientSecret);
 	}
 
-	public void setErrorRedirectURI(String errorRedirectURI) {
-		this.errorRedirectURI = errorRedirectURI;
-	}
-
 	public void setTokenEndpointURI(String tokenEndpointURI) {
 		oidcServerConfig.setTokenEndpointURI(tokenEndpointURI);
 	}
