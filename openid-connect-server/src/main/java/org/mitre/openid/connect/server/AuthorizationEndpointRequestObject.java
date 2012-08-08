@@ -10,9 +10,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.mitre.jwt.model.Jwt;
 import org.mitre.jwt.model.JwtClaims;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -25,15 +28,16 @@ import org.springframework.security.oauth2.common.exceptions.UnsupportedGrantTyp
 import org.springframework.security.oauth2.common.exceptions.UserDeniedAuthorizationException;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
+import org.springframework.security.oauth2.provider.TokenGranter;
 import org.springframework.security.oauth2.provider.approval.DefaultUserApprovalHandler;
 import org.springframework.security.oauth2.provider.approval.UserApprovalHandler;
 import org.springframework.security.oauth2.provider.code.AuthorizationCodeServices;
 import org.springframework.security.oauth2.provider.code.AuthorizationRequestHolder;
 import org.springframework.security.oauth2.provider.code.InMemoryAuthorizationCodeServices;
-import org.springframework.security.oauth2.provider.endpoint.AbstractEndpoint;
 import org.springframework.security.oauth2.provider.endpoint.DefaultRedirectResolver;
 import org.springframework.security.oauth2.provider.endpoint.RedirectResolver;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -48,7 +52,12 @@ import org.springframework.web.servlet.view.RedirectView;
 @Controller
 @SessionAttributes(types = AuthorizationRequest.class)
 @RequestMapping(value = "/oauth/authorize")
-public class AuthorizationEndpointRequestObject extends AbstractEndpoint implements InitializingBean{
+public class AuthorizationEndpointRequestObject implements InitializingBean{
+	
+	@Autowired
+	private TokenGranter tokenGranter;
+	
+	protected final Log logger = LogFactory.getLog(getClass());
 	
 	private RedirectResolver redirectResolver = new DefaultRedirectResolver();
 	
@@ -391,5 +400,19 @@ public class AuthorizationEndpointRequestObject extends AbstractEndpoint impleme
 		}
 
 		return url.toString();
+	}
+	
+	public TokenGranter getTokenGranter() {
+		return tokenGranter;
+	}
+
+	public void setTokenGranter(TokenGranter tokenGranter) {
+		this.tokenGranter = tokenGranter;
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		Assert.state(tokenGranter != null, "TokenGranter must be provided");
+		
 	}
 }
