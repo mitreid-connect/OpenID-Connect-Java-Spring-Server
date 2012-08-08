@@ -25,6 +25,7 @@ import java.util.Set;
 
 import javax.persistence.Basic;
 import javax.persistence.CollectionTable;
+import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -266,7 +267,6 @@ public class ClientDetailsEntity implements ClientDetails {
 	}
 	
 	/**
-	 * 
 	 * @return the id
 	 */
 	@Id
@@ -283,109 +283,6 @@ public class ClientDetailsEntity implements ClientDetails {
 		this.id = id;
 	}
 	
-	/**
-     * @return the clientId
-     */
-	@Basic
-    public String getClientId() {
-    	return clientId;
-    }
-
-	/**
-     * @param clientId The OAuth2 client_id, must be unique to this client 
-     */
-    public void setClientId(String clientId) {
-    	this.clientId = clientId;
-    }
-
-	/**
-     * @return the clientSecret
-     */
-	@Basic
-	public String getClientSecret() {
-    	return clientSecret;
-    }
-
-	/**
-     * @param clientSecret the OAuth2 client_secret (optional)
-     */
-    public void setClientSecret(String clientSecret) {
-    	this.clientSecret = clientSecret;
-    }
-
-	/**
-     * @return the scope
-     */
-	@ElementCollection(fetch = FetchType.EAGER)
-	@CollectionTable(
-			name="scope",
-			joinColumns=@JoinColumn(name="owner_id")
-	)
-	public Set<String> getScope() {
-    	return scope;
-    }
-
-	/**
-     * @param scope the set of scopes allowed to be issued to this client
-     */
-    public void setScope(Set<String> scope) {
-    	this.scope = scope;
-    }
-
-	/**
-     * @return the authorizedGrantTypes
-     */
-	@ElementCollection(fetch = FetchType.EAGER)
-	@CollectionTable(
-			name="authorizedgranttypes",
-			joinColumns=@JoinColumn(name="owner_id")
-	)
-	public Set<String> getAuthorizedGrantTypes() {
-    	return authorizedGrantTypes;
-    }
-
-	/**
-     * @param authorizedGrantTypes the OAuth2 grant types that this client is allowed to use  
-     */
-    public void setAuthorizedGrantTypes(Set<String> authorizedGrantTypes) {
-    	this.authorizedGrantTypes = authorizedGrantTypes;
-    }
-
-	/**
-     * @return the authorities
-     */
-	@ElementCollection(fetch = FetchType.EAGER)
-	@CollectionTable(
-			name="authorities",
-			joinColumns=@JoinColumn(name="owner_id")
-	)
-    public Set<GrantedAuthority> getAuthorities() {
-    	return authorities;
-    }
-
-	/**
-     * @param authorities the Spring Security authorities this client is given
-     */
-    public void setAuthorities(Set<GrantedAuthority> authorities) {
-    	this.authorities = authorities;
-    }
-
-	/**
-	 * If the clientSecret is not null, then it is always required.
-     */
-    @Override
-    public boolean isSecretRequired() {
-	    return getClientSecret() != null;
-    }
-
-	/**
-	 * If the scope list is not null or empty, then this client has been scoped.
-     */
-    @Override
-    public boolean isScoped() {
-    	return getScope() != null && !getScope().isEmpty();
-    }
-
 	/**
      * @return the clientDescription
      */
@@ -415,6 +312,140 @@ public class ClientDetailsEntity implements ClientDetails {
     public void setAllowRefresh(Boolean allowRefresh) {
     	this.allowRefresh = allowRefresh;
     }
+	
+    @Basic
+    public Boolean isAllowMultipleAccessTokens() {
+		return allowMultipleAccessTokens;
+	}
+
+	public void setAllowMultipleAccessTokens(Boolean allowMultipleAccessTokens) {
+		this.allowMultipleAccessTokens = allowMultipleAccessTokens;
+	}
+
+	@Basic
+	public Boolean isReuseRefreshToken() {
+		return reuseRefreshToken;
+	}
+
+	public void setReuseRefreshToken(Boolean reuseRefreshToken) {
+		this.reuseRefreshToken = reuseRefreshToken;
+	}
+	
+	
+	
+	
+    
+	/**
+	 * If the clientSecret is not null, then it is always required.
+     */
+    @Override
+    @Transient
+    public boolean isSecretRequired() {
+	    return getClientSecret() != null;
+    }
+
+	/**
+	 * If the scope list is not null or empty, then this client has been scoped.
+     */
+    @Override
+    @Transient
+    public boolean isScoped() {
+    	return getScope() != null && !getScope().isEmpty();
+    }
+	
+	/**
+     * @return the clientId
+     */
+	@Basic
+	@Override
+    public String getClientId() {
+    	return clientId;
+    }
+
+	/**
+     * @param clientId The OAuth2 client_id, must be unique to this client 
+     */
+    public void setClientId(String clientId) {
+    	this.clientId = clientId;
+    }
+
+	/**
+     * @return the clientSecret
+     */
+	@Basic
+	@Override
+	public String getClientSecret() {
+    	return clientSecret;
+    }
+
+	/**
+     * @param clientSecret the OAuth2 client_secret (optional)
+     */
+    public void setClientSecret(String clientSecret) {
+    	this.clientSecret = clientSecret;
+    }
+
+	/**
+     * @return the scope
+     */
+	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(
+			name="scope",
+			joinColumns=@JoinColumn(name="owner_id")
+	)
+	@Override
+	public Set<String> getScope() {
+    	return scope;
+    }
+
+	/**
+     * @param scope the set of scopes allowed to be issued to this client
+     */
+    public void setScope(Set<String> scope) {
+    	this.scope = scope;
+    }
+
+	/**
+     * @return the authorizedGrantTypes
+     */
+	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(
+			name="authorized_grant_type",
+			joinColumns=@JoinColumn(name="owner_id")
+	)
+	@Override
+	@Column(name="authorized_grant_type")
+	public Set<String> getAuthorizedGrantTypes() {
+    	return authorizedGrantTypes;
+    }
+
+	/**
+     * @param authorizedGrantTypes the OAuth2 grant types that this client is allowed to use  
+     */
+    public void setAuthorizedGrantTypes(Set<String> authorizedGrantTypes) {
+    	this.authorizedGrantTypes = authorizedGrantTypes;
+    }
+
+	/**
+     * @return the authorities
+     */
+	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(
+			name="authority",
+			joinColumns=@JoinColumn(name="owner_id")
+	)
+	@Override
+	@Column(name="authority")
+    public Set<GrantedAuthority> getAuthorities() {
+    	return authorities;
+    }
+
+	/**
+     * @param authorities the Spring Security authorities this client is given
+     */
+    public void setAuthorities(Set<GrantedAuthority> authorities) {
+    	this.authorities = authorities;
+    }
 
 	@Override
 	@Basic
@@ -429,7 +460,6 @@ public class ClientDetailsEntity implements ClientDetails {
     	this.accessTokenValiditySeconds = accessTokenValiditySeconds;
     }
 
-
 	@Override
 	@Basic
 	public Integer getRefreshTokenValiditySeconds() {
@@ -443,25 +473,15 @@ public class ClientDetailsEntity implements ClientDetails {
     	this.refreshTokenValiditySeconds = refreshTokenValiditySeconds;
     }
 	
-	/**
-	 * We're not using this field, so it is not stored with JPA.
-	 * 
-	 * @return an empty map
-	 */
-	@Override
-	@Transient
-	public Map<String, Object> getAdditionalInformation() {
-		return this.additionalInformation;
-	}
-
-	/**
+    /**
      * @return the registeredRedirectUri
      */
     @ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(
-			name="redirect_uris",
+			name="redirect_uri",
 			joinColumns=@JoinColumn(name="owner_id")
 	)
+    @Column(name="redirect_uri")
     public Set<String> getRegisteredRedirectUri() {
     	return registeredRedirectUri;
     }
@@ -481,6 +501,7 @@ public class ClientDetailsEntity implements ClientDetails {
 			name="resource_ids",
 			joinColumns=@JoinColumn(name="owner_id")
 	)
+	@Column(name="resource_id")
     public Set<String> getResourceIds() {
     	return resourceIds;
     }
@@ -492,23 +513,21 @@ public class ClientDetailsEntity implements ClientDetails {
     	this.resourceIds = resourceIds;
     }
 
-    @Basic
-    public Boolean isAllowMultipleAccessTokens() {
-		return allowMultipleAccessTokens;
+    
+	/**
+	 * This library does not make use of this field, so it is not
+	 * stored using our persistence layer.
+	 * 
+	 * @return an empty map
+	 */
+	@Override
+	@Transient
+	public Map<String, Object> getAdditionalInformation() {
+		return this.additionalInformation;
 	}
 
-	public void setAllowMultipleAccessTokens(Boolean allowMultipleAccessTokens) {
-		this.allowMultipleAccessTokens = allowMultipleAccessTokens;
-	}
+	
 
-	@Basic
-	public Boolean isReuseRefreshToken() {
-		return reuseRefreshToken;
-	}
-
-	public void setReuseRefreshToken(Boolean reuseRefreshToken) {
-		this.reuseRefreshToken = reuseRefreshToken;
-	}
 
 	@Basic
 	public AppType getApplicationType() {
@@ -546,7 +565,12 @@ public class ClientDetailsEntity implements ClientDetails {
 		this.userIdType = userIdType;
 	}
 
-	@Basic
+	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(
+			name="contact",
+			joinColumns=@JoinColumn(name="owner_id")
+	)
+	@Column(name="contact")
 	public Set<String> getContacts() {
 		return contacts;
 	}
