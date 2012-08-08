@@ -33,6 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
 
 @Service
 @Transactional
@@ -84,7 +85,7 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
     		Set<String> scope, Set<String> grantTypes, String redirectUri, Set<GrantedAuthority> authorities,
     		Set<String> resourceIds,
     		String name, String description, boolean allowRefresh, Integer accessTokenTimeout, 
-    		Integer refreshTokenTimeout, String owner) {
+    		Integer refreshTokenTimeout, Set<String> contacts) {
 		
 		// TODO: check "owner" locally?
 
@@ -96,13 +97,13 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 		redirectUris.add(redirectUri);
 		client.setRegisteredRedirectUri(redirectUris);
 		client.setAuthorities(authorities);
-		client.setClientName(name);
+		client.setApplicationName(name);
 		client.setClientDescription(description);
 		client.setAllowRefresh(allowRefresh);
 		client.setAccessTokenValiditySeconds(accessTokenTimeout);
 		client.setRefreshTokenValiditySeconds(refreshTokenTimeout);
 		client.setResourceIds(resourceIds);
-		client.setOwner(owner);
+		client.setContacts(contacts);
 
 		clientRepository.saveClient(client);
 		

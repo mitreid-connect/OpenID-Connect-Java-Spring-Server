@@ -66,7 +66,8 @@ public class ClientAPI {
 
         ClientDetailsEntity client = new Gson().fromJson(json, ClientDetailsEntity.class);
         // set owners as current logged in user
-        client.setOwner(principal.getName());
+        //client.setOwner(principal.getName());
+        //TODO: owner has been replaced by a list of contacts, which should be styled as email addresses.
         m.addAttribute("entity", clientService.saveClient(client));
 
         return "jsonClientView";
@@ -78,7 +79,8 @@ public class ClientAPI {
         ClientDetailsEntity client = new Gson().fromJson(json, ClientDetailsEntity.class);
         client.setClientId(id);
         // set owners as current logged in user
-        client.setOwner(principal.getName());
+        // client.setOwner(principal.getName());
+        //TODO: owner has been replaced by a list of contacts, which should be styled as email addresses.
         
         m.addAttribute("entity", clientService.saveClient(client));
 
