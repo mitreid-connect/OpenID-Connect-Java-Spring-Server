@@ -50,10 +50,15 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.RedirectView;
 
+import com.google.common.base.Splitter;
+import com.google.common.collect.Sets;
+
 @Controller
 @SessionAttributes(types = AuthorizationRequest.class)
 @RequestMapping(value = "/oauth/authorize")
-public class AuthorizationEndpointRequestObject extends AbstractEndpoint implements InitializingBean{
+public class RequestObjectAuthorizationEndpoint extends AbstractEndpoint implements InitializingBean{
+	
+	// TODO: clean up member variable inheritance
 	
 	@Autowired
 	private TokenGranter tokenGranter;
@@ -62,6 +67,7 @@ public class AuthorizationEndpointRequestObject extends AbstractEndpoint impleme
 	
 	private RedirectResolver redirectResolver = new DefaultRedirectResolver();
 	
+	@Autowired
 	private ClientDetailsService clientDetailsService;
 	
 	private UserApprovalHandler userApprovalHandler = new DefaultUserApprovalHandler();
@@ -70,7 +76,7 @@ public class AuthorizationEndpointRequestObject extends AbstractEndpoint impleme
 	
 	private String userApprovalPage = "forward:/oauth/confirm_access";
 	
-	@RequestMapping(params = "response_type")
+	@RequestMapping(params = "request")
 	public ModelAndView authorizeRequestObject(Map<String, Object> model, @RequestParam("request") String jwtString, 
 			@RequestParam Map<String, String> parameters, SessionStatus sessionStatus, Principal principal) {
 		
@@ -78,13 +84,18 @@ public class AuthorizationEndpointRequestObject extends AbstractEndpoint impleme
 		JwtClaims claims = jwt.getClaims();
 		
 		String clientId = claims.getClaimAsString("client_id");
-		String[] scopeString = new String[]{claims.getClaimAsString("scope")};
-		Collection<String> scope = new HashSet<String>(Arrays.asList(scopeString));
+		Set<String> scopes = Sets.newHashSet(Splitter.on(" ").split(claims.getClaimAsString("scope")));
 		
 		// Manually initialize auth request instead of using @ModelAttribute
 		// to make sure it comes from request instead of the session
 		
-		AuthorizationRequest authorizationRequest = new AuthorizationRequest(parameters, null, clientId, scope);
+		// TODO: check parameter consistency, move keys to constants
+		String responseTypes = claims.getClaimAsString("response_type");
+		if (responseTypes != null) {
+			parameters.put("response_type", responseTypes);
+		}
+		
+		AuthorizationRequest authorizationRequest = new AuthorizationRequest(parameters, null, clientId, scopes);
 
 		if (authorizationRequest.getClientId() == null) {
 			sessionStatus.setComplete();
