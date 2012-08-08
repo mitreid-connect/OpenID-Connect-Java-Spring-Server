@@ -109,7 +109,7 @@ public class OIDCSignedRequestFilter extends AbstractOIDCAuthenticationFilter {
 //		header.setAlgorithm(JwsAlgorithm.getByName(SIGNING_ALGORITHM).toString());
 		
 		//set parameters to JwtClaims
-		claims.setClaim("response_type", "token");
+		claims.setClaim("response_type", "code");
 		claims.setClaim("client_id", serverConfiguration.getClientId());
 		claims.setClaim("scope", scope);
 		claims.setClaim("redirect_uri", AbstractOIDCAuthenticationFilter.buildRedirectURI(request, null));
