@@ -1,11 +1,14 @@
 package org.mitre.openid.connect.client;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -113,8 +116,12 @@ public class OIDCSignedRequestFilter extends AbstractOIDCAuthenticationFilter {
 		claims.setClaim("client_id", serverConfiguration.getClientId());
 		claims.setClaim("scope", scope);
 		claims.setClaim("redirect_uri", AbstractOIDCAuthenticationFilter.buildRedirectURI(request, null));
-		claims.setClaim("nonce", NONCE_SIGNATURE_COOKIE_NAME);
-		claims.setClaim("state", "af0ifjsldkj");
+		
+		//create random nonce
+		String nonce = new BigInteger(50, new SecureRandom()).toString(16);
+		Cookie nonceCookie = new Cookie(NONCE_SIGNATURE_COOKIE_NAME, sign(signer, privateKey, nonce.getBytes()));
+
+		claims.setClaim("nonce", nonceCookie);
 		
 		try {
 			signingAndValidationService.signJwt(jwt);
