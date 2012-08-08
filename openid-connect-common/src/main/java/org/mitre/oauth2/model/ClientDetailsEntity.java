@@ -149,7 +149,9 @@ public class ClientDetailsEntity implements ClientDetails {
 	public static ClientDetailsEntityBuilder makeBuilder() {
     	return new ClientDetailsEntityBuilder();
     }
-    
+
+	//TODO or FIXME: This builder is currently unused. If we want to keep it, it needs
+	//to be updated with the current fieldset.
 	public static class ClientDetailsEntityBuilder {
 		private ClientDetailsEntity instance;
 		
@@ -157,6 +159,35 @@ public class ClientDetailsEntity implements ClientDetails {
 			instance = new ClientDetailsEntity();
 		}
 
+		/**
+         * @param clientDescription
+         * @see org.mitre.oauth2.model.ClientDetailsEntity#setClientDescription(java.lang.String)
+         */
+        public ClientDetailsEntityBuilder setClientDescription(String clientDescription) {
+	        instance.setClientDescription(clientDescription);
+			return this;
+        }
+		
+        /**
+         * @param allowRefresh
+         * @see org.mitre.oauth2.model.ClientDetailsEntity#setAllowRefresh(Boolean)
+         */
+        public ClientDetailsEntityBuilder setAllowRefresh(Boolean allowRefresh) {
+	        instance.setAllowRefresh(allowRefresh);
+			return this;
+        }
+        
+        /**
+         * @param allow
+         * @see 
+         */
+        public ClientDetailsEntityBuilder setAllowMultipleAccessTokens(Boolean allow) {
+        	instance.setAllowMultipleAccessTokens(allow);
+        	return this;
+        }
+        
+        
+        
 		/**
          * @param clientId
          * @see org.mitre.oauth2.model.ClientDetailsEntity#setClientId(java.lang.String)
@@ -202,23 +233,9 @@ public class ClientDetailsEntity implements ClientDetails {
 			return this;
         }
 
-		/**
-         * @param clientDescription
-         * @see org.mitre.oauth2.model.ClientDetailsEntity#setClientDescription(java.lang.String)
-         */
-        public ClientDetailsEntityBuilder setClientDescription(String clientDescription) {
-	        instance.setClientDescription(clientDescription);
-			return this;
-        }
+		
 
-		/**
-         * @param allowRefresh
-         * @see org.mitre.oauth2.model.ClientDetailsEntity#setAllowRefresh(Boolean)
-         */
-        public ClientDetailsEntityBuilder setAllowRefresh(Boolean allowRefresh) {
-	        instance.setAllowRefresh(allowRefresh);
-			return this;
-        }
+		
 
 		/**
          * @param accessTokenTimeout
@@ -842,8 +859,6 @@ public class ClientDetailsEntity implements ClientDetails {
 				+ (defaultACR != null ? "defaultACR=" + defaultACR : "") + "]";
 	}
 
-    
-
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
@@ -960,8 +975,6 @@ public class ClientDetailsEntity implements ClientDetails {
 		result = prime * result + ((x509Url == null) ? 0 : x509Url.hashCode());
 		return result;
 	}
-
-
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)

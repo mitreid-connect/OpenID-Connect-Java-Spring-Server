@@ -45,7 +45,6 @@ import org.mitre.jwt.model.Jwt;
 import org.mitre.openid.connect.model.IdToken;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2RefreshToken;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
 
 /**
  * @author jricher
@@ -70,7 +69,7 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	
 	private ClientDetailsEntity client;
 	
-	private OAuth2Authentication authentication; // the authentication that made this access
+	private AuthenticationHolder authenticationHolder; // the authentication that made this access
 	
 	private Jwt jwtValue; // JWT-encoded access token value
 
@@ -121,17 +120,17 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	 * The authentication in place when this token was created.
      * @return the authentication
      */
-	@Lob
-	@Basic
-    public OAuth2Authentication getAuthentication() {
-    	return authentication;
+	@ManyToOne
+	@JoinColumn(name = "owner_id")
+    public AuthenticationHolder getAuthenticationHolder() {
+    	return authenticationHolder;
     }
 
 	/**
      * @param authentication the authentication to set
      */
-    public void setAuthentication(OAuth2Authentication authentication) {
-    	this.authentication = authentication;
+    public void setAuthenticationHolder(AuthenticationHolder authenticationHolder) {
+    	this.authenticationHolder = authenticationHolder;
     }
 
 	/**

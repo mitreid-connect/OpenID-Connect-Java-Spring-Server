@@ -22,9 +22,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import org.mitre.oauth2.model.AuthenticationHolder;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
+import org.mitre.oauth2.repository.AuthenticationHolderRepository;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
@@ -55,6 +57,9 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 
 	@Autowired
 	private OAuth2TokenRepository tokenRepository;
+	
+	@Autowired
+	private AuthenticationHolderRepository authenticationHolderRepository;
 	
 	@Autowired
 	private ClientDetailsEntityService clientDetailsService;
@@ -90,7 +95,11 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	    	}
 		    
 	    	// attach the authorization so that we can look it up later
-	    	token.setAuthentication(authentication);
+	    	AuthenticationHolder authHolder = new AuthenticationHolder();
+	    	authHolder.setAuthentication(authentication);
+	    	authHolder = authenticationHolderRepository.save(authHolder);
+	    	
+	    	token.setAuthenticationHolder(authHolder);
 	    	
 	    	// TODO: tie this to the offline_access scope
 	    	// attach a refresh token, if this client is allowed to request them
@@ -207,7 +216,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 			throw new InvalidTokenException("Expired access token: " + accessTokenValue);
 		}
 		
-	    return accessToken.getAuthentication();
+	    return accessToken.getAuthenticationHolder().getAuthentication();
     }
 
 
