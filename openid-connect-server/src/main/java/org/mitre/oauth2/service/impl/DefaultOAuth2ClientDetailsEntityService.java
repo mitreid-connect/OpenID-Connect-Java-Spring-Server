@@ -16,24 +16,19 @@
 package org.mitre.oauth2.service.impl;
 
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 
 import org.mitre.oauth2.model.ClientDetailsEntity;
-import org.mitre.oauth2.model.ClientDetailsEntityFactory;
 import org.mitre.oauth2.repository.OAuth2ClientRepository;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Sets;
 
 @Service
 @Transactional
@@ -45,18 +40,15 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 	@Autowired
 	private OAuth2TokenRepository tokenRepository;
 	
-	@Autowired
-	private ClientDetailsEntityFactory clientFactory;
 	
 	public DefaultOAuth2ClientDetailsEntityService() {
 		
 	}
 	
 	public DefaultOAuth2ClientDetailsEntityService(OAuth2ClientRepository clientRepository, 
-			OAuth2TokenRepository tokenRepository, ClientDetailsEntityFactory clientFactory) {
+			OAuth2TokenRepository tokenRepository) {
 		this.clientRepository = clientRepository;
 		this.tokenRepository = tokenRepository;
-		this.clientFactory = clientFactory;
 	}
 	
 	/**
@@ -76,49 +68,6 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 		
 		throw new IllegalArgumentException("Client id must not be empty!");
 	}
-	
-	/**
-	 * Create a new client with the appropriate fields filled in
-	 */
-	@Override
-    public ClientDetailsEntity createClient(String clientId, String clientSecret, 
-    		Set<String> scope, Set<String> grantTypes, String redirectUri, Set<GrantedAuthority> authorities,
-    		Set<String> resourceIds,
-    		String name, String description, boolean allowRefresh, Integer accessTokenTimeout, 
-    		Integer refreshTokenTimeout, Set<String> contacts) {
-		
-		// TODO: check "owner" locally?
-
-		ClientDetailsEntity client = clientFactory.createClient(clientId, clientSecret);
-		client.setScope(scope);
-		client.setAuthorizedGrantTypes(grantTypes);
-		//client.setRegisteredRedirectUri(redirectUri);
-		Set<String> redirectUris = new HashSet<String>();
-		redirectUris.add(redirectUri);
-		client.setRegisteredRedirectUri(redirectUris);
-		client.setAuthorities(authorities);
-		client.setApplicationName(name);
-		client.setClientDescription(description);
-		client.setAllowRefresh(allowRefresh);
-		client.setAccessTokenValiditySeconds(accessTokenTimeout);
-		client.setRefreshTokenValiditySeconds(refreshTokenTimeout);
-		client.setResourceIds(resourceIds);
-		client.setContacts(contacts);
-
-		clientRepository.saveClient(client);
-		
-		return client;
-		
-	}
-
-    @Override
-    public ClientDetailsEntity createClient(ClientDetailsEntity client) {
-
-        clientRepository.saveClient(client);
-
-        return client;
-
-    }
 	
 	/**
 	 * Delete a client and all its associated tokens
@@ -166,7 +115,7 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
         // assign it a new ID
         if (client.getClientId() == null || client.getClientId().equals("") || this.loadClientByClientId(client.getClientId()) == null) {
             client.setClientId(UUID.randomUUID().toString());
-            return this.createClient(client);
+            return clientRepository.saveClient(client);
         }  else {
             return clientRepository.updateClient(client.getClientId(), client);
         }
