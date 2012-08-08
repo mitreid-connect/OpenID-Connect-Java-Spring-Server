@@ -65,14 +65,14 @@ public class RequestObjectAuthorizationEndpoint extends AbstractEndpoint impleme
 	
 	protected final Log logger = LogFactory.getLog(getClass());
 	
-	@Autowired
-	private RedirectResolver redirectResolver;
+	@Autowired(required = false)
+	private RedirectResolver redirectResolver = new DefaultRedirectResolver();
 	
 	@Autowired
 	private ClientDetailsService clientDetailsService;
 	
-	@Autowired
-	private UserApprovalHandler userApprovalHandler;
+	@Autowired(required = false)
+	private UserApprovalHandler userApprovalHandler = new DefaultUserApprovalHandler();
 	
 	@Autowired
 	private AuthorizationCodeServices authorizationCodeServices;
