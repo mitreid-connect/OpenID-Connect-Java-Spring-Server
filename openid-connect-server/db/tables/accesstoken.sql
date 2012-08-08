@@ -1,5 +1,6 @@
 CREATE TABLE accesstoken (
-	id VARCHAR(4096),
+	id VARCHAR(256),
+	token_value VARCHAR(4096),
 	expiration TIMESTAMP,
 	tokenType VARCHAR(256),
 	refresh_token_id VARCHAR(256),

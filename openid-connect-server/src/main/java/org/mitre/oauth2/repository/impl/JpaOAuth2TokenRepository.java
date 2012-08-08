@@ -39,7 +39,14 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 
 	@Override
 	public OAuth2AccessTokenEntity getAccessTokenByValue(String accessTokenValue) {
-		return manager.find(OAuth2AccessTokenEntity.class, accessTokenValue);
+		TypedQuery<OAuth2AccessTokenEntity> query = manager.createNamedQuery("OAuth2AccessTokenEntity.getByTokenValue", OAuth2AccessTokenEntity.class);
+		query.setParameter("tokenValue", accessTokenValue);
+		return JpaUtil.getSingleResult(query.getResultList());
+	}
+	
+	@Override
+	public OAuth2AccessTokenEntity getAccessTokenById(Long id) {
+		return manager.find(OAuth2AccessTokenEntity.class, id);
 	}
 	
 	@Override

@@ -29,6 +29,8 @@ import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
@@ -55,13 +57,16 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 	@NamedQuery(name = "OAuth2AccessTokenEntity.getByRefreshToken", query = "select a from OAuth2AccessTokenEntity a where a.refreshToken = :refreshToken"),
 	@NamedQuery(name = "OAuth2AccessTokenEntity.getByClient", query = "select a from OAuth2AccessTokenEntity a where a.client = :client"),
 	@NamedQuery(name = "OAuth2AccessTokenEntity.getExpired", query = "select a from OAuth2AccessTokenEntity a where a.expiration is not null and a.expiration < current_timestamp"),
-	@NamedQuery(name = "OAuth2AccessTokenEntity.getByAuthentication", query = "select a from OAuth2AccessTokenEntity a where a.authentication = :authentication")
+	@NamedQuery(name = "OAuth2AccessTokenEntity.getByAuthentication", query = "select a from OAuth2AccessTokenEntity a where a.authentication = :authentication"),
+	@NamedQuery(name = "OAuth2AccessTokenEntity.getByTokenValue", query = "select a from OAuth2AccessTokenEntity a where a.value = :tokenValue")
 })
 //@JsonSerialize(using = OAuth2AccessTokenSerializer.class)
 //@JsonDeserialize(using = OAuth2AccessTokenDeserializer.class)
 public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 
 	public static String ID_TOKEN = "id_token";
+	
+	private Long id;
 	
 	private ClientDetailsEntity client;
 	
@@ -86,6 +91,22 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 		setJwt(new Jwt()); // give us a blank jwt to work with at least
 	}
 	
+	/**
+	 * @return the id
+	 */
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	public Long getId() {
+		return id;
+	}
+
+	/**
+	 * @param id the id to set
+	 */
+	public void setId(Long id) {
+		this.id = id;
+	}
+
 	/**
 	 * Get all additional information to be sent to the serializer. Inserts a copy of the IdToken (in JWT String form). 
 	 */
@@ -132,8 +153,8 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
     /**
      * Get the string-encoded value of this access token. 
      */
-    @Id
-    @Column(name="id")
+    @Basic
+    @Column(name="token_value")
     public String getValue() {
 	    return jwtValue.toString();
     }

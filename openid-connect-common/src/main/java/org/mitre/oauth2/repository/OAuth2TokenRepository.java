@@ -35,6 +35,8 @@ public interface OAuth2TokenRepository {
 	public OAuth2RefreshTokenEntity saveRefreshToken(OAuth2RefreshTokenEntity refreshToken);
 
 	public OAuth2AccessTokenEntity getAccessTokenByValue(String accessTokenValue);
+	
+	public OAuth2AccessTokenEntity getAccessTokenById(Long id);
 
 	public void removeAccessToken(OAuth2AccessTokenEntity accessToken);
 
