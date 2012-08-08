@@ -27,6 +27,8 @@ import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -47,10 +49,13 @@ import org.springframework.security.oauth2.common.OAuth2RefreshToken;
 @Table(name="refreshtoken")
 @NamedQueries({
 	@NamedQuery(name = "OAuth2RefreshTokenEntity.getByClient", query = "select r from OAuth2RefreshTokenEntity r where r.client = :client"),
-	@NamedQuery(name = "OAuth2RefreshTokenEntity.getExpired", query = "select r from OAuth2RefreshTokenEntity r where r.expiration is not null and r.expiration < current_timestamp")
+	@NamedQuery(name = "OAuth2RefreshTokenEntity.getExpired", query = "select r from OAuth2RefreshTokenEntity r where r.expiration is not null and r.expiration < current_timestamp"),
+	@NamedQuery(name = "OAuth2RefreshTokenEntity.getByTokenValue", query = "selecr r from OAuth2RefreshTokenEntity r where r.tokenValue = :tokenValue")
 })
 public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
 
+	private Long id;
+	
 	private ClientDetailsEntity client;
 
 	//JWT-encoded representation of this access token entity
@@ -69,12 +74,27 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
 	}
 
 	/**
+	 * @return the id
+	 */
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	public Long getId() {
+		return id;
+	}
+
+	/**
+	 * @param id the id to set
+	 */
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	/**
 	 * Get the JWT-encoded value of this token
 	 */
-    @Id
-    @Column(name="id")
+    @Basic
+    @Column(name="tokenValue")
     public String getValue() {
-	    // TODO Auto-generated method stub
 	    return jwt.toString();
     }
 

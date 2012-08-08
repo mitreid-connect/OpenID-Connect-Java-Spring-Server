@@ -79,7 +79,14 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 
 	@Override
 	public OAuth2RefreshTokenEntity getRefreshTokenByValue(String refreshTokenValue) {
-		return manager.find(OAuth2RefreshTokenEntity.class, refreshTokenValue);
+		TypedQuery<OAuth2RefreshTokenEntity> query = manager.createNamedQuery("OAuth2RefreshTokenEntity.getByTokenValue", OAuth2RefreshTokenEntity.class);
+		query.setParameter("tokenValue", refreshTokenValue);
+		return JpaUtil.getSingleResult(query.getResultList());
+	}
+	
+	@Override
+	public OAuth2RefreshTokenEntity getRefreshTokenById(Long id) {
+		return manager.find(OAuth2RefreshTokenEntity.class, id);
 	}
 	
 	@Override
