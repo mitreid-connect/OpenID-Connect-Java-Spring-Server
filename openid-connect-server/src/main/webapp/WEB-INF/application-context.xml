@@ -83,8 +83,6 @@
 	<bean class="org.mitre.openid.connect.token.TofuUserApprovalHandler" id="jdbcUserApprovalHandler">
 	</bean>
 
-	<bean id="authCodeServices" class="org.springframework.security.oauth2.provider.code.InMemoryAuthorizationCodeServices" />
-
 	<!-- user services -->
 	<import resource="user-context.xml" />
 
