@@ -118,6 +118,9 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 			    	refreshToken.setScope(token.getScope());
 			    }
 
+			    //Add the authentication
+			    refreshToken.setAuthenticationHolder(authHolder);
+			    
 			    // save the token first so that we can set it to a member of the access token (NOTE: is this step necessary?)
 			    tokenRepository.saveRefreshToken(refreshToken);
 			    
@@ -149,6 +152,8 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		
 		ClientDetailsEntity client = refreshToken.getClient();
 		
+		AuthenticationHolder authHolder = refreshToken.getAuthenticationHolder();
+		
 		//Make sure this client allows access token refreshing
 		if (!client.isAllowRefresh()) {
 			throw new InvalidClientException("Client does not allow refreshing access token!");
@@ -166,7 +171,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		// TODO: have the option to recycle the refresh token here, too
 		// for now, we just reuse it as long as it's valid, which is the original intent
 
-		OAuth2AccessTokenEntity token = new OAuth2AccessTokenEntity(); //accessTokenFactory.createNewAccessToken();
+		OAuth2AccessTokenEntity token = new OAuth2AccessTokenEntity(); 
 
 		
 		if (scope != null && !scope.isEmpty()) { 
@@ -192,9 +197,10 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
     	}
     	
     	token.setRefreshToken(refreshToken);
+    	
+    	token.setAuthenticationHolder(authHolder);
 
-    	// TODO: call the token enhancer on refresh, too
-    	//tokenEnhancer.enhance(token, refreshToken.get)
+    	tokenEnhancer.enhance(token, authHolder.getAuthentication());
     	
     	tokenRepository.saveAccessToken(token);
     	

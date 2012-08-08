@@ -50,11 +50,14 @@ import org.springframework.security.oauth2.common.OAuth2RefreshToken;
 @NamedQueries({
 	@NamedQuery(name = "OAuth2RefreshTokenEntity.getByClient", query = "select r from OAuth2RefreshTokenEntity r where r.client = :client"),
 	@NamedQuery(name = "OAuth2RefreshTokenEntity.getExpired", query = "select r from OAuth2RefreshTokenEntity r where r.expiration is not null and r.expiration < current_timestamp"),
-	@NamedQuery(name = "OAuth2RefreshTokenEntity.getByTokenValue", query = "selecr r from OAuth2RefreshTokenEntity r where r.tokenValue = :tokenValue")
+	@NamedQuery(name = "OAuth2RefreshTokenEntity.getByTokenValue", query = "select r from OAuth2RefreshTokenEntity r where r.tokenValue = :tokenValue"),
+	@NamedQuery(name = "OAuth2RefreshTokenEntity.getByAuthentication", query = "select r from OAuth2RefreshTokenEntity r where r.authenticationHolder.authentication = :authentication")
 })
 public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
 
 	private Long id;
+	
+	private AuthenticationHolder authenticationHolder;
 	
 	private ClientDetailsEntity client;
 
@@ -88,6 +91,25 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
 	public void setId(Long id) {
 		this.id = id;
 	}
+	
+	/**
+	 * The authentication in place when the original access token was 
+	 * created
+	 * 
+     * @return the authentication
+     */
+	@ManyToOne
+	@JoinColumn(name = "owner_id")
+    public AuthenticationHolder getAuthenticationHolder() {
+    	return authenticationHolder;
+    }
+
+	/**
+     * @param authentication the authentication to set
+     */
+    public void setAuthenticationHolder(AuthenticationHolder authenticationHolder) {
+    	this.authenticationHolder = authenticationHolder;
+    }
 
 	/**
 	 * Get the JWT-encoded value of this token

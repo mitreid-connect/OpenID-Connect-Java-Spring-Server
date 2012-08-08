@@ -9,9 +9,9 @@ public interface AuthenticationHolderRepository {
 	
 	public AuthenticationHolder getByAuthentication(OAuth2Authentication a);
 	
-	public AuthenticationHolder removeById(Long id);
+	public void removeById(Long id);
 	
-	public AuthenticationHolder remove(AuthenticationHolder a);
+	public void remove(AuthenticationHolder a);
 	
 	public AuthenticationHolder save(AuthenticationHolder a);
 	
