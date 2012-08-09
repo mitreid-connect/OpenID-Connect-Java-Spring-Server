@@ -62,6 +62,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	private Boolean allowRefresh = false; // do we allow refresh tokens for this client?
 	private Boolean allowMultipleAccessTokens = false; // do we allow multiple access tokens, or not?
 	private Boolean reuseRefreshToken = false; // do we let someone reuse a refresh token?
+	private Integer idTokenValiditySeconds = 0; //timeout for id tokens
 	
 	/** Fields from ClientDetails interface **/
     private String clientId = "";
@@ -352,10 +353,26 @@ public class ClientDetailsEntity implements ClientDetails {
 		this.reuseRefreshToken = reuseRefreshToken;
 	}
 	
-	
+	/**
+	 * @return the idTokenValiditySeconds
+	 */
+	@Basic
+	@Column(name="id_token_validity_seconds")
+	public Integer getIdTokenValiditySeconds() {
+		return idTokenValiditySeconds;
+	}
+
+	/**
+	 * @param idTokenValiditySeconds the idTokenValiditySeconds to set
+	 */
+	public void setIdTokenValiditySeconds(Integer idTokenValiditySeconds) {
+		this.idTokenValiditySeconds = idTokenValiditySeconds;
+	}
 	
 	
     
+	
+
 	/**
 	 * If the clientSecret is not null, then it is always required.
      */

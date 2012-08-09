@@ -16,6 +16,7 @@
 package org.mitre.openid.connect.model;
 
 import javax.persistence.Basic;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -59,6 +60,7 @@ public class Address {
 	 * @return the streetAddress
 	 */
 	@Basic
+	@Column(name="street_address")
 	public String getStreetAddress() {
 		return streetAddress;
 	}
@@ -98,6 +100,7 @@ public class Address {
 	 * @return the postalCode
 	 */
 	@Basic
+	@Column(name="postal_code")
 	public String getPostalCode() {
 		return postalCode;
 	}

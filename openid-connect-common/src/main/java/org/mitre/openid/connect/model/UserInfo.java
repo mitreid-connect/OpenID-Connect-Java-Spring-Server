@@ -1,20 +1,24 @@
 package org.mitre.openid.connect.model;
 
 import javax.persistence.Basic;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 @Entity
 @Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
+@Table(name="user_info")
 public interface UserInfo {
 
 	/**
 	 * @return the userId
 	 */
 	@Id
+	@Column(name="user_id")
 	public abstract String getUserId();
 
 	/**
@@ -26,6 +30,7 @@ public interface UserInfo {
 	 * @return the preferred username
 	 */
 	@Basic
+	@Column(name="preferred_username")
 	public abstract String getPreferredUsername();
 	
 	/**
@@ -48,6 +53,7 @@ public interface UserInfo {
 	 * @return the givenName
 	 */
 	@Basic
+	@Column(name="given_name")
 	public abstract String getGivenName();
 
 	/**
@@ -59,6 +65,7 @@ public interface UserInfo {
 	 * @return the familyName
 	 */
 	@Basic
+	@Column(name="family_name")
 	public abstract String getFamilyName();
 
 	/**
@@ -70,6 +77,7 @@ public interface UserInfo {
 	 * @return the middleName
 	 */
 	@Basic
+	@Column(name="middle_name")
 	public abstract String getMiddleName();
 
 	/**
@@ -136,6 +144,7 @@ public interface UserInfo {
 	 * @return the verified
 	 */
 	@Basic
+	@Column(name="email_verified")
 	public abstract Boolean getEmailVerified();
 
 	/**
@@ -158,6 +167,7 @@ public interface UserInfo {
 	 * @return the zoneinfo
 	 */
 	@Basic
+	@Column(name="zone_info")
 	public abstract String getZoneinfo();
 
 	/**
@@ -180,6 +190,7 @@ public interface UserInfo {
 	 * @return the phoneNumber
 	 */
 	@Basic
+	@Column(name="phone_number")
 	public abstract String getPhoneNumber();
 
 	/**
@@ -202,6 +213,7 @@ public interface UserInfo {
 	 * @return the updatedTime
 	 */
 	@Basic
+	@Column(name="updated_time")
 	public abstract String getUpdatedTime();
 
 	/**

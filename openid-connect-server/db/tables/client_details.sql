@@ -4,6 +4,7 @@ CREATE TABLE client_details (
 	allow_refresh TINYINT,
 	allow_multiple_access_tokens TINYINT,
 	reuse_refresh_tokens TINYINT,
+	id_token_validity_seconds BIGINT,
 	
 	client_id VARCHAR(256),
 	client_secret VARCHAR(2000),

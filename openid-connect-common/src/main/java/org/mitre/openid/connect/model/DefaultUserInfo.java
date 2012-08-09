@@ -16,6 +16,7 @@
 package org.mitre.openid.connect.model;
 
 import javax.persistence.Basic;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -27,7 +28,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="userinfo")
+@Table(name="user_info")
 @NamedQueries({
 	@NamedQuery(name="DefaultUserInfo.getAll", query = "select u from DefaultUserInfo u")
 })
@@ -59,6 +60,7 @@ public class DefaultUserInfo implements UserInfo {
 	@Override
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@Column(name="user_id")
 	public String getUserId() {
 		return userId;
 	}
@@ -73,6 +75,8 @@ public class DefaultUserInfo implements UserInfo {
 	 * @see org.mitre.openid.connect.model.UserInfo#getPreferredUsername
 	 */
 	@Override
+	@Basic
+	@Column(name="preferred_username")
 	public String getPreferredUsername() {
 		return this.preferredUsername;
 	}
@@ -103,6 +107,7 @@ public class DefaultUserInfo implements UserInfo {
 	 */
 	@Override
 	@Basic
+	@Column(name="given_name")
 	public String getGivenName() {
 		return givenName;
 	}
@@ -118,6 +123,7 @@ public class DefaultUserInfo implements UserInfo {
 	 */
 	@Override
 	@Basic
+	@Column(name="family_name")
 	public String getFamilyName() {
 		return familyName;
 	}
@@ -133,6 +139,7 @@ public class DefaultUserInfo implements UserInfo {
 	 */
 	@Override
 	@Basic
+	@Column(name="middle_name")
 	public String getMiddleName() {
 		return middleName;
 	}
@@ -223,6 +230,7 @@ public class DefaultUserInfo implements UserInfo {
 	 */
 	@Override
 	@Basic
+	@Column(name="email_verified")
 	public Boolean getEmailVerified() {
 		return emailVerified;
 	}
@@ -253,6 +261,7 @@ public class DefaultUserInfo implements UserInfo {
 	 */
 	@Override
 	@Basic
+	@Column(name="zone_info")
 	public String getZoneinfo() {
 		return zoneinfo;
 	}
@@ -283,6 +292,7 @@ public class DefaultUserInfo implements UserInfo {
 	 */
 	@Override
 	@Basic
+	@Column(name="phone_number")
 	public String getPhoneNumber() {
 		return phoneNumber;
 	}
@@ -314,6 +324,7 @@ public class DefaultUserInfo implements UserInfo {
 	 */
 	@Override
 	@Basic
+	@Column(name="updated_time")
 	public String getUpdatedTime() {
 		return updatedTime;
 	}
