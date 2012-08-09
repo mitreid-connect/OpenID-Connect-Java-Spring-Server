@@ -20,7 +20,9 @@ import java.util.Date;
 import java.util.UUID;
 
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
+import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
+import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.mitre.openid.connect.model.IdToken;
 import org.mitre.openid.connect.model.IdTokenClaims;
@@ -28,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.stereotype.Service;
@@ -44,6 +47,9 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 	
 	@Autowired
 	private JwtSigningAndValidationService jwtService;
+	
+	@Autowired
+	private ClientDetailsEntityService clientService;
 	
 	@Override
 	public OAuth2AccessToken enhance(OAuth2AccessToken accessToken,	OAuth2Authentication authentication) {
@@ -87,8 +93,14 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 			IdTokenClaims claims = new IdTokenClaims();
 			claims.setAuthTime(new Date());
 			claims.setIssuedAt(new Date());
-			//TODO: Set expiration
-			//claims.setExpiration(new Date());
+			
+			ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
+			
+			if (client.getIdTokenValiditySeconds() != null) {
+				Date expiration = new Date(System.currentTimeMillis() + (client.getIdTokenValiditySeconds() * 1000L));
+				claims.setExpiration(expiration);
+			}
+			
 			claims.setIssuer(configBean.getIssuer());
 			claims.setUserId(userId);
 			claims.setAudience(clientId);
@@ -128,6 +140,14 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 
 	public void setJwtService(JwtSigningAndValidationService jwtService) {
 		this.jwtService = jwtService;
+	}
+
+	public ClientDetailsEntityService getClientService() {
+		return clientService;
+	}
+
+	public void setClientService(ClientDetailsEntityService clientService) {
+		this.clientService = clientService;
 	}
 
 }
