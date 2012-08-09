@@ -51,7 +51,7 @@ import org.springframework.security.oauth2.common.OAuth2RefreshToken;
  *
  */
 @Entity
-@Table(name="accesstoken")
+@Table(name="access_token")
 @NamedQueries({
 	@NamedQuery(name = "OAuth2AccessTokenEntity.getByRefreshToken", query = "select a from OAuth2AccessTokenEntity a where a.refreshToken = :refreshToken"),
 	@NamedQuery(name = "OAuth2AccessTokenEntity.getByClient", query = "select a from OAuth2AccessTokenEntity a where a.client = :client"),
@@ -179,6 +179,7 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
     }
 
     @Basic
+    @Column(name="token_type")
     public String getTokenType() {
 	    return tokenType;
     }
@@ -245,6 +246,7 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	 * @return the idTokenString
 	 */
 	@Basic
+	@Column(name="id_token_string")
 	public String getIdTokenString() {
 		if (idToken != null) {
 			return idToken.toString();

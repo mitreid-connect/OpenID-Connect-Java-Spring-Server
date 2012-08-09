@@ -46,7 +46,7 @@ import org.springframework.security.oauth2.common.OAuth2RefreshToken;
  *
  */
 @Entity
-@Table(name="refreshtoken")
+@Table(name="refresh_token")
 @NamedQueries({
 	@NamedQuery(name = "OAuth2RefreshTokenEntity.getByClient", query = "select r from OAuth2RefreshTokenEntity r where r.client = :client"),
 	@NamedQuery(name = "OAuth2RefreshTokenEntity.getExpired", query = "select r from OAuth2RefreshTokenEntity r where r.expiration is not null and r.expiration < current_timestamp"),
@@ -115,7 +115,7 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
 	 * Get the JWT-encoded value of this token
 	 */
     @Basic
-    @Column(name="tokenValue")
+    @Column(name="token_value")
     public String getValue() {
 	    return jwt.toString();
     }

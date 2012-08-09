@@ -48,7 +48,7 @@ import org.springframework.security.oauth2.provider.ClientDetails;
  * 
  */
 @Entity
-@Table(name="clientdetails")
+@Table(name="client_details")
 @NamedQueries({
 	@NamedQuery(name = "ClientDetailsEntity.findAll", query = "SELECT c FROM ClientDetailsEntity c"),
 	@NamedQuery(name = "ClientDetailsEntity.getByClientId", query = "select c from ClientDetailsEntity c where c.clientId = :clientId")
@@ -304,6 +304,7 @@ public class ClientDetailsEntity implements ClientDetails {
      * @return the clientDescription
      */
 	@Basic
+	@Column(name="client_description")
     public String getClientDescription() {
     	return clientDescription;
     }
@@ -319,6 +320,7 @@ public class ClientDetailsEntity implements ClientDetails {
      * @return the allowRefresh
      */
 	@Basic
+	@Column(name="allow_refresh")
     public Boolean isAllowRefresh() {
     	return allowRefresh;
     }
@@ -331,6 +333,7 @@ public class ClientDetailsEntity implements ClientDetails {
     }
 	
     @Basic
+    @Column(name="allow_multiple_access_tokens")
     public Boolean isAllowMultipleAccessTokens() {
 		return allowMultipleAccessTokens;
 	}
@@ -340,6 +343,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	}
 
 	@Basic
+	@Column(name="reuse_refresh_tokens")
 	public Boolean isReuseRefreshToken() {
 		return reuseRefreshToken;
 	}
@@ -375,6 +379,7 @@ public class ClientDetailsEntity implements ClientDetails {
      */
 	@Basic
 	@Override
+	@Column(name="client_id")
     public String getClientId() {
     	return clientId;
     }
@@ -391,6 +396,7 @@ public class ClientDetailsEntity implements ClientDetails {
      */
 	@Basic
 	@Override
+	@Column(name="client_secret")
 	public String getClientSecret() {
     	return clientSecret;
     }
@@ -466,6 +472,7 @@ public class ClientDetailsEntity implements ClientDetails {
 
 	@Override
 	@Basic
+	@Column(name="access_token_validity_seconds")
 	public Integer getAccessTokenValiditySeconds() {
 		return accessTokenValiditySeconds;
 	}
@@ -479,6 +486,7 @@ public class ClientDetailsEntity implements ClientDetails {
 
 	@Override
 	@Basic
+	@Column(name="refresh_token_validity_seconds")
 	public Integer getRefreshTokenValiditySeconds() {
 		return refreshTokenValiditySeconds;
 	}
@@ -547,6 +555,7 @@ public class ClientDetailsEntity implements ClientDetails {
 
 
 	@Basic
+	@Column(name="application_type")
 	public AppType getApplicationType() {
 		return applicationType;
 	}
@@ -556,6 +565,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	}
 
 	@Basic
+	@Column(name="application_name")
 	public String getApplicationName() {
 		return applicationName;
 	}
@@ -565,6 +575,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	}
 
 	@Basic
+	@Column(name="token_endpoint_auth_type")
 	public AuthType getTokenEndpointAuthType() {
 		return tokenEndpointAuthType;
 	}
@@ -574,6 +585,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	}
 
 	@Basic
+	@Column(name="user_id_type")
 	public String getUserIdType() {
 		return userIdType;
 	}
@@ -597,6 +609,17 @@ public class ClientDetailsEntity implements ClientDetails {
 	}
 
 	@Basic
+	@Column(name="logo_url")
+	public String getLogoUrl() {
+		return logoUrl;
+	}
+
+	public void setLogoUrl(String logoUrl) {
+		this.logoUrl = logoUrl;
+	}
+	
+	@Basic
+	@Column(name="policy_url")
 	public String getPolicyUrl() {
 		return policyUrl;
 	}
@@ -606,6 +629,27 @@ public class ClientDetailsEntity implements ClientDetails {
 	}
 
 	@Basic
+	@Column(name="jwk_url")
+	public String getJwkUrl() {
+		return jwkUrl;
+	}
+
+	public void setJwkUrl(String jwkUrl) {
+		this.jwkUrl = jwkUrl;
+	}
+
+	@Basic
+	@Column(name="jwk_encryption_url")
+	public String getJwkEncryptionUrl() {
+		return jwkEncryptionUrl;
+	}
+
+	public void setJwkEncryptionUrl(String jwkEncryptionUrl) {
+		this.jwkEncryptionUrl = jwkEncryptionUrl;
+	}
+
+	@Basic
+	@Column(name="x509_url")
 	public String getX509Url() {
 		return x509Url;
 	}
@@ -615,6 +659,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	}
 	
 	@Basic
+	@Column(name="x509_encryption_url")
 	public String getX509EncryptionUrl() {
 		return x509EncryptionUrl;
 	}
@@ -624,6 +669,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	}
 
 	@Basic
+	@Column(name="sector_identifier_url")
 	public String getSectorIdentifierUrl() {
 		return sectorIdentifierUrl;
 	}
@@ -633,6 +679,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	}
 
 	@Basic
+	@Column(name="requre_signed_request_object")
 	public JwsAlgorithm getRequireSignedRequestObject() {
 		return requireSignedRequestObject;
 	}
@@ -643,6 +690,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	}
 
 	@Basic
+	@Column(name="user_info_signed_response_alg")
 	public JwsAlgorithm getUserInfoSignedResponseAlg() {
 		return userInfoSignedResponseAlg;
 	}
@@ -652,6 +700,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	}
 
 	@Basic
+	@Column(name="user_info_encrypted_response_alg")
 	public JweAlgorithms getUserInfoEncryptedResponseAlg() {
 		return userInfoEncryptedResponseAlg;
 	}
@@ -662,6 +711,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	}
 
 	@Basic
+	@Column(name="user_info_encrypted_response_enc")
 	public JweAlgorithms getUserInfoEncryptedResponseEnc() {
 		return userInfoEncryptedResponseEnc;
 	}
@@ -672,6 +722,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	}
 
 	@Basic
+	@Column(name="user_info_encrypted_response_int")
 	public JweAlgorithms getUserInfoEncryptedResponseInt() {
 		return userInfoEncryptedResponseInt;
 	}
@@ -682,6 +733,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	}
 
 	@Basic
+	@Column(name="id_token_signed_response_alg")
 	public JwsAlgorithm getIdTokenSignedResponseAlg() {
 		return idTokenSignedResponseAlg;
 	}
@@ -691,6 +743,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	}
 
 	@Basic
+	@Column(name="id_token_encrypted_response_alg")
 	public JweAlgorithms getIdTokenEncryptedResponseAlg() {
 		return idTokenEncryptedResponseAlg;
 	}
@@ -701,6 +754,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	}
 
 	@Basic
+	@Column(name="id_token_encrypted_response_enc")
 	public JweAlgorithms getIdTokenEncryptedReponseEnc() {
 		return idTokenEncryptedReponseEnc;
 	}
@@ -711,6 +765,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	}
 
 	@Basic
+	@Column(name="id_token_encrypted_response_int")
 	public JweAlgorithms getIdTokenEncryptedResponseInt() {
 		return idTokenEncryptedResponseInt;
 	}
@@ -721,6 +776,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	}
 
 	@Basic
+	@Column(name="default_max_age")
 	public Integer getDefaultMaxAge() {
 		return defaultMaxAge;
 	}
@@ -730,6 +786,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	}
 
 	@Basic
+	@Column(name="require_auth_time")
 	public Boolean getRequireAuthTime() {
 		return requireAuthTime;
 	}
@@ -739,39 +796,13 @@ public class ClientDetailsEntity implements ClientDetails {
 	}
 
 	@Basic
+	@Column(name="default_acr")
 	public String getDefaultACR() {
 		return defaultACR;
 	}
 
 	public void setDefaultACR(String defaultACR) {
 		this.defaultACR = defaultACR;
-	}
-	
-	@Basic
-	public String getLogoUrl() {
-		return logoUrl;
-	}
-
-	public void setLogoUrl(String logoUrl) {
-		this.logoUrl = logoUrl;
-	}
-
-	@Basic
-	public String getJwkUrl() {
-		return jwkUrl;
-	}
-
-	public void setJwkUrl(String jwkUrl) {
-		this.jwkUrl = jwkUrl;
-	}
-
-	@Basic
-	public String getJwkEncryptionUrl() {
-		return jwkEncryptionUrl;
-	}
-
-	public void setJwkEncryptionUrl(String jwkEncryptionUrl) {
-		this.jwkEncryptionUrl = jwkEncryptionUrl;
 	}
 	
     @Override

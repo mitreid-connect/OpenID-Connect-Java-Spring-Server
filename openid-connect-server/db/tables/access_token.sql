@@ -1,10 +1,10 @@
-CREATE TABLE accesstoken (
+CREATE TABLE access_token (
 	id VARCHAR(256),
 	token_value VARCHAR(4096),
 	expiration TIMESTAMP,
-	tokenType VARCHAR(256),
+	token_type VARCHAR(256),
 	refresh_token_id VARCHAR(256),
 	client_id VARCHAR(256),
 	authentication LONGBLOB,
-	idTokenString VARCHAR(4096)
+	id_token_string VARCHAR(4096)
 );

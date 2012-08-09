@@ -20,6 +20,7 @@ import java.util.Set;
 
 import javax.persistence.Basic;
 import javax.persistence.CollectionTable;
+import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -35,7 +36,7 @@ import javax.persistence.Temporal;
 import javax.persistence.Transient;
 
 @Entity
-@Table(name="approvedsite")
+@Table(name="approved_site")
 @NamedQueries({
 	@NamedQuery(name = "ApprovedSite.getAll", query = "select a from ApprovedSite a"),
 	@NamedQuery(name = "ApprovedSite.getByUserId", query = "select a from ApprovedSite a where a.userId = :userId"),
@@ -97,6 +98,7 @@ public class ApprovedSite {
      * @return the userInfo
      */
     @Basic
+    @Column(name="user_id")
     public String getUserId() {
     	return userId;
     }
@@ -112,6 +114,7 @@ public class ApprovedSite {
      * @return the clientId
      */
     @Basic
+    @Column(name="client_id")
     public String getClientId() {
     	return clientId;
     }
@@ -128,6 +131,7 @@ public class ApprovedSite {
      */
     @Basic
     @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    @Column(name="creation_date")
     public Date getCreationDate() {
     	return creationDate;
     }
@@ -144,6 +148,7 @@ public class ApprovedSite {
      */
     @Basic
     @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    @Column(name="access_date")
     public Date getAccessDate() {
     	return accessDate;
     }
@@ -179,6 +184,7 @@ public class ApprovedSite {
      */
     @Basic
     @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    @Column(name="timeout_date")
     public Date getTimeoutDate() {
     	return timeoutDate;
     }
@@ -201,7 +207,7 @@ public class ApprovedSite {
 
 
 	@ManyToOne
-	@JoinColumn(name="whitelistedsite_id")
+	@JoinColumn(name="whitelisted_site_id")
 	public WhitelistedSite getWhitelistedSite() {
 		return whitelistedSite;
 	}

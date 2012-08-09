@@ -19,6 +19,7 @@ import java.util.Set;
 
 import javax.persistence.Basic;
 import javax.persistence.CollectionTable;
+import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -37,7 +38,7 @@ import javax.persistence.Table;
  *
  */
 @Entity
-@Table(name="whitelistedsite")
+@Table(name="whitelisted_site")
 @NamedQueries({
 	@NamedQuery(name = "WhitelistedSite.getAll", query = "select w from WhitelistedSite w"), 
 	@NamedQuery(name = "WhitelistedSite.getByClientId", query = "select w from WhitelistedSite w where w.clientId = :clientId"),
@@ -85,6 +86,7 @@ public class WhitelistedSite {
 	 * @return the clientId
 	 */
 	@Basic
+	@Column(name="client_id")
 	public String getClientId() {
 		return clientId;
 	}
@@ -116,6 +118,7 @@ public class WhitelistedSite {
 	}
 
 	@Basic
+	@Column(name="creator_user_id")
 	public String getCreatorUserId() {
 		return creatorUserId;
 	}
