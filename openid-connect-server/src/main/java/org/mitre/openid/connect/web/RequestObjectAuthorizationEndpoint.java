@@ -1,4 +1,4 @@
-package org.mitre.openid.connect.server;
+package org.mitre.openid.connect.web;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
