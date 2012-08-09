@@ -87,7 +87,7 @@ public class OIDCSignedRequestFilter extends AbstractOIDCAuthenticationFilter {
 	public void handleAuthorizationRequest(HttpServletRequest request, HttpServletResponse response, 
 			OIDCServerConfiguration serverConfiguration) throws IOException {
 
-			Jwt jwt = createAndSignRequestJwt(request, serverConfiguration);
+			Jwt jwt = createAndSignRequestJwt(request, response, serverConfiguration);
 			
 			Map<String, String> urlVariables = new HashMap<String, String>();
 			
@@ -100,7 +100,7 @@ public class OIDCSignedRequestFilter extends AbstractOIDCAuthenticationFilter {
 			response.sendRedirect(authRequest);
 	}
 	
-	public Jwt createAndSignRequestJwt(HttpServletRequest request, OIDCServerConfiguration serverConfiguration) {
+	public Jwt createAndSignRequestJwt(HttpServletRequest request, HttpServletResponse response, OIDCServerConfiguration serverConfiguration) {
 		Jwt jwt = new Jwt();
 		JwtHeader header = jwt.getHeader();
 		JwtClaims claims = jwt.getClaims();
@@ -117,7 +117,9 @@ public class OIDCSignedRequestFilter extends AbstractOIDCAuthenticationFilter {
 		//create random nonce
 		String nonce = new BigInteger(50, new SecureRandom()).toString(16);
 		Cookie nonceCookie = new Cookie(NONCE_SIGNATURE_COOKIE_NAME, sign(signer, privateKey, nonce.getBytes()));
-
+		
+		response.addCookie(nonceCookie);
+		
 		claims.setClaim("nonce", nonceCookie);
 		
 		try {
