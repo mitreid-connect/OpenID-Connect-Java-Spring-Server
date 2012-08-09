@@ -102,7 +102,6 @@ public class OIDCSignedRequestFilter extends AbstractOIDCAuthenticationFilter {
 	
 	public Jwt createAndSignRequestJwt(HttpServletRequest request, HttpServletResponse response, OIDCServerConfiguration serverConfiguration) {
 		Jwt jwt = new Jwt();
-		JwtHeader header = jwt.getHeader();
 		JwtClaims claims = jwt.getClaims();
 		
 		//set parameters to JwtHeader
