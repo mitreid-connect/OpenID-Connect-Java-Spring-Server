@@ -20,6 +20,8 @@ import java.util.Collection;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 
 public interface OAuth2ClientRepository {
+	
+	public ClientDetailsEntity getById(Long id);
 
 	public ClientDetailsEntity getClientById(String clientId);
 

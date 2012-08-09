@@ -29,11 +29,11 @@
             <div class="row">
                 <div class="span4 offset2 well-small" style="text-align:left">Do you authorize
                     "<c:choose>
-                        <c:when test="${empty client.clientName}">
+                        <c:when test="${empty client.applicationName}">
                             <c:out value="${client.clientId}"/>
                         </c:when>
                         <c:otherwise>
-                            <c:out value="${client.clientName}"/>
+                            <c:out value="${client.applicationName}"/>
                         </c:otherwise>
                     </c:choose>" to sign you into their site
                     using your identity?

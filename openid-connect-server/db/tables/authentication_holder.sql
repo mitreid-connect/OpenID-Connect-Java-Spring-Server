@@ -1,5 +1,5 @@
 CREATE TABLE authentication_holder (
-	id VARCHAR(256),
+	id BIGINT AUTO_INCREMENT PRIMARY KEY,
 	owner_id VARCHAR(256),
 	authentication LONGBLOB
 );

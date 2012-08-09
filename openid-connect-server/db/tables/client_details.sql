@@ -1,5 +1,5 @@
 CREATE TABLE client_details (
-	id VARCHAR(256),
+	id BIGINT AUTO_INCREMENT PRIMARY KEY,
 	client_description VARCHAR(256),
 	allow_refresh TINYINT,
 	allow_multiple_access_tokens TINYINT,

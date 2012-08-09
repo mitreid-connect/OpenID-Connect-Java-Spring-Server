@@ -45,13 +45,19 @@ public class JpaOAuth2ClientRepository implements OAuth2ClientRepository {
 	public JpaOAuth2ClientRepository(EntityManager manager) {
 		this.manager = manager;
 	}
+	
+	public ClientDetailsEntity getById(Long id) {
+		return manager.find(ClientDetailsEntity.class, id);
+	}
 
 	/* (non-Javadoc)
 	 * @see org.mitre.oauth2.repository.OAuth2ClientRepository#getClientById(java.lang.String)
 	 */
 	@Override
 	public ClientDetailsEntity getClientById(String clientId) {
-		return manager.find(ClientDetailsEntity.class, clientId);
+		TypedQuery<ClientDetailsEntity> query = manager.createNamedQuery("ClientDetailsEntity.getByClientId", ClientDetailsEntity.class);
+		query.setParameter("clientId", clientId);
+		return JpaUtil.getSingleResult(query.getResultList());
 	}
 
 	/* (non-Javadoc)

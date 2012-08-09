@@ -523,7 +523,7 @@ public class ClientDetailsEntity implements ClientDetails {
      */
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(
-			name="resource_ids",
+			name="resource_id",
 			joinColumns=@JoinColumn(name="owner_id")
 	)
 	@Column(name="resource_id")

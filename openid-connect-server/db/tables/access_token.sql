@@ -1,5 +1,5 @@
 CREATE TABLE access_token (
-	id VARCHAR(256),
+	id BIGINT AUTO_INCREMENT PRIMARY KEY,
 	token_value VARCHAR(4096),
 	expiration TIMESTAMP,
 	token_type VARCHAR(256),

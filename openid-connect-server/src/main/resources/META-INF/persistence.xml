@@ -8,6 +8,7 @@
         <class>org.mitre.oauth2.model.ClientDetailsEntity</class>
         <class>org.mitre.oauth2.model.OAuth2AccessTokenEntity</class>
         <class>org.mitre.oauth2.model.OAuth2RefreshTokenEntity</class>
+        <class>org.mitre.oauth2.model.AuthenticationHolder</class>
         <class>org.mitre.openid.connect.model.Address</class>
         <class>org.mitre.openid.connect.model.ApprovedSite</class>
         <class>org.mitre.openid.connect.model.Event</class>

@@ -1,5 +1,5 @@
 CREATE TABLE approved_site (
-	id VARCHAR(256),
+	id BIGINT AUTO_INCREMENT PRIMARY KEY,
 	user_id VARCHAR(256),
 	client_id VARCHAR(256),
 	creation_date DATE,

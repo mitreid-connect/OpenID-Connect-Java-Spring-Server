@@ -50,7 +50,7 @@ import org.springframework.security.oauth2.common.OAuth2RefreshToken;
 @NamedQueries({
 	@NamedQuery(name = "OAuth2RefreshTokenEntity.getByClient", query = "select r from OAuth2RefreshTokenEntity r where r.client = :client"),
 	@NamedQuery(name = "OAuth2RefreshTokenEntity.getExpired", query = "select r from OAuth2RefreshTokenEntity r where r.expiration is not null and r.expiration < current_timestamp"),
-	@NamedQuery(name = "OAuth2RefreshTokenEntity.getByTokenValue", query = "select r from OAuth2RefreshTokenEntity r where r.tokenValue = :tokenValue"),
+	@NamedQuery(name = "OAuth2RefreshTokenEntity.getByTokenValue", query = "select r from OAuth2RefreshTokenEntity r where r.value = :tokenValue"),
 	@NamedQuery(name = "OAuth2RefreshTokenEntity.getByAuthentication", query = "select r from OAuth2RefreshTokenEntity r where r.authenticationHolder.authentication = :authentication")
 })
 public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
@@ -63,6 +63,9 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
 
 	//JWT-encoded representation of this access token entity
 	private Jwt jwt;
+	
+	//TOOD: shouldn't need this
+	private String value;
 	
 	// our refresh tokens might expire
 	private Date expiration;
@@ -117,7 +120,8 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
     @Basic
     @Column(name="token_value")
     public String getValue() {
-	    return jwt.toString();
+    	value = jwt.toString();
+	    return value;
     }
 
     /**
@@ -126,6 +130,7 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
      * @throws IllegalArgumentException if the value is not a valid JWT string
      */
     public void setValue(String value) {
+    	this.value = value;
 	    setJwt(Jwt.parse(value));
     }
 
@@ -201,6 +206,7 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
      */
     public void setJwt(Jwt jwt) {
     	this.jwt = jwt;
+    	this.value = jwt.toString();
     }
     
 }

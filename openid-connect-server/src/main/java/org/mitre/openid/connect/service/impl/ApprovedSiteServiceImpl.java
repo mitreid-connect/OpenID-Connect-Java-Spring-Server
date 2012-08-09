@@ -62,6 +62,7 @@ public class ApprovedSiteServiceImpl implements ApprovedSiteService {
 	}
 
 	@Override
+	@Transactional
 	public ApprovedSite save(ApprovedSite approvedSite) {
 		return approvedSiteRepository.save(approvedSite);
 	}
@@ -72,20 +73,23 @@ public class ApprovedSiteServiceImpl implements ApprovedSiteService {
 	}
 
 	@Override
+	@Transactional
 	public void remove(ApprovedSite approvedSite) {
 		approvedSiteRepository.remove(approvedSite);
 	}
 
 	@Override
+	@Transactional
 	public void removeById(Long id) {
 		approvedSiteRepository.removeById(id);
 	}
 
 	@Override
+	@Transactional
 	public ApprovedSite createApprovedSite(String clientId, String userId, Date timeoutDate, Set<String> allowedScopes,
 											WhitelistedSite whitelistedSite) {
 		
-		ApprovedSite as = new ApprovedSite();
+		ApprovedSite as = approvedSiteRepository.save(new ApprovedSite());
 		
 		Date now = new Date();
 		as.setCreationDate(now);
