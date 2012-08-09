@@ -124,7 +124,7 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
      * @return the authentication
      */
 	@ManyToOne
-	@JoinColumn(name = "owner_id")
+	@JoinColumn(name = "auth_holder_id")
     public AuthenticationHolder getAuthenticationHolder() {
     	return authenticationHolder;
     }

@@ -60,8 +60,8 @@ public class ClientDetailsEntity implements ClientDetails {
 	/** Our own fields **/
 	private String clientDescription = "";//this is ours
 	private Boolean allowRefresh = false; // do we allow refresh tokens for this client?
-	private Boolean allowMultipleAccessTokens; // do we allow multiple access tokens, or not?
-	private Boolean reuseRefreshToken; // do we let someone reuse a refresh token?
+	private Boolean allowMultipleAccessTokens = false; // do we allow multiple access tokens, or not?
+	private Boolean reuseRefreshToken = false; // do we let someone reuse a refresh token?
 	
 	/** Fields from ClientDetails interface **/
     private String clientId = "";
@@ -104,7 +104,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	private JweAlgorithms idTokenEncryptedResponseInt;
 	
 	private Integer defaultMaxAge;
-	private Boolean requireAuthTime;
+	private Boolean requireAuthTime = false;
 	private String defaultACR;
 	
 	
