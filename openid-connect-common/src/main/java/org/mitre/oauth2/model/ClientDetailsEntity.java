@@ -63,6 +63,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	private Boolean allowMultipleAccessTokens = false; // do we allow multiple access tokens, or not?
 	private Boolean reuseRefreshToken = false; // do we let someone reuse a refresh token?
 	private Integer idTokenValiditySeconds = 0; //timeout for id tokens
+	private Boolean dynamicallyRegistered = false;
 	
 	/** Fields from ClientDetails interface **/
     private String clientId = "";
@@ -369,8 +370,24 @@ public class ClientDetailsEntity implements ClientDetails {
 		this.idTokenValiditySeconds = idTokenValiditySeconds;
 	}
 	
-	
+	/**
+	 * @return the dynamicallyRegistered
+	 */
+	@Basic
+	@Column(name="dynamically_registered")
+	public Boolean isDynamicallyRegistered() {
+		return dynamicallyRegistered;
+	}
+
+	/**
+	 * @param dynamicallyRegistered the dynamicallyRegistered to set
+	 */
+	public void setDynamicallyRegistered(Boolean dynamicallyRegistered) {
+		this.dynamicallyRegistered = dynamicallyRegistered;
+	}
     
+	
+
 	
 
 	/**
