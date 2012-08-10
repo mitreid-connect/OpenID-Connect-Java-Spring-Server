@@ -217,16 +217,8 @@
             });
 
             if (valid) {
-                this.model.save(this.model, {
-                    success:function () {
-                        app.navigate('clients', {trigger:true});
-                    },
-                    error:function (model,resp) {
-                        console.error("Oops! The object didn't save correctly.",resp);
-                    }
-                });
 
-                if (this.model.isNew()) {
+/*                if (this.model.isNew()) {
                     var self = this;
                     app.clientList.create(this.model, {
                         success:function () {
@@ -237,7 +229,18 @@
                         }
                     });
 
-                }
+                }*/
+
+                var _self = this;
+                this.model.save(this.model, {
+                    success:function () {
+                        app.clientList.add(_self.model);
+                        app.navigate('clients', {trigger:true});
+                    },
+                    error:function (model,resp) {
+                        console.error("Oops! The object didn't save correctly.",resp);
+                    }
+                });
             }
 
             return false;
