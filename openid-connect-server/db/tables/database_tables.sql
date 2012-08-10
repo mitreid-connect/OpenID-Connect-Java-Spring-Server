@@ -131,7 +131,12 @@ CREATE TABLE resource_id (
 	resource_id VARCHAR(256) 
 );
 
-CREATE TABLE scope (
+CREATE TABLE client_scope (
+	owner_id VARCHAR(4096),
+	scope VARCHAR(2048)
+);
+
+CREATE TABLE token_scope (
 	owner_id VARCHAR(4096),
 	scope VARCHAR(2048)
 );

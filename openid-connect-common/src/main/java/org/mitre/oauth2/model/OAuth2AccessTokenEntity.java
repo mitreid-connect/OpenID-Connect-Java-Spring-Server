@@ -215,7 +215,7 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
     @ElementCollection(fetch=FetchType.EAGER)
     @CollectionTable(
     		joinColumns=@JoinColumn(name="owner_id"),
-    		name="scope"
+    		name="token_scope"
     )
     public Set<String> getScope() {
 	    return scope;

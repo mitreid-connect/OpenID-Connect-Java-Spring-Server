@@ -111,12 +111,6 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		    		Date expiration = new Date(System.currentTimeMillis() + (client.getRefreshTokenValiditySeconds() * 1000L));
 		    		refreshToken.setExpiration(expiration);
 	    		}
-	    		
-	    		// save our scopes so that we can reuse them later for more auth tokens
-	    		// TODO: save the auth instead of the just the scope?
-			    if (client.isScoped()) {
-			    	refreshToken.setScope(token.getScope());
-			    }
 
 			    //Add the authentication
 			    refreshToken.setAuthenticationHolder(authHolder);
@@ -173,20 +167,22 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 
 		OAuth2AccessTokenEntity token = new OAuth2AccessTokenEntity(); 
 
+		// get the stored scopes from the authentication holder's authorization request; these are the scopes associated with the refresh token
+		Set<String> refreshScopes = refreshToken.getAuthenticationHolder().getAuthentication().getAuthorizationRequest().getScope();
 		
 		if (scope != null && !scope.isEmpty()) { 
-			// ensure a proper subset of scopes 
-			if (refreshToken.getScope() != null && refreshToken.getScope().containsAll(scope)) {
+			// ensure a proper subset of scopes
+			if (refreshScopes != null && refreshScopes.containsAll(scope)) {
 				// set the scope of the new access token if requested
 				token.setScope(scope);
 			} else {
 				// up-scoping is not allowed
 				// (TODO: should this throw InvalidScopeException? For now just pass through)
-				token.setScope(refreshToken.getScope());
+				token.setScope(refreshScopes);
 			}
 		} else {
 			// otherwise inherit the scope of the refresh token (if it's there -- this can return a null scope set)
-			token.setScope(refreshToken.getScope());
+			token.setScope(refreshScopes);
 		}
 	    
     	token.setClient(client);

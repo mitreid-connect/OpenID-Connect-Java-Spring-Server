@@ -451,7 +451,7 @@ public class ClientDetailsEntity implements ClientDetails {
      */
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(
-			name="scope",
+			name="client_scope",
 			joinColumns=@JoinColumn(name="owner_id")
 	)
 	@Override

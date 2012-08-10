@@ -70,8 +70,6 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
 	// our refresh tokens might expire
 	private Date expiration;
 
-	private  Set<String> scope; // we save the scope issued to the refresh token so that we can reissue a new access token	
-	
 	/**
 	 * 
 	 */
@@ -173,25 +171,6 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
     	this.client = client;
     }
 
-	/**
-     * @return the scope
-     */
-	@ElementCollection(fetch = FetchType.EAGER)
-	@CollectionTable(
-			joinColumns=@JoinColumn(name="owner_id"),
-			name="scope"
-	)
-    public Set<String> getScope() {
-    	return scope;
-    }
-
-	/**
-     * @param scope the scope to set
-     */
-    public void setScope(Set<String> scope) {
-    	this.scope = scope;
-    }
-    
     /**
      * Get the JWT object directly
      * @return the jwt
