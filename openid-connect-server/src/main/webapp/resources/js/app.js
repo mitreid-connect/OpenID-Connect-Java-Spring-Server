@@ -59,7 +59,8 @@
 
         // We can pass it default values.
         defaults:{
-            applicationName:"",
+            idTokenValiditySeconds: 0,
+            clientName:"",
             clientSecret:"",
             registeredRedirectUri:[],
             authorizedGrantTypes:["authorization_code"],
