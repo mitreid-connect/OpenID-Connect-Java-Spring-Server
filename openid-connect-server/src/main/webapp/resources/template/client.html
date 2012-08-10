@@ -42,126 +42,120 @@
 
     <h1><%=(clientId == null ? 'New' : 'Edit')%> Client</h1>
 
-
-    <div class="">
-        <form>
-            <fieldset>
-                <legend>Details <%=(clientId != null ? 'for ' + clientId : '')%></legend>
-
-                <div class="well">
-
-                    <div class="row-fluid">
-                        <div class="span6">
-                            <span class="control-group" id="clientName">
-                            <label>Client name</label>
-                            <input value="<%=clientName%>" maxlength="100" type="text" class="" placeholder="Type something"> <span class="help-inline"></span>
-                            </span>
-                            <span class="control-group" id="registeredRedirectUri">
-                            <label>Redirect URI(s)</label>
-                                 <textarea class="input-xlarge" placeholder="http://"
-                                           rows="3"><% for (var i in registeredRedirectUri) { %><%=registeredRedirectUri[i]+"\n"%><% } %></textarea> <span class="help-inline">You may enter multiple URIs separated by a new lines</span>
-                            </span>
-                        </div>
-                        <div class="span6">
-                            <span class="control-group" id="clientDescription">
-                            <label>Description</label>
-                            <textarea class="input-xlarge" placeholder="Type a description" maxlength="200"
-                                      rows="3"><%=clientDescription%></textarea> <span class="help-inline"></span>
-                            </span>
-
-
-                        </div>
-                    </div>
-
-                    <hr>
-
-                    <div class="">
-                        <p class="help-block">Refresh tokens allow clients to request another authorization
-                            token after it
-                            expires.</p>
-                        <label class="checkbox">
-                            <input type="checkbox" id="allowRefresh" <%=(allowRefresh == true ? 'checked' : '')%>> Allow refresh tokens?
-                        </label>
-                        <button class="btn btn-primary">Submit</button>
-                    </div>
+    <form class="form-horizontal">
+        <fieldset>
+            <legend>Details <%=(clientId != null ? 'for ' + clientId : '')%></legend>
+            <div class="control-group" id="clientName">
+                <label class="control-label">Client name</label>
+                <div class="controls">
+                    <input value="<%=clientName%>" maxlength="100" type="text" class="" placeholder="Type something">
+                    <p class="help-block">Supporting help text</p>
                 </div>
-            </fieldset>
-            <fieldset>
-                <legend>Additional Options</legend>
+            </div>
 
-                <div class="row-fluid">
-
-                    <div class="span4 control-group" id="scope">
-
-                        <label class="control-label">Scope</label>
-
-                        <textarea rows="3" class="xlarge" placeholder="openid"
-                                  id="textarea2" name="textarea2"><% for (var i in scope) { %><%=scope[i]+","%><% }%></textarea>
-                          <span class="help-block">
-                            Please enter scopes separated by commas
-                          </span>
-
-                    </div>
-
-                    <div class="span4 control-group">
-
-                        <div id="clientSecret">
-                            <label>Client Secret</label>
-                            <input value="<%=clientSecret%>" maxlength="100" type="text" class=""
-                                   placeholder="Type a secret"> <span class="help-inline">If you leave this blank a client secret will be generated for you automatically.</span>
-                        </div>
-                        <br/>
-
-                        <div id="authorizedGrantTypes">
-                            <label>Authorized Grant Types</label>
-                            <label class="checkbox">
-                                <input id="authorizedGrantTypes-authorization_code" type="checkbox" <%=($.inArray("authorization_code", authorizedGrantTypes) > -1 ? 'checked' : '')%>> authorization code
-                            </label>
-                            <label class="checkbox">
-                                <input id="authorizedGrantTypes-client_credentials" type="checkbox" <%=($.inArray("client_credentials", authorizedGrantTypes) > -1 ? 'checked' : '')%>> client credentials
-                            </label>
-                            <label class="checkbox">
-                                <input id="authorizedGrantTypes-password" type="checkbox" <%=($.inArray("password", authorizedGrantTypes) > -1 ? 'checked' : '')%>> password
-                            </label>
-                            <label class="checkbox">
-                                <input id="authorizedGrantTypes-implicit" type="checkbox" <%=($.inArray("implicit", authorizedGrantTypes) > -1 ? 'checked' : '')%>> implicit
-                            </label>
-                        </div>
-
-
-                    </div>
-
-
-                    <div class="span4">
-                        <span class="control-group" id="accessTokenValiditySeconds">
-                        <label class="control-label" for="access-token-timeout-seconds" style="">Access Token
-                            Timeout</label>
-
-                        <div class="controls form-horizontal" style="">
-                            <div class="input-append">
-                                <input type="text" class="" value="<%=accessTokenValiditySeconds%>" id="access-token-timeout-seconds" size="16"><span
-                                    class="add-on">seconds</span>
-                            </div>
-                            <span class="help-inline">Enter this time in seconds</span>
-                        </div>
-                        </span>
-                        <span class="control-group" id="refreshTokenValiditySeconds">
-                        <label class="control-label" for="refresh-token-timeout-seconds" style="">Refresh Token
-                            Timeout</label>
-
-                        <div class="controls form-horizontal" style="">
-                            <div class="input-append">
-                                <input type="text" class="" value="<%=refreshTokenValiditySeconds%>" id="refresh-token-timeout-seconds" size="16"><span
-                                    class="add-on">seconds</span>
-                            </div>
-                            <span class="help-inline">Enter this time in seconds</span>
-                        </div>
-                        </span>
-                    </div>
-
+            <div class="control-group" id="registeredRedirectUri">
+                <label class="control-label">Redirect URI(s)</label>
+                <div class="controls">
+                    <textarea class="input-xlarge" placeholder="http://"
+                              rows="3"><% for (var i in registeredRedirectUri) { %><%=registeredRedirectUri[i]+"\n"%><% } %></textarea>
+                    <p class="help-block">You may enter multiple URIs separated by a new lines</p>
                 </div>
-            </fieldset>
-        </form>
+            </div>
+
+            <div class="control-group" id="clientDescription">
+                <label class="control-label">Description</label>
+                <div class="controls">
+                    <textarea class="input-xlarge" placeholder="Type a description" maxlength="200"
+                              rows="3"><%=clientDescription%></textarea>
+                    <p class="help-block">Supporting help text</p>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">Refresh Tokens</label>
+                <div class="controls">
+                    <label class="checkbox">
+                        <input type="checkbox" id="allowRefresh" <%=(allowRefresh == true ? 'checked' : '')%>> Allow refresh tokens?
+                    </label>
+                </div>
+            </div>
+
+            <div class="control-group" id="scope">
+                <label class="control-label">Scope</label>
+                <div class="controls">
+                    <textarea rows="3" class="xlarge" placeholder="openid"
+                              id="textarea2" name="textarea2"><% for (var i in scope) { %><%=scope[i]+","%><% }%></textarea>
+                    <p class="help-block">Please enter scopes separated by commas</p>
+                </div>
+            </div>
+
+            <div class="control-group" id="clientSecret">
+                <label class="control-label">Client name</label>
+                <div class="controls">
+                    <input value="<%=clientSecret%>" maxlength="100" type="text" class=""
+                           placeholder="Type a secret">
+                    <p class="help-block">If you leave this blank a client secret will be generated for you automatically.</p>
+                </div>
+            </div>
+
+            <div class="control-group" id="authorizedGrantTypes">
+                <label class="control-label">Authorized Grant Types</label>
+
+                <div class="controls">
+
+                    <label class="checkbox">
+                        <input id="authorizedGrantTypes-authorization_code" type="checkbox"
+                        <%=($.inArray("authorization_code", authorizedGrantTypes) > -1 ? 'checked' : '')%>>
+                        authorization code
+                    </label>
+                    <label class="checkbox">
+                        <input id="authorizedGrantTypes-client_credentials" type="checkbox"
+                        <%=($.inArray("client_credentials", authorizedGrantTypes) > -1 ? 'checked' : '')%>> client
+                        credentials
+                    </label>
+                    <label class="checkbox">
+                        <input id="authorizedGrantTypes-password" type="checkbox" <%=($.inArray("password",
+                        authorizedGrantTypes) > -1 ? 'checked' : '')%>> password
+                    </label>
+                    <label class="checkbox">
+                        <input id="authorizedGrantTypes-implicit" type="checkbox" <%=($.inArray("implicit",
+                        authorizedGrantTypes) > -1 ? 'checked' : '')%>> implicit
+                    </label>
+                </div>
+            </div>
+
+            <div class="control-group" id="accessTokenValiditySeconds">
+                <label class="control-label">Access Token
+                    Timeout</label>
+                <div class="controls">
+                    <div class="input-append">
+                        <input type="text" class="" value="<%=accessTokenValiditySeconds%>" id="access-token-timeout-seconds" size="16"><span
+                            class="add-on">seconds</span>
+                    </div>
+                    <p class="help-block">Enter this time in seconds</p>
+                </div>
+            </div>
+
+            <div class="control-group" id="refreshTokenValiditySeconds">
+                <label class="control-label">Refresh Token
+                    Timeout</label>
+                <div class="controls">
+                    <div class="input-append">
+                        <input type="text" class="" value="<%=refreshTokenValiditySeconds%>" id="refresh-token-timeout-seconds" size="16"><span
+                            class="add-on">seconds</span>
+                    </div>
+                    <p class="help-block">Enter this time in seconds</p>
+                </div>
+            </div>
+
+        </fieldset>
+    </form>
+
+
+
+
+    <div class="well">
+        <button class="btn btn-small btn-primary">Submit</button>
     </div>
 
 </script>

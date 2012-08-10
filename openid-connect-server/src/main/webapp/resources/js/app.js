@@ -2,7 +2,7 @@
 
     var ClientModel = Backbone.Model.extend({
 
-        idAttribute: "clientId",
+        idAttribute: "id",
 
         initialize: function () {
 
@@ -59,7 +59,7 @@
 
         // We can pass it default values.
         defaults:{
-            clientName:"",
+            applicationName:"",
             clientSecret:"",
             registeredRedirectUri:[],
             authorizedGrantTypes:["authorization_code"],
