@@ -54,7 +54,7 @@ public class JpaOAuth2ClientRepository implements OAuth2ClientRepository {
 	 * @see org.mitre.oauth2.repository.OAuth2ClientRepository#getClientById(java.lang.String)
 	 */
 	@Override
-	public ClientDetailsEntity getClientById(String clientId) {
+	public ClientDetailsEntity getClientByClientId(String clientId) {
 		TypedQuery<ClientDetailsEntity> query = manager.createNamedQuery("ClientDetailsEntity.getByClientId", ClientDetailsEntity.class);
 		query.setParameter("clientId", clientId);
 		return JpaUtil.getSingleResult(query.getResultList());
@@ -73,7 +73,7 @@ public class JpaOAuth2ClientRepository implements OAuth2ClientRepository {
 	 */
 	@Override
 	public void deleteClient(ClientDetailsEntity client) {
-		ClientDetailsEntity found = getClientById(client.getClientId());
+		ClientDetailsEntity found = getClientByClientId(client.getClientId());
 		if (found != null) {
 			manager.remove(found);
 		} else {

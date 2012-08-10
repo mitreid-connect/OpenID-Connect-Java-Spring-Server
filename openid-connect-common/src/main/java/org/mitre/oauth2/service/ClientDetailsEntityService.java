@@ -25,6 +25,8 @@ import org.springframework.security.oauth2.provider.ClientDetailsService;
 
 public interface ClientDetailsEntityService extends ClientDetailsService {
 
+	public ClientDetailsEntity getClientById(Long id);
+	
 	public ClientDetailsEntity loadClientByClientId(String clientId) throws OAuth2Exception;
 
 	public void deleteClient(ClientDetailsEntity client);

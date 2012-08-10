@@ -23,7 +23,7 @@ public interface OAuth2ClientRepository {
 	
 	public ClientDetailsEntity getById(Long id);
 
-	public ClientDetailsEntity getClientById(String clientId);
+	public ClientDetailsEntity getClientByClientId(String clientId);
 
 	public ClientDetailsEntity saveClient(ClientDetailsEntity client);
 

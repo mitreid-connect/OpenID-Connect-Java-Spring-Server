@@ -52,12 +52,21 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 	}
 	
 	/**
-	 * Get the client for the given ID
+	 * Get the client by its internal ID
+	 */
+	public ClientDetailsEntity getClientById(Long id) {
+		ClientDetailsEntity client = clientRepository.getById(id);
+		
+		return client;
+	}
+	
+	/**
+	 * Get the client for the given ClientID
 	 */
 	@Override
 	public ClientDetailsEntity loadClientByClientId(String clientId) throws OAuth2Exception, InvalidClientException, IllegalArgumentException {
 		if (!Strings.isNullOrEmpty(clientId)) {
-			ClientDetailsEntity client = clientRepository.getClientById(clientId);
+			ClientDetailsEntity client = clientRepository.getClientByClientId(clientId);
 			if (client == null) {
 				throw new InvalidClientException("Client with id " + clientId + " was not found");
 			}
@@ -75,7 +84,7 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 	@Override
     public void deleteClient(ClientDetailsEntity client) throws InvalidClientException {
 		
-		if (clientRepository.getClientById(client.getClientId()) == null) {
+		if (clientRepository.getClientByClientId(client.getClientId()) == null) {
 			throw new InvalidClientException("Client with id " + client.getClientId() + " was not found");
 		}
 		
