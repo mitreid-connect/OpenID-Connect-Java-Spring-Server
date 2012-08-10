@@ -28,9 +28,9 @@ CREATE TABLE approved_site (
 	id BIGINT AUTO_INCREMENT PRIMARY KEY,
 	user_id VARCHAR(4096),
 	client_id VARCHAR(4096),
-	creation_date DATE,
-	access_date DATE,
-	timeout_date DATE,
+	creation_date TIMESTAMP,
+	access_date TIMESTAMP,
+	timeout_date TIMESTAMP,
 	whitelisted_site_id VARCHAR(256)
 );
 
