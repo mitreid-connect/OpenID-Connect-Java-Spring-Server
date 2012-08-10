@@ -67,7 +67,7 @@
             scope:["openid"],
             authorities:[],
             clientDescription:"",
-            clientId:null,
+            clientId:"",
             allowRefresh:false,
             accessTokenValiditySeconds: 0,
             refreshTokenValiditySeconds: 0
