@@ -1,46 +1,14 @@
 <script type="text/html" id="tmpl-client">
     <td>
         <%=clientId%>
+        <blockquote><small><%=clientDescription%></small></blockquote>
     </td>
 
     <td>
         <%=clientName%>
-    </td>
-    <td>
-        <ul>
-            <% for (var i in registeredRedirectUri) { %>
-            <li>
-                <%=registeredRedirectUri[i]%>
-            </li>
-            <% } %>
-        </ul>
-    </td>
-    <td>
-        <ul>
-            <% for (var i in authorizedGrantTypes) { %>
-            <li>
-                <%=authorizedGrantTypes[i]%>
-            </li>
-            <% } %>
-        </ul>
-    </td>
-    <td>
-        <ul>
-            <% for (var i in scope) { %>
-            <li>
-                <%=scope[i]%>
-            </li>
-            <% } %>
-        </ul>
+        <!--expandable future information-->
     </td>
 
-    <td>
-        <%=clientDescription%>
-    </td>
-    <td><input type="checkbox"
-        <%=(allowRefresh == 1 ? 'checked' : '')%>
-        value="" id="" name="" disabled>
-    </td>
     <td>
         <button class="btn btn-edit">edit</button>
     </td>
@@ -58,13 +26,8 @@
     <table id="client-table" class="table">
         <thead>
         <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Redirect URI(s)</th>
-            <th>Grant Types</th>
-            <th>Scope</th>
-            <th>Description</th>
-            <th>Refresh Tokens</th>
+            <th>Client ID</th>
+            <th>Client Name</th>
             <th class="span1"></th>
             <th class="span1"></th>
         </tr>
