@@ -64,9 +64,6 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
 	//JWT-encoded representation of this access token entity
 	private Jwt jwt;
 	
-	//TOOD: shouldn't need this
-	private String value;
-	
 	// our refresh tokens might expire
 	private Date expiration;
 
@@ -118,8 +115,7 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
     @Basic
     @Column(name="token_value")
     public String getValue() {
-    	value = jwt.toString();
-	    return value;
+	    return jwt.toString();
     }
 
     /**
@@ -128,7 +124,6 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
      * @throws IllegalArgumentException if the value is not a valid JWT string
      */
     public void setValue(String value) {
-    	this.value = value;
 	    setJwt(Jwt.parse(value));
     }
 
@@ -185,7 +180,6 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
      */
     public void setJwt(Jwt jwt) {
     	this.jwt = jwt;
-    	this.value = jwt.toString();
     }
     
 }
