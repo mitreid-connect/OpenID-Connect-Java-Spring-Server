@@ -24,7 +24,7 @@
         <thead>
         <tr>
             <th>Client ID</th>
-            <th>Client Name</th>
+            <th>Application Name</th>
             <th></th>
         </tr>
         </thead>
@@ -44,11 +44,19 @@
 
     <form class="form-horizontal">
         <fieldset>
-            <legend>Details <%=(clientId != null ? 'for ' + clientId : '')%></legend>
+            <legend>Details</legend>
             <div class="control-group" id="applicationName">
                 <label class="control-label">Application name</label>
                 <div class="controls">
                     <input value="<%=applicationName%>" maxlength="100" type="text" class="" placeholder="Type something">
+                    <p class="help-block">Supporting help text</p>
+                </div>
+            </div>
+
+            <div class="control-group" id="clientId">
+                <label class="control-label">Client ID</label>
+                <div class="controls">
+                    <input value="<%=clientId%>" maxlength="100" type="text" class="" placeholder="Type something">
                     <p class="help-block">Supporting help text</p>
                 </div>
             </div>

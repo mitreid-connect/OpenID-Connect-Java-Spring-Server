@@ -207,6 +207,7 @@
 
             var valid = this.model.set({
                 applicationName:$('#applicationName input').val(),
+                clientId:$('#clientId input').val(),
                 clientSecret:$('#clientSecret input').val(),
                 registeredRedirectUri:registeredRedirectUri,
                 clientDescription:$('#clientDescription textarea').val(),
