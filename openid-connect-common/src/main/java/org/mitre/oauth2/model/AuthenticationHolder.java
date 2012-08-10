@@ -1,6 +1,7 @@
 package org.mitre.oauth2.model;
 
 import javax.persistence.Basic;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -22,7 +23,7 @@ public class AuthenticationHolder {
 
 	private Long id;
 	
-	private Long owner_id;
+	private Long ownerId;
 	
 	private OAuth2Authentication authentication;
 	
@@ -41,12 +42,13 @@ public class AuthenticationHolder {
 	}
 
 	@Basic
-	public Long getOwner_id() {
-		return owner_id;
+	@Column(name="owner_id")
+	public Long getOwnerId() {
+		return ownerId;
 	}
 
-	public void setOwner_id(Long owner_id) {
-		this.owner_id = owner_id;
+	public void setOwnerId(Long owner_id) {
+		this.ownerId = owner_id;
 	}
 
 	@Lob
