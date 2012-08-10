@@ -215,6 +215,7 @@
                 authorizedGrantTypes: authorizedGrantTypes,
                 accessTokenValiditySeconds: $('#accessTokenValiditySeconds input').val(),
                 refreshTokenValiditySeconds: $('#refreshTokenValiditySeconds input').val(),
+                idTokenValiditySeconds: $('#idTokenValiditySeconds input').val(),
                 scope:$.map($('#scope textarea').val().replace(/,$/,'').replace(/\s/g,' ').split(","), $.trim)
             });
 
