@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.mitre.jwt.model.Jwt;
 import org.mitre.jwt.model.JwtClaims;
-import org.mitre.jwt.model.JwtHeader;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.openid.connect.config.OIDCServerConfiguration;
 import org.springframework.security.core.Authentication;
@@ -119,7 +118,7 @@ public class OIDCSignedRequestFilter extends AbstractOIDCAuthenticationFilter {
 		
 		response.addCookie(nonceCookie);
 		
-		claims.setClaim("nonce", response);
+		claims.setClaim("nonce", nonceCookie);
 		
 		try {
 			signingAndValidationService.signJwt(jwt);
