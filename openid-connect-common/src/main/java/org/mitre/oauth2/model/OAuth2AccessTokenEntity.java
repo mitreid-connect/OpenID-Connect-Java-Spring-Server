@@ -73,9 +73,6 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	
 	private Jwt jwtValue; // JWT-encoded access token value
 	
-	//TODO should not need this
-	private String value;
-
 	private IdToken idToken; // JWT-encoded OpenID Connect IdToken
 	
 	private Date expiration;
@@ -158,8 +155,7 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
     @Basic
     @Column(name="token_value")
     public String getValue() {
-    	this.value = jwtValue.toString();
-	    return value;
+	    return jwtValue.toString();
     }
 
     /**
@@ -169,7 +165,6 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
      * @throws IllegalArgumentException if "value" is not a properly formatted JWT string
      */
     public void setValue(String value) {
-    	this.value = value;
     	setJwt(Jwt.parse(value));
     }
 
@@ -215,7 +210,7 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
     @ElementCollection(fetch=FetchType.EAGER)
     @CollectionTable(
     		joinColumns=@JoinColumn(name="owner_id"),
-    		name="scope"
+    		name="token_scope"
     )
     public Set<String> getScope() {
 	    return scope;
@@ -281,7 +276,6 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	 */
 	public void setJwt(Jwt jwt) {
 		this.jwtValue = jwt;
-		this.value = jwt.toString();
 	}
 
 	@Override

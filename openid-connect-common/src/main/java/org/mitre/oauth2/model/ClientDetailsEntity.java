@@ -28,6 +28,8 @@ import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -55,15 +57,17 @@ import org.springframework.security.oauth2.provider.ClientDetails;
 })
 public class ClientDetailsEntity implements ClientDetails {
 
+    private static final long serialVersionUID = -1617727085733786296L;
+
 	private Long id;
 	
 	/** Our own fields **/
-	private String clientDescription = "";//this is ours
+	private String clientDescription = ""; // human-readable description
 	private Boolean allowRefresh = false; // do we allow refresh tokens for this client?
 	private Boolean allowMultipleAccessTokens = false; // do we allow multiple access tokens, or not?
 	private Boolean reuseRefreshToken = false; // do we let someone reuse a refresh token?
-	private Integer idTokenValiditySeconds = 0; //timeout for id tokens
-	private Boolean dynamicallyRegistered = false;
+	private Boolean dynamicallyRegistered = false; // was this client dynamically registered?
+	private Integer idTokenValiditySeconds; //timeout for id tokens
 	
 	/** Fields from ClientDetails interface **/
     private String clientId = "";
@@ -447,7 +451,7 @@ public class ClientDetailsEntity implements ClientDetails {
      */
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(
-			name="scope",
+			name="client_scope",
 			joinColumns=@JoinColumn(name="owner_id")
 	)
 	@Override
@@ -588,7 +592,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	
 
 
-	@Basic
+	@Enumerated(EnumType.STRING)
 	@Column(name="application_type")
 	public AppType getApplicationType() {
 		return applicationType;
@@ -608,7 +612,7 @@ public class ClientDetailsEntity implements ClientDetails {
 		this.applicationName = applicationName;
 	}
 
-	@Basic
+	@Enumerated(EnumType.STRING)
 	@Column(name="token_endpoint_auth_type")
 	public AuthType getTokenEndpointAuthType() {
 		return tokenEndpointAuthType;
@@ -712,7 +716,7 @@ public class ClientDetailsEntity implements ClientDetails {
 		this.sectorIdentifierUrl = sectorIdentifierUrl;
 	}
 
-	@Basic
+	@Enumerated(EnumType.STRING)
 	@Column(name="requre_signed_request_object")
 	public JwsAlgorithm getRequireSignedRequestObject() {
 		return requireSignedRequestObject;
@@ -723,7 +727,7 @@ public class ClientDetailsEntity implements ClientDetails {
 		this.requireSignedRequestObject = requireSignedRequestObject;
 	}
 
-	@Basic
+	@Enumerated(EnumType.STRING)
 	@Column(name="user_info_signed_response_alg")
 	public JwsAlgorithm getUserInfoSignedResponseAlg() {
 		return userInfoSignedResponseAlg;
@@ -733,7 +737,7 @@ public class ClientDetailsEntity implements ClientDetails {
 		this.userInfoSignedResponseAlg = userInfoSignedResponseAlg;
 	}
 
-	@Basic
+	@Enumerated(EnumType.STRING)
 	@Column(name="user_info_encrypted_response_alg")
 	public JweAlgorithms getUserInfoEncryptedResponseAlg() {
 		return userInfoEncryptedResponseAlg;
@@ -744,7 +748,7 @@ public class ClientDetailsEntity implements ClientDetails {
 		this.userInfoEncryptedResponseAlg = userInfoEncryptedResponseAlg;
 	}
 
-	@Basic
+	@Enumerated(EnumType.STRING)
 	@Column(name="user_info_encrypted_response_enc")
 	public JweAlgorithms getUserInfoEncryptedResponseEnc() {
 		return userInfoEncryptedResponseEnc;
@@ -755,7 +759,7 @@ public class ClientDetailsEntity implements ClientDetails {
 		this.userInfoEncryptedResponseEnc = userInfoEncryptedResponseEnc;
 	}
 
-	@Basic
+	@Enumerated(EnumType.STRING)
 	@Column(name="user_info_encrypted_response_int")
 	public JweAlgorithms getUserInfoEncryptedResponseInt() {
 		return userInfoEncryptedResponseInt;
@@ -766,7 +770,7 @@ public class ClientDetailsEntity implements ClientDetails {
 		this.userInfoEncryptedResponseInt = userInfoEncryptedResponseInt;
 	}
 
-	@Basic
+	@Enumerated(EnumType.STRING)
 	@Column(name="id_token_signed_response_alg")
 	public JwsAlgorithm getIdTokenSignedResponseAlg() {
 		return idTokenSignedResponseAlg;
@@ -776,7 +780,7 @@ public class ClientDetailsEntity implements ClientDetails {
 		this.idTokenSignedResponseAlg = idTokenSignedResponseAlg;
 	}
 
-	@Basic
+	@Enumerated(EnumType.STRING)
 	@Column(name="id_token_encrypted_response_alg")
 	public JweAlgorithms getIdTokenEncryptedResponseAlg() {
 		return idTokenEncryptedResponseAlg;
@@ -787,7 +791,7 @@ public class ClientDetailsEntity implements ClientDetails {
 		this.idTokenEncryptedResponseAlg = idTokenEncryptedResponseAlg;
 	}
 
-	@Basic
+	@Enumerated(EnumType.STRING)
 	@Column(name="id_token_encrypted_response_enc")
 	public JweAlgorithms getIdTokenEncryptedReponseEnc() {
 		return idTokenEncryptedReponseEnc;
@@ -798,7 +802,7 @@ public class ClientDetailsEntity implements ClientDetails {
 		this.idTokenEncryptedReponseEnc = idTokenEncryptedReponseEnc;
 	}
 
-	@Basic
+	@Enumerated(EnumType.STRING)
 	@Column(name="id_token_encrypted_response_int")
 	public JweAlgorithms getIdTokenEncryptedResponseInt() {
 		return idTokenEncryptedResponseInt;

@@ -3,9 +3,9 @@ CREATE TABLE access_token (
 	token_value VARCHAR(4096),
 	expiration TIMESTAMP,
 	token_type VARCHAR(256),
-	refresh_token_id VARCHAR(256),
+	refresh_token_id BIGINT,
 	client_id VARCHAR(256),
-	auth_holder_id VARCHAR(256),
+	auth_holder_id BIGINT,
 	id_token_string VARCHAR(4096)
 );
 
@@ -20,33 +20,33 @@ CREATE TABLE address (
 );
 
 CREATE TABLE allowed_scope (
-	owner_id VARCHAR(256), 
+	owner_id BIGINT, 
 	allowed_scope VARCHAR(256)
 );
 
 CREATE TABLE approved_site (
 	id BIGINT AUTO_INCREMENT PRIMARY KEY,
-	user_id VARCHAR(256),
-	client_id VARCHAR(256),
-	creation_date DATE,
-	access_date DATE,
-	timeout_date DATE,
+	user_id VARCHAR(4096),
+	client_id VARCHAR(4096),
+	creation_date TIMESTAMP,
+	access_date TIMESTAMP,
+	timeout_date TIMESTAMP,
 	whitelisted_site_id VARCHAR(256)
 );
 
 CREATE TABLE authentication_holder (
 	id BIGINT AUTO_INCREMENT PRIMARY KEY,
-	owner_id VARCHAR(256),
+	owner_id BIGINT,
 	authentication LONGBLOB
 );
 
 CREATE TABLE authority (
-	owner_id VARCHAR(4096),
+	owner_id BIGINT,
 	authority LONGBLOB
 );
 
 CREATE TABLE authorized_grant_type (
-	owner_id VARCHAR(256),
+	owner_id BIGINT,
 	authorized_grant_type VARCHAR(2000)
 );
 
@@ -56,11 +56,11 @@ CREATE TABLE client_details (
 	allow_refresh TINYINT,
 	allow_multiple_access_tokens TINYINT,
 	reuse_refresh_tokens TINYINT,
-	id_token_validity_seconds BIGINT,
 	dynamically_registered TINYINT,
+	id_token_validity_seconds BIGINT,
 	
 	client_id VARCHAR(256),
-	client_secret VARCHAR(2000),
+	client_secret VARCHAR(2048),
 	access_token_validity_seconds BIGINT,
 	refresh_token_validity_seconds BIGINT,
 	
@@ -69,13 +69,13 @@ CREATE TABLE client_details (
 	token_endpoint_auth_type VARCHAR(256),
 	user_id_type VARCHAR(256),
 	
-	logo_url VARCHAR(256),
-	policy_url VARCHAR(256),
-	jwk_url VARCHAR(256),
-	jwk_encryption_url VARCHAR(256),
-	x509_url VARCHAR(256),
-	x509_encryption_url VARCHAR(256),
-	sector_identifier_url VARCHAR(256),
+	logo_url VARCHAR(2048),
+	policy_url VARCHAR(2048),
+	jwk_url VARCHAR(2048),
+	jwk_encryption_url VARCHAR(2048),
+	x509_url VARCHAR(2048),
+	x509_encryption_url VARCHAR(2048),
+	sector_identifier_url VARCHAR(2048),
 	
 	requre_signed_request_object VARCHAR(256),
 	
@@ -95,7 +95,7 @@ CREATE TABLE client_details (
 );
 
 CREATE TABLE contact (
-	owner_id VARCHAR(256),
+	owner_id BIGINT,
 	contact VARCHAR(256)
 );
 
@@ -114,14 +114,15 @@ CREATE TABLE idtokenclaims (
 );
 
 CREATE TABLE redirect_uri (
-	owner_id VARCHAR(256), 
-	redirect_uri VARCHAR(2000) 
+	owner_id BIGINT, 
+	redirect_uri VARCHAR(2048) 
 );
 
 CREATE TABLE refresh_token (
 	id BIGINT AUTO_INCREMENT PRIMARY KEY,
 	token_value VARCHAR(4096),
 	expiration TIMESTAMP,
+	auth_holder_id BIGINT,
 	client_id VARCHAR(256)
 );
 
@@ -130,7 +131,12 @@ CREATE TABLE resource_id (
 	resource_id VARCHAR(256) 
 );
 
-CREATE TABLE scope (
+CREATE TABLE client_scope (
+	owner_id VARCHAR(4096),
+	scope VARCHAR(2048)
+);
+
+CREATE TABLE token_scope (
 	owner_id VARCHAR(4096),
 	scope VARCHAR(2048)
 );

@@ -64,14 +64,9 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
 	//JWT-encoded representation of this access token entity
 	private Jwt jwt;
 	
-	//TOOD: shouldn't need this
-	private String value;
-	
 	// our refresh tokens might expire
 	private Date expiration;
 
-	private  Set<String> scope; // we save the scope issued to the refresh token so that we can reissue a new access token	
-	
 	/**
 	 * 
 	 */
@@ -102,7 +97,7 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
      * @return the authentication
      */
 	@ManyToOne
-	@JoinColumn(name = "owner_id")
+	@JoinColumn(name = "auth_holder_id")
     public AuthenticationHolder getAuthenticationHolder() {
     	return authenticationHolder;
     }
@@ -120,8 +115,7 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
     @Basic
     @Column(name="token_value")
     public String getValue() {
-    	value = jwt.toString();
-	    return value;
+	    return jwt.toString();
     }
 
     /**
@@ -130,7 +124,6 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
      * @throws IllegalArgumentException if the value is not a valid JWT string
      */
     public void setValue(String value) {
-    	this.value = value;
 	    setJwt(Jwt.parse(value));
     }
 
@@ -173,25 +166,6 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
     	this.client = client;
     }
 
-	/**
-     * @return the scope
-     */
-	@ElementCollection(fetch = FetchType.EAGER)
-	@CollectionTable(
-			joinColumns=@JoinColumn(name="owner_id"),
-			name="scope"
-	)
-    public Set<String> getScope() {
-    	return scope;
-    }
-
-	/**
-     * @param scope the scope to set
-     */
-    public void setScope(Set<String> scope) {
-    	this.scope = scope;
-    }
-    
     /**
      * Get the JWT object directly
      * @return the jwt
@@ -206,7 +180,6 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
      */
     public void setJwt(Jwt jwt) {
     	this.jwt = jwt;
-    	this.value = jwt.toString();
     }
     
 }
