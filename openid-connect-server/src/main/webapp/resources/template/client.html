@@ -5,7 +5,7 @@
     </td>
 
     <td>
-        <%=clientName%>
+        <%=applicationName%>
         <!--expandable future information-->
     </td>
 
@@ -45,10 +45,10 @@
     <form class="form-horizontal">
         <fieldset>
             <legend>Details <%=(clientId != null ? 'for ' + clientId : '')%></legend>
-            <div class="control-group" id="clientName">
-                <label class="control-label">Client name</label>
+            <div class="control-group" id="applicationName">
+                <label class="control-label">Application name</label>
                 <div class="controls">
-                    <input value="<%=clientName%>" maxlength="100" type="text" class="" placeholder="Type something">
+                    <input value="<%=applicationName%>" maxlength="100" type="text" class="" placeholder="Type something">
                     <p class="help-block">Supporting help text</p>
                 </div>
             </div>

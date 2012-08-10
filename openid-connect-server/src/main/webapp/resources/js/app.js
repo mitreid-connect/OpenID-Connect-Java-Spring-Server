@@ -60,7 +60,7 @@
         // We can pass it default values.
         defaults:{
             idTokenValiditySeconds: 0,
-            clientName:"",
+            applicationName:"",
             clientSecret:"",
             registeredRedirectUri:[],
             authorizedGrantTypes:["authorization_code"],
@@ -206,7 +206,7 @@
             });
 
             var valid = this.model.set({
-                clientName:$('#clientName input').val(),
+                applicationName:$('#applicationName input').val(),
                 clientSecret:$('#clientSecret input').val(),
                 registeredRedirectUri:registeredRedirectUri,
                 clientDescription:$('#clientDescription textarea').val(),
