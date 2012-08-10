@@ -90,9 +90,9 @@ public class ClientAPI {
     }
 
     @RequestMapping(value="/{id}", method=RequestMethod.DELETE, headers="Accept=application/json")
-    public String apiDeleteClient(@PathVariable("id") String id, ModelAndView modelAndView) {
+    public String apiDeleteClient(@PathVariable("id") Long id, ModelAndView modelAndView) {
 
-        ClientDetailsEntity client = clientService.loadClientByClientId(id);
+        ClientDetailsEntity client = clientService.getClientById(id);
         clientService.deleteClient(client);
 
         return "jsonClientView";
@@ -102,7 +102,7 @@ public class ClientAPI {
     @RequestMapping(value="/{id}", method=RequestMethod.GET, headers="Accept=application/json")
     @ResponseBody
     public Object apiShowClient(@PathVariable("id") Long id, ModelAndView modelAndView) {
-        ClientDetailsEntity client = clientService.loadClientByClientId(id.toString());
+        ClientDetailsEntity client = clientService.getClientById(id);
         if (client == null) {
             return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
         }
