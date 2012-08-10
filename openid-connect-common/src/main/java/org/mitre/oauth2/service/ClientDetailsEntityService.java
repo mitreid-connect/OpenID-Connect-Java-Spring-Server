@@ -25,6 +25,8 @@ import org.springframework.security.oauth2.provider.ClientDetailsService;
 
 public interface ClientDetailsEntityService extends ClientDetailsService {
 
+	public ClientDetailsEntity saveNewClient(ClientDetailsEntity client);
+	
 	public ClientDetailsEntity getClientById(Long id);
 	
 	public ClientDetailsEntity loadClientByClientId(String clientId) throws OAuth2Exception;
@@ -33,7 +35,6 @@ public interface ClientDetailsEntityService extends ClientDetailsService {
 	
 	public ClientDetailsEntity updateClient(ClientDetailsEntity oldClient, ClientDetailsEntity newClient);
 
-    public ClientDetailsEntity saveClient(ClientDetailsEntity client);
-
 	public Collection<ClientDetailsEntity> getAllClients();
+
 }

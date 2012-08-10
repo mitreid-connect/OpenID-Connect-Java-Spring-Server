@@ -68,21 +68,23 @@ public class ClientAPI {
         // set owners as current logged in user
         //client.setOwner(principal.getName());
         //TODO: owner has been replaced by a list of contacts, which should be styled as email addresses.
-        m.addAttribute("entity", clientService.saveClient(client));
+        m.addAttribute("entity", clientService.saveNewClient(client));
 
         return "jsonClientView";
     }
 
     @RequestMapping(value="/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")
-    public String apiUpdateClient(@PathVariable("id") String id, @RequestBody String json, Model m, Principal principal) {
+    public String apiUpdateClient(@PathVariable("id") Long id, @RequestBody String json, Model m, Principal principal) {
 
         ClientDetailsEntity client = new Gson().fromJson(json, ClientDetailsEntity.class);
-        client.setClientId(id);
+        
+        ClientDetailsEntity oldClient = clientService.getClientById(id);
+        
         // set owners as current logged in user
         // client.setOwner(principal.getName());
         //TODO: owner has been replaced by a list of contacts, which should be styled as email addresses.
         
-        m.addAttribute("entity", clientService.saveClient(client));
+        m.addAttribute("entity", clientService.updateClient(oldClient, client));
 
         return "jsonClientView";
     }

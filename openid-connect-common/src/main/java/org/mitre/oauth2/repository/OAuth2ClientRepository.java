@@ -29,8 +29,9 @@ public interface OAuth2ClientRepository {
 
 	public void deleteClient(ClientDetailsEntity client);
 
-	public ClientDetailsEntity updateClient(String clientId, ClientDetailsEntity client);
+	public ClientDetailsEntity updateClient(Long id, ClientDetailsEntity client);
 
 	public Collection<ClientDetailsEntity> getAllClients();
+
 
 }

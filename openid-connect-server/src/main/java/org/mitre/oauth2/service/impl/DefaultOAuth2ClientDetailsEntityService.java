@@ -51,6 +51,24 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 		this.tokenRepository = tokenRepository;
 	}
 	
+	@Override
+	public ClientDetailsEntity saveNewClient(ClientDetailsEntity client) {
+		if (client.getId() != null) { // if it's not null, it's already been saved, this is an error
+			return null; // TODO: throw exception?
+		}
+
+		// assign a random clientid and secret if they're empty 
+        if (client.getClientId() == null || client.getClientId().equals("")) {
+            client.setClientId(UUID.randomUUID().toString());
+        }
+        
+		if (client.getClientSecret().equals("")) {
+            client.setClientSecret(UUID.randomUUID().toString());
+        }
+        
+        return clientRepository.saveClient(client);
+	}
+	
 	/**
 	 * Get the client by its internal ID
 	 */
@@ -84,7 +102,7 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 	@Override
     public void deleteClient(ClientDetailsEntity client) throws InvalidClientException {
 		
-		if (clientRepository.getClientByClientId(client.getClientId()) == null) {
+		if (clientRepository.getById(client.getId()) == null) {
 			throw new InvalidClientException("Client with id " + client.getClientId() + " was not found");
 		}
 		
@@ -103,32 +121,9 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 	@Override
     public ClientDetailsEntity updateClient(ClientDetailsEntity oldClient, ClientDetailsEntity newClient) throws IllegalArgumentException {
 		if (oldClient != null && newClient != null) {
-			return clientRepository.updateClient(oldClient.getClientId(), newClient);
+			return clientRepository.updateClient(oldClient.getId(), newClient);
 		}
 		throw new IllegalArgumentException("Neither old client or new client can be null!");
-    }
-
-    /**
-     *
-     * @param client object to be saved
-     * @return ClientDetailsEntity the saved object
-     */
-    @Override
-    public ClientDetailsEntity saveClient(ClientDetailsEntity client) {
-
-        if (client.getClientSecret().equals("")) {
-            client.setClientSecret(UUID.randomUUID().toString());
-        }
-
-        // this must be a new client if we don't have a clientID
-        // assign it a new ID
-        if (client.getClientId() == null || client.getClientId().equals("") || this.loadClientByClientId(client.getClientId()) == null) {
-            client.setClientId(UUID.randomUUID().toString());
-            return clientRepository.saveClient(client);
-        }  else {
-            return clientRepository.updateClient(client.getClientId(), client);
-        }
-
     }
 
 	/**

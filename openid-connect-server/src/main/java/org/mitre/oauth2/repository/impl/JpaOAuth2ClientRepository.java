@@ -73,7 +73,7 @@ public class JpaOAuth2ClientRepository implements OAuth2ClientRepository {
 	 */
 	@Override
 	public void deleteClient(ClientDetailsEntity client) {
-		ClientDetailsEntity found = getClientByClientId(client.getClientId());
+		ClientDetailsEntity found = getById(client.getId());
 		if (found != null) {
 			manager.remove(found);
 		} else {
@@ -82,8 +82,8 @@ public class JpaOAuth2ClientRepository implements OAuth2ClientRepository {
 	}
 
 	@Override
-    public ClientDetailsEntity updateClient(String clientId, ClientDetailsEntity client) {
-	    return JpaUtil.saveOrUpdate(clientId, manager, client);
+    public ClientDetailsEntity updateClient(Long id, ClientDetailsEntity client) {
+	    return JpaUtil.saveOrUpdate(id, manager, client);
     }
 
 	@Override
