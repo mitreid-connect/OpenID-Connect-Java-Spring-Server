@@ -67,6 +67,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.WebUtils;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
@@ -311,12 +312,17 @@ public class AbstractOIDCAuthenticationFilter extends
 		logger.debug("from TokenEndpoint jsonString = " + jsonString);
 		
 		JsonElement jsonRoot = new JsonParser().parse(jsonString);
+		if (!jsonRoot.isJsonObject()) {
+			throw new AuthenticationServiceException("Token Endpoint did not return a JSON object: " + jsonRoot);
+		}
 
-		if (jsonRoot.getAsJsonObject().get("error") != null) {
+		JsonObject tokenResponse = jsonRoot.getAsJsonObject();
+		
+		if (tokenResponse.get("error") != null) {
 
 			// Handle error
 
-			String error = jsonRoot.getAsJsonObject().get("error")
+			String error = tokenResponse.get("error")
 					.getAsString();
 
 			logger.error("Token Endpoint returned: " + error);
@@ -328,49 +334,66 @@ public class AbstractOIDCAuthenticationFilter extends
 			// Extract the id_token to insert into the
 			// OpenIdConnectAuthenticationToken
 			
-			IdToken idToken = null;
-			JwtSigningAndValidationService jwtValidator = getValidatorForServer(serverConfig); 
+			// get out all the token strings
+			String accessTokenValue = null;
+			String idTokenValue = null;
+			String refreshTokenValue = null;
 			
-			if (jsonRoot.getAsJsonObject().get("id_token") != null) {
-				
-				try {
-					idToken = IdToken.parse(jsonRoot.getAsJsonObject().get("id_token").getAsString());
-				
-				} catch (AuthenticationServiceException e) {
-
-					// I suspect this could happen
-
-					logger.error("Problem parsing id_token:  " + e);
-					// e.printStackTrace();
-
-					throw new AuthenticationServiceException("Problem parsing id_token return from Token endpoint: " + e);
-				}
-
-				if(jwtValidator.validateSignature(jsonRoot.getAsJsonObject().get("id_token").getAsString()) == false) {
-					throw new AuthenticationServiceException("Signature not validated");
-				}
-				if(idToken.getClaims().getIssuer() == null) {
-					throw new AuthenticationServiceException("Issuer is null");
-				}
-				if(!idToken.getClaims().getIssuer().equals(serverConfig.getIssuer())){
-					throw new AuthenticationServiceException("Issuers do not match");
-				}
-				if(jwtValidator.isJwtExpired(idToken)) {
-					throw new AuthenticationServiceException("Id Token is expired");
-				}
-				if(jwtValidator.validateIssuedAt(idToken) == false) {
-					throw new AuthenticationServiceException("Id Token issuedAt failed");
-				}
-
+			if (tokenResponse.has("access_token")) {
+				accessTokenValue = tokenResponse.get("access_token").getAsString();
 			} else {
-
-				// An error is unlikely, but it good security to check
-
+				throw new AuthenticationServiceException("Token Endpoint did not return an access_token: " + jsonString);
+			}
+			
+			if (tokenResponse.has("id_token")) {
+				idTokenValue = tokenResponse.get("id_token").getAsString();
+			} else {
 				logger.error("Token Endpoint did not return an id_token");
-
 				throw new AuthenticationServiceException("Token Endpoint did not return an id_token");
 			}
 			
+			if (tokenResponse.has("refresh_token")) {
+				refreshTokenValue = tokenResponse.get("refresh_token").getAsString();
+			}
+			
+			JwtSigningAndValidationService jwtValidator = getValidatorForServer(serverConfig); 
+			IdToken idToken = null;
+			
+			try {
+				idToken = IdToken.parse(idTokenValue);
+			
+			} catch (AuthenticationServiceException e) {
+
+				// I suspect this could happen
+
+				logger.error("Problem parsing id_token:  " + e);
+				// e.printStackTrace();
+
+				throw new AuthenticationServiceException("Problem parsing id_token return from Token endpoint: " + e);
+			}
+
+			// validate our ID Token over a number of tests
+			
+			if(!jwtValidator.validateSignature(idToken.toString())) {
+				throw new AuthenticationServiceException("Signature not validated");
+			}
+			
+			if(idToken.getClaims().getIssuer() == null) {
+				throw new AuthenticationServiceException("Issuer is null");
+			}
+			
+			if(!idToken.getClaims().getIssuer().equals(serverConfig.getIssuer())){
+				throw new AuthenticationServiceException("Issuers do not match");
+			}
+			
+			if(jwtValidator.isJwtExpired(idToken)) {
+				throw new AuthenticationServiceException("Id Token is expired");
+			}
+			
+			if(!jwtValidator.validateIssuedAt(idToken)) {
+				throw new AuthenticationServiceException("Id Token issuedAt failed");
+			}
+
 			// Clients are required to compare nonce claim in ID token to 
 			// the nonce sent in the Authorization request.  The client 
 			// stores this value as a signed session cookie to detect a 
@@ -409,11 +432,13 @@ public class AbstractOIDCAuthenticationFilter extends
 			// construct an OpenIdConnectAuthenticationToken and return 
 			// a Authentication object w/the userId and the idToken
 			
-			OpenIdConnectAuthenticationToken token = new OpenIdConnectAuthenticationToken(userId, idToken);
+			OpenIdConnectAuthenticationToken token = new OpenIdConnectAuthenticationToken(userId, idTokenValue, accessTokenValue, refreshTokenValue);
 
 			Authentication authentication = this.getAuthenticationManager().authenticate(token);
 
 			return authentication;
+
+		
 
 		}
 	}

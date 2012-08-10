@@ -25,17 +25,18 @@ import org.springframework.security.core.SpringSecurityCoreVersion;
 
 /**
  * 
- * @author nemonik
+ * @author Michael Walsh, Justin Richer
  * 
  */
-public class OpenIdConnectAuthenticationToken extends
-		AbstractAuthenticationToken {
+public class OpenIdConnectAuthenticationToken extends AbstractAuthenticationToken {
 
+    private static final long serialVersionUID = 22100073066377804L;
+    
 	private final Object principle;
-	private final IdToken idToken;
-	private final String userId;
-
-	private static final long serialVersionUID = SpringSecurityCoreVersion.SERIAL_VERSION_UID;
+	private final String idTokenValue; // string representation of the id token
+	private final String accessTokenValue; // string representation of the access token
+	private final String refreshTokenValue; // string representation of the refresh token
+	private final String userId; // user id (parsed from the id token)
 
 	/**
 	 * Constructs OpenIdConnectAuthenticationToken provided
@@ -47,13 +48,15 @@ public class OpenIdConnectAuthenticationToken extends
 	 */
 	public OpenIdConnectAuthenticationToken(Object principle,
 			Collection<? extends GrantedAuthority> authorities, String userId,
-			IdToken idToken) {
+			String idTokenValue, String accessTokenValue, String refreshTokenValue) {
 
 		super(authorities);
 
 		this.principle = principle;
 		this.userId = userId;
-		this.idToken = idToken;
+		this.idTokenValue = idTokenValue;
+		this.accessTokenValue = accessTokenValue;
+		this.refreshTokenValue = refreshTokenValue;
 
 		setAuthenticated(true);
 	}
@@ -64,13 +67,15 @@ public class OpenIdConnectAuthenticationToken extends
 	 * @param idToken
 	 * @param userId
 	 */
-	public OpenIdConnectAuthenticationToken(String userId, IdToken idToken) {
+	public OpenIdConnectAuthenticationToken(String userId, String idTokenValue, String accessTokenValue, String refreshTokenValue) {
 
 		super(new ArrayList<GrantedAuthority>(0));
 
 		this.principle = userId;
 		this.userId = userId;
-		this.idToken = idToken;
+		this.idTokenValue = idTokenValue;
+		this.accessTokenValue = accessTokenValue;
+		this.refreshTokenValue = refreshTokenValue;
 
 		setAuthenticated(false);
 	}
@@ -82,11 +87,7 @@ public class OpenIdConnectAuthenticationToken extends
 	 */
 	@Override
 	public Object getCredentials() {
-		return null;
-	}
-
-	public IdToken getIdToken() {
-		return idToken;
+		return accessTokenValue;
 	}
 
 	/*
@@ -103,4 +104,27 @@ public class OpenIdConnectAuthenticationToken extends
 	public String getUserId() {
 		return userId;
 	}
+
+	/**
+     * @return the idTokenValue
+     */
+    public String getIdTokenValue() {
+    	return idTokenValue;
+    }
+
+	/**
+     * @return the accessTokenValue
+     */
+    public String getAccessTokenValue() {
+    	return accessTokenValue;
+    }
+
+	/**
+     * @return the refreshTokenValue
+     */
+    public String getRefreshTokenValue() {
+    	return refreshTokenValue;
+    }
+	
+	
 }

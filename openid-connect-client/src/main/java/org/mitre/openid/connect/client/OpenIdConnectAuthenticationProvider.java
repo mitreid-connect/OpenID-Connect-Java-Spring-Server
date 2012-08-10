@@ -68,9 +68,8 @@ public class OpenIdConnectAuthenticationProvider implements
 			UserDetails userDetails = userDetailsService.loadUserDetails(token);
 
 			return new OpenIdConnectAuthenticationToken(userDetails,
-					authoritiesMapper.mapAuthorities(userDetails
-							.getAuthorities()), token.getUserId(),
-					token.getIdToken());
+					authoritiesMapper.mapAuthorities(userDetails.getAuthorities()), token.getUserId(),
+					token.getIdTokenValue(), token.getAccessTokenValue(), token.getRefreshTokenValue());
 		}
 
 		return null;
