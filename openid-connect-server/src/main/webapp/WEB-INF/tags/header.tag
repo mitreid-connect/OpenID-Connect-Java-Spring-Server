@@ -46,6 +46,9 @@
     <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../bootstrap2/ico/apple-touch-icon-114-precomposed.png">
     <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../bootstrap2/ico/apple-touch-icon-72-precomposed.png">
     <link rel="apple-touch-icon-precomposed" href="../bootstrap2/ico/apple-touch-icon-57-precomposed.png">
+
+    <!-- Load jQuery up here so that we can use in-page functions -->
+    <script type="text/javascript" src="resources/js/jquery.min.js"></script>
 </head>
 
 <body>

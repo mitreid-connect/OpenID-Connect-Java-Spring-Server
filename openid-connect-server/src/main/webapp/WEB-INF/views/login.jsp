@@ -5,7 +5,7 @@
 <script type="text/javascript">
 <!--
 
-$().ready(function() {
+$(document).ready(function() {
 	$('#j_username').focus();
 });
 
