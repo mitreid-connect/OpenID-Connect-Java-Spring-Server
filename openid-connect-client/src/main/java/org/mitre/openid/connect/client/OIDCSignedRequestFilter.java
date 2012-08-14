@@ -118,7 +118,7 @@ public class OIDCSignedRequestFilter extends AbstractOIDCAuthenticationFilter {
 		
 		response.addCookie(nonceCookie);
 		
-		claims.setClaim("nonce", nonceCookie);
+		claims.setClaim("nonce", nonce);
 		
 		try {
 			signingAndValidationService.signJwt(jwt);
