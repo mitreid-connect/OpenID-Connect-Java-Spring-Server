@@ -40,8 +40,7 @@ import org.springframework.web.util.WebUtils;
  * @author nemonik
  * 
  */
-public class OIDCAuthenticationUsingChooserFilter extends
-		AbstractOIDCAuthenticationFilter {
+public class OIDCAuthenticationUsingChooserFilter extends AbstractOIDCAuthenticationFilter {
 
 	protected final static String ISSUER_COOKIE_NAME = "issuer";
 
@@ -70,17 +69,11 @@ public class OIDCAuthenticationUsingChooserFilter extends
 
 		// Validating configuration
 
-		Assert.notNull(
-				oidcServerConfigs,
-				"Server Configurations must be supplied if the Account Chooser UI Application is to be used.");
+		Assert.notNull(oidcServerConfigs, "Server Configurations must be supplied if the Account Chooser UI Application is to be used.");
 
-		Assert.notNull(
-				accountChooserURI,
-				"Account Chooser URI must be supplied if the Account Chooser UI Application is to be used.");
+		Assert.notNull(accountChooserURI, "Account Chooser URI must be supplied if the Account Chooser UI Application is to be used.");
 
-		Assert.notNull(
-				accountChooserClientID,
-				"Account Chooser Client ID must be supplied if the Account Chooser UI Application is to be used.");
+		Assert.notNull(accountChooserClientID, "Account Chooser Client ID must be supplied if the Account Chooser UI Application is to be used.");
 	}
 
 	/*
@@ -92,9 +85,7 @@ public class OIDCAuthenticationUsingChooserFilter extends
 	 * javax.servlet.http.HttpServletResponse)
 	 */
 	@Override
-	public Authentication attemptAuthentication(HttpServletRequest request,
-			HttpServletResponse response) throws IOException,
-			AuthenticationException, ServletException {
+	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws IOException, AuthenticationException, ServletException {
 
 		// Enter AuthenticationFilter here...
 		super.attemptAuthentication(request, response);
@@ -106,12 +97,10 @@ public class OIDCAuthenticationUsingChooserFilter extends
 		} else if (request.getParameter("code") != null) {
 
 			// Which OIDC configuration?
-			Cookie issuerCookie = WebUtils.getCookie(request,
-					ISSUER_COOKIE_NAME);
+			Cookie issuerCookie = WebUtils.getCookie(request, ISSUER_COOKIE_NAME);
 
 			try {
-				return handleAuthorizationGrantResponse(request.getParameter("code"), new SanatizedRequest(request,	new String[] { "code" }),
-						oidcServerConfigs.get(issuerCookie.getValue()));
+				return handleAuthorizationGrantResponse(request.getParameter("code"), request, oidcServerConfigs.get(issuerCookie.getValue()));
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -125,8 +114,7 @@ public class OIDCAuthenticationUsingChooserFilter extends
 
 				// Account Chooser UI provided and Issuer Identifier
 
-				OIDCServerConfiguration oidcServerConfig = oidcServerConfigs
-						.get(issuer);
+				OIDCServerConfiguration oidcServerConfig = oidcServerConfigs.get(issuer);
 
 				if (oidcServerConfig != null) {
 
@@ -136,18 +124,14 @@ public class OIDCAuthenticationUsingChooserFilter extends
 					Cookie issuerCookie = new Cookie(ISSUER_COOKIE_NAME, issuer);
 					response.addCookie(issuerCookie);
 
-					handleAuthorizationRequest(new SanatizedRequest(request,
-							new String[] { "issuer" }), response,
-							oidcServerConfig);
+					handleAuthorizationRequest(request, response, oidcServerConfig);
 
 				} else {
 
 					// The Client is NOT configured to support this Issuer
 					// Identifier
 
-					throw new AuthenticationServiceException(
-							"Security Filter not configured for issuer: "
-									+ issuer);
+					throw new AuthenticationServiceException("Security Filter not configured for issuer: " + issuer);
 				}
 
 			} else {
@@ -157,9 +141,7 @@ public class OIDCAuthenticationUsingChooserFilter extends
 
 				Map<String, String> urlVariables = new HashMap<String, String>();
 
-				urlVariables.put("redirect_uri",
-						OIDCAuthenticationUsingChooserFilter.buildRedirectURI(
-								request, null));
+				urlVariables.put("redirect_uri", buildRedirectURI(request, null));
 
 				urlVariables.put("client_id", accountChooserClientID);
 

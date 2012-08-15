@@ -11,6 +11,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
 import org.mitre.jwt.model.Jwt;
@@ -68,7 +69,7 @@ public class OIDCSignedRequestFilter extends AbstractOIDCAuthenticationFilter {
 		} else if (StringUtils.isNotBlank(request.getParameter("code"))) {
 
 			try {
-				return handleAuthorizationGrantResponse(request.getParameter("code"), new SanatizedRequest(request,	new String[] { "code" }), oidcServerConfig);
+				return handleAuthorizationGrantResponse(request.getParameter("code"), request, oidcServerConfig);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -100,6 +101,7 @@ public class OIDCSignedRequestFilter extends AbstractOIDCAuthenticationFilter {
 	}
 	
 	public Jwt createAndSignRequestJwt(HttpServletRequest request, HttpServletResponse response, OIDCServerConfiguration serverConfiguration) {
+		HttpSession session = request.getSession();
 		Jwt jwt = new Jwt();
 		JwtClaims claims = jwt.getClaims();
 		
@@ -110,15 +112,19 @@ public class OIDCSignedRequestFilter extends AbstractOIDCAuthenticationFilter {
 		claims.setClaim("response_type", "code");
 		claims.setClaim("client_id", serverConfiguration.getClientId());
 		claims.setClaim("scope", scope);
-		claims.setClaim("redirect_uri", AbstractOIDCAuthenticationFilter.buildRedirectURI(request, null));
 		
-		//create random nonce
-		String nonce = new BigInteger(50, new SecureRandom()).toString(16);
-		Cookie nonceCookie = new Cookie(NONCE_SIGNATURE_COOKIE_NAME, sign(signer, privateKey, nonce.getBytes()));
+		// build our redirect URI
+		String redirectUri = buildRedirectURI(request, null);
+		claims.setClaim("redirect_uri", redirectUri);
+		session.setAttribute(REDIRECT_URI_SESION_VARIABLE, redirectUri);
 		
-		response.addCookie(nonceCookie);
+		//create random nonce and state, save them to the session
 		
+		String nonce = createNonce(session);
 		claims.setClaim("nonce", nonce);
+		
+		String state = createState(session);
+		claims.setClaim("state", state);
 		
 		try {
 			signingAndValidationService.signJwt(jwt);

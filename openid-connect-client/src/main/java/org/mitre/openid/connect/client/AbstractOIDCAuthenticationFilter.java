@@ -40,6 +40,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
@@ -77,68 +78,11 @@ import com.google.gson.JsonParser;
 public class AbstractOIDCAuthenticationFilter extends
 		AbstractAuthenticationProcessingFilter {
 
-	/**
-	 * Used to remove parameters from a Request before passing it down the
-	 * chain...
-	 * 
-	 * @author nemonik
-	 * 
-	 */
-	protected class SanatizedRequest extends HttpServletRequestWrapper {
-
-		private List<String> paramsToBeSanatized;
-
-		public SanatizedRequest(HttpServletRequest request,
-				String[] paramsToBeSanatized) {
-			super(request);
-
-			this.paramsToBeSanatized = Arrays.asList(paramsToBeSanatized);
-		}
-
-		public String getParameter(String name) {
-			if (paramsToBeSanatized.contains(name)) {
-				return null;
-			} else {
-				return super.getParameter(name);
-			}
-		}
-
-		public Map<String, String[]> getParameterMap() {
-			Map<String, String[]> params = super.getParameterMap();
-
-			for (String paramToBeSanatized : paramsToBeSanatized) {
-				params.remove(paramToBeSanatized);
-			}
-
-			return params;
-		}
-
-		public Enumeration<String> getParameterNames() {
-
-			ArrayList<String> paramNames = Collections.list(super.getParameterNames());
-
-			for (String paramToBeSanatized : paramsToBeSanatized) {
-				paramNames.remove(paramToBeSanatized);
-			}
-
-			return Collections.enumeration(paramNames);
-		}
-
-		public String[] getParameterValues(String name) {
-
-			if (paramsToBeSanatized.contains(name)) {
-				return null;
-			} else {
-				return super.getParameterValues(name);
-			}
-		}
-	}
-
+	protected static final String REDIRECT_URI_SESION_VARIABLE = "redirect_uri";
+	protected static final String STATE_SESSION_VARIABLE = "state";
+	protected final static String NONCE_SESSION_VARIABLE = "nonce";
 	protected final static int HTTP_SOCKET_TIMEOUT = 30000;
-	protected final static String SCOPE = "openid";
-	protected final static int KEY_SIZE = 1024;
-	protected final static String SIGNING_ALGORITHM = "SHA256withRSA";
-	protected final static String NONCE_SIGNATURE_COOKIE_NAME = "nonce";
+	protected final static String DEFAULT_SCOPE = "openid";
 
 	protected final static String FILTER_PROCESSES_URL = "/openid_connect_login";
 
@@ -156,18 +100,15 @@ public class AbstractOIDCAuthenticationFilter extends
 	 *            an array of field names to ignore.
 	 * @return a URL built from the messaged parameters.
 	 */
-	public static String buildRedirectURI(HttpServletRequest request,
-			String[] ignoreFields) {
+	public static String buildRedirectURI(HttpServletRequest request, String[] ignoreFields) {
 
-		List<String> ignore = (ignoreFields != null) ? Arrays
-				.asList(ignoreFields) : null;
+		List<String> ignore = (ignoreFields != null) ? Arrays.asList(ignoreFields) : null;
  
 		boolean isFirst = true;
 
 		StringBuffer sb = request.getRequestURL();
 
-		for (Enumeration<?> e = request.getParameterNames(); e
-				.hasMoreElements();) {
+		for (Enumeration<?> e = request.getParameterNames(); e.hasMoreElements();) {
 
 			String name = (String) e.nextElement();
 
@@ -212,7 +153,7 @@ public class AbstractOIDCAuthenticationFilter extends
 	 *         parameters.
 	 */
 	public static String buildURL(String baseURI, Map<String, String> queryStringFields) {
-
+// TODO: replace this with URIUtils call
 		StringBuilder URLBuilder = new StringBuilder(baseURI);
 
 		char appendChar = '?';
@@ -238,86 +179,11 @@ public class AbstractOIDCAuthenticationFilter extends
 		return URLBuilder.toString();
 	}
 
-	/**
-	 * Returns the signature text for the byte array of data
-	 * 
-	 * @param signer
-	 *            The algorithm to sign with
-	 * @param privateKey
-	 *            The private key to sign with
-	 * @param data
-	 *            The data to be signed
-	 * @return The signature text
-	 */
-	public static String sign(Signature signer, PrivateKey privateKey, byte[] data) {
-		String signature;
-
-		try {
-			signer.initSign(privateKey);
-			signer.update(data);
-
-			byte[] sigBytes = signer.sign();
-
-			signature = (new String(Base64.encodeBase64URLSafe(sigBytes)))
-					.replace("=", "");
-
-		} catch (GeneralSecurityException generalSecurityException) {
-
-			// generalSecurityException.printStackTrace();
-
-			throw new IllegalStateException(generalSecurityException);
-
-		}
-
-		return signature;
-	}
-
-	/**
-	 * Verifies the signature text against the data
-	 * 
-	 * @param data
-	 *            The data
-	 * @param sigText
-	 *            The signature text
-	 * @return True if valid, false if not
-	 */
-	public static boolean verify(Signature signer, PublicKey publicKey,
-			String data, String sigText) {
-
-		try {
-			signer.initVerify(publicKey);
-			signer.update(data.getBytes("UTF-8"));
-
-			byte[] sigBytes = Base64.decodeBase64(sigText);
-
-			return signer.verify(sigBytes);
-
-		} catch (GeneralSecurityException generalSecurityException) {
-
-			// generalSecurityException.printStackTrace();
-
-			throw new IllegalStateException(generalSecurityException);
-
-		} catch (UnsupportedEncodingException unsupportedEncodingException) {
-
-			// unsupportedEncodingException.printStackTrace();
-
-			throw new IllegalStateException(unsupportedEncodingException);
-
-		}
-	}
-
 	protected String errorRedirectURI;
 
 	protected String scope;
 
 	protected int httpSocketTimeout = HTTP_SOCKET_TIMEOUT;
-
-	protected PublicKey publicKey;
-
-	protected PrivateKey privateKey;
-
-	protected Signature signer;
 
 	/**
 	 * OpenIdConnectAuthenticationFilter constructor
@@ -332,24 +198,8 @@ public class AbstractOIDCAuthenticationFilter extends
 
 		Assert.notNull(errorRedirectURI, "An Error Redirect URI must be supplied");
 
-		KeyPairGenerator keyPairGenerator;
-
-		try {
-			keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-			keyPairGenerator.initialize(KEY_SIZE);
-			KeyPair keyPair = keyPairGenerator.generateKeyPair();
-			publicKey = keyPair.getPublic();
-			privateKey = keyPair.getPrivate();
-
-			signer = Signature.getInstance(SIGNING_ALGORITHM);
-		} catch (GeneralSecurityException generalSecurityException) {
-			// generalSecurityException.printStackTrace();
-			throw new IllegalStateException(generalSecurityException);
-		}
-
-		// prepend the spec necessary SCOPE
-		setScope((scope != null && !scope.isEmpty()) ? SCOPE + " " + scope
-				: SCOPE);
+		// prepend the spec necessary DEFAULT_SCOPE
+		setScope((scope != null && !scope.isEmpty()) ? DEFAULT_SCOPE + " " + scope : DEFAULT_SCOPE);
 	}
 
 	/*
@@ -376,7 +226,7 @@ public class AbstractOIDCAuthenticationFilter extends
 	/**
 	 * Handles the authorization grant response
 	 * 
-	 * @param authorizationGrant
+	 * @param authorizationCode
 	 *            The Authorization grant code
 	 * @param request
 	 *            The request from which to extract parameters and perform the
@@ -387,11 +237,22 @@ public class AbstractOIDCAuthenticationFilter extends
 	 * @throws UnsupportedEncodingException
 	 */
 	protected Authentication handleAuthorizationGrantResponse(
-			String authorizationGrant, HttpServletRequest request,
+			String authorizationCode, HttpServletRequest request,
 			OIDCServerConfiguration serverConfig) {
 
 		final boolean debug = logger.isDebugEnabled();
 
+		HttpSession session = request.getSession();
+		
+		// check for state
+		String storedState = getStoredState(session);
+		if (!StringUtils.isBlank(storedState)) {
+			String state = request.getParameter("state");
+			if (!storedState.equals(state)) {
+				throw new AuthenticationServiceException("State parameter mismatch on return. Expected " + storedState + " got " + state);
+			}
+		}
+		
 		// Handle Token Endpoint interaction
 		HttpClient httpClient = new DefaultHttpClient();
 
@@ -414,9 +275,12 @@ public class AbstractOIDCAuthenticationFilter extends
 
 		MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
 		form.add("grant_type", "authorization_code");
-		form.add("code", authorizationGrant);
-		form.add("redirect_uri", AbstractOIDCAuthenticationFilter
-				.buildRedirectURI(request, null));
+		form.add("code", authorizationCode);
+		
+		String redirectUri = getStoredRedirectUri(session);
+		if (redirectUri != null) {
+			form.add("redirect_uri", redirectUri);
+		}
 
 		// pass clientId and clientSecret in post of request
 		form.add("client_id", serverConfig.getClientId());
@@ -457,9 +321,7 @@ public class AbstractOIDCAuthenticationFilter extends
 
 			logger.error("Token Endpoint returned: " + error);
 
-			throw new AuthenticationServiceException(
-					"Unable to obtain Access Token.  Token Endpoint returned: "
-							+ error);
+			throw new AuthenticationServiceException("Unable to obtain Access Token.  Token Endpoint returned: " + error);
 
 		} else {
 
@@ -527,41 +389,17 @@ public class AbstractOIDCAuthenticationFilter extends
 				
 				logger.error("ID token did not contain a nonce claim.");
 
-				throw new AuthenticationServiceException(
-						"ID token did not contain a nonce claim.");
+				throw new AuthenticationServiceException("ID token did not contain a nonce claim.");
 			}
-			
-			Cookie nonceSignatureCookie = WebUtils.getCookie(request, NONCE_SIGNATURE_COOKIE_NAME);
 
-			if (nonceSignatureCookie != null) {
+			String storedNonce = getStoredNonce(session);
+			if (!nonce.equals(storedNonce)) {
+				logger.error("Possible replay attack detected! The comparison of the nonce in the returned "
+						+ "ID Token to the session " + NONCE_SESSION_VARIABLE + " failed. Expected " + storedNonce + " got " + nonce + ".");
 
-				String sigText = nonceSignatureCookie.getValue();
-	
-				if (sigText != null && !sigText.isEmpty()) {
-	
-					if (!verify(signer, publicKey, nonce, sigText)) {
-						logger.error("Possible replay attack detected! "
-								+ "The comparison of the nonce in the returned "
-								+ "ID Token to the signed session "
-								+ NONCE_SIGNATURE_COOKIE_NAME + " failed.");
-	
-						throw new AuthenticationServiceException(
-								"Possible replay attack detected! "
-										+ "The comparison of the nonce in the returned "
-										+ "ID Token to the signed session "
-										+ NONCE_SIGNATURE_COOKIE_NAME
-										+ " failed.");
-					}
-				} else {
-					logger.error(NONCE_SIGNATURE_COOKIE_NAME + " cookie was found but value was null or empty");					
-					throw new AuthenticationServiceException(NONCE_SIGNATURE_COOKIE_NAME + " cookie was found but value was null or empty");
-				}
-	
-			} else {
-
-				logger.error(NONCE_SIGNATURE_COOKIE_NAME + " cookie was not found.");
-
-				throw new AuthenticationServiceException(NONCE_SIGNATURE_COOKIE_NAME + " cookie was not found.");
+				throw new AuthenticationServiceException(
+						"Possible replay attack detected! The comparison of the nonce in the returned "
+								+ "ID Token to the session " + NONCE_SESSION_VARIABLE + " failed. Expected " + storedNonce + " got " + nonce + ".");
 			}
 
 			// pull the user_id out as a claim on the id_token
@@ -594,9 +432,10 @@ public class AbstractOIDCAuthenticationFilter extends
 	 *             If an input or output exception occurs
 	 */
 	protected void handleAuthorizationRequest(HttpServletRequest request,
-			HttpServletResponse response,
-			OIDCServerConfiguration serverConfiguration) throws IOException {
+			HttpServletResponse response, OIDCServerConfiguration serverConfiguration) throws IOException {
 
+		HttpSession session = request.getSession();
+		
 		Map<String, String> urlVariables = new HashMap<String, String>();
 
 		// Required parameters:
@@ -604,7 +443,10 @@ public class AbstractOIDCAuthenticationFilter extends
 		urlVariables.put("response_type", "code");
 		urlVariables.put("client_id", serverConfiguration.getClientId());
 		urlVariables.put("scope", scope);
-		urlVariables.put("redirect_uri", AbstractOIDCAuthenticationFilter.buildRedirectURI(request, null));
+		
+		String redirectURI = buildRedirectURI(request, null);
+		urlVariables.put("redirect_uri", redirectURI);
+		session.setAttribute(REDIRECT_URI_SESION_VARIABLE, redirectURI);
 
 		// Create a string value used to associate a user agent session
 		// with an ID Token to mitigate replay attacks. The value is
@@ -612,14 +454,12 @@ public class AbstractOIDCAuthenticationFilter extends
 		// store a random value as a signed session cookie, and pass the
 		// value in the nonce parameter.
 
-		String nonce = new BigInteger(50, new SecureRandom()).toString(16);
-
-		Cookie nonceCookie = new Cookie(NONCE_SIGNATURE_COOKIE_NAME, sign(signer, privateKey, nonce.getBytes()));
-
-		response.addCookie(nonceCookie);
-
+		String nonce = createNonce(session);
 		urlVariables.put("nonce", nonce);
 
+		String state = createState(session);
+		urlVariables.put("state", state);
+		
 		// Optional parameters:
 
 		// TODO: display, prompt, request, request_uri
@@ -671,6 +511,73 @@ public class AbstractOIDCAuthenticationFilter extends
 
 	public void setScope(String scope) {
 		this.scope = scope;
+	}
+	
+
+	/**
+	 * Get the named stored session variable as a string. Return null if not found or not a string.
+	 * @param session
+	 * @param key
+	 * @return
+	 */
+	private static String getStoredSessionString(HttpSession session, String key) {
+		Object o = session.getAttribute(key);
+		if (o != null && o instanceof String) {
+			return o.toString();
+		} else {
+			return null;
+		}
+	}
+	
+	/**
+	 * Create a cryptographically random nonce and store it in the session
+	 * @param session
+	 * @return
+	 */
+	protected static String createNonce(HttpSession session) {
+		String nonce = new BigInteger(50, new SecureRandom()).toString(16);
+		session.setAttribute(NONCE_SESSION_VARIABLE, nonce);
+
+		return nonce;
+	}
+
+	/**
+	 * Get the nonce we stored in the session
+	 * @param session
+	 * @return
+	 */
+	protected static String getStoredNonce(HttpSession session) {
+		return getStoredSessionString(session, NONCE_SESSION_VARIABLE);
+	}
+	
+	/**
+	 * Create a cryptographically random state and store it in the session
+	 * @param session
+	 * @return
+	 */
+	protected static String createState(HttpSession session) {
+		String state = new BigInteger(50, new SecureRandom()).toString(16);
+		session.setAttribute(STATE_SESSION_VARIABLE, state);
+		
+		return state;
+	}
+	
+	/**
+	 * Get the state we stored in the session
+	 * @param session
+	 * @return
+	 */
+	protected static String getStoredState(HttpSession session) {
+		return getStoredSessionString(session, STATE_SESSION_VARIABLE);
+	}
+
+	/**
+	 * Get the stored redirect URI that we used on the way out
+	 * @param serverConfig
+	 * @return
+	 */
+	protected static String getStoredRedirectUri(HttpSession session) {
+		return getStoredSessionString(session, REDIRECT_URI_SESION_VARIABLE);
 	}
 	
 	
