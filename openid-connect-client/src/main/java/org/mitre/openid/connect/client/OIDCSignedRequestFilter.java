@@ -40,10 +40,10 @@ public class OIDCSignedRequestFilter extends AbstractOIDCAuthenticationFilter {
 
 		// Validating configuration
 
-		Assert.notNull(oidcServerConfig.getAuthorizationEndpointURI(),
+		Assert.notNull(oidcServerConfig.getAuthorizationEndpointUrl(),
 				"An Authorization Endpoint URI must be supplied");
 
-		Assert.notNull(oidcServerConfig.getTokenEndpointURI(),
+		Assert.notNull(oidcServerConfig.getTokenEndpointUrl(),
 				"A Token ID Endpoint URI must be supplied");
 		
 		Assert.notNull(oidcServerConfig.getClientId(),
@@ -93,7 +93,7 @@ public class OIDCSignedRequestFilter extends AbstractOIDCAuthenticationFilter {
 			
 			urlVariables.put("request", jwt.toString());
 			
-			String authRequest = AbstractOIDCAuthenticationFilter.buildURL(serverConfiguration.getAuthorizationEndpointURI(), urlVariables);
+			String authRequest = AbstractOIDCAuthenticationFilter.buildURL(serverConfiguration.getAuthorizationEndpointUrl(), urlVariables);
 
 			logger.debug("Auth Request:  " + authRequest);
 
@@ -152,10 +152,10 @@ public class OIDCSignedRequestFilter extends AbstractOIDCAuthenticationFilter {
 
 	/**
 	 * @param authorizationEndpointURI
-	 * @see org.mitre.openid.connect.config.OIDCServerConfiguration#setAuthorizationEndpointURI(java.lang.String)
+	 * @see org.mitre.openid.connect.config.OIDCServerConfiguration#setAuthorizationEndpointUrl(java.lang.String)
 	 */
 	public void setAuthorizationEndpointURI(String authorizationEndpointURI) {
-		oidcServerConfig.setAuthorizationEndpointURI(authorizationEndpointURI);
+		oidcServerConfig.setAuthorizationEndpointUrl(authorizationEndpointURI);
 	}
 
 	/**
@@ -184,10 +184,10 @@ public class OIDCSignedRequestFilter extends AbstractOIDCAuthenticationFilter {
 
 	/**
 	 * @param tokenEndpointURI
-	 * @see org.mitre.openid.connect.config.OIDCServerConfiguration#setTokenEndpointURI(java.lang.String)
+	 * @see org.mitre.openid.connect.config.OIDCServerConfiguration#setTokenEndpointUrl(java.lang.String)
 	 */
 	public void setTokenEndpointURI(String tokenEndpointURI) {
-		oidcServerConfig.setTokenEndpointURI(tokenEndpointURI);
+		oidcServerConfig.setTokenEndpointUrl(tokenEndpointURI);
 	}
 
 	/**

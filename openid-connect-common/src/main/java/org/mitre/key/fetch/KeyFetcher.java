@@ -41,7 +41,7 @@ public class KeyFetcher {
 
 		try {
 			jsonString = restTemplate.getForObject(
-					serverConfig.getTokenEndpointURI(), String.class);
+					serverConfig.getTokenEndpointUrl(), String.class);
 		} catch (HttpClientErrorException httpClientErrorException) {
 
 			throw new AuthenticationServiceException(

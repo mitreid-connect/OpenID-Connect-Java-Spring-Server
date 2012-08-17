@@ -288,7 +288,7 @@ public class AbstractOIDCAuthenticationFilter extends
 		form.add("client_secret", serverConfig.getClientSecret());
 
 		if (debug) {
-			logger.debug("tokenEndpointURI = " + serverConfig.getTokenEndpointURI());
+			logger.debug("tokenEndpointURI = " + serverConfig.getTokenEndpointUrl());
 			logger.debug("form = " + form);
 		}
 
@@ -296,7 +296,7 @@ public class AbstractOIDCAuthenticationFilter extends
 
 		try {
 			jsonString = restTemplate.postForObject(
-					serverConfig.getTokenEndpointURI(), form, String.class);
+					serverConfig.getTokenEndpointUrl(), form, String.class);
 		} catch (HttpClientErrorException httpClientErrorException) {
 
 			// Handle error
@@ -489,7 +489,7 @@ public class AbstractOIDCAuthenticationFilter extends
 
 		// TODO: display, prompt, request, request_uri
 
-		String authRequest = AbstractOIDCAuthenticationFilter.buildURL(serverConfiguration.getAuthorizationEndpointURI(), urlVariables);
+		String authRequest = AbstractOIDCAuthenticationFilter.buildURL(serverConfiguration.getAuthorizationEndpointUrl(), urlVariables);
 
 		logger.debug("Auth Request:  " + authRequest);
 

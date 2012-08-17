@@ -23,9 +23,9 @@ import java.net.URI;
  */
 public class OIDCServerConfiguration {
 
-	private String authorizationEndpointURI;
+	private String authorizationEndpointUrl;
 
-	private String tokenEndpointURI;
+	private String tokenEndpointUrl;
 
 	private String clientSecret;
 
@@ -43,8 +43,8 @@ public class OIDCServerConfiguration {
 	
 	private String userInfoUrl;
 
-	public String getAuthorizationEndpointURI() {
-		return authorizationEndpointURI;
+	public String getAuthorizationEndpointUrl() {
+		return authorizationEndpointUrl;
 	}
 
 	public String getClientId() {
@@ -59,12 +59,12 @@ public class OIDCServerConfiguration {
 		return clientSecret;
 	}
 
-	public String getTokenEndpointURI() {
-		return tokenEndpointURI;
+	public String getTokenEndpointUrl() {
+		return tokenEndpointUrl;
 	} 
 
-	public void setAuthorizationEndpointURI(String authorizationEndpointURI) {
-		this.authorizationEndpointURI = authorizationEndpointURI;
+	public void setAuthorizationEndpointUrl(String authorizationEndpointURI) {
+		this.authorizationEndpointUrl = authorizationEndpointURI;
 	}
  
 	public void setClientId(String clientId) {
@@ -79,8 +79,8 @@ public class OIDCServerConfiguration {
 		this.clientSecret = clientSecret;
 	}
 
-	public void setTokenEndpointURI(String tokenEndpointURI) {
-		this.tokenEndpointURI = tokenEndpointURI;
+	public void setTokenEndpointUrl(String tokenEndpointURI) {
+		this.tokenEndpointUrl = tokenEndpointURI;
 	}
 	
 	public String getX509EncryptUrl() {
@@ -134,7 +134,7 @@ public class OIDCServerConfiguration {
      */
     @Override
     public String toString() {
-	    return "OIDCServerConfiguration [authorizationEndpointURI=" + authorizationEndpointURI + ", tokenEndpointURI=" + tokenEndpointURI + ", clientSecret=" + clientSecret + ", clientId=" + clientId + ", issuer=" + issuer + ", x509EncryptUrl=" + x509EncryptUrl + ", x509SigningUrl="
+	    return "OIDCServerConfiguration [authorizationEndpointUrl=" + authorizationEndpointUrl + ", tokenEndpointUrl=" + tokenEndpointUrl + ", clientSecret=" + clientSecret + ", clientId=" + clientId + ", issuer=" + issuer + ", x509EncryptUrl=" + x509EncryptUrl + ", x509SigningUrl="
 	            + x509SigningUrl + ", jwkEncryptUrl=" + jwkEncryptUrl + ", jwkSigningUrl=" + jwkSigningUrl + ", userInfoUrl=" + userInfoUrl + "]";
     }
 

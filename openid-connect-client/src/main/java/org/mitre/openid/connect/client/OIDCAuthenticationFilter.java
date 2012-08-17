@@ -60,17 +60,13 @@ public class OIDCAuthenticationFilter extends AbstractOIDCAuthenticationFilter {
 
 		// Validating configuration
 
-		Assert.notNull(oidcServerConfig.getAuthorizationEndpointURI(),
-				"An Authorization Endpoint URI must be supplied");
+		Assert.notNull(oidcServerConfig.getAuthorizationEndpointUrl(), "An Authorization Endpoint URI must be supplied");
 
-		Assert.notNull(oidcServerConfig.getTokenEndpointURI(),
-				"A Token ID Endpoint URI must be supplied");
+		Assert.notNull(oidcServerConfig.getTokenEndpointUrl(), "A Token ID Endpoint URI must be supplied");
 		
-		Assert.notNull(oidcServerConfig.getClientId(),
-				"A Client ID must be supplied");
+		Assert.notNull(oidcServerConfig.getClientId(), "A Client ID must be supplied");
 
-		Assert.notNull(oidcServerConfig.getClientSecret(),
-				"A Client Secret must be supplied");
+		Assert.notNull(oidcServerConfig.getClientSecret(), "A Client Secret must be supplied");
 	}
 
 	/*
@@ -110,10 +106,14 @@ public class OIDCAuthenticationFilter extends AbstractOIDCAuthenticationFilter {
 		return null;
 	}
 
-	public void setAuthorizationEndpointURI(String authorizationEndpointURI) {
-		oidcServerConfig.setAuthorizationEndpointURI(authorizationEndpointURI);
+	public void setAuthorizationEndpointUrl(String authorizationEndpointUrl) {
+		oidcServerConfig.setAuthorizationEndpointUrl(authorizationEndpointUrl);
 	}
 
+	public void setTokenEndpointUrl(String tokenEndpointUrl) {
+		oidcServerConfig.setTokenEndpointUrl(tokenEndpointUrl);
+	}
+	
 	public void setClientId(String clientId) {
 		oidcServerConfig.setClientId(clientId);
 	}
@@ -122,10 +122,6 @@ public class OIDCAuthenticationFilter extends AbstractOIDCAuthenticationFilter {
 		oidcServerConfig.setClientSecret(clientSecret);
 	}
 
-	public void setTokenEndpointURI(String tokenEndpointURI) {
-		oidcServerConfig.setTokenEndpointURI(tokenEndpointURI);
-	}
-	
 	public void setX509EncryptUrl(String x509EncryptUrl) {
 		oidcServerConfig.setX509EncryptUrl(x509EncryptUrl);
 	}
