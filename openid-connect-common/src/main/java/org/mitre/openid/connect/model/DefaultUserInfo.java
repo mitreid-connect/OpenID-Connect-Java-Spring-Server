@@ -27,6 +27,8 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.google.gson.JsonObject;
+
 @Entity
 @Table(name="user_info")
 @NamedQueries({
@@ -335,5 +337,52 @@ public class DefaultUserInfo implements UserInfo {
 	public void setUpdatedTime(String updatedTime) {
 		this.updatedTime = updatedTime;
 	}
-	
+
+	/**
+	 * Parse a JsonObject into a UserInfo.
+	 * @param o
+	 * @return
+	 */
+	public static UserInfo fromJson(JsonObject obj) {
+		DefaultUserInfo ui = new DefaultUserInfo();
+
+		ui.setUserId(obj.has("user_id") ? obj.get("user_id").getAsString() : null);
+		
+		ui.setName(obj.has("name") ? obj.get("name").getAsString() : null);
+		ui.setPreferredUsername(obj.has("preferred_username") ? obj.get("preferred_username").getAsString() : null);
+		ui.setGivenName(obj.has("given_name") ? obj.get("given_name").getAsString() : null);
+		ui.setFamilyName(obj.has("family_name") ? obj.get("family_name").getAsString() : null);
+		ui.setMiddleName(obj.has("middle_name") ? obj.get("middle_name").getAsString() : null);
+		ui.setNickname(obj.has("nickname") ? obj.get("nickname").getAsString() : null);
+		ui.setProfile(obj.has("profile") ? obj.get("profile").getAsString() : null);
+		ui.setPicture(obj.has("picture") ? obj.get("picture").getAsString() : null);
+		ui.setWebsite(obj.has("website") ? obj.get("website").getAsString() : null);
+		ui.setGender(obj.has("gender") ? obj.get("gender").getAsString() : null);
+		ui.setZoneinfo(obj.has("zone_info") ? obj.get("zone_info").getAsString() : null);
+		ui.setLocale(obj.has("locale") ? obj.get("locale").getAsString() : null);
+		ui.setUpdatedTime(obj.has("updated_time") ? obj.get("updated_time").getAsString() : null);
+		
+		ui.setEmail(obj.has("email") ? obj.get("email").getAsString() : null);
+		ui.setEmailVerified(obj.has("email") ? obj.get("email_verified").getAsBoolean() : null);
+		
+		ui.setPhoneNumber(obj.has("phone_number") ? obj.get("phone_number").getAsString() : null);
+
+		
+		if (obj.has("address") && obj.get("address").isJsonObject()) {
+			JsonObject addr = obj.get("address").getAsJsonObject();
+			ui.setAddress(new Address());
+			
+			ui.getAddress().setFormatted(addr.has("formatted") ? addr.get("formatted").getAsString() : null);
+			ui.getAddress().setStreetAddress(addr.has("street_address") ? addr.get("street_address").getAsString() : null);
+			ui.getAddress().setLocality(addr.has("locality") ? addr.get("locality").getAsString() : null);
+			ui.getAddress().setRegion(addr.has("region") ? addr.get("region").getAsString() : null);
+			ui.getAddress().setPostalCode(addr.has("postal_code") ? addr.get("postal_code").getAsString() : null);
+			ui.getAddress().setCountry(addr.has("country") ? addr.get("country").getAsString() : null);
+			
+		}
+
+		
+		return ui;
+		
+	}
 }

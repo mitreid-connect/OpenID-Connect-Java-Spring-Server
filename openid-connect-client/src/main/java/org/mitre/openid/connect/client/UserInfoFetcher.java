@@ -28,15 +28,15 @@ public class UserInfoFetcher {
 
 		MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
 		form.add("access_token", token.getAccessTokenValue());
+		form.add("schema", "openid");
 		
 		String userInfoString = restTemplate.postForObject(token.getServerConfiguration().getUserInfoUrl(), form, String.class);
 		
 		JsonObject userInfoJson = new JsonParser().parse(userInfoString).getAsJsonObject();
 		
-		Gson gson = new Gson();
-		DefaultUserInfo userInfo = gson.fromJson(userInfoJson, DefaultUserInfo.class);
+		UserInfo userInfo = DefaultUserInfo.fromJson(userInfoJson);
 		
-		return new DefaultUserInfo();
+		return userInfo;
 		
     }
 

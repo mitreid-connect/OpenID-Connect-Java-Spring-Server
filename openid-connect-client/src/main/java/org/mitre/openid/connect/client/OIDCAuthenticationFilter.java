@@ -149,4 +149,12 @@ public class OIDCAuthenticationFilter extends AbstractOIDCAuthenticationFilter {
     public void setIssuer(String issuer) {
 	    oidcServerConfig.setIssuer(issuer);
     }
+
+	/**
+     * @param userInfoUrl
+     * @see org.mitre.openid.connect.config.OIDCServerConfiguration#setUserInfoUrl(java.lang.String)
+     */
+    public void setUserInfoUrl(String userInfoUrl) {
+	    oidcServerConfig.setUserInfoUrl(userInfoUrl);
+    }
 }
