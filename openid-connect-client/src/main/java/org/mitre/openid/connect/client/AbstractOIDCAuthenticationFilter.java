@@ -371,7 +371,7 @@ public class AbstractOIDCAuthenticationFilter extends
 			} else {
 				// it's not null, see if it's expired
 				Date now = new Date();
-				if (!now.after(idClaims.getExpiration())) {
+				if (now.after(idClaims.getExpiration())) {
 					throw new AuthenticationServiceException("Id Token is expired: " + idClaims.getExpiration());
 				}
 			}
