@@ -19,33 +19,25 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.URLEncoder;
-import java.security.GeneralSecurityException;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
-import java.security.Signature;
 import java.security.interfaces.RSAPublicKey;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.mitre.jwt.model.JwtClaims;
 import org.mitre.jwt.signer.JwsAlgorithm;
 import org.mitre.jwt.signer.JwtSigner;
 import org.mitre.jwt.signer.impl.RsaSigner;
@@ -64,7 +56,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.WebUtils;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -212,9 +203,7 @@ public class AbstractOIDCAuthenticationFilter extends
 	 * javax.servlet.http.HttpServletResponse)
 	 */
 	@Override
-	public Authentication attemptAuthentication(HttpServletRequest request,
-			HttpServletResponse response) throws AuthenticationException,
-			IOException, ServletException {
+	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
 
 		logger.debug("Request: "
 				+ request.getRequestURI()
@@ -237,9 +226,7 @@ public class AbstractOIDCAuthenticationFilter extends
 	 * @throws Exception 
 	 * @throws UnsupportedEncodingException
 	 */
-	protected Authentication handleAuthorizationGrantResponse(
-			String authorizationCode, HttpServletRequest request,
-			OIDCServerConfiguration serverConfig) {
+	protected Authentication handleAuthorizationGrantResponse(String authorizationCode, HttpServletRequest request, OIDCServerConfiguration serverConfig) {
 
 		final boolean debug = logger.isDebugEnabled();
 
@@ -356,58 +343,59 @@ public class AbstractOIDCAuthenticationFilter extends
 				refreshTokenValue = tokenResponse.get("refresh_token").getAsString();
 			}
 			
-			JwtSigningAndValidationService jwtValidator = getValidatorForServer(serverConfig); 
-			IdToken idToken = null;
-			
-			try {
-				idToken = IdToken.parse(idTokenValue);
-			
-			} catch (AuthenticationServiceException e) {
-
-				// I suspect this could happen
-
-				logger.error("Problem parsing id_token:  " + e);
-				// e.printStackTrace();
-
-				throw new AuthenticationServiceException("Problem parsing id_token return from Token endpoint: " + e);
-			}
+			IdToken idToken = IdToken.parse(idTokenValue); // TODO: catch parsing errors?
 
 			// validate our ID Token over a number of tests
+			JwtClaims idClaims = idToken.getClaims();
 			
-			if(!jwtValidator.validateSignature(idToken.toString())) {
-				throw new AuthenticationServiceException("Signature not validated");
+			// check the signature
+			JwtSigningAndValidationService jwtValidator = getValidatorForServer(serverConfig); 
+			if (jwtValidator != null) {
+				if(!jwtValidator.validateSignature(idToken.toString())) {
+					throw new AuthenticationServiceException("Signature validation failed");
+				}
+			} else {
+				logger.info("No validation service found. Skipping signature validation");
 			}
 			
-			if(idToken.getClaims().getIssuer() == null) {
-				throw new AuthenticationServiceException("Issuer is null");
+			// check the issuer
+			if (idClaims.getIssuer() == null) {
+				throw new AuthenticationServiceException("Id Token Issuer is null");
+			} else if (!idClaims.getIssuer().equals(serverConfig.getIssuer())){
+				throw new AuthenticationServiceException("Issuers do not match, expected " + serverConfig.getIssuer() + " got " + idClaims.getIssuer());
 			}
 			
-			if(!idToken.getClaims().getIssuer().equals(serverConfig.getIssuer())){
-				throw new AuthenticationServiceException("Issuers do not match");
+			// check expiration
+			if (idClaims.getExpiration() == null) {
+				throw new AuthenticationServiceException("Id Token does not have required expiration claim");
+			} else {
+				// it's not null, see if it's expired
+				Date now = new Date();
+				if (!now.after(idClaims.getExpiration())) {
+					throw new AuthenticationServiceException("Id Token is expired: " + idClaims.getExpiration());
+				}
 			}
 			
-			if(jwtValidator.isJwtExpired(idToken)) {
-				throw new AuthenticationServiceException("Id Token is expired");
+			// check audience
+			if (idClaims.getAudience() == null) {
+				throw new AuthenticationServiceException("Id token audience is null");
+			} else if (!idClaims.getAudience().equals(serverConfig.getClientId())) {
+				throw new AuthenticationServiceException("Audience does not match, expected " + serverConfig.getClientId() + " got " + idClaims.getAudience());
 			}
 			
-			if(!jwtValidator.validateIssuedAt(idToken)) {
-				throw new AuthenticationServiceException("Id Token issuedAt failed");
+			// check issued at
+			if (idClaims.getIssuedAt() == null) {
+				throw new AuthenticationServiceException("Id Token does not have required issued-at claim");				
+			} else {
+				// since it's not null, see if it was issued in the future
+				Date now = new Date();
+				if (now.before(idClaims.getIssuedAt())) {
+					throw new AuthenticationServiceException("Id Token was issued in the future: " + idClaims.getIssuedAt());
+				}
 			}
 
-			// Clients are required to compare nonce claim in ID token to 
-			// the nonce sent in the Authorization request.  The client 
-			// stores this value as a signed session cookie to detect a 
-			// replay by third parties.
-			//
-			// See: OpenID Connect Messages Section 2.1.1 entitled "ID Token"
-			//
-			// http://openid.net/specs/openid-connect-messages-1_0.html#id_token
-			//
-			
-			//String nonce = idToken.getClaims().getClaimAsString("nonce");
-
-			String nonce = idToken.getClaims().getNonce();
-			
+			// compare the nonce to our stored claim
+			String nonce = idClaims.getNonce();			
 			if (StringUtils.isBlank(nonce)) {
 				
 				logger.error("ID token did not contain a nonce claim.");
@@ -429,10 +417,9 @@ public class AbstractOIDCAuthenticationFilter extends
 			
 			String userId = idToken.getTokenClaims().getUserId();
 			
-			// construct an OpenIdConnectAuthenticationToken and return 
-			// a Authentication object w/the userId and the idToken
+			// construct an OpenIdConnectAuthenticationToken and return a Authentication object w/the userId and the idToken
 			
-			OpenIdConnectAuthenticationToken token = new OpenIdConnectAuthenticationToken(userId, idToken.getClaims().getIssuer(), serverConfig, idTokenValue, accessTokenValue, refreshTokenValue);
+			OpenIdConnectAuthenticationToken token = new OpenIdConnectAuthenticationToken(userId, idClaims.getIssuer(), serverConfig, idTokenValue, accessTokenValue, refreshTokenValue);
 
 			Authentication authentication = this.getAuthenticationManager().authenticate(token);
 
@@ -615,13 +602,15 @@ public class AbstractOIDCAuthenticationFilter extends
 			KeyFetcher keyFetch = new KeyFetcher();
 			PublicKey signingKey = null;
 			
-			// If the config has the X509 url, prefer that to the JWK
-			if(serverConfig.getX509SigningUrl() != null) {
-				signingKey = keyFetch.retrieveX509Key(serverConfig);
-				
-			} else {
-				// otherwise prefer the JWK
+			if (serverConfig.getJwkSigningUrl() != null) {
+				// prefer the JWK
 				signingKey = keyFetch.retrieveJwkKey(serverConfig);
+			} else if (serverConfig.getX509SigningUrl() != null) {
+				// use the x509 only if JWK isn't configured
+				signingKey = keyFetch.retrieveX509Key(serverConfig);				
+			} else {
+				// no keys configured
+				logger.warn("No server key URLs configured for " + serverConfig.getIssuer());
 			}
 			
 			if (signingKey != null) {
@@ -648,6 +637,7 @@ public class AbstractOIDCAuthenticationFilter extends
 				return signingAndValidationService;
 				
 			} else {
+				// there were either no keys returned or no URLs configured to fetch them, assume no checking on key signatures
 				return null;
 			}
 		}

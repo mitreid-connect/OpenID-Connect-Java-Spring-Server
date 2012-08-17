@@ -28,8 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class JwtSigningAndValidationServiceDefault extends AbstractJwtSigningAndValidationService implements
-		JwtSigningAndValidationService, InitializingBean {
+public class JwtSigningAndValidationServiceDefault implements JwtSigningAndValidationService, InitializingBean {
 
 	@Autowired 
 	private ConfigurationPropertiesBean configBean;
@@ -51,8 +50,7 @@ public class JwtSigningAndValidationServiceDefault extends AbstractJwtSigningAnd
 	 * @param signer
 	 *            List of JwtSigners to associate with this service
 	 */
-	public JwtSigningAndValidationServiceDefault(
-			Map<String, ? extends JwtSigner> signer) {
+	public JwtSigningAndValidationServiceDefault(Map<String, ? extends JwtSigner> signer) {
 		setSigners(signer);
 	}
 	
@@ -106,8 +104,7 @@ public class JwtSigningAndValidationServiceDefault extends AbstractJwtSigningAnd
 	 */
 	@Override
 	public String toString() {
-		return "JwtSigningAndValidationServiceDefault [signers=" + signers
-				+ "]";
+		return "JwtSigningAndValidationServiceDefault [signers=" + signers + "]";
 	}
 
 	/**
@@ -148,6 +145,22 @@ public class JwtSigningAndValidationServiceDefault extends AbstractJwtSigningAnd
 	 */
 	public Map<String, ? extends JwtSigner> getSigners() {
 		return signers;
+	}
+
+	@Override
+	public boolean validateSignature(String jwtString) {
+
+		for (JwtSigner signer : getSigners().values()) {
+			try {
+				if (signer.verify(jwtString)) {
+					return true;
+				}
+			} catch (NoSuchAlgorithmException e) {
+				// ignore, signer didn't verify signature, try the next one
+				e.printStackTrace();
+			}
+		}
+		return false;
 	}
 
 }
