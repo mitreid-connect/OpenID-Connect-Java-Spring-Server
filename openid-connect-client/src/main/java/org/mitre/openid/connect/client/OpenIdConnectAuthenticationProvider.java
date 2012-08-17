@@ -15,15 +15,24 @@
  ******************************************************************************/
 package org.mitre.openid.connect.client;
 
+import java.util.Collection;
+
+import org.mitre.openid.connect.model.UserInfo;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
 import org.springframework.security.core.authority.mapping.NullAuthoritiesMapper;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.util.Assert;
+
+import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
 
 /**
  * @author nemonik
@@ -32,7 +41,8 @@ import org.springframework.util.Assert;
 public class OpenIdConnectAuthenticationProvider implements
 		AuthenticationProvider, InitializingBean {
 
-	private AuthenticationUserDetailsService<OpenIdConnectAuthenticationToken> userDetailsService;
+	private UserInfoFetcher userInfoFetcher = new UserInfoFetcher();
+	
 	private GrantedAuthoritiesMapper authoritiesMapper = new NullAuthoritiesMapper();
 
 	/*
@@ -43,8 +53,6 @@ public class OpenIdConnectAuthenticationProvider implements
 	 */
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		Assert.notNull(this.userDetailsService,
-				"The userDetailsService must be set");
 	}
 
 	/*
@@ -63,12 +71,26 @@ public class OpenIdConnectAuthenticationProvider implements
 
 		if (authentication instanceof OpenIdConnectAuthenticationToken) {
 
+			// Default authorities set
+			// TODO: let this be configured
+			Collection<SimpleGrantedAuthority> authorities = Sets.newHashSet(new SimpleGrantedAuthority("ROLE_USER"));
+			
 			OpenIdConnectAuthenticationToken token = (OpenIdConnectAuthenticationToken) authentication;
 
-			UserDetails userDetails = userDetailsService.loadUserDetails(token);
+			UserInfo userInfo = userInfoFetcher.loadUserInfo(token);
 
-			return new OpenIdConnectAuthenticationToken(userDetails,
-					authoritiesMapper.mapAuthorities(userDetails.getAuthorities()), token.getUserId(),
+			if (userInfo == null) {
+				// TODO: user Info not found -- error?
+			} else {			
+				if (!Strings.isNullOrEmpty(userInfo.getUserId()) && userInfo.getUserId().equals(token.getUserId())) {
+					// the userinfo came back and the user_id fields don't match what was in the id_token
+					throw new UsernameNotFoundException("user_id mismatch between id_token and user_info call: " + userInfo.getUserId() + " / " + token.getUserId());
+				}
+			}
+			
+			return new OpenIdConnectAuthenticationToken(token.getUserId(), 
+					token.getIssuer(), 
+					userInfo, authoritiesMapper.mapAuthorities(authorities),
 					token.getIdTokenValue(), token.getAccessTokenValue(), token.getRefreshTokenValue());
 		}
 
@@ -82,11 +104,6 @@ public class OpenIdConnectAuthenticationProvider implements
 		this.authoritiesMapper = authoritiesMapper;
 	}
 
-	public void setUserDetailsService(
-			AuthenticationUserDetailsService<OpenIdConnectAuthenticationToken> userDetailsService) {
-		this.userDetailsService = userDetailsService;
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -96,7 +113,6 @@ public class OpenIdConnectAuthenticationProvider implements
 	 */
 	@Override
 	public boolean supports(Class<?> authentication) {
-		return OpenIdConnectAuthenticationToken.class
-				.isAssignableFrom(authentication);
+		return OpenIdConnectAuthenticationToken.class.isAssignableFrom(authentication);
 	}
 }

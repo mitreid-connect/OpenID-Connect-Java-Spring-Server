@@ -15,6 +15,8 @@
  ******************************************************************************/
 package org.mitre.openid.connect.config;
 
+import java.net.URI;
+
 /**
  * @author nemonik
  * 
@@ -38,6 +40,8 @@ public class OIDCServerConfiguration {
 	private String jwkEncryptUrl;
 	
 	private String jwkSigningUrl;
+	
+	private String userInfoUrl;
 
 	public String getAuthorizationEndpointURI() {
 		return authorizationEndpointURI;
@@ -111,17 +115,27 @@ public class OIDCServerConfiguration {
 		this.jwkSigningUrl = jwkSigningUrl;
 	}
 
-	@Override
-	public String toString() {
-		return "OIDCServerConfiguration [authorizationEndpointURI="
-				+ authorizationEndpointURI + ", tokenEndpointURI="
-				+ tokenEndpointURI + ", clientSecret=" + clientSecret
-				+ ", clientId=" + clientId + ", issuer=" + issuer 
-				+", x509EncryptedUrl=" 
-				+ x509EncryptUrl + ", jwkEncryptedUrl=" 
-				+ jwkEncryptUrl + ", x509SigningUrl="
-				+ x509SigningUrl + ", jwkSigningUrl="
-				+ jwkSigningUrl + "]";
-	}
+	/**
+     * @return the userInfoUrl
+     */
+    public String getUserInfoUrl() {
+	    return userInfoUrl;
+    }
+
+	/**
+     * @param userInfoUrl the userInfoUrl to set
+     */
+    public void setUserInfoUrl(String userInfoUrl) {
+	    this.userInfoUrl = userInfoUrl;
+    }
+
+	/* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+	    return "OIDCServerConfiguration [authorizationEndpointURI=" + authorizationEndpointURI + ", tokenEndpointURI=" + tokenEndpointURI + ", clientSecret=" + clientSecret + ", clientId=" + clientId + ", issuer=" + issuer + ", x509EncryptUrl=" + x509EncryptUrl + ", x509SigningUrl="
+	            + x509SigningUrl + ", jwkEncryptUrl=" + jwkEncryptUrl + ", jwkSigningUrl=" + jwkSigningUrl + ", userInfoUrl=" + userInfoUrl + "]";
+    }
 
 }

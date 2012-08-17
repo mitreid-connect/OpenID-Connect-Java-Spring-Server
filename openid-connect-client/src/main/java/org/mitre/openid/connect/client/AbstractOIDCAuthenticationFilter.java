@@ -432,7 +432,7 @@ public class AbstractOIDCAuthenticationFilter extends
 			// construct an OpenIdConnectAuthenticationToken and return 
 			// a Authentication object w/the userId and the idToken
 			
-			OpenIdConnectAuthenticationToken token = new OpenIdConnectAuthenticationToken(userId, idTokenValue, accessTokenValue, refreshTokenValue);
+			OpenIdConnectAuthenticationToken token = new OpenIdConnectAuthenticationToken(userId, idToken.getClaims().getIssuer(), serverConfig, idTokenValue, accessTokenValue, refreshTokenValue);
 
 			Authentication authentication = this.getAuthenticationManager().authenticate(token);
 

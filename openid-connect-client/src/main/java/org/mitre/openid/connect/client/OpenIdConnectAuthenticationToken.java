@@ -18,10 +18,15 @@ package org.mitre.openid.connect.client;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.mitre.openid.connect.config.OIDCServerConfiguration;
 import org.mitre.openid.connect.model.IdToken;
+import org.mitre.openid.connect.model.UserInfo;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.SpringSecurityCoreVersion;
+
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Sets;
 
 /**
  * 
@@ -32,51 +37,73 @@ public class OpenIdConnectAuthenticationToken extends AbstractAuthenticationToke
 
     private static final long serialVersionUID = 22100073066377804L;
     
-	private final Object principle;
+	private final Object principal;
 	private final String idTokenValue; // string representation of the id token
 	private final String accessTokenValue; // string representation of the access token
 	private final String refreshTokenValue; // string representation of the refresh token
+	private final String issuer; // issuer URL (parsed from the id token)
 	private final String userId; // user id (parsed from the id token)
 
+	private final transient OIDCServerConfiguration serverConfiguration; // server configuration used to fulfill this token, don't serialize it
+	private final transient UserInfo userInfo; // user info container, don't serialize it b/c it might be huge and can be re-fetched
+	
 	/**
-	 * Constructs OpenIdConnectAuthenticationToken provided
+	 * Constructs OpenIdConnectAuthenticationToken with a full set of authorities, marking this as authenticated.
 	 * 
-	 * @param principle
-	 * @param authorities
+	 * Set to authenticated.
+	 * 
+	 * Constructs a Principal out of the user_id and issuer.
 	 * @param userId
+	 * @param authorities
+	 * @param principal
 	 * @param idToken
 	 */
-	public OpenIdConnectAuthenticationToken(Object principle,
-			Collection<? extends GrantedAuthority> authorities, String userId,
+	public OpenIdConnectAuthenticationToken(String userId, String issuer, 
+			UserInfo userInfo, Collection<? extends GrantedAuthority> authorities,
 			String idTokenValue, String accessTokenValue, String refreshTokenValue) {
 
 		super(authorities);
 
-		this.principle = principle;
+		this.principal = ImmutableMap.of("user_id", userId, "issuer", issuer);
+		this.userInfo = userInfo;
 		this.userId = userId;
+		this.issuer = issuer;
 		this.idTokenValue = idTokenValue;
 		this.accessTokenValue = accessTokenValue;
 		this.refreshTokenValue = refreshTokenValue;
 
+		this.serverConfiguration = null; // we don't need a server config anymore
+		
 		setAuthenticated(true);
 	}
 
 	/**
-	 * Constructs OpenIdConnectAuthenticationToken provided
+	 * Constructs OpenIdConnectAuthenticationToken for use as a data shuttle from the filter to the auth provider. 
 	 * 
-	 * @param idToken
+	 * Set to not-authenticated.
+	 * 
+	 * Constructs a Principal out of the user_id and issuer.
 	 * @param userId
+	 * @param idToken
 	 */
-	public OpenIdConnectAuthenticationToken(String userId, String idTokenValue, String accessTokenValue, String refreshTokenValue) {
+	public OpenIdConnectAuthenticationToken(String userId, String issuer, 
+			OIDCServerConfiguration serverConfiguration, 
+			String idTokenValue, String accessTokenValue, String refreshTokenValue) {
 
 		super(new ArrayList<GrantedAuthority>(0));
 
-		this.principle = userId;
+		this.principal = ImmutableMap.of("user_id", userId, "issuer", issuer);
 		this.userId = userId;
+		this.issuer = issuer;
 		this.idTokenValue = idTokenValue;
 		this.accessTokenValue = accessTokenValue;
 		this.refreshTokenValue = refreshTokenValue;
 
+		this.userInfo = null; // we don't have a UserInfo yet
+		
+		this.serverConfiguration = serverConfiguration;
+		
+		
 		setAuthenticated(false);
 	}
 
@@ -98,7 +125,7 @@ public class OpenIdConnectAuthenticationToken extends AbstractAuthenticationToke
 	@Override
 	public Object getPrincipal() {
 		// TODO Auto-generated method stub
-		return principle;
+		return principal;
 	}
 
 	public String getUserId() {
@@ -124,6 +151,27 @@ public class OpenIdConnectAuthenticationToken extends AbstractAuthenticationToke
      */
     public String getRefreshTokenValue() {
     	return refreshTokenValue;
+    }
+
+	/**
+     * @return the serverConfiguration
+     */
+    public OIDCServerConfiguration getServerConfiguration() {
+    	return serverConfiguration;
+    }
+
+	/**
+     * @return the issuer
+     */
+    public String getIssuer() {
+    	return issuer;
+    }
+
+	/**
+     * @return the userInfo
+     */
+    public UserInfo getUserInfo() {
+    	return userInfo;
     }
 	
 	
