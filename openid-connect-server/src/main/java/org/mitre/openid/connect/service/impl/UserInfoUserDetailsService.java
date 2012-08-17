@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.GrantedAuthorityImpl;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -21,8 +22,8 @@ public class UserInfoUserDetailsService implements UserDetailsService {
 	@Autowired
 	UserInfoRepository repository;
 	
-    public static final GrantedAuthority ROLE_USER = new GrantedAuthorityImpl("ROLE_USER");
-    public static final GrantedAuthority ROLE_ADMIN = new GrantedAuthorityImpl("ROLE_ADMIN");
+    public static final GrantedAuthority ROLE_USER = new SimpleGrantedAuthority("ROLE_USER");
+    public static final GrantedAuthority ROLE_ADMIN = new SimpleGrantedAuthority("ROLE_ADMIN");
 
     private List<String> admins = new ArrayList<String>();
     
