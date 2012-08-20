@@ -49,7 +49,7 @@
                 <label class="control-label">Application name</label>
                 <div class="controls">
                     <input value="<%=applicationName%>" maxlength="100" type="text" class="" placeholder="Type something">
-                    <p class="help-block">Supporting help text</p>
+                    <p class="help-block">Human-readable application name</p>
                 </div>
             </div>
 
@@ -57,7 +57,7 @@
                 <label class="control-label">Client ID</label>
                 <div class="controls">
                     <input value="<%=clientId%>" maxlength="100" type="text" class="" placeholder="Type something">
-                    <p class="help-block">Supporting help text</p>
+                    <p class="help-block">Unique identifier. If you leave this blank it will be automatically generated.</p>
                 </div>
             </div>
 
@@ -75,7 +75,7 @@
                 <div class="controls">
                     <textarea class="input-xlarge" placeholder="Type a description" maxlength="200"
                               rows="3"><%=clientDescription%></textarea>
-                    <p class="help-block">Supporting help text</p>
+                    <p class="help-block">Human-readable text description</p>
                 </div>
             </div>
 
@@ -97,42 +97,46 @@
                 </div>
             </div>
 
-			<div class="control-group">
+			<div class="control-group" id="requireClientSecret">
 				<label class="control-label">Require Client Secret</label>
 				<div class="controls">
 					<label class="checkbox">
-						<input type="checkbox" id="requireClientSecret" <%=(requireClientSecret == true ? 'checked' : '')%>> Require client secret?
+						<input type="checkbox" <%=(requireClientSecret == true ? 'checked' : '')%>> Require client secret?
 					</label>
 				</div>
 			</div>
 
-			<div class="control-group">
-				<label class="control-label">Generate Client Secret</label>
-				<div class="controls">
-					<label class="checkbox">
-						<input type="checkbox" id="generateClientSecret" <%=(generateClientSecret == true ? 'checked' : '')%>> Generate a new client secret?
-					</label>
-					<p class="help-block">New secret will be generated when you click 'Save'</p>
-				</div>
-			</div>
+			<div id="clientSecretPanel">
 
-			<div class="control-group">
-				<label class="control-label">Show Client Secret</label>
-				<div class="controls">
-					<label class="checkbox">
-						<input type="checkbox" id="displayClientSecret" <%=(displayClientSecret == true ? 'checked' : '')%>> Display client secret here:
-					</label>
+				<div class="control-group" id="generateClientSecret">
+					<label class="control-label">Generate Client Secret</label>
+					<div class="controls">
+						<label class="checkbox">
+							<input type="checkbox" <%=(generateClientSecret == true ? 'checked' : '')%>> Generate a new client secret?
+						</label>
+						<p class="help-block">New secret will be generated when you click 'Save'</p>
+					</div>
 				</div>
-			</div>
+	
+				<div class="control-group" id="displayClientSecret">
+					<label class="control-label">Show Client Secret</label>
+					<div class="controls">
+						<label class="checkbox">
+							<input type="checkbox" <%=(displayClientSecret == true ? 'checked' : '')%>> Display client secret here:
+						</label>
+					</div>
+				</div>
+	
+    	        <div class="control-group">
+        	        <label class="control-label">Client Secret</label>
+            	    <div class="controls">
+                	    <input id="clientSecret" value="<%=clientSecret%>" maxlength="100" type="text" placeholder="Type a secret">
+						<input id="clientSecretGenerated" value="Generate on Save" type="text" disabled>
+						<input id="clientSecretHidden" value="************" type="password" disabled>
+	                </div>
+    	        </div>
 
-            <div class="control-group" id="clientSecret">
-                <label class="control-label">Client Secret</label>
-                <div class="controls">
-                    <input value="<%=clientSecret%>" maxlength="100" type="text" class=""
-                           placeholder="Type a secret">
-                    <p class="help-block">If you leave this blank a client secret will be generated for you automatically.</p>
-                </div>
-            </div>
+			</div>
 
             <div class="control-group" id="authorizedGrantTypes">
                 <label class="control-label">Authorized Grant Types</label>

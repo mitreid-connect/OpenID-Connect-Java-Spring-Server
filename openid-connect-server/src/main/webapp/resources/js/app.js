@@ -187,9 +187,67 @@
         },
 
         events:{
-            "click .btn-primary":"saveClient"
+            "click .btn-primary":"saveClient",
+            "change #requireClientSecret":"toggleRequireClientSecret",
+            "change #displayClientSecret":"toggleDisplayClientSecret",
+            "change #generateClientSecret":"toggleGenerateClientSecret"
         },
 
+        /**
+         * Set up the form based on the current state of the requireClientSecret checkbox parameter
+         * @param event
+         */
+        toggleRequireClientSecret:function(event) {
+        	
+        	if ($('#requireClientSecret input').is(':checked')) {
+        		// client secret is required, show all the bits
+        		$('#clientSecretPanel').show();
+        		// this function sets up the display portions
+        		this.toggleGenerateClientSecret();
+        	} else {
+        		// no client secret, hide all the bits
+        		$('#clientSecretPanel').hide();        		
+        	}
+        },
+        
+        /**
+         * Set up the form based on the "Generate" checkbox
+         * @param event
+         */
+        toggleGenerateClientSecret:function(event) {
+        	
+        	if ($('#generateClientSecret input').is(':checked')) {
+        		// show the "generated" block, hide the "display" checkbox
+        		$('#displayClientSecret').hide();
+        		$('#clientSecret').hide();
+        		$('#clientSecretGenerated').show();
+        		$('#clientSecretHidden').hide();
+        	} else {
+        		// show the display checkbox, fall back to the "display" logic
+        		$('#displayClientSecret').show();
+        		this.toggleDisplayClientSecret(event);
+        	}
+        },
+        
+        /**
+         * Handle whether or not to display the client secret
+         * @param event
+         */
+        toggleDisplayClientSecret:function(event) {
+        	
+        	if ($('#displayClientSecret input').is(':checked')) {
+        		// want to display it
+        		$('#clientSecret').show();
+        		$('#clientSecretHidden').hide();
+        		$('#clientSecretGenerated').hide();
+        	} else {
+        		// want to hide it
+        		$('#clientSecret').hide();
+        		$('#clientSecretHidden').show();
+        		$('#clientSecretGenerated').hide();
+        	}
+        },
+        
         saveClient:function (event) {
 
             $('.control-group').removeClass('error');
@@ -208,13 +266,13 @@
                 }
             });
 
-            var requireClientSecret = $('#requireClientSecret').is(':checked');
-            var generateClientSecret = $('#generateClientSecret').is(':checked');
+            var requireClientSecret = $('#requireClientSecret input').is(':checked');
+            var generateClientSecret = $('#generateClientSecret input').is(':checked');
             var clientSecret = null;
             
             if (requireClientSecret && !generateClientSecret) {
             	// if it's required but we're not generating it, send the value
-            	clientSecret = $('#clientSecret input').val();
+            	clientSecret = $('#clientSecret').val();
             }
 
             var valid = this.model.set({
@@ -265,7 +323,12 @@
         render:function (eventName) {
 
             $(this.el).html(this.template(this.model.toJSON()));
+            
             return this;
+        },
+        
+        postRender:function() {
+            this.toggleRequireClientSecret();
         }
     });
 
@@ -332,14 +395,27 @@
         },
 
         newClient:function() {
-            this.clientFormView = new ClientFormView({model:new ClientModel()});
+        	var client = new ClientModel();
+        	
+        	// set up this new client to require a secret and have us autogenerate one
+        	client.requireClientSecret = true; 
+        	client.generateClientSecret = true;
+        	
+            this.clientFormView = new ClientFormView({model:client});
             $('#content').html(this.clientFormView.render().el);
+            this.clientFormView.postRender(); // set up the form for the given model data
         },
 
         editClient:function(id) {
             var client = this.clientList.get(id);
+            
+            if (client.clientSecret == null) {
+            	client.requireClientSecret = false;
+            }
+            
             this.clientFormView = new ClientFormView({model:client});
             $('#content').html(this.clientFormView.render().el);
+            this.clientFormView.postRender(); // set up the form for the given model data
         },
 
         whiteList:function () {
