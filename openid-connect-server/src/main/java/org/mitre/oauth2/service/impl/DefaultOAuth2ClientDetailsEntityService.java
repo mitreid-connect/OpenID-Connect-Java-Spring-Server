@@ -15,9 +15,13 @@
  ******************************************************************************/
 package org.mitre.oauth2.service.impl;
 
+import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.util.Collection;
 import java.util.UUID;
 
+import org.apache.commons.codec.binary.Base64;
+import org.bouncycastle.asn1.cmp.GenRepContent;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.repository.OAuth2ClientRepository;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
@@ -34,6 +38,8 @@ import com.google.common.base.Strings;
 @Transactional
 public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEntityService {
 
+	private SecureRandom random = new SecureRandom();
+	
 	@Autowired
 	private OAuth2ClientRepository clientRepository;
 	
@@ -58,12 +64,8 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 		}
 
 		// assign a random clientid and secret if they're empty 
-        if (client.getClientId() == null || client.getClientId().equals("")) {
-            client.setClientId(UUID.randomUUID().toString());
-        }
-        
-		if (client.getClientSecret().equals("")) {
-            client.setClientSecret(UUID.randomUUID().toString());
+        if (Strings.isNullOrEmpty(client.getClientId())) {
+            client = generateClientId(client);
         }
         
         return clientRepository.saveClient(client);
@@ -132,6 +134,24 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 	@Override
     public Collection<ClientDetailsEntity> getAllClients() {
 		return clientRepository.getAllClients();
+    }
+
+	/**
+	 * Generates a clientId for the given client and sets it to the client's clientId field. Returns the client that was passed in, now with id set.
+	 */
+	@Override
+    public ClientDetailsEntity generateClientId(ClientDetailsEntity client) {
+		client.setClientId(UUID.randomUUID().toString());
+	    return client;
+    }
+
+	/**
+	 * Generates a new clientSecret for the given client and sets it to the client's clientSecret field. Returns the client that was passed in, now with secret set.
+	 */
+	@Override
+    public ClientDetailsEntity generateClientSecret(ClientDetailsEntity client) {
+		client.setClientSecret(Base64.encodeBase64URLSafeString(new BigInteger(128, new SecureRandom()).toByteArray()).replace("=", ""));
+	    return client;
     }
 
 }

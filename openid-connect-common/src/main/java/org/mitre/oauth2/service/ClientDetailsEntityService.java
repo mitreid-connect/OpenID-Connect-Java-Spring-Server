@@ -37,4 +37,8 @@ public interface ClientDetailsEntityService extends ClientDetailsService {
 
 	public Collection<ClientDetailsEntity> getAllClients();
 
+	public ClientDetailsEntity generateClientId(ClientDetailsEntity client);
+	
+	public ClientDetailsEntity generateClientSecret(ClientDetailsEntity client);
+	
 }
