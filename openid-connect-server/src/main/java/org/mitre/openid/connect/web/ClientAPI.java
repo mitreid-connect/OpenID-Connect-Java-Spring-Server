@@ -15,7 +15,12 @@
  ******************************************************************************/
 package org.mitre.openid.connect.web;
 
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 import org.mitre.oauth2.exception.ClientNotFoundException;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
@@ -51,6 +56,11 @@ public class ClientAPI {
 
     }
 
+    /**
+     * Get a list of all clients
+     * @param modelAndView
+     * @return
+     */
     @RequestMapping(method = RequestMethod.GET, headers="Accept=application/json")
     public ModelAndView apiGetAllClients(ModelAndView modelAndView) {
 
@@ -61,10 +71,32 @@ public class ClientAPI {
         return modelAndView;
     }
 
+    /**
+     * Create a new client
+     * @param json
+     * @param m
+     * @param principal
+     * @return
+     */
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
-    public String apiAddClient(@RequestBody String json, Model m, Principal principal) {
+    public String apiAddClient(@RequestBody String jsonString, Model m, Principal principal) {
 
+    	// TODO: sanity check if the thing really is a JSON object
+    	JsonObject json = new JsonParser().parse(jsonString).getAsJsonObject();
+
+    	// parse the client passed in (from JSON) and fetch the old client from the store
         ClientDetailsEntity client = new Gson().fromJson(json, ClientDetailsEntity.class);
+        
+        // if they leave the client secret empty, force it to be generated
+        if (Strings.isNullOrEmpty(client.getClientId())) {
+        	client = clientService.generateClientId(client);
+        }
+        
+        // if they've asked for us to generate a client secret, do so here
+        if (json.has("generateClientSecret") && json.get("generateClientSecret").getAsBoolean()) {
+        	client = clientService.generateClientSecret(client);
+        }
+        
         // set owners as current logged in user
         //client.setOwner(principal.getName());
         //TODO: owner has been replaced by a list of contacts, which should be styled as email addresses.
@@ -73,12 +105,37 @@ public class ClientAPI {
         return "jsonClientView";
     }
 
+    /**
+     * Update an existing client
+     * @param id
+     * @param jsonString
+     * @param m
+     * @param principal
+     * @return
+     */
     @RequestMapping(value="/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")
-    public String apiUpdateClient(@PathVariable("id") Long id, @RequestBody String json, Model m, Principal principal) {
+    public String apiUpdateClient(@PathVariable("id") Long id, @RequestBody String jsonString, Model m, Principal principal) {
+    	
+    	// TODO: sanity check if the thing really is a JSON object
+    	JsonObject json = new JsonParser().parse(jsonString).getAsJsonObject();
 
+    	// parse the client passed in (from JSON) and fetch the old client from the store
         ClientDetailsEntity client = new Gson().fromJson(json, ClientDetailsEntity.class);
-        
         ClientDetailsEntity oldClient = clientService.getClientById(id);
+        
+        if (oldClient == null) {
+        	throw new ClientNotFoundException();
+        }
+        
+        // if they leave the client secret empty, force it to be generated
+        if (Strings.isNullOrEmpty(client.getClientId())) {
+        	client = clientService.generateClientId(client);
+        }
+        
+        // if they've asked for us to generate a client secret, do so here
+        if (json.has("generateClientSecret") && json.get("generateClientSecret").getAsBoolean()) {
+        	client = clientService.generateClientSecret(client);
+        }
         
         // set owners as current logged in user
         // client.setOwner(principal.getName());
@@ -89,6 +146,12 @@ public class ClientAPI {
         return "jsonClientView";
     }
 
+    /**
+     * Delete a client
+     * @param id
+     * @param modelAndView
+     * @return
+     */
     @RequestMapping(value="/{id}", method=RequestMethod.DELETE, headers="Accept=application/json")
     public String apiDeleteClient(@PathVariable("id") Long id, ModelAndView modelAndView) {
 
@@ -99,6 +162,12 @@ public class ClientAPI {
     }
 
 
+    /**
+     * Get an individual client
+     * @param id
+     * @param modelAndView
+     * @return
+     */
     @RequestMapping(value="/{id}", method=RequestMethod.GET, headers="Accept=application/json")
     @ResponseBody
     public Object apiShowClient(@PathVariable("id") Long id, ModelAndView modelAndView) {
