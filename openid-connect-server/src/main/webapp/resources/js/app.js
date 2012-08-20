@@ -398,8 +398,11 @@
         	var client = new ClientModel();
         	
         	// set up this new client to require a secret and have us autogenerate one
-        	client.requireClientSecret = true; 
-        	client.generateClientSecret = true;
+        	client.set({
+        		requireClientSecret:true, 
+        		generateClientSecret:true,
+        		displayClientSecret:false
+        	}, { silent: true });
         	
             this.clientFormView = new ClientFormView({model:client});
             $('#content').html(this.clientFormView.render().el);
@@ -408,10 +411,17 @@
 
         editClient:function(id) {
             var client = this.clientList.get(id);
-            
-            if (client.clientSecret == null) {
-            	client.requireClientSecret = false;
+
+            if (client.get("clientSecret") == null) {
+            	client.set({
+            		requireClientSecret:false
+            	}, { silent: true });
             }
+            
+        	client.set({
+        		generateClientSecret:false,
+        		displayClientSecret:false
+        	}, { silent: true });
             
             this.clientFormView = new ClientFormView({model:client});
             $('#content').html(this.clientFormView.render().el);
