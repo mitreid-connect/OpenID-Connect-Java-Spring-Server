@@ -97,6 +97,34 @@
                 </div>
             </div>
 
+			<div class="control-group">
+				<label class="control-label">Require Client Secret</label>
+				<div class="controls">
+					<label class="checkbox">
+						<input type="checkbox" id="requireClientSecret" <%=(requireClientSecret == true ? 'checked' : '')%>> Require client secret?
+					</label>
+				</div>
+			</div>
+
+			<div class="control-group">
+				<label class="control-label">Generate Client Secret</label>
+				<div class="controls">
+					<label class="checkbox">
+						<input type="checkbox" id="generateClientSecret" <%=(generateClientSecret == true ? 'checked' : '')%>> Generate a new client secret?
+					</label>
+					<p class="help-block">New secret will be generated when you click 'Save'</p>
+				</div>
+			</div>
+
+			<div class="control-group">
+				<label class="control-label">Show Client Secret</label>
+				<div class="controls">
+					<label class="checkbox">
+						<input type="checkbox" id="displayClientSecret" <%=(displayClientSecret == true ? 'checked' : '')%>> Display client secret here:
+					</label>
+				</div>
+			</div>
+
             <div class="control-group" id="clientSecret">
                 <label class="control-label">Client Secret</label>
                 <div class="controls">

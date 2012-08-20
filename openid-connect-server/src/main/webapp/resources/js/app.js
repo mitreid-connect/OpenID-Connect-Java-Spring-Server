@@ -70,7 +70,10 @@
             clientId:"",
             allowRefresh:false,
             accessTokenValiditySeconds: 0,
-            refreshTokenValiditySeconds: 0
+            refreshTokenValiditySeconds: 0,
+            displayClientSecret: false,
+            generateClientSecret: false,
+            requireClientSecret: true
         },
 
         urlRoot:"api/clients"
@@ -205,10 +208,20 @@
                 }
             });
 
+            var requireClientSecret = $('#requireClientSecret').is(':checked');
+            var generateClientSecret = $('#generateClientSecret').is(':checked');
+            var clientSecret = null;
+            
+            if (requireClientSecret && !generateClientSecret) {
+            	// if it's required but we're not generating it, send the value
+            	clientSecret = $('#clientSecret input').val();
+            }
+
             var valid = this.model.set({
                 applicationName:$('#applicationName input').val(),
                 clientId:$('#clientId input').val(),
-                clientSecret:$('#clientSecret input').val(),
+                clientSecret: clientSecret,
+                generateClientSecret:generateClientSecret,
                 registeredRedirectUri:registeredRedirectUri,
                 clientDescription:$('#clientDescription textarea').val(),
                 allowRefresh:$('#allowRefresh').is(':checked'),
