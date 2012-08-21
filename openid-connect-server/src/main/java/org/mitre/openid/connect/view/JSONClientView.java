@@ -53,11 +53,10 @@ public class JSONClientView extends AbstractView {
 
         response.setContentType("application/json");
 
-        Writer out;
         
 		try {
 			
-			out = response.getWriter();
+			Writer out = response.getWriter();
 			Object obj = model.get("entity");
 	        if (obj == null) {
 	            obj = model;
