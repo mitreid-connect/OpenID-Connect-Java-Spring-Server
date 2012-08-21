@@ -35,9 +35,9 @@
 		<security:expression-handler ref="oauthExpressionHandler" />
 	</security:global-method-security>
 
-	<oauth2:expression-handler id="oauthExpressionHandler" />
+	<oauth:expression-handler id="oauthExpressionHandler" />
 
-	<oauth2:web-expression-handler id="oauthWebExpressionHandler" />
+	<oauth:web-expression-handler id="oauthWebExpressionHandler" />
 
 	<!-- Spring Security configuration -->
 
