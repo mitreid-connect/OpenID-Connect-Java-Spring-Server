@@ -59,7 +59,11 @@
 	<!-- Allow open access to required endpoints -->
 	<security:http auto-config="true">
 		<security:intercept-url pattern="/jwk**" access="permitAll"/>
+	</security:http>
+	<security:http auto-config="true">
 		<security:intercept-url pattern="/.well-known**" access="permitAll"/>
+	</security:http>
+	<security:http auto-config="true">
 		<security:intercept-url pattern="/x509**" access="permitAll"/>	
 	</security:http>
 
