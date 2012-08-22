@@ -45,6 +45,12 @@ CREATE TABLE authority (
 	authority LONGBLOB
 );
 
+CREATE TABLE authorization_code (
+	id BIGINT AUTO_INCREMENT PRIMARY KEY,
+	code VARCHAR(256),
+	authorization_request_holder LONGBLOB
+);
+
 CREATE TABLE authorized_grant_type (
 	owner_id BIGINT,
 	authorized_grant_type VARCHAR(2000)
