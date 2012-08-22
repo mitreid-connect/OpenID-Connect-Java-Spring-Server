@@ -19,11 +19,6 @@ CREATE TABLE address (
 	country VARCHAR(256)
 );
 
-CREATE TABLE allowed_scope (
-	owner_id BIGINT, 
-	allowed_scope VARCHAR(256)
-);
-
 CREATE TABLE approved_site (
 	id BIGINT AUTO_INCREMENT PRIMARY KEY,
 	user_id VARCHAR(4096),
@@ -32,6 +27,11 @@ CREATE TABLE approved_site (
 	access_date TIMESTAMP,
 	timeout_date TIMESTAMP,
 	whitelisted_site_id VARCHAR(256)
+);
+
+CREATE TABLE approved_site_scope (
+	owner_id BIGINT,
+	scope VARCHAR(256)
 );
 
 CREATE TABLE authentication_holder (
@@ -169,3 +169,7 @@ CREATE TABLE whitelisted_site (
 	client_id VARCHAR(256)
 );
 
+CREATE TABLE whitelisted_site_scope (
+	owner_id BIGINT,
+	scope VARCHAR(256)
+);
