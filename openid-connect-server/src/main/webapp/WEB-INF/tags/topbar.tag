@@ -21,7 +21,7 @@
                 	<security:authentication property="authorities" var="roles"/>
 
                     <security:authorize access="hasRole('ROLE_USER')">
-                        Logged in as <a href="#"><%= request.getUserPrincipal().getName() %></a>
+                        Logged in as <a href="#">${ userInfo.preferredUsername }</a>
                     </security:authorize>
                 </p>
             </div><!--/.nav-collapse -->
