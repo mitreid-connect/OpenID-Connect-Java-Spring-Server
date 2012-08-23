@@ -16,6 +16,12 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+/**
+ * A UserDetailsService backed by a UserInfoRepository.
+ *  
+ * @author jricher
+ *
+ */
 @Service("userInfoUserDetailsService")
 public class UserInfoUserDetailsService implements UserDetailsService {
 	
@@ -28,25 +34,14 @@ public class UserInfoUserDetailsService implements UserDetailsService {
     private List<String> admins = new ArrayList<String>();
     
 	@Override
-	public UserDetails loadUserByUsername(String username)
-			throws UsernameNotFoundException {
-		UserInfo userInfo = repository.getByUserId(username);
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		UserInfo userInfo = repository.getByUsername(username);
 		
 		if (userInfo != null) {
 		
 			// TODO: make passwords configurable? part of object?
 			String password = "password";
 			
-	        boolean enabled = true;
-	        /*
-	         * TODO: this was for a MITRE-specific flag
-	        if(userInfo.getDeleteFlag() > 0){
-	        	enabled = false;
-	        }
-	        */
-	        boolean accountNonExpired = true;
-	        boolean credentialsNonExpired = true;
-	        boolean accountNonLocked = true;
 	        List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
 	        authorities.add(ROLE_USER);
 	        
@@ -55,10 +50,10 @@ public class UserInfoUserDetailsService implements UserDetailsService {
 	        }
 	        
 	        // TODO: this should really be our own UserDetails wrapper class, shouldn't it?
-			User user = new User(userInfo.getPreferredUsername(), password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
+			User user = new User(userInfo.getUserId(), password, authorities);
 			return user;
 		} else {
-			return null;
+			throw new UsernameNotFoundException("Could not find username: " + username);
 		}
 	}
 

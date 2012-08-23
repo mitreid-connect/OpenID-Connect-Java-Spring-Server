@@ -16,6 +16,7 @@
 package org.mitre.openid.connect.repository.impl;
 
 import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
+import static org.mitre.util.jpa.JpaUtil.getSingleResult;
 
 import java.util.Collection;
 
@@ -82,10 +83,21 @@ public class JpaUserInfoRepository implements UserInfoRepository {
 	@Transactional	
 	public Collection<DefaultUserInfo> getAll() {
 		
-		TypedQuery<DefaultUserInfo> query = manager.createNamedQuery(
-				"DefaultUserInfo.getAll", DefaultUserInfo.class);
+		TypedQuery<DefaultUserInfo> query = manager.createNamedQuery("DefaultUserInfo.getAll", DefaultUserInfo.class);
 		
 		return query.getResultList();
 	}
+
+	/**
+	 * Get a single UserInfo object by its username
+	 */
+	@Override
+    public UserInfo getByUsername(String username) {
+		TypedQuery<DefaultUserInfo> query = manager.createNamedQuery("DefaultUserInfo.getByUsername", DefaultUserInfo.class);
+		query.setParameter("username", username);
+		
+		return getSingleResult(query.getResultList());
+		
+    }
 
 }

@@ -66,6 +66,13 @@ public interface UserInfoRepository {
 	 * 
 	 * @return the UserInfo collection, or null
 	 */
-	public Collection<? extends UserInfo> getAll();	
+	public Collection<? extends UserInfo> getAll();
+
+	/**
+	 * Get a UserInfo object by its preferred_username field
+	 * @param username
+	 * @return
+	 */
+	public UserInfo getByUsername(String username);	
 	
 }
