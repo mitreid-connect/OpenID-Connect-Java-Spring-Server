@@ -13,6 +13,8 @@ import org.springframework.security.oauth2.provider.code.AuthorizationRequestHol
 import org.springframework.stereotype.Service;
 
 /**
+ * Database-backed, random-value authorization code service implementation.
+ * 
  * @author aanganes
  *
  */
@@ -24,8 +26,13 @@ public class DefaultOAuth2AuthorizationCodeService implements AuthorizationCodeS
 	
 	private RandomValueStringGenerator generator = new RandomValueStringGenerator();
 	
-	/* (non-Javadoc)
-	 * @see org.springframework.security.oauth2.provider.code.AuthorizationCodeServices#createAuthorizationCode(org.springframework.security.oauth2.provider.code.AuthorizationRequestHolder)
+	/**
+	 * Generate a random authorization code and create an AuthorizationCodeEntity,
+	 * which will be stored in the repository.
+	 * 
+	 * @param authentication 	the authentication of the current user, to be retrieved when the
+	 * 							code is consumed
+	 * @return 					the authorization code
 	 */
 	@Override
 	public String createAuthorizationCode(AuthorizationRequestHolder authentication) {
@@ -37,8 +44,15 @@ public class DefaultOAuth2AuthorizationCodeService implements AuthorizationCodeS
 		return code;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.security.oauth2.provider.code.AuthorizationCodeServices#consumeAuthorizationCode(java.lang.String)
+	/**
+	 * Consume a given authorization code. 
+	 * Match the provided string to an AuthorizationCodeEntity. If one is found, return 
+	 * the authentication associated with the code. If one is not found, throw an
+	 * InvalidGrantException.
+	 * 
+	 * @param code		the authorization code
+	 * @return			the authentication that made the original request
+	 * @throws 			InvalidGrantException, if an AuthorizationCodeEntity is not found with the given value
 	 */
 	@Override
 	public AuthorizationRequestHolder consumeAuthorizationCode(String code) throws InvalidGrantException {
@@ -47,10 +61,16 @@ public class DefaultOAuth2AuthorizationCodeService implements AuthorizationCodeS
 		return auth;
 	}
 
+	/**
+	 * @return the repository
+	 */
 	public AuthorizationCodeRepository getRepository() {
 		return repository;
 	}
 
+	/**
+	 * @param repository the repository to set
+	 */
 	public void setRepository(AuthorizationCodeRepository repository) {
 		this.repository = repository;
 	}

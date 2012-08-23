@@ -16,6 +16,8 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
+ * JPA AuthorizationCodeRepository implementation.
+ * 
  * @author aanganes
  *
  */
@@ -54,7 +56,8 @@ public class JpaAuthorizationCodeRepository implements AuthorizationCodeReposito
 		}
 		
 		AuthorizationRequestHolder authRequest = result.getAuthorizationRequestHolder();
-		//authRequest.getAuthenticationRequest();
+		
+		manager.remove(result);
 		
 		return authRequest;
 

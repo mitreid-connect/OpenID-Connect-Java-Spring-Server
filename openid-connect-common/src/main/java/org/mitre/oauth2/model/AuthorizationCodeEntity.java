@@ -16,6 +16,7 @@ import org.springframework.security.oauth2.provider.code.AuthorizationRequestHol
 
 /**
  * Entity class for authorization codes
+ * 
  * @author aanganes
  *
  */
@@ -40,9 +41,10 @@ public class AuthorizationCodeEntity {
 	}
 	
 	/**
-	 * Create a new AuthorizationCodeEntity with the given code.
+	 * Create a new AuthorizationCodeEntity with the given code and AuthorizationRequestHolder.
 	 * 
-	 * @param code the authorization code
+	 * @param code 			the authorization code
+	 * @param authRequest	the AuthoriztionRequestHolder associated with the original code request
 	 */
 	public AuthorizationCodeEntity(String code, AuthorizationRequestHolder authRequest) {
 		this.code = code;
