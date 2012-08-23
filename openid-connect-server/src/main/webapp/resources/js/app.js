@@ -90,6 +90,27 @@
         url:"api/clients"
     });
 
+    var BreadCrumbView = Backbone.View.extend({
+
+        tagName: 'ul',
+
+        initialize:function () {
+
+            if (!this.template) {
+                this.template = _.template($('#tmpl-breadcrumbs').html());
+            }
+
+            this.$el.addClass('breadcrumb');
+
+            this.model.bind('change', this.render, this);
+        },
+
+        render:function (eventName) {
+            this.$el.html(this.template(this.model.toJSON()));
+            $('#breadcrumbs').html(this.el);
+        }
+    });
+
 
     var ClientView = Backbone.View.extend({
 
@@ -373,6 +394,8 @@
 
             this.whiteListView = new URLListView();
             this.blackListView = new URLListView();
+
+            //this.clientBreadCrumbView = new BreadCrumbView();
 
             this.startAfter([this.clientList]);
 

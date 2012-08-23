@@ -42,9 +42,15 @@
 
     <h1><%=(clientId == null ? 'New' : 'Edit')%> Client</h1>
 
+
     <form class="form-horizontal">
         <fieldset>
             <legend>Details</legend>
+
+            <div class="well">
+                <button class="btn btn-small btn-primary">Submit</button>
+            </div>
+
             <div class="control-group" id="applicationName">
                 <label class="control-label">Application name</label>
                 <div class="controls">
@@ -200,14 +206,18 @@
                 </div>
             </div>
 
+            <div class="well">
+                <button class="btn btn-small btn-primary">Submit</button>
+            </div>
+
         </fieldset>
     </form>
 
+</script>
 
-
-
-    <div class="well">
-        <button class="btn btn-small btn-primary">Submit</button>
-    </div>
-
+<script type="text/html" id="tmpl-breadcrumbs">
+    <% for (var i = 0; i < crumbs.length; ++i) { %>
+    <li><a href="<%=crumbs[i].href%>"><%=crumbs[i].text%></a> <span class="divider">/</span></li>
+    <% }%>
+    <li class="active">active crumb</li>
 </script>
