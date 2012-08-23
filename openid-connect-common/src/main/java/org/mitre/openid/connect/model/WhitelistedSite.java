@@ -103,10 +103,10 @@ public class WhitelistedSite {
 	 */
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(
-    		name="allowed_scope",
+    		name="whitelisted_site_scope",
     		joinColumns=@JoinColumn(name="owner_id")
     )
-	@Column(name="allowed_scope")
+	@Column(name="scope")
 	public Set<String> getAllowedScopes() {
 		return allowedScopes;
 	}
