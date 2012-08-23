@@ -33,12 +33,20 @@ public class AuthorizationCodeEntity {
 	private AuthorizationRequestHolder authorizationRequestHolder;
 
 	/**
+	 * Default constructor.
+	 */
+	public AuthorizationCodeEntity() {
+		
+	}
+	
+	/**
 	 * Create a new AuthorizationCodeEntity with the given code.
 	 * 
 	 * @param code the authorization code
 	 */
-	public AuthorizationCodeEntity(String code) {
+	public AuthorizationCodeEntity(String code, AuthorizationRequestHolder authRequest) {
 		this.code = code;
+		this.authorizationRequestHolder = authRequest;
 	}
 	
 	/**
@@ -76,7 +84,7 @@ public class AuthorizationCodeEntity {
 	 * @return the authorizationRequestHolder
 	 */
 	@Lob
-	@Basic(fetch=FetchType.LAZY)
+	@Basic(fetch=FetchType.EAGER)
 	@Column(name="authorization_request_holder")
 	public AuthorizationRequestHolder getAuthorizationRequestHolder() {
 		return authorizationRequestHolder;

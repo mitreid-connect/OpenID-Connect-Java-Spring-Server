@@ -53,7 +53,10 @@ public class JpaAuthorizationCodeRepository implements AuthorizationCodeReposito
 			throw new InvalidGrantException("JpaAuthorizationCodeRepository: no authorization code found for value " + code);
 		}
 		
-		return result.getAuthorizationRequestHolder();
+		AuthorizationRequestHolder authRequest = result.getAuthorizationRequestHolder();
+		//authRequest.getAuthenticationRequest();
+		
+		return authRequest;
 
 	}
 

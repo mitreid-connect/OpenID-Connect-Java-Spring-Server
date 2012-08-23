@@ -85,7 +85,7 @@
 		authorization-endpoint-url="/authorize" 
 		token-endpoint-url="/token">
 		
-		<oauth:authorization-code />
+		<oauth:authorization-code authorization-code-services-ref="defaultOAuth2AuthorizationCodeService"/>
 		<oauth:implicit />
 		
 	</oauth:authorization-server>

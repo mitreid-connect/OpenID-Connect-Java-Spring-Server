@@ -31,8 +31,7 @@ public class DefaultOAuth2AuthorizationCodeService implements AuthorizationCodeS
 	public String createAuthorizationCode(AuthorizationRequestHolder authentication) {
 		String code = generator.generate();
 		
-		AuthorizationCodeEntity entity = new AuthorizationCodeEntity(code);
-		
+		AuthorizationCodeEntity entity = new AuthorizationCodeEntity(code, authentication);
 		repository.save(entity);
 		
 		return code;
