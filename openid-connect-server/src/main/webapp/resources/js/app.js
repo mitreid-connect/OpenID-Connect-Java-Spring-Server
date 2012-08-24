@@ -226,6 +226,7 @@
 
         events:{
             "click .btn-primary":"saveClient",
+            "click .btn-cancel": function() { window.history.back(); return false; },
             "change #requireClientSecret":"toggleRequireClientSecret",
             "change #displayClientSecret":"toggleDisplayClientSecret",
             "change #generateClientSecret":"toggleGenerateClientSecret"
