@@ -40,7 +40,7 @@
 
 <script type="text/html" id="tmpl-client-form">
 
-    <h1><%=(clientId == null ? 'New' : 'Edit')%> Client</h1>
+    <h1><%=(id == null ? 'New' : 'Edit')%> Client</h1>
 
 
     <form class="form-horizontal">
@@ -216,8 +216,9 @@
 </script>
 
 <script type="text/html" id="tmpl-breadcrumbs">
-    <% for (var i = 0; i < crumbs.length; ++i) { %>
-    <li><a href="<%=crumbs[i].href%>"><%=crumbs[i].text%></a> <span class="divider">/</span></li>
-    <% }%>
-    <li class="active">active crumb</li>
+    <% if (active == false) { %>
+    <li><a href="<%=href%>"><%=text%></a> <span class="divider">/</span></li>
+    <% } else { %>
+    <li class="active"><%=text%></li>
+    <% } %>
 </script>

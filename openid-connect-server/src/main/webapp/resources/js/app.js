@@ -59,6 +59,7 @@
 
         // We can pass it default values.
         defaults:{
+            id:null,
             idTokenValiditySeconds: 0,
             applicationName:"",
             clientSecret:"",
@@ -102,11 +103,27 @@
 
             this.$el.addClass('breadcrumb');
 
-            this.model.bind('change', this.render, this);
+            this.collection.bind('add', this.render, this);
         },
 
-        render:function (eventName) {
-            this.$el.html(this.template(this.model.toJSON()));
+        render:function () {
+
+            this.$el.empty();
+            var parent = this;
+
+            // go through each of the breadcrumb models
+            _.each(this.collection.models, function (crumb, index) {
+
+                // if it's the last index in the crumbs then render the link inactive
+                if (index == parent.collection.size() - 1) {
+                    crumb.set({active:true}, {silent:true});
+                } else {
+                    crumb.set({active:false}, {silent:true});
+                }
+
+                this.$el.append(this.template(crumb.toJSON()));
+            }, this);
+
             $('#breadcrumbs').html(this.el);
         }
     });
@@ -313,19 +330,6 @@
 
             if (valid) {
 
-/*                if (this.model.isNew()) {
-                    var self = this;
-                    app.clientList.create(this.model, {
-                        success:function () {
-                            app.navigate('clients', {trigger:true});
-                        },
-                        error:function (model,resp) {
-                            console.error("Oops! The object didn't create correctly.",resp);
-                        }
-                    });
-
-                }*/
-
                 var _self = this;
                 this.model.save(this.model, {
                     success:function () {
@@ -395,7 +399,12 @@
             this.whiteListView = new URLListView();
             this.blackListView = new URLListView();
 
-            //this.clientBreadCrumbView = new BreadCrumbView();
+
+            this.breadCrumbView = new BreadCrumbView({
+                collection:new Backbone.Collection()
+            });
+
+            this.breadCrumbView.render();
 
             this.startAfter([this.clientList]);
 
@@ -413,11 +422,25 @@
 
         listClients:function () {
 
+            this.breadCrumbView.collection.reset();
+            this.breadCrumbView.collection.add([
+                {text:"Home", href:"/"},
+                {text:"Manage Clients", href:"admin/manage/#clients"}
+            ]);
+
             $('#content').html(this.clientListView.render().el);
             this.clientListView.delegateEvents();
         },
 
         newClient:function() {
+
+            this.breadCrumbView.collection.reset();
+            this.breadCrumbView.collection.add([
+                {text:"Home", href:"/"},
+                {text:"Manage Clients", href:"admin/manage/#clients"},
+                {text:"New", href:"#"}
+            ]);
+
         	var client = new ClientModel();
         	
         	// set up this new client to require a secret and have us autogenerate one
@@ -433,6 +456,14 @@
         },
 
         editClient:function(id) {
+
+            this.breadCrumbView.collection.reset();
+            this.breadCrumbView.collection.add([
+                {text:"Home", href:"/"},
+                {text:"Manage Clients", href:"admin/manage/#clients"},
+                {text:"Edit", href:"#"}
+            ]);
+
             var client = this.clientList.get(id);
 
             if (client.get("clientSecret") == null) {
