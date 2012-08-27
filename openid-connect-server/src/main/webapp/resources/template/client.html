@@ -73,6 +73,19 @@
                     <textarea class="input-xlarge" placeholder="http://"
                               rows="3"><% for (var i in registeredRedirectUri) { %><%=registeredRedirectUri[i]+"\n"%><% } %></textarea>
                     <p class="help-block">You may enter multiple URIs separated by a new lines</p>
+
+                    <table class="table-condensed">
+                        <tbody>
+                        <tr>
+                            <td><input type="text" placeholder="http://" value=""></td>
+                            <td><button class="btn btn-inverse" type="button"><i class="icon-plus icon-white"></i></button></td>
+                        </tr>
+                        <tr>
+                            <td>http://google.com</td>
+                            <td><button class="btn btn-danger" type="button"><i class="icon-minus icon-white"></i></button></td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
