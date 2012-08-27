@@ -151,7 +151,7 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 	 */
 	@Override
     public ClientDetailsEntity generateClientSecret(ClientDetailsEntity client) {
-		client.setClientSecret(Base64.encodeBase64URLSafeString(new BigInteger(128, new SecureRandom()).toByteArray()).replace("=", ""));
+		client.setClientSecret(Base64.encodeBase64URLSafeString(new BigInteger(512, new SecureRandom()).toByteArray()).replace("=", ""));
 	    return client;
     }
 
