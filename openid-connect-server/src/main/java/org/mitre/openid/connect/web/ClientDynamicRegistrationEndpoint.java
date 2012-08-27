@@ -213,6 +213,14 @@ public class ClientDynamicRegistrationEndpoint {
 		client.setRequireAuthTime(requireAuthTime);
 		client.setDefaultACR(defaultAcr);
 
+		// defaults for SECOAUTH functionality
+		// TODO: extensions to request, or configuration?
+		client.setScope(Sets.newHashSet("openid", "phone", "address", "profile", "email")); // provision all scopes
+		client.setAllowRefresh(true); // by default allow refresh tokens on dynamic clients
+		client.setAccessTokenValiditySeconds(3600); // access tokens good for 1hr
+		client.setIdTokenValiditySeconds(600); // id tokens good for 10min
+		client.setRefreshTokenValiditySeconds(null); // refresh tokens good until revoked
+		
 		client.setDynamicallyRegistered(true);
 		
 		ClientDetailsEntity saved = clientService.saveNewClient(client);
