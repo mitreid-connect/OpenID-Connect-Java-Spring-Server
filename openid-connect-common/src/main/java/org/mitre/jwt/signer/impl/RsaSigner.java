@@ -101,7 +101,7 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 	 * @throws GeneralSecurityException
 	 */
 	public RsaSigner(String algorithmName, KeyStore keystore, String alias, String password) throws GeneralSecurityException {
-		super(JwsAlgorithm.getByName(algorithmName));
+		super(JwsAlgorithm.getByJwaName(algorithmName));
 
 		setKeystore(keystore);
 		setAlias(alias);
@@ -122,7 +122,7 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 	 *            The private key
 	 */
 	public RsaSigner(String algorithmName, PublicKey publicKey, PrivateKey privateKey) {
-		super(JwsAlgorithm.getByName(algorithmName));
+		super(JwsAlgorithm.getByJwaName(algorithmName));
 
 		this.publicKey = publicKey;
 		this.privateKey = privateKey;

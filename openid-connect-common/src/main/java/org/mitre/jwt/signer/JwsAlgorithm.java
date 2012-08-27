@@ -15,6 +15,9 @@
  ******************************************************************************/
 package org.mitre.jwt.signer;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -37,6 +40,15 @@ public enum JwsAlgorithm {
 	RS384("SHA384withRSA", "RS384"), 
 	RS512("SHA512withRSA", "RS512");
 	
+
+	private static final Map<String, JwsAlgorithm> jwaLookup = new HashMap<String, JwsAlgorithm>();
+	private static final Map<String, JwsAlgorithm> jceLookup = new HashMap<String, JwsAlgorithm>();
+	static {
+		for (JwsAlgorithm alg : JwsAlgorithm.values()) {
+	        jwaLookup.put(alg.getJwaName(), alg);
+	        jceLookup.put(alg.getStandardName(), alg);
+        }
+	}
 	
 	/**
 	 * Returns the Algorithm for the JWS-registered name
@@ -44,15 +56,12 @@ public enum JwsAlgorithm {
 	 * @param name
 	 * @return
 	 */
-	public static JwsAlgorithm getByName(String name) {
-		for (JwsAlgorithm correspondingType : JwsAlgorithm.values()) {
-			if (correspondingType.toString().equals(name)) {
-				return correspondingType;
-			}
-		}
-
-		// corresponding type not found
-		throw new IllegalArgumentException("JwsAlgorithm name " + name + " does not have a corresponding JwsAlgorithm: expected one of [" + StringUtils.join(JwsAlgorithm.values(), ", ") + "]");
+	public static JwsAlgorithm getByJwaName(String name) {
+		return jwaLookup.get(name);
+	}
+	
+	public static JwsAlgorithm getByStandardName(String name) {
+		return jceLookup.get(name);
 	}
 
 	private final String standardName;

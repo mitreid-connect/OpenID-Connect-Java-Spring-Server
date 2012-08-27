@@ -101,7 +101,7 @@ public class HmacSigner extends AbstractJwtSigner implements InitializingBean {
 	 *            the passphrase
 	 */
 	public HmacSigner(String algorithmName, String passphrase) {
-		super(JwsAlgorithm.getByName(algorithmName));
+		super(JwsAlgorithm.getByJwaName(algorithmName));
 
 		Assert.notNull(passphrase, "A passphrase must be supplied");
 
