@@ -177,6 +177,7 @@
 				<prop key="org.mitre.openid.connect.web.InvalidJwtSignatureException">exceptionAsJSONView</prop>
 				<prop key="org.mitre.openid.connect.web.ExpiredTokenException">exceptionAsJSONView</prop>
 				<prop key="org.mitre.openid.connect.web.InvalidJwtIssuerException">exceptionAsJSONView</prop>
+				<prop key="org.springframework.security.oauth2.common.exceptions.InsufficientScopeException">exceptionAsJSONView</prop>
 				<prop key="org.mitre.openid.connect.exception.UserNotFoundException">exception/usernotfound</prop>
 			</props>
 		</property>

@@ -21,8 +21,10 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.http.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.view.AbstractView;
 
@@ -50,6 +52,8 @@ public class ExceptionAsJSONView extends AbstractView {
 
 		response.setContentType("application/json");
 
+		response.setStatus(HttpStatus.BAD_REQUEST.value());
+		
 		final JsonObject jsonObject = new JsonObject();
 
 		Object ex = model.get("exception");

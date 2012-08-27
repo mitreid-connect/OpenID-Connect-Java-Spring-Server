@@ -26,6 +26,7 @@ import org.mitre.openid.connect.service.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.oauth2.common.exceptions.InvalidScopeException;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -64,8 +65,9 @@ public class UserInfoEndpoint {
 	/**
 	 * Get information about the user as specified in the accessToken->idToken included in this request
 	 * 
-	 * @throws UsernameNotFoundException		if the user does not exist or cannot be found
+	 * @throws UserNotFoundException		if the user does not exist or cannot be found
 	 * @throws UnknownUserInfoSchemaException	if an unknown schema is used
+	 * @throws InvalidScopeException if the oauth2 token doesn't have the "openid" scope
 	 */
 	@PreAuthorize("hasRole('ROLE_USER') and #oauth2.hasScope('openid')")
 	@RequestMapping(value="/userinfo", method= {RequestMethod.GET, RequestMethod.POST})
