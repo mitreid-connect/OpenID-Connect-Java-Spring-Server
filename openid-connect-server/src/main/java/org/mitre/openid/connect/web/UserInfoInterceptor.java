@@ -26,17 +26,19 @@ public class UserInfoInterceptor extends HandlerInterceptorAdapter {
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
 
-    	// get our principal
-    	Principal p = request.getUserPrincipal();
-    	
-    	if (p != null && p.getName() != null) {
-    	
-	    	// try to look up a user based on it
-	    	UserInfo user = userInfoRepository.getByUserId(p.getName());
+    	if (modelAndView != null) { // skip checking at all if we have no model and view to hand the user to
+	    	// get our principal from the security context
+	    	Principal p = request.getUserPrincipal();
 	    	
-	    	// if we have one, inject it so views can use it
-	    	if (user != null) {
-	    		modelAndView.addObject("userInfo", user);
+	    	if (p != null && p.getName() != null) { // don't bother checking if we don't have a principal
+	    	
+		    	// try to look up a user based on it
+		    	UserInfo user = userInfoRepository.getByUserId(p.getName());
+		    	
+		    	// if we have one, inject it so views can use it
+		    	if (user != null) {
+		    		modelAndView.addObject("userInfo", user);
+		    	}
 	    	}
     	}
     	
