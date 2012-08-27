@@ -37,8 +37,9 @@ public enum JwsAlgorithm {
 	RS384("SHA384withRSA", "RS384"), 
 	RS512("SHA512withRSA", "RS512");
 	
+	
 	/**
-	 * Returns the Algorithm for the name
+	 * Returns the Algorithm for the JWS-registered name
 	 * 
 	 * @param name
 	 * @return
@@ -51,8 +52,7 @@ public enum JwsAlgorithm {
 		}
 
 		// corresponding type not found
-		throw new IllegalArgumentException(
-				"JwsAlgorithm name " + name + " does not have a corresponding JwsAlgorithm: expected one of [" + StringUtils.join(JwsAlgorithm.values(), ", ") + "]");
+		throw new IllegalArgumentException("JwsAlgorithm name " + name + " does not have a corresponding JwsAlgorithm: expected one of [" + StringUtils.join(JwsAlgorithm.values(), ", ") + "]");
 	}
 
 	private final String standardName;
