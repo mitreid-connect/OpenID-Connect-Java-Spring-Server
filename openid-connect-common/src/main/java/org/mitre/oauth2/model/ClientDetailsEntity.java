@@ -57,7 +57,7 @@ import org.springframework.security.oauth2.provider.ClientDetails;
 })
 public class ClientDetailsEntity implements ClientDetails {
 
-    private static final long serialVersionUID = -1617727085733786296L;
+	private static final long serialVersionUID = -1617727085733786296L;
 
 	private Long id;
 	
@@ -85,7 +85,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	private AppType applicationType;
 	private String applicationName;
 	private AuthType tokenEndpointAuthType = AuthType.SECRET_BASIC;
-	private String userIdType;
+	private UserIdType userIdType;
 	
 	private Set<String> contacts; 	
 	
@@ -169,6 +169,32 @@ public class ClientDetailsEntity implements ClientDetails {
 		}
 	}
 	
+    public enum UserIdType {
+    	PAIRWISE("pairwise"), PUBLIC("public");
+
+		private final String value;
+		
+		// map to aid reverse lookup 
+		private static final Map<String, UserIdType> lookup = new HashMap<String, UserIdType>();
+		static {
+			for (UserIdType u : UserIdType.values()) {
+	            lookup.put(u.getValue(), u);
+            }
+		}
+		
+		UserIdType(String value) {
+			this.value = value;
+		}
+		
+		public String getValue() {
+			return value;
+		}
+		
+		public static UserIdType getByValue(String value) {
+			return lookup.get(value);
+		}
+    }
+
 	/**
 	 * Create a blank ClientDetailsEntity
 	 */
@@ -646,13 +672,13 @@ public class ClientDetailsEntity implements ClientDetails {
 		this.tokenEndpointAuthType = tokenEndpointAuthType;
 	}
 
-	@Basic
+	@Enumerated(EnumType.STRING)
 	@Column(name="user_id_type")
-	public String getUserIdType() {
+	public UserIdType getUserIdType() {
 		return userIdType;
 	}
 
-	public void setUserIdType(String userIdType) {
+	public void setUserIdType(UserIdType userIdType) {
 		this.userIdType = userIdType;
 	}
 
