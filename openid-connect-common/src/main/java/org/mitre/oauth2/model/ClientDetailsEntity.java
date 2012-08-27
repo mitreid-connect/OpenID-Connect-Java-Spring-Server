@@ -122,12 +122,24 @@ public class ClientDetailsEntity implements ClientDetails {
 		
 		private final String value;
 		
+		// map to aid reverse lookup
+		private static final Map<String, AuthType> lookup = new HashMap<String, AuthType>();
+		static {
+			for (AuthType a : AuthType.values()) {
+				lookup.put(a.getValue(), a);
+			}
+		}
+		
 		AuthType(String value) {
 			this.value = value;
 		}
 		
 		public String getValue() {
 			return value;
+		}
+		
+		public static AuthType getByValue(String value) {
+			return lookup.get(value);
 		}
 	}
 	
@@ -136,12 +148,24 @@ public class ClientDetailsEntity implements ClientDetails {
 		
 		private final String value;
 		
+		// map to aid reverse lookup 
+		private static final Map<String, AppType> lookup = new HashMap<String, AppType>();
+		static {
+			for (AppType a : AppType.values()) {
+	            lookup.put(a.getValue(), a);
+            }
+		}
+		
 		AppType(String value) {
 			this.value = value;
 		}
 		
 		public String getValue() {
 			return value;
+		}
+		
+		public static AppType getByValue(String value) {
+			return lookup.get(value);
 		}
 	}
 	
