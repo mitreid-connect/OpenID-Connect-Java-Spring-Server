@@ -220,6 +220,7 @@ public class ClientDynamicRegistrationEndpoint {
 		client.setAccessTokenValiditySeconds(3600); // access tokens good for 1hr
 		client.setIdTokenValiditySeconds(600); // id tokens good for 10min
 		client.setRefreshTokenValiditySeconds(null); // refresh tokens good until revoked
+		client.setAuthorizedGrantTypes(Sets.newHashSet("authorization_code"));
 		
 		client.setDynamicallyRegistered(true);
 		
