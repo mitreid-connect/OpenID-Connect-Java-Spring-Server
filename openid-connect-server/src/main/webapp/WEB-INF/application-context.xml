@@ -70,6 +70,9 @@
 	<security:http auto-config="true" pattern="/x509**" use-expressions="true">
 		<security:intercept-url pattern="/x509**" access="permitAll"/>	
 	</security:http>
+	<security:http auto-config="true" pattern="/register**" use-expressions="true">
+		<security:intercept-url pattern="/register**" access="permitAll"/>	
+	</security:http>
 
  	<security:http auto-config="true" pattern="/userinfo**" use-expressions="true">
 		<security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
