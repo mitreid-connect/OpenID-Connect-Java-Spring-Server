@@ -334,7 +334,7 @@ public class ClientDynamicRegistrationEndpoint {
 		client.setRequireAuthTime(requireAuthTime);
 		client.setDefaultACR(defaultAcr);
 
-		ClientDetailsEntity saved = clientService.saveNewClient(client);
+		ClientDetailsEntity saved = clientService.updateClient(client, client);
 		
 		model.put("client", saved);
 		return "clientUpdate";
