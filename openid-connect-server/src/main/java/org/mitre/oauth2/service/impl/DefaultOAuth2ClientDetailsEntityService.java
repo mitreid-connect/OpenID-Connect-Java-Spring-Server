@@ -63,7 +63,8 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 			return null; // TODO: throw exception?
 		}
 
-		// assign a random clientid and secret if they're empty 
+		// assign a random clientid if it's empty 
+		// NOTE: don't assign a random client secret without asking, since public clients have no secret
         if (Strings.isNullOrEmpty(client.getClientId())) {
             client = generateClientId(client);
         }

@@ -100,6 +100,8 @@ public class ClientAPI {
         // set owners as current logged in user
         //client.setOwner(principal.getName());
         //TODO: owner has been replaced by a list of contacts, which should be styled as email addresses.
+        client.setDynamicallyRegistered(false);
+        
         m.addAttribute("entity", clientService.saveNewClient(client));
 
         return "jsonClientView";
