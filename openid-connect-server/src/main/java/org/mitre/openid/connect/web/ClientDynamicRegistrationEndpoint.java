@@ -42,6 +42,10 @@ public class ClientDynamicRegistrationEndpoint {
 	
 	@InitBinder
 	public void initBinder(WebDataBinder binder) {
+		
+		/*
+		 * Application type
+		 */
 		binder.registerCustomEditor(AppType.class, new PropertyEditorSupport() {
 			@Override
 			public void setAsText(String text) throws IllegalArgumentException {
@@ -59,6 +63,9 @@ public class ClientDynamicRegistrationEndpoint {
 			}
 		});
 
+		/*
+		 * Authentication type
+		 */
 		binder.registerCustomEditor(AuthType.class, new PropertyEditorSupport() {
 			@Override
 			public void setAsText(String text) throws IllegalArgumentException {
@@ -76,6 +83,9 @@ public class ClientDynamicRegistrationEndpoint {
 			}
 		});
 
+		/*
+		 * UserID type
+		 */
 		binder.registerCustomEditor(UserIdType.class, new PropertyEditorSupport() {
 			@Override
 			public void setAsText(String text) throws IllegalArgumentException {
@@ -93,6 +103,9 @@ public class ClientDynamicRegistrationEndpoint {
 			}
 		});
 		
+		/*
+		 * JWS Algorithm
+		 */
 		binder.registerCustomEditor(JwsAlgorithm.class, new PropertyEditorSupport() {
 			@Override
 			public void setAsText(String text) throws IllegalArgumentException {
@@ -132,7 +145,9 @@ public class ClientDynamicRegistrationEndpoint {
 		*/
 		
 
-		
+		/*
+		 * Space-separated set of strings
+		 */
 		binder.registerCustomEditor(Set.class, new PropertyEditorSupport() {
 			@Override
 			public void setAsText(String text) throws IllegalArgumentException {
@@ -153,7 +168,6 @@ public class ClientDynamicRegistrationEndpoint {
 	
 	@RequestMapping(params = "type=client_associate")
 	public String clientAssociate(
-			// TODO: use @InitBinding or @ModelAttribute to clean up this data processing
 			@RequestParam(value = "contacts", required = false) Set<String> contacts,
 			@RequestParam(value = "application_type", required = false) AppType applicationType,
 			@RequestParam(value = "application_name", required = false) String applicationName,
@@ -255,8 +269,74 @@ public class ClientDynamicRegistrationEndpoint {
 	}
 	
 	@RequestMapping(params = "type=client_update")
-	public String clientUpdate() {
+	public String clientUpdate(
+			@RequestParam("client_id") String clientId, 
+			@RequestParam("client_secret") String clientSecret,
+			@RequestParam(value = "contacts", required = false) Set<String> contacts,
+			@RequestParam(value = "application_type", required = false) AppType applicationType,
+			@RequestParam(value = "application_name", required = false) String applicationName,
+			@RequestParam(value = "logo_url", required = false) String logoUrl,
+			@RequestParam(value = "redirect_uris", required = false) Set<String> redirectUris,
+			@RequestParam(value = "token_endpoint_auth_type", required = false) AuthType tokenEndpointAuthType,
+			@RequestParam(value = "policy_url", required = false) String policyUrl,
+			@RequestParam(value = "jwk_url", required = false) String jwkUrl,
+			@RequestParam(value = "jwk_encryption_url", required = false) String jwkEncryptionUrl,
+			@RequestParam(value = "x509_url", required = false) String x509Url,
+			@RequestParam(value = "x509_encryption_url", required = false) String x509EncryptionUrl,
+			@RequestParam(value = "sector_identifier_url", required = false) String sectorIdentifierUrl,
+			@RequestParam(value = "user_id_type", required = false) UserIdType userIdType,
+			@RequestParam(value = "require_signed_request_object", required = false) JwsAlgorithm requireSignedRequestObject,
+			
+			// TODO: JWE needs to be handled properly, see @InitBinder above -- we'll ignore these right now
+			/*
+			@RequestParam(value = "userinfo_signed_response_alg", required = false) String userinfoSignedResponseAlg,
+			@RequestParam(value = "userinfo_encrypted_response_alg", required = false) String userinfoEncryptedResponseAlg,
+			@RequestParam(value = "userinfo_encrypted_response_enc", required = false) String userinfoEncryptedResponseEnc,
+			@RequestParam(value = "userinfo_encrypted_response_int", required = false) String userinfoEncryptedResponseInt,
+			@RequestParam(value = "idtoken_signed_response_alg", required = false) String idtokenSignedResponseAlg,
+			@RequestParam(value = "idtoken_encrypted_response_alg", required = false) String idtokenEncryptedResponseAlg,
+			@RequestParam(value = "idtoken_encrypted_response_enc", required = false) String idtokenEncryptedResponseEnc,
+			@RequestParam(value = "idtoken_encrypted_response_int", required = false) String idtokenEncryptedResponseInt,
+			*/
+			
+			@RequestParam(value = "default_max_age", required = false) Integer defaultMaxAge,
+			@RequestParam(value = "require_auth_time", required = false) Boolean requireAuthTime,
+			@RequestParam(value = "default_acr", required = false) String defaultAcr,
+			ModelMap model
+			
+			) {
 		
+		ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
+		
+		if (client == null) {
+			throw new ClientNotFoundException("Could not find client: " + clientId);
+		}
+		
+		if (!Objects.equal(client.getClientSecret(), clientSecret)) {
+			throw new UnauthorizedClientException("Client secret did not match");
+		}
+		
+		client.setContacts(contacts);
+		client.setApplicationType(applicationType);
+		client.setApplicationName(applicationName);
+		client.setLogoUrl(logoUrl);
+		client.setRegisteredRedirectUri(redirectUris);
+		client.setTokenEndpointAuthType(tokenEndpointAuthType);
+		client.setPolicyUrl(policyUrl);
+		client.setJwkUrl(jwkUrl);
+		client.setJwkEncryptionUrl(jwkEncryptionUrl);
+		client.setX509Url(x509Url);
+		client.setX509EncryptionUrl(x509EncryptionUrl);
+		client.setSectorIdentifierUrl(sectorIdentifierUrl);
+		client.setUserIdType(userIdType);
+		client.setRequireSignedRequestObject(requireSignedRequestObject);
+		client.setDefaultMaxAge(defaultMaxAge);
+		client.setRequireAuthTime(requireAuthTime);
+		client.setDefaultACR(defaultAcr);
+
+		ClientDetailsEntity saved = clientService.saveNewClient(client);
+		
+		model.put("client", saved);
 		return "clientUpdate";
 	}
 	
