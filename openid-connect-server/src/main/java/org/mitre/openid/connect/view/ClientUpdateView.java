@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.mitre.oauth2.model.ClientDetailsEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.view.AbstractView;
 
 import com.google.gson.Gson;
@@ -21,6 +22,7 @@ import com.google.gson.JsonObject;
  * @author jricher
  *
  */
+@Component("clientUpdate")
 public class ClientUpdateView extends AbstractView {
 
 	/* (non-Javadoc)
