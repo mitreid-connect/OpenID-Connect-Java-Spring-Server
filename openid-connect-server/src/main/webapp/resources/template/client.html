@@ -70,22 +70,6 @@
             <div class="control-group" id="registeredRedirectUri">
                 <label class="control-label">Redirect URI(s)</label>
                 <div class="controls">
-                    <textarea class="input-xlarge" placeholder="http://"
-                              rows="3"><% for (var i in registeredRedirectUri) { %><%=registeredRedirectUri[i]+"\n"%><% } %></textarea>
-                    <p class="help-block">You may enter multiple URIs separated by a new lines</p>
-
-                    <table class="table-condensed">
-                        <tbody>
-                        <tr>
-                            <td><input type="text" value="" placeholder="http://"></td>
-                            <td><button class="btn btn-small" type="button">Add</button></td>
-                        </tr>
-                        <tr>
-                            <td>http://google.com</td>
-                            <td><i class="icon-minus-sign icon-gray"></i></td>
-                        </tr>
-                        </tbody>
-                    </table>
                 </div>
             </div>
 
@@ -234,4 +218,18 @@
     <% } else { %>
     <li class="active"><%=text%></li>
     <% } %>
+</script>
+
+<script type="text/html" id="tmpl-uri">
+    <td><%=uri%></td>
+    <td><i class="icon-minus-sign icon-gray"></i></td>
+</script>
+
+<script type="text/html" id="tmpl-uri-list">
+    <tbody>
+    <tr>
+        <td><input type="text" value="" placeholder="http://"></td>
+        <td><button class="btn btn-small" type="button">Add</button></td>
+    </tr>
+    </tbody>
 </script>

@@ -1,4 +1,17 @@
 
+    var URIModel = Backbone.Model.extend({
+
+        validate: function(){
+
+            var expression = /^(?:([a-z0-9+.-]+:\/\/)((?:(?:[a-z0-9-._~!$&'()*+,;=:]|%[0-9A-F]{2})*)@)?((?:[a-z0-9-._~!$&'()*+,;=]|%[0-9A-F]{2})*)(:(?:\d*))?(\/(?:[a-z0-9-._~!$&'()*+,;=:@\/]|%[0-9A-F]{2})*)?|([a-z0-9+.-]+:)(\/?(?:[a-z0-9-._~!$&'()*+,;=:@]|%[0-9A-F]{2})+(?:[a-z0-9-._~!$&'()*+,;=:@\/]|%[0-9A-F]{2})*)?)(\?(?:[a-z0-9-._~!$&'()*+,;=:\/?@]|%[0-9A-F]{2})*)?(#(?:[a-z0-9-._~!$&'()*+,;=:\/?@]|%[0-9A-F]{2})*)?$/i;
+            var regex = new RegExp(expression);
+
+            if (!this.get("uri").match(regex)) {
+                return "Invalid URI";
+            }
+        }
+
+    });
 
     var ClientModel = Backbone.Model.extend({
 
@@ -36,26 +49,9 @@
             refreshTokenValiditySeconds: {
                 required: true,
                 type:"number"
-            },
-            registeredRedirectUri: {
-                custom: 'validateURI'
             }
         },
 
-        validateURI: function(attributeName, attributeValue) {
-
-            var expression = /^(?:([a-z0-9+.-]+:\/\/)((?:(?:[a-z0-9-._~!$&'()*+,;=:]|%[0-9A-F]{2})*)@)?((?:[a-z0-9-._~!$&'()*+,;=]|%[0-9A-F]{2})*)(:(?:\d*))?(\/(?:[a-z0-9-._~!$&'()*+,;=:@\/]|%[0-9A-F]{2})*)?|([a-z0-9+.-]+:)(\/?(?:[a-z0-9-._~!$&'()*+,;=:@]|%[0-9A-F]{2})+(?:[a-z0-9-._~!$&'()*+,;=:@\/]|%[0-9A-F]{2})*)?)(\?(?:[a-z0-9-._~!$&'()*+,;=:\/?@]|%[0-9A-F]{2})*)?(#(?:[a-z0-9-._~!$&'()*+,;=:\/?@]|%[0-9A-F]{2})*)?$/i;
-            var regex = new RegExp(expression);
-
-
-            for (var i in attributeValue) {
-                if (!attributeValue[i].match(regex)) {
-                    return "Invalid URI";
-                }
-            }
-
-
-        },
 
         // We can pass it default values.
         defaults:{
@@ -90,6 +86,79 @@
         model:ClientModel,
         url:"api/clients"
     });
+
+
+
+    var URIView = Backbone.View.extend({
+
+        tagName: 'tr',
+
+        events:{
+            "click .icon-minus-sign":function() { this.model.destroy(); }
+        },
+
+        initialize:function () {
+
+            if (!this.template) {
+                this.template = _.template($('#tmpl-uri').html());
+            }
+
+            this.model.bind('destroy', this.remove, this);
+
+        },
+
+        render:function () {
+            this.$el.html(this.template(this.model.toJSON()));
+            return this;
+        }
+    });
+
+    var URIListView = Backbone.View.extend({
+
+        tagName: "table",
+
+        events:{
+            "click button": "addItem"
+        },
+
+        initialize:function () {
+
+            if (!this.template) {
+                this.template = _.template($('#tmpl-uri-list').html());
+            }
+
+            this.$el.addClass("table-condensed");
+            this.collection.bind('add', this.render, this);
+
+        },
+
+        addItem:function() {
+            var input_value = $("input", this.el).val().trim();
+
+            var uri = new URIModel({uri:input_value});
+
+            // if it's valid and doesn't already exist
+            if (uri.isValid() && this.collection.where({uri: input_value}).length < 1) {
+                this.collection.add(uri);
+            }
+        },
+
+        render:function (eventName) {
+
+            this.$el.html(this.template());
+
+            _self = this;
+
+            _.each(this.collection.models, function (model) {
+                var el = new URIView({model:model}).render().el;
+                $("tbody", _self.el).append(el);
+            }, this);
+
+            return this;
+        }
+
+    });
+
 
     var BreadCrumbView = Backbone.View.extend({
 
@@ -222,6 +291,8 @@
             if (!this.template) {
                 this.template = _.template($('#tmpl-client-form').html());
             }
+
+            this.registeredRedirectUriCollection = new Backbone.Collection();
         },
 
         events:{
@@ -291,12 +362,6 @@
 
             $('.control-group').removeClass('error');
 
-            // do some trimming to the redirect URI to allow null value
-            var registeredRedirectUri = $.trim($('#registeredRedirectUri textarea').val()).replace(/ /g,'').split("\n");
-            if (registeredRedirectUri.length == 1 && registeredRedirectUri[0] == "") {
-                registeredRedirectUri = [];
-            }
-
             // build the grant type object
             var authorizedGrantTypes = [];
             $.each(["authorization_code","client_credentials","password","implicit"],function(index,type) {
@@ -319,7 +384,7 @@
                 clientId:$('#clientId input').val(),
                 clientSecret: clientSecret,
                 generateClientSecret:generateClientSecret,
-                registeredRedirectUri:registeredRedirectUri,
+                registeredRedirectUri: this.registeredRedirectUriCollection.pluck("uri"),
                 clientDescription:$('#clientDescription textarea').val(),
                 allowRefresh:$('#allowRefresh').is(':checked'),
                 authorizedGrantTypes: authorizedGrantTypes,
@@ -349,7 +414,16 @@
         render:function (eventName) {
 
             $(this.el).html(this.template(this.model.toJSON()));
-            
+
+            _self = this;
+
+            // build and bind registered redirect URI collection and view
+            _.each(this.model.get("registeredRedirectUri"), function (registeredRedirectUri) {
+                _self.registeredRedirectUriCollection.add(new URIModel({uri:registeredRedirectUri}));
+            });
+
+            $("#registeredRedirectUri .controls",this.el).html(new URIListView({collection: this.registeredRedirectUriCollection}).render().el);
+
             return this;
         },
         
@@ -358,28 +432,7 @@
         }
     });
 
-    var URLListView = Backbone.View.extend({
 
-        tagName: 'span',
-
-        initialize:function () {
-        },
-
-        events:{
-            "click .btn-primary":"save"
-        },
-
-        save:function () {
-
-        },
-
-        render:function (eventName) {
-
-            // append and render
-            $(this.el).html($('#tmpl-url-list').html());
-            return this;
-        }
-    });
 
 
     // Router
@@ -396,10 +449,6 @@
 
             this.clientList = new ClientCollection();
             this.clientListView = new ClientListView({model:this.clientList});
-
-            this.whiteListView = new URLListView();
-            this.blackListView = new URLListView();
-
 
             this.breadCrumbView = new BreadCrumbView({
                 collection:new Backbone.Collection()
