@@ -62,7 +62,7 @@ public class JpaApprovedSiteRepository implements ApprovedSiteRepository {
 				approvedSite.getId());
 		
 		if (found != null) {
-			manager.remove(approvedSite);
+			manager.remove(found);
 		} else {
 			throw new IllegalArgumentException();
 		}

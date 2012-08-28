@@ -57,11 +57,10 @@ public class JpaWhitelistedSiteRepository implements WhitelistedSiteRepository {
 	@Override
 	@Transactional
 	public void remove(WhitelistedSite whitelistedSite) {
-		WhitelistedSite found = manager.find(WhitelistedSite.class,
-				whitelistedSite.getId());
+		WhitelistedSite found = manager.find(WhitelistedSite.class, whitelistedSite.getId());
 
 		if (found != null) {
-			manager.remove(whitelistedSite);
+			manager.remove(found);
 		} else {
 			throw new IllegalArgumentException();
 		}
