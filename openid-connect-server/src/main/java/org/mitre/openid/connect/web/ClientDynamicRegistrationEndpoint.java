@@ -40,8 +40,12 @@ public class ClientDynamicRegistrationEndpoint {
 	@Autowired
 	private ClientDetailsEntityService clientService;
 	
+	/**
+	 * Bind utility data types to their classes
+	 * @param binder
+	 */
 	@InitBinder
-	public void initBinder(WebDataBinder binder) {
+	public void utilityDataInitBinder(WebDataBinder binder) {
 		
 		/*
 		 * Application type
@@ -144,7 +148,14 @@ public class ClientDynamicRegistrationEndpoint {
 		});
 		*/
 		
-
+	}
+	
+	/**
+	 * Bind a space-separated string to a Set<String>
+	 * @param binder
+	 */
+	@InitBinder({"contacts", "redirect_uris"})
+	public void stringSetInitbinder(WebDataBinder binder) {
 		/*
 		 * Space-separated set of strings
 		 */
