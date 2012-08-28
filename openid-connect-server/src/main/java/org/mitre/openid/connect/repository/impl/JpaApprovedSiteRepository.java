@@ -58,22 +58,13 @@ public class JpaApprovedSiteRepository implements ApprovedSiteRepository {
 	@Override
 	@Transactional
 	public void remove(ApprovedSite approvedSite) {
-		ApprovedSite found = manager.find(ApprovedSite.class,
-				approvedSite.getId());
+		ApprovedSite found = manager.find(ApprovedSite.class, approvedSite.getId());
 		
 		if (found != null) {
 			manager.remove(found);
 		} else {
 			throw new IllegalArgumentException();
 		}
-	}
-
-	@Override
-	@Transactional
-	public void removeById(Long id) {
-		ApprovedSite found = getById(id);
-
-		manager.remove(found);
 	}
 
 	@Override
@@ -91,4 +82,23 @@ public class JpaApprovedSiteRepository implements ApprovedSiteRepository {
 		
 		return JpaUtil.getSingleResult(query.getResultList());
 	}
+	
+    @Override
+    @Transactional
+    public Collection<ApprovedSite> getByUserId(String userId) {
+		TypedQuery<ApprovedSite> query = manager.createNamedQuery("ApprovedSite.getByUserId", ApprovedSite.class);
+		query.setParameter("userId", userId);
+
+		return query.getResultList();
+    	
+    }
+
+    @Override
+    @Transactional
+    public Collection<ApprovedSite> getByClientId(String clientId) {
+		TypedQuery<ApprovedSite> query = manager.createNamedQuery("ApprovedSite.getByClientId", ApprovedSite.class);
+		query.setParameter("clientId", clientId);
+		
+		return query.getResultList();
+    }
 }

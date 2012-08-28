@@ -40,6 +40,7 @@ import javax.persistence.Transient;
 @NamedQueries({
 	@NamedQuery(name = "ApprovedSite.getAll", query = "select a from ApprovedSite a"),
 	@NamedQuery(name = "ApprovedSite.getByUserId", query = "select a from ApprovedSite a where a.userId = :userId"),
+	@NamedQuery(name = "ApprovedSite.getByClientId", query = "select a from ApprovedSite a where a.clientId = :clientId"),
 	@NamedQuery(name = "ApprovedSite.getByClientIdAndUserId", query = "select a from ApprovedSite a where a.clientId = :clientId and a.userId = :userId")
 })
 public class ApprovedSite {

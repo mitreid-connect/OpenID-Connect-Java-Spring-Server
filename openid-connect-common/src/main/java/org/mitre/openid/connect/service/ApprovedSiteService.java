@@ -76,11 +76,16 @@ public interface ApprovedSiteService {
 	public void remove(ApprovedSite approvedSite);
 
 	/**
-	 * Remove the ApprovedSite
-	 * 
-	 * @param id
-	 *            id for ApprovedSite to remove
+	 * Get all sites approved by this user
+	 * @param userId
+	 * @return
 	 */
-	public void removeById(Long id);
-
+	public Collection<ApprovedSite> getByUserId(String userId);
+	
+	/**
+	 * Get all sites associated with this client
+	 * @param clientId
+	 * @return
+	 */
+	public Collection<ApprovedSite> getByClientId(String clientId);
 }

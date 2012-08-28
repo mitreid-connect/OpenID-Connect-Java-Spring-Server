@@ -62,14 +62,6 @@ public interface ApprovedSiteRepository {
 	public void remove(ApprovedSite approvedSite);
 
 	/**
-	 * Removes an ApprovedSite from the repository
-	 * 
-	 * @param id
-	 *            the id of the ApprovedSite to remove
-	 */
-	public void removeById(Long id);
-
-	/**
 	 * Persists an ApprovedSite
 	 * 
 	 * @param aggregator
@@ -77,4 +69,18 @@ public interface ApprovedSiteRepository {
 	 * @return the persisted entity
 	 */
 	public ApprovedSite save(ApprovedSite approvedSite);
+	
+	/**
+	 * Get all sites approved by this user
+	 * @param userId
+	 * @return
+	 */
+	public Collection<ApprovedSite> getByUserId(String userId);
+	
+	/**
+	 * Get all sites associated with this client
+	 * @param clientId
+	 * @return
+	 */
+	public Collection<ApprovedSite> getByClientId(String clientId);
 }

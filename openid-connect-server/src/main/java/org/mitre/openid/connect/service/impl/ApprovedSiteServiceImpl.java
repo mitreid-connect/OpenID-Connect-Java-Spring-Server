@@ -80,12 +80,6 @@ public class ApprovedSiteServiceImpl implements ApprovedSiteService {
 
 	@Override
 	@Transactional
-	public void removeById(Long id) {
-		approvedSiteRepository.removeById(id);
-	}
-
-	@Override
-	@Transactional
 	public ApprovedSite createApprovedSite(String clientId, String userId, Date timeoutDate, Set<String> allowedScopes,
 											WhitelistedSite whitelistedSite) {
 		
@@ -105,11 +99,31 @@ public class ApprovedSiteServiceImpl implements ApprovedSiteService {
 	}
 
 	@Override
-	public ApprovedSite getByClientIdAndUserId(String clientId,
-			String userId) {
+	public ApprovedSite getByClientIdAndUserId(String clientId, String userId) {
 		
 		return approvedSiteRepository.getByClientIdAndUserId(clientId, userId);
 		
 	}
 
+	/**
+     * @param userId
+     * @return
+     * @see org.mitre.openid.connect.repository.ApprovedSiteRepository#getByUserId(java.lang.String)
+     */
+	@Override
+    public Collection<ApprovedSite> getByUserId(String userId) {
+	    return approvedSiteRepository.getByUserId(userId);
+    }
+
+	/**
+     * @param clientId
+     * @return
+     * @see org.mitre.openid.connect.repository.ApprovedSiteRepository#getByClientId(java.lang.String)
+     */
+	@Override
+    public Collection<ApprovedSite> getByClientId(String clientId) {
+	    return approvedSiteRepository.getByClientId(clientId);
+    }
+
+	
 }
