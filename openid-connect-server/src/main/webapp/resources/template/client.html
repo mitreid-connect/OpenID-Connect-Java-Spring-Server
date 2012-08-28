@@ -220,12 +220,12 @@
     <% } %>
 </script>
 
-<script type="text/html" id="tmpl-uri">
-    <td><%=uri%></td>
+<script type="text/html" id="tmpl-list-widget-child">
+    <td><%=(uri.length > 27) ? uri.substr(0,27) + '...' : uri %></td>
     <td><i class="icon-minus-sign icon-gray"></i></td>
 </script>
 
-<script type="text/html" id="tmpl-uri-list">
+<script type="text/html" id="tmpl-list-widget">
     <tbody>
     <tr>
         <td><input type="text" value="" placeholder="http://"></td>

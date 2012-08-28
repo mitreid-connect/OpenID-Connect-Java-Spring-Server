@@ -13,6 +13,85 @@
 
     });
 
+
+    var ListWidgetView = Backbone.View.extend({
+
+        tagName: "table",
+
+        childView: Backbone.View.extend({
+
+            tagName: 'tr',
+
+            events:{
+                "click .icon-minus-sign":function () {
+                    this.$el.tooltip('destroy');
+                    this.model.destroy();
+                }
+            },
+
+            initialize:function () {
+
+                if (!this.template) {
+                    this.template = _.template($('#tmpl-list-widget-child').html());
+                }
+
+                this.model.bind('destroy', this.remove, this);
+
+            },
+
+            render:function () {
+                this.$el.html(this.template(this.model.toJSON()));
+
+                if (this.model.get('uri').length > 27)
+                    this.$el.tooltip({title:this.model.get('uri')});
+
+                return this;
+            }
+        }),
+
+        events:{
+            "click button": "addItem"
+        },
+
+        initialize:function () {
+
+            if (!this.template) {
+                this.template = _.template($('#tmpl-list-widget').html());
+            }
+
+            this.$el.addClass("table-condensed");
+            this.collection.bind('add', this.render, this);
+
+        },
+
+        addItem:function() {
+            var input_value = $("input", this.el).val().trim();
+
+            var uri = new URIModel({uri:input_value});
+
+            // if it's valid and doesn't already exist
+            if (uri.isValid() && this.collection.where({uri: input_value}).length < 1) {
+                this.collection.add(uri);
+            }
+        },
+
+        render:function (eventName) {
+
+            this.$el.html(this.template());
+
+            _self = this;
+
+            _.each(this.collection.models, function (model) {
+                var el = new this.childView({model:model}).render().el;
+                $("tbody", _self.el).append(el);
+            }, this);
+
+            return this;
+        }
+
+    });
+
+
     var ClientModel = Backbone.Model.extend({
 
         idAttribute: "id",
@@ -87,77 +166,6 @@
         url:"api/clients"
     });
 
-
-
-    var URIView = Backbone.View.extend({
-
-        tagName: 'tr',
-
-        events:{
-            "click .icon-minus-sign":function() { this.model.destroy(); }
-        },
-
-        initialize:function () {
-
-            if (!this.template) {
-                this.template = _.template($('#tmpl-uri').html());
-            }
-
-            this.model.bind('destroy', this.remove, this);
-
-        },
-
-        render:function () {
-            this.$el.html(this.template(this.model.toJSON()));
-            return this;
-        }
-    });
-
-    var URIListView = Backbone.View.extend({
-
-        tagName: "table",
-
-        events:{
-            "click button": "addItem"
-        },
-
-        initialize:function () {
-
-            if (!this.template) {
-                this.template = _.template($('#tmpl-uri-list').html());
-            }
-
-            this.$el.addClass("table-condensed");
-            this.collection.bind('add', this.render, this);
-
-        },
-
-        addItem:function() {
-            var input_value = $("input", this.el).val().trim();
-
-            var uri = new URIModel({uri:input_value});
-
-            // if it's valid and doesn't already exist
-            if (uri.isValid() && this.collection.where({uri: input_value}).length < 1) {
-                this.collection.add(uri);
-            }
-        },
-
-        render:function (eventName) {
-
-            this.$el.html(this.template());
-
-            _self = this;
-
-            _.each(this.collection.models, function (model) {
-                var el = new URIView({model:model}).render().el;
-                $("tbody", _self.el).append(el);
-            }, this);
-
-            return this;
-        }
-
-    });
 
 
     var BreadCrumbView = Backbone.View.extend({
@@ -422,7 +430,7 @@
                 _self.registeredRedirectUriCollection.add(new URIModel({uri:registeredRedirectUri}));
             });
 
-            $("#registeredRedirectUri .controls",this.el).html(new URIListView({collection: this.registeredRedirectUriCollection}).render().el);
+            $("#registeredRedirectUri .controls",this.el).html(new ListWidgetView({collection: this.registeredRedirectUriCollection}).render().el);
 
             return this;
         },
