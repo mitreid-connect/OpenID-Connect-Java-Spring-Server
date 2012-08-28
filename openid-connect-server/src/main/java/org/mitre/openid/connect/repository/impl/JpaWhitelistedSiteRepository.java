@@ -75,6 +75,9 @@ public class JpaWhitelistedSiteRepository implements WhitelistedSiteRepository {
 	@Override
 	@Transactional
 	public WhitelistedSite update(WhitelistedSite oldWhitelistedSite, WhitelistedSite whitelistedSite) {
+		// sanity check
+		whitelistedSite.setId(oldWhitelistedSite.getId());
+		
 		return saveOrUpdate(oldWhitelistedSite.getId(), manager, whitelistedSite);
 	}
 	
