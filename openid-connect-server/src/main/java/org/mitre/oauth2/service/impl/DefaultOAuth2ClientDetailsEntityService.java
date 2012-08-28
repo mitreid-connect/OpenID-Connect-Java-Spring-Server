@@ -26,6 +26,11 @@ import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.repository.OAuth2ClientRepository;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
+import org.mitre.openid.connect.model.ApprovedSite;
+import org.mitre.openid.connect.model.WhitelistedSite;
+import org.mitre.openid.connect.repository.ApprovedSiteRepository;
+import org.mitre.openid.connect.repository.WhitelistedSiteRepository;
+import org.mitre.openid.connect.service.ApprovedSiteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
@@ -46,6 +51,11 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 	@Autowired
 	private OAuth2TokenRepository tokenRepository;
 	
+	@Autowired
+	private ApprovedSiteRepository approvedSiteRepository;
+	
+	@Autowired
+	private WhitelistedSiteRepository whitelistedSiteRepository;
 	
 	public DefaultOAuth2ClientDetailsEntityService() {
 		
@@ -111,6 +121,20 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 		
 		// clean out any tokens that this client had issued
 		tokenRepository.clearTokensForClient(client);
+		
+		// clean out any approved sites for this client
+		Collection<ApprovedSite> approvedSites = approvedSiteRepository.getByClientId(client.getClientId());
+		if (approvedSites != null) {
+			for (ApprovedSite approvedSite : approvedSites) {
+	            approvedSiteRepository.remove(approvedSite);
+            }
+		}
+		
+		// clear out any whitelisted sites for this client
+		WhitelistedSite whitelistedSite = whitelistedSiteRepository.getByClientId(client.getClientId());
+		if (whitelistedSite != null) {
+            whitelistedSiteRepository.remove(whitelistedSite);
+		}
 		
 		// take care of the client itself
 		clientRepository.deleteClient(client);
