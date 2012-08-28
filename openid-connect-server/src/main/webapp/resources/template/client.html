@@ -94,9 +94,6 @@
             <div class="control-group" id="scope">
                 <label class="control-label">Scope</label>
                 <div class="controls">
-                    <textarea rows="3" class="xlarge" placeholder="openid"
-                              id="textarea2" name="textarea2"><% for (var i in scope) { %><%=scope[i]+","%><% }%></textarea>
-                    <p class="help-block">Please enter scopes separated by commas</p>
                 </div>
             </div>
 
@@ -221,7 +218,7 @@
 </script>
 
 <script type="text/html" id="tmpl-list-widget-child">
-    <td><%=(uri.length > 27) ? uri.substr(0,27) + '...' : uri %></td>
+    <td><%=(item.length > 27) ? item.substr(0,27) + '...' : item %></td>
     <td><i class="icon-minus-sign icon-gray"></i></td>
 </script>
 

@@ -6,7 +6,7 @@
             var expression = /^(?:([a-z0-9+.-]+:\/\/)((?:(?:[a-z0-9-._~!$&'()*+,;=:]|%[0-9A-F]{2})*)@)?((?:[a-z0-9-._~!$&'()*+,;=]|%[0-9A-F]{2})*)(:(?:\d*))?(\/(?:[a-z0-9-._~!$&'()*+,;=:@\/]|%[0-9A-F]{2})*)?|([a-z0-9+.-]+:)(\/?(?:[a-z0-9-._~!$&'()*+,;=:@]|%[0-9A-F]{2})+(?:[a-z0-9-._~!$&'()*+,;=:@\/]|%[0-9A-F]{2})*)?)(\?(?:[a-z0-9-._~!$&'()*+,;=:\/?@]|%[0-9A-F]{2})*)?(#(?:[a-z0-9-._~!$&'()*+,;=:\/?@]|%[0-9A-F]{2})*)?$/i;
             var regex = new RegExp(expression);
 
-            if (!this.get("uri").match(regex)) {
+            if (!this.get("item").match(regex)) {
                 return "Invalid URI";
             }
         }
@@ -14,6 +14,16 @@
     });
 
 
+    /*
+    * Backbone JS Reusable ListWidget
+    *  Options
+    * {
+    *   collection: Backbone JS Collection
+    *   type: ('uri'|'default')
+    *   autocomplete: ['item1','item2'] List of auto complete items
+    * }
+    *
+     */
     var ListWidgetView = Backbone.View.extend({
 
         tagName: "table",
@@ -42,8 +52,8 @@
             render:function () {
                 this.$el.html(this.template(this.model.toJSON()));
 
-                if (this.model.get('uri').length > 27)
-                    this.$el.tooltip({title:this.model.get('uri')});
+                if (this.model.get('item').length > 27)
+                    this.$el.tooltip({title:this.model.get('item')});
 
                 return this;
             }
@@ -67,11 +77,18 @@
         addItem:function() {
             var input_value = $("input", this.el).val().trim();
 
-            var uri = new URIModel({uri:input_value});
+            var model;
+
+            if (this.options.type == 'uri') {
+                model = new URIModel({item:input_value});
+            } else {
+                model = new Backbone.Model({item:input_value});
+                model.validate = function() {};
+            }
 
             // if it's valid and doesn't already exist
-            if (uri.isValid() && this.collection.where({uri: input_value}).length < 1) {
-                this.collection.add(uri);
+            if (model.isValid() && this.collection.where({item: input_value}).length < 1) {
+                this.collection.add(model);
             }
         },
 
@@ -301,6 +318,7 @@
             }
 
             this.registeredRedirectUriCollection = new Backbone.Collection();
+            this.scopeCollection = new Backbone.Collection();
         },
 
         events:{
@@ -392,14 +410,14 @@
                 clientId:$('#clientId input').val(),
                 clientSecret: clientSecret,
                 generateClientSecret:generateClientSecret,
-                registeredRedirectUri: this.registeredRedirectUriCollection.pluck("uri"),
+                registeredRedirectUri: this.registeredRedirectUriCollection.pluck("item"),
                 clientDescription:$('#clientDescription textarea').val(),
                 allowRefresh:$('#allowRefresh').is(':checked'),
                 authorizedGrantTypes: authorizedGrantTypes,
                 accessTokenValiditySeconds: $('#accessTokenValiditySeconds input').val(),
                 refreshTokenValiditySeconds: $('#refreshTokenValiditySeconds input').val(),
                 idTokenValiditySeconds: $('#idTokenValiditySeconds input').val(),
-                scope:$.map($('#scope textarea').val().replace(/,$/,'').replace(/\s/g,' ').split(","), $.trim)
+                scope: this.scopeCollection.pluck("item")
             });
 
             if (valid) {
@@ -427,10 +445,18 @@
 
             // build and bind registered redirect URI collection and view
             _.each(this.model.get("registeredRedirectUri"), function (registeredRedirectUri) {
-                _self.registeredRedirectUriCollection.add(new URIModel({uri:registeredRedirectUri}));
+                _self.registeredRedirectUriCollection.add(new URIModel({item:registeredRedirectUri}));
             });
 
-            $("#registeredRedirectUri .controls",this.el).html(new ListWidgetView({collection: this.registeredRedirectUriCollection}).render().el);
+            $("#registeredRedirectUri .controls",this.el).html(new ListWidgetView({type:'uri', collection: this.registeredRedirectUriCollection}).render().el);
+
+            _self = this;
+            // build and bind scopes
+            _.each(this.model.get("scope"), function (scope) {
+                _self.scopeCollection.add(new Backbone.Model({item:scope}));
+            });
+
+            $("#scope .controls",this.el).html(new ListWidgetView({collection: this.scopeCollection}).render().el);
 
             return this;
         },
