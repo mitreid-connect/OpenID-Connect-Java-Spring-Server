@@ -44,8 +44,7 @@ public class JpaWhitelistedSiteRepository implements WhitelistedSiteRepository {
 	@Override
 	@Transactional
 	public Collection<WhitelistedSite> getAll() {
-		TypedQuery<WhitelistedSite> query = manager.createNamedQuery(
-				"WhitelistedSite.getAll", WhitelistedSite.class);
+		TypedQuery<WhitelistedSite> query = manager.createNamedQuery("WhitelistedSite.getAll", WhitelistedSite.class);
 		return query.getResultList();
 	}
 
@@ -70,18 +69,16 @@ public class JpaWhitelistedSiteRepository implements WhitelistedSiteRepository {
 
 	@Override
 	@Transactional
-	public void removeById(Long id) {
-		WhitelistedSite found = getById(id);
-
-		manager.remove(found);
-	}
-
-	@Override
-	@Transactional
 	public WhitelistedSite save(WhitelistedSite whiteListedSite) {
 		return saveOrUpdate(whiteListedSite.getId(), manager, whiteListedSite);
 	}
 
+	@Override
+	@Transactional
+	public WhitelistedSite update(WhitelistedSite oldWhitelistedSite, WhitelistedSite whitelistedSite) {
+		return saveOrUpdate(oldWhitelistedSite.getId(), manager, whitelistedSite);
+	}
+	
 	@Override
 	@Transactional
 	public WhitelistedSite getByClientId(String clientId) {

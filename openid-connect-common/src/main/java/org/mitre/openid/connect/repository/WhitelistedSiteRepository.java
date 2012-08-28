@@ -68,19 +68,19 @@ public interface WhitelistedSiteRepository {
 	public void remove(WhitelistedSite whitelistedSite);
 
 	/**
-	 * Removes an WhitelistedSite from the repository
-	 * 
-	 * @param id
-	 *            the id of the IdToken to remove
-	 */
-	public void removeById(Long id);
-
-	/**
 	 * Persists a WhitelistedSite
 	 * 
 	 * @param whitelistedSite
 	 * @return
 	 */
 	public WhitelistedSite save(WhitelistedSite whiteListedSite);
+
+	/**
+	 * Persist changes to a whitelistedSite. The ID of oldWhitelistedSite is retained.
+     * @param oldWhitelistedSite
+     * @param whitelistedSite
+     * @return
+     */
+    public WhitelistedSite update(WhitelistedSite oldWhitelistedSite, WhitelistedSite whitelistedSite);
 
 }

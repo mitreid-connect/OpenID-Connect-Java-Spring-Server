@@ -64,15 +64,10 @@ public class WhitelistedSiteServiceImpl implements WhitelistedSiteService {
 	}
 
 	@Override
-	public void removeById(Long id) {
-		WhitelistedSite w = repository.getById(id);
-		if (w != null) {
-			repository.remove(w);
+	public WhitelistedSite saveNew(WhitelistedSite whitelistedSite) {
+		if (whitelistedSite.getId() != null) {
+			throw new IllegalArgumentException("A new whitelisted site cannot be created with an id value already set: " + whitelistedSite.getId());
 		}
-	}
-
-	@Override
-	public WhitelistedSite save(WhitelistedSite whitelistedSite) {
 		return repository.save(whitelistedSite);
 	}
 
@@ -90,5 +85,13 @@ public class WhitelistedSiteServiceImpl implements WhitelistedSiteService {
 	public Collection<WhitelistedSite> getByCreator(String creatorId) {
 		return repository.getByCreator(creatorId);
 	}
+
+    @Override
+    public WhitelistedSite update(WhitelistedSite oldWhitelistedSite, WhitelistedSite whitelistedSite) {
+    	if (oldWhitelistedSite == null || whitelistedSite == null) {
+    		throw new IllegalArgumentException("Neither the old or new sites may be null");
+    	}
+    	return repository.update(oldWhitelistedSite, whitelistedSite);
+    }
 
 }

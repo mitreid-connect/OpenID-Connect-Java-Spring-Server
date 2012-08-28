@@ -69,7 +69,7 @@ public class WhitelistApi {
 		// save the id of the person who created this
 		whitelist.setCreatorUserId(p.getName());
 		
-		WhitelistedSite newWhitelist = whitelistService.save(whitelist);
+		WhitelistedSite newWhitelist = whitelistService.saveNew(whitelist);
 		
 		m.put("entity", newWhitelist);
 		
@@ -93,7 +93,7 @@ public class WhitelistApi {
 			// TODO: throw new "entity not found"
 		}
 		
-		WhitelistedSite newWhitelist = whitelistService.save(whitelist);
+		WhitelistedSite newWhitelist = whitelistService.update(oldWhitelist, whitelist);
 		
 		m.put("entity", newWhitelist);
 		
