@@ -35,7 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class WhitelistedSiteServiceImpl implements WhitelistedSiteService {
 
 	@Autowired
-	private WhitelistedSiteRepository whitelistedSiteRepository;
+	private WhitelistedSiteRepository repository;
 
 	/**
 	 * Default constructor
@@ -49,43 +49,46 @@ public class WhitelistedSiteServiceImpl implements WhitelistedSiteService {
 	 * 
 	 * @param repository
 	 */
-	public WhitelistedSiteServiceImpl(
-			WhitelistedSiteRepository whitelistedSiteRepository) {
-		this.whitelistedSiteRepository = whitelistedSiteRepository;
+	public WhitelistedSiteServiceImpl(WhitelistedSiteRepository whitelistedSiteRepository) {
+		this.repository = whitelistedSiteRepository;
 	}	
 	
 	@Override
 	public WhitelistedSite getById(Long id) {
-		return whitelistedSiteRepository.getById(id);
+		return repository.getById(id);
 	}
 
 	@Override
 	public void remove(WhitelistedSite whitelistedSite) {
-		whitelistedSiteRepository.remove(whitelistedSite);
+		repository.remove(whitelistedSite);
 	}
 
 	@Override
 	public void removeById(Long id) {
+		WhitelistedSite w = repository.getById(id);
+		if (w != null) {
+			repository.remove(w);
+		}
 	}
 
 	@Override
 	public WhitelistedSite save(WhitelistedSite whitelistedSite) {
-		return whitelistedSiteRepository.save(whitelistedSite);
+		return repository.save(whitelistedSite);
 	}
 
 	@Override
 	public Collection<WhitelistedSite> getAll() {
-		return whitelistedSiteRepository.getAll();
+		return repository.getAll();
 	}
 
 	@Override
 	public WhitelistedSite getByClientId(String clientId) {
-		return whitelistedSiteRepository.getByClientId(clientId);
+		return repository.getByClientId(clientId);
 	}
 
 	@Override
 	public Collection<WhitelistedSite> getByCreator(String creatorId) {
-		return whitelistedSiteRepository.getByCreator(creatorId);
+		return repository.getByCreator(creatorId);
 	}
 
 }
