@@ -30,6 +30,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -48,13 +49,8 @@ public class ClientAPI {
 
     @Autowired
     private ClientDetailsEntityService clientService;
-
-    /**
-     * constructor
-     */
-    public ClientAPI() {
-
-    }
+	private JsonParser parser = new JsonParser();
+	private Gson gson = new Gson();
 
     /**
      * Get a list of all clients
@@ -81,11 +77,9 @@ public class ClientAPI {
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
     public String apiAddClient(@RequestBody String jsonString, Model m, Principal principal) {
 
-    	// TODO: sanity check if the thing really is a JSON object
-    	JsonObject json = new JsonParser().parse(jsonString).getAsJsonObject();
+    	JsonObject json = parser.parse(jsonString).getAsJsonObject();
 
-    	// parse the client passed in (from JSON) and fetch the old client from the store
-        ClientDetailsEntity client = new Gson().fromJson(json, ClientDetailsEntity.class);
+    	ClientDetailsEntity client = gson.fromJson(json, ClientDetailsEntity.class);
         
         // if they leave the client secret empty, force it to be generated
         if (Strings.isNullOrEmpty(client.getClientId())) {
@@ -102,7 +96,8 @@ public class ClientAPI {
         //TODO: owner has been replaced by a list of contacts, which should be styled as email addresses.
         client.setDynamicallyRegistered(false);
         
-        m.addAttribute("entity", clientService.saveNewClient(client));
+        ClientDetailsEntity newClient = clientService.saveNewClient(client);
+		m.addAttribute("entity", newClient);
 
         return "jsonClientView";
     }
@@ -119,10 +114,10 @@ public class ClientAPI {
     public String apiUpdateClient(@PathVariable("id") Long id, @RequestBody String jsonString, Model m, Principal principal) {
     	
     	// TODO: sanity check if the thing really is a JSON object
-    	JsonObject json = new JsonParser().parse(jsonString).getAsJsonObject();
+    	JsonObject json = parser.parse(jsonString).getAsJsonObject();
 
     	// parse the client passed in (from JSON) and fetch the old client from the store
-        ClientDetailsEntity client = new Gson().fromJson(json, ClientDetailsEntity.class);
+        ClientDetailsEntity client = gson.fromJson(json, ClientDetailsEntity.class);
         ClientDetailsEntity oldClient = clientService.getClientById(id);
         
         if (oldClient == null) {
@@ -143,7 +138,8 @@ public class ClientAPI {
         // client.setOwner(principal.getName());
         //TODO: owner has been replaced by a list of contacts, which should be styled as email addresses.
         
-        m.addAttribute("entity", clientService.updateClient(oldClient, client));
+        ClientDetailsEntity newClient = clientService.updateClient(oldClient, client);
+		m.addAttribute("entity", newClient);
 
         return "jsonClientView";
     }
@@ -171,11 +167,10 @@ public class ClientAPI {
      * @return
      */
     @RequestMapping(value="/{id}", method=RequestMethod.GET, headers="Accept=application/json")
-    @ResponseBody
-    public Object apiShowClient(@PathVariable("id") Long id, ModelAndView modelAndView) {
+    public ModelAndView apiShowClient(@PathVariable("id") Long id, ModelAndView modelAndView) {
         ClientDetailsEntity client = clientService.getClientById(id);
         if (client == null) {
-            return new ResponseEntity<String>(HttpStatus.NOT_FOUND);
+            throw new ClientNotFoundException("Could not find client: " + id);
         }
 
         modelAndView.addObject("entity", client);
