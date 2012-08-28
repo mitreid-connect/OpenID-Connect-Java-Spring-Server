@@ -77,7 +77,9 @@ public class AbstractOIDCAuthenticationFilter extends
 	protected final static String DEFAULT_SCOPE = "openid";
 
 	protected final static String FILTER_PROCESSES_URL = "/openid_connect_login";
-
+	
+	// Allow for time sync issues by having a window of X seconds.
+	private int timeSkewAllowance = 300;
 	
 	private Map<OIDCServerConfiguration, JwtSigningAndValidationService> validationServices = new HashMap<OIDCServerConfiguration, JwtSigningAndValidationService>();
 	
@@ -370,9 +372,17 @@ public class AbstractOIDCAuthenticationFilter extends
 				throw new AuthenticationServiceException("Id Token does not have required expiration claim");
 			} else {
 				// it's not null, see if it's expired
-				Date now = new Date();
+				Date now = new Date(System.currentTimeMillis() - (timeSkewAllowance * 1000));
 				if (now.after(idClaims.getExpiration())) {
 					throw new AuthenticationServiceException("Id Token is expired: " + idClaims.getExpiration());
+				}
+			}
+			
+			// check not before
+			if (idClaims.getNotBefore() != null) {
+				Date now = new Date(System.currentTimeMillis() + (timeSkewAllowance * 1000));
+				if (now.before(idClaims.getNotBefore())){
+					throw new AuthenticationServiceException("Id Token not valid untill: " + idClaims.getNotBefore());
 				}
 			}
 			
@@ -388,7 +398,7 @@ public class AbstractOIDCAuthenticationFilter extends
 				throw new AuthenticationServiceException("Id Token does not have required issued-at claim");				
 			} else {
 				// since it's not null, see if it was issued in the future
-				Date now = new Date();
+				Date now = new Date(System.currentTimeMillis() + (timeSkewAllowance * 1000));
 				if (now.before(idClaims.getIssuedAt())) {
 					throw new AuthenticationServiceException("Id Token was issued in the future: " + idClaims.getIssuedAt());
 				}
@@ -652,4 +662,13 @@ public class AbstractOIDCAuthenticationFilter extends
 			Map<OIDCServerConfiguration, JwtSigningAndValidationService> validationServices) {
 		this.validationServices = validationServices;
 	}
+	
+	public int getTimeSkewAllowance() {
+		return timeSkewAllowance;
+	}
+
+	public void setTimeSkewAllowance(int timeSkewAllowance) {
+		this.timeSkewAllowance = timeSkewAllowance;
+	}	
+	
 }
