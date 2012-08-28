@@ -15,8 +15,13 @@
  ******************************************************************************/
 package org.mitre.openid.connect.web;
 
+import java.util.Map;
+
+import org.mitre.openid.connect.service.StatsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
@@ -28,9 +33,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @PreAuthorize("hasRole('ROLE_USER')") // TODO: this probably shouldn't be here
 public class ManagerController {
 
+	@Autowired
+	private StatsService statsService;
 
     @RequestMapping({"", "home", "index"})
-    public String showHomePage() {
+    public String showHomePage(ModelMap m) {
+    	
+    	Map<String, Integer> summary = statsService.calculateSummaryStats();
+    	
+    	m.put("statsSummary", summary);
+    	
         return "home";
     }
 

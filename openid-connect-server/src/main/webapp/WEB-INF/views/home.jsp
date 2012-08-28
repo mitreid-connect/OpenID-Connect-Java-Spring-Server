@@ -14,10 +14,10 @@
             <div class="hero-unit">
                 <h1>Welcome!</h1>
 
-                <p>Can't remember your passwords? Tired of filling out registration forms?
-                    OpenID is a <strong>safe</strong>, <strong>faster</strong>, and <strong>easier</strong> way to log
-                    in to
-                    web sites.</p>
+                <p>OpenID Connect is a next-generation protocol built on top of the OAuth2 authorization framework.
+                   OpenID Connect lets you log into a remote site using your identity without exposing your 
+                   credentials, like a username and password.                
+                </p>
 
                 <p><a class="btn btn-primary btn-large" href="http://openid.net/connect/">Learn more &raquo;</a></p>
             </div>
@@ -26,24 +26,16 @@
                 <div class="span6">
                     <h2>About</h2>
 
-                    <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo,
-                        tortor
-                        mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada
-                        magna
-                        mollis euismod. Donec sed odio dui. </p>
+                    <p>This OpenID Connect service is built from the MITREid Connect Open Source project started by The MITRE Corporation.</p>
 
-                    <p><a class="btn" href="#">More &raquo;</a></p>
+                    <p><a class="btn" href="http://github.com/mitreid-connect/">More &raquo;</a></p>
                 </div>
                 <div class="span6">
                     <h2>Contact</h2>
 
-                    <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo,
-                        tortor
-                        mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada
-                        magna
-                        mollis euismod. Donec sed odio dui. </p>
+                    <p>For more information or support, contact the administrators of this system.</p>
 
-                    <p><a class="btn" href="#">Email &raquo;</a></p>
+                    <p><a class="btn" href="mailto:idp@example.com?Subject=OpenID Connect">Email &raquo;</a></p>
                 </div>
 
             </div>
@@ -53,10 +45,9 @@
                 <div class="span12">
                     <h2>Current Statistics</h2>
 
-                    <p>You'll be keen to know that there have been <span class="label label-info">4720</span> users of this
-                        system who have logged in to
-                        <span class="label label-info">203</span>
-                        total sites, for a total of <span class="label label-info">6224</span> site approvals.</p>
+                    <p>There have been <span class="label label-info">${statsSummary["userCount"]}</span> users of this
+                        system who have logged in to <span class="label label-info">${statsSummary["clientCount"]}</span>
+                        total sites, for a total of <span class="label label-info">${statsSummary["approvalCount"]}</span> site approvals.</p>
 
                 </div>
             </div>
