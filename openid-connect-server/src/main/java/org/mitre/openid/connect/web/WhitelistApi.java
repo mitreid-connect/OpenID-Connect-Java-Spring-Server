@@ -10,6 +10,7 @@ import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.openid.connect.model.WhitelistedSite;
 import org.mitre.openid.connect.service.WhitelistedSiteService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -90,15 +91,16 @@ public class WhitelistApi {
 		WhitelistedSite oldWhitelist = whitelistService.getById(id);
 		
 		if (oldWhitelist == null) {
-			// TODO: throw new "entity not found"
+			m.put("code", HttpStatus.NOT_FOUND);
+			return "httpCodeView";
+		} else {
+			
+			WhitelistedSite newWhitelist = whitelistService.update(oldWhitelist, whitelist);
+			
+			m.put("entity", newWhitelist);
+			
+			return "jsonEntityView";
 		}
-		
-		WhitelistedSite newWhitelist = whitelistService.update(oldWhitelist, whitelist);
-		
-		m.put("entity", newWhitelist);
-		
-		return "jsonEntityView";
-		
 	}
 	
 	/**
@@ -110,13 +112,12 @@ public class WhitelistApi {
 		WhitelistedSite whitelist = whitelistService.getById(id);
 		
 		if (whitelist == null) {
-			// TODO: throw new "entity not found"
-		}
+			m.put("code", HttpStatus.NOT_FOUND);
+		} else {
+			whitelistService.remove(whitelist);
+		}		
 		
-		whitelistService.remove(whitelist);
-		
-		// TODO: not really an entity view, more of an empty view w/code
-		return "jsonEntityView";
+		return "httpCodeView";
 	}
 	
 	/**
@@ -126,12 +127,14 @@ public class WhitelistApi {
 	public String getWhitelistedSite(@PathVariable("id") Long id, ModelMap m) {
 		WhitelistedSite whitelist = whitelistService.getById(id);
 		if (whitelist == null) {
-			// TODO: throw new "entity not found"
+			m.put("code", HttpStatus.NOT_FOUND);
+			return "httpCodeView";
+		} else {
+		
+			m.put("entity", whitelist);
+			
+			return "jsonEntityView";
 		}
-		
-		m.put("entity", whitelist);
-		
-		return "jsonEntityView";
 		
 	}
 }
