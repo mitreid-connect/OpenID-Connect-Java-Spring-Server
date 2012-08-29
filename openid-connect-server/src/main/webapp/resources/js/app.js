@@ -90,7 +90,7 @@
             if (model.isValid() && this.collection.where({item: input_value}).length < 1) {
                 this.collection.add(model);
             } else {
-                // add a visual error indicator
+                // else add a visual error indicator
                 $(".control-group", this.el).addClass('error')
             }
         },
