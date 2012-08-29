@@ -94,7 +94,12 @@
 
         render:function (eventName) {
 
-            this.$el.html(this.template());
+            this.$el.html(this.template({placeholder:this.options.placeholder}));
+
+            // bind autocomplete options
+            if (this.options.autocomplete) {
+                $('input', this.$el).typeahead({source:this.options.autocomplete});
+            }
 
             _self = this;
 
@@ -441,14 +446,15 @@
 
             $(this.el).html(this.template(this.model.toJSON()));
 
-            _self = this;
+            var _self = this;
 
             // build and bind registered redirect URI collection and view
             _.each(this.model.get("registeredRedirectUri"), function (registeredRedirectUri) {
                 _self.registeredRedirectUriCollection.add(new URIModel({item:registeredRedirectUri}));
             });
 
-            $("#registeredRedirectUri .controls",this.el).html(new ListWidgetView({type:'uri', collection: this.registeredRedirectUriCollection}).render().el);
+            $("#registeredRedirectUri .controls",this.el).html(new ListWidgetView({type:'uri', placeholder: 'http://',
+                                                                                    collection: this.registeredRedirectUriCollection}).render().el);
 
             _self = this;
             // build and bind scopes
@@ -456,7 +462,9 @@
                 _self.scopeCollection.add(new Backbone.Model({item:scope}));
             });
 
-            $("#scope .controls",this.el).html(new ListWidgetView({collection: this.scopeCollection}).render().el);
+            $("#scope .controls",this.el).html(new ListWidgetView({placeholder: 'new scope here'
+                , autocomplete: _.uniq(_.flatten(app.clientList.pluck("scope")))
+                , collection: this.scopeCollection}).render().el);
 
             return this;
         },
@@ -482,6 +490,7 @@
         initialize:function () {
 
             this.clientList = new ClientCollection();
+
             this.clientListView = new ClientListView({model:this.clientList});
 
             this.breadCrumbView = new BreadCrumbView({
@@ -514,6 +523,7 @@
 
             $('#content').html(this.clientListView.render().el);
             this.clientListView.delegateEvents();
+
         },
 
         newClient:function() {
