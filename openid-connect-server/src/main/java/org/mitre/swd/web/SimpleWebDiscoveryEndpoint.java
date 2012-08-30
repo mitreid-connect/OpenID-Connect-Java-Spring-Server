@@ -111,7 +111,7 @@ public class SimpleWebDiscoveryEndpoint {
 		//m.put("end_session_endpoint", baseUrl + "/end_session");
 		m.put("jwk_url", baseUrl + "jwk");
 		m.put("x509_url", baseUrl + "x509");
-		//m.put("registration_endpoint", baseUrl + "/register_client");
+		m.put("registration_endpoint", baseUrl + "register");
 		m.put("scopes_supported", Lists.newArrayList("openid", "email", "profile", "address", "phone"));
 		m.put("response_types_supported", Lists.newArrayList("code"));
 		m.put("token_endpoint_auth_types_supported", Lists.newArrayList("client_secret_post", "client_secret_basic"));
