@@ -1,4 +1,121 @@
 
+    var URIModel = Backbone.Model.extend({
+
+        validate: function(){
+
+            var expression = /^(?:([a-z0-9+.-]+:\/\/)((?:(?:[a-z0-9-._~!$&'()*+,;=:]|%[0-9A-F]{2})*)@)?((?:[a-z0-9-._~!$&'()*+,;=]|%[0-9A-F]{2})*)(:(?:\d*))?(\/(?:[a-z0-9-._~!$&'()*+,;=:@\/]|%[0-9A-F]{2})*)?|([a-z0-9+.-]+:)(\/?(?:[a-z0-9-._~!$&'()*+,;=:@]|%[0-9A-F]{2})+(?:[a-z0-9-._~!$&'()*+,;=:@\/]|%[0-9A-F]{2})*)?)(\?(?:[a-z0-9-._~!$&'()*+,;=:\/?@]|%[0-9A-F]{2})*)?(#(?:[a-z0-9-._~!$&'()*+,;=:\/?@]|%[0-9A-F]{2})*)?$/i;
+            var regex = new RegExp(expression);
+
+            if (!this.get("item").match(regex)) {
+                return "Invalid URI";
+            }
+        }
+
+    });
+
+
+    /*
+    * Backbone JS Reusable ListWidget
+    *  Options
+    * {
+    *   collection: Backbone JS Collection
+    *   type: ('uri'|'default')
+    *   autocomplete: ['item1','item2'] List of auto complete items
+    * }
+    *
+     */
+    var ListWidgetView = Backbone.View.extend({
+
+        tagName: "table",
+
+        childView: Backbone.View.extend({
+
+            tagName: 'tr',
+
+            events:{
+                "click .icon-minus-sign":function () {
+                    this.$el.tooltip('destroy');
+                    this.model.destroy();
+                }
+            },
+
+            initialize:function () {
+
+                if (!this.template) {
+                    this.template = _.template($('#tmpl-list-widget-child').html());
+                }
+
+                this.model.bind('destroy', this.remove, this);
+
+            },
+
+            render:function () {
+                this.$el.html(this.template(this.model.toJSON()));
+
+                if (this.model.get('item').length > 27)
+                    this.$el.tooltip({title:this.model.get('item')});
+
+                return this;
+            }
+        }),
+
+        events:{
+            "click button": "addItem"
+        },
+
+        initialize:function () {
+
+            if (!this.template) {
+                this.template = _.template($('#tmpl-list-widget').html());
+            }
+
+            this.$el.addClass("table-condensed");
+            this.collection.bind('add', this.render, this);
+
+        },
+
+        addItem:function() {
+            var input_value = $("input", this.el).val().trim();
+
+            var model;
+
+            if (this.options.type == 'uri') {
+                model = new URIModel({item:input_value});
+            } else {
+                model = new Backbone.Model({item:input_value});
+                model.validate = function() { if(!this.get("item")) return "value can't be null" };
+            }
+
+            // if it's valid and doesn't already exist
+            if (model.isValid() && this.collection.where({item: input_value}).length < 1) {
+                this.collection.add(model);
+            } else {
+                // else add a visual error indicator
+                $(".control-group", this.el).addClass('error')
+            }
+        },
+
+        render:function (eventName) {
+
+            this.$el.html(this.template({placeholder:this.options.placeholder}));
+
+            // bind autocomplete options
+            if (this.options.autocomplete) {
+                $('input', this.$el).typeahead({source:this.options.autocomplete});
+            }
+
+            _self = this;
+
+            _.each(this.collection.models, function (model) {
+                var el = new this.childView({model:model}).render().el;
+                $("tbody", _self.el).append(el);
+            }, this);
+
+            return this;
+        }
+
+    });
+
 
     var ClientModel = Backbone.Model.extend({
 
@@ -36,26 +153,9 @@
             refreshTokenValiditySeconds: {
                 required: true,
                 type:"number"
-            },
-            registeredRedirectUri: {
-                custom: 'validateURI'
             }
         },
 
-        validateURI: function(attributeName, attributeValue) {
-
-            var expression = /^(?:([a-z0-9+.-]+:\/\/)((?:(?:[a-z0-9-._~!$&'()*+,;=:]|%[0-9A-F]{2})*)@)?((?:[a-z0-9-._~!$&'()*+,;=]|%[0-9A-F]{2})*)(:(?:\d*))?(\/(?:[a-z0-9-._~!$&'()*+,;=:@\/]|%[0-9A-F]{2})*)?|([a-z0-9+.-]+:)(\/?(?:[a-z0-9-._~!$&'()*+,;=:@]|%[0-9A-F]{2})+(?:[a-z0-9-._~!$&'()*+,;=:@\/]|%[0-9A-F]{2})*)?)(\?(?:[a-z0-9-._~!$&'()*+,;=:\/?@]|%[0-9A-F]{2})*)?(#(?:[a-z0-9-._~!$&'()*+,;=:\/?@]|%[0-9A-F]{2})*)?$/i;
-            var regex = new RegExp(expression);
-
-
-            for (var i in attributeValue) {
-                if (!attributeValue[i].match(regex)) {
-                    return "Invalid URI";
-                }
-            }
-
-
-        },
 
         // We can pass it default values.
         defaults:{
@@ -90,6 +190,8 @@
         model:ClientModel,
         url:"api/clients"
     });
+
+
 
     var BreadCrumbView = Backbone.View.extend({
 
@@ -222,6 +324,9 @@
             if (!this.template) {
                 this.template = _.template($('#tmpl-client-form').html());
             }
+
+            this.registeredRedirectUriCollection = new Backbone.Collection();
+            this.scopeCollection = new Backbone.Collection();
         },
 
         events:{
@@ -291,12 +396,6 @@
 
             $('.control-group').removeClass('error');
 
-            // do some trimming to the redirect URI to allow null value
-            var registeredRedirectUri = $.trim($('#registeredRedirectUri textarea').val()).replace(/ /g,'').split("\n");
-            if (registeredRedirectUri.length == 1 && registeredRedirectUri[0] == "") {
-                registeredRedirectUri = [];
-            }
-
             // build the grant type object
             var authorizedGrantTypes = [];
             $.each(["authorization_code","client_credentials","password","implicit"],function(index,type) {
@@ -319,14 +418,14 @@
                 clientId:$('#clientId input').val(),
                 clientSecret: clientSecret,
                 generateClientSecret:generateClientSecret,
-                registeredRedirectUri:registeredRedirectUri,
+                registeredRedirectUri: this.registeredRedirectUriCollection.pluck("item"),
                 clientDescription:$('#clientDescription textarea').val(),
                 allowRefresh:$('#allowRefresh').is(':checked'),
                 authorizedGrantTypes: authorizedGrantTypes,
                 accessTokenValiditySeconds: $('#accessTokenValiditySeconds input').val(),
                 refreshTokenValiditySeconds: $('#refreshTokenValiditySeconds input').val(),
                 idTokenValiditySeconds: $('#idTokenValiditySeconds input').val(),
-                scope:$.map($('#scope textarea').val().replace(/,$/,'').replace(/\s/g,' ').split(","), $.trim)
+                scope: this.scopeCollection.pluck("item")
             });
 
             if (valid) {
@@ -349,7 +448,27 @@
         render:function (eventName) {
 
             $(this.el).html(this.template(this.model.toJSON()));
-            
+
+            var _self = this;
+
+            // build and bind registered redirect URI collection and view
+            _.each(this.model.get("registeredRedirectUri"), function (registeredRedirectUri) {
+                _self.registeredRedirectUriCollection.add(new URIModel({item:registeredRedirectUri}));
+            });
+
+            $("#registeredRedirectUri .controls",this.el).html(new ListWidgetView({type:'uri', placeholder: 'http://',
+                                                                                    collection: this.registeredRedirectUriCollection}).render().el);
+
+            _self = this;
+            // build and bind scopes
+            _.each(this.model.get("scope"), function (scope) {
+                _self.scopeCollection.add(new Backbone.Model({item:scope}));
+            });
+
+            $("#scope .controls",this.el).html(new ListWidgetView({placeholder: 'new scope here'
+                , autocomplete: _.uniq(_.flatten(app.clientList.pluck("scope")))
+                , collection: this.scopeCollection}).render().el);
+
             return this;
         },
         
@@ -358,28 +477,7 @@
         }
     });
 
-    var URLListView = Backbone.View.extend({
 
-        tagName: 'span',
-
-        initialize:function () {
-        },
-
-        events:{
-            "click .btn-primary":"save"
-        },
-
-        save:function () {
-
-        },
-
-        render:function (eventName) {
-
-            // append and render
-            $(this.el).html($('#tmpl-url-list').html());
-            return this;
-        }
-    });
 
 
     // Router
@@ -395,11 +493,8 @@
         initialize:function () {
 
             this.clientList = new ClientCollection();
+
             this.clientListView = new ClientListView({model:this.clientList});
-
-            this.whiteListView = new URLListView();
-            this.blackListView = new URLListView();
-
 
             this.breadCrumbView = new BreadCrumbView({
                 collection:new Backbone.Collection()
@@ -431,6 +526,7 @@
 
             $('#content').html(this.clientListView.render().el);
             this.clientListView.delegateEvents();
+
         },
 
         newClient:function() {

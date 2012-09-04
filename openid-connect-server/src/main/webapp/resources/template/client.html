@@ -70,9 +70,6 @@
             <div class="control-group" id="registeredRedirectUri">
                 <label class="control-label">Redirect URI(s)</label>
                 <div class="controls">
-                    <textarea class="input-xlarge" placeholder="http://"
-                              rows="3"><% for (var i in registeredRedirectUri) { %><%=registeredRedirectUri[i]+"\n"%><% } %></textarea>
-                    <p class="help-block">You may enter multiple URIs separated by a new lines</p>
                 </div>
             </div>
 
@@ -97,9 +94,6 @@
             <div class="control-group" id="scope">
                 <label class="control-label">Scope</label>
                 <div class="controls">
-                    <textarea rows="3" class="xlarge" placeholder="openid"
-                              id="textarea2" name="textarea2"><% for (var i in scope) { %><%=scope[i]+","%><% }%></textarea>
-                    <p class="help-block">Please enter scopes separated by commas</p>
                 </div>
             </div>
 
@@ -221,4 +215,19 @@
     <% } else { %>
     <li class="active"><%=text%></li>
     <% } %>
+</script>
+
+<script type="text/html" id="tmpl-list-widget-child">
+    <td><%=(item.length > 27) ? item.substr(0,27) + '...' : item %></td>
+    <td><i class="icon-minus-sign icon-gray"></i></td>
+</script>
+
+<script type="text/html" id="tmpl-list-widget">
+    <tbody>
+    <tr>
+        <td class="control-group">
+            <input type="text" value="" placeholder="<%=(placeholder) ? placeholder : ''%>"></td>
+        <td><button class="btn btn-small" type="button">Add</button></td>
+    </tr>
+    </tbody>
 </script>
