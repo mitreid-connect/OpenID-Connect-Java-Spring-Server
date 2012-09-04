@@ -168,6 +168,7 @@
             scope:["openid"],
             authorities:[],
             clientDescription:"",
+            logoUrl:"",
             clientId:"",
             allowRefresh:false,
             accessTokenValiditySeconds: 0,
@@ -334,7 +335,18 @@
             "click .btn-cancel": function() { window.history.back(); return false; },
             "change #requireClientSecret":"toggleRequireClientSecret",
             "change #displayClientSecret":"toggleDisplayClientSecret",
-            "change #generateClientSecret":"toggleGenerateClientSecret"
+            "change #generateClientSecret":"toggleGenerateClientSecret",
+            "change #logoUrl input":"previewLogo"
+        },
+        
+        previewLogo:function(event) {
+        	if ($('#logoUrl input').val()) {
+        		//$('#logoBlock').show();
+        		$('#logoPreview').empty();
+        		$('#logoPreview').append('<img src="' + $('#logoUrl input').val() + '"/>');
+        	} else {
+        		//$('#logoBlock').hide();
+        	}
         },
 
         /**
@@ -420,6 +432,7 @@
                 generateClientSecret:generateClientSecret,
                 registeredRedirectUri: this.registeredRedirectUriCollection.pluck("item"),
                 clientDescription:$('#clientDescription textarea').val(),
+                logoUrl:$('#logoUrl input').val(),
                 allowRefresh:$('#allowRefresh').is(':checked'),
                 authorizedGrantTypes: authorizedGrantTypes,
                 accessTokenValiditySeconds: $('#accessTokenValiditySeconds input').val(),
@@ -448,6 +461,19 @@
         render:function (eventName) {
 
             $(this.el).html(this.template(this.model.toJSON()));
+
+            
+            return this;
+        },
+        
+        postRender:function() {
+            this.toggleRequireClientSecret();
+            this.previewLogo();
+        }
+    });
+
+    var URLListView = Backbone.View.extend({
+
 
             var _self = this;
 

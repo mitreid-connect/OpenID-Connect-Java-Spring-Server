@@ -26,8 +26,21 @@
 
         <form name="confirmationForm" style="display:inline" action="<%=request.getContextPath()%>/oauth/authorize"
               method="post">
+
             <div class="row">
-                <div class="span4 offset2 well-small" style="text-align:left">Do you authorize
+                <div class="span4 offset2 well-small" style="text-align:left">
+                <c:choose>
+            		<c:when test="${empty client.logoUrl }">
+            		</c:when>
+            		<c:otherwise>
+            			<ul class="thumbnails">
+            				<li class="span4">
+            					<div class="thumbnail"><img src="${client.logoUrl }"/></div>
+            				</li>
+            			</ul>
+            		</c:otherwise>
+            	</c:choose>
+                Do you authorize
                     "<c:choose>
                         <c:when test="${empty client.applicationName}">
                             <c:out value="${client.clientId}"/>
