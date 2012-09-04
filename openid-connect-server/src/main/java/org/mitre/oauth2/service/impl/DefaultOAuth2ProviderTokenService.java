@@ -50,7 +50,6 @@ import org.springframework.transaction.annotation.Transactional;
  * 
  */
 @Service
-@Transactional
 public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityService {
 	
 	private static Logger logger = LoggerFactory.getLogger(DefaultOAuth2ProviderTokenService.class);
@@ -114,6 +113,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 
 			    //Add the authentication
 			    refreshToken.setAuthenticationHolder(authHolder);
+			    refreshToken.setClient(client);
 			    
 			    // save the token first so that we can set it to a member of the access token (NOTE: is this step necessary?)
 			    tokenRepository.saveRefreshToken(refreshToken);
@@ -214,7 +214,8 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		}
 		
 		if (accessToken.isExpired()) {
-			tokenRepository.removeAccessToken(accessToken);
+			//tokenRepository.removeAccessToken(accessToken);
+			revokeAccessToken(accessToken);
 			throw new InvalidTokenException("Expired access token: " + accessTokenValue);
 		}
 		

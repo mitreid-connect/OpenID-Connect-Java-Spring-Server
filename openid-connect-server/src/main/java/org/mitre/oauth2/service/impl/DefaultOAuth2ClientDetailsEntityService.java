@@ -40,7 +40,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.common.base.Strings;
 
 @Service
-@Transactional
 public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEntityService {
 
 	private SecureRandom random = new SecureRandom();

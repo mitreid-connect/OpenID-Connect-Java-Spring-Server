@@ -31,7 +31,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
-@Transactional
 public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 
 	@PersistenceContext
