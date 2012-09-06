@@ -31,7 +31,7 @@ public class RsaEncrypter extends AbstractJweEncrypter {
 		String alg = jwe.getHeader().getAlgorithm();
 		String integrityAlg = jwe.getHeader().getIntegrity();
 		
-		if(alg.equals("RSA1_5") || alg.equals("RSA-OAEP") || alg.equals("ECDH-ES") || alg.equals("A128KW") || alg.equals("A256KW")) {
+		if(alg.equals("RSA1_5") || alg.equals("RSA-OAEP")) {
 			
 			//generate random content master key
 

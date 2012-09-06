@@ -30,7 +30,7 @@ public class RsaDecrypter extends AbstractJweDecrypter {
 		Jwe jwe = Jwe.parse(encryptedJwe);
 		
 		String alg = jwe.getHeader().getAlgorithm();
-		if(alg.equals("RSA1_5") || alg.equals("RSA-OAEP") || alg.equals("ECDH-ES") || alg.equals("A128KW") || alg.equals("A256KW")) {
+		if(alg.equals("RSA1_5") || alg.equals("RSA-OAEP")) {
 			
 			//decrypt to get cmk to be used for cek and cik
 			jwe.setEncryptedKey(decryptEncryptionKey(jwe));
