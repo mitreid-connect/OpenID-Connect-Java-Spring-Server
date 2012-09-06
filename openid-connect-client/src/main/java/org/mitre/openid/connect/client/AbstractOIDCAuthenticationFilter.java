@@ -425,7 +425,7 @@ public class AbstractOIDCAuthenticationFilter extends
 
 			// pull the user_id out as a claim on the id_token
 			
-			String userId = idToken.getTokenClaims().getUserId();
+			String userId = idToken.getClaims().getUserId();
 			
 			// construct an OpenIdConnectAuthenticationToken and return a Authentication object w/the userId and the idToken
 			

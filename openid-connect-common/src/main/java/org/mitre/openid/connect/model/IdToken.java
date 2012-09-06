@@ -80,15 +80,19 @@ public class IdToken extends Jwt {
 	 * @return the tokenClaims
 	 */
 	@Transient
-	public IdTokenClaims getTokenClaims() {
+	public IdTokenClaims getClaims() {
 		return (IdTokenClaims) super.getClaims();
 	}
 
 	/**
 	 * @param tokenClaims the tokenClaims to set
 	 */
-	public void setTokenClaims(IdTokenClaims tokenClaims) {
-		super.setClaims(tokenClaims);
+	public void setClaims(JwtClaims tokenClaims) {
+		if (tokenClaims instanceof IdTokenClaims) {
+			super.setClaims(tokenClaims);
+		} else {
+			super.setClaims(new IdTokenClaims(tokenClaims));
+		}
 	}
 	
 	

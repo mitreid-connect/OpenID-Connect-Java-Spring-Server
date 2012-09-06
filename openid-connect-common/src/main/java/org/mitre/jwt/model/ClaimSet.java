@@ -55,6 +55,10 @@ public class ClaimSet {
 		loadFromBase64JsonObjectString(b64);
 	}
 	
+	public ClaimSet(ClaimSet claimSet) {
+		loadFromClaimSet(claimSet);
+	}
+	
 	/**
      * Get an extension claim
      */
@@ -185,6 +189,9 @@ public class ClaimSet {
 
 	/**
 	 * Load new claims from the given json object. Will replace any existing claims, but does not clear claim set.  
+	 * 
+	 * This function is intended to be overridden by subclasses for more exact data type and claim handling.
+	 * 
 	 * @param json
 	 */
 	public void loadFromJsonObject(JsonObject json) {
@@ -215,6 +222,14 @@ public class ClaimSet {
 
 		// save the string we were passed in (decoded from base64)
 		jsonString = new String(b64decoded);
+	}
+
+	public void loadFromClaimSet(ClaimSet claimSet) {
+		
+		loadFromJsonObject(getAsJsonObject()); // we push to a JSON object and back to let subclasses override this
+
+		jsonString = claimSet.toJsonString(); // preserve the string on input
+		
 	}
 	
 	public String toJsonString() {

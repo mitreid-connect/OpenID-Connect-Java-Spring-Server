@@ -47,6 +47,10 @@ public class JwtHeader extends ClaimSet {
 		super(b64);
     }
 
+	public JwtHeader(JwtHeader jwtHeader) {
+		super(jwtHeader);
+	}
+	
 	/**
 	 * Load all claims from the given json object into this object
      */

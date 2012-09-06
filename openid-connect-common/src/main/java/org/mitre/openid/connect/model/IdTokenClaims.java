@@ -57,6 +57,10 @@ public class IdTokenClaims extends JwtClaims {
 	public IdTokenClaims(String b64) {
 	    super(b64);
     }
+	
+	public IdTokenClaims(JwtClaims jwtClaims) {
+		super(jwtClaims);
+	}
 
 	/**
      * @return the id

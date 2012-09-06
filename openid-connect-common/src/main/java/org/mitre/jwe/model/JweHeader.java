@@ -33,6 +33,10 @@ public class JweHeader extends JwtHeader{
 		super(b64);
     }
 	
+	public JweHeader(JwtHeader jwtHeader) {
+		super(jwtHeader);
+	}
+	
 	/**
 	 * Load all claims from the given json object into this object
      */

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.commons.codec.binary.Base64;
 import org.mitre.jwt.model.Jwt;
+import org.mitre.jwt.model.JwtHeader;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
@@ -20,22 +21,18 @@ import com.google.gson.JsonObject;
  */
 public class Jwe extends Jwt {
 
-	private JweHeader header;
-	
 	private byte[] encryptedKey;
 	
 	private byte[] ciphertext;
 	
 	public Jwe() {
 		super();
-		this.header = new JweHeader();
 		this.encryptedKey = null;
 		this.ciphertext = null;
 	}
 	
 	public Jwe(JweHeader header, byte[] encryptedKey, byte[] ciphertext, String integrityValue) {
-		super(null, null, integrityValue);
-		this.header = header;
+		super(header, null, integrityValue);
 		this.encryptedKey = encryptedKey;
 		this.ciphertext = ciphertext;
 	}
@@ -52,11 +49,18 @@ public class Jwe extends Jwt {
 	*/
 	
 	public JweHeader getHeader() {
-		return header;
+		return (JweHeader) super.getHeader();
 	}
 
-	public void setHeader(JweHeader header) {
-		this.header = header;
+	/**
+	 * Set the header, wrapping it in a JweHeader if necessary
+	 */
+	public void setHeader(JwtHeader header) {
+		if (header instanceof JweHeader) {		
+			super.setHeader(header);
+		} else {
+			super.setHeader(new JweHeader(header));
+		}
 	}
 
 	public byte[] getEncryptedKey() {
@@ -77,12 +81,9 @@ public class Jwe extends Jwt {
 
 	@Override
 	public String getSignatureBase() {
-		byte[] c = ciphertext;
-		byte[] e = encryptedKey;
-
-		String h64 = new String(Base64.encodeBase64URLSafe(header.toJsonString().getBytes()));
-		String e64 = new String(Base64.encodeBase64URLSafe(e));
-		String c64 = new String(Base64.encodeBase64URLSafe(c));
+		String h64 = new String(Base64.encodeBase64URLSafe(getHeader().toJsonString().getBytes()));
+		String e64 = new String(Base64.encodeBase64URLSafe(getEncryptedKey()));
+		String c64 = new String(Base64.encodeBase64URLSafe(getCiphertext()));
 		
 		return h64 + "." + e64 + "." + c64;	
 	}

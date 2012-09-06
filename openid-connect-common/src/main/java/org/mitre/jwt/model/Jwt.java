@@ -53,9 +53,9 @@ public class Jwt {
 	 */
 	public Jwt(JwtHeader header, JwtClaims claims, String signature) {
 	    super();
-	    this.header = header;
-	    this.claims = claims;
-	    this.signature = signature;
+	    setHeader(header);
+	    setClaims(claims);
+	    setSignature(signature);
     }
 
 

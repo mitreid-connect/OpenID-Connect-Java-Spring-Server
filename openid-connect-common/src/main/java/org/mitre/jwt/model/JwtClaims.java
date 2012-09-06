@@ -51,6 +51,10 @@ public class JwtClaims extends ClaimSet {
 		super(b64);
 	}
 
+	public JwtClaims(JwtClaims jwtClaims) {
+		super(jwtClaims);
+	}
+	
 	@Override
 	public void loadFromJsonObject(JsonObject json) {
 		JsonObject pass = new JsonObject();
