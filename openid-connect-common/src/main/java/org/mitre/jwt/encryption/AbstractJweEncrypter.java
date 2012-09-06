@@ -3,6 +3,9 @@ package org.mitre.jwt.encryption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import com.google.common.primitives.Bytes;
+import com.google.common.primitives.Ints;
+
 public abstract class AbstractJweEncrypter implements JweEncrypter {
 	
 	public MessageDigest md;
@@ -25,13 +28,13 @@ public abstract class AbstractJweEncrypter implements JweEncrypter {
             throw new IllegalArgumentException("Key derivation failed");
         }
         int counter = 1;
-        byte[] counterInBytes = intToFourBytes(counter);
+        byte[] counterInBytes = Ints.toByteArray(counter);
         if ((counterInBytes.length + cmk.length + type.length) * 8 > MAX_HASH_INPUTLEN) {
             throw new IllegalArgumentException("Key derivation failed");
         }
         for (int i = 0; i <= reps; i++) {
             md.reset();
-            md.update(intToFourBytes(i + 1));
+            md.update(Ints.toByteArray(i + 1));
             md.update(cmk);
             md.update(type);
             byte[] hash = md.digest();
@@ -45,14 +48,4 @@ public abstract class AbstractJweEncrypter implements JweEncrypter {
     
 	}
 	
-	// this is a utility function, shouldn't be in the public interface for this class
-    protected byte[] intToFourBytes(int i) {
-        byte[] res = new byte[4];
-        res[0] = (byte) (i >>> 24);
-        res[1] = (byte) ((i >>> 16) & 0xFF);
-        res[2] = (byte) ((i >>> 8) & 0xFF);
-        res[3] = (byte) (i & 0xFF);
-        return res;
-    }
-
 }

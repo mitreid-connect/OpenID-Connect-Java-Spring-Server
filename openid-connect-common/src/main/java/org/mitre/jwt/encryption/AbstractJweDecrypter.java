@@ -3,6 +3,8 @@ package org.mitre.jwt.encryption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import com.google.common.primitives.Ints;
+
 public abstract class AbstractJweDecrypter implements JweDecrypter {
 	
 	long MAX_HASH_INPUTLEN = Long.MAX_VALUE;
@@ -25,13 +27,13 @@ public abstract class AbstractJweDecrypter implements JweDecrypter {
             throw new IllegalArgumentException("Key derivation failed");
         }
         int counter = 1;
-        byte[] counterInBytes = intToFourBytes(counter);
+        byte[] counterInBytes = Ints.toByteArray(counter);
         if ((counterInBytes.length + cmk.length + type.length) * 8 > MAX_HASH_INPUTLEN) {
             throw new IllegalArgumentException("Key derivation failed");
         }
         for (int i = 0; i <= reps; i++) {
             md.reset();
-            md.update(intToFourBytes(i + 1));
+            md.update(Ints.toByteArray(i + 1));
             md.update(cmk);
             md.update(type);
             byte[] hash = md.digest();
@@ -45,12 +47,4 @@ public abstract class AbstractJweDecrypter implements JweDecrypter {
     
 	}
 	
-    public byte[] intToFourBytes(int i) {
-        byte[] res = new byte[4];
-        res[0] = (byte) (i >>> 24);
-        res[1] = (byte) ((i >>> 16) & 0xFF);
-        res[2] = (byte) ((i >>> 8) & 0xFF);
-        res[3] = (byte) (i & 0xFF);
-        return res;
-    }
 }
