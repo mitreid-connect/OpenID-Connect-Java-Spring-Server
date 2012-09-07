@@ -50,5 +50,19 @@ public class JsonWebKeyEndpoint {
 		
 		return new ModelAndView("x509certs", "signers", signers);
 	}
+
+	/**
+     * @return the jwtService
+     */
+    public JwtSigningAndValidationService getJwtService() {
+    	return jwtService;
+    }
+
+	/**
+     * @param jwtService the jwtService to set
+     */
+    public void setJwtService(JwtSigningAndValidationService jwtService) {
+    	this.jwtService = jwtService;
+    }
 	
 }

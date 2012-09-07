@@ -18,15 +18,35 @@ import org.mitre.jwt.model.Jwt;
 import org.mitre.jwt.model.JwtClaims;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.openid.connect.config.OIDCServerConfiguration;
+import org.mitre.openid.connect.view.JwkKeyListView;
+import org.mitre.openid.connect.view.X509CertificateView;
+import org.mitre.openid.connect.web.JsonWebKeyEndpoint;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.util.Assert;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+import org.springframework.web.servlet.view.BeanNameViewResolver;
 
-public class OIDCSignedRequestFilter extends AbstractOIDCAuthenticationFilter {
+import com.google.common.base.Strings;
+
+public class OIDCSignedRequestFilter extends AbstractOIDCAuthenticationFilter implements BeanDefinitionRegistryPostProcessor {
 	
-	protected OIDCServerConfiguration oidcServerConfig;
+	private OIDCServerConfiguration oidcServerConfig;
 	
 	private JwtSigningAndValidationService signingAndValidationService;
+
+	private String jwkPublishUrl;
+
+	private BeanDefinitionRegistry registry;
 
 	protected OIDCSignedRequestFilter() {
 		super();
@@ -51,6 +71,7 @@ public class OIDCSignedRequestFilter extends AbstractOIDCAuthenticationFilter {
 
 		Assert.notNull(oidcServerConfig.getClientSecret(),
 				"A Client Secret must be supplied");
+		
 	}
 	
 	@Override
@@ -151,75 +172,141 @@ public class OIDCSignedRequestFilter extends AbstractOIDCAuthenticationFilter {
 	}
 
 	/**
-	 * @param authorizationEndpointURI
-	 * @see org.mitre.openid.connect.config.OIDCServerConfiguration#setAuthorizationEndpointUrl(java.lang.String)
-	 */
-	public void setAuthorizationEndpointURI(String authorizationEndpointURI) {
-		oidcServerConfig.setAuthorizationEndpointUrl(authorizationEndpointURI);
-	}
+     * @param authorizationEndpointURI
+     * @see org.mitre.openid.connect.config.OIDCServerConfiguration#setAuthorizationEndpointUrl(java.lang.String)
+     */
+    public void setAuthorizationEndpointUrl(String authorizationEndpointURI) {
+	    oidcServerConfig.setAuthorizationEndpointUrl(authorizationEndpointURI);
+    }
 
 	/**
-	 * @param clientId
-	 * @see org.mitre.openid.connect.config.OIDCServerConfiguration#setClientId(java.lang.String)
-	 */
-	public void setClientId(String clientId) {
-		oidcServerConfig.setClientId(clientId);
-	}
+     * @param clientId
+     * @see org.mitre.openid.connect.config.OIDCServerConfiguration#setClientId(java.lang.String)
+     */
+    public void setClientId(String clientId) {
+	    oidcServerConfig.setClientId(clientId);
+    }
 
 	/**
-	 * @param issuer
-	 * @see org.mitre.openid.connect.config.OIDCServerConfiguration#setIssuer(java.lang.String)
-	 */
-	public void setIssuer(String issuer) {
-		oidcServerConfig.setIssuer(issuer);
-	}
+     * @param issuer
+     * @see org.mitre.openid.connect.config.OIDCServerConfiguration#setIssuer(java.lang.String)
+     */
+    public void setIssuer(String issuer) {
+	    oidcServerConfig.setIssuer(issuer);
+    }
 
 	/**
-	 * @param clientSecret
-	 * @see org.mitre.openid.connect.config.OIDCServerConfiguration#setClientSecret(java.lang.String)
-	 */
-	public void setClientSecret(String clientSecret) {
-		oidcServerConfig.setClientSecret(clientSecret);
-	}
+     * @param clientSecret
+     * @see org.mitre.openid.connect.config.OIDCServerConfiguration#setClientSecret(java.lang.String)
+     */
+    public void setClientSecret(String clientSecret) {
+	    oidcServerConfig.setClientSecret(clientSecret);
+    }
 
 	/**
-	 * @param tokenEndpointURI
-	 * @see org.mitre.openid.connect.config.OIDCServerConfiguration#setTokenEndpointUrl(java.lang.String)
-	 */
-	public void setTokenEndpointURI(String tokenEndpointURI) {
-		oidcServerConfig.setTokenEndpointUrl(tokenEndpointURI);
-	}
+     * @param tokenEndpointURI
+     * @see org.mitre.openid.connect.config.OIDCServerConfiguration#setTokenEndpointUrl(java.lang.String)
+     */
+    public void setTokenEndpointUrl(String tokenEndpointURI) {
+	    oidcServerConfig.setTokenEndpointUrl(tokenEndpointURI);
+    }
 
 	/**
-	 * @param x509EncryptUrl
-	 * @see org.mitre.openid.connect.config.OIDCServerConfiguration#setX509EncryptUrl(java.lang.String)
-	 */
-	public void setX509EncryptUrl(String x509EncryptUrl) {
-		oidcServerConfig.setX509EncryptUrl(x509EncryptUrl);
-	}
+     * @param x509EncryptUrl
+     * @see org.mitre.openid.connect.config.OIDCServerConfiguration#setX509EncryptUrl(java.lang.String)
+     */
+    public void setX509EncryptUrl(String x509EncryptUrl) {
+	    oidcServerConfig.setX509EncryptUrl(x509EncryptUrl);
+    }
 
 	/**
-	 * @param x509SigningUrl
-	 * @see org.mitre.openid.connect.config.OIDCServerConfiguration#setX509SigningUrl(java.lang.String)
-	 */
-	public void setX509SigningUrl(String x509SigningUrl) {
-		oidcServerConfig.setX509SigningUrl(x509SigningUrl);
-	}
+     * @param x509SigningUrl
+     * @see org.mitre.openid.connect.config.OIDCServerConfiguration#setX509SigningUrl(java.lang.String)
+     */
+    public void setX509SigningUrl(String x509SigningUrl) {
+	    oidcServerConfig.setX509SigningUrl(x509SigningUrl);
+    }
 
 	/**
-	 * @param jwkEncryptUrl
-	 * @see org.mitre.openid.connect.config.OIDCServerConfiguration#setJwkEncryptUrl(java.lang.String)
-	 */
-	public void setJwkEncryptUrl(String jwkEncryptUrl) {
-		oidcServerConfig.setJwkEncryptUrl(jwkEncryptUrl);
-	}
+     * @param jwkEncryptUrl
+     * @see org.mitre.openid.connect.config.OIDCServerConfiguration#setJwkEncryptUrl(java.lang.String)
+     */
+    public void setJwkEncryptUrl(String jwkEncryptUrl) {
+	    oidcServerConfig.setJwkEncryptUrl(jwkEncryptUrl);
+    }
 
 	/**
-	 * @param jwkSigningUrl
-	 * @see org.mitre.openid.connect.config.OIDCServerConfiguration#setJwkSigningUrl(java.lang.String)
-	 */
-	public void setJwkSigningUrl(String jwkSigningUrl) {
-		oidcServerConfig.setJwkSigningUrl(jwkSigningUrl);
-	}
+     * @param jwkSigningUrl
+     * @see org.mitre.openid.connect.config.OIDCServerConfiguration#setJwkSigningUrl(java.lang.String)
+     */
+    public void setJwkSigningUrl(String jwkSigningUrl) {
+	    oidcServerConfig.setJwkSigningUrl(jwkSigningUrl);
+    }
+
+	/**
+     * @param userInfoUrl
+     * @see org.mitre.openid.connect.config.OIDCServerConfiguration#setUserInfoUrl(java.lang.String)
+     */
+    public void setUserInfoUrl(String userInfoUrl) {
+	    oidcServerConfig.setUserInfoUrl(userInfoUrl);
+    }
+
+	/**
+     * @return the jwkPublishUrl
+     */
+    public String getJwkPublishUrl() {
+    	return jwkPublishUrl;
+    }
+
+	/**
+     * @param jwkPublishUrl the jwkPublishUrl to set
+     */
+    public void setJwkPublishUrl(String jwkPublishUrl) {
+    	this.jwkPublishUrl = jwkPublishUrl;
+    }
+
+	/* (non-Javadoc)
+     * @see org.springframework.beans.factory.config.BeanFactoryPostProcessor#postProcessBeanFactory(org.springframework.beans.factory.config.ConfigurableListableBeanFactory)
+     */
+    @Override
+    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+		if (!Strings.isNullOrEmpty(jwkPublishUrl)) {
+
+			
+			BeanDefinitionBuilder jwkBuilder = BeanDefinitionBuilder.rootBeanDefinition(JsonWebKeyEndpoint.class);
+			jwkBuilder.addPropertyValue("jwtService", signingAndValidationService);
+			
+			registry.registerBeanDefinition("jwkEndpointController", jwkBuilder.getBeanDefinition());
+			
+			
+			BeanDefinitionBuilder jwkViewBuilder = BeanDefinitionBuilder.rootBeanDefinition(JwkKeyListView.class);
+			registry.registerBeanDefinition("jwkKeyList", jwkViewBuilder.getBeanDefinition());
+			
+			BeanDefinitionBuilder x509ViewBuilder = BeanDefinitionBuilder.rootBeanDefinition(X509CertificateView.class);
+			registry.registerBeanDefinition("x509certs", x509ViewBuilder.getBeanDefinition());
+			
+			Map<String, BeanNameViewResolver> resolvers = beanFactory.getBeansOfType(BeanNameViewResolver.class);
+			
+			if (resolvers.isEmpty()) {
+				logger.info("Creating view resolver");
+				BeanDefinitionBuilder viewResolverBuilder = BeanDefinitionBuilder.rootBeanDefinition(BeanNameViewResolver.class);
+				viewResolverBuilder.addPropertyValue("order", 1);
+				registry.registerBeanDefinition("beanNameViewResolver", viewResolverBuilder.getBeanDefinition());
+			}
+			
+			//beanFactory.createBean(JsonWebKeyEndpoint.class);
+			
+		}
+	    
+    }
+
+	/* (non-Javadoc)
+     * @see org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor#postProcessBeanDefinitionRegistry(org.springframework.beans.factory.support.BeanDefinitionRegistry)
+     */
+    @Override
+    public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
+		this.registry = registry;
+    }
+
 
 }
