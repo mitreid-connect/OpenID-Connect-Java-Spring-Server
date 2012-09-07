@@ -463,18 +463,6 @@
             $(this.el).html(this.template(this.model.toJSON()));
 
             
-            return this;
-        },
-        
-        postRender:function() {
-            this.toggleRequireClientSecret();
-            this.previewLogo();
-        }
-    });
-
-    var URLListView = Backbone.View.extend({
-
-
             var _self = this;
 
             // build and bind registered redirect URI collection and view
@@ -500,6 +488,7 @@
         
         postRender:function() {
             this.toggleRequireClientSecret();
+            this.previewLogo();
         }
     });
 
