@@ -18,10 +18,13 @@ package org.mitre.openid.connect.client;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.interfaces.RSAPublicKey;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
@@ -35,8 +38,12 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.utils.URIUtils;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.mitre.jwt.model.JwtClaims;
 import org.mitre.jwt.signer.JwsAlgorithm;
 import org.mitre.jwt.signer.JwtSigner;
@@ -46,6 +53,7 @@ import org.mitre.jwt.signer.service.impl.JwtSigningAndValidationServiceDefault;
 import org.mitre.key.fetch.KeyFetcher;
 import org.mitre.openid.connect.config.OIDCServerConfiguration;
 import org.mitre.openid.connect.model.IdToken;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
@@ -60,6 +68,7 @@ import org.springframework.web.client.RestTemplate;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.sun.xml.ws.mex.client.schema.GetMetadata;
 
 /**
  * Abstract OpenID Connect Authentication Filter class
@@ -149,8 +158,25 @@ public class AbstractOIDCAuthenticationFilter extends
 	public static String buildURL(String baseURI, Map<String, String> queryStringFields) {
 // TODO: replace this with URIUtils call
 		StringBuilder URLBuilder = new StringBuilder(baseURI);
-
+		List<NameValuePair> queryparams = new ArrayList<NameValuePair>();
 		char appendChar = '?';
+		
+		// build a NameValuePair list for the query paramaters
+		for (Map.Entry<String, String> param : queryStringFields.entrySet()){
+			queryparams.add(new BasicNameValuePair(param.getKey(),param.getValue()));
+		}
+		URLBuilder.append(appendChar).append(URLEncodedUtils.format(queryparams, "UTF-8"));
+		
+	/*	try {
+			URI uri = new URI(baseURI);
+			URI returnURI = URIUtils.createURI(uri.getScheme(), uri.getHost(), uri.getPort(), uri.getPath(), URLEncodedUtils.format(queryparams, "UTF-8"), null);
+			return returnURI.toString();
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+
 
 		for (Map.Entry<String, String> param : queryStringFields.entrySet()) {
 
@@ -168,7 +194,7 @@ public class AbstractOIDCAuthenticationFilter extends
 			}
 
 			appendChar = '&';
-		}
+		} */
 
 		return URLBuilder.toString();
 	}
