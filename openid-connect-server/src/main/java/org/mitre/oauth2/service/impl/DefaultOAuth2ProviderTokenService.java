@@ -42,7 +42,8 @@ import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.collect.Sets;
 
 
 /**
@@ -83,8 +84,11 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		    // attach the client
 	    	token.setClient(client);
 	    	
-		    // inherit the scope from the auth
-		    token.setScope(clientAuth.getScope());
+		    // inherit the scope from the auth, but make a new set so it is 
+	    	//not unmodifiable. Unmodifiables don't play nicely with Eclipselink, which 
+	    	//wants to use the clone operation.
+	    	Set<String> scopes = Sets.newHashSet(clientAuth.getScope());
+		    token.setScope(scopes);
 
 		    // make it expire if necessary
 		    // TODO: pending upstream updates, check for 0 or -1 value here

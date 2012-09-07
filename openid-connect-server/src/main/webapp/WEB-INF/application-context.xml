@@ -47,12 +47,12 @@
 
 	<oauth:resource-server id="resourceServerFilter" token-services-ref="defaultOAuth2ProviderTokenService" />
 
-	<security:http pattern="/oauth/token" 
+	<security:http pattern="/token" 
 		create-session="stateless"
 		authentication-manager-ref="clientAuthenticationManager"
 		entry-point-ref="oauthAuthenticationEntryPoint">
 		
-		<security:intercept-url pattern="/oauth/token" access="IS_AUTHENTICATED_FULLY" />
+		<security:intercept-url pattern="/token" access="IS_AUTHENTICATED_FULLY" />
 		<security:anonymous enabled="false" />
 		<security:http-basic entry-point-ref="oauthAuthenticationEntryPoint" />
 		<!-- include this only if you need to authenticate clients via request parameters -->
@@ -101,6 +101,7 @@
 
 	<bean id="clientCredentialsTokenEndpointFilter" class="org.springframework.security.oauth2.provider.client.ClientCredentialsTokenEndpointFilter">
 		<property name="authenticationManager" ref="clientAuthenticationManager" />
+		<property name="filterProcessesUrl" value="/token"/>
 	</bean>
 
 	<authentication-manager id="clientAuthenticationManager" xmlns="http://www.springframework.org/schema/security">
