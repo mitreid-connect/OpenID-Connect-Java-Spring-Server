@@ -106,10 +106,12 @@ public class AbstractOIDCAuthenticationFilter extends
 	public static String buildRedirectURI(HttpServletRequest request, String[] ignoreFields) {
 
 		List<String> ignore = (ignoreFields != null) ? Arrays.asList(ignoreFields) : null;
- 
+		
 		boolean isFirst = true;
 
 		StringBuffer sb = request.getRequestURL();
+		List<NameValuePair> queryparams = new ArrayList<NameValuePair>();
+
 
 		for (Enumeration<?> e = request.getParameterNames(); e.hasMoreElements();) {
 
@@ -124,21 +126,23 @@ public class AbstractOIDCAuthenticationFilter extends
 				if (value == null) {
 					continue;
 				}
+				
+				queryparams.add(new BasicNameValuePair(name,value));
 
-				if (isFirst) {
-					sb.append("?");
-					isFirst = false;
-				}
+				//if (isFirst) {
+				//	sb.append("?");
+				//	isFirst = false;
+				//}
 
-				sb.append(name).append("=").append(value);
+				//sb.append(name).append("=").append(value);
 
-				if (e.hasMoreElements()) {
-					sb.append("&");
-				}
+				//if (e.hasMoreElements()) {
+				//	sb.append("&");
+				//}
 			}
+			
 		}
-
-		return sb.toString();
+		return sb.append("?").append(URLEncodedUtils.format(queryparams, "UTF-8")).toString();
 	}
 
 	/**
@@ -156,7 +160,6 @@ public class AbstractOIDCAuthenticationFilter extends
 	 *         parameters.
 	 */
 	public static String buildURL(String baseURI, Map<String, String> queryStringFields) {
-// TODO: replace this with URIUtils call
 		StringBuilder URLBuilder = new StringBuilder(baseURI);
 		List<NameValuePair> queryparams = new ArrayList<NameValuePair>();
 		char appendChar = '?';
@@ -166,35 +169,6 @@ public class AbstractOIDCAuthenticationFilter extends
 			queryparams.add(new BasicNameValuePair(param.getKey(),param.getValue()));
 		}
 		URLBuilder.append(appendChar).append(URLEncodedUtils.format(queryparams, "UTF-8"));
-		
-	/*	try {
-			URI uri = new URI(baseURI);
-			URI returnURI = URIUtils.createURI(uri.getScheme(), uri.getHost(), uri.getPort(), uri.getPath(), URLEncodedUtils.format(queryparams, "UTF-8"), null);
-			return returnURI.toString();
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-
-
-		for (Map.Entry<String, String> param : queryStringFields.entrySet()) {
-
-			try {
-
-				URLBuilder.append(appendChar)
-					.append(param.getKey())
-					.append('=')
-					.append(URLEncoder.encode(param.getValue(), "UTF-8"));
-
-			} catch (UnsupportedEncodingException uee) {
-
-				throw new IllegalStateException(uee);
-
-			}
-
-			appendChar = '&';
-		} */
 
 		return URLBuilder.toString();
 	}
