@@ -18,9 +18,11 @@ import org.springframework.web.servlet.ViewResolver;
  */
 public class JwkViewResolver implements ViewResolver, Ordered {
 
-	private View x509;
-	
+	private String jwkViewName = "jwkKeyList";
 	private View jwk;
+	
+	private String x509ViewName = "x509certs";
+	private View x509;
 	
 	private int order = HIGHEST_PRECEDENCE; // highest precedence, most specific -- avoids hitting the catch-all view resolvers
 	
@@ -31,10 +33,10 @@ public class JwkViewResolver implements ViewResolver, Ordered {
 	@Override
 	public View resolveViewName(String viewName, Locale locale) throws Exception {
 		if (viewName != null) {
-			if (viewName.equals("jwkKeyList")) {
-				return jwk;
-			} else if (viewName.equals("x509certs")) {
-				return x509;
+			if (viewName.equals(getJwkViewName())) {
+				return getJwk();
+			} else if (viewName.equals(getX509ViewName())) {
+				return getX509();
 			} else {
 				return null;
 			}
@@ -84,6 +86,34 @@ public class JwkViewResolver implements ViewResolver, Ordered {
      */
     public void setOrder(int order) {
 	    this.order = order;
+    }
+
+	/**
+     * @return the jwkViewName
+     */
+    public String getJwkViewName() {
+	    return jwkViewName;
+    }
+
+	/**
+     * @param jwkViewName the jwkViewName to set
+     */
+    public void setJwkViewName(String jwkViewName) {
+	    this.jwkViewName = jwkViewName;
+    }
+
+	/**
+     * @return the x509ViewName
+     */
+    public String getX509ViewName() {
+	    return x509ViewName;
+    }
+
+	/**
+     * @param x509ViewName the x509ViewName to set
+     */
+    public void setX509ViewName(String x509ViewName) {
+	    this.x509ViewName = x509ViewName;
     }
 
 }

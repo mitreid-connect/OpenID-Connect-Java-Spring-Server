@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -41,6 +42,10 @@ public class OIDCSignedRequestFilter extends AbstractOIDCAuthenticationFilter im
 	private String x509PublishUrl;
 
 	private BeanDefinitionRegistry registry;
+
+	private String jwkViewName = "jwkKeyList";
+
+	private String x509ViewName;
 
 
 	protected OIDCSignedRequestFilter() {
@@ -285,7 +290,7 @@ public class OIDCSignedRequestFilter extends AbstractOIDCAuthenticationFilter im
 
 		// TODO: check if keys are empty, return a 404 here or just an empty list?
 		
-		return new ModelAndView("jwkKeyList", "signers", signers);
+		return new ModelAndView(jwkViewName, "signers", signers);
 	}
 
 	/**
@@ -298,7 +303,7 @@ public class OIDCSignedRequestFilter extends AbstractOIDCAuthenticationFilter im
 		
 		// TODO: check if keys are empty, return a 404 here or just an empty list?
 		
-		return new ModelAndView("x509certs", "signers", signers);
+		return new ModelAndView(x509ViewName, "signers", signers);
 	}
 	
 	/**
@@ -306,48 +311,41 @@ public class OIDCSignedRequestFilter extends AbstractOIDCAuthenticationFilter im
      */
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-		if (!Strings.isNullOrEmpty(jwkPublishUrl) || !Strings.isNullOrEmpty(getX509PublishUrl())) {
+		if (!Strings.isNullOrEmpty(getJwkPublishUrl()) || !Strings.isNullOrEmpty(getX509PublishUrl())) {
 
-			// standard endpoint
-			/*
-			BeanDefinitionBuilder jwkBuilder = BeanDefinitionBuilder.rootBeanDefinition(JsonWebKeyEndpoint.class);
-			jwkBuilder.addPropertyValue("jwtService", signingAndValidationService);			
-			registry.registerBeanDefinition("jwkEndpointController", jwkBuilder.getBeanDefinition());
-			*/
-			
 			// add a mapping to this class
 			BeanDefinitionBuilder clientKeyMapping = BeanDefinitionBuilder.rootBeanDefinition(ClientKeyPublisherMapping.class);
-			if (!Strings.isNullOrEmpty(jwkPublishUrl)) {
-				clientKeyMapping.addPropertyValue("jwkPublishUrl", jwkPublishUrl);
-			}
-			if (!Strings.isNullOrEmpty(getX509PublishUrl())) {
-				clientKeyMapping.addPropertyValue("x509PublishUrl", getX509PublishUrl());
-			}
-			registry.registerBeanDefinition("clientKeyMapping", clientKeyMapping.getBeanDefinition());
-			
-			// add views for JWK and x509 formats
-			BeanDefinitionBuilder jwkView = BeanDefinitionBuilder.rootBeanDefinition(JwkKeyListView.class);
-			registry.registerBeanDefinition("jwkKeyList", jwkView.getBeanDefinition());
-			
-			BeanDefinitionBuilder x509View = BeanDefinitionBuilder.rootBeanDefinition(X509CertificateView.class);
-			registry.registerBeanDefinition("x509certs", x509View.getBeanDefinition());
-			
 			// custom view resolver
 			BeanDefinitionBuilder viewResolver = BeanDefinitionBuilder.rootBeanDefinition(JwkViewResolver.class);
-			viewResolver.addPropertyReference("jwk", "jwkKeyList");
-			viewResolver.addPropertyReference("x509", "x509certs");
-			registry.registerBeanDefinition("jwkViewResolver", viewResolver.getBeanDefinition());
 			
-			// Bean name view resolver
-			/*
-			Map<String, BeanNameViewResolver> resolvers = beanFactory.getBeansOfType(BeanNameViewResolver.class);			
-			if (resolvers.isEmpty()) {
-				logger.info("Creating view resolver");
-				BeanDefinitionBuilder viewResolverBuilder = BeanDefinitionBuilder.rootBeanDefinition(BeanNameViewResolver.class);
-				viewResolverBuilder.addPropertyValue("order", 1);
-				registry.registerBeanDefinition("beanNameViewResolver", viewResolverBuilder.getBeanDefinition());
+			if (!Strings.isNullOrEmpty(getJwkPublishUrl())) {
+				clientKeyMapping.addPropertyValue("jwkPublishUrl", getJwkPublishUrl());
+
+				// randomize view name to make sure it doesn't conflict with local views
+				jwkViewName = "jwkKeyList-" + UUID.randomUUID().toString();
+				viewResolver.addPropertyValue("jwkViewName", jwkViewName);
+
+				// view bean
+				BeanDefinitionBuilder jwkView = BeanDefinitionBuilder.rootBeanDefinition(JwkKeyListView.class);
+				registry.registerBeanDefinition("jwkKeyList", jwkView.getBeanDefinition());
+				viewResolver.addPropertyReference("jwk", "jwkKeyList");
 			}
-			*/
+			
+			if (!Strings.isNullOrEmpty(getX509PublishUrl())) {
+				clientKeyMapping.addPropertyValue("x509PublishUrl", getX509PublishUrl());
+				
+				// randomize view name to make sure it doesn't conflict with local views
+				x509ViewName = "x509certs-" + UUID.randomUUID().toString();
+				viewResolver.addPropertyValue("x509ViewName", x509ViewName);
+
+				// view bean
+				BeanDefinitionBuilder x509View = BeanDefinitionBuilder.rootBeanDefinition(X509CertificateView.class);
+				registry.registerBeanDefinition("x509certs", x509View.getBeanDefinition());
+				viewResolver.addPropertyReference("x509", "x509certs");
+			}
+			
+			registry.registerBeanDefinition("clientKeyMapping", clientKeyMapping.getBeanDefinition());
+			registry.registerBeanDefinition("jwkViewResolver", viewResolver.getBeanDefinition());
 			
 		}
 	    
