@@ -3,39 +3,64 @@
  */
 package org.mitre.openid.connect.client;
 
-import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.Method;
 
-import org.mitre.openid.connect.web.JsonWebKeyEndpoint;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.handler.AbstractUrlHandlerMapping;
+import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
+import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
+import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMapping;
 
 /**
  * @author jricher
  *
  */
 @Component
-public class ClientKeyPublisherMapping extends AbstractUrlHandlerMapping implements InitializingBean {
+public class ClientKeyPublisherMapping extends RequestMappingInfoHandlerMapping {
 
-	private JsonWebKeyEndpoint controller;
-	
 	private String url;
 	
-	public void setKeyUrl(String url, JsonWebKeyEndpoint controller) {
-		this.url = url;
-		this.controller = controller;
-	}
-
 	/* (non-Javadoc)
-     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+     * @see org.springframework.web.servlet.handler.AbstractHandlerMethodMapping#isHandler(java.lang.Class)
      */
     @Override
-    public void afterPropertiesSet() throws Exception {
-
-    	if (url != null && controller != null) {
-    		super.registerHandler(url, controller);
-    	}
-	    
+    protected boolean isHandler(Class<?> beanType) {
+	    return beanType.equals(OIDCSignedRequestFilter.class);
     }
+
+	/**
+	 * Map the "jwkKeyPublish" method to our given URL
+     */
+    @Override
+    protected RequestMappingInfo getMappingForMethod(Method method, Class<?> handlerType) {
+    	
+    	if (method.getName().equals("publishClientJwk")) {
+    		return new RequestMappingInfo(
+    				new PatternsRequestCondition(new String[] {url}, getUrlPathHelper(), getPathMatcher(), false, false),
+    				null,
+    				null,
+    				null,
+    				null,
+    				null, 
+    				null);
+    	} else {
+    		return null;
+    	}
+    	
+    }
+
+	/**
+     * @return the url
+     */
+    public String getUrl() {
+    	return url;
+    }
+
+	/**
+     * @param url the url to set
+     */
+    public void setUrl(String url) {
+    	this.url = url;
+    }
+
 	
 }

@@ -1,14 +1,11 @@
 package org.mitre.openid.connect.client;
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -16,15 +13,12 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.lang.StringUtils;
 import org.mitre.jwt.model.Jwt;
 import org.mitre.jwt.model.JwtClaims;
+import org.mitre.jwt.signer.JwtSigner;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.openid.connect.config.OIDCServerConfiguration;
 import org.mitre.openid.connect.view.JwkKeyListView;
 import org.mitre.openid.connect.view.X509CertificateView;
-import org.mitre.openid.connect.web.JsonWebKeyEndpoint;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -32,9 +26,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProce
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.util.Assert;
-import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
-import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
-import org.springframework.web.servlet.view.BeanNameViewResolver;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.google.common.base.Strings;
 
@@ -265,36 +257,62 @@ public class OIDCSignedRequestFilter extends AbstractOIDCAuthenticationFilter im
     	this.jwkPublishUrl = jwkPublishUrl;
     }
 
-	/* (non-Javadoc)
-     * @see org.springframework.beans.factory.config.BeanFactoryPostProcessor#postProcessBeanFactory(org.springframework.beans.factory.config.ConfigurableListableBeanFactory)
+    /**
+     * Return a view to publish all keys in JWK format
+     * @return
+     */
+	public ModelAndView publishClientJwk() {
+		
+		// map from key id to signer
+		Map<String, JwtSigner> signers = signingAndValidationService.getAllSigners();
+
+		// TODO: check if keys are empty, return a 404 here or just an empty list?
+		
+		return new ModelAndView("jwkKeyList", "signers", signers);
+	}
+    
+	/**
+	 * If the jwkPublishUrl field is set on this bean, set up a listener on that URL to publish keys.
      */
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 		if (!Strings.isNullOrEmpty(jwkPublishUrl)) {
 
-			
+			// standard endpoint
+			/*
 			BeanDefinitionBuilder jwkBuilder = BeanDefinitionBuilder.rootBeanDefinition(JsonWebKeyEndpoint.class);
-			jwkBuilder.addPropertyValue("jwtService", signingAndValidationService);
-			
+			jwkBuilder.addPropertyValue("jwtService", signingAndValidationService);			
 			registry.registerBeanDefinition("jwkEndpointController", jwkBuilder.getBeanDefinition());
+			*/
 			
+			// add a mapping to this class
+			BeanDefinitionBuilder clientKeyMapping = BeanDefinitionBuilder.rootBeanDefinition(ClientKeyPublisherMapping.class);
+			clientKeyMapping.addPropertyValue("url", jwkPublishUrl);
+			registry.registerBeanDefinition("clientKeyMapping", clientKeyMapping.getBeanDefinition());
 			
-			BeanDefinitionBuilder jwkViewBuilder = BeanDefinitionBuilder.rootBeanDefinition(JwkKeyListView.class);
-			registry.registerBeanDefinition("jwkKeyList", jwkViewBuilder.getBeanDefinition());
+			// add views for JWK and x509 formats
+			BeanDefinitionBuilder jwkView = BeanDefinitionBuilder.rootBeanDefinition(JwkKeyListView.class);
+			registry.registerBeanDefinition("jwkKeyList", jwkView.getBeanDefinition());
 			
-			BeanDefinitionBuilder x509ViewBuilder = BeanDefinitionBuilder.rootBeanDefinition(X509CertificateView.class);
-			registry.registerBeanDefinition("x509certs", x509ViewBuilder.getBeanDefinition());
+			BeanDefinitionBuilder x509View = BeanDefinitionBuilder.rootBeanDefinition(X509CertificateView.class);
+			registry.registerBeanDefinition("x509certs", x509View.getBeanDefinition());
 			
-			Map<String, BeanNameViewResolver> resolvers = beanFactory.getBeansOfType(BeanNameViewResolver.class);
+			// custom view resolver
+			BeanDefinitionBuilder viewResolver = BeanDefinitionBuilder.rootBeanDefinition(JwkViewResolver.class);
+			viewResolver.addPropertyReference("jwk", "jwkKeyList");
+			viewResolver.addPropertyReference("x509", "x509certs");
+			registry.registerBeanDefinition("jwkViewResolver", viewResolver.getBeanDefinition());
 			
+			// Bean name view resolver
+			/*
+			Map<String, BeanNameViewResolver> resolvers = beanFactory.getBeansOfType(BeanNameViewResolver.class);			
 			if (resolvers.isEmpty()) {
 				logger.info("Creating view resolver");
 				BeanDefinitionBuilder viewResolverBuilder = BeanDefinitionBuilder.rootBeanDefinition(BeanNameViewResolver.class);
 				viewResolverBuilder.addPropertyValue("order", 1);
 				registry.registerBeanDefinition("beanNameViewResolver", viewResolverBuilder.getBeanDefinition());
 			}
-			
-			//beanFactory.createBean(JsonWebKeyEndpoint.class);
+			*/
 			
 		}
 	    
