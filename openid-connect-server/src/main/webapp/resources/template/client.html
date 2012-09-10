@@ -99,15 +99,6 @@
 				</div>
 			</div>
 
-            <div class="control-group">
-                <label class="control-label">Refresh Tokens</label>
-                <div class="controls">
-                    <label class="checkbox">
-                        <input type="checkbox" id="allowRefresh" <%=(allowRefresh == true ? 'checked' : '')%>> Allow refresh tokens?
-                    </label>
-                </div>
-            </div>
-
             <div class="control-group" id="scope">
                 <label class="control-label">Scope</label>
                 <div class="controls">
@@ -190,6 +181,15 @@
                             class="add-on">seconds</span>
                     </div>
                     <p class="help-block">Enter this time in seconds</p>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">Refresh Tokens</label>
+                <div class="controls">
+                    <label class="checkbox">
+                        <input type="checkbox" id="allowRefresh" <%=(allowRefresh == true ? 'checked' : '')%>> Allow refresh tokens?
+                    </label>
                 </div>
             </div>
 

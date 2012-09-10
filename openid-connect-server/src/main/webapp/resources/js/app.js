@@ -160,7 +160,7 @@
         // We can pass it default values.
         defaults:{
             id:null,
-            idTokenValiditySeconds: 0,
+            idTokenValiditySeconds: 600,
             applicationName:"",
             clientSecret:"",
             registeredRedirectUri:[],
@@ -171,8 +171,8 @@
             logoUrl:"",
             clientId:"",
             allowRefresh:false,
-            accessTokenValiditySeconds: 0,
-            refreshTokenValiditySeconds: 0,
+            accessTokenValiditySeconds: 3600,
+            refreshTokenValiditySeconds: 604800,
             displayClientSecret: false,
             generateClientSecret: false,
             requireClientSecret: true
@@ -332,11 +332,16 @@
 
         events:{
             "click .btn-primary":"saveClient",
+            "click #allowRefresh" : "toggleRefreshTokenTimeout",
             "click .btn-cancel": function() { window.history.back(); return false; },
             "change #requireClientSecret":"toggleRequireClientSecret",
             "change #displayClientSecret":"toggleDisplayClientSecret",
             "change #generateClientSecret":"toggleGenerateClientSecret",
             "change #logoUrl input":"previewLogo"
+        },
+
+        toggleRefreshTokenTimeout:function () {
+            $("#refreshTokenValiditySeconds", this.$el).toggle();
         },
         
         previewLogo:function(event) {
@@ -482,6 +487,10 @@
             $("#scope .controls",this.el).html(new ListWidgetView({placeholder: 'new scope here'
                 , autocomplete: _.uniq(_.flatten(app.clientList.pluck("scope")))
                 , collection: this.scopeCollection}).render().el);
+
+            if (!this.model.get("allowRefresh")) {
+                $("#refreshTokenValiditySeconds", this.$el).hide();
+            }
 
             return this;
         },
