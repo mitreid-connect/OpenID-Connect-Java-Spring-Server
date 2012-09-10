@@ -65,9 +65,9 @@ public class KeyFetcher {
 			X509Certificate cert = (X509Certificate) factory.generateCertificate(x509Stream);
 			key = cert.getPublicKey();
 		} catch (HttpClientErrorException e) {
-			logger.error("HttpClientErrorException in KeyFetcher.java: " + e.getStackTrace());
+			logger.error("HttpClientErrorException in KeyFetcher.java: ", e);
 		} catch (CertificateException e) {
-			logger.error("CertificateException in KeyFetcher.java: " + e.getStackTrace());
+			logger.error("CertificateException in KeyFetcher.java: ", e);
         }
 
 		return key;
@@ -97,11 +97,11 @@ public class KeyFetcher {
 			}
 
 		} catch (HttpClientErrorException e) {
-			logger.error("HttpClientErrorException in KeyFetcher.java: " + e.getStackTrace());
+			logger.error("HttpClientErrorException in KeyFetcher.java: ", e);
 		} catch (NoSuchAlgorithmException e) {
-			logger.error("NoSuchAlgorithmException in KeyFetcher.java: " + e.getStackTrace());
+			logger.error("NoSuchAlgorithmException in KeyFetcher.java: ", e);
         } catch (InvalidKeySpecException e) {
-        	logger.error("InvalidKeySpecException in KeyFetcher.java: " + e.getStackTrace());
+        	logger.error("InvalidKeySpecException in KeyFetcher.java: ", e);
         }
 		return pub;
 	}

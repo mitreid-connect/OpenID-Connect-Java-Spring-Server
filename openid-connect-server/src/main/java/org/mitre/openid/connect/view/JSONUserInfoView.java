@@ -79,7 +79,7 @@ public class JSONUserInfoView extends AbstractView {
 			
 		} catch (IOException e) {
 			
-			logger.error("IOException in JSONUserInfoView.java: " + e.getStackTrace());
+			logger.error("IOException in JSONUserInfoView.java: ", e);
 			
 		}
 

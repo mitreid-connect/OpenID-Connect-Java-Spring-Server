@@ -184,9 +184,9 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 
 			sig = (new String(Base64.encodeBase64URLSafe(sigBytes))).replace("=", "");
 		} catch (GeneralSecurityException e) {
-			logger.error("GeneralSecurityException in RsaSigner.java: " + e.getStackTrace());
+			logger.error("GeneralSecurityException in RsaSigner.java: ", e);
 		} catch (UnsupportedEncodingException e) {
-			logger.error("UnsupportedEncodingException in RsaSigner.java: " + e.getStackTrace());
+			logger.error("UnsupportedEncodingException in RsaSigner.java: ", e);
 		}
 
 		return sig;
@@ -281,9 +281,9 @@ public class RsaSigner extends AbstractJwtSigner implements InitializingBean {
 			signer.update(signingInput.getBytes("UTF-8"));
 			value = signer.verify(Base64.decodeBase64(s64));
 		} catch (GeneralSecurityException e) {
-			logger.error("GeneralSecurityException in RsaSigner.java: " + e.getStackTrace());
+			logger.error("GeneralSecurityException in RsaSigner.java: ", e);
 		} catch (UnsupportedEncodingException e) {
-			logger.error("UnsupportedEncodingException in RsaSigner.java: " + e.getStackTrace());
+			logger.error("UnsupportedEncodingException in RsaSigner.java: ", e);
 		}
 
 		return value;

@@ -86,7 +86,7 @@ public class SwdResponse extends AbstractView {
 			
 		} catch (IOException e) {
 			
-			logger.error("IOException in SwdResponse.java: " + e.getStackTrace());
+			logger.error("IOException in SwdResponse.java: ", e);
 			
 		}
 		

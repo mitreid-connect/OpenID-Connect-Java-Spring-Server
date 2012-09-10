@@ -118,7 +118,7 @@ public class TokenIntrospection extends AbstractView {
 		
 		} catch (IOException e) {
 		
-			logger.error("IOException occurred in TokenIntrospection.java: " + e.getStackTrace());
+			logger.error("IOException occurred in TokenIntrospection.java: ", e);
 		
 		}
 

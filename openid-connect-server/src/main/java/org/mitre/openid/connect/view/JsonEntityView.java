@@ -61,7 +61,7 @@ public class JsonEntityView extends AbstractView {
 	        
 		} catch (IOException e) {
 			
-			logger.error("IOException in JsonEntityView.java: " + e.getStackTrace());
+			logger.error("IOException in JsonEntityView.java: ", e);
 			
 		}
     }

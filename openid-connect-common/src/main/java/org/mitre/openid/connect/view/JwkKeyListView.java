@@ -122,7 +122,7 @@ public class JwkKeyListView extends AbstractView {
 			
 		} catch (IOException e) {
 			
-			logger.error("IOException in JwkKeyListView.java: " + e.getStackTrace());
+			logger.error("IOException in JwkKeyListView.java: ", e);
 			
 		}
 

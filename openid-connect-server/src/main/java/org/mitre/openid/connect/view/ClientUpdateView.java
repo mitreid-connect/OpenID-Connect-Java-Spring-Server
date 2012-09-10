@@ -47,7 +47,7 @@ public class ClientUpdateView extends AbstractView {
 		    
 		} catch (IOException e) {
 			
-			logger.error("IOException " + e.getStackTrace());
+			logger.error("IOException ", e);
 			
 		}
 

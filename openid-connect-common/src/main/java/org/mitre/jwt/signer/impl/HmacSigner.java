@@ -142,9 +142,9 @@ public class HmacSigner extends AbstractJwtSigner implements InitializingBean {
 
 			mac.update(signatureBase.getBytes("UTF-8"));
 		} catch (GeneralSecurityException e) {
-			logger.error("GeneralSecurityException in HmacSigner.java: " + e.getStackTrace());
+			logger.error("GeneralSecurityException in HmacSigner.java: ", e);
 		} catch (UnsupportedEncodingException e) {
-			logger.error("UnsupportedEncodingException in HmacSigner.java: " + e.getStackTrace());
+			logger.error("UnsupportedEncodingException in HmacSigner.java: ", e);
 		}
 
 		byte[] sigBytes = mac.doFinal();

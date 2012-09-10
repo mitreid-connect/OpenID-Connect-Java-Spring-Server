@@ -66,7 +66,7 @@ public class JSONClientView extends AbstractView {
 	        
 		} catch (IOException e) {
 			
-			logger.error("IOException in JSONClientView.java: " + e.getStackTrace());
+			logger.error("IOException in JSONClientView.java: ", e);
 			
 		}
     }

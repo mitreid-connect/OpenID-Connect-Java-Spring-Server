@@ -76,7 +76,7 @@ public class JsonOpenIdConfigurationView extends AbstractView {
 		
 		} catch (IOException e) {
 		
-			logger.error("IOException in JsonOpenIdConfigurationView.java: " + e.getStackTrace());
+			logger.error("IOException in JsonOpenIdConfigurationView.java: ", e);
 			
 		}
 

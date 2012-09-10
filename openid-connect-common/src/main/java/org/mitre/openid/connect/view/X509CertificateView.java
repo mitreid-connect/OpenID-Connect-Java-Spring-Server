@@ -94,15 +94,15 @@ public class X509CertificateView extends AbstractView {
                 	X509Certificate cert = v3CertGen.generate(rsaSigner.getPrivateKey());
 	                pemWriter.writeObject(cert);
                 } catch (CertificateEncodingException e) {
-	                logger.error("CertificateEncodingException in X509CertificateView.java: " + e.getStackTrace());
+	                logger.error("CertificateEncodingException in X509CertificateView.java: ", e);
                 } catch (InvalidKeyException e) {
-		            logger.error("InvalidKeyException in X509CertificateView.java: " + e.getStackTrace());
+		            logger.error("InvalidKeyException in X509CertificateView.java: ", e);
                 } catch (IllegalStateException e) {
-	                logger.error("IllegalStateException in X509CertificateView.java" + e.getStackTrace());
+	                logger.error("IllegalStateException in X509CertificateView.java", e);
                 } catch (NoSuchAlgorithmException e) {
-                	logger.error("NoSuchAlgorithmException in X509CertificateView.java" + e.getStackTrace());
+                	logger.error("NoSuchAlgorithmException in X509CertificateView.java", e);
                 } catch (SignatureException e) {
-                	logger.error("SignatureException in X509CertificateView.java" + e.getStackTrace());
+                	logger.error("SignatureException in X509CertificateView.java", e);
                 } finally {
                 	pemWriter.flush();
                 	writer.flush();

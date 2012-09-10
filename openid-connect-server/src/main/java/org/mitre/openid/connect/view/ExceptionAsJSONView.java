@@ -68,7 +68,7 @@ public class ExceptionAsJSONView extends AbstractView {
 			
 		} catch (IOException e) {
 			
-			logger.error("IOException in ExceptionAsJSONView.java: " + e.getStackTrace());
+			logger.error("IOException in ExceptionAsJSONView.java: ", e);
 			
 		}
 	}

@@ -80,7 +80,7 @@ public class POCOUserInfoView extends AbstractView {
 			
 		} catch (IOException e) {
 			
-			logger.error("IOException in POCOUserInfoView.java: " + e.getStackTrace());
+			logger.error("IOException in POCOUserInfoView.java: ", e);
 			
 		}
 		
