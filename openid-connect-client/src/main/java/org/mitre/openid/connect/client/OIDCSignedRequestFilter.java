@@ -38,7 +38,10 @@ public class OIDCSignedRequestFilter extends AbstractOIDCAuthenticationFilter im
 
 	private String jwkPublishUrl;
 
+	private String x509PublishUrl;
+
 	private BeanDefinitionRegistry registry;
+
 
 	protected OIDCSignedRequestFilter() {
 		super();
@@ -258,7 +261,21 @@ public class OIDCSignedRequestFilter extends AbstractOIDCAuthenticationFilter im
     }
 
     /**
-     * Return a view to publish all keys in JWK format
+     * @return the x509PublishUrl
+     */
+    public String getX509PublishUrl() {
+	    return x509PublishUrl;
+    }
+
+	/**
+     * @param x509PublishUrl the x509PublishUrl to set
+     */
+    public void setX509PublishUrl(String x509PublishUrl) {
+	    this.x509PublishUrl = x509PublishUrl;
+    }
+
+	/**
+     * Return a view to publish all keys in JWK format. Only used if jwkPublishUrl is set.
      * @return
      */
 	public ModelAndView publishClientJwk() {
@@ -270,13 +287,26 @@ public class OIDCSignedRequestFilter extends AbstractOIDCAuthenticationFilter im
 		
 		return new ModelAndView("jwkKeyList", "signers", signers);
 	}
-    
+
 	/**
-	 * If the jwkPublishUrl field is set on this bean, set up a listener on that URL to publish keys.
+	 * Return a view to publish all keys in x509 format. Only used if x509publishUrl is set.
+	 * @return
+	 */
+	public ModelAndView publishClientx509() {
+		// map from key id to signer
+		Map<String, JwtSigner> signers = signingAndValidationService.getAllSigners();
+		
+		// TODO: check if keys are empty, return a 404 here or just an empty list?
+		
+		return new ModelAndView("x509certs", "signers", signers);
+	}
+	
+	/**
+	 * If either the jwkPublishUrl or x509PublishUrl fields are set on this bean, set up a listener on that URL to publish keys.
      */
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-		if (!Strings.isNullOrEmpty(jwkPublishUrl)) {
+		if (!Strings.isNullOrEmpty(jwkPublishUrl) || !Strings.isNullOrEmpty(getX509PublishUrl())) {
 
 			// standard endpoint
 			/*
@@ -287,7 +317,12 @@ public class OIDCSignedRequestFilter extends AbstractOIDCAuthenticationFilter im
 			
 			// add a mapping to this class
 			BeanDefinitionBuilder clientKeyMapping = BeanDefinitionBuilder.rootBeanDefinition(ClientKeyPublisherMapping.class);
-			clientKeyMapping.addPropertyValue("url", jwkPublishUrl);
+			if (!Strings.isNullOrEmpty(jwkPublishUrl)) {
+				clientKeyMapping.addPropertyValue("jwkPublishUrl", jwkPublishUrl);
+			}
+			if (!Strings.isNullOrEmpty(getX509PublishUrl())) {
+				clientKeyMapping.addPropertyValue("x509PublishUrl", getX509PublishUrl());
+			}
 			registry.registerBeanDefinition("clientKeyMapping", clientKeyMapping.getBeanDefinition());
 			
 			// add views for JWK and x509 formats
