@@ -103,4 +103,18 @@ public class UserInfoEndpoint {
 
 	}
 
+	/**
+     * @return the schemaToViewNameMap (defaults to an immutable map)
+     */
+    public Map<String, String> getSchemaToViewNameMap() {
+    	return schemaToViewNameMap;
+    }
+
+	/**
+     * @param schemaToViewNameMap the schemaToViewNameMap to set
+     */
+    public void setSchemaToViewNameMap(Map<String, String> schemaToViewNameMap) {
+    	this.schemaToViewNameMap = schemaToViewNameMap;
+    }
+
 }
