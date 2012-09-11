@@ -145,14 +145,6 @@
                 pattern:/^[\w ]+$/,
                 minlength:3,*/
                 maxlength:200
-            },
-            accessTokenValiditySeconds: {
-                required: true,
-                type:"number"
-            },
-            refreshTokenValiditySeconds: {
-                required: true,
-                type:"number"
             }
         },
 
@@ -346,9 +338,8 @@
         
         previewLogo:function(event) {
         	if ($('#logoUrl input').val()) {
-        		//$('#logoBlock').show();
         		$('#logoPreview').empty();
-        		$('#logoPreview').append('<img src="' + $('#logoUrl input').val() + '"/>');
+        		$('#logoPreview').attr('src', $('#logoUrl input').val());
         	} else {
         		//$('#logoBlock').hide();
         	}
@@ -408,6 +399,11 @@
         		$('#clientSecretGenerated').hide();
         	}
         },
+
+        getFormTokenValue:function(value) {
+            if (value == "") return null;
+            else return value;
+        },
         
         saveClient:function (event) {
 
@@ -440,11 +436,15 @@
                 logoUrl:$('#logoUrl input').val(),
                 allowRefresh:$('#allowRefresh').is(':checked'),
                 authorizedGrantTypes: authorizedGrantTypes,
-                accessTokenValiditySeconds: $('#accessTokenValiditySeconds input').val(),
-                refreshTokenValiditySeconds: $('#refreshTokenValiditySeconds input').val(),
-                idTokenValiditySeconds: $('#idTokenValiditySeconds input').val(),
+                accessTokenValiditySeconds: this.getFormTokenValue($('#accessTokenValiditySeconds input').val()),
+                refreshTokenValiditySeconds: this.getFormTokenValue($('#refreshTokenValiditySeconds input').val()),
+                idTokenValiditySeconds: this.getFormTokenValue($('#idTokenValiditySeconds input').val()),
                 scope: this.scopeCollection.pluck("item")
             });
+
+            if (this.model.get("allowRefresh") == false) {
+                this.model.set("refreshTokenValiditySeconds",null);
+            }
 
             if (valid) {
 

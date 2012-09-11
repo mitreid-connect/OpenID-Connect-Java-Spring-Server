@@ -93,9 +93,7 @@
 			<div class="control-group" id="logoBlock">
 				<label class="control-label">Logo Preview</label>
 				<div class="controls">
-					<ul class="thumbnails">
-						<li class="span3"><div id="logoPreview" class="thumbnail"></div></li>
-					</ul>
+					<img src="http://placehold.it/275x200&text=Enter a logo URL" alt="logo" id="logoPreview" width="275px" class="thumbnail" />
 				</div>
 			</div>
 
@@ -177,10 +175,23 @@
                     Timeout</label>
                 <div class="controls">
                     <div class="input-append">
-                        <input type="text" class="" value="<%=accessTokenValiditySeconds%>" id="access-token-timeout-seconds" size="16"><span
+                        <input type="text" class="" value="<%=(accessTokenValiditySeconds == null ? '' : accessTokenValiditySeconds)%>" id="access-token-timeout-seconds" size="16"><span
                             class="add-on">seconds</span>
                     </div>
-                    <p class="help-block">Enter this time in seconds</p>
+                    <p class="help-block">Enter this time in seconds. Leave blank if the token does not timeout.</p>
+                </div>
+            </div>
+
+
+            <div class="control-group" id="idTokenValiditySeconds">
+                <label class="control-label">ID Token
+                    Timeout</label>
+                <div class="controls">
+                    <div class="input-append">
+                        <input type="text" class="" value="<%=(idTokenValiditySeconds == null ? '' : idTokenValiditySeconds)%>" id="id-token-timeout-seconds" size="16"><span
+                            class="add-on">seconds</span>
+                    </div>
+                    <p class="help-block">Enter this time in seconds. Leave blank if the token does not timeout.</p>
                 </div>
             </div>
 
@@ -198,22 +209,10 @@
                     Timeout</label>
                 <div class="controls">
                     <div class="input-append">
-                        <input type="text" class="" value="<%=refreshTokenValiditySeconds%>" id="refresh-token-timeout-seconds" size="16"><span
+                        <input type="text" class="" value="<%=(refreshTokenValiditySeconds == null ? '' : refreshTokenValiditySeconds)%>" id="refresh-token-timeout-seconds" size="16"><span
                             class="add-on">seconds</span>
                     </div>
-                    <p class="help-block">Enter this time in seconds</p>
-                </div>
-            </div>
-
-            <div class="control-group" id="idTokenValiditySeconds">
-                <label class="control-label">ID Token
-                    Timeout</label>
-                <div class="controls">
-                    <div class="input-append">
-                        <input type="text" class="" value="<%=idTokenValiditySeconds%>" id="id-token-timeout-seconds" size="16"><span
-                            class="add-on">seconds</span>
-                    </div>
-                    <p class="help-block">Enter this time in seconds</p>
+                    <p class="help-block">Enter this time in seconds. Leave blank if the token does not timeout.</p>
                 </div>
             </div>
 
