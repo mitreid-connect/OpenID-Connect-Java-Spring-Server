@@ -296,6 +296,13 @@
         	<groupId>org.bouncycastle</groupId>
         	<artifactId>bcpkix-jdk15on</artifactId>
         	<version>1.47</version>
+        	<exclusions>
+        		<exclusion>
+        			<!-- bcprov-ext already included -->
+        			<artifactId>bcprov-jdk15on</artifactId>
+        			<groupId>org.bouncycastle</groupId>
+        		</exclusion>
+        	</exclusions>
         </dependency>
     </dependencies>
     <repositories>
