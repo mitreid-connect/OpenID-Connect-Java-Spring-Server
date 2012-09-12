@@ -325,6 +325,9 @@
         events:{
             "click .btn-primary":"saveClient",
             "click #allowRefresh" : "toggleRefreshTokenTimeout",
+            "click #disableAccessTokenTimeout" : function(){ $("#access-token-timeout-seconds", this.$el).prop('disabled',!$("#access-token-timeout-seconds", this.$el).prop('disabled')); },
+            "click #disableIDTokenTimeout" : function(){ $("#id-token-timeout-seconds", this.$el).prop('disabled',!$("#id-token-timeout-seconds", this.$el).prop('disabled')); },
+            "click #disableRefreshTokenTimeout" : function(){ $("#refresh-token-timeout-seconds", this.$el).prop('disabled',!$("#refresh-token-timeout-seconds", this.$el).prop('disabled')); },
             "click .btn-cancel": function() { window.history.back(); return false; },
             "change #requireClientSecret":"toggleRequireClientSecret",
             "change #displayClientSecret":"toggleDisplayClientSecret",
@@ -367,7 +370,7 @@
          * @param event
          */
         toggleGenerateClientSecret:function(event) {
-        	
+
         	if ($('#generateClientSecret input').is(':checked')) {
         		// show the "generated" block, hide the "display" checkbox
         		$('#displayClientSecret').hide();
@@ -446,6 +449,18 @@
                 this.model.set("refreshTokenValiditySeconds",null);
             }
 
+            if ($('#disableIDTokenTimeout').is(':checked')) {
+                 this.model.set("idTokenValiditySeconds",null);
+            }
+
+            if ($('#disableAccessTokenTimeout').is(':checked')) {
+                this.model.set("accessTokenValiditySeconds",null);
+            }
+
+            if ($('#disableRefreshTokenTimeout').is(':checked')) {
+                this.model.set("refreshTokenValiditySeconds",null);
+            }
+
             if (valid) {
 
                 var _self = this;
@@ -491,6 +506,19 @@
             if (!this.model.get("allowRefresh")) {
                 $("#refreshTokenValiditySeconds", this.$el).hide();
             }
+
+            if (!this.model.get("accessTokenValiditySeconds")) {
+                $("#access-token-timeout-seconds", this.$el).prop('disabled',true);
+            }
+
+            if (!this.model.get("refreshTokenValiditySeconds")) {
+                $("#refresh-token-timeout-seconds", this.$el).prop('disabled',true);
+            }
+
+            if (!this.model.get("idTokenValiditySeconds")) {
+                $("#id-token-timeout-seconds", this.$el).prop('disabled',true);
+            }
+
 
             return this;
         },

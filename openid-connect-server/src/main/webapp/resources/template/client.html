@@ -177,8 +177,9 @@
                     <div class="input-append">
                         <input type="text" class="" value="<%=(accessTokenValiditySeconds == null ? '' : accessTokenValiditySeconds)%>" id="access-token-timeout-seconds" size="16"><span
                             class="add-on">seconds</span>
+                        <input type="checkbox" id="disableAccessTokenTimeout" <%=(accessTokenValiditySeconds == null ? 'checked' : '')%>/> disable?
                     </div>
-                    <p class="help-block">Enter this time in seconds. Leave blank if the token does not timeout.</p>
+                    <p class="help-block">Enter this time in seconds.</p>
                 </div>
             </div>
 
@@ -190,8 +191,9 @@
                     <div class="input-append">
                         <input type="text" class="" value="<%=(idTokenValiditySeconds == null ? '' : idTokenValiditySeconds)%>" id="id-token-timeout-seconds" size="16"><span
                             class="add-on">seconds</span>
+                        <input type="checkbox" id="disableIDTokenTimeout" <%=(idTokenValiditySeconds == null ? 'checked' : '')%>/> disable?
                     </div>
-                    <p class="help-block">Enter this time in seconds. Leave blank if the token does not timeout.</p>
+                    <p class="help-block">Enter this time in seconds.</p>
                 </div>
             </div>
 
@@ -211,8 +213,9 @@
                     <div class="input-append">
                         <input type="text" class="" value="<%=(refreshTokenValiditySeconds == null ? '' : refreshTokenValiditySeconds)%>" id="refresh-token-timeout-seconds" size="16"><span
                             class="add-on">seconds</span>
+                            <input type="checkbox" id="disableRefreshTokenTimeout" <%=(refreshTokenValiditySeconds == null ? 'checked' : '')%>/> disable?
                     </div>
-                    <p class="help-block">Enter this time in seconds. Leave blank if the token does not timeout.</p>
+                    <p class="help-block">Enter this time in seconds.</p>
                 </div>
             </div>
 
