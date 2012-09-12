@@ -42,5 +42,10 @@
 		<constructor-arg name="location" value="file:src/test/resources/keystore.jks" />
 		<constructor-arg name="password" value="changeit" />
 	</bean>
+	
+ 	<bean id="configBean" class="org.mitre.openid.connect.config.ConfigurationPropertiesBean">
+		<property name="issuer" value="http://localhost/" />
+ 		<property name="defaultJwtSigner"  value="rsa1"/>
+	</bean>
  
 </beans>
