@@ -69,7 +69,7 @@
                 this.template = _.template($('#tmpl-list-widget').html());
             }
 
-            this.$el.addClass("table-condensed");
+            this.$el.addClass("table table-condensed table-hover span4");
             this.collection.bind('add', this.render, this);
 
         },
