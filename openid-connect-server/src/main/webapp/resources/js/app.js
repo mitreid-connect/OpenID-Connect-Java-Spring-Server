@@ -507,15 +507,15 @@
                 $("#refreshTokenValiditySeconds", this.$el).hide();
             }
 
-            if (!this.model.get("accessTokenValiditySeconds")) {
+            if (this.model.get("accessTokenValiditySeconds") == null) {
                 $("#access-token-timeout-seconds", this.$el).prop('disabled',true);
             }
 
-            if (!this.model.get("refreshTokenValiditySeconds")) {
+            if (this.model.get("refreshTokenValiditySeconds") == null) {
                 $("#refresh-token-timeout-seconds", this.$el).prop('disabled',true);
             }
 
-            if (!this.model.get("idTokenValiditySeconds")) {
+            if (this.model.get("idTokenValiditySeconds") == null) {
                 $("#id-token-timeout-seconds", this.$el).prop('disabled',true);
             }
 
