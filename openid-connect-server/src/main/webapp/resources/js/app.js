@@ -91,7 +91,7 @@
                 this.collection.add(model);
             } else {
                 // else add a visual error indicator
-                $(".control-group", this.el).addClass('error')
+                $(".control-group", this.el).addClass('error');
             }
         },
 
