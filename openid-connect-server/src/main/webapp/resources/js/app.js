@@ -429,6 +429,21 @@
             	clientSecret = $('#clientSecret').val();
             }
 
+            var accessTokenValiditySeconds = null;
+            if (!$('disableAccessTokenTimeout').is(':checked')) {
+            	accessTokenValiditySeconds = this.getFormTokenValue($('#accessTokenValiditySeconds input[type=text]').val()); 
+            }
+            
+            var idTokenValiditySeconds = null;
+            if (!$('disableIDTokenTimeout').is(':checked')) {
+            	idTokenValiditySeconds = this.getFormTokenValue($('#idTokenValiditySeconds input[type=text]').val()); 
+            }
+            
+            var refreshTokenValiditySeconds = null;
+            if ($('#allowRefresh').is(':checked') && !$('disableRefreshTokenTimeout').is(':checked')) {
+            	refreshTokenValiditySeconds = this.getFormTokenValue($('#refreshTokenValiditySeconds input[type=text]').val()); 
+            }
+            
             var valid = this.model.set({
                 applicationName:$('#applicationName input').val(),
                 clientId:$('#clientId input').val(),
@@ -439,9 +454,9 @@
                 logoUrl:$('#logoUrl input').val(),
                 allowRefresh:$('#allowRefresh').is(':checked'),
                 authorizedGrantTypes: authorizedGrantTypes,
-                accessTokenValiditySeconds: this.getFormTokenValue($('#accessTokenValiditySeconds input').val()),
-                refreshTokenValiditySeconds: this.getFormTokenValue($('#refreshTokenValiditySeconds input').val()),
-                idTokenValiditySeconds: this.getFormTokenValue($('#idTokenValiditySeconds input').val()),
+                accessTokenValiditySeconds: accessTokenValiditySeconds,
+                refreshTokenValiditySeconds: refreshTokenValiditySeconds,
+                idTokenValiditySeconds: idTokenValiditySeconds,
                 scope: this.scopeCollection.pluck("item")
             });
 

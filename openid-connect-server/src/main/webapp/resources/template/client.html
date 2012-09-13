@@ -168,13 +168,15 @@
             </div>
 
             <div class="control-group" id="accessTokenValiditySeconds">
-                <label class="control-label">Access Token
-                    Timeout</label>
+                <label class="control-label">Access Token Timeout</label>
                 <div class="controls">
+					<div>
+						<label class="checkbox">
+                        	<input type="checkbox" id="disableAccessTokenTimeout" <%=(accessTokenValiditySeconds == null ? 'checked' : '')%>/> Access tokens do not time out
+						</label>
+					</div>
                     <div class="input-append">
-                        <input type="text" class="" value="<%=(accessTokenValiditySeconds == null ? '' : accessTokenValiditySeconds)%>" id="access-token-timeout-seconds" size="16"><span
-                            class="add-on">seconds</span>
-                        <input type="checkbox" id="disableAccessTokenTimeout" <%=(accessTokenValiditySeconds == null ? 'checked' : '')%>/> disable timeout
+                        <input type="text" class="" value="<%=(accessTokenValiditySeconds == null ? '' : accessTokenValiditySeconds)%>" id="access-token-timeout-seconds" size="16"><span class="add-on">seconds</span>
                     </div>
                     <p class="help-block">Enter this time in seconds.</p>
                 </div>
@@ -182,13 +184,16 @@
 
 
             <div class="control-group" id="idTokenValiditySeconds">
-                <label class="control-label">ID Token
-                    Timeout</label>
+                <label class="control-label">ID Token Timeout</label>
                 <div class="controls">
+					<div>
+						<label class="checkbox">
+                        	<input type="checkbox" id="disableIDTokenTimeout" <%=(idTokenValiditySeconds == null ? 'checked' : '')%>/> ID Tokens do not time out
+						</label>
+					</div>
                     <div class="input-append">
                         <input type="text" class="" value="<%=(idTokenValiditySeconds == null ? '' : idTokenValiditySeconds)%>" id="id-token-timeout-seconds" size="16"><span
                             class="add-on">seconds</span>
-                        <input type="checkbox" id="disableIDTokenTimeout" <%=(idTokenValiditySeconds == null ? 'checked' : '')%>/> disable timeout
                     </div>
                     <p class="help-block">Enter this time in seconds.</p>
                 </div>
@@ -198,19 +203,20 @@
                 <label class="control-label">Refresh Tokens</label>
                 <div class="controls">
                     <label class="checkbox">
-                        <input type="checkbox" id="allowRefresh" <%=(allowRefresh == true ? 'checked' : '')%>> Allow refresh tokens?
+                        <input type="checkbox" id="allowRefresh" <%=(allowRefresh == true ? 'checked' : '')%>> Refresh tokens are issued for this client
                     </label>
                 </div>
             </div>
 
             <div class="control-group" id="refreshTokenValiditySeconds">
-                <label class="control-label">Refresh Token
-                    Timeout</label>
                 <div class="controls">
+					<div>
+						<label class="checkbox">
+                        	<input type="checkbox" id="disableRefreshTokenTimeout" <%=(refreshTokenValiditySeconds == null ? 'checked' : '')%>/> Refresh tokens do not time out
+						</label>
+					</div>
                     <div class="input-append">
-                        <input type="text" class="" value="<%=(refreshTokenValiditySeconds == null ? '' : refreshTokenValiditySeconds)%>" id="refresh-token-timeout-seconds" size="16"><span
-                            class="add-on">seconds</span>
-                            <input type="checkbox" id="disableRefreshTokenTimeout" <%=(refreshTokenValiditySeconds == null ? 'checked' : '')%>/> disable timeout
+                        <input type="text" class="" value="<%=(refreshTokenValiditySeconds == null ? '' : refreshTokenValiditySeconds)%>" id="refresh-token-timeout-seconds" size="16"><span class="add-on">seconds</span>
                     </div>
                     <p class="help-block">Enter this time in seconds.</p>
                 </div>
