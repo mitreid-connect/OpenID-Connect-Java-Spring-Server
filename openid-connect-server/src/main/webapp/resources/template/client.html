@@ -104,7 +104,7 @@
             </div>
 
 			<div class="control-group" id="requireClientSecret">
-				<label class="control-label">Require Client Secret</label>
+				<label class="control-label">Client Secret</label>
 				<div class="controls">
 					<label class="checkbox">
 						<input type="checkbox" <%=(requireClientSecret == true ? 'checked' : '')%>> Require client secret?
@@ -115,7 +115,6 @@
 			<div id="clientSecretPanel">
 
 				<div class="control-group" id="generateClientSecret">
-					<label class="control-label">Generate Client Secret</label>
 					<div class="controls">
 						<label class="checkbox">
 							<input type="checkbox" <%=(generateClientSecret == true ? 'checked' : '')%>> Generate a new client secret?
@@ -125,16 +124,14 @@
 				</div>
 	
 				<div class="control-group" id="displayClientSecret">
-					<label class="control-label">Show Client Secret</label>
 					<div class="controls">
 						<label class="checkbox">
-							<input type="checkbox" <%=(displayClientSecret == true ? 'checked' : '')%>> Display client secret here:
+							<input type="checkbox" <%=(displayClientSecret == true ? 'checked' : '')%>> Display/edit client secret:
 						</label>
 					</div>
 				</div>
 	
     	        <div class="control-group">
-        	        <label class="control-label">Client Secret</label>
             	    <div class="controls">
                 	    <input id="clientSecret" value="<%=clientSecret%>" maxlength="100" type="text" placeholder="Type a secret">
 						<input id="clientSecretGenerated" value="Generate on Save" type="text" disabled>
