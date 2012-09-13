@@ -518,7 +518,6 @@
                 , autocomplete: _.uniq(_.flatten(app.clientList.pluck("scope")))
                 , collection: this.scopeCollection}).render().el);
 
-            // set up refresh 
             if (!this.model.get("allowRefresh")) {
                 $("#refreshTokenValiditySeconds", this.$el).hide();
             }
@@ -535,15 +534,14 @@
                 $("#id-token-timeout-seconds", this.$el).prop('disabled',true);
             }
 
-            // setup client secret display
-            this.toggleRequireClientSecret();
-            
-            // setup logo display
-            this.previewLogo();
 
             return this;
-        }
+        },
         
+        postRender:function() {
+            this.toggleRequireClientSecret();
+            this.previewLogo();
+        }
     });
 
 
@@ -618,6 +616,7 @@
         	
             this.clientFormView = new ClientFormView({model:client});
             $('#content').html(this.clientFormView.render().el);
+            this.clientFormView.postRender(); // set up the form for the given model data
         },
 
         editClient:function(id) {
@@ -644,6 +643,7 @@
             
             this.clientFormView = new ClientFormView({model:client});
             $('#content').html(this.clientFormView.render().el);
+            this.clientFormView.postRender(); // set up the form for the given model data
         },
 
         whiteList:function () {
