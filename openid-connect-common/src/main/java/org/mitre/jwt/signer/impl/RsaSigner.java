@@ -26,9 +26,9 @@ import java.security.interfaces.RSAPrivateKey;
 import java.util.List;
 
 import org.apache.commons.codec.binary.Base64;
+import org.mitre.jwt.encryption.impl.KeyStore;
 import org.mitre.jwt.signer.AbstractJwtSigner;
 import org.mitre.jwt.signer.JwsAlgorithm;
-import org.mitre.jwt.signer.service.impl.KeyStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;

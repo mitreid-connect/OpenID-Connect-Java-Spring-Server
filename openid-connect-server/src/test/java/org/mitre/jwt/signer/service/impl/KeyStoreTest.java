@@ -37,6 +37,7 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.x509.X509V3CertificateGenerator;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mitre.jwt.encryption.impl.KeyStore;
 import org.mitre.jwt.signer.impl.RsaSigner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

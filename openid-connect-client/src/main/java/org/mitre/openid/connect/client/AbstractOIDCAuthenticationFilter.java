@@ -49,7 +49,7 @@ import org.mitre.jwt.signer.JwsAlgorithm;
 import org.mitre.jwt.signer.JwtSigner;
 import org.mitre.jwt.signer.impl.RsaSigner;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
-import org.mitre.jwt.signer.service.impl.JwtSigningAndValidationServiceDefault;
+import org.mitre.jwt.signer.service.impl.DefaultJwtSigningAndValidationService;
 import org.mitre.key.fetch.KeyFetcher;
 import org.mitre.openid.connect.config.OIDCServerConfiguration;
 import org.mitre.openid.connect.model.IdToken;
@@ -640,7 +640,7 @@ public class AbstractOIDCAuthenticationFilter extends
 					signers.put(serverConfig.getIssuer() + JwsAlgorithm.RS512.getJwaName(), signer512);
 				}
 
-                JwtSigningAndValidationService signingAndValidationService = new JwtSigningAndValidationServiceDefault(signers);
+                JwtSigningAndValidationService signingAndValidationService = new DefaultJwtSigningAndValidationService(signers);
 				
 				validationServices.put(serverConfig, signingAndValidationService);
 				

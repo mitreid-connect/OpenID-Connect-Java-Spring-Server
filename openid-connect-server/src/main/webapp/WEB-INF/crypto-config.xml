@@ -3,13 +3,13 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<bean id="defaultKeystore" class="org.mitre.jwt.signer.service.impl.KeyStore">
+	<bean id="defaultKeystore" class="org.mitre.jwt.encryption.impl.KeyStore">
 		<constructor-arg name="location" value="classpath:keystore.jks" />
 		<constructor-arg name="password" value="changeit" />
 	</bean>
 
 	<bean id="defaultsignerService"
-		class="org.mitre.jwt.signer.service.impl.JwtSigningAndValidationServiceDefault">
+		class="org.mitre.jwt.signer.service.impl.DefaultJwtSigningAndValidationService">
 		<property name="signers">
 			<map>
 				<entry key="rsa1">

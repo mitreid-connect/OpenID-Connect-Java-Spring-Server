@@ -1,18 +1,18 @@
 package org.mitre.oauth2.repository;
 
-import org.mitre.oauth2.model.AuthenticationHolder;
+import org.mitre.oauth2.model.AuthenticationHolderEntity;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 
 public interface AuthenticationHolderRepository {
 
-	public AuthenticationHolder getById(Long id);
+	public AuthenticationHolderEntity getById(Long id);
 	
-	public AuthenticationHolder getByAuthentication(OAuth2Authentication a);
+	public AuthenticationHolderEntity getByAuthentication(OAuth2Authentication a);
 	
 	public void removeById(Long id);
 	
-	public void remove(AuthenticationHolder a);
+	public void remove(AuthenticationHolderEntity a);
 	
-	public AuthenticationHolder save(AuthenticationHolder a);
+	public AuthenticationHolderEntity save(AuthenticationHolderEntity a);
 	
 }

@@ -69,7 +69,7 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	
 	private ClientDetailsEntity client;
 	
-	private AuthenticationHolder authenticationHolder; // the authentication that made this access
+	private AuthenticationHolderEntity authenticationHolder; // the authentication that made this access
 	
 	private Jwt jwtValue; // JWT-encoded access token value
 	
@@ -122,14 +122,14 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
      */
 	@ManyToOne
 	@JoinColumn(name = "auth_holder_id")
-    public AuthenticationHolder getAuthenticationHolder() {
+    public AuthenticationHolderEntity getAuthenticationHolder() {
     	return authenticationHolder;
     }
 
 	/**
      * @param authentication the authentication to set
      */
-    public void setAuthenticationHolder(AuthenticationHolder authenticationHolder) {
+    public void setAuthenticationHolder(AuthenticationHolderEntity authenticationHolder) {
     	this.authenticationHolder = authenticationHolder;
     }
 

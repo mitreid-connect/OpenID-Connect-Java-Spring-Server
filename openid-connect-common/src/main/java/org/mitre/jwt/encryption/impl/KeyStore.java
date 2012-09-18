@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package org.mitre.jwt.signer.service.impl;
+package org.mitre.jwt.encryption.impl;
 
 import java.io.InputStream;
 import java.security.GeneralSecurityException;

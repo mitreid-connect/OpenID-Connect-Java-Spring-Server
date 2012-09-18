@@ -15,7 +15,7 @@ import org.bouncycastle.math.ec.ECCurve;
 
 import com.google.gson.JsonObject;
 
-public class EC extends AbstractJwk{
+public class EllipticCurveJwk extends AbstractJwk {
 	
 	public static final String CURVE = "crv";
 	public static final String X = "x";
@@ -51,7 +51,7 @@ public class EC extends AbstractJwk{
 		this.y = y;
 	}
 
-	public EC(JsonObject object) {
+	public EllipticCurveJwk(JsonObject object) {
 		super(object);
 	}
 	

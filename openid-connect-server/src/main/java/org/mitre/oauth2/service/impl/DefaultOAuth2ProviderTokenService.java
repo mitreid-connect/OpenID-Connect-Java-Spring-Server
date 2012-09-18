@@ -22,7 +22,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import org.mitre.oauth2.model.AuthenticationHolder;
+import org.mitre.oauth2.model.AuthenticationHolderEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
@@ -98,7 +98,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	    	}
 		    
 	    	// attach the authorization so that we can look it up later
-	    	AuthenticationHolder authHolder = new AuthenticationHolder();
+	    	AuthenticationHolderEntity authHolder = new AuthenticationHolderEntity();
 	    	authHolder.setAuthentication(authentication);
 	    	authHolder = authenticationHolderRepository.save(authHolder);
 	    	
@@ -150,7 +150,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		
 		ClientDetailsEntity client = refreshToken.getClient();
 		
-		AuthenticationHolder authHolder = refreshToken.getAuthenticationHolder();
+		AuthenticationHolderEntity authHolder = refreshToken.getAuthenticationHolder();
 		
 		//Make sure this client allows access token refreshing
 		if (!client.isAllowRefresh()) {

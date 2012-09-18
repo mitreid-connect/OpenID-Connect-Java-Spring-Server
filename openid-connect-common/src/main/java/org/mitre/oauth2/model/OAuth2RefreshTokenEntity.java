@@ -57,7 +57,7 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
 
 	private Long id;
 	
-	private AuthenticationHolder authenticationHolder;
+	private AuthenticationHolderEntity authenticationHolder;
 	
 	private ClientDetailsEntity client;
 
@@ -98,14 +98,14 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
      */
 	@ManyToOne
 	@JoinColumn(name = "auth_holder_id")
-    public AuthenticationHolder getAuthenticationHolder() {
+    public AuthenticationHolderEntity getAuthenticationHolder() {
     	return authenticationHolder;
     }
 
 	/**
      * @param authentication the authentication to set
      */
-    public void setAuthenticationHolder(AuthenticationHolder authenticationHolder) {
+    public void setAuthenticationHolder(AuthenticationHolderEntity authenticationHolder) {
     	this.authenticationHolder = authenticationHolder;
     }
 

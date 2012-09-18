@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class JwtSigningAndValidationServiceDefault implements JwtSigningAndValidationService, InitializingBean {
+public class DefaultJwtSigningAndValidationService implements JwtSigningAndValidationService, InitializingBean {
 
 	@Autowired 
 	private ConfigurationPropertiesBean configBean;
@@ -36,21 +36,21 @@ public class JwtSigningAndValidationServiceDefault implements JwtSigningAndValid
 	// map of identifier to signer
 	private Map<String, ? extends JwtSigner> signers = new HashMap<String, JwtSigner>();
 
-	private static Logger logger = LoggerFactory.getLogger(JwtSigningAndValidationServiceDefault.class);
+	private static Logger logger = LoggerFactory.getLogger(DefaultJwtSigningAndValidationService.class);
 
 	/**
 	 * default constructor
 	 */
-	public JwtSigningAndValidationServiceDefault() {
+	public DefaultJwtSigningAndValidationService() {
 	}
 
 	/**
-	 * Create JwtSigningAndValidationServiceDefault
+	 * Create DefaultJwtSigningAndValidationService
 	 * 
 	 * @param signer
 	 *            List of JwtSigners to associate with this service
 	 */
-	public JwtSigningAndValidationServiceDefault(Map<String, ? extends JwtSigner> signer) {
+	public DefaultJwtSigningAndValidationService(Map<String, ? extends JwtSigner> signer) {
 		setSigners(signer);
 	}
 	
@@ -67,7 +67,7 @@ public class JwtSigningAndValidationServiceDefault implements JwtSigningAndValid
 			logger.info(this.toString());
 		}
 
-		logger.info("JwtSigningAndValidationServiceDefault is open for business");
+		logger.info("DefaultJwtSigningAndValidationService is open for business");
 
 	}
 
@@ -104,7 +104,7 @@ public class JwtSigningAndValidationServiceDefault implements JwtSigningAndValid
 	 */
 	@Override
 	public String toString() {
-		return "JwtSigningAndValidationServiceDefault [signers=" + signers + "]";
+		return "DefaultJwtSigningAndValidationService [signers=" + signers + "]";
 	}
 
 	/**

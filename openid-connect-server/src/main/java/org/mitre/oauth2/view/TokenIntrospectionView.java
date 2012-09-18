@@ -40,9 +40,9 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
-public class TokenIntrospection extends AbstractView {
+public class TokenIntrospectionView extends AbstractView {
 	
-	private static Logger logger = LoggerFactory.getLogger(TokenIntrospection.class);
+	private static Logger logger = LoggerFactory.getLogger(TokenIntrospectionView.class);
 
 	@Override
     protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
@@ -118,7 +118,7 @@ public class TokenIntrospection extends AbstractView {
 		
 		} catch (IOException e) {
 		
-			logger.error("IOException occurred in TokenIntrospection.java: ", e);
+			logger.error("IOException occurred in TokenIntrospectionView.java: ", e);
 		
 		}
 
