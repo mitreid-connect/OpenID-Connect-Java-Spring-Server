@@ -1,7 +1,5 @@
 package org.mitre.openid.connect.client;
 
-import java.net.URI;
-
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.mitre.openid.connect.model.DefaultUserInfo;
@@ -11,14 +9,12 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 public class UserInfoFetcher {
 
-	public UserInfo loadUserInfo(OpenIdConnectAuthenticationToken token) {
+	public UserInfo loadUserInfo(OIDCAuthenticationToken token) {
 		
 		HttpClient httpClient = new DefaultHttpClient();
 

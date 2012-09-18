@@ -18,9 +18,6 @@ package org.mitre.openid.connect.client;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLEncoder;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.interfaces.RSAPublicKey;
@@ -40,7 +37,6 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.utils.URIUtils;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
@@ -53,7 +49,6 @@ import org.mitre.jwt.signer.service.impl.DefaultJwtSigningAndValidationService;
 import org.mitre.key.fetch.KeyFetcher;
 import org.mitre.openid.connect.config.OIDCServerConfiguration;
 import org.mitre.openid.connect.model.IdToken;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
@@ -68,7 +63,6 @@ import org.springframework.web.client.RestTemplate;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.sun.xml.ws.mex.client.schema.GetMetadata;
 
 /**
  * Abstract OpenID Connect Authentication Filter class
@@ -107,7 +101,7 @@ public class AbstractOIDCAuthenticationFilter extends
 
 		List<String> ignore = (ignoreFields != null) ? Arrays.asList(ignoreFields) : null;
 		
-		boolean isFirst = true;
+		//boolean isFirst = true;
 
 		StringBuffer sb = request.getRequestURL();
 		List<NameValuePair> queryparams = new ArrayList<NameValuePair>();
@@ -321,7 +315,7 @@ public class AbstractOIDCAuthenticationFilter extends
 		} else {
 
 			// Extract the id_token to insert into the
-			// OpenIdConnectAuthenticationToken
+			// OIDCAuthenticationToken
 			
 			// get out all the token strings
 			String accessTokenValue = null;
@@ -427,9 +421,9 @@ public class AbstractOIDCAuthenticationFilter extends
 			
 			String userId = idToken.getClaims().getUserId();
 			
-			// construct an OpenIdConnectAuthenticationToken and return a Authentication object w/the userId and the idToken
+			// construct an OIDCAuthenticationToken and return a Authentication object w/the userId and the idToken
 			
-			OpenIdConnectAuthenticationToken token = new OpenIdConnectAuthenticationToken(userId, idClaims.getIssuer(), serverConfig, idTokenValue, accessTokenValue, refreshTokenValue);
+			OIDCAuthenticationToken token = new OIDCAuthenticationToken(userId, idClaims.getIssuer(), serverConfig, idTokenValue, accessTokenValue, refreshTokenValue);
 
 			Authentication authentication = this.getAuthenticationManager().authenticate(token);
 

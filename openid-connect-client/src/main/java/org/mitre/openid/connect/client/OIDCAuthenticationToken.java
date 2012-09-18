@@ -19,21 +19,18 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.mitre.openid.connect.config.OIDCServerConfiguration;
-import org.mitre.openid.connect.model.IdToken;
 import org.mitre.openid.connect.model.UserInfo;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.SpringSecurityCoreVersion;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Sets;
 
 /**
  * 
  * @author Michael Walsh, Justin Richer
  * 
  */
-public class OpenIdConnectAuthenticationToken extends AbstractAuthenticationToken {
+public class OIDCAuthenticationToken extends AbstractAuthenticationToken {
 
     private static final long serialVersionUID = 22100073066377804L;
     
@@ -48,7 +45,7 @@ public class OpenIdConnectAuthenticationToken extends AbstractAuthenticationToke
 	private final transient UserInfo userInfo; // user info container, don't serialize it b/c it might be huge and can be re-fetched
 	
 	/**
-	 * Constructs OpenIdConnectAuthenticationToken with a full set of authorities, marking this as authenticated.
+	 * Constructs OIDCAuthenticationToken with a full set of authorities, marking this as authenticated.
 	 * 
 	 * Set to authenticated.
 	 * 
@@ -58,7 +55,7 @@ public class OpenIdConnectAuthenticationToken extends AbstractAuthenticationToke
 	 * @param principal
 	 * @param idToken
 	 */
-	public OpenIdConnectAuthenticationToken(String userId, String issuer, 
+	public OIDCAuthenticationToken(String userId, String issuer, 
 			UserInfo userInfo, Collection<? extends GrantedAuthority> authorities,
 			String idTokenValue, String accessTokenValue, String refreshTokenValue) {
 
@@ -78,7 +75,7 @@ public class OpenIdConnectAuthenticationToken extends AbstractAuthenticationToke
 	}
 
 	/**
-	 * Constructs OpenIdConnectAuthenticationToken for use as a data shuttle from the filter to the auth provider. 
+	 * Constructs OIDCAuthenticationToken for use as a data shuttle from the filter to the auth provider. 
 	 * 
 	 * Set to not-authenticated.
 	 * 
@@ -86,7 +83,7 @@ public class OpenIdConnectAuthenticationToken extends AbstractAuthenticationToke
 	 * @param userId
 	 * @param idToken
 	 */
-	public OpenIdConnectAuthenticationToken(String userId, String issuer, 
+	public OIDCAuthenticationToken(String userId, String issuer, 
 			OIDCServerConfiguration serverConfiguration, 
 			String idTokenValue, String accessTokenValue, String refreshTokenValue) {
 

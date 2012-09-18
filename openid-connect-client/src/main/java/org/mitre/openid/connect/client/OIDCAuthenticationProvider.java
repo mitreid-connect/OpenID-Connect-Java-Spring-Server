@@ -22,14 +22,10 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
 import org.springframework.security.core.authority.mapping.NullAuthoritiesMapper;
-import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.util.Assert;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
@@ -38,7 +34,7 @@ import com.google.common.collect.Sets;
  * @author nemonik
  * 
  */
-public class OpenIdConnectAuthenticationProvider implements
+public class OIDCAuthenticationProvider implements
 		AuthenticationProvider, InitializingBean {
 
 	private UserInfoFetcher userInfoFetcher = new UserInfoFetcher();
@@ -69,13 +65,13 @@ public class OpenIdConnectAuthenticationProvider implements
 			return null;
 		}
 
-		if (authentication instanceof OpenIdConnectAuthenticationToken) {
+		if (authentication instanceof OIDCAuthenticationToken) {
 
 			// Default authorities set
 			// TODO: let this be configured
 			Collection<SimpleGrantedAuthority> authorities = Sets.newHashSet(new SimpleGrantedAuthority("ROLE_USER"));
 			
-			OpenIdConnectAuthenticationToken token = (OpenIdConnectAuthenticationToken) authentication;
+			OIDCAuthenticationToken token = (OIDCAuthenticationToken) authentication;
 
 			UserInfo userInfo = userInfoFetcher.loadUserInfo(token);
 
@@ -88,7 +84,7 @@ public class OpenIdConnectAuthenticationProvider implements
 				}
 			}
 			
-			return new OpenIdConnectAuthenticationToken(token.getUserId(), 
+			return new OIDCAuthenticationToken(token.getUserId(), 
 					token.getIssuer(), 
 					userInfo, authoritiesMapper.mapAuthorities(authorities),
 					token.getIdTokenValue(), token.getAccessTokenValue(), token.getRefreshTokenValue());
@@ -113,6 +109,6 @@ public class OpenIdConnectAuthenticationProvider implements
 	 */
 	@Override
 	public boolean supports(Class<?> authentication) {
-		return OpenIdConnectAuthenticationToken.class.isAssignableFrom(authentication);
+		return OIDCAuthenticationToken.class.isAssignableFrom(authentication);
 	}
 }
