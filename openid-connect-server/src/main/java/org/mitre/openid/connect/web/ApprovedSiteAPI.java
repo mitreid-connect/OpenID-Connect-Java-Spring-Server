@@ -28,7 +28,7 @@ import com.google.gson.JsonParser;
 @Controller
 @RequestMapping("/api/approved")
 @PreAuthorize("hasRole('ROLE_USER')")
-public class ApprovedSiteApi {
+public class ApprovedSiteAPI {
 
 	@Autowired
 	private ApprovedSiteService approvedSiteService;

@@ -41,7 +41,6 @@ public interface UserInfoService {
 	 * @return UserInfo for user id, or null
 	 */
 	public UserInfo getByUserId(String userId);
-
 	/**
 	 * Remove the UserInfo
 	 * 

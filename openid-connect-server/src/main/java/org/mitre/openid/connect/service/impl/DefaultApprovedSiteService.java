@@ -35,7 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional
-public class ApprovedSiteServiceImpl implements ApprovedSiteService {
+public class DefaultApprovedSiteService implements ApprovedSiteService {
 
 	@Autowired
 	private ApprovedSiteRepository approvedSiteRepository;
@@ -43,7 +43,7 @@ public class ApprovedSiteServiceImpl implements ApprovedSiteService {
 	/**
 	 * Default constructor
 	 */	
-	public ApprovedSiteServiceImpl() {
+	public DefaultApprovedSiteService() {
 
 	}
 	
@@ -52,7 +52,7 @@ public class ApprovedSiteServiceImpl implements ApprovedSiteService {
      * 
      * @param repository
      */	
-	public ApprovedSiteServiceImpl(ApprovedSiteRepository approvedSiteRepository) {
+	public DefaultApprovedSiteService(ApprovedSiteRepository approvedSiteRepository) {
 		this.approvedSiteRepository = approvedSiteRepository;
 	}	
 	

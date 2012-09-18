@@ -6,9 +6,7 @@ import java.util.List;
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.repository.UserInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.GrantedAuthorityImpl;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,7 +21,7 @@ import org.springframework.stereotype.Service;
  *
  */
 @Service("userInfoUserDetailsService")
-public class UserInfoUserDetailsService implements UserDetailsService {
+public class DefaultUserInfoUserDetailsService implements UserDetailsService {
 	
 	@Autowired
 	UserInfoRepository repository;

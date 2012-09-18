@@ -32,7 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional
-public class WhitelistedSiteServiceImpl implements WhitelistedSiteService {
+public class DefaultWhitelistedSiteService implements WhitelistedSiteService {
 
 	@Autowired
 	private WhitelistedSiteRepository repository;
@@ -40,7 +40,7 @@ public class WhitelistedSiteServiceImpl implements WhitelistedSiteService {
 	/**
 	 * Default constructor
 	 */
-	public WhitelistedSiteServiceImpl() {
+	public DefaultWhitelistedSiteService() {
 
 	}
 
@@ -49,7 +49,7 @@ public class WhitelistedSiteServiceImpl implements WhitelistedSiteService {
 	 * 
 	 * @param repository
 	 */
-	public WhitelistedSiteServiceImpl(WhitelistedSiteRepository whitelistedSiteRepository) {
+	public DefaultWhitelistedSiteService(WhitelistedSiteRepository whitelistedSiteRepository) {
 		this.repository = whitelistedSiteRepository;
 	}	
 	

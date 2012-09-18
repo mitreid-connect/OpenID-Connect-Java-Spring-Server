@@ -30,7 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional
-public class UserInfoServiceImpl implements UserInfoService {
+public class DefaultUserInfoService implements UserInfoService {
 
 	@Autowired
 	private UserInfoRepository userInfoRepository;
@@ -38,7 +38,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 	/**
 	 * Default constructor
 	 */
-	public UserInfoServiceImpl() {
+	public DefaultUserInfoService() {
 
 	}
 
@@ -47,7 +47,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 	 * 
 	 * @param repository
 	 */
-	public UserInfoServiceImpl(UserInfoRepository userInfoRepository) {
+	public DefaultUserInfoService(UserInfoRepository userInfoRepository) {
 		this.userInfoRepository = userInfoRepository;
 	}
 

@@ -18,14 +18,12 @@ package org.mitre.openid.connect.web;
 import java.security.Principal;
 import java.util.Map;
 
-import org.mitre.oauth2.service.OAuth2TokenEntityService;
 import org.mitre.openid.connect.exception.UnknownUserInfoSchemaException;
 import org.mitre.openid.connect.exception.UserNotFoundException;
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.service.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.common.exceptions.InvalidScopeException;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Controller;
@@ -44,9 +42,6 @@ import com.google.common.collect.ImmutableMap;
  */
 @Controller
 public class UserInfoEndpoint {
-
-	@Autowired
-	private OAuth2TokenEntityService tokenService;
 	
 	@Autowired
 	private UserInfoService userInfoService;

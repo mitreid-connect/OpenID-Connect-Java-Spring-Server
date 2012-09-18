@@ -6,7 +6,6 @@ package org.mitre.openid.connect.web;
 import java.security.Principal;
 import java.util.Collection;
 
-import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.openid.connect.model.WhitelistedSite;
 import org.mitre.openid.connect.service.WhitelistedSiteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +29,7 @@ import com.google.gson.JsonParser;
 @Controller
 @RequestMapping("/api/whitelist")
 @PreAuthorize("hasRole('ROLE_ADMIN')")
-public class WhitelistApi {
+public class WhitelistAPI {
 
 	@Autowired
 	private WhitelistedSiteService whitelistService;
