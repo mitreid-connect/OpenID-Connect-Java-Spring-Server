@@ -23,8 +23,6 @@ import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -73,6 +71,7 @@ public class RevocationEndpoint {
 		}
 		
 		if (principal instanceof OAuth2Authentication) {
+			//TODO what is this variable for? It is unused. is it just a validation check?
 			OAuth2AccessTokenEntity tok = tokenServices.getAccessToken((OAuth2Authentication) principal);
 			
 			// we've got a client acting on its own behalf, not an admin

@@ -18,8 +18,6 @@ package org.mitre.jwt.signer;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
-
 /**
  * Enum to translate between the JWS defined algorithm names and the JSE algorithm names
  * 

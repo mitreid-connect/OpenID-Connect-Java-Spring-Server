@@ -3,7 +3,6 @@ package org.mitre.jwt.encryption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import com.google.common.primitives.Bytes;
 import com.google.common.primitives.Ints;
 
 public abstract class AbstractJweEncrypter implements JweEncrypter {

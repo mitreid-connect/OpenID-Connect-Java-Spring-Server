@@ -20,7 +20,6 @@ import java.util.List;
 
 import org.mitre.jwt.model.Jwt;
 
-import com.google.common.base.Objects;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;

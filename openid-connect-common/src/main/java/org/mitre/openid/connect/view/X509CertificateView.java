@@ -59,6 +59,7 @@ public class X509CertificateView extends AbstractView {
 	private long daysNotValidBefore = 30;
 	private long daysNotValidAfter = 365;
 
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) throws IOException {
 

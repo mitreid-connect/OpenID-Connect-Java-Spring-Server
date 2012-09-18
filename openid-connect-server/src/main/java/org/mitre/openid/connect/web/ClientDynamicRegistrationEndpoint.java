@@ -161,7 +161,6 @@ public class ClientDynamicRegistrationEndpoint {
 				}
 			}
 			
-			@SuppressWarnings("unchecked")
 			@Override
 			public String getAsText() {
 				Set<String> set = (Set<String>) getValue();

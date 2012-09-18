@@ -17,7 +17,6 @@ package org.mitre.openid.connect.repository;
 
 import java.util.Collection;
 
-import org.mitre.openid.connect.model.DefaultUserInfo;
 import org.mitre.openid.connect.model.UserInfo;
 
 /**

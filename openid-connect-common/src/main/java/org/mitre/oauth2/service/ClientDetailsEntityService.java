@@ -16,10 +16,8 @@
 package org.mitre.oauth2.service;
 
 import java.util.Collection;
-import java.util.Set;
 
 import org.mitre.oauth2.model.ClientDetailsEntity;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 

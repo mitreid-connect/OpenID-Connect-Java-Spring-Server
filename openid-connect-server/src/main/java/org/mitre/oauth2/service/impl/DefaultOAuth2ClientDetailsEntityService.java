@@ -21,7 +21,6 @@ import java.util.Collection;
 import java.util.UUID;
 
 import org.apache.commons.codec.binary.Base64;
-import org.bouncycastle.asn1.cmp.GenRepContent;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.repository.OAuth2ClientRepository;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
@@ -30,19 +29,15 @@ import org.mitre.openid.connect.model.ApprovedSite;
 import org.mitre.openid.connect.model.WhitelistedSite;
 import org.mitre.openid.connect.repository.ApprovedSiteRepository;
 import org.mitre.openid.connect.repository.WhitelistedSiteRepository;
-import org.mitre.openid.connect.service.ApprovedSiteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.base.Strings;
 
 @Service
 public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEntityService {
-
-	private SecureRandom random = new SecureRandom();
 	
 	@Autowired
 	private OAuth2ClientRepository clientRepository;

@@ -15,7 +15,6 @@
  ******************************************************************************/
 package org.mitre.openid.connect.config;
 
-import java.net.URI;
 
 /**
  * @author nemonik
