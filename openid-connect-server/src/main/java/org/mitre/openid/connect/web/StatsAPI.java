@@ -2,12 +2,10 @@ package org.mitre.openid.connect.web;
 
 import java.util.Map;
 
-import org.mitre.openid.connect.service.ApprovedSiteService;
 import org.mitre.openid.connect.service.StatsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 

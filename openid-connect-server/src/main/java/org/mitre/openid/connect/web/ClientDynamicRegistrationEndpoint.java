@@ -1,15 +1,8 @@
 package org.mitre.openid.connect.web;
 
-import java.awt.Component;
-import java.awt.Graphics;
-import java.awt.Rectangle;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyEditor;
 import java.beans.PropertyEditorSupport;
-import java.util.Map;
 import java.util.Set;
 
-import org.mitre.jwt.encryption.JweAlgorithms;
 import org.mitre.jwt.signer.JwsAlgorithm;
 import org.mitre.oauth2.exception.ClientNotFoundException;
 import org.mitre.oauth2.model.ClientDetailsEntity;
@@ -24,7 +17,6 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.google.common.base.Joiner;
@@ -169,6 +161,7 @@ public class ClientDynamicRegistrationEndpoint {
 				}
 			}
 			
+			@SuppressWarnings("unchecked")
 			@Override
 			public String getAsText() {
 				Set<String> set = (Set<String>) getValue();
