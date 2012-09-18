@@ -14,16 +14,6 @@
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd">
 
-
-<!--	<security:global-method-security pre-post-annotations="enabled" proxy-target-class="true" authentication-manager-ref="authenticationManager">
--->		<!--you could also wire in the expression handler up at the layer of the http filters. See https://jira.springsource.org/browse/SEC-1452 -->
-<!--		<security:expression-handler ref="oauthExpressionHandler" />
-	</security:global-method-security>
-
-	<oauth2:expression-handler id="oauthExpressionHandler" />
-
-	<oauth2:web-expression-handler id="oauthWebExpressionHandler" />
--->
 	<security:authentication-manager alias="authenticationManager">
 		<security:authentication-provider>
 			<security:user-service id="userDetailsService">
@@ -40,7 +30,7 @@
 		
 	<mvc:view-controller path="/login" view-name="login" />
 		
-	<security:http auto-config="true" disable-url-rewriting="true" use-expressions="true"> <!-- authentication-manager-ref="springSecurityAuthenticationManager" -->
+	<security:http auto-config="true" disable-url-rewriting="true" use-expressions="true"> 
 		<security:form-login login-page="/login" />
 		<security:intercept-url pattern="/oauth/**" access="hasRole('ROLE_USER')" />
 		<security:intercept-url pattern="/**" access="permitAll" />
