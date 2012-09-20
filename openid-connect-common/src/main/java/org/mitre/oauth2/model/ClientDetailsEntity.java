@@ -63,10 +63,10 @@ public class ClientDetailsEntity implements ClientDetails {
 	
 	/** Our own fields **/
 	private String clientDescription = ""; // human-readable description
-	private Boolean allowRefresh = false; // do we allow refresh tokens for this client?
-	private Boolean allowMultipleAccessTokens = false; // do we allow multiple access tokens, or not?
-	private Boolean reuseRefreshToken = false; // do we let someone reuse a refresh token?
-	private Boolean dynamicallyRegistered = false; // was this client dynamically registered?
+	private boolean allowRefresh = false; // do we allow refresh tokens for this client?
+	private boolean allowMultipleAccessTokens = false; // do we allow multiple access tokens, or not?
+	private boolean reuseRefreshToken = false; // do we let someone reuse a refresh token?
+	private boolean dynamicallyRegistered = false; // was this client dynamically registered?
 	private Integer idTokenValiditySeconds; //timeout for id tokens
 	
 	/** Fields from ClientDetails interface **/
@@ -110,7 +110,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	private JweAlgorithms idTokenEncryptedResponseInt;
 	
 	private Integer defaultMaxAge;
-	private Boolean requireAuthTime = false;
+	private boolean requireAuthTime = false;
 	private String defaultACR;
 	
 	
@@ -226,9 +226,9 @@ public class ClientDetailsEntity implements ClientDetails {
 		
         /**
          * @param allowRefresh
-         * @see org.mitre.oauth2.model.ClientDetailsEntity#setAllowRefresh(Boolean)
+         * @see org.mitre.oauth2.model.ClientDetailsEntity#setAllowRefresh(boolean)
          */
-        public ClientDetailsEntityBuilder setAllowRefresh(Boolean allowRefresh) {
+        public ClientDetailsEntityBuilder setAllowRefresh(boolean allowRefresh) {
 	        instance.setAllowRefresh(allowRefresh);
 			return this;
         }
@@ -237,7 +237,7 @@ public class ClientDetailsEntity implements ClientDetails {
          * @param allow
          * @see 
          */
-        public ClientDetailsEntityBuilder setAllowMultipleAccessTokens(Boolean allow) {
+        public ClientDetailsEntityBuilder setAllowMultipleAccessTokens(boolean allow) {
         	instance.setAllowMultipleAccessTokens(allow);
         	return this;
         }
@@ -377,34 +377,34 @@ public class ClientDetailsEntity implements ClientDetails {
      */
 	@Basic
 	@Column(name="allow_refresh")
-    public Boolean isAllowRefresh() {
+    public boolean isAllowRefresh() {
     	return allowRefresh;
     }
 
 	/**
      * @param allowRefresh Whether to allow for issuance of refresh tokens or not (defaults to false)
      */
-    public void setAllowRefresh(Boolean allowRefresh) {
+    public void setAllowRefresh(boolean allowRefresh) {
     	this.allowRefresh = allowRefresh;
     }
 	
     @Basic
     @Column(name="allow_multiple_access_tokens")
-    public Boolean isAllowMultipleAccessTokens() {
+    public boolean isAllowMultipleAccessTokens() {
 		return allowMultipleAccessTokens;
 	}
 
-	public void setAllowMultipleAccessTokens(Boolean allowMultipleAccessTokens) {
+	public void setAllowMultipleAccessTokens(boolean allowMultipleAccessTokens) {
 		this.allowMultipleAccessTokens = allowMultipleAccessTokens;
 	}
 
 	@Basic
 	@Column(name="reuse_refresh_tokens")
-	public Boolean isReuseRefreshToken() {
+	public boolean isReuseRefreshToken() {
 		return reuseRefreshToken;
 	}
 
-	public void setReuseRefreshToken(Boolean reuseRefreshToken) {
+	public void setReuseRefreshToken(boolean reuseRefreshToken) {
 		this.reuseRefreshToken = reuseRefreshToken;
 	}
 	
@@ -429,14 +429,14 @@ public class ClientDetailsEntity implements ClientDetails {
 	 */
 	@Basic
 	@Column(name="dynamically_registered")
-	public Boolean isDynamicallyRegistered() {
+	public boolean isDynamicallyRegistered() {
 		return dynamicallyRegistered;
 	}
 
 	/**
 	 * @param dynamicallyRegistered the dynamicallyRegistered to set
 	 */
-	public void setDynamicallyRegistered(Boolean dynamicallyRegistered) {
+	public void setDynamicallyRegistered(boolean dynamicallyRegistered) {
 		this.dynamicallyRegistered = dynamicallyRegistered;
 	}
     
@@ -875,11 +875,11 @@ public class ClientDetailsEntity implements ClientDetails {
 
 	@Basic
 	@Column(name="require_auth_time")
-	public Boolean getRequireAuthTime() {
+	public boolean getRequireAuthTime() {
 		return requireAuthTime;
 	}
 
-	public void setRequireAuthTime(Boolean requireAuthTime) {
+	public void setRequireAuthTime(boolean requireAuthTime) {
 		this.requireAuthTime = requireAuthTime;
 	}
 
@@ -893,7 +893,10 @@ public class ClientDetailsEntity implements ClientDetails {
 		this.defaultACR = defaultACR;
 	}
 	
-    @Override
+    /* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
 	public String toString() {
 		return "ClientDetailsEntity ["
 				+ (id != null ? "id=" + id + ", " : "")
@@ -905,7 +908,11 @@ public class ClientDetailsEntity implements ClientDetails {
 				+ allowMultipleAccessTokens
 				+ ", reuseRefreshToken="
 				+ reuseRefreshToken
+				+ ", dynamicallyRegistered="
+				+ dynamicallyRegistered
 				+ ", "
+				+ (idTokenValiditySeconds != null ? "idTokenValiditySeconds="
+						+ idTokenValiditySeconds + ", " : "")
 				+ (clientId != null ? "clientId=" + clientId + ", " : "")
 				+ (clientSecret != null ? "clientSecret=" + clientSecret + ", "
 						: "")
@@ -972,10 +979,9 @@ public class ClientDetailsEntity implements ClientDetails {
 						+ idTokenEncryptedResponseInt + ", "
 						: "")
 				+ (defaultMaxAge != null ? "defaultMaxAge=" + defaultMaxAge
-						+ ", " : "")
-				+ (requireAuthTime != null ? "requireAuthTime="
-						+ requireAuthTime + ", " : "")
-				+ (defaultACR != null ? "defaultACR=" + defaultACR : "") + "]";
+						+ ", " : "") + "requireAuthTime=" + requireAuthTime
+				+ ", " + (defaultACR != null ? "defaultACR=" + defaultACR : "")
+				+ "]";
 	}
 
 	/* (non-Javadoc)
@@ -1019,6 +1025,7 @@ public class ClientDetailsEntity implements ClientDetails {
 				+ ((defaultACR == null) ? 0 : defaultACR.hashCode());
 		result = prime * result
 				+ ((defaultMaxAge == null) ? 0 : defaultMaxAge.hashCode());
+		result = prime * result + (dynamicallyRegistered ? 1231 : 1237);
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime
 				* result
@@ -1038,6 +1045,10 @@ public class ClientDetailsEntity implements ClientDetails {
 						: idTokenSignedResponseAlg.hashCode());
 		result = prime
 				* result
+				+ ((idTokenValiditySeconds == null) ? 0
+						: idTokenValiditySeconds.hashCode());
+		result = prime
+				* result
 				+ ((jwkEncryptionUrl == null) ? 0 : jwkEncryptionUrl.hashCode());
 		result = prime * result + ((jwkUrl == null) ? 0 : jwkUrl.hashCode());
 		result = prime * result + ((logoUrl == null) ? 0 : logoUrl.hashCode());
@@ -1051,8 +1062,7 @@ public class ClientDetailsEntity implements ClientDetails {
 				* result
 				+ ((registeredRedirectUri == null) ? 0 : registeredRedirectUri
 						.hashCode());
-		result = prime * result
-				+ ((requireAuthTime == null) ? 0 : requireAuthTime.hashCode());
+		result = prime * result + (requireAuthTime ? 1231 : 1237);
 		result = prime
 				* result
 				+ ((requireSignedRequestObject == null) ? 0
@@ -1106,7 +1116,7 @@ public class ClientDetailsEntity implements ClientDetails {
 		if (obj == null) {
 			return false;
 		}
-		if (getClass() != obj.getClass()) {
+		if (!(obj instanceof ClientDetailsEntity)) {
 			return false;
 		}
 		ClientDetailsEntity other = (ClientDetailsEntity) obj;
@@ -1197,6 +1207,9 @@ public class ClientDetailsEntity implements ClientDetails {
 		} else if (!defaultMaxAge.equals(other.defaultMaxAge)) {
 			return false;
 		}
+		if (dynamicallyRegistered != other.dynamicallyRegistered) {
+			return false;
+		}
 		if (id == null) {
 			if (other.id != null) {
 				return false;
@@ -1214,6 +1227,13 @@ public class ClientDetailsEntity implements ClientDetails {
 			return false;
 		}
 		if (idTokenSignedResponseAlg != other.idTokenSignedResponseAlg) {
+			return false;
+		}
+		if (idTokenValiditySeconds == null) {
+			if (other.idTokenValiditySeconds != null) {
+				return false;
+			}
+		} else if (!idTokenValiditySeconds.equals(other.idTokenValiditySeconds)) {
 			return false;
 		}
 		if (jwkEncryptionUrl == null) {
@@ -1259,11 +1279,7 @@ public class ClientDetailsEntity implements ClientDetails {
 		} else if (!registeredRedirectUri.equals(other.registeredRedirectUri)) {
 			return false;
 		}
-		if (requireAuthTime == null) {
-			if (other.requireAuthTime != null) {
-				return false;
-			}
-		} else if (!requireAuthTime.equals(other.requireAuthTime)) {
+		if (requireAuthTime != other.requireAuthTime) {
 			return false;
 		}
 		if (requireSignedRequestObject != other.requireSignedRequestObject) {
@@ -1296,11 +1312,7 @@ public class ClientDetailsEntity implements ClientDetails {
 		if (tokenEndpointAuthType != other.tokenEndpointAuthType) {
 			return false;
 		}
-		if (userIdType == null) {
-			if (other.userIdType != null) {
-				return false;
-			}
-		} else if (!userIdType.equals(other.userIdType)) {
+		if (userIdType != other.userIdType) {
 			return false;
 		}
 		if (userInfoEncryptedResponseAlg != other.userInfoEncryptedResponseAlg) {

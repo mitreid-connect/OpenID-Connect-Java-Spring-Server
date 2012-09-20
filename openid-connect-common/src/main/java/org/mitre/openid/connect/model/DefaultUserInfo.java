@@ -48,7 +48,7 @@ public class DefaultUserInfo implements UserInfo {
 	private String picture;	
 	private String website;
 	private String email;
-	private Boolean emailVerified;
+	private boolean emailVerified;
 	private String gender;
 	private String zoneinfo;
 	private String locale;
@@ -234,14 +234,14 @@ public class DefaultUserInfo implements UserInfo {
 	@Override
 	@Basic
 	@Column(name="email_verified")
-	public Boolean getEmailVerified() {
+	public boolean getEmailVerified() {
 		return emailVerified;
 	}
 	/* (non-Javadoc)
-	 * @see org.mitre.openid.connect.model.UserInfo#setVerified(java.lang.Boolean)
+	 * @see org.mitre.openid.connect.model.UserInfo#setVerified(java.lang.boolean)
 	 */
 	@Override
-	public void setEmailVerified(Boolean emailVerified) {
+	public void setEmailVerified(boolean emailVerified) {
 		this.emailVerified = emailVerified;
 	}
 	/* (non-Javadoc)

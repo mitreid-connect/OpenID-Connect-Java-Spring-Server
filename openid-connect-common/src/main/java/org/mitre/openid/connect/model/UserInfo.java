@@ -145,12 +145,12 @@ public interface UserInfo {
 	 */
 	@Basic
 	@Column(name="email_verified")
-	public abstract Boolean getEmailVerified();
+	public abstract boolean getEmailVerified();
 
 	/**
 	 * @param verified the verified to set
 	 */
-	public abstract void setEmailVerified(Boolean emailVerified);
+	public abstract void setEmailVerified(boolean emailVerified);
 
 	/**
 	 * @return the gender
