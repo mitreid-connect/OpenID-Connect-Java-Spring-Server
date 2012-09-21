@@ -559,23 +559,18 @@
 
         initialize:function () {
 
+            this.clientList = new ClientCollection();
+
+            this.clientListView = new ClientListView({model:this.clientList});
+
             this.breadCrumbView = new BreadCrumbView({
                 collection:new Backbone.Collection()
             });
 
             this.breadCrumbView.render();
 
-            //this.startAfter([this.clientList]);
-            Backbone.history.start();
-        },
+            this.startAfter([this.clientList]);
 
-        clientLoadCheck: function() {
-            // check to see if the client collections are already loaded
-            // if they aren't then load them
-            if (!this.clientList || !this.clientListView) {
-                this.clientList = new ClientCollection();
-                this.clientListView = new ClientListView({model:this.clientList});
-            }
         },
 
         startAfter:function (collections) {
@@ -590,8 +585,6 @@
 
         listClients:function () {
 
-            this.clientLoadCheck();
-
             this.breadCrumbView.collection.reset();
             this.breadCrumbView.collection.add([
                 {text:"Home", href:"/"},
@@ -604,8 +597,6 @@
         },
 
         newClient:function() {
-
-            this.clientLoadCheck();
 
             this.breadCrumbView.collection.reset();
             this.breadCrumbView.collection.add([
@@ -629,8 +620,6 @@
         },
 
         editClient:function(id) {
-
-            this.clientLoadCheck();
 
             this.breadCrumbView.collection.reset();
             this.breadCrumbView.collection.add([
@@ -658,8 +647,7 @@
         },
 
         whiteList:function () {
-
-
+            $('#content').html(this.whiteListView.render().el);
         }
 
 
@@ -679,7 +667,8 @@
         };
 
         // load templates and append them to the body
-        $.get('resources/template/templates.html', _load);
+        $.get('resources/template/client.html', _load);
+        $.get('resources/template/list.html', _load);
 
         jQuery.ajaxSetup({async:true});
         app = new AppRouter();
