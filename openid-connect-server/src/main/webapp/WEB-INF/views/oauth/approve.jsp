@@ -111,4 +111,4 @@
         <o:copyright/>
     </div>
 </div>
-<o:footer loadapp="false"/>
+<o:footer/>
