@@ -1,4 +1,15 @@
-@import url('https://fonts.googleapis.com/css?family=Open+Sans:400,700');
+@font-face {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 700;
+    src: local('Open Sans Bold'), local('OpenSans-Bold'), url(/resources/fonts/open_sans_700.woff) format('woff');
+}
+@font-face {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Open Sans'), local('OpenSans'), url(/resources/fonts/open_sans_400.woff) format('woff');
+}
 
 html {overflow-y: scroll;}
 article,aside,details,figcaption,figure,footer,header,hgroup,nav,section{display:block;}

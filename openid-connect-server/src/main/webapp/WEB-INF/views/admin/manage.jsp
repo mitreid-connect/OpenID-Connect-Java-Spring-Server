@@ -12,10 +12,9 @@
         <div class="span10">
             <div class="content span12">
                 <o:breadcrumbs crumb="Manage Clients"/>
-                <div class="progress">
-                    <div class="bar" style="width: 60%;"></div>
-                </div>
-                <span id="content"></span>
+                <span id="content">
+                    loading...
+                </span>
                 <o:copyright/>
             </div>
         </div>
