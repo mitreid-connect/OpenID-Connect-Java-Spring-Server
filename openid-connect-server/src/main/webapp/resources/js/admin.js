@@ -60,7 +60,14 @@
         }),
 
         events:{
-            "click button": "addItem"
+            "click button":"addItem",
+            "keypress input":function (e) {
+                if (e.which == 13) {
+                    this.addItem();
+                    e.preventDefault();
+                    $("input", this.$el).focus();
+                }
+            }
         },
 
         initialize:function () {
