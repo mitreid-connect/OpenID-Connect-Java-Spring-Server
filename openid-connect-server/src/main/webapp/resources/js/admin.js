@@ -554,7 +554,8 @@
             "clients":"listClients",
             "client/new":"newClient",
             "client/:id":"editClient",
-            "white_list":"whiteList"
+            "white_list":"whiteList",
+            '*path':  'listClients'
         },
 
         initialize:function () {
@@ -667,8 +668,7 @@
         };
 
         // load templates and append them to the body
-        $.get('resources/template/client.html', _load);
-        $.get('resources/template/list.html', _load);
+        $.get('resources/template/admin.html', _load);
 
         jQuery.ajaxSetup({async:true});
         app = new AppRouter();
