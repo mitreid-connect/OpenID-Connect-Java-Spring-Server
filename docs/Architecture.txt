@@ -2,6 +2,10 @@ This project is built on Spring 3.1 and Spring Security 3.1, making heavy use of
 
 This project tracks against the development version of SECOAUTH, which is included in the build directories as a Git submodule. This submodule must be initialized before the main project can be built. Once SECOAUTH stabilizes to sufficient point, this project will remove its submodule reference and instead use a Maven dependency.
 
+To initialize the submodule:
+  git submodule init
+  git submodule update
+
 This project is intended to be a standalone OpenID Connect Server. Extension and customization of this server can be accomplished by configuration through Spring configuration files, injected functionality through new Beans, and overlay of views and static resources (using Maven War Overlay or similar functionality).
 
 
