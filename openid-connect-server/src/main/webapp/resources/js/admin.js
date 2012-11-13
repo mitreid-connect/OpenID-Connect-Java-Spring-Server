@@ -683,7 +683,7 @@
         app = new AppRouter();
 
         // grab all hashed URLs and send them through the app router instead
-        $('a[href*="#"').on('click', function(event) {
+        $('a[href*="#"]').on('click', function(event) {
         	event.preventDefault();
         	app.navigate(this.hash.slice(1), {trigger: true});
         });
