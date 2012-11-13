@@ -9,7 +9,7 @@
 <script type="text/javascript" src="resources/js/backbone-min.js"></script>
 <script type="text/javascript" src="resources/js/backbone.validations.js"></script>
 <script type="text/javascript" src="resources/js/purl.js"></script>
-<c:if test="${js != null || js != ''}">
+<c:if test="${js != null && js != ''}">
 <script type="text/javascript" src="${js}"></script>
 </c:if>
 </body>
