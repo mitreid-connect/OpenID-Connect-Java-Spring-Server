@@ -8,20 +8,20 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </a>
-            <a class="brand" style="padding-left: 35px" href="#">OpenID Connect Server</a>
+            <a class="brand" style="padding-left: 35px" href="">OpenID Connect Server</a>
             <div class="nav-collapse">
                 <ul class="nav">
                     <li class="active"><a href="#">Home</a></li>
-                    <li><a href="#about">About</a></li>
-                    <li><a href="#contact">Statistics</a></li>
-                    <li><a href="#contact">Contact</a></li>
+                    <li><a href="about">About</a></li>
+                    <li><a href="stats">Statistics</a></li>
+                    <li><a href="contact">Contact</a></li>
                 </ul>
                 <p class="navbar-text pull-right">
                 
                 	<security:authentication property="authorities" var="roles"/>
 
                     <security:authorize access="hasRole('ROLE_USER')">
-                        Logged in as <a href="#">${ userInfo.preferredUsername }</a>
+                        Logged in as <a href="home">${ userInfo.preferredUsername }</a>
                     </security:authorize>
                 </p>
             </div><!--/.nav-collapse -->
