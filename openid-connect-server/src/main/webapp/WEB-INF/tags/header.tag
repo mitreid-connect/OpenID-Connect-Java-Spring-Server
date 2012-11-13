@@ -34,6 +34,9 @@
         .brand {
             background: url("resources/images/openid_connect_small.png") no-repeat scroll 7px 7px transparent;
         }
+        
+		-webkit-input-placeholder{color:#999999;}
+
     </style>
 
     <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
