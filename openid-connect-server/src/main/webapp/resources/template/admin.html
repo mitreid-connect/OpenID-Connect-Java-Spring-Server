@@ -1,3 +1,5 @@
+<!-- client -->
+
 <script type="text/html" id="tmpl-client">
     <td>
         <%=clientId%>
@@ -231,6 +233,8 @@
 
 </script>
 
+<!-- breadcrumbs -->
+
 <script type="text/html" id="tmpl-breadcrumbs">
     <% if (active == false) { %>
     <li><a href="<%=href%>"><%=text%></a> <span class="divider">/</span></li>
@@ -238,6 +242,8 @@
     <li class="active"><%=text%></li>
     <% } %>
 </script>
+
+<!-- list widget -->
 
 <script type="text/html" id="tmpl-list-widget-child">
     <td><%=(item.length > 27) ? item.substr(0,27) + '...' : item %></td>
@@ -254,4 +260,45 @@
     </thead>
 	<tbody>
 	</tbody>
+</script>
+
+<!-- whitelist -->
+
+<script type="text/html" id="tmpl-whitelist">
+    <td>
+        <%=whitelist.clientId%>
+        <blockquote><small><%=client.clientDescription%></small></blockquote>
+    </td>
+
+    <td>
+        <%=client.applicationName%>
+        <!--expandable future information-->
+    </td>
+
+    <td>
+        <button class="btn btn-edit">edit</button>&nbsp;&nbsp;<button class="btn btn-danger btn-delete">delete</button>
+    </td>
+
+</script>
+
+<script type="text/html" id="tmpl-whitelist-table">
+    <div class="well">
+        <button class="btn btn-small btn-primary">New Whitelisted Site</button>
+    </div>
+
+    <table id="whitelist-table" class="table">
+        <thead>
+        <tr>
+            <th>Client ID</th>
+            <th>Application Name</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+    <div class="well">
+        <button class="btn btn-small btn-primary">New Whitelisted Site</button>
+    </div>
 </script>

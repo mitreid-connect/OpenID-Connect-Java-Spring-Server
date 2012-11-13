@@ -124,6 +124,33 @@
     });
 
 
+    var WhiteListModel = Backbone.Model.extend({
+    	
+    	idAttribute: "id",
+    	
+    	initialize: function () {
+    		
+    		
+    	},
+    	
+    	validate: {
+    		
+    	},
+    	
+    	urlRoot: "api/whitelist"
+    	
+    });
+    
+    var WhiteListCollection = Backbone.Collection.extend({
+    	initialize: function() {
+    		this.fetch();
+    	},
+    	
+    	model: WhiteListModel,
+    	url: "api/whitelist"
+    	
+    });
+    
     var ClientModel = Backbone.Model.extend({
 
         idAttribute: "id",
@@ -552,7 +579,92 @@
     });
 
 
-
+    var WhiteListListView = Backbone.View.extend({
+    	tagName: 'span',
+    	
+    	initialize:function () {
+    		this.model.bind("reset", this.render, this);
+    	},
+    
+    	events:{
+    		'click .btn-primary':'newWhiteList'
+    	},
+    	
+    	newWhiteList:function() {
+    		this.remove();
+    		app.navigate('admin/whitelist/new', {trigger: true});
+    	},
+    	
+    	render:function (eventName) {
+    		$(this.el).html($('#tmpl-whitelist-table').html());
+    		
+    		_.each(this.model.models, function (whitelist) {
+    			
+    			// look up client
+    			var client = app.clientList.where({clientId: whitelist.get('clientId')})[0]; // TODO: bulletproofing
+    			
+    			$('#whitelist-table', this.el).append(new WhiteListView({model: whitelist, client: client}).render().el);
+    		}, this);
+    		
+    		return this;
+    	}
+    
+    });
+    
+    var WhiteListView = Backbone.View.extend({
+    	tagName: 'tr',
+    	
+    	initialize:function() {
+    		if (!this.template) {
+    			this.template = _.template($('#tmpl-whitelist').html());
+    		}
+    		
+    		this.model.bind('change', this.render, this);
+    	},
+    	
+    	render:function(eventName) {
+    		
+    		var json = {whitelist: this.model.toJSON(), client: this.options.client.toJSON()};
+    		
+    		this.$el.html(this.template(json));
+    		return this;
+    	},
+    	
+    	events:{
+    		'click .btn-edit': 'editWhitelist',
+    		'click .btn-delete': 'deleteWhitelist'
+    	},
+    	
+    	editWhitelist:function() {
+    		app.navigate('admin/whitelist/' + this.model.id, {trigger: true});
+    	},
+    	
+    	deleteWhitelist:function() {
+    		
+    		if (confirm("Are you sure you want to delete this whitelist entry?")) {
+    			var self = this;
+    			
+                this.model.destroy({
+                    success:function () {
+                        self.$el.fadeTo("fast", 0.00, function () { //fade
+                            $(this).slideUp("fast", function () { //slide up
+                                $(this).remove(); //then remove from the DOM
+                            });
+                        });
+                    }
+                });
+                
+                app.whiteListListView.delegateEvents();
+    		}
+    		
+    		return false;
+    	},
+    	
+    	close:function() {
+    		$(this.el).unbind();
+    		$(this.el).empty();
+    	}
+    });
 
     // Router
     var AppRouter = Backbone.Router.extend({
@@ -561,14 +673,20 @@
             "admin/clients":"listClients",
             "admin/client/new":"newClient",
             "admin/client/:id":"editClient",
-            "admin/white_list":"whiteList"
+
+            "admin/whitelists":"whiteList",
+            "admin/whitelist/new":"newWhitelist",
+            "admin/whitelist/:id":"editWhitelist"
         },
 
         initialize:function () {
 
+        	// TODO: lazy load these instead? bootstrap them?
             this.clientList = new ClientCollection();
+            this.whiteListList = new WhiteListCollection();
 
             this.clientListView = new ClientListView({model:this.clientList});
+            this.whiteListListView = new WhiteListListView({model:this.whiteListList});
 
             this.breadCrumbView = new BreadCrumbView({
                 collection:new Backbone.Collection()
@@ -657,7 +775,15 @@
         },
 
         whiteList:function () {
-            $('#content').html(this.whiteListView.render().el);
+            $('#content').html(this.whiteListListView.render().el);
+        },
+        
+        newWhitelist:function() {
+        	
+        },
+        
+        editWhitelist:function() {
+        	
         }
 
 
