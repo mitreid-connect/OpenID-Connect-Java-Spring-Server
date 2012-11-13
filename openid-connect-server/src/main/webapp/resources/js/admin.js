@@ -255,7 +255,7 @@
         },
 
         editClient:function () {
-            app.navigate('client/' + this.model.id, {trigger: true});
+            app.navigate('admin/client/' + this.model.id, {trigger: true});
         },
 
         deleteClient:function () {
@@ -299,7 +299,7 @@
 
         newClient:function () {
             this.remove();
-            app.navigate('client/new', {trigger: true});
+            app.navigate('admin/client/new', {trigger: true});
         },
 
         render:function (eventName) {
@@ -351,7 +351,7 @@
         		$('#logoPreview').empty();
         		$('#logoPreview').attr('src', $('#logoUrl input').val());
         	} else {
-        		//$('#logoBlock').hide();
+        		$('#logoBlock').hide();
         	}
         },
 
@@ -489,7 +489,7 @@
                 this.model.save(this.model, {
                     success:function () {
                         app.clientList.add(_self.model);
-                        app.navigate('clients', {trigger:true});
+                        app.navigate('admin/clients', {trigger:true});
                     },
                     error:function (model,resp) {
                         console.error("Oops! The object didn't save correctly.",resp);
@@ -561,8 +561,7 @@
             "admin/clients":"listClients",
             "admin/client/new":"newClient",
             "admin/client/:id":"editClient",
-            "admin/white_list":"whiteList",
-            '*path':  'listClients'
+            "admin/white_list":"whiteList"
         },
 
         initialize:function () {
@@ -683,7 +682,7 @@
         jQuery.ajaxSetup({async:true});
         app = new AppRouter();
 
-
+        // grab all hashed URLs and send them through the app router instead
         $('a[href*="#"').on('click', function(event) {
         	event.preventDefault();
         	app.navigate(this.hash.slice(1), {trigger: true});
