@@ -147,6 +147,15 @@
     		//this.fetch();
     	},
     	
+        getByClientId: function(clientId) {
+			var clients = this.where({clientId: clientId});
+			if (clients.length == 1) {
+				return clients[0];
+			} else {
+				return null;
+			}
+        },
+    	
     	model: WhiteListModel,
     	url: "api/whitelist"
     	
@@ -286,13 +295,25 @@
 
         events:{
             "click .btn-edit":"editClient",
-            "click .btn-delete":"deleteClient"
+            "click .btn-delete":"deleteClient",
+            "click .btn-whitelist":"whiteListClient"
         },
 
         editClient:function () {
             app.navigate('admin/client/' + this.model.id, {trigger: true});
         },
 
+        whiteListClient:function() {
+        	var whiteList = app.whiteListList.getByClientId(this.model.get('clientId'));
+        	if (whiteList == null) {
+        		// create a new one
+        		app.navigate('admin/whitelist/new/' + this.model.id, {trigger: true});
+        	} else {
+        		// edit the existing one
+        		app.navigate('admin/whitelist/' + whiteList.id, {trigger: true});
+        	}
+        },
+        
         deleteClient:function () {
 
             if (confirm("Are you sure sure you would like to delete this client?")) {
@@ -764,7 +785,7 @@
             "admin/client/:id":"editClient",
 
             "admin/whitelists":"whiteList",
-            "admin/whitelist/new":"newWhitelist",
+            "admin/whitelist/new/:cid":"newWhitelist",
             "admin/whitelist/:id":"editWhitelist"
         },
 
@@ -887,7 +908,31 @@
             this.whiteListListView.delegateEvents();
         },
         
-        newWhitelist:function() {
+        newWhitelist:function(cid) {
+            var client = this.clientList.get(cid);
+
+            // if there's no client this is an error
+            if (client != null) {
+
+            	this.breadCrumbView.collection.reset();
+                this.breadCrumbView.collection.add([
+                    {text:"Home", href:""},
+                    {text:"Manage Whitelisted Sites", href:"manage/#admin/whitelists"},
+                    {text:"Manage Whitelisted Sites", href:"manage/#admin/whitelist/new/" + cid}
+                ]);
+                
+                var whiteList = new WhiteListModel();
+                whiteList.set({
+                	clientId: client.get('clientId'),
+                	allowedScopes: client.get('scope')
+                }, { silent: true });
+                
+            	this.whiteListFormView = new WhiteListFormView({model: whiteList, client: client});
+            	$('#content').html(this.whiteListFormView.render().el);
+            } else {
+            	console.log('ERROR: no client found for ' + cid);
+            }
+            
         	
         },
         
@@ -900,14 +945,19 @@
             ]);
             
             var whiteList = this.whiteListList.get(id);
-            var client = app.clientList.getByClientId(whiteList.get('clientId'));
-            
-            // if there's no client, this is an error
-            if (client != null) {
-            	this.whiteListFormView = new WhiteListFormView({model: whiteList, client: client});
-            	$('#content').html(this.whiteListFormView.render().el);
+            if (whiteList != null) {
+	            var client = app.clientList.getByClientId(whiteList.get('clientId'));
+	            
+	            // if there's no client, this is an error
+	            if (client != null) {
+	            	this.whiteListFormView = new WhiteListFormView({model: whiteList, client: client});
+	            	$('#content').html(this.whiteListFormView.render().el);
+	            } else {
+	            	console.log('ERROR: no client found for ' + whiteList.get('clientId'));
+	            }
+            } else {
+            	console.error('ERROR: no whitelist found for id ' + id);
             }
-
         }
 
 
