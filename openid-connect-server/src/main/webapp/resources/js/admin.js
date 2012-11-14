@@ -144,7 +144,7 @@
     
     var WhiteListCollection = Backbone.Collection.extend({
     	initialize: function() {
-    		this.fetch();
+    		//this.fetch();
     	},
     	
     	model: WhiteListModel,
@@ -212,7 +212,7 @@
     var ClientCollection = Backbone.Collection.extend({
 
         initialize: function() {
-            this.fetch();
+            //this.fetch();
         },
 
         model:ClientModel,
@@ -325,7 +325,7 @@
         tagName: 'span',
 
         initialize:function () {
-            this.model.bind("reset", this.render, this);
+            //this.model.bind("reset", this.render, this);
         },
 
         events:{
@@ -591,7 +591,7 @@
     	tagName: 'span',
     	
     	initialize:function () {
-    		this.model.bind("reset", this.render, this);
+    		//this.model.bind("reset", this.render, this);
     	},
     
     	events:{
@@ -611,7 +611,11 @@
     			// look up client
     			var client = app.clientList.getByClientId(whiteList.get('clientId'));
     			
-    			$('#whitelist-table', this.el).append(new WhiteListView({model: whiteList, client: client}).render().el);
+    			// if there's no client ID, this is an error!
+    			if (client != null) {
+    				$('#whitelist-table', this.el).append(new WhiteListView({model: whiteList, client: client}).render().el);
+    			}
+    			
     		}, this);
     		
     		return this;
@@ -697,8 +701,11 @@
     		// process allowed scopes
             var allowedScopes = this.scopeCollection.pluck("item");
     		
+            if (this.model.get('id') == null) {
+    			this.model.set({clientId:$('#clientId input').val()});
+            }
+            
     		var valid = this.model.set({
-    			clientId:$('#clientId input').val(),
     			allowedScopes: allowedScopes
     		});
     		
@@ -732,14 +739,14 @@
     		
             var _self = this;
             // build and bind scopes
-            _.each(this.model.get("scope"), function (scope) {
+            _.each(this.model.get("allowedScopes"), function (scope) {
                 _self.scopeCollection.add(new Backbone.Model({item:scope}));
             });
 
-            $("#scope .controls",this.el).html(new ListWidgetView({placeholder: 'new scope here'
-                , autocomplete: _.uniq(_.flatten(app.clientList.pluck("scope")))
-                , collection: this.scopeCollection}).render().el);
-
+            $("#scope .controls",this.el).html(new ListWidgetView({
+            	placeholder: 'new scope here', 
+            	autocomplete: this.options.client.scope, 
+            	collection: this.scopeCollection}).render().el);
     		
     		
     		return this;
@@ -763,11 +770,8 @@
 
         initialize:function () {
 
-        	// TODO: lazy load these instead? bootstrap them?
-            jQuery.ajaxSetup({async:false});
             this.clientList = new ClientCollection();
             this.whiteListList = new WhiteListCollection();
-            jQuery.ajaxSetup({async:true});
 
             this.clientListView = new ClientListView({model:this.clientList});
             this.whiteListListView = new WhiteListListView({model:this.whiteListList});
@@ -778,22 +782,36 @@
 
             this.breadCrumbView.render();
 
-            this.startAfter([this.clientList, this.whiteListList]);
+            //this.startAfter([this.clientList, this.whiteListList]);
+            
+            // load things in the right order:
+            
+            this.clientList.on('reset', function(collection, response) {
+            	app.whiteListList.fetch();
+            });
+    		
+    		this.whiteListList.on('reset', function(collection, response) {
+                var baseUrl = $.url($('base').attr('href'));                
+                Backbone.history.start({pushState: true, root: baseUrl.attr('relative') + 'manage/'});
+    		});
+
+    		
+    		// start the loading process
+    		this.clientList.fetch();
 
         },
 
+        /*
         startAfter:function (collections) {
             // Start history when required collections are loaded
             var start = _.after(collections.length, _.once(function () {
-                var baseUrl = $.url($('base').attr('href'));
-                
-                Backbone.history.start({pushState: true, root: baseUrl.attr('relative') + 'manage/'});
                 
             }));
             _.each(collections, function (collection) {
                 collection.bind('reset', start, Backbone.history);
             });
         },
+		*/
 
         listClients:function () {
 
@@ -884,8 +902,11 @@
             var whiteList = this.whiteListList.get(id);
             var client = app.clientList.getByClientId(whiteList.get('clientId'));
             
-            this.whiteListFormView = new WhiteListFormView({model: whiteList, client: client});
-        	$('#content').html(this.whiteListFormView.render().el);
+            // if there's no client, this is an error
+            if (client != null) {
+            	this.whiteListFormView = new WhiteListFormView({model: whiteList, client: client});
+            	$('#content').html(this.whiteListFormView.render().el);
+            }
 
         }
 

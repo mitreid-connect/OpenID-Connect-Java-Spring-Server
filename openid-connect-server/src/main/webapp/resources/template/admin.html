@@ -316,16 +316,16 @@
                 <button class="btn btn-small btn-primary">Save</button>&nbsp;<button class="btn btn-small btn-cancel">Cancel</button>
             </div>
 
-			<div class="control-group">
+			<div class="control-group" id="clientId">
 				<label class="control-label">Client</label>
 				<div class="controls">
-					<input type="hidden" id="clientId" name="clientId" value="<%= client.clientId %> />
+					<input type="hidden" name="clientId" value="<%= client.clientId %>" />
 					<%= client.applicationName != null ? client.applicationName : client.clientId %>
 				</div>
 			</div>
 
             <div class="control-group" id="scope">
-                <label class="control-label">Allowed Scope</label>
+                <label class="control-label">Allowed Scopes</label>
                 <div class="controls">
                 </div>
             </div>
