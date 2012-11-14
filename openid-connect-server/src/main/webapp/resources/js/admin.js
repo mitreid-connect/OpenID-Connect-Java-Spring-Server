@@ -62,6 +62,7 @@
         events:{
             "click button":"addItem",
             "keypress input":function (e) {
+            	// trap the enter key
                 if (e.which == 13) {
                     this.addItem();
                     e.preventDefault();
@@ -215,10 +216,17 @@
         },
 
         model:ClientModel,
-        url:"api/clients"
+        url:"api/clients",
+        
+        getByClientId: function(clientId) {
+			var clients = this.where({clientId: clientId});
+			if (clients.length == 1) {
+				return clients[0];
+			} else {
+				return null;
+			}
+        }
     });
-
-
 
     var BreadCrumbView = Backbone.View.extend({
 
@@ -601,7 +609,7 @@
     		_.each(this.model.models, function (whitelist) {
     			
     			// look up client
-    			var client = app.clientList.where({clientId: whitelist.get('clientId')})[0]; // TODO: bulletproofing
+    			var client = app.clientList.getByClientId(whitelist.get('clientId'));
     			
     			$('#whitelist-table', this.el).append(new WhiteListView({model: whitelist, client: client}).render().el);
     		}, this);
@@ -665,6 +673,76 @@
     		$(this.el).empty();
     	}
     });
+    
+    var WhiteListFormView = Backbone.View.extend({
+    	tagName: 'span',
+    	
+    	initialize:function () {
+    		if (!this.template) {
+    			this.template = _.template($('#tmpl-whitelist-form').html());
+    		}
+    		
+    		this.scopeCollection = new Backbone.Collection();
+    	},
+    
+    	events:{
+    		'click .btn-primary':'saveWhiteList',
+    		'click .btn-cancel':'cancelWhiteList',
+    		
+    	},
+    	
+    	saveWhiteList:function (event) {
+    		$('.control-group').removeClass('error');
+    		
+    		// process allowed scopes
+            var allowedScopes = this.scopeCollection.pluck("item");
+    		
+    		var valid = this.model.set({
+    			clientId:$('#clientId input').val(),
+    			allowedScopes: allowedScopes
+    		});
+    		
+            if (valid) {
+                var _self = this;
+                this.model.save(this.model, {
+                    success:function () {
+                        app.whiteListList.add(_self.model);
+                        app.navigate('admin/whitelists', {trigger:true});
+                    },
+                    error:function (model,resp) {
+                        console.error("Oops! The object didn't save correctly.",resp);
+                    }
+                });
+            }
+
+            return false;
+    		
+    	},
+    	
+    	render:function (eventName) {
+    		
+    		var json = {whitelist: this.model.toJSON(), client: this.options.client.toJSON()};
+    		
+    		this.$el.html(this.template(json));
+    		
+    		
+            var _self = this;
+            // build and bind scopes
+            _.each(this.model.get("scope"), function (scope) {
+                _self.scopeCollection.add(new Backbone.Model({item:scope}));
+            });
+
+            $("#scope .controls",this.el).html(new ListWidgetView({placeholder: 'new scope here'
+                , autocomplete: _.uniq(_.flatten(app.clientList.pluck("scope")))
+                , collection: this.scopeCollection}).render().el);
+
+    		
+    		
+    		return this;
+
+    	}
+    
+    });
 
     // Router
     var AppRouter = Backbone.Router.extend({
@@ -694,7 +772,7 @@
 
             this.breadCrumbView.render();
 
-            this.startAfter([this.clientList]);
+            this.startAfter([this.clientList, this.whiteListList]);
 
         },
 
@@ -775,14 +853,32 @@
         },
 
         whiteList:function () {
+            this.breadCrumbView.collection.reset();
+            this.breadCrumbView.collection.add([
+                {text:"Home", href:""},
+                {text:"Manage Whitelisted Sites", href:"manage/#admin/whitelists"}
+            ]);
+            
             $('#content').html(this.whiteListListView.render().el);
+            this.whiteListListView.delegateEvents();
         },
         
         newWhitelist:function() {
         	
         },
         
-        editWhitelist:function() {
+        editWhitelist:function(id) {
+            this.breadCrumbView.collection.reset();
+            this.breadCrumbView.collection.add([
+                {text:"Home", href:""},
+                {text:"Manage Whitelisted Sites", href:"manage/#admin/whitelists"},
+                {text:"Manage Whitelisted Sites", href:"manage/#admin/whitelist/" + id}
+            ]);
+            
+            var whiteList = this.whiteListList.get(id);
+            var client = app.clientList.getByClientId(whitelist.get('clientId'));
+            
+            this.whiteListFormView = new WhiteListFormView({model: whiteList, client: client});
         	
         }
 
