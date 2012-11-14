@@ -606,12 +606,12 @@
     	render:function (eventName) {
     		$(this.el).html($('#tmpl-whitelist-table').html());
     		
-    		_.each(this.model.models, function (whitelist) {
+    		_.each(this.model.models, function (whiteList) {
     			
     			// look up client
-    			var client = app.clientList.getByClientId(whitelist.get('clientId'));
+    			var client = app.clientList.getByClientId(whiteList.get('clientId'));
     			
-    			$('#whitelist-table', this.el).append(new WhiteListView({model: whitelist, client: client}).render().el);
+    			$('#whitelist-table', this.el).append(new WhiteListView({model: whiteList, client: client}).render().el);
     		}, this);
     		
     		return this;
@@ -632,7 +632,7 @@
     	
     	render:function(eventName) {
     		
-    		var json = {whitelist: this.model.toJSON(), client: this.options.client.toJSON()};
+    		var json = {whiteList: this.model.toJSON(), client: this.options.client.toJSON()};
     		
     		this.$el.html(this.template(json));
     		return this;
@@ -719,9 +719,13 @@
     		
     	},
     	
+    	cancelWhiteList:function(event) {
+    		app.navigate('admin/whitelists', {trigger:true});
+    	},
+    	
     	render:function (eventName) {
     		
-    		var json = {whitelist: this.model.toJSON(), client: this.options.client.toJSON()};
+    		var json = {whiteList: this.model.toJSON(), client: this.options.client.toJSON()};
     		
     		this.$el.html(this.template(json));
     		
@@ -760,8 +764,10 @@
         initialize:function () {
 
         	// TODO: lazy load these instead? bootstrap them?
+            jQuery.ajaxSetup({async:false});
             this.clientList = new ClientCollection();
             this.whiteListList = new WhiteListCollection();
+            jQuery.ajaxSetup({async:true});
 
             this.clientListView = new ClientListView({model:this.clientList});
             this.whiteListListView = new WhiteListListView({model:this.whiteListList});
@@ -876,10 +882,11 @@
             ]);
             
             var whiteList = this.whiteListList.get(id);
-            var client = app.clientList.getByClientId(whitelist.get('clientId'));
+            var client = app.clientList.getByClientId(whiteList.get('clientId'));
             
             this.whiteListFormView = new WhiteListFormView({model: whiteList, client: client});
-        	
+        	$('#content').html(this.whiteListFormView.render().el);
+
         }
 
 
