@@ -303,11 +303,13 @@
 
             this.model.bind('change', this.render, this);
             
-            this.$('.dynamically-registered').popover({title: 'Dynamic', content: 'This client was dynamically registered'});
         },
 
         render:function (eventName) {
             this.$el.html(this.template(this.model.toJSON()));
+
+            this.$('.dynamically-registered').tooltip({title: 'This client was dynamically registered'});
+            
             return this;
         },
 
