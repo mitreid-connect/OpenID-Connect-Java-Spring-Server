@@ -129,14 +129,9 @@
     	
     	idAttribute: "id",
     	
-    	initialize: function () {
-    		
-    		
-    	},
+    	initialize: function () { },
     	
-    	validate: {
-    		
-    	},
+    	validate: { },
     	
     	urlRoot: "api/whitelist"
     	
@@ -159,6 +154,24 @@
     	model: WhiteListModel,
     	url: "api/whitelist"
     	
+    });
+    
+    var ApprovedSiteModel = Backbone.Model.extend({
+    	idAttribute: 'id',
+    	
+    	initialize: function() { },
+    	
+    	validate: { },
+    	
+    	urlRoot: 'api/approved'
+    	
+    });
+    
+    var ApprovedSiteCollection = Backbone.Collection.extend({
+    	initialize: function() { },
+
+    	model: ApprovedSiteModel,
+    	url: 'api/approved'
     });
     
     var ClientModel = Backbone.Model.extend({
@@ -608,6 +621,77 @@
     });
 
 
+    var ApprovedSiteListView = Backbone.View.extend({
+    	tagName: 'span',
+    	
+    	initialize:function() { },
+    	
+    	events: { },
+    	
+    	render:function (eventName) {
+    		$(this.el).html($('#tmpl-grant-table').html());
+    		
+    		_.each(this.model.models, function(approvedSite) {
+    			// look up client
+    			var client = app.clientList.getByClientId(approvedSite.get('clientId'));
+    			
+    			if (client != null) {
+    				$('#grant-table', this.el).append(new ApprovedSiteView({model: approvedSite, client: client}).render().el);
+    			}
+    			
+    		}, this);
+    		
+    		return this;
+    	}
+    	
+    });
+    
+    var ApprovedSiteView = Backbone.View.extend({
+    	tagName: 'tr',
+    	
+    	initialize: function() {
+    		if (!this.template) {
+    			this.template = _.template($('#tmpl-grant').html());
+    		}
+    	},
+    
+    	render: function() {
+    		var json = {grant: this.model.toJSON(), client: this.options.client.toJSON()};
+    		
+    		this.$el.html(this.template(json));
+    		return this;
+    	},
+    	
+    	events: {
+    		'click .btn-delete': 'deleteApprovedSite'
+    	},
+    	
+    	deleteApprovedSite:function() {
+    		if (confirm("Are you sure you want to revoke access to this site?")) {
+    			var self = this;
+    			
+                this.model.destroy({
+                    success:function () {
+                        self.$el.fadeTo("fast", 0.00, function () { //fade
+                            $(this).slideUp("fast", function () { //slide up
+                                $(this).remove(); //then remove from the DOM
+                            });
+                        });
+                    }
+                });
+                
+                app.approvedSiteListView.delegateEvents();
+    		}
+    		
+    		return false;
+    	},
+    	
+    	close:function() {
+    		$(this.el).unbind();
+    		$(this.el).empty();
+    	}
+    });
+    
     var WhiteListListView = Backbone.View.extend({
     	tagName: 'span',
     	
@@ -615,14 +699,7 @@
     		//this.model.bind("reset", this.render, this);
     	},
     
-    	events:{
-    		'click .btn-primary':'newWhiteList'
-    	},
-    	
-    	newWhiteList:function() {
-    		this.remove();
-    		app.navigate('admin/whitelist/new', {trigger: true});
-    	},
+    	events:{ },
     	
     	render:function (eventName) {
     		$(this.el).html($('#tmpl-whitelist-table').html());
@@ -786,16 +863,21 @@
 
             "admin/whitelists":"whiteList",
             "admin/whitelist/new/:cid":"newWhitelist",
-            "admin/whitelist/:id":"editWhitelist"
+            "admin/whitelist/:id":"editWhitelist",
+            
+            "user/approved":"approvedSites"
+            	
         },
 
         initialize:function () {
 
             this.clientList = new ClientCollection();
             this.whiteListList = new WhiteListCollection();
+            this.approvedSiteList = new ApprovedSiteCollection();
 
             this.clientListView = new ClientListView({model:this.clientList});
             this.whiteListListView = new WhiteListListView({model:this.whiteListList});
+            this.approvedSiteListView = new ApprovedSiteListView({model:this.approvedSiteList});
 
             this.breadCrumbView = new BreadCrumbView({
                 collection:new Backbone.Collection()
@@ -949,7 +1031,27 @@
             } else {
             	console.error('ERROR: no whitelist found for id ' + id);
             }
+        },
+        
+        approvedSites:function() {
+        
+            this.breadCrumbView.collection.reset();
+            this.breadCrumbView.collection.add([
+                {text:"Home", href:""},
+                {text:"Manage Approved Sites", href:"manage/#user/approve"}
+            ]);
+
+        	var view = this.approvedSiteListView;
+        	
+        	this.approvedSiteList.fetch({success: 
+        		function(collection, response, options) {
+        			$('#content').html(view.render().el);
+        		}
+        	});
+        	
         }
+        
+        
 
 
     });

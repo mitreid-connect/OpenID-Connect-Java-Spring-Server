@@ -10,7 +10,7 @@
                 <li><a href="manage/#admin/blacklists">Black Lists</a></li>
             </security:authorize>
             <li class="nav-header">Personal</li>
-            <li><a href="manage/#user/grants">Manage Sites</a></li>
+            <li><a href="manage/#user/approved">Manage Sites</a></li>
             <li><a href="manage/#user/tokens">Manage Active Tokens</a></li>
             <li><a href="manage/#user/profile">Manage Profiles</a></li>
         </ul>

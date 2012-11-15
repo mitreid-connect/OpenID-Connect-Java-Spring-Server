@@ -327,4 +327,54 @@
     </form>
 
 </script>
-            
+
+<!-- approved sites (grants) -->
+
+<script type="text/html" id="tmpl-grant-table">
+
+	<h2>Your approved sites</h2>
+
+    <table id="grant-table" class="table">
+        <thead>
+        <tr>
+            <th>Application</th>
+			<th>Created</th>
+			<th>Last Accessed</th>
+			<th>Expires</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+</script>
+
+<script type="text/html" id="tmpl-grant">
+    <td>
+        <%= client.applicationName != null ? client.applicationName : client.clientId %>
+        <blockquote><small><%=client.clientDescription%></small></blockquote>
+		<!-- put scopes and other info here -->
+    </td>
+
+
+	<!-- TODO: make these dates collapsable/expandable -->
+
+	<td>
+		<%= grant.creationDate %>
+	</td>
+
+	<td>
+		<%= grant.accessDate %>
+	</td>
+
+	<td>
+		<%= grant.timeoutDate %>
+	</td>
+
+    <td>
+        <button class="btn btn-danger btn-delete">revoke</button>
+    </td>
+
+</script>
+
