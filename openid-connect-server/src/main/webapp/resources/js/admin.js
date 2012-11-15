@@ -779,7 +779,10 @@
     		var json = {whiteList: this.model.toJSON(), client: this.options.client.toJSON()};
     		
     		this.$el.html(this.template(json));
-    		return this;
+
+    		this.$('.dynamically-registered').tooltip({title: 'This client was dynamically registered'});
+
+            return this;
     	},
     	
     	events:{

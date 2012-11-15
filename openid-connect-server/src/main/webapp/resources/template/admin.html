@@ -272,6 +272,12 @@
 <!-- whitelist -->
 
 <script type="text/html" id="tmpl-whitelist">
+	<td>
+		<% if (client.dynamicallyRegistered) { %>
+		<span class="dynamically-registered"><i class="icon-cog"></i></span>
+		<% } %>
+	</td>
+
     <td>
         <%=whiteList.clientId%>
         <blockquote><small><%=client.clientDescription%></small></blockquote>
@@ -296,6 +302,7 @@
     <table id="whitelist-table" class="table">
         <thead>
         <tr>
+			<th></th>
             <th>Client ID</th>
             <th>Application Name</th>
             <th></th>
