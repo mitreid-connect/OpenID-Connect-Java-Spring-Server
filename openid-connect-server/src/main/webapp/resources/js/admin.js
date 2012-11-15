@@ -366,7 +366,8 @@
         },
 
         events:{
-            "click .btn-primary":"newClient"
+            "click .new-client":"newClient",
+            "click .refresh-table":"refreshTable"
         },
 
         newClient:function () {
@@ -384,6 +385,15 @@
             }, this);
 
             return this;
+        },
+        
+        refreshTable:function() {
+        	var _self = this;
+        	this.model.fetch({
+        		success: function() {
+        			_self.render();
+        		}
+        	});
         }
     });
 
@@ -629,7 +639,9 @@
     	
     	initialize:function() { },
     	
-    	events: { },
+    	events: {
+    		"click .refresh-table":"refreshTable"
+    	},
     	
     	render:function (eventName) {
     		$(this.el).html($('#tmpl-grant-table').html());
@@ -645,8 +657,17 @@
     		}, this);
     		
     		return this;
-    	}
+    	},
     	
+        refreshTable:function() {
+        	var _self = this;
+        	this.model.fetch({
+        		success: function() {
+        			_self.render();
+        		}
+        	});
+        }
+
     });
     
     var ApprovedSiteView = Backbone.View.extend({
@@ -702,7 +723,9 @@
     		//this.model.bind("reset", this.render, this);
     	},
     
-    	events:{ },
+    	events:{
+            "click .refresh-table":"refreshTable"
+    	},
     	
     	render:function (eventName) {
     		$(this.el).html($('#tmpl-whitelist-table').html());
@@ -720,8 +743,16 @@
     		}, this);
     		
     		return this;
-    	}
+    	},
     
+        refreshTable:function() {
+        	var _self = this;
+        	this.model.fetch({
+        		success: function() {
+        			_self.render();
+        		}
+        	});
+        }
     });
     
     var WhiteListView = Backbone.View.extend({
@@ -894,19 +925,16 @@
             //
             
             // load things in the right order:
-            
-            this.clientList.on('reset', function(collection, response) {
-            	app.whiteListList.fetch();
+            this.clientList.fetch({
+            	success: function(collection, response) {
+            		app.whiteListList.fetch({
+            			success: function(collection, response) {
+            				var baseUrl = $.url($('base').attr('href'));                
+            				Backbone.history.start({pushState: true, root: baseUrl.attr('relative') + 'manage/'});
+            			}
+            		});
+            	}
             });
-    		
-    		this.whiteListList.on('reset', function(collection, response) {
-                var baseUrl = $.url($('base').attr('href'));                
-                Backbone.history.start({pushState: true, root: baseUrl.attr('relative') + 'manage/'});
-    		});
-
-    		
-    		// start the loading process
-    		this.clientList.fetch();
 
         },
 
