@@ -33,7 +33,8 @@
             tagName: 'tr',
 
             events:{
-                "click .icon-minus-sign":function () {
+                "click .btn":function (e) {
+                	e.preventDefault();
                     this.$el.tooltip('destroy');
                     this.model.destroy();
                 }
@@ -60,7 +61,7 @@
         }),
 
         events:{
-            "click button":"addItem",
+            "click .btn":"addItem",
             "keypress input":function (e) {
             	// trap the enter key
                 if (e.which == 13) {
@@ -82,8 +83,10 @@
 
         },
 
-        addItem:function() {
-            var input_value = $("input", this.el).val().trim();
+        addItem:function(e) {
+        	e.preventDefault();
+
+        	var input_value = $("input", this.el).val().trim();
 
             var model;
 
