@@ -35,7 +35,7 @@
             events:{
                 "click .btn":function (e) {
                 	e.preventDefault();
-                    this.$el.tooltip('destroy');
+                    this.$el.tooltip('delete');
                     this.model.destroy();
                 }
             },
@@ -687,6 +687,10 @@
     		var json = {grant: this.model.toJSON(), client: this.options.client.toJSON()};
     		
     		this.$el.html(this.template(json));
+
+            this.$('.dynamically-registered').tooltip({title: 'This client was dynamically registered'});
+            this.$('.whitelisted-site').tooltip({title: 'This site was whitelisted by an adminstrator'});
+            
     		return this;
     	},
     	

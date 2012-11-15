@@ -358,6 +358,7 @@
     <table id="grant-table" class="table">
         <thead>
         <tr>
+			<th></th>
             <th>Application</th>
 			<th>Created</th>
 			<th>Last Accessed</th>
@@ -376,6 +377,15 @@
 </script>
 
 <script type="text/html" id="tmpl-grant">
+	<td>
+		<% if (dynamicallyRegistered) { %>
+		<span class="dynamically-registered"><i class="icon-cog"></i></span>
+		<% } %>
+		<% if (whitelistedSite != null) { %>
+		<span class="whitelisted-site"><i class="icon-certificate"></i></span>
+		<% } %>
+	</td>
+
     <td>
         <%= client.applicationName != null ? client.applicationName : client.clientId %>
         <blockquote><small><%=client.clientDescription%></small></blockquote>
