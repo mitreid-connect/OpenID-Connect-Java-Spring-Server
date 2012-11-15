@@ -803,7 +803,10 @@
 
             this.breadCrumbView.render();
 
-            //this.startAfter([this.clientList, this.whiteListList]);
+            //
+            // Several items depend on the clients and whitelists being loaded, so we're going to pre-fetch them here
+            // and not start the app router until they're loaded.
+            //
             
             // load things in the right order:
             
@@ -821,18 +824,6 @@
     		this.clientList.fetch();
 
         },
-
-        /*
-        startAfter:function (collections) {
-            // Start history when required collections are loaded
-            var start = _.after(collections.length, _.once(function () {
-                
-            }));
-            _.each(collections, function (collection) {
-                collection.bind('reset', start, Backbone.history);
-            });
-        },
-		*/
 
         listClients:function () {
 
