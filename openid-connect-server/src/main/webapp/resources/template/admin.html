@@ -1,6 +1,12 @@
 <!-- client -->
 
 <script type="text/html" id="tmpl-client">
+	<td>
+		<% if (dynamicallyRegistered) { %>
+		<span class="dynamically-registered"><i class="icon-cog"></i></span>
+		<% } %>
+	</td>
+
     <td>
         <%=clientId%>
         <blockquote><small><%=clientDescription%></small></blockquote>
@@ -26,6 +32,7 @@
     <table id="client-table" class="table">
         <thead>
         <tr>
+			<th></th>
             <th>Client ID</th>
             <th>Application Name</th>
             <th></th>

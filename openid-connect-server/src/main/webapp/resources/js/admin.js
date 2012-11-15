@@ -302,6 +302,8 @@
             }
 
             this.model.bind('change', this.render, this);
+            
+            this.$('.dynamically-registered').popover({title: 'Dynamic', content: 'This client was dynamically registered'});
         },
 
         render:function (eventName) {
