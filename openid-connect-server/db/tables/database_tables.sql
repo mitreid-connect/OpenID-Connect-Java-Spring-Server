@@ -1,7 +1,7 @@
 CREATE TABLE access_token (
 	id BIGINT AUTO_INCREMENT PRIMARY KEY,
 	token_value VARCHAR(4096),
-	expiration TIMESTAMP,
+	expiration TIMESTAMP NULL,
 	token_type VARCHAR(256),
 	refresh_token_id BIGINT,
 	client_id VARCHAR(256),
@@ -23,9 +23,9 @@ CREATE TABLE approved_site (
 	id BIGINT AUTO_INCREMENT PRIMARY KEY,
 	user_id VARCHAR(4096),
 	client_id VARCHAR(4096),
-	creation_date TIMESTAMP,
-	access_date TIMESTAMP,
-	timeout_date TIMESTAMP,
+	creation_date TIMESTAMP NULL,
+	access_date TIMESTAMP NULL,
+	timeout_date TIMESTAMP NULL,
 	whitelisted_site_id VARCHAR(256)
 );
 
@@ -127,7 +127,7 @@ CREATE TABLE redirect_uri (
 CREATE TABLE refresh_token (
 	id BIGINT AUTO_INCREMENT PRIMARY KEY,
 	token_value VARCHAR(4096),
-	expiration TIMESTAMP,
+	expiration TIMESTAMP NULL,
 	auth_holder_id BIGINT,
 	client_id VARCHAR(256)
 );
