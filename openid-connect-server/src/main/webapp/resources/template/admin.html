@@ -385,11 +385,11 @@
 
 <script type="text/html" id="tmpl-grant">
 	<td>
-		<% if (dynamicallyRegistered) { %>
+		<% if (client.dynamicallyRegistered) { %>
 		<span class="dynamically-registered"><i class="icon-cog"></i></span>
 		<% } %>
-		<% if (whitelistedSite != null) { %>
-		<span class="whitelisted-site"><i class="icon-certificate"></i></span>
+		<% if (grant.whitelistedSite != null) { //TODO: change to icon-certificate %>
+		<span class="whitelisted-site"><i class="icon-ok-sign"></i></span>
 		<% } %>
 	</td>
 
