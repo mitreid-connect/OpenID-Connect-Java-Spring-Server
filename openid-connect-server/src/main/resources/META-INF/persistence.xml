@@ -18,6 +18,7 @@
         <class>org.mitre.openid.connect.model.DefaultUserInfo</class>
 <!--         <class>org.mitre.openid.connect.model.UserInfo</class> -->
         <class>org.mitre.openid.connect.model.WhitelistedSite</class>
+        <class>org.mitre.openid.connect.model.BlacklistedSite</class>
         <shared-cache-mode>NONE</shared-cache-mode>
     </persistence-unit>
 </persistence>

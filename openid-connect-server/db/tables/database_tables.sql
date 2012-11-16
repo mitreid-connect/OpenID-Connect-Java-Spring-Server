@@ -56,6 +56,11 @@ CREATE TABLE authorized_grant_type (
 	authorized_grant_type VARCHAR(2000)
 );
 
+CREATE TABLE blacklisted_site (
+	id BIGINT AUTO_INCREMENT PRIMARY KEY,
+	uri VARCHAR(2048)
+);
+
 CREATE TABLE client_details (
 	id BIGINT AUTO_INCREMENT PRIMARY KEY,
 	client_description VARCHAR(256),
