@@ -21,6 +21,7 @@ import java.util.Set;
 
 import org.mitre.openid.connect.model.ApprovedSite;
 import org.mitre.openid.connect.model.WhitelistedSite;
+import org.springframework.security.oauth2.provider.ClientDetails;
 
 /**
  * Interface for ApprovedSite service
@@ -88,4 +89,10 @@ public interface ApprovedSiteService {
 	 * @return
 	 */
 	public Collection<ApprovedSite> getByClientId(String clientId);
+	
+	/**
+	 * Clear out any approved sites for a given client.
+	 * @param client
+	 */
+	public void clearApprovedSitesForClient(ClientDetails client);
 }

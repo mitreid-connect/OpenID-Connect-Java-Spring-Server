@@ -19,11 +19,13 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
 
+import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.openid.connect.model.ApprovedSite;
 import org.mitre.openid.connect.model.WhitelistedSite;
 import org.mitre.openid.connect.repository.ApprovedSiteRepository;
 import org.mitre.openid.connect.service.ApprovedSiteService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -125,5 +127,15 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 	    return approvedSiteRepository.getByClientId(clientId);
     }
 
-	
+
+	@Override
+	public void clearApprovedSitesForClient(ClientDetails client) {
+	    Collection<ApprovedSite> approvedSites = approvedSiteRepository.getByClientId(client.getClientId());
+		if (approvedSites != null) {
+			for (ApprovedSite approvedSite : approvedSites) {
+	            approvedSiteRepository.remove(approvedSite);
+            }
+		}
+    }
+
 }

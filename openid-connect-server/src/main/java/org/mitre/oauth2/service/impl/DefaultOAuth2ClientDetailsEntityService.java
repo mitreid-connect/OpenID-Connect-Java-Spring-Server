@@ -27,8 +27,9 @@ import org.mitre.oauth2.repository.OAuth2TokenRepository;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.openid.connect.model.ApprovedSite;
 import org.mitre.openid.connect.model.WhitelistedSite;
-import org.mitre.openid.connect.repository.ApprovedSiteRepository;
-import org.mitre.openid.connect.repository.WhitelistedSiteRepository;
+import org.mitre.openid.connect.service.ApprovedSiteService;
+import org.mitre.openid.connect.service.BlacklistedSiteService;
+import org.mitre.openid.connect.service.WhitelistedSiteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
@@ -46,10 +47,13 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 	private OAuth2TokenRepository tokenRepository;
 	
 	@Autowired
-	private ApprovedSiteRepository approvedSiteRepository;
+	private ApprovedSiteService approvedSiteService;
 	
 	@Autowired
-	private WhitelistedSiteRepository whitelistedSiteRepository;
+	private WhitelistedSiteService whitelistedSiteService;
+	
+	@Autowired
+	private BlacklistedSiteService blacklistedSiteService;
 	
 	public DefaultOAuth2ClientDetailsEntityService() {
 		
@@ -117,17 +121,12 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 		tokenRepository.clearTokensForClient(client);
 		
 		// clean out any approved sites for this client
-		Collection<ApprovedSite> approvedSites = approvedSiteRepository.getByClientId(client.getClientId());
-		if (approvedSites != null) {
-			for (ApprovedSite approvedSite : approvedSites) {
-	            approvedSiteRepository.remove(approvedSite);
-            }
-		}
+		approvedSiteService.clearApprovedSitesForClient(client);
 		
 		// clear out any whitelisted sites for this client
-		WhitelistedSite whitelistedSite = whitelistedSiteRepository.getByClientId(client.getClientId());
+		WhitelistedSite whitelistedSite = whitelistedSiteService.getByClientId(client.getClientId());
 		if (whitelistedSite != null) {
-            whitelistedSiteRepository.remove(whitelistedSite);
+            whitelistedSiteService.remove(whitelistedSite);
 		}
 		
 		// take care of the client itself
