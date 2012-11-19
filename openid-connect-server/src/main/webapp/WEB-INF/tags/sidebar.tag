@@ -6,8 +6,8 @@
             <security:authorize ifAnyGranted="ROLE_ADMIN">
                 <li class="nav-header">Administrative</li>
                 <li><a href="manage/#admin/clients">Manage Clients</a></li>
-                <li><a href="manage/#admin/whitelists">White Lists</a></li>
-                <li><a href="manage/#admin/blacklists">Black Lists</a></li>
+                <li><a href="manage/#admin/whitelists">Whitelisted Clients</a></li>
+                <li><a href="manage/#admin/blacklist">Blacklisted Clients</a></li>
             </security:authorize>
             <li class="nav-header">Personal</li>
             <li><a href="manage/#user/approved">Manage Sites</a></li>

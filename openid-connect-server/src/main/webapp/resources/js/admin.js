@@ -1188,7 +1188,7 @@
             this.breadCrumbView.collection.reset();
             this.breadCrumbView.collection.add([
                 {text:"Home", href:""},
-                {text:"Manage Blacklisted Sites", href:"manage/#admin/blacklists"}
+                {text:"Manage Blacklisted Sites", href:"manage/#admin/blacklist"}
             ]);
             
             var view = this.blackListListView;
