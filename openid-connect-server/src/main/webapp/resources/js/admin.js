@@ -446,11 +446,11 @@
         },
         
         previewLogo:function(event) {
-        	if ($('#logoUrl input').val()) {
-        		$('#logoPreview').empty();
-        		$('#logoPreview').attr('src', $('#logoUrl input').val());
+        	if ($('#logoUrl input', this.el).val()) {
+        		$('#logoPreview', this.el).empty();
+        		$('#logoPreview', this.el).attr('src', $('#logoUrl input').val());
         	} else {
-        		$('#logoBlock').hide();
+        		$('#logoBlock', this.el).hide();
         	}
         },
 
@@ -460,14 +460,14 @@
          */
         toggleRequireClientSecret:function(event) {
         	
-        	if ($('#requireClientSecret input').is(':checked')) {
+        	if ($('#requireClientSecret input', this.el).is(':checked')) {
         		// client secret is required, show all the bits
-        		$('#clientSecretPanel').show();
+        		$('#clientSecretPanel', this.el).show();
         		// this function sets up the display portions
         		this.toggleGenerateClientSecret();
         	} else {
         		// no client secret, hide all the bits
-        		$('#clientSecretPanel').hide();        		
+        		$('#clientSecretPanel', this.el).hide();        		
         	}
         },
         
@@ -477,15 +477,15 @@
          */
         toggleGenerateClientSecret:function(event) {
 
-        	if ($('#generateClientSecret input').is(':checked')) {
+        	if ($('#generateClientSecret input', this.el).is(':checked')) {
         		// show the "generated" block, hide the "display" checkbox
-        		$('#displayClientSecret').hide();
-        		$('#clientSecret').hide();
-        		$('#clientSecretGenerated').show();
-        		$('#clientSecretHidden').hide();
+        		$('#displayClientSecret', this.el).hide();
+        		$('#clientSecret', this.el).hide();
+        		$('#clientSecretGenerated', this.el).show();
+        		$('#clientSecretHidden', this.el).hide();
         	} else {
         		// show the display checkbox, fall back to the "display" logic
-        		$('#displayClientSecret').show();
+        		$('#displayClientSecret', this.el).show();
         		this.toggleDisplayClientSecret(event);
         	}
         },
@@ -498,14 +498,14 @@
         	
         	if ($('#displayClientSecret input').is(':checked')) {
         		// want to display it
-        		$('#clientSecret').show();
-        		$('#clientSecretHidden').hide();
-        		$('#clientSecretGenerated').hide();
+        		$('#clientSecret', this.el).show();
+        		$('#clientSecretHidden', this.el).hide();
+        		$('#clientSecretGenerated', this.el).hide();
         	} else {
         		// want to hide it
-        		$('#clientSecret').hide();
-        		$('#clientSecretHidden').show();
-        		$('#clientSecretGenerated').hide();
+        		$('#clientSecret', this.el).hide();
+        		$('#clientSecretHidden', this.el).show();
+        		$('#clientSecretGenerated', this.el).hide();
         	}
         },
 
@@ -640,11 +640,6 @@
                 $("#id-token-timeout-seconds", this.$el).prop('disabled',true);
             }
 
-
-            return this;
-        },
-        
-        postRender:function() {
             this.toggleRequireClientSecret();
             this.previewLogo();
         }
@@ -1073,7 +1068,6 @@
         	
             this.clientFormView = new ClientFormView({model:client});
             $('#content').html(this.clientFormView.render().el);
-            this.clientFormView.postRender(); // set up the form for the given model data
         },
 
         editClient:function(id) {
@@ -1100,7 +1094,6 @@
             
             this.clientFormView = new ClientFormView({model:client});
             $('#content').html(this.clientFormView.render().el);
-            this.clientFormView.postRender(); // set up the form for the given model data
         },
 
         whiteList:function () {
