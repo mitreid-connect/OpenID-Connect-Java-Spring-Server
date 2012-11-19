@@ -532,7 +532,7 @@
             
             if (requireClientSecret && !generateClientSecret) {
             	// if it's required but we're not generating it, send the value
-            	clientSecret = $('#clientSecret').val();
+            	clientSecret = $('#clientSecret input').val();
             }
 
             var accessTokenValiditySeconds = null;
