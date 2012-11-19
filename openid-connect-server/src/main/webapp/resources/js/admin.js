@@ -53,7 +53,7 @@
             render:function () {
                 this.$el.html(this.template(this.model.toJSON()));
 
-                if (this.model.get('item').length > 27) {
+                if (this.model.get('item').length > 30) {
                     this.$el.tooltip({title:this.model.get('item')});
                 }
                 return this;
