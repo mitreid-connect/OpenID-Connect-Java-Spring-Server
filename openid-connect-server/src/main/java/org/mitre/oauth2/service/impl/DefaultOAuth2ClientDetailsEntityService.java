@@ -68,9 +68,15 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 	@Override
 	public ClientDetailsEntity saveNewClient(ClientDetailsEntity client) {
 		if (client.getId() != null) { // if it's not null, it's already been saved, this is an error
-			return null; // TODO: throw exception?
+			throw new IllegalArgumentException("Tried to save a new client with an existing ID: " + client.getId());
 		}
 
+		for (String uri : client.getRegisteredRedirectUri()) {
+			if (blacklistedSiteService.isBlacklisted(uri)) {
+				throw new IllegalArgumentException("Client URI is blacklisted: " + uri);
+			}
+        }
+		
 		// assign a random clientid if it's empty 
 		// NOTE: don't assign a random client secret without asking, since public clients have no secret
         if (Strings.isNullOrEmpty(client.getClientId())) {
@@ -141,6 +147,13 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 	@Override
     public ClientDetailsEntity updateClient(ClientDetailsEntity oldClient, ClientDetailsEntity newClient) throws IllegalArgumentException {
 		if (oldClient != null && newClient != null) {
+			
+			for (String uri : newClient.getRegisteredRedirectUri()) {
+				if (blacklistedSiteService.isBlacklisted(uri)) {
+					throw new IllegalArgumentException("Client URI is blacklisted: " + uri);
+				}
+	        }
+			
 			return clientRepository.updateClient(oldClient.getId(), newClient);
 		}
 		throw new IllegalArgumentException("Neither old client or new client can be null!");
