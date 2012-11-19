@@ -24,44 +24,46 @@
     * }
     *
      */
+    var ListWidgetChildView = Backbone.View.extend({
+
+        tagName: 'tr',
+
+        events:{
+            "click .btn-delete":function (e) {
+            	e.preventDefault();
+                //this.$el.tooltip('delete');
+                this.model.destroy();
+            }
+        },
+
+        initialize:function () {
+
+            if (!this.template) {
+                this.template = _.template($('#tmpl-list-widget-child').html());
+            }
+
+            this.model.bind('destroy', this.remove, this);
+
+        },
+
+        render:function () {
+            this.$el.html(this.template(this.model.toJSON()));
+
+            if (this.model.get('item').length > 30) {
+                this.$el.tooltip({title:this.model.get('item')});
+            }
+            return this;
+        }
+    });
+
     var ListWidgetView = Backbone.View.extend({
 
         tagName: "table",
 
-        childView: Backbone.View.extend({
-
-            tagName: 'tr',
-
-            events:{
-                "click .btn":function (e) {
-                	e.preventDefault();
-                    this.$el.tooltip('delete');
-                    this.model.destroy();
-                }
-            },
-
-            initialize:function () {
-
-                if (!this.template) {
-                    this.template = _.template($('#tmpl-list-widget-child').html());
-                }
-
-                this.model.bind('destroy', this.remove, this);
-
-            },
-
-            render:function () {
-                this.$el.html(this.template(this.model.toJSON()));
-
-                if (this.model.get('item').length > 30) {
-                    this.$el.tooltip({title:this.model.get('item')});
-                }
-                return this;
-            }
-        }),
+        childView:ListWidgetChildView,
 
         events:{
-            "click .btn":"addItem",
+            "click .btn-add":"addItem",
             "keypress input":function (e) {
             	// trap the enter key
                 if (e.which == 13) {
@@ -124,9 +126,20 @@
 
             return this;
         }
-
+        
     });
 
+    var BlackListModel = Backbone.Model.extend({
+    	idAttribute: 'id',
+    	
+    	urlRoot: 'api/blacklist'
+    });
+    
+    var BlackListCollection = Backbone.Collection.extend({
+    	initialize: function() { },
+
+    	url: "api/blacklist"
+    });
 
     var WhiteListModel = Backbone.Model.extend({
     	
@@ -897,7 +910,81 @@
     	}
     
     });
+    
+    var BlackListListView = Backbone.View.extend({
+    	tagName: 'span',
+    	
+    	initialize:function() {
+    		if (!this.template) {
+    			this.template = _.template($('#tmpl-blacklist-form').html());
+    		}
+    	},
+    	
+    	events: {
+            "click .refresh-table":"refreshTable"    		
+    	},
+    	
+        refreshTable:function() {
+        	var _self = this;
+        	this.model.fetch({
+        		success: function() {
+        			_self.render();
+        		}
+        	});
+        },	
+    	
+    	render:function (eventName) {
+    		
+    		$(this.el).html(this.template(this.model.toJSON()));
+    		
+			$('#blacklist .controls', this.el).html(new BlackListWidgetView({
+				placeholder: 'http://',
+				collection: this.model
+			}).render().el);
+    		
+			return this;
+    	}
+    });
 
+    var BlackListWidgetView = ListWidgetView.extend({
+    	
+    	childView: ListWidgetChildView.extend({
+    		render:function() {
+    			var uri = this.model.get('uri');
+    			
+    			this.$el.html(this.template({item: uri}));
+
+                if (uri.length > 30) {
+                    this.$el.tooltip({title:uri});
+                }
+                return this;
+    			
+    		}
+    	}),
+    	
+    	addItem:function(e) {
+        	e.preventDefault();
+
+        	var input_value = $("input", this.el).val().trim();
+        	
+        	// TODO: URI/pattern validation, check against existing clients
+        	
+        	var item = new BlackListModel({
+        		uri: input_value
+        	});
+        	
+        	var _self = this; // closures...
+        	
+        	item.save(item, {
+        		success:function() {
+        			_self.collection.add(item);
+        		}
+        	});
+
+    	}
+    	
+    });
+    
     // Router
     var AppRouter = Backbone.Router.extend({
 
@@ -910,6 +997,8 @@
             "admin/whitelist/new/:cid":"newWhitelist",
             "admin/whitelist/:id":"editWhitelist",
             
+            "admin/blacklist":"blackList",
+            
             "user/approved":"approvedSites"
             	
         },
@@ -918,11 +1007,13 @@
 
             this.clientList = new ClientCollection();
             this.whiteListList = new WhiteListCollection();
+            this.blackListList = new BlackListCollection();
             this.approvedSiteList = new ApprovedSiteCollection();
 
             this.clientListView = new ClientListView({model:this.clientList});
             this.whiteListListView = new WhiteListListView({model:this.whiteListList});
             this.approvedSiteListView = new ApprovedSiteListView({model:this.approvedSiteList});
+            this.blackListListView = new BlackListListView({model:this.blackListList});
 
             this.breadCrumbView = new BreadCrumbView({
                 collection:new Backbone.Collection()
@@ -1091,9 +1182,23 @@
         		}
         	});
         	
+        },
+        
+        blackList:function() {
+            this.breadCrumbView.collection.reset();
+            this.breadCrumbView.collection.add([
+                {text:"Home", href:""},
+                {text:"Manage Blacklisted Sites", href:"manage/#admin/blacklists"}
+            ]);
+            
+            var view = this.blackListListView;
+            
+            this.blackListList.fetch({success:
+            	function(collection, response, options) {
+            		$('#content').html(view.render().el);
+            	}
+            });
         }
-        
-        
 
 
     });

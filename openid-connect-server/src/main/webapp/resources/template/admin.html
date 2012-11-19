@@ -254,7 +254,7 @@
 
 <script type="text/html" id="tmpl-list-widget-child">
     <td><%=(item.length > 30) ? item.substr(0,27) + '...' : item %></td>
-    <td><a class="btn btn-small" href="#"><i class="icon-minus-sign icon-gray"></i></a></td>
+    <td><a class="btn btn-small btn-delete" href="#"><i class="icon-minus-sign icon-gray"></i></a></td>
 </script>
 
 <script type="text/html" id="tmpl-list-widget">
@@ -262,7 +262,7 @@
     <tr>
         <th class="control-group">
             <input type="text" value="" placeholder="<%=(placeholder) ? placeholder : ''%>"></th>
-        <th><a class="btn btn-small" href="#"><i class="icon-plus-sign icon-gray"></i></a></th>
+        <th><a class="btn btn-small btn-add" href="#"><i class="icon-plus-sign icon-gray"></i></a></th>
     </tr>
     </thead>
 	<tbody>
@@ -426,7 +426,7 @@
     <form class="form-horizontal">
         <fieldset>
             <div class="well">
-                <button class="btn btn-small btn-primary">Save</button>&nbsp;<button class="btn btn-small btn-cancel">Cancel</button>
+				<button class="btn btn-small refresh-table"><i class="icon-refresh"></i></button>
             </div>
 
             <div class="control-group" id="blacklist">
@@ -436,7 +436,7 @@
             </div>
 
             <div class="well">
-                <button class="btn btn-small btn-primary">Save</button>&nbsp;<button class="btn btn-small btn-cancel">Cancel</button>
+				<button class="btn btn-small refresh-table"><i class="icon-refresh"></i></button>
             </div>
 
         </fieldset>
