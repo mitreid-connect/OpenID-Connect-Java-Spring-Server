@@ -162,7 +162,7 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 		for (String scope : requestedScopes) {
 			
 			if (!allowedScopes.contains(scope)) {
-				throw new InvalidScopeException("Invalid scope: " + scope, allowedScopes);
+				return false; //throw new InvalidScopeException("Invalid scope: " + scope, allowedScopes);
 			}
 		}
 		
