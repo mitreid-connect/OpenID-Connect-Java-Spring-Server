@@ -168,7 +168,7 @@ public class ClientDynamicRegistrationEndpoint {
 			}
 		});
 	}
-	
+
 
 	//TODO: this is a stub, make it work
 	@InitBinder({"require_auth_time"})
@@ -178,13 +178,18 @@ public class ClientDynamicRegistrationEndpoint {
 		 */
 		binder.registerCustomEditor(Boolean.class, new PropertyEditorSupport() {
 			@Override
-			public void setValue(Object obj) {
-				if (obj != null) {
-					setValue(obj);
-				}
-				else {
+			public void setAsText(String text) throws IllegalArgumentException {
+				if (Strings.isNullOrEmpty(text)) {
 					setValue(false);
+				} else {
+					setValue(new Boolean(text));
 				}
+			}
+			
+			@Override
+			public String getAsText() {
+				Boolean bool = (Boolean) getValue();
+				return bool == null? "false" : bool.toString();
 			}
 		});
 		
