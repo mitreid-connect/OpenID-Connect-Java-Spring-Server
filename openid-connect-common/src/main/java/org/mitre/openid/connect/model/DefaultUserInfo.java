@@ -364,7 +364,7 @@ public class DefaultUserInfo implements UserInfo {
 		ui.setUpdatedTime(obj.has("updated_time") ? obj.get("updated_time").getAsString() : null);
 		
 		ui.setEmail(obj.has("email") ? obj.get("email").getAsString() : null);
-		ui.setEmailVerified(obj.has("email") ? obj.get("email_verified").getAsBoolean() : null);
+		ui.setEmailVerified(obj.has("email_verified") ? obj.get("email_verified").getAsBoolean() : null);
 		
 		ui.setPhoneNumber(obj.has("phone_number") ? obj.get("phone_number").getAsString() : null);
 
