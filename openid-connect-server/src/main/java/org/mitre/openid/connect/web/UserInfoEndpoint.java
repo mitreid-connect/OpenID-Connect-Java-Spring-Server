@@ -65,7 +65,7 @@ public class UserInfoEndpoint {
 	 * @throws InvalidScopeException if the oauth2 token doesn't have the "openid" scope
 	 */
 	@PreAuthorize("hasRole('ROLE_USER') and #oauth2.hasScope('openid')")
-	@RequestMapping(value="/userinfo", method= {RequestMethod.GET, RequestMethod.POST})
+	@RequestMapping(value="/userinfo", method= {RequestMethod.GET, RequestMethod.POST}, produces = "application/json")
 	public String getInfo(Principal p, @RequestParam("schema") String schema, Model model) {
 
 		if (p == null) {

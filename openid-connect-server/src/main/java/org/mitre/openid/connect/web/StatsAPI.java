@@ -17,7 +17,7 @@ public class StatsAPI {
 	@Autowired
 	private StatsService statsService;
 	
-	@RequestMapping("summary")
+	@RequestMapping(value = "summary", produces = "application/json")
 	public String statsSummary(ModelMap m) {
 		
 		Map<String, Integer> e = statsService.calculateSummaryStats();

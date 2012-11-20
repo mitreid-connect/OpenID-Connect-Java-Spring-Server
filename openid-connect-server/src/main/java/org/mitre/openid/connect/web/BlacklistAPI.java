@@ -43,7 +43,7 @@ public class BlacklistAPI {
 	 * @param m
 	 * @return
 	 */
-	@RequestMapping(method = RequestMethod.GET, headers = "Accept=application/json")
+	@RequestMapping(method = RequestMethod.GET, produces = "application/json")
 	public String getAllBlacklistedSites(ModelMap m) {
 		
 		Collection<BlacklistedSite> all = blacklistService.getAll();
@@ -60,7 +60,7 @@ public class BlacklistAPI {
 	 * @param p
 	 * @return
 	 */
-	@RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
+	@RequestMapping(method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
 	public String addNewBlacklistedSite(@RequestBody String jsonString, ModelMap m, Principal p) {
 		
 		JsonObject json = parser.parse(jsonString).getAsJsonObject();
@@ -78,7 +78,7 @@ public class BlacklistAPI {
 	/**
 	 * Update an existing blacklisted site
 	 */
-	@RequestMapping(value="/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")
+	@RequestMapping(value="/{id}", method = RequestMethod.PUT, consumes = "application/json", produces = "application/json")
 	public String updateBlacklistedSite(@PathVariable("id") Long id, @RequestBody String jsonString, ModelMap m, Principal p) {
 		
 		JsonObject json = parser.parse(jsonString).getAsJsonObject();
@@ -104,13 +104,14 @@ public class BlacklistAPI {
 	 * Delete a blacklisted site
 	 * 
 	 */
-	@RequestMapping(value="/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
+	@RequestMapping(value="/{id}", method = RequestMethod.DELETE)
 	public String deleteBlacklistedSite(@PathVariable("id") Long id, ModelMap m) {
 		BlacklistedSite blacklist = blacklistService.getById(id);
 		
 		if (blacklist == null) {
 			m.put("code", HttpStatus.NOT_FOUND);
 		} else {
+			m.put("code", HttpStatus.OK);
 			blacklistService.remove(blacklist);
 		}		
 		
@@ -120,7 +121,7 @@ public class BlacklistAPI {
 	/**
 	 * Get a single blacklisted site
 	 */
-	@RequestMapping(value="/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
+	@RequestMapping(value="/{id}", method = RequestMethod.GET, produces = "application/json")
 	public String getBlacklistedSite(@PathVariable("id") Long id, ModelMap m) {
 		BlacklistedSite blacklist = blacklistService.getById(id);
 		if (blacklist == null) {

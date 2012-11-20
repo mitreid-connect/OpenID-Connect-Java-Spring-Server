@@ -34,7 +34,7 @@ public class SimpleWebDiscoveryEndpoint {
 	ConfigurationPropertiesBean config;
 	
 	@RequestMapping(value="/.well-known/simple-web-discovery", 
-					params={"principal", "service=http://openid.net/specs/connect/1.0/issuer"})
+					params={"principal", "service=http://openid.net/specs/connect/1.0/issuer"}, produces = "application/json")
 	public ModelAndView openIdConnectIssuerDiscovery(@RequestParam("principal") String principal, ModelAndView modelAndView) {
 		
 		String baseUrl = config.getIssuer();
@@ -54,7 +54,7 @@ public class SimpleWebDiscoveryEndpoint {
 	}
 	
 	@RequestMapping(value={"/.well-known/host-meta", "/.well-known/host-meta.json"},
-			params={"resource", "rel=http://openid.net/specs/connect/1.0/issuer"})
+			params={"resource", "rel=http://openid.net/specs/connect/1.0/issuer"}, produces = "application/json")
 	public ModelAndView xrdDiscovery(@RequestParam("resource") String resource, ModelAndView modelAndView) {
 		
 		Map<String, String> relMap = new HashMap<String, String>();

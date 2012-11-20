@@ -30,7 +30,7 @@ public class JsonWebKeyEndpoint {
 	@Autowired
 	JwtSigningAndValidationService jwtService;
 	
-	@RequestMapping("/jwk")
+	@RequestMapping(value = "/jwk", produces = "application/json")
 	public ModelAndView getJwk() {
 		
 		// map from key id to signer

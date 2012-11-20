@@ -22,6 +22,7 @@ import org.mitre.oauth2.exception.ClientNotFoundException;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -55,7 +56,7 @@ public class ClientAPI {
      * @param modelAndView
      * @return
      */
-    @RequestMapping(method = RequestMethod.GET, headers="Accept=application/json")
+    @RequestMapping(method = RequestMethod.GET, produces = "application/json")
     public ModelAndView apiGetAllClients(ModelAndView modelAndView) {
 
         Collection<ClientDetailsEntity> clients = clientService.getAllClients();
@@ -72,7 +73,7 @@ public class ClientAPI {
      * @param principal
      * @return
      */
-    @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
+    @RequestMapping(method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
     public String apiAddClient(@RequestBody String jsonString, Model m, Principal principal) {
 
     	JsonObject json = parser.parse(jsonString).getAsJsonObject();
@@ -108,7 +109,7 @@ public class ClientAPI {
      * @param principal
      * @return
      */
-    @RequestMapping(value="/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")
+    @RequestMapping(value="/{id}", method = RequestMethod.PUT, consumes = "application/json", produces = "application/json")
     public String apiUpdateClient(@PathVariable("id") Long id, @RequestBody String jsonString, Model m, Principal principal) {
     	
     	// TODO: sanity check if the thing really is a JSON object
@@ -148,13 +149,19 @@ public class ClientAPI {
      * @param modelAndView
      * @return
      */
-    @RequestMapping(value="/{id}", method=RequestMethod.DELETE, headers="Accept=application/json")
+    @RequestMapping(value="/{id}", method=RequestMethod.DELETE)
     public String apiDeleteClient(@PathVariable("id") Long id, ModelAndView modelAndView) {
 
         ClientDetailsEntity client = clientService.getClientById(id);
-        clientService.deleteClient(client);
-
-        return "jsonClientView";
+        
+		if (client == null) {
+			modelAndView.getModelMap().put("code", HttpStatus.NOT_FOUND);
+		} else {
+			modelAndView.getModelMap().put("code", HttpStatus.OK);
+			clientService.deleteClient(client);
+		}		
+		
+		return "httpCodeView";
     }
 
 
@@ -164,7 +171,7 @@ public class ClientAPI {
      * @param modelAndView
      * @return
      */
-    @RequestMapping(value="/{id}", method=RequestMethod.GET, headers="Accept=application/json")
+    @RequestMapping(value="/{id}", method=RequestMethod.GET, produces = "application/json")
     public ModelAndView apiShowClient(@PathVariable("id") Long id, ModelAndView modelAndView) {
         ClientDetailsEntity client = clientService.getClientById(id);
         if (client == null) {

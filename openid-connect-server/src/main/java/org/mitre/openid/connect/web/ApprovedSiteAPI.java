@@ -34,7 +34,7 @@ public class ApprovedSiteAPI {
 	 * @param m
 	 * @return
 	 */
-	@RequestMapping(method = RequestMethod.GET, headers = "Accept=application/json")
+	@RequestMapping(method = RequestMethod.GET, produces = "application/json")
 	public String getAllApprovedSites(ModelMap m, Principal p) {
 		
 		Collection<ApprovedSite> all = approvedSiteService.getByUserId(p.getName());
@@ -48,7 +48,7 @@ public class ApprovedSiteAPI {
 	 * Delete an approved site
 	 * 
 	 */
-	@RequestMapping(value="/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
+	@RequestMapping(value="/{id}", method = RequestMethod.DELETE)
 	public String deleteApprovedSite(@PathVariable("id") Long id, ModelMap m, Principal p) {
 		ApprovedSite approvedSite = approvedSiteService.getById(id);
 		
@@ -57,6 +57,7 @@ public class ApprovedSiteAPI {
 		} else if (!approvedSite.getUserId().equals(p.getName())) {
 			m.put("code", HttpStatus.FORBIDDEN);
 		} else {
+			m.put("code", HttpStatus.OK);
 			approvedSiteService.remove(approvedSite);
 		}		
 		
@@ -66,7 +67,7 @@ public class ApprovedSiteAPI {
 	/**
 	 * Get a single approved site
 	 */
-	@RequestMapping(value="/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
+	@RequestMapping(value="/{id}", method = RequestMethod.GET, produces = "application/json")
 	public String getApprovedSite(@PathVariable("id") Long id, ModelMap m, Principal p) {
 		ApprovedSite approvedSite = approvedSiteService.getById(id);
 		if (approvedSite == null) {

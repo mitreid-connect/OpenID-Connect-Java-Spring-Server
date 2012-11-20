@@ -169,7 +169,7 @@ public class ClientDynamicRegistrationEndpoint {
 		});
 	}
 	
-	@RequestMapping(params = "type=client_associate")
+	@RequestMapping(params = "type=client_associate", produces = "application/json")
 	public String clientAssociate(
 			@RequestParam(value = "contacts", required = false) Set<String> contacts,
 			@RequestParam(value = "application_type", required = false) AppType applicationType,
@@ -248,7 +248,7 @@ public class ClientDynamicRegistrationEndpoint {
 		return "clientAssociate";
 	}
 	
-	@RequestMapping(params = "type=rotate_secret")
+	@RequestMapping(params = "type=rotate_secret", produces = "application/json")
 	public String rotateSecret(@RequestParam("client_id") String clientId, @RequestParam("client_secret") String clientSecret, ModelMap model) {
 		
 		ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
@@ -271,7 +271,7 @@ public class ClientDynamicRegistrationEndpoint {
 		return "clientAssociate";
 	}
 	
-	@RequestMapping(params = "type=client_update")
+	@RequestMapping(params = "type=client_update", produces = "application/json")
 	public String clientUpdate(
 			@RequestParam("client_id") String clientId, 
 			@RequestParam("client_secret") String clientSecret,

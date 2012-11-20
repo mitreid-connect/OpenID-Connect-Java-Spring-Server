@@ -42,7 +42,7 @@ public class WhitelistAPI {
 	 * @param m
 	 * @return
 	 */
-	@RequestMapping(method = RequestMethod.GET, headers = "Accept=application/json")
+	@RequestMapping(method = RequestMethod.GET, produces = "application/json")
 	public String getAllWhitelistedSites(ModelMap m) {
 		
 		Collection<WhitelistedSite> all = whitelistService.getAll();
@@ -59,7 +59,7 @@ public class WhitelistAPI {
 	 * @param p
 	 * @return
 	 */
-	@RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
+	@RequestMapping(method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
 	public String addNewWhitelistedSite(@RequestBody String jsonString, ModelMap m, Principal p) {
 		
 		JsonObject json = parser.parse(jsonString).getAsJsonObject();
@@ -80,7 +80,7 @@ public class WhitelistAPI {
 	/**
 	 * Update an existing whitelisted site
 	 */
-	@RequestMapping(value="/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")
+	@RequestMapping(value="/{id}", method = RequestMethod.PUT, consumes = "application/json", produces = "application/json")
 	public String updateWhitelistedSite(@PathVariable("id") Long id, @RequestBody String jsonString, ModelMap m, Principal p) {
 		
 		JsonObject json = parser.parse(jsonString).getAsJsonObject();
@@ -106,13 +106,14 @@ public class WhitelistAPI {
 	 * Delete a whitelisted site
 	 * 
 	 */
-	@RequestMapping(value="/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
+	@RequestMapping(value="/{id}", method = RequestMethod.DELETE)
 	public String deleteWhitelistedSite(@PathVariable("id") Long id, ModelMap m) {
 		WhitelistedSite whitelist = whitelistService.getById(id);
 		
 		if (whitelist == null) {
 			m.put("code", HttpStatus.NOT_FOUND);
 		} else {
+			m.put("code", HttpStatus.OK);
 			whitelistService.remove(whitelist);
 		}		
 		
@@ -122,7 +123,7 @@ public class WhitelistAPI {
 	/**
 	 * Get a single whitelisted site
 	 */
-	@RequestMapping(value="/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
+	@RequestMapping(value="/{id}", method = RequestMethod.GET, produces = "application/json")
 	public String getWhitelistedSite(@PathVariable("id") Long id, ModelMap m) {
 		WhitelistedSite whitelist = whitelistService.getById(id);
 		if (whitelist == null) {
