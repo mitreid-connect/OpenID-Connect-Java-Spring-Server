@@ -51,7 +51,7 @@ public interface ApprovedSiteRepository {
 	 * @param userId
 	 * @return
 	 */	
-	public ApprovedSite getByClientIdAndUserId(String clientId, String userId);
+	public Collection<ApprovedSite> getByClientIdAndUserId(String clientId, String userId);
 
 	/**
 	 * Removes the given ApprovedSite from the repository

@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.mitre.openid.connect.token;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
@@ -25,7 +26,6 @@ import org.mitre.openid.connect.service.ApprovedSiteService;
 import org.mitre.openid.connect.service.WhitelistedSiteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.common.exceptions.InvalidScopeException;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
@@ -86,9 +86,9 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 		Set<String> authRequestScopes = Sets.newHashSet(Splitter.on(" ").split(scopes));
 		
 		//lookup ApprovedSites by userId and clientId
-		ApprovedSite ap = approvedSiteService.getByClientIdAndUserId(clientId, userId);
-		
-		if (ap != null) {
+		Collection<ApprovedSite> aps = approvedSiteService.getByClientIdAndUserId(clientId, userId);
+		for (ApprovedSite ap : aps) {
+			// if we find one that fits...
 			if (scopesMatch(authRequestScopes, ap.getAllowedScopes())) {
 				
 				//We have a match; update the access date on the AP entry and return true.
@@ -97,7 +97,7 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 				
 				return true;
 			}
-		}
+        }
 		
 		WhitelistedSite ws = whitelistedSiteService.getByClientId(clientId);
 		if (ws != null && scopesMatch(authRequestScopes, ws.getAllowedScopes())) {

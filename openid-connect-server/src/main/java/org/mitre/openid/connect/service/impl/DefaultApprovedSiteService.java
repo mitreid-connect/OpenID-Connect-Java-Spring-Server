@@ -101,7 +101,7 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 	}
 
 	@Override
-	public ApprovedSite getByClientIdAndUserId(String clientId, String userId) {
+	public Collection<ApprovedSite> getByClientIdAndUserId(String clientId, String userId) {
 		
 		return approvedSiteRepository.getByClientIdAndUserId(clientId, userId);
 		

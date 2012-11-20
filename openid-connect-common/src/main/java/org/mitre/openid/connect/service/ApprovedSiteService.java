@@ -49,7 +49,7 @@ public interface ApprovedSiteService {
 	 * @param userId
 	 * @return
 	 */	
-	public ApprovedSite getByClientIdAndUserId(String clientId, String userId);
+	public Collection<ApprovedSite> getByClientIdAndUserId(String clientId, String userId);
 	
 	/**
 	 * Save an ApprovedSite

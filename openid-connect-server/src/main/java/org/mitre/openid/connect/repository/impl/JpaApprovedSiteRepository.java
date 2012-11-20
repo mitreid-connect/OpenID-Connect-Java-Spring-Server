@@ -74,13 +74,13 @@ public class JpaApprovedSiteRepository implements ApprovedSiteRepository {
 	}
 
 	@Override
-	public ApprovedSite getByClientIdAndUserId(String clientId, String userId) {
+	public Collection<ApprovedSite> getByClientIdAndUserId(String clientId, String userId) {
 		
 		TypedQuery<ApprovedSite> query = manager.createNamedQuery("ApprovedSite.getByClientIdAndUserId", ApprovedSite.class);
 		query.setParameter("userId", userId);
 		query.setParameter("clientId", clientId);
 		
-		return JpaUtil.getSingleResult(query.getResultList());
+		return query.getResultList();
 	}
 	
     @Override
