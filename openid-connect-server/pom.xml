@@ -24,6 +24,11 @@
 			<artifactId>openid-connect-common</artifactId>
 			<version>0.1-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>org.hsqldb</groupId>
+			<artifactId>hsqldb</artifactId>
+			<version>2.2.9</version>
+		</dependency>
     </dependencies>
     <description>Reference implementation of OpenID Connect spec (http://openid.net/connect/).
     </description>

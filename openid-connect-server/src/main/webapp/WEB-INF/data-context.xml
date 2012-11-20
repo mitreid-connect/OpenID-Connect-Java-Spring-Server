@@ -1,13 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:jdbc="http://www.springframework.org/schema/jdbc"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       						http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd">
 
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="org.hsqldb.jdbcDriver" />
+		<property name="url" value="jdbc:hsqldb:mem:oic;sql.syntax_mys=true" />
+		<!-- <property name="url" value="jdbc:hsqldb:file:/opt/hsql/clipOIDC/oic;sql.syntax_mys=true" /> -->
+		<property name="username" value="oic" />
+		<property name="password" value="oic" />	
+	</bean>
+	
+	<!-- Use the following to set up the OIC tables in the in-memory DB
+		   If you are using a file based HSQLDB you should not run this every time. -->
+	<jdbc:initialize-database data-source="dataSource">
+		<jdbc:script location="classpath:/db/tables/database_tables.sql"/>
+		<!-- The following are for the jdbc-user-service spring security implementation -->
+		<jdbc:script location="classpath:/db/tables/security-schema.sql"/>
+		<jdbc:script location="classpath:/db/users.sql"/>
+	</jdbc:initialize-database>
+	
+	<!--  The following is for connecting to a MySQL database that has been initialized with 
+			src/main/resources/db/tables/mysql_database_tables.sql -->
+	<!-- 
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
 		<property name="url" value="jdbc:mysql://localhost/oic" />
 		<property name="username" value="oic" />
 		<property name="password" value="oic" />		
 	</bean>
-
+	-->
 </beans>

@@ -134,7 +134,8 @@
 	<!-- JPA -->
 
 	<bean id="jpaAdapter" class="org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter">
-		<property name="databasePlatform" value="org.eclipse.persistence.platform.database.MySQLPlatform" />
+		<!-- <property name="databasePlatform" value="org.eclipse.persistence.platform.database.MySQLPlatform" /> -->
+		<property name="databasePlatform" value="org.eclipse.persistence.platform.database.HSQLPlatform"></property>
 		<property name="showSql" value="true" />
 	</bean>
 
