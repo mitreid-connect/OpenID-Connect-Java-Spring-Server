@@ -169,6 +169,27 @@ public class ClientDynamicRegistrationEndpoint {
 		});
 	}
 	
+
+	//TODO: this is a stub, make it work
+	@InitBinder({"require_auth_time"})
+	public void authTimeInitBinder(WebDataBinder binder) {
+		/*
+		 * Space-separated set of strings
+		 */
+		binder.registerCustomEditor(Boolean.class, new PropertyEditorSupport() {
+			@Override
+			public void setValue(Object obj) {
+				if (obj != null) {
+					setValue(obj);
+				}
+				else {
+					setValue(false);
+				}
+			}
+		});
+		
+	}
+	
 	@RequestMapping(params = "type=client_associate", produces = "application/json")
 	public String clientAssociate(
 			@RequestParam(value = "contacts", required = false) Set<String> contacts,
