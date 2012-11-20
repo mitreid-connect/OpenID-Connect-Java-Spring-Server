@@ -642,6 +642,8 @@
 
             this.toggleRequireClientSecret();
             this.previewLogo();
+            
+            return this;
         }
     });
 
