@@ -168,5 +168,14 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 		
 		return true;
 	}
+
+	//
+	// FIXME
+	// 
+    @Override
+    public AuthorizationRequest updateBeforeApproval(AuthorizationRequest authorizationRequest, Authentication userAuthentication) {
+	    // TODO Auto-generated method stub
+	    return null;
+    }
 	
 }

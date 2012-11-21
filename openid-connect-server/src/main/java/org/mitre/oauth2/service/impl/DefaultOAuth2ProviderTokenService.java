@@ -140,7 +140,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
     }
 
 	@Override
-    public OAuth2AccessTokenEntity refreshAccessToken(String refreshTokenValue, Set<String> scope) throws AuthenticationException {
+    public OAuth2AccessTokenEntity refreshAccessToken(String refreshTokenValue, AuthorizationRequest authRequest) throws AuthenticationException {
 		
 		OAuth2RefreshTokenEntity refreshToken = tokenRepository.getRefreshTokenByValue(refreshTokenValue);
 		
@@ -174,6 +174,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		// get the stored scopes from the authentication holder's authorization request; these are the scopes associated with the refresh token
 		Set<String> refreshScopes = refreshToken.getAuthenticationHolder().getAuthentication().getAuthorizationRequest().getScope();
 		
+		Set<String> scope = authRequest.getScope();
 		if (scope != null && !scope.isEmpty()) { 
 			// ensure a proper subset of scopes
 			if (refreshScopes != null && refreshScopes.containsAll(scope)) {
