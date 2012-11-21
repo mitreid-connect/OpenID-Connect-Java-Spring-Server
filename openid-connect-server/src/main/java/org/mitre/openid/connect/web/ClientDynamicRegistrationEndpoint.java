@@ -168,32 +168,6 @@ public class ClientDynamicRegistrationEndpoint {
 			}
 		});
 	}
-
-
-	//TODO: this is a stub, make it work
-	@InitBinder({"require_auth_time"})
-	public void authTimeInitBinder(WebDataBinder binder) {
-		/*
-		 * Space-separated set of strings
-		 */
-		binder.registerCustomEditor(Boolean.class, new PropertyEditorSupport() {
-			@Override
-			public void setAsText(String text) throws IllegalArgumentException {
-				if (Strings.isNullOrEmpty(text)) {
-					setValue(false);
-				} else {
-					setValue(new Boolean(text));
-				}
-			}
-			
-			@Override
-			public String getAsText() {
-				Boolean bool = (Boolean) getValue();
-				return bool == null? "false" : bool.toString();
-			}
-		});
-		
-	}
 	
 	@RequestMapping(params = "type=client_associate", produces = "application/json")
 	public String clientAssociate(
@@ -225,7 +199,7 @@ public class ClientDynamicRegistrationEndpoint {
 			*/
 			
 			@RequestParam(value = "default_max_age", required = false) Integer defaultMaxAge,
-			@RequestParam(value = "require_auth_time", required = false) Boolean requireAuthTime,
+			@RequestParam(value = "require_auth_time", required = false, defaultValue = "true") Boolean requireAuthTime,
 			@RequestParam(value = "default_acr", required = false) String defaultAcr,
 			ModelMap model
 			) {

@@ -71,11 +71,13 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 			throw new IllegalArgumentException("Tried to save a new client with an existing ID: " + client.getId());
 		}
 
-		for (String uri : client.getRegisteredRedirectUri()) {
-			if (blacklistedSiteService.isBlacklisted(uri)) {
-				throw new IllegalArgumentException("Client URI is blacklisted: " + uri);
-			}
-        }
+		if (client.getRegisteredRedirectUri() != null) {
+			for (String uri : client.getRegisteredRedirectUri()) {
+				if (blacklistedSiteService.isBlacklisted(uri)) {
+					throw new IllegalArgumentException("Client URI is blacklisted: " + uri);
+				}
+		    }
+		}
 		
 		// assign a random clientid if it's empty 
 		// NOTE: don't assign a random client secret without asking, since public clients have no secret
