@@ -1,6 +1,7 @@
 INSERT INTO users(username, password, enabled) values ('jricher','password',true);
 INSERT INTO authorities(username,authority) values ('jricher','ROLE_USER');
 INSERT INTO authorities(username,authority) values ('jricher','ROLE_ADMIN');
+INSERT INTO user_info(user_id, preferred_username, name, email_verified) values ('jricher','jricher','jricher', 'FALSE');
 
 INSERT INTO users(username, password, enabled) values ('mfranklin','password',true);
 INSERT INTO authorities(username,authority) values ('mfranklin','ROLE_USER');
