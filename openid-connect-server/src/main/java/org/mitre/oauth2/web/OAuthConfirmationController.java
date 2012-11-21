@@ -18,12 +18,15 @@
  */
 package org.mitre.oauth2.web;
 
+import java.util.Map;
+
 import org.mitre.oauth2.exception.ClientNotFoundException;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
@@ -34,7 +37,7 @@ import org.springframework.web.servlet.ModelAndView;
  *
  */
 @Controller
-@SessionAttributes(types = AuthorizationRequest.class)
+@SessionAttributes("authorizationRequest")
 public class OAuthConfirmationController {
 
 	@Autowired
@@ -50,22 +53,25 @@ public class OAuthConfirmationController {
 	
 	//@PreAuthorize("hasRole('ROLE_USER')")
 	@RequestMapping("/oauth/confirm_access")
-	public ModelAndView confimAccess(@ModelAttribute AuthorizationRequest authRequest, ModelAndView modelAndView) {
-		
-		ClientDetails client = clientService.loadClientByClientId(authRequest.getClientId());
+	public ModelAndView confimAccess(Map<String, Object> model) {
+
+		AuthorizationRequest clientAuth = (AuthorizationRequest) model.remove("authorizationRequest");
+
+		ClientDetails client = clientService.loadClientByClientId(clientAuth.getClientId());
 		
 		if (client == null) {
-			throw new ClientNotFoundException("Client not found: " + authRequest.getClientId());
+			throw new ClientNotFoundException("Client not found: " + clientAuth.getClientId());
 		}
 
-        String redirect_uri = authRequest.getAuthorizationParameters().get("redirect_uri");
+		model.put("auth_request", clientAuth);
+		model.put("client", client);
+
+		String redirect_uri = clientAuth.getAuthorizationParameters().get("redirect_uri");
 		
-		modelAndView.addObject("auth_request", authRequest);
-	    modelAndView.addObject("client", client);
-        modelAndView.addObject("redirect_uri", redirect_uri);
-	    modelAndView.setViewName("oauth/approve");
+        model.put("redirect_uri", redirect_uri);
 	    
-	    return modelAndView;
+        
+        return new ModelAndView("oauth/approve", model);
 	}
 
 	/**
