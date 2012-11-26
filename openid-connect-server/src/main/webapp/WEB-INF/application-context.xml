@@ -61,20 +61,27 @@
 	</security:http>
 
 	<!-- Allow open access to required endpoints -->
-	<security:http auto-config="true" pattern="/jwk**" use-expressions="true">
+	<security:http pattern="/jwk**" use-expressions="true" entry-point-ref="http403EntryPoint">
 		<security:intercept-url pattern="/jwk**" access="permitAll"/>
 	</security:http>
-	<security:http auto-config="true" pattern="/.well-known**" use-expressions="true">
+	<security:http pattern="/.well-known**" use-expressions="true" entry-point-ref="http403EntryPoint">
 		<security:intercept-url pattern="/.well-known**" access="permitAll"/>
 	</security:http>
-	<security:http auto-config="true" pattern="/x509**" use-expressions="true">
+	<security:http pattern="/x509**" use-expressions="true" entry-point-ref="http403EntryPoint">
 		<security:intercept-url pattern="/x509**" access="permitAll"/>	
 	</security:http>
-	<security:http auto-config="true" pattern="/register**" use-expressions="true">
+	
+	<!-- OAuth-protect API and other endpoints -->
+	<security:http pattern="/register**" use-expressions="true" entry-point-ref="oauthAuthenticationEntryPoint">
 		<security:intercept-url pattern="/register**" access="permitAll"/>	
 	</security:http>
 
- 	<security:http auto-config="true" pattern="/userinfo**" use-expressions="true">
+ 	<security:http pattern="/userinfo**" use-expressions="true" entry-point-ref="oauthAuthenticationEntryPoint">
+		<security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
+		<security:expression-handler ref="oauthWebExpressionHandler" />
+	</security:http>
+
+ 	<security:http pattern="/api**" use-expressions="true" entry-point-ref="oauthAuthenticationEntryPoint">
 		<security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
 		<security:expression-handler ref="oauthWebExpressionHandler" />
 	</security:http>
@@ -82,6 +89,8 @@
 	<bean id="oauthAuthenticationEntryPoint" class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint">
 		<property name="realmName" value="openidconnect" />
 	</bean>
+
+	<bean id="http403EntryPoint" class="org.springframework.security.web.authentication.Http403ForbiddenEntryPoint" />
 
 	<!-- SECOAUTH Authorization Server -->
 	<oauth:authorization-server 
