@@ -217,5 +217,23 @@ public class ApprovedSite {
 	public void setWhitelistedSite(WhitelistedSite whitelistedSite) {
 		this.whitelistedSite = whitelistedSite;
 	}
+
+	/**
+	 * Has this approval expired?
+     * @return
+     */
+	@Transient
+    public boolean isExpired() {
+		if (getTimeoutDate() != null) {
+			Date now = new Date();
+			if (now.after(getTimeoutDate())) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
+    }
 	
 }
