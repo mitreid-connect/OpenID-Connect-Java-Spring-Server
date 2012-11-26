@@ -23,10 +23,10 @@ import java.util.Map;
 import org.mitre.oauth2.exception.ClientNotFoundException;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
@@ -51,11 +51,12 @@ public class OAuthConfirmationController {
 		this.clientService = clientService;
 	}
 	
-	//@PreAuthorize("hasRole('ROLE_USER')")
+	@PreAuthorize("hasRole('ROLE_USER')")
 	@RequestMapping("/oauth/confirm_access")
-	public ModelAndView confimAccess(Map<String, Object> model) {
+	public ModelAndView confimAccess(Map<String, Object> model, @ModelAttribute("authorizationRequest") AuthorizationRequest clientAuth) {
 
-		AuthorizationRequest clientAuth = (AuthorizationRequest) model.remove("authorizationRequest");
+		//AuthorizationRequest clientAuth = (AuthorizationRequest) model.remove("authorizationRequest");
+
 
 		ClientDetails client = clientService.loadClientByClientId(clientAuth.getClientId());
 		
