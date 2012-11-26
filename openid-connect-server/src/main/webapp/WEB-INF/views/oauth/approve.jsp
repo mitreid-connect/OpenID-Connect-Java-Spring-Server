@@ -78,23 +78,38 @@
                         <input type="hidden" name="scope_openid" id="scope_openid" value="openid"/>
                         
 						<c:if test="${not empty scopes['profile']}">
-                        	<input type="checkbox" name="scope_profile" id="scope_profile" value="profile" checked="checked"><label for="scope_profile"><i class="icon-list-alt"></i> basic profile information</label>
+							<label for="scope_profile" class="checkbox">
+	                        	<input type="checkbox" name="scope_profile" id="scope_profile" value="profile" checked="checked"> 
+	                        	<i class="icon-list-alt"></i> basic profile information
+                        	</label>
 						</c:if>
 						                       
 						<c:if test="${not empty scopes['email']}">
-                        	<input type="checkbox" name="scope_email" id="scope_email" value="email" checked="checked"><label for="scope_email"><i class="icon-envelope"></i> email address</label>
+							<label for="scope_email" class="checkbox">
+	                        	<input type="checkbox" name="scope_email" id="scope_email" value="email" checked="checked"> 
+	                        	<i class="icon-envelope"></i> email address
+                        	</label>
 						</c:if>
                         
 						<c:if test="${not empty scopes['address']}">
-                        	<input type="checkbox" name="scope_address" id="scope_address" value="address" checked="checked"><label for="scope_address"><i class="icon-home"></i> address</label>
+							<label for="scope_address" class="checkbox">
+	                        	<input type="checkbox" name="scope_address" id="scope_address" value="address" checked="checked"> 
+	                        	<i class="icon-home"></i> address
+                        	</label>
 						</c:if>
                         
 						<c:if test="${not empty scopes['phone']}">
-                        	<input type="checkbox" name="scope_phone" id="scope_phone" value="phone" checked="checked"><label for="scope_phone"><i class="icon-bell"></i> phone number</label>
+                        	<label for="scope_phone" class="checkbox">
+	                        	<input type="checkbox" name="scope_phone" id="scope_phone" value="phone" checked="checked">
+	                        	<i class="icon-bell"></i> phone number
+                        	</label>
 						</c:if>
                         
 						<c:if test="${not empty scopes['offline']}">
-                        	<input type="checkbox" name="scope_offline" id="scope_offline" value="offline" checked="checked"><label for="scope_offline"><i class="icon-time"></i> offline access</label>
+                        	<label for="scope_offline" class="checkbox">
+	                        	<input type="checkbox" name="scope_offline" id="scope_offline" value="offline" checked="checked"> 
+	                        	<i class="icon-time"></i> offline access
+                        	</label>
 						</c:if>
                     
                     	<input type="checkbox" name="remember" id="remember" value="true" checked="checked"><label for="remember">remember this decision</label>
