@@ -64,8 +64,8 @@
 	<security:http pattern="/jwk**" use-expressions="true" entry-point-ref="http403EntryPoint">
 		<security:intercept-url pattern="/jwk**" access="permitAll"/>
 	</security:http>
-	<security:http pattern="/.well-known**" use-expressions="true" entry-point-ref="http403EntryPoint">
-		<security:intercept-url pattern="/.well-known**" access="permitAll"/>
+	<security:http pattern="/.well-known/**" use-expressions="true" entry-point-ref="http403EntryPoint">
+		<security:intercept-url pattern="/.well-known/**" access="permitAll"/>
 	</security:http>
 	<security:http pattern="/x509**" use-expressions="true" entry-point-ref="http403EntryPoint">
 		<security:intercept-url pattern="/x509**" access="permitAll"/>	
@@ -81,7 +81,7 @@
 		<security:expression-handler ref="oauthWebExpressionHandler" />
 	</security:http>
 
- 	<security:http pattern="/api**" use-expressions="true" entry-point-ref="oauthAuthenticationEntryPoint">
+ 	<security:http pattern="/api/**" use-expressions="true" entry-point-ref="oauthAuthenticationEntryPoint">
 		<security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
 		<security:expression-handler ref="oauthWebExpressionHandler" />
 	</security:http>

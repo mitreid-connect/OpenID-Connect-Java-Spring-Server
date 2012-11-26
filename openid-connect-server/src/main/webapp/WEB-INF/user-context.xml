@@ -32,7 +32,6 @@
 		
 	<security:http disable-url-rewriting="true" use-expressions="true"> 
 		<security:form-login login-page="/login" />
-		<security:intercept-url pattern="/oauth/**" access="hasRole('ROLE_USER')" />
 		<security:intercept-url pattern="/**" access="permitAll" />
 		<security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
 		<security:logout/>
