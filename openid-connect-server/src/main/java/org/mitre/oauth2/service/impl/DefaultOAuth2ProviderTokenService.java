@@ -91,7 +91,6 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		    token.setScope(scopes);
 
 		    // make it expire if necessary
-		    // TODO: pending upstream updates, check for 0 or -1 value here
 	    	if (client.getAccessTokenValiditySeconds() != null && client.getAccessTokenValiditySeconds() > 0) {
 	    		Date expiration = new Date(System.currentTimeMillis() + (client.getAccessTokenValiditySeconds() * 1000L));
 	    		token.setExpiration(expiration);
@@ -104,9 +103,9 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	    	
 	    	token.setAuthenticationHolder(authHolder);
 	    	
-	    	// TODO: tie this to the offline_access scope
-	    	// attach a refresh token, if this client is allowed to request them
-	    	if (client.isAllowRefresh()) {
+	    	// attach a refresh token, if this client is allowed to request them and the user gets the offline scope
+	    	// TODO: tie this to some kind of scope service
+	    	if (client.isAllowRefresh() && scopes.contains("offline")) {
 	    		OAuth2RefreshTokenEntity refreshToken = new OAuth2RefreshTokenEntity(); //refreshTokenFactory.createNewRefreshToken();
 
 	    		// make it expire if necessary
