@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.mitre.openid.connect.token;
 
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
@@ -33,6 +34,7 @@ import org.springframework.security.oauth2.provider.DefaultAuthorizationRequest;
 import org.springframework.security.oauth2.provider.approval.UserApprovalHandler;
 
 import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 
 /**
@@ -125,18 +127,22 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 		//lookup ApprovedSites by userId and clientId
 		Collection<ApprovedSite> aps = approvedSiteService.getByClientIdAndUserId(clientId, userId);
 		for (ApprovedSite ap : aps) {
-			// if we find one that fits...
-			if (scopesMatch(authorizationRequest.getScope(), ap.getAllowedScopes())) {
-				
-				//We have a match; update the access date on the AP entry and return true.
-				ap.setAccessDate(new Date());
-				approvedSiteService.save(ap);
-
-				// TODO: WHY DAVE WHY
-				DefaultAuthorizationRequest ar = new DefaultAuthorizationRequest(authorizationRequest);
-				ar.setApproved(true);
-				
-				return ar;
+			
+			if (!ap.isExpired()) {
+			
+				// if we find one that fits...
+				if (scopesMatch(authorizationRequest.getScope(), ap.getAllowedScopes())) {
+					
+					//We have a match; update the access date on the AP entry and return true.
+					ap.setAccessDate(new Date());
+					approvedSiteService.save(ap);
+	
+					// TODO: WHY DAVE WHY
+					DefaultAuthorizationRequest ar = new DefaultAuthorizationRequest(authorizationRequest);
+					ar.setApproved(true);
+					
+					return ar;
+				}
 			}
         }
 		
@@ -161,37 +167,44 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 			// TODO: Get SECOAUTH to stop breaking polymorphism and start using real objects, SRSLY
 			DefaultAuthorizationRequest ar = new DefaultAuthorizationRequest(authorizationRequest);
 			
-			//Only store an ApprovedSite if the user has checked "remember this decision":
-			if (ar.getApprovalParameters().get("remember") != null) {
-				
-				//TODO: Remember may eventually have an option to remember for a specific amount
-				//of time; this would set the ApprovedSite.timeout.
-				
-				Set<String> allowedScopes = Sets.newHashSet();
-				Map<String,String> approvalParams = ar.getApprovalParameters();
-				
-				Set<String> keys = approvalParams.keySet();
-				
-				for (String key : keys) {
-					if (key.contains("scope")) {
-						//This is a scope parameter from the approval page. The value sent back should
-						//be the scope string. Check to make sure it is contained in the client's 
-						//registered allowed scopes.
-						
-						String scope = approvalParams.get(key);
-						
-						//Make sure this scope is allowed for the given client
-						if (client.getScope().contains(scope)) {
-							allowedScopes.add(scope);
-						}
+			// process scopes from user input
+			Set<String> allowedScopes = Sets.newHashSet();
+			Map<String,String> approvalParams = ar.getApprovalParameters();
+			
+			Set<String> keys = approvalParams.keySet();
+			
+			for (String key : keys) {
+				if (key.startsWith("scope_")) {
+					//This is a scope parameter from the approval page. The value sent back should
+					//be the scope string. Check to make sure it is contained in the client's 
+					//registered allowed scopes.
+					
+					String scope = approvalParams.get(key);
+					
+					//Make sure this scope is allowed for the given client
+					if (client.getScope().contains(scope)) {
+						allowedScopes.add(scope);
 					}
 				}
+			}
 
-				// inject the user-allowed scopes into the auth request
-				// TODO: for the moment this allows both upscoping and downscoping.
-				ar.setScope(allowedScopes);
+			// inject the user-allowed scopes into the auth request
+			// TODO: for the moment this allows both upscoping and downscoping.
+			ar.setScope(allowedScopes);
+			
+			//Only store an ApprovedSite if the user has checked "remember this decision":
+			String remember = ar.getApprovalParameters().get("remember");
+			if (!Strings.isNullOrEmpty(remember) && !remember.equals("none")) {
 				
-				approvedSiteService.createApprovedSite(clientId, userId, null, allowedScopes, null);
+				Date timeout = null;
+				if (remember.equals("one-hour")) {
+					// set the timeout to one hour from now
+					Calendar cal = Calendar.getInstance();
+					cal.add(Calendar.HOUR, 1);
+					timeout = cal.getTime();
+				}
+				
+				approvedSiteService.createApprovedSite(clientId, userId, timeout, allowedScopes, null);
 			}
 			
 			// TODO: should we set approved here? It gets called later via the isApproved method in this class...

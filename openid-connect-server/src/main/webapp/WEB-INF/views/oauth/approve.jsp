@@ -111,11 +111,25 @@
 	                        	<i class="icon-time"></i> offline access
                         	</label>
 						</c:if>
-                    
-                    	<input type="checkbox" name="remember" id="remember" value="true" checked="checked"><label for="remember">remember this decision</label>
-                    
-                    </fieldset>
-                </div>
+
+                        </fieldset>
+
+                   <fieldset style="text-align:left" class="well">
+                        <legend style="margin-bottom: 0;">Remember this decision:</legend>
+                    	<label for="remember-forever" class="radio">
+                    		<input type="radio" name="remember" id="remember-forever" value="until-revoked" checked="checked">
+                    		<i class="icon-hdd"></i> remember this decision until I revoke it
+                    	</label>
+                    	<label for="remember-hour" class="radio">
+                    		<input type="radio" name="remember" id="remember-hour" value="one-hour">
+                    		<i class="icon-hdd"></i> remember this decision for one hour
+                    	</label>
+                    	<label for="remember-not" class="radio">
+                    		<input type="radio" name="remember" id="remember-not" value="none">
+                    		<i class="icon-hdd"></i> prompt me again next time
+                    	</label>
+                      </fieldset>
+				</div>
 
             </div>
 
