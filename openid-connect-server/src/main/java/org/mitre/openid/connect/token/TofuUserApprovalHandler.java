@@ -29,6 +29,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
+import org.springframework.security.oauth2.provider.DefaultAuthorizationRequest;
 import org.springframework.security.oauth2.provider.approval.UserApprovalHandler;
 
 import com.google.common.base.Splitter;
@@ -52,13 +53,13 @@ import com.google.common.collect.Sets;
 public class TofuUserApprovalHandler implements UserApprovalHandler {
 	
 	@Autowired
-	ApprovedSiteService approvedSiteService;
+	private ApprovedSiteService approvedSiteService;
 	
 	@Autowired
-	WhitelistedSiteService whitelistedSiteService;
+	private WhitelistedSiteService whitelistedSiteService;
 	
 	@Autowired
-	ClientDetailsService clientDetailsService;
+	private ClientDetailsService clientDetailsService;
 	
 	
 	/**
@@ -75,79 +76,19 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 	@Override
 	public boolean isApproved(AuthorizationRequest authorizationRequest, Authentication userAuthentication) {
 		
-		//First, check database to see if the user identified by the userAuthentication has stored an approval decision
-		
-		//getName may not be filled in? TODO: investigate
-		String userId = userAuthentication.getName();
-		String clientId = authorizationRequest.getClientId();
-		ClientDetails client = clientDetailsService.loadClientByClientId(clientId);
-		
-		String scopes = authorizationRequest.getAuthorizationParameters().get("scope");
-		Set<String> authRequestScopes = Sets.newHashSet(Splitter.on(" ").split(scopes));
-		
-		//lookup ApprovedSites by userId and clientId
-		Collection<ApprovedSite> aps = approvedSiteService.getByClientIdAndUserId(clientId, userId);
-		for (ApprovedSite ap : aps) {
-			// if we find one that fits...
-			if (scopesMatch(authRequestScopes, ap.getAllowedScopes())) {
-				
-				//We have a match; update the access date on the AP entry and return true.
-				ap.setAccessDate(new Date());
-				approvedSiteService.save(ap);
-				
-				return true;
-			}
-        }
-		
-		WhitelistedSite ws = whitelistedSiteService.getByClientId(clientId);
-		if (ws != null && scopesMatch(authRequestScopes, ws.getAllowedScopes())) {
-			
-			//Create an approved site
-			approvedSiteService.createApprovedSite(clientId, userId, null, ws.getAllowedScopes(), ws);
-			
+		// if this request is already approved, pass that info through
+		// (this flag may be set by updateBeforeApproval, which can also do funny things with scopes, etc)
+		if (authorizationRequest.isApproved()) {
 			return true;
-		}
-		
-		boolean approved = Boolean.parseBoolean(authorizationRequest.getApprovalParameters().get("user_oauth_approval"));
-		
-		if (approved && !authorizationRequest.getApprovalParameters().isEmpty()) {
+		} else {
+			// if not, check to see if the user has approved it
 			
-			//Only store an ApprovedSite if the user has checked "remember this decision":
-			if (authorizationRequest.getApprovalParameters().get("remember") != null) {
-				
-				//TODO: Remember may eventually have an option to remember for a specific amount
-				//of time; this would set the ApprovedSite.timeout.
-				
-				Set<String> allowedScopes = Sets.newHashSet();
-				Map<String,String> approvalParams = authorizationRequest.getApprovalParameters();
-				
-				Set<String> keys = approvalParams.keySet();
-				
-				for (String key : keys) {
-					if (key.contains("scope")) {
-						//This is a scope parameter from the approval page. The value sent back should
-						//be the scope string. Check to make sure it is contained in the client's 
-						//registered allowed scopes.
-						
-						String scope = approvalParams.get(key);
-						
-						//Make sure this scope is allowed for the given client
-						if (client.getScope().contains(scope)) {
-							allowedScopes.add(scope);
-						}
-					}
-				}
-				
-				//FIXME: inject the final allowedScopes set into the AuthorizationRequest. The requester may have
-				//asked for many scopes and the user may have denied some of them.
-				
-				approvedSiteService.createApprovedSite(clientId, userId, null, allowedScopes, null);
-			}
-			
-			return true;
+			// TODO: make parameter name configurable?
+			boolean approved = Boolean.parseBoolean(authorizationRequest.getApprovalParameters().get("user_oauth_approval"));
+	
+			return userAuthentication.isAuthenticated() && approved;
 		}
 
-		return false;
 	}
 	
 	/**
@@ -169,13 +110,98 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 		return true;
 	}
 
-	//
-	// FIXME
-	// 
-    @Override
+	/**
+	 * Pre-process the authorization request during the approval stage, check against whitelist, approved sites, and stuff.
+	 */
+	@Override
     public AuthorizationRequest updateBeforeApproval(AuthorizationRequest authorizationRequest, Authentication userAuthentication) {
-	    // TODO Auto-generated method stub
-	    return null;
+		//First, check database to see if the user identified by the userAuthentication has stored an approval decision
+		
+		//getName may not be filled in? TODO: investigate
+		String userId = userAuthentication.getName();
+		String clientId = authorizationRequest.getClientId();
+		ClientDetails client = clientDetailsService.loadClientByClientId(clientId);
+		//TODO: ar.scope
+		String scopes = authorizationRequest.getAuthorizationParameters().get("scope");
+		Set<String> authRequestScopes = Sets.newHashSet(Splitter.on(" ").split(scopes));
+		
+		//lookup ApprovedSites by userId and clientId
+		Collection<ApprovedSite> aps = approvedSiteService.getByClientIdAndUserId(clientId, userId);
+		for (ApprovedSite ap : aps) {
+			// if we find one that fits...
+			if (scopesMatch(authRequestScopes, ap.getAllowedScopes())) {
+				
+				//We have a match; update the access date on the AP entry and return true.
+				ap.setAccessDate(new Date());
+				approvedSiteService.save(ap);
+
+				// TODO: WHY DAVE WHY
+				DefaultAuthorizationRequest ar = new DefaultAuthorizationRequest(authorizationRequest);
+				ar.setApproved(true);
+				
+				return ar;
+			}
+        }
+		
+		WhitelistedSite ws = whitelistedSiteService.getByClientId(clientId);
+		if (ws != null && scopesMatch(authRequestScopes, ws.getAllowedScopes())) {
+			
+			//Create an approved site
+			approvedSiteService.createApprovedSite(clientId, userId, null, ws.getAllowedScopes(), ws);
+			
+			// TODO: WHY DAVE WHY
+			DefaultAuthorizationRequest ar = new DefaultAuthorizationRequest(authorizationRequest);
+			ar.setApproved(true);
+			
+			return ar;
+		}
+		
+		// This must be re-parsed here because SECOAUTH forces us to call things in a strange order
+		boolean approved = Boolean.parseBoolean(authorizationRequest.getApprovalParameters().get("user_oauth_approval"));
+		
+		if (approved && !authorizationRequest.getApprovalParameters().isEmpty()) {
+
+			// TODO: Get SECOAUTH to stop breaking polymorphism and start using real objects, SRSLY
+			DefaultAuthorizationRequest ar = new DefaultAuthorizationRequest(authorizationRequest);
+			
+			//Only store an ApprovedSite if the user has checked "remember this decision":
+			if (ar.getApprovalParameters().get("remember") != null) {
+				
+				//TODO: Remember may eventually have an option to remember for a specific amount
+				//of time; this would set the ApprovedSite.timeout.
+				
+				Set<String> allowedScopes = Sets.newHashSet();
+				Map<String,String> approvalParams = ar.getApprovalParameters();
+				
+				Set<String> keys = approvalParams.keySet();
+				
+				for (String key : keys) {
+					if (key.contains("scope")) {
+						//This is a scope parameter from the approval page. The value sent back should
+						//be the scope string. Check to make sure it is contained in the client's 
+						//registered allowed scopes.
+						
+						String scope = approvalParams.get(key);
+						
+						//Make sure this scope is allowed for the given client
+						if (client.getScope().contains(scope)) {
+							allowedScopes.add(scope);
+						}
+					}
+				}
+
+				// inject the user-allowed scopes into the auth request 
+				ar.setScope(allowedScopes);
+				
+				approvedSiteService.createApprovedSite(clientId, userId, null, allowedScopes, null);
+			}
+			
+			// TODO: should we set approved here? It gets called later via the isApproved method in this class...
+			
+			return ar;
+		}
+
+		return authorizationRequest;
     }
 	
 }
