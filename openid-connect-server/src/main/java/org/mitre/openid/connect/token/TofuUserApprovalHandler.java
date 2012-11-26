@@ -121,15 +121,12 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 		String userId = userAuthentication.getName();
 		String clientId = authorizationRequest.getClientId();
 		ClientDetails client = clientDetailsService.loadClientByClientId(clientId);
-		//TODO: ar.scope
-		String scopes = authorizationRequest.getAuthorizationParameters().get("scope");
-		Set<String> authRequestScopes = Sets.newHashSet(Splitter.on(" ").split(scopes));
-		
+
 		//lookup ApprovedSites by userId and clientId
 		Collection<ApprovedSite> aps = approvedSiteService.getByClientIdAndUserId(clientId, userId);
 		for (ApprovedSite ap : aps) {
 			// if we find one that fits...
-			if (scopesMatch(authRequestScopes, ap.getAllowedScopes())) {
+			if (scopesMatch(authorizationRequest.getScope(), ap.getAllowedScopes())) {
 				
 				//We have a match; update the access date on the AP entry and return true.
 				ap.setAccessDate(new Date());
@@ -144,7 +141,7 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
         }
 		
 		WhitelistedSite ws = whitelistedSiteService.getByClientId(clientId);
-		if (ws != null && scopesMatch(authRequestScopes, ws.getAllowedScopes())) {
+		if (ws != null && scopesMatch(authorizationRequest.getScope(), ws.getAllowedScopes())) {
 			
 			//Create an approved site
 			approvedSiteService.createApprovedSite(clientId, userId, null, ws.getAllowedScopes(), ws);
@@ -190,7 +187,8 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 					}
 				}
 
-				// inject the user-allowed scopes into the auth request 
+				// inject the user-allowed scopes into the auth request
+				// TODO: for the moment this allows both upscoping and downscoping.
 				ar.setScope(allowedScopes);
 				
 				approvedSiteService.createApprovedSite(clientId, userId, null, allowedScopes, null);
