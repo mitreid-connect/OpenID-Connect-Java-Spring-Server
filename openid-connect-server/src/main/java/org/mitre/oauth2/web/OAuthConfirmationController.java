@@ -18,6 +18,7 @@
  */
 package org.mitre.oauth2.web;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.mitre.oauth2.exception.ClientNotFoundException;
@@ -71,6 +72,12 @@ public class OAuthConfirmationController {
 		
         model.put("redirect_uri", redirect_uri);
 	    
+        Map<String, Boolean> scopes = new HashMap<String, Boolean>();
+        for (String scope : clientAuth.getScope()) {
+	        scopes.put(scope, Boolean.TRUE);
+        }
+
+        model.put("scopes", scopes);
         
         return new ModelAndView("oauth/approve", model);
 	}
