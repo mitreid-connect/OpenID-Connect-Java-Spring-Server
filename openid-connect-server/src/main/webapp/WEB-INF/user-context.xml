@@ -17,17 +17,6 @@
 	<security:authentication-manager alias="authenticationManager">
 		<security:authentication-provider>
 			<security:jdbc-user-service data-source-ref="dataSource"/>
-			<!-- 
-			<security:user-service id="userDetailsService">
-				<security:user name="jricher" password="password" authorities="ROLE_USER, ROLE_ADMIN" />
-				<security:user name="mfranklin" password="password" authorities="ROLE_USER, ROLE_ADMIN" />
-				<security:user name="dcuomo" password="password" authorities="ROLE_USER, ROLE_ADMIN" />
-				<security:user name="mjett" password="password" authorities="ROLE_USER, ROLE_ADMIN" />
-				<security:user name="aanganes" password="password" authorities="ROLE_USER, ROLE_ADMIN" />
-				<security:user name="mjwalsh" password="password" authorities="ROLE_USER, ROLE_ADMIN" />
-				<security:user name="srmoore" password="password" authorities="ROLE_USER, ROLE_ADMIN" />
-		  	</security:user-service>
-		  	-->
 		</security:authentication-provider>
 	</security:authentication-manager>
 		
