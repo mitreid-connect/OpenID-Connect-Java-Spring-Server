@@ -15,6 +15,7 @@
  ******************************************************************************/
 package org.mitre.swd.web;
 
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -68,7 +69,7 @@ public class SimpleWebDiscoveryEndpoint {
 	}
 
 	@RequestMapping("/.well-known/openid-configuration")
-	public ModelAndView providerConfiguration(ModelAndView modelAndView) {
+	public ModelAndView providerConfiguration(ModelAndView modelAndView, Principal p) {
 
 		/*	
 		 *
