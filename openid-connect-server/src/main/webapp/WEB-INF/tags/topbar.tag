@@ -19,7 +19,6 @@
                 	<security:authentication property="authorities" var="roles"/>
 
 					<div class="btn-group pull-right">
-					</div>
                     <security:authorize access="hasRole('ROLE_USER')">
 						<a class="btn btn-primary btn-mini" href=""><i class="icon-user icon-white"></i> ${ userInfo.preferredUsername }</a>
 						<a class="btn btn-primary btn-mini dropdown-toggle" data-toggle="dropdown" href=""><span class="caret"></span></a>
@@ -27,6 +26,7 @@
 							<li><a href="j_spring_security_logout"><i class="icon-remove"></i> Log out</a></li>
 						</ul>
                     </security:authorize>
+					</div>
             </div><!--/.nav-collapse -->
         </div>
     </div>
