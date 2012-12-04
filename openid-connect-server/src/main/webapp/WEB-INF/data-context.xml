@@ -19,6 +19,7 @@
 		<jdbc:script location="classpath:/db/tables/database_tables.sql"/>
 		<!-- The following are for the jdbc-user-service spring security implementation -->
 		<jdbc:script location="classpath:/db/tables/security-schema.sql"/>
+		<jdbc:script location="classpath:/db/tables/loading_temp_tables.sql"/>
 		<jdbc:script location="classpath:/db/users.sql"/>
 	</jdbc:initialize-database>
 	
