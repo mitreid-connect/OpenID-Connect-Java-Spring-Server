@@ -22,6 +22,8 @@
 
                     <security:authorize access="hasRole('ROLE_USER')">
                         Logged in as <a href="home">${ userInfo.preferredUsername }</a>
+                        | 
+                        <a class="btn btn-mini btn-danger" href="j_spring_security_logout"><i class="icon-remove icon-white"></i> Log out</a>
                     </security:authorize>
                 </p>
             </div><!--/.nav-collapse -->
