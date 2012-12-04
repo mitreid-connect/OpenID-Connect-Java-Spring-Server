@@ -16,16 +16,17 @@
                     <li><a href="stats">Statistics</a></li>
                     <li><a href="contact">Contact</a></li>
                 </ul>
-                <p class="navbar-text pull-right">
-                
                 	<security:authentication property="authorities" var="roles"/>
 
+					<div class="btn-group pull-right">
+					</div>
                     <security:authorize access="hasRole('ROLE_USER')">
-                        Logged in as <a href="home">${ userInfo.preferredUsername }</a>
-                        | 
-                        <a class="btn btn-mini btn-danger" href="j_spring_security_logout"><i class="icon-remove icon-white"></i> Log out</a>
+						<a class="btn btn-primary btn-mini" href=""><i class="icon-user icon-white"></i> ${ userInfo.preferredUsername }</a>
+						<a class="btn btn-primary btn-mini dropdown-toggle" data-toggle="dropdown" href=""><span class="caret"></span></a>
+						<ul class="dropdown-menu">
+							<li><a href="j_spring_security_logout"><i class="icon-remove"></i> Log out</a></li>
+						</ul>
                     </security:authorize>
-                </p>
             </div><!--/.nav-collapse -->
         </div>
     </div>
