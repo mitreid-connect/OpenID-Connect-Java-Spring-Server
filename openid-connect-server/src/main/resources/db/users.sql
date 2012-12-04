@@ -3,13 +3,16 @@ MERGE INTO users
   ON vals.username = users.username
   WHEN NOT MATCHED THEN 
     INSERT (username, password, enabled) VALUES(vals.username, vals.password, vals.enabled);
-    
+
 MERGE INTO authorities 
-  USING (VALUES('jricher', 'ROLE_USER'), ('jricher', 'ROLE_ADMIN'), ('jricher', 'ROLE_AWESOME')) AS vals(username, authority)
+  USING (VALUES ('jricher', CAST('ROLE_USER' AS varchar(50))), ('jricher', CAST('ROLE_ADMIN' AS varchar(50))), ('jricher', CAST('ROLE_AWESOME' AS varchar(50)))) AS vals(username, authority)
+--  USING (VALUES ('jricher', 'ROLE_USER'), ('jricher', 'ROLE_ADMIN'), ('jricher', 'ROLE_AWESOME')) AS vals(username varchar(50), authority varchar(50))
   ON vals.username = authorities.username AND vals.authority = authorities.authority
   WHEN NOT MATCHED THEN 
     INSERT (username,authority) values (vals.username, vals.authority);
-    
+
+--INSERT INTO authorities (username, authority) VALUES ('jricher', 'ROLE_USER'), ('jricher', 'ROLE_ADMIN');    
+
 MERGE INTO user_info 
   USING (VALUES('user1-abc123', 'jricher', 'Justin Richer', false)) AS vals(user_id, preferred_username, name, email_verified)
   ON vals.preferred_username = user_info.preferred_username
