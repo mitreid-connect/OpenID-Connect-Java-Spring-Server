@@ -24,11 +24,12 @@ INSERT INTO authorities_TEMP (username, authority) VALUES
   ('mfranklin','ROLE_USER'),
   ('srmoore','ROLE_USER');
     
+-- By default, the user_id column here has to match the username column in the users table, above
 INSERT INTO user_info_TEMP (user_id, preferred_username, name, email, email_verified) VALUES
-  ('user1-abc123', 'jricher', 'Justin Richer', 'jricher@mitre.org', false),
-  ('user2-xj2f51', 'aanganes', 'Amanda Anganes', 'aanganes@mitre.org', false),
-  ('user3-2je938', 'mfranklin', 'Matt Franklin', 'mfranklin@mitre.org', false),
-  ('user4-l2ww33', 'srmoore', 'Steve Moore', 'srmoore@mitre.org', false);
+  ('jricher', 'jricher', 'Justin Richer', 'jricher@mitre.org', false),
+  ('jricher', 'aanganes', 'Amanda Anganes', 'aanganes@mitre.org', false),
+  ('jricher', 'mfranklin', 'Matt Franklin', 'mfranklin@mitre.org', false),
+  ('jricher', 'srmoore', 'Steve Moore', 'srmoore@mitre.org', false);
     
  
 --
