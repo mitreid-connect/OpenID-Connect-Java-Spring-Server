@@ -4,6 +4,6 @@ This code includes a functioning server (IdP) and client (RP) as well as utility
 
 Authors: Justin Richer, Amanda Anganes, Michael Walsh, Michael Jett, Steve Moore, Mike Derryberry
 
-Copyright 2012, The MTIRE Corporation (http://www.mitre.org/)
+Copyright 2012, The MITRE Corporation (http://www.mitre.org/)
 
 
