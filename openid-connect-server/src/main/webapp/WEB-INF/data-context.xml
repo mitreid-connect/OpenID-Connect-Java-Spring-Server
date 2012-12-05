@@ -17,10 +17,12 @@
 		   If you are using a file based HSQLDB you should not run this every time. -->
 	<jdbc:initialize-database data-source="dataSource">
 		<jdbc:script location="classpath:/db/tables/database_tables.sql"/>
-		<!-- The following are for the jdbc-user-service spring security implementation -->
+		<!-- The following file is for the jdbc-user-service spring security implementation -->
 		<jdbc:script location="classpath:/db/tables/security-schema.sql"/>
+		<!-- The following files are for safely bootstrapping users and clients into the database -->
 		<jdbc:script location="classpath:/db/tables/loading_temp_tables.sql"/>
 		<jdbc:script location="classpath:/db/users.sql"/>
+		<jdbc:script location="classpath:/db/clients.sql"/>
 	</jdbc:initialize-database>
 	
 	<!--  The following is for connecting to a MySQL database that has been initialized with 
