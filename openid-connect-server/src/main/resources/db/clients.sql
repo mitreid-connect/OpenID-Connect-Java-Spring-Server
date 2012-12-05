@@ -26,7 +26,7 @@ INSERT INTO redirect_uri_TEMP (owner_id, redirect_uri) VALUES
 	('client', 'http://localhost:8080/');
 	
 INSERT INTO authorized_grant_type_TEMP (owner_id, authorized_grant_type) VALUES
-	('client', 'autorization_code'),
+	('client', 'authorization_code'),
 	('client', 'implicit');
 	
 --

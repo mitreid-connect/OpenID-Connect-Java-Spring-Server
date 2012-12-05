@@ -11,10 +11,10 @@ START TRANSACTION;
 -- 
 
 INSERT INTO users_TEMP (username, password, enabled) VALUES
- ('jricher', 'password', true),
- ('aanganes','password',true),
- ('mfranklin','password',true),
- ('srmoore','password',true);
+  ('jricher', 'password', true),
+  ('aanganes','password',true),
+  ('mfranklin','password',true),
+  ('srmoore','password',true);
 
 INSERT INTO authorities_TEMP (username, authority) VALUES
   ('jricher', 'ROLE_ADMIN'),
