@@ -64,6 +64,9 @@ import org.springframework.security.oauth2.common.OAuth2RefreshToken;
 //@JsonDeserialize(using = OAuth2AccessTokenDeserializer.class)
 public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 
+	public static final String ID_TOKEN_SCOPE = "id-token";
+	public static final String REGISTRATION_TOKEN_SCOPE = "registration-token";
+
 	public static String ID_TOKEN = "id_token";
 	
 	private Long id;

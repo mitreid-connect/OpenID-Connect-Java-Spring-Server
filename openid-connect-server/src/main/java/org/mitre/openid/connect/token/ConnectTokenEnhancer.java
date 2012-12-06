@@ -17,6 +17,8 @@ package org.mitre.openid.connect.token;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
@@ -79,12 +81,15 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
         }
 		
 		/**
-		 * Authorization request scope MUST include "openid", but access token request 
+		 * Authorization request scope MUST include "openid" in OIDC, but access token request 
 		 * may or may not include the scope parameter. As long as the AuthorizationRequest 
-		 * has the proper scope, we can consider this a valid OpenID Connect request.
+		 * has the proper scope, we can consider this a valid OpenID Connect request. Otherwise,
+		 * we consider it to be a vanilla OAuth2 request. 
 		 */
 		if (authentication.getAuthorizationRequest().getScope().contains("openid")) {
 
+			// TODO: maybe id tokens need a service layer
+			
 			String userId = authentication.getName();
 		
 			OAuth2AccessTokenEntity idTokenEntity = new OAuth2AccessTokenEntity();
@@ -124,9 +129,18 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 
 			idTokenEntity.setJwt(idToken);
 			
+			// TODO: might want to create a specialty authentication object here instead of copying
 			idTokenEntity.setAuthenticationHolder(token.getAuthenticationHolder());
-			idTokenEntity.setScope(token.getScope());
+
+			// copy in the scopes from the parent token and add "id-token" to the list
+			Set<String> idScopes = new HashSet<String>(token.getScope());
+			idScopes.add(OAuth2AccessTokenEntity.ID_TOKEN_SCOPE);
+			idTokenEntity.setScope(idScopes);
 			
+			idTokenEntity.setClient(token.getClient());
+			
+			// attach the id token to the parent access token
+			// TODO: this relationship is one-to-one right now, this might change
 			token.setIdToken(idTokenEntity);
 		}
 		
