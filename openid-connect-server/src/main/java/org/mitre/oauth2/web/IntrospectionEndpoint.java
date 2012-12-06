@@ -40,7 +40,7 @@ public class IntrospectionEndpoint {
 		this.tokenServices = tokenServices;
 	}
 	
-	@RequestMapping("/oauth/verify")
+	@RequestMapping("/introspect")
 	public ModelAndView verify(Principal p, ModelAndView modelAndView) {
 		
 		// assume the token's not valid until proven otherwise
