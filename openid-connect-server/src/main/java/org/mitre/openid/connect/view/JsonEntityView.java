@@ -48,7 +48,9 @@ public class JsonEntityView extends AbstractView {
                         return false;
                     }
 
-                }).create();
+                })
+                .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+                .create();
 
         response.setContentType("application/json");
 
