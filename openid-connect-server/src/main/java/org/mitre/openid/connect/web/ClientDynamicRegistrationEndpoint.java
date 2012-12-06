@@ -9,9 +9,20 @@ import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity.AppType;
 import org.mitre.oauth2.model.ClientDetailsEntity.AuthType;
 import org.mitre.oauth2.model.ClientDetailsEntity.UserIdType;
+import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
+import org.mitre.oauth2.service.OAuth2TokenEntityService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedClientException;
+import org.springframework.security.oauth2.provider.AuthorizationRequest;
+import org.springframework.security.oauth2.provider.DefaultAuthorizationRequest;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.WebDataBinder;
@@ -31,6 +42,9 @@ public class ClientDynamicRegistrationEndpoint {
 
 	@Autowired
 	private ClientDetailsEntityService clientService;
+	
+	@Autowired
+	private OAuth2TokenEntityService tokenService;
 	
 	/**
 	 * Bind utility data types to their classes
@@ -243,38 +257,74 @@ public class ClientDynamicRegistrationEndpoint {
 		
 		ClientDetailsEntity saved = clientService.saveNewClient(client);
 		
+		OAuth2AccessTokenEntity registrationAccessToken = createRegistrationAccessToken(client);
+		
 		model.put("client", saved);
+		model.put("token", registrationAccessToken);
 		
 		return "clientAssociate";
 	}
+
+	/**
+     * @param client
+     * @return
+     * @throws AuthenticationException
+     */
+    private OAuth2AccessTokenEntity createRegistrationAccessToken(ClientDetailsEntity client) throws AuthenticationException {
+	    // create a registration access token, treat it like a client credentials flow
+		// I can't use the auth request interface here because it has no setters and bad constructors -- THIS IS BAD API DESIGN
+		DefaultAuthorizationRequest authorizationRequest = new DefaultAuthorizationRequest(client.getClientId(), Sets.newHashSet(OAuth2AccessTokenEntity.REGISTRATION_TOKEN_SCOPE));
+		authorizationRequest.setApproved(true);
+		authorizationRequest.setAuthorities(Sets.newHashSet(new SimpleGrantedAuthority("ROLE_CLIENT")));
+		OAuth2Authentication authentication = new OAuth2Authentication(authorizationRequest, null);
+		OAuth2AccessTokenEntity registrationAccessToken = (OAuth2AccessTokenEntity) tokenService.createAccessToken(authentication);
+	    return registrationAccessToken;
+    }
 	
+	@PreAuthorize("hasRole('ROLE_CLIENT') and #oauth2.hasScope('registration-token')")
 	@RequestMapping(params = "type=rotate_secret", produces = "application/json")
-	public String rotateSecret(@RequestParam("client_id") String clientId, @RequestParam("client_secret") String clientSecret, ModelMap model) {
+	public String rotateSecret(OAuth2Authentication auth, ModelMap model) {
 		
+		
+		String clientId = auth.getAuthorizationRequest().getClientId();
 		ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
-		
+
 		if (client == null) {
 			throw new ClientNotFoundException("Could not find client: " + clientId);
 		}
 		
-		if (!Objects.equal(client.getClientSecret(), clientSecret)) {
-			throw new UnauthorizedClientException("Client secret did not match");
+		// rotate the secret, if available
+		if (client.isSecretRequired()) {
+			client = clientService.generateClientSecret(client);
 		}
 		
-		// rotate the secret
-		client = clientService.generateClientSecret(client);
+		// mint a new access token
+		OAuth2AccessTokenEntity registrationAccessToken = createRegistrationAccessToken(client);
+
+		// revoke the old one
+		OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
+		if (details != null) {
+			OAuth2AccessTokenEntity oldAccessToken = tokenService.readAccessToken(details.getTokenValue());
+			if (oldAccessToken != null) {
+				tokenService.revokeAccessToken(oldAccessToken);
+			} else {
+				// serious error here -- how'd we get this far without a valid token?!
+				throw new OAuth2Exception("SEVERE: token not found, something is fishy");
+			}
+		}
 		
+		// save the client
 		ClientDetailsEntity saved = clientService.updateClient(client, client);
 		
 		model.put("client", saved);
-				
+		model.put("token", registrationAccessToken);
+		
 		return "clientAssociate";
 	}
 	
+	@PreAuthorize("hasRole('ROLE_CLIENT') and #oauth2.hasScope('registration-token')")
 	@RequestMapping(params = "type=client_update", produces = "application/json")
 	public String clientUpdate(
-			@RequestParam("client_id") String clientId, 
-			@RequestParam("client_secret") String clientSecret,
 			@RequestParam(value = "contacts", required = false) Set<String> contacts,
 			@RequestParam(value = "application_type", required = false) AppType applicationType,
 			@RequestParam(value = "application_name", required = false) String applicationName,
@@ -305,18 +355,16 @@ public class ClientDynamicRegistrationEndpoint {
 			@RequestParam(value = "default_max_age", required = false) Integer defaultMaxAge,
 			@RequestParam(value = "require_auth_time", required = false) Boolean requireAuthTime,
 			@RequestParam(value = "default_acr", required = false) String defaultAcr,
+			OAuth2Authentication auth,
 			ModelMap model
 			
 			) {
 		
+		String clientId = auth.getAuthorizationRequest().getClientId();
 		ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
 		
 		if (client == null) {
 			throw new ClientNotFoundException("Could not find client: " + clientId);
-		}
-		
-		if (!Objects.equal(client.getClientSecret(), clientSecret)) {
-			throw new UnauthorizedClientException("Client secret did not match");
 		}
 		
 		client.setContacts(contacts);

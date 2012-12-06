@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.mitre.oauth2.model.ClientDetailsEntity;
+import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.view.AbstractView;
 
@@ -38,11 +39,19 @@ public class ClientAssociateView extends AbstractView {
 			Gson gson = new GsonBuilder().create();
 			
 			ClientDetailsEntity client = (ClientDetailsEntity) model.get("client");
+			OAuth2AccessTokenEntity token = (OAuth2AccessTokenEntity) model.get("token");
 			
 			JsonObject obj = new JsonObject();
 			obj.addProperty("client_id", client.getClientId());
-			obj.addProperty("client_secret", client.getClientSecret());
-			obj.addProperty("expires_at", 0); // TODO: configure expiring client secrets. For now, they don't expire
+			if (client.isSecretRequired()) {
+				obj.addProperty("client_secret", client.getClientSecret());
+			}
+			obj.addProperty("registration_access_token", token.getValue());
+			if (token.getExpiration() != null) {
+				obj.addProperty("expires_at", token.getExpiration().getTime()); // TODO: make sure this makes sense?
+			} else {
+				obj.addProperty("expires_at", 0); // TODO: configure expiring client secrets. For now, they don't expire
+			}
 			
 			Writer out = response.getWriter();
 		    gson.toJson(obj, out);
