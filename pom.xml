@@ -18,7 +18,6 @@
 		    	<module>spring-security-oauth/spring-security-oauth2</module>
 		    	<module>openid-connect-common</module>
 		    	<module>openid-connect-client</module>
-		    	<module>account-chooser</module>
 			<module>openid-connect-server</module>
 		    </modules>
     	</profile>
