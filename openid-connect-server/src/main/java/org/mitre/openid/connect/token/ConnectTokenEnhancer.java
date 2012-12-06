@@ -87,6 +87,7 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 
 			String userId = authentication.getName();
 		
+			OAuth2AccessTokenEntity idTokenEntity = new OAuth2AccessTokenEntity();
 			IdToken idToken = new IdToken();
 			
 			IdTokenClaims claims = new IdTokenClaims();
@@ -98,6 +99,7 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 			if (client.getIdTokenValiditySeconds() != null) {
 				Date expiration = new Date(System.currentTimeMillis() + (client.getIdTokenValiditySeconds() * 1000L));
 				claims.setExpiration(expiration);
+				idTokenEntity.setExpiration(expiration);
 			}
 			
 			claims.setIssuer(configBean.getIssuer());
@@ -119,7 +121,13 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
             	logger.warn("Couldn't sign id token", e);
             }
 			
-			token.setIdToken(idToken);
+
+			idTokenEntity.setJwt(idToken);
+			
+			idTokenEntity.setAuthenticationHolder(token.getAuthenticationHolder());
+			idTokenEntity.setScope(token.getScope());
+			
+			token.setIdToken(idTokenEntity);
 		}
 		
 		return token;

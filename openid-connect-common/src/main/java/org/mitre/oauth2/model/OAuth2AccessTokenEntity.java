@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -36,6 +37,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.Transient;
@@ -72,7 +74,7 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	
 	private Jwt jwtValue; // JWT-encoded access token value
 	
-	private IdToken idToken; // JWT-encoded OpenID Connect IdToken
+	private OAuth2AccessTokenEntity idToken; // JWT-encoded OpenID Connect IdToken
 	
 	private Date expiration;
 
@@ -225,41 +227,31 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	}
     
 	/**
-	 * This is transient b/c the IdToken is not serializable. Instead,
-	 * the toString of the IdToken is persisted in idTokenString 
 	 * @return the idToken
 	 */
-    @Transient
-	public IdToken getIdToken() {
+    @OneToOne(cascade=CascadeType.ALL) // one-to-one mapping for now
+    @JoinColumn(name = "id_token_id")
+	public OAuth2AccessTokenEntity getIdToken() {
 		return idToken;
 	}
 
 	/**
 	 * @param idToken the idToken to set
 	 */
-	public void setIdToken(IdToken idToken) {
+	public void setIdToken(OAuth2AccessTokenEntity idToken) {
 		this.idToken = idToken;
 	}
 	
 	/**
 	 * @return the idTokenString
 	 */
-	@Basic
-	@Column(name="id_token_string")
+	@Transient
 	public String getIdTokenString() {
 		if (idToken != null) {
-			return idToken.toString();
+			return idToken.getValue(); // get the JWT string value of the id token entity
 		} else {
 			return null;
 		}
-	}
-
-	/**
-	 * @param idTokenString the idTokenString to set
-     * @throws IllegalArgumentException if "value" is not a properly formatted JWT string
-	 */
-	public void setIdTokenString(String idTokenString) {
-		this.idToken = IdToken.parse(idTokenString);
 	}
 
 	/**
