@@ -19,6 +19,7 @@
 package org.mitre.oauth2.service.impl;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -171,9 +172,9 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		OAuth2AccessTokenEntity token = new OAuth2AccessTokenEntity(); 
 
 		// get the stored scopes from the authentication holder's authorization request; these are the scopes associated with the refresh token
-		Set<String> refreshScopes = refreshToken.getAuthenticationHolder().getAuthentication().getAuthorizationRequest().getScope();
+		Set<String> refreshScopes = new HashSet<String>(refreshToken.getAuthenticationHolder().getAuthentication().getAuthorizationRequest().getScope());
 		
-		Set<String> scope = authRequest.getScope();
+		Set<String> scope = new HashSet<String>(authRequest.getScope());
 		if (scope != null && !scope.isEmpty()) { 
 			// ensure a proper subset of scopes
 			if (refreshScopes != null && refreshScopes.containsAll(scope)) {
