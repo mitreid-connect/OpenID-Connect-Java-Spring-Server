@@ -46,7 +46,7 @@ public class RevocationEndpoint {
 	
 	// TODO
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
-	@RequestMapping("/oauth/revoke")
+	@RequestMapping("/revoke")
 	public ModelAndView revoke(@RequestParam("token") String tokenValue, Principal principal,
 			ModelAndView modelAndView) {
 
