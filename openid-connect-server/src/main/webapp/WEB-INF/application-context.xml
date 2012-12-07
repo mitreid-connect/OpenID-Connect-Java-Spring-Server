@@ -105,6 +105,7 @@
 		
 		<oauth:authorization-code authorization-code-services-ref="defaultOAuth2AuthorizationCodeService"/>
 		<oauth:implicit />
+		<oauth:refresh-token/>
 		
 	</oauth:authorization-server>
 
