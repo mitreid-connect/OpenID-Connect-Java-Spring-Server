@@ -17,20 +17,30 @@ package org.mitre.oauth2.web;
 
 import java.security.Principal;
 
+import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
+import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.google.common.base.Objects;
+import com.google.common.base.Strings;
 
 @Controller
 public class IntrospectionEndpoint {
 
 	@Autowired
-	OAuth2TokenEntityService tokenServices;
+	private OAuth2TokenEntityService tokenServices;
+	
+	@Autowired
+	private ClientDetailsEntityService clientService;
 	
 	public IntrospectionEndpoint() {
 		
@@ -40,12 +50,13 @@ public class IntrospectionEndpoint {
 		this.tokenServices = tokenServices;
 	}
 	
+	@PreAuthorize("hasRole('ROLE_CLIENT')")
 	@RequestMapping("/introspect")
-	public ModelAndView verify(Principal p, ModelAndView modelAndView) {
+	public ModelAndView verify(@RequestParam("token") String tokenValue, Principal p, ModelAndView modelAndView) {
 		
 		// assume the token's not valid until proven otherwise
 		modelAndView.setViewName("tokenNotFound");
-		
+		/*
 		if (p != null && p instanceof OAuth2Authentication) {
 			OAuth2Authentication auth = (OAuth2Authentication)p;
 			
@@ -61,6 +72,29 @@ public class IntrospectionEndpoint {
 					modelAndView.setViewName("tokenIntrospection");
 					modelAndView.addObject("entity", token);
 				}
+			}
+		}*/
+		
+		if (!Strings.isNullOrEmpty(tokenValue)) {
+			OAuth2AccessTokenEntity token = tokenServices.readAccessToken(tokenValue);
+			
+			if (token != null) {
+				
+				ClientDetailsEntity tokenClient = token.getClient();
+				// clientID is the principal name in the authentication
+				String clientId = p.getName();
+				ClientDetailsEntity authClient = clientService.loadClientByClientId(clientId);
+				
+				if (tokenClient != null && authClient != null) {
+					if (Objects.equal(authClient, tokenClient)) {
+						
+						// if it's a valid token, we'll print out information on it
+						modelAndView.setViewName("tokenIntrospection");
+						modelAndView.addObject("entity", token);
+					}
+				}
+				
+				
 			}
 		}
 		

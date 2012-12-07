@@ -97,6 +97,10 @@ public class TokenIntrospectionView extends AbstractView {
             	
             	token.add("expires", context.serialize(src.getExpiration()));
             	
+            	token.addProperty("audience", src.getAuthenticationHolder().getAuthentication().getAuthorizationRequest().getClientId());
+            	
+            	token.addProperty("user_id", src.getAuthenticationHolder().getAuthentication().getName());
+            	
             	return token;
             }
 			
