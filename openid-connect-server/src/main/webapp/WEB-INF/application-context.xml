@@ -92,6 +92,10 @@
 		<security:custom-filter ref="clientCredentialsIntrospectionEndpointFilter" before="BASIC_AUTH_FILTER" />
 	</security:http>
 
+	<security:http pattern="/revoke**" entry-point-ref="oauthAuthenticationEntryPoint">
+		<security:custom-filter ref="clientCredentialsRevocationEndpointFilter" before="BASIC_AUTH_FILTER" />
+	</security:http>
+
 	<bean id="oauthAuthenticationEntryPoint" class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint">
 		<property name="realmName" value="openidconnect" />
 	</bean>
@@ -123,6 +127,11 @@
 	<bean id="clientCredentialsIntrospectionEndpointFilter" class="org.springframework.security.oauth2.provider.client.ClientCredentialsTokenEndpointFilter">
 		<property name="authenticationManager" ref="clientAuthenticationManager" />
 		<property name="filterProcessesUrl" value="/introspect"/>
+	</bean>
+
+	<bean id="clientCredentialsRevocationEndpointFilter" class="org.springframework.security.oauth2.provider.client.ClientCredentialsTokenEndpointFilter">
+		<property name="authenticationManager" ref="clientAuthenticationManager" />
+		<property name="filterProcessesUrl" value="/revoke"/>
 	</bean>
 
 	<authentication-manager id="clientAuthenticationManager" xmlns="http://www.springframework.org/schema/security">
