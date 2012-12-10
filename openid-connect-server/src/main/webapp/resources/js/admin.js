@@ -513,6 +513,15 @@
             if (value == "") return null;
             else return value;
         },
+
+        // maps from a form-friendly name to the real grant parameter name
+        authorizedGrantMap:{
+        	"authorization_code": "authorization_code",
+        	"password": "password",
+        	"implicit": "implicit",
+        	"client_credentials": "client_credentials",
+        	"redelegate": "urn:ietf:params:oauth:grant_type:redelegate"
+        },
         
         saveClient:function (event) {
 
@@ -520,9 +529,9 @@
 
             // build the grant type object
             var authorizedGrantTypes = [];
-            $.each(["authorization_code","client_credentials","password","implicit"],function(index,type) {
+            $.each(["authorization_code","client_credentials","password","implicit","urn:ietf:params:oauth:grant_type:redelegate"],function(index,type) {
                 if ($('#authorizedGrantTypes-' + type).is(':checked')) {
-                    authorizedGrantTypes.push(type);
+                    authorizedGrantTypes.push(authorizedGrantMap[type]);
                 }
             });
 
@@ -548,6 +557,9 @@
             var refreshTokenValiditySeconds = null;
             if ($('#allowRefresh').is(':checked') && !$('disableRefreshTokenTimeout').is(':checked')) {
             	refreshTokenValiditySeconds = this.getFormTokenValue($('#refreshTokenValiditySeconds input[type=text]').val()); 
+            	if ($.inArray('refresh_token', authorizedGrantTypes) == -1) {
+            		authorizedGrantTypes.push('refresh_token');
+            	}
             }
             
             var valid = this.model.set({

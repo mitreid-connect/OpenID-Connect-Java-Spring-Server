@@ -33,6 +33,7 @@ import org.mitre.openid.connect.service.WhitelistedSiteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
+import org.springframework.security.oauth2.provider.refresh.RefreshTokenGranter;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Strings;
@@ -83,6 +84,18 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 		// NOTE: don't assign a random client secret without asking, since public clients have no secret
         if (Strings.isNullOrEmpty(client.getClientId())) {
             client = generateClientId(client);
+        }
+        
+        // if the client is flagged to allow for refresh tokens, make sure it's got the right granted authority
+        if (client.isAllowRefresh()) {
+        	client.getAuthorizedGrantTypes().add("refresh_token");
+        } else {
+        	client.getAuthorizedGrantTypes().remove("refresh_token");
+        }
+        if (client.getAuthorizedGrantTypes().contains("refresh_token")) {
+        	client.setAllowRefresh(true);
+        } else {
+        	client.setAllowRefresh(false);
         }
         
         return clientRepository.saveClient(client);
@@ -156,7 +169,19 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 				}
 	        }
 			
-			return clientRepository.updateClient(oldClient.getId(), newClient);
+	        // if the client is flagged to allow for refresh tokens, make sure it's got the right granted authority
+	        if (newClient.isAllowRefresh()) {
+	        	newClient.getAuthorizedGrantTypes().add("refresh_token");
+	        } else {
+	        	newClient.getAuthorizedGrantTypes().remove("refresh_token");
+	        }
+	        if (newClient.getAuthorizedGrantTypes().contains("refresh_token")) {
+	        	newClient.setAllowRefresh(true);
+	        } else {
+	        	newClient.setAllowRefresh(false);
+	        }
+
+	        return clientRepository.updateClient(oldClient.getId(), newClient);
 		}
 		throw new IllegalArgumentException("Neither old client or new client can be null!");
     }

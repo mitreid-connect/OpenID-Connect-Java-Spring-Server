@@ -179,6 +179,17 @@
                         <input id="authorizedGrantTypes-implicit" type="checkbox" <%=($.inArray("implicit",
                         authorizedGrantTypes) > -1 ? 'checked' : '')%>> implicit
                     </label>
+<!--
+                    <label class="checkbox">
+                        <input id="authorizedGrantTypes-refresh_token" type="checkbox" <%=($.inArray("refresh_token",
+                        authorizedGrantTypes) > -1 ? 'checked' : '')%>> refresh
+                    </label>
+-->
+                    <label class="checkbox">
+                        <input id="authorizedGrantTypes-redelegate" type="checkbox" <%=($.inArray("urn:ietf:params:oauth:grant_type:redelegate",
+                        authorizedGrantTypes) > -1 ? 'checked' : '')%>> redelegate
+                    </label>
+
                 </div>
             </div>
 

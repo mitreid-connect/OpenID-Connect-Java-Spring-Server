@@ -27,6 +27,7 @@ INSERT INTO redirect_uri_TEMP (owner_id, redirect_uri) VALUES
 	
 INSERT INTO authorized_grant_type_TEMP (owner_id, authorized_grant_type) VALUES
 	('client', 'authorization_code'),
+	('client', 'urn:ietf:params:oauth:grant_type:redelegate'),
 	('client', 'implicit');
 	
 --
