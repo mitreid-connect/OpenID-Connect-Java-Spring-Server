@@ -116,7 +116,9 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	@Transient
 	public Map<String, Object> getAdditionalInformation() {
 		Map<String, Object> map = new HashMap<String, Object>(); //super.getAdditionalInformation();
-		map.put(ID_TOKEN, getIdTokenString());
+		if (getIdToken() != null) {
+			map.put(ID_TOKEN, getIdTokenString());
+		}
 		return map;
 	}
 	
