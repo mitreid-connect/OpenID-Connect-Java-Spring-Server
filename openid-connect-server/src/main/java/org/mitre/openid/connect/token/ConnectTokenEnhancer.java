@@ -37,6 +37,7 @@ import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
 
 @Service
 public class ConnectTokenEnhancer implements TokenEnhancer {
@@ -132,9 +133,9 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 			// TODO: might want to create a specialty authentication object here instead of copying
 			idTokenEntity.setAuthenticationHolder(token.getAuthenticationHolder());
 
-			// copy in the scopes from the parent token and add "id-token" to the list
-			Set<String> idScopes = new HashSet<String>(token.getScope());
-			idScopes.add(OAuth2AccessTokenEntity.ID_TOKEN_SCOPE);
+			// create a scope set with just the special "id-token" scope
+			//Set<String> idScopes = new HashSet<String>(token.getScope()); // this would copy the original token's scopes in, we don't really want that
+			Set<String> idScopes = Sets.newHashSet(OAuth2AccessTokenEntity.ID_TOKEN_SCOPE);
 			idTokenEntity.setScope(idScopes);
 			
 			idTokenEntity.setClient(token.getClient());
