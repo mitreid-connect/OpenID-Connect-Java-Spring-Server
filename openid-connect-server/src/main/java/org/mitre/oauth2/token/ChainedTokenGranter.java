@@ -12,6 +12,7 @@ import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.security.oauth2.common.exceptions.InvalidScopeException;
 import org.springframework.security.oauth2.common.util.OAuth2Utils;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
@@ -76,6 +77,12 @@ public class ChainedTokenGranter extends AbstractTokenGranter {
 	    	requestedScopes = new HashSet<String>();
 	    }
 	    
+	    // Check the incoming client id against the client that was issued the original token
+	    // TODO: right now, this only lets a client chain a request, not a resource server. We need
+	    //       a way to let one client get a token chained from another client's token, securely.
+	    if (!client.getClientId().equals(authorizationRequest.getClientId())) {
+	    	throw new InvalidClientException("Not the right client for this token");
+	    }
 	    
 	    // if our scopes are a valid subset of what's allowed, we can continue
 	    if (approvedScopes.containsAll(requestedScopes)) {
