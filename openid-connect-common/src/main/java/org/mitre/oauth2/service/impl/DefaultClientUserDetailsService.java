@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package org.mitre.openid.connect.service;
+package org.mitre.oauth2.service.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,28 +37,37 @@ import org.springframework.stereotype.Service;
  * @author AANGANES
  *
  */
-@Service
-public class ClientUserDetailsService implements UserDetailsService {
+@Service("clientUserDetailsService")
+public class DefaultClientUserDetailsService implements UserDetailsService {
 
 	@Autowired
-	ClientDetailsService clientDetailsService;
+	private ClientDetailsService clientDetailsService;
 
 	@Override
     public UserDetails loadUserByUsername(String clientId) throws  UsernameNotFoundException, DataAccessException {
 
 		ClientDetails client = clientDetailsService.loadClientByClientId(clientId);
 		
+		if (client != null) {
 		
-        String password = client.getClientSecret();
-        boolean enabled = true;
-        boolean accountNonExpired = true;
-        boolean credentialsNonExpired = true;
-        boolean accountNonLocked = true;
-        List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-        GrantedAuthority roleClient = new SimpleGrantedAuthority("ROLE_CLIENT");
-        authorities.add(roleClient);
-
-        return new User(clientId, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
+	        String password = client.getClientSecret();
+	        boolean enabled = true;
+	        boolean accountNonExpired = true;
+	        boolean credentialsNonExpired = true;
+	        boolean accountNonLocked = true;
+	        Collection<GrantedAuthority> authorities = client.getAuthorities();
+	        if (authorities == null || authorities.isEmpty()) {
+	        	// automatically inject ROLE_CLIENT if none exists ...
+	        	// TODO: this should probably happen on the client service side instead to keep it in the real data model
+	        	authorities = new ArrayList<GrantedAuthority>();
+	        	GrantedAuthority roleClient = new SimpleGrantedAuthority("ROLE_CLIENT");
+	        	authorities.add(roleClient);
+	        }
+	
+	        return new User(clientId, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
+		} else {
+			throw new UsernameNotFoundException("Client not found: " + clientId);
+		}
 
     }
 
