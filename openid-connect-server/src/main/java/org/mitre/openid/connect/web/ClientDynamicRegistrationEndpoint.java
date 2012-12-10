@@ -183,23 +183,29 @@ public class ClientDynamicRegistrationEndpoint {
 		});
 	}
 	
-	@RequestMapping(params = "type=client_associate", produces = "application/json")
-	public String clientAssociate(
-			@RequestParam(value = "contacts", required = false) Set<String> contacts,
-			@RequestParam(value = "application_type", required = false) AppType applicationType,
-			@RequestParam(value = "application_name", required = false) String applicationName,
+	@RequestMapping(params = "operation=client_register", produces = "application/json")
+	public String clientRegister(
+			@RequestParam(value = "redirect_uris", required = true) Set<String> redirectUris,
+			@RequestParam(value = "client_name", required = false) String clientName,
+			@RequestParam(value = "client_url", required = false) String clientUrl,
 			@RequestParam(value = "logo_url", required = false) String logoUrl,
-			@RequestParam(value = "redirect_uris", required = false) Set<String> redirectUris,
+			@RequestParam(value = "contacts", required = false) Set<String> contacts,
+			@RequestParam(value = "tos_url", required = false) String tosUrl,
 			@RequestParam(value = "token_endpoint_auth_type", required = false) AuthType tokenEndpointAuthType,
 			@RequestParam(value = "policy_url", required = false) String policyUrl,
+			
 			@RequestParam(value = "jwk_url", required = false) String jwkUrl,
 			@RequestParam(value = "jwk_encryption_url", required = false) String jwkEncryptionUrl,
 			@RequestParam(value = "x509_url", required = false) String x509Url,
 			@RequestParam(value = "x509_encryption_url", required = false) String x509EncryptionUrl,
+			@RequestParam(value = "default_max_age", required = false) Integer defaultMaxAge,
+			@RequestParam(value = "default_acr", required = false) String defaultAcr,
+			
+			// OPENID CONNECT EXTENSIONS BELOW
+			@RequestParam(value = "application_type", required = false) AppType applicationType,
 			@RequestParam(value = "sector_identifier_url", required = false) String sectorIdentifierUrl,
 			@RequestParam(value = "user_id_type", required = false) UserIdType userIdType,
 			@RequestParam(value = "require_signed_request_object", required = false) JwsAlgorithm requireSignedRequestObject,
-			
 			// TODO: JWE needs to be handled properly, see @InitBinder above -- we'll ignore these right now
 			/*
 			@RequestParam(value = "userinfo_signed_response_alg", required = false) String userinfoSignedResponseAlg,
@@ -212,9 +218,7 @@ public class ClientDynamicRegistrationEndpoint {
 			@RequestParam(value = "idtoken_encrypted_response_int", required = false) String idtokenEncryptedResponseInt,
 			*/
 			
-			@RequestParam(value = "default_max_age", required = false) Integer defaultMaxAge,
 			@RequestParam(value = "require_auth_time", required = false, defaultValue = "true") Boolean requireAuthTime,
-			@RequestParam(value = "default_acr", required = false) String defaultAcr,
 			ModelMap model
 			) {
 		
@@ -223,12 +227,16 @@ public class ClientDynamicRegistrationEndpoint {
 		
 		ClientDetailsEntity client = new ClientDetailsEntity();
 
-		// always generate a secret for this client
-		client = clientService.generateClientSecret(client);
+		// if it's not using a private key or no auth, then generate a secret
+		if (tokenEndpointAuthType != AuthType.PRIVATE_KEY && tokenEndpointAuthType != AuthType.NONE) {
+			client = clientService.generateClientSecret(client);
+		}
 		
 		client.setContacts(contacts);
 		client.setApplicationType(applicationType);
-		client.setApplicationName(applicationName);
+		client.setClientName(clientName);
+		client.setClientUrl(clientUrl);
+		client.setTosUrl(tosUrl);
 		client.setLogoUrl(logoUrl);
 		client.setRegisteredRedirectUri(redirectUris);
 		client.setTokenEndpointAuthType(tokenEndpointAuthType);
@@ -247,11 +255,10 @@ public class ClientDynamicRegistrationEndpoint {
 		// defaults for SECOAUTH functionality
 		// TODO: extensions to request, or configuration?
 		client.setScope(Sets.newHashSet("openid", "phone", "address", "profile", "email")); // provision all scopes
-		client.setAllowRefresh(true); // by default allow refresh tokens on dynamic clients
 		client.setAccessTokenValiditySeconds(3600); // access tokens good for 1hr
 		client.setIdTokenValiditySeconds(600); // id tokens good for 10min
 		client.setRefreshTokenValiditySeconds(null); // refresh tokens good until revoked
-		client.setAuthorizedGrantTypes(Sets.newHashSet("authorization_code"));
+		client.setAuthorizedGrantTypes(Sets.newHashSet("authorization_code", "refresh_token")); // allow authoirzation code and refresh token grant types
 		
 		client.setDynamicallyRegistered(true);
 		
@@ -259,10 +266,11 @@ public class ClientDynamicRegistrationEndpoint {
 		
 		OAuth2AccessTokenEntity registrationAccessToken = createRegistrationAccessToken(client);
 		
+		model.put("fullClient", Boolean.TRUE);
 		model.put("client", saved);
 		model.put("token", registrationAccessToken);
 		
-		return "clientAssociate";
+		return "clientRegistration";
 	}
 
 	/**
@@ -282,7 +290,7 @@ public class ClientDynamicRegistrationEndpoint {
     }
 	
 	@PreAuthorize("hasRole('ROLE_CLIENT') and #oauth2.hasScope('registration-token')")
-	@RequestMapping(params = "type=rotate_secret", produces = "application/json")
+	@RequestMapping(params = "operation=rotate_secret", produces = "application/json")
 	public String rotateSecret(OAuth2Authentication auth, ModelMap model) {
 		
 		
@@ -316,30 +324,38 @@ public class ClientDynamicRegistrationEndpoint {
 		// save the client
 		ClientDetailsEntity saved = clientService.updateClient(client, client);
 		
+		model.put("fullClient", Boolean.FALSE);
 		model.put("client", saved);
 		model.put("token", registrationAccessToken);
 		
-		return "clientAssociate";
+		return "clientRegistration";
 	}
 	
 	@PreAuthorize("hasRole('ROLE_CLIENT') and #oauth2.hasScope('registration-token')")
-	@RequestMapping(params = "type=client_update", produces = "application/json")
+	@RequestMapping(params = "operation=client_update", produces = "application/json")
 	public String clientUpdate(
-			@RequestParam(value = "contacts", required = false) Set<String> contacts,
-			@RequestParam(value = "application_type", required = false) AppType applicationType,
-			@RequestParam(value = "application_name", required = false) String applicationName,
+			@RequestParam(value = "redirect_uris", required = true) Set<String> redirectUris,
+			@RequestParam(value = "client_name", required = false) String clientName,
+			@RequestParam(value = "client_url", required = false) String clientUrl,
 			@RequestParam(value = "logo_url", required = false) String logoUrl,
-			@RequestParam(value = "redirect_uris", required = false) Set<String> redirectUris,
+			@RequestParam(value = "contacts", required = false) Set<String> contacts,
+			@RequestParam(value = "tos_url", required = false) String tosUrl,
 			@RequestParam(value = "token_endpoint_auth_type", required = false) AuthType tokenEndpointAuthType,
 			@RequestParam(value = "policy_url", required = false) String policyUrl,
+			
 			@RequestParam(value = "jwk_url", required = false) String jwkUrl,
 			@RequestParam(value = "jwk_encryption_url", required = false) String jwkEncryptionUrl,
 			@RequestParam(value = "x509_url", required = false) String x509Url,
 			@RequestParam(value = "x509_encryption_url", required = false) String x509EncryptionUrl,
+			@RequestParam(value = "default_max_age", required = false) Integer defaultMaxAge,
+			@RequestParam(value = "default_acr", required = false) String defaultAcr,
+			
+			// OPENID CONNECT EXTENSIONS BELOW
+			@RequestParam(value = "application_type", required = false) AppType applicationType,
 			@RequestParam(value = "sector_identifier_url", required = false) String sectorIdentifierUrl,
 			@RequestParam(value = "user_id_type", required = false) UserIdType userIdType,
 			@RequestParam(value = "require_signed_request_object", required = false) JwsAlgorithm requireSignedRequestObject,
-			
+			@RequestParam(value = "require_auth_time", required = false, defaultValue = "true") Boolean requireAuthTime,
 			// TODO: JWE needs to be handled properly, see @InitBinder above -- we'll ignore these right now
 			/*
 			@RequestParam(value = "userinfo_signed_response_alg", required = false) String userinfoSignedResponseAlg,
@@ -352,9 +368,6 @@ public class ClientDynamicRegistrationEndpoint {
 			@RequestParam(value = "idtoken_encrypted_response_int", required = false) String idtokenEncryptedResponseInt,
 			*/
 			
-			@RequestParam(value = "default_max_age", required = false) Integer defaultMaxAge,
-			@RequestParam(value = "require_auth_time", required = false) Boolean requireAuthTime,
-			@RequestParam(value = "default_acr", required = false) String defaultAcr,
 			OAuth2Authentication auth,
 			ModelMap model
 			
@@ -369,7 +382,9 @@ public class ClientDynamicRegistrationEndpoint {
 		
 		client.setContacts(contacts);
 		client.setApplicationType(applicationType);
-		client.setApplicationName(applicationName);
+		client.setClientName(clientName);
+		client.setClientUrl(clientUrl);
+		client.setTosUrl(tosUrl);
 		client.setLogoUrl(logoUrl);
 		client.setRegisteredRedirectUri(redirectUris);
 		client.setTokenEndpointAuthType(tokenEndpointAuthType);
@@ -387,8 +402,9 @@ public class ClientDynamicRegistrationEndpoint {
 
 		ClientDetailsEntity saved = clientService.updateClient(client, client);
 		
+		model.put("fullClient", Boolean.TRUE);
 		model.put("client", saved);
-		return "clientUpdate";
+		return "clientRegister";
 	}
 	
 }

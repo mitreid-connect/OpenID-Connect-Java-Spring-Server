@@ -63,7 +63,6 @@ public class ClientDetailsEntity implements ClientDetails {
 	
 	/** Our own fields **/
 	private String clientDescription = ""; // human-readable description
-	private boolean allowRefresh = false; // do we allow refresh tokens for this client?
 	private boolean allowMultipleAccessTokens = false; // do we allow multiple access tokens, or not?
 	private boolean reuseRefreshToken = false; // do we let someone reuse a refresh token?
 	private boolean dynamicallyRegistered = false; // was this client dynamically registered?
@@ -83,7 +82,7 @@ public class ClientDetailsEntity implements ClientDetails {
 
     /** Fields from Client Registration Specification **/
 	private AppType applicationType;
-	private String applicationName;
+	private String clientName;
 	private AuthType tokenEndpointAuthType = AuthType.SECRET_BASIC;
 	private UserIdType userIdType;
 	
@@ -91,6 +90,8 @@ public class ClientDetailsEntity implements ClientDetails {
 	
 	private String logoUrl;
 	private String policyUrl;
+	private String clientUrl;
+	private String tosUrl;
 	private String jwkUrl;
 	private String jwkEncryptionUrl;
 	private String x509Url;
@@ -239,19 +240,11 @@ public class ClientDetailsEntity implements ClientDetails {
 	/**
      * @return the allowRefresh
      */
-	@Basic
-	@Column(name="allow_refresh")
+	@Transient
     public boolean isAllowRefresh() {
-    	return allowRefresh;
+    	return getAuthorizedGrantTypes().contains("refresh_token");
     }
 
-	/**
-     * @param allowRefresh Whether to allow for issuance of refresh tokens or not (defaults to false)
-     */
-    public void setAllowRefresh(boolean allowRefresh) {
-    	this.allowRefresh = allowRefresh;
-    }
-	
     @Basic
     @Column(name="allow_multiple_access_tokens")
     public boolean isAllowMultipleAccessTokens() {
@@ -517,13 +510,13 @@ public class ClientDetailsEntity implements ClientDetails {
 	}
 
 	@Basic
-	@Column(name="application_name")
-	public String getApplicationName() {
-		return applicationName;
+	@Column(name="client_name")
+	public String getClientName() {
+		return clientName;
 	}
 
-	public void setApplicationName(String applicationName) {
-		this.applicationName = applicationName;
+	public void setClientName(String clientName) {
+		this.clientName = clientName;
 	}
 
 	@Enumerated(EnumType.STRING)
@@ -579,6 +572,38 @@ public class ClientDetailsEntity implements ClientDetails {
 	public void setPolicyUrl(String policyUrl) {
 		this.policyUrl = policyUrl;
 	}
+
+	/**
+     * @return the clientUrl
+     */
+	@Basic
+	@Column(name="client_url")
+    public String getClientUrl() {
+    	return clientUrl;
+    }
+
+	/**
+     * @param clientUrl the clientUrl to set
+     */
+    public void setClientUrl(String clientUrl) {
+    	this.clientUrl = clientUrl;
+    }
+
+	/**
+     * @return the tosUrl
+     */
+    @Basic
+    @Column(name="tos_url")
+    public String getTosUrl() {
+    	return tosUrl;
+    }
+
+	/**
+     * @param tosUrl the tosUrl to set
+     */
+    public void setTosUrl(String tosUrl) {
+    	this.tosUrl = tosUrl;
+    }
 
 	@Basic
 	@Column(name="jwk_url")
@@ -766,8 +791,6 @@ public class ClientDetailsEntity implements ClientDetails {
 				+ (id != null ? "id=" + id + ", " : "")
 				+ (clientDescription != null ? "clientDescription="
 						+ clientDescription + ", " : "")
-				+ "allowRefresh="
-				+ allowRefresh
 				+ ", allowMultipleAccessTokens="
 				+ allowMultipleAccessTokens
 				+ ", reuseRefreshToken="
@@ -799,8 +822,8 @@ public class ClientDetailsEntity implements ClientDetails {
 						+ additionalInformation + ", " : "")
 				+ (applicationType != null ? "applicationType="
 						+ applicationType + ", " : "")
-				+ (applicationName != null ? "applicationName="
-						+ applicationName + ", " : "")
+				+ (clientName != null ? "applicationName="
+						+ clientName + ", " : "")
 				+ (tokenEndpointAuthType != null ? "tokenEndpointAuthType="
 						+ tokenEndpointAuthType + ", " : "")
 				+ (userIdType != null ? "userIdType=" + userIdType + ", " : "")
@@ -864,9 +887,8 @@ public class ClientDetailsEntity implements ClientDetails {
 				+ ((additionalInformation == null) ? 0 : additionalInformation
 						.hashCode());
 		result = prime * result + (allowMultipleAccessTokens ? 1231 : 1237);
-		result = prime * result + (allowRefresh ? 1231 : 1237);
 		result = prime * result
-				+ ((applicationName == null) ? 0 : applicationName.hashCode());
+				+ ((clientName == null) ? 0 : clientName.hashCode());
 		result = prime * result
 				+ ((applicationType == null) ? 0 : applicationType.hashCode());
 		result = prime * result
@@ -1002,14 +1024,11 @@ public class ClientDetailsEntity implements ClientDetails {
 		if (allowMultipleAccessTokens != other.allowMultipleAccessTokens) {
 			return false;
 		}
-		if (allowRefresh != other.allowRefresh) {
-			return false;
-		}
-		if (applicationName == null) {
-			if (other.applicationName != null) {
+		if (clientName == null) {
+			if (other.clientName != null) {
 				return false;
 			}
-		} else if (!applicationName.equals(other.applicationName)) {
+		} else if (!clientName.equals(other.clientName)) {
 			return false;
 		}
 		if (applicationType != other.applicationType) {

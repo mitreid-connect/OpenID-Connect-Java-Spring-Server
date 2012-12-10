@@ -19,6 +19,9 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 /**
+ * 
+ * Provides a minimal display response for a dynamic client registration's client_update operation.
+ * 
  * @author jricher
  *
  */

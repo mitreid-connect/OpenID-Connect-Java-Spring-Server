@@ -20,11 +20,15 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 /**
+ * 
+ * Provides a minimal representation of a client's registration information, to be shown from the dynamic registration endpoint
+ * on the client_register and rotate_secret operations.
+ * 
  * @author jricher
  *
  */
-@Component("clientAssociate")
-public class ClientAssociateView extends AbstractView {
+@Component("clientRegistration")
+public class ClientRegistrationView extends AbstractView {
 
 	/* (non-Javadoc)
 	 * @see org.springframework.web.servlet.view.AbstractView#renderMergedOutputModel(java.util.Map, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
@@ -40,17 +44,26 @@ public class ClientAssociateView extends AbstractView {
 			
 			ClientDetailsEntity client = (ClientDetailsEntity) model.get("client");
 			OAuth2AccessTokenEntity token = (OAuth2AccessTokenEntity) model.get("token");
-			
+			Boolean fullClient = (Boolean) model.get("fullClient"); // do we display the full client or not?
 			JsonObject obj = new JsonObject();
 			obj.addProperty("client_id", client.getClientId());
 			if (client.isSecretRequired()) {
 				obj.addProperty("client_secret", client.getClientSecret());
 			}
-			obj.addProperty("registration_access_token", token.getValue());
-			if (token.getExpiration() != null) {
-				obj.addProperty("expires_at", token.getExpiration().getTime()); // TODO: make sure this makes sense?
-			} else {
-				obj.addProperty("expires_at", 0); // TODO: configure expiring client secrets. For now, they don't expire
+			
+			if (fullClient) {
+				// TODO: display the rest of the client fields, for now just this to mark changes
+				obj.addProperty("client_name", client.getClientName());
+			}
+			
+			
+			if (token != null) {
+				obj.addProperty("registration_access_token", token.getValue());
+				if (token.getExpiration() != null) {
+					obj.addProperty("expires_at", token.getExpiration().getTime()); // TODO: make sure this makes sense?
+				} else {
+					obj.addProperty("expires_at", 0); // TODO: configure expiring client secrets. For now, they don't expire
+				}
 			}
 			
 			Writer out = response.getWriter();
