@@ -114,7 +114,8 @@
 		<oauth:authorization-code authorization-code-services-ref="defaultOAuth2AuthorizationCodeService"/>
 		<oauth:implicit />
 		<oauth:refresh-token/>
-		
+		<oauth:custom-grant token-granter-ref="chainedTokenGranter" />
+
 	</oauth:authorization-server>
 
 	<bean id="oauthAccessDeniedHandler" class="org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler" />
