@@ -53,11 +53,10 @@ public class ChainedTokenGranter extends AbstractTokenGranter {
 	}
 
 	/* (non-Javadoc)
-     * @see org.springframework.security.oauth2.provider.token.AbstractTokenGranter#getAccessToken(org.springframework.security.oauth2.provider.AuthorizationRequest)
+     * @see org.springframework.security.oauth2.provider.token.AbstractTokenGranter#getOAuth2Authentication(org.springframework.security.oauth2.provider.AuthorizationRequest)
      */
     @Override
-    protected OAuth2AccessToken getAccessToken(AuthorizationRequest authorizationRequest) {
-    	
+    protected OAuth2Authentication getOAuth2Authentication(AuthorizationRequest authorizationRequest) {
     	// read and load up the existing token
 	    String incomingTokenValue = authorizationRequest.getAuthorizationParameters().get("token");
 	    OAuth2AccessTokenEntity incomingToken = tokenServices.readAccessToken(incomingTokenValue);
@@ -104,15 +103,12 @@ public class ChainedTokenGranter extends AbstractTokenGranter {
 	    	// create a new access token
 	    	OAuth2Authentication authentication = new OAuth2Authentication(outgoingAuthRequest, incomingToken.getAuthenticationHolder().getAuthentication().getUserAuthentication()); 
 	    	
-	    	return tokenServices.createAccessToken(authentication);
+	    	return authentication;
 	    	
 	    } else {
 	    	throw new InvalidScopeException("Invalid scope requested in chained request", approvedScopes);
 	    }
 	    
-	    
     }
-
-	
 	
 }
