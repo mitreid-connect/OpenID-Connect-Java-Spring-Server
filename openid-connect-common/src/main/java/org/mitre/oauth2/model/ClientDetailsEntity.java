@@ -118,7 +118,8 @@ public class ClientDetailsEntity implements ClientDetails {
 		SECRET_POST("client_secret_post"), 
 		SECRET_BASIC("client_secret_basic"), 
 		SECRET_JWT("client_secret_jwt"), 
-		PRIVATE_KEY("private_key_jwt");
+		PRIVATE_KEY("private_key_jwt"), 
+		NONE("none");
 		
 		private final String value;
 		
