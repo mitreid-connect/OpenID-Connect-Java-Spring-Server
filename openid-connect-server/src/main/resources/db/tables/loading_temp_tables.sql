@@ -37,7 +37,6 @@ CREATE TEMPORARY TABLE IF NOT EXISTS user_info_TEMP (
 
 CREATE TEMPORARY TABLE IF NOT EXISTS client_details_TEMP (
 	client_description VARCHAR(256),
-	allow_refresh BOOLEAN,
 	dynamically_registered BOOLEAN,
 	id_token_validity_seconds BIGINT,
 	
@@ -46,7 +45,7 @@ CREATE TEMPORARY TABLE IF NOT EXISTS client_details_TEMP (
 	access_token_validity_seconds BIGINT,
 	refresh_token_validity_seconds BIGINT,
 	
-	application_name VARCHAR(256)
+	client_name VARCHAR(256)
 );
 
 CREATE TEMPORARY TABLE IF NOT EXISTS client_scope_TEMP (
