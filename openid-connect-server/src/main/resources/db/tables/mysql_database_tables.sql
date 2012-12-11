@@ -64,10 +64,9 @@ CREATE TABLE blacklisted_site (
 CREATE TABLE client_details (
 	id BIGINT AUTO_INCREMENT PRIMARY KEY,
 	client_description VARCHAR(256),
-	allow_refresh TINYINT,
-	allow_multiple_access_tokens TINYINT,
-	reuse_refresh_tokens TINYINT,
-	dynamically_registered TINYINT,
+	allow_multiple_access_tokens TINYINT NOT NULL DEFAULT 0,
+	reuse_refresh_tokens TINYINT NOT NULL DEFAULT 0,
+	dynamically_registered TINYINT NOT NULL DEFAULT 0,
 	id_token_validity_seconds BIGINT,
 	
 	client_id VARCHAR(256),
@@ -76,7 +75,7 @@ CREATE TABLE client_details (
 	refresh_token_validity_seconds BIGINT,
 	
 	application_type VARCHAR(256),
-	application_name VARCHAR(256),
+	client_name VARCHAR(256),
 	token_endpoint_auth_type VARCHAR(256),
 	user_id_type VARCHAR(256),
 	
@@ -101,7 +100,7 @@ CREATE TABLE client_details (
 	id_token_encrypted_response_int VARCHAR(256),
 	
 	default_max_age BIGINT,
-	require_auth_time TINYINT,
+	require_auth_time TINYINT NOT NULL DEFAULT 0,
 	default_acr VARCHAR(256)
 );
 
@@ -138,17 +137,17 @@ CREATE TABLE refresh_token (
 );
 
 CREATE TABLE resource_id (
-	owner_id VARCHAR(256), 
+	owner_id BIGINT, 
 	resource_id VARCHAR(256) 
 );
 
 CREATE TABLE client_scope (
-	owner_id VARCHAR(4096),
+	owner_id BIGINT,
 	scope VARCHAR(2048)
 );
 
 CREATE TABLE token_scope (
-	owner_id VARCHAR(4096),
+	owner_id BIGINT,
 	scope VARCHAR(2048)
 );
 
