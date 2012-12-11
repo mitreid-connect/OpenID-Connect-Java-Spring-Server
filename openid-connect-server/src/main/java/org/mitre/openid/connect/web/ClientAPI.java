@@ -61,7 +61,7 @@ public class ClientAPI {
 
         Collection<ClientDetailsEntity> clients = clientService.getAllClients();
         modelAndView.addObject("entity", clients);
-        modelAndView.setViewName("jsonClientView");
+        modelAndView.setViewName("jsonEntityView");
 
         return modelAndView;
     }
@@ -98,7 +98,7 @@ public class ClientAPI {
         ClientDetailsEntity newClient = clientService.saveNewClient(client);
 		m.addAttribute("entity", newClient);
 
-        return "jsonClientView";
+        return "jsonEntityView";
     }
 
     /**
@@ -140,7 +140,7 @@ public class ClientAPI {
         ClientDetailsEntity newClient = clientService.updateClient(oldClient, client);
 		m.addAttribute("entity", newClient);
 
-        return "jsonClientView";
+        return "jsonEntityView";
     }
 
     /**
@@ -179,7 +179,7 @@ public class ClientAPI {
         }
 
         modelAndView.addObject("entity", client);
-        modelAndView.setViewName("jsonClientView");
+        modelAndView.setViewName("jsonEntityView");
 
         return modelAndView;
     }
