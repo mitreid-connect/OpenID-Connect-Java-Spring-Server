@@ -51,7 +51,7 @@ public class ClientRegistrationView extends AbstractView {
 			if (client.isSecretRequired()) {
 				obj.addProperty("client_secret", client.getClientSecret());
 			}
-			
+
 			if (fullClient) {
 				// TODO: display the rest of the client fields, for now just this to mark changes
 				obj.addProperty("client_name", client.getClientName());
@@ -66,11 +66,7 @@ public class ClientRegistrationView extends AbstractView {
 			
 			if (token != null) {
 				obj.addProperty("registration_access_token", token.getValue());
-				if (token.getExpiration() != null) {
-					obj.addProperty("expires_at", token.getExpiration().getTime()); // TODO: make sure this makes sense?
-				} else {
-					obj.addProperty("expires_at", 0); // TODO: configure expiring client secrets. For now, they don't expire
-				}
+				obj.addProperty("expires_at", 0); // TODO: configure expiring client secrets. For now, they don't expire
 			}
 			
 			Writer out = response.getWriter();

@@ -41,14 +41,14 @@
             	</c:choose>
                 Do you authorize
                     "<c:choose>
-                        <c:when test="${empty client.applicationName}">
+                        <c:when test="${empty client.clientName}">
                             <c:out value="${client.clientId}"/>
                         </c:when>
                         <c:otherwise>
-                            <c:out value="${client.applicationName}"/>
+                            <c:out value="${client.clientName}"/>
                         </c:otherwise>
-                    </c:choose>" to sign you into their site
-                    using your identity?
+                    </c:choose>" 
+                to sign you into their site using your identity?
                     <div>
                     	<a class="small" href="#" onclick="$('#description').toggle('fast'); return false;">more information</a>
 					</div>

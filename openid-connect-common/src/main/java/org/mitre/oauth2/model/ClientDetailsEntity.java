@@ -822,7 +822,7 @@ public class ClientDetailsEntity implements ClientDetails {
 						+ additionalInformation + ", " : "")
 				+ (applicationType != null ? "applicationType="
 						+ applicationType + ", " : "")
-				+ (clientName != null ? "applicationName="
+				+ (clientName != null ? "clientName="
 						+ clientName + ", " : "")
 				+ (tokenEndpointAuthType != null ? "tokenEndpointAuthType="
 						+ tokenEndpointAuthType + ", " : "")
