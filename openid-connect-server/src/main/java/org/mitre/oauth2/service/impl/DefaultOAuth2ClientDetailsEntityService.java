@@ -86,16 +86,11 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
             client = generateClientId(client);
         }
         
-        // if the client is flagged to allow for refresh tokens, make sure it's got the right granted authority
+        // if the client is flagged to allow for refresh tokens, make sure it's got the right granted scopes
         if (client.isAllowRefresh()) {
-        	client.getAuthorizedGrantTypes().add("refresh_token");
+        	client.getScope().add("offline");
         } else {
-        	client.getAuthorizedGrantTypes().remove("refresh_token");
-        }
-        if (client.getAuthorizedGrantTypes().contains("refresh_token")) {
-        	client.setAllowRefresh(true);
-        } else {
-        	client.setAllowRefresh(false);
+        	client.getScope().remove("offline");
         }
         
         return clientRepository.saveClient(client);
@@ -169,16 +164,11 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 				}
 	        }
 			
-	        // if the client is flagged to allow for refresh tokens, make sure it's got the right granted authority
+	        // if the client is flagged to allow for refresh tokens, make sure it's got the right scope
 	        if (newClient.isAllowRefresh()) {
-	        	newClient.getAuthorizedGrantTypes().add("refresh_token");
+	        	newClient.getScope().add("offline");
 	        } else {
-	        	newClient.getAuthorizedGrantTypes().remove("refresh_token");
-	        }
-	        if (newClient.getAuthorizedGrantTypes().contains("refresh_token")) {
-	        	newClient.setAllowRefresh(true);
-	        } else {
-	        	newClient.setAllowRefresh(false);
+	        	newClient.getScope().remove("offline");
 	        }
 
 	        return clientRepository.updateClient(oldClient.getId(), newClient);
