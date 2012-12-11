@@ -539,12 +539,6 @@
                 }
             });
 
-            var allowRefresh = $('#allowRefresh').is(':checked');
-            if (allowRefresh) {
-            	authorizedGrantTypes.push(this.authorizedGrantMap['refresh_token']);
-            	scopes.push("offline");
-            }
-            
             var requireClientSecret = $('#requireClientSecret input').is(':checked');
             var generateClientSecret = $('#generateClientSecret input').is(':checked');
             var clientSecret = null;
@@ -565,10 +559,18 @@
             }
             
             var refreshTokenValiditySeconds = null;
-            if ($('#allowRefresh').is(':checked') && !$('disableRefreshTokenTimeout').is(':checked')) {
-            	refreshTokenValiditySeconds = this.getFormTokenValue($('#refreshTokenValiditySeconds input[type=text]').val()); 
+            if ($('#allowRefresh').is(':checked')) {
+
             	if ($.inArray('refresh_token', authorizedGrantTypes) == -1) {
             		authorizedGrantTypes.push('refresh_token');
+            	}
+
+            	if ($.inArray('offline', scopes) == -1) {
+                	scopes.push("offline");            		
+            	}
+
+            	if (!$('disableRefreshTokenTimeout').is(':checked')) {
+            		refreshTokenValiditySeconds = this.getFormTokenValue($('#refreshTokenValiditySeconds input[type=text]').val()); 
             	}
             }
             
@@ -584,6 +586,7 @@
                 accessTokenValiditySeconds: accessTokenValiditySeconds,
                 refreshTokenValiditySeconds: refreshTokenValiditySeconds,
                 idTokenValiditySeconds: idTokenValiditySeconds,
+                allowRefresh: $('#allowRefresh').is(':checked'),
                 scope: scopes
             });
 
@@ -1110,7 +1113,7 @@
             	}, { silent: true });
             }
             
-            if ($.inArray("refresh_token", client.get("authorizedGrantTypes"))) {
+            if ($.inArray("refresh_token", client.get("authorizedGrantTypes")) != -1) {
             	client.set({
             		allowRefresh: true
             	}, { silent: true });
