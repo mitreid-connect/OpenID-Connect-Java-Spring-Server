@@ -15,6 +15,7 @@ import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.view.AbstractView;
 
+import com.google.common.base.Joiner;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -54,6 +55,12 @@ public class ClientRegistrationView extends AbstractView {
 			if (fullClient) {
 				// TODO: display the rest of the client fields, for now just this to mark changes
 				obj.addProperty("client_name", client.getClientName());
+				if (client.getScope() != null) {
+					obj.addProperty("scope", Joiner.on(" ").join(client.getScope()));
+				}
+				if (client.getRegisteredRedirectUri() != null) {
+					obj.addProperty("redirect_uri", Joiner.on(" ").join(client.getRegisteredRedirectUri()));
+				}
 			}
 			
 			

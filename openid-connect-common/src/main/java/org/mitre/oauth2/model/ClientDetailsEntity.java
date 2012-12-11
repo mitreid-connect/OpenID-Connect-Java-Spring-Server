@@ -69,8 +69,8 @@ public class ClientDetailsEntity implements ClientDetails {
 	private Integer idTokenValiditySeconds; //timeout for id tokens
 	
 	/** Fields from ClientDetails interface **/
-    private String clientId = "";
-    private String clientSecret = "";
+    private String clientId = null;
+    private String clientSecret = null;
     private Set<String> scope = new HashSet<String>();
     private Set<String> authorizedGrantTypes = new HashSet<String>();
 	private Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();

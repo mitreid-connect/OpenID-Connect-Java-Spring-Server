@@ -2,6 +2,7 @@ package org.mitre.openid.connect.web;
 
 import java.beans.PropertyEditorSupport;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.mitre.jwt.signer.JwsAlgorithm;
 import org.mitre.oauth2.exception.ClientNotFoundException;
@@ -160,7 +161,7 @@ public class ClientDynamicRegistrationEndpoint {
 	 * Bind a space-separated string to a Set<String>
 	 * @param binder
 	 */
-	@InitBinder({"contacts", "redirect_uris"})
+	@InitBinder({"contacts", "redirect_uris", "scope", "grant_type"})
 	public void stringSetInitbinder(WebDataBinder binder) {
 		/*
 		 * Space-separated set of strings
@@ -193,6 +194,9 @@ public class ClientDynamicRegistrationEndpoint {
 			@RequestParam(value = "tos_url", required = false) String tosUrl,
 			@RequestParam(value = "token_endpoint_auth_type", required = false) AuthType tokenEndpointAuthType,
 			@RequestParam(value = "policy_url", required = false) String policyUrl,
+			
+			@RequestParam(value = "scope", required = false) Set<String> scope,
+			@RequestParam(value = "grant_type", required = false) Set<String> grantType,
 			
 			@RequestParam(value = "jwk_url", required = false) String jwkUrl,
 			@RequestParam(value = "jwk_encryption_url", required = false) String jwkEncryptionUrl,
@@ -252,13 +256,24 @@ public class ClientDynamicRegistrationEndpoint {
 		client.setRequireAuthTime(requireAuthTime);
 		client.setDefaultACR(defaultAcr);
 
+		if (scope != null) {
+			// TODO: check against some kind of scope service for scope validity
+			client.setScope(scope);
+		} else {
+			client.setScope(Sets.newHashSet("openid", "phone", "address", "profile", "email")); // provision all scopes
+		}
+		if (grantType != null) {
+			// TODO: check against some kind of grant type service for validity
+			client.setAuthorizedGrantTypes(grantType);
+		} else {
+			client.setAuthorizedGrantTypes(Sets.newHashSet("authorization_code", "refresh_token")); // allow authorization code and refresh token grant types
+		}
+		
 		// defaults for SECOAUTH functionality
 		// TODO: extensions to request, or configuration?
-		client.setScope(Sets.newHashSet("openid", "phone", "address", "profile", "email")); // provision all scopes
-		client.setAccessTokenValiditySeconds(3600); // access tokens good for 1hr
-		client.setIdTokenValiditySeconds(600); // id tokens good for 10min
+		client.setAccessTokenValiditySeconds((int)TimeUnit.HOURS.toSeconds(1)); // access tokens good for 1hr
+		client.setIdTokenValiditySeconds((int)TimeUnit.MINUTES.toSeconds(10)); // id tokens good for 10min
 		client.setRefreshTokenValiditySeconds(null); // refresh tokens good until revoked
-		client.setAuthorizedGrantTypes(Sets.newHashSet("authorization_code", "refresh_token")); // allow authoirzation code and refresh token grant types
 		
 		client.setDynamicallyRegistered(true);
 		
@@ -343,6 +358,9 @@ public class ClientDynamicRegistrationEndpoint {
 			@RequestParam(value = "token_endpoint_auth_type", required = false) AuthType tokenEndpointAuthType,
 			@RequestParam(value = "policy_url", required = false) String policyUrl,
 			
+			@RequestParam(value = "scope", required = false) Set<String> scope,
+			@RequestParam(value = "grant_type", required = false) Set<String> grantType,
+			
 			@RequestParam(value = "jwk_url", required = false) String jwkUrl,
 			@RequestParam(value = "jwk_encryption_url", required = false) String jwkEncryptionUrl,
 			@RequestParam(value = "x509_url", required = false) String x509Url,
@@ -399,6 +417,17 @@ public class ClientDynamicRegistrationEndpoint {
 		client.setDefaultMaxAge(defaultMaxAge);
 		client.setRequireAuthTime(requireAuthTime);
 		client.setDefaultACR(defaultAcr);
+
+		if (scope != null) {
+			// TODO: check against some kind of scope service for scope validity
+			client.setScope(scope);
+		} else {
+		}
+		if (grantType != null) {
+			// TODO: check against some kind of grant type service for validity
+			client.setAuthorizedGrantTypes(grantType);
+		} else {
+		}
 
 		ClientDetailsEntity saved = clientService.updateClient(client, client);
 		
