@@ -533,7 +533,7 @@
             
             // build the grant type object
             var authorizedGrantTypes = [];
-            $.each(authorizedGrantMap,function(index,type) {
+            $.each(this.authorizedGrantMap, function(index,type) {
                 if ($('#authorizedGrantTypes-' + index).is(':checked')) {
                     authorizedGrantTypes.push(type);
                 }
@@ -541,7 +541,7 @@
 
             var allowRefresh = $('#allowRefresh').is(':checked');
             if (allowRefresh) {
-            	authorizedGrantTypes.push(authorizedGrantMap('refresh_token'));
+            	authorizedGrantTypes.push(this.authorizedGrantMap['refresh_token']);
             	scopes.push("offline");
             }
             
