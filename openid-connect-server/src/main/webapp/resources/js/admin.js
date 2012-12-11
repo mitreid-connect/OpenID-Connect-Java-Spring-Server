@@ -226,7 +226,7 @@
         defaults:{
             id:null,
             idTokenValiditySeconds: 600,
-            applicationName:"",
+            clientName:"",
             clientSecret:"",
             registeredRedirectUri:[],
             authorizedGrantTypes:["authorization_code"],
@@ -563,7 +563,7 @@
             }
             
             var valid = this.model.set({
-                applicationName:$('#applicationName input').val(),
+                clientName:$('#clientName input').val(),
                 clientId:$('#clientId input').val(),
                 clientSecret: clientSecret,
                 generateClientSecret:generateClientSecret,

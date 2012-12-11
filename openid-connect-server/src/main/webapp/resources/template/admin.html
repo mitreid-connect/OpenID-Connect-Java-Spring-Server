@@ -13,7 +13,7 @@
     </td>
 
     <td>
-        <%=applicationName%>
+        <%=clientName%>
         <!--expandable future information-->
     </td>
 
@@ -33,8 +33,8 @@
         <thead>
         <tr>
 			<th></th>
-            <th>Client ID</th>
-            <th>Application Name</th>
+            <th>ID</th>
+            <th>Name</th>
             <th></th>
         </tr>
         </thead>
@@ -60,10 +60,10 @@
                 <button class="btn btn-small btn-primary">Save</button>&nbsp;<button class="btn btn-small btn-cancel">Cancel</button>
             </div>
 
-            <div class="control-group" id="applicationName">
-                <label class="control-label">Application name</label>
+            <div class="control-group" id="clientName">
+                <label class="control-label">Client name</label>
                 <div class="controls">
-                    <input value="<%=applicationName%>" maxlength="100" type="text" class="" placeholder="Type something">
+                    <input value="<%=clientName%>" maxlength="100" type="text" class="" placeholder="Type something">
                     <p class="help-block">Human-readable application name</p>
                 </div>
             </div>
@@ -301,7 +301,7 @@
     </td>
 
     <td>
-        <%=client.applicationName%>
+        <%=client.clientName%>
         <!--expandable future information-->
     </td>
 
@@ -320,8 +320,8 @@
         <thead>
         <tr>
 			<th></th>
-            <th>Client ID</th>
-            <th>Application Name</th>
+            <th>ID</th>
+            <th>Name</th>
             <th></th>
         </tr>
         </thead>
@@ -350,7 +350,7 @@
 				<label class="control-label">Client</label>
 				<div class="controls">
 					<input type="hidden" name="clientId" value="<%= client.clientId %>" />
-					<%= client.applicationName != null ? client.applicationName : client.clientId %>
+					<%= client.clientName != null ? client.clientName : client.clientId %>
 				</div>
 			</div>
 
@@ -411,7 +411,7 @@
 	</td>
 
     <td>
-        <%= client.applicationName != null ? client.applicationName : client.clientId %>
+        <%= client.clientName != null ? client.clientName : client.clientId %>
         <blockquote><small><%=client.clientDescription%></small></blockquote>
 		<!-- put scopes and other info here -->
     </td>
