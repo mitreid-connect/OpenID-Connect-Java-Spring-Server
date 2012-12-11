@@ -520,21 +520,31 @@
         	"password": "password",
         	"implicit": "implicit",
         	"client_credentials": "client_credentials",
-        	"redelegate": "urn:ietf:params:oauth:grant_type:redelegate"
+        	"redelegate": "urn:ietf:params:oauth:grant_type:redelegate",
+        	"refresh_token": "refresh_token"
         },
         
         saveClient:function (event) {
 
             $('.control-group').removeClass('error');
 
+            // build the scope object
+            var scopes = this.scopeCollection.pluck("item");
+            
             // build the grant type object
             var authorizedGrantTypes = [];
-            $.each(["authorization_code","client_credentials","password","implicit","urn:ietf:params:oauth:grant_type:redelegate"],function(index,type) {
-                if ($('#authorizedGrantTypes-' + type).is(':checked')) {
-                    authorizedGrantTypes.push(authorizedGrantMap[type]);
+            $.each(authorizedGrantMap,function(index,type) {
+                if ($('#authorizedGrantTypes-' + index).is(':checked')) {
+                    authorizedGrantTypes.push(type);
                 }
             });
 
+            var allowRefresh = $('#allowRefresh').is(':checked');
+            if (allowRefresh) {
+            	authorizedGrantTypes.push(authorizedGrantMap('refresh_token'));
+            	scopes.push("offline");
+            }
+            
             var requireClientSecret = $('#requireClientSecret input').is(':checked');
             var generateClientSecret = $('#generateClientSecret input').is(':checked');
             var clientSecret = null;
@@ -570,12 +580,11 @@
                 registeredRedirectUri: this.registeredRedirectUriCollection.pluck("item"),
                 clientDescription:$('#clientDescription textarea').val(),
                 logoUrl:$('#logoUrl input').val(),
-                allowRefresh:$('#allowRefresh').is(':checked'),
                 authorizedGrantTypes: authorizedGrantTypes,
                 accessTokenValiditySeconds: accessTokenValiditySeconds,
                 refreshTokenValiditySeconds: refreshTokenValiditySeconds,
                 idTokenValiditySeconds: idTokenValiditySeconds,
-                scope: this.scopeCollection.pluck("item")
+                scope: scopes
             });
 
             if (this.model.get("allowRefresh") == false) {
@@ -1098,6 +1107,12 @@
             if (client.get("clientSecret") == null) {
             	client.set({
             		requireClientSecret:false
+            	}, { silent: true });
+            }
+            
+            if ($.inArray("refresh_token", client.get("authorizedGrantTypes"))) {
+            	client.set({
+            		allowRefresh: true
             	}, { silent: true });
             }
             
