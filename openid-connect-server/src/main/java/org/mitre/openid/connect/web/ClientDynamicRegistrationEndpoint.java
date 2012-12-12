@@ -1,6 +1,7 @@
 package org.mitre.openid.connect.web;
 
 import java.beans.PropertyEditorSupport;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -15,12 +16,9 @@ import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
-import org.springframework.security.oauth2.common.exceptions.UnauthorizedClientException;
-import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.DefaultAuthorizationRequest;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
@@ -32,10 +30,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Objects;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
+import com.google.common.primitives.Booleans;
 
 @Controller
 @RequestMapping(value = "register"/*, method = RequestMethod.POST*/)
@@ -253,7 +251,7 @@ public class ClientDynamicRegistrationEndpoint {
 		client.setUserIdType(userIdType);
 		client.setRequireSignedRequestObject(requireSignedRequestObject);
 		client.setDefaultMaxAge(defaultMaxAge);
-		client.setRequireAuthTime(requireAuthTime);
+		client.setRequireAuthTime(requireAuthTime == null ? false : requireAuthTime.booleanValue());
 		client.setDefaultACR(defaultAcr);
 
 		if (scope != null) {
@@ -386,6 +384,8 @@ public class ClientDynamicRegistrationEndpoint {
 			@RequestParam(value = "idtoken_encrypted_response_int", required = false) String idtokenEncryptedResponseInt,
 			*/
 			
+			@RequestParam Map<String, String> params,
+			
 			OAuth2Authentication auth,
 			ModelMap model
 			
@@ -398,36 +398,81 @@ public class ClientDynamicRegistrationEndpoint {
 			throw new ClientNotFoundException("Could not find client: " + clientId);
 		}
 		
-		client.setContacts(contacts);
-		client.setApplicationType(applicationType);
-		client.setClientName(clientName);
-		client.setClientUrl(clientUrl);
-		client.setTosUrl(tosUrl);
-		client.setLogoUrl(logoUrl);
-		client.setRegisteredRedirectUri(redirectUris);
-		client.setTokenEndpointAuthType(tokenEndpointAuthType);
-		client.setPolicyUrl(policyUrl);
-		client.setJwkUrl(jwkUrl);
-		client.setJwkEncryptionUrl(jwkEncryptionUrl);
-		client.setX509Url(x509Url);
-		client.setX509EncryptionUrl(x509EncryptionUrl);
-		client.setSectorIdentifierUrl(sectorIdentifierUrl);
-		client.setUserIdType(userIdType);
-		client.setRequireSignedRequestObject(requireSignedRequestObject);
-		client.setDefaultMaxAge(defaultMaxAge);
-		client.setRequireAuthTime(requireAuthTime);
-		client.setDefaultACR(defaultAcr);
-
-		if (scope != null) {
+		/*
+		 * now process each field:
+		 *   1) If input is not provided (null, not in map), keep existing value
+		 *   2) If input is provided (in map) but null or blank, remove existing value
+		 *   3) If input is not null and not blank, replace existing value
+		 */
+		if (params.containsKey("contacts")) {
+			client.setContacts(contacts);
+		}
+		if (params.containsKey("application_type")) {
+			client.setApplicationType(applicationType);
+		}
+		if (params.containsKey("client_name")) {
+			client.setClientName(Strings.emptyToNull(clientName));
+		}
+		if (params.containsKey("client_url")) {
+			client.setClientUrl(Strings.emptyToNull(clientUrl));
+		}
+		if (params.containsKey("tos_url")) {
+			client.setTosUrl(Strings.emptyToNull(tosUrl));
+		}
+		if (params.containsKey("logo_url")) {
+			client.setLogoUrl(Strings.emptyToNull(logoUrl));
+		}
+		if (params.containsKey("redirect_uris")) {
+			client.setRegisteredRedirectUri(redirectUris);
+		}
+		if (params.containsKey("token_endpoint_auth_type")) {
+			client.setTokenEndpointAuthType(tokenEndpointAuthType);
+		}
+		if (params.containsKey("policy_url")) {
+			client.setPolicyUrl(Strings.emptyToNull(policyUrl));
+		}
+		if (params.containsKey("jwk_url")) {
+			client.setJwkUrl(Strings.emptyToNull(jwkUrl));
+		}
+		if (params.containsKey("jwk_encryption_url")) {
+			client.setJwkEncryptionUrl(Strings.emptyToNull(jwkEncryptionUrl));
+		}
+		if (params.containsKey("x509_url")) {
+			client.setX509Url(Strings.emptyToNull(x509Url));
+		}
+		if (params.containsKey("x509_encryption_url")) {
+			client.setX509EncryptionUrl(Strings.emptyToNull(x509EncryptionUrl));
+		}
+		if (params.containsKey("default_max_age")) {
+			client.setDefaultMaxAge(defaultMaxAge);
+		}
+		if (params.containsKey("default_acr")) {
+			client.setDefaultACR(Strings.emptyToNull(defaultAcr));
+		}
+		if (params.containsKey("scope")) {
 			// TODO: check against some kind of scope service for scope validity
 			client.setScope(scope);
-		} else {
 		}
-		if (grantType != null) {
+		if (params.containsKey("grant_type")) {
 			// TODO: check against some kind of grant type service for validity
 			client.setAuthorizedGrantTypes(grantType);
-		} else {
 		}
+		
+		
+		// OIDC
+		if (params.containsKey("sector_identifier_url")) {
+			client.setSectorIdentifierUrl(Strings.emptyToNull(sectorIdentifierUrl));
+		}
+		if (params.containsKey("user_id_type")) {
+			client.setUserIdType(userIdType);
+		}
+		if (params.containsKey("require_signed_request_object")) { // TODO: rename field
+			client.setRequireSignedRequestObject(requireSignedRequestObject);
+		}
+		if (params.containsKey("require_auth_time")) {
+			client.setRequireAuthTime(requireAuthTime == null ? false : requireAuthTime.booleanValue()); // watch out for autoboxing
+		}
+		
 
 		ClientDetailsEntity saved = clientService.updateClient(client, client);
 		
