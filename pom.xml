@@ -306,11 +306,6 @@
     </dependencies>
     <repositories>
         <repository>
-            <id>com.google.code.gson</id>
-            <name>GSON repository</name>
-            <url>http://google-gson.googlecode.com/svn/mavenrepo/</url>
-        </repository>
-        <repository>
             <id>org.eclipse.persistence</id>
             <name>EclipseLink repository</name>
             <url>http://download.eclipse.org/rt/eclipselink/maven.repo</url>
