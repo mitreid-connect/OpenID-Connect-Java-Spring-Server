@@ -6,7 +6,7 @@ CREATE TABLE access_token (
 	refresh_token_id BIGINT,
 	client_id VARCHAR(256),
 	auth_holder_id BIGINT,
-	id_token_string VARCHAR(4096)
+	id_token_id BIGINT
 );
 
 CREATE TABLE address (
@@ -81,6 +81,9 @@ CREATE TABLE client_details (
 	
 	logo_url VARCHAR(2048),
 	policy_url VARCHAR(2048),
+	client_url VARCHAR(2048),
+	tos_url VARCHAR(2048),
+
 	jwk_url VARCHAR(2048),
 	jwk_encryption_url VARCHAR(2048),
 	x509_url VARCHAR(2048),
