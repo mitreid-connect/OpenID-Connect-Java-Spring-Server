@@ -115,14 +115,6 @@ CREATE TABLE event (
 	timestamp DATE
 );
 
-CREATE TABLE idtoken (
-	id BIGINT AUTO_INCREMENT PRIMARY KEY
-);
-
-CREATE TABLE idtokenclaims (
-	id BIGINT AUTO_INCREMENT PRIMARY KEY
-);
-
 CREATE TABLE redirect_uri (
 	owner_id BIGINT, 
 	redirect_uri VARCHAR(2048) 
