@@ -110,6 +110,7 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 			
 			claims.setIssuer(configBean.getIssuer());
 			claims.setUserId(userId);
+			claims.setPrincipal(userId); // TODO: this is technically redundant
 			claims.setAudience(clientId);
 			
 			idToken.setClaims(claims);
