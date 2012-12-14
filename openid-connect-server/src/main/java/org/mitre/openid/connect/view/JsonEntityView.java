@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.servlet.view.AbstractView;
@@ -56,6 +57,13 @@ public class JsonEntityView extends AbstractView {
         response.setContentType("application/json");
 
         
+		HttpStatus code = (HttpStatus) model.get("code");
+		if (code == null) {
+			code = HttpStatus.OK; // default to 200
+		}
+		
+		response.setStatus(code.value());
+		
 		try {
 			
 			Writer out = response.getWriter();
