@@ -386,5 +386,13 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	public void setTokenEnhancer(TokenEnhancer tokenEnhancer) {
 		this.tokenEnhancer = tokenEnhancer;
 	}
+
+	/* (non-Javadoc)
+     * @see org.mitre.oauth2.service.OAuth2TokenEntityService#getAccessTokenForIdToken(org.mitre.oauth2.model.OAuth2AccessTokenEntity)
+     */
+    @Override
+    public OAuth2AccessTokenEntity getAccessTokenForIdToken(OAuth2AccessTokenEntity idToken) {
+    	return tokenRepository.getAccessTokenForIdToken(idToken);
+    }
 	
 }

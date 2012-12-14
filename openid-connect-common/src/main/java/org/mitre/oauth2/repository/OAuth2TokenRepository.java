@@ -53,5 +53,10 @@ public interface OAuth2TokenRepository {
 	public List<OAuth2RefreshTokenEntity> getExpiredRefreshTokens();
 
 	public OAuth2AccessTokenEntity getByAuthentication(OAuth2Authentication auth);
+
+	/**
+     * @return
+     */
+    public OAuth2AccessTokenEntity getAccessTokenForIdToken(OAuth2AccessTokenEntity idToken);
 	
 }

@@ -172,4 +172,15 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	    return JpaUtil.getSingleResult(accessTokens);
     }
 
+	/* (non-Javadoc)
+     * @see org.mitre.oauth2.repository.OAuth2TokenRepository#getAccessTokenForIdToken(org.mitre.oauth2.model.OAuth2AccessTokenEntity)
+     */
+    @Override
+    public OAuth2AccessTokenEntity getAccessTokenForIdToken(OAuth2AccessTokenEntity idToken) {
+    	TypedQuery<OAuth2AccessTokenEntity> queryA = manager.createNamedQuery("OAuth2AccessTokenEntity.getByIdToken", OAuth2AccessTokenEntity.class);
+	    queryA.setParameter("idToken", idToken);
+	    List<OAuth2AccessTokenEntity> accessTokens = queryA.getResultList();
+	    return JpaUtil.getSingleResult(accessTokens);
+    }
+
 }
