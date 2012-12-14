@@ -16,6 +16,8 @@
 package org.mitre.oauth2.web;
 
 import java.security.Principal;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
@@ -23,15 +25,20 @@ import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
+import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 
 @Controller
 public class IntrospectionEndpoint {
@@ -50,12 +57,20 @@ public class IntrospectionEndpoint {
 		this.tokenServices = tokenServices;
 	}
 	
+	@ExceptionHandler(InvalidTokenException.class)
+	public ModelAndView tokenNotFound(InvalidTokenException ex) {
+		Map<String,Boolean> e = ImmutableMap.of("valid", Boolean.FALSE);
+		Map<String, Object> model = new HashMap<String, Object>();
+		model.put("entity", e);
+		// TODO: http code?
+		
+		return new ModelAndView("jsonEntityView", model);
+	}
+	
 	@PreAuthorize("hasRole('ROLE_CLIENT')")
 	@RequestMapping("/introspect")
 	public ModelAndView verify(@RequestParam("token") String tokenValue, Principal p, ModelAndView modelAndView) {
 		
-		// assume the token's not valid until proven otherwise
-		modelAndView.setViewName("tokenNotFound");
 		/*
 		if (p != null && p instanceof OAuth2Authentication) {
 			OAuth2Authentication auth = (OAuth2Authentication)p;
@@ -75,30 +90,31 @@ public class IntrospectionEndpoint {
 			}
 		}*/
 		
-		if (!Strings.isNullOrEmpty(tokenValue)) {
-			OAuth2AccessTokenEntity token = tokenServices.readAccessToken(tokenValue);
-			
-			if (token != null) {
-				
-				ClientDetailsEntity tokenClient = token.getClient();
-				// clientID is the principal name in the authentication
-				String clientId = p.getName();
-				ClientDetailsEntity authClient = clientService.loadClientByClientId(clientId);
-				
-				if (tokenClient != null && authClient != null) {
-					if (Objects.equal(authClient, tokenClient)) {
-						
-						// if it's a valid token, we'll print out information on it
-						modelAndView.setViewName("tokenIntrospection");
-						modelAndView.addObject("entity", token);
-					}
-				}
-				
-				
-			}
+		if (Strings.isNullOrEmpty(tokenValue)) {
+			throw new InvalidTokenException("No token found!");
 		}
 		
-		return modelAndView;
+		OAuth2AccessTokenEntity token = tokenServices.readAccessToken(tokenValue);
+	
+		ClientDetailsEntity tokenClient = token.getClient();
+		// clientID is the principal name in the authentication
+		String clientId = p.getName();
+		ClientDetailsEntity authClient = clientService.loadClientByClientId(clientId);
+		
+		if (tokenClient != null && authClient != null) {
+			if (Objects.equal(authClient, tokenClient)) { // TODO: this lets a client introspect but not an RS
+				
+				// if it's a valid token, we'll print out information on it
+				modelAndView.setViewName("tokenIntrospection");
+				modelAndView.addObject("entity", token);
+				return modelAndView;
+			} else {
+				throw new InvalidClientException("Clients did not match.");
+			}
+		} else {
+			throw new InvalidClientException("No client found.");
+		}
+		
 	}
 	
 }
