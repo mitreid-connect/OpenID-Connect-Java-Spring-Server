@@ -53,7 +53,7 @@ public class IdToken extends Jwt {
 	 * @param claims
 	 * @param signature
 	 */
-	public IdToken(JwtHeader header, JwtClaims claims, String signature) {
+	public IdToken(JwtHeader header, IdTokenClaims claims, String signature) {
 	    super(header, claims, signature);
     }
 

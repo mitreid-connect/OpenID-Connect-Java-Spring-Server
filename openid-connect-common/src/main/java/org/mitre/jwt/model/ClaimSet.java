@@ -226,7 +226,7 @@ public class ClaimSet {
 
 	public void loadFromClaimSet(ClaimSet claimSet) {
 		
-		loadFromJsonObject(getAsJsonObject()); // we push to a JSON object and back to let subclasses override this
+		loadFromJsonObject(claimSet.getAsJsonObject()); // we push to a JSON object and back to let subclasses override this
 
 		jsonString = claimSet.toJsonString(); // preserve the string on input
 		

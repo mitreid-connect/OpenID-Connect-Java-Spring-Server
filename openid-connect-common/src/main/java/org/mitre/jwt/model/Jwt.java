@@ -38,9 +38,9 @@ public class Jwt {
 	
 	
 	public Jwt() {
-	    this.header = new JwtHeader();
-	    this.claims = new JwtClaims();
-	    this.signature = null; // unsigned by default
+	    setHeader(new JwtHeader());
+	    setClaims(new JwtClaims());
+	    setSignature(null); // unsigned by default
     }
 
 
@@ -52,7 +52,6 @@ public class Jwt {
 	 * @param signature
 	 */
 	public Jwt(JwtHeader header, JwtClaims claims, String signature) {
-	    super();
 	    setHeader(header);
 	    setClaims(claims);
 	    setSignature(signature);
