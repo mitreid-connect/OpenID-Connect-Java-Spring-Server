@@ -115,6 +115,7 @@
 		<oauth:implicit />
 		<oauth:refresh-token/>
 		<oauth:custom-grant token-granter-ref="chainedTokenGranter" />
+		<oauth:custom-grant token-granter-ref="jwtAssertionTokenGranter" />
 
 	</oauth:authorization-server>
 

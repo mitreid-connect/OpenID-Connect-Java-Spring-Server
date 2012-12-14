@@ -3,16 +3,22 @@
  */
 package org.mitre.oauth2.token;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 
 import org.mitre.jwt.model.Jwt;
 import org.mitre.jwt.model.JwtClaims;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
+import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
+import org.mitre.openid.connect.model.IdToken;
+import org.mitre.openid.connect.model.IdTokenClaims;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -39,6 +45,7 @@ public class JwtAssertionTokenGranter extends AbstractTokenGranter {
 	@Autowired
 	private ConfigurationPropertiesBean config;
 	
+	@Autowired
 	public JwtAssertionTokenGranter(OAuth2TokenEntityService tokenServices, ClientDetailsEntityService clientDetailsService) {
 	    super(tokenServices, clientDetailsService, grantType);
 	    this.tokenServices = tokenServices;
@@ -49,15 +56,79 @@ public class JwtAssertionTokenGranter extends AbstractTokenGranter {
      * @see org.springframework.security.oauth2.provider.token.AbstractTokenGranter#getOAuth2Authentication(org.springframework.security.oauth2.provider.AuthorizationRequest)
      */
     @Override
-    protected OAuth2Authentication getOAuth2Authentication(AuthorizationRequest authorizationRequest) {
+    protected OAuth2AccessToken getAccessToken(AuthorizationRequest authorizationRequest) {
     	// read and load up the existing token
 	    String incomingTokenValue = authorizationRequest.getAuthorizationParameters().get("assertion");
+	    OAuth2AccessTokenEntity incomingToken = tokenServices.readAccessToken(incomingTokenValue);
 	    
+	    ClientDetailsEntity client = incomingToken.getClient();
+
+	    
+	    if (incomingToken.getScope().contains(OAuth2AccessTokenEntity.ID_TOKEN_SCOPE)) {
+		    
+	    	if (!client.getClientId().equals(authorizationRequest.getClientId())) {
+		    	throw new InvalidClientException("Not the right client for this token");
+		    }
+
+		    // it's an ID token, process it accordingly
+	    	
+	    	IdToken idToken = IdToken.parse(incomingTokenValue);
+	    	
+	    	OAuth2AccessTokenEntity accessToken = tokenServices.getAccessTokenForIdToken(incomingToken);
+	    	
+	    	if (accessToken != null) {
+	    	
+	    		//OAuth2AccessTokenEntity newIdToken = tokenServices.get
+	    		IdToken newIdToken = new IdToken();
+	    		OAuth2AccessTokenEntity newIdTokenEntity = new OAuth2AccessTokenEntity();
+	    		
+	    		IdTokenClaims claims = newIdToken.getClaims();
+	    		claims.loadFromClaimSet(idToken.getClaims()); // copy over all existing claims
+
+	    		// update expiration and issued-at claims
+				if (client.getIdTokenValiditySeconds() != null) {
+					Date expiration = new Date(System.currentTimeMillis() + (client.getIdTokenValiditySeconds() * 1000L));
+					claims.setExpiration(expiration);
+					newIdTokenEntity.setExpiration(expiration);
+				}
+				claims.setIssuedAt(new Date());
+
+				try {
+	                jwtService.signJwt(newIdToken);
+                } catch (NoSuchAlgorithmException e) {
+	                // TODO Auto-generated catch block
+	                e.printStackTrace();
+                }
+				
+				newIdTokenEntity.setJwt(newIdToken);
+				newIdTokenEntity.setAuthenticationHolder(incomingToken.getAuthenticationHolder());
+				newIdTokenEntity.setScope(incomingToken.getScope());
+				newIdTokenEntity.setClient(incomingToken.getClient());
+				
+				newIdTokenEntity = tokenServices.saveAccessToken(newIdTokenEntity);
+
+				// attach the ID token to the access token entity
+				accessToken.setIdToken(newIdTokenEntity);
+				accessToken = tokenServices.saveAccessToken(accessToken);
+				
+				// delete the old ID token
+				tokenServices.revokeAccessToken(incomingToken);
+				
+				return newIdTokenEntity;
+	    		
+	    	}
+	    	
+	    }
+	    
+	    return null;
+
+	    /*
+	     * Otherwise, process it like an access token assertion ... which we don't support yet so this is all commented out
+	     * /
 	    if (jwtService.validateSignature(incomingTokenValue)) {
 
 	    	Jwt jwt = Jwt.parse(incomingTokenValue);
 	    	
-	    	OAuth2AccessTokenEntity oldToken = tokenServices.readAccessToken(incomingTokenValue);
 	    	
 	    	if (oldToken.getScope().contains("id-token")) {
 	    		// TODO: things
@@ -92,7 +163,7 @@ public class JwtAssertionTokenGranter extends AbstractTokenGranter {
 	    } else {
 	    	return null; // throw error??
 	    }
-	    
+	    */
 	    
     }
 
