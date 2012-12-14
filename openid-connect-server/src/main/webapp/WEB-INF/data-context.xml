@@ -25,6 +25,11 @@
 		<jdbc:script location="classpath:/db/clients.sql"/>
 	</jdbc:initialize-database>
 	
+	<bean id="jpaAdapter" class="org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter">
+ 		<property name="databasePlatform" value="org.eclipse.persistence.platform.database.HSQLPlatform" />
+		<property name="showSql" value="true" />
+	</bean>
+
 	<!--  The following is for connecting to a MySQL database that has been initialized with 
 			src/main/resources/db/tables/mysql_database_tables.sql -->
 	<!-- 
@@ -34,5 +39,11 @@
 		<property name="username" value="oic" />
 		<property name="password" value="oic" />		
 	</bean>
+
+	<bean id="jpaAdapter" class="org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter">
+		<property name="databasePlatform" value="org.eclipse.persistence.platform.database.MySQLPlatform" />
+		<property name="showSql" value="true" />
+	</bean>
+
 	-->
 </beans>
