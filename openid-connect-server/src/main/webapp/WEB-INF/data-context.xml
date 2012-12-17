@@ -16,7 +16,7 @@
 	<!-- Use the following to set up the OIC tables in the in-memory DB
 		   If you are using a file based HSQLDB you should not run this every time. -->
 	<jdbc:initialize-database data-source="dataSource">
-		<jdbc:script location="classpath:/db/tables/database_tables.sql"/>
+		<jdbc:script location="classpath:/db/tables/hsql_database_tables.sql"/>
 		<!-- The following file is for the jdbc-user-service spring security implementation -->
 		<jdbc:script location="classpath:/db/tables/security-schema.sql"/>
 		<!-- The following files are for safely bootstrapping users and clients into the database -->
