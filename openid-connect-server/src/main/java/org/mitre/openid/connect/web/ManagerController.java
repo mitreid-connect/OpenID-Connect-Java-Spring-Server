@@ -29,7 +29,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
  */
 
 @Controller
-@PreAuthorize("hasRole('ROLE_USER')") // TODO: this probably shouldn't be here
 public class ManagerController {
 
 	@Autowired
@@ -45,6 +44,7 @@ public class ManagerController {
         return "home";
     }
 
+    @PreAuthorize("hasRole('ROLE_USER')") // TODO: this probably shouldn't be here
     @RequestMapping("manage/**")
     public String showClientManager() {
     	// TODO: move view
