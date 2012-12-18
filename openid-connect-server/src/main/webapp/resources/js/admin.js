@@ -1020,10 +1020,16 @@
             
             "admin/blacklist":"blackList",
             
-            "user/approved":"approvedSites"
+            "user/approved":"approvedSites",
+            
+            "": "root"
             	
         },
-
+        
+        root:function() {
+        	this.navigate('user/approved', {trigger: true});
+        },
+        
         initialize:function () {
 
             this.clientList = new ClientCollection();
