@@ -116,10 +116,10 @@ public class IntrospectionEndpoint {
 					throw new InvalidScopeException("Tried to introspect a token of different scope");
 				}
 			} else {
-				throw new InvalidClientException("Clients can't introspect.");
+				throw new InvalidClientException("Client is not allowed to call introspection endpoint.");
 			}
 		} else {
-			throw new InvalidClientException("No client found.");
+			throw new InvalidClientException("Client not found.");
 		}
 		
 	}
