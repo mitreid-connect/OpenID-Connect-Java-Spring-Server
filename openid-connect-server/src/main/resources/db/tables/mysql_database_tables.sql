@@ -64,9 +64,10 @@ CREATE TABLE blacklisted_site (
 CREATE TABLE client_details (
 	id BIGINT AUTO_INCREMENT PRIMARY KEY,
 	client_description VARCHAR(256),
-	allow_multiple_access_tokens TINYINT NOT NULL DEFAULT 0,
-	reuse_refresh_tokens TINYINT NOT NULL DEFAULT 0,
-	dynamically_registered TINYINT NOT NULL DEFAULT 0,
+	allow_multiple_access_tokens BOOLEAN NOT NULL DEFAULT 0,
+	reuse_refresh_tokens BOOLEAN NOT NULL DEFAULT 1,
+	dynamically_registered BOOLEAN NOT NULL DEFAULT 0,
+	allow_introspection BOOLEAN NOT NULL DEFAULT 0,
 	id_token_validity_seconds BIGINT,
 	
 	client_id VARCHAR(256),
@@ -103,7 +104,7 @@ CREATE TABLE client_details (
 	id_token_encrypted_response_int VARCHAR(256),
 	
 	default_max_age BIGINT,
-	require_auth_time TINYINT NOT NULL DEFAULT 0,
+	require_auth_time BOOLEAN NOT NULL DEFAULT 0,
 	default_acr VARCHAR(256)
 );
 

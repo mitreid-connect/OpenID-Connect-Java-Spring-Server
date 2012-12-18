@@ -64,8 +64,9 @@ public class ClientDetailsEntity implements ClientDetails {
 	/** Our own fields **/
 	private String clientDescription = ""; // human-readable description
 	private boolean allowMultipleAccessTokens = false; // do we allow multiple access tokens, or not?
-	private boolean reuseRefreshToken = false; // do we let someone reuse a refresh token?
+	private boolean reuseRefreshToken = true; // do we let someone reuse a refresh token?
 	private boolean dynamicallyRegistered = false; // was this client dynamically registered?
+	private boolean allowIntrospection = false; // do we let this client call the introspection endpoint?
 	private Integer idTokenValiditySeconds; //timeout for id tokens
 	
 	/** Fields from ClientDetails interface **/
@@ -300,6 +301,22 @@ public class ClientDetailsEntity implements ClientDetails {
 	
 
 	
+
+	/**
+     * @return the allowIntrospection
+     */
+	@Basic
+	@Column(name="allow_introspection")
+    public boolean isAllowIntrospection() {
+    	return allowIntrospection;
+    }
+
+	/**
+     * @param allowIntrospection the allowIntrospection to set
+     */
+    public void setAllowIntrospection(boolean allowIntrospection) {
+    	this.allowIntrospection = allowIntrospection;
+    }
 
 	/**
 	 * If the clientSecret is not null, then it is always required.

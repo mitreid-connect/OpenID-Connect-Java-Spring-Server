@@ -26,6 +26,7 @@ import org.mitre.oauth2.service.OAuth2TokenEntityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
+import org.springframework.security.oauth2.common.exceptions.InvalidScopeException;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
@@ -102,14 +103,20 @@ public class IntrospectionEndpoint {
 		ClientDetailsEntity authClient = clientService.loadClientByClientId(clientId);
 		
 		if (tokenClient != null && authClient != null) {
-			if (Objects.equal(authClient, tokenClient)) { // TODO: this lets a client introspect but not an RS
+			if (authClient.isAllowIntrospection()) {
 				
-				// if it's a valid token, we'll print out information on it
-				modelAndView.setViewName("tokenIntrospection");
-				modelAndView.addObject("entity", token);
-				return modelAndView;
+				// if it's the same client that the token was issued to, or it at least has all the scopes the token was issued with
+				if (authClient.equals(tokenClient) || authClient.getScope().containsAll(token.getScope())) {
+				
+					// if it's a valid token, we'll print out information on it
+					modelAndView.setViewName("tokenIntrospection");
+					modelAndView.addObject("entity", token);
+					return modelAndView;
+				} else {
+					throw new InvalidScopeException("Tried to introspect a token of different scope");
+				}
 			} else {
-				throw new InvalidClientException("Clients did not match.");
+				throw new InvalidClientException("Clients can't introspect.");
 			}
 		} else {
 			throw new InvalidClientException("No client found.");

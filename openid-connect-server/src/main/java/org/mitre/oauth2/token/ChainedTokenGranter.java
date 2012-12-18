@@ -76,13 +76,6 @@ public class ChainedTokenGranter extends AbstractTokenGranter {
 	    	requestedScopes = new HashSet<String>();
 	    }
 	    
-	    // Check the incoming client id against the client that was issued the original token
-	    // TODO: right now, this only lets a client chain a request, not a resource server. We need
-	    //       a way to let one client get a token chained from another client's token, securely.
-	    if (!client.getClientId().equals(authorizationRequest.getClientId())) {
-	    	throw new InvalidClientException("Not the right client for this token");
-	    }
-	    
 	    // if our scopes are a valid subset of what's allowed, we can continue
 	    if (approvedScopes.containsAll(requestedScopes)) {
 
