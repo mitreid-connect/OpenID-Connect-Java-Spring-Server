@@ -593,7 +593,7 @@
             if (valid) {
 
                 var _self = this;
-                this.model.save(this.model, {
+                this.model.save({}, {
                     success:function () {
                         app.clientList.add(_self.model);
                         app.navigate('admin/clients', {trigger:true});
@@ -872,7 +872,7 @@
     		
             if (valid) {
                 var _self = this;
-                this.model.save(this.model, {
+                this.model.save({}, {
                     success:function () {
                         app.whiteListList.add(_self.model);
                         app.navigate('admin/whitelists', {trigger:true});
@@ -980,7 +980,7 @@
         	
         	var _self = this; // closures...
         	
-        	item.save(item, {
+        	item.save({}, {
         		success:function() {
         			_self.collection.add(item);
         		}
