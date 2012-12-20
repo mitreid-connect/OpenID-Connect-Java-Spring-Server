@@ -1,12 +1,12 @@
 
     var URIModel = Backbone.Model.extend({
 
-        validate: function(){
+        validate: function(attrs){
 
             var expression = /^(?:([a-z0-9+.-]+:\/\/)((?:(?:[a-z0-9-._~!$&'()*+,;=:]|%[0-9A-F]{2})*)@)?((?:[a-z0-9-._~!$&'()*+,;=]|%[0-9A-F]{2})*)(:(?:\d*))?(\/(?:[a-z0-9-._~!$&'()*+,;=:@\/]|%[0-9A-F]{2})*)?|([a-z0-9+.-]+:)(\/?(?:[a-z0-9-._~!$&'()*+,;=:@]|%[0-9A-F]{2})+(?:[a-z0-9-._~!$&'()*+,;=:@\/]|%[0-9A-F]{2})*)?)(\?(?:[a-z0-9-._~!$&'()*+,;=:\/?@]|%[0-9A-F]{2})*)?(#(?:[a-z0-9-._~!$&'()*+,;=:\/?@]|%[0-9A-F]{2})*)?$/i;
             var regex = new RegExp(expression);
 
-            if (!this.get("item").match(regex)) {
+            if (attrs.item == null || !attrs.item.match(regex)) {
                 return "Invalid URI";
             }
         }
@@ -96,11 +96,15 @@
                 model = new URIModel({item:input_value});
             } else {
                 model = new Backbone.Model({item:input_value});
-                model.validate = function() { if(!this.get("item")) return "value can't be null"; };
+                model.validate = function(attrs) { 
+                	if(!attrs.item) {
+                		return "value can't be null";
+                	}
+                };
             }
 
             // if it's valid and doesn't already exist
-            if (model.isValid() && this.collection.where({item: input_value}).length < 1) {
+            if (model.get("item") != null && this.collection.where({item: input_value}).length < 1) {
                 this.collection.add(model);
             } else {
                 // else add a visual error indicator
@@ -147,8 +151,6 @@
     	
     	initialize: function () { },
     	
-    	validate: { },
-    	
     	urlRoot: "api/whitelist"
     	
     });
@@ -177,8 +179,6 @@
     	
     	initialize: function() { },
     	
-    	validate: { },
-    	
     	urlRoot: 'api/approved'
     	
     });
@@ -205,22 +205,6 @@
             });
 
         },
-
-        validate:{
-            clientName:{
-               /* required:true,
-                pattern:/^[\w ]+$/,
-                minlength:3,*/
-                maxlength:100
-            },
-            clientDescription:{
-                /*required:true,
-                pattern:/^[\w ]+$/,
-                minlength:3,*/
-                maxlength:200
-            }
-        },
-
 
         // We can pass it default values.
         defaults:{
