@@ -2,9 +2,6 @@
 <%@ taglib prefix="o" tagdir="/WEB-INF/tags" %>
 
 <o:header title="welcome"/>
-
-
-
 <o:topbar/>
 <div class="container-fluid">
     <div class="row-fluid">
@@ -15,9 +12,9 @@
                 <span id="content">
                     loading...
                 </span>
-                <o:copyright/>
             </div>
         </div>
     </div>
 </div>
+<o:copyright />
 <o:footer js="resources/js/admin.js"/>

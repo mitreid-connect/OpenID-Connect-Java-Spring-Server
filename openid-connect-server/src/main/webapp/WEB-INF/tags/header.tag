@@ -16,8 +16,6 @@
 
     <!-- Le styles -->
     <link href="resources/bootstrap2/css/bootstrap.min.css" rel="stylesheet">
-    <link href="resources/bootstrap2/css/bootstrap-responsive.css" rel="stylesheet">
-
     <style type="text/css">
         body {
             padding-top: 60px;
@@ -33,11 +31,14 @@
 
         .brand {
             background: url("resources/images/openid_connect_small.png") no-repeat scroll 7px 7px transparent;
+            padding-left: 35px !important;
         }
         
 		-webkit-input-placeholder{color:#999999;}
 
     </style>
+    <link href="resources/bootstrap2/css/bootstrap-responsive.css" rel="stylesheet">
+
 
     <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>

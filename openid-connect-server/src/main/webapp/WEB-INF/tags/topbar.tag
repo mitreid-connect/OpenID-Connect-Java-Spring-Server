@@ -2,14 +2,14 @@
 <%@ taglib prefix="security" uri="http://www.springframework.org/security/tags" %>
 <div class="navbar navbar-fixed-top">
     <div class="navbar-inner">
-        <div class="container-fluid">
-            <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+        <div class="container">
+            <button class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
-            </a>
-            <a class="brand" style="padding-left: 35px" href="">OpenID Connect Server</a>
-            <div class="nav-collapse">
+            </button>
+            <a class="brand" href="">OpenID Connect Server</a>
+            <div class="nav-collapse collapse">
                 <ul class="nav">
                     <li class="active"><a href="">Home</a></li>
                     <li><a href="about">About</a></li>
