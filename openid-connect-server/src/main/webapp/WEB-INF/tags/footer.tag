@@ -5,8 +5,8 @@
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->
 <script type="text/javascript" src="resources/bootstrap2/js/bootstrap.js"></script>
-<script type="text/javascript" src="resources/js/underscore-min.js"></script>
-<script type="text/javascript" src="resources/js/backbone-min.js"></script>
+<script type="text/javascript" src="resources/js/underscore.js"></script>
+<script type="text/javascript" src="resources/js/backbone.js"></script>
 <script type="text/javascript" src="resources/js/backbone.validations.js"></script>
 <script type="text/javascript" src="resources/js/purl.js"></script>
 <c:if test="${js != null && js != ''}">
