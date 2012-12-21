@@ -43,7 +43,7 @@
 				<ul class="nav pull-right">
                     <security:authorize access="hasRole('ROLE_USER')">
 					<div class="btn-group">
-						<a class="btn btn-primary btn-mini dropdown-toggle" data-toggle="dropdown" href=""><i class="icon-user icon-white"></i> ${ shortName } <span class="caret"></span></a>
+						<a class="btn btn-primary btn-small dropdown-toggle" data-toggle="dropdown" href=""><i class="icon-user icon-white"></i> ${ shortName } <span class="caret"></span></a>
 						<ul class="dropdown-menu">
 							<li><a>${ longName }</a></li>
 							<li class="divider"></li>
