@@ -59,12 +59,22 @@
     <h1><%=(id == null ? 'New' : 'Edit')%> Client</h1>
 
 
-    <form class="form-horizontal">
+    <form class="form-horizontal tabbable">
         <fieldset>
             <div class="well well-small">
                 <button class="btn btn-small btn-save btn-success"><i class="icon-ok-circle icon-white"></i> Save</button> &nbsp; 
 				<button class="btn btn-small btn-cancel"><i class="icon-ban-circle"></i> Cancel</button>
+
             </div>
+
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-target="#client-main-tab" data-toggle="tab">Main</a></li>
+					<li><a data-target="#client-secret-tab" data-toggle="tab">Secret</a></li>
+					<li><a data-target="#client-token-tab" data-toggle="tab">Tokens</a></li>
+				</ul>
+
+<div class="tab-content">
+	<div class="tab-pane active" id="client-main-tab">
 
             <div class="control-group" id="clientName">
                 <label class="control-label">Client name</label>
@@ -118,6 +128,47 @@
                 </div>
             </div>
 
+            <div class="control-group" id="authorizedGrantTypes">
+                <label class="control-label">Authorized Grant Types</label>
+
+                <div class="controls">
+
+                    <label class="checkbox">
+                        <input id="authorizedGrantTypes-authorization_code" type="checkbox"
+                        <%=($.inArray("authorization_code", authorizedGrantTypes) > -1 ? 'checked' : '')%>>
+                        authorization code
+                    </label>
+                    <label class="checkbox">
+                        <input id="authorizedGrantTypes-client_credentials" type="checkbox"
+                        <%=($.inArray("client_credentials", authorizedGrantTypes) > -1 ? 'checked' : '')%>> client
+                        credentials
+                    </label>
+                    <label class="checkbox">
+                        <input id="authorizedGrantTypes-password" type="checkbox" <%=($.inArray("password",
+                        authorizedGrantTypes) > -1 ? 'checked' : '')%>> password
+                    </label>
+                    <label class="checkbox">
+                        <input id="authorizedGrantTypes-implicit" type="checkbox" <%=($.inArray("implicit",
+                        authorizedGrantTypes) > -1 ? 'checked' : '')%>> implicit
+                    </label>
+<!--
+                    <label class="checkbox">
+                        <input id="authorizedGrantTypes-refresh_token" type="checkbox" <%=($.inArray("refresh_token",
+                        authorizedGrantTypes) > -1 ? 'checked' : '')%>> refresh
+                    </label>
+-->
+                    <label class="checkbox">
+                        <input id="authorizedGrantTypes-redelegate" type="checkbox" <%=($.inArray("urn:ietf:params:oauth:grant_type:redelegate",
+                        authorizedGrantTypes) > -1 ? 'checked' : '')%>> redelegate
+                    </label>
+
+                </div>
+            </div>
+
+	</div>
+	
+	<div class="tab-pane" id="client-secret-tab">
+
 			<div class="control-group" id="requireClientSecret">
 				<label class="control-label">Client Secret</label>
 				<div class="controls">
@@ -162,43 +213,9 @@
 
 			</div>
 
-            <div class="control-group" id="authorizedGrantTypes">
-                <label class="control-label">Authorized Grant Types</label>
+	</div>
 
-                <div class="controls">
-
-                    <label class="checkbox">
-                        <input id="authorizedGrantTypes-authorization_code" type="checkbox"
-                        <%=($.inArray("authorization_code", authorizedGrantTypes) > -1 ? 'checked' : '')%>>
-                        authorization code
-                    </label>
-                    <label class="checkbox">
-                        <input id="authorizedGrantTypes-client_credentials" type="checkbox"
-                        <%=($.inArray("client_credentials", authorizedGrantTypes) > -1 ? 'checked' : '')%>> client
-                        credentials
-                    </label>
-                    <label class="checkbox">
-                        <input id="authorizedGrantTypes-password" type="checkbox" <%=($.inArray("password",
-                        authorizedGrantTypes) > -1 ? 'checked' : '')%>> password
-                    </label>
-                    <label class="checkbox">
-                        <input id="authorizedGrantTypes-implicit" type="checkbox" <%=($.inArray("implicit",
-                        authorizedGrantTypes) > -1 ? 'checked' : '')%>> implicit
-                    </label>
-<!--
-                    <label class="checkbox">
-                        <input id="authorizedGrantTypes-refresh_token" type="checkbox" <%=($.inArray("refresh_token",
-                        authorizedGrantTypes) > -1 ? 'checked' : '')%>> refresh
-                    </label>
--->
-                    <label class="checkbox">
-                        <input id="authorizedGrantTypes-redelegate" type="checkbox" <%=($.inArray("urn:ietf:params:oauth:grant_type:redelegate",
-                        authorizedGrantTypes) > -1 ? 'checked' : '')%>> redelegate
-                    </label>
-
-                </div>
-            </div>
-
+	<div class="tab-pane" id="client-token-tab">
             <div class="control-group" id="accessTokenValiditySeconds">
                 <label class="control-label">Access Token Timeout</label>
                 <div class="controls">
@@ -253,6 +270,17 @@
                     <p class="help-block">Enter this time in seconds.</p>
                 </div>
             </div>
+	</div>
+
+	<div class="tab-pane" id="client-other-tab">
+
+		<div class="alert alert-block alert-info">
+			This page intentionally left blank.
+		</div>
+
+	</div>
+
+
 
             <div class="well well-small">
                 <button class="btn btn-small btn-save btn-success"><i class="icon-ok-circle icon-white"></i> Save</button> &nbsp; 
