@@ -9,27 +9,32 @@
 
     <td>
         <%=clientId%>
-        <blockquote><small><%=clientDescription%></small></blockquote>
+		<!-- scopes and stuff -->
     </td>
 
     <td>
         <%=clientName%>
+		<% if (clientDescription) { %>
+        <blockquote><small><%=clientDescription%></small></blockquote>
+		<% } %>
         <!--expandable future information-->
     </td>
 
     <td>
-        <button class="btn btn-edit">edit</button>&nbsp;&nbsp;<button class="btn btn-danger btn-delete">delete</button>&nbsp;&nbsp;<button class="btn btn-warning btn-whitelist">whitelist</button>
+        <button class="btn btn-edit"><i class="icon-edit"></i> Edit</button> &nbsp; 
+		<button class="btn btn-warning btn-whitelist">Whitelist</button> &nbsp;
+		<button class="btn btn-danger btn-delete pull-right"><i class="icon-trash icon-white"></i> Delete</button>
     </td>
 
 </script>
 
 <script type="text/html" id="tmpl-client-table">
-    <div class="well">
-		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i></button>
-        <button class="btn btn-small btn-primary new-client">New Client</button>
+    <div class="well well-small">
+		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> Refresh</button> &nbsp;
+        <button class="btn btn-small btn-primary new-client"><i class="icon-plus icon-white"></i> New Client</button>
     </div>
 
-    <table id="client-table" class="table">
+    <table id="client-table" class="table table-hover table-striped">
         <thead>
         <tr>
 			<th></th>
@@ -42,9 +47,9 @@
         </tbody>
     </table>
 
-    <div class="well">
-		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i></button>
-        <button class="btn btn-small btn-primary new-client">New Client</button>
+    <div class="well well-small">
+		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> Refresh</button> &nbsp; 
+        <button class="btn btn-small btn-primary new-client"><i class="icon-plus icon-white"></i> New Client</button>
     </div>
 </script>
 
@@ -56,8 +61,9 @@
 
     <form class="form-horizontal">
         <fieldset>
-            <div class="well">
-                <button class="btn btn-small btn-primary">Save</button>&nbsp;<button class="btn btn-small btn-cancel">Cancel</button>
+            <div class="well well-small">
+                <button class="btn btn-small btn-save btn-success"><i class="icon-ok-circle icon-white"></i> Save</button> &nbsp; 
+				<button class="btn btn-small btn-cancel"><i class="icon-ban-circle"></i> Cancel</button>
             </div>
 
             <div class="control-group" id="clientName">
@@ -248,8 +254,9 @@
                 </div>
             </div>
 
-            <div class="well">
-                <button class="btn btn-small btn-primary">Save</button>&nbsp;<button class="btn btn-small btn-cancel">Cancel</button>
+            <div class="well well-small">
+                <button class="btn btn-small btn-save btn-success"><i class="icon-ok-circle icon-white"></i> Save</button> &nbsp; 
+				<button class="btn btn-small btn-cancel"><i class="icon-ban-circle"></i> Cancel</button>
             </div>
 
         </fieldset>
@@ -306,17 +313,18 @@
     </td>
 
     <td>
-        <button class="btn btn-edit">edit</button>&nbsp;&nbsp;<button class="btn btn-danger btn-delete">delete</button>
+        <button class="btn btn-edit"><i class="icon-edit"></i> Edit</button> &nbsp; 
+		<button class="btn btn-danger btn-delete pull-right"><i class="icon-trash icon-white"></i> Delete</button>
     </td>
 
 </script>
 
 <script type="text/html" id="tmpl-whitelist-table">
-    <div class="well">
-		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i></button>
+    <div class="well well-small">
+		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> Refresh</button>
     </div>
 
-    <table id="whitelist-table" class="table">
+    <table id="whitelist-table" class="table table-hover table-striped">
         <thead>
         <tr>
 			<th></th>
@@ -329,8 +337,8 @@
         </tbody>
     </table>
 
-    <div class="well">
-		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i></button>
+    <div class="well well-small">
+		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> Refresh</button>
     </div>
 
 </script>
@@ -342,8 +350,9 @@
 
     <form class="form-horizontal">
         <fieldset>
-            <div class="well">
-                <button class="btn btn-small btn-primary">Save</button>&nbsp;<button class="btn btn-small btn-cancel">Cancel</button>
+            <div class="well well-small">
+                <button class="btn btn-small btn-save btn-success"><i class="icon-ok-circle icon-white"></i> Save</button> &nbsp; 
+				<button class="btn btn-small btn-cancel"><i class="icon-ban-circle"></i> Cancel</button>
             </div>
 
 			<div class="control-group" id="clientId">
@@ -360,8 +369,9 @@
                 </div>
             </div>
 
-            <div class="well">
-                <button class="btn btn-small btn-primary">Save</button>&nbsp;<button class="btn btn-small btn-cancel">Cancel</button>
+            <div class="well well-small">
+                <button class="btn btn-small btn-save btn-success"><i class="icon-ok-circle icon-white"></i> Save</button> &nbsp; 
+				<button class="btn btn-small btn-cancel"><i class="icon-ban-circle"></i> Cancel</button>
             </div>
 
         </fieldset>
@@ -375,13 +385,13 @@
 
 	<h2>Approved sites</h2>
 
-    <div class="well">
-		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i></button>
+    <div class="well well-small">
+		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> Refresh</button>
     </div>
 
 	<h3>Sites you have manually approved</h3>
 
-    <table id="grant-table" class="table">
+    <table id="grant-table" class="table table-hover table-striped">
         <thead>
         <tr>
 			<th></th>
@@ -396,9 +406,11 @@
         </tbody>
     </table>
 
+	<div class="well">
+	
 	<h3>Sites that have been whitelisted by an administrator</h3>
 
-    <table id="grant-whitelist-table" class="table">
+    <table id="grant-whitelist-table" class="table table-hover table-striped">
         <thead>
         <tr>
 			<th></th>
@@ -413,8 +425,10 @@
         </tbody>
     </table>
 
-    <div class="well">
-		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i></button>
+	</div>
+
+    <div class="well well-small">
+		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> Refresh</button>
     </div>
 
 </script>
@@ -448,7 +462,7 @@
 	</td>
 
     <td>
-        <button class="btn btn-danger btn-delete">revoke</button>
+        <button class="btn btn-danger btn-delete pull-right"><i class="icon-trash"></i> Revoke</button>
     </td>
 
 </script>
@@ -459,7 +473,7 @@
     <form class="form-horizontal">
         <fieldset>
             <div class="well">
-				<button class="btn btn-small refresh-table"><i class="icon-refresh"></i></button>
+				<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> Refresh</button>
             </div>
 
             <div class="control-group" id="blacklist">
@@ -469,7 +483,7 @@
             </div>
 
             <div class="well">
-				<button class="btn btn-small refresh-table"><i class="icon-refresh"></i></button>
+				<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> Refresh</button>
             </div>
 
         </fieldset>

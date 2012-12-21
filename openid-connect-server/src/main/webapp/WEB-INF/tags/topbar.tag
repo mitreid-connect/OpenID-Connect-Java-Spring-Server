@@ -52,7 +52,7 @@
 					</div>
                     </security:authorize>
                     <security:authorize access="!hasRole('ROLE_USER')">
-                    	<a class="btn btn-primary btn-mini" href="j_spring_security_check"><i class="icon-user icon-white"></i> Log in</a>
+                    	<a class="btn btn-primary btn-small" href="j_spring_security_check"><i class="icon-user icon-white"></i> Log in</a>
                     </security:authorize>
                 </ul>
                     

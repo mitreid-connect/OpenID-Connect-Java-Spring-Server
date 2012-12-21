@@ -413,7 +413,7 @@
         },
 
         events:{
-            "click .btn-primary":"saveClient",
+            "click .btn-save":"saveClient",
             "click #allowRefresh" : "toggleRefreshTokenTimeout",
             "click #disableAccessTokenTimeout" : function(){ $("#access-token-timeout-seconds", this.$el).prop('disabled',!$("#access-token-timeout-seconds", this.$el).prop('disabled')); },
             "click #disableIDTokenTimeout" : function(){ $("#id-token-timeout-seconds", this.$el).prop('disabled',!$("#id-token-timeout-seconds", this.$el).prop('disabled')); },
@@ -857,7 +857,7 @@
     	},
     
     	events:{
-    		'click .btn-primary':'saveWhiteList',
+    		'click .btn-save':'saveWhiteList',
     		'click .btn-cancel':'cancelWhiteList',
     		
     	},
