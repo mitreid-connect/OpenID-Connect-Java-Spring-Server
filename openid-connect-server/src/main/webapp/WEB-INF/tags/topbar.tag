@@ -1,5 +1,29 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="security" uri="http://www.springframework.org/security/tags" %>
+<c:choose>
+	<c:when test="${ not empty userInfo.preferredUsername }">
+		<c:set var="shortName" value="${ userInfo.preferredUsername }" />
+	</c:when>
+	<c:otherwise>
+		<c:set var="shortName" value="${ userInfo.userId }" />
+	</c:otherwise>
+</c:choose>
+<c:choose>
+	<c:when test="${ not empty userInfo.name }">
+		<c:set var="longName" value="${ userInfo.name }" />
+	</c:when>
+	<c:otherwise>
+		<c:choose>
+			<c:when test="${ not empty userInfo.givenName || not empty userInfo.familyName }">
+				<c:set var="longName" value="${ userInfo.givenName } {$ userInfo.familyName }" />
+			</c:when>
+			<c:otherwise>
+				<c:set var="longName" value="${ shortName }" />
+			</c:otherwise>
+		</c:choose>
+	</c:otherwise>
+</c:choose>
+	
 <div class="navbar navbar-fixed-top">
     <div class="navbar-inner">
         <div class="container">
@@ -19,9 +43,10 @@
 				<ul class="nav pull-right">
                     <security:authorize access="hasRole('ROLE_USER')">
 					<div class="btn-group">
-						<a class="btn btn-primary btn-mini" href=""><i class="icon-user icon-white"></i> ${ userInfo.preferredUsername }</a>
-						<a class="btn btn-primary btn-mini dropdown-toggle" data-toggle="dropdown" href=""><span class="caret"></span></a>
+						<a class="btn btn-primary btn-mini dropdown-toggle" data-toggle="dropdown" href=""><i class="icon-user icon-white"></i> ${ shortName } <span class="caret"></span></a>
 						<ul class="dropdown-menu">
+							<li><a>${ longName }</a></li>
+							<li class="divider"></li>
 							<li><a href="j_spring_security_logout"><i class="icon-remove"></i> Log out</a></li>
 						</ul>
 					</div>
