@@ -3,7 +3,7 @@
 <script type="text/html" id="tmpl-client">
 	<td>
 		<% if (dynamicallyRegistered) { %>
-		<span class="dynamically-registered"><i class="icon-cog"></i></span>
+		<span class="dynamically-registered"><i class="icon-globe"></i></span>
 		<% } %>
 	</td>
 
@@ -271,7 +271,7 @@
 
 <script type="text/html" id="tmpl-list-widget-child">
     <td><%=(item.length > 30) ? item.substr(0,27) + '...' : item %></td>
-    <td><a class="btn btn-small btn-delete" href="#"><i class="icon-minus-sign icon-gray"></i></a></td>
+    <td><a class="btn btn-small btn-delete" href="#"><i class="icon-minus-sign"></i></a></td>
 </script>
 
 <script type="text/html" id="tmpl-list-widget">
@@ -279,7 +279,7 @@
     <tr>
         <th class="control-group">
             <input type="text" value="" placeholder="<%=(placeholder) ? placeholder : ''%>"></th>
-        <th><a class="btn btn-small btn-add" href="#"><i class="icon-plus-sign icon-gray"></i></a></th>
+        <th><a class="btn btn-small btn-add" href="#"><i class="icon-plus-sign"></i></a></th>
     </tr>
     </thead>
 	<tbody>
@@ -291,7 +291,7 @@
 <script type="text/html" id="tmpl-whitelist">
 	<td>
 		<% if (client.dynamicallyRegistered) { %>
-		<span class="dynamically-registered"><i class="icon-cog"></i></span>
+		<span class="dynamically-registered"><i class="icon-globe"></i></span>
 		<% } %>
 	</td>
 
@@ -403,10 +403,10 @@
 <script type="text/html" id="tmpl-grant">
 	<td>
 		<% if (client.dynamicallyRegistered) { %>
-		<span class="dynamically-registered"><i class="icon-cog"></i></span>
+		<span class="dynamically-registered"><i class="icon-globe"></i></span>
 		<% } %>
-		<% if (grant.whitelistedSite != null) { //TODO: change to icon-certificate %>
-		<span class="whitelisted-site"><i class="icon-ok-sign"></i></span>
+		<% if (grant.whitelistedSite != null) { %>
+		<span class="whitelisted-site"><i class="icon-thumbs-up"></i></span>
 		<% } %>
 	</td>
 
