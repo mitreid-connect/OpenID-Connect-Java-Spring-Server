@@ -108,6 +108,14 @@ CREATE TABLE client_details (
 	default_acr VARCHAR(256)
 );
 
+CREATE TABLE client_nonce ( 
+	id BIGINT AUTO_INCREMENT PRIMARY KEY,
+	value VARCHAR(256),
+	client_id VARCHAR(256),
+	use_date DATE,
+	expire_date DATE
+);
+
 CREATE TABLE contact (
 	owner_id BIGINT,
 	contact VARCHAR(256)
