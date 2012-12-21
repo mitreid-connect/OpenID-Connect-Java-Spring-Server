@@ -673,7 +673,13 @@
     			var client = app.clientList.getByClientId(approvedSite.get('clientId'));
     			
     			if (client != null) {
-    				$('#grant-table', this.el).append(new ApprovedSiteView({model: approvedSite, client: client}).render().el);
+    				
+    				if (approvedSite.get('whitelistedSite') != null) {
+    					$('#grant-whitelist-table', this.el).append(new ApprovedSiteView({model: approvedSite, client: client}).render().el);
+    				} else {
+    					$('#grant-table', this.el).append(new ApprovedSiteView({model: approvedSite, client: client}).render().el);
+    				}
+    				
     			}
     			
     		}, this);

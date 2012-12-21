@@ -373,13 +373,32 @@
 
 <script type="text/html" id="tmpl-grant-table">
 
-	<h2>Your approved sites</h2>
+	<h2>Approved sites</h2>
 
     <div class="well">
 		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i></button>
     </div>
 
+	<h3>Sites you have manually approved</h3>
+
     <table id="grant-table" class="table">
+        <thead>
+        <tr>
+			<th></th>
+            <th>Application</th>
+			<th>Created</th>
+			<th>Last Accessed</th>
+			<th>Expires</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+	<h3>Sites that have been whitelisted by an administrator</h3>
+
+    <table id="grant-whitelist-table" class="table">
         <thead>
         <tr>
 			<th></th>
@@ -404,9 +423,6 @@
 	<td>
 		<% if (client.dynamicallyRegistered) { %>
 		<span class="dynamically-registered"><i class="icon-globe"></i></span>
-		<% } %>
-		<% if (grant.whitelistedSite != null) { %>
-		<span class="whitelisted-site"><i class="icon-thumbs-up"></i></span>
 		<% } %>
 	</td>
 
