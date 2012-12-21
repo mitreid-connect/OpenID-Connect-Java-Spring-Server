@@ -571,9 +571,12 @@
                 refreshTokenValiditySeconds: refreshTokenValiditySeconds,
                 idTokenValiditySeconds: idTokenValiditySeconds,
                 allowRefresh: $('#allowRefresh').is(':checked'),
+                allowIntrospection: $('#allowIntrospection input').is(':checked'),
                 scope: scopes
             });
 
+            // post-validate
+            // TODO: move these into the validation function somehow?
             if (this.model.get("allowRefresh") == false) {
                 this.model.set("refreshTokenValiditySeconds",null);
             }

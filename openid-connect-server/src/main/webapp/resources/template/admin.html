@@ -69,6 +69,7 @@
 
 				<ul class="nav nav-tabs">
 					<li class="active"><a data-target="#client-main-tab" data-toggle="tab">Main</a></li>
+					<li><a data-target="#client-access-tab" data-toggle="tab">Access</a></li>
 					<li><a data-target="#client-secret-tab" data-toggle="tab">Secret</a></li>
 					<li><a data-target="#client-token-tab" data-toggle="tab">Tokens</a></li>
 				</ul>
@@ -122,6 +123,10 @@
 				</div>
 			</div>
 
+	</div>
+	
+	<div class="tab-pane" id="client-access-tab">
+
             <div class="control-group" id="scope">
                 <label class="control-label">Scope</label>
                 <div class="controls">
@@ -165,6 +170,14 @@
                 </div>
             </div>
 
+			<div class="control-group" id="allowIntrospection">
+				<label class="control-label">Introspection</label>
+				<div class="controls">
+					<label class="checkbox">
+						<input type="checkbox" <%=(allowIntrospection == true ? 'checked' : '')%>> Allow calls to the Introspection Endpoint?
+					</label>
+				</div>
+			</div>
 	</div>
 	
 	<div class="tab-pane" id="client-secret-tab">
