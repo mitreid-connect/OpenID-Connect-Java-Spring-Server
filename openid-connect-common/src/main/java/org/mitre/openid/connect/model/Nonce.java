@@ -19,12 +19,14 @@ import javax.persistence.Temporal;
 @NamedQueries({
 	@NamedQuery(name = "Nonce.getAll", query = "select n from Nonce n"),
 	@NamedQuery(name = "Nonce.getByClientId", query = "select n from Nonce n where n.clientId = :clientId"),
-	@NamedQuery(name = "Nonce.getExpired", query = "select n from Nonce n where n.expireDate < now()")
+	@NamedQuery(name = "Nonce.getExpired", query = "select n from Nonce n where n.expireDate is not null and n.expireDate < current_timestamp")
 })
 public class Nonce {
 
 	
 	private Long id; //the ID of this Nonce
+	
+	private String value; //the value of this Nonce
 	
 	private String clientId;//The id of the client who used this Nonce
 	
@@ -46,6 +48,22 @@ public class Nonce {
 	 */
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	/**
+	 * @return the value
+	 */
+	@Basic
+	@Column(name="value")
+	public String getValue() {
+		return value;
+	}
+
+	/**
+	 * @param value the value to set
+	 */
+	public void setValue(String value) {
+		this.value = value;
 	}
 
 	/**

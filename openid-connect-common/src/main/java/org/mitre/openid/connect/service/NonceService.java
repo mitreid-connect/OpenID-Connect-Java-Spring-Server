@@ -59,5 +59,10 @@ public interface NonceService {
 	 * @return the set of nonces registered to the client
 	 */
 	public Collection<Nonce> getByClientId(String clientId);
+
+	/**
+	 * Clear expired nonces from the database
+	 */
+	void clearExpiredNonces();
 	
 }

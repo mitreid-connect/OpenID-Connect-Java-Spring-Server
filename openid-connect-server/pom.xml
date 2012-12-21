@@ -29,6 +29,11 @@
 			<artifactId>hsqldb</artifactId>
 			<version>2.2.9</version>
 		</dependency>
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<version>2.1</version>
+		</dependency>
     </dependencies>
     <description>Reference implementation of OpenID Connect spec (http://openid.net/connect/).
     </description>
