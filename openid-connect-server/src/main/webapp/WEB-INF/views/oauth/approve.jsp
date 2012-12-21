@@ -28,6 +28,16 @@
 
             <div class="row">
                 <div class="span4 offset2 well-small" style="text-align:left">
+                
+                <%-- TODO: wire up to stats engine and customize display of this block --%>
+                <c:if test="${ client.dynamicallyRegistered }">
+			    <div class="alert alert-block alert-info">
+			        <h4><i class="icon-globe"></i> Caution:</h4>
+			        This client was dynamically registered and has very few
+			        other users on this system.
+			    </div>
+			    </c:if>
+
                 <c:choose>
             		<c:when test="${empty client.logoUrl }">
             		</c:when>
