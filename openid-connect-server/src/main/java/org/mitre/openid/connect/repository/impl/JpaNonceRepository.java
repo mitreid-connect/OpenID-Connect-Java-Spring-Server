@@ -8,6 +8,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
+import org.mitre.openid.connect.model.ApprovedSite;
 import org.mitre.openid.connect.model.Nonce;
 import org.mitre.openid.connect.repository.NonceRepository;
 import org.springframework.stereotype.Repository;
