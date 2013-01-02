@@ -44,6 +44,7 @@ CREATE TEMPORARY TABLE IF NOT EXISTS client_details_TEMP (
 	client_secret VARCHAR(2048),
 	access_token_validity_seconds BIGINT,
 	refresh_token_validity_seconds BIGINT,
+	allow_introspection BOOLEAN,
 	
 	client_name VARCHAR(256)
 );
