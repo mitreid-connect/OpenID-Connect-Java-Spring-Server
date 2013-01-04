@@ -72,12 +72,6 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	private ClientDetailsEntityService clientDetailsService;
 	
 	@Autowired
-	private NonceService nonceService;
-	
-	//TODO how to specify this?
-	private Period nonceStorageDuration = new Period(1, 0, 0, 0, 0, 0, 0, 0);
-	
-	@Autowired
 	private TokenEnhancer tokenEnhancer;
 	
 	@Override
@@ -91,29 +85,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 			if (client == null) {
 				throw new InvalidClientException("Client not found: " + clientAuth.getClientId());
 			}
-			
-			String requestNonce = clientAuth.getAuthorizationParameters().get("nonce");
-			
-			//Check request nonce for reuse
-			Collection<Nonce> clientNonces = nonceService.getByClientId(client.getClientId());
-			for (Nonce nonce : clientNonces) {
-				if (nonce.getValue().equals(requestNonce)) {
-					throw new NonceReuseException(client.getClientId(), nonce);
-				}
-			}
-			
-			//Store nonce
-			Nonce nonce = new Nonce();
-			nonce.setClientId(client.getClientId());
-			nonce.setValue(requestNonce);
-			DateTime now = new DateTime(new Date());
-			DateTime expDate = now.plus(nonceStorageDuration);
-			Date expirationJdkDate = expDate.toDate();
-			nonce.setExpireDate(expirationJdkDate);
-			
-			nonceService.save(nonce);
-			
-			
+					
 			OAuth2AccessTokenEntity token = new OAuth2AccessTokenEntity();//accessTokenFactory.createNewAccessToken();
 		    
 		    // attach the client
@@ -428,19 +400,5 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
     public OAuth2AccessTokenEntity getAccessTokenForIdToken(OAuth2AccessTokenEntity idToken) {
     	return tokenRepository.getAccessTokenForIdToken(idToken);
     }
-
-	/**
-	 * @return the nonceStorageDuration
-	 */
-	public Period getNonceStorageDuration() {
-		return nonceStorageDuration;
-	}
-
-	/**
-	 * @param nonceStorageDuration the nonceStorageDuration to set
-	 */
-	public void setNonceStorageDuration(Period nonceStorageDuration) {
-		this.nonceStorageDuration = nonceStorageDuration;
-	}
 	
 }
