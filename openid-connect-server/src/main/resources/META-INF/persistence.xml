@@ -17,6 +17,7 @@
 <!--         <class>org.mitre.openid.connect.model.UserInfo</class> -->
         <class>org.mitre.openid.connect.model.WhitelistedSite</class>
         <class>org.mitre.openid.connect.model.BlacklistedSite</class>
+        <class>org.mitre.openid.connect.model.Nonce</class>
         <shared-cache-mode>NONE</shared-cache-mode>
     </persistence-unit>
 </persistence>
