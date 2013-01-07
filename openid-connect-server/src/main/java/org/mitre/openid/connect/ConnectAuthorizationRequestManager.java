@@ -63,26 +63,29 @@ public class ConnectAuthorizationRequestManager implements AuthorizationRequestM
 		
 		String requestNonce = parameters.get("nonce");
 		
-		//Check request nonce for reuse
-		Collection<Nonce> clientNonces = nonceService.getByClientId(client.getClientId());
-		for (Nonce nonce : clientNonces) {
-			if (nonce.getValue().equals(requestNonce)) {
-				throw new NonceReuseException(client.getClientId(), nonce);
+		//If a nonce was included in the request, process it
+		if (requestNonce != null) {
+		
+			//Check request nonce for reuse
+			Collection<Nonce> clientNonces = nonceService.getByClientId(client.getClientId());
+			for (Nonce nonce : clientNonces) {
+				if (nonce.getValue().equals(requestNonce)) {
+					throw new NonceReuseException(client.getClientId(), nonce);
+				}
 			}
+			
+			//Store nonce
+			Nonce nonce = new Nonce();
+			nonce.setClientId(client.getClientId());
+			nonce.setValue(requestNonce);
+			DateTime now = new DateTime(new Date());
+			nonce.setUseDate(now.toDate());
+			DateTime expDate = now.plus(nonceStorageDuration);
+			Date expirationJdkDate = expDate.toDate();
+			nonce.setExpireDate(expirationJdkDate);
+			
+			nonceService.save(nonce);
 		}
-		
-		//Store nonce
-		Nonce nonce = new Nonce();
-		nonce.setClientId(client.getClientId());
-		nonce.setValue(requestNonce);
-		DateTime now = new DateTime(new Date());
-		nonce.setUseDate(now.toDate());
-		DateTime expDate = now.plus(nonceStorageDuration);
-		Date expirationJdkDate = expDate.toDate();
-		nonce.setExpireDate(expirationJdkDate);
-		
-		nonceService.save(nonce);
-		
 		
 		Set<String> scopes = OAuth2Utils.parseParameterList(parameters.get("scope"));
 		if ((scopes == null || scopes.isEmpty())) {
