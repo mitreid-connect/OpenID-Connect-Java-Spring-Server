@@ -34,9 +34,22 @@ public class ConnectAuthorizationRequestManager implements AuthorizationRequestM
 	//TODO how to specify this? Should use int "nonceValiditySeconds" instead?
 	private Period nonceStorageDuration = new Period(1, 0, 0, 0, 0, 0, 0, 0);
 
+	/**
+	 * Constructor with arguments
+	 * 
+	 * @param clientDetailsService
+	 * @param nonceService
+	 */
 	public ConnectAuthorizationRequestManager(ClientDetailsService clientDetailsService, NonceService nonceService) {
 		this.clientDetailsService = clientDetailsService;
 		this.nonceService = nonceService;
+	}
+	
+	/**
+	 * Default empty constructor
+	 */
+	public ConnectAuthorizationRequestManager() {
+		
 	}
 
 	@Override
