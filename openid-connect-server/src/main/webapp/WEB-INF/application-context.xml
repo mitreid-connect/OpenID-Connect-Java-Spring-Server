@@ -145,6 +145,15 @@
 			<bean class="org.mitre.oauth2.service.impl.DefaultOAuth2ClientDetailsEntityService" />
 		</constructor-arg>
 	</bean>
+	
+	<bean id="authorizationRequestManager" class="org.mitre.openid.connect.ConnectAuthorizationRequestManager">
+		<constructor-arg>
+			<bean class="org.mitre.oauth2.service.impl.DefaultOAuth2ClientDetailsEntityService" />
+		</constructor-arg>
+		<constructor-arg>
+			<bean class="org.mitre.openid.connect.service.impl.DefaultNonceService" />
+		</constructor-arg>
+	</bean>
 
 	<bean class="org.mitre.openid.connect.token.TofuUserApprovalHandler" id="jdbcUserApprovalHandler">
 	</bean>
