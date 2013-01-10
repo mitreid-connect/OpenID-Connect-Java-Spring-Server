@@ -88,6 +88,7 @@ public class UserInfoEndpoint {
 	        OAuth2Authentication authentication = (OAuth2Authentication)p;
 	        
 	        model.addAttribute("scope", authentication.getAuthorizationRequest().getScope());
+	        model.addAttribute("requestObject", authentication.getAuthorizationRequest().getAuthorizationParameters().get("request"));
         }
 
 		model.addAttribute("userInfo", userInfo);

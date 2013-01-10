@@ -105,9 +105,9 @@ public class RequestObjectAuthorizationEndpoint {
 		
 		String requestUri = claims.getClaimAsString("request_uri");
 		if (requestUri != null) {
-			if (parameters.containsKey("request_uri") == false) {
-				parameters.put("request_uri", requestUri);
-			}
+			//The spec does not allow a client to send a request parameter AND 
+			//link to a hosted request object at the same time, so this is an error.
+			//TODO: what error to throw?
 		}
 
 		// call out to the SECOAUTH endpoint to do the real processing

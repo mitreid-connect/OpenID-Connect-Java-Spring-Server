@@ -75,7 +75,18 @@ public class JSONUserInfoView extends AbstractView {
 		try {
 			
 			out = response.getWriter();
-			gson.toJson(toJson(userInfo, scope), out);
+			
+			if (model.get("requestObject") != null) {
+				String jsonString = (String)model.get("requestObject");
+				JsonObject requestObject = gson.fromJson(jsonString, JsonObject.class);
+				
+				gson.toJson(toJsonFromRequestObj(userInfo, scope, requestObject));
+			
+			} else {
+			
+				gson.toJson(toJson(userInfo, scope), out);
+			
+			}
 			
 		} catch (IOException e) {
 			
@@ -134,5 +145,16 @@ public class JSONUserInfoView extends AbstractView {
 
 		
 		return obj;
+	}
+	
+	private JsonObject toJsonFromRequestObj(UserInfo ui, Set<String> scope, JsonObject requestObj) {
+		
+		JsonObject obj = new JsonObject();
+		
+		
+		
+		
+		return obj;
+		
 	}
 }

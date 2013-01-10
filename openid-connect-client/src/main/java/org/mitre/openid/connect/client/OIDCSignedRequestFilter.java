@@ -64,7 +64,7 @@ public class OIDCSignedRequestFilter extends AbstractOIDCAuthenticationFilter im
 				"An Authorization Endpoint URI must be supplied");
 
 		Assert.notNull(oidcServerConfig.getTokenEndpointUrl(),
-				"A Token ID Endpoint URI must be supplied");
+				"A Token Endpoint URI must be supplied");
 		
 		Assert.notNull(oidcServerConfig.getClientId(),
 				"A Client ID must be supplied");
