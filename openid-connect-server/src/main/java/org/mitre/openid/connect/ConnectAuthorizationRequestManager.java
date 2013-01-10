@@ -11,6 +11,9 @@ import org.joda.time.Period;
 import org.mitre.oauth2.exception.NonceReuseException;
 import org.mitre.openid.connect.model.Nonce;
 import org.mitre.openid.connect.service.NonceService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.security.oauth2.common.exceptions.InvalidScopeException;
@@ -23,16 +26,17 @@ import org.springframework.security.oauth2.provider.DefaultAuthorizationRequest;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ConnectAuthorizationRequestManager implements AuthorizationRequestManager {
+public class ConnectAuthorizationRequestManager implements AuthorizationRequestManager, InitializingBean {
 
+	private static Logger logger = LoggerFactory.getLogger(ConnectAuthorizationRequestManager.class);
+	
 	@Autowired
 	private NonceService nonceService;
 	
 	@Autowired
 	private ClientDetailsService clientDetailsService;
 	
-	//TODO how to specify this? Should use int "nonceValiditySeconds" instead?
-	private Period nonceStorageDuration = new Period(1, 0, 0, 0, 0, 0, 0, 0);
+	private Period nonceStorageDuration;
 
 	/**
 	 * Constructor with arguments
@@ -50,6 +54,15 @@ public class ConnectAuthorizationRequestManager implements AuthorizationRequestM
 	 */
 	public ConnectAuthorizationRequestManager() {
 		
+	}
+	
+	/**
+	 * Make sure that the nonce storage duration was set
+	 */
+	public void afterPropertiesSet() throws Exception {
+		if (nonceStorageDuration == null) {
+			logger.error("Nonce storage duration must be set!");
+		}
 	}
 
 	@Override

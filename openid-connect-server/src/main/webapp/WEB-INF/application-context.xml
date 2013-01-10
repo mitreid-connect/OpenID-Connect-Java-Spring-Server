@@ -140,6 +140,14 @@
 		<authentication-provider user-service-ref="clientUserDetailsService" />
 	</authentication-manager>
 	
+	<!-- A JodaTime Period for the nonce storage duration. Constructor takes (hours, minutes, seconds, milliseconds). -->
+	<bean id="nonceStorageDurationPeriod"  class="org.joda.time.Period">
+		<constructor-arg type="int" index="0" value="24"/>
+		<constructor-arg type="int" index="1" value="0"/>
+		<constructor-arg type="int" index="2" value="0"/>
+		<constructor-arg type="int" index="3" value="0"/>
+	</bean>
+	
 	<bean id="authorizationRequestManager" class="org.mitre.openid.connect.ConnectAuthorizationRequestManager">
 		<constructor-arg>
 			<bean class="org.mitre.oauth2.service.impl.DefaultOAuth2ClientDetailsEntityService" />
@@ -147,6 +155,7 @@
 		<constructor-arg>
 			<bean class="org.mitre.openid.connect.service.impl.DefaultNonceService" />
 		</constructor-arg>
+		<property name="nonceStorageDuration" ref="nonceStorageDurationPeriod"/>
 	</bean>
 
 	<bean class="org.mitre.openid.connect.token.TofuUserApprovalHandler" id="jdbcUserApprovalHandler">
