@@ -34,6 +34,8 @@ import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 @Component("jsonUserInfoView")
@@ -100,6 +102,11 @@ public class JSONUserInfoView extends AbstractView {
 		
 		JsonObject obj = new JsonObject();
 		
+		//The "sub" claim must always be returned from this endpoint
+		obj.addProperty("sub", ui.getUserId());
+		
+		//TODO: I think the following should be removed. "sub" replaces "user_id", and according
+		//to the spec it must ALWAYS be returned from this endpoint. 
 		if (scope.contains("openid")) {
 			obj.addProperty("sub", ui.getSub());
 		}
@@ -147,10 +154,32 @@ public class JSONUserInfoView extends AbstractView {
 		return obj;
 	}
 	
+	/**
+	 * Build a JSON response according to the request object recieved. 
+	 * 
+	 * Claims requested in requestObj.userinfo.claims are added to any 
+	 * claims corresponding to requested scopes, if any.
+	 * 
+	 * @param ui
+	 * @param scope
+	 * @param requestObj
+	 * @return
+	 */
 	private JsonObject toJsonFromRequestObj(UserInfo ui, Set<String> scope, JsonObject requestObj) {
 		
-		JsonObject obj = new JsonObject();
+		JsonObject obj = toJson(ui, scope);
 		
+		//Process list of requested claims out of the request object
+		JsonArray claims = requestObj.get("userinfo").getAsJsonObject().get("claims").getAsJsonArray();
+		
+		//For each claim found, add it if not already present
+		for (JsonElement i : claims) {
+			String claimName = i.getAsString();
+			if (!obj.has(claimName)) {
+				//TODO is there some way to do Java reflection for this?
+				obj.addProperty(claimName, "value");
+			}
+		}
 		
 		
 		
