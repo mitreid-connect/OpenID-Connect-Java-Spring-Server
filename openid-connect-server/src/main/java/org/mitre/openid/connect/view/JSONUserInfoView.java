@@ -17,6 +17,8 @@ package org.mitre.openid.connect.view;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Set;
 
@@ -30,6 +32,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.servlet.view.AbstractView;
 
+import com.google.common.base.CaseFormat;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
@@ -176,8 +179,32 @@ public class JSONUserInfoView extends AbstractView {
 		for (JsonElement i : claims) {
 			String claimName = i.getAsString();
 			if (!obj.has(claimName)) {
-				//TODO is there some way to do Java reflection for this?
-				obj.addProperty(claimName, "value");
+				String value = "";
+				//Process claim names to go from "claim_name" to "ClaimName"
+				String camelClaimName = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, claimName);
+				//Now we have "getClaimName"
+				String methodName = "get" + camelClaimName;
+				Method getter = null;
+				try {
+					getter = ui.getClass().getMethod(methodName, (Class<?>)null);
+					value = (String) getter.invoke(ui, (Object[])null);
+					obj.addProperty(claimName, value);
+				} catch (SecurityException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (NoSuchMethodException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalArgumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 		
