@@ -608,10 +608,10 @@ public class AbstractOIDCAuthenticationFilter extends
 			
 			if (serverConfig.getJwkSigningUrl() != null) {
 				// prefer the JWK
-				signingKey = keyFetch.retrieveJwkKey(serverConfig);
+				signingKey = keyFetch.retrieveJwkKey(serverConfig.getJwkSigningUrl());
 			} else if (serverConfig.getX509SigningUrl() != null) {
 				// use the x509 only if JWK isn't configured
-				signingKey = keyFetch.retrieveX509Key(serverConfig);				
+				signingKey = keyFetch.retrieveX509Key(serverConfig.getX509SigningUrl());				
 			} else {
 				// no keys configured
 				logger.warn("No server key URLs configured for " + serverConfig.getIssuer());

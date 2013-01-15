@@ -54,13 +54,13 @@ public class KeyFetcher {
 		return getArray;
 	}
 	
-	public PublicKey retrieveX509Key(OIDCServerConfiguration serverConfig) {
+	public PublicKey retrieveX509Key(String x509url) {
 		
 
 		PublicKey key = null;
 
 		try {
-			InputStream x509Stream = restTemplate.getForObject(serverConfig.getX509SigningUrl(), InputStream.class);
+			InputStream x509Stream = restTemplate.getForObject(x509url, InputStream.class);
 			CertificateFactory factory = CertificateFactory.getInstance("X.509");
 			X509Certificate cert = (X509Certificate) factory.generateCertificate(x509Stream);
 			key = cert.getPublicKey();
@@ -73,11 +73,11 @@ public class KeyFetcher {
 		return key;
 	}
 	
-	public PublicKey retrieveJwkKey(OIDCServerConfiguration serverConfig) {
+	public PublicKey retrieveJwkKey(String jwkUrl) {
 		RSAPublicKey pub = null;
 		
 		try {
-			String jwkString = restTemplate.getForObject(serverConfig.getJwkSigningUrl(), String.class);
+			String jwkString = restTemplate.getForObject(jwkUrl, String.class);
 			JsonObject json = (JsonObject) new JsonParser().parse(jwkString);
 			JsonArray getArray = json.getAsJsonArray("keys");
 			for(int i = 0; i < getArray.size(); i++) {
