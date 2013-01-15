@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-@Service
+@Service("defaultNonceService")
 public class DefaultNonceService implements NonceService {
 
 	private static Logger logger = LoggerFactory.getLogger(NonceService.class);	

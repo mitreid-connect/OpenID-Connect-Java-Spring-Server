@@ -32,8 +32,8 @@ import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.DefaultAuthorizationRequest;
 import org.springframework.security.oauth2.provider.approval.UserApprovalHandler;
+import org.springframework.stereotype.Component;
 
-import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 
@@ -52,6 +52,7 @@ import com.google.common.collect.Sets;
  * @author aanganes
  *
  */
+@Component("tofuUserApprovalHandler")
 public class TofuUserApprovalHandler implements UserApprovalHandler {
 	
 	@Autowired

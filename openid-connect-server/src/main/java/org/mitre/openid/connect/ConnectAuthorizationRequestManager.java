@@ -25,7 +25,7 @@ import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.DefaultAuthorizationRequest;
 import org.springframework.stereotype.Component;
 
-@Component
+@Component("authorizationRequestManager")
 public class ConnectAuthorizationRequestManager implements AuthorizationRequestManager, InitializingBean {
 
 	private static Logger logger = LoggerFactory.getLogger(ConnectAuthorizationRequestManager.class);
