@@ -170,7 +170,7 @@ public class JwtClaims extends ClaimSet {
      * @param principal the principal to set
      */
     public void setPrincipal(String principal) {
-    	setClaim(AUDIENCE, principal);
+    	setClaim(PRINCIPAL, principal);
     }
 
 	/**
