@@ -6,6 +6,7 @@ package org.mitre.openid.connect.assertion;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.interfaces.RSAPublicKey;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,6 +37,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.JWSObject;
+import com.nimbusds.jose.JWSVerifier;
+import com.nimbusds.jose.crypto.RSASSAVerifier;
+import com.nimbusds.jwt.JWT;
+import com.nimbusds.jwt.JWTParser;
 
 /**
  * @author jricher
@@ -70,32 +78,20 @@ public class JwtBearerAuthenticationProvider implements AuthenticationProvider {
     	
     	try {
     		ClientDetailsEntity client = clientService.loadClientByClientId(jwtAuth.getClientId());
-    		
-    		JwtSigningAndValidationService validator = getValidatorForClient(client);
-    		
-    		if (validator == null) {
-    			throw new AuthenticationServiceException("Could not find signing keys for " + jwtAuth.getClientId());
-    		}
-    		
-    		// process the JWT
-    		
+
+    		// fetch our client's key
+            KeyFetcher keyFetch = new KeyFetcher();
+			RSAPublicKey k2 = (RSAPublicKey) keyFetch.retrieveJwkKey(client.getJwkUrl());
+            
+			// use Nimbus to verify the signature
+            JWSVerifier v2 = new RSASSAVerifier(k2);
+			
+			JWSObject j3 = JWSObject.parse(jwtAuth.getJwt().toString());
+				
     		Jwt jwt = jwtAuth.getJwt();
     		JwtClaims jwtClaims = jwt.getClaims();
 
-    		// do a deep copy
-    		Jwt newJwt = new Jwt(new JwtHeader(jwt.getHeader()), new JwtClaims(jwt.getClaims()), null);
-    		// sign it
-    		try {
-    			for (JwtSigner signer : validator.getAllSigners().values()) {
-	                signer.sign(newJwt);
-                }
-	            //validator.signJwt(newJwt);
-            } catch (NoSuchAlgorithmException e) {
-	            // TODO Auto-generated catch block
-	            e.printStackTrace();
-            }
-    		
-    		if (!validator.validateSignature(jwt.toString())) {
+    		if (!j3.verify(v2)) {
     			throw new AuthenticationServiceException("Invalid signature");
     		}
     		
@@ -146,7 +142,13 @@ public class JwtBearerAuthenticationProvider implements AuthenticationProvider {
     		
     	} catch (ClientNotFoundException e) {
     		throw new UsernameNotFoundException("Could not find client: " + jwtAuth.getClientId());
-    	}
+    	} catch (ParseException e) {
+	        // TODO Auto-generated catch block
+	        throw new AuthenticationServiceException("Invalid JWT format");
+        } catch (JOSEException e) {
+	        // TODO Auto-generated catch block
+	        throw new AuthenticationServiceException("JOSE Error");
+        }
     	
     	
     }
