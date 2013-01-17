@@ -76,8 +76,23 @@ public class JwtBearerClientAssertionTokenEndpointFilter extends ClientCredentia
     	}
     	
     	
+    	// Can't call to superclass here b/c client creds would break for lack of client_id
+//	    return super.requiresAuthentication(request, response);
     	
-	    return super.requiresAuthentication(request, response);
+        String uri = request.getRequestURI();
+        int pathParamIndex = uri.indexOf(';');
+
+        if (pathParamIndex > 0) {
+            // strip everything after the first semi-colon
+            uri = uri.substring(0, pathParamIndex);
+        }
+
+        if ("".equals(request.getContextPath())) {
+            return uri.endsWith(getFilterProcessesUrl());
+        }
+
+        return uri.endsWith(request.getContextPath() + getFilterProcessesUrl());
+
     }
 
 

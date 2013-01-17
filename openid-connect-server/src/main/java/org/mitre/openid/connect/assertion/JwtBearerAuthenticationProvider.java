@@ -3,6 +3,7 @@
  */
 package org.mitre.openid.connect.assertion;
 
+import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Date;
@@ -11,6 +12,7 @@ import java.util.Map;
 
 import org.mitre.jwt.model.Jwt;
 import org.mitre.jwt.model.JwtClaims;
+import org.mitre.jwt.model.JwtHeader;
 import org.mitre.jwt.signer.JwsAlgorithm;
 import org.mitre.jwt.signer.JwtSigner;
 import org.mitre.jwt.signer.impl.RsaSigner;
@@ -79,6 +81,19 @@ public class JwtBearerAuthenticationProvider implements AuthenticationProvider {
     		
     		Jwt jwt = jwtAuth.getJwt();
     		JwtClaims jwtClaims = jwt.getClaims();
+
+    		// do a deep copy
+    		Jwt newJwt = new Jwt(new JwtHeader(jwt.getHeader()), new JwtClaims(jwt.getClaims()), null);
+    		// sign it
+    		try {
+    			for (JwtSigner signer : validator.getAllSigners().values()) {
+	                signer.sign(newJwt);
+                }
+	            //validator.signJwt(newJwt);
+            } catch (NoSuchAlgorithmException e) {
+	            // TODO Auto-generated catch block
+	            e.printStackTrace();
+            }
     		
     		if (!validator.validateSignature(jwt.toString())) {
     			throw new AuthenticationServiceException("Invalid signature");
