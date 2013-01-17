@@ -86,9 +86,9 @@ public class KeyFetcher {
 				
 				if(algorithm.equals("RSA")){
 					byte[] modulusByte = Base64.decodeBase64(object.get("mod").getAsString());
-					BigInteger modulus = new BigInteger(modulusByte);
+					BigInteger modulus = new BigInteger(1, modulusByte);
 					byte[] exponentByte = Base64.decodeBase64(object.get("exp").getAsString());
-					BigInteger exponent = new BigInteger(exponentByte);
+					BigInteger exponent = new BigInteger(1, exponentByte);
 							
 					RSAPublicKeySpec spec = new RSAPublicKeySpec(modulus, exponent);
 					KeyFactory factory = KeyFactory.getInstance("RSA");
