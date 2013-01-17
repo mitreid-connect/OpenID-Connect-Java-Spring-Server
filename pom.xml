@@ -278,6 +278,11 @@
         		</exclusion>
         	</exclusions>
         </dependency>
+        <dependency>
+        	<groupId>com.nimbusds</groupId>
+        	<artifactId>nimbus-jose-jwt</artifactId>
+        	<version>2.10.1</version>
+        </dependency>
     </dependencies>
     <repositories>
         <repository>
