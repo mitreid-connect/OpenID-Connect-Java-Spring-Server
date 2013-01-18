@@ -32,7 +32,8 @@ CREATE TEMPORARY TABLE IF NOT EXISTS user_info_TEMP (
 	locale VARCHAR(256),
 	phone_number VARCHAR(256),
 	address_id VARCHAR(256),
-	updated_time VARCHAR(256)
+	updated_time VARCHAR(256),
+	birthdate VARCHAR(256)
 );
 
 CREATE TEMPORARY TABLE IF NOT EXISTS client_details_TEMP (

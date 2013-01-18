@@ -107,6 +107,7 @@ public class JSONUserInfoView extends AbstractView {
 			obj.addProperty("zone_info", ui.getZoneinfo());
 			obj.addProperty("locale", ui.getLocale());
 			obj.addProperty("updated_time", ui.getUpdatedTime());
+			obj.addProperty("birthdate", ui.getBirthdate());
 		}
 		
 		if (scope.contains("email")) {

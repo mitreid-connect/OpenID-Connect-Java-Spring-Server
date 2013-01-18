@@ -55,6 +55,7 @@ public class DefaultUserInfo implements UserInfo {
 	private String phoneNumber;
 	private Address address;
 	private String updatedTime;
+	private String birthdate;
 	
 	
 	/* (non-Javadoc)
@@ -340,6 +341,21 @@ public class DefaultUserInfo implements UserInfo {
 	}
 
 	/**
+     * @return the birthdate
+     */
+	@Basic
+	@Column(name="birthdate")
+    public String getBirthdate() {
+    	return birthdate;
+    }
+	/**
+     * @param birthdate the birthdate to set
+     */
+    public void setBirthdate(String birthdate) {
+    	this.birthdate = birthdate;
+    }
+
+    /**
 	 * Parse a JsonObject into a UserInfo.
 	 * @param o
 	 * @return
@@ -362,6 +378,7 @@ public class DefaultUserInfo implements UserInfo {
 		ui.setZoneinfo(obj.has("zone_info") ? obj.get("zone_info").getAsString() : null);
 		ui.setLocale(obj.has("locale") ? obj.get("locale").getAsString() : null);
 		ui.setUpdatedTime(obj.has("updated_time") ? obj.get("updated_time").getAsString() : null);
+		ui.setBirthdate(obj.has("birthdate") ? obj.get("birthdate").getAsString() : null);
 		
 		ui.setEmail(obj.has("email") ? obj.get("email").getAsString() : null);
 		ui.setEmailVerified(obj.has("email_verified") ? obj.get("email_verified").getAsBoolean() : null);
@@ -386,4 +403,5 @@ public class DefaultUserInfo implements UserInfo {
 		return ui;
 		
 	}
+
 }

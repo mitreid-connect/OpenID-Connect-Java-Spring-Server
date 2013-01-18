@@ -179,7 +179,8 @@ CREATE TABLE IF NOT EXISTS user_info (
 	locale VARCHAR(256),
 	phone_number VARCHAR(256),
 	address_id VARCHAR(256),
-	updated_time VARCHAR(256)
+	updated_time VARCHAR(256),
+	birthdate VARCHAR(256)
 );
 
 CREATE TABLE IF NOT EXISTS whitelisted_site (

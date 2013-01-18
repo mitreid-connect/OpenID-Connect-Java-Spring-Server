@@ -221,4 +221,18 @@ public interface UserInfo {
 	 */
 	public abstract void setUpdatedTime(String updatedTime);
 
+
+	/**
+	 * 
+	 * @return
+	 */
+	@Basic
+	@Column(name="birthdate")
+	public abstract String getBirthdate();
+	
+	/**
+	 * 
+	 * @param birthdate
+	 */
+	public abstract void setBirthdate(String birthdate);
 }
