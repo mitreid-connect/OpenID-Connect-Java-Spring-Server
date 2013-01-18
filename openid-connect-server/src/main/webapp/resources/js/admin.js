@@ -549,8 +549,8 @@
             		authorizedGrantTypes.push('refresh_token');
             	}
 
-            	if ($.inArray('offline', scopes) == -1) {
-                	scopes.push("offline");            		
+            	if ($.inArray('offline_access', scopes) == -1) {
+                	scopes.push("offline_access");            		
             	}
 
             	if (!$('disableRefreshTokenTimeout').is(':checked')) {

@@ -88,9 +88,9 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
         
         // if the client is flagged to allow for refresh tokens, make sure it's got the right granted scopes
         if (client.isAllowRefresh()) {
-        	client.getScope().add("offline");
+        	client.getScope().add("offline_access");
         } else {
-        	client.getScope().remove("offline");
+        	client.getScope().remove("offline_access");
         }
         
         return clientRepository.saveClient(client);
@@ -166,9 +166,9 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 			
 	        // if the client is flagged to allow for refresh tokens, make sure it's got the right scope
 	        if (newClient.isAllowRefresh()) {
-	        	newClient.getScope().add("offline");
+	        	newClient.getScope().add("offline_access");
 	        } else {
-	        	newClient.getScope().remove("offline");
+	        	newClient.getScope().remove("offline_access");
 	        }
 
 	        return clientRepository.updateClient(oldClient.getId(), newClient);

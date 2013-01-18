@@ -112,7 +112,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	    	
 	    	// attach a refresh token, if this client is allowed to request them and the user gets the offline scope
 	    	// TODO: tie this to some kind of scope service
-	    	if (client.isAllowRefresh() && scopes.contains("offline")) {
+	    	if (client.isAllowRefresh() && scopes.contains("offline_access")) {
 	    		OAuth2RefreshTokenEntity refreshToken = new OAuth2RefreshTokenEntity(); //refreshTokenFactory.createNewRefreshToken();
 
 	    		// make it expire if necessary

@@ -115,9 +115,9 @@
                         	</label>
 						</c:if>
                         
-						<c:if test="${not empty scopes['offline']}">
-                        	<label for="scope_offline" class="checkbox">
-	                        	<input type="checkbox" name="scope_offline" id="scope_offline" value="offline" checked="checked"> 
+						<c:if test="${not empty scopes['offline_access']}">
+                        	<label for="scope_offline_access" class="checkbox">
+	                        	<input type="checkbox" name="scope_offline_access" id="scope_offline_access" value="offline_access" checked="checked"> 
 	                        	<i class="icon-time"></i> offline access
                         	</label>
 						</c:if>
