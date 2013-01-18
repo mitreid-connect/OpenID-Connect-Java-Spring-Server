@@ -224,7 +224,8 @@
             refreshTokenValiditySeconds: 604800,
             displayClientSecret: false,
             generateClientSecret: false,
-            requireClientSecret: true
+            requireClientSecret: true,
+            allowIntrospection: false
         },
 
         urlRoot:"api/clients"
