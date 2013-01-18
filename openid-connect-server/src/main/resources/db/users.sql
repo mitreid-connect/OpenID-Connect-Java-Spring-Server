@@ -24,13 +24,13 @@ INSERT INTO authorities_TEMP (username, authority) VALUES
   ('mfranklin','ROLE_USER'),
   ('srmoore','ROLE_USER');
     
--- By default, the user_id column here has to match the username column in the users table, above
+-- By default, the username column here has to match the username column in the users table, above
 INSERT INTO user_info_TEMP (user_id, preferred_username, name, email, email_verified) VALUES
   ('jricher', 'jricher', 'Justin Richer', 'jricher@mitre.org', false),
-  ('jricher', 'aanganes', 'Amanda Anganes', 'aanganes@mitre.org', false),
-  ('jricher', 'mfranklin', 'Matt Franklin', 'mfranklin@mitre.org', false),
-  ('jricher', 'srmoore', 'Steve Moore', 'srmoore@mitre.org', false);
-    
+  ('aanganes', 'aanganes', 'Amanda Anganes', 'aanganes@mitre.org', false),
+  ('mfranklin', 'mfranklin', 'Matt Franklin', 'mfranklin@mitre.org', false),
+  ('srmoore', 'srmoore', 'Steve Moore', 'srmoore@mitre.org', false);
+
  
 --
 -- Merge the temporary users safely into the database. This is a two-step process to keep users from being created on every startup with a persistent store.
