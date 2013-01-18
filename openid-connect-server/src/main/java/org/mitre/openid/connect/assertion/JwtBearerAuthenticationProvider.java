@@ -53,8 +53,8 @@ public class JwtBearerAuthenticationProvider implements AuthenticationProvider {
 
 	private static final Logger logger = LoggerFactory.getLogger(JwtBearerAuthenticationProvider.class);
 
-	// map of validators, load keys for clients
-	private Map<ClientDetailsEntity, JwtSigningAndValidationService> validators = new HashMap<ClientDetailsEntity, JwtSigningAndValidationService>();
+	// map of verifiers, load keys for clients
+	private Map<ClientDetailsEntity, JWSVerifier> verifiers = new HashMap<ClientDetailsEntity, JWSVerifier>();
 	
 	// Allow for time sync issues by having a window of X seconds.
 	private int timeSkewAllowance = 300;
@@ -79,19 +79,13 @@ public class JwtBearerAuthenticationProvider implements AuthenticationProvider {
     	try {
     		ClientDetailsEntity client = clientService.loadClientByClientId(jwtAuth.getClientId());
 
-    		// fetch our client's key
-            KeyFetcher keyFetch = new KeyFetcher();
-			RSAPublicKey k2 = (RSAPublicKey) keyFetch.retrieveJwkKey(client.getJwkUrl());
-            
-			// use Nimbus to verify the signature
-            JWSVerifier v2 = new RSASSAVerifier(k2);
-			
-			JWSObject j3 = JWSObject.parse(jwtAuth.getJwt().toString());
-				
     		Jwt jwt = jwtAuth.getJwt();
     		JwtClaims jwtClaims = jwt.getClaims();
 
-    		if (!j3.verify(v2)) {
+    		// check the signature with nimbus
+    		JWSVerifier verifier = getVerifierForClient(client);
+    		JWSObject jws = JWSObject.parse(jwtAuth.getJwt().toString());    		
+    		if (verifier != null && !jws.verify(verifier)) {
     			throw new AuthenticationServiceException("Invalid signature");
     		}
     		
@@ -161,10 +155,10 @@ public class JwtBearerAuthenticationProvider implements AuthenticationProvider {
 	    return (JwtBearerAssertionAuthenticationToken.class.isAssignableFrom(authentication));
     }
 
-	protected JwtSigningAndValidationService getValidatorForClient(ClientDetailsEntity client) {
+	protected JWSVerifier getVerifierForClient(ClientDetailsEntity client) {
 
-		if(validators.containsKey(client)){
-			return validators.get(client);
+		if(verifiers.containsKey(client)){
+			return verifiers.get(client);
 		} else {
 						
 			KeyFetcher keyFetch = new KeyFetcher();
@@ -182,27 +176,13 @@ public class JwtBearerAuthenticationProvider implements AuthenticationProvider {
 			}
 			
 			if (signingKey != null) {
-				Map<String, JwtSigner> signers = new HashMap<String, JwtSigner>();
-				
-				if (signingKey instanceof RSAPublicKey) {
-					
-					RSAPublicKey rsaKey = (RSAPublicKey)signingKey;
-					
-					// build an RSA signers
-					RsaSigner signer256 = new RsaSigner(JwsAlgorithm.RS256.getJwaName(), rsaKey, null);
-					RsaSigner signer384 = new RsaSigner(JwsAlgorithm.RS384.getJwaName(), rsaKey, null);
-					RsaSigner signer512 = new RsaSigner(JwsAlgorithm.RS512.getJwaName(), rsaKey, null);
 
-					signers.put(client.getClientId() + JwsAlgorithm.RS256.getJwaName(), signer256);
-					signers.put(client.getClientId() + JwsAlgorithm.RS384.getJwaName(), signer384);
-					signers.put(client.getClientId() + JwsAlgorithm.RS512.getJwaName(), signer512);
-				}
-
-                JwtSigningAndValidationService signingAndValidationService = new DefaultJwtSigningAndValidationService(signers);
+				// TODO: this assumes RSA
+				JWSVerifier verifier = new RSASSAVerifier((RSAPublicKey) signingKey);
 				
-				validators.put(client, signingAndValidationService);
+				verifiers.put(client, verifier);
 				
-				return signingAndValidationService;
+				return verifier;
 				
 			} else {
 				// there were either no keys returned or no URLs configured to fetch them, assume no checking on key signatures
