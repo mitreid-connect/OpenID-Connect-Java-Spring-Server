@@ -38,8 +38,8 @@ import com.google.gson.JsonParser;
 public class IdTokenClaims extends JwtClaims {
 
 	public static final String AUTHENTICATION_CONTEXT_CLASS_REFERENCE = "acr";
-	public static final String NONCE = "nonce";
 	public static final String AUTH_TIME = "auth_time";
+	public static final String AUTHORIZED_PARTY = "azp";
 
 	private Long id;
 	
@@ -86,15 +86,6 @@ public class IdTokenClaims extends JwtClaims {
 	}
 	
 	@Transient
-	public String getNonce() {
-		return getClaimAsString(NONCE);
-	}
-	
-	public void setNonce(String nonce) {
-		setClaim(NONCE, nonce);
-	}
-	
-	@Transient
 	public Date getAuthTime() {
 		return getClaimAsDate(AUTH_TIME);
 	}
@@ -103,32 +94,15 @@ public class IdTokenClaims extends JwtClaims {
 		setClaim(AUTH_TIME, authTime);
 	}
 	
-	
-	/**
-	 * Get the seraialized form of this claim set
-	 */
-	@Basic
-    public String getSerializedForm() {
-	    // TODO Auto-generated method stub
-	    JsonObject o = super.getAsJsonObject();
-	    
-	    return o.toString();
-    }
-	
-	/**
-	 * Set up the claims in this object from the serialized form. This clears all current claims from the object.
-	 * @param s a JSON Object string to load into this object
-	 * @throws IllegalArgumentException if s is not a valid JSON object string
-	 */
-	public void setSerializedForm(String s) {
-		JsonParser parser = new JsonParser(); 
-		JsonElement json = parser.parse(s);
-		if (json != null && json.isJsonObject()) {
-			loadFromJsonObject(json.getAsJsonObject());
-		} else {
-			throw new IllegalArgumentException("Could not parse: " + s);
-		}
+	@Transient
+	public String getAuthorizedParty() {
+		return getClaimAsString(AUTHORIZED_PARTY);
 	}
+	
+	public void setAuthorizedParty(String azp) {
+		setClaim(AUTHORIZED_PARTY, azp);
+	}
+	
 	
 	/**
 	 * Load this IdToken from a JSON Object
@@ -142,10 +116,10 @@ public class IdTokenClaims extends JwtClaims {
 				pass.add(element.getKey(), element.getValue());
 			} else if (element.getKey().equals(AUTHENTICATION_CONTEXT_CLASS_REFERENCE)) {
 				setAuthContext(element.getValue().getAsString());
-			} else if (element.getKey().equals(NONCE)) {
-				setNonce(element.getValue().getAsString());
 			} else if (element.getKey().equals(AUTH_TIME)) {
 				setAuthTime(new Date(element.getValue().getAsLong() * 1000L));
+			} else if (element.getKey().equals(AUTHORIZED_PARTY)) {
+				setAuthorizedParty(element.getValue().getAsString());
 	        } else {
 	        	pass.add(element.getKey(), element.getValue());
 	        }
