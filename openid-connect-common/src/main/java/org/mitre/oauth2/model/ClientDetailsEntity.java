@@ -85,7 +85,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	private AppType applicationType;
 	private String clientName;
 	private AuthType tokenEndpointAuthType = AuthType.SECRET_BASIC;
-	private UserIdType userIdType;
+	private SubjectType subjectType;
 	
 	private Set<String> contacts; 	
 	
@@ -172,20 +172,20 @@ public class ClientDetailsEntity implements ClientDetails {
 		}
 	}
 	
-    public enum UserIdType {
+    public enum SubjectType {
     	PAIRWISE("pairwise"), PUBLIC("public");
 
 		private final String value;
 		
 		// map to aid reverse lookup 
-		private static final Map<String, UserIdType> lookup = new HashMap<String, UserIdType>();
+		private static final Map<String, SubjectType> lookup = new HashMap<String, SubjectType>();
 		static {
-			for (UserIdType u : UserIdType.values()) {
+			for (SubjectType u : SubjectType.values()) {
 	            lookup.put(u.getValue(), u);
             }
 		}
 		
-		UserIdType(String value) {
+		SubjectType(String value) {
 			this.value = value;
 		}
 		
@@ -193,7 +193,7 @@ public class ClientDetailsEntity implements ClientDetails {
 			return value;
 		}
 		
-		public static UserIdType getByValue(String value) {
+		public static SubjectType getByValue(String value) {
 			return lookup.get(value);
 		}
     }
@@ -547,13 +547,13 @@ public class ClientDetailsEntity implements ClientDetails {
 	}
 
 	@Enumerated(EnumType.STRING)
-	@Column(name="user_id_type")
-	public UserIdType getUserIdType() {
-		return userIdType;
+	@Column(name="subject_type")
+	public SubjectType getSubjectType() {
+		return subjectType;
 	}
 
-	public void setUserIdType(UserIdType userIdType) {
-		this.userIdType = userIdType;
+	public void setSubjectType(SubjectType subjectType) {
+		this.subjectType = subjectType;
 	}
 
 	@ElementCollection(fetch = FetchType.EAGER)
@@ -843,7 +843,7 @@ public class ClientDetailsEntity implements ClientDetails {
 						+ clientName + ", " : "")
 				+ (tokenEndpointAuthType != null ? "tokenEndpointAuthType="
 						+ tokenEndpointAuthType + ", " : "")
-				+ (userIdType != null ? "userIdType=" + userIdType + ", " : "")
+				+ (subjectType != null ? "subjectType=" + subjectType + ", " : "")
 				+ (contacts != null ? "contacts=" + contacts + ", " : "")
 				+ (logoUrl != null ? "logoUrl=" + logoUrl + ", " : "")
 				+ (policyUrl != null ? "policyUrl=" + policyUrl + ", " : "")
@@ -983,7 +983,7 @@ public class ClientDetailsEntity implements ClientDetails {
 				+ ((tokenEndpointAuthType == null) ? 0 : tokenEndpointAuthType
 						.hashCode());
 		result = prime * result
-				+ ((userIdType == null) ? 0 : userIdType.hashCode());
+				+ ((subjectType == null) ? 0 : subjectType.hashCode());
 		result = prime
 				* result
 				+ ((userInfoEncryptedResponseAlg == null) ? 0
@@ -1212,7 +1212,7 @@ public class ClientDetailsEntity implements ClientDetails {
 		if (tokenEndpointAuthType != other.tokenEndpointAuthType) {
 			return false;
 		}
-		if (userIdType != other.userIdType) {
+		if (subjectType != other.subjectType) {
 			return false;
 		}
 		if (userInfoEncryptedResponseAlg != other.userInfoEncryptedResponseAlg) {

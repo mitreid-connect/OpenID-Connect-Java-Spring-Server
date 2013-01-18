@@ -18,13 +18,13 @@ public interface UserInfo {
 	 * @return the userId
 	 */
 	@Id
-	@Column(name="user_id")
-	public abstract String getUserId();
+	@Column(name="sub")
+	public abstract String getSub();
 
 	/**
-	 * @param userId the userId to set
+	 * @param sub the userId to set
 	 */
-	public abstract void setUserId(String userId);
+	public abstract void setSub(String sub);
 	
 	/**
 	 * @return the preferred username

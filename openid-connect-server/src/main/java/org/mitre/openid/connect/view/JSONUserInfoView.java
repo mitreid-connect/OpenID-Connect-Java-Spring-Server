@@ -90,7 +90,7 @@ public class JSONUserInfoView extends AbstractView {
 		JsonObject obj = new JsonObject();
 		
 		if (scope.contains("openid")) {
-			obj.addProperty("user_id", ui.getUserId());
+			obj.addProperty("sub", ui.getSub());
 		}
 		
 		if (scope.contains("profile")) {

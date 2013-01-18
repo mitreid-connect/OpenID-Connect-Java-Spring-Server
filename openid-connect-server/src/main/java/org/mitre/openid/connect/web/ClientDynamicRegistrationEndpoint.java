@@ -10,7 +10,7 @@ import org.mitre.oauth2.exception.ClientNotFoundException;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity.AppType;
 import org.mitre.oauth2.model.ClientDetailsEntity.AuthType;
-import org.mitre.oauth2.model.ClientDetailsEntity.UserIdType;
+import org.mitre.oauth2.model.ClientDetailsEntity.SubjectType;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
@@ -95,19 +95,19 @@ public class ClientDynamicRegistrationEndpoint {
 		/*
 		 * UserID type
 		 */
-		binder.registerCustomEditor(UserIdType.class, new PropertyEditorSupport() {
+		binder.registerCustomEditor(SubjectType.class, new PropertyEditorSupport() {
 			@Override
 			public void setAsText(String text) throws IllegalArgumentException {
 				if (Strings.isNullOrEmpty(text)) {
 					setValue(null);
 				} else {
-					setValue(UserIdType.getByValue(text));
+					setValue(SubjectType.getByValue(text));
 				}
 			}
 			
 			@Override
 			public String getAsText() {
-				UserIdType ut = (UserIdType) getValue();
+				SubjectType ut = (SubjectType) getValue();
 				return ut == null ? null : ut.getValue();
 			}
 		});
@@ -206,7 +206,7 @@ public class ClientDynamicRegistrationEndpoint {
 			// OPENID CONNECT EXTENSIONS BELOW
 			@RequestParam(value = "application_type", required = false) AppType applicationType,
 			@RequestParam(value = "sector_identifier_url", required = false) String sectorIdentifierUrl,
-			@RequestParam(value = "user_id_type", required = false) UserIdType userIdType,
+			@RequestParam(value = "subject_type", required = false) SubjectType subjectType,
 			@RequestParam(value = "require_signed_request_object", required = false) JwsAlgorithm requireSignedRequestObject,
 			// TODO: JWE needs to be handled properly, see @InitBinder above -- we'll ignore these right now
 			/*
@@ -248,7 +248,7 @@ public class ClientDynamicRegistrationEndpoint {
 		client.setX509Url(x509Url);
 		client.setX509EncryptionUrl(x509EncryptionUrl);
 		client.setSectorIdentifierUrl(sectorIdentifierUrl);
-		client.setUserIdType(userIdType);
+		client.setSubjectType(subjectType);
 		client.setRequireSignedRequestObject(requireSignedRequestObject);
 		client.setDefaultMaxAge(defaultMaxAge);
 		client.setRequireAuthTime(requireAuthTime == null ? false : requireAuthTime.booleanValue());
@@ -369,7 +369,7 @@ public class ClientDynamicRegistrationEndpoint {
 			// OPENID CONNECT EXTENSIONS BELOW
 			@RequestParam(value = "application_type", required = false) AppType applicationType,
 			@RequestParam(value = "sector_identifier_url", required = false) String sectorIdentifierUrl,
-			@RequestParam(value = "user_id_type", required = false) UserIdType userIdType,
+			@RequestParam(value = "subject_type", required = false) SubjectType subjectType,
 			@RequestParam(value = "require_signed_request_object", required = false) JwsAlgorithm requireSignedRequestObject,
 			@RequestParam(value = "require_auth_time", required = false, defaultValue = "true") Boolean requireAuthTime,
 			// TODO: JWE needs to be handled properly, see @InitBinder above -- we'll ignore these right now
@@ -463,8 +463,8 @@ public class ClientDynamicRegistrationEndpoint {
 		if (params.containsKey("sector_identifier_url")) {
 			client.setSectorIdentifierUrl(Strings.emptyToNull(sectorIdentifierUrl));
 		}
-		if (params.containsKey("user_id_type")) {
-			client.setUserIdType(userIdType);
+		if (params.containsKey("subject_type")) {
+			client.setSubjectType(subjectType);
 		}
 		if (params.containsKey("require_signed_request_object")) { // TODO: rename field
 			client.setRequireSignedRequestObject(requireSignedRequestObject);

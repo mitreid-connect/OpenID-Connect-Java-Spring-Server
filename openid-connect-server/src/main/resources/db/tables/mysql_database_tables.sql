@@ -78,7 +78,7 @@ CREATE TABLE client_details (
 	application_type VARCHAR(256),
 	client_name VARCHAR(256),
 	token_endpoint_auth_type VARCHAR(256),
-	user_id_type VARCHAR(256),
+	subject_type VARCHAR(256),
 	
 	logo_url VARCHAR(2048),
 	policy_url VARCHAR(2048),
@@ -157,7 +157,7 @@ CREATE TABLE token_scope (
 
 CREATE TABLE user_info (
 	id BIGINT AUTO_INCREMENT PRIMARY KEY,
-	user_id VARCHAR(256),
+	sub VARCHAR(256),
 	preferred_username VARCHAR(256),
 	name VARCHAR(256),
 	given_name VARCHAR(256),

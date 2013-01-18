@@ -88,7 +88,7 @@ public class SimpleWebDiscoveryEndpoint {
 			scopes_supported 	array 	A JSON array containing a list of the OAuth 2.0 [OAuth2.0] scope values that this server supports. The server MUST support the openid scope value.
 			response_types_supported 	array 	A JSON array containing a list of the OAuth 2.0 response_type that this server supports. The server MUST support the code, id_token, and the token id_token response_type.
 			acrs_supported 	array 	A JSON array containing a list of the Authentication Context Class References that this server supports.
-			user_id_types_supported 	array 	A JSON array containing a list of the user identifier types that this server supports. Valid types include pairwise and public.
+			subject_types_supported 	array 	A JSON array containing a list of the user identifier types that this server supports. Valid types include pairwise and public.
 			userinfo_algs_supported 	array 	A JSON array containing a list of the JWS [JWS] and JWE [JWE] signing and encryption algorithms [JWA] supported by the UserInfo Endpoint to encode the JWT [JWT].
 			id_token_algs_supported 	array 	A JSON array containing a list of the JWS and JWE signing and encryption algorithms [JWA] supported by the Authorization Server for the ID Token to encode the JWT [JWT].
 			request_object_algs_supported 	array 	A JSON array containing a list of the JWS and JWE signing and encryption algorithms [JWA] supported by the Authorization Server for the OpenID Request Object described in Section 2.1.2.1 of OpenID Connect Messages [OpenID.Messages] to encode the JWT [JWT]. Servers SHOULD support RS256.

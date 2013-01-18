@@ -37,7 +37,6 @@ import com.google.gson.JsonParser;
 @Table(name="idtokenclaims")
 public class IdTokenClaims extends JwtClaims {
 
-	public static final String USER_ID = "user_id";
 	public static final String AUTHENTICATION_CONTEXT_CLASS_REFERENCE = "acr";
 	public static final String NONCE = "nonce";
 	public static final String AUTH_TIME = "auth_time";
@@ -77,15 +76,6 @@ public class IdTokenClaims extends JwtClaims {
     	this.id = id;
     }
 
-    @Transient
-	public String getUserId() {
-		return getClaimAsString(USER_ID);
-	}
-	
-	public void setUserId(String user_id) {
-		setClaim(USER_ID, user_id);
-	}
-	
 	@Transient
 	public String getAuthContext() {
 		return getClaimAsString(AUTHENTICATION_CONTEXT_CLASS_REFERENCE);		
@@ -150,8 +140,6 @@ public class IdTokenClaims extends JwtClaims {
 		for (Entry<String, JsonElement> element : json.entrySet()) {
 			if (element.getValue().isJsonNull()) {
 				pass.add(element.getKey(), element.getValue());
-			} else if (element.getKey().equals(USER_ID)) {
-				setUserId(element.getValue().getAsString());
 			} else if (element.getKey().equals(AUTHENTICATION_CONTEXT_CLASS_REFERENCE)) {
 				setAuthContext(element.getValue().getAsString());
 			} else if (element.getKey().equals(NONCE)) {

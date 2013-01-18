@@ -99,7 +99,7 @@ public class TokenIntrospectionView extends AbstractView {
             	
             	token.addProperty("audience", src.getAuthenticationHolder().getAuthentication().getAuthorizationRequest().getClientId());
             	
-            	token.addProperty("user_id", src.getAuthenticationHolder().getAuthentication().getName());
+            	token.addProperty("subject", src.getAuthenticationHolder().getAuthentication().getName());
             	
             	return token;
             }

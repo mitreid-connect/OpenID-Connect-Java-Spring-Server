@@ -48,7 +48,7 @@ public class DefaultUserInfoUserDetailsService implements UserDetailsService {
 	        }
 	        
 	        // TODO: this should really be our own UserDetails wrapper class, shouldn't it?
-			User user = new User(userInfo.getUserId(), password, authorities);
+			User user = new User(userInfo.getSub(), password, authorities);
 			return user;
 		} else {
 			throw new UsernameNotFoundException("Could not find username: " + username);

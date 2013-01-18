@@ -98,7 +98,7 @@ public class POCOUserInfoView extends AbstractView {
 		JsonObject entry = new JsonObject();
 		
 		if (scope.contains("openid")) {
-			entry.addProperty("id", ui.getUserId());
+			entry.addProperty("id", ui.getSub());
 		}
 		
 		if (scope.contains("profile")) {

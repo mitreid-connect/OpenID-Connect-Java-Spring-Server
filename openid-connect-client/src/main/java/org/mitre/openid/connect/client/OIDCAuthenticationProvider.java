@@ -78,9 +78,9 @@ public class OIDCAuthenticationProvider implements
 			if (userInfo == null) {
 				// TODO: user Info not found -- error?
 			} else {			
-				if (!Strings.isNullOrEmpty(userInfo.getUserId()) && !userInfo.getUserId().equals(token.getUserId())) {
+				if (!Strings.isNullOrEmpty(userInfo.getSub()) && !userInfo.getSub().equals(token.getUserId())) {
 					// the userinfo came back and the user_id fields don't match what was in the id_token
-					throw new UsernameNotFoundException("user_id mismatch between id_token and user_info call: " + userInfo.getUserId() + " / " + token.getUserId());
+					throw new UsernameNotFoundException("user_id mismatch between id_token and user_info call: " + userInfo.getSub() + " / " + token.getUserId());
 				}
 			}
 			

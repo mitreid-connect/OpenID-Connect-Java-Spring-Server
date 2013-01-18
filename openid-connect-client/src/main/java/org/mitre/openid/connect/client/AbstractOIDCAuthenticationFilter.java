@@ -417,9 +417,9 @@ public class AbstractOIDCAuthenticationFilter extends
 								+ "ID Token to the session " + NONCE_SESSION_VARIABLE + " failed. Expected " + storedNonce + " got " + nonce + ".");
 			}
 
-			// pull the user_id out as a claim on the id_token
+			// pull the subject (user id) out as a claim on the id_token
 			
-			String userId = idToken.getClaims().getUserId();
+			String userId = idToken.getClaims().getSubject();
 			
 			// construct an OIDCAuthenticationToken and return a Authentication object w/the userId and the idToken
 			

@@ -25,14 +25,13 @@ public class JwtClaims extends ClaimSet {
 	
 	public static final String TYPE = "typ";
 	public static final String JWT_ID = "jti";
-	public static final String PRINCIPAL = "prn";
+	public static final String SUBJECT = "sub";
 	public static final String AUDIENCE = "aud";
 	public static final String ISSUER = "iss";
 	public static final String ISSUED_AT = "iat";
 	public static final String NOT_BEFORE = "nbf";
 	public static final String EXPIRATION = "exp";
 	public static final String NONCE = "nonce";
-
 
 	/**
 	 * ISO8601 / RFC3339 Date Format
@@ -72,8 +71,8 @@ public class JwtClaims extends ClaimSet {
 	        	setIssuer(element.getValue().getAsString());
 	        } else if (element.getKey().equals(AUDIENCE)) {	        	
 	        	setAudience(element.getValue().getAsString());
-	        } else if (element.getKey().equals(PRINCIPAL)) {	        	
-	        	setPrincipal(element.getValue().getAsString());
+	        } else if (element.getKey().equals(SUBJECT)) {	        	
+	        	setSubject(element.getValue().getAsString());
 	        } else if (element.getKey().equals(JWT_ID)) {	        	
 	        	setJwtId(element.getValue().getAsString());
 	        } else if (element.getKey().equals(TYPE)) {	        	
@@ -162,15 +161,15 @@ public class JwtClaims extends ClaimSet {
 	/**
      * @return the principal
      */
-    public String getPrincipal() {
-    	return getClaimAsString(PRINCIPAL);
+    public String getSubject() {
+    	return getClaimAsString(SUBJECT);
     }
 
 	/**
      * @param principal the principal to set
      */
-    public void setPrincipal(String principal) {
-    	setClaim(PRINCIPAL, principal);
+    public void setSubject(String principal) {
+    	setClaim(SUBJECT, principal);
     }
 
 	/**

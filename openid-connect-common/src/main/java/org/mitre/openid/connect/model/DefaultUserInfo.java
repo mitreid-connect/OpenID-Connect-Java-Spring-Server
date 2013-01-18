@@ -37,7 +37,7 @@ import com.google.gson.JsonObject;
 })
 public class DefaultUserInfo implements UserInfo {
 	
-	private String userId;	
+	private String sub;	
 	private String preferredUsername;
 	private String name;	
 	private String givenName;	
@@ -64,16 +64,16 @@ public class DefaultUserInfo implements UserInfo {
 	@Override
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="user_id")
-	public String getUserId() {
-		return userId;
+	@Column(name="sub")
+	public String getSub() {
+		return sub;
 	}
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.model.UserInfo#setUserId(java.lang.String)
 	 */
 	@Override
-	public void setUserId(String userId) {
-		this.userId = userId;
+	public void setSub(String sub) {
+		this.sub = sub;
 	}
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.model.UserInfo#getPreferredUsername
@@ -363,7 +363,7 @@ public class DefaultUserInfo implements UserInfo {
 	public static UserInfo fromJson(JsonObject obj) {
 		DefaultUserInfo ui = new DefaultUserInfo();
 
-		ui.setUserId(obj.has("user_id") ? obj.get("user_id").getAsString() : null);
+		ui.setSub(obj.has("sub") ? obj.get("sub").getAsString() : null);
 		
 		ui.setName(obj.has("name") ? obj.get("name").getAsString() : null);
 		ui.setPreferredUsername(obj.has("preferred_username") ? obj.get("preferred_username").getAsString() : null);
