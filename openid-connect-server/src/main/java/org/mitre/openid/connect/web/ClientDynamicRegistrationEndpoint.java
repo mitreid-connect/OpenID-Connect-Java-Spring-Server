@@ -9,7 +9,7 @@ import org.mitre.jwt.signer.JwsAlgorithm;
 import org.mitre.oauth2.exception.ClientNotFoundException;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity.AppType;
-import org.mitre.oauth2.model.ClientDetailsEntity.AuthType;
+import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
 import org.mitre.oauth2.model.ClientDetailsEntity.SubjectType;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
@@ -75,19 +75,19 @@ public class ClientDynamicRegistrationEndpoint {
 		/*
 		 * Authentication type
 		 */
-		binder.registerCustomEditor(AuthType.class, new PropertyEditorSupport() {
+		binder.registerCustomEditor(AuthMethod.class, new PropertyEditorSupport() {
 			@Override
 			public void setAsText(String text) throws IllegalArgumentException {
 				if (Strings.isNullOrEmpty(text)) {
 					setValue(null);
 				} else {
-					setValue(AuthType.getByValue(text));
+					setValue(AuthMethod.getByValue(text));
 				}
 			}
 			
 			@Override
 			public String getAsText() {
-				AuthType at = (AuthType) getValue();
+				AuthMethod at = (AuthMethod) getValue();
 				return at == null ? null : at.getValue();
 			}
 		});
@@ -190,7 +190,7 @@ public class ClientDynamicRegistrationEndpoint {
 			@RequestParam(value = "logo_url", required = false) String logoUrl,
 			@RequestParam(value = "contacts", required = false) Set<String> contacts,
 			@RequestParam(value = "tos_url", required = false) String tosUrl,
-			@RequestParam(value = "token_endpoint_auth_type", required = false) AuthType tokenEndpointAuthType,
+			@RequestParam(value = "token_endpoint_auth_method", required = false) AuthMethod tokenEndpointAuthMethod,
 			@RequestParam(value = "policy_url", required = false) String policyUrl,
 			
 			@RequestParam(value = "scope", required = false) Set<String> scope,
@@ -230,7 +230,7 @@ public class ClientDynamicRegistrationEndpoint {
 		ClientDetailsEntity client = new ClientDetailsEntity();
 
 		// if it's not using a private key or no auth, then generate a secret
-		if (tokenEndpointAuthType != AuthType.PRIVATE_KEY && tokenEndpointAuthType != AuthType.NONE) {
+		if (tokenEndpointAuthMethod != AuthMethod.PRIVATE_KEY && tokenEndpointAuthMethod != AuthMethod.NONE) {
 			client = clientService.generateClientSecret(client);
 		}
 		
@@ -241,7 +241,7 @@ public class ClientDynamicRegistrationEndpoint {
 		client.setTosUrl(tosUrl);
 		client.setLogoUrl(logoUrl);
 		client.setRegisteredRedirectUri(redirectUris);
-		client.setTokenEndpointAuthType(tokenEndpointAuthType);
+		client.setTokenEndpointAuthMethod(tokenEndpointAuthMethod);
 		client.setPolicyUrl(policyUrl);
 		client.setJwkUrl(jwkUrl);
 		client.setJwkEncryptionUrl(jwkEncryptionUrl);
@@ -353,7 +353,7 @@ public class ClientDynamicRegistrationEndpoint {
 			@RequestParam(value = "logo_url", required = false) String logoUrl,
 			@RequestParam(value = "contacts", required = false) Set<String> contacts,
 			@RequestParam(value = "tos_url", required = false) String tosUrl,
-			@RequestParam(value = "token_endpoint_auth_type", required = false) AuthType tokenEndpointAuthType,
+			@RequestParam(value = "token_endpoint_auth_method", required = false) AuthMethod tokenEndpointAuthMethod,
 			@RequestParam(value = "policy_url", required = false) String policyUrl,
 			
 			@RequestParam(value = "scope", required = false) Set<String> scope,
@@ -425,8 +425,8 @@ public class ClientDynamicRegistrationEndpoint {
 		if (params.containsKey("redirect_uris")) {
 			client.setRegisteredRedirectUri(redirectUris);
 		}
-		if (params.containsKey("token_endpoint_auth_type")) {
-			client.setTokenEndpointAuthType(tokenEndpointAuthType);
+		if (params.containsKey("token_endpoint_auth_method")) {
+			client.setTokenEndpointAuthMethod(tokenEndpointAuthMethod);
 		}
 		if (params.containsKey("policy_url")) {
 			client.setPolicyUrl(Strings.emptyToNull(policyUrl));

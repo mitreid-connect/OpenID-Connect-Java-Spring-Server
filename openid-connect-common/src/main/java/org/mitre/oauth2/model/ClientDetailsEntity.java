@@ -84,7 +84,7 @@ public class ClientDetailsEntity implements ClientDetails {
     /** Fields from Client Registration Specification **/
 	private AppType applicationType;
 	private String clientName;
-	private AuthType tokenEndpointAuthType = AuthType.SECRET_BASIC;
+	private AuthMethod tokenEndpointAuthMethod = AuthMethod.SECRET_BASIC;
 	private SubjectType subjectType;
 	
 	private Set<String> contacts; 	
@@ -116,7 +116,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	private String defaultACR;
 	
 	
-	public enum AuthType {
+	public enum AuthMethod {
 		SECRET_POST("client_secret_post"), 
 		SECRET_BASIC("client_secret_basic"), 
 		SECRET_JWT("client_secret_jwt"), 
@@ -126,14 +126,14 @@ public class ClientDetailsEntity implements ClientDetails {
 		private final String value;
 		
 		// map to aid reverse lookup
-		private static final Map<String, AuthType> lookup = new HashMap<String, AuthType>();
+		private static final Map<String, AuthMethod> lookup = new HashMap<String, AuthMethod>();
 		static {
-			for (AuthType a : AuthType.values()) {
+			for (AuthMethod a : AuthMethod.values()) {
 				lookup.put(a.getValue(), a);
 			}
 		}
 		
-		AuthType(String value) {
+		AuthMethod(String value) {
 			this.value = value;
 		}
 		
@@ -141,7 +141,7 @@ public class ClientDetailsEntity implements ClientDetails {
 			return value;
 		}
 		
-		public static AuthType getByValue(String value) {
+		public static AuthMethod getByValue(String value) {
 			return lookup.get(value);
 		}
 	}
@@ -537,13 +537,13 @@ public class ClientDetailsEntity implements ClientDetails {
 	}
 
 	@Enumerated(EnumType.STRING)
-	@Column(name="token_endpoint_auth_type")
-	public AuthType getTokenEndpointAuthType() {
-		return tokenEndpointAuthType;
+	@Column(name="token_endpoint_auth_method")
+	public AuthMethod getTokenEndpointAuthMethod() {
+		return tokenEndpointAuthMethod;
 	}
 
-	public void setTokenEndpointAuthType(AuthType tokenEndpointAuthType) {
-		this.tokenEndpointAuthType = tokenEndpointAuthType;
+	public void setTokenEndpointAuthMethod(AuthMethod tokenEndpointAuthMethod) {
+		this.tokenEndpointAuthMethod = tokenEndpointAuthMethod;
 	}
 
 	@Enumerated(EnumType.STRING)
@@ -841,8 +841,8 @@ public class ClientDetailsEntity implements ClientDetails {
 						+ applicationType + ", " : "")
 				+ (clientName != null ? "clientName="
 						+ clientName + ", " : "")
-				+ (tokenEndpointAuthType != null ? "tokenEndpointAuthType="
-						+ tokenEndpointAuthType + ", " : "")
+				+ (tokenEndpointAuthMethod != null ? "tokenEndpointAuthMethod="
+						+ tokenEndpointAuthMethod + ", " : "")
 				+ (subjectType != null ? "subjectType=" + subjectType + ", " : "")
 				+ (contacts != null ? "contacts=" + contacts + ", " : "")
 				+ (logoUrl != null ? "logoUrl=" + logoUrl + ", " : "")
@@ -980,7 +980,7 @@ public class ClientDetailsEntity implements ClientDetails {
 						.hashCode());
 		result = prime
 				* result
-				+ ((tokenEndpointAuthType == null) ? 0 : tokenEndpointAuthType
+				+ ((tokenEndpointAuthMethod == null) ? 0 : tokenEndpointAuthMethod
 						.hashCode());
 		result = prime * result
 				+ ((subjectType == null) ? 0 : subjectType.hashCode());
@@ -1209,7 +1209,7 @@ public class ClientDetailsEntity implements ClientDetails {
 		} else if (!sectorIdentifierUrl.equals(other.sectorIdentifierUrl)) {
 			return false;
 		}
-		if (tokenEndpointAuthType != other.tokenEndpointAuthType) {
+		if (tokenEndpointAuthMethod != other.tokenEndpointAuthMethod) {
 			return false;
 		}
 		if (subjectType != other.subjectType) {

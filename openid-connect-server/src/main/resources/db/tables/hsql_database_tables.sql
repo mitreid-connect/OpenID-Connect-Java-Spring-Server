@@ -82,7 +82,7 @@ CREATE TABLE IF NOT EXISTS client_details (
 	
 	application_type VARCHAR(256),
 	client_name VARCHAR(256),
-	token_endpoint_auth_type VARCHAR(256),
+	token_endpoint_auth_method VARCHAR(256),
 	subject_type VARCHAR(256),
 	
 	logo_url VARCHAR(2048),

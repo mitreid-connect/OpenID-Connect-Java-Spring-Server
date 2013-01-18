@@ -92,7 +92,7 @@ public class SimpleWebDiscoveryEndpoint {
 			userinfo_algs_supported 	array 	A JSON array containing a list of the JWS [JWS] and JWE [JWE] signing and encryption algorithms [JWA] supported by the UserInfo Endpoint to encode the JWT [JWT].
 			id_token_algs_supported 	array 	A JSON array containing a list of the JWS and JWE signing and encryption algorithms [JWA] supported by the Authorization Server for the ID Token to encode the JWT [JWT].
 			request_object_algs_supported 	array 	A JSON array containing a list of the JWS and JWE signing and encryption algorithms [JWA] supported by the Authorization Server for the OpenID Request Object described in Section 2.1.2.1 of OpenID Connect Messages [OpenID.Messages] to encode the JWT [JWT]. Servers SHOULD support RS256.
-			token_endpoint_auth_types_supported 	array 	A JSON array containing a list of authentication types supported by this Token Endpoint. The options are client_secret_post, client_secret_basic, client_secret_jwt, and private_key_jwt, as described in Section 2.2.1 of OpenID Connect Messages 1.0 [OpenID.Messages]. Other Authentication types may be defined by extension. If unspecified or omitted, the default is client_secret_basic HTTP Basic Authentication Scheme as specified in Section 2.3.1 of OAuth 2.0 [OAuth2.0].
+			token_endpoint_auth_methods_supported 	array 	A JSON array containing a list of authentication types supported by this Token Endpoint. The options are client_secret_post, client_secret_basic, client_secret_jwt, and private_key_jwt, as described in Section 2.2.1 of OpenID Connect Messages 1.0 [OpenID.Messages]. Other Authentication types may be defined by extension. If unspecified or omitted, the default is client_secret_basic HTTP Basic Authentication Scheme as specified in Section 2.3.1 of OAuth 2.0 [OAuth2.0].
 			token_endpoint_auth_algs_supported 	array 	A JSON array containing a list of the JWS signing algorithms [JWA] supported by the Token Endpoint for the private_key_jwt method to encode the JWT [JWT]. Servers SHOULD support RS256.
 		 *
 		 */
@@ -115,7 +115,7 @@ public class SimpleWebDiscoveryEndpoint {
 		m.put("registration_endpoint", baseUrl + "register");
 		m.put("scopes_supported", Lists.newArrayList("openid", "email", "profile", "address", "phone"));
 		m.put("response_types_supported", Lists.newArrayList("code"));
-		m.put("token_endpoint_auth_types_supported", Lists.newArrayList("client_secret_post", "client_secret_basic"));
+		m.put("token_endpoint_auth_methods_supported", Lists.newArrayList("client_secret_post", "client_secret_basic", "private_key_jwt", "none"));
 		
 		modelAndView.getModel().put("entity", m);
 		// TODO: everything in the list up there
