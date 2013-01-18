@@ -15,11 +15,17 @@
  ******************************************************************************/
 package org.mitre.jwt.model;
 
+import java.lang.reflect.Type;
 import java.util.Date;
+import java.util.List;
 import java.util.Map.Entry;
 
+import com.google.common.collect.Lists;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 
 public class JwtClaims extends ClaimSet {
 	
@@ -69,8 +75,17 @@ public class JwtClaims extends ClaimSet {
                 setIssuedAt(new Date(element.getValue().getAsLong() * 1000L));
 	        } else if (element.getKey().equals(ISSUER)) {	        	
 	        	setIssuer(element.getValue().getAsString());
-	        } else if (element.getKey().equals(AUDIENCE)) {	        	
-	        	setAudience(element.getValue().getAsString());
+	        } else if (element.getKey().equals(AUDIENCE)) {
+	        	if (element.getValue().isJsonArray()) {
+	        		// it's an array of strings, set it as such
+	        		//setAudience(element.getValue().getAsJsonArray());
+	        		Type collectionType = new TypeToken<List<String>>(){}.getType();
+	        		List<String> values = new Gson().fromJson(element.getValue(), collectionType);
+	        		setAudience(values);
+	        	} else {
+	        		// it's a single value
+	        		setAudience(element.getValue().getAsString());
+	        	}
 	        } else if (element.getKey().equals(SUBJECT)) {	        	
 	        	setSubject(element.getValue().getAsString());
 	        } else if (element.getKey().equals(JWT_ID)) {	        	
@@ -144,20 +159,25 @@ public class JwtClaims extends ClaimSet {
     	setClaim(ISSUER, issuer);
     }
 
-	/**
+    /**
      * @return the audience
      */
-    public String getAudience() {
-    	return getClaimAsString(AUDIENCE);
+    public List<String> getAudience() {
+    	return (List<String>) getClaimAsList(AUDIENCE);
     }
 
 	/**
      * @param audience the audience to set
      */
     public void setAudience(String audience) {
-    	setClaim(AUDIENCE, audience);
+    	setClaim(AUDIENCE, Lists.newArrayList(audience));
     }
 
+    
+    public void setAudience(List<String> audience) {
+    	setClaim(AUDIENCE, audience);
+    }
+    
 	/**
      * @return the principal
      */
@@ -212,6 +232,25 @@ public class JwtClaims extends ClaimSet {
      */
     public void setNonce(String nonce) {
     	setClaim(NONCE, nonce);
+    }
+
+	/* (non-Javadoc)
+     * @see org.mitre.jwt.model.ClaimSet#getAsJsonObject()
+     */
+    @Override
+    public JsonObject getAsJsonObject() {
+	    JsonObject o = super.getAsJsonObject();
+	    
+	    // special handling for audience claim
+	    if (o.has(AUDIENCE) && o.get(AUDIENCE).isJsonArray()) {
+	    	JsonArray aud = o.get(AUDIENCE).getAsJsonArray();
+	    	// overwrite single-sized arrays as a string
+	    	if (aud.size() == 1) {
+	    		o.addProperty(AUDIENCE, aud.get(0).getAsString());
+	    	}
+	    }
+	    
+	    return o;
     }
 
 }

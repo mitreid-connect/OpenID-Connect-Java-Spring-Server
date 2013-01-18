@@ -19,15 +19,19 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.codec.binary.Base64;
 
+import com.google.common.collect.Lists;
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
+import com.google.gson.reflect.TypeToken;
 
 /**
  * Generic container for JSON-based claims. Backed with a {@link Map} that preserves
@@ -95,6 +99,21 @@ public class ClaimSet {
     		return null;
     	}
     }
+
+    // TODO: not convinced I like this construct
+    public List getClaimAsList(String key) {
+    	Object v = claims.get(key);
+    	if (v != null) {
+    		if (v instanceof List<?>) {
+    			return (List) v;
+    		} else {
+    			// return a list of the singular element
+    			return Lists.newArrayList(v);
+    		}
+    	} else {
+    		return null;
+    	}
+    }
     
     /**
      * Set an extension claim
@@ -150,6 +169,9 @@ public class ClaimSet {
 	 * @return a copy of the data in this header in a JsonObject
 	 */
 	public JsonObject getAsJsonObject() {
+		
+		Gson g = new Gson();
+		
 		JsonObject o = new JsonObject();
 		
 		
@@ -174,9 +196,11 @@ public class ClaimSet {
 				} else if (claim.getValue() instanceof Date) {
 					// dates get serialized out as integers
 					o.addProperty(claim.getKey(), ((Date)claim.getValue()).getTime() / 1000L);
+				} else if (claim.getValue() instanceof List) {
+					o.add(claim.getKey(), g.toJsonTree(claim.getValue(), new TypeToken<List<String>>(){}.getType()));
 				} else if (claim.getValue() != null) {
 					// try to put it in as a string
-					o.addProperty(claim.getKey(), claim.getValue().toString());
+					o.addProperty(claim.getKey(), g.toJson(claim.getValue()));
 				} else {
 					// otherwise add in as a null
 					o.add(claim.getKey(), null);
