@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.security.oauth2.common.exceptions.InvalidScopeException;
 import org.springframework.security.oauth2.common.util.OAuth2Utils;
@@ -76,29 +77,43 @@ public class ConnectAuthorizationRequestManager implements AuthorizationRequestM
 		
 		String requestNonce = parameters.get("nonce");
 		
-		//If a nonce was included in the request, process it
-		if (requestNonce != null) {
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		boolean anonymous = false;
 		
-			//Check request nonce for reuse
-			Collection<Nonce> clientNonces = nonceService.getByClientId(client.getClientId());
-			for (Nonce nonce : clientNonces) {
-				if (nonce.getValue().equals(requestNonce)) {
-					throw new NonceReuseException(client.getClientId(), nonce);
-				}
+		if (principal instanceof String) {
+			if (principal.toString().equals("anonymousUser")) {
+				anonymous = true;
 			}
-			
-			//Store nonce
-			Nonce nonce = new Nonce();
-			nonce.setClientId(client.getClientId());
-			nonce.setValue(requestNonce);
-			DateTime now = new DateTime(new Date());
-			nonce.setUseDate(now.toDate());
-			DateTime expDate = now.plus(nonceStorageDuration);
-			Date expirationJdkDate = expDate.toDate();
-			nonce.setExpireDate(expirationJdkDate);
-			
-			nonceService.save(nonce);
 		}
+		
+		//If a nonce was included in the request, process it
+//		if (requestNonce != null) {
+//			
+//			//Check request nonce for reuse
+//			Collection<Nonce> clientNonces = nonceService.getByClientId(client.getClientId());
+//			for (Nonce nonce : clientNonces) {
+//				if (nonce.getValue().equals(requestNonce)) {
+//					throw new NonceReuseException(client.getClientId(), nonce);
+//				}
+//			}
+//			
+//			
+//			
+//			if (principal != null && !anonymous) {
+//			
+//				//Store nonce
+//				Nonce nonce = new Nonce();
+//				nonce.setClientId(client.getClientId());
+//				nonce.setValue(requestNonce);
+//				DateTime now = new DateTime(new Date());
+//				nonce.setUseDate(now.toDate());
+//				DateTime expDate = now.plus(nonceStorageDuration);
+//				Date expirationJdkDate = expDate.toDate();
+//				nonce.setExpireDate(expirationJdkDate);
+//				
+//				nonceService.save(nonce);
+//			}
+//		}
 		
 		Set<String> scopes = OAuth2Utils.parseParameterList(parameters.get("scope"));
 		if ((scopes == null || scopes.isEmpty())) {
