@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.repository.UserInfoRepository;
+import org.mitre.openid.connect.service.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -21,7 +22,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 
 	@Autowired
-	private UserInfoRepository userInfoRepository;
+	private UserInfoService userInfoService;
 	
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
@@ -33,7 +34,7 @@ public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 	    	if (p != null && p.getName() != null) { // don't bother checking if we don't have a principal
 	    	
 		    	// try to look up a user based on it
-		    	UserInfo user = userInfoRepository.getByUserId(p.getName());
+		    	UserInfo user = userInfoService.getByUserId(p.getName());
 		    	
 		    	// if we have one, inject it so views can use it
 		    	if (user != null) {
