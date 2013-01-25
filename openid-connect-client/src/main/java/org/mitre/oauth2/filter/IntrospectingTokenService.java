@@ -113,7 +113,7 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
         MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
         form.add("token",accessToken);
         form.add("client_id", this.clientId);
-        form.add("client_scret", this.clientSecret);
+        form.add("client_secret", this.clientSecret);
         
         try {
             validatedToken = restTemplate.postForObject(introspectionUrl, form, String.class);
