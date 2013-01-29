@@ -83,7 +83,7 @@ public class ConnectAuthorizationRequestManager implements AuthorizationRequestM
 			Collection<Nonce> clientNonces = nonceService.getByClientId(client.getClientId());
 			for (Nonce nonce : clientNonces) {
 				if (nonce.getValue().equals(requestNonce)) {
-					throw new NonceReuseException(client.getClientId(), nonce);
+					//throw new NonceReuseException(client.getClientId(), nonce);
 				}
 			}
 			
