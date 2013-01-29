@@ -15,6 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.security.oauth2.common.exceptions.InvalidScopeException;
 import org.springframework.security.oauth2.common.util.OAuth2Utils;
@@ -76,14 +78,19 @@ public class ConnectAuthorizationRequestManager implements AuthorizationRequestM
 		
 		String requestNonce = parameters.get("nonce");
 		
-		//If a nonce was included in the request, process it
-		if (requestNonce != null) {
+		//Only process if the user is authenticated. If the user is not authenticated yet, this 
+		//code will be called a second time once the user is redirected from the login page back 
+		//to the auth endpoint.
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		
+		if (requestNonce != null && principal != null && principal instanceof User) {
+
 			//Check request nonce for reuse
 			Collection<Nonce> clientNonces = nonceService.getByClientId(client.getClientId());
 			for (Nonce nonce : clientNonces) {
-				if (nonce.getValue().equals(requestNonce)) {
-					//throw new NonceReuseException(client.getClientId(), nonce);
+				String nonceVal = nonce.getValue();
+				if (nonceVal.equals(requestNonce)) {
+					throw new NonceReuseException(client.getClientId(), nonce);
 				}
 			}
 			
@@ -98,6 +105,7 @@ public class ConnectAuthorizationRequestManager implements AuthorizationRequestM
 			nonce.setExpireDate(expirationJdkDate);
 			
 			nonceService.save(nonce);
+	
 		}
 		
 		Set<String> scopes = OAuth2Utils.parseParameterList(parameters.get("scope"));
