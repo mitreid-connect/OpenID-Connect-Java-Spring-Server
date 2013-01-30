@@ -56,8 +56,8 @@
 		<security:anonymous enabled="false" />
 		<security:http-basic entry-point-ref="oauthAuthenticationEntryPoint" />
 		<!-- include this only if you need to authenticate clients via request parameters -->
+		<security:custom-filter ref="clientAssertiontokenEndpointFilter" after="PRE_AUTH_FILTER" /> <!-- this one has to go first -->
 		<security:custom-filter ref="clientCredentialsTokenEndpointFilter" before="BASIC_AUTH_FILTER" />
-		<security:custom-filter ref="clientAssertiontokenEndpointFilter" after="BASIC_AUTH_FILTER" />
 		<security:access-denied-handler ref="oauthAccessDeniedHandler" />
 	</security:http>
 
@@ -115,6 +115,7 @@
 		<oauth:authorization-code authorization-code-services-ref="defaultOAuth2AuthorizationCodeService"/>
 		<oauth:implicit />
 		<oauth:refresh-token/>
+		<oauth:client-credentials/>
 		<oauth:custom-grant token-granter-ref="chainedTokenGranter" />
 		<oauth:custom-grant token-granter-ref="jwtAssertionTokenGranter" />
 
