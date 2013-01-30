@@ -20,11 +20,13 @@ import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.mitre.jwt.model.Jwt;
 import org.mitre.openid.connect.model.UserInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,10 +84,11 @@ public class JSONUserInfoView extends AbstractView {
 			out = response.getWriter();
 			
 			if (model.get("requestObject") != null) {
-				String jsonString = (String)model.get("requestObject");
-				JsonObject requestObject = gson.fromJson(jsonString, JsonObject.class);
 				
-				gson.toJson(toJsonFromRequestObj(userInfo, scope, requestObject));
+				String jwtString = (String)model.get("requestObject");
+				Jwt requestObject = Jwt.parse(jwtString);
+				
+				gson.toJson(toJsonFromRequestObj(userInfo, scope, requestObject.getClaims().getAsJsonObject()), out);
 			
 			} else {
 			
@@ -173,11 +176,19 @@ public class JSONUserInfoView extends AbstractView {
 		JsonObject obj = toJson(ui, scope);
 		
 		//Process list of requested claims out of the request object
-		JsonArray claims = requestObj.get("userinfo").getAsJsonObject().get("claims").getAsJsonArray();
+		JsonElement userInfo = requestObj.get("userinfo");
+		if (userInfo == null || !userInfo.isJsonObject()) {
+			return obj;
+		}
+		
+		JsonElement claims = userInfo.getAsJsonObject().get("claims");
+		if (claims == null || !claims.isJsonObject()) {
+			return obj;
+		}
 		
 		//For each claim found, add it if not already present
-		for (JsonElement i : claims) {
-			String claimName = i.getAsString();
+		for (Entry<String, JsonElement> i : claims.getAsJsonObject().entrySet()) {
+			String claimName = i.getKey();
 			if (!obj.has(claimName)) {
 				String value = "";
 				//Process claim names to go from "claim_name" to "ClaimName"
@@ -186,8 +197,8 @@ public class JSONUserInfoView extends AbstractView {
 				String methodName = "get" + camelClaimName;
 				Method getter = null;
 				try {
-					getter = ui.getClass().getMethod(methodName, (Class<?>)null);
-					value = (String) getter.invoke(ui, (Object[])null);
+					getter = ui.getClass().getMethod(methodName);
+					value = (String) getter.invoke(ui);
 					obj.addProperty(claimName, value);
 				} catch (SecurityException e) {
 					// TODO Auto-generated catch block
