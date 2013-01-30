@@ -85,7 +85,7 @@ public class JwtBearerAuthenticationProvider implements AuthenticationProvider {
     		// check the signature with nimbus
     		JWSVerifier verifier = getVerifierForClient(client);
     		JWSObject jws = JWSObject.parse(jwtAuth.getJwt().toString());    		
-    		if (verifier != null && !jws.verify(verifier)) {
+    		if (verifier == null && !jws.verify(verifier)) {
     			throw new AuthenticationServiceException("Invalid signature");
     		}
     		
@@ -118,7 +118,7 @@ public class JwtBearerAuthenticationProvider implements AuthenticationProvider {
 			// check audience
 			if (jwtClaims.getAudience() == null) {
 				throw new AuthenticationServiceException("Assertion token audience is null");
-			} else if (!jwtClaims.getAudience().equals(config.getIssuer())) {
+			} else if (!jwtClaims.getAudience().contains(config.getIssuer())) {
 				throw new AuthenticationServiceException("Audience does not match, expected " + config.getIssuer() + " got " + jwtClaims.getAudience());
 			}
 			
