@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.ModelAndView;
 
-@Controller("requestObjectAuthorzationEndpoint")
+//@Controller("requestObjectAuthorzationEndpoint")
 public class RequestObjectAuthorizationEndpoint {
 	
 	protected final Log logger = LogFactory.getLog(getClass());
