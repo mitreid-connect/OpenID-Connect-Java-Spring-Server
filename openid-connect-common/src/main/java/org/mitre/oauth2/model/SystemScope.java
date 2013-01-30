@@ -21,7 +21,7 @@ import javax.persistence.Table;
 @Table(name = "system_scope")
 @NamedQueries({
 	@NamedQuery(name = "SystemScope.findAll", query = "select s from SystemScope s"),
-	@NamedQuery(name = "SystemScope.getByValue", query = "select s from SystemScope s WHERE value = :value")	
+	@NamedQuery(name = "SystemScope.getByValue", query = "select s from SystemScope s WHERE s.value = :value")
 })
 public class SystemScope {
 

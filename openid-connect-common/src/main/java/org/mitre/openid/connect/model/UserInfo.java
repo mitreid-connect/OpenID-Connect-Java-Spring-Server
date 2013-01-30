@@ -9,16 +9,11 @@ import javax.persistence.InheritanceType;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-@Entity
-@Inheritance(strategy=InheritanceType.TABLE_PER_CLASS)
-@Table(name="user_info")
 public interface UserInfo {
 
 	/**
 	 * @return the userId
 	 */
-	@Id
-	@Column(name="sub")
 	public abstract String getSub();
 
 	/**
@@ -29,8 +24,6 @@ public interface UserInfo {
 	/**
 	 * @return the preferred username
 	 */
-	@Basic
-	@Column(name="preferred_username")
 	public abstract String getPreferredUsername();
 	
 	/**
@@ -41,7 +34,6 @@ public interface UserInfo {
 	/**
 	 * @return the name
 	 */
-	@Basic
 	public abstract String getName();
 
 	/**
@@ -52,8 +44,6 @@ public interface UserInfo {
 	/**
 	 * @return the givenName
 	 */
-	@Basic
-	@Column(name="given_name")
 	public abstract String getGivenName();
 
 	/**
@@ -64,8 +54,6 @@ public interface UserInfo {
 	/**
 	 * @return the familyName
 	 */
-	@Basic
-	@Column(name="family_name")
 	public abstract String getFamilyName();
 
 	/**
@@ -76,8 +64,6 @@ public interface UserInfo {
 	/**
 	 * @return the middleName
 	 */
-	@Basic
-	@Column(name="middle_name")
 	public abstract String getMiddleName();
 
 	/**
@@ -88,7 +74,6 @@ public interface UserInfo {
 	/**
 	 * @return the nickname
 	 */
-	@Basic
 	public abstract String getNickname();
 
 	/**
@@ -99,7 +84,6 @@ public interface UserInfo {
 	/**
 	 * @return the profile
 	 */
-	@Basic
 	public abstract String getProfile();
 
 	/**
@@ -110,7 +94,6 @@ public interface UserInfo {
 	/**
 	 * @return the picture
 	 */
-	@Basic
 	public abstract String getPicture();
 
 	/**
@@ -121,7 +104,6 @@ public interface UserInfo {
 	/**
 	 * @return the website
 	 */
-	@Basic
 	public abstract String getWebsite();
 
 	/**
@@ -132,7 +114,6 @@ public interface UserInfo {
 	/**
 	 * @return the email
 	 */
-	@Basic
 	public abstract String getEmail();
 
 	/**
@@ -143,8 +124,6 @@ public interface UserInfo {
 	/**
 	 * @return the verified
 	 */
-	@Basic
-	@Column(name="email_verified")
 	public abstract Boolean getEmailVerified();
 
 	/**
@@ -155,7 +134,6 @@ public interface UserInfo {
 	/**
 	 * @return the gender
 	 */
-	@Basic
 	public abstract String getGender();
 
 	/**
@@ -166,8 +144,6 @@ public interface UserInfo {
 	/**
 	 * @return the zoneinfo
 	 */
-	@Basic
-	@Column(name="zone_info")
 	public abstract String getZoneinfo();
 
 	/**
@@ -178,7 +154,6 @@ public interface UserInfo {
 	/**
 	 * @return the locale
 	 */
-	@Basic
 	public abstract String getLocale();
 
 	/**
@@ -189,8 +164,6 @@ public interface UserInfo {
 	/**
 	 * @return the phoneNumber
 	 */
-	@Basic
-	@Column(name="phone_number")
 	public abstract String getPhoneNumber();
 
 	/**
@@ -201,7 +174,6 @@ public interface UserInfo {
 	/**
 	 * @return the address
 	 */
-	@OneToOne
 	public abstract Address getAddress();
 
 	/**
@@ -212,8 +184,6 @@ public interface UserInfo {
 	/**
 	 * @return the updatedTime
 	 */
-	@Basic
-	@Column(name="updated_time")
 	public abstract String getUpdatedTime();
 
 	/**
@@ -226,8 +196,6 @@ public interface UserInfo {
 	 * 
 	 * @return
 	 */
-	@Basic
-	@Column(name="birthdate")
 	public abstract String getBirthdate();
 	
 	/**

@@ -177,7 +177,8 @@
 	</bean>
 
 	<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-		<property name="persistenceUnitName" value="openidPersistenceUnit" />
+		<property name="packagesToScan" value="org.mitre" />
+		<property name="persistenceProviderClass" value="org.eclipse.persistence.jpa.PersistenceProvider" />
 		<property name="dataSource" ref="dataSource" />
 		<property name="jpaVendorAdapter" ref="jpaAdapter" />
 		<property name="jpaPropertyMap">
@@ -185,6 +186,7 @@
 				<entry key="eclipselink.weaving" value="false" />
 				<entry key="eclipselink.logging.level" value="FINEST" />
 				<entry key="eclipselink.logging.level.sql" value="FINEST" />
+				<entry key="eclipselink.cache.shared.default" value="false" />
 			</map>
 		</property>
 	</bean>
