@@ -155,6 +155,15 @@ CREATE TABLE token_scope (
 	scope VARCHAR(2048)
 );
 
+CREATE TABLE IF NOT EXISTS site_scope (
+	id BIGINT AUTO_INCREMENT PRIMARY KEY,
+	scope VARCHAR(1024),
+	description VARCHAR(4096),
+	icon VARCHAR(256),
+	allow_dyn_reg BOOLEAN,
+	default_scope BOOLEAN
+);
+
 CREATE TABLE user_info (
 	id BIGINT AUTO_INCREMENT PRIMARY KEY,
 	sub VARCHAR(256),
