@@ -210,6 +210,13 @@ public class ConnectAuthorizationRequestManager implements AuthorizationRequestM
 			}
 		}
 		
+		String scope = claims.getClaimAsString("scope");
+		if (scope != null) {
+			if (inputParams.containsKey("scope") == false) {
+				parameters.put("scope", scope);
+			}
+		}
+		
 		return parameters;
     }
 
