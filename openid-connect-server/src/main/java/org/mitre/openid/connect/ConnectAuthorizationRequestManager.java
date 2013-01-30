@@ -119,12 +119,7 @@ public class ConnectAuthorizationRequestManager implements AuthorizationRequestM
 		Set<String> scopes = OAuth2Utils.parseParameterList(parameters.get("scope"));
 		if ((scopes == null || scopes.isEmpty())) {
 			//TODO: do we want to allow default scoping at all?
-			// If no scopes are specified in the incoming data, it is possible to default to the client's 
-			//registered scopes, but minus the "openid" scope. OpenID Connect requests MUST have the "openid" scope.
 			Set<String> clientScopes = client.getScope();
-			if (clientScopes.contains("openid")) {
-				clientScopes.remove("openid");
-			}
 			scopes = clientScopes;
 		}
 		DefaultAuthorizationRequest request = new DefaultAuthorizationRequest(inputParams, Collections.<String, String> emptyMap(), clientId, scopes);
