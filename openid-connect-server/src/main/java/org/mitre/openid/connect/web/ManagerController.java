@@ -43,6 +43,26 @@ public class ManagerController {
     	
         return "home";
     }
+    
+    @RequestMapping({"about", "about/"})
+    public String showAboutPage(ModelMap m) {
+    	return "about";
+    }
+    
+    @RequestMapping({"stats", "stats/"})
+    public String showStatsPage(ModelMap m) {
+    	
+    	Map<String, Integer> summary = statsService.calculateSummaryStats();
+    	
+    	m.put("statsSummary", summary);
+    	
+    	return "stats";
+    }
+    
+    @RequestMapping({"contact", "contact/"})
+    public String showContactPage(ModelMap m) {
+    	return "contact";
+    }
 
     @PreAuthorize("hasRole('ROLE_USER')") // TODO: this probably shouldn't be here
     @RequestMapping("manage/**")

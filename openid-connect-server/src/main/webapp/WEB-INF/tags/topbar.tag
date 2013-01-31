@@ -1,3 +1,4 @@
+<%@attribute name="pageName" required="false" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="security" uri="http://www.springframework.org/security/tags" %>
 <c:choose>
@@ -35,10 +36,38 @@
             <a class="brand" href="">OpenID Connect Server</a>
             <div class="nav-collapse collapse">
                 <ul class="nav">
-                    <li class="active"><a href="">Home</a></li>
-                    <li><a href="about">About</a></li>
-                    <li><a href="stats">Statistics</a></li>
-                    <li><a href="contact">Contact</a></li>
+                	<c:choose>
+                		<c:when test="${pageName == 'Home' || empty pageName}"> 
+                			<li class="active"><a href="">Home</a></li>
+                		</c:when>
+                		<c:otherwise>
+                			<li><a href="">Home</a></li>
+                		</c:otherwise>
+                	</c:choose>
+                    <c:choose>
+                		<c:when test="${pageName == 'About'}"> 
+                			<li class="active"><a href="">About</a></li>
+                		</c:when>
+                		<c:otherwise>
+                			<li><a href="about">About</a></li>
+                		</c:otherwise>
+                	</c:choose>
+                	<c:choose>
+                		<c:when test="${pageName == 'Statistics'}"> 
+                			<li class="active"><a href="">Statistics</a></li>
+                		</c:when>
+                		<c:otherwise>
+                			<li><a href="stats">Statistics</a></li>
+                		</c:otherwise>
+                	</c:choose>
+                	<c:choose>
+                		<c:when test="${pageName == 'Contact'}"> 
+                			<li class="active"><a href="">Contact</a></li>
+                		</c:when>
+                		<c:otherwise>
+                			<li><a href="contact">Contact</a></li>
+                		</c:otherwise>
+                	</c:choose>
                 </ul>
 				<ul class="nav pull-right">
                     <security:authorize access="hasRole('ROLE_USER')">
