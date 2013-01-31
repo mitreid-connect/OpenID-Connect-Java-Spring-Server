@@ -676,7 +676,7 @@
             });
 
             $("#scope .controls",this.el).html(new ListWidgetView({placeholder: 'new scope here'
-                , autocomplete: _.uniq(_.flatten(app.systemScopes.defaultScopes.pluck("value"))) // TODO: load from default scopes
+                , autocomplete: _.uniq(_.flatten(app.systemScopes.pluck("value"))) // TODO: load from default scopes
                 , collection: this.scopeCollection}).render().el);
 
             if (!this.model.get("allowRefresh")) {
@@ -1043,6 +1043,103 @@
     	
     });
     
+    var SystemScopeView = Backbone.View.extend({
+    	
+    	tagName: 'tr',
+    	
+        initialize:function () {
+
+            if (!this.template) {
+                this.template = _.template($('#tmpl-system-scope').html());
+            }
+
+            this.model.bind('change', this.render, this);
+            
+        },
+        
+        events: {
+    		'click .btn-edit':'editScope',
+    		'click .btn-delete':'deleteScope'
+    	},
+    	
+    	editScope:function() {
+    		app.navigate('admin/scope/' + this.model.id, {trigger: true});
+    	},
+    	
+        render:function (eventName) {
+            this.$el.html(this.template(this.model.toJSON()));
+
+            this.$('.dynamically-registered').tooltip({title: 'This client was dynamically registered'});
+            
+            return this;
+        },
+        
+        deleteScope:function () {
+
+            if (confirm("Are you sure sure you would like to delete this scope? Clients that have this scope will still be able to ask for it.")) {
+                var self = this;
+
+                this.model.destroy({
+                    success:function () {
+                        self.$el.fadeTo("fast", 0.00, function () { //fade
+                            $(this).slideUp("fast", function () { //slide up
+                                $(this).remove(); //then remove from the DOM
+                            });
+                        });
+                    }
+                });
+
+                app.systemScopeListView.delegateEvents();
+            }
+
+            return false;
+        },
+        
+        close:function () {
+            $(this.el).unbind();
+            $(this.el).empty();
+        }
+    });
+    
+    var SystemScopeListView = Backbone.View.extend({
+    	tagName: 'span',
+    	
+    	events:{
+    		"click .new-scope":"newScope",
+    		"click .refresh-table":"refreshTable"
+    	},
+    
+    	newScope:function() {
+    		this.remove();
+    		app.navigate('admin/scope/new', {trigger: true});
+    	},
+    	
+    	refreshTable:function() {
+    		var _self = this;
+    		this.model.fetch({
+    			success: function() {
+    				_self.render();
+    			}
+    		});
+    	},
+    	
+    	render: function (eventName) {
+    		
+    		// append and render the table structure
+    		$(this.el).html($('#tmpl-system-scope-table').html());
+    		
+    		_.each(this.model.models, function (scope) {
+    			$("#scope-table", this.el).append(new SystemScopeView({model: scope}).render().el);
+    		}, this);
+    		
+    		return this;
+    	}
+    });
+    
+    var SystemScopeFormView = Backbone.View.extend({
+    	
+    });
+    
     // Router
     var AppRouter = Backbone.Router.extend({
 
@@ -1056,6 +1153,10 @@
             "admin/whitelist/:id":"editWhitelist",
             
             "admin/blacklist":"blackList",
+            
+            "admin/scope":"siteScope",
+            "admin/scope/new":"newScope",
+            "admin/scope/:id":"editScope",
             
             "user/approved":"approvedSites",
             
@@ -1079,7 +1180,8 @@
             this.whiteListListView = new WhiteListListView({model:this.whiteListList});
             this.approvedSiteListView = new ApprovedSiteListView({model:this.approvedSiteList});
             this.blackListListView = new BlackListListView({model:this.blackListList});
-
+            this.systemScopeListView = new SystemScopeListView({model:this.systemScopes});
+            
             this.breadCrumbView = new BreadCrumbView({
                 collection:new Backbone.Collection()
             });
@@ -1094,7 +1196,7 @@
             // load things in the right order:
             this.systemScopes.fetch({
             	success: function(collection, response) {
-            		this.clientList.fetch({
+            		app.clientList.fetch({
             			success: function(collection, response) {
             				app.whiteListList.fetch({
             					success: function(collection, response) {
@@ -1138,7 +1240,7 @@
         		requireClientSecret:true, 
         		generateClientSecret:true,
         		displayClientSecret:false,
-        		scope: _.uniq(_.flatten(this.systemScopes.defaultScopes.pluck("value"))),
+        		scope: _.uniq(_.flatten(this.systemScopes.defaultScopes().pluck("value"))),
         	}, { silent: true });
         	
             this.clientFormView = new ClientFormView({model:client});
@@ -1272,6 +1374,37 @@
             		$('#content').html(view.render().el);
             	}
             });
+        },
+        
+        siteScope:function() {
+        	this.breadCrumbView.collection.reset();
+        	this.breadCrumbView.collection.add([
+                 {text:"Home", href:""},
+                 {text:"Mange System Scopes", href:"manage/#admin/scope"}
+	        ]);
+        	
+        	$('#content').html(this.systemScopeListView.render().el);
+            this.systemScopeListView.delegateEvents();
+        },
+        
+        newScope:function() {
+        	this.breadCrumbView.collection.reset();
+        	this.breadCrumbView.collection.add([
+                 {text:"Home", href:""},
+                 {text:"Mange System Scopes", href:"manage/#admin/scope"},
+                 {text:"New", href:"manage/#admin/scope/new"}
+	        ]);
+        },
+        
+        editScope:function(sid) {
+        	this.breadCrumbView.collection.reset();
+        	this.breadCrumbView.collection.add([
+                 {text:"Home", href:""},
+                 {text:"Mange System Scopes", href:"manage/#admin/scope"},
+                 {text:"Edit", href:"manage/#admin/scope/" + sid}
+	        ]);
+        	
+        	
         }
 
 
