@@ -222,6 +222,15 @@
     		return new SystemScopeCollection(filtered);
     	},
     	
+    	getByValue: function(value) {
+    		var scopes = this.where({value: scope});
+    		if (scopes.length == 1) {
+    			return scopes[0];
+    		} else {
+    			return null;
+    		}
+    	}
+    	
     });
     
     var ClientModel = Backbone.Model.extend({
