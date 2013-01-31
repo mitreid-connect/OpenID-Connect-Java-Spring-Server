@@ -190,6 +190,40 @@
     	url: 'api/approved'
     });
     
+
+    var SystemScopeModel = Backbone.Model.extend({
+    	idAttribute: 'id',
+
+    	/*
+    	// fake the 'item' portion
+		get: function (attr) {
+		    if (attr == 'item') {
+		    	attr = 'value';
+		    }
+		
+		    return Backbone.Model.prototype.get.call(this, attr);
+		},
+    	*/
+    	
+    	urlRoot: 'api/scopes'
+    });
+    
+    var SystemScopeCollection = Backbone.Collection.extend({
+    	idAttribute: 'id',
+    	
+    	model: SystemScopeModel,
+    	
+    	url: 'api/scopes',
+
+    	defaultScopes: function() {
+    		filtered = this.filter(function(scope) {
+    			return scope.get("defaultScope") === true;
+    		});
+    		return new SystemScopeCollection(filtered);
+    	},
+    	
+    });
+    
     var ClientModel = Backbone.Model.extend({
 
         idAttribute: "id",
@@ -214,7 +248,7 @@
             clientSecret:"",
             registeredRedirectUri:[],
             authorizedGrantTypes:["authorization_code"],
-            scope:["openid"],
+            scope:[],
             authorities:[],
             clientDescription:"",
             logoUrl:"",
@@ -633,7 +667,7 @@
             });
 
             $("#scope .controls",this.el).html(new ListWidgetView({placeholder: 'new scope here'
-                , autocomplete: _.uniq(_.flatten(app.clientList.pluck("scope")))
+                , autocomplete: _.uniq(_.flatten(app.systemScopes.defaultScopes.pluck("value"))) // TODO: load from default scopes
                 , collection: this.scopeCollection}).render().el);
 
             if (!this.model.get("allowRefresh")) {
@@ -1030,6 +1064,7 @@
             this.whiteListList = new WhiteListCollection();
             this.blackListList = new BlackListCollection();
             this.approvedSiteList = new ApprovedSiteCollection();
+            this.systemScopes = new SystemScopeCollection();
 
             this.clientListView = new ClientListView({model:this.clientList});
             this.whiteListListView = new WhiteListListView({model:this.whiteListList});
@@ -1048,12 +1083,16 @@
             //
             
             // load things in the right order:
-            this.clientList.fetch({
+            this.systemScopes.fetch({
             	success: function(collection, response) {
-            		app.whiteListList.fetch({
+            		this.clientList.fetch({
             			success: function(collection, response) {
-            				var baseUrl = $.url($('base').attr('href'));                
-            				Backbone.history.start({pushState: true, root: baseUrl.attr('relative') + 'manage/'});
+            				app.whiteListList.fetch({
+            					success: function(collection, response) {
+            						var baseUrl = $.url($('base').attr('href'));                
+            						Backbone.history.start({pushState: true, root: baseUrl.attr('relative') + 'manage/'});
+            					}
+            				});
             			}
             		});
             	}
@@ -1089,7 +1128,8 @@
         	client.set({
         		requireClientSecret:true, 
         		generateClientSecret:true,
-        		displayClientSecret:false
+        		displayClientSecret:false,
+        		scope: _.uniq(_.flatten(this.systemScopes.defaultScopes.pluck("value"))),
         	}, { silent: true });
         	
             this.clientFormView = new ClientFormView({model:client});

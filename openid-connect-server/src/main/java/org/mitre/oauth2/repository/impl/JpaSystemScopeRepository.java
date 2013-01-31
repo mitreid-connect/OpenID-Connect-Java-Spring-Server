@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
 import javax.persistence.TypedQuery;
 
@@ -25,7 +26,7 @@ import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
 @Repository("jpaSystemScopeRepository")
 public class JpaSystemScopeRepository implements SystemScopeRepository {
 
-	@PersistenceUnit
+	@PersistenceContext
 	private EntityManager em;
 	
 	/* (non-Javadoc)
