@@ -15,6 +15,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.ModelAndView;
 
+// 
+// TODO: make this into a controller again, use the forward: or redirect: mechanism to send to auth endpoint
+//
+
 //@Controller("requestObjectAuthorzationEndpoint")
 public class RequestObjectAuthorizationEndpoint {
 	
