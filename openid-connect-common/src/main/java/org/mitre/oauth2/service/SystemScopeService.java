@@ -27,4 +27,8 @@ public interface SystemScopeService {
 	
 	public SystemScope save(SystemScope scope);
 	
+	public Set<SystemScope> fromStrings(Set<String> scope);
+	
+	public Set<String> toStrings(Set<SystemScope> scope);
+
 }

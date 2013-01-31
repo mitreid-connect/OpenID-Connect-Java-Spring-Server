@@ -3,6 +3,7 @@
  */
 package org.mitre.oauth2.service.impl;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.annotation.Nullable;
@@ -13,7 +14,10 @@ import org.mitre.oauth2.service.SystemScopeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.base.Function;
 import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Sets;
 
 /**
@@ -43,7 +47,23 @@ public class DefaultSystemScopeService implements SystemScopeService {
         }
 	};
 	
+	private Function<String, SystemScope> stringToSystemScope = new Function<String, SystemScope>() {
+		@Override
+        public SystemScope apply(@Nullable String input) {
+	        return getByValue(input);
+        }
+	};
 	
+	private Function<SystemScope, String> systemScopeToString = new Function<SystemScope, String>() {
+		@Override
+        public String apply(@Nullable SystemScope input) {
+			if (input == null) {
+				return null;
+			} else {
+				return input.getValue();
+			}
+        }
+	};
 	
 	/* (non-Javadoc)
 	 * @see org.mitre.oauth2.service.SystemScopeService#getAll()
@@ -100,6 +120,30 @@ public class DefaultSystemScopeService implements SystemScopeService {
     @Override
     public SystemScope save(SystemScope scope) {
     	return repository.save(scope);
+    }
+
+	/* (non-Javadoc)
+	 * @see org.mitre.oauth2.service.SystemScopeService#fromStrings(java.util.Set)
+	 */
+    @Override
+    public Set<SystemScope> fromStrings(Set<String> scope) {
+    	if (scope == null) {
+    		return null;
+    	} else {
+    		return new HashSet<SystemScope>(Collections2.filter(Collections2.transform(scope, stringToSystemScope), Predicates.notNull()));
+    	}
+    }
+
+	/* (non-Javadoc)
+	 * @see org.mitre.oauth2.service.SystemScopeService#toStrings(java.util.Set)
+	 */
+    @Override
+    public Set<String> toStrings(Set<SystemScope> scope) {
+    	if (scope == null) {
+    		return null;
+    	} else {
+    		return new HashSet<String>(Collections2.filter(Collections2.transform(scope, systemScopeToString), Predicates.notNull()));
+    	}
     }
 
 	

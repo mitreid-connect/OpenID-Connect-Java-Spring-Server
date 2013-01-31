@@ -12,8 +12,10 @@ import org.mitre.oauth2.model.ClientDetailsEntity.AppType;
 import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
 import org.mitre.oauth2.model.ClientDetailsEntity.SubjectType;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
+import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
+import org.mitre.oauth2.service.SystemScopeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.AuthenticationException;
@@ -44,6 +46,9 @@ public class ClientDynamicRegistrationEndpoint {
 	
 	@Autowired
 	private OAuth2TokenEntityService tokenService;
+
+	@Autowired
+	private SystemScopeService scopeService;
 	
 	/**
 	 * Bind utility data types to their classes
@@ -254,12 +259,22 @@ public class ClientDynamicRegistrationEndpoint {
 		client.setRequireAuthTime(requireAuthTime == null ? false : requireAuthTime.booleanValue());
 		client.setDefaultACR(defaultAcr);
 
-		if (scope != null) {
-			// TODO: check against some kind of scope service for scope validity
-			client.setScope(scope);
-		} else {
-			client.setScope(Sets.newHashSet("openid", "phone", "address", "profile", "email")); // provision all scopes
+		// set of scopes that are OK for clients to dynamically register for
+		Set<SystemScope> dynScopes = scopeService.getDynReg();
+		
+		// scopes that the client is asking for
+		Set<SystemScope> requestedScopes = scopeService.fromStrings(scope);
+		if (requestedScopes == null) {
+			requestedScopes = scopeService.getDefaults();
 		}
+		
+		// the scopes that the client can have must be a subset of the dynamically allowed scopes
+		Set<SystemScope> allowedScopes = Sets.intersection(dynScopes, requestedScopes);
+
+		client.setScope(scopeService.toStrings(allowedScopes));
+		
+		
+		
 		if (grantType != null) {
 			// TODO: check against some kind of grant type service for validity
 			client.setAuthorizedGrantTypes(grantType);
@@ -450,8 +465,16 @@ public class ClientDynamicRegistrationEndpoint {
 			client.setDefaultACR(Strings.emptyToNull(defaultAcr));
 		}
 		if (params.containsKey("scope")) {
-			// TODO: check against some kind of scope service for scope validity
-			client.setScope(scope);
+			// set of scopes that are OK for clients to dynamically register for
+			Set<SystemScope> dynScopes = scopeService.getDynReg();
+			
+			// scopes that the client is asking for
+			Set<SystemScope> requestedScopes = scopeService.fromStrings(scope);
+
+			// the scopes that the client can have must be a subset of the dynamically allowed scopes
+			Set<SystemScope> allowedScopes = Sets.intersection(dynScopes, requestedScopes);
+
+			client.setScope(scopeService.toStrings(allowedScopes));
 		}
 		if (params.containsKey("grant_type")) {
 			// TODO: check against some kind of grant type service for validity
