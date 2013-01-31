@@ -93,7 +93,7 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
     
     // create a default authentication object with authority ROLE_API
     private Authentication createAuthentication(JsonObject token){
-        // TODO:  user_id is going to go away. Will have to fix.
+    	// TODO: make role/authority configurable somehow
         return new PreAuthenticatedAuthenticationToken(token.get("subject").getAsString(), null, AuthorityUtils.createAuthorityList("ROLE_API"));
     }
     
