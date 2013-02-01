@@ -1147,7 +1147,7 @@
     	
     	initialize:function() {
     		if (!this.template) {
-    			this.template = _.template($('#tmpl-system-scope-form'))
+    			this.template = _.template($('#tmpl-system-scope-form').html());
     		}
     	},
     	
