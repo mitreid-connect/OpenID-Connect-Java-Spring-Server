@@ -578,3 +578,59 @@
     </td>
 
 </script>
+
+<script type="text/html" id="tmpl-system-scope-form">
+
+	<h1><%= id == null ? 'New' : 'Edit')%> Scope</h1>
+
+	<form class="form-horizontal">
+		<fieldset>
+
+            <div class="well well-small">
+                <button class="btn btn-small btn-save btn-success"><i class="icon-ok-circle icon-white"></i> Save</button> &nbsp; 
+				<button class="btn btn-small btn-cancel"><i class="icon-ban-circle"></i> Cancel</button>
+            </div>			
+
+			<div class="control-group" id="value">
+				<label class="control-label">Scope value</label>
+				<div class="controls">
+					<input value="<%=value%>" type="text" class="" placeholder="scope">
+					<p class="help-block">Single string with no spaces</p>
+				</div>
+			</div>
+
+			<div class="control-group" id="description">
+				<label class="control-label">Description</label>
+				<div class="controls">
+					<textarea class="input-xlarge" placeholder="Type a description" maxlength="200" rows="3"><%=description%></textarea>
+					<p class="help-block">Human-readable text description</p>
+				</div>
+			</div>
+
+			<div class="control-group" id="defaultScope">
+				<div class="controls">
+					<label class="checkbox">
+						<input type="checkbox" <%=defaultScope ? 'checked' : ''%>> default scope
+					</label>
+					<p class="help-block">Newly-created clients get this scope by default?</p>
+				</div>
+			</div>
+
+			<div class="control-group" id="allowDynReg">
+				<div class="controls">
+					<label class="checkbox">
+						<input type="checkbox" <%=allowDynReg ? 'checked' : ''%>> allow dynamic registration
+					</label>
+					<p class="help-block">Allow dynamically registered clients to request this scope?</p>
+				</div>
+			</div>
+
+            <div class="well well-small">
+                <button class="btn btn-small btn-save btn-success"><i class="icon-ok-circle icon-white"></i> Save</button> &nbsp; 
+				<button class="btn btn-small btn-cancel"><i class="icon-ban-circle"></i> Cancel</button>
+            </div>			
+
+		</fieldset>
+	</form>
+
+</script>

@@ -205,6 +205,12 @@
 		},
     	*/
     	
+    	defaults:{
+    		id:null,
+    		defaultScope:false,
+    		allowDynReg:false
+    	},
+    	
     	urlRoot: 'api/scopes'
     });
     
@@ -676,7 +682,7 @@
             });
 
             $("#scope .controls",this.el).html(new ListWidgetView({placeholder: 'new scope here'
-                , autocomplete: _.uniq(_.flatten(app.systemScopes.pluck("value"))) // TODO: load from default scopes
+                , autocomplete: _.uniq(_.flatten(app.systemScopeList.pluck("value"))) // TODO: load from default scopes
                 , collection: this.scopeCollection}).render().el);
 
             if (!this.model.get("allowRefresh")) {
@@ -1137,7 +1143,46 @@
     });
     
     var SystemScopeFormView = Backbone.View.extend({
+    	tagName: 'span',
     	
+    	initialize:function() {
+    		if (!this.template) {
+    			this.template = _.template($('#tmpl-system-scope-form'))
+    		}
+    	},
+    	
+    	events:{
+    		'click .btn-save':'saveSope',
+    		'click .btn-cancel': function() {window.history.back(); return false; }
+    	},
+    	
+    	saveScope:function(event) {
+    		var valid = this.model.set({
+    			value:$('#value input').val(),
+    			description:$('#description input').val(),
+    			defaultScope:$('#defaultScope input').is(':checked'),
+    			allowDynReg:$('#allowDynReg input').is(':checked')
+    		});
+    		
+    		if (valid) {
+    			var _self = this;
+    			this.model.save({}, {
+    				success:function() {
+    					app.systemScopeList.add(_self.model);
+    					app.navigate('admin/scope', {trigger: true});
+    				},
+    				error:function(model,resp) {
+    					console.error("The scope didn't save correctly.", resp);
+    				}
+    			});
+    		}
+    	},
+    	
+    	render: function(eventName) {
+    		$(this.el).html(this.template(this.model.toJSON()));
+    		
+    		return this;
+    	}
     });
     
     // Router
@@ -1174,13 +1219,13 @@
             this.whiteListList = new WhiteListCollection();
             this.blackListList = new BlackListCollection();
             this.approvedSiteList = new ApprovedSiteCollection();
-            this.systemScopes = new SystemScopeCollection();
+            this.systemScopeList = new SystemScopeCollection();
 
             this.clientListView = new ClientListView({model:this.clientList});
             this.whiteListListView = new WhiteListListView({model:this.whiteListList});
             this.approvedSiteListView = new ApprovedSiteListView({model:this.approvedSiteList});
             this.blackListListView = new BlackListListView({model:this.blackListList});
-            this.systemScopeListView = new SystemScopeListView({model:this.systemScopes});
+            this.systemScopeListView = new SystemScopeListView({model:this.systemScopeList});
             
             this.breadCrumbView = new BreadCrumbView({
                 collection:new Backbone.Collection()
@@ -1194,7 +1239,7 @@
             //
             
             // load things in the right order:
-            this.systemScopes.fetch({
+            this.systemScopeList.fetch({
             	success: function(collection, response) {
             		app.clientList.fetch({
             			success: function(collection, response) {
@@ -1240,7 +1285,7 @@
         		requireClientSecret:true, 
         		generateClientSecret:true,
         		displayClientSecret:false,
-        		scope: _.uniq(_.flatten(this.systemScopes.defaultScopes().pluck("value"))),
+        		scope: _.uniq(_.flatten(this.systemScopeList.defaultScopes().pluck("value"))),
         	}, { silent: true });
         	
             this.clientFormView = new ClientFormView({model:client});
@@ -1394,6 +1439,11 @@
                  {text:"Mange System Scopes", href:"manage/#admin/scope"},
                  {text:"New", href:"manage/#admin/scope/new"}
 	        ]);
+        	
+        	var scope = new SystemScopeModel();
+        	
+        	this.systemScopeFormView = new SystemScopeFormView({model:scope});
+        	$('#content').html(this.systemScopeFormView.render().el);
         },
         
         editScope:function(sid) {
@@ -1403,7 +1453,11 @@
                  {text:"Mange System Scopes", href:"manage/#admin/scope"},
                  {text:"Edit", href:"manage/#admin/scope/" + sid}
 	        ]);
+
+        	var scope = this.systemScopeList.get(sid);
         	
+        	this.systemScopeFormView = new SystemScopeFormView({model:scope});
+        	$('#content').html(this.systemScopeFormView.render().el);
         	
         }
 
