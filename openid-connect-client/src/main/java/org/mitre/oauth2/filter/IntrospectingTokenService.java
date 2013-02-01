@@ -94,7 +94,7 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
     // create a default authentication object with authority ROLE_API
     private Authentication createAuthentication(JsonObject token){
         // TODO:  user_id is going to go away. Will have to fix.
-        return new PreAuthenticatedAuthenticationToken(token.get("sub").getAsString(), null, AuthorityUtils.createAuthorityList("ROLE_API"));
+        return new PreAuthenticatedAuthenticationToken(token.get("subject").getAsString(), null, AuthorityUtils.createAuthorityList("ROLE_API"));
     }
     
     private OAuth2AccessToken createAccessToken(final JsonObject token, final String tokenString){
@@ -140,7 +140,7 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
                 return false;
             }
             // create an OAuth2Authentication
-            OAuth2Authentication auth = new OAuth2Authentication(createAuthRequest(tokenResponse), null);
+            OAuth2Authentication auth = new OAuth2Authentication(createAuthRequest(tokenResponse), createAuthentication(tokenResponse));
             // create an OAuth2AccessToken
             OAuth2AccessToken token = createAccessToken(tokenResponse, accessToken);
             
