@@ -207,6 +207,9 @@
     	
     	defaults:{
     		id:null,
+		description:null,
+		icon:null,
+		value:null,
     		defaultScope:false,
     		allowDynReg:false
     	},
@@ -1147,12 +1150,12 @@
     	
     	initialize:function() {
     		if (!this.template) {
-    			this.template = _.template($('#tmpl-system-scope-form').html());
+                	this.template = _.template($('#tmpl-system-scope-form').html());
     		}
     	},
     	
     	events:{
-    		'click .btn-save':'saveSope',
+    		'click .btn-save':'saveScope',
     		'click .btn-cancel': function() {window.history.back(); return false; }
     	},
     	
@@ -1179,7 +1182,7 @@
     	},
     	
     	render: function(eventName) {
-    		$(this.el).html(this.template(this.model.toJSON()));
+    		this.$el.html(this.template(this.model.toJSON()));
     		
     		return this;
     	}
