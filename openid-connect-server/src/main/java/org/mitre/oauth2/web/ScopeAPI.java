@@ -61,7 +61,7 @@ public class ScopeAPI {
 	}
 
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	@RequestMapping(value = "/id", method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
+	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
 	public String updateScope(@PathVariable("id") Long id, @RequestBody String json, ModelMap m) {
 		
 		SystemScope existing = scopeService.getById(id);

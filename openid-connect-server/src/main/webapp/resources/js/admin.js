@@ -194,17 +194,6 @@
     var SystemScopeModel = Backbone.Model.extend({
     	idAttribute: 'id',
 
-    	/*
-    	// fake the 'item' portion
-		get: function (attr) {
-		    if (attr == 'item') {
-		    	attr = 'value';
-		    }
-		
-		    return Backbone.Model.prototype.get.call(this, attr);
-		},
-    	*/
-    	
     	defaults:{
     		id:null,
 		description:null,
@@ -1156,13 +1145,13 @@
     	
     	events:{
     		'click .btn-save':'saveScope',
-    		'click .btn-cancel': function() {window.history.back(); return false; }
+    		'click .btn-cancel': function() {app.navigate('admin/scope', {trigger: true}); }
     	},
     	
     	saveScope:function(event) {
     		var valid = this.model.set({
     			value:$('#value input').val(),
-    			description:$('#description input').val(),
+    			description:$('#description textarea').val(),
     			defaultScope:$('#defaultScope input').is(':checked'),
     			allowDynReg:$('#allowDynReg input').is(':checked')
     		});
@@ -1179,6 +1168,8 @@
     				}
     			});
     		}
+
+		return false;
     	},
     	
     	render: function(eventName) {
