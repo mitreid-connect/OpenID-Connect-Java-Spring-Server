@@ -86,7 +86,7 @@ public class OAuthConfirmationController {
         }
          */
         
-        Set<SystemScope> scopes = scopeService.fromStrings(client.getScope());
+        Set<SystemScope> scopes = scopeService.fromStrings(clientAuth.getScope());
         
         model.put("scopes", scopes);
         

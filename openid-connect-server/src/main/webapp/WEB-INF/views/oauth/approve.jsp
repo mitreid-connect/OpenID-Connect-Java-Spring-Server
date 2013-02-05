@@ -55,22 +55,16 @@
                         </c:otherwise>
                     </c:choose>" 
                 to sign you into their site using your identity?
-                    <div>
-                    	<a class="small" href="#" onclick="$('#description').toggle('fast'); return false;">more information</a>
-					</div>
-                    <p>
-	                    <blockquote id="description" style="display: none">
-	                        <c:choose>
-	                            <c:when test="${empty client.clientDescription}">
-	                                No additional information available.
-	                            </c:when>
-	                            <c:otherwise>
-	                                <c:out value="${client.clientDescription}"/>
-	                            </c:otherwise>
-	                        </c:choose>
-	
-	                    </blockquote>
-                    </p>
+	                <c:if test="${not empty client.clientDescription}">
+	                    <div>
+	                    	<a class="small" href="#" onclick="$('#description').toggle('fast'); return false;"><i class="icon-chevron-right"></i> more information</a>
+						</div>
+	                    <p>
+		                    <blockquote id="description" style="display: none">
+		                                ${client.clientDescription}
+		                    </blockquote>
+	                    </p>
+                    </c:if>
                     <div>
 			            <small>
 			            	<strong>Redirect URI: </strong><c:out value="${redirect_uri}"/>
@@ -100,48 +94,7 @@
 						
 						</c:forEach>
 
-						<!-- 
-
-                        <input type="hidden" name="scope_openid" id="scope_openid" value="openid"/>
-                        
-						<c:if test="${not empty scopes['profile']}">
-							<label for="scope_profile" class="checkbox">
-	                        	<input type="checkbox" name="scope_profile" id="scope_profile" value="profile" checked="checked"> 
-	                        	<i class="icon-list-alt"></i> basic profile information
-                        	</label>
-						</c:if>
-						                       
-						<c:if test="${not empty scopes['email']}">
-							<label for="scope_email" class="checkbox">
-	                        	<input type="checkbox" name="scope_email" id="scope_email" value="email" checked="checked"> 
-	                        	<i class="icon-envelope"></i> email address
-                        	</label>
-						</c:if>
-                        
-						<c:if test="${not empty scopes['address']}">
-							<label for="scope_address" class="checkbox">
-	                        	<input type="checkbox" name="scope_address" id="scope_address" value="address" checked="checked"> 
-	                        	<i class="icon-home"></i> address
-                        	</label>
-						</c:if>
-                        
-						<c:if test="${not empty scopes['phone']}">
-                        	<label for="scope_phone" class="checkbox">
-	                        	<input type="checkbox" name="scope_phone" id="scope_phone" value="phone" checked="checked">
-	                        	<i class="icon-bell"></i> phone number
-                        	</label>
-						</c:if>
-                        
-						<c:if test="${not empty scopes['offline_access']}">
-                        	<label for="scope_offline_access" class="checkbox">
-	                        	<input type="checkbox" name="scope_offline_access" id="scope_offline_access" value="offline_access" checked="checked"> 
-	                        	<i class="icon-time"></i> offline access
-                        	</label>
-						</c:if>
-
-				-->
-
-                        </fieldset>
+                   </fieldset>
 
                    <fieldset style="text-align:left" class="well">
                         <legend style="margin-bottom: 0;">Remember this decision:</legend>
