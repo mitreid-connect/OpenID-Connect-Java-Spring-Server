@@ -19,6 +19,7 @@
 package org.mitre.oauth2.web;
 
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -35,6 +36,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.google.common.collect.Sets;
 
 /**
  * @author jricher
@@ -88,7 +91,19 @@ public class OAuthConfirmationController {
         
         Set<SystemScope> scopes = scopeService.fromStrings(clientAuth.getScope());
         
-        model.put("scopes", scopes);
+        Set<SystemScope> sortedScopes = new LinkedHashSet<SystemScope>(scopes.size());
+        Set<SystemScope> systemScopes = scopeService.getAll();
+        
+        // sort scopes for display
+        for (SystemScope s : systemScopes) {
+	        if (scopes.contains(s)) {
+	        	sortedScopes.add(s);
+	        }
+        }
+        
+        sortedScopes.addAll(Sets.difference(scopes, systemScopes));
+        
+        model.put("scopes", sortedScopes);
         
         return new ModelAndView("oauth/approve", model);
 	}
