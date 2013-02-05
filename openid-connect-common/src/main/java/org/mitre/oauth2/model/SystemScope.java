@@ -33,7 +33,15 @@ public class SystemScope {
 	private boolean defaultScope = false; // is this a default scope for newly-registered clients?
 
 	/**
-	 * @param input
+	 * Make a blank system scope with no value
+	 */
+	public SystemScope() {
+		
+	}
+	
+	/**
+	 * Make a system scope with the given scope value
+	 * @param value
 	 */
     public SystemScope(String value) {
     	this.value = value;

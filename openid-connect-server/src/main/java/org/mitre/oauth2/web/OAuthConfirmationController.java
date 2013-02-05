@@ -20,9 +20,12 @@ package org.mitre.oauth2.web;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.mitre.oauth2.exception.ClientNotFoundException;
+import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
+import org.mitre.oauth2.service.SystemScopeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
@@ -43,6 +46,9 @@ public class OAuthConfirmationController {
 
 	@Autowired
 	private ClientDetailsEntityService clientService;
+	
+	@Autowired
+	private SystemScopeService scopeService;
 	
 	public OAuthConfirmationController() {
 		
@@ -71,12 +77,17 @@ public class OAuthConfirmationController {
 		String redirect_uri = clientAuth.getAuthorizationParameters().get("redirect_uri");
 		
         model.put("redirect_uri", redirect_uri);
-	    
+
+        
+        /*
         Map<String, Boolean> scopes = new HashMap<String, Boolean>();
         for (String scope : clientAuth.getScope()) {
 	        scopes.put(scope, Boolean.TRUE);
         }
-
+         */
+        
+        Set<SystemScope> scopes = scopeService.fromStrings(client.getScope());
+        
         model.put("scopes", scopes);
         
         return new ModelAndView("oauth/approve", model);
