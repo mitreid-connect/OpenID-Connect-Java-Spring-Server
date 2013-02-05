@@ -165,8 +165,8 @@ CREATE TABLE IF NOT EXISTS system_scope (
 	scope VARCHAR(1024),
 	description VARCHAR(4096),
 	icon VARCHAR(256),
-	allow_dyn_reg BOOLEAN,
-	default_scope BOOLEAN
+	allow_dyn_reg BOOLEAN NOT NULL DEFAULT false,
+	default_scope BOOLEAN NOT NULL DEFAULT false
 );
 
 CREATE TABLE IF NOT EXISTS user_info (
