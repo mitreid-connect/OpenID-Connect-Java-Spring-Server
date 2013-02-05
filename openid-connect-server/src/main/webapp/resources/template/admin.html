@@ -9,7 +9,6 @@
 
     <td>
         <%=clientId%>
-		<!-- scopes and stuff -->
     </td>
 
     <td>
@@ -17,6 +16,7 @@
 		<% if (clientDescription) { %>
         <blockquote><small><%=clientDescription%></small></blockquote>
 		<% } %>
+		<div class="scope-list"></div>
         <!--expandable future information-->
     </td>
 
@@ -345,7 +345,10 @@
 
     <td>
         <%=whiteList.clientId%>
+		<% if (client.clientDescription) { %>
         <blockquote><small><%=client.clientDescription%></small></blockquote>
+		<% } %>
+		<div class="scope-list"></div>
     </td>
 
     <td>
@@ -449,7 +452,7 @@
 
 	<div class="well">
 	
-	<h3>Sites that have been whitelisted by an administrator<h3>
+	<h3>Sites that have been whitelisted by an administrator</h3>
 	<p>If you revoke them here, they will automatically be re-approved on your next visit.</p>
 
     <table id="grant-whitelist-table" class="table table-hover table-striped">
@@ -484,8 +487,10 @@
 
     <td>
         <%= client.clientName != null ? client.clientName : client.clientId %>
+		<% if (client.clientDescription) { %>
         <blockquote><small><%=client.clientDescription%></small></blockquote>
-		<!-- put scopes and other info here -->
+		<% } %>
+		<div class="scope-list"></div>
     </td>
 
 
@@ -680,5 +685,27 @@
 			<% } %>
 		</div>
 	</div>
+
+</script>
+
+<script type="text/html" id="tmpl-scope-list">
+
+<% 
+_.each(scopes, function(s) {
+%>
+	<span class="badge badge-info">
+<%
+	var ss = systemScopes.getByValue(s);
+	if (ss && ss.get('icon')) {
+%>
+	<i class="icon-<%=ss.get('icon')%> icon-white"></i>
+<%		
+	}
+%>
+<%=s%>
+</span>
+<%
+});
+%>
 
 </script>

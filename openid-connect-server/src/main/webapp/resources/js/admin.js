@@ -80,7 +80,7 @@
                 this.template = _.template($('#tmpl-list-widget').html());
             }
 
-            this.$el.addClass("table table-condensed table-hover span4");
+            this.$el.addClass("table table-condensed table-hover table-striped span4");
             this.collection.bind('add', this.render, this);
 
         },
@@ -221,7 +221,7 @@
     	},
     	
     	getByValue: function(value) {
-    		var scopes = this.where({value: scope});
+    		var scopes = this.where({value: value});
     		if (scopes.length == 1) {
     			return scopes[0];
     		} else {
@@ -340,6 +340,10 @@
                 this.template = _.template($('#tmpl-client').html());
             }
 
+            if (!this.scopeTemplate) {
+            	this.scopeTemplate = _.template($('#tmpl-scope-list').html());
+            }
+
             this.model.bind('change', this.render, this);
             
         },
@@ -347,6 +351,8 @@
         render:function (eventName) {
             this.$el.html(this.template(this.model.toJSON()));
 
+            $('.scope-list', this.el).html(this.scopeTemplate({scopes: this.model.get('scope'), systemScopes: app.systemScopeList}));
+            
             this.$('.dynamically-registered').tooltip({title: 'This client was dynamically registered'});
             
             return this;
@@ -750,6 +756,10 @@
     		if (!this.template) {
     			this.template = _.template($('#tmpl-grant').html());
     		}
+            if (!this.scopeTemplate) {
+            	this.scopeTemplate = _.template($('#tmpl-scope-list').html());
+            }
+
     	},
     
     	render: function() {
@@ -757,6 +767,8 @@
     		
     		this.$el.html(this.template(json));
 
+            $('.scope-list', this.el).html(this.scopeTemplate({scopes: this.options.client.get('scope'), systemScopes: app.systemScopeList}));
+            
             this.$('.dynamically-registered').tooltip({title: 'This client was dynamically registered'});
             this.$('.whitelisted-site').tooltip({title: 'This site was whitelisted by an adminstrator'});
             
@@ -840,6 +852,10 @@
     			this.template = _.template($('#tmpl-whitelist').html());
     		}
     		
+            if (!this.scopeTemplate) {
+            	this.scopeTemplate = _.template($('#tmpl-scope-list').html());
+            }
+
     		this.model.bind('change', this.render, this);
     	},
     	
@@ -849,6 +865,8 @@
     		
     		this.$el.html(this.template(json));
 
+            $('.scope-list', this.el).html(this.scopeTemplate({scopes: this.model.get('allowedScopes'), systemScopes: app.systemScopeList}));
+            
     		this.$('.dynamically-registered').tooltip({title: 'This client was dynamically registered'});
 
             return this;
