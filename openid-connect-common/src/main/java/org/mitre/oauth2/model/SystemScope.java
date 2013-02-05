@@ -20,7 +20,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "system_scope")
 @NamedQueries({
-	@NamedQuery(name = "SystemScope.findAll", query = "select s from SystemScope s"),
+	@NamedQuery(name = "SystemScope.findAll", query = "select s from SystemScope s ORDER BY s.id"),
 	@NamedQuery(name = "SystemScope.getByValue", query = "select s from SystemScope s WHERE s.value = :value")
 })
 public class SystemScope {
@@ -29,9 +29,15 @@ public class SystemScope {
 	private String value; // scope value
 	private String description; // human-readable description
 	private String icon; // class of the icon to display on the auth page	
-	private boolean allowDynReg; // can a dynamically registered client ask for this scope?
-	private boolean defaultScope; // is this a default scope for newly-registered clients?
+	private boolean allowDynReg = false; // can a dynamically registered client ask for this scope?
+	private boolean defaultScope = false; // is this a default scope for newly-registered clients?
 
+	/**
+	 * @param input
+	 */
+    public SystemScope(String value) {
+    	this.value = value;
+    }
 	/**
 	 * @return the id
 	 */

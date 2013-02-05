@@ -3,12 +3,11 @@
  */
 package org.mitre.oauth2.repository.impl;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceUnit;
 import javax.persistence.TypedQuery;
 
 import org.mitre.oauth2.model.SystemScope;
@@ -37,7 +36,7 @@ public class JpaSystemScopeRepository implements SystemScopeRepository {
 	public Set<SystemScope> getAll() {
 		TypedQuery<SystemScope> query = em.createNamedQuery("SystemScope.findAll", SystemScope.class);
 		
-		return new HashSet<SystemScope>(query.getResultList());
+		return new LinkedHashSet<SystemScope>(query.getResultList());
 	}
 
 	/* (non-Javadoc)

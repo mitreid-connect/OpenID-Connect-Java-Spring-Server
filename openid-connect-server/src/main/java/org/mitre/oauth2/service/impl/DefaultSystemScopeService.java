@@ -3,7 +3,7 @@
  */
 package org.mitre.oauth2.service.impl;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import javax.annotation.Nullable;
@@ -31,7 +31,6 @@ public class DefaultSystemScopeService implements SystemScopeService {
 	private SystemScopeRepository repository;
 	
 	private Predicate<SystemScope> isDefault = new Predicate<SystemScope>() {
-
 		@Override
         public boolean apply(@Nullable SystemScope input) {
 			return (input != null && input.isDefaultScope());
@@ -40,7 +39,6 @@ public class DefaultSystemScopeService implements SystemScopeService {
 	
 	
 	private Predicate<SystemScope> isDynReg = new Predicate<SystemScope>() {
-
 		@Override
         public boolean apply(@Nullable SystemScope input) {
 			return (input != null && input.isAllowDynReg());
@@ -50,7 +48,18 @@ public class DefaultSystemScopeService implements SystemScopeService {
 	private Function<String, SystemScope> stringToSystemScope = new Function<String, SystemScope>() {
 		@Override
         public SystemScope apply(@Nullable String input) {
-	        return getByValue(input);
+			if (input == null) {
+				return null;
+			} else {
+		        SystemScope s = getByValue(input);
+		        if (s != null) {
+		        	// get the real scope if it's available
+		        	return s;
+		        } else {
+		        	// make a fake one otherwise
+		        	return new SystemScope(input);
+		        }
+			}
         }
 	};
 	
@@ -130,7 +139,7 @@ public class DefaultSystemScopeService implements SystemScopeService {
     	if (scope == null) {
     		return null;
     	} else {
-    		return new HashSet<SystemScope>(Collections2.filter(Collections2.transform(scope, stringToSystemScope), Predicates.notNull()));
+    		return new LinkedHashSet<SystemScope>(Collections2.filter(Collections2.transform(scope, stringToSystemScope), Predicates.notNull()));
     	}
     }
 
@@ -142,7 +151,7 @@ public class DefaultSystemScopeService implements SystemScopeService {
     	if (scope == null) {
     		return null;
     	} else {
-    		return new HashSet<String>(Collections2.filter(Collections2.transform(scope, systemScopeToString), Predicates.notNull()));
+    		return new LinkedHashSet<String>(Collections2.filter(Collections2.transform(scope, systemScopeToString), Predicates.notNull()));
     	}
     }
 
