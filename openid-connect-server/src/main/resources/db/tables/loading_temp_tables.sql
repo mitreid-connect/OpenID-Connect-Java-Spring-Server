@@ -64,3 +64,11 @@ CREATE TEMPORARY TABLE IF NOT EXISTS authorized_grant_type_TEMP (
 	owner_id VARCHAR(256),
 	authorized_grant_type VARCHAR(2000)
 );
+
+CREATE TEMPORARY TABLE IF NOT EXISTS system_scope_TEMP (
+	scope VARCHAR(256),
+	description VARCHAR(4096),
+	icon VARCHAR(256),
+	allow_dyn_reg BOOLEAN,
+	default_scope BOOLEAN
+);
