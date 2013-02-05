@@ -1141,17 +1141,66 @@
     		if (!this.template) {
                 	this.template = _.template($('#tmpl-system-scope-form').html());
     		}
+    		if (!this.iconTemplate) {
+    			this.iconTemplate = _.template($('#tmpl-system-scope-icon').html());
+    		}
+    		
+    		// initialize our icon set into slices for the selector
+    		if (!this.bootstrapIcons) {
+    			this.bootstrapIcons = [];
+    			
+	    		var iconList = ['glass', 'music', 'search', 'envelope', 'heart', 'star',
+	    		                'star-empty', 'user', 'film', 'th-large', 'th', 'th-list', 'ok',
+	    		                'remove', 'zoom-in', 'zoom-out', 'off', 'signal', 'cog', 'trash',
+	    		                'home', 'file', 'time', 'road', 'download-alt', 'download',
+	    		                'upload', 'inbox', 'play-circle', 'repeat', 'refresh', 'list-alt',
+	    		                'lock', 'flag', 'headphones', 'volume-off', 'volume-down',
+	    		                'volume-up', 'qrcode', 'barcode', 'tag', 'tags', 'book',
+	                			'bookmark', 'print', 'camera', 'font', 'bold', 'italic',
+	                			'text-height', 'text-width', 'align-left', 'align-center',
+	                			'align-right', 'align-justify', 'list', 'indent-left',
+	                			'indent-right', 'facetime-video', 'picture', 'pencil',
+	                			'map-marker', 'tint', 'share', 'move', 'fast-backward', 'backward',
+	                			'pause', 'stop', 'forward', 'step-forward', 'eject',
+	                			'chevron-right', 'plus-sign', 'minus-sign', 'remove-sign',
+	                			'ok-sign', 'question-sign', 'info-sign', 'screenshot',
+	                			'remove-circle', 'ok-circle', 'ban-circle', 'arrow-left',
+	                			'arrow-right', 'arrow-down', 'share-alt', 'resize-full',
+	                			'resize-small', 'plus', 'asterisk', 'exclamation-sign', 'gift',
+	                			'leaf', 'fire', 'eye-close', 'plane', 'random', 'magnet',
+	                			'chevron-up', 'chevron-down', 'retweet', 'shopping-cart',
+	                			'folder-close', 'folder-open', 'resize-vertical',
+	                			'resize-horizontal', 'hdd', 'bell', 'thumbs-up', 'hand-right',
+	                			'hand-left', 'hand-down', 'circle-arrow-left', 'circle-arrow-up',
+	                			'circle-arrow-down', 'globe', 'tasks', 'briefcase' ];
+	    		
+	    		var size = 3;
+	    		while (iconList.length > 0) {
+	    			this.bootstrapIcons.push(iconList.splice(0, size));
+	    		}
+
+    		}
     	},
     	
     	events:{
     		'click .btn-save':'saveScope',
-    		'click .btn-cancel': function() {app.navigate('admin/scope', {trigger: true}); }
+    		'click .btn-cancel': function() {app.navigate('admin/scope', {trigger: true}); },
+    		'click .btn-icon':'selectIcon'
     	},
     	
     	saveScope:function(event) {
+    		
+    		var value = $('#value input').val()
+    		
+    		if (value == null || value.trim() == "") {
+    			// error: can't have a blank scope
+    			return false
+    		}
+    		
     		var valid = this.model.set({
-    			value:$('#value input').val(),
+    			value:value,
     			description:$('#description textarea').val(),
+    			icon:$('#iconDisplay input').val(),
     			defaultScope:$('#defaultScope input').is(':checked'),
     			allowDynReg:$('#allowDynReg input').is(':checked')
     		});
@@ -1169,11 +1218,30 @@
     			});
     		}
 
-		return false;
+    		return false;
+    	},
+    	
+    	selectIcon:function(event) {
+    		
+    		var icon = event.target.value;
+    		
+    		$('#iconDisplay input').val(icon);
+    		$('#iconDisplay span').html(icon);
+    		$('#iconDisplay i').removeClass();
+    		$('#iconDisplay i').addClass('icon-' + icon);
+    		
+    		$('#iconSelector').modal('hide');
+    		
+    		return false;
     	},
     	
     	render: function(eventName) {
     		this.$el.html(this.template(this.model.toJSON()));
+    		
+    		_.each(this.bootstrapIcons, function (items) {
+    			$(".modal-body", this.el).append(this.iconTemplate({items:items}));
+    		}, this);
+    		
     		
     		return this;
     	}
