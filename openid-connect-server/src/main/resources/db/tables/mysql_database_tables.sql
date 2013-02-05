@@ -157,11 +157,12 @@ CREATE TABLE token_scope (
 
 CREATE TABLE system_scope (
 	id BIGINT AUTO_INCREMENT PRIMARY KEY,
-	scope VARCHAR(1024),
+	scope VARCHAR(1024) UNIQUE NOT NULL,
 	description VARCHAR(4096),
 	icon VARCHAR(256),
 	allow_dyn_reg BOOLEAN NOT NULL DEFAULT 0,
-	default_scope BOOLEAN NOT NULL DEFAULT 0
+	default_scope BOOLEAN NOT NULL DEFAULT 0,
+	
 );
 
 CREATE TABLE user_info (

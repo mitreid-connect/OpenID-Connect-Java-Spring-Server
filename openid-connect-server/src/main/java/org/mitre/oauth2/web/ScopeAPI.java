@@ -119,7 +119,7 @@ public class ScopeAPI {
 
 			scopeService.remove(existing);
 			
-			return "httpCodeview";
+			return "httpCodeView";
 		} else {
 			
 			m.put("code", HttpStatus.NOT_FOUND);
