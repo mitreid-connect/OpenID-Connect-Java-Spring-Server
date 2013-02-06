@@ -389,6 +389,7 @@
                         self.$el.fadeTo("fast", 0.00, function () { //fade
                             $(this).slideUp("fast", function () { //slide up
                                 $(this).remove(); //then remove from the DOM
+                                app.clientListView.togglePlaceholder();
                             });
                         });
                     }
@@ -433,9 +434,21 @@
                 $("#client-table",this.el).append(new ClientView({model:client}).render().el);
             }, this);
 
+            this.togglePlaceholder();
+            
             return this;
         },
         
+    	togglePlaceholder:function() {
+    		if (this.model.length > 0) {
+    			$('#client-table', this.el).show();
+    			$('#client-table-empty', this.el).hide();
+    		} else {
+    			$('#client-table', this.el).hide();
+    			$('#client-table-empty', this.el).show();
+    		}
+    	},
+    	
         refreshTable:function() {
         	var _self = this;
         	this.model.fetch({
@@ -735,7 +748,37 @@
     			
     		}, this);
     		
+    		this.togglePlaceholder();
+    		
     		return this;
+    	},
+    	
+    	togglePlaceholder:function() {
+    		// count the whitelisted and non-whitelisted entries
+    		var wl = 0;
+    		var gr = 0;
+    		for (var i = 0; i < this.model.length; i++) {
+    			if (this.model.at(i).get('whitelistedSite') != null) {
+    				wl += 1;
+    			} else {
+    				gr += 1;
+    			}
+    		}
+    		
+    		if (wl > 0) {
+    			$('#grant-whitelist-table', this.el).show();
+    			$('#grant-whitelist-table-empty', this.el).hide();
+    		} else {
+    			$('#grant-whitelist-table', this.el).hide();
+    			$('#grant-whitelist-table-empty', this.el).show();
+    		}
+    		if (gr > 0) {
+    			$('#grant-table', this.el).show();
+    			$('#grant-table-empty', this.el).hide();
+    		} else {
+    			$('#grant-table', this.el).hide();
+    			$('#grant-table-empty', this.el).show();
+    		}
     	},
     	
         refreshTable:function() {
@@ -788,6 +831,7 @@
                         self.$el.fadeTo("fast", 0.00, function () { //fade
                             $(this).slideUp("fast", function () { //slide up
                                 $(this).remove(); //then remove from the DOM
+                                app.approvedSiteListView.togglePlaceholder();
                             });
                         });
                     }
@@ -830,10 +874,22 @@
     			}
     			
     		}, this);
+
+    		this.togglePlaceholder();
     		
     		return this;
     	},
     
+    	togglePlaceholder:function() {
+    		if (this.model.length > 0) {
+    			$('#whitelist-table', this.el).show();
+    			$('#whitelist-table-empty', this.el).hide();
+    		} else {
+    			$('#whitelist-table', this.el).hide();
+    			$('#whitelist-table-empty', this.el).show();
+    		}
+    	},
+    	
         refreshTable:function() {
         	var _self = this;
         	this.model.fetch({
@@ -891,6 +947,8 @@
                         self.$el.fadeTo("fast", 0.00, function () { //fade
                             $(this).slideUp("fast", function () { //slide up
                                 $(this).remove(); //then remove from the DOM
+                                // check the placeholder in case it's empty now
+                                app.whiteListListView.togglePlaceholder();
                             });
                         });
                     }
@@ -1100,6 +1158,7 @@
                         self.$el.fadeTo("fast", 0.00, function () { //fade
                             $(this).slideUp("fast", function () { //slide up
                                 $(this).remove(); //then remove from the DOM
+                                app.systemScopeListView.togglePlaceholder();
                             });
                         });
                     }
@@ -1139,6 +1198,16 @@
     		});
     	},
     	
+    	togglePlaceholder:function() {
+    		if (this.model.length > 0) {
+    			$('#scope-table', this.el).show();
+    			$('#scope-table-empty', this.el).hide();
+    		} else {
+    			$('#scope-table', this.el).hide();
+    			$('#scope-table-empty', this.el).show();
+    		}
+    	},
+    	
     	render: function (eventName) {
     		
     		// append and render the table structure
@@ -1147,6 +1216,8 @@
     		_.each(this.model.models, function (scope) {
     			$("#scope-table", this.el).append(new SystemScopeView({model: scope}).render().el);
     		}, this);
+    		
+    		this.togglePlaceholder();
     		
     		return this;
     	}
