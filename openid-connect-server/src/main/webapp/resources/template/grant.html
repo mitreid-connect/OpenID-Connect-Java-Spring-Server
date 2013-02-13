@@ -1,0 +1,99 @@
+<!-- approved sites (grants) -->
+
+<script type="text/html" id="tmpl-grant-table">
+
+	<h2>Approved sites</h2>
+
+    <div class="well well-small">
+		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> Refresh</button>
+    </div>
+
+	<h3>Sites you have manually approved</h3>
+
+	<div id="grant-table-empty" class="alert alert-info">
+		You have not approved any sites.
+	</div>
+
+    <table id="grant-table" class="table table-hover table-striped">
+        <thead>
+        <tr>
+			<th></th>
+            <th>Application</th>
+			<th>Created</th>
+			<th>Last Accessed</th>
+			<th>Expires</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+	<div class="well">
+	
+	<h3>Sites that have been whitelisted by an administrator</h3>
+	<p>If you revoke them here, they will automatically be re-approved on your next visit.</p>
+
+	<div id="grant-whitelist-table-empty" class="alert alert-info">
+		You have not accessed any whitelisted sites.
+	</div>
+
+    <table id="grant-whitelist-table" class="table table-hover table-striped">
+        <thead>
+        <tr>
+			<th></th>
+            <th>Application</th>
+			<th>Created</th>
+			<th>Last Accessed</th>
+			<th>Expires</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+	</div>
+
+    <div class="well well-small">
+		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> Refresh</button>
+    </div>
+
+</script>
+
+<script type="text/html" id="tmpl-grant">
+	<td>
+		<% if (client.dynamicallyRegistered) { %>
+		<span class="dynamically-registered"><i class="icon-globe"></i></span>
+		<% } %>
+	</td>
+
+    <td>
+        <%= client.clientName != null ? client.clientName : client.clientId %>
+		<% if (client.clientDescription) { %>
+        <blockquote><small><%=client.clientDescription%></small></blockquote>
+		<% } %>
+		<div class="scope-list"></div>
+    </td>
+
+
+	<!-- TODO: make these dates collapsable/expandable -->
+
+	<td>
+		<%= grant.creationDate %>
+	</td>
+
+	<td>
+		<%= grant.accessDate %>
+	</td>
+
+	<td>
+		<%= grant.timeoutDate %>
+	</td>
+
+    <td>
+        <button class="btn btn-danger btn-delete pull-right"><i class="icon-trash"></i> Revoke</button>
+    </td>
+
+</script>
+

@@ -52,7 +52,7 @@
     <link rel="apple-touch-icon-precomposed" href="../bootstrap2/ico/apple-touch-icon-57-precomposed.png">
 
     <!-- Load jQuery up here so that we can use in-page functions -->
-    <script type="text/javascript" src="resources/js/jquery.js"></script>
+    <script type="text/javascript" src="resources/js/lib/jquery.js"></script>
 </head>
 
 <body>

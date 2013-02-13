@@ -1,0 +1,310 @@
+<!-- client -->
+
+<script type="text/html" id="tmpl-client">
+	<td>
+		<% if (dynamicallyRegistered) { %>
+		<span class="dynamically-registered"><i class="icon-globe"></i></span>
+		<% } %>
+	</td>
+
+    <td>
+        <%=clientId%>
+    </td>
+
+    <td>
+        <%=clientName%>
+		<% if (clientDescription) { %>
+        <blockquote><small><%=clientDescription%></small></blockquote>
+		<% } %>
+		<div class="scope-list"></div>
+        <!--expandable future information-->
+    </td>
+
+    <td>
+        <button class="btn btn-edit"><i class="icon-edit"></i> Edit</button> &nbsp; 
+		<button class="btn btn-warning btn-whitelist">Whitelist</button> &nbsp;
+		<button class="btn btn-danger btn-delete pull-right"><i class="icon-trash icon-white"></i> Delete</button>
+    </td>
+
+</script>
+
+<script type="text/html" id="tmpl-client-table">
+    <div class="well well-small">
+		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> Refresh</button> &nbsp;
+        <button class="btn btn-small btn-primary new-client"><i class="icon-plus icon-white"></i> New Client</button>
+    </div>
+
+	<div id="client-table-empty" class="alert alert-info">
+		There are no registered clients on this server.
+	</div>
+
+    <table id="client-table" class="table table-hover table-striped">
+        <thead>
+        <tr>
+			<th></th>
+            <th>ID</th>
+            <th>Name</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+    <div class="well well-small">
+		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> Refresh</button> &nbsp; 
+        <button class="btn btn-small btn-primary new-client"><i class="icon-plus icon-white"></i> New Client</button>
+    </div>
+</script>
+
+
+<script type="text/html" id="tmpl-client-form">
+
+    <h1><%=(id == null ? 'New' : 'Edit')%> Client</h1>
+
+
+    <form class="form-horizontal tabbable">
+        <fieldset>
+            <div class="well well-small">
+                <button class="btn btn-small btn-save btn-success"><i class="icon-ok-circle icon-white"></i> Save</button> &nbsp; 
+				<button class="btn btn-small btn-cancel"><i class="icon-ban-circle"></i> Cancel</button>
+
+            </div>
+
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-target="#client-main-tab" data-toggle="tab" href="#">Main</a></li>
+					<li><a data-target="#client-access-tab" data-toggle="tab" href="#">Access</a></li>
+					<li><a data-target="#client-secret-tab" data-toggle="tab" href="#">Credentials</a></li>
+					<li><a data-target="#client-token-tab" data-toggle="tab" href="#">Tokens</a></li>
+				</ul>
+
+<div class="tab-content">
+	<div class="tab-pane active" id="client-main-tab">
+
+            <div class="control-group" id="clientName">
+                <label class="control-label">Client name</label>
+                <div class="controls">
+                    <input value="<%=clientName%>" maxlength="100" type="text" class="" placeholder="Type something">
+                    <p class="help-block">Human-readable application name</p>
+                </div>
+            </div>
+
+            <div class="control-group" id="clientId">
+                <label class="control-label">Client ID</label>
+                <div class="controls">
+                    <input value="<%=clientId%>" maxlength="100" type="text" class="" placeholder="Type something">
+                    <p class="help-block">Unique identifier. If you leave this blank it will be automatically generated.</p>
+                </div>
+            </div>
+
+            <div class="control-group" id="registeredRedirectUri">
+                <label class="control-label">Redirect URI(s)</label>
+                <div class="controls">
+                </div>
+            </div>
+
+            <div class="control-group" id="clientDescription">
+                <label class="control-label">Description</label>
+                <div class="controls">
+                    <textarea class="input-xlarge" placeholder="Type a description" maxlength="200"
+                              rows="3"><%=clientDescription%></textarea>
+                    <p class="help-block">Human-readable text description</p>
+                </div>
+            </div>
+
+			<div class="control-group" id="logoUrl">
+				<label class="control-label">Logo URL</label>
+				<div class="controls">
+					<input placeholder="http://" value="<%=logoUrl%>" maxlength="100" type="text" class=""/>
+					<p class="help-block">URL to use for a logo image</p>
+				</div>
+			</div>
+
+			<div class="control-group" id="logoBlock">
+				<label class="control-label">Logo Preview</label>
+				<div class="controls">
+					<img src="http://placehold.it/275x200&text=Enter a logo URL" alt="logo" id="logoPreview" width="275px" class="thumbnail" />
+				</div>
+			</div>
+
+	</div>
+	
+	<div class="tab-pane" id="client-access-tab">
+
+            <div class="control-group" id="scope">
+                <label class="control-label">Scope</label>
+                <div class="controls">
+                </div>
+            </div>
+
+            <div class="control-group" id="authorizedGrantTypes">
+                <label class="control-label">Authorized Grant Types</label>
+
+                <div class="controls">
+
+                    <label class="checkbox">
+                        <input id="authorizedGrantTypes-authorization_code" type="checkbox"
+                        <%=($.inArray("authorization_code", authorizedGrantTypes) > -1 ? 'checked' : '')%>>
+                        authorization code
+                    </label>
+                    <label class="checkbox">
+                        <input id="authorizedGrantTypes-client_credentials" type="checkbox"
+                        <%=($.inArray("client_credentials", authorizedGrantTypes) > -1 ? 'checked' : '')%>> client
+                        credentials
+                    </label>
+                    <label class="checkbox">
+                        <input id="authorizedGrantTypes-password" type="checkbox" <%=($.inArray("password",
+                        authorizedGrantTypes) > -1 ? 'checked' : '')%>> password
+                    </label>
+                    <label class="checkbox">
+                        <input id="authorizedGrantTypes-implicit" type="checkbox" <%=($.inArray("implicit",
+                        authorizedGrantTypes) > -1 ? 'checked' : '')%>> implicit
+                    </label>
+<!--
+                    <label class="checkbox">
+                        <input id="authorizedGrantTypes-refresh_token" type="checkbox" <%=($.inArray("refresh_token",
+                        authorizedGrantTypes) > -1 ? 'checked' : '')%>> refresh
+                    </label>
+-->
+                    <label class="checkbox">
+                        <input id="authorizedGrantTypes-redelegate" type="checkbox" <%=($.inArray("urn:ietf:params:oauth:grant_type:redelegate",
+                        authorizedGrantTypes) > -1 ? 'checked' : '')%>> redelegate
+                    </label>
+
+                </div>
+            </div>
+
+			<div class="control-group" id="allowIntrospection">
+				<label class="control-label">Introspection</label>
+				<div class="controls">
+					<label class="checkbox">
+						<input type="checkbox" <%=(allowIntrospection == true ? 'checked' : '')%>> Allow calls to the Introspection Endpoint?
+					</label>
+				</div>
+			</div>
+	</div>
+	
+	<div class="tab-pane" id="client-secret-tab">
+
+			<div class="control-group" id="requireClientSecret">
+				<label class="control-label">Client Secret</label>
+				<div class="controls">
+					<label class="checkbox">
+						<input type="checkbox" <%=(requireClientSecret == true ? 'checked' : '')%>> Require client secret?
+					</label>
+				</div>
+			</div>
+
+			<div id="clientSecretPanel">
+
+				<div class="control-group" id="generateClientSecret">
+					<div class="controls">
+						<label class="checkbox">
+							<input type="checkbox" <%=(generateClientSecret == true ? 'checked' : '')%>> Generate a new client secret?
+						</label>
+						<p class="help-block">New secret will be generated when you click 'Save'</p>
+					</div>
+				</div>
+	
+				<div class="control-group" id="displayClientSecret">
+					<div class="controls">
+						<label class="checkbox">
+							<input type="checkbox" <%=(displayClientSecret == true ? 'checked' : '')%>> Display/edit client secret:
+						</label>
+					</div>
+				</div>
+	
+    	        <div class="control-group">
+            	    <div class="controls">
+						<div id="clientSecret">
+                	    	<input value="<%=clientSecret%>" maxlength="100" type="text" placeholder="Type a secret">
+						</div>
+						<div id="clientSecretGenerated">
+							<span class="uneditable-input span3">Generate on Save</span>
+						</div>
+						<div id="clientSecretHidden"> 
+							<span class="uneditable-input span3">* * * * * * * * * * * *</span>
+						</div>
+	                </div>
+    	        </div>
+
+			</div>
+
+	</div>
+
+	<div class="tab-pane" id="client-token-tab">
+            <div class="control-group" id="accessTokenValiditySeconds">
+                <label class="control-label">Access Token Timeout</label>
+                <div class="controls">
+					<div>
+						<label class="checkbox">
+                        	<input type="checkbox" id="disableAccessTokenTimeout" <%=(accessTokenValiditySeconds == null ? 'checked' : '')%>/> Access tokens do not time out
+						</label>
+					</div>
+                    <div class="input-append">
+                        <input type="text" class="" value="<%=(accessTokenValiditySeconds == null ? '' : accessTokenValiditySeconds)%>" id="access-token-timeout-seconds" size="16"><span class="add-on">seconds</span>
+                    </div>
+                    <p class="help-block">Enter this time in seconds.</p>
+                </div>
+            </div>
+
+
+            <div class="control-group" id="idTokenValiditySeconds">
+                <label class="control-label">ID Token Timeout</label>
+                <div class="controls">
+					<div>
+						<label class="checkbox">
+                        	<input type="checkbox" id="disableIDTokenTimeout" <%=(idTokenValiditySeconds == null ? 'checked' : '')%>/> ID Tokens do not time out
+						</label>
+					</div>
+                    <div class="input-append">
+                        <input type="text" class="" value="<%=(idTokenValiditySeconds == null ? '' : idTokenValiditySeconds)%>" id="id-token-timeout-seconds" size="16"><span
+                            class="add-on">seconds</span>
+                    </div>
+                    <p class="help-block">Enter this time in seconds.</p>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label class="control-label">Refresh Tokens</label>
+                <div class="controls">
+                    <label class="checkbox">
+                        <input type="checkbox" id="allowRefresh" <%=(allowRefresh == true ? 'checked' : '')%>> Refresh tokens are issued for this client
+                    </label>
+                </div>
+            </div>
+
+            <div class="control-group" id="refreshTokenValiditySeconds">
+                <div class="controls">
+					<div>
+						<label class="checkbox">
+                        	<input type="checkbox" id="disableRefreshTokenTimeout" <%=(refreshTokenValiditySeconds == null ? 'checked' : '')%>/> Refresh tokens do not time out
+						</label>
+					</div>
+                    <div class="input-append">
+                        <input type="text" class="" value="<%=(refreshTokenValiditySeconds == null ? '' : refreshTokenValiditySeconds)%>" id="refresh-token-timeout-seconds" size="16"><span class="add-on">seconds</span>
+                    </div>
+                    <p class="help-block">Enter this time in seconds.</p>
+                </div>
+            </div>
+	</div>
+
+	<div class="tab-pane" id="client-other-tab">
+
+		<div class="alert alert-block alert-info">
+			This page intentionally left blank.
+		</div>
+
+	</div>
+
+
+
+            <div class="well well-small">
+                <button class="btn btn-small btn-save btn-success"><i class="icon-ok-circle icon-white"></i> Save</button> &nbsp; 
+				<button class="btn btn-small btn-cancel"><i class="icon-ban-circle"></i> Cancel</button>
+            </div>
+
+        </fieldset>
+    </form>
+
+</script>
