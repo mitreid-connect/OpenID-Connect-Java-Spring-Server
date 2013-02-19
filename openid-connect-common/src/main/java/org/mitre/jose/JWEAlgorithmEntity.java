@@ -22,12 +22,24 @@ public class JWEAlgorithmEntity {
 
 	private JWEAlgorithm algorithm;
 
+	public JWEAlgorithmEntity() {
+		
+	}
+	
+	public JWEAlgorithmEntity(JWEAlgorithm algorithm) {
+	    this.algorithm = algorithm;
+    }
+
+	public JWEAlgorithmEntity(String algorithmName) {
+		setAlgorithmName(algorithmName);
+	}
+	
 	/**
 	 * Get the name of this algorithm, return null if no algorithm set.
 	 * @return
 	 */
 	@Basic
-	public String getAlgorithm() {
+	public String getAlgorithmName() {
 		if (algorithm != null) {
 			return algorithm.getName();
 		} else {
@@ -40,7 +52,7 @@ public class JWEAlgorithmEntity {
 	 * Calls JWEAlgorithm.parse()
 	 * @param algorithmName
 	 */
-	public void setAlgorithm(String algorithmName) {
+	public void setAlgorithmName(String algorithmName) {
 		if (algorithmName != null) {
 			algorithm = JWEAlgorithm.parse(algorithmName);
 		} else {
@@ -55,5 +67,19 @@ public class JWEAlgorithmEntity {
     public String toString() {
 	    return "JWEAlgorithmEntity [algorithm=" + algorithm + "]";
     }
+
+	/**
+	 * @return the algorithm
+	 */
+	public JWEAlgorithm getAlgorithm() {
+		return algorithm;
+	}
+
+	/**
+	 * @param algorithm the algorithm to set
+	 */
+	public void setAlgorithm(JWEAlgorithm algorithm) {
+		this.algorithm = algorithm;
+	}
 	
 }

@@ -22,6 +22,19 @@ import com.nimbusds.jose.JWSAlgorithm;
 public class JWSAlgorithmEntity {
 
 	private JWSAlgorithm algorithm;
+	
+	public JWSAlgorithmEntity() { 
+		
+	}
+
+	public JWSAlgorithmEntity(JWSAlgorithm algorithm) {
+	    super();
+	    this.algorithm = algorithm;
+    }
+	
+	public JWSAlgorithmEntity(String algorithmName) {
+		setAlgorithmName(algorithmName);
+	}
 
 	/**
 	 * Get the name of this algorithm, return null if no algorithm set.
