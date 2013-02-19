@@ -1,5 +1,6 @@
 package org.mitre.openid.connect;
 
+import java.text.ParseException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -7,10 +8,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import net.minidev.json.JSONObject;
+
 import org.joda.time.DateTime;
 import org.joda.time.Period;
-import org.mitre.jwt.model.Jwt;
-import org.mitre.jwt.model.JwtClaims;
 import org.mitre.oauth2.exception.NonceReuseException;
 import org.mitre.openid.connect.model.Nonce;
 import org.mitre.openid.connect.service.NonceService;
@@ -20,7 +21,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.security.oauth2.common.exceptions.InvalidScopeException;
 import org.springframework.security.oauth2.common.util.OAuth2Utils;
@@ -32,6 +32,7 @@ import org.springframework.security.oauth2.provider.DefaultAuthorizationRequest;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
+import com.nimbusds.jose.JWSObject;
 
 @Component("authorizationRequestManager")
 public class ConnectAuthorizationRequestManager implements AuthorizationRequestManager, InitializingBean {
@@ -148,78 +149,85 @@ public class ConnectAuthorizationRequestManager implements AuthorizationRequestM
     	Map<String, String> parameters = new HashMap<String, String>(inputParams);
 
     	// parse the request object
-		Jwt jwt = Jwt.parse(jwtString);
-		JwtClaims claims = jwt.getClaims();
-		
-		// TODO: validate JWT signature
-		
-		String clientId = claims.getClaimAsString("client_id");
-
-		// TODO: check parameter consistency, move keys to constants
-		
-		/*
-		 * if (in Claims):
-		 * 		if (in params):
-		 * 			if (equal):
-		 * 				all set
-		 * 			else (not equal):
-		 * 				error
-		 * 		else (not in params):
-		 * 			add to params
-		 * else (not in claims):
-		 * 		we don't care
-		 */
-		
-		String responseTypes = claims.getClaimAsString("response_type");
-		if (responseTypes != null) {
-			parameters.put("response_type", responseTypes);
-		}
-		
-		if (clientId != null) {
-			parameters.put("client_id", clientId);
-		}
-		
-		if (claims.getClaimAsString("redirect_uri") != null) {
-			if (inputParams.containsKey("redirect_uri") == false) {
-				parameters.put("redirect_uri", claims.getClaimAsString("redirect_uri"));
+        try {
+        	JWSObject jwsObject = JWSObject.parse(jwtString);
+			JSONObject claims = jwsObject.getPayload().toJSONObject(); 
+			
+			// TODO: validate JWT signature
+			
+			
+	
+			// TODO: check parameter consistency, move keys to constants
+			
+			/*
+			 * if (in Claims):
+			 * 		if (in params):
+			 * 			if (equal):
+			 * 				all set
+			 * 			else (not equal):
+			 * 				error
+			 * 		else (not in params):
+			 * 			add to params
+			 * else (not in claims):
+			 * 		we don't care
+			 */
+			
+			// FIXME: all of these are doing raw JSON parsing and don't guarantee good behavior vis a vis strings
+			String responseTypes = (String) claims.get("response_type");
+			if (responseTypes != null) {
+				parameters.put("response_type", responseTypes);
 			}
-		}
-		
-		String state = claims.getClaimAsString("state");
-		if(state != null) {
-			if (inputParams.containsKey("state") == false) {
-				parameters.put("state", state);
+			
+			String clientId = (String) claims.get("client_id");
+			if (clientId != null) {
+				parameters.put("client_id", clientId);
 			}
-		}
-		
-		String nonce = claims.getClaimAsString("nonce");
-		if(nonce != null) {
-			if (inputParams.containsKey("nonce") == false) {
-				parameters.put("nonce", nonce);
+			
+			if (claims.get("redirect_uri") != null) {
+				if (inputParams.containsKey("redirect_uri") == false) {
+					parameters.put("redirect_uri", (String) claims.get("redirect_uri"));
+				}
 			}
-		}
-		
-		String display = claims.getClaimAsString("display");
-		if (display != null) {
-			if (inputParams.containsKey("display") == false) {
-				parameters.put("display", display);
+			
+			String state = (String) claims.get("state");
+			if(state != null) {
+				if (inputParams.containsKey("state") == false) {
+					parameters.put("state", state);
+				}
 			}
-		}
-		
-		String prompt = claims.getClaimAsString("prompt");
-		if (prompt != null) {
-			if (inputParams.containsKey("prompt") == false) {
-				parameters.put("prompt", prompt);
+			
+			String nonce = (String) claims.get("nonce");
+			if(nonce != null) {
+				if (inputParams.containsKey("nonce") == false) {
+					parameters.put("nonce", nonce);
+				}
 			}
-		}
-		
-		String scope = claims.getClaimAsString("scope");
-		if (scope != null) {
-			if (inputParams.containsKey("scope") == false) {
-				parameters.put("scope", scope);
+			
+			String display = (String) claims.get("display");
+			if (display != null) {
+				if (inputParams.containsKey("display") == false) {
+					parameters.put("display", display);
+				}
 			}
-		}
+			
+			String prompt = (String) claims.get("prompt");
+			if (prompt != null) {
+				if (inputParams.containsKey("prompt") == false) {
+					parameters.put("prompt", prompt);
+				}
+			}
+			
+			String scope = (String) claims.get("scope");
+			if (scope != null) {
+				if (inputParams.containsKey("scope") == false) {
+					parameters.put("scope", scope);
+				}
+			}
 		
+        } catch (ParseException e) {
+        	// TODO Auto-generated catch block
+        	e.printStackTrace();
+        }
 		return parameters;
     }
 
