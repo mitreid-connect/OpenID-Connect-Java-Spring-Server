@@ -53,6 +53,11 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 
 	}
 	
+	public DefaultJwtSigningAndValidationService(Map<String, JWSSigner> signers, Map<String, JWSVerifier> verifiers) {
+	    this.signers = signers;
+	    this.verifiers = verifiers;
+    }
+
 	public DefaultJwtSigningAndValidationService(Map<String, RSASSASignerVerifierBuilder> builders) {
 		
 		for (Entry<String, RSASSASignerVerifierBuilder> e : builders.entrySet()) {

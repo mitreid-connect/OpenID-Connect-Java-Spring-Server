@@ -21,9 +21,9 @@ import java.math.BigInteger;
 import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.interfaces.RSAPublicKey;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -40,15 +40,10 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-import org.mitre.jwt.model.JwtClaims;
-import org.mitre.jwt.signer.JwsAlgorithm;
-import org.mitre.jwt.signer.JwtSigner;
-import org.mitre.jwt.signer.impl.RsaSigner;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.jwt.signer.service.impl.DefaultJwtSigningAndValidationService;
 import org.mitre.key.fetch.KeyFetcher;
 import org.mitre.openid.connect.config.OIDCServerConfiguration;
-import org.mitre.openid.connect.model.IdToken;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
@@ -60,9 +55,14 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.nimbusds.jose.JWSVerifier;
+import com.nimbusds.jose.crypto.RSASSAVerifier;
+import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 
 /**
  * Abstract OpenID Connect Authentication Filter class
@@ -339,95 +339,105 @@ public class AbstractOIDCAuthenticationFilter extends
 				refreshTokenValue = tokenResponse.get("refresh_token").getAsString();
 			}
 			
-			IdToken idToken = IdToken.parse(idTokenValue); // TODO: catch parsing errors?
+			try {
+	            SignedJWT idToken = SignedJWT.parse(idTokenValue);
 
-			// validate our ID Token over a number of tests
-			JwtClaims idClaims = idToken.getClaims();
-			
-			// check the signature
-			JwtSigningAndValidationService jwtValidator = getValidatorForServer(serverConfig); 
-			if (jwtValidator != null) {
-				if(!jwtValidator.validateSignature(idToken.toString())) {
-					throw new AuthenticationServiceException("Signature validation failed");
-				}
-			} else {
-				logger.info("No validation service found. Skipping signature validation");
-			}
-			
-			// check the issuer
-			if (idClaims.getIssuer() == null) {
-				throw new AuthenticationServiceException("Id Token Issuer is null");
-			} else if (!idClaims.getIssuer().equals(serverConfig.getIssuer())){
-				throw new AuthenticationServiceException("Issuers do not match, expected " + serverConfig.getIssuer() + " got " + idClaims.getIssuer());
-			}
-			
-			// check expiration
-			if (idClaims.getExpiration() == null) {
-				throw new AuthenticationServiceException("Id Token does not have required expiration claim");
-			} else {
-				// it's not null, see if it's expired
-				Date now = new Date(System.currentTimeMillis() - (timeSkewAllowance * 1000));
-				if (now.after(idClaims.getExpiration())) {
-					throw new AuthenticationServiceException("Id Token is expired: " + idClaims.getExpiration());
-				}
-			}
-			
-			// check not before
-			if (idClaims.getNotBefore() != null) {
-				Date now = new Date(System.currentTimeMillis() + (timeSkewAllowance * 1000));
-				if (now.before(idClaims.getNotBefore())){
-					throw new AuthenticationServiceException("Id Token not valid untill: " + idClaims.getNotBefore());
-				}
-			}
-			
-			// check audience
-			if (idClaims.getAudience() == null) {
-				throw new AuthenticationServiceException("Id token audience is null");
-			} else if (!idClaims.getAudience().equals(serverConfig.getClientId())) {
-				throw new AuthenticationServiceException("Audience does not match, expected " + serverConfig.getClientId() + " got " + idClaims.getAudience());
-			}
-			
-			// check issued at
-			if (idClaims.getIssuedAt() == null) {
-				throw new AuthenticationServiceException("Id Token does not have required issued-at claim");				
-			} else {
-				// since it's not null, see if it was issued in the future
-				Date now = new Date(System.currentTimeMillis() + (timeSkewAllowance * 1000));
-				if (now.before(idClaims.getIssuedAt())) {
-					throw new AuthenticationServiceException("Id Token was issued in the future: " + idClaims.getIssuedAt());
-				}
-			}
+	            // validate our ID Token over a number of tests
+	            ReadOnlyJWTClaimsSet idClaims = idToken.getJWTClaimsSet();
+	            
+	            // check the signature
+	            JwtSigningAndValidationService jwtValidator = getValidatorForServer(serverConfig); 
+	            if (jwtValidator != null) {
+	            	if(!jwtValidator.validateSignature(idToken)) {
+	            		throw new AuthenticationServiceException("Signature validation failed");
+	            	}
+	            } else {
+	            	logger.info("No validation service found. Skipping signature validation");
+	            }
+	            
+	            // check the issuer
+	            if (idClaims.getIssuerClaim() == null) {
+	            	throw new AuthenticationServiceException("Id Token Issuer is null");
+	            } else if (!idClaims.getIssuerClaim().equals(serverConfig.getIssuer())){
+	            	throw new AuthenticationServiceException("Issuers do not match, expected " + serverConfig.getIssuer() + " got " + idClaims.getIssuerClaim());
+	            }
+	            
+	            // check expiration
+	            // FIXME: Nimbus Date Fields
+	            /*
+	            if (idClaims.getExpirationTimeClaim() == 0) {
+	            	throw new AuthenticationServiceException("Id Token does not have required expiration claim");
+	            } else {
+	            	// it's not null, see if it's expired
+	            	Date now = new Date(System.currentTimeMillis() - (timeSkewAllowance * 1000));
+	            	if (now.after(new Date(idClaims.getExpirationTimeClaim()))) {
+	            		throw new AuthenticationServiceException("Id Token is expired: " + idClaims.getExpirationTimeClaim());
+	            	}
+	            }
+	            
+	            // check not before
+	            // FIXME: Nimbus Date Fields
+	            if (idClaims.getNotBefore() != null) {
+	            	Date now = new Date(System.currentTimeMillis() + (timeSkewAllowance * 1000));
+	            	if (now.before(idClaims.getNotBefore())){
+	            		throw new AuthenticationServiceException("Id Token not valid untill: " + idClaims.getNotBefore());
+	            	}
+	            }
+	            
+	            // check issued at
+	            if (idClaims.getIssuedAt() == null) {
+	            	throw new AuthenticationServiceException("Id Token does not have required issued-at claim");				
+	            } else {
+	            	// since it's not null, see if it was issued in the future
+	            	Date now = new Date(System.currentTimeMillis() + (timeSkewAllowance * 1000));
+	            	if (now.before(idClaims.getIssuedAt())) {
+	            		throw new AuthenticationServiceException("Id Token was issued in the future: " + idClaims.getIssuedAt());
+	            	}
+	            }
+	             */
+	            
+	            // check audience
+	            // FIXME: Nimbus audience collection
+	            if (idClaims.getAudienceClaim() == null) {
+	            	throw new AuthenticationServiceException("Id token audience is null");
+	            } else if (!Arrays.asList(idClaims.getAudienceClaim()).contains(serverConfig.getClientId())) {
+	            	throw new AuthenticationServiceException("Audience does not match, expected " + serverConfig.getClientId() + " got " + idClaims.getAudienceClaim());
+	            }
+	            
+	            // compare the nonce to our stored claim
+	            // FIXME: Nimbus claims as strings?
+	            String nonce = (String) idClaims.getCustomClaim("nonce");			
+	            if (StringUtils.isBlank(nonce)) {
+	            	
+	            	logger.error("ID token did not contain a nonce claim.");
 
-			// compare the nonce to our stored claim
-			String nonce = idClaims.getNonce();			
-			if (StringUtils.isBlank(nonce)) {
-				
-				logger.error("ID token did not contain a nonce claim.");
+	            	throw new AuthenticationServiceException("ID token did not contain a nonce claim.");
+	            }
 
-				throw new AuthenticationServiceException("ID token did not contain a nonce claim.");
-			}
+	            String storedNonce = getStoredNonce(session);
+	            if (!nonce.equals(storedNonce)) {
+	            	logger.error("Possible replay attack detected! The comparison of the nonce in the returned "
+	            			+ "ID Token to the session " + NONCE_SESSION_VARIABLE + " failed. Expected " + storedNonce + " got " + nonce + ".");
 
-			String storedNonce = getStoredNonce(session);
-			if (!nonce.equals(storedNonce)) {
-				logger.error("Possible replay attack detected! The comparison of the nonce in the returned "
-						+ "ID Token to the session " + NONCE_SESSION_VARIABLE + " failed. Expected " + storedNonce + " got " + nonce + ".");
+	            	throw new AuthenticationServiceException(
+	            			"Possible replay attack detected! The comparison of the nonce in the returned "
+	            					+ "ID Token to the session " + NONCE_SESSION_VARIABLE + " failed. Expected " + storedNonce + " got " + nonce + ".");
+	            }
 
-				throw new AuthenticationServiceException(
-						"Possible replay attack detected! The comparison of the nonce in the returned "
-								+ "ID Token to the session " + NONCE_SESSION_VARIABLE + " failed. Expected " + storedNonce + " got " + nonce + ".");
-			}
+	            // pull the subject (user id) out as a claim on the id_token
+	            
+	            String userId = idClaims.getSubjectClaim();
+	            
+	            // construct an OIDCAuthenticationToken and return a Authentication object w/the userId and the idToken
+	            
+	            OIDCAuthenticationToken token = new OIDCAuthenticationToken(userId, idClaims.getIssuerClaim(), serverConfig, idTokenValue, accessTokenValue, refreshTokenValue);
 
-			// pull the subject (user id) out as a claim on the id_token
-			
-			String userId = idToken.getClaims().getSubject();
-			
-			// construct an OIDCAuthenticationToken and return a Authentication object w/the userId and the idToken
-			
-			OIDCAuthenticationToken token = new OIDCAuthenticationToken(userId, idClaims.getIssuer(), serverConfig, idTokenValue, accessTokenValue, refreshTokenValue);
+	            Authentication authentication = this.getAuthenticationManager().authenticate(token);
 
-			Authentication authentication = this.getAuthenticationManager().authenticate(token);
-
-			return authentication;
+	            return authentication;
+            } catch (ParseException e) {
+            	throw new AuthenticationServiceException("Couldn't parse idToken: ", e);
+            }
 
 		
 
@@ -618,27 +628,17 @@ public class AbstractOIDCAuthenticationFilter extends
 			}
 			
 			if (signingKey != null) {
-				Map<String, JwtSigner> signers = new HashMap<String, JwtSigner>();
-				
-				if (signingKey instanceof RSAPublicKey) {
-					
-					RSAPublicKey rsaKey = (RSAPublicKey)signingKey;
-					
-					// build an RSA signer
-					RsaSigner signer256 = new RsaSigner(JwsAlgorithm.RS256.getJwaName(), rsaKey, null);
-					RsaSigner signer384 = new RsaSigner(JwsAlgorithm.RS384.getJwaName(), rsaKey, null);
-					RsaSigner signer512 = new RsaSigner(JwsAlgorithm.RS512.getJwaName(), rsaKey, null);
 
-					signers.put(serverConfig.getIssuer() + JwsAlgorithm.RS256.getJwaName(), signer256);
-					signers.put(serverConfig.getIssuer() + JwsAlgorithm.RS384.getJwaName(), signer384);
-					signers.put(serverConfig.getIssuer() + JwsAlgorithm.RS512.getJwaName(), signer512);
-				}
-
-                JwtSigningAndValidationService signingAndValidationService = new DefaultJwtSigningAndValidationService(signers);
+				// TODO: this assumes RSA
+				JWSVerifier verifier = new RSASSAVerifier((RSAPublicKey) signingKey);
 				
-				validationServices.put(serverConfig, signingAndValidationService);
+				Map<String, JWSVerifier> verifiers = ImmutableMap.of(serverConfig.getIssuer(), verifier);
 				
-				return signingAndValidationService;
+				JwtSigningAndValidationService service = new DefaultJwtSigningAndValidationService();
+				
+				validationServices.put(serverConfig, service);
+				
+				return service;
 				
 			} else {
 				// there were either no keys returned or no URLs configured to fetch them, assume no checking on key signatures

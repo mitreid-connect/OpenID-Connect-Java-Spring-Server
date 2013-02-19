@@ -2,6 +2,7 @@ package org.mitre.openid.connect.client;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -12,9 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
-import org.mitre.jwt.model.Jwt;
-import org.mitre.jwt.model.JwtClaims;
-import org.mitre.jwt.signer.JwtSigner;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.openid.connect.config.OIDCServerConfiguration;
 import org.mitre.openid.connect.view.JwkKeyListView;
@@ -30,6 +28,9 @@ import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.google.common.base.Strings;
+import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 
 public class OIDCSignedRequestFilter extends AbstractOIDCAuthenticationFilter implements BeanDefinitionRegistryPostProcessor {
 	
@@ -108,7 +109,7 @@ public class OIDCSignedRequestFilter extends AbstractOIDCAuthenticationFilter im
 	public void handleAuthorizationRequest(HttpServletRequest request, HttpServletResponse response, 
 			OIDCServerConfiguration serverConfiguration) throws IOException {
 
-			Jwt jwt = createAndSignRequestJwt(request, response, serverConfiguration);
+			SignedJWT jwt = createAndSignRequestJwt(request, response, serverConfiguration);
 			
 			Map<String, String> urlVariables = new HashMap<String, String>();
 			
@@ -121,31 +122,33 @@ public class OIDCSignedRequestFilter extends AbstractOIDCAuthenticationFilter im
 			response.sendRedirect(authRequest);
 	}
 	
-	public Jwt createAndSignRequestJwt(HttpServletRequest request, HttpServletResponse response, OIDCServerConfiguration serverConfiguration) {
+	public SignedJWT createAndSignRequestJwt(HttpServletRequest request, HttpServletResponse response, OIDCServerConfiguration serverConfiguration) {
 		HttpSession session = request.getSession();
-		Jwt jwt = new Jwt();
-		JwtClaims claims = jwt.getClaims();
+
+		JWTClaimsSet claims = new JWTClaimsSet();
 		
 		//set parameters to JwtHeader
 //		header.setAlgorithm(JwsAlgorithm.getByName(SIGNING_ALGORITHM).toString());
 		
 		//set parameters to JwtClaims
-		claims.setClaim("response_type", "code");
-		claims.setClaim("client_id", serverConfiguration.getClientId());
-		claims.setClaim("scope", scope);
+		claims.setCustomClaim("response_type", "code");
+		claims.setCustomClaim("client_id", serverConfiguration.getClientId());
+		claims.setCustomClaim("scope", scope);
 		
 		// build our redirect URI
 		String redirectUri = buildRedirectURI(request, null);
-		claims.setClaim("redirect_uri", redirectUri);
+		claims.setCustomClaim("redirect_uri", redirectUri);
 		session.setAttribute(REDIRECT_URI_SESION_VARIABLE, redirectUri);
 		
 		//create random nonce and state, save them to the session
 		
 		String nonce = createNonce(session);
-		claims.setClaim("nonce", nonce);
+		claims.setCustomClaim("nonce", nonce);
 		
 		String state = createState(session);
-		claims.setClaim("state", state);
+		claims.setCustomClaim("state", state);
+		
+		SignedJWT jwt = new SignedJWT(new JWSHeader(serverConfiguration.getSigningAlgorithm()), claims);
 		
 		try {
 			signingAndValidationService.signJwt(jwt);
@@ -285,12 +288,12 @@ public class OIDCSignedRequestFilter extends AbstractOIDCAuthenticationFilter im
      */
 	public ModelAndView publishClientJwk() {
 		
-		// map from key id to signer
-		Map<String, JwtSigner> signers = signingAndValidationService.getAllSigners();
+		// map from key id to key
+		Map<String, PublicKey> keys = signingAndValidationService.getAllPublicKeys();
 
 		// TODO: check if keys are empty, return a 404 here or just an empty list?
 		
-		return new ModelAndView(jwkViewName, "signers", signers);
+		return new ModelAndView(jwkViewName, "keys", keys);
 	}
 
 	/**
@@ -298,12 +301,12 @@ public class OIDCSignedRequestFilter extends AbstractOIDCAuthenticationFilter im
 	 * @return
 	 */
 	public ModelAndView publishClientx509() {
-		// map from key id to signer
-		Map<String, JwtSigner> signers = signingAndValidationService.getAllSigners();
-		
+		// map from key id to key
+		Map<String, PublicKey> keys = signingAndValidationService.getAllPublicKeys();
+
 		// TODO: check if keys are empty, return a 404 here or just an empty list?
 		
-		return new ModelAndView(x509ViewName, "signers", signers);
+		return new ModelAndView(x509ViewName, "keys", keys);
 	}
 	
 	/**

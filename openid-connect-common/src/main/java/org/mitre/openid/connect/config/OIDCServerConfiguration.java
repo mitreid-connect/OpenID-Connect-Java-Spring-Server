@@ -15,6 +15,10 @@
  ******************************************************************************/
 package org.mitre.openid.connect.config;
 
+import javax.persistence.Basic;
+
+import com.nimbusds.jose.JWSAlgorithm;
+
 
 /**
  * @author nemonik
@@ -41,6 +45,8 @@ public class OIDCServerConfiguration {
 	private String jwkSigningUrl;
 	
 	private String userInfoUrl;
+	
+	private JWSAlgorithm signingAlgorithm;
 
 	public String getAuthorizationEndpointUrl() {
 		return authorizationEndpointUrl;
@@ -136,5 +142,45 @@ public class OIDCServerConfiguration {
 	    return "OIDCServerConfiguration [authorizationEndpointUrl=" + authorizationEndpointUrl + ", tokenEndpointUrl=" + tokenEndpointUrl + ", clientSecret=" + clientSecret + ", clientId=" + clientId + ", issuer=" + issuer + ", x509EncryptUrl=" + x509EncryptUrl + ", x509SigningUrl="
 	            + x509SigningUrl + ", jwkEncryptUrl=" + jwkEncryptUrl + ", jwkSigningUrl=" + jwkSigningUrl + ", userInfoUrl=" + userInfoUrl + "]";
     }
+
+	/**
+	 * @return the signingAlgorithm
+	 */
+	public JWSAlgorithm getSigningAlgorithm() {
+		return signingAlgorithm;
+	}
+
+	/**
+	 * @param signingAlgorithm the signingAlgorithm to set
+	 */
+	public void setSigningAlgorithm(JWSAlgorithm signingAlgorithm) {
+		this.signingAlgorithm = signingAlgorithm;
+	}
+
+	/**
+	 * Get the name of this algorithm, return null if no algorithm set.
+	 * @return
+	 */
+	@Basic
+	public String getAlgorithmName() {
+		if (signingAlgorithm != null) {
+			return signingAlgorithm.getName();
+		} else {
+			return null;
+		}
+	}
+	
+	/**
+	 * Set the name of this algorithm. 
+	 * Calls JWSAlgorithm.parse()
+	 * @param algorithmName
+	 */
+	public void setAlgorithmName(String algorithmName) {
+		if (algorithmName != null) {
+			signingAlgorithm = JWSAlgorithm.parse(algorithmName);
+		} else {
+			signingAlgorithm = null;
+		}
+	}
 
 }
