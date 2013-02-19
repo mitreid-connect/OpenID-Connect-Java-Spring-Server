@@ -6,6 +6,7 @@ package org.mitre.jose;
 import javax.persistence.Basic;
 import javax.persistence.Embeddable;
 import javax.persistence.Entity;
+import javax.persistence.Transient;
 
 import com.nimbusds.jose.JWEAlgorithm;
 
@@ -71,6 +72,7 @@ public class JWEAlgorithmEntity {
 	/**
 	 * @return the algorithm
 	 */
+    @Transient
 	public JWEAlgorithm getAlgorithm() {
 		return algorithm;
 	}
