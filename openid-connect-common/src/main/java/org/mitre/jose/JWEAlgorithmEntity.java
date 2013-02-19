@@ -17,7 +17,6 @@ import com.nimbusds.jose.JWEAlgorithm;
  * @author jricher
  *
  */
-@Entity
 @Embeddable
 public class JWEAlgorithmEntity {
 

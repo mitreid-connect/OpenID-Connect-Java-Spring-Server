@@ -6,6 +6,7 @@ package org.mitre.jose;
 import javax.persistence.Basic;
 import javax.persistence.Embeddable;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.Transient;
 
 import com.nimbusds.jose.JWSAlgorithm;
@@ -17,7 +18,6 @@ import com.nimbusds.jose.JWSAlgorithm;
  * @author jricher
  *
  */
-@Entity
 @Embeddable
 public class JWSAlgorithmEntity {
 
@@ -28,7 +28,6 @@ public class JWSAlgorithmEntity {
 	}
 
 	public JWSAlgorithmEntity(JWSAlgorithm algorithm) {
-	    super();
 	    this.algorithm = algorithm;
     }
 	
