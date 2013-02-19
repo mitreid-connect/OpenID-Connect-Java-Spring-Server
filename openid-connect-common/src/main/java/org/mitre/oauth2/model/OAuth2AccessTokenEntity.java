@@ -18,6 +18,7 @@
  */
 package org.mitre.oauth2.model;
 
+import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -42,10 +43,13 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.Transient;
 
-import org.mitre.jwt.model.Jwt;
-import org.mitre.openid.connect.model.IdToken;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2RefreshToken;
+
+import com.nimbusds.jwt.JWT;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.JWTParser;
+import com.nimbusds.jwt.PlainJWT;
 
 /**
  * @author jricher
@@ -76,7 +80,7 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	
 	private AuthenticationHolderEntity authenticationHolder; // the authentication that made this access
 	
-	private Jwt jwtValue; // JWT-encoded access token value
+	private JWT jwtValue; // JWT-encoded access token value
 	
 	private OAuth2AccessTokenEntity idToken; // JWT-encoded OpenID Connect IdToken
 	
@@ -92,7 +96,7 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	 * Create a new, blank access token
 	 */
 	public OAuth2AccessTokenEntity() {
-		setJwt(new Jwt()); // give us a blank jwt to work with at least
+		setJwt(new PlainJWT(new JWTClaimsSet())); // give us a blank jwt to work with at least
 	}
 	
 	/**
@@ -169,10 +173,10 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
      * Set the "value" of this Access Token
      * 
      * @param value the JWT string
-     * @throws IllegalArgumentException if "value" is not a properly formatted JWT string
+     * @throws ParseException if "value" is not a properly formatted JWT string
      */
-    public void setValue(String value) {
-    	setJwt(Jwt.parse(value));
+    public void setValue(String value) throws ParseException {
+    	setJwt(JWTParser.parse(value));
     }
 
     @Basic
@@ -264,14 +268,14 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	 * @return the jwtValue
 	 */
 	@Transient
-	public Jwt getJwt() {
+	public JWT getJwt() {
 		return jwtValue;
 	}
 
 	/**
 	 * @param jwtValue the jwtValue to set
 	 */
-	public void setJwt(Jwt jwt) {
+	public void setJwt(JWT jwt) {
 		this.jwtValue = jwt;
 	}
 

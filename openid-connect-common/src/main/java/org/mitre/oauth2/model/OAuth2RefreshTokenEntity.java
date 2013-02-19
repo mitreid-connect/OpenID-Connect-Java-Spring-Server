@@ -18,6 +18,7 @@
  */
 package org.mitre.oauth2.model;
 
+import java.text.ParseException;
 import java.util.Date;
 
 import javax.persistence.Basic;
@@ -35,8 +36,12 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.Transient;
 
-import org.mitre.jwt.model.Jwt;
 import org.springframework.security.oauth2.common.OAuth2RefreshToken;
+
+import com.nimbusds.jwt.JWT;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.JWTParser;
+import com.nimbusds.jwt.PlainJWT;
 
 /**
  * @author jricher
@@ -59,7 +64,7 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
 	private ClientDetailsEntity client;
 
 	//JWT-encoded representation of this access token entity
-	private Jwt jwt;
+	private JWT jwt;
 	
 	// our refresh tokens might expire
 	private Date expiration;
@@ -68,7 +73,7 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
 	 * 
 	 */
 	public OAuth2RefreshTokenEntity() {
-		setJwt(new Jwt()); // start with a blank JWT value
+		setJwt(new PlainJWT(new JWTClaimsSet())); // start with a blank JWT value
 	}
 
 	/**
@@ -118,10 +123,10 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
     /**
      * Set the value of this token as a string. Parses the string into a JWT.
      * @param value
-     * @throws IllegalArgumentException if the value is not a valid JWT string
+     * @throws ParseException if the value is not a valid JWT string
      */
-    public void setValue(String value) {
-	    setJwt(Jwt.parse(value));
+    public void setValue(String value) throws ParseException {
+	    setJwt(JWTParser.parse(value));
     }
 
     @Basic
@@ -168,14 +173,14 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
      * @return the jwt
      */
     @Transient
-    public Jwt getJwt() {
+    public JWT getJwt() {
     	return jwt;
     }
     
     /**
      * @param jwt the jwt to set
      */
-    public void setJwt(Jwt jwt) {
+    public void setJwt(JWT jwt) {
     	this.jwt = jwt;
     }
     
