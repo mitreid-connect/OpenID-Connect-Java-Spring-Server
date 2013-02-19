@@ -73,7 +73,7 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
 	 * 
 	 */
 	public OAuth2RefreshTokenEntity() {
-		setJwt(new PlainJWT(new JWTClaimsSet())); // start with a blank JWT value
+
 	}
 
 	/**

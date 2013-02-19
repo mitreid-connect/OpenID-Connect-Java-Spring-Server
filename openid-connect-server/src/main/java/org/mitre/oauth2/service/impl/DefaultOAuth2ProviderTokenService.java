@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import org.joda.time.DateTime;
 import org.joda.time.Period;
@@ -51,6 +52,8 @@ import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Sets;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.PlainJWT;
 
 
 /**
@@ -114,16 +117,30 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	    	// TODO: tie this to some kind of scope service
 	    	if (client.isAllowRefresh() && scopes.contains("offline_access")) {
 	    		OAuth2RefreshTokenEntity refreshToken = new OAuth2RefreshTokenEntity(); //refreshTokenFactory.createNewRefreshToken();
+	    		JWTClaimsSet refreshClaims = new JWTClaimsSet();
 
+	    		
 	    		// make it expire if necessary
 	    		if (client.getRefreshTokenValiditySeconds() != null) {
 		    		Date expiration = new Date(System.currentTimeMillis() + (client.getRefreshTokenValiditySeconds() * 1000L));
 		    		refreshToken.setExpiration(expiration);
+		    		// FIXME: nimbus date fields
+		    		refreshClaims.setExpirationTimeClaim(expiration.getTime());
 	    		}
+	    		
+	    		// set a random identifier
+	    		refreshClaims.setJWTIDClaim(UUID.randomUUID().toString());
 
+	    		// TODO: add issuer fields, signature to JWT
+	    		
+	    		PlainJWT refreshJwt = new PlainJWT(refreshClaims);
+	    		refreshToken.setJwt(refreshJwt);
+	    		
 			    //Add the authentication
 			    refreshToken.setAuthenticationHolder(authHolder);
 			    refreshToken.setClient(client);
+			    
+			    
 			    
 			    // save the token first so that we can set it to a member of the access token (NOTE: is this step necessary?)
 			    tokenRepository.saveRefreshToken(refreshToken);

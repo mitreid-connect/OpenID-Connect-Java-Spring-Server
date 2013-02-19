@@ -96,7 +96,7 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	 * Create a new, blank access token
 	 */
 	public OAuth2AccessTokenEntity() {
-		setJwt(new PlainJWT(new JWTClaimsSet())); // give us a blank jwt to work with at least
+
 	}
 	
 	/**

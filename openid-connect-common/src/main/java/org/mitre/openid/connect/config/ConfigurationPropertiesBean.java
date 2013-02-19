@@ -15,6 +15,8 @@
  ******************************************************************************/
 package org.mitre.openid.connect.config;
 
+import com.nimbusds.jose.JWSAlgorithm;
+
 
 /**
  * Bean to hold configuration information that must be injected into various parts
@@ -29,6 +31,8 @@ public class ConfigurationPropertiesBean {
 	private String issuer;
 	
 	private String defaultJwtSigner;
+
+	private JWSAlgorithm defaultAlgorithm;
 
 	public ConfigurationPropertiesBean() {
 	}
@@ -57,4 +61,23 @@ public class ConfigurationPropertiesBean {
 	public void setIssuer(String iss) {
 		issuer = iss;
 	}
+
+	/**
+	 * @return
+	 */
+    public JWSAlgorithm getDefaultSigningAlgorithm() {
+    	return defaultAlgorithm;
+    }
+    
+    public void setDefaultSigningAlgorithmName(String algName) {
+    	defaultAlgorithm = JWSAlgorithm.parse(algName);
+    }
+    
+    public String getDefaultSigningAlgorithmName() {
+    	if (defaultAlgorithm != null) {
+    		return defaultAlgorithm.getName();
+    	} else {
+    		return null;
+    	}
+    }
 }

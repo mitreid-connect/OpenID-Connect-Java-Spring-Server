@@ -15,6 +15,7 @@
 	<bean id="configBean" class="org.mitre.openid.connect.config.ConfigurationPropertiesBean">
 		<property name="issuer" value="http://localhost/" />
  		<property name="defaultJwtSigner"  value="rsa1"/>
+ 		<property name="defaultSigningAlgorithmName" value="RS256" />
 	</bean>
 	
 </beans>

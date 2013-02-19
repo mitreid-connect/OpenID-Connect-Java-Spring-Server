@@ -17,7 +17,6 @@ package org.mitre.openid.connect.token;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -26,8 +25,6 @@ import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
-import org.mitre.openid.connect.model.IdToken;
-import org.mitre.openid.connect.model.IdTokenClaims;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +35,9 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
+import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 
 @Service
 public class ConnectTokenEnhancer implements TokenEnhancer {
@@ -60,26 +60,31 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 		
 		String clientId = authentication.getAuthorizationRequest().getClientId();
 		
-		token.getJwt().getClaims().setAudience(clientId);
+		JWTClaimsSet claims = new JWTClaimsSet();
 		
-		token.getJwt().getClaims().setIssuer(configBean.getIssuer());
+		// FIXME: Nimbus should do collections
+		claims.setAudienceClaim(new String[] {clientId});
+		
+		claims.setIssuerClaim(configBean.getIssuer());
 
-		token.getJwt().getClaims().setIssuedAt(new Date());
+		// FIXME: Nimbus Dates
+		claims.setIssuedAtClaim(new Date().getTime());
 		
-		token.getJwt().getClaims().setExpiration(token.getExpiration());
+		// FIXME: Nimbus dates
+		claims.setExpirationTimeClaim(token.getExpiration().getTime());
 
-		token.getJwt().getClaims().setNonce(UUID.randomUUID().toString()); // set a random NONCE in the middle of it
+		claims.setJWTIDClaim(UUID.randomUUID().toString()); // set a random NONCE in the middle of it
 		
-		if (token.getRefreshToken() != null && Strings.isNullOrEmpty(token.getRefreshToken().getJwt().getClaims().getNonce())) {
-			token.getRefreshToken().getJwt().getClaims().setNonce(UUID.randomUUID().toString()); // set a random nonce in the middle of it
-		}
+		SignedJWT signed = new SignedJWT(new JWSHeader(configBean.getDefaultSigningAlgorithm()), claims);
 		
-		try {
-	        jwtService.signJwt(token.getJwt());
-        } catch (NoSuchAlgorithmException e) {
-	        // couldn't sign token
-        	logger.warn("Couldn't sign access token", e);
+	    try {
+	        jwtService.signJwt(signed);
+        } catch (NoSuchAlgorithmException e1) {
+	        // TODO Auto-generated catch block
+	        e1.printStackTrace();
         }
+	    
+	    token.setJwt(signed);
 		
 		/**
 		 * Authorization request scope MUST include "openid" in OIDC, but access token request 
@@ -94,37 +99,45 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 			String userId = authentication.getName();
 		
 			OAuth2AccessTokenEntity idTokenEntity = new OAuth2AccessTokenEntity();
-			IdToken idToken = new IdToken();
 			
-			IdTokenClaims claims = new IdTokenClaims();
-			claims.setAuthTime(new Date());
-			claims.setIssuedAt(new Date());
+			// FIXME: extend the "claims" section for id tokens
+			JWTClaimsSet idClaims = new JWTClaimsSet();
+			
+			
+			idClaims.setCustomClaim("auth_time", new Date().getTime());
+			
+			// FIXME: nimbus date fields
+			idClaims.setIssuedAtClaim(new Date().getTime());
 			
 			ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
 			
 			if (client.getIdTokenValiditySeconds() != null) {
 				Date expiration = new Date(System.currentTimeMillis() + (client.getIdTokenValiditySeconds() * 1000L));
-				claims.setExpiration(expiration);
+				// FIXME: nimbus date fields
+				idClaims.setExpirationTimeClaim(expiration.getTime());
 				idTokenEntity.setExpiration(expiration);
 			}
 			
-			claims.setIssuer(configBean.getIssuer());
-			claims.setSubject(userId);
-			claims.setAudience(clientId);
+			idClaims.setIssuerClaim(configBean.getIssuer());
+			idClaims.setSubjectClaim(userId);
+			// FIXME: Nimbus audience as collection
+			idClaims.setAudienceClaim(new String[] { clientId });
 			
-			idToken.setClaims(claims);
 			
 			String nonce = authentication.getAuthorizationRequest().getAuthorizationParameters().get("nonce");
 			if (!Strings.isNullOrEmpty(nonce)) {
-				idToken.getClaims().setNonce(nonce);
+				idClaims.setCustomClaim("nonce", nonce);
 			}
+
+			SignedJWT idToken = new SignedJWT(new JWSHeader(configBean.getDefaultSigningAlgorithm()), idClaims);
 
 			//TODO: check for client's preferred signer alg and use that
 			
-			try {
+	        try {
 	            jwtService.signJwt(idToken);
             } catch (NoSuchAlgorithmException e) {
-            	logger.warn("Couldn't sign id token", e);
+	            // TODO Auto-generated catch block
+	            e.printStackTrace();
             }
 			
 
