@@ -1,11 +1,12 @@
+// FIXME: update to latest DynReg spec
+
 package org.mitre.openid.connect.web;
 
-import java.beans.PropertyEditorSupport;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import org.mitre.jwt.signer.JwsAlgorithm;
+import org.mitre.jose.JWSAlgorithmEntity;
 import org.mitre.oauth2.exception.ClientNotFoundException;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity.AppType;
@@ -26,16 +27,12 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
-import com.google.common.primitives.Booleans;
+import com.nimbusds.jose.JWSAlgorithm;
 
 @Controller
 @RequestMapping(value = "register"/*, method = RequestMethod.POST*/)
@@ -50,142 +47,6 @@ public class ClientDynamicRegistrationEndpoint {
 	@Autowired
 	private SystemScopeService scopeService;
 	
-	/**
-	 * Bind utility data types to their classes
-	 * @param binder
-	 */
-	@InitBinder
-	public void utilityDataInitBinder(WebDataBinder binder) {
-		
-		/*
-		 * Application type
-		 */
-		binder.registerCustomEditor(AppType.class, new PropertyEditorSupport() {
-			@Override
-			public void setAsText(String text) throws IllegalArgumentException {
-				if (Strings.isNullOrEmpty(text)) {
-					setValue(null);
-				} else {
-					setValue(AppType.getByValue(text));
-				}
-			}
-			
-			@Override
-			public String getAsText() {
-				AppType at = (AppType) getValue();
-				return at == null ? null : at.getValue();
-			}
-		});
-
-		/*
-		 * Authentication type
-		 */
-		binder.registerCustomEditor(AuthMethod.class, new PropertyEditorSupport() {
-			@Override
-			public void setAsText(String text) throws IllegalArgumentException {
-				if (Strings.isNullOrEmpty(text)) {
-					setValue(null);
-				} else {
-					setValue(AuthMethod.getByValue(text));
-				}
-			}
-			
-			@Override
-			public String getAsText() {
-				AuthMethod at = (AuthMethod) getValue();
-				return at == null ? null : at.getValue();
-			}
-		});
-
-		/*
-		 * UserID type
-		 */
-		binder.registerCustomEditor(SubjectType.class, new PropertyEditorSupport() {
-			@Override
-			public void setAsText(String text) throws IllegalArgumentException {
-				if (Strings.isNullOrEmpty(text)) {
-					setValue(null);
-				} else {
-					setValue(SubjectType.getByValue(text));
-				}
-			}
-			
-			@Override
-			public String getAsText() {
-				SubjectType ut = (SubjectType) getValue();
-				return ut == null ? null : ut.getValue();
-			}
-		});
-		
-		/*
-		 * JWS Algorithm
-		 */
-		binder.registerCustomEditor(JwsAlgorithm.class, new PropertyEditorSupport() {
-			@Override
-			public void setAsText(String text) throws IllegalArgumentException {
-				if (Strings.isNullOrEmpty(text)) {
-					setValue(null);
-				} else {
-					setValue(JwsAlgorithm.getByJwaName(text));
-				}
-			}
-			
-			@Override
-			public String getAsText() {
-				JwsAlgorithm alg = (JwsAlgorithm) getValue();
-				return alg == null ? null : alg.getJwaName();
-			}
-		});
-
-		
-		// FIXME: JWE needs to be handled much better than it is right now
-		/*
-		binder.registerCustomEditor(JweAlgorithms.class, new PropertyEditorSupport() {
-			@Override
-			public void setAsText(String text) throws IllegalArgumentException {
-				if (Strings.isNullOrEmpty(text)) {
-					setValue(null);
-				} else {
-					setValue(JweAlgorithms.getByJwaName(text));
-				}
-			}
-			
-			@Override
-			public String getAsText() {
-				JweAlgorithms alg = (JweAlgorithms) getValue();
-				return alg == null ? null : alg.getJwaName();
-			}
-		});
-		*/
-		
-	}
-	
-	/**
-	 * Bind a space-separated string to a Set<String>
-	 * @param binder
-	 */
-	@InitBinder({"contacts", "redirect_uris", "scope", "grant_type"})
-	public void stringSetInitbinder(WebDataBinder binder) {
-		/*
-		 * Space-separated set of strings
-		 */
-		binder.registerCustomEditor(Set.class, new PropertyEditorSupport() {
-			@Override
-			public void setAsText(String text) throws IllegalArgumentException {
-				if (Strings.isNullOrEmpty(text)) {
-					setValue(null);
-				} else {
-					setValue(Sets.newHashSet(Splitter.on(" ").split(text)));
-				}
-			}
-			
-			@Override
-			public String getAsText() {
-				Set<String> set = (Set<String>) getValue();
-				return set == null ? null : Joiner.on(" ").join(set);
-			}
-		});
-	}
 	
 	@RequestMapping(params = "operation=client_register", produces = "application/json")
 	public String clientRegister(
@@ -212,7 +73,7 @@ public class ClientDynamicRegistrationEndpoint {
 			@RequestParam(value = "application_type", required = false) AppType applicationType,
 			@RequestParam(value = "sector_identifier_url", required = false) String sectorIdentifierUrl,
 			@RequestParam(value = "subject_type", required = false) SubjectType subjectType,
-			@RequestParam(value = "require_signed_request_object", required = false) JwsAlgorithm requireSignedRequestObject,
+			@RequestParam(value = "require_signed_request_object", required = false) JWSAlgorithm requireSignedRequestObject,
 			// TODO: JWE needs to be handled properly, see @InitBinder above -- we'll ignore these right now
 			/*
 			@RequestParam(value = "userinfo_signed_response_alg", required = false) String userinfoSignedResponseAlg,
@@ -254,7 +115,7 @@ public class ClientDynamicRegistrationEndpoint {
 		client.setX509EncryptionUrl(x509EncryptionUrl);
 		client.setSectorIdentifierUrl(sectorIdentifierUrl);
 		client.setSubjectType(subjectType);
-		client.setRequireSignedRequestObject(requireSignedRequestObject);
+		client.setRequireSignedRequestObject(new JWSAlgorithmEntity(requireSignedRequestObject));
 		client.setDefaultMaxAge(defaultMaxAge);
 		client.setRequireAuthTime(requireAuthTime == null ? false : requireAuthTime.booleanValue());
 		client.setDefaultACR(defaultAcr);
@@ -385,7 +246,7 @@ public class ClientDynamicRegistrationEndpoint {
 			@RequestParam(value = "application_type", required = false) AppType applicationType,
 			@RequestParam(value = "sector_identifier_url", required = false) String sectorIdentifierUrl,
 			@RequestParam(value = "subject_type", required = false) SubjectType subjectType,
-			@RequestParam(value = "require_signed_request_object", required = false) JwsAlgorithm requireSignedRequestObject,
+			@RequestParam(value = "require_signed_request_object", required = false) JWSAlgorithm requireSignedRequestObject,
 			@RequestParam(value = "require_auth_time", required = false, defaultValue = "true") Boolean requireAuthTime,
 			// TODO: JWE needs to be handled properly, see @InitBinder above -- we'll ignore these right now
 			/*
@@ -490,7 +351,7 @@ public class ClientDynamicRegistrationEndpoint {
 			client.setSubjectType(subjectType);
 		}
 		if (params.containsKey("require_signed_request_object")) { // TODO: rename field
-			client.setRequireSignedRequestObject(requireSignedRequestObject);
+			client.setRequireSignedRequestObject(new JWSAlgorithmEntity(requireSignedRequestObject));
 		}
 		if (params.containsKey("require_auth_time")) {
 			client.setRequireAuthTime(requireAuthTime == null ? false : requireAuthTime.booleanValue()); // watch out for autoboxing
