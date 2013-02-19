@@ -18,6 +18,7 @@ package org.mitre.jwt.signer.service.impl;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
@@ -37,9 +38,9 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 	private ConfigurationPropertiesBean configBean;
 	
 	// map of identifier to signer
-	private Map<String, ? extends JWSSigner> signers = new HashMap<String, JWSSigner>();
+	private Map<String, JWSSigner> signers = new HashMap<String, JWSSigner>();
 	// map of identifier to verifier
-	private Map<String, ? extends JWSVerifier> verifiers = new HashMap<String, JWSVerifier>();
+	private Map<String, JWSVerifier> verifiers = new HashMap<String, JWSVerifier>();
 
 	private static Logger logger = LoggerFactory.getLogger(DefaultJwtSigningAndValidationService.class);
 
@@ -47,6 +48,21 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 	 * default constructor
 	 */
 	public DefaultJwtSigningAndValidationService() {
+
+	}
+	
+	public DefaultJwtSigningAndValidationService(Map<String, RSASSASignerVerifierBuilder> builders) {
+		
+		for (Entry<String, RSASSASignerVerifierBuilder> e : builders.entrySet()) {
+	        
+			JWSSigner signer = e.getValue().buildSigner();
+			signers.put(e.getKey(), signer);
+			
+	        JWSVerifier verifier = e.getValue().buildVerifier();
+	        verifiers.put(e.getKey(), verifier);
+	        
+        }
+		
 	}
 
 	/*

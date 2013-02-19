@@ -16,12 +16,7 @@
 package org.mitre.jwt.signer.service;
 
 import java.security.NoSuchAlgorithmException;
-import java.util.Map;
 
-import org.mitre.jwt.model.Jwt;
-import org.mitre.jwt.signer.JwtSigner;
-
-import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.SignedJWT;
 
 public interface JwtSigningAndValidationService {
