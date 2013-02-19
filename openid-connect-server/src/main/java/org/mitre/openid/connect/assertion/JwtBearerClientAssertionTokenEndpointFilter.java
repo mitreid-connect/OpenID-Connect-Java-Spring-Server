@@ -4,20 +4,20 @@
 package org.mitre.openid.connect.assertion;
 
 import java.io.IOException;
+import java.text.ParseException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.mitre.jwt.model.Jwt;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.provider.client.ClientCredentialsTokenEndpointFilter;
-import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 
 import com.google.common.base.Strings;
+import com.nimbusds.jwt.JWT;
+import com.nimbusds.jwt.JWTParser;
 
 /**
  * Filter to check client authentication via JWT Bearer assertions.
@@ -48,14 +48,14 @@ public class JwtBearerClientAssertionTokenEndpointFilter extends ClientCredentia
     	String assertion = request.getParameter("client_assertion");
     	
     	try {
-    		Jwt jwt = Jwt.parse(assertion);
+    		JWT jwt = JWTParser.parse(assertion);
     	
-    		String clientId = jwt.getClaims().getSubject();
+    		String clientId = jwt.getJWTClaimsSet().getSubjectClaim();
     		
     		Authentication authRequest = new JwtBearerAssertionAuthenticationToken(clientId, jwt);
     	
     		return this.getAuthenticationManager().authenticate(authRequest);
-    	} catch (IllegalArgumentException e) {
+    	} catch (ParseException e) {
     		throw new BadCredentialsException("Invalid JWT credential: " + assertion);
     	}
     }
