@@ -15,9 +15,9 @@
  ******************************************************************************/
 package org.mitre.openid.connect.web;
 
+import java.security.PublicKey;
 import java.util.Map;
 
-import org.mitre.jwt.signer.JwtSigner;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -34,21 +34,21 @@ public class JsonWebKeyEndpoint {
 	public ModelAndView getJwk() {
 		
 		// map from key id to signer
-		Map<String, JwtSigner> signers = jwtService.getAllSigners();
+		Map<String, PublicKey> keys = jwtService.getAllPublicKeys();
 		
 		// TODO: check if keys are empty, return a 404 here or just an empty list?
 		
-		return new ModelAndView("jwkKeyList", "signers", signers);
+		return new ModelAndView("jwkKeyList", "keys", keys);
 	}
 	
 	@RequestMapping("/x509")
 	public ModelAndView getX509() {
 		// map from key id to signer
-		Map<String, JwtSigner> signers = jwtService.getAllSigners();
+		Map<String, PublicKey> keys = jwtService.getAllPublicKeys();
 		
 		// TODO: check if keys are empty, return a 404 here or just an empty list?
 		
-		return new ModelAndView("x509certs", "signers", signers);
+		return new ModelAndView("x509certs", "keys", keys);
 	}
 
 	/**

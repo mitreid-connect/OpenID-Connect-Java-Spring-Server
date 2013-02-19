@@ -21,6 +21,7 @@ package org.mitre.openid.connect.view;
 import java.io.IOException;
 import java.io.Writer;
 import java.math.BigInteger;
+import java.security.PublicKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Map;
 
@@ -28,8 +29,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.binary.Base64;
-import org.mitre.jwt.signer.JwtSigner;
-import org.mitre.jwt.signer.impl.RsaSigner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -78,22 +77,19 @@ public class JwkKeyListView extends AbstractView {
 		
 		
 		//BiMap<String, PublicKey> keyMap = (BiMap<String, PublicKey>) model.get("keys");
-		Map<String, JwtSigner> signers = (Map<String, JwtSigner>) model.get("signers");
+		Map<String, PublicKey> keys = (Map<String, PublicKey>) model.get("keys");
 		
 		JsonObject obj = new JsonObject();
-		JsonArray keys = new JsonArray();
-		obj.add("keys", keys);
+		JsonArray keyList = new JsonArray();
+		obj.add("keys", keyList);
 		
-		for (String keyId : signers.keySet()) {
+		for (String keyId : keys.keySet()) {
 
-			JwtSigner src = signers.get(keyId);
+			PublicKey key = keys.get(keyId);
 
-			if (src instanceof RsaSigner) {
+			if (key instanceof RSAPublicKey) {
 				
-				RsaSigner rsaSigner = (RsaSigner) src;
-				
-				RSAPublicKey rsa = (RSAPublicKey) rsaSigner.getPublicKey(); // we're sure this is an RSAPublicKey b/c this is an RsaSigner
-				
+				RSAPublicKey rsa = (RSAPublicKey) key;
 				
 				BigInteger mod = rsa.getModulus();
 				BigInteger exp = rsa.getPublicExponent();
@@ -109,7 +105,7 @@ public class JwkKeyListView extends AbstractView {
 				o.addProperty("exp", e64);
 				o.addProperty("kid", keyId);
 
-				keys.add(o);
+				keyList.add(o);
 			} // TODO: deal with non-RSA key types
         }
 		

@@ -16,6 +16,7 @@
 package org.mitre.jwt.signer.service.impl;
 
 import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -30,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSSigner;
 import com.nimbusds.jose.JWSVerifier;
+import com.nimbusds.jose.crypto.RSASSAVerifier;
 import com.nimbusds.jwt.SignedJWT;
 
 public class DefaultJwtSigningAndValidationService implements JwtSigningAndValidationService, InitializingBean {
@@ -133,4 +135,20 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 		return false;
 	}
 
+	@Override
+	public Map<String, PublicKey> getAllPublicKeys() {
+		Map<String, PublicKey> keys = new HashMap<String, PublicKey>();
+		
+		// pull all keys out of the verifiers if we know how
+		for (String keyId : verifiers.keySet()) {
+	        JWSVerifier verifier = verifiers.get(keyId);
+	        if (verifier instanceof RSASSAVerifier) {
+	        	// we know how to do RSA public keys
+	        	keys.put(keyId, ((RSASSAVerifier) verifier).getPublicKey());
+	        }
+        }
+		
+		return keys;
+	}
+	
 }

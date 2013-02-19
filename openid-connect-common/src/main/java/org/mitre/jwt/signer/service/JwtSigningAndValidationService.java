@@ -16,11 +16,18 @@
 package org.mitre.jwt.signer.service;
 
 import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.util.Map;
 
 import com.nimbusds.jwt.SignedJWT;
 
 public interface JwtSigningAndValidationService {
 
+	/**
+	 * Get all public keys for this service, mapped by their ID
+	 */
+	public Map<String, PublicKey> getAllPublicKeys();
+	
 	/**
 	 * Checks the signature of the given JWT against all configured signers,
 	 * returns true if at least one of the signers validates it.
