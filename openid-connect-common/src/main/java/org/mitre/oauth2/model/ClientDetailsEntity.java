@@ -23,10 +23,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.Basic;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -40,8 +43,8 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.mitre.jwt.encryption.JweAlgorithms;
-import org.mitre.jwt.signer.JwsAlgorithm;
+import org.mitre.jose.JWEAlgorithmEntity;
+import org.mitre.jose.JWSAlgorithmEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.provider.ClientDetails;
 
@@ -99,17 +102,17 @@ public class ClientDetailsEntity implements ClientDetails {
 	private String x509EncryptionUrl;
 	private String sectorIdentifierUrl;
 	
-	private JwsAlgorithm requireSignedRequestObject;
+	private JWSAlgorithmEntity requireSignedRequestObject;
 	
-	private JwsAlgorithm userInfoSignedResponseAlg;
-	private JweAlgorithms userInfoEncryptedResponseAlg;
-	private JweAlgorithms userInfoEncryptedResponseEnc;
-	private JweAlgorithms userInfoEncryptedResponseInt;
+	private JWSAlgorithmEntity userInfoSignedResponseAlg;
+	private JWEAlgorithmEntity userInfoEncryptedResponseAlg;
+	private JWEAlgorithmEntity userInfoEncryptedResponseEnc;
+	private JWEAlgorithmEntity userInfoEncryptedResponseInt;
 	
-	private JwsAlgorithm idTokenSignedResponseAlg;
-	private JweAlgorithms idTokenEncryptedResponseAlg;
-	private JweAlgorithms idTokenEncryptedReponseEnc;
-	private JweAlgorithms idTokenEncryptedResponseInt;
+	private JWSAlgorithmEntity idTokenSignedResponseAlg;
+	private JWEAlgorithmEntity idTokenEncryptedResponseAlg;
+	private JWEAlgorithmEntity idTokenEncryptedReponseEnc;
+	private JWEAlgorithmEntity idTokenEncryptedResponseInt;
 	
 	private Integer defaultMaxAge;
 	private boolean requireAuthTime = false;
@@ -672,100 +675,111 @@ public class ClientDetailsEntity implements ClientDetails {
 		this.sectorIdentifierUrl = sectorIdentifierUrl;
 	}
 
-	@Enumerated(EnumType.STRING)
-	@Column(name="requre_signed_request_object")
-	public JwsAlgorithm getRequireSignedRequestObject() {
+	@Embedded
+	@AttributeOverrides({
+		@AttributeOverride(name = "algorithmName", column=@Column(name="requre_signed_request_object"))
+	})
+	public JWSAlgorithmEntity getRequireSignedRequestObject() {
 		return requireSignedRequestObject;
 	}
 
-	public void setRequireSignedRequestObject(
-			JwsAlgorithm requireSignedRequestObject) {
+	public void setRequireSignedRequestObject(JWSAlgorithmEntity requireSignedRequestObject) {
 		this.requireSignedRequestObject = requireSignedRequestObject;
 	}
 
-	@Enumerated(EnumType.STRING)
-	@Column(name="user_info_signed_response_alg")
-	public JwsAlgorithm getUserInfoSignedResponseAlg() {
+	@Embedded
+	@AttributeOverrides({
+		@AttributeOverride(name = "algorithmName", column=@Column(name="user_info_signed_response_alg"))
+	})
+	public JWSAlgorithmEntity getUserInfoSignedResponseAlg() {
 		return userInfoSignedResponseAlg;
 	}
 
-	public void setUserInfoSignedResponseAlg(JwsAlgorithm userInfoSignedResponseAlg) {
+	public void setUserInfoSignedResponseAlg(JWSAlgorithmEntity userInfoSignedResponseAlg) {
 		this.userInfoSignedResponseAlg = userInfoSignedResponseAlg;
 	}
 
-	@Enumerated(EnumType.STRING)
-	@Column(name="user_info_encrypted_response_alg")
-	public JweAlgorithms getUserInfoEncryptedResponseAlg() {
+	@Embedded
+	@AttributeOverrides({
+		@AttributeOverride(name = "algorithmName", column=@Column(name="user_info_encrypted_response_alg"))
+	})
+	public JWEAlgorithmEntity getUserInfoEncryptedResponseAlg() {
 		return userInfoEncryptedResponseAlg;
 	}
 
-	public void setUserInfoEncryptedResponseAlg(
-			JweAlgorithms userInfoEncryptedResponseAlg) {
+	public void setUserInfoEncryptedResponseAlg(JWEAlgorithmEntity userInfoEncryptedResponseAlg) {
 		this.userInfoEncryptedResponseAlg = userInfoEncryptedResponseAlg;
 	}
 
-	@Enumerated(EnumType.STRING)
-	@Column(name="user_info_encrypted_response_enc")
-	public JweAlgorithms getUserInfoEncryptedResponseEnc() {
+	@Embedded
+	@AttributeOverrides({
+		@AttributeOverride(name = "algorithmName", column=@Column(name="user_info_encrypted_response_enc"))
+	})
+	public JWEAlgorithmEntity getUserInfoEncryptedResponseEnc() {
 		return userInfoEncryptedResponseEnc;
 	}
 
-	public void setUserInfoEncryptedResponseEnc(
-			JweAlgorithms userInfoEncryptedResponseEnc) {
+	public void setUserInfoEncryptedResponseEnc(JWEAlgorithmEntity userInfoEncryptedResponseEnc) {
 		this.userInfoEncryptedResponseEnc = userInfoEncryptedResponseEnc;
 	}
 
-	@Enumerated(EnumType.STRING)
-	@Column(name="user_info_encrypted_response_int")
-	public JweAlgorithms getUserInfoEncryptedResponseInt() {
+	@Embedded
+	@AttributeOverrides({
+		@AttributeOverride(name = "algorithmName", column=@Column(name="user_info_encrypted_response_int"))
+	})
+	public JWEAlgorithmEntity getUserInfoEncryptedResponseInt() {
 		return userInfoEncryptedResponseInt;
 	}
 
-	public void setUserInfoEncryptedResponseInt(
-			JweAlgorithms userInfoEncryptedResponseInt) {
+	public void setUserInfoEncryptedResponseInt(JWEAlgorithmEntity userInfoEncryptedResponseInt) {
 		this.userInfoEncryptedResponseInt = userInfoEncryptedResponseInt;
 	}
 
-	@Enumerated(EnumType.STRING)
-	@Column(name="id_token_signed_response_alg")
-	public JwsAlgorithm getIdTokenSignedResponseAlg() {
+	@Embedded
+	@AttributeOverrides({
+		@AttributeOverride(name = "algorithmName", column=@Column(name="id_token_signed_response_alg"))
+	})
+	public JWSAlgorithmEntity getIdTokenSignedResponseAlg() {
 		return idTokenSignedResponseAlg;
 	}
 
-	public void setIdTokenSignedResponseAlg(JwsAlgorithm idTokenSignedResponseAlg) {
+	public void setIdTokenSignedResponseAlg(JWSAlgorithmEntity idTokenSignedResponseAlg) {
 		this.idTokenSignedResponseAlg = idTokenSignedResponseAlg;
 	}
 
-	@Enumerated(EnumType.STRING)
-	@Column(name="id_token_encrypted_response_alg")
-	public JweAlgorithms getIdTokenEncryptedResponseAlg() {
+	@Embedded
+	@AttributeOverrides({
+		@AttributeOverride(name = "algorithmName", column=@Column(name="id_token_encrypted_response_alg"))
+	})
+	public JWEAlgorithmEntity getIdTokenEncryptedResponseAlg() {
 		return idTokenEncryptedResponseAlg;
 	}
 
-	public void setIdTokenEncryptedResponseAlg(
-			JweAlgorithms idTokenEncryptedResponseAlg) {
+	public void setIdTokenEncryptedResponseAlg(JWEAlgorithmEntity idTokenEncryptedResponseAlg) {
 		this.idTokenEncryptedResponseAlg = idTokenEncryptedResponseAlg;
 	}
 
-	@Enumerated(EnumType.STRING)
-	@Column(name="id_token_encrypted_response_enc")
-	public JweAlgorithms getIdTokenEncryptedReponseEnc() {
+	@Embedded
+	@AttributeOverrides({
+		@AttributeOverride(name = "algorithmName", column=@Column(name="id_token_encrypted_response_enc"))
+	})
+	public JWEAlgorithmEntity getIdTokenEncryptedReponseEnc() {
 		return idTokenEncryptedReponseEnc;
 	}
 
-	public void setIdTokenEncryptedReponseEnc(
-			JweAlgorithms idTokenEncryptedReponseEnc) {
+	public void setIdTokenEncryptedReponseEnc(JWEAlgorithmEntity idTokenEncryptedReponseEnc) {
 		this.idTokenEncryptedReponseEnc = idTokenEncryptedReponseEnc;
 	}
 
-	@Enumerated(EnumType.STRING)
-	@Column(name="id_token_encrypted_response_int")
-	public JweAlgorithms getIdTokenEncryptedResponseInt() {
+	@Embedded
+	@AttributeOverrides({
+		@AttributeOverride(name = "algorithmName", column=@Column(name="id_token_encrypted_response_int"))
+	})
+	public JWEAlgorithmEntity getIdTokenEncryptedResponseInt() {
 		return idTokenEncryptedResponseInt;
 	}
 
-	public void setIdTokenEncryptedResponseInt(
-			JweAlgorithms idTokenEncryptedResponseInt) {
+	public void setIdTokenEncryptedResponseInt(JWEAlgorithmEntity idTokenEncryptedResponseInt) {
 		this.idTokenEncryptedResponseInt = idTokenEncryptedResponseInt;
 	}
 
