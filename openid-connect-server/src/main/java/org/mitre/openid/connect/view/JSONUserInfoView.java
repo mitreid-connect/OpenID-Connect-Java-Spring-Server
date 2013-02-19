@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.text.ParseException;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -26,7 +27,6 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.mitre.jwt.model.Jwt;
 import org.mitre.openid.connect.model.UserInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,9 +39,13 @@ import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
+import com.nimbusds.jwt.JWT;
+import com.nimbusds.jwt.JWTParser;
 
 @Component("jsonUserInfoView")
 public class JSONUserInfoView extends AbstractView {
@@ -85,10 +89,24 @@ public class JSONUserInfoView extends AbstractView {
 			
 			if (model.get("requestObject") != null) {
 				
-				String jwtString = (String)model.get("requestObject");
-				Jwt requestObject = Jwt.parse(jwtString);
-				
-				gson.toJson(toJsonFromRequestObj(userInfo, scope, requestObject.getClaims().getAsJsonObject()), out);
+				try {
+	                String jwtString = (String)model.get("requestObject");
+	                JWT requestObject = JWTParser.parse(jwtString);
+	                
+	                // FIXME: move to GSON for easier processing
+	                JsonObject obj = (JsonObject) new JsonParser().parse(requestObject.getJWTClaimsSet().toJSONObject().toJSONString());
+	                
+	                gson.toJson(toJsonFromRequestObj(userInfo, scope, obj), out);
+                } catch (JsonSyntaxException e) {
+	                // TODO Auto-generated catch block
+	                e.printStackTrace();
+                } catch (JsonIOException e) {
+	                // TODO Auto-generated catch block
+	                e.printStackTrace();
+                } catch (ParseException e) {
+	                // TODO Auto-generated catch block
+	                e.printStackTrace();
+                }
 			
 			} else {
 			
