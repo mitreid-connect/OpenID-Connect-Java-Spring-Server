@@ -4,27 +4,27 @@
 package org.mitre.oauth2.token;
 
 import java.security.NoSuchAlgorithmException;
+import java.text.ParseException;
 import java.util.Date;
 
-import org.mitre.jwt.model.Jwt;
-import org.mitre.jwt.model.JwtClaims;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
-import org.mitre.openid.connect.model.IdToken;
-import org.mitre.openid.connect.model.IdTokenClaims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
-import org.springframework.security.oauth2.provider.ClientDetailsService;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.AbstractTokenGranter;
-import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices;
 import org.springframework.stereotype.Component;
+
+import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jwt.JWT;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.JWTParser;
+import com.nimbusds.jwt.SignedJWT;
 
 /**
  * @author jricher
@@ -72,27 +72,46 @@ public class JwtAssertionTokenGranter extends AbstractTokenGranter {
 
 		    // it's an ID token, process it accordingly
 	    	
-	    	IdToken idToken = IdToken.parse(incomingTokenValue);
+	    	// TODO: make this use the idtoken class
+	    	JWT idToken;
+            try {
+	            idToken = JWTParser.parse(incomingTokenValue);
+            } catch (ParseException e1) {
+	            // TODO Auto-generated catch block
+	            e1.printStackTrace();
+	            return null;
+            }
 	    	
 	    	OAuth2AccessTokenEntity accessToken = tokenServices.getAccessTokenForIdToken(incomingToken);
 	    	
 	    	if (accessToken != null) {
 	    	
 	    		//OAuth2AccessTokenEntity newIdToken = tokenServices.get
-	    		IdToken newIdToken = new IdToken();
+	    		
 	    		OAuth2AccessTokenEntity newIdTokenEntity = new OAuth2AccessTokenEntity();
 	    		
-	    		IdTokenClaims claims = newIdToken.getClaims();
-	    		claims.loadFromClaimSet(idToken.getClaims()); // copy over all existing claims
+	    		// FIXME: we shouldn't have to roundtrip this through JSON to get it to copy all existing claims
+	    		JWTClaimsSet claims;
+                try {
+	                claims = JWTClaimsSet.parse(idToken.getJWTClaimsSet().toJSONObject());
+                } catch (ParseException e1) {
+	                // TODO Auto-generated catch block
+	                e1.printStackTrace();
+	                return null;
+                }
 
 	    		// update expiration and issued-at claims
 				if (client.getIdTokenValiditySeconds() != null) {
 					Date expiration = new Date(System.currentTimeMillis() + (client.getIdTokenValiditySeconds() * 1000L));
-					claims.setExpiration(expiration);
+					// FIXME: Nimbus-JOSE Date fields
+					claims.setExpirationTimeClaim(expiration.getTime());
 					newIdTokenEntity.setExpiration(expiration);
 				}
-				claims.setIssuedAt(new Date());
+				// FIXME: Nimbus-JOSE Date fields
+				claims.setIssuedAtClaim(new Date().getTime());
 
+				
+				SignedJWT newIdToken = new SignedJWT((JWSHeader) idToken.getHeader(), claims);
 				try {
 	                jwtService.signJwt(newIdToken);
                 } catch (NoSuchAlgorithmException e) {
