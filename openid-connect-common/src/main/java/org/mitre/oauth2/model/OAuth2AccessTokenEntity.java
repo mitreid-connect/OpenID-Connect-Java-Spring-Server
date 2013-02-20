@@ -166,7 +166,7 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
     @Basic
     @Column(name="token_value")
     public String getValue() {
-	    return jwtValue.toString();
+	    return jwtValue.serialize();
     }
 
     /**

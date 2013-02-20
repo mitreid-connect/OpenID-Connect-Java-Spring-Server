@@ -117,7 +117,7 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
     @Basic
     @Column(name="token_value")
     public String getValue() {
-	    return jwt.toString();
+	    return jwt.serialize();
     }
 
     /**
