@@ -23,7 +23,7 @@
 	<div class="well">
 		<div>You are not logged in.</div>
 		<hr />
-		<div class="row-fluid"><a class="btn btn-primary span12" href="j_spring_security_check"><i class="icon-user icon-white"></i> Log in</a></div>
+		<div class="row-fluid"><a class="btn btn-primary span12" href="login"><i class="icon-user icon-white"></i> Log in</a></div>
 	</div>
 </security:authorize>
 </div><!--/span-->

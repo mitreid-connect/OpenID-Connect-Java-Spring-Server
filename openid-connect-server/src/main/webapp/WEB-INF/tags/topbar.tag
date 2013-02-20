@@ -76,12 +76,12 @@
 						<ul class="dropdown-menu">
 							<li><a>${ longName }</a></li>
 							<li class="divider"></li>
-							<li><a href="j_spring_security_logout"><i class="icon-remove"></i> Log out</a></li>
+							<li><a href="logout"><i class="icon-remove"></i> Log out</a></li>
 						</ul>
 					</div>
                     </security:authorize>
                     <security:authorize access="!hasRole('ROLE_USER')">
-                    	<a class="btn btn-primary btn-small" href="j_spring_security_check"><i class="icon-user icon-white"></i> Log in</a>
+                    	<a class="btn btn-primary btn-small" href="login"><i class="icon-user icon-white"></i> Log in</a>
                     </security:authorize>
                 </ul>
                     

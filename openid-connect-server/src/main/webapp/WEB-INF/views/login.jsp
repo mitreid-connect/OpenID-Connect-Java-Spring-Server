@@ -16,6 +16,10 @@ $(document).ready(function() {
 
 <h1>Login with Username and Password</h1>
 
+<c:if test="${ param.error != null }">
+<div class="alert alert-error">The system was unable to log you in. Please try again.</div>
+</c:if>
+
 <!-- TODO: this is an ugly form but it gets the job done -->
 
 <form action="<%=request.getContextPath()%>/j_spring_security_check" method="POST" class="well">
