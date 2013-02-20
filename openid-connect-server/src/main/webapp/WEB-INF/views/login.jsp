@@ -24,9 +24,9 @@ $(document).ready(function() {
 
 <form action="<%=request.getContextPath()%>/j_spring_security_check" method="POST" class="well">
  <fieldset>
-    <div class="input-prepend"><span class="add-on">Username:</span><input name="j_username" id="j_username" value="" type="text" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off"></div>
-    <div class="input-prepend"><span class="add-on">Password:</span><input name="j_password" id="j_password" type="password" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off"></div>
-    <div class="form-actions"><input name="submit" value="Login" class="btn" type="submit"></div>
+    <div class="input-prepend"><span class="add-on"><i class="icon-user"></i></span><input type="text" name="j_username" id="j_username" value="" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" placeholder="Username"></div>
+    <div class="input-prepend"><span class="add-on"><i class="icon-lock"></i></span><input type="password" name="j_password" id="j_password" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" placeholder="Password"></div>
+    <div class="form-actions"><input type="submit" name="submit" value="Login" class="btn"></div>    <div class="form-actions"><input name="submit" value="Login" class="btn" type="submit"></div>
   </fieldset>
 </form>
 
