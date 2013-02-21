@@ -72,70 +72,63 @@ public class JwtAssertionTokenGranter extends AbstractTokenGranter {
 
 		    // it's an ID token, process it accordingly
 	    	
-	    	// TODO: make this use the idtoken class
-	    	JWT idToken;
-            try {
-	            idToken = JWTParser.parse(incomingTokenValue);
-            } catch (ParseException e1) {
-	            // TODO Auto-generated catch block
-	            e1.printStackTrace();
-	            return null;
-            }
+	    	try {
 	    	
-	    	OAuth2AccessTokenEntity accessToken = tokenServices.getAccessTokenForIdToken(incomingToken);
-	    	
-	    	if (accessToken != null) {
-	    	
-	    		//OAuth2AccessTokenEntity newIdToken = tokenServices.get
-	    		
-	    		OAuth2AccessTokenEntity newIdTokenEntity = new OAuth2AccessTokenEntity();
-	    		
-	    		// FIXME: we shouldn't have to roundtrip this through JSON to get it to copy all existing claims
-	    		JWTClaimsSet claims;
-                try {
-	                claims = JWTClaimsSet.parse(idToken.getJWTClaimsSet().toJSONObject());
-                } catch (ParseException e1) {
-	                // TODO Auto-generated catch block
-	                e1.printStackTrace();
-	                return null;
-                }
-
-	    		// update expiration and issued-at claims
-				if (client.getIdTokenValiditySeconds() != null) {
-					Date expiration = new Date(System.currentTimeMillis() + (client.getIdTokenValiditySeconds() * 1000L));
-					claims.setExpirationTime(expiration);
-					newIdTokenEntity.setExpiration(expiration);
-				}
-				claims.setIssueTime(new Date());
-
-				
-				SignedJWT newIdToken = new SignedJWT((JWSHeader) idToken.getHeader(), claims);
-				try {
-	                jwtService.signJwt(newIdToken);
-                } catch (NoSuchAlgorithmException e) {
-	                // TODO Auto-generated catch block
-	                e.printStackTrace();
-                }
-				
-				newIdTokenEntity.setJwt(newIdToken);
-				newIdTokenEntity.setAuthenticationHolder(incomingToken.getAuthenticationHolder());
-				newIdTokenEntity.setScope(incomingToken.getScope());
-				newIdTokenEntity.setClient(incomingToken.getClient());
-				
-				newIdTokenEntity = tokenServices.saveAccessToken(newIdTokenEntity);
-
-				// attach the ID token to the access token entity
-				accessToken.setIdToken(newIdTokenEntity);
-				accessToken = tokenServices.saveAccessToken(accessToken);
-				
-				// delete the old ID token
-				tokenServices.revokeAccessToken(incomingToken);
-				
-				return newIdTokenEntity;
-	    		
+		    	// TODO: make this use a more specific idtoken class
+		    	JWT idToken = JWTParser.parse(incomingTokenValue);
+		    	
+		    	OAuth2AccessTokenEntity accessToken = tokenServices.getAccessTokenForIdToken(incomingToken);
+		    	
+		    	if (accessToken != null) {
+		    	
+		    		//OAuth2AccessTokenEntity newIdToken = tokenServices.get
+		    		
+		    		OAuth2AccessTokenEntity newIdTokenEntity = new OAuth2AccessTokenEntity();
+		    		
+		    		// copy over all existing claims
+		    		JWTClaimsSet claims = new JWTClaimsSet(idToken.getJWTClaimsSet());
+	
+		    		// update expiration and issued-at claims
+					if (client.getIdTokenValiditySeconds() != null) {
+						Date expiration = new Date(System.currentTimeMillis() + (client.getIdTokenValiditySeconds() * 1000L));
+						claims.setExpirationTime(expiration);
+						newIdTokenEntity.setExpiration(expiration);
+					}
+					claims.setIssueTime(new Date());
+	
+					
+					SignedJWT newIdToken = new SignedJWT((JWSHeader) idToken.getHeader(), claims);
+					try {
+		                jwtService.signJwt(newIdToken);
+	                } catch (NoSuchAlgorithmException e) {
+		                // TODO Auto-generated catch block
+		                e.printStackTrace();
+	                }
+					
+					newIdTokenEntity.setJwt(newIdToken);
+					newIdTokenEntity.setAuthenticationHolder(incomingToken.getAuthenticationHolder());
+					newIdTokenEntity.setScope(incomingToken.getScope());
+					newIdTokenEntity.setClient(incomingToken.getClient());
+					
+					newIdTokenEntity = tokenServices.saveAccessToken(newIdTokenEntity);
+	
+					// attach the ID token to the access token entity
+					accessToken.setIdToken(newIdTokenEntity);
+					accessToken = tokenServices.saveAccessToken(accessToken);
+					
+					// delete the old ID token
+					tokenServices.revokeAccessToken(incomingToken);
+					
+					return newIdTokenEntity;
+		    		
+		    	}
+	    	} catch (ParseException e) {
+	    		logger.warn("Couldn't parse id token", e);
 	    	}
 	    	
 	    }
+	    
+	    // if we got down here, we didn't actually create any tokens, so return null
 	    
 	    return null;
 

@@ -126,11 +126,6 @@ public class JSONUserInfoView extends AbstractView {
 		
 		JsonObject obj = new JsonObject();
 		
-		//The "sub" claim must always be returned from this endpoint
-		obj.addProperty("sub", ui.getSub());
-		
-		//TODO: I think the following should be removed. "sub" replaces "user_id", and according
-		//to the spec it must ALWAYS be returned from this endpoint. 
 		if (scope.contains("openid")) {
 			obj.addProperty("sub", ui.getSub());
 		}

@@ -33,6 +33,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
 import com.nimbusds.jose.JWSObject;
+import com.nimbusds.jose.util.JSONObjectUtils;
 
 @Component("authorizationRequestManager")
 public class ConnectAuthorizationRequestManager implements AuthorizationRequestManager, InitializingBean {
@@ -172,52 +173,51 @@ public class ConnectAuthorizationRequestManager implements AuthorizationRequestM
 			 * 		we don't care
 			 */
 			
-			// FIXME: all of these are doing raw JSON parsing and don't guarantee good behavior vis a vis strings
-			String responseTypes = (String) claims.get("response_type");
+			String responseTypes = JSONObjectUtils.getString(claims, "response_type");
 			if (responseTypes != null) {
 				parameters.put("response_type", responseTypes);
 			}
 			
-			String clientId = (String) claims.get("client_id");
+			String clientId = JSONObjectUtils.getString(claims, "client_id");
 			if (clientId != null) {
 				parameters.put("client_id", clientId);
 			}
 			
 			if (claims.get("redirect_uri") != null) {
 				if (inputParams.containsKey("redirect_uri") == false) {
-					parameters.put("redirect_uri", (String) claims.get("redirect_uri"));
+					parameters.put("redirect_uri", JSONObjectUtils.getString(claims, "redirect_uri"));
 				}
 			}
 			
-			String state = (String) claims.get("state");
+			String state = JSONObjectUtils.getString(claims, "state");
 			if(state != null) {
 				if (inputParams.containsKey("state") == false) {
 					parameters.put("state", state);
 				}
 			}
 			
-			String nonce = (String) claims.get("nonce");
+			String nonce = JSONObjectUtils.getString(claims, "nonce");
 			if(nonce != null) {
 				if (inputParams.containsKey("nonce") == false) {
 					parameters.put("nonce", nonce);
 				}
 			}
 			
-			String display = (String) claims.get("display");
+			String display = JSONObjectUtils.getString(claims, "display");
 			if (display != null) {
 				if (inputParams.containsKey("display") == false) {
 					parameters.put("display", display);
 				}
 			}
 			
-			String prompt = (String) claims.get("prompt");
+			String prompt = JSONObjectUtils.getString(claims, "prompt");
 			if (prompt != null) {
 				if (inputParams.containsKey("prompt") == false) {
 					parameters.put("prompt", prompt);
 				}
 			}
 			
-			String scope = (String) claims.get("scope");
+			String scope = JSONObjectUtils.getString(claims, "scope");
 			if (scope != null) {
 				if (inputParams.containsKey("scope") == false) {
 					parameters.put("scope", scope);
