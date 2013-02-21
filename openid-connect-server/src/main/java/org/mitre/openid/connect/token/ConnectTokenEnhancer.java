@@ -34,6 +34,7 @@ import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jwt.JWTClaimsSet;
@@ -62,18 +63,15 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 		
 		JWTClaimsSet claims = new JWTClaimsSet();
 		
-		// FIXME: Nimbus should do collections
-		claims.setAudienceClaim(new String[] {clientId});
+		claims.setAudience(Lists.newArrayList(clientId));
 		
-		claims.setIssuerClaim(configBean.getIssuer());
+		claims.setIssuer(configBean.getIssuer());
 
-		// FIXME: Nimbus Dates
-		claims.setIssuedAtClaim(new Date().getTime());
+		claims.setIssueTime(new Date());
 		
-		// FIXME: Nimbus dates
-		claims.setExpirationTimeClaim(token.getExpiration().getTime());
+		claims.setExpirationTime(token.getExpiration());
 
-		claims.setJWTIDClaim(UUID.randomUUID().toString()); // set a random NONCE in the middle of it
+		claims.setJWTID(UUID.randomUUID().toString()); // set a random NONCE in the middle of it
 		
 		SignedJWT signed = new SignedJWT(new JWSHeader(configBean.getDefaultSigningAlgorithm()), claims);
 		
@@ -106,22 +104,19 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 			
 			idClaims.setCustomClaim("auth_time", new Date().getTime());
 			
-			// FIXME: nimbus date fields
-			idClaims.setIssuedAtClaim(new Date().getTime());
+			idClaims.setIssueTime(new Date());
 			
 			ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
 			
 			if (client.getIdTokenValiditySeconds() != null) {
 				Date expiration = new Date(System.currentTimeMillis() + (client.getIdTokenValiditySeconds() * 1000L));
-				// FIXME: nimbus date fields
-				idClaims.setExpirationTimeClaim(expiration.getTime());
+				idClaims.setExpirationTime(expiration);
 				idTokenEntity.setExpiration(expiration);
 			}
 			
-			idClaims.setIssuerClaim(configBean.getIssuer());
-			idClaims.setSubjectClaim(userId);
-			// FIXME: Nimbus audience as collection
-			idClaims.setAudienceClaim(new String[] { clientId });
+			idClaims.setIssuer(configBean.getIssuer());
+			idClaims.setSubject(userId);
+			idClaims.setAudience(Lists.newArrayList(clientId));
 			
 			
 			String nonce = authentication.getAuthorizationRequest().getAuthorizationParameters().get("nonce");

@@ -6,7 +6,7 @@ package org.mitre.openid.connect.assertion;
 import java.security.PublicKey;
 import java.security.interfaces.RSAPublicKey;
 import java.text.ParseException;
-import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -76,49 +76,45 @@ public class JwtBearerAuthenticationProvider implements AuthenticationProvider {
     		}
     		
 			// check the issuer
-			if (jwtClaims.getIssuerClaim() == null) {
+			if (jwtClaims.getIssuer() == null) {
 				throw new AuthenticationServiceException("Assertion Token Issuer is null");
-			} else if (!jwtClaims.getIssuerClaim().equals(client.getClientId())){
-				throw new AuthenticationServiceException("Issuers do not match, expected " + client.getClientId() + " got " + jwtClaims.getIssuerClaim());
+			} else if (!jwtClaims.getIssuer().equals(client.getClientId())){
+				throw new AuthenticationServiceException("Issuers do not match, expected " + client.getClientId() + " got " + jwtClaims.getIssuer());
 			}
 			
 			// check expiration
-			/*
-			 * FIXME: re-institute date check for Nimbus
-			if (jwtClaims.getExpirationTimeClaim() == null) {
+			if (jwtClaims.getExpirationTime() == null) {
 				throw new AuthenticationServiceException("Assertion Token does not have required expiration claim");
 			} else {
 				// it's not null, see if it's expired
 				Date now = new Date(System.currentTimeMillis() - (timeSkewAllowance * 1000));
-				if (now.after(jwtClaims.getExpirationTimeClaim())) {
-					throw new AuthenticationServiceException("Assertion Token is expired: " + jwtClaims.getExpirationTimeClaim());
+				if (now.after(jwtClaims.getExpirationTime())) {
+					throw new AuthenticationServiceException("Assertion Token is expired: " + jwtClaims.getExpirationTime());
 				}
 			}
 			
 			// check not before
-			if (jwtClaims.getNotBefore() != null) {
+			if (jwtClaims.getNotBeforeTime() != null) {
 				Date now = new Date(System.currentTimeMillis() + (timeSkewAllowance * 1000));
-				if (now.before(jwtClaims.getNotBefore())){
-					throw new AuthenticationServiceException("Assertion Token not valid untill: " + jwtClaims.getNotBefore());
+				if (now.before(jwtClaims.getNotBeforeTime())){
+					throw new AuthenticationServiceException("Assertion Token not valid untill: " + jwtClaims.getNotBeforeTime());
 				}
 			}
 			
 			// check issued at
-			if (jwtClaims.getIssuedAt() != null) {
+			if (jwtClaims.getIssueTime() != null) {
 				// since it's not null, see if it was issued in the future
 				Date now = new Date(System.currentTimeMillis() + (timeSkewAllowance * 1000));
-				if (now.before(jwtClaims.getIssuedAt())) {
-					throw new AuthenticationServiceException("Assertion Token was issued in the future: " + jwtClaims.getIssuedAt());
+				if (now.before(jwtClaims.getIssueTime())) {
+					throw new AuthenticationServiceException("Assertion Token was issued in the future: " + jwtClaims.getIssueTime());
 				}
 			}
 			
-			 */
-			
 			// check audience
-			if (jwtClaims.getAudienceClaim() == null) {
+			if (jwtClaims.getAudience() == null) {
 				throw new AuthenticationServiceException("Assertion token audience is null"); 
-			} else if (!Arrays.asList(jwtClaims.getAudienceClaim()).contains(config.getIssuer())) { // FIXME: change back to list.contains() check after Nimbus update
-				throw new AuthenticationServiceException("Audience does not match, expected " + config.getIssuer() + " got " + jwtClaims.getAudienceClaim());
+			} else if (!jwtClaims.getAudience().contains(config.getIssuer())) {
+				throw new AuthenticationServiceException("Audience does not match, expected " + config.getIssuer() + " got " + jwtClaims.getAudience());
 			}
 			
     		// IFF we managed to get all the way down here, the token is valid

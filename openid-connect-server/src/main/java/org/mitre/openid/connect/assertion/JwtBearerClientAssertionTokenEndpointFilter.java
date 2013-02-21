@@ -50,7 +50,7 @@ public class JwtBearerClientAssertionTokenEndpointFilter extends ClientCredentia
     	try {
     		JWT jwt = JWTParser.parse(assertion);
     	
-    		String clientId = jwt.getJWTClaimsSet().getSubjectClaim();
+    		String clientId = jwt.getJWTClaimsSet().getSubject();
     		
     		Authentication authRequest = new JwtBearerAssertionAuthenticationToken(clientId, jwt);
     	

@@ -124,12 +124,11 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	    		if (client.getRefreshTokenValiditySeconds() != null) {
 		    		Date expiration = new Date(System.currentTimeMillis() + (client.getRefreshTokenValiditySeconds() * 1000L));
 		    		refreshToken.setExpiration(expiration);
-		    		// FIXME: nimbus date fields
-		    		refreshClaims.setExpirationTimeClaim(expiration.getTime());
+		    		refreshClaims.setExpirationTime(expiration);
 	    		}
 	    		
 	    		// set a random identifier
-	    		refreshClaims.setJWTIDClaim(UUID.randomUUID().toString());
+	    		refreshClaims.setJWTID(UUID.randomUUID().toString());
 
 	    		// TODO: add issuer fields, signature to JWT
 	    		

@@ -103,12 +103,10 @@ public class JwtAssertionTokenGranter extends AbstractTokenGranter {
 	    		// update expiration and issued-at claims
 				if (client.getIdTokenValiditySeconds() != null) {
 					Date expiration = new Date(System.currentTimeMillis() + (client.getIdTokenValiditySeconds() * 1000L));
-					// FIXME: Nimbus-JOSE Date fields
-					claims.setExpirationTimeClaim(expiration.getTime());
+					claims.setExpirationTime(expiration);
 					newIdTokenEntity.setExpiration(expiration);
 				}
-				// FIXME: Nimbus-JOSE Date fields
-				claims.setIssuedAtClaim(new Date().getTime());
+				claims.setIssueTime(new Date());
 
 				
 				SignedJWT newIdToken = new SignedJWT((JWSHeader) idToken.getHeader(), claims);
