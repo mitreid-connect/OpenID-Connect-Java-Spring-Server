@@ -283,6 +283,14 @@ public class OIDCSignedRequestFilter extends AbstractOIDCAuthenticationFilter im
     }
 
 	/**
+	 * @param algorithmName
+	 * @see org.mitre.openid.connect.config.OIDCServerConfiguration#setAlgorithmName(java.lang.String)
+	 */
+    public void setAlgorithmName(String algorithmName) {
+	    oidcServerConfig.setAlgorithmName(algorithmName);
+    }
+
+	/**
      * Return a view to publish all keys in JWK format. Only used if jwkPublishUrl is set.
      * @return
      */
