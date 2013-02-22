@@ -113,7 +113,7 @@ public class OIDCSignedRequestFilter extends AbstractOIDCAuthenticationFilter im
 			
 			Map<String, String> urlVariables = new HashMap<String, String>();
 			
-			urlVariables.put("request", jwt.toString());
+			urlVariables.put("request", jwt.serialize());
 			
 			String authRequest = AbstractOIDCAuthenticationFilter.buildURL(serverConfiguration.getAuthorizationEndpointUrl(), urlVariables);
 
