@@ -60,6 +60,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.nimbusds.jose.JWSSigner;
 import com.nimbusds.jose.JWSVerifier;
 import com.nimbusds.jose.crypto.RSASSAVerifier;
 import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
@@ -630,7 +631,7 @@ public class AbstractOIDCAuthenticationFilter extends
 				
 				Map<String, JWSVerifier> verifiers = ImmutableMap.of(serverConfig.getIssuer(), verifier);
 				
-				JwtSigningAndValidationService service = new DefaultJwtSigningAndValidationService();
+				JwtSigningAndValidationService service = new DefaultJwtSigningAndValidationService(new HashMap<String, JWSSigner>(), verifiers);
 				
 				validationServices.put(serverConfig, service);
 				
