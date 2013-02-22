@@ -1,4 +1,5 @@
 <%@attribute name="pageName" required="false" %>
+<%@attribute name="title" required="true" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="security" uri="http://www.springframework.org/security/tags" %>
 <c:choose>
@@ -33,7 +34,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="brand" href="">OpenID Connect Server</a>
+            <a class="brand" href="">${title}</a>
             <div class="nav-collapse collapse">
                 <ul class="nav">
                 	<c:choose>

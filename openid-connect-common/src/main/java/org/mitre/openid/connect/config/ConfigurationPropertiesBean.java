@@ -33,7 +33,16 @@ public class ConfigurationPropertiesBean {
 	private String defaultJwtSigner;
 
 	private JWSAlgorithm defaultAlgorithm;
-
+	
+	private String adminConsoleTopbarTitle;
+	
+	private String logoImageUrl;
+	
+	private String adminConsoleCopyrightFooter;
+	
+	private String adminConsoleLandingPageText;
+	
+	
 	public ConfigurationPropertiesBean() {
 	}
 	
@@ -80,4 +89,37 @@ public class ConfigurationPropertiesBean {
     		return null;
     	}
     }
+    
+	public String getAdminConsoleTopbarTitle() {
+		return adminConsoleTopbarTitle;
+	}
+
+	public void setAdminConsoleTopbarTitle(String adminConsoleTopbarTitle) {
+		this.adminConsoleTopbarTitle = adminConsoleTopbarTitle;
+	}
+
+	public String getLogoImageUrl() {
+		return logoImageUrl;
+	}
+
+	public void setLogoImageUrl(String logoImageUrl) {
+		this.logoImageUrl = logoImageUrl;
+	}
+
+	public String getAdminConsoleCopyrightFooter() {
+		return adminConsoleCopyrightFooter;
+	}
+
+	public void setAdminConsoleCopyrightFooter(String adminConsoleCopyrightFooter) {
+		this.adminConsoleCopyrightFooter = adminConsoleCopyrightFooter;
+	}
+
+	public String getAdminConsoleLandingPageText() {
+		return adminConsoleLandingPageText;
+	}
+
+	public void setAdminConsoleLandingPageText(String adminConsoleLandingPageText) {
+		this.adminConsoleLandingPageText = adminConsoleLandingPageText;
+	}
+
 }

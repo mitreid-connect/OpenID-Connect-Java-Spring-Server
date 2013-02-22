@@ -6,7 +6,7 @@
 <%@ taglib prefix="o" tagdir="/WEB-INF/tags" %>
 
 <o:header title="Approve Access"/>
-<o:topbar/>
+<o:topbar title="${topbarTitle}"/>
 <div class="container">
     <% if (session.getAttribute(AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY) != null && !(session.getAttribute(AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY) instanceof UnapprovedClientAuthenticationException)) { %>
     <div class="alert-message error">

@@ -11,7 +11,7 @@ $(document).ready(function() {
 
 //-->
 </script>
-<o:topbar/>
+<o:topbar title="${topbarTitle}"/>
 <div class="container">
 
 <h1>Login with Username and Password</h1>
