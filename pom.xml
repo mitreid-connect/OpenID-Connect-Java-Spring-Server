@@ -279,6 +279,11 @@
         	</exclusions>
         </dependency>
         <dependency>
+			<groupId>net.minidev</groupId>
+			<artifactId>json-smart</artifactId>
+			<version>1.0.9</version>
+		</dependency>
+        <dependency>
         	<groupId>com.nimbusds</groupId>
         	<artifactId>nimbus-jose-jwt</artifactId>
         	<version>2.11.0</version>
