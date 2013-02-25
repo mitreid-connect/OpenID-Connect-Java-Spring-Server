@@ -26,6 +26,13 @@
 	</c:otherwise>
 </c:choose>
 	
+<script type="text/javascript">
+
+$(document).ready(function() {
+	$('a.brand').css("background", "url('" + "${logoUrl}" + "') no-repeat scroll 7px 7px transparent");
+});
+</script>	
+	
 <div class="navbar navbar-fixed-top">
     <div class="navbar-inner">
         <div class="container">

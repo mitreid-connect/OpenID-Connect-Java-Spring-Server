@@ -30,7 +30,6 @@
         }
 
         .brand {
-            background: url("resources/images/openid_connect_small.png") no-repeat scroll 7px 7px transparent;
             padding-left: 35px !important;
         }
         
