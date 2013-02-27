@@ -25,7 +25,7 @@ public class ClientKeyPublisherMapping extends RequestMappingInfoHandlerMapping 
      */
     @Override
     protected boolean isHandler(Class<?> beanType) {
-	    return beanType.equals(OIDCSignedRequestFilter.class);
+	    return beanType.equals(ClientKeyPublisher.class);
     }
 
 	/**
