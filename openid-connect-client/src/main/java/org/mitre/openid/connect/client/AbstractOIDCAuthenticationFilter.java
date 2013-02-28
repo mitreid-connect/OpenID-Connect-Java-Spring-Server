@@ -56,6 +56,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -188,8 +189,11 @@ public class AbstractOIDCAuthenticationFilter extends
 
 		Assert.notNull(errorRedirectURI, "An Error Redirect URI must be supplied");
 
-		// prepend the spec necessary DEFAULT_SCOPE
-		setScope((scope != null && !scope.isEmpty()) ? DEFAULT_SCOPE + " " + scope : DEFAULT_SCOPE);
+		if (Strings.isNullOrEmpty(scope)) {
+			setScope(DEFAULT_SCOPE);
+		} else {
+			setScope(scope);
+		}
 	}
 
 	/*
