@@ -13,9 +13,7 @@
             <!-- Main hero unit for a primary marketing message or call to action -->
             <div class="hero-unit">
 
-                <p> 
-                This OpenID Connect service is built from the MITREid Connect Open Source project started by The MITRE Corporation.           
-                </p>
+                <o:aboutContent/>
 
             </div>
 
