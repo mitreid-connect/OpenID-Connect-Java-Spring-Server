@@ -10,15 +10,15 @@
         <div class="span10">
             <!-- Main hero unit for a primary marketing message or call to action -->
             <div class="hero-unit">
-                <o:landingPageText/>
+                <o:landingPageWelcome/>
             </div>
             <!-- Example row of columns -->
             <div class="row-fluid">
                 <div class="span6">
-                    <o:aboutContent short="true"/>
+                    <o:landingPageAbout/>
                 </div>
                 <div class="span6">
-                	<o:contactContent short="true"/>
+                	<o:landingPageContact/>
                 </div>
 
             </div>
@@ -26,7 +26,7 @@
             <!-- Example row of columns -->
             <div class="row-fluid">
                 <div class="span12">
-                    <o:statsContent short="true"/>
+                    <o:landingPageStats/>
                 </div>
             </div>
 
