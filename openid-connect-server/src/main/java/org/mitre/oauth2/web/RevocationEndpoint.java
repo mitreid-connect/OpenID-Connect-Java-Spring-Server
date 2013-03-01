@@ -23,6 +23,7 @@ import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -57,15 +58,20 @@ public class RevocationEndpoint {
 	        refreshToken = tokenServices.getRefreshToken(tokenValue);
         } catch (InvalidTokenException e) {
 	        // it's OK if either of these tokens are bad
+        	//TODO: Error Handling
         }
 
 		try {
 	        accessToken = tokenServices.readAccessToken(tokenValue);
         } catch (InvalidTokenException e) {
 	        // it's OK if either of these tokens are bad
+        	//TODO: Error Handling
+        } catch (AuthenticationException e) {
+        	//TODO: Error Handling
         }
 		
 		if (refreshToken == null && accessToken == null) {
+			//TODO: Error Handling
 			// TODO: this should throw a 400 with a JSON error code
 			throw new InvalidTokenException("Invalid OAuth token: " + tokenValue);
 		}
@@ -82,12 +88,14 @@ public class RevocationEndpoint {
 				if (!refreshToken.getClient().getClientId().equals(clientAuth.getClientId())) {
 					// trying to revoke a token we don't own, fail
 					// TODO: this should throw a 403 
+					//TODO: Error Handling
 					throw new PermissionDeniedException("Client tried to revoke a token it doesn't own");
 				}
 			} else {
 				if (!accessToken.getClient().getClientId().equals(clientAuth.getClientId())) {
 					// trying to revoke a token we don't own, fail
 					// TODO: this should throw a 403 
+					//TODO: Error Handling
 					throw new PermissionDeniedException("Client tried to revoke a token it doesn't own");
 				}
 			}

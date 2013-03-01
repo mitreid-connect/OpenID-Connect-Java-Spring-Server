@@ -20,7 +20,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * @author jricher
@@ -63,10 +65,19 @@ public class WhitelistAPI {
 	@RequestMapping(method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
 	public String addNewWhitelistedSite(@RequestBody String jsonString, ModelMap m, Principal p) {
 		
-		JsonObject json = parser.parse(jsonString).getAsJsonObject();
+		JsonObject json; 
 		
-		WhitelistedSite whitelist = gson.fromJson(json, WhitelistedSite.class);
+		WhitelistedSite whitelist = null; 
+		try {
+			json = parser.parse(jsonString).getAsJsonObject();
+			whitelist = gson.fromJson(json, WhitelistedSite.class);
 
+		} catch (JsonParseException e) {
+			//TODO: Error Handling
+		} catch (IllegalStateException e) {
+			
+		}
+		
 		// save the id of the person who created this
 		whitelist.setCreatorUserId(p.getName());
 		
@@ -85,9 +96,18 @@ public class WhitelistAPI {
 	@RequestMapping(value="/{id}", method = RequestMethod.PUT, consumes = "application/json", produces = "application/json")
 	public String updateWhitelistedSite(@PathVariable("id") Long id, @RequestBody String jsonString, ModelMap m, Principal p) {
 		
-		JsonObject json = parser.parse(jsonString).getAsJsonObject();
+		JsonObject json; 
 		
-		WhitelistedSite whitelist = gson.fromJson(json, WhitelistedSite.class);
+		WhitelistedSite whitelist = null; 
+		try {
+			json = parser.parse(jsonString).getAsJsonObject();
+			whitelist = gson.fromJson(json, WhitelistedSite.class);
+
+		} catch (JsonParseException e) {
+			//TODO: Error Handling
+		} catch (IllegalStateException e) {
+			
+		}
 		
 		WhitelistedSite oldWhitelist = whitelistService.getById(id);
 		

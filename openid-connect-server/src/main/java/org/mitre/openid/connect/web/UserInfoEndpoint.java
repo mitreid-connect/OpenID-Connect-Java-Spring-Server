@@ -60,9 +60,9 @@ public class UserInfoEndpoint {
 	/**
 	 * Get information about the user as specified in the accessToken->idToken included in this request
 	 * 
-	 * @throws UserNotFoundException		if the user does not exist or cannot be found
+	 * @throws UserNotFoundException		    if the user does not exist or cannot be found
 	 * @throws UnknownUserInfoSchemaException	if an unknown schema is used
-	 * @throws InvalidScopeException if the oauth2 token doesn't have the "openid" scope
+	 * @throws InvalidScopeException            if the oauth2 token doesn't have the "openid" scope
 	 */
 	@PreAuthorize("hasRole('ROLE_USER') and #oauth2.hasScope('openid')")
 	@RequestMapping(value="/userinfo", method= {RequestMethod.GET, RequestMethod.POST}, produces = "application/json")
@@ -70,11 +70,13 @@ public class UserInfoEndpoint {
 
 		if (p == null) {
 			throw new UserNotFoundException("Invalid User"); 
+			//TODO: Error Handling
 		}
 
 		String viewName = schemaToViewNameMap.get(schema);
 		if (viewName == null) {
 			throw new UnknownUserInfoSchemaException("Unknown User Info Schema: " + schema );
+			//TODO: Error Handling
 		}
 
 		String userId = p.getName(); 
@@ -82,6 +84,7 @@ public class UserInfoEndpoint {
 		
 		if (userInfo == null) {
 			throw new UserNotFoundException("User not found: " + userId); 
+			//TODO: Error Handling
 		}
 		
 		if (p instanceof OAuth2Authentication) {
@@ -92,8 +95,6 @@ public class UserInfoEndpoint {
         }
 
 		model.addAttribute("userInfo", userInfo);
-		
-		//return new ModelAndView(viewName, "userInfo", userInfo);
 		
 		return viewName;
 

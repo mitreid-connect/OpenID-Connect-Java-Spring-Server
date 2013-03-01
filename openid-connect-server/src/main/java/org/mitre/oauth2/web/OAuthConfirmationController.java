@@ -18,7 +18,6 @@
  */
 package org.mitre.oauth2.web;
 
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -29,6 +28,8 @@ import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.SystemScopeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
+import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.stereotype.Controller;
@@ -67,11 +68,13 @@ public class OAuthConfirmationController {
 
 		//AuthorizationRequest clientAuth = (AuthorizationRequest) model.remove("authorizationRequest");
 
-
+		//TODO: Error Handling
+		//Throws OAuth2Exception, InvalidClientException, IllegalArgumentException
 		ClientDetails client = clientService.loadClientByClientId(clientAuth.getClientId());
 		
 		if (client == null) {
 			throw new ClientNotFoundException("Client not found: " + clientAuth.getClientId());
+			//TODO: Error Handling
 		}
 
 		model.put("auth_request", clientAuth);

@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * @author jricher
@@ -63,13 +64,23 @@ public class BlacklistAPI {
 	@RequestMapping(method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
 	public String addNewBlacklistedSite(@RequestBody String jsonString, ModelMap m, Principal p) {
 		
-		JsonObject json = parser.parse(jsonString).getAsJsonObject();
+		JsonObject json; 
 		
-		BlacklistedSite blacklist = gson.fromJson(json, BlacklistedSite.class);
+		BlacklistedSite blacklist = null;
+		
+		try {
+			
+			json = parser.parse(jsonString).getAsJsonObject();
+			blacklist = gson.fromJson(json, BlacklistedSite.class);
+			BlacklistedSite newBlacklist = blacklistService.saveNew(blacklist);
+			m.put("entity", newBlacklist);
+			
+		} catch (JsonSyntaxException e) {
+			//TODO: Error Handling
+		} catch (IllegalStateException e) {
+			
+		}
 
-		BlacklistedSite newBlacklist = blacklistService.saveNew(blacklist);
-		
-		m.put("entity", newBlacklist);
 		
 		return "jsonEntityView";
 		
@@ -81,9 +92,21 @@ public class BlacklistAPI {
 	@RequestMapping(value="/{id}", method = RequestMethod.PUT, consumes = "application/json", produces = "application/json")
 	public String updateBlacklistedSite(@PathVariable("id") Long id, @RequestBody String jsonString, ModelMap m, Principal p) {
 		
-		JsonObject json = parser.parse(jsonString).getAsJsonObject();
+		JsonObject json; 
 		
-		BlacklistedSite blacklist = gson.fromJson(json, BlacklistedSite.class);
+		BlacklistedSite blacklist = null; 
+		
+		try {
+			
+			json = parser.parse(jsonString).getAsJsonObject();
+			blacklist = gson.fromJson(json, BlacklistedSite.class);
+			
+		} catch (JsonSyntaxException e) {
+			//TODO: Error Handling
+		} catch (IllegalStateException e) {
+			
+		}
+		
 		
 		BlacklistedSite oldBlacklist = blacklistService.getById(id);
 		

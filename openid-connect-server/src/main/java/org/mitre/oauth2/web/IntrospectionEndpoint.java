@@ -25,21 +25,18 @@ import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.security.oauth2.common.exceptions.InvalidScopeException;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
-import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 
 @Controller
 public class IntrospectionEndpoint {
@@ -93,10 +90,19 @@ public class IntrospectionEndpoint {
 		
 		if (Strings.isNullOrEmpty(tokenValue)) {
 			throw new InvalidTokenException("No token found!");
+			//TODO: Error Handling
 		}
 		
-		OAuth2AccessTokenEntity token = tokenServices.readAccessToken(tokenValue);
-	
+		OAuth2AccessTokenEntity token = null;
+		
+		try {
+			token = tokenServices.readAccessToken(tokenValue);
+		} catch (InvalidTokenException e) {
+			//TODO: Error Handling
+		} catch (AuthenticationException e) {
+			//TODO: Error Handling
+		}
+			
 		ClientDetailsEntity tokenClient = token.getClient();
 		// clientID is the principal name in the authentication
 		String clientId = p.getName();
@@ -114,12 +120,15 @@ public class IntrospectionEndpoint {
 					return modelAndView;
 				} else {
 					throw new InvalidScopeException("Tried to introspect a token of different scope");
+					//TODO: Error Handling
 				}
 			} else {
 				throw new InvalidClientException("Client is not allowed to call introspection endpoint.");
+				//TODO: Error Handling
 			}
 		} else {
 			throw new InvalidClientException("Client not found.");
+			//TODO: Error Handling
 		}
 		
 	}

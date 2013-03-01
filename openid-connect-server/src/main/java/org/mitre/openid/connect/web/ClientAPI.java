@@ -47,6 +47,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * @author Michael Jett <mjett@mitre.org>
@@ -124,10 +125,18 @@ public class ClientAPI {
     @RequestMapping(method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
     public String apiAddClient(@RequestBody String jsonString, Model m, Authentication auth) {
 
-    	JsonObject json = parser.parse(jsonString).getAsJsonObject();
-
-    	ClientDetailsEntity client = gson.fromJson(json, ClientDetailsEntity.class);
+    	JsonObject json = null; 
+    	ClientDetailsEntity client = null; 
         
+    	try {
+    		json = parser.parse(jsonString).getAsJsonObject();
+    		client = gson.fromJson(json, ClientDetailsEntity.class);
+    	} catch (JsonSyntaxException e) {
+    		//TODO: Error Handling
+    	} catch (IllegalStateException e) {
+			
+		}
+    	
         // if they leave the client secret empty, force it to be generated
         if (Strings.isNullOrEmpty(client.getClientId())) {
         	client = clientService.generateClientId(client);
@@ -165,14 +174,24 @@ public class ClientAPI {
     @RequestMapping(value="/{id}", method = RequestMethod.PUT, consumes = "application/json", produces = "application/json")
     public String apiUpdateClient(@PathVariable("id") Long id, @RequestBody String jsonString, Model m, Authentication auth) {
     	
-    	// TODO: sanity check if the thing really is a JSON object
-    	JsonObject json = parser.parse(jsonString).getAsJsonObject();
+    	JsonObject json = null;
+    	ClientDetailsEntity client = null;
+    	
+    	try {
+    		// parse the client passed in (from JSON) and fetch the old client from the store
+    		json = parser.parse(jsonString).getAsJsonObject();
+    		client = gson.fromJson(json, ClientDetailsEntity.class);
+    	} catch (JsonSyntaxException e) {
+    		//TODO: Error Handling
+    	} catch (IllegalStateException e) {
+			
+		}
 
-    	// parse the client passed in (from JSON) and fetch the old client from the store
-        ClientDetailsEntity client = gson.fromJson(json, ClientDetailsEntity.class);
         ClientDetailsEntity oldClient = clientService.getClientById(id);
         
         if (oldClient == null) {
+        	//TODO: Error Handling
+        	//Is this exception caught by a view? 
         	throw new ClientNotFoundException();
         }
         
@@ -233,6 +252,8 @@ public class ClientAPI {
     public String apiShowClient(@PathVariable("id") Long id, Model model, Authentication auth) {
         ClientDetailsEntity client = clientService.getClientById(id);
         if (client == null) {
+        	//TODO: Error Handling
+        	//Is this error handled by a view?
             throw new ClientNotFoundException("Could not find client: " + id);
         }
 
