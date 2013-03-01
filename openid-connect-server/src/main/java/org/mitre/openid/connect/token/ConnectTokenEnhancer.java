@@ -60,6 +60,7 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 		OAuth2AccessTokenEntity token = (OAuth2AccessTokenEntity) accessToken;
 		
 		String clientId = authentication.getAuthorizationRequest().getClientId();
+		ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
 		
 		JWTClaimsSet claims = new JWTClaimsSet();
 		
@@ -73,7 +74,9 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 
 		claims.setJWTID(UUID.randomUUID().toString()); // set a random NONCE in the middle of it
 		
-		SignedJWT signed = new SignedJWT(new JWSHeader(configBean.getDefaultSigningAlgorithm()), claims);
+		// TODO: use client's default signing algorithm
+
+		SignedJWT signed = new SignedJWT(new JWSHeader(jwtService.getDefaultSigningAlgorithm()), claims);
 		
 	    try {
 	        jwtService.signJwt(signed);
@@ -106,8 +109,6 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 			
 			idClaims.setIssueTime(new Date());
 			
-			ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
-			
 			if (client.getIdTokenValiditySeconds() != null) {
 				Date expiration = new Date(System.currentTimeMillis() + (client.getIdTokenValiditySeconds() * 1000L));
 				idClaims.setExpirationTime(expiration);
@@ -124,7 +125,7 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 				idClaims.setCustomClaim("nonce", nonce);
 			}
 
-			SignedJWT idToken = new SignedJWT(new JWSHeader(configBean.getDefaultSigningAlgorithm()), idClaims);
+			SignedJWT idToken = new SignedJWT(new JWSHeader(jwtService.getDefaultSigningAlgorithm()), idClaims);
 
 			//TODO: check for client's preferred signer alg and use that
 			

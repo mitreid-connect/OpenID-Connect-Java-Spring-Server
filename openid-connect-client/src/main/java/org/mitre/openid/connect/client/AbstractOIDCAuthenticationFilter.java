@@ -43,8 +43,10 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.jwt.signer.service.impl.DefaultJwtSigningAndValidationService;
+import org.mitre.jwt.signer.service.impl.JWKSetSigningAndValidationServiceCache;
 import org.mitre.key.fetch.KeyFetcher;
 import org.mitre.openid.connect.config.OIDCServerConfiguration;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
@@ -86,8 +88,9 @@ public class AbstractOIDCAuthenticationFilter extends
 	
 	// Allow for time sync issues by having a window of X seconds.
 	private int timeSkewAllowance = 300;
-	
-	private Map<OIDCServerConfiguration, JwtSigningAndValidationService> validationServices = new HashMap<OIDCServerConfiguration, JwtSigningAndValidationService>();
+
+	@Autowired
+	JWKSetSigningAndValidationServiceCache validationServices;
 	
 	/**
 	 * Builds the redirect_uri that will be sent to the Authorization Endpoint.
@@ -352,7 +355,7 @@ public class AbstractOIDCAuthenticationFilter extends
 	            ReadOnlyJWTClaimsSet idClaims = idToken.getJWTClaimsSet();
 	            
 	            // check the signature
-	            JwtSigningAndValidationService jwtValidator = getValidatorForServer(serverConfig); 
+	            JwtSigningAndValidationService jwtValidator = validationServices.get(serverConfig.getJwkSigningUrl()); 
 	            if (jwtValidator != null) {
 	            	if(!jwtValidator.validateSignature(idToken)) {
 	            		throw new AuthenticationServiceException("Signature validation failed");
@@ -605,57 +608,6 @@ public class AbstractOIDCAuthenticationFilter extends
 	 */
 	protected static String getStoredRedirectUri(HttpSession session) {
 		return getStoredSessionString(session, REDIRECT_URI_SESION_VARIABLE);
-	}
-	
-	
-	protected JwtSigningAndValidationService getValidatorForServer(OIDCServerConfiguration serverConfig) {
-
-		if(getValidationServices().containsKey(serverConfig)){
-			return validationServices.get(serverConfig);
-		} else {
-						
-			KeyFetcher keyFetch = new KeyFetcher();
-			PublicKey signingKey = null;
-			
-			if (serverConfig.getJwkSigningUrl() != null) {
-				// prefer the JWK
-				signingKey = keyFetch.retrieveJwkKey(serverConfig.getJwkSigningUrl());
-			} else if (serverConfig.getX509SigningUrl() != null) {
-				// use the x509 only if JWK isn't configured
-				signingKey = keyFetch.retrieveX509Key(serverConfig.getX509SigningUrl());				
-			} else {
-				// no keys configured
-				logger.warn("No server key URLs configured for " + serverConfig.getIssuer());
-			}
-			
-			if (signingKey != null) {
-
-				// TODO: this assumes RSA
-				JWSVerifier verifier = new RSASSAVerifier((RSAPublicKey) signingKey);
-				
-				Map<String, JWSVerifier> verifiers = ImmutableMap.of(serverConfig.getIssuer(), verifier);
-				
-				JwtSigningAndValidationService service = new DefaultJwtSigningAndValidationService(new HashMap<String, JWSSigner>(), verifiers);
-				
-				validationServices.put(serverConfig, service);
-				
-				return service;
-				
-			} else {
-				// there were either no keys returned or no URLs configured to fetch them, assume no checking on key signatures
-				return null;
-			}
-		}
-
-	}
-
-	public Map<OIDCServerConfiguration, JwtSigningAndValidationService> getValidationServices() {
-		return validationServices;
-	}
-
-	public void setValidationServices(
-			Map<OIDCServerConfiguration, JwtSigningAndValidationService> validationServices) {
-		this.validationServices = validationServices;
 	}
 	
 	public int getTimeSkewAllowance() {

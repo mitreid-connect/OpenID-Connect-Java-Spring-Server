@@ -28,7 +28,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.common.collect.ImmutableMap;
 import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSSigner;
 import com.nimbusds.jose.JWSVerifier;
 import com.nimbusds.jose.crypto.RSASSAVerifier;
@@ -36,9 +38,6 @@ import com.nimbusds.jwt.SignedJWT;
 
 public class DefaultJwtSigningAndValidationService implements JwtSigningAndValidationService, InitializingBean {
 
-	@Autowired 
-	private ConfigurationPropertiesBean configBean;
-	
 	// map of identifier to signer
 	private Map<String, JWSSigner> signers = new HashMap<String, JWSSigner>();
 	// map of identifier to verifier
@@ -46,24 +45,37 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 
 	private static Logger logger = LoggerFactory.getLogger(DefaultJwtSigningAndValidationService.class);
 
+	private String defaultSignerId;
+	
+	private JWSAlgorithm defaultAlgorithm;
+
 	/**
 	 * default constructor
 	 */
 	public DefaultJwtSigningAndValidationService() {
 
 	}
-	
-	public DefaultJwtSigningAndValidationService(Map<String, JWSSigner> signers, Map<String, JWSVerifier> verifiers) {
-	    this.signers = signers;
-	    this.verifiers = verifiers;
-    }
 
-	public DefaultJwtSigningAndValidationService(Map<String, RSASSASignerVerifierBuilder> builders) {
+	/**
+	 * Create a new validation service from the given set of verifiers (no signing)
+	 */
+	public DefaultJwtSigningAndValidationService(Map<String, JWSVerifier> verifiers) {
+		this.verifiers = verifiers;
+	}
+	
+	/**
+	 * Load this signing and validation service from the given builders (which load keys from keystores) 
+	 * @param builders
+	 */
+	public void setBuilders(Map<String, RSASSASignerVerifierBuilder> builders) {
 		
 		for (Entry<String, RSASSASignerVerifierBuilder> e : builders.entrySet()) {
 	        
 			JWSSigner signer = e.getValue().buildSigner();
 			signers.put(e.getKey(), signer);
+			if (e.getValue().isDefault()) {
+				defaultSignerId = e.getKey();
+			}
 			
 	        JWSVerifier verifier = e.getValue().buildVerifier();
 	        verifiers.put(e.getKey(), verifier);
@@ -72,6 +84,39 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 		
 	}
 
+	/**
+	 * @return the defaultSignerId
+	 */
+	public String getDefaultSignerId() {
+		return defaultSignerId;
+	}
+
+	/**
+	 * @param defaultSignerId the defaultSignerId to set
+	 */
+	public void setDefaultSignerId(String defaultSignerId) {
+		this.defaultSignerId = defaultSignerId;
+	}
+
+	/**
+	 * @return
+	 */
+	@Override
+    public JWSAlgorithm getDefaultSigningAlgorithm() {
+    	return defaultAlgorithm;
+    }
+    
+    public void setDefaultSigningAlgorithmName(String algName) {
+    	defaultAlgorithm = JWSAlgorithm.parse(algName);
+    }
+    
+    public String getDefaultSigningAlgorithmName() {
+    	if (defaultAlgorithm != null) {
+    		return defaultAlgorithm.getName();
+    	} else {
+    		return null;
+    	}
+    }
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -80,41 +125,20 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 	 */
 	@Override
 	public void afterPropertiesSet(){
-		// used for debugging...
-		if (!signers.isEmpty()) {
-			logger.info(this.toString());
-		}
-
-		logger.info("DefaultJwtSigningAndValidationService is open for business");
-
+		logger.info("DefaultJwtSigningAndValidationService is ready: " + this.toString());
 	}
-
-	/**
-	 * @return the configBean
-	 */
-	public ConfigurationPropertiesBean getConfigBean() {
-		return configBean;
-	}
-
-	/**
-	 * @param configBean the configBean to set
-	 */
-	public void setConfigBean(ConfigurationPropertiesBean configBean) {
-		this.configBean = configBean;
-	}
-	
 
 	/**
 	 * Sign a jwt in place using the configured default signer.
-	 * @throws JOSEException 
-	 * @throws NoSuchAlgorithmException 
 	 */
 	@Override
 	public void signJwt(SignedJWT jwt) {
-		String signerId = configBean.getDefaultJwtSigner();
+		if (getDefaultSignerId() == null) {
+			throw new IllegalStateException("Tried to call default signing with no default signer ID set");
+		}
 		
-		JWSSigner signer = signers.get(signerId);
-		
+		JWSSigner signer = signers.get(getDefaultSignerId());
+
 		try {
 	        jwt.sign(signer);
         } catch (JOSEException e) {

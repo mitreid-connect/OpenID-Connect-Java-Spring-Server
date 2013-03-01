@@ -3,14 +3,11 @@
  */
 package org.mitre.openid.connect.assertion;
 
-import java.security.PublicKey;
-import java.security.interfaces.RSAPublicKey;
 import java.text.ParseException;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
-import org.mitre.key.fetch.KeyFetcher;
+import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
+import org.mitre.jwt.signer.service.impl.JWKSetSigningAndValidationServiceCache;
 import org.mitre.oauth2.exception.ClientNotFoundException;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
@@ -24,12 +21,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import com.nimbusds.jose.JOSEException;
-import com.nimbusds.jose.JWSObject;
-import com.nimbusds.jose.JWSVerifier;
-import com.nimbusds.jose.crypto.RSASSAVerifier;
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 
 /**
  * @author jricher
@@ -40,7 +34,8 @@ public class JwtBearerAuthenticationProvider implements AuthenticationProvider {
 	private static final Logger logger = LoggerFactory.getLogger(JwtBearerAuthenticationProvider.class);
 
 	// map of verifiers, load keys for clients
-	private Map<ClientDetailsEntity, JWSVerifier> verifiers = new HashMap<ClientDetailsEntity, JWSVerifier>();
+	@Autowired
+	private JWKSetSigningAndValidationServiceCache validators;
 	
 	// Allow for time sync issues by having a window of X seconds.
 	private int timeSkewAllowance = 300;
@@ -69,10 +64,12 @@ public class JwtBearerAuthenticationProvider implements AuthenticationProvider {
     		ReadOnlyJWTClaimsSet jwtClaims = jwt.getJWTClaimsSet();
 
     		// check the signature with nimbus
-    		JWSVerifier verifier = getVerifierForClient(client);
-    		JWSObject jws = JWSObject.parse(jwtAuth.getJwt().toString());    		
-    		if (verifier == null && !jws.verify(verifier)) {
-    			throw new AuthenticationServiceException("Invalid signature");
+    		if (jwt instanceof SignedJWT) {
+    			SignedJWT jws = (SignedJWT)jwt;
+    			JwtSigningAndValidationService validator = validators.get(client.getJwkUrl());
+	    		if (validator == null || !validator.validateSignature(jws)) {
+	    			throw new AuthenticationServiceException("Invalid signature");
+	    		}
     		}
     		
 			// check the issuer
@@ -125,12 +122,7 @@ public class JwtBearerAuthenticationProvider implements AuthenticationProvider {
     	} catch (ParseException e) {
 	        // TODO Auto-generated catch block
 	        throw new AuthenticationServiceException("Invalid JWT format");
-        } catch (JOSEException e) {
-	        // TODO Auto-generated catch block
-	        throw new AuthenticationServiceException("JOSE Error");
         }
-    	
-    	
     }
 
 	/**
@@ -141,39 +133,5 @@ public class JwtBearerAuthenticationProvider implements AuthenticationProvider {
 	    return (JwtBearerAssertionAuthenticationToken.class.isAssignableFrom(authentication));
     }
 
-	protected JWSVerifier getVerifierForClient(ClientDetailsEntity client) {
-
-		if(verifiers.containsKey(client)){
-			return verifiers.get(client);
-		} else {
-						
-			KeyFetcher keyFetch = new KeyFetcher();
-			PublicKey signingKey = null;
-			
-			if (client.getJwkUrl() != null) {
-				// prefer the JWK
-				signingKey = keyFetch.retrieveJwkKey(client.getJwkUrl());
-			} else if (client.getX509Url() != null) {
-				// use the x509 only if JWK isn't configured
-				signingKey = keyFetch.retrieveX509Key(client.getX509Url());				
-			} else {
-				// no keys configured
-				logger.warn("No server key URLs configured for " + client.getClientId());
-			}
-			
-			if (signingKey != null) {
-
-				// TODO: this assumes RSA
-				JWSVerifier verifier = new RSASSAVerifier((RSAPublicKey) signingKey);
-				
-				verifiers.put(client, verifier);
-				
-				return verifier;
-				
-			} else {
-				// there were either no keys returned or no URLs configured to fetch them, assume no checking on key signatures
-				return null;
-			}
-		}
-	}
+	
 }

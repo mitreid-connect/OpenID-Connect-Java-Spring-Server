@@ -10,17 +10,19 @@
 
 	<bean id="defaultsignerService"
 		class="org.mitre.jwt.signer.service.impl.DefaultJwtSigningAndValidationService">
-		<constructor-arg name="builders">
+		<property name="builders">
 			<map>
 				<entry key="rsa1">
 					<bean id="rsaSignerBuilder" class="org.mitre.jwt.signer.service.impl.RSASSASignerVerifierBuilder">
 						<property name="keystore" ref="defaultKeystore" />
 						<property name="alias" value="rsa" />
 						<property name="password" value="changeit" />
+						<property name="default" value="true" />
 					</bean>
 				</entry>
 			</map>
-		</constructor-arg>
+		</property>
+ 		<property name="defaultSigningAlgorithmName" value="RS256" />
 	</bean>
 
 </beans>

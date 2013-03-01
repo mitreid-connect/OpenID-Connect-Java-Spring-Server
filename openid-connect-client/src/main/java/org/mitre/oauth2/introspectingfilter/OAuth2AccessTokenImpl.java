@@ -1,4 +1,4 @@
-package org.mitre.oauth2.filter;
+package org.mitre.oauth2.introspectingfilter;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;

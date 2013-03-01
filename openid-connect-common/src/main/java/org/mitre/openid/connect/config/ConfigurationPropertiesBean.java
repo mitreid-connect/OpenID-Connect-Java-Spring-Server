@@ -15,7 +15,6 @@
  ******************************************************************************/
 package org.mitre.openid.connect.config;
 
-import com.nimbusds.jose.JWSAlgorithm;
 
 
 /**
@@ -30,10 +29,6 @@ public class ConfigurationPropertiesBean {
 
 	private String issuer;
 	
-	private String defaultJwtSigner;
-
-	private JWSAlgorithm defaultAlgorithm;
-	
 	private String adminConsoleTopbarTitle;
 	
 	private String logoImageUrl;
@@ -46,17 +41,6 @@ public class ConfigurationPropertiesBean {
 	public ConfigurationPropertiesBean() {
 	}
 	
-	/**
-	 * @return the defaultJwtSigner
-	 */
-	public String getDefaultJwtSigner() {
-		return defaultJwtSigner;
-	}
-	
-	public void setDefaultJwtSigner(String signer) {
-		defaultJwtSigner = signer;
-	}
-
 	/**
 	 * @return the baseUrl
 	 */
@@ -71,25 +55,6 @@ public class ConfigurationPropertiesBean {
 		issuer = iss;
 	}
 
-	/**
-	 * @return
-	 */
-    public JWSAlgorithm getDefaultSigningAlgorithm() {
-    	return defaultAlgorithm;
-    }
-    
-    public void setDefaultSigningAlgorithmName(String algName) {
-    	defaultAlgorithm = JWSAlgorithm.parse(algName);
-    }
-    
-    public String getDefaultSigningAlgorithmName() {
-    	if (defaultAlgorithm != null) {
-    		return defaultAlgorithm.getName();
-    	} else {
-    		return null;
-    	}
-    }
-    
 	public String getAdminConsoleTopbarTitle() {
 		return adminConsoleTopbarTitle;
 	}

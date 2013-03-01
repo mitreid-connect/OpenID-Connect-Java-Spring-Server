@@ -19,6 +19,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.util.Map;
 
+import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jwt.SignedJWT;
 
 public interface JwtSigningAndValidationService {
@@ -48,6 +49,12 @@ public interface JwtSigningAndValidationService {
 	 * @throws NoSuchAlgorithmException 
 	 */
 	public void signJwt(SignedJWT jwt) throws NoSuchAlgorithmException;
+
+	/**
+	 * Get the default signing algorithm for use when nothing else has been specified.
+	 * @return
+	 */
+    JWSAlgorithm getDefaultSigningAlgorithm();
 
 	/**
 	 * Sign a jwt using the selected algorithm. The algorithm is selected using the String parameter values specified

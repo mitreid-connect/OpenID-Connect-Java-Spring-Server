@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.mitre.openid.connect.client;
+package org.mitre.openid.connect.client.keypublisher;
 
 import java.lang.reflect.Method;
 

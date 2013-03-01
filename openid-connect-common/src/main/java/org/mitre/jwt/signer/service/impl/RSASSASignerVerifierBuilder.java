@@ -28,6 +28,8 @@ public class RSASSASignerVerifierBuilder {
 	private String alias;
 	private String password;
 	private KeyStore keystore;
+	private boolean defaultSigner = false;
+	
 	/**
 	 * @return the alias
 	 */
@@ -65,6 +67,18 @@ public class RSASSASignerVerifierBuilder {
 		this.keystore = keystore;
 	}
 	
+	/**
+	 * @return the defaultSigner
+	 */
+	public boolean isDefault() {
+		return defaultSigner;
+	}
+	/**
+	 * @param defaultSigner the defaultSigner to set
+	 */
+	public void setDefault(boolean defaultSigner) {
+		this.defaultSigner = defaultSigner;
+	}
 	/**
 	 * Build the signer as configured from the given keystore, null if it can't be built for some reason
 	 * @return

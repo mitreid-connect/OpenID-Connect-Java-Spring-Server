@@ -14,8 +14,6 @@
 
 	<bean id="configBean" class="org.mitre.openid.connect.config.ConfigurationPropertiesBean">
 		<property name="issuer" value="http://localhost/" />
- 		<property name="defaultJwtSigner"  value="rsa1"/>
- 		<property name="defaultSigningAlgorithmName" value="RS256" />
  		<property name="adminConsoleCopyrightFooter" value="The MTIRE Corporation" />
  		<property name="logoImageUrl" value="https://id.mitre.org/connect/resources/images/openid_connect_small.png" />
  		<property name="adminConsoleTopbarTitle" value="MITREid Connect" />
