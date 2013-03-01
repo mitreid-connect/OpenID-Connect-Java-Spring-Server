@@ -12,14 +12,18 @@ import net.minidev.json.JSONObject;
 
 import org.joda.time.DateTime;
 import org.joda.time.Period;
+import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.jwt.signer.service.impl.JWKSetSigningAndValidationServiceCacheService;
 import org.mitre.oauth2.exception.NonceReuseException;
+import org.mitre.oauth2.model.ClientDetailsEntity;
+import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.openid.connect.model.Nonce;
 import org.mitre.openid.connect.service.NonceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
@@ -28,12 +32,10 @@ import org.springframework.security.oauth2.common.util.OAuth2Utils;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.AuthorizationRequestManager;
 import org.springframework.security.oauth2.provider.ClientDetails;
-import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.DefaultAuthorizationRequest;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
-import com.nimbusds.jose.JWSObject;
 import com.nimbusds.jose.util.JSONObjectUtils;
 import com.nimbusds.jwt.SignedJWT;
 
@@ -46,7 +48,7 @@ public class ConnectAuthorizationRequestManager implements AuthorizationRequestM
 	private NonceService nonceService;
 	
 	@Autowired
-	private ClientDetailsService clientDetailsService;
+	private ClientDetailsEntityService clientDetailsService;
 
 	@Autowired
 	private JWKSetSigningAndValidationServiceCacheService validators;
@@ -59,7 +61,7 @@ public class ConnectAuthorizationRequestManager implements AuthorizationRequestM
 	 * @param clientDetailsService
 	 * @param nonceService
 	 */
-	public ConnectAuthorizationRequestManager(ClientDetailsService clientDetailsService, NonceService nonceService) {
+	public ConnectAuthorizationRequestManager(ClientDetailsEntityService clientDetailsService, NonceService nonceService) {
 		this.clientDetailsService = clientDetailsService;
 		this.nonceService = nonceService;
 	}
@@ -159,11 +161,28 @@ public class ConnectAuthorizationRequestManager implements AuthorizationRequestM
         	SignedJWT jwsObject = SignedJWT.parse(jwtString);
 			JSONObject claims = jwsObject.getPayload().toJSONObject(); 
 			
-			// TODO: validate JWT signature
-			
-			
-	
 			// TODO: check parameter consistency, move keys to constants
+			
+			String clientId = JSONObjectUtils.getString(claims, "client_id");
+			if (clientId != null) {
+				parameters.put("client_id", clientId);
+			}
+			
+			ClientDetailsEntity client = clientDetailsService.loadClientByClientId(clientId);
+
+			if (client.getJwkUrl() == null) {
+				throw new InvalidClientException("Client must have a JWK URI registered to use request objects.");
+			}
+			
+			// check JWT signature
+			JwtSigningAndValidationService validator = validators.get(client.getJwkUrl());
+			if (validator == null) {
+				throw new InvalidClientException("Client must have a JWK URI registered to use request objects.");
+			}
+			
+			if (!validator.validateSignature(jwsObject)) {
+				throw new AuthenticationServiceException("Signature did not validate for presented JWT request object.");
+			}
 			
 			/*
 			 * if (in Claims):
@@ -181,11 +200,6 @@ public class ConnectAuthorizationRequestManager implements AuthorizationRequestM
 			String responseTypes = JSONObjectUtils.getString(claims, "response_type");
 			if (responseTypes != null) {
 				parameters.put("response_type", responseTypes);
-			}
-			
-			String clientId = JSONObjectUtils.getString(claims, "client_id");
-			if (clientId != null) {
-				parameters.put("client_id", clientId);
 			}
 			
 			if (claims.get("redirect_uri") != null) {
