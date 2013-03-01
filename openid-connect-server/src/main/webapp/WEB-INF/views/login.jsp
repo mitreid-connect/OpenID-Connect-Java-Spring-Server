@@ -26,7 +26,7 @@ $(document).ready(function() {
  <fieldset>
     <div class="input-prepend"><span class="add-on"><i class="icon-user"></i></span><input type="text" name="j_username" id="j_username" value="" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" placeholder="Username"></div>
     <div class="input-prepend"><span class="add-on"><i class="icon-lock"></i></span><input type="password" name="j_password" id="j_password" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" placeholder="Password"></div>
-    <div class="form-actions"><input type="submit" name="submit" value="Login" class="btn"></div>    <div class="form-actions"><input name="submit" value="Login" class="btn" type="submit"></div>
+    <div class="form-actions"><input type="submit" name="submit" value="Login" class="btn"></div>
   </fieldset>
 </form>
 
