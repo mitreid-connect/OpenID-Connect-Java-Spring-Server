@@ -27,7 +27,7 @@
 	</mvc:interceptors>
 	<mvc:default-servlet-handler />
 
-	<!-- Bean to hold configuration propreties -->
+	<!-- Bean to hold configuration properties -->
 	<import resource="server-config.xml" />
 
 	<!-- Import the data context -->
