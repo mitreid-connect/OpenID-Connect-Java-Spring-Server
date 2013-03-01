@@ -23,6 +23,8 @@ import java.io.Writer;
 import java.math.BigInteger;
 import java.security.PublicKey;
 import java.security.interfaces.RSAPublicKey;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -41,6 +43,12 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.nimbusds.jose.JWK;
+import com.nimbusds.jose.JWKSet;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.RSAKey;
+import com.nimbusds.jose.Use;
+import com.nimbusds.jose.util.Base64URL;
 
 /**
  * @author jricher
@@ -54,34 +62,13 @@ public class JwkKeyListView extends AbstractView {
 	@Override
 	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
 
-		Gson gson = new GsonBuilder()
-		.setExclusionStrategies(new ExclusionStrategy() {
-			
-			public boolean shouldSkipField(FieldAttributes f) {
-				
-				return false;
-			}
-			
-			public boolean shouldSkipClass(Class<?> clazz) {
-				// skip the JPA binding wrapper
-				if (clazz.equals(BeanPropertyBindingResult.class)) {
-					return true;
-				}
-				return false;
-			}
-							
-		})
-		.create();
-		
 		response.setContentType("application/json");
 		
 		
 		//BiMap<String, PublicKey> keyMap = (BiMap<String, PublicKey>) model.get("keys");
 		Map<String, PublicKey> keys = (Map<String, PublicKey>) model.get("keys");
 		
-		JsonObject obj = new JsonObject();
-		JsonArray keyList = new JsonArray();
-		obj.add("keys", keyList);
+		List<JWK> jwks = new ArrayList<JWK>();
 		
 		for (String keyId : keys.keySet()) {
 
@@ -94,27 +81,18 @@ public class JwkKeyListView extends AbstractView {
 				BigInteger mod = rsa.getModulus();
 				BigInteger exp = rsa.getPublicExponent();
 				
-				String m64 = Base64.encodeBase64URLSafeString(mod.toByteArray());
-				String e64 = Base64.encodeBase64URLSafeString(exp.toByteArray());
-				
-				JsonObject o = new JsonObject();
+				RSAKey rsaKey = new RSAKey(Base64URL.encode(mod.toByteArray()), Base64URL.encode(exp.toByteArray()), Use.SIGNATURE, JWSAlgorithm.RS256, keyId);
 
-				o.addProperty("use", "sig"); // since we don't do encryption yet
-				o.addProperty("alg", "RSA"); //rsaSigner.getAlgorithm()); // we know this is RSA
-				o.addProperty("mod", m64);
-				o.addProperty("exp", e64);
-				o.addProperty("kid", keyId);
-
-				keyList.add(o);
+				jwks.add(rsaKey);
 			} // TODO: deal with non-RSA key types
         }
 		
-		Writer out;
+		JWKSet jwkSet = new JWKSet(jwks);
 		
 		try {
 			
-			out = response.getWriter();
-			gson.toJson(obj, out);
+			Writer out = response.getWriter();
+			out.write(jwkSet.toString());
 			
 		} catch (IOException e) {
 			
