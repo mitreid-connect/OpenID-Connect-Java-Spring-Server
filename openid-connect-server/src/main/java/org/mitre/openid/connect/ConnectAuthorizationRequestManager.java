@@ -12,6 +12,7 @@ import net.minidev.json.JSONObject;
 
 import org.joda.time.DateTime;
 import org.joda.time.Period;
+import org.mitre.jwt.signer.service.impl.JWKSetSigningAndValidationServiceCacheService;
 import org.mitre.oauth2.exception.NonceReuseException;
 import org.mitre.openid.connect.model.Nonce;
 import org.mitre.openid.connect.service.NonceService;
@@ -34,6 +35,7 @@ import org.springframework.stereotype.Component;
 import com.google.common.base.Strings;
 import com.nimbusds.jose.JWSObject;
 import com.nimbusds.jose.util.JSONObjectUtils;
+import com.nimbusds.jwt.SignedJWT;
 
 @Component("authorizationRequestManager")
 public class ConnectAuthorizationRequestManager implements AuthorizationRequestManager, InitializingBean {
@@ -45,6 +47,9 @@ public class ConnectAuthorizationRequestManager implements AuthorizationRequestM
 	
 	@Autowired
 	private ClientDetailsService clientDetailsService;
+
+	@Autowired
+	private JWKSetSigningAndValidationServiceCacheService validators;
 	
 	private Period nonceStorageDuration;
 
@@ -151,7 +156,7 @@ public class ConnectAuthorizationRequestManager implements AuthorizationRequestM
 
     	// parse the request object
         try {
-        	JWSObject jwsObject = JWSObject.parse(jwtString);
+        	SignedJWT jwsObject = SignedJWT.parse(jwtString);
 			JSONObject claims = jwsObject.getPayload().toJSONObject(); 
 			
 			// TODO: validate JWT signature

@@ -7,7 +7,7 @@ import java.text.ParseException;
 import java.util.Date;
 
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
-import org.mitre.jwt.signer.service.impl.JWKSetSigningAndValidationServiceCache;
+import org.mitre.jwt.signer.service.impl.JWKSetSigningAndValidationServiceCacheService;
 import org.mitre.oauth2.exception.ClientNotFoundException;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
@@ -35,7 +35,7 @@ public class JwtBearerAuthenticationProvider implements AuthenticationProvider {
 
 	// map of verifiers, load keys for clients
 	@Autowired
-	private JWKSetSigningAndValidationServiceCache validators;
+	private JWKSetSigningAndValidationServiceCacheService validators;
 	
 	// Allow for time sync issues by having a window of X seconds.
 	private int timeSkewAllowance = 300;

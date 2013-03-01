@@ -43,7 +43,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.jwt.signer.service.impl.DefaultJwtSigningAndValidationService;
-import org.mitre.jwt.signer.service.impl.JWKSetSigningAndValidationServiceCache;
+import org.mitre.jwt.signer.service.impl.JWKSetSigningAndValidationServiceCacheService;
 import org.mitre.key.fetch.KeyFetcher;
 import org.mitre.openid.connect.config.OIDCServerConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,7 +90,7 @@ public class AbstractOIDCAuthenticationFilter extends
 	private int timeSkewAllowance = 300;
 
 	@Autowired
-	JWKSetSigningAndValidationServiceCache validationServices;
+	JWKSetSigningAndValidationServiceCacheService validationServices;
 	
 	/**
 	 * Builds the redirect_uri that will be sent to the Authorization Endpoint.
