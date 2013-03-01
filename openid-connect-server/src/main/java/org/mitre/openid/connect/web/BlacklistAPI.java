@@ -75,12 +75,15 @@ public class BlacklistAPI {
 			BlacklistedSite newBlacklist = blacklistService.saveNew(blacklist);
 			m.put("entity", newBlacklist);
 			
-		} catch (JsonSyntaxException e) {
-			//TODO: Error Handling
+		} 
+		//TODO: Java 7 combine catch statements
+		catch (JsonSyntaxException e) {
+			m.put("code", HttpStatus.BAD_REQUEST);
+			return "httpCodeView";
 		} catch (IllegalStateException e) {
-			
+			m.put("code", HttpStatus.BAD_REQUEST);
+			return "httpCodeView";
 		}
-
 		
 		return "jsonEntityView";
 		
@@ -101,10 +104,14 @@ public class BlacklistAPI {
 			json = parser.parse(jsonString).getAsJsonObject();
 			blacklist = gson.fromJson(json, BlacklistedSite.class);
 			
-		} catch (JsonSyntaxException e) {
-			//TODO: Error Handling
+		} 
+		//TODO: Java 7 combine catch statements
+		catch (JsonSyntaxException e) {
+			m.put("code", HttpStatus.BAD_REQUEST);
+			return "httpCodeView";
 		} catch (IllegalStateException e) {
-			
+			m.put("code", HttpStatus.BAD_REQUEST);
+			return "httpCodeView";
 		}
 		
 		

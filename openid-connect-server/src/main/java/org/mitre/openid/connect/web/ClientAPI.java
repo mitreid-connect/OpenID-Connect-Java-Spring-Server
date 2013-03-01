@@ -131,10 +131,14 @@ public class ClientAPI {
     	try {
     		json = parser.parse(jsonString).getAsJsonObject();
     		client = gson.fromJson(json, ClientDetailsEntity.class);
-    	} catch (JsonSyntaxException e) {
-    		//TODO: Error Handling
+    	} 
+    	//TODO: Java 7 combine catch statements
+    	catch (JsonSyntaxException e) {
+    		m.addAttribute("code", HttpStatus.BAD_REQUEST);
+			return "httpCodeView";
     	} catch (IllegalStateException e) {
-			
+    		m.addAttribute("code", HttpStatus.BAD_REQUEST);
+			return "httpCodeView";
 		}
     	
         // if they leave the client secret empty, force it to be generated
@@ -181,10 +185,14 @@ public class ClientAPI {
     		// parse the client passed in (from JSON) and fetch the old client from the store
     		json = parser.parse(jsonString).getAsJsonObject();
     		client = gson.fromJson(json, ClientDetailsEntity.class);
-    	} catch (JsonSyntaxException e) {
-    		//TODO: Error Handling
+    	} 
+    	//TODO: Java 7 combine catch statements
+    	catch (JsonSyntaxException e) {
+    		m.addAttribute("code", HttpStatus.BAD_REQUEST);
+			return "httpCodeView";
     	} catch (IllegalStateException e) {
-			
+    		m.addAttribute("code", HttpStatus.BAD_REQUEST);
+			return "httpCodeView";
 		}
 
         ClientDetailsEntity oldClient = clientService.getClientById(id);
