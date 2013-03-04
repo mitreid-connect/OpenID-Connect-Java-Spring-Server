@@ -107,6 +107,19 @@ public class ClientDynamicRegistrationEndpoint {
 			// this client has been dynamically registered (obviously)
 			newClient.setDynamicallyRegistered(true);
 			
+			if (newClient.getTokenEndpointAuthMethod() == null) {
+				newClient.setTokenEndpointAuthMethod(AuthMethod.SECRET_BASIC);
+			}
+			
+			if (newClient.getTokenEndpointAuthMethod() == AuthMethod.SECRET_BASIC ||
+					newClient.getTokenEndpointAuthMethod() == AuthMethod.SECRET_JWT ||
+					newClient.getTokenEndpointAuthMethod() == AuthMethod.SECRET_POST) {
+				
+				// we need to generate a secret
+				newClient = clientService.generateClientSecret(newClient);
+			}
+			
+			
 			// now save it
 			ClientDetailsEntity savedClient = clientService.saveNewClient(newClient);
 			
@@ -185,8 +198,8 @@ public class ClientDynamicRegistrationEndpoint {
 			c.setRequestObjectSigningAlg(getAsJwsAlgorithm(o, "request_object_signing_alg"));
 			
 			c.setUserInfoSignedResponseAlg(getAsJwsAlgorithm(o, "userinfo_signed_response_alg"));
-			c.setUserInfoEncryptedResponseAlg(getAsJweAlgorithm(o, "user_info_encrypted_response_alg"));
-			c.setUserInfoEncryptedResponseEnc(getAsJweEncryptionMethod(o, "user_info_encrypted_response_enc"));
+			c.setUserInfoEncryptedResponseAlg(getAsJweAlgorithm(o, "userinfo_encrypted_response_alg"));
+			c.setUserInfoEncryptedResponseEnc(getAsJweEncryptionMethod(o, "userinfo_encrypted_response_enc"));
 			
 			c.setIdTokenSignedResponseAlg(getAsJwsAlgorithm(o, "id_token_signed_response_alg"));
 			c.setIdTokenEncryptedResponseAlg(getAsJweAlgorithm(o, "id_token_encrypted_response_alg"));
