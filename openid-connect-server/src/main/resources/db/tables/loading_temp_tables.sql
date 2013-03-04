@@ -1,6 +1,6 @@
 --
 -- Temporary tables used during the bootstrapping process to safely load users and clients.
--- These are not needed if you're not using the users.sql file to bootstrap the database.
+-- These are not needed if you're not using the users.sql/clients.sql files to bootstrap the database.
 --
 
 CREATE TEMPORARY TABLE IF NOT EXISTS authorities_TEMP (
@@ -55,14 +55,14 @@ CREATE TEMPORARY TABLE IF NOT EXISTS client_scope_TEMP (
 	scope VARCHAR(2048)
 );
 
-CREATE TEMPORARY TABLE IF NOT EXISTS redirect_uri_TEMP (
+CREATE TEMPORARY TABLE IF NOT EXISTS client_redirect_uri_TEMP (
 	owner_id VARCHAR(256),
 	redirect_uri VARCHAR(2048) 
 );
 
-CREATE TEMPORARY TABLE IF NOT EXISTS authorized_grant_type_TEMP (
+CREATE TEMPORARY TABLE IF NOT EXISTS client_grant_type_TEMP (
 	owner_id VARCHAR(256),
-	authorized_grant_type VARCHAR(2000)
+	grant_type VARCHAR(2000)
 );
 
 CREATE TEMPORARY TABLE IF NOT EXISTS system_scope_TEMP (
