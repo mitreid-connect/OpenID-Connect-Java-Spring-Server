@@ -15,9 +15,13 @@
  ******************************************************************************/
 package org.mitre.openid.connect.web;
 
+import java.lang.reflect.Type;
 import java.security.Principal;
 import java.util.Collection;
 
+import org.mitre.jose.JWEAlgorithmEntity;
+import org.mitre.jose.JWEEncryptionMethodEntity;
+import org.mitre.jose.JWSAlgorithmEntity;
 import org.mitre.oauth2.exception.ClientNotFoundException;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
@@ -35,8 +39,15 @@ import org.springframework.web.servlet.ModelAndView;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 
 /**
  * @author Michael Jett <mjett@mitre.org>
@@ -50,9 +61,40 @@ public class ClientAPI {
     @Autowired
     private ClientDetailsEntityService clientService;
 	private JsonParser parser = new JsonParser();
-	private Gson gson = new GsonBuilder().serializeNulls()
-            .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
-            .create();
+	private Gson gson = new GsonBuilder()
+			.serializeNulls()
+		    .registerTypeAdapter(JWSAlgorithmEntity.class, new JsonDeserializer<JWSAlgorithmEntity>() {
+				@Override
+                public JWSAlgorithmEntity deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+					if (json.isJsonPrimitive()) {
+						return new JWSAlgorithmEntity(json.getAsString());
+					} else {
+						return null;
+					}
+                }
+		    })
+		    .registerTypeAdapter(JWEAlgorithmEntity.class, new JsonDeserializer<JWEAlgorithmEntity>() {
+				@Override
+                public JWEAlgorithmEntity deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+					if (json.isJsonPrimitive()) {
+						return new JWEAlgorithmEntity(json.getAsString());
+					} else {
+						return null;
+					}
+                }
+		    })
+		    .registerTypeAdapter(JWEEncryptionMethodEntity.class, new JsonDeserializer<JWEEncryptionMethodEntity>() {
+				@Override
+                public JWEEncryptionMethodEntity deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+					if (json.isJsonPrimitive()) {
+						return new JWEEncryptionMethodEntity(json.getAsString());
+					} else {
+						return null;
+					}
+                }
+		    })
+          .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+          .create();
 
     /**
      * Get a list of all clients
@@ -64,7 +106,7 @@ public class ClientAPI {
 
         Collection<ClientDetailsEntity> clients = clientService.getAllClients();
         modelAndView.addObject("entity", clients);
-        modelAndView.setViewName("jsonEntityView");
+        modelAndView.setViewName("clientEntityView");
 
         return modelAndView;
     }
@@ -101,7 +143,7 @@ public class ClientAPI {
         ClientDetailsEntity newClient = clientService.saveNewClient(client);
 		m.addAttribute("entity", newClient);
 
-        return "jsonEntityView";
+        return "clientEntityView";
     }
 
     /**
@@ -143,7 +185,7 @@ public class ClientAPI {
         ClientDetailsEntity newClient = clientService.updateClient(oldClient, client);
 		m.addAttribute("entity", newClient);
 
-        return "jsonEntityView";
+        return "clientEntityView";
     }
 
     /**
@@ -182,7 +224,7 @@ public class ClientAPI {
         }
 
         modelAndView.addObject("entity", client);
-        modelAndView.setViewName("jsonEntityView");
+        modelAndView.setViewName("clientEntityView");
 
         return modelAndView;
     }

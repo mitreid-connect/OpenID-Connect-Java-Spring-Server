@@ -31,30 +31,30 @@ public class JsonEntityView extends AbstractView {
 
 	private static Logger logger = LoggerFactory.getLogger(JsonEntityView.class);
 
-    protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
+	private Gson gson = new GsonBuilder()
+	    .setExclusionStrategies(new ExclusionStrategy() {
+	
+	        public boolean shouldSkipField(FieldAttributes f) {
+	
+	            return false;
+	        }
+	
+	        public boolean shouldSkipClass(Class<?> clazz) {
+	            // skip the JPA binding wrapper
+	            if (clazz.equals(BeanPropertyBindingResult.class)) {
+	                return true;
+	            }
+	            return false;
+	        }
+	
+	    })
+	    .serializeNulls()
+	    .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+	    .create();
 
-        Gson gson = new GsonBuilder()
-                .setExclusionStrategies(new ExclusionStrategy() {
+	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
 
-                    public boolean shouldSkipField(FieldAttributes f) {
-
-                        return false;
-                    }
-
-                    public boolean shouldSkipClass(Class<?> clazz) {
-                        // skip the JPA binding wrapper
-                        if (clazz.equals(BeanPropertyBindingResult.class)) {
-                            return true;
-                        }
-                        return false;
-                    }
-
-                })
-                .serializeNulls()
-                .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
-                .create();
-
-        response.setContentType("application/json");
+		response.setContentType("application/json");
 
         
 		HttpStatus code = (HttpStatus) model.get("code");
