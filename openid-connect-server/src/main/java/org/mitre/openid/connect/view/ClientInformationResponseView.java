@@ -19,6 +19,7 @@ import org.springframework.web.servlet.view.AbstractView;
 import com.google.common.base.Joiner;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
 
 /**
@@ -40,7 +41,8 @@ public class ClientInformationResponseView extends AbstractView {
 
 		response.setContentType("application/json");
 		
-		Gson gson = new GsonBuilder().create();
+		// note that this won't serialize nulls by default
+		Gson gson = new Gson();
 		
 		ClientDetailsEntity client = (ClientDetailsEntity) model.get("client");
 		OAuth2AccessTokenEntity token = (OAuth2AccessTokenEntity) model.get("token");
@@ -49,7 +51,36 @@ public class ClientInformationResponseView extends AbstractView {
 			code = HttpStatus.OK;
 		}
 		
+		JsonObject obj = new JsonObject();
 		
+		obj.addProperty("client_id", client.getClientId());
+		if (client.getClientSecret() != null) {
+			obj.addProperty("client_secret", client.getClientSecret());
+			obj.addProperty("expires_at", 0); // TODO: do we want to let secrets expire?
+		}
+		obj.addProperty("issued_at", client.getCreatedAt().getTime());
+
+		obj.addProperty("registration_access_token", token.getValue());
+		
+		// TODO: urlencode the client id for safety?
+		String uri = request.getRequestURL() + "/" + client.getClientId();		
+		obj.addProperty("registration_client_uri", uri);
+		
+		
+		// add in all other client properties
+		
+		
+		
+		try {
+	        Writer out = response.getWriter();
+	        gson.toJson(obj, out);
+        } catch (JsonIOException e) {
+	        // TODO Auto-generated catch block
+	        e.printStackTrace();
+        } catch (IOException e) {
+	        // TODO Auto-generated catch block
+	        e.printStackTrace();
+        }		
 			
 	}
 
