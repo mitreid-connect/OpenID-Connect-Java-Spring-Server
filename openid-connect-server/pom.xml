@@ -58,7 +58,6 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <configuration>
                     <warName>openid-connect-server</warName>
-                    <useCache>true</useCache>
                 </configuration>
             </plugin>
             <plugin>

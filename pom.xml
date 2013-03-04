@@ -32,7 +32,25 @@
     <description>Reference implementation of OpenID Connect spec (http://openid.net/connect/).
     </description>
     <url></url>
-    
+    <build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.4</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.2</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-archiver</artifactId>
+				<version>2.5</version>
+			</plugin>
+		</plugins>
+	</build>
     <dependencies>
         <!-- Spring -->
         <dependency>
