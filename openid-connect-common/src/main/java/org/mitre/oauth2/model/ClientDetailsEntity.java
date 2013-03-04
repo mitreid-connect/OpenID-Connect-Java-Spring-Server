@@ -98,7 +98,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	private JWEEncryptionMethodEntity idTokenEncryptedReponseEnc; // id_token_encrypted_response_enc
 	
 	private Integer defaultMaxAge; // default_max_age
-	private boolean requireAuthTime = false; // require_auth_time
+	private Boolean requireAuthTime; // require_auth_time
 	private Set<String> defaultACRvalues; // default_acr_values
 	
 	private String initiateLoginUri; // initiate_login_uri
@@ -752,11 +752,11 @@ public class ClientDetailsEntity implements ClientDetails {
 
 	@Basic
 	@Column(name="require_auth_time")
-	public boolean getRequireAuthTime() {
+	public Boolean getRequireAuthTime() {
 		return requireAuthTime;
 	}
 
-	public void setRequireAuthTime(boolean requireAuthTime) {
+	public void setRequireAuthTime(Boolean requireAuthTime) {
 		this.requireAuthTime = requireAuthTime;
 	}
 

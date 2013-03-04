@@ -108,7 +108,7 @@ CREATE TABLE IF NOT EXISTS client_details (
 	id_token_encrypted_response_enc VARCHAR(256),
 	
 	default_max_age BIGINT,
-	require_auth_time BOOLEAN NOT NULL DEFAULT FALSE,
+	require_auth_time BOOLEAN,
 	created_at TIMESTAMP,
 	initiate_login_uri VARCHAR(2048),
 	post_logout_redirect_uri VARCHAR(2048)
