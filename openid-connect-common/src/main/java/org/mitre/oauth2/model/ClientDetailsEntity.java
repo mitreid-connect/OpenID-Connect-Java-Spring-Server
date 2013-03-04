@@ -42,6 +42,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.mitre.jose.JWEAlgorithmEntity;
@@ -855,6 +857,8 @@ public class ClientDetailsEntity implements ClientDetails {
 	/**
 	 * @return the createdAt
 	 */
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="created_at")
     public Date getCreatedAt() {
 	    return createdAt;
     }

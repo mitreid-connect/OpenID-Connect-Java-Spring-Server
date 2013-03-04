@@ -18,6 +18,7 @@ package org.mitre.oauth2.service.impl;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.Collection;
+import java.util.Date;
 import java.util.UUID;
 
 import org.apache.commons.codec.binary.Base64;
@@ -25,7 +26,6 @@ import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.repository.OAuth2ClientRepository;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
-import org.mitre.openid.connect.model.ApprovedSite;
 import org.mitre.openid.connect.model.WhitelistedSite;
 import org.mitre.openid.connect.service.ApprovedSiteService;
 import org.mitre.openid.connect.service.BlacklistedSiteService;
@@ -33,7 +33,6 @@ import org.mitre.openid.connect.service.WhitelistedSiteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
-import org.springframework.security.oauth2.provider.refresh.RefreshTokenGranter;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Strings;
@@ -92,6 +91,9 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
         } else {
         	client.getScope().remove("offline_access");
         }
+        
+        // timestamp this to right now
+        client.setCreatedAt(new Date());
         
         return clientRepository.saveClient(client);
 	}
