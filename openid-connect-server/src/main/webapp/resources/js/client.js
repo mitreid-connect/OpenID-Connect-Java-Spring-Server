@@ -25,7 +25,7 @@ var ClientModel = Backbone.Model.extend({
         scope:[],
         authorities:[],
         clientDescription:"",
-        logoUrl:"",
+        logoUri:"",
         clientId:"",
         allowRefresh:false,
         accessTokenValiditySeconds: 3600,
@@ -212,7 +212,7 @@ var ClientFormView = Backbone.View.extend({
         "change #requireClientSecret":"toggleRequireClientSecret",
         "change #displayClientSecret":"toggleDisplayClientSecret",
         "change #generateClientSecret":"toggleGenerateClientSecret",
-        "change #logoUrl input":"previewLogo"
+        "change #logoUri input":"previewLogo"
     },
 
     toggleRefreshTokenTimeout:function () {
@@ -220,9 +220,9 @@ var ClientFormView = Backbone.View.extend({
     },
     
     previewLogo:function(event) {
-    	if ($('#logoUrl input', this.el).val()) {
+    	if ($('#logoUri input', this.el).val()) {
     		$('#logoPreview', this.el).empty();
-    		$('#logoPreview', this.el).attr('src', $('#logoUrl input').val());
+    		$('#logoPreview', this.el).attr('src', $('#logoUri input').val());
     	} else {
     		$('#logoBlock', this.el).hide();
     	}
@@ -355,7 +355,7 @@ var ClientFormView = Backbone.View.extend({
             generateClientSecret:generateClientSecret,
             redirectUris: this.redirectUrisCollection.pluck("item"),
             clientDescription:$('#clientDescription textarea').val(),
-            logoUrl:$('#logoUrl input').val(),
+            logoUri:$('#logoUri input').val(),
             authorizedGrantTypes: authorizedGrantTypes,
             accessTokenValiditySeconds: accessTokenValiditySeconds,
             refreshTokenValiditySeconds: refreshTokenValiditySeconds,
@@ -363,6 +363,7 @@ var ClientFormView = Backbone.View.extend({
             allowRefresh: $('#allowRefresh').is(':checked'),
             allowIntrospection: $('#allowIntrospection input').is(':checked'),
             scope: scopes,
+            
             
         });
 
@@ -423,7 +424,7 @@ var ClientFormView = Backbone.View.extend({
         });
 
         $("#scope .controls",this.el).html(new ListWidgetView({placeholder: 'new scope here'
-            , autocomplete: _.uniq(_.flatten(app.systemScopeList.pluck("value"))) // TODO: load from default scopes
+            , autocomplete: _.uniq(_.flatten(app.systemScopeList.pluck("value")))
             , collection: this.scopeCollection}).render().el);
 
         if (!this.model.get("allowRefresh")) {
