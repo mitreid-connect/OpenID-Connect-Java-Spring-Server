@@ -21,7 +21,7 @@ var ClientModel = Backbone.Model.extend({
         clientName:"",
         clientSecret:"",
         redirectUris:[],
-        authorizedGrantTypes:["authorization_code"],
+        grantTypes:["authorization_code"],
         scope:[],
         authorities:[],
         clientDescription:"",
@@ -289,7 +289,7 @@ var ClientFormView = Backbone.View.extend({
     },
 
     // maps from a form-friendly name to the real grant parameter name
-    authorizedGrantMap:{
+    grantMap:{
     	"authorization_code": "authorization_code",
     	"password": "password",
     	"implicit": "implicit",
@@ -306,10 +306,10 @@ var ClientFormView = Backbone.View.extend({
         var scopes = this.scopeCollection.pluck("item");
         
         // build the grant type object
-        var authorizedGrantTypes = [];
-        $.each(this.authorizedGrantMap, function(index,type) {
-            if ($('#authorizedGrantTypes-' + index).is(':checked')) {
-                authorizedGrantTypes.push(type);
+        var grantTypes = [];
+        $.each(this.grantMap, function(index,type) {
+            if ($('#grantTypes-' + index).is(':checked')) {
+                grantTypes.push(type);
             }
         });
 
@@ -318,10 +318,11 @@ var ClientFormView = Backbone.View.extend({
         var clientSecret = null;
         
         if (requireClientSecret && !generateClientSecret) {
-        	// if it's required but we're not generating it, send the value
+        	// if it's required but we're not generating it, send the value to preserve it
         	clientSecret = $('#clientSecret input').val();
         }
 
+        // TODO: validate  these as integers
         var accessTokenValiditySeconds = null;
         if (!$('disableAccessTokenTimeout').is(':checked')) {
         	accessTokenValiditySeconds = this.getFormTokenValue($('#accessTokenValiditySeconds input[type=text]').val()); 
@@ -356,7 +357,7 @@ var ClientFormView = Backbone.View.extend({
             redirectUris: this.redirectUrisCollection.pluck("item"),
             clientDescription:$('#clientDescription textarea').val(),
             logoUri:$('#logoUri input').val(),
-            authorizedGrantTypes: authorizedGrantTypes,
+            grantTypes: grantTypes,
             accessTokenValiditySeconds: accessTokenValiditySeconds,
             refreshTokenValiditySeconds: refreshTokenValiditySeconds,
             idTokenValiditySeconds: idTokenValiditySeconds,

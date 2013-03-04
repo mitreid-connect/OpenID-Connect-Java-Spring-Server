@@ -138,38 +138,38 @@
                 </div>
             </div>
 
-            <div class="control-group" id="authorizedGrantTypes">
-                <label class="control-label">Authorized Grant Types</label>
+            <div class="control-group" id="grantTypes">
+                <label class="control-label">Grant Types</label>
 
                 <div class="controls">
 
                     <label class="checkbox">
-                        <input id="authorizedGrantTypes-authorization_code" type="checkbox"
-                        <%=($.inArray("authorization_code", authorizedGrantTypes) > -1 ? 'checked' : '')%>>
+                        <input id="grantTypes-authorization_code" type="checkbox"
+                        <%=($.inArray("authorization_code", grantTypes) > -1 ? 'checked' : '')%>>
                         authorization code
                     </label>
                     <label class="checkbox">
-                        <input id="authorizedGrantTypes-client_credentials" type="checkbox"
-                        <%=($.inArray("client_credentials", authorizedGrantTypes) > -1 ? 'checked' : '')%>> client
+                        <input id="grantTypes-client_credentials" type="checkbox"
+                        <%=($.inArray("client_credentials", grantTypes) > -1 ? 'checked' : '')%>> client
                         credentials
                     </label>
                     <label class="checkbox">
-                        <input id="authorizedGrantTypes-password" type="checkbox" <%=($.inArray("password",
-                        authorizedGrantTypes) > -1 ? 'checked' : '')%>> password
+                        <input id="grantTypes-password" type="checkbox" <%=($.inArray("password",
+                        grantTypes) > -1 ? 'checked' : '')%>> password
                     </label>
                     <label class="checkbox">
-                        <input id="authorizedGrantTypes-implicit" type="checkbox" <%=($.inArray("implicit",
-                        authorizedGrantTypes) > -1 ? 'checked' : '')%>> implicit
+                        <input id="grantTypes-implicit" type="checkbox" <%=($.inArray("implicit",
+                        grantTypes) > -1 ? 'checked' : '')%>> implicit
                     </label>
 <!--
                     <label class="checkbox">
-                        <input id="authorizedGrantTypes-refresh_token" type="checkbox" <%=($.inArray("refresh_token",
-                        authorizedGrantTypes) > -1 ? 'checked' : '')%>> refresh
+                        <input id="grantTypes-refresh_token" type="checkbox" <%=($.inArray("refresh_token",
+                        grantTypes) > -1 ? 'checked' : '')%>> refresh
                     </label>
 -->
                     <label class="checkbox">
-                        <input id="authorizedGrantTypes-redelegate" type="checkbox" <%=($.inArray("urn:ietf:params:oauth:grant_type:redelegate",
-                        authorizedGrantTypes) > -1 ? 'checked' : '')%>> redelegate
+                        <input id="grantTypes-redelegate" type="checkbox" <%=($.inArray("urn:ietf:params:oauth:grant_type:redelegate",
+                        grantTypes) > -1 ? 'checked' : '')%>> redelegate
                     </label>
 
                 </div>
