@@ -78,11 +78,11 @@ public class ClientDetailsEntity implements ClientDetails {
 	private AuthMethod tokenEndpointAuthMethod = AuthMethod.SECRET_BASIC; // token_endpoint_auth_method
 	private Set<String> scope = new HashSet<String>(); // scope
 	private Set<String> grantTypes = new HashSet<String>(); // grant_types
+	private Set<String> responseTypes = new HashSet<String>(); // response_types
 	private String policyUri;
 	private String jwksUri;
 	
     /** Fields from OIDC Client Registration Specification **/
-	private Set<String> responseTypes = new HashSet<String>(); // response_types
 	private AppType applicationType; // application_type
 	private String sectorIdentifierUri; // sector_identifier_uri
 	private SubjectType subjectType; // subject_type
