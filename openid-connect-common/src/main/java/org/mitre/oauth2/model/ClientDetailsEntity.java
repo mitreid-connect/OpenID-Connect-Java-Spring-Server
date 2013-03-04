@@ -314,11 +314,12 @@ public class ClientDetailsEntity implements ClientDetails {
     }
 
 	/**
-	 * If the auth method is 
+	 * 
      */
     @Override
     @Transient
     public boolean isSecretRequired() {
+    	// TODO: this should check the auth method field instead
 	    return getClientSecret() != null;
     }
 
