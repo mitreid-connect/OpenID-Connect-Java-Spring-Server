@@ -336,8 +336,8 @@ var ClientFormView = Backbone.View.extend({
         var refreshTokenValiditySeconds = null;
         if ($('#allowRefresh').is(':checked')) {
 
-        	if ($.inArray('refresh_token', authorizedGrantTypes) == -1) {
-        		authorizedGrantTypes.push('refresh_token');
+        	if ($.inArray('refresh_token', grantTypes) == -1) {
+        		grantTypes.push('refresh_token');
         	}
 
         	if ($.inArray('offline_access', scopes) == -1) {
@@ -361,10 +361,37 @@ var ClientFormView = Backbone.View.extend({
             accessTokenValiditySeconds: accessTokenValiditySeconds,
             refreshTokenValiditySeconds: refreshTokenValiditySeconds,
             idTokenValiditySeconds: idTokenValiditySeconds,
-            allowRefresh: $('#allowRefresh').is(':checked'),
-            allowIntrospection: $('#allowIntrospection input').is(':checked'),
-            scope: scopes,
+            allowRefresh: $('#allowRefresh').is(':checked'), // TODO: why are these two checkboxes different?
+            allowIntrospection: $('#allowIntrospection input').is(':checked'), // <-- And here? --^
+            scope: scopes
             
+            
+            ,
+            
+            // TODO: everything below this line isn't implemented yet
+            contacts: this.contactsCollection.pluck('item'),
+            tosUri: $('#tosUri input').val(),
+            tokenEndpointAuthMethod: $('#tokenEndpointAuthMethod input').val(), // TODO: this might need to be something different for a single-select?
+            responseTypes: responseTypes, // TODO: need a preprocessor?
+            policyUri: $('#policyUri input').val(),
+            jwksUri: $('#jwksUri input').val(),
+            applicationType: applicationType, // TODO: need a preprocessor?
+            sectorIdentifierUri: $('#sectorIdentifierUri input').val(),
+            subjectType: subjectType, // TODO: need a preprocessor?
+            requestObjectSigningAlg: requestObjectSigningAlg,           // TODO: need a preprocessor for all the JOSE stuff:
+            userInfoEncryptedResponseAlg: userInfoEncryptedResponseAlg, // "
+            userInfoEncryptedResponseEnc: userInfoEncryptedResponseEnc, // "
+            idTokenSignedResponseAlg: idTokenSignedResponseAlg,         // "
+            idTokenEncryptedResponseAlg: idTokenEncryptedResponseAlg,   // "
+            idTokenEncryptedResponseEnc: idTokenEncryptedResponseEnc,   // "
+            defaultMaxAge: $('#defaultMaxAge input').val(), // TODO: validate integer
+            requireAuthTime: $('#requireAuthTime input').is(':checked'),
+            defaultAcrValues: this.defaultAcrValuesCollection.pluck('item'),
+            initiateLoginUri: $('#initiateLoginUri input').val(),
+            postLogoutRedirectUri: $('#postLogoutRedirectUri input').val(),
+            requestUris: this.requestUrisCollection.pluck('item'),
+            resourceIds: this.resourceIdsCollection.pluck('item'),
+            reuseRefreshToken: $('#reuseRefreshToken input').is(':checked')
             
         });
 
