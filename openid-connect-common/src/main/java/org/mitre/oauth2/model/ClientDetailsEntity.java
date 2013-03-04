@@ -44,6 +44,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.mitre.jose.JWEAlgorithmEntity;
+import org.mitre.jose.JWEEncryptionMethodEntity;
 import org.mitre.jose.JWSAlgorithmEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.provider.ClientDetails;
@@ -64,59 +65,59 @@ public class ClientDetailsEntity implements ClientDetails {
 
 	private Long id;
 	
+	/** Fields from the OAuth2 Dynamic Registration Specification */
+	private String clientId = null; // client_id
+	private String clientSecret = null; // client_secret
+	private Set<String> redirectUris = new HashSet<String>(); // redirect_uris
+	private String clientName; // client_name
+	private String clientUri; // client_uri
+	private String logoUri; // logo_uri
+	private Set<String> contacts; // contacts 	
+	private String tosUri; // tos_uri
+	private AuthMethod tokenEndpointAuthMethod = AuthMethod.SECRET_BASIC; // token_endpoint_auth_method
+	private Set<String> scope = new HashSet<String>(); // scope
+	private Set<String> grantTypes = new HashSet<String>(); // grant_types
+	private String policyUri;
+	private String jwksUri;
+	
+    /** Fields from OIDC Client Registration Specification **/
+	private Set<String> responseTypes = new HashSet<String>(); // response_types
+	private AppType applicationType; // application_type
+	private String sectorIdentifierUri; // sector_identifier_uri
+	private SubjectType subjectType; // subject_type
+	
+	private JWSAlgorithmEntity requestObjectSigningAlg; // request_object_signing_alg
+	
+	private JWSAlgorithmEntity userInfoSignedResponseAlg; // user_info_signed_response_alg
+	private JWEAlgorithmEntity userInfoEncryptedResponseAlg; // user_info_encrypted_response_alg
+	private JWEEncryptionMethodEntity userInfoEncryptedResponseEnc; // user_info_encrypted_response_enc
+	
+	private JWSAlgorithmEntity idTokenSignedResponseAlg; // id_token_signed_response_alg
+	private JWEAlgorithmEntity idTokenEncryptedResponseAlg; // id_token_encrypted_response_alg
+	private JWEEncryptionMethodEntity idTokenEncryptedReponseEnc; // id_token_encrypted_response_enc
+	
+	private Integer defaultMaxAge; // default_max_age
+	private boolean requireAuthTime = false; // require_auth_time
+	private Set<String> defaultACRvalues; // default_acr_values
+	
+	private String initiateLoginUri; // initiate_login_uri
+	private String postLogoutRedirectUri; // post_logout_redirect_uri
+	
+	private Set<String> requestUris; // request_uris
+	
+	/** Fields to support the ClientDetails interface **/
+	private Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
+	private Integer accessTokenValiditySeconds = 0; // in seconds 
+	private Integer refreshTokenValiditySeconds = 0; // in seconds 
+	private Set<String> resourceIds = new HashSet<String>();
+	private Map<String, Object> additionalInformation = new HashMap<String, Object>();
+	
 	/** Our own fields **/
 	private String clientDescription = ""; // human-readable description
-	private boolean allowMultipleAccessTokens = false; // do we allow multiple access tokens, or not?
 	private boolean reuseRefreshToken = true; // do we let someone reuse a refresh token?
 	private boolean dynamicallyRegistered = false; // was this client dynamically registered?
 	private boolean allowIntrospection = false; // do we let this client call the introspection endpoint?
 	private Integer idTokenValiditySeconds; //timeout for id tokens
-	
-	/** Fields from ClientDetails interface **/
-    private String clientId = null;
-    private String clientSecret = null;
-    private Set<String> scope = new HashSet<String>();
-    private Set<String> authorizedGrantTypes = new HashSet<String>();
-	private Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
-    private Integer accessTokenValiditySeconds = 0; // in seconds 
-    private Integer refreshTokenValiditySeconds = 0; // in seconds 
-    private Set<String> registeredRedirectUri = new HashSet<String>();
-    private Set<String> resourceIds = new HashSet<String>();
-	private Map<String, Object> additionalInformation = new HashMap<String, Object>();
-
-    /** Fields from Client Registration Specification **/
-	private AppType applicationType;
-	private String clientName;
-	private AuthMethod tokenEndpointAuthMethod = AuthMethod.SECRET_BASIC;
-	private SubjectType subjectType;
-	
-	private Set<String> contacts; 	
-	
-	private String logoUrl;
-	private String policyUrl;
-	private String clientUrl;
-	private String tosUrl;
-	private String jwkUrl;
-	private String jwkEncryptionUrl;
-	private String x509Url;
-	private String x509EncryptionUrl;
-	private String sectorIdentifierUrl;
-	
-	private JWSAlgorithmEntity requireSignedRequestObject;
-	
-	private JWSAlgorithmEntity userInfoSignedResponseAlg;
-	private JWEAlgorithmEntity userInfoEncryptedResponseAlg;
-	private JWEAlgorithmEntity userInfoEncryptedResponseEnc;
-	private JWEAlgorithmEntity userInfoEncryptedResponseInt;
-	
-	private JWSAlgorithmEntity idTokenSignedResponseAlg;
-	private JWEAlgorithmEntity idTokenEncryptedResponseAlg;
-	private JWEAlgorithmEntity idTokenEncryptedReponseEnc;
-	private JWEAlgorithmEntity idTokenEncryptedResponseInt;
-	
-	private Integer defaultMaxAge;
-	private boolean requireAuthTime = false;
-	private String defaultACR;
 	
 	
 	public enum AuthMethod {
@@ -249,16 +250,6 @@ public class ClientDetailsEntity implements ClientDetails {
     	return getAuthorizedGrantTypes().contains("refresh_token");
     }
 
-    @Basic
-    @Column(name="allow_multiple_access_tokens")
-    public boolean isAllowMultipleAccessTokens() {
-		return allowMultipleAccessTokens;
-	}
-
-	public void setAllowMultipleAccessTokens(boolean allowMultipleAccessTokens) {
-		this.allowMultipleAccessTokens = allowMultipleAccessTokens;
-	}
-
 	@Basic
 	@Column(name="reuse_refresh_tokens")
 	public boolean isReuseRefreshToken() {
@@ -322,7 +313,7 @@ public class ClientDetailsEntity implements ClientDetails {
     }
 
 	/**
-	 * If the clientSecret is not null, then it is always required.
+	 * If the auth method is 
      */
     @Override
     @Transient
@@ -382,6 +373,7 @@ public class ClientDetailsEntity implements ClientDetails {
 			joinColumns=@JoinColumn(name="owner_id")
 	)
 	@Override
+	@Column(name="scope")
 	public Set<String> getScope() {
     	return scope;
     }
@@ -398,28 +390,34 @@ public class ClientDetailsEntity implements ClientDetails {
      */
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(
-			name="authorized_grant_type",
+			name="client_grant_type",
 			joinColumns=@JoinColumn(name="owner_id")
 	)
-	@Override
-	@Column(name="authorized_grant_type")
-	public Set<String> getAuthorizedGrantTypes() {
-    	return authorizedGrantTypes;
+	@Column(name="grant_type")
+	public Set<String> getGrantTypes() {
+    	return grantTypes;
     }
 
 	/**
      * @param authorizedGrantTypes the OAuth2 grant types that this client is allowed to use  
      */
-    public void setAuthorizedGrantTypes(Set<String> authorizedGrantTypes) {
-    	this.authorizedGrantTypes = authorizedGrantTypes;
+    public void setGrantTypes(Set<String> grantTypes) {
+    	this.grantTypes = grantTypes;
     }
 
+    /**
+     * passthrough for SECOAUTH api
+     */
+    public Set<String> getAuthorizedGrantTypes() {
+    	return getGrantTypes();
+    }
+    
 	/**
      * @return the authorities
      */
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(
-			name="authority",
+			name="client_authority",
 			joinColumns=@JoinColumn(name="owner_id")
 	)
 	@Override
@@ -468,27 +466,36 @@ public class ClientDetailsEntity implements ClientDetails {
      */
     @ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(
-			name="redirect_uri",
+			name="client_redirect_uri",
 			joinColumns=@JoinColumn(name="owner_id")
 	)
     @Column(name="redirect_uri")
-    public Set<String> getRegisteredRedirectUri() {
-    	return registeredRedirectUri;
+    public Set<String> getRedirectUris() {
+    	return redirectUris;
     }
 
 	/**
      * @param registeredRedirectUri the registeredRedirectUri to set
      */
-    public void setRegisteredRedirectUri(Set<String> registeredRedirectUri) {
-    	this.registeredRedirectUri = registeredRedirectUri;
+    public void setRedirectUris(Set<String> redirectUris) {
+    	this.redirectUris = redirectUris;
     }
 
+    /**
+     * Pass-through method to fulfill the ClientDetails interface with a bad name
+     */
+    @Override
+    @Transient
+    public Set<String> getRegisteredRedirectUri() {
+    	return getRedirectUris();
+    }
+    
 	/**
      * @return the resourceIds
      */
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(
-			name="resource_id",
+			name="client_resource",
 			joinColumns=@JoinColumn(name="owner_id")
 	)
 	@Column(name="resource_id")
@@ -507,6 +514,8 @@ public class ClientDetailsEntity implements ClientDetails {
 	/**
 	 * This library does not make use of this field, so it is not
 	 * stored using our persistence layer.
+	 * 
+	 * However, it's somehow required by SECOUATH.
 	 * 
 	 * @return an empty map
 	 */
@@ -561,7 +570,7 @@ public class ClientDetailsEntity implements ClientDetails {
 
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(
-			name="contact",
+			name="client_contact",
 			joinColumns=@JoinColumn(name="owner_id")
 	)
 	@Column(name="contact")
@@ -574,117 +583,87 @@ public class ClientDetailsEntity implements ClientDetails {
 	}
 
 	@Basic
-	@Column(name="logo_url")
-	public String getLogoUrl() {
-		return logoUrl;
+	@Column(name="logo_uri")
+	public String getLogoUri() {
+		return logoUri;
 	}
 
-	public void setLogoUrl(String logoUrl) {
-		this.logoUrl = logoUrl;
+	public void setLogoUri(String logoUri) {
+		this.logoUri = logoUri;
 	}
 	
 	@Basic
-	@Column(name="policy_url")
-	public String getPolicyUrl() {
-		return policyUrl;
+	@Column(name="policy_uri")
+	public String getPolicyUri() {
+		return policyUri;
 	}
 
-	public void setPolicyUrl(String policyUrl) {
-		this.policyUrl = policyUrl;
+	public void setPolicyUri(String policyUri) {
+		this.policyUri = policyUri;
 	}
 
 	/**
      * @return the clientUrl
      */
 	@Basic
-	@Column(name="client_url")
-    public String getClientUrl() {
-    	return clientUrl;
+	@Column(name="client_uri")
+    public String getClientUri() {
+    	return clientUri;
     }
 
 	/**
      * @param clientUrl the clientUrl to set
      */
-    public void setClientUrl(String clientUrl) {
-    	this.clientUrl = clientUrl;
+    public void setClientUri(String clientUri) {
+    	this.clientUri = clientUri;
     }
 
 	/**
      * @return the tosUrl
      */
     @Basic
-    @Column(name="tos_url")
-    public String getTosUrl() {
-    	return tosUrl;
+    @Column(name="tos_uri")
+    public String getTosUri() {
+    	return tosUri;
     }
 
 	/**
      * @param tosUrl the tosUrl to set
      */
-    public void setTosUrl(String tosUrl) {
-    	this.tosUrl = tosUrl;
+    public void setTosUri(String tosUri) {
+    	this.tosUri = tosUri;
     }
 
 	@Basic
-	@Column(name="jwk_url")
-	public String getJwkUrl() {
-		return jwkUrl;
+	@Column(name="jwks_uri")
+	public String getJwksUri() {
+		return jwksUri;
 	}
 
-	public void setJwkUrl(String jwkUrl) {
-		this.jwkUrl = jwkUrl;
-	}
-
-	@Basic
-	@Column(name="jwk_encryption_url")
-	public String getJwkEncryptionUrl() {
-		return jwkEncryptionUrl;
-	}
-
-	public void setJwkEncryptionUrl(String jwkEncryptionUrl) {
-		this.jwkEncryptionUrl = jwkEncryptionUrl;
+	public void setJwksUri(String jwksUri) {
+		this.jwksUri = jwksUri;
 	}
 
 	@Basic
-	@Column(name="x509_url")
-	public String getX509Url() {
-		return x509Url;
+	@Column(name="sector_identifier_uri")
+	public String getSectorIdentifierUri() {
+		return sectorIdentifierUri;
 	}
 
-	public void setX509Url(String x509Url) {
-		this.x509Url = x509Url;
-	}
-	
-	@Basic
-	@Column(name="x509_encryption_url")
-	public String getX509EncryptionUrl() {
-		return x509EncryptionUrl;
-	}
-
-	public void setX509EncryptionUrl(String x509EncryptionUrl) {
-		this.x509EncryptionUrl = x509EncryptionUrl;
-	}
-
-	@Basic
-	@Column(name="sector_identifier_url")
-	public String getSectorIdentifierUrl() {
-		return sectorIdentifierUrl;
-	}
-
-	public void setSectorIdentifierUrl(String sectorIdentifierUrl) {
-		this.sectorIdentifierUrl = sectorIdentifierUrl;
+	public void setSectorIdentifierUri(String sectorIdentifierUri) {
+		this.sectorIdentifierUri = sectorIdentifierUri;
 	}
 
 	@Embedded
 	@AttributeOverrides({
-		@AttributeOverride(name = "algorithmName", column=@Column(name="requre_signed_request_object"))
+		@AttributeOverride(name = "algorithmName", column=@Column(name="request_object_signing_alg"))
 	})
-	public JWSAlgorithmEntity getRequireSignedRequestObject() {
-		return requireSignedRequestObject;
+	public JWSAlgorithmEntity getRequestObjectSigningAlg() {
+		return requestObjectSigningAlg;
 	}
 
-	public void setRequireSignedRequestObject(JWSAlgorithmEntity requireSignedRequestObject) {
-		this.requireSignedRequestObject = requireSignedRequestObject;
+	public void setRequestObjectSigningAlg(JWSAlgorithmEntity requestObjectSigningAlg) {
+		this.requestObjectSigningAlg = requestObjectSigningAlg;
 	}
 
 	@Embedded
@@ -715,25 +694,13 @@ public class ClientDetailsEntity implements ClientDetails {
 	@AttributeOverrides({
 		@AttributeOverride(name = "algorithmName", column=@Column(name="user_info_encrypted_response_enc"))
 	})
-	public JWEAlgorithmEntity getUserInfoEncryptedResponseEnc() {
+	public JWEEncryptionMethodEntity getUserInfoEncryptedResponseEnc() {
 		return userInfoEncryptedResponseEnc;
 	}
 
-	public void setUserInfoEncryptedResponseEnc(JWEAlgorithmEntity userInfoEncryptedResponseEnc) {
+	public void setUserInfoEncryptedResponseEnc(JWEEncryptionMethodEntity userInfoEncryptedResponseEnc) {
 		this.userInfoEncryptedResponseEnc = userInfoEncryptedResponseEnc;
-	}
-
-	@Embedded
-	@AttributeOverrides({
-		@AttributeOverride(name = "algorithmName", column=@Column(name="user_info_encrypted_response_int"))
-	})
-	public JWEAlgorithmEntity getUserInfoEncryptedResponseInt() {
-		return userInfoEncryptedResponseInt;
-	}
-
-	public void setUserInfoEncryptedResponseInt(JWEAlgorithmEntity userInfoEncryptedResponseInt) {
-		this.userInfoEncryptedResponseInt = userInfoEncryptedResponseInt;
-	}
+	}	
 
 	@Embedded
 	@AttributeOverrides({
@@ -763,24 +730,12 @@ public class ClientDetailsEntity implements ClientDetails {
 	@AttributeOverrides({
 		@AttributeOverride(name = "algorithmName", column=@Column(name="id_token_encrypted_response_enc"))
 	})
-	public JWEAlgorithmEntity getIdTokenEncryptedReponseEnc() {
+	public JWEEncryptionMethodEntity getIdTokenEncryptedReponseEnc() {
 		return idTokenEncryptedReponseEnc;
 	}
 
-	public void setIdTokenEncryptedReponseEnc(JWEAlgorithmEntity idTokenEncryptedReponseEnc) {
+	public void setIdTokenEncryptedReponseEnc(JWEEncryptionMethodEntity idTokenEncryptedReponseEnc) {
 		this.idTokenEncryptedReponseEnc = idTokenEncryptedReponseEnc;
-	}
-
-	@Embedded
-	@AttributeOverrides({
-		@AttributeOverride(name = "algorithmName", column=@Column(name="id_token_encrypted_response_int"))
-	})
-	public JWEAlgorithmEntity getIdTokenEncryptedResponseInt() {
-		return idTokenEncryptedResponseInt;
-	}
-
-	public void setIdTokenEncryptedResponseInt(JWEAlgorithmEntity idTokenEncryptedResponseInt) {
-		this.idTokenEncryptedResponseInt = idTokenEncryptedResponseInt;
 	}
 
 	@Basic
@@ -803,459 +758,96 @@ public class ClientDetailsEntity implements ClientDetails {
 		this.requireAuthTime = requireAuthTime;
 	}
 
+	/**
+	 * @return the responseTypes
+	 */
+	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(
+			name="client_response_type",
+			joinColumns=@JoinColumn(name="response_type")
+	)
+	@Column(name="response_type")
+	public Set<String> getResponseTypes() {
+		return responseTypes;
+	}
+
+	/**
+	 * @param responseTypes the responseTypes to set
+	 */
+	public void setResponseTypes(Set<String> responseTypes) {
+		this.responseTypes = responseTypes;
+	}
+
+	/**
+	 * @return the defaultACRvalues
+	 */
+	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(
+			name="client_default_acr_value",
+			joinColumns=@JoinColumn(name="owner_id")
+	)
+	@Column(name="default_acr_value")
+	public Set<String> getDefaultACRvalues() {
+		return defaultACRvalues;
+	}
+
+	/**
+	 * @param defaultACRvalues the defaultACRvalues to set
+	 */
+	public void setDefaultACRvalues(Set<String> defaultACRvalues) {
+		this.defaultACRvalues = defaultACRvalues;
+	}
+
+	/**
+	 * @return the initiateLoginUri
+	 */
 	@Basic
-	@Column(name="default_acr")
-	public String getDefaultACR() {
-		return defaultACR;
+	@Column(name="initiate_login_uri")
+	public String getInitiateLoginUri() {
+		return initiateLoginUri;
 	}
 
-	public void setDefaultACR(String defaultACR) {
-		this.defaultACR = defaultACR;
-	}
-	
-    /* (non-Javadoc)
-	 * @see java.lang.Object#toString()
+	/**
+	 * @param initiateLoginUri the initiateLoginUri to set
 	 */
-	@Override
-	public String toString() {
-		return "ClientDetailsEntity ["
-				+ (id != null ? "id=" + id + ", " : "")
-				+ (clientDescription != null ? "clientDescription="
-						+ clientDescription + ", " : "")
-				+ ", allowMultipleAccessTokens="
-				+ allowMultipleAccessTokens
-				+ ", reuseRefreshToken="
-				+ reuseRefreshToken
-				+ ", dynamicallyRegistered="
-				+ dynamicallyRegistered
-				+ ", "
-				+ (idTokenValiditySeconds != null ? "idTokenValiditySeconds="
-						+ idTokenValiditySeconds + ", " : "")
-				+ (clientId != null ? "clientId=" + clientId + ", " : "")
-				+ (clientSecret != null ? "clientSecret=" + clientSecret + ", "
-						: "")
-				+ (scope != null ? "scope=" + scope + ", " : "")
-				+ (authorizedGrantTypes != null ? "authorizedGrantTypes="
-						+ authorizedGrantTypes + ", " : "")
-				+ (authorities != null ? "authorities=" + authorities + ", "
-						: "")
-				+ (accessTokenValiditySeconds != null ? "accessTokenValiditySeconds="
-						+ accessTokenValiditySeconds + ", "
-						: "")
-				+ (refreshTokenValiditySeconds != null ? "refreshTokenValiditySeconds="
-						+ refreshTokenValiditySeconds + ", "
-						: "")
-				+ (registeredRedirectUri != null ? "registeredRedirectUri="
-						+ registeredRedirectUri + ", " : "")
-				+ (resourceIds != null ? "resourceIds=" + resourceIds + ", "
-						: "")
-				+ (additionalInformation != null ? "additionalInformation="
-						+ additionalInformation + ", " : "")
-				+ (applicationType != null ? "applicationType="
-						+ applicationType + ", " : "")
-				+ (clientName != null ? "clientName="
-						+ clientName + ", " : "")
-				+ (tokenEndpointAuthMethod != null ? "tokenEndpointAuthMethod="
-						+ tokenEndpointAuthMethod + ", " : "")
-				+ (subjectType != null ? "subjectType=" + subjectType + ", " : "")
-				+ (contacts != null ? "contacts=" + contacts + ", " : "")
-				+ (logoUrl != null ? "logoUrl=" + logoUrl + ", " : "")
-				+ (policyUrl != null ? "policyUrl=" + policyUrl + ", " : "")
-				+ (jwkUrl != null ? "jwkUrl=" + jwkUrl + ", " : "")
-				+ (jwkEncryptionUrl != null ? "jwkEncryptionUrl="
-						+ jwkEncryptionUrl + ", " : "")
-				+ (x509Url != null ? "x509Url=" + x509Url + ", " : "")
-				+ (x509EncryptionUrl != null ? "x509EncryptionUrl="
-						+ x509EncryptionUrl + ", " : "")
-				+ (sectorIdentifierUrl != null ? "sectorIdentifierUrl="
-						+ sectorIdentifierUrl + ", " : "")
-				+ (requireSignedRequestObject != null ? "requireSignedRequestObject="
-						+ requireSignedRequestObject + ", "
-						: "")
-				+ (userInfoSignedResponseAlg != null ? "userInfoSignedResponseAlg="
-						+ userInfoSignedResponseAlg + ", "
-						: "")
-				+ (userInfoEncryptedResponseAlg != null ? "userInfoEncryptedResponseAlg="
-						+ userInfoEncryptedResponseAlg + ", "
-						: "")
-				+ (userInfoEncryptedResponseEnc != null ? "userInfoEncryptedResponseEnc="
-						+ userInfoEncryptedResponseEnc + ", "
-						: "")
-				+ (userInfoEncryptedResponseInt != null ? "userInfoEncryptedResponseInt="
-						+ userInfoEncryptedResponseInt + ", "
-						: "")
-				+ (idTokenSignedResponseAlg != null ? "idTokenSignedResponseAlg="
-						+ idTokenSignedResponseAlg + ", "
-						: "")
-				+ (idTokenEncryptedResponseAlg != null ? "idTokenEncryptedResponseAlg="
-						+ idTokenEncryptedResponseAlg + ", "
-						: "")
-				+ (idTokenEncryptedReponseEnc != null ? "idTokenEncryptedReponseEnc="
-						+ idTokenEncryptedReponseEnc + ", "
-						: "")
-				+ (idTokenEncryptedResponseInt != null ? "idTokenEncryptedResponseInt="
-						+ idTokenEncryptedResponseInt + ", "
-						: "")
-				+ (defaultMaxAge != null ? "defaultMaxAge=" + defaultMaxAge
-						+ ", " : "") + "requireAuthTime=" + requireAuthTime
-				+ ", " + (defaultACR != null ? "defaultACR=" + defaultACR : "")
-				+ "]";
+	public void setInitiateLoginUri(String initiateLoginUri) {
+		this.initiateLoginUri = initiateLoginUri;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
+	/**
+	 * @return the postLogoutRedirectUri
 	 */
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime
-				* result
-				+ ((accessTokenValiditySeconds == null) ? 0
-						: accessTokenValiditySeconds.hashCode());
-		result = prime
-				* result
-				+ ((additionalInformation == null) ? 0 : additionalInformation
-						.hashCode());
-		result = prime * result + (allowMultipleAccessTokens ? 1231 : 1237);
-		result = prime * result
-				+ ((clientName == null) ? 0 : clientName.hashCode());
-		result = prime * result
-				+ ((applicationType == null) ? 0 : applicationType.hashCode());
-		result = prime * result
-				+ ((authorities == null) ? 0 : authorities.hashCode());
-		result = prime
-				* result
-				+ ((authorizedGrantTypes == null) ? 0 : authorizedGrantTypes
-						.hashCode());
-		result = prime
-				* result
-				+ ((clientDescription == null) ? 0 : clientDescription
-						.hashCode());
-		result = prime * result
-				+ ((clientId == null) ? 0 : clientId.hashCode());
-		result = prime * result
-				+ ((clientSecret == null) ? 0 : clientSecret.hashCode());
-		result = prime * result
-				+ ((contacts == null) ? 0 : contacts.hashCode());
-		result = prime * result
-				+ ((defaultACR == null) ? 0 : defaultACR.hashCode());
-		result = prime * result
-				+ ((defaultMaxAge == null) ? 0 : defaultMaxAge.hashCode());
-		result = prime * result + (dynamicallyRegistered ? 1231 : 1237);
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime
-				* result
-				+ ((idTokenEncryptedReponseEnc == null) ? 0
-						: idTokenEncryptedReponseEnc.hashCode());
-		result = prime
-				* result
-				+ ((idTokenEncryptedResponseAlg == null) ? 0
-						: idTokenEncryptedResponseAlg.hashCode());
-		result = prime
-				* result
-				+ ((idTokenEncryptedResponseInt == null) ? 0
-						: idTokenEncryptedResponseInt.hashCode());
-		result = prime
-				* result
-				+ ((idTokenSignedResponseAlg == null) ? 0
-						: idTokenSignedResponseAlg.hashCode());
-		result = prime
-				* result
-				+ ((idTokenValiditySeconds == null) ? 0
-						: idTokenValiditySeconds.hashCode());
-		result = prime
-				* result
-				+ ((jwkEncryptionUrl == null) ? 0 : jwkEncryptionUrl.hashCode());
-		result = prime * result + ((jwkUrl == null) ? 0 : jwkUrl.hashCode());
-		result = prime * result + ((logoUrl == null) ? 0 : logoUrl.hashCode());
-		result = prime * result
-				+ ((policyUrl == null) ? 0 : policyUrl.hashCode());
-		result = prime
-				* result
-				+ ((refreshTokenValiditySeconds == null) ? 0
-						: refreshTokenValiditySeconds.hashCode());
-		result = prime
-				* result
-				+ ((registeredRedirectUri == null) ? 0 : registeredRedirectUri
-						.hashCode());
-		result = prime * result + (requireAuthTime ? 1231 : 1237);
-		result = prime
-				* result
-				+ ((requireSignedRequestObject == null) ? 0
-						: requireSignedRequestObject.hashCode());
-		result = prime * result
-				+ ((resourceIds == null) ? 0 : resourceIds.hashCode());
-		result = prime * result + (reuseRefreshToken ? 1231 : 1237);
-		result = prime * result + ((scope == null) ? 0 : scope.hashCode());
-		result = prime
-				* result
-				+ ((sectorIdentifierUrl == null) ? 0 : sectorIdentifierUrl
-						.hashCode());
-		result = prime
-				* result
-				+ ((tokenEndpointAuthMethod == null) ? 0 : tokenEndpointAuthMethod
-						.hashCode());
-		result = prime * result
-				+ ((subjectType == null) ? 0 : subjectType.hashCode());
-		result = prime
-				* result
-				+ ((userInfoEncryptedResponseAlg == null) ? 0
-						: userInfoEncryptedResponseAlg.hashCode());
-		result = prime
-				* result
-				+ ((userInfoEncryptedResponseEnc == null) ? 0
-						: userInfoEncryptedResponseEnc.hashCode());
-		result = prime
-				* result
-				+ ((userInfoEncryptedResponseInt == null) ? 0
-						: userInfoEncryptedResponseInt.hashCode());
-		result = prime
-				* result
-				+ ((userInfoSignedResponseAlg == null) ? 0
-						: userInfoSignedResponseAlg.hashCode());
-		result = prime
-				* result
-				+ ((x509EncryptionUrl == null) ? 0 : x509EncryptionUrl
-						.hashCode());
-		result = prime * result + ((x509Url == null) ? 0 : x509Url.hashCode());
-		return result;
+	@Basic
+	@Column(name="post_logout_redirect_uri")
+	public String getPostLogoutRedirectUri() {
+		return postLogoutRedirectUri;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
+	/**
+	 * @param postLogoutRedirectUri the postLogoutRedirectUri to set
 	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (!(obj instanceof ClientDetailsEntity)) {
-			return false;
-		}
-		ClientDetailsEntity other = (ClientDetailsEntity) obj;
-		if (accessTokenValiditySeconds == null) {
-			if (other.accessTokenValiditySeconds != null) {
-				return false;
-			}
-		} else if (!accessTokenValiditySeconds
-				.equals(other.accessTokenValiditySeconds)) {
-			return false;
-		}
-		if (additionalInformation == null) {
-			if (other.additionalInformation != null) {
-				return false;
-			}
-		} else if (!additionalInformation.equals(other.additionalInformation)) {
-			return false;
-		}
-		if (allowMultipleAccessTokens != other.allowMultipleAccessTokens) {
-			return false;
-		}
-		if (clientName == null) {
-			if (other.clientName != null) {
-				return false;
-			}
-		} else if (!clientName.equals(other.clientName)) {
-			return false;
-		}
-		if (applicationType != other.applicationType) {
-			return false;
-		}
-		if (authorities == null) {
-			if (other.authorities != null) {
-				return false;
-			}
-		} else if (!authorities.equals(other.authorities)) {
-			return false;
-		}
-		if (authorizedGrantTypes == null) {
-			if (other.authorizedGrantTypes != null) {
-				return false;
-			}
-		} else if (!authorizedGrantTypes.equals(other.authorizedGrantTypes)) {
-			return false;
-		}
-		if (clientDescription == null) {
-			if (other.clientDescription != null) {
-				return false;
-			}
-		} else if (!clientDescription.equals(other.clientDescription)) {
-			return false;
-		}
-		if (clientId == null) {
-			if (other.clientId != null) {
-				return false;
-			}
-		} else if (!clientId.equals(other.clientId)) {
-			return false;
-		}
-		if (clientSecret == null) {
-			if (other.clientSecret != null) {
-				return false;
-			}
-		} else if (!clientSecret.equals(other.clientSecret)) {
-			return false;
-		}
-		if (contacts == null) {
-			if (other.contacts != null) {
-				return false;
-			}
-		} else if (!contacts.equals(other.contacts)) {
-			return false;
-		}
-		if (defaultACR == null) {
-			if (other.defaultACR != null) {
-				return false;
-			}
-		} else if (!defaultACR.equals(other.defaultACR)) {
-			return false;
-		}
-		if (defaultMaxAge == null) {
-			if (other.defaultMaxAge != null) {
-				return false;
-			}
-		} else if (!defaultMaxAge.equals(other.defaultMaxAge)) {
-			return false;
-		}
-		if (dynamicallyRegistered != other.dynamicallyRegistered) {
-			return false;
-		}
-		if (id == null) {
-			if (other.id != null) {
-				return false;
-			}
-		} else if (!id.equals(other.id)) {
-			return false;
-		}
-		if (idTokenEncryptedReponseEnc != other.idTokenEncryptedReponseEnc) {
-			return false;
-		}
-		if (idTokenEncryptedResponseAlg != other.idTokenEncryptedResponseAlg) {
-			return false;
-		}
-		if (idTokenEncryptedResponseInt != other.idTokenEncryptedResponseInt) {
-			return false;
-		}
-		if (idTokenSignedResponseAlg != other.idTokenSignedResponseAlg) {
-			return false;
-		}
-		if (idTokenValiditySeconds == null) {
-			if (other.idTokenValiditySeconds != null) {
-				return false;
-			}
-		} else if (!idTokenValiditySeconds.equals(other.idTokenValiditySeconds)) {
-			return false;
-		}
-		if (jwkEncryptionUrl == null) {
-			if (other.jwkEncryptionUrl != null) {
-				return false;
-			}
-		} else if (!jwkEncryptionUrl.equals(other.jwkEncryptionUrl)) {
-			return false;
-		}
-		if (jwkUrl == null) {
-			if (other.jwkUrl != null) {
-				return false;
-			}
-		} else if (!jwkUrl.equals(other.jwkUrl)) {
-			return false;
-		}
-		if (logoUrl == null) {
-			if (other.logoUrl != null) {
-				return false;
-			}
-		} else if (!logoUrl.equals(other.logoUrl)) {
-			return false;
-		}
-		if (policyUrl == null) {
-			if (other.policyUrl != null) {
-				return false;
-			}
-		} else if (!policyUrl.equals(other.policyUrl)) {
-			return false;
-		}
-		if (refreshTokenValiditySeconds == null) {
-			if (other.refreshTokenValiditySeconds != null) {
-				return false;
-			}
-		} else if (!refreshTokenValiditySeconds
-				.equals(other.refreshTokenValiditySeconds)) {
-			return false;
-		}
-		if (registeredRedirectUri == null) {
-			if (other.registeredRedirectUri != null) {
-				return false;
-			}
-		} else if (!registeredRedirectUri.equals(other.registeredRedirectUri)) {
-			return false;
-		}
-		if (requireAuthTime != other.requireAuthTime) {
-			return false;
-		}
-		if (requireSignedRequestObject != other.requireSignedRequestObject) {
-			return false;
-		}
-		if (resourceIds == null) {
-			if (other.resourceIds != null) {
-				return false;
-			}
-		} else if (!resourceIds.equals(other.resourceIds)) {
-			return false;
-		}
-		if (reuseRefreshToken != other.reuseRefreshToken) {
-			return false;
-		}
-		if (scope == null) {
-			if (other.scope != null) {
-				return false;
-			}
-		} else if (!scope.equals(other.scope)) {
-			return false;
-		}
-		if (sectorIdentifierUrl == null) {
-			if (other.sectorIdentifierUrl != null) {
-				return false;
-			}
-		} else if (!sectorIdentifierUrl.equals(other.sectorIdentifierUrl)) {
-			return false;
-		}
-		if (tokenEndpointAuthMethod != other.tokenEndpointAuthMethod) {
-			return false;
-		}
-		if (subjectType != other.subjectType) {
-			return false;
-		}
-		if (userInfoEncryptedResponseAlg != other.userInfoEncryptedResponseAlg) {
-			return false;
-		}
-		if (userInfoEncryptedResponseEnc != other.userInfoEncryptedResponseEnc) {
-			return false;
-		}
-		if (userInfoEncryptedResponseInt != other.userInfoEncryptedResponseInt) {
-			return false;
-		}
-		if (userInfoSignedResponseAlg != other.userInfoSignedResponseAlg) {
-			return false;
-		}
-		if (x509EncryptionUrl == null) {
-			if (other.x509EncryptionUrl != null) {
-				return false;
-			}
-		} else if (!x509EncryptionUrl.equals(other.x509EncryptionUrl)) {
-			return false;
-		}
-		if (x509Url == null) {
-			if (other.x509Url != null) {
-				return false;
-			}
-		} else if (!x509Url.equals(other.x509Url)) {
-			return false;
-		}
-		return true;
+	public void setPostLogoutRedirectUri(String postLogoutRedirectUri) {
+		this.postLogoutRedirectUri = postLogoutRedirectUri;
 	}
-	
+
+	/**
+	 * @return the requestUris
+	 */
+	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(
+			name="client_request_uri",
+			joinColumns=@JoinColumn(name="owner_id")
+	)
+	@Column(name="request_uri")
+	public Set<String> getRequestUris() {
+		return requestUris;
+	}
+
+	/**
+	 * @param requestUris the requestUris to set
+	 */
+	public void setRequestUris(Set<String> requestUris) {
+		this.requestUris = requestUris;
+	}
+
 }
