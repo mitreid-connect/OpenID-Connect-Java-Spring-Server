@@ -77,7 +77,9 @@ public class ClientDynamicRegistrationEndpoint {
 
 			// scopes that the client is asking for
 			Set<SystemScope> requestedScopes = scopeService.fromStrings(newClient.getScope());
-			if (requestedScopes == null) {
+
+			// if the client didn't ask for any, give them the defaults
+			if (requestedScopes == null || requestedScopes.isEmpty()) {
 				requestedScopes = scopeService.getDefaults();
 			}
 
@@ -131,7 +133,7 @@ public class ClientDynamicRegistrationEndpoint {
 			m.addAttribute("code", HttpStatus.CREATED); // http 201
 			m.addAttribute("token", token);
 			
-			return "clientInformationView";
+			return "clientInformationResponseView";
 		} else {
 			// didn't parse, this is a bad request
 			

@@ -32,7 +32,7 @@ import com.google.gson.reflect.TypeToken;
  * @author jricher
  *
  */
-@Component("clientInformationResponse")
+@Component("clientInformationResponseView")
 public class ClientInformationResponseView extends AbstractView {
 
 	// note that this won't serialize nulls by default
@@ -60,7 +60,10 @@ public class ClientInformationResponseView extends AbstractView {
 			o.addProperty("client_secret", c.getClientSecret());
 			o.addProperty("expires_at", 0); // TODO: do we want to let secrets expire?
 		}
-		o.addProperty("issued_at", c.getCreatedAt().getTime());
+		
+		if (c.getCreatedAt() != null) {
+			o.addProperty("issued_at", c.getCreatedAt().getTime());
+		}
 
 		o.addProperty("registration_access_token", token.getValue());
 		
