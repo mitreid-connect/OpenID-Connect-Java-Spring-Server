@@ -31,20 +31,25 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 /**
+ * 
+ * @see ClientEntityViewForUsers
  * @author jricher
  *
  */
-@Component("clientEntityView")
-public class ClientEntityView extends AbstractView {
+@Component("clientEntityViewAdmin")
+public class ClientEntityViewForAdmins extends AbstractView {
 
-	private static Logger logger = LoggerFactory.getLogger(ClientEntityView.class);
+	private static Logger logger = LoggerFactory.getLogger(ClientEntityViewForAdmins.class);
 
 	private Gson gson = new GsonBuilder()
 	    .setExclusionStrategies(new ExclusionStrategy() {
 	
 	        public boolean shouldSkipField(FieldAttributes f) {
-	
-	            return false;
+	        	if (f.getName().equals("additionalProperties")) {
+	        		return true;
+	        	} else {
+	        		return false;
+	        	}
 	        }
 	
 	        public boolean shouldSkipClass(Class<?> clazz) {
@@ -93,7 +98,6 @@ public class ClientEntityView extends AbstractView {
 	
     protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
 
-        
         response.setContentType("application/json");
 
         
