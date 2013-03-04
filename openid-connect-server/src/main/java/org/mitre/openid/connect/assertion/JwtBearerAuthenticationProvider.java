@@ -66,7 +66,7 @@ public class JwtBearerAuthenticationProvider implements AuthenticationProvider {
     		// check the signature with nimbus
     		if (jwt instanceof SignedJWT) {
     			SignedJWT jws = (SignedJWT)jwt;
-    			JwtSigningAndValidationService validator = validators.get(client.getJwkUrl());
+    			JwtSigningAndValidationService validator = validators.get(client.getJwksUri());
 	    		if (validator == null || !validator.validateSignature(jws)) {
 	    			throw new AuthenticationServiceException("Invalid signature");
 	    		}

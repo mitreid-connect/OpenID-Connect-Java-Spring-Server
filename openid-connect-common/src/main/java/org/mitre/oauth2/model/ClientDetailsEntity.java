@@ -18,6 +18,7 @@
  */
 package org.mitre.oauth2.model;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -118,7 +119,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	private boolean dynamicallyRegistered = false; // was this client dynamically registered?
 	private boolean allowIntrospection = false; // do we let this client call the introspection endpoint?
 	private Integer idTokenValiditySeconds; //timeout for id tokens
-	
+	private Date createdAt; // time the client was created
 	
 	public enum AuthMethod {
 		SECRET_POST("client_secret_post"), 
@@ -849,5 +850,19 @@ public class ClientDetailsEntity implements ClientDetails {
 	public void setRequestUris(Set<String> requestUris) {
 		this.requestUris = requestUris;
 	}
+
+	/**
+	 * @return the createdAt
+	 */
+    public Date getCreatedAt() {
+	    return createdAt;
+    }
+
+	/**
+	 * @param createdAt the createdAt to set
+	 */
+    public void setCreatedAt(Date createdAt) {
+	    this.createdAt = createdAt;
+    }
 
 }

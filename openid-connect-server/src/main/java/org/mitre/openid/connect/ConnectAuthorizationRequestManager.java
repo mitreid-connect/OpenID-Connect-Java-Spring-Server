@@ -170,12 +170,12 @@ public class ConnectAuthorizationRequestManager implements AuthorizationRequestM
 			
 			ClientDetailsEntity client = clientDetailsService.loadClientByClientId(clientId);
 
-			if (client.getJwkUrl() == null) {
+			if (client.getJwksUri() == null) {
 				throw new InvalidClientException("Client must have a JWK URI registered to use request objects.");
 			}
 			
 			// check JWT signature
-			JwtSigningAndValidationService validator = validators.get(client.getJwkUrl());
+			JwtSigningAndValidationService validator = validators.get(client.getJwksUri());
 			if (validator == null) {
 				throw new InvalidClientException("Client must have a JWK URI registered to use request objects.");
 			}

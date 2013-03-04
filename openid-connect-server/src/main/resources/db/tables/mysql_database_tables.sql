@@ -109,15 +109,27 @@ CREATE TABLE IF NOT EXISTS client_details (
 	
 	default_max_age BIGINT,
 	require_auth_time BOOLEAN NOT NULL DEFAULT 0,
-	default_acr VARCHAR(256)
+	created_at TIMESTAMP NULL,
+	initiate_login_uri VARCHAR(2048),
+	post_logout_redirect_uri VARCHAR(2048)
+);
+
+CREATE TABLE IF NOT EXISTS client_request_uri (
+	owner_id BIGINT,
+	request_uri VARCHAR(2000)
+);
+
+CREATE TABLE IF NOT EXISTS client_default_acr_value (
+	owner_id BIGINT,
+	default_acr_value VARCHAR(2000)
 );
 
 CREATE TABLE IF NOT EXISTS client_nonce ( 
 	id BIGINT AUTO_INCREMENT PRIMARY KEY,
 	value VARCHAR(256),
 	client_id VARCHAR(256),
-	use_date DATE,
-	expire_date DATE
+	use_date TIMESTAMP NULL,
+	expire_date TIMESTAMP NULL
 );
 
 CREATE TABLE IF NOT EXISTS client_contact (
