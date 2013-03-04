@@ -34,6 +34,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -49,7 +50,9 @@ public class ClientAPI {
     @Autowired
     private ClientDetailsEntityService clientService;
 	private JsonParser parser = new JsonParser();
-	private Gson gson = new Gson();
+	private Gson gson = new GsonBuilder().serializeNulls()
+            .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+            .create();
 
     /**
      * Get a list of all clients
