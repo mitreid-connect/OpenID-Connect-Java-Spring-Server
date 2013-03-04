@@ -20,7 +20,7 @@ var ClientModel = Backbone.Model.extend({
         idTokenValiditySeconds: 600,
         clientName:"",
         clientSecret:"",
-        registeredRedirectUri:[],
+        redirectUris:[],
         authorizedGrantTypes:["authorization_code"],
         scope:[],
         authorities:[],
@@ -198,7 +198,7 @@ var ClientFormView = Backbone.View.extend({
             this.template = _.template($('#tmpl-client-form').html());
         }
 
-        this.registeredRedirectUriCollection = new Backbone.Collection();
+        this.redirectUrisCollection = new Backbone.Collection();
         this.scopeCollection = new Backbone.Collection();
     },
 
@@ -353,7 +353,7 @@ var ClientFormView = Backbone.View.extend({
             clientId:$('#clientId input').val(),
             clientSecret: clientSecret,
             generateClientSecret:generateClientSecret,
-            registeredRedirectUri: this.registeredRedirectUriCollection.pluck("item"),
+            redirectUris: this.redirectUrisCollection.pluck("item"),
             clientDescription:$('#clientDescription textarea').val(),
             logoUrl:$('#logoUrl input').val(),
             authorizedGrantTypes: authorizedGrantTypes,
@@ -362,7 +362,8 @@ var ClientFormView = Backbone.View.extend({
             idTokenValiditySeconds: idTokenValiditySeconds,
             allowRefresh: $('#allowRefresh').is(':checked'),
             allowIntrospection: $('#allowIntrospection input').is(':checked'),
-            scope: scopes
+            scope: scopes,
+            
         });
 
         // post-validate
@@ -408,12 +409,12 @@ var ClientFormView = Backbone.View.extend({
         var _self = this;
 
         // build and bind registered redirect URI collection and view
-        _.each(this.model.get("registeredRedirectUri"), function (registeredRedirectUri) {
-            _self.registeredRedirectUriCollection.add(new URIModel({item:registeredRedirectUri}));
+        _.each(this.model.get("redirectUris"), function (redirectUri) {
+            _self.redirectUrisCollection.add(new URIModel({item:redirectUri}));
         });
 
-        $("#registeredRedirectUri .controls",this.el).html(new ListWidgetView({type:'uri', placeholder: 'http://',
-                                                                                collection: this.registeredRedirectUriCollection}).render().el);
+        $("#redirectUris .controls",this.el).html(new ListWidgetView({type:'uri', placeholder: 'http://',
+                                                                                collection: this.redirectUrisCollection}).render().el);
 
         _self = this;
         // build and bind scopes
