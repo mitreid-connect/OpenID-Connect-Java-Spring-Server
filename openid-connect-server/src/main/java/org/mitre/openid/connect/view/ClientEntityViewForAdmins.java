@@ -36,13 +36,14 @@ import com.google.gson.JsonSerializer;
  * @author jricher
  *
  */
-@Component("clientEntityViewAdmin")
-public class ClientEntityViewForAdmins extends AbstractView {
+@Component("clientEntityViewAdmins")
+public class ClientEntityViewForAdmins extends AbstractClientEntityView {
 
-	private static Logger logger = LoggerFactory.getLogger(ClientEntityViewForAdmins.class);
-
-	private Gson gson = new GsonBuilder()
-	    .setExclusionStrategies(new ExclusionStrategy() {
+	/**
+	 * @return
+	 */
+    protected ExclusionStrategy getExclusionStrategy() {
+	    return new ExclusionStrategy() {
 	
 	        public boolean shouldSkipField(FieldAttributes f) {
 	        	if (f.getName().equals("additionalProperties")) {
@@ -60,65 +61,6 @@ public class ClientEntityViewForAdmins extends AbstractView {
 	            return false;
 	        }
 	
-	    })
-	    .registerTypeAdapter(JWSAlgorithmEmbed.class, new JsonSerializer<JWSAlgorithmEmbed>() {
-			@Override
-            public JsonElement serialize(JWSAlgorithmEmbed src, Type typeOfSrc, JsonSerializationContext context) {
-				if (src != null) {
-					return new JsonPrimitive(src.getAlgorithmName());
-				} else {
-					return null;
-				}
-            }
-	    })
-	    .registerTypeAdapter(JWEAlgorithmEmbed.class, new JsonSerializer<JWEAlgorithmEmbed>() {
-			@Override
-            public JsonElement serialize(JWEAlgorithmEmbed src, Type typeOfSrc, JsonSerializationContext context) {
-				if (src != null) {
-					return new JsonPrimitive(src.getAlgorithmName());
-				} else {
-					return null;
-				}
-            }
-	    })
-	    .registerTypeAdapter(JWEEncryptionMethodEmbed.class, new JsonSerializer<JWEEncryptionMethodEmbed>() {
-			@Override
-            public JsonElement serialize(JWEEncryptionMethodEmbed src, Type typeOfSrc, JsonSerializationContext context) {
-				if (src != null) {
-					return new JsonPrimitive(src.getAlgorithmName());
-				} else {
-					return null;
-				}
-            }
-	    })
-	    .serializeNulls()
-	    .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
-	    .create();
- 
-	
-    protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
-
-        response.setContentType("application/json");
-
-        
-		HttpStatus code = (HttpStatus) model.get("code");
-		if (code == null) {
-			code = HttpStatus.OK; // default to 200
-		}
-		
-		response.setStatus(code.value());
-		
-		try {
-			
-			Writer out = response.getWriter();
-			Object obj = model.get("entity");
-	        gson.toJson(obj, out);
-	        
-		} catch (IOException e) {
-			
-			logger.error("IOException in JsonEntityView.java: ", e);
-			
-		}
+	    };
     }
-
 }

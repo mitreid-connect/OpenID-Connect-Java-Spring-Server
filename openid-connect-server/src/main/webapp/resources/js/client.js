@@ -495,7 +495,7 @@ var ClientFormView = Backbone.View.extend({
         $('#requestUris .controls', this.el).html(new ListWidgetView({
         	type: 'uri',
         	placeholder: 'http://',
-        	collection: this.requestUrisCollection}).render.el());
+        	collection: this.requestUrisCollection}).render().el);
         
         // build and bind default ACR values
         _.each(this.model.get('defaultAcrValues'), function (defaultAcrValue) {
@@ -505,7 +505,7 @@ var ClientFormView = Backbone.View.extend({
         $('#defaultAcrValues .controls', this.el).html(new ListWidgetView({
         	placeholder: 'new ACR value',
         	// TODO: autocomplete from spec
-        	collection: this.defaultAcrValuesCollection}).render.el());
+        	collection: this.defaultAcrValuesCollection}).render().el);
         
         // build and bind 
         

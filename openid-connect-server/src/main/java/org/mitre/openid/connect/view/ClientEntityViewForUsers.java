@@ -36,14 +36,16 @@ import com.google.gson.JsonSerializer;
  * @author jricher
  *
  */
-@Component("clientEntityViewUser")
-public class ClientEntityViewForUsers extends AbstractView {
+@Component("clientEntityViewUsers")
+public class ClientEntityViewForUsers extends AbstractClientEntityView {
 
-	private static Logger logger = LoggerFactory.getLogger(ClientEntityViewForUsers.class);
-
-	private Gson gson = new GsonBuilder()
-	    .setExclusionStrategies(new ExclusionStrategy() {
-	
+	/* (non-Javadoc)
+	 * @see org.mitre.openid.connect.view.AbstractClientEntityView#getExclusionStrategy()
+	 */
+    @Override
+    protected ExclusionStrategy getExclusionStrategy() {
+    	return new ExclusionStrategy() {
+    		
 	        public boolean shouldSkipField(FieldAttributes f) {
 	        	// whitelist the handful of fields that are good 
 	        	if (f.getName().equals("clientName") ||
@@ -66,65 +68,7 @@ public class ClientEntityViewForUsers extends AbstractView {
 	            return false;
 	        }
 	
-	    })
-	    .registerTypeAdapter(JWSAlgorithmEmbed.class, new JsonSerializer<JWSAlgorithmEmbed>() {
-			@Override
-            public JsonElement serialize(JWSAlgorithmEmbed src, Type typeOfSrc, JsonSerializationContext context) {
-				if (src != null) {
-					return new JsonPrimitive(src.getAlgorithmName());
-				} else {
-					return null;
-				}
-            }
-	    })
-	    .registerTypeAdapter(JWEAlgorithmEmbed.class, new JsonSerializer<JWEAlgorithmEmbed>() {
-			@Override
-            public JsonElement serialize(JWEAlgorithmEmbed src, Type typeOfSrc, JsonSerializationContext context) {
-				if (src != null) {
-					return new JsonPrimitive(src.getAlgorithmName());
-				} else {
-					return null;
-				}
-            }
-	    })
-	    .registerTypeAdapter(JWEEncryptionMethodEmbed.class, new JsonSerializer<JWEEncryptionMethodEmbed>() {
-			@Override
-            public JsonElement serialize(JWEEncryptionMethodEmbed src, Type typeOfSrc, JsonSerializationContext context) {
-				if (src != null) {
-					return new JsonPrimitive(src.getAlgorithmName());
-				} else {
-					return null;
-				}
-            }
-	    })
-	    .serializeNulls()
-	    .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
-	    .create();
- 
-	
-    protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
-
-        response.setContentType("application/json");
-
-        
-		HttpStatus code = (HttpStatus) model.get("code");
-		if (code == null) {
-			code = HttpStatus.OK; // default to 200
-		}
-		
-		response.setStatus(code.value());
-		
-		try {
-			
-			Writer out = response.getWriter();
-			Object obj = model.get("entity");
-	        gson.toJson(obj, out);
-	        
-		} catch (IOException e) {
-			
-			logger.error("IOException in JsonEntityView.java: ", e);
-			
-		}
+	    };
     }
-
+	
 }

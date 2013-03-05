@@ -205,7 +205,7 @@ public class ClientDynamicRegistrationEndpoint {
 			
 			c.setIdTokenSignedResponseAlg(getAsJwsAlgorithm(o, "id_token_signed_response_alg"));
 			c.setIdTokenEncryptedResponseAlg(getAsJweAlgorithm(o, "id_token_encrypted_response_alg"));
-			c.setIdTokenEncryptedReponseEnc(getAsJweEncryptionMethod(o, "id_token_encrypted_response_enc"));
+			c.setIdTokenEncryptedResponseEnc(getAsJweEncryptionMethod(o, "id_token_encrypted_response_enc"));
 			
 			if (o.has("default_max_age")) {
 				if (o.get("default_max_age").isJsonPrimitive()) {

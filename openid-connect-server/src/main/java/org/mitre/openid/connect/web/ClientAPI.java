@@ -106,7 +106,7 @@ public class ClientAPI {
 
         Collection<ClientDetailsEntity> clients = clientService.getAllClients();
         modelAndView.addObject("entity", clients);
-        modelAndView.setViewName("clientEntityView");
+        modelAndView.setViewName("clientEntityViewAdmins");
 
         return modelAndView;
     }
@@ -143,7 +143,7 @@ public class ClientAPI {
         ClientDetailsEntity newClient = clientService.saveNewClient(client);
 		m.addAttribute("entity", newClient);
 
-        return "clientEntityView";
+        return "clientEntityViewAdmins";
     }
 
     /**
@@ -185,7 +185,7 @@ public class ClientAPI {
         ClientDetailsEntity newClient = clientService.updateClient(oldClient, client);
 		m.addAttribute("entity", newClient);
 
-        return "clientEntityView";
+        return "clientEntityViewAdmins";
     }
 
     /**
@@ -224,7 +224,7 @@ public class ClientAPI {
         }
 
         modelAndView.addObject("entity", client);
-        modelAndView.setViewName("clientEntityView");
+        modelAndView.setViewName("clientEntityViewAdmins");
 
         return modelAndView;
     }

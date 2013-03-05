@@ -97,7 +97,7 @@ public class ClientInformationResponseView extends AbstractView {
 		o.addProperty("userinfo_encrypted_response_enc", c.getUserInfoEncryptedResponseEnc() != null ? c.getUserInfoEncryptedResponseEnc().getAlgorithmName() : null);
 		o.addProperty("id_token_signed_response_alg", c.getIdTokenSignedResponseAlg() != null ? c.getIdTokenSignedResponseAlg().getAlgorithmName() : null);
 		o.addProperty("id_token_encrypted_response_alg", c.getIdTokenEncryptedResponseAlg() != null ? c.getIdTokenEncryptedResponseAlg().getAlgorithmName() : null);
-		o.addProperty("id_token_encrypted_response_enc", c.getIdTokenEncryptedReponseEnc() != null ? c.getIdTokenEncryptedReponseEnc().getAlgorithmName() : null);
+		o.addProperty("id_token_encrypted_response_enc", c.getIdTokenEncryptedResponseEnc() != null ? c.getIdTokenEncryptedResponseEnc().getAlgorithmName() : null);
 		o.addProperty("default_max_age", c.getDefaultMaxAge());
 		o.addProperty("require_auth_time", c.getRequireAuthTime());
 		o.add("default_acr_values", getAsArray(c.getDefaultACRvalues()));

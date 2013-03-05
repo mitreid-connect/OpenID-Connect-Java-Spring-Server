@@ -97,7 +97,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	
 	private JWSAlgorithmEmbed idTokenSignedResponseAlg; // id_token_signed_response_alg
 	private JWEAlgorithmEmbed idTokenEncryptedResponseAlg; // id_token_encrypted_response_alg
-	private JWEEncryptionMethodEmbed idTokenEncryptedReponseEnc; // id_token_encrypted_response_enc
+	private JWEEncryptionMethodEmbed idTokenEncryptedResponseEnc; // id_token_encrypted_response_enc
 	
 	private Integer defaultMaxAge; // default_max_age
 	private Boolean requireAuthTime; // require_auth_time
@@ -734,12 +734,12 @@ public class ClientDetailsEntity implements ClientDetails {
 	@AttributeOverrides({
 		@AttributeOverride(name = "algorithmName", column=@Column(name="id_token_encrypted_response_enc"))
 	})
-	public JWEEncryptionMethodEmbed getIdTokenEncryptedReponseEnc() {
-		return idTokenEncryptedReponseEnc;
+	public JWEEncryptionMethodEmbed getIdTokenEncryptedResponseEnc() {
+		return idTokenEncryptedResponseEnc;
 	}
 
-	public void setIdTokenEncryptedReponseEnc(JWEEncryptionMethodEmbed idTokenEncryptedReponseEnc) {
-		this.idTokenEncryptedReponseEnc = idTokenEncryptedReponseEnc;
+	public void setIdTokenEncryptedResponseEnc(JWEEncryptionMethodEmbed idTokenEncryptedResponseEnc) {
+		this.idTokenEncryptedResponseEnc = idTokenEncryptedResponseEnc;
 	}
 
 	@Basic
