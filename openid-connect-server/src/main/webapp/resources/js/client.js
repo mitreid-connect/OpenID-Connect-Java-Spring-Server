@@ -201,6 +201,9 @@ var ClientFormView = Backbone.View.extend({
         this.redirectUrisCollection = new Backbone.Collection();
         this.scopeCollection = new Backbone.Collection();
         this.contactsCollection = new Backbone.Collection();
+        this.defaultAcrValuesCollection = new Backbone.Collection();
+        this.requestUrisCollection = new Backbone.Collection();
+        // TODO: add Spring authorities collection and resource IDs collection?
     },
 
     events:{
@@ -401,7 +404,8 @@ var ClientFormView = Backbone.View.extend({
             requireAuthTime: $('#requireAuthTime input').is(':checked'),
             defaultMaxAge: $('#defaultMaxAge input').val(), // TODO: validate integer
             contacts: this.contactsCollection.pluck('item'),
-            
+            requestUris: this.requestUrisCollection.pluck('item'),
+            defaultAcrValues: this.defaultAcrValuesCollection.pluck('item'),
             
             
             // TODO: everything below this line isn't implemented yet
@@ -412,9 +416,6 @@ var ClientFormView = Backbone.View.extend({
             idTokenSignedResponseAlg: idTokenSignedResponseAlg,         // "
             idTokenEncryptedResponseAlg: idTokenEncryptedResponseAlg,   // "
             idTokenEncryptedResponseEnc: idTokenEncryptedResponseEnc,   // "
-            defaultAcrValues: this.defaultAcrValuesCollection.pluck('item'),
-            requestUris: this.requestUrisCollection.pluck('item'),
-            resourceIds: this.resourceIdsCollection.pluck('item'),
             */
         });
 
@@ -465,22 +466,54 @@ var ClientFormView = Backbone.View.extend({
             _self.redirectUrisCollection.add(new URIModel({item:redirectUri}));
         });
 
-        $("#redirectUris .controls",this.el).html(new ListWidgetView({type:'uri', placeholder: 'http://',
-                                                                                collection: this.redirectUrisCollection}).render().el);
-
-        _self = this;
+        $("#redirectUris .controls",this.el).html(new ListWidgetView({
+        	type:'uri', 
+        	placeholder: 'http://',
+        	collection: this.redirectUrisCollection}).render().el);
+        
         // build and bind scopes
         _.each(this.model.get("scope"), function (scope) {
             _self.scopeCollection.add(new Backbone.Model({item:scope}));
         });
 
-        $("#scope .controls",this.el).html(new ListWidgetView({placeholder: 'new scope', 
+        $("#scope .controls",this.el).html(new ListWidgetView({
+        	placeholder: 'new scope', 
         	autocomplete: _.uniq(_.flatten(app.systemScopeList.pluck("value"))), 
             collection: this.scopeCollection}).render().el);
 
-        $("#contacts .controls", this.el).html(new ListWidgetView({placeholder: 'new contact',
+        // build and bind contacts
+        _.each(this.model.get('contacts'), function (contact) {
+        	_self.contactsCollection.add(new Backbone.Model({item:contact}));
+        });
+        
+        $("#contacts .controls", this.el).html(new ListWidgetView({
+        	placeholder: 'new contact',
         	collection: this.contactsCollection}).render().el);
         
+        
+        // build and bind request URIs
+        _.each(this.model.get('requestUris'), function (requestUri) {
+        	_self.requestUrisCollection.add(new URIModel({item:requestUri}));
+        });
+        
+        $('#requestUris .controls', this.el).html(new ListWidgetView({
+        	type: 'uri',
+        	placeholder: 'http://',
+        	collection: this.requestUrisCollection}).render.el());
+        
+        // build and bind default ACR values
+        _.each(this.model.get('defaultAcrValues'), function (defaultAcrValue) {
+        	_self.defaultAcrValuesCollection.add(new Backbone.Model({item:defaultAcrValue}));
+        });
+        
+        $('#defaultAcrValues .controls', this.el).html(new ListWidgetView({
+        	placeholder: 'new ACR value',
+        	// TODO: autocomplete from spec
+        	collection: this.defaultAcrValuesCollection}).render.el());
+        
+        // build and bind 
+        
+        // set up token  fields
         if (!this.model.get("allowRefresh")) {
             $("#refreshTokenValiditySeconds", this.$el).hide();
         }
@@ -497,6 +530,7 @@ var ClientFormView = Backbone.View.extend({
             $("#id-token-timeout-seconds", this.$el).prop('disabled',true);
         }
 
+        // toggle other dynamic fields
         this.toggleRequireClientSecret();
         this.previewLogo();
         
