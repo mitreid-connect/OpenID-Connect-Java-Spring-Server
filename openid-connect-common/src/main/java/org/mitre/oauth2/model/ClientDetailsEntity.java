@@ -46,9 +46,9 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
-import org.mitre.jose.JWEAlgorithmEntity;
-import org.mitre.jose.JWEEncryptionMethodEntity;
-import org.mitre.jose.JWSAlgorithmEntity;
+import org.mitre.jose.JWEAlgorithmEmbed;
+import org.mitre.jose.JWEEncryptionMethodEmbed;
+import org.mitre.jose.JWSAlgorithmEmbed;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.provider.ClientDetails;
 
@@ -89,15 +89,15 @@ public class ClientDetailsEntity implements ClientDetails {
 	private String sectorIdentifierUri; // sector_identifier_uri
 	private SubjectType subjectType; // subject_type
 	
-	private JWSAlgorithmEntity requestObjectSigningAlg; // request_object_signing_alg
+	private JWSAlgorithmEmbed requestObjectSigningAlg; // request_object_signing_alg
 	
-	private JWSAlgorithmEntity userInfoSignedResponseAlg; // user_info_signed_response_alg
-	private JWEAlgorithmEntity userInfoEncryptedResponseAlg; // user_info_encrypted_response_alg
-	private JWEEncryptionMethodEntity userInfoEncryptedResponseEnc; // user_info_encrypted_response_enc
+	private JWSAlgorithmEmbed userInfoSignedResponseAlg; // user_info_signed_response_alg
+	private JWEAlgorithmEmbed userInfoEncryptedResponseAlg; // user_info_encrypted_response_alg
+	private JWEEncryptionMethodEmbed userInfoEncryptedResponseEnc; // user_info_encrypted_response_enc
 	
-	private JWSAlgorithmEntity idTokenSignedResponseAlg; // id_token_signed_response_alg
-	private JWEAlgorithmEntity idTokenEncryptedResponseAlg; // id_token_encrypted_response_alg
-	private JWEEncryptionMethodEntity idTokenEncryptedReponseEnc; // id_token_encrypted_response_enc
+	private JWSAlgorithmEmbed idTokenSignedResponseAlg; // id_token_signed_response_alg
+	private JWEAlgorithmEmbed idTokenEncryptedResponseAlg; // id_token_encrypted_response_alg
+	private JWEEncryptionMethodEmbed idTokenEncryptedReponseEnc; // id_token_encrypted_response_enc
 	
 	private Integer defaultMaxAge; // default_max_age
 	private Boolean requireAuthTime; // require_auth_time
@@ -662,11 +662,11 @@ public class ClientDetailsEntity implements ClientDetails {
 	@AttributeOverrides({
 		@AttributeOverride(name = "algorithmName", column=@Column(name="request_object_signing_alg"))
 	})
-	public JWSAlgorithmEntity getRequestObjectSigningAlg() {
+	public JWSAlgorithmEmbed getRequestObjectSigningAlg() {
 		return requestObjectSigningAlg;
 	}
 
-	public void setRequestObjectSigningAlg(JWSAlgorithmEntity requestObjectSigningAlg) {
+	public void setRequestObjectSigningAlg(JWSAlgorithmEmbed requestObjectSigningAlg) {
 		this.requestObjectSigningAlg = requestObjectSigningAlg;
 	}
 
@@ -674,11 +674,11 @@ public class ClientDetailsEntity implements ClientDetails {
 	@AttributeOverrides({
 		@AttributeOverride(name = "algorithmName", column=@Column(name="user_info_signed_response_alg"))
 	})
-	public JWSAlgorithmEntity getUserInfoSignedResponseAlg() {
+	public JWSAlgorithmEmbed getUserInfoSignedResponseAlg() {
 		return userInfoSignedResponseAlg;
 	}
 
-	public void setUserInfoSignedResponseAlg(JWSAlgorithmEntity userInfoSignedResponseAlg) {
+	public void setUserInfoSignedResponseAlg(JWSAlgorithmEmbed userInfoSignedResponseAlg) {
 		this.userInfoSignedResponseAlg = userInfoSignedResponseAlg;
 	}
 
@@ -686,11 +686,11 @@ public class ClientDetailsEntity implements ClientDetails {
 	@AttributeOverrides({
 		@AttributeOverride(name = "algorithmName", column=@Column(name="user_info_encrypted_response_alg"))
 	})
-	public JWEAlgorithmEntity getUserInfoEncryptedResponseAlg() {
+	public JWEAlgorithmEmbed getUserInfoEncryptedResponseAlg() {
 		return userInfoEncryptedResponseAlg;
 	}
 
-	public void setUserInfoEncryptedResponseAlg(JWEAlgorithmEntity userInfoEncryptedResponseAlg) {
+	public void setUserInfoEncryptedResponseAlg(JWEAlgorithmEmbed userInfoEncryptedResponseAlg) {
 		this.userInfoEncryptedResponseAlg = userInfoEncryptedResponseAlg;
 	}
 
@@ -698,11 +698,11 @@ public class ClientDetailsEntity implements ClientDetails {
 	@AttributeOverrides({
 		@AttributeOverride(name = "algorithmName", column=@Column(name="user_info_encrypted_response_enc"))
 	})
-	public JWEEncryptionMethodEntity getUserInfoEncryptedResponseEnc() {
+	public JWEEncryptionMethodEmbed getUserInfoEncryptedResponseEnc() {
 		return userInfoEncryptedResponseEnc;
 	}
 
-	public void setUserInfoEncryptedResponseEnc(JWEEncryptionMethodEntity userInfoEncryptedResponseEnc) {
+	public void setUserInfoEncryptedResponseEnc(JWEEncryptionMethodEmbed userInfoEncryptedResponseEnc) {
 		this.userInfoEncryptedResponseEnc = userInfoEncryptedResponseEnc;
 	}	
 
@@ -710,11 +710,11 @@ public class ClientDetailsEntity implements ClientDetails {
 	@AttributeOverrides({
 		@AttributeOverride(name = "algorithmName", column=@Column(name="id_token_signed_response_alg"))
 	})
-	public JWSAlgorithmEntity getIdTokenSignedResponseAlg() {
+	public JWSAlgorithmEmbed getIdTokenSignedResponseAlg() {
 		return idTokenSignedResponseAlg;
 	}
 
-	public void setIdTokenSignedResponseAlg(JWSAlgorithmEntity idTokenSignedResponseAlg) {
+	public void setIdTokenSignedResponseAlg(JWSAlgorithmEmbed idTokenSignedResponseAlg) {
 		this.idTokenSignedResponseAlg = idTokenSignedResponseAlg;
 	}
 
@@ -722,11 +722,11 @@ public class ClientDetailsEntity implements ClientDetails {
 	@AttributeOverrides({
 		@AttributeOverride(name = "algorithmName", column=@Column(name="id_token_encrypted_response_alg"))
 	})
-	public JWEAlgorithmEntity getIdTokenEncryptedResponseAlg() {
+	public JWEAlgorithmEmbed getIdTokenEncryptedResponseAlg() {
 		return idTokenEncryptedResponseAlg;
 	}
 
-	public void setIdTokenEncryptedResponseAlg(JWEAlgorithmEntity idTokenEncryptedResponseAlg) {
+	public void setIdTokenEncryptedResponseAlg(JWEAlgorithmEmbed idTokenEncryptedResponseAlg) {
 		this.idTokenEncryptedResponseAlg = idTokenEncryptedResponseAlg;
 	}
 
@@ -734,11 +734,11 @@ public class ClientDetailsEntity implements ClientDetails {
 	@AttributeOverrides({
 		@AttributeOverride(name = "algorithmName", column=@Column(name="id_token_encrypted_response_enc"))
 	})
-	public JWEEncryptionMethodEntity getIdTokenEncryptedReponseEnc() {
+	public JWEEncryptionMethodEmbed getIdTokenEncryptedReponseEnc() {
 		return idTokenEncryptedReponseEnc;
 	}
 
-	public void setIdTokenEncryptedReponseEnc(JWEEncryptionMethodEntity idTokenEncryptedReponseEnc) {
+	public void setIdTokenEncryptedReponseEnc(JWEEncryptionMethodEmbed idTokenEncryptedReponseEnc) {
 		this.idTokenEncryptedReponseEnc = idTokenEncryptedReponseEnc;
 	}
 

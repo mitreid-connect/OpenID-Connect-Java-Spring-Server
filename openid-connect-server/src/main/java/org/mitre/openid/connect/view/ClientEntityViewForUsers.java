@@ -11,9 +11,9 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.mitre.jose.JWEAlgorithmEntity;
-import org.mitre.jose.JWEEncryptionMethodEntity;
-import org.mitre.jose.JWSAlgorithmEntity;
+import org.mitre.jose.JWEAlgorithmEmbed;
+import org.mitre.jose.JWEEncryptionMethodEmbed;
+import org.mitre.jose.JWSAlgorithmEmbed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -67,9 +67,9 @@ public class ClientEntityViewForUsers extends AbstractView {
 	        }
 	
 	    })
-	    .registerTypeAdapter(JWSAlgorithmEntity.class, new JsonSerializer<JWSAlgorithmEntity>() {
+	    .registerTypeAdapter(JWSAlgorithmEmbed.class, new JsonSerializer<JWSAlgorithmEmbed>() {
 			@Override
-            public JsonElement serialize(JWSAlgorithmEntity src, Type typeOfSrc, JsonSerializationContext context) {
+            public JsonElement serialize(JWSAlgorithmEmbed src, Type typeOfSrc, JsonSerializationContext context) {
 				if (src != null) {
 					return new JsonPrimitive(src.getAlgorithmName());
 				} else {
@@ -77,9 +77,9 @@ public class ClientEntityViewForUsers extends AbstractView {
 				}
             }
 	    })
-	    .registerTypeAdapter(JWEAlgorithmEntity.class, new JsonSerializer<JWEAlgorithmEntity>() {
+	    .registerTypeAdapter(JWEAlgorithmEmbed.class, new JsonSerializer<JWEAlgorithmEmbed>() {
 			@Override
-            public JsonElement serialize(JWEAlgorithmEntity src, Type typeOfSrc, JsonSerializationContext context) {
+            public JsonElement serialize(JWEAlgorithmEmbed src, Type typeOfSrc, JsonSerializationContext context) {
 				if (src != null) {
 					return new JsonPrimitive(src.getAlgorithmName());
 				} else {
@@ -87,9 +87,9 @@ public class ClientEntityViewForUsers extends AbstractView {
 				}
             }
 	    })
-	    .registerTypeAdapter(JWEEncryptionMethodEntity.class, new JsonSerializer<JWEEncryptionMethodEntity>() {
+	    .registerTypeAdapter(JWEEncryptionMethodEmbed.class, new JsonSerializer<JWEEncryptionMethodEmbed>() {
 			@Override
-            public JsonElement serialize(JWEEncryptionMethodEntity src, Type typeOfSrc, JsonSerializationContext context) {
+            public JsonElement serialize(JWEEncryptionMethodEmbed src, Type typeOfSrc, JsonSerializationContext context) {
 				if (src != null) {
 					return new JsonPrimitive(src.getAlgorithmName());
 				} else {

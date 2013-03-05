@@ -6,9 +6,9 @@ import java.security.Principal;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import org.mitre.jose.JWEAlgorithmEntity;
-import org.mitre.jose.JWEEncryptionMethodEntity;
-import org.mitre.jose.JWSAlgorithmEntity;
+import org.mitre.jose.JWEAlgorithmEmbed;
+import org.mitre.jose.JWEEncryptionMethodEmbed;
+import org.mitre.jose.JWSAlgorithmEmbed;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity.AppType;
 import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
@@ -260,10 +260,10 @@ public class ClientDynamicRegistrationEndpoint {
     /**
      * Gets the value of the given member as a JWS Algorithm, null if it doesn't exist
      */
-    private JWSAlgorithmEntity getAsJwsAlgorithm(JsonObject o, String member) {
+    private JWSAlgorithmEmbed getAsJwsAlgorithm(JsonObject o, String member) {
     	String s = getAsString(o, member);
     	if (s != null) {
-    		return JWSAlgorithmEntity.getForAlgorithmName(s);
+    		return JWSAlgorithmEmbed.getForAlgorithmName(s);
     	} else {
     		return null;
     	}
@@ -272,10 +272,10 @@ public class ClientDynamicRegistrationEndpoint {
     /**
      * Gets the value of the given member as a JWE Algorithm, null if it doesn't exist
      */
-    private JWEAlgorithmEntity getAsJweAlgorithm(JsonObject o, String member) {
+    private JWEAlgorithmEmbed getAsJweAlgorithm(JsonObject o, String member) {
     	String s = getAsString(o, member);
     	if (s != null) {
-    		return JWEAlgorithmEntity.getForAlgorithmName(s);
+    		return JWEAlgorithmEmbed.getForAlgorithmName(s);
     	} else {
     		return null;
     	}
@@ -285,10 +285,10 @@ public class ClientDynamicRegistrationEndpoint {
     /**
      * Gets the value of the given member as a JWE Encryption Method, null if it doesn't exist
      */
-    private JWEEncryptionMethodEntity getAsJweEncryptionMethod(JsonObject o, String member) {
+    private JWEEncryptionMethodEmbed getAsJweEncryptionMethod(JsonObject o, String member) {
     	String s = getAsString(o, member);
     	if (s != null) {
-    		return JWEEncryptionMethodEntity.getForAlgorithmName(s);
+    		return JWEEncryptionMethodEmbed.getForAlgorithmName(s);
     	} else {
     		return null;
     	}

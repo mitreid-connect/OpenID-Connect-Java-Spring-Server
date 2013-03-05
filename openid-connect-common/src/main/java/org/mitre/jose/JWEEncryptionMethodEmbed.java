@@ -5,35 +5,31 @@ package org.mitre.jose;
 
 import javax.persistence.Basic;
 import javax.persistence.Embeddable;
-import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.Transient;
 
 import com.google.common.base.Strings;
-import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.EncryptionMethod;
+import com.nimbusds.jose.JWEAlgorithm;
 
 /**
- * 
- * Wrapper class for Nimbus JOSE objects to fit into JPA
- * 
  * @author jricher
  *
  */
 @Embeddable
-public class JWSAlgorithmEntity {
+public class JWEEncryptionMethodEmbed {
 
-	private JWSAlgorithm algorithm;
-	
-	public JWSAlgorithmEntity() { 
+	private EncryptionMethod algorithm;
+
+	public JWEEncryptionMethodEmbed() {
 		
 	}
-
-	public JWSAlgorithmEntity(JWSAlgorithm algorithm) {
+	
+	public JWEEncryptionMethodEmbed(EncryptionMethod algorithm) {
 	    this.algorithm = algorithm;
     }
-	
-	public static JWSAlgorithmEntity getForAlgorithmName (String algorithmName) {
-		JWSAlgorithmEntity ent = new JWSAlgorithmEntity();
+
+	public static JWEEncryptionMethodEmbed getForAlgorithmName (String algorithmName) {
+		JWEEncryptionMethodEmbed ent = new JWEEncryptionMethodEmbed();
 		ent.setAlgorithmName(algorithmName);
 		if (ent.getAlgorithm() == null) {
 			return null;
@@ -41,7 +37,7 @@ public class JWSAlgorithmEntity {
 			return ent;
 		}
 	}
-
+	
 	/**
 	 * Get the name of this algorithm, return null if no algorithm set.
 	 * @return
@@ -57,30 +53,15 @@ public class JWSAlgorithmEntity {
 	
 	/**
 	 * Set the name of this algorithm. 
-	 * Calls JWSAlgorithm.parse()
+	 * Calls EncryptionMethod.parse()
 	 * @param algorithmName
 	 */
 	public void setAlgorithmName(String algorithmName) {
 		if (!Strings.isNullOrEmpty(algorithmName)) {
-			algorithm = JWSAlgorithm.parse(algorithmName);
+			algorithm = EncryptionMethod.parse(algorithmName);
 		} else {
 			algorithm = null;
 		}
-	}
-
-	/**
-	 * @return the algorithm
-	 */
-	@Transient
-	public JWSAlgorithm getAlgorithm() {
-		return algorithm;
-	}
-
-	/**
-	 * @param algorithm the algorithm to set
-	 */
-	public void setAlgorithm(JWSAlgorithm algorithm) {
-		this.algorithm = algorithm;
 	}
 
 	/* (non-Javadoc)
@@ -88,9 +69,23 @@ public class JWSAlgorithmEntity {
 	 */
     @Override
     public String toString() {
-	    return "JWSAlgorithmEntity [algorithm=" + algorithm + "]";
+	    return "JWEEncryptionMethodEmbed [algorithm=" + algorithm + "]";
     }
 
+	/**
+	 * @return the algorithm
+	 */
+    @Transient
+	public EncryptionMethod getAlgorithm() {
+		return algorithm;
+	}
+
+	/**
+	 * @param algorithm the algorithm to set
+	 */
+	public void setAlgorithm(EncryptionMethod algorithm) {
+		this.algorithm = algorithm;
+	}
 	
-	
+
 }
