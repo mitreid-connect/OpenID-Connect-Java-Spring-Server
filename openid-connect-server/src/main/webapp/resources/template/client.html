@@ -190,30 +190,53 @@
                     </label>
                     <label class="checkbox">
                         <input id="grantTypes-client_credentials" type="checkbox"
-                        <%=($.inArray("client_credentials", grantTypes) > -1 ? 'checked' : '')%>> client
-                        credentials
+                        <%=($.inArray("client_credentials", grantTypes) > -1 ? 'checked' : '')%>> client credentials
                     </label>
                     <label class="checkbox">
-                        <input id="grantTypes-password" type="checkbox" <%=($.inArray("password",
-                        grantTypes) > -1 ? 'checked' : '')%>> password
+                        <input id="grantTypes-password" type="checkbox" <%=($.inArray("password", grantTypes) > -1 ? 'checked' : '')%>> password
                     </label>
                     <label class="checkbox">
-                        <input id="grantTypes-implicit" type="checkbox" <%=($.inArray("implicit",
-                        grantTypes) > -1 ? 'checked' : '')%>> implicit
+                        <input id="grantTypes-implicit" type="checkbox" <%=($.inArray("implicit", grantTypes) > -1 ? 'checked' : '')%>> implicit
                     </label>
 <!--
                     <label class="checkbox">
-                        <input id="grantTypes-refresh_token" type="checkbox" <%=($.inArray("refresh_token",
-                        grantTypes) > -1 ? 'checked' : '')%>> refresh
+                        <input id="grantTypes-refresh_token" type="checkbox" <%=($.inArray("refresh_token", grantTypes) > -1 ? 'checked' : '')%>> refresh
                     </label>
 -->
                     <label class="checkbox">
-                        <input id="grantTypes-redelegate" type="checkbox" <%=($.inArray("urn:ietf:params:oauth:grant_type:redelegate",
-                        grantTypes) > -1 ? 'checked' : '')%>> redelegate
+                        <input id="grantTypes-redelegate" type="checkbox" <%=($.inArray("urn:ietf:params:oauth:grant_type:redelegate", grantTypes) > -1 ? 'checked' : '')%>> redelegate
                     </label>
 
                 </div>
             </div>
+
+			<div class="control-group" id="responseTypes">
+				<label class="control-label">Response Types</label>
+
+				<div class="controls">
+					<label class="checkbox">
+                        <input id="responseTypes-code" type="checkbox" <%=($.inArray("code", responseTypes) > -1 ? 'checked' : '')%>> code
+					</label>
+					<label class="checkbox">
+                        <input id="responseTypes-token" type="checkbox" <%=($.inArray("token", responseTypes) > -1 ? 'checked' : '')%>> token
+					</label>
+					<label class="checkbox">
+                        <input id="responseTypes-idtoken" type="checkbox" <%=($.inArray("id_token", responseTypes) > -1 ? 'checked' : '')%>> id_token
+					</label>
+					<label class="checkbox">
+                        <input id="responseTypes-token-idtoken" type="checkbox" <%=($.inArray("token id_token", responseTypes) > -1 ? 'checked' : '')%>> token id_token
+					</label>
+					<label class="checkbox">
+                        <input id="responseTypes-code-idtoken" type="checkbox" <%=($.inArray("code id_token", responseTypes) > -1 ? 'checked' : '')%>> code id_token
+					</label>
+					<label class="checkbox">
+                        <input id="responseTypes-code-token" type="checkbox" <%=($.inArray("code token", responseTypes) > -1 ? 'checked' : '')%>> code token
+					</label>
+					<label class="checkbox">
+                        <input id="responseTypes-code-token-idtoken" type="checkbox" <%=($.inArray("code token id_token", responseTypes) > -1 ? 'checked' : '')%>> code token id_token
+					</label>
+				</div>
+			</div>
 
 			<div class="control-group" id="allowIntrospection">
 				<label class="control-label">Introspection</label>

@@ -290,12 +290,23 @@ var ClientFormView = Backbone.View.extend({
 
     // maps from a form-friendly name to the real grant parameter name
     grantMap:{
-    	"authorization_code": "authorization_code",
-    	"password": "password",
-    	"implicit": "implicit",
-    	"client_credentials": "client_credentials",
-    	"redelegate": "urn:ietf:params:oauth:grant_type:redelegate",
-    	"refresh_token": "refresh_token"
+    	'authorization_code': 'authorization_code',
+    	'password': 'password',
+    	'implicit': 'implicit',
+    	'client_credentials': 'client_credentials',
+    	'redelegate': 'urn:ietf:params:oauth:grant_type:redelegate',
+    	'refresh_token': 'refresh_token'
+    },
+    
+    // maps from a form-friendly name to the real reponse type parameter name
+    repsonseMap:{
+    	'code': 'code',
+    	'token': 'token',
+    	'idtoken': 'id_token',
+    	'token-idtoken': 'token id_token',
+    	'code-idtoken': 'code id_token',
+    	'code-token': 'code token',
+    	'code-token-idtoken': 'code token id_token'
     },
     
     saveClient:function (event) {
@@ -311,6 +322,14 @@ var ClientFormView = Backbone.View.extend({
             if ($('#grantTypes-' + index).is(':checked')) {
                 grantTypes.push(type);
             }
+        });
+        
+        // build the response type object
+        var responseTypes = [];
+        $.each(this.responseMap, function(index,type) {
+        	if ($('#responseTypes-' + index).is(':checked')) {
+        		responseTypes.push(type);
+        	}
         });
 
         var requireClientSecret = $('#requireClientSecret input').is(':checked');
@@ -373,13 +392,13 @@ var ClientFormView = Backbone.View.extend({
             jwksUri: $('#jwksUri input').val(),
             subjectType: $('#applicationType input').filter(':checked').val(),
             tokenEndpointAuthMethod: $('#tokenEndpointAuthMethod input').filter(':checked').val(),
+            responseTypes: responseTypes,
             
             
             
             // TODO: everything below this line isn't implemented yet
             /*
             contacts: this.contactsCollection.pluck('item'),
-            responseTypes: responseTypes, // TODO: need a preprocessor?
             sectorIdentifierUri: $('#sectorIdentifierUri input').val(),
             requestObjectSigningAlg: requestObjectSigningAlg,           // TODO: need a preprocessor for all the JOSE stuff:
             userInfoEncryptedResponseAlg: userInfoEncryptedResponseAlg, // "
