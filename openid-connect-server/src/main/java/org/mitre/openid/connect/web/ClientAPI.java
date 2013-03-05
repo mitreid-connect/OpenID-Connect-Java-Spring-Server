@@ -28,6 +28,8 @@ import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,9 +47,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
 
 /**
  * @author Michael Jett <mjett@mitre.org>
@@ -102,13 +101,16 @@ public class ClientAPI {
      * @return
      */
     @RequestMapping(method = RequestMethod.GET, produces = "application/json")
-    public ModelAndView apiGetAllClients(ModelAndView modelAndView) {
+    public String apiGetAllClients(Model model, Authentication auth) {
 
         Collection<ClientDetailsEntity> clients = clientService.getAllClients();
-        modelAndView.addObject("entity", clients);
-        modelAndView.setViewName("clientEntityViewAdmins");
+        model.addAttribute("entity", clients);
 
-        return modelAndView;
+		if (isAdmin(auth)) {
+			return "clientEntityViewAdmins";
+		} else {
+			return "clientEntityViewUsers";
+		}
     }
 
     /**
@@ -119,7 +121,7 @@ public class ClientAPI {
      * @return
      */
     @RequestMapping(method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
-    public String apiAddClient(@RequestBody String jsonString, Model m, Principal principal) {
+    public String apiAddClient(@RequestBody String jsonString, Model m, Authentication auth) {
 
     	JsonObject json = parser.parse(jsonString).getAsJsonObject();
 
@@ -143,7 +145,11 @@ public class ClientAPI {
         ClientDetailsEntity newClient = clientService.saveNewClient(client);
 		m.addAttribute("entity", newClient);
 
-        return "clientEntityViewAdmins";
+		if (isAdmin(auth)) {
+			return "clientEntityViewAdmins";
+		} else {
+			return "clientEntityViewUsers";
+		}
     }
 
     /**
@@ -155,7 +161,7 @@ public class ClientAPI {
      * @return
      */
     @RequestMapping(value="/{id}", method = RequestMethod.PUT, consumes = "application/json", produces = "application/json")
-    public String apiUpdateClient(@PathVariable("id") Long id, @RequestBody String jsonString, Model m, Principal principal) {
+    public String apiUpdateClient(@PathVariable("id") Long id, @RequestBody String jsonString, Model m, Authentication auth) {
     	
     	// TODO: sanity check if the thing really is a JSON object
     	JsonObject json = parser.parse(jsonString).getAsJsonObject();
@@ -185,7 +191,11 @@ public class ClientAPI {
         ClientDetailsEntity newClient = clientService.updateClient(oldClient, client);
 		m.addAttribute("entity", newClient);
 
-        return "clientEntityViewAdmins";
+		if (isAdmin(auth)) {
+			return "clientEntityViewAdmins";
+		} else {
+			return "clientEntityViewUsers";
+		}
     }
 
     /**
@@ -217,15 +227,32 @@ public class ClientAPI {
      * @return
      */
     @RequestMapping(value="/{id}", method=RequestMethod.GET, produces = "application/json")
-    public ModelAndView apiShowClient(@PathVariable("id") Long id, ModelAndView modelAndView) {
+    public String apiShowClient(@PathVariable("id") Long id, Model model, Authentication auth) {
         ClientDetailsEntity client = clientService.getClientById(id);
         if (client == null) {
             throw new ClientNotFoundException("Could not find client: " + id);
         }
 
-        modelAndView.addObject("entity", client);
-        modelAndView.setViewName("clientEntityViewAdmins");
+        model.addAttribute("entity", client);
 
-        return modelAndView;
+        if (isAdmin(auth)) {
+			return "clientEntityViewAdmins";
+		} else {
+			return "clientEntityViewUsers";
+		}
+    }
+    
+    /**
+     * Check to see if the given auth object has ROLE_ADMIN assigned to it or not
+     * @param auth
+     * @return
+     */
+    private boolean isAdmin(Authentication auth) {
+    	for (GrantedAuthority grantedAuthority : auth.getAuthorities()) {
+	        if (grantedAuthority.getAuthority().equals("ROLE_ADMIN")) {
+	        	return true;
+	        }
+        }
+    	return false;
     }
 }
