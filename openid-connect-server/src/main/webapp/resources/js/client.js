@@ -364,9 +364,12 @@ var ClientFormView = Backbone.View.extend({
             allowRefresh: $('#allowRefresh').is(':checked'), // TODO: why are these two checkboxes different?
             allowIntrospection: $('#allowIntrospection input').is(':checked'), // <-- And here? --^
             scope: scopes,
+            
+            // TODO: items below this line are untested
             tosUri: $('#tosUri input').val(),
             policyUri: $('#policyUri input').val(),
             clientUri: $('#clientUri input').val(),
+            applicationType: $('#applicationType input').filter(':checked').val(),
             
             
             
@@ -375,7 +378,6 @@ var ClientFormView = Backbone.View.extend({
             tokenEndpointAuthMethod: $('#tokenEndpointAuthMethod input').val(), // TODO: this might need to be something different for a single-select?
             responseTypes: responseTypes, // TODO: need a preprocessor?
             jwksUri: $('#jwksUri input').val(),
-            applicationType: applicationType, // TODO: need a preprocessor?
             sectorIdentifierUri: $('#sectorIdentifierUri input').val(),
             subjectType: subjectType, // TODO: need a preprocessor?
             requestObjectSigningAlg: requestObjectSigningAlg,           // TODO: need a preprocessor for all the JOSE stuff:
