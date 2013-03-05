@@ -546,11 +546,12 @@ $(function () {
     jQuery.ajaxSetup({async:false});
 
     // load up our model and collection classes
+    /*
     $.get('resources/js/client.js', _load);
     $.get('resources/js/grant.js', _load);
     $.get('resources/js/scope.js', _load);
     $.get('resources/js/whitelist.js', _load);
-    
+    */
     
     var _load = function (templates) {
         $('body').append(templates);

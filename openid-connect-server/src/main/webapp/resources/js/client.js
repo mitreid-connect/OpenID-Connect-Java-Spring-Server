@@ -371,11 +371,12 @@ var ClientFormView = Backbone.View.extend({
             clientUri: $('#clientUri input').val(),
             applicationType: $('#applicationType input').filter(':checked').val(),
             jwksUri: $('#jwksUri input').val(),
-            subjectType: subjectType, // TODO: need a preprocessor?
+            subjectType: $('#applicationType input').filter(':checked').val(),
             
             
             
             // TODO: everything below this line isn't implemented yet
+            /*
             contacts: this.contactsCollection.pluck('item'),
             tokenEndpointAuthMethod: $('#tokenEndpointAuthMethod input').val(), // TODO: this might need to be something different for a single-select?
             responseTypes: responseTypes, // TODO: need a preprocessor?
@@ -394,7 +395,7 @@ var ClientFormView = Backbone.View.extend({
             requestUris: this.requestUrisCollection.pluck('item'),
             resourceIds: this.resourceIdsCollection.pluck('item'),
             reuseRefreshToken: $('#reuseRefreshToken input').is(':checked')
-            
+            */
         });
 
         // post-validate
