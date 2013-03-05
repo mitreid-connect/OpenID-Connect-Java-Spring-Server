@@ -372,13 +372,13 @@ var ClientFormView = Backbone.View.extend({
             applicationType: $('#applicationType input').filter(':checked').val(),
             jwksUri: $('#jwksUri input').val(),
             subjectType: $('#applicationType input').filter(':checked').val(),
+            tokenEndpointAuthMethod: $('#tokenEndpointAuthMethod input').filter(':checked').val(),
             
             
             
             // TODO: everything below this line isn't implemented yet
             /*
             contacts: this.contactsCollection.pluck('item'),
-            tokenEndpointAuthMethod: $('#tokenEndpointAuthMethod input').val(), // TODO: this might need to be something different for a single-select?
             responseTypes: responseTypes, // TODO: need a preprocessor?
             sectorIdentifierUri: $('#sectorIdentifierUri input').val(),
             requestObjectSigningAlg: requestObjectSigningAlg,           // TODO: need a preprocessor for all the JOSE stuff:
