@@ -113,20 +113,46 @@
             </div>
 
 			<div class="control-group" id="logoUri">
-				<label class="control-label">Logo URL</label>
+				<label class="control-label">Logo</label>
 				<div class="controls">
-					<input placeholder="http://" value="<%=logoUri%>" maxlength="100" type="text" class=""/>
-					<p class="help-block">URL to use for a logo image</p>
+					<input placeholder="http://" value="<%=logoUri%>" maxlength="1000" type="text" class=""/>
+					<p class="help-block">URL that points to a logo image, will be displayed on approval page</p>
 				</div>
 			</div>
 
 			<div class="control-group" id="logoBlock">
-				<label class="control-label">Logo Preview</label>
 				<div class="controls">
 					<!-- TODO: this should be an internally-served placeholder graphic -->
 					<img src="http://placehold.it/275x200&text=Enter a logo URL" alt="logo" id="logoPreview" width="275px" class="thumbnail" />
 				</div>
 			</div>
+
+			<div class="control-group" id="tosUri">
+				<label class="control-label">Terms of Service</label>
+				<div class="controls">
+					<input placeholder="http://" value="<%=tosUri%>" maxlength="1000" type="text" class=""/>
+					<p class="help-block">URL for the Terms of Service of this client, will be displayed to the user</p>
+				</div>
+			</div>
+
+			<div class="control-group" id="policyUri">
+				<label class="control-label">Policy</label>
+				<div class="controls">
+					<input placeholder="http://" value="<%=policyUri%>" maxlength="1000" type="text" class=""/>
+					<p class="help-block">URL for the Policy Statement of this client, will be displayed to the user</p>
+				</div>
+			</div>
+
+			<div class="control-group" id="clientUri">
+				<label class="control-label">Home Page</label>
+				<div class="controls">
+					<input placeholder="http://" value="<%=clientUri%>" maxlength="1000" type="text" class=""/>
+					<p class="help-block">URL for the client's home page, will be displayed to the user</p>
+				</div>
+			</div>
+
+
+
 
 	</div>
 	

@@ -363,17 +363,17 @@ var ClientFormView = Backbone.View.extend({
             idTokenValiditySeconds: idTokenValiditySeconds,
             allowRefresh: $('#allowRefresh').is(':checked'), // TODO: why are these two checkboxes different?
             allowIntrospection: $('#allowIntrospection input').is(':checked'), // <-- And here? --^
-            scope: scopes
+            scope: scopes,
+            tosUri: $('#tosUri input').val(),
+            policyUri: $('#policyUri input').val(),
+            clientUri: $('#clientUri input').val(),
             
             
-            ,
             
             // TODO: everything below this line isn't implemented yet
             contacts: this.contactsCollection.pluck('item'),
-            tosUri: $('#tosUri input').val(),
             tokenEndpointAuthMethod: $('#tokenEndpointAuthMethod input').val(), // TODO: this might need to be something different for a single-select?
             responseTypes: responseTypes, // TODO: need a preprocessor?
-            policyUri: $('#policyUri input').val(),
             jwksUri: $('#jwksUri input').val(),
             applicationType: applicationType, // TODO: need a preprocessor?
             sectorIdentifierUri: $('#sectorIdentifierUri input').val(),
