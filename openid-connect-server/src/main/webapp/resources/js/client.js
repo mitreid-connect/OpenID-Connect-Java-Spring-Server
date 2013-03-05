@@ -393,13 +393,16 @@ var ClientFormView = Backbone.View.extend({
             subjectType: $('#applicationType input').filter(':checked').val(),
             tokenEndpointAuthMethod: $('#tokenEndpointAuthMethod input').filter(':checked').val(),
             responseTypes: responseTypes,
+            sectorIdentifierUri: $('#sectorIdentifierUri input').val(),
+            initiateLoginUri: $('#initiateLoginUri input').val(),
+            postLogoutRedirectUri: $('#postLogoutRedirectUri input').val(),
+            reuseRefreshToken: $('#reuseRefreshToken').is(':checked') // TODO: another funny checkbox
             
             
             
             // TODO: everything below this line isn't implemented yet
             /*
             contacts: this.contactsCollection.pluck('item'),
-            sectorIdentifierUri: $('#sectorIdentifierUri input').val(),
             requestObjectSigningAlg: requestObjectSigningAlg,           // TODO: need a preprocessor for all the JOSE stuff:
             userInfoEncryptedResponseAlg: userInfoEncryptedResponseAlg, // "
             userInfoEncryptedResponseEnc: userInfoEncryptedResponseEnc, // "
@@ -409,11 +412,8 @@ var ClientFormView = Backbone.View.extend({
             defaultMaxAge: $('#defaultMaxAge input').val(), // TODO: validate integer
             requireAuthTime: $('#requireAuthTime input').is(':checked'),
             defaultAcrValues: this.defaultAcrValuesCollection.pluck('item'),
-            initiateLoginUri: $('#initiateLoginUri input').val(),
-            postLogoutRedirectUri: $('#postLogoutRedirectUri input').val(),
             requestUris: this.requestUrisCollection.pluck('item'),
             resourceIds: this.resourceIdsCollection.pluck('item'),
-            reuseRefreshToken: $('#reuseRefreshToken input').is(':checked')
             */
         });
 
