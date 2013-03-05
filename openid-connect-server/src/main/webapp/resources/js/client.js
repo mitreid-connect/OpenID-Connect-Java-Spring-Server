@@ -406,17 +406,13 @@ var ClientFormView = Backbone.View.extend({
             contacts: this.contactsCollection.pluck('item'),
             requestUris: this.requestUrisCollection.pluck('item'),
             defaultAcrValues: this.defaultAcrValuesCollection.pluck('item'),
-            
-            
-            // TODO: everything below this line isn't implemented yet
-            /*
-            requestObjectSigningAlg: requestObjectSigningAlg,           // TODO: need a preprocessor for all the JOSE stuff:
-            userInfoEncryptedResponseAlg: userInfoEncryptedResponseAlg, // "
-            userInfoEncryptedResponseEnc: userInfoEncryptedResponseEnc, // "
-            idTokenSignedResponseAlg: idTokenSignedResponseAlg,         // "
-            idTokenEncryptedResponseAlg: idTokenEncryptedResponseAlg,   // "
-            idTokenEncryptedResponseEnc: idTokenEncryptedResponseEnc,   // "
-            */
+            requestObjectSigningAlg: $('#requestObjectSigningAlg select').val(),
+            userInfoSignedResponseAlg: $('#userInfoSignedResponseAlg select').val(),
+            userInfoEncryptedResponseAlg: $('#userInfoEncryptedResponseAlg select').val(),
+            userInfoEncryptedResponseEnc: $('#userInfoEncryptedResponseEnc select').val(),
+            idTokenSignedResponseAlg: $('#idTokenSignedResponseAlg select').val(),
+            idTokenEncryptedResponseAlg: $('#idTokenEncryptedResponseAlg select').val(),
+            idTokenEncryptedResponseEnc: $('#idTokenEncryptedResponseEnc select').val()
         });
 
         // post-validate

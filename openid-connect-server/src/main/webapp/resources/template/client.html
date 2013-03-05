@@ -448,6 +448,122 @@
                 </div>
             </div>
 
+            <div class="control-group" id="requestObjectSigningAlg">
+                <label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> Request Object Signing Algorithm</label>
+                <div class="controls">
+					<select>
+						<!-- TODO: this should be filled out by the server, perhaps? -->
+						<option value="none" <%=requestObjectSigningAlg == "none" ? 'selected' : ''%>>No digital signature</option>
+						<option value="HS256" <%=requestObjectSigningAlg == "HS256" ? 'selected' : ''%>>HMAC using SHA-256 hash algorithm</option>
+						<option value="HS384" <%=requestObjectSigningAlg == "HS384" ? 'selected' : ''%>>HMAC using SHA-384 hash algorithm</option>
+						<option value="HS512" <%=requestObjectSigningAlg == "HS512" ? 'selected' : ''%>>HMAC using SHA-512 hash algorithm</option>
+						<option value="RS256" <%=requestObjectSigningAlg == "RS256" ? 'selected' : ''%>>RSASSA using SHA-256 hash algorithm</option>
+						<option value="RS384" <%=requestObjectSigningAlg == "RS384" ? 'selected' : ''%>>RSASSA using SHA-384 hash algorithm</option>
+						<option value="RS512" <%=requestObjectSigningAlg == "RS512" ? 'selected' : ''%>>RSASSA using SHA-512 hash algorithm</option>
+						<option value="ES256" <%=requestObjectSigningAlg == "ES256" ? 'selected' : ''%>>ECDSA using P-256 curve and SHA-256 hash algorithm</option>
+						<option value="ES384" <%=requestObjectSigningAlg == "ES384" ? 'selected' : ''%>>ECDSA using P-384 curve and SHA-384 hash algorithm</option>
+						<option value="ES512" <%=requestObjectSigningAlg == "ES512" ? 'selected' : ''%>>ECDSA using P-512 curve and SHA-512 hash algorithm</option>
+					</select>
+                </div>
+            </div>
+			
+            <div class="control-group" id="userInfoSignedResponseAlg">
+                <label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> User Info Endpoint Signing Algorithm</label>
+                <div class="controls">
+					<select>
+						<!-- TODO: this should be filled out by the server, perhaps? -->
+						<option value="none" <%=userInfoSignedResponseAlg == "none" ? 'selected' : ''%>>No digital signature</option>
+						<option value="HS256" <%=userInfoSignedResponseAlg == "HS256" ? 'selected' : ''%>>HMAC using SHA-256 hash algorithm</option>
+						<option value="HS384" <%=userInfoSignedResponseAlg == "HS384" ? 'selected' : ''%>>HMAC using SHA-384 hash algorithm</option>
+						<option value="HS512" <%=userInfoSignedResponseAlg == "HS512" ? 'selected' : ''%>>HMAC using SHA-512 hash algorithm</option>
+						<option value="RS256" <%=userInfoSignedResponseAlg == "RS256" ? 'selected' : ''%>>RSASSA using SHA-256 hash algorithm</option>
+						<option value="RS384" <%=userInfoSignedResponseAlg == "RS384" ? 'selected' : ''%>>RSASSA using SHA-384 hash algorithm</option>
+						<option value="RS512" <%=userInfoSignedResponseAlg == "RS512" ? 'selected' : ''%>>RSASSA using SHA-512 hash algorithm</option>
+						<option value="ES256" <%=userInfoSignedResponseAlg == "ES256" ? 'selected' : ''%>>ECDSA using P-256 curve and SHA-256 hash algorithm</option>
+						<option value="ES384" <%=userInfoSignedResponseAlg == "ES384" ? 'selected' : ''%>>ECDSA using P-384 curve and SHA-384 hash algorithm</option>
+						<option value="ES512" <%=userInfoSignedResponseAlg == "ES512" ? 'selected' : ''%>>ECDSA using P-512 curve and SHA-512 hash algorithm</option>
+                </div>
+            </div>
+			
+			<div class="control-group" id="userInfoEncryptedResponseAlg">
+                <label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> User Info Endpoint Encryption Algorithm</label>
+                <div class="controls">
+					<select>
+						<!-- TODO: this should be filled out by the server, perhaps? -->
+						<option value="RSA1_5" <%=userInfoEncryptedResponseAlg == "RSA1_5" ? 'selected' : ''%>>RSAES-PKCS1-V1_5</option>
+						<option value="RSA-OAEP" <%=userInfoEncryptedResponseAlg == "RSA-OAEP" ? 'selected' : ''%>>RSAES using Optimal Asymmetric Encryption Padding (OAEP)</option>
+						<option value="A128KW" <%=userInfoEncryptedResponseAlg == "A128KW" ? 'selected' : ''%>>AES Key Wrap Algorithm using 128 bit keys </option>
+						<option value="A256KW" <%=userInfoEncryptedResponseAlg == "A256KW" ? 'selected' : ''%>>AES Key Wrap Algorithm using 256 bit keys</option>
+						<option value="dir" <%=userInfoEncryptedResponseAlg == "dir" ? 'selected' : ''%>>Direct use of a shared symmetric key as the Content Master Key (CMK) for the block encryption step</option>
+						<option value="ECDH-ES" <%=userInfoEncryptedResponseAlg == "ECDH-ES" ? 'selected' : ''%>>Elliptic Curve Diffie-Hellman Ephemeral Static key agreement using the Concat KDF, with the agreed-upon key being used directly as the Content Master Key (CMK)</option>
+						<option value="ECDH-ES+A128KW" <%=userInfoEncryptedResponseAlg == "ECDH-ES+A128KW" ? 'selected' : ''%>>Elliptic Curve Diffie-Hellman Ephemeral Static key agreement per ECDH-ES and Section 4.7, but where the agreed-upon key is used to wrap the Content Master Key (CMK) with the A128KW function</option>
+						<option value="ECDH-ES+A256KW" <%=userInfoEncryptedResponseAlg == "ECDH-ES+A256KW" ? 'selected' : ''%>>Elliptic Curve Diffie-Hellman Ephemeral Static key agreement per ECDH-ES and Section 4.7, but where the agreed-upon key is used to wrap the Content Master Key (CMK) with the A256KW function</option>
+					</select>
+				</div>
+			</div>
+
+			<div class="control-group" id="userInfoEncryptedResponseEnc">
+                <label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> User Info Endpoint Encryption Method</label>
+                <div class="controls">
+					<select>
+						<!-- TODO: this should be filled out by the server, perhaps? -->
+						<option value="A128CBC+HS256" <%=userInfoEncryptedResponseEnc == "A128CBC+HS256" ? 'selected' : ''%>>Composite Authenticated Encryption algorithm using AES in Cipher Block Chaining (CBC) mode with PKCS #5 padding with an integrity calculation using HMAC SHA-256, using a 256 bit CMK (and 128 bit CEK)</option>
+						<option value="A256CBC+HS512" <%=userInfoEncryptedResponseEnc == "A256CBC+HS512" ? 'selected' : ''%>>Composite Authenticated Encryption algorithm using AES in CBC mode with PKCS #5 padding with an integrity calculation using HMAC SHA-512, using a 512 bit CMK (and 256 bit CEK)</option>
+						<option value="A128GCM" <%=userInfoEncryptedResponseEnc == "A128GCM" ? 'selected' : ''%>>AES GCM using 128 bit keys</option>
+						<option value="A256GCM" <%=userInfoEncryptedResponseEnc == "A256GCM" ? 'selected' : ''%>>AES GCM using 256 bit keys</option>
+					</select>
+				</div>
+			</div>
+
+            <div class="control-group" id="idTokenSignedResponseAlg">
+                <label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> ID Token Signing Algorithm</label>
+                <div class="controls">
+					<select>
+						<!-- TODO: this should be filled out by the server, perhaps? -->
+						<option value="none" <%=idTokenSignedResponseAlg == "none" ? 'selected' : ''%>>No digital signature</option>
+						<option value="HS256" <%=idTokenSignedResponseAlg == "HS256" ? 'selected' : ''%>>HMAC using SHA-256 hash algorithm</option>
+						<option value="HS384" <%=idTokenSignedResponseAlg == "HS384" ? 'selected' : ''%>>HMAC using SHA-384 hash algorithm</option>
+						<option value="HS512" <%=idTokenSignedResponseAlg == "HS512" ? 'selected' : ''%>>HMAC using SHA-512 hash algorithm</option>
+						<option value="RS256" <%=idTokenSignedResponseAlg == "RS256" ? 'selected' : ''%>>RSASSA using SHA-256 hash algorithm</option>
+						<option value="RS384" <%=idTokenSignedResponseAlg == "RS384" ? 'selected' : ''%>>RSASSA using SHA-384 hash algorithm</option>
+						<option value="RS512" <%=idTokenSignedResponseAlg == "RS512" ? 'selected' : ''%>>RSASSA using SHA-512 hash algorithm</option>
+						<option value="ES256" <%=idTokenSignedResponseAlg == "ES256" ? 'selected' : ''%>>ECDSA using P-256 curve and SHA-256 hash algorithm</option>
+						<option value="ES384" <%=idTokenSignedResponseAlg == "ES384" ? 'selected' : ''%>>ECDSA using P-384 curve and SHA-384 hash algorithm</option>
+						<option value="ES512" <%=idTokenSignedResponseAlg == "ES512" ? 'selected' : ''%>>ECDSA using P-512 curve and SHA-512 hash algorithm</option>
+					</select>
+                </div>
+            </div>
+			
+			<div class="control-group" id="idTokenEncryptedResponseAlg">
+                <label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> ID Token Encryption Algorithm</label>
+                <div class="controls">
+					<select>
+						<!-- TODO: this should be filled out by the server, perhaps? -->
+						<option value="RSA1_5" <%=idTokenEncryptedResponseAlg == "RSA1_5" ? 'selected' : ''%>>RSAES-PKCS1-V1_5</option>
+						<option value="RSA-OAEP" <%=idTokenEncryptedResponseAlg == "RSA-OAEP" ? 'selected' : ''%>>RSAES using Optimal Asymmetric Encryption Padding (OAEP)</option>
+						<option value="A128KW" <%=idTokenEncryptedResponseAlg == "A128KW" ? 'selected' : ''%>>Advanced Encryption Standard (AES) Key Wrap Algorithm using 128 bit keys </option>
+						<option value="A256KW" <%=idTokenEncryptedResponseAlg == "A256KW" ? 'selected' : ''%>>AES Key Wrap Algorithm using 256 bit keys</option>
+						<option value="dir" <%=idTokenEncryptedResponseAlg == "dir" ? 'selected' : ''%>>Direct use of a shared symmetric key as the Content Master Key (CMK) for the block encryption step</option>
+						<option value="ECDH-ES" <%=idTokenEncryptedResponseAlg == "ECDH-ES" ? 'selected' : ''%>>Elliptic Curve Diffie-Hellman Ephemeral Static key agreement using the Concat KDF, with the agreed-upon key being used directly as the Content Master Key (CMK)</option>
+						<option value="ECDH-ES+A128KW" <%=idTokenEncryptedResponseAlg == "ECDH-ES+A128KW" ? 'selected' : ''%>>Elliptic Curve Diffie-Hellman Ephemeral Static key agreement per ECDH-ES and Section 4.7, but where the agreed-upon key is used to wrap the Content Master Key (CMK) with the A128KW function</option>
+						<option value="ECDH-ES+A256KW" <%=idTokenEncryptedResponseAlg == "ECDH-ES+A256KW" ? 'selected' : ''%>>Elliptic Curve Diffie-Hellman Ephemeral Static key agreement per ECDH-ES and Section 4.7, but where the agreed-upon key is used to wrap the Content Master Key (CMK) with the A256KW function</option>
+					</select>
+				</div>
+			</div>
+
+			<div class="control-group" id="idTokenEncryptedResponseEnc">
+                <label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> ID Token Encryption Method</label>
+                <div class="controls">
+					<select>
+						<!-- TODO: this should be filled out by the server, perhaps? -->
+						<option value="A128CBC+HS256" <%=idTokenEncryptedResponseEnc == "A128CBC+HS256" ? 'selected' : ''%>>Composite Authenticated Encryption algorithm using AES in Cipher Block Chaining (CBC) mode with PKCS #5 padding with an integrity calculation using HMAC SHA-256, using a 256 bit CMK (and 128 bit CEK)</option>
+						<option value="A256CBC+HS512" <%=idTokenEncryptedResponseEnc == "A256CBC+HS512" ? 'selected' : ''%>>Composite Authenticated Encryption algorithm using AES in CBC mode with PKCS #5 padding with an integrity calculation using HMAC SHA-512, using a 512 bit CMK (and 256 bit CEK)</option>
+						<option value="A128GCM" <%=idTokenEncryptedResponseEnc == "A128GCM" ? 'selected' : ''%>>AES GCM using 128 bit keys</option>
+						<option value="A256GCM" <%=idTokenEncryptedResponseEnc == "A256GCM" ? 'selected' : ''%>>AES GCM using 256 bit keys</option>
+					</select>
+				</div>
+			</div>
+
 			
 
 	</div>
