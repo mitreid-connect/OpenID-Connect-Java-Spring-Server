@@ -396,7 +396,7 @@ var ClientFormView = Backbone.View.extend({
             sectorIdentifierUri: $('#sectorIdentifierUri input').val(),
             initiateLoginUri: $('#initiateLoginUri input').val(),
             postLogoutRedirectUri: $('#postLogoutRedirectUri input').val(),
-            reuseRefreshToken: $('#reuseRefreshToken').is(':checked') // TODO: another funny checkbox
+            reuseRefreshToken: $('#reuseRefreshToken').is(':checked'), // TODO: another funny checkbox
             requireAuthTime: $('#requireAuthTime input').is(':checked'),
             defaultMaxAge: $('#defaultMaxAge input').val(), // TODO: validate integer
             
@@ -496,7 +496,15 @@ var ClientFormView = Backbone.View.extend({
         this.toggleRequireClientSecret();
         this.previewLogo();
         
-        return this;
+        this.$('.nyi').clickover({
+        	placement: 'right', 
+        	title: 'Not Yet Implemented', 
+        	content: 'The value of this field will be saved with the client, '
+        		+'but the server does not currently process anything with it. '
+        		+'Future versions of the server library will make use of this.'
+        	});
+        
+       return this;
     }
 });
 
