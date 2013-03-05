@@ -363,6 +363,7 @@
                 <div class="controls">
                     <label class="checkbox">
                         <input type="checkbox" id="allowRefresh" <%=(allowRefresh == true ? 'checked' : '')%>> Refresh tokens are issued for this client
+                        <input type="checkbox" id="reuseRefreshToken" <%=(reuseRefreshToken == true ? 'checked' : '')%>> Refresh tokens for this client are re-used
                     </label>
                 </div>
             </div>
@@ -413,6 +414,22 @@
 			</div>
 
 
+            <div class="control-group" id="requireAuthTime">
+                <label class="control-label">Require Auth Time</label>
+                <div class="controls">
+                    <label class="checkbox">
+                        <input type="checkbox" <%=(requireAuthTime == true ? 'checked' : '')%>> Always require that the auth_time claim be sent in the id token
+                    </label>
+                </div>
+            </div>
+
+			<div class="control-group" id="defaultMaxAge">
+				<label class="control-label">Default Max Age</label>
+				<div class="controls">
+					<input placeholder="" value="<%=defaultMaxAge%>" maxlength="1000" type="text" class=""/>
+					<p class="help-block">Default maximum session age before re-prompting</p>
+				</div>
+			</div>
 	</div>
 
 

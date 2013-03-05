@@ -397,6 +397,8 @@ var ClientFormView = Backbone.View.extend({
             initiateLoginUri: $('#initiateLoginUri input').val(),
             postLogoutRedirectUri: $('#postLogoutRedirectUri input').val(),
             reuseRefreshToken: $('#reuseRefreshToken').is(':checked') // TODO: another funny checkbox
+            requireAuthTime: $('#requireAuthTime input').is(':checked'),
+            defaultMaxAge: $('#defaultMaxAge input').val(), // TODO: validate integer
             
             
             
@@ -409,8 +411,6 @@ var ClientFormView = Backbone.View.extend({
             idTokenSignedResponseAlg: idTokenSignedResponseAlg,         // "
             idTokenEncryptedResponseAlg: idTokenEncryptedResponseAlg,   // "
             idTokenEncryptedResponseEnc: idTokenEncryptedResponseEnc,   // "
-            defaultMaxAge: $('#defaultMaxAge input').val(), // TODO: validate integer
-            requireAuthTime: $('#requireAuthTime input').is(':checked'),
             defaultAcrValues: this.defaultAcrValuesCollection.pluck('item'),
             requestUris: this.requestUrisCollection.pluck('item'),
             resourceIds: this.resourceIdsCollection.pluck('item'),
