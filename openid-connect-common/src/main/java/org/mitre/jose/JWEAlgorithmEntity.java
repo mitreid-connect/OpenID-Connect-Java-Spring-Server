@@ -8,6 +8,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 
+import com.google.common.base.Strings;
 import com.nimbusds.jose.JWEAlgorithm;
 
 /**
@@ -30,8 +31,14 @@ public class JWEAlgorithmEntity {
 	    this.algorithm = algorithm;
     }
 
-	public JWEAlgorithmEntity(String algorithmName) {
-		setAlgorithmName(algorithmName);
+	public static JWEAlgorithmEntity getForAlgorithmName (String algorithmName) {
+		JWEAlgorithmEntity ent = new JWEAlgorithmEntity();
+		ent.setAlgorithmName(algorithmName);
+		if (ent.getAlgorithm() == null) {
+			return null;
+		} else {
+			return ent;
+		}
 	}
 	
 	/**
@@ -53,7 +60,7 @@ public class JWEAlgorithmEntity {
 	 * @param algorithmName
 	 */
 	public void setAlgorithmName(String algorithmName) {
-		if (algorithmName != null) {
+		if (!Strings.isNullOrEmpty(algorithmName)) {
 			algorithm = JWEAlgorithm.parse(algorithmName);
 		} else {
 			algorithm = null;

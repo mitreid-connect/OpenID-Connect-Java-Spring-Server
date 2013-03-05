@@ -7,6 +7,7 @@ import javax.persistence.Basic;
 import javax.persistence.Embeddable;
 import javax.persistence.Transient;
 
+import com.google.common.base.Strings;
 import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JWEAlgorithm;
 
@@ -27,8 +28,14 @@ public class JWEEncryptionMethodEntity {
 	    this.algorithm = algorithm;
     }
 
-	public JWEEncryptionMethodEntity(String algorithmName) {
-		setAlgorithmName(algorithmName);
+	public static JWEEncryptionMethodEntity getForAlgorithmName (String algorithmName) {
+		JWEEncryptionMethodEntity ent = new JWEEncryptionMethodEntity();
+		ent.setAlgorithmName(algorithmName);
+		if (ent.getAlgorithm() == null) {
+			return null;
+		} else {
+			return ent;
+		}
 	}
 	
 	/**
@@ -46,11 +53,11 @@ public class JWEEncryptionMethodEntity {
 	
 	/**
 	 * Set the name of this algorithm. 
-	 * Calls JWEAlgorithm.parse()
+	 * Calls EncryptionMethod.parse()
 	 * @param algorithmName
 	 */
 	public void setAlgorithmName(String algorithmName) {
-		if (algorithmName != null) {
+		if (!Strings.isNullOrEmpty(algorithmName)) {
 			algorithm = EncryptionMethod.parse(algorithmName);
 		} else {
 			algorithm = null;

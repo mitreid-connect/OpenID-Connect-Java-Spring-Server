@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Transient;
 
+import com.google.common.base.Strings;
 import com.nimbusds.jose.JWSAlgorithm;
 
 /**
@@ -31,8 +32,14 @@ public class JWSAlgorithmEntity {
 	    this.algorithm = algorithm;
     }
 	
-	public JWSAlgorithmEntity(String algorithmName) {
-		setAlgorithmName(algorithmName);
+	public static JWSAlgorithmEntity getForAlgorithmName (String algorithmName) {
+		JWSAlgorithmEntity ent = new JWSAlgorithmEntity();
+		ent.setAlgorithmName(algorithmName);
+		if (ent.getAlgorithm() == null) {
+			return null;
+		} else {
+			return ent;
+		}
 	}
 
 	/**
@@ -54,7 +61,7 @@ public class JWSAlgorithmEntity {
 	 * @param algorithmName
 	 */
 	public void setAlgorithmName(String algorithmName) {
-		if (algorithmName != null) {
+		if (!Strings.isNullOrEmpty(algorithmName)) {
 			algorithm = JWSAlgorithm.parse(algorithmName);
 		} else {
 			algorithm = null;

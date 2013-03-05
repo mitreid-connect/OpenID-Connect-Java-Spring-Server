@@ -67,7 +67,7 @@ public class ClientAPI {
 				@Override
                 public JWSAlgorithmEntity deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
 					if (json.isJsonPrimitive()) {
-						return new JWSAlgorithmEntity(json.getAsString());
+						return JWSAlgorithmEntity.getForAlgorithmName(json.getAsString());
 					} else {
 						return null;
 					}
@@ -77,7 +77,7 @@ public class ClientAPI {
 				@Override
                 public JWEAlgorithmEntity deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
 					if (json.isJsonPrimitive()) {
-						return new JWEAlgorithmEntity(json.getAsString());
+						return JWEAlgorithmEntity.getForAlgorithmName(json.getAsString());
 					} else {
 						return null;
 					}
@@ -87,7 +87,7 @@ public class ClientAPI {
 				@Override
                 public JWEEncryptionMethodEntity deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
 					if (json.isJsonPrimitive()) {
-						return new JWEEncryptionMethodEntity(json.getAsString());
+						return JWEEncryptionMethodEntity.getForAlgorithmName(json.getAsString());
 					} else {
 						return null;
 					}

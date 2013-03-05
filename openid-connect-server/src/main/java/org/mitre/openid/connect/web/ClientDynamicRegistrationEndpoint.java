@@ -263,7 +263,7 @@ public class ClientDynamicRegistrationEndpoint {
     private JWSAlgorithmEntity getAsJwsAlgorithm(JsonObject o, String member) {
     	String s = getAsString(o, member);
     	if (s != null) {
-    		return new JWSAlgorithmEntity(s);
+    		return JWSAlgorithmEntity.getForAlgorithmName(s);
     	} else {
     		return null;
     	}
@@ -275,7 +275,7 @@ public class ClientDynamicRegistrationEndpoint {
     private JWEAlgorithmEntity getAsJweAlgorithm(JsonObject o, String member) {
     	String s = getAsString(o, member);
     	if (s != null) {
-    		return new JWEAlgorithmEntity(s);
+    		return JWEAlgorithmEntity.getForAlgorithmName(s);
     	} else {
     		return null;
     	}
@@ -288,7 +288,7 @@ public class ClientDynamicRegistrationEndpoint {
     private JWEEncryptionMethodEntity getAsJweEncryptionMethod(JsonObject o, String member) {
     	String s = getAsString(o, member);
     	if (s != null) {
-    		return new JWEEncryptionMethodEntity(s);
+    		return JWEEncryptionMethodEntity.getForAlgorithmName(s);
     	} else {
     		return null;
     	}
