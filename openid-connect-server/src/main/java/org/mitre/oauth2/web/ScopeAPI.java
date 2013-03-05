@@ -25,6 +25,7 @@ import com.google.gson.Gson;
  */
 @Controller
 @RequestMapping("/api/scopes")
+@PreAuthorize("hasRole('ROLE_USER')")
 public class ScopeAPI {
 
 	
@@ -92,6 +93,7 @@ public class ScopeAPI {
 		}
 	}
 	
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	public String createScope(@RequestBody String json, ModelMap m) {
 		SystemScope scope = gson.fromJson(json, SystemScope.class);
@@ -111,6 +113,7 @@ public class ScopeAPI {
 		}
 	}
 	
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
 	public String deleteScope(@PathVariable("id") Long id, ModelMap m) {
 		SystemScope existing = scopeService.getById(id);

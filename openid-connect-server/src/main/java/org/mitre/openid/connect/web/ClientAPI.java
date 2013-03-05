@@ -54,7 +54,7 @@ import com.google.gson.JsonParser;
 
 @Controller
 @RequestMapping("/api/clients")
-@PreAuthorize("hasRole('ROLE_ADMIN')")
+@PreAuthorize("hasRole('ROLE_USER')")
 public class ClientAPI {
 
     @Autowired
@@ -120,6 +120,7 @@ public class ClientAPI {
      * @param principal
      * @return
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @RequestMapping(method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
     public String apiAddClient(@RequestBody String jsonString, Model m, Authentication auth) {
 
@@ -160,6 +161,7 @@ public class ClientAPI {
      * @param principal
      * @return
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @RequestMapping(value="/{id}", method = RequestMethod.PUT, consumes = "application/json", produces = "application/json")
     public String apiUpdateClient(@PathVariable("id") Long id, @RequestBody String jsonString, Model m, Authentication auth) {
     	
@@ -204,6 +206,7 @@ public class ClientAPI {
      * @param modelAndView
      * @return
      */
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @RequestMapping(value="/{id}", method=RequestMethod.DELETE)
     public String apiDeleteClient(@PathVariable("id") Long id, ModelAndView modelAndView) {
 

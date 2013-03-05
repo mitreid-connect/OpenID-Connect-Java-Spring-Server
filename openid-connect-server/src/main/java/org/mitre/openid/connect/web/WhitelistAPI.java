@@ -28,7 +28,7 @@ import com.google.gson.JsonParser;
  */
 @Controller
 @RequestMapping("/api/whitelist")
-@PreAuthorize("hasRole('ROLE_ADMIN')")
+@PreAuthorize("hasRole('ROLE_USER')")
 public class WhitelistAPI {
 
 	@Autowired
@@ -59,6 +59,7 @@ public class WhitelistAPI {
 	 * @param p
 	 * @return
 	 */
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@RequestMapping(method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
 	public String addNewWhitelistedSite(@RequestBody String jsonString, ModelMap m, Principal p) {
 		
@@ -80,6 +81,7 @@ public class WhitelistAPI {
 	/**
 	 * Update an existing whitelisted site
 	 */
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@RequestMapping(value="/{id}", method = RequestMethod.PUT, consumes = "application/json", produces = "application/json")
 	public String updateWhitelistedSite(@PathVariable("id") Long id, @RequestBody String jsonString, ModelMap m, Principal p) {
 		
@@ -106,6 +108,7 @@ public class WhitelistAPI {
 	 * Delete a whitelisted site
 	 * 
 	 */
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@RequestMapping(value="/{id}", method = RequestMethod.DELETE)
 	public String deleteWhitelistedSite(@PathVariable("id") Long id, ModelMap m) {
 		WhitelistedSite whitelist = whitelistService.getById(id);
