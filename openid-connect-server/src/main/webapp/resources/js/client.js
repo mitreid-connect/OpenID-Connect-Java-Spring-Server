@@ -303,7 +303,7 @@ var ClientFormView = Backbone.View.extend({
     },
     
     // maps from a form-friendly name to the real reponse type parameter name
-    repsonseMap:{
+    responseMap:{
     	'code': 'code',
     	'token': 'token',
     	'idtoken': 'id_token',
