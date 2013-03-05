@@ -76,6 +76,7 @@
 					<li><a data-target="#client-access-tab" data-toggle="tab" href="#">Access</a></li>
 					<li><a data-target="#client-secret-tab" data-toggle="tab" href="#">Credentials</a></li>
 					<li><a data-target="#client-token-tab" data-toggle="tab" href="#">Tokens</a></li>
+					<li><a data-target="#client-other-tab" data-toggle="tab" href="#">Other</a></li>
 				</ul>
 
 <div class="tab-content">
@@ -270,6 +271,14 @@
 
 			</div>
 
+			<div class="control-group" id="jwksUri">
+				<label class="control-label">JWK Set</label>
+				<div class="controls">
+					<input placeholder="http://" value="<%=jwksUri%>" maxlength="1000" type="text" class=""/>
+					<p class="help-block">URL for the client's JSON Web Key set</p>
+				</div>
+			</div>
+
 	</div>
 
 	<div class="tab-pane" id="client-token-tab">
@@ -331,9 +340,19 @@
 
 	<div class="tab-pane" id="client-other-tab">
 
-		<div class="alert alert-block alert-info">
-			This page intentionally left blank.
-		</div>
+			<div class="control-group" id="subjectType">
+				<label class="control-label">Subject Type</label>
+				<div class="controls">
+					<label class="radio inline">
+						<input type="radio" name="subjectType" value="PUBLIC" <%=(subjectType == 'PUBLIC' ? 'checked' : '')%>> Public
+					</label>
+					<label class="radio inline">
+						<input type="radio" name="subjectType" value="PAIRWISE" <%=(subjectType == 'PAIRWISE' ? 'checked' : '')%>> Pairwise
+					</label>
+				</div>
+			</div>
+
+
 
 	</div>
 

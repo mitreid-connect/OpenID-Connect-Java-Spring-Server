@@ -370,6 +370,8 @@ var ClientFormView = Backbone.View.extend({
             policyUri: $('#policyUri input').val(),
             clientUri: $('#clientUri input').val(),
             applicationType: $('#applicationType input').filter(':checked').val(),
+            jwksUri: $('#jwksUri input').val(),
+            subjectType: subjectType, // TODO: need a preprocessor?
             
             
             
@@ -377,9 +379,7 @@ var ClientFormView = Backbone.View.extend({
             contacts: this.contactsCollection.pluck('item'),
             tokenEndpointAuthMethod: $('#tokenEndpointAuthMethod input').val(), // TODO: this might need to be something different for a single-select?
             responseTypes: responseTypes, // TODO: need a preprocessor?
-            jwksUri: $('#jwksUri input').val(),
             sectorIdentifierUri: $('#sectorIdentifierUri input').val(),
-            subjectType: subjectType, // TODO: need a preprocessor?
             requestObjectSigningAlg: requestObjectSigningAlg,           // TODO: need a preprocessor for all the JOSE stuff:
             userInfoEncryptedResponseAlg: userInfoEncryptedResponseAlg, // "
             userInfoEncryptedResponseEnc: userInfoEncryptedResponseEnc, // "
