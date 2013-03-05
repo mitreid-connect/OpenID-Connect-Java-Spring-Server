@@ -200,6 +200,7 @@ var ClientFormView = Backbone.View.extend({
 
         this.redirectUrisCollection = new Backbone.Collection();
         this.scopeCollection = new Backbone.Collection();
+        this.contactsCollection = new Backbone.Collection();
     },
 
     events:{
@@ -399,12 +400,12 @@ var ClientFormView = Backbone.View.extend({
             reuseRefreshToken: $('#reuseRefreshToken').is(':checked'), // TODO: another funny checkbox
             requireAuthTime: $('#requireAuthTime input').is(':checked'),
             defaultMaxAge: $('#defaultMaxAge input').val(), // TODO: validate integer
+            contacts: this.contactsCollection.pluck('item'),
             
             
             
             // TODO: everything below this line isn't implemented yet
             /*
-            contacts: this.contactsCollection.pluck('item'),
             requestObjectSigningAlg: requestObjectSigningAlg,           // TODO: need a preprocessor for all the JOSE stuff:
             userInfoEncryptedResponseAlg: userInfoEncryptedResponseAlg, // "
             userInfoEncryptedResponseEnc: userInfoEncryptedResponseEnc, // "
@@ -473,10 +474,13 @@ var ClientFormView = Backbone.View.extend({
             _self.scopeCollection.add(new Backbone.Model({item:scope}));
         });
 
-        $("#scope .controls",this.el).html(new ListWidgetView({placeholder: 'new scope here'
-            , autocomplete: _.uniq(_.flatten(app.systemScopeList.pluck("value")))
-            , collection: this.scopeCollection}).render().el);
+        $("#scope .controls",this.el).html(new ListWidgetView({placeholder: 'new scope', 
+        	autocomplete: _.uniq(_.flatten(app.systemScopeList.pluck("value"))), 
+            collection: this.scopeCollection}).render().el);
 
+        $("#contacts .controls", this.el).html(new ListWidgetView({placeholder: 'new contact',
+        	collection: this.contactsCollection}).render().el);
+        
         if (!this.model.get("allowRefresh")) {
             $("#refreshTokenValiditySeconds", this.$el).hide();
         }
