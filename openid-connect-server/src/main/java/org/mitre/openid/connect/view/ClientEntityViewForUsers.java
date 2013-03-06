@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.Type;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.servlet.view.AbstractView;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
@@ -32,6 +34,9 @@ import com.google.gson.JsonSerializer;
 
 /**
  * 
+ * View bean for field-limited view of client entity, for regular users.  
+ * 
+ * @see AbstractClientEntityView
  * @see ClientEntityViewForAdmins
  * @author jricher
  *
@@ -39,6 +44,8 @@ import com.google.gson.JsonSerializer;
 @Component("clientEntityViewUsers")
 public class ClientEntityViewForUsers extends AbstractClientEntityView {
 
+	private Set<String> whitelistedFields = ImmutableSet.of("clientName", "clientId", "id", "clientDescription", "scope", "logoUri");
+	
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.view.AbstractClientEntityView#getExclusionStrategy()
 	 */
@@ -48,12 +55,7 @@ public class ClientEntityViewForUsers extends AbstractClientEntityView {
     		
 	        public boolean shouldSkipField(FieldAttributes f) {
 	        	// whitelist the handful of fields that are good 
-	        	if (f.getName().equals("clientName") ||
-	        			f.getName().equals("clientId") ||
-	        			f.getName().equals("id") || 
-	        			f.getName().equals("clientDescription") ||
-	        			f.getName().equals("scope")) {
-	        	
+	        	if (whitelistedFields.contains(f.getName())) {
 	        		return false;
 	        	} else {
 	        		return true;

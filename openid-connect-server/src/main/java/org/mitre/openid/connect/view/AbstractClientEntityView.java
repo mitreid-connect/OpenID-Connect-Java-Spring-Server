@@ -30,6 +30,12 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 /**
+ * 
+ * Abstract superclass for client entity view, used with the ClientApi.
+ * 
+ * @see ClientEntityViewForUsers
+ * @see ClientEntityViewForAdmins
+ * 
  * @author jricher
  *
  */

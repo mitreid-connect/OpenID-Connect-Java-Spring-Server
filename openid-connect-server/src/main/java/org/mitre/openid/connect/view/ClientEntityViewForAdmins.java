@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.Type;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.servlet.view.AbstractView;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
@@ -32,6 +34,8 @@ import com.google.gson.JsonSerializer;
 
 /**
  * 
+ * View bean for full view of client entity, for admins.
+ * 
  * @see ClientEntityViewForUsers
  * @author jricher
  *
@@ -39,6 +43,8 @@ import com.google.gson.JsonSerializer;
 @Component("clientEntityViewAdmins")
 public class ClientEntityViewForAdmins extends AbstractClientEntityView {
 
+	private Set<String> blacklistedFields = ImmutableSet.of("additionalProperties");
+	
 	/**
 	 * @return
 	 */
@@ -46,7 +52,7 @@ public class ClientEntityViewForAdmins extends AbstractClientEntityView {
 	    return new ExclusionStrategy() {
 	
 	        public boolean shouldSkipField(FieldAttributes f) {
-	        	if (f.getName().equals("additionalProperties")) {
+	        	if (blacklistedFields.contains(f.getName())) {
 	        		return true;
 	        	} else {
 	        		return false;
