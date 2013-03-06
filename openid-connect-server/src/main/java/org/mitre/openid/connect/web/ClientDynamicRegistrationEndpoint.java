@@ -309,7 +309,7 @@ public class ClientDynamicRegistrationEndpoint {
 				c.setScope(Sets.newHashSet(Splitter.on(" ").split(scope)));
 			}
 			
-			c.setGrantTypes(getAsStringSet(o, "grant_type"));
+			c.setGrantTypes(getAsStringSet(o, "grant_types"));
 			c.setPolicyUri(getAsString(o, "policy_uri"));
 			c.setJwksUri(getAsString(o, "jwks_uri"));
 			
