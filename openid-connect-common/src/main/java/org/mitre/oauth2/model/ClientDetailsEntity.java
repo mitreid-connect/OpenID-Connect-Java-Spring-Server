@@ -250,7 +250,11 @@ public class ClientDetailsEntity implements ClientDetails {
      */
 	@Transient
     public boolean isAllowRefresh() {
-    	return getAuthorizedGrantTypes().contains("refresh_token");
+		if (grantTypes != null) {
+			return getAuthorizedGrantTypes().contains("refresh_token");
+		} else {
+			return false; // if there are no grants, we can't be refreshing them, can we?
+		}
     }
 
 	@Basic
