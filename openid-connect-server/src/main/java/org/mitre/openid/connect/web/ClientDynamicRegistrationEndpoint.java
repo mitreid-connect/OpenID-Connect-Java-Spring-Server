@@ -153,6 +153,13 @@ public class ClientDynamicRegistrationEndpoint {
 		
 	}
 
+	/**
+	 * Get the meta information for a client.
+	 * @param clientId
+	 * @param m
+	 * @param auth
+	 * @return
+	 */
 	@PreAuthorize("hasRole('ROLE_CLIENT') and #oauth2.hasScope('" + OAuth2AccessTokenEntity.REGISTRATION_TOKEN_SCOPE + "')")
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = "application/json")
 	public String readClientConfiguration(@PathVariable("id") String clientId, Model m, OAuth2Authentication auth) {
@@ -180,6 +187,14 @@ public class ClientDynamicRegistrationEndpoint {
 		}
 	}
 	
+	/**
+	 * Update the metainformation for a given client.
+	 * @param clientId
+	 * @param jsonString
+	 * @param m
+	 * @param auth
+	 * @return
+	 */
 	@PreAuthorize("hasRole('ROLE_CLIENT') and #oauth2.hasScope('" + OAuth2AccessTokenEntity.REGISTRATION_TOKEN_SCOPE + "')")
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
 	public String updateClient(@PathVariable("id") String clientId, @RequestBody String jsonString, Model m, OAuth2Authentication auth) {
@@ -223,6 +238,7 @@ public class ClientDynamicRegistrationEndpoint {
 			ClientDetailsEntity savedClient = clientService.updateClient(oldClient, newClient);
 			
 			// we return the token that we got in
+			// TODO: rotate this after some set amount of time
 			OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
 			OAuth2AccessTokenEntity token = tokenService.readAccessToken(details.getTokenValue());
 			
@@ -239,7 +255,14 @@ public class ClientDynamicRegistrationEndpoint {
 			return "httpCodeView";
 		}
 	}
-	
+
+	/**
+	 * Delete the indicated client from the system.
+	 * @param clientId
+	 * @param m
+	 * @param auth
+	 * @return
+	 */
 	@PreAuthorize("hasRole('ROLE_CLIENT') and #oauth2.hasScope('" + OAuth2AccessTokenEntity.REGISTRATION_TOKEN_SCOPE + "')")
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "application/json")
 	public String deleteClient(@PathVariable("id") String clientId, Model m, OAuth2Authentication auth) {
@@ -248,6 +271,7 @@ public class ClientDynamicRegistrationEndpoint {
 		
 		if (client != null && client.getClientId().equals(auth.getAuthorizationRequest().getClientId())) {
 
+			clientService.deleteClient(client);
 			
 			// we return the token that we got in
 			OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
