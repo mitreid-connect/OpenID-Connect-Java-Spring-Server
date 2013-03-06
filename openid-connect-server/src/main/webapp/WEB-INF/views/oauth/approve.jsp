@@ -4,10 +4,9 @@
 <%@ taglib prefix="authz" uri="http://www.springframework.org/security/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="o" tagdir="/WEB-INF/tags" %>
-
 <o:header title="Approve Access"/>
 <o:topbar title="${topbarTitle}"/>
-<div class="container">
+<div class="container main">
     <% if (session.getAttribute(AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY) != null && !(session.getAttribute(AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY) instanceof UnapprovedClientAuthenticationException)) { %>
     <div class="alert-message error">
         <a href="#" class="close">&times;</a>
@@ -18,8 +17,6 @@
     </div>
     <% } %>
     <c:remove scope="session" var="SPRING_SECURITY_LAST_EXCEPTION"/>
-
-    <authz:authorize ifAnyGranted="ROLE_USER">
 
     <div class="well" style="text-align:center">
         <h1>Approve New Site</h1>
@@ -127,9 +124,7 @@
 
         </form>
 
-        </authz:authorize>
 
-        <o:copyright/>
     </div>
 </div>
 <o:footer/>

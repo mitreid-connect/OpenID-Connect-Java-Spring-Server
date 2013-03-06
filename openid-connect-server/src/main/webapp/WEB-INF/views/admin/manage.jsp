@@ -3,7 +3,7 @@
 
 <o:header title="welcome"/>
 <o:topbar title="${topbarTitle}"/>
-<div class="container-fluid">
+<div class="container-fluid main">
     <div class="row-fluid">
         <o:sidebar/>
         <div class="span10">
@@ -16,5 +16,4 @@
         </div>
     </div>
 </div>
-<o:copyright />
 <o:footer js="resources/js/admin.js"/>

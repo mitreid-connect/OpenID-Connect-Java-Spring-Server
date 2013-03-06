@@ -1,6 +1,10 @@
 <%@attribute name="js" required="false" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="o" tagdir="/WEB-INF/tags" %>
+<div id="push"></div>
+</div> <!-- end #wrap -->
+<o:copyright />
 <!-- Le javascript
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->

@@ -6,11 +6,10 @@
 
 <o:header title="welcome"/>
 <o:topbar title="${topbarTitle}" pageName="Statistics"/>
-<div class="container-fluid">
+<div class="container-fluid main">
     <div class="row-fluid">
         <o:sidebar/>
         <div class="span10">
-            <!-- Main hero unit for a primary marketing message or call to action -->
             <div class="hero-unit">
 				<o:statsContent/>
             </div>
@@ -19,5 +18,4 @@
         </div>
     </div>
 </div>
-<o:copyright/>
 <o:footer/>

@@ -1,21 +1,12 @@
 <%@ taglib prefix="security" uri="http://www.springframework.org/security/tags" %>
+<%@ taglib prefix="o" tagdir="/WEB-INF/tags" %>
 
-<div class="span2">
+<div class="span2 visible-desktop">
 
 <security:authorize access="hasRole('ROLE_USER')">
     <div class="well sidebar-nav">
         <ul class="nav nav-list">
-            <security:authorize access="hasRole('ROLE_ADMIN')">
-                <li class="nav-header">Administrative</li>
-                <li><a href="manage/#admin/clients">Manage Clients</a></li>
-                <li><a href="manage/#admin/whitelists">Whitelisted Clients</a></li>
-                <li><a href="manage/#admin/blacklist">Blacklisted Clients</a></li>
-                <li><a href="manage/#admin/scope">System Scopes</a></li>
-            </security:authorize>
-	            <li class="nav-header">Personal</li>
-	            <li><a href="manage/#user/approved">Manage Sites</a></li>
-	            <li><a href="manage/#user/tokens">Manage Active Tokens</a></li>
-	            <li><a href="manage/#user/profile">Manage Profiles</a></li>
+        	<o:actionmenu />
         </ul>
     </div><!--/.well -->
 </security:authorize>

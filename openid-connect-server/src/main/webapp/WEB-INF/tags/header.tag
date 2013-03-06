@@ -17,10 +17,13 @@
     <!-- Le styles -->
     <link href="resources/bootstrap2/css/bootstrap.min.css" rel="stylesheet">
     <style type="text/css">
-        body {
-            padding-top: 60px;
-            padding-bottom: 40px;
-        }
+
+      html,
+      body {
+        height: 100%;
+        /* The html and body elements cannot have any padding or margin. */
+      }
+
         .sidebar-nav {
             padding: 9px 0;
         }
@@ -32,12 +35,54 @@
         .brand {
             padding-left: 35px !important;
         }
-        
-		-webkit-input-placeholder{color:#999999;}
+
+      /* Wrapper for page content to push down footer */
+      #wrap {
+        min-height: 100%;
+        height: auto !important;
+        height: 100%;
+        /* Negative indent footer by it's height */
+        margin: 0 auto -60px;
+      }
+
+      /* Set the fixed height of the footer here */
+      #push,
+      #footer {
+        min-height: 60px;
+      }
+      #footer {
+        background-color: #f5f5f5;
+      }
+
+      .main {
+        padding-top: 60px;
+      }
+
+      .credit {
+        margin: 20px 0;
+      }
 
     </style>
     <link href="resources/bootstrap2/css/bootstrap-responsive.css" rel="stylesheet">
-
+	<style type="text/css">
+		@media (min-width: 768px) and (max-width: 979px) {
+	        .main {
+	        	padding-top: 0px;
+	        }
+	
+	    }
+	    
+	    @media (max-width: 767px) {
+	        #footer {
+	          margin-left: -20px;
+	          margin-right: -20px;
+	          padding-left: 20px;
+	          padding-right: 20px;
+	        }
+	    }
+	
+	
+	</style>
 
     <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -55,3 +100,4 @@
 </head>
 
 <body>
+<div id="wrap">

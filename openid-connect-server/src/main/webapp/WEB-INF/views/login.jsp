@@ -12,7 +12,7 @@ $(document).ready(function() {
 //-->
 </script>
 <o:topbar title="${topbarTitle}"/>
-<div class="container">
+<div class="container main">
 
 <h1>Login with Username and Password</h1>
 
@@ -20,9 +20,7 @@ $(document).ready(function() {
 <div class="alert alert-error">The system was unable to log you in. Please try again.</div>
 </c:if>
 
-<!-- TODO: this is an ugly form but it gets the job done -->
-
-<form action="<%=request.getContextPath()%>/j_spring_security_check" method="POST" class="well">
+<form action="<%=request.getContextPath()%>/j_spring_security_check" method="POST" class="well span3 offset1">
  <fieldset>
     <div class="input-prepend"><span class="add-on"><i class="icon-user"></i></span><input type="text" name="j_username" id="j_username" value="" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" placeholder="Username"></div>
     <div class="input-prepend"><span class="add-on"><i class="icon-lock"></i></span><input type="password" name="j_password" id="j_password" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" placeholder="Password"></div>
@@ -30,6 +28,5 @@ $(document).ready(function() {
   </fieldset>
 </form>
 
-<o:copyright/>
 </div>
 <o:footer/>

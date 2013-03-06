@@ -2,6 +2,7 @@
 <%@attribute name="title" required="true" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="security" uri="http://www.springframework.org/security/tags" %>
+<%@ taglib prefix="o" tagdir="/WEB-INF/tags" %>
 <c:choose>
 	<c:when test="${ not empty userInfo.preferredUsername }">
 		<c:set var="shortName" value="${ userInfo.preferredUsername }" />
@@ -76,6 +77,19 @@ $(document).ready(function() {
                 			<li><a href="contact">Contact</a></li>
                 		</c:otherwise>
                 	</c:choose>
+
+
+					<security:authorize access="hasRole('ROLE_USER')">
+
+					<li class="dropdown hidden-desktop">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown">Action <b class="caret"></b></a>
+				        <ul class="dropdown-menu">
+				        	<o:actionmenu />
+				        </ul>
+				    </li>
+				    
+				    </security:authorize>
+				    
                 </ul>
 				<ul class="nav pull-right">
                     <security:authorize access="hasRole('ROLE_USER')">
