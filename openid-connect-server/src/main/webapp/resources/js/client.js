@@ -18,7 +18,7 @@ var ClientModel = Backbone.Model.extend({
     defaults:{
         id:null,
         idTokenValiditySeconds: 600,
-        clientName:"",
+        clientName:null,
         clientSecret:"",
         redirectUris:[],
         grantTypes:["authorization_code"],
@@ -345,15 +345,14 @@ var ClientFormView = Backbone.View.extend({
         	clientSecret = $('#clientSecret input').val();
         }
 
-        // TODO: validate  these as integers
         var accessTokenValiditySeconds = null;
         if (!$('disableAccessTokenTimeout').is(':checked')) {
-        	accessTokenValiditySeconds = this.getFormTokenValue($('#accessTokenValiditySeconds input[type=text]').val()); 
+        	accessTokenValiditySeconds = parseInt(this.getFormTokenValue($('#accessTokenValiditySeconds input[type=text]').val())); 
         }
         
         var idTokenValiditySeconds = null;
         if (!$('disableIDTokenTimeout').is(':checked')) {
-        	idTokenValiditySeconds = this.getFormTokenValue($('#idTokenValiditySeconds input[type=text]').val()); 
+        	idTokenValiditySeconds = parseInt(this.getFormTokenValue($('#idTokenValiditySeconds input[type=text]').val())); 
         }
         
         var refreshTokenValiditySeconds = null;
@@ -368,11 +367,11 @@ var ClientFormView = Backbone.View.extend({
         	}
 
         	if (!$('disableRefreshTokenTimeout').is(':checked')) {
-        		refreshTokenValiditySeconds = this.getFormTokenValue($('#refreshTokenValiditySeconds input[type=text]').val()); 
+        		refreshTokenValiditySeconds = parseInt(this.getFormTokenValue($('#refreshTokenValiditySeconds input[type=text]').val()));
         	}
         }
         
-        var valid = this.model.set({
+        var attrs = {
             clientName:$('#clientName input').val(),
             clientId:$('#clientId input').val(),
             clientSecret: clientSecret,
@@ -402,7 +401,7 @@ var ClientFormView = Backbone.View.extend({
             postLogoutRedirectUri: $('#postLogoutRedirectUri input').val(),
             reuseRefreshToken: $('#reuseRefreshToken').is(':checked'), // TODO: another funny checkbox
             requireAuthTime: $('#requireAuthTime input').is(':checked'),
-            defaultMaxAge: $('#defaultMaxAge input').val(), // TODO: validate integer
+            defaultMaxAge: parseInt($('#defaultMaxAge input').val()),
             contacts: this.contactsCollection.pluck('item'),
             requestUris: this.requestUrisCollection.pluck('item'),
             defaultAcrValues: this.defaultAcrValuesCollection.pluck('item'),
@@ -413,39 +412,42 @@ var ClientFormView = Backbone.View.extend({
             idTokenSignedResponseAlg: $('#idTokenSignedResponseAlg select').val(),
             idTokenEncryptedResponseAlg: $('#idTokenEncryptedResponseAlg select').val(),
             idTokenEncryptedResponseEnc: $('#idTokenEncryptedResponseEnc select').val()
-        });
+        };
 
         // post-validate
-        // TODO: move these into the validation function somehow?
-        if (this.model.get("allowRefresh") == false) {
-            this.model.set("refreshTokenValiditySeconds",null);
+        if (attrs["allowRefresh"] == false) {
+            attrs["refreshTokenValiditySeconds"] = null;
         }
 
         if ($('#disableIDTokenTimeout').is(':checked')) {
-             this.model.set("idTokenValiditySeconds",null);
+             attrs["idTokenValiditySeconds"] = null;
         }
 
         if ($('#disableAccessTokenTimeout').is(':checked')) {
-            this.model.set("accessTokenValiditySeconds",null);
+            attrs["accessTokenValiditySeconds"] = null;
         }
 
         if ($('#disableRefreshTokenTimeout').is(':checked')) {
-            this.model.set("refreshTokenValiditySeconds",null);
+            attrs["refreshTokenValiditySeconds"] = null;
         }
 
-        if (valid) {
-
-            var _self = this;
-            this.model.save({}, {
-                success:function () {
-                    app.clientList.add(_self.model);
-                    app.navigate('admin/clients', {trigger:true});
-                },
-                error:function (model,resp) {
-                    console.error("Oops! The object didn't save correctly.",resp);
-                }
-            });
+        // set all empty strings to nulls
+        for (var key in attrs) {
+        	if (attrs[key] === "") {
+        		attrs[key] = null;
+        	}
         }
+        
+        var _self = this;
+        this.model.save(attrs, {
+            success:function () {
+                app.clientList.add(_self.model);
+                app.navigate('admin/clients', {trigger:true});
+            },
+            error:function (model,resp) {
+                console.error("Oops! The object didn't save correctly.",resp);
+            }
+        });
 
         return false;
     },
