@@ -22,6 +22,8 @@ import com.nimbusds.jose.JWSAlgorithm;
 @Embeddable
 public class JWSAlgorithmEmbed {
 
+	public static final JWSAlgorithmEmbed NONE = getForAlgorithmName("none");
+	
 	private JWSAlgorithm algorithm;
 	
 	public JWSAlgorithmEmbed() { 

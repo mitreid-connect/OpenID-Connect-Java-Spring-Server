@@ -21,6 +21,8 @@ import com.nimbusds.jose.JWEAlgorithm;
 @Embeddable
 public class JWEAlgorithmEmbed {
 
+	public static final JWEAlgorithmEmbed NONE = getForAlgorithmName("none");
+	
 	private JWEAlgorithm algorithm;
 
 	public JWEAlgorithmEmbed() {

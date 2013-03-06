@@ -18,6 +18,8 @@ import com.nimbusds.jose.JWEAlgorithm;
 @Embeddable
 public class JWEEncryptionMethodEmbed {
 
+	public static final JWEEncryptionMethodEmbed NONE  = getForAlgorithmName("none");
+	
 	private EncryptionMethod algorithm;
 
 	public JWEEncryptionMethodEmbed() {
