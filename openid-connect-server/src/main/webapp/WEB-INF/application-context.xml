@@ -62,24 +62,21 @@
 	</security:http>
 
 	<!-- Allow open access to required endpoints -->
-	<security:http pattern="/jwk**" use-expressions="true" entry-point-ref="http403EntryPoint">
+	<security:http pattern="/jwk**" use-expressions="true" entry-point-ref="http403EntryPoint" create-session="stateless">
 		<security:intercept-url pattern="/jwk**" access="permitAll"/>
 	</security:http>
-	<security:http pattern="/.well-known/**" use-expressions="true" entry-point-ref="http403EntryPoint">
+	<security:http pattern="/.well-known/**" use-expressions="true" entry-point-ref="http403EntryPoint" create-session="stateless">
 		<security:intercept-url pattern="/.well-known/**" access="permitAll"/>
-	</security:http>
-	<security:http pattern="/x509**" use-expressions="true" entry-point-ref="http403EntryPoint">
-		<security:intercept-url pattern="/x509**" access="permitAll"/>	
 	</security:http>
 	
 	<!-- OAuth-protect API and other endpoints -->
-	<security:http pattern="/register**" use-expressions="true" entry-point-ref="oauthAuthenticationEntryPoint">
+	<security:http pattern="/register/**" use-expressions="true" entry-point-ref="oauthAuthenticationEntryPoint" create-session="stateless">
 		<security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
 		<security:expression-handler ref="oauthWebExpressionHandler" />
-		<security:intercept-url pattern="/register**" access="permitAll"/>	
+		<security:intercept-url pattern="/register/**" access="permitAll"/>
 	</security:http>
 
- 	<security:http pattern="/userinfo**" use-expressions="true" entry-point-ref="oauthAuthenticationEntryPoint">
+ 	<security:http pattern="/userinfo**" use-expressions="true" entry-point-ref="oauthAuthenticationEntryPoint" create-session="stateless">
 		<security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
 		<security:expression-handler ref="oauthWebExpressionHandler" />
 	</security:http>
@@ -89,11 +86,11 @@
 		<security:expression-handler ref="oauthWebExpressionHandler" />
 	</security:http>
 	
-	<security:http pattern="/introspect**" entry-point-ref="oauthAuthenticationEntryPoint">
+	<security:http pattern="/introspect**" entry-point-ref="oauthAuthenticationEntryPoint" create-session="stateless">
 		<security:custom-filter ref="clientCredentialsIntrospectionEndpointFilter" before="BASIC_AUTH_FILTER" />
 	</security:http>
 
-	<security:http pattern="/revoke**" entry-point-ref="oauthAuthenticationEntryPoint">
+	<security:http pattern="/revoke**" entry-point-ref="oauthAuthenticationEntryPoint" create-session="stateless">
 		<security:custom-filter ref="clientCredentialsRevocationEndpointFilter" before="BASIC_AUTH_FILTER" />
 	</security:http>
 
