@@ -20,12 +20,16 @@ import org.mitre.oauth2.service.OAuth2TokenEntityService;
 import org.mitre.oauth2.service.SystemScopeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.oauth2.provider.DefaultAuthorizationRequest;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -36,12 +40,11 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
 @Controller
-@RequestMapping(value = "register"/*, method = RequestMethod.POST*/)
+@RequestMapping(value = "register")
 public class ClientDynamicRegistrationEndpoint {
 
 	@Autowired
@@ -56,8 +59,15 @@ public class ClientDynamicRegistrationEndpoint {
 	private JsonParser parser = new JsonParser();
 	private Gson gson = new Gson();
 	
+	/**
+	 * Create a new Client, issue a client ID, and create a registration access token.
+	 * @param jsonString
+	 * @param m
+	 * @param p
+	 * @return
+	 */
 	@RequestMapping(method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
-	public String registerNewClient(@RequestBody String jsonString, Model m, Principal p) {
+	public String registerNewClient(@RequestBody String jsonString, Model m) {
 		
 		ClientDetailsEntity newClient = parse(jsonString);
 		
@@ -101,14 +111,6 @@ public class ClientDynamicRegistrationEndpoint {
 				newClient.setResponseTypes(Sets.newHashSet("code")); // default to allowing only the auth code flow
 			}
 			
-			// set some defaults for token timeouts
-			newClient.setAccessTokenValiditySeconds((int)TimeUnit.HOURS.toSeconds(1)); // access tokens good for 1hr
-			newClient.setIdTokenValiditySeconds((int)TimeUnit.MINUTES.toSeconds(10)); // id tokens good for 10min
-			newClient.setRefreshTokenValiditySeconds(null); // refresh tokens good until revoked
-
-			// this client has been dynamically registered (obviously)
-			newClient.setDynamicallyRegistered(true);
-			
 			if (newClient.getTokenEndpointAuthMethod() == null) {
 				newClient.setTokenEndpointAuthMethod(AuthMethod.SECRET_BASIC);
 			}
@@ -121,6 +123,13 @@ public class ClientDynamicRegistrationEndpoint {
 				newClient = clientService.generateClientSecret(newClient);
 			}
 			
+			// set some defaults for token timeouts
+			newClient.setAccessTokenValiditySeconds((int)TimeUnit.HOURS.toSeconds(1)); // access tokens good for 1hr
+			newClient.setIdTokenValiditySeconds((int)TimeUnit.MINUTES.toSeconds(10)); // id tokens good for 10min
+			newClient.setRefreshTokenValiditySeconds(null); // refresh tokens good until revoked
+
+			// this client has been dynamically registered (obviously)
+			newClient.setDynamicallyRegistered(true);
 			
 			// now save it
 			ClientDetailsEntity savedClient = clientService.saveNewClient(newClient);
@@ -137,13 +146,130 @@ public class ClientDynamicRegistrationEndpoint {
 		} else {
 			// didn't parse, this is a bad request
 			
-			m.addAttribute("code", HttpStatus.BAD_REQUEST);
+			m.addAttribute("code", HttpStatus.BAD_REQUEST); // http 400
 			
 			return "httpCodeView";
 		}
 		
 	}
 
+	@PreAuthorize("hasRole('ROLE_CLIENT') and #oauth2.hasScope('" + OAuth2AccessTokenEntity.REGISTRATION_TOKEN_SCOPE + "')")
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = "application/json")
+	public String readClientConfiguration(@PathVariable("id") String clientId, Model m, OAuth2Authentication auth) {
+		
+		ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
+		
+		if (client != null && client.getClientId().equals(auth.getAuthorizationRequest().getClientId())) {
+
+			
+			// we return the token that we got in
+			OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
+			OAuth2AccessTokenEntity token = tokenService.readAccessToken(details.getTokenValue());
+			
+			// send it all out to the view
+			m.addAttribute("client", client);
+			m.addAttribute("code", HttpStatus.OK); // http 200
+			m.addAttribute("token", token);
+			
+			return "clientInformationResponseView";
+		} else {
+			// client mismatch
+			m.addAttribute("code", HttpStatus.FORBIDDEN); // http 403
+			
+			return "httpCodeView";
+		}
+	}
+	
+	@PreAuthorize("hasRole('ROLE_CLIENT') and #oauth2.hasScope('" + OAuth2AccessTokenEntity.REGISTRATION_TOKEN_SCOPE + "')")
+	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
+	public String updateClient(@PathVariable("id") String clientId, @RequestBody String jsonString, Model m, OAuth2Authentication auth) {
+
+		
+		ClientDetailsEntity newClient = parse(jsonString);
+		ClientDetailsEntity oldClient = clientService.loadClientByClientId(clientId);
+		
+		if (newClient != null && oldClient != null  // we have an existing client and the new one parsed
+				&& oldClient.getClientId().equals(auth.getAuthorizationRequest().getClientId()) // the client passed in the URI matches the one in the auth
+				&& oldClient.getClientId().equals(newClient.getClientId()) // the client passed in the body matches the one in the URI
+				) {
+
+			// a client can't ask to update its own client secret to any particular value
+			newClient.setClientSecret(oldClient.getClientSecret());
+			
+			// we need to copy over all of the local and SECOAUTH fields
+			newClient.setAccessTokenValiditySeconds(oldClient.getAccessTokenValiditySeconds());
+			newClient.setIdTokenValiditySeconds(oldClient.getIdTokenValiditySeconds());
+			newClient.setRefreshTokenValiditySeconds(oldClient.getRefreshTokenValiditySeconds());
+			newClient.setDynamicallyRegistered(true); // it's still dynamically registered
+			newClient.setAllowIntrospection(oldClient.isAllowIntrospection());
+			newClient.setAuthorities(oldClient.getAuthorities());
+			newClient.setClientDescription(oldClient.getClientDescription());
+			newClient.setCreatedAt(oldClient.getCreatedAt());
+			newClient.setReuseRefreshToken(oldClient.isReuseRefreshToken());
+			
+			// set of scopes that are OK for clients to dynamically register for
+			Set<SystemScope> dynScopes = scopeService.getDynReg();
+
+			// scopes that the client is asking for
+			Set<SystemScope> requestedScopes = scopeService.fromStrings(newClient.getScope());
+
+			// the scopes that the client can have must be a subset of the dynamically allowed scopes
+			Set<SystemScope> allowedScopes = Sets.intersection(dynScopes, requestedScopes);
+
+			// make sure that the client doesn't ask for scopes it can't have
+			newClient.setScope(scopeService.toStrings(allowedScopes));
+			
+			// save the client
+			ClientDetailsEntity savedClient = clientService.updateClient(oldClient, newClient);
+			
+			// we return the token that we got in
+			OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
+			OAuth2AccessTokenEntity token = tokenService.readAccessToken(details.getTokenValue());
+			
+			// send it all out to the view
+			m.addAttribute("client", savedClient);
+			m.addAttribute("code", HttpStatus.OK); // http 200
+			m.addAttribute("token", token);
+			
+			return "clientInformationResponseView";
+		} else {
+			// client mismatch
+			m.addAttribute("code", HttpStatus.FORBIDDEN); // http 403
+			
+			return "httpCodeView";
+		}
+	}
+	
+	@PreAuthorize("hasRole('ROLE_CLIENT') and #oauth2.hasScope('" + OAuth2AccessTokenEntity.REGISTRATION_TOKEN_SCOPE + "')")
+	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "application/json")
+	public String deleteClient(@PathVariable("id") String clientId, Model m, OAuth2Authentication auth) {
+		
+		ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
+		
+		if (client != null && client.getClientId().equals(auth.getAuthorizationRequest().getClientId())) {
+
+			
+			// we return the token that we got in
+			OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
+			OAuth2AccessTokenEntity token = tokenService.readAccessToken(details.getTokenValue());
+			
+			// send it all out to the view
+			m.addAttribute("client", client);
+			m.addAttribute("code", HttpStatus.OK); // http 200
+			m.addAttribute("token", token);
+			
+			return "clientInformationResponseView";
+		} else {
+			// client mismatch
+			m.addAttribute("code", HttpStatus.FORBIDDEN); // http 403
+			
+			return "httpCodeView";
+		}
+	}
+	
+	
+	
+	
 	/**
 	 * 
 	 * Create an unbound ClientDetailsEntity from the given JSON string.
@@ -159,6 +285,10 @@ public class ClientDynamicRegistrationEndpoint {
 			ClientDetailsEntity c = new ClientDetailsEntity();
 			
 			// TODO: make these field names into constants
+
+			// these two fields should only be sent in the update request, and MUST match existing values
+			c.setClientId(getAsString(o, "client_id"));
+			c.setClientSecret(getAsString(o, "client_secret"));
 			
 			// OAuth DynReg
 			c.setRedirectUris(getAsStringSet(o, "redirect_uris"));
