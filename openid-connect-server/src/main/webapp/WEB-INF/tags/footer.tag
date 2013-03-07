@@ -4,7 +4,11 @@
 <%@ taglib prefix="o" tagdir="/WEB-INF/tags" %>
 <div id="push"></div>
 </div> <!-- end #wrap -->
-<o:copyright />
+<div id="footer">
+    <div class="container">
+    	<p class="muted credit"><o:copyright /></p>
+    </div>
+</div>
 <!-- Le javascript
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->

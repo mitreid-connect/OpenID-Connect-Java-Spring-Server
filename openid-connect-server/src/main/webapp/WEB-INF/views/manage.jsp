@@ -2,7 +2,7 @@
 <%@ taglib prefix="o" tagdir="/WEB-INF/tags" %>
 
 <o:header title="welcome"/>
-<o:topbar title="${topbarTitle}"/>
+<o:topbar />
 <div class="container-fluid main">
     <div class="row-fluid">
         <o:sidebar/>

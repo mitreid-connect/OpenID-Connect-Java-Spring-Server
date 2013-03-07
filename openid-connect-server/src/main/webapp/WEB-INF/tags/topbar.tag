@@ -1,5 +1,4 @@
 <%@attribute name="pageName" required="false" %>
-<%@attribute name="title" required="true" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="security" uri="http://www.springframework.org/security/tags" %>
 <%@ taglib prefix="o" tagdir="/WEB-INF/tags" %>
@@ -26,14 +25,6 @@
 		</c:choose>
 	</c:otherwise>
 </c:choose>
-	
-<script type="text/javascript">
-
-$(document).ready(function() {
-	$('a.brand').css("background", "url('" + "${logoUrl}" + "') no-repeat scroll 7px 7px transparent");
-});
-</script>	
-	
 <div class="navbar navbar-fixed-top">
     <div class="navbar-inner">
         <div class="container">
@@ -42,7 +33,7 @@ $(document).ready(function() {
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="brand" href="">${title}</a>
+            <a class="brand" href="">${config.topbarTitle}</a>
             <div class="nav-collapse collapse">
                 <ul class="nav">
                 	<c:choose>

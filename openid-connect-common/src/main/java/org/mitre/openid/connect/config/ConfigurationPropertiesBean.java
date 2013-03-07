@@ -29,20 +29,16 @@ public class ConfigurationPropertiesBean {
 
 	private String issuer;
 	
-	private String adminConsoleTopbarTitle;
+	private String topbarTitle;
 	
 	private String logoImageUrl;
 	
-	private String adminConsoleCopyrightFooter;
-	
-	private String adminConsoleLandingPageText;
-	
-	
 	public ConfigurationPropertiesBean() {
+
 	}
 	
 	/**
-	 * @return the baseUrl
+	 * @return the issuer baseUrl
 	 */
 	public String getIssuer() {
 		return issuer;
@@ -55,36 +51,32 @@ public class ConfigurationPropertiesBean {
 		issuer = iss;
 	}
 
-	public String getAdminConsoleTopbarTitle() {
-		return adminConsoleTopbarTitle;
+	/**
+	 * @return the topbarTitle
+	 */
+	public String getTopbarTitle() {
+		return topbarTitle;
 	}
 
-	public void setAdminConsoleTopbarTitle(String adminConsoleTopbarTitle) {
-		this.adminConsoleTopbarTitle = adminConsoleTopbarTitle;
+	/**
+	 * @param topbarTitle the topbarTitle to set
+	 */
+	public void setTopbarTitle(String topbarTitle) {
+		this.topbarTitle = topbarTitle;
 	}
 
+	/**
+	 * @return the logoImageUrl
+	 */
 	public String getLogoImageUrl() {
 		return logoImageUrl;
 	}
 
+	/**
+	 * @param logoImageUrl the logoImageUrl to set
+	 */
 	public void setLogoImageUrl(String logoImageUrl) {
 		this.logoImageUrl = logoImageUrl;
-	}
-
-	public String getAdminConsoleCopyrightFooter() {
-		return adminConsoleCopyrightFooter;
-	}
-
-	public void setAdminConsoleCopyrightFooter(String adminConsoleCopyrightFooter) {
-		this.adminConsoleCopyrightFooter = adminConsoleCopyrightFooter;
-	}
-
-	public String getAdminConsoleLandingPageText() {
-		return adminConsoleLandingPageText;
-	}
-
-	public void setAdminConsoleLandingPageText(String adminConsoleLandingPageText) {
-		this.adminConsoleLandingPageText = adminConsoleLandingPageText;
 	}
 
 }

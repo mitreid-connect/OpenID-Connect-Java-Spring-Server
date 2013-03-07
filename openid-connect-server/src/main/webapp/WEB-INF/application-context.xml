@@ -24,7 +24,9 @@
 	<mvc:interceptors>
 		<!-- Inject the UserInfo into the current context -->
 		<bean id="userInfoInterceptor" class="org.mitre.openid.connect.web.UserInfoInterceptor" />
+		<bean id="serverConfigInterceptor" class="org.mitre.openid.connect.web.ServerConfigInterceptor" />
 	</mvc:interceptors>
+
 	<mvc:default-servlet-handler />
 
 	<!-- Bean to hold configuration properties -->

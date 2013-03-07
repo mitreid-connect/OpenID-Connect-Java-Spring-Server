@@ -61,7 +61,10 @@
       .credit {
         margin: 20px 0;
       }
-
+	
+	  a.brand {
+	  	background: url('${config.logoImageUrl}') no-repeat scroll 7px 7px transparent;
+	  }
     </style>
     <link href="resources/bootstrap2/css/bootstrap-responsive.css" rel="stylesheet">
 	<style type="text/css">

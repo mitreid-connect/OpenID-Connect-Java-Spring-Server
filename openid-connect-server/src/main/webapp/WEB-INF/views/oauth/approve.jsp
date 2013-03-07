@@ -5,7 +5,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="o" tagdir="/WEB-INF/tags" %>
 <o:header title="Approve Access"/>
-<o:topbar title="${topbarTitle}"/>
+<o:topbar />
 <div class="container main">
     <% if (session.getAttribute(AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY) != null && !(session.getAttribute(AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY) instanceof UnapprovedClientAuthenticationException)) { %>
     <div class="alert-message error">
@@ -35,10 +35,10 @@
 			    </div>
 			    </c:if>
 
-           		<c:if test="${ not empty client.logoUrl }">
+           		<c:if test="${ not empty client.logoUri }">
            			<ul class="thumbnails">
            				<li class="span4">
-           					<div class="thumbnail"><img src="${client.logoUrl }"/></div>
+           					<div class="thumbnail"><img src="${client.logoUri }"/></div>
            				</li>
            			</ul>
            		</c:if>
