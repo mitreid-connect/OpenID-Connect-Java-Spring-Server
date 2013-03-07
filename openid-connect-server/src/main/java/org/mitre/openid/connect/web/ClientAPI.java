@@ -18,6 +18,9 @@ package org.mitre.openid.connect.web;
 import java.lang.reflect.Type;
 import java.util.Collection;
 
+import org.mitre.jose.JWEAlgorithmEmbed;
+import org.mitre.jose.JWEEncryptionMethodEmbed;
+import org.mitre.jose.JWSAlgorithmEmbed;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.slf4j.Logger;
