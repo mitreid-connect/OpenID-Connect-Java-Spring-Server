@@ -16,15 +16,12 @@
 package org.mitre.openid.connect.web;
 
 import java.lang.reflect.Type;
-import java.security.Principal;
 import java.util.Collection;
 
-import org.mitre.jose.JWEAlgorithmEmbed;
-import org.mitre.jose.JWEEncryptionMethodEmbed;
-import org.mitre.jose.JWSAlgorithmEmbed;
-import org.mitre.oauth2.exception.ClientNotFoundException;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -61,6 +58,7 @@ public class ClientAPI {
     @Autowired
     private ClientDetailsEntityService clientService;
 	private JsonParser parser = new JsonParser();
+
 	private Gson gson = new GsonBuilder()
 			.serializeNulls()
 		    .registerTypeAdapter(JWSAlgorithmEmbed.class, new JsonDeserializer<JWSAlgorithmEmbed>() {
@@ -95,6 +93,8 @@ public class ClientAPI {
 		    })
           .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
           .create();
+	
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
      * Get a list of all clients
@@ -132,11 +132,12 @@ public class ClientAPI {
     		json = parser.parse(jsonString).getAsJsonObject();
     		client = gson.fromJson(json, ClientDetailsEntity.class);
     	} 
-    	//TODO: Java 7 combine catch statements
     	catch (JsonSyntaxException e) {
+    		logger.error("ClientAPI: apiAddClient failed due to JsonSyntaxException: " + e.getStackTrace().toString());
     		m.addAttribute("code", HttpStatus.BAD_REQUEST);
 			return "httpCodeView";
     	} catch (IllegalStateException e) {
+    		logger.error("ClientAPI: apiAddClient failed due to IllegalStateException: " + e.getStackTrace().toString());
     		m.addAttribute("code", HttpStatus.BAD_REQUEST);
 			return "httpCodeView";
 		}
@@ -186,11 +187,12 @@ public class ClientAPI {
     		json = parser.parse(jsonString).getAsJsonObject();
     		client = gson.fromJson(json, ClientDetailsEntity.class);
     	} 
-    	//TODO: Java 7 combine catch statements
     	catch (JsonSyntaxException e) {
+    		logger.error("ClientAPI: apiUpdateClient failed due to JsonSyntaxException: " + e.getStackTrace().toString());
     		m.addAttribute("code", HttpStatus.BAD_REQUEST);
 			return "httpCodeView";
     	} catch (IllegalStateException e) {
+    		logger.error("ClientAPI: apiUpdateClient failed due to IllegalStateException: " + e.getStackTrace().toString());
     		m.addAttribute("code", HttpStatus.BAD_REQUEST);
 			return "httpCodeView";
 		}
@@ -198,9 +200,9 @@ public class ClientAPI {
         ClientDetailsEntity oldClient = clientService.getClientById(id);
         
         if (oldClient == null) {
-        	//TODO: Error Handling
-        	//Is this exception caught by a view? 
-        	throw new ClientNotFoundException();
+        	logger.error("ClientAPI: apiUpdateClient failed; client with id " + id + " could not be found.");
+        	m.addAttribute("code", HttpStatus.NOT_FOUND);
+        	return "httpCodeView";
         }
         
         // if they leave the client secret empty, force it to be generated
@@ -240,6 +242,7 @@ public class ClientAPI {
         ClientDetailsEntity client = clientService.getClientById(id);
         
 		if (client == null) {
+			logger.error("ClientAPI: apiDeleteClient failed; client with id " + id + " could not be found.");
 			modelAndView.getModelMap().put("code", HttpStatus.NOT_FOUND);
 		} else {
 			modelAndView.getModelMap().put("code", HttpStatus.OK);
@@ -258,11 +261,13 @@ public class ClientAPI {
      */
     @RequestMapping(value="/{id}", method=RequestMethod.GET, produces = "application/json")
     public String apiShowClient(@PathVariable("id") Long id, Model model, Authentication auth) {
+
         ClientDetailsEntity client = clientService.getClientById(id);
+        
         if (client == null) {
-        	//TODO: Error Handling
-        	//Is this error handled by a view?
-            throw new ClientNotFoundException("Could not find client: " + id);
+        	logger.error("ClientAPI: apiShowClient failed; client with id " + id + " could not be found.");
+        	model.addAttribute("code", HttpStatus.NOT_FOUND);
+        	return "httpCodeView";
         }
 
         model.addAttribute("entity", client);

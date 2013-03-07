@@ -21,6 +21,8 @@ import org.mitre.oauth2.exception.PermissionDeniedException;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.AuthenticationException;
@@ -36,6 +38,8 @@ import org.springframework.web.servlet.ModelAndView;
 public class RevocationEndpoint {
 	@Autowired
 	OAuth2TokenEntityService tokenServices;
+	
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	
 	public RevocationEndpoint() {
 		

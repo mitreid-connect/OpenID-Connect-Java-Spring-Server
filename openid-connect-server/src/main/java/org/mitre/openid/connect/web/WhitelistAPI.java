@@ -8,6 +8,8 @@ import java.util.Collection;
 
 import org.mitre.openid.connect.model.WhitelistedSite;
 import org.mitre.openid.connect.service.WhitelistedSiteService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -35,6 +37,8 @@ public class WhitelistAPI {
 
 	@Autowired
 	private WhitelistedSiteService whitelistService;
+	
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	
 	private Gson gson = new Gson();
 	private JsonParser parser = new JsonParser();
@@ -73,9 +77,13 @@ public class WhitelistAPI {
 			whitelist = gson.fromJson(json, WhitelistedSite.class);
 
 		} catch (JsonParseException e) {
-			//TODO: Error Handling
+			logger.error("WhitelistAPi: addNewWhitelistedSite failed due to JsonParseException: " + e.getStackTrace().toString());
+			m.addAttribute("code", HttpStatus.BAD_REQUEST);
+			return "httpCodeView";
 		} catch (IllegalStateException e) {
-			
+			logger.error("WhitelistAPi: addNewWhitelistedSite failed due to IllegalStateException: " + e.getStackTrace().toString());
+			m.addAttribute("code", HttpStatus.BAD_REQUEST);
+			return "httpCodeView";
 		}
 		
 		// save the id of the person who created this
@@ -104,14 +112,19 @@ public class WhitelistAPI {
 			whitelist = gson.fromJson(json, WhitelistedSite.class);
 
 		} catch (JsonParseException e) {
-			//TODO: Error Handling
+			logger.error("WhitelistAPi: updateWhitelistedSite failed due to JsonParseException: " + e.getStackTrace().toString());
+			m.put("code", HttpStatus.BAD_REQUEST);
+			return "httpCodeView";
 		} catch (IllegalStateException e) {
-			
+			logger.error("WhitelistAPi: updateWhitelistedSite failed due to IllegalStateException: " + e.getStackTrace().toString());
+			m.put("code", HttpStatus.BAD_REQUEST);
+			return "httpCodeView";
 		}
 		
 		WhitelistedSite oldWhitelist = whitelistService.getById(id);
 		
 		if (oldWhitelist == null) {
+			logger.error("WhitelistAPi: updateWhitelistedSite failed; whitelist with id " + id + " could not be found.");
 			m.put("code", HttpStatus.NOT_FOUND);
 			return "httpCodeView";
 		} else {
@@ -134,6 +147,7 @@ public class WhitelistAPI {
 		WhitelistedSite whitelist = whitelistService.getById(id);
 		
 		if (whitelist == null) {
+			logger.error("WhitelistAPi: deleteWhitelistedSite failed; whitelist with id " + id + " could not be found.");
 			m.put("code", HttpStatus.NOT_FOUND);
 		} else {
 			m.put("code", HttpStatus.OK);
@@ -150,6 +164,7 @@ public class WhitelistAPI {
 	public String getWhitelistedSite(@PathVariable("id") Long id, ModelMap m) {
 		WhitelistedSite whitelist = whitelistService.getById(id);
 		if (whitelist == null) {
+			logger.error("WhitelistAPi: getWhitelistedSite failed; whitelist with id " + id + " could not be found.");
 			m.put("code", HttpStatus.NOT_FOUND);
 			return "httpCodeView";
 		} else {

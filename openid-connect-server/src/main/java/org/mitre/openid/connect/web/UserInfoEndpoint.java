@@ -22,7 +22,10 @@ import org.mitre.openid.connect.exception.UnknownUserInfoSchemaException;
 import org.mitre.openid.connect.exception.UserNotFoundException;
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.service.UserInfoService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.common.exceptions.InvalidScopeException;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -45,6 +48,8 @@ public class UserInfoEndpoint {
 	
 	@Autowired
 	private UserInfoService userInfoService;
+	
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	
 	private Map<String, String> schemaToViewNameMap = ImmutableMap.of(
 			openIdSchema, jsonUserInfoViewName, 
@@ -69,22 +74,25 @@ public class UserInfoEndpoint {
 	public String getInfo(Principal p, @RequestParam("schema") String schema, Model model) {
 
 		if (p == null) {
-			throw new UserNotFoundException("Invalid User"); 
-			//TODO: Error Handling
+			logger.error("UserInfoEndpoint: getInfo failed; no principal. Requester is not authorized.");
+			model.addAttribute("code", HttpStatus.FORBIDDEN);
+			return "httpCodeView";
 		}
 
 		String viewName = schemaToViewNameMap.get(schema);
 		if (viewName == null) {
-			throw new UnknownUserInfoSchemaException("Unknown User Info Schema: " + schema );
-			//TODO: Error Handling
+			logger.error("UserInfoEndpoint: getInfo failed; unknown User Info schema " + schema); 
+			model.addAttribute("code", HttpStatus.BAD_REQUEST);
+			return "httpCodeView";
 		}
 
 		String userId = p.getName(); 
 		UserInfo userInfo = userInfoService.getByUserId(userId);
 		
 		if (userInfo == null) {
-			throw new UserNotFoundException("User not found: " + userId); 
-			//TODO: Error Handling
+			logger.error("UserInfoEndpoint: getInfo failed; user not found: " + userId); 
+			model.addAttribute("code", HttpStatus.NOT_FOUND);
+			return "httpCodeView";
 		}
 		
 		if (p instanceof OAuth2Authentication) {

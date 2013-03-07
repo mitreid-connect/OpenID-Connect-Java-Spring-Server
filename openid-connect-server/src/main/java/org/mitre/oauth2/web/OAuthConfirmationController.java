@@ -26,7 +26,10 @@ import org.mitre.oauth2.exception.ClientNotFoundException;
 import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.SystemScopeService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
@@ -54,6 +57,8 @@ public class OAuthConfirmationController {
 	@Autowired
 	private SystemScopeService scopeService;
 	
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	
 	public OAuthConfirmationController() {
 		
 	}
@@ -68,14 +73,26 @@ public class OAuthConfirmationController {
 
 		//AuthorizationRequest clientAuth = (AuthorizationRequest) model.remove("authorizationRequest");
 
-		//TODO: Error Handling
-		//Throws OAuth2Exception, InvalidClientException, IllegalArgumentException
-		ClientDetails client = clientService.loadClientByClientId(clientAuth.getClientId());
+		ClientDetails client = null;
+		
+		try {
+			client = clientService.loadClientByClientId(clientAuth.getClientId());
+		} catch (OAuth2Exception e) {	
+			logger.error("OAuthConfirmationController: confirmAccess: OAuth2Exception was thrown when attempting to load client: "
+					+ e.getStackTrace().toString());
+			model.put("code", HttpStatus.BAD_REQUEST);
+			return new ModelAndView("httpCodeView");
+		} catch (IllegalArgumentException e) {
+			logger.error("OAuthConfirmationController: confirmAccess: IllegalArgumentException was thrown when attempting to load client: "
+					+ e.getStackTrace().toString());
+			model.put("code", HttpStatus.BAD_REQUEST);
+			return new ModelAndView("httpCodeView");
+		}
 		
 		if (client == null) {
-			throw new ClientNotFoundException("Client not found: " + clientAuth.getClientId());
-			//TODO: Error Handling
-		}
+			logger.error("OAuthConfirmationController: confirmAccess: could not find client " + clientAuth.getClientId());
+			model.put("code", HttpStatus.NOT_FOUND);
+			return new ModelAndView("httpCodeView");		}
 
 		model.put("auth_request", clientAuth);
 		model.put("client", client);

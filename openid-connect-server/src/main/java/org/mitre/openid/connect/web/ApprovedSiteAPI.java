@@ -8,6 +8,8 @@ import java.util.Collection;
 
 import org.mitre.openid.connect.model.ApprovedSite;
 import org.mitre.openid.connect.service.ApprovedSiteService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,6 +30,8 @@ public class ApprovedSiteAPI {
 
 	@Autowired
 	private ApprovedSiteService approvedSiteService;
+	
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	/**
 	 * Get a list of all of this user's approved sites
@@ -53,8 +57,11 @@ public class ApprovedSiteAPI {
 		ApprovedSite approvedSite = approvedSiteService.getById(id);
 		
 		if (approvedSite == null) {
+			logger.error("ApprovedSiteAPI: deleteApprovedSite failed; no approved site found for id: " + id);
 			m.put("code", HttpStatus.NOT_FOUND);
 		} else if (!approvedSite.getUserId().equals(p.getName())) {
+			logger.error("ApprovedSiteAPI: deleteApprovedSite failed; principal " 
+					+ p.getName() + " does not own approved site" + id);
 			m.put("code", HttpStatus.FORBIDDEN);
 		} else {
 			m.put("code", HttpStatus.OK);
@@ -71,9 +78,12 @@ public class ApprovedSiteAPI {
 	public String getApprovedSite(@PathVariable("id") Long id, ModelMap m, Principal p) {
 		ApprovedSite approvedSite = approvedSiteService.getById(id);
 		if (approvedSite == null) {
+			logger.error("ApprovedSiteAPI: getApprovedSite failed; no approved site found for id: " + id);
 			m.put("code", HttpStatus.NOT_FOUND);
 			return "httpCodeView";
 		} else if (!approvedSite.getUserId().equals(p.getName())) {
+			logger.error("ApprovedSiteAPI: getApprovedSite failed; principal " 
+					+ p.getName() + " does not own approved site" + id);
 			m.put("code", HttpStatus.FORBIDDEN);
 			return "httpCodeView";
 		} else {

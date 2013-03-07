@@ -7,6 +7,8 @@ import java.util.Set;
 
 import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.service.SystemScopeService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,9 +30,10 @@ import com.google.gson.Gson;
 @PreAuthorize("hasRole('ROLE_USER')")
 public class ScopeAPI {
 
-	
 	@Autowired
 	private SystemScopeService scopeService;
+	
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	
 	private Gson gson = new Gson();
 	
@@ -55,8 +58,10 @@ public class ScopeAPI {
 			
 			return "jsonEntityView";
 		} else {
-			m.put("code", HttpStatus.NOT_FOUND);
+		
+			logger.error("ScopeAPI: getScope failed; scope not found: " + id);
 			
+			m.put("code", HttpStatus.NOT_FOUND);
 			return "httpCodeView";
 		}
 	}
@@ -80,6 +85,10 @@ public class ScopeAPI {
 				
 				return "jsonEntityView";
 			} else {
+				
+				logger.error("ScopeAPI: updateScope failed; scope ids to not match: got " 
+						+ existing.getId() + " and " + scope.getId());
+				
 				m.put("code", HttpStatus.BAD_REQUEST);
 				
 				return "httpCodeView";
@@ -87,6 +96,7 @@ public class ScopeAPI {
 			
 		} else {
 			
+			logger.error("ScopeAPI: updateScope failed; scope with id " + id + " not found.");
 			m.put("code", HttpStatus.NOT_FOUND);
 			
 			return "httpCodeView";
@@ -106,6 +116,8 @@ public class ScopeAPI {
 			
 			return "jsonEntityView";
 		} else {
+			
+			logger.error("ScopeAPI: createScope failed; JSON was invalid: " + json);
 			m.put("code", HttpStatus.BAD_REQUEST);
 			
 			return "httpCodeView";
@@ -125,6 +137,7 @@ public class ScopeAPI {
 			return "httpCodeView";
 		} else {
 			
+			logger.error("ScopeAPI: deleteScope failed; scope with id " + id + " not found.");
 			m.put("code", HttpStatus.NOT_FOUND);
 			
 			return "httpCodeView";

@@ -17,7 +17,10 @@ import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
 import org.mitre.oauth2.service.SystemScopeService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -49,6 +52,7 @@ public class ClientDynamicRegistrationEndpoint {
 	@Autowired
 	private SystemScopeService scopeService;
 	
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	
 	@RequestMapping(params = "operation=client_register", produces = "application/json")
 	public String clientRegister(
@@ -189,7 +193,9 @@ public class ClientDynamicRegistrationEndpoint {
 		ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
 
 		if (client == null) {
-			throw new ClientNotFoundException("Could not find client: " + clientId);
+			logger.error("ClientDynamicRegistrationEndpoint: rotateSecret failed, could not find client " + clientId);
+			model.addAttribute("code", HttpStatus.NOT_FOUND);
+			return "httpCodeView";
 		}
 		
 		// rotate the secret, if available
@@ -203,8 +209,11 @@ public class ClientDynamicRegistrationEndpoint {
 			// mint a new access token
 			registrationAccessToken = createRegistrationAccessToken(client);
 		} catch (AuthenticationException e) {
-			//TODO: Error Handling
-			//AuthException may be handled by spring security
+			logger.error("ClientDynamicRegistrationEndpoint: rotateSecret failed; AuthenticationException: CLient " + clientId 
+					+ " attempted to rotate secret and failed with the following stack trace: " 
+					+ e.getStackTrace().toString());
+			model.addAttribute("code", HttpStatus.FORBIDDEN);
+			return "httpCodeView";
 		}
 
 		// revoke the old one
@@ -215,16 +224,25 @@ public class ClientDynamicRegistrationEndpoint {
 			try {
 				oldAccessToken = tokenService.readAccessToken(details.getTokenValue());
 			} catch (AuthenticationException e) {
-				//TODO: Error Handling
+				logger.error("ClientDynamicRegistrationEndpoint: rotateSecret failed; AuthenticationException: CLient " + clientId 
+						+ " attempted to rotate secret and failed with the following stack trace: " 
+						+ e.getStackTrace().toString());
+				model.addAttribute("code", HttpStatus.FORBIDDEN);
+				return "httpCodeView";
 			} catch (InvalidTokenException e) {
-				//TODO: Error Handling
+				logger.error("ClientDynamicRegistrationEndpoint: rotateSecret failed; InvalidTokenException: CLient " + clientId 
+						+ " attempted to rotate secret with an invalid token." 
+						+ e.getStackTrace().toString());
+				model.addAttribute("code", HttpStatus.BAD_REQUEST);
+				return "httpCodeView";
 			}
 			if (oldAccessToken != null) {
 				tokenService.revokeAccessToken(oldAccessToken);
 			} else {
-				// serious error here -- how'd we get this far without a valid token?!
-				throw new OAuth2Exception("SEVERE: token not found, something is fishy");
-				//TODO: Error Handling
+				// This is a severe error
+				logger.error("SEVERE: ClientDynamicRegistrationEndpoint: rotateSecret failed; Revocation of access token for client " + clientId 
+						+ " failed. Original token can not be found.");
+				throw OAuth2Exception.create(OAuth2Exception.INVALID_TOKEN, "SEVERE: token not found, something is fishy");
 			}
 		}
 		
@@ -289,8 +307,9 @@ public class ClientDynamicRegistrationEndpoint {
 		ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
 		
 		if (client == null) {
-			throw new ClientNotFoundException("Could not find client: " + clientId);
-			//TODO: Error Handling
+			logger.error("ClientDynamicRegistrationEndpoint: clientUpdate failed; Client with id " + clientId + " does not exist or cannot be found.");
+			model.addAttribute("code", HttpStatus.NOT_FOUND);
+			return "httpCodeView";
 		}
 		
 		/*
