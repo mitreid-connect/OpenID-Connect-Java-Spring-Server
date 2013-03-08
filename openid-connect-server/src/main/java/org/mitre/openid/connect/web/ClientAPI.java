@@ -97,7 +97,7 @@ public class ClientAPI {
           .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
           .create();
 	
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	private static Logger logger = LoggerFactory.getLogger(ClientAPI.class);
 
     /**
      * Get a list of all clients
@@ -136,11 +136,11 @@ public class ClientAPI {
     		client = gson.fromJson(json, ClientDetailsEntity.class);
     	} 
     	catch (JsonSyntaxException e) {
-    		logger.error("ClientAPI: apiAddClient failed due to JsonSyntaxException: " + e.getStackTrace().toString());
+    		logger.error("apiAddClient failed due to JsonSyntaxException: " + e.getStackTrace().toString());
     		m.addAttribute("code", HttpStatus.BAD_REQUEST);
 			return "httpCodeView";
     	} catch (IllegalStateException e) {
-    		logger.error("ClientAPI: apiAddClient failed due to IllegalStateException: " + e.getStackTrace().toString());
+    		logger.error("apiAddClient failed due to IllegalStateException: " + e.getStackTrace().toString());
     		m.addAttribute("code", HttpStatus.BAD_REQUEST);
 			return "httpCodeView";
 		}
@@ -191,11 +191,11 @@ public class ClientAPI {
     		client = gson.fromJson(json, ClientDetailsEntity.class);
     	} 
     	catch (JsonSyntaxException e) {
-    		logger.error("ClientAPI: apiUpdateClient failed due to JsonSyntaxException: " + e.getStackTrace().toString());
+    		logger.error("apiUpdateClient failed due to JsonSyntaxException: " + e.getStackTrace().toString());
     		m.addAttribute("code", HttpStatus.BAD_REQUEST);
 			return "httpCodeView";
     	} catch (IllegalStateException e) {
-    		logger.error("ClientAPI: apiUpdateClient failed due to IllegalStateException: " + e.getStackTrace().toString());
+    		logger.error("apiUpdateClient failed due to IllegalStateException: " + e.getStackTrace().toString());
     		m.addAttribute("code", HttpStatus.BAD_REQUEST);
 			return "httpCodeView";
 		}
@@ -203,7 +203,7 @@ public class ClientAPI {
         ClientDetailsEntity oldClient = clientService.getClientById(id);
         
         if (oldClient == null) {
-        	logger.error("ClientAPI: apiUpdateClient failed; client with id " + id + " could not be found.");
+        	logger.error("apiUpdateClient failed; client with id " + id + " could not be found.");
         	m.addAttribute("code", HttpStatus.NOT_FOUND);
         	return "httpCodeView";
         }
@@ -245,7 +245,7 @@ public class ClientAPI {
         ClientDetailsEntity client = clientService.getClientById(id);
         
 		if (client == null) {
-			logger.error("ClientAPI: apiDeleteClient failed; client with id " + id + " could not be found.");
+			logger.error("apiDeleteClient failed; client with id " + id + " could not be found.");
 			modelAndView.getModelMap().put("code", HttpStatus.NOT_FOUND);
 		} else {
 			modelAndView.getModelMap().put("code", HttpStatus.OK);
@@ -268,7 +268,7 @@ public class ClientAPI {
         ClientDetailsEntity client = clientService.getClientById(id);
         
         if (client == null) {
-        	logger.error("ClientAPI: apiShowClient failed; client with id " + id + " could not be found.");
+        	logger.error("apiShowClient failed; client with id " + id + " could not be found.");
         	model.addAttribute("code", HttpStatus.NOT_FOUND);
         	return "httpCodeView";
         }

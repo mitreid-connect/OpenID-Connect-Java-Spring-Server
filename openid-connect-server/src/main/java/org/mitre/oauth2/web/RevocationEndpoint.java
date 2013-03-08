@@ -39,7 +39,7 @@ public class RevocationEndpoint {
 	@Autowired
 	OAuth2TokenEntityService tokenServices;
 	
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	private static Logger logger = LoggerFactory.getLogger(RevocationEndpoint.class);
 	
 	public RevocationEndpoint() {
 		

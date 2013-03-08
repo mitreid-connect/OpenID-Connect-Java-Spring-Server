@@ -29,8 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
-import org.springframework.security.oauth2.common.exceptions.InvalidScopeException;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -50,7 +48,7 @@ public class IntrospectionEndpoint {
 	@Autowired
 	private ClientDetailsEntityService clientService;
 	
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	private static Logger logger = LoggerFactory.getLogger(IntrospectionEndpoint.class);
 	
 	public IntrospectionEndpoint() {
 		
@@ -66,7 +64,7 @@ public class IntrospectionEndpoint {
 		Map<String, Object> model = new HashMap<String, Object>();
 		model.put("entity", e);
 		
-		logger.error("IntrospectionEndpoint InvalidTokenException: " + ex.getStackTrace().toString());
+		logger.error("InvalidTokenException: " + ex.getStackTrace().toString());
 		
 		model.put("code", HttpStatus.BAD_REQUEST);
 		
@@ -97,7 +95,7 @@ public class IntrospectionEndpoint {
 		}*/
 		
 		if (Strings.isNullOrEmpty(tokenValue)) {
-			logger.error("IntrospectionEndpoint: verify failed; token value is null");
+			logger.error("Verify failed; token value is null");
 			modelAndView.addObject("code", HttpStatus.BAD_REQUEST);
 			modelAndView.setViewName("httpCodeView");
 			return modelAndView;
@@ -108,7 +106,7 @@ public class IntrospectionEndpoint {
 		try {
 			token = tokenServices.readAccessToken(tokenValue);		
 		} catch (AuthenticationException e) {
-			logger.error("IntrospectionEndpoint: verify failed; AuthenticationException: " + e.getStackTrace().toString());
+			logger.error("Verify failed; AuthenticationException: " + e.getStackTrace().toString());
 			modelAndView.addObject("code", HttpStatus.FORBIDDEN);
 			modelAndView.setViewName("httpCodeView");
 			return modelAndView;
@@ -130,20 +128,20 @@ public class IntrospectionEndpoint {
 					modelAndView.addObject("entity", token);
 					return modelAndView;
 				} else {
-					logger.error("IntrospectionEndpoint: verify failed; client tried to introspect a token of an incorrect scope");
+					logger.error("Verify failed; client tried to introspect a token of an incorrect scope");
 					modelAndView.addObject("code", HttpStatus.BAD_REQUEST);
 					modelAndView.setViewName("httpCodeView");
 					return modelAndView;
 				}
 			} else {
-				logger.error("IntrospectionEndpoint: verify failed; client " + clientId + " is not allowed to call introspection endpoint");
+				logger.error("Verify failed; client " + clientId + " is not allowed to call introspection endpoint");
 				modelAndView.addObject("code", HttpStatus.BAD_REQUEST);
 				modelAndView.setViewName("httpCodeView");
 				return modelAndView;
 			}
 		} else {
 			//TODO: Log error client not found
-			logger.error("IntrospectionEndpoint: verify failed; client " + clientId + " not found.");
+			logger.error("Verify failed; client " + clientId + " not found.");
 			modelAndView.addObject("code", HttpStatus.NOT_FOUND);
 			modelAndView.setViewName("httpCodeView");
 			return modelAndView;

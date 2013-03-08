@@ -33,7 +33,7 @@ public class ScopeAPI {
 	@Autowired
 	private SystemScopeService scopeService;
 	
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	private static Logger logger = LoggerFactory.getLogger(ScopeAPI.class);
 	
 	private Gson gson = new Gson();
 	
@@ -59,7 +59,7 @@ public class ScopeAPI {
 			return "jsonEntityView";
 		} else {
 		
-			logger.error("ScopeAPI: getScope failed; scope not found: " + id);
+			logger.error("getScope failed; scope not found: " + id);
 			
 			m.put("code", HttpStatus.NOT_FOUND);
 			return "httpCodeView";
@@ -86,7 +86,7 @@ public class ScopeAPI {
 				return "jsonEntityView";
 			} else {
 				
-				logger.error("ScopeAPI: updateScope failed; scope ids to not match: got " 
+				logger.error("updateScope failed; scope ids to not match: got " 
 						+ existing.getId() + " and " + scope.getId());
 				
 				m.put("code", HttpStatus.BAD_REQUEST);
@@ -96,7 +96,7 @@ public class ScopeAPI {
 			
 		} else {
 			
-			logger.error("ScopeAPI: updateScope failed; scope with id " + id + " not found.");
+			logger.error("updateScope failed; scope with id " + id + " not found.");
 			m.put("code", HttpStatus.NOT_FOUND);
 			
 			return "httpCodeView";
@@ -117,7 +117,7 @@ public class ScopeAPI {
 			return "jsonEntityView";
 		} else {
 			
-			logger.error("ScopeAPI: createScope failed; JSON was invalid: " + json);
+			logger.error("createScope failed; JSON was invalid: " + json);
 			m.put("code", HttpStatus.BAD_REQUEST);
 			
 			return "httpCodeView";
@@ -137,7 +137,7 @@ public class ScopeAPI {
 			return "httpCodeView";
 		} else {
 			
-			logger.error("ScopeAPI: deleteScope failed; scope with id " + id + " not found.");
+			logger.error("deleteScope failed; scope with id " + id + " not found.");
 			m.put("code", HttpStatus.NOT_FOUND);
 			
 			return "httpCodeView";

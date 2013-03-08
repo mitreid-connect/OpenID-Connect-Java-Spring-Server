@@ -31,7 +31,7 @@ public class ApprovedSiteAPI {
 	@Autowired
 	private ApprovedSiteService approvedSiteService;
 	
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	private static Logger logger = LoggerFactory.getLogger(ApprovedSiteAPI.class);
 
 	/**
 	 * Get a list of all of this user's approved sites
@@ -57,10 +57,10 @@ public class ApprovedSiteAPI {
 		ApprovedSite approvedSite = approvedSiteService.getById(id);
 		
 		if (approvedSite == null) {
-			logger.error("ApprovedSiteAPI: deleteApprovedSite failed; no approved site found for id: " + id);
+			logger.error("deleteApprovedSite failed; no approved site found for id: " + id);
 			m.put("code", HttpStatus.NOT_FOUND);
 		} else if (!approvedSite.getUserId().equals(p.getName())) {
-			logger.error("ApprovedSiteAPI: deleteApprovedSite failed; principal " 
+			logger.error("deleteApprovedSite failed; principal " 
 					+ p.getName() + " does not own approved site" + id);
 			m.put("code", HttpStatus.FORBIDDEN);
 		} else {
@@ -78,11 +78,11 @@ public class ApprovedSiteAPI {
 	public String getApprovedSite(@PathVariable("id") Long id, ModelMap m, Principal p) {
 		ApprovedSite approvedSite = approvedSiteService.getById(id);
 		if (approvedSite == null) {
-			logger.error("ApprovedSiteAPI: getApprovedSite failed; no approved site found for id: " + id);
+			logger.error("getApprovedSite failed; no approved site found for id: " + id);
 			m.put("code", HttpStatus.NOT_FOUND);
 			return "httpCodeView";
 		} else if (!approvedSite.getUserId().equals(p.getName())) {
-			logger.error("ApprovedSiteAPI: getApprovedSite failed; principal " 
+			logger.error("getApprovedSite failed; principal " 
 					+ p.getName() + " does not own approved site" + id);
 			m.put("code", HttpStatus.FORBIDDEN);
 			return "httpCodeView";

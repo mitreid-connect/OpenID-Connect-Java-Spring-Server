@@ -24,7 +24,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
 
 /**
  * @author jricher
@@ -38,7 +37,7 @@ public class WhitelistAPI {
 	@Autowired
 	private WhitelistedSiteService whitelistService;
 	
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	private static Logger logger = LoggerFactory.getLogger(WhitelistAPI.class);
 	
 	private Gson gson = new Gson();
 	private JsonParser parser = new JsonParser();
@@ -77,11 +76,11 @@ public class WhitelistAPI {
 			whitelist = gson.fromJson(json, WhitelistedSite.class);
 
 		} catch (JsonParseException e) {
-			logger.error("WhitelistAPi: addNewWhitelistedSite failed due to JsonParseException: " + e.getStackTrace().toString());
+			logger.error("addNewWhitelistedSite failed due to JsonParseException: " + e.getStackTrace().toString());
 			m.addAttribute("code", HttpStatus.BAD_REQUEST);
 			return "httpCodeView";
 		} catch (IllegalStateException e) {
-			logger.error("WhitelistAPi: addNewWhitelistedSite failed due to IllegalStateException: " + e.getStackTrace().toString());
+			logger.error("addNewWhitelistedSite failed due to IllegalStateException: " + e.getStackTrace().toString());
 			m.addAttribute("code", HttpStatus.BAD_REQUEST);
 			return "httpCodeView";
 		}
@@ -112,11 +111,11 @@ public class WhitelistAPI {
 			whitelist = gson.fromJson(json, WhitelistedSite.class);
 
 		} catch (JsonParseException e) {
-			logger.error("WhitelistAPi: updateWhitelistedSite failed due to JsonParseException: " + e.getStackTrace().toString());
+			logger.error("updateWhitelistedSite failed due to JsonParseException: " + e.getStackTrace().toString());
 			m.put("code", HttpStatus.BAD_REQUEST);
 			return "httpCodeView";
 		} catch (IllegalStateException e) {
-			logger.error("WhitelistAPi: updateWhitelistedSite failed due to IllegalStateException: " + e.getStackTrace().toString());
+			logger.error("updateWhitelistedSite failed due to IllegalStateException: " + e.getStackTrace().toString());
 			m.put("code", HttpStatus.BAD_REQUEST);
 			return "httpCodeView";
 		}
@@ -124,7 +123,7 @@ public class WhitelistAPI {
 		WhitelistedSite oldWhitelist = whitelistService.getById(id);
 		
 		if (oldWhitelist == null) {
-			logger.error("WhitelistAPi: updateWhitelistedSite failed; whitelist with id " + id + " could not be found.");
+			logger.error("updateWhitelistedSite failed; whitelist with id " + id + " could not be found.");
 			m.put("code", HttpStatus.NOT_FOUND);
 			return "httpCodeView";
 		} else {
@@ -147,7 +146,7 @@ public class WhitelistAPI {
 		WhitelistedSite whitelist = whitelistService.getById(id);
 		
 		if (whitelist == null) {
-			logger.error("WhitelistAPi: deleteWhitelistedSite failed; whitelist with id " + id + " could not be found.");
+			logger.error("deleteWhitelistedSite failed; whitelist with id " + id + " could not be found.");
 			m.put("code", HttpStatus.NOT_FOUND);
 		} else {
 			m.put("code", HttpStatus.OK);
@@ -164,7 +163,7 @@ public class WhitelistAPI {
 	public String getWhitelistedSite(@PathVariable("id") Long id, ModelMap m) {
 		WhitelistedSite whitelist = whitelistService.getById(id);
 		if (whitelist == null) {
-			logger.error("WhitelistAPi: getWhitelistedSite failed; whitelist with id " + id + " could not be found.");
+			logger.error("getWhitelistedSite failed; whitelist with id " + id + " could not be found.");
 			m.put("code", HttpStatus.NOT_FOUND);
 			return "httpCodeView";
 		} else {

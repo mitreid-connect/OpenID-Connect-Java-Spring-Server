@@ -49,7 +49,7 @@ public class UserInfoEndpoint {
 	@Autowired
 	private UserInfoService userInfoService;
 	
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	private static Logger logger = LoggerFactory.getLogger(UserInfoEndpoint.class);
 	
 	private Map<String, String> schemaToViewNameMap = ImmutableMap.of(
 			openIdSchema, jsonUserInfoViewName, 
@@ -74,14 +74,14 @@ public class UserInfoEndpoint {
 	public String getInfo(Principal p, @RequestParam("schema") String schema, Model model) {
 
 		if (p == null) {
-			logger.error("UserInfoEndpoint: getInfo failed; no principal. Requester is not authorized.");
+			logger.error("getInfo failed; no principal. Requester is not authorized.");
 			model.addAttribute("code", HttpStatus.FORBIDDEN);
 			return "httpCodeView";
 		}
 
 		String viewName = schemaToViewNameMap.get(schema);
 		if (viewName == null) {
-			logger.error("UserInfoEndpoint: getInfo failed; unknown User Info schema " + schema); 
+			logger.error("getInfo failed; unknown User Info schema " + schema); 
 			model.addAttribute("code", HttpStatus.BAD_REQUEST);
 			return "httpCodeView";
 		}
@@ -90,7 +90,7 @@ public class UserInfoEndpoint {
 		UserInfo userInfo = userInfoService.getByUserId(userId);
 		
 		if (userInfo == null) {
-			logger.error("UserInfoEndpoint: getInfo failed; user not found: " + userId); 
+			logger.error("getInfo failed; user not found: " + userId); 
 			model.addAttribute("code", HttpStatus.NOT_FOUND);
 			return "httpCodeView";
 		}

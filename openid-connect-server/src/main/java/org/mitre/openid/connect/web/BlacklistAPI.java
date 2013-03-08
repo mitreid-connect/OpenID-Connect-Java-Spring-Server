@@ -37,7 +37,7 @@ public class BlacklistAPI {
 	@Autowired
 	private BlacklistedSiteService blacklistService;
 	
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	private static Logger logger = LoggerFactory.getLogger(BlacklistAPI.class);
 	
 	private Gson gson = new Gson();
 	private JsonParser parser = new JsonParser();
@@ -80,11 +80,11 @@ public class BlacklistAPI {
 			
 		} 
 		catch (JsonSyntaxException e) {
-			logger.error("BlacklistAPI: addNewBlacklistedSite failed due to JsonSyntaxException: " + e.getStackTrace().toString());
+			logger.error("addNewBlacklistedSite failed due to JsonSyntaxException: " + e.getStackTrace().toString());
 			m.put("code", HttpStatus.BAD_REQUEST);
 			return "httpCodeView";
 		} catch (IllegalStateException e) {
-			logger.error("BlacklistAPI: addNewBlacklistedSite failed due to IllegalStateException: " + e.getStackTrace().toString());
+			logger.error("addNewBlacklistedSite failed due to IllegalStateException: " + e.getStackTrace().toString());
 			m.put("code", HttpStatus.BAD_REQUEST);
 			return "httpCodeView";
 		}
@@ -110,11 +110,11 @@ public class BlacklistAPI {
 			
 		} 
 		catch (JsonSyntaxException e) {
-			logger.error("BlacklistAPI: updateBlacklistedSite failed due to JsonSyntaxException: " + e.getStackTrace().toString());
+			logger.error("updateBlacklistedSite failed due to JsonSyntaxException: " + e.getStackTrace().toString());
 			m.put("code", HttpStatus.BAD_REQUEST);
 			return "httpCodeView";
 		} catch (IllegalStateException e) {
-			logger.error("BlacklistAPI: updateBlacklistedSite failed due to IllegalStateException: " + e.getStackTrace().toString());
+			logger.error("updateBlacklistedSite failed due to IllegalStateException: " + e.getStackTrace().toString());
 			m.put("code", HttpStatus.BAD_REQUEST);
 			return "httpCodeView";
 		}
@@ -123,7 +123,7 @@ public class BlacklistAPI {
 		BlacklistedSite oldBlacklist = blacklistService.getById(id);
 		
 		if (oldBlacklist == null) {
-			logger.error("BlacklistAPI: updateBlacklistedSite failed; blacklist with id " + id + " could not be found");
+			logger.error("updateBlacklistedSite failed; blacklist with id " + id + " could not be found");
 			m.put("code", HttpStatus.NOT_FOUND);
 			return "httpCodeView";
 		} else {
@@ -145,7 +145,7 @@ public class BlacklistAPI {
 		BlacklistedSite blacklist = blacklistService.getById(id);
 		
 		if (blacklist == null) {
-			logger.error("BlacklistAPI: deleteBlacklistedSite failed; blacklist with id " + id + " could not be found");
+			logger.error("deleteBlacklistedSite failed; blacklist with id " + id + " could not be found");
 			m.put("code", HttpStatus.NOT_FOUND);
 		} else {
 			m.put("code", HttpStatus.OK);
@@ -162,7 +162,7 @@ public class BlacklistAPI {
 	public String getBlacklistedSite(@PathVariable("id") Long id, ModelMap m) {
 		BlacklistedSite blacklist = blacklistService.getById(id);
 		if (blacklist == null) {
-			logger.error("BlacklistAPI: getBlacklistedSite failed; blacklist with id " + id + " could not be found");
+			logger.error("getBlacklistedSite failed; blacklist with id " + id + " could not be found");
 			m.put("code", HttpStatus.NOT_FOUND);
 			return "httpCodeView";
 		} else {

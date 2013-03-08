@@ -56,7 +56,7 @@ public class ClientDynamicRegistrationEndpoint {
 	@Autowired
 	private SystemScopeService scopeService;
 	
-	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	private static Logger logger = LoggerFactory.getLogger(ClientDynamicRegistrationEndpoint.class);
 	private JsonParser parser = new JsonParser();
 	private Gson gson = new Gson();
 	
@@ -146,7 +146,7 @@ public class ClientDynamicRegistrationEndpoint {
 			return "clientInformationResponseView";
 		} else {
 			// didn't parse, this is a bad request
-			logger.error("ClientDynamicRegistrationEndpoint: registerNewClient failed; submitted JSON is malformed");
+			logger.error("registerNewClient failed; submitted JSON is malformed");
 			m.addAttribute("code", HttpStatus.BAD_REQUEST); // http 400
 			
 			return "httpCodeView";
@@ -182,7 +182,7 @@ public class ClientDynamicRegistrationEndpoint {
 			return "clientInformationResponseView";
 		} else {
 			// client mismatch
-			logger.error("ClientDynamicRegistrationEndpoint: readClientConfiguration failed, client ID mismatch: " 
+			logger.error("readClientConfiguration failed, client ID mismatch: " 
 					+ clientId + " and " + auth.getAuthorizationRequest().getClientId() + " do not match.");
 			m.addAttribute("code", HttpStatus.FORBIDDEN); // http 403
 			
@@ -253,7 +253,7 @@ public class ClientDynamicRegistrationEndpoint {
 			return "clientInformationResponseView";
 		} else {
 			// client mismatch
-			logger.error("ClientDynamicRegistrationEndpoint: readClientConfiguration failed, client ID mismatch: " 
+			logger.error("readClientConfiguration failed, client ID mismatch: " 
 					+ clientId + " and " + auth.getAuthorizationRequest().getClientId() + " do not match.");
 			m.addAttribute("code", HttpStatus.FORBIDDEN); // http 403
 			
@@ -290,7 +290,7 @@ public class ClientDynamicRegistrationEndpoint {
 			return "clientInformationResponseView";
 		} else {
 			// client mismatch
-			logger.error("ClientDynamicRegistrationEndpoint: readClientConfiguration failed, client ID mismatch: " 
+			logger.error("readClientConfiguration failed, client ID mismatch: " 
 					+ clientId + " and " + auth.getAuthorizationRequest().getClientId() + " do not match.");
 			m.addAttribute("code", HttpStatus.FORBIDDEN); // http 403
 			

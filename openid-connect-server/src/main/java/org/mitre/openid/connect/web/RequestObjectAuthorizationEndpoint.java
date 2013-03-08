@@ -6,13 +6,14 @@ import java.text.ParseException;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.http.client.utils.URIBuilder;
-import org.springframework.stereotype.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.google.common.base.Strings;
 import com.nimbusds.jwt.JWT;
@@ -29,10 +30,10 @@ import com.nimbusds.jwt.JWTParser;
 //@Component
 public class RequestObjectAuthorizationEndpoint {
 
-	protected final Log logger = LogFactory.getLog(getClass());
+	private static Logger logger = LoggerFactory.getLogger(RequestObjectAuthorizationEndpoint.class);
 
 	@RequestMapping(value = "/authorize", params = "request")
-	public String authorizeRequestObject(@RequestParam("request") String jwtString, @RequestParam(value = "response_type", required = false) String responseType, HttpServletRequest request) {
+	public String authorizeRequestObject(@RequestParam("request") String jwtString, @RequestParam(value = "response_type", required = false) String responseType, HttpServletRequest request, ModelAndView mav) {
 
 		String query = request.getQueryString();
 		
@@ -48,11 +49,14 @@ public class RequestObjectAuthorizationEndpoint {
 		        query = uri.getRawQuery();//uri.toString();
 		        
 	        } catch (ParseException e) {
-		        // TODO Auto-generated catch block
-		        e.printStackTrace();
+		        logger.error("ParseException while attempting to authorize request object: " + e.getStackTrace().toString());
+		        mav.addObject("code", HttpStatus.BAD_REQUEST);
+		        return "httpCodeView";
+		        
 	        } catch (URISyntaxException e) {
-	            // TODO Auto-generated catch block
-	            e.printStackTrace();
+	        	logger.error("URISyntaxError while attempting to authorize request object: " + e.getStackTrace().toString());
+	        	mav.addObject("code", HttpStatus.BAD_REQUEST);
+		        return "httpCodeView";
             }
 		}
 		
