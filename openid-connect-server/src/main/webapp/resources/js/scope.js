@@ -222,9 +222,13 @@ var SystemScopeFormView = Backbone.View.extend({
 					app.systemScopeList.add(_self.model);
 					app.navigate('admin/scope', {trigger: true});
 				},
-				error:function(model,resp) {
-					console.error("The scope didn't save correctly.", resp);
-				}
+				error:function(error, response) {
+	    			if (response.status == 409) {
+	    				//Conflict, scope already exists
+	    				$('#value input').css('border', '1px solid red');
+	    				//add hint to choose a different value
+	    			}
+	    		}
 			});
 		}
 

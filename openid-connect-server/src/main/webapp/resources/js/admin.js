@@ -250,6 +250,10 @@ var BlackListWidgetView = ListWidgetView.extend({
     	item.save({}, {
     		success:function() {
     			_self.collection.add(item);
+    		},
+    		error:function(error, response) {
+    			console.log("error: " + error);
+    			console.log("response: " + response);
     		}
     	});
 

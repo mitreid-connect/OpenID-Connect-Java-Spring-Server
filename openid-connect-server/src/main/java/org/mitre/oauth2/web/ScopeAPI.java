@@ -108,7 +108,23 @@ public class ScopeAPI {
 	public String createScope(@RequestBody String json, ModelMap m) {
 		SystemScope scope = gson.fromJson(json, SystemScope.class);
 		
-		scope = scopeService.save(scope);
+		SystemScope alreadyExists = scopeService.getByValue(scope.getValue());
+		if (alreadyExists != null) {
+			//Error, cannot save a scope with the same value as an existing one
+			logger.error("Error: attempting to save a scope with a value that already exists: " + scope.getValue());
+			m.put("code", HttpStatus.CONFLICT);
+			m.put("entity", "A scope with value " + scope.getValue() + "already exists, please choose a different value.");
+			return "jsonEntityView";
+		}
+		
+		try {
+			scope = scopeService.save(scope);
+		} catch (RuntimeException e) {
+			logger.error("There was an error attempting to save scope: " + scope + " : " + e.getStackTrace().toString());
+			m.put("code", HttpStatus.BAD_REQUEST);
+			m.put("entity", "An error occurred while processing your request");
+			return "jsonEntityView";
+		}
 		
 		if (scope != null && scope.getId() != null) {
 
