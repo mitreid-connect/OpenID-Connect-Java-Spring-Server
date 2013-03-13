@@ -469,12 +469,89 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 		return getStoredSessionString(session, STATE_SESSION_VARIABLE);
 	}
 	
+	
+	
+	//
+	// Getters and setters for configuration variables
+	//
+	
+	
 	public int getTimeSkewAllowance() {
 		return timeSkewAllowance;
 	}
 
 	public void setTimeSkewAllowance(int timeSkewAllowance) {
 		this.timeSkewAllowance = timeSkewAllowance;
+	}
+
+	/**
+	 * @return the validationServices
+	 */
+	public JWKSetSigningAndValidationServiceCacheService getValidationServices() {
+		return validationServices;
+	}
+
+	/**
+	 * @param validationServices the validationServices to set
+	 */
+	public void setValidationServices(JWKSetSigningAndValidationServiceCacheService validationServices) {
+		this.validationServices = validationServices;
+	}
+
+	/**
+	 * @return the servers
+	 */
+	public ServerConfigurationService getServerConfigurationService() {
+		return servers;
+	}
+
+	/**
+	 * @param servers the servers to set
+	 */
+	public void setServerConfigurationService(ServerConfigurationService servers) {
+		this.servers = servers;
+	}
+
+	/**
+	 * @return the clients
+	 */
+	public ClientConfigurationService getClientConfigurationService() {
+		return clients;
+	}
+
+	/**
+	 * @param clients the clients to set
+	 */
+	public void setClientConfigurationService(ClientConfigurationService clients) {
+		this.clients = clients;
+	}
+
+	/**
+	 * @return the issuerService
+	 */
+	public IssuerService getIssuerService() {
+		return issuerService;
+	}
+
+	/**
+	 * @param issuerService the issuerService to set
+	 */
+	public void setIssuerService(IssuerService issuerService) {
+		this.issuerService = issuerService;
+	}
+
+	/**
+	 * @return the authRequestBuilder
+	 */
+	public AuthRequestUrlBuilder getAuthRequestUrlBuilder() {
+		return authRequestBuilder;
+	}
+
+	/**
+	 * @param authRequestBuilder the authRequestBuilder to set
+	 */
+	public void setAuthRequestUrlBuilder(AuthRequestUrlBuilder authRequestBuilder) {
+		this.authRequestBuilder = authRequestBuilder;
 	}	
 	
 }
