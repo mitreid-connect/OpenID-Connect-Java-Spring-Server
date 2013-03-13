@@ -150,6 +150,8 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 		HttpSession session = request.getSession();
 		
 		String issuer = issuerService.getIssuer(request);
+		session.setAttribute(ISSUER_SESSION_VARIABLE, issuer);
+		
 		ServerConfiguration serverConfig = servers.getServerConfiguration(issuer);
 		ClientDetails clientConfig = clients.getClientConfiguration(issuer);
 
@@ -199,26 +201,6 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 		ServerConfiguration serverConfig = servers.getServerConfiguration(issuer);
 		ClientDetails clientConfig = clients.getClientConfiguration(issuer);
 		
-		
-		// Handle Token Endpoint interaction
-		DefaultHttpClient httpClient = new DefaultHttpClient();
-
-		httpClient.getParams().setParameter("http.socket.timeout", new Integer(httpSocketTimeout));
-
-		
-		UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(clientConfig.getClientId(), clientConfig.getClientSecret());
-		httpClient.getCredentialsProvider().setCredentials(AuthScope.ANY, credentials);
-
-		/* Alternatively, use form-based auth:
-		 *
-		form.add("client_id", serverConfig.getClientId());
-		form.add("client_secret", serverConfig.getClientSecret());
-		 */
-
-		HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
-
-		RestTemplate restTemplate = new RestTemplate(factory);
-
 		MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
 		form.add("grant_type", "authorization_code");
 		form.add("code", authorizationCode);
@@ -227,6 +209,26 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 		if (redirectUri != null) {
 			form.add("redirect_uri", redirectUri);
 		}
+		
+		// Handle Token Endpoint interaction
+		DefaultHttpClient httpClient = new DefaultHttpClient();
+
+		httpClient.getParams().setParameter("http.socket.timeout", new Integer(httpSocketTimeout));
+
+		/* Use these for basic auth:
+		 * 
+		UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(clientConfig.getClientId(), clientConfig.getClientSecret());
+		httpClient.getCredentialsProvider().setCredentials(AuthScope.ANY, credentials);
+		 */
+		/* Alternatively, use form-based auth:
+		 */
+		form.add("client_id", clientConfig.getClientId());
+		form.add("client_secret", clientConfig.getClientSecret());
+		 /**/
+
+		HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
+
+		RestTemplate restTemplate = new RestTemplate(factory);
 
 		logger.debug("tokenEndpointURI = " + serverConfig.getTokenEndpointUri());
 		logger.debug("form = " + form);
