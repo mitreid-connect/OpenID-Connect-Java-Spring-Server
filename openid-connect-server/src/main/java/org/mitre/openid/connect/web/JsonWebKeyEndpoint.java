@@ -21,6 +21,7 @@ import java.util.Map;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -28,29 +29,21 @@ import org.springframework.web.servlet.ModelAndView;
 public class JsonWebKeyEndpoint {
 
 	@Autowired
-	JwtSigningAndValidationService jwtService;
+	private JwtSigningAndValidationService jwtService;
 	
 	@RequestMapping(value = "/jwk", produces = "application/json")
-	public ModelAndView getJwk() {
+	public String getJwk(Model m) {
 		
 		// map from key id to signer
 		Map<String, PublicKey> keys = jwtService.getAllPublicKeys();
 		
 		// TODO: check if keys are empty, return a 404 here or just an empty list?
 		
-		return new ModelAndView("jwkKeyList", "keys", keys);
+		m.addAttribute("keys", keys);
+		
+		return "jwkKeyList";
 	}
 	
-	@RequestMapping("/x509")
-	public ModelAndView getX509() {
-		// map from key id to signer
-		Map<String, PublicKey> keys = jwtService.getAllPublicKeys();
-		
-		// TODO: check if keys are empty, return a 404 here or just an empty list?
-		
-		return new ModelAndView("x509certs", "keys", keys);
-	}
-
 	/**
      * @return the jwtService
      */

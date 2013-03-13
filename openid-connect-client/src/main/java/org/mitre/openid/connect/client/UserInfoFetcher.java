@@ -26,7 +26,7 @@ public class UserInfoFetcher {
 		form.add("access_token", token.getAccessTokenValue());
 		form.add("schema", "openid");
 		
-		String userInfoString = restTemplate.postForObject(token.getServerConfiguration().getUserInfoUrl(), form, String.class);
+		String userInfoString = restTemplate.postForObject(token.getServerConfiguration().getUserInfoUri(), form, String.class);
 		
 		JsonObject userInfoJson = new JsonParser().parse(userInfoString).getAsJsonObject();
 		

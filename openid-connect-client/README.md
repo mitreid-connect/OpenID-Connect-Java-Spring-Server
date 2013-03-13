@@ -65,7 +65,7 @@ Additionally, it contains a set of convenience methods to pass through to parame
 Configure like so: 
 
 	<bean id="openIdConnectAuthenticationFilter"
-		class="org.mitre.openid.connect.client.OIDCAuthenticationFilter">
+		class="org.mitre.openid.connect.client.PlainOIDCAuthenticationFilter">
 		<property name="authenticationManager" ref="authenticationManager" />
 		<property name="errorRedirectURI" value="/login.jsp?authfail=openid" />
 		<property name="issuer" value="http://server.example.com:8080/openid-connect-server/" />

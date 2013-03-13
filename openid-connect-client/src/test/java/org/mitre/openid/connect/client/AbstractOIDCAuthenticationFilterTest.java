@@ -7,7 +7,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
- * Unit test for AbstractOIDCAuthenticationFilter
+ * Unit test for OIDCAuthenticationFilter
  * 
  * @author amanda
  *
@@ -17,7 +17,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class AbstractOIDCAuthenticationFilterTest {
 
 	//@Autowired
-	private AbstractOIDCAuthenticationFilter filter;
+	private OIDCAuthenticationFilter filter;
 	
 	//@Test
 	public void testUrlConstruction() {
@@ -27,14 +27,14 @@ public class AbstractOIDCAuthenticationFilterTest {
 	/**
 	 * @return the filter
 	 */
-	public AbstractOIDCAuthenticationFilter getFilter() {
+	public OIDCAuthenticationFilter getFilter() {
 		return filter;
 	}
 
 	/**
 	 * @param filter the filter to set
 	 */
-	public void setFilter(AbstractOIDCAuthenticationFilter filter) {
+	public void setFilter(OIDCAuthenticationFilter filter) {
 		this.filter = filter;
 	}
 	

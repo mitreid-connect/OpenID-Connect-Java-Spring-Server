@@ -18,7 +18,7 @@ package org.mitre.openid.connect.client;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.mitre.openid.connect.config.OIDCServerConfiguration;
+import org.mitre.openid.connect.config.ServerConfiguration;
 import org.mitre.openid.connect.model.UserInfo;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -41,7 +41,7 @@ public class OIDCAuthenticationToken extends AbstractAuthenticationToken {
 	private final String issuer; // issuer URL (parsed from the id token)
 	private final String userId; // user id (parsed from the id token)
 
-	private final transient OIDCServerConfiguration serverConfiguration; // server configuration used to fulfill this token, don't serialize it
+	private final transient ServerConfiguration serverConfiguration; // server configuration used to fulfill this token, don't serialize it
 	private final transient UserInfo userInfo; // user info container, don't serialize it b/c it might be huge and can be re-fetched
 	
 	/**
@@ -84,7 +84,7 @@ public class OIDCAuthenticationToken extends AbstractAuthenticationToken {
 	 * @param idToken
 	 */
 	public OIDCAuthenticationToken(String userId, String issuer, 
-			OIDCServerConfiguration serverConfiguration, 
+			ServerConfiguration serverConfiguration, 
 			String idTokenValue, String accessTokenValue, String refreshTokenValue) {
 
 		super(new ArrayList<GrantedAuthority>(0));
@@ -153,7 +153,7 @@ public class OIDCAuthenticationToken extends AbstractAuthenticationToken {
 	/**
      * @return the serverConfiguration
      */
-    public OIDCServerConfiguration getServerConfiguration() {
+    public ServerConfiguration getServerConfiguration() {
     	return serverConfiguration;
     }
 
