@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.google.gson.Gson;
 
@@ -104,6 +105,23 @@ public class ScopeAPI {
 	}
 	
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@RequestMapping(value="/checkScopeValue", method = RequestMethod.GET)
+	public String checkScopeValue(@RequestParam String value, ModelMap m) {
+		
+		SystemScope alreadyExists = scopeService.getByValue(value);
+		if (alreadyExists != null) {
+			m.put("code", HttpStatus.CONFLICT);
+			m.put("entity", "A scope with value " + value + " already exists, please choose a different value.");
+		}
+		else {
+			m.put("code", HttpStatus.ACCEPTED);
+			m.put("entity", "OK");
+		}
+		
+		return "jsonEntityView";
+	}
+	
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	public String createScope(@RequestBody String json, ModelMap m) {
 		SystemScope scope = gson.fromJson(json, SystemScope.class);
@@ -113,7 +131,7 @@ public class ScopeAPI {
 			//Error, cannot save a scope with the same value as an existing one
 			logger.error("Error: attempting to save a scope with a value that already exists: " + scope.getValue());
 			m.put("code", HttpStatus.CONFLICT);
-			m.put("entity", "A scope with value " + scope.getValue() + "already exists, please choose a different value.");
+			m.put("entity", "A scope with value " + scope.getValue() + " already exists, please choose a different value.");
 			return "jsonEntityView";
 		}
 		
