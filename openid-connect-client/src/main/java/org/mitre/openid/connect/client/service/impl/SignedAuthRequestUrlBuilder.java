@@ -73,4 +73,18 @@ public class SignedAuthRequestUrlBuilder implements AuthRequestUrlBuilder {
         }
 	}
 
+	/**
+	 * @return the signingAndValidationService
+	 */
+	public JwtSigningAndValidationService getSigningAndValidationService() {
+		return signingAndValidationService;
+	}
+
+	/**
+	 * @param signingAndValidationService the signingAndValidationService to set
+	 */
+	public void setSigningAndValidationService(JwtSigningAndValidationService signingAndValidationService) {
+		this.signingAndValidationService = signingAndValidationService;
+	}
+
 }
