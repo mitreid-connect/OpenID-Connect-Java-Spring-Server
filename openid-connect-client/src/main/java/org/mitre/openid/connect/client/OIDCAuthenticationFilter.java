@@ -34,6 +34,7 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.jwt.signer.service.impl.JWKSetSigningAndValidationServiceCacheService;
+import org.mitre.openid.connect.client.model.IssuerServiceResponse;
 import org.mitre.openid.connect.client.service.AuthRequestUrlBuilder;
 import org.mitre.openid.connect.client.service.ClientConfigurationService;
 import org.mitre.openid.connect.client.service.IssuerService;
@@ -149,27 +150,34 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 
 		HttpSession session = request.getSession();
 		
-		String issuer = issuerService.getIssuer(request);
-		session.setAttribute(ISSUER_SESSION_VARIABLE, issuer);
+		IssuerServiceResponse issResp = issuerService.getIssuer(request);
 		
-		ServerConfiguration serverConfig = servers.getServerConfiguration(issuer);
-		ClientDetails clientConfig = clients.getClientConfiguration(issuer);
-
-		// our redirect URI is this current URL, with no query parameters
-		String redirectUri = request.getRequestURL().toString();
-		session.setAttribute(REDIRECT_URI_SESION_VARIABLE, redirectUri);
-
-		// this value comes back in the id token and is checked there
-		String nonce = createNonce(session);
-
-		// this value comes back in the auth code response
-		String state = createState(session);
+		if (issResp.shouldRedirect()) {
+			response.sendRedirect(issResp.getRedirectUrl());
+		} else {
+			String issuer = issResp.getIssuer();
 		
-		String authRequest = authRequestBuilder.buildAuthRequestUrl(serverConfig, clientConfig, redirectUri, nonce, state);
-
-		logger.debug("Auth Request:  " + authRequest);
-
-		response.sendRedirect(authRequest);
+			session.setAttribute(ISSUER_SESSION_VARIABLE, issuer);
+			
+			ServerConfiguration serverConfig = servers.getServerConfiguration(issuer);
+			ClientDetails clientConfig = clients.getClientConfiguration(issuer);
+	
+			// our redirect URI is this current URL, with no query parameters
+			String redirectUri = request.getRequestURL().toString();
+			session.setAttribute(REDIRECT_URI_SESION_VARIABLE, redirectUri);
+	
+			// this value comes back in the id token and is checked there
+			String nonce = createNonce(session);
+	
+			// this value comes back in the auth code response
+			String state = createState(session);
+			
+			String authRequest = authRequestBuilder.buildAuthRequestUrl(serverConfig, clientConfig, redirectUri, nonce, state);
+	
+			logger.debug("Auth Request:  " + authRequest);
+	
+			response.sendRedirect(authRequest);
+		}
 	}
 
 	/**

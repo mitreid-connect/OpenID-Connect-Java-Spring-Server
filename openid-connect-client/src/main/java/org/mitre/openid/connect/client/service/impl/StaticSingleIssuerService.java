@@ -5,6 +5,7 @@ package org.mitre.openid.connect.client.service.impl;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.mitre.openid.connect.client.model.IssuerServiceResponse;
 import org.mitre.openid.connect.client.service.IssuerService;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -38,8 +39,8 @@ public class StaticSingleIssuerService implements IssuerService, InitializingBea
 	 * @see org.mitre.openid.connect.client.service.IssuerService#getIssuer(javax.servlet.http.HttpServletRequest)
 	 */
 	@Override
-	public String getIssuer(HttpServletRequest request) {
-		return getIssuer();
+	public IssuerServiceResponse getIssuer(HttpServletRequest request) {
+		return new IssuerServiceResponse(getIssuer(), null, null);
 	}
 
 	/* (non-Javadoc)

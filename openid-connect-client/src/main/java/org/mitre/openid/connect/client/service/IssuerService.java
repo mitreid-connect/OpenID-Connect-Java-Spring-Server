@@ -5,6 +5,8 @@ package org.mitre.openid.connect.client.service;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.mitre.openid.connect.client.model.IssuerServiceResponse;
+
 /**
  * 
  * Gets an issuer for the given request. Might do dynamic discovery, or might be statically configured.
@@ -14,6 +16,6 @@ import javax.servlet.http.HttpServletRequest;
  */
 public interface IssuerService {
 
-	public String getIssuer(HttpServletRequest request);
+	public IssuerServiceResponse getIssuer(HttpServletRequest request);
 	
 }
