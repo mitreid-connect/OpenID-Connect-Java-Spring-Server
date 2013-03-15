@@ -105,23 +105,6 @@ public class ScopeAPI {
 	}
 	
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	@RequestMapping(value="/checkScopeValue", method = RequestMethod.GET)
-	public String checkScopeValue(@RequestParam String value, ModelMap m) {
-		
-		SystemScope alreadyExists = scopeService.getByValue(value);
-		if (alreadyExists != null) {
-			m.put("code", HttpStatus.CONFLICT);
-			m.put("entity", "A scope with value " + value + " already exists, please choose a different value.");
-		}
-		else {
-			m.put("code", HttpStatus.ACCEPTED);
-			m.put("entity", "OK");
-		}
-		
-		return "jsonEntityView";
-	}
-	
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	public String createScope(@RequestBody String json, ModelMap m) {
 		SystemScope scope = gson.fromJson(json, SystemScope.class);

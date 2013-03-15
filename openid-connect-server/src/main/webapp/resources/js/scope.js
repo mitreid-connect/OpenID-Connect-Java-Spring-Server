@@ -207,20 +207,6 @@ var SystemScopeFormView = Backbone.View.extend({
 			return false;
 		}
 		
-		var valuedata = {};
-		valuedata.value = value;
-		var alreadyExists = false;
-		
-		$.get(this.model.urlRoot + "/checkScopeValue", valuedata)
-			.success(function() {
-				console.log("scope value is OK");
-			})
-			.error(function(error, response) {
-				$('#value input').addClass('error');
-				//add hint
-				alreadyExists = true;
-			});
-		
 		var valid = this.model.set({
 			value:value,
 			description:$('#description textarea').val(),
@@ -229,7 +215,7 @@ var SystemScopeFormView = Backbone.View.extend({
 			allowDynReg:$('#allowDynReg input').is(':checked')
 		});
 		
-		if (valid && !alreadyExists) {
+		if (valid) {
 			
 			var _self = this;
 			this.model.save({}, {
@@ -240,8 +226,14 @@ var SystemScopeFormView = Backbone.View.extend({
 				error:function(error, response) {
 	    			if (response.status == 409) {
 	    				//Conflict, scope already exists
-	    				$('#value input').css('border', '1px solid red');
-	    				//add hint to choose a different value
+	    				$('#value input').addClass('error');
+	    				alert("A scope with this value already exists; please enter a different value");
+	    				
+	    				$('#value input').bind('click.error', function() {
+	    					$('#value input').removeClass('error');
+	    					$('#value input').unbind('click.error');
+	    				});
+	    				
 	    			}
 	    		}
 			});
