@@ -81,6 +81,7 @@ public class JwkKeyListView extends AbstractView {
 				BigInteger mod = rsa.getModulus();
 				BigInteger exp = rsa.getPublicExponent();
 
+				// FIXME: this assumes RS256
 				RSAKey rsaKey = new RSAKey(Base64URL.encode(mod.toByteArray()), Base64URL.encode(exp.toByteArray()), Use.SIGNATURE, JWSAlgorithm.RS256, keyId);
 
 				jwks.add(rsaKey);
