@@ -9,7 +9,6 @@ import java.util.UUID;
 
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.openid.connect.view.JwkKeyListView;
-import org.mitre.openid.connect.view.X509CertificateView;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -29,8 +28,6 @@ public class ClientKeyPublisher implements BeanDefinitionRegistryPostProcessor {
 
 	private String jwkPublishUrl;
 
-	private String x509PublishUrl;
-
 	private BeanDefinitionRegistry registry;
 
 	private String jwkViewName = "jwkKeyList";
@@ -43,7 +40,7 @@ public class ClientKeyPublisher implements BeanDefinitionRegistryPostProcessor {
      */
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-		if (!Strings.isNullOrEmpty(getJwkPublishUrl()) || !Strings.isNullOrEmpty(getX509PublishUrl())) {
+		if (!Strings.isNullOrEmpty(getJwkPublishUrl())) {
 
 			// add a mapping to this class
 			BeanDefinitionBuilder clientKeyMapping = BeanDefinitionBuilder.rootBeanDefinition(ClientKeyPublisherMapping.class);
@@ -61,19 +58,6 @@ public class ClientKeyPublisher implements BeanDefinitionRegistryPostProcessor {
 				BeanDefinitionBuilder jwkView = BeanDefinitionBuilder.rootBeanDefinition(JwkKeyListView.class);
 				registry.registerBeanDefinition("jwkKeyList", jwkView.getBeanDefinition());
 				viewResolver.addPropertyReference("jwk", "jwkKeyList");
-			}
-			
-			if (!Strings.isNullOrEmpty(getX509PublishUrl())) {
-				clientKeyMapping.addPropertyValue("x509PublishUrl", getX509PublishUrl());
-				
-				// randomize view name to make sure it doesn't conflict with local views
-				x509ViewName = "x509certs-" + UUID.randomUUID().toString();
-				viewResolver.addPropertyValue("x509ViewName", x509ViewName);
-
-				// view bean
-				BeanDefinitionBuilder x509View = BeanDefinitionBuilder.rootBeanDefinition(X509CertificateView.class);
-				registry.registerBeanDefinition("x509certs", x509View.getBeanDefinition());
-				viewResolver.addPropertyReference("x509", "x509certs");
 			}
 			
 			registry.registerBeanDefinition("clientKeyMapping", clientKeyMapping.getBeanDefinition());
@@ -130,20 +114,6 @@ public class ClientKeyPublisher implements BeanDefinitionRegistryPostProcessor {
      */
     public void setJwkPublishUrl(String jwkPublishUrl) {
     	this.jwkPublishUrl = jwkPublishUrl;
-    }
-
-    /**
-     * @return the x509PublishUrl
-     */
-    public String getX509PublishUrl() {
-	    return x509PublishUrl;
-    }
-
-	/**
-     * @param x509PublishUrl the x509PublishUrl to set
-     */
-    public void setX509PublishUrl(String x509PublishUrl) {
-	    this.x509PublishUrl = x509PublishUrl;
     }
 
 	/**
