@@ -62,6 +62,10 @@
         margin: 20px 0;
       }
 	
+	  .inputError {
+	  	border: 1px solid red !important;
+	  }
+	
 	  a.brand {
 	  	background: url('${config.logoImageUrl}') no-repeat scroll 7px 7px transparent;
 	  }

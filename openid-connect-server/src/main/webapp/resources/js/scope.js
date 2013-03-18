@@ -226,12 +226,12 @@ var SystemScopeFormView = Backbone.View.extend({
 				error:function(error, response) {
 	    			if (response.status == 409) {
 	    				//Conflict, scope already exists
-	    				$('#value input').addClass('error');
-	    				alert("A scope with this value already exists; please enter a different value");
+	    				$('#value.control-group input').addClass('inputError');
+	    				$('#value.control-group').before('<div class="alert alert-error"><button type="button" class="close" data-dismiss="alert">&times;</button>A scope with this value already exists, please choose a different value.</div>');
 	    				
-	    				$('#value input').bind('click.error', function() {
-	    					$('#value input').removeClass('error');
-	    					$('#value input').unbind('click.error');
+	    				$('#value.control-group').bind('click.error', function() {
+	    					$('#value.control-group input').removeClass('inputError');
+	    					$('#value.control-group').unbind('click.error');
 	    				});
 	    				
 	    			}
