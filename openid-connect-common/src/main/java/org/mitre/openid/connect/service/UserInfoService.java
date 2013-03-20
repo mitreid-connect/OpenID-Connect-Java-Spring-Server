@@ -34,13 +34,14 @@ public interface UserInfoService {
 	public void save(UserInfo userInfo);
 
 	/**
-	 * Get UserInfo for user id
+	 * Get UserInfo for the Subject
 	 * 
-	 * @param userId
-	 *            user id for UserInfo
-	 * @return UserInfo for user id, or null
+	 * @param sub
+	 *            subject for UserInfo
+	 * @return UserInfo for sub, or null
 	 */
-	public UserInfo getByUserId(String userId);
+	public UserInfo getBySubject(String userId);
+	
 	/**
 	 * Remove the UserInfo
 	 * 
@@ -49,11 +50,11 @@ public interface UserInfoService {
 	 */
 	public void remove(UserInfo userInfo);
 
+
 	/**
-	 * Remove the UserInfo
-	 * 
-	 * @param userId
-	 *            user id for UserInfo to remove
+	 * Get the UserInfo for the given preferredUsername field
+	 * @param username
+	 * @return
 	 */
-	public void removeByUserId(String userId);
+	public UserInfo getByUsername(String username);
 }

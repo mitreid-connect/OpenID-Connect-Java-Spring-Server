@@ -33,10 +33,12 @@ import com.google.gson.JsonObject;
 @Table(name="user_info")
 @NamedQueries({
 	@NamedQuery(name="DefaultUserInfo.getAll", query = "select u from DefaultUserInfo u"),
-	@NamedQuery(name="DefaultUserInfo.getByUsername", query = "select u from DefaultUserInfo u WHERE u.preferredUsername = :username")	
+	@NamedQuery(name="DefaultUserInfo.getByUsername", query = "select u from DefaultUserInfo u WHERE u.preferredUsername = :username"),	
+	@NamedQuery(name="DefaultUserInfo.getBySubject", query = "select u from DefaultUserInfo u WHERE u.sub = :sub")	
 })
 public class DefaultUserInfo implements UserInfo {
 	
+	private Long id;
 	private String sub;	
 	private String preferredUsername;
 	private String name;	
@@ -58,12 +60,25 @@ public class DefaultUserInfo implements UserInfo {
 	private String birthdate;
 	
 	
+	/**
+	 * @return the id
+	 */
+	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	public Long getId() {
+		return id;
+	}
+	/**
+	 * @param id the id to set
+	 */
+	public void setId(Long id) {
+		this.id = id;
+	}
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.model.UserInfo#getUserId()
 	 */
 	@Override
-	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@Basic
 	@Column(name="sub")
 	public String getSub() {
 		return sub;

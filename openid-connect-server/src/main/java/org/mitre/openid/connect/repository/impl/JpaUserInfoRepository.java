@@ -44,8 +44,11 @@ public class JpaUserInfoRepository implements UserInfoRepository {
 	
 	@Override
     @Transactional	
-	public UserInfo getByUserId(String userId) {
-		return manager.find(DefaultUserInfo.class, userId);
+	public UserInfo getBySubject(String sub) {
+		TypedQuery<DefaultUserInfo> query = manager.createNamedQuery("DefaultUserInfo.getBySubject", DefaultUserInfo.class);
+		query.setParameter("sub", sub);
+		
+		return getSingleResult(query.getResultList());
 	}	
 	
 	@Override
@@ -67,18 +70,6 @@ public class JpaUserInfoRepository implements UserInfoRepository {
 		}		
 	}
 
-	@Override
-	@Transactional		
-	public void removeByUserId(String userId) {
-		UserInfo found = manager.find(DefaultUserInfo.class, userId);
-		
-		if (found != null) {
-			manager.remove(found);
-		} else {
-			throw new IllegalArgumentException();
-		}			
-	}
-	
 	@Override
 	@Transactional	
 	public Collection<DefaultUserInfo> getAll() {

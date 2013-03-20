@@ -57,8 +57,8 @@ public class DefaultUserInfoService implements UserInfoService {
 	}
 
 	@Override
-	public UserInfo getByUserId(String userId) {
-		return userInfoRepository.getByUserId(userId);
+	public UserInfo getBySubject(String userId) {
+		return userInfoRepository.getBySubject(userId);
 	}
 
 	@Override
@@ -67,10 +67,10 @@ public class DefaultUserInfoService implements UserInfoService {
 	}
 
 	@Override
-	public void removeByUserId(String userId) {
-		userInfoRepository.removeByUserId(userId);
+	public UserInfo getByUsername(String username) {
+		return userInfoRepository.getByUsername(username);
 	}
-
+	
 	/**
      * @return the userInfoRepository
      */

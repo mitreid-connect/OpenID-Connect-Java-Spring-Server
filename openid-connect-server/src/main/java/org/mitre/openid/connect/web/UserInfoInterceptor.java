@@ -36,7 +36,7 @@ public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 	    	if (p != null && p.getName() != null) { // don't bother checking if we don't have a principal
 	    	
 		    	// try to look up a user based on it
-		    	UserInfo user = userInfoService.getByUserId(p.getName());
+		    	UserInfo user = userInfoService.getBySubject(p.getName());
 		    	
 		    	// if we have one, inject it so views can use it
 		    	if (user != null) {

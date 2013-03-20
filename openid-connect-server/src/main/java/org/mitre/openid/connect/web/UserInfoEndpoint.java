@@ -87,7 +87,7 @@ public class UserInfoEndpoint {
 		}
 
 		String userId = p.getName(); 
-		UserInfo userInfo = userInfoService.getByUserId(userId);
+		UserInfo userInfo = userInfoService.getBySubject(userId);
 		
 		if (userInfo == null) {
 			logger.error("getInfo failed; user not found: " + userId); 
