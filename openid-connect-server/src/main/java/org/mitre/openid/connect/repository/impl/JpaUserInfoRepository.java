@@ -54,14 +54,15 @@ public class JpaUserInfoRepository implements UserInfoRepository {
 	@Override
 	@Transactional	
 	public UserInfo save(UserInfo userInfo) {
-		return saveOrUpdate(userInfo.getSub(), manager, userInfo);
+		DefaultUserInfo dui = (DefaultUserInfo)userInfo;
+		return saveOrUpdate(dui.getId(), manager, dui);
 	}
 
 	@Override
 	@Transactional	
 	public void remove(UserInfo userInfo) {
-		
-		UserInfo found = manager.find(DefaultUserInfo.class, userInfo.getSub());
+		DefaultUserInfo dui = (DefaultUserInfo)userInfo;
+		UserInfo found = manager.find(DefaultUserInfo.class, dui.getId());
 		
 		if (found != null) {
 			manager.remove(userInfo);
