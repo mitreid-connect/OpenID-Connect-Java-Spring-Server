@@ -39,7 +39,6 @@ public class JwtAssertionTokenGranter extends AbstractTokenGranter {
 
 	// keep down-cast versions so we can get to the right queries
 	private OAuth2TokenEntityService tokenServices;
-	private ClientDetailsEntityService clientDetailsService;
 	
 	@Autowired
 	private JwtSigningAndValidationService jwtService;
@@ -51,7 +50,6 @@ public class JwtAssertionTokenGranter extends AbstractTokenGranter {
 	public JwtAssertionTokenGranter(OAuth2TokenEntityService tokenServices, ClientDetailsEntityService clientDetailsService) {
 	    super(tokenServices, clientDetailsService, grantType);
 	    this.tokenServices = tokenServices;
-	    this.clientDetailsService = clientDetailsService;
     }
 
 	/* (non-Javadoc)

@@ -33,7 +33,6 @@ public class ChainedTokenGranter extends AbstractTokenGranter {
 
 	// keep down-cast versions so we can get to the right queries
 	private OAuth2TokenEntityService tokenServices;
-	private ClientDetailsEntityService clientDetailsService;
 	
 	/**
 	 * @param tokenServices
@@ -43,10 +42,7 @@ public class ChainedTokenGranter extends AbstractTokenGranter {
 	@Autowired
 	public ChainedTokenGranter(OAuth2TokenEntityService tokenServices, ClientDetailsEntityService clientDetailsService) {
 		super(tokenServices, clientDetailsService, grantType);
-		
 		this.tokenServices = tokenServices;
-		this.clientDetailsService = clientDetailsService;
-		
 	}
 
 	/* (non-Javadoc)
