@@ -17,23 +17,62 @@ var ClientModel = Backbone.Model.extend({
     // We can pass it default values.
     defaults:{
         id:null,
-        idTokenValiditySeconds: 600,
-        clientName:null,
+        
+        clientId:"",
         clientSecret:"",
         redirectUris:[],
-        grantTypes:["authorization_code"],
-        scope:[],
-        authorities:[],
-        clientDescription:"",
+        clientName:null,
+        clientUri:"",
         logoUri:"",
-        clientId:"",
-        allowRefresh:false,
+        contacts:[],
+        tosUri:"",
+        tokenEndpointAuthMethod:null,
+        scope:[],
+        grantTypes:["authorization_code"],
+        responseTypes:[],
+        policyUri:"",
+        jwksUri:"",
+        
+        applicationType:null,
+        sectorIdentifierUri:"",
+        subjectType:null,
+        
+        requestObjectSigningAlg:null,
+        
+        userInfoSignedResponseAlg:null,
+        userInfoEncryptedResponseAlg:null,
+        userInfoEncryptedResponseEnc:null,
+        
+        idTokenSignedResponseAlg:null,
+        idTokenEncryptedResponseAlg:null,
+        idTokenEncryptedResponseEnc:null,
+        
+        defaultMaxAge:60000,
+        requireAuthTime:false,
+        defaultACRvalues:null,
+        
+        initiateLoginUri:"",
+        postLogoutRedirectUri:"",
+        
+        requestUris:[],
+        
+        authorities:[],
         accessTokenValiditySeconds: 3600,
         refreshTokenValiditySeconds: 604800,
+        resourceIds:[],
+        //additionalInformation?
+        
+        clientDescription:"",
+        reuseRefreshToken:true,
+        dynamicallyRegistered:false,
+        allowIntrospection:false,
+        idTokenValiditySeconds: 600,
+        createdAt:null,     
+
+        allowRefresh:false,
         displayClientSecret: false,
         generateClientSecret: false,
         requireClientSecret: true,
-        allowIntrospection: false
     },
 
     urlRoot:"api/clients"
