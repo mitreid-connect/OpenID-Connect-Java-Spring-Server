@@ -76,13 +76,25 @@ var SystemScopeView = Backbone.View.extend({
 
             this.model.destroy({
                 success:function () {
+                	
                     self.$el.fadeTo("fast", 0.00, function () { //fade
                         $(this).slideUp("fast", function () { //slide up
                             $(this).remove(); //then remove from the DOM
                             app.systemScopeListView.togglePlaceholder();
                         });
                     });
-                }
+                },
+            	error:function () {
+            		
+            		//Display an alert with an error message
+            		$('#modalAlert div.modal-body').html("<div class='alert alert-error'><strong>Warning!</strong> An error occurred when processing your request. Please refresh the page and try again.</div>");
+            		
+        			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
+        				 "backdrop" : "static",
+        				 "keyboard" : true,
+        				 "show" : true // ensure the modal is shown immediately
+        			 });
+            	}
             });
 
             app.systemScopeListView.delegateEvents();
@@ -234,6 +246,11 @@ var SystemScopeFormView = Backbone.View.extend({
 	    					$('#value.control-group').unbind('click.error');
 	    				});
 	    				
+	    			}
+	    			else {
+	    				//TODO: if there are any other known error cases, catch those by response status and display 
+	    				//appropriate messages.
+	    				$('#value.control-group').before('<div class="alert alert-error"><button type="button" class="close" data-dismiss="alert">&times;</button>A system error occurred when processing your request.</div>');
 	    			}
 	    		}
 			});

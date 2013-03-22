@@ -63,7 +63,7 @@
       }
 	
 	  .inputError {
-	  	border: 1px solid red !important;
+	  	border: 1px solid #b94a48 !important;
 	  }
 	
 	  a.brand {
@@ -107,4 +107,10 @@
 </head>
 
 <body>
+
+<div id="modalAlert" class="modal hide fade">
+	<div class="modal-body"></div>
+	<div class="modal-footer"><button class="btn primary" type="button" onclick="$('#modalAlert').modal('hide');">OK</button></div>
+</div>
+
 <div id="wrap">
