@@ -1,17 +1,13 @@
 package org.mitre.openid.connect;
 
 import java.text.ParseException;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 import net.minidev.json.JSONObject;
 
-import org.joda.time.DateTime;
-import org.joda.time.Period;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.jwt.signer.service.impl.JWKSetSigningAndValidationServiceCacheService;
 import org.mitre.oauth2.exception.NonceReuseException;
@@ -21,11 +17,10 @@ import org.mitre.openid.connect.model.Nonce;
 import org.mitre.openid.connect.service.NonceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationServiceException;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.security.oauth2.common.exceptions.InvalidScopeException;
 import org.springframework.security.oauth2.common.util.OAuth2Utils;
@@ -40,7 +35,7 @@ import com.nimbusds.jose.util.JSONObjectUtils;
 import com.nimbusds.jwt.SignedJWT;
 
 @Component("authorizationRequestManager")
-public class ConnectAuthorizationRequestManager implements AuthorizationRequestManager, InitializingBean {
+public class ConnectAuthorizationRequestManager implements AuthorizationRequestManager {
 
 	private static Logger logger = LoggerFactory.getLogger(ConnectAuthorizationRequestManager.class);
 	
@@ -52,8 +47,6 @@ public class ConnectAuthorizationRequestManager implements AuthorizationRequestM
 
 	@Autowired
 	private JWKSetSigningAndValidationServiceCacheService validators;
-	
-	private Period nonceStorageDuration;
 
 	/**
 	 * Constructor with arguments
@@ -71,15 +64,6 @@ public class ConnectAuthorizationRequestManager implements AuthorizationRequestM
 	 */
 	public ConnectAuthorizationRequestManager() {
 		
-	}
-	
-	/**
-	 * Make sure that the nonce storage duration was set
-	 */
-	public void afterPropertiesSet() throws Exception {
-		if (nonceStorageDuration == null) {
-			logger.error("Nonce storage duration must be set!");
-		}
 	}
 
 	@Override
@@ -100,28 +84,15 @@ public class ConnectAuthorizationRequestManager implements AuthorizationRequestM
 		//to the auth endpoint.
 		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		
-		if (requestNonce != null && principal != null && principal instanceof Authentication) {
+		if (requestNonce != null && principal != null && principal instanceof User) {
 
-			//Check request nonce for reuse
-			Collection<Nonce> clientNonces = nonceService.getByClientId(client.getClientId());
-			for (Nonce nonce : clientNonces) {
-				String nonceVal = nonce.getValue();
-				if (nonceVal.equals(requestNonce)) {
-					throw new NonceReuseException(client.getClientId(), nonce);
-				}
+			if (!nonceService.alreadyUsed(clientId, requestNonce)) {
+				Nonce nonce = nonceService.create(clientId, requestNonce);
+				nonceService.save(nonce);
 			}
-			
-			//Store nonce
-			Nonce nonce = new Nonce();
-			nonce.setClientId(client.getClientId());
-			nonce.setValue(requestNonce);
-			DateTime now = new DateTime(new Date());
-			nonce.setUseDate(now.toDate());
-			DateTime expDate = now.plus(nonceStorageDuration);
-			Date expirationJdkDate = expDate.toDate();
-			nonce.setExpireDate(expirationJdkDate);
-			
-			nonceService.save(nonce);
+			else {
+				throw new NonceReuseException(client.getClientId(), requestNonce);
+			}
 	
 		}
 		
@@ -263,20 +234,5 @@ public class ConnectAuthorizationRequestManager implements AuthorizationRequestM
 			}
 		}
 	}
-	
-	/**
-	 * @return the nonceStorageDuration
-	 */
-	public Period getNonceStorageDuration() {
-		return nonceStorageDuration;
-	}
-
-	/**
-	 * @param nonceStorageDuration the nonceStorageDuration to set
-	 */
-	public void setNonceStorageDuration(Period nonceStorageDuration) {
-		this.nonceStorageDuration = nonceStorageDuration;
-	}
-	
 
 }

@@ -14,7 +14,25 @@ import org.mitre.openid.connect.model.Nonce;
  */
 public interface NonceService {
 
-
+	/**
+	 * Create a new nonce. 
+	 *  
+	 * @param clientId the ID of the client
+	 * @param value the value of the Nonce
+	 * @return the saved Nonce
+	 */
+	public Nonce create(String clientId, String value);
+	
+	/**
+	 * Check whether a given nonce value has been previously used and stored
+	 * by the client. 
+	 * 
+	 * @param clientId the ID of the client
+	 * @param value the value of the nonce
+	 * @return true if the nonce has already been used, false otherwise
+	 */
+	public boolean alreadyUsed(String clientId, String value);	
+	
 	/**
 	 * Return the nonce with the given ID
 	 * 

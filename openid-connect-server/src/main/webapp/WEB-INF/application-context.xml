@@ -145,9 +145,7 @@
 		<constructor-arg type="int" index="3" value="0"/>
 	</bean>
 	
-	<bean id="authorizationRequestManager" class="org.mitre.openid.connect.ConnectAuthorizationRequestManager">
-		<property name="nonceStorageDuration" ref="nonceStorageDurationPeriod" />
-	</bean>
+	<bean id="authorizationRequestManager" class="org.mitre.openid.connect.ConnectAuthorizationRequestManager" />
 	
 	<bean id="clientAssertiontokenEndpointFilter" class="org.mitre.openid.connect.assertion.JwtBearerClientAssertionTokenEndpointFilter">
 		<property name="authenticationManager" ref="clientAssertionAuthenticationManager" />
