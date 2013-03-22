@@ -8,8 +8,7 @@ public class NonceReuseException extends OAuth2Exception {
 	private static final long serialVersionUID = 1L;
 
 	public NonceReuseException(String clientId, Nonce alreadyUsed) {
-		super("Client " + clientId + " attempted to use nonce " + alreadyUsed.getValue() + " which was used previously at "
-				+ alreadyUsed.getUseDate().toString() + " and expires at " + alreadyUsed.getExpireDate());
+		super("Client " + clientId + " attempted to use reuse nonce " + alreadyUsed.getValue());
 	}
 
 }
