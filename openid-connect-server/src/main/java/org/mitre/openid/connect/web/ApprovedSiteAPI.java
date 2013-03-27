@@ -59,10 +59,14 @@ public class ApprovedSiteAPI {
 		if (approvedSite == null) {
 			logger.error("deleteApprovedSite failed; no approved site found for id: " + id);
 			m.put("code", HttpStatus.NOT_FOUND);
+			m.put("entity", "An error occurred while processing your request - no approved site found for id: " + id);
+			return "jsonEntityView";
 		} else if (!approvedSite.getUserId().equals(p.getName())) {
 			logger.error("deleteApprovedSite failed; principal " 
 					+ p.getName() + " does not own approved site" + id);
 			m.put("code", HttpStatus.FORBIDDEN);
+			m.put("entity", "An error occurred while processing your request - you do not have permission to delete this approved site");
+			return "jsonEntityView";
 		} else {
 			m.put("code", HttpStatus.OK);
 			approvedSiteService.remove(approvedSite);

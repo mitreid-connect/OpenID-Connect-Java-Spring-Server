@@ -129,7 +129,22 @@ var ApprovedSiteView = Backbone.View.extend({
                             app.approvedSiteListView.togglePlaceholder();
                         });
                     });
-                }
+                },
+                error:function (error, response) {
+            		
+					//Pull out the response text.
+					var responseText = JSON.parse(response.responseText);
+            		
+            		//Display an alert with an error message
+            		$('#modalAlert div.modal-body').html("<div class='alert alert-error'><strong>Warning!</strong>" + responseText + "</div>");
+            		
+        			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
+        				 "backdrop" : "static",
+        				 "keyboard" : true,
+        				 "show" : true // ensure the modal is shown immediately
+        			 });
+            	}
+            
             });
             
             app.approvedSiteListView.delegateEvents();
