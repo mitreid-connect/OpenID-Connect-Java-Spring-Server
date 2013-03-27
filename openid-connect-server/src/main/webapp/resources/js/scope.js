@@ -84,10 +84,13 @@ var SystemScopeView = Backbone.View.extend({
                         });
                     });
                 },
-            	error:function () {
+            	error:function (error, response) {
+            		
+					//Pull out the response text.
+					var responseText = JSON.parse(response.responseText);
             		
             		//Display an alert with an error message
-            		$('#modalAlert div.modal-body').html("<div class='alert alert-error'><strong>Warning!</strong> An error occurred when processing your request. Please refresh the page and try again.</div>");
+            		$('#modalAlert div.modal-body').html("<div class='alert alert-error'><strong>Warning!</strong>" + responseText + "</div>");
             		
         			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
         				 "backdrop" : "static",
@@ -236,10 +239,14 @@ var SystemScopeFormView = Backbone.View.extend({
 					app.navigate('admin/scope', {trigger: true});
 				},
 				error:function(error, response) {
-	    			if (response.status == 409) {
+					
+					//Pull out the response text.
+					var responseText = JSON.parse(response.responseText);
+	    			
+					if (response.status == 409) {
 	    				//Conflict, scope already exists
 	    				$('#value.control-group input').addClass('inputError');
-	    				$('#value.control-group').before('<div class="alert alert-error"><button type="button" class="close" data-dismiss="alert">&times;</button>A scope with this value already exists, please choose a different value.</div>');
+	    				$('#value.control-group').before('<div class="alert alert-error"><button type="button" class="close" data-dismiss="alert">&times;</button>' + responseText + '</div>');
 	    				
 	    				$('#value.control-group').bind('click.error', function() {
 	    					$('#value.control-group input').removeClass('inputError');
@@ -248,9 +255,14 @@ var SystemScopeFormView = Backbone.View.extend({
 	    				
 	    			}
 	    			else {
-	    				//TODO: if there are any other known error cases, catch those by response status and display 
-	    				//appropriate messages.
-	    				$('#value.control-group').before('<div class="alert alert-error"><button type="button" class="close" data-dismiss="alert">&times;</button>A system error occurred when processing your request.</div>');
+	    				//Display an alert with an error message
+	            		$('#modalAlert div.modal-body').html("<div class='alert alert-error'><strong>Warning!</strong>" + responseText + "</div>");
+	            		
+	        			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
+	        				 "backdrop" : "static",
+	        				 "keyboard" : true,
+	        				 "show" : true // ensure the modal is shown immediately
+	        			 });
 	    			}
 	    		}
 			});

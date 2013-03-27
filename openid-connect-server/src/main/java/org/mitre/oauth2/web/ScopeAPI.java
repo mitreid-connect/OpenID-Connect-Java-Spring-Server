@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.google.gson.Gson;
 
@@ -123,7 +122,7 @@ public class ScopeAPI {
 		} catch (RuntimeException e) {
 			logger.error("There was an error attempting to save scope: " + scope + " : " + e.getStackTrace().toString());
 			m.put("code", HttpStatus.BAD_REQUEST);
-			m.put("entity", "An error occurred while processing your request");
+			m.put("entity", "An error occurred while processing your request.");
 			return "jsonEntityView";
 		}
 		
@@ -135,9 +134,10 @@ public class ScopeAPI {
 		} else {
 			
 			logger.error("createScope failed; JSON was invalid: " + json);
+			m.put("entity", "An error occurred while processing your request - invalud JSON.");
 			m.put("code", HttpStatus.BAD_REQUEST);
 			
-			return "httpCodeView";
+			return "jsonEntityView";
 			
 		}
 	}
