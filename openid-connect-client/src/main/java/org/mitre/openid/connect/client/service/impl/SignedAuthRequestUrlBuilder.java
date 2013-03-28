@@ -55,12 +55,7 @@ public class SignedAuthRequestUrlBuilder implements AuthRequestUrlBuilder {
 		
 		SignedJWT jwt = new SignedJWT(new JWSHeader(signingAndValidationService.getDefaultSigningAlgorithm()), claims);
 		
-		try {
-			signingAndValidationService.signJwt(jwt);
-		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		signingAndValidationService.signJwt(jwt);
 		
 		try {
 	        URIBuilder uriBuilder = new URIBuilder(serverConfig.getAuthorizationEndpointUri());

@@ -20,12 +20,13 @@ import java.security.PublicKey;
 import java.util.Map;
 
 import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jwt.SignedJWT;
 
 public interface JwtSigningAndValidationService {
 
 	/**
-	 * Get all public keys for this service, mapped by their ID
+	 * Get all public keys for this service, mapped by their Key ID
 	 */
 	public Map<String, PublicKey> getAllPublicKeys();
 	
@@ -48,13 +49,13 @@ public interface JwtSigningAndValidationService {
 	 * @return the signed jwt
 	 * @throws NoSuchAlgorithmException 
 	 */
-	public void signJwt(SignedJWT jwt) throws NoSuchAlgorithmException;
+	public void signJwt(SignedJWT jwt);
 
 	/**
 	 * Get the default signing algorithm for use when nothing else has been specified.
 	 * @return
 	 */
-    JWSAlgorithm getDefaultSigningAlgorithm();
+    public JWSAlgorithm getDefaultSigningAlgorithm();
 
 	/**
 	 * Sign a jwt using the selected algorithm. The algorithm is selected using the String parameter values specified

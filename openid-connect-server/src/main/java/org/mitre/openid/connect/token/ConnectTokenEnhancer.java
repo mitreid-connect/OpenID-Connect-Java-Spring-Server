@@ -78,12 +78,7 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 
 		SignedJWT signed = new SignedJWT(new JWSHeader(jwtService.getDefaultSigningAlgorithm()), claims);
 		
-	    try {
-	        jwtService.signJwt(signed);
-        } catch (NoSuchAlgorithmException e1) {
-	        // TODO Auto-generated catch block
-	        e1.printStackTrace();
-        }
+        jwtService.signJwt(signed);
 	    
 	    token.setJwt(signed);
 		
@@ -129,13 +124,7 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 
 			//TODO: check for client's preferred signer alg and use that
 			
-	        try {
-	            jwtService.signJwt(idToken);
-            } catch (NoSuchAlgorithmException e) {
-	            // TODO Auto-generated catch block
-	            e.printStackTrace();
-            }
-			
+			jwtService.signJwt(idToken);
 
 			idTokenEntity.setJwt(idToken);
 			

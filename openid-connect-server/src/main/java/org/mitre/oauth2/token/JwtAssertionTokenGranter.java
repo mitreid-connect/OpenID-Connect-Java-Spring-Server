@@ -55,9 +55,6 @@ public class JwtAssertionTokenGranter extends AbstractTokenGranter {
 	/* (non-Javadoc)
      * @see org.springframework.security.oauth2.provider.token.AbstractTokenGranter#getOAuth2Authentication(org.springframework.security.oauth2.provider.AuthorizationRequest)
      */
-	/**
-	 * @throws NoSuchAlgorithmException
-	 */
     @Override
     protected OAuth2AccessToken getAccessToken(AuthorizationRequest authorizationRequest) throws AuthenticationException, InvalidTokenException {
     	// read and load up the existing token
@@ -101,15 +98,7 @@ public class JwtAssertionTokenGranter extends AbstractTokenGranter {
 	
 					
 					SignedJWT newIdToken = new SignedJWT((JWSHeader) idToken.getHeader(), claims);
-					try {
-		                jwtService.signJwt(newIdToken);
-	                } catch (NoSuchAlgorithmException e) {
-		                // TODO how to handle this exception? 
-	                	// Because of the abstract class's method signature, cannot add "throws"
-	                	// declaration to this class, but printing a stack trace is not a good 
-	                	// fallback.
-		                e.printStackTrace();
-	                }
+	                jwtService.signJwt(newIdToken);
 					
 					newIdTokenEntity.setJwt(newIdToken);
 					newIdTokenEntity.setAuthenticationHolder(incomingToken.getAuthenticationHolder());
