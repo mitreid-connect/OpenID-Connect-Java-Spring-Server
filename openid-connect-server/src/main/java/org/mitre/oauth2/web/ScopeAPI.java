@@ -5,6 +5,9 @@ package org.mitre.oauth2.web;
 
 import java.util.Set;
 
+import javax.persistence.EntityExistsException;
+import javax.persistence.TransactionRequiredException;
+
 import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.service.SystemScopeService;
 import org.slf4j.Logger;
@@ -117,15 +120,8 @@ public class ScopeAPI {
 			return "jsonEntityView";
 		}
 		
-		try {
-			scope = scopeService.save(scope);
-		} catch (RuntimeException e) {
-			logger.error("There was an error attempting to save scope: " + scope + " : " + e.getStackTrace().toString());
-			m.put("code", HttpStatus.BAD_REQUEST);
-			m.put("entity", "An error occurred while processing your request.");
-			return "jsonEntityView";
-		}
-		
+		scope = scopeService.save(scope);
+
 		if (scope != null && scope.getId() != null) {
 
 			m.put("entity", scope);
