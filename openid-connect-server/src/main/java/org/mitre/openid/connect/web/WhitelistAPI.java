@@ -78,11 +78,13 @@ public class WhitelistAPI {
 		} catch (JsonParseException e) {
 			logger.error("addNewWhitelistedSite failed due to JsonParseException: " + e.getStackTrace().toString());
 			m.addAttribute("code", HttpStatus.BAD_REQUEST);
-			return "httpCodeView";
+			m.addAttribute("entity", "An error occurred while processing your request. Contact a system administrator for assistance.");
+			return "jsonEntityView";
 		} catch (IllegalStateException e) {
 			logger.error("addNewWhitelistedSite failed due to IllegalStateException: " + e.getStackTrace().toString());
 			m.addAttribute("code", HttpStatus.BAD_REQUEST);
-			return "httpCodeView";
+			m.addAttribute("entity", "An error occurred while processing your request. Contact a system administrator for assistance.");
+			return "jsonEntityView";
 		}
 		
 		// save the id of the person who created this
@@ -113,11 +115,13 @@ public class WhitelistAPI {
 		} catch (JsonParseException e) {
 			logger.error("updateWhitelistedSite failed due to JsonParseException: " + e.getStackTrace().toString());
 			m.put("code", HttpStatus.BAD_REQUEST);
-			return "httpCodeView";
+			m.put("entity", "An error occurred while processing your request. Contact a system administrator for assistance.");
+			return "jsonEntityView";
 		} catch (IllegalStateException e) {
 			logger.error("updateWhitelistedSite failed due to IllegalStateException: " + e.getStackTrace().toString());
 			m.put("code", HttpStatus.BAD_REQUEST);
-			return "httpCodeView";
+			m.put("entity", "An error occurred while processing your request. Contact a system administrator for assistance.");
+			return "jsonEntityView";
 		}
 		
 		WhitelistedSite oldWhitelist = whitelistService.getById(id);
@@ -148,6 +152,8 @@ public class WhitelistAPI {
 		if (whitelist == null) {
 			logger.error("deleteWhitelistedSite failed; whitelist with id " + id + " could not be found.");
 			m.put("code", HttpStatus.NOT_FOUND);
+			m.put("entity", "An error occurred while processing your request. The requested whitelist entry could not be found.");
+			return "jsonEntityView";
 		} else {
 			m.put("code", HttpStatus.OK);
 			whitelistService.remove(whitelist);

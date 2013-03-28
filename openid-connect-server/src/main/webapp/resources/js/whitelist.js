@@ -129,7 +129,22 @@ var WhiteListView = Backbone.View.extend({
                             app.whiteListListView.togglePlaceholder();
                         });
                     });
-                }
+                },
+                error:function (error, response) {
+            		console.log("An error occurred when deleting a whitelist entry");
+
+    				//Pull out the response text.
+    				var responseText = JSON.parse(response.responseText);
+            		
+            		//Display an alert with an error message
+            		$('#modalAlert div.modal-body').html("<div class='alert alert-error'><strong>Warning!</strong>" + responseText + "</div>");
+            		
+        			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
+        				 "backdrop" : "static",
+        				 "keyboard" : true,
+        				 "show" : true // ensure the modal is shown immediately
+        			 });
+            	}
             });
             
             app.whiteListListView.delegateEvents();
@@ -182,9 +197,21 @@ var WhiteListFormView = Backbone.View.extend({
                     app.whiteListList.add(_self.model);
                     app.navigate('admin/whitelists', {trigger:true});
                 },
-                error:function (model,resp) {
-                    console.error("Oops! The object didn't save correctly.",resp);
-                }
+                error:function (error, response) {
+            		console.log("An error occurred when deleting from a list widget");
+
+    				//Pull out the response text.
+    				var responseText = JSON.parse(response.responseText);
+            		
+            		//Display an alert with an error message
+            		$('#modalAlert div.modal-body').html("<div class='alert alert-error'><strong>Warning!</strong>" + responseText + "</div>");
+            		
+        			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
+        				 "backdrop" : "static",
+        				 "keyboard" : true,
+        				 "show" : true // ensure the modal is shown immediately
+        			 });
+            	}
             });
         }
 
