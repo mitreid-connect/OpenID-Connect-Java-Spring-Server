@@ -3,12 +3,12 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<bean id="defaultKeyStore" class="org.mitre.jose.keystore.JWKSetKeyStore">
-		<property name="location" value="classpath:keystore.jwks" />
-	</bean>
-
 	<bean id="defaultsignerService" class="org.mitre.jwt.signer.service.impl.DefaultJwtSigningAndValidationService">
-		<constructor-arg name="keyStore" ref="defaultKeyStore" />
+		<constructor-arg name="keyStore">
+			<bean id="defaultKeyStore" class="org.mitre.jose.keystore.JWKSetKeyStore">
+				<property name="location" value="classpath:keystore.jwks" />
+			</bean>
+		</constructor-arg>
 		<property name="defaultSignerKeyId" value="rsa1" />
  		<property name="defaultSigningAlgorithmName" value="RS256" />
 	</bean>

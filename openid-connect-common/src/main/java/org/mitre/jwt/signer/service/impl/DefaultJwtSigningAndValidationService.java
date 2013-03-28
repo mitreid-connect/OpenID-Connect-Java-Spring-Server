@@ -164,10 +164,13 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 			
             if (jwk instanceof RSAKey) {
             	// build RSA signers & verifiers
-            	RSASSASigner signer = new RSASSASigner(((RSAKey) jwk).toRSAPrivateKey());
-            	RSASSAVerifier verifier = new RSASSAVerifier(((RSAKey) jwk).toRSAPublicKey());
             	
-            	signers.put(id, signer);
+            	if (jwk.isPrivate()) { // only add the signer if there's a private key            	
+            		RSASSASigner signer = new RSASSASigner(((RSAKey) jwk).toRSAPrivateKey());
+            		signers.put(id, signer);
+            	}
+            	
+            	RSASSAVerifier verifier = new RSASSAVerifier(((RSAKey) jwk).toRSAPublicKey());            	
             	verifiers.put(id, verifier);
             	
             } else if (jwk instanceof ECKey) {
@@ -178,11 +181,15 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
             	
             } else if (jwk instanceof OctetSequenceKey) {
             	// build HMAC signers & verifiers
-            	MACSigner signer = new MACSigner(((OctetSequenceKey) jwk).toByteArray());
-            	MACVerifier verifier = new MACVerifier(((OctetSequenceKey) jwk).toByteArray());
-
-            	signers.put(id, signer);
+            	
+            	if (jwk.isPrivate()) { // technically redundant check because all HMAC keys are private
+            		MACSigner signer = new MACSigner(((OctetSequenceKey) jwk).toByteArray());
+            		signers.put(id, signer);
+            	}
+            	
+            	MACVerifier verifier = new MACVerifier(((OctetSequenceKey) jwk).toByteArray());            	
             	verifiers.put(id, verifier);
+            	
             } else {
             	logger.warn("Unknown key type: " + jwk);
             }
