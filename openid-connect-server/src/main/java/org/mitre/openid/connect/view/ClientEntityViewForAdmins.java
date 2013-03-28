@@ -43,7 +43,7 @@ import com.google.gson.JsonSerializer;
 @Component("clientEntityViewAdmins")
 public class ClientEntityViewForAdmins extends AbstractClientEntityView {
 
-	private Set<String> blacklistedFields = ImmutableSet.of("additionalProperties");
+	private Set<String> blacklistedFields = ImmutableSet.of("additionalInformation");
 	
 	/**
 	 * @return
