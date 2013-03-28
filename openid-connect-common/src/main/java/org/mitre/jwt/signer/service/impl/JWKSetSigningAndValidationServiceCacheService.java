@@ -13,6 +13,7 @@ import java.util.concurrent.ExecutionException;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.mitre.jose.keystore.JWKSetKeyStore;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
@@ -80,32 +81,9 @@ public class JWKSetSigningAndValidationServiceCacheService {
         	String jsonString = restTemplate.getForObject(key, String.class);
         	JWKSet jwkSet = JWKSet.parse(jsonString);
         	
-        	Map<String, JWSVerifier> verifiers = new HashMap<String, JWSVerifier>();
+        	JWKSetKeyStore keyStore = new JWKSetKeyStore(jwkSet);
         	
-        	for (JWK jwk : jwkSet.getKeys()) {
-        		
-        		if (jwk.getKeyType().equals(KeyType.RSA)) {
-        			// we can handle RSA
-        			RSAKey rsa = (RSAKey)jwk;
-        			
-					byte[] modulusByte = rsa.getModulus().decode();
-					BigInteger modulus = new BigInteger(1, modulusByte);
-					byte[] exponentByte = rsa.getPublicExponent().decode();
-					BigInteger exponent = new BigInteger(1, exponentByte);
-							
-					RSAPublicKeySpec spec = new RSAPublicKeySpec(modulus, exponent);
-					KeyFactory factory = KeyFactory.getInstance("RSA");
-					
-					RSAPublicKey pub = (RSAPublicKey) factory.generatePublic(spec);
-        			
-        			
-        			JWSVerifier verifier = new RSASSAVerifier(pub);
-        			
-        			verifiers.put(jwk.getKeyID(), verifier);
-        		}
-            }
-        	
-        	JwtSigningAndValidationService service = new DefaultJwtSigningAndValidationService(verifiers);
+        	JwtSigningAndValidationService service = new DefaultJwtSigningAndValidationService(keyStore);
 
         	return service;
         	

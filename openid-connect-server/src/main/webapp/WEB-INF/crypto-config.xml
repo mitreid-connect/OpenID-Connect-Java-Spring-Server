@@ -7,9 +7,8 @@
 		<property name="location" value="classpath:keystore.jwks" />
 	</bean>
 
-	<bean id="defaultsignerService"
-		class="org.mitre.jwt.signer.service.impl.DefaultJwtSigningAndValidationService">
-		<property name="keyStore" ref="defaultKeyStore" />
+	<bean id="defaultsignerService" class="org.mitre.jwt.signer.service.impl.DefaultJwtSigningAndValidationService">
+		<constructor-arg name="keyStore" ref="defaultKeyStore" />
 		<property name="defaultSignerKeyId" value="rsa1" />
  		<property name="defaultSigningAlgorithmName" value="RS256" />
 	</bean>

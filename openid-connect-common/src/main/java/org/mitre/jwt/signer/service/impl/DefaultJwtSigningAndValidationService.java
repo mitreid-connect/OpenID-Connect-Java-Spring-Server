@@ -16,10 +16,8 @@
 package org.mitre.jwt.signer.service.impl;
 
 import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.mitre.jose.keystore.JWKSetKeyStore;
@@ -47,6 +45,7 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 
 	// map of identifier to signer
 	private Map<String, JWSSigner> signers = new HashMap<String, JWSSigner>();
+
 	// map of identifier to verifier
 	private Map<String, JWSVerifier> verifiers = new HashMap<String, JWSVerifier>();
 
@@ -56,22 +55,50 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 	
 	private JWSAlgorithm defaultAlgorithm;
 	
-	private JWKSetKeyStore keyStore;
+	// map of identifier to key
+	private Map<String, JWK> keys = new HashMap<String, JWK>();
 
 	/**
-	 * default constructor
+	 * Build this service based on the keys given. All public keys will be used
+	 * to make verifiers, all private keys will be used to make signers.
+	 * 
+	 * @param keys
+	 *            A map of key identifier to key
+	 * 
+	 * @throws InvalidKeySpecException
+	 *             If the keys in the JWKs are not valid
+	 * @throws NoSuchAlgorithmException
+	 *             If there is no appropriate algorithm to tie the keys to.
 	 */
-	public DefaultJwtSigningAndValidationService() {
-
-	}
+    public DefaultJwtSigningAndValidationService(Map<String, JWK> keys) throws NoSuchAlgorithmException, InvalidKeySpecException {
+	    this.keys = keys;
+	    buildSignersAndVerifiers();
+    }
 
 	/**
-	 * Create a new validation service from the given set of verifiers (no signing)
+	 * Build this service based on the given keystore. All keys must have a key
+	 * id ({@code kid}) field in order to be used.
+	 * 
+	 * @param keyStore
+	 *            the keystore to load all keys from
+	 * 
+	 * @throws InvalidKeySpecException
+	 *             If the keys in the JWKs are not valid
+	 * @throws NoSuchAlgorithmException
+	 *             If there is no appropriate algorithm to tie the keys to.
 	 */
-	public DefaultJwtSigningAndValidationService(Map<String, JWSVerifier> verifiers) {
-		this.verifiers = verifiers;
-	}
-	
+    public DefaultJwtSigningAndValidationService(JWKSetKeyStore keyStore) throws NoSuchAlgorithmException, InvalidKeySpecException {
+    	// convert all keys in the keystore to a map based on key id
+    	for (JWK key : keyStore.getKeys()) {
+	        if (!Strings.isNullOrEmpty(key.getKeyID())) {
+	        	this.keys.put(key.getKeyID(), key);
+	        } else {
+	        	throw new IllegalArgumentException("Tried to load a key from a keystore without a 'kid' field: " + key);
+	        }
+        }
+    	buildSignersAndVerifiers();
+    }
+    
 	/**
 	 * @return the defaultSignerKeyId
 	 */
@@ -105,20 +132,7 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
     		return null;
     	}
     }
-	/**
-	 * @return the keyStore
-	 */
-    public JWKSetKeyStore getKeyStore() {
-	    return keyStore;
-    }
-
-	/**
-	 * @param keyStore the keyStore to set
-	 */
-    public void setKeyStore(JWKSetKeyStore keyStore) {
-	    this.keyStore = keyStore;
-    }
-
+    
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -127,48 +141,53 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 	 */
 	@Override
 	public void afterPropertiesSet() throws NoSuchAlgorithmException, InvalidKeySpecException{
-		
-		if (keyStore != null) {
-			// if we have a keystore, load it up into our signers
-			
-			List<JWK> keys = keyStore.getKeys();
-			for (JWK jwk : keys) {
-				
-				if (!Strings.isNullOrEmpty(jwk.getKeyID())) {
-				
-		            if (jwk instanceof RSAKey) {
-		            	// build RSA signers & verifiers
-		            	RSASSASigner signer = new RSASSASigner(((RSAKey) jwk).toRSAPrivateKey());
-		            	RSASSAVerifier verifier = new RSASSAVerifier(((RSAKey) jwk).toRSAPublicKey());
-		            	
-		            	signers.put(jwk.getKeyID(), signer);
-		            	verifiers.put(jwk.getKeyID(), verifier);
-		            	
-		            } else if (jwk instanceof ECKey) {
-		            	// build EC signers & verifiers
-		            	
-		            	// TODO: add support for EC keys
-		            	logger.warn("EC Keys are not yet supported.");
-		            	
-		            } else if (jwk instanceof OctetSequenceKey) {
-		            	// build HMAC signers & verifiers
-		            	MACSigner signer = new MACSigner(((OctetSequenceKey) jwk).toByteArray());
-		            	MACVerifier verifier = new MACVerifier(((OctetSequenceKey) jwk).toByteArray());
 
-		            	signers.put(jwk.getKeyID(), signer);
-		            	verifiers.put(jwk.getKeyID(), verifier);
-		            } else {
-		            	logger.warn("Unknown key type: " + jwk);
-		            }
-				} else {
-					logger.warn("Found a key with no KeyId: " + jwk);
-				}
-            }
-			
+		if (keys == null) {
+			throw new IllegalArgumentException("Signing and validation service must have at least one key configured.");
 		}
+		
+		buildSignersAndVerifiers();
 		
 		logger.info("DefaultJwtSigningAndValidationService is ready: " + this.toString());
 	}
+
+	/**
+	 * Build all of the signers and verifiers for this based on the key map.
+	 * @throws InvalidKeySpecException If the keys in the JWKs are not valid
+	 * @throws NoSuchAlgorithmException If there is no appropriate algorithm to tie the keys to.
+	 */
+    private void buildSignersAndVerifiers() throws NoSuchAlgorithmException, InvalidKeySpecException {
+		for (Map.Entry<String, JWK> jwkEntry : keys.entrySet()) {
+
+			String id = jwkEntry.getKey();
+			JWK jwk = jwkEntry.getValue();
+			
+            if (jwk instanceof RSAKey) {
+            	// build RSA signers & verifiers
+            	RSASSASigner signer = new RSASSASigner(((RSAKey) jwk).toRSAPrivateKey());
+            	RSASSAVerifier verifier = new RSASSAVerifier(((RSAKey) jwk).toRSAPublicKey());
+            	
+            	signers.put(id, signer);
+            	verifiers.put(id, verifier);
+            	
+            } else if (jwk instanceof ECKey) {
+            	// build EC signers & verifiers
+            	
+            	// TODO: add support for EC keys
+            	logger.warn("EC Keys are not yet supported.");
+            	
+            } else if (jwk instanceof OctetSequenceKey) {
+            	// build HMAC signers & verifiers
+            	MACSigner signer = new MACSigner(((OctetSequenceKey) jwk).toByteArray());
+            	MACVerifier verifier = new MACVerifier(((OctetSequenceKey) jwk).toByteArray());
+
+            	signers.put(id, signer);
+            	verifiers.put(id, verifier);
+            } else {
+            	logger.warn("Unknown key type: " + jwk);
+            }
+        }
+    }
 
 	/**
 	 * Sign a jwt in place using the configured default signer.
@@ -207,19 +226,19 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 	}
 
 	@Override
-	public Map<String, PublicKey> getAllPublicKeys() {
-		Map<String, PublicKey> keys = new HashMap<String, PublicKey>();
+	public Map<String, JWK> getAllPublicKeys() {
+		Map<String, JWK> pubKeys = new HashMap<String, JWK>();
 		
 		// pull all keys out of the verifiers if we know how
-		for (String keyId : verifiers.keySet()) {
-	        JWSVerifier verifier = verifiers.get(keyId);
-	        if (verifier instanceof RSASSAVerifier) {
-	        	// we know how to do RSA public keys
-	        	keys.put(keyId, ((RSASSAVerifier) verifier).getPublicKey());
+		for (String keyId : keys.keySet()) {
+	        JWK key = keys.get(keyId);
+	        JWK pub = key.toPublicJWK();
+	        if (pub != null) {
+	        	pubKeys.put(keyId, pub);
 	        }
         }
 		
-		return keys;
+		return pubKeys;
 	}
 	
 }

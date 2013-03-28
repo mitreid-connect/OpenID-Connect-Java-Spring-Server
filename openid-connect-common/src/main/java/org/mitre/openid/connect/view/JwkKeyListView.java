@@ -20,11 +20,7 @@ package org.mitre.openid.connect.view;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.math.BigInteger;
-import java.security.PublicKey;
-import java.security.interfaces.RSAPublicKey;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -35,12 +31,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.view.AbstractView;
 
-import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
-import com.nimbusds.jose.jwk.RSAKey;
-import com.nimbusds.jose.jwk.Use;
-import com.nimbusds.jose.util.Base64URL;
 
 /**
  * @author jricher
@@ -58,29 +50,9 @@ public class JwkKeyListView extends AbstractView {
 		
 		
 		//BiMap<String, PublicKey> keyMap = (BiMap<String, PublicKey>) model.get("keys");
-		Map<String, PublicKey> keys = (Map<String, PublicKey>) model.get("keys");
+		Map<String, JWK> keys = (Map<String, JWK>) model.get("keys");
 		
-		List<JWK> jwks = new ArrayList<JWK>();
-		
-		for (String keyId : keys.keySet()) {
-
-			PublicKey key = keys.get(keyId);
-
-			if (key instanceof RSAPublicKey) {
-				
-				RSAPublicKey rsa = (RSAPublicKey) key;
-				
-				BigInteger mod = rsa.getModulus();
-				BigInteger exp = rsa.getPublicExponent();
-
-				// FIXME: this assumes RS256
-				RSAKey rsaKey = new RSAKey(Base64URL.encode(mod.toByteArray()), Base64URL.encode(exp.toByteArray()), Use.SIGNATURE, JWSAlgorithm.RS256, keyId);
-
-				jwks.add(rsaKey);
-			} // TODO: deal with non-RSA key types
-        }
-		
-		JWKSet jwkSet = new JWKSet(jwks);
+		JWKSet jwkSet = new JWKSet(new ArrayList<JWK>(keys.values()));
 		
 		try {
 			

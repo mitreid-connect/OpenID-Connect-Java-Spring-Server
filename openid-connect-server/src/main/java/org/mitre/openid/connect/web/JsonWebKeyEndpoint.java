@@ -15,7 +15,6 @@
  ******************************************************************************/
 package org.mitre.openid.connect.web;
 
-import java.security.PublicKey;
 import java.util.Map;
 
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
@@ -23,7 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
+
+import com.nimbusds.jose.jwk.JWK;
 
 @Controller
 public class JsonWebKeyEndpoint {
@@ -34,8 +34,8 @@ public class JsonWebKeyEndpoint {
 	@RequestMapping(value = "/jwk", produces = "application/json")
 	public String getJwk(Model m) {
 		
-		// map from key id to signer
-		Map<String, PublicKey> keys = jwtService.getAllPublicKeys();
+		// map from key id to key
+		Map<String, JWK> keys = jwtService.getAllPublicKeys();
 		
 		// TODO: check if keys are empty, return a 404 here or just an empty list?
 		

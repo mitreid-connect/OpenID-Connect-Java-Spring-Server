@@ -24,6 +24,14 @@ public class JWKSetKeyStore implements InitializingBean {
 	
 	private Resource location;
 	
+	public JWKSetKeyStore() {
+		
+	}
+	
+	public JWKSetKeyStore(JWKSet jwkSet) {
+		this.jwkSet = jwkSet;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
 	 */
@@ -80,8 +88,7 @@ public class JWKSetKeyStore implements InitializingBean {
 	}
 
 	/**
-	 * Pass through to underlying JwK set and return its keys.
-	 * @return
+	 * Get the list of keys in this keystore. This is a passthrough to the underlying JWK Set
 	 */
     public List<JWK> getKeys() {
 	    return jwkSet.getKeys();

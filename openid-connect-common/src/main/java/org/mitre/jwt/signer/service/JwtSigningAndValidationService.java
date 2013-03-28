@@ -28,7 +28,7 @@ public interface JwtSigningAndValidationService {
 	/**
 	 * Get all public keys for this service, mapped by their Key ID
 	 */
-	public Map<String, PublicKey> getAllPublicKeys();
+	public Map<String, JWK> getAllPublicKeys();
 	
 	/**
 	 * Checks the signature of the given JWT against all configured signers,

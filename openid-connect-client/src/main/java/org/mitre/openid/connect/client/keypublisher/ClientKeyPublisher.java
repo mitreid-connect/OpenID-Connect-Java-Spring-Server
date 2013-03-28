@@ -3,7 +3,6 @@
  */
 package org.mitre.openid.connect.client.keypublisher;
 
-import java.security.PublicKey;
 import java.util.Map;
 import java.util.UUID;
 
@@ -17,6 +16,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProce
 import org.springframework.web.servlet.ModelAndView;
 
 import com.google.common.base.Strings;
+import com.nimbusds.jose.jwk.JWK;
 
 /**
  * @author jricher
@@ -31,9 +31,6 @@ public class ClientKeyPublisher implements BeanDefinitionRegistryPostProcessor {
 	private BeanDefinitionRegistry registry;
 
 	private String jwkViewName = "jwkKeyList";
-
-	private String x509ViewName;
-
 
 	/**
 	 * If either the jwkPublishUrl or x509PublishUrl fields are set on this bean, set up a listener on that URL to publish keys.
@@ -82,24 +79,11 @@ public class ClientKeyPublisher implements BeanDefinitionRegistryPostProcessor {
 	public ModelAndView publishClientJwk() {
 		
 		// map from key id to key
-		Map<String, PublicKey> keys = signingAndValidationService.getAllPublicKeys();
+		Map<String, JWK> keys = signingAndValidationService.getAllPublicKeys();
 
 		// TODO: check if keys are empty, return a 404 here or just an empty list?
 		
 		return new ModelAndView(jwkViewName, "keys", keys);
-	}
-
-	/**
-	 * Return a view to publish all keys in x509 format. Only used if x509publishUrl is set.
-	 * @return
-	 */
-	public ModelAndView publishClientx509() {
-		// map from key id to key
-		Map<String, PublicKey> keys = signingAndValidationService.getAllPublicKeys();
-
-		// TODO: check if keys are empty, return a 404 here or just an empty list?
-		
-		return new ModelAndView(x509ViewName, "keys", keys);
 	}
 
 	/**
