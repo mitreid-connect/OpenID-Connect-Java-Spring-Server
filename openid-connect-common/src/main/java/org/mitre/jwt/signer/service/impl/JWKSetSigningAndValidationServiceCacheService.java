@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
@@ -22,14 +21,12 @@ import org.springframework.web.client.RestTemplate;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
-import com.google.common.collect.ImmutableMap;
-import com.nimbusds.jose.JWK;
-import com.nimbusds.jose.JWKSet;
-import com.nimbusds.jose.JWSSigner;
 import com.nimbusds.jose.JWSVerifier;
-import com.nimbusds.jose.KeyType;
-import com.nimbusds.jose.RSAKey;
 import com.nimbusds.jose.crypto.RSASSAVerifier;
+import com.nimbusds.jose.jwk.JWK;
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.jwk.KeyType;
+import com.nimbusds.jose.jwk.RSAKey;
 
 /**
  * 
@@ -46,7 +43,7 @@ public class JWKSetSigningAndValidationServiceCacheService {
 	public JWKSetSigningAndValidationServiceCacheService() {
 		this.cache = CacheBuilder.newBuilder()
 				.maximumSize(100)
-				.build(new JWKSetFetcher());
+				.build(new JWKSetVerifierFetcher());
 	}
 	
 	/**
@@ -69,7 +66,7 @@ public class JWKSetSigningAndValidationServiceCacheService {
      * @author jricher
      *
      */
-    private class JWKSetFetcher extends CacheLoader<String, JwtSigningAndValidationService> {
+    private class JWKSetVerifierFetcher extends CacheLoader<String, JwtSigningAndValidationService> {
     	private HttpClient httpClient = new DefaultHttpClient();
     	private HttpComponentsClientHttpRequestFactory httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
     	private RestTemplate restTemplate = new RestTemplate(httpFactory);
@@ -93,7 +90,7 @@ public class JWKSetSigningAndValidationServiceCacheService {
         			
 					byte[] modulusByte = rsa.getModulus().decode();
 					BigInteger modulus = new BigInteger(1, modulusByte);
-					byte[] exponentByte = rsa.getExponent().decode();
+					byte[] exponentByte = rsa.getPublicExponent().decode();
 					BigInteger exponent = new BigInteger(1, exponentByte);
 							
 					RSAPublicKeySpec spec = new RSAPublicKeySpec(modulus, exponent);
