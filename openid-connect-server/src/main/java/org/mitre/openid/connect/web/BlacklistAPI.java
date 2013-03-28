@@ -82,11 +82,13 @@ public class BlacklistAPI {
 		catch (JsonSyntaxException e) {
 			logger.error("addNewBlacklistedSite failed due to JsonSyntaxException: " + e.getStackTrace().toString());
 			m.put("code", HttpStatus.BAD_REQUEST);
-			return "httpCodeView";
+			m.put("entity", "An error occurred while processing your request. Contact a system administrator for assistance.");
+			return "jsonEntityView";
 		} catch (IllegalStateException e) {
 			logger.error("addNewBlacklistedSite failed due to IllegalStateException: " + e.getStackTrace().toString());
 			m.put("code", HttpStatus.BAD_REQUEST);
-			return "httpCodeView";
+			m.put("entity", "An error occurred while processing your request. Refresh and try again - if the problem persists, contact a system administrator for assistance.");
+			return "jsonEntityView";
 		}
 		
 		return "jsonEntityView";
@@ -112,11 +114,13 @@ public class BlacklistAPI {
 		catch (JsonSyntaxException e) {
 			logger.error("updateBlacklistedSite failed due to JsonSyntaxException: " + e.getStackTrace().toString());
 			m.put("code", HttpStatus.BAD_REQUEST);
-			return "httpCodeView";
+			m.put("entity", "An error occurred while processing your request. Contact a system administrator for assistance.");
+			return "jsonEntityView";
 		} catch (IllegalStateException e) {
 			logger.error("updateBlacklistedSite failed due to IllegalStateException: " + e.getStackTrace().toString());
 			m.put("code", HttpStatus.BAD_REQUEST);
-			return "httpCodeView";
+			m.put("entity", "An error occurred while processing your request. Refresh and try again - if the problem persists, contact a system administrator for assistance.");
+			return "jsonEntityView";
 		}
 		
 		
@@ -125,7 +129,8 @@ public class BlacklistAPI {
 		if (oldBlacklist == null) {
 			logger.error("updateBlacklistedSite failed; blacklist with id " + id + " could not be found");
 			m.put("code", HttpStatus.NOT_FOUND);
-			return "httpCodeView";
+			m.put("entity", "An error occurred while processing your request - the requested blacklisted site could not be found.");
+			return "jsonEntityView";
 		} else {
 			
 			BlacklistedSite newBlacklist = blacklistService.update(oldBlacklist, blacklist);
@@ -146,7 +151,8 @@ public class BlacklistAPI {
 		
 		if (blacklist == null) {
 			logger.error("deleteBlacklistedSite failed; blacklist with id " + id + " could not be found");
-			m.put("code", HttpStatus.NOT_FOUND);
+			m.put("entity", "An error occurred while processing your request - the requested blacklisted site could not be found.");
+			return "jsonEntityView";
 		} else {
 			m.put("code", HttpStatus.OK);
 			blacklistService.remove(blacklist);
@@ -164,7 +170,8 @@ public class BlacklistAPI {
 		if (blacklist == null) {
 			logger.error("getBlacklistedSite failed; blacklist with id " + id + " could not be found");
 			m.put("code", HttpStatus.NOT_FOUND);
-			return "httpCodeView";
+			m.put("entity", "An error occurred while processing your request - the requested blacklisted site could not be found.");
+			return "jsonEntityView";
 		} else {
 		
 			m.put("entity", blacklist);

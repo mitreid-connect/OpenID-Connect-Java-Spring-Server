@@ -138,11 +138,13 @@ public class ClientAPI {
     	catch (JsonSyntaxException e) {
     		logger.error("apiAddClient failed due to JsonSyntaxException: " + e.getStackTrace().toString());
     		m.addAttribute("code", HttpStatus.BAD_REQUEST);
-			return "httpCodeView";
+    		m.addAttribute("entity", "An error occurred while processing your request. Contact a system administrator for assistance.");
+			return "jsonEntityView";
     	} catch (IllegalStateException e) {
     		logger.error("apiAddClient failed due to IllegalStateException: " + e.getStackTrace().toString());
     		m.addAttribute("code", HttpStatus.BAD_REQUEST);
-			return "httpCodeView";
+    		m.addAttribute("entity", "An error occurred while processing your request. Contact a system administrator for assistance.");
+			return "jsonEntityView";
 		}
     	
         // if they leave the client secret empty, force it to be generated
@@ -193,11 +195,13 @@ public class ClientAPI {
     	catch (JsonSyntaxException e) {
     		logger.error("apiUpdateClient failed due to JsonSyntaxException: " + e.getStackTrace().toString());
     		m.addAttribute("code", HttpStatus.BAD_REQUEST);
-			return "httpCodeView";
+    		m.addAttribute("entity", "An error occurred while processing your request. Contact a system administrator for assistance.");
+			return "jsonEntityView";
     	} catch (IllegalStateException e) {
     		logger.error("apiUpdateClient failed due to IllegalStateException: " + e.getStackTrace().toString());
     		m.addAttribute("code", HttpStatus.BAD_REQUEST);
-			return "httpCodeView";
+    		m.addAttribute("entity", "An error occurred while processing your request. Contact a system administrator for assistance.");
+			return "jsonEntityView";
 		}
 
         ClientDetailsEntity oldClient = clientService.getClientById(id);
@@ -205,7 +209,8 @@ public class ClientAPI {
         if (oldClient == null) {
         	logger.error("apiUpdateClient failed; client with id " + id + " could not be found.");
         	m.addAttribute("code", HttpStatus.NOT_FOUND);
-        	return "httpCodeView";
+        	m.addAttribute("entity", "An error occurred while processing your request. The requested client could not be found.");
+			return "jsonEntityView";
         }
         
         // if they leave the client secret empty, force it to be generated
@@ -247,6 +252,8 @@ public class ClientAPI {
 		if (client == null) {
 			logger.error("apiDeleteClient failed; client with id " + id + " could not be found.");
 			modelAndView.getModelMap().put("code", HttpStatus.NOT_FOUND);
+			modelAndView.getModelMap().put("entity", "An error occurred while processing your request. The requested client could not be found.");
+			return "jsonEntityView";
 		} else {
 			modelAndView.getModelMap().put("code", HttpStatus.OK);
 			clientService.deleteClient(client);

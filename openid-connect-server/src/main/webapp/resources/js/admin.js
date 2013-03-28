@@ -32,7 +32,25 @@ var ListWidgetChildView = Backbone.View.extend({
         "click .btn-delete":function (e) {
         	e.preventDefault();
             //this.$el.tooltip('delete');
-            this.model.destroy();
+            
+            this.model.destroy({         
+            	error:function (error, response) {
+            		console.log("An error occurred when deleting from a list widget");
+    
+					//Pull out the response text.
+					var responseText = JSON.parse(response.responseText);
+            		
+            		//Display an alert with an error message
+            		$('#modalAlert div.modal-body').html("<div class='alert alert-error'><strong>Warning!</strong>" + responseText + "</div>");
+            		
+        			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
+        				 "backdrop" : "static",
+        				 "keyboard" : true,
+        				 "show" : true // ensure the modal is shown immediately
+        			 });
+            	}
+            });
+            
         }
     },
 
@@ -252,8 +270,17 @@ var BlackListWidgetView = ListWidgetView.extend({
     			_self.collection.add(item);
     		},
     		error:function(error, response) {
-    			console.log("error: " + error);
-    			console.log("response: " + response);
+    			//Pull out the response text.
+				var responseText = JSON.parse(response.responseText);
+        		
+        		//Display an alert with an error message
+        		$('#modalAlert div.modal-body').html("<div class='alert alert-error'><strong>Warning!</strong>" + responseText + "</div>");
+        		
+    			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
+    				 "backdrop" : "static",
+    				 "keyboard" : true,
+    				 "show" : true // ensure the modal is shown immediately
+    			 });
     		}
     	});
 
