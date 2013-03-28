@@ -17,23 +17,30 @@ package org.mitre.jwt.signer.service.impl;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
+import java.security.spec.InvalidKeySpecException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
+import org.mitre.jose.keystore.JWKSetKeyStore;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
-import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.common.collect.ImmutableMap;
+import com.google.common.base.Strings;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSSigner;
 import com.nimbusds.jose.JWSVerifier;
+import com.nimbusds.jose.crypto.MACSigner;
+import com.nimbusds.jose.crypto.MACVerifier;
+import com.nimbusds.jose.crypto.RSASSASigner;
 import com.nimbusds.jose.crypto.RSASSAVerifier;
+import com.nimbusds.jose.jwk.ECKey;
+import com.nimbusds.jose.jwk.JWK;
+import com.nimbusds.jose.jwk.OctetSequenceKey;
+import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jwt.SignedJWT;
 
 public class DefaultJwtSigningAndValidationService implements JwtSigningAndValidationService, InitializingBean {
@@ -45,9 +52,11 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 
 	private static Logger logger = LoggerFactory.getLogger(DefaultJwtSigningAndValidationService.class);
 
-	private String defaultSignerId;
+	private String defaultSignerKeyId;
 	
 	private JWSAlgorithm defaultAlgorithm;
+	
+	private JWKSetKeyStore keyStore;
 
 	/**
 	 * default constructor
@@ -64,38 +73,17 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 	}
 	
 	/**
-	 * Load this signing and validation service from the given builders (which load keys from keystores) 
-	 * @param builders
+	 * @return the defaultSignerKeyId
 	 */
-	public void setBuilders(Map<String, RSASSASignerVerifierBuilder> builders) {
-		
-		for (Entry<String, RSASSASignerVerifierBuilder> e : builders.entrySet()) {
-	        
-			JWSSigner signer = e.getValue().buildSigner();
-			signers.put(e.getKey(), signer);
-			if (e.getValue().isDefault()) {
-				defaultSignerId = e.getKey();
-			}
-			
-	        JWSVerifier verifier = e.getValue().buildVerifier();
-	        verifiers.put(e.getKey(), verifier);
-	        
-        }
-		
+	public String getDefaultSignerKeyId() {
+		return defaultSignerKeyId;
 	}
 
 	/**
-	 * @return the defaultSignerId
+	 * @param defaultSignerKeyId the defaultSignerKeyId to set
 	 */
-	public String getDefaultSignerId() {
-		return defaultSignerId;
-	}
-
-	/**
-	 * @param defaultSignerId the defaultSignerId to set
-	 */
-	public void setDefaultSignerId(String defaultSignerId) {
-		this.defaultSignerId = defaultSignerId;
+	public void setDefaultSignerKeyId(String defaultSignerId) {
+		this.defaultSignerKeyId = defaultSignerId;
 	}
 
 	/**
@@ -117,6 +105,20 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
     		return null;
     	}
     }
+	/**
+	 * @return the keyStore
+	 */
+    public JWKSetKeyStore getKeyStore() {
+	    return keyStore;
+    }
+
+	/**
+	 * @param keyStore the keyStore to set
+	 */
+    public void setKeyStore(JWKSetKeyStore keyStore) {
+	    this.keyStore = keyStore;
+    }
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -124,7 +126,47 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 	 * org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
 	 */
 	@Override
-	public void afterPropertiesSet(){
+	public void afterPropertiesSet() throws NoSuchAlgorithmException, InvalidKeySpecException{
+		
+		if (keyStore != null) {
+			// if we have a keystore, load it up into our signers
+			
+			List<JWK> keys = keyStore.getKeys();
+			for (JWK jwk : keys) {
+				
+				if (!Strings.isNullOrEmpty(jwk.getKeyID())) {
+				
+		            if (jwk instanceof RSAKey) {
+		            	// build RSA signers & verifiers
+		            	RSASSASigner signer = new RSASSASigner(((RSAKey) jwk).toRSAPrivateKey());
+		            	RSASSAVerifier verifier = new RSASSAVerifier(((RSAKey) jwk).toRSAPublicKey());
+		            	
+		            	signers.put(jwk.getKeyID(), signer);
+		            	verifiers.put(jwk.getKeyID(), verifier);
+		            	
+		            } else if (jwk instanceof ECKey) {
+		            	// build EC signers & verifiers
+		            	
+		            	// TODO: add support for EC keys
+		            	logger.warn("EC Keys are not yet supported.");
+		            	
+		            } else if (jwk instanceof OctetSequenceKey) {
+		            	// build HMAC signers & verifiers
+		            	MACSigner signer = new MACSigner(((OctetSequenceKey) jwk).toByteArray());
+		            	MACVerifier verifier = new MACVerifier(((OctetSequenceKey) jwk).toByteArray());
+
+		            	signers.put(jwk.getKeyID(), signer);
+		            	verifiers.put(jwk.getKeyID(), verifier);
+		            } else {
+		            	logger.warn("Unknown key type: " + jwk);
+		            }
+				} else {
+					logger.warn("Found a key with no KeyId: " + jwk);
+				}
+            }
+			
+		}
+		
 		logger.info("DefaultJwtSigningAndValidationService is ready: " + this.toString());
 	}
 
@@ -133,11 +175,11 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 	 */
 	@Override
 	public void signJwt(SignedJWT jwt) {
-		if (getDefaultSignerId() == null) {
+		if (getDefaultSignerKeyId() == null) {
 			throw new IllegalStateException("Tried to call default signing with no default signer ID set");
 		}
 		
-		JWSSigner signer = signers.get(getDefaultSignerId());
+		JWSSigner signer = signers.get(getDefaultSignerKeyId());
 
 		try {
 	        jwt.sign(signer);
