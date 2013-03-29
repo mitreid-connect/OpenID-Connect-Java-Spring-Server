@@ -78,13 +78,13 @@ public class WhitelistAPI {
 		} catch (JsonParseException e) {
 			logger.error("addNewWhitelistedSite failed due to JsonParseException: " + e.getStackTrace().toString());
 			m.addAttribute("code", HttpStatus.BAD_REQUEST);
-			m.addAttribute("entity", "An error occurred while processing your request. Contact a system administrator for assistance.");
-			return "jsonEntityView";
+			m.addAttribute("errorMessage", "Could not save new whitelisted site. The server encountered a JSON syntax exception. Contact a system administrator for assistance.");
+			return "jsonErrorView";
 		} catch (IllegalStateException e) {
 			logger.error("addNewWhitelistedSite failed due to IllegalStateException: " + e.getStackTrace().toString());
 			m.addAttribute("code", HttpStatus.BAD_REQUEST);
-			m.addAttribute("entity", "An error occurred while processing your request. Contact a system administrator for assistance.");
-			return "jsonEntityView";
+			m.addAttribute("errorMessage", "Could not save new whitelisted site. The server encountered an IllegalStateException. Refresh and try again - if the problem persists, contact a system administrator for assistance.");
+			return "jsonErrorView";
 		}
 		
 		// save the id of the person who created this
@@ -115,13 +115,13 @@ public class WhitelistAPI {
 		} catch (JsonParseException e) {
 			logger.error("updateWhitelistedSite failed due to JsonParseException: " + e.getStackTrace().toString());
 			m.put("code", HttpStatus.BAD_REQUEST);
-			m.put("entity", "An error occurred while processing your request. Contact a system administrator for assistance.");
-			return "jsonEntityView";
+			m.put("errorMessage", "Could not update whitelisted site. The server encountered a JSON syntax exception. Contact a system administrator for assistance.");
+			return "jsonErrorView";
 		} catch (IllegalStateException e) {
 			logger.error("updateWhitelistedSite failed due to IllegalStateException: " + e.getStackTrace().toString());
 			m.put("code", HttpStatus.BAD_REQUEST);
-			m.put("entity", "An error occurred while processing your request. Contact a system administrator for assistance.");
-			return "jsonEntityView";
+			m.put("errorMessage", "Could not update whitelisted site. The server encountered an IllegalStateException. Refresh and try again - if the problem persists, contact a system administrator for assistance.");
+			return "jsonErrorView";
 		}
 		
 		WhitelistedSite oldWhitelist = whitelistService.getById(id);
@@ -129,7 +129,8 @@ public class WhitelistAPI {
 		if (oldWhitelist == null) {
 			logger.error("updateWhitelistedSite failed; whitelist with id " + id + " could not be found.");
 			m.put("code", HttpStatus.NOT_FOUND);
-			return "httpCodeView";
+			m.put("errorMessage", "Could not update whitelisted site. The requested whitelisted site with id " + id + "could not be found.");
+			return "jsonErrorView";
 		} else {
 			
 			WhitelistedSite newWhitelist = whitelistService.update(oldWhitelist, whitelist);
@@ -152,8 +153,8 @@ public class WhitelistAPI {
 		if (whitelist == null) {
 			logger.error("deleteWhitelistedSite failed; whitelist with id " + id + " could not be found.");
 			m.put("code", HttpStatus.NOT_FOUND);
-			m.put("entity", "An error occurred while processing your request. The requested whitelist entry could not be found.");
-			return "jsonEntityView";
+			m.put("errorMessage", "Could not delete whitelisted site. The requested whitelisted site with id " + id + "could not be found.");
+			return "jsonErrorView";
 		} else {
 			m.put("code", HttpStatus.OK);
 			whitelistService.remove(whitelist);
@@ -171,7 +172,8 @@ public class WhitelistAPI {
 		if (whitelist == null) {
 			logger.error("getWhitelistedSite failed; whitelist with id " + id + " could not be found.");
 			m.put("code", HttpStatus.NOT_FOUND);
-			return "httpCodeView";
+			m.put("errorMessage", "The requested whitelisted site with id " + id + "could not be found.");
+			return "jsonErrorView";
 		} else {
 		
 			m.put("entity", whitelist);
