@@ -252,7 +252,7 @@ public class ClientAPI {
 		if (client == null) {
 			logger.error("apiDeleteClient failed; client with id " + id + " could not be found.");
 			modelAndView.getModelMap().put("code", HttpStatus.NOT_FOUND);
-			modelAndView.addAttribute("errorMessage", "Could not delete client. The requested client with id " + id + "could not be found.");
+			modelAndView.getModelMap().put("errorMessage", "Could not delete client. The requested client with id " + id + "could not be found.");
 			return "jsonErrorView";
 		} else {
 			modelAndView.getModelMap().put("code", HttpStatus.OK);
