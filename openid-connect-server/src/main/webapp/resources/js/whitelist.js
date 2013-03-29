@@ -134,10 +134,10 @@ var WhiteListView = Backbone.View.extend({
             		console.log("An error occurred when deleting a whitelist entry");
 
     				//Pull out the response text.
-    				var responseText = JSON.parse(response.responseText);
+    				var responseJson = JSON.parse(response.responseText);
             		
             		//Display an alert with an error message
-            		$('#modalAlert div.modal-body').html("<div class='alert alert-error'><strong>Warning!</strong>" + responseText + "</div>");
+            		$('#modalAlert div.modal-body').html(responseJson.errorMessage);
             		
         			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
         				 "backdrop" : "static",
@@ -201,10 +201,10 @@ var WhiteListFormView = Backbone.View.extend({
             		console.log("An error occurred when deleting from a list widget");
 
     				//Pull out the response text.
-    				var responseText = JSON.parse(response.responseText);
+    				var responseJson = JSON.parse(response.responseText);
             		
             		//Display an alert with an error message
-            		$('#modalAlert div.modal-body').html("<div class='alert alert-error'><strong>Warning!</strong>" + responseText + "</div>");
+            		$('#modalAlert div.modal-body').html(responseJson.errorMessage);
             		
         			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
         				 "backdrop" : "static",
