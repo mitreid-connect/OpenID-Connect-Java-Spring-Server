@@ -1,3 +1,0 @@
-[submodule "spring-security-oauth"]
-	path = spring-security-oauth
-	url = https://github.com/SpringSource/spring-security-oauth.git
