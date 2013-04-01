@@ -24,7 +24,7 @@ import com.google.gson.JsonObject;
  * @author aanganes, jricher
  *
  */
-@Component("jsonEntityView")
+@Component("jsonErrorView")
 public class JsonErrorView extends AbstractView {
 
 	private static Logger logger = LoggerFactory.getLogger(JsonEntityView.class);
