@@ -20,11 +20,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
       <artifactId>openid-connect-common</artifactId>
       <version>0.1-SNAPSHOT</version>
     </dependency>
-    <dependency>
-      <groupId>org.springframework.security.oauth</groupId>
-      <version>1.0.1.BUILD-SNAPSHOT</version>
-      <artifactId>spring-security-oauth2</artifactId>
-    </dependency>
   </dependencies>
   <packaging>jar</packaging>
   <build>

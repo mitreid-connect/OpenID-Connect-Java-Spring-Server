@@ -15,7 +15,6 @@
     		</activation>
     		<id>default</id>
 		    <modules>
-		    	<module>spring-security-oauth/spring-security-oauth2</module>
 		    	<module>openid-connect-common</module>
 		    	<module>openid-connect-client</module>
 			<module>openid-connect-server</module>
@@ -283,6 +282,11 @@
         	<artifactId>spring-oxm</artifactId>
         	<version>${org.springframework-version}</version>
         </dependency>
+    	<dependency>
+      		<groupId>org.springframework.security.oauth</groupId>
+      		<version>1.0.2.RELEASE</version>
+      		<artifactId>spring-security-oauth2</artifactId>
+	</dependency>
         <dependency>
         	<groupId>org.bouncycastle</groupId>
         	<artifactId>bcpkix-jdk15on</artifactId>
