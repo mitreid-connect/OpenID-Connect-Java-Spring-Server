@@ -9,9 +9,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
     <version>0.1-SNAPSHOT</version>
     <relativePath>..</relativePath>
   </parent>
-  <groupId>org.mitre</groupId> 
-  <artifactId>openid-connect-client</artifactId>
-  <version>0.1-SNAPSHOT</version> 
+  <artifactId>openid-connect-client</artifactId> 
   <description>OpenID Connect Client Files</description>
   <name>OpenID Connect Client</name>
   <dependencies>

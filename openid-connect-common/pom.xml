@@ -8,10 +8,8 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
     <groupId>org.mitre</groupId>
     <version>0.1-SNAPSHOT</version>
     <relativePath>..</relativePath>
-  </parent>
-  <groupId>org.mitre</groupId>  
+  </parent>  
   <artifactId>openid-connect-common</artifactId>
-  <version>0.1-SNAPSHOT</version>  
   <description>OpenID Connect Common modules</description>
   <name>OpenID Connect Common</name>
   <dependencies>
