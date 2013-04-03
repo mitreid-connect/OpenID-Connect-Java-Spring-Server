@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>    
     <artifactId>openid-connect-server</artifactId>
     <name>OpenIdConnect Server</name>
@@ -8,14 +7,14 @@
     <parent>
     	<groupId>org.mitre</groupId>
     	<artifactId>openid-connect-parent</artifactId>
-    	<version>0.1-SNAPSHOT</version>
+    	<version>0.9.1-SNAPSHOT</version>
     	<relativePath>..</relativePath>
     </parent>
     <dependencies>
 		<dependency>
 			<groupId>org.mitre</groupId>
 			<artifactId>openid-connect-common</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<version>0.9.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hsqldb</groupId>
@@ -35,7 +34,7 @@
     </dependencies>
     <description>Reference implementation of OpenID Connect spec (http://openid.net/connect/).
     </description>
-    <url></url>
+    <url />
     <build>
         <plugins>
             <plugin>
