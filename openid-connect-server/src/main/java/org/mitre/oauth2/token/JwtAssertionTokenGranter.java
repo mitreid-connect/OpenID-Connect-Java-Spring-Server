@@ -3,7 +3,6 @@
  */
 package org.mitre.oauth2.token;
 
-import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.util.Date;
 
@@ -19,6 +18,7 @@ import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
+import org.springframework.security.oauth2.provider.AuthorizationRequestManager;
 import org.springframework.security.oauth2.provider.token.AbstractTokenGranter;
 import org.springframework.stereotype.Component;
 
@@ -47,8 +47,11 @@ public class JwtAssertionTokenGranter extends AbstractTokenGranter {
 	private ConfigurationPropertiesBean config;
 	
 	@Autowired
+	private static AuthorizationRequestManager authorizationRequestManager;	
+	
+	@Autowired
 	public JwtAssertionTokenGranter(OAuth2TokenEntityService tokenServices, ClientDetailsEntityService clientDetailsService) {
-	    super(tokenServices, clientDetailsService, grantType);
+	    super(tokenServices, clientDetailsService, grantType, authorizationRequestManager);
 	    this.tokenServices = tokenServices;
     }
 

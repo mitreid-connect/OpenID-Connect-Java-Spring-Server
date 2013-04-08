@@ -2,6 +2,7 @@
 
 package org.mitre.openid.connect.web;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -24,7 +25,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.oauth2.provider.DefaultAuthorizationRequest;
+import org.springframework.security.oauth2.provider.AuthorizationRequest;
+import org.springframework.security.oauth2.provider.AuthorizationRequestManager;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.stereotype.Controller;
@@ -35,6 +37,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.google.common.base.Splitter;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -55,6 +58,9 @@ public class ClientDynamicRegistrationEndpoint {
 
 	@Autowired
 	private SystemScopeService scopeService;
+	
+	@Autowired
+	private AuthorizationRequestManager authorizationRequestManager;
 	
 	private static Logger logger = LoggerFactory.getLogger(ClientDynamicRegistrationEndpoint.class);
 	private JsonParser parser = new JsonParser();
@@ -460,11 +466,13 @@ public class ClientDynamicRegistrationEndpoint {
      * @throws AuthenticationException
      */
     private OAuth2AccessTokenEntity createRegistrationAccessToken(ClientDetailsEntity client) throws AuthenticationException {
-	    // create a registration access token, treat it like a client credentials flow
-		// I can't use the auth request interface here because it has no setters and bad constructors -- THIS IS BAD API DESIGN
-		DefaultAuthorizationRequest authorizationRequest = new DefaultAuthorizationRequest(client.getClientId(), Sets.newHashSet(OAuth2AccessTokenEntity.REGISTRATION_TOKEN_SCOPE));
-		authorizationRequest.setApproved(true);
-		authorizationRequest.setAuthorities(Sets.newHashSet(new SimpleGrantedAuthority("ROLE_CLIENT")));
+    	
+    	Map<String, String> authorizationParameters = Maps.newHashMap();
+    	authorizationParameters.put("client_id", client.getClientId());
+    	authorizationParameters.put("scope", OAuth2AccessTokenEntity.REGISTRATION_TOKEN_SCOPE);
+    	AuthorizationRequest authorizationRequest = authorizationRequestManager.createAuthorizationRequest(authorizationParameters);
+    	authorizationRequest.setApproved(true);
+    	authorizationRequest.setAuthorities(Sets.newHashSet(new SimpleGrantedAuthority("ROLE_CLIENT")));
 		OAuth2Authentication authentication = new OAuth2Authentication(authorizationRequest, null);
 		OAuth2AccessTokenEntity registrationAccessToken = (OAuth2AccessTokenEntity) tokenService.createAccessToken(authentication);
 	    return registrationAccessToken;

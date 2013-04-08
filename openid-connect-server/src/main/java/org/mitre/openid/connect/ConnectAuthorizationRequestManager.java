@@ -215,8 +215,7 @@ public class ConnectAuthorizationRequestManager implements AuthorizationRequestM
 			}
 		
         } catch (ParseException e) {
-        	// TODO Auto-generated catch block
-        	e.printStackTrace();
+        	logger.error("ParseException while parsing RequestObject:", e);
         }
 		return parameters;
     }
@@ -233,6 +232,22 @@ public class ConnectAuthorizationRequestManager implements AuthorizationRequestM
 				}
 			}
 		}
+	}
+
+	@Override
+	public AuthorizationRequest createFromExisting(AuthorizationRequest original) {
+		ConnectAuthorizationRequest copy 
+				= new ConnectAuthorizationRequest(original.getAuthorizationParameters(), original.getApprovalParameters(), 
+				original.getClientId(), original.getScope(), original.getResourceIds(),
+				original.getAuthorities(),original.isApproved(), original.getState(), 
+				original.getRedirectUri(), original.getResponseTypes());
+		
+		//If original is a ConnectAuthorizationRequest, preserve extra properties
+		if (original instanceof ConnectAuthorizationRequest) {
+			copy.setApprovedSite(((ConnectAuthorizationRequest) original).getApprovedSite());
+		}
+		
+		return copy;
 	}
 
 }

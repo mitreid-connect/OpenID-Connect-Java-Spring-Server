@@ -15,6 +15,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.common.exceptions.InvalidScopeException;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
+import org.springframework.security.oauth2.provider.AuthorizationRequestManager;
 import org.springframework.security.oauth2.provider.DefaultAuthorizationRequest;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.AbstractTokenGranter;
@@ -31,6 +32,9 @@ public class ChainedTokenGranter extends AbstractTokenGranter {
 
 	private static final String grantType = "urn:ietf:params:oauth:grant_type:redelegate";
 
+	@Autowired
+	private static AuthorizationRequestManager authorizationRequestManager;
+	
 	// keep down-cast versions so we can get to the right queries
 	private OAuth2TokenEntityService tokenServices;
 	
@@ -41,7 +45,7 @@ public class ChainedTokenGranter extends AbstractTokenGranter {
 	 */
 	@Autowired
 	public ChainedTokenGranter(OAuth2TokenEntityService tokenServices, ClientDetailsEntityService clientDetailsService) {
-		super(tokenServices, clientDetailsService, grantType);
+		super(tokenServices, clientDetailsService, grantType, authorizationRequestManager);
 		this.tokenServices = tokenServices;
 	}
 
