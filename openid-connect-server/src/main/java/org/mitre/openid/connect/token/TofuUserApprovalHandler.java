@@ -30,7 +30,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
-import org.springframework.security.oauth2.provider.DefaultAuthorizationRequest;
 import org.springframework.security.oauth2.provider.approval.UserApprovalHandler;
 import org.springframework.stereotype.Component;
 
@@ -138,11 +137,9 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 					ap.setAccessDate(new Date());
 					approvedSiteService.save(ap);
 	
-					// TODO: WHY DAVE WHY
-					DefaultAuthorizationRequest ar = new DefaultAuthorizationRequest(authorizationRequest);
-					ar.setApproved(true);
+					authorizationRequest.setApproved(true);
 					
-					return ar;
+					return authorizationRequest;
 				}
 			}
         }
@@ -153,24 +150,19 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 			//Create an approved site
 			approvedSiteService.createApprovedSite(clientId, userId, null, ws.getAllowedScopes(), ws);
 			
-			// TODO: WHY DAVE WHY
-			DefaultAuthorizationRequest ar = new DefaultAuthorizationRequest(authorizationRequest);
-			ar.setApproved(true);
+			authorizationRequest.setApproved(true);
 			
-			return ar;
+			return authorizationRequest;
 		}
 		
 		// This must be re-parsed here because SECOAUTH forces us to call things in a strange order
 		boolean approved = Boolean.parseBoolean(authorizationRequest.getApprovalParameters().get("user_oauth_approval"));
 		
 		if (approved && !authorizationRequest.getApprovalParameters().isEmpty()) {
-
-			// TODO: Get SECOAUTH to stop breaking polymorphism and start using real objects, SRSLY
-			DefaultAuthorizationRequest ar = new DefaultAuthorizationRequest(authorizationRequest);
 			
 			// process scopes from user input
 			Set<String> allowedScopes = Sets.newHashSet();
-			Map<String,String> approvalParams = ar.getApprovalParameters();
+			Map<String,String> approvalParams = authorizationRequest.getApprovalParameters();
 			
 			Set<String> keys = approvalParams.keySet();
 			
@@ -191,10 +183,10 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 
 			// inject the user-allowed scopes into the auth request
 			// TODO: for the moment this allows both upscoping and downscoping.
-			ar.setScope(allowedScopes);
+			authorizationRequest.setScope(allowedScopes);
 			
 			//Only store an ApprovedSite if the user has checked "remember this decision":
-			String remember = ar.getApprovalParameters().get("remember");
+			String remember = authorizationRequest.getApprovalParameters().get("remember");
 			if (!Strings.isNullOrEmpty(remember) && !remember.equals("none")) {
 				
 				Date timeout = null;
@@ -210,7 +202,7 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 			
 			// TODO: should we set approved here? It gets called later via the isApproved method in this class...
 			
-			return ar;
+			return authorizationRequest;
 		}
 
 		return authorizationRequest;

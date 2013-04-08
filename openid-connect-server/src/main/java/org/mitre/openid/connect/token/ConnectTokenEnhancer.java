@@ -15,7 +15,6 @@
  ******************************************************************************/
 package org.mitre.openid.connect.token;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.Set;
 import java.util.UUID;

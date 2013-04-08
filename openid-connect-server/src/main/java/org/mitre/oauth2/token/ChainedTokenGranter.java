@@ -16,7 +16,6 @@ import org.springframework.security.oauth2.common.exceptions.InvalidScopeExcepti
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.AuthorizationRequestManager;
-import org.springframework.security.oauth2.provider.DefaultAuthorizationRequest;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.AbstractTokenGranter;
 import org.springframework.stereotype.Component;
@@ -77,7 +76,7 @@ public class ChainedTokenGranter extends AbstractTokenGranter {
 	    if (approvedScopes.containsAll(requestedScopes)) {
 
 	    	// build an appropriate auth request to hand to the token services layer
-	    	DefaultAuthorizationRequest outgoingAuthRequest = new DefaultAuthorizationRequest(authorizationRequest);
+	    	AuthorizationRequest outgoingAuthRequest = authorizationRequestManager.createFromExisting(authorizationRequest);
 	    	outgoingAuthRequest.setApproved(true);
 	    	if (requestedScopes.isEmpty()) {
 	    		// if there are no scopes, inherit the original scopes from the token

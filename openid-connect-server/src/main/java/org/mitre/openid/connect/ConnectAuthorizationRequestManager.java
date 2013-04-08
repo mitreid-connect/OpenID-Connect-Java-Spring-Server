@@ -103,10 +103,10 @@ public class ConnectAuthorizationRequestManager implements AuthorizationRequestM
 			scopes = clientScopes;
 		}
 		
-		
-		// note that we have to inject the processed parameters in at this point so that SECOAUTH can find them later (and this object will get copy-constructored away anyway)
-		DefaultAuthorizationRequest request = new DefaultAuthorizationRequest(parameters, Collections.<String, String> emptyMap(), clientId, scopes);
-		request.addClientDetails(client);
+		ConnectAuthorizationRequest request = new ConnectAuthorizationRequest();
+		request.setApprovalParameters(parameters);
+		request.setClientId(clientId);
+		request.setScope(scopes);
 		return request;
 
 	}
