@@ -412,4 +412,23 @@
     	<system>Travis CI</system>
     	<url>https://travis-ci.org/mitreid-connect/OpenID-Connect-Java-Spring-Server</url>
     </ciManagement>
+
+    <reporting>
+	<plugins>
+                        <plugin>
+                                <groupId>org.apache.maven.plugins</groupId>
+                                <artifactId>maven-javadoc-plugin</artifactId>
+                                <configuration>
+                                        <author>true</author>
+                                        <version>true</version>
+                                        <use>true</use>
+                                        <linksource>true</linksource>
+                                        <windowtitle>MITREid Connect v. ${project.version}</windowtitle>
+                                        <doctitle>MITREid Connect v. ${project.version}</doctitle>
+                                        <overview>${basedir}/src/main/javadoc/overview.html</overview>
+                                </configuration>  
+                        </plugin>
+	</plugins>
+    </reporting>
+
 </project>
