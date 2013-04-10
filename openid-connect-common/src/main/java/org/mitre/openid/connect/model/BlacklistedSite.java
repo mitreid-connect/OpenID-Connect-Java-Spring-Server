@@ -20,7 +20,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name="blacklisted_site")
 @NamedQueries({
-	@NamedQuery(name = "BlacklistedSite.getAll", query = "select b from BlacklistedSite b"),
+	@NamedQuery(name = "BlacklistedSite.getAll", query = "select b from BlacklistedSite b")
 })
 public class BlacklistedSite {
 
