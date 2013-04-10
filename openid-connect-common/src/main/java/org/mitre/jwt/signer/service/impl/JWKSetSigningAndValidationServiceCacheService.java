@@ -19,7 +19,7 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.google.common.cache.Cache;
+import com.google.common.cache.LoadingCache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.nimbusds.jose.JWSVerifier;
@@ -39,7 +39,7 @@ import com.nimbusds.jose.jwk.RSAKey;
 @Service
 public class JWKSetSigningAndValidationServiceCacheService {
 
-	private Cache<String, JwtSigningAndValidationService> cache;
+	private LoadingCache<String, JwtSigningAndValidationService> cache;
 
 	public JWKSetSigningAndValidationServiceCacheService() {
 		this.cache = CacheBuilder.newBuilder()

@@ -6,8 +6,6 @@ package org.mitre.oauth2.service.impl;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import javax.annotation.Nullable;
-
 import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.repository.SystemScopeRepository;
 import org.mitre.oauth2.service.SystemScopeService;
@@ -32,7 +30,7 @@ public class DefaultSystemScopeService implements SystemScopeService {
 	
 	private Predicate<SystemScope> isDefault = new Predicate<SystemScope>() {
 		@Override
-        public boolean apply(@Nullable SystemScope input) {
+        public boolean apply(SystemScope input) {
 			return (input != null && input.isDefaultScope());
         }
 	};
@@ -40,14 +38,14 @@ public class DefaultSystemScopeService implements SystemScopeService {
 	
 	private Predicate<SystemScope> isDynReg = new Predicate<SystemScope>() {
 		@Override
-        public boolean apply(@Nullable SystemScope input) {
+        public boolean apply(SystemScope input) {
 			return (input != null && input.isAllowDynReg());
         }
 	};
 	
 	private Function<String, SystemScope> stringToSystemScope = new Function<String, SystemScope>() {
 		@Override
-        public SystemScope apply(@Nullable String input) {
+        public SystemScope apply(String input) {
 			if (input == null) {
 				return null;
 			} else {
@@ -65,7 +63,7 @@ public class DefaultSystemScopeService implements SystemScopeService {
 	
 	private Function<SystemScope, String> systemScopeToString = new Function<SystemScope, String>() {
 		@Override
-        public String apply(@Nullable SystemScope input) {
+        public String apply(SystemScope input) {
 			if (input == null) {
 				return null;
 			} else {
