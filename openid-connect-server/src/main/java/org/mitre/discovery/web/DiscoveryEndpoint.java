@@ -34,19 +34,20 @@ public class DiscoveryEndpoint {
 	@Autowired
 	ConfigurationPropertiesBean config;	
 	
-	@RequestMapping(value={"/.well-known/host-meta", "/.well-known/host-meta.json"},
-			params={"resource", "rel=http://openid.net/specs/connect/1.0/issuer"}, produces = "application/json")
-	public ModelAndView xrdDiscovery(@RequestParam("resource") String resource, ModelAndView modelAndView) {
-		
-		Map<String, String> relMap = new HashMap<String, String>();
-		relMap.put("http://openid.net/specs/connect/1.0/issuer", config.getIssuer());
-		
-		modelAndView.getModel().put("links", relMap);
-		
-		modelAndView.setViewName("jsonXrdResponseView");
-		
-		return modelAndView;
-	}
+	//TODO: rewrite, see issue #279, Webfinger
+//	@RequestMapping(value={"/.well-known/host-meta", "/.well-known/host-meta.json"},
+//			params={"resource", "rel=http://openid.net/specs/connect/1.0/issuer"}, produces = "application/json")
+//	public ModelAndView xrdDiscovery(@RequestParam("resource") String resource, ModelAndView modelAndView) {
+//		
+//		Map<String, String> relMap = new HashMap<String, String>();
+//		relMap.put("http://openid.net/specs/connect/1.0/issuer", config.getIssuer());
+//		
+//		modelAndView.getModel().put("links", relMap);
+//		
+//		modelAndView.setViewName("jsonXrdResponseView");
+//		
+//		return modelAndView;
+//	}
 
 	@RequestMapping("/.well-known/openid-configuration")
 	public ModelAndView providerConfiguration(ModelAndView modelAndView, Principal p) {
