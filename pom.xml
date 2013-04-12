@@ -351,11 +351,6 @@
         	<version>1.6</version>
         </dependency>
         <dependency>
-        	<groupId>org.bouncycastle</groupId>
-        	<artifactId>bcprov-ext-jdk15on</artifactId>
-        	<version>1.47</version>
-        </dependency>
-        <dependency>
         	<groupId>org.codehaus.jackson</groupId>
         	<artifactId>jackson-mapper-asl</artifactId>
         	<version>1.9.2</version>
@@ -370,23 +365,6 @@
       		<version>1.0.2.RELEASE</version>
       		<artifactId>spring-security-oauth2</artifactId>
 	</dependency>
-        <dependency>
-        	<groupId>org.bouncycastle</groupId>
-        	<artifactId>bcpkix-jdk15on</artifactId>
-        	<version>1.47</version>
-        	<exclusions>
-        		<exclusion>
-        			<!-- bcprov-ext already included -->
-        			<artifactId>bcprov-jdk15on</artifactId>
-        			<groupId>org.bouncycastle</groupId>
-        		</exclusion>
-        	</exclusions>
-        </dependency>
-        <dependency>
-			<groupId>net.minidev</groupId>
-			<artifactId>json-smart</artifactId>
-			<version>1.0.9</version>
-		</dependency>
         <dependency>
         	<groupId>com.nimbusds</groupId>
         	<artifactId>nimbus-jose-jwt</artifactId>
