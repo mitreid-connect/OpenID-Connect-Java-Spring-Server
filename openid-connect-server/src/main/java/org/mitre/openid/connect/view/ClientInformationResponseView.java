@@ -26,7 +26,7 @@ import com.google.gson.reflect.TypeToken;
 
 /**
  * 
- * Provides a minimal representation of a client's registration information, to be shown from the dynamic registration endpoint
+ * Provides representation of a client's registration metadata, to be shown from the dynamic registration endpoint
  * on the client_register and rotate_secret operations.
  * 
  * @author jricher
