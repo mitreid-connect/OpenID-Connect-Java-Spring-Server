@@ -24,7 +24,7 @@ public class StatsAPI {
 		
 		m.put("entity", e);
 		
-		return "statsSummaryJson";
+		return "jsonEntityview";
 		
 	}
 	
