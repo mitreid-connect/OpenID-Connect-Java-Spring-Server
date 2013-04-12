@@ -17,8 +17,6 @@ package org.mitre.openid.connect.web;
 
 import java.security.Principal;
 
-import org.mitre.openid.connect.exception.UnknownUserInfoSchemaException;
-import org.mitre.openid.connect.exception.UserNotFoundException;
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.service.UserInfoService;
 import org.slf4j.Logger;
@@ -48,11 +46,7 @@ public class UserInfoEndpoint {
 	private static Logger logger = LoggerFactory.getLogger(UserInfoEndpoint.class);
 	
 	/**
-	 * Get information about the user as specified in the accessToken->idToken included in this request
-	 * 
-	 * @throws UserNotFoundException		    if the user does not exist or cannot be found
-	 * @throws UnknownUserInfoSchemaException	if an unknown schema is used
-	 * @throws InvalidScopeException            if the oauth2 token doesn't have the "openid" scope
+	 * Get information about the user as specified in the accessToken included in this request
 	 */
 	@PreAuthorize("hasRole('ROLE_USER') and #oauth2.hasScope('openid')")
 	@RequestMapping(value="/userinfo", method= {RequestMethod.GET, RequestMethod.POST}, produces = "application/json")

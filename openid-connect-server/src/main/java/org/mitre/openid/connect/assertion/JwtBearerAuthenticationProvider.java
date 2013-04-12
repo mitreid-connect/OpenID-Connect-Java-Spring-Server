@@ -8,7 +8,6 @@ import java.util.Date;
 
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.jwt.signer.service.impl.JWKSetSigningAndValidationServiceCacheService;
-import org.mitre.oauth2.exception.ClientNotFoundException;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
@@ -20,6 +19,7 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
@@ -117,7 +117,7 @@ public class JwtBearerAuthenticationProvider implements AuthenticationProvider {
     		// IFF we managed to get all the way down here, the token is valid
 			return new JwtBearerAssertionAuthenticationToken(client.getClientId(), jwt, client.getAuthorities());
     		
-    	} catch (ClientNotFoundException e) {
+    	} catch (InvalidClientException e) {
     		throw new UsernameNotFoundException("Could not find client: " + jwtAuth.getClientId());
     	} catch (ParseException e) {
 	        // TODO Auto-generated catch block
