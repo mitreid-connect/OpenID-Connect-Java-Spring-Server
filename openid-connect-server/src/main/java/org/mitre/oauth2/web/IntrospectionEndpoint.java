@@ -31,6 +31,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -58,58 +59,26 @@ public class IntrospectionEndpoint {
 		this.tokenServices = tokenServices;
 	}
 	
-	@ExceptionHandler(InvalidTokenException.class)
-	public ModelAndView tokenNotFound(InvalidTokenException ex) {
-		Map<String,Boolean> e = ImmutableMap.of("valid", Boolean.FALSE);
-		Map<String, Object> model = new HashMap<String, Object>();
-		model.put("entity", e);
-		
-		logger.error("InvalidTokenException: " + ex.getStackTrace().toString());
-		
-		model.put("code", HttpStatus.BAD_REQUEST);
-		
-		return new ModelAndView("jsonEntityView", model);
-	}
-	
 	@PreAuthorize("hasRole('ROLE_CLIENT')")
 	@RequestMapping("/introspect")
-	public ModelAndView verify(@RequestParam("token") String tokenValue, Principal p, ModelAndView modelAndView) {
-		
-		/*
-		if (p != null && p instanceof OAuth2Authentication) {
-			OAuth2Authentication auth = (OAuth2Authentication)p;
-			
-			if (auth.getDetails() != null && auth.getDetails() instanceof OAuth2AuthenticationDetails) {
-				OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails)auth.getDetails();
-				
-				String tokenValue = details.getTokenValue();
-				
-				OAuth2AccessTokenEntity token = tokenServices.readAccessToken(tokenValue);
-		
-				if (token != null) {
-					// if it's a valid token, we'll print out the scope and expiration
-					modelAndView.setViewName("tokenIntrospection");
-					modelAndView.addObject("entity", token);
-				}
-			}
-		}*/
+	public String verify(@RequestParam("token") String tokenValue, Principal p, Model model) {
 		
 		if (Strings.isNullOrEmpty(tokenValue)) {
 			logger.error("Verify failed; token value is null");
-			modelAndView.addObject("code", HttpStatus.BAD_REQUEST);
-			modelAndView.setViewName("httpCodeView");
-			return modelAndView;
+			Map<String,Boolean> entity = ImmutableMap.of("valid", Boolean.FALSE);
+			model.addAttribute("entity", entity);
+			return "jsonEntityView";
 		}
 		
 		OAuth2AccessTokenEntity token = null;
 		
 		try {
 			token = tokenServices.readAccessToken(tokenValue);		
-		} catch (AuthenticationException e) {
+		} catch (InvalidTokenException e) {
 			logger.error("Verify failed; AuthenticationException: " + e.getStackTrace().toString());
-			modelAndView.addObject("code", HttpStatus.FORBIDDEN);
-			modelAndView.setViewName("httpCodeView");
-			return modelAndView;
+			Map<String,Boolean> entity = ImmutableMap.of("valid", Boolean.FALSE);
+			model.addAttribute("entity", entity);
+			return "jsonEntityView";
 		}
 			
 		ClientDetailsEntity tokenClient = token.getClient();
@@ -124,27 +93,23 @@ public class IntrospectionEndpoint {
 				if (authClient.equals(tokenClient) || authClient.getScope().containsAll(token.getScope())) {
 				
 					// if it's a valid token, we'll print out information on it
-					modelAndView.setViewName("tokenIntrospection");
-					modelAndView.addObject("entity", token);
-					return modelAndView;
+					model.addAttribute("entity", token);
+					return "tokenIntrospection";
 				} else {
 					logger.error("Verify failed; client tried to introspect a token of an incorrect scope");
-					modelAndView.addObject("code", HttpStatus.BAD_REQUEST);
-					modelAndView.setViewName("httpCodeView");
-					return modelAndView;
+					model.addAttribute("code", HttpStatus.FORBIDDEN);
+					return "httpCodeView";
 				}
 			} else {
 				logger.error("Verify failed; client " + clientId + " is not allowed to call introspection endpoint");
-				modelAndView.addObject("code", HttpStatus.BAD_REQUEST);
-				modelAndView.setViewName("httpCodeView");
-				return modelAndView;
+				model.addAttribute("code", HttpStatus.FORBIDDEN);
+				return "httpCodeView";
 			}
 		} else {
-			//TODO: Log error client not found
+			// This is a bad error -- I think it means we have a token outstanding that doesn't map to a client?
 			logger.error("Verify failed; client " + clientId + " not found.");
-			modelAndView.addObject("code", HttpStatus.NOT_FOUND);
-			modelAndView.setViewName("httpCodeView");
-			return modelAndView;
+			model.addAttribute("code", HttpStatus.NOT_FOUND);
+			return "httpCodeView";
 		}
 		
 	}
