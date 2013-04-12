@@ -8,7 +8,7 @@
     <relativePath>..</relativePath>
   </parent>
   <artifactId>openid-connect-client</artifactId> 
-  <description>OpenID Connect Client Files</description>
+  <description>OpenID Connect Client filter for Spring Security</description>
   <name>OpenID Connect Client</name>
   <dependencies>
     <dependency>
