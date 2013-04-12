@@ -47,10 +47,10 @@ import com.google.gson.JsonSyntaxException;
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTParser;
 
-@Component("jsonUserInfoView")
-public class JSONUserInfoView extends AbstractView {
+@Component("userInfoView")
+public class UserInfoView extends AbstractView {
 	
-	private static Logger logger = LoggerFactory.getLogger(JSONUserInfoView.class);
+	private static Logger logger = LoggerFactory.getLogger(UserInfoView.class);
 	
 	/* (non-Javadoc)
 	 * @see org.springframework.web.servlet.view.AbstractView#renderMergedOutputModel(java.util.Map, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
@@ -116,7 +116,7 @@ public class JSONUserInfoView extends AbstractView {
 			
 		} catch (IOException e) {
 			
-			logger.error("IOException in JSONUserInfoView.java: ", e);
+			logger.error("IOException in UserInfoView.java: ", e);
 			
 		}
 
@@ -199,11 +199,15 @@ public class JSONUserInfoView extends AbstractView {
 			return obj;
 		}
 		
+		// TODO: this mehod is likely to be fragile if the data model changes at all
+		
 		//For each claim found, add it if not already present
 		for (Entry<String, JsonElement> i : claims.getAsJsonObject().entrySet()) {
 			String claimName = i.getKey();
 			if (!obj.has(claimName)) {
 				String value = "";
+
+				
 				//Process claim names to go from "claim_name" to "ClaimName"
 				String camelClaimName = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, claimName);
 				//Now we have "getClaimName"
