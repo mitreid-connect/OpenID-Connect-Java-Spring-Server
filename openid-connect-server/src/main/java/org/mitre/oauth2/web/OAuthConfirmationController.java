@@ -123,7 +123,7 @@ public class OAuthConfirmationController {
         
         model.put("scopes", sortedScopes);
         
-        return new ModelAndView("oauth/approve", model);
+        return new ModelAndView("approve", model);
 	}
 
 	/**
