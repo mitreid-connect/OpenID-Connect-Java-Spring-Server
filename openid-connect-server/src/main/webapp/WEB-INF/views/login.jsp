@@ -20,8 +20,8 @@ $(document).ready(function() {
 <div class="alert alert-error">The system was unable to log you in. Please try again.</div>
 </c:if>
 
-<form action="<%=request.getContextPath()%>/j_spring_security_check" method="POST" class="well span3 offset1">
- <fieldset>
+<form action="<%=request.getContextPath()%>/j_spring_security_check" method="POST">
+ <fieldset class="well span3 offset1">
     <div class="input-prepend"><span class="add-on"><i class="icon-user"></i></span><input type="text" name="j_username" id="j_username" value="" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" placeholder="Username"></div>
     <div class="input-prepend"><span class="add-on"><i class="icon-lock"></i></span><input type="password" name="j_password" id="j_password" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" placeholder="Password"></div>
     <div class="form-actions"><input type="submit" name="submit" value="Login" class="btn"></div>
