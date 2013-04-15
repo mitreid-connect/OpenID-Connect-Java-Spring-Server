@@ -15,10 +15,17 @@
  ******************************************************************************/
 package org.mitre.openid.connect.token;
 
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpSession;
 
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
@@ -31,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.common.util.OAuth2Utils;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.stereotype.Service;
@@ -40,7 +48,9 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jose.util.Base64URL;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 
@@ -80,7 +90,8 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 		
 		// TODO: use client's default signing algorithm
 
-		SignedJWT signed = new SignedJWT(new JWSHeader(jwtService.getDefaultSigningAlgorithm()), claims);
+		JWSAlgorithm signingAlg = jwtService.getDefaultSigningAlgorithm();
+		SignedJWT signed = new SignedJWT(new JWSHeader(signingAlg), claims);
 		
         jwtService.signJwt(signed);
 	    
@@ -132,7 +143,43 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 				idClaims.setCustomClaim("nonce", nonce);
 			}
 
-			SignedJWT idToken = new SignedJWT(new JWSHeader(jwtService.getDefaultSigningAlgorithm()), idClaims);
+			String responseType = authentication.getAuthorizationRequest().getAuthorizationParameters().get("response_type");
+			Set<String> responseTypes = OAuth2Utils.parseParameterList(responseType);
+			if (responseTypes.contains("token")) {
+				// calculate the token hash
+				
+				// get the right algorithm size
+				// TODO: all this string parsing feels like a bad hack
+				String algName = signingAlg.getName();
+				Pattern re = Pattern.compile("^[HRE]S(\\d+)$");
+				Matcher match = re.matcher(algName);
+				if (match.matches()) {
+					String bits = match.group(1);
+					String hmacAlg = "HMACSHA" + bits;
+					try {
+	                    Mac mac = Mac.getInstance(hmacAlg);
+	                    mac.init(new SecretKeySpec(token.getJwt().serialize().getBytes(), hmacAlg));
+	                    
+	                    byte[] at_hash_bytes = mac.doFinal();
+	                    byte[] at_hash_bytes_left = Arrays.copyOf(at_hash_bytes, at_hash_bytes.length / 2);
+	                    Base64URL at_hash = Base64URL.encode(at_hash_bytes_left);
+	                    
+	                    idClaims.setClaim("at_hash", at_hash);
+	                    
+	                } catch (NoSuchAlgorithmException e) {
+	                    // TODO Auto-generated catch block
+	                    e.printStackTrace();
+                    } catch (InvalidKeyException e) {
+	                    // TODO Auto-generated catch block
+	                    e.printStackTrace();
+                    }
+					
+				}
+				
+			}
+			
+			
+			SignedJWT idToken = new SignedJWT(new JWSHeader(signingAlg), idClaims);
 
 			//TODO: check for client's preferred signer alg and use that
 			
