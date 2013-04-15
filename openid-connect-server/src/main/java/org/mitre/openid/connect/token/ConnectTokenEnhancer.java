@@ -15,16 +15,18 @@
  ******************************************************************************/
 package org.mitre.openid.connect.token;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.Set;
 import java.util.UUID;
+
+import javax.servlet.http.HttpSession;
 
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
+import org.mitre.openid.connect.web.AuthenticationTimeStamper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,8 @@ import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -100,9 +104,17 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 			JWTClaimsSet idClaims = new JWTClaimsSet();
 			
 			
-			idClaims.setCustomClaim("auth_time", new Date().getTime());
+			// get the auth time from the session
+			ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+			if (attr != null) {
+				HttpSession session = attr.getRequest().getSession();
+				if (session != null) {
+					Date authTime = (Date) session.getAttribute(AuthenticationTimeStamper.AUTH_TIMESTAMP);
+					idClaims.setClaim("auth_time", authTime.getTime() / 1000);
+				}
+			}
 			
-			idClaims.setIssueTime(new Date());
+			idClaims.setIssueTime(claims.getIssueTime());
 			
 			if (client.getIdTokenValiditySeconds() != null) {
 				Date expiration = new Date(System.currentTimeMillis() + (client.getIdTokenValiditySeconds() * 1000L));

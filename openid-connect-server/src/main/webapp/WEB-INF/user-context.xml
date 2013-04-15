@@ -27,7 +27,7 @@
 	</security:http>
 		
 	<security:http disable-url-rewriting="true" use-expressions="true"> 
-		<security:form-login login-page="/login" authentication-failure-url="/login?error=failure" />
+		<security:form-login login-page="/login" authentication-failure-url="/login?error=failure" authentication-success-handler-ref="authenticationTimeStamper" />
 		<security:intercept-url pattern="/**" access="permitAll" />
 		<security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
 		<security:logout logout-url="/logout" />
