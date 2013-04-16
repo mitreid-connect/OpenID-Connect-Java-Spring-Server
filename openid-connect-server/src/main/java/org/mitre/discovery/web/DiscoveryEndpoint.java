@@ -15,21 +15,29 @@
  ******************************************************************************/
 package org.mitre.discovery.web;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.oauth2.service.SystemScopeService;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
+import org.mitre.openid.connect.model.UserInfo;
+import org.mitre.openid.connect.service.UserInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
-import com.google.gson.JsonObject;
 
 /**
  * 
@@ -52,20 +60,56 @@ public class DiscoveryEndpoint {
 	@Autowired
 	private JwtSigningAndValidationService jwtService;
 	
-	//TODO: rewrite, see issue #279, Webfinger
-//	@RequestMapping(value={"/.well-known/host-meta", "/.well-known/host-meta.json"},
-//			params={"resource", "rel=http://openid.net/specs/connect/1.0/issuer"}, produces = "application/json")
-//	public ModelAndView xrdDiscovery(@RequestParam("resource") String resource, ModelAndView modelAndView) {
-//		
-//		Map<String, String> relMap = new HashMap<String, String>();
-//		relMap.put("http://openid.net/specs/connect/1.0/issuer", config.getIssuer());
-//		
-//		modelAndView.getModel().put("links", relMap);
-//		
-//		modelAndView.setViewName("jsonXrdResponseView");
-//		
-//		return modelAndView;
-//	}
+	@Autowired
+	private UserInfoService userService;
+	
+	@RequestMapping(value={"/.well-known/webfinger"},
+			params={"resource", "rel=http://openid.net/specs/connect/1.0/issuer"}, produces = "application/json")
+	public String webfinger(@RequestParam("resource") String resource, Model model) {
+
+		if (!resource.equals(config.getIssuer())) {
+			// it's not the issuer directly, need to check other methods
+
+			try {
+				URI resourceUri = new URI(resource);
+				if (resourceUri != null
+						&& resourceUri.getScheme() != null 
+						&& resourceUri.getScheme().equals("acct")) {
+					// acct: URI
+					
+					// split out the user and host parts
+					List<String> parts = Lists.newArrayList(Splitter.on("@").split(resourceUri.getSchemeSpecificPart()));
+
+					UserInfo user = null;
+					if (parts.size() > 0) {
+						user = userService.getByUsername(parts.get(0)); // first part is the username
+					}
+					
+					if (user == null) {
+						logger.info("User not found: " + resource);
+						model.addAttribute("code", HttpStatus.NOT_FOUND);
+						return "httpCodeView";
+					}
+					// TODO: check the "host" part against our issuer 
+					
+				} else {
+					logger.info("Unknown URI format: " + resource);
+					model.addAttribute("code", HttpStatus.NOT_FOUND);
+					return "httpCodeView";
+				}
+			} catch (URISyntaxException e) {
+				logger.info("URI parsing exception: " + resource, e);
+				model.addAttribute("code", HttpStatus.NOT_FOUND);
+				return "httpCodeView";
+			}
+		}
+		
+		// if we got here, then we're good
+		model.addAttribute("resource", resource);
+		model.addAttribute("issuer", config.getIssuer());
+		
+		return "webfingerView";
+	}
 
 	@RequestMapping("/.well-known/openid-configuration")
 	public String providerConfiguration(Model model) {
