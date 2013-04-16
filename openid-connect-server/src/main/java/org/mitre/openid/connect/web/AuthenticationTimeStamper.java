@@ -39,6 +39,10 @@ public class AuthenticationTimeStamper extends SavedRequestAwareAuthenticationSu
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 
+		//
+		// FIXME: storing the auth time in the session doesn't actually work because we need access to it from the token endpoint when the user isn't present
+		//
+		
 		Date authTimestamp = new Date();
 		
 		HttpSession session = request.getSession();

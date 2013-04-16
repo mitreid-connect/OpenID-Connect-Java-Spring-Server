@@ -115,13 +115,19 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 			JWTClaimsSet idClaims = new JWTClaimsSet();
 			
 			
+			//
+			// FIXME: storing the auth time in the session doesn't actually work, because we need access to it from the token endpoint when the user isn't present
+			//
+			
 			// get the auth time from the session
 			ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
 			if (attr != null) {
 				HttpSession session = attr.getRequest().getSession();
 				if (session != null) {
 					Date authTime = (Date) session.getAttribute(AuthenticationTimeStamper.AUTH_TIMESTAMP);
-					idClaims.setClaim("auth_time", authTime.getTime() / 1000);
+					if (authTime != null) {
+						idClaims.setClaim("auth_time", authTime.getTime() / 1000);
+					}
 				}
 			}
 			
