@@ -17,8 +17,11 @@ package org.mitre.jwt.signer.service.impl;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.mitre.jose.keystore.JWKSetKeyStore;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
@@ -247,5 +250,25 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 		
 		return pubKeys;
 	}
+
+	/* (non-Javadoc)
+	 * @see org.mitre.jwt.signer.service.JwtSigningAndValidationService#getAllSigningAlgsSupported()
+	 */
+    @Override
+    public Collection<JWSAlgorithm> getAllSigningAlgsSupported() {
+    	
+    	Set<JWSAlgorithm> algs = new HashSet<JWSAlgorithm>();
+    	
+    	for (JWSSigner signer : signers.values()) {
+	        algs.addAll(signer.supportedAlgorithms());
+        }
+
+    	for (JWSVerifier verifier : verifiers.values()) {
+    		algs.addAll(verifier.supportedAlgorithms());
+    	}
+    	
+    	return algs;
+    	
+    }
 	
 }

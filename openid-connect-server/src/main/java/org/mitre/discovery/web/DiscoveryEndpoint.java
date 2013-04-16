@@ -15,24 +15,42 @@
  ******************************************************************************/
 package org.mitre.discovery.web;
 
-import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
+import org.mitre.oauth2.service.SystemScopeService;
+import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.ModelAndView;
-import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 
 import com.google.common.collect.Lists;
+import com.google.gson.JsonObject;
 
+/**
+ * 
+ * Handle OpenID Connect Discovery.
+ * 
+ * @author jricher
+ *
+ */
 @Controller
 public class DiscoveryEndpoint {
 
+	private static Logger logger = LoggerFactory.getLogger(DiscoveryEndpoint.class);
+	
 	@Autowired
-	ConfigurationPropertiesBean config;	
+	private ConfigurationPropertiesBean config;	
+	
+	@Autowired
+	private SystemScopeService scopeService;
+	
+	@Autowired
+	private JwtSigningAndValidationService jwtService;
 	
 	//TODO: rewrite, see issue #279, Webfinger
 //	@RequestMapping(value={"/.well-known/host-meta", "/.well-known/host-meta.json"},
@@ -50,36 +68,89 @@ public class DiscoveryEndpoint {
 //	}
 
 	@RequestMapping("/.well-known/openid-configuration")
-	public ModelAndView providerConfiguration(ModelAndView modelAndView, Principal p) {
+	public String providerConfiguration(Model model) {
 
 		/*	
 		 *
-		 	version 	string 	Version of the provider response. "3.0" is the default.
-			issuer 	string 	The https: URL with no query or fragment component that the OP asserts as its Issuer Identifier
-			authorization_endpoint 	string 	URL of the OP's Authentication and Authorization Endpoint [OpenID.Messages]
-			token_endpoint 	string 	URL of the OP's OAuth 2.0 Token Endpoint [OpenID.Messages]
-			userinfo_endpoint 	string 	URL of the OP's UserInfo Endpoint [OpenID.Messages]
-			refresh_session_endpoint 	string 	URL of the OP's Refresh Session Endpoint [OpenID.Session]
-			end_session_endpoint 	string 	URL of the OP's End Session Endpoint [OpenID.Session]
-			jwk_url 	string 	URL of the OP's JSON Web Key [JWK] document. Server's signing Key
-			jwk_encryption_url 	string 	URL of the OP's JSON Web Key [JWK] document. Server's Encryption Key, if not present, its value is the same as the URL provided by jwk_url
-			x509_url 	string 	URL of the OP's X.509 certificates in PEM format.
-			x509_encryption_url 	string 	URL of the OP's X.509 certificates in PEM format. Server's Encryption Key, if not present its value is the same as the URL provided by x509_url
-			registration_endpoint 	string 	URL of the OP's Dynamic Client Registration Endpoint [OpenID.Registration]
-			scopes_supported 	array 	A JSON array containing a list of the OAuth 2.0 [OAuth2.0] scope values that this server supports. The server MUST support the openid scope value.
-			response_types_supported 	array 	A JSON array containing a list of the OAuth 2.0 response_type that this server supports. The server MUST support the code, id_token, and the token id_token response_type.
-			acrs_supported 	array 	A JSON array containing a list of the Authentication Context Class References that this server supports.
-			subject_types_supported 	array 	A JSON array containing a list of the user identifier types that this server supports. Valid types include pairwise and public.
-			userinfo_algs_supported 	array 	A JSON array containing a list of the JWS [JWS] and JWE [JWE] signing and encryption algorithms [JWA] supported by the UserInfo Endpoint to encode the JWT [JWT].
-			id_token_algs_supported 	array 	A JSON array containing a list of the JWS and JWE signing and encryption algorithms [JWA] supported by the Authorization Server for the ID Token to encode the JWT [JWT].
-			request_object_algs_supported 	array 	A JSON array containing a list of the JWS and JWE signing and encryption algorithms [JWA] supported by the Authorization Server for the OpenID Request Object described in Section 2.1.2.1 of OpenID Connect Messages [OpenID.Messages] to encode the JWT [JWT]. Servers SHOULD support RS256.
-			token_endpoint_auth_methods_supported 	array 	A JSON array containing a list of authentication types supported by this Token Endpoint. The options are client_secret_post, client_secret_basic, client_secret_jwt, and private_key_jwt, as described in Section 2.2.1 of OpenID Connect Messages 1.0 [OpenID.Messages]. Other Authentication types may be defined by extension. If unspecified or omitted, the default is client_secret_basic HTTP Basic Authentication Scheme as specified in Section 2.3.1 of OAuth 2.0 [OAuth2.0].
-			token_endpoint_auth_algs_supported 	array 	A JSON array containing a list of the JWS signing algorithms [JWA] supported by the Token Endpoint for the private_key_jwt method to encode the JWT [JWT]. Servers SHOULD support RS256.
-		 *
+		    version
+		        REQUIRED. Version string of the provider response. "3.0" is the expected value. 
+		    issuer
+		        REQUIRED. URL using the https scheme with no query or fragment component that the OP asserts as its Issuer Identifier. 
+		    authorization_endpoint
+		        OPTIONAL. URL of the OP's Authentication and Authorization Endpoint [OpenID.Messages]. 
+		    token_endpoint
+		        OPTIONAL. URL of the OP's OAuth 2.0 Token Endpoint [OpenID.Messages]. 
+		    userinfo_endpoint
+		        RECOMMENDED. URL of the OP's UserInfo Endpoint [OpenID.Messages]. This URL MUST use the https scheme and MAY contain port, path, and query parameter components. 
+		    check_session_iframe
+		        OPTIONAL. URL of an OP endpoint that provides a page to support cross-origin communications for session state information with the RP Client, using the HTML5 postMessage API. The page is loaded from an invisible iframe embedded in an RP page so that it can run in the OP's security context.[OpenID.Session] 
+		    end_session_endpoint
+		        OPTIONAL. URL of the OP's endpoint that initiates the user logout [OpenID.Session]. 
+		    jwks_uri
+		        OPTIONAL. URL of the OP's JSON Web Key Set [JWK] document that contains the Server's signing key(s) that are used for signing responses to the Client. The JWK Set MAY also contain the Server's encryption key(s) that are used by the Client to encrypt requests to the Server. When both signing and encryption keys are made available, a use (Key Use) parameter value is REQUIRED for all keys in the document to indicate each key's intended usage. 
+		    registration_endpoint
+		        RECOMMENDED. URL of the OP's Dynamic Client Registration Endpoint [OpenID.Registration]. 
+		    scopes_supported
+		        RECOMMENDED. JSON array containing a list of the OAuth 2.0 [RFC6749] scope values that this server supports. The server MUST support the openid scope value. 
+		    response_types_supported
+		        REQUIRED. JSON array containing a list of the OAuth 2.0 response_type values that this server supports. The server MUST support the code, id_token, and the token id_token response type values. 
+		    grant_types_supported
+		        OPTIONAL. JSON array containing a list of the OAuth 2.0 grant type values that this server supports. The server MUST support the authorization_code and implicit grant type values and MAY support the urn:ietf:params:oauth:grant-type:jwt-bearer grant type defined in OAuth JWT Bearer Token Profiles [OAuth.JWT]. If omitted, the default value is ["authorization_code", "implicit"]. 
+		    acr_values_supported
+		        OPTIONAL. JSON array containing a list of the Authentication Context Class References that this server supports. 
+		    subject_types_supported
+		        REQUIRED. JSON array containing a list of the subject identifier types that this server supports. Valid types include pairwise and public. 
+		    userinfo_signing_alg_values_supported
+		        OPTIONAL. JSON array containing a list of the JWS [JWS] signing algorithms (alg values) [JWA] supported by the UserInfo Endpoint to encode the Claims in a JWT [JWT]. 
+		    userinfo_encryption_alg_values_supported
+		        OPTIONAL. JSON array containing a list of the JWE [JWE] encryption algorithms (alg values) [JWA] supported by the UserInfo Endpoint to encode the Claims in a JWT [JWT]. 
+		    userinfo_encryption_enc_values_supported
+		        OPTIONAL. JSON array containing a list of the JWE encryption algorithms (enc values) [JWA] supported by the UserInfo Endpoint to encode the Claims in a JWT [JWT]. 
+		    id_token_signing_alg_values_supported
+		        REQUIRED. JSON array containing a list of the JWS signing algorithms (alg values) supported by the Authorization Server for the ID Token to encode the Claims in a JWT [JWT]. 
+		    id_token_encryption_alg_values_supported
+		        OPTIONAL. JSON array containing a list of the JWE encryption algorithms (alg values) supported by the Authorization Server for the ID Token to encode the Claims in a JWT [JWT]. 
+		    id_token_encryption_enc_values_supported
+		        OPTIONAL. JSON array containing a list of the JWE encryption algorithms (enc values) supported by the Authorization Server for the ID Token to encode the Claims in a JWT [JWT]. 
+		    request_object_signing_alg_values_supported
+		        OPTIONAL. JSON array containing a list of the JWS signing algorithms (alg values) supported by the Authorization Server for the Request Object described in Section 2.9 of OpenID Connect Messages 1.0 [OpenID.Messages]. These algorithms are used both when the Request Object is passed by value (using the request parameter) and when it is passed by reference (using the request_uri parameter). Servers SHOULD support none and RS256. 
+		    request_object_encryption_alg_values_supported
+		        OPTIONAL. JSON array containing a list of the JWE encryption algorithms (alg values) supported by the Authorization Server for the Request Object described in Section 2.9 of OpenID Connect Messages 1.0 [OpenID.Messages]. These algorithms are used both when the Request Object is passed by value and when it is passed by reference. 
+		    request_object_encryption_enc_values_supported
+		        OPTIONAL. JSON array containing a list of the JWE encryption algorithms (enc values) supported by the Authorization Server for the Request Object described in Section 2.9 of OpenID Connect Messages 1.0 [OpenID.Messages]. These algorithms are used both when the Request Object is passed by value and when it is passed by reference. 
+		    token_endpoint_auth_methods_supported
+		        OPTIONAL. JSON array containing a list of authentication methods supported by this Token Endpoint. The options are client_secret_post, client_secret_basic, client_secret_jwt, and private_key_jwt, as described in Section 2.2.1 of OpenID Connect Messages 1.0 [OpenID.Messages]. Other authentication methods may be defined by extensions. If omitted, the default is client_secret_basic -- the HTTP Basic Authentication Scheme as specified in Section 2.3.1 of OAuth 2.0 [RFC6749]. 
+		    token_endpoint_auth_signing_alg_values_supported
+		        OPTIONAL. JSON array containing a list of the JWS signing algorithms (alg values) supported by the Token Endpoint for the private_key_jwt and client_secret_jwt methods to encode the JWT [JWT]. Servers SHOULD support RS256. 
+		    display_values_supported
+		        OPTIONAL. JSON array containing a list of the display parameter values that the OpenID Provider supports. These values are described in Section 2.1.1 of OpenID Connect Messages 1.0 [OpenID.Messages]. 
+		    claim_types_supported
+		        OPTIONAL. JSON array containing a list of the Claim Types that the OpenID Provider supports. These Claim Types are described in Section 2.6 of OpenID Connect Messages 1.0 [OpenID.Messages]. Values defined by this specification are normal, aggregated, and distributed. If not specified, the implementation supports only normal Claims. 
+		    claims_supported
+		        RECOMMENDED. JSON array containing a list of the Claim Names of the Claims that the OpenID Provider may be able to supply values for. Note that for privacy or other reasons, this may not be an exhaustive list. 
+		    service_documentation
+		        OPTIONAL. URL of a page containing human-readable information that developers might want or need to know when using the OpenID Provider. In particular, if the OpenID Provider does not support Dynamic Client Registration, then information on how to register Clients should be provided in this documentation. 
+		    claims_locales_supported
+		        OPTIONAL. Languages and scripts supported for values in Claims being returned, represented as a JSON array of BCP47 [RFC5646] language tag values. Not all languages and scripts may be supported for all Claim values. 
+		    ui_locales_supported
+		        OPTIONAL. Languages and scripts supported for the user interface, represented as a JSON array of BCP47 [RFC5646] language tag values. 
+		    claims_parameter_supported
+		        OPTIONAL. Boolean value specifying whether the OP supports use of the claims parameter, with true indicating support. If omitted, the default value is false. 
+		    request_parameter_supported
+		        OPTIONAL. Boolean value specifying whether the OP supports use of the request parameter, with true indicating support. If omitted, the default value is false. 
+		    request_uri_parameter_supported
+		        OPTIONAL. Boolean value specifying whether the OP supports use of the request_uri parameter, with true indicating support. If omitted, the default value is true. 
+		    require_request_uri_registration
+		        OPTIONAL. Boolean value specifying whether the OP requires any request_uri values used to be pre-registered using the request_uris registration parameter. Pre-registration is REQUIRED when the value is true. 
+		    op_policy_uri
+		        OPTIONAL. URL that the OpenID Provider provides to the person registering the Client to read about the OP's requirements on how the Relying Party may use the data provided by the OP. The registration process SHOULD display this URL to the person registering the Client if it is given. 
+		    op_tos_uri
+		        OPTIONAL. URL that the OpenID Provider provides to the person registering the Client to read about OpenID Provider's terms of service. The registration process SHOULD display this URL to the person registering the Client if it is given. 		 *
 		 */
 		String baseUrl = config.getIssuer();
 		
 		if (!baseUrl.endsWith("/")) {
+			logger.warn("Configured issuer doesn't end in /, adding for discovery: " + baseUrl);
 			baseUrl = baseUrl.concat("/");
 		}
 
@@ -89,21 +160,62 @@ public class DiscoveryEndpoint {
 		m.put("authorization_endpoint", baseUrl + "authorize");
 		m.put("token_endpoint", baseUrl + "token");
 		m.put("userinfo_endpoint", baseUrl + "userinfo");
-		//m.put("refresh_session_endpoint", baseUrl + "/refresh_session");
-		//m.put("end_session_endpoint", baseUrl + "/end_session");
-		m.put("jwk_url", baseUrl + "jwk");
-		m.put("x509_url", baseUrl + "x509");
+		//check_session_iframe
+		//end_session_endpoint
+		m.put("jwks_uri", baseUrl + "jwk");
 		m.put("registration_endpoint", baseUrl + "register");
-		m.put("scopes_supported", Lists.newArrayList("openid", "email", "profile", "address", "phone"));
-		m.put("response_types_supported", Lists.newArrayList("code"));
-		m.put("token_endpoint_auth_methods_supported", Lists.newArrayList("client_secret_post", "client_secret_basic", "private_key_jwt", "none"));
+		m.put("scopes_supported", scopeService.toStrings(scopeService.getDynReg())); // these are the scopes that you can dynamically register for, which is what matters for discovery
+		m.put("response_types_supported", Lists.newArrayList("code", "token"));
+		m.put("grant_types_supported", Lists.newArrayList("authorization_cide", "implicit", "urn:ietf:params:oauth:grant-type:jwt-bearerurn:ietf:params:oauth:grant-type:jwt-bearer", "client_credentials", "urn:ietf:params:oauth:grant_type:redelegate")); // we also support client_credentials and chaining, but OIDC doesn't specify those so we'll leave them off
+		//acr_values_supported
+		m.put("subject_types_supported", Lists.newArrayList("public"));
+		//userinfo_signing_alg_values_supported
+		//userinfo_encryption_alg_values_supported
+		//userinfo_encryption_enc_values_supported
+		m.put("id_token_signing_alg_values_supported", jwtService.getAllSigningAlgsSupported());
+		//id_token_encryption_alg_values_supported
+		//id_token_encryption_enc_values_supported
+		m.put("request_object_signing_alg_values_supported", jwtService.getAllSigningAlgsSupported());
+		//request_object_alg_values_supported
+		//request_object_env_values_supported
+		m.put("token_endpoint_auth_methods_supported", Lists.newArrayList("client_secret_post", "client_secret_basic", /*"client_secret_jwt",*/ "private_key_jwt", "none"));
+		//display_types_supported
+		m.put("claim_types_supported", Lists.newArrayList("normal" /*, "aggregated", "distributed"*/));
+		m.put("claims_supported", Lists.newArrayList(
+				"sub", 
+				"name", 
+				"preferred_username", 
+				"given_name", 
+				"family_name", 
+				"middle_name", 
+				"nickname", 
+				"profile", 
+				"picture", 
+				"website", 
+				"gender", 
+				"zone_info", 
+				"locale", 
+				"updated_time", 
+				"birthdate", 
+				"email", 
+				"email_verified", 
+				"phone_number", 
+				"address" 
+				));
+		m.put("service_documentation", baseUrl + "about");
+		//claims_locales_supported
+		//ui_locales_supported
+		m.put("claims_parameter_supported", false);
+		m.put("request_parameter_supported", true);
+		m.put("request_uri_parameter_supported", false);
+		m.put("require_request_uri_registration", false);
+		m.put("op_policy_uri", baseUrl + "about");
+		m.put("op_tos_uri", baseUrl + "about");
 		
-		modelAndView.getModel().put("entity", m);
-		// TODO: everything in the list up there
 		
-		modelAndView.setViewName("jsonOpenIdConfigurationView");
+		model.addAttribute("entity", m);
 		
-		return modelAndView;
+		return "jsonEntityView";
 	}
 	
 }

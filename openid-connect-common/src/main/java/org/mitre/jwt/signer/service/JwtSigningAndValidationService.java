@@ -17,6 +17,7 @@ package org.mitre.jwt.signer.service;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
+import java.util.Collection;
 import java.util.Map;
 
 import com.nimbusds.jose.JWSAlgorithm;
@@ -56,6 +57,12 @@ public interface JwtSigningAndValidationService {
 	 * @return
 	 */
     public JWSAlgorithm getDefaultSigningAlgorithm();
+
+	/**
+	 * Get the list of all signing algorithms supported by this service. 
+	 * @return
+	 */
+    public Collection<JWSAlgorithm> getAllSigningAlgsSupported();
 
 	/**
 	 * Sign a jwt using the selected algorithm. The algorithm is selected using the String parameter values specified
