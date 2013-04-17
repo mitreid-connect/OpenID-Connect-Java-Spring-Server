@@ -79,12 +79,12 @@ public class ConnectAuthorizationRequestManager implements AuthorizationRequestM
 		
 		String requestNonce = parameters.get("nonce");
 		
-		AuthorizationRequest request = new AuthorizationRequest(inputParams, Collections.<String, String> emptyMap(), 
-				inputParams.get(AuthorizationRequest.CLIENT_ID), 
-				OAuth2Utils.parseParameterList(inputParams.get(AuthorizationRequest.SCOPE)), null,
-				null, false, inputParams.get(AuthorizationRequest.STATE), 
-				inputParams.get(AuthorizationRequest.REDIRECT_URI), 
-				OAuth2Utils.parseParameterList(inputParams.get(AuthorizationRequest.RESPONSE_TYPE)));
+		AuthorizationRequest request = new AuthorizationRequest(parameters, Collections.<String, String> emptyMap(), 
+				parameters.get(AuthorizationRequest.CLIENT_ID), 
+				OAuth2Utils.parseParameterList(parameters.get(AuthorizationRequest.SCOPE)), null,
+				null, false, parameters.get(AuthorizationRequest.STATE), 
+				parameters.get(AuthorizationRequest.REDIRECT_URI), 
+				OAuth2Utils.parseParameterList(parameters.get(AuthorizationRequest.RESPONSE_TYPE)));
 		
 		//Only process if the user is authenticated. If the user is not authenticated yet, this 
 		//code will be called a second time once the user is redirected from the login page back 
