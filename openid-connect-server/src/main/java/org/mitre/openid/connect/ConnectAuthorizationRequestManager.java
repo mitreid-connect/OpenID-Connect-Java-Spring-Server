@@ -27,7 +27,6 @@ import org.springframework.security.oauth2.common.util.OAuth2Utils;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.AuthorizationRequestManager;
 import org.springframework.security.oauth2.provider.ClientDetails;
-import org.springframework.security.oauth2.provider.DefaultAuthorizationRequest;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
@@ -72,12 +71,20 @@ public class ConnectAuthorizationRequestManager implements AuthorizationRequestM
 		Map<String, String> parameters = processRequestObject(inputParams);
 		
 		String clientId = parameters.get("client_id");
-		if (clientId == null) {
-			throw new InvalidClientException("A client id must be provided");
+		ClientDetails client = null;
+		
+		if (clientId != null) {
+			client = clientDetailsService.loadClientByClientId(clientId);
 		}
-		ClientDetails client = clientDetailsService.loadClientByClientId(clientId);
 		
 		String requestNonce = parameters.get("nonce");
+		
+		AuthorizationRequest request = new AuthorizationRequest(inputParams, Collections.<String, String> emptyMap(), 
+				inputParams.get(AuthorizationRequest.CLIENT_ID), 
+				OAuth2Utils.parseParameterList(inputParams.get(AuthorizationRequest.SCOPE)), null,
+				null, false, inputParams.get(AuthorizationRequest.STATE), 
+				inputParams.get(AuthorizationRequest.REDIRECT_URI), 
+				OAuth2Utils.parseParameterList(inputParams.get(AuthorizationRequest.RESPONSE_TYPE)));
 		
 		//Only process if the user is authenticated. If the user is not authenticated yet, this 
 		//code will be called a second time once the user is redirected from the login page back 
@@ -91,24 +98,21 @@ public class ConnectAuthorizationRequestManager implements AuthorizationRequestM
 				nonceService.save(nonce);
 			}
 			else {
-				throw new NonceReuseException(client.getClientId(), requestNonce);
+				throw new NonceReuseException(client == null ? "unidentified client" : client.getClientId(), requestNonce);
 			}
 	
 		}
 		
 		Set<String> scopes = OAuth2Utils.parseParameterList(parameters.get("scope"));
-		if ((scopes == null || scopes.isEmpty())) {
+		if ((scopes == null || scopes.isEmpty()) && client != null) {
 			//TODO: do we want to allow default scoping at all?
 			Set<String> clientScopes = client.getScope();
 			scopes = clientScopes;
 		}
 		
-		ConnectAuthorizationRequest request = new ConnectAuthorizationRequest();
-		request.setApprovalParameters(parameters);
-		request.setClientId(clientId);
 		request.setScope(scopes);
+		
 		return request;
-
 	}
 
 	/**
@@ -232,22 +236,6 @@ public class ConnectAuthorizationRequestManager implements AuthorizationRequestM
 				}
 			}
 		}
-	}
-
-	@Override
-	public AuthorizationRequest createFromExisting(AuthorizationRequest original) {
-		ConnectAuthorizationRequest copy 
-				= new ConnectAuthorizationRequest(original.getAuthorizationParameters(), original.getApprovalParameters(), 
-				original.getClientId(), original.getScope(), original.getResourceIds(),
-				original.getAuthorities(),original.isApproved(), original.getState(), 
-				original.getRedirectUri(), original.getResponseTypes());
-		
-		//If original is a ConnectAuthorizationRequest, preserve extra properties
-		if (original instanceof ConnectAuthorizationRequest) {
-			copy.setApprovedSite(((ConnectAuthorizationRequest) original).getApprovedSite());
-		}
-		
-		return copy;
 	}
 
 }

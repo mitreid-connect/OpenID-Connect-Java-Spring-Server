@@ -1,27 +1,16 @@
 package org.mitre.oauth2.introspectingfilter;
 
-import com.google.common.collect.Sets;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
-import org.springframework.security.oauth2.common.OAuth2RefreshToken;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
@@ -30,6 +19,10 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 public class IntrospectingTokenService implements ResourceServerTokenServices {
 
@@ -87,7 +80,15 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
     }
     
     private AuthorizationRequest createAuthRequest(final JsonObject token) {
-        AuthorizationRequest authReq = new AuthorizationRequestImpl(token);
+    	
+    	 clientId = token.get("client_id").getAsString();
+         Set<String> scopes = new HashSet<String>();
+         for (JsonElement e : token.get("scope").getAsJsonArray()) {
+             scopes.add(e.getAsString());
+         }   
+        AuthorizationRequest authReq = new AuthorizationRequest();
+        authReq.setScope(scopes);
+        authReq.setClientId(clientId);
         return authReq;
     }
     

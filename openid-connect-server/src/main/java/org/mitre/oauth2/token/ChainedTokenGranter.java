@@ -15,7 +15,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.common.exceptions.InvalidScopeException;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
-import org.springframework.security.oauth2.provider.AuthorizationRequestManager;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.AbstractTokenGranter;
 import org.springframework.stereotype.Component;
@@ -30,9 +29,6 @@ import com.google.common.collect.Sets;
 public class ChainedTokenGranter extends AbstractTokenGranter {
 
 	private static final String grantType = "urn:ietf:params:oauth:grant_type:redelegate";
-
-	@Autowired
-	private static AuthorizationRequestManager authorizationRequestManager;
 	
 	// keep down-cast versions so we can get to the right queries
 	private OAuth2TokenEntityService tokenServices;
@@ -44,7 +40,7 @@ public class ChainedTokenGranter extends AbstractTokenGranter {
 	 */
 	@Autowired
 	public ChainedTokenGranter(OAuth2TokenEntityService tokenServices, ClientDetailsEntityService clientDetailsService) {
-		super(tokenServices, clientDetailsService, grantType, authorizationRequestManager);
+		super(tokenServices, clientDetailsService, grantType);
 		this.tokenServices = tokenServices;
 	}
 
@@ -76,21 +72,20 @@ public class ChainedTokenGranter extends AbstractTokenGranter {
 	    if (approvedScopes.containsAll(requestedScopes)) {
 
 	    	// build an appropriate auth request to hand to the token services layer
-	    	AuthorizationRequest outgoingAuthRequest = authorizationRequestManager.createFromExisting(authorizationRequest);
-	    	outgoingAuthRequest.setApproved(true);
+	    	authorizationRequest.setApproved(true);
 	    	if (requestedScopes.isEmpty()) {
 	    		// if there are no scopes, inherit the original scopes from the token
-	    		outgoingAuthRequest.setScope(approvedScopes);
+	    		authorizationRequest.setScope(approvedScopes);
 	    	} else {
 	    		// if scopes were asked for, give only the subset of scopes requested
 	    		// this allows safe downscoping
-	    		outgoingAuthRequest.setScope(Sets.intersection(requestedScopes, approvedScopes));
+	    		authorizationRequest.setScope(Sets.intersection(requestedScopes, approvedScopes));
 	    	}
 		    
 		    // NOTE: don't revoke the existing access token
 
 	    	// create a new access token
-	    	OAuth2Authentication authentication = new OAuth2Authentication(outgoingAuthRequest, incomingToken.getAuthenticationHolder().getAuthentication().getUserAuthentication()); 
+	    	OAuth2Authentication authentication = new OAuth2Authentication(authorizationRequest, incomingToken.getAuthenticationHolder().getAuthentication().getUserAuthentication()); 
 	    	
 	    	return authentication;
 	    	

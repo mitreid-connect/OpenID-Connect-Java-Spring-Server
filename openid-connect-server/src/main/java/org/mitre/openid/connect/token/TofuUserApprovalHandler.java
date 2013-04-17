@@ -64,17 +64,7 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 	private ClientDetailsService clientDetailsService;
 	
 	
-	/**
-	 * Check if the user has already stored a positive approval decision for this site; or if the
-	 * site is whitelisted, approve it automatically.
-	 * 
-	 * Otherwise, return false so that the user will see the approval page and can make their own decision.
-	 * 
-	 * @param authorizationRequest	the incoming authorization request	
-	 * @param userAuthentication	the Principal representing the currently-logged-in user
-	 * 
-	 * @return 						true if the site is approved, false otherwise
-	 */
+
 	@Override
 	public boolean isApproved(AuthorizationRequest authorizationRequest, Authentication userAuthentication) {
 		
@@ -92,39 +82,29 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 		}
 
 	}
-	
-	/**
-	 * Check whether the requested scope set is a proper subset of the allowed scopes.
-	 * 
-	 * @param requestedScopes
-	 * @param allowedScopes
-	 * @return
-	 */
-	private boolean scopesMatch(Set<String> requestedScopes, Set<String> allowedScopes) {
-		
-		for (String scope : requestedScopes) {
-			
-			if (!allowedScopes.contains(scope)) {
-				return false; //throw new InvalidScopeException("Invalid scope: " + scope, allowedScopes);
-			}
-		}
-		
-		return true;
-	}
 
 	/**
-	 * Pre-process the authorization request during the approval stage, check against whitelist, approved sites, and stuff.
+	 * Check if the user has already stored a positive approval decision for this site; or if the
+	 * site is whitelisted, approve it automatically.
+	 * 
+	 * Otherwise the user will be directed to the approval page and can make their own decision.
+	 * 
+	 * @param authorizationRequest	the incoming authorization request	
+	 * @param userAuthentication	the Principal representing the currently-logged-in user
+	 * 
+	 * @return 						the updated AuthorizationRequest
 	 */
 	@Override
-    public AuthorizationRequest updateBeforeApproval(AuthorizationRequest authorizationRequest, Authentication userAuthentication) {
+	public AuthorizationRequest checkForPreApproval(AuthorizationRequest authorizationRequest, Authentication userAuthentication) {
+		
 		//First, check database to see if the user identified by the userAuthentication has stored an approval decision
 		
 		//getName may not be filled in? TODO: investigate
 		String userId = userAuthentication.getName();
 		String clientId = authorizationRequest.getClientId();
-		ClientDetails client = clientDetailsService.loadClientByClientId(clientId);
 
 		//lookup ApprovedSites by userId and clientId
+		boolean alreadyApproved = false;
 		Collection<ApprovedSite> aps = approvedSiteService.getByClientIdAndUserId(clientId, userId);
 		for (ApprovedSite ap : aps) {
 			
@@ -137,28 +117,40 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 					ap.setAccessDate(new Date());
 					approvedSiteService.save(ap);
 	
-					authorizationRequest.setApproved(true);
-					
-					return authorizationRequest;
+					authorizationRequest.setApproved(true);					
+					alreadyApproved = true;
 				}
 			}
         }
 		
-		WhitelistedSite ws = whitelistedSiteService.getByClientId(clientId);
-		if (ws != null && scopesMatch(authorizationRequest.getScope(), ws.getAllowedScopes())) {
-			
-			//Create an approved site
-			approvedSiteService.createApprovedSite(clientId, userId, null, ws.getAllowedScopes(), ws);
-			
-			authorizationRequest.setApproved(true);
-			
-			return authorizationRequest;
+		if (!alreadyApproved) {
+			WhitelistedSite ws = whitelistedSiteService.getByClientId(clientId);
+			if (ws != null && scopesMatch(authorizationRequest.getScope(), ws.getAllowedScopes())) {
+				
+				//Create an approved site
+				approvedSiteService.createApprovedSite(clientId, userId, null, ws.getAllowedScopes(), ws);				
+				authorizationRequest.setApproved(true);
+			}
 		}
+		
+		return authorizationRequest;
+		
+	}
+	
+
+	@Override
+    public AuthorizationRequest updateAfterApproval(AuthorizationRequest authorizationRequest, Authentication userAuthentication) {
+
+		String userId = userAuthentication.getName();
+		String clientId = authorizationRequest.getClientId();
+		ClientDetails client = clientDetailsService.loadClientByClientId(clientId);
 		
 		// This must be re-parsed here because SECOAUTH forces us to call things in a strange order
 		boolean approved = Boolean.parseBoolean(authorizationRequest.getApprovalParameters().get("user_oauth_approval"));
 		
-		if (approved && !authorizationRequest.getApprovalParameters().isEmpty()) {
+		if (approved) {
+			
+			authorizationRequest.setApproved(true);
 			
 			// process scopes from user input
 			Set<String> allowedScopes = Sets.newHashSet();
@@ -200,12 +192,28 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 				approvedSiteService.createApprovedSite(clientId, userId, timeout, allowedScopes, null);
 			}
 			
-			// TODO: should we set approved here? It gets called later via the isApproved method in this class...
-			
-			return authorizationRequest;
 		}
 
 		return authorizationRequest;
     }
+	
+	/**
+	 * Check whether the requested scope set is a proper subset of the allowed scopes.
+	 * 
+	 * @param requestedScopes
+	 * @param allowedScopes
+	 * @return
+	 */
+	private boolean scopesMatch(Set<String> requestedScopes, Set<String> allowedScopes) {
+		
+		for (String scope : requestedScopes) {
+			
+			if (!allowedScopes.contains(scope)) {
+				return false; //throw new InvalidScopeException("Invalid scope: " + scope, allowedScopes);
+			}
+		}
+		
+		return true;
+	}
 	
 }

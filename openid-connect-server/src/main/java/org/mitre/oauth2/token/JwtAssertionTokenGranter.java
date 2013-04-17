@@ -18,7 +18,6 @@ import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
-import org.springframework.security.oauth2.provider.AuthorizationRequestManager;
 import org.springframework.security.oauth2.provider.token.AbstractTokenGranter;
 import org.springframework.stereotype.Component;
 
@@ -47,11 +46,8 @@ public class JwtAssertionTokenGranter extends AbstractTokenGranter {
 	private ConfigurationPropertiesBean config;
 	
 	@Autowired
-	private static AuthorizationRequestManager authorizationRequestManager;	
-	
-	@Autowired
 	public JwtAssertionTokenGranter(OAuth2TokenEntityService tokenServices, ClientDetailsEntityService clientDetailsService) {
-	    super(tokenServices, clientDetailsService, grantType, authorizationRequestManager);
+	    super(tokenServices, clientDetailsService, grantType);
 	    this.tokenServices = tokenServices;
     }
 

@@ -13,7 +13,7 @@
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd">
 
 	<bean id="configBean" class="org.mitre.openid.connect.config.ConfigurationPropertiesBean">
-		<property name="issuer" value="http://localhost/" />
+		<property name="issuer" value="http://localhost:8080/openid-connect-server/" />
  		<property name="logoImageUrl" value="resources/images/openid_connect_small.png" />
  		<property name="topbarTitle" value="OpenID Connect Server" />
 	</bean>
