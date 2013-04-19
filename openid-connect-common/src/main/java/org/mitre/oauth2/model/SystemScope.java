@@ -201,6 +201,11 @@ public class SystemScope {
 	    return true;
     }
 
+    @Override
+    public String toString() {
+	    return "SystemScope [value=" + value + ", description=" + description + ", icon=" + icon + ", allowDynReg=" + allowDynReg + ", defaultScope=" + defaultScope + "]";
+    }
+
 	
 	
 }
