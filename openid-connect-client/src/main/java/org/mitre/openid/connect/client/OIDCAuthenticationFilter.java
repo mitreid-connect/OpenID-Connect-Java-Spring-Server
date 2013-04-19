@@ -157,10 +157,25 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 		} else {
 			String issuer = issResp.getIssuer();
 		
+			if (Strings.isNullOrEmpty(issuer)) {
+				logger.error("No issuer found: " + issuer);
+				throw new AuthenticationServiceException("No issuer found: " + issuer);
+			}
+			
 			session.setAttribute(ISSUER_SESSION_VARIABLE, issuer);
 			
 			ServerConfiguration serverConfig = servers.getServerConfiguration(issuer);
+			if (serverConfig == null) {
+				logger.error("No server configuration found for issuer: " + issuer);
+				throw new AuthenticationServiceException("No server configuration found for issuer: " + issuer);
+			}
+			
+			
 			ClientDetails clientConfig = clients.getClientConfiguration(issuer);
+			if (clientConfig == null) {
+				logger.error("No client configuration found for issuer: " + issuer);
+				throw new AuthenticationServiceException("No client configuration found for issuer: " + issuer);
+			}
 	
 			// our redirect URI is this current URL, with no query parameters
 			String redirectUri = request.getRequestURL().toString();
