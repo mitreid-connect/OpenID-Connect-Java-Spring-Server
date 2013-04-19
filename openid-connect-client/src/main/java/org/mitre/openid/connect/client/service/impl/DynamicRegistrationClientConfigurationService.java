@@ -13,7 +13,9 @@ import org.mitre.openid.connect.client.service.ClientConfigurationService;
 import org.mitre.openid.connect.config.ServerConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.web.client.RestTemplate;
@@ -21,6 +23,7 @@ import org.springframework.web.client.RestTemplate;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.collect.Lists;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -77,13 +80,13 @@ public class DynamicRegistrationClientConfigurationService implements ClientConf
         	// dynamically register this client
         	JsonObject jsonRequest = ClientDetailsEntityJsonProcessor.serialize(template, null, null);
         	
-        	/*
         	HttpHeaders headers = new HttpHeaders();
-        	headers.add("Content-type", "application/json");
-        	headers.add("Accept", "application/json");
-        	*/
+        	headers.setContentType(MediaType.APPLICATION_JSON);
+        	headers.setAccept(Lists.newArrayList(MediaType.APPLICATION_JSON));
         	
-        	String registered = restTemplate.postForObject(serverConfig.getRegistrationEndpointUri(), jsonRequest.toString(), String.class);
+        	HttpEntity<String> entity = new HttpEntity<String>(jsonRequest.toString(), headers);
+        	
+        	String registered = restTemplate.postForObject(serverConfig.getRegistrationEndpointUri(), entity, String.class);
         	// TODO: handle HTTP errors
         	
         	// TODO: save registration token and other important bits
