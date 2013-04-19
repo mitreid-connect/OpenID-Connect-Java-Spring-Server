@@ -36,8 +36,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.google.common.base.Function;
 import com.google.common.base.Splitter;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
+import com.nimbusds.jose.Algorithm;
 
 /**
  * 
@@ -62,6 +65,19 @@ public class DiscoveryEndpoint {
 	
 	@Autowired
 	private UserInfoService userService;
+
+	
+	// used to map JWA algorithms objects to strings
+	private Function<Algorithm, String> toAlgorithmName = new Function<Algorithm, String>() {
+		@Override
+		public String apply(Algorithm alg) {
+			if (alg == null) {
+				return null;
+			} else {
+				return alg.getName();
+			}
+		}
+	};
 	
 	@RequestMapping(value={"/.well-known/webfinger"},
 			params={"resource", "rel=http://openid.net/specs/connect/1.0/issuer"}, produces = "application/json")
@@ -216,10 +232,10 @@ public class DiscoveryEndpoint {
 		//userinfo_signing_alg_values_supported
 		//userinfo_encryption_alg_values_supported
 		//userinfo_encryption_enc_values_supported
-		m.put("id_token_signing_alg_values_supported", jwtService.getAllSigningAlgsSupported());
+		m.put("id_token_signing_alg_values_supported", Collections2.transform(jwtService.getAllSigningAlgsSupported(), toAlgorithmName));
 		//id_token_encryption_alg_values_supported
 		//id_token_encryption_enc_values_supported
-		m.put("request_object_signing_alg_values_supported", jwtService.getAllSigningAlgsSupported());
+		m.put("request_object_signing_alg_values_supported", Collections2.transform(jwtService.getAllSigningAlgsSupported(), toAlgorithmName));
 		//request_object_alg_values_supported
 		//request_object_env_values_supported
 		m.put("token_endpoint_auth_methods_supported", Lists.newArrayList("client_secret_post", "client_secret_basic", /*"client_secret_jwt",*/ "private_key_jwt", "none"));
