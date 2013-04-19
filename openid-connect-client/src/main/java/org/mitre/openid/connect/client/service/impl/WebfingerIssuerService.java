@@ -46,8 +46,15 @@ public class WebfingerIssuerService implements IssuerService {
 	// map of user input -> issuer, loaded dynamically from webfinger discover
 	private LoadingCache<NormalizedURI, String> issuers;
 
-	
+	/**
+	 * Name of the incoming parameter to check for discovery purposes.
+	 */
 	private String parameterName = "identifier";
+	
+	/**
+	 * URL of the page to forward to if no identifier is given.
+	 */
+	private String loginPageUrl;
 
 	public WebfingerIssuerService() {
 		issuers = CacheBuilder.newBuilder().build(new WebfingerIssuerFetcher());
@@ -59,38 +66,38 @@ public class WebfingerIssuerService implements IssuerService {
 	@Override
 	public IssuerServiceResponse getIssuer(HttpServletRequest request) {
 		
-		String login = request.getParameter(parameterName);
-		if (!Strings.isNullOrEmpty(login)) {
+		String identifier = request.getParameter(parameterName);
+		if (!Strings.isNullOrEmpty(identifier)) {
             try {
-            	String issuer = issuers.get(normalizeResource(login));
+            	String issuer = issuers.get(normalizeResource(identifier));
             	return new IssuerServiceResponse(issuer, null, null);
             } catch (ExecutionException e) {
-            	logger.warn("Issue fetching issuer for user input: " + login, e);
+            	logger.warn("Issue fetching issuer for user input: " + identifier, e);
 	            return null;
             }
             
 		} else {
-			logger.warn("No user input given.");
-			return null;
+			logger.warn("No user input given, directing to login page: " + loginPageUrl);
+			return new IssuerServiceResponse(loginPageUrl);
 		}
 	}
 	
 	/**
 	 * Normalize the resource string as per OIDC Discovery.
-	 * @param resource
+	 * @param identifier
 	 * @return the normalized string, or null if the string can't be normalized
 	 */
-	private NormalizedURI normalizeResource(String resource) {
+	private NormalizedURI normalizeResource(String identifier) {
 		// try to parse the URI		
 		// NOTE: we can't use the Java built-in URI class because it doesn't split the parts appropriately
 		
-		if (Strings.isNullOrEmpty(resource)) {
-			logger.warn("Can't normalize null or empty URI: " + resource);
+		if (Strings.isNullOrEmpty(identifier)) {
+			logger.warn("Can't normalize null or empty URI: " + identifier);
 			return null; // nothing we can do
 		} else {
 				
     		NormalizedURI n = new NormalizedURI();    		
-    		Matcher m = pattern.matcher(resource);
+    		Matcher m = pattern.matcher(identifier);
 		
 			if (m.matches()) {
 				n.scheme = m.group(1); // includes colon and maybe initial slashes
@@ -117,7 +124,7 @@ public class WebfingerIssuerService implements IssuerService {
 				
 				return n;
 			} else {
-				logger.warn("Parser couldn't match input: " + resource);
+				logger.warn("Parser couldn't match input: " + identifier);
 				return null;
 			}
 			
@@ -139,6 +146,21 @@ public class WebfingerIssuerService implements IssuerService {
 	 */
 	public void setParameterName(String parameterName) {
 		this.parameterName = parameterName;
+	}
+
+
+	/**
+	 * @return the loginPageUrl
+	 */
+	public String getLoginPageUrl() {
+		return loginPageUrl;
+	}
+
+	/**
+	 * @param loginPageUrl the loginPageUrl to set
+	 */
+	public void setLoginPageUrl(String loginPageUrl) {
+		this.loginPageUrl = loginPageUrl;
 	}
 
 
@@ -167,10 +189,17 @@ public class WebfingerIssuerService implements IssuerService {
         	URIBuilder builder = new URIBuilder(scheme + key.hostportpath + "/.well-known/webfinger" + Strings.nullToEmpty(key.query));
         	builder.addParameter("resource", key.source);
         	builder.addParameter("rel", "http://openid.net/specs/connect/1.0/issuer");
+        	
+        	// do the fetch
         	logger.info("Loading: " + builder.toString());
         	String webfingerResponse = restTemplate.getForObject(builder.build(), String.class);
+
+        	// TODO: catch and handle HTTP errors
         	
         	JsonElement json = new JsonParser().parse(webfingerResponse);
+        	
+        	// TODO: catch and handle JSON errors
+        	
         	if (json != null && json.isJsonObject()) {
         		// find the issuer
         		JsonArray links = json.getAsJsonObject().get("links").getAsJsonArray();
@@ -180,6 +209,8 @@ public class WebfingerIssuerService implements IssuerService {
 	                	if (linkObj.has("href") 
 	                			&& linkObj.has("rel") 
 	                			&& linkObj.get("rel").getAsString().equals("http://openid.net/specs/connect/1.0/issuer")) {
+	                		
+	                		// we found the issuer, return it
 	                		return linkObj.get("href").getAsString();
 	                	}
 	                }
