@@ -49,21 +49,21 @@ public class OIDCAuthenticationToken extends AbstractAuthenticationToken {
 	 * 
 	 * Set to authenticated.
 	 * 
-	 * Constructs a Principal out of the user_id and issuer.
-	 * @param sub
+	 * Constructs a Principal out of the subject and issuer.
+	 * @param subject
 	 * @param authorities
 	 * @param principal
 	 * @param idToken
 	 */
-	public OIDCAuthenticationToken(String userId, String issuer, 
+	public OIDCAuthenticationToken(String subject, String issuer, 
 			UserInfo userInfo, Collection<? extends GrantedAuthority> authorities,
 			String idTokenValue, String accessTokenValue, String refreshTokenValue) {
 
 		super(authorities);
 
-		this.principal = ImmutableMap.of("user_id", userId, "issuer", issuer);
+		this.principal = ImmutableMap.of("sub", subject, "iss", issuer);
 		this.userInfo = userInfo;
-		this.sub = userId;
+		this.sub = subject;
 		this.issuer = issuer;
 		this.idTokenValue = idTokenValue;
 		this.accessTokenValue = accessTokenValue;
@@ -79,18 +79,18 @@ public class OIDCAuthenticationToken extends AbstractAuthenticationToken {
 	 * 
 	 * Set to not-authenticated.
 	 * 
-	 * Constructs a Principal out of the user_id and issuer.
+	 * Constructs a Principal out of the subject and issuer.
 	 * @param sub
 	 * @param idToken
 	 */
-	public OIDCAuthenticationToken(String userId, String issuer, 
+	public OIDCAuthenticationToken(String subject, String issuer, 
 			ServerConfiguration serverConfiguration, 
 			String idTokenValue, String accessTokenValue, String refreshTokenValue) {
 
 		super(new ArrayList<GrantedAuthority>(0));
 
-		this.principal = ImmutableMap.of("sub", userId, "iss", issuer);
-		this.sub = userId;
+		this.principal = ImmutableMap.of("sub", subject, "iss", issuer);
+		this.sub = subject;
 		this.issuer = issuer;
 		this.idTokenValue = idTokenValue;
 		this.accessTokenValue = accessTokenValue;
