@@ -91,7 +91,7 @@ public class ClientDynamicRegistrationEndpoint {
 
 			// set default grant types if needed
 			if (newClient.getGrantTypes() == null || newClient.getGrantTypes().isEmpty()) { 
-				newClient.setGrantTypes(Sets.newHashSet("authorization_code", "refresh_token")); // allow authorization code and refresh token grant types by default
+				newClient.setGrantTypes(Sets.newHashSet("authorization_code")); // allow authorization code grant type by default
 			}
 			
 			// set default response types if needed
