@@ -39,7 +39,7 @@ public class OIDCAuthenticationToken extends AbstractAuthenticationToken {
 	private final String accessTokenValue; // string representation of the access token
 	private final String refreshTokenValue; // string representation of the refresh token
 	private final String issuer; // issuer URL (parsed from the id token)
-	private final String userId; // user id (parsed from the id token)
+	private final String sub; // user id (parsed from the id token)
 
 	private final transient ServerConfiguration serverConfiguration; // server configuration used to fulfill this token, don't serialize it
 	private final transient UserInfo userInfo; // user info container, don't serialize it b/c it might be huge and can be re-fetched
@@ -50,7 +50,7 @@ public class OIDCAuthenticationToken extends AbstractAuthenticationToken {
 	 * Set to authenticated.
 	 * 
 	 * Constructs a Principal out of the user_id and issuer.
-	 * @param userId
+	 * @param sub
 	 * @param authorities
 	 * @param principal
 	 * @param idToken
@@ -63,7 +63,7 @@ public class OIDCAuthenticationToken extends AbstractAuthenticationToken {
 
 		this.principal = ImmutableMap.of("user_id", userId, "issuer", issuer);
 		this.userInfo = userInfo;
-		this.userId = userId;
+		this.sub = userId;
 		this.issuer = issuer;
 		this.idTokenValue = idTokenValue;
 		this.accessTokenValue = accessTokenValue;
@@ -80,7 +80,7 @@ public class OIDCAuthenticationToken extends AbstractAuthenticationToken {
 	 * Set to not-authenticated.
 	 * 
 	 * Constructs a Principal out of the user_id and issuer.
-	 * @param userId
+	 * @param sub
 	 * @param idToken
 	 */
 	public OIDCAuthenticationToken(String userId, String issuer, 
@@ -89,8 +89,8 @@ public class OIDCAuthenticationToken extends AbstractAuthenticationToken {
 
 		super(new ArrayList<GrantedAuthority>(0));
 
-		this.principal = ImmutableMap.of("user_id", userId, "issuer", issuer);
-		this.userId = userId;
+		this.principal = ImmutableMap.of("sub", userId, "iss", issuer);
+		this.sub = userId;
 		this.issuer = issuer;
 		this.idTokenValue = idTokenValue;
 		this.accessTokenValue = accessTokenValue;
@@ -114,10 +114,8 @@ public class OIDCAuthenticationToken extends AbstractAuthenticationToken {
 		return accessTokenValue;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.springframework.security.core.Authentication#getPrincipal()
+	/**
+	 * Get the principal of this object, an immutable map of the subject and issuer.
 	 */
 	@Override
 	public Object getPrincipal() {
@@ -125,8 +123,8 @@ public class OIDCAuthenticationToken extends AbstractAuthenticationToken {
 		return principal;
 	}
 
-	public String getUserId() {
-		return userId;
+	public String getSub() {
+		return sub;
 	}
 
 	/**
