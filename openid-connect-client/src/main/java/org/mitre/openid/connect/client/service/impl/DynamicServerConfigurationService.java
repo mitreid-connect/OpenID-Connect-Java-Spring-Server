@@ -58,10 +58,11 @@ public class DynamicServerConfigurationService implements ServerConfigurationSer
     private class OpenIDConnectServiceConfigurationFetcher extends CacheLoader<String, ServerConfiguration> {
     	private HttpClient httpClient = new DefaultHttpClient();
     	private HttpComponentsClientHttpRequestFactory httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
-    	private RestTemplate restTemplate = new RestTemplate(httpFactory);
+		private JsonParser parser = new JsonParser();
 
     	@Override
         public ServerConfiguration load(String issuer) throws Exception {
+    		RestTemplate restTemplate = new RestTemplate(httpFactory);
 
     		// data holder
     		ServerConfiguration conf = new ServerConfiguration();
@@ -72,7 +73,7 @@ public class DynamicServerConfigurationService implements ServerConfigurationSer
     		// fetch the value
         	String jsonString = restTemplate.getForObject(url, String.class);
 
-        	JsonElement parsed = new JsonParser().parse(jsonString);
+        	JsonElement parsed = parser.parse(jsonString);
         	if (parsed.isJsonObject()) {
         		
         		JsonObject o = parsed.getAsJsonObject();

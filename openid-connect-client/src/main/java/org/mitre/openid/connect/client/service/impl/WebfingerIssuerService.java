@@ -3,8 +3,6 @@
  */
 package org.mitre.openid.connect.client.service.impl;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -16,7 +14,6 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.mitre.openid.connect.client.model.IssuerServiceResponse;
 import org.mitre.openid.connect.client.service.IssuerService;
-import org.mitre.openid.connect.config.ServerConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -171,10 +168,9 @@ public class WebfingerIssuerService implements IssuerService {
     private class WebfingerIssuerFetcher extends CacheLoader<NormalizedURI, String> {
     	private HttpClient httpClient = new DefaultHttpClient();
     	private HttpComponentsClientHttpRequestFactory httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
-		/* (non-Javadoc)
-		 * @see com.google.common.cache.CacheLoader#load(java.lang.Object)
-		 */
-        @Override
+		private JsonParser parser = new JsonParser();
+
+		@Override
         public String load(NormalizedURI key) throws Exception {
 
         	RestTemplate restTemplate = new RestTemplate(httpFactory);
@@ -196,7 +192,7 @@ public class WebfingerIssuerService implements IssuerService {
 
         	// TODO: catch and handle HTTP errors
         	
-        	JsonElement json = new JsonParser().parse(webfingerResponse);
+        	JsonElement json = parser.parse(webfingerResponse);
         	
         	// TODO: catch and handle JSON errors
         	
