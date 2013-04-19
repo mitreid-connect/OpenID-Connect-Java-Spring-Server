@@ -152,6 +152,11 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 		
 		IssuerServiceResponse issResp = issuerService.getIssuer(request);
 		
+		if (issResp == null) {
+			logger.error("Null issuer response returned from service.");
+			throw new AuthenticationServiceException("No issuer found.");
+		}
+		
 		if (issResp.shouldRedirect()) {
 			response.sendRedirect(issResp.getRedirectUrl());
 		} else {
@@ -171,7 +176,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 			}
 			
 			
-			ClientDetails clientConfig = clients.getClientConfiguration(issuer);
+			ClientDetails clientConfig = clients.getClientConfiguration(serverConfig);
 			if (clientConfig == null) {
 				logger.error("No client configuration found for issuer: " + issuer);
 				throw new AuthenticationServiceException("No client configuration found for issuer: " + issuer);
@@ -222,7 +227,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 		
 		// pull the configurations based on that issuer
 		ServerConfiguration serverConfig = servers.getServerConfiguration(issuer);
-		ClientDetails clientConfig = clients.getClientConfiguration(issuer);
+		ClientDetails clientConfig = clients.getClientConfiguration(serverConfig);
 		
 		MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
 		form.add("grant_type", "authorization_code");
