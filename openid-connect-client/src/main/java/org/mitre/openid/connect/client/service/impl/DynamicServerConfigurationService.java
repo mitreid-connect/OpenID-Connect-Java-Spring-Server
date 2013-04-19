@@ -88,6 +88,7 @@ public class DynamicServerConfigurationService implements ServerConfigurationSer
         		conf.setTokenEndpointUri(o.get("token_endpoint").getAsString());
         		conf.setJwksUri(o.get("jwks_uri").getAsString());
         		conf.setUserInfoUri(o.get("userinfo_endpoint").getAsString());
+        		conf.setRegistrationEndpointUri(o.get("registration_endpoint").getAsString());
 
         		return conf;
         	} else {
