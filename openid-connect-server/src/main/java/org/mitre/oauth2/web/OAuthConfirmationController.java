@@ -77,12 +77,12 @@ public class OAuthConfirmationController {
 			client = clientService.loadClientByClientId(clientAuth.getClientId());
 		} catch (OAuth2Exception e) {	
 			logger.error("confirmAccess: OAuth2Exception was thrown when attempting to load client: "
-					+ e.getStackTrace().toString());
+					, e);
 			model.put("code", HttpStatus.BAD_REQUEST);
 			return new ModelAndView("httpCodeView");
 		} catch (IllegalArgumentException e) {
 			logger.error("confirmAccess: IllegalArgumentException was thrown when attempting to load client: "
-					+ e.getStackTrace().toString());
+					, e);
 			model.put("code", HttpStatus.BAD_REQUEST);
 			return new ModelAndView("httpCodeView");
 		}

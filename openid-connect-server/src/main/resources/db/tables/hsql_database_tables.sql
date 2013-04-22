@@ -10,7 +10,8 @@ CREATE TABLE IF NOT EXISTS access_token (
 	refresh_token_id BIGINT,
 	client_id VARCHAR(256),
 	auth_holder_id BIGINT,
-	id_token_id BIGINT
+	id_token_id BIGINT,
+	approved_site_id BIGINT
 );
 
 CREATE TABLE IF NOT EXISTS address (

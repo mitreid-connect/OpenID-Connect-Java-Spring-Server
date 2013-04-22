@@ -64,7 +64,7 @@ public class IntrospectionEndpoint {
 		Map<String, Object> model = new HashMap<String, Object>();
 		model.put("entity", e);
 		
-		logger.error("InvalidTokenException: " + ex.getStackTrace().toString());
+		logger.error("InvalidTokenException: ", ex);
 		
 		model.put("code", HttpStatus.BAD_REQUEST);
 		
@@ -106,7 +106,7 @@ public class IntrospectionEndpoint {
 		try {
 			token = tokenServices.readAccessToken(tokenValue);		
 		} catch (AuthenticationException e) {
-			logger.error("Verify failed; AuthenticationException: " + e.getStackTrace().toString());
+			logger.error("Verify failed; AuthenticationException: ", e);
 			modelAndView.addObject("code", HttpStatus.FORBIDDEN);
 			modelAndView.setViewName("httpCodeView");
 			return modelAndView;

@@ -24,10 +24,12 @@ import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
+import org.mitre.openid.connect.model.ApprovedSite;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.stereotype.Service;
@@ -57,8 +59,16 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 	public OAuth2AccessToken enhance(OAuth2AccessToken accessToken,	OAuth2Authentication authentication) {
 		
 		OAuth2AccessTokenEntity token = (OAuth2AccessTokenEntity) accessToken;
+		AuthorizationRequest originalAuthRequest = authentication.getAuthorizationRequest();
 		
-		String clientId = authentication.getAuthorizationRequest().getClientId();
+		if (originalAuthRequest.getExtensionProperties().containsKey("approved_site")) {
+			//Add the token to the approved site reference, if there is one
+			ApprovedSite ap = (ApprovedSite)originalAuthRequest.getExtensionProperties().get("approved_site");
+			//ap.addApprovedAccessToken(token);
+			token.setApprovedSite(ap);
+		}
+		
+		String clientId = originalAuthRequest.getClientId();
 		ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
 		
 		JWTClaimsSet claims = new JWTClaimsSet();
@@ -87,7 +97,7 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 		 * has the proper scope, we can consider this a valid OpenID Connect request. Otherwise,
 		 * we consider it to be a vanilla OAuth2 request. 
 		 */
-		if (authentication.getAuthorizationRequest().getScope().contains("openid")) {
+		if (originalAuthRequest.getScope().contains("openid")) {
 
 			// TODO: maybe id tokens need a service layer
 			
@@ -114,7 +124,7 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 			idClaims.setAudience(Lists.newArrayList(clientId));
 			
 			
-			String nonce = authentication.getAuthorizationRequest().getAuthorizationParameters().get("nonce");
+			String nonce = originalAuthRequest.getAuthorizationParameters().get("nonce");
 			if (!Strings.isNullOrEmpty(nonce)) {
 				idClaims.setCustomClaim("nonce", nonce);
 			}
