@@ -91,7 +91,23 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 
 	private Set<String> scope;
 	
-	private ApprovedSite approvedSite; //Back-reference for one-to-many relationship
+//	private ApprovedSite approvedSite;
+//	
+//	/**
+//	 * @return the approvedSite
+//	 */
+//	@ManyToOne(fetch=FetchType.EAGER)
+//	@JoinColumn(name="approved_site_id", referencedColumnName="id")
+//	public ApprovedSite getApprovedSite() {
+//		return approvedSite;
+//	}
+//
+//	/**
+//	 * @param approvedSite the approvedSite to set
+//	 */
+//	public void setApprovedSite(ApprovedSite approvedSite) {
+//		this.approvedSite = approvedSite;
+//	}
 	
 	/**
 	 * Create a new, blank access token
@@ -167,7 +183,7 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
     @Basic
     @Column(name="token_value")
     public String getValue() {
-	    return jwtValue.serialize();
+		return jwtValue.serialize();
     }
 
     /**
@@ -177,7 +193,7 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
      * @throws ParseException if "value" is not a properly formatted JWT string
      */
     public void setValue(String value) throws ParseException {
-    	setJwt(JWTParser.parse(value));
+		setJwt(JWTParser.parse(value));
     }
 
     @Basic
@@ -286,19 +302,5 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 		return 0;
 	}
 
-	/**
-	 * @return the approvedSite
-	 */
-	@ManyToOne(fetch=FetchType.EAGER)
-	@JoinColumn(name="approved_site_id", referencedColumnName="id")
-	public ApprovedSite getApprovedSite() {
-		return approvedSite;
-	}
 
-	/**
-	 * @param approvedSite the approvedSite to set
-	 */
-	public void setApprovedSite(ApprovedSite approvedSite) {
-		this.approvedSite = approvedSite;
-	}
 }

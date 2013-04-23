@@ -45,6 +45,8 @@ public interface OAuth2TokenEntityService extends AuthorizationServerTokenServic
 	public OAuth2RefreshTokenEntity saveRefreshToken(OAuth2RefreshTokenEntity refreshToken);
 	
 	public OAuth2AccessTokenEntity getAccessToken(OAuth2Authentication authentication);
+	
+	public OAuth2AccessTokenEntity getAccessTokenById(Long id);
 
 	/**
      * @param incomingToken

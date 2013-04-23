@@ -51,7 +51,7 @@ public class ApprovedSiteAPI {
 		
 		m.put("entity", all);
 		
-		return "jsonEntityView";
+		return "jsonApprovedSiteView";
 	}
 	
 	/**
@@ -112,7 +112,7 @@ public class ApprovedSiteAPI {
 			return "jsonErrorView";
 		} else {
 			m.put("entity", approvedSite);
-			return "jsonEntityView";
+			return "jsonApprovedSiteView";
 		}
 		
 	}

@@ -32,6 +32,8 @@ import org.mitre.oauth2.repository.AuthenticationHolderRepository;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
+import org.mitre.openid.connect.model.ApprovedSite;
+import org.mitre.openid.connect.service.ApprovedSiteService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,6 +72,9 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	
 	@Autowired
 	private TokenEnhancer tokenEnhancer;
+	
+	@Autowired
+	private ApprovedSiteService approvedSiteService;
 	
 	@Override
     public OAuth2AccessTokenEntity createAccessToken(OAuth2Authentication authentication) throws AuthenticationException, InvalidClientException {
@@ -140,10 +145,25 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 			    
 	    		token.setRefreshToken(refreshToken);
 	    	}	    	
-
+	    	
 	    	tokenEnhancer.enhance(token, authentication);
 	    	
 		    tokenRepository.saveAccessToken(token);
+		    
+	    	//Add approved site reference, if any
+	    	AuthorizationRequest originalAuthRequest = authHolder.getAuthentication().getAuthorizationRequest();
+			
+	    	if (originalAuthRequest.getExtensionProperties().containsKey("approved_site")) {
+				
+				Long apId = (Long) originalAuthRequest.getExtensionProperties().get("approved_site");
+				ApprovedSite ap = approvedSiteService.getById(apId);
+				//token.setApprovedSite(ap);
+				Set<OAuth2AccessTokenEntity> apTokens = ap.getApprovedAccessTokens();
+				apTokens.add(token);
+				ap.setApprovedAccessTokens(apTokens);
+				approvedSiteService.save(ap);
+				
+			}
 		    
 		    if (token.getRefreshToken() != null) {
 		    	tokenRepository.saveRefreshToken(token.getRefreshToken()); // make sure we save any changes that might have been enhanced
@@ -410,5 +430,10 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
     public OAuth2AccessTokenEntity getAccessTokenForIdToken(OAuth2AccessTokenEntity idToken) {
     	return tokenRepository.getAccessTokenForIdToken(idToken);
     }
+
+	@Override
+	public OAuth2AccessTokenEntity getAccessTokenById(Long id) {
+		return tokenRepository.getAccessTokenById(id);
+	}
 	
 }

@@ -246,10 +246,8 @@ public class ApprovedSite implements Serializable {
 		}
     }
 
-	/**
-	 * @return the approvedAccessTokens
-	 */
-	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER, mappedBy="approvedSite")
+	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+	@JoinColumn(name="approved_site_id")
 	public Set<OAuth2AccessTokenEntity> getApprovedAccessTokens() {
 		return approvedAccessTokens;
 	}
@@ -259,11 +257,6 @@ public class ApprovedSite implements Serializable {
 	 */
 	public void setApprovedAccessTokens(Set<OAuth2AccessTokenEntity> approvedAccessTokens) {
 		this.approvedAccessTokens = approvedAccessTokens;
-	}
-
-	public void addApprovedAccessToken(OAuth2AccessTokenEntity token) {
-		this.getApprovedAccessTokens();
-		this.approvedAccessTokens.add(token);
 	}
 
 	/* (non-Javadoc)
