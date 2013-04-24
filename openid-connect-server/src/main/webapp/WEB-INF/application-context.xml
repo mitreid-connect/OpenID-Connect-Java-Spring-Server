@@ -70,6 +70,11 @@
 	<security:http pattern="/.well-known/**" use-expressions="true" entry-point-ref="http403EntryPoint" create-session="stateless">
 		<security:intercept-url pattern="/.well-known/**" access="permitAll"/>
 	</security:http>
+
+	<!-- Allow open access to all static resources -->	
+	<security:http pattern="/resources/**" use-expressions="true" entry-point-ref="http403EntryPoint" create-session="stateless">
+		<security:intercept-url pattern="/resources/**" access="permitAll"/>
+	</security:http>
 	
 	<!-- OAuth-protect API and other endpoints -->
 	<security:http pattern="/register/**" use-expressions="true" entry-point-ref="oauthAuthenticationEntryPoint" create-session="stateless">
