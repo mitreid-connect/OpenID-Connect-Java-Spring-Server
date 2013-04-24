@@ -124,40 +124,48 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 		String userId = userAuthentication.getName();
 		String clientId = authorizationRequest.getClientId();
 		ClientDetails client = clientDetailsService.loadClientByClientId(clientId);
-
-		//lookup ApprovedSites by userId and clientId
-		Collection<ApprovedSite> aps = approvedSiteService.getByClientIdAndUserId(clientId, userId);
-		for (ApprovedSite ap : aps) {
-			
-			if (!ap.isExpired()) {
-			
-				// if we find one that fits...
-				if (scopesMatch(authorizationRequest.getScope(), ap.getAllowedScopes())) {
-					
-					//We have a match; update the access date on the AP entry and return true.
-					ap.setAccessDate(new Date());
-					approvedSiteService.save(ap);
-	
-					// TODO: WHY DAVE WHY
-					DefaultAuthorizationRequest ar = new DefaultAuthorizationRequest(authorizationRequest);
-					ar.setApproved(true);
-					
-					return ar;
-				}
-			}
-        }
 		
-		WhitelistedSite ws = whitelistedSiteService.getByClientId(clientId);
-		if (ws != null && scopesMatch(authorizationRequest.getScope(), ws.getAllowedScopes())) {
+		// find out if we're supposed to prompt the user or not
+		String prompt = authorizationRequest.getAuthorizationParameters().get("prompt");
+		if (!"consent".equals(prompt)) {
+			// if the prompt parameter is set to "consent" then we can't use approved sites or whitelisted sites
+			// otherwise, we need to check them below
+		
+	
+			//lookup ApprovedSites by userId and clientId
+			Collection<ApprovedSite> aps = approvedSiteService.getByClientIdAndUserId(clientId, userId);
+			for (ApprovedSite ap : aps) {
+				
+				if (!ap.isExpired()) {
+				
+					// if we find one that fits...
+					if (scopesMatch(authorizationRequest.getScope(), ap.getAllowedScopes())) {
+						
+						//We have a match; update the access date on the AP entry and return true.
+						ap.setAccessDate(new Date());
+						approvedSiteService.save(ap);
+		
+						// TODO: WHY DAVE WHY
+						DefaultAuthorizationRequest ar = new DefaultAuthorizationRequest(authorizationRequest);
+						ar.setApproved(true);
+						
+						return ar;
+					}
+				}
+	        }
 			
-			//Create an approved site
-			approvedSiteService.createApprovedSite(clientId, userId, null, ws.getAllowedScopes(), ws);
-			
-			// TODO: WHY DAVE WHY
-			DefaultAuthorizationRequest ar = new DefaultAuthorizationRequest(authorizationRequest);
-			ar.setApproved(true);
-			
-			return ar;
+			WhitelistedSite ws = whitelistedSiteService.getByClientId(clientId);
+			if (ws != null && scopesMatch(authorizationRequest.getScope(), ws.getAllowedScopes())) {
+				
+				//Create an approved site
+				approvedSiteService.createApprovedSite(clientId, userId, null, ws.getAllowedScopes(), ws);
+				
+				// TODO: WHY DAVE WHY
+				DefaultAuthorizationRequest ar = new DefaultAuthorizationRequest(authorizationRequest);
+				ar.setApproved(true);
+				
+				return ar;
+			}
 		}
 		
 		// This must be re-parsed here because SECOAUTH forces us to call things in a strange order

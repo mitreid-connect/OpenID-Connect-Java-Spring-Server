@@ -92,7 +92,7 @@ public class RevocationEndpoint {
 						model.addAttribute("code", HttpStatus.FORBIDDEN);
 						return "httpCodeView";
 					}
-				}				
+				}
 			
 				// if we got this far, we're allowed to do this
 				tokenServices.revokeRefreshToken(refreshToken);
