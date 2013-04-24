@@ -15,7 +15,6 @@
  ******************************************************************************/
 package org.mitre.openid.connect.model;
 
-import java.io.Serializable;
 import java.util.Set;
 
 import javax.persistence.Basic;
@@ -45,9 +44,7 @@ import javax.persistence.Table;
 	@NamedQuery(name = "WhitelistedSite.getByClientId", query = "select w from WhitelistedSite w where w.clientId = :clientId"),
 	@NamedQuery(name = "WhitelistedSite.getByCreatoruserId", query = "select w from WhitelistedSite w where w.creatorUserId = :userId")
 })
-public class WhitelistedSite implements Serializable {
-
-	private static final long serialVersionUID = 1L;
+public class WhitelistedSite {
 
 	// unique id
     private Long id;
@@ -129,68 +126,5 @@ public class WhitelistedSite implements Serializable {
 
 	public void setCreatorUserId(String creatorUserId) {
 		this.creatorUserId = creatorUserId;
-	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result
-				+ ((allowedScopes == null) ? 0 : allowedScopes.hashCode());
-		result = prime * result
-				+ ((clientId == null) ? 0 : clientId.hashCode());
-		result = prime * result
-				+ ((creatorUserId == null) ? 0 : creatorUserId.hashCode());
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		return result;
-	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (!(obj instanceof WhitelistedSite)) {
-			return false;
-		}
-		WhitelistedSite other = (WhitelistedSite) obj;
-		if (allowedScopes == null) {
-			if (other.allowedScopes != null) {
-				return false;
-			}
-		} else if (!allowedScopes.equals(other.allowedScopes)) {
-			return false;
-		}
-		if (clientId == null) {
-			if (other.clientId != null) {
-				return false;
-			}
-		} else if (!clientId.equals(other.clientId)) {
-			return false;
-		}
-		if (creatorUserId == null) {
-			if (other.creatorUserId != null) {
-				return false;
-			}
-		} else if (!creatorUserId.equals(other.creatorUserId)) {
-			return false;
-		}
-		if (id == null) {
-			if (other.id != null) {
-				return false;
-			}
-		} else if (!id.equals(other.id)) {
-			return false;
-		}
-		return true;
 	}
 }

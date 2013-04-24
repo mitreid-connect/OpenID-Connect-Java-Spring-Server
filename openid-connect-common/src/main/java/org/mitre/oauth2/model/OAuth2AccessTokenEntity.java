@@ -43,7 +43,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.Transient;
 
-import org.mitre.openid.connect.model.ApprovedSite;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2RefreshToken;
 
@@ -90,24 +89,6 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	private OAuth2RefreshTokenEntity refreshToken;
 
 	private Set<String> scope;
-	
-//	private ApprovedSite approvedSite;
-//	
-//	/**
-//	 * @return the approvedSite
-//	 */
-//	@ManyToOne(fetch=FetchType.EAGER)
-//	@JoinColumn(name="approved_site_id", referencedColumnName="id")
-//	public ApprovedSite getApprovedSite() {
-//		return approvedSite;
-//	}
-//
-//	/**
-//	 * @param approvedSite the approvedSite to set
-//	 */
-//	public void setApprovedSite(ApprovedSite approvedSite) {
-//		this.approvedSite = approvedSite;
-//	}
 	
 	/**
 	 * Create a new, blank access token

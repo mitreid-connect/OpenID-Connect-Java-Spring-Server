@@ -19,7 +19,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
 
-import org.mitre.oauth2.model.ClientDetailsEntity;
+import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
+import org.mitre.oauth2.repository.OAuth2TokenRepository;
 import org.mitre.openid.connect.model.ApprovedSite;
 import org.mitre.openid.connect.model.WhitelistedSite;
 import org.mitre.openid.connect.repository.ApprovedSiteRepository;
@@ -41,6 +42,9 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 
 	@Autowired
 	private ApprovedSiteRepository approvedSiteRepository;
+	
+	@Autowired
+	private OAuth2TokenRepository tokenRepository;
 
 	/**
 	 * Default constructor
@@ -77,6 +81,17 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 	@Override
 	@Transactional
 	public void remove(ApprovedSite approvedSite) {
+		
+		//Remove any associated access and refresh tokens
+		Set<OAuth2AccessTokenEntity> accessTokens = approvedSite.getApprovedAccessTokens();
+
+		for (OAuth2AccessTokenEntity token : accessTokens) {
+			if (token.getRefreshToken() != null) {
+				tokenRepository.removeRefreshToken(token.getRefreshToken());
+			}
+			tokenRepository.removeAccessToken(token);
+		}
+		
 		approvedSiteRepository.remove(approvedSite);
 	}
 

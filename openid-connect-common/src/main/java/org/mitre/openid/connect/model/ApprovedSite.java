@@ -15,7 +15,6 @@
  ******************************************************************************/
 package org.mitre.openid.connect.model;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 
@@ -50,9 +49,7 @@ import com.google.common.collect.Sets;
 	@NamedQuery(name = "ApprovedSite.getByClientId", query = "select a from ApprovedSite a where a.clientId = :clientId"),
 	@NamedQuery(name = "ApprovedSite.getByClientIdAndUserId", query = "select a from ApprovedSite a where a.clientId = :clientId and a.userId = :userId")
 })
-public class ApprovedSite implements Serializable {
-
-	private static final long serialVersionUID = 1L;
+public class ApprovedSite {
 
 	// unique id
     private Long id;
@@ -257,104 +254,6 @@ public class ApprovedSite implements Serializable {
 	 */
 	public void setApprovedAccessTokens(Set<OAuth2AccessTokenEntity> approvedAccessTokens) {
 		this.approvedAccessTokens = approvedAccessTokens;
-	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result
-				+ ((accessDate == null) ? 0 : accessDate.hashCode());
-		result = prime * result
-				+ ((allowedScopes == null) ? 0 : allowedScopes.hashCode());
-		result = prime * result
-				+ ((clientId == null) ? 0 : clientId.hashCode());
-		result = prime * result
-				+ ((creationDate == null) ? 0 : creationDate.hashCode());
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result
-				+ ((timeoutDate == null) ? 0 : timeoutDate.hashCode());
-		result = prime * result + ((userId == null) ? 0 : userId.hashCode());
-		result = prime * result
-				+ ((whitelistedSite == null) ? 0 : whitelistedSite.hashCode());
-		return result;
-	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (!(obj instanceof ApprovedSite)) {
-			return false;
-		}
-		ApprovedSite other = (ApprovedSite) obj;
-		if (accessDate == null) {
-			if (other.accessDate != null) {
-				return false;
-			}
-		} else if (!accessDate.equals(other.accessDate)) {
-			return false;
-		}
-		if (allowedScopes == null) {
-			if (other.allowedScopes != null) {
-				return false;
-			}
-		} else if (!allowedScopes.equals(other.allowedScopes)) {
-			return false;
-		}
-		if (clientId == null) {
-			if (other.clientId != null) {
-				return false;
-			}
-		} else if (!clientId.equals(other.clientId)) {
-			return false;
-		}
-		if (creationDate == null) {
-			if (other.creationDate != null) {
-				return false;
-			}
-		} else if (!creationDate.equals(other.creationDate)) {
-			return false;
-		}
-		if (id == null) {
-			if (other.id != null) {
-				return false;
-			}
-		} else if (!id.equals(other.id)) {
-			return false;
-		}
-		if (timeoutDate == null) {
-			if (other.timeoutDate != null) {
-				return false;
-			}
-		} else if (!timeoutDate.equals(other.timeoutDate)) {
-			return false;
-		}
-		if (userId == null) {
-			if (other.userId != null) {
-				return false;
-			}
-		} else if (!userId.equals(other.userId)) {
-			return false;
-		}
-		if (whitelistedSite == null) {
-			if (other.whitelistedSite != null) {
-				return false;
-			}
-		} else if (!whitelistedSite.equals(other.whitelistedSite)) {
-			return false;
-		}
-		return true;
 	}
 	
 }
