@@ -125,7 +125,7 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 		String clientId = authorizationRequest.getClientId();
 		ClientDetails client = clientDetailsService.loadClientByClientId(clientId);
 		
-		// find out if we're supposed to prompt the user or not
+		// find out if we're supposed to force a prompt on the user or not
 		String prompt = authorizationRequest.getAuthorizationParameters().get("prompt");
 		if (!"consent".equals(prompt)) {
 			// if the prompt parameter is set to "consent" then we can't use approved sites or whitelisted sites

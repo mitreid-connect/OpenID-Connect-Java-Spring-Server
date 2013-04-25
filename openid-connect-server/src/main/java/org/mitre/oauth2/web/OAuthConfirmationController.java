@@ -67,8 +67,17 @@ public class OAuthConfirmationController {
 	
 	@PreAuthorize("hasRole('ROLE_USER')")
 	@RequestMapping("/oauth/confirm_access")
-	public ModelAndView confimAccess(Map<String, Object> model, @ModelAttribute("authorizationRequest") AuthorizationRequest clientAuth) {
+	public String confimAccess(Map<String, Object> model, @ModelAttribute("authorizationRequest") AuthorizationRequest clientAuth) {
 
+		// Check the "prompt" parameter to see if we need to do special processing
+		String prompt = clientAuth.getAuthorizationParameters().get("prompt");
+		if ("none".equals(prompt)) {
+			// we're not supposed to prompt, so "return an error"
+			logger.info("Client requested no prompt, returning 403 from confirmation endpoint");
+			model.put("code", HttpStatus.FORBIDDEN);
+			return "httpCodeView";
+		}
+		
 		//AuthorizationRequest clientAuth = (AuthorizationRequest) model.remove("authorizationRequest");
 
 		ClientDetails client = null;
@@ -79,18 +88,19 @@ public class OAuthConfirmationController {
 			logger.error("confirmAccess: OAuth2Exception was thrown when attempting to load client: "
 					+ e.getStackTrace().toString());
 			model.put("code", HttpStatus.BAD_REQUEST);
-			return new ModelAndView("httpCodeView");
+			return "httpCodeView";
 		} catch (IllegalArgumentException e) {
 			logger.error("confirmAccess: IllegalArgumentException was thrown when attempting to load client: "
 					+ e.getStackTrace().toString());
 			model.put("code", HttpStatus.BAD_REQUEST);
-			return new ModelAndView("httpCodeView");
+			return "httpCodeView";
 		}
 		
 		if (client == null) {
 			logger.error("confirmAccess: could not find client " + clientAuth.getClientId());
 			model.put("code", HttpStatus.NOT_FOUND);
-			return new ModelAndView("httpCodeView");		}
+			return "httpCodeView";
+		}
 
 		model.put("auth_request", clientAuth);
 		model.put("client", client);
@@ -98,14 +108,6 @@ public class OAuthConfirmationController {
 		String redirect_uri = clientAuth.getAuthorizationParameters().get("redirect_uri");
 		
         model.put("redirect_uri", redirect_uri);
-
-        
-        /*
-        Map<String, Boolean> scopes = new HashMap<String, Boolean>();
-        for (String scope : clientAuth.getScope()) {
-	        scopes.put(scope, Boolean.TRUE);
-        }
-         */
         
         Set<SystemScope> scopes = scopeService.fromStrings(clientAuth.getScope());
         
@@ -123,7 +125,7 @@ public class OAuthConfirmationController {
         
         model.put("scopes", sortedScopes);
         
-        return new ModelAndView("approve", model);
+        return "approve";
 	}
 
 	/**

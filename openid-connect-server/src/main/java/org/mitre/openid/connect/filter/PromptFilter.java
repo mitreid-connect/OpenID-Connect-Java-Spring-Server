@@ -1,0 +1,76 @@
+/**
+ * 
+ */
+package org.mitre.openid.connect.filter;
+
+import java.io.IOException;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import org.springframework.security.web.savedrequest.SavedRequest;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.GenericFilterBean;
+
+import com.google.common.base.Strings;
+
+/**
+ * @author jricher
+ *
+ */
+@Component("promptFilter")
+public class PromptFilter extends GenericFilterBean {
+	
+	private Logger logger = LoggerFactory.getLogger(PromptFilter.class);
+
+	/**
+	 * 
+	 */
+	@Override
+	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
+		 
+        HttpServletRequest request = (HttpServletRequest) req;
+        HttpServletResponse response = (HttpServletResponse) res;
+		
+        if (!Strings.isNullOrEmpty(request.getParameter("prompt"))) {
+        	// we have a "prompt" parameter
+        	
+        	if (request.getParameter("prompt").equals("none")) {
+        		logger.info("Client requested no prompt");
+        		// see if the user's logged in
+        		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        		
+        		if (auth != null) {
+        			// user's been logged in already (by session management)
+        			// we're OK, continue without prompting
+        			chain.doFilter(req, res);
+        		} else {
+        			// user hasn't been logged in, we need to "return an error"
+        			logger.info("User not logged in, no prompt requested, returning 403 from filter");
+        	        response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied");
+        	        return;
+        		}
+        		
+        	} else {
+        		// prompt parameter is a value we don't care about, not our business 
+        		chain.doFilter(req, res);
+        	}
+        	
+        } else {
+        	// no prompt parameter, not our business
+        	chain.doFilter(req, res);
+        }
+        
+	}
+
+}
