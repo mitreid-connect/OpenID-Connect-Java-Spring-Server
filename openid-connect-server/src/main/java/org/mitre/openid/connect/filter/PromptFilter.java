@@ -60,7 +60,21 @@ public class PromptFilter extends GenericFilterBean {
         	        response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied");
         	        return;
         		}
+        		/* TODO: this is an attempt to catch the prompt=login case, but it results in an infinite loop so it's commented out
+        	} else if (request.getParameter("prompt").equals("login")) {
+        		// see if the user's logged in
+        		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         		
+        		if (auth != null) {
+        			// user's been logged in already (by session management)
+        			// log them out and continue
+        			SecurityContextHolder.getContext().setAuthentication(null);
+        			chain.doFilter(req, res);
+        		} else {
+        			// user hasn't been logged in yet, we can keep going
+        			chain.doFilter(req, res);
+        		}
+        		*/
         	} else {
         		// prompt parameter is a value we don't care about, not our business 
         		chain.doFilter(req, res);
