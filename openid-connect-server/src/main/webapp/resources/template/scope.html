@@ -156,10 +156,10 @@
 
 <% 
 _.each(scopes, function(s) {
-%>
-	<span class="badge badge-info">
-<%
 	var ss = systemScopes.getByValue(s);
+%>
+	<span class="badge<%= (ss) ? ' badge-info' : '' %>">
+<%
 	if (ss && ss.get('icon')) {
 %>
 	<i class="icon-<%=ss.get('icon')%> icon-white"></i>
