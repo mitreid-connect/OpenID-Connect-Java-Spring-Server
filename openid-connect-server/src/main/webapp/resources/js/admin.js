@@ -82,11 +82,11 @@ var ListWidgetView = Backbone.View.extend({
 
     events:{
         "click .btn-add":"addItem",
-        "keypress input":function (e) {
+        "keypress":function (e) {
         	// trap the enter key
             if (e.which == 13) {
-                this.addItem();
-                e.preventDefault();
+            	e.preventDefault();
+                this.addItem(e);
                 $("input", this.$el).focus();
             }
         }
