@@ -5,6 +5,7 @@ package org.mitre.openid.connect.view;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.lang.reflect.Type;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,6 +23,10 @@ import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 
 /**
  * @author jricher
@@ -37,13 +42,6 @@ public class JsonApprovedSiteView extends AbstractView {
 	
 	        public boolean shouldSkipField(FieldAttributes f) {
 	        	
-	        	if (f.getDeclaringClass() == OAuth2AccessTokenEntity.class) {
-	        		if (f.getName().equals("id")) {
-	        			return false;
-	        		}
-	        		return true;
-	        	}
-	        	
 	            return false;
 	        }
 	
@@ -55,6 +53,15 @@ public class JsonApprovedSiteView extends AbstractView {
 	            return false;
 	        }
 	
+	    })
+	    .registerTypeAdapter(OAuth2AccessTokenEntity.class, new JsonSerializer<OAuth2AccessTokenEntity>() {
+
+			@Override
+			public JsonElement serialize(OAuth2AccessTokenEntity src,
+					Type typeOfSrc, JsonSerializationContext context) {
+				return new JsonPrimitive(src.getId());
+			}
+	    	
 	    })
 	    .serializeNulls()
 	    .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
