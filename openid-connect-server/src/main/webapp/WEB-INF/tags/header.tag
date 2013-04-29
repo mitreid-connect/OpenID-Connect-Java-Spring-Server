@@ -9,7 +9,7 @@
     <base href="${fn:substring(url, 0, fn:length(url) - fn:length(pageContext.request.requestURI))}${pageContext.request.contextPath}/" />
 
     <meta charset="utf-8">
-    <title>OpenID Connect - ${title}</title>
+    <title>${config.topbarTitle} - ${title}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
@@ -104,6 +104,12 @@
 
     <!-- Load jQuery up here so that we can use in-page functions -->
     <script type="text/javascript" src="resources/js/lib/jquery.js"></script>
+    <script type="text/javascript">
+    	// safely set the title of the application
+    	function setPageTitle(title) {
+    		document.title = "${config.topbarTitle} - " + title;
+    	}
+    </script>    
 </head>
 
 <body>

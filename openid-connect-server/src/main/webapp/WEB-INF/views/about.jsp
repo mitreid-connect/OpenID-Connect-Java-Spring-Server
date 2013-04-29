@@ -4,7 +4,7 @@
 
 <!-- TODO: highlight proper section of topbar; what is the right way to do this? -->
 
-<o:header title="welcome"/>
+<o:header title="About"/>
 <o:topbar pageName="About"/>
 <div class="container-fluid main">
     <div class="row-fluid">

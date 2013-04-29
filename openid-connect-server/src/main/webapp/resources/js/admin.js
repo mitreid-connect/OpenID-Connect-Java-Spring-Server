@@ -369,6 +369,7 @@ var AppRouter = Backbone.Router.extend({
 
         $('#content').html(this.clientListView.render().el);
         this.clientListView.delegateEvents();
+    	setPageTitle("Mange Clients");
 
     },
 
@@ -393,6 +394,7 @@ var AppRouter = Backbone.Router.extend({
     	
         this.clientFormView = new ClientFormView({model:client});
         $('#content').html(this.clientFormView.render().el);
+    	setPageTitle("New Client");
     },
 
     editClient:function(id) {
@@ -425,6 +427,8 @@ var AppRouter = Backbone.Router.extend({
         
         this.clientFormView = new ClientFormView({model:client});
         $('#content').html(this.clientFormView.render().el);
+        
+    	setPageTitle("Edit Client");
     },
 
     whiteList:function () {
@@ -436,6 +440,8 @@ var AppRouter = Backbone.Router.extend({
         
         $('#content').html(this.whiteListListView.render().el);
         this.whiteListListView.delegateEvents();
+    	setPageTitle("Manage Whitelists");
+
     },
     
     newWhitelist:function(cid) {
@@ -459,6 +465,7 @@ var AppRouter = Backbone.Router.extend({
             
         	this.whiteListFormView = new WhiteListFormView({model: whiteList, client: client});
         	$('#content').html(this.whiteListFormView.render().el);
+        	setPageTitle("Create New Whitelist");
         } else {
         	console.log('ERROR: no client found for ' + cid);
         }
@@ -482,6 +489,8 @@ var AppRouter = Backbone.Router.extend({
             if (client != null) {
             	this.whiteListFormView = new WhiteListFormView({model: whiteList, client: client});
             	$('#content').html(this.whiteListFormView.render().el);
+            	setPageTitle("Edit Whitelist");
+
             } else {
             	console.log('ERROR: no client found for ' + whiteList.get('clientId'));
             }
@@ -503,6 +512,7 @@ var AppRouter = Backbone.Router.extend({
     	this.approvedSiteList.fetch({success: 
     		function(collection, response, options) {
     			$('#content').html(view.render().el);
+    	    	setPageTitle("Manage Approved Sites");
     		}
     	});
     	
@@ -520,6 +530,8 @@ var AppRouter = Backbone.Router.extend({
         this.blackListList.fetch({success:
         	function(collection, response, options) {
         		$('#content').html(view.render().el);
+            	setPageTitle("Mange Blacklist");
+
         	}
         });
     },
@@ -533,6 +545,8 @@ var AppRouter = Backbone.Router.extend({
     	
     	$('#content').html(this.systemScopeListView.render().el);
         this.systemScopeListView.delegateEvents();
+    	setPageTitle("Mange System Scopes");
+
     },
     
     newScope:function() {
@@ -547,6 +561,8 @@ var AppRouter = Backbone.Router.extend({
     	
     	this.systemScopeFormView = new SystemScopeFormView({model:scope});
     	$('#content').html(this.systemScopeFormView.render().el);
+    	setPageTitle("New System Scope");
+
     },
     
     editScope:function(sid) {
@@ -561,6 +577,7 @@ var AppRouter = Backbone.Router.extend({
     	
     	this.systemScopeFormView = new SystemScopeFormView({model:scope});
     	$('#content').html(this.systemScopeFormView.render().el);
+    	setPageTitle("Edit System Scope");
     	
     }
 
