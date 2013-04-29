@@ -35,6 +35,19 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <configuration>
                     <warName>openid-connect-server</warName>
+					<nonFilteredFileExtensions>
+						<nonFilteredFileExtension>gif</nonFilteredFileExtension>
+						<nonFilteredFileExtension>ico</nonFilteredFileExtension>
+						<nonFilteredFileExtension>jpg</nonFilteredFileExtension>
+						<nonFilteredFileExtension>png</nonFilteredFileExtension>
+						<nonFilteredFileExtension>pdf</nonFilteredFileExtension>
+					</nonFilteredFileExtensions>
+					<webResources>
+						<resource>
+							<directory>src/main/webapp</directory>
+							<filtering>true</filtering>
+						</resource>
+					</webResources>
                 </configuration>
             </plugin>
             <plugin>
