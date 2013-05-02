@@ -33,7 +33,7 @@ public class ClientKeyPublisher implements BeanDefinitionRegistryPostProcessor {
 	private String jwkViewName = "jwkKeyList";
 
 	/**
-	 * If either the jwkPublishUrl or x509PublishUrl fields are set on this bean, set up a listener on that URL to publish keys.
+	 * If the jwkPublishUrl field is set on this bean, set up a listener on that URL to publish keys.
 	 */
 	@Override
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {

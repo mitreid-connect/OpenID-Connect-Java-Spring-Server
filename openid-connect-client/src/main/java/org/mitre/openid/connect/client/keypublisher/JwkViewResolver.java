@@ -21,13 +21,10 @@ public class JwkViewResolver implements ViewResolver, Ordered {
 	private String jwkViewName = "jwkKeyList";
 	private View jwk;
 
-	private String x509ViewName = "x509certs";
-	private View x509;
-
 	private int order = HIGHEST_PRECEDENCE; // highest precedence, most specific -- avoids hitting the catch-all view resolvers
 
 	/**
-	 * Map "jwkKeyList" to the jwk property and "x509certs" to the x509 property on this bean.
+	 * Map "jwkKeyList" to the jwk property on this bean.
 	 * Everything else returns null
 	 */
 	@Override
@@ -35,28 +32,12 @@ public class JwkViewResolver implements ViewResolver, Ordered {
 		if (viewName != null) {
 			if (viewName.equals(getJwkViewName())) {
 				return getJwk();
-			} else if (viewName.equals(getX509ViewName())) {
-				return getX509();
 			} else {
 				return null;
 			}
 		} else {
 			return null;
 		}
-	}
-
-	/**
-	 * @return the x509
-	 */
-	public View getX509() {
-		return x509;
-	}
-
-	/**
-	 * @param x509 the x509 to set
-	 */
-	public void setX509(View x509) {
-		this.x509 = x509;
 	}
 
 	/**
@@ -100,20 +81,6 @@ public class JwkViewResolver implements ViewResolver, Ordered {
 	 */
 	public void setJwkViewName(String jwkViewName) {
 		this.jwkViewName = jwkViewName;
-	}
-
-	/**
-	 * @return the x509ViewName
-	 */
-	public String getX509ViewName() {
-		return x509ViewName;
-	}
-
-	/**
-	 * @param x509ViewName the x509ViewName to set
-	 */
-	public void setX509ViewName(String x509ViewName) {
-		this.x509ViewName = x509ViewName;
 	}
 
 }
