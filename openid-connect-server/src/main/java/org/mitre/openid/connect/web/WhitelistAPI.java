@@ -36,12 +36,12 @@ public class WhitelistAPI {
 
 	@Autowired
 	private WhitelistedSiteService whitelistService;
-	
+
 	private static Logger logger = LoggerFactory.getLogger(WhitelistAPI.class);
-	
+
 	private Gson gson = new Gson();
 	private JsonParser parser = new JsonParser();
-	
+
 	/**
 	 * Get a list of all whitelisted sites
 	 * @param m
@@ -49,14 +49,14 @@ public class WhitelistAPI {
 	 */
 	@RequestMapping(method = RequestMethod.GET, produces = "application/json")
 	public String getAllWhitelistedSites(ModelMap m) {
-		
+
 		Collection<WhitelistedSite> all = whitelistService.getAll();
-		
+
 		m.put("entity", all);
-		
+
 		return "jsonEntityView";
 	}
-	
+
 	/**
 	 * Create a new whitelisted site
 	 * @param jsonString
@@ -67,10 +67,10 @@ public class WhitelistAPI {
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@RequestMapping(method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
 	public String addNewWhitelistedSite(@RequestBody String jsonString, ModelMap m, Principal p) {
-		
-		JsonObject json; 
-		
-		WhitelistedSite whitelist = null; 
+
+		JsonObject json;
+
+		WhitelistedSite whitelist = null;
 		try {
 			json = parser.parse(jsonString).getAsJsonObject();
 			whitelist = gson.fromJson(json, WhitelistedSite.class);
@@ -86,28 +86,28 @@ public class WhitelistAPI {
 			m.addAttribute("errorMessage", "Could not save new whitelisted site. The server encountered an IllegalStateException. Refresh and try again - if the problem persists, contact a system administrator for assistance.");
 			return "jsonErrorView";
 		}
-		
+
 		// save the id of the person who created this
 		whitelist.setCreatorUserId(p.getName());
-		
+
 		WhitelistedSite newWhitelist = whitelistService.saveNew(whitelist);
-		
+
 		m.put("entity", newWhitelist);
-		
+
 		return "jsonEntityView";
-		
+
 	}
-	
+
 	/**
 	 * Update an existing whitelisted site
 	 */
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@RequestMapping(value="/{id}", method = RequestMethod.PUT, consumes = "application/json", produces = "application/json")
 	public String updateWhitelistedSite(@PathVariable("id") Long id, @RequestBody String jsonString, ModelMap m, Principal p) {
-		
-		JsonObject json; 
-		
-		WhitelistedSite whitelist = null; 
+
+		JsonObject json;
+
+		WhitelistedSite whitelist = null;
 		try {
 			json = parser.parse(jsonString).getAsJsonObject();
 			whitelist = gson.fromJson(json, WhitelistedSite.class);
@@ -123,24 +123,24 @@ public class WhitelistAPI {
 			m.put("errorMessage", "Could not update whitelisted site. The server encountered an IllegalStateException. Refresh and try again - if the problem persists, contact a system administrator for assistance.");
 			return "jsonErrorView";
 		}
-		
+
 		WhitelistedSite oldWhitelist = whitelistService.getById(id);
-		
+
 		if (oldWhitelist == null) {
 			logger.error("updateWhitelistedSite failed; whitelist with id " + id + " could not be found.");
 			m.put("code", HttpStatus.NOT_FOUND);
 			m.put("errorMessage", "Could not update whitelisted site. The requested whitelisted site with id " + id + "could not be found.");
 			return "jsonErrorView";
 		} else {
-			
+
 			WhitelistedSite newWhitelist = whitelistService.update(oldWhitelist, whitelist);
-			
+
 			m.put("entity", newWhitelist);
-			
+
 			return "jsonEntityView";
 		}
 	}
-	
+
 	/**
 	 * Delete a whitelisted site
 	 * 
@@ -149,7 +149,7 @@ public class WhitelistAPI {
 	@RequestMapping(value="/{id}", method = RequestMethod.DELETE)
 	public String deleteWhitelistedSite(@PathVariable("id") Long id, ModelMap m) {
 		WhitelistedSite whitelist = whitelistService.getById(id);
-		
+
 		if (whitelist == null) {
 			logger.error("deleteWhitelistedSite failed; whitelist with id " + id + " could not be found.");
 			m.put("code", HttpStatus.NOT_FOUND);
@@ -158,11 +158,11 @@ public class WhitelistAPI {
 		} else {
 			m.put("code", HttpStatus.OK);
 			whitelistService.remove(whitelist);
-		}		
-		
+		}
+
 		return "httpCodeView";
 	}
-	
+
 	/**
 	 * Get a single whitelisted site
 	 */
@@ -175,11 +175,11 @@ public class WhitelistAPI {
 			m.put("errorMessage", "The requested whitelisted site with id " + id + "could not be found.");
 			return "jsonErrorView";
 		} else {
-		
+
 			m.put("entity", whitelist);
-			
+
 			return "jsonEntityView";
 		}
-		
+
 	}
 }

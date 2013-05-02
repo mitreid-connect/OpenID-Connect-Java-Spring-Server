@@ -27,7 +27,7 @@ import javax.persistence.Table;
 @Table(name="address")
 public class Address {
 
-	
+
 	private Long id;
 	private String formatted;
 	private String streetAddress;
@@ -35,14 +35,14 @@ public class Address {
 	private String region;
 	private String postalCode;
 	private String country;
-	
+
 	/**
 	 * Empty constructor
 	 */
 	public Address() {
-		
+
 	}
-	
+
 	/**
 	 * @return the formatted address string
 	 */
@@ -125,19 +125,19 @@ public class Address {
 	}
 
 	/**
-     * @return the id
-     */
+	 * @return the id
+	 */
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	public Long getId() {
-    	return id;
-    }
+		return id;
+	}
 
 	/**
-     * @param id the id to set
-     */
-    public void setId(Long id) {
-    	this.id = id;
-    }
-		
+	 * @param id the id to set
+	 */
+	public void setId(Long id) {
+		this.id = id;
+	}
+
 }

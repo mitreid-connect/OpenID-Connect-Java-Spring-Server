@@ -50,7 +50,7 @@ public interface ApprovedSiteRepository {
 	 * @param clientId
 	 * @param userId
 	 * @return
-	 */	
+	 */
 	public Collection<ApprovedSite> getByClientIdAndUserId(String clientId, String userId);
 
 	/**
@@ -69,14 +69,14 @@ public interface ApprovedSiteRepository {
 	 * @return the persisted entity
 	 */
 	public ApprovedSite save(ApprovedSite approvedSite);
-	
+
 	/**
 	 * Get all sites approved by this user
 	 * @param userId
 	 * @return
 	 */
 	public Collection<ApprovedSite> getByUserId(String userId);
-	
+
 	/**
 	 * Get all sites associated with this client
 	 * @param clientId

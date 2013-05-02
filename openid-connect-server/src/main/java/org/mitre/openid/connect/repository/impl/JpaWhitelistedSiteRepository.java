@@ -15,8 +15,6 @@
  ******************************************************************************/
 package org.mitre.openid.connect.repository.impl;
 
-import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
-
 import java.util.Collection;
 
 import javax.persistence.EntityManager;
@@ -28,6 +26,8 @@ import org.mitre.openid.connect.repository.WhitelistedSiteRepository;
 import org.mitre.util.jpa.JpaUtil;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
 
 /**
  * JPA WhitelistedSite repository implementation
@@ -77,10 +77,10 @@ public class JpaWhitelistedSiteRepository implements WhitelistedSiteRepository {
 	public WhitelistedSite update(WhitelistedSite oldWhitelistedSite, WhitelistedSite whitelistedSite) {
 		// sanity check
 		whitelistedSite.setId(oldWhitelistedSite.getId());
-		
+
 		return saveOrUpdate(oldWhitelistedSite.getId(), manager, whitelistedSite);
 	}
-	
+
 	@Override
 	@Transactional
 	public WhitelistedSite getByClientId(String clientId) {
@@ -94,7 +94,7 @@ public class JpaWhitelistedSiteRepository implements WhitelistedSiteRepository {
 	public Collection<WhitelistedSite> getByCreator(String creatorId) {
 		TypedQuery<WhitelistedSite> query = manager.createNamedQuery("WhitelistedSite.getByCreaterUserId", WhitelistedSite.class);
 		query.setParameter("userId", creatorId);
-		
+
 		return query.getResultList();
 	}
 }

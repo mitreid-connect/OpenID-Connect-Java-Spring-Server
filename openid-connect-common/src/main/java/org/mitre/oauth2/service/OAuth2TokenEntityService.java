@@ -26,30 +26,32 @@ import org.springframework.security.oauth2.provider.token.ResourceServerTokenSer
 
 public interface OAuth2TokenEntityService extends AuthorizationServerTokenServices, ResourceServerTokenServices {
 
+	@Override
 	public OAuth2AccessTokenEntity readAccessToken(String accessTokenValue);
-	
+
 	public OAuth2RefreshTokenEntity getRefreshToken(String refreshTokenValue);
 
 	public void revokeRefreshToken(OAuth2RefreshTokenEntity refreshToken);
 
 	public void revokeAccessToken(OAuth2AccessTokenEntity accessToken);
-	
+
 	public List<OAuth2AccessTokenEntity> getAccessTokensForClient(ClientDetailsEntity client);
-	
+
 	public List<OAuth2RefreshTokenEntity> getRefreshTokensForClient(ClientDetailsEntity client);
 
 	public void clearExpiredTokens();
-	
+
 	public OAuth2AccessTokenEntity saveAccessToken(OAuth2AccessTokenEntity accessToken);
-	
+
 	public OAuth2RefreshTokenEntity saveRefreshToken(OAuth2RefreshTokenEntity refreshToken);
-	
+
+	@Override
 	public OAuth2AccessTokenEntity getAccessToken(OAuth2Authentication authentication);
 
 	/**
-     * @param incomingToken
-     * @return
-     */
-    public OAuth2AccessTokenEntity getAccessTokenForIdToken(OAuth2AccessTokenEntity idToken);
-	
+	 * @param incomingToken
+	 * @return
+	 */
+	public OAuth2AccessTokenEntity getAccessTokenForIdToken(OAuth2AccessTokenEntity idToken);
+
 }

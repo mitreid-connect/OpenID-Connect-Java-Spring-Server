@@ -30,32 +30,32 @@ public class JsonWebKeyEndpoint {
 
 	@Autowired
 	private JwtSigningAndValidationService jwtService;
-	
+
 	@RequestMapping(value = "/jwk", produces = "application/json")
 	public String getJwk(Model m) {
-		
+
 		// map from key id to key
 		Map<String, JWK> keys = jwtService.getAllPublicKeys();
-		
+
 		// TODO: check if keys are empty, return a 404 here or just an empty list?
-		
+
 		m.addAttribute("keys", keys);
-		
+
 		return "jwkKeyList";
 	}
-	
-	/**
-     * @return the jwtService
-     */
-    public JwtSigningAndValidationService getJwtService() {
-    	return jwtService;
-    }
 
 	/**
-     * @param jwtService the jwtService to set
-     */
-    public void setJwtService(JwtSigningAndValidationService jwtService) {
-    	this.jwtService = jwtService;
-    }
-	
+	 * @return the jwtService
+	 */
+	public JwtSigningAndValidationService getJwtService() {
+		return jwtService;
+	}
+
+	/**
+	 * @param jwtService the jwtService to set
+	 */
+	public void setJwtService(JwtSigningAndValidationService jwtService) {
+		this.jwtService = jwtService;
+	}
+
 }

@@ -34,7 +34,7 @@ public class ClientInformationResponseView extends AbstractView {
 
 	// note that this won't serialize nulls by default
 	private Gson gson = new Gson();
-	
+
 	/* (non-Javadoc)
 	 * @see org.springframework.web.servlet.view.AbstractView#renderMergedOutputModel(java.util.Map, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
 	 */
@@ -42,29 +42,29 @@ public class ClientInformationResponseView extends AbstractView {
 	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
 
 		response.setContentType("application/json");
-		
+
 		ClientDetailsEntity c = (ClientDetailsEntity) model.get("client");
 		OAuth2AccessTokenEntity token = (OAuth2AccessTokenEntity) model.get("token");
 		HttpStatus code = (HttpStatus) model.get("code");
 		if (code == null) {
 			code = HttpStatus.OK;
 		}
-		
+
 		// TODO: urlencode the client id for safety?
-		String uri = request.getRequestURL() + "/" + c.getClientId();		
+		String uri = request.getRequestURL() + "/" + c.getClientId();
 		JsonObject o = ClientDetailsEntityJsonProcessor.serialize(c, token, uri);
-		
+
 		try {
-	        Writer out = response.getWriter();
-	        gson.toJson(o, out);
-        } catch (JsonIOException e) {
-	        // TODO Auto-generated catch block
-	        e.printStackTrace();
-        } catch (IOException e) {
-	        // TODO Auto-generated catch block
-	        e.printStackTrace();
-        }		
-			
+			Writer out = response.getWriter();
+			gson.toJson(o, out);
+		} catch (JsonIOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 }

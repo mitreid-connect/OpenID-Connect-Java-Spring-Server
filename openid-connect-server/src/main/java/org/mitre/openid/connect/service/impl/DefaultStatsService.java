@@ -24,26 +24,26 @@ public class DefaultStatsService implements StatsService {
 
 	@Autowired
 	private ApprovedSiteService approvedSiteService;
-	
+
 	@Override
-    public Map<String, Integer> calculateSummaryStats() {
-        // get all approved sites
-    	Collection<ApprovedSite> allSites = approvedSiteService.getAll();
-    
-    	// process to find number of unique users and sites
-    	Set<String> userIds = new HashSet<String>();
-    	Set<String> clientIds = new HashSet<String>();
-    	for (ApprovedSite approvedSite : allSites) {
-            userIds.add(approvedSite.getUserId());
-            clientIds.add(approvedSite.getClientId());
-        }
-    	
-    	Map<String, Integer> e = new HashMap<String, Integer>();
-    	
-    	e.put("approvalCount", allSites.size());
-    	e.put("userCount", userIds.size());
-    	e.put("clientCount", clientIds.size());
-        return e;
-    }
+	public Map<String, Integer> calculateSummaryStats() {
+		// get all approved sites
+		Collection<ApprovedSite> allSites = approvedSiteService.getAll();
+
+		// process to find number of unique users and sites
+		Set<String> userIds = new HashSet<String>();
+		Set<String> clientIds = new HashSet<String>();
+		for (ApprovedSite approvedSite : allSites) {
+			userIds.add(approvedSite.getUserId());
+			clientIds.add(approvedSite.getClientId());
+		}
+
+		Map<String, Integer> e = new HashMap<String, Integer>();
+
+		e.put("approvalCount", allSites.size());
+		e.put("userCount", userIds.size());
+		e.put("clientCount", clientIds.size());
+		return e;
+	}
 
 }

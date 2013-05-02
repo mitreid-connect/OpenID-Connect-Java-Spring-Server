@@ -20,8 +20,6 @@ import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.text.ParseException;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -29,8 +27,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.jwt.signer.service.impl.JWKSetSigningAndValidationServiceCacheService;
@@ -74,7 +70,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 	protected final static int HTTP_SOCKET_TIMEOUT = 30000;
 
 	protected final static String FILTER_PROCESSES_URL = "/openid_connect_login";
-	
+
 	// Allow for time sync issues by having a window of X seconds.
 	private int timeSkewAllowance = 300;
 
@@ -86,7 +82,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 	private ClientConfigurationService clients;
 	private IssuerService issuerService;
 	private AuthRequestUrlBuilder authRequestBuilder;
-	
+
 	protected int httpSocketTimeout = HTTP_SOCKET_TIMEOUT;
 
 	/**
@@ -119,18 +115,18 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 			// there's an error coming back from the server, need to handle this
 			handleError(request, response);
 			return null; // no auth, response is sent to display page or something
-			
+
 		} else if (!Strings.isNullOrEmpty(request.getParameter("code"))) {
 
 			// we got back the code, need to process this to get our tokens
 			Authentication auth = handleAuthorizationCodeResponse(request, response);
 			return auth;
-			
+
 		} else {
-			
+
 			// not an error, not a code, must be an initial login of some type
 			handleAuthorizationRequest(request, response);
-			
+
 			return null; // no auth, response redirected to the server's Auth Endpoint (or possibly to the account chooser)
 		}
 
@@ -149,53 +145,53 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 	protected void handleAuthorizationRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 		HttpSession session = request.getSession();
-		
+
 		IssuerServiceResponse issResp = issuerService.getIssuer(request);
-		
+
 		if (issResp == null) {
 			logger.error("Null issuer response returned from service.");
 			throw new AuthenticationServiceException("No issuer found.");
 		}
-		
+
 		if (issResp.shouldRedirect()) {
 			response.sendRedirect(issResp.getRedirectUrl());
 		} else {
 			String issuer = issResp.getIssuer();
-		
+
 			if (Strings.isNullOrEmpty(issuer)) {
 				logger.error("No issuer found: " + issuer);
 				throw new AuthenticationServiceException("No issuer found: " + issuer);
 			}
-			
+
 			session.setAttribute(ISSUER_SESSION_VARIABLE, issuer);
-			
+
 			ServerConfiguration serverConfig = servers.getServerConfiguration(issuer);
 			if (serverConfig == null) {
 				logger.error("No server configuration found for issuer: " + issuer);
 				throw new AuthenticationServiceException("No server configuration found for issuer: " + issuer);
 			}
-			
-			
+
+
 			ClientDetails clientConfig = clients.getClientConfiguration(serverConfig);
 			if (clientConfig == null) {
 				logger.error("No client configuration found for issuer: " + issuer);
 				throw new AuthenticationServiceException("No client configuration found for issuer: " + issuer);
 			}
-	
+
 			// our redirect URI is this current URL, with no query parameters
 			String redirectUri = request.getRequestURL().toString();
 			session.setAttribute(REDIRECT_URI_SESION_VARIABLE, redirectUri);
-	
+
 			// this value comes back in the id token and is checked there
 			String nonce = createNonce(session);
-	
+
 			// this value comes back in the auth code response
 			String state = createState(session);
-			
+
 			String authRequest = authRequestBuilder.buildAuthRequestUrl(serverConfig, clientConfig, redirectUri, nonce, state);
-	
+
 			logger.debug("Auth Request:  " + authRequest);
-	
+
 			response.sendRedirect(authRequest);
 		}
 	}
@@ -210,9 +206,9 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 	protected Authentication handleAuthorizationCodeResponse(HttpServletRequest request, HttpServletResponse response) {
 
 		String authorizationCode = request.getParameter("code");
-		
+
 		HttpSession session = request.getSession();
-		
+
 		// check for state, if it doesn't match we bail early
 		String storedState = getStoredState(session);
 		if (!StringUtils.isBlank(storedState)) {
@@ -224,20 +220,20 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 
 		// look up the issuer that we set out to talk to
 		String issuer = getStoredSessionString(session, ISSUER_SESSION_VARIABLE);
-		
+
 		// pull the configurations based on that issuer
 		ServerConfiguration serverConfig = servers.getServerConfiguration(issuer);
 		ClientDetails clientConfig = clients.getClientConfiguration(serverConfig);
-		
+
 		MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
 		form.add("grant_type", "authorization_code");
 		form.add("code", authorizationCode);
-		
+
 		String redirectUri = getStoredSessionString(session, REDIRECT_URI_SESION_VARIABLE);
 		if (redirectUri != null) {
 			form.add("redirect_uri", redirectUri);
 		}
-		
+
 		// Handle Token Endpoint interaction
 		DefaultHttpClient httpClient = new DefaultHttpClient();
 
@@ -252,7 +248,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 		 */
 		form.add("client_id", clientConfig.getClientId());
 		form.add("client_secret", clientConfig.getClientSecret());
-		 /**/
+		/**/
 
 		HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
 
@@ -277,14 +273,14 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 		}
 
 		logger.debug("from TokenEndpoint jsonString = " + jsonString);
-		
+
 		JsonElement jsonRoot = new JsonParser().parse(jsonString);
 		if (!jsonRoot.isJsonObject()) {
 			throw new AuthenticationServiceException("Token Endpoint did not return a JSON object: " + jsonRoot);
 		}
 
 		JsonObject tokenResponse = jsonRoot.getAsJsonObject();
-		
+
 		if (tokenResponse.get("error") != null) {
 
 			// Handle error
@@ -299,125 +295,125 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 
 			// Extract the id_token to insert into the
 			// OIDCAuthenticationToken
-			
+
 			// get out all the token strings
 			String accessTokenValue = null;
 			String idTokenValue = null;
 			String refreshTokenValue = null;
-			
+
 			if (tokenResponse.has("access_token")) {
 				accessTokenValue = tokenResponse.get("access_token").getAsString();
 			} else {
 				throw new AuthenticationServiceException("Token Endpoint did not return an access_token: " + jsonString);
 			}
-			
+
 			if (tokenResponse.has("id_token")) {
 				idTokenValue = tokenResponse.get("id_token").getAsString();
 			} else {
 				logger.error("Token Endpoint did not return an id_token");
 				throw new AuthenticationServiceException("Token Endpoint did not return an id_token");
 			}
-			
+
 			if (tokenResponse.has("refresh_token")) {
 				refreshTokenValue = tokenResponse.get("refresh_token").getAsString();
 			}
-			
+
 			try {
-	            SignedJWT idToken = SignedJWT.parse(idTokenValue);
+				SignedJWT idToken = SignedJWT.parse(idTokenValue);
 
-	            // validate our ID Token over a number of tests
-	            ReadOnlyJWTClaimsSet idClaims = idToken.getJWTClaimsSet();
-	            
-	            // check the signature
-	            JwtSigningAndValidationService jwtValidator = validationServices.get(serverConfig.getJwksUri()); 
-	            if (jwtValidator != null) {
-	            	if(!jwtValidator.validateSignature(idToken)) {
-	            		throw new AuthenticationServiceException("Signature validation failed");
-	            	}
-	            } else {
-	            	logger.info("No validation service found. Skipping signature validation");
-	            }
-	            
-	            // check the issuer
-	            if (idClaims.getIssuer() == null) {
-	            	throw new AuthenticationServiceException("Id Token Issuer is null");
-	            } else if (!idClaims.getIssuer().equals(serverConfig.getIssuer())){
-	            	throw new AuthenticationServiceException("Issuers do not match, expected " + serverConfig.getIssuer() + " got " + idClaims.getIssuer());
-	            }
-	            
-	            // check expiration
-	            if (idClaims.getExpirationTime() == null) {
-	            	throw new AuthenticationServiceException("Id Token does not have required expiration claim");
-	            } else {
-	            	// it's not null, see if it's expired
-	            	Date now = new Date(System.currentTimeMillis() - (timeSkewAllowance * 1000));
-	            	if (now.after(idClaims.getExpirationTime())) {
-	            		throw new AuthenticationServiceException("Id Token is expired: " + idClaims.getExpirationTime());
-	            	}
-	            }
-	            
-	            // check not before
-	            if (idClaims.getNotBeforeTime() != null) {
-	            	Date now = new Date(System.currentTimeMillis() + (timeSkewAllowance * 1000));
-	            	if (now.before(idClaims.getNotBeforeTime())){
-	            		throw new AuthenticationServiceException("Id Token not valid untill: " + idClaims.getNotBeforeTime());
-	            	}
-	            }
-	            
-	            // check issued at
-	            if (idClaims.getIssueTime() == null) {
-	            	throw new AuthenticationServiceException("Id Token does not have required issued-at claim");				
-	            } else {
-	            	// since it's not null, see if it was issued in the future
-	            	Date now = new Date(System.currentTimeMillis() + (timeSkewAllowance * 1000));
-	            	if (now.before(idClaims.getIssueTime())) {
-	            		throw new AuthenticationServiceException("Id Token was issued in the future: " + idClaims.getIssueTime());
-	            	}
-	            }
-	            
-	            // check audience
-	            if (idClaims.getAudience() == null) {
-	            	throw new AuthenticationServiceException("Id token audience is null");
-	            } else if (!idClaims.getAudience().contains(clientConfig.getClientId())) {
-	            	throw new AuthenticationServiceException("Audience does not match, expected " + clientConfig.getClientId() + " got " + idClaims.getAudience());
-	            }
-	            
-	            // compare the nonce to our stored claim
-	            // FIXME: Nimbus claims as strings?
-	            String nonce = (String) idClaims.getCustomClaim("nonce");			
-	            if (StringUtils.isBlank(nonce)) {
-	            	
-	            	logger.error("ID token did not contain a nonce claim.");
+				// validate our ID Token over a number of tests
+				ReadOnlyJWTClaimsSet idClaims = idToken.getJWTClaimsSet();
 
-	            	throw new AuthenticationServiceException("ID token did not contain a nonce claim.");
-	            }
+				// check the signature
+				JwtSigningAndValidationService jwtValidator = validationServices.get(serverConfig.getJwksUri());
+				if (jwtValidator != null) {
+					if(!jwtValidator.validateSignature(idToken)) {
+						throw new AuthenticationServiceException("Signature validation failed");
+					}
+				} else {
+					logger.info("No validation service found. Skipping signature validation");
+				}
 
-	            String storedNonce = getStoredNonce(session);
-	            if (!nonce.equals(storedNonce)) {
-	            	logger.error("Possible replay attack detected! The comparison of the nonce in the returned "
-	            			+ "ID Token to the session " + NONCE_SESSION_VARIABLE + " failed. Expected " + storedNonce + " got " + nonce + ".");
+				// check the issuer
+				if (idClaims.getIssuer() == null) {
+					throw new AuthenticationServiceException("Id Token Issuer is null");
+				} else if (!idClaims.getIssuer().equals(serverConfig.getIssuer())){
+					throw new AuthenticationServiceException("Issuers do not match, expected " + serverConfig.getIssuer() + " got " + idClaims.getIssuer());
+				}
 
-	            	throw new AuthenticationServiceException(
-	            			"Possible replay attack detected! The comparison of the nonce in the returned "
-	            					+ "ID Token to the session " + NONCE_SESSION_VARIABLE + " failed. Expected " + storedNonce + " got " + nonce + ".");
-	            }
+				// check expiration
+				if (idClaims.getExpirationTime() == null) {
+					throw new AuthenticationServiceException("Id Token does not have required expiration claim");
+				} else {
+					// it's not null, see if it's expired
+					Date now = new Date(System.currentTimeMillis() - (timeSkewAllowance * 1000));
+					if (now.after(idClaims.getExpirationTime())) {
+						throw new AuthenticationServiceException("Id Token is expired: " + idClaims.getExpirationTime());
+					}
+				}
 
-	            // pull the subject (user id) out as a claim on the id_token
-	            
-	            String userId = idClaims.getSubject();
-	            
-	            // construct an OIDCAuthenticationToken and return a Authentication object w/the userId and the idToken
-	            
-	            OIDCAuthenticationToken token = new OIDCAuthenticationToken(userId, idClaims.getIssuer(), serverConfig, idTokenValue, accessTokenValue, refreshTokenValue);
+				// check not before
+				if (idClaims.getNotBeforeTime() != null) {
+					Date now = new Date(System.currentTimeMillis() + (timeSkewAllowance * 1000));
+					if (now.before(idClaims.getNotBeforeTime())){
+						throw new AuthenticationServiceException("Id Token not valid untill: " + idClaims.getNotBeforeTime());
+					}
+				}
 
-	            Authentication authentication = this.getAuthenticationManager().authenticate(token);
+				// check issued at
+				if (idClaims.getIssueTime() == null) {
+					throw new AuthenticationServiceException("Id Token does not have required issued-at claim");
+				} else {
+					// since it's not null, see if it was issued in the future
+					Date now = new Date(System.currentTimeMillis() + (timeSkewAllowance * 1000));
+					if (now.before(idClaims.getIssueTime())) {
+						throw new AuthenticationServiceException("Id Token was issued in the future: " + idClaims.getIssueTime());
+					}
+				}
 
-	            return authentication;
-            } catch (ParseException e) {
-            	throw new AuthenticationServiceException("Couldn't parse idToken: ", e);
-            }
+				// check audience
+				if (idClaims.getAudience() == null) {
+					throw new AuthenticationServiceException("Id token audience is null");
+				} else if (!idClaims.getAudience().contains(clientConfig.getClientId())) {
+					throw new AuthenticationServiceException("Audience does not match, expected " + clientConfig.getClientId() + " got " + idClaims.getAudience());
+				}
 
-		
+				// compare the nonce to our stored claim
+				// FIXME: Nimbus claims as strings?
+				String nonce = (String) idClaims.getCustomClaim("nonce");
+				if (StringUtils.isBlank(nonce)) {
+
+					logger.error("ID token did not contain a nonce claim.");
+
+					throw new AuthenticationServiceException("ID token did not contain a nonce claim.");
+				}
+
+				String storedNonce = getStoredNonce(session);
+				if (!nonce.equals(storedNonce)) {
+					logger.error("Possible replay attack detected! The comparison of the nonce in the returned "
+							+ "ID Token to the session " + NONCE_SESSION_VARIABLE + " failed. Expected " + storedNonce + " got " + nonce + ".");
+
+					throw new AuthenticationServiceException(
+							"Possible replay attack detected! The comparison of the nonce in the returned "
+									+ "ID Token to the session " + NONCE_SESSION_VARIABLE + " failed. Expected " + storedNonce + " got " + nonce + ".");
+				}
+
+				// pull the subject (user id) out as a claim on the id_token
+
+				String userId = idClaims.getSubject();
+
+				// construct an OIDCAuthenticationToken and return a Authentication object w/the userId and the idToken
+
+				OIDCAuthenticationToken token = new OIDCAuthenticationToken(userId, idClaims.getIssuer(), serverConfig, idTokenValue, accessTokenValue, refreshTokenValue);
+
+				Authentication authentication = this.getAuthenticationManager().authenticate(token);
+
+				return authentication;
+			} catch (ParseException e) {
+				throw new AuthenticationServiceException("Couldn't parse idToken: ", e);
+			}
+
+
 
 		}
 	}
@@ -456,7 +452,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Create a cryptographically random nonce and store it in the session
 	 * @param session
@@ -477,7 +473,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 	protected static String getStoredNonce(HttpSession session) {
 		return getStoredSessionString(session, NONCE_SESSION_VARIABLE);
 	}
-	
+
 	/**
 	 * Create a cryptographically random state and store it in the session
 	 * @param session
@@ -486,10 +482,10 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 	protected static String createState(HttpSession session) {
 		String state = new BigInteger(50, new SecureRandom()).toString(16);
 		session.setAttribute(STATE_SESSION_VARIABLE, state);
-		
+
 		return state;
 	}
-	
+
 	/**
 	 * Get the state we stored in the session
 	 * @param session
@@ -498,14 +494,14 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 	protected static String getStoredState(HttpSession session) {
 		return getStoredSessionString(session, STATE_SESSION_VARIABLE);
 	}
-	
-	
-	
+
+
+
 	//
 	// Getters and setters for configuration variables
 	//
-	
-	
+
+
 	public int getTimeSkewAllowance() {
 		return timeSkewAllowance;
 	}
@@ -582,6 +578,6 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 	 */
 	public void setAuthRequestUrlBuilder(AuthRequestUrlBuilder authRequestBuilder) {
 		this.authRequestBuilder = authRequestBuilder;
-	}	
-	
+	}
+
 }

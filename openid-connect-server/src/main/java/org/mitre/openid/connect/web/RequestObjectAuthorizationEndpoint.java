@@ -36,32 +36,32 @@ public class RequestObjectAuthorizationEndpoint {
 	public String authorizeRequestObject(@RequestParam("request") String jwtString, @RequestParam(value = "response_type", required = false) String responseType, HttpServletRequest request, ModelAndView mav) {
 
 		String query = request.getQueryString();
-		
+
 		if (responseType == null) {
 			try {
-		        JWT requestObject = JWTParser.parse(jwtString);
-		        responseType = (String)requestObject.getJWTClaimsSet().getClaim("response_type");
-		        
-		        URI uri = new URIBuilder(Strings.nullToEmpty(request.getServletPath()) + Strings.nullToEmpty(request.getPathInfo()) + "?" + query)
-		        	.addParameter("response_type", responseType)
-		        	.build();
-		        
-		        query = uri.getRawQuery();//uri.toString();
-		        
-	        } catch (ParseException e) {
-		        logger.error("ParseException while attempting to authorize request object: " + e.getStackTrace().toString());
-		        mav.addObject("code", HttpStatus.BAD_REQUEST);
-		        return "httpCodeView";
-		        
-	        } catch (URISyntaxException e) {
-	        	logger.error("URISyntaxError while attempting to authorize request object: " + e.getStackTrace().toString());
-	        	mav.addObject("code", HttpStatus.BAD_REQUEST);
-		        return "httpCodeView";
-            }
+				JWT requestObject = JWTParser.parse(jwtString);
+				responseType = (String)requestObject.getJWTClaimsSet().getClaim("response_type");
+
+				URI uri = new URIBuilder(Strings.nullToEmpty(request.getServletPath()) + Strings.nullToEmpty(request.getPathInfo()) + "?" + query)
+				.addParameter("response_type", responseType)
+				.build();
+
+				query = uri.getRawQuery();//uri.toString();
+
+			} catch (ParseException e) {
+				logger.error("ParseException while attempting to authorize request object: " + e.getStackTrace().toString());
+				mav.addObject("code", HttpStatus.BAD_REQUEST);
+				return "httpCodeView";
+
+			} catch (URISyntaxException e) {
+				logger.error("URISyntaxError while attempting to authorize request object: " + e.getStackTrace().toString());
+				mav.addObject("code", HttpStatus.BAD_REQUEST);
+				return "httpCodeView";
+			}
 		}
-		
+
 		return "forward:/oauth/authorize?" + query;
-		
+
 	}
-	
+
 }

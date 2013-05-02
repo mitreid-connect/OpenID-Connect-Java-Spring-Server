@@ -33,7 +33,7 @@ public interface WhitelistedSiteService {
 	 * @return the WhitelistedSite collection, or null
 	 */
 	public Collection<WhitelistedSite> getAll();
-	
+
 	/**
 	 * Returns the WhitelistedSite for the given id
 	 * 
@@ -50,7 +50,7 @@ public interface WhitelistedSiteService {
 	 * @return			the corresponding WhitelistedSite if one exists for the RP, or null
 	 */
 	public WhitelistedSite getByClientId(String clientId);
-	
+
 	/**
 	 * Return a collection of the WhitelistedSites created by a given user
 	 * 
@@ -58,7 +58,7 @@ public interface WhitelistedSiteService {
 	 * @return			the collection of corresponding WhitelistedSites, if any, or null
 	 */
 	public Collection<WhitelistedSite> getByCreator(String creatorId);
-	
+
 	/**
 	 * Removes the given WhitelistedSite from the repository
 	 * 
@@ -75,10 +75,10 @@ public interface WhitelistedSiteService {
 	 * @return
 	 */
 	public WhitelistedSite saveNew(WhitelistedSite whitelistedSite);
-	
+
 	/**
 	 * Updates an existing whitelisted site
 	 */
 	public WhitelistedSite update(WhitelistedSite oldWhitelistedSite, WhitelistedSite whitelistedSite);
-	
+
 }

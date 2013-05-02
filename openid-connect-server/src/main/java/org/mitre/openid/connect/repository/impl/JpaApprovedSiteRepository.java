@@ -15,8 +15,6 @@
  ******************************************************************************/
 package org.mitre.openid.connect.repository.impl;
 
-import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
-
 import java.util.Collection;
 
 import javax.persistence.EntityManager;
@@ -25,9 +23,10 @@ import javax.persistence.TypedQuery;
 
 import org.mitre.openid.connect.model.ApprovedSite;
 import org.mitre.openid.connect.repository.ApprovedSiteRepository;
-import org.mitre.util.jpa.JpaUtil;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
 
 /**
  * JPA ApprovedSite repository implementation
@@ -48,7 +47,7 @@ public class JpaApprovedSiteRepository implements ApprovedSiteRepository {
 				"ApprovedSite.getAll", ApprovedSite.class);
 		return query.getResultList();
 	}
-	
+
 	@Override
 	@Transactional
 	public ApprovedSite getById(Long id) {
@@ -59,7 +58,7 @@ public class JpaApprovedSiteRepository implements ApprovedSiteRepository {
 	@Transactional
 	public void remove(ApprovedSite approvedSite) {
 		ApprovedSite found = manager.find(ApprovedSite.class, approvedSite.getId());
-		
+
 		if (found != null) {
 			manager.remove(found);
 		} else {
@@ -75,30 +74,30 @@ public class JpaApprovedSiteRepository implements ApprovedSiteRepository {
 
 	@Override
 	public Collection<ApprovedSite> getByClientIdAndUserId(String clientId, String userId) {
-		
+
 		TypedQuery<ApprovedSite> query = manager.createNamedQuery("ApprovedSite.getByClientIdAndUserId", ApprovedSite.class);
 		query.setParameter("userId", userId);
 		query.setParameter("clientId", clientId);
-		
+
 		return query.getResultList();
 	}
-	
-    @Override
-    @Transactional
-    public Collection<ApprovedSite> getByUserId(String userId) {
+
+	@Override
+	@Transactional
+	public Collection<ApprovedSite> getByUserId(String userId) {
 		TypedQuery<ApprovedSite> query = manager.createNamedQuery("ApprovedSite.getByUserId", ApprovedSite.class);
 		query.setParameter("userId", userId);
 
 		return query.getResultList();
-    	
-    }
 
-    @Override
-    @Transactional
-    public Collection<ApprovedSite> getByClientId(String clientId) {
+	}
+
+	@Override
+	@Transactional
+	public Collection<ApprovedSite> getByClientId(String clientId) {
 		TypedQuery<ApprovedSite> query = manager.createNamedQuery("ApprovedSite.getByClientId", ApprovedSite.class);
 		query.setParameter("clientId", clientId);
-		
+
 		return query.getResultList();
-    }
+	}
 }

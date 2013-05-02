@@ -37,15 +37,16 @@ public class JpaOAuth2ClientRepository implements OAuth2ClientRepository {
 
 	@PersistenceContext
 	private EntityManager manager;
-	
+
 	public JpaOAuth2ClientRepository() {
-		
+
 	}
-	
+
 	public JpaOAuth2ClientRepository(EntityManager manager) {
 		this.manager = manager;
 	}
-	
+
+	@Override
 	public ClientDetailsEntity getById(Long id) {
 		return manager.find(ClientDetailsEntity.class, id);
 	}
@@ -82,17 +83,17 @@ public class JpaOAuth2ClientRepository implements OAuth2ClientRepository {
 	}
 
 	@Override
-    public ClientDetailsEntity updateClient(Long id, ClientDetailsEntity client) {
+	public ClientDetailsEntity updateClient(Long id, ClientDetailsEntity client) {
 		// sanity check
 		client.setId(id);
-		
-	    return JpaUtil.saveOrUpdate(id, manager, client);
-    }
+
+		return JpaUtil.saveOrUpdate(id, manager, client);
+	}
 
 	@Override
-    public Collection<ClientDetailsEntity> getAllClients() {
+	public Collection<ClientDetailsEntity> getAllClients() {
 		TypedQuery<ClientDetailsEntity> query = manager.createNamedQuery("ClientDetailsEntity.findAll", ClientDetailsEntity.class);
 		return query.getResultList();
-    }
+	}
 
 }

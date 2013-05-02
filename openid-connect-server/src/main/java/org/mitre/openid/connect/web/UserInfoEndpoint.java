@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.oauth2.common.exceptions.InvalidScopeException;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -39,12 +38,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
  */
 @Controller
 public class UserInfoEndpoint {
-	
+
 	@Autowired
 	private UserInfoService userInfoService;
-	
+
 	private static Logger logger = LoggerFactory.getLogger(UserInfoEndpoint.class);
-	
+
 	/**
 	 * Get information about the user as specified in the accessToken included in this request
 	 */
@@ -58,24 +57,24 @@ public class UserInfoEndpoint {
 			return "httpCodeView";
 		}
 
-		String userId = p.getName(); 
+		String userId = p.getName();
 		UserInfo userInfo = userInfoService.getBySubject(userId);
-		
+
 		if (userInfo == null) {
-			logger.error("getInfo failed; user not found: " + userId); 
+			logger.error("getInfo failed; user not found: " + userId);
 			model.addAttribute("code", HttpStatus.NOT_FOUND);
 			return "httpCodeView";
 		}
-		
+
 		if (p instanceof OAuth2Authentication) {
-	        OAuth2Authentication authentication = (OAuth2Authentication)p;
-	        
-	        model.addAttribute("scope", authentication.getAuthorizationRequest().getScope());
-	        model.addAttribute("requestObject", authentication.getAuthorizationRequest().getAuthorizationParameters().get("request"));
-        }
+			OAuth2Authentication authentication = (OAuth2Authentication)p;
+
+			model.addAttribute("scope", authentication.getAuthorizationRequest().getScope());
+			model.addAttribute("requestObject", authentication.getAuthorizationRequest().getAuthorizationParameters().get("request"));
+		}
 
 		model.addAttribute("userInfo", userInfo);
-		
+
 		return "userInfoView";
 
 	}

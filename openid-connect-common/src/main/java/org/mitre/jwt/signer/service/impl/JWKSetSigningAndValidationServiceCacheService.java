@@ -3,12 +3,6 @@
  */
 package org.mitre.jwt.signer.service.impl;
 
-import java.math.BigInteger;
-import java.security.KeyFactory;
-import java.security.interfaces.RSAPublicKey;
-import java.security.spec.RSAPublicKeySpec;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.http.client.HttpClient;
@@ -21,19 +15,14 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.google.common.cache.LoadingCache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
-import com.nimbusds.jose.JWSVerifier;
-import com.nimbusds.jose.crypto.RSASSAVerifier;
-import com.nimbusds.jose.jwk.JWK;
+import com.google.common.cache.LoadingCache;
 import com.nimbusds.jose.jwk.JWKSet;
-import com.nimbusds.jose.jwk.KeyType;
-import com.nimbusds.jose.jwk.RSAKey;
 
 /**
  * 
- * Creates a caching map of JOSE signers and validators keyed on the JWK Set URI. 
+ * Creates a caching map of JOSE signers and validators keyed on the JWK Set URI.
  * Dynamically loads JWK Sets to create the signing and validation services.
  * 
  * @author jricher
@@ -43,7 +32,7 @@ import com.nimbusds.jose.jwk.RSAKey;
 public class JWKSetSigningAndValidationServiceCacheService {
 
 	private static Logger logger = LoggerFactory.getLogger(JWKSetSigningAndValidationServiceCacheService.class);
-	
+
 	// map of jwk set uri -> signing/validation service built on the keys found in that jwk set
 	private LoadingCache<String, JwtSigningAndValidationService> cache;
 
@@ -52,48 +41,48 @@ public class JWKSetSigningAndValidationServiceCacheService {
 				.maximumSize(100)
 				.build(new JWKSetVerifierFetcher());
 	}
-	
+
 	/**
 	 * @param jwksUri
 	 * @return
 	 * @throws ExecutionException
 	 * @see com.google.common.cache.Cache#get(java.lang.Object)
 	 */
-    public JwtSigningAndValidationService get(String jwksUri) {
-	    try {
-	        return cache.get(jwksUri);
-        } catch (ExecutionException e) {
-	        logger.warn("Couldn't load JWK Set from " + jwksUri, e);
-	        return null;
-        }
-    }
+	public JwtSigningAndValidationService get(String jwksUri) {
+		try {
+			return cache.get(jwksUri);
+		} catch (ExecutionException e) {
+			logger.warn("Couldn't load JWK Set from " + jwksUri, e);
+			return null;
+		}
+	}
 
 	/**
-     * @author jricher
-     *
-     */
-    private class JWKSetVerifierFetcher extends CacheLoader<String, JwtSigningAndValidationService> {
-    	private HttpClient httpClient = new DefaultHttpClient();
-    	private HttpComponentsClientHttpRequestFactory httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
-    	private RestTemplate restTemplate = new RestTemplate(httpFactory);
-    	
-    	/**
-    	 * Load the JWK Set and build the appropriate signing service.
-    	 */
-        @Override
-        public JwtSigningAndValidationService load(String key) throws Exception {
+	 * @author jricher
+	 *
+	 */
+	private class JWKSetVerifierFetcher extends CacheLoader<String, JwtSigningAndValidationService> {
+		private HttpClient httpClient = new DefaultHttpClient();
+		private HttpComponentsClientHttpRequestFactory httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
+		private RestTemplate restTemplate = new RestTemplate(httpFactory);
 
-        	String jsonString = restTemplate.getForObject(key, String.class);
-        	JWKSet jwkSet = JWKSet.parse(jsonString);
-        	
-        	JWKSetKeyStore keyStore = new JWKSetKeyStore(jwkSet);
-        	
-        	JwtSigningAndValidationService service = new DefaultJwtSigningAndValidationService(keyStore);
+		/**
+		 * Load the JWK Set and build the appropriate signing service.
+		 */
+		@Override
+		public JwtSigningAndValidationService load(String key) throws Exception {
 
-        	return service;
-        	
-        }
+			String jsonString = restTemplate.getForObject(key, String.class);
+			JWKSet jwkSet = JWKSet.parse(jsonString);
 
-    }
+			JWKSetKeyStore keyStore = new JWKSetKeyStore(jwkSet);
+
+			JwtSigningAndValidationService service = new DefaultJwtSigningAndValidationService(keyStore);
+
+			return service;
+
+		}
+
+	}
 
 }

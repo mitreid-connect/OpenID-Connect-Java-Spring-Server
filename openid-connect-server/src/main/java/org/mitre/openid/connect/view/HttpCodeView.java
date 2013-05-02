@@ -26,9 +26,9 @@ public class HttpCodeView extends AbstractView {
 		if (code == null) {
 			code = HttpStatus.OK; // default to 200
 		}
-		
+
 		response.setStatus(code.value());
-		
+
 	}
 
 }

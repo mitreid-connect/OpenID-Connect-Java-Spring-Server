@@ -12,12 +12,12 @@ public interface UserInfo {
 	 * @param sub the userId to set
 	 */
 	public abstract void setSub(String sub);
-	
+
 	/**
 	 * @return the preferred username
 	 */
 	public abstract String getPreferredUsername();
-	
+
 	/**
 	 * @param preferredUsername the preferredUsername to set
 	 */
@@ -189,7 +189,7 @@ public interface UserInfo {
 	 * @return
 	 */
 	public abstract String getBirthdate();
-	
+
 	/**
 	 * 
 	 * @param birthdate

@@ -24,7 +24,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -35,66 +34,66 @@ import com.google.gson.JsonParser;
 public class DynamicRegistrationClientConfigurationService implements ClientConfigurationService {
 
 	private static Logger logger = LoggerFactory.getLogger(DynamicServerConfigurationService.class);
-	
+
 	private LoadingCache<ServerConfiguration, ClientDetailsEntity> clients;
-	
+
 	private ClientDetailsEntity template;
-	
+
 	public DynamicRegistrationClientConfigurationService() {
 		clients = CacheBuilder.newBuilder().build(new DynamicClientRegistrationLoader());
 	}
-	
+
 	@Override
 	public ClientDetails getClientConfiguration(ServerConfiguration issuer) {
 		try {
-	        return clients.get(issuer);
-        } catch (ExecutionException e) {
-        	logger.warn("Unable to get client configuration", e);
-	        return null;
-        }
+			return clients.get(issuer);
+		} catch (ExecutionException e) {
+			logger.warn("Unable to get client configuration", e);
+			return null;
+		}
 	}
 
-    /**
+	/**
 	 * @return the template
 	 */
-    public ClientDetailsEntity getTemplate() {
-	    return template;
-    }
+	public ClientDetailsEntity getTemplate() {
+		return template;
+	}
 
 	/**
 	 * @param template the template to set
 	 */
-    public void setTemplate(ClientDetailsEntity template) {
-	    this.template = template;
-    }
+	public void setTemplate(ClientDetailsEntity template) {
+		this.template = template;
+	}
 
 	public class DynamicClientRegistrationLoader extends CacheLoader<ServerConfiguration, ClientDetailsEntity> {
 		private HttpClient httpClient = new DefaultHttpClient();
 		private HttpComponentsClientHttpRequestFactory httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
 		private JsonParser parser = new JsonParser();
 
-        @Override
-        public ClientDetailsEntity load(ServerConfiguration serverConfig) throws Exception {
-    		RestTemplate restTemplate = new RestTemplate(httpFactory);
-        	
-        	// dynamically register this client
-        	JsonObject jsonRequest = ClientDetailsEntityJsonProcessor.serialize(template, null, null);
-        	
-        	HttpHeaders headers = new HttpHeaders();
-        	headers.setContentType(MediaType.APPLICATION_JSON);
-        	headers.setAccept(Lists.newArrayList(MediaType.APPLICATION_JSON));
-        	
-        	HttpEntity<String> entity = new HttpEntity<String>(jsonRequest.toString(), headers);
-        	
-        	String registered = restTemplate.postForObject(serverConfig.getRegistrationEndpointUri(), entity, String.class);
-        	// TODO: handle HTTP errors
-        	
-        	// TODO: save registration token and other important bits
-        	ClientDetailsEntity client = ClientDetailsEntityJsonProcessor.parse(registered);
-        	
-        	return client;
-        }
+		@Override
+		public ClientDetailsEntity load(ServerConfiguration serverConfig) throws Exception {
+			RestTemplate restTemplate = new RestTemplate(httpFactory);
 
-    }
+			// dynamically register this client
+			JsonObject jsonRequest = ClientDetailsEntityJsonProcessor.serialize(template, null, null);
+
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			headers.setAccept(Lists.newArrayList(MediaType.APPLICATION_JSON));
+
+			HttpEntity<String> entity = new HttpEntity<String>(jsonRequest.toString(), headers);
+
+			String registered = restTemplate.postForObject(serverConfig.getRegistrationEndpointUri(), entity, String.class);
+			// TODO: handle HTTP errors
+
+			// TODO: save registration token and other important bits
+			ClientDetailsEntity client = ClientDetailsEntityJsonProcessor.parse(registered);
+
+			return client;
+		}
+
+	}
 
 }

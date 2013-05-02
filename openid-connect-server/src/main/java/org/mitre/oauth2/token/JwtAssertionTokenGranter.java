@@ -3,7 +3,6 @@
  */
 package org.mitre.oauth2.token;
 
-import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.util.Date;
 
@@ -39,118 +38,118 @@ public class JwtAssertionTokenGranter extends AbstractTokenGranter {
 
 	// keep down-cast versions so we can get to the right queries
 	private OAuth2TokenEntityService tokenServices;
-	
+
 	@Autowired
 	private JwtSigningAndValidationService jwtService;
-	
+
 	@Autowired
 	private ConfigurationPropertiesBean config;
-	
+
 	@Autowired
 	public JwtAssertionTokenGranter(OAuth2TokenEntityService tokenServices, ClientDetailsEntityService clientDetailsService) {
-	    super(tokenServices, clientDetailsService, grantType);
-	    this.tokenServices = tokenServices;
-    }
+		super(tokenServices, clientDetailsService, grantType);
+		this.tokenServices = tokenServices;
+	}
 
 	/* (non-Javadoc)
-     * @see org.springframework.security.oauth2.provider.token.AbstractTokenGranter#getOAuth2Authentication(org.springframework.security.oauth2.provider.AuthorizationRequest)
-     */
-    @Override
-    protected OAuth2AccessToken getAccessToken(AuthorizationRequest authorizationRequest) throws AuthenticationException, InvalidTokenException {
-    	// read and load up the existing token
-	    String incomingTokenValue = authorizationRequest.getAuthorizationParameters().get("assertion");
-	    OAuth2AccessTokenEntity incomingToken = tokenServices.readAccessToken(incomingTokenValue);
-	    
-	    ClientDetailsEntity client = incomingToken.getClient();
+	 * @see org.springframework.security.oauth2.provider.token.AbstractTokenGranter#getOAuth2Authentication(org.springframework.security.oauth2.provider.AuthorizationRequest)
+	 */
+	@Override
+	protected OAuth2AccessToken getAccessToken(AuthorizationRequest authorizationRequest) throws AuthenticationException, InvalidTokenException {
+		// read and load up the existing token
+		String incomingTokenValue = authorizationRequest.getAuthorizationParameters().get("assertion");
+		OAuth2AccessTokenEntity incomingToken = tokenServices.readAccessToken(incomingTokenValue);
 
-	    
-	    if (incomingToken.getScope().contains(OAuth2AccessTokenEntity.ID_TOKEN_SCOPE)) {
-		    
-	    	if (!client.getClientId().equals(authorizationRequest.getClientId())) {
-		    	throw new InvalidClientException("Not the right client for this token");
-		    }
+		ClientDetailsEntity client = incomingToken.getClient();
 
-		    // it's an ID token, process it accordingly
-	    	
-	    	try {
-	    	
-		    	// TODO: make this use a more specific idtoken class
-		    	JWT idToken = JWTParser.parse(incomingTokenValue);
-		    	
-		    	OAuth2AccessTokenEntity accessToken = tokenServices.getAccessTokenForIdToken(incomingToken);
-		    	
-		    	if (accessToken != null) {
-		    	
-		    		//OAuth2AccessTokenEntity newIdToken = tokenServices.get
-		    		
-		    		OAuth2AccessTokenEntity newIdTokenEntity = new OAuth2AccessTokenEntity();
-		    		
-		    		// copy over all existing claims
-		    		JWTClaimsSet claims = new JWTClaimsSet(idToken.getJWTClaimsSet());
-	
-		    		// update expiration and issued-at claims
+
+		if (incomingToken.getScope().contains(OAuth2AccessTokenEntity.ID_TOKEN_SCOPE)) {
+
+			if (!client.getClientId().equals(authorizationRequest.getClientId())) {
+				throw new InvalidClientException("Not the right client for this token");
+			}
+
+			// it's an ID token, process it accordingly
+
+			try {
+
+				// TODO: make this use a more specific idtoken class
+				JWT idToken = JWTParser.parse(incomingTokenValue);
+
+				OAuth2AccessTokenEntity accessToken = tokenServices.getAccessTokenForIdToken(incomingToken);
+
+				if (accessToken != null) {
+
+					//OAuth2AccessTokenEntity newIdToken = tokenServices.get
+
+					OAuth2AccessTokenEntity newIdTokenEntity = new OAuth2AccessTokenEntity();
+
+					// copy over all existing claims
+					JWTClaimsSet claims = new JWTClaimsSet(idToken.getJWTClaimsSet());
+
+					// update expiration and issued-at claims
 					if (client.getIdTokenValiditySeconds() != null) {
 						Date expiration = new Date(System.currentTimeMillis() + (client.getIdTokenValiditySeconds() * 1000L));
 						claims.setExpirationTime(expiration);
 						newIdTokenEntity.setExpiration(expiration);
 					}
 					claims.setIssueTime(new Date());
-	
-					
+
+
 					SignedJWT newIdToken = new SignedJWT((JWSHeader) idToken.getHeader(), claims);
-	                jwtService.signJwt(newIdToken);
-					
+					jwtService.signJwt(newIdToken);
+
 					newIdTokenEntity.setJwt(newIdToken);
 					newIdTokenEntity.setAuthenticationHolder(incomingToken.getAuthenticationHolder());
 					newIdTokenEntity.setScope(incomingToken.getScope());
 					newIdTokenEntity.setClient(incomingToken.getClient());
-					
+
 					newIdTokenEntity = tokenServices.saveAccessToken(newIdTokenEntity);
-	
+
 					// attach the ID token to the access token entity
 					accessToken.setIdToken(newIdTokenEntity);
 					accessToken = tokenServices.saveAccessToken(accessToken);
-					
+
 					// delete the old ID token
 					tokenServices.revokeAccessToken(incomingToken);
-					
-					return newIdTokenEntity;
-		    		
-		    	}
-	    	} catch (ParseException e) {
-	    		logger.warn("Couldn't parse id token", e);
-	    	}
-	    	
-	    }
-	    
-	    // if we got down here, we didn't actually create any tokens, so return null
-	    
-	    return null;
 
-	    /*
-	     * Otherwise, process it like an access token assertion ... which we don't support yet so this is all commented out
-	     * /
+					return newIdTokenEntity;
+
+				}
+			} catch (ParseException e) {
+				logger.warn("Couldn't parse id token", e);
+			}
+
+		}
+
+		// if we got down here, we didn't actually create any tokens, so return null
+
+		return null;
+
+		/*
+		 * Otherwise, process it like an access token assertion ... which we don't support yet so this is all commented out
+		 * /
 	    if (jwtService.validateSignature(incomingTokenValue)) {
 
 	    	Jwt jwt = Jwt.parse(incomingTokenValue);
-	    	
-	    	
+
+
 	    	if (oldToken.getScope().contains("id-token")) {
 	    		// TODO: things
 	    	}
-	    	
+
 	    	// TODO: should any of these throw an exception instead of returning null?
 	    	JwtClaims claims = jwt.getClaims();
 	    	if (!config.getIssuer().equals(claims.getIssuer())) {
 	    		// issuer isn't us
 	    		return null;
 	    	}
-	    	
+
 	    	if (!authorizationRequest.getClientId().equals(claims.getAudience())) {
 	    		// audience isn't the client
 	    		return null;
 	    	}
-	    	
+
 	    	Date now = new Date();
 	    	if (!now.after(claims.getExpiration())) {
 	    		// token is expired
@@ -164,14 +163,14 @@ public class JwtAssertionTokenGranter extends AbstractTokenGranter {
 	    	// we might need new calls on the token services layer to handle this, and we might
 	    	// need to handle id tokens separately.
 	    	return new OAuth2Authentication(authorizationRequest, null);
-	    	
+
 	    } else {
 	    	return null; // throw error??
 	    }
-	    */
-	    
-    }
+		 */
 
-	
-	
+	}
+
+
+
 }

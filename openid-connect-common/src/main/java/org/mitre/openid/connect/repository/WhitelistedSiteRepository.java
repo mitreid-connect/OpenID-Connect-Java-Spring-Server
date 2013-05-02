@@ -42,7 +42,7 @@ public interface WhitelistedSiteRepository {
 	 * @return a valid WhitelistedSite if it exists, null otherwise
 	 */
 	public WhitelistedSite getById(Long id);
-	
+
 	/**
 	 * Find a WhitelistedSite by its associated ClientDetails reference
 	 * 
@@ -50,7 +50,7 @@ public interface WhitelistedSiteRepository {
 	 * @return			the corresponding WhitelistedSite if one exists for the RP, or null
 	 */
 	public WhitelistedSite getByClientId(String clientId);
-	
+
 	/**
 	 * Return a collection of the WhitelistedSites created by a given user
 	 * 
@@ -77,10 +77,10 @@ public interface WhitelistedSiteRepository {
 
 	/**
 	 * Persist changes to a whitelistedSite. The ID of oldWhitelistedSite is retained.
-     * @param oldWhitelistedSite
-     * @param whitelistedSite
-     * @return
-     */
-    public WhitelistedSite update(WhitelistedSite oldWhitelistedSite, WhitelistedSite whitelistedSite);
+	 * @param oldWhitelistedSite
+	 * @param whitelistedSite
+	 * @return
+	 */
+	public WhitelistedSite update(WhitelistedSite oldWhitelistedSite, WhitelistedSite whitelistedSite);
 
 }

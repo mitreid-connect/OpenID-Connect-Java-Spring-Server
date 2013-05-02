@@ -3,10 +3,8 @@
  */
 package org.mitre.openid.connect.client;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -24,26 +22,26 @@ import org.springframework.security.core.authority.mapping.NullAuthoritiesMapper
  * 
  */
 public class NamedAdminAuthoritiesMapper implements GrantedAuthoritiesMapper {
-	
-    private static final SimpleGrantedAuthority ROLE_ADMIN = new SimpleGrantedAuthority("ROLE_ADMIN");
-    private static final SimpleGrantedAuthority ROLE_USER = new SimpleGrantedAuthority("ROLE_USER");
+
+	private static final SimpleGrantedAuthority ROLE_ADMIN = new SimpleGrantedAuthority("ROLE_ADMIN");
+	private static final SimpleGrantedAuthority ROLE_USER = new SimpleGrantedAuthority("ROLE_USER");
 
 	private Set<SubjectIssuerGrantedAuthority> admins = new HashSet<SubjectIssuerGrantedAuthority>();
 
 	private GrantedAuthoritiesMapper chain = new NullAuthoritiesMapper();
-	
+
 	@Override
 	public Collection<? extends GrantedAuthority> mapAuthorities(Collection<? extends GrantedAuthority> authorities) {
-		
+
 		Set<GrantedAuthority> out = new HashSet<GrantedAuthority>();
 		out.addAll(authorities);
-		
+
 		for (GrantedAuthority authority : authorities) {
 			if (admins.contains(authority)) {
 				out.add(ROLE_ADMIN);
 			}
-        }
-		
+		}
+
 		// everybody's a user by default
 		out.add(ROLE_USER);
 

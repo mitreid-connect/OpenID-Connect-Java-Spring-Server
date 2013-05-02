@@ -47,9 +47,7 @@ import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2RefreshToken;
 
 import com.nimbusds.jwt.JWT;
-import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.JWTParser;
-import com.nimbusds.jwt.PlainJWT;
 
 /**
  * @author jricher
@@ -73,17 +71,17 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	public static final String REGISTRATION_TOKEN_SCOPE = "registration-token";
 
 	public static String ID_TOKEN = "id_token";
-	
+
 	private Long id;
-	
+
 	private ClientDetailsEntity client;
-	
+
 	private AuthenticationHolderEntity authenticationHolder; // the authentication that made this access
-	
+
 	private JWT jwtValue; // JWT-encoded access token value
-	
+
 	private OAuth2AccessTokenEntity idToken; // JWT-encoded OpenID Connect IdToken
-	
+
 	private Date expiration;
 
 	private String tokenType = OAuth2AccessToken.BEARER_TYPE;
@@ -91,14 +89,14 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	private OAuth2RefreshTokenEntity refreshToken;
 
 	private Set<String> scope;
-	
+
 	/**
 	 * Create a new, blank access token
 	 */
 	public OAuth2AccessTokenEntity() {
 
 	}
-	
+
 	/**
 	 * @return the id
 	 */
@@ -116,8 +114,9 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	}
 
 	/**
-	 * Get all additional information to be sent to the serializer. Inserts a copy of the IdToken (in JWT String form). 
+	 * Get all additional information to be sent to the serializer. Inserts a copy of the IdToken (in JWT String form).
 	 */
+	@Override
 	@Transient
 	public Map<String, Object> getAdditionalInformation() {
 		Map<String, Object> map = new HashMap<String, Object>(); //super.getAdditionalInformation();
@@ -126,121 +125,127 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 		}
 		return map;
 	}
-	
+
 	/**
 	 * The authentication in place when this token was created.
-     * @return the authentication
-     */
+	 * @return the authentication
+	 */
 	@ManyToOne
 	@JoinColumn(name = "auth_holder_id")
-    public AuthenticationHolderEntity getAuthenticationHolder() {
-    	return authenticationHolder;
-    }
+	public AuthenticationHolderEntity getAuthenticationHolder() {
+		return authenticationHolder;
+	}
 
 	/**
-     * @param authentication the authentication to set
-     */
-    public void setAuthenticationHolder(AuthenticationHolderEntity authenticationHolder) {
-    	this.authenticationHolder = authenticationHolder;
-    }
+	 * @param authentication the authentication to set
+	 */
+	public void setAuthenticationHolder(AuthenticationHolderEntity authenticationHolder) {
+		this.authenticationHolder = authenticationHolder;
+	}
 
 	/**
-     * @return the client
-     */
+	 * @return the client
+	 */
 	@ManyToOne
 	@JoinColumn(name = "client_id")
-    public ClientDetailsEntity getClient() {
-    	return client;
-    }
+	public ClientDetailsEntity getClient() {
+		return client;
+	}
 
 	/**
-     * @param client the client to set
-     */
-    public void setClient(ClientDetailsEntity client) {
-    	this.client = client;
-    }
-	
-    /**
-     * Get the string-encoded value of this access token. 
-     */
-    @Basic
-    @Column(name="token_value")
-    public String getValue() {
-	    return jwtValue.serialize();
-    }
+	 * @param client the client to set
+	 */
+	public void setClient(ClientDetailsEntity client) {
+		this.client = client;
+	}
 
-    /**
-     * Set the "value" of this Access Token
-     * 
-     * @param value the JWT string
-     * @throws ParseException if "value" is not a properly formatted JWT string
-     */
-    public void setValue(String value) throws ParseException {
-    	setJwt(JWTParser.parse(value));
-    }
+	/**
+	 * Get the string-encoded value of this access token.
+	 */
+	@Override
+	@Basic
+	@Column(name="token_value")
+	public String getValue() {
+		return jwtValue.serialize();
+	}
 
-    @Basic
-    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
-    public Date getExpiration() {
-	    return expiration;
-    }
+	/**
+	 * Set the "value" of this Access Token
+	 * 
+	 * @param value the JWT string
+	 * @throws ParseException if "value" is not a properly formatted JWT string
+	 */
+	public void setValue(String value) throws ParseException {
+		setJwt(JWTParser.parse(value));
+	}
 
-    public void setExpiration(Date expiration) {
-	    this.expiration = expiration;
-    }
+	@Override
+	@Basic
+	@Temporal(javax.persistence.TemporalType.TIMESTAMP)
+	public Date getExpiration() {
+		return expiration;
+	}
 
-    @Basic
-    @Column(name="token_type")
-    public String getTokenType() {
-	    return tokenType;
-    }
+	public void setExpiration(Date expiration) {
+		this.expiration = expiration;
+	}
 
-    public void setTokenType(String tokenType) {
-	   this.tokenType = tokenType;
-    }
+	@Override
+	@Basic
+	@Column(name="token_type")
+	public String getTokenType() {
+		return tokenType;
+	}
 
-    @ManyToOne
-    @JoinColumn(name="refresh_token_id")
-    public OAuth2RefreshTokenEntity getRefreshToken() {
-	    return refreshToken;
-    }
+	public void setTokenType(String tokenType) {
+		this.tokenType = tokenType;
+	}
 
-    public void setRefreshToken(OAuth2RefreshTokenEntity refreshToken) {
-	    this.refreshToken = refreshToken;
-    }
+	@Override
+	@ManyToOne
+	@JoinColumn(name="refresh_token_id")
+	public OAuth2RefreshTokenEntity getRefreshToken() {
+		return refreshToken;
+	}
 
-    public void setRefreshToken(OAuth2RefreshToken refreshToken) {
-    	if (!(refreshToken instanceof OAuth2RefreshTokenEntity)) {
-    		// TODO: make a copy constructor instead....
-    		throw new IllegalArgumentException("Not a storable refresh token entity!");
-    	}
-    	// force a pass through to the entity version
-    	setRefreshToken((OAuth2RefreshTokenEntity)refreshToken);
-    }
-	
-    @ElementCollection(fetch=FetchType.EAGER)
-    @CollectionTable(
-    		joinColumns=@JoinColumn(name="owner_id"),
-    		name="token_scope"
-    )
-    public Set<String> getScope() {
-	    return scope;
-    }
+	public void setRefreshToken(OAuth2RefreshTokenEntity refreshToken) {
+		this.refreshToken = refreshToken;
+	}
 
-    public void setScope(Set<String> scope) {
-	    this.scope = scope;
-    }
+	public void setRefreshToken(OAuth2RefreshToken refreshToken) {
+		if (!(refreshToken instanceof OAuth2RefreshTokenEntity)) {
+			// TODO: make a copy constructor instead....
+			throw new IllegalArgumentException("Not a storable refresh token entity!");
+		}
+		// force a pass through to the entity version
+		setRefreshToken((OAuth2RefreshTokenEntity)refreshToken);
+	}
 
-    @Transient
+	@Override
+	@ElementCollection(fetch=FetchType.EAGER)
+	@CollectionTable(
+			joinColumns=@JoinColumn(name="owner_id"),
+			name="token_scope"
+			)
+	public Set<String> getScope() {
+		return scope;
+	}
+
+	public void setScope(Set<String> scope) {
+		this.scope = scope;
+	}
+
+	@Override
+	@Transient
 	public boolean isExpired() {
 		return getExpiration() == null ? false : System.currentTimeMillis() > getExpiration().getTime();
 	}
-    
+
 	/**
 	 * @return the idToken
 	 */
-    @OneToOne(cascade=CascadeType.ALL) // one-to-one mapping for now
-    @JoinColumn(name = "id_token_id")
+	@OneToOne(cascade=CascadeType.ALL) // one-to-one mapping for now
+	@JoinColumn(name = "id_token_id")
 	public OAuth2AccessTokenEntity getIdToken() {
 		return idToken;
 	}
@@ -251,7 +256,7 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	public void setIdToken(OAuth2AccessTokenEntity idToken) {
 		this.idToken = idToken;
 	}
-	
+
 	/**
 	 * @return the idTokenString
 	 */

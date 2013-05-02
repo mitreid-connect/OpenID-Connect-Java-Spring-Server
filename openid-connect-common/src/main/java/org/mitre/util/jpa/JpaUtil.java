@@ -27,26 +27,26 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
  *         Time: 2:13 PM
  */
 public class JpaUtil {
-    public static <T> T getSingleResult(List<T> list) {
-        switch(list.size()) {
-            case 0:
-                return null;
-            case 1:
-                return list.get(0);
-            default:
-                throw new IncorrectResultSizeDataAccessException(1);
-        }
-    }
+	public static <T> T getSingleResult(List<T> list) {
+		switch(list.size()) {
+			case 0:
+				return null;
+			case 1:
+				return list.get(0);
+			default:
+				throw new IncorrectResultSizeDataAccessException(1);
+		}
+	}
 
-    public static <T, I> T saveOrUpdate(I id, EntityManager entityManager, T entity) {
-        if (id == null) {
-            entityManager.persist(entity);
-            entityManager.flush();
-            return entity;
-        } else {
-            T tmp = entityManager.merge(entity);
-            entityManager.flush();
-            return tmp;
-        }
-    }
+	public static <T, I> T saveOrUpdate(I id, EntityManager entityManager, T entity) {
+		if (id == null) {
+			entityManager.persist(entity);
+			entityManager.flush();
+			return entity;
+		} else {
+			T tmp = entityManager.merge(entity);
+			entityManager.flush();
+			return tmp;
+		}
+	}
 }

@@ -42,27 +42,27 @@ import com.nimbusds.jose.jwk.JWKSet;
 public class JwkKeyListView extends AbstractView {
 
 	private static Logger logger = LoggerFactory.getLogger(JwkKeyListView.class);
-	
+
 	@Override
 	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
 
 		response.setContentType("application/json");
-		
-		
+
+
 		//BiMap<String, PublicKey> keyMap = (BiMap<String, PublicKey>) model.get("keys");
 		Map<String, JWK> keys = (Map<String, JWK>) model.get("keys");
-		
+
 		JWKSet jwkSet = new JWKSet(new ArrayList<JWK>(keys.values()));
-		
+
 		try {
-			
+
 			Writer out = response.getWriter();
 			out.write(jwkSet.toString());
-			
+
 		} catch (IOException e) {
-			
+
 			logger.error("IOException in JwkKeyListView.java: ", e);
-			
+
 		}
 
 	}

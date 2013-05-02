@@ -27,17 +27,17 @@ public interface OAuth2TokenRepository {
 	public OAuth2AccessTokenEntity saveAccessToken(OAuth2AccessTokenEntity token);
 
 	public OAuth2RefreshTokenEntity getRefreshTokenByValue(String refreshTokenValue);
-	
+
 	public OAuth2RefreshTokenEntity getRefreshTokenById(Long Id);
 
 	public void clearAccessTokensForRefreshToken(OAuth2RefreshTokenEntity refreshToken);
 
 	public void removeRefreshToken(OAuth2RefreshTokenEntity refreshToken);
-	
+
 	public OAuth2RefreshTokenEntity saveRefreshToken(OAuth2RefreshTokenEntity refreshToken);
 
 	public OAuth2AccessTokenEntity getAccessTokenByValue(String accessTokenValue);
-	
+
 	public OAuth2AccessTokenEntity getAccessTokenById(Long id);
 
 	public void removeAccessToken(OAuth2AccessTokenEntity accessToken);
@@ -55,8 +55,8 @@ public interface OAuth2TokenRepository {
 	public OAuth2AccessTokenEntity getByAuthentication(OAuth2Authentication auth);
 
 	/**
-     * @return
-     */
-    public OAuth2AccessTokenEntity getAccessTokenForIdToken(OAuth2AccessTokenEntity idToken);
-	
+	 * @return
+	 */
+	public OAuth2AccessTokenEntity getAccessTokenForIdToken(OAuth2AccessTokenEntity idToken);
+
 }

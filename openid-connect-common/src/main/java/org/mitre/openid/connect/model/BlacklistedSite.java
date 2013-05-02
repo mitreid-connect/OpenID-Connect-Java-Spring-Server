@@ -24,41 +24,41 @@ import javax.persistence.Table;
 })
 public class BlacklistedSite {
 
-    // unique id
-    private Long id;
-    
-    // URI pattern to black list
-    private String uri;
-    
-    public BlacklistedSite() {
-    	
-    }
-    
+	// unique id
+	private Long id;
+
+	// URI pattern to black list
+	private String uri;
+
+	public BlacklistedSite() {
+
+	}
+
 	/**
-     * @return the id
-     */
+	 * @return the id
+	 */
 	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Long getId() {
-    	return id;
-    }
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	public Long getId() {
+		return id;
+	}
 
 	/**
-     * @param id the id to set
-     */
-    public void setId(Long id) {
-    	this.id = id;
-    }
+	 * @param id the id to set
+	 */
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    @Basic
-    @Column(name="uri")
-    public String getUri() {
-    	return uri;
-    }
+	@Basic
+	@Column(name="uri")
+	public String getUri() {
+		return uri;
+	}
 
-    public void setUri(String uri) {
-    	this.uri = uri;
-    }
+	public void setUri(String uri) {
+		this.uri = uri;
+	}
 
-    
+
 }

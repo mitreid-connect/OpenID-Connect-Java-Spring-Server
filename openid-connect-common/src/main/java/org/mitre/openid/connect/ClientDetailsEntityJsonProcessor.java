@@ -29,7 +29,7 @@ import com.google.gson.reflect.TypeToken;
  *
  */
 public class ClientDetailsEntityJsonProcessor {
-	
+
 	private static Gson gson = new Gson();
 	private static JsonParser parser = new JsonParser();
 
@@ -43,16 +43,16 @@ public class ClientDetailsEntityJsonProcessor {
 	public static ClientDetailsEntity parse(String jsonString) {
 		JsonElement jsonEl = parser.parse(jsonString);
 		if (jsonEl.isJsonObject()) {
-	
+
 			JsonObject o = jsonEl.getAsJsonObject();
 			ClientDetailsEntity c = new ClientDetailsEntity();
-			
+
 			// TODO: make these field names into constants
-	
+
 			// these two fields should only be sent in the update request, and MUST match existing values
 			c.setClientId(getAsString(o, "client_id"));
 			c.setClientSecret(getAsString(o, "client_secret"));
-			
+
 			// OAuth DynReg
 			c.setRedirectUris(getAsStringSet(o, "redirect_uris"));
 			c.setClientName(getAsString(o, "client_name"));
@@ -60,66 +60,66 @@ public class ClientDetailsEntityJsonProcessor {
 			c.setLogoUri(getAsString(o, "logo_uri"));
 			c.setContacts(getAsStringSet(o, "contacts"));
 			c.setTosUri(getAsString(o, "tos_uri"));
-			
+
 			String authMethod = getAsString(o, "token_endpoint_auth_method");
 			if (authMethod != null) {
 				c.setTokenEndpointAuthMethod(AuthMethod.getByValue(authMethod));
 			}
-			
+
 			// scope is a space-separated string
 			String scope = getAsString(o, "scope");
 			if (scope != null) {
 				c.setScope(Sets.newHashSet(Splitter.on(" ").split(scope)));
 			}
-			
+
 			c.setGrantTypes(getAsStringSet(o, "grant_types"));
 			c.setPolicyUri(getAsString(o, "policy_uri"));
 			c.setJwksUri(getAsString(o, "jwks_uri"));
-			
-			
+
+
 			// OIDC Additions
 			String appType = getAsString(o, "application_type");
 			if (appType != null) {
 				c.setApplicationType(AppType.getByValue(appType));
 			}
-			
+
 			c.setSectorIdentifierUri(getAsString(o, "sector_identifier_uri"));
-			
+
 			String subjectType = getAsString(o, "subject_type");
 			if (subjectType != null) {
 				c.setSubjectType(SubjectType.getByValue(subjectType));
 			}
-			
+
 			c.setRequestObjectSigningAlg(getAsJwsAlgorithm(o, "request_object_signing_alg"));
-			
+
 			c.setUserInfoSignedResponseAlg(getAsJwsAlgorithm(o, "userinfo_signed_response_alg"));
 			c.setUserInfoEncryptedResponseAlg(getAsJweAlgorithm(o, "userinfo_encrypted_response_alg"));
 			c.setUserInfoEncryptedResponseEnc(getAsJweEncryptionMethod(o, "userinfo_encrypted_response_enc"));
-			
+
 			c.setIdTokenSignedResponseAlg(getAsJwsAlgorithm(o, "id_token_signed_response_alg"));
 			c.setIdTokenEncryptedResponseAlg(getAsJweAlgorithm(o, "id_token_encrypted_response_alg"));
 			c.setIdTokenEncryptedResponseEnc(getAsJweEncryptionMethod(o, "id_token_encrypted_response_enc"));
-			
+
 			if (o.has("default_max_age")) {
 				if (o.get("default_max_age").isJsonPrimitive()) {
 					c.setDefaultMaxAge(o.get("default_max_age").getAsInt());
 				}
 			}
-			
+
 			if (o.has("require_auth_time")) {
 				if (o.get("require_auth_time").isJsonPrimitive()) {
 					c.setRequireAuthTime(o.get("require_auth_time").getAsBoolean());
 				}
 			}
-			
+
 			c.setDefaultACRvalues(getAsStringSet(o, "default_acr_values"));
 			c.setInitiateLoginUri(getAsString(o, "initiate_login_uri"));
 			c.setPostLogoutRedirectUri(getAsString(o, "post_logout_redirect_uri"));
 			c.setRequestUris(getAsStringSet(o, "request_uris"));
-			
+
 			return c;
 		} else {
-	    	return null;
+			return null;
 		}
 	}
 
@@ -134,28 +134,28 @@ public class ClientDetailsEntityJsonProcessor {
 	 * @return
 	 */
 	public static JsonObject serialize(ClientDetailsEntity c, OAuth2AccessTokenEntity token, String registrationUri) {
-	    JsonObject o = new JsonObject();
-		
+		JsonObject o = new JsonObject();
+
 		o.addProperty("client_id", c.getClientId());
 		if (c.getClientSecret() != null) {
 			o.addProperty("client_secret", c.getClientSecret());
 			o.addProperty("expires_at", 0); // TODO: do we want to let secrets expire?
 		}
-		
+
 		if (c.getCreatedAt() != null) {
 			o.addProperty("issued_at", c.getCreatedAt().getTime());
 		}
 		if (token != null) {
 			o.addProperty("registration_access_token", token.getValue());
 		}
-		
+
 		if (registrationUri != null) {
 			o.addProperty("registration_client_uri", registrationUri);
 		}
-		
-		
+
+
 		// add in all other client properties
-		
+
 		// OAuth DynReg
 		o.add("redirect_uris", getAsArray(c.getRedirectUris()));
 		o.addProperty("client_name", c.getClientName());
@@ -168,7 +168,7 @@ public class ClientDetailsEntityJsonProcessor {
 		o.add("grant_types", getAsArray(c.getGrantTypes()));
 		o.addProperty("policy_uri", c.getPolicyUri());
 		o.addProperty("jwks_uri", c.getJwksUri());
-		
+
 		// OIDC Registration
 		o.addProperty("application_type", c.getApplicationType() != null ? c.getApplicationType().getValue() : null);
 		o.addProperty("sector_identifier_uri", c.getSectorIdentifierUri());
@@ -186,7 +186,7 @@ public class ClientDetailsEntityJsonProcessor {
 		o.addProperty("initiate_login_uri", c.getInitiateLoginUri());
 		o.addProperty("post_logout_redirect_uri", c.getPostLogoutRedirectUri());
 		o.add("request_uris", getAsArray(c.getRequestUris()));
-	    return o;
+		return o;
 	}
 
 	/**

@@ -27,7 +27,7 @@ public class JpaSystemScopeRepository implements SystemScopeRepository {
 
 	@PersistenceContext
 	private EntityManager em;
-	
+
 	/* (non-Javadoc)
 	 * @see org.mitre.oauth2.repository.SystemScopeRepository#getAll()
 	 */
@@ -35,7 +35,7 @@ public class JpaSystemScopeRepository implements SystemScopeRepository {
 	@Transactional
 	public Set<SystemScope> getAll() {
 		TypedQuery<SystemScope> query = em.createNamedQuery("SystemScope.findAll", SystemScope.class);
-		
+
 		return new LinkedHashSet<SystemScope>(query.getResultList());
 	}
 
@@ -66,7 +66,7 @@ public class JpaSystemScopeRepository implements SystemScopeRepository {
 	@Transactional
 	public void remove(SystemScope scope) {
 		SystemScope found = getById(scope.getId());
-		
+
 		if (found != null) {
 			em.remove(found);
 		}

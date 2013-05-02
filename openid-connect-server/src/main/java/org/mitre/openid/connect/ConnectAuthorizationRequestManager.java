@@ -38,10 +38,10 @@ import com.nimbusds.jwt.SignedJWT;
 public class ConnectAuthorizationRequestManager implements AuthorizationRequestManager {
 
 	private static Logger logger = LoggerFactory.getLogger(ConnectAuthorizationRequestManager.class);
-	
+
 	@Autowired
 	private NonceService nonceService;
-	
+
 	@Autowired
 	private ClientDetailsEntityService clientDetailsService;
 
@@ -58,32 +58,32 @@ public class ConnectAuthorizationRequestManager implements AuthorizationRequestM
 		this.clientDetailsService = clientDetailsService;
 		this.nonceService = nonceService;
 	}
-	
+
 	/**
 	 * Default empty constructor
 	 */
 	public ConnectAuthorizationRequestManager() {
-		
+
 	}
 
 	@Override
 	public AuthorizationRequest createAuthorizationRequest(Map<String, String> inputParams) {
 
 		Map<String, String> parameters = processRequestObject(inputParams);
-		
+
 		String clientId = parameters.get("client_id");
 		if (clientId == null) {
 			throw new InvalidClientException("A client id must be provided");
 		}
 		ClientDetails client = clientDetailsService.loadClientByClientId(clientId);
-		
+
 		String requestNonce = parameters.get("nonce");
-		
-		//Only process if the user is authenticated. If the user is not authenticated yet, this 
-		//code will be called a second time once the user is redirected from the login page back 
+
+		//Only process if the user is authenticated. If the user is not authenticated yet, this
+		//code will be called a second time once the user is redirected from the login page back
 		//to the auth endpoint.
 		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		
+
 		if (requestNonce != null && principal != null && principal instanceof User) {
 
 			if (!nonceService.alreadyUsed(clientId, requestNonce)) {
@@ -93,17 +93,17 @@ public class ConnectAuthorizationRequestManager implements AuthorizationRequestM
 			else {
 				throw new NonceReuseException(client.getClientId(), requestNonce);
 			}
-	
+
 		}
-		
+
 		Set<String> scopes = OAuth2Utils.parseParameterList(parameters.get("scope"));
 		if ((scopes == null || scopes.isEmpty())) {
 			//TODO: do we want to allow default scoping at all?
 			Set<String> clientScopes = client.getScope();
 			scopes = clientScopes;
 		}
-		
-		
+
+
 		// note that we have to inject the processed parameters in at this point so that SECOAUTH can find them later (and this object will get copy-constructored away anyway)
 		DefaultAuthorizationRequest request = new DefaultAuthorizationRequest(parameters, Collections.<String, String> emptyMap(), clientId, scopes);
 		request.addClientDetails(client);
@@ -115,46 +115,46 @@ public class ConnectAuthorizationRequestManager implements AuthorizationRequestM
 	 * @param inputParams
 	 * @return
 	 */
-    private Map<String, String> processRequestObject(Map<String, String> inputParams) {
-    	
-    	String jwtString = inputParams.get("request");
-    	
-    	// if there's no request object, bail early
-    	if (Strings.isNullOrEmpty(jwtString)) {
-    		return inputParams;
-    	}
+	private Map<String, String> processRequestObject(Map<String, String> inputParams) {
 
-    	// start by copying over what's already in there
-    	Map<String, String> parameters = new HashMap<String, String>(inputParams);
+		String jwtString = inputParams.get("request");
 
-    	// parse the request object
-        try {
-        	SignedJWT jwsObject = SignedJWT.parse(jwtString);
-			JSONObject claims = jwsObject.getPayload().toJSONObject(); 
-			
+		// if there's no request object, bail early
+		if (Strings.isNullOrEmpty(jwtString)) {
+			return inputParams;
+		}
+
+		// start by copying over what's already in there
+		Map<String, String> parameters = new HashMap<String, String>(inputParams);
+
+		// parse the request object
+		try {
+			SignedJWT jwsObject = SignedJWT.parse(jwtString);
+			JSONObject claims = jwsObject.getPayload().toJSONObject();
+
 			// TODO: check parameter consistency, move keys to constants
-			
+
 			String clientId = JSONObjectUtils.getString(claims, "client_id");
 			if (clientId != null) {
 				parameters.put("client_id", clientId);
 			}
-			
+
 			ClientDetailsEntity client = clientDetailsService.loadClientByClientId(clientId);
 
 			if (client.getJwksUri() == null) {
 				throw new InvalidClientException("Client must have a JWKS URI registered to use request objects.");
 			}
-			
+
 			// check JWT signature
 			JwtSigningAndValidationService validator = validators.get(client.getJwksUri());
 			if (validator == null) {
 				throw new InvalidClientException("Unable to create signature validator for client's JWKS URI: " + client.getJwksUri());
 			}
-			
+
 			if (!validator.validateSignature(jwsObject)) {
 				throw new AuthenticationServiceException("Signature did not validate for presented JWT request object.");
 			}
-			
+
 			/*
 			 * if (in Claims):
 			 * 		if (in params):
@@ -167,59 +167,59 @@ public class ConnectAuthorizationRequestManager implements AuthorizationRequestM
 			 * else (not in claims):
 			 * 		we don't care
 			 */
-			
+
 			String responseTypes = JSONObjectUtils.getString(claims, "response_type");
 			if (responseTypes != null) {
 				parameters.put("response_type", responseTypes);
 			}
-			
+
 			if (claims.get("redirect_uri") != null) {
 				if (inputParams.containsKey("redirect_uri") == false) {
 					parameters.put("redirect_uri", JSONObjectUtils.getString(claims, "redirect_uri"));
 				}
 			}
-			
+
 			String state = JSONObjectUtils.getString(claims, "state");
 			if(state != null) {
 				if (inputParams.containsKey("state") == false) {
 					parameters.put("state", state);
 				}
 			}
-			
+
 			String nonce = JSONObjectUtils.getString(claims, "nonce");
 			if(nonce != null) {
 				if (inputParams.containsKey("nonce") == false) {
 					parameters.put("nonce", nonce);
 				}
 			}
-			
+
 			String display = JSONObjectUtils.getString(claims, "display");
 			if (display != null) {
 				if (inputParams.containsKey("display") == false) {
 					parameters.put("display", display);
 				}
 			}
-			
+
 			String prompt = JSONObjectUtils.getString(claims, "prompt");
 			if (prompt != null) {
 				if (inputParams.containsKey("prompt") == false) {
 					parameters.put("prompt", prompt);
 				}
 			}
-			
+
 			String scope = JSONObjectUtils.getString(claims, "scope");
 			if (scope != null) {
 				if (inputParams.containsKey("scope") == false) {
 					parameters.put("scope", scope);
 				}
 			}
-		
-        } catch (ParseException e) {
-        	// TODO Auto-generated catch block
-        	e.printStackTrace();
-        }
+
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return parameters;
-    }
+	}
 
 	@Override
 	public void validateParameters(Map<String, String> parameters, ClientDetails clientDetails) {

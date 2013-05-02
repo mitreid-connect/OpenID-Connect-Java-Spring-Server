@@ -28,7 +28,7 @@ public class PlainAuthRequestUrlBuilder implements AuthRequestUrlBuilder {
 	@Override
 	public String buildAuthRequestUrl(ServerConfiguration serverConfig, ClientDetails clientConfig, String redirectUri, String nonce, String state) {
 		try {
-	        
+
 			URIBuilder uriBuilder = new URIBuilder(serverConfig.getAuthorizationEndpointUri());
 			uriBuilder.addParameter("response_type", "code");
 			uriBuilder.addParameter("client_id", clientConfig.getClientId());
@@ -39,20 +39,20 @@ public class PlainAuthRequestUrlBuilder implements AuthRequestUrlBuilder {
 			uriBuilder.addParameter("nonce", nonce);
 
 			uriBuilder.addParameter("state", state);
-			
+
 			// Optional parameters:
 
 			// TODO: display, prompt
-			
-			return uriBuilder.build().toString();
-	        
-        } catch (URISyntaxException e) {
-	        throw new AuthenticationServiceException("Malformed Authorization Endpoint Uri", e);
-	        
-        }
 
-		
-		
+			return uriBuilder.build().toString();
+
+		} catch (URISyntaxException e) {
+			throw new AuthenticationServiceException("Malformed Authorization Endpoint Uri", e);
+
+		}
+
+
+
 	}
 
 }

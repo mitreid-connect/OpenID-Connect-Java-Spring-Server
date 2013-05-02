@@ -17,7 +17,6 @@ package org.mitre.oauth2.web;
 
 import java.security.Principal;
 
-import org.mitre.oauth2.exception.PermissionDeniedException;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
@@ -26,7 +25,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -34,19 +32,18 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class RevocationEndpoint {
 	@Autowired
 	OAuth2TokenEntityService tokenServices;
-	
+
 	private static Logger logger = LoggerFactory.getLogger(RevocationEndpoint.class);
-	
+
 	public RevocationEndpoint() {
-		
+
 	}
-	
+
 	// TODO
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
 	@RequestMapping("/revoke")
@@ -54,16 +51,16 @@ public class RevocationEndpoint {
 
 		// This is the token as passed in from OAuth (in case we need it some day)
 		//OAuth2AccessTokenEntity tok = tokenServices.getAccessToken((OAuth2Authentication) principal);
-		
+
 		AuthorizationRequest clientAuth = null;
 		if (principal instanceof OAuth2Authentication) {
 			// if the client is acting on its own behalf (the common case), pull out the client authorization request
 			clientAuth = ((OAuth2Authentication) principal).getAuthorizationRequest();
 		}
-			
+
 		try {
 			// check and handle access tokens first
-			
+
 			OAuth2AccessTokenEntity accessToken = tokenServices.readAccessToken(tokenValue);
 			if (clientAuth != null) {
 				// client acting on its own, make sure it owns the token
@@ -72,17 +69,17 @@ public class RevocationEndpoint {
 					model.addAttribute("code", HttpStatus.FORBIDDEN);
 					return "httpCodeView";
 				}
-			}				
-			
+			}
+
 			// if we got this far, we're allowed to do this
 			tokenServices.revokeAccessToken(accessToken);
 			model.addAttribute("code", HttpStatus.OK);
 			return "httpCodeView";
-			
+
 		} catch (InvalidTokenException e) {
-			
+
 			// access token wasn't found, check the refresh token
-			
+
 			try {
 				OAuth2RefreshTokenEntity refreshToken = tokenServices.getRefreshToken(tokenValue);
 				if (clientAuth != null) {
@@ -93,16 +90,16 @@ public class RevocationEndpoint {
 						return "httpCodeView";
 					}
 				}
-			
+
 				// if we got this far, we're allowed to do this
 				tokenServices.revokeRefreshToken(refreshToken);
 				model.addAttribute("code", HttpStatus.OK);
 				return "httpCodeView";
-				
+
 			} catch (InvalidTokenException e1) {
-				
+
 				// neither token type was found, simply say "OK" and be on our way.
-				
+
 				model.addAttribute("code", HttpStatus.OK);
 				return "httpCodeView";
 			}

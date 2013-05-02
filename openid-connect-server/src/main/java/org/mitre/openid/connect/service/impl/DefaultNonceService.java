@@ -18,17 +18,18 @@ import org.springframework.stereotype.Service;
 @Service("defaultNonceService")
 public class DefaultNonceService implements NonceService, InitializingBean {
 
-	private static Logger logger = LoggerFactory.getLogger(NonceService.class);	
-	
+	private static Logger logger = LoggerFactory.getLogger(NonceService.class);
+
 	@Autowired
 	private NonceRepository repository;
-	
+
 	@Autowired
 	private Period nonceStorageDuration;
-	
+
 	/**
 	 * Make sure that the nonce storage duration was set
 	 */
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (nonceStorageDuration == null) {
 			logger.error("Nonce storage duration must be set!");
@@ -51,7 +52,7 @@ public class DefaultNonceService implements NonceService, InitializingBean {
 
 	@Override
 	public boolean alreadyUsed(String clientId, String value) {
-		
+
 		Collection<Nonce> clientNonces = getByClientId(clientId);
 		for (Nonce nonce : clientNonces) {
 			String nonceVal = nonce.getValue();
@@ -59,10 +60,10 @@ public class DefaultNonceService implements NonceService, InitializingBean {
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
-	
+
 	@Override
 	public Nonce getById(Long id) {
 		return repository.getById(id);
@@ -92,16 +93,16 @@ public class DefaultNonceService implements NonceService, InitializingBean {
 	public Collection<Nonce> getByClientId(String clientId) {
 		return repository.getByClientId(clientId);
 	}
-	
+
 	@Override
 	@Scheduled(fixedRate = 5 * 60 * 1000) // schedule this task every five minutes
 	public void clearExpiredNonces() {
-		
+
 		logger.info("Clearing expired nonces");
-		
+
 		Collection<Nonce> expired = repository.getExpired();
 		logger.info("Found " + expired.size() + " expired nonces");
-		
+
 		for (Nonce nonce : expired) {
 			remove(nonce);
 		}

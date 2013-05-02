@@ -4,11 +4,6 @@
 package org.mitre.openid.connect.client.service.impl;
 
 import java.net.URISyntaxException;
-import java.security.NoSuchAlgorithmException;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.http.client.utils.URIBuilder;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
@@ -38,34 +33,34 @@ public class SignedAuthRequestUrlBuilder implements AuthRequestUrlBuilder {
 
 		// create our signed JWT for the request object
 		JWTClaimsSet claims = new JWTClaimsSet();
-		
+
 		//set parameters to JwtClaims
 		claims.setCustomClaim("response_type", "code");
 		claims.setCustomClaim("client_id", clientConfig.getClientId());
 		claims.setCustomClaim("scope", Joiner.on(" ").join(clientConfig.getScope()));
-		
+
 		// build our redirect URI
 		claims.setCustomClaim("redirect_uri", redirectUri);
-		
+
 		// this comes back in the id token
 		claims.setCustomClaim("nonce", nonce);
-		
+
 		// this comes back in the auth request return
 		claims.setCustomClaim("state", state);
-		
+
 		SignedJWT jwt = new SignedJWT(new JWSHeader(signingAndValidationService.getDefaultSigningAlgorithm()), claims);
-		
+
 		signingAndValidationService.signJwt(jwt);
-		
+
 		try {
-	        URIBuilder uriBuilder = new URIBuilder(serverConfig.getAuthorizationEndpointUri());
-	        uriBuilder.addParameter("request", jwt.serialize());
-	        
-	        // build out the URI
-	        return uriBuilder.build().toString();
-        } catch (URISyntaxException e) {
-        	throw new AuthenticationServiceException("Malformed Authorization Endpoint Uri", e);
-        }
+			URIBuilder uriBuilder = new URIBuilder(serverConfig.getAuthorizationEndpointUri());
+			uriBuilder.addParameter("request", jwt.serialize());
+
+			// build out the URI
+			return uriBuilder.build().toString();
+		} catch (URISyntaxException e) {
+			throw new AuthenticationServiceException("Malformed Authorization Endpoint Uri", e);
+		}
 	}
 
 	/**

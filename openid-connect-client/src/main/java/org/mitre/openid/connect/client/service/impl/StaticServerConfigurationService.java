@@ -45,12 +45,12 @@ public class StaticServerConfigurationService implements ServerConfigurationServ
 	/* (non-Javadoc)
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
 	 */
-    @Override
-    public void afterPropertiesSet() throws Exception {
-	    if (servers == null || servers.isEmpty()) {
-	    	throw new IllegalArgumentException("Servers map cannot be null or empty.");
-	    }
-	    
-    }
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		if (servers == null || servers.isEmpty()) {
+			throw new IllegalArgumentException("Servers map cannot be null or empty.");
+		}
+
+	}
 
 }

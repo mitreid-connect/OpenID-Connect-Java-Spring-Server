@@ -28,18 +28,18 @@ import org.springframework.security.oauth2.provider.code.AuthorizationRequestHol
 public class AuthorizationCodeEntity {
 
 	private Long id;
-	
+
 	private String code;
-	
+
 	private AuthorizationRequestHolder authorizationRequestHolder;
 
 	/**
 	 * Default constructor.
 	 */
 	public AuthorizationCodeEntity() {
-		
+
 	}
-	
+
 	/**
 	 * Create a new AuthorizationCodeEntity with the given code and AuthorizationRequestHolder.
 	 * 
@@ -50,12 +50,12 @@ public class AuthorizationCodeEntity {
 		this.code = code;
 		this.authorizationRequestHolder = authRequest;
 	}
-	
+
 	/**
 	 * @return the id
 	 */
 	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	public Long getId() {
 		return id;
 	}
@@ -98,5 +98,5 @@ public class AuthorizationCodeEntity {
 	public void setAuthorizationRequestHolder(AuthorizationRequestHolder authorizationRequestHolder) {
 		this.authorizationRequestHolder = authorizationRequestHolder;
 	}
-	
+
 }

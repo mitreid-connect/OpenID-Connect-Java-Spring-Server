@@ -9,7 +9,6 @@ import javax.persistence.Transient;
 
 import com.google.common.base.Strings;
 import com.nimbusds.jose.EncryptionMethod;
-import com.nimbusds.jose.JWEAlgorithm;
 
 /**
  * @author jricher
@@ -19,16 +18,16 @@ import com.nimbusds.jose.JWEAlgorithm;
 public class JWEEncryptionMethodEmbed {
 
 	public static final JWEEncryptionMethodEmbed NONE  = getForAlgorithmName("none");
-	
+
 	private EncryptionMethod algorithm;
 
 	public JWEEncryptionMethodEmbed() {
-		
+
 	}
-	
+
 	public JWEEncryptionMethodEmbed(EncryptionMethod algorithm) {
-	    this.algorithm = algorithm;
-    }
+		this.algorithm = algorithm;
+	}
 
 	public static JWEEncryptionMethodEmbed getForAlgorithmName (String algorithmName) {
 		JWEEncryptionMethodEmbed ent = new JWEEncryptionMethodEmbed();
@@ -39,7 +38,7 @@ public class JWEEncryptionMethodEmbed {
 			return ent;
 		}
 	}
-	
+
 	/**
 	 * Get the name of this algorithm, return null if no algorithm set.
 	 * @return
@@ -52,9 +51,9 @@ public class JWEEncryptionMethodEmbed {
 			return null;
 		}
 	}
-	
+
 	/**
-	 * Set the name of this algorithm. 
+	 * Set the name of this algorithm.
 	 * Calls EncryptionMethod.parse()
 	 * @param algorithmName
 	 */
@@ -69,15 +68,15 @@ public class JWEEncryptionMethodEmbed {
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
-    @Override
-    public String toString() {
-	    return "JWEEncryptionMethodEmbed [algorithm=" + algorithm + "]";
-    }
+	@Override
+	public String toString() {
+		return "JWEEncryptionMethodEmbed [algorithm=" + algorithm + "]";
+	}
 
 	/**
 	 * @return the algorithm
 	 */
-    @Transient
+	@Transient
 	public EncryptionMethod getAlgorithm() {
 		return algorithm;
 	}
@@ -88,6 +87,6 @@ public class JWEEncryptionMethodEmbed {
 	public void setAlgorithm(EncryptionMethod algorithm) {
 		this.algorithm = algorithm;
 	}
-	
+
 
 }

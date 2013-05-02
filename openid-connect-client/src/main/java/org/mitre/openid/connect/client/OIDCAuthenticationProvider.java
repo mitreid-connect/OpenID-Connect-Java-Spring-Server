@@ -22,25 +22,21 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
-import org.springframework.security.core.authority.mapping.NullAuthoritiesMapper;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 /**
  * @author nemonik
  * 
  */
 public class OIDCAuthenticationProvider implements
-		AuthenticationProvider, InitializingBean {
+AuthenticationProvider, InitializingBean {
 
 	private UserInfoFetcher userInfoFetcher = new UserInfoFetcher();
-	
+
 	private GrantedAuthoritiesMapper authoritiesMapper = new NamedAdminAuthoritiesMapper();
 
 	/*
@@ -69,24 +65,24 @@ public class OIDCAuthenticationProvider implements
 
 		if (authentication instanceof OIDCAuthenticationToken) {
 
-			
+
 			OIDCAuthenticationToken token = (OIDCAuthenticationToken) authentication;
 
 			Collection<SubjectIssuerGrantedAuthority> authorities = Lists.newArrayList(new SubjectIssuerGrantedAuthority(token.getSub(), token.getIssuer()));
-			
+
 			UserInfo userInfo = userInfoFetcher.loadUserInfo(token);
 
 			if (userInfo == null) {
 				// TODO: user Info not found -- error?
-			} else {			
+			} else {
 				if (!Strings.isNullOrEmpty(userInfo.getSub()) && !userInfo.getSub().equals(token.getSub())) {
 					// the userinfo came back and the user_id fields don't match what was in the id_token
 					throw new UsernameNotFoundException("user_id mismatch between id_token and user_info call: " + userInfo.getSub() + " / " + token.getSub());
 				}
 			}
-			
-			return new OIDCAuthenticationToken(token.getSub(), 
-					token.getIssuer(), 
+
+			return new OIDCAuthenticationToken(token.getSub(),
+					token.getIssuer(),
 					userInfo, authoritiesMapper.mapAuthorities(authorities),
 					token.getIdTokenValue(), token.getAccessTokenValue(), token.getRefreshTokenValue());
 		}

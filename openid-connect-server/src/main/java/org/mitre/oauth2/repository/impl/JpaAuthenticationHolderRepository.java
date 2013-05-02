@@ -17,7 +17,7 @@ public class JpaAuthenticationHolderRepository implements AuthenticationHolderRe
 
 	@PersistenceContext
 	private EntityManager manager;
-	
+
 	@Override
 	public AuthenticationHolderEntity getById(Long id) {
 		return manager.find(AuthenticationHolderEntity.class, id);

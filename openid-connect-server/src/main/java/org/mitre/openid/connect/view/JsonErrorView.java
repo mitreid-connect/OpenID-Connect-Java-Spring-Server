@@ -30,53 +30,56 @@ public class JsonErrorView extends AbstractView {
 	private static Logger logger = LoggerFactory.getLogger(JsonEntityView.class);
 
 	private Gson gson = new GsonBuilder()
-	    .setExclusionStrategies(new ExclusionStrategy() {
-	
-	        public boolean shouldSkipField(FieldAttributes f) {
-	
-	            return false;
-	        }
-	
-	        public boolean shouldSkipClass(Class<?> clazz) {
-	            // skip the JPA binding wrapper
-	            if (clazz.equals(BeanPropertyBindingResult.class)) {
-	                return true;
-	            }
-	            return false;
-	        }
-	
-	    })
-	    .serializeNulls()
-	    .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
-	    .create();
+	.setExclusionStrategies(new ExclusionStrategy() {
 
+		@Override
+		public boolean shouldSkipField(FieldAttributes f) {
+
+			return false;
+		}
+
+		@Override
+		public boolean shouldSkipClass(Class<?> clazz) {
+			// skip the JPA binding wrapper
+			if (clazz.equals(BeanPropertyBindingResult.class)) {
+				return true;
+			}
+			return false;
+		}
+
+	})
+	.serializeNulls()
+	.setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+	.create();
+
+	@Override
 	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
 
 		response.setContentType("application/json");
 
-        
+
 		HttpStatus code = (HttpStatus) model.get("code");
 		if (code == null) {
 			code = HttpStatus.OK; // default to 200
 		}
-		
+
 		response.setStatus(code.value());
-		
+
 		try {
-			
+
 			Writer out = response.getWriter();
-			
+
 			String errorMessage = (String) model.get("errorMessage");
 			JsonObject obj = new JsonObject();
 			obj.addProperty("error_message", errorMessage);
-	        gson.toJson(obj, out);
-	        
+			gson.toJson(obj, out);
+
 		} catch (IOException e) {
-			
+
 			//TODO: Error Handling
 			logger.error("IOException in JsonErrorView.java: ", e);
-			
+
 		}
-    }
+	}
 
 }

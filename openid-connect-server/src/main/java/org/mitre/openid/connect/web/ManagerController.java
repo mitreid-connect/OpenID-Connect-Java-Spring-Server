@@ -17,7 +17,6 @@ package org.mitre.openid.connect.web;
 
 import java.util.Map;
 
-import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.mitre.openid.connect.service.StatsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -34,42 +33,42 @@ public class ManagerController {
 
 	@Autowired
 	private StatsService statsService;
-	
-    @RequestMapping({"", "home", "index"})
-    public String showHomePage(ModelMap m) {
-    	
-    	Map<String, Integer> summary = statsService.calculateSummaryStats();
-    	
-    	m.put("statsSummary", summary);
-        return "home";
-    }
-    
-    @RequestMapping({"about", "about/"})
-    public String showAboutPage(ModelMap m) {
-    	
-    	return "about";
-    }
-    
-    @RequestMapping({"stats", "stats/"})
-    public String showStatsPage(ModelMap m) {
-    	
-    	Map<String, Integer> summary = statsService.calculateSummaryStats();
-    	
-    	m.put("statsSummary", summary);
-    	return "stats";
-    }
-    
-    @RequestMapping({"contact", "contact/"})
-    public String showContactPage(ModelMap m) {
-    	
-    	return "contact";
-    }
 
-    @PreAuthorize("hasRole('ROLE_USER')") // TODO: this probably shouldn't be here
-    @RequestMapping("manage/**")
-    public String showClientManager(ModelMap m) {
-        return "manage";
-    }
+	@RequestMapping({"", "home", "index"})
+	public String showHomePage(ModelMap m) {
+
+		Map<String, Integer> summary = statsService.calculateSummaryStats();
+
+		m.put("statsSummary", summary);
+		return "home";
+	}
+
+	@RequestMapping({"about", "about/"})
+	public String showAboutPage(ModelMap m) {
+
+		return "about";
+	}
+
+	@RequestMapping({"stats", "stats/"})
+	public String showStatsPage(ModelMap m) {
+
+		Map<String, Integer> summary = statsService.calculateSummaryStats();
+
+		m.put("statsSummary", summary);
+		return "stats";
+	}
+
+	@RequestMapping({"contact", "contact/"})
+	public String showContactPage(ModelMap m) {
+
+		return "contact";
+	}
+
+	@PreAuthorize("hasRole('ROLE_USER')") // TODO: this probably shouldn't be here
+	@RequestMapping("manage/**")
+	public String showClientManager(ModelMap m) {
+		return "manage";
+	}
 
 	public StatsService getStatsService() {
 		return statsService;

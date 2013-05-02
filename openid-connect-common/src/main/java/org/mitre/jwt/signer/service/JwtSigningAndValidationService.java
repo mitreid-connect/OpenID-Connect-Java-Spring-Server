@@ -16,7 +16,6 @@
 package org.mitre.jwt.signer.service;
 
 import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
 import java.util.Collection;
 import java.util.Map;
 
@@ -30,7 +29,7 @@ public interface JwtSigningAndValidationService {
 	 * Get all public keys for this service, mapped by their Key ID
 	 */
 	public Map<String, JWK> getAllPublicKeys();
-	
+
 	/**
 	 * Checks the signature of the given JWT against all configured signers,
 	 * returns true if at least one of the signers validates it.
@@ -38,17 +37,17 @@ public interface JwtSigningAndValidationService {
 	 * @param jwtString
 	 *            the string representation of the JWT as sent on the wire
 	 * @return true if the signature is valid, false if not
-	 * @throws NoSuchAlgorithmException 
+	 * @throws NoSuchAlgorithmException
 	 */
 	public boolean validateSignature(SignedJWT jwtString);
-	
+
 	/**
 	 * Called to sign a jwt in place for a client that hasn't registered a preferred signing algorithm.
 	 * Use the default algorithm to sign.
 	 * 
 	 * @param jwt the jwt to sign
 	 * @return the signed jwt
-	 * @throws NoSuchAlgorithmException 
+	 * @throws NoSuchAlgorithmException
 	 */
 	public void signJwt(SignedJWT jwt);
 
@@ -56,13 +55,13 @@ public interface JwtSigningAndValidationService {
 	 * Get the default signing algorithm for use when nothing else has been specified.
 	 * @return
 	 */
-    public JWSAlgorithm getDefaultSigningAlgorithm();
+	public JWSAlgorithm getDefaultSigningAlgorithm();
 
 	/**
-	 * Get the list of all signing algorithms supported by this service. 
+	 * Get the list of all signing algorithms supported by this service.
 	 * @return
 	 */
-    public Collection<JWSAlgorithm> getAllSigningAlgsSupported();
+	public Collection<JWSAlgorithm> getAllSigningAlgsSupported();
 
 	/**
 	 * Sign a jwt using the selected algorithm. The algorithm is selected using the String parameter values specified
@@ -74,7 +73,7 @@ public interface JwtSigningAndValidationService {
 	 */
 	//TODO: implement later; only need signJwt(Jwt jwt) for now
 	//public Jwt signJwt(Jwt jwt, String alg);
-	
+
 	/**
 	 * TODO: method to sign a jwt using a specified algorithm and a key id
 	 */

@@ -30,17 +30,17 @@ import org.springframework.security.oauth2.provider.ClientDetails;
  * 
  */
 public interface ApprovedSiteService {
-	
-	
+
+
 	public ApprovedSite createApprovedSite(String clientId, String userId, Date timeoutDate, Set<String> allowedScopes, WhitelistedSite whitelistedSite);
-	
+
 	/**
 	 * Return a collection of all ApprovedSites
 	 * 
 	 * @return the ApprovedSite collection, or null
 	 */
 	public Collection<ApprovedSite> getAll();
-	
+
 	/**
 	 * Return a collection of ApprovedSite managed by this repository matching the
 	 * provided client ID and user ID
@@ -48,9 +48,9 @@ public interface ApprovedSiteService {
 	 * @param clientId
 	 * @param userId
 	 * @return
-	 */	
+	 */
 	public Collection<ApprovedSite> getByClientIdAndUserId(String clientId, String userId);
-	
+
 	/**
 	 * Save an ApprovedSite
 	 * 
@@ -82,14 +82,14 @@ public interface ApprovedSiteService {
 	 * @return
 	 */
 	public Collection<ApprovedSite> getByUserId(String userId);
-	
+
 	/**
 	 * Get all sites associated with this client
 	 * @param clientId
 	 * @return
 	 */
 	public Collection<ApprovedSite> getByClientId(String clientId);
-	
+
 	/**
 	 * Clear out any approved sites for a given client.
 	 * @param client

@@ -27,16 +27,16 @@ public class JpaAuthorizationCodeRepository implements AuthorizationCodeReposito
 
 	@PersistenceContext
 	EntityManager manager;
-	
+
 	/* (non-Javadoc)
 	 * @see org.mitre.oauth2.repository.AuthorizationCodeRepository#save(org.mitre.oauth2.model.AuthorizationCodeEntity)
 	 */
 	@Override
 	@Transactional
 	public AuthorizationCodeEntity save(AuthorizationCodeEntity authorizationCode) {
-		
+
 		return JpaUtil.saveOrUpdate(authorizationCode.getId(), manager, authorizationCode);
-		
+
 	}
 
 	/* (non-Javadoc)
@@ -45,20 +45,20 @@ public class JpaAuthorizationCodeRepository implements AuthorizationCodeReposito
 	@Override
 	@Transactional
 	public AuthorizationRequestHolder consume(String code) throws InvalidGrantException {
-		
+
 		TypedQuery<AuthorizationCodeEntity> query = manager.createNamedQuery("AuthorizationCodeEntity.getByValue", AuthorizationCodeEntity.class);
 		query.setParameter("code", code);
-		
+
 		AuthorizationCodeEntity result = JpaUtil.getSingleResult(query.getResultList());
-		
+
 		if (result == null) {
 			throw new InvalidGrantException("JpaAuthorizationCodeRepository: no authorization code found for value " + code);
 		}
-		
+
 		AuthorizationRequestHolder authRequest = result.getAuthorizationRequestHolder();
-		
+
 		manager.remove(result);
-		
+
 		return authRequest;
 
 	}

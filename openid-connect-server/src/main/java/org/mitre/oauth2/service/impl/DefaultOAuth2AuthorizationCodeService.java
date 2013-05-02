@@ -23,9 +23,9 @@ public class DefaultOAuth2AuthorizationCodeService implements AuthorizationCodeS
 
 	@Autowired
 	private AuthorizationCodeRepository repository;
-	
+
 	private RandomValueStringGenerator generator = new RandomValueStringGenerator();
-	
+
 	/**
 	 * Generate a random authorization code and create an AuthorizationCodeEntity,
 	 * which will be stored in the repository.
@@ -37,16 +37,16 @@ public class DefaultOAuth2AuthorizationCodeService implements AuthorizationCodeS
 	@Override
 	public String createAuthorizationCode(AuthorizationRequestHolder authentication) {
 		String code = generator.generate();
-		
+
 		AuthorizationCodeEntity entity = new AuthorizationCodeEntity(code, authentication);
 		repository.save(entity);
-		
+
 		return code;
 	}
 
 	/**
-	 * Consume a given authorization code. 
-	 * Match the provided string to an AuthorizationCodeEntity. If one is found, return 
+	 * Consume a given authorization code.
+	 * Match the provided string to an AuthorizationCodeEntity. If one is found, return
 	 * the authentication associated with the code. If one is not found, throw an
 	 * InvalidGrantException.
 	 * 
@@ -56,7 +56,7 @@ public class DefaultOAuth2AuthorizationCodeService implements AuthorizationCodeS
 	 */
 	@Override
 	public AuthorizationRequestHolder consumeAuthorizationCode(String code) throws InvalidGrantException {
-		
+
 		AuthorizationRequestHolder auth = repository.consume(code);
 		return auth;
 	}

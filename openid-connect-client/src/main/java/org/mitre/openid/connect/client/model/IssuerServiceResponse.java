@@ -16,24 +16,24 @@ public class IssuerServiceResponse {
 	private String loginHint;
 	private String targetLinkUri;
 	private String redirectUrl;
-	
+
 	/**
 	 * @param issuer
 	 * @param loginHint
 	 * @param targetLinkUri
 	 */
-    public IssuerServiceResponse(String issuer, String loginHint, String targetLinkUri) {
-	    this.issuer = issuer;
-	    this.loginHint = loginHint;
-	    this.targetLinkUri = targetLinkUri;
-    }
-    
+	public IssuerServiceResponse(String issuer, String loginHint, String targetLinkUri) {
+		this.issuer = issuer;
+		this.loginHint = loginHint;
+		this.targetLinkUri = targetLinkUri;
+	}
+
 	/**
 	 * @param redirectUrl
 	 */
-    public IssuerServiceResponse(String redirectUrl) {
-	    this.redirectUrl = redirectUrl;
-    }
+	public IssuerServiceResponse(String redirectUrl) {
+		this.redirectUrl = redirectUrl;
+	}
 	/**
 	 * @return the issuer
 	 */
@@ -82,12 +82,12 @@ public class IssuerServiceResponse {
 	public void setRedirectUrl(String redirectUrl) {
 		this.redirectUrl = redirectUrl;
 	}
-	
+
 	/**
 	 * If the redirect url has been set, then we should send a redirect using it instead of processing things.
 	 */
 	public boolean shouldRedirect() {
 		return this.redirectUrl != null;
 	}
-	
+
 }

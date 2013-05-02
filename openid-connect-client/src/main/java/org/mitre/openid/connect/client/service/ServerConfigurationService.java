@@ -12,5 +12,5 @@ import org.mitre.openid.connect.config.ServerConfiguration;
 public interface ServerConfigurationService {
 
 	public ServerConfiguration getServerConfiguration(String issuer);
-	
+
 }

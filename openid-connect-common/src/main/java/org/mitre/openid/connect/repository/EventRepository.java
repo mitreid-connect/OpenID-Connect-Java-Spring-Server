@@ -47,8 +47,8 @@ public interface EventRepository {
 	 * @param startChunk
 	 *            the start chuck of a list you desire
 	 * @param chunkSize
-	 *            the size of the chunk you desire           
-	 *            
+	 *            the size of the chunk you desire
+	 * 
 	 * @return a Collection of Events
 	 */
 	public Collection<Event> getEventsDuringPeriod(Date start, Date end, int startChunk, int chunkSize);
