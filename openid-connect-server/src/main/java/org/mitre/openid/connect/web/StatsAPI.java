@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @PreAuthorize("hasRole('ROLE_USER')")
-@RequestMapping("stats")
+@RequestMapping("/api/stats")
 public class StatsAPI {
 
 	@Autowired
@@ -40,7 +40,7 @@ public class StatsAPI {
 
 		m.put("entity", e);
 
-		return "jsonEntityview";
+		return "jsonEntityView";
 
 	}
 
