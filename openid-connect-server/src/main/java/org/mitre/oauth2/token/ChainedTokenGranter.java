@@ -14,8 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.common.exceptions.InvalidScopeException;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
-import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.security.oauth2.provider.token.AbstractTokenGranter;
 import org.springframework.stereotype.Component;
 
@@ -48,7 +48,7 @@ public class ChainedTokenGranter extends AbstractTokenGranter {
      * @see org.springframework.security.oauth2.provider.token.AbstractTokenGranter#getOAuth2Authentication(org.springframework.security.oauth2.provider.AuthorizationRequest)
      */
     @Override
-    protected OAuth2Authentication getOAuth2Authentication(AuthorizationRequest authorizationRequest) throws AuthenticationException, InvalidTokenException {
+    protected OAuth2Authentication getOAuth2Authentication(OAuth2Request authorizationRequest) throws AuthenticationException, InvalidTokenException {
     	// read and load up the existing token
 	    String incomingTokenValue = authorizationRequest.getAuthorizationParameters().get("token");
 	    OAuth2AccessTokenEntity incomingToken = tokenServices.readAccessToken(incomingTokenValue);

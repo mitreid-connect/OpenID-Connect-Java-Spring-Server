@@ -1,7 +1,5 @@
 package org.mitre.oauth2.introspectingfilter;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -12,8 +10,12 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2RefreshToken;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 
 public class OAuth2AccessTokenImpl implements OAuth2AccessToken {

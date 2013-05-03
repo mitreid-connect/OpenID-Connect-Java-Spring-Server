@@ -25,9 +25,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.oauth2.provider.AuthorizationRequest;
-import org.springframework.security.oauth2.provider.AuthorizationRequestManager;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.OAuth2Request;
+import org.springframework.security.oauth2.provider.OAuth2RequestManager;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -60,7 +60,7 @@ public class ClientDynamicRegistrationEndpoint {
 	private SystemScopeService scopeService;
 	
 	@Autowired
-	private AuthorizationRequestManager authorizationRequestManager;
+	private OAuth2RequestManager oAuth2RequestManager;
 	
 	private static Logger logger = LoggerFactory.getLogger(ClientDynamicRegistrationEndpoint.class);
 	private JsonParser parser = new JsonParser();
@@ -470,10 +470,10 @@ public class ClientDynamicRegistrationEndpoint {
     	Map<String, String> authorizationParameters = Maps.newHashMap();
     	authorizationParameters.put("client_id", client.getClientId());
     	authorizationParameters.put("scope", OAuth2AccessTokenEntity.REGISTRATION_TOKEN_SCOPE);
-    	AuthorizationRequest authorizationRequest = authorizationRequestManager.createAuthorizationRequest(authorizationParameters);
-    	authorizationRequest.setApproved(true);
-    	authorizationRequest.setAuthorities(Sets.newHashSet(new SimpleGrantedAuthority("ROLE_CLIENT")));
-		OAuth2Authentication authentication = new OAuth2Authentication(authorizationRequest, null);
+    	OAuth2Request oAuthRequest = oAuth2RequestManager.createOAuth2Request(authorizationParameters);
+    	oAuthRequest.setApproved(true);
+    	oAuthRequest.setAuthorities(Sets.newHashSet(new SimpleGrantedAuthority("ROLE_CLIENT")));
+		OAuth2Authentication authentication = new OAuth2Authentication(oAuthRequest, null);
 		OAuth2AccessTokenEntity registrationAccessToken = (OAuth2AccessTokenEntity) tokenService.createAccessToken(authentication);
 	    return registrationAccessToken;
     }

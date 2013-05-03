@@ -11,8 +11,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
-import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.util.LinkedMultiValueMap;
@@ -79,14 +79,14 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
         return null;
     }
     
-    private AuthorizationRequest createAuthRequest(final JsonObject token) {
+    private OAuth2Request createAuthRequest(final JsonObject token) {
     	
     	 clientId = token.get("client_id").getAsString();
          Set<String> scopes = new HashSet<String>();
          for (JsonElement e : token.get("scope").getAsJsonArray()) {
              scopes.add(e.getAsString());
          }   
-        AuthorizationRequest authReq = new AuthorizationRequest();
+        OAuth2Request authReq = new OAuth2Request();
         authReq.setScope(scopes);
         authReq.setClientId(clientId);
         return authReq;

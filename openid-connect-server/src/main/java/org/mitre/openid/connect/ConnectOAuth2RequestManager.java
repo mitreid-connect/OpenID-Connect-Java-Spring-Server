@@ -24,9 +24,9 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.security.oauth2.common.exceptions.InvalidScopeException;
 import org.springframework.security.oauth2.common.util.OAuth2Utils;
-import org.springframework.security.oauth2.provider.AuthorizationRequest;
-import org.springframework.security.oauth2.provider.AuthorizationRequestManager;
 import org.springframework.security.oauth2.provider.ClientDetails;
+import org.springframework.security.oauth2.provider.OAuth2Request;
+import org.springframework.security.oauth2.provider.OAuth2RequestManager;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
@@ -34,9 +34,9 @@ import com.nimbusds.jose.util.JSONObjectUtils;
 import com.nimbusds.jwt.SignedJWT;
 
 @Component("authorizationRequestManager")
-public class ConnectAuthorizationRequestManager implements AuthorizationRequestManager {
+public class ConnectOAuth2RequestManager implements OAuth2RequestManager {
 
-	private static Logger logger = LoggerFactory.getLogger(ConnectAuthorizationRequestManager.class);
+	private static Logger logger = LoggerFactory.getLogger(ConnectOAuth2RequestManager.class);
 	
 	@Autowired
 	private NonceService nonceService;
@@ -53,7 +53,7 @@ public class ConnectAuthorizationRequestManager implements AuthorizationRequestM
 	 * @param clientDetailsService
 	 * @param nonceService
 	 */
-	public ConnectAuthorizationRequestManager(ClientDetailsEntityService clientDetailsService, NonceService nonceService) {
+	public ConnectOAuth2RequestManager(ClientDetailsEntityService clientDetailsService, NonceService nonceService) {
 		this.clientDetailsService = clientDetailsService;
 		this.nonceService = nonceService;
 	}
@@ -61,12 +61,12 @@ public class ConnectAuthorizationRequestManager implements AuthorizationRequestM
 	/**
 	 * Default empty constructor
 	 */
-	public ConnectAuthorizationRequestManager() {
+	public ConnectOAuth2RequestManager() {
 		
 	}
 
 	@Override
-	public AuthorizationRequest createAuthorizationRequest(Map<String, String> inputParams) {
+	public OAuth2Request createOAuth2Request(Map<String, String> inputParams) {
 
 		Map<String, String> parameters = processRequestObject(inputParams);
 		
@@ -79,12 +79,12 @@ public class ConnectAuthorizationRequestManager implements AuthorizationRequestM
 		
 		String requestNonce = parameters.get("nonce");
 		
-		AuthorizationRequest request = new AuthorizationRequest(parameters, Collections.<String, String> emptyMap(), 
-				parameters.get(AuthorizationRequest.CLIENT_ID), 
-				OAuth2Utils.parseParameterList(parameters.get(AuthorizationRequest.SCOPE)), null,
-				null, false, parameters.get(AuthorizationRequest.STATE), 
-				parameters.get(AuthorizationRequest.REDIRECT_URI), 
-				OAuth2Utils.parseParameterList(parameters.get(AuthorizationRequest.RESPONSE_TYPE)));
+		OAuth2Request request = new OAuth2Request(parameters, Collections.<String, String> emptyMap(), 
+				parameters.get(OAuth2Request.CLIENT_ID), 
+				OAuth2Utils.parseParameterList(parameters.get(OAuth2Request.SCOPE)), null,
+				null, false, parameters.get(OAuth2Request.STATE), 
+				parameters.get(OAuth2Request.REDIRECT_URI), 
+				OAuth2Utils.parseParameterList(parameters.get(OAuth2Request.RESPONSE_TYPE)));
 		
 		//Only process if the user is authenticated. If the user is not authenticated yet, this 
 		//code will be called a second time once the user is redirected from the login page back 

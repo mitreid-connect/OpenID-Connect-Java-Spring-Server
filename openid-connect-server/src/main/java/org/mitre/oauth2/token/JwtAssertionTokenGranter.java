@@ -17,7 +17,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
-import org.springframework.security.oauth2.provider.AuthorizationRequest;
+import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.security.oauth2.provider.token.AbstractTokenGranter;
 import org.springframework.stereotype.Component;
 
@@ -55,9 +55,9 @@ public class JwtAssertionTokenGranter extends AbstractTokenGranter {
      * @see org.springframework.security.oauth2.provider.token.AbstractTokenGranter#getOAuth2Authentication(org.springframework.security.oauth2.provider.AuthorizationRequest)
      */
     @Override
-    protected OAuth2AccessToken getAccessToken(AuthorizationRequest authorizationRequest) throws AuthenticationException, InvalidTokenException {
+    protected OAuth2AccessToken getAccessToken(OAuth2Request oAuthRequest) throws AuthenticationException, InvalidTokenException {
     	// read and load up the existing token
-	    String incomingTokenValue = authorizationRequest.getAuthorizationParameters().get("assertion");
+	    String incomingTokenValue = oAuthRequest.getAuthorizationParameters().get("assertion");
 	    OAuth2AccessTokenEntity incomingToken = tokenServices.readAccessToken(incomingTokenValue);
 	    
 	    ClientDetailsEntity client = incomingToken.getClient();
@@ -65,7 +65,7 @@ public class JwtAssertionTokenGranter extends AbstractTokenGranter {
 	    
 	    if (incomingToken.getScope().contains(OAuth2AccessTokenEntity.ID_TOKEN_SCOPE)) {
 		    
-	    	if (!client.getClientId().equals(authorizationRequest.getClientId())) {
+	    	if (!client.getClientId().equals(oAuthRequest.getClientId())) {
 		    	throw new InvalidClientException("Not the right client for this token");
 		    }
 

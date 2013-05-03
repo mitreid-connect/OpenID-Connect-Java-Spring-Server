@@ -42,8 +42,8 @@ import org.springframework.security.authentication.AuthenticationCredentialsNotF
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
-import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.stereotype.Service;
 
@@ -80,7 +80,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
     public OAuth2AccessTokenEntity createAccessToken(OAuth2Authentication authentication) throws AuthenticationException, InvalidClientException {
 		if (authentication != null && authentication.getAuthorizationRequest() != null) {
 			// look up our client
-			AuthorizationRequest clientAuth = authentication.getAuthorizationRequest();
+			OAuth2Request clientAuth = authentication.getAuthorizationRequest();
 			
 			ClientDetailsEntity client = clientDetailsService.loadClientByClientId(clientAuth.getClientId());
 		
@@ -151,7 +151,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		    tokenRepository.saveAccessToken(token);
 		    
 	    	//Add approved site reference, if any
-	    	AuthorizationRequest originalAuthRequest = authHolder.getAuthentication().getAuthorizationRequest();
+		    OAuth2Request originalAuthRequest = authHolder.getAuthentication().getAuthorizationRequest();
 			
 	    	if (originalAuthRequest.getExtensionProperties().containsKey("approved_site")) {
 				
@@ -175,7 +175,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
     }
 
 	@Override
-    public OAuth2AccessTokenEntity refreshAccessToken(String refreshTokenValue, AuthorizationRequest authRequest) throws AuthenticationException {
+    public OAuth2AccessTokenEntity refreshAccessToken(String refreshTokenValue, OAuth2Request authRequest) throws AuthenticationException {
 		
 		OAuth2RefreshTokenEntity refreshToken = tokenRepository.getRefreshTokenByValue(refreshTokenValue);
 		
