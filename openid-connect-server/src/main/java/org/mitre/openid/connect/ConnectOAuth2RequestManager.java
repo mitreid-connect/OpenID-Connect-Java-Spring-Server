@@ -33,7 +33,7 @@ import com.google.common.base.Strings;
 import com.nimbusds.jose.util.JSONObjectUtils;
 import com.nimbusds.jwt.SignedJWT;
 
-@Component("authorizationRequestManager")
+@Component("oAuth2RequestManager")
 public class ConnectOAuth2RequestManager implements OAuth2RequestManager {
 
 	private static Logger logger = LoggerFactory.getLogger(ConnectOAuth2RequestManager.class);
