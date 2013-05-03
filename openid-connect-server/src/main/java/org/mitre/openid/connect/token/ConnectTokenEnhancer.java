@@ -120,7 +120,7 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 			idClaims.setAudience(Lists.newArrayList(clientId));
 			
 			
-			String nonce = originalAuthRequest.getAuthorizationParameters().get("nonce");
+			String nonce = originalAuthRequest.getRequestParameters().get("nonce");
 			if (!Strings.isNullOrEmpty(nonce)) {
 				idClaims.setCustomClaim("nonce", nonce);
 			}

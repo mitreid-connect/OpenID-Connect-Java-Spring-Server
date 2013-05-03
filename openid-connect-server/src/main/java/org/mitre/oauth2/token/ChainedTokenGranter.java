@@ -50,7 +50,7 @@ public class ChainedTokenGranter extends AbstractTokenGranter {
     @Override
     protected OAuth2Authentication getOAuth2Authentication(OAuth2Request authorizationRequest) throws AuthenticationException, InvalidTokenException {
     	// read and load up the existing token
-	    String incomingTokenValue = authorizationRequest.getAuthorizationParameters().get("token");
+	    String incomingTokenValue = authorizationRequest.getRequestParameters().get("token");
 	    OAuth2AccessTokenEntity incomingToken = tokenServices.readAccessToken(incomingTokenValue);
 	    
 	    // check for scoping in the request, can't up-scope with a chained request

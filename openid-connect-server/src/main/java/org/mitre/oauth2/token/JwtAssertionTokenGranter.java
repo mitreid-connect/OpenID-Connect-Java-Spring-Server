@@ -57,7 +57,7 @@ public class JwtAssertionTokenGranter extends AbstractTokenGranter {
     @Override
     protected OAuth2AccessToken getAccessToken(OAuth2Request oAuthRequest) throws AuthenticationException, InvalidTokenException {
     	// read and load up the existing token
-	    String incomingTokenValue = oAuthRequest.getAuthorizationParameters().get("assertion");
+	    String incomingTokenValue = oAuthRequest.getRequestParameters().get("assertion");
 	    OAuth2AccessTokenEntity incomingToken = tokenServices.readAccessToken(incomingTokenValue);
 	    
 	    ClientDetailsEntity client = incomingToken.getClient();

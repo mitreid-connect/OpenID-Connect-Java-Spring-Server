@@ -95,7 +95,7 @@ public class OAuthConfirmationController {
 		model.put("auth_request", clientAuth);
 		model.put("client", client);
 
-		String redirect_uri = clientAuth.getAuthorizationParameters().get("redirect_uri");
+		String redirect_uri = clientAuth.getRequestParameters().get("redirect_uri");
 		
         model.put("redirect_uri", redirect_uri);
 
