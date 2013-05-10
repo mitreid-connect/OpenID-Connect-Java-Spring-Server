@@ -249,26 +249,27 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 
 		RestTemplate restTemplate;
 
-        if(clientConfig instanceof ClientDetailsEntity && SECRET_BASIC.equals(((ClientDetailsEntity) clientConfig).getTokenEndpointAuthMethod())){
-            restTemplate = new RestTemplate(factory){
+		if (clientConfig instanceof ClientDetailsEntity && SECRET_BASIC.equals(((ClientDetailsEntity) clientConfig).getTokenEndpointAuthMethod())){
+			// use BASIC auth if configured to do so
+			restTemplate = new RestTemplate(factory) {
 
-                @Override
-                protected ClientHttpRequest createRequest(URI url, HttpMethod method) throws IOException {
-                    ClientHttpRequest httpRequest = super.createRequest(url, method);
-                    httpRequest.getHeaders().add("Authorization",
-                            String.format("Basic %s", Base64.encode(String.format("%s:%s", clientConfig.getClientId(), clientConfig.getClientSecret())) ));
+				@Override
+				protected ClientHttpRequest createRequest(URI url, HttpMethod method) throws IOException {
+					ClientHttpRequest httpRequest = super.createRequest(url, method);
+					httpRequest.getHeaders().add("Authorization",
+							String.format("Basic %s", Base64.encode(String.format("%s:%s", clientConfig.getClientId(), clientConfig.getClientSecret())) ));
 
 
 
-                    return httpRequest;
-                }
-            };
-        }else{  //Alternatively use form based auth
-            restTemplate = new RestTemplate(factory);
+					return httpRequest;
+				}
+			};
+		} else {  //Alternatively use form based auth
+			restTemplate = new RestTemplate(factory);
 
-            form.add("client_id", clientConfig.getClientId());
-            form.add("client_secret", clientConfig.getClientSecret());
-        }
+			form.add("client_id", clientConfig.getClientId());
+			form.add("client_secret", clientConfig.getClientSecret());
+		}
 
 		logger.debug("tokenEndpointURI = " + serverConfig.getTokenEndpointUri());
 		logger.debug("form = " + form);
