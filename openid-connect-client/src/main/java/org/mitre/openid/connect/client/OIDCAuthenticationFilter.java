@@ -184,8 +184,14 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 				throw new AuthenticationServiceException("No client configuration found for issuer: " + issuer);
 			}
 
-			// our redirect URI is this current URL, with no query parameters
-			String redirectUri = request.getRequestURL().toString();
+			String redirectUri = null; 
+			if (clientConfig.getRegisteredRedirectUri() != null && clientConfig.getRegisteredRedirectUri().size() == 1) {
+				// if there's a redirect uri configured (and only one), use that
+				redirectUri = clientConfig.getRegisteredRedirectUri().toArray(new String[] {})[0];
+			} else {
+				// otherwise our redirect URI is this current URL, with no query parameters
+				redirectUri = request.getRequestURL().toString();
+			}
 			session.setAttribute(REDIRECT_URI_SESION_VARIABLE, redirectUri);
 
 			// this value comes back in the id token and is checked there
