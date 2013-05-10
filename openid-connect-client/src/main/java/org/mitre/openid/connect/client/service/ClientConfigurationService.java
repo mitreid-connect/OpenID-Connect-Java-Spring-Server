@@ -19,6 +19,7 @@
  */
 package org.mitre.openid.connect.client.service;
 
+import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.openid.connect.config.ServerConfiguration;
 import org.springframework.security.oauth2.provider.ClientDetails;
 
@@ -28,6 +29,6 @@ import org.springframework.security.oauth2.provider.ClientDetails;
  */
 public interface ClientConfigurationService {
 
-	public ClientDetails getClientConfiguration(ServerConfiguration issuer);
+	public ClientDetailsEntity getClientConfiguration(ServerConfiguration issuer);
 
 }

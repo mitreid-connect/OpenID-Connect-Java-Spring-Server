@@ -60,7 +60,7 @@ public class DynamicRegistrationClientConfigurationService implements ClientConf
 	}
 
 	@Override
-	public ClientDetails getClientConfiguration(ServerConfiguration issuer) {
+	public ClientDetailsEntity getClientConfiguration(ServerConfiguration issuer) {
 		try {
 			return clients.get(issuer);
 		} catch (ExecutionException e) {

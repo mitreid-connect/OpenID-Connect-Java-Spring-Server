@@ -229,7 +229,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 
 		// pull the configurations based on that issuer
 		ServerConfiguration serverConfig = servers.getServerConfiguration(issuer);
-		final ClientDetails clientConfig = clients.getClientConfiguration(serverConfig);
+		final ClientDetailsEntity clientConfig = clients.getClientConfiguration(serverConfig);
 
 		MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
 		form.add("grant_type", "authorization_code");
@@ -249,7 +249,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 
 		RestTemplate restTemplate;
 
-		if (clientConfig instanceof ClientDetailsEntity && SECRET_BASIC.equals(((ClientDetailsEntity) clientConfig).getTokenEndpointAuthMethod())){
+		if (SECRET_BASIC.equals(clientConfig.getTokenEndpointAuthMethod())){
 			// use BASIC auth if configured to do so
 			restTemplate = new RestTemplate(factory) {
 

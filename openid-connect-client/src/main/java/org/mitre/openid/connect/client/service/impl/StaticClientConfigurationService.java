@@ -21,6 +21,7 @@ package org.mitre.openid.connect.client.service.impl;
 
 import java.util.Map;
 
+import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.openid.connect.client.service.ClientConfigurationService;
 import org.mitre.openid.connect.config.ServerConfiguration;
 import org.springframework.beans.factory.InitializingBean;
@@ -37,19 +38,19 @@ import org.springframework.security.oauth2.provider.ClientDetails;
 public class StaticClientConfigurationService implements ClientConfigurationService, InitializingBean {
 
 	// Map of issuer URL -> client configuration information
-	private Map<String, ClientDetails> clients;
+	private Map<String, ClientDetailsEntity> clients;
 
 	/**
 	 * @return the clients
 	 */
-	public Map<String, ClientDetails> getClients() {
+	public Map<String, ClientDetailsEntity> getClients() {
 		return clients;
 	}
 
 	/**
 	 * @param clients the clients to set
 	 */
-	public void setClients(Map<String, ClientDetails> clients) {
+	public void setClients(Map<String, ClientDetailsEntity> clients) {
 		this.clients = clients;
 	}
 
@@ -59,7 +60,7 @@ public class StaticClientConfigurationService implements ClientConfigurationServ
 	 * @see org.mitre.openid.connect.client.service.ClientConfigurationService#getClientConfiguration(java.lang.String)
 	 */
 	@Override
-	public ClientDetails getClientConfiguration(ServerConfiguration issuer) {
+	public ClientDetailsEntity getClientConfiguration(ServerConfiguration issuer) {
 
 		return clients.get(issuer.getIssuer());
 	}
