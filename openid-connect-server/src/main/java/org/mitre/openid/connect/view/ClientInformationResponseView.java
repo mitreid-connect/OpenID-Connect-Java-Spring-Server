@@ -66,8 +66,7 @@ public class ClientInformationResponseView extends AbstractView {
 			code = HttpStatus.OK;
 		}
 
-		// TODO: urlencode the client id for safety?
-		String uri = request.getRequestURL() + "/" + c.getClientId();
+		String uri = (String)model.get("uri"); //request.getRequestURL() + "/" + c.getClientId();
 		JsonObject o = ClientDetailsEntityJsonProcessor.serialize(c, token, uri);
 
 		try {

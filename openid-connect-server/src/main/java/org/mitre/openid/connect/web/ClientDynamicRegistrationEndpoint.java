@@ -20,6 +20,8 @@ package org.mitre.openid.connect.web;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.http.client.utils.URIUtils;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
@@ -28,6 +30,7 @@ import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
 import org.mitre.oauth2.service.SystemScopeService;
 import org.mitre.openid.connect.ClientDetailsEntityJsonProcessor;
+import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +62,9 @@ public class ClientDynamicRegistrationEndpoint {
 
 	@Autowired
 	private SystemScopeService scopeService;
+	
+	@Autowired
+	private ConfigurationPropertiesBean config;
 
 	private static Logger logger = LoggerFactory.getLogger(ClientDynamicRegistrationEndpoint.class);
 
@@ -148,7 +154,9 @@ public class ClientDynamicRegistrationEndpoint {
 			m.addAttribute("client", savedClient);
 			m.addAttribute("code", HttpStatus.CREATED); // http 201
 			m.addAttribute("token", token);
-
+			// TODO: urlencode the client id for safety?
+			m.addAttribute("uri", config.getIssuer() + "register/" + savedClient.getClientId());
+			
 			return "clientInformationResponseView";
 		} else {
 			// didn't parse, this is a bad request
@@ -184,6 +192,8 @@ public class ClientDynamicRegistrationEndpoint {
 			m.addAttribute("client", client);
 			m.addAttribute("code", HttpStatus.OK); // http 200
 			m.addAttribute("token", token);
+			// TODO: urlencode the client id for safety?
+			m.addAttribute("uri", config.getIssuer() + "register/" + client.getClientId());
 
 			return "clientInformationResponseView";
 		} else {
@@ -255,6 +265,8 @@ public class ClientDynamicRegistrationEndpoint {
 			m.addAttribute("client", savedClient);
 			m.addAttribute("code", HttpStatus.OK); // http 200
 			m.addAttribute("token", token);
+			// TODO: urlencode the client id for safety?
+			m.addAttribute("uri", config.getIssuer() + "register/" + savedClient.getClientId());
 
 			return "clientInformationResponseView";
 		} else {
@@ -292,6 +304,8 @@ public class ClientDynamicRegistrationEndpoint {
 			m.addAttribute("client", client);
 			m.addAttribute("code", HttpStatus.OK); // http 200
 			m.addAttribute("token", token);
+			// TODO: urlencode the client id for safety?
+			m.addAttribute("uri", config.getIssuer() + "register/" + client.getClientId());
 
 			return "clientInformationResponseView";
 		} else {
