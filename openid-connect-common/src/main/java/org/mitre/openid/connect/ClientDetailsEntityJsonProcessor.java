@@ -19,6 +19,7 @@
  */
 package org.mitre.openid.connect;
 
+import java.util.Date;
 import java.util.Set;
 
 import org.mitre.jose.JWEAlgorithmEmbed;
@@ -29,6 +30,7 @@ import org.mitre.oauth2.model.ClientDetailsEntity.AppType;
 import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
 import org.mitre.oauth2.model.ClientDetailsEntity.SubjectType;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
+import org.mitre.oauth2.model.RegisteredClient;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
@@ -139,6 +141,36 @@ public class ClientDetailsEntityJsonProcessor {
 		}
 	}
 
+	/**
+	 * Parse the JSON as a RegisteredClient (useful in the dynamic client filter)
+	 */
+	public static RegisteredClient parseRegistered(String jsonString) {
+		
+		
+		JsonElement jsonEl = parser.parse(jsonString);
+		if (jsonEl.isJsonObject()) {
+
+			JsonObject o = jsonEl.getAsJsonObject();
+			ClientDetailsEntity c = parse(jsonString);
+
+			RegisteredClient rc = new RegisteredClient(c);
+			// get any fields from the registration
+			rc.setRegistrationAccessToken(getAsString(o, "registration_access_token"));
+			rc.setRegistrationClientUri(getAsString(o, "registration_client_uri"));
+			rc.setIssuedAt(getAsDate(o, "issued_at"));
+			rc.setExpiresAt(getAsDate(o, "expires_at"));
+
+			return rc;
+		} else {
+			return null;
+		}
+	}
+	
+	/**
+	 * Translate a set of strings to a JSON array
+	 * @param value
+	 * @return
+	 */
 	public static JsonElement getAsArray(Set<String> value) {
 		return gson.toJsonTree(value, new TypeToken<Set<String>>(){}.getType());
 	}
@@ -149,7 +181,7 @@ public class ClientDetailsEntityJsonProcessor {
 	 * @param registrationUri
 	 * @return
 	 */
-	public static JsonObject serialize(ClientDetailsEntity c, OAuth2AccessTokenEntity token, String registrationUri) {
+	public static JsonObject serialize(RegisteredClient c) {
 		JsonObject o = new JsonObject();
 
 		o.addProperty("client_id", c.getClientId());
@@ -158,15 +190,17 @@ public class ClientDetailsEntityJsonProcessor {
 			o.addProperty("expires_at", 0); // TODO: do we want to let secrets expire?
 		}
 
-		if (c.getCreatedAt() != null) {
-			o.addProperty("issued_at", c.getCreatedAt().getTime());
+		if (c.getIssuedAt() != null) {
+			o.addProperty("issued_at", c.getIssuedAt().getTime() / 1000L);
+		} else if (c.getCreatedAt() != null) {
+			o.addProperty("issued_at", c.getCreatedAt().getTime() / 1000L);
 		}
-		if (token != null) {
-			o.addProperty("registration_access_token", token.getValue());
+		if (c.getRegistrationAccessToken() != null) {
+			o.addProperty("registration_access_token", c.getRegistrationAccessToken());
 		}
 
-		if (registrationUri != null) {
-			o.addProperty("registration_client_uri", registrationUri);
+		if (c.getRegistrationClientUri() != null) {
+			o.addProperty("registration_client_uri", c.getRegistrationClientUri());
 		}
 
 
@@ -258,6 +292,22 @@ public class ClientDetailsEntityJsonProcessor {
 	}
 
 	/**
+	 * Gets the value of the given member (expressed as integer seconds since epoch) as a Date
+	 */
+	public static Date getAsDate(JsonObject o, String member) {
+		if (o.has(member)) {
+			JsonElement e = o.get(member);
+			if (e != null && e.isJsonPrimitive()) {
+				return new Date(e.getAsInt() * 1000L);
+			} else {
+				return null;
+			}
+		} else {
+			return null;
+		}
+	}
+	
+	/**
 	 * Gets the value of the given given member as a set of strings, null if it doesn't exist
 	 */
 	public static Set<String> getAsStringSet(JsonObject o, String member) throws JsonSyntaxException {
@@ -267,5 +317,7 @@ public class ClientDetailsEntityJsonProcessor {
 			return null;
 		}
 	}
+	
+	
 
 }

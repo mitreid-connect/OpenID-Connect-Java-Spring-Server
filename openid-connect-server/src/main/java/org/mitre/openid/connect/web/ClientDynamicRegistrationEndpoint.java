@@ -25,6 +25,7 @@ import org.apache.http.client.utils.URLEncodedUtils;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
+import org.mitre.oauth2.model.RegisteredClient;
 import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
@@ -151,11 +152,14 @@ public class ClientDynamicRegistrationEndpoint {
 			OAuth2AccessTokenEntity token = createRegistrationAccessToken(savedClient);
 
 			// send it all out to the view
-			m.addAttribute("client", savedClient);
-			m.addAttribute("code", HttpStatus.CREATED); // http 201
-			m.addAttribute("token", token);
+			
 			// TODO: urlencode the client id for safety?
-			m.addAttribute("uri", config.getIssuer() + "register/" + savedClient.getClientId());
+			RegisteredClient registered = new RegisteredClient(savedClient, token.getValue(), config.getIssuer() + "register/" + savedClient.getClientId());
+			
+			m.addAttribute("client", registered);
+			m.addAttribute("code", HttpStatus.CREATED); // http 201
+			//m.addAttribute("token", token);
+			//m.addAttribute("uri", config.getIssuer() + "register/" + savedClient.getClientId());
 			
 			return "clientInformationResponseView";
 		} else {
@@ -188,12 +192,15 @@ public class ClientDynamicRegistrationEndpoint {
 			OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
 			OAuth2AccessTokenEntity token = tokenService.readAccessToken(details.getTokenValue());
 
-			// send it all out to the view
-			m.addAttribute("client", client);
-			m.addAttribute("code", HttpStatus.OK); // http 200
-			m.addAttribute("token", token);
 			// TODO: urlencode the client id for safety?
-			m.addAttribute("uri", config.getIssuer() + "register/" + client.getClientId());
+			RegisteredClient registered = new RegisteredClient(client, token.getValue(), config.getIssuer() + "register/" + client.getClientId());
+
+			// send it all out to the view
+			m.addAttribute("client", registered);
+			m.addAttribute("code", HttpStatus.OK); // http 200
+			//m.addAttribute("token", token);
+			// TODO: urlencode the client id for safety?
+			//m.addAttribute("uri", config.getIssuer() + "register/" + client.getClientId());
 
 			return "clientInformationResponseView";
 		} else {
@@ -261,12 +268,15 @@ public class ClientDynamicRegistrationEndpoint {
 			OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
 			OAuth2AccessTokenEntity token = tokenService.readAccessToken(details.getTokenValue());
 
-			// send it all out to the view
-			m.addAttribute("client", savedClient);
-			m.addAttribute("code", HttpStatus.OK); // http 200
-			m.addAttribute("token", token);
 			// TODO: urlencode the client id for safety?
-			m.addAttribute("uri", config.getIssuer() + "register/" + savedClient.getClientId());
+			RegisteredClient registered = new RegisteredClient(savedClient, token.getValue(), config.getIssuer() + "register/" + savedClient.getClientId());
+
+			// send it all out to the view
+			m.addAttribute("client", registered);
+			m.addAttribute("code", HttpStatus.OK); // http 200
+			//m.addAttribute("token", token);
+			// TODO: urlencode the client id for safety?
+			//m.addAttribute("uri", config.getIssuer() + "register/" + savedClient.getClientId());
 
 			return "clientInformationResponseView";
 		} else {
@@ -300,12 +310,15 @@ public class ClientDynamicRegistrationEndpoint {
 			OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
 			OAuth2AccessTokenEntity token = tokenService.readAccessToken(details.getTokenValue());
 
+			// TODO: urlencode the client id for safety?
+			RegisteredClient registered = new RegisteredClient(client, token.getValue(), config.getIssuer() + "register/" + client.getClientId());
+
 			// send it all out to the view
 			m.addAttribute("client", client);
 			m.addAttribute("code", HttpStatus.OK); // http 200
-			m.addAttribute("token", token);
+			//m.addAttribute("token", token);
 			// TODO: urlencode the client id for safety?
-			m.addAttribute("uri", config.getIssuer() + "register/" + client.getClientId());
+			//m.addAttribute("uri", config.getIssuer() + "register/" + client.getClientId());
 
 			return "clientInformationResponseView";
 		} else {

@@ -23,10 +23,10 @@ import java.net.URISyntaxException;
 
 import org.apache.http.client.utils.URIBuilder;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
+import org.mitre.oauth2.model.RegisteredClient;
 import org.mitre.openid.connect.client.service.AuthRequestUrlBuilder;
 import org.mitre.openid.connect.config.ServerConfiguration;
 import org.springframework.security.authentication.AuthenticationServiceException;
-import org.springframework.security.oauth2.provider.ClientDetails;
 
 import com.google.common.base.Joiner;
 import com.nimbusds.jose.JWSHeader;
@@ -45,7 +45,7 @@ public class SignedAuthRequestUrlBuilder implements AuthRequestUrlBuilder {
 	 * @see org.mitre.openid.connect.client.service.AuthRequestUrlBuilder#buildAuthRequestUrl(org.mitre.openid.connect.config.ServerConfiguration, org.springframework.security.oauth2.provider.ClientDetails, java.lang.String, java.lang.String, java.lang.String)
 	 */
 	@Override
-	public String buildAuthRequestUrl(ServerConfiguration serverConfig, ClientDetails clientConfig, String redirectUri, String nonce, String state) {
+	public String buildAuthRequestUrl(ServerConfiguration serverConfig, RegisteredClient clientConfig, String redirectUri, String nonce, String state) {
 
 		// create our signed JWT for the request object
 		JWTClaimsSet claims = new JWTClaimsSet();

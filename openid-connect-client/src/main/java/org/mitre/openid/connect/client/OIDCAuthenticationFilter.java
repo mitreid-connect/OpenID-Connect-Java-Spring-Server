@@ -28,6 +28,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.jwt.signer.service.impl.JWKSetSigningAndValidationServiceCacheService;
 import org.mitre.oauth2.model.ClientDetailsEntity;
+import org.mitre.oauth2.model.RegisteredClient;
 import org.mitre.openid.connect.client.model.IssuerServiceResponse;
 import org.mitre.openid.connect.client.service.AuthRequestUrlBuilder;
 import org.mitre.openid.connect.client.service.ClientConfigurationService;
@@ -178,7 +179,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 			}
 
 
-			ClientDetails clientConfig = clients.getClientConfiguration(serverConfig);
+			RegisteredClient clientConfig = clients.getClientConfiguration(serverConfig);
 			if (clientConfig == null) {
 				logger.error("No client configuration found for issuer: " + issuer);
 				throw new AuthenticationServiceException("No client configuration found for issuer: " + issuer);
@@ -235,7 +236,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 
 		// pull the configurations based on that issuer
 		ServerConfiguration serverConfig = servers.getServerConfiguration(issuer);
-		final ClientDetailsEntity clientConfig = clients.getClientConfiguration(serverConfig);
+		final RegisteredClient clientConfig = clients.getClientConfiguration(serverConfig);
 
 		MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
 		form.add("grant_type", "authorization_code");

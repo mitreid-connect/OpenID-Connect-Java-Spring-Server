@@ -24,6 +24,7 @@ import java.util.concurrent.ExecutionException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.mitre.oauth2.model.ClientDetailsEntity;
+import org.mitre.oauth2.model.RegisteredClient;
 import org.mitre.openid.connect.ClientDetailsEntityJsonProcessor;
 import org.mitre.openid.connect.client.service.ClientConfigurationService;
 import org.mitre.openid.connect.config.ServerConfiguration;
@@ -51,16 +52,16 @@ public class DynamicRegistrationClientConfigurationService implements ClientConf
 
 	private static Logger logger = LoggerFactory.getLogger(DynamicServerConfigurationService.class);
 
-	private LoadingCache<ServerConfiguration, ClientDetailsEntity> clients;
+	private LoadingCache<ServerConfiguration, RegisteredClient> clients;
 
-	private ClientDetailsEntity template;
-
+	private RegisteredClient template;
+	
 	public DynamicRegistrationClientConfigurationService() {
 		clients = CacheBuilder.newBuilder().build(new DynamicClientRegistrationLoader());
 	}
 
 	@Override
-	public ClientDetailsEntity getClientConfiguration(ServerConfiguration issuer) {
+	public RegisteredClient getClientConfiguration(ServerConfiguration issuer) {
 		try {
 			return clients.get(issuer);
 		} catch (ExecutionException e) {
@@ -72,28 +73,28 @@ public class DynamicRegistrationClientConfigurationService implements ClientConf
 	/**
 	 * @return the template
 	 */
-	public ClientDetailsEntity getTemplate() {
+	public RegisteredClient getTemplate() {
 		return template;
 	}
 
 	/**
 	 * @param template the template to set
 	 */
-	public void setTemplate(ClientDetailsEntity template) {
+	public void setTemplate(RegisteredClient template) {
 		this.template = template;
 	}
 
-	public class DynamicClientRegistrationLoader extends CacheLoader<ServerConfiguration, ClientDetailsEntity> {
+	public class DynamicClientRegistrationLoader extends CacheLoader<ServerConfiguration, RegisteredClient> {
 		private HttpClient httpClient = new DefaultHttpClient();
 		private HttpComponentsClientHttpRequestFactory httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
 		private JsonParser parser = new JsonParser();
 
 		@Override
-		public ClientDetailsEntity load(ServerConfiguration serverConfig) throws Exception {
+		public RegisteredClient load(ServerConfiguration serverConfig) throws Exception {
 			RestTemplate restTemplate = new RestTemplate(httpFactory);
 
 			// dynamically register this client
-			JsonObject jsonRequest = ClientDetailsEntityJsonProcessor.serialize(template, null, null);
+			JsonObject jsonRequest = ClientDetailsEntityJsonProcessor.serialize(template);
 
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -105,7 +106,7 @@ public class DynamicRegistrationClientConfigurationService implements ClientConf
 			// TODO: handle HTTP errors
 
 			// TODO: save registration token and other important bits
-			ClientDetailsEntity client = ClientDetailsEntityJsonProcessor.parse(registered);
+			RegisteredClient client = ClientDetailsEntityJsonProcessor.parseRegistered(registered);
 
 			return client;
 		}

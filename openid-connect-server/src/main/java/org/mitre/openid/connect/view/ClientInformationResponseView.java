@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
+import org.mitre.oauth2.model.RegisteredClient;
 import org.mitre.openid.connect.ClientDetailsEntityJsonProcessor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -59,15 +60,16 @@ public class ClientInformationResponseView extends AbstractView {
 
 		response.setContentType("application/json");
 
-		ClientDetailsEntity c = (ClientDetailsEntity) model.get("client");
-		OAuth2AccessTokenEntity token = (OAuth2AccessTokenEntity) model.get("token");
+		RegisteredClient c = (RegisteredClient) model.get("client");
+		//OAuth2AccessTokenEntity token = (OAuth2AccessTokenEntity) model.get("token");
+		//String uri = (String)model.get("uri"); //request.getRequestURL() + "/" + c.getClientId();
+		
 		HttpStatus code = (HttpStatus) model.get("code");
 		if (code == null) {
 			code = HttpStatus.OK;
 		}
 
-		String uri = (String)model.get("uri"); //request.getRequestURL() + "/" + c.getClientId();
-		JsonObject o = ClientDetailsEntityJsonProcessor.serialize(c, token, uri);
+		JsonObject o = ClientDetailsEntityJsonProcessor.serialize(c);
 
 		try {
 			Writer out = response.getWriter();
