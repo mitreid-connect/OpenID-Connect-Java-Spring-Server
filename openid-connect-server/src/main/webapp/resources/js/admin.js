@@ -322,6 +322,8 @@ var AppRouter = Backbone.Router.extend({
         "admin/scope/:id":"editScope",
         
         "user/approved":"approvedSites",
+        "user/tokens":"notImplemented",
+        "user/profile":"notImplemented",
         
         "": "root"
         	
@@ -531,6 +533,14 @@ var AppRouter = Backbone.Router.extend({
     		}
     	});
     	
+    },
+
+    notImplemented:function(){
+        this.breadCrumbView.collection.reset();
+        this.breadCrumbView.collection.add([
+            {text:"Home", href:""}
+        ]);
+    		$('#content').html("<h2>Not implemented yet.</h2>");
     },
     
     blackList:function() {
