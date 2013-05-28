@@ -22,11 +22,10 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
-import org.springframework.security.oauth2.common.exceptions.InvalidScopeException;
 import org.springframework.security.oauth2.common.util.OAuth2Utils;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.OAuth2Request;
-import org.springframework.security.oauth2.provider.OAuth2RequestManager;
+import org.springframework.security.oauth2.provider.OAuth2RequestFactory;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
@@ -34,7 +33,7 @@ import com.nimbusds.jose.util.JSONObjectUtils;
 import com.nimbusds.jwt.SignedJWT;
 
 @Component("oAuth2RequestManager")
-public class ConnectOAuth2RequestManager implements OAuth2RequestManager {
+public class ConnectOAuth2RequestManager implements OAuth2RequestFactory {
 
 	private static Logger logger = LoggerFactory.getLogger(ConnectOAuth2RequestManager.class);
 	
@@ -223,19 +222,5 @@ public class ConnectOAuth2RequestManager implements OAuth2RequestManager {
         }
 		return parameters;
     }
-
-	@Override
-	public void validateParameters(Map<String, String> parameters, ClientDetails clientDetails) {
-		if (parameters.containsKey("scope")) {
-			if (clientDetails.isScoped()) {
-				Set<String> validScope = clientDetails.getScope();
-				for (String scope : OAuth2Utils.parseParameterList(parameters.get("scope"))) {
-					if (!validScope.contains(scope)) {
-						throw new InvalidScopeException("Invalid scope: " + scope, validScope);
-					}
-				}
-			}
-		}
-	}
 
 }
