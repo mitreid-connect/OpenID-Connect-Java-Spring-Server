@@ -167,15 +167,6 @@ public class ClientDetailsEntityJsonProcessor {
 	}
 	
 	/**
-	 * Translate a set of strings to a JSON array
-	 * @param value
-	 * @return
-	 */
-	public static JsonElement getAsArray(Set<String> value) {
-		return gson.toJsonTree(value, new TypeToken<Set<String>>(){}.getType());
-	}
-
-	/**
 	 * @param c
 	 * @param token
 	 * @param registrationUri
@@ -187,7 +178,12 @@ public class ClientDetailsEntityJsonProcessor {
 		o.addProperty("client_id", c.getClientId());
 		if (c.getClientSecret() != null) {
 			o.addProperty("client_secret", c.getClientSecret());
-			o.addProperty("expires_at", 0); // TODO: do we want to let secrets expire?
+			
+			if (c.getExpiresAt() == null) {
+				o.addProperty("expires_at", 0); // TODO: do we want to let secrets expire?
+			} else {
+				o.addProperty("expires_at", c.getExpiresAt().getTime() / 1000L);
+			}
 		}
 
 		if (c.getIssuedAt() != null) {
@@ -242,7 +238,7 @@ public class ClientDetailsEntityJsonProcessor {
 	/**
 	 * Gets the value of the given member as a JWE Algorithm, null if it doesn't exist
 	 */
-	public static JWEAlgorithmEmbed getAsJweAlgorithm(JsonObject o, String member) {
+	private static JWEAlgorithmEmbed getAsJweAlgorithm(JsonObject o, String member) {
 		String s = getAsString(o, member);
 		if (s != null) {
 			return JWEAlgorithmEmbed.getForAlgorithmName(s);
@@ -254,7 +250,7 @@ public class ClientDetailsEntityJsonProcessor {
 	/**
 	 * Gets the value of the given member as a JWE Encryption Method, null if it doesn't exist
 	 */
-	public static JWEEncryptionMethodEmbed getAsJweEncryptionMethod(JsonObject o, String member) {
+	private static JWEEncryptionMethodEmbed getAsJweEncryptionMethod(JsonObject o, String member) {
 		String s = getAsString(o, member);
 		if (s != null) {
 			return JWEEncryptionMethodEmbed.getForAlgorithmName(s);
@@ -266,7 +262,7 @@ public class ClientDetailsEntityJsonProcessor {
 	/**
 	 * Gets the value of the given member as a JWS Algorithm, null if it doesn't exist
 	 */
-	public static JWSAlgorithmEmbed getAsJwsAlgorithm(JsonObject o, String member) {
+	private static JWSAlgorithmEmbed getAsJwsAlgorithm(JsonObject o, String member) {
 		String s = getAsString(o, member);
 		if (s != null) {
 			return JWSAlgorithmEmbed.getForAlgorithmName(s);
@@ -278,7 +274,7 @@ public class ClientDetailsEntityJsonProcessor {
 	/**
 	 * Gets the value of the given member as a string, null if it doesn't exist
 	 */
-	public static String getAsString(JsonObject o, String member) {
+	private static String getAsString(JsonObject o, String member) {
 		if (o.has(member)) {
 			JsonElement e = o.get(member);
 			if (e != null && e.isJsonPrimitive()) {
@@ -294,7 +290,7 @@ public class ClientDetailsEntityJsonProcessor {
 	/**
 	 * Gets the value of the given member (expressed as integer seconds since epoch) as a Date
 	 */
-	public static Date getAsDate(JsonObject o, String member) {
+	private static Date getAsDate(JsonObject o, String member) {
 		if (o.has(member)) {
 			JsonElement e = o.get(member);
 			if (e != null && e.isJsonPrimitive()) {
@@ -310,7 +306,7 @@ public class ClientDetailsEntityJsonProcessor {
 	/**
 	 * Gets the value of the given given member as a set of strings, null if it doesn't exist
 	 */
-	public static Set<String> getAsStringSet(JsonObject o, String member) throws JsonSyntaxException {
+	private static Set<String> getAsStringSet(JsonObject o, String member) throws JsonSyntaxException {
 		if (o.has(member)) {
 			return gson.fromJson(o.get(member), new TypeToken<Set<String>>(){}.getType());
 		} else {
@@ -319,5 +315,14 @@ public class ClientDetailsEntityJsonProcessor {
 	}
 	
 	
+	/**
+	 * Translate a set of strings to a JSON array
+	 * @param value
+	 * @return
+	 */
+	private static JsonElement getAsArray(Set<String> value) {
+		return gson.toJsonTree(value, new TypeToken<Set<String>>(){}.getType());
+	}
+
 
 }
