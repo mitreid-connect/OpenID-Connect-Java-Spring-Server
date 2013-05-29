@@ -16,18 +16,21 @@
  ******************************************************************************/
 package org.mitre.openid.connect.client;
 
-import com.google.common.base.Strings;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.nimbusds.jose.util.Base64;
-import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
-import com.nimbusds.jwt.SignedJWT;
-import org.apache.commons.lang.StringUtils;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.net.URI;
+import java.security.SecureRandom;
+import java.text.ParseException;
+import java.util.Date;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.jwt.signer.service.impl.JWKSetSigningAndValidationServiceCacheService;
-import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.RegisteredClient;
 import org.mitre.openid.connect.client.model.IssuerServiceResponse;
 import org.mitre.openid.connect.client.service.AuthRequestUrlBuilder;
@@ -42,23 +45,19 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.io.IOException;
-import java.math.BigInteger;
-import java.net.URI;
-import java.security.SecureRandom;
-import java.text.ParseException;
-import java.util.Date;
+import com.google.common.base.Strings;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.nimbusds.jose.util.Base64;
+import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 
 import static org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod.SECRET_BASIC;
 
@@ -224,7 +223,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 
 		// check for state, if it doesn't match we bail early
 		String storedState = getStoredState(session);
-		if (!StringUtils.isBlank(storedState)) {
+		if (!Strings.isNullOrEmpty(storedState)) {
 			String state = request.getParameter("state");
 			if (!storedState.equals(state)) {
 				throw new AuthenticationServiceException("State parameter mismatch on return. Expected " + storedState + " got " + state);
@@ -403,9 +402,9 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 				}
 
 				// compare the nonce to our stored claim
-				// FIXME: Nimbus claims as strings?
+				// TODO: Nimbus claims as strings?
 				String nonce = (String) idClaims.getCustomClaim("nonce");
-				if (StringUtils.isBlank(nonce)) {
+				if (Strings.isNullOrEmpty(nonce)) {
 
 					logger.error("ID token did not contain a nonce claim.");
 
