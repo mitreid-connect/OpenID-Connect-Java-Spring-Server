@@ -18,7 +18,6 @@ import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JWEAlgorithm;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
 
 /**
  * @author jricher
@@ -77,7 +76,7 @@ public class ClientDetailsEntityJsonProcessorTest {
 				"   \"client_id\": \"s6BhdRkqt3\",\n" + 
 				"   \"client_secret\":\n" + 
 				"     \"ZJYCqe3GGRvdrudKyZS0XhGv_Z45DuKhCUk0gBR1vZk\",\n" + 
-				"   \"expires_at\": 1577858400,\n" + 
+				"   \"client_secret_expires_at\": 1577858400,\n" + 
 				"   \"registration_access_token\":\n" + 
 				"     \"this.is.an.access.token.value.ffx83\",\n" + 
 				"   \"registration_client_uri\":\n" + 
@@ -108,7 +107,7 @@ public class ClientDetailsEntityJsonProcessorTest {
 		
 		assertEquals("s6BhdRkqt3", c.getClientId());
 		assertEquals("ZJYCqe3GGRvdrudKyZS0XhGv_Z45DuKhCUk0gBR1vZk", c.getClientSecret());
-		assertEquals(new Date(1577858400L * 1000L), c.getExpiresAt());
+		assertEquals(new Date(1577858400L * 1000L), c.getClientSecretExpiresAt());
 		assertEquals("this.is.an.access.token.value.ffx83", c.getRegistrationAccessToken());
 		assertEquals("https://server.example.com/connect/register?client_id=s6BhdRkqt3", c.getRegistrationClientUri());
 		assertEquals(ClientDetailsEntity.AppType.WEB, c.getApplicationType());
@@ -135,7 +134,7 @@ public class ClientDetailsEntityJsonProcessorTest {
 		
 		c.setClientId("s6BhdRkqt3");
 		c.setClientSecret("ZJYCqe3GGRvdrudKyZS0XhGv_Z45DuKhCUk0gBR1vZk");
-		c.setExpiresAt(new Date(1577858400L * 1000L));
+		c.setClientSecretExpiresAt(new Date(1577858400L * 1000L));
 		c.setRegistrationAccessToken("this.is.an.access.token.value.ffx83");
 		c.setRegistrationClientUri("https://server.example.com/connect/register?client_id=s6BhdRkqt3");
 		c.setApplicationType(ClientDetailsEntity.AppType.WEB);
@@ -155,7 +154,7 @@ public class ClientDetailsEntityJsonProcessorTest {
 
 		assertEquals("s6BhdRkqt3", j.get("client_id").getAsString());
 		assertEquals("ZJYCqe3GGRvdrudKyZS0XhGv_Z45DuKhCUk0gBR1vZk", j.get("client_secret").getAsString());
-		assertEquals(1577858400L, j.get("expires_at").getAsNumber());
+		assertEquals(1577858400L, j.get("client_secret_expires_at").getAsNumber());
 		assertEquals("this.is.an.access.token.value.ffx83", j.get("registration_access_token").getAsString());
 		assertEquals("https://server.example.com/connect/register?client_id=s6BhdRkqt3", j.get("registration_client_uri").getAsString());
 		assertEquals(ClientDetailsEntity.AppType.WEB.getValue(), j.get("application_type").getAsString());
