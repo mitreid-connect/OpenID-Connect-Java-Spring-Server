@@ -24,8 +24,8 @@ public class RegisteredClient {
 	// these fields are needed in addition to the ones in ClientDetailsEntity
 	private String registrationAccessToken;
 	private String registrationClientUri;
-	private Date expiresAt;
-	private Date issuedAt;
+	private Date clientSecretExpiresAt;
+	private Date clientIdIssuedAt;
 	private ClientDetailsEntity client;
 	
 	/**
@@ -692,28 +692,28 @@ public class RegisteredClient {
 		this.registrationClientUri = registrationClientUri;
 	}
 	/**
-	 * @return the expiresAt
+	 * @return the clientSecretExpiresAt
 	 */
-	public Date getExpiresAt() {
-		return expiresAt;
+	public Date getClientSecretExpiresAt() {
+		return clientSecretExpiresAt;
 	}
 	/**
-	 * @param expiresAt the expiresAt to set
+	 * @param clientSecretExpiresAt the clientSecretExpiresAt to set
 	 */
-	public void setExpiresAt(Date expiresAt) {
-		this.expiresAt = expiresAt;
+	public void setClientSecretExpiresAt(Date expiresAt) {
+		this.clientSecretExpiresAt = expiresAt;
 	}
 	/**
-	 * @return the issuedAt
+	 * @return the clientIdIssuedAt
 	 */
-	public Date getIssuedAt() {
-		return issuedAt;
+	public Date getClientIdIssuedAt() {
+		return clientIdIssuedAt;
 	}
 	/**
-	 * @param issuedAt the issuedAt to set
+	 * @param clientIdIssuedAt the clientIdIssuedAt to set
 	 */
-	public void setIssuedAt(Date issuedAt) {
-		this.issuedAt = issuedAt;
+	public void setClientIdIssuedAt(Date issuedAt) {
+		this.clientIdIssuedAt = issuedAt;
 	}
 	
 	

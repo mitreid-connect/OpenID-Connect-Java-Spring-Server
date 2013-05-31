@@ -157,8 +157,8 @@ public class ClientDetailsEntityJsonProcessor {
 			// get any fields from the registration
 			rc.setRegistrationAccessToken(getAsString(o, "registration_access_token"));
 			rc.setRegistrationClientUri(getAsString(o, "registration_client_uri"));
-			rc.setIssuedAt(getAsDate(o, "issued_at"));
-			rc.setExpiresAt(getAsDate(o, "expires_at"));
+			rc.setClientIdIssuedAt(getAsDate(o, "client_id_issued_at"));
+			rc.setClientSecretExpiresAt(getAsDate(o, "client_secret_expires_at"));
 
 			return rc;
 		} else {
@@ -179,17 +179,17 @@ public class ClientDetailsEntityJsonProcessor {
 		if (c.getClientSecret() != null) {
 			o.addProperty("client_secret", c.getClientSecret());
 			
-			if (c.getExpiresAt() == null) {
-				o.addProperty("expires_at", 0); // TODO: do we want to let secrets expire?
+			if (c.getClientSecretExpiresAt() == null) {
+				o.addProperty("client_secret_expires_at", 0); // TODO: do we want to let secrets expire?
 			} else {
-				o.addProperty("expires_at", c.getExpiresAt().getTime() / 1000L);
+				o.addProperty("client_secret_expires_at", c.getClientSecretExpiresAt().getTime() / 1000L);
 			}
 		}
 
-		if (c.getIssuedAt() != null) {
-			o.addProperty("issued_at", c.getIssuedAt().getTime() / 1000L);
+		if (c.getClientIdIssuedAt() != null) {
+			o.addProperty("client_id_issued_at", c.getClientIdIssuedAt().getTime() / 1000L);
 		} else if (c.getCreatedAt() != null) {
-			o.addProperty("issued_at", c.getCreatedAt().getTime() / 1000L);
+			o.addProperty("client_id_issued_at", c.getCreatedAt().getTime() / 1000L);
 		}
 		if (c.getRegistrationAccessToken() != null) {
 			o.addProperty("registration_access_token", c.getRegistrationAccessToken());
