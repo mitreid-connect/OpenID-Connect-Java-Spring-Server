@@ -30,6 +30,10 @@ public class TestDefaultUserInfoUserDetailsService {
 	private String adminSub = "adminSub12d3a1f34a2";
 	private String regularSub = "regularSub652ha23b";
 	
+	/**
+	 * Initialize the service and the mocked repository.
+	 * Initialize 2 users, one of them an admin, for use in unit tests.
+	 */
 	@Before
 	public void prepare() {
 		userInfoRepository = Mockito.mock(UserInfoRepository.class);
@@ -45,6 +49,10 @@ public class TestDefaultUserInfoUserDetailsService {
 		userInfoRegular.setSub(regularSub);	
 	}
 	
+	/**
+	 * Test loading an admin user, ensuring that the UserDetails object returned
+	 * has both the ROLE_USER and ROLE_ADMIN authorities.
+	 */
 	@Test
 	public void loadByUsername_admin_success() {
 		
@@ -57,6 +65,10 @@ public class TestDefaultUserInfoUserDetailsService {
 		
 	}
 	
+	/**
+	 * Test loading a regular, non-admin user, ensuring that the returned UserDetails
+	 * object has ROLE_USER but *not* ROLE_ADMIN.
+	 */
 	@Test
 	public void loadByUsername_regular_success() {
 		
@@ -69,6 +81,9 @@ public class TestDefaultUserInfoUserDetailsService {
 		
 	}	
 	
+	/**
+	 * If a user is not found, the loadByUsername method should throw an exception.
+	 */
 	@Test(expected = UsernameNotFoundException.class)
 	public void loadByUsername_nullUser() {
 		

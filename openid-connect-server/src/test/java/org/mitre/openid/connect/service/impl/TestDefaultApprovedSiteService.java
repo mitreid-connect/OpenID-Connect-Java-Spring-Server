@@ -30,6 +30,10 @@ public class TestDefaultApprovedSiteService {
 	private ApprovedSiteService service;
 	private ApprovedSiteRepository repository;
 	
+	/**
+	 * Initialize the service and repository mock. Initialize a client and
+	 * several ApprovedSite objects for use in unit tests.
+	 */
 	@Before
 	public void prepare() {
 		
@@ -56,6 +60,10 @@ public class TestDefaultApprovedSiteService {
 		service = new DefaultApprovedSiteService(repository);
 	}
 	
+	/**
+	 * Test clearing approved sites for a client that has 2 stored approved sites.
+	 * Ensure that the repository's remove() method is called twice.
+	 */
 	@Test
 	public void clearApprovedSitesForClient_success() {
 		Set<ApprovedSite> setToReturn = Sets.newHashSet(site2, site3);
@@ -66,6 +74,10 @@ public class TestDefaultApprovedSiteService {
 		Mockito.verify(repository, times(2)).remove(any(ApprovedSite.class));
 	}
 	
+	/**
+	 * Test clearing approved sites for a client that doesn't have any stored approved
+	 * sites. Ensure that the repository's remove() method is never called in this case.
+	 */
 	@Test
 	@Rollback
 	public void clearApprovedSitesForClient_null() {
