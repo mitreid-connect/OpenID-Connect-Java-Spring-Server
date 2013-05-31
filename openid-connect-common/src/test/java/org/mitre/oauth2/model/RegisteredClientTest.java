@@ -26,6 +26,9 @@ public class RegisteredClientTest {
 	 */
 	@Test
 	public void testRegisteredClient() {
+		
+		// make sure all the pass-through getters and setters work
+		
 		RegisteredClient c = new RegisteredClient();
 		
 		c.setClientId("s6BhdRkqt3");
@@ -87,11 +90,13 @@ public class RegisteredClientTest {
 		c.setContacts(ImmutableSet.of("ve7jtb@example.org", "mary@example.org"));
 		c.setRequestUris(ImmutableSet.of("https://client.example.org/rf.txt#qpXaRLh_n93TTR9F252ValdatUQvQiJi5BDub2BeznA"));
 		
+		// Create a RegisteredClient based on a ClientDetailsEntity object and set several properties
 		RegisteredClient rc = new RegisteredClient(c);
 		rc.setClientSecretExpiresAt(new Date(1577858400L * 1000L));
 		rc.setRegistrationAccessToken("this.is.an.access.token.value.ffx83");
 		rc.setRegistrationClientUri("https://server.example.com/connect/register?client_id=s6BhdRkqt3");
 		
+		// make sure all the pass-throughs work
 		assertEquals("s6BhdRkqt3", rc.getClientId());
 		assertEquals("ZJYCqe3GGRvdrudKyZS0XhGv_Z45DuKhCUk0gBR1vZk", rc.getClientSecret());
 		assertEquals(new Date(1577858400L * 1000L), rc.getClientSecretExpiresAt());
@@ -133,8 +138,10 @@ public class RegisteredClientTest {
 		c.setContacts(ImmutableSet.of("ve7jtb@example.org", "mary@example.org"));
 		c.setRequestUris(ImmutableSet.of("https://client.example.org/rf.txt#qpXaRLh_n93TTR9F252ValdatUQvQiJi5BDub2BeznA"));
 		
+		// Create a RegisteredClient based on a ClientDetails, a token, and a server URI
 		RegisteredClient rc = new RegisteredClient(c, "this.is.an.access.token.value.ffx83", "https://server.example.com/connect/register?client_id=s6BhdRkqt3");
 		
+		// make sure all the pass-throughs work
 		assertEquals("s6BhdRkqt3", rc.getClientId());
 		assertEquals("ZJYCqe3GGRvdrudKyZS0XhGv_Z45DuKhCUk0gBR1vZk", rc.getClientSecret());
 		assertEquals("this.is.an.access.token.value.ffx83", rc.getRegistrationAccessToken());

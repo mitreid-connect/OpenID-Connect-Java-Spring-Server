@@ -12,6 +12,10 @@ import com.nimbusds.jose.JWSAlgorithm;
 import static org.junit.Assert.*;
 
 /**
+ * 
+ * These tests make sure that the algorithm name processing 
+ * is functional on the three embedded JOSE classes.
+ * 
  * @author jricher
  *
  */
