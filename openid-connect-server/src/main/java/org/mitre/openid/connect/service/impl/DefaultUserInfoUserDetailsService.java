@@ -47,6 +47,15 @@ public class DefaultUserInfoUserDetailsService implements UserDetailsService {
 
 	private List<String> admins = new ArrayList<String>();
 
+	/**
+	 * Parameterized constructor for use in test harnesses.
+	 * 
+	 * @param repository the UserInfoRepository to set
+	 */
+	public DefaultUserInfoUserDetailsService(UserInfoRepository repository) {
+		this.repository = repository;
+	}
+	
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		UserInfo userInfo = repository.getByUsername(username);
