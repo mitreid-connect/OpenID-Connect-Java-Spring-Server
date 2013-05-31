@@ -306,21 +306,11 @@ public class ClientDynamicRegistrationEndpoint {
 
 			clientService.deleteClient(client);
 
-			// we return the token that we got in
-			OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
-			OAuth2AccessTokenEntity token = tokenService.readAccessToken(details.getTokenValue());
-
-			// TODO: urlencode the client id for safety?
-			RegisteredClient registered = new RegisteredClient(client, token.getValue(), config.getIssuer() + "register/" + client.getClientId());
-
 			// send it all out to the view
 			m.addAttribute("client", client);
-			m.addAttribute("code", HttpStatus.OK); // http 200
-			//m.addAttribute("token", token);
-			// TODO: urlencode the client id for safety?
-			//m.addAttribute("uri", config.getIssuer() + "register/" + client.getClientId());
+			m.addAttribute("code", HttpStatus.NO_CONTENT); // http 204
 
-			return "clientInformationResponseView";
+			return "httpCodeView";
 		} else {
 			// client mismatch
 			logger.error("readClientConfiguration failed, client ID mismatch: "
