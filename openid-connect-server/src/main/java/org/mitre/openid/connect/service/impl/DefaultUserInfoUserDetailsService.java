@@ -52,6 +52,7 @@ public class DefaultUserInfoUserDetailsService implements UserDetailsService {
 	 * 
 	 * @param repository the UserInfoRepository to set
 	 */
+	@Autowired
 	public DefaultUserInfoUserDetailsService(UserInfoRepository repository) {
 		this.repository = repository;
 	}
