@@ -37,7 +37,8 @@ public class TestDefaultUserInfoUserDetailsService {
 	@Before
 	public void prepare() {
 		userInfoRepository = Mockito.mock(UserInfoRepository.class);
-		service = new DefaultUserInfoUserDetailsService(userInfoRepository);
+		service = new DefaultUserInfoUserDetailsService();
+		service.setUserInfoRepository(userInfoRepository);
 		service.setAdmins(Lists.newArrayList(adminUsername));
 		
 		userInfoAdmin = new DefaultUserInfo();
