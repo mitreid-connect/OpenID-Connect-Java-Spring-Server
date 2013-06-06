@@ -96,12 +96,12 @@ public class BlacklistAPI {
 
 		}
 		catch (JsonSyntaxException e) {
-			logger.error("addNewBlacklistedSite failed due to JsonSyntaxException: " + e.getStackTrace().toString());
+			logger.error("addNewBlacklistedSite failed due to JsonSyntaxException: ", e);
 			m.put("code", HttpStatus.BAD_REQUEST);
 			m.put("errorMessage", "Could not save new blacklisted site. The server encountered a JSON syntax exception. Contact a system administrator for assistance.");
 			return "jsonErrorView";
 		} catch (IllegalStateException e) {
-			logger.error("addNewBlacklistedSite failed due to IllegalStateException: " + e.getStackTrace().toString());
+			logger.error("addNewBlacklistedSite failed due to IllegalStateException", e);
 			m.put("code", HttpStatus.BAD_REQUEST);
 			m.put("errorMessage", "Could not save new blacklisted site. The server encountered an IllegalStateException. Refresh and try again - if the problem persists, contact a system administrator for assistance.");
 			return "jsonErrorView";
@@ -128,12 +128,12 @@ public class BlacklistAPI {
 
 		}
 		catch (JsonSyntaxException e) {
-			logger.error("updateBlacklistedSite failed due to JsonSyntaxException: " + e.getStackTrace().toString());
+			logger.error("updateBlacklistedSite failed due to JsonSyntaxException", e);
 			m.put("code", HttpStatus.BAD_REQUEST);
 			m.put("errorMessage", "Could not update blacklisted site. The server encountered a JSON syntax exception. Contact a system administrator for assistance.");
 			return "jsonErrorView";
 		} catch (IllegalStateException e) {
-			logger.error("updateBlacklistedSite failed due to IllegalStateException: " + e.getStackTrace().toString());
+			logger.error("updateBlacklistedSite failed due to IllegalStateException", e);
 			m.put("code", HttpStatus.BAD_REQUEST);
 			m.put("errorMessage", "Could not update blacklisted site. The server encountered an IllegalStateException. Refresh and try again - if the problem persists, contact a system administrator for assistance.");
 			return "jsonErrorView";

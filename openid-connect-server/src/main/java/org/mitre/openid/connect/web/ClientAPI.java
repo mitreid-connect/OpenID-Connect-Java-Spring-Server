@@ -137,12 +137,12 @@ public class ClientAPI {
 			client = gson.fromJson(json, ClientDetailsEntity.class);
 		}
 		catch (JsonSyntaxException e) {
-			logger.error("apiAddClient failed due to JsonSyntaxException: " + e.getStackTrace().toString());
+			logger.error("apiAddClient failed due to JsonSyntaxException", e);
 			m.addAttribute("code", HttpStatus.BAD_REQUEST);
 			m.addAttribute("errorMessage", "Could not save new client. The server encountered a JSON syntax exception. Contact a system administrator for assistance.");
 			return "jsonErrorView";
 		} catch (IllegalStateException e) {
-			logger.error("apiAddClient failed due to IllegalStateException: " + e.getStackTrace().toString());
+			logger.error("apiAddClient failed due to IllegalStateException", e);
 			m.addAttribute("code", HttpStatus.BAD_REQUEST);
 			m.addAttribute("errorMessage", "Could not save new client. The server encountered an IllegalStateException. Refresh and try again - if the problem persists, contact a system administrator for assistance.");
 			return "jsonErrorView";
@@ -194,12 +194,12 @@ public class ClientAPI {
 			client = gson.fromJson(json, ClientDetailsEntity.class);
 		}
 		catch (JsonSyntaxException e) {
-			logger.error("apiUpdateClient failed due to JsonSyntaxException: " + e.getStackTrace().toString());
+			logger.error("apiUpdateClient failed due to JsonSyntaxException", e);
 			m.addAttribute("code", HttpStatus.BAD_REQUEST);
 			m.addAttribute("errorMessage", "Could not update client. The server encountered a JSON syntax exception. Contact a system administrator for assistance.");
 			return "jsonErrorView";
 		} catch (IllegalStateException e) {
-			logger.error("apiUpdateClient failed due to IllegalStateException: " + e.getStackTrace().toString());
+			logger.error("apiUpdateClient failed due to IllegalStateException", e);
 			m.addAttribute("code", HttpStatus.BAD_REQUEST);
 			m.addAttribute("errorMessage", "Could not update client. The server encountered an IllegalStateException. Refresh and try again - if the problem persists, contact a system administrator for assistance.");
 			return "jsonErrorView";

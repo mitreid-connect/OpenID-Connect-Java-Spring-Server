@@ -65,12 +65,12 @@ public class RequestObjectAuthorizationEndpoint {
 				query = uri.getRawQuery();//uri.toString();
 
 			} catch (ParseException e) {
-				logger.error("ParseException while attempting to authorize request object: " + e.getStackTrace().toString());
+				logger.error("ParseException while attempting to authorize request object", e);
 				mav.addObject("code", HttpStatus.BAD_REQUEST);
 				return "httpCodeView";
 
 			} catch (URISyntaxException e) {
-				logger.error("URISyntaxError while attempting to authorize request object: " + e.getStackTrace().toString());
+				logger.error("URISyntaxError while attempting to authorize request object", e);
 				mav.addObject("code", HttpStatus.BAD_REQUEST);
 				return "httpCodeView";
 			}

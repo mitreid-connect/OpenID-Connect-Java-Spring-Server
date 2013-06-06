@@ -146,7 +146,7 @@ public class ScopeAPI {
 
 			logger.error("createScope failed; JSON was invalid: " + json);
 			m.put("code", HttpStatus.BAD_REQUEST);
-			m.put("errorMessage", "Could not save new scope " + scope.getValue() + ". The scope service failed to return a saved entity.");
+			m.put("errorMessage", "Could not save new scope " + scope + ". The scope service failed to return a saved entity.");
 			return "jsonErrorView";
 
 		}

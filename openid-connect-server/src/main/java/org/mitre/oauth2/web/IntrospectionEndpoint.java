@@ -72,7 +72,7 @@ public class IntrospectionEndpoint {
 		try {
 			token = tokenServices.readAccessToken(tokenValue);
 		} catch (InvalidTokenException e) {
-			logger.error("Verify failed; AuthenticationException: " + e.getStackTrace().toString());
+			logger.error("Verify failed; AuthenticationException", e);
 			Map<String,Boolean> entity = ImmutableMap.of("valid", Boolean.FALSE);
 			model.addAttribute("entity", entity);
 			return "jsonEntityView";

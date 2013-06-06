@@ -92,12 +92,12 @@ public class WhitelistAPI {
 			whitelist = gson.fromJson(json, WhitelistedSite.class);
 
 		} catch (JsonParseException e) {
-			logger.error("addNewWhitelistedSite failed due to JsonParseException: " + e.getStackTrace().toString());
+			logger.error("addNewWhitelistedSite failed due to JsonParseException", e);
 			m.addAttribute("code", HttpStatus.BAD_REQUEST);
 			m.addAttribute("errorMessage", "Could not save new whitelisted site. The server encountered a JSON syntax exception. Contact a system administrator for assistance.");
 			return "jsonErrorView";
 		} catch (IllegalStateException e) {
-			logger.error("addNewWhitelistedSite failed due to IllegalStateException: " + e.getStackTrace().toString());
+			logger.error("addNewWhitelistedSite failed due to IllegalStateException", e);
 			m.addAttribute("code", HttpStatus.BAD_REQUEST);
 			m.addAttribute("errorMessage", "Could not save new whitelisted site. The server encountered an IllegalStateException. Refresh and try again - if the problem persists, contact a system administrator for assistance.");
 			return "jsonErrorView";
@@ -129,12 +129,12 @@ public class WhitelistAPI {
 			whitelist = gson.fromJson(json, WhitelistedSite.class);
 
 		} catch (JsonParseException e) {
-			logger.error("updateWhitelistedSite failed due to JsonParseException: " + e.getStackTrace().toString());
+			logger.error("updateWhitelistedSite failed due to JsonParseException", e);
 			m.put("code", HttpStatus.BAD_REQUEST);
 			m.put("errorMessage", "Could not update whitelisted site. The server encountered a JSON syntax exception. Contact a system administrator for assistance.");
 			return "jsonErrorView";
 		} catch (IllegalStateException e) {
-			logger.error("updateWhitelistedSite failed due to IllegalStateException: " + e.getStackTrace().toString());
+			logger.error("updateWhitelistedSite failed due to IllegalStateException", e);
 			m.put("code", HttpStatus.BAD_REQUEST);
 			m.put("errorMessage", "Could not update whitelisted site. The server encountered an IllegalStateException. Refresh and try again - if the problem persists, contact a system administrator for assistance.");
 			return "jsonErrorView";
