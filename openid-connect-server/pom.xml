@@ -23,14 +23,14 @@
     <parent>
     	<groupId>org.mitre</groupId>
     	<artifactId>openid-connect-parent</artifactId>
-    	<version>1.0.2</version>
+    	<version>1.0.3-SNAPSHOT</version>
     	<relativePath>..</relativePath>
     </parent>
     <dependencies>
 		<dependency>
 			<groupId>org.mitre</groupId>
 			<artifactId>openid-connect-common</artifactId>
-			<version>1.0.2</version>
+			<version>1.0.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
