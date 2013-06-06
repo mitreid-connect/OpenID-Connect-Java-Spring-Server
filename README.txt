@@ -21,7 +21,7 @@ Issues can be reported at:
 
 
 
-Authors: Justin Richer, Amanda Anganes, Michael Walsh, Michael Jett, Steve Moore, Mike Derryberry
+Authors: Justin Richer, Amanda Anganes, Michael Walsh, Michael Jett, Steve Moore, Mike Derryberry, William Kim
 
 
 
