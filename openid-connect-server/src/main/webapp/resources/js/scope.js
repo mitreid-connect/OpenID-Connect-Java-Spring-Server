@@ -80,7 +80,7 @@ var SystemScopeView = Backbone.View.extend({
     render:function (eventName) {
         this.$el.html(this.template(this.model.toJSON()));
 
-        this.$('.dynamically-registered').tooltip({title: 'This client was dynamically registered'});
+        this.$('.allow-dyn-reg').tooltip({title: 'This scope can be used by dynamically registered clients'});
         
         return this;
     },

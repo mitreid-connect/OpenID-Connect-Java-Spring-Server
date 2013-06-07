@@ -133,7 +133,8 @@ var ClientView = Backbone.View.extend({
     },
 
     render:function (eventName) {
-        this.$el.html(this.template(this.model.toJSON()));
+    	var json = {client: this.model.toJSON(), count: this.options.count};
+        this.$el.html(this.template(json));
 
         $('.scope-list', this.el).html(this.scopeTemplate({scopes: this.model.get('scope'), systemScopes: app.systemScopeList}));
         
@@ -230,7 +231,11 @@ var ClientListView = Backbone.View.extend({
         $(this.el).html($('#tmpl-client-table').html());
 
         _.each(this.model.models, function (client) {
-            $("#client-table",this.el).append(new ClientView({model:client}).render().el);
+            $("#client-table",this.el).append(
+            		new ClientView({
+            				model:client, 
+            				count:this.options.stats.get(client.get('id'))
+            			}).render().el);
         }, this);
 
         this.togglePlaceholder();
@@ -250,9 +255,13 @@ var ClientListView = Backbone.View.extend({
 	
     refreshTable:function() {
     	var _self = this;
-    	this.model.fetch({
+    	_self.model.fetch({
     		success: function() {
-    			_self.render();
+    			_self.options.stats.fetch({
+    				success: function () {
+    					_self.render();
+    				}
+    			});
     		}
     	});
     }

@@ -303,6 +303,12 @@ var BlackListWidgetView = ListWidgetView.extend({
 	
 });
 
+// Stats table
+
+var StatsModel = Backbone.Model.extend({
+	url: "api/stats/byclientid"
+});
+
 // Router
 var AppRouter = Backbone.Router.extend({
 
@@ -340,8 +346,10 @@ var AppRouter = Backbone.Router.extend({
         this.blackListList = new BlackListCollection();
         this.approvedSiteList = new ApprovedSiteCollection();
         this.systemScopeList = new SystemScopeCollection();
+        this.clientStats = new StatsModel(); 
 
-        this.clientListView = new ClientListView({model:this.clientList});
+        
+        this.clientListView = new ClientListView({model:this.clientList, stats: this.clientStats});
         this.whiteListListView = new WhiteListListView({model:this.whiteListList});
         this.approvedSiteListView = new ApprovedSiteListView({model:this.approvedSiteList});
         this.blackListListView = new BlackListListView({model:this.blackListList});
@@ -365,8 +373,12 @@ var AppRouter = Backbone.Router.extend({
         			success: function(collection, response) {
         				app.whiteListList.fetch({
         					success: function(collection, response) {
-        						var baseUrl = $.url($('base').attr('href'));                
-        						Backbone.history.start({pushState: true, root: baseUrl.attr('relative') + 'manage/'});
+        						app.clientStats.fetch({
+        							success: function(model, response) {
+		        						var baseUrl = $.url($('base').attr('href'));                
+		        						Backbone.history.start({pushState: true, root: baseUrl.attr('relative') + 'manage/'});
+        							}
+        						});
         					}
         				});
         			}

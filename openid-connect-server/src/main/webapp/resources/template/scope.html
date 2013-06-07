@@ -47,13 +47,18 @@
 
 <script type="text/html" id="tmpl-system-scope">
 	<td>
-		<% if (icon) { %>
-		<i class="icon-<%= icon %>"></i>
+		<% if (allowDynReg) { %>
+			<span class="label label-inverse allow-dyn-reg"><i class="icon-globe icon-white"></i></span>
 		<% } %>
 	</td>
 
     <td>
-        <%= value %>
+        <span class="badge badge-info">
+		<% if (icon) { %>
+			<i class="icon-<%= icon %> icon-white"></i>
+		<% } %>
+		<%= value %>
+		</span>
         <blockquote><small><%= description %></small></blockquote>
     </td>
 

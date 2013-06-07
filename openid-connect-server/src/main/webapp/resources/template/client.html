@@ -18,19 +18,24 @@
 
 <script type="text/html" id="tmpl-client">
 	<td>
-		<% if (dynamicallyRegistered) { %>
-		<span class="dynamically-registered"><i class="icon-globe"></i></span>
+		<% if (count) { %>
+			<span class="label label-info"><%= count %></span>
+		<% } else { %>
+			<span class="label label-important">0</span>
+		<% } %>
+		<% if (client.dynamicallyRegistered) { %>
+			<span class="label label-inverse dynamically-registered"><i class="icon-globe icon-white"></i></span>
 		<% } %>
 	</td>
 
     <td>
-        <%=clientId%>
+        <%=client.clientId%>
     </td>
 
     <td>
-        <%=clientName%>
-		<% if (clientDescription) { %>
-        <blockquote><small><%=clientDescription%></small></blockquote>
+        <%=client.clientName%>
+		<% if (client.clientDescription) { %>
+        <blockquote><small><%=client.clientDescription%></small></blockquote>
 		<% } %>
 		<div class="scope-list"></div>
         <!--expandable future information-->
