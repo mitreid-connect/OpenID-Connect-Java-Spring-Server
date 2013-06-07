@@ -386,7 +386,7 @@ var AppRouter = Backbone.Router.extend({
 
         $('#content').html(this.clientListView.render().el);
         this.clientListView.delegateEvents();
-    	setPageTitle("Mange Clients");
+    	setPageTitle("Manage Clients");
 
     },
 
@@ -555,7 +555,7 @@ var AppRouter = Backbone.Router.extend({
         this.blackListList.fetch({success:
         	function(collection, response, options) {
         		$('#content').html(view.render().el);
-            	setPageTitle("Mange Blacklist");
+            	setPageTitle("Manage Blacklist");
 
         	}
         });
@@ -565,12 +565,12 @@ var AppRouter = Backbone.Router.extend({
     	this.breadCrumbView.collection.reset();
     	this.breadCrumbView.collection.add([
              {text:"Home", href:""},
-             {text:"Mange System Scopes", href:"manage/#admin/scope"}
+             {text:"Manage System Scopes", href:"manage/#admin/scope"}
         ]);
     	
     	$('#content').html(this.systemScopeListView.render().el);
         this.systemScopeListView.delegateEvents();
-    	setPageTitle("Mange System Scopes");
+    	setPageTitle("Manage System Scopes");
 
     },
     
@@ -578,7 +578,7 @@ var AppRouter = Backbone.Router.extend({
     	this.breadCrumbView.collection.reset();
     	this.breadCrumbView.collection.add([
              {text:"Home", href:""},
-             {text:"Mange System Scopes", href:"manage/#admin/scope"},
+             {text:"Manage System Scopes", href:"manage/#admin/scope"},
              {text:"New", href:"manage/#admin/scope/new"}
         ]);
     	
@@ -594,7 +594,7 @@ var AppRouter = Backbone.Router.extend({
     	this.breadCrumbView.collection.reset();
     	this.breadCrumbView.collection.add([
              {text:"Home", href:""},
-             {text:"Mange System Scopes", href:"manage/#admin/scope"},
+             {text:"Manage System Scopes", href:"manage/#admin/scope"},
              {text:"Edit", href:"manage/#admin/scope/" + sid}
         ]);
 
