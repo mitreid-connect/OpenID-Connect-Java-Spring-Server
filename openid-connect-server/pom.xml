@@ -32,12 +32,6 @@
 			<artifactId>openid-connect-common</artifactId>
 			<version>1.0.3-SNAPSHOT</version>
 		</dependency>
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-all</artifactId>
-			<version>1.9.0</version>
-			<scope>test</scope>
-		</dependency>
 	</dependencies>
     <description>Reference implementation of OpenID Connect spec (http://openid.net/connect/).
     </description>
