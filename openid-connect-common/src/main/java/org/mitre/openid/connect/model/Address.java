@@ -48,6 +48,7 @@ public class Address {
 	 * @return the formatted address string
 	 */
 	@Basic
+	@Column(name = "formatted")
 	public String getFormatted() {
 		return formatted;
 	}
@@ -75,6 +76,7 @@ public class Address {
 	 * @return the locality
 	 */
 	@Basic
+	@Column(name = "locality")
 	public String getLocality() {
 		return locality;
 	}
@@ -88,6 +90,7 @@ public class Address {
 	 * @return the region
 	 */
 	@Basic
+	@Column(name = "region")
 	public String getRegion() {
 		return region;
 	}
@@ -115,6 +118,7 @@ public class Address {
 	 * @return the country
 	 */
 	@Basic
+	@Column(name = "country")
 	public String getCountry() {
 		return country;
 	}
@@ -130,6 +134,7 @@ public class Address {
 	 */
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@Column(name = "id")
 	public Long getId() {
 		return id;
 	}
