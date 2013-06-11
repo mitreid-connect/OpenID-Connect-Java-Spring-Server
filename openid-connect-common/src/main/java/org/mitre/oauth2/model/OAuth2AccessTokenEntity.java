@@ -55,7 +55,7 @@ import com.nimbusds.jwt.JWTParser;
  *
  */
 @Entity
-@Table(name="access_token")
+@Table(name = "access_token")
 @NamedQueries({
 	@NamedQuery(name = "OAuth2AccessTokenEntity.getByRefreshToken", query = "select a from OAuth2AccessTokenEntity a where a.refreshToken = :refreshToken"),
 	@NamedQuery(name = "OAuth2AccessTokenEntity.getByClient", query = "select a from OAuth2AccessTokenEntity a where a.client = :client"),
@@ -103,6 +103,7 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id")
 	public Long getId() {
 		return id;
 	}
@@ -183,6 +184,7 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	@Override
 	@Basic
 	@Temporal(javax.persistence.TemporalType.TIMESTAMP)
+	@Column(name = "expiration")
 	public Date getExpiration() {
 		return expiration;
 	}

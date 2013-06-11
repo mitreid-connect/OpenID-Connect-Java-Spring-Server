@@ -37,7 +37,7 @@ import org.springframework.security.oauth2.provider.code.AuthorizationRequestHol
  *
  */
 @Entity
-@Table(name="authorization_code")
+@Table(name = "authorization_code")
 @NamedQueries({
 	@NamedQuery(name = "AuthorizationCodeEntity.getByValue", query = "select a from AuthorizationCodeEntity a where a.code = :code")
 })
@@ -72,6 +72,7 @@ public class AuthorizationCodeEntity {
 	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id")
 	public Long getId() {
 		return id;
 	}
@@ -87,6 +88,7 @@ public class AuthorizationCodeEntity {
 	 * @return the code
 	 */
 	@Basic
+	@Column(name = "code")
 	public String getCode() {
 		return code;
 	}
