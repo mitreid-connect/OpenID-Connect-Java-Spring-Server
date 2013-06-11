@@ -31,7 +31,7 @@ import javax.persistence.Table;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 
 @Entity
-@Table(name="authentication_holder")
+@Table(name = "authentication_holder")
 @NamedQueries ({
 	@NamedQuery(name = "AuthenticationHolderEntity.getByAuthentication", query = "select a from AuthenticationHolderEntity a where a.authentication = :authentication")
 })
@@ -49,6 +49,7 @@ public class AuthenticationHolderEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id")
 	public Long getId() {
 		return id;
 	}
@@ -58,7 +59,7 @@ public class AuthenticationHolderEntity {
 	}
 
 	@Basic
-	@Column(name="owner_id")
+	@Column(name = "owner_id")
 	public Long getOwnerId() {
 		return ownerId;
 	}
@@ -69,6 +70,7 @@ public class AuthenticationHolderEntity {
 
 	@Lob
 	@Basic(fetch=FetchType.LAZY)
+	@Column(name = "authentication")
 	public OAuth2Authentication getAuthentication() {
 		return authentication;
 	}

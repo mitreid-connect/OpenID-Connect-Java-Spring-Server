@@ -58,7 +58,7 @@ import org.springframework.security.oauth2.provider.ClientDetails;
  * 
  */
 @Entity
-@Table(name="client_details")
+@Table(name = "client_details")
 @NamedQueries({
 	@NamedQuery(name = "ClientDetailsEntity.findAll", query = "SELECT c FROM ClientDetailsEntity c"),
 	@NamedQuery(name = "ClientDetailsEntity.getByClientId", query = "select c from ClientDetailsEntity c where c.clientId = :clientId")
@@ -218,6 +218,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id")
 	public Long getId() {
 		return id;
 	}
