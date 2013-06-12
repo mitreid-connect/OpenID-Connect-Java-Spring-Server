@@ -24,6 +24,7 @@ import java.security.Principal;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.mitre.openid.connect.client.OIDCAuthenticationToken;
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.service.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,16 +49,22 @@ public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 			// get our principal from the security context
 			Principal p = request.getUserPrincipal();
 
-			if (p != null && p.getName() != null) { // don't bother checking if we don't have a principal
-
-				// try to look up a user based on it
-				UserInfo user = userInfoService.getBySubject(p.getName());
-
-				// if we have one, inject it so views can use it
-				if (user != null) {
-					modelAndView.addObject("userInfo", user);
+			if (p instanceof OIDCAuthenticationToken) {
+				// if they're logging into this server from a remote OIDC server, pass through their user info
+				OIDCAuthenticationToken oidc = (OIDCAuthenticationToken) p;
+				modelAndView.addObject("userInfo", oidc.getUserInfo());
+			} else {
+				if (p != null && p.getName() != null) { // don't bother checking if we don't have a principal
+	
+					// try to look up a user based on the principal's name
+					UserInfo user = userInfoService.getBySubject(p.getName());
+	
+					// if we have one, inject it so views can use it
+					if (user != null) {
+						modelAndView.addObject("userInfo", user);
+					} 
 				}
-			}
+            }
 		}
 
 	}
