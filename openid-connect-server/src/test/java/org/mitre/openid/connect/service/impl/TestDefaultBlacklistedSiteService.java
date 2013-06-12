@@ -22,9 +22,14 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mitre.openid.connect.model.BlacklistedSite;
 import org.mitre.openid.connect.repository.BlacklistedSiteRepository;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
+
 import static org.mockito.Mockito.times;
 
 import com.google.common.collect.Sets;
@@ -33,6 +38,7 @@ import com.google.common.collect.Sets;
  * @author wkim
  *
  */
+@RunWith(MockitoJUnitRunner.class)
 public class TestDefaultBlacklistedSiteService {
 
 	private BlacklistedSite site1;
@@ -42,9 +48,13 @@ public class TestDefaultBlacklistedSiteService {
 	private String uri2 = "black2";
 	private String uri3 = "not-black";
 	
+	private Set<BlacklistedSite> blackListedSitesSet;
+	
+	@Mock
 	private BlacklistedSiteRepository mockRepository;
 	
-	private DefaultBlacklistedSiteService service;
+	@InjectMocks
+	private DefaultBlacklistedSiteService service = new DefaultBlacklistedSiteService();
 	
 	/**
 	 * @throws java.lang.Exception
@@ -58,12 +68,7 @@ public class TestDefaultBlacklistedSiteService {
 		site1.setUri(uri1);
 		site2.setUri(uri2);
 		
-		Set<BlacklistedSite> blackListedSitesSet = Sets.newHashSet(site1, site2);
-		
-		mockRepository = Mockito.mock(BlacklistedSiteRepository.class);
-		Mockito.when(mockRepository.getAll()).thenReturn(blackListedSitesSet);
-		
-		service = new DefaultBlacklistedSiteService(mockRepository);
+		blackListedSitesSet = Sets.newHashSet(site1, site2);
 	}
 
 	/**
@@ -71,6 +76,8 @@ public class TestDefaultBlacklistedSiteService {
 	 */
 	@Test
 	public void isBlacklisted_yes() {
+		
+		Mockito.when(mockRepository.getAll()).thenReturn(blackListedSitesSet);
 		
 		assertTrue(service.isBlacklisted(uri1));
 		assertTrue(service.isBlacklisted(uri2));
@@ -83,6 +90,8 @@ public class TestDefaultBlacklistedSiteService {
 	 */
 	@Test
 	public void isBlacklisted_no() {
+		
+		Mockito.when(mockRepository.getAll()).thenReturn(blackListedSitesSet);
 		
 		assertFalse(service.isBlacklisted(uri3));
 		
