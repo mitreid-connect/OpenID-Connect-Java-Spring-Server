@@ -41,6 +41,24 @@ public class DefaultBlacklistedSiteService implements BlacklistedSiteService {
 	@Autowired
 	private BlacklistedSiteRepository repository;
 
+	/**
+	 * Default Constructor
+	 */
+	public DefaultBlacklistedSiteService()
+	{
+		
+	}
+	
+	/**
+	 * Constructor for test harness.
+	 * 
+	 * @param repository
+	 */
+	public DefaultBlacklistedSiteService(BlacklistedSiteRepository repository)
+	{
+		this.repository = repository;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.service.BlacklistedSiteService#getAll()
 	 */
