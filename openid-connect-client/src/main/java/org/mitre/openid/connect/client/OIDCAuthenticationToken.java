@@ -35,7 +35,7 @@ public class OIDCAuthenticationToken extends AbstractAuthenticationToken {
 
 	private static final long serialVersionUID = 22100073066377804L;
 
-	private final Object principal;
+	private final ImmutableMap<String, String> principal;
 	private final String idTokenValue; // string representation of the id token
 	private final String accessTokenValue; // string representation of the access token
 	private final String refreshTokenValue; // string representation of the refresh token
