@@ -24,7 +24,7 @@ import java.security.Principal;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.mitre.openid.connect.client.OIDCAuthenticationToken;
+import org.mitre.openid.connect.model.OIDCAuthenticationToken;
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.service.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;

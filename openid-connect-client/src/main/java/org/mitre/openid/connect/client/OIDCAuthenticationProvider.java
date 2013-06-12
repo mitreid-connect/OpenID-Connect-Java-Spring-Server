@@ -18,6 +18,7 @@ package org.mitre.openid.connect.client;
 
 import java.util.Collection;
 
+import org.mitre.openid.connect.model.OIDCAuthenticationToken;
 import org.mitre.openid.connect.model.UserInfo;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.security.authentication.AuthenticationProvider;

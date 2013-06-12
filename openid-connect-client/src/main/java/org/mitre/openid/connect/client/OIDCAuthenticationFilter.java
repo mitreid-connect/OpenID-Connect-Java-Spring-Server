@@ -38,6 +38,7 @@ import org.mitre.openid.connect.client.service.ClientConfigurationService;
 import org.mitre.openid.connect.client.service.IssuerService;
 import org.mitre.openid.connect.client.service.ServerConfigurationService;
 import org.mitre.openid.connect.config.ServerConfiguration;
+import org.mitre.openid.connect.model.OIDCAuthenticationToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
