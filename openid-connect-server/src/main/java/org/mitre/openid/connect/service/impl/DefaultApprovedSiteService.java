@@ -42,22 +42,6 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 	@Autowired
 	private ApprovedSiteRepository approvedSiteRepository;
 
-	/**
-	 * Default constructor
-	 */
-	public DefaultApprovedSiteService() {
-
-	}
-
-	/**
-	 * Constructor for use in test harnesses.
-	 * 
-	 * @param repository
-	 */
-	public DefaultApprovedSiteService(ApprovedSiteRepository approvedSiteRepository) {
-		this.approvedSiteRepository = approvedSiteRepository;
-	}
-
 	@Override
 	public Collection<ApprovedSite> getAll() {
 		return approvedSiteRepository.getAll();
