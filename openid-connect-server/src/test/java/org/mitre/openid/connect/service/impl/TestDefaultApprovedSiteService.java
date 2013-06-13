@@ -9,15 +9,20 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.openid.connect.model.ApprovedSite;
 import org.mitre.openid.connect.repository.ApprovedSiteRepository;
 import org.mitre.openid.connect.service.ApprovedSiteService;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.test.annotation.Rollback;
 
 import com.google.common.collect.Sets;
 
+@RunWith(MockitoJUnitRunner.class)
 public class TestDefaultApprovedSiteService {
 
 	private ApprovedSite site1;
@@ -27,8 +32,12 @@ public class TestDefaultApprovedSiteService {
 	private ClientDetailsEntity client;
 	private final String clientId = "client";
 	
-	private ApprovedSiteService service;
+	@Mock
 	private ApprovedSiteRepository repository;
+	
+	@InjectMocks
+	private ApprovedSiteService service = new DefaultApprovedSiteService();
+	
 	
 	/**
 	 * Initialize the service and repository mock. Initialize a client and
@@ -55,9 +64,8 @@ public class TestDefaultApprovedSiteService {
 		site3.setUserId("user2");
 		site3.setClientId(clientId);
 		
-		repository = Mockito.mock(ApprovedSiteRepository.class);
-		
-		service = new DefaultApprovedSiteService(repository);
+		Mockito.reset(repository);
+
 	}
 	
 	/**
