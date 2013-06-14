@@ -85,12 +85,4 @@ public class DefaultUserInfoUserDetailsService implements UserDetailsService {
 		this.admins = admins;
 	}
 
-	public UserInfoRepository getUserInfoRepository() {
-		return repository;
-	}
-
-	public void setUserInfoRepository(UserInfoRepository repository) {
-		this.repository = repository;
-	}
-
 }
