@@ -9,20 +9,29 @@ import java.util.ArrayList;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mitre.openid.connect.model.DefaultUserInfo;
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.repository.UserInfoRepository;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import com.google.common.collect.Lists;
 
+@RunWith(MockitoJUnitRunner.class)
 public class TestDefaultUserInfoUserDetailsService {
 
-	private DefaultUserInfoUserDetailsService service;
+	@InjectMocks
+	private DefaultUserInfoUserDetailsService service = new DefaultUserInfoUserDetailsService();
+	
+	@Mock
 	private UserInfoRepository userInfoRepository;
+	
 	private UserInfo userInfoAdmin;
 	private UserInfo userInfoRegular;
 	private String adminUsername = "username";
@@ -36,9 +45,8 @@ public class TestDefaultUserInfoUserDetailsService {
 	 */
 	@Before
 	public void prepare() {
-		userInfoRepository = Mockito.mock(UserInfoRepository.class);
-		service = new DefaultUserInfoUserDetailsService();
-		service.setUserInfoRepository(userInfoRepository);
+		
+		
 		service.setAdmins(Lists.newArrayList(adminUsername));
 		
 		userInfoAdmin = new DefaultUserInfo();
