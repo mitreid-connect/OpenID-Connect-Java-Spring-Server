@@ -56,16 +56,7 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 	@Autowired
 	private BlacklistedSiteService blacklistedSiteService;
 
-	public DefaultOAuth2ClientDetailsEntityService() {
-
-	}
-
-	public DefaultOAuth2ClientDetailsEntityService(OAuth2ClientRepository clientRepository,
-			OAuth2TokenRepository tokenRepository) {
-		this.clientRepository = clientRepository;
-		this.tokenRepository = tokenRepository;
-	}
-
+	
 	@Override
 	public ClientDetailsEntity saveNewClient(ClientDetailsEntity client) {
 		if (client.getId() != null) { // if it's not null, it's already been saved, this is an error
