@@ -17,8 +17,9 @@
 package org.mitre.oauth2.service.impl;
 
 import static org.junit.Assert.*;
-import static org.junit.matchers.JUnitMatchers.*;
 import static org.hamcrest.CoreMatchers.*;
+
+import java.util.Set;
 
 
 import org.junit.Before;
@@ -121,11 +122,16 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		Mockito.when(client.getId()).thenReturn(null);
 
 		Mockito.when(client.isAllowRefresh()).thenReturn(true);
-		Mockito.when(client.getScope()).thenReturn(Sets.newHashSet("offline_access"));
+		
+		// scopes returned by client entities are Strings
+		@SuppressWarnings("unchecked")
+		Set<String> scopes = Mockito.mock(Set.class);
+		
+		Mockito.when(client.getScope()).thenReturn(scopes);
 
 		service.saveNewClient(client);
 
-		assertThat(client.getScope(), hasItem("offline_access"));
+		Mockito.verify(scopes).add("offline_access");
 	}
 
 	/**
@@ -138,11 +144,16 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		Mockito.when(client.getId()).thenReturn(null);
 
 		Mockito.when(client.isAllowRefresh()).thenReturn(false);
-		Mockito.when(client.getScope()).thenReturn(Sets.newHashSet(""));
+		
+		// scopes returned by client entities are Strings
+		@SuppressWarnings("unchecked")
+		Set<String> scopes = Mockito.mock(Set.class);
+		
+		Mockito.when(client.getScope()).thenReturn(scopes);
 
 		service.saveNewClient(client);
 
-		assertThat(client.getScope(), not(hasItem("offline_access")));
+		Mockito.verify(scopes).remove("offline_access");
 	}
 
 	@Test
@@ -151,7 +162,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		// null id
 		try {
 			service.loadClientByClientId(null);
-			fail("Expected an IllegalArgumentException.");
+			fail("Null client id. Expected an IllegalArgumentException.");
 		} catch (IllegalArgumentException e) {
 			assertThat(e, is(notNullValue()));
 		}
@@ -159,7 +170,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		// empty id
 		try {
 			service.loadClientByClientId("");
-			fail("Expected an IllegalArgumentException.");
+			fail("Empty client id. Expected an IllegalArgumentException.");
 		} catch (IllegalArgumentException e) {
 			assertThat(e, is(notNullValue()));
 		}
@@ -169,7 +180,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		Mockito.when(clientRepository.getClientByClientId(clientId)).thenReturn(null);
 		try {
 			service.loadClientByClientId(clientId);
-			fail("Expected an InvalidClientException.");
+			fail("Client id not found. Expected an InvalidClientException.");
 		} catch (InvalidClientException e) {
 			assertThat(e, is(notNullValue()));
 		}
@@ -259,11 +270,16 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		ClientDetailsEntity newClient = Mockito.mock(ClientDetailsEntity.class);
 
 		Mockito.when(newClient.isAllowRefresh()).thenReturn(true);
-		Mockito.when(newClient.getScope()).thenReturn(Sets.newHashSet("offline_access"));
+		
+		// scopes returned by client entities are Strings
+		@SuppressWarnings("unchecked")
+		Set<String> scopes = Mockito.mock(Set.class);
+		
+		Mockito.when(newClient.getScope()).thenReturn(scopes);
 
 		service.updateClient(oldClient, newClient);
-
-		assertThat(newClient.getScope(), hasItem("offline_access"));
+		
+		Mockito.verify(scopes).add("offline_access");
 	}
 
 	@Test
@@ -273,10 +289,15 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		ClientDetailsEntity newClient = Mockito.mock(ClientDetailsEntity.class);
 
 		Mockito.when(newClient.isAllowRefresh()).thenReturn(false);
-		Mockito.when(newClient.getScope()).thenReturn(Sets.newHashSet(""));
+
+		// scopes returned by client entities are Strings
+		@SuppressWarnings("unchecked")
+		Set<String> scopes = Mockito.mock(Set.class);
+		
+		Mockito.when(newClient.getScope()).thenReturn(scopes);
 
 		service.updateClient(oldClient, newClient);
-
-		assertThat(newClient.getScope(), not(hasItem("offline_access")));
+		
+		Mockito.verify(scopes).remove("offline_access");
 	}
 }
