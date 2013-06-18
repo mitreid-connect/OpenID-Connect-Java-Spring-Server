@@ -38,22 +38,6 @@ public class DefaultWhitelistedSiteService implements WhitelistedSiteService {
 	@Autowired
 	private WhitelistedSiteRepository repository;
 
-	/**
-	 * Default constructor
-	 */
-	public DefaultWhitelistedSiteService() {
-
-	}
-
-	/**
-	 * Constructor for use in test harnesses.
-	 * 
-	 * @param repository
-	 */
-	public DefaultWhitelistedSiteService(WhitelistedSiteRepository whitelistedSiteRepository) {
-		this.repository = whitelistedSiteRepository;
-	}
-
 	@Override
 	public WhitelistedSite getById(Long id) {
 		return repository.getById(id);
