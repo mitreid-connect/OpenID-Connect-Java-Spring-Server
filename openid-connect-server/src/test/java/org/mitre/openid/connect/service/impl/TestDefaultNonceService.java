@@ -71,15 +71,15 @@ public class TestDefaultNonceService {
 	@Test
 	public void create() {
 		
-		Date start = new Date();
+		Date start = new Date(System.currentTimeMillis() - 100); // time skew of 100ms on either side
 		
 		Nonce nonce = service.create(clientId, value1);
 		
-		Date end = new Date();
+		Date end = new Date(System.currentTimeMillis() + 100); // time skew of 100ms on either side
 		
 		assertEquals(clientId, nonce.getClientId());
 		assertEquals(value1, nonce.getValue());
-		assertTrue(nonce.getUseDate().after(start) && nonce.getUseDate().before(end));
+		assertTrue(nonce.getUseDate().after(start) && nonce.getUseDate().before(end)); // make sure the date is within the right range (within 100ms on either side)
 		
 		// Check expiration date.
 		assertEquals(new DateTime(nonce.getUseDate()).plus(nonceStorageDuration), new DateTime(nonce.getExpireDate()));
