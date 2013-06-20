@@ -336,44 +336,6 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		}
 	}
 
-	/**
-	 * Get a builder object for this class (for tests)
-	 * @return
-	 */
-	public static DefaultOAuth2ProviderTokenServicesBuilder makeBuilder() {
-		return new DefaultOAuth2ProviderTokenServicesBuilder();
-	}
-
-	/**
-	 * Builder class for test harnesses.
-	 */
-	public static class DefaultOAuth2ProviderTokenServicesBuilder {
-		private DefaultOAuth2ProviderTokenService instance;
-
-		private DefaultOAuth2ProviderTokenServicesBuilder() {
-			instance = new DefaultOAuth2ProviderTokenService();
-		}
-
-		public DefaultOAuth2ProviderTokenServicesBuilder setTokenRepository(OAuth2TokenRepository tokenRepository) {
-			instance.tokenRepository = tokenRepository;
-			return this;
-		}
-
-		public DefaultOAuth2ProviderTokenServicesBuilder setClientDetailsService(ClientDetailsEntityService clientDetailsService) {
-			instance.clientDetailsService = clientDetailsService;
-			return this;
-		}
-
-		public DefaultOAuth2ProviderTokenServicesBuilder setTokenEnhancer(TokenEnhancer tokenEnhancer) {
-			instance.tokenEnhancer = tokenEnhancer;
-			return this;
-		}
-
-		public OAuth2TokenEntityService finish() {
-			return instance;
-		}
-	}
-
 	/* (non-Javadoc)
 	 * @see org.mitre.oauth2.service.OAuth2TokenEntityService#saveAccessToken(org.mitre.oauth2.model.OAuth2AccessTokenEntity)
 	 */
