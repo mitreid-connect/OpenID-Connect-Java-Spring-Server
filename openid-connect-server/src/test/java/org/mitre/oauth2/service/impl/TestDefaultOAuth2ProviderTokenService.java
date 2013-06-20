@@ -16,17 +16,30 @@
  ******************************************************************************/
 package org.mitre.oauth2.service.impl;
 
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mitre.oauth2.model.AuthenticationHolderEntity;
+import org.mitre.oauth2.model.ClientDetailsEntity;
+import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
+import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
 import org.mitre.oauth2.repository.AuthenticationHolderRepository;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
+import org.springframework.security.oauth2.provider.AuthorizationRequest;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
+
+import com.google.common.collect.Sets;
 
 /**
  * @author wkim
@@ -34,6 +47,10 @@ import org.springframework.security.oauth2.provider.token.TokenEnhancer;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class TestDefaultOAuth2ProviderTokenService {
+
+	// Test Fixture:
+	private OAuth2Authentication authentication;
+	private ClientDetailsEntity client;
 
 	@Mock
 	private OAuth2TokenRepository tokenRepository;
@@ -50,9 +67,88 @@ public class TestDefaultOAuth2ProviderTokenService {
 	@InjectMocks
 	private DefaultOAuth2ProviderTokenService service;
 
-	@Test
-	public void test() {
-		fail("Not yet implemented");
+	/**
+	 * Set up a mock authentication and mock client to work with.
+	 */
+	@Before
+	public void prepare() {
+		Mockito.reset(tokenRepository, authenticationHolderRepository, clientDetailsService, tokenEnhancer);
+
+		authentication = Mockito.mock(OAuth2Authentication.class);
+		Mockito.when(authentication.getAuthorizationRequest()).thenReturn(Mockito.mock(AuthorizationRequest.class));
+
+		client = Mockito.mock(ClientDetailsEntity.class);
+		Mockito.when(clientDetailsService.loadClientByClientId(Mockito.anyString())).thenReturn(client);
 	}
 
+	/**
+	 * Tests exception handling for null authentication or null authorization.
+	 */
+	@Test
+	public void createAccessToken_nullAuth() {
+
+		Mockito.when(authentication.getAuthorizationRequest()).thenReturn(null);
+
+		try {
+			service.createAccessToken(null);
+			fail("Authentication parameter is null. Excpected a AuthenticationCredentialsNotFoundException.");
+		} catch (AuthenticationCredentialsNotFoundException e) {
+			assertThat(e, is(notNullValue()));
+		}
+
+		try {
+			service.createAccessToken(authentication);
+			fail("AuthorizationRequest is null. Excpected a AuthenticationCredentialsNotFoundException.");
+		} catch (AuthenticationCredentialsNotFoundException e) {
+			assertThat(e, is(notNullValue()));
+		}
+	}
+
+	/**
+	 * Tests exception handling for clients not found.
+	 */
+	@Test(expected = InvalidClientException.class)
+	public void createAccessToken_nullClient() {
+
+		Mockito.when(clientDetailsService.loadClientByClientId(Mockito.anyString())).thenReturn(null);
+
+		service.createAccessToken(authentication);
+	}
+
+	/**
+	 * Tests the creation of access tokens for clients that are not allowed to have refresh tokens.
+	 */
+	@Test
+	public void createAccessToken_noRefresh() {
+
+		OAuth2AccessTokenEntity token = service.createAccessToken(authentication);
+
+		Mockito.verify(clientDetailsService).loadClientByClientId(Mockito.anyString());
+		Mockito.verify(authenticationHolderRepository).save(Mockito.any(AuthenticationHolderEntity.class));
+		Mockito.verify(tokenEnhancer).enhance(token, authentication);
+		Mockito.verify(tokenRepository).saveAccessToken(token);
+
+		Mockito.verify(tokenRepository, Mockito.never()).saveRefreshToken(Mockito.any(OAuth2RefreshTokenEntity.class));
+		assertThat(token.getRefreshToken(), is(nullValue()));
+	}
+
+	/**
+	 * Tests the creation of access tokens for clients that are allowed to have refresh tokens.
+	 */
+	@Test
+	public void createAccessToken_yesRefresh() {
+
+		AuthorizationRequest clientAuth = authentication.getAuthorizationRequest();
+		Mockito.when(clientAuth.getScope()).thenReturn(Sets.newHashSet("offline_access"));
+		Mockito.when(client.isAllowRefresh()).thenReturn(true);
+
+		OAuth2AccessTokenEntity token = service.createAccessToken(authentication);
+
+		// Note: a refactor may be appropriate to only save refresh tokens once to the repository during creation.
+		Mockito.verify(tokenRepository, Mockito.atLeastOnce()).saveRefreshToken(Mockito.any(OAuth2RefreshTokenEntity.class));
+		assertThat(token.getRefreshToken(), is(notNullValue()));
+
+	}
+
+	// TODO check expiration dates
 }
