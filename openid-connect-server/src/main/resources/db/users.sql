@@ -12,21 +12,17 @@ START TRANSACTION;
 
 INSERT INTO users_TEMP (username, password, enabled) VALUES
   ('admin','password',true),
-  ('cheezcat','password',true),
   ('user','password',true);
 
 
 INSERT INTO authorities_TEMP (username, authority) VALUES
   ('admin','ROLE_ADMIN'),
-  ('cheezcat','ROLE_ADMIN'),
   ('admin','ROLE_USER'),
-  ('cheezcat','ROLE_USER'),
   ('user','ROLE_USER');
     
 -- By default, the username column here has to match the username column in the users table, above
 INSERT INTO user_info_TEMP (sub, preferred_username, name, email, email_verified) VALUES
   ('admin','admin','Demo Admin','admin@example.com',false),
-  ('cheezcat','cheezcat','Cheezburger Cat','lol@example.com',false),
   ('user','user','Demo User','user@example.com',false);
 
  
