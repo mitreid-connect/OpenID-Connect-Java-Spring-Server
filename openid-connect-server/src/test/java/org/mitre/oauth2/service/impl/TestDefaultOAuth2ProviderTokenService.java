@@ -19,6 +19,8 @@ package org.mitre.oauth2.service.impl;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
+import java.util.Date;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -79,6 +81,11 @@ public class TestDefaultOAuth2ProviderTokenService {
 
 		client = Mockito.mock(ClientDetailsEntity.class);
 		Mockito.when(clientDetailsService.loadClientByClientId(Mockito.anyString())).thenReturn(client);
+
+		// by default in tests, allow refresh tokens
+		AuthorizationRequest clientAuth = authentication.getAuthorizationRequest();
+		Mockito.when(clientAuth.getScope()).thenReturn(Sets.newHashSet("offline_access"));
+		Mockito.when(client.isAllowRefresh()).thenReturn(true);
 	}
 
 	/**
@@ -121,6 +128,8 @@ public class TestDefaultOAuth2ProviderTokenService {
 	@Test
 	public void createAccessToken_noRefresh() {
 
+		Mockito.when(client.isAllowRefresh()).thenReturn(false);
+
 		OAuth2AccessTokenEntity token = service.createAccessToken(authentication);
 
 		Mockito.verify(clientDetailsService).loadClientByClientId(Mockito.anyString());
@@ -150,5 +159,34 @@ public class TestDefaultOAuth2ProviderTokenService {
 
 	}
 
-	// TODO check expiration dates
+	/**
+	 * Checks to see that the expiration date of new tokens is being set accurately to within some delta for time skew.
+	 */
+	@Test
+	public void createAccessToken_expiration() {
+
+		Integer accessTokenValiditySeconds = 3600;
+		Integer refreshTokenValiditySeconds = 600;
+		
+		long delta = 100L;
+
+		Mockito.when(client.getAccessTokenValiditySeconds()).thenReturn(accessTokenValiditySeconds);
+		Mockito.when(client.getRefreshTokenValiditySeconds()).thenReturn(refreshTokenValiditySeconds);
+
+		long start = System.currentTimeMillis();
+		OAuth2AccessTokenEntity token = service.createAccessToken(authentication);
+		long end = System.currentTimeMillis();
+
+		// Accounting for some delta for time skew on either side.
+		Date lowerBoundAccessTokens = new Date(start + (accessTokenValiditySeconds * 1000L) - delta);
+		Date upperBoundAccessTokens = new Date(end + (accessTokenValiditySeconds * 1000L) + delta);
+		Date lowerBoundRefreshTokens = new Date(start + (refreshTokenValiditySeconds * 1000L) - delta);
+		Date upperBoundRefreshTokens = new Date(end + (refreshTokenValiditySeconds * 1000L) + delta);
+
+		assertTrue(token.getExpiration().after(lowerBoundAccessTokens) && token.getExpiration().before(upperBoundAccessTokens));
+		assertTrue(token.getRefreshToken().getExpiration().after(lowerBoundRefreshTokens) && token.getRefreshToken().getExpiration().before(upperBoundRefreshTokens));
+	}
+	
+	// TODO verify JWT stuff in createAccessToken().
+
 }
