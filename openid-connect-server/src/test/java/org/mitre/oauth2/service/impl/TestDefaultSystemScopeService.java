@@ -19,14 +19,19 @@ package org.mitre.oauth2.service.impl;
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
 
+import java.util.Set;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.repository.SystemScopeRepository;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+
+import com.google.common.collect.Sets;
 
 /**
  * @author wkim
@@ -34,25 +39,110 @@ import org.mockito.runners.MockitoJUnitRunner;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class TestDefaultSystemScopeService {
+
+	// test fixture
+	private SystemScope defaultDynScope1;
+	private SystemScope defaultDynScope2;
+	private SystemScope defaultScope1;
+	private SystemScope defaultScope2;
+	private SystemScope dynScope1;
+	private SystemScope extraScope1;
 	
-	// TODO test fixtures
+	private String defaultDynScope1String = "defaultDynScope1";
+	private String defaultDynScope2String = "defaultDynScope2";
+	private String defaultScope1String = "defaultScope1";
+	private String defaultScope2String = "defaultScope2";
+	private String dynScope1String = "dynScope1";
+	private String extraScope1String = "extraScope1";
+
+	private Set<SystemScope> allScopes;
+	private Set<String> allScopeStrings;
 	
 	@Mock
 	private SystemScopeRepository repository;
-	
+
 	@InjectMocks
 	private DefaultSystemScopeService service;
-	
+
+	/**
+	 * Assumes these SystemScope defaults: isDefaultScope=false and isAllowDynReg=false.
+	 */
 	@Before
 	public void prepare() {
-		Mockito.reset(repository);
 		
-		// TODO set up test fixtures
+		Mockito.reset(repository);
+
+		// two default and dynamically registerable scopes
+		defaultDynScope1 = new SystemScope(defaultDynScope1String);
+		defaultDynScope2 = new SystemScope(defaultDynScope2String);
+		defaultDynScope1.setAllowDynReg(true);
+		defaultDynScope2.setAllowDynReg(true);
+		defaultDynScope1.setDefaultScope(true);
+		defaultDynScope2.setDefaultScope(true);
+
+		// two strictly default scopes (isAllowDynReg false)
+		defaultScope1 = new SystemScope(defaultScope1String);
+		defaultScope2 = new SystemScope(defaultScope2String);
+		defaultScope1.setDefaultScope(true);
+		defaultScope2.setDefaultScope(true);
+		
+		// one strictly dynamically registerable scope (isDefault false)
+		dynScope1 = new SystemScope(dynScope1String);
+		dynScope1.setAllowDynReg(true);
+		
+		// extraScope1 : extra scope that is neither (defaults to false/false)
+		extraScope1 = new SystemScope(extraScope1String);
+		
+		allScopes = Sets.newHashSet(defaultDynScope1, defaultDynScope2, defaultScope1, defaultScope2, dynScope1, extraScope1);
+		allScopeStrings = Sets.newHashSet(defaultDynScope1String, defaultDynScope2String, defaultScope1String, defaultScope2String, dynScope1String, extraScope1String);
+		
+		Mockito.when(repository.getAll()).thenReturn(allScopes);
 	}
 
 	@Test
-	public void test() {
-		assertTrue("Not yet implemented", true);
+	public void getAll() {
+
+		assertThat(service.getAll(), equalTo(allScopes));
 	}
 
+	@Test
+	public void getDefaults() {
+		
+		Set<SystemScope> defaults = Sets.newHashSet(defaultDynScope1, defaultDynScope2, defaultScope1, defaultScope2);
+		
+		assertThat(service.getDefaults(), equalTo(defaults));
+	}
+	
+	@Test
+	public void getDynReg() {
+		
+		Set<SystemScope> dynReg = Sets.newHashSet(defaultDynScope1, defaultDynScope2, dynScope1);
+		
+		assertThat(service.getDynReg(), equalTo(dynReg));
+	}
+
+	@Test
+	public void fromStrings() {
+		
+		// check null condition
+		assertThat(service.fromStrings(null), is(nullValue()));
+		
+		// reinitialize the set of SystemScope objects to clear boolean flags..
+		allScopes = Sets.newHashSet();
+		for (String scope : allScopeStrings) {
+			allScopes.add(new SystemScope(scope));
+		}
+		
+		assertThat(service.fromStrings(allScopeStrings), equalTo(allScopes));
+	}
+	
+	@Test
+	public void toStrings() {
+		
+		// check null condition
+		assertThat(service.toStrings(null), is(nullValue()));
+		
+		assertThat(service.toStrings(allScopes), equalTo(allScopeStrings));
+	}
+	
 }
