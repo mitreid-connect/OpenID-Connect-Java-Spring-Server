@@ -120,12 +120,6 @@
 
 	</oauth:authorization-server>
 
-	<bean id="chainedTokenGranter">
-		<constructor-arg ref="defaultOAuth2ProviderTokenService"/>
-		<constructor-arg ref="defaultOAuth2ClientDetailsEntityService"/>
-		<constructor-arg ref="oAuth2RequestFactory"/>
-	</bean>
-
 	<bean id="oauthAccessDeniedHandler" class="org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler" />
 
 	<bean id="clientCredentialsTokenEndpointFilter" class="org.springframework.security.oauth2.provider.client.ClientCredentialsTokenEndpointFilter">
@@ -150,8 +144,6 @@
 		<constructor-arg type="int" index="2" value="0"/>
 		<constructor-arg type="int" index="3" value="0"/>
 	</bean>
-	
-	<!-- <bean id="oAuth2RequestManager" class="org.mitre.openid.connect.ConnectOAuth2RequestFactory" /> -->
 	
 	<bean id="clientAssertiontokenEndpointFilter" class="org.mitre.openid.connect.assertion.JwtBearerClientAssertionTokenEndpointFilter">
 		<property name="authenticationManager" ref="clientAssertionAuthenticationManager" />

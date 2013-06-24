@@ -10,6 +10,7 @@ import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.common.exceptions.InvalidScopeException;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
@@ -17,6 +18,7 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2RequestFactory;
 import org.springframework.security.oauth2.provider.TokenRequest;
 import org.springframework.security.oauth2.provider.token.AbstractTokenGranter;
+import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Sets;
 
@@ -24,7 +26,7 @@ import com.google.common.collect.Sets;
  * @author jricher
  *
  */
-//@Component("chainedTokenGranter")
+@Component("chainedTokenGranter")
 public class ChainedTokenGranter extends AbstractTokenGranter {
 
 	private static final String grantType = "urn:ietf:params:oauth:grant_type:redelegate";
@@ -39,7 +41,7 @@ public class ChainedTokenGranter extends AbstractTokenGranter {
 	 * @param clientDetailsService
 	 * @param grantType
 	 */
-	//@Autowired
+	@Autowired
 	public ChainedTokenGranter(OAuth2TokenEntityService tokenServices, ClientDetailsEntityService clientDetailsService, OAuth2RequestFactory requestFactory) {
 		super(tokenServices, clientDetailsService, requestFactory, grantType);
 		this.tokenServices = tokenServices;
