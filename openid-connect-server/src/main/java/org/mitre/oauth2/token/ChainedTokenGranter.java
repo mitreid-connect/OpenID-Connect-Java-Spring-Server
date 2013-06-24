@@ -10,14 +10,13 @@ import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.common.exceptions.InvalidScopeException;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
-import org.springframework.security.oauth2.provider.OAuth2Request;
+import org.springframework.security.oauth2.provider.OAuth2RequestFactory;
+import org.springframework.security.oauth2.provider.TokenRequest;
 import org.springframework.security.oauth2.provider.token.AbstractTokenGranter;
-import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Sets;
 
@@ -25,7 +24,7 @@ import com.google.common.collect.Sets;
  * @author jricher
  *
  */
-@Component("chainedTokenGranter")
+//@Component("chainedTokenGranter")
 public class ChainedTokenGranter extends AbstractTokenGranter {
 
 	private static final String grantType = "urn:ietf:params:oauth:grant_type:redelegate";
@@ -33,29 +32,31 @@ public class ChainedTokenGranter extends AbstractTokenGranter {
 	// keep down-cast versions so we can get to the right queries
 	private OAuth2TokenEntityService tokenServices;
 	
+	
+	
 	/**
 	 * @param tokenServices
 	 * @param clientDetailsService
 	 * @param grantType
 	 */
-	@Autowired
-	public ChainedTokenGranter(OAuth2TokenEntityService tokenServices, ClientDetailsEntityService clientDetailsService) {
-		super(tokenServices, clientDetailsService, grantType);
+	//@Autowired
+	public ChainedTokenGranter(OAuth2TokenEntityService tokenServices, ClientDetailsEntityService clientDetailsService, OAuth2RequestFactory requestFactory) {
+		super(tokenServices, clientDetailsService, requestFactory, grantType);
 		this.tokenServices = tokenServices;
 	}
-
+	
 	/* (non-Javadoc)
      * @see org.springframework.security.oauth2.provider.token.AbstractTokenGranter#getOAuth2Authentication(org.springframework.security.oauth2.provider.AuthorizationRequest)
      */
     @Override
-    protected OAuth2Authentication getOAuth2Authentication(OAuth2Request authorizationRequest) throws AuthenticationException, InvalidTokenException {
+    protected OAuth2Authentication getOAuth2Authentication(TokenRequest tokenRequest) throws AuthenticationException, InvalidTokenException {
     	// read and load up the existing token
-	    String incomingTokenValue = authorizationRequest.getRequestParameters().get("token");
+	    String incomingTokenValue = tokenRequest.getRequestParameters().get("token");
 	    OAuth2AccessTokenEntity incomingToken = tokenServices.readAccessToken(incomingTokenValue);
 	    
 	    // check for scoping in the request, can't up-scope with a chained request
 	    Set<String> approvedScopes = incomingToken.getScope();
-	    Set<String> requestedScopes = authorizationRequest.getScope();
+	    Set<String> requestedScopes = tokenRequest.getScope();
 	    
 	    if (requestedScopes == null) {
 	    	requestedScopes = new HashSet<String>();
@@ -71,21 +72,19 @@ public class ChainedTokenGranter extends AbstractTokenGranter {
 	    // if our scopes are a valid subset of what's allowed, we can continue
 	    if (approvedScopes.containsAll(requestedScopes)) {
 
-	    	// build an appropriate auth request to hand to the token services layer
-	    	authorizationRequest.setApproved(true);
 	    	if (requestedScopes.isEmpty()) {
 	    		// if there are no scopes, inherit the original scopes from the token
-	    		authorizationRequest.setScope(approvedScopes);
+	    		tokenRequest.setScope(approvedScopes);
 	    	} else {
 	    		// if scopes were asked for, give only the subset of scopes requested
 	    		// this allows safe downscoping
-	    		authorizationRequest.setScope(Sets.intersection(requestedScopes, approvedScopes));
+	    		tokenRequest.setScope(Sets.intersection(requestedScopes, approvedScopes));
 	    	}
 		    
 		    // NOTE: don't revoke the existing access token
 
 	    	// create a new access token
-	    	OAuth2Authentication authentication = new OAuth2Authentication(authorizationRequest, incomingToken.getAuthenticationHolder().getAuthentication().getUserAuthentication()); 
+	    	OAuth2Authentication authentication = new OAuth2Authentication(getRequestFactory().createStoredOAuth2Request(tokenRequest), incomingToken.getAuthenticationHolder().getAuthentication().getUserAuthentication()); 
 	    	
 	    	return authentication;
 	    	

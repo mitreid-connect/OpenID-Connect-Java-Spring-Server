@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
-import org.springframework.security.oauth2.provider.OAuth2Request;
+import org.springframework.security.oauth2.provider.StoredOAuth2Request;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.stereotype.Service;
 
@@ -62,7 +62,7 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 	public OAuth2AccessToken enhance(OAuth2AccessToken accessToken,	OAuth2Authentication authentication) {
 		
 		OAuth2AccessTokenEntity token = (OAuth2AccessTokenEntity) accessToken;
-		OAuth2Request originalAuthRequest = authentication.getAuthorizationRequest();
+		StoredOAuth2Request originalAuthRequest = authentication.getStoredRequest();
 		
 		String clientId = originalAuthRequest.getClientId();
 		ClientDetailsEntity client = clientService.loadClientByClientId(clientId);

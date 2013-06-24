@@ -23,19 +23,19 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.security.oauth2.common.util.OAuth2Utils;
+import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.ClientDetails;
-import org.springframework.security.oauth2.provider.OAuth2Request;
-import org.springframework.security.oauth2.provider.OAuth2RequestFactory;
+import org.springframework.security.oauth2.provider.DefaultOAuth2RequestFactory;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
 import com.nimbusds.jose.util.JSONObjectUtils;
 import com.nimbusds.jwt.SignedJWT;
 
-@Component("oAuth2RequestManager")
-public class ConnectOAuth2RequestManager implements OAuth2RequestFactory {
+@Component("oAuth2RequestFactory")
+public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 
-	private static Logger logger = LoggerFactory.getLogger(ConnectOAuth2RequestManager.class);
+	private static Logger logger = LoggerFactory.getLogger(ConnectOAuth2RequestFactory.class);
 	
 	@Autowired
 	private NonceService nonceService;
@@ -52,7 +52,8 @@ public class ConnectOAuth2RequestManager implements OAuth2RequestFactory {
 	 * @param clientDetailsService
 	 * @param nonceService
 	 */
-	public ConnectOAuth2RequestManager(ClientDetailsEntityService clientDetailsService, NonceService nonceService) {
+	public ConnectOAuth2RequestFactory(ClientDetailsEntityService clientDetailsService, NonceService nonceService) {
+		super(clientDetailsService);
 		this.clientDetailsService = clientDetailsService;
 		this.nonceService = nonceService;
 	}
@@ -60,12 +61,12 @@ public class ConnectOAuth2RequestManager implements OAuth2RequestFactory {
 	/**
 	 * Default empty constructor
 	 */
-	public ConnectOAuth2RequestManager() {
-		
+	public ConnectOAuth2RequestFactory() {
+		super(null);
 	}
 
 	@Override
-	public OAuth2Request createOAuth2Request(Map<String, String> inputParams) {
+	public AuthorizationRequest createAuthorizationRequest(Map<String, String> inputParams) {
 
 		Map<String, String> parameters = processRequestObject(inputParams);
 		
@@ -78,12 +79,12 @@ public class ConnectOAuth2RequestManager implements OAuth2RequestFactory {
 		
 		String requestNonce = parameters.get("nonce");
 		
-		OAuth2Request request = new OAuth2Request(parameters, Collections.<String, String> emptyMap(), 
-				parameters.get(OAuth2Request.CLIENT_ID), 
-				OAuth2Utils.parseParameterList(parameters.get(OAuth2Request.SCOPE)), null,
-				null, false, parameters.get(OAuth2Request.STATE), 
-				parameters.get(OAuth2Request.REDIRECT_URI), 
-				OAuth2Utils.parseParameterList(parameters.get(OAuth2Request.RESPONSE_TYPE)));
+		AuthorizationRequest request = new AuthorizationRequest(parameters, Collections.<String, String> emptyMap(), 
+				parameters.get(OAuth2Utils.CLIENT_ID), 
+				OAuth2Utils.parseParameterList(parameters.get(OAuth2Utils.SCOPE)), null,
+				null, false, parameters.get(OAuth2Utils.STATE), 
+				parameters.get(OAuth2Utils.REDIRECT_URI), 
+				OAuth2Utils.parseParameterList(parameters.get(OAuth2Utils.RESPONSE_TYPE)));
 		
 		//Only process if the user is authenticated. If the user is not authenticated yet, this 
 		//code will be called a second time once the user is redirected from the login page back 

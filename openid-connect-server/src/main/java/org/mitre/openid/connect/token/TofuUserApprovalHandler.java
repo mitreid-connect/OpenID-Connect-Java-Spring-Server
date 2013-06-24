@@ -27,9 +27,9 @@ import org.mitre.openid.connect.service.ApprovedSiteService;
 import org.mitre.openid.connect.service.WhitelistedSiteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
-import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.security.oauth2.provider.approval.UserApprovalHandler;
 import org.springframework.stereotype.Component;
 
@@ -66,17 +66,17 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 	
 
 	@Override
-	public boolean isApproved(OAuth2Request oAuthRequest, Authentication userAuthentication) {
+	public boolean isApproved(AuthorizationRequest authorizationRequest, Authentication userAuthentication) {
 		
 		// if this request is already approved, pass that info through
 		// (this flag may be set by updateBeforeApproval, which can also do funny things with scopes, etc)
-		if (oAuthRequest.isApproved()) {
+		if (authorizationRequest.isApproved()) {
 			return true;
 		} else {
 			// if not, check to see if the user has approved it
 			
 			// TODO: make parameter name configurable?
-			boolean approved = Boolean.parseBoolean(oAuthRequest.getApprovalParameters().get("user_oauth_approval"));
+			boolean approved = Boolean.parseBoolean(authorizationRequest.getApprovalParameters().get("user_oauth_approval"));
 	
 			return userAuthentication.isAuthenticated() && approved;
 		}
@@ -89,19 +89,19 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 	 * 
 	 * Otherwise the user will be directed to the approval page and can make their own decision.
 	 * 
-	 * @param oAuthRequest	the incoming authorization request	
+	 * @param authorizationRequest	the incoming authorization request	
 	 * @param userAuthentication	the Principal representing the currently-logged-in user
 	 * 
 	 * @return 						the updated AuthorizationRequest
 	 */
 	@Override
-	public OAuth2Request checkForPreApproval(OAuth2Request oAuthRequest, Authentication userAuthentication) {
+	public AuthorizationRequest checkForPreApproval(AuthorizationRequest authorizationRequest, Authentication userAuthentication) {
 		
 		//First, check database to see if the user identified by the userAuthentication has stored an approval decision
 		
 		//getName may not be filled in? TODO: investigate
 		String userId = userAuthentication.getName();
-		String clientId = oAuthRequest.getClientId();
+		String clientId = authorizationRequest.getClientId();
 
 		//lookup ApprovedSites by userId and clientId
 		boolean alreadyApproved = false;
@@ -111,14 +111,14 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 			if (!ap.isExpired()) {
 			
 				// if we find one that fits...
-				if (scopesMatch(oAuthRequest.getScope(), ap.getAllowedScopes())) {
+				if (scopesMatch(authorizationRequest.getScope(), ap.getAllowedScopes())) {
 					
 					//We have a match; update the access date on the AP entry and return true.
 					ap.setAccessDate(new Date());
 					approvedSiteService.save(ap);
 	
-					oAuthRequest.getExtensionProperties().put("approved_site", ap.getId());
-					oAuthRequest.setApproved(true);					
+					authorizationRequest.getExtensionProperties().put("approved_site", ap.getId());
+					authorizationRequest.setApproved(true);					
 					alreadyApproved = true;
 				}
 			}
@@ -126,37 +126,37 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 		
 		if (!alreadyApproved) {
 			WhitelistedSite ws = whitelistedSiteService.getByClientId(clientId);
-			if (ws != null && scopesMatch(oAuthRequest.getScope(), ws.getAllowedScopes())) {
+			if (ws != null && scopesMatch(authorizationRequest.getScope(), ws.getAllowedScopes())) {
 				
 				//Create an approved site
 				ApprovedSite newSite = approvedSiteService.createApprovedSite(clientId, userId, null, ws.getAllowedScopes(), ws);	
-				oAuthRequest.getExtensionProperties().put("approved_site", newSite.getId());
-				oAuthRequest.setApproved(true);
+				authorizationRequest.getExtensionProperties().put("approved_site", newSite.getId());
+				authorizationRequest.setApproved(true);
 			}
 		}
 		
-		return oAuthRequest;
+		return authorizationRequest;
 		
 	}
 	
 
 	@Override
-    public OAuth2Request updateAfterApproval(OAuth2Request oAuthRequest, Authentication userAuthentication) {
+    public AuthorizationRequest updateAfterApproval(AuthorizationRequest authorizationRequest, Authentication userAuthentication) {
 
 		String userId = userAuthentication.getName();
-		String clientId = oAuthRequest.getClientId();
+		String clientId = authorizationRequest.getClientId();
 		ClientDetails client = clientDetailsService.loadClientByClientId(clientId);
 		
 		// This must be re-parsed here because SECOAUTH forces us to call things in a strange order
-		boolean approved = Boolean.parseBoolean(oAuthRequest.getApprovalParameters().get("user_oauth_approval"));
+		boolean approved = Boolean.parseBoolean(authorizationRequest.getApprovalParameters().get("user_oauth_approval"));
 		
 		if (approved) {
 			
-			oAuthRequest.setApproved(true);
+			authorizationRequest.setApproved(true);
 			
 			// process scopes from user input
 			Set<String> allowedScopes = Sets.newHashSet();
-			Map<String,String> approvalParams = oAuthRequest.getApprovalParameters();
+			Map<String,String> approvalParams = authorizationRequest.getApprovalParameters();
 			
 			Set<String> keys = approvalParams.keySet();
 			
@@ -177,10 +177,10 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 
 			// inject the user-allowed scopes into the auth request
 			// TODO: for the moment this allows both upscoping and downscoping.
-			oAuthRequest.setScope(allowedScopes);
+			authorizationRequest.setScope(allowedScopes);
 			
 			//Only store an ApprovedSite if the user has checked "remember this decision":
-			String remember = oAuthRequest.getApprovalParameters().get("remember");
+			String remember = authorizationRequest.getApprovalParameters().get("remember");
 			if (!Strings.isNullOrEmpty(remember) && !remember.equals("none")) {
 				
 				Date timeout = null;
@@ -192,12 +192,12 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 				}
 				
 				ApprovedSite newSite = approvedSiteService.createApprovedSite(clientId, userId, timeout, allowedScopes, null);
-				oAuthRequest.getExtensionProperties().put("approved_site", newSite.getId());
+				authorizationRequest.getExtensionProperties().put("approved_site", newSite.getId());
 			}
 			
 		}
 
-		return oAuthRequest;
+		return authorizationRequest;
     }
 	
 	/**

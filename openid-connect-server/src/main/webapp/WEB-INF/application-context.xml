@@ -105,7 +105,7 @@
 	<!-- SECOAUTH Authorization Server -->
 	<oauth:authorization-server 
 		client-details-service-ref="defaultOAuth2ClientDetailsEntityService"
-		authorization-request-manager-ref="oAuth2RequestManager" 
+		authorization-request-manager-ref="oAuth2RequestFactory" 
 		token-services-ref="defaultOAuth2ProviderTokenService" 
 		user-approval-handler-ref="tofuUserApprovalHandler" 
 		authorization-endpoint-url="/authorize" 
@@ -119,6 +119,12 @@
 		<oauth:custom-grant token-granter-ref="jwtAssertionTokenGranter" />
 
 	</oauth:authorization-server>
+
+	<bean id="chainedTokenGranter">
+		<constructor-arg ref="defaultOAuth2ProviderTokenService"/>
+		<constructor-arg ref="defaultOAuth2ClientDetailsEntityService"/>
+		<constructor-arg ref="oAuth2RequestFactory"/>
+	</bean>
 
 	<bean id="oauthAccessDeniedHandler" class="org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler" />
 
@@ -145,7 +151,7 @@
 		<constructor-arg type="int" index="3" value="0"/>
 	</bean>
 	
-	<!-- <bean id="oAuth2RequestManager" class="org.mitre.openid.connect.ConnectOAuth2RequestManager" /> -->
+	<!-- <bean id="oAuth2RequestManager" class="org.mitre.openid.connect.ConnectOAuth2RequestFactory" /> -->
 	
 	<bean id="clientAssertiontokenEndpointFilter" class="org.mitre.openid.connect.assertion.JwtBearerClientAssertionTokenEndpointFilter">
 		<property name="authenticationManager" ref="clientAssertionAuthenticationManager" />

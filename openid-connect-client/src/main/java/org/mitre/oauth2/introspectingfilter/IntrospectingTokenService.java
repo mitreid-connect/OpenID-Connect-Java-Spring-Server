@@ -11,8 +11,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.common.util.OAuth2Utils;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
-import org.springframework.security.oauth2.provider.OAuth2Request;
+import org.springframework.security.oauth2.provider.StoredOAuth2Request;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.util.LinkedMultiValueMap;
@@ -79,17 +80,18 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
         return null;
     }
     
-    private OAuth2Request createAuthRequest(final JsonObject token) {
+    private StoredOAuth2Request createStoredRequest(final JsonObject token) {
+    	clientId = token.get("client_id").getAsString();
+        Set<String> scopes = new HashSet<String>();
+        for (JsonElement e : token.get("scope").getAsJsonArray()) {
+            scopes.add(e.getAsString());
+        }   
+        Map<String, String> parameters = new HashMap<String, String>();
+        parameters.put("client_id", clientId);
+        parameters.put("scope", OAuth2Utils.formatParameterList(scopes));
+        StoredOAuth2Request storedRequest = new StoredOAuth2Request(parameters, clientId, null, true, scopes, null, null, null);
+        return storedRequest;
     	
-    	 clientId = token.get("client_id").getAsString();
-         Set<String> scopes = new HashSet<String>();
-         for (JsonElement e : token.get("scope").getAsJsonArray()) {
-             scopes.add(e.getAsString());
-         }   
-        OAuth2Request authReq = new OAuth2Request();
-        authReq.setScope(scopes);
-        authReq.setClientId(clientId);
-        return authReq;
     }
     
     // create a default authentication object with authority ROLE_API
@@ -141,7 +143,7 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
                 return false;
             }
             // create an OAuth2Authentication
-            OAuth2Authentication auth = new OAuth2Authentication(createAuthRequest(tokenResponse), createAuthentication(tokenResponse));
+            OAuth2Authentication auth = new OAuth2Authentication(createStoredRequest(tokenResponse), createAuthentication(tokenResponse));
             // create an OAuth2AccessToken
             OAuth2AccessToken token = createAccessToken(tokenResponse, accessToken);
             

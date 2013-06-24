@@ -2,7 +2,7 @@ package org.mitre.oauth2.repository;
 
 import org.mitre.oauth2.model.AuthorizationCodeEntity;
 import org.springframework.security.oauth2.common.exceptions.InvalidGrantException;
-import org.springframework.security.oauth2.provider.code.AuthorizationRequestHolder;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
 
 /**
  * Interface for saving and consuming OAuth2 authorization codes as AuthorizationCodeEntitys. 
@@ -27,6 +27,6 @@ public interface AuthorizationCodeRepository {
 	 * @return							the authentication associated with the code	
 	 * @throws InvalidGrantException	if no AuthorizationCodeEntity is found with the given value
 	 */
-	public AuthorizationRequestHolder consume(String code) throws InvalidGrantException;
+	public OAuth2Authentication consume(String code) throws InvalidGrantException;
 	
 }

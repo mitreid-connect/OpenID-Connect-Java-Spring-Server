@@ -12,7 +12,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
-import org.springframework.security.oauth2.provider.code.AuthorizationRequestHolder;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
 
 /**
  * Entity class for authorization codes
@@ -31,7 +31,7 @@ public class AuthorizationCodeEntity {
 	
 	private String code;
 	
-	private AuthorizationRequestHolder authorizationRequestHolder;
+	private OAuth2Authentication authentication;
 
 	/**
 	 * Default constructor.
@@ -46,9 +46,9 @@ public class AuthorizationCodeEntity {
 	 * @param code 			the authorization code
 	 * @param authRequest	the AuthoriztionRequestHolder associated with the original code request
 	 */
-	public AuthorizationCodeEntity(String code, AuthorizationRequestHolder authRequest) {
+	public AuthorizationCodeEntity(String code, OAuth2Authentication authRequest) {
 		this.code = code;
-		this.authorizationRequestHolder = authRequest;
+		this.authentication = authRequest;
 	}
 	
 	/**
@@ -83,20 +83,20 @@ public class AuthorizationCodeEntity {
 	}
 
 	/**
-	 * @return the authorizationRequestHolder
+	 * @return the authentication
 	 */
 	@Lob
 	@Basic(fetch=FetchType.EAGER)
-	@Column(name="authorization_request_holder")
-	public AuthorizationRequestHolder getAuthorizationRequestHolder() {
-		return authorizationRequestHolder;
+	@Column(name="authentication")
+	public OAuth2Authentication getAuthentication() {
+		return authentication;
 	}
 
 	/**
-	 * @param authorizationRequestHolder the authorizationRequestHolder to set
+	 * @param authentication the authentication to set
 	 */
-	public void setAuthorizationRequestHolder(AuthorizationRequestHolder authorizationRequestHolder) {
-		this.authorizationRequestHolder = authorizationRequestHolder;
+	public void setAuthentication(OAuth2Authentication authentication) {
+		this.authentication = authentication;
 	}
 	
 }

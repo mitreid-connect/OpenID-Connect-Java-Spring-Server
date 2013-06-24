@@ -31,8 +31,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
+import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.ClientDetails;
-import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -67,7 +67,7 @@ public class OAuthConfirmationController {
 	
 	@PreAuthorize("hasRole('ROLE_USER')")
 	@RequestMapping("/oauth/confirm_access")
-	public ModelAndView confimAccess(Map<String, Object> model, @ModelAttribute("authorizationRequest") OAuth2Request clientAuth) {
+	public ModelAndView confimAccess(Map<String, Object> model, @ModelAttribute("authorizationRequest") AuthorizationRequest clientAuth) {
 
 		//AuthorizationRequest clientAuth = (AuthorizationRequest) model.remove("authorizationRequest");
 
