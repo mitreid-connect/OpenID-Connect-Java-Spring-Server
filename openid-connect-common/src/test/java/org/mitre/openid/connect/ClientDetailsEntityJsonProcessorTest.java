@@ -38,6 +38,8 @@ public class ClientDetailsEntityJsonProcessorTest {
 				"   \"client_name\": \"My Example\",\n" + 
 				"   \"client_name#ja-Jpan-JP\":\n" + 
 				"     \"クライアント名\",\n" + 
+				"   \"response_types\": [\"code\", \"token\"],\n" +
+				"   \"grant_types\": [\"authorization_code\", \"implicit\"],\n" +
 				"   \"logo_uri\": \"https://client.example.org/logo.png\",\n" + 
 				"   \"subject_type\": \"pairwise\",\n" + 
 				"   \"sector_identifier_uri\":\n" + 
@@ -55,6 +57,8 @@ public class ClientDetailsEntityJsonProcessorTest {
 		assertEquals(ClientDetailsEntity.AppType.WEB, c.getApplicationType());
 		assertEquals(ImmutableSet.of("https://client.example.org/callback", "https://client.example.org/callback2"), c.getRedirectUris());
 		assertEquals("My Example", c.getClientName());
+		assertEquals(ImmutableSet.of("code", "token"), c.getResponseTypes());
+		assertEquals(ImmutableSet.of("authorization_code", "implicit"), c.getGrantTypes());
 		assertEquals("https://client.example.org/logo.png", c.getLogoUri());
 		assertEquals(ClientDetailsEntity.SubjectType.PAIRWISE, c.getSubjectType());
 		assertEquals("https://other.example.net/file_of_redirect_uris.json", c.getSectorIdentifierUri());
@@ -90,6 +94,8 @@ public class ClientDetailsEntityJsonProcessorTest {
 				"   \"client_name\": \"My Example\",\n" + 
 				"   \"client_name#ja-Jpan-JP\":\n" + 
 				"     \"クライアント名\",\n" + 
+				"   \"response_types\": [\"code\", \"token\"],\n" +
+				"   \"grant_types\": [\"authorization_code\", \"implicit\"],\n" +
 				"   \"logo_uri\": \"https://client.example.org/logo.png\",\n" + 
 				"   \"subject_type\": \"pairwise\",\n" + 
 				"   \"sector_identifier_uri\":\n" + 
@@ -113,6 +119,8 @@ public class ClientDetailsEntityJsonProcessorTest {
 		assertEquals(ClientDetailsEntity.AppType.WEB, c.getApplicationType());
 		assertEquals(ImmutableSet.of("https://client.example.org/callback", "https://client.example.org/callback2"), c.getRedirectUris());
 		assertEquals("My Example", c.getClientName());
+		assertEquals(ImmutableSet.of("code", "token"), c.getResponseTypes());
+		assertEquals(ImmutableSet.of("authorization_code", "implicit"), c.getGrantTypes());
 		assertEquals("https://client.example.org/logo.png", c.getLogoUri());
 		assertEquals(ClientDetailsEntity.SubjectType.PAIRWISE, c.getSubjectType());
 		assertEquals("https://other.example.net/file_of_redirect_uris.json", c.getSectorIdentifierUri());
@@ -140,6 +148,8 @@ public class ClientDetailsEntityJsonProcessorTest {
 		c.setApplicationType(ClientDetailsEntity.AppType.WEB);
 		c.setRedirectUris(ImmutableSet.of("https://client.example.org/callback", "https://client.example.org/callback2"));
 		c.setClientName("My Example");
+		c.setResponseTypes(ImmutableSet.of("code", "token"));
+		c.setGrantTypes(ImmutableSet.of("authorization_code", "implicit"));
 		c.setLogoUri("https://client.example.org/logo.png");
 		c.setSubjectType(ClientDetailsEntity.SubjectType.PAIRWISE);
 		c.setSectorIdentifierUri("https://other.example.net/file_of_redirect_uris.json");
@@ -162,6 +172,12 @@ public class ClientDetailsEntityJsonProcessorTest {
 			assertTrue(ImmutableSet.of("https://client.example.org/callback", "https://client.example.org/callback2").contains(e.getAsString()));
         }
 		assertEquals("My Example", j.get("client_name").getAsString());
+		for (JsonElement e : j.get("response_types").getAsJsonArray()) {
+			assertTrue(ImmutableSet.of("code", "token").contains(e.getAsString()));
+		}
+		for (JsonElement e : j.get("grant_types").getAsJsonArray()) {
+			assertTrue(ImmutableSet.of("authorization_code", "implicit").contains(e.getAsString()));
+		}
 		assertEquals("https://client.example.org/logo.png", j.get("logo_uri").getAsString());
 		assertEquals(ClientDetailsEntity.SubjectType.PAIRWISE.getValue(), j.get("subject_type").getAsString());
 		assertEquals("https://other.example.net/file_of_redirect_uris.json", j.get("sector_identifier_uri").getAsString());
