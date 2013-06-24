@@ -776,7 +776,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(
 			name="client_response_type",
-			joinColumns=@JoinColumn(name="response_type")
+			joinColumns=@JoinColumn(name="owner_id")
 			)
 	@Column(name="response_type")
 	public Set<String> getResponseTypes() {
