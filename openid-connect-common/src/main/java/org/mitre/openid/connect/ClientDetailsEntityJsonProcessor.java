@@ -91,6 +91,7 @@ public class ClientDetailsEntityJsonProcessor {
 			}
 
 			c.setGrantTypes(getAsStringSet(o, "grant_types"));
+			c.setResponseTypes(getAsStringSet(o, "response_types"));
 			c.setPolicyUri(getAsString(o, "policy_uri"));
 			c.setJwksUri(getAsString(o, "jwks_uri"));
 
@@ -212,6 +213,7 @@ public class ClientDetailsEntityJsonProcessor {
 		o.addProperty("token_endpoint_auth_method", c.getTokenEndpointAuthMethod() != null ? c.getTokenEndpointAuthMethod().getValue() : null);
 		o.addProperty("scope", c.getScope() != null ? Joiner.on(" ").join(c.getScope()) : null);
 		o.add("grant_types", getAsArray(c.getGrantTypes()));
+		o.add("response_types", getAsArray(c.getResponseTypes()));
 		o.addProperty("policy_uri", c.getPolicyUri());
 		o.addProperty("jwks_uri", c.getJwksUri());
 
