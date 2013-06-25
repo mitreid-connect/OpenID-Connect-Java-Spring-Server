@@ -16,9 +16,17 @@
  ******************************************************************************/
 package org.mitre.openid.connect.client.service.impl;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.*;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.mitre.oauth2.model.RegisteredClient;
+import org.mitre.openid.connect.config.ServerConfiguration;
+import org.mockito.Mockito;
+import org.springframework.security.authentication.AuthenticationServiceException;
+
+import com.google.common.collect.Sets;
 
 /**
  * @author wkim
@@ -26,9 +34,45 @@ import org.junit.Test;
  */
 public class TestPlainAuthRequestUrlBuilder {
 
+	// Test fixture:
+	ServerConfiguration serverConfig;
+	RegisteredClient clientConfig;
+	
+	private PlainAuthRequestUrlBuilder urlBuilder = new PlainAuthRequestUrlBuilder();
+
+	@Before
+	public void prepare() {
+		
+		serverConfig = Mockito.mock(ServerConfiguration.class);
+		Mockito.when(serverConfig.getAuthorizationEndpointUri()).thenReturn("https://server.example.com/authorize");
+		
+		clientConfig = Mockito.mock(RegisteredClient.class);
+		Mockito.when(clientConfig.getClientId()).thenReturn("s6BhdRkqt3");
+		Mockito.when(clientConfig.getScope()).thenReturn(Sets.newHashSet("openid", "profile"));
+	}
+	
 	@Test
-	public void test() {
-		assertTrue("Not yet implemented", true);
+	public void buildAuthRequestUrl() {
+		
+		String expectedUrl = "https://server.example.com/authorize?" + 
+				"response_type=code" + 
+				"&client_id=s6BhdRkqt3" + 
+				"&scope=openid+profile" + // plus sign used for space per application/x-www-form-encoded standard
+				"&redirect_uri=https%3A%2F%2Fclient.example.org%2F" + 
+				"&nonce=34fasf3ds" +
+				"&state=af0ifjsldkj";
+
+		String actualUrl = urlBuilder.buildAuthRequestUrl(serverConfig, clientConfig, "https://client.example.org/", "34fasf3ds", "af0ifjsldkj");
+		
+		assertThat(actualUrl, equalTo(expectedUrl));
+	}
+	
+	@Test(expected = AuthenticationServiceException.class)
+	public void buildAuthRequestUrl_badUri() {
+		
+		Mockito.when(serverConfig.getAuthorizationEndpointUri()).thenReturn("e=mc^2");
+		
+		urlBuilder.buildAuthRequestUrl(serverConfig, clientConfig, "example.com", "", "");
 	}
 
 }
