@@ -19,6 +19,8 @@
  */
 package org.mitre.openid.connect.client.service.impl;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,6 +35,7 @@ import org.mitre.openid.connect.client.service.IssuerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.web.client.RestTemplate;
 
 import com.google.common.base.Strings;
@@ -59,6 +62,9 @@ public class WebfingerIssuerService implements IssuerService {
 	// map of user input -> issuer, loaded dynamically from webfinger discover
 	private LoadingCache<NormalizedURI, String> issuers;
 
+	private Set<String> whitelist = new HashSet<String>();
+	private Set<String> blacklist = new HashSet<String>();
+
 	/**
 	 * Name of the incoming parameter to check for discovery purposes.
 	 */
@@ -83,6 +89,14 @@ public class WebfingerIssuerService implements IssuerService {
 		if (!Strings.isNullOrEmpty(identifier)) {
 			try {
 				String issuer = issuers.get(normalizeResource(identifier));
+				if (!whitelist.isEmpty() && !whitelist.contains(issuer)) {
+					throw new AuthenticationServiceException("Whitelist was nonempty, issuer was not in whitelist: " + issuer);
+				}
+				
+				if (blacklist.contains(issuer)) {
+					throw new AuthenticationServiceException("Issuer was in blacklist: " + issuer);
+				}
+				
 				return new IssuerServiceResponse(issuer, null, null);
 			} catch (ExecutionException e) {
 				logger.warn("Issue fetching issuer for user input: " + identifier, e);
@@ -176,6 +190,33 @@ public class WebfingerIssuerService implements IssuerService {
 		this.loginPageUrl = loginPageUrl;
 	}
 
+	/**
+	 * @return the whitelist
+	 */
+	public Set<String> getWhitelist() {
+		return whitelist;
+	}
+
+	/**
+	 * @param whitelist the whitelist to set
+	 */
+	public void setWhitelist(Set<String> whitelist) {
+		this.whitelist = whitelist;
+	}
+
+	/**
+	 * @return the blacklist
+	 */
+	public Set<String> getBlacklist() {
+		return blacklist;
+	}
+
+	/**
+	 * @param blacklist the blacklist to set
+	 */
+	public void setBlacklist(Set<String> blacklist) {
+		this.blacklist = blacklist;
+	}
 
 	/**
 	 * @author jricher
