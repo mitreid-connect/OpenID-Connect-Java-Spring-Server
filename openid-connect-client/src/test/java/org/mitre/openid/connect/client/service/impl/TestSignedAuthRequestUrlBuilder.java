@@ -26,12 +26,11 @@ import java.util.Map;
 import org.apache.http.client.utils.URIBuilder;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mitre.jwt.signer.service.impl.DefaultJwtSigningAndValidationService;
 import org.mitre.oauth2.model.RegisteredClient;
 import org.mitre.openid.connect.config.ServerConfiguration;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.security.authentication.AuthenticationServiceException;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Maps;
@@ -139,6 +138,14 @@ public class TestSignedAuthRequestUrlBuilder {
 		String actual = urlBuilder.buildAuthRequestUrl(serverConfig, clientConfig, redirectUri, nonce, state);
 		
 		assertEquals(expected, actual);
+	}
+	
+	@Test(expected = AuthenticationServiceException.class)
+	public void buildAuthRequestUrl_badUri() {
+		
+		Mockito.when(serverConfig.getAuthorizationEndpointUri()).thenReturn("e=mc^2");
+		
+		urlBuilder.buildAuthRequestUrl(serverConfig, clientConfig, "example.com", "", "");
 	}
 
 }
