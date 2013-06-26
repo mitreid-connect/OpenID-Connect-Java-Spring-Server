@@ -104,11 +104,16 @@ public class JsonFileRegisteredClientService implements RegisteredClientService 
 	}
 	
 	/**
-	 * Sync this file out to disk.
+	 * Sync the map of clients out to disk.
 	 */
 	private void write() {
 		try {
-	        FileWriter out = new FileWriter(file);
+			if (!file.exists()) {
+				// create a new file
+				logger.info("Creating saved clients list in " + file);
+				file.createNewFile();
+			}
+			FileWriter out = new FileWriter(file);
 	        
 	        gson.toJson(clients, new TypeToken<Map<String, RegisteredClient>>(){}.getType(), out);
 	        
@@ -126,6 +131,10 @@ public class JsonFileRegisteredClientService implements RegisteredClientService 
 	 */
 	private void load() {
 		try {
+			if (!file.exists()) {
+				logger.info("No sved clients file found in " + file);
+				return;
+			}
 			FileReader in = new FileReader(file);
 			
 			clients = gson.fromJson(in, new TypeToken<Map<String, RegisteredClient>>(){}.getType());
