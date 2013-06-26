@@ -132,8 +132,6 @@ public class DiscoveryEndpoint {
 
 		/*
 		 *
-		    version
-		        REQUIRED. Version string of the provider response. "3.0" is the expected value.
 		    issuer
 		        REQUIRED. URL using the https scheme with no query or fragment component that the OP asserts as its Issuer Identifier.
 		    authorization_endpoint
@@ -215,7 +213,6 @@ public class DiscoveryEndpoint {
 		}
 
 		Map<String, Object> m = new HashMap<String, Object>();
-		m.put("version", "3.0");
 		m.put("issuer", config.getIssuer());
 		m.put("authorization_endpoint", baseUrl + "authorize");
 		m.put("token_endpoint", baseUrl + "token");
