@@ -27,6 +27,7 @@ import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.RegisteredClient;
 import org.mitre.openid.connect.ClientDetailsEntityJsonProcessor;
 import org.mitre.openid.connect.client.service.ClientConfigurationService;
+import org.mitre.openid.connect.client.service.RegisteredClientService;
 import org.mitre.openid.connect.config.ServerConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +35,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.web.client.RestTemplate;
 
@@ -53,7 +55,10 @@ public class DynamicRegistrationClientConfigurationService implements ClientConf
 	private static Logger logger = LoggerFactory.getLogger(DynamicServerConfigurationService.class);
 
 	private LoadingCache<ServerConfiguration, RegisteredClient> clients;
+	
+	private RegisteredClientService registeredClientService = new InMemoryRegisteredClientService();
 
+	// TODO: make sure the template doesn't have "client_id", "client_secret", or "registration_access_token" set on it already
 	private RegisteredClient template;
 	
 	public DynamicRegistrationClientConfigurationService() {
@@ -84,6 +89,30 @@ public class DynamicRegistrationClientConfigurationService implements ClientConf
 		this.template = template;
 	}
 
+	/**
+	 * @return the registeredClientService
+	 */
+	public RegisteredClientService getRegisteredClientService() {
+		return registeredClientService;
+	}
+
+	/**
+	 * @param registeredClientService the registeredClientService to set
+	 */
+	public void setRegisteredClientService(RegisteredClientService registeredClientService) {
+		this.registeredClientService = registeredClientService;
+	}
+
+
+	/**
+	 * Loader class that fetches the client information.
+	 * 
+	 * If a client has been registered (ie, it's known to the RegisteredClientService), then this
+	 * will fetch the client's configuration from the server.
+	 * 
+	 * @author jricher
+	 *
+	 */
 	public class DynamicClientRegistrationLoader extends CacheLoader<ServerConfiguration, RegisteredClient> {
 		private HttpClient httpClient = new DefaultHttpClient();
 		private HttpComponentsClientHttpRequestFactory httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
@@ -93,22 +122,41 @@ public class DynamicRegistrationClientConfigurationService implements ClientConf
 		public RegisteredClient load(ServerConfiguration serverConfig) throws Exception {
 			RestTemplate restTemplate = new RestTemplate(httpFactory);
 
-			// dynamically register this client
-			JsonObject jsonRequest = ClientDetailsEntityJsonProcessor.serialize(template);
+			
+			RegisteredClient knownClient = registeredClientService.getByIssuer(serverConfig.getIssuer());
+			if (knownClient == null) {
+			
+				// dynamically register this client
+				JsonObject jsonRequest = ClientDetailsEntityJsonProcessor.serialize(template);
+	
+				HttpHeaders headers = new HttpHeaders();
+				headers.setContentType(MediaType.APPLICATION_JSON);
+				headers.setAccept(Lists.newArrayList(MediaType.APPLICATION_JSON));
+	
+				HttpEntity<String> entity = new HttpEntity<String>(jsonRequest.toString(), headers);
+	
+				String registered = restTemplate.postForObject(serverConfig.getRegistrationEndpointUri(), entity, String.class);
+				// TODO: handle HTTP errors
+	
+				RegisteredClient client = ClientDetailsEntityJsonProcessor.parseRegistered(registered);
+	
+				// save this client for later				
+				registeredClientService.save(serverConfig.getIssuer(), client);
+				
+				return client;
+			} else {
+				
+				// load this client's information from the server
+				HttpHeaders headers = new HttpHeaders();
+				headers.set("Authorization", String.format("%s %s", OAuth2AccessToken.BEARER_TYPE, knownClient.getRegistrationAccessToken()));
+				headers.setAccept(Lists.newArrayList(MediaType.APPLICATION_JSON));
 
-			HttpHeaders headers = new HttpHeaders();
-			headers.setContentType(MediaType.APPLICATION_JSON);
-			headers.setAccept(Lists.newArrayList(MediaType.APPLICATION_JSON));
-
-			HttpEntity<String> entity = new HttpEntity<String>(jsonRequest.toString(), headers);
-
-			String registered = restTemplate.postForObject(serverConfig.getRegistrationEndpointUri(), entity, String.class);
-			// TODO: handle HTTP errors
-
-			// TODO: save registration token and other important bits
-			RegisteredClient client = ClientDetailsEntityJsonProcessor.parseRegistered(registered);
-
-			return client;
+				String registered = restTemplate.getForObject(knownClient.getRegistrationClientUri(), String.class);
+				
+				RegisteredClient client = ClientDetailsEntityJsonProcessor.parseRegistered(registered);
+				
+				return client;
+			}
 		}
 
 	}
