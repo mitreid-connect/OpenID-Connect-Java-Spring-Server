@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
@@ -151,7 +152,9 @@ public class DynamicRegistrationClientConfigurationService implements ClientConf
 				headers.set("Authorization", String.format("%s %s", OAuth2AccessToken.BEARER_TYPE, knownClient.getRegistrationAccessToken()));
 				headers.setAccept(Lists.newArrayList(MediaType.APPLICATION_JSON));
 
-				String registered = restTemplate.getForObject(knownClient.getRegistrationClientUri(), String.class);
+				HttpEntity<String> entity = new HttpEntity<String>(headers);
+				
+				String registered = restTemplate.exchange(knownClient.getRegistrationClientUri(), HttpMethod.GET, entity, String.class).getBody();
 				
 				RegisteredClient client = ClientDetailsEntityJsonProcessor.parseRegistered(registered);
 				
