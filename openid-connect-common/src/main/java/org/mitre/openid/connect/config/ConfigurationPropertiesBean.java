@@ -16,6 +16,11 @@
  ******************************************************************************/
 package org.mitre.openid.connect.config;
 
+import javax.annotation.PostConstruct;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 
 /**
@@ -28,6 +33,8 @@ package org.mitre.openid.connect.config;
  */
 public class ConfigurationPropertiesBean {
 
+	private static Logger logger = LoggerFactory.getLogger(ConfigurationPropertiesBean.class);
+	
 	private String issuer;
 
 	private String topbarTitle;
@@ -36,6 +43,16 @@ public class ConfigurationPropertiesBean {
 
 	public ConfigurationPropertiesBean() {
 
+	}
+	
+	/**
+	 * Endpoints protected by TLS must have https scheme in the URI.
+	 */
+	@PostConstruct
+	public void checkForHttps() {
+		if (!issuer.substring(0, 5).equalsIgnoreCase("https")) {
+			logger.warn("Configured issuer url is not using https scheme.");
+		}
 	}
 
 	/**
