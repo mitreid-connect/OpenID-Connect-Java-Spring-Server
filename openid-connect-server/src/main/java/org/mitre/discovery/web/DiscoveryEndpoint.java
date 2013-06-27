@@ -221,8 +221,8 @@ public class DiscoveryEndpoint {
 		m.put("jwks_uri", baseUrl + "jwk");
 		m.put("registration_endpoint", baseUrl + "register");
 		m.put("scopes_supported", scopeService.toStrings(scopeService.getDynReg())); // these are the scopes that you can dynamically register for, which is what matters for discovery
-		m.put("response_types_supported", Lists.newArrayList("code", "token"));
-		m.put("grant_types_supported", Lists.newArrayList("authorization_cide", "implicit", "urn:ietf:params:oauth:grant-type:jwt-bearerurn:ietf:params:oauth:grant-type:jwt-bearer", "client_credentials", "urn:ietf:params:oauth:grant_type:redelegate")); // we also support client_credentials and chaining, but OIDC doesn't specify those so we'll leave them off
+		m.put("response_types_supported", Lists.newArrayList("code", "token", "id_token", "id_token token"));
+		m.put("grant_types_supported", Lists.newArrayList("authorization_code", "implicit", "urn:ietf:params:oauth:grant-type:jwt-bearer", "client_credentials", "urn:ietf:params:oauth:grant_type:redelegate")); // we also support client_credentials and chaining, but OIDC doesn't specify those so we'll leave them off
 		//acr_values_supported
 		m.put("subject_types_supported", Lists.newArrayList("public"));
 		//userinfo_signing_alg_values_supported
