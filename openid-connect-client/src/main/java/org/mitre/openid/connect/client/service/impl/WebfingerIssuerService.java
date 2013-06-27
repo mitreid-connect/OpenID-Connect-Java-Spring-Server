@@ -36,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -59,7 +60,7 @@ public class WebfingerIssuerService implements IssuerService {
 	private static Logger logger = LoggerFactory.getLogger(WebfingerIssuerService.class);
 
 	// pattern used to parse user input; we can't use the built-in java URI parser
-	private static final Pattern pattern = Pattern.compile("(https://|acct:|http://|mailto:)?(([^@]+)@)?([^\\?]+)(\\?([^#]+))?(#(.*))?");
+	private static final Pattern pattern = Pattern.compile("^((https|acct|http|mailto):(//)?)?((([^@]+)@)?(([^:]+)(:(\\d*))?))([^\\?]+)?(\\?([^#]+))?(#(.*))?$");
 
 	// map of user input -> issuer, loaded dynamically from webfinger discover
 	private LoadingCache<UriComponents, String> issuers;
@@ -125,7 +126,28 @@ public class WebfingerIssuerService implements IssuerService {
 			return null; // nothing we can do
 		} else {
 
-			UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(identifier);
+			//UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(identifier);
+			UriComponentsBuilder builder = UriComponentsBuilder.newInstance();
+
+			//Pattern regex = Pattern.compile("^(([^:/?#]+):)?(//(([^@/]*)@)?([^/?#:]*)(:(\\d*))?)?([^?#]*)(\\?([^#]*))?(#(.*))?");
+			Matcher m = pattern.matcher(identifier);
+			if (m.matches()) {
+				builder.scheme(m.group(2));
+				builder.userInfo(m.group(6));
+				builder.host(m.group(8));
+				String port = m.group(10);
+				if (!Strings.isNullOrEmpty(port)) {
+					builder.port(Integer.parseInt(port));
+				}
+				builder.path(m.group(11));
+				builder.query(m.group(13));
+				builder.fragment(m.group(15)); // we throw away the hash, but this is the group it would be if we kept it
+			} else {
+				// doesn't match the pattern, throw it out
+				logger.warn("Parser couldn't match input: " + identifier);
+				return null;
+			}
+			
 			UriComponents n = builder.build();
 			
 			if (Strings.isNullOrEmpty(n.getScheme())) {
