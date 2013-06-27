@@ -37,6 +37,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.google.common.base.Strings;
 import com.google.common.cache.CacheBuilder;
@@ -60,7 +62,7 @@ public class WebfingerIssuerService implements IssuerService {
 	private static final Pattern pattern = Pattern.compile("(https://|acct:|http://|mailto:)?(([^@]+)@)?([^\\?]+)(\\?([^#]+))?(#(.*))?");
 
 	// map of user input -> issuer, loaded dynamically from webfinger discover
-	private LoadingCache<NormalizedURI, String> issuers;
+	private LoadingCache<UriComponents, String> issuers;
 
 	private Set<String> whitelist = new HashSet<String>();
 	private Set<String> blacklist = new HashSet<String>();
@@ -114,7 +116,7 @@ public class WebfingerIssuerService implements IssuerService {
 	 * @param identifier
 	 * @return the normalized string, or null if the string can't be normalized
 	 */
-	private NormalizedURI normalizeResource(String identifier) {
+	private UriComponents normalizeResource(String identifier) {
 		// try to parse the URI
 		// NOTE: we can't use the Java built-in URI class because it doesn't split the parts appropriately
 
@@ -123,38 +125,30 @@ public class WebfingerIssuerService implements IssuerService {
 			return null; // nothing we can do
 		} else {
 
-			NormalizedURI n = new NormalizedURI();
-			Matcher m = pattern.matcher(identifier);
-
-			if (m.matches()) {
-				n.scheme = m.group(1); // includes colon and maybe initial slashes
-				n.user = m.group(2); // includes at sign
-				n.hostportpath = m.group(4);
-				n.query = m.group(5); // includes question mark
-				n.hash = m.group(7); // includes hash mark
-
-				// normalize scheme portion
-				if (Strings.isNullOrEmpty(n.scheme)) {
-					if (!Strings.isNullOrEmpty(n.user)) {
-						// no scheme, but have a user, assume acct:
-						n.scheme = "acct:";
-					} else {
-						// no scheme, no user, assume https://
-						n.scheme = "https://";
-					}
+			UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(identifier);
+			UriComponents n = builder.build();
+			
+			if (Strings.isNullOrEmpty(n.getScheme())) {
+				if (!Strings.isNullOrEmpty(n.getUserInfo())
+						&& Strings.isNullOrEmpty(n.getPath())
+						&& Strings.isNullOrEmpty(n.getQuery())
+						&& n.getPort() < 0) {
+					
+					// scheme empty, userinfo is not empty, path/query/port are empty
+					// set to "acct" (rule 2)
+					builder.scheme("acct");
+					
+				} else {
+					// scheme is empty, but rule 2 doesn't apply
+					// set scheme to "https" (rule 3)
+					builder.scheme("https");
 				}
-
-				n.source = Strings.nullToEmpty(n.scheme) +
-						Strings.nullToEmpty(n.user) +
-						Strings.nullToEmpty(n.hostportpath) +
-						Strings.nullToEmpty(n.query); // note: leave fragment off
-
-				return n;
-			} else {
-				logger.warn("Parser couldn't match input: " + identifier);
-				return null;
 			}
-
+			
+			// fragment must be stripped (rule 4)
+			builder.fragment(null);
+			
+			return builder.build();
 		}
 
 
@@ -222,25 +216,26 @@ public class WebfingerIssuerService implements IssuerService {
 	 * @author jricher
 	 *
 	 */
-	private class WebfingerIssuerFetcher extends CacheLoader<NormalizedURI, String> {
+	private class WebfingerIssuerFetcher extends CacheLoader<UriComponents, String> {
 		private HttpClient httpClient = new DefaultHttpClient();
 		private HttpComponentsClientHttpRequestFactory httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
 		private JsonParser parser = new JsonParser();
 
 		@Override
-		public String load(NormalizedURI key) throws Exception {
+		public String load(UriComponents key) throws Exception {
 
 			RestTemplate restTemplate = new RestTemplate(httpFactory);
 			// construct the URL to go to
 
-			//String url = "https://" + key.hostportpath + "/.well-known/webfinger?resource="
-			String scheme = key.scheme;
-			if (!Strings.isNullOrEmpty(scheme) && !scheme.startsWith("http")) {
-				// do discovery on http or https URLs
-				scheme = "https://";
-			}
-			URIBuilder builder = new URIBuilder(scheme + key.hostportpath + "/.well-known/webfinger" + Strings.nullToEmpty(key.query));
-			builder.addParameter("resource", key.source);
+			// do a webfinger lookup
+			URIBuilder builder = new URIBuilder("https://" 
+												+ key.getHost()
+												+ (key.getPort() >= 0 ? ":" + key.getPort() : "")
+												+ Strings.nullToEmpty(key.getPath())
+												+ "/.well-known/webfinger" 
+												+ (Strings.isNullOrEmpty(key.getQuery()) ? "" : "?" + key.getQuery())
+												);
+			builder.addParameter("resource", key.toString());
 			builder.addParameter("rel", "http://openid.net/specs/connect/1.0/issuer");
 
 			// do the fetch
@@ -271,30 +266,19 @@ public class WebfingerIssuerService implements IssuerService {
 			}
 
 			// we couldn't find it
-			logger.warn("Couldn't find issuer");
-			return null;
+			
+			if (key.getScheme().equals("http") || key.getScheme().equals("https")) {
+				// if it looks like HTTP then punt and return the input
+				logger.warn("Returning normalized input string as issuer, hoping for the best: " + key.toString());
+				return key.toString();
+			} else {
+				// if it's not HTTP, give up
+				logger.warn("Couldn't find issuer: " + key.toString());
+				return null;
+			}
+			
 		}
 
 	}
-
-
-	/**
-	 * Simple data shuttle class to represent the parsed components of a URI.
-	 * 
-	 * @author jricher
-	 *
-	 */
-	private class NormalizedURI {
-
-		public String scheme;
-		public String user;
-		public String hostportpath;
-		public String query;
-		public String hash;
-		public String source;
-
-
-	}
-
 
 }
