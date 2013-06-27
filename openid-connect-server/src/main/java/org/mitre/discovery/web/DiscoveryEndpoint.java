@@ -269,6 +269,7 @@ public class DiscoveryEndpoint {
 		m.put("op_policy_uri", baseUrl + "about");
 		m.put("op_tos_uri", baseUrl + "about");
 
+		m.put("introspection_endpoint", baseUrl + "introspect"); // token introspection endpoint for verifying tokens
 
 		model.addAttribute("entity", m);
 
