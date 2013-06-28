@@ -20,6 +20,7 @@ import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 
 
@@ -50,7 +51,7 @@ public class ConfigurationPropertiesBean {
 	 */
 	@PostConstruct
 	public void checkForHttps() {
-		if (!issuer.substring(0, 5).equalsIgnoreCase("https")) {
+		if (!StringUtils.startsWithIgnoreCase(issuer, "https")) {
 			logger.warn("Configured issuer url is not using https scheme.");
 		}
 	}
