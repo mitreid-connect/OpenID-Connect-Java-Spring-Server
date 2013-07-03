@@ -248,9 +248,18 @@ public class WebfingerIssuerService implements IssuerService {
 
 			RestTemplate restTemplate = new RestTemplate(httpFactory);
 			// construct the URL to go to
+			
+			// preserving http scheme is strictly for demo system use only.
+			String scheme = key.getScheme();
+			if (!Strings.isNullOrEmpty(scheme) && scheme.equals("http")) {
+				scheme = "http://"; // add on colon and slashes.
+				logger.warn("Webfinger endpoint MUST use the https URI scheme.");
+			} else {
+				scheme = "https://";
+			}
 
 			// do a webfinger lookup
-			URIBuilder builder = new URIBuilder("https://" 
+			URIBuilder builder = new URIBuilder(scheme 
 												+ key.getHost()
 												+ (key.getPort() >= 0 ? ":" + key.getPort() : "")
 												+ Strings.nullToEmpty(key.getPath())
