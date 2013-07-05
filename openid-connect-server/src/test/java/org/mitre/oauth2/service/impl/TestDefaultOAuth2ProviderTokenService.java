@@ -57,11 +57,15 @@ public class TestDefaultOAuth2ProviderTokenService {
 	private ClientDetailsEntity client;
 	private String clientId = "test_client";
 	private Set<String> scope = Sets.newHashSet("openid", "profile", "email", "offline_access");
-
 	private OAuth2RefreshTokenEntity refreshToken;
 	private String refreshTokenValue = "refresh_token_value";
-
 	private AuthorizationRequest authRequest;
+
+	// for use when refreshing access tokens
+	private AuthorizationRequest storedAuthRequest;
+	private OAuth2Authentication storedAuthentication;
+	private AuthenticationHolderEntity storedAuthHolder;
+	private Set<String> storedScope;
 
 	@Mock
 	private OAuth2TokenRepository tokenRepository;
@@ -105,6 +109,16 @@ public class TestDefaultOAuth2ProviderTokenService {
 		Mockito.when(refreshToken.isExpired()).thenReturn(false);
 
 		authRequest = Mockito.mock(AuthorizationRequest.class);
+
+		storedAuthRequest = Mockito.mock(AuthorizationRequest.class);
+		storedAuthentication = Mockito.mock(OAuth2Authentication.class);
+		storedAuthHolder = Mockito.mock(AuthenticationHolderEntity.class);
+		storedScope = Sets.newHashSet(scope);
+
+		Mockito.when(refreshToken.getAuthenticationHolder()).thenReturn(storedAuthHolder);
+		Mockito.when(storedAuthHolder.getAuthentication()).thenReturn(storedAuthentication);
+		Mockito.when(storedAuthentication.getAuthorizationRequest()).thenReturn(storedAuthRequest);
+		Mockito.when(storedAuthRequest.getScope()).thenReturn(storedScope);
 	}
 
 	/**
@@ -258,6 +272,97 @@ public class TestDefaultOAuth2ProviderTokenService {
 		Mockito.when(refreshToken.isExpired()).thenReturn(true);
 
 		service.refreshAccessToken(refreshTokenValue, authRequest);
+	}
+
+	@Test
+	public void refreshAccessToken_verifyAcessToken() {
+
+		OAuth2AccessTokenEntity token = service.refreshAccessToken(refreshTokenValue, authRequest);
+
+		Mockito.verify(tokenRepository).clearAccessTokensForRefreshToken(refreshToken);
+
+		assertThat(token.getClient(), equalTo(client));
+		assertThat(token.getRefreshToken(), equalTo(refreshToken));
+		assertThat(token.getAuthenticationHolder(), equalTo(storedAuthHolder));
+
+		Mockito.verify(tokenEnhancer).enhance(token, storedAuthentication);
+		Mockito.verify(tokenRepository).saveAccessToken(token);
+	}
+
+	@Test
+	public void refreshAccessToken_requestingSameScope() {
+
+		OAuth2AccessTokenEntity token = service.refreshAccessToken(refreshTokenValue, authRequest);
+
+		assertThat(token.getScope(), equalTo(storedScope));
+	}
+
+	@Test
+	public void refreshAccessToken_requestingLessScope() {
+
+		Set<String> lessScope = Sets.newHashSet("openid", "profile");
+
+		Mockito.when(authRequest.getScope()).thenReturn(lessScope);
+
+		OAuth2AccessTokenEntity token = service.refreshAccessToken(refreshTokenValue, authRequest);
+
+		assertThat(token.getScope(), equalTo(lessScope));
+	}
+
+	// Note: attempt at upscoping may throw an exception in future implementation.
+	@Test
+	public void refreshAccessToken_requestingMoreScope() {
+
+		Set<String> moreScope = Sets.newHashSet(storedScope);
+		moreScope.add("address");
+		moreScope.add("phone");
+
+		Mockito.when(authRequest.getScope()).thenReturn(moreScope);
+
+		OAuth2AccessTokenEntity token = service.refreshAccessToken(refreshTokenValue, authRequest);
+
+		assertThat(token.getScope(), not(equalTo(moreScope)));
+		assertThat(token.getScope(), equalTo(storedScope));
+	}
+	
+	/**
+	 * Tests the case where only some of the valid scope values are being requested along with 
+	 * other extra unauthorized scope values.
+	 */
+	@Test
+	public void refreshAccessToken_requestingMixedScope() {
+
+		Set<String> mixedScope = Sets.newHashSet("openid", "profile", "address", "phone"); // no email or offline_access
+
+		Mockito.when(authRequest.getScope()).thenReturn(mixedScope);
+
+		OAuth2AccessTokenEntity token = service.refreshAccessToken(refreshTokenValue, authRequest);
+
+		// Current behavior is to simply return the set scope values stored in the initial authorization.
+		assertThat(token.getScope(), equalTo(storedScope));
+	}
+
+	@Test
+	public void refreshAccessToken_requestingEmptyScope() {
+
+		Set<String> emptyScope = Sets.newHashSet();
+
+		Mockito.when(authRequest.getScope()).thenReturn(emptyScope);
+
+		OAuth2AccessTokenEntity token = service.refreshAccessToken(refreshTokenValue, authRequest);
+
+		assertThat(token.getScope(), equalTo(storedScope));
+	}
+
+	@Test
+	public void refreshAccessToken_requestingNullScope() {
+
+		Mockito.when(authRequest.getScope()).thenReturn(null);
+
+		OAuth2AccessTokenEntity token = service.refreshAccessToken(refreshTokenValue, authRequest);
+
+		assertThat(token.getScope(), equalTo(storedScope));
+
 	}
 
 }
