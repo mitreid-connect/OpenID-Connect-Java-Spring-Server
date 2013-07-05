@@ -52,6 +52,9 @@ import com.google.common.collect.Sets;
 @RunWith(MockitoJUnitRunner.class)
 public class TestDefaultOAuth2ProviderTokenService {
 
+	// Grace period for time-sensitive tests.
+	private static final long DELTA = 100L;
+
 	// Test Fixture:
 	private OAuth2Authentication authentication;
 	private ClientDetailsEntity client;
@@ -201,8 +204,6 @@ public class TestDefaultOAuth2ProviderTokenService {
 		Integer accessTokenValiditySeconds = 3600;
 		Integer refreshTokenValiditySeconds = 600;
 
-		long delta = 100L;
-
 		Mockito.when(client.getAccessTokenValiditySeconds()).thenReturn(accessTokenValiditySeconds);
 		Mockito.when(client.getRefreshTokenValiditySeconds()).thenReturn(refreshTokenValiditySeconds);
 
@@ -211,10 +212,10 @@ public class TestDefaultOAuth2ProviderTokenService {
 		long end = System.currentTimeMillis();
 
 		// Accounting for some delta for time skew on either side.
-		Date lowerBoundAccessTokens = new Date(start + (accessTokenValiditySeconds * 1000L) - delta);
-		Date upperBoundAccessTokens = new Date(end + (accessTokenValiditySeconds * 1000L) + delta);
-		Date lowerBoundRefreshTokens = new Date(start + (refreshTokenValiditySeconds * 1000L) - delta);
-		Date upperBoundRefreshTokens = new Date(end + (refreshTokenValiditySeconds * 1000L) + delta);
+		Date lowerBoundAccessTokens = new Date(start + (accessTokenValiditySeconds * 1000L) - DELTA);
+		Date upperBoundAccessTokens = new Date(end + (accessTokenValiditySeconds * 1000L) + DELTA);
+		Date lowerBoundRefreshTokens = new Date(start + (refreshTokenValiditySeconds * 1000L) - DELTA);
+		Date upperBoundRefreshTokens = new Date(end + (refreshTokenValiditySeconds * 1000L) + DELTA);
 
 		assertTrue(token.getExpiration().after(lowerBoundAccessTokens) && token.getExpiration().before(upperBoundAccessTokens));
 		assertTrue(token.getRefreshToken().getExpiration().after(lowerBoundRefreshTokens) && token.getRefreshToken().getExpiration().before(upperBoundRefreshTokens));
@@ -324,7 +325,7 @@ public class TestDefaultOAuth2ProviderTokenService {
 		assertThat(token.getScope(), not(equalTo(moreScope)));
 		assertThat(token.getScope(), equalTo(storedScope));
 	}
-	
+
 	/**
 	 * Tests the case where only some of the valid scope values are being requested along with 
 	 * other extra unauthorized scope values.
@@ -363,6 +364,27 @@ public class TestDefaultOAuth2ProviderTokenService {
 
 		assertThat(token.getScope(), equalTo(storedScope));
 
+	}
+
+	/**
+	 * Checks to see that the expiration date of refreshed tokens is being set accurately to within some delta for time skew.
+	 */
+	@Test
+	public void refreshAccessToken_expiration() {
+
+		Integer accessTokenValiditySeconds = 3600;
+
+		Mockito.when(client.getAccessTokenValiditySeconds()).thenReturn(accessTokenValiditySeconds);
+
+		long start = System.currentTimeMillis();
+		OAuth2AccessTokenEntity token = service.refreshAccessToken(refreshTokenValue, authRequest);
+		long end = System.currentTimeMillis();
+
+		// Accounting for some delta for time skew on either side.
+		Date lowerBoundAccessTokens = new Date(start + (accessTokenValiditySeconds * 1000L) - DELTA);
+		Date upperBoundAccessTokens = new Date(end + (accessTokenValiditySeconds * 1000L) + DELTA);
+
+		assertTrue(token.getExpiration().after(lowerBoundAccessTokens) && token.getExpiration().before(upperBoundAccessTokens));
 	}
 
 }
