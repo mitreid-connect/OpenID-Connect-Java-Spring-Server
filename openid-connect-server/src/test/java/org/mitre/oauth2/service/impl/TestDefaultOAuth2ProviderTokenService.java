@@ -20,6 +20,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 import java.util.Date;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -53,6 +54,8 @@ public class TestDefaultOAuth2ProviderTokenService {
 	// Test Fixture:
 	private OAuth2Authentication authentication;
 	private ClientDetailsEntity client;
+	private String clientId = "test_client";
+	private Set<String> scope = Sets.newHashSet("openid", "profile", "email", "offline_access");
 
 	@Mock
 	private OAuth2TokenRepository tokenRepository;
@@ -78,13 +81,16 @@ public class TestDefaultOAuth2ProviderTokenService {
 
 		authentication = Mockito.mock(OAuth2Authentication.class);
 		Mockito.when(authentication.getAuthorizationRequest()).thenReturn(Mockito.mock(AuthorizationRequest.class));
+		AuthorizationRequest clientAuth = authentication.getAuthorizationRequest();
 
 		client = Mockito.mock(ClientDetailsEntity.class);
-		Mockito.when(clientDetailsService.loadClientByClientId(Mockito.anyString())).thenReturn(client);
+		Mockito.when(client.getClientId()).thenReturn(clientId);
+		Mockito.when(clientDetailsService.loadClientByClientId(clientId)).thenReturn(client);
+
+		Mockito.when(clientAuth.getClientId()).thenReturn(clientId);
+		Mockito.when(clientAuth.getScope()).thenReturn(scope);
 
 		// by default in tests, allow refresh tokens
-		AuthorizationRequest clientAuth = authentication.getAuthorizationRequest();
-		Mockito.when(clientAuth.getScope()).thenReturn(Sets.newHashSet("offline_access"));
 		Mockito.when(client.isAllowRefresh()).thenReturn(true);
 	}
 
@@ -167,7 +173,7 @@ public class TestDefaultOAuth2ProviderTokenService {
 
 		Integer accessTokenValiditySeconds = 3600;
 		Integer refreshTokenValiditySeconds = 600;
-		
+
 		long delta = 100L;
 
 		Mockito.when(client.getAccessTokenValiditySeconds()).thenReturn(accessTokenValiditySeconds);
@@ -186,7 +192,35 @@ public class TestDefaultOAuth2ProviderTokenService {
 		assertTrue(token.getExpiration().after(lowerBoundAccessTokens) && token.getExpiration().before(upperBoundAccessTokens));
 		assertTrue(token.getRefreshToken().getExpiration().after(lowerBoundRefreshTokens) && token.getRefreshToken().getExpiration().before(upperBoundRefreshTokens));
 	}
-	
-	// TODO verify JWT stuff in createAccessToken().
+
+	@Test
+	public void createAccessToken_checkClient() {
+
+		OAuth2AccessTokenEntity token = service.createAccessToken(authentication);
+
+		assertThat(token.getClient().getClientId(), equalTo(clientId));
+	}
+
+	@Test
+	public void createAccessToken_checkScopes() {
+
+		OAuth2AccessTokenEntity token = service.createAccessToken(authentication);
+
+		assertThat(token.getScope(), equalTo(scope));
+	}
+
+	@Test
+	public void createAccessToken_checkAttachedAuthentication() {
+
+		AuthenticationHolderEntity authHolder = Mockito.mock(AuthenticationHolderEntity.class);
+		Mockito.when(authHolder.getAuthentication()).thenReturn(authentication);
+		
+		Mockito.when(authenticationHolderRepository.save(Mockito.any(AuthenticationHolderEntity.class))).thenReturn(authHolder);
+		
+		OAuth2AccessTokenEntity token = service.createAccessToken(authentication);
+
+		assertThat(token.getAuthenticationHolder().getAuthentication(), equalTo(authentication));
+		Mockito.verify(authenticationHolderRepository).save(Mockito.any(AuthenticationHolderEntity.class));
+	}
 
 }
