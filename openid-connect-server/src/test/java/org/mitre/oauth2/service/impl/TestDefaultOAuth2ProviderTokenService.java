@@ -38,6 +38,7 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
+import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
@@ -56,6 +57,11 @@ public class TestDefaultOAuth2ProviderTokenService {
 	private ClientDetailsEntity client;
 	private String clientId = "test_client";
 	private Set<String> scope = Sets.newHashSet("openid", "profile", "email", "offline_access");
+
+	private OAuth2RefreshTokenEntity refreshToken;
+	private String refreshTokenValue = "refresh_token_value";
+
+	private AuthorizationRequest authRequest;
 
 	@Mock
 	private OAuth2TokenRepository tokenRepository;
@@ -92,6 +98,13 @@ public class TestDefaultOAuth2ProviderTokenService {
 
 		// by default in tests, allow refresh tokens
 		Mockito.when(client.isAllowRefresh()).thenReturn(true);
+
+		refreshToken = Mockito.mock(OAuth2RefreshTokenEntity.class);
+		Mockito.when(tokenRepository.getRefreshTokenByValue(refreshTokenValue)).thenReturn(refreshToken);
+		Mockito.when(refreshToken.getClient()).thenReturn(client);
+		Mockito.when(refreshToken.isExpired()).thenReturn(false);
+
+		authRequest = Mockito.mock(AuthorizationRequest.class);
 	}
 
 	/**
@@ -214,13 +227,37 @@ public class TestDefaultOAuth2ProviderTokenService {
 
 		AuthenticationHolderEntity authHolder = Mockito.mock(AuthenticationHolderEntity.class);
 		Mockito.when(authHolder.getAuthentication()).thenReturn(authentication);
-		
+
 		Mockito.when(authenticationHolderRepository.save(Mockito.any(AuthenticationHolderEntity.class))).thenReturn(authHolder);
-		
+
 		OAuth2AccessTokenEntity token = service.createAccessToken(authentication);
 
 		assertThat(token.getAuthenticationHolder().getAuthentication(), equalTo(authentication));
 		Mockito.verify(authenticationHolderRepository).save(Mockito.any(AuthenticationHolderEntity.class));
+	}
+
+	@Test(expected = InvalidTokenException.class)
+	public void refreshAccessToken_noRefreshToken() {
+
+		Mockito.when(tokenRepository.getRefreshTokenByValue(Mockito.anyString())).thenReturn(null);
+
+		service.refreshAccessToken(refreshTokenValue, authRequest);
+	}
+
+	@Test(expected = InvalidClientException.class)
+	public void refreshAccessToken_notAllowRefresh() {
+
+		Mockito.when(client.isAllowRefresh()).thenReturn(false);
+
+		service.refreshAccessToken(refreshTokenValue, authRequest);
+	}
+
+	@Test(expected = InvalidTokenException.class)
+	public void refreshAccessToken_expired() {
+
+		Mockito.when(refreshToken.isExpired()).thenReturn(true);
+
+		service.refreshAccessToken(refreshTokenValue, authRequest);
 	}
 
 }
