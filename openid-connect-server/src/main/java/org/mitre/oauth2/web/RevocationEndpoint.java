@@ -43,7 +43,7 @@ public class RevocationEndpoint {
 
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
 	@RequestMapping("/revoke")
-	public String revoke(@RequestParam("token") String tokenValue, @RequestParam("token_type_hint") String tokenType, Principal principal, Model model) {
+	public String revoke(@RequestParam("token") String tokenValue, @RequestParam(value = "token_type_hint", required = false) String tokenType, Principal principal, Model model) {
 
 		// This is the token as passed in from OAuth (in case we need it some day)
 		//OAuth2AccessTokenEntity tok = tokenServices.getAccessToken((OAuth2Authentication) principal);

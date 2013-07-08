@@ -61,8 +61,10 @@ public class IntrospectionEndpoint {
 
 	@PreAuthorize("hasRole('ROLE_CLIENT')")
 	@RequestMapping("/introspect")
-	public String verify(@RequestParam("token") String tokenValue, @RequestParam("resource_id") String resourceId, @RequestParam("token_type_hint") String tokenType, 
-							Principal p, Model model) {
+	public String verify(@RequestParam("token") String tokenValue, 
+						 @RequestParam(value = "resource_id", required = false) String resourceId, 
+						 @RequestParam(value = "token_type_hint", required = false) String tokenType, 
+						 Principal p, Model model) {
 
 		if (Strings.isNullOrEmpty(tokenValue)) {
 			logger.error("Verify failed; token value is null");
