@@ -101,7 +101,7 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 	// create a default authentication object with authority ROLE_API
 	private Authentication createAuthentication(JsonObject token){
 		// TODO: make role/authority configurable somehow
-		return new PreAuthenticatedAuthenticationToken(token.get("subject").getAsString(), null, AuthorityUtils.createAuthorityList("ROLE_API"));
+		return new PreAuthenticatedAuthenticationToken(token.get("sub").getAsString(), null, AuthorityUtils.createAuthorityList("ROLE_API"));
 	}
 
 	private OAuth2AccessToken createAccessToken(final JsonObject token, final String tokenString){
@@ -142,7 +142,7 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 				return false;
 			}
 
-			if (!tokenResponse.get("valid").getAsBoolean()){
+			if (!tokenResponse.get("active").getAsBoolean()){
 				// non-valid token
 				return false;
 			}

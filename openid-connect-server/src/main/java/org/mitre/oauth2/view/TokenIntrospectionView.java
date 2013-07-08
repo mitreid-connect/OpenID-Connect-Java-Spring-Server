@@ -25,12 +25,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
+import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.servlet.view.AbstractView;
 
+import com.google.common.base.Joiner;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
@@ -89,19 +91,38 @@ public class TokenIntrospectionView extends AbstractView {
 			public JsonElement serialize(OAuth2AccessTokenEntity src, Type typeOfSrc, JsonSerializationContext context) {
 				JsonObject token = new JsonObject();
 
-				token.addProperty("valid", true);
+				token.addProperty("active", true);
 
-				JsonArray scopes = new JsonArray();
-				for (String scope : src.getScope()) {
-					scopes.add(new JsonPrimitive(scope));
-				}
-				token.add("scope", scopes);
+				token.addProperty("scope", Joiner.on(" ").join(src.getScope()));
 
-				token.add("expires_at", context.serialize(src.getExpiration()));
-
+				token.add("exp", context.serialize(src.getExpiration()));
+				
 				//token.addProperty("audience", src.getAuthenticationHolder().getAuthentication().getAuthorizationRequest().getClientId());
 
-				token.addProperty("subject", src.getAuthenticationHolder().getAuthentication().getName());
+				token.addProperty("sub", src.getAuthenticationHolder().getAuthentication().getName());
+
+				token.addProperty("client_id", src.getAuthenticationHolder().getAuthentication().getAuthorizationRequest().getClientId());
+
+				token.addProperty("token_type", src.getTokenType());
+				
+				return token;
+			}
+
+		})
+		.registerTypeAdapter(OAuth2RefreshTokenEntity.class, new JsonSerializer<OAuth2RefreshTokenEntity>() {
+			@Override
+			public JsonElement serialize(OAuth2RefreshTokenEntity src, Type typeOfSrc, JsonSerializationContext context) {
+				JsonObject token = new JsonObject();
+
+				token.addProperty("active", true);
+
+				token.addProperty("scope", Joiner.on(" ").join(src.getAuthenticationHolder().getAuthentication().getAuthorizationRequest().getScope()));
+
+				token.add("exp", context.serialize(src.getExpiration()));
+				
+				//token.addProperty("audience", src.getAuthenticationHolder().getAuthentication().getAuthorizationRequest().getClientId());
+
+				token.addProperty("sub", src.getAuthenticationHolder().getAuthentication().getName());
 
 				token.addProperty("client_id", src.getAuthenticationHolder().getAuthentication().getAuthorizationRequest().getClientId());
 

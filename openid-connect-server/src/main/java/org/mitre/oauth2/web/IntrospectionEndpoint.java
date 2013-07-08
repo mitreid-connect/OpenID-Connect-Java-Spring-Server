@@ -17,10 +17,13 @@
 package org.mitre.oauth2.web;
 
 import java.security.Principal;
+import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
+import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
 import org.slf4j.Logger;
@@ -58,27 +61,51 @@ public class IntrospectionEndpoint {
 
 	@PreAuthorize("hasRole('ROLE_CLIENT')")
 	@RequestMapping("/introspect")
-	public String verify(@RequestParam("token") String tokenValue, Principal p, Model model) {
+	public String verify(@RequestParam("token") String tokenValue, @RequestParam("resource_id") String resourceId, @RequestParam("token_type_hint") String tokenType, 
+							Principal p, Model model) {
 
 		if (Strings.isNullOrEmpty(tokenValue)) {
 			logger.error("Verify failed; token value is null");
-			Map<String,Boolean> entity = ImmutableMap.of("valid", Boolean.FALSE);
+			Map<String,Boolean> entity = ImmutableMap.of("active", Boolean.FALSE);
 			model.addAttribute("entity", entity);
 			return "jsonEntityView";
 		}
 
-		OAuth2AccessTokenEntity token = null;
 
+		ClientDetailsEntity tokenClient = null;
+		Set<String> scopes = null;
+		Object token = null;
+		
 		try {
-			token = tokenServices.readAccessToken(tokenValue);
+			
+			// check access tokens first (includes ID tokens)
+			OAuth2AccessTokenEntity access = tokenServices.readAccessToken(tokenValue);
+			
+			tokenClient = access.getClient();
+			scopes = access.getScope();
+			
+			token = access;
+			
 		} catch (InvalidTokenException e) {
-			logger.error("Verify failed; AuthenticationException", e);
-			Map<String,Boolean> entity = ImmutableMap.of("valid", Boolean.FALSE);
-			model.addAttribute("entity", entity);
-			return "jsonEntityView";
+			logger.error("Verify failed; Invalid access token. Checking refresh token.", e);
+			try {
+				
+				// check refresh tokens next
+				OAuth2RefreshTokenEntity refresh = tokenServices.getRefreshToken(tokenValue);
+				
+				tokenClient = refresh.getClient();
+				scopes = refresh.getAuthenticationHolder().getAuthentication().getAuthorizationRequest().getScope();
+				
+				token = refresh;
+				
+			} catch (InvalidTokenException e2) {				
+				logger.error("Verify failed; Invalid refresh token", e2);
+				Map<String,Boolean> entity = ImmutableMap.of("active", Boolean.FALSE);
+				model.addAttribute("entity", entity);
+				return "jsonEntityView";
+			}
 		}
 
-		ClientDetailsEntity tokenClient = token.getClient();
 		// clientID is the principal name in the authentication
 		String clientId = p.getName();
 		ClientDetailsEntity authClient = clientService.loadClientByClientId(clientId);
@@ -87,7 +114,7 @@ public class IntrospectionEndpoint {
 			if (authClient.isAllowIntrospection()) {
 
 				// if it's the same client that the token was issued to, or it at least has all the scopes the token was issued with
-				if (authClient.equals(tokenClient) || authClient.getScope().containsAll(token.getScope())) {
+				if (authClient.equals(tokenClient) || authClient.getScope().containsAll(scopes)) {
 
 					// if it's a valid token, we'll print out information on it
 					model.addAttribute("entity", token);
