@@ -17,6 +17,7 @@
 package org.mitre.openid.connect.client.service.impl;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.net.URI;
@@ -24,11 +25,12 @@ import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.text.ParseException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import net.minidev.json.JSONObject;
 
-import org.apache.http.client.utils.URIBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.mitre.jwt.signer.service.impl.DefaultJwtSigningAndValidationService;
@@ -43,7 +45,6 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.nimbusds.jose.Algorithm;
-import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.JWSObject;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.RSAKey;
@@ -51,6 +52,7 @@ import com.nimbusds.jose.jwk.Use;
 import com.nimbusds.jose.util.Base64URL;
 import com.nimbusds.jose.util.JSONObjectUtils;
 import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 
 /**
@@ -109,45 +111,45 @@ public class TestSignedAuthRequestUrlBuilder {
 		Mockito.when(clientConfig.getScope()).thenReturn(Sets.newHashSet("openid", "profile"));
 	}
 
+	/**
+	 * This test takes the URI from the result of building a signed request 
+	 * and checks that the JWS object parsed from the request URI matches up 
+	 * with the expected claim values.
+	 */
 	@Test
 	public void buildAuthRequestUrl() {
 
-		JWTClaimsSet claims = new JWTClaimsSet();
+		String requestUri = urlBuilder.buildAuthRequestUrl(serverConfig, clientConfig, redirectUri, nonce, state);
 
-		//set parameters to JwtClaims
-		claims.setCustomClaim("response_type", responseType);
-		claims.setCustomClaim("client_id", clientConfig.getClientId());
-		claims.setCustomClaim("scope", Joiner.on(" ").join(clientConfig.getScope()));
-
-		// build our redirect URI
-		claims.setCustomClaim("redirect_uri", redirectUri);
-
-		// this comes back in the id token
-		claims.setCustomClaim("nonce", nonce);
-
-		// this comes back in the auth request return
-		claims.setCustomClaim("state", state);
-
-		SignedJWT jwt = new SignedJWT(new JWSHeader(signingAndValidationService.getDefaultSigningAlgorithm()), claims);
-
-		signingAndValidationService.signJwt(jwt);
-
-		String expected = null;
-
+		// parsing the result
+		UriComponentsBuilder builder = null;
+		
 		try {
-
-			URIBuilder uriBuilder = new URIBuilder(serverConfig.getAuthorizationEndpointUri());
-			uriBuilder.addParameter("request", jwt.serialize());
-
-			expected = uriBuilder.build().toString();
-
-		} catch (URISyntaxException e) {
-			fail("URISyntaxException occurred.");
+			builder = UriComponentsBuilder.fromUri(new URI(requestUri));
+		} catch (URISyntaxException e1) {
+			fail("URISyntaxException was thrown.");
 		}
-
-		String actual = urlBuilder.buildAuthRequestUrl(serverConfig, clientConfig, redirectUri, nonce, state);
-
-		assertEquals(expected, actual);
+		
+		UriComponents components = builder.build();
+		String jwtString = components.getQueryParams().get("request").get(0);
+		ReadOnlyJWTClaimsSet claims = null;
+		
+		try {
+			SignedJWT jwt = SignedJWT.parse(jwtString);
+			claims = jwt.getJWTClaimsSet();
+		} catch (ParseException e) {
+			fail("ParseException was thrown.");
+		}
+		
+		assertEquals(responseType, claims.getClaim("response_type"));
+		assertEquals(clientConfig.getClientId(), claims.getClaim("client_id"));
+		
+		List<String> scopeList = Arrays.asList(((String) claims.getClaim("scope")).split(" "));
+		assertTrue(scopeList.containsAll(clientConfig.getScope()));
+		
+		assertEquals(redirectUri, claims.getClaim("redirect_uri"));
+		assertEquals(nonce, claims.getClaim("nonce"));
+		assertEquals(state, claims.getClaim("state"));
 	}
 
 	@Test(expected = AuthenticationServiceException.class)
@@ -156,38 +158,5 @@ public class TestSignedAuthRequestUrlBuilder {
 		Mockito.when(serverConfig.getAuthorizationEndpointUri()).thenReturn("e=mc^2");
 
 		urlBuilder.buildAuthRequestUrl(serverConfig, clientConfig, "example.com", "", "");
-	}
-
-	/**
-	 * This test takes the URI from the result of building a signed request, 
-	 * and attempts to parse the JWS object to make sure that the content of the
-	 * JWS object match up with the expected claim values.
-	 * 
-	 * @throws URISyntaxException
-	 * @throws ParseException 
-	 */
-	@Test
-	public void verifyJwt() throws URISyntaxException, ParseException {
-
-		// The URI below was taken from the results of the buildAuthRequestUrl() unit test..
-		URI uri = new URI("https://server.example.com/authorize?request=" + 
-						"eyJhbGciOiJSUzI1NiJ9." + 
-						"eyJyZXNwb25zZV90eXBlIjoiY29kZSIsInNjb3BlIjoib3BlbmlkIHByb2ZpbGUiLCJyZWRpcmVjdF91cmkiOiJodHRwczpcL1wvY2xpZW50LmV4YW1wbGUub3JnXC8iLCJub25jZSI6IjM0ZmFzZjNkcyIsInN0YXRlIjoiYWYwaWZqc2xka2oiLCJjbGllbnRfaWQiOiJzNkJoZFJrcXQzIn0." + 
-						"m_1UVCTlr_3ksYmZzN5WUAhbr2E3x0RTWq8ZO7SZwNtIu_kGI29BeHUDaGM3A40A-IX9dMsNQlkr-88g6BdHU2Nd5LJCe4FCrvEo7xSQiGbEAKeFn_q_paVL2P_GJgVrwc7cKAECQzc8iJylXm_ZZgyMEU2YtR-CMXHM3pkY1hCYy6kkmteAMwvEYIz3JtLQ6P4QhMCRVYl_AY9LlwS1gmNpoCcwhnQRjxOk8SKIhMFgFkauyy97H9bM0bcy619awigdnP4ZFaEK1O7SQ3-3M_qDZ3BHGM3fWKy6ql5HZPKm2e8SqdShmnA0JKmEZegRBqms_Fpk9X81Tln7Bi883w");
-
-		UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
-		UriComponents components = builder.build();
-		
-		String jwtString = components.getQueryParams().get("request").get(0);
-		JWSObject jws = JWSObject.parse(jwtString);
-		JSONObject json = JSONObjectUtils.parseJSONObject(jws.getPayload().toString());
-		
-		assertEquals(redirectUri, json.get("redirect_uri"));
-		assertEquals(clientConfig.getClientId(), json.get("client_id"));
-		assertEquals(responseType, json.get("response_type"));
-		assertEquals(Joiner.on(" ").join(clientConfig.getScope()), json.get("scope"));
-		assertEquals(nonce, json.get("nonce"));
-		assertEquals(state, json.get("state"));
-		
 	}
 }
