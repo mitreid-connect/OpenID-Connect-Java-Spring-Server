@@ -16,12 +16,17 @@
  ******************************************************************************/
 package org.mitre.openid.connect.client.service.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.text.ParseException;
 import java.util.Map;
+
+import net.minidev.json.JSONObject;
 
 import org.apache.http.client.utils.URIBuilder;
 import org.junit.Before;
@@ -31,16 +36,20 @@ import org.mitre.oauth2.model.RegisteredClient;
 import org.mitre.openid.connect.config.ServerConfiguration;
 import org.mockito.Mockito;
 import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.nimbusds.jose.Algorithm;
 import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jose.JWSObject;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.Use;
 import com.nimbusds.jose.util.Base64URL;
+import com.nimbusds.jose.util.JSONObjectUtils;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 
@@ -51,8 +60,13 @@ import com.nimbusds.jwt.SignedJWT;
 public class TestSignedAuthRequestUrlBuilder {
 
 	// Test fixture:
-	ServerConfiguration serverConfig;
-	RegisteredClient clientConfig;
+	private ServerConfiguration serverConfig;
+	private RegisteredClient clientConfig;
+
+	private String redirectUri = "https://client.example.org/";
+	private String nonce = "34fasf3ds";
+	private String state = "af0ifjsldkj";
+	private String responseType = "code";
 
 	// RSA key properties:
 	// {@link package com.nimbusds.jose.jwk#RSAKey}
@@ -98,14 +112,10 @@ public class TestSignedAuthRequestUrlBuilder {
 	@Test
 	public void buildAuthRequestUrl() {
 
-		String redirectUri = "https://client.example.org/";
-		String nonce = "34fasf3ds";
-		String state = "af0ifjsldkj";
-
 		JWTClaimsSet claims = new JWTClaimsSet();
 
 		//set parameters to JwtClaims
-		claims.setCustomClaim("response_type", "code");
+		claims.setCustomClaim("response_type", responseType);
 		claims.setCustomClaim("client_id", clientConfig.getClientId());
 		claims.setCustomClaim("scope", Joiner.on(" ").join(clientConfig.getScope()));
 
@@ -123,29 +133,61 @@ public class TestSignedAuthRequestUrlBuilder {
 		signingAndValidationService.signJwt(jwt);
 
 		String expected = null;
-		
+
 		try {
-			
+
 			URIBuilder uriBuilder = new URIBuilder(serverConfig.getAuthorizationEndpointUri());
 			uriBuilder.addParameter("request", jwt.serialize());
 
 			expected = uriBuilder.build().toString();
-			
+
 		} catch (URISyntaxException e) {
 			fail("URISyntaxException occurred.");
 		}
-		
+
 		String actual = urlBuilder.buildAuthRequestUrl(serverConfig, clientConfig, redirectUri, nonce, state);
-		
+
 		assertEquals(expected, actual);
 	}
-	
+
 	@Test(expected = AuthenticationServiceException.class)
 	public void buildAuthRequestUrl_badUri() {
-		
+
 		Mockito.when(serverConfig.getAuthorizationEndpointUri()).thenReturn("e=mc^2");
-		
+
 		urlBuilder.buildAuthRequestUrl(serverConfig, clientConfig, "example.com", "", "");
 	}
 
+	/**
+	 * This test takes the URI from the result of building a signed request, 
+	 * and attempts to parse the JWS object to make sure that the content of the
+	 * JWS object match up with the expected claim values.
+	 * 
+	 * @throws URISyntaxException
+	 * @throws ParseException 
+	 */
+	@Test
+	public void verifyJwt() throws URISyntaxException, ParseException {
+
+		// The URI below was taken from the results of the buildAuthRequestUrl() unit test..
+		URI uri = new URI("https://server.example.com/authorize?request=" + 
+						"eyJhbGciOiJSUzI1NiJ9." + 
+						"eyJyZXNwb25zZV90eXBlIjoiY29kZSIsInNjb3BlIjoib3BlbmlkIHByb2ZpbGUiLCJyZWRpcmVjdF91cmkiOiJodHRwczpcL1wvY2xpZW50LmV4YW1wbGUub3JnXC8iLCJub25jZSI6IjM0ZmFzZjNkcyIsInN0YXRlIjoiYWYwaWZqc2xka2oiLCJjbGllbnRfaWQiOiJzNkJoZFJrcXQzIn0." + 
+						"m_1UVCTlr_3ksYmZzN5WUAhbr2E3x0RTWq8ZO7SZwNtIu_kGI29BeHUDaGM3A40A-IX9dMsNQlkr-88g6BdHU2Nd5LJCe4FCrvEo7xSQiGbEAKeFn_q_paVL2P_GJgVrwc7cKAECQzc8iJylXm_ZZgyMEU2YtR-CMXHM3pkY1hCYy6kkmteAMwvEYIz3JtLQ6P4QhMCRVYl_AY9LlwS1gmNpoCcwhnQRjxOk8SKIhMFgFkauyy97H9bM0bcy619awigdnP4ZFaEK1O7SQ3-3M_qDZ3BHGM3fWKy6ql5HZPKm2e8SqdShmnA0JKmEZegRBqms_Fpk9X81Tln7Bi883w");
+
+		UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
+		UriComponents components = builder.build();
+		
+		String jwtString = components.getQueryParams().get("request").get(0);
+		JWSObject jws = JWSObject.parse(jwtString);
+		JSONObject json = JSONObjectUtils.parseJSONObject(jws.getPayload().toString());
+		
+		assertEquals(redirectUri, json.get("redirect_uri"));
+		assertEquals(clientConfig.getClientId(), json.get("client_id"));
+		assertEquals(responseType, json.get("response_type"));
+		assertEquals(Joiner.on(" ").join(clientConfig.getScope()), json.get("scope"));
+		assertEquals(nonce, json.get("nonce"));
+		assertEquals(state, json.get("state"));
+		
+	}
 }
