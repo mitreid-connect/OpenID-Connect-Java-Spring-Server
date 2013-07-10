@@ -28,7 +28,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @Service("defaultNonceService")
@@ -111,7 +110,9 @@ public class DefaultNonceService implements NonceService, InitializingBean {
 	}
 
 	@Override
-	@Scheduled(fixedRate = 5 * 60 * 1000) // schedule this task every five minutes
+	//We are eventually deleting this class, but if we weren't, 
+	//this would have been moved to application-context.xml for easier configuration.
+	//@Scheduled(fixedRate = 5 * 60 * 1000) // schedule this task every five minutes
 	public void clearExpiredNonces() {
 
 		logger.info("Clearing expired nonces");

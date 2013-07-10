@@ -24,6 +24,8 @@ import org.mitre.openid.connect.model.ApprovedSite;
 import org.mitre.openid.connect.model.WhitelistedSite;
 import org.mitre.openid.connect.repository.ApprovedSiteRepository;
 import org.mitre.openid.connect.service.ApprovedSiteService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.stereotype.Service;
@@ -39,6 +41,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class DefaultApprovedSiteService implements ApprovedSiteService {
 
+	private static Logger logger = LoggerFactory.getLogger(DefaultApprovedSiteService.class);
+	
 	@Autowired
 	private ApprovedSiteRepository approvedSiteRepository;
 
@@ -118,6 +122,19 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 		if (approvedSites != null) {
 			for (ApprovedSite approvedSite : approvedSites) {
 				approvedSiteRepository.remove(approvedSite);
+			}
+		}
+	}
+	
+	@Override
+	public void clearExpiredSites() {
+		
+		logger.info("Clearing expired approved sites");
+		
+		Collection<ApprovedSite> expiredSites = approvedSiteRepository.getExpired();
+		if (expiredSites != null) {
+			for (ApprovedSite expired : expiredSites) {
+				approvedSiteRepository.remove(expired);
 			}
 		}
 	}

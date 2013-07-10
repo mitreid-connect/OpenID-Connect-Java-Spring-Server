@@ -240,9 +240,14 @@
 	<!-- End view configuration -->
 
 	<!-- scheduled tasks -->
-	<!-- <task:scheduler id="taskScheduler" pool-size="10" /> -->
-	<!-- <task:executor id="taskExecutor" pool-size="5" /> -->
-	<!-- <task:annotation-driven scheduler="taskScheduler" executor="taskExecutor" /> -->
+	<task:scheduler id="taskScheduler" pool-size="10" /> 
+	<task:executor id="taskExecutor" pool-size="5" /> 
+	<task:annotation-driven scheduler="taskScheduler" executor="taskExecutor" /> 
+	
+	<task:scheduled-tasks scheduler="taskScheduler">
+	    <task:scheduled ref="defaultOAuth2ProviderTokenService" method="clearExpiredTokens" fixed-rate="300000"/>
+	    <task:scheduled ref="defaultApprovedSiteService" method="clearExpiredSites" fixed-rate="300000"/>
+	</task:scheduled-tasks>
 
 	<!-- import application-local configuration information (such as bean definitions) -->
 	<import resource="local-config.xml" />

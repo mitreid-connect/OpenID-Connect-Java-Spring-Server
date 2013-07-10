@@ -96,4 +96,10 @@ public interface ApprovedSiteService {
 	 * @param client
 	 */
 	public void clearApprovedSitesForClient(ClientDetails client);
+	
+	/**
+	 * Remove all expired approved sites fromt he data store.
+	 * @return
+	 */
+	public void clearExpiredSites();
 }
