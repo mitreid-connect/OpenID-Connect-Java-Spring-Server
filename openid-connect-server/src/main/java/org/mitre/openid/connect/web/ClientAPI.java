@@ -148,7 +148,7 @@ public class ClientAPI {
 			return "jsonErrorView";
 		}
 
-		// if they leave the client secret empty, force it to be generated
+		// if they leave the client identifier empty, force it to be generated
 		if (Strings.isNullOrEmpty(client.getClientId())) {
 			client = clientService.generateClientId(client);
 		}
@@ -214,7 +214,7 @@ public class ClientAPI {
 			return "jsonErrorView";
 		}
 
-		// if they leave the client secret empty, force it to be generated
+		// if they leave the client identifier empty, force it to be generated
 		if (Strings.isNullOrEmpty(client.getClientId())) {
 			client = clientService.generateClientId(client);
 		}
