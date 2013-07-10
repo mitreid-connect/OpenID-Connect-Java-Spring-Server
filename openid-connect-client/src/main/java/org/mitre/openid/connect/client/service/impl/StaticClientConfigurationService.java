@@ -21,12 +21,10 @@ package org.mitre.openid.connect.client.service.impl;
 
 import java.util.Map;
 
-import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.RegisteredClient;
 import org.mitre.openid.connect.client.service.ClientConfigurationService;
 import org.mitre.openid.connect.config.ServerConfiguration;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.security.oauth2.provider.ClientDetails;
 
 /**
  * Client configuration service that holds a static map from issuer URL to a ClientDetails object to use at that issuer.

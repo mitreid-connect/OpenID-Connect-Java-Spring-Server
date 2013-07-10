@@ -23,7 +23,6 @@ import java.util.concurrent.ExecutionException;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.RegisteredClient;
 import org.mitre.openid.connect.ClientDetailsEntityJsonProcessor;
 import org.mitre.openid.connect.client.service.ClientConfigurationService;
@@ -37,7 +36,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
-import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.web.client.RestTemplate;
 
 import com.google.common.cache.CacheBuilder;
@@ -45,7 +43,6 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 /**
  * @author jricher
@@ -117,7 +114,6 @@ public class DynamicRegistrationClientConfigurationService implements ClientConf
 	public class DynamicClientRegistrationLoader extends CacheLoader<ServerConfiguration, RegisteredClient> {
 		private HttpClient httpClient = new DefaultHttpClient();
 		private HttpComponentsClientHttpRequestFactory httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
-		private JsonParser parser = new JsonParser();
 
 		@Override
 		public RegisteredClient load(ServerConfiguration serverConfig) throws Exception {
@@ -155,6 +151,7 @@ public class DynamicRegistrationClientConfigurationService implements ClientConf
 				HttpEntity<String> entity = new HttpEntity<String>(headers);
 				
 				String registered = restTemplate.exchange(knownClient.getRegistrationClientUri(), HttpMethod.GET, entity, String.class).getBody();
+				// TODO: handle HTTP errors
 				
 				RegisteredClient client = ClientDetailsEntityJsonProcessor.parseRegistered(registered);
 				
