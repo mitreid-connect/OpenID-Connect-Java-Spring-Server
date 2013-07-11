@@ -119,7 +119,6 @@ public class OIDCAuthenticationToken extends AbstractAuthenticationToken {
 	 */
 	@Override
 	public Object getPrincipal() {
-		// TODO Auto-generated method stub
 		return principal;
 	}
 
