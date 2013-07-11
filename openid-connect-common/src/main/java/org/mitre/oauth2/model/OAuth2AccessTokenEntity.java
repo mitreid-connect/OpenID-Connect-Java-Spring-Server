@@ -288,8 +288,19 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	}
 
 	@Override
+	@Transient
 	public int getExpiresIn() {
-		// TODO Auto-generated method stub
-		return 0;
+		
+		if (getExpiration() == null) {
+			return -1; // no expiration time
+		} else {
+			int secondsRemaining = (int) ((getExpiration().getTime() - System.currentTimeMillis()) / 1000);
+			if (isExpired()) {
+				return 0; // has an expiration time and expired
+			} else { // has an expiration time and not expired
+				return secondsRemaining;
+			}
+		}
 	}
+	
 }
