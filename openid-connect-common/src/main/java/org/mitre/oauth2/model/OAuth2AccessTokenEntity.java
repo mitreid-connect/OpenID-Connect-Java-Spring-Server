@@ -217,7 +217,6 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 
 	public void setRefreshToken(OAuth2RefreshToken refreshToken) {
 		if (!(refreshToken instanceof OAuth2RefreshTokenEntity)) {
-			// TODO: make a copy constructor instead....
 			throw new IllegalArgumentException("Not a storable refresh token entity!");
 		}
 		// force a pass through to the entity version
