@@ -16,8 +16,13 @@
  ******************************************************************************/
 package org.mitre.oauth2.service.impl;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.Date;
 import java.util.Set;
@@ -38,6 +43,7 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
+import org.springframework.security.oauth2.common.exceptions.InvalidScopeException;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -310,8 +316,7 @@ public class TestDefaultOAuth2ProviderTokenService {
 		assertThat(token.getScope(), equalTo(lessScope));
 	}
 
-	// Note: attempt at upscoping may throw an exception in future implementation.
-	@Test
+	@Test(expected = InvalidScopeException.class)
 	public void refreshAccessToken_requestingMoreScope() {
 
 		Set<String> moreScope = Sets.newHashSet(storedScope);
@@ -320,27 +325,21 @@ public class TestDefaultOAuth2ProviderTokenService {
 
 		Mockito.when(authRequest.getScope()).thenReturn(moreScope);
 
-		OAuth2AccessTokenEntity token = service.refreshAccessToken(refreshTokenValue, authRequest);
-
-		assertThat(token.getScope(), not(equalTo(moreScope)));
-		assertThat(token.getScope(), equalTo(storedScope));
+		service.refreshAccessToken(refreshTokenValue, authRequest);
 	}
 
 	/**
 	 * Tests the case where only some of the valid scope values are being requested along with 
 	 * other extra unauthorized scope values.
 	 */
-	@Test
+	@Test(expected = InvalidScopeException.class)
 	public void refreshAccessToken_requestingMixedScope() {
 
 		Set<String> mixedScope = Sets.newHashSet("openid", "profile", "address", "phone"); // no email or offline_access
 
 		Mockito.when(authRequest.getScope()).thenReturn(mixedScope);
 
-		OAuth2AccessTokenEntity token = service.refreshAccessToken(refreshTokenValue, authRequest);
-
-		// Current behavior is to simply return the set scope values stored in the initial authorization.
-		assertThat(token.getScope(), equalTo(storedScope));
+		service.refreshAccessToken(refreshTokenValue, authRequest);
 	}
 
 	@Test
