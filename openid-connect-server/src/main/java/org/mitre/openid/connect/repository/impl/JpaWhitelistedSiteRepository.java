@@ -77,10 +77,10 @@ public class JpaWhitelistedSiteRepository implements WhitelistedSiteRepository {
 	public WhitelistedSite update(WhitelistedSite oldWhitelistedSite, WhitelistedSite whitelistedSite) {
 		// sanity check
 		whitelistedSite.setId(oldWhitelistedSite.getId());
-		
+
 		return saveOrUpdate(oldWhitelistedSite.getId(), manager, whitelistedSite);
 	}
-	
+
 	@Override
 	@Transactional
 	public WhitelistedSite getByClientId(String clientId) {
@@ -94,7 +94,7 @@ public class JpaWhitelistedSiteRepository implements WhitelistedSiteRepository {
 	public Collection<WhitelistedSite> getByCreator(String creatorId) {
 		TypedQuery<WhitelistedSite> query = manager.createNamedQuery("WhitelistedSite.getByCreaterUserId", WhitelistedSite.class);
 		query.setParameter("userId", creatorId);
-		
+
 		return query.getResultList();
 	}
 }

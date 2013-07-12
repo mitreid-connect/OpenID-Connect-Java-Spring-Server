@@ -22,7 +22,7 @@ package org.mitre.openid.connect.exception;
 public class InvalidJwtSignatureException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	public InvalidJwtSignatureException() {
 		super();
 	}
@@ -30,5 +30,5 @@ public class InvalidJwtSignatureException extends RuntimeException {
 	public InvalidJwtSignatureException(String message) {
 		super(message);
 	}
-	
+
 }

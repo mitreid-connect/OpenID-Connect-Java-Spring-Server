@@ -43,11 +43,11 @@ import com.google.gson.JsonSerializer;
 
 @Component("tokenIntrospection")
 public class TokenIntrospectionView extends AbstractView {
-	
+
 	private static Logger logger = LoggerFactory.getLogger(TokenIntrospectionView.class);
 
 	@Override
-    protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
+	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
 
 		Gson gson = new GsonBuilder().setExclusionStrategies(new ExclusionStrategy() {
 
@@ -68,7 +68,7 @@ public class TokenIntrospectionView extends AbstractView {
 					// serialize other classes without filter (lists and sets and things)
 					return false;
 				}
-				*/
+				 */
 				return false;
 			}
 
@@ -84,28 +84,29 @@ public class TokenIntrospectionView extends AbstractView {
 
 		})
 		.registerTypeAdapter(OAuth2AccessTokenEntity.class, new JsonSerializer<OAuth2AccessTokenEntity>() {
-            public JsonElement serialize(OAuth2AccessTokenEntity src, Type typeOfSrc, JsonSerializationContext context) {
-            	JsonObject token = new JsonObject();
-            	
-            	token.addProperty("valid", true);
-            	
-            	JsonArray scopes = new JsonArray();
-            	for (String scope : src.getScope()) {
-	                scopes.add(new JsonPrimitive(scope));
-                }
-            	token.add("scope", scopes);
-            	
-            	token.add("expires_at", context.serialize(src.getExpiration()));
-            	
-            	//token.addProperty("audience", src.getAuthenticationHolder().getAuthentication().getAuthorizationRequest().getClientId());
-            	
-            	token.addProperty("subject", src.getAuthenticationHolder().getAuthentication().getName());
-            	
-            	token.addProperty("client_id", src.getAuthenticationHolder().getAuthentication().getOAuth2Request().getClientId());
-            	
-            	return token;
-            }
-			
+			@Override
+			public JsonElement serialize(OAuth2AccessTokenEntity src, Type typeOfSrc, JsonSerializationContext context) {
+				JsonObject token = new JsonObject();
+
+				token.addProperty("valid", true);
+
+				JsonArray scopes = new JsonArray();
+				for (String scope : src.getScope()) {
+					scopes.add(new JsonPrimitive(scope));
+				}
+				token.add("scope", scopes);
+
+				token.add("expires_at", context.serialize(src.getExpiration()));
+
+				//token.addProperty("audience", src.getAuthenticationHolder().getAuthentication().getAuthorizationRequest().getClientId());
+
+				token.addProperty("subject", src.getAuthenticationHolder().getAuthentication().getName());
+
+				token.addProperty("client_id", src.getAuthenticationHolder().getAuthentication().getOAuth2Request().getClientId());
+
+				return token;
+			}
+
 		})
 		.setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
 		.create();
@@ -113,9 +114,9 @@ public class TokenIntrospectionView extends AbstractView {
 		response.setContentType("application/json");
 
 		Writer out;
-		
+
 		try {
-		
+
 			out = response.getWriter();
 			Object obj = model.get("entity");
 			if (obj == null) {
@@ -123,13 +124,13 @@ public class TokenIntrospectionView extends AbstractView {
 			}
 
 			gson.toJson(obj, out);
-		
+
 		} catch (IOException e) {
-		
+
 			logger.error("IOException occurred in TokenIntrospectionView.java: ", e);
-		
+
 		}
 
-    }
+	}
 
 }

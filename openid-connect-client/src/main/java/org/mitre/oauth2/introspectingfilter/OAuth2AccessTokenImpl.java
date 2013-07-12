@@ -20,73 +20,73 @@ import com.google.gson.JsonObject;
 
 public class OAuth2AccessTokenImpl implements OAuth2AccessToken {
 
-    private JsonObject token;
-    private String tokenString;
-    private Set<String> scopes = null;
-    private Date expireDate;
-    
-    
-    public OAuth2AccessTokenImpl(JsonObject token, String tokenString) {
-        this.token = token;
-        this.tokenString = tokenString;
-        scopes = new HashSet<String>();
-        for (JsonElement e : token.get("scope").getAsJsonArray()) {
-            scopes.add(e.getAsString());
-        }
-        
-        DateFormat dateFormater = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
-        try {
-            expireDate = dateFormater.parse(token.get("expires_at").getAsString());
-        } catch (ParseException ex) {
-            Logger.getLogger(IntrospectingTokenService.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
+	private JsonObject token;
+	private String tokenString;
+	private Set<String> scopes = null;
+	private Date expireDate;
 
 
-    @Override
-    public Map<String, Object> getAdditionalInformation() {
-        return null;
-    }
+	public OAuth2AccessTokenImpl(JsonObject token, String tokenString) {
+		this.token = token;
+		this.tokenString = tokenString;
+		scopes = new HashSet<String>();
+		for (JsonElement e : token.get("scope").getAsJsonArray()) {
+			scopes.add(e.getAsString());
+		}
 
-    @Override
-    public Set<String> getScope() {
-        return scopes;
-    }
+		DateFormat dateFormater = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+		try {
+			expireDate = dateFormater.parse(token.get("expires_at").getAsString());
+		} catch (ParseException ex) {
+			Logger.getLogger(IntrospectingTokenService.class.getName()).log(Level.SEVERE, null, ex);
+		}
+	}
 
-    @Override
-    public OAuth2RefreshToken getRefreshToken() {
-        return null;
-    }
 
-    @Override
-    public String getTokenType() {
-        return BEARER_TYPE;
-    }
+	@Override
+	public Map<String, Object> getAdditionalInformation() {
+		return null;
+	}
 
-    @Override
-    public boolean isExpired() {
-        if (expireDate != null && expireDate.before(new Date())) {
-            return true;
-        }
-        return false;
-    }
+	@Override
+	public Set<String> getScope() {
+		return scopes;
+	}
 
-    @Override
-    public Date getExpiration() {
-        return expireDate;
-    }
+	@Override
+	public OAuth2RefreshToken getRefreshToken() {
+		return null;
+	}
 
-    @Override
-    public int getExpiresIn() {
-        if (expireDate != null) {
-            return (int)TimeUnit.MILLISECONDS.toSeconds(expireDate.getTime() - (new Date()).getTime());
-        }
-        return 0;
-    }
+	@Override
+	public String getTokenType() {
+		return BEARER_TYPE;
+	}
 
-    @Override
-    public String getValue() {
-        return tokenString;
-    }
+	@Override
+	public boolean isExpired() {
+		if (expireDate != null && expireDate.before(new Date())) {
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public Date getExpiration() {
+		return expireDate;
+	}
+
+	@Override
+	public int getExpiresIn() {
+		if (expireDate != null) {
+			return (int)TimeUnit.MILLISECONDS.toSeconds(expireDate.getTime() - (new Date()).getTime());
+		}
+		return 0;
+	}
+
+	@Override
+	public String getValue() {
+		return tokenString;
+	}
 
 }

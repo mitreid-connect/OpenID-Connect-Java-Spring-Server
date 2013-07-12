@@ -32,7 +32,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 /**
- * Indicator that login to a site should be automatically granted 
+ * Indicator that login to a site should be automatically granted
  * without user interaction.
  * @author jricher, aanganes
  *
@@ -40,21 +40,21 @@ import javax.persistence.Table;
 @Entity
 @Table(name="whitelisted_site")
 @NamedQueries({
-	@NamedQuery(name = "WhitelistedSite.getAll", query = "select w from WhitelistedSite w"), 
+	@NamedQuery(name = "WhitelistedSite.getAll", query = "select w from WhitelistedSite w"),
 	@NamedQuery(name = "WhitelistedSite.getByClientId", query = "select w from WhitelistedSite w where w.clientId = :clientId"),
 	@NamedQuery(name = "WhitelistedSite.getByCreatoruserId", query = "select w from WhitelistedSite w where w.creatorUserId = :userId")
 })
 public class WhitelistedSite {
 
 	// unique id
-    private Long id;
-    
-    // Reference to the admin user who created this entry
+	private Long id;
+
+	// Reference to the admin user who created this entry
 	private String creatorUserId;
-    
+
 	// which OAuth2 client is this tied to
 	private String clientId;
-	
+
 	// what scopes be allowed by default
 	// this should include all information for what data to access
 	private Set<String> allowedScopes;
@@ -63,14 +63,14 @@ public class WhitelistedSite {
 	 * Empty constructor
 	 */
 	public WhitelistedSite() {
-		
+
 	}
-	
+
 	/**
 	 * @return the id
 	 */
 	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)	
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	public Long getId() {
 		return id;
 	}
@@ -103,9 +103,9 @@ public class WhitelistedSite {
 	 */
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(
-    		name="whitelisted_site_scope",
-    		joinColumns=@JoinColumn(name="owner_id")
-    )
+			name="whitelisted_site_scope",
+			joinColumns=@JoinColumn(name="owner_id")
+			)
 	@Column(name="scope")
 	public Set<String> getAllowedScopes() {
 		return allowedScopes;

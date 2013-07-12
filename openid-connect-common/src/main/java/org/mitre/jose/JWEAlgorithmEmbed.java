@@ -5,7 +5,6 @@ package org.mitre.jose;
 
 import javax.persistence.Basic;
 import javax.persistence.Embeddable;
-import javax.persistence.Entity;
 import javax.persistence.Transient;
 
 import com.google.common.base.Strings;
@@ -22,16 +21,16 @@ import com.nimbusds.jose.JWEAlgorithm;
 public class JWEAlgorithmEmbed {
 
 	public static final JWEAlgorithmEmbed NONE = getForAlgorithmName("none");
-	
+
 	private JWEAlgorithm algorithm;
 
 	public JWEAlgorithmEmbed() {
-		
+
 	}
-	
+
 	public JWEAlgorithmEmbed(JWEAlgorithm algorithm) {
-	    this.algorithm = algorithm;
-    }
+		this.algorithm = algorithm;
+	}
 
 	public static JWEAlgorithmEmbed getForAlgorithmName (String algorithmName) {
 		JWEAlgorithmEmbed ent = new JWEAlgorithmEmbed();
@@ -42,7 +41,7 @@ public class JWEAlgorithmEmbed {
 			return ent;
 		}
 	}
-	
+
 	/**
 	 * Get the name of this algorithm, return null if no algorithm set.
 	 * @return
@@ -55,9 +54,9 @@ public class JWEAlgorithmEmbed {
 			return null;
 		}
 	}
-	
+
 	/**
-	 * Set the name of this algorithm. 
+	 * Set the name of this algorithm.
 	 * Calls JWEAlgorithm.parse()
 	 * @param algorithmName
 	 */
@@ -72,15 +71,15 @@ public class JWEAlgorithmEmbed {
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
-    @Override
-    public String toString() {
-	    return "JWEAlgorithmEmbed [algorithm=" + algorithm + "]";
-    }
+	@Override
+	public String toString() {
+		return "JWEAlgorithmEmbed [algorithm=" + algorithm + "]";
+	}
 
 	/**
 	 * @return the algorithm
 	 */
-    @Transient
+	@Transient
 	public JWEAlgorithm getAlgorithm() {
 		return algorithm;
 	}
@@ -91,5 +90,5 @@ public class JWEAlgorithmEmbed {
 	public void setAlgorithm(JWEAlgorithm algorithm) {
 		this.algorithm = algorithm;
 	}
-	
+
 }

@@ -38,7 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Repository
 public class JpaEventRepository implements EventRepository {
-	
+
 	@PersistenceContext
 	private EntityManager manager;
 
@@ -52,17 +52,17 @@ public class JpaEventRepository implements EventRepository {
 	@Override
 	@Transactional
 	public Collection<Event> getEventsDuringPeriod(Date start, Date end, int startChunk, int chunkSize) {
-		
+
 		Query query = manager.createQuery("SELECT e FROM Event e WHERE e.timestamp BETWEEN :start AND :end");
-			    
+
 		query = query.setParameter("start", start, TemporalType.DATE);
 		query = query.setParameter("end", end, TemporalType.DATE);
 		query = query.setFirstResult(startChunk);
-        query = query.setMaxResults(chunkSize);
-		
+		query = query.setMaxResults(chunkSize);
+
 		return query.getResultList();
 	}
-	
+
 	@Override
 	@Transactional
 	public void remove(Event event) {

@@ -33,21 +33,21 @@ import com.google.gson.JsonObject;
 @Table(name="user_info")
 @NamedQueries({
 	@NamedQuery(name="DefaultUserInfo.getAll", query = "select u from DefaultUserInfo u"),
-	@NamedQuery(name="DefaultUserInfo.getByUsername", query = "select u from DefaultUserInfo u WHERE u.preferredUsername = :username"),	
-	@NamedQuery(name="DefaultUserInfo.getBySubject", query = "select u from DefaultUserInfo u WHERE u.sub = :sub")	
+	@NamedQuery(name="DefaultUserInfo.getByUsername", query = "select u from DefaultUserInfo u WHERE u.preferredUsername = :username"),
+	@NamedQuery(name="DefaultUserInfo.getBySubject", query = "select u from DefaultUserInfo u WHERE u.sub = :sub")
 })
 public class DefaultUserInfo implements UserInfo {
-	
+
 	private Long id;
-	private String sub;	
+	private String sub;
 	private String preferredUsername;
-	private String name;	
-	private String givenName;	
-	private String familyName;	
-	private String middleName;	
-	private String nickname;	
+	private String name;
+	private String givenName;
+	private String familyName;
+	private String middleName;
+	private String nickname;
 	private String profile;
-	private String picture;	
+	private String picture;
 	private String website;
 	private String email;
 	private Boolean emailVerified;
@@ -58,8 +58,8 @@ public class DefaultUserInfo implements UserInfo {
 	private Address address;
 	private String updatedTime;
 	private String birthdate;
-	
-	
+
+
 	/**
 	 * @return the id
 	 */
@@ -356,21 +356,23 @@ public class DefaultUserInfo implements UserInfo {
 	}
 
 	/**
-     * @return the birthdate
-     */
+	 * @return the birthdate
+	 */
+	@Override
 	@Basic
 	@Column(name="birthdate")
-    public String getBirthdate() {
-    	return birthdate;
-    }
+	public String getBirthdate() {
+		return birthdate;
+	}
 	/**
-     * @param birthdate the birthdate to set
-     */
-    public void setBirthdate(String birthdate) {
-    	this.birthdate = birthdate;
-    }
+	 * @param birthdate the birthdate to set
+	 */
+	@Override
+	public void setBirthdate(String birthdate) {
+		this.birthdate = birthdate;
+	}
 
-    /**
+	/**
 	 * Parse a JsonObject into a UserInfo.
 	 * @param o
 	 * @return
@@ -379,7 +381,7 @@ public class DefaultUserInfo implements UserInfo {
 		DefaultUserInfo ui = new DefaultUserInfo();
 
 		ui.setSub(obj.has("sub") ? obj.get("sub").getAsString() : null);
-		
+
 		ui.setName(obj.has("name") ? obj.get("name").getAsString() : null);
 		ui.setPreferredUsername(obj.has("preferred_username") ? obj.get("preferred_username").getAsString() : null);
 		ui.setGivenName(obj.has("given_name") ? obj.get("given_name").getAsString() : null);
@@ -394,29 +396,29 @@ public class DefaultUserInfo implements UserInfo {
 		ui.setLocale(obj.has("locale") ? obj.get("locale").getAsString() : null);
 		ui.setUpdatedTime(obj.has("updated_time") ? obj.get("updated_time").getAsString() : null);
 		ui.setBirthdate(obj.has("birthdate") ? obj.get("birthdate").getAsString() : null);
-		
+
 		ui.setEmail(obj.has("email") ? obj.get("email").getAsString() : null);
 		ui.setEmailVerified(obj.has("email_verified") ? obj.get("email_verified").getAsBoolean() : null);
-		
+
 		ui.setPhoneNumber(obj.has("phone_number") ? obj.get("phone_number").getAsString() : null);
 
-		
+
 		if (obj.has("address") && obj.get("address").isJsonObject()) {
 			JsonObject addr = obj.get("address").getAsJsonObject();
 			ui.setAddress(new Address());
-			
+
 			ui.getAddress().setFormatted(addr.has("formatted") ? addr.get("formatted").getAsString() : null);
 			ui.getAddress().setStreetAddress(addr.has("street_address") ? addr.get("street_address").getAsString() : null);
 			ui.getAddress().setLocality(addr.has("locality") ? addr.get("locality").getAsString() : null);
 			ui.getAddress().setRegion(addr.has("region") ? addr.get("region").getAsString() : null);
 			ui.getAddress().setPostalCode(addr.has("postal_code") ? addr.get("postal_code").getAsString() : null);
 			ui.getAddress().setCountry(addr.has("country") ? addr.get("country").getAsString() : null);
-			
+
 		}
 
-		
+
 		return ui;
-		
+
 	}
 
 }

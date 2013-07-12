@@ -70,19 +70,19 @@ public class DefaultUserInfoService implements UserInfoService {
 	public UserInfo getByUsername(String username) {
 		return userInfoRepository.getByUsername(username);
 	}
-	
-	/**
-     * @return the userInfoRepository
-     */
-    public UserInfoRepository getUserInfoRepository() {
-    	return userInfoRepository;
-    }
 
 	/**
-     * @param userInfoRepository the userInfoRepository to set
-     */
-    public void setUserInfoRepository(UserInfoRepository userInfoRepository) {
-    	this.userInfoRepository = userInfoRepository;
-    }
+	 * @return the userInfoRepository
+	 */
+	public UserInfoRepository getUserInfoRepository() {
+		return userInfoRepository;
+	}
+
+	/**
+	 * @param userInfoRepository the userInfoRepository to set
+	 */
+	public void setUserInfoRepository(UserInfoRepository userInfoRepository) {
+		this.userInfoRepository = userInfoRepository;
+	}
 
 }

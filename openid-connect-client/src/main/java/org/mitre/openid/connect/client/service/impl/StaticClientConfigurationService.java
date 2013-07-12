@@ -21,7 +21,7 @@ public class StaticClientConfigurationService implements ClientConfigurationServ
 
 	// Map of issuer URL -> client configuration information
 	private Map<String, ClientDetails> clients;
-	
+
 	/**
 	 * @return the clients
 	 */
@@ -43,19 +43,19 @@ public class StaticClientConfigurationService implements ClientConfigurationServ
 	 */
 	@Override
 	public ClientDetails getClientConfiguration(String issuer) {
-		
+
 		return clients.get(issuer);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
 	 */
-    @Override
-    public void afterPropertiesSet() throws Exception {
-    	if (clients == null || clients.isEmpty()) {
-    		throw new IllegalArgumentException("Clients map cannot be null or empty");
-    	}
-	    
-    }
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		if (clients == null || clients.isEmpty()) {
+			throw new IllegalArgumentException("Clients map cannot be null or empty");
+		}
+
+	}
 
 }

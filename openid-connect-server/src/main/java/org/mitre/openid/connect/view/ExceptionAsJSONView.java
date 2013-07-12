@@ -37,7 +37,7 @@ import com.google.gson.JsonObject;
 public class ExceptionAsJSONView extends AbstractView {
 
 	private static Logger logger = LoggerFactory.getLogger(ExceptionAsJSONView.class);
-	
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -52,7 +52,7 @@ public class ExceptionAsJSONView extends AbstractView {
 		response.setContentType("application/json");
 
 		response.setStatus(HttpStatus.BAD_REQUEST.value());
-		
+
 		final JsonObject jsonObject = new JsonObject();
 
 		Object ex = model.get("exception");
@@ -62,13 +62,13 @@ public class ExceptionAsJSONView extends AbstractView {
 				((Exception) ex).getMessage());
 
 		try {
-			
+
 			response.getWriter().write(jsonObject.toString());
-			
+
 		} catch (IOException e) {
-			
+
 			logger.error("IOException in ExceptionAsJSONView.java: ", e);
-			
+
 		}
 	}
 

@@ -45,23 +45,23 @@ import com.google.common.collect.ImmutableMap;
  */
 @Controller
 public class UserInfoEndpoint {
-	
+
 	@Autowired
 	private UserInfoService userInfoService;
-	
+
 	private static Logger logger = LoggerFactory.getLogger(UserInfoEndpoint.class);
-	
+
 	private Map<String, String> schemaToViewNameMap = ImmutableMap.of(
-			openIdSchema, jsonUserInfoViewName, 
+			openIdSchema, jsonUserInfoViewName,
 			pocoSchema, pocoUserInfoViewName
-	);
-	
+			);
+
 	// Valid schemas and associated views
 	private static final String openIdSchema = "openid";
 	private static final String pocoSchema = "poco";
 	private static final String jsonUserInfoViewName = "jsonUserInfoView";
 	private static final String pocoUserInfoViewName = "pocoUserInfoView";
-	
+
 	/**
 	 * Get information about the user as specified in the accessToken->idToken included in this request
 	 * 
@@ -81,45 +81,45 @@ public class UserInfoEndpoint {
 
 		String viewName = schemaToViewNameMap.get(schema);
 		if (viewName == null) {
-			logger.error("getInfo failed; unknown User Info schema " + schema); 
+			logger.error("getInfo failed; unknown User Info schema " + schema);
 			model.addAttribute("code", HttpStatus.BAD_REQUEST);
 			return "httpCodeView";
 		}
 
-		String userId = p.getName(); 
+		String userId = p.getName();
 		UserInfo userInfo = userInfoService.getBySubject(userId);
-		
+
 		if (userInfo == null) {
-			logger.error("getInfo failed; user not found: " + userId); 
+			logger.error("getInfo failed; user not found: " + userId);
 			model.addAttribute("code", HttpStatus.NOT_FOUND);
 			return "httpCodeView";
 		}
-		
+
 		if (p instanceof OAuth2Authentication) {
-	        OAuth2Authentication authentication = (OAuth2Authentication)p;
-	        
-	        model.addAttribute("scope", authentication.getOAuth2Request().getScope());
-	        model.addAttribute("requestObject", authentication.getOAuth2Request().getRequestParameters().get("request"));
-        }
+			OAuth2Authentication authentication = (OAuth2Authentication)p;
+
+			model.addAttribute("scope", authentication.getOAuth2Request().getScope());
+			model.addAttribute("requestObject", authentication.getOAuth2Request().getRequestParameters().get("request"));
+		}
 
 		model.addAttribute("userInfo", userInfo);
-		
+
 		return viewName;
 
 	}
 
 	/**
-     * @return the schemaToViewNameMap (defaults to an immutable map)
-     */
-    public Map<String, String> getSchemaToViewNameMap() {
-    	return schemaToViewNameMap;
-    }
+	 * @return the schemaToViewNameMap (defaults to an immutable map)
+	 */
+	public Map<String, String> getSchemaToViewNameMap() {
+		return schemaToViewNameMap;
+	}
 
 	/**
-     * @param schemaToViewNameMap the schemaToViewNameMap to set
-     */
-    public void setSchemaToViewNameMap(Map<String, String> schemaToViewNameMap) {
-    	this.schemaToViewNameMap = schemaToViewNameMap;
-    }
+	 * @param schemaToViewNameMap the schemaToViewNameMap to set
+	 */
+	public void setSchemaToViewNameMap(Map<String, String> schemaToViewNameMap) {
+		this.schemaToViewNameMap = schemaToViewNameMap;
+	}
 
 }

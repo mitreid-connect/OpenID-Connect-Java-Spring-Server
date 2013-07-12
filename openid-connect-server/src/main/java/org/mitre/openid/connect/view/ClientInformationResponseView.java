@@ -37,7 +37,7 @@ public class ClientInformationResponseView extends AbstractView {
 
 	// note that this won't serialize nulls by default
 	private Gson gson = new Gson();
-	
+
 	/* (non-Javadoc)
 	 * @see org.springframework.web.servlet.view.AbstractView#renderMergedOutputModel(java.util.Map, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
 	 */
@@ -45,35 +45,35 @@ public class ClientInformationResponseView extends AbstractView {
 	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
 
 		response.setContentType("application/json");
-		
+
 		ClientDetailsEntity c = (ClientDetailsEntity) model.get("client");
 		OAuth2AccessTokenEntity token = (OAuth2AccessTokenEntity) model.get("token");
 		HttpStatus code = (HttpStatus) model.get("code");
 		if (code == null) {
 			code = HttpStatus.OK;
 		}
-		
+
 		JsonObject o = new JsonObject();
-		
+
 		o.addProperty("client_id", c.getClientId());
 		if (c.getClientSecret() != null) {
 			o.addProperty("client_secret", c.getClientSecret());
 			o.addProperty("expires_at", 0); // TODO: do we want to let secrets expire?
 		}
-		
+
 		if (c.getCreatedAt() != null) {
 			o.addProperty("issued_at", c.getCreatedAt().getTime());
 		}
 
 		o.addProperty("registration_access_token", token.getValue());
-		
+
 		// TODO: urlencode the client id for safety?
-		String uri = request.getRequestURL() + "/" + c.getClientId();		
+		String uri = request.getRequestURL() + "/" + c.getClientId();
 		o.addProperty("registration_client_uri", uri);
-		
-		
+
+
 		// add in all other client properties
-		
+
 		// OAuth DynReg
 		o.add("redirect_uris", getAsArray(c.getRedirectUris()));
 		o.addProperty("client_name", c.getClientName());
@@ -86,7 +86,7 @@ public class ClientInformationResponseView extends AbstractView {
 		o.add("grant_types", getAsArray(c.getGrantTypes()));
 		o.addProperty("policy_uri", c.getPolicyUri());
 		o.addProperty("jwks_uri", c.getJwksUri());
-		
+
 		// OIDC Registration
 		o.addProperty("application_type", c.getApplicationType() != null ? c.getApplicationType().getValue() : null);
 		o.addProperty("sector_identifier_uri", c.getSectorIdentifierUri());
@@ -104,20 +104,20 @@ public class ClientInformationResponseView extends AbstractView {
 		o.addProperty("initiate_login_uri", c.getInitiateLoginUri());
 		o.addProperty("post_logout_redirect_uri", c.getPostLogoutRedirectUri());
 		o.add("request_uris", getAsArray(c.getRequestUris()));
-		
+
 		try {
-	        Writer out = response.getWriter();
-	        gson.toJson(o, out);
-        } catch (JsonIOException e) {
-	        // TODO Auto-generated catch block
-	        e.printStackTrace();
-        } catch (IOException e) {
-	        // TODO Auto-generated catch block
-	        e.printStackTrace();
-        }		
-			
+			Writer out = response.getWriter();
+			gson.toJson(o, out);
+		} catch (JsonIOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
-	
+
 	private JsonElement getAsArray(Set<String> value) {
 		return gson.toJsonTree(value, new TypeToken<Set<String>>(){}.getType());
 	}

@@ -41,7 +41,7 @@ public interface UserInfoService {
 	 * @return UserInfo for sub, or null
 	 */
 	public UserInfo getBySubject(String userId);
-	
+
 	/**
 	 * Remove the UserInfo
 	 * 

@@ -30,5 +30,5 @@ public class InvalidJwtIssuerException extends RuntimeException {
 	public InvalidJwtIssuerException(String message) {
 		super(message);
 	}
-	
+
 }

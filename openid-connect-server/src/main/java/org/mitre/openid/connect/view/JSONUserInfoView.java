@@ -49,87 +49,90 @@ import com.nimbusds.jwt.JWTParser;
 
 @Component("jsonUserInfoView")
 public class JSONUserInfoView extends AbstractView {
-	
+
 	private static Logger logger = LoggerFactory.getLogger(JSONUserInfoView.class);
-	
+
 	/* (non-Javadoc)
 	 * @see org.springframework.web.servlet.view.AbstractView#renderMergedOutputModel(java.util.Map, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
 	 */
+	@Override
 	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
-		
+
 		UserInfo userInfo = (UserInfo) model.get("userInfo");
 
 		Set<String> scope = (Set<String>) model.get("scope");
-		
+
 		Gson gson = new GsonBuilder()
-			.setExclusionStrategies(new ExclusionStrategy() {
-				
-				public boolean shouldSkipField(FieldAttributes f) {
-					
-					return false;
+		.setExclusionStrategies(new ExclusionStrategy() {
+
+			@Override
+			public boolean shouldSkipField(FieldAttributes f) {
+
+				return false;
+			}
+
+			@Override
+			public boolean shouldSkipClass(Class<?> clazz) {
+				// skip the JPA binding wrapper
+				if (clazz.equals(BeanPropertyBindingResult.class)) {
+					return true;
 				}
-				
-				public boolean shouldSkipClass(Class<?> clazz) {
-					// skip the JPA binding wrapper
-					if (clazz.equals(BeanPropertyBindingResult.class)) {
-						return true;
-					}
-					return false;
-				}
-								
-			}).create();
+				return false;
+			}
+
+		}).create();
 
 		response.setContentType("application/json");
-		
+
 		Writer out;
-		
+
 		try {
-			
+
 			out = response.getWriter();
-			
+
 			if (model.get("requestObject") != null) {
-				
+
 				try {
-	                String jwtString = (String)model.get("requestObject");
-	                JWT requestObject = JWTParser.parse(jwtString);
-	                
-	                // FIXME: move to GSON for easier processing
-	                JsonObject obj = (JsonObject) new JsonParser().parse(requestObject.getJWTClaimsSet().toJSONObject().toJSONString());
-	                
-	                gson.toJson(toJsonFromRequestObj(userInfo, scope, obj), out);
-                } catch (JsonSyntaxException e) {
-	                // TODO Auto-generated catch block
-	                e.printStackTrace();
-                } catch (JsonIOException e) {
-	                // TODO Auto-generated catch block
-	                e.printStackTrace();
-                } catch (ParseException e) {
-	                // TODO Auto-generated catch block
-	                e.printStackTrace();
-                }
-			
+					String jwtString = (String)model.get("requestObject");
+					JWT requestObject = JWTParser.parse(jwtString);
+
+					// FIXME: move to GSON for easier processing
+					JsonObject obj = (JsonObject) new JsonParser().parse(requestObject.getJWTClaimsSet().toJSONObject().toJSONString());
+
+					gson.toJson(toJsonFromRequestObj(userInfo, scope, obj), out);
+				} catch (JsonSyntaxException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (JsonIOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
 			} else {
-			
+
 				gson.toJson(toJson(userInfo, scope), out);
-			
+
 			}
-			
+
 		} catch (IOException e) {
-			
+
 			logger.error("IOException in JSONUserInfoView.java: ", e);
-			
+
 		}
 
 	}
-	
+
 	private JsonObject toJson(UserInfo ui, Set<String> scope) {
-		
+
 		JsonObject obj = new JsonObject();
-		
+
 		if (scope.contains("openid")) {
 			obj.addProperty("sub", ui.getSub());
 		}
-		
+
 		if (scope.contains("profile")) {
 			obj.addProperty("name", ui.getName());
 			obj.addProperty("preferred_username", ui.getPreferredUsername());
@@ -146,16 +149,16 @@ public class JSONUserInfoView extends AbstractView {
 			obj.addProperty("updated_time", ui.getUpdatedTime());
 			obj.addProperty("birthdate", ui.getBirthdate());
 		}
-		
+
 		if (scope.contains("email")) {
 			obj.addProperty("email", ui.getEmail());
 			obj.addProperty("email_verified", ui.getEmailVerified());
 		}
-		
+
 		if (scope.contains("phone")) {
 			obj.addProperty("phone_number", ui.getPhoneNumber());
 		}
-		
+
 		if (scope.contains("address") && ui.getAddress() != null) {
 
 			JsonObject addr = new JsonObject();
@@ -165,18 +168,18 @@ public class JSONUserInfoView extends AbstractView {
 			addr.addProperty("region", ui.getAddress().getRegion());
 			addr.addProperty("postal_code", ui.getAddress().getPostalCode());
 			addr.addProperty("country", ui.getAddress().getCountry());
-			
+
 			obj.add("address", addr);
 		}
 
-		
+
 		return obj;
 	}
-	
+
 	/**
-	 * Build a JSON response according to the request object recieved. 
+	 * Build a JSON response according to the request object recieved.
 	 * 
-	 * Claims requested in requestObj.userinfo.claims are added to any 
+	 * Claims requested in requestObj.userinfo.claims are added to any
 	 * claims corresponding to requested scopes, if any.
 	 * 
 	 * @param ui
@@ -185,20 +188,20 @@ public class JSONUserInfoView extends AbstractView {
 	 * @return
 	 */
 	private JsonObject toJsonFromRequestObj(UserInfo ui, Set<String> scope, JsonObject requestObj) {
-		
+
 		JsonObject obj = toJson(ui, scope);
-		
+
 		//Process list of requested claims out of the request object
 		JsonElement userInfo = requestObj.get("userinfo");
 		if (userInfo == null || !userInfo.isJsonObject()) {
 			return obj;
 		}
-		
+
 		JsonElement claims = userInfo.getAsJsonObject().get("claims");
 		if (claims == null || !claims.isJsonObject()) {
 			return obj;
 		}
-		
+
 		//For each claim found, add it if not already present
 		for (Entry<String, JsonElement> i : claims.getAsJsonObject().entrySet()) {
 			String claimName = i.getKey();
@@ -231,10 +234,10 @@ public class JSONUserInfoView extends AbstractView {
 				}
 			}
 		}
-		
-		
-		
+
+
+
 		return obj;
-		
+
 	}
 }

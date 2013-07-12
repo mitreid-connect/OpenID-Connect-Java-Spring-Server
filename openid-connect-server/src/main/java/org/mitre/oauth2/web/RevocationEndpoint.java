@@ -38,52 +38,52 @@ import org.springframework.web.servlet.ModelAndView;
 public class RevocationEndpoint {
 	@Autowired
 	OAuth2TokenEntityService tokenServices;
-	
+
 	private static Logger logger = LoggerFactory.getLogger(RevocationEndpoint.class);
-	
+
 	public RevocationEndpoint() {
-		
+
 	}
-	
+
 	public RevocationEndpoint(OAuth2TokenEntityService tokenServices) {
 		this.tokenServices = tokenServices;
 	}
-	
+
 	// TODO
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
 	@RequestMapping("/revoke")
 	public ModelAndView revoke(@RequestParam("token") String tokenValue, Principal principal,
 			ModelAndView modelAndView) {
 
-		
+
 		OAuth2RefreshTokenEntity refreshToken = null;
 		OAuth2AccessTokenEntity accessToken = null;
 		try {
-	        refreshToken = tokenServices.getRefreshToken(tokenValue);
-        } catch (InvalidTokenException e) {
-	        // it's OK if either of these tokens are bad
-        	//TODO: Error Handling
-        }
+			refreshToken = tokenServices.getRefreshToken(tokenValue);
+		} catch (InvalidTokenException e) {
+			// it's OK if either of these tokens are bad
+			//TODO: Error Handling
+		}
 
 		try {
-	        accessToken = tokenServices.readAccessToken(tokenValue);
-        } catch (InvalidTokenException e) {
-	        // it's OK if either of these tokens are bad
-        	//TODO: Error Handling
-        } catch (AuthenticationException e) {
-        	//TODO: Error Handling
-        }
-		
+			accessToken = tokenServices.readAccessToken(tokenValue);
+		} catch (InvalidTokenException e) {
+			// it's OK if either of these tokens are bad
+			//TODO: Error Handling
+		} catch (AuthenticationException e) {
+			//TODO: Error Handling
+		}
+
 		if (refreshToken == null && accessToken == null) {
 			//TODO: Error Handling
 			// TODO: this should throw a 400 with a JSON error code
 			throw new InvalidTokenException("Invalid OAuth token: " + tokenValue);
 		}
-		
+
 		if (principal instanceof OAuth2Authentication) {
 			//TODO what is this variable for? It is unused. is it just a validation check?
 			OAuth2AccessTokenEntity tok = tokenServices.getAccessToken((OAuth2Authentication) principal);
-			
+
 			// we've got a client acting on its own behalf, not an admin
 			//ClientAuthentication clientAuth = (ClientAuthenticationToken) ((OAuth2Authentication) auth).getClientAuthentication();
 			OAuth2Request clientAuth = ((OAuth2Authentication) principal).getOAuth2Request();
@@ -91,27 +91,27 @@ public class RevocationEndpoint {
 			if (refreshToken != null) {
 				if (!refreshToken.getClient().getClientId().equals(clientAuth.getClientId())) {
 					// trying to revoke a token we don't own, fail
-					// TODO: this should throw a 403 
+					// TODO: this should throw a 403
 					//TODO: Error Handling
 					throw new PermissionDeniedException("Client tried to revoke a token it doesn't own");
 				}
 			} else {
 				if (!accessToken.getClient().getClientId().equals(clientAuth.getClientId())) {
 					// trying to revoke a token we don't own, fail
-					// TODO: this should throw a 403 
+					// TODO: this should throw a 403
 					//TODO: Error Handling
 					throw new PermissionDeniedException("Client tried to revoke a token it doesn't own");
 				}
 			}
 		}
-		
+
 		// if we got this far, we're allowed to do this
 		if (refreshToken != null) {
 			tokenServices.revokeRefreshToken(refreshToken);
 		} else {
 			tokenServices.revokeAccessToken(accessToken);
 		}
-		
+
 		// TODO: throw a 200 back (no content?)
 		return modelAndView;
 	}

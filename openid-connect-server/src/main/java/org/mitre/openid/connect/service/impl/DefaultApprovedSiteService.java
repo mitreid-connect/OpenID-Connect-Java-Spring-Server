@@ -42,26 +42,26 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 
 	@Autowired
 	private ApprovedSiteRepository approvedSiteRepository;
-	
+
 	@Autowired
 	private OAuth2TokenRepository tokenRepository;
 
 	/**
 	 * Default constructor
-	 */	
+	 */
 	public DefaultApprovedSiteService() {
 
 	}
-	
-    /**
-     * Constructor for use in test harnesses. 
-     * 
-     * @param repository
-     */	
+
+	/**
+	 * Constructor for use in test harnesses.
+	 * 
+	 * @param repository
+	 */
 	public DefaultApprovedSiteService(ApprovedSiteRepository approvedSiteRepository) {
 		this.approvedSiteRepository = approvedSiteRepository;
-	}	
-	
+	}
+
 	@Override
 	public Collection<ApprovedSite> getAll() {
 		return approvedSiteRepository.getAll();
@@ -81,7 +81,7 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 	@Override
 	@Transactional
 	public void remove(ApprovedSite approvedSite) {
-		
+
 		//Remove any associated access and refresh tokens
 		Set<OAuth2AccessTokenEntity> accessTokens = approvedSite.getApprovedAccessTokens();
 
@@ -91,17 +91,17 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 			}
 			tokenRepository.removeAccessToken(token);
 		}
-		
+
 		approvedSiteRepository.remove(approvedSite);
 	}
 
 	@Override
 	@Transactional
 	public ApprovedSite createApprovedSite(String clientId, String userId, Date timeoutDate, Set<String> allowedScopes,
-											WhitelistedSite whitelistedSite) {
-		
+			WhitelistedSite whitelistedSite) {
+
 		ApprovedSite as = approvedSiteRepository.save(new ApprovedSite());
-		
+
 		Date now = new Date();
 		as.setCreationDate(now);
 		as.setAccessDate(now);
@@ -110,47 +110,47 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 		as.setTimeoutDate(timeoutDate);
 		as.setAllowedScopes(allowedScopes);
 		as.setWhitelistedSite(whitelistedSite);
-		
+
 		return save(as);
-		
+
 	}
 
 	@Override
 	public Collection<ApprovedSite> getByClientIdAndUserId(String clientId, String userId) {
-		
+
 		return approvedSiteRepository.getByClientIdAndUserId(clientId, userId);
-		
+
 	}
 
 	/**
-     * @param userId
-     * @return
-     * @see org.mitre.openid.connect.repository.ApprovedSiteRepository#getByUserId(java.lang.String)
-     */
+	 * @param userId
+	 * @return
+	 * @see org.mitre.openid.connect.repository.ApprovedSiteRepository#getByUserId(java.lang.String)
+	 */
 	@Override
-    public Collection<ApprovedSite> getByUserId(String userId) {
-	    return approvedSiteRepository.getByUserId(userId);
-    }
+	public Collection<ApprovedSite> getByUserId(String userId) {
+		return approvedSiteRepository.getByUserId(userId);
+	}
 
 	/**
-     * @param clientId
-     * @return
-     * @see org.mitre.openid.connect.repository.ApprovedSiteRepository#getByClientId(java.lang.String)
-     */
+	 * @param clientId
+	 * @return
+	 * @see org.mitre.openid.connect.repository.ApprovedSiteRepository#getByClientId(java.lang.String)
+	 */
 	@Override
-    public Collection<ApprovedSite> getByClientId(String clientId) {
-	    return approvedSiteRepository.getByClientId(clientId);
-    }
+	public Collection<ApprovedSite> getByClientId(String clientId) {
+		return approvedSiteRepository.getByClientId(clientId);
+	}
 
 
 	@Override
 	public void clearApprovedSitesForClient(ClientDetails client) {
-	    Collection<ApprovedSite> approvedSites = approvedSiteRepository.getByClientId(client.getClientId());
+		Collection<ApprovedSite> approvedSites = approvedSiteRepository.getByClientId(client.getClientId());
 		if (approvedSites != null) {
 			for (ApprovedSite approvedSite : approvedSites) {
-	            approvedSiteRepository.remove(approvedSite);
-            }
+				approvedSiteRepository.remove(approvedSite);
+			}
 		}
-    }
+	}
 
 }

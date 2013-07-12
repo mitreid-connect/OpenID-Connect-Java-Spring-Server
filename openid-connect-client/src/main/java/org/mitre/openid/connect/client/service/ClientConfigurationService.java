@@ -12,5 +12,5 @@ import org.springframework.security.oauth2.provider.ClientDetails;
 public interface ClientConfigurationService {
 
 	public ClientDetails getClientConfiguration(String issuer);
-	
+
 }

@@ -9,21 +9,21 @@
 			<param name="ConversionPattern" value="%-5p: %c - %m%n" />
 		</layout>
 	</appender>
-	
+
 	<!-- Application Loggers -->
 	<logger name="org.mitre.openid">
 		<level value="info" />
 	</logger>
-	
+
 	<!-- 3rdparty Loggers -->
 	<logger name="org.springframework.core">
 		<level value="info" />
 	</logger>
-	
+
 	<logger name="org.springframework.beans">
 		<level value="info" />
 	</logger>
-	
+
 	<logger name="org.springframework.context">
 		<level value="info" />
 	</logger>
@@ -37,5 +37,5 @@
 		<priority value="warn" />
 		<appender-ref ref="console" />
 	</root>
-	
+
 </log4j:configuration>

@@ -25,7 +25,7 @@ public class JpaBlacklistedSiteRepository implements BlacklistedSiteRepository {
 
 	@PersistenceContext
 	private EntityManager manager;
-	
+
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.repository.BlacklistedSiteRepository#getAll()
 	 */
@@ -52,7 +52,7 @@ public class JpaBlacklistedSiteRepository implements BlacklistedSiteRepository {
 	@Transactional
 	public void remove(BlacklistedSite blacklistedSite) {
 		BlacklistedSite found = manager.find(BlacklistedSite.class, blacklistedSite.getId());
-		
+
 		if (found != null) {
 			manager.remove(found);
 		} else {
@@ -79,7 +79,7 @@ public class JpaBlacklistedSiteRepository implements BlacklistedSiteRepository {
 
 		blacklistedSite.setId(oldBlacklistedSite.getId());
 		return saveOrUpdate(oldBlacklistedSite.getId(), manager, blacklistedSite);
-		
+
 	}
 
 }

@@ -23,16 +23,16 @@ import javax.persistence.Temporal;
 })
 public class Nonce {
 
-	
+
 	private Long id; //the ID of this Nonce
-	
+
 	private String value; //the value of this Nonce
-	
+
 	private String clientId;//The id of the client who used this Nonce
-	
+
 	private Date useDate; //the date this Nonce was used
-	
-	private Date expireDate; //the date after which this Nonce should be removed from the database 
+
+	private Date expireDate; //the date after which this Nonce should be removed from the database
 
 	/**
 	 * @return the id
@@ -86,7 +86,7 @@ public class Nonce {
 	 * @return the useDate
 	 */
 	@Basic
-    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+	@Temporal(javax.persistence.TemporalType.TIMESTAMP)
 	@Column(name="use_date")
 	public Date getUseDate() {
 		return useDate;
@@ -103,7 +103,7 @@ public class Nonce {
 	 * @return the expireDate
 	 */
 	@Basic
-    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+	@Temporal(javax.persistence.TemporalType.TIMESTAMP)
 	@Column(name="expire_date")
 	public Date getExpireDate() {
 		return expireDate;
@@ -115,8 +115,8 @@ public class Nonce {
 	public void setExpireDate(Date expireDate) {
 		this.expireDate = expireDate;
 	}
-	
-	
-	
-	
+
+
+
+
 }

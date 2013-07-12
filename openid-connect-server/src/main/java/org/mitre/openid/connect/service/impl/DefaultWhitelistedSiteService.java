@@ -51,8 +51,8 @@ public class DefaultWhitelistedSiteService implements WhitelistedSiteService {
 	 */
 	public DefaultWhitelistedSiteService(WhitelistedSiteRepository whitelistedSiteRepository) {
 		this.repository = whitelistedSiteRepository;
-	}	
-	
+	}
+
 	@Override
 	public WhitelistedSite getById(Long id) {
 		return repository.getById(id);
@@ -86,12 +86,12 @@ public class DefaultWhitelistedSiteService implements WhitelistedSiteService {
 		return repository.getByCreator(creatorId);
 	}
 
-    @Override
-    public WhitelistedSite update(WhitelistedSite oldWhitelistedSite, WhitelistedSite whitelistedSite) {
-    	if (oldWhitelistedSite == null || whitelistedSite == null) {
-    		throw new IllegalArgumentException("Neither the old or new sites may be null");
-    	}
-    	return repository.update(oldWhitelistedSite, whitelistedSite);
-    }
+	@Override
+	public WhitelistedSite update(WhitelistedSite oldWhitelistedSite, WhitelistedSite whitelistedSite) {
+		if (oldWhitelistedSite == null || whitelistedSite == null) {
+			throw new IllegalArgumentException("Neither the old or new sites may be null");
+		}
+		return repository.update(oldWhitelistedSite, whitelistedSite);
+	}
 
 }

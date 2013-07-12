@@ -13,19 +13,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @PreAuthorize("hasRole('ROLE_USER')")
 @RequestMapping("stats")
 public class StatsAPI {
-	
+
 	@Autowired
 	private StatsService statsService;
-	
+
 	@RequestMapping(value = "summary", produces = "application/json")
 	public String statsSummary(ModelMap m) {
-		
+
 		Map<String, Integer> e = statsService.calculateSummaryStats();
-		
+
 		m.put("entity", e);
-		
+
 		return "statsSummaryJson";
-		
+
 	}
-	
+
 }

@@ -17,5 +17,5 @@ import org.mitre.openid.connect.client.model.IssuerServiceResponse;
 public interface IssuerService {
 
 	public IssuerServiceResponse getIssuer(HttpServletRequest request);
-	
+
 }

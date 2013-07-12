@@ -39,73 +39,76 @@ import com.google.gson.JsonObject;
 
 @Component("pocoUserInfoView")
 public class POCOUserInfoView extends AbstractView {
-	
+
 	private static Logger logger = LoggerFactory.getLogger(POCOUserInfoView.class);
-	
+
 	/* (non-Javadoc)
 	 * @see org.springframework.web.servlet.view.AbstractView#renderMergedOutputModel(java.util.Map, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
 	 */
+	@Override
 	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
-		
+
 		UserInfo userInfo = (UserInfo) model.get("userInfo");
 
 		Set<String> scope = (Set<String>) model.get("scope");
-		
+
 		Gson gson = new GsonBuilder()
-			.setExclusionStrategies(new ExclusionStrategy() {
-				
-				public boolean shouldSkipField(FieldAttributes f) {
-					
-					return false;
+		.setExclusionStrategies(new ExclusionStrategy() {
+
+			@Override
+			public boolean shouldSkipField(FieldAttributes f) {
+
+				return false;
+			}
+
+			@Override
+			public boolean shouldSkipClass(Class<?> clazz) {
+				// skip the JPA binding wrapper
+				if (clazz.equals(BeanPropertyBindingResult.class)) {
+					return true;
 				}
-				
-				public boolean shouldSkipClass(Class<?> clazz) {
-					// skip the JPA binding wrapper
-					if (clazz.equals(BeanPropertyBindingResult.class)) {
-						return true;
-					}
-					return false;
-				}
-								
-			}).create();
+				return false;
+			}
+
+		}).create();
 
 		response.setContentType("application/json");
-		
+
 		Writer out;
-		
+
 		try {
-			
+
 			out = response.getWriter();
 			gson.toJson(toPoco(userInfo, scope), out);
-			
+
 		} catch (IOException e) {
-			
+
 			logger.error("IOException in POCOUserInfoView.java: ", e);
-			
+
 		}
-		
+
 	}
-	
+
 	private JsonObject toPoco(UserInfo ui, Set<String> scope) {
 		JsonObject poco = new JsonObject();
-		
+
 		// Envelope Info
 		poco.addProperty("startIndex", 0);
 		poco.addProperty("itemsPerPage", 1);
 		poco.addProperty("totalResults", 1);
-		
+
 		// Build the entry for this userInfo, then add it to entries, then add it to poco
 		JsonObject entry = new JsonObject();
-		
+
 		if (scope.contains("openid")) {
 			entry.addProperty("id", ui.getSub());
 		}
-		
+
 		if (scope.contains("profile")) {
 			entry.addProperty("displayName", ui.getNickname());
-			
-			if (ui.getFamilyName() != null 
-					|| ui.getGivenName() != null 
+
+			if (ui.getFamilyName() != null
+					|| ui.getGivenName() != null
 					|| ui.getMiddleName() != null
 					|| ui.getName() != null) {
 				JsonObject name = new JsonObject();
@@ -115,54 +118,54 @@ public class POCOUserInfoView extends AbstractView {
 				name.addProperty("formatted", ui.getName());
 				entry.add("name", name);
 			}
-		
+
 			entry.addProperty("gender", ui.getGender());
 			entry.addProperty("preferredUsername", ui.getPreferredUsername());
 			if (ui.getPicture() != null){
 				JsonObject photo = new JsonObject();
 				photo.addProperty("value", ui.getPicture());
-				
+
 				JsonArray photoArray = new JsonArray();
 				photoArray.add(photo);
 				entry.add("photos", photoArray);
 			}
-			
+
 			if (ui.getWebsite() != null) {
 				JsonObject website = new JsonObject();
 				website.addProperty("value", ui.getWebsite());
-				
+
 				JsonArray websiteArray = new JsonArray();
 				websiteArray.add(website);
 				entry.add("urls", websiteArray);
 			}
 
 			entry.addProperty("updated", ui.getUpdatedTime());
-			
+
 		}
-		
+
 		if (scope.contains("email")) {
 			if (ui.getEmail() != null) {
 				JsonObject email = new JsonObject();
 				email.addProperty("value", ui.getEmail());
-				
+
 				JsonArray emailArray = new JsonArray();
 				emailArray.add(email);
 				entry.add("emails", emailArray);
 			}
 		}
-		
+
 		if (scope.contains("phone")) {
 			if (ui.getPhoneNumber() != null){
 				JsonObject phone = new JsonObject();
 				phone.addProperty("value", ui.getPhoneNumber());
-				
+
 				JsonArray phoneArray = new JsonArray();
 				phoneArray.add(phone);
 				entry.add("phoneNumbers", phoneArray);
 			}
-		
+
 		}
-		
+
 		if (scope.contains("address")) {
 			if (ui.getAddress() != null) {
 				JsonObject addr = new JsonObject();
@@ -172,13 +175,13 @@ public class POCOUserInfoView extends AbstractView {
 				addr.addProperty("region", ui.getAddress().getRegion());
 				addr.addProperty("postalCode", ui.getAddress().getPostalCode());
 				addr.addProperty("country", ui.getAddress().getCountry());
-				
+
 				JsonArray addrArray = new JsonArray();
 				addrArray.add(addr);
 				entry.add("addresses", addrArray);
 			}
 		}
-		
+
 		JsonArray entryArray = new JsonArray();
 		entryArray.add(entry);
 		poco.add("entry", entryArray);

@@ -20,9 +20,9 @@ package org.mitre.openid.connect.exception;
  *
  */
 public class UnknownUserInfoSchemaException extends RuntimeException {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	public UnknownUserInfoSchemaException() {
 		super();
 	}
@@ -30,5 +30,5 @@ public class UnknownUserInfoSchemaException extends RuntimeException {
 	public UnknownUserInfoSchemaException(String message) {
 		super(message);
 	}
-	
+
 }

@@ -39,32 +39,32 @@ import com.google.common.base.Strings;
 
 @Service
 public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEntityService {
-	
+
 	@Autowired
 	private OAuth2ClientRepository clientRepository;
-	
+
 	@Autowired
 	private OAuth2TokenRepository tokenRepository;
-	
+
 	@Autowired
 	private ApprovedSiteService approvedSiteService;
-	
+
 	@Autowired
 	private WhitelistedSiteService whitelistedSiteService;
-	
+
 	@Autowired
 	private BlacklistedSiteService blacklistedSiteService;
-	
+
 	public DefaultOAuth2ClientDetailsEntityService() {
-		
+
 	}
-	
-	public DefaultOAuth2ClientDetailsEntityService(OAuth2ClientRepository clientRepository, 
+
+	public DefaultOAuth2ClientDetailsEntityService(OAuth2ClientRepository clientRepository,
 			OAuth2TokenRepository tokenRepository) {
 		this.clientRepository = clientRepository;
 		this.tokenRepository = tokenRepository;
 	}
-	
+
 	@Override
 	public ClientDetailsEntity saveNewClient(ClientDetailsEntity client) {
 		if (client.getId() != null) { // if it's not null, it's already been saved, this is an error
@@ -76,37 +76,38 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 				if (blacklistedSiteService.isBlacklisted(uri)) {
 					throw new IllegalArgumentException("Client URI is blacklisted: " + uri);
 				}
-		    }
+			}
 		}
-		
-		// assign a random clientid if it's empty 
+
+		// assign a random clientid if it's empty
 		// NOTE: don't assign a random client secret without asking, since public clients have no secret
-        if (Strings.isNullOrEmpty(client.getClientId())) {
-            client = generateClientId(client);
-        }
-        
-        // if the client is flagged to allow for refresh tokens, make sure it's got the right granted scopes
-        if (client.isAllowRefresh()) {
-        	client.getScope().add("offline_access");
-        } else {
-        	client.getScope().remove("offline_access");
-        }
-        
-        // timestamp this to right now
-        client.setCreatedAt(new Date());
-        
-        return clientRepository.saveClient(client);
+		if (Strings.isNullOrEmpty(client.getClientId())) {
+			client = generateClientId(client);
+		}
+
+		// if the client is flagged to allow for refresh tokens, make sure it's got the right granted scopes
+		if (client.isAllowRefresh()) {
+			client.getScope().add("offline_access");
+		} else {
+			client.getScope().remove("offline_access");
+		}
+
+		// timestamp this to right now
+		client.setCreatedAt(new Date());
+
+		return clientRepository.saveClient(client);
 	}
-	
+
 	/**
 	 * Get the client by its internal ID
 	 */
+	@Override
 	public ClientDetailsEntity getClientById(Long id) {
 		ClientDetailsEntity client = clientRepository.getById(id);
-		
+
 		return client;
 	}
-	
+
 	/**
 	 * Get the client for the given ClientID
 	 */
@@ -121,87 +122,87 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 				return client;
 			}
 		}
-		
+
 		throw new IllegalArgumentException("Client id must not be empty!");
 	}
-	
+
 	/**
 	 * Delete a client and all its associated tokens
 	 */
 	@Override
-    public void deleteClient(ClientDetailsEntity client) throws InvalidClientException {
-		
+	public void deleteClient(ClientDetailsEntity client) throws InvalidClientException {
+
 		if (clientRepository.getById(client.getId()) == null) {
 			throw new InvalidClientException("Client with id " + client.getClientId() + " was not found");
 		}
-		
+
 		// clean out any tokens that this client had issued
 		tokenRepository.clearTokensForClient(client);
-		
+
 		// clean out any approved sites for this client
 		approvedSiteService.clearApprovedSitesForClient(client);
-		
+
 		// clear out any whitelisted sites for this client
 		WhitelistedSite whitelistedSite = whitelistedSiteService.getByClientId(client.getClientId());
 		if (whitelistedSite != null) {
-            whitelistedSiteService.remove(whitelistedSite);
+			whitelistedSiteService.remove(whitelistedSite);
 		}
-		
+
 		// take care of the client itself
 		clientRepository.deleteClient(client);
-		
+
 	}
 
 	/**
-	 * Update the oldClient with information from the newClient. The 
+	 * Update the oldClient with information from the newClient. The
 	 * id from oldClient is retained.
 	 */
 	@Override
-    public ClientDetailsEntity updateClient(ClientDetailsEntity oldClient, ClientDetailsEntity newClient) throws IllegalArgumentException {
+	public ClientDetailsEntity updateClient(ClientDetailsEntity oldClient, ClientDetailsEntity newClient) throws IllegalArgumentException {
 		if (oldClient != null && newClient != null) {
-			
+
 			for (String uri : newClient.getRegisteredRedirectUri()) {
 				if (blacklistedSiteService.isBlacklisted(uri)) {
 					throw new IllegalArgumentException("Client URI is blacklisted: " + uri);
 				}
-	        }
-			
-	        // if the client is flagged to allow for refresh tokens, make sure it's got the right scope
-	        if (newClient.isAllowRefresh()) {
-	        	newClient.getScope().add("offline_access");
-	        } else {
-	        	newClient.getScope().remove("offline_access");
-	        }
+			}
 
-	        return clientRepository.updateClient(oldClient.getId(), newClient);
+			// if the client is flagged to allow for refresh tokens, make sure it's got the right scope
+			if (newClient.isAllowRefresh()) {
+				newClient.getScope().add("offline_access");
+			} else {
+				newClient.getScope().remove("offline_access");
+			}
+
+			return clientRepository.updateClient(oldClient.getId(), newClient);
 		}
 		throw new IllegalArgumentException("Neither old client or new client can be null!");
-    }
+	}
 
 	/**
 	 * Get all clients in the system
 	 */
 	@Override
-    public Collection<ClientDetailsEntity> getAllClients() {
+	public Collection<ClientDetailsEntity> getAllClients() {
 		return clientRepository.getAllClients();
-    }
+	}
 
 	/**
 	 * Generates a clientId for the given client and sets it to the client's clientId field. Returns the client that was passed in, now with id set.
 	 */
 	@Override
-    public ClientDetailsEntity generateClientId(ClientDetailsEntity client) {
+	public ClientDetailsEntity generateClientId(ClientDetailsEntity client) {
 		client.setClientId(UUID.randomUUID().toString());
-	    return client;
-    }
+		return client;
+	}
 
 	/**
 	 * Generates a new clientSecret for the given client and sets it to the client's clientSecret field. Returns the client that was passed in, now with secret set.
 	 */
 	@Override
-    public ClientDetailsEntity generateClientSecret(ClientDetailsEntity client) {
+	public ClientDetailsEntity generateClientSecret(ClientDetailsEntity client) {
 		client.setClientSecret(Base64.encodeBase64URLSafeString(new BigInteger(512, new SecureRandom()).toByteArray()).replace("=", ""));
-	    return client;
-    }
+		return client;
+	}
 
 }

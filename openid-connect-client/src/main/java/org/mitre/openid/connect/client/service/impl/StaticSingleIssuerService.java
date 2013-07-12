@@ -16,7 +16,7 @@ import com.google.common.base.Strings;
  *
  */
 public class StaticSingleIssuerService implements IssuerService, InitializingBean {
-	
+
 	private String issuer;
 
 	/**
@@ -46,13 +46,13 @@ public class StaticSingleIssuerService implements IssuerService, InitializingBea
 	/* (non-Javadoc)
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
 	 */
-    @Override
-    public void afterPropertiesSet() throws Exception {
+	@Override
+	public void afterPropertiesSet() throws Exception {
 
-    	if (Strings.isNullOrEmpty(issuer)) {
-    		throw new IllegalArgumentException("Issuer must not be null or empty.");
-    	}
-	    
-    }
+		if (Strings.isNullOrEmpty(issuer)) {
+			throw new IllegalArgumentException("Issuer must not be null or empty.");
+		}
+
+	}
 
 }

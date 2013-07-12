@@ -44,48 +44,48 @@ public class IntrospectionEndpoint {
 
 	@Autowired
 	private OAuth2TokenEntityService tokenServices;
-	
+
 	@Autowired
 	private ClientDetailsEntityService clientService;
-	
+
 	private static Logger logger = LoggerFactory.getLogger(IntrospectionEndpoint.class);
-	
+
 	public IntrospectionEndpoint() {
-		
+
 	}
-	
+
 	public IntrospectionEndpoint(OAuth2TokenEntityService tokenServices) {
 		this.tokenServices = tokenServices;
 	}
-	
+
 	@ExceptionHandler(InvalidTokenException.class)
 	public ModelAndView tokenNotFound(InvalidTokenException ex) {
 		Map<String,Boolean> e = ImmutableMap.of("valid", Boolean.FALSE);
 		Map<String, Object> model = new HashMap<String, Object>();
 		model.put("entity", e);
-		
+
 		logger.error("InvalidTokenException: ", ex);
-		
+
 		model.put("code", HttpStatus.BAD_REQUEST);
-		
+
 		return new ModelAndView("jsonEntityView", model);
 	}
-	
+
 	@PreAuthorize("hasRole('ROLE_CLIENT')")
 	@RequestMapping("/introspect")
 	public ModelAndView verify(@RequestParam("token") String tokenValue, Principal p, ModelAndView modelAndView) {
-		
+
 		/*
 		if (p != null && p instanceof OAuth2Authentication) {
 			OAuth2Authentication auth = (OAuth2Authentication)p;
-			
+
 			if (auth.getDetails() != null && auth.getDetails() instanceof OAuth2AuthenticationDetails) {
 				OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails)auth.getDetails();
-				
+
 				String tokenValue = details.getTokenValue();
-				
+
 				OAuth2AccessTokenEntity token = tokenServices.readAccessToken(tokenValue);
-		
+
 				if (token != null) {
 					// if it's a valid token, we'll print out the scope and expiration
 					modelAndView.setViewName("tokenIntrospection");
@@ -93,36 +93,36 @@ public class IntrospectionEndpoint {
 				}
 			}
 		}*/
-		
+
 		if (Strings.isNullOrEmpty(tokenValue)) {
 			logger.error("Verify failed; token value is null");
 			modelAndView.addObject("code", HttpStatus.BAD_REQUEST);
 			modelAndView.setViewName("httpCodeView");
 			return modelAndView;
 		}
-		
+
 		OAuth2AccessTokenEntity token = null;
-		
+
 		try {
-			token = tokenServices.readAccessToken(tokenValue);		
+			token = tokenServices.readAccessToken(tokenValue);
 		} catch (AuthenticationException e) {
 			logger.error("Verify failed; AuthenticationException: ", e);
 			modelAndView.addObject("code", HttpStatus.FORBIDDEN);
 			modelAndView.setViewName("httpCodeView");
 			return modelAndView;
 		}
-			
+
 		ClientDetailsEntity tokenClient = token.getClient();
 		// clientID is the principal name in the authentication
 		String clientId = p.getName();
 		ClientDetailsEntity authClient = clientService.loadClientByClientId(clientId);
-		
+
 		if (tokenClient != null && authClient != null) {
 			if (authClient.isAllowIntrospection()) {
-				
+
 				// if it's the same client that the token was issued to, or it at least has all the scopes the token was issued with
 				if (authClient.equals(tokenClient) || authClient.getScope().containsAll(token.getScope())) {
-				
+
 					// if it's a valid token, we'll print out information on it
 					modelAndView.setViewName("tokenIntrospection");
 					modelAndView.addObject("entity", token);
@@ -146,7 +146,7 @@ public class IntrospectionEndpoint {
 			modelAndView.setViewName("httpCodeView");
 			return modelAndView;
 		}
-		
+
 	}
-	
+
 }

@@ -22,13 +22,13 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 public class AuthenticationHolderEntity {
 
 	private Long id;
-	
+
 	private Long ownerId;
-	
+
 	private OAuth2Authentication authentication;
-	
+
 	public AuthenticationHolderEntity() {
-		
+
 	}
 
 	@Id
@@ -60,7 +60,7 @@ public class AuthenticationHolderEntity {
 	public void setAuthentication(OAuth2Authentication authentication) {
 		this.authentication = authentication;
 	}
-	
-	
-	
+
+
+
 }

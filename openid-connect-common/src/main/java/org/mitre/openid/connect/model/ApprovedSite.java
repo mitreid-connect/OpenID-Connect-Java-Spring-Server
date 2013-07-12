@@ -52,164 +52,164 @@ import com.google.common.collect.Sets;
 public class ApprovedSite {
 
 	// unique id
-    private Long id;
-    
-    // which user made the approval
+	private Long id;
+
+	// which user made the approval
 	private String userId;
-	
+
 	// which OAuth2 client is this tied to
 	private String clientId;
-	
+
 	// when was this first approved?
 	private Date creationDate;
-	
+
 	// when was this last accessed?
 	private Date accessDate;
-	
+
 	// if this is a time-limited access, when does it run out?
 	private Date timeoutDate;
-	
+
 	// what scopes have been allowed
 	// this should include all information for what data to access
 	private Set<String> allowedScopes;
-	
+
 	// If this AP is a WS, link to the WS
 	private WhitelistedSite whitelistedSite;
-	
+
 	//Link to any access tokens approved through this stored decision
 	private Set<OAuth2AccessTokenEntity> approvedAccessTokens = Sets.newHashSet();
-	
+
 	/**
 	 * Empty constructor
 	 */
 	public ApprovedSite() {
 
-    }
+	}
 
 	/**
-     * @return the id
-     */
+	 * @return the id
+	 */
 	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Long getId() {
-    	return id;
-    }
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	public Long getId() {
+		return id;
+	}
 
 	/**
-     * @param id the id to set
-     */
-    public void setId(Long id) {
-    	this.id = id;
-    }
+	 * @param id the id to set
+	 */
+	public void setId(Long id) {
+		this.id = id;
+	}
 
 	/**
-     * @return the userInfo
-     */
-    @Basic
-    @Column(name="user_id")
-    public String getUserId() {
-    	return userId;
-    }
+	 * @return the userInfo
+	 */
+	@Basic
+	@Column(name="user_id")
+	public String getUserId() {
+		return userId;
+	}
 
 	/**
-     * @param userInfo the userInfo to set
-     */
-    public void setUserId(String userId) {
-    	this.userId = userId;
-    }
+	 * @param userInfo the userInfo to set
+	 */
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
 
 	/**
-     * @return the clientId
-     */
-    @Basic
-    @Column(name="client_id")
-    public String getClientId() {
-    	return clientId;
-    }
+	 * @return the clientId
+	 */
+	@Basic
+	@Column(name="client_id")
+	public String getClientId() {
+		return clientId;
+	}
 
 	/**
-     * @param clientId the clientId to set
-     */
-    public void setClientId(String clientId) {
-    	this.clientId = clientId;
-    }
+	 * @param clientId the clientId to set
+	 */
+	public void setClientId(String clientId) {
+		this.clientId = clientId;
+	}
 
 	/**
-     * @return the creationDate
-     */
-    @Basic
-    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
-    @Column(name="creation_date")
-    public Date getCreationDate() {
-    	return creationDate;
-    }
+	 * @return the creationDate
+	 */
+	@Basic
+	@Temporal(javax.persistence.TemporalType.TIMESTAMP)
+	@Column(name="creation_date")
+	public Date getCreationDate() {
+		return creationDate;
+	}
 
 	/**
-     * @param creationDate the creationDate to set
-     */
-    public void setCreationDate(Date creationDate) {
-    	this.creationDate = creationDate;
-    }
+	 * @param creationDate the creationDate to set
+	 */
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
 
 	/**
-     * @return the accessDate
-     */
-    @Basic
-    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
-    @Column(name="access_date")
-    public Date getAccessDate() {
-    	return accessDate;
-    }
+	 * @return the accessDate
+	 */
+	@Basic
+	@Temporal(javax.persistence.TemporalType.TIMESTAMP)
+	@Column(name="access_date")
+	public Date getAccessDate() {
+		return accessDate;
+	}
 
 	/**
-     * @param accessDate the accessDate to set
-     */
-    public void setAccessDate(Date accessDate) {
-    	this.accessDate = accessDate;
-    }
+	 * @param accessDate the accessDate to set
+	 */
+	public void setAccessDate(Date accessDate) {
+		this.accessDate = accessDate;
+	}
 
 	/**
-     * @return the allowedScopes
-     */
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(
-    		name="approved_site_scope",
-    		joinColumns=@JoinColumn(name="owner_id")
-    )
-    @Column(name="scope")
-    public Set<String> getAllowedScopes() {
-    	return allowedScopes;
-    }
+	 * @return the allowedScopes
+	 */
+	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(
+			name="approved_site_scope",
+			joinColumns=@JoinColumn(name="owner_id")
+			)
+	@Column(name="scope")
+	public Set<String> getAllowedScopes() {
+		return allowedScopes;
+	}
 
 	/**
-     * @param allowedScopes the allowedScopes to set
-     */
-    public void setAllowedScopes(Set<String> allowedScopes) {
-    	this.allowedScopes = allowedScopes;
-    }
+	 * @param allowedScopes the allowedScopes to set
+	 */
+	public void setAllowedScopes(Set<String> allowedScopes) {
+		this.allowedScopes = allowedScopes;
+	}
 
 	/**
-     * @return the timeoutDate
-     */
-    @Basic
-    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
-    @Column(name="timeout_date")
-    public Date getTimeoutDate() {
-    	return timeoutDate;
-    }
+	 * @return the timeoutDate
+	 */
+	@Basic
+	@Temporal(javax.persistence.TemporalType.TIMESTAMP)
+	@Column(name="timeout_date")
+	public Date getTimeoutDate() {
+		return timeoutDate;
+	}
 
 	/**
-     * @param timeoutDate the timeoutDate to set
-     */
-    public void setTimeoutDate(Date timeoutDate) {
-    	this.timeoutDate = timeoutDate;
-    }
+	 * @param timeoutDate the timeoutDate to set
+	 */
+	public void setTimeoutDate(Date timeoutDate) {
+		this.timeoutDate = timeoutDate;
+	}
 
-    /**
-     * Does this AP entry correspond to a WS?
-     * @return
-     */
-    @Transient
+	/**
+	 * Does this AP entry correspond to a WS?
+	 * @return
+	 */
+	@Transient
 	public Boolean getIsWhitelisted() {
 		return (whitelistedSite != null);
 	}
@@ -227,10 +227,10 @@ public class ApprovedSite {
 
 	/**
 	 * Has this approval expired?
-     * @return
-     */
+	 * @return
+	 */
 	@Transient
-    public boolean isExpired() {
+	public boolean isExpired() {
 		if (getTimeoutDate() != null) {
 			Date now = new Date();
 			if (now.after(getTimeoutDate())) {
@@ -241,7 +241,7 @@ public class ApprovedSite {
 		} else {
 			return false;
 		}
-    }
+	}
 
 	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
 	@JoinColumn(name="approved_site_id")
@@ -255,5 +255,5 @@ public class ApprovedSite {
 	public void setApprovedAccessTokens(Set<OAuth2AccessTokenEntity> approvedAccessTokens) {
 		this.approvedAccessTokens = approvedAccessTokens;
 	}
-	
+
 }

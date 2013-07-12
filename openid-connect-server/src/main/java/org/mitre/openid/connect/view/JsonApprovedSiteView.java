@@ -38,59 +38,62 @@ public class JsonApprovedSiteView extends AbstractView {
 	private static Logger logger = LoggerFactory.getLogger(JsonApprovedSiteView.class);
 
 	private Gson gson = new GsonBuilder()
-	    .setExclusionStrategies(new ExclusionStrategy() {
-	
-	        public boolean shouldSkipField(FieldAttributes f) {
-	        	
-	            return false;
-	        }
-	
-	        public boolean shouldSkipClass(Class<?> clazz) {
-	            // skip the JPA binding wrapper
-	            if (clazz.equals(BeanPropertyBindingResult.class)) {
-	                return true;
-	            }
-	            return false;
-	        }
-	
-	    })
-	    .registerTypeAdapter(OAuth2AccessTokenEntity.class, new JsonSerializer<OAuth2AccessTokenEntity>() {
+	.setExclusionStrategies(new ExclusionStrategy() {
 
-			@Override
-			public JsonElement serialize(OAuth2AccessTokenEntity src,
-					Type typeOfSrc, JsonSerializationContext context) {
-				return new JsonPrimitive(src.getId());
+		@Override
+		public boolean shouldSkipField(FieldAttributes f) {
+
+			return false;
+		}
+
+		@Override
+		public boolean shouldSkipClass(Class<?> clazz) {
+			// skip the JPA binding wrapper
+			if (clazz.equals(BeanPropertyBindingResult.class)) {
+				return true;
 			}
-	    	
-	    })
-	    .serializeNulls()
-	    .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
-	    .create();
+			return false;
+		}
 
+	})
+	.registerTypeAdapter(OAuth2AccessTokenEntity.class, new JsonSerializer<OAuth2AccessTokenEntity>() {
+
+		@Override
+		public JsonElement serialize(OAuth2AccessTokenEntity src,
+				Type typeOfSrc, JsonSerializationContext context) {
+			return new JsonPrimitive(src.getId());
+		}
+
+	})
+	.serializeNulls()
+	.setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+	.create();
+
+	@Override
 	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
 
 		response.setContentType("application/json");
 
-        
+
 		HttpStatus code = (HttpStatus) model.get("code");
 		if (code == null) {
 			code = HttpStatus.OK; // default to 200
 		}
-		
+
 		response.setStatus(code.value());
-		
+
 		try {
-			
+
 			Writer out = response.getWriter();
 			Object obj = model.get("entity");
-	        gson.toJson(obj, out);
-	        
+			gson.toJson(obj, out);
+
 		} catch (IOException e) {
-			
+
 			//TODO: Error Handling
 			logger.error("IOException in JsonEntityView.java: ", e);
-			
+
 		}
-    }
+	}
 
 }

@@ -5,8 +5,6 @@ package org.mitre.jose;
 
 import javax.persistence.Basic;
 import javax.persistence.Embeddable;
-import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.Transient;
 
 import com.google.common.base.Strings;
@@ -23,17 +21,17 @@ import com.nimbusds.jose.JWSAlgorithm;
 public class JWSAlgorithmEmbed {
 
 	public static final JWSAlgorithmEmbed NONE = getForAlgorithmName("none");
-	
+
 	private JWSAlgorithm algorithm;
-	
-	public JWSAlgorithmEmbed() { 
-		
+
+	public JWSAlgorithmEmbed() {
+
 	}
 
 	public JWSAlgorithmEmbed(JWSAlgorithm algorithm) {
-	    this.algorithm = algorithm;
-    }
-	
+		this.algorithm = algorithm;
+	}
+
 	public static JWSAlgorithmEmbed getForAlgorithmName (String algorithmName) {
 		JWSAlgorithmEmbed ent = new JWSAlgorithmEmbed();
 		ent.setAlgorithmName(algorithmName);
@@ -56,9 +54,9 @@ public class JWSAlgorithmEmbed {
 			return null;
 		}
 	}
-	
+
 	/**
-	 * Set the name of this algorithm. 
+	 * Set the name of this algorithm.
 	 * Calls JWSAlgorithm.parse()
 	 * @param algorithmName
 	 */
@@ -88,11 +86,11 @@ public class JWSAlgorithmEmbed {
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
-    @Override
-    public String toString() {
-	    return "JWSAlgorithmEmbed [algorithm=" + algorithm + "]";
-    }
+	@Override
+	public String toString() {
+		return "JWSAlgorithmEmbed [algorithm=" + algorithm + "]";
+	}
 
-	
-	
+
+
 }

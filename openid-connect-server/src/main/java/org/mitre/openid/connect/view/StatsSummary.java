@@ -28,42 +28,44 @@ public class StatsSummary extends AbstractView {
 
 	@Override
 	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
-        Gson gson = new GsonBuilder()
-        .setExclusionStrategies(new ExclusionStrategy() {
+		Gson gson = new GsonBuilder()
+		.setExclusionStrategies(new ExclusionStrategy() {
 
-            public boolean shouldSkipField(FieldAttributes f) {
+			@Override
+			public boolean shouldSkipField(FieldAttributes f) {
 
-                return false;
-            }
+				return false;
+			}
 
-            public boolean shouldSkipClass(Class<?> clazz) {
-                // skip the JPA binding wrapper
-                if (clazz.equals(BeanPropertyBindingResult.class)) {
-                    return true;
-                }
-                return false;
-            }
+			@Override
+			public boolean shouldSkipClass(Class<?> clazz) {
+				// skip the JPA binding wrapper
+				if (clazz.equals(BeanPropertyBindingResult.class)) {
+					return true;
+				}
+				return false;
+			}
 
-        }).create();
+		}).create();
 
-        response.setContentType("application/json");
+		response.setContentType("application/json");
 
 
-        try {
-	
-        	Writer out = response.getWriter();
-        	Object obj = model.get("entity");
-        	if (obj == null) {
-        		obj = model;
-        	}
+		try {
 
-        	gson.toJson(obj, out);
-    
-        } catch (IOException e) {
-	
-        	logger.error("IOException in JSONClientView.java: ", e);
-	
-        }
+			Writer out = response.getWriter();
+			Object obj = model.get("entity");
+			if (obj == null) {
+				obj = model;
+			}
+
+			gson.toJson(obj, out);
+
+		} catch (IOException e) {
+
+			logger.error("IOException in JSONClientView.java: ", e);
+
+		}
 
 	}
 

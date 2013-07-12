@@ -32,8 +32,8 @@ import com.google.common.collect.ImmutableMap;
  */
 public class OIDCAuthenticationToken extends AbstractAuthenticationToken {
 
-    private static final long serialVersionUID = 22100073066377804L;
-    
+	private static final long serialVersionUID = 22100073066377804L;
+
 	private final Object principal;
 	private final String idTokenValue; // string representation of the id token
 	private final String accessTokenValue; // string representation of the access token
@@ -43,7 +43,7 @@ public class OIDCAuthenticationToken extends AbstractAuthenticationToken {
 
 	private final transient ServerConfiguration serverConfiguration; // server configuration used to fulfill this token, don't serialize it
 	private final transient UserInfo userInfo; // user info container, don't serialize it b/c it might be huge and can be re-fetched
-	
+
 	/**
 	 * Constructs OIDCAuthenticationToken with a full set of authorities, marking this as authenticated.
 	 * 
@@ -55,7 +55,7 @@ public class OIDCAuthenticationToken extends AbstractAuthenticationToken {
 	 * @param principal
 	 * @param idToken
 	 */
-	public OIDCAuthenticationToken(String userId, String issuer, 
+	public OIDCAuthenticationToken(String userId, String issuer,
 			UserInfo userInfo, Collection<? extends GrantedAuthority> authorities,
 			String idTokenValue, String accessTokenValue, String refreshTokenValue) {
 
@@ -70,12 +70,12 @@ public class OIDCAuthenticationToken extends AbstractAuthenticationToken {
 		this.refreshTokenValue = refreshTokenValue;
 
 		this.serverConfiguration = null; // we don't need a server config anymore
-		
+
 		setAuthenticated(true);
 	}
 
 	/**
-	 * Constructs OIDCAuthenticationToken for use as a data shuttle from the filter to the auth provider. 
+	 * Constructs OIDCAuthenticationToken for use as a data shuttle from the filter to the auth provider.
 	 * 
 	 * Set to not-authenticated.
 	 * 
@@ -83,8 +83,8 @@ public class OIDCAuthenticationToken extends AbstractAuthenticationToken {
 	 * @param userId
 	 * @param idToken
 	 */
-	public OIDCAuthenticationToken(String userId, String issuer, 
-			ServerConfiguration serverConfiguration, 
+	public OIDCAuthenticationToken(String userId, String issuer,
+			ServerConfiguration serverConfiguration,
 			String idTokenValue, String accessTokenValue, String refreshTokenValue) {
 
 		super(new ArrayList<GrantedAuthority>(0));
@@ -97,10 +97,10 @@ public class OIDCAuthenticationToken extends AbstractAuthenticationToken {
 		this.refreshTokenValue = refreshTokenValue;
 
 		this.userInfo = null; // we don't have a UserInfo yet
-		
+
 		this.serverConfiguration = serverConfiguration;
-		
-		
+
+
 		setAuthenticated(false);
 	}
 
@@ -130,46 +130,46 @@ public class OIDCAuthenticationToken extends AbstractAuthenticationToken {
 	}
 
 	/**
-     * @return the idTokenValue
-     */
-    public String getIdTokenValue() {
-    	return idTokenValue;
-    }
+	 * @return the idTokenValue
+	 */
+	public String getIdTokenValue() {
+		return idTokenValue;
+	}
 
 	/**
-     * @return the accessTokenValue
-     */
-    public String getAccessTokenValue() {
-    	return accessTokenValue;
-    }
+	 * @return the accessTokenValue
+	 */
+	public String getAccessTokenValue() {
+		return accessTokenValue;
+	}
 
 	/**
-     * @return the refreshTokenValue
-     */
-    public String getRefreshTokenValue() {
-    	return refreshTokenValue;
-    }
+	 * @return the refreshTokenValue
+	 */
+	public String getRefreshTokenValue() {
+		return refreshTokenValue;
+	}
 
 	/**
-     * @return the serverConfiguration
-     */
-    public ServerConfiguration getServerConfiguration() {
-    	return serverConfiguration;
-    }
+	 * @return the serverConfiguration
+	 */
+	public ServerConfiguration getServerConfiguration() {
+		return serverConfiguration;
+	}
 
 	/**
-     * @return the issuer
-     */
-    public String getIssuer() {
-    	return issuer;
-    }
+	 * @return the issuer
+	 */
+	public String getIssuer() {
+		return issuer;
+	}
 
 	/**
-     * @return the userInfo
-     */
-    public UserInfo getUserInfo() {
-    	return userInfo;
-    }
-	
-	
+	 * @return the userInfo
+	 */
+	public UserInfo getUserInfo() {
+		return userInfo;
+	}
+
+
 }

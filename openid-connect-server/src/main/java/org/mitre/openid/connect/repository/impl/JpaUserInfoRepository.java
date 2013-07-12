@@ -15,8 +15,8 @@
  ******************************************************************************/
 package org.mitre.openid.connect.repository.impl;
 
-import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
 import static org.mitre.util.jpa.JpaUtil.getSingleResult;
+import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
 
 import java.util.Collection;
 
@@ -40,43 +40,43 @@ import org.springframework.transaction.annotation.Transactional;
 public class JpaUserInfoRepository implements UserInfoRepository {
 
 	@PersistenceContext
-    private EntityManager manager;
-	
+	private EntityManager manager;
+
 	@Override
-    @Transactional	
+	@Transactional
 	public UserInfo getBySubject(String sub) {
 		TypedQuery<DefaultUserInfo> query = manager.createNamedQuery("DefaultUserInfo.getBySubject", DefaultUserInfo.class);
 		query.setParameter("sub", sub);
-		
+
 		return getSingleResult(query.getResultList());
-	}	
-	
+	}
+
 	@Override
-	@Transactional	
+	@Transactional
 	public UserInfo save(UserInfo userInfo) {
 		DefaultUserInfo dui = (DefaultUserInfo)userInfo;
 		return saveOrUpdate(dui.getId(), manager, dui);
 	}
 
 	@Override
-	@Transactional	
+	@Transactional
 	public void remove(UserInfo userInfo) {
 		DefaultUserInfo dui = (DefaultUserInfo)userInfo;
 		UserInfo found = manager.find(DefaultUserInfo.class, dui.getId());
-		
+
 		if (found != null) {
 			manager.remove(userInfo);
 		} else {
 			throw new IllegalArgumentException();
-		}		
+		}
 	}
 
 	@Override
-	@Transactional	
+	@Transactional
 	public Collection<DefaultUserInfo> getAll() {
-		
+
 		TypedQuery<DefaultUserInfo> query = manager.createNamedQuery("DefaultUserInfo.getAll", DefaultUserInfo.class);
-		
+
 		return query.getResultList();
 	}
 
@@ -84,12 +84,12 @@ public class JpaUserInfoRepository implements UserInfoRepository {
 	 * Get a single UserInfo object by its username
 	 */
 	@Override
-    public UserInfo getByUsername(String username) {
+	public UserInfo getByUsername(String username) {
 		TypedQuery<DefaultUserInfo> query = manager.createNamedQuery("DefaultUserInfo.getByUsername", DefaultUserInfo.class);
 		query.setParameter("username", username);
-		
+
 		return getSingleResult(query.getResultList());
-		
-    }
+
+	}
 
 }

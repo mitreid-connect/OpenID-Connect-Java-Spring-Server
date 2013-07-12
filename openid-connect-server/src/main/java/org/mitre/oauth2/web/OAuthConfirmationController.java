@@ -51,20 +51,20 @@ public class OAuthConfirmationController {
 
 	@Autowired
 	private ClientDetailsEntityService clientService;
-	
+
 	@Autowired
 	private SystemScopeService scopeService;
-	
+
 	private static Logger logger = LoggerFactory.getLogger(OAuthConfirmationController.class);
-	
+
 	public OAuthConfirmationController() {
-		
+
 	}
-	
+
 	public OAuthConfirmationController(ClientDetailsEntityService clientService) {
 		this.clientService = clientService;
 	}
-	
+
 	@PreAuthorize("hasRole('ROLE_USER')")
 	@RequestMapping("/oauth/confirm_access")
 	public ModelAndView confimAccess(Map<String, Object> model, @ModelAttribute("authorizationRequest") AuthorizationRequest clientAuth) {
@@ -72,10 +72,10 @@ public class OAuthConfirmationController {
 		//AuthorizationRequest clientAuth = (AuthorizationRequest) model.remove("authorizationRequest");
 
 		ClientDetails client = null;
-		
+
 		try {
 			client = clientService.loadClientByClientId(clientAuth.getClientId());
-		} catch (OAuth2Exception e) {	
+		} catch (OAuth2Exception e) {
 			logger.error("confirmAccess: OAuth2Exception was thrown when attempting to load client: "
 					, e);
 			model.put("code", HttpStatus.BAD_REQUEST);
@@ -86,7 +86,7 @@ public class OAuthConfirmationController {
 			model.put("code", HttpStatus.BAD_REQUEST);
 			return new ModelAndView("httpCodeView");
 		}
-		
+
 		if (client == null) {
 			logger.error("confirmAccess: could not find client " + clientAuth.getClientId());
 			model.put("code", HttpStatus.NOT_FOUND);
@@ -96,49 +96,49 @@ public class OAuthConfirmationController {
 		model.put("client", client);
 
 		String redirect_uri = clientAuth.getRequestParameters().get("redirect_uri");
-		
-        model.put("redirect_uri", redirect_uri);
 
-        
-        /*
+		model.put("redirect_uri", redirect_uri);
+
+
+		/*
         Map<String, Boolean> scopes = new HashMap<String, Boolean>();
         for (String scope : clientAuth.getScope()) {
 	        scopes.put(scope, Boolean.TRUE);
         }
-         */
-        
-        Set<SystemScope> scopes = scopeService.fromStrings(clientAuth.getScope());
-        
-        Set<SystemScope> sortedScopes = new LinkedHashSet<SystemScope>(scopes.size());
-        Set<SystemScope> systemScopes = scopeService.getAll();
-        
-        // sort scopes for display
-        for (SystemScope s : systemScopes) {
-	        if (scopes.contains(s)) {
-	        	sortedScopes.add(s);
-	        }
-        }
-        
-        sortedScopes.addAll(Sets.difference(scopes, systemScopes));
-        
-        model.put("scopes", sortedScopes);
-        
-        return new ModelAndView("oauth/approve", model);
+		 */
+
+		Set<SystemScope> scopes = scopeService.fromStrings(clientAuth.getScope());
+
+		Set<SystemScope> sortedScopes = new LinkedHashSet<SystemScope>(scopes.size());
+		Set<SystemScope> systemScopes = scopeService.getAll();
+
+		// sort scopes for display
+		for (SystemScope s : systemScopes) {
+			if (scopes.contains(s)) {
+				sortedScopes.add(s);
+			}
+		}
+
+		sortedScopes.addAll(Sets.difference(scopes, systemScopes));
+
+		model.put("scopes", sortedScopes);
+
+		return new ModelAndView("oauth/approve", model);
 	}
 
 	/**
-     * @return the clientService
-     */
-    public ClientDetailsEntityService getClientService() {
-    	return clientService;
-    }
+	 * @return the clientService
+	 */
+	public ClientDetailsEntityService getClientService() {
+		return clientService;
+	}
 
 	/**
-     * @param clientService the clientService to set
-     */
-    public void setClientService(ClientDetailsEntityService clientService) {
-    	this.clientService = clientService;
-    }
-	
-	
+	 * @param clientService the clientService to set
+	 */
+	public void setClientService(ClientDetailsEntityService clientService) {
+		this.clientService = clientService;
+	}
+
+
 }

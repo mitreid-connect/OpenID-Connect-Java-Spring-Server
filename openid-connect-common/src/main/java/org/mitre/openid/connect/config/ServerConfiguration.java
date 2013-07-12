@@ -31,9 +31,9 @@ public class ServerConfiguration {
 	private String tokenEndpointUri;
 
 	private String issuer;
-	
+
 	private String jwksUri;
-	
+
 	private String userInfoUri;
 
 	/**
@@ -105,5 +105,5 @@ public class ServerConfiguration {
 	public void setUserInfoUri(String userInfoUri) {
 		this.userInfoUri = userInfoUri;
 	}
-	
+
 }

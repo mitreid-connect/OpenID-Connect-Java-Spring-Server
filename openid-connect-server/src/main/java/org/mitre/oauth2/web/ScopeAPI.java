@@ -5,9 +5,6 @@ package org.mitre.oauth2.web;
 
 import java.util.Set;
 
-import javax.persistence.EntityExistsException;
-import javax.persistence.TransactionRequiredException;
-
 import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.service.SystemScopeService;
 import org.slf4j.Logger;
@@ -35,35 +32,35 @@ public class ScopeAPI {
 
 	@Autowired
 	private SystemScopeService scopeService;
-	
+
 	private static Logger logger = LoggerFactory.getLogger(ScopeAPI.class);
-	
+
 	private Gson gson = new Gson();
-	
+
 	@RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json")
 	public String getAll(ModelMap m) {
-		
+
 		Set<SystemScope> allScopes = scopeService.getAll();
-		
+
 		m.put("entity", allScopes);
-		
+
 		return "jsonEntityView";
 	}
-	
+
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = "application/json")
 	public String getScope(@PathVariable("id") Long id, ModelMap m) {
-		
+
 		SystemScope scope = scopeService.getById(id);
-		
+
 		if (scope != null) {
-		
+
 			m.put("entity", scope);
-			
+
 			return "jsonEntityView";
 		} else {
-		
+
 			logger.error("getScope failed; scope not found: " + id);
-			
+
 			m.put("code", HttpStatus.NOT_FOUND);
 			m.put("errorMessage", "The requested scope with id " + id + " could not be found.");
 			return "jsonErrorView";
@@ -73,46 +70,46 @@ public class ScopeAPI {
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
 	public String updateScope(@PathVariable("id") Long id, @RequestBody String json, ModelMap m) {
-		
+
 		SystemScope existing = scopeService.getById(id);
-		
+
 		SystemScope scope = gson.fromJson(json, SystemScope.class);
-		
+
 		if (existing != null && scope != null) {
-		
+
 			if (existing.getId().equals(scope.getId())) {
 				// sanity check
-				
+
 				scope = scopeService.save(scope);
-				
+
 				m.put("entity", scope);
-				
+
 				return "jsonEntityView";
 			} else {
-				
-				logger.error("updateScope failed; scope ids to not match: got " 
+
+				logger.error("updateScope failed; scope ids to not match: got "
 						+ existing.getId() + " and " + scope.getId());
-				
+
 				m.put("code", HttpStatus.BAD_REQUEST);
-				m.put("errorMessage", "Could not update scope. Scope ids to not match: got " 
+				m.put("errorMessage", "Could not update scope. Scope ids to not match: got "
 						+ existing.getId() + " and " + scope.getId());
 				return "jsonErrorView";
 			}
-			
+
 		} else {
-			
+
 			logger.error("updateScope failed; scope with id " + id + " not found.");
 			m.put("code", HttpStatus.NOT_FOUND);
 			m.put("errorMessage", "Could not update scope. The scope with id " + id + " could not be found.");
 			return "jsonErrorView";
 		}
 	}
-	
+
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
 	public String createScope(@RequestBody String json, ModelMap m) {
 		SystemScope scope = gson.fromJson(json, SystemScope.class);
-		
+
 		SystemScope alreadyExists = scopeService.getByValue(scope.getValue());
 		if (alreadyExists != null) {
 			//Error, cannot save a scope with the same value as an existing one
@@ -121,41 +118,41 @@ public class ScopeAPI {
 			m.put("errorMessage", "A scope with value " + scope.getValue() + " already exists, please choose a different value.");
 			return "jsonErrorView";
 		}
-		
+
 		scope = scopeService.save(scope);
 
 		if (scope != null && scope.getId() != null) {
 
 			m.put("entity", scope);
-			
+
 			return "jsonEntityView";
 		} else {
-			
+
 			logger.error("createScope failed; JSON was invalid: " + json);
 			m.put("code", HttpStatus.BAD_REQUEST);
 			m.put("errorMessage", "Could not save new scope " + scope.getValue() + ". The scope service failed to return a saved entity.");
 			return "jsonErrorView";
-			
+
 		}
 	}
-	
+
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
 	public String deleteScope(@PathVariable("id") Long id, ModelMap m) {
 		SystemScope existing = scopeService.getById(id);
-		
+
 		if (existing != null) {
 
 			scopeService.remove(existing);
-			
+
 			return "httpCodeView";
 		} else {
-			
+
 			logger.error("deleteScope failed; scope with id " + id + " not found.");
 			m.put("code", HttpStatus.NOT_FOUND);
 			m.put("errorMessage", "Could not delete scope. The requested scope with id " + id + " could not be found.");
 			return "jsonErrorView";
 		}
 	}
-	
+
 }

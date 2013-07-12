@@ -20,6 +20,6 @@ public interface AuthRequestUrlBuilder {
 	 * @param state
 	 * @return
 	 */
-    public String buildAuthRequestUrl(ServerConfiguration serverConfig, ClientDetails clientConfig, String redirectUri, String nonce, String state);
-	
+	public String buildAuthRequestUrl(ServerConfiguration serverConfig, ClientDetails clientConfig, String redirectUri, String nonce, String state);
+
 }

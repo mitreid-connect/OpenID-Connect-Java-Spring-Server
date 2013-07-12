@@ -28,18 +28,18 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 public class AuthorizationCodeEntity {
 
 	private Long id;
-	
+
 	private String code;
-	
+
 	private OAuth2Authentication authentication;
 
 	/**
 	 * Default constructor.
 	 */
 	public AuthorizationCodeEntity() {
-		
+
 	}
-	
+
 	/**
 	 * Create a new AuthorizationCodeEntity with the given code and AuthorizationRequestHolder.
 	 * 
@@ -50,12 +50,12 @@ public class AuthorizationCodeEntity {
 		this.code = code;
 		this.authentication = authRequest;
 	}
-	
+
 	/**
 	 * @return the id
 	 */
 	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	public Long getId() {
 		return id;
 	}
@@ -98,5 +98,5 @@ public class AuthorizationCodeEntity {
 	public void setAuthentication(OAuth2Authentication authentication) {
 		this.authentication = authentication;
 	}
-	
+
 }

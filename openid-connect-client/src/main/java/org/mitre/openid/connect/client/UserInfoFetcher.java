@@ -15,7 +15,7 @@ import com.google.gson.JsonParser;
 public class UserInfoFetcher {
 
 	public UserInfo loadUserInfo(OIDCAuthenticationToken token) {
-		
+
 		HttpClient httpClient = new DefaultHttpClient();
 
 		HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
@@ -25,15 +25,15 @@ public class UserInfoFetcher {
 		MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
 		form.add("access_token", token.getAccessTokenValue());
 		form.add("schema", "openid");
-		
+
 		String userInfoString = restTemplate.postForObject(token.getServerConfiguration().getUserInfoUri(), form, String.class);
-		
+
 		JsonObject userInfoJson = new JsonParser().parse(userInfoString).getAsJsonObject();
-		
+
 		UserInfo userInfo = DefaultUserInfo.fromJson(userInfoJson);
-		
+
 		return userInfo;
-		
-    }
+
+	}
 
 }

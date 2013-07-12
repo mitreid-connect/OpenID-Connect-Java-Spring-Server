@@ -24,7 +24,7 @@ public class DefaultBlacklistedSiteService implements BlacklistedSiteService {
 
 	@Autowired
 	private BlacklistedSiteRepository repository;
-	
+
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.service.BlacklistedSiteService#getAll()
 	 */
@@ -70,21 +70,21 @@ public class DefaultBlacklistedSiteService implements BlacklistedSiteService {
 	 */
 	@Override
 	public boolean isBlacklisted(String uri) {
-		
+
 		if (Strings.isNullOrEmpty(uri)) {
 			return false; // can't be blacklisted if you don't exist
 		}
-		
+
 		Collection<BlacklistedSite> sites = getAll();
 
 		// TODO: rewrite this to do regex matching and use the Guava predicates collection
-		
+
 		for (BlacklistedSite blacklistedSite : sites) {
-	        if (Strings.nullToEmpty(blacklistedSite.getUri()).equals(uri)) {
-	        	return true;
-	        }
-	    }
-		
+			if (Strings.nullToEmpty(blacklistedSite.getUri()).equals(uri)) {
+				return true;
+			}
+		}
+
 		return false;
 	}
 

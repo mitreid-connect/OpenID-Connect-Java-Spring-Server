@@ -35,10 +35,10 @@ import com.google.common.collect.Sets;
  * 
  */
 public class OIDCAuthenticationProvider implements
-		AuthenticationProvider, InitializingBean {
+AuthenticationProvider, InitializingBean {
 
 	private UserInfoFetcher userInfoFetcher = new UserInfoFetcher();
-	
+
 	private GrantedAuthoritiesMapper authoritiesMapper = new NullAuthoritiesMapper();
 
 	/*
@@ -70,22 +70,22 @@ public class OIDCAuthenticationProvider implements
 			// Default authorities set
 			// TODO: let this be configured
 			Collection<SimpleGrantedAuthority> authorities = Sets.newHashSet(new SimpleGrantedAuthority("ROLE_USER"));
-			
+
 			OIDCAuthenticationToken token = (OIDCAuthenticationToken) authentication;
 
 			UserInfo userInfo = userInfoFetcher.loadUserInfo(token);
 
 			if (userInfo == null) {
 				// TODO: user Info not found -- error?
-			} else {			
+			} else {
 				if (!Strings.isNullOrEmpty(userInfo.getSub()) && !userInfo.getSub().equals(token.getUserId())) {
 					// the userinfo came back and the user_id fields don't match what was in the id_token
 					throw new UsernameNotFoundException("user_id mismatch between id_token and user_info call: " + userInfo.getSub() + " / " + token.getUserId());
 				}
 			}
-			
-			return new OIDCAuthenticationToken(token.getUserId(), 
-					token.getIssuer(), 
+
+			return new OIDCAuthenticationToken(token.getUserId(),
+					token.getIssuer(),
 					userInfo, authoritiesMapper.mapAuthorities(authorities),
 					token.getIdTokenValue(), token.getAccessTokenValue(), token.getRefreshTokenValue());
 		}

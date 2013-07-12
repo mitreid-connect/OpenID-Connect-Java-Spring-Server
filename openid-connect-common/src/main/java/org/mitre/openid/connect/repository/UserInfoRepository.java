@@ -26,24 +26,24 @@ import org.mitre.openid.connect.model.UserInfo;
  *
  */
 public interface UserInfoRepository {
-	
+
 	/**
 	 * Returns the UserInfo for the given subject
 	 * 
 	 * @param sub
 	 *            the subject of the UserInfo
 	 * @return a valid UserInfo if it exists, null otherwise
-	 */	
-	public UserInfo getBySubject(String sub);		
-	
+	 */
+	public UserInfo getBySubject(String sub);
+
 	/**
-	 * Persists a UserInfo 
+	 * Persists a UserInfo
 	 *
 	 * @param user
 	 * @return
 	 */
 	public UserInfo save(UserInfo userInfo);
-	
+
 	/**
 	 * Removes the given UserInfo from the repository
 	 * 
@@ -64,6 +64,6 @@ public interface UserInfoRepository {
 	 * @param username
 	 * @return
 	 */
-	public UserInfo getByUsername(String username);	
-	
+	public UserInfo getByUsername(String username);
+
 }
