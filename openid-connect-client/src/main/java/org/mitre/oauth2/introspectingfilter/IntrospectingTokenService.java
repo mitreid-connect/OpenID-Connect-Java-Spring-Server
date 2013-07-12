@@ -13,7 +13,7 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.util.OAuth2Utils;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
-import org.springframework.security.oauth2.provider.StoredOAuth2Request;
+import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.util.LinkedMultiValueMap;
@@ -80,7 +80,7 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
         return null;
     }
     
-    private StoredOAuth2Request createStoredRequest(final JsonObject token) {
+    private OAuth2Request createStoredRequest(final JsonObject token) {
     	clientId = token.get("client_id").getAsString();
         Set<String> scopes = new HashSet<String>();
         for (JsonElement e : token.get("scope").getAsJsonArray()) {
@@ -89,7 +89,7 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("client_id", clientId);
         parameters.put("scope", OAuth2Utils.formatParameterList(scopes));
-        StoredOAuth2Request storedRequest = new StoredOAuth2Request(parameters, clientId, null, true, scopes, null, null, null);
+        OAuth2Request storedRequest = new OAuth2Request(parameters, clientId, null, true, scopes, null, null, null);
         return storedRequest;
     	
     }

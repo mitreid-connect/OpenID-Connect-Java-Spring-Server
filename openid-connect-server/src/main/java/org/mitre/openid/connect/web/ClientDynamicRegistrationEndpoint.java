@@ -26,8 +26,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.security.oauth2.provider.OAuth2RequestFactory;
-import org.springframework.security.oauth2.provider.StoredOAuth2Request;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -173,7 +173,7 @@ public class ClientDynamicRegistrationEndpoint {
 		
 		ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
 		
-		if (client != null && client.getClientId().equals(auth.getStoredRequest().getClientId())) {
+		if (client != null && client.getClientId().equals(auth.getOAuth2Request().getClientId())) {
 
 			
 			// we return the token that we got in
@@ -189,7 +189,7 @@ public class ClientDynamicRegistrationEndpoint {
 		} else {
 			// client mismatch
 			logger.error("readClientConfiguration failed, client ID mismatch: " 
-					+ clientId + " and " + auth.getStoredRequest().getClientId() + " do not match.");
+					+ clientId + " and " + auth.getOAuth2Request().getClientId() + " do not match.");
 			m.addAttribute("code", HttpStatus.FORBIDDEN); // http 403
 			
 			return "httpCodeView";
@@ -213,7 +213,7 @@ public class ClientDynamicRegistrationEndpoint {
 		ClientDetailsEntity oldClient = clientService.loadClientByClientId(clientId);
 		
 		if (newClient != null && oldClient != null  // we have an existing client and the new one parsed
-				&& oldClient.getClientId().equals(auth.getStoredRequest().getClientId()) // the client passed in the URI matches the one in the auth
+				&& oldClient.getClientId().equals(auth.getOAuth2Request().getClientId()) // the client passed in the URI matches the one in the auth
 				&& oldClient.getClientId().equals(newClient.getClientId()) // the client passed in the body matches the one in the URI
 				) {
 
@@ -260,7 +260,7 @@ public class ClientDynamicRegistrationEndpoint {
 		} else {
 			// client mismatch
 			logger.error("readClientConfiguration failed, client ID mismatch: " 
-					+ clientId + " and " + auth.getStoredRequest().getClientId() + " do not match.");
+					+ clientId + " and " + auth.getOAuth2Request().getClientId() + " do not match.");
 			m.addAttribute("code", HttpStatus.FORBIDDEN); // http 403
 			
 			return "httpCodeView";
@@ -280,7 +280,7 @@ public class ClientDynamicRegistrationEndpoint {
 		
 		ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
 		
-		if (client != null && client.getClientId().equals(auth.getStoredRequest().getClientId())) {
+		if (client != null && client.getClientId().equals(auth.getOAuth2Request().getClientId())) {
 
 			clientService.deleteClient(client);
 			
@@ -297,7 +297,7 @@ public class ClientDynamicRegistrationEndpoint {
 		} else {
 			// client mismatch
 			logger.error("readClientConfiguration failed, client ID mismatch: " 
-					+ clientId + " and " + auth.getStoredRequest().getClientId() + " do not match.");
+					+ clientId + " and " + auth.getOAuth2Request().getClientId() + " do not match.");
 			m.addAttribute("code", HttpStatus.FORBIDDEN); // http 403
 			
 			return "httpCodeView";
@@ -470,7 +470,7 @@ public class ClientDynamicRegistrationEndpoint {
     	Map<String, String> authorizationParameters = Maps.newHashMap();
     	authorizationParameters.put("client_id", client.getClientId());
     	authorizationParameters.put("scope", OAuth2AccessTokenEntity.REGISTRATION_TOKEN_SCOPE);
-    	StoredOAuth2Request storedRequest = new StoredOAuth2Request(authorizationParameters, client.getClientId(), 
+    	OAuth2Request storedRequest = new OAuth2Request(authorizationParameters, client.getClientId(), 
     			Sets.newHashSet(new SimpleGrantedAuthority("ROLE_CLIENT")), true, 
     			Sets.newHashSet(OAuth2AccessTokenEntity.REGISTRATION_TOKEN_SCOPE), null, null, null);
 		OAuth2Authentication authentication = new OAuth2Authentication(storedRequest, null);

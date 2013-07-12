@@ -28,7 +28,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
-import org.springframework.security.oauth2.provider.StoredOAuth2Request;
+import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -86,7 +86,7 @@ public class RevocationEndpoint {
 			
 			// we've got a client acting on its own behalf, not an admin
 			//ClientAuthentication clientAuth = (ClientAuthenticationToken) ((OAuth2Authentication) auth).getClientAuthentication();
-			StoredOAuth2Request clientAuth = ((OAuth2Authentication) principal).getStoredRequest();
+			OAuth2Request clientAuth = ((OAuth2Authentication) principal).getOAuth2Request();
 
 			if (refreshToken != null) {
 				if (!refreshToken.getClient().getClientId().equals(clientAuth.getClientId())) {

@@ -43,7 +43,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
-import org.springframework.security.oauth2.provider.StoredOAuth2Request;
+import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.security.oauth2.provider.TokenRequest;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.stereotype.Service;
@@ -79,9 +79,9 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	
 	@Override
     public OAuth2AccessTokenEntity createAccessToken(OAuth2Authentication authentication) throws AuthenticationException, InvalidClientException {
-		if (authentication != null && authentication.getStoredRequest() != null) {
+		if (authentication != null && authentication.getOAuth2Request() != null) {
 			// look up our client
-			StoredOAuth2Request clientAuth = authentication.getStoredRequest();
+			OAuth2Request clientAuth = authentication.getOAuth2Request();
 			
 			ClientDetailsEntity client = clientDetailsService.loadClientByClientId(clientAuth.getClientId());
 		
@@ -152,11 +152,11 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		    tokenRepository.saveAccessToken(token);
 		    
 	    	//Add approved site reference, if any
-		    StoredOAuth2Request originalAuthRequest = authHolder.getAuthentication().getStoredRequest();
+		    OAuth2Request originalAuthRequest = authHolder.getAuthentication().getOAuth2Request();
 			
-	    	if (originalAuthRequest.getExtensionProperties() != null && originalAuthRequest.getExtensionProperties().containsKey("approved_site")) {
+	    	if (originalAuthRequest.getExtensions() != null && originalAuthRequest.getExtensions().containsKey("approved_site")) {
 				
-				Long apId = (Long) originalAuthRequest.getExtensionProperties().get("approved_site");
+				Long apId = (Long) originalAuthRequest.getExtensions().get("approved_site");
 				ApprovedSite ap = approvedSiteService.getById(apId);
 				Set<OAuth2AccessTokenEntity> apTokens = ap.getApprovedAccessTokens();
 				apTokens.add(token);
@@ -208,7 +208,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		OAuth2AccessTokenEntity token = new OAuth2AccessTokenEntity(); 
 
 		// get the stored scopes from the authentication holder's authorization request; these are the scopes associated with the refresh token
-		Set<String> refreshScopes = new HashSet<String>(refreshToken.getAuthenticationHolder().getAuthentication().getStoredRequest().getScope());
+		Set<String> refreshScopes = new HashSet<String>(refreshToken.getAuthenticationHolder().getAuthentication().getOAuth2Request().getScope());
 		
 		Set<String> scope = new HashSet<String>(authRequest.getScope());
 		if (scope != null && !scope.isEmpty()) { 

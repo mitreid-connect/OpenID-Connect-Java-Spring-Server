@@ -37,10 +37,10 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 
 	private static Logger logger = LoggerFactory.getLogger(ConnectOAuth2RequestFactory.class);
 	
-	@Autowired
+	//@Autowired
 	private NonceService nonceService;
 	
-	@Autowired
+	//@Autowired
 	private ClientDetailsEntityService clientDetailsService;
 
 	@Autowired
@@ -52,6 +52,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 	 * @param clientDetailsService
 	 * @param nonceService
 	 */
+	@Autowired
 	public ConnectOAuth2RequestFactory(ClientDetailsEntityService clientDetailsService, NonceService nonceService) {
 		super(clientDetailsService);
 		this.clientDetailsService = clientDetailsService;

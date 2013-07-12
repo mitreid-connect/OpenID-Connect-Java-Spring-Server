@@ -6,7 +6,6 @@ package org.mitre.oauth2.token;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
@@ -14,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.common.exceptions.InvalidScopeException;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
+import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2RequestFactory;
 import org.springframework.security.oauth2.provider.TokenRequest;
@@ -51,7 +51,7 @@ public class ChainedTokenGranter extends AbstractTokenGranter {
      * @see org.springframework.security.oauth2.provider.token.AbstractTokenGranter#getOAuth2Authentication(org.springframework.security.oauth2.provider.AuthorizationRequest)
      */
     @Override
-    protected OAuth2Authentication getOAuth2Authentication(TokenRequest tokenRequest) throws AuthenticationException, InvalidTokenException {
+    protected OAuth2Authentication getOAuth2Authentication(ClientDetails client, TokenRequest tokenRequest) throws AuthenticationException, InvalidTokenException {
     	// read and load up the existing token
 	    String incomingTokenValue = tokenRequest.getRequestParameters().get("token");
 	    OAuth2AccessTokenEntity incomingToken = tokenServices.readAccessToken(incomingTokenValue);
@@ -65,8 +65,6 @@ public class ChainedTokenGranter extends AbstractTokenGranter {
 	    }
 	    
 	    // do a check on the requested scopes -- if they exactly match the client scopes, they were probably shadowed by the token granter
-	    // FIXME: bug in SECOAUTH functionality
-	    ClientDetailsEntity client = incomingToken.getClient();
 	    if (client.getScope().equals(requestedScopes)) {
 	    	requestedScopes = new HashSet<String>();
 	    }
@@ -86,7 +84,7 @@ public class ChainedTokenGranter extends AbstractTokenGranter {
 		    // NOTE: don't revoke the existing access token
 
 	    	// create a new access token
-	    	OAuth2Authentication authentication = new OAuth2Authentication(getRequestFactory().createStoredOAuth2Request(tokenRequest), incomingToken.getAuthenticationHolder().getAuthentication().getUserAuthentication()); 
+	    	OAuth2Authentication authentication = new OAuth2Authentication(getRequestFactory().createOAuth2Request(client, tokenRequest), incomingToken.getAuthenticationHolder().getAuthentication().getUserAuthentication()); 
 	    	
 	    	return authentication;
 	    	

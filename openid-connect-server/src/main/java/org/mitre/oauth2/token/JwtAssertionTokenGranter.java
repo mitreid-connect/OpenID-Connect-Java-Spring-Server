@@ -17,6 +17,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
+import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.OAuth2RequestFactory;
 import org.springframework.security.oauth2.provider.TokenRequest;
 import org.springframework.security.oauth2.provider.token.AbstractTokenGranter;
@@ -56,13 +57,10 @@ public class JwtAssertionTokenGranter extends AbstractTokenGranter {
      * @see org.springframework.security.oauth2.provider.token.AbstractTokenGranter#getOAuth2Authentication(org.springframework.security.oauth2.provider.AuthorizationRequest)
      */
     @Override
-    protected OAuth2AccessToken getAccessToken(TokenRequest tokenRequest) throws AuthenticationException, InvalidTokenException {
+    protected OAuth2AccessToken getAccessToken(ClientDetails client, TokenRequest tokenRequest) throws AuthenticationException, InvalidTokenException {
     	// read and load up the existing token
 	    String incomingTokenValue = tokenRequest.getRequestParameters().get("assertion");
 	    OAuth2AccessTokenEntity incomingToken = tokenServices.readAccessToken(incomingTokenValue);
-	    
-	    ClientDetailsEntity client = incomingToken.getClient();
-
 	    
 	    if (incomingToken.getScope().contains(OAuth2AccessTokenEntity.ID_TOKEN_SCOPE)) {
 		    
@@ -88,12 +86,21 @@ public class JwtAssertionTokenGranter extends AbstractTokenGranter {
 		    		// copy over all existing claims
 		    		JWTClaimsSet claims = new JWTClaimsSet(idToken.getJWTClaimsSet());
 	
-		    		// update expiration and issued-at claims
-					if (client.getIdTokenValiditySeconds() != null) {
-						Date expiration = new Date(System.currentTimeMillis() + (client.getIdTokenValiditySeconds() * 1000L));
-						claims.setExpirationTime(expiration);
-						newIdTokenEntity.setExpiration(expiration);
-					}
+		    		if (client instanceof ClientDetailsEntity) {
+		    		
+		    			ClientDetailsEntity clientEntity = (ClientDetailsEntity) client;
+		    			
+			    		// update expiration and issued-at claims
+						if (clientEntity.getIdTokenValiditySeconds() != null) {
+							Date expiration = new Date(System.currentTimeMillis() + (clientEntity.getIdTokenValiditySeconds() * 1000L));
+							claims.setExpirationTime(expiration);
+							newIdTokenEntity.setExpiration(expiration);
+						}
+					
+		    		} else {
+		    			//TODO: What should happen in this case? Is this possible?
+		    		}
+					
 					claims.setIssueTime(new Date());
 	
 					

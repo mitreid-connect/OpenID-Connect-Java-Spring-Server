@@ -117,7 +117,7 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 					ap.setAccessDate(new Date());
 					approvedSiteService.save(ap);
 	
-					authorizationRequest.getExtensionProperties().put("approved_site", ap.getId());
+					authorizationRequest.getExtensions().put("approved_site", ap.getId());
 					authorizationRequest.setApproved(true);					
 					alreadyApproved = true;
 				}
@@ -130,7 +130,7 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 				
 				//Create an approved site
 				ApprovedSite newSite = approvedSiteService.createApprovedSite(clientId, userId, null, ws.getAllowedScopes(), ws);	
-				authorizationRequest.getExtensionProperties().put("approved_site", newSite.getId());
+				authorizationRequest.getExtensions().put("approved_site", newSite.getId());
 				authorizationRequest.setApproved(true);
 			}
 		}
@@ -192,7 +192,7 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 				}
 				
 				ApprovedSite newSite = approvedSiteService.createApprovedSite(clientId, userId, timeout, allowedScopes, null);
-				authorizationRequest.getExtensionProperties().put("approved_site", newSite.getId());
+				authorizationRequest.getExtensions().put("approved_site", newSite.getId());
 			}
 			
 		}
