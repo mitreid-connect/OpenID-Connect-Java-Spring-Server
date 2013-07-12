@@ -40,6 +40,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
+import org.springframework.security.oauth2.common.exceptions.InvalidScopeException;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -198,9 +199,9 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 				// set the scope of the new access token if requested
 				token.setScope(scope);
 			} else {
-				// up-scoping is not allowed
-				// (TODO: should this throw InvalidScopeException? For now just pass through)
-				token.setScope(refreshScopes);
+				String errorMsg = "Up-scoping is not allowed.";
+				logger.error(errorMsg);
+				throw new InvalidScopeException(errorMsg);
 			}
 		} else {
 			// otherwise inherit the scope of the refresh token (if it's there -- this can return a null scope set)
