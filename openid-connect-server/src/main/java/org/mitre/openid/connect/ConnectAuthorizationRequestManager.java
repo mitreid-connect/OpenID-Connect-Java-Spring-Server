@@ -114,7 +114,7 @@ public class ConnectAuthorizationRequestManager implements AuthorizationRequestM
 
 		Set<String> scopes = OAuth2Utils.parseParameterList(parameters.get("scope"));
 		if ((scopes == null || scopes.isEmpty())) {
-			//TODO: do we want to allow default scoping at all?
+			// default scoping
 			Set<String> clientScopes = client.getScope();
 			scopes = clientScopes;
 		}
