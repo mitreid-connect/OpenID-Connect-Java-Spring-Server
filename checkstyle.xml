@@ -11,11 +11,6 @@ page at http://checkstyle.sourceforge.net/config.html -->
 
 <module name="Checker">
 
-  <module name="FileTabCharacter">
-    <!-- Checks that there are no tab characters in the file.
-    -->
-  </module>
-
   <module name="NewlineAtEndOfFile">
     <property name="lineSeparator" value="lf"/>
   </module>
@@ -24,20 +19,7 @@ page at http://checkstyle.sourceforge.net/config.html -->
     <!-- Checks that FIXME is not used in comments.  TODO is preferred.
     -->
     <property name="format" value="((//.*)|(\*.*))FIXME" />
-    <property name="message" value='TODO is preferred to FIXME.  e.g. "TODO(johndoe): Refactor when v2 is released."' />
-  </module>
-
-  <module name="RegexpSingleline">
-    <!-- Checks that TODOs are named.  (Actually, just that they are followed
-         by an open paren.)
-    -->
-    <property name="format" value="((//.*)|(\*.*))TODO[^(]" />
-    <property name="message" value='All TODOs should be named.  e.g. "TODO(johndoe): Refactor when v2 is released."' />
-  </module>
-
-  <module name="JavadocPackage">
-    <!-- Checks that each Java package has a Javadoc file used for commenting.
-      Only allows a package-info.java, not package.html. -->
+    <property name="message" value='TODO is preferred to FIXME.' />
   </module>
 
   <!-- All Java AST specific tests live under TreeWalker module. -->
@@ -58,7 +40,6 @@ page at http://checkstyle.sourceforge.net/config.html -->
       <!-- Checks for out of order import statements. -->
 
       <property name="severity" value="warning"/>
-      <property name="groups" value="com.google,android,junit,net,org,java,javax"/>
       <!-- This ensures that static imports go first. -->
       <property name="option" value="top"/>
       <property name="tokens" value="STATIC_IMPORT, IMPORT"/>
@@ -72,21 +53,6 @@ page at http://checkstyle.sourceforge.net/config.html -->
 
     <!-- Checks for Javadoc comments.                     -->
     <!-- See http://checkstyle.sf.net/config_javadoc.html -->
-    <module name="JavadocMethod">
-      <property name="scope" value="protected"/>
-      <property name="severity" value="warning"/>
-      <property name="allowMissingJavadoc" value="true"/>
-      <property name="allowMissingParamTags" value="true"/>
-      <property name="allowMissingReturnTag" value="true"/>
-      <property name="allowMissingThrowsTags" value="true"/>
-      <property name="allowThrowsTagsForSubclasses" value="true"/>
-      <property name="allowUndeclaredRTE" value="true"/>
-    </module>
-
-    <module name="JavadocType">
-      <property name="scope" value="protected"/>
-      <property name="severity" value="error"/>
-    </module>
 
     <module name="JavadocStyle">
       <property name="severity" value="warning"/>
@@ -188,7 +154,7 @@ page at http://checkstyle.sourceforge.net/config.html -->
 
     <module name="LineLength">
       <!-- Checks if a line is too long. -->
-      <property name="max" value="${com.puppycrawl.tools.checkstyle.checks.sizes.LineLength.max}" default="100"/>
+      <property name="max" value="${com.puppycrawl.tools.checkstyle.checks.sizes.LineLength.max}" default="250"/>
       <property name="severity" value="error"/>
 
       <!--
