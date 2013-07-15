@@ -18,6 +18,7 @@
 		<!-- Checks that FIXME is not used in comments. TODO is preferred. -->
 		<property name="format" value="((//.*)|(\*.*))FIXME"/>
 		<property name="message" value='TODO is preferred to FIXME.'/>
+		<property name="severity" value="warning"/>
 	</module>
 
 	<!-- All Java AST specific tests live under TreeWalker module. -->
@@ -38,6 +39,12 @@
 			<property name="option" value="top"/>
 			<property name="tokens" value="STATIC_IMPORT, IMPORT"/>
 		</module>
+
+		<module name="AvoidStarImport">
+			<property name="severity" value="warning"/>
+		</module>
+
+		<module name="UnusedImports"/>
 
 		<!-- JAVADOC CHECKS -->
 
@@ -128,7 +135,6 @@
 			<property name="severity" value="warning"/>
 		</module>
 
-
 		<!-- LENGTH and CODING CHECKS -->
 
 		<module name="LineLength">
@@ -136,7 +142,7 @@
 			<property name="max"
 				value="${com.puppycrawl.tools.checkstyle.checks.sizes.LineLength.max}"
 				default="250"/>
-			<property name="severity" value="error"/>
+			<property name="severity" value="warning"/>
 
 			<!-- The default ignore pattern exempts the following elements: - import 
 				statements - long URLs inside comments -->
@@ -181,7 +187,61 @@
 			<property name="severity" value="error"/>
 		</module>
 
+		<module name="AnnotationUseStyle">
+			<property name="severity" value="warning"/>
+		</module>
 
+		<module name="ArrayTypeStyle">
+			<property name="severity" value="warning"/>
+		</module>
+
+		<module name="AvoidNestedBlocks">
+			<property name="severity" value="error"/>
+		</module>
+
+		<module name="CovariantEquals">
+			<property name="severity" value="error"/>
+		</module>
+
+		<module name="DeclarationOrder">
+			<property name="severity" value="warning"/>
+		</module>
+
+		<module name="DefaultComesLast">
+			<property name="severity" value="warning"/>
+		</module>
+
+		<module name="EmptyStatement">
+			<property name="severity" value="warning"/>
+		</module>
+
+		<module name="MultipleStringLiterals">
+			<property name="allowedDuplicates" value="1"/>
+			<property name="severity" value="warning"/>
+		</module>
+
+		<module name="NeedBraces">
+			<property name="severity" value="error"/>
+		</module>
+
+		<module name="PackageDeclaration"/>
+
+		<!-- COMPLEXITY CHECKS -->
+
+		<module name="BooleanExpressionComplexity">
+			<property name="max" value="10"/>
+			<property name="severity" value="warning"/>
+		</module>
+
+		<module name="CyclomaticComplexity">
+			<property name="max" value="10"/>
+			<property name="severity" value="warning"/>
+		</module>
+
+		<module name="NPathComplexity">
+			<property name="max" value="200"/>
+			<property name="severity" value="warning"/>
+		</module>
 
 		<!-- MODIFIERS CHECKS -->
 
@@ -205,12 +265,13 @@
 				LITERAL_SYNCHRONIZED, LITERAL_TRY, LITERAL_WHILE, LOR, LT, MINUS, 
 				MINUS_ASSIGN, MOD, MOD_ASSIGN, NOT_EQUAL, PLUS, PLUS_ASSIGN, QUESTION, 
 				SL, SL_ASSIGN, SR_ASSIGN, STAR, STAR_ASSIGN"/>
-			<property name="severity" value="error"/>
+			<property name="severity" value="warning"/>
 		</module>
 
 		<module name="WhitespaceAfter">
 			<!-- Checks that commas, semicolons and typecasts are followed by whitespace. -->
 			<property name="tokens" value="COMMA, SEMI, TYPECAST"/>
+			<property name="severity" value="warning"/>
 		</module>
 
 		<module name="NoWhitespaceAfter">
@@ -219,7 +280,7 @@
 			<property name="tokens"
 				value="BNOT, DEC, DOT, INC, LNOT, UNARY_MINUS, UNARY_PLUS"/>
 			<property name="allowLineBreaks" value="true"/>
-			<property name="severity" value="error"/>
+			<property name="severity" value="warning"/>
 		</module>
 
 		<module name="NoWhitespaceBefore">
@@ -227,7 +288,7 @@
 				Linebreaks are allowed. -->
 			<property name="tokens" value="SEMI, DOT, POST_DEC, POST_INC"/>
 			<property name="allowLineBreaks" value="true"/>
-			<property name="severity" value="error"/>
+			<property name="severity" value="warning"/>
 		</module>
 
 		<module name="ParenPad">
