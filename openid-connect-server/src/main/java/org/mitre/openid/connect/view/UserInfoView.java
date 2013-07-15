@@ -119,7 +119,8 @@ public class UserInfoView extends AbstractView {
 			}
 
 		} catch (IOException e) {
-
+			
+			//TODO: Error Handling
 			logger.error("IOException in UserInfoView.java: ", e);
 
 		}
@@ -178,7 +179,7 @@ public class UserInfoView extends AbstractView {
 	}
 
 	/**
-	 * Build a JSON response according to the request object recieved.
+	 * Build a JSON response according to the request object received.
 	 * 
 	 * Claims requested in requestObj.userinfo.claims are added to any
 	 * claims corresponding to requested scopes, if any.
@@ -203,7 +204,7 @@ public class UserInfoView extends AbstractView {
 			return obj;
 		}
 
-		// TODO: this mehod is likely to be fragile if the data model changes at all
+		// TODO: this method is likely to be fragile if the data model changes at all
 
 		//For each claim found, add it if not already present
 		for (Entry<String, JsonElement> i : claims.getAsJsonObject().entrySet()) {
