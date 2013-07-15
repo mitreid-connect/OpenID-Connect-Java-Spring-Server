@@ -5,15 +5,15 @@
 
 <module name="Checker">
 	<module name="TreeWalker">
-		<module name="AvoidStarImport" />
+		<module name="AvoidStarImport"/>
 		<module name="LineLength">
-			<property name="max" value="250" />
+			<property name="max" value="250"/>
 		</module>
-		<module name="RedundantImport" />
-		<module name="TodoComment" />
+		<module name="RedundantImport"/>
+		<module name="TodoComment"/>
 		<module name="TodoComment">
-			<property name="format" value="FIXME" />
+			<property name="format" value="FIXME"/>
 		</module>
-		<module name="UnusedImports" />
+		<module name="UnusedImports"/>
 	</module>
 </module>
