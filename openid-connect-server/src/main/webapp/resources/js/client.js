@@ -462,7 +462,7 @@ var ClientFormView = Backbone.View.extend({
             accessTokenValiditySeconds: accessTokenValiditySeconds,
             refreshTokenValiditySeconds: refreshTokenValiditySeconds,
             idTokenValiditySeconds: idTokenValiditySeconds,
-            allowRefresh: $('#allowRefresh').is(':checked'), // TODO: why are these two checkboxes different?
+            allowRefresh: $('#allowRefresh').is(':checked'),
             allowIntrospection: $('#allowIntrospection input').is(':checked'), // <-- And here? --^
             scope: scopes,
             
@@ -478,7 +478,7 @@ var ClientFormView = Backbone.View.extend({
             sectorIdentifierUri: $('#sectorIdentifierUri input').val(),
             initiateLoginUri: $('#initiateLoginUri input').val(),
             postLogoutRedirectUri: $('#postLogoutRedirectUri input').val(),
-            reuseRefreshToken: $('#reuseRefreshToken').is(':checked'), // TODO: another funny checkbox
+            reuseRefreshToken: $('#reuseRefreshToken').is(':checked'),
             requireAuthTime: $('#requireAuthTime input').is(':checked'),
             defaultMaxAge: parseInt($('#defaultMaxAge input').val()),
             contacts: this.contactsCollection.pluck('item'),
