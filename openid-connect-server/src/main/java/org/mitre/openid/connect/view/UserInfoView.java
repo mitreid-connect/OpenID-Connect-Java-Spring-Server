@@ -102,14 +102,11 @@ public class UserInfoView extends AbstractView {
 
 					gson.toJson(toJsonFromRequestObj(userInfo, scope, obj), out);
 				} catch (JsonSyntaxException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error("JsonSyntaxException in UserInfoView.java: ", e);
 				} catch (JsonIOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error("JsonIOException in UserInfoView.java: ", e);
 				} catch (ParseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error("ParseException in UserInfoView.java: ", e);
 				}
 
 			} else {
@@ -120,7 +117,6 @@ public class UserInfoView extends AbstractView {
 
 		} catch (IOException e) {
 			
-			//TODO: Error Handling
 			logger.error("IOException in UserInfoView.java: ", e);
 
 		}
@@ -223,20 +219,15 @@ public class UserInfoView extends AbstractView {
 					value = (String) getter.invoke(ui);
 					obj.addProperty(claimName, value);
 				} catch (SecurityException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error("SecurityException in UserInfoView.java: ", e);
 				} catch (NoSuchMethodException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error("NoSuchMethodException in UserInfoView.java: ", e);
 				} catch (IllegalArgumentException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error("IllegalArgumentException in UserInfoView.java: ", e);
 				} catch (IllegalAccessException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error("IllegalAccessException in UserInfoView.java: ", e);
 				} catch (InvocationTargetException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					logger.error("InvocationTargetException in UserInfoView.java: ", e);
 				}
 			}
 		}

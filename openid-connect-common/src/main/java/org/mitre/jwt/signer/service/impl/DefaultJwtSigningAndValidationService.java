@@ -214,8 +214,8 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 		try {
 			jwt.sign(signer);
 		} catch (JOSEException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error("Failed to sign JWT, error was: ", e);
 		}
 
 	}
@@ -229,8 +229,8 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 					return true;
 				}
 			} catch (JOSEException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				logger.error("Failed to validate signature, error was: ", e);
 			}
 		}
 		return false;

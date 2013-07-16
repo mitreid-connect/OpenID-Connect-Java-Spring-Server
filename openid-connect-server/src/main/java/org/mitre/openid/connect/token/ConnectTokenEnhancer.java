@@ -174,11 +174,12 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 						idClaims.setClaim("at_hash", at_hash);
 
 					} catch (NoSuchAlgorithmException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						
+						logger.error("No such algorithm error: ", e);
+						
 					} catch (InvalidKeyException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						
+						logger.error("Invalid key error: ", e);
 					}
 
 				}

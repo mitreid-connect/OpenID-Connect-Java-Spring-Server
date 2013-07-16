@@ -136,7 +136,9 @@ public class JwtBearerAuthenticationProvider implements AuthenticationProvider {
 		} catch (InvalidClientException e) {
 			throw new UsernameNotFoundException("Could not find client: " + jwtAuth.getClientId());
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
+			
+			logger.error("Failure during authentication, error was: ", e);
+			
 			throw new AuthenticationServiceException("Invalid JWT format");
 		}
 	}

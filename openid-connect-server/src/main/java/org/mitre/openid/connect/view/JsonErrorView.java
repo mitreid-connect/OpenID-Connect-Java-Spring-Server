@@ -92,7 +92,6 @@ public class JsonErrorView extends AbstractView {
 
 		} catch (IOException e) {
 
-			//TODO: Error Handling
 			logger.error("IOException in JsonErrorView.java: ", e);
 
 		}

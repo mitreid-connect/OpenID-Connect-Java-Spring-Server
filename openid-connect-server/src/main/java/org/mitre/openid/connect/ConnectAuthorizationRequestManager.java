@@ -231,8 +231,8 @@ public class ConnectAuthorizationRequestManager implements AuthorizationRequestM
 			}
 
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			logger.error("Failed to process request object, error was: ", e);
 		}
 		return parameters;
 	}
