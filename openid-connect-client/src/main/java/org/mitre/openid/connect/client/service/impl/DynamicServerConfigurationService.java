@@ -95,17 +95,35 @@ public class DynamicServerConfigurationService implements ServerConfigurationSer
 				JsonObject o = parsed.getAsJsonObject();
 
 				// sanity checks
+				if (!o.has("issuer")) {
+					throw new IllegalStateException("Returned object did not have an 'issuer' field");
+				}
+				
 				if (!issuer.equals(o.get("issuer").getAsString())) {
 					throw new IllegalStateException("Discovered issuers didn't match, expected " + issuer + " got " + o.get("issuer").getAsString());
 				}
 
 				conf.setIssuer(o.get("issuer").getAsString());
-				conf.setAuthorizationEndpointUri(o.get("authorization_endpoint").getAsString());
-				conf.setTokenEndpointUri(o.get("token_endpoint").getAsString());
-				conf.setJwksUri(o.get("jwks_uri").getAsString());
-				conf.setUserInfoUri(o.get("userinfo_endpoint").getAsString());
-				conf.setRegistrationEndpointUri(o.get("registration_endpoint").getAsString());
-
+				
+				if (o.has("authorization_endpoint")) {
+					conf.setAuthorizationEndpointUri(o.get("authorization_endpoint").getAsString());
+				}
+				if (o.has("token_endpoint")) {
+					conf.setTokenEndpointUri(o.get("token_endpoint").getAsString());
+				}
+				if (o.has("jwks_uri")) {
+					conf.setJwksUri(o.get("jwks_uri").getAsString());
+				}
+				if (o.has("userinfo_endpoint")) {
+					conf.setUserInfoUri(o.get("userinfo_endpoint").getAsString());
+				}
+				if (o.has("registration_endpoint")) {
+					conf.setRegistrationEndpointUri(o.get("registration_endpoint").getAsString());
+				}
+				if (o.has("introspection_endpoint")) {
+					conf.setIntrospectionEndpointUri(o.get("introspection_endpoint").getAsString());
+				}
+				
 				return conf;
 			} else {
 				throw new IllegalStateException("Couldn't parse server discovery results for " + url);

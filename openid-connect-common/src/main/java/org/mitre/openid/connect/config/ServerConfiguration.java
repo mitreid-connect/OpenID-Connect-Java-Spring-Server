@@ -39,6 +39,8 @@ public class ServerConfiguration {
 
 	private String userInfoUri;
 
+	private String introspectionEndpointUri;
+	
 	/**
 	 * @return the authorizationEndpointUri
 	 */
@@ -123,81 +125,103 @@ public class ServerConfiguration {
 		this.registrationEndpointUri = registrationEndpointUri;
 	}
 
+	/**
+	 * @return the introspectionEndpointUri
+	 */
+	public String getIntrospectionEndpointUri() {
+		return introspectionEndpointUri;
+	}
+
+	/**
+	 * @param introspectionEndpointUri the introspectionEndpointUri to set
+	 */
+	public void setIntrospectionEndpointUri(String introspectionEndpointUri) {
+		this.introspectionEndpointUri = introspectionEndpointUri;
+	}
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((authorizationEndpointUri == null) ? 0 : authorizationEndpointUri.hashCode());
-		result = prime * result + ((issuer == null) ? 0 : issuer.hashCode());
-		result = prime * result + ((jwksUri == null) ? 0 : jwksUri.hashCode());
-		result = prime * result + ((registrationEndpointUri == null) ? 0 : registrationEndpointUri.hashCode());
-		result = prime * result + ((tokenEndpointUri == null) ? 0 : tokenEndpointUri.hashCode());
-		result = prime * result + ((userInfoUri == null) ? 0 : userInfoUri.hashCode());
-		return result;
-	}
+    @Override
+    public int hashCode() {
+	    final int prime = 31;
+	    int result = 1;
+	    result = prime * result + ((authorizationEndpointUri == null) ? 0 : authorizationEndpointUri.hashCode());
+	    result = prime * result + ((introspectionEndpointUri == null) ? 0 : introspectionEndpointUri.hashCode());
+	    result = prime * result + ((issuer == null) ? 0 : issuer.hashCode());
+	    result = prime * result + ((jwksUri == null) ? 0 : jwksUri.hashCode());
+	    result = prime * result + ((registrationEndpointUri == null) ? 0 : registrationEndpointUri.hashCode());
+	    result = prime * result + ((tokenEndpointUri == null) ? 0 : tokenEndpointUri.hashCode());
+	    result = prime * result + ((userInfoUri == null) ? 0 : userInfoUri.hashCode());
+	    return result;
+    }
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		ServerConfiguration other = (ServerConfiguration) obj;
-		if (authorizationEndpointUri == null) {
-			if (other.authorizationEndpointUri != null) {
-				return false;
-			}
-		} else if (!authorizationEndpointUri.equals(other.authorizationEndpointUri)) {
-			return false;
-		}
-		if (issuer == null) {
-			if (other.issuer != null) {
-				return false;
-			}
-		} else if (!issuer.equals(other.issuer)) {
-			return false;
-		}
-		if (jwksUri == null) {
-			if (other.jwksUri != null) {
-				return false;
-			}
-		} else if (!jwksUri.equals(other.jwksUri)) {
-			return false;
-		}
-		if (registrationEndpointUri == null) {
-			if (other.registrationEndpointUri != null) {
-				return false;
-			}
-		} else if (!registrationEndpointUri.equals(other.registrationEndpointUri)) {
-			return false;
-		}
-		if (tokenEndpointUri == null) {
-			if (other.tokenEndpointUri != null) {
-				return false;
-			}
-		} else if (!tokenEndpointUri.equals(other.tokenEndpointUri)) {
-			return false;
-		}
-		if (userInfoUri == null) {
-			if (other.userInfoUri != null) {
-				return false;
-			}
-		} else if (!userInfoUri.equals(other.userInfoUri)) {
-			return false;
-		}
-		return true;
-	}
+    @Override
+    public boolean equals(Object obj) {
+	    if (this == obj) {
+		    return true;
+	    }
+	    if (obj == null) {
+		    return false;
+	    }
+	    if (!(obj instanceof ServerConfiguration)) {
+		    return false;
+	    }
+	    ServerConfiguration other = (ServerConfiguration) obj;
+	    if (authorizationEndpointUri == null) {
+		    if (other.authorizationEndpointUri != null) {
+			    return false;
+		    }
+	    } else if (!authorizationEndpointUri.equals(other.authorizationEndpointUri)) {
+		    return false;
+	    }
+	    if (introspectionEndpointUri == null) {
+		    if (other.introspectionEndpointUri != null) {
+			    return false;
+		    }
+	    } else if (!introspectionEndpointUri.equals(other.introspectionEndpointUri)) {
+		    return false;
+	    }
+	    if (issuer == null) {
+		    if (other.issuer != null) {
+			    return false;
+		    }
+	    } else if (!issuer.equals(other.issuer)) {
+		    return false;
+	    }
+	    if (jwksUri == null) {
+		    if (other.jwksUri != null) {
+			    return false;
+		    }
+	    } else if (!jwksUri.equals(other.jwksUri)) {
+		    return false;
+	    }
+	    if (registrationEndpointUri == null) {
+		    if (other.registrationEndpointUri != null) {
+			    return false;
+		    }
+	    } else if (!registrationEndpointUri.equals(other.registrationEndpointUri)) {
+		    return false;
+	    }
+	    if (tokenEndpointUri == null) {
+		    if (other.tokenEndpointUri != null) {
+			    return false;
+		    }
+	    } else if (!tokenEndpointUri.equals(other.tokenEndpointUri)) {
+		    return false;
+	    }
+	    if (userInfoUri == null) {
+		    if (other.userInfoUri != null) {
+			    return false;
+		    }
+	    } else if (!userInfoUri.equals(other.userInfoUri)) {
+		    return false;
+	    }
+	    return true;
+    }
 
 
 }
