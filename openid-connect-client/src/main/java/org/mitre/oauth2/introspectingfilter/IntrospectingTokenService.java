@@ -23,7 +23,6 @@ import java.util.Map;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -50,6 +49,7 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 	private String clientId;
 	private String clientSecret;
 	private IntrospectionUrlProvider introspectionUrlProvider;
+	private IntrospectionAuthorityGranter introspectionAuthorityGranter = new SimpleIntrospectionAuthorityGranter();
 	
 	// Inner class to store in the hash map
 	private class TokenCacheObject {
@@ -117,7 +117,7 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 	// create a default authentication object with authority ROLE_API
 	private Authentication createAuthentication(JsonObject token) {
 		// TODO: make role/authority configurable somehow
-		return new PreAuthenticatedAuthenticationToken(token.get("sub").getAsString(), null, AuthorityUtils.createAuthorityList("ROLE_API"));
+		return new PreAuthenticatedAuthenticationToken(token.get("sub").getAsString(), token, introspectionAuthorityGranter.getAuthorities(token));
 	}
 
 	private OAuth2AccessToken createAccessToken(final JsonObject token, final String tokenString) {

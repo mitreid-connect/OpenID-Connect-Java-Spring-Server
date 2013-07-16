@@ -4,6 +4,8 @@
 package org.mitre.oauth2.introspectingfilter;
 
 import java.text.ParseException;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.mitre.openid.connect.client.service.ServerConfigurationService;
 import org.mitre.openid.connect.config.ServerConfiguration;
@@ -50,6 +52,9 @@ public class JWTParsingIntrospectionUrlProvider implements IntrospectionUrlProvi
 	        
 	        String issuer = jwt.getJWTClaimsSet().getIssuer();
 	        if (!Strings.isNullOrEmpty(issuer)) {
+	        	
+	        	
+	        	
 	        	ServerConfiguration server = serverConfigurationService.getServerConfiguration(issuer);
 	        	if (server != null) {
 	        		if (!Strings.isNullOrEmpty(server.getIntrospectionEndpointUri())) {
