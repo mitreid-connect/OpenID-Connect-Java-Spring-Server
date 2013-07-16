@@ -4,6 +4,7 @@
 package org.mitre.openid.connect.client.service.impl;
 
 import java.util.Map;
+import java.util.Set;
 
 import org.mitre.openid.connect.client.service.ServerConfigurationService;
 import org.mitre.openid.connect.config.ServerConfiguration;
@@ -13,8 +14,9 @@ import org.mitre.openid.connect.config.ServerConfiguration;
  * service in one object. Checks the static service first, then falls through to
  * the dynamic service.
  * 
- * Provides configuration passthrough for the template and the static
- * client map.
+ * Provides configuration passthrough to the dynamic service's whitelist and blacklist, 
+ * and to the static service's server map.
+ * 
  * 
  * @author jricher
  *
@@ -55,6 +57,42 @@ public class HybridServerConfigurationService implements ServerConfigurationServ
 	 */
     public void setServers(Map<String, ServerConfiguration> servers) {
 	    staticServerService.setServers(servers);
+    }
+
+
+	/**
+	 * @return
+	 * @see org.mitre.openid.connect.client.service.impl.DynamicServerConfigurationService#getWhitelist()
+	 */
+    public Set<String> getWhitelist() {
+	    return dynamicServerService.getWhitelist();
+    }
+
+
+	/**
+	 * @param whitelist
+	 * @see org.mitre.openid.connect.client.service.impl.DynamicServerConfigurationService#setWhitelist(java.util.Set)
+	 */
+    public void setWhitelist(Set<String> whitelist) {
+	    dynamicServerService.setWhitelist(whitelist);
+    }
+
+
+	/**
+	 * @return
+	 * @see org.mitre.openid.connect.client.service.impl.DynamicServerConfigurationService#getBlacklist()
+	 */
+    public Set<String> getBlacklist() {
+	    return dynamicServerService.getBlacklist();
+    }
+
+
+	/**
+	 * @param blacklist
+	 * @see org.mitre.openid.connect.client.service.impl.DynamicServerConfigurationService#setBlacklist(java.util.Set)
+	 */
+    public void setBlacklist(Set<String> blacklist) {
+	    dynamicServerService.setBlacklist(blacklist);
     }
 
 }

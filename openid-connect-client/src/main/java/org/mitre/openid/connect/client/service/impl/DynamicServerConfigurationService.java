@@ -19,6 +19,8 @@
  */
 package org.mitre.openid.connect.client.service.impl;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.http.client.HttpClient;
@@ -28,6 +30,7 @@ import org.mitre.openid.connect.config.ServerConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.web.client.RestTemplate;
 
 import com.google.common.cache.CacheBuilder;
@@ -51,14 +54,54 @@ public class DynamicServerConfigurationService implements ServerConfigurationSer
 	// map of issuer -> server configuration, loaded dynamically from service discovery
 	private LoadingCache<String, ServerConfiguration> servers;
 
+	private Set<String> whitelist = new HashSet<String>();
+	private Set<String> blacklist = new HashSet<String>();
+	
 	public DynamicServerConfigurationService() {
 		// initialize the cache
 		servers = CacheBuilder.newBuilder().build(new OpenIDConnectServiceConfigurationFetcher());
 	}
 
+	/**
+	 * @return the whitelist
+	 */
+	public Set<String> getWhitelist() {
+		return whitelist;
+	}
+
+	/**
+	 * @param whitelist the whitelist to set
+	 */
+	public void setWhitelist(Set<String> whitelist) {
+		this.whitelist = whitelist;
+	}
+
+	/**
+	 * @return the blacklist
+	 */
+	public Set<String> getBlacklist() {
+		return blacklist;
+	}
+
+	/**
+	 * @param blacklist the blacklist to set
+	 */
+	public void setBlacklist(Set<String> blacklist) {
+		this.blacklist = blacklist;
+	}
+
 	@Override
 	public ServerConfiguration getServerConfiguration(String issuer) {
 		try {
+			
+			if (!whitelist.isEmpty() && !whitelist.contains(issuer)) {
+				throw new AuthenticationServiceException("Whitelist was nonempty, issuer was not in whitelist: " + issuer);
+			}
+			
+			if (blacklist.contains(issuer)) {
+				throw new AuthenticationServiceException("Issuer was in blacklist: " + issuer);
+			}
+			
 			return servers.get(issuer);
 		} catch (ExecutionException e) {
 			logger.warn("Couldn't load configuration for " + issuer, e);

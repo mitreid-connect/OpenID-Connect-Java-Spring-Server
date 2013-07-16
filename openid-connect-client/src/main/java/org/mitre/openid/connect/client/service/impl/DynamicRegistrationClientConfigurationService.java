@@ -19,6 +19,8 @@
  */
 package org.mitre.openid.connect.client.service.impl;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.http.client.HttpClient;
@@ -35,6 +37,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.web.client.RestTemplate;
 
@@ -59,6 +62,9 @@ public class DynamicRegistrationClientConfigurationService implements ClientConf
 	// TODO: make sure the template doesn't have "client_id", "client_secret", or "registration_access_token" set on it already
 	private RegisteredClient template;
 	
+	private Set<String> whitelist = new HashSet<String>();
+	private Set<String> blacklist = new HashSet<String>();
+	
 	public DynamicRegistrationClientConfigurationService() {
 		clients = CacheBuilder.newBuilder().build(new DynamicClientRegistrationLoader());
 	}
@@ -66,6 +72,14 @@ public class DynamicRegistrationClientConfigurationService implements ClientConf
 	@Override
 	public RegisteredClient getClientConfiguration(ServerConfiguration issuer) {
 		try {
+			if (!whitelist.isEmpty() && !whitelist.contains(issuer)) {
+				throw new AuthenticationServiceException("Whitelist was nonempty, issuer was not in whitelist: " + issuer);
+			}
+			
+			if (blacklist.contains(issuer)) {
+				throw new AuthenticationServiceException("Issuer was in blacklist: " + issuer);
+			}
+			
 			return clients.get(issuer);
 		} catch (ExecutionException e) {
 			logger.warn("Unable to get client configuration", e);
@@ -99,6 +113,35 @@ public class DynamicRegistrationClientConfigurationService implements ClientConf
 	 */
 	public void setRegisteredClientService(RegisteredClientService registeredClientService) {
 		this.registeredClientService = registeredClientService;
+	}
+
+
+	/**
+	 * @return the whitelist
+	 */
+	public Set<String> getWhitelist() {
+		return whitelist;
+	}
+
+	/**
+	 * @param whitelist the whitelist to set
+	 */
+	public void setWhitelist(Set<String> whitelist) {
+		this.whitelist = whitelist;
+	}
+
+	/**
+	 * @return the blacklist
+	 */
+	public Set<String> getBlacklist() {
+		return blacklist;
+	}
+
+	/**
+	 * @param blacklist the blacklist to set
+	 */
+	public void setBlacklist(Set<String> blacklist) {
+		this.blacklist = blacklist;
 	}
 
 
