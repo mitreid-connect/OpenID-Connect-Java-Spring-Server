@@ -194,7 +194,6 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 
 			idTokenEntity.setJwt(idToken);
 
-			// TODO: might want to create a specialty authentication object here instead of copying
 			idTokenEntity.setAuthenticationHolder(token.getAuthenticationHolder());
 
 			// create a scope set with just the special "id-token" scope
@@ -205,7 +204,6 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 			idTokenEntity.setClient(token.getClient());
 
 			// attach the id token to the parent access token
-			// TODO: this relationship is one-to-one right now, this might change
 			token.setIdToken(idTokenEntity);
 		}
 

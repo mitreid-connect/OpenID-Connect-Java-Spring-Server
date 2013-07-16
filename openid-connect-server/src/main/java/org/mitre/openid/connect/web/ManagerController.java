@@ -65,7 +65,7 @@ public class ManagerController {
 		return "contact";
 	}
 
-	@PreAuthorize("hasRole('ROLE_USER')") // TODO: this probably shouldn't be here
+	@PreAuthorize("hasRole('ROLE_USER')")
 	@RequestMapping("manage/**")
 	public String showClientManager(ModelMap m) {
 		return "manage";

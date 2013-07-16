@@ -121,7 +121,6 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 	public AuthorizationRequest updateBeforeApproval(AuthorizationRequest authorizationRequest, Authentication userAuthentication) {
 		//First, check database to see if the user identified by the userAuthentication has stored an approval decision
 
-		//getName may not be filled in? TODO: investigate
 		String userId = userAuthentication.getName();
 		String clientId = authorizationRequest.getClientId();
 		ClientDetails client = clientDetailsService.loadClientByClientId(clientId);
@@ -199,7 +198,6 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 			}
 
 			// inject the user-allowed scopes into the auth request
-			// TODO: for the moment this allows both upscoping and downscoping.
 			ar.setScope(allowedScopes);
 
 			//Only store an ApprovedSite if the user has checked "remember this decision":
@@ -216,8 +214,6 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 
 				approvedSiteService.createApprovedSite(clientId, userId, timeout, allowedScopes, null);
 			}
-
-			// TODO: should we set approved here? It gets called later via the isApproved method in this class...
 
 			return ar;
 		}

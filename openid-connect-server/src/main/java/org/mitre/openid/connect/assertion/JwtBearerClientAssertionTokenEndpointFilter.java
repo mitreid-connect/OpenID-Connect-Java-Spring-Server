@@ -45,12 +45,10 @@ public class JwtBearerClientAssertionTokenEndpointFilter extends ClientCredentia
 
 	public JwtBearerClientAssertionTokenEndpointFilter() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public JwtBearerClientAssertionTokenEndpointFilter(String path) {
 		super(path);
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
