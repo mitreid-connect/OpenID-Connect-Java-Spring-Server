@@ -94,8 +94,6 @@ public class ClientKeyPublisher implements BeanDefinitionRegistryPostProcessor {
 		// map from key id to key
 		Map<String, JWK> keys = signingAndValidationService.getAllPublicKeys();
 
-		// TODO: check if keys are empty, return a 404 here or just an empty list?
-
 		return new ModelAndView(jwkViewName, "keys", keys);
 	}
 
