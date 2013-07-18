@@ -21,10 +21,11 @@ package org.mitre.openid.connect.client.service.impl;
 
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import org.mitre.oauth2.model.RegisteredClient;
 import org.mitre.openid.connect.client.service.ClientConfigurationService;
 import org.mitre.openid.connect.config.ServerConfiguration;
-import org.springframework.beans.factory.InitializingBean;
 
 /**
  * Client configuration service that holds a static map from issuer URL to a ClientDetails object to use at that issuer.
@@ -34,7 +35,7 @@ import org.springframework.beans.factory.InitializingBean;
  * @author jricher
  *
  */
-public class StaticClientConfigurationService implements ClientConfigurationService, InitializingBean {
+public class StaticClientConfigurationService implements ClientConfigurationService {
 
 	// Map of issuer URL -> client configuration information
 	private Map<String, RegisteredClient> clients;
@@ -64,10 +65,7 @@ public class StaticClientConfigurationService implements ClientConfigurationServ
 		return clients.get(issuer.getIssuer());
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-	 */
-	@Override
+	@PostConstruct
 	public void afterPropertiesSet() throws Exception {
 		if (clients == null || clients.isEmpty()) {
 			throw new IllegalArgumentException("Clients map cannot be null or empty");

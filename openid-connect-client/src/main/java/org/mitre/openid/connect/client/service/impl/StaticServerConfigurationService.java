@@ -21,9 +21,10 @@ package org.mitre.openid.connect.client.service.impl;
 
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import org.mitre.openid.connect.client.service.ServerConfigurationService;
 import org.mitre.openid.connect.config.ServerConfiguration;
-import org.springframework.beans.factory.InitializingBean;
 
 /**
  * Statically configured server configuration service that maps issuer URLs to server configurations to use at that issuer.
@@ -31,7 +32,7 @@ import org.springframework.beans.factory.InitializingBean;
  * @author jricher
  *
  */
-public class StaticServerConfigurationService implements ServerConfigurationService, InitializingBean {
+public class StaticServerConfigurationService implements ServerConfigurationService {
 
 	// map of issuer url -> server configuration information
 	private Map<String, ServerConfiguration> servers;
@@ -58,10 +59,7 @@ public class StaticServerConfigurationService implements ServerConfigurationServ
 		return servers.get(issuer);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-	 */
-	@Override
+	@PostConstruct
 	public void afterPropertiesSet() throws Exception {
 		if (servers == null || servers.isEmpty()) {
 			throw new IllegalArgumentException("Servers map cannot be null or empty.");
