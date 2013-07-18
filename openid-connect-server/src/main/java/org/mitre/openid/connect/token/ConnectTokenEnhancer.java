@@ -15,17 +15,10 @@
  ******************************************************************************/
 package org.mitre.openid.connect.token;
 
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Set;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpSession;
 
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
@@ -33,6 +26,8 @@ import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
+import org.mitre.openid.connect.service.ApprovedSiteService;
+import org.mitre.openid.connect.util.JWSUtils;
 import org.mitre.openid.connect.web.AuthenticationTimeStamper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -153,38 +148,10 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 			Set<String> responseTypes = OAuth2Utils.parseParameterList(responseType);
 			if (responseTypes.contains("token")) {
 				// calculate the token hash
-
-				// get the right algorithm size
-				// TODO: all this string parsing feels like a bad hack
-				String algName = signingAlg.getName();
-				Pattern re = Pattern.compile("^[HRE]S(\\d+)$");
-				Matcher match = re.matcher(algName);
-				if (match.matches()) {
-					String bits = match.group(1);
-					String hmacAlg = "HMACSHA" + bits;
-					try {
-						Mac mac = Mac.getInstance(hmacAlg);
-						mac.init(new SecretKeySpec(token.getJwt().serialize().getBytes(), hmacAlg));
-
-						byte[] at_hash_bytes = mac.doFinal();
-						byte[] at_hash_bytes_left = Arrays.copyOf(at_hash_bytes, at_hash_bytes.length / 2);
-						Base64URL at_hash = Base64URL.encode(at_hash_bytes_left);
-
-						idClaims.setClaim("at_hash", at_hash);
-
-					} catch (NoSuchAlgorithmException e) {
-
-						logger.error("No such algorithm error: ", e);
-
-					} catch (InvalidKeyException e) {
-
-						logger.error("Invalid key error: ", e);
-					}
-
-				}
-
+				Base64URL at_hash = JWSUtils.getAccessTokenHash(signingAlg, token.getJwt().serialize().getBytes());
+				//TODO: What should happen if the hash cannot be calculated?
+				idClaims.setClaim("at_hash", at_hash);
 			}
-
 
 			SignedJWT idToken = new SignedJWT(new JWSHeader(signingAlg), idClaims);
 
