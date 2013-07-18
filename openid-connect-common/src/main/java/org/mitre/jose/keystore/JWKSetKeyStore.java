@@ -22,7 +22,8 @@ package org.mitre.jose.keystore;
 import java.io.InputStreamReader;
 import java.util.List;
 
-import org.springframework.beans.factory.InitializingBean;
+import javax.annotation.PostConstruct;
+
 import org.springframework.core.io.Resource;
 
 import com.google.common.base.Charsets;
@@ -34,7 +35,7 @@ import com.nimbusds.jose.jwk.JWKSet;
  * @author jricher
  *
  */
-public class JWKSetKeyStore implements InitializingBean {
+public class JWKSetKeyStore {
 
 	private JWKSet jwkSet;
 
@@ -48,10 +49,7 @@ public class JWKSetKeyStore implements InitializingBean {
 		this.jwkSet = jwkSet;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-	 */
-	@Override
+	@PostConstruct
 	public void afterPropertiesSet() throws Exception {
 
 		if (jwkSet == null) {

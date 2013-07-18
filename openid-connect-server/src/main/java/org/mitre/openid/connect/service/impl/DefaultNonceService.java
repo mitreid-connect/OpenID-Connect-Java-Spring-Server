@@ -19,6 +19,8 @@ package org.mitre.openid.connect.service.impl;
 import java.util.Collection;
 import java.util.Date;
 
+import javax.annotation.PostConstruct;
+
 import org.joda.time.DateTime;
 import org.joda.time.Period;
 import org.mitre.openid.connect.model.Nonce;
@@ -26,12 +28,11 @@ import org.mitre.openid.connect.repository.NonceRepository;
 import org.mitre.openid.connect.service.NonceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service("defaultNonceService")
-public class DefaultNonceService implements NonceService, InitializingBean {
+public class DefaultNonceService implements NonceService {
 
 	private static Logger logger = LoggerFactory.getLogger(NonceService.class);
 
@@ -44,11 +45,12 @@ public class DefaultNonceService implements NonceService, InitializingBean {
 	/**
 	 * Make sure that the nonce storage duration was set
 	 */
-	@Override
+	@PostConstruct
 	public void afterPropertiesSet() throws Exception {
 		if (nonceStorageDuration == null) {
 			logger.error("Nonce storage duration must be set!");
 		}
+		logger.info("Nonce Service ready to go");
 	}
 
 	@Override

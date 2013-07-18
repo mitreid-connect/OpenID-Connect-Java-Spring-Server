@@ -24,11 +24,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.PostConstruct;
+
 import org.mitre.jose.keystore.JWKSetKeyStore;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
 
 import com.google.common.base.Strings;
 import com.nimbusds.jose.JOSEException;
@@ -45,7 +46,7 @@ import com.nimbusds.jose.jwk.OctetSequenceKey;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jwt.SignedJWT;
 
-public class DefaultJwtSigningAndValidationService implements JwtSigningAndValidationService, InitializingBean {
+public class DefaultJwtSigningAndValidationService implements JwtSigningAndValidationService {
 
 	// map of identifier to signer
 	private Map<String, JWSSigner> signers = new HashMap<String, JWSSigner>();
@@ -103,6 +104,18 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 		buildSignersAndVerifiers();
 	}
 
+	@PostConstruct
+	public void afterPropertiesSet() throws NoSuchAlgorithmException, InvalidKeySpecException{
+
+		if (keys == null) {
+			throw new IllegalArgumentException("Signing and validation service must have at least one key configured.");
+		}
+
+		buildSignersAndVerifiers();
+
+		logger.info("DefaultJwtSigningAndValidationService is ready: " + this.toString());
+	}
+	
 	/**
 	 * @return the defaultSignerKeyId
 	 */
@@ -135,24 +148,6 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 		} else {
 			return null;
 		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-	 */
-	@Override
-	public void afterPropertiesSet() throws NoSuchAlgorithmException, InvalidKeySpecException{
-
-		if (keys == null) {
-			throw new IllegalArgumentException("Signing and validation service must have at least one key configured.");
-		}
-
-		buildSignersAndVerifiers();
-
-		logger.info("DefaultJwtSigningAndValidationService is ready: " + this.toString());
 	}
 
 	/**
