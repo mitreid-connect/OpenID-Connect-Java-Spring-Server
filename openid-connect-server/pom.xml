@@ -10,19 +10,19 @@
     <parent>
     	<groupId>org.mitre</groupId>
     	<artifactId>openid-connect-parent</artifactId>
-    	<version>0.1-SNAPSHOT</version>
+    	<version>1.1.0-SNAPSHOT</version>
     	<relativePath>..</relativePath>
     </parent>
     <dependencies>
 		<dependency>
 			<groupId>org.springframework.security.oauth</groupId>
-			<version>1.1.0.BUILD-SNAPSHOT</version>
+			<version>1.1.0.M1</version>
 			<artifactId>spring-security-oauth2</artifactId>
 		</dependency>  
 		<dependency>
 			<groupId>org.mitre</groupId>
 			<artifactId>openid-connect-common</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<version>1.1.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hsqldb</groupId>
