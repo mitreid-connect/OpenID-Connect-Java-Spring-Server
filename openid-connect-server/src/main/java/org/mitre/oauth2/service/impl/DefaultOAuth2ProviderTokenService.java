@@ -36,7 +36,6 @@ import org.mitre.oauth2.service.OAuth2TokenEntityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
@@ -73,6 +72,22 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	@Autowired
 	private TokenEnhancer tokenEnhancer;
 
+	public Set<OAuth2AccessTokenEntity> getAllAccessTokens() {
+		return tokenRepository.getAllAccessTokens();
+	}
+	
+	public Set<OAuth2RefreshTokenEntity> getAllRefreshTokens() {
+		return tokenRepository.getAllRefreshTokens();
+	}
+	
+	public OAuth2AccessTokenEntity getAccessTokenById(Long id) {
+		return tokenRepository.getAccessTokenById(id);
+	}
+	
+	public OAuth2RefreshTokenEntity getRefreshTokenById(Long id) {
+		return tokenRepository.getRefreshTokenById(id);
+	}
+	
 	@Override
 	public OAuth2AccessTokenEntity createAccessToken(OAuth2Authentication authentication) throws AuthenticationException, InvalidClientException {
 		if (authentication != null && authentication.getAuthorizationRequest() != null) {

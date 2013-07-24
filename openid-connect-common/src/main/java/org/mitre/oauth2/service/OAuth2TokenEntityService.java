@@ -17,6 +17,7 @@
 package org.mitre.oauth2.service;
 
 import java.util.List;
+import java.util.Set;
 
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
@@ -27,6 +28,10 @@ import org.springframework.security.oauth2.provider.token.ResourceServerTokenSer
 
 public interface OAuth2TokenEntityService extends AuthorizationServerTokenServices, ResourceServerTokenServices {
 
+	public Set<OAuth2AccessTokenEntity> getAllAccessTokens();
+	
+	public Set<OAuth2RefreshTokenEntity> getAllRefreshTokens();
+	
 	@Override
 	public OAuth2AccessTokenEntity readAccessToken(String accessTokenValue);
 
@@ -54,5 +59,9 @@ public interface OAuth2TokenEntityService extends AuthorizationServerTokenServic
 	 * @return
 	 */
 	public OAuth2AccessTokenEntity getAccessTokenForIdToken(OAuth2AccessTokenEntity idToken);
+
+	public OAuth2AccessTokenEntity getAccessTokenById(Long id);
+	
+	public OAuth2RefreshTokenEntity getRefreshTokenById(Long id);
 
 }
