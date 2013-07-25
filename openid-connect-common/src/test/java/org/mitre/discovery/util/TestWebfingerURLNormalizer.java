@@ -229,11 +229,11 @@ public class TestWebfingerURLNormalizer {
 		for (int i = 0; i < identifiers_noScheme.size(); i++) {
 			
 			String identifier = identifiers_noScheme.get(i);
-			String expectedIssuer = expected_noScheme.get(i);
+			String expectedNormalized = expected_noScheme.get(i);
 			
-			String actualIssuer = WebfingerURLNormalizer.normalizeResource(identifier).toUriString();
+			String actualNormalized = WebfingerURLNormalizer.normalizeResource(identifier).toUriString();
 			
-			assertEquals("Identifer/Issuer pair #" + i + " failed.", expectedIssuer, actualIssuer);
+			assertEquals("Identifer/Normalized pair #" + i + " failed.", expectedNormalized, actualNormalized);
 		}
 	}
 	
@@ -243,11 +243,11 @@ public class TestWebfingerURLNormalizer {
 		for (int i = 0; i < identifiers_http.size(); i++) {
 			
 			String identifier = identifiers_http.get(i);
-			String expectedIssuer = expected_http.get(i);
+			String expectedNormalized = expected_http.get(i);
 			
-			String actualIssuer = WebfingerURLNormalizer.normalizeResource(identifier).toUriString();
+			String actualNormalized = WebfingerURLNormalizer.normalizeResource(identifier).toUriString();
 			
-			assertEquals("Identifer/Issuer pair #" + i + " failed.", expectedIssuer, actualIssuer);
+			assertEquals("Identifer/Normalized pair #" + i + " failed.", expectedNormalized, actualNormalized);
 		}
 	}
 	
@@ -258,11 +258,11 @@ public class TestWebfingerURLNormalizer {
 		for (int i = 0; i < identifiers_noSchemeWithUser.size(); i++) {
 			
 			String identifier = identifiers_noSchemeWithUser.get(i);
-			String expectedIssuer = expected_noSchemeWithUser.get(i);
+			String expectedNormalized = expected_noSchemeWithUser.get(i);
 			
-			String actualIssuer = WebfingerURLNormalizer.normalizeResource(identifier).toUriString();
+			String actualNormalized = WebfingerURLNormalizer.normalizeResource(identifier).toUriString();
 			
-			assertEquals("Identifer/Issuer pair #" + i + " failed.", expectedIssuer, actualIssuer);
+			assertEquals("Identifer/Normalized pair #" + i + " failed.", expectedNormalized, actualNormalized);
 		}
 	}
 	
@@ -272,11 +272,11 @@ public class TestWebfingerURLNormalizer {
 		for (int i = 0; i < identifiers_acct.size(); i++) {
 			
 			String identifier = identifiers_acct.get(i);
-			String expectedIssuer = expected_acct.get(i);
+			String expectedNormalized = expected_acct.get(i);
 			
-			String actualIssuer = WebfingerURLNormalizer.normalizeResource(identifier).toUriString();
+			String actualNormalized = WebfingerURLNormalizer.normalizeResource(identifier).toUriString();
 			
-			assertEquals("Identifer/Issuer pair #" + i + " failed.", expectedIssuer, actualIssuer);
+			assertEquals("Identifer/Normalized pair #" + i + " failed.", expectedNormalized, actualNormalized);
 		}
 	}
 	
@@ -287,11 +287,11 @@ public class TestWebfingerURLNormalizer {
 		for (int i = 0; i < identifiers_mailto.size(); i++) {
 			
 			String identifier = identifiers_mailto.get(i);
-			String expectedIssuer = expected_mailto.get(i);
+			String expectedNormalized = expected_mailto.get(i);
 			
-			String actualIssuer = WebfingerURLNormalizer.normalizeResource(identifier).toUriString();
+			String actualNormalized = WebfingerURLNormalizer.normalizeResource(identifier).toUriString();
 			
-			assertEquals("Identifer/Issuer pair #" + i + " failed.", expectedIssuer, actualIssuer);
+			assertEquals("Identifer/Normalized pair #" + i + " failed.", expectedNormalized, actualNormalized);
 		}
 	}
 	
@@ -301,11 +301,11 @@ public class TestWebfingerURLNormalizer {
 		for (int i = 0; i < identifiers_localhost.size(); i++) {
 			
 			String identifier = identifiers_localhost.get(i);
-			String expectedIssuer = expected_localhost.get(i);
+			String expectedNormalized = expected_localhost.get(i);
 			
-			String actualIssuer = WebfingerURLNormalizer.normalizeResource(identifier).toUriString();
+			String actualNormalized = WebfingerURLNormalizer.normalizeResource(identifier).toUriString();
 			
-			assertEquals("Identifer/Issuer pair #" + i + " failed.", expectedIssuer, actualIssuer);
+			assertEquals("Identifer/Normalized pair #" + i + " failed.", expectedNormalized, actualNormalized);
 		}
 	}
 	
@@ -315,11 +315,11 @@ public class TestWebfingerURLNormalizer {
 		for (int i = 0; i < identifiers_numbers.size(); i++) {
 			
 			String identifier = identifiers_numbers.get(i);
-			String expectedIssuer = expected_numbers.get(i);
+			String expectedNormalized = expected_numbers.get(i);
 			
-			String actualIssuer = WebfingerURLNormalizer.normalizeResource(identifier).toUriString();
+			String actualNormalized = WebfingerURLNormalizer.normalizeResource(identifier).toUriString();
 			
-			assertEquals("Identifer/Issuer pair #" + i + " failed.", expectedIssuer, actualIssuer);
+			assertEquals("Identifer/Normalized pair #" + i + " failed.", expectedNormalized, actualNormalized);
 		}
 	}
 }
