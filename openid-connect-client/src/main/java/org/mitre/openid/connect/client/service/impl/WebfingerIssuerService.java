@@ -22,14 +22,13 @@ package org.mitre.openid.connect.client.service.impl;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.mitre.discovery.util.WebfingerURLNormalizer;
 import org.mitre.openid.connect.client.model.IssuerServiceResponse;
 import org.mitre.openid.connect.client.service.IssuerService;
 import org.slf4j.Logger;
@@ -38,7 +37,6 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import com.google.common.base.Strings;
 import com.google.common.cache.CacheBuilder;
@@ -57,9 +55,6 @@ import com.google.gson.JsonParser;
 public class WebfingerIssuerService implements IssuerService {
 
 	private static Logger logger = LoggerFactory.getLogger(WebfingerIssuerService.class);
-
-	// pattern used to parse user input; we can't use the built-in java URI parser
-	private static final Pattern pattern = Pattern.compile("^((https|acct|http|mailto):(//)?)?((([^@]+)@)?(([^:]+)(:(\\d*))?))([^\\?]+)?(\\?([^#]+))?(#(.*))?$");
 
 	// map of user input -> issuer, loaded dynamically from webfinger discover
 	private LoadingCache<UriComponents, String> issuers;
@@ -90,7 +85,7 @@ public class WebfingerIssuerService implements IssuerService {
 		String identifier = request.getParameter(parameterName);
 		if (!Strings.isNullOrEmpty(identifier)) {
 			try {
-				String issuer = issuers.get(normalizeResource(identifier));
+				String issuer = issuers.get(WebfingerURLNormalizer.normalizeResource(identifier));
 				if (!whitelist.isEmpty() && !whitelist.contains(issuer)) {
 					throw new AuthenticationServiceException("Whitelist was nonempty, issuer was not in whitelist: " + issuer);
 				}
@@ -110,71 +105,6 @@ public class WebfingerIssuerService implements IssuerService {
 			return new IssuerServiceResponse(loginPageUrl);
 		}
 	}
-
-	/**
-	 * Normalize the resource string as per OIDC Discovery.
-	 * @param identifier
-	 * @return the normalized string, or null if the string can't be normalized
-	 */
-	private UriComponents normalizeResource(String identifier) {
-		// try to parse the URI
-		// NOTE: we can't use the Java built-in URI class because it doesn't split the parts appropriately
-
-		if (Strings.isNullOrEmpty(identifier)) {
-			logger.warn("Can't normalize null or empty URI: " + identifier);
-			return null; // nothing we can do
-		} else {
-
-			//UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(identifier);
-			UriComponentsBuilder builder = UriComponentsBuilder.newInstance();
-
-			//Pattern regex = Pattern.compile("^(([^:/?#]+):)?(//(([^@/]*)@)?([^/?#:]*)(:(\\d*))?)?([^?#]*)(\\?([^#]*))?(#(.*))?");
-			Matcher m = pattern.matcher(identifier);
-			if (m.matches()) {
-				builder.scheme(m.group(2));
-				builder.userInfo(m.group(6));
-				builder.host(m.group(8));
-				String port = m.group(10);
-				if (!Strings.isNullOrEmpty(port)) {
-					builder.port(Integer.parseInt(port));
-				}
-				builder.path(m.group(11));
-				builder.query(m.group(13));
-				builder.fragment(m.group(15)); // we throw away the hash, but this is the group it would be if we kept it
-			} else {
-				// doesn't match the pattern, throw it out
-				logger.warn("Parser couldn't match input: " + identifier);
-				return null;
-			}
-			
-			UriComponents n = builder.build();
-			
-			if (Strings.isNullOrEmpty(n.getScheme())) {
-				if (!Strings.isNullOrEmpty(n.getUserInfo())
-						&& Strings.isNullOrEmpty(n.getPath())
-						&& Strings.isNullOrEmpty(n.getQuery())
-						&& n.getPort() < 0) {
-					
-					// scheme empty, userinfo is not empty, path/query/port are empty
-					// set to "acct" (rule 2)
-					builder.scheme("acct");
-					
-				} else {
-					// scheme is empty, but rule 2 doesn't apply
-					// set scheme to "https" (rule 3)
-					builder.scheme("https");
-				}
-			}
-			
-			// fragment must be stripped (rule 4)
-			builder.fragment(null);
-			
-			return builder.build();
-		}
-
-
-	}
-
 
 	/**
 	 * @return the parameterName
