@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.mitre.discovery.util.WebfingerURLNormalizer;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.oauth2.service.SystemScopeService;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
@@ -35,6 +36,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.util.UriComponents;
 
 import com.google.common.base.Function;
 import com.google.common.base.Splitter;
@@ -86,35 +88,24 @@ public class DiscoveryEndpoint {
 		if (!resource.equals(config.getIssuer())) {
 			// it's not the issuer directly, need to check other methods
 
-			try {
-				URI resourceUri = new URI(resource);
-				if (resourceUri != null
-						&& resourceUri.getScheme() != null
-						&& resourceUri.getScheme().equals("acct")) {
-					// acct: URI
+			UriComponents resourceUri = WebfingerURLNormalizer.normalizeResource(resource);
+			if (resourceUri != null
+					&& resourceUri.getScheme() != null
+					&& resourceUri.getScheme().equals("acct")) {
+				// acct: URI
 
-					// split out the user and host parts
-					List<String> parts = Lists.newArrayList(Splitter.on("@").split(resourceUri.getSchemeSpecificPart()));
+				UserInfo user = null;
+				user = userService.getByUsername(resourceUri.getUserInfo()); // first part is the username
 
-					UserInfo user = null;
-					if (parts.size() > 0) {
-						user = userService.getByUsername(parts.get(0)); // first part is the username
-					}
-
-					if (user == null) {
-						logger.info("User not found: " + resource);
-						model.addAttribute("code", HttpStatus.NOT_FOUND);
-						return "httpCodeView";
-					}
-					// TODO: check the "host" part against our issuer
-
-				} else {
-					logger.info("Unknown URI format: " + resource);
+				if (user == null) {
+					logger.info("User not found: " + resource);
 					model.addAttribute("code", HttpStatus.NOT_FOUND);
 					return "httpCodeView";
 				}
-			} catch (URISyntaxException e) {
-				logger.info("URI parsing exception: " + resource, e);
+				// TODO: check the "host" part against our issuer
+
+			} else {
+				logger.info("Unknown URI format: " + resource);
 				model.addAttribute("code", HttpStatus.NOT_FOUND);
 				return "httpCodeView";
 			}
