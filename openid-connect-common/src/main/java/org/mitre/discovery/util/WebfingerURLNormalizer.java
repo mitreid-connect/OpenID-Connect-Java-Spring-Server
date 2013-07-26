@@ -36,7 +36,19 @@ public class WebfingerURLNormalizer {
 	private static Logger logger = LoggerFactory.getLogger(WebfingerURLNormalizer.class);
 	
 	// pattern used to parse user input; we can't use the built-in java URI parser
-	private static final Pattern pattern = Pattern.compile("^((https|acct|http|mailto):(//)?)?((([^@]+)@)?(([^:]+)(:(\\d*))?))([^\\?]+)?(\\?([^#]+))?(#(.*))?$");
+	private static final Pattern pattern = Pattern.compile("^" +
+			"((https|acct|http|mailto|tel|device):(//)?)?" + // scheme
+			"(" +
+			"(([^@]+)@)?" + // userinfo
+			"(([^\\?#:/]+)" + // host
+			"(:(\\d*))?)" + // port
+			")" +
+			"([^\\?#]+)?" + // path
+			"(\\?([^#]+))?" + // query
+			"(#(.*))?" +  // fragment
+			"$"
+			);
+
 	
 	
 	/**
@@ -63,7 +75,6 @@ public class WebfingerURLNormalizer {
 			//UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(identifier);
 			UriComponentsBuilder builder = UriComponentsBuilder.newInstance();
 
-			//Pattern regex = Pattern.compile("^(([^:/?#]+):)?(//(([^@/]*)@)?([^/?#:]*)(:(\\d*))?)?([^?#]*)(\\?([^#]*))?(#(.*))?");
 			Matcher m = pattern.matcher(identifier);
 			if (m.matches()) {
 				builder.scheme(m.group(2));
