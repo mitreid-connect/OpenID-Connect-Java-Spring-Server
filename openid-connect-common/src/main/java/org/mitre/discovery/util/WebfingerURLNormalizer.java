@@ -20,6 +20,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -121,6 +122,63 @@ public class WebfingerURLNormalizer {
 
 	}
 
+	
+	public static String serializeURL(UriComponents uri) {
+		if (uri.getScheme() != null &&
+				(uri.getScheme().equals("acct") ||
+						uri.getScheme().equals("mailto") ||
+						uri.getScheme().equals("tel") ||
+						uri.getScheme().equals("device")
+						)) {
+			
+			// serializer copied from HierarchicalUriComponents but with "//" removed
+			
+			StringBuilder uriBuilder = new StringBuilder();
+
+			if (uri.getScheme() != null) {
+				uriBuilder.append(uri.getScheme());
+				uriBuilder.append(':');
+			}
+
+			if (uri.getUserInfo() != null || uri.getHost() != null) {
+				if (uri.getUserInfo() != null) {
+					uriBuilder.append(uri.getUserInfo());
+					uriBuilder.append('@');
+				}
+				if (uri.getHost() != null) {
+					uriBuilder.append(uri.getHost());
+				}
+				if (uri.getPort() != -1) {
+					uriBuilder.append(':');
+					uriBuilder.append(uri.getPort());
+				}
+			}
+
+			String path = uri.getPath();
+			if (StringUtils.hasLength(path)) {
+				if (uriBuilder.length() != 0 && path.charAt(0) != '/') {
+					uriBuilder.append('/');
+				}
+				uriBuilder.append(path);
+			}
+
+			String query = uri.getQuery();
+			if (query != null) {
+				uriBuilder.append('?');
+				uriBuilder.append(query);
+			}
+
+			if (uri.getFragment() != null) {
+				uriBuilder.append('#');
+				uriBuilder.append(uri.getFragment());
+			}
+
+			return uriBuilder.toString();
+		} else {
+			return uri.toUriString();
+		}
+				
+	}
 
 	
 }
