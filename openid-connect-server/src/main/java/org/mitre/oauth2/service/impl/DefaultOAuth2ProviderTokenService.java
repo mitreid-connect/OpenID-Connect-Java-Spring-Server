@@ -72,12 +72,32 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	@Autowired
 	private TokenEnhancer tokenEnhancer;
 
-	public Set<OAuth2AccessTokenEntity> getAllAccessTokens() {
-		return tokenRepository.getAllAccessTokens();
+	public Set<OAuth2AccessTokenEntity> getAllAccessTokensForUser(String id) {
+		
+		Set<OAuth2AccessTokenEntity> all = tokenRepository.getAllAccessTokens();
+		Set<OAuth2AccessTokenEntity> results = Sets.newLinkedHashSet();
+		
+		for (OAuth2AccessTokenEntity token : all) {
+			if (token.getAuthenticationHolder().getAuthentication().getName().equals(id)) {
+				results.add(token);
+			}
+		}
+		
+		return results;
 	}
+		
 	
-	public Set<OAuth2RefreshTokenEntity> getAllRefreshTokens() {
-		return tokenRepository.getAllRefreshTokens();
+	public Set<OAuth2RefreshTokenEntity> getAllRefreshTokensForUser(String id) {
+		Set<OAuth2RefreshTokenEntity> all = tokenRepository.getAllRefreshTokens();
+		Set<OAuth2RefreshTokenEntity> results = Sets.newLinkedHashSet();
+		
+		for (OAuth2RefreshTokenEntity token : all) {
+			if (token.getAuthenticationHolder().getAuthentication().getName().equals(id)) {
+				results.add(token);
+			}
+		}
+		
+		return results;
 	}
 	
 	public OAuth2AccessTokenEntity getAccessTokenById(Long id) {

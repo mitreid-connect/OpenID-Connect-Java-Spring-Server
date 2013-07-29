@@ -62,7 +62,7 @@ public interface OAuth2TokenRepository {
 	public OAuth2AccessTokenEntity getAccessTokenForIdToken(OAuth2AccessTokenEntity idToken);
 
 	public Set<OAuth2AccessTokenEntity> getAllAccessTokens();
-	
+
 	public Set<OAuth2RefreshTokenEntity> getAllRefreshTokens();
 
 }

@@ -1,5 +1,6 @@
 package org.mitre.oauth2.web;
 
+import java.security.Principal;
 import java.util.Set;
 
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
@@ -31,56 +32,32 @@ public class AccessTokenAPI {
 	private static Logger logger = LoggerFactory.getLogger(AccessTokenAPI.class);
 	
 	@RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json")
-	public String getAll(ModelMap m) {
+	public String getAll(ModelMap m, Principal p) {
 
-		Set<OAuth2AccessTokenEntity> allTokens = tokenService.getAllAccessTokens();
-
+		Set<OAuth2AccessTokenEntity> allTokens = tokenService.getAllAccessTokensForUser(p.getName());
 		m.put("entity", allTokens);
-
 		return "jsonEntityView";
 	}
 	
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = "application/json")
-	public String getById(@PathVariable("id") Long id, ModelMap m) {
+	public String getById(@PathVariable("id") Long id, ModelMap m, Principal p) {
 		
 		OAuth2AccessTokenEntity token = tokenService.getAccessTokenById(id);
 		
-		if (token != null) {
-
-			m.put("entity", token);
-
-			return "jsonEntityView";
-		} else {
-
+		 if (token == null) {
 			logger.error("getToken failed; token not found: " + id);
-
 			m.put("code", HttpStatus.NOT_FOUND);
 			m.put("errorMessage", "The requested token with id " + id + " could not be found.");
 			return "jsonErrorView";
-		}
-	}
-	
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-	public String delete(@PathVariable("id") Long id, ModelMap m) {
-		
-		OAuth2AccessTokenEntity token = tokenService.getAccessTokenById(id);
-		
-		if (token != null) {
-
-			tokenService.revokeAccessToken(token);
-			m.put("code", HttpStatus.OK);
-			return "httpCodeView";
-			
+		} else if (!token.getAuthenticationHolder().getAuthentication().getName().equals(p.getName())) { 
+			logger.error("getToken failed; token does not belong to principal " + p.getName());
+			m.put("code", HttpStatus.FORBIDDEN);
+			m.put("errorMessage", "You do not have permission to view this token");
+			return "jsonErrorView";
 		} else {
-
-			logger.error("Delete token failed; token not found: " + id);
-
-			m.put("code", HttpStatus.NOT_FOUND);
-			m.put("errorMessage", "The requested token with id " + id + " could not be found.");
-			return "jsonErrorView";
+			m.put("entity", token);
+			return "jsonEntityView";
 		}
-
 	}
 	
 }

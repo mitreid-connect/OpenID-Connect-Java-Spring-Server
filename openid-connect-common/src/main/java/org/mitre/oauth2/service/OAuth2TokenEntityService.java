@@ -27,10 +27,6 @@ import org.springframework.security.oauth2.provider.token.AuthorizationServerTok
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
 
 public interface OAuth2TokenEntityService extends AuthorizationServerTokenServices, ResourceServerTokenServices {
-
-	public Set<OAuth2AccessTokenEntity> getAllAccessTokens();
-	
-	public Set<OAuth2RefreshTokenEntity> getAllRefreshTokens();
 	
 	@Override
 	public OAuth2AccessTokenEntity readAccessToken(String accessTokenValue);
@@ -64,4 +60,7 @@ public interface OAuth2TokenEntityService extends AuthorizationServerTokenServic
 	
 	public OAuth2RefreshTokenEntity getRefreshTokenById(Long id);
 
+	public Set<OAuth2AccessTokenEntity> getAllAccessTokensForUser(String name);
+
+	public Set<OAuth2RefreshTokenEntity> getAllRefreshTokensForUser(String name);
 }
