@@ -103,13 +103,12 @@ public class DefaultJwtEncryptionAndDecryptionService implements JwtEncryptionAn
 	
 
 	@PostConstruct
-	public void afterPropertiesSet() throws NoSuchAlgorithmException, InvalidKeySpecException{
+	public void afterPropertiesSet() throws NoSuchAlgorithmException, InvalidKeySpecException, JOSEException{
 
 		if (keys == null) {
 			throw new IllegalArgumentException("Encryption and decryption service must have at least one key configured.");
 		}
-		
-		// TODO call build..() again? see default signer service.
+		buildEncryptersAndDecrypters();
 	}
 
 	public String getDefaultEncryptionKeyId() {
@@ -141,7 +140,18 @@ public class DefaultJwtEncryptionAndDecryptionService implements JwtEncryptionAn
 	 */
 	@Override
 	public void encryptJwt(EncryptedJWT jwt) {
-		// TODO Auto-generated method stub
+		if (getDefaultEncryptionKeyId() == null) {
+			throw new IllegalStateException("Tried to call default encryption with no default encrypter ID set");
+		}
+
+		JWEEncrypter encrypter = encrypters.get(getDefaultEncryptionKeyId());
+
+		try {
+			jwt.encrypt(encrypter);
+		} catch (JOSEException e) {
+			
+			logger.error("Failed to encrypt JWT, error was: ", e);
+		}
 
 	}
 
@@ -150,7 +160,18 @@ public class DefaultJwtEncryptionAndDecryptionService implements JwtEncryptionAn
 	 */
 	@Override
 	public void decryptJwt(EncryptedJWT jwt) {
-		// TODO Auto-generated method stub
+		if (getDefaultDecryptionKeyId() == null) {
+			throw new IllegalStateException("Tried to call default decryption with no default decrypter ID set");
+		}
+
+		JWEDecrypter decrypter = decrypters.get(getDefaultDecryptionKeyId());
+
+		try {
+			jwt.decrypt(decrypter);
+		} catch (JOSEException e) {
+			
+			logger.error("Failed to decrypt JWT, error was: ", e);
+		}
 
 	}
 

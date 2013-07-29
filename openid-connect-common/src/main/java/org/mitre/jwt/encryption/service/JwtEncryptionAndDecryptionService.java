@@ -51,4 +51,9 @@ public interface JwtEncryptionAndDecryptionService {
 	 * @return
 	 */
 	public Collection<JWEAlgorithm> getAllEncryptionAlgsSupported();
+	
+	/**
+	 * TODO add functionality for encrypting and decrypting using a specified key id.
+	 * Example: public void encryptJwt(EncryptedJWT jwt, String kid);
+	 */
 }
