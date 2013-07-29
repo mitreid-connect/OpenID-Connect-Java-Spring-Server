@@ -22,9 +22,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
  * @author Amanda Anganes
  *
  */
-@Controller
-@RequestMapping("/api/tokens/rt")
-@PreAuthorize("hasRole('ROLE_USER')")
+//@Controller
+//@RequestMapping("/api/tokens/rt")
+//@PreAuthorize("hasRole('ROLE_USER')")
 public class RefreshTokenAPI {
 
 	@Autowired
