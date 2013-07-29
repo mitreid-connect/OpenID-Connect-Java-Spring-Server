@@ -1,4 +1,19 @@
-
+/*******************************************************************************
+ * Copyright 2013 The MITRE Corporation 
+ *   and the MIT Kerberos and Internet Trust Consortium
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ******************************************************************************/
 var URIModel = Backbone.Model.extend({
 
     validate: function(attrs){
@@ -82,11 +97,11 @@ var ListWidgetView = Backbone.View.extend({
 
     events:{
         "click .btn-add":"addItem",
-        "keypress input":function (e) {
+        "keypress":function (e) {
         	// trap the enter key
             if (e.which == 13) {
-                this.addItem();
-                e.preventDefault();
+            	e.preventDefault();
+                this.addItem(e);
                 $("input", this.$el).focus();
             }
         }
@@ -288,6 +303,12 @@ var BlackListWidgetView = ListWidgetView.extend({
 	
 });
 
+// Stats table
+
+var StatsModel = Backbone.Model.extend({
+	url: "api/stats/byclientid"
+});
+
 // Router
 var AppRouter = Backbone.Router.extend({
 
@@ -307,6 +328,8 @@ var AppRouter = Backbone.Router.extend({
         "admin/scope/:id":"editScope",
         
         "user/approved":"approvedSites",
+        "user/tokens":"notImplemented",
+        "user/profile":"notImplemented",
         
         "": "root"
         	
@@ -323,8 +346,10 @@ var AppRouter = Backbone.Router.extend({
         this.blackListList = new BlackListCollection();
         this.approvedSiteList = new ApprovedSiteCollection();
         this.systemScopeList = new SystemScopeCollection();
+        this.clientStats = new StatsModel(); 
 
-        this.clientListView = new ClientListView({model:this.clientList});
+        
+        this.clientListView = new ClientListView({model:this.clientList, stats: this.clientStats});
         this.whiteListListView = new WhiteListListView({model:this.whiteListList});
         this.approvedSiteListView = new ApprovedSiteListView({model:this.approvedSiteList});
         this.blackListListView = new BlackListListView({model:this.blackListList});
@@ -348,8 +373,12 @@ var AppRouter = Backbone.Router.extend({
         			success: function(collection, response) {
         				app.whiteListList.fetch({
         					success: function(collection, response) {
-        						var baseUrl = $.url($('base').attr('href'));                
-        						Backbone.history.start({pushState: true, root: baseUrl.attr('relative') + 'manage/'});
+        						app.clientStats.fetch({
+        							success: function(model, response) {
+		        						var baseUrl = $.url($('base').attr('href'));                
+		        						Backbone.history.start({pushState: true, root: baseUrl.attr('relative') + 'manage/'});
+        							}
+        						});
         					}
         				});
         			}
@@ -369,6 +398,7 @@ var AppRouter = Backbone.Router.extend({
 
         $('#content').html(this.clientListView.render().el);
         this.clientListView.delegateEvents();
+    	setPageTitle("Manage Clients");
 
     },
 
@@ -393,6 +423,7 @@ var AppRouter = Backbone.Router.extend({
     	
         this.clientFormView = new ClientFormView({model:client});
         $('#content').html(this.clientFormView.render().el);
+    	setPageTitle("New Client");
     },
 
     editClient:function(id) {
@@ -425,6 +456,8 @@ var AppRouter = Backbone.Router.extend({
         
         this.clientFormView = new ClientFormView({model:client});
         $('#content').html(this.clientFormView.render().el);
+        
+    	setPageTitle("Edit Client");
     },
 
     whiteList:function () {
@@ -436,6 +469,8 @@ var AppRouter = Backbone.Router.extend({
         
         $('#content').html(this.whiteListListView.render().el);
         this.whiteListListView.delegateEvents();
+    	setPageTitle("Manage Whitelists");
+
     },
     
     newWhitelist:function(cid) {
@@ -459,6 +494,7 @@ var AppRouter = Backbone.Router.extend({
             
         	this.whiteListFormView = new WhiteListFormView({model: whiteList, client: client});
         	$('#content').html(this.whiteListFormView.render().el);
+        	setPageTitle("Create New Whitelist");
         } else {
         	console.log('ERROR: no client found for ' + cid);
         }
@@ -482,6 +518,8 @@ var AppRouter = Backbone.Router.extend({
             if (client != null) {
             	this.whiteListFormView = new WhiteListFormView({model: whiteList, client: client});
             	$('#content').html(this.whiteListFormView.render().el);
+            	setPageTitle("Edit Whitelist");
+
             } else {
             	console.log('ERROR: no client found for ' + whiteList.get('clientId'));
             }
@@ -503,9 +541,18 @@ var AppRouter = Backbone.Router.extend({
     	this.approvedSiteList.fetch({success: 
     		function(collection, response, options) {
     			$('#content').html(view.render().el);
+    	    	setPageTitle("Manage Approved Sites");
     		}
     	});
     	
+    },
+
+    notImplemented:function(){
+        this.breadCrumbView.collection.reset();
+        this.breadCrumbView.collection.add([
+            {text:"Home", href:""}
+        ]);
+    		$('#content').html("<h2>Not implemented yet.</h2>");
     },
     
     blackList:function() {
@@ -520,6 +567,8 @@ var AppRouter = Backbone.Router.extend({
         this.blackListList.fetch({success:
         	function(collection, response, options) {
         		$('#content').html(view.render().el);
+            	setPageTitle("Manage Blacklist");
+
         	}
         });
     },
@@ -528,18 +577,20 @@ var AppRouter = Backbone.Router.extend({
     	this.breadCrumbView.collection.reset();
     	this.breadCrumbView.collection.add([
              {text:"Home", href:""},
-             {text:"Mange System Scopes", href:"manage/#admin/scope"}
+             {text:"Manage System Scopes", href:"manage/#admin/scope"}
         ]);
     	
     	$('#content').html(this.systemScopeListView.render().el);
         this.systemScopeListView.delegateEvents();
+    	setPageTitle("Manage System Scopes");
+
     },
     
     newScope:function() {
     	this.breadCrumbView.collection.reset();
     	this.breadCrumbView.collection.add([
              {text:"Home", href:""},
-             {text:"Mange System Scopes", href:"manage/#admin/scope"},
+             {text:"Manage System Scopes", href:"manage/#admin/scope"},
              {text:"New", href:"manage/#admin/scope/new"}
         ]);
     	
@@ -547,13 +598,15 @@ var AppRouter = Backbone.Router.extend({
     	
     	this.systemScopeFormView = new SystemScopeFormView({model:scope});
     	$('#content').html(this.systemScopeFormView.render().el);
+    	setPageTitle("New System Scope");
+
     },
     
     editScope:function(sid) {
     	this.breadCrumbView.collection.reset();
     	this.breadCrumbView.collection.add([
              {text:"Home", href:""},
-             {text:"Mange System Scopes", href:"manage/#admin/scope"},
+             {text:"Manage System Scopes", href:"manage/#admin/scope"},
              {text:"Edit", href:"manage/#admin/scope/" + sid}
         ]);
 
@@ -561,6 +614,7 @@ var AppRouter = Backbone.Router.extend({
     	
     	this.systemScopeFormView = new SystemScopeFormView({model:scope});
     	$('#content').html(this.systemScopeFormView.render().el);
+    	setPageTitle("Edit System Scope");
     	
     }
 

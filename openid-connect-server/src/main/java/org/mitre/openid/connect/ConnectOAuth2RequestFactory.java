@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ******************************************************************************/
 package org.mitre.openid.connect;
 
 import java.text.ParseException;
@@ -37,10 +52,8 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 
 	private static Logger logger = LoggerFactory.getLogger(ConnectOAuth2RequestFactory.class);
 
-	//@Autowired
 	private NonceService nonceService;
 
-	//@Autowired
 	private ClientDetailsEntityService clientDetailsService;
 
 	@Autowired
@@ -57,13 +70,6 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 		super(clientDetailsService);
 		this.clientDetailsService = clientDetailsService;
 		this.nonceService = nonceService;
-	}
-
-	/**
-	 * Default empty constructor
-	 */
-	public ConnectOAuth2RequestFactory() {
-		super(null);
 	}
 
 	@Override
@@ -106,7 +112,6 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 
 		Set<String> scopes = OAuth2Utils.parseParameterList(parameters.get("scope"));
 		if ((scopes == null || scopes.isEmpty()) && client != null) {
-			//TODO: do we want to allow default scoping at all?
 			Set<String> clientScopes = client.getScope();
 			scopes = clientScopes;
 		}
@@ -147,13 +152,13 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 			ClientDetailsEntity client = clientDetailsService.loadClientByClientId(clientId);
 
 			if (client.getJwksUri() == null) {
-				throw new InvalidClientException("Client must have a JWK URI registered to use request objects.");
+				throw new InvalidClientException("Client must have a JWKS URI registered to use request objects.");
 			}
 
 			// check JWT signature
 			JwtSigningAndValidationService validator = validators.get(client.getJwksUri());
 			if (validator == null) {
-				throw new InvalidClientException("Client must have a JWK URI registered to use request objects.");
+				throw new InvalidClientException("Unable to create signature validator for client's JWKS URI: " + client.getJwksUri());
 			}
 
 			if (!validator.validateSignature(jwsObject)) {
@@ -218,7 +223,6 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 					parameters.put("scope", scope);
 				}
 			}
-
 		} catch (ParseException e) {
 			logger.error("ParseException while parsing RequestObject:", e);
 		}

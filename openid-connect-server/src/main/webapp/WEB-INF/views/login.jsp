@@ -22,26 +22,16 @@ $(document).ready(function() {
 			in. Please try again.</div>
 	</c:if>
 
-	<form action="<%=request.getContextPath()%>/j_spring_security_check"
-		method="POST" class="well span3 offset1">
-		<fieldset>
-			<div class="input-prepend">
-				<span class="add-on"><i class="icon-user"></i></span><input
-					type="text" name="j_username" id="j_username" value=""
-					spellcheck="false" autocomplete="off" autocapitalize="off"
-					autocorrect="off" placeholder="Username">
-			</div>
-			<div class="input-prepend">
-				<span class="add-on"><i class="icon-lock"></i></span><input
-					type="password" name="j_password" id="j_password"
-					spellcheck="false" autocomplete="off" autocapitalize="off"
-					autocorrect="off" placeholder="Password">
-			</div>
-			<div class="form-actions">
-				<input type="submit" name="submit" value="Login" class="btn">
-			</div>
-		</fieldset>
-	</form>
+
+<div class="row-fluid">
+   <form action="<%=request.getContextPath()%>/j_spring_security_check" method="POST">
+      <div class="span4 offset1 well">
+         <div class="input-prepend"><span class="add-on"><i class="icon-user"></i></span><input type="text" placeholder="Username" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false" value="" id="j_username" name="j_username" class="span11"></div>
+         <div class="input-prepend"><span class="add-on"><i class="icon-lock"></i></span><input type="password" placeholder="Password" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false" id="j_password" name="j_password" class="span11"></div>
+         <div class="form-actions"><input type="submit" class="btn" value="Login" name="submit"></div>
+      </div>
+   </form>
+</div>
 
 </div>
-<o:footer />
+<o:footer/>

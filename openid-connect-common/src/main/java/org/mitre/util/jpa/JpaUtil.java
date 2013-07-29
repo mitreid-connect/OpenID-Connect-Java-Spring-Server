@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2012 The MITRE Corporation
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,12 +29,12 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 public class JpaUtil {
 	public static <T> T getSingleResult(List<T> list) {
 		switch(list.size()) {
-		case 0:
-			return null;
-		case 1:
-			return list.get(0);
-		default:
-			throw new IncorrectResultSizeDataAccessException(1);
+			case 0:
+				return null;
+			case 1:
+				return list.get(0);
+			default:
+				throw new IncorrectResultSizeDataAccessException(1);
 		}
 	}
 

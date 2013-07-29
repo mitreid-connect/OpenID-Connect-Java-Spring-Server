@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2012 The MITRE Corporation
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,18 @@
  ******************************************************************************/
 package org.mitre.openid.connect.token;
 
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import javax.servlet.http.HttpSession;
 
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.oauth2.model.ClientDetailsEntity;
@@ -25,19 +34,25 @@ import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.mitre.openid.connect.service.ApprovedSiteService;
+import org.mitre.openid.connect.web.AuthenticationTimeStamper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.common.util.OAuth2Utils;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jose.util.Base64URL;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 
@@ -81,7 +96,8 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 
 		// TODO: use client's default signing algorithm
 
-		SignedJWT signed = new SignedJWT(new JWSHeader(jwtService.getDefaultSigningAlgorithm()), claims);
+		JWSAlgorithm signingAlg = jwtService.getDefaultSigningAlgorithm();
+		SignedJWT signed = new SignedJWT(new JWSHeader(signingAlg), claims);
 
 		jwtService.signJwt(signed);
 
@@ -105,9 +121,23 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 			JWTClaimsSet idClaims = new JWTClaimsSet();
 
 
-			idClaims.setCustomClaim("auth_time", new Date().getTime());
+			//
+			// FIXME: storing the auth time in the session doesn't actually work, because we need access to it from the token endpoint when the user isn't present
+			//
 
-			idClaims.setIssueTime(new Date());
+			// get the auth time from the session
+			ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+			if (attr != null) {
+				HttpSession session = attr.getRequest().getSession();
+				if (session != null) {
+					Date authTime = (Date) session.getAttribute(AuthenticationTimeStamper.AUTH_TIMESTAMP);
+					if (authTime != null) {
+						idClaims.setClaim("auth_time", authTime.getTime() / 1000);
+					}
+				}
+			}
+
+			idClaims.setIssueTime(claims.getIssueTime());
 
 			if (client.getIdTokenValiditySeconds() != null) {
 				Date expiration = new Date(System.currentTimeMillis() + (client.getIdTokenValiditySeconds() * 1000L));
@@ -120,12 +150,52 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 			idClaims.setAudience(Lists.newArrayList(clientId));
 
 
+			// TODO: issue #450
 			String nonce = originalAuthRequest.getRequestParameters().get("nonce");
 			if (!Strings.isNullOrEmpty(nonce)) {
 				idClaims.setCustomClaim("nonce", nonce);
 			}
 
-			SignedJWT idToken = new SignedJWT(new JWSHeader(jwtService.getDefaultSigningAlgorithm()), idClaims);
+			// TODO: this ought to be getResponseType
+			
+			String responseType = authentication.getOAuth2Request().getRequestParameters().get("response_type");
+			Set<String> responseTypes = OAuth2Utils.parseParameterList(responseType);
+			if (responseTypes.contains("token")) {
+				// calculate the token hash
+
+				// get the right algorithm size
+				// TODO: all this string parsing feels like a bad hack
+				String algName = signingAlg.getName();
+				Pattern re = Pattern.compile("^[HRE]S(\\d+)$");
+				Matcher match = re.matcher(algName);
+				if (match.matches()) {
+					String bits = match.group(1);
+					String hmacAlg = "HMACSHA" + bits;
+					try {
+						Mac mac = Mac.getInstance(hmacAlg);
+						mac.init(new SecretKeySpec(token.getJwt().serialize().getBytes(), hmacAlg));
+
+						byte[] at_hash_bytes = mac.doFinal();
+						byte[] at_hash_bytes_left = Arrays.copyOf(at_hash_bytes, at_hash_bytes.length / 2);
+						Base64URL at_hash = Base64URL.encode(at_hash_bytes_left);
+
+						idClaims.setClaim("at_hash", at_hash);
+
+					} catch (NoSuchAlgorithmException e) {
+
+						logger.error("No such algorithm error: ", e);
+
+					} catch (InvalidKeyException e) {
+
+						logger.error("Invalid key error: ", e);
+					}
+
+				}
+
+			}
+
+
+			SignedJWT idToken = new SignedJWT(new JWSHeader(signingAlg), idClaims);
 
 			//TODO: check for client's preferred signer alg and use that
 
@@ -133,7 +203,6 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 
 			idTokenEntity.setJwt(idToken);
 
-			// TODO: might want to create a specialty authentication object here instead of copying
 			idTokenEntity.setAuthenticationHolder(token.getAuthenticationHolder());
 
 			// create a scope set with just the special "id-token" scope
@@ -144,7 +213,6 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 			idTokenEntity.setClient(token.getClient());
 
 			// attach the id token to the parent access token
-			// TODO: this relationship is one-to-one right now, this might change
 			token.setIdToken(idTokenEntity);
 		}
 

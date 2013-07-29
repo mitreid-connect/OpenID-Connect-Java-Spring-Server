@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2012 The MITRE Corporation
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,10 +37,10 @@ import org.mitre.openid.connect.service.ApprovedSiteService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
+import org.springframework.security.oauth2.common.exceptions.InvalidScopeException;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
@@ -73,9 +73,50 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 
 	@Autowired
 	private TokenEnhancer tokenEnhancer;
+	
+	@Override
+	public Set<OAuth2AccessTokenEntity> getAllAccessTokensForUser(String id) {
+
+		Set<OAuth2AccessTokenEntity> all = tokenRepository.getAllAccessTokens();
+		Set<OAuth2AccessTokenEntity> results = Sets.newLinkedHashSet();
+
+		for (OAuth2AccessTokenEntity token : all) {
+			if (token.getAuthenticationHolder().getAuthentication().getName().equals(id)) {
+				results.add(token);
+			}
+		}
+
+		return results;
+	}
+
+
+	@Override
+	public Set<OAuth2RefreshTokenEntity> getAllRefreshTokensForUser(String id) {
+		Set<OAuth2RefreshTokenEntity> all = tokenRepository.getAllRefreshTokens();
+		Set<OAuth2RefreshTokenEntity> results = Sets.newLinkedHashSet();
+
+		for (OAuth2RefreshTokenEntity token : all) {
+			if (token.getAuthenticationHolder().getAuthentication().getName().equals(id)) {
+				results.add(token);
+			}
+		}
+
+		return results;
+	}
+
+	@Override
+	public OAuth2AccessTokenEntity getAccessTokenById(Long id) {
+		return tokenRepository.getAccessTokenById(id);
+	}
+
+	@Override
+	public OAuth2RefreshTokenEntity getRefreshTokenById(Long id) {
+		return tokenRepository.getRefreshTokenById(id);
+	}
 
 	@Autowired
 	private ApprovedSiteService approvedSiteService;
+	
 
 	@Override
 	public OAuth2AccessTokenEntity createAccessToken(OAuth2Authentication authentication) throws AuthenticationException, InvalidClientException {
@@ -210,16 +251,16 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		// get the stored scopes from the authentication holder's authorization request; these are the scopes associated with the refresh token
 		Set<String> refreshScopes = new HashSet<String>(refreshToken.getAuthenticationHolder().getAuthentication().getOAuth2Request().getScope());
 
-		Set<String> scope = new HashSet<String>(authRequest.getScope());
+		Set<String> scope = authRequest.getScope() == null ? new HashSet<String>() : new HashSet<String>(authRequest.getScope());
 		if (scope != null && !scope.isEmpty()) {
 			// ensure a proper subset of scopes
 			if (refreshScopes != null && refreshScopes.containsAll(scope)) {
 				// set the scope of the new access token if requested
 				token.setScope(scope);
 			} else {
-				// up-scoping is not allowed
-				// (TODO: should this throw InvalidScopeException? For now just pass through)
-				token.setScope(refreshScopes);
+				String errorMsg = "Up-scoping is not allowed.";
+				logger.error(errorMsg);
+				throw new InvalidScopeException(errorMsg);
 			}
 		} else {
 			// otherwise inherit the scope of the refresh token (if it's there -- this can return a null scope set)
@@ -338,7 +379,6 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	}
 
 	@Override
-	@Scheduled(fixedRate = 5 * 60 * 1000) // schedule this task every five minutes
 	public void clearExpiredTokens() {
 		logger.info("Cleaning out all expired tokens");
 
@@ -352,44 +392,6 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		logger.info("Found " + refreshTokens.size() + " expired refresh tokens");
 		for (OAuth2RefreshTokenEntity oAuth2RefreshTokenEntity : refreshTokens) {
 			revokeRefreshToken(oAuth2RefreshTokenEntity);
-		}
-	}
-
-	/**
-	 * Get a builder object for this class (for tests)
-	 * @return
-	 */
-	public static DefaultOAuth2ProviderTokenServicesBuilder makeBuilder() {
-		return new DefaultOAuth2ProviderTokenServicesBuilder();
-	}
-
-	/**
-	 * Builder class for test harnesses.
-	 */
-	public static class DefaultOAuth2ProviderTokenServicesBuilder {
-		private DefaultOAuth2ProviderTokenService instance;
-
-		private DefaultOAuth2ProviderTokenServicesBuilder() {
-			instance = new DefaultOAuth2ProviderTokenService();
-		}
-
-		public DefaultOAuth2ProviderTokenServicesBuilder setTokenRepository(OAuth2TokenRepository tokenRepository) {
-			instance.tokenRepository = tokenRepository;
-			return this;
-		}
-
-		public DefaultOAuth2ProviderTokenServicesBuilder setClientDetailsService(ClientDetailsEntityService clientDetailsService) {
-			instance.clientDetailsService = clientDetailsService;
-			return this;
-		}
-
-		public DefaultOAuth2ProviderTokenServicesBuilder setTokenEnhancer(TokenEnhancer tokenEnhancer) {
-			instance.tokenEnhancer = tokenEnhancer;
-			return this;
-		}
-
-		public OAuth2TokenEntityService finish() {
-			return instance;
 		}
 	}
 
@@ -429,11 +431,6 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	@Override
 	public OAuth2AccessTokenEntity getAccessTokenForIdToken(OAuth2AccessTokenEntity idToken) {
 		return tokenRepository.getAccessTokenForIdToken(idToken);
-	}
-
-	@Override
-	public OAuth2AccessTokenEntity getAccessTokenById(Long id) {
-		return tokenRepository.getAccessTokenById(id);
 	}
 
 }

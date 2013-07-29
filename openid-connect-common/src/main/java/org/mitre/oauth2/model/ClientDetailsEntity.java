@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2012 The MITRE Corporation
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ import org.springframework.security.oauth2.provider.ClientDetails;
  * 
  */
 @Entity
-@Table(name="client_details")
+@Table(name = "client_details")
 @NamedQueries({
 	@NamedQuery(name = "ClientDetailsEntity.findAll", query = "SELECT c FROM ClientDetailsEntity c"),
 	@NamedQuery(name = "ClientDetailsEntity.getByClientId", query = "select c from ClientDetailsEntity c where c.clientId = :clientId")
@@ -217,6 +217,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id")
 	public Long getId() {
 		return id;
 	}
@@ -774,7 +775,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(
 			name="client_response_type",
-			joinColumns=@JoinColumn(name="response_type")
+			joinColumns=@JoinColumn(name="owner_id")
 			)
 	@Column(name="response_type")
 	public Set<String> getResponseTypes() {

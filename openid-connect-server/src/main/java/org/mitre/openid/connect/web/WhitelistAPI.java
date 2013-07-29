@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ******************************************************************************/
 /**
  * 
  */
@@ -76,12 +91,12 @@ public class WhitelistAPI {
 			whitelist = gson.fromJson(json, WhitelistedSite.class);
 
 		} catch (JsonParseException e) {
-			logger.error("addNewWhitelistedSite failed due to JsonParseException: " , e);
+			logger.error("addNewWhitelistedSite failed due to JsonParseException", e);
 			m.addAttribute("code", HttpStatus.BAD_REQUEST);
 			m.addAttribute("errorMessage", "Could not save new whitelisted site. The server encountered a JSON syntax exception. Contact a system administrator for assistance.");
 			return "jsonErrorView";
 		} catch (IllegalStateException e) {
-			logger.error("addNewWhitelistedSite failed due to IllegalStateException: " , e);
+			logger.error("addNewWhitelistedSite failed due to IllegalStateException", e);
 			m.addAttribute("code", HttpStatus.BAD_REQUEST);
 			m.addAttribute("errorMessage", "Could not save new whitelisted site. The server encountered an IllegalStateException. Refresh and try again - if the problem persists, contact a system administrator for assistance.");
 			return "jsonErrorView";
@@ -113,12 +128,12 @@ public class WhitelistAPI {
 			whitelist = gson.fromJson(json, WhitelistedSite.class);
 
 		} catch (JsonParseException e) {
-			logger.error("updateWhitelistedSite failed due to JsonParseException: " , e);
+			logger.error("updateWhitelistedSite failed due to JsonParseException", e);
 			m.put("code", HttpStatus.BAD_REQUEST);
 			m.put("errorMessage", "Could not update whitelisted site. The server encountered a JSON syntax exception. Contact a system administrator for assistance.");
 			return "jsonErrorView";
 		} catch (IllegalStateException e) {
-			logger.error("updateWhitelistedSite failed due to IllegalStateException: " , e);
+			logger.error("updateWhitelistedSite failed due to IllegalStateException", e);
 			m.put("code", HttpStatus.BAD_REQUEST);
 			m.put("errorMessage", "Could not update whitelisted site. The server encountered an IllegalStateException. Refresh and try again - if the problem persists, contact a system administrator for assistance.");
 			return "jsonErrorView";

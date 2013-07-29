@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2012 The MITRE Corporation
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  ******************************************************************************/
 package org.mitre.openid.connect.repository.impl;
 
-import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
-
 import java.util.Collection;
 import java.util.Date;
 
@@ -29,6 +27,8 @@ import org.mitre.openid.connect.model.Event;
 import org.mitre.openid.connect.repository.EventRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
 
 /**
  * JPA Event repository implementation

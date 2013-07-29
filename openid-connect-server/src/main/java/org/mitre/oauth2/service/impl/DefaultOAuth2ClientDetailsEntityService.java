@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2012 The MITRE Corporation
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,16 +54,6 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 
 	@Autowired
 	private BlacklistedSiteService blacklistedSiteService;
-
-	public DefaultOAuth2ClientDetailsEntityService() {
-
-	}
-
-	public DefaultOAuth2ClientDetailsEntityService(OAuth2ClientRepository clientRepository,
-			OAuth2TokenRepository tokenRepository) {
-		this.clientRepository = clientRepository;
-		this.tokenRepository = tokenRepository;
-	}
 
 	@Override
 	public ClientDetailsEntity saveNewClient(ClientDetailsEntity client) {

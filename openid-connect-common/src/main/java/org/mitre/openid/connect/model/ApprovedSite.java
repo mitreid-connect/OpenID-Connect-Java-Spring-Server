@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2012 The MITRE Corporation
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,6 +47,7 @@ import com.google.common.collect.Sets;
 	@NamedQuery(name = "ApprovedSite.getAll", query = "select a from ApprovedSite a"),
 	@NamedQuery(name = "ApprovedSite.getByUserId", query = "select a from ApprovedSite a where a.userId = :userId"),
 	@NamedQuery(name = "ApprovedSite.getByClientId", query = "select a from ApprovedSite a where a.clientId = :clientId"),
+	@NamedQuery(name = "ApprovedSite.getExpired", query = "select a from ApprovedSite a where a.timeoutDate is not null and a.timeoutDate < current_timestamp"),
 	@NamedQuery(name = "ApprovedSite.getByClientIdAndUserId", query = "select a from ApprovedSite a where a.clientId = :clientId and a.userId = :userId")
 })
 public class ApprovedSite {
@@ -91,6 +92,7 @@ public class ApprovedSite {
 	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id")
 	public Long getId() {
 		return id;
 	}
@@ -255,5 +257,4 @@ public class ApprovedSite {
 	public void setApprovedAccessTokens(Set<OAuth2AccessTokenEntity> approvedAccessTokens) {
 		this.approvedAccessTokens = approvedAccessTokens;
 	}
-
 }

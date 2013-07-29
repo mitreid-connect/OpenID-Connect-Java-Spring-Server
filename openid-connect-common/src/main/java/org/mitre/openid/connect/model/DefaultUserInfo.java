@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2012 The MITRE Corporation
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,6 +65,7 @@ public class DefaultUserInfo implements UserInfo {
 	 */
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@Column(name = "id")
 	public Long getId() {
 		return id;
 	}
@@ -111,6 +112,7 @@ public class DefaultUserInfo implements UserInfo {
 	 */
 	@Override
 	@Basic
+	@Column(name = "name")
 	public String getName() {
 		return name;
 	}
@@ -174,6 +176,7 @@ public class DefaultUserInfo implements UserInfo {
 	 */
 	@Override
 	@Basic
+	@Column(name = "nickname")
 	public String getNickname() {
 		return nickname;
 	}
@@ -189,6 +192,7 @@ public class DefaultUserInfo implements UserInfo {
 	 */
 	@Override
 	@Basic
+	@Column(name = "profile")
 	public String getProfile() {
 		return profile;
 	}
@@ -204,6 +208,7 @@ public class DefaultUserInfo implements UserInfo {
 	 */
 	@Override
 	@Basic
+	@Column(name = "picture")
 	public String getPicture() {
 		return picture;
 	}
@@ -219,6 +224,7 @@ public class DefaultUserInfo implements UserInfo {
 	 */
 	@Override
 	@Basic
+	@Column(name = "website")
 	public String getWebsite() {
 		return website;
 	}
@@ -234,6 +240,7 @@ public class DefaultUserInfo implements UserInfo {
 	 */
 	@Override
 	@Basic
+	@Column(name = "email")
 	public String getEmail() {
 		return email;
 	}
@@ -265,6 +272,7 @@ public class DefaultUserInfo implements UserInfo {
 	 */
 	@Override
 	@Basic
+	@Column(name = "gender")
 	public String getGender() {
 		return gender;
 	}
@@ -296,6 +304,7 @@ public class DefaultUserInfo implements UserInfo {
 	 */
 	@Override
 	@Basic
+	@Column(name = "locale")
 	public String getLocale() {
 		return locale;
 	}

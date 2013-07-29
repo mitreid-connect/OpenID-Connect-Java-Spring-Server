@@ -1,3 +1,20 @@
+/*******************************************************************************
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ******************************************************************************/
+
+
 /**
  * 
  */
@@ -18,7 +35,6 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMappi
 public class ClientKeyPublisherMapping extends RequestMappingInfoHandlerMapping {
 
 	private String jwkPublishUrl;
-	private String x509PublishUrl;
 
 	/* (non-Javadoc)
 	 * @see org.springframework.web.servlet.handler.AbstractHandlerMethodMapping#isHandler(java.lang.Class)
@@ -30,7 +46,6 @@ public class ClientKeyPublisherMapping extends RequestMappingInfoHandlerMapping 
 
 	/**
 	 * Map the "jwkKeyPublish" method to our jwkPublishUrl.
-	 * Map the "x509KeyPublish" method to our x509PublishUrl.
 	 */
 	@Override
 	protected RequestMappingInfo getMappingForMethod(Method method, Class<?> handlerType) {
@@ -38,15 +53,6 @@ public class ClientKeyPublisherMapping extends RequestMappingInfoHandlerMapping 
 		if (method.getName().equals("publishClientJwk") && getJwkPublishUrl() != null) {
 			return new RequestMappingInfo(
 					new PatternsRequestCondition(new String[] {getJwkPublishUrl()}, getUrlPathHelper(), getPathMatcher(), false, false),
-					null,
-					null,
-					null,
-					null,
-					null,
-					null);
-		} else if (method.getName().equals("publishClientx509") && getX509PublishUrl() != null) {
-			return new RequestMappingInfo(
-					new PatternsRequestCondition(new String[] {getX509PublishUrl()}, getUrlPathHelper(), getPathMatcher(), false, false),
 					null,
 					null,
 					null,
@@ -71,20 +77,6 @@ public class ClientKeyPublisherMapping extends RequestMappingInfoHandlerMapping 
 	 */
 	public void setJwkPublishUrl(String jwkPublishUrl) {
 		this.jwkPublishUrl = jwkPublishUrl;
-	}
-
-	/**
-	 * @return the x509PublishUrl
-	 */
-	public String getX509PublishUrl() {
-		return x509PublishUrl;
-	}
-
-	/**
-	 * @param x509PublishUrl the x509PublishUrl to set
-	 */
-	public void setX509PublishUrl(String x509PublishUrl) {
-		this.x509PublishUrl = x509PublishUrl;
 	}
 
 }

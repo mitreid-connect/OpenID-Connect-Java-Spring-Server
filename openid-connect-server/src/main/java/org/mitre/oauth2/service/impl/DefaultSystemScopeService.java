@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ******************************************************************************/
 /**
  * 
  */
@@ -5,8 +20,6 @@ package org.mitre.oauth2.service.impl;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
-
-import javax.annotation.Nullable;
 
 import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.repository.SystemScopeRepository;
@@ -32,7 +45,7 @@ public class DefaultSystemScopeService implements SystemScopeService {
 
 	private Predicate<SystemScope> isDefault = new Predicate<SystemScope>() {
 		@Override
-		public boolean apply(@Nullable SystemScope input) {
+		public boolean apply(SystemScope input) {
 			return (input != null && input.isDefaultScope());
 		}
 	};
@@ -40,14 +53,14 @@ public class DefaultSystemScopeService implements SystemScopeService {
 
 	private Predicate<SystemScope> isDynReg = new Predicate<SystemScope>() {
 		@Override
-		public boolean apply(@Nullable SystemScope input) {
+		public boolean apply(SystemScope input) {
 			return (input != null && input.isAllowDynReg());
 		}
 	};
 
 	private Function<String, SystemScope> stringToSystemScope = new Function<String, SystemScope>() {
 		@Override
-		public SystemScope apply(@Nullable String input) {
+		public SystemScope apply(String input) {
 			if (input == null) {
 				return null;
 			} else {
@@ -65,7 +78,7 @@ public class DefaultSystemScopeService implements SystemScopeService {
 
 	private Function<SystemScope, String> systemScopeToString = new Function<SystemScope, String>() {
 		@Override
-		public String apply(@Nullable SystemScope input) {
+		public String apply(SystemScope input) {
 			if (input == null) {
 				return null;
 			} else {

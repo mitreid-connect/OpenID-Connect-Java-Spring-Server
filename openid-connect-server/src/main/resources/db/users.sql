@@ -11,25 +11,19 @@ START TRANSACTION;
 -- 
 
 INSERT INTO users_TEMP (username, password, enabled) VALUES
-  ('jricher', 'password', true),
-  ('aanganes','password',true),
-  ('mfranklin','password',true),
-  ('srmoore','password',true);
+  ('admin','password',true),
+  ('user','password',true);
+
 
 INSERT INTO authorities_TEMP (username, authority) VALUES
-  ('jricher', 'ROLE_ADMIN'),
-  ('aanganes','ROLE_ADMIN'),
-  ('jricher', 'ROLE_USER'),
-  ('aanganes','ROLE_USER'),
-  ('mfranklin','ROLE_USER'),
-  ('srmoore','ROLE_USER');
+  ('admin','ROLE_ADMIN'),
+  ('admin','ROLE_USER'),
+  ('user','ROLE_USER');
     
 -- By default, the username column here has to match the username column in the users table, above
 INSERT INTO user_info_TEMP (sub, preferred_username, name, email, email_verified) VALUES
-  ('jricher', 'jricher', 'Justin Richer', 'jricher@mitre.org', false),
-  ('aanganes', 'aanganes', 'Amanda Anganes', 'aanganes@mitre.org', false),
-  ('mfranklin', 'mfranklin', 'Matt Franklin', 'mfranklin@mitre.org', false),
-  ('srmoore', 'srmoore', 'Steve Moore', 'srmoore@mitre.org', false);
+  ('admin','admin','Demo Admin','admin@example.com',false),
+  ('user','user','Demo User','user@example.com',false);
 
  
 --

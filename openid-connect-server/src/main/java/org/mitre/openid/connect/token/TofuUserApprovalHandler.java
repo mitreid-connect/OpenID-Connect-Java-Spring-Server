@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2012 The MITRE Corporation
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,7 +64,17 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 	private ClientDetailsService clientDetailsService;
 
 
-
+	/**
+	 * Check if the user has already stored a positive approval decision for this site; or if the
+	 * site is whitelisted, approve it automatically.
+	 * 
+	 * Otherwise, return false so that the user will see the approval page and can make their own decision.
+	 * 
+	 * @param authorizationRequest	the incoming authorization request
+	 * @param userAuthentication	the Principal representing the currently-logged-in user
+	 * 
+	 * @return 						true if the site is approved, false otherwise
+	 */
 	@Override
 	public boolean isApproved(AuthorizationRequest authorizationRequest, Authentication userAuthentication) {
 
@@ -99,42 +109,50 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 
 		//First, check database to see if the user identified by the userAuthentication has stored an approval decision
 
-		//getName may not be filled in? TODO: investigate
 		String userId = userAuthentication.getName();
 		String clientId = authorizationRequest.getClientId();
 
 		//lookup ApprovedSites by userId and clientId
 		boolean alreadyApproved = false;
-		Collection<ApprovedSite> aps = approvedSiteService.getByClientIdAndUserId(clientId, userId);
-		for (ApprovedSite ap : aps) {
 
-			if (!ap.isExpired()) {
+		// find out if we're supposed to force a prompt on the user or not
+		// TODO (issue #450)
+		String prompt = authorizationRequest.getRequestParameters().get("prompt");
+		if (!"consent".equals(prompt)) {
+			// if the prompt parameter is set to "consent" then we can't use approved sites or whitelisted sites
+			// otherwise, we need to check them below
 
-				// if we find one that fits...
-				if (scopesMatch(authorizationRequest.getScope(), ap.getAllowedScopes())) {
-
-					//We have a match; update the access date on the AP entry and return true.
-					ap.setAccessDate(new Date());
-					approvedSiteService.save(ap);
-
-					authorizationRequest.getExtensions().put("approved_site", ap.getId());
+			Collection<ApprovedSite> aps = approvedSiteService.getByClientIdAndUserId(clientId, userId);
+			for (ApprovedSite ap : aps) {
+	
+				if (!ap.isExpired()) {
+	
+					// if we find one that fits...
+					if (scopesMatch(authorizationRequest.getScope(), ap.getAllowedScopes())) {
+	
+						//We have a match; update the access date on the AP entry and return true.
+						ap.setAccessDate(new Date());
+						approvedSiteService.save(ap);
+	
+						authorizationRequest.getExtensions().put("approved_site", ap.getId());
+						authorizationRequest.setApproved(true);
+						alreadyApproved = true;
+					}
+				}
+			}
+	
+			if (!alreadyApproved) {
+				WhitelistedSite ws = whitelistedSiteService.getByClientId(clientId);
+				if (ws != null && scopesMatch(authorizationRequest.getScope(), ws.getAllowedScopes())) {
+	
+					//Create an approved site
+					ApprovedSite newSite = approvedSiteService.createApprovedSite(clientId, userId, null, ws.getAllowedScopes(), ws);
+					authorizationRequest.getExtensions().put("approved_site", newSite.getId());
 					authorizationRequest.setApproved(true);
-					alreadyApproved = true;
 				}
 			}
 		}
-
-		if (!alreadyApproved) {
-			WhitelistedSite ws = whitelistedSiteService.getByClientId(clientId);
-			if (ws != null && scopesMatch(authorizationRequest.getScope(), ws.getAllowedScopes())) {
-
-				//Create an approved site
-				ApprovedSite newSite = approvedSiteService.createApprovedSite(clientId, userId, null, ws.getAllowedScopes(), ws);
-				authorizationRequest.getExtensions().put("approved_site", newSite.getId());
-				authorizationRequest.setApproved(true);
-			}
-		}
-
+		
 		return authorizationRequest;
 
 	}
@@ -176,7 +194,6 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 			}
 
 			// inject the user-allowed scopes into the auth request
-			// TODO: for the moment this allows both upscoping and downscoping.
 			authorizationRequest.setScope(allowedScopes);
 
 			//Only store an ApprovedSite if the user has checked "remember this decision":
@@ -218,5 +235,4 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 
 		return true;
 	}
-
 }

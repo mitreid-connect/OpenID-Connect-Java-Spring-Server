@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2012 The MITRE Corporation
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,12 @@
  ******************************************************************************/
 package org.mitre.openid.connect.config;
 
+import javax.annotation.PostConstruct;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
+
 
 
 /**
@@ -27,6 +33,8 @@ package org.mitre.openid.connect.config;
  */
 public class ConfigurationPropertiesBean {
 
+	private static Logger logger = LoggerFactory.getLogger(ConfigurationPropertiesBean.class);
+
 	private String issuer;
 
 	private String topbarTitle;
@@ -35,6 +43,16 @@ public class ConfigurationPropertiesBean {
 
 	public ConfigurationPropertiesBean() {
 
+	}
+
+	/**
+	 * Endpoints protected by TLS must have https scheme in the URI.
+	 */
+	@PostConstruct
+	public void checkForHttps() {
+		if (!StringUtils.startsWithIgnoreCase(issuer, "https")) {
+			logger.warn("Configured issuer url is not using https scheme.");
+		}
 	}
 
 	/**

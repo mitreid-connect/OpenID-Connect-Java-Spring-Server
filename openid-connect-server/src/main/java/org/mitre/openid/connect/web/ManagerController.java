@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2012 The MITRE Corporation
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,7 +64,7 @@ public class ManagerController {
 		return "contact";
 	}
 
-	@PreAuthorize("hasRole('ROLE_USER')") // TODO: this probably shouldn't be here
+	@PreAuthorize("hasRole('ROLE_USER')")
 	@RequestMapping("manage/**")
 	public String showClientManager(ModelMap m) {
 		return "manage";

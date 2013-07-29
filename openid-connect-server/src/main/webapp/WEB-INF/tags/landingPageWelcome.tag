@@ -5,7 +5,4 @@
 	remote site using your identity without exposing your credentials, like
 	a username and password.</p>
 
-<p>
-	<a class="btn btn-primary btn-large" href="http://openid.net/connect/">Learn
-		more &raquo;</a>
-</p>
+<p><a class="btn btn-primary btn-large" href="http://openid.net/connect/">Learn more &raquo;</a></p>

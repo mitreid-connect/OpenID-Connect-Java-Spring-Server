@@ -1,7 +1,24 @@
+/*******************************************************************************
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ******************************************************************************/
 package org.mitre.openid.connect.service.impl;
 
 import java.util.Collection;
 import java.util.Date;
+
+import javax.annotation.PostConstruct;
 
 import org.joda.time.DateTime;
 import org.joda.time.Period;
@@ -10,13 +27,11 @@ import org.mitre.openid.connect.repository.NonceRepository;
 import org.mitre.openid.connect.service.NonceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @Service("defaultNonceService")
-public class DefaultNonceService implements NonceService, InitializingBean {
+public class DefaultNonceService implements NonceService {
 
 	private static Logger logger = LoggerFactory.getLogger(NonceService.class);
 
@@ -29,11 +44,12 @@ public class DefaultNonceService implements NonceService, InitializingBean {
 	/**
 	 * Make sure that the nonce storage duration was set
 	 */
-	@Override
+	@PostConstruct
 	public void afterPropertiesSet() throws Exception {
 		if (nonceStorageDuration == null) {
 			logger.error("Nonce storage duration must be set!");
 		}
+		logger.info("Nonce Service ready to go");
 	}
 
 	@Override
@@ -95,7 +111,9 @@ public class DefaultNonceService implements NonceService, InitializingBean {
 	}
 
 	@Override
-	@Scheduled(fixedRate = 5 * 60 * 1000) // schedule this task every five minutes
+	//We are eventually deleting this class, but if we weren't,
+	//this would have been moved to application-context.xml for easier configuration.
+	//@Scheduled(fixedRate = 5 * 60 * 1000) // schedule this task every five minutes
 	public void clearExpiredNonces() {
 
 		logger.info("Clearing expired nonces");

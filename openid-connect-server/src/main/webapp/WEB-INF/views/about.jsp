@@ -5,8 +5,8 @@
 
 <!-- TODO: highlight proper section of topbar; what is the right way to do this? -->
 
-<o:header title="welcome" />
-<o:topbar pageName="About" />
+<o:header title="About"/>
+<o:topbar pageName="About"/>
 <div class="container-fluid main">
 	<div class="row-fluid">
 		<o:sidebar />
@@ -22,4 +22,4 @@
 		</div>
 	</div>
 </div>
-<o:footer />
+<o:footer/>

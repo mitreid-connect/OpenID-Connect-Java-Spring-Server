@@ -1,23 +1,34 @@
-// FIXME: update to latest DynReg spec
-
+/*******************************************************************************
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ******************************************************************************/
 package org.mitre.openid.connect.web;
 
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import org.mitre.jose.JWEAlgorithmEmbed;
-import org.mitre.jose.JWEEncryptionMethodEmbed;
-import org.mitre.jose.JWSAlgorithmEmbed;
 import org.mitre.oauth2.model.ClientDetailsEntity;
-import org.mitre.oauth2.model.ClientDetailsEntity.AppType;
 import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
-import org.mitre.oauth2.model.ClientDetailsEntity.SubjectType;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
+import org.mitre.oauth2.model.RegisteredClient;
 import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
 import org.mitre.oauth2.service.SystemScopeService;
+import org.mitre.openid.connect.ClientDetailsEntityJsonProcessor;
+import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +38,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
-import org.springframework.security.oauth2.provider.OAuth2RequestFactory;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -36,15 +46,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.google.common.base.Splitter;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.reflect.TypeToken;
 
 @Controller
 @RequestMapping(value = "register")
@@ -60,11 +63,9 @@ public class ClientDynamicRegistrationEndpoint {
 	private SystemScopeService scopeService;
 
 	@Autowired
-	private OAuth2RequestFactory oAuth2RequestFactory;
+	private ConfigurationPropertiesBean config;
 
 	private static Logger logger = LoggerFactory.getLogger(ClientDynamicRegistrationEndpoint.class);
-	private JsonParser parser = new JsonParser();
-	private Gson gson = new Gson();
 
 	/**
 	 * Create a new Client, issue a client ID, and create a registration access token.
@@ -76,7 +77,7 @@ public class ClientDynamicRegistrationEndpoint {
 	@RequestMapping(method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
 	public String registerNewClient(@RequestBody String jsonString, Model m) {
 
-		ClientDetailsEntity newClient = parse(jsonString);
+		ClientDetailsEntity newClient = ClientDetailsEntityJsonProcessor.parse(jsonString);
 
 		if (newClient != null) {
 			// it parsed!
@@ -108,7 +109,11 @@ public class ClientDynamicRegistrationEndpoint {
 
 			// set default grant types if needed
 			if (newClient.getGrantTypes() == null || newClient.getGrantTypes().isEmpty()) {
-				newClient.setGrantTypes(Sets.newHashSet("authorization_code", "refresh_token")); // allow authorization code and refresh token grant types by default
+				if (newClient.getScope().contains("offline_access")) { // client asked for offline access
+					newClient.setGrantTypes(Sets.newHashSet("authorization_code", "refresh_token")); // allow authorization code and refresh token grant types by default
+				} else {
+					newClient.setGrantTypes(Sets.newHashSet("authorization_code")); // allow authorization code grant type by default
+				}
 			}
 
 			// set default response types if needed
@@ -145,9 +150,12 @@ public class ClientDynamicRegistrationEndpoint {
 			OAuth2AccessTokenEntity token = createRegistrationAccessToken(savedClient);
 
 			// send it all out to the view
-			m.addAttribute("client", savedClient);
+
+			// TODO: urlencode the client id for safety?
+			RegisteredClient registered = new RegisteredClient(savedClient, token.getValue(), config.getIssuer() + "register/" + savedClient.getClientId());
+
+			m.addAttribute("client", registered);
 			m.addAttribute("code", HttpStatus.CREATED); // http 201
-			m.addAttribute("token", token);
 
 			return "clientInformationResponseView";
 		} else {
@@ -180,10 +188,12 @@ public class ClientDynamicRegistrationEndpoint {
 			OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
 			OAuth2AccessTokenEntity token = tokenService.readAccessToken(details.getTokenValue());
 
+			// TODO: urlencode the client id for safety?
+			RegisteredClient registered = new RegisteredClient(client, token.getValue(), config.getIssuer() + "register/" + client.getClientId());
+
 			// send it all out to the view
-			m.addAttribute("client", client);
+			m.addAttribute("client", registered);
 			m.addAttribute("code", HttpStatus.OK); // http 200
-			m.addAttribute("token", token);
 
 			return "clientInformationResponseView";
 		} else {
@@ -209,7 +219,7 @@ public class ClientDynamicRegistrationEndpoint {
 	public String updateClient(@PathVariable("id") String clientId, @RequestBody String jsonString, Model m, OAuth2Authentication auth) {
 
 
-		ClientDetailsEntity newClient = parse(jsonString);
+		ClientDetailsEntity newClient = ClientDetailsEntityJsonProcessor.parse(jsonString);
 		ClientDetailsEntity oldClient = clientService.loadClientByClientId(clientId);
 
 		if (newClient != null && oldClient != null  // we have an existing client and the new one parsed
@@ -251,10 +261,12 @@ public class ClientDynamicRegistrationEndpoint {
 			OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
 			OAuth2AccessTokenEntity token = tokenService.readAccessToken(details.getTokenValue());
 
+			// TODO: urlencode the client id for safety?
+			RegisteredClient registered = new RegisteredClient(savedClient, token.getValue(), config.getIssuer() + "register/" + savedClient.getClientId());
+
 			// send it all out to the view
-			m.addAttribute("client", savedClient);
+			m.addAttribute("client", registered);
 			m.addAttribute("code", HttpStatus.OK); // http 200
-			m.addAttribute("token", token);
 
 			return "clientInformationResponseView";
 		} else {
@@ -284,16 +296,9 @@ public class ClientDynamicRegistrationEndpoint {
 
 			clientService.deleteClient(client);
 
-			// we return the token that we got in
-			OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
-			OAuth2AccessTokenEntity token = tokenService.readAccessToken(details.getTokenValue());
+			m.addAttribute("code", HttpStatus.NO_CONTENT); // http 204
 
-			// send it all out to the view
-			m.addAttribute("client", client);
-			m.addAttribute("code", HttpStatus.OK); // http 200
-			m.addAttribute("token", token);
-
-			return "clientInformationResponseView";
+			return "httpCodeView";
 		} else {
 			// client mismatch
 			logger.error("readClientConfiguration failed, client ID mismatch: "
@@ -306,160 +311,6 @@ public class ClientDynamicRegistrationEndpoint {
 
 
 
-
-	/**
-	 * 
-	 * Create an unbound ClientDetailsEntity from the given JSON string.
-	 * 
-	 * @param jsonString
-	 * @return the entity if successful, null otherwise
-	 */
-	private ClientDetailsEntity parse(String jsonString) {
-		JsonElement jsonEl = parser.parse(jsonString);
-		if (jsonEl.isJsonObject()) {
-
-			JsonObject o = jsonEl.getAsJsonObject();
-			ClientDetailsEntity c = new ClientDetailsEntity();
-
-			// TODO: make these field names into constants
-
-			// these two fields should only be sent in the update request, and MUST match existing values
-			c.setClientId(getAsString(o, "client_id"));
-			c.setClientSecret(getAsString(o, "client_secret"));
-
-			// OAuth DynReg
-			c.setRedirectUris(getAsStringSet(o, "redirect_uris"));
-			c.setClientName(getAsString(o, "client_name"));
-			c.setClientUri(getAsString(o, "client_uri"));
-			c.setLogoUri(getAsString(o, "logo_uri"));
-			c.setContacts(getAsStringSet(o, "contacts"));
-			c.setTosUri(getAsString(o, "tos_uri"));
-
-			String authMethod = getAsString(o, "token_endpoint_auth_method");
-			if (authMethod != null) {
-				c.setTokenEndpointAuthMethod(AuthMethod.getByValue(authMethod));
-			}
-
-			// scope is a space-separated string
-			String scope = getAsString(o, "scope");
-			if (scope != null) {
-				c.setScope(Sets.newHashSet(Splitter.on(" ").split(scope)));
-			}
-
-			c.setGrantTypes(getAsStringSet(o, "grant_types"));
-			c.setPolicyUri(getAsString(o, "policy_uri"));
-			c.setJwksUri(getAsString(o, "jwks_uri"));
-
-
-			// OIDC Additions
-			String appType = getAsString(o, "application_type");
-			if (appType != null) {
-				c.setApplicationType(AppType.getByValue(appType));
-			}
-
-			c.setSectorIdentifierUri(getAsString(o, "sector_identifier_uri"));
-
-			String subjectType = getAsString(o, "subject_type");
-			if (subjectType != null) {
-				c.setSubjectType(SubjectType.getByValue(subjectType));
-			}
-
-			c.setRequestObjectSigningAlg(getAsJwsAlgorithm(o, "request_object_signing_alg"));
-
-			c.setUserInfoSignedResponseAlg(getAsJwsAlgorithm(o, "userinfo_signed_response_alg"));
-			c.setUserInfoEncryptedResponseAlg(getAsJweAlgorithm(o, "userinfo_encrypted_response_alg"));
-			c.setUserInfoEncryptedResponseEnc(getAsJweEncryptionMethod(o, "userinfo_encrypted_response_enc"));
-
-			c.setIdTokenSignedResponseAlg(getAsJwsAlgorithm(o, "id_token_signed_response_alg"));
-			c.setIdTokenEncryptedResponseAlg(getAsJweAlgorithm(o, "id_token_encrypted_response_alg"));
-			c.setIdTokenEncryptedResponseEnc(getAsJweEncryptionMethod(o, "id_token_encrypted_response_enc"));
-
-			if (o.has("default_max_age")) {
-				if (o.get("default_max_age").isJsonPrimitive()) {
-					c.setDefaultMaxAge(o.get("default_max_age").getAsInt());
-				}
-			}
-
-			if (o.has("require_auth_time")) {
-				if (o.get("require_auth_time").isJsonPrimitive()) {
-					c.setRequireAuthTime(o.get("require_auth_time").getAsBoolean());
-				}
-			}
-
-			c.setDefaultACRvalues(getAsStringSet(o, "default_acr_values"));
-			c.setInitiateLoginUri(getAsString(o, "initiate_login_uri"));
-			c.setPostLogoutRedirectUri(getAsString(o, "post_logout_redirect_uri"));
-			c.setRequestUris(getAsStringSet(o, "request_uris"));
-
-			return c;
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	 * Gets the value of the given given member as a set of strings, null if it doesn't exist
-	 */
-	private Set<String> getAsStringSet(JsonObject o, String member) throws JsonSyntaxException {
-		if (o.has(member)) {
-			return gson.fromJson(o.get(member), new TypeToken<Set<String>>(){}.getType());
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	 * Gets the value of the given member as a string, null if it doesn't exist
-	 */
-	private String getAsString(JsonObject o, String member) {
-		if (o.has(member)) {
-			JsonElement e = o.get(member);
-			if (e != null && e.isJsonPrimitive()) {
-				return e.getAsString();
-			} else {
-				return null;
-			}
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	 * Gets the value of the given member as a JWS Algorithm, null if it doesn't exist
-	 */
-	private JWSAlgorithmEmbed getAsJwsAlgorithm(JsonObject o, String member) {
-		String s = getAsString(o, member);
-		if (s != null) {
-			return JWSAlgorithmEmbed.getForAlgorithmName(s);
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	 * Gets the value of the given member as a JWE Algorithm, null if it doesn't exist
-	 */
-	private JWEAlgorithmEmbed getAsJweAlgorithm(JsonObject o, String member) {
-		String s = getAsString(o, member);
-		if (s != null) {
-			return JWEAlgorithmEmbed.getForAlgorithmName(s);
-		} else {
-			return null;
-		}
-	}
-
-
-	/**
-	 * Gets the value of the given member as a JWE Encryption Method, null if it doesn't exist
-	 */
-	private JWEEncryptionMethodEmbed getAsJweEncryptionMethod(JsonObject o, String member) {
-		String s = getAsString(o, member);
-		if (s != null) {
-			return JWEEncryptionMethodEmbed.getForAlgorithmName(s);
-		} else {
-			return null;
-		}
-	}
 	/**
 	 * @param client
 	 * @return
@@ -468,8 +319,6 @@ public class ClientDynamicRegistrationEndpoint {
 	private OAuth2AccessTokenEntity createRegistrationAccessToken(ClientDetailsEntity client) throws AuthenticationException {
 
 		Map<String, String> authorizationParameters = Maps.newHashMap();
-		authorizationParameters.put("client_id", client.getClientId());
-		authorizationParameters.put("scope", OAuth2AccessTokenEntity.REGISTRATION_TOKEN_SCOPE);
 		OAuth2Request storedRequest = new OAuth2Request(authorizationParameters, client.getClientId(),
 				Sets.newHashSet(new SimpleGrantedAuthority("ROLE_CLIENT")), true,
 				Sets.newHashSet(OAuth2AccessTokenEntity.REGISTRATION_TOKEN_SCOPE), null, null, null);

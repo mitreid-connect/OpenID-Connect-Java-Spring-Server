@@ -1,15 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright 2013 The MITRE Corporation 
+    and the MIT Kerberos and Internet Trust Consortium
+  
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+    http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:mvc="http://www.springframework.org/schema/mvc" 
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:tx="http://www.springframework.org/schema/tx" 
+	xmlns:tx="http://www.springframework.org/schema/tx"
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:security="http://www.springframework.org/schema/security"
-	xmlns:task="http://www.springframework.org/schema/task" 
 	xmlns:oauth="http://www.springframework.org/schema/security/oauth2"
-	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd
-		http://www.springframework.org/schema/security/oauth2 http://www.springframework.org/schema/security/spring-security-oauth2-1.0.xsd
-		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.1.xsd
+	xsi:schemaLocation="http://www.springframework.org/schema/security/oauth2 http://www.springframework.org/schema/security/spring-security-oauth2-1.0.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd
 		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
@@ -69,6 +83,11 @@
 	</security:http>
 	<security:http pattern="/.well-known/**" use-expressions="true" entry-point-ref="http403EntryPoint" create-session="stateless">
 		<security:intercept-url pattern="/.well-known/**" access="permitAll"/>
+	</security:http>
+
+	<!-- Allow open access to all static resources -->	
+	<security:http pattern="/resources/**" use-expressions="true" entry-point-ref="http403EntryPoint" create-session="stateless">
+		<security:intercept-url pattern="/resources/**" access="permitAll"/>
 	</security:http>
 	
 	<!-- OAuth-protect API and other endpoints -->
@@ -214,25 +233,10 @@
 		<property name="order" value="1" />
 	</bean>
 
-	<!-- Map our custom exception classes to named views -->
-	<bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
-		<property name="exceptionMappings">
-			<props>
-				<prop key="org.mitre.openid.connect.web.InvalidJwtSignatureException">exceptionAsJSONView</prop>
-				<prop key="org.mitre.openid.connect.web.ExpiredTokenException">exceptionAsJSONView</prop>
-				<prop key="org.mitre.openid.connect.web.InvalidJwtIssuerException">exceptionAsJSONView</prop>
-				<prop key="org.springframework.security.oauth2.common.exceptions.InsufficientScopeException">exceptionAsJSONView</prop>
-				<prop key="org.mitre.openid.connect.exception.UserNotFoundException">exception/usernotfound</prop>
-			</props>
-		</property>
-	</bean>
-
 	<!-- End view configuration -->
 
-	<!-- scheduled tasks -->
-	<!-- <task:scheduler id="taskScheduler" pool-size="10" /> -->
-	<!-- <task:executor id="taskExecutor" pool-size="5" /> -->
-	<!-- <task:annotation-driven scheduler="taskScheduler" executor="taskExecutor" /> -->
+	<!--Import scheduled task configuration -->
+	<import resource="task-config.xml" />
 
 	<!-- import application-local configuration information (such as bean definitions) -->
 	<import resource="local-config.xml" />

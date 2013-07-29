@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ******************************************************************************/
 /**
  * 
  */
@@ -9,18 +24,21 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.mitre.jose.keystore.JWKSetKeyStore;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.nimbusds.jose.jwk.JWKSet;
 
 /**
  * 
- * Creates a
+ * Creates a caching map of JOSE signers and validators keyed on the JWK Set URI.
+ * Dynamically loads JWK Sets to create the signing and validation services.
  * 
  * @author jricher
  *
@@ -28,7 +46,10 @@ import com.nimbusds.jose.jwk.JWKSet;
 @Service
 public class JWKSetSigningAndValidationServiceCacheService {
 
-	private Cache<String, JwtSigningAndValidationService> cache;
+	private static Logger logger = LoggerFactory.getLogger(JWKSetSigningAndValidationServiceCacheService.class);
+
+	// map of jwk set uri -> signing/validation service built on the keys found in that jwk set
+	private LoadingCache<String, JwtSigningAndValidationService> cache;
 
 	public JWKSetSigningAndValidationServiceCacheService() {
 		this.cache = CacheBuilder.newBuilder()
@@ -37,17 +58,16 @@ public class JWKSetSigningAndValidationServiceCacheService {
 	}
 
 	/**
-	 * @param key
+	 * @param jwksUri
 	 * @return
 	 * @throws ExecutionException
 	 * @see com.google.common.cache.Cache#get(java.lang.Object)
 	 */
-	public JwtSigningAndValidationService get(String key) {
+	public JwtSigningAndValidationService get(String jwksUri) {
 		try {
-			return cache.get(key);
+			return cache.get(jwksUri);
 		} catch (ExecutionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.warn("Couldn't load JWK Set from " + jwksUri, e);
 			return null;
 		}
 	}

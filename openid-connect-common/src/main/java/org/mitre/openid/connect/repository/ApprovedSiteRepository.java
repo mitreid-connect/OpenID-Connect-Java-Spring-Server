@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2012 The MITRE Corporation
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,4 +83,10 @@ public interface ApprovedSiteRepository {
 	 * @return
 	 */
 	public Collection<ApprovedSite> getByClientId(String clientId);
+
+	/**
+	 * Get all expired sites
+	 * @return
+	 */
+	public Collection<ApprovedSite> getExpired();
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2012 The MITRE Corporation
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,8 @@ import org.mitre.openid.connect.model.ApprovedSite;
 import org.mitre.openid.connect.model.WhitelistedSite;
 import org.mitre.openid.connect.repository.ApprovedSiteRepository;
 import org.mitre.openid.connect.service.ApprovedSiteService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.stereotype.Service;
@@ -40,27 +42,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class DefaultApprovedSiteService implements ApprovedSiteService {
 
+	private static Logger logger = LoggerFactory.getLogger(DefaultApprovedSiteService.class);
+
 	@Autowired
 	private ApprovedSiteRepository approvedSiteRepository;
 
 	@Autowired
 	private OAuth2TokenRepository tokenRepository;
-
-	/**
-	 * Default constructor
-	 */
-	public DefaultApprovedSiteService() {
-
-	}
-
-	/**
-	 * Constructor for use in test harnesses.
-	 * 
-	 * @param repository
-	 */
-	public DefaultApprovedSiteService(ApprovedSiteRepository approvedSiteRepository) {
-		this.approvedSiteRepository = approvedSiteRepository;
-	}
 
 	@Override
 	public Collection<ApprovedSite> getAll() {
@@ -149,6 +137,19 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 		if (approvedSites != null) {
 			for (ApprovedSite approvedSite : approvedSites) {
 				approvedSiteRepository.remove(approvedSite);
+			}
+		}
+	}
+
+	@Override
+	public void clearExpiredSites() {
+
+		logger.info("Clearing expired approved sites");
+
+		Collection<ApprovedSite> expiredSites = approvedSiteRepository.getExpired();
+		if (expiredSites != null) {
+			for (ApprovedSite expired : expiredSites) {
+				approvedSiteRepository.remove(expired);
 			}
 		}
 	}

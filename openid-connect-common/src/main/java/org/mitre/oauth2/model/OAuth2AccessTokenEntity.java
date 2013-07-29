@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2012 The MITRE Corporation
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,8 +54,9 @@ import com.nimbusds.jwt.JWTParser;
  *
  */
 @Entity
-@Table(name="access_token")
+@Table(name = "access_token")
 @NamedQueries({
+	@NamedQuery(name = "OAuth2AccessTokenEntity.getAll", query = "select a from OAuth2AccessTokenEntity a"),
 	@NamedQuery(name = "OAuth2AccessTokenEntity.getByRefreshToken", query = "select a from OAuth2AccessTokenEntity a where a.refreshToken = :refreshToken"),
 	@NamedQuery(name = "OAuth2AccessTokenEntity.getByClient", query = "select a from OAuth2AccessTokenEntity a where a.client = :client"),
 	@NamedQuery(name = "OAuth2AccessTokenEntity.getExpired", query = "select a from OAuth2AccessTokenEntity a where a.expiration is not null and a.expiration < current_timestamp"),
@@ -102,6 +103,7 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id")
 	public Long getId() {
 		return id;
 	}
@@ -182,6 +184,7 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	@Override
 	@Basic
 	@Temporal(javax.persistence.TemporalType.TIMESTAMP)
+	@Column(name = "expiration")
 	public Date getExpiration() {
 		return expiration;
 	}
@@ -214,7 +217,6 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 
 	public void setRefreshToken(OAuth2RefreshToken refreshToken) {
 		if (!(refreshToken instanceof OAuth2RefreshTokenEntity)) {
-			// TODO: make a copy constructor instead....
 			throw new IllegalArgumentException("Not a storable refresh token entity!");
 		}
 		// force a pass through to the entity version
@@ -285,10 +287,19 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	}
 
 	@Override
+	@Transient
 	public int getExpiresIn() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 
+		if (getExpiration() == null) {
+			return -1; // no expiration time
+		} else {
+			int secondsRemaining = (int) ((getExpiration().getTime() - System.currentTimeMillis()) / 1000);
+			if (isExpired()) {
+				return 0; // has an expiration time and expired
+			} else { // has an expiration time and not expired
+				return secondsRemaining;
+			}
+		}
+	}
 
 }

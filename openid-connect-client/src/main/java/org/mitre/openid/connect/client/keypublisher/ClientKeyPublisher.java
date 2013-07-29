@@ -1,6 +1,20 @@
-/**
+/*******************************************************************************
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
- */
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ******************************************************************************/
+
+
 package org.mitre.openid.connect.client.keypublisher;
 
 import java.util.Map;
@@ -33,7 +47,7 @@ public class ClientKeyPublisher implements BeanDefinitionRegistryPostProcessor {
 	private String jwkViewName = "jwkKeyList";
 
 	/**
-	 * If either the jwkPublishUrl or x509PublishUrl fields are set on this bean, set up a listener on that URL to publish keys.
+	 * If the jwkPublishUrl field is set on this bean, set up a listener on that URL to publish keys.
 	 */
 	@Override
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
@@ -80,8 +94,6 @@ public class ClientKeyPublisher implements BeanDefinitionRegistryPostProcessor {
 
 		// map from key id to key
 		Map<String, JWK> keys = signingAndValidationService.getAllPublicKeys();
-
-		// TODO: check if keys are empty, return a 404 here or just an empty list?
 
 		return new ModelAndView(jwkViewName, "keys", keys);
 	}

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2012 The MITRE Corporation
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,10 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
+
+
 package org.mitre.openid.connect.client;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.net.URI;
 import java.security.SecureRandom;
 import java.text.ParseException;
 import java.util.Date;
@@ -26,22 +29,24 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.jwt.signer.service.impl.JWKSetSigningAndValidationServiceCacheService;
+import org.mitre.oauth2.model.RegisteredClient;
 import org.mitre.openid.connect.client.model.IssuerServiceResponse;
 import org.mitre.openid.connect.client.service.AuthRequestUrlBuilder;
 import org.mitre.openid.connect.client.service.ClientConfigurationService;
 import org.mitre.openid.connect.client.service.IssuerService;
 import org.mitre.openid.connect.client.service.ServerConfigurationService;
 import org.mitre.openid.connect.config.ServerConfiguration;
+import org.mitre.openid.connect.model.OIDCAuthenticationToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -52,8 +57,11 @@ import com.google.common.base.Strings;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.nimbusds.jose.util.Base64;
 import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+
+import static org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod.*;
 
 /**
  * OpenID Connect Authentication Filter class
@@ -148,18 +156,44 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 
 		IssuerServiceResponse issResp = issuerService.getIssuer(request);
 
+		if (issResp == null) {
+			logger.error("Null issuer response returned from service.");
+			throw new AuthenticationServiceException("No issuer found.");
+		}
+
 		if (issResp.shouldRedirect()) {
 			response.sendRedirect(issResp.getRedirectUrl());
 		} else {
 			String issuer = issResp.getIssuer();
 
+			if (Strings.isNullOrEmpty(issuer)) {
+				logger.error("No issuer found: " + issuer);
+				throw new AuthenticationServiceException("No issuer found: " + issuer);
+			}
+
 			session.setAttribute(ISSUER_SESSION_VARIABLE, issuer);
 
 			ServerConfiguration serverConfig = servers.getServerConfiguration(issuer);
-			ClientDetails clientConfig = clients.getClientConfiguration(issuer);
+			if (serverConfig == null) {
+				logger.error("No server configuration found for issuer: " + issuer);
+				throw new AuthenticationServiceException("No server configuration found for issuer: " + issuer);
+			}
 
-			// our redirect URI is this current URL, with no query parameters
-			String redirectUri = request.getRequestURL().toString();
+
+			RegisteredClient clientConfig = clients.getClientConfiguration(serverConfig);
+			if (clientConfig == null) {
+				logger.error("No client configuration found for issuer: " + issuer);
+				throw new AuthenticationServiceException("No client configuration found for issuer: " + issuer);
+			}
+
+			String redirectUri = null;
+			if (clientConfig.getRegisteredRedirectUri() != null && clientConfig.getRegisteredRedirectUri().size() == 1) {
+				// if there's a redirect uri configured (and only one), use that
+				redirectUri = clientConfig.getRegisteredRedirectUri().toArray(new String[] {})[0];
+			} else {
+				// otherwise our redirect URI is this current URL, with no query parameters
+				redirectUri = request.getRequestURL().toString();
+			}
 			session.setAttribute(REDIRECT_URI_SESION_VARIABLE, redirectUri);
 
 			// this value comes back in the id token and is checked there
@@ -191,7 +225,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 
 		// check for state, if it doesn't match we bail early
 		String storedState = getStoredState(session);
-		if (!StringUtils.isBlank(storedState)) {
+		if (!Strings.isNullOrEmpty(storedState)) {
 			String state = request.getParameter("state");
 			if (!storedState.equals(state)) {
 				throw new AuthenticationServiceException("State parameter mismatch on return. Expected " + storedState + " got " + state);
@@ -203,7 +237,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 
 		// pull the configurations based on that issuer
 		ServerConfiguration serverConfig = servers.getServerConfiguration(issuer);
-		ClientDetails clientConfig = clients.getClientConfiguration(issuer);
+		final RegisteredClient clientConfig = clients.getClientConfiguration(serverConfig);
 
 		MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
 		form.add("grant_type", "authorization_code");
@@ -219,20 +253,31 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 
 		httpClient.getParams().setParameter("http.socket.timeout", new Integer(httpSocketTimeout));
 
-		/* Use these for basic auth:
-		 * 
-		UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(clientConfig.getClientId(), clientConfig.getClientSecret());
-		httpClient.getCredentialsProvider().setCredentials(AuthScope.ANY, credentials);
-		 */
-		/* Alternatively, use form-based auth:
-		 */
-		form.add("client_id", clientConfig.getClientId());
-		form.add("client_secret", clientConfig.getClientSecret());
-		/**/
-
 		HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
 
-		RestTemplate restTemplate = new RestTemplate(factory);
+		RestTemplate restTemplate;
+
+		if (SECRET_BASIC.equals(clientConfig.getTokenEndpointAuthMethod())){
+			// use BASIC auth if configured to do so
+			restTemplate = new RestTemplate(factory) {
+
+				@Override
+				protected ClientHttpRequest createRequest(URI url, HttpMethod method) throws IOException {
+					ClientHttpRequest httpRequest = super.createRequest(url, method);
+					httpRequest.getHeaders().add("Authorization",
+							String.format("Basic %s", Base64.encode(String.format("%s:%s", clientConfig.getClientId(), clientConfig.getClientSecret())) ));
+
+
+
+					return httpRequest;
+				}
+			};
+		} else {  //Alternatively use form based auth
+			restTemplate = new RestTemplate(factory);
+
+			form.add("client_id", clientConfig.getClientId());
+			form.add("client_secret", clientConfig.getClientSecret());
+		}
 
 		logger.debug("tokenEndpointURI = " + serverConfig.getTokenEndpointUri());
 		logger.debug("form = " + form);
@@ -359,9 +404,9 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 				}
 
 				// compare the nonce to our stored claim
-				// FIXME: Nimbus claims as strings?
-				String nonce = (String) idClaims.getCustomClaim("nonce");
-				if (StringUtils.isBlank(nonce)) {
+				// would be nice to have a getClaimAsString() kind of method from nimbus..
+				String nonce = (String) idClaims.getClaim("nonce");
+				if (Strings.isNullOrEmpty(nonce)) {
 
 					logger.error("ID token did not contain a nonce claim.");
 

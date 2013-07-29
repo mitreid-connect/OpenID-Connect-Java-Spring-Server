@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2012 The MITRE Corporation
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package org.mitre.oauth2.repository;
 
 import java.util.List;
+import java.util.Set;
 
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
@@ -58,5 +59,9 @@ public interface OAuth2TokenRepository {
 	 * @return
 	 */
 	public OAuth2AccessTokenEntity getAccessTokenForIdToken(OAuth2AccessTokenEntity idToken);
+
+	public Set<OAuth2AccessTokenEntity> getAllAccessTokens();
+
+	public Set<OAuth2RefreshTokenEntity> getAllRefreshTokens();
 
 }

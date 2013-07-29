@@ -1,7 +1,1 @@
 language: java
-before_install:
-  - git submodule update --init --recursive
-jdk:
-  - openjdk6
-install: echo 'skip this step...'
-script: mvn -Dmaven.javadoc.skip=true test

@@ -5,18 +5,16 @@
 
 <!-- TODO: highlight proper section of topbar; what is the right way to do this? -->
 
-<o:header title="welcome" />
-<o:topbar pageName="Statistics" />
+<o:header title="Statistics"/>
+<o:topbar pageName="Statistics"/>
 <div class="container-fluid main">
-	<div class="row-fluid">
-		<o:sidebar />
-		<div class="span10">
-			<div class="hero-unit">
-				<o:statsContent />
-			</div>
-
-
-		</div>
-	</div>
+    <div class="row-fluid">
+        <o:sidebar/>
+        <div class="span10">
+            <div class="hero-unit">
+				<o:statsContent/>
+            </div>
+        </div>
+    </div>
 </div>
-<o:footer />
+<o:footer/>

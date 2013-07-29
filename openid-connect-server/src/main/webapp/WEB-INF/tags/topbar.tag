@@ -86,28 +86,22 @@
 
 				</ul>
 				<ul class="nav pull-right">
-					<security:authorize access="hasRole('ROLE_USER')">
-						<div class="btn-group">
-							<a class="btn btn-primary btn-small dropdown-toggle"
-								data-toggle="dropdown" href=""><i
-								class="icon-user icon-white"></i> ${ shortName } <span
-								class="caret"></span></a>
-							<ul class="dropdown-menu">
-								<li><a>${ longName }</a></li>
-								<li class="divider"></li>
-								<li><a href="logout"><i class="icon-remove"></i> Log
-										out</a></li>
-							</ul>
-						</div>
-					</security:authorize>
-					<security:authorize access="!hasRole('ROLE_USER')">
-						<a class="btn btn-primary btn-small" href="login"><i
-							class="icon-user icon-white"></i> Log in</a>
-					</security:authorize>
-				</ul>
-
-			</div>
-			<!--/.nav-collapse -->
-		</div>
-	</div>
+                    <security:authorize access="hasRole('ROLE_USER')">
+					<div class="btn-group">
+						<a class="btn btn-primary btn-small dropdown-toggle" data-toggle="dropdown" href=""><i class="icon-user icon-white"></i> ${ shortName } <span class="caret"></span></a>
+						<ul class="dropdown-menu">
+							<li><a>${ longName }</a></li>
+							<li class="divider"></li>
+							<li><a href="logout"><i class="icon-remove"></i> Log out</a></li>
+						</ul>
+					</div>
+                    </security:authorize>
+                    <security:authorize access="!hasRole('ROLE_USER')">
+                    	<a class="btn btn-primary btn-small" href="login"><i class="icon-user icon-white"></i> Log in</a>
+                    </security:authorize>
+                </ul>
+                    
+            </div><!--/.nav-collapse -->
+        </div>
+    </div>
 </div>

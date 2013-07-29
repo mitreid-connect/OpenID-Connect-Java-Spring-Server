@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2012 The MITRE Corporation
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,22 +17,21 @@ package org.mitre.oauth2.web;
 
 import java.security.Principal;
 
-import org.mitre.oauth2.exception.PermissionDeniedException;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class RevocationEndpoint {
@@ -41,79 +40,65 @@ public class RevocationEndpoint {
 
 	private static Logger logger = LoggerFactory.getLogger(RevocationEndpoint.class);
 
-	public RevocationEndpoint() {
-
-	}
-
-	public RevocationEndpoint(OAuth2TokenEntityService tokenServices) {
-		this.tokenServices = tokenServices;
-	}
-
-	// TODO
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
 	@RequestMapping("/revoke")
-	public ModelAndView revoke(@RequestParam("token") String tokenValue, Principal principal,
-			ModelAndView modelAndView) {
+	public String revoke(@RequestParam("token") String tokenValue, @RequestParam(value = "token_type_hint", required = false) String tokenType, Principal principal, Model model) {
 
+		// This is the token as passed in from OAuth (in case we need it some day)
+		//OAuth2AccessTokenEntity tok = tokenServices.getAccessToken((OAuth2Authentication) principal);
 
-		OAuth2RefreshTokenEntity refreshToken = null;
-		OAuth2AccessTokenEntity accessToken = null;
-		try {
-			refreshToken = tokenServices.getRefreshToken(tokenValue);
-		} catch (InvalidTokenException e) {
-			// it's OK if either of these tokens are bad
-			//TODO: Error Handling
-		}
-
-		try {
-			accessToken = tokenServices.readAccessToken(tokenValue);
-		} catch (InvalidTokenException e) {
-			// it's OK if either of these tokens are bad
-			//TODO: Error Handling
-		} catch (AuthenticationException e) {
-			//TODO: Error Handling
-		}
-
-		if (refreshToken == null && accessToken == null) {
-			//TODO: Error Handling
-			// TODO: this should throw a 400 with a JSON error code
-			throw new InvalidTokenException("Invalid OAuth token: " + tokenValue);
-		}
-
+		OAuth2Request authRequest = null;
 		if (principal instanceof OAuth2Authentication) {
-			//TODO what is this variable for? It is unused. is it just a validation check?
-			OAuth2AccessTokenEntity tok = tokenServices.getAccessToken((OAuth2Authentication) principal);
+			// if the client is acting on its own behalf (the common case), pull out the client authorization request
+			authRequest = ((OAuth2Authentication) principal).getOAuth2Request();
+		}
 
-			// we've got a client acting on its own behalf, not an admin
-			//ClientAuthentication clientAuth = (ClientAuthenticationToken) ((OAuth2Authentication) auth).getClientAuthentication();
-			OAuth2Request clientAuth = ((OAuth2Authentication) principal).getOAuth2Request();
+		try {
+			// check and handle access tokens first
 
-			if (refreshToken != null) {
-				if (!refreshToken.getClient().getClientId().equals(clientAuth.getClientId())) {
-					// trying to revoke a token we don't own, fail
-					// TODO: this should throw a 403
-					//TODO: Error Handling
-					throw new PermissionDeniedException("Client tried to revoke a token it doesn't own");
-				}
-			} else {
-				if (!accessToken.getClient().getClientId().equals(clientAuth.getClientId())) {
-					// trying to revoke a token we don't own, fail
-					// TODO: this should throw a 403
-					//TODO: Error Handling
-					throw new PermissionDeniedException("Client tried to revoke a token it doesn't own");
+			OAuth2AccessTokenEntity accessToken = tokenServices.readAccessToken(tokenValue);
+			if (authRequest != null) {
+				// client acting on its own, make sure it owns the token
+				if (!accessToken.getClient().getClientId().equals(authRequest.getClientId())) {
+					// trying to revoke a token we don't own, throw a 403
+					model.addAttribute("code", HttpStatus.FORBIDDEN);
+					return "httpCodeView";
 				}
 			}
-		}
 
-		// if we got this far, we're allowed to do this
-		if (refreshToken != null) {
-			tokenServices.revokeRefreshToken(refreshToken);
-		} else {
+			// if we got this far, we're allowed to do this
 			tokenServices.revokeAccessToken(accessToken);
-		}
+			model.addAttribute("code", HttpStatus.OK);
+			return "httpCodeView";
 
-		// TODO: throw a 200 back (no content?)
-		return modelAndView;
+		} catch (InvalidTokenException e) {
+
+			// access token wasn't found, check the refresh token
+
+			try {
+				OAuth2RefreshTokenEntity refreshToken = tokenServices.getRefreshToken(tokenValue);
+				if (authRequest != null) {
+					// client acting on its own, make sure it owns the token
+					if (!refreshToken.getClient().getClientId().equals(authRequest.getClientId())) {
+						// trying to revoke a token we don't own, throw a 403
+						model.addAttribute("code", HttpStatus.FORBIDDEN);
+						return "httpCodeView";
+					}
+				}
+
+				// if we got this far, we're allowed to do this
+				tokenServices.revokeRefreshToken(refreshToken);
+				model.addAttribute("code", HttpStatus.OK);
+				return "httpCodeView";
+
+			} catch (InvalidTokenException e1) {
+
+				// neither token type was found, simply say "OK" and be on our way.
+
+				model.addAttribute("code", HttpStatus.OK);
+				return "httpCodeView";
+			}
+		}
 	}
 
 }

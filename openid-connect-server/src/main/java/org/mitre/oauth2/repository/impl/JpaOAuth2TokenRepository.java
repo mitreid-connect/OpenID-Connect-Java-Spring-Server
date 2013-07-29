@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2012 The MITRE Corporation
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,9 @@
  ******************************************************************************/
 package org.mitre.oauth2.repository.impl;
 
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -35,6 +37,19 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 
 	@PersistenceContext
 	private EntityManager manager;
+
+	@Override
+	public Set<OAuth2AccessTokenEntity> getAllAccessTokens() {
+		TypedQuery<OAuth2AccessTokenEntity> query = manager.createNamedQuery("OAuth2AccessTokenEntity.getAll", OAuth2AccessTokenEntity.class);
+		return new LinkedHashSet<OAuth2AccessTokenEntity>(query.getResultList());
+	}
+
+	@Override
+	public Set<OAuth2RefreshTokenEntity> getAllRefreshTokens() {
+		TypedQuery<OAuth2RefreshTokenEntity> query = manager.createNamedQuery("OAuth2RefreshTokenEntity.getAll", OAuth2RefreshTokenEntity.class);
+		return new LinkedHashSet<OAuth2RefreshTokenEntity>(query.getResultList());
+	}
+
 
 	@Override
 	public OAuth2AccessTokenEntity getAccessTokenByValue(String accessTokenValue) {

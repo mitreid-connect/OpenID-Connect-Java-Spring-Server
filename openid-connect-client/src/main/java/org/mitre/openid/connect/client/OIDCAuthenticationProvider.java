@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2012 The MITRE Corporation
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,43 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
+
+
 package org.mitre.openid.connect.client;
 
 import java.util.Collection;
 
+import org.mitre.openid.connect.model.OIDCAuthenticationToken;
 import org.mitre.openid.connect.model.UserInfo;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
-import org.springframework.security.core.authority.mapping.NullAuthoritiesMapper;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Sets;
+import com.google.common.collect.Lists;
 
 /**
  * @author nemonik
  * 
  */
-public class OIDCAuthenticationProvider implements
-AuthenticationProvider, InitializingBean {
+public class OIDCAuthenticationProvider implements AuthenticationProvider {
 
 	private UserInfoFetcher userInfoFetcher = new UserInfoFetcher();
 
-	private GrantedAuthoritiesMapper authoritiesMapper = new NullAuthoritiesMapper();
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-	 */
-	@Override
-	public void afterPropertiesSet() throws Exception {
-	}
+	private GrantedAuthoritiesMapper authoritiesMapper = new NamedAdminAuthoritiesMapper();
 
 	/*
 	 * (non-Javadoc)
@@ -67,24 +56,22 @@ AuthenticationProvider, InitializingBean {
 
 		if (authentication instanceof OIDCAuthenticationToken) {
 
-			// Default authorities set
-			// TODO: let this be configured
-			Collection<SimpleGrantedAuthority> authorities = Sets.newHashSet(new SimpleGrantedAuthority("ROLE_USER"));
-
 			OIDCAuthenticationToken token = (OIDCAuthenticationToken) authentication;
+
+			Collection<SubjectIssuerGrantedAuthority> authorities = Lists.newArrayList(new SubjectIssuerGrantedAuthority(token.getSub(), token.getIssuer()));
 
 			UserInfo userInfo = userInfoFetcher.loadUserInfo(token);
 
 			if (userInfo == null) {
 				// TODO: user Info not found -- error?
 			} else {
-				if (!Strings.isNullOrEmpty(userInfo.getSub()) && !userInfo.getSub().equals(token.getUserId())) {
+				if (!Strings.isNullOrEmpty(userInfo.getSub()) && !userInfo.getSub().equals(token.getSub())) {
 					// the userinfo came back and the user_id fields don't match what was in the id_token
-					throw new UsernameNotFoundException("user_id mismatch between id_token and user_info call: " + userInfo.getSub() + " / " + token.getUserId());
+					throw new UsernameNotFoundException("user_id mismatch between id_token and user_info call: " + userInfo.getSub() + " / " + token.getSub());
 				}
 			}
 
-			return new OIDCAuthenticationToken(token.getUserId(),
+			return new OIDCAuthenticationToken(token.getSub(),
 					token.getIssuer(),
 					userInfo, authoritiesMapper.mapAuthorities(authorities),
 					token.getIdTokenValue(), token.getAccessTokenValue(), token.getRefreshTokenValue());

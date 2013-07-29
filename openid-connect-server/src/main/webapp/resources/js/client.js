@@ -1,3 +1,19 @@
+/*******************************************************************************
+ * Copyright 2013 The MITRE Corporation 
+ *   and the MIT Kerberos and Internet Trust Consortium
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ******************************************************************************/
 var ClientModel = Backbone.Model.extend({
 
     idAttribute: "id",
@@ -117,7 +133,8 @@ var ClientView = Backbone.View.extend({
     },
 
     render:function (eventName) {
-        this.$el.html(this.template(this.model.toJSON()));
+    	var json = {client: this.model.toJSON(), count: this.options.count};
+        this.$el.html(this.template(json));
 
         $('.scope-list', this.el).html(this.scopeTemplate({scopes: this.model.get('scope'), systemScopes: app.systemScopeList}));
         
@@ -214,7 +231,11 @@ var ClientListView = Backbone.View.extend({
         $(this.el).html($('#tmpl-client-table').html());
 
         _.each(this.model.models, function (client) {
-            $("#client-table",this.el).append(new ClientView({model:client}).render().el);
+            $("#client-table",this.el).append(
+            		new ClientView({
+            				model:client, 
+            				count:this.options.stats.get(client.get('id'))
+            			}).render().el);
         }, this);
 
         this.togglePlaceholder();
@@ -234,9 +255,13 @@ var ClientListView = Backbone.View.extend({
 	
     refreshTable:function() {
     	var _self = this;
-    	this.model.fetch({
+    	_self.model.fetch({
     		success: function() {
-    			_self.render();
+    			_self.options.stats.fetch({
+    				success: function () {
+    					_self.render();
+    				}
+    			});
     		}
     	});
     }
@@ -437,7 +462,7 @@ var ClientFormView = Backbone.View.extend({
             accessTokenValiditySeconds: accessTokenValiditySeconds,
             refreshTokenValiditySeconds: refreshTokenValiditySeconds,
             idTokenValiditySeconds: idTokenValiditySeconds,
-            allowRefresh: $('#allowRefresh').is(':checked'), // TODO: why are these two checkboxes different?
+            allowRefresh: $('#allowRefresh').is(':checked'),
             allowIntrospection: $('#allowIntrospection input').is(':checked'), // <-- And here? --^
             scope: scopes,
             
@@ -453,7 +478,7 @@ var ClientFormView = Backbone.View.extend({
             sectorIdentifierUri: $('#sectorIdentifierUri input').val(),
             initiateLoginUri: $('#initiateLoginUri input').val(),
             postLogoutRedirectUri: $('#postLogoutRedirectUri input').val(),
-            reuseRefreshToken: $('#reuseRefreshToken').is(':checked'), // TODO: another funny checkbox
+            reuseRefreshToken: $('#reuseRefreshToken').is(':checked'),
             requireAuthTime: $('#requireAuthTime input').is(':checked'),
             defaultMaxAge: parseInt($('#defaultMaxAge input').val()),
             contacts: this.contactsCollection.pluck('item'),
