@@ -36,9 +36,12 @@ import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWEDecrypter;
 import com.nimbusds.jose.JWEEncrypter;
+import com.nimbusds.jose.crypto.DirectDecrypter;
+import com.nimbusds.jose.crypto.DirectEncrypter;
 import com.nimbusds.jose.crypto.RSADecrypter;
 import com.nimbusds.jose.crypto.RSAEncrypter;
 import com.nimbusds.jose.jwk.JWK;
+import com.nimbusds.jose.jwk.OctetSequenceKey;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jwt.EncryptedJWT;
 
@@ -204,6 +207,15 @@ public class DefaultJwtEncryptionAndDecryptionService implements JwtEncryptionAn
 
 				// TODO: add support for EC keys
 
+			} else if (jwk instanceof OctetSequenceKey) {
+				// build symmetric encrypters and decrypters
+
+				DirectEncrypter encrypter = new DirectEncrypter(((OctetSequenceKey) jwk).toByteArray());
+				DirectDecrypter decrypter = new DirectDecrypter(((OctetSequenceKey) jwk).toByteArray());
+				
+				encrypters.put(id, encrypter);
+				decrypters.put(id, decrypter);
+
 			} else {
 				logger.warn("Unknown key type: " + jwk);
 			}
@@ -231,12 +243,12 @@ public class DefaultJwtEncryptionAndDecryptionService implements JwtEncryptionAn
 	public Collection<JWEAlgorithm> getAllEncryptionAlgsSupported() {
 		Set<JWEAlgorithm> algs = new HashSet<JWEAlgorithm>();
 
-		for (JWEEncrypter enc : encrypters.values()) {
-			algs.addAll(enc.supportedAlgorithms());
+		for (JWEEncrypter encrypter : encrypters.values()) {
+			algs.addAll(encrypter.supportedAlgorithms());
 		}
 
-		for (JWEDecrypter dec : decrypters.values()) {
-			algs.addAll(dec.supportedAlgorithms());
+		for (JWEDecrypter decrypter : decrypters.values()) {
+			algs.addAll(decrypter.supportedAlgorithms());
 		}
 
 		return algs;
