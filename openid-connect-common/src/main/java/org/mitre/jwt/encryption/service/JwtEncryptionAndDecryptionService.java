@@ -16,6 +16,11 @@
  ******************************************************************************/
 package org.mitre.jwt.encryption.service;
 
+import java.util.Collection;
+import java.util.Map;
+
+import com.nimbusds.jose.JWEAlgorithm;
+import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jwt.EncryptedJWT;
 
 /**
@@ -24,7 +29,26 @@ import com.nimbusds.jwt.EncryptedJWT;
  */
 public interface JwtEncryptionAndDecryptionService {
 
+	/**
+	 * Encrypts the JWT in place with the default encrypter.
+	 * @param jwt
+	 */
 	public void encryptJwt(EncryptedJWT jwt);
 	
+	/**
+	 * Decrypts the JWT in place with the default decrypter.
+	 * @param jwt
+	 */
 	public void decryptJwt(EncryptedJWT jwt);
+	
+	/**
+	 * Get all public keys for this service, mapped by their Key ID
+	 */
+	public Map<String, JWK> getAllPublicKeys();
+	
+	/**
+	 * Get the list of all encryption algorithms supported by this service.
+	 * @return
+	 */
+	public Collection<JWEAlgorithm> getAllEncryptionAlgsSupported();
 }
