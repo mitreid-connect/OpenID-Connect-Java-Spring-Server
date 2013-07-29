@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
- *   and the MIT Kerberos and Internet Trust Consortium
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
+
+
 package org.mitre.oauth2.introspectingfilter;
 
 import java.util.Date;
@@ -38,7 +39,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
- * This ResourceServerTokenServices implementation introspects incoming tokens at a 
+ * This ResourceServerTokenServices implementation introspects incoming tokens at a
  * server's introspection endpoint URL and passes an Authentication object along
  * based on the response from the introspection endpoint.
  * @author jricher
@@ -50,7 +51,7 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 	private String clientSecret;
 	private IntrospectionUrlProvider introspectionUrlProvider;
 	private IntrospectionAuthorityGranter introspectionAuthorityGranter = new SimpleIntrospectionAuthorityGranter();
-	
+
 	// Inner class to store in the hash map
 	private class TokenCacheObject {
 		OAuth2AccessToken token;
@@ -132,7 +133,7 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 
 		// find out which URL to ask
 		String introspectionUrl = introspectionUrlProvider.getIntrospectionUrl(accessToken);
-		
+
 		// Use the SpringFramework RestTemplate to send the request to the
 		// endpoint
 		String validatedToken = null;

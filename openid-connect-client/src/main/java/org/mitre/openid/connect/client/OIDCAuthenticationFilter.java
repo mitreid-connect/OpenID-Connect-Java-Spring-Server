@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
- *   and the MIT Kerberos and Internet Trust Consortium
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
+
+
 package org.mitre.openid.connect.client;
 
 import java.io.IOException;
@@ -185,7 +186,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 				throw new AuthenticationServiceException("No client configuration found for issuer: " + issuer);
 			}
 
-			String redirectUri = null; 
+			String redirectUri = null;
 			if (clientConfig.getRegisteredRedirectUri() != null && clientConfig.getRegisteredRedirectUri().size() == 1) {
 				// if there's a redirect uri configured (and only one), use that
 				redirectUri = clientConfig.getRegisteredRedirectUri().toArray(new String[] {})[0];

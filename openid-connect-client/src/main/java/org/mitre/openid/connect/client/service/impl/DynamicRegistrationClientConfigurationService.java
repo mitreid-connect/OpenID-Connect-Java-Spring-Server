@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
- *   and the MIT Kerberos and Internet Trust Consortium
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
+
+
 /**
  * 
  */
@@ -56,15 +57,15 @@ public class DynamicRegistrationClientConfigurationService implements ClientConf
 	private static Logger logger = LoggerFactory.getLogger(DynamicServerConfigurationService.class);
 
 	private LoadingCache<ServerConfiguration, RegisteredClient> clients;
-	
+
 	private RegisteredClientService registeredClientService = new InMemoryRegisteredClientService();
 
 	// TODO: make sure the template doesn't have "client_id", "client_secret", or "registration_access_token" set on it already
 	private RegisteredClient template;
-	
+
 	private Set<String> whitelist = new HashSet<String>();
 	private Set<String> blacklist = new HashSet<String>();
-	
+
 	public DynamicRegistrationClientConfigurationService() {
 		clients = CacheBuilder.newBuilder().build(new DynamicClientRegistrationLoader());
 	}
@@ -75,11 +76,11 @@ public class DynamicRegistrationClientConfigurationService implements ClientConf
 			if (!whitelist.isEmpty() && !whitelist.contains(issuer)) {
 				throw new AuthenticationServiceException("Whitelist was nonempty, issuer was not in whitelist: " + issuer);
 			}
-			
+
 			if (blacklist.contains(issuer)) {
 				throw new AuthenticationServiceException("Issuer was in blacklist: " + issuer);
 			}
-			
+
 			return clients.get(issuer);
 		} catch (ExecutionException e) {
 			logger.warn("Unable to get client configuration", e);
@@ -162,42 +163,42 @@ public class DynamicRegistrationClientConfigurationService implements ClientConf
 		public RegisteredClient load(ServerConfiguration serverConfig) throws Exception {
 			RestTemplate restTemplate = new RestTemplate(httpFactory);
 
-			
+
 			RegisteredClient knownClient = registeredClientService.getByIssuer(serverConfig.getIssuer());
 			if (knownClient == null) {
-			
+
 				// dynamically register this client
 				JsonObject jsonRequest = ClientDetailsEntityJsonProcessor.serialize(template);
-	
+
 				HttpHeaders headers = new HttpHeaders();
 				headers.setContentType(MediaType.APPLICATION_JSON);
 				headers.setAccept(Lists.newArrayList(MediaType.APPLICATION_JSON));
-	
+
 				HttpEntity<String> entity = new HttpEntity<String>(jsonRequest.toString(), headers);
-	
+
 				String registered = restTemplate.postForObject(serverConfig.getRegistrationEndpointUri(), entity, String.class);
 				// TODO: handle HTTP errors
-	
+
 				RegisteredClient client = ClientDetailsEntityJsonProcessor.parseRegistered(registered);
-	
-				// save this client for later				
+
+				// save this client for later
 				registeredClientService.save(serverConfig.getIssuer(), client);
-				
+
 				return client;
 			} else {
-				
+
 				// load this client's information from the server
 				HttpHeaders headers = new HttpHeaders();
 				headers.set("Authorization", String.format("%s %s", OAuth2AccessToken.BEARER_TYPE, knownClient.getRegistrationAccessToken()));
 				headers.setAccept(Lists.newArrayList(MediaType.APPLICATION_JSON));
 
 				HttpEntity<String> entity = new HttpEntity<String>(headers);
-				
+
 				String registered = restTemplate.exchange(knownClient.getRegistrationClientUri(), HttpMethod.GET, entity, String.class).getBody();
 				// TODO: handle HTTP errors
-				
+
 				RegisteredClient client = ClientDetailsEntityJsonProcessor.parseRegistered(registered);
-				
+
 				return client;
 			}
 		}

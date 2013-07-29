@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
- *   and the MIT Kerberos and Internet Trust Consortium
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +21,6 @@ package org.mitre.openid.connect.service.impl;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -46,7 +44,7 @@ public class DefaultStatsService implements StatsService {
 
 	@Autowired
 	private ApprovedSiteService approvedSiteService;
-	
+
 	@Autowired
 	private ClientDetailsEntityService clientService;
 
@@ -74,8 +72,8 @@ public class DefaultStatsService implements StatsService {
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.service.StatsService#calculateByClientId()
 	 */
-    @Override
-    public Map<Long, Integer> calculateByClientId() {
+	@Override
+	public Map<Long, Integer> calculateByClientId() {
 		// get all approved sites
 		Collection<ApprovedSite> allSites = approvedSiteService.getAll();
 
@@ -83,39 +81,39 @@ public class DefaultStatsService implements StatsService {
 		for (ApprovedSite approvedSite : allSites) {
 			clientIds.add(approvedSite.getClientId());
 		}
-		
+
 		Map<Long, Integer> counts = getEmptyClientCountMap();
 		for (String clientId : clientIds) {
-	        ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
-	        counts.put(client.getId(), clientIds.count(clientId));
-        }
-		
-		return counts;	
-    }
+			ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
+			counts.put(client.getId(), clientIds.count(clientId));
+		}
+
+		return counts;
+	}
 
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.service.StatsService#countForClientId(java.lang.String)
 	 */
-    @Override
-    public Integer countForClientId(Long id) {
-    	
-    	Map<Long, Integer> counts = calculateByClientId();
-    	return counts.get(id);
-    	
-    }
-    
-    /**
-     * Create a new map of all client ids set to zero
-     * @return
-     */
-    private Map<Long, Integer> getEmptyClientCountMap() {
+	@Override
+	public Integer countForClientId(Long id) {
+
+		Map<Long, Integer> counts = calculateByClientId();
+		return counts.get(id);
+
+	}
+
+	/**
+	 * Create a new map of all client ids set to zero
+	 * @return
+	 */
+	private Map<Long, Integer> getEmptyClientCountMap() {
 		Map<Long, Integer> counts = new HashMap<Long, Integer>();
-    	Collection<ClientDetailsEntity> clients = clientService.getAllClients();
-    	for (ClientDetailsEntity client : clients) {
-	        counts.put(client.getId(), 0);
-        }
-    	
-    	return counts;
-    }
+		Collection<ClientDetailsEntity> clients = clientService.getAllClients();
+		for (ClientDetailsEntity client : clients) {
+			counts.put(client.getId(), 0);
+		}
+
+		return counts;
+	}
 
 }

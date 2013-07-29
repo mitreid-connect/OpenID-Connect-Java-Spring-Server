@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ******************************************************************************/
 /**
  * 
  */
@@ -5,7 +20,8 @@ package org.mitre.openid.connect.config;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author jricher
@@ -24,7 +40,7 @@ public class ServerConfigurationTest {
 		String issuer = "http://localhost:8080/openid-connect-server/";
 		String jwksUri = "http://localhost:8080/openid-connect-server/jwk";
 		String userInfoUri = "http://localhost:8080/openid-connect-server/userinfo";
-		
+
 		ServerConfiguration sc = new ServerConfiguration();
 		sc.setAuthorizationEndpointUri(authorizationEndpointUri);
 		sc.setTokenEndpointUri(tokenEndpointUri);
@@ -32,17 +48,17 @@ public class ServerConfigurationTest {
 		sc.setIssuer(issuer);
 		sc.setJwksUri(jwksUri);
 		sc.setUserInfoUri(userInfoUri);
-		
+
 		assertEquals(authorizationEndpointUri, sc.getAuthorizationEndpointUri());
 		assertEquals(tokenEndpointUri, sc.getTokenEndpointUri());
 		assertEquals(registrationEndpointUri, sc.getRegistrationEndpointUri());
 		assertEquals(issuer, sc.getIssuer());
 		assertEquals(jwksUri, sc.getJwksUri());
 		assertEquals(userInfoUri, sc.getUserInfoUri());
-		
+
 	}
-	
-	
+
+
 	/**
 	 * Test method for {@link org.mitre.openid.connect.config.ServerConfiguration#equals(java.lang.Object)}.
 	 */
@@ -54,7 +70,7 @@ public class ServerConfigurationTest {
 		String issuer = "http://localhost:8080/openid-connect-server/";
 		String jwksUri = "http://localhost:8080/openid-connect-server/jwk";
 		String userInfoUri = "http://localhost:8080/openid-connect-server/userinfo";
-		
+
 		ServerConfiguration sc1 = new ServerConfiguration();
 		sc1.setAuthorizationEndpointUri(authorizationEndpointUri);
 		sc1.setTokenEndpointUri(tokenEndpointUri);
@@ -62,7 +78,7 @@ public class ServerConfigurationTest {
 		sc1.setIssuer(issuer);
 		sc1.setJwksUri(jwksUri);
 		sc1.setUserInfoUri(userInfoUri);
-		
+
 		ServerConfiguration sc2 = new ServerConfiguration();
 		sc2.setAuthorizationEndpointUri(authorizationEndpointUri);
 		sc2.setTokenEndpointUri(tokenEndpointUri);
@@ -72,7 +88,7 @@ public class ServerConfigurationTest {
 		sc2.setUserInfoUri(userInfoUri);
 
 		assertTrue(sc1.equals(sc2));
-		
+
 	}
 
 }

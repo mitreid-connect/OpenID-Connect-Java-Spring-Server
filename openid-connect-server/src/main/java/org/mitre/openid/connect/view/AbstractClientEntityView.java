@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
- *   and the MIT Kerberos and Internet Trust Consortium
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,33 +95,33 @@ public abstract class AbstractClientEntityView extends AbstractView {
 	/**
 	 * @return
 	 */
-	 protected abstract ExclusionStrategy getExclusionStrategy();
+	protected abstract ExclusionStrategy getExclusionStrategy();
 
 
-	 @Override
-	 protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
+	@Override
+	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
 
-		 response.setContentType("application/json");
+		response.setContentType("application/json");
 
 
-		 HttpStatus code = (HttpStatus) model.get("code");
-		 if (code == null) {
-			 code = HttpStatus.OK; // default to 200
-		 }
+		HttpStatus code = (HttpStatus) model.get("code");
+		if (code == null) {
+			code = HttpStatus.OK; // default to 200
+		}
 
-		 response.setStatus(code.value());
+		response.setStatus(code.value());
 
-		 try {
+		try {
 
-			 Writer out = response.getWriter();
-			 Object obj = model.get("entity");
-			 gson.toJson(obj, out);
+			Writer out = response.getWriter();
+			Object obj = model.get("entity");
+			gson.toJson(obj, out);
 
-		 } catch (IOException e) {
+		} catch (IOException e) {
 
-			 logger.error("IOException in JsonEntityView.java: ", e);
+			logger.error("IOException in JsonEntityView.java: ", e);
 
-		 }
-	 }
+		}
+	}
 
 }

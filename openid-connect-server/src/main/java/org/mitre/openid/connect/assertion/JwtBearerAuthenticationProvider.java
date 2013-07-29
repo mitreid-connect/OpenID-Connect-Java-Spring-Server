@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
- *   and the MIT Kerberos and Internet Trust Consortium
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -136,9 +135,9 @@ public class JwtBearerAuthenticationProvider implements AuthenticationProvider {
 		} catch (InvalidClientException e) {
 			throw new UsernameNotFoundException("Could not find client: " + jwtAuth.getClientId());
 		} catch (ParseException e) {
-			
+
 			logger.error("Failure during authentication, error was: ", e);
-			
+
 			throw new AuthenticationServiceException("Invalid JWT format");
 		}
 	}

@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
- *   and the MIT Kerberos and Internet Trust Consortium
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +15,6 @@
  ******************************************************************************/
 package org.mitre.oauth2.service.impl;
 
-import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.*;
-
 import java.util.Set;
 
 import org.junit.Before;
@@ -32,6 +28,11 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.google.common.collect.Sets;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
 
 /**
  * @author wkim
@@ -47,7 +48,7 @@ public class TestDefaultSystemScopeService {
 	private SystemScope defaultScope2;
 	private SystemScope dynScope1;
 	private SystemScope extraScope1;
-	
+
 	private String defaultDynScope1String = "defaultDynScope1";
 	private String defaultDynScope2String = "defaultDynScope2";
 	private String defaultScope1String = "defaultScope1";
@@ -57,7 +58,7 @@ public class TestDefaultSystemScopeService {
 
 	private Set<SystemScope> allScopes;
 	private Set<String> allScopeStrings;
-	
+
 	@Mock
 	private SystemScopeRepository repository;
 
@@ -69,7 +70,7 @@ public class TestDefaultSystemScopeService {
 	 */
 	@Before
 	public void prepare() {
-		
+
 		Mockito.reset(repository);
 
 		// two default and dynamically registerable scopes
@@ -85,17 +86,17 @@ public class TestDefaultSystemScopeService {
 		defaultScope2 = new SystemScope(defaultScope2String);
 		defaultScope1.setDefaultScope(true);
 		defaultScope2.setDefaultScope(true);
-		
+
 		// one strictly dynamically registerable scope (isDefault false)
 		dynScope1 = new SystemScope(dynScope1String);
 		dynScope1.setAllowDynReg(true);
-		
+
 		// extraScope1 : extra scope that is neither (defaults to false/false)
 		extraScope1 = new SystemScope(extraScope1String);
-		
+
 		allScopes = Sets.newHashSet(defaultDynScope1, defaultDynScope2, defaultScope1, defaultScope2, dynScope1, extraScope1);
 		allScopeStrings = Sets.newHashSet(defaultDynScope1String, defaultDynScope2String, defaultScope1String, defaultScope2String, dynScope1String, extraScope1String);
-		
+
 		Mockito.when(repository.getAll()).thenReturn(allScopes);
 	}
 
@@ -107,42 +108,42 @@ public class TestDefaultSystemScopeService {
 
 	@Test
 	public void getDefaults() {
-		
+
 		Set<SystemScope> defaults = Sets.newHashSet(defaultDynScope1, defaultDynScope2, defaultScope1, defaultScope2);
-		
+
 		assertThat(service.getDefaults(), equalTo(defaults));
 	}
-	
+
 	@Test
 	public void getDynReg() {
-		
+
 		Set<SystemScope> dynReg = Sets.newHashSet(defaultDynScope1, defaultDynScope2, dynScope1);
-		
+
 		assertThat(service.getDynReg(), equalTo(dynReg));
 	}
 
 	@Test
 	public void fromStrings() {
-		
+
 		// check null condition
 		assertThat(service.fromStrings(null), is(nullValue()));
-		
+
 		// reinitialize the set of SystemScope objects to clear boolean flags..
 		allScopes = Sets.newHashSet();
 		for (String scope : allScopeStrings) {
 			allScopes.add(new SystemScope(scope));
 		}
-		
+
 		assertThat(service.fromStrings(allScopeStrings), equalTo(allScopes));
 	}
-	
+
 	@Test
 	public void toStrings() {
-		
+
 		// check null condition
 		assertThat(service.toStrings(null), is(nullValue()));
-		
+
 		assertThat(service.toStrings(allScopes), equalTo(allScopeStrings));
 	}
-	
+
 }

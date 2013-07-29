@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
- *   and the MIT Kerberos and Internet Trust Consortium
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +17,7 @@ package org.mitre.discovery.util;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -28,14 +28,14 @@ import com.google.common.base.Strings;
 
 /**
  * Provides utility methods for normalizing and parsing URIs for use with Webfinger Discovery.
- *  
+ * 
  * @author wkim
  *
  */
 public class WebfingerURLNormalizer {
-	
+
 	private static Logger logger = LoggerFactory.getLogger(WebfingerURLNormalizer.class);
-	
+
 	// pattern used to parse user input; we can't use the built-in java URI parser
 	private static final Pattern pattern = Pattern.compile("^" +
 			"((https|acct|http|mailto|tel|device):(//)?)?" + // scheme
@@ -50,15 +50,15 @@ public class WebfingerURLNormalizer {
 			"$"
 			);
 
-	
-	
+
+
 	/**
 	 * Private constructor to prevent instantiation.
 	 */
 	private WebfingerURLNormalizer() {
 		// intentionally blank
 	}
-	
+
 	/**
 	 * Normalize the resource string as per OIDC Discovery.
 	 * @param identifier
@@ -93,36 +93,36 @@ public class WebfingerURLNormalizer {
 				logger.warn("Parser couldn't match input: " + identifier);
 				return null;
 			}
-			
+
 			UriComponents n = builder.build();
-			
+
 			if (Strings.isNullOrEmpty(n.getScheme())) {
 				if (!Strings.isNullOrEmpty(n.getUserInfo())
 						&& Strings.isNullOrEmpty(n.getPath())
 						&& Strings.isNullOrEmpty(n.getQuery())
 						&& n.getPort() < 0) {
-					
+
 					// scheme empty, userinfo is not empty, path/query/port are empty
 					// set to "acct" (rule 2)
 					builder.scheme("acct");
-					
+
 				} else {
 					// scheme is empty, but rule 2 doesn't apply
 					// set scheme to "https" (rule 3)
 					builder.scheme("https");
 				}
 			}
-			
+
 			// fragment must be stripped (rule 4)
 			builder.fragment(null);
-			
+
 			return builder.build();
 		}
 
 
 	}
 
-	
+
 	public static String serializeURL(UriComponents uri) {
 		if (uri.getScheme() != null &&
 				(uri.getScheme().equals("acct") ||
@@ -130,9 +130,9 @@ public class WebfingerURLNormalizer {
 						uri.getScheme().equals("tel") ||
 						uri.getScheme().equals("device")
 						)) {
-			
+
 			// serializer copied from HierarchicalUriComponents but with "//" removed
-			
+
 			StringBuilder uriBuilder = new StringBuilder();
 
 			if (uri.getScheme() != null) {
@@ -177,8 +177,8 @@ public class WebfingerURLNormalizer {
 		} else {
 			return uri.toUriString();
 		}
-				
+
 	}
 
-	
+
 }

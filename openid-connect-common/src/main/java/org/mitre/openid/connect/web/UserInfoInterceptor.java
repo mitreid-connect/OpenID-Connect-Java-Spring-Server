@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
- *   and the MIT Kerberos and Internet Trust Consortium
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,16 +54,16 @@ public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 				modelAndView.addObject("userInfo", oidc.getUserInfo());
 			} else {
 				if (p != null && p.getName() != null) { // don't bother checking if we don't have a principal
-	
+
 					// try to look up a user based on the principal's name
 					UserInfo user = userInfoService.getBySubject(p.getName());
-	
+
 					// if we have one, inject it so views can use it
 					if (user != null) {
 						modelAndView.addObject("userInfo", user);
-					} 
+					}
 				}
-            }
+			}
 		}
 
 	}

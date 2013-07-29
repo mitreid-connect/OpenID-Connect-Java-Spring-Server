@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
- *   and the MIT Kerberos and Internet Trust Consortium
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
+
+
 /**
  * 
  */
@@ -56,7 +57,7 @@ public class DynamicServerConfigurationService implements ServerConfigurationSer
 
 	private Set<String> whitelist = new HashSet<String>();
 	private Set<String> blacklist = new HashSet<String>();
-	
+
 	public DynamicServerConfigurationService() {
 		// initialize the cache
 		servers = CacheBuilder.newBuilder().build(new OpenIDConnectServiceConfigurationFetcher());
@@ -93,15 +94,15 @@ public class DynamicServerConfigurationService implements ServerConfigurationSer
 	@Override
 	public ServerConfiguration getServerConfiguration(String issuer) {
 		try {
-			
+
 			if (!whitelist.isEmpty() && !whitelist.contains(issuer)) {
 				throw new AuthenticationServiceException("Whitelist was nonempty, issuer was not in whitelist: " + issuer);
 			}
-			
+
 			if (blacklist.contains(issuer)) {
 				throw new AuthenticationServiceException("Issuer was in blacklist: " + issuer);
 			}
-			
+
 			return servers.get(issuer);
 		} catch (ExecutionException e) {
 			logger.warn("Couldn't load configuration for " + issuer, e);
@@ -141,13 +142,13 @@ public class DynamicServerConfigurationService implements ServerConfigurationSer
 				if (!o.has("issuer")) {
 					throw new IllegalStateException("Returned object did not have an 'issuer' field");
 				}
-				
+
 				if (!issuer.equals(o.get("issuer").getAsString())) {
 					throw new IllegalStateException("Discovered issuers didn't match, expected " + issuer + " got " + o.get("issuer").getAsString());
 				}
 
 				conf.setIssuer(o.get("issuer").getAsString());
-				
+
 				if (o.has("authorization_endpoint")) {
 					conf.setAuthorizationEndpointUri(o.get("authorization_endpoint").getAsString());
 				}
@@ -166,7 +167,7 @@ public class DynamicServerConfigurationService implements ServerConfigurationSer
 				if (o.has("introspection_endpoint")) {
 					conf.setIntrospectionEndpointUri(o.get("introspection_endpoint").getAsString());
 				}
-				
+
 				return conf;
 			} else {
 				throw new IllegalStateException("Couldn't parse server discovery results for " + url);

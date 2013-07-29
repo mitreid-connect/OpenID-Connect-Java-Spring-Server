@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
- *   and the MIT Kerberos and Internet Trust Consortium
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -290,7 +289,7 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	@Override
 	@Transient
 	public int getExpiresIn() {
-		
+
 		if (getExpiration() == null) {
 			return -1; // no expiration time
 		} else {
@@ -302,5 +301,5 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 			}
 		}
 	}
-	
+
 }

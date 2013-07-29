@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
- *   and the MIT Kerberos and Internet Trust Consortium
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +15,7 @@
  ******************************************************************************/
 package org.mitre.oauth2.service.impl;
 
-import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.*;
-
 import java.util.Set;
-
 
 import org.junit.Before;
 import org.junit.Test;
@@ -33,12 +28,18 @@ import org.mitre.openid.connect.service.ApprovedSiteService;
 import org.mitre.openid.connect.service.BlacklistedSiteService;
 import org.mitre.openid.connect.service.WhitelistedSiteService;
 import org.mockito.InjectMocks;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 
 import com.google.common.collect.Sets;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 /**
  * @author wkim
@@ -109,7 +110,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 
 		service.saveNewClient(client);
 
-		Mockito.verify(client).setClientId(Mockito.anyString());
+		Mockito.verify(client).setClientId(Matchers.anyString());
 	}
 
 	/**
@@ -122,11 +123,11 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		Mockito.when(client.getId()).thenReturn(null);
 
 		Mockito.when(client.isAllowRefresh()).thenReturn(true);
-		
+
 		// scopes returned by client entities are Strings
 		@SuppressWarnings("unchecked")
 		Set<String> scopes = Mockito.mock(Set.class);
-		
+
 		Mockito.when(client.getScope()).thenReturn(scopes);
 
 		service.saveNewClient(client);
@@ -144,11 +145,11 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		Mockito.when(client.getId()).thenReturn(null);
 
 		Mockito.when(client.isAllowRefresh()).thenReturn(false);
-		
+
 		// scopes returned by client entities are Strings
 		@SuppressWarnings("unchecked")
 		Set<String> scopes = Mockito.mock(Set.class);
-		
+
 		Mockito.when(client.getScope()).thenReturn(scopes);
 
 		service.saveNewClient(client);
@@ -270,15 +271,15 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		ClientDetailsEntity newClient = Mockito.mock(ClientDetailsEntity.class);
 
 		Mockito.when(newClient.isAllowRefresh()).thenReturn(true);
-		
+
 		// scopes returned by client entities are Strings
 		@SuppressWarnings("unchecked")
 		Set<String> scopes = Mockito.mock(Set.class);
-		
+
 		Mockito.when(newClient.getScope()).thenReturn(scopes);
 
 		service.updateClient(oldClient, newClient);
-		
+
 		Mockito.verify(scopes).add("offline_access");
 	}
 
@@ -293,11 +294,11 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		// scopes returned by client entities are Strings
 		@SuppressWarnings("unchecked")
 		Set<String> scopes = Mockito.mock(Set.class);
-		
+
 		Mockito.when(newClient.getScope()).thenReturn(scopes);
 
 		service.updateClient(oldClient, newClient);
-		
+
 		Mockito.verify(scopes).remove("offline_access");
 	}
 }

@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
- *   and the MIT Kerberos and Internet Trust Consortium
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,22 +43,22 @@ public class StatsAPI {
 		return "jsonEntityView";
 
 	}
-	
+
 	@RequestMapping(value = "byclientid", produces = "application/json")
 	public String statsByClient(ModelMap m) {
 		Map<Long, Integer> e = statsService.calculateByClientId();
-		
+
 		m.put("entity", e);
-		
+
 		return "jsonEntityView";
 	}
-	
+
 	@RequestMapping(value = "byclientid/{id}", produces = "application/json")
 	public String statsByClientId(@PathVariable("id") Long id, ModelMap m) {
 		Integer e = statsService.countForClientId(id);
-		
+
 		m.put("entity", e);
-		
+
 		return "jsonEntityView";
 	}
 

@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
- *   and the MIT Kerberos and Internet Trust Consortium
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
+
+
 package org.mitre.openid.connect.client.service.impl;
 
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mitre.openid.connect.config.ServerConfiguration;
 import org.mockito.InjectMocks;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 /**
  * @author wkim
@@ -40,44 +42,44 @@ public class TestHybridServerConfigurationService {
 
 	@Mock
 	private StaticServerConfigurationService mockStaticService;
-	
+
 	@Mock
 	private DynamicServerConfigurationService mockDynamicService;
-	
+
 	@InjectMocks
 	private HybridServerConfigurationService hybridService;
-	
+
 	@Mock
 	private ServerConfiguration mockServerConfig;
-	
+
 	private String issuer = "https://www.example.com/";
-	
+
 	@Before
 	public void prepare() {
-		
+
 		Mockito.reset(mockDynamicService, mockStaticService);
-		
+
 	}
-	
-	
+
+
 	@Test
 	public void getServerConfiguration_useStatic() {
-		
+
 		Mockito.when(mockStaticService.getServerConfiguration(issuer)).thenReturn(mockServerConfig);
-		
+
 		ServerConfiguration result = hybridService.getServerConfiguration(issuer);
-		
+
 		Mockito.verify(mockStaticService).getServerConfiguration(issuer);
-		Mockito.verify(mockDynamicService, Mockito.never()).getServerConfiguration(Mockito.anyString());
+		Mockito.verify(mockDynamicService, Mockito.never()).getServerConfiguration(Matchers.anyString());
 		assertEquals(mockServerConfig, result);
 	}
-	
+
 	@Test
 	public void getServerConfiguration_useDynamic() {
-		
+
 		Mockito.when(mockStaticService.getServerConfiguration(issuer)).thenReturn(null);
 		Mockito.when(mockDynamicService.getServerConfiguration(issuer)).thenReturn(mockServerConfig);
-		
+
 		ServerConfiguration result = hybridService.getServerConfiguration(issuer);
 
 		Mockito.verify(mockStaticService).getServerConfiguration(issuer);
@@ -90,14 +92,14 @@ public class TestHybridServerConfigurationService {
 	 */
 	@Test
 	public void getServerConfiguration_noIssuer() {
-		
+
 		Mockito.when(mockStaticService.getServerConfiguration(issuer)).thenReturn(mockServerConfig);
 		Mockito.when(mockDynamicService.getServerConfiguration(issuer)).thenReturn(mockServerConfig);
-		
+
 		String badIssuer = "www.badexample.com";
-		
+
 		ServerConfiguration result = hybridService.getServerConfiguration(badIssuer);
-		
+
 		Mockito.verify(mockStaticService).getServerConfiguration(badIssuer);
 		Mockito.verify(mockDynamicService).getServerConfiguration(badIssuer);
 		assertThat(result, is(nullValue()));

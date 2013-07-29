@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
- *   and the MIT Kerberos and Internet Trust Consortium
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -115,7 +114,7 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 
 		logger.info("DefaultJwtSigningAndValidationService is ready: " + this.toString());
 	}
-	
+
 	/**
 	 * @return the defaultSignerKeyId
 	 */
@@ -209,7 +208,7 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 		try {
 			jwt.sign(signer);
 		} catch (JOSEException e) {
-			
+
 			logger.error("Failed to sign JWT, error was: ", e);
 		}
 
@@ -224,7 +223,7 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 					return true;
 				}
 			} catch (JOSEException e) {
-				
+
 				logger.error("Failed to validate signature, error was: ", e);
 			}
 		}

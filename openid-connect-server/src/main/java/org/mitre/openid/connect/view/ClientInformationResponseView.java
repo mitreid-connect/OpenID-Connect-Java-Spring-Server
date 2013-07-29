@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
- *   and the MIT Kerberos and Internet Trust Consortium
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +49,7 @@ import com.google.gson.JsonObject;
 public class ClientInformationResponseView extends AbstractView {
 
 	private static Logger logger = LoggerFactory.getLogger(ClientInformationResponseView.class);
-	
+
 	// note that this won't serialize nulls by default
 	private Gson gson = new Gson();
 
@@ -65,7 +64,7 @@ public class ClientInformationResponseView extends AbstractView {
 		RegisteredClient c = (RegisteredClient) model.get("client");
 		//OAuth2AccessTokenEntity token = (OAuth2AccessTokenEntity) model.get("token");
 		//String uri = (String)model.get("uri"); //request.getRequestURL() + "/" + c.getClientId();
-		
+
 		HttpStatus code = (HttpStatus) model.get("code");
 		if (code == null) {
 			code = HttpStatus.OK;
@@ -77,13 +76,13 @@ public class ClientInformationResponseView extends AbstractView {
 			Writer out = response.getWriter();
 			gson.toJson(o, out);
 		} catch (JsonIOException e) {
-			
+
 			logger.error("JsonIOException in ClientInformationResponseView.java: ", e);
-			
+
 		} catch (IOException e) {
-			
+
 			logger.error("IOException in ClientInformationResponseView.java: ", e);
-			
+
 		}
 
 	}

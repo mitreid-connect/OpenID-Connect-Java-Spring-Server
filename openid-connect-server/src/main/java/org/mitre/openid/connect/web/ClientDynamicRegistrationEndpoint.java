@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
- *   and the MIT Kerberos and Internet Trust Consortium
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-
 package org.mitre.openid.connect.web;
 
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.http.client.utils.URIUtils;
-import org.apache.http.client.utils.URLEncodedUtils;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
@@ -63,7 +59,7 @@ public class ClientDynamicRegistrationEndpoint {
 
 	@Autowired
 	private SystemScopeService scopeService;
-	
+
 	@Autowired
 	private ConfigurationPropertiesBean config;
 
@@ -152,15 +148,15 @@ public class ClientDynamicRegistrationEndpoint {
 			OAuth2AccessTokenEntity token = createRegistrationAccessToken(savedClient);
 
 			// send it all out to the view
-			
+
 			// TODO: urlencode the client id for safety?
 			RegisteredClient registered = new RegisteredClient(savedClient, token.getValue(), config.getIssuer() + "register/" + savedClient.getClientId());
-			
+
 			m.addAttribute("client", registered);
 			m.addAttribute("code", HttpStatus.CREATED); // http 201
 			//m.addAttribute("token", token);
 			//m.addAttribute("uri", config.getIssuer() + "register/" + savedClient.getClientId());
-			
+
 			return "clientInformationResponseView";
 		} else {
 			// didn't parse, this is a bad request

@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
- *   and the MIT Kerberos and Internet Trust Consortium
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,7 +95,7 @@ public interface ApprovedSiteService {
 	 * @param client
 	 */
 	public void clearApprovedSitesForClient(ClientDetails client);
-	
+
 	/**
 	 * Remove all expired approved sites fromt he data store.
 	 * @return

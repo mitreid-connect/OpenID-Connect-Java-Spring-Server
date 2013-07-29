@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
- *   and the MIT Kerberos and Internet Trust Consortium
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +15,12 @@
  ******************************************************************************/
 package org.mitre.discovery.util;
 
-import static org.junit.Assert.*;
-
-import java.util.List;
-
 import org.junit.Test;
 import org.springframework.web.util.UriComponents;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author wkim
@@ -96,7 +92,7 @@ public class TestWebfingerURLNormalizer {
 
 	/*
 	Adapted from Nov Matake's Ruby normalizer implementation.
-	
+
 	 ## INPUT => NORMALIZED
 	# example.com => https://example.com
 	# example.com:8080 => https://example.com:8080
@@ -104,35 +100,35 @@ public class TestWebfingerURLNormalizer {
 	# example.com?query => https://example.com?query
 	# example.com#fragment => https://example.com
 	# example.com:8080/path?query#fragment => https://example.com:8080/path?query
-	
+
 	# http://example.com => http://example.com
 	# http://example.com:8080 => http://example.com:8080
 	# http://example.com/path => http://example.com/path
 	# http://example.com?query => http://example.com?query
 	# http://example.com#fragment => http://example.com
 	# http://example.com:8080/path?query#fragment => http://example.com:8080/path?query
-	
+
 	# nov@example.com => acct:nov@example.com
 	# nov@example.com:8080 => https://nov@example.com:8080
 	# nov@example.com/path => https://nov@example.com/path
 	# nov@example.com?query => https://nov@example.com?query
 	# nov@example.com#fragment => acct:nov@example.com
 	# nov@example.com:8080/path?query#fragment => https://nov@example.com:8080/path?query
-	
+
 	# acct:nov@matake.jp => acct:nov@matake.jp
 	# acct:nov@example.com:8080 => acct:nov@example.com:8080
 	# acct:nov@example.com/path => acct:nov@example.com/path
 	# acct:nov@example.com?query => acct:nov@example.com?query
 	# acct:nov@example.com#fragment => acct:nov@example.com
 	# acct:nov@example.com:8080/path?query#fragment => acct:nov@example.com:8080/path?query
-	
+
 	# mailto:nov@matake.jp => mailto:nov@matake.jp
 	# mailto:nov@example.com:8080 => mailto:nov@example.com:8080
 	# mailto:nov@example.com/path => mailto:nov@example.com/path
 	# mailto:nov@example.com?query => mailto:nov@example.com?query
 	# mailto:nov@example.com#fragment => mailto:nov@example.com
 	# mailto:nov@example.com:8080/path?query#fragment => mailto:nov@example.com:8080/path?query
-	
+
 	# localhost => https://localhost
 	# localhost:8080 => https://localhost:8080
 	# localhost/path => https://localhost/path
@@ -145,7 +141,7 @@ public class TestWebfingerURLNormalizer {
 	# nov@localhost?query => https://nov@localhost?query
 	# nov@localhost#fragment => acct:nov@localhost
 	# nov@localhost/path?query#fragment => https://nov@localhost/path?query
-	
+
 	# tel:+810312345678 => tel:+810312345678
 	# device:192.168.2.1 => device:192.168.2.1
 	# device:192.168.2.1:8080 => device:192.168.2.1:8080
@@ -155,18 +151,18 @@ public class TestWebfingerURLNormalizer {
 	# device:192.168.2.1/path?query#fragment => device:192.168.2.1/path?query
 
 	 *
-	 
+
 	 */
-	
-	
+
+
 	@Test
 	public void normalizeResource_novTest() {
 		for (String input : inputToNormalized.keySet()) {
-		
+
 			UriComponents actualNormalized = WebfingerURLNormalizer.normalizeResource(input);
-			
+
 			String expectedNormalized = inputToNormalized.get(input);
-			
+
 			assertEquals("Identifer/Normalized failed.", expectedNormalized, WebfingerURLNormalizer.serializeURL(actualNormalized));
 		}
 	}

@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
- *   and the MIT Kerberos and Internet Trust Consortium
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +26,7 @@ import org.springframework.security.oauth2.provider.token.AuthorizationServerTok
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
 
 public interface OAuth2TokenEntityService extends AuthorizationServerTokenServices, ResourceServerTokenServices {
-	
+
 	@Override
 	public OAuth2AccessTokenEntity readAccessToken(String accessTokenValue);
 
@@ -57,7 +56,7 @@ public interface OAuth2TokenEntityService extends AuthorizationServerTokenServic
 	public OAuth2AccessTokenEntity getAccessTokenForIdToken(OAuth2AccessTokenEntity idToken);
 
 	public OAuth2AccessTokenEntity getAccessTokenById(Long id);
-	
+
 	public OAuth2RefreshTokenEntity getRefreshTokenById(Long id);
 
 	public Set<OAuth2AccessTokenEntity> getAllAccessTokensForUser(String name);

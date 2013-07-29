@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
- *   and the MIT Kerberos and Internet Trust Consortium
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -231,7 +230,7 @@ public class ConnectAuthorizationRequestManager implements AuthorizationRequestM
 			}
 
 		} catch (ParseException e) {
-			
+
 			logger.error("Failed to process request object, error was: ", e);
 		}
 		return parameters;

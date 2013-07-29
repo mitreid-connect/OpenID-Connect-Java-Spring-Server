@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ******************************************************************************/
 /**
  * 
  */
@@ -13,7 +28,7 @@ import com.google.common.collect.ImmutableSet;
 import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JWEAlgorithm;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author jricher
@@ -26,11 +41,11 @@ public class RegisteredClientTest {
 	 */
 	@Test
 	public void testRegisteredClient() {
-		
+
 		// make sure all the pass-through getters and setters work
-		
+
 		RegisteredClient c = new RegisteredClient();
-		
+
 		c.setClientId("s6BhdRkqt3");
 		c.setClientSecret("ZJYCqe3GGRvdrudKyZS0XhGv_Z45DuKhCUk0gBR1vZk");
 		c.setClientSecretExpiresAt(new Date(1577858400L * 1000L));
@@ -48,7 +63,7 @@ public class RegisteredClientTest {
 		c.setUserInfoEncryptedResponseEnc(new JWEEncryptionMethodEmbed(EncryptionMethod.A128CBC_HS256));
 		c.setContacts(ImmutableSet.of("ve7jtb@example.org", "mary@example.org"));
 		c.setRequestUris(ImmutableSet.of("https://client.example.org/rf.txt#qpXaRLh_n93TTR9F252ValdatUQvQiJi5BDub2BeznA"));
-		
+
 		assertEquals("s6BhdRkqt3", c.getClientId());
 		assertEquals("ZJYCqe3GGRvdrudKyZS0XhGv_Z45DuKhCUk0gBR1vZk", c.getClientSecret());
 		assertEquals(new Date(1577858400L * 1000L), c.getClientSecretExpiresAt());
@@ -73,8 +88,8 @@ public class RegisteredClientTest {
 	 */
 	@Test
 	public void testRegisteredClientClientDetailsEntity() {
-		ClientDetailsEntity c = new ClientDetailsEntity();		
-		
+		ClientDetailsEntity c = new ClientDetailsEntity();
+
 		c.setClientId("s6BhdRkqt3");
 		c.setClientSecret("ZJYCqe3GGRvdrudKyZS0XhGv_Z45DuKhCUk0gBR1vZk");
 		c.setApplicationType(ClientDetailsEntity.AppType.WEB);
@@ -89,13 +104,13 @@ public class RegisteredClientTest {
 		c.setUserInfoEncryptedResponseEnc(new JWEEncryptionMethodEmbed(EncryptionMethod.A128CBC_HS256));
 		c.setContacts(ImmutableSet.of("ve7jtb@example.org", "mary@example.org"));
 		c.setRequestUris(ImmutableSet.of("https://client.example.org/rf.txt#qpXaRLh_n93TTR9F252ValdatUQvQiJi5BDub2BeznA"));
-		
+
 		// Create a RegisteredClient based on a ClientDetailsEntity object and set several properties
 		RegisteredClient rc = new RegisteredClient(c);
 		rc.setClientSecretExpiresAt(new Date(1577858400L * 1000L));
 		rc.setRegistrationAccessToken("this.is.an.access.token.value.ffx83");
 		rc.setRegistrationClientUri("https://server.example.com/connect/register?client_id=s6BhdRkqt3");
-		
+
 		// make sure all the pass-throughs work
 		assertEquals("s6BhdRkqt3", rc.getClientId());
 		assertEquals("ZJYCqe3GGRvdrudKyZS0XhGv_Z45DuKhCUk0gBR1vZk", rc.getClientSecret());
@@ -121,8 +136,8 @@ public class RegisteredClientTest {
 	 */
 	@Test
 	public void testRegisteredClientClientDetailsEntityStringString() {
-		ClientDetailsEntity c = new ClientDetailsEntity();		
-		
+		ClientDetailsEntity c = new ClientDetailsEntity();
+
 		c.setClientId("s6BhdRkqt3");
 		c.setClientSecret("ZJYCqe3GGRvdrudKyZS0XhGv_Z45DuKhCUk0gBR1vZk");
 		c.setApplicationType(ClientDetailsEntity.AppType.WEB);
@@ -137,10 +152,10 @@ public class RegisteredClientTest {
 		c.setUserInfoEncryptedResponseEnc(new JWEEncryptionMethodEmbed(EncryptionMethod.A128CBC_HS256));
 		c.setContacts(ImmutableSet.of("ve7jtb@example.org", "mary@example.org"));
 		c.setRequestUris(ImmutableSet.of("https://client.example.org/rf.txt#qpXaRLh_n93TTR9F252ValdatUQvQiJi5BDub2BeznA"));
-		
+
 		// Create a RegisteredClient based on a ClientDetails, a token, and a server URI
 		RegisteredClient rc = new RegisteredClient(c, "this.is.an.access.token.value.ffx83", "https://server.example.com/connect/register?client_id=s6BhdRkqt3");
-		
+
 		// make sure all the pass-throughs work
 		assertEquals("s6BhdRkqt3", rc.getClientId());
 		assertEquals("ZJYCqe3GGRvdrudKyZS0XhGv_Z45DuKhCUk0gBR1vZk", rc.getClientSecret());

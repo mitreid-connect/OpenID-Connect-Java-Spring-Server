@@ -1,12 +1,27 @@
+/*******************************************************************************
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ******************************************************************************/
+
+
 /**
  * 
  */
 package org.mitre.openid.connect.client.service.impl;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -38,11 +53,11 @@ import com.google.gson.JsonSerializer;
 public class JsonFileRegisteredClientService implements RegisteredClientService {
 
 	private static Logger logger = LoggerFactory.getLogger(JsonFileRegisteredClientService.class);
-	
+
 	private Gson gson = new GsonBuilder()
 	.registerTypeAdapter(RegisteredClient.class, new JsonSerializer<RegisteredClient>() {
 		@Override
-        public JsonElement serialize(RegisteredClient src, Type typeOfSrc, JsonSerializationContext context) {
+		public JsonElement serialize(RegisteredClient src, Type typeOfSrc, JsonSerializationContext context) {
 			JsonObject obj = new JsonObject();
 			obj.addProperty("token", src.getRegistrationAccessToken());
 			obj.addProperty("uri", src.getRegistrationClientUri());
@@ -52,12 +67,12 @@ public class JsonFileRegisteredClientService implements RegisteredClientService 
 			if (src.getClientSecretExpiresAt() != null) {
 				obj.addProperty("expires", src.getClientSecretExpiresAt().getTime());
 			}
-	        return obj;
-        }
+			return obj;
+		}
 	})
 	.registerTypeAdapter(RegisteredClient.class, new JsonDeserializer<RegisteredClient>() {
 		@Override
-        public RegisteredClient deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+		public RegisteredClient deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
 			if (json.isJsonObject()) {
 				JsonObject src = json.getAsJsonObject();
 				RegisteredClient rc = new RegisteredClient();
@@ -73,19 +88,19 @@ public class JsonFileRegisteredClientService implements RegisteredClientService 
 			} else {
 				return null;
 			}
-        }		
+		}
 	})
 	.create();
-	
+
 	private File file;
-	
+
 	private Map<String, RegisteredClient> clients = new HashMap<String, RegisteredClient>();
-	
+
 	public JsonFileRegisteredClientService(String filename) {
 		this.file = new File(filename);
 		load();
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.client.service.RegisteredClientService#getByIssuer(java.lang.String)
 	 */
@@ -102,7 +117,7 @@ public class JsonFileRegisteredClientService implements RegisteredClientService 
 		clients.put(issuer, client);
 		write();
 	}
-	
+
 	/**
 	 * Sync the map of clients out to disk.
 	 */
@@ -114,18 +129,18 @@ public class JsonFileRegisteredClientService implements RegisteredClientService 
 				file.createNewFile();
 			}
 			FileWriter out = new FileWriter(file);
-	        
-	        gson.toJson(clients, new TypeToken<Map<String, RegisteredClient>>(){}.getType(), out);
-	        
-	        out.close();
-	        
-        } catch (FileNotFoundException e) {
-	        logger.error("Could not write to output file", e);
-        } catch (IOException e) {
-	        logger.error("Could not write to output file", e);
-        }
+
+			gson.toJson(clients, new TypeToken<Map<String, RegisteredClient>>(){}.getType(), out);
+
+			out.close();
+
+		} catch (FileNotFoundException e) {
+			logger.error("Could not write to output file", e);
+		} catch (IOException e) {
+			logger.error("Could not write to output file", e);
+		}
 	}
-	
+
 	/**
 	 * Load the map in from disk.
 	 */
@@ -136,16 +151,16 @@ public class JsonFileRegisteredClientService implements RegisteredClientService 
 				return;
 			}
 			FileReader in = new FileReader(file);
-			
+
 			clients = gson.fromJson(in, new TypeToken<Map<String, RegisteredClient>>(){}.getType());
-			
+
 			in.close();
-	        
-        } catch (FileNotFoundException e) {
-        	logger.error("Could not read from input file", e);
-        } catch (IOException e) {
-        	logger.error("Could not read from input file", e);
-        }
+
+		} catch (FileNotFoundException e) {
+			logger.error("Could not read from input file", e);
+		} catch (IOException e) {
+			logger.error("Could not read from input file", e);
+		}
 	}
 
 }

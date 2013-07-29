@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
- *   and the MIT Kerberos and Internet Trust Consortium
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +41,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class DefaultApprovedSiteService implements ApprovedSiteService {
 
 	private static Logger logger = LoggerFactory.getLogger(DefaultApprovedSiteService.class);
-	
+
 	@Autowired
 	private ApprovedSiteRepository approvedSiteRepository;
 
@@ -125,12 +124,12 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 			}
 		}
 	}
-	
+
 	@Override
 	public void clearExpiredSites() {
-		
+
 		logger.info("Clearing expired approved sites");
-		
+
 		Collection<ApprovedSite> expiredSites = approvedSiteRepository.getExpired();
 		if (expiredSites != null) {
 			for (ApprovedSite expired : expiredSites) {

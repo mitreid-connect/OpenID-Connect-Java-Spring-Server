@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
- *   and the MIT Kerberos and Internet Trust Consortium
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -112,7 +111,7 @@ public class DefaultNonceService implements NonceService {
 	}
 
 	@Override
-	//We are eventually deleting this class, but if we weren't, 
+	//We are eventually deleting this class, but if we weren't,
 	//this would have been moved to application-context.xml for easier configuration.
 	//@Scheduled(fixedRate = 5 * 60 * 1000) // schedule this task every five minutes
 	public void clearExpiredNonces() {

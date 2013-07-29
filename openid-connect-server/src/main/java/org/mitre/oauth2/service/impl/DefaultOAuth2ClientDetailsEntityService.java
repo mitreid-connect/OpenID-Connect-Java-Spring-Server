@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
- *   and the MIT Kerberos and Internet Trust Consortium
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,7 +55,7 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 	@Autowired
 	private BlacklistedSiteService blacklistedSiteService;
 
-	
+
 	@Override
 	public ClientDetailsEntity saveNewClient(ClientDetailsEntity client) {
 		if (client.getId() != null) { // if it's not null, it's already been saved, this is an error

@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
- *   and the MIT Kerberos and Internet Trust Consortium
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +16,6 @@
 package org.mitre.oauth2.web;
 
 import java.security.Principal;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
@@ -61,10 +59,10 @@ public class IntrospectionEndpoint {
 
 	@PreAuthorize("hasRole('ROLE_CLIENT')")
 	@RequestMapping("/introspect")
-	public String verify(@RequestParam("token") String tokenValue, 
-						 @RequestParam(value = "resource_id", required = false) String resourceId, 
-						 @RequestParam(value = "token_type_hint", required = false) String tokenType, 
-						 Principal p, Model model) {
+	public String verify(@RequestParam("token") String tokenValue,
+			@RequestParam(value = "resource_id", required = false) String resourceId,
+			@RequestParam(value = "token_type_hint", required = false) String tokenType,
+			Principal p, Model model) {
 
 		if (Strings.isNullOrEmpty(tokenValue)) {
 			logger.error("Verify failed; token value is null");
@@ -77,30 +75,30 @@ public class IntrospectionEndpoint {
 		ClientDetailsEntity tokenClient = null;
 		Set<String> scopes = null;
 		Object token = null;
-		
+
 		try {
-			
+
 			// check access tokens first (includes ID tokens)
 			OAuth2AccessTokenEntity access = tokenServices.readAccessToken(tokenValue);
-			
+
 			tokenClient = access.getClient();
 			scopes = access.getScope();
-			
+
 			token = access;
-			
+
 		} catch (InvalidTokenException e) {
 			logger.error("Verify failed; Invalid access token. Checking refresh token.", e);
 			try {
-				
+
 				// check refresh tokens next
 				OAuth2RefreshTokenEntity refresh = tokenServices.getRefreshToken(tokenValue);
-				
+
 				tokenClient = refresh.getClient();
 				scopes = refresh.getAuthenticationHolder().getAuthentication().getAuthorizationRequest().getScope();
-				
+
 				token = refresh;
-				
-			} catch (InvalidTokenException e2) {				
+
+			} catch (InvalidTokenException e2) {
 				logger.error("Verify failed; Invalid refresh token", e2);
 				Map<String,Boolean> entity = ImmutableMap.of("active", Boolean.FALSE);
 				model.addAttribute("entity", entity);

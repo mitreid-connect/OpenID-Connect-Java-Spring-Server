@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
- *   and the MIT Kerberos and Internet Trust Consortium
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +14,6 @@
  * limitations under the License.
  ******************************************************************************/
 package org.mitre.openid.connect.service.impl;
-
-import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.*;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -35,6 +31,9 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.google.common.collect.Sets;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * @author wkim
@@ -129,14 +128,14 @@ public class TestDefaultStatsService {
 		assertThat(stats.get("userCount"), is(2));
 		assertThat(stats.get("clientCount"), is(3));
 	}
-	
+
 	@Test
 	public void calculateByClientId_empty() {
-		
+
 		Mockito.when(approvedSiteService.getAll()).thenReturn(new HashSet<ApprovedSite>());
-		
+
 		Map<Long, Integer> stats = service.calculateByClientId();
-		
+
 		assertThat(stats.get(1L), is(0));
 		assertThat(stats.get(2L), is(0));
 		assertThat(stats.get(3L), is(0));
@@ -145,15 +144,15 @@ public class TestDefaultStatsService {
 
 	@Test
 	public void calculateByClientId() {
-		
+
 		Map<Long, Integer> stats = service.calculateByClientId();
-		
+
 		assertThat(stats.get(1L), is(2));
 		assertThat(stats.get(2L), is(1));
 		assertThat(stats.get(3L), is(1));
 		assertThat(stats.get(4L), is(0));
 	}
-	
+
 	@Test
 	public void countForClientId() {
 

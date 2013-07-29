@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
- *   and the MIT Kerberos and Internet Trust Consortium
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
+
+
 /**
  * 
  */
@@ -43,7 +44,7 @@ import com.google.common.base.Strings;
 public class ThirdPartyIssuerService implements IssuerService {
 
 	private String accountChooserUrl;
-	
+
 	private Set<String> whitelist = new HashSet<String>();
 	private Set<String> blacklist = new HashSet<String>();
 
@@ -59,11 +60,11 @@ public class ThirdPartyIssuerService implements IssuerService {
 			if (!whitelist.isEmpty() && !whitelist.contains(iss)) {
 				throw new AuthenticationServiceException("Whitelist was nonempty, issuer was not in whitelist: " + iss);
 			}
-			
+
 			if (blacklist.contains(iss)) {
 				throw new AuthenticationServiceException("Issuer was in blacklist: " + iss);
 			}
-			
+
 			return new IssuerServiceResponse(iss, request.getParameter("login_hint"), request.getParameter("target_link_uri"));
 		} else {
 

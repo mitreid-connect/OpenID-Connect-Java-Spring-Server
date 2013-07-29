@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
- *   and the MIT Kerberos and Internet Trust Consortium
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +15,6 @@
  ******************************************************************************/
 package org.mitre.oauth2.service.impl;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.util.Date;
 import java.util.Set;
 
@@ -38,6 +29,7 @@ import org.mitre.oauth2.repository.AuthenticationHolderRepository;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mockito.InjectMocks;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -50,6 +42,14 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 
 import com.google.common.collect.Sets;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author wkim
@@ -159,7 +159,7 @@ public class TestDefaultOAuth2ProviderTokenService {
 	@Test(expected = InvalidClientException.class)
 	public void createAccessToken_nullClient() {
 
-		Mockito.when(clientDetailsService.loadClientByClientId(Mockito.anyString())).thenReturn(null);
+		Mockito.when(clientDetailsService.loadClientByClientId(Matchers.anyString())).thenReturn(null);
 
 		service.createAccessToken(authentication);
 	}
@@ -174,12 +174,12 @@ public class TestDefaultOAuth2ProviderTokenService {
 
 		OAuth2AccessTokenEntity token = service.createAccessToken(authentication);
 
-		Mockito.verify(clientDetailsService).loadClientByClientId(Mockito.anyString());
-		Mockito.verify(authenticationHolderRepository).save(Mockito.any(AuthenticationHolderEntity.class));
+		Mockito.verify(clientDetailsService).loadClientByClientId(Matchers.anyString());
+		Mockito.verify(authenticationHolderRepository).save(Matchers.any(AuthenticationHolderEntity.class));
 		Mockito.verify(tokenEnhancer).enhance(token, authentication);
 		Mockito.verify(tokenRepository).saveAccessToken(token);
 
-		Mockito.verify(tokenRepository, Mockito.never()).saveRefreshToken(Mockito.any(OAuth2RefreshTokenEntity.class));
+		Mockito.verify(tokenRepository, Mockito.never()).saveRefreshToken(Matchers.any(OAuth2RefreshTokenEntity.class));
 		assertThat(token.getRefreshToken(), is(nullValue()));
 	}
 
@@ -196,7 +196,7 @@ public class TestDefaultOAuth2ProviderTokenService {
 		OAuth2AccessTokenEntity token = service.createAccessToken(authentication);
 
 		// Note: a refactor may be appropriate to only save refresh tokens once to the repository during creation.
-		Mockito.verify(tokenRepository, Mockito.atLeastOnce()).saveRefreshToken(Mockito.any(OAuth2RefreshTokenEntity.class));
+		Mockito.verify(tokenRepository, Mockito.atLeastOnce()).saveRefreshToken(Matchers.any(OAuth2RefreshTokenEntity.class));
 		assertThat(token.getRefreshToken(), is(notNullValue()));
 
 	}
@@ -249,18 +249,18 @@ public class TestDefaultOAuth2ProviderTokenService {
 		AuthenticationHolderEntity authHolder = Mockito.mock(AuthenticationHolderEntity.class);
 		Mockito.when(authHolder.getAuthentication()).thenReturn(authentication);
 
-		Mockito.when(authenticationHolderRepository.save(Mockito.any(AuthenticationHolderEntity.class))).thenReturn(authHolder);
+		Mockito.when(authenticationHolderRepository.save(Matchers.any(AuthenticationHolderEntity.class))).thenReturn(authHolder);
 
 		OAuth2AccessTokenEntity token = service.createAccessToken(authentication);
 
 		assertThat(token.getAuthenticationHolder().getAuthentication(), equalTo(authentication));
-		Mockito.verify(authenticationHolderRepository).save(Mockito.any(AuthenticationHolderEntity.class));
+		Mockito.verify(authenticationHolderRepository).save(Matchers.any(AuthenticationHolderEntity.class));
 	}
 
 	@Test(expected = InvalidTokenException.class)
 	public void refreshAccessToken_noRefreshToken() {
 
-		Mockito.when(tokenRepository.getRefreshTokenByValue(Mockito.anyString())).thenReturn(null);
+		Mockito.when(tokenRepository.getRefreshTokenByValue(Matchers.anyString())).thenReturn(null);
 
 		service.refreshAccessToken(refreshTokenValue, authRequest);
 	}
@@ -329,7 +329,7 @@ public class TestDefaultOAuth2ProviderTokenService {
 	}
 
 	/**
-	 * Tests the case where only some of the valid scope values are being requested along with 
+	 * Tests the case where only some of the valid scope values are being requested along with
 	 * other extra unauthorized scope values.
 	 */
 	@Test(expected = InvalidScopeException.class)

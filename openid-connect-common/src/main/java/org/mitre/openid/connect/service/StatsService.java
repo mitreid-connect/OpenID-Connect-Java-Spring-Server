@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
- *   and the MIT Kerberos and Internet Trust Consortium
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,14 +41,14 @@ public interface StatsService {
 	 * 
 	 * @return a map of id of client object to number of approvals
 	 */
-    public Map<Long, Integer> calculateByClientId();
+	public Map<Long, Integer> calculateByClientId();
 
 	/**
 	 * Calculate the usage count for a single client
 	 * 
-	 * @param id the id of the client to search on 
+	 * @param id the id of the client to search on
 	 * @return
 	 */
-    public Integer countForClientId(Long id);
+	public Integer countForClientId(Long id);
 
 }

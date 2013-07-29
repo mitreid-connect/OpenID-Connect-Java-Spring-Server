@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
- *   and the MIT Kerberos and Internet Trust Consortium
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,10 +36,8 @@ import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
@@ -96,7 +93,7 @@ public class TokenIntrospectionView extends AbstractView {
 				token.addProperty("scope", Joiner.on(" ").join(src.getScope()));
 
 				token.add("exp", context.serialize(src.getExpiration()));
-				
+
 				//token.addProperty("audience", src.getAuthenticationHolder().getAuthentication().getAuthorizationRequest().getClientId());
 
 				token.addProperty("sub", src.getAuthenticationHolder().getAuthentication().getName());
@@ -104,7 +101,7 @@ public class TokenIntrospectionView extends AbstractView {
 				token.addProperty("client_id", src.getAuthenticationHolder().getAuthentication().getAuthorizationRequest().getClientId());
 
 				token.addProperty("token_type", src.getTokenType());
-				
+
 				return token;
 			}
 
@@ -119,7 +116,7 @@ public class TokenIntrospectionView extends AbstractView {
 				token.addProperty("scope", Joiner.on(" ").join(src.getAuthenticationHolder().getAuthentication().getAuthorizationRequest().getScope()));
 
 				token.add("exp", context.serialize(src.getExpiration()));
-				
+
 				//token.addProperty("audience", src.getAuthenticationHolder().getAuthentication().getAuthorizationRequest().getClientId());
 
 				token.addProperty("sub", src.getAuthenticationHolder().getAuthentication().getName());

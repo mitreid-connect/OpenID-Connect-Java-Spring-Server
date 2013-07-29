@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
- *   and the MIT Kerberos and Internet Trust Consortium
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package org.mitre.openid.connect.client.service.impl;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+
+package org.mitre.openid.connect.client.service.impl;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,6 +27,12 @@ import org.mitre.openid.connect.config.ServerConfiguration;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+
 /**
  * @author wkim
  *
@@ -39,42 +40,42 @@ import org.mockito.runners.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public class TestStaticServerConfigurationService {
 
-	
+
 	private StaticServerConfigurationService service;
-	
+
 	private String issuer = "https://www.example.com/";
-	
+
 	@Mock
 	private ServerConfiguration mockServerConfig;
-	
+
 	@Before
 	public void prepare() {
-		
+
 		service = new StaticServerConfigurationService();
-		
+
 		Map<String, ServerConfiguration> servers = new HashMap<String, ServerConfiguration>();
 		servers.put(issuer, mockServerConfig);
-		
+
 		service.setServers(servers);
 	}
-	
+
 	@Test
 	public void getServerConfiguration_success() {
-		
+
 		ServerConfiguration result = service.getServerConfiguration(issuer);
-		
+
 		assertThat(mockServerConfig, is(notNullValue()));
 		assertEquals(mockServerConfig, result);
 	}
-	
+
 	/**
 	 * Checks the behavior when the issuer is not known.
 	 */
 	@Test
 	public void getClientConfiguration_noIssuer() {
-		
+
 		ServerConfiguration result = service.getServerConfiguration("www.badexample.net");
-		
+
 		assertThat(result, is(nullValue()));
 	}
 

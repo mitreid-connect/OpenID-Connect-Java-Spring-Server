@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
- *   and the MIT Kerberos and Internet Trust Consortium
+ * Copyright 2013 The MITRE Corporation and the MIT Kerberos and Internet Trust Consortuim
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
+
+
 /**
  * 
  */
@@ -89,11 +90,11 @@ public class WebfingerIssuerService implements IssuerService {
 				if (!whitelist.isEmpty() && !whitelist.contains(issuer)) {
 					throw new AuthenticationServiceException("Whitelist was nonempty, issuer was not in whitelist: " + issuer);
 				}
-				
+
 				if (blacklist.contains(issuer)) {
 					throw new AuthenticationServiceException("Issuer was in blacklist: " + issuer);
 				}
-				
+
 				return new IssuerServiceResponse(issuer, null, null);
 			} catch (ExecutionException e) {
 				logger.warn("Issue fetching issuer for user input: " + identifier, e);
@@ -177,7 +178,7 @@ public class WebfingerIssuerService implements IssuerService {
 
 			RestTemplate restTemplate = new RestTemplate(httpFactory);
 			// construct the URL to go to
-			
+
 			// preserving http scheme is strictly for demo system use only.
 			String scheme = key.getScheme();
 			if (!Strings.isNullOrEmpty(scheme) && scheme.equals("http")) {
@@ -188,13 +189,13 @@ public class WebfingerIssuerService implements IssuerService {
 			}
 
 			// do a webfinger lookup
-			URIBuilder builder = new URIBuilder(scheme 
-												+ key.getHost()
-												+ (key.getPort() >= 0 ? ":" + key.getPort() : "")
-												+ Strings.nullToEmpty(key.getPath())
-												+ "/.well-known/webfinger" 
-												+ (Strings.isNullOrEmpty(key.getQuery()) ? "" : "?" + key.getQuery())
-												);
+			URIBuilder builder = new URIBuilder(scheme
+					+ key.getHost()
+					+ (key.getPort() >= 0 ? ":" + key.getPort() : "")
+					+ Strings.nullToEmpty(key.getPath())
+					+ "/.well-known/webfinger"
+					+ (Strings.isNullOrEmpty(key.getQuery()) ? "" : "?" + key.getQuery())
+					);
 			builder.addParameter("resource", key.toString());
 			builder.addParameter("rel", "http://openid.net/specs/connect/1.0/issuer");
 
@@ -226,7 +227,7 @@ public class WebfingerIssuerService implements IssuerService {
 			}
 
 			// we couldn't find it
-			
+
 			if (key.getScheme().equals("http") || key.getScheme().equals("https")) {
 				// if it looks like HTTP then punt and return the input
 				logger.warn("Returning normalized input string as issuer, hoping for the best: " + key.toString());
@@ -236,7 +237,7 @@ public class WebfingerIssuerService implements IssuerService {
 				logger.warn("Couldn't find issuer: " + key.toString());
 				return null;
 			}
-			
+
 		}
 
 	}
