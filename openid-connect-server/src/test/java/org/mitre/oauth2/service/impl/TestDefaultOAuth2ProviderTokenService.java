@@ -16,6 +16,14 @@
  ******************************************************************************/
 package org.mitre.oauth2.service.impl;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.util.Date;
 import java.util.Set;
 
@@ -38,21 +46,12 @@ import org.springframework.security.authentication.AuthenticationCredentialsNotF
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.security.oauth2.common.exceptions.InvalidScopeException;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
-import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.security.oauth2.provider.TokenRequest;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 
 import com.google.common.collect.Sets;
-
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 /**
  * @author wkim
@@ -102,15 +101,12 @@ public class TestDefaultOAuth2ProviderTokenService {
 		Mockito.reset(tokenRepository, authenticationHolderRepository, clientDetailsService, tokenEnhancer);
 
 		authentication = Mockito.mock(OAuth2Authentication.class);
-		Mockito.when(authentication.getOAuth2Request()).thenReturn(Mockito.mock(OAuth2Request.class));
-		OAuth2Request clientAuth = authentication.getOAuth2Request();
+		OAuth2Request clientAuth = new OAuth2Request(null, clientId, null, true, scope, null, null, null);
+		Mockito.when(authentication.getOAuth2Request()).thenReturn(clientAuth);
 
 		client = Mockito.mock(ClientDetailsEntity.class);
 		Mockito.when(client.getClientId()).thenReturn(clientId);
 		Mockito.when(clientDetailsService.loadClientByClientId(clientId)).thenReturn(client);
-
-		Mockito.when(clientAuth.getClientId()).thenReturn(clientId);
-		Mockito.when(clientAuth.getScope()).thenReturn(scope);
 
 		// by default in tests, allow refresh tokens
 		Mockito.when(client.isAllowRefresh()).thenReturn(true);
@@ -130,7 +126,6 @@ public class TestDefaultOAuth2ProviderTokenService {
 		Mockito.when(refreshToken.getAuthenticationHolder()).thenReturn(storedAuthHolder);
 		Mockito.when(storedAuthHolder.getAuthentication()).thenReturn(storedAuthentication);
 		Mockito.when(storedAuthentication.getOAuth2Request()).thenReturn(storedAuthRequest);
-		Mockito.when(storedAuthRequest.getScope()).thenReturn(storedScope);
 	}
 
 	/**
