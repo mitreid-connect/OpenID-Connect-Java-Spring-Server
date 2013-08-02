@@ -72,8 +72,7 @@ public interface JwtSigningAndValidationService {
 	 * @param alg the name of the algorithm to use, as specified in JWS s.6
 	 * @return the signed jwt
 	 */
-	//TODO: implement later; only need signJwt(Jwt jwt) for now
-	//public Jwt signJwt(Jwt jwt, String alg);
+	public void signJwt(SignedJWT jwt, JWSAlgorithm alg);
 
 	/**
 	 * TODO: method to sign a jwt using a specified algorithm and a key id
