@@ -29,6 +29,7 @@ import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
@@ -114,7 +115,9 @@ public class JwtAssertionTokenGranter extends AbstractTokenGranter {
 						}
 
 					} else {
-						//TODO: What should happen in this case? Is this possible?
+						//This should never happen
+						logger.fatal("SEVERE: Client is not an instance of OAuth2AccessTokenEntity.");
+						throw new BadCredentialsException("SEVERE: Client is not an instance of ClientDetailsEntity; JwtAssertionTokenGranter cannot process this request.");
 					}
 
 					claims.setIssueTime(new Date());
