@@ -216,6 +216,33 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 	}
 
 	@Override
+	public void signJwt(SignedJWT jwt, JWSAlgorithm alg) {
+
+		JWSSigner signer = null;
+		
+		for (JWSSigner s : signers.values()) {
+			if (s.supportedAlgorithms().contains(alg)) {
+				signer = s;
+				break;
+			}
+		}
+		
+		if (signer == null) {
+			//If we can't find an algorithm that matches, we can't sign
+			logger.error("No matching algirthm found for alg=" + alg);
+			
+		}
+		
+		try {
+			jwt.sign(signer);
+		} catch (JOSEException e) {
+
+			logger.error("Failed to sign JWT, error was: ", e);
+		}
+		
+	}
+	
+	@Override
 	public boolean validateSignature(SignedJWT jwt) {
 
 		for (JWSVerifier verifier : verifiers.values()) {
@@ -266,4 +293,5 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 		return algs;
 
 	}
+
 }
