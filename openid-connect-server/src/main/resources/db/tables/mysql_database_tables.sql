@@ -125,23 +125,9 @@ CREATE TABLE IF NOT EXISTS client_default_acr_value (
 	default_acr_value VARCHAR(2000)
 );
 
-CREATE TABLE IF NOT EXISTS client_nonce ( 
-	id BIGINT AUTO_INCREMENT PRIMARY KEY,
-	value VARCHAR(256),
-	client_id VARCHAR(256),
-	use_date TIMESTAMP NULL,
-	expire_date TIMESTAMP NULL
-);
-
 CREATE TABLE IF NOT EXISTS client_contact (
 	owner_id BIGINT,
 	contact VARCHAR(256)
-);
-
-CREATE TABLE IF NOT EXISTS event (
-	id BIGINT AUTO_INCREMENT PRIMARY KEY,
-	type INT(3),
-	timestamp DATE
 );
 
 CREATE TABLE IF NOT EXISTS client_redirect_uri (
