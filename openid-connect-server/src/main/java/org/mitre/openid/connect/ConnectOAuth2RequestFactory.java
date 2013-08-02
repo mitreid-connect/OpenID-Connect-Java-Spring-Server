@@ -26,17 +26,12 @@ import net.minidev.json.JSONObject;
 
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.jwt.signer.service.impl.JWKSetSigningAndValidationServiceCacheService;
-import org.mitre.oauth2.exception.NonceReuseException;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
-import org.mitre.openid.connect.model.Nonce;
-import org.mitre.openid.connect.service.NonceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationServiceException;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.security.oauth2.common.util.OAuth2Utils;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
@@ -53,8 +48,6 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 
 	private static Logger logger = LoggerFactory.getLogger(ConnectOAuth2RequestFactory.class);
 
-	private NonceService nonceService;
-
 	private ClientDetailsEntityService clientDetailsService;
 
 	@Autowired
@@ -67,10 +60,9 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 	 * @param nonceService
 	 */
 	@Autowired
-	public ConnectOAuth2RequestFactory(ClientDetailsEntityService clientDetailsService, NonceService nonceService) {
+	public ConnectOAuth2RequestFactory(ClientDetailsEntityService clientDetailsService) {
 		super(clientDetailsService);
 		this.clientDetailsService = clientDetailsService;
-		this.nonceService = nonceService;
 	}
 
 	@Override
@@ -85,31 +77,12 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 			client = clientDetailsService.loadClientByClientId(clientId);
 		}
 
-		String requestNonce = parameters.get("nonce");
-
 		AuthorizationRequest request = new AuthorizationRequest(parameters, Collections.<String, String> emptyMap(),
 				parameters.get(OAuth2Utils.CLIENT_ID),
 				OAuth2Utils.parseParameterList(parameters.get(OAuth2Utils.SCOPE)), null,
 				null, false, parameters.get(OAuth2Utils.STATE),
 				parameters.get(OAuth2Utils.REDIRECT_URI),
 				OAuth2Utils.parseParameterList(parameters.get(OAuth2Utils.RESPONSE_TYPE)));
-
-		//Only process if the user is authenticated. If the user is not authenticated yet, this
-		//code will be called a second time once the user is redirected from the login page back
-		//to the auth endpoint.
-		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-		if (requestNonce != null && principal != null && principal instanceof User) {
-
-			if (!nonceService.alreadyUsed(clientId, requestNonce)) {
-				Nonce nonce = nonceService.create(clientId, requestNonce);
-				nonceService.save(nonce);
-			}
-			else {
-				throw new NonceReuseException(client == null ? "unidentified client" : client.getClientId(), requestNonce);
-			}
-
-		}
 
 		Set<String> scopes = OAuth2Utils.parseParameterList(parameters.get("scope"));
 		if ((scopes == null || scopes.isEmpty()) && client != null) {
