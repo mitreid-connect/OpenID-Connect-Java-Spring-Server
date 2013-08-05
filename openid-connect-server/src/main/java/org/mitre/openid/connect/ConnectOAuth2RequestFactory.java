@@ -43,7 +43,7 @@ import com.google.common.base.Strings;
 import com.nimbusds.jose.util.JSONObjectUtils;
 import com.nimbusds.jwt.SignedJWT;
 
-@Component("oAuth2RequestFactory")
+@Component("connectOAuth2RequestFactory")
 public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 
 	private static Logger logger = LoggerFactory.getLogger(ConnectOAuth2RequestFactory.class);
