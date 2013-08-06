@@ -41,7 +41,6 @@ import javax.persistence.Transient;
 	@NamedQuery(name = "ApprovedSite.getAll", query = "select a from ApprovedSite a"),
 	@NamedQuery(name = "ApprovedSite.getByUserId", query = "select a from ApprovedSite a where a.userId = :userId"),
 	@NamedQuery(name = "ApprovedSite.getByClientId", query = "select a from ApprovedSite a where a.clientId = :clientId"),
-	@NamedQuery(name = "ApprovedSite.getExpired", query = "select a from ApprovedSite a where a.timeoutDate is not null and a.timeoutDate < current_timestamp"),
 	@NamedQuery(name = "ApprovedSite.getByClientIdAndUserId", query = "select a from ApprovedSite a where a.clientId = :clientId and a.userId = :userId")
 })
 public class ApprovedSite {

@@ -18,6 +18,7 @@
  */
 package org.mitre.oauth2.service.impl;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -45,6 +46,7 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.stereotype.Service;
 
+import com.google.common.base.Predicate;
 import com.google.common.collect.Sets;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.PlainJWT;
@@ -361,17 +363,39 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	public void clearExpiredTokens() {
 		logger.info("Cleaning out all expired tokens");
 
-		List<OAuth2AccessTokenEntity> accessTokens = tokenRepository.getExpiredAccessTokens();
+		Collection<OAuth2AccessTokenEntity> accessTokens = getExpiredAccessTokens();
 		logger.info("Found " + accessTokens.size() + " expired access tokens");
 		for (OAuth2AccessTokenEntity oAuth2AccessTokenEntity : accessTokens) {
 			revokeAccessToken(oAuth2AccessTokenEntity);
 		}
 
-		List<OAuth2RefreshTokenEntity> refreshTokens = tokenRepository.getExpiredRefreshTokens();
+		Collection<OAuth2RefreshTokenEntity> refreshTokens = getExpiredRefreshTokens();
 		logger.info("Found " + refreshTokens.size() + " expired refresh tokens");
 		for (OAuth2RefreshTokenEntity oAuth2RefreshTokenEntity : refreshTokens) {
 			revokeRefreshToken(oAuth2RefreshTokenEntity);
 		}
+	}
+	
+	private Predicate<OAuth2AccessTokenEntity> isAccessTokenExpired = new Predicate<OAuth2AccessTokenEntity>() {
+		@Override
+		public boolean apply(OAuth2AccessTokenEntity input) {
+			return (input != null && input.isExpired());
+		}
+	};
+	
+	private Predicate<OAuth2RefreshTokenEntity> isRefreshTokenExpired = new Predicate<OAuth2RefreshTokenEntity>() {
+		@Override
+		public boolean apply(OAuth2RefreshTokenEntity input) {
+			return (input != null && input.isExpired());
+		}
+	};
+	
+	private Collection<OAuth2AccessTokenEntity> getExpiredAccessTokens() {
+		return Sets.filter(Sets.newHashSet(tokenRepository.getAllAccessTokens()), isAccessTokenExpired);
+	}
+
+	private Collection<OAuth2RefreshTokenEntity> getExpiredRefreshTokens() {
+		return Sets.filter(Sets.newHashSet(tokenRepository.getAllRefreshTokens()), isRefreshTokenExpired);
 	}
 
 	/* (non-Javadoc)

@@ -84,9 +84,4 @@ public interface ApprovedSiteRepository {
 	 */
 	public Collection<ApprovedSite> getByClientId(String clientId);
 
-	/**
-	 * Get all expired sites
-	 * @return
-	 */
-	public Collection<ApprovedSite> getExpired();
 }

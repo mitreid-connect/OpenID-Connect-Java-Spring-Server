@@ -30,6 +30,9 @@ import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Sets;
+
 /**
  * Implementation of the ApprovedSiteService
  * 
@@ -130,12 +133,23 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 
 		logger.info("Clearing expired approved sites");
 
-		Collection<ApprovedSite> expiredSites = approvedSiteRepository.getExpired();
+		Collection<ApprovedSite> expiredSites = getExpired();
 		if (expiredSites != null) {
 			for (ApprovedSite expired : expiredSites) {
 				approvedSiteRepository.remove(expired);
 			}
 		}
+	}
+	
+	private Predicate<ApprovedSite> isExpired = new Predicate<ApprovedSite>() {
+		@Override
+		public boolean apply(ApprovedSite input) {
+			return (input != null && input.isExpired());
+		}
+	};
+	
+	private Collection<ApprovedSite> getExpired() {
+		return Sets.filter(Sets.newHashSet(approvedSiteRepository.getAll()), isExpired);
 	}
 
 }
