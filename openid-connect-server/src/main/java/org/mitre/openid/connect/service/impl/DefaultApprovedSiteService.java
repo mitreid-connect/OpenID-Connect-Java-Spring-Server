@@ -18,7 +18,6 @@ package org.mitre.openid.connect.service.impl;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
 
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
@@ -34,7 +33,8 @@ import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.common.collect.Lists;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Sets;
 
 /**
  * Implementation of the ApprovedSiteService
@@ -158,15 +158,15 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 		}
 	}
 	
-	private Collection<ApprovedSite> getExpired() {
-		Collection<ApprovedSite> sites = approvedSiteRepository.getAll();
-		List<ApprovedSite> expired = Lists.newArrayList();
-		for (ApprovedSite a : sites) {
-			if (a.isExpired()) {
-				expired.add(a);
-			}
+	private Predicate<ApprovedSite> isExpired = new Predicate<ApprovedSite>() {
+		@Override
+		public boolean apply(ApprovedSite input) {
+			return (input != null && input.isExpired());
 		}
-		return expired;
+	};
+	
+	private Collection<ApprovedSite> getExpired() {
+		return Sets.filter(Sets.newHashSet(approvedSiteRepository.getAll()), isExpired);
 	}
 
 }
