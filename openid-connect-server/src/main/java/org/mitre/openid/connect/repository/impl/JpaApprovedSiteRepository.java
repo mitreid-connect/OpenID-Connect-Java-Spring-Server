@@ -16,7 +16,10 @@
  ******************************************************************************/
 package org.mitre.openid.connect.repository.impl;
 
+import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
+
 import java.util.Collection;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -27,7 +30,7 @@ import org.mitre.openid.connect.repository.ApprovedSiteRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
+import com.google.common.collect.Lists;
 
 /**
  * JPA ApprovedSite repository implementation
@@ -105,7 +108,14 @@ public class JpaApprovedSiteRepository implements ApprovedSiteRepository {
 	@Override
 	@Transactional
 	public Collection<ApprovedSite> getExpired() {
-		TypedQuery<ApprovedSite> query = manager.createNamedQuery("ApprovedSite.getExpired", ApprovedSite.class);
-		return query.getResultList();
+		TypedQuery<ApprovedSite> query = manager.createNamedQuery("ApprovedSite.getAll", ApprovedSite.class);
+		List<ApprovedSite> sites = query.getResultList();
+		List<ApprovedSite> expired = Lists.newArrayList();
+		for (ApprovedSite a : sites) {
+			if (a.isExpired()) {
+				expired.add(a);
+			}
+		}
+		return expired;
 	}
 }

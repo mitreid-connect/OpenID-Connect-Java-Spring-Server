@@ -33,6 +33,8 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.collect.Lists;
+
 @Repository
 public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 
@@ -165,9 +167,15 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	 */
 	@Override
 	public List<OAuth2AccessTokenEntity> getExpiredAccessTokens() {
-		TypedQuery<OAuth2AccessTokenEntity> queryA = manager.createNamedQuery("OAuth2AccessTokenEntity.getExpired", OAuth2AccessTokenEntity.class);
+		TypedQuery<OAuth2AccessTokenEntity> queryA = manager.createNamedQuery("OAuth2AccessTokenEntity.getAll", OAuth2AccessTokenEntity.class);
 		List<OAuth2AccessTokenEntity> accessTokens = queryA.getResultList();
-		return accessTokens;
+		List<OAuth2AccessTokenEntity> expired = Lists.newArrayList();
+		for (OAuth2AccessTokenEntity a : accessTokens) {
+			if (a.isExpired()) {
+				expired.add(a);
+			}
+		}
+		return expired;
 	}
 
 	/* (non-Javadoc)
@@ -175,9 +183,15 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	 */
 	@Override
 	public List<OAuth2RefreshTokenEntity> getExpiredRefreshTokens() {
-		TypedQuery<OAuth2RefreshTokenEntity> queryR = manager.createNamedQuery("OAuth2RefreshTokenEntity.getExpired", OAuth2RefreshTokenEntity.class);
+		TypedQuery<OAuth2RefreshTokenEntity> queryR = manager.createNamedQuery("OAuth2RefreshTokenEntity.getAll", OAuth2RefreshTokenEntity.class);
 		List<OAuth2RefreshTokenEntity> refreshTokens = queryR.getResultList();
-		return refreshTokens;
+		List<OAuth2RefreshTokenEntity> expired = Lists.newArrayList();
+		for (OAuth2RefreshTokenEntity r : refreshTokens) {
+			if (r.isExpired()) {
+				expired.add(r);
+			}
+		}
+		return expired;
 	}
 
 	@Override
