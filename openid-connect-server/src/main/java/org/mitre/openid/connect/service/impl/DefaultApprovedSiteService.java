@@ -18,6 +18,7 @@ package org.mitre.openid.connect.service.impl;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
@@ -32,6 +33,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.collect.Lists;
 
 /**
  * Implementation of the ApprovedSiteService
@@ -147,12 +150,23 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 
 		logger.info("Clearing expired approved sites");
 
-		Collection<ApprovedSite> expiredSites = approvedSiteRepository.getExpired();
+		Collection<ApprovedSite> expiredSites = getExpired();
 		if (expiredSites != null) {
 			for (ApprovedSite expired : expiredSites) {
 				approvedSiteRepository.remove(expired);
 			}
 		}
+	}
+	
+	private Collection<ApprovedSite> getExpired() {
+		Collection<ApprovedSite> sites = approvedSiteRepository.getAll();
+		List<ApprovedSite> expired = Lists.newArrayList();
+		for (ApprovedSite a : sites) {
+			if (a.isExpired()) {
+				expired.add(a);
+			}
+		}
+		return expired;
 	}
 
 }

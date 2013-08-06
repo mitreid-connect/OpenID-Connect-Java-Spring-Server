@@ -19,6 +19,7 @@
  */
 package org.mitre.oauth2.service.impl;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -49,6 +50,7 @@ import org.springframework.security.oauth2.provider.TokenRequest;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.PlainJWT;
@@ -385,17 +387,39 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	public void clearExpiredTokens() {
 		logger.info("Cleaning out all expired tokens");
 
-		List<OAuth2AccessTokenEntity> accessTokens = tokenRepository.getExpiredAccessTokens();
+		List<OAuth2AccessTokenEntity> accessTokens = getExpiredAccessTokens();
 		logger.info("Found " + accessTokens.size() + " expired access tokens");
 		for (OAuth2AccessTokenEntity oAuth2AccessTokenEntity : accessTokens) {
 			revokeAccessToken(oAuth2AccessTokenEntity);
 		}
 
-		List<OAuth2RefreshTokenEntity> refreshTokens = tokenRepository.getExpiredRefreshTokens();
+		List<OAuth2RefreshTokenEntity> refreshTokens = getExpiredRefreshTokens();
 		logger.info("Found " + refreshTokens.size() + " expired refresh tokens");
 		for (OAuth2RefreshTokenEntity oAuth2RefreshTokenEntity : refreshTokens) {
 			revokeRefreshToken(oAuth2RefreshTokenEntity);
 		}
+	}
+	
+	private List<OAuth2AccessTokenEntity> getExpiredAccessTokens() {
+		Collection<OAuth2AccessTokenEntity> accessTokens = tokenRepository.getAllAccessTokens();
+		List<OAuth2AccessTokenEntity> expired = Lists.newArrayList();
+		for (OAuth2AccessTokenEntity a : accessTokens) {
+			if (a.isExpired()) {
+				expired.add(a);
+			}
+		}
+		return expired;
+	}
+
+	private List<OAuth2RefreshTokenEntity> getExpiredRefreshTokens() {
+		Collection<OAuth2RefreshTokenEntity> refreshTokens = tokenRepository.getAllRefreshTokens();
+		List<OAuth2RefreshTokenEntity> expired = Lists.newArrayList();
+		for (OAuth2RefreshTokenEntity r : refreshTokens) {
+			if (r.isExpired()) {
+				expired.add(r);
+			}
+		}
+		return expired;
 	}
 
 	/* (non-Javadoc)
