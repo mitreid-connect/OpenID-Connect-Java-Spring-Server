@@ -26,7 +26,6 @@ import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
-import org.mitre.openid.connect.service.ApprovedSiteService;
 import org.mitre.openid.connect.util.JWSUtils;
 import org.mitre.openid.connect.web.AuthenticationTimeStamper;
 import org.slf4j.Logger;
@@ -148,7 +147,7 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 			Set<String> responseTypes = OAuth2Utils.parseParameterList(responseType);
 			if (responseTypes.contains("token")) {
 				// calculate the token hash
-				Base64URL at_hash = JWSUtils.getAccessTokenHash(signingAlg, token.getJwt().serialize().getBytes());
+				Base64URL at_hash = JWSUtils.getAccessTokenHash(signingAlg, token);
 				//TODO: What should happen if the hash cannot be calculated?
 				idClaims.setClaim("at_hash", at_hash);
 			}
