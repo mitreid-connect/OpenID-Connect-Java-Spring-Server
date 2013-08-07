@@ -36,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.util.OAuth2Utils;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -151,12 +152,12 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 			}
 
 			// TODO: this ought to be getResponseType
-			
 			String responseType = authentication.getOAuth2Request().getRequestParameters().get("response_type");
+			
 			Set<String> responseTypes = OAuth2Utils.parseParameterList(responseType);
 			if (responseTypes.contains("token")) {
 				// calculate the token hash
-				Base64URL at_hash = JWSUtils.getAccessTokenHash(signingAlg, token.getJwt().serialize().getBytes());
+				Base64URL at_hash = JWSUtils.getAccessTokenHash(signingAlg, token);
 				//TODO: What should happen if the hash cannot be calculated?
 				idClaims.setClaim("at_hash", at_hash);
 			}
