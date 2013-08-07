@@ -16,8 +16,9 @@
  ******************************************************************************/
 package org.mitre.jwt.encryption.service.impl;
 
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThat;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
@@ -32,8 +33,8 @@ import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWEHeader;
+import com.nimbusds.jose.JWEObject;
 import com.nimbusds.jose.jwk.JWK;
-import com.nimbusds.jose.jwk.OctetSequenceKey;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.Use;
 import com.nimbusds.jose.util.Base64URL;
@@ -47,12 +48,25 @@ import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
  */
 public class TestDefaultJwtEncryptionAndDecryptionService {
 
+	private String plainText = "The true sign of intelligence is not knowledge but imagination.";
+	
 	private String issuer = "www.example.net";
 	private String subject = "example_user";
-	
 	private JWTClaimsSet claimsSet = new JWTClaimsSet();
 	
-	// Example keys taken from Mike Jones's draft-ietf-jose-json-web-encryption-14 appendix examples
+	// Example data taken from Mike Jones's draft-ietf-jose-json-web-encryption-14 appendix examples
+	private String compactSerializedJwe = "eyJhbGciOiJSU0EtT0FFUCIsImVuYyI6IkEyNTZHQ00ifQ." +
+			"OKOawDo13gRp2ojaHV7LFpZcgV7T6DVZKTyKOMTYUmKoTCVJRgckCL9kiMT03JGe" +
+			"ipsEdY3mx_etLbbWSrFr05kLzcSr4qKAq7YN7e9jwQRb23nfa6c9d-StnImGyFDb" +
+			"Sv04uVuxIp5Zms1gNxKKK2Da14B8S4rzVRltdYwam_lDp5XnZAYpQdb76FdIKLaV" +
+			"mqgfwX7XWRxv2322i-vDxRfqNzo_tETKzpVLzfiwQyeyPGLBIO56YJ7eObdv0je8" +
+			"1860ppamavo35UgoRdbYaBcoh9QcfylQr66oc6vFWXRcZ_ZT2LawVCWTIy3brGPi" +
+			"6UklfCpIMfIjf7iGdXKHzg." +
+			"48V1_ALb6US04U3b." +
+			"5eym8TW_c8SuK0ltJ3rpYIzOeDQz7TALvtu6UG9oMo4vpzs9tX_EFShS8iB7j6ji" +
+			"SdiwkIr3ajwQzaBtQD_A." +
+			"XFBoMYUZodetZdvTiFvSkQ";
+	
 	private String RSAkid = "rsa321";
 	private JWK RSAjwk = new RSAKey(new Base64URL("oahUIoWw0K0usKNuOR6H4wkf4oBUXHTxRvgb48E-BVvxkeDNjbC4he8rUW" +
 			"cJoZmds2h7M70imEVhRU5djINXtqllXI4DFqcI1DgjT9LewND8MW2Krf3S" +
@@ -91,6 +105,21 @@ public class TestDefaultJwtEncryptionAndDecryptionService {
 	}
 	
 	@Test
+	public void decrypt_RSA() throws ParseException {
+		
+		service.setDefaultDecryptionKeyId(RSAkid);
+		service.setDefaultEncryptionKeyId(RSAkid);
+		
+		JWEObject jwt = JWEObject.parse(compactSerializedJwe);
+		
+		assertThat(jwt.getPayload(), nullValue());
+		
+		service.decryptJwt(jwt);
+		
+		assertEquals(plainText, jwt.getPayload().toString());
+	}
+	
+	@Test
 	public void encryptThenDecrypt_RSA() throws ParseException {
 		
 		service.setDefaultDecryptionKeyId(RSAkid);
@@ -101,10 +130,13 @@ public class TestDefaultJwtEncryptionAndDecryptionService {
 		EncryptedJWT jwt = new EncryptedJWT(header, claimsSet);
 		
 		service.encryptJwt(jwt);
-		// TODO test intermediate crypto parts?
-		service.decryptJwt(jwt);
+		String serialized = jwt.serialize();
 		
-		ReadOnlyJWTClaimsSet resultClaims = jwt.getJWTClaimsSet();
+		EncryptedJWT encryptedJwt = EncryptedJWT.parse(serialized);
+		assertThat(encryptedJwt.getJWTClaimsSet(), nullValue());
+		service.decryptJwt(encryptedJwt);
+		
+		ReadOnlyJWTClaimsSet resultClaims = encryptedJwt.getJWTClaimsSet();
 		
 		assertEquals(claimsSet.getIssuer(), resultClaims.getIssuer());
 		assertEquals(claimsSet.getSubject(), resultClaims.getSubject());

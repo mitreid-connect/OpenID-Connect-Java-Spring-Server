@@ -36,6 +36,7 @@ import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWEDecrypter;
 import com.nimbusds.jose.JWEEncrypter;
+import com.nimbusds.jose.JWEObject;
 import com.nimbusds.jose.crypto.DirectDecrypter;
 import com.nimbusds.jose.crypto.DirectEncrypter;
 import com.nimbusds.jose.crypto.RSADecrypter;
@@ -43,7 +44,6 @@ import com.nimbusds.jose.crypto.RSAEncrypter;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.OctetSequenceKey;
 import com.nimbusds.jose.jwk.RSAKey;
-import com.nimbusds.jwt.EncryptedJWT;
 
 /**
  * @author wkim
@@ -142,7 +142,7 @@ public class DefaultJwtEncryptionAndDecryptionService implements JwtEncryptionAn
 	 * @see org.mitre.jwt.encryption.service.JwtEncryptionAndDecryptionService#encryptJwt(com.nimbusds.jwt.EncryptedJWT)
 	 */
 	@Override
-	public void encryptJwt(EncryptedJWT jwt) {
+	public void encryptJwt(JWEObject jwt) {
 		if (getDefaultEncryptionKeyId() == null) {
 			throw new IllegalStateException("Tried to call default encryption with no default encrypter ID set");
 		}
@@ -162,7 +162,7 @@ public class DefaultJwtEncryptionAndDecryptionService implements JwtEncryptionAn
 	 * @see org.mitre.jwt.encryption.service.JwtEncryptionAndDecryptionService#decryptJwt(com.nimbusds.jwt.EncryptedJWT)
 	 */
 	@Override
-	public void decryptJwt(EncryptedJWT jwt) {
+	public void decryptJwt(JWEObject jwt) {
 		if (getDefaultDecryptionKeyId() == null) {
 			throw new IllegalStateException("Tried to call default decryption with no default decrypter ID set");
 		}
