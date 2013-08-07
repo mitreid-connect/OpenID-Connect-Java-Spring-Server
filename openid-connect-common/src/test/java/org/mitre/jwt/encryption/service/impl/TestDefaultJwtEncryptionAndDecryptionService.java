@@ -81,7 +81,7 @@ public class TestDefaultJwtEncryptionAndDecryptionService {
 			"qDp0Vqj3kbSCz1XyfCs6_LehBwtxHIyh8Ripy40p24moOAbgxVw3rxT_vl" +
 			"t3UVe4WO3JkJOzlpUf-KTVI2Ptgm-dARxTEtE-id-4OJr0h-K-VFs3VSnd" +
 			"VTIznSxfyrj8ILL6MG_Uv8YAu7VILSB3lOW085-4qE3DzgrTjgyQ"), // d
-			Use.ENCRYPTION, JWEAlgorithm.RSA_OAEP, RSAkid);
+			Use.ENCRYPTION, JWEAlgorithm.RSA_OAEP, RSAkid, null, null, null);
 	
 	// AES key wrap not yet tested
 //	private String AESkid = "aes123";
@@ -112,11 +112,12 @@ public class TestDefaultJwtEncryptionAndDecryptionService {
 		
 		JWEObject jwt = JWEObject.parse(compactSerializedJwe);
 		
-		assertThat(jwt.getPayload(), nullValue());
+		assertThat(jwt.getPayload(), nullValue()); // observe..nothing is there
 		
 		service.decryptJwt(jwt);
+		String result = jwt.getPayload().toString(); // and voila! decrypto-magic
 		
-		assertEquals(plainText, jwt.getPayload().toString());
+		assertEquals(plainText, result);
 	}
 	
 	@Test
