@@ -1,7 +1,6 @@
 <%@attribute name="pageName" required="false"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<%@ taglib prefix="security"
-	uri="http://www.springframework.org/security/tags"%>
+<%@ taglib prefix="security" uri="http://www.springframework.org/security/tags"%>
 <%@ taglib prefix="o" tagdir="/WEB-INF/tags"%>
 <c:choose>
 	<c:when test="${ not empty userInfo.preferredUsername }">
@@ -17,10 +16,8 @@
 	</c:when>
 	<c:otherwise>
 		<c:choose>
-			<c:when
-				test="${ not empty userInfo.givenName || not empty userInfo.familyName }">
-				<c:set var="longName"
-					value="${ userInfo.givenName } {$ userInfo.familyName }" />
+			<c:when test="${ not empty userInfo.givenName || not empty userInfo.familyName }">
+				<c:set var="longName" value="${ userInfo.givenName } {$ userInfo.familyName }" />
 			</c:when>
 			<c:otherwise>
 				<c:set var="longName" value="${ shortName }" />
@@ -31,10 +28,10 @@
 <div class="navbar navbar-fixed-top">
 	<div class="navbar-inner">
 		<div class="container">
-			<button class="btn btn-navbar" data-toggle="collapse"
-				data-target=".nav-collapse">
-				<span class="icon-bar"></span> <span class="icon-bar"></span> <span
-					class="icon-bar"></span>
+			<button class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+				<span class="icon-bar"></span> 
+				<span class="icon-bar"></span> 
+				<span class="icon-bar"></span>
 			</button>
 			<a class="brand" href="">${config.topbarTitle}</a>
 			<div class="nav-collapse collapse">
