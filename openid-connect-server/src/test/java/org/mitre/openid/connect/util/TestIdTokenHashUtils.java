@@ -38,7 +38,7 @@ import com.nimbusds.jwt.PlainJWT;
  *
  */
 @RunWith(MockitoJUnitRunner.class)
-public class TestJWSUtils {
+public class TestIdTokenHashUtils {
 	
 	@Mock
 	OAuth2AccessTokenEntity mockToken256;
@@ -83,7 +83,7 @@ public class TestJWSUtils {
 		String token = mockToken256.getJwt().serialize();
 		Base64URL expectedHash = new Base64URL("EP1gXNeESRH-n57baopfTQ");
 		
-		Base64URL resultHash = JWSUtils.getAccessTokenHash(JWSAlgorithm.HS256, mockToken256);
+		Base64URL resultHash = IdTokenHashUtils.getAccessTokenHash(JWSAlgorithm.HS256, mockToken256);
 		
 		assertEquals(expectedHash, resultHash);
 	}
@@ -100,7 +100,7 @@ public class TestJWSUtils {
 		String token = mockToken384.getJwt().serialize(); 
 		Base64URL expectedHash = new Base64URL("BWfFK73PQI36M1rg9R6VjMyWOE0-XvBK");
 		
-		Base64URL resultHash = JWSUtils.getAccessTokenHash(JWSAlgorithm.ES384, mockToken384);
+		Base64URL resultHash = IdTokenHashUtils.getAccessTokenHash(JWSAlgorithm.ES384, mockToken384);
 		
 		assertEquals(expectedHash, resultHash);
 	}
@@ -117,7 +117,7 @@ public class TestJWSUtils {
 		String token = mockToken512.getJwt().serialize(); 
 		Base64URL expectedHash = new Base64URL("vGH3QMY-knpACkLgzdkTqu3C9jtvbf2Wk_RSu2vAx8k");
 		
-		Base64URL resultHash = JWSUtils.getAccessTokenHash(JWSAlgorithm.RS512, mockToken512);
+		Base64URL resultHash = IdTokenHashUtils.getAccessTokenHash(JWSAlgorithm.RS512, mockToken512);
 		
 		assertEquals(expectedHash, resultHash);
 	}
@@ -129,7 +129,7 @@ public class TestJWSUtils {
 		
 		Base64URL expectedHash = new Base64URL("R5DCRi5eOjlvyTAJfry2dNM9adJ2ElpDEKYYByYU920"); // independently generated
 		
-		Base64URL resultHash = JWSUtils.getCodeHash(JWSAlgorithm.ES512, testCode);
+		Base64URL resultHash = IdTokenHashUtils.getCodeHash(JWSAlgorithm.ES512, testCode);
 		
 		assertEquals(expectedHash, resultHash);
 	}
