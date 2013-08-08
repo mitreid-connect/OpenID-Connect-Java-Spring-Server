@@ -1,5 +1,4 @@
-<%@ taglib prefix="authz"
-	uri="http://www.springframework.org/security/tags"%>
+<%@ taglib prefix="authz" uri="http://www.springframework.org/security/tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="o" tagdir="/WEB-INF/tags"%>
 <o:header title="Log In" />
@@ -18,8 +17,7 @@ $(document).ready(function() {
 	<h1>Login with Username and Password</h1>
 
 	<c:if test="${ param.error != null }">
-		<div class="alert alert-error">The system was unable to log you
-			in. Please try again.</div>
+		<div class="alert alert-error">The system was unable to log you in. Please try again.</div>
 	</c:if>
 
 
