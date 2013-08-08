@@ -1,11 +1,8 @@
 package org.mitre.openid.connect.util;
 
-import java.security.InvalidKeyException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
-
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.slf4j.Logger;
@@ -25,7 +22,7 @@ public class JWSUtils {
 	private static Logger logger = LoggerFactory.getLogger(JWSUtils.class);
 	
 	/**
-	 * Compute the HMAC hash of an authorization code
+	 * Compute the SHA hash of an authorization code
 	 * 
 	 * @param signingAlg
 	 * @param code
@@ -36,7 +33,7 @@ public class JWSUtils {
 	}
 	
 	/**
-	 * Compute the HMAC hash of a token
+	 * Compute the SHA hash of a token
 	 * 
 	 * @param signingAlg
 	 * @param token
@@ -52,31 +49,32 @@ public class JWSUtils {
 	
 	public static Base64URL getHash(JWSAlgorithm signingAlg, byte[] bytes) {
 		
-		//Switch based on the given signing algorithm - use HMAC with the same bitnumber
+		//Switch based on the given signing algorithm - use SHA-xxx with the same 'xxx' bitnumber
 		//as the JWSAlgorithm to hash the token.
 		String hashAlg = null;
 		
 		if (signingAlg.equals(JWSAlgorithm.HS256) || signingAlg.equals(JWSAlgorithm.ES256) || signingAlg.equals(JWSAlgorithm.RS256)) {
-			hashAlg = "HMACSHA256";
+			hashAlg = "SHA-256";
 		}
 		
 		else if (signingAlg.equals(JWSAlgorithm.ES384) || signingAlg.equals(JWSAlgorithm.HS384) || signingAlg.equals(JWSAlgorithm.RS384)) {
-			hashAlg = "HMACSHA384";
+			hashAlg = "SHA-384";
 		}
 		
 		else if (signingAlg.equals(JWSAlgorithm.ES512) || signingAlg.equals(JWSAlgorithm.HS512) || signingAlg.equals(JWSAlgorithm.RS512)) {
-			hashAlg = "HMACSHA512";
+			hashAlg = "SHA-512";
 		}
 		
 		if (hashAlg != null) {
 
 			try {
-				Mac mac = Mac.getInstance(hashAlg);
-				mac.init(new SecretKeySpec(bytes, hashAlg));
-
-				byte[] at_hash_bytes = mac.doFinal();
-				byte[] at_hash_bytes_left = Arrays.copyOf(at_hash_bytes, at_hash_bytes.length / 2);
-				Base64URL at_hash = Base64URL.encode(at_hash_bytes_left);
+				MessageDigest hasher = MessageDigest.getInstance(hashAlg);
+				hasher.reset();
+				hasher.update(bytes);
+				
+				byte[] atHashBytes = hasher.digest();
+				byte[] atHashBytesLeftHalf = Arrays.copyOf(atHashBytes, atHashBytes.length / 2);
+				Base64URL at_hash = Base64URL.encode(atHashBytesLeftHalf);
 
 				return at_hash;
 
@@ -84,9 +82,6 @@ public class JWSUtils {
 				
 				logger.error("No such algorithm error: ", e);
 				
-			} catch (InvalidKeyException e) {
-				
-				logger.error("Invalid key error: ", e);
 			}
 
 		}
