@@ -15,14 +15,20 @@
  ******************************************************************************/
 package org.mitre.openid.connect.web;
 
+import java.util.Date;
+import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
+import org.mitre.oauth2.model.AuthenticationHolderEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.RegisteredClient;
 import org.mitre.oauth2.model.SystemScope;
+import org.mitre.oauth2.repository.AuthenticationHolderRepository;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
 import org.mitre.oauth2.service.SystemScopeService;
@@ -45,7 +51,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 
 @Controller
 @RequestMapping(value = "register")
@@ -56,6 +68,15 @@ public class ClientDynamicRegistrationEndpoint {
 
 	@Autowired
 	private OAuth2TokenEntityService tokenService;
+	
+	@Autowired
+	private JwtSigningAndValidationService jwtService;
+	
+	@Autowired
+	private ConfigurationPropertiesBean configBean;
+	
+	@Autowired
+	private AuthenticationHolderRepository authenticationHolderRepository;
 
 	@Autowired
 	private SystemScopeService scopeService;
@@ -326,14 +347,42 @@ public class ClientDynamicRegistrationEndpoint {
 	 * @throws AuthenticationException
 	 */
 	private OAuth2AccessTokenEntity createRegistrationAccessToken(ClientDetailsEntity client) throws AuthenticationException {
-		// create a registration access token, treat it like a client credentials flow
-		// I can't use the auth request interface here because it has no setters and bad constructors -- THIS IS BAD API DESIGN
-		DefaultAuthorizationRequest authorizationRequest = new DefaultAuthorizationRequest(client.getClientId(), Sets.newHashSet(OAuth2AccessTokenEntity.REGISTRATION_TOKEN_SCOPE));
-		authorizationRequest.setApproved(true);
-		authorizationRequest.setAuthorities(Sets.newHashSet(new SimpleGrantedAuthority("ROLE_CLIENT")));
-		OAuth2Authentication authentication = new OAuth2Authentication(authorizationRequest, null);
-		OAuth2AccessTokenEntity registrationAccessToken = (OAuth2AccessTokenEntity) tokenService.createAccessToken(authentication);
-		return registrationAccessToken;
+		Map<String, String> authorizationParameters = Maps.newHashMap();
+		// This is replaced in 1.1 with a proper storage object
+		DefaultAuthorizationRequest clientAuth = new DefaultAuthorizationRequest(authorizationParameters, null, client.getClientId(), Sets.newHashSet(OAuth2AccessTokenEntity.REGISTRATION_TOKEN_SCOPE));
+		clientAuth.setApproved(true);
+		clientAuth.setAuthorities(Sets.newHashSet(new SimpleGrantedAuthority("ROLE_CLIENT")));
+		OAuth2Authentication authentication = new OAuth2Authentication(clientAuth, null);
+		
+		OAuth2AccessTokenEntity token = new OAuth2AccessTokenEntity();
+		token.setClient(client);
+		token.setScope(Sets.newHashSet(OAuth2AccessTokenEntity.REGISTRATION_TOKEN_SCOPE));
+
+		AuthenticationHolderEntity authHolder = new AuthenticationHolderEntity();
+		authHolder.setAuthentication(authentication);
+		authHolder = authenticationHolderRepository.save(authHolder);
+		token.setAuthenticationHolder(authHolder);
+
+		JWTClaimsSet claims = new JWTClaimsSet();
+
+		claims.setAudience(Lists.newArrayList(client.getClientId()));
+		claims.setIssuer(configBean.getIssuer());
+		claims.setIssueTime(new Date());
+		claims.setExpirationTime(token.getExpiration());
+		claims.setJWTID(UUID.randomUUID().toString()); // set a random NONCE in the middle of it
+
+		// TODO: use client's default signing algorithm
+		JWSAlgorithm signingAlg = jwtService.getDefaultSigningAlgorithm();
+		SignedJWT signed = new SignedJWT(new JWSHeader(signingAlg), claims);
+
+		jwtService.signJwt(signed);
+
+		token.setJwt(signed);
+
+		tokenService.saveAccessToken(token);
+
+		return token;
+		
 	}
 
 }
