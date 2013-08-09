@@ -403,8 +403,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 				}
 
 				// compare the nonce to our stored claim
-				// would be nice to have a getClaimAsString() kind of method from nimbus..
-				String nonce = (String) idClaims.getClaim("nonce");
+				String nonce = idClaims.getStringClaim("nonce");
 				if (Strings.isNullOrEmpty(nonce)) {
 
 					logger.error("ID token did not contain a nonce claim.");
