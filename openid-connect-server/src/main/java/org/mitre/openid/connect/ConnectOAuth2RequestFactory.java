@@ -37,6 +37,7 @@ import org.springframework.security.oauth2.common.util.OAuth2Utils;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.DefaultOAuth2RequestFactory;
+import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
@@ -65,6 +66,12 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 		this.clientDetailsService = clientDetailsService;
 	}
 
+	@Override
+	public OAuth2Request createOAuth2Request(AuthorizationRequest request) {
+		return new OAuth2Request(request.getRequestParameters(), request.getClientId(), request.getAuthorities(), 
+				request.isApproved(), request.getScope(), request.getResourceIds(), request.getRedirectUri(), request.getExtensions());
+	}
+	
 	@Override
 	public AuthorizationRequest createAuthorizationRequest(Map<String, String> inputParams) {
 
