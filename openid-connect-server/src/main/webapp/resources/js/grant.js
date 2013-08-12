@@ -117,7 +117,12 @@ var ApprovedSiteView = Backbone.View.extend({
 	},
 
 	render: function() {
-		var json = {grant: this.model.toJSON(), client: this.options.client.toJSON()};
+		
+		var formattedDate = {creationDate: moment(this.model.creationDate).format("ddd, hA"),
+							 accessDate: moment(this.model.accessDate),
+							 timeoutDate: moment(this.model.timeoutDate)};
+		
+		var json = {grant: this.model.toJSON(), client: this.options.client.toJSON(), formattedDate: formattedDate};
 		
 		this.$el.html(this.template(json));
 
