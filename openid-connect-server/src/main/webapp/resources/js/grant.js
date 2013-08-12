@@ -118,9 +118,24 @@ var ApprovedSiteView = Backbone.View.extend({
 
 	render: function() {
 		
-		var formattedDate = {creationDate: moment(this.model.creationDate).format("ddd, hA"),
-							 accessDate: moment(this.model.accessDate),
-							 timeoutDate: moment(this.model.timeoutDate)};
+		var creationDate = moment(this.model.get("creationDate"));
+		var accessDate = moment(this.model.get("accessDate"));
+		
+		var timeoutDate = moment(this.model.get("timeoutDate")).calendar();
+		
+		if (moment().diff(creationDate, 'months') < 6) {
+			creationDate = creationDate.fromNow();
+		} else {
+			creationDate = creationDate.format("MMMM Do, YYYY");
+		}
+		
+		if (moment().diff(accessDate, 'months') < 6) {
+			accessDate = accessDate.fromNow();
+		} else {
+			accessDate = accessDate.format("MMMM Do, YYYY");
+		}
+		
+		var formattedDate = {creationDate: creationDate, accessDate: accessDate, timeoutDate: timeoutDate};
 		
 		var json = {grant: this.model.toJSON(), client: this.options.client.toJSON(), formattedDate: formattedDate};
 		
