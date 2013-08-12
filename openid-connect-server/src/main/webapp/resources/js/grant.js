@@ -122,7 +122,7 @@ var ApprovedSiteView = Backbone.View.extend({
 		var accessDate = this.model.get("accessDate");
 		var timeoutDate = this.model.get("timeoutDate");
 		
-		if (creationDate == null) {
+		if (creationDate == null || !moment(creationDate).isValid()) {
 			creationDate = "Unknown";
 		} else {
 			creationDate = moment(creationDate);
@@ -133,7 +133,7 @@ var ApprovedSiteView = Backbone.View.extend({
 			}
 		}
 		
-		if (accessDate == null) {
+		if (accessDate == null || !moment(accessDate).isValid()) {
 			accessDate = "Unknown";
 		} else {
 			accessDate = moment(accessDate);
@@ -144,7 +144,7 @@ var ApprovedSiteView = Backbone.View.extend({
 			}
 		}
 		
-		if (timeoutDate == null) {
+		if (timeoutDate == null || !moment(timeoutDate).isValid()) {
 			timeoutDate = "Never";
 		} else {
 			timeoutDate = moment(timeoutDate).calendar();
