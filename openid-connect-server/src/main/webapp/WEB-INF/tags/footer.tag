@@ -17,6 +17,7 @@
 <script type="text/javascript" src="resources/js/lib/backbone.js"></script>
 <script type="text/javascript" src="resources/js/lib/purl.js"></script>
 <script type="text/javascript" src="resources/js/lib/bootstrapx-clickover.js"></script>
+<script type="text/javascript" src="resources/js/lib/moment.js"></script>
 <c:if test="${js != null && js != ''}">
 	<script type="text/javascript" src="resources/js/client.js"></script>
 	<script type="text/javascript" src="resources/js/grant.js"></script>
