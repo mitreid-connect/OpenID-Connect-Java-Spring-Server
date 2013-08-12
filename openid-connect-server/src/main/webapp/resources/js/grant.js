@@ -144,8 +144,10 @@ var ApprovedSiteView = Backbone.View.extend({
 			}
 		}
 		
-		if (timeoutDate == null || !moment(timeoutDate).isValid()) {
+		if (timeoutDate == null) {
 			timeoutDate = "Never";
+		} else if (!moment(timeoutDate).isValid()) {
+			timeoutDate = "Unknown";
 		} else {
 			timeoutDate = moment(timeoutDate).calendar();
 		}
