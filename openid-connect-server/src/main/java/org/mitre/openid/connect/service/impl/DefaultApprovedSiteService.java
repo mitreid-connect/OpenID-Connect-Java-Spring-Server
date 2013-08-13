@@ -34,7 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.base.Predicate;
-import com.google.common.collect.Sets;
+import com.google.common.collect.Collections2;
 
 /**
  * Implementation of the ApprovedSiteService
@@ -166,7 +166,7 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 	};
 	
 	private Collection<ApprovedSite> getExpired() {
-		return Sets.filter(Sets.newHashSet(approvedSiteRepository.getAll()), isExpired);
+		return Collections2.filter(approvedSiteRepository.getAll(), isExpired);
 	}
 
 }

@@ -51,6 +51,7 @@ import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Sets;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.PlainJWT;
@@ -413,11 +414,11 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	};
 	
 	private Collection<OAuth2AccessTokenEntity> getExpiredAccessTokens() {
-		return Sets.filter(Sets.newHashSet(tokenRepository.getAllAccessTokens()), isAccessTokenExpired);
+		return Collections2.filter(tokenRepository.getAllAccessTokens(), isAccessTokenExpired);
 	}
 
 	private Collection<OAuth2RefreshTokenEntity> getExpiredRefreshTokens() {
-		return Sets.filter(Sets.newHashSet(tokenRepository.getAllRefreshTokens()), isRefreshTokenExpired);
+		return Collections2.filter(tokenRepository.getAllRefreshTokens(), isRefreshTokenExpired);
 	}
 
 	/* (non-Javadoc)
