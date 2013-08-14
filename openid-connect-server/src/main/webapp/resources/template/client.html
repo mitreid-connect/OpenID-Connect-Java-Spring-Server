@@ -352,7 +352,7 @@
 	</div>
 
 	<div class="tab-pane" id="client-token-tab">
-            <div class="control-group" id="accessTokenValiditySeconds">
+            <div class="control-group" id="accessTokenValidityTime">
                 <label class="control-label">Access Token Timeout</label>
                 <div class="controls">
 					<div>
@@ -361,14 +361,19 @@
 						</label>
 					</div>
                     <div class="input-append">
-                        <input type="text" class="" value="<%=(accessTokenValiditySeconds == null ? '' : accessTokenValiditySeconds)%>" id="access-token-timeout-seconds" size="16"><span class="add-on">seconds</span>
+                        <input type="text" class="" value="<%=(accessTokenValiditySeconds == null ? '' : accessTokenValiditySeconds)%>" id="access-token-timeout-seconds" size="16">
+						<select>
+							<option>seconds</option>
+							<option>minutes</option>
+							<option>hours</option>
+						</select>
                     </div>
-                    <p class="help-block">Enter this time in seconds.</p>
+                    <p class="help-block">Enter this time in seconds, minutes, or hours.</p>
                 </div>
             </div>
 
 
-            <div class="control-group" id="idTokenValiditySeconds">
+            <div class="control-group" id="idTokenValidityTime">
                 <label class="control-label">ID Token Timeout</label>
                 <div class="controls">
 					<div>
@@ -377,10 +382,14 @@
 						</label>
 					</div>
                     <div class="input-append">
-                        <input type="text" class="" value="<%=(idTokenValiditySeconds == null ? '' : idTokenValiditySeconds)%>" id="id-token-timeout-seconds" size="16"><span
-                            class="add-on">seconds</span>
+                        <input type="text" class="" value="<%=(idTokenValiditySeconds == null ? '' : idTokenValiditySeconds)%>" id="id-token-timeout-seconds" size="16">
+						<select>
+							<option>seconds</option>
+							<option>minutes</option>
+							<option>hours</option>
+						</select>
                     </div>
-                    <p class="help-block">Enter this time in seconds.</p>
+                    <p class="help-block">Enter this time in seconds, minutes, or hours.</p>
                 </div>
             </div>
 
@@ -393,7 +402,7 @@
                 </div>
             </div>
 
-            <div class="control-group" id="refreshTokenValiditySeconds">
+            <div class="control-group" id="refreshTokenValidityTime">
                 <div class="controls">
 					<div>
 						<label class="checkbox">
@@ -406,9 +415,14 @@
 						</label>
 					</div>
                     <div class="input-append">
-                        <input type="text" class="" value="<%=(refreshTokenValiditySeconds == null ? '' : refreshTokenValiditySeconds)%>" id="refresh-token-timeout-seconds" size="16"><span class="add-on">seconds</span>
-                    </div>
-                    <p class="help-block">Enter this time in seconds.</p>
+                        <input type="text" class="" value="<%=(refreshTokenValiditySeconds == null ? '' : refreshTokenValiditySeconds)%>" id="refresh-token-timeout-seconds" size="16">
+						<select>
+							<option>seconds</option>
+							<option>minutes</option>
+							<option>hours</option>
+						</select>
+					</div>
+                    <p class="help-block">Enter this time in seconds, minutes, or hours.</p>
                 </div>
             </div>
 	</div>

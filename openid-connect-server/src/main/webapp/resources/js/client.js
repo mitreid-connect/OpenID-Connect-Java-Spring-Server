@@ -299,7 +299,7 @@ var ClientFormView = Backbone.View.extend({
     },
 
     toggleRefreshTokenTimeout:function () {
-        $("#refreshTokenValiditySeconds", this.$el).toggle();
+        $("#refreshTokenValidityTime", this.$el).toggle();
     },
     
     previewLogo:function(event) {
@@ -366,10 +366,15 @@ var ClientFormView = Backbone.View.extend({
     	}
     },
 
-    getFormTokenNumberValue:function(value) {
+    // rounds down to the nearest integer value in seconds.
+    getFormTokenNumberValue:function(value, timeUnit) {
         if (value == "") {
         	return null;
-        } else {
+        } else if (timeUnit == 'hours') {
+        	return parseInt(parseFloat(value) * 3600);
+        } else if (timeUnit == 'minutes') {
+        	return parseInt(parseFloat(value) * 60);
+        } else { // seconds
         	return parseInt(value);
         }
     },
@@ -429,12 +434,12 @@ var ClientFormView = Backbone.View.extend({
 
         var accessTokenValiditySeconds = null;
         if (!$('disableAccessTokenTimeout').is(':checked')) {
-        	accessTokenValiditySeconds = this.getFormTokenNumberValue($('#accessTokenValiditySeconds input[type=text]').val()); 
+        	accessTokenValiditySeconds = this.getFormTokenNumberValue($('#accessTokenValidityTime input[type=text]').val(), $('#accessTokenValidityTime select').val()); 
         }
         
         var idTokenValiditySeconds = null;
         if (!$('disableIDTokenTimeout').is(':checked')) {
-        	idTokenValiditySeconds = this.getFormTokenNumberValue($('#idTokenValiditySeconds input[type=text]').val()); 
+        	idTokenValiditySeconds = this.getFormTokenNumberValue($('#idTokenValidityTime input[type=text]').val(), $('#idTokenValidityTime select').val()); 
         }
         
         var refreshTokenValiditySeconds = null;
@@ -449,7 +454,7 @@ var ClientFormView = Backbone.View.extend({
         	}
 
         	if (!$('disableRefreshTokenTimeout').is(':checked')) {
-        		refreshTokenValiditySeconds = this.getFormTokenNumberValue($('#refreshTokenValiditySeconds input[type=text]').val());
+        		refreshTokenValiditySeconds = this.getFormTokenNumberValue($('#refreshTokenValidityTime input[type=text]').val(), $('#refreshTokenValidityTime select').val());
         	}
         }
         
@@ -607,7 +612,7 @@ var ClientFormView = Backbone.View.extend({
         
         // set up token  fields
         if (!this.model.get("allowRefresh")) {
-            $("#refreshTokenValiditySeconds", this.$el).hide();
+            $("#refreshTokenValidityTime", this.$el).hide();
         }
 
         if (this.model.get("accessTokenValiditySeconds") == null) {
