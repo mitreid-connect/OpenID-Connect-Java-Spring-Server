@@ -20,6 +20,7 @@
 package org.mitre.openid.connect.filter;
 
 import java.io.IOException;
+import java.util.Date;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -27,7 +28,9 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
+import org.mitre.openid.connect.web.AuthenticationTimeStamper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
@@ -93,7 +96,24 @@ public class PromptFilter extends GenericFilterBean {
 				chain.doFilter(req, res);
 			}
 
-		} else {
+		} else if (!Strings.isNullOrEmpty(request.getParameter("max_age"))) {
+			// TODO: issue #450
+			String maxAge = request.getParameter("max_age");
+			HttpSession session = request.getSession();
+			Date authTime = (Date) session.getAttribute(AuthenticationTimeStamper.AUTH_TIMESTAMP);
+
+			Date now = new Date();
+			if (authTime != null) {
+				Integer max = Integer.parseInt(maxAge);
+				long seconds = (now.getTime() - authTime.getTime()) / 1000;
+				if (seconds > max) {
+					// session is too old, log the user out and continue
+        			SecurityContextHolder.getContext().setAuthentication(null);
+				}
+			}
+			
+			chain.doFilter(req, res);
+    	} else {
 			// no prompt parameter, not our business
 			chain.doFilter(req, res);
 		}
