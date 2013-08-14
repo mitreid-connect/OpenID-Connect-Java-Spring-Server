@@ -366,9 +366,12 @@ var ClientFormView = Backbone.View.extend({
     	}
     },
 
-    getFormTokenValue:function(value) {
-        if (value == "") return null;
-        else return value;
+    getFormTokenNumberValue:function(value) {
+        if (value == "") {
+        	return null;
+        } else {
+        	return parseInt(value);
+        }
     },
 
     // maps from a form-friendly name to the real grant parameter name
@@ -381,7 +384,7 @@ var ClientFormView = Backbone.View.extend({
     	'refresh_token': 'refresh_token'
     },
     
-    // maps from a form-friendly name to the real reponse type parameter name
+    // maps from a form-friendly name to the real response type parameter name
     responseMap:{
     	'code': 'code',
     	'token': 'token',
@@ -426,12 +429,12 @@ var ClientFormView = Backbone.View.extend({
 
         var accessTokenValiditySeconds = null;
         if (!$('disableAccessTokenTimeout').is(':checked')) {
-        	accessTokenValiditySeconds = parseInt(this.getFormTokenValue($('#accessTokenValiditySeconds input[type=text]').val())); 
+        	accessTokenValiditySeconds = this.getFormTokenNumberValue($('#accessTokenValiditySeconds input[type=text]').val()); 
         }
         
         var idTokenValiditySeconds = null;
         if (!$('disableIDTokenTimeout').is(':checked')) {
-        	idTokenValiditySeconds = parseInt(this.getFormTokenValue($('#idTokenValiditySeconds input[type=text]').val())); 
+        	idTokenValiditySeconds = this.getFormTokenNumberValue($('#idTokenValiditySeconds input[type=text]').val()); 
         }
         
         var refreshTokenValiditySeconds = null;
@@ -446,7 +449,7 @@ var ClientFormView = Backbone.View.extend({
         	}
 
         	if (!$('disableRefreshTokenTimeout').is(':checked')) {
-        		refreshTokenValiditySeconds = parseInt(this.getFormTokenValue($('#refreshTokenValiditySeconds input[type=text]').val()));
+        		refreshTokenValiditySeconds = this.getFormTokenNumberValue($('#refreshTokenValiditySeconds input[type=text]').val());
         	}
         }
         
