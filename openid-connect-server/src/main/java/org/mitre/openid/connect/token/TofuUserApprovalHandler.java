@@ -22,10 +22,13 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.HttpSession;
+
 import org.mitre.openid.connect.model.ApprovedSite;
 import org.mitre.openid.connect.model.WhitelistedSite;
 import org.mitre.openid.connect.service.ApprovedSiteService;
 import org.mitre.openid.connect.service.WhitelistedSiteService;
+import org.mitre.openid.connect.web.AuthenticationTimeStamper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
@@ -33,6 +36,8 @@ import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.approval.UserApprovalHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
@@ -138,6 +143,8 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 						authorizationRequest.getExtensions().put("approved_site", ap.getId());
 						authorizationRequest.setApproved(true);
 						alreadyApproved = true;
+						
+						setAuthTime(authorizationRequest);
 					}
 				}
 			}
@@ -150,6 +157,8 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 					ApprovedSite newSite = approvedSiteService.createApprovedSite(clientId, userId, null, ws.getAllowedScopes(), ws);
 					authorizationRequest.getExtensions().put("approved_site", newSite.getId());
 					authorizationRequest.setApproved(true);
+					
+					setAuthTime(authorizationRequest);
 				}
 			}
 		}
@@ -212,10 +221,33 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 				ApprovedSite newSite = approvedSiteService.createApprovedSite(clientId, userId, timeout, allowedScopes, null);
 				authorizationRequest.getExtensions().put("approved_site", newSite.getId());
 			}
+			
+			setAuthTime(authorizationRequest);
+
 
 		}
 
 		return authorizationRequest;
+	}
+
+	/**
+	 * Get the auth time out of the current session and add it to the 
+	 * auth request in the extensions map.
+	 * 
+	 * @param authorizationRequest
+	 */
+	private void setAuthTime(AuthorizationRequest authorizationRequest) {
+		// Get the session auth time, if we have it, and store it in the request
+		ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+		if (attr != null) {
+			HttpSession session = attr.getRequest().getSession();
+			if (session != null) {
+				Date authTime = (Date) session.getAttribute(AuthenticationTimeStamper.AUTH_TIMESTAMP);
+				if (authTime != null) {
+					authorizationRequest.getExtensions().put(AuthenticationTimeStamper.AUTH_TIMESTAMP, authTime);
+				}
+			}
+		}
 	}
 
 	/**

@@ -49,14 +49,11 @@ public class AuthenticationTimeStamper extends SavedRequestAwareAuthenticationSu
 
 	/**
 	 * Set the timestamp on the session to mark when the authentication happened,
-	 * useful for calculating authentication age.
+	 * useful for calculating authentication age. This gets stored in the sesion
+	 * and can get pulled out by other components.
 	 */
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-
-		//
-		// FIXME: storing the auth time in the session doesn't actually work because we need access to it from the token endpoint when the user isn't present
-		//
 
 		Date authTimestamp = new Date();
 
