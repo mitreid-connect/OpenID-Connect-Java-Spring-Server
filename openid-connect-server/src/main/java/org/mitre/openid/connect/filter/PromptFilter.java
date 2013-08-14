@@ -49,6 +49,9 @@ public class PromptFilter extends GenericFilterBean {
 
 	private Logger logger = LoggerFactory.getLogger(PromptFilter.class);
 
+	public final static String PROMPTED = "PROMPT_FILTER_PROMPTED";
+	public final static String PROMPT_REQUESTED = "PROMPT_FILTER_REQUESTED";
+	
 	/**
 	 * 
 	 */
@@ -76,21 +79,33 @@ public class PromptFilter extends GenericFilterBean {
 					response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied");
 					return;
 				}
-				/* TODO: this is an attempt to catch the prompt=login case, but it results in an infinite loop so it's commented out
-        	} else if (request.getParameter("prompt").equals("login")) {
-        		// see if the user's logged in
-        		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			} else if (request.getParameter("prompt").equals("login")) {
 
-        		if (auth != null) {
-        			// user's been logged in already (by session management)
-        			// log them out and continue
-        			SecurityContextHolder.getContext().setAuthentication(null);
+    			// first see if the user's already been prompted in this session
+				HttpSession session = request.getSession();
+    			if (session.getAttribute(PROMPTED) == null) {
+    				// user hasn't been PROMPTED yet, we need to check    			
+
+    				session.setAttribute(PROMPT_REQUESTED, Boolean.TRUE);
+    				
+    				// see if the user's logged in
+    				Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+	        		if (auth != null) {
+	        			// user's been logged in already (by session management)
+	        			// log them out and continue
+	        			SecurityContextHolder.getContext().setAuthentication(null);
+	        			chain.doFilter(req, res);
+	        		} else {
+	        			// user hasn't been logged in yet, we can keep going since we'll get there
+	        			chain.doFilter(req, res);
+	        		}
+    			} else {
+    				// user has been PROMPTED, we're fine
+    				
+    				// but first, undo the prompt tag
+    				session.removeAttribute(PROMPTED);
         			chain.doFilter(req, res);
-        		} else {
-        			// user hasn't been logged in yet, we can keep going
-        			chain.doFilter(req, res);
-        		}
-				 */
+    			}
 			} else {
 				// prompt parameter is a value we don't care about, not our business
 				chain.doFilter(req, res);

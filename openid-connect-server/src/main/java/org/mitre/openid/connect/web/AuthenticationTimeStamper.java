@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.mitre.openid.connect.filter.PromptFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
@@ -60,7 +61,12 @@ public class AuthenticationTimeStamper extends SavedRequestAwareAuthenticationSu
 		HttpSession session = request.getSession();
 
 		session.setAttribute(AUTH_TIMESTAMP, authTimestamp);
-
+		
+		if (session.getAttribute(PromptFilter.PROMPT_REQUESTED) != null) {
+			session.setAttribute(PromptFilter.PROMPTED, Boolean.TRUE);
+			session.removeAttribute(PromptFilter.PROMPT_REQUESTED);
+		}
+		
 		logger.info("Successful Authentication at " + authTimestamp.toString());
 
 		super.onAuthenticationSuccess(request, response, authentication);
