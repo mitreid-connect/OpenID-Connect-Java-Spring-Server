@@ -73,8 +73,8 @@ var ClientModel = Backbone.Model.extend({
         requestUris:[],
         
         authorities:[],
-        accessTokenValiditySeconds: 3600,
-        refreshTokenValiditySeconds: 604800,
+        accessTokenValiditySeconds: null,
+        refreshTokenValiditySeconds: null,
         resourceIds:[],
         //additionalInformation?
         
@@ -82,7 +82,7 @@ var ClientModel = Backbone.Model.extend({
         reuseRefreshToken:true,
         dynamicallyRegistered:false,
         allowIntrospection:false,
-        idTokenValiditySeconds: 600,
+        idTokenValiditySeconds: null,
         createdAt:null,     
 
         allowRefresh:false,
