@@ -629,14 +629,17 @@ var ClientFormView = Backbone.View.extend({
 
         if (this.model.get("accessTokenValiditySeconds") == null) {
             $("#access-token-timeout-time", this.$el).prop('disabled',true);
+            $("#access-token-timeout-unit", this.$el).prop('disabled',true);
         }
 
         if (this.model.get("refreshTokenValiditySeconds") == null) {
             $("#refresh-token-timeout-time", this.$el).prop('disabled',true);
+            $("#refresh-token-timeout-unit", this.$el).prop('disabled',true);
         }
 
         if (this.model.get("idTokenValiditySeconds") == null) {
             $("#id-token-timeout-time", this.$el).prop('disabled',true);
+            $("#id-token-timeout-unit", this.$el).prop('disabled',true);
         }
 
         // toggle other dynamic fields
