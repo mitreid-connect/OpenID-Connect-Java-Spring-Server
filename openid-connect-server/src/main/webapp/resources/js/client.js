@@ -288,9 +288,21 @@ var ClientFormView = Backbone.View.extend({
     events:{
         "click .btn-save":"saveClient",
         "click #allowRefresh" : "toggleRefreshTokenTimeout",
-        "click #disableAccessTokenTimeout" : function(){ $("#access-token-timeout-time", this.$el).prop('disabled',!$("#access-token-timeout-time", this.$el).prop('disabled')); },
-        "click #disableIDTokenTimeout" : function(){ $("#id-token-timeout-time", this.$el).prop('disabled',!$("#id-token-timeout-time", this.$el).prop('disabled')); },
-        "click #disableRefreshTokenTimeout" : function(){ $("#refresh-token-timeout-time", this.$el).prop('disabled',!$("#refresh-token-timeout-time", this.$el).prop('disabled')); },
+        "click #disableAccessTokenTimeout" : function() { 
+        	$("#access-token-timeout-time", this.$el).prop('disabled',!$("#access-token-timeout-time", this.$el).prop('disabled')); 
+        	$("#access-token-timeout-unit", this.$el).prop('disabled',!$("#access-token-timeout-unit", this.$el).prop('disabled')); 
+        	document.getElementById("access-token-timeout-time").value = '';
+        	},
+        "click #disableIDTokenTimeout" : function() { 
+        	$("#id-token-timeout-time", this.$el).prop('disabled',!$("#id-token-timeout-time", this.$el).prop('disabled')); 
+        	$("#id-token-timeout-unit", this.$el).prop('disabled',!$("#id-token-timeout-unit", this.$el).prop('disabled')); 
+        	document.getElementById("id-token-timeout-time").value = ''; 
+        	},
+        "click #disableRefreshTokenTimeout" : function() { 
+        	$("#refresh-token-timeout-time", this.$el).prop('disabled',!$("#refresh-token-timeout-time", this.$el).prop('disabled'));
+        	$("#refresh-token-timeout-unit", this.$el).prop('disabled',!$("#refresh-token-timeout-unit", this.$el).prop('disabled')); 
+        	document.getElementById("refresh-token-timeout-time").value = ''; 	
+        	},
         "click .btn-cancel": function() { window.history.back(); return false; },
         "change #requireClientSecret":"toggleRequireClientSecret",
         "change #displayClientSecret":"toggleDisplayClientSecret",
