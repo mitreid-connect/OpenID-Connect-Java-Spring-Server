@@ -288,9 +288,9 @@ var ClientFormView = Backbone.View.extend({
     events:{
         "click .btn-save":"saveClient",
         "click #allowRefresh" : "toggleRefreshTokenTimeout",
-        "click #disableAccessTokenTimeout" : function(){ $("#access-token-timeout-seconds", this.$el).prop('disabled',!$("#access-token-timeout-seconds", this.$el).prop('disabled')); },
-        "click #disableIDTokenTimeout" : function(){ $("#id-token-timeout-seconds", this.$el).prop('disabled',!$("#id-token-timeout-seconds", this.$el).prop('disabled')); },
-        "click #disableRefreshTokenTimeout" : function(){ $("#refresh-token-timeout-seconds", this.$el).prop('disabled',!$("#refresh-token-timeout-seconds", this.$el).prop('disabled')); },
+        "click #disableAccessTokenTimeout" : function(){ $("#access-token-timeout-time", this.$el).prop('disabled',!$("#access-token-timeout-time", this.$el).prop('disabled')); },
+        "click #disableIDTokenTimeout" : function(){ $("#id-token-timeout-time", this.$el).prop('disabled',!$("#id-token-timeout-time", this.$el).prop('disabled')); },
+        "click #disableRefreshTokenTimeout" : function(){ $("#refresh-token-timeout-time", this.$el).prop('disabled',!$("#refresh-token-timeout-time", this.$el).prop('disabled')); },
         "click .btn-cancel": function() { window.history.back(); return false; },
         "change #requireClientSecret":"toggleRequireClientSecret",
         "change #displayClientSecret":"toggleDisplayClientSecret",
@@ -616,15 +616,15 @@ var ClientFormView = Backbone.View.extend({
         }
 
         if (this.model.get("accessTokenValiditySeconds") == null) {
-            $("#access-token-timeout-seconds", this.$el).prop('disabled',true);
+            $("#access-token-timeout-time", this.$el).prop('disabled',true);
         }
 
         if (this.model.get("refreshTokenValiditySeconds") == null) {
-            $("#refresh-token-timeout-seconds", this.$el).prop('disabled',true);
+            $("#refresh-token-timeout-time", this.$el).prop('disabled',true);
         }
 
         if (this.model.get("idTokenValiditySeconds") == null) {
-            $("#id-token-timeout-seconds", this.$el).prop('disabled',true);
+            $("#id-token-timeout-time", this.$el).prop('disabled',true);
         }
 
         // toggle other dynamic fields
