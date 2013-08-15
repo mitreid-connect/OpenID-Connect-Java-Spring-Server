@@ -419,6 +419,8 @@ var AppRouter = Backbone.Router.extend({
     		generateClientSecret:true,
     		displayClientSecret:false,
     		scope: _.uniq(_.flatten(this.systemScopeList.defaultScopes().pluck("value"))),
+    		accessTokenValiditySeconds:3600,
+    		idTokenValiditySeconds:600
     	}, { silent: true });
     	
         this.clientFormView = new ClientFormView({model:client});
@@ -443,7 +445,7 @@ var AppRouter = Backbone.Router.extend({
         	}, { silent: true });
         }
         
-        if ($.inArray("refresh_token", client.get("authorizedGrantTypes")) != -1) {
+        if ($.inArray("refresh_token", client.get("grantTypes")) != -1) {
         	client.set({
         		allowRefresh: true
         	}, { silent: true });
