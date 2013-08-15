@@ -361,9 +361,9 @@
                         	<input type="checkbox" id="disableAccessTokenTimeout" <%=(accessTokenValiditySeconds == null ? 'checked' : '')%>/> Access tokens do not time out
 						</label>
 					</div>
-                    <div class="input-append">
-                        <input type="text" class="" value="<%=(accessTokenValiditySeconds == null ? '' : accessTokenValiditySeconds)%>" id="access-token-timeout-seconds" size="16">
-						<select>
+                    <div class="form-horizontal">
+                        <input type="text" class="" value="<%=(accessTokenValiditySeconds == null ? '' : accessTokenValiditySeconds)%>" id="access-token-timeout-seconds" size="16" style="width:120px;">
+						<select style="width:120px;">
 							<option>seconds</option>
 							<option>minutes</option>
 							<option>hours</option>
@@ -382,9 +382,9 @@
                         	<input type="checkbox" id="disableIDTokenTimeout" <%=(idTokenValiditySeconds == null ? 'checked' : '')%>/> ID Tokens do not time out
 						</label>
 					</div>
-                    <div class="input-append">
-                        <input type="text" class="" value="<%=(idTokenValiditySeconds == null ? '' : idTokenValiditySeconds)%>" id="id-token-timeout-seconds" size="16">
-						<select>
+                    <div class="form-horizontal">
+                        <input type="text" class="" value="<%=(idTokenValiditySeconds == null ? '' : idTokenValiditySeconds)%>" id="id-token-timeout-seconds" size="16" style="width:120px;">
+						<select style="width:120px;">
 							<option>seconds</option>
 							<option>minutes</option>
 							<option>hours</option>
@@ -415,9 +415,9 @@
                         	<input type="checkbox" id="disableRefreshTokenTimeout" <%=(refreshTokenValiditySeconds == null ? 'checked' : '')%>/> Refresh tokens do not time out
 						</label>
 					</div>
-                    <div class="input-append">
-                        <input type="text" class="" value="<%=(refreshTokenValiditySeconds == null ? '' : refreshTokenValiditySeconds)%>" id="refresh-token-timeout-seconds" size="16">
-						<select>
+                    <div class="form-horizontal">
+                        <input type="text" class="" value="<%=(refreshTokenValiditySeconds == null ? '' : refreshTokenValiditySeconds)%>" id="refresh-token-timeout-seconds" size="16" style="width:120px;">
+						<select style="width:120px;">
 							<option>seconds</option>
 							<option>minutes</option>
 							<option>hours</option>
