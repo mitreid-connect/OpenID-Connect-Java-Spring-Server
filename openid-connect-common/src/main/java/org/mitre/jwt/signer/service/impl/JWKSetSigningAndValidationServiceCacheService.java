@@ -20,6 +20,7 @@
 package org.mitre.jwt.signer.service.impl;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -54,6 +55,7 @@ public class JWKSetSigningAndValidationServiceCacheService {
 
 	public JWKSetSigningAndValidationServiceCacheService() {
 		this.cache = CacheBuilder.newBuilder()
+				.expireAfterWrite(1, TimeUnit.HOURS) // expires 1 hour after fetch
 				.maximumSize(100)
 				.build(new JWKSetVerifierFetcher());
 	}
