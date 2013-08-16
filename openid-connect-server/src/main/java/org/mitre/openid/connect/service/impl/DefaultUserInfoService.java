@@ -35,22 +35,7 @@ public class DefaultUserInfoService implements UserInfoService {
 
 	@Autowired
 	private UserInfoRepository userInfoRepository;
-
-	/**
-	 * Default constructor
-	 */
-	public DefaultUserInfoService() {
-
-	}
-
-	/**
-	 * Constructor for use in test harnesses.
-	 * 
-	 * @param repository
-	 */
-	public DefaultUserInfoService(UserInfoRepository userInfoRepository) {
-		this.userInfoRepository = userInfoRepository;
-	}
+	
 
 	@Override
 	public void save(UserInfo userInfo) {
