@@ -10,7 +10,10 @@
             <div class="content span12">
                 <o:breadcrumbs crumb="Manage"/>
                 <span id="content">
-                    loading...
+                    Loading <span id="loading"></span>...
+                    <div class="progress progress-striped active">
+                    	<div class="bar" style="width: 0%"></div>
+                    </div>
                 </span>
             </div>
         </div>
