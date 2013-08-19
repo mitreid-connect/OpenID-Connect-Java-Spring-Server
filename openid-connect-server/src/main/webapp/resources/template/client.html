@@ -419,7 +419,6 @@
                 <label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> Request Object Signing Algorithm</label>
                 <div class="controls">
 					<select>
-						<!-- TODO: this should be filled out by the server, perhaps? -->
 						<option value="default" <%=requestObjectSigningAlg == null ? 'selected ' : ''%>>Use server default</option>
 						<option value="none" <%=requestObjectSigningAlg == "none" ? 'selected' : ''%>>No digital signature</option>
 						<option value="HS256" <%=requestObjectSigningAlg == "HS256" ? 'selected' : ''%>>HMAC using SHA-256 hash algorithm</option>
@@ -439,7 +438,6 @@
                 <label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> User Info Endpoint Signing Algorithm</label>
                 <div class="controls">
 					<select>
-						<!-- TODO: this should be filled out by the server, perhaps? -->
 						<option value="default" <%=userInfoSignedResponseAlg == null ? 'selected ' : ''%>>Use server default</option>
 						<option value="none" <%=userInfoSignedResponseAlg == "none" ? 'selected' : ''%>>No digital signature</option>
 						<option value="HS256" <%=userInfoSignedResponseAlg == "HS256" ? 'selected' : ''%>>HMAC using SHA-256 hash algorithm</option>
@@ -459,7 +457,6 @@
                 <label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> User Info Endpoint Encryption Algorithm</label>
                 <div class="controls">
 					<select>
-						<!-- TODO: this should be filled out by the server, perhaps? -->
 						<option value="default" <%=userInfoEncryptedResponseAlg == null ? 'selected ' : ''%>>Use server default</option>
 						<option value="none" <%=userInfoEncryptedResponseAlg == "none" ? 'selected' : ''%>>No encryption</option>
 						<option value="RSA1_5" <%=userInfoEncryptedResponseAlg == "RSA1_5" ? 'selected' : ''%>>RSAES-PKCS1-V1_5</option>
@@ -478,7 +475,6 @@
                 <label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> User Info Endpoint Encryption Method</label>
                 <div class="controls">
 					<select>
-						<!-- TODO: this should be filled out by the server, perhaps? -->
 						<option value="default" <%=userInfoEncryptedResponseEnc == null ? 'selected ' : ''%>>Use server default</option>
 						<option value="none" <%=userInfoEncryptedResponseEnc == "none" ? 'selected' : ''%>>No encryption</option>
 						<option value="A128CBC+HS256" <%=userInfoEncryptedResponseEnc == "A128CBC+HS256" ? 'selected' : ''%>>Composite Authenticated Encryption algorithm using AES in Cipher Block Chaining (CBC) mode with PKCS #5 padding with an integrity calculation using HMAC SHA-256, using a 256 bit CMK (and 128 bit CEK)</option>
@@ -493,7 +489,6 @@
                 <label class="control-label">ID Token Signing Algorithm</label>
                 <div class="controls">
 					<select>
-						<!-- TODO: this should be filled out by the server, perhaps? -->
 						<option value="default" <%=idTokenSignedResponseAlg == null ? 'selected ' : ''%>>Use server default</option>
 						<option value="none" <%=idTokenSignedResponseAlg == "none" ? 'selected' : ''%>>No digital signature</option>
 						<option value="HS256" <%=idTokenSignedResponseAlg == "HS256" ? 'selected' : ''%>>HMAC using SHA-256 hash algorithm</option>
@@ -513,7 +508,6 @@
                 <label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> ID Token Encryption Algorithm</label>
                 <div class="controls">
 					<select>
-						<!-- TODO: this should be filled out by the server, perhaps? -->
 						<option value="default" <%=idTokenEncryptedResponseAlg == null ? 'selected ' : ''%>>Use server default</option>
 						<option value="none" <%=idTokenEncryptedResponseAlg == "none" ? 'selected' : ''%>>No encryption</option>
 						<option value="RSA1_5" <%=idTokenEncryptedResponseAlg == "RSA1_5" ? 'selected' : ''%>>RSAES-PKCS1-V1_5</option>
@@ -532,7 +526,6 @@
                 <label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> ID Token Encryption Method</label>
                 <div class="controls">
 					<select>
-						<!-- TODO: this should be filled out by the server, perhaps? -->
 						<option value="default" <%=idTokenEncryptedResponseEnc == null ? 'selected ' : ''%>>Use server default</option>
 						<option value="none" <%=idTokenEncryptedResponseEnc == "none" ? 'selected' : ''%>>No encryption</option>
 						<option value="A128CBC+HS256" <%=idTokenEncryptedResponseEnc == "A128CBC+HS256" ? 'selected' : ''%>>Composite Authenticated Encryption algorithm using AES in Cipher Block Chaining (CBC) mode with PKCS #5 padding with an integrity calculation using HMAC SHA-256, using a 256 bit CMK (and 128 bit CEK)</option>
