@@ -208,20 +208,20 @@ public class UserInfoView extends AbstractView {
 		JsonObject obj = toJson(ui, scope);
 
 		//Process list of requested claims out of the request object
-		JsonElement userInfo = requestObj.get("userinfo");
-		if (userInfo == null || !userInfo.isJsonObject()) {
+		JsonElement claims = requestObj.get("claims");
+		if (claims == null || !claims.isJsonObject()) {
 			return obj;
 		}
 
-		JsonElement claims = userInfo.getAsJsonObject().get("claims");
-		if (claims == null || !claims.isJsonObject()) {
+		JsonElement userinfo = claims.getAsJsonObject().get("userinfo");
+		if (userinfo == null || !userinfo.isJsonObject()) {
 			return obj;
 		}
 
 		// TODO: this method is likely to be fragile if the data model changes at all
 
 		//For each claim found, add it if not already present
-		for (Entry<String, JsonElement> i : claims.getAsJsonObject().entrySet()) {
+		for (Entry<String, JsonElement> i : userinfo.getAsJsonObject().entrySet()) {
 			String claimName = i.getKey();
 			if (!obj.has(claimName)) {
 				String value = "";
