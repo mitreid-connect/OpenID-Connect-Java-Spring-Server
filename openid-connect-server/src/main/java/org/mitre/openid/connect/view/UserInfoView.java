@@ -36,6 +36,7 @@ import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.servlet.view.AbstractView;
 
 import com.google.common.base.CaseFormat;
+import com.google.common.base.Strings;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
@@ -64,6 +65,21 @@ public class UserInfoView extends AbstractView {
 		UserInfo userInfo = (UserInfo) model.get("userInfo");
 
 		Set<String> scope = (Set<String>) model.get("scope");
+		
+		String claimsRequestJsonString = (String) model.get("claimsRequest");
+		
+		// getting the 'claims request parameter' from the model
+		JsonObject claimsRequest = null;
+		if (!Strings.isNullOrEmpty(claimsRequestJsonString)) {
+			JsonElement parsed = jsonParser.parse(claimsRequestJsonString);
+			if (parsed.isJsonObject()) {
+				claimsRequest = parsed.getAsJsonObject();
+			} else {
+				// claimsRequest stays null
+				logger.warn("Claims parameter not a valid JSON object: " + claimsRequestJsonString);
+			}
+		}
+		
 
 		Gson gson = new GsonBuilder()
 		.setExclusionStrategies(new ExclusionStrategy() {
