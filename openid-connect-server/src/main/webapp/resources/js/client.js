@@ -370,6 +370,15 @@ var ClientFormView = Backbone.View.extend({
         if (value == "") return null;
         else return value;
     },
+    
+    // returns "null" if given the value "default" as a string, otherwise returns input value. useful for parsing the JOSE algorithm dropdowns
+    defaultToNull:function(value) {
+    	if (value == 'default') {
+    		return null;
+    	} else {
+    		return value;
+    	}
+    },
 
     // maps from a form-friendly name to the real grant parameter name
     grantMap:{
@@ -484,13 +493,13 @@ var ClientFormView = Backbone.View.extend({
             contacts: this.contactsCollection.pluck('item'),
             requestUris: this.requestUrisCollection.pluck('item'),
             defaultAcrValues: this.defaultAcrValuesCollection.pluck('item'),
-            requestObjectSigningAlg: $('#requestObjectSigningAlg select').val(),
-            userInfoSignedResponseAlg: $('#userInfoSignedResponseAlg select').val(),
-            userInfoEncryptedResponseAlg: $('#userInfoEncryptedResponseAlg select').val(),
-            userInfoEncryptedResponseEnc: $('#userInfoEncryptedResponseEnc select').val(),
-            idTokenSignedResponseAlg: $('#idTokenSignedResponseAlg select').val(),
-            idTokenEncryptedResponseAlg: $('#idTokenEncryptedResponseAlg select').val(),
-            idTokenEncryptedResponseEnc: $('#idTokenEncryptedResponseEnc select').val()
+            requestObjectSigningAlg: this.defaultToNull($('#requestObjectSigningAlg select').val()),
+            userInfoSignedResponseAlg: this.defaultToNull($('#userInfoSignedResponseAlg select').val()),
+            userInfoEncryptedResponseAlg: this.defaultToNull($('#userInfoEncryptedResponseAlg select').val()),
+            userInfoEncryptedResponseEnc: this.defaultToNull($('#userInfoEncryptedResponseEnc select').val()),
+            idTokenSignedResponseAlg: this.defaultToNull($('#idTokenSignedResponseAlg select').val()),
+            idTokenEncryptedResponseAlg: this.defaultToNull($('#idTokenEncryptedResponseAlg select').val()),
+            idTokenEncryptedResponseEnc: this.defaultToNull($('#idTokenEncryptedResponseEnc select').val())
         };
 
         // post-validate
