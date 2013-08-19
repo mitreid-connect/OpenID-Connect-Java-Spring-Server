@@ -77,7 +77,7 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 	 */
 	public DefaultJwtSigningAndValidationService(Map<String, JWK> keys) throws NoSuchAlgorithmException, InvalidKeySpecException {
 		this.keys = keys;
-		buildSignersAndVerifiers();
+		//buildSignersAndVerifiers();
 	}
 
 	/**
@@ -101,7 +101,7 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 				throw new IllegalArgumentException("Tried to load a key from a keystore without a 'kid' field: " + key);
 			}
 		}
-		buildSignersAndVerifiers();
+		//buildSignersAndVerifiers();
 	}
 
 	@PostConstruct
