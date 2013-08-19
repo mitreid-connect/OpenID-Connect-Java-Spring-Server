@@ -394,6 +394,21 @@ var ClientFormView = Backbone.View.extend({
     		return value;
     	}
     },
+    
+    disableUnsupportedJOSEItems:function(serverSupported, query) {
+        var supported = ['default'];
+        if (serverSupported) {
+        	supported = _.union(supported, serverSupported);
+        }
+        $(query, this.$el).each(function(idx) {
+        	if(_.contains(supported, $(this).val())) {
+        		$(this).prop('disabled', false);
+        	} else {
+        		$(this).prop('disabled', true);
+        	}
+        });
+    	
+    },
 
     // maps from a form-friendly name to the real grant parameter name
     grantMap:{
@@ -637,6 +652,15 @@ var ClientFormView = Backbone.View.extend({
         // toggle other dynamic fields
         this.toggleRequireClientSecret();
         this.previewLogo();
+        
+        // disable unsupported JOSE algorithms
+        this.disableUnsupportedJOSEItems(app.serverConfiguration.request_object_signing_alg_values_supported, '#requestObjectSigningAlg option');
+        this.disableUnsupportedJOSEItems(app.serverConfiguration.userinfo_signing_alg_values_supported, '#userInfoSignedResponseAlg option');
+        this.disableUnsupportedJOSEItems(app.serverConfiguration.userinfo_encryption_alg_values_supported, '#userInfoEncryptedResponseAlg option');
+        this.disableUnsupportedJOSEItems(app.serverConfiguration.userinfo_encryption_enc_values_supported, '#userInfoEncryptedResponseEnc option');
+        this.disableUnsupportedJOSEItems(app.serverConfiguration.id_token_signing_alg_values_supported, '#idTokenSignedResponseAlg option');
+        this.disableUnsupportedJOSEItems(app.serverConfiguration.id_token_encryption_alg_values_supported, '#idTokenEncryptedResponseAlg option');
+        this.disableUnsupportedJOSEItems(app.serverConfiguration.id_token_encryption_enc_values_supported, '#idTokenEncryptedResponseEnc option');
         
         this.$('.nyi').clickover({
         	placement: 'right', 
