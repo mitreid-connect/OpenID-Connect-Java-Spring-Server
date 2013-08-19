@@ -115,7 +115,7 @@ public class IntrospectionEndpoint {
 			if (authClient.isAllowIntrospection()) {
 
 				// if it's the same client that the token was issued to, or it at least has all the scopes the token was issued with
-				if (authClient.equals(tokenClient) || authClient.getScope().containsAll(scopes)) {
+				if (authClient.getClientId().equals(tokenClient.getClientId()) || authClient.getScope().containsAll(scopes)) {
 
 					// if it's a valid token, we'll print out information on it
 					model.addAttribute("entity", token);
