@@ -632,14 +632,6 @@ $(function () {
 
     jQuery.ajaxSetup({async:false});
 
-    // load up our model and collection classes
-    /*
-    $.get('resources/js/client.js', _load);
-    $.get('resources/js/grant.js', _load);
-    $.get('resources/js/scope.js', _load);
-    $.get('resources/js/whitelist.js', _load);
-    */
-    
     var _load = function (templates) {
         $('body').append(templates);
     };
@@ -655,7 +647,7 @@ $(function () {
     app = new AppRouter();
 
     // grab all hashed URLs and send them through the app router instead
-    $('a[href*="#"]').on('click', function(event) {
+    $(document).on('click', 'a[href*="#"]', function(event) {
     	event.preventDefault();
     	app.navigate(this.hash.slice(1), {trigger: true});
     });
