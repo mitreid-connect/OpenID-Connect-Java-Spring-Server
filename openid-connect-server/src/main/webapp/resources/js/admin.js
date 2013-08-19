@@ -361,38 +361,45 @@ var AppRouter = Backbone.Router.extend({
 
         this.breadCrumbView.render();
 
+
         //
         // Several items depend on the clients and whitelists being loaded, so we're going to pre-fetch them here
         // and not start the app router until they're loaded.
         //
         
         // load things in the right order:
-        $("#loading").html("scopes");        
-        this.systemScopeList.fetch({
-        	success: function(collection, response) {
-        		$("#content .progress .bar").css("width", "25%");
-                $("#loading").html("clients");
-        		app.clientList.fetch({
-        			success: function(collection, response) {
-                		$("#content .progress .bar").css("width", "50%");
-        		        $("#loading").html("whitelists");
-        				app.whiteListList.fetch({
-        					success: function(collection, response) {
-        		        		$("#content .progress .bar").css("width", "75%");
-        				        $("#loading").html("statistics");        						
-        						app.clientStats.fetch({
-        							success: function(model, response) {
-        				        		$("#content .progress .bar").css("width", "100%");
-        						        $("#loading").html("console");        								
-		        						var baseUrl = $.url($('base').attr('href'));                
-		        						Backbone.history.start({pushState: true, root: baseUrl.attr('relative') + 'manage/'});
-        							}
-        						});
-        					}
-        				});
-        			}
-        		});
-        	}
+        $("#loading").html("server configuration");
+        var base = $('base').attr('href');
+        $.getJSON(base + '.well-known/openid-configuration', function(data) {
+        	app.serverConfiguration = data;
+    		$("#content .progress .bar").css("width", "20%");
+	        $("#loading").html("scopes");        
+	        app.systemScopeList.fetch({
+	        	success: function(collection, response) {
+	        		$("#content .progress .bar").css("width", "40%");
+	                $("#loading").html("clients");
+	        		app.clientList.fetch({
+	        			success: function(collection, response) {
+	                		$("#content .progress .bar").css("width", "60%");
+	        		        $("#loading").html("whitelists");
+	        				app.whiteListList.fetch({
+	        					success: function(collection, response) {
+	        		        		$("#content .progress .bar").css("width", "80%");
+	        				        $("#loading").html("statistics");        						
+	        						app.clientStats.fetch({
+	        							success: function(model, response) {
+	        				        		$("#content .progress .bar").css("width", "100%");
+	        						        $("#loading").html("console");
+			        						var baseUrl = $.url(app.serverConfiguration.issuer);
+			        						Backbone.history.start({pushState: true, root: baseUrl.attr('relative') + 'manage/'});
+	        							}
+	        						});
+	        					}
+	        				});
+	        			}
+	        		});
+	        	}
+	        });
         });
 
     },
