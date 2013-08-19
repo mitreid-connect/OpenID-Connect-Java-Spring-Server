@@ -97,15 +97,15 @@ public class ClientDetailsEntity implements ClientDetails {
 	private String sectorIdentifierUri; // sector_identifier_uri
 	private SubjectType subjectType; // subject_type
 
-	private JWSAlgorithmEmbed requestObjectSigningAlg = JWSAlgorithmEmbed.NONE; // request_object_signing_alg
+	private JWSAlgorithmEmbed requestObjectSigningAlg = null; // request_object_signing_alg
 
-	private JWSAlgorithmEmbed userInfoSignedResponseAlg = JWSAlgorithmEmbed.NONE; // user_info_signed_response_alg
-	private JWEAlgorithmEmbed userInfoEncryptedResponseAlg = JWEAlgorithmEmbed.NONE; // user_info_encrypted_response_alg
-	private JWEEncryptionMethodEmbed userInfoEncryptedResponseEnc = JWEEncryptionMethodEmbed.NONE; // user_info_encrypted_response_enc
+	private JWSAlgorithmEmbed userInfoSignedResponseAlg = null; // user_info_signed_response_alg
+	private JWEAlgorithmEmbed userInfoEncryptedResponseAlg = null; // user_info_encrypted_response_alg
+	private JWEEncryptionMethodEmbed userInfoEncryptedResponseEnc = null; // user_info_encrypted_response_enc
 
-	private JWSAlgorithmEmbed idTokenSignedResponseAlg = JWSAlgorithmEmbed.NONE; // id_token_signed_response_alg
-	private JWEAlgorithmEmbed idTokenEncryptedResponseAlg = JWEAlgorithmEmbed.NONE; // id_token_encrypted_response_alg
-	private JWEEncryptionMethodEmbed idTokenEncryptedResponseEnc = JWEEncryptionMethodEmbed.NONE; // id_token_encrypted_response_enc
+	private JWSAlgorithmEmbed idTokenSignedResponseAlg = null; // id_token_signed_response_alg
+	private JWEAlgorithmEmbed idTokenEncryptedResponseAlg = null; // id_token_encrypted_response_alg
+	private JWEEncryptionMethodEmbed idTokenEncryptedResponseEnc = null; // id_token_encrypted_response_enc
 
 	private Integer defaultMaxAge; // default_max_age
 	private Boolean requireAuthTime; // require_auth_time
