@@ -78,7 +78,7 @@ CREATE TABLE IF NOT EXISTS client_details (
 	reuse_refresh_tokens BOOLEAN NOT NULL DEFAULT true,
 	dynamically_registered BOOLEAN NOT NULL DEFAULT false,
 	allow_introspection BOOLEAN NOT NULL DEFAULT false,
-	id_token_validity_seconds BIGINT,
+	id_token_validity_seconds BIGINT NOT NULL DEFAULT 600,
 	
 	client_id VARCHAR(256),
 	client_secret VARCHAR(2048),
