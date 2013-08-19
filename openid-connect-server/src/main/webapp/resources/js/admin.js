@@ -367,14 +367,23 @@ var AppRouter = Backbone.Router.extend({
         //
         
         // load things in the right order:
+        $("#loading").html("scopes");        
         this.systemScopeList.fetch({
         	success: function(collection, response) {
+        		$("#content .progress .bar").css("width", "25%");
+                $("#loading").html("clients");
         		app.clientList.fetch({
         			success: function(collection, response) {
+                		$("#content .progress .bar").css("width", "50%");
+        		        $("#loading").html("whitelists");
         				app.whiteListList.fetch({
         					success: function(collection, response) {
+        		        		$("#content .progress .bar").css("width", "75%");
+        				        $("#loading").html("statistics");        						
         						app.clientStats.fetch({
         							success: function(model, response) {
+        				        		$("#content .progress .bar").css("width", "100%");
+        						        $("#loading").html("console");        								
 		        						var baseUrl = $.url($('base').attr('href'));                
 		        						Backbone.history.start({pushState: true, root: baseUrl.attr('relative') + 'manage/'});
         							}
