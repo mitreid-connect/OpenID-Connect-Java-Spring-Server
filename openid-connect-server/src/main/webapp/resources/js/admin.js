@@ -663,7 +663,7 @@ $(function () {
     app = new AppRouter();
 
     // grab all hashed URLs and send them through the app router instead
-    $(document).on('click', 'a[href*="#"]', function(event) {
+    $(document).on('click', 'a[href^="manage/#"]', function(event) {
     	event.preventDefault();
     	app.navigate(this.hash.slice(1), {trigger: true});
     });
