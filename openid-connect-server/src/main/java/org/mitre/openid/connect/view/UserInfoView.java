@@ -50,6 +50,8 @@ import com.nimbusds.jwt.JWTParser;
 
 @Component("userInfoView")
 public class UserInfoView extends AbstractView {
+	
+	private static JsonParser jsonParser = new JsonParser();
 
 	private static Logger logger = LoggerFactory.getLogger(UserInfoView.class);
 
@@ -98,7 +100,7 @@ public class UserInfoView extends AbstractView {
 					JWT requestObject = JWTParser.parse(jwtString);
 
 					// FIXME: move to GSON for easier processing
-					JsonObject obj = (JsonObject) new JsonParser().parse(requestObject.getJWTClaimsSet().toJSONObject().toJSONString());
+					JsonObject obj = (JsonObject) jsonParser.parse(requestObject.getJWTClaimsSet().toJSONObject().toJSONString());
 
 					gson.toJson(toJsonFromRequestObj(userInfo, scope, obj), out);
 				} catch (JsonSyntaxException e) {
