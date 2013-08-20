@@ -37,6 +37,7 @@ import org.springframework.web.servlet.view.AbstractView;
 
 import com.google.common.base.CaseFormat;
 import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
@@ -118,7 +119,7 @@ public class UserInfoView extends AbstractView {
 					// FIXME: move to GSON for easier processing
 					JsonObject obj = (JsonObject) jsonParser.parse(requestObject.getJWTClaimsSet().toJSONObject().toJSONString());
 
-					gson.toJson(toJsonFromRequestObj(userInfo, scope, obj), out);
+					gson.toJson(toJsonFromRequestObj(userInfo, scope, obj, claimsRequest), out);
 				} catch (JsonSyntaxException e) {
 					logger.error("JsonSyntaxException in UserInfoView.java: ", e);
 				} catch (JsonIOException e) {
@@ -201,9 +202,10 @@ public class UserInfoView extends AbstractView {
 	 * @param ui
 	 * @param scope
 	 * @param requestObj
+	 * @param claimsRequest the claims request parameter object.
 	 * @return
 	 */
-	private JsonObject toJsonFromRequestObj(UserInfo ui, Set<String> scope, JsonObject requestObj) {
+	private JsonObject toJsonFromRequestObj(UserInfo ui, Set<String> scope, JsonObject requestObj, JsonObject claimsRequest) {
 
 		JsonObject obj = toJson(ui, scope);
 
@@ -218,10 +220,23 @@ public class UserInfoView extends AbstractView {
 			return obj;
 		}
 
+		
+		// Filter claims from the request object with the claims from the claims request parameter, if it exists
+		Set<Entry<String, JsonElement>> requestClaimsSet = Sets.newHashSet();
+		if (claimsRequest != null) {
+			
+			for (Entry<String, JsonElement> entry : userinfo.getAsJsonObject().entrySet()) {
+				if (claimsRequest.has(entry.getKey())) {
+					requestClaimsSet.add(entry);
+				}
+			}
+			
+		}
+		
 		// TODO: this method is likely to be fragile if the data model changes at all
 
 		//For each claim found, add it if not already present
-		for (Entry<String, JsonElement> i : userinfo.getAsJsonObject().entrySet()) {
+		for (Entry<String, JsonElement> i : requestClaimsSet) {
 			String claimName = i.getKey();
 			if (!obj.has(claimName)) {
 				String value = "";
