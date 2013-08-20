@@ -377,14 +377,9 @@
             <div class="control-group" id="idTokenValidityTime">
                 <label class="control-label">ID Token Timeout</label>
                 <div class="controls">
-					<div>
-						<label class="checkbox">
-                        	<input type="checkbox" id="disableIDTokenTimeout" <%=(idTokenValiditySeconds == null ? 'checked' : '')%>/> ID Tokens do not time out
-						</label>
-					</div>
-                    <div class="form-horizontal">
-                        <input type="text" class="" value="<%=(idTokenValiditySeconds == null ? '' : idTokenValiditySeconds)%>" id="id-token-timeout-time" size="16" style="width:120px;">
-						<select id="id-token-timeout-unit" style="width:120px;">
+                    <div>
+                        <input type="text" class="" value="<%=(idTokenValiditySeconds == null ? '' : idTokenValiditySeconds)%>" id="id-token-timeout-time" size="16" style="width:8em;">
+						<select id="id-token-timeout-unit" style="width:8em;">
 							<option>seconds</option>
 							<option>minutes</option>
 							<option>hours</option>

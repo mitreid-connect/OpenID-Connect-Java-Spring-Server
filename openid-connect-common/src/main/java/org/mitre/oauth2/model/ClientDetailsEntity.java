@@ -42,6 +42,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -64,6 +66,11 @@ import org.springframework.security.oauth2.provider.ClientDetails;
 	@NamedQuery(name = "ClientDetailsEntity.getByClientId", query = "select c from ClientDetailsEntity c where c.clientId = :clientId")
 })
 public class ClientDetailsEntity implements ClientDetails {
+
+	/**
+	 * 
+	 */
+    private static final int DEFAULT_ID_TOKEN_VALIDITY_SECONDS = 600;
 
 	private static final long serialVersionUID = -1617727085733786296L;
 
@@ -213,6 +220,15 @@ public class ClientDetailsEntity implements ClientDetails {
 
 	}
 
+	@PrePersist
+	@PreUpdate
+	private void prePersist() {
+		// make sure that ID tokens always time out, default to 5 minutes
+		if (getIdTokenValiditySeconds() == null) {
+			setIdTokenValiditySeconds(DEFAULT_ID_TOKEN_VALIDITY_SECONDS);
+		}
+	}	
+	
 	/**
 	 * @return the id
 	 */
@@ -270,6 +286,8 @@ public class ClientDetailsEntity implements ClientDetails {
 	}
 
 	/**
+	 * Number of seconds ID token is valid for. MUST be a positive integer, can not be null.
+	 * 
 	 * @return the idTokenValiditySeconds
 	 */
 	@Basic

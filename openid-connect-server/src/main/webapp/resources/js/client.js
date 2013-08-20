@@ -293,11 +293,6 @@ var ClientFormView = Backbone.View.extend({
         	$("#access-token-timeout-unit", this.$el).prop('disabled',!$("#access-token-timeout-unit", this.$el).prop('disabled')); 
         	document.getElementById("access-token-timeout-time").value = '';
         	},
-        "click #disableIDTokenTimeout" : function() { 
-        	$("#id-token-timeout-time", this.$el).prop('disabled',!$("#id-token-timeout-time", this.$el).prop('disabled')); 
-        	$("#id-token-timeout-unit", this.$el).prop('disabled',!$("#id-token-timeout-unit", this.$el).prop('disabled')); 
-        	document.getElementById("id-token-timeout-time").value = ''; 
-        	},
         "click #disableRefreshTokenTimeout" : function() { 
         	$("#refresh-token-timeout-time", this.$el).prop('disabled',!$("#refresh-token-timeout-time", this.$el).prop('disabled'));
         	$("#refresh-token-timeout-unit", this.$el).prop('disabled',!$("#refresh-token-timeout-unit", this.$el).prop('disabled')); 
@@ -473,10 +468,7 @@ var ClientFormView = Backbone.View.extend({
         	accessTokenValiditySeconds = this.getFormTokenNumberValue($('#accessTokenValidityTime input[type=text]').val(), $('#accessTokenValidityTime select').val()); 
         }
         
-        var idTokenValiditySeconds = null;
-        if (!$('disableIDTokenTimeout').is(':checked')) {
-        	idTokenValiditySeconds = this.getFormTokenNumberValue($('#idTokenValidityTime input[type=text]').val(), $('#idTokenValidityTime select').val()); 
-        }
+        var idTokenValiditySeconds = this.getFormTokenNumberValue($('#idTokenValidityTime input[type=text]').val(), $('#idTokenValidityTime select').val()); 
         
         var refreshTokenValiditySeconds = null;
         if ($('#allowRefresh').is(':checked')) {
@@ -540,10 +532,6 @@ var ClientFormView = Backbone.View.extend({
         // post-validate
         if (attrs["allowRefresh"] == false) {
             attrs["refreshTokenValiditySeconds"] = null;
-        }
-
-        if ($('#disableIDTokenTimeout').is(':checked')) {
-             attrs["idTokenValiditySeconds"] = null;
         }
 
         if ($('#disableAccessTokenTimeout').is(':checked')) {
@@ -659,11 +647,6 @@ var ClientFormView = Backbone.View.extend({
         if (this.model.get("refreshTokenValiditySeconds") == null) {
             $("#refresh-token-timeout-time", this.$el).prop('disabled',true);
             $("#refresh-token-timeout-unit", this.$el).prop('disabled',true);
-        }
-
-        if (this.model.get("idTokenValiditySeconds") == null) {
-            $("#id-token-timeout-time", this.$el).prop('disabled',true);
-            $("#id-token-timeout-unit", this.$el).prop('disabled',true);
         }
 
         // toggle other dynamic fields
