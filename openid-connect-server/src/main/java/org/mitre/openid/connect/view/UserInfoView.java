@@ -222,6 +222,10 @@ public class UserInfoView extends AbstractView {
 
 		
 		// Filter claims from the request object with the claims from the claims request parameter, if it exists
+		
+		// Doing the set intersection manually because the claim entries may be referring to
+		// the same claim but have different 'individual claim values', causing the Entry<> to be unequal, 
+		// which doesn't allow the use of the more compact Sets.intersection() type method.
 		Set<Entry<String, JsonElement>> requestClaimsSet = Sets.newHashSet();
 		if (claimsRequest != null) {
 			
