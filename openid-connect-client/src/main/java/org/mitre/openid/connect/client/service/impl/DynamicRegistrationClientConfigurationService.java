@@ -45,6 +45,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 /**
@@ -157,7 +158,8 @@ public class DynamicRegistrationClientConfigurationService implements ClientConf
 	public class DynamicClientRegistrationLoader extends CacheLoader<ServerConfiguration, RegisteredClient> {
 		private HttpClient httpClient = new DefaultHttpClient();
 		private HttpComponentsClientHttpRequestFactory httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
-
+		private Gson gson = new Gson(); // note that this doesn't serialize nulls by default
+		
 		@Override
 		public RegisteredClient load(ServerConfiguration serverConfig) throws Exception {
 			RestTemplate restTemplate = new RestTemplate(httpFactory);
@@ -168,12 +170,13 @@ public class DynamicRegistrationClientConfigurationService implements ClientConf
 
 				// dynamically register this client
 				JsonObject jsonRequest = ClientDetailsEntityJsonProcessor.serialize(template);
+				String serializedClient = gson.toJson(jsonRequest);
 
 				HttpHeaders headers = new HttpHeaders();
 				headers.setContentType(MediaType.APPLICATION_JSON);
 				headers.setAccept(Lists.newArrayList(MediaType.APPLICATION_JSON));
 
-				HttpEntity<String> entity = new HttpEntity<String>(jsonRequest.toString(), headers);
+				HttpEntity<String> entity = new HttpEntity<String>(serializedClient, headers);
 
 				String registered = restTemplate.postForObject(serverConfig.getRegistrationEndpointUri(), entity, String.class);
 				// TODO: handle HTTP errors
