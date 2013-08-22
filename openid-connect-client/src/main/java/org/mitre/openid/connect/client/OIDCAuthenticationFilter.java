@@ -22,6 +22,7 @@ import java.net.URI;
 import java.security.SecureRandom;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -33,10 +34,12 @@ import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.jwt.signer.service.impl.JWKSetSigningAndValidationServiceCacheService;
 import org.mitre.oauth2.model.RegisteredClient;
 import org.mitre.openid.connect.client.model.IssuerServiceResponse;
+import org.mitre.openid.connect.client.service.AuthRequestOptionsService;
 import org.mitre.openid.connect.client.service.AuthRequestUrlBuilder;
 import org.mitre.openid.connect.client.service.ClientConfigurationService;
 import org.mitre.openid.connect.client.service.IssuerService;
 import org.mitre.openid.connect.client.service.ServerConfigurationService;
+import org.mitre.openid.connect.client.service.impl.StaticAuthRequestOptionsService;
 import org.mitre.openid.connect.config.ServerConfiguration;
 import org.mitre.openid.connect.model.OIDCAuthenticationToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,8 +91,9 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 	private ServerConfigurationService servers;
 	private ClientConfigurationService clients;
 	private IssuerService issuerService;
+	private AuthRequestOptionsService authOptions = new StaticAuthRequestOptionsService(); // initialize with an empty set of options
 	private AuthRequestUrlBuilder authRequestBuilder;
-
+	
 	protected int httpSocketTimeout = HTTP_SOCKET_TIMEOUT;
 
 	/**
@@ -201,7 +205,9 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 			// this value comes back in the auth code response
 			String state = createState(session);
 
-			String authRequest = authRequestBuilder.buildAuthRequestUrl(serverConfig, clientConfig, redirectUri, nonce, state);
+			Map<String, String> options = authOptions.getOptions(serverConfig, clientConfig, request);
+			
+			String authRequest = authRequestBuilder.buildAuthRequestUrl(serverConfig, clientConfig, redirectUri, nonce, state, options);
 
 			logger.debug("Auth Request:  " + authRequest);
 
@@ -601,6 +607,20 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 	 */
 	public void setAuthRequestUrlBuilder(AuthRequestUrlBuilder authRequestBuilder) {
 		this.authRequestBuilder = authRequestBuilder;
+	}
+
+	/**
+	 * @return the authOptions
+	 */
+	public AuthRequestOptionsService getAuthRequestOptionsService() {
+		return authOptions;
+	}
+
+	/**
+	 * @param authOptions the authOptions to set
+	 */
+	public void setAuthRequestOptionsService(AuthRequestOptionsService authOptions) {
+		this.authOptions = authOptions;
 	}
 
 }

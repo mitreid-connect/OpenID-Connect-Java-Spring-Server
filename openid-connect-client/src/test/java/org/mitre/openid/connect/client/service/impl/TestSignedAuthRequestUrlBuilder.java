@@ -35,6 +35,7 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.nimbusds.jose.Algorithm;
@@ -63,6 +64,8 @@ public class TestSignedAuthRequestUrlBuilder {
 	private String nonce = "34fasf3ds";
 	private String state = "af0ifjsldkj";
 	private String responseType = "code";
+	private Map<String, String> options = ImmutableMap.of("foo", "bar");
+
 
 	// RSA key properties:
 	// {@link package com.nimbusds.jose.jwk#RSAKey}
@@ -113,7 +116,7 @@ public class TestSignedAuthRequestUrlBuilder {
 	@Test
 	public void buildAuthRequestUrl() {
 
-		String requestUri = urlBuilder.buildAuthRequestUrl(serverConfig, clientConfig, redirectUri, nonce, state);
+		String requestUri = urlBuilder.buildAuthRequestUrl(serverConfig, clientConfig, redirectUri, nonce, state, options);
 
 		// parsing the result
 		UriComponentsBuilder builder = null;
@@ -144,6 +147,9 @@ public class TestSignedAuthRequestUrlBuilder {
 		assertEquals(redirectUri, claims.getClaim("redirect_uri"));
 		assertEquals(nonce, claims.getClaim("nonce"));
 		assertEquals(state, claims.getClaim("state"));
+		for (String claim : options.keySet()) {
+	        assertEquals(options.get(claim), claims.getClaim(claim));
+        }
 	}
 
 	@Test(expected = AuthenticationServiceException.class)
@@ -151,6 +157,6 @@ public class TestSignedAuthRequestUrlBuilder {
 
 		Mockito.when(serverConfig.getAuthorizationEndpointUri()).thenReturn("e=mc^2");
 
-		urlBuilder.buildAuthRequestUrl(serverConfig, clientConfig, "example.com", "", "");
+		urlBuilder.buildAuthRequestUrl(serverConfig, clientConfig, "example.com", "", "", options);
 	}
 }
