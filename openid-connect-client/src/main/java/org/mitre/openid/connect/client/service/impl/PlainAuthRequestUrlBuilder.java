@@ -20,6 +20,8 @@
 package org.mitre.openid.connect.client.service.impl;
 
 import java.net.URISyntaxException;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.http.client.utils.URIBuilder;
 import org.mitre.oauth2.model.RegisteredClient;
@@ -42,7 +44,7 @@ public class PlainAuthRequestUrlBuilder implements AuthRequestUrlBuilder {
 	 * @see org.mitre.openid.connect.client.service.AuthRequestUrlBuilder#buildAuthRequest(javax.servlet.http.HttpServletRequest, org.mitre.openid.connect.config.ServerConfiguration, org.springframework.security.oauth2.provider.ClientDetails)
 	 */
 	@Override
-	public String buildAuthRequestUrl(ServerConfiguration serverConfig, RegisteredClient clientConfig, String redirectUri, String nonce, String state) {
+	public String buildAuthRequestUrl(ServerConfiguration serverConfig, RegisteredClient clientConfig, String redirectUri, String nonce, String state, Map<String, String> options) {
 		try {
 
 			URIBuilder uriBuilder = new URIBuilder(serverConfig.getAuthorizationEndpointUri());
@@ -57,8 +59,9 @@ public class PlainAuthRequestUrlBuilder implements AuthRequestUrlBuilder {
 			uriBuilder.addParameter("state", state);
 
 			// Optional parameters:
-
-			// TODO: display, prompt
+			for (Entry<String, String> option : options.entrySet()) {
+	            uriBuilder.addParameter(option.getKey(), option.getValue());
+            }
 
 			return uriBuilder.build().toString();
 

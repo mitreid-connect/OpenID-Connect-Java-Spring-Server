@@ -20,6 +20,8 @@
 package org.mitre.openid.connect.client.service.impl;
 
 import java.net.URISyntaxException;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.http.client.utils.URIBuilder;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
@@ -45,24 +47,31 @@ public class SignedAuthRequestUrlBuilder implements AuthRequestUrlBuilder {
 	 * @see org.mitre.openid.connect.client.service.AuthRequestUrlBuilder#buildAuthRequestUrl(org.mitre.openid.connect.config.ServerConfiguration, org.springframework.security.oauth2.provider.ClientDetails, java.lang.String, java.lang.String, java.lang.String)
 	 */
 	@Override
-	public String buildAuthRequestUrl(ServerConfiguration serverConfig, RegisteredClient clientConfig, String redirectUri, String nonce, String state) {
+	public String buildAuthRequestUrl(ServerConfiguration serverConfig, RegisteredClient clientConfig, String redirectUri, String nonce, String state, Map<String, String> options) {
 
 		// create our signed JWT for the request object
 		JWTClaimsSet claims = new JWTClaimsSet();
 
 		//set parameters to JwtClaims
-		claims.setCustomClaim("response_type", "code");
-		claims.setCustomClaim("client_id", clientConfig.getClientId());
-		claims.setCustomClaim("scope", Joiner.on(" ").join(clientConfig.getScope()));
+		claims.setClaim("response_type", "code");
+		claims.setClaim("client_id", clientConfig.getClientId());
+		claims.setClaim("scope", Joiner.on(" ").join(clientConfig.getScope()));
 
 		// build our redirect URI
-		claims.setCustomClaim("redirect_uri", redirectUri);
+		claims.setClaim("redirect_uri", redirectUri);
 
 		// this comes back in the id token
-		claims.setCustomClaim("nonce", nonce);
+		claims.setClaim("nonce", nonce);
 
 		// this comes back in the auth request return
-		claims.setCustomClaim("state", state);
+		claims.setClaim("state", state);
+		
+		// Optional parameters
+		for (Entry<String, String> option : options.entrySet()) {
+            claims.setClaim(option.getKey(), option.getValue());
+        }
+
+		
 
 		SignedJWT jwt = new SignedJWT(new JWSHeader(signingAndValidationService.getDefaultSigningAlgorithm()), claims);
 

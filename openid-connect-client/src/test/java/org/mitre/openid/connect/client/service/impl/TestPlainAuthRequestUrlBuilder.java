@@ -16,6 +16,9 @@
  ******************************************************************************/
 package org.mitre.openid.connect.client.service.impl;
 
+import java.util.Collections;
+import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mitre.oauth2.model.RegisteredClient;
@@ -23,6 +26,7 @@ import org.mitre.openid.connect.config.ServerConfiguration;
 import org.mockito.Mockito;
 import org.springframework.security.authentication.AuthenticationServiceException;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -60,9 +64,12 @@ public class TestPlainAuthRequestUrlBuilder {
 				"&scope=openid+profile" + // plus sign used for space per application/x-www-form-encoded standard
 				"&redirect_uri=https%3A%2F%2Fclient.example.org%2F" +
 				"&nonce=34fasf3ds" +
-				"&state=af0ifjsldkj";
+				"&state=af0ifjsldkj" +
+				"&foo=bar";
+		
+		Map<String, String> options = ImmutableMap.of("foo", "bar");
 
-		String actualUrl = urlBuilder.buildAuthRequestUrl(serverConfig, clientConfig, "https://client.example.org/", "34fasf3ds", "af0ifjsldkj");
+		String actualUrl = urlBuilder.buildAuthRequestUrl(serverConfig, clientConfig, "https://client.example.org/", "34fasf3ds", "af0ifjsldkj", options);
 
 		assertThat(actualUrl, equalTo(expectedUrl));
 	}
@@ -72,7 +79,9 @@ public class TestPlainAuthRequestUrlBuilder {
 
 		Mockito.when(serverConfig.getAuthorizationEndpointUri()).thenReturn("e=mc^2");
 
-		urlBuilder.buildAuthRequestUrl(serverConfig, clientConfig, "example.com", "", "");
+		Map<String, String> options = ImmutableMap.of("foo", "bar");
+
+		urlBuilder.buildAuthRequestUrl(serverConfig, clientConfig, "example.com", "", "", options);
 	}
 
 }
