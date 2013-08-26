@@ -30,9 +30,6 @@ import com.nimbusds.jose.util.Base64URL;
 /**
  * Signer to support "alg:none" JWS signing option (no signature).
  * 
- * FIXME: The JWSSigner interface was never intended to be used with plain JWTs.
- * Use of the signer/verifier pattern alongside the other JWSSigner/Verifiers will require refactoring.
- * 
  * @author wkim
  *
  */
@@ -47,25 +44,15 @@ public final class PlainSigner implements JWSSigner {
 	@Override
 	public Base64URL sign(ReadOnlyJWSHeader header, byte[] signingInput) throws JOSEException {
 		
-		if (header instanceof PlainHeader) { // XXX impossible due to interface method signature
+		if (header instanceof PlainHeader) {
 			
 			return new Base64URL("");
 			
-		} else { 
+		} else {
 			
 			throw new JOSEException("Invalid header. This signer is for use with Plain JWTs only.");
 			
 		}
-	}
-	
-	/**
-	 * Utility method to return an empty signature.
-	 * 
-	 * @return
-	 */
-	public static Base64URL sign() {
-		
-		return new Base64URL("");
 	}
 
 }

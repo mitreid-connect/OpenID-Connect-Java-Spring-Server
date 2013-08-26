@@ -53,7 +53,7 @@ import com.nimbusds.jwt.SignedJWT;
 
 public class DefaultJwtSigningAndValidationService implements JwtSigningAndValidationService {
 
-	public static final String ALG_NONE = "none";
+	public static final String ALG_NONE = "none"; // TODO storing a default "alg:none" id smells a bit..
 	
 	// map of identifier to signer
 	private Map<String, JWSSigner> signers = new HashMap<String, JWSSigner>();
@@ -131,7 +131,7 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 	}
 
 	/**
-	 * @param defaultSignerKeyId the defaultSignerKeyId to set. The "none" key id is reserved for alg:none in this implementation.
+	 * @param defaultSignerKeyId the defaultSignerKeyId to set
 	 */
 	public void setDefaultSignerKeyId(String defaultSignerId) {
 		this.defaultSignerKeyId = defaultSignerId;
@@ -165,6 +165,8 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 	private void buildSignersAndVerifiers() throws NoSuchAlgorithmException, InvalidKeySpecException {
 		
 		signers.put(ALG_NONE, new PlainSigner());
+		verifiers.put(ALG_NONE, new PlainVerifier());
+		
 		
 		for (Map.Entry<String, JWK> jwkEntry : keys.entrySet()) {
 
@@ -228,12 +230,10 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 				
 				// At this point, this is a plain JWT and is already good-to-go.
 				
-			} else if (jwt instanceof SignedJWT) { // we have a signable JWS at this point.
+			} else { // we have a signable JWS at this point.
 				
 				((SignedJWT) jwt).sign(signer);
 				
-			} else {
-				logger.warn("Attempted to sign an unsupported JWT type.");
 			}
 		} catch (JOSEException e) {
 
@@ -270,13 +270,10 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 				
 				// do nothing because PlainJWT is good already.	
 				
-			} else if (jwt instanceof SignedJWT){ // we have a signable JWS at this point.
+			} else { // we have a signable JWS at this point.
 			
 				((SignedJWT) jwt).sign(signer);
 				
-			} else {
-				
-				logger.warn("Attempted to sign an unsupported JWT type.");
 			}
 			
 		} catch (JOSEException e) {
@@ -288,21 +285,21 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 	@Override
 	public boolean validateSignature(JWT jwt) {
 
-		if (getDefaultSignerKeyId().equals(ALG_NONE) && (jwt instanceof PlainJWT)) {
+		if (getDefaultSigningAlgorithm().equals(JWSAlgorithm.NONE) {
 			
-			return PlainVerifier.verify((PlainJWT) jwt);
-			
-		} else { 
+			if (jwt instanceof PlainJWT) {
+				return 
+			}
+		}
 
-			for (JWSVerifier verifier : verifiers.values()) {
-				try {
-					if (((SignedJWT) jwt).verify(verifier)) {
-						return true;
-					}
-				} catch (JOSEException e) {
-	
-					logger.error("Failed to validate signature, error was: ", e);
+		for (JWSVerifier verifier : verifiers.values()) {
+			try {
+				if (jwt.verify(verifier)) {
+					return true;
 				}
+			} catch (JOSEException e) {
+
+				logger.error("Failed to validate signature, error was: ", e);
 			}
 		}
 		return false;
@@ -331,6 +328,8 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 	public Collection<JWSAlgorithm> getAllSigningAlgsSupported() {
 
 		Set<JWSAlgorithm> algs = new HashSet<JWSAlgorithm>();
+		
+		//TODO add 'none'
 
 		for (JWSSigner signer : signers.values()) {
 			algs.addAll(signer.supportedAlgorithms());

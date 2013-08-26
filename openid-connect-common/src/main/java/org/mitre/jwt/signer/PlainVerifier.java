@@ -33,9 +33,6 @@ import com.nimbusds.jwt.PlainJWT;
 /**
  * Verifier to support "alg:none" JWS signing option (no signature).
  * 
- * FIXME: The JWSVerifier interface was never intended to be used with plain JWTs.
- * Use of the signer/verifier pattern alongside the other JWSSigner/Verifiers will require refactoring.
- * 
  * @author wkim
  *
  */
