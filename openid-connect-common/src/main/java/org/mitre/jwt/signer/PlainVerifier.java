@@ -28,6 +28,7 @@ import com.nimbusds.jose.PlainHeader;
 import com.nimbusds.jose.ReadOnlyJWSHeader;
 import com.nimbusds.jose.Requirement;
 import com.nimbusds.jose.util.Base64URL;
+import com.nimbusds.jwt.PlainJWT;
 
 /**
  * Verifier to support "alg:none" JWS signing option (no signature).
@@ -35,7 +36,7 @@ import com.nimbusds.jose.util.Base64URL;
  * @author wkim
  *
  */
-public class PlainVerifier implements JWSVerifier {
+public final class PlainVerifier implements JWSVerifier {
 
 	// the NONE alg constant lives in the Algorithm superclass of JWSAlgorithm, not allowing its use as a JWSAlgorithm object.
 	// redefining the constant here for convenience.
@@ -76,6 +77,17 @@ public class PlainVerifier implements JWSVerifier {
 			throw new JOSEException("Not a plain JWT header.");
 			
 		}
+	}
+	
+	/**
+	 * Verifies that the third signature component of the JWT is null.
+	 * 
+	 * @param jwt
+	 * @return
+	 */
+	public static boolean verify(PlainJWT jwt) {
+		
+		return jwt.getParsedParts()[2] == null;
 	}
 
 }
