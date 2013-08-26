@@ -33,7 +33,7 @@ import com.nimbusds.jose.util.Base64URL;
  * @author wkim
  *
  */
-public final class PlainSigner implements JWSSigner {
+public class PlainSigner implements JWSSigner {
 
 
 	@Override

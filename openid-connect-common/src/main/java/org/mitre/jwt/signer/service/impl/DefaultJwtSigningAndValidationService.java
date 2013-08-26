@@ -27,8 +27,6 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 
 import org.mitre.jose.keystore.JWKSetKeyStore;
-import org.mitre.jwt.signer.PlainSigner;
-import org.mitre.jwt.signer.PlainVerifier;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +36,6 @@ import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSSigner;
 import com.nimbusds.jose.JWSVerifier;
-import com.nimbusds.jose.PlainHeader;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jose.crypto.RSASSASigner;
@@ -47,14 +44,10 @@ import com.nimbusds.jose.jwk.ECKey;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.OctetSequenceKey;
 import com.nimbusds.jose.jwk.RSAKey;
-import com.nimbusds.jwt.JWT;
-import com.nimbusds.jwt.PlainJWT;
 import com.nimbusds.jwt.SignedJWT;
 
 public class DefaultJwtSigningAndValidationService implements JwtSigningAndValidationService {
 
-	public static final String ALG_NONE = "none"; // TODO storing a default "alg:none" id smells a bit..
-	
 	// map of identifier to signer
 	private Map<String, JWSSigner> signers = new HashMap<String, JWSSigner>();
 
@@ -163,11 +156,6 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 	 * @throws NoSuchAlgorithmException If there is no appropriate algorithm to tie the keys to.
 	 */
 	private void buildSignersAndVerifiers() throws NoSuchAlgorithmException, InvalidKeySpecException {
-		
-		signers.put(ALG_NONE, new PlainSigner());
-		verifiers.put(ALG_NONE, new PlainVerifier());
-		
-		
 		for (Map.Entry<String, JWK> jwkEntry : keys.entrySet()) {
 
 			String id = jwkEntry.getKey();
@@ -211,7 +199,7 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 	 * Sign a jwt in place using the configured default signer.
 	 */
 	@Override
-	public void signJwt(JWT jwt) {
+	public void signJwt(SignedJWT jwt) {
 		if (getDefaultSignerKeyId() == null) {
 			throw new IllegalStateException("Tried to call default signing with no default signer ID set");
 		}
@@ -219,22 +207,7 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 		JWSSigner signer = signers.get(getDefaultSignerKeyId());
 
 		try {
-			
-			// the sign() method is not a part of the JWT interface,
-			// hence this if/else structure.
-			if (signer instanceof PlainSigner) {
-				
-				if (!(jwt instanceof PlainJWT)) {
-					throw new JOSEException("This JWT object is not a plain JWT.");
-				}
-				
-				// At this point, this is a plain JWT and is already good-to-go.
-				
-			} else { // we have a signable JWS at this point.
-				
-				((SignedJWT) jwt).sign(signer);
-				
-			}
+			jwt.sign(signer);
 		} catch (JOSEException e) {
 
 			logger.error("Failed to sign JWT, error was: ", e);
@@ -243,7 +216,7 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 	}
 
 	@Override
-	public void signJwt(JWT jwt, JWSAlgorithm alg) {
+	public void signJwt(SignedJWT jwt, JWSAlgorithm alg) {
 
 		JWSSigner signer = null;
 		
@@ -254,43 +227,23 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 			}
 		}
 		
-		try {
+		if (signer == null) {
+			//If we can't find an algorithm that matches, we can't sign
+			logger.error("No matching algirthm found for alg=" + alg);
+			
+		}
 		
-			if (signer == null) {
-				//If we can't find an algorithm that matches, we can't sign
-				logger.error("No matching algirthm found for alg=" + alg);
-				
-			} else if (signer instanceof PlainSigner) {
-				
-				if (!(jwt.getHeader() instanceof PlainHeader)) {
-					
-					throw new JOSEException("Invalid header. This signer is for use with Plain JWTs only.");
-					
-				}
-				
-				// do nothing because PlainJWT is good already.	
-				
-			} else { // we have a signable JWS at this point.
-			
-				((SignedJWT) jwt).sign(signer);
-				
-			}
-			
+		try {
+			jwt.sign(signer);
 		} catch (JOSEException e) {
-			
+
 			logger.error("Failed to sign JWT, error was: ", e);
 		}
+		
 	}
 	
 	@Override
-	public boolean validateSignature(JWT jwt) {
-
-		if (getDefaultSigningAlgorithm().equals(JWSAlgorithm.NONE) {
-			
-			if (jwt instanceof PlainJWT) {
-				return 
-			}
-		}
+	public boolean validateSignature(SignedJWT jwt) {
 
 		for (JWSVerifier verifier : verifiers.values()) {
 			try {
@@ -328,8 +281,6 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 	public Collection<JWSAlgorithm> getAllSigningAlgsSupported() {
 
 		Set<JWSAlgorithm> algs = new HashSet<JWSAlgorithm>();
-		
-		//TODO add 'none'
 
 		for (JWSSigner signer : signers.values()) {
 			algs.addAll(signer.supportedAlgorithms());
