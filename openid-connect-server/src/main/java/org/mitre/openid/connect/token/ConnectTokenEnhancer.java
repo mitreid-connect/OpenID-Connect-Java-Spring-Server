@@ -20,8 +20,6 @@ import java.util.Date;
 import java.util.Set;
 import java.util.UUID;
 
-import javax.servlet.http.HttpSession;
-
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
@@ -39,8 +37,6 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -48,7 +44,9 @@ import com.google.common.collect.Sets;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.util.Base64URL;
+import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.PlainJWT;
 import com.nimbusds.jwt.SignedJWT;
 
 @Service
@@ -94,11 +92,17 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 			signingAlg = client.getIdTokenSignedResponseAlg().getAlgorithm();
 		}
 		
-		SignedJWT signed = new SignedJWT(new JWSHeader(signingAlg), claims);
+		JWT jwt;
+		
+		if (signingAlg.equals(JWSAlgorithm.NONE)) { // alg:none
+			jwt = new PlainJWT(claims);
+		} else { // signature needed
+			jwt = new SignedJWT(new JWSHeader(signingAlg), claims);
+		}
 
-		jwtService.signJwt(signed);
+		jwtService.signJwt(jwt);
 
-		token.setJwt(signed);
+		token.setJwt(jwt);
 
 		/**
 		 * Authorization request scope MUST include "openid" in OIDC, but access token request

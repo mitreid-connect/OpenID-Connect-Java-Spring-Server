@@ -57,7 +57,9 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.PlainJWT;
 import com.nimbusds.jwt.SignedJWT;
 
 @Controller
@@ -363,11 +365,18 @@ public class ClientDynamicRegistrationEndpoint {
 
 		// TODO: use client's default signing algorithm
 		JWSAlgorithm signingAlg = jwtService.getDefaultSigningAlgorithm();
-		SignedJWT signed = new SignedJWT(new JWSHeader(signingAlg), claims);
+		
+		JWT jwt;
+		
+		if (signingAlg.equals(JWSAlgorithm.NONE)) { // alg:none
+			jwt = new PlainJWT(claims);
+		} else { // signature needed
+			jwt = new SignedJWT(new JWSHeader(signingAlg), claims);
+		}
 
-		jwtService.signJwt(signed);
+		jwtService.signJwt(jwt);
 
-		token.setJwt(signed);
+		token.setJwt(jwt);
 
 		tokenService.saveAccessToken(token);
 

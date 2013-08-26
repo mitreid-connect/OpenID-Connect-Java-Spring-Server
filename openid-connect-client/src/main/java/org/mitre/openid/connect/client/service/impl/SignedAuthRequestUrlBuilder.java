@@ -31,8 +31,11 @@ import org.mitre.openid.connect.config.ServerConfiguration;
 import org.springframework.security.authentication.AuthenticationServiceException;
 
 import com.google.common.base.Joiner;
+import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.PlainJWT;
 import com.nimbusds.jwt.SignedJWT;
 
 /**
@@ -71,9 +74,15 @@ public class SignedAuthRequestUrlBuilder implements AuthRequestUrlBuilder {
             claims.setClaim(option.getKey(), option.getValue());
         }
 
+		JWSAlgorithm alg = signingAndValidationService.getDefaultSigningAlgorithm();
 		
-
-		SignedJWT jwt = new SignedJWT(new JWSHeader(signingAndValidationService.getDefaultSigningAlgorithm()), claims);
+		JWT jwt;
+		
+		if (alg.equals(JWSAlgorithm.NONE)) { // alg:none
+			jwt = new PlainJWT(claims);
+		} else { // signature needed
+			jwt = new SignedJWT(new JWSHeader(alg), claims);
+		}
 
 		signingAndValidationService.signJwt(jwt);
 

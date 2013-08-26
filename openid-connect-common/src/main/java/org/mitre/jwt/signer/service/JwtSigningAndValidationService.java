@@ -22,7 +22,7 @@ import java.util.Map;
 
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.jwk.JWK;
-import com.nimbusds.jwt.SignedJWT;
+import com.nimbusds.jwt.JWT;
 
 public interface JwtSigningAndValidationService {
 
@@ -32,15 +32,16 @@ public interface JwtSigningAndValidationService {
 	public Map<String, JWK> getAllPublicKeys();
 
 	/**
-	 * Checks the signature of the given JWT against all configured signers,
-	 * returns true if at least one of the signers validates it.
+	 * If alg:none is the default algorithm, verifies that the signature part is empty. 
+	 * Otherwise, checks the signature of the given JWT against all configured non-plain signers,
+	 * returns true if at least one of the non-plain signers validates it.
 	 * 
 	 * @param jwtString
 	 *            the string representation of the JWT as sent on the wire
 	 * @return true if the signature is valid, false if not
 	 * @throws NoSuchAlgorithmException
 	 */
-	public boolean validateSignature(SignedJWT jwtString);
+	public boolean validateSignature(JWT jwtString);
 
 	/**
 	 * Called to sign a jwt in place for a client that hasn't registered a preferred signing algorithm.
@@ -50,7 +51,7 @@ public interface JwtSigningAndValidationService {
 	 * @return the signed jwt
 	 * @throws NoSuchAlgorithmException
 	 */
-	public void signJwt(SignedJWT jwt);
+	public void signJwt(JWT jwt);
 
 	/**
 	 * Get the default signing algorithm for use when nothing else has been specified.
@@ -72,7 +73,7 @@ public interface JwtSigningAndValidationService {
 	 * @param alg the name of the algorithm to use, as specified in JWS s.6
 	 * @return the signed jwt
 	 */
-	public void signJwt(SignedJWT jwt, JWSAlgorithm alg);
+	public void signJwt(JWT jwt, JWSAlgorithm alg);
 
 	/**
 	 * TODO: method to sign a jwt using a specified algorithm and a key id
