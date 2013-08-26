@@ -18,45 +18,53 @@
 	<% } %>
 	<c:remove scope="session" var="SPRING_SECURITY_LAST_EXCEPTION" />
 
-	<div class="well" style="text-align: center">
-		<h1>Approve New Site</h1>
+    <div class="well" style="text-align:center">
+        <h1>Approve a BlueButton App</h1>
 
 		<form name="confirmationForm"
 			action="<%=request.getContextPath()%>/authorize" method="post">
 
-			<div class="row">
-				<div class="span4 offset2 well-small" style="text-align: left">
-
-					<%-- TODO: wire up to stats engine and customize display of this block --%>
-					<c:if test="${ client.dynamicallyRegistered }">
-						<div class="alert alert-block alert-info">
-							<h4>
-								<i class="icon-globe"></i> Caution:
-							</h4>
-							This client was dynamically registered and has very few other
-							users on this system.
+            <div class="row">
+                <div class="span4 offset2 well-small" style="text-align:left">
+                
+                <%-- TODO: wire up to stats engine and customize display of this block --%>
+               <c:if test="${ client.dynamicallyRegistered  and not client.trustedRegistration}">
+			    <div class="alert alert-block alert-info">
+			        <h4><i class="icon-globe"></i> Caution:</h4>
+			        This client was dynamically registered and has very few
+			        other users on this system.
+			    </div>
+	        </c:if>
+		<c:if test="${ client.dynamicallyRegistered and client.trustedRegistration }">
+			    <div class="alert alert-block alert-success">
+			        <h4><i class="icon-globe"></i> Note:</h4>
+				This client was dynamically registered <em>via a trusted process</em>.
+			    </div>
+	        </c:if>
+ 
+           		<c:if test="${ not empty client.logoUri }">
+           			<ul class="thumbnails">
+           				<li class="span4">
+           					<div class="thumbnail"><img src="${client.logoUri }"/></div>
+           				</li>
+           			</ul>
+           		</c:if>
+                Do you authorize
+                    "<c:choose>
+                        <c:when test="${empty client.clientName}">
+                            <c:out value="${client.clientId}"/>
+                        </c:when>
+                        <c:otherwise>
+                            <c:out value="${client.clientName}"/>
+                        </c:otherwise>
+                    </c:choose>" 
+					to access the requested resources?
+	                <c:if test="${not empty client.clientDescription}">
+	                    <div>
+	                    	<a class="small" href="#" onclick="$('#description').toggle('fast'); return false;"><i class="icon-chevron-right"></i> more information</a>
 						</div>
 					</c:if>
 
-					<c:if test="${ not empty client.logoUri }">
-						<ul class="thumbnails">
-							<li class="span4">
-								<div class="thumbnail">
-									<img src="${client.logoUri }" />
-								</div>
-							</li>
-						</ul>
-					</c:if>
-					Do you authorize 
-					"<c:choose>
-						<c:when test="${empty client.clientName}">
-							<c:out value="${client.clientId}" />
-						</c:when>
-						<c:otherwise>
-							<c:out value="${client.clientName}" />
-						</c:otherwise>
-					</c:choose>"
-					to sign you into their site using your identity?
 					<c:if test="${not empty client.clientDescription}">
 						<div>
 							<a class="small" href="#"onclick="$('#description').toggle('fast'); return false;"><i class="icon-chevron-right"></i> more information</a>
@@ -78,7 +86,6 @@
 						<legend style="margin-bottom: 0;">Access to:</legend>
 
 						<c:forEach var="scope" items="${ scopes }">
-
 							<label for="scope_${ scope.value }" class="checkbox"> 
 								<input type="checkbox" name="scope_${ scope.value }" id="scope_${ scope.value }" value="${ scope.value }" checked="checked"> 
 								<c:if test="${ not empty scope.icon }">
@@ -92,7 +99,11 @@
 										${ scope.value }
 									</c:otherwise>
 								</c:choose>
+								
 							</label>
+								<c:if test="${ scope.structured }">
+									<input name="scopeparam_${ scope.value }" type="text" value="${proposedParams[scope.value]}" placeholder="${scope.structuredParamDescription}">
+								</c:if>
 
 						</c:forEach>
 

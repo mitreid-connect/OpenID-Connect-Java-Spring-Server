@@ -22,6 +22,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.http.client.utils.URIUtils;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.bbplus.TrustedRegistrationValidator;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.oauth2.model.AuthenticationHolderEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity;
@@ -40,8 +43,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
@@ -61,7 +66,7 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 
 @Controller
-@RequestMapping(value = "register")
+@RequestMapping(value = "/register")
 public class ClientDynamicRegistrationEndpoint {
 
 	@Autowired
@@ -85,6 +90,9 @@ public class ClientDynamicRegistrationEndpoint {
 	@Autowired
 	private ConfigurationPropertiesBean config;
 
+	@Autowired
+	private TrustedRegistrationValidator validateTrustedRegistration;
+
 	private static Logger logger = LoggerFactory.getLogger(ClientDynamicRegistrationEndpoint.class);
 
 	/**
@@ -95,7 +103,9 @@ public class ClientDynamicRegistrationEndpoint {
 	 * @return
 	 */
 	@RequestMapping(method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
-	public String registerNewClient(@RequestBody String jsonString, Model m) {
+	public String registerNewClient(@RequestBody String jsonString, Model m, Authentication a) {
+
+		boolean trustedRegistration = validateTrustedRegistration.validate(jsonString, a);
 
 		ClientDetailsEntity newClient = ClientDetailsEntityJsonProcessor.parse(jsonString);
 
@@ -162,6 +172,10 @@ public class ClientDynamicRegistrationEndpoint {
 
 			// this client has been dynamically registered (obviously)
 			newClient.setDynamicallyRegistered(true);
+			
+			if (trustedRegistration){
+				newClient.setTrustedRegistration(trustedRegistration);
+			}
 
 			// now save it
 			ClientDetailsEntity savedClient = clientService.saveNewClient(newClient);

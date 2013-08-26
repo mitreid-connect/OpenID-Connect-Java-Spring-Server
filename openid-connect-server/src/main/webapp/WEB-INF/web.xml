@@ -54,14 +54,20 @@
 	</filter>
 
 	<filter-mapping>
-		<filter-name>clientCredentialsTokenEndpointFilter</filter-name>
-		<url-pattern>/token</url-pattern>
+	    <filter-name>springSecurityFilterChain</filter-name>
+	    <url-pattern>/*</url-pattern>
 	</filter-mapping>
 
+	<filter>
+		<filter-name>cors</filter-name>
+		<filter-class>org.bbplus.CorsFilter</filter-class>
+	 </filter>
+	  
 	<filter-mapping>
-		<filter-name>springSecurityFilterChain</filter-name>
+		<filter-name>cors</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
+
 
 	<!-- Processes application requests -->
 	<servlet>
