@@ -28,7 +28,6 @@ import javax.annotation.PostConstruct;
 
 import org.mitre.jose.keystore.JWKSetKeyStore;
 import org.mitre.jwt.signer.PlainSigner;
-import org.mitre.jwt.signer.PlainVerifier;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -165,6 +164,7 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 	private void buildSignersAndVerifiers() throws NoSuchAlgorithmException, InvalidKeySpecException {
 		
 		signers.put(ALG_NONE, new PlainSigner());
+		// no plain verifier, that is handled as a special case in validateSignature().
 		
 		for (Map.Entry<String, JWK> jwkEntry : keys.entrySet()) {
 
@@ -288,17 +288,20 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 	@Override
 	public boolean validateSignature(JWT jwt) {
 
-		if (getDefaultSignerKeyId().equals(ALG_NONE) && (jwt instanceof PlainJWT)) {
+		if (getDefaultSignerKeyId().equals(ALG_NONE)) {
 			
-			return PlainVerifier.verify((PlainJWT) jwt);
+			return (jwt instanceof PlainJWT);
 			
 		} else { 
 
 			for (JWSVerifier verifier : verifiers.values()) {
+				
 				try {
-					if (((SignedJWT) jwt).verify(verifier)) {
-						return true;
+					
+					if (jwt instanceof SignedJWT) {
+						return ((SignedJWT) jwt).verify(verifier);
 					}
+					
 				} catch (JOSEException e) {
 	
 					logger.error("Failed to validate signature, error was: ", e);
