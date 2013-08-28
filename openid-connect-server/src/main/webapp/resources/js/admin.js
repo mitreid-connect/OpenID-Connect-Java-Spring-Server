@@ -332,6 +332,7 @@ var AppRouter = Backbone.Router.extend({
         "user/profile":"notImplemented",
         
         "dev/dynreg":"dynReg",
+        "dev/dynreg/new":"newDynReg",
         
         "": "root"
         	
@@ -644,8 +645,25 @@ var AppRouter = Backbone.Router.extend({
              {text:"Home", href:""},
              {text:"Client Registration", href:"manage/#dev/dynreg"}
         ]);
-    	$('#content').html($('#tmpl-dynreg').html());
+    	
+    	this.dynRegRootView = new DynRegRootView();
+    	$('#content').html(this.dynRegRootView.render().el);
+    	
     	setPageTitle("Self-service Client Registration");
+    },
+    
+    newDynReg:function() {
+    	this.breadCrumbView.collection.reset();
+    	this.breadCrumbView.collection.add([
+             {text:"Home", href:""},
+             {text:"Client Registration", href:"manage/#dev/dynreg"},
+             {text:"New", href:"manage/#dev/dynreg/new"}
+        ]);
+    	
+    	this.dynRegEditView = new DynRegEditView({model: new DynRegClient()});
+    	$('#content').html(this.dynRegEditView.render().el);
+    	
+    	setPageTitle("Register a New Client");
     }
 
 
