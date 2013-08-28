@@ -672,7 +672,7 @@ var AppRouter = Backbone.Router.extend({
     	this.breadCrumbView.collection.add([
              {text:"Home", href:""},
              {text:"Client Registration", href:"manage/#dev/dynreg"},
-             {text:"New", href:"manage/#dev/dynreg/new"}
+             {text:"Edit", href:"manage/#dev/dynreg/new"}
         ]);
     	
     	setPageTitle("Edit a New Client");
