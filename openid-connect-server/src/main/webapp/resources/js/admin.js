@@ -333,6 +333,7 @@ var AppRouter = Backbone.Router.extend({
         
         "dev/dynreg":"dynReg",
         "dev/dynreg/new":"newDynReg",
+        "dev/dynreg/edit":"editDynReg",
         
         "": "root"
         	
@@ -664,6 +665,17 @@ var AppRouter = Backbone.Router.extend({
     	$('#content').html(this.dynRegEditView.render().el);
     	
     	setPageTitle("Register a New Client");
+    },
+    
+    editDynReg:function() {
+    	this.breadCrumbView.collection.reset();
+    	this.breadCrumbView.collection.add([
+             {text:"Home", href:""},
+             {text:"Client Registration", href:"manage/#dev/dynreg"},
+             {text:"New", href:"manage/#dev/dynreg/new"}
+        ]);
+    	
+    	setPageTitle("Edit a New Client");
     }
 
 
