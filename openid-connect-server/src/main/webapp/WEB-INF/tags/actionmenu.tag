@@ -12,3 +12,5 @@
 <li><a href="manage/#user/approved">Manage Sites</a></li>
 <li><a href="manage/#user/tokens">Manage Active Tokens</a></li>
 <li><a href="manage/#user/profile">Manage Profiles</a></li>
+<li class="nav-header">Developer</li>
+<li><a href="manage/#dev/dynreg">Self-service client registration</a><li>

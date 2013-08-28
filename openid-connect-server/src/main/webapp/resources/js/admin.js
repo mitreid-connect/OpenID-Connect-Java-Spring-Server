@@ -331,6 +331,8 @@ var AppRouter = Backbone.Router.extend({
         "user/tokens":"notImplemented",
         "user/profile":"notImplemented",
         
+        "dev/dynreg":"dynReg",
+        
         "": "root"
         	
     },
@@ -634,6 +636,16 @@ var AppRouter = Backbone.Router.extend({
     	$('#content').html(this.systemScopeFormView.render().el);
     	setPageTitle("Edit System Scope");
     	
+    },
+    
+    dynReg:function() {
+    	this.breadCrumbView.collection.reset();
+    	this.breadCrumbView.collection.add([
+             {text:"Home", href:""},
+             {text:"Client Registration", href:"manage/#dev/dynreg"}
+        ]);
+    	$('#content').html($('#tmpl-dynreg').html());
+    	setPageTitle("Self-service Client Registration");
     }
 
 
@@ -658,6 +670,7 @@ $(function () {
     $.get('resources/template/grant.html', _load);
     $.get('resources/template/scope.html', _load);
     $.get('resources/template/whitelist.html', _load);
+    $.get('resources/template/dynreg.html', _load);
 
     jQuery.ajaxSetup({async:true});
     app = new AppRouter();
