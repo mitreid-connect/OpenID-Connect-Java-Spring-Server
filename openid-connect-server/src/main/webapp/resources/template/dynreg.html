@@ -18,21 +18,465 @@
 
 <script type="text/html" id="tmpl-dynreg">
 
-<div>
+<div class="row-fluid">
 
-<div>
-<button class="btn" id="newreg">Register a new client</button>
+<div class="span5">
+	<button class="btn btn-large" id="newreg">Register a new client</button>
 </div>
-<div>
-<strong> - OR - </strong>
+<div class="span2">
+	<strong> - OR - </strong>
 </div>
-<div>
-<input type="text" id="clientId" placeholder="Enter Client ID"> 
-<input type="text" id="regtoken" placeholder="Enter Registration Access Token"> 
-<button class="btn" id="editreg">Edit an existing client</button>
-<span class="help-block>Paste in your client ID and registration access token to access the client.</span>
+<div class="span5">
+	<input type="text" id="clientId" placeholder="Enter Client ID"> 
+	<input type="text" id="regtoken" placeholder="Enter Registration Access Token"> 
+	<button class="btn btn-large" id="editreg">Edit an existing client</button>
+	<span class="help-block>Paste in your client ID and registration access token to access the client.</span>
 </div>
 
-</div>
+</script>
+
+
+<script type="text/html" id="tmpl-dynreg-client-form">
+
+    <h1><%=(client_id == null ? 'New' : 'Edit')%> Client</h1>
+
+
+    <form class="form-horizontal tabbable">
+        <fieldset>
+            <div class="well well-small">
+                <button class="btn btn-small btn-save btn-success"><i class="icon-ok-circle icon-white"></i> Save</button> &nbsp; 
+				<button class="btn btn-small btn-cancel"><i class="icon-ban-circle"></i> Cancel</button>
+
+            </div>
+
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-target="#client-main-tab" data-toggle="tab" href="#">Main</a></li>
+					<li><a data-target="#client-access-tab" data-toggle="tab" href="#">Access</a></li>
+					<li><a data-target="#client-secret-tab" data-toggle="tab" href="#">Credentials</a></li>
+					<li><a data-target="#client-token-tab" data-toggle="tab" href="#">Tokens</a></li>
+					<li><a data-target="#client-crypto-tab" data-toggle="tab" href="#">Crypto</a></li>
+					<li><a data-target="#client-other-tab" data-toggle="tab" href="#">Other</a></li>
+				</ul>
+
+<div class="tab-content">
+	<div class="tab-pane active" id="client-main-tab">
+
+            <div class="control-group" id="clientId">
+                <label class="control-label">Client ID</label>
+                <div class="controls">
+                    <%=client_id ? client_id : 'Will be generated'%>
+                </div>
+            </div>
+
+            <div class="control-group" id="clientName">
+                <label class="control-label">Client name</label>
+                <div class="controls">
+                    <input value="<%=client_name ? client_name : ''%>" maxlength="100" type="text" class="" placeholder="Type something">
+                    <p class="help-block">Human-readable application name</p>
+                </div>
+            </div>
+
+            <div class="control-group" id="redirectUris">
+                <label class="control-label">Redirect URI(s)</label>
+                <div class="controls">
+                </div>
+            </div>
+
+            <div class="control-group" id="clientDescription">
+                <label class="control-label">Description</label>
+                <div class="controls">
+                    <textarea class="input-xlarge" placeholder="Type a description" maxlength="200" rows="3"><%=client_description ? client_description : ''%></textarea>
+                    <p class="help-block">Human-readable text description</p>
+                </div>
+            </div>
+
+			<div class="control-group" id="logoUri">
+				<label class="control-label">Logo</label>
+				<div class="controls">
+					<input placeholder="http://" value="<%=logo_uri ? logo_uri : ''%>" maxlength="1000" type="text" class=""/>
+					<p class="help-block">URL that points to a logo image, will be displayed on approval page</p>
+				</div>
+			</div>
+
+			<div class="control-group" id="logoBlock">
+				<div class="controls">
+					<!-- TODO: this should be an internally-served placeholder graphic -->
+					<img src="http://placehold.it/275x200&text=Enter a logo URL" alt="logo" id="logoPreview" width="275px" class="thumbnail" />
+				</div>
+			</div>
+
+			<div class="control-group" id="tosUri">
+				<label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> Terms of Service</label>
+				<div class="controls">
+					<input placeholder="http://" value="<%=tos_uri ? tos_uri : ''%>" maxlength="1000" type="text" class=""/>
+					<p class="help-block">URL for the Terms of Service of this client, will be displayed to the user</p>
+				</div>
+			</div>
+
+			<div class="control-group" id="policyUri">
+				<label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> Policy</label>
+				<div class="controls">
+					<input placeholder="http://" value="<%=policy_uri ? policy_uri : ''%>" maxlength="1000" type="text" class=""/>
+					<p class="help-block">URL for the Policy Statement of this client, will be displayed to the user</p>
+				</div>
+			</div>
+
+			<div class="control-group" id="clientUri">
+				<label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> Home Page</label>
+				<div class="controls">
+					<input placeholder="http://" value="<%=client_uri ? client_uri : ''%>" maxlength="1000" type="text" class=""/>
+					<p class="help-block">URL for the client's home page, will be displayed to the user</p>
+				</div>
+			</div>
+
+			<div class="control-group" id="applicationType">
+				<label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> Application Type</label>
+				<div class="controls">
+					<label class="radio inline">
+						<input type="radio" name="applicationType" value="NATIVE" <%=(application_type == 'NATIVE' ? 'checked' : '')%>> Native
+					</label>
+					<label class="radio inline">
+						<input type="radio" name="applicationType" value="WEB" <%=(application_type == 'WEB' ? 'checked' : '')%>> Web
+					</label>
+				</div>
+			</div>
+			
+            <div class="control-group" id="contacts">
+                <label class="control-label">Contacts</label>
+                <div class="controls">
+                </div>
+            </div>
+
+
+
+
+	</div>
+	
+	<div class="tab-pane" id="client-access-tab">
+
+            <div class="control-group" id="scope">
+                <label class="control-label">Scope</label>
+                <div class="controls">
+                </div>
+            </div>
+
+            <div class="control-group" id="grantTypes">
+                <label class="control-label">Grant Types</label>
+
+                <div class="controls">
+
+                    <label class="checkbox">
+                        <input id="grantTypes-authorization_code" type="checkbox"
+                        <%=($.inArray("authorization_code", grant_types) > -1 ? 'checked' : '')%>>
+                        authorization code
+                    </label>
+                    <label class="checkbox">
+                        <input id="grantTypes-client_credentials" type="checkbox"
+                        <%=($.inArray("client_credentials", grant_types) > -1 ? 'checked' : '')%>> client credentials
+                    </label>
+                    <label class="checkbox">
+                        <input id="grantTypes-password" type="checkbox" <%=($.inArray("password", grant_types) > -1 ? 'checked' : '')%>> password
+                    </label>
+                    <label class="checkbox">
+                        <input id="grantTypes-implicit" type="checkbox" <%=($.inArray("implicit", grant_types) > -1 ? 'checked' : '')%>> implicit
+                    </label>
+<!--
+                    <label class="checkbox">
+                        <input id="grantTypes-refresh_token" type="checkbox" <%=($.inArray("refresh_token", grant_types) > -1 ? 'checked' : '')%>> refresh
+                    </label>
+-->
+                    <label class="checkbox">
+                        <input id="grantTypes-redelegate" type="checkbox" <%=($.inArray("urn:ietf:params:oauth:grant_type:redelegate", grant_types) > -1 ? 'checked' : '')%>> redelegate
+                    </label>
+
+                </div>
+            </div>
+
+			<div class="control-group" id="responseTypes">
+				<label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> Response Types</label>
+
+				<div class="controls">
+					<label class="checkbox">
+                        <input id="responseTypes-code" type="checkbox" <%=($.inArray("code", response_types) > -1 ? 'checked' : '')%>> code
+					</label>
+					<label class="checkbox">
+                        <input id="responseTypes-token" type="checkbox" <%=($.inArray("token", response_types) > -1 ? 'checked' : '')%>> token
+					</label>
+					<label class="checkbox">
+                        <input id="responseTypes-idtoken" type="checkbox" <%=($.inArray("id_token", response_types) > -1 ? 'checked' : '')%>> id_token
+					</label>
+					<label class="checkbox">
+                        <input id="responseTypes-token-idtoken" type="checkbox" <%=($.inArray("token id_token", response_types) > -1 ? 'checked' : '')%>> token id_token
+					</label>
+					<label class="checkbox">
+                        <input id="responseTypes-code-idtoken" type="checkbox" <%=($.inArray("code id_token", response_types) > -1 ? 'checked' : '')%>> code id_token
+					</label>
+					<label class="checkbox">
+                        <input id="responseTypes-code-token" type="checkbox" <%=($.inArray("code token", response_types) > -1 ? 'checked' : '')%>> code token
+					</label>
+					<label class="checkbox">
+                        <input id="responseTypes-code-token-idtoken" type="checkbox" <%=($.inArray("code token id_token", response_types) > -1 ? 'checked' : '')%>> code token id_token
+					</label>
+				</div>
+			</div>
+	</div>
+	
+	<div class="tab-pane" id="client-secret-tab">
+
+			<div class="control-group" id="tokenEndpointAuthMethod">
+				<label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> Token Endpoint Authentication Method</label>
+				<div class="controls">
+					<label class="radio">
+						<input type="radio" name="tokenEndpointAuthMethod" value="SECRET_BASIC" <%=(token_endpoint_auth_method == 'SECRET_BASIC' ? 'checked' : '')%>> Client Secret over HTTP Basic
+					</label>
+					<label class="radio">
+						<input type="radio" name="tokenEndpointAuthMethod" value="SECRET_POST" <%=(token_endpoint_auth_method == 'SECRET_POST' ? 'checked' : '')%>> Client Secret over HTTP POST
+					</label>
+					<label class="radio">
+						<input type="radio" name="tokenEndpointAuthMethod" value="SECRET_JWT" <%=(token_endpoint_auth_method == 'SECRET_JWT' ? 'checked' : '')%>> Client Secret via symmetrically-signed JWT assertion
+					</label>
+					<label class="radio">
+						<input type="radio" name="tokenEndpointAuthMethod" value="PRIVATE_KEY_JWT" <%=(token_endpoint_auth_method == 'PRIVATE_KEY_JWT' ? 'checked' : '')%>> Asymmetrically-signed JWT assertion
+					</label>
+					<label class="radio">
+						<input type="radio" name="tokenEndpointAuthMethod" value="NONE" <%=(token_endpoint_auth_method == 'NONE' ? 'checked' : '')%>> No authentication
+					</label>
+				</div>
+			</div>
+
+    	        <div class="control-group">
+            	    <div class="controls">
+						<div id="clientSecret" class="span3">
+                	    	<input value="<%=client_secret ? client_secret : ''%>" maxlength="100" type="text" placeholder="Type a secret">
+						</div>
+						<div id="clientSecretGenerated" class="span3">
+							<span class="uneditable-input">Generate on Save</span>
+						</div>
+						<div id="clientSecretHidden" class="span3"> 
+							<span class="uneditable-input span3">* * * * * * * * * * * *</span>
+						</div>
+	                </div>
+    	        </div>
+
+			</div>
+
+			<div class="control-group" id="jwksUri">
+				<label class="control-label">JWK Set</label>
+				<div class="controls">
+					<input placeholder="http://" value="<%=jwks_uri ? jwks_uri : ''%>" maxlength="1000" type="text" class=""/>
+					<p class="help-block">URL for the client's JSON Web Key set</p>
+				</div>
+			</div>
+
+	</div>
+
+	<div class="tab-pane" id="client-token-tab">
+	</div>
+
+	<div class="tab-pane" id="client-crypto-tab">
+            <div class="control-group" id="requestObjectSigningAlg">
+                <label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> Request Object Signing Algorithm</label>
+                <div class="controls">
+					<select>
+						<option value="default" <%=request_object_signing_alg == null ? 'selected ' : ''%>>Use server default</option>
+						<option value="none" <%=request_object_signing_alg == "none" ? 'selected' : ''%>>No digital signature</option>
+						<option value="HS256" <%=request_object_signing_alg == "HS256" ? 'selected' : ''%>>HMAC using SHA-256 hash algorithm</option>
+						<option value="HS384" <%=request_object_signing_alg == "HS384" ? 'selected' : ''%>>HMAC using SHA-384 hash algorithm</option>
+						<option value="HS512" <%=request_object_signing_alg == "HS512" ? 'selected' : ''%>>HMAC using SHA-512 hash algorithm</option>
+						<option value="RS256" <%=request_object_signing_alg == "RS256" ? 'selected' : ''%>>RSASSA using SHA-256 hash algorithm</option>
+						<option value="RS384" <%=request_object_signing_alg == "RS384" ? 'selected' : ''%>>RSASSA using SHA-384 hash algorithm</option>
+						<option value="RS512" <%=request_object_signing_alg == "RS512" ? 'selected' : ''%>>RSASSA using SHA-512 hash algorithm</option>
+						<option value="ES256" <%=request_object_signing_alg == "ES256" ? 'selected' : ''%>>ECDSA using P-256 curve and SHA-256 hash algorithm</option>
+						<option value="ES384" <%=request_object_signing_alg == "ES384" ? 'selected' : ''%>>ECDSA using P-384 curve and SHA-384 hash algorithm</option>
+						<option value="ES512" <%=request_object_signing_alg == "ES512" ? 'selected' : ''%>>ECDSA using P-512 curve and SHA-512 hash algorithm</option>
+					</select>
+                </div>
+            </div>
+			
+            <div class="control-group" id="userInfoSignedResponseAlg">
+                <label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> User Info Endpoint Signing Algorithm</label>
+                <div class="controls">
+					<select>
+						<option value="default" <%=userinfo_signed_response_alg == null ? 'selected ' : ''%>>Use server default</option>
+						<option value="none" <%=userinfo_signed_response_alg == "none" ? 'selected' : ''%>>No digital signature</option>
+						<option value="HS256" <%=userinfo_signed_response_alg == "HS256" ? 'selected' : ''%>>HMAC using SHA-256 hash algorithm</option>
+						<option value="HS384" <%=userinfo_signed_response_alg == "HS384" ? 'selected' : ''%>>HMAC using SHA-384 hash algorithm</option>
+						<option value="HS512" <%=userinfo_signed_response_alg == "HS512" ? 'selected' : ''%>>HMAC using SHA-512 hash algorithm</option>
+						<option value="RS256" <%=userinfo_signed_response_alg == "RS256" ? 'selected' : ''%>>RSASSA using SHA-256 hash algorithm</option>
+						<option value="RS384" <%=userinfo_signed_response_alg == "RS384" ? 'selected' : ''%>>RSASSA using SHA-384 hash algorithm</option>
+						<option value="RS512" <%=userinfo_signed_response_alg == "RS512" ? 'selected' : ''%>>RSASSA using SHA-512 hash algorithm</option>
+						<option value="ES256" <%=userinfo_signed_response_alg == "ES256" ? 'selected' : ''%>>ECDSA using P-256 curve and SHA-256 hash algorithm</option>
+						<option value="ES384" <%=userinfo_signed_response_alg == "ES384" ? 'selected' : ''%>>ECDSA using P-384 curve and SHA-384 hash algorithm</option>
+						<option value="ES512" <%=userinfo_signed_response_alg == "ES512" ? 'selected' : ''%>>ECDSA using P-512 curve and SHA-512 hash algorithm</option>
+					</select>
+                </div>
+            </div>
+			
+			<div class="control-group" id="userInfoEncryptedResponseAlg">
+                <label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> User Info Endpoint Encryption Algorithm</label>
+                <div class="controls">
+					<select>
+						<option value="default" <%=userinfo_encrypted_response_alg == null ? 'selected ' : ''%>>Use server default</option>
+						<option value="none" <%=userinfo_encrypted_response_alg == "none" ? 'selected' : ''%>>No encryption</option>
+						<option value="RSA1_5" <%=userinfo_encrypted_response_alg == "RSA1_5" ? 'selected' : ''%>>RSAES-PKCS1-V1_5</option>
+						<option value="RSA-OAEP" <%=userinfo_encrypted_response_alg == "RSA-OAEP" ? 'selected' : ''%>>RSAES using Optimal Asymmetric Encryption Padding (OAEP)</option>
+						<option value="A128KW" <%=userinfo_encrypted_response_alg == "A128KW" ? 'selected' : ''%>>AES Key Wrap Algorithm using 128 bit keys </option>
+						<option value="A256KW" <%=userinfo_encrypted_response_alg == "A256KW" ? 'selected' : ''%>>AES Key Wrap Algorithm using 256 bit keys</option>
+						<option value="dir" <%=userinfo_encrypted_response_alg == "dir" ? 'selected' : ''%>>Direct use of a shared symmetric key as the Content Master Key (CMK) for the block encryption step</option>
+						<option value="ECDH-ES" <%=userinfo_encrypted_response_alg == "ECDH-ES" ? 'selected' : ''%>>Elliptic Curve Diffie-Hellman Ephemeral Static key agreement using the Concat KDF, with the agreed-upon key being used directly as the Content Master Key (CMK)</option>
+						<option value="ECDH-ES+A128KW" <%=userinfo_encrypted_response_alg == "ECDH-ES+A128KW" ? 'selected' : ''%>>Elliptic Curve Diffie-Hellman Ephemeral Static key agreement per ECDH-ES and Section 4.7, but where the agreed-upon key is used to wrap the Content Master Key (CMK) with the A128KW function</option>
+						<option value="ECDH-ES+A256KW" <%=userinfo_encrypted_response_alg == "ECDH-ES+A256KW" ? 'selected' : ''%>>Elliptic Curve Diffie-Hellman Ephemeral Static key agreement per ECDH-ES and Section 4.7, but where the agreed-upon key is used to wrap the Content Master Key (CMK) with the A256KW function</option>
+					</select>
+				</div>
+			</div>
+
+			<div class="control-group" id="userInfoEncryptedResponseEnc">
+                <label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> User Info Endpoint Encryption Method</label>
+                <div class="controls">
+					<select>
+						<option value="default" <%=userinfo_encrypted_response_enc == null ? 'selected ' : ''%>>Use server default</option>
+						<option value="none" <%=userinfo_encrypted_response_enc == "none" ? 'selected' : ''%>>No encryption</option>
+						<option value="A128CBC+HS256" <%=userinfo_encrypted_response_enc == "A128CBC+HS256" ? 'selected' : ''%>>Composite Authenticated Encryption algorithm using AES in Cipher Block Chaining (CBC) mode with PKCS #5 padding with an integrity calculation using HMAC SHA-256, using a 256 bit CMK (and 128 bit CEK)</option>
+						<option value="A256CBC+HS512" <%=userinfo_encrypted_response_enc == "A256CBC+HS512" ? 'selected' : ''%>>Composite Authenticated Encryption algorithm using AES in CBC mode with PKCS #5 padding with an integrity calculation using HMAC SHA-512, using a 512 bit CMK (and 256 bit CEK)</option>
+						<option value="A128GCM" <%=userinfo_encrypted_response_enc == "A128GCM" ? 'selected' : ''%>>AES GCM using 128 bit keys</option>
+						<option value="A256GCM" <%=userinfo_encrypted_response_enc == "A256GCM" ? 'selected' : ''%>>AES GCM using 256 bit keys</option>
+					</select>
+				</div>
+			</div>
+
+            <div class="control-group" id="idTokenSignedResponseAlg">
+                <label class="control-label">ID Token Signing Algorithm</label>
+                <div class="controls">
+					<select>
+						<option value="default" <%=id_token_signed_response_alg == null ? 'selected ' : ''%>>Use server default</option>
+						<option value="none" <%=id_token_signed_response_alg == "none" ? 'selected' : ''%>>No digital signature</option>
+						<option value="HS256" <%=id_token_signed_response_alg == "HS256" ? 'selected' : ''%>>HMAC using SHA-256 hash algorithm</option>
+						<option value="HS384" <%=id_token_signed_response_alg == "HS384" ? 'selected' : ''%>>HMAC using SHA-384 hash algorithm</option>
+						<option value="HS512" <%=id_token_signed_response_alg == "HS512" ? 'selected' : ''%>>HMAC using SHA-512 hash algorithm</option>
+						<option value="RS256" <%=id_token_signed_response_alg == "RS256" ? 'selected' : ''%>>RSASSA using SHA-256 hash algorithm</option>
+						<option value="RS384" <%=id_token_signed_response_alg == "RS384" ? 'selected' : ''%>>RSASSA using SHA-384 hash algorithm</option>
+						<option value="RS512" <%=id_token_signed_response_alg == "RS512" ? 'selected' : ''%>>RSASSA using SHA-512 hash algorithm</option>
+						<option value="ES256" <%=id_token_signed_response_alg == "ES256" ? 'selected' : ''%>>ECDSA using P-256 curve and SHA-256 hash algorithm</option>
+						<option value="ES384" <%=id_token_signed_response_alg == "ES384" ? 'selected' : ''%>>ECDSA using P-384 curve and SHA-384 hash algorithm</option>
+						<option value="ES512" <%=id_token_signed_response_alg == "ES512" ? 'selected' : ''%>>ECDSA using P-512 curve and SHA-512 hash algorithm</option>
+					</select>
+                </div>
+            </div>
+			
+			<div class="control-group" id="idTokenEncryptedResponseAlg">
+                <label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> ID Token Encryption Algorithm</label>
+                <div class="controls">
+					<select>
+						<option value="default" <%=id_token_encrypted_response_alg == null ? 'selected ' : ''%>>Use server default</option>
+						<option value="none" <%=id_token_encrypted_response_alg == "none" ? 'selected' : ''%>>No encryption</option>
+						<option value="RSA1_5" <%=id_token_encrypted_response_alg == "RSA1_5" ? 'selected' : ''%>>RSAES-PKCS1-V1_5</option>
+						<option value="RSA-OAEP" <%=id_token_encrypted_response_alg == "RSA-OAEP" ? 'selected' : ''%>>RSAES using Optimal Asymmetric Encryption Padding (OAEP)</option>
+						<option value="A128KW" <%=id_token_encrypted_response_alg == "A128KW" ? 'selected' : ''%>>Advanced Encryption Standard (AES) Key Wrap Algorithm using 128 bit keys </option>
+						<option value="A256KW" <%=id_token_encrypted_response_alg == "A256KW" ? 'selected' : ''%>>AES Key Wrap Algorithm using 256 bit keys</option>
+						<option value="dir" <%=id_token_encrypted_response_alg == "dir" ? 'selected' : ''%>>Direct use of a shared symmetric key as the Content Master Key (CMK) for the block encryption step</option>
+						<option value="ECDH-ES" <%=id_token_encrypted_response_alg == "ECDH-ES" ? 'selected' : ''%>>Elliptic Curve Diffie-Hellman Ephemeral Static key agreement using the Concat KDF, with the agreed-upon key being used directly as the Content Master Key (CMK)</option>
+						<option value="ECDH-ES+A128KW" <%=id_token_encrypted_response_alg == "ECDH-ES+A128KW" ? 'selected' : ''%>>Elliptic Curve Diffie-Hellman Ephemeral Static key agreement per ECDH-ES and Section 4.7, but where the agreed-upon key is used to wrap the Content Master Key (CMK) with the A128KW function</option>
+						<option value="ECDH-ES+A256KW" <%=id_token_encrypted_response_alg == "ECDH-ES+A256KW" ? 'selected' : ''%>>Elliptic Curve Diffie-Hellman Ephemeral Static key agreement per ECDH-ES and Section 4.7, but where the agreed-upon key is used to wrap the Content Master Key (CMK) with the A256KW function</option>
+					</select>
+				</div>
+			</div>
+
+			<div class="control-group" id="idTokenEncryptedResponseEnc">
+                <label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> ID Token Encryption Method</label>
+                <div class="controls">
+					<select>
+						<option value="default" <%=id_token_encrypted_response_enc == null ? 'selected ' : ''%>>Use server default</option>
+						<option value="none" <%=id_token_encrypted_response_enc == "none" ? 'selected' : ''%>>No encryption</option>
+						<option value="A128CBC+HS256" <%=id_token_encrypted_response_enc == "A128CBC+HS256" ? 'selected' : ''%>>Composite Authenticated Encryption algorithm using AES in Cipher Block Chaining (CBC) mode with PKCS #5 padding with an integrity calculation using HMAC SHA-256, using a 256 bit CMK (and 128 bit CEK)</option>
+						<option value="A256CBC+HS512" <%=id_token_encrypted_response_enc == "A256CBC+HS512" ? 'selected' : ''%>>Composite Authenticated Encryption algorithm using AES in CBC mode with PKCS #5 padding with an integrity calculation using HMAC SHA-512, using a 512 bit CMK (and 256 bit CEK)</option>
+						<option value="A128GCM" <%=id_token_encrypted_response_enc == "A128GCM" ? 'selected' : ''%>>AES GCM using 128 bit keys</option>
+						<option value="A256GCM" <%=id_token_encrypted_response_enc == "A256GCM" ? 'selected' : ''%>>AES GCM using 256 bit keys</option>
+					</select>
+				</div>
+			</div>
+
+	</div>
+
+	<div class="tab-pane" id="client-other-tab">
+
+			<div class="control-group" id="subjectType">
+				<label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> Subject Type</label>
+				<div class="controls">
+					<label class="radio inline">
+						<input type="radio" name="subjectType" value="PUBLIC" <%=(subject_type == 'PUBLIC' ? 'checked' : '')%>> Public
+					</label>
+					<label class="radio inline">
+						<input type="radio" name="subjectType" value="PAIRWISE" <%=(subject_type == 'PAIRWISE' ? 'checked' : '')%>> Pairwise
+					</label>
+				</div>
+			</div>
+
+			<div class="control-group" id="initiateLoginUri">
+				<label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> Initiate Login</label>
+				<div class="controls">
+					<input placeholder="http://" value="<%=initiate_login_uri ? initiate_login_uri : ''%>" maxlength="1000" type="text" class=""/>
+					<p class="help-block">URL to initiate login on the client</p>
+				</div>
+			</div>
+
+			<div class="control-group" id="postLogoutRedirectUri">
+				<label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> Post-Logout Redirect</label>
+				<div class="controls">
+					<input placeholder="http://" value="<%=post_logout_redirect_uri%>" maxlength="1000" type="text" class=""/>
+					<p class="help-block">URL to redirect the client to after a logout operation</p>
+				</div>
+			</div>
+
+
+            <div class="control-group" id="requireAuthTime">
+                <label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> Require Auth Time</label>
+                <div class="controls">
+                    <label class="checkbox">
+                        <input type="checkbox" <%=(require_auth_time == true ? 'checked' : '')%>> Always require that the auth_time claim be sent in the id token
+                    </label>
+                </div>
+            </div>
+
+			<div class="control-group" id="defaultMaxAge">
+				<label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> Default Max Age</label>
+				<div class="controls">
+					<input placeholder="" value="<%=default_max_age ? default_max_age : ''%>" maxlength="1000" type="text" class=""/>
+					<p class="help-block">Default maximum session age before re-prompting</p>
+				</div>
+			</div>
+
+            <div class="control-group" id="requestUris">
+                <label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> Request URIs</label>
+                <div class="controls">
+                </div>
+            </div>
+
+            <div class="control-group" id="defaultAcrValues">
+                <label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> Default ACR Values</label>
+                <div class="controls">
+                </div>
+            </div>
+
+			<div class="control-group" id="sectorIdentifierUri">
+				<label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> Sector Identifier URI</label>
+				<div class="controls">
+					<input placeholder="http://" value="<%=sector_identifier_uri ? sector_identifier_uri : ''%>" maxlength="1000" type="text" class=""/>
+					<p class="help-block">Sector Identifier for JavaScript</p>
+				</div>
+			</div>
+
+			
+
+	</div>
+
+
+
+            <div class="well well-small">
+                <button class="btn btn-small btn-save btn-success"><i class="icon-ok-circle icon-white"></i> Save</button> &nbsp; 
+				<button class="btn btn-small btn-cancel"><i class="icon-ban-circle"></i> Cancel</button>
+            </div>
+
+        </fieldset>
+    </form>
 
 </script>
