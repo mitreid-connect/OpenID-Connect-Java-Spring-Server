@@ -41,6 +41,24 @@ var DynRegClient = Backbone.Model.extend({
         request_uris:[],
         
         client_description:null,
+        
+        registration_access_token:null,
+        registration_client_uri:null
+    },
+    
+    sync: function(method, model, options){
+    	console.log('Sync! ' + method);
+    	console.log(model);
+    	console.log(options);
+    	if (model.get('registration_access_token')) {
+    		var headers = options.headers ? options.headers : {};
+    		headers['Authorization'] = 'Bearer ' + model.get('registration_access_token');
+    		options.headers = headers;
+    		console.log('Added token to request');
+    		console.log(options);
+    	}
+    	
+    	return this.constructor.__super__.sync(method, model, options);
     },
 
     urlRoot:'register'
@@ -71,7 +89,25 @@ var DynRegRootView = Backbone.View.extend({
 	},
 	
 	editReg:function() {
+		var clientId = $('#clientId').val();
+		var token = $('#regtoken').val();
 		
+		var client = new DynRegClient();
+		client.set({
+			client_id: clientId,
+			registration_access_token: token
+		}, { silent: true });
+		
+		console.log(client.get('registration_access_token'));
+
+		client.fetch();
+		console.log(client);
+		
+		var dynRegEditView = new DynRegEditView({model: client});
+		
+		this.remove();
+		$('#content').html(dynRegEditView.render().el);
+		app.navigate('dev/dynreg/edit', {trigger: true});
 	}
 	
 });
