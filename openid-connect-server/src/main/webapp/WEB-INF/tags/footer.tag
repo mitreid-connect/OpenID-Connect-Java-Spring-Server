@@ -26,6 +26,7 @@
 	<script type="text/javascript" src="resources/js/grant.js"></script>
 	<script type="text/javascript" src="resources/js/scope.js"></script>
 	<script type="text/javascript" src="resources/js/whitelist.js"></script>
+	<script type="text/javascript" src="resources/js/dynreg.js"></script>
 	<script type="text/javascript" src="resources/js/admin.js"></script>
 </c:if>
 </body>
