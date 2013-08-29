@@ -99,15 +99,26 @@ var DynRegRootView = Backbone.View.extend({
 		
 		console.log(client.get('registration_access_token'));
 
+		var self = this;
+		
 		client.fetch({success: function() {
 			console.log(client);
 			
 			var dynRegEditView = new DynRegEditView({model: client});
 			
 			$('#content').html(dynRegEditView.render().el);
+			app.navigate('dev/dynreg/edit', {trigger: true});
+			self.remove();
+		}, error: function() {
+    		$('#modalAlert div.modal-body').html("Invalid client or registration access token.");
+    		
+			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
+				 "backdrop" : "static",
+				 "keyboard" : true,
+				 "show" : true // ensure the modal is shown immediately
+			 });
+
 		}});
-		app.navigate('dev/dynreg/edit', {trigger: true});
-		this.remove();
 	}
 	
 });
@@ -131,7 +142,41 @@ var DynRegEditView = Backbone.View.extend({
     events:{
         "click .btn-save":"saveClient",
         "click .btn-cancel": function() { window.history.back(); return false; },
+        "click .btn-delete":"deleteClient",
         "change #logoUri input":"previewLogo"
+    },
+
+    deleteClient:function () {
+
+        if (confirm("Are you sure sure you would like to delete this client?")) {
+            var self = this;
+
+            this.model.destroy({
+                success:function () {
+                	self.remove();
+                	app.navigate('dev/dynreg', {trigger: true});
+                },
+                error:function (error, response) {
+            		console.log("An error occurred when deleting a client");
+    
+					//Pull out the response text.
+					var responseJson = JSON.parse(response.responseText);
+            		
+            		//Display an alert with an error message
+            		$('#modalAlert div.modal-body').html(responseJson.errorMessage);
+            		
+        			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
+        				 "backdrop" : "static",
+        				 "keyboard" : true,
+        				 "show" : true // ensure the modal is shown immediately
+        			 });
+            	}
+            });
+
+            app.clientListView.delegateEvents();
+        }
+
+        return false;
     },
 
     previewLogo:function(event) {
