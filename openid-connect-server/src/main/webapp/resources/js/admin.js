@@ -340,7 +340,11 @@ var AppRouter = Backbone.Router.extend({
     },
     
     root:function() {
-    	this.navigate('user/approved', {trigger: true});
+    	if (isAdmin()) {
+    		this.navigate('admin/clients', {trigger: true});
+    	} else {
+    		this.navigate('user/approved', {trigger: true});
+    	}
     },
     
     initialize:function () {
@@ -410,6 +414,11 @@ var AppRouter = Backbone.Router.extend({
 
     listClients:function () {
 
+    	if (!isAdmin()) {
+    		this.root();
+    		return;
+    	}
+    	
         this.breadCrumbView.collection.reset();
         this.breadCrumbView.collection.add([
             {text:"Home", href:""},
@@ -423,6 +432,11 @@ var AppRouter = Backbone.Router.extend({
     },
 
     newClient:function() {
+
+    	if (!isAdmin()) {
+    		this.root()();
+    		return;
+    	}
 
         this.breadCrumbView.collection.reset();
         this.breadCrumbView.collection.add([
@@ -449,6 +463,11 @@ var AppRouter = Backbone.Router.extend({
     },
 
     editClient:function(id) {
+
+    	if (!isAdmin()) {
+    		this.root()();
+    		return;
+    	}
 
         this.breadCrumbView.collection.reset();
         this.breadCrumbView.collection.add([
@@ -483,7 +502,13 @@ var AppRouter = Backbone.Router.extend({
     },
 
     whiteList:function () {
-        this.breadCrumbView.collection.reset();
+
+    	if (!isAdmin()) {
+    		this.root()();
+    		return;
+    	}
+
+    	this.breadCrumbView.collection.reset();
         this.breadCrumbView.collection.add([
             {text:"Home", href:""},
             {text:"Manage Whitelisted Sites", href:"manage/#admin/whitelists"}
@@ -496,7 +521,13 @@ var AppRouter = Backbone.Router.extend({
     },
     
     newWhitelist:function(cid) {
-        var client = this.clientList.get(cid);
+
+    	if (!isAdmin()) {
+    		this.root()();
+    		return;
+    	}
+
+    	var client = this.clientList.get(cid);
 
         // if there's no client this is an error
         if (client != null) {
@@ -525,7 +556,13 @@ var AppRouter = Backbone.Router.extend({
     },
     
     editWhitelist:function(id) {
-        this.breadCrumbView.collection.reset();
+
+    	if (!isAdmin()) {
+    		this.root()();
+    		return;
+    	}
+
+    	this.breadCrumbView.collection.reset();
         this.breadCrumbView.collection.add([
             {text:"Home", href:""},
             {text:"Manage Whitelisted Sites", href:"manage/#admin/whitelists"},
@@ -551,8 +588,7 @@ var AppRouter = Backbone.Router.extend({
     },
     
     approvedSites:function() {
-    
-        this.breadCrumbView.collection.reset();
+    	this.breadCrumbView.collection.reset();
         this.breadCrumbView.collection.add([
             {text:"Home", href:""},
             {text:"Manage Approved Sites", href:"manage/#user/approve"}
@@ -578,7 +614,13 @@ var AppRouter = Backbone.Router.extend({
     },
     
     blackList:function() {
-        this.breadCrumbView.collection.reset();
+
+    	if (!isAdmin()) {
+    		this.root()();
+    		return;
+    	}
+
+    	this.breadCrumbView.collection.reset();
         this.breadCrumbView.collection.add([
             {text:"Home", href:""},
             {text:"Manage Blacklisted Sites", href:"manage/#admin/blacklist"}
@@ -596,6 +638,12 @@ var AppRouter = Backbone.Router.extend({
     },
     
     siteScope:function() {
+
+    	if (!isAdmin()) {
+    		this.root()();
+    		return;
+    	}
+
     	this.breadCrumbView.collection.reset();
     	this.breadCrumbView.collection.add([
              {text:"Home", href:""},
@@ -609,6 +657,12 @@ var AppRouter = Backbone.Router.extend({
     },
     
     newScope:function() {
+
+    	if (!isAdmin()) {
+    		this.root()();
+    		return;
+    	}
+
     	this.breadCrumbView.collection.reset();
     	this.breadCrumbView.collection.add([
              {text:"Home", href:""},
@@ -625,6 +679,12 @@ var AppRouter = Backbone.Router.extend({
     },
     
     editScope:function(sid) {
+
+    	if (!isAdmin()) {
+    		this.root()();
+    		return;
+    	}
+
     	this.breadCrumbView.collection.reset();
     	this.breadCrumbView.collection.add([
              {text:"Home", href:""},
@@ -676,6 +736,7 @@ var AppRouter = Backbone.Router.extend({
         ]);
     	
     	setPageTitle("Edit a New Client");
+    	// note that this doesn't actually load the client, that's supposed to happen elsewhere...
     }
 
 
