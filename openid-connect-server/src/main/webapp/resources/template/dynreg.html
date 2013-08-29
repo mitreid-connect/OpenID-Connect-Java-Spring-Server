@@ -46,7 +46,9 @@
             <div class="well well-small">
                 <button class="btn btn-small btn-save btn-success"><i class="icon-ok-circle icon-white"></i> Save</button> &nbsp; 
 				<button class="btn btn-small btn-cancel"><i class="icon-ban-circle"></i> Cancel</button>
-
+				<% if (client.client_id) { %>
+				<button class="btn btn-danger btn-delete pull-right"><i class="icon-trash icon-white"></i> Delete</button>
+				<% } %>
             </div>
 
 				<ul class="nav nav-tabs">
@@ -61,10 +63,22 @@
 <div class="tab-content">
 	<div class="tab-pane active" id="client-main-tab">
 
+			<% if (client.client_id) { %>
+			<div class="control-group">
+				<div class="controls">
+					<div class="alert alert-error">
+						<strong>Warning!</strong> You MUST protect your your Client ID, Client Secret, and your Registration Access Token. If
+						you lose your Client ID or Registration Access Token, you will no longer have access to your client's registration
+						records and you will need to register a new client.
+					</div>
+				</div>
+
+			</div>
+
             <div class="control-group" id="clientId">
                 <label class="control-label">Client ID</label>
                 <div class="controls">
-                    <code><%=client.client_id ? client.client_id : 'Will be generated'%></code>
+                    <pre><%=client.client_id ? client.client_id : '<code>Will be generated</code>'%></pre>
                 </div>
             </div>
 
@@ -73,15 +87,7 @@
 				<label class="control-label">Client Secret</label>
     	        <div class="control-group">
             	    <div class="controls">
-						<% if (client.client_id) { %>
-						<div id="clientSecret" class="span3">
-                	    	<code><%=client.client_secret ? client.client_secret : ''%></code>
-						</div>
-						<% } else { %>
-						<div id="clientSecretGenerated" class="span3">
-							<code>Will be generated</code>
-						</div>
-						<% } %>
+						<pre><%=client.client_secret ? client.client_secret : 'Will be generated'%></pre>
 	                </div>
     	        </div>
 
@@ -90,16 +96,53 @@
             <div class="control-group" id="clientConfigurationUri">
                 <label class="control-label">Client Configuration URL</label>
                 <div class="controls">
-                    <code><%=client.registration_client_uri ? client.registration_client_uri : 'Will be generated'%></code>
+                    <pre><%=client.registration_client_uri ? client.registration_client_uri : 'Will be generated'%></pre>
                 </div>
             </div>
 
             <div class="control-group" id="registrationAccessToken">
                 <label class="control-label">Registration Access Token</label>
                 <div class="controls">
-                    <code><%=client.registration_access_token ? client.registration_access_token : 'Will be generated'%></code>
+                    <pre><%=client.registration_access_token ? client.registration_access_token : 'Will be generated'%></pre>
                 </div>
             </div>
+
+			<% } else { %>
+
+            <div class="control-group" id="clientId">
+                <label class="control-label">Client ID</label>
+                <div class="controls">
+                    <code>Will be generated</code>
+                </div>
+            </div>
+
+
+			<div class="control-group" id="requireClientSecret">
+				<label class="control-label">Client Secret</label>
+    	        <div class="control-group">
+            	    <div class="controls">
+						<code>Will be generated</code>
+	                </div>
+    	        </div>
+
+			</div>
+
+            <div class="control-group" id="clientConfigurationUri">
+                <label class="control-label">Client Configuration URL</label>
+                <div class="controls">
+                    <code>Will be generated</code>
+                </div>
+            </div>
+
+            <div class="control-group" id="registrationAccessToken">
+                <label class="control-label">Registration Access Token</label>
+                <div class="controls">
+                    <code>Will be generated</code>
+                </div>
+            </div>
+
+			<% } %>
+
 
             <div class="control-group" id="clientName">
                 <label class="control-label">Client name</label>
@@ -496,6 +539,9 @@
             <div class="well well-small">
                 <button class="btn btn-small btn-save btn-success"><i class="icon-ok-circle icon-white"></i> Save</button> &nbsp; 
 				<button class="btn btn-small btn-cancel"><i class="icon-ban-circle"></i> Cancel</button>
+				<% if (client.client_id) { %>
+				<button class="btn btn-danger btn-delete pull-right"><i class="icon-trash icon-white"></i> Delete</button>
+				<% } %>
             </div>
 
         </fieldset>
