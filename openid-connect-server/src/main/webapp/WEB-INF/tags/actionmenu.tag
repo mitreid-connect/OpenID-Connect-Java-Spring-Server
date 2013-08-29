@@ -9,9 +9,9 @@
    <li class="divider"></li>
 </security:authorize>
 <li class="nav-header">Personal</li>
-<li><a href="manage/#user/approved">Manage Sites</a></li>
+<li><a href="manage/#user/approved">Manage Approved Sites</a></li>
 <li><a href="manage/#user/tokens">Manage Active Tokens</a></li>
-<li><a href="manage/#user/profile">Manage Profiles</a></li>
+<li><a href="manage/#user/profile">View Profile Information</a></li>
 <li class="divider"></li>
 <li class="nav-header">Developer</li>
 <li><a href="manage/#dev/dynreg">Self-service client registration</a><li>

@@ -309,6 +309,47 @@ var StatsModel = Backbone.Model.extend({
 	url: "api/stats/byclientid"
 });
 
+// User Profile
+
+var UserProfileView = Backbone.View.extend({
+	tagName: 'span',
+	
+	initialize:function() {
+	},
+	
+	render:function() {
+		
+        $(this.el).html($('#tmpl-user-profile').html());
+
+        _.each(this.model, function (value, key) {
+            $("fieldset",this.el).append(
+            		new UserProfileElementView({
+            				model:{key: key, value: value}
+            			}).render().el);
+        }, this);
+		
+		return this;
+	}
+});
+
+var UserProfileElementView = Backbone.View.extend({
+	tagName: 'div',
+	
+	initialize:function() {
+        if (!this.template) {
+            this.template = _.template($('#tmpl-user-profile-element').html());
+        }
+	},
+	
+	render:function() {
+
+		$(this.el).html(this.template(this.model));
+		
+		return this;
+	}
+	
+});
+
 // Router
 var AppRouter = Backbone.Router.extend({
 
@@ -329,7 +370,7 @@ var AppRouter = Backbone.Router.extend({
         
         "user/approved":"approvedSites",
         "user/tokens":"notImplemented",
-        "user/profile":"notImplemented",
+        "user/profile":"profile",
         
         "dev/dynreg":"dynReg",
         "dev/dynreg/new":"newDynReg",
@@ -737,6 +778,20 @@ var AppRouter = Backbone.Router.extend({
     	
     	setPageTitle("Edit a New Client");
     	// note that this doesn't actually load the client, that's supposed to happen elsewhere...
+    },
+    
+    profile:function() {
+    	this.breadCrumbView.collection.reset();
+    	this.breadCrumbView.collection.add([
+             {text:"Home", href:""},
+             {text:"Profile", href:"manage/#user/profile"}
+        ]);
+    
+    	this.userProfileView = new UserProfileView({model: getUserInfo()});
+    	$('#content').html(this.userProfileView.render().el);
+    	
+    	setPageTitle("Edit a New Client");
+    	
     }
 
 
