@@ -47,15 +47,10 @@ var DynRegClient = Backbone.Model.extend({
     },
     
     sync: function(method, model, options){
-    	console.log('Sync! ' + method);
-    	console.log(model);
-    	console.log(options);
     	if (model.get('registration_access_token')) {
     		var headers = options.headers ? options.headers : {};
     		headers['Authorization'] = 'Bearer ' + model.get('registration_access_token');
     		options.headers = headers;
-    		console.log('Added token to request');
-    		console.log(options);
     	}
     	
     	return this.constructor.__super__.sync(method, model, options);
@@ -97,12 +92,9 @@ var DynRegRootView = Backbone.View.extend({
 			registration_access_token: token
 		});
 		
-		console.log(client.get('registration_access_token'));
-
 		var self = this;
 		
 		client.fetch({success: function() {
-			console.log(client);
 			
 			var dynRegEditView = new DynRegEditView({model: client});
 			
@@ -238,7 +230,7 @@ var DynRegEditView = Backbone.View.extend({
         $('.control-group').removeClass('error');
 
         // build the scope object
-        var scopes = this.scopeCollection.pluck("item");
+        var scopes = this.scopeCollection.pluck("item").join(" ");
         
         // build the grant type object
         var grantTypes = [];
@@ -255,6 +247,14 @@ var DynRegEditView = Backbone.View.extend({
         		responseTypes.push(type);
         	}
         });
+        
+        var contacts = this.contactsCollection.pluck('item');
+        var userInfo = getUserInfo();
+        if (userInfo && userInfo.email) {
+        	if (!_.contains(contacts, userInfo.email)) {
+        		contacts.push(userInfo.email);
+        	}
+        }
 
         var attrs = {
             client_name:$('#clientName input').val(),
@@ -278,7 +278,7 @@ var DynRegEditView = Backbone.View.extend({
             reuse_refresh_token: $('#reuseRefreshToken').is(':checked'),
             require_auth_time: $('#requireAuthTime input').is(':checked'),
             default_max_age: parseInt($('#defaultMaxAge input').val()),
-            contacts: this.contactsCollection.pluck('item'),
+            contacts: contacts,
             request_uris: this.requestUrisCollection.pluck('item'),
             default_acr_values: this.defaultAcrValuesCollection.pluck('item'),
             request_object_signing_alg: this.defaultToNull($('#requestObjectSigningAlg select').val()),
@@ -328,7 +328,6 @@ var DynRegEditView = Backbone.View.extend({
     },
 
     render:function() {
-		console.log(this.model.toJSON());
 		$(this.el).html(this.template({client: this.model.toJSON()}));
 		
         var _self = this;
