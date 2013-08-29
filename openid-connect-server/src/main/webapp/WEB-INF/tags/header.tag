@@ -113,6 +113,11 @@
     	function getUserInfo() {
     		return ${userInfoJson};
     	}
+		
+		// get the authorities of the current user, if available (null otherwise)
+		function getUserAuthorities() {
+			return ${userAuthorities};
+		}
     </script>    
 </head>
 

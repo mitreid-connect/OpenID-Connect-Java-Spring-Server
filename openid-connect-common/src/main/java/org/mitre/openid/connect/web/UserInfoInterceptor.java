@@ -19,6 +19,7 @@
  */
 package org.mitre.openid.connect.web;
 
+import java.lang.reflect.Type;
 import java.security.Principal;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,10 +29,17 @@ import org.mitre.openid.connect.model.OIDCAuthenticationToken;
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.service.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 
 /**
  * Injects the UserInfo object for the current user into the current model's context, if both exist. Allows JSPs and the like to call "userInfo.name" and other fields.
@@ -41,7 +49,14 @@ import com.google.gson.Gson;
  */
 public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 	
-	private Gson gson = new Gson();
+	private Gson gson = new GsonBuilder()
+		.registerTypeHierarchyAdapter(GrantedAuthority.class, new JsonSerializer<GrantedAuthority>() {
+			@Override
+            public JsonElement serialize(GrantedAuthority src, Type typeOfSrc, JsonSerializationContext context) {
+	            return new JsonPrimitive(src.getAuthority());
+            }
+		})
+		.create();
 
 	@Autowired
 	private UserInfoService userInfoService;
@@ -53,6 +68,11 @@ public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 			// get our principal from the security context
 			Principal p = request.getUserPrincipal();
 
+			if (p instanceof Authentication){
+				Authentication auth = (Authentication)p;
+				modelAndView.addObject("userAuthorities", gson.toJson(auth.getAuthorities()));
+			}
+			
 			if (p instanceof OIDCAuthenticationToken) {
 				// if they're logging into this server from a remote OIDC server, pass through their user info
 				OIDCAuthenticationToken oidc = (OIDCAuthenticationToken) p;
