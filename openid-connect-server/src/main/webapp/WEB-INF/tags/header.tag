@@ -108,6 +108,11 @@
     	function setPageTitle(title) {
     		document.title = "${config.topbarTitle} - " + title;
     	}
+    	
+		// get the info of the current user, if available (null otherwise)
+    	function getUserInfo() {
+    		return ${userInfoJson};
+    	}
     </script>    
 </head>
 
