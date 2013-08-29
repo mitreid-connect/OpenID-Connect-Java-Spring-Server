@@ -128,6 +128,12 @@ var DynRegEditView = Backbone.View.extend({
         this.requestUrisCollection = new Backbone.Collection();
 	},
 	
+    events:{
+        "click .btn-save":"saveClient",
+        "click .btn-cancel": function() { window.history.back(); return false; },
+        "change #logoUri input":"previewLogo"
+    },
+
     previewLogo:function(event) {
     	if ($('#logoUri input', this.el).val()) {
     		$('#logoPreview', this.el).empty();
@@ -182,6 +188,100 @@ var DynRegEditView = Backbone.View.extend({
     	'code-token-idtoken': 'code token id_token'
     },
 
+    saveClient:function (event) {
+
+        $('.control-group').removeClass('error');
+
+        // build the scope object
+        var scopes = this.scopeCollection.pluck("item");
+        
+        // build the grant type object
+        var grantTypes = [];
+        $.each(this.grantMap, function(index,type) {
+            if ($('#grantTypes-' + index).is(':checked')) {
+                grantTypes.push(type);
+            }
+        });
+        
+        // build the response type object
+        var responseTypes = [];
+        $.each(this.responseMap, function(index,type) {
+        	if ($('#responseTypes-' + index).is(':checked')) {
+        		responseTypes.push(type);
+        	}
+        });
+
+        var attrs = {
+            client_name:$('#clientName input').val(),
+            redirect_uris: this.redirectUrisCollection.pluck("item"),
+            client_description:$('#clientDescription textarea').val(),
+            logo_uri:$('#logoUri input').val(),
+            grant_types: grantTypes,
+            scope: scopes,
+            
+            tos_uri: $('#tosUri input').val(),
+            policy_uri: $('#policyUri input').val(),
+            client_uri: $('#clientUri input').val(),
+            application_type: $('#applicationType input').filter(':checked').val(),
+            jwks_uri: $('#jwksUri input').val(),
+            subject_type: $('#applicationType input').filter(':checked').val(),
+            token_endpoint_auth_method: $('#tokenEndpointAuthMethod input').filter(':checked').val(),
+            response_types: responseTypes,
+            sector_identifier_uri: $('#sectorIdentifierUri input').val(),
+            initiate_login_uri: $('#initiateLoginUri input').val(),
+            post_logout_redirect_uri: $('#postLogoutRedirectUri input').val(),
+            reuse_refresh_token: $('#reuseRefreshToken').is(':checked'),
+            require_auth_time: $('#requireAuthTime input').is(':checked'),
+            default_max_age: parseInt($('#defaultMaxAge input').val()),
+            contacts: this.contactsCollection.pluck('item'),
+            request_uris: this.requestUrisCollection.pluck('item'),
+            default_acr_values: this.defaultAcrValuesCollection.pluck('item'),
+            request_object_signing_alg: this.defaultToNull($('#requestObjectSigningAlg select').val()),
+            userinfo_signed_response_alg: this.defaultToNull($('#userInfoSignedResponseAlg select').val()),
+            userinfo_encrypted_response_alg: this.defaultToNull($('#userInfoEncryptedResponseAlg select').val()),
+            userinfo_encrypted_response_enc: this.defaultToNull($('#userInfoEncryptedResponseEnc select').val()),
+            id_token_signed_response_alg: this.defaultToNull($('#idTokenSignedResponseAlg select').val()),
+            id_token_encrypted_response_alg: this.defaultToNull($('#idTokenEncryptedResponseAlg select').val()),
+            id_token_encrypted_response_enc: this.defaultToNull($('#idTokenEncryptedResponseEnc select').val())
+        };
+
+        // set all empty strings to nulls
+        for (var key in attrs) {
+        	if (attrs[key] === "") {
+        		attrs[key] = null;
+        	}
+        }
+        
+        var _self = this;        
+        this.model.save(attrs, {
+            success:function () {
+            	// switch to an "edit" view
+            	app.navigate('dev/dynreg/edit', {trigger: true});
+            	_self.remove();
+    			var dynRegEditView = new DynRegEditView({model: _self.model});
+    			// reload
+    			$('#content').html(dynRegEditView.render().el);
+            },
+            error:function (error, response) {
+        		console.log("An error occurred when deleting from a list widget");
+
+				//Pull out the response text.
+				var responseJson = JSON.parse(response.responseText);
+        		
+        		//Display an alert with an error message
+        		$('#modalAlert div.modal-body').html(responseJson.errorMessage);
+        		
+    			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
+    				 "backdrop" : "static",
+    				 "keyboard" : true,
+    				 "show" : true // ensure the modal is shown immediately
+    			 });
+        	}
+        });
+
+        return false;
+    },
+
     render:function() {
 		console.log(this.model.toJSON());
 		$(this.el).html(this.template({client: this.model.toJSON()}));
@@ -199,7 +299,8 @@ var DynRegEditView = Backbone.View.extend({
         	collection: this.redirectUrisCollection}).render().el);
         
         // build and bind scopes
-        var scopeSet = this.model.get("scope").split(" ");
+        var scopes = this.model.get("scope");
+        var scopeSet = scopes ? scopes.split(" ") : [];
         _.each(scopeSet, function (scope) {
             _self.scopeCollection.add(new Backbone.Model({item:scope}));
         });
