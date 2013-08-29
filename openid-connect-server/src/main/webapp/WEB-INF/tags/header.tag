@@ -1,6 +1,7 @@
 <%@attribute name="title" required="false"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ tag import="com.google.gson.Gson" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -107,6 +108,11 @@
     	// safely set the title of the application
     	function setPageTitle(title) {
     		document.title = "${config.topbarTitle} - " + title;
+    	}
+    	
+		// get the info of the current user, if available (null otherwise)
+    	function getUserInfo() {
+    		return ${userInfoJson};
     	}
     </script>    
 </head>

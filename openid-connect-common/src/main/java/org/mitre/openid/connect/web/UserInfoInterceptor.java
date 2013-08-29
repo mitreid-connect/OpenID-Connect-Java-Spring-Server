@@ -31,6 +31,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import com.google.gson.Gson;
+
 /**
  * Injects the UserInfo object for the current user into the current model's context, if both exist. Allows JSPs and the like to call "userInfo.name" and other fields.
  * 
@@ -38,6 +40,8 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
  *
  */
 public class UserInfoInterceptor extends HandlerInterceptorAdapter {
+	
+	private Gson gson = new Gson();
 
 	@Autowired
 	private UserInfoService userInfoService;
@@ -53,6 +57,8 @@ public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 				// if they're logging into this server from a remote OIDC server, pass through their user info
 				OIDCAuthenticationToken oidc = (OIDCAuthenticationToken) p;
 				modelAndView.addObject("userInfo", oidc.getUserInfo());
+				// TODO: this should use the same serializer as UserInfoView (#488)
+				modelAndView.addObject("userInfoJson", gson.toJson(oidc.getUserInfo()));
 			} else {
 				if (p != null && p.getName() != null) { // don't bother checking if we don't have a principal
 
@@ -62,6 +68,8 @@ public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 					// if we have one, inject it so views can use it
 					if (user != null) {
 						modelAndView.addObject("userInfo", user);
+						// TODO: this should use the same serializer as UserInfoView (#488)
+						modelAndView.addObject("userInfoJson", gson.toJson(user));
 					}
 				}
 			}
