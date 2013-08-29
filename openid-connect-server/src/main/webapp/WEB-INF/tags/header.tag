@@ -119,6 +119,16 @@
 		function getUserAuthorities() {
 			return ${userAuthorities};
 		}
+		
+		// is the current user an admin?
+		function isAdmin() {
+			var auth = getUserAuthorities();
+			if (auth && _.contains(auth, "ROLE_ADMIN")) {
+				return true;
+			} else {
+				return false;
+			}
+		}
     </script>    
 </head>
 
