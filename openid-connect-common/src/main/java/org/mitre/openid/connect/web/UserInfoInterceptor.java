@@ -33,6 +33,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+import org.springframework.web.servlet.view.RedirectView;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -65,31 +66,36 @@ public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
 
 		if (modelAndView != null) { // skip checking at all if we have no model and view to hand the user to
-			// get our principal from the security context
-			Principal p = request.getUserPrincipal();
 
-			if (p instanceof Authentication){
-				Authentication auth = (Authentication)p;
-				modelAndView.addObject("userAuthorities", gson.toJson(auth.getAuthorities()));
-			}
+			// TODO: this is a patch to get around a potential information leak from #492
+			if (!(modelAndView.getView() instanceof RedirectView)) {
 			
-			if (p instanceof OIDCAuthenticationToken) {
-				// if they're logging into this server from a remote OIDC server, pass through their user info
-				OIDCAuthenticationToken oidc = (OIDCAuthenticationToken) p;
-				modelAndView.addObject("userInfo", oidc.getUserInfo());
-				// TODO: this should use the same serializer as UserInfoView (#488)
-				modelAndView.addObject("userInfoJson", gson.toJson(oidc.getUserInfo()));
-			} else {
-				if (p != null && p.getName() != null) { // don't bother checking if we don't have a principal
-
-					// try to look up a user based on the principal's name
-					UserInfo user = userInfoService.getBySubject(p.getName());
-
-					// if we have one, inject it so views can use it
-					if (user != null) {
-						modelAndView.addObject("userInfo", user);
-						// TODO: this should use the same serializer as UserInfoView (#488)
-						modelAndView.addObject("userInfoJson", gson.toJson(user));
+				// get our principal from the security context
+				Principal p = request.getUserPrincipal();
+	
+				if (p instanceof Authentication){
+					Authentication auth = (Authentication)p;
+					modelAndView.addObject("userAuthorities", gson.toJson(auth.getAuthorities()));
+				}
+				
+				if (p instanceof OIDCAuthenticationToken) {
+					// if they're logging into this server from a remote OIDC server, pass through their user info
+					OIDCAuthenticationToken oidc = (OIDCAuthenticationToken) p;
+					modelAndView.addObject("userInfo", oidc.getUserInfo());
+					// TODO: this should use the same serializer as UserInfoView (#488)
+					modelAndView.addObject("userInfoJson", gson.toJson(oidc.getUserInfo()));
+				} else {
+					if (p != null && p.getName() != null) { // don't bother checking if we don't have a principal
+	
+						// try to look up a user based on the principal's name
+						UserInfo user = userInfoService.getBySubject(p.getName());
+	
+						// if we have one, inject it so views can use it
+						if (user != null) {
+							modelAndView.addObject("userInfo", user);
+							// TODO: this should use the same serializer as UserInfoView (#488)
+							modelAndView.addObject("userInfoJson", gson.toJson(user));
+						}
 					}
 				}
 			}
