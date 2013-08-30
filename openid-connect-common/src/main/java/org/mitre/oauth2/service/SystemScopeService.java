@@ -19,7 +19,6 @@
  */
 package org.mitre.oauth2.service;
 
-import java.util.Map;
 import java.util.Set;
 
 import org.mitre.oauth2.model.SystemScope;
