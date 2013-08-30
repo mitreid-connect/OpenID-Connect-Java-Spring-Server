@@ -19,8 +19,11 @@
  */
 package org.mitre.oauth2.service.impl;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.repository.SystemScopeRepository;
@@ -31,7 +34,9 @@ import org.springframework.stereotype.Service;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
+import com.google.common.base.Splitter;
 import com.google.common.collect.Collections2;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 
 /**
@@ -62,6 +67,7 @@ public class DefaultSystemScopeService implements SystemScopeService {
 	private Function<String, SystemScope> stringToSystemScope = new Function<String, SystemScope>() {
 		@Override
 		public SystemScope apply(String input) {
+			input = baseScopeString(input);
 			if (input == null) {
 				return null;
 			} else {
@@ -167,6 +173,53 @@ public class DefaultSystemScopeService implements SystemScopeService {
 		} else {
 			return new LinkedHashSet<String>(Collections2.filter(Collections2.transform(scope, systemScopeToString), Predicates.notNull()));
 		}
+	}
+
+	private String[] scopeParts(String value){
+		return Iterables.toArray(
+				Splitter.on(":").split(value), 
+				String.class);
+	}
+	
+	@Override
+	public String baseScopeString(String value) {
+		SystemScope s = toStructuredScope(value);
+		if (s != null) {
+			return s.getValue();
+		}
+		return value;
+	}
+	
+	@Override
+	public SystemScope toStructuredScope(String value) {
+		String[] scopeParts = scopeParts(value);
+		String baseScope = value;
+		if (scopeParts.length == 2) {
+			baseScope = scopeParts[0];
+		}
+		SystemScope s = repository.getByValue(baseScope);
+		if (s != null && s.isStructured()) {
+			return s;
+		}			
+		
+		return null;
+	}
+
+	@Override
+	public Map<String, String> structuredScopeParameters(Set<String> scopes) {
+		HashMap<String, String> ret = new HashMap<String, String>();
+		
+		for (String s : scopes){
+			SystemScope structured = toStructuredScope(s);
+			if (structured != null){
+				String[] scopeParts = scopeParts(s);
+				if (scopeParts.length == 2){
+					ret.put(scopeParts[0], scopeParts[1]);
+				}
+			}
+		}		
+		
+		return ret;
 	}
 
 

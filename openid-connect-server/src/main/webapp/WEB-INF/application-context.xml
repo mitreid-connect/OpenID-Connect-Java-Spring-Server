@@ -22,7 +22,12 @@
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:security="http://www.springframework.org/schema/security"
 	xmlns:oauth="http://www.springframework.org/schema/security/oauth2"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xmlns:util="http://www.springframework.org/schema/util" 
+
 	xsi:schemaLocation="http://www.springframework.org/schema/security/oauth2 http://www.springframework.org/schema/security/spring-security-oauth2-1.0.xsd
+		http://www.springframework.org/schema/data/jpa
+		http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
 		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
 		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
@@ -30,7 +35,11 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd">
 
 	<!-- Scan for components -->
-	<context:component-scan annotation-config="true" base-package="org.mitre" />
+	<context:component-scan annotation-config="true" base-package="org.mitre, org.bbplus" />
+
+
+	<!-- Scan for repository interfaces -->
+	<jpa:repositories base-package="org.bbplus" />
 
 	<!-- Enables the Spring MVC @Controller programming model -->
 	<tx:annotation-driven transaction-manager="transactionManager" />
@@ -62,6 +71,13 @@
 	<!-- Spring Security configuration -->
 
 	<oauth:resource-server id="resourceServerFilter" token-services-ref="defaultOAuth2ProviderTokenService" />
+	<oauth:resource-server id="preregistrationFilter" token-services-ref="preregistrationTokenService" />
+
+	<security:authentication-manager id="preregistrationAuthenticationManager">
+		<security:authentication-provider ref="preregistrationAuthenticationProvider" />
+	</security:authentication-manager>
+	
+	<bean id="preregistrationAuthenticationProvider" class="org.bbplus.PreregistrationAuthenticationProvider" />
 
 	<security:http pattern="/token" 
 		create-session="stateless"
@@ -91,6 +107,15 @@
 	</security:http>
 	
 	<!-- OAuth-protect API and other endpoints -->
+	<security:http pattern="/register" 
+		authentication-manager-ref="preregistrationAuthenticationManager"
+		use-expressions="true" entry-point-ref="oauthAuthenticationEntryPoint" create-session="stateless">
+		<security:custom-filter ref="preregistrationFilter" before="PRE_AUTH_FILTER" />
+		<security:expression-handler ref="oauthWebExpressionHandler" />
+		<security:intercept-url pattern="/register" access="permitAll"/>
+	</security:http>
+
+	<!-- OAuth-protect API and other endpoints -->
 	<security:http pattern="/register/**" use-expressions="true" entry-point-ref="oauthAuthenticationEntryPoint" create-session="stateless">
 		<security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
 		<security:expression-handler ref="oauthWebExpressionHandler" />
@@ -107,8 +132,15 @@
 		<security:expression-handler ref="oauthWebExpressionHandler" />
 	</security:http>
 	
-	<security:http pattern="/introspect**" entry-point-ref="oauthAuthenticationEntryPoint" create-session="stateless">
+	<security:http pattern="/introspect**" 
+		create-session="stateless"
+		authentication-manager-ref="clientAuthenticationManager">
+		
+		<security:http-basic entry-point-ref="oauthAuthenticationEntryPoint" />
+		<!-- include this only if you need to authenticate clients via request parameters -->
+		<security:custom-filter ref="clientAssertiontokenEndpointFilter" after="PRE_AUTH_FILTER" /> <!-- this one has to go first -->
 		<security:custom-filter ref="clientCredentialsIntrospectionEndpointFilter" before="BASIC_AUTH_FILTER" />
+		<security:access-denied-handler ref="oauthAccessDeniedHandler" />
 	</security:http>
 
 	<security:http pattern="/revoke**" entry-point-ref="oauthAuthenticationEntryPoint" create-session="stateless">
@@ -170,6 +202,8 @@
 	</security:authentication-manager>
 	
 	<bean id="clientAssertionAuthenticationProvider" class="org.mitre.openid.connect.assertion.JwtBearerAuthenticationProvider" />
+
+	<bean id="validateTrustedRegistration" class="org.bbplus.BBTrustedRegistrationValidator" />
 	
 	<!-- user services -->
 	<import resource="user-context.xml" />
@@ -183,7 +217,7 @@
 	</bean>
 
 	<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-		<property name="packagesToScan" value="org.mitre" />
+		<property name="packagesToScan" value="org.mitre, org.bbplus" />
 		<property name="persistenceProviderClass" value="org.eclipse.persistence.jpa.PersistenceProvider" />
 		<property name="dataSource" ref="dataSource" />
 		<property name="jpaVendorAdapter" ref="jpaAdapter" />
@@ -225,12 +259,14 @@
 		<property name="order" value="1" />
 	</bean>
 
+	<import resource="local-config.xml" />
+
+
 	<!-- End view configuration -->
 
 	<!--Import scheduled task configuration -->
 	<import resource="task-config.xml" />
 
 	<!-- import application-local configuration information (such as bean definitions) -->
-	<import resource="local-config.xml" />
 
 </beans>

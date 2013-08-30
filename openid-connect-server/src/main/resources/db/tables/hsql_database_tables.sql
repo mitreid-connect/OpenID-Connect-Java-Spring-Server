@@ -77,6 +77,7 @@ CREATE TABLE IF NOT EXISTS client_details (
 	client_description VARCHAR(1024),
 	reuse_refresh_tokens BOOLEAN NOT NULL DEFAULT true,
 	dynamically_registered BOOLEAN NOT NULL DEFAULT false,
+	trusted_registration BOOLEAN NOT NULL DEFAULT false,
 	allow_introspection BOOLEAN NOT NULL DEFAULT false,
 	id_token_validity_seconds BIGINT NOT NULL DEFAULT 600,
 	
@@ -165,6 +166,8 @@ CREATE TABLE IF NOT EXISTS system_scope (
 	icon VARCHAR(256),
 	allow_dyn_reg BOOLEAN NOT NULL DEFAULT false,
 	default_scope BOOLEAN NOT NULL DEFAULT false,
+	structured BOOLEAN NOT NULL DEFAULT false,
+	structured_param_description VARCHAR(256),
 	UNIQUE (scope)
 );
 
@@ -200,4 +203,8 @@ CREATE TABLE IF NOT EXISTS whitelisted_site (
 CREATE TABLE IF NOT EXISTS whitelisted_site_scope (
 	owner_id BIGINT,
 	scope VARCHAR(256)
+);
+
+CREATE TABLE IF NOT EXISTS trusted_registry  (
+	uri VARCHAR(256)
 );

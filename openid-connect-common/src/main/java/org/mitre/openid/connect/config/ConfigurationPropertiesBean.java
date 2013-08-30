@@ -60,6 +60,8 @@ public class ConfigurationPropertiesBean {
 	 * @return the issuer baseUrl
 	 */
 	public String getIssuer() {
+		String ret = java.lang.System.getenv("baseUrl");
+		if (ret != null) return ret;
 		return issuer;
 	}
 

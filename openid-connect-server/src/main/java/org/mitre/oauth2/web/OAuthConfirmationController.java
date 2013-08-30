@@ -19,6 +19,7 @@
  */
 package org.mitre.oauth2.web;
 
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -110,7 +111,7 @@ public class OAuthConfirmationController {
 		model.put("redirect_uri", redirect_uri);
 
 		Set<SystemScope> scopes = scopeService.fromStrings(clientAuth.getScope());
-
+		
 		Set<SystemScope> sortedScopes = new LinkedHashSet<SystemScope>(scopes.size());
 		Set<SystemScope> systemScopes = scopeService.getAll();
 
@@ -122,7 +123,10 @@ public class OAuthConfirmationController {
 		}
 
 		sortedScopes.addAll(Sets.difference(scopes, systemScopes));
-
+		
+		Map<String, String> proposedParams =  scopeService.structuredScopeParameters(clientAuth.getScope());
+		
+		model.put("proposedParams", proposedParams);
 		model.put("scopes", sortedScopes);
 
 		return "approve";

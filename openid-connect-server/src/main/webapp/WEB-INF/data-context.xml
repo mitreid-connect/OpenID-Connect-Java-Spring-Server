@@ -24,7 +24,7 @@
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 		<property name="driverClassName" value="org.hsqldb.jdbcDriver" />
 		<property name="url" value="jdbc:hsqldb:mem:oic;sql.syntax_mys=true" />
-<!-- 		<property name="url" value="jdbc:hsqldb:file:/tmp/oic;sql.syntax_mys=true" /> -->
+		<!--<property name="url" value="jdbc:hsqldb:hsql://localhost/oic;sql.syntax_mys=true" />-->
 		<property name="username" value="oic" />
 		<property name="password" value="oic" />	
 	</bean>

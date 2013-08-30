@@ -19,6 +19,7 @@
  */
 package org.mitre.oauth2.service;
 
+import java.util.Map;
 import java.util.Set;
 
 import org.mitre.oauth2.model.SystemScope;
@@ -64,5 +65,11 @@ public interface SystemScopeService {
 	 * @return
 	 */
 	public Set<String> toStrings(Set<SystemScope> scope);
+	
+	public String baseScopeString(String value);
+
+	public Map<String, String> structuredScopeParameters(Set<String> scope);
+
+	public SystemScope toStructuredScope(String s);
 
 }

@@ -47,7 +47,9 @@ public class SystemScope {
 	private String icon; // class of the icon to display on the auth page
 	private boolean allowDynReg = false; // can a dynamically registered client ask for this scope?
 	private boolean defaultScope = false; // is this a default scope for newly-registered clients?
-
+	private boolean structured = false; // is this a default scope for newly-registered clients?
+	private String structuredParamDescription;
+	
 	/**
 	 * Make a blank system scope with no value
 	 */
@@ -142,13 +144,41 @@ public class SystemScope {
 	public boolean isDefaultScope() {
 		return defaultScope;
 	}
+	
 	/**
 	 * @param defaultScope the defaultScope to set
 	 */
 	public void setDefaultScope(boolean defaultScope) {
 		this.defaultScope = defaultScope;
 	}
+	
+	/**
+	 * @return the isStructured status
+	 */
+	@Basic
+	@Column(name = "structured")
+	public boolean isStructured() {
+		return structured;
+	}
+	
+	public void setIsStructured(boolean isStructured) {
+		this.structured = isStructured;
+	}
 
+	@Basic
+	@Column(name = "structured_param_description")
+	public String getStructuredParamDescription() {
+		return structuredParamDescription;
+	}
+	
+	/**
+	 * @param isStructured the isStructured to set
+	 */
+	public void setStructuredParamDescription(String d) {
+		this.structuredParamDescription = d;
+	}
+
+	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
@@ -158,6 +188,7 @@ public class SystemScope {
 		int result = 1;
 		result = prime * result + (allowDynReg ? 1231 : 1237);
 		result = prime * result + (defaultScope ? 1231 : 1237);
+		result = prime * result + (structured ? 1231 : 1237);
 		result = prime * result + ((description == null) ? 0 : description.hashCode());
 		result = prime * result + ((icon == null) ? 0 : icon.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
@@ -184,6 +215,9 @@ public class SystemScope {
 			return false;
 		}
 		if (defaultScope != other.defaultScope) {
+			return false;
+		}
+		if (structured != other.structured) {
 			return false;
 		}
 		if (description == null) {
@@ -219,7 +253,7 @@ public class SystemScope {
 
 	@Override
 	public String toString() {
-		return "SystemScope [value=" + value + ", description=" + description + ", icon=" + icon + ", allowDynReg=" + allowDynReg + ", defaultScope=" + defaultScope + "]";
+		return "SystemScope [value=" + value + ", description=" + description + ", icon=" + icon + ", allowDynReg=" + allowDynReg + ", defaultScope=" + defaultScope  + ", isStructured=" + structured + "]";
 	}
 
 }

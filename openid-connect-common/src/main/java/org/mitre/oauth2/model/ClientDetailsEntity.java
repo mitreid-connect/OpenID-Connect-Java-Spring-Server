@@ -127,6 +127,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	private String clientDescription = ""; // human-readable description
 	private boolean reuseRefreshToken = true; // do we let someone reuse a refresh token?
 	private boolean dynamicallyRegistered = false; // was this client dynamically registered?
+	private boolean trustedRegistration = false; // was this client registered by a trusted process?
 	private boolean allowIntrospection = false; // do we let this client call the introspection endpoint?
 	private Integer idTokenValiditySeconds; //timeout for id tokens
 	private Date createdAt; // time the client was created
@@ -318,8 +319,22 @@ public class ClientDetailsEntity implements ClientDetails {
 	public void setDynamicallyRegistered(boolean dynamicallyRegistered) {
 		this.dynamicallyRegistered = dynamicallyRegistered;
 	}
+	
+	/**
+	 * @return the trustedRegistration
+	 */
+	@Basic
+	@Column(name="trusted_registration")
+	public boolean isTrustedRegistration() {
+		return trustedRegistration;
+	}
 
-
+	/**
+	 * @param trustedRegistration the trustedRegistration to set
+	 */
+	public void setTrustedRegistration(boolean trustedRegistration) {
+		this.trustedRegistration = trustedRegistration;
+	}
 
 
 

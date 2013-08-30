@@ -60,7 +60,7 @@ public class UserInfoEndpoint {
 			model.addAttribute("code", HttpStatus.FORBIDDEN);
 			return "httpCodeView";
 		}
-
+		
 		String userId = p.getName();
 		UserInfo userInfo = userInfoService.getBySubject(userId);
 
