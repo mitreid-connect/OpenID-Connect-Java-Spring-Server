@@ -142,12 +142,16 @@
 				</div>
 			</div>
 
-			<div class="control-group" id="isStructured">
+			<div class="control-group">
 				<div class="controls">
 					<label class="checkbox">
-						<input type="checkbox" <%=isStructured ? 'checked' : '' %>> is a structured scope
+						<input type="checkbox" id="isStructured" <%=structured ? 'checked' : '' %>> is a structured scope
 					</label>
 					<p class="help-block">Is the scope structured with structured values like <code>base:extension</code>?</p>
+				</div>
+				<div class="controls">
+					<input type="text" id="structuredParamDescription" value="<%=structuredParamDescription ? structuredParamDescription : '' %>">
+					<p class="help-block">Human-readable description of the structured parameter</p>
 				</div>
 			</div>
 

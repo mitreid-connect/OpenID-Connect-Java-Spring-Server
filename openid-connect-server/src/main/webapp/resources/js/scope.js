@@ -243,7 +243,9 @@ var SystemScopeFormView = Backbone.View.extend({
 			description:$('#description textarea').val(),
 			icon:$('#iconDisplay input').val(),
 			defaultScope:$('#defaultScope input').is(':checked'),
-			allowDynReg:$('#allowDynReg input').is(':checked')
+			allowDynReg:$('#allowDynReg input').is(':checked'),
+			structured:$('#structured').is(':checked'),
+			structuredParamDescription:$('#structuredParamDescription').val()
 		});
 		
 		if (valid) {
