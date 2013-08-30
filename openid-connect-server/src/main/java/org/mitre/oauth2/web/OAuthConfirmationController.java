@@ -124,9 +124,6 @@ public class OAuthConfirmationController {
 
 		sortedScopes.addAll(Sets.difference(scopes, systemScopes));
 		
-		Map<String, String> proposedParams =  scopeService.structuredScopeParameters(clientAuth.getScope());
-		
-		model.put("proposedParams", proposedParams);
 		model.put("scopes", sortedScopes);
 
 		return "approve";
