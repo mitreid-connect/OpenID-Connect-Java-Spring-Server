@@ -65,11 +65,14 @@ public interface SystemScopeService {
 	 * @return
 	 */
 	public Set<String> toStrings(Set<SystemScope> scope);
-	
-	public String baseScopeString(String value);
 
-	public Map<String, String> structuredScopeParameters(Set<String> scope);
-
-	public SystemScope toStructuredScope(String s);
-
+	/**
+	 * Test whether the scopes in both sets are compatible, with special
+	 * processing for structured scopes. All scopes in "actual" must exist in
+	 * "expected". If a scope in "expected" is structured and has a value, it
+	 * must be matched exactly by its corresponding scope in "actual". If a
+	 * scope in "expected" is structured but has no value, it may be matched by
+	 * a scope with or without a value in "actual".
+	 */
+	public boolean scopesMatch(Set<String> expected, Set<String> actual);
 }

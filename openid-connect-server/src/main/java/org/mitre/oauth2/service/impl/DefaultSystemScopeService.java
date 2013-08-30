@@ -19,11 +19,9 @@
  */
 package org.mitre.oauth2.service.impl;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.repository.SystemScopeRepository;
@@ -35,8 +33,9 @@ import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import com.google.common.collect.Collections2;
-import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 /**
@@ -67,18 +66,26 @@ public class DefaultSystemScopeService implements SystemScopeService {
 	private Function<String, SystemScope> stringToSystemScope = new Function<String, SystemScope>() {
 		@Override
 		public SystemScope apply(String input) {
-			input = baseScopeString(input);
-			if (input == null) {
+			if (Strings.isNullOrEmpty(input)) {
 				return null;
 			} else {
-				SystemScope s = getByValue(input);
-				if (s != null) {
-					// get the real scope if it's available
-					return s;
-				} else {
+				List<String> parts = parseStructuredScopeValue(input);
+				String base = parts.get(0); // the first part is the base
+				// get the real scope if it's available
+				SystemScope s = getByValue(base);
+				if (s == null) {
 					// make a fake one otherwise
-					return new SystemScope(input);
+					s = new SystemScope(base);
+					if (parts.size() > 1) {
+						s.setStructured(true);
+					}
 				}
+				
+				if (s.isStructured() && parts.size() > 1) {
+					s.setStructuredValue(parts.get(1));
+				}
+				
+				return s;
 			}
 		}
 	};
@@ -175,53 +182,49 @@ public class DefaultSystemScopeService implements SystemScopeService {
 		}
 	}
 
-	private String[] scopeParts(String value){
-		return Iterables.toArray(
-				Splitter.on(":").split(value), 
-				String.class);
+	// parse a structured scope string into its components
+	private List<String> parseStructuredScopeValue(String value) {
+		return Lists.newArrayList(Splitter.on(":").split(value));
 	}
 	
-	@Override
-	public String baseScopeString(String value) {
-		SystemScope s = toStructuredScope(value);
-		if (s != null) {
-			return s.getValue();
-		}
-		return value;
-	}
+	/* (non-Javadoc)
+	 * @see org.mitre.oauth2.service.SystemScopeService#scopesMatch(java.util.Set, java.util.Set)
+	 */
+    @Override
+    public boolean scopesMatch(Set<String> expected, Set<String> actual) {
+    	
+    	Set<SystemScope> ex = fromStrings(expected);
+    	Set<SystemScope> act = fromStrings(actual);
+    	
+    	for (SystemScope actScope : act) {
+    		// first check to see if there's an exact match
+    		if (!ex.contains(actScope)) {
+    			// we didn't find an exact match
+    			if (actScope.isStructured() && !Strings.isNullOrEmpty(actScope.getStructuredValue())) {
+	    			// if we didn't get an exact match but the actual scope is structured, we need to check further
+
+    				// first, find the "base" scope for this 
+    				SystemScope base = getByValue(actScope.getValue());
+	    			if (!ex.contains(base)) {
+	    				// if the expected doesn't contain the base scope, fail
+	    				return false;
+	    			} else {
+	    				// we did find an exact match, need to check the rest
+	    			}
+	    		} else {
+	    			// the scope wasn't structured, fail now
+	    			return false;
+	    		}
+    		} else {
+    			// if we did find an exact match, we need to check the rest
+    		}
+        }
+    	
+    	// if we got all the way down here, the setup passed
+    	return true;
+    	
+    }
+
 	
-	@Override
-	public SystemScope toStructuredScope(String value) {
-		String[] scopeParts = scopeParts(value);
-		String baseScope = value;
-		if (scopeParts.length == 2) {
-			baseScope = scopeParts[0];
-		}
-		SystemScope s = repository.getByValue(baseScope);
-		if (s != null && s.isStructured()) {
-			return s;
-		}			
-		
-		return null;
-	}
-
-	@Override
-	public Map<String, String> structuredScopeParameters(Set<String> scopes) {
-		HashMap<String, String> ret = new HashMap<String, String>();
-		
-		for (String s : scopes){
-			SystemScope structured = toStructuredScope(s);
-			if (structured != null){
-				String[] scopeParts = scopeParts(s);
-				if (scopeParts.length == 2){
-					ret.put(scopeParts[0], scopeParts[1]);
-				}
-			}
-		}		
-		
-		return ret;
-	}
-
-
-
+	
 }

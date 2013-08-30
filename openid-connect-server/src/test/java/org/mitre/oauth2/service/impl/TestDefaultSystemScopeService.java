@@ -26,7 +26,9 @@ import org.mitre.oauth2.repository.SystemScopeRepository;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
 
 import com.google.common.collect.Sets;
 
@@ -147,4 +149,43 @@ public class TestDefaultSystemScopeService {
 		assertThat(service.toStrings(allScopes), equalTo(allScopeStrings));
 	}
 
+	@Test
+	public void scopesMatch() {
+		
+		Set<String> expected = Sets.newHashSet("foo", "bar", "baz");
+		Set<String> actualGood = Sets.newHashSet("foo", "baz", "bar");
+		Set<String> actualGood2 = Sets.newHashSet("foo", "bar");
+		Set<String> actualBad = Sets.newHashSet("foo", "bob", "bar");
+		
+		// same scopes, different order
+		assertThat(service.scopesMatch(expected, actualGood), is(true));
+
+		// subset
+		assertThat(service.scopesMatch(expected, actualGood2), is(true));
+		
+		// extra scope (fail)
+		assertThat(service.scopesMatch(expected, actualBad), is(false));
+	}
+	
+	@Test
+	public void scopesMatch_structured() {
+		Set<String> expected = Sets.newHashSet("foo", "bar", "baz");
+		Set<String> actualGood = Sets.newHashSet("foo:value", "baz", "bar");
+		Set<String> actualBad = Sets.newHashSet("foo:value", "bar:value");
+		
+		// note: we have to use "thenAnswer" here to mimic the repository not serializing the structuredValue field
+		Mockito.when(repository.getByValue("foo")).thenAnswer(new Answer<SystemScope>() {
+			@Override
+            public SystemScope answer(InvocationOnMock invocation) throws Throwable {
+				SystemScope foo = new SystemScope("foo");
+				foo.setStructured(true);
+				return foo;
+            }
+			
+		});
+		
+		assertThat(service.scopesMatch(expected, actualGood), is(true));
+		
+		assertThat(service.scopesMatch(expected, actualBad), is(false));
+	}
 }
