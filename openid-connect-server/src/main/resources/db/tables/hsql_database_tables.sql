@@ -165,6 +165,8 @@ CREATE TABLE IF NOT EXISTS system_scope (
 	icon VARCHAR(256),
 	allow_dyn_reg BOOLEAN NOT NULL DEFAULT false,
 	default_scope BOOLEAN NOT NULL DEFAULT false,
+	structured BOOLEAN NOT NULL DEFAULT false,
+	structured_param_description VARCHAR(256),
 	UNIQUE (scope)
 );
 

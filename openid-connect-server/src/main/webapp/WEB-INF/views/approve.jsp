@@ -92,7 +92,11 @@
 										${ scope.value }
 									</c:otherwise>
 								</c:choose>
+								
 							</label>
+								<c:if test="${ scope.structured }">
+									<input name="scopeparam_${ scope.value }" type="text" value="${proposedParams[scope.value]}" placeholder="${scope.structuredParamDescription}">
+								</c:if>
 
 						</c:forEach>
 
