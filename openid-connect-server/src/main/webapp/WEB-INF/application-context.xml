@@ -34,7 +34,7 @@
 
 	<!-- Enables the Spring MVC @Controller programming model -->
 	<tx:annotation-driven transaction-manager="transactionManager" />
-	<mvc:annotation-driven />
+	<mvc:annotation-driven ignoreDefaultModelOnRedirect="true" />
 	<mvc:interceptors>
 		<!-- Inject the UserInfo into the current context -->
 		<bean id="userInfoInterceptor" class="org.mitre.openid.connect.web.UserInfoInterceptor" />
