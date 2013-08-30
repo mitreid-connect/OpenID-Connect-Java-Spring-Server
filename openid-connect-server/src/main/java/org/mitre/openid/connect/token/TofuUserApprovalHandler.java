@@ -22,10 +22,10 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
-import org.mitre.oauth2.model.SystemScope;
-import org.mitre.oauth2.service.SystemScopeService;
 import javax.servlet.http.HttpSession;
 
+import org.mitre.oauth2.model.SystemScope;
+import org.mitre.oauth2.service.SystemScopeService;
 import org.mitre.openid.connect.model.ApprovedSite;
 import org.mitre.openid.connect.model.WhitelistedSite;
 import org.mitre.openid.connect.service.ApprovedSiteService;
@@ -41,9 +41,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 
 /**
@@ -201,13 +199,14 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 					//registered allowed scopes.
 
 					String scope = approvalParams.get(key);
-					String baseScope = systemScopes.baseScopeString(scope);
-					SystemScope structured = systemScopes.toStructuredScope(scope);
-
+					Set<String> approveSet = Sets.newHashSet(scope);
+					
 					//Make sure this scope is allowed for the given client
-					if (client.getScope().contains(baseScope)) {
+					if (systemScopes.scopesMatch(client.getScope(), approveSet)) {
+
 						// If it's structured, assign the user-specified parameter
-						if (structured  != null){
+						SystemScope systemScope = systemScopes.getByValue(scope);
+						if (systemScope.isStructured()){
 							String paramValue = approvalParams.get("scopeparam_" + scope);
 							allowedScopes.add(scope + ":"+paramValue);
 						// .. and if it's unstructured, we're all set
