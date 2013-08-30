@@ -22,7 +22,6 @@ import java.util.Set;
 
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
-import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
@@ -120,25 +119,11 @@ public class IntrospectionEndpoint {
 			if (authClient.isAllowIntrospection()) {
 
 				// if it's the same client that the token was issued to, or it at least has all the scopes the token was issued with
-				if (authClient.getClientId().equals(tokenClient.getClientId()) || authClient.getScope().containsAll(scopes)) {
+				if (authClient.getClientId().equals(tokenClient.getClientId()) || scopeService.scopesMatch(authClient.getScope(), scopes)) {
 					// if it's a valid token, we'll print out information on it
 					model.addAttribute("entity", token);
 					return "tokenIntrospection";
 				} else {
-					
-					boolean scopesConsistent = true;
-					for (String ts : scopes){
-						if (!authClient.getScope().contains(scopeService.baseScopeString(ts))){
-							scopesConsistent = false;
-							break;
-						}						
-					}
-					
-					if (scopesConsistent) {
-						model.addAttribute("entity", token);
-						return "tokenIntrospection";
-					}
-					
 					logger.error("Verify failed; client tried to introspect a token of an incorrect scope");
 					model.addAttribute("code", HttpStatus.FORBIDDEN);
 					return "httpCodeView";
