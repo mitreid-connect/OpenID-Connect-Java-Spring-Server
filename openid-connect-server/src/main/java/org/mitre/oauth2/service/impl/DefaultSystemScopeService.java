@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Function;
+import com.google.common.base.Joiner;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.base.Splitter;
@@ -96,7 +97,11 @@ public class DefaultSystemScopeService implements SystemScopeService {
 			if (input == null) {
 				return null;
 			} else {
-				return input.getValue();
+				if (input.isStructured() && !Strings.isNullOrEmpty(input.getStructuredValue())) {
+					return Joiner.on(":").join(input.getValue(), input.getStructuredValue());
+				} else {
+					return input.getValue();
+				}
 			}
 		}
 	};

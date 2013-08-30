@@ -51,6 +51,8 @@ public class TestDefaultSystemScopeService {
 	private SystemScope defaultScope2;
 	private SystemScope dynScope1;
 	private SystemScope extraScope1;
+	private SystemScope structuredScope1;
+	private SystemScope structuredScope1Value;
 
 	private String defaultDynScope1String = "defaultDynScope1";
 	private String defaultDynScope2String = "defaultDynScope2";
@@ -58,6 +60,8 @@ public class TestDefaultSystemScopeService {
 	private String defaultScope2String = "defaultScope2";
 	private String dynScope1String = "dynScope1";
 	private String extraScope1String = "extraScope1";
+	private String structuredScope1String = "structuredScope1";
+	private String structuredValue = "structuredValue";
 
 	private Set<SystemScope> allScopes;
 	private Set<String> allScopeStrings;
@@ -96,10 +100,36 @@ public class TestDefaultSystemScopeService {
 
 		// extraScope1 : extra scope that is neither (defaults to false/false)
 		extraScope1 = new SystemScope(extraScope1String);
+		
+		// structuredScope1 : structured scope
+		structuredScope1 = new SystemScope(structuredScope1String);
+		structuredScope1.setStructured(true);
+		
+		// structuredScope1Value : structured scope with value
+		structuredScope1Value = new SystemScope(structuredScope1String);
+		structuredScope1Value.setStructured(true);
+		structuredScope1Value.setStructuredValue(structuredValue);
 
-		allScopes = Sets.newHashSet(defaultDynScope1, defaultDynScope2, defaultScope1, defaultScope2, dynScope1, extraScope1);
-		allScopeStrings = Sets.newHashSet(defaultDynScope1String, defaultDynScope2String, defaultScope1String, defaultScope2String, dynScope1String, extraScope1String);
+		allScopes = Sets.newHashSet(defaultDynScope1, defaultDynScope2, defaultScope1, defaultScope2, dynScope1, extraScope1, structuredScope1, structuredScope1Value);
+		allScopeStrings = Sets.newHashSet(defaultDynScope1String, defaultDynScope2String, defaultScope1String, defaultScope2String, dynScope1String, extraScope1String, structuredScope1String, structuredScope1String + ":" + structuredValue);
 
+		Mockito.when(repository.getByValue(defaultDynScope1String)).thenReturn(defaultDynScope1);
+		Mockito.when(repository.getByValue(defaultDynScope2String)).thenReturn(defaultDynScope2);
+		Mockito.when(repository.getByValue(defaultScope1String)).thenReturn(defaultScope1);
+		Mockito.when(repository.getByValue(defaultScope2String)).thenReturn(defaultScope2);
+		Mockito.when(repository.getByValue(dynScope1String)).thenReturn(dynScope1);
+		Mockito.when(repository.getByValue(extraScope1String)).thenReturn(extraScope1);
+		// we re-use this value so we've got to use thenAnswer instead
+		Mockito.when(repository.getByValue(structuredScope1String)).thenAnswer(new Answer<SystemScope>() {
+			@Override
+            public SystemScope answer(InvocationOnMock invocation) throws Throwable {
+				SystemScope s = new SystemScope(structuredScope1String);
+				s.setStructured(true);
+				return s;
+            }
+			
+		});
+		
 		Mockito.when(repository.getAll()).thenReturn(allScopes);
 	}
 
@@ -130,12 +160,6 @@ public class TestDefaultSystemScopeService {
 
 		// check null condition
 		assertThat(service.fromStrings(null), is(nullValue()));
-
-		// reinitialize the set of SystemScope objects to clear boolean flags..
-		allScopes = Sets.newHashSet();
-		for (String scope : allScopeStrings) {
-			allScopes.add(new SystemScope(scope));
-		}
 
 		assertThat(service.fromStrings(allScopeStrings), equalTo(allScopes));
 	}
