@@ -138,7 +138,7 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 				if (!ap.isExpired()) {
 	
 					// if we find one that fits...
-					if (scopesMatch(authorizationRequest.getScope(), ap.getAllowedScopes())) {
+					if (systemScopes.scopesMatch(ap.getAllowedScopes(), authorizationRequest.getScope())) {
 	
 						//We have a match; update the access date on the AP entry and return true.
 						ap.setAccessDate(new Date());
@@ -155,7 +155,7 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 	
 			if (!alreadyApproved) {
 				WhitelistedSite ws = whitelistedSiteService.getByClientId(clientId);
-				if (ws != null && scopesMatch(authorizationRequest.getScope(), ws.getAllowedScopes())) {
+				if (ws != null && systemScopes.scopesMatch(ws.getAllowedScopes(), authorizationRequest.getScope())) {
 	
 					//Create an approved site
 					ApprovedSite newSite = approvedSiteService.createApprovedSite(clientId, userId, null, ws.getAllowedScopes(), ws);
@@ -265,22 +265,4 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 		}
 	}
 
-	/**
-	 * Check whether the requested scope set is a proper subset of the allowed scopes.
-	 * 
-	 * @param requestedScopes
-	 * @param allowedScopes
-	 * @return
-	 */
-	private boolean scopesMatch(Set<String> requestedScopes, Set<String> allowedScopes) {
-
-		for (String scope : requestedScopes) {
-
-			if (!allowedScopes.contains(scope)) {
-				return false; //throw new InvalidScopeException("Invalid scope: " + scope, allowedScopes);
-			}
-		}
-
-		return true;
-	}
 }
