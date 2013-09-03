@@ -20,7 +20,7 @@
   <parent>
     <artifactId>openid-connect-parent</artifactId>
     <groupId>org.mitre</groupId>
-    <version>1.0.10-SNAPSHOT</version>
+    <version>1.0.10</version>
     <relativePath>..</relativePath>
   </parent>
   <artifactId>openid-connect-client</artifactId> 
@@ -30,7 +30,7 @@
     <dependency>
       <groupId>org.mitre</groupId>
       <artifactId>openid-connect-common</artifactId>
-      <version>1.0.10-SNAPSHOT</version>
+      <version>1.0.10</version>
     </dependency>
   </dependencies>
   <packaging>jar</packaging>
