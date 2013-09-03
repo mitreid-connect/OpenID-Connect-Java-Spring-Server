@@ -70,5 +70,7 @@ CREATE TEMPORARY TABLE IF NOT EXISTS system_scope_TEMP (
 	description VARCHAR(4096),
 	icon VARCHAR(256),
 	allow_dyn_reg BOOLEAN,
-	default_scope BOOLEAN
+	default_scope BOOLEAN,
+	structured BOOLEAN,
+	structured_param_description VARCHAR(256)
 );
