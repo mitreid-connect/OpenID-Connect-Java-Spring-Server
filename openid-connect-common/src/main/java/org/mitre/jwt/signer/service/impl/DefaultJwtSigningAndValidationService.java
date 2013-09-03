@@ -94,12 +94,14 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 	 */
 	public DefaultJwtSigningAndValidationService(JWKSetKeyStore keyStore) throws NoSuchAlgorithmException, InvalidKeySpecException {
 		// convert all keys in the keystore to a map based on key id
+		if (keyStore!= null && keyStore.getJwkSet() != null) {
 		for (JWK key : keyStore.getKeys()) {
 			if (!Strings.isNullOrEmpty(key.getKeyID())) {
 				this.keys.put(key.getKeyID(), key);
 			} else {
 				throw new IllegalArgumentException("Tried to load a key from a keystore without a 'kid' field: " + key);
 			}
+		}
 		}
 		//buildSignersAndVerifiers();
 	}
