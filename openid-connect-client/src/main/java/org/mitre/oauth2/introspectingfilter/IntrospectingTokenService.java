@@ -16,11 +16,23 @@
  ******************************************************************************/
 package org.mitre.oauth2.introspectingfilter;
 
+import java.io.IOException;
+import java.net.URI;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.mitre.oauth2.introspectingfilter.service.IntrospectionAuthorityGranter;
+import org.mitre.oauth2.introspectingfilter.service.IntrospectionConfigurationService;
+import org.mitre.oauth2.introspectingfilter.service.impl.SimpleIntrospectionAuthorityGranter;
+import org.mitre.oauth2.model.RegisteredClient;
+import org.mitre.openid.connect.client.service.ClientConfigurationService;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.client.ClientHttpRequest;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
@@ -36,6 +48,9 @@ import org.springframework.web.client.RestTemplate;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.nimbusds.jose.util.Base64;
+
+import static org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod.SECRET_BASIC;
 
 /**
  * This ResourceServerTokenServices implementation introspects incoming tokens at a
@@ -45,12 +60,14 @@ import com.google.gson.JsonParser;
  *
  */
 public class IntrospectingTokenService implements ResourceServerTokenServices {
-
-	private String clientId;
-	private String clientSecret;
-	private IntrospectionUrlProvider introspectionUrlProvider;
+	
+	private ClientConfigurationService clientService;
+	private IntrospectionConfigurationService introspectionConfigurationService;
 	private IntrospectionAuthorityGranter introspectionAuthorityGranter = new SimpleIntrospectionAuthorityGranter();
 
+	private DefaultHttpClient httpClient = new DefaultHttpClient();
+	private HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
+	
 	// Inner class to store in the hash map
 	private class TokenCacheObject {
 		OAuth2AccessToken token;
@@ -63,35 +80,20 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 	}
 
 	private Map<String, TokenCacheObject> authCache = new HashMap<String, TokenCacheObject>();
+	private static Logger logger = LoggerFactory.getLogger(IntrospectingTokenService.class);
 
-	public String getClientId() {
-		return clientId;
-	}
-
-	public void setClientId(String clientId) {
-		this.clientId = clientId;
-	}
-
-	public String getClientSecret() {
-		return clientSecret;
-	}
-
-	public void setClientSecret(String clientSecret) {
-		this.clientSecret = clientSecret;
+	/**
+	 * @return the introspectionConfigurationService
+	 */
+	public IntrospectionConfigurationService getIntrospectionConfigurationService() {
+		return introspectionConfigurationService;
 	}
 
 	/**
-	 * @return the introspectionUrlProvider
+	 * @param introspectionConfigurationService the introspectionConfigurationService to set
 	 */
-	public IntrospectionUrlProvider getIntrospectionUrlProvider() {
-		return introspectionUrlProvider;
-	}
-
-	/**
-	 * @param introspectionUrlProvider the introspectionUrlProvider to set
-	 */
-	public void setIntrospectionUrlProvider(IntrospectionUrlProvider introspectionUrlProvider) {
-		this.introspectionUrlProvider = introspectionUrlProvider;
+	public void setIntrospectionConfigurationService(IntrospectionConfigurationService introspectionUrlProvider) {
+		this.introspectionConfigurationService = introspectionUrlProvider;
 	}
 
 	// Check if there is a token and authentication in the cache
@@ -131,22 +133,50 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 	private boolean parseToken(String accessToken) {
 
 		// find out which URL to ask
-		String introspectionUrl = introspectionUrlProvider.getIntrospectionUrl(accessToken);
-
+		String introspectionUrl;
+        RegisteredClient client;
+        try {
+	        introspectionUrl = introspectionConfigurationService.getIntrospectionUrl(accessToken);
+	        client = introspectionConfigurationService.getClientConfiguration(accessToken);
+        } catch (IllegalArgumentException e) {
+	        logger.error("Unable to load introspection URL or client configuration", e);
+	        return false;
+        }
 		// Use the SpringFramework RestTemplate to send the request to the
 		// endpoint
 		String validatedToken = null;
-		RestTemplate restTemplate = new RestTemplate();
+
+		RestTemplate restTemplate;
 		MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
+
+		final String clientId = client.getClientId();
+		final String clientSecret = client.getClientSecret();
+		
+		if (SECRET_BASIC.equals(client.getTokenEndpointAuthMethod())){
+			// use BASIC auth if configured to do so
+			restTemplate = new RestTemplate(factory) {
+
+				@Override
+				protected ClientHttpRequest createRequest(URI url, HttpMethod method) throws IOException {
+					ClientHttpRequest httpRequest = super.createRequest(url, method);
+					httpRequest.getHeaders().add("Authorization",
+							String.format("Basic %s", Base64.encode(String.format("%s:%s", clientId, clientSecret)) ));
+					return httpRequest;
+				}
+			};
+		} else {  //Alternatively use form based auth
+			restTemplate = new RestTemplate(factory);
+
+			form.add("client_id", clientId);
+			form.add("client_secret", clientSecret);
+		}
+		
 		form.add("token", accessToken);
-		form.add("client_id", this.clientId);
-		form.add("client_secret", this.clientSecret);
 
 		try {
 			validatedToken = restTemplate.postForObject(introspectionUrl, form, String.class);
 		} catch (RestClientException rce) {
-			// TODO: LOG THIS!?
-			LoggerFactory.getLogger(IntrospectingTokenService.class).error("validateToken", rce);
+			logger.error("validateToken", rce);
 		}
 		if (validatedToken != null) {
 			// parse the json
@@ -159,11 +189,13 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 
 			if (tokenResponse.get("error") != null) {
 				// report an error?
+				logger.error("Got an error back: " + tokenResponse.get("error") + ", " + tokenResponse.get("error_description"));
 				return false;
 			}
 
 			if (!tokenResponse.get("active").getAsBoolean()) {
 				// non-valid token
+				logger.info("Server returned non-active token");
 				return false;
 			}
 			// create an OAuth2Authentication

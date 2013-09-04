@@ -17,20 +17,30 @@
 /**
  * 
  */
-package org.mitre.oauth2.introspectingfilter;
+package org.mitre.oauth2.introspectingfilter.service;
 
-import java.util.List;
-
-import org.springframework.security.core.GrantedAuthority;
-
-import com.google.gson.JsonObject;
+import org.mitre.oauth2.model.RegisteredClient;
 
 /**
  * @author jricher
  *
  */
-public interface IntrospectionAuthorityGranter {
+public interface IntrospectionConfigurationService {
 
-	public List<GrantedAuthority> getAuthorities(JsonObject introspectionResponse);
+	/**
+	 * Get the introspection URL based on the access token.
+	 * @param accessToken
+	 * @return
+	 */
+	public String getIntrospectionUrl(String accessToken);
 
+	
+	/**
+	 * Get the client configuration to use to connect to the
+	 * introspection endpoint. In particular, this cares about
+	 * the clientId, clientSecret, and tokenEndpointAuthMethod
+	 * fields.
+	 */
+	public RegisteredClient getClientConfiguration(String accessToken);
+	
 }
