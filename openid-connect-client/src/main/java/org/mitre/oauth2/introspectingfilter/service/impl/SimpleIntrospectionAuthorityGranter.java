@@ -17,10 +17,11 @@
 /**
  * 
  */
-package org.mitre.oauth2.introspectingfilter;
+package org.mitre.oauth2.introspectingfilter.service.impl;
 
 import java.util.List;
 
+import org.mitre.oauth2.introspectingfilter.service.IntrospectionAuthorityGranter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 

@@ -17,19 +17,20 @@
 /**
  * 
  */
-package org.mitre.oauth2.introspectingfilter;
+package org.mitre.oauth2.introspectingfilter.service;
+
+import java.util.List;
+
+import org.springframework.security.core.GrantedAuthority;
+
+import com.google.gson.JsonObject;
 
 /**
  * @author jricher
  *
  */
-public interface IntrospectionUrlProvider {
+public interface IntrospectionAuthorityGranter {
 
-	/**
-	 * Get the introspection URL based on the access token.
-	 * @param accessToken
-	 * @return
-	 */
-	public String getIntrospectionUrl(String accessToken);
+	public List<GrantedAuthority> getAuthorities(JsonObject introspectionResponse);
 
 }

@@ -17,40 +17,30 @@
 /**
  * 
  */
-package org.mitre.oauth2.introspectingfilter;
+package org.mitre.oauth2.introspectingfilter.service;
+
+import org.mitre.oauth2.model.RegisteredClient;
 
 /**
- * 
- * Always provides the (configured) IntrospectionURL regardless of token. Useful for talking to
- * a single, trusted authorization server.
- * 
  * @author jricher
  *
  */
-public class StaticIntrospectionUrlProvider implements IntrospectionUrlProvider {
-
-	private String introspectionUrl;
+public interface IntrospectionConfigurationService {
 
 	/**
-	 * @return the introspectionUrl
+	 * Get the introspection URL based on the access token.
+	 * @param accessToken
+	 * @return
 	 */
-	public String getIntrospectionUrl() {
-		return introspectionUrl;
-	}
+	public String getIntrospectionUrl(String accessToken);
 
+	
 	/**
-	 * @param introspectionUrl the introspectionUrl to set
+	 * Get the client configuration to use to connect to the
+	 * introspection endpoint. In particular, this cares about
+	 * the clientId, clientSecret, and tokenEndpointAuthMethod
+	 * fields.
 	 */
-	public void setIntrospectionUrl(String introspectionUrl) {
-		this.introspectionUrl = introspectionUrl;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.mitre.oauth2.introspectingfilter.IntrospectionUrlProvider#getIntrospectionUrl(java.lang.String)
-	 */
-	@Override
-	public String getIntrospectionUrl(String accessToken) {
-		return getIntrospectionUrl();
-	}
-
+	public RegisteredClient getClientConfiguration(String accessToken);
+	
 }
