@@ -64,7 +64,6 @@ import static org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod.SECRET_BASIC
  */
 public class IntrospectingTokenService implements ResourceServerTokenServices {
 	
-	private ClientConfigurationService clientService;
 	private IntrospectionConfigurationService introspectionConfigurationService;
 	private IntrospectionAuthorityGranter introspectionAuthorityGranter = new SimpleIntrospectionAuthorityGranter();
 
