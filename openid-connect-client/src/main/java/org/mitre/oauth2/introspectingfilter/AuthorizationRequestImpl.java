@@ -24,6 +24,8 @@ import java.util.Set;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 
+import com.google.common.base.Splitter;
+import com.google.common.collect.Sets;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -36,9 +38,8 @@ public class AuthorizationRequestImpl implements AuthorizationRequest {
 	public AuthorizationRequestImpl(JsonObject token) {
 		this.token = token;
 		clientId = token.get("client_id").getAsString();
-		scopes = new HashSet<String>();
-		for (JsonElement e : token.get("scope").getAsJsonArray()) {
-			scopes.add(e.getAsString());
+		if (token.get("scope") != null) {
+			scopes = Sets.newHashSet(Splitter.on(" ").split(token.get("scope").getAsString()));
 		}
 	}
 
