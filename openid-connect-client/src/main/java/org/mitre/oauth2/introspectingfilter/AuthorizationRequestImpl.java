@@ -33,7 +33,7 @@ public class AuthorizationRequestImpl implements AuthorizationRequest {
 
 	private JsonObject token;
 	private String clientId;
-	private Set<String> scopes = null;
+	private Set<String> scopes = new HashSet<String>();
 
 	public AuthorizationRequestImpl(JsonObject token) {
 		this.token = token;
