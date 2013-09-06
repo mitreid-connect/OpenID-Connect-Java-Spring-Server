@@ -116,14 +116,14 @@ public class ClientDynamicRegistrationEndpoint {
 			// scopes that the client is asking for
 			Set<SystemScope> requestedScopes = scopeService.fromStrings(newClient.getScope());
 
-			// if the client didn't ask for any, give them the defaults
-			if (requestedScopes == null || requestedScopes.isEmpty()) {
-				requestedScopes = scopeService.getDefaults();
-			}
-
 			// the scopes that the client can have must be a subset of the dynamically allowed scopes
 			Set<SystemScope> allowedScopes = Sets.intersection(dynScopes, requestedScopes);
 
+			// if the client didn't ask for any, give them the defaults
+			if (allowedScopes == null || allowedScopes.isEmpty()) {
+				allowedScopes = scopeService.getDefaults();
+			}
+			
 			newClient.setScope(scopeService.toStrings(allowedScopes));
 
 
