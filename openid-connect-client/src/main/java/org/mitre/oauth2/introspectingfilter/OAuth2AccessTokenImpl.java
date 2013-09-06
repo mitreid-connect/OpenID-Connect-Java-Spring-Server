@@ -52,10 +52,12 @@ public class OAuth2AccessTokenImpl implements OAuth2AccessToken {
 		}
 
 		DateFormat dateFormater = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
-		try {
-			expireDate = dateFormater.parse(token.get("expires_at").getAsString());
-		} catch (ParseException ex) {
-			Logger.getLogger(IntrospectingTokenService.class.getName()).log(Level.SEVERE, null, ex);
+		if (token.get("exp") != null) {
+			try {
+					expireDate = dateFormater.parse(token.get("exp").getAsString());
+			} catch (ParseException ex) {
+				Logger.getLogger(IntrospectingTokenService.class.getName()).log(Level.SEVERE, null, ex);
+			}
 		}
 	}
 
