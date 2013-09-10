@@ -41,7 +41,6 @@ public class UserInfoFetcher {
 
 		MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
 		form.add("access_token", token.getAccessTokenValue());
-		form.add("schema", "openid");
 
 		String userInfoString = restTemplate.postForObject(token.getServerConfiguration().getUserInfoUri(), form, String.class);
 
