@@ -112,7 +112,7 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 			// TODO: maybe id tokens need a service layer
 
 			String username = authentication.getName();
-			UserInfo userInfo = userInfoService.getByUsername(username);
+			UserInfo userInfo = userInfoService.getByUsernameAndClientId(username, clientId);
 
 			OAuth2AccessTokenEntity idTokenEntity = new OAuth2AccessTokenEntity();
 

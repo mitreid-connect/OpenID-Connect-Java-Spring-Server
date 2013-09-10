@@ -53,9 +53,21 @@ public interface UserInfoService {
 
 
 	/**
-	 * Get the UserInfo for the given preferredUsername field
+	 * Get the UserInfo for the given username (usually maps to the
+	 * preferredUsername field).
 	 * @param username
 	 * @return
 	 */
 	public UserInfo getByUsername(String username);
+	
+	/**
+	 * Get the UserInfo for the given username (usually maps to the
+	 * preferredUsername field) and clientId. This allows pairwise
+	 * client identifiers where appropriate. 
+	 * @param username
+	 * @param clientId
+	 * @return
+	 */
+	public UserInfo getByUsernameAndClientId(String username, String clientId);
+
 }

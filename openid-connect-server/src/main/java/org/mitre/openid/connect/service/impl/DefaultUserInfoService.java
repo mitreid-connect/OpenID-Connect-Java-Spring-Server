@@ -16,6 +16,8 @@
  ******************************************************************************/
 package org.mitre.openid.connect.service.impl;
 
+import org.mitre.oauth2.model.ClientDetailsEntity;
+import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.repository.UserInfoRepository;
 import org.mitre.openid.connect.service.UserInfoService;
@@ -35,7 +37,9 @@ public class DefaultUserInfoService implements UserInfoService {
 	@Autowired
 	private UserInfoRepository userInfoRepository;
 	
-
+	@Autowired
+	private ClientDetailsEntityService clientService;
+	
 	@Override
 	public void save(UserInfo userInfo) {
 		userInfoRepository.save(userInfo);
@@ -55,5 +59,24 @@ public class DefaultUserInfoService implements UserInfoService {
 	public UserInfo getByUsername(String username) {
 		return userInfoRepository.getByUsername(username);
 	}
+
+    @Override
+    public UserInfo getByUsernameAndClientId(String username, String clientId) {
+    	
+    	ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
+    	
+    	UserInfo userInfo = getByUsername(username);
+    	
+    	if (client == null || userInfo == null) {
+    		return null;
+    	}
+    	
+    	if (client.getSubjectType().equals(ClientDetailsEntity.SubjectType.PAIRWISE)) {
+    		userInfo.setSub(userInfo.getSub() + "@" + clientId);
+    	}
+    	
+    	return userInfo;
+    	
+    }
 
 }

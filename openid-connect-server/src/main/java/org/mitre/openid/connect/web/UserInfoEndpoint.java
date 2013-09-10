@@ -16,8 +16,6 @@
  ******************************************************************************/
 package org.mitre.openid.connect.web;
 
-import java.security.Principal;
-
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.service.UserInfoService;
 import org.slf4j.Logger;
@@ -62,7 +60,7 @@ public class UserInfoEndpoint {
 		}
 
 		String username = auth.getName();
-		UserInfo userInfo = userInfoService.getByUsername(username);
+		UserInfo userInfo = userInfoService.getByUsernameAndClientId(username, auth.getOAuth2Request().getClientId());
 
 		if (userInfo == null) {
 			logger.error("getInfo failed; user not found: " + username);
