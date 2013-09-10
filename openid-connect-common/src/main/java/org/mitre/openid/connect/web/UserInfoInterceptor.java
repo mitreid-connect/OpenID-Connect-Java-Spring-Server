@@ -65,7 +65,8 @@ public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 	@Override
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
 
-		if (modelAndView != null) { // skip checking at all if we have no model and view to hand the user to
+		if (modelAndView != null && !modelAndView.getModel().containsKey("userInfo")) { // skip checking at all if we have no model and view to hand the user to 
+																						// or if there's already a userInfo object in there
 
 			// TODO: this is a patch to get around a potential information leak from #492
 			if (!(modelAndView.getView() instanceof RedirectView)) {
@@ -73,7 +74,7 @@ public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 				// get our principal from the security context
 				Principal p = request.getUserPrincipal();
 	
-				if (p instanceof Authentication){
+				if (p instanceof Authentication && !modelAndView.getModel().containsKey("userAuthorities")){
 					Authentication auth = (Authentication)p;
 					modelAndView.addObject("userAuthorities", gson.toJson(auth.getAuthorities()));
 				}
