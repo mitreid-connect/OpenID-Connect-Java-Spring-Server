@@ -26,11 +26,10 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Implementation of the UserInfoService
  * 
- * @author Michael Joseph Walsh
+ * @author Michael Joseph Walsh, jricher
  * 
  */
 @Service
-@Transactional
 public class DefaultUserInfoService implements UserInfoService {
 
 	@Autowired
