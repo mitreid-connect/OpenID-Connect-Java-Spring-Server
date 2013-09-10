@@ -53,15 +53,15 @@ public class UserInfoEndpoint {
 	 */
 	@PreAuthorize("hasRole('ROLE_USER') and #oauth2.hasScope('openid')")
 	@RequestMapping(value="/userinfo", method= {RequestMethod.GET, RequestMethod.POST}, produces = "application/json")
-	public String getInfo(@RequestParam(value="claims", required=false) String claimsRequestJsonString, Principal p, Model model) {
+	public String getInfo(@RequestParam(value="claims", required=false) String claimsRequestJsonString, OAuth2Authentication auth, Model model) {
 
-		if (p == null) {
+		if (auth == null) {
 			logger.error("getInfo failed; no principal. Requester is not authorized.");
 			model.addAttribute("code", HttpStatus.FORBIDDEN);
 			return "httpCodeView";
 		}
 
-		String username = p.getName();
+		String username = auth.getName();
 		UserInfo userInfo = userInfoService.getByUsername(username);
 
 		if (userInfo == null) {
@@ -74,12 +74,8 @@ public class UserInfoEndpoint {
 			model.addAttribute("claimsRequest", claimsRequestJsonString);
 		}
 
-		if (p instanceof OAuth2Authentication) {
-			OAuth2Authentication authentication = (OAuth2Authentication)p;
-
-			model.addAttribute("scope", authentication.getOAuth2Request().getScope());
-			model.addAttribute("requestObject", authentication.getOAuth2Request().getRequestParameters().get("request"));
-		}
+		model.addAttribute("scope", auth.getOAuth2Request().getScope());
+		model.addAttribute("requestObject", auth.getOAuth2Request().getRequestParameters().get("request"));
 
 		model.addAttribute("userInfo", userInfo);
 
