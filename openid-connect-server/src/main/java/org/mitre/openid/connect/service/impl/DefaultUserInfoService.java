@@ -20,10 +20,10 @@ import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.repository.UserInfoRepository;
+import org.mitre.openid.connect.service.PairwiseIdentiferService;
 import org.mitre.openid.connect.service.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Implementation of the UserInfoService
@@ -39,6 +39,9 @@ public class DefaultUserInfoService implements UserInfoService {
 	
 	@Autowired
 	private ClientDetailsEntityService clientService;
+	
+	@Autowired
+	private PairwiseIdentiferService pairwiseIdentifierService;
 	
 	@Override
 	public void save(UserInfo userInfo) {
@@ -60,23 +63,24 @@ public class DefaultUserInfoService implements UserInfoService {
 		return userInfoRepository.getByUsername(username);
 	}
 
-    @Override
-    public UserInfo getByUsernameAndClientId(String username, String clientId) {
-    	
-    	ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
-    	
-    	UserInfo userInfo = getByUsername(username);
-    	
-    	if (client == null || userInfo == null) {
-    		return null;
-    	}
-    	
-    	if (client.getSubjectType().equals(ClientDetailsEntity.SubjectType.PAIRWISE)) {
-    		userInfo.setSub(userInfo.getSub() + "@" + clientId);
-    	}
-    	
-    	return userInfo;
-    	
-    }
+	@Override
+	public UserInfo getByUsernameAndClientId(String username, String clientId) {
+
+		ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
+
+		UserInfo userInfo = getByUsername(username);
+
+		if (client == null || userInfo == null) {
+			return null;
+		}
+
+		if (client.getSubjectType().equals(ClientDetailsEntity.SubjectType.PAIRWISE)) {
+			String pairwiseSub = pairwiseIdentifierService.getIdentifier(userInfo, client);
+			userInfo.setSub(pairwiseSub);
+		}
+
+		return userInfo;
+
+	}
 
 }
