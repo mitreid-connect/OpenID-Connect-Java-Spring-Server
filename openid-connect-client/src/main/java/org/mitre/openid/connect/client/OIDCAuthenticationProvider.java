@@ -68,7 +68,7 @@ AuthenticationProvider {
 			} else {
 				if (!Strings.isNullOrEmpty(userInfo.getSub()) && !userInfo.getSub().equals(token.getSub())) {
 					// the userinfo came back and the user_id fields don't match what was in the id_token
-					throw new UsernameNotFoundException("user_id mismatch between id_token and user_info call: " + userInfo.getSub() + " / " + token.getSub());
+					throw new UsernameNotFoundException("user_id mismatch between id_token and user_info call: " + token.getSub() + " / " + userInfo.getSub());
 				}
 			}
 
