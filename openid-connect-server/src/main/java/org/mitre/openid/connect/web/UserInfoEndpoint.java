@@ -61,11 +61,11 @@ public class UserInfoEndpoint {
 			return "httpCodeView";
 		}
 
-		String userId = p.getName();
-		UserInfo userInfo = userInfoService.getBySubject(userId);
+		String username = p.getName();
+		UserInfo userInfo = userInfoService.getByUsername(username);
 
 		if (userInfo == null) {
-			logger.error("getInfo failed; user not found: " + userId);
+			logger.error("getInfo failed; user not found: " + username);
 			model.addAttribute("code", HttpStatus.NOT_FOUND);
 			return "httpCodeView";
 		}
