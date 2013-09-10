@@ -20,14 +20,14 @@ import java.util.Date;
 import java.util.Set;
 import java.util.UUID;
 
-import javax.servlet.http.HttpSession;
-
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
+import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.service.ApprovedSiteService;
+import org.mitre.openid.connect.service.UserInfoService;
 import org.mitre.openid.connect.util.IdTokenHashUtils;
 import org.mitre.openid.connect.web.AuthenticationTimeStamper;
 import org.slf4j.Logger;
@@ -39,8 +39,6 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -67,6 +65,9 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 
 	@Autowired
 	private ApprovedSiteService approvedSiteService;
+	
+	@Autowired
+	private UserInfoService userInfoService;
 
 	@Override
 	public OAuth2AccessToken enhance(OAuth2AccessToken accessToken,	OAuth2Authentication authentication) {
@@ -110,7 +111,8 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 
 			// TODO: maybe id tokens need a service layer
 
-			String userId = authentication.getName();
+			String username = authentication.getName();
+			UserInfo userInfo = userInfoService.getByUsername(username);
 
 			OAuth2AccessTokenEntity idTokenEntity = new OAuth2AccessTokenEntity();
 
@@ -132,7 +134,7 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 			}
 
 			idClaims.setIssuer(configBean.getIssuer());
-			idClaims.setSubject(userId);
+			idClaims.setSubject(userInfo.getSub());
 			idClaims.setAudience(Lists.newArrayList(clientId));
 
 
