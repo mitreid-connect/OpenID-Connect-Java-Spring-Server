@@ -72,6 +72,13 @@
 							<strong>Redirect URI: </strong><c:out value="${redirect_uri}" />
 						</small>
 					</div>
+
+					<c:if test="${ client.subjectType == 'PAIRWISE' }">
+						<div class="alert alert-success">
+							This client uses a <b>pairwise</b> identifier, which makes it more difficult to correlate your identity between sites.
+						</div>
+					</c:if>
+
 				</div>
 				<div class="span4">
 					<fieldset style="text-align: left" class="well">
