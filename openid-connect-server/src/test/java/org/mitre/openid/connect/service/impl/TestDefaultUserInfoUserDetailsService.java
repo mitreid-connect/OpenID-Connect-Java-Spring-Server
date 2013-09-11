@@ -50,11 +50,12 @@ public class TestDefaultUserInfoUserDetailsService {
 
 	private UserInfo userInfoAdmin;
 	private UserInfo userInfoRegular;
+	
 	private String adminUsername = "username";
 	private String regularUsername = "regular";
 	private String adminSub = "adminSub12d3a1f34a2";
 	private String regularSub = "regularSub652ha23b";
-
+	
 	/**
 	 * Initialize the service and the mocked repository.
 	 * Initialize 2 users, one of them an admin, for use in unit tests.
@@ -72,6 +73,7 @@ public class TestDefaultUserInfoUserDetailsService {
 		userInfoRegular = new DefaultUserInfo();
 		userInfoRegular.setPreferredUsername(regularUsername);
 		userInfoRegular.setSub(regularSub);
+
 	}
 
 	/**
@@ -116,5 +118,4 @@ public class TestDefaultUserInfoUserDetailsService {
 		service.loadUserByUsername(adminUsername);
 
 	}
-
 }
