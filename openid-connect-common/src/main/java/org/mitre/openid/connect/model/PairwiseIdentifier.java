@@ -24,7 +24,6 @@ import javax.persistence.Table;
 @Table(name = "pairwise_identifier")
 @NamedQueries({
 	@NamedQuery(name="PairwiseIdentifier.getAll", query = "select p from PairwiseIdentifier p"),
-	@NamedQuery(name="PairwiseIdentifier.getByClientId", query = "select p from PairwiseIdentifier p WHERE p.userSub = :sub AND p.clientId = :clientId"),
 	@NamedQuery(name="PairwiseIdentifier.getBySectorIdentifier", query = "select p from PairwiseIdentifier p WHERE p.userSub = :sub AND p.sectorIdentifier = :sectorIdentifier")
 })
 public class PairwiseIdentifier {
@@ -32,7 +31,6 @@ public class PairwiseIdentifier {
 	private Long id;
 	private String identifier;
 	private String userSub;
-	private String clientId;
 	private String sectorIdentifier;
 
 	/**
@@ -82,22 +80,6 @@ public class PairwiseIdentifier {
 	 */
 	public void setUserSub(String userSub) {
 		this.userSub = userSub;
-	}
-	
-	/**
-	 * @return the clientId
-	 */
-	@Basic
-	@Column(name = "client_id")
-	public String getClientId() {
-		return clientId;
-	}
-	
-	/**
-	 * @param clientId the clientId to set
-	 */
-	public void setClientId(String clientId) {
-		this.clientId = clientId;
 	}
 	
 	/**

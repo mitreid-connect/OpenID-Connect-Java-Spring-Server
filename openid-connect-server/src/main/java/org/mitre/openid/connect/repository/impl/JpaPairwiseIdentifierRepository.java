@@ -38,18 +38,6 @@ public class JpaPairwiseIdentifierRepository implements PairwiseIdentifierReposi
 	}
 
 	/* (non-Javadoc)
-	 * @see org.mitre.openid.connect.repository.PairwiseIdentifierRepository#getByClientId(java.lang.String, java.lang.String)
-	 */
-	@Override
-	public PairwiseIdentifier getByClientId(String sub, String clientId) {
-		TypedQuery<PairwiseIdentifier> query = manager.createNamedQuery("PairwiseIdentifier.getByClientId", PairwiseIdentifier.class);
-		query.setParameter("sub", sub);
-		query.setParameter("clientId", clientId);
-
-		return getSingleResult(query.getResultList());
-	}
-
-	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.repository.PairwiseIdentifierRepository#save(org.mitre.openid.connect.model.PairwiseIdentifier)
 	 */
 	@Override

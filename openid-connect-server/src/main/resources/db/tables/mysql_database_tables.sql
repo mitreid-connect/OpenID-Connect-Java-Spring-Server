@@ -208,6 +208,5 @@ CREATE TABLE IF NOT EXISTS pairwise_identifier (
 	id BIGINT AUTO_INCREMENT PRIMARY KEY,
 	identifier VARCHAR(256),
 	sub VARCHAR(256),
-	client_id VARCHAR(256),
 	sector_identifier VARCHAR(2048)
 );

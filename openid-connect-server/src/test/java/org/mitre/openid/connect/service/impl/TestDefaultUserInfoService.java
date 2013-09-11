@@ -67,7 +67,8 @@ public class TestDefaultUserInfoService {
 	private String pairwiseClientId3 = "pairwiseClient-3-154157";
 	private String pairwiseClientId4 = "pairwiseClient-4-4589723";
 	
-	private String sectorIdentifier12 = "https://sector-identifier-12/url";
+	private String sectorIdentifier1 = "https://sector-identifier-12/url";
+	private String sectorIdentifier2 = "https://sector-identifier-12/url2";
 	private String sectorIdentifier3 = "https://sector-identifier-3/url";
 
 
@@ -100,12 +101,12 @@ public class TestDefaultUserInfoService {
 		pairwiseClient1 = new ClientDetailsEntity();
 		pairwiseClient1.setClientId(pairwiseClientId1);
 		pairwiseClient1.setSubjectType(SubjectType.PAIRWISE);
-		pairwiseClient1.setSectorIdentifierUri(sectorIdentifier12);
+		pairwiseClient1.setSectorIdentifierUri(sectorIdentifier1);
 		
 		pairwiseClient2 = new ClientDetailsEntity();
 		pairwiseClient2.setClientId(pairwiseClientId2);
 		pairwiseClient2.setSubjectType(SubjectType.PAIRWISE);
-		pairwiseClient2.setSectorIdentifierUri(sectorIdentifier12);
+		pairwiseClient2.setSectorIdentifierUri(sectorIdentifier2);
 
 		// pairwise set 2
 		pairwiseClient3 = new ClientDetailsEntity();
