@@ -295,6 +295,27 @@
 					</label>
 				</div>
 			</div>
+
+			<div class="control-group" id="subjectType">
+				<label class="control-label">Subject Type</label>
+				<div class="controls">
+					<label class="radio inline">
+						<input type="radio" name="subjectType" value="public" <%=(client.subject_type == 'public' ? 'checked' : '')%>> Public
+					</label>
+					<label class="radio inline">
+						<input type="radio" name="subjectType" value="pairwise" <%=(client.subject_type == 'pairwise' ? 'checked' : '')%>> Pairwise
+					</label>
+				</div>
+			</div>
+
+			<div class="control-group" id="sectorIdentifierUri">
+				<label class="control-label">Sector Identifier URI</label>
+				<div class="controls">
+					<input placeholder="http://" value="<%=client.sector_identifier_uri ? client.sector_identifier_uri : ''%>" maxlength="1000" type="text" class=""/>
+					<p class="help-block">Sector Identifier for JavaScript</p>
+				</div>
+			</div>
+
 	</div>
 	
 	<div class="tab-pane" id="client-secret-tab">
@@ -456,18 +477,6 @@
 
 	<div class="tab-pane" id="client-other-tab">
 
-			<div class="control-group" id="subjectType">
-				<label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> Subject Type</label>
-				<div class="controls">
-					<label class="radio inline">
-						<input type="radio" name="subjectType" value="public" <%=(client.subject_type == 'public' ? 'checked' : '')%>> Public
-					</label>
-					<label class="radio inline">
-						<input type="radio" name="subjectType" value="pairwise" <%=(client.subject_type == 'pairwise' ? 'checked' : '')%>> Pairwise
-					</label>
-				</div>
-			</div>
-
 			<div class="control-group" id="initiateLoginUri">
 				<label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> Initiate Login</label>
 				<div class="controls">
@@ -513,14 +522,6 @@
                 <div class="controls">
                 </div>
             </div>
-
-			<div class="control-group" id="sectorIdentifierUri">
-				<label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> Sector Identifier URI</label>
-				<div class="controls">
-					<input placeholder="http://" value="<%=client.sector_identifier_uri ? client.sector_identifier_uri : ''%>" maxlength="1000" type="text" class=""/>
-					<p class="help-block">Sector Identifier for JavaScript</p>
-				</div>
-			</div>
 
 			
 
