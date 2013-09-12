@@ -19,14 +19,21 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
+	<bean id="defaultKeyStore" class="org.mitre.jose.keystore.JWKSetKeyStore">
+		<property name="location" value="classpath:keystore.jwks" />
+	</bean>
+	
 	<bean id="defaultsignerService" class="org.mitre.jwt.signer.service.impl.DefaultJwtSigningAndValidationService">
-		<constructor-arg name="keyStore">
-			<bean id="defaultKeyStore" class="org.mitre.jose.keystore.JWKSetKeyStore">
-				<property name="location" value="classpath:keystore.jwks" />
-			</bean>
-		</constructor-arg>
+		<constructor-arg name="keyStore" ref="defaultKeyStore" />
 		<property name="defaultSignerKeyId" value="rsa1" />
  		<property name="defaultSigningAlgorithmName" value="RS256" />
+	</bean>
+
+	<bean id="defaultEncryptionService" class="org.mitre.jwt.encryption.service.impl.DefaultJwtEncryptionAndDecryptionService">
+		<constructor-arg name="keyStore" ref="defaultKeyStore" />
+		<property name="defaultAlgorithm" value="RSA1_5" />
+		<property name="defaultDecryptionKeyId" value="rsa1" />
+		<property name="defaultEncryptionKeyId" value="rsa1" />
 	</bean>
 
 </beans>

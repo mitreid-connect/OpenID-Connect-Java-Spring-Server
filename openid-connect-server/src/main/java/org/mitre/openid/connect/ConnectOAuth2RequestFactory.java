@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.mitre.jwt.encryption.service.JwtEncryptionAndDecryptionService;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.jwt.signer.service.impl.DefaultJwtSigningAndValidationService;
 import org.mitre.jwt.signer.service.impl.JWKSetSigningAndValidationServiceCacheService;
@@ -45,11 +46,13 @@ import org.springframework.stereotype.Component;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.nimbusds.jose.Algorithm;
+import com.nimbusds.jose.JWEObject.State;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.OctetSequenceKey;
 import com.nimbusds.jose.jwk.Use;
 import com.nimbusds.jose.util.Base64URL;
+import com.nimbusds.jwt.EncryptedJWT;
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTParser;
 import com.nimbusds.jwt.PlainJWT;
@@ -68,6 +71,9 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 	
 	@Autowired
 	private SystemScopeService systemScopes;
+	
+	@Autowired
+	private JwtEncryptionAndDecryptionService encryptionService;
 
 	/**
 	 * Constructor with arguments
@@ -236,6 +242,18 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 				}
 				
 				// if we got here, we're OK, keep processing
+				
+			} else if (jwt instanceof EncryptedJWT) {
+				
+				EncryptedJWT encryptedJWT = (EncryptedJWT)jwt;
+				
+				// decrypt the jwt if we can
+				
+				encryptionService.decryptJwt(encryptedJWT);
+				
+				if (!encryptedJWT.getState().equals(State.DECRYPTED)) {
+					throw new InvalidClientException("Unable to decrypt the request object");
+				}
 				
 			}
 			
