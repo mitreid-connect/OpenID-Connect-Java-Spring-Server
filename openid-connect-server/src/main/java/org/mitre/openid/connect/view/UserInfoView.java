@@ -28,9 +28,11 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.mitre.jwt.encryption.service.JwtEncryptionAndDecryptionService;
 import org.mitre.openid.connect.model.UserInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.servlet.view.AbstractView;
@@ -47,6 +49,8 @@ import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
+import com.nimbusds.jose.JWEObject;
+import com.nimbusds.jwt.EncryptedJWT;
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTParser;
 
@@ -56,6 +60,9 @@ public class UserInfoView extends AbstractView {
 	private static JsonParser jsonParser = new JsonParser();
 
 	private static Logger logger = LoggerFactory.getLogger(UserInfoView.class);
+	
+	@Autowired
+	private JwtEncryptionAndDecryptionService encryptionService;
 
 	private Gson gson = new GsonBuilder()
 	.setExclusionStrategies(new ExclusionStrategy() {
@@ -113,8 +120,13 @@ public class UserInfoView extends AbstractView {
 			if (model.get("requestObject") != null) {
 
 				try {
+					// FIXME: re-parse the request object
 					String jwtString = (String)model.get("requestObject");
 					JWT requestObject = JWTParser.parse(jwtString);
+					if (requestObject instanceof EncryptedJWT) {
+						// we need to re-decrypt it :(
+						encryptionService.decryptJwt((EncryptedJWT) requestObject);
+					}
 
 					// FIXME: move to GSON for easier processing
 					JsonObject obj = (JsonObject) jsonParser.parse(requestObject.getJWTClaimsSet().toJSONObject().toJSONString());
