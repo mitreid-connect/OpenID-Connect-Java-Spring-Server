@@ -330,7 +330,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
     	
     	try {
     		
-    		JWK jwk = new OctetSequenceKey(new Base64URL(client.getClientSecret()), Use.SIGNATURE, null, client.getClientId(), null, null, null);
+    		JWK jwk = new OctetSequenceKey(Base64URL.encode(client.getClientSecret()), Use.SIGNATURE, null, client.getClientId(), null, null, null);
     		Map<String, JWK> keys = ImmutableMap.of(client.getClientId(), jwk);
 	        JwtSigningAndValidationService service = new DefaultJwtSigningAndValidationService(keys);
 	        
