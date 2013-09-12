@@ -60,8 +60,8 @@ public class RegisteredClientTest {
 		c.setSectorIdentifierUri("https://other.example.net/file_of_redirect_uris.json");
 		c.setTokenEndpointAuthMethod(ClientDetailsEntity.AuthMethod.SECRET_BASIC);
 		c.setJwksUri("https://client.example.org/my_public_keys.jwks");
-		c.setUserInfoEncryptedResponseAlg(new JWEAlgorithmEmbed(JWEAlgorithm.RSA1_5));
-		c.setUserInfoEncryptedResponseEnc(new JWEEncryptionMethodEmbed(EncryptionMethod.A128CBC_HS256));
+		c.setUserInfoEncryptedResponseAlg(JWEAlgorithm.RSA1_5);
+		c.setUserInfoEncryptedResponseEnc(EncryptionMethod.A128CBC_HS256);
 		c.setContacts(ImmutableSet.of("ve7jtb@example.org", "mary@example.org"));
 		c.setRequestUris(ImmutableSet.of("https://client.example.org/rf.txt#qpXaRLh_n93TTR9F252ValdatUQvQiJi5BDub2BeznA"));
 
@@ -78,8 +78,8 @@ public class RegisteredClientTest {
 		assertEquals("https://other.example.net/file_of_redirect_uris.json", c.getSectorIdentifierUri());
 		assertEquals(ClientDetailsEntity.AuthMethod.SECRET_BASIC, c.getTokenEndpointAuthMethod());
 		assertEquals("https://client.example.org/my_public_keys.jwks", c.getJwksUri());
-		assertEquals(JWEAlgorithm.RSA1_5, c.getUserInfoEncryptedResponseAlg().getAlgorithm());
-		assertEquals(EncryptionMethod.A128CBC_HS256, c.getUserInfoEncryptedResponseEnc().getAlgorithm());
+		assertEquals(JWEAlgorithm.RSA1_5, c.getUserInfoEncryptedResponseAlg());
+		assertEquals(EncryptionMethod.A128CBC_HS256, c.getUserInfoEncryptedResponseEnc());
 		assertEquals(ImmutableSet.of("ve7jtb@example.org", "mary@example.org"), c.getContacts());
 		assertEquals(ImmutableSet.of("https://client.example.org/rf.txt#qpXaRLh_n93TTR9F252ValdatUQvQiJi5BDub2BeznA"), c.getRequestUris());
 	}
@@ -101,8 +101,8 @@ public class RegisteredClientTest {
 		c.setSectorIdentifierUri("https://other.example.net/file_of_redirect_uris.json");
 		c.setTokenEndpointAuthMethod(ClientDetailsEntity.AuthMethod.SECRET_BASIC);
 		c.setJwksUri("https://client.example.org/my_public_keys.jwks");
-		c.setUserInfoEncryptedResponseAlg(new JWEAlgorithmEmbed(JWEAlgorithm.RSA1_5));
-		c.setUserInfoEncryptedResponseEnc(new JWEEncryptionMethodEmbed(EncryptionMethod.A128CBC_HS256));
+		c.setUserInfoEncryptedResponseAlg(JWEAlgorithm.RSA1_5);
+		c.setUserInfoEncryptedResponseEnc(EncryptionMethod.A128CBC_HS256);
 		c.setContacts(ImmutableSet.of("ve7jtb@example.org", "mary@example.org"));
 		c.setRequestUris(ImmutableSet.of("https://client.example.org/rf.txt#qpXaRLh_n93TTR9F252ValdatUQvQiJi5BDub2BeznA"));
 
@@ -126,8 +126,8 @@ public class RegisteredClientTest {
 		assertEquals("https://other.example.net/file_of_redirect_uris.json", rc.getSectorIdentifierUri());
 		assertEquals(ClientDetailsEntity.AuthMethod.SECRET_BASIC, rc.getTokenEndpointAuthMethod());
 		assertEquals("https://client.example.org/my_public_keys.jwks", rc.getJwksUri());
-		assertEquals(JWEAlgorithm.RSA1_5, rc.getUserInfoEncryptedResponseAlg().getAlgorithm());
-		assertEquals(EncryptionMethod.A128CBC_HS256, rc.getUserInfoEncryptedResponseEnc().getAlgorithm());
+		assertEquals(JWEAlgorithm.RSA1_5, rc.getUserInfoEncryptedResponseAlg());
+		assertEquals(EncryptionMethod.A128CBC_HS256, rc.getUserInfoEncryptedResponseEnc());
 		assertEquals(ImmutableSet.of("ve7jtb@example.org", "mary@example.org"), rc.getContacts());
 		assertEquals(ImmutableSet.of("https://client.example.org/rf.txt#qpXaRLh_n93TTR9F252ValdatUQvQiJi5BDub2BeznA"), rc.getRequestUris());
 	}
@@ -149,8 +149,8 @@ public class RegisteredClientTest {
 		c.setSectorIdentifierUri("https://other.example.net/file_of_redirect_uris.json");
 		c.setTokenEndpointAuthMethod(ClientDetailsEntity.AuthMethod.SECRET_BASIC);
 		c.setJwksUri("https://client.example.org/my_public_keys.jwks");
-		c.setUserInfoEncryptedResponseAlg(new JWEAlgorithmEmbed(JWEAlgorithm.RSA1_5));
-		c.setUserInfoEncryptedResponseEnc(new JWEEncryptionMethodEmbed(EncryptionMethod.A128CBC_HS256));
+		c.setUserInfoEncryptedResponseAlg(JWEAlgorithm.RSA1_5);
+		c.setUserInfoEncryptedResponseEnc(EncryptionMethod.A128CBC_HS256);
 		c.setContacts(ImmutableSet.of("ve7jtb@example.org", "mary@example.org"));
 		c.setRequestUris(ImmutableSet.of("https://client.example.org/rf.txt#qpXaRLh_n93TTR9F252ValdatUQvQiJi5BDub2BeznA"));
 
@@ -170,8 +170,8 @@ public class RegisteredClientTest {
 		assertEquals("https://other.example.net/file_of_redirect_uris.json", rc.getSectorIdentifierUri());
 		assertEquals(ClientDetailsEntity.AuthMethod.SECRET_BASIC, rc.getTokenEndpointAuthMethod());
 		assertEquals("https://client.example.org/my_public_keys.jwks", rc.getJwksUri());
-		assertEquals(JWEAlgorithm.RSA1_5, rc.getUserInfoEncryptedResponseAlg().getAlgorithm());
-		assertEquals(EncryptionMethod.A128CBC_HS256, rc.getUserInfoEncryptedResponseEnc().getAlgorithm());
+		assertEquals(JWEAlgorithm.RSA1_5, rc.getUserInfoEncryptedResponseAlg());
+		assertEquals(EncryptionMethod.A128CBC_HS256, rc.getUserInfoEncryptedResponseEnc());
 		assertEquals(ImmutableSet.of("ve7jtb@example.org", "mary@example.org"), rc.getContacts());
 		assertEquals(ImmutableSet.of("https://client.example.org/rf.txt#qpXaRLh_n93TTR9F252ValdatUQvQiJi5BDub2BeznA"), rc.getRequestUris());
 	}

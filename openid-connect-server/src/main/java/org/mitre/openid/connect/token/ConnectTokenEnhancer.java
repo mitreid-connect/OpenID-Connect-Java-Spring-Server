@@ -86,7 +86,7 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 
 		JWSAlgorithm signingAlg = jwtService.getDefaultSigningAlgorithm();
 		if (client.getIdTokenSignedResponseAlg() != null) {
-			signingAlg = client.getIdTokenSignedResponseAlg().getAlgorithm();
+			signingAlg = client.getIdTokenSignedResponseAlg();
 		}
 		
 		SignedJWT signed = new SignedJWT(new JWSHeader(signingAlg), claims);
