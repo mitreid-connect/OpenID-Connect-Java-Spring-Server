@@ -56,6 +56,7 @@ public class DefaultUserInfo implements UserInfo {
 	private String zoneinfo;
 	private String locale;
 	private String phoneNumber;
+	private Boolean phoneNumberVerified;
 	private Address address;
 	private String updatedTime;
 	private String birthdate;
@@ -333,6 +334,24 @@ public class DefaultUserInfo implements UserInfo {
 		this.phoneNumber = phoneNumber;
 	}
 	/* (non-Javadoc)
+	 * @see org.mitre.openid.connect.model.UserInfo#getPhoneNumberVerified()
+	 */
+    @Override
+    @Basic
+    @Column(name="phone_number_verified")
+    public Boolean getPhoneNumberVerified() {
+	    // TODO Auto-generated method stub
+	    return null;
+    }
+	/* (non-Javadoc)
+	 * @see org.mitre.openid.connect.model.UserInfo#setPhoneNumberVerified(java.lang.Boolean)
+	 */
+    @Override
+    public void setPhoneNumberVerified(Boolean phoneNumberVerified) {
+	    // TODO Auto-generated method stub
+	    
+    }
+	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.model.UserInfo#getAddress()
 	 */
 	@Override
@@ -411,7 +430,7 @@ public class DefaultUserInfo implements UserInfo {
 		ui.setEmailVerified(obj.has("email_verified") ? obj.get("email_verified").getAsBoolean() : null);
 
 		ui.setPhoneNumber(obj.has("phone_number") ? obj.get("phone_number").getAsString() : null);
-
+		ui.setPhoneNumberVerified(obj.has("phone_number_verified") ? obj.get("phone_number_verified").getAsBoolean() : null);
 
 		if (obj.has("address") && obj.get("address").isJsonObject()) {
 			JsonObject addr = obj.get("address").getAsJsonObject();
@@ -451,6 +470,7 @@ public class DefaultUserInfo implements UserInfo {
 	    result = prime * result + ((name == null) ? 0 : name.hashCode());
 	    result = prime * result + ((nickname == null) ? 0 : nickname.hashCode());
 	    result = prime * result + ((phoneNumber == null) ? 0 : phoneNumber.hashCode());
+	    result = prime * result + ((phoneNumberVerified == null) ? 0 : phoneNumberVerified.hashCode());
 	    result = prime * result + ((picture == null) ? 0 : picture.hashCode());
 	    result = prime * result + ((preferredUsername == null) ? 0 : preferredUsername.hashCode());
 	    result = prime * result + ((profile == null) ? 0 : profile.hashCode());
@@ -565,6 +585,13 @@ public class DefaultUserInfo implements UserInfo {
 			    return false;
 		    }
 	    } else if (!phoneNumber.equals(other.phoneNumber)) {
+		    return false;
+	    }
+	    if (phoneNumberVerified == null) {
+		    if (other.phoneNumberVerified != null) {
+			    return false;
+		    }
+	    } else if (!phoneNumberVerified.equals(other.phoneNumberVerified)) {
 		    return false;
 	    }
 	    if (picture == null) {

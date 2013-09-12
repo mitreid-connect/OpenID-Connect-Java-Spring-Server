@@ -57,6 +57,26 @@ public class UserInfoView extends AbstractView {
 
 	private static Logger logger = LoggerFactory.getLogger(UserInfoView.class);
 
+	private Gson gson = new GsonBuilder()
+	.setExclusionStrategies(new ExclusionStrategy() {
+
+		@Override
+		public boolean shouldSkipField(FieldAttributes f) {
+
+			return false;
+		}
+
+		@Override
+		public boolean shouldSkipClass(Class<?> clazz) {
+			// skip the JPA binding wrapper
+			if (clazz.equals(BeanPropertyBindingResult.class)) {
+				return true;
+			}
+			return false;
+		}
+
+	}).create();
+
 	/* (non-Javadoc)
 	 * @see org.springframework.web.servlet.view.AbstractView#renderMergedOutputModel(java.util.Map, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
 	 */
@@ -81,26 +101,6 @@ public class UserInfoView extends AbstractView {
 			}
 		}
 		
-
-		Gson gson = new GsonBuilder()
-		.setExclusionStrategies(new ExclusionStrategy() {
-
-			@Override
-			public boolean shouldSkipField(FieldAttributes f) {
-
-				return false;
-			}
-
-			@Override
-			public boolean shouldSkipClass(Class<?> clazz) {
-				// skip the JPA binding wrapper
-				if (clazz.equals(BeanPropertyBindingResult.class)) {
-					return true;
-				}
-				return false;
-			}
-
-		}).create();
 
 		response.setContentType("application/json");
 
@@ -174,6 +174,7 @@ public class UserInfoView extends AbstractView {
 
 		if (scope.contains("phone")) {
 			obj.addProperty("phone_number", ui.getPhoneNumber());
+			obj.addProperty("phone_number_verified", ui.getPhoneNumberVerified());
 		}
 
 		if (scope.contains("address") && ui.getAddress() != null) {

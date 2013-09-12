@@ -178,6 +178,17 @@ public interface UserInfo {
 	 * @param phoneNumber the phoneNumber to set
 	 */
 	public abstract void setPhoneNumber(String phoneNumber);
+	
+	/**
+	 * 
+	 */
+	public abstract Boolean getPhoneNumberVerified();
+	
+	/**
+	 * 
+	 * @param phoneNumberVerified
+	 */
+	public abstract void setPhoneNumberVerified(Boolean phoneNumberVerified);
 
 	/**
 	 * @return the address

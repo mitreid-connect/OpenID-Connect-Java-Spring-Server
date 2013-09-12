@@ -188,6 +188,7 @@ CREATE TABLE IF NOT EXISTS user_info (
 	zone_info VARCHAR(256),
 	locale VARCHAR(256),
 	phone_number VARCHAR(256),
+	phone_number_verified BOOLEAN,
 	address_id VARCHAR(256),
 	updated_time VARCHAR(256),
 	birthdate VARCHAR(256)
