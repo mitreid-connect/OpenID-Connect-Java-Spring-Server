@@ -171,7 +171,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 				
 				if (client.getRequestObjectSigningAlg() != null) {
 					if (!client.getRequestObjectSigningAlg().equals(alg)) {
-						throw new AuthenticationServiceException("Client's registered request object signing algorithm (" + client.getRequestObjectSigningAlg() + ") does not match request object's actual algorithm (" + alg.getName() + ")");
+						throw new InvalidClientException("Client's registered request object signing algorithm (" + client.getRequestObjectSigningAlg() + ") does not match request object's actual algorithm (" + alg.getName() + ")");
 					}
 				}
 				
@@ -193,7 +193,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 					}
 					
 					if (!validator.validateSignature(signedJwt)) {
-						throw new AuthenticationServiceException("Signature did not validate for presented JWT request object.");
+						throw new InvalidClientException("Signature did not validate for presented JWT request object.");
 					}
 				} else if (alg.equals(JWSAlgorithm.HS256)
 						|| alg.equals(JWSAlgorithm.HS384)
@@ -208,7 +208,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 					}
 					
 					if (!validator.validateSignature(signedJwt)) {
-						throw new AuthenticationServiceException("Signature did not validate for presented JWT request object.");
+						throw new InvalidClientException("Signature did not validate for presented JWT request object.");
 					}
 					
 					
