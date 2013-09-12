@@ -22,9 +22,6 @@ package org.mitre.openid.connect;
 import java.util.Date;
 import java.util.Set;
 
-import org.mitre.jose.JWEAlgorithmEmbed;
-import org.mitre.jose.JWEEncryptionMethodEmbed;
-import org.mitre.jose.JWSAlgorithmEmbed;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity.AppType;
 import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
@@ -40,6 +37,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
+import com.nimbusds.jose.EncryptionMethod;
+import com.nimbusds.jose.JWEAlgorithm;
+import com.nimbusds.jose.JWSAlgorithm;
 
 /**
  * @author jricher
@@ -220,13 +220,13 @@ public class ClientDetailsEntityJsonProcessor {
 		o.addProperty("application_type", c.getApplicationType() != null ? c.getApplicationType().getValue() : null);
 		o.addProperty("sector_identifier_uri", c.getSectorIdentifierUri());
 		o.addProperty("subject_type", c.getSubjectType() != null ? c.getSubjectType().getValue() : null);
-		o.addProperty("request_object_signing_alg", c.getRequestObjectSigningAlg() != null ? c.getRequestObjectSigningAlg().getAlgorithmName() : null);
-		o.addProperty("userinfo_signed_response_alg", c.getUserInfoSignedResponseAlg() != null ? c.getUserInfoSignedResponseAlg().getAlgorithmName() : null);
-		o.addProperty("userinfo_encrypted_response_alg", c.getUserInfoEncryptedResponseAlg() != null ? c.getUserInfoEncryptedResponseAlg().getAlgorithmName() : null);
-		o.addProperty("userinfo_encrypted_response_enc", c.getUserInfoEncryptedResponseEnc() != null ? c.getUserInfoEncryptedResponseEnc().getAlgorithmName() : null);
-		o.addProperty("id_token_signed_response_alg", c.getIdTokenSignedResponseAlg() != null ? c.getIdTokenSignedResponseAlg().getAlgorithmName() : null);
-		o.addProperty("id_token_encrypted_response_alg", c.getIdTokenEncryptedResponseAlg() != null ? c.getIdTokenEncryptedResponseAlg().getAlgorithmName() : null);
-		o.addProperty("id_token_encrypted_response_enc", c.getIdTokenEncryptedResponseEnc() != null ? c.getIdTokenEncryptedResponseEnc().getAlgorithmName() : null);
+		o.addProperty("request_object_signing_alg", c.getRequestObjectSigningAlg() != null ? c.getRequestObjectSigningAlg().getName() : null);
+		o.addProperty("userinfo_signed_response_alg", c.getUserInfoSignedResponseAlg() != null ? c.getUserInfoSignedResponseAlg().getName() : null);
+		o.addProperty("userinfo_encrypted_response_alg", c.getUserInfoEncryptedResponseAlg() != null ? c.getUserInfoEncryptedResponseAlg().getName() : null);
+		o.addProperty("userinfo_encrypted_response_enc", c.getUserInfoEncryptedResponseEnc() != null ? c.getUserInfoEncryptedResponseEnc().getName() : null);
+		o.addProperty("id_token_signed_response_alg", c.getIdTokenSignedResponseAlg() != null ? c.getIdTokenSignedResponseAlg().getName() : null);
+		o.addProperty("id_token_encrypted_response_alg", c.getIdTokenEncryptedResponseAlg() != null ? c.getIdTokenEncryptedResponseAlg().getName() : null);
+		o.addProperty("id_token_encrypted_response_enc", c.getIdTokenEncryptedResponseEnc() != null ? c.getIdTokenEncryptedResponseEnc().getName() : null);
 		o.addProperty("default_max_age", c.getDefaultMaxAge());
 		o.addProperty("require_auth_time", c.getRequireAuthTime());
 		o.add("default_acr_values", getAsArray(c.getDefaultACRvalues()));
@@ -239,10 +239,10 @@ public class ClientDetailsEntityJsonProcessor {
 	/**
 	 * Gets the value of the given member as a JWE Algorithm, null if it doesn't exist
 	 */
-	private static JWEAlgorithmEmbed getAsJweAlgorithm(JsonObject o, String member) {
+	private static JWEAlgorithm getAsJweAlgorithm(JsonObject o, String member) {
 		String s = getAsString(o, member);
 		if (s != null) {
-			return JWEAlgorithmEmbed.getForAlgorithmName(s);
+			return JWEAlgorithm.parse(s);
 		} else {
 			return null;
 		}
@@ -251,10 +251,10 @@ public class ClientDetailsEntityJsonProcessor {
 	/**
 	 * Gets the value of the given member as a JWE Encryption Method, null if it doesn't exist
 	 */
-	private static JWEEncryptionMethodEmbed getAsJweEncryptionMethod(JsonObject o, String member) {
+	private static EncryptionMethod getAsJweEncryptionMethod(JsonObject o, String member) {
 		String s = getAsString(o, member);
 		if (s != null) {
-			return JWEEncryptionMethodEmbed.getForAlgorithmName(s);
+			return EncryptionMethod.parse(s);
 		} else {
 			return null;
 		}
@@ -263,10 +263,10 @@ public class ClientDetailsEntityJsonProcessor {
 	/**
 	 * Gets the value of the given member as a JWS Algorithm, null if it doesn't exist
 	 */
-	private static JWSAlgorithmEmbed getAsJwsAlgorithm(JsonObject o, String member) {
+	private static JWSAlgorithm getAsJwsAlgorithm(JsonObject o, String member) {
 		String s = getAsString(o, member);
 		if (s != null) {
-			return JWSAlgorithmEmbed.getForAlgorithmName(s);
+			return JWSAlgorithm.parse(s);
 		} else {
 			return null;
 		}

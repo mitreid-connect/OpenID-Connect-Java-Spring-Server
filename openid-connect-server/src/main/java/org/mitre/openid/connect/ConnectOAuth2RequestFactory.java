@@ -171,7 +171,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 				
 				if (client.getRequestObjectSigningAlg() != null) {
 					if (!client.getRequestObjectSigningAlg().equals(alg)) {
-						throw new AuthenticationServiceException("Client's registered request object signing algorithm (" + client.getRequestObjectSigningAlg().getAlgorithmName() + ") does not match request object's actual algorithm (" + alg.getName() + ")");
+						throw new AuthenticationServiceException("Client's registered request object signing algorithm (" + client.getRequestObjectSigningAlg() + ") does not match request object's actual algorithm (" + alg.getName() + ")");
 					}
 				}
 				
@@ -231,8 +231,8 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 				
 				if (client.getRequestObjectSigningAlg() == null) { 
 					throw new InvalidClientException("Client is not registered for unsigned request objects (no request_object_signing_alg registered)");
-				} else if (!client.getRequestObjectSigningAlg().getAlgorithm().equals(Algorithm.NONE)) {
-					throw new InvalidClientException("Client is not registered for unsigned request objects (request_object_signing_alg is " + client.getRequestObjectSigningAlg().getAlgorithmName() +")");
+				} else if (!client.getRequestObjectSigningAlg().equals(Algorithm.NONE)) {
+					throw new InvalidClientException("Client is not registered for unsigned request objects (request_object_signing_alg is " + client.getRequestObjectSigningAlg() +")");
 				}
 				
 				// if we got here, we're OK, keep processing
