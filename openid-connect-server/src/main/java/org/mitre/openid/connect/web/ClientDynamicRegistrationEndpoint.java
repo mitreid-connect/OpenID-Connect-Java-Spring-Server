@@ -69,13 +69,13 @@ public class ClientDynamicRegistrationEndpoint {
 
 	@Autowired
 	private OAuth2TokenEntityService tokenService;
-	
+
 	@Autowired
 	private JwtSigningAndValidationService jwtService;
-	
+
 	@Autowired
 	private ConfigurationPropertiesBean configBean;
-	
+
 	@Autowired
 	private AuthenticationHolderRepository authenticationHolderRepository;
 
@@ -123,7 +123,7 @@ public class ClientDynamicRegistrationEndpoint {
 			if (allowedScopes == null || allowedScopes.isEmpty()) {
 				allowedScopes = scopeService.getDefaults();
 			}
-			
+
 			newClient.setScope(scopeService.toStrings(allowedScopes));
 
 
@@ -164,22 +164,29 @@ public class ClientDynamicRegistrationEndpoint {
 			newClient.setDynamicallyRegistered(true);
 
 			// now save it
-			ClientDetailsEntity savedClient = clientService.saveNewClient(newClient);
+			try {
+				ClientDetailsEntity savedClient = clientService.saveNewClient(newClient);
 
-			// generate the registration access token
-			OAuth2AccessTokenEntity token = createRegistrationAccessToken(savedClient);
+				// generate the registration access token
+				OAuth2AccessTokenEntity token = createRegistrationAccessToken(savedClient);
 
-			// send it all out to the view
+				// send it all out to the view
 
-			// TODO: urlencode the client id for safety?
-			RegisteredClient registered = new RegisteredClient(savedClient, token.getValue(), config.getIssuer() + "register/" + savedClient.getClientId());
+				// TODO: urlencode the client id for safety?
+				RegisteredClient registered = new RegisteredClient(savedClient, token.getValue(), config.getIssuer() + "register/" + savedClient.getClientId());
 
-			m.addAttribute("client", registered);
-			m.addAttribute("code", HttpStatus.CREATED); // http 201
-			//m.addAttribute("token", token);
-			//m.addAttribute("uri", config.getIssuer() + "register/" + savedClient.getClientId());
+				m.addAttribute("client", registered);
+				m.addAttribute("code", HttpStatus.CREATED); // http 201
+				//m.addAttribute("token", token);
+				//m.addAttribute("uri", config.getIssuer() + "register/" + savedClient.getClientId());
 
-			return "clientInformationResponseView";
+				return "clientInformationResponseView";
+			} catch (IllegalArgumentException e) {
+				logger.error("Couldn't save client", e);
+				m.addAttribute("code", HttpStatus.BAD_REQUEST);
+
+				return "httpCodeView";
+			}
 		} else {
 			// didn't parse, this is a bad request
 			logger.error("registerNewClient failed; submitted JSON is malformed");
@@ -278,25 +285,32 @@ public class ClientDynamicRegistrationEndpoint {
 			// make sure that the client doesn't ask for scopes it can't have
 			newClient.setScope(scopeService.toStrings(allowedScopes));
 
-			// save the client
-			ClientDetailsEntity savedClient = clientService.updateClient(oldClient, newClient);
+			try {
+				// save the client
+				ClientDetailsEntity savedClient = clientService.updateClient(oldClient, newClient);
 
-			// we return the token that we got in
-			// TODO: rotate this after some set amount of time
-			OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
-			OAuth2AccessTokenEntity token = tokenService.readAccessToken(details.getTokenValue());
+				// we return the token that we got in
+				// TODO: rotate this after some set amount of time
+				OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
+				OAuth2AccessTokenEntity token = tokenService.readAccessToken(details.getTokenValue());
 
-			// TODO: urlencode the client id for safety?
-			RegisteredClient registered = new RegisteredClient(savedClient, token.getValue(), config.getIssuer() + "register/" + savedClient.getClientId());
+				// TODO: urlencode the client id for safety?
+				RegisteredClient registered = new RegisteredClient(savedClient, token.getValue(), config.getIssuer() + "register/" + savedClient.getClientId());
 
-			// send it all out to the view
-			m.addAttribute("client", registered);
-			m.addAttribute("code", HttpStatus.OK); // http 200
-			//m.addAttribute("token", token);
-			// TODO: urlencode the client id for safety?
-			//m.addAttribute("uri", config.getIssuer() + "register/" + savedClient.getClientId());
+				// send it all out to the view
+				m.addAttribute("client", registered);
+				m.addAttribute("code", HttpStatus.OK); // http 200
+				//m.addAttribute("token", token);
+				// TODO: urlencode the client id for safety?
+				//m.addAttribute("uri", config.getIssuer() + "register/" + savedClient.getClientId());
 
-			return "clientInformationResponseView";
+				return "clientInformationResponseView";
+			} catch (IllegalArgumentException e) {
+				logger.error("Couldn't save client", e);
+				m.addAttribute("code", HttpStatus.BAD_REQUEST);
+
+				return "httpCodeView";
+			}
 		} else {
 			// client mismatch
 			logger.error("readClientConfiguration failed, client ID mismatch: "
@@ -354,7 +368,7 @@ public class ClientDynamicRegistrationEndpoint {
 		clientAuth.setApproved(true);
 		clientAuth.setAuthorities(Sets.newHashSet(new SimpleGrantedAuthority("ROLE_CLIENT")));
 		OAuth2Authentication authentication = new OAuth2Authentication(clientAuth, null);
-		
+
 		OAuth2AccessTokenEntity token = new OAuth2AccessTokenEntity();
 		token.setClient(client);
 		token.setScope(Sets.newHashSet(OAuth2AccessTokenEntity.REGISTRATION_TOKEN_SCOPE));
@@ -383,7 +397,7 @@ public class ClientDynamicRegistrationEndpoint {
 		tokenService.saveAccessToken(token);
 
 		return token;
-		
+
 	}
 
 }
