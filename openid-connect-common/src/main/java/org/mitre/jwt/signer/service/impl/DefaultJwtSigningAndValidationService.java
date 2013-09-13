@@ -24,8 +24,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
-
 import org.mitre.jose.keystore.JWKSetKeyStore;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.slf4j.Logger;
@@ -62,7 +60,7 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 
 	// map of identifier to key
 	private Map<String, JWK> keys = new HashMap<String, JWK>();
-
+	
 	/**
 	 * Build this service based on the keys given. All public keys will be used
 	 * to make verifiers, all private keys will be used to make signers.
@@ -77,7 +75,7 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 	 */
 	public DefaultJwtSigningAndValidationService(Map<String, JWK> keys) throws NoSuchAlgorithmException, InvalidKeySpecException {
 		this.keys = keys;
-		//buildSignersAndVerifiers();
+		buildSignersAndVerifiers();
 	}
 
 	/**
@@ -95,28 +93,17 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 	public DefaultJwtSigningAndValidationService(JWKSetKeyStore keyStore) throws NoSuchAlgorithmException, InvalidKeySpecException {
 		// convert all keys in the keystore to a map based on key id
 		if (keyStore!= null && keyStore.getJwkSet() != null) {
-		for (JWK key : keyStore.getKeys()) {
-			if (!Strings.isNullOrEmpty(key.getKeyID())) {
-				this.keys.put(key.getKeyID(), key);
-			} else {
-				throw new IllegalArgumentException("Tried to load a key from a keystore without a 'kid' field: " + key);
+			for (JWK key : keyStore.getKeys()) {
+				if (!Strings.isNullOrEmpty(key.getKeyID())) {
+					this.keys.put(key.getKeyID(), key);
+				} else {
+					throw new IllegalArgumentException("Tried to load a key from a keystore without a 'kid' field: " + key);
+				}
 			}
 		}
-		}
-		//buildSignersAndVerifiers();
-	}
-
-	@PostConstruct
-	public void afterPropertiesSet() throws NoSuchAlgorithmException, InvalidKeySpecException{
-
-		if (keys == null) {
-			throw new IllegalArgumentException("Signing and validation service must have at least one key configured.");
-		}
-
 		buildSignersAndVerifiers();
-
-		logger.info("DefaultJwtSigningAndValidationService is ready: " + this.toString());
 	}
+
 
 	/**
 	 * @return the defaultSignerKeyId
