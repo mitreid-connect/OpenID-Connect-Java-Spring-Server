@@ -23,7 +23,7 @@ import java.text.ParseException;
 import java.util.Date;
 
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
-import org.mitre.jwt.signer.service.impl.JWKSetSigningAndValidationServiceCacheService;
+import org.mitre.jwt.signer.service.impl.JWKSetCacheService;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
@@ -51,7 +51,7 @@ public class JwtBearerAuthenticationProvider implements AuthenticationProvider {
 
 	// map of verifiers, load keys for clients
 	@Autowired
-	private JWKSetSigningAndValidationServiceCacheService validators;
+	private JWKSetCacheService validators;
 
 	// Allow for time sync issues by having a window of X seconds.
 	private int timeSkewAllowance = 300;
@@ -82,7 +82,7 @@ public class JwtBearerAuthenticationProvider implements AuthenticationProvider {
 			// check the signature with nimbus
 			if (jwt instanceof SignedJWT) {
 				SignedJWT jws = (SignedJWT)jwt;
-				JwtSigningAndValidationService validator = validators.get(client.getJwksUri());
+				JwtSigningAndValidationService validator = validators.getValidator(client.getJwksUri());
 				if (validator == null || !validator.validateSignature(jws)) {
 					throw new AuthenticationServiceException("Invalid signature");
 				}

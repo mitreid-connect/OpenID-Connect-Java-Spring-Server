@@ -25,6 +25,8 @@ import java.util.concurrent.TimeUnit;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.mitre.jose.keystore.JWKSetKeyStore;
+import org.mitre.jwt.encryption.service.JwtEncryptionAndDecryptionService;
+import org.mitre.jwt.encryption.service.impl.DefaultJwtEncryptionAndDecryptionService;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,25 +41,32 @@ import com.nimbusds.jose.jwk.JWKSet;
 
 /**
  * 
- * Creates a caching map of JOSE signers and validators keyed on the JWK Set URI.
- * Dynamically loads JWK Sets to create the signing and validation services.
+ * Creates a caching map of JOSE signers/validators and encryptors/decryptors
+ * keyed on the JWK Set URI. Dynamically loads JWK Sets to create the services.
  * 
  * @author jricher
- *
+ * 
  */
 @Service
-public class JWKSetSigningAndValidationServiceCacheService {
+public class JWKSetCacheService {
 
-	private static Logger logger = LoggerFactory.getLogger(JWKSetSigningAndValidationServiceCacheService.class);
+	private static Logger logger = LoggerFactory.getLogger(JWKSetCacheService.class);
 
 	// map of jwk set uri -> signing/validation service built on the keys found in that jwk set
-	private LoadingCache<String, JwtSigningAndValidationService> cache;
+	private LoadingCache<String, JwtSigningAndValidationService> validators;
+	
+	// map of jwk set uri -> encryption/decryption service built on the keys found in that jwk set
+	private LoadingCache<String, JwtEncryptionAndDecryptionService> encryptors;
 
-	public JWKSetSigningAndValidationServiceCacheService() {
-		this.cache = CacheBuilder.newBuilder()
+	public JWKSetCacheService() {
+		this.validators = CacheBuilder.newBuilder()
 				.expireAfterWrite(1, TimeUnit.HOURS) // expires 1 hour after fetch
 				.maximumSize(100)
 				.build(new JWKSetVerifierFetcher());
+		this.encryptors = CacheBuilder.newBuilder()
+				.expireAfterWrite(1, TimeUnit.HOURS) // expires 1 hour after fetch
+				.maximumSize(100)
+				.build(new JWKSetEncryptorFetcher());
 	}
 
 	/**
@@ -66,15 +75,24 @@ public class JWKSetSigningAndValidationServiceCacheService {
 	 * @throws ExecutionException
 	 * @see com.google.common.cache.Cache#get(java.lang.Object)
 	 */
-	public JwtSigningAndValidationService get(String jwksUri) {
+	public JwtSigningAndValidationService getValidator(String jwksUri) {
 		try {
-			return cache.get(jwksUri);
+			return validators.get(jwksUri);
 		} catch (ExecutionException e) {
 			logger.warn("Couldn't load JWK Set from " + jwksUri, e);
 			return null;
 		}
 	}
 
+	public JwtEncryptionAndDecryptionService getEncrypter(String jwksUri) {
+		try {
+			return encryptors.get(jwksUri);
+		} catch (ExecutionException e) {
+			logger.warn("Couldn't load JWK Set from " + jwksUri, e);
+			return null;
+		}
+	}
+	
 	/**
 	 * @author jricher
 	 *
@@ -102,5 +120,29 @@ public class JWKSetSigningAndValidationServiceCacheService {
 		}
 
 	}
+
+	/**
+     * @author jricher
+     *
+     */
+    private class JWKSetEncryptorFetcher extends CacheLoader<String, JwtEncryptionAndDecryptionService> {
+		private HttpClient httpClient = new DefaultHttpClient();
+		private HttpComponentsClientHttpRequestFactory httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
+		private RestTemplate restTemplate = new RestTemplate(httpFactory);
+		/* (non-Javadoc)
+		 * @see com.google.common.cache.CacheLoader#load(java.lang.Object)
+		 */
+        @Override
+        public JwtEncryptionAndDecryptionService load(String key) throws Exception {
+			String jsonString = restTemplate.getForObject(key, String.class);
+			JWKSet jwkSet = JWKSet.parse(jsonString);
+
+			JWKSetKeyStore keyStore = new JWKSetKeyStore(jwkSet);
+
+			JwtEncryptionAndDecryptionService service = new DefaultJwtEncryptionAndDecryptionService(keyStore);
+			
+			return service;
+        }
+    }
 
 }

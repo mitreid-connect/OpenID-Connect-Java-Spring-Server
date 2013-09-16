@@ -27,7 +27,7 @@ import java.util.Set;
 import org.mitre.jwt.encryption.service.JwtEncryptionAndDecryptionService;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.jwt.signer.service.impl.DefaultJwtSigningAndValidationService;
-import org.mitre.jwt.signer.service.impl.JWKSetSigningAndValidationServiceCacheService;
+import org.mitre.jwt.signer.service.impl.JWKSetCacheService;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.SystemScopeService;
@@ -67,7 +67,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 	private ClientDetailsEntityService clientDetailsService;
 
 	@Autowired
-	private JWKSetSigningAndValidationServiceCacheService validators;
+	private JWKSetCacheService validators;
 	
 	@Autowired
 	private SystemScopeService systemScopes;
@@ -192,7 +192,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 					}
 					
 					// check JWT signature
-					JwtSigningAndValidationService validator = validators.get(client.getJwksUri());
+					JwtSigningAndValidationService validator = validators.getValidator(client.getJwksUri());
 					
 					if (validator == null) {
 						throw new InvalidClientException("Unable to create signature validator for client's JWKS URI: " + client.getJwksUri());
