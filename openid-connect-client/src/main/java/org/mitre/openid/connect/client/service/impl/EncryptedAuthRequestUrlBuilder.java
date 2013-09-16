@@ -19,10 +19,8 @@ import com.google.common.base.Joiner;
 import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWEHeader;
-import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jwt.EncryptedJWT;
 import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.SignedJWT;
 
 /**
  * @author jricher
@@ -30,7 +28,7 @@ import com.nimbusds.jwt.SignedJWT;
  */
 public class EncryptedAuthRequestUrlBuilder implements AuthRequestUrlBuilder {
 	
-	private JWKSetCacheService encryptors;
+	private JWKSetCacheService encrypterService;
 	
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.client.service.AuthRequestUrlBuilder#buildAuthRequestUrl(org.mitre.openid.connect.config.ServerConfiguration, org.mitre.oauth2.model.RegisteredClient, java.lang.String, java.lang.String, java.lang.String, java.util.Map)
@@ -77,7 +75,7 @@ public class EncryptedAuthRequestUrlBuilder implements AuthRequestUrlBuilder {
 
 		EncryptedJWT jwt = new EncryptedJWT(new JWEHeader(alg, enc), claims);
 		
-		JwtEncryptionAndDecryptionService encryptor = encryptors.getEncrypter(serverConfig.getJwksUri());
+		JwtEncryptionAndDecryptionService encryptor = encrypterService.getEncrypter(serverConfig.getJwksUri());
 		
 		encryptor.encryptJwt(jwt);
 		
@@ -90,6 +88,20 @@ public class EncryptedAuthRequestUrlBuilder implements AuthRequestUrlBuilder {
 		} catch (URISyntaxException e) {
 			throw new AuthenticationServiceException("Malformed Authorization Endpoint Uri", e);
 		}
+	}
+
+	/**
+	 * @return the encrypterService
+	 */
+	public JWKSetCacheService getEncrypterService() {
+		return encrypterService;
+	}
+
+	/**
+	 * @param encrypterService the encrypterService to set
+	 */
+	public void setEncrypterService(JWKSetCacheService encrypterService) {
+		this.encrypterService = encrypterService;
 	}
 
 }
