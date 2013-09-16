@@ -30,27 +30,16 @@ public class EncryptedAuthRequestUrlBuilder implements AuthRequestUrlBuilder {
 	
 	private JWKSetCacheService encrypterService;
 	
+	private JWEAlgorithm alg;
+	private EncryptionMethod enc;
+	
+	
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.client.service.AuthRequestUrlBuilder#buildAuthRequestUrl(org.mitre.openid.connect.config.ServerConfiguration, org.mitre.oauth2.model.RegisteredClient, java.lang.String, java.lang.String, java.lang.String, java.util.Map)
 	 */
 	@Override
 	public String buildAuthRequestUrl(ServerConfiguration serverConfig, RegisteredClient clientConfig, String redirectUri, String nonce, String state, Map<String, String> options) {
 
-		JWEAlgorithm alg = null;
-		EncryptionMethod enc = null;
-		
-		if (serverConfig.getRequestObjectEncryptionAlgValuesSupported() != null || !serverConfig.getRequestObjectEncryptionAlgValuesSupported().isEmpty()) {
-			alg = serverConfig.getRequestObjectEncryptionAlgValuesSupported().get(0); // get the first alg value in the list
-			if (serverConfig.getRequestObjectEncryptionEncValuesSupported() != null || !serverConfig.getRequestObjectEncryptionEncValuesSupported().isEmpty()) {
-				enc = serverConfig.getRequestObjectEncryptionEncValuesSupported().get(0); // get the first enc value in the list
-			}
-		}
-		
-		if (alg == null || enc == null) {
-			throw new IllegalArgumentException("No encryption algorithms found for server " + serverConfig);
-		}
-		
-		
 		// create our signed JWT for the request object
 		JWTClaimsSet claims = new JWTClaimsSet();
 
@@ -102,6 +91,34 @@ public class EncryptedAuthRequestUrlBuilder implements AuthRequestUrlBuilder {
 	 */
 	public void setEncrypterService(JWKSetCacheService encrypterService) {
 		this.encrypterService = encrypterService;
+	}
+
+	/**
+	 * @return the alg
+	 */
+	public JWEAlgorithm getAlg() {
+		return alg;
+	}
+
+	/**
+	 * @param alg the alg to set
+	 */
+	public void setAlg(JWEAlgorithm alg) {
+		this.alg = alg;
+	}
+
+	/**
+	 * @return the enc
+	 */
+	public EncryptionMethod getEnc() {
+		return enc;
+	}
+
+	/**
+	 * @param enc the enc to set
+	 */
+	public void setEnc(EncryptionMethod enc) {
+		this.enc = enc;
 	}
 
 }
