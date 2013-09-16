@@ -102,7 +102,9 @@ public class DefaultJwtEncryptionAndDecryptionService implements JwtEncryptionAn
 				throw new IllegalArgumentException("Tried to load a key from a keystore without a 'kid' field: " + key);
 			}
 		}
+		
 		buildEncryptersAndDecrypters();
+		
 	}
 	
 
@@ -116,7 +118,14 @@ public class DefaultJwtEncryptionAndDecryptionService implements JwtEncryptionAn
 	}
 
 	public String getDefaultEncryptionKeyId() {
-		return defaultEncryptionKeyId;
+		if (defaultEncryptionKeyId != null) {
+			return defaultEncryptionKeyId;
+		} else if (keys.size() == 1) {
+			// if there's only one key in the map, it's the default
+			return keys.keySet().iterator().next();
+		} else {
+			return null;
+		}
 	}
 
 	public void setDefaultEncryptionKeyId(String defaultEncryptionKeyId) {
@@ -124,7 +133,14 @@ public class DefaultJwtEncryptionAndDecryptionService implements JwtEncryptionAn
 	}
 
 	public String getDefaultDecryptionKeyId() {
-		return defaultDecryptionKeyId;
+		if (defaultDecryptionKeyId != null) {
+			return defaultDecryptionKeyId;
+		} else if (keys.size() == 1) {
+			// if there's only one key in the map, it's the default
+			return keys.keySet().iterator().next();
+		} else {
+			return null;
+		}
 	}
 
 	public void setDefaultDecryptionKeyId(String defaultDecryptionKeyId) {
