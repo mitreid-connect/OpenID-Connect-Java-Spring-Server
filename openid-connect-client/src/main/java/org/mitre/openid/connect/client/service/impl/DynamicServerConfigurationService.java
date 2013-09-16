@@ -40,6 +40,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import static org.mitre.discovery.util.JsonUtils.*;
+
 /**
  * 
  * Dynamically fetches OpenID Connect server configurations based on the issuer. Caches the server configurations.
@@ -148,24 +150,41 @@ public class DynamicServerConfigurationService implements ServerConfigurationSer
 
 				conf.setIssuer(o.get("issuer").getAsString());
 
-				if (o.has("authorization_endpoint")) {
-					conf.setAuthorizationEndpointUri(o.get("authorization_endpoint").getAsString());
-				}
-				if (o.has("token_endpoint")) {
-					conf.setTokenEndpointUri(o.get("token_endpoint").getAsString());
-				}
-				if (o.has("jwks_uri")) {
-					conf.setJwksUri(o.get("jwks_uri").getAsString());
-				}
-				if (o.has("userinfo_endpoint")) {
-					conf.setUserInfoUri(o.get("userinfo_endpoint").getAsString());
-				}
-				if (o.has("registration_endpoint")) {
-					conf.setRegistrationEndpointUri(o.get("registration_endpoint").getAsString());
-				}
-				if (o.has("introspection_endpoint")) {
-					conf.setIntrospectionEndpointUri(o.get("introspection_endpoint").getAsString());
-				}
+				
+				conf.setAuthorizationEndpointUri(getAsString(o, "authorization_endpoint"));
+				conf.setTokenEndpointUri(getAsString(o, "token_endpoint"));
+				conf.setJwksUri(getAsString(o, "jwks_uri"));
+				conf.setUserInfoUri(getAsString(o, "userinfo_endpoint"));
+				conf.setRegistrationEndpointUri(getAsString(o, "registration_endpoint"));
+				conf.setIntrospectionEndpointUri(getAsString(o, "introspection_endpoint"));
+				conf.setAcrValuesSupported(getAsStringList(o, "acr_values_supported"));
+				conf.setCheckSessionIframe(getAsString(o, "check_session_iframe"));
+				conf.setClaimsLocalesSupported(getAsStringList(o, "claims_locales_supported"));
+				conf.setClaimsParameterSupported(getAsBoolean(o, "claims_parameter_supported"));
+				conf.setClaimsSupported(getAsStringList(o, "claims_supported"));
+				conf.setDisplayValuesSupported(getAsStringList(o, "display_values_supported"));
+				conf.setEndSessionEndpoint(getAsString(o, "end_session_endpoint"));
+				conf.setGrantTypesSupported(getAsStringList(o, "grant_types_supported"));
+				conf.setIdTokenSigningAlgValuesSupported(getAsJwsAlgorithmList(o, "id_token_signing_alg_values_supported"));
+				conf.setIdTokenEncryptionAlgValuesSupported(getAsJweAlgorithmList(o, "id_token_encryption_alg_values_supported"));
+				conf.setIdTokenEncryptionEncValuesSupported(getAsEncryptionMethodList(o, "id_token_encryption_enc_values_supported"));
+				conf.setOpPolicyUri(getAsString(o, "op_policy_uri"));
+				conf.setOpTosUri(getAsString(o, "op_tos_uri"));
+				conf.setRequestObjectEncryptionAlgValuesSupported(getAsJweAlgorithmList(o, "request_object_encryption_alg_values_supported"));
+				conf.setRequestObjectEncryptionEncValuesSupported(getAsEncryptionMethodList(o, "request_object_encryption_enc_values_supported"));
+				conf.setRequestObjectSigningAlgValuesSupported(getAsJwsAlgorithmList(o, "request_object_signing_alg_values_supported"));
+				conf.setRequestParameterSupported(getAsBoolean(o, "request_parameter_supported"));
+				conf.setRequestUriParameterSupported(getAsBoolean(o, "request_uri_parameter_supported"));
+				conf.setResponseTypesSupported(getAsStringList(o, "response_types_supported"));
+				conf.setScopesSupported(getAsStringList(o, "scopes_supported"));
+				conf.setSubjectTypesSupported(getAsStringList(o, "subject_types_supported"));
+				conf.setServiceDocumentation(getAsString(o, "service_documentation"));
+				conf.setTokenEndpointAuthMethodsSupported(getAsStringList(o, "token_endpoint_auth_methods"));
+				conf.setTokenEndpointAuthSigningAlgValuesSupported(getAsJwsAlgorithmList(o, "token_endpoint_auth_signing_alg_values_supported"));
+				conf.setUiLocalesSupported(getAsStringList(o, "ui_locales_supported"));
+				conf.setUserinfoEncryptionAlgValuesSupported(getAsJweAlgorithmList(o, "userinfo_encryption_alg_values_supported"));
+				conf.setUserinfoEncryptionEncValuesSupported(getAsEncryptionMethodList(o, "userinfo_encryption_enc_values_supported"));
+				conf.setUserinfoSigningAlgValuesSupported(getAsJwsAlgorithmList(o, "userinfo_signing_alg_values_supported"));
 
 				return conf;
 			} else {

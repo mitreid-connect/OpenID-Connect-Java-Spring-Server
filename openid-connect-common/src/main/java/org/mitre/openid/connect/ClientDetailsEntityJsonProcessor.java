@@ -19,8 +19,6 @@
  */
 package org.mitre.openid.connect;
 
-import java.util.Date;
-import java.util.Set;
 
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity.AppType;
@@ -31,15 +29,11 @@ import org.mitre.oauth2.model.RegisteredClient;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Sets;
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.reflect.TypeToken;
-import com.nimbusds.jose.EncryptionMethod;
-import com.nimbusds.jose.JWEAlgorithm;
-import com.nimbusds.jose.JWSAlgorithm;
+
+import static org.mitre.discovery.util.JsonUtils.*;
 
 /**
  * @author jricher
@@ -47,7 +41,6 @@ import com.nimbusds.jose.JWSAlgorithm;
  */
 public class ClientDetailsEntityJsonProcessor {
 
-	private static Gson gson = new Gson();
 	private static JsonParser parser = new JsonParser();
 
 	/**
@@ -234,95 +227,6 @@ public class ClientDetailsEntityJsonProcessor {
 		o.addProperty("post_logout_redirect_uri", c.getPostLogoutRedirectUri());
 		o.add("request_uris", getAsArray(c.getRequestUris()));
 		return o;
-	}
-
-	/**
-	 * Gets the value of the given member as a JWE Algorithm, null if it doesn't exist
-	 */
-	private static JWEAlgorithm getAsJweAlgorithm(JsonObject o, String member) {
-		String s = getAsString(o, member);
-		if (s != null) {
-			return JWEAlgorithm.parse(s);
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	 * Gets the value of the given member as a JWE Encryption Method, null if it doesn't exist
-	 */
-	private static EncryptionMethod getAsJweEncryptionMethod(JsonObject o, String member) {
-		String s = getAsString(o, member);
-		if (s != null) {
-			return EncryptionMethod.parse(s);
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	 * Gets the value of the given member as a JWS Algorithm, null if it doesn't exist
-	 */
-	private static JWSAlgorithm getAsJwsAlgorithm(JsonObject o, String member) {
-		String s = getAsString(o, member);
-		if (s != null) {
-			return JWSAlgorithm.parse(s);
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	 * Gets the value of the given member as a string, null if it doesn't exist
-	 */
-	private static String getAsString(JsonObject o, String member) {
-		if (o.has(member)) {
-			JsonElement e = o.get(member);
-			if (e != null && e.isJsonPrimitive()) {
-				return e.getAsString();
-			} else {
-				return null;
-			}
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	 * Gets the value of the given member (expressed as integer seconds since epoch) as a Date
-	 */
-	private static Date getAsDate(JsonObject o, String member) {
-		if (o.has(member)) {
-			JsonElement e = o.get(member);
-			if (e != null && e.isJsonPrimitive()) {
-				return new Date(e.getAsInt() * 1000L);
-			} else {
-				return null;
-			}
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	 * Gets the value of the given given member as a set of strings, null if it doesn't exist
-	 */
-	private static Set<String> getAsStringSet(JsonObject o, String member) throws JsonSyntaxException {
-		if (o.has(member)) {
-			return gson.fromJson(o.get(member), new TypeToken<Set<String>>(){}.getType());
-		} else {
-			return null;
-		}
-	}
-
-
-	/**
-	 * Translate a set of strings to a JSON array
-	 * @param value
-	 * @return
-	 */
-	private static JsonElement getAsArray(Set<String> value) {
-		return gson.toJsonTree(value, new TypeToken<Set<String>>(){}.getType());
 	}
 
 
