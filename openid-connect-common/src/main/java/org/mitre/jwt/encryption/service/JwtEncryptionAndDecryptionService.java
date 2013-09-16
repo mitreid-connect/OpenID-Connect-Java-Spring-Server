@@ -19,6 +19,7 @@ package org.mitre.jwt.encryption.service;
 import java.util.Collection;
 import java.util.Map;
 
+import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWEObject;
 import com.nimbusds.jose.jwk.JWK;
@@ -55,6 +56,12 @@ public interface JwtEncryptionAndDecryptionService {
 	 * @return
 	 */
 	public Collection<JWEAlgorithm> getAllEncryptionAlgsSupported();
+	
+	/**
+	 * Get the list of all encryption methods supported by this service.
+	 * @return
+	 */
+	public Collection<EncryptionMethod> getAllEncryptionEncsSupported();
 	
 	/**
 	 * TODO add functionality for encrypting and decrypting using a specified key id.
