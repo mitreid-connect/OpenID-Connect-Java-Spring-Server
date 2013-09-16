@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
+import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWEDecrypter;
@@ -254,4 +255,23 @@ public class DefaultJwtEncryptionAndDecryptionService implements JwtEncryptionAn
 		return algs;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.mitre.jwt.encryption.service.JwtEncryptionAndDecryptionService#getAllEncryptionEncsSupported()
+	 */
+    @Override
+    public Collection<EncryptionMethod> getAllEncryptionEncsSupported() {
+    	Set<EncryptionMethod> encs = new HashSet<EncryptionMethod>();
+    	
+    	for (JWEEncrypter encrypter : encrypters.values()) {
+    		encs.addAll(encrypter.supportedEncryptionMethods());
+    	}
+    	
+    	for (JWEDecrypter decrypter : decrypters.values()) {
+    		encs.addAll(decrypter.supportedEncryptionMethods());
+    	}
+    	
+    	return encs;
+    }
+
+	
 }
