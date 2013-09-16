@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.mitre.discovery.util.WebfingerURLNormalizer;
+import org.mitre.jwt.encryption.service.JwtEncryptionAndDecryptionService;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.oauth2.service.SystemScopeService;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
@@ -59,7 +60,10 @@ public class DiscoveryEndpoint {
 	private SystemScopeService scopeService;
 
 	@Autowired
-	private JwtSigningAndValidationService jwtService;
+	private JwtSigningAndValidationService signService;
+	
+	@Autowired
+	private JwtEncryptionAndDecryptionService encService;
 
 	@Autowired
 	private UserInfoService userService;
@@ -256,16 +260,16 @@ public class DiscoveryEndpoint {
 		m.put("response_types_supported", Lists.newArrayList("code", "token")); // we don't support these yet: , "id_token", "id_token token"));
 		m.put("grant_types_supported", Lists.newArrayList("authorization_code", "implicit", "urn:ietf:params:oauth:grant-type:jwt-bearer", "client_credentials", "urn:ietf:params:oauth:grant_type:redelegate"));
 		//acr_values_supported
-		m.put("subject_types_supported", Lists.newArrayList("public"));
+		m.put("subject_types_supported", Lists.newArrayList("public", "pairwise"));
 		//userinfo_signing_alg_values_supported
 		//userinfo_encryption_alg_values_supported
 		//userinfo_encryption_enc_values_supported
-		m.put("id_token_signing_alg_values_supported", Collections2.transform(jwtService.getAllSigningAlgsSupported(), toAlgorithmName));
+		m.put("id_token_signing_alg_values_supported", Collections2.transform(signService.getAllSigningAlgsSupported(), toAlgorithmName));
 		//id_token_encryption_alg_values_supported
 		//id_token_encryption_enc_values_supported
-		m.put("request_object_signing_alg_values_supported", Collections2.transform(jwtService.getAllSigningAlgsSupported(), toAlgorithmName));
-		//request_object_encryption_alg_values_supported
-		//request_object_encryption_enc_values_supported
+		m.put("request_object_signing_alg_values_supported", Collections2.transform(signService.getAllSigningAlgsSupported(), toAlgorithmName));
+		m.put("request_object_encryption_alg_values_supported", Collections2.transform(encService.getAllEncryptionAlgsSupported(), toAlgorithmName));
+		m.put("request_object_encryption_enc_values_supported", Collections2.transform(encService.getAllEncryptionEncsSupported(), toAlgorithmName));
 		m.put("token_endpoint_auth_methods_supported", Lists.newArrayList("client_secret_post", "client_secret_basic", /*"client_secret_jwt",*/ "private_key_jwt", "none"));
 		//token_endpoint_auth_signing_alg_values_supported
 		//display_types_supported
