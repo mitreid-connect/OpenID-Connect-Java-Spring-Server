@@ -109,7 +109,14 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 	 * @return the defaultSignerKeyId
 	 */
 	public String getDefaultSignerKeyId() {
-		return defaultSignerKeyId;
+		if (defaultSignerKeyId != null) {
+			return defaultSignerKeyId;
+		} else if (keys.size() == 1) {
+			// if there's only one key, it's the default
+			return keys.keySet().iterator().next();
+		} else {
+			return null;
+		}
 	}
 
 	/**
