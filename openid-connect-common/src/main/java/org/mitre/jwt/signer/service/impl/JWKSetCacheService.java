@@ -41,7 +41,7 @@ import com.nimbusds.jose.jwk.JWKSet;
 
 /**
  * 
- * Creates a caching map of JOSE signers/validators and encryptors/decryptors
+ * Creates a caching map of JOSE signers/validators and encrypters/decryptors
  * keyed on the JWK Set URI. Dynamically loads JWK Sets to create the services.
  * 
  * @author jricher
@@ -56,14 +56,14 @@ public class JWKSetCacheService {
 	private LoadingCache<String, JwtSigningAndValidationService> validators;
 	
 	// map of jwk set uri -> encryption/decryption service built on the keys found in that jwk set
-	private LoadingCache<String, JwtEncryptionAndDecryptionService> encryptors;
+	private LoadingCache<String, JwtEncryptionAndDecryptionService> encrypters;
 
 	public JWKSetCacheService() {
 		this.validators = CacheBuilder.newBuilder()
 				.expireAfterWrite(1, TimeUnit.HOURS) // expires 1 hour after fetch
 				.maximumSize(100)
 				.build(new JWKSetVerifierFetcher());
-		this.encryptors = CacheBuilder.newBuilder()
+		this.encrypters = CacheBuilder.newBuilder()
 				.expireAfterWrite(1, TimeUnit.HOURS) // expires 1 hour after fetch
 				.maximumSize(100)
 				.build(new JWKSetEncryptorFetcher());
@@ -86,7 +86,7 @@ public class JWKSetCacheService {
 
 	public JwtEncryptionAndDecryptionService getEncrypter(String jwksUri) {
 		try {
-			return encryptors.get(jwksUri);
+			return encrypters.get(jwksUri);
 		} catch (ExecutionException e) {
 			logger.warn("Couldn't load JWK Set from " + jwksUri, e);
 			return null;
