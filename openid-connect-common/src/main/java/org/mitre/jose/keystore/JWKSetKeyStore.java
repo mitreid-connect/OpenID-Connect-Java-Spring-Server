@@ -24,12 +24,10 @@ import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.core.io.Resource;
 
 import com.google.common.base.Charsets;
-import com.google.common.io.CharStreams;
+import com.google.co/Users/aanganes/Documents/OpenID/OpenID-Connect-Java-Spring-Server/openid-connect-common/src/main/java/org/mitre/jose/keystore/JWKSetKeyStore.javammon.io.CharStreams;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
 
@@ -49,9 +47,9 @@ public class JWKSetKeyStore {
 
 	public JWKSetKeyStore(JWKSet jwkSet) {
 		this.jwkSet = jwkSet;
+		initializeJwkSet();
 	}
 
-	@PostConstruct
 	private void initializeJwkSet() {
 
 		if (jwkSet == null) {
@@ -92,6 +90,7 @@ public class JWKSetKeyStore {
 	 */
 	public void setJwkSet(JWKSet jwkSet) {
 		this.jwkSet = jwkSet;
+		initializeJwkSet();
 	}
 
 	/**
@@ -106,6 +105,7 @@ public class JWKSetKeyStore {
 	 */
 	public void setLocation(Resource location) {
 		this.location = location;
+		initializeJwkSet();
 	}
 
 	/**
