@@ -16,34 +16,27 @@
  ******************************************************************************/
 package org.mitre.openid.connect.web;
 
-import java.util.Date;
-import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
-import org.mitre.oauth2.model.AuthenticationHolderEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.RegisteredClient;
 import org.mitre.oauth2.model.SystemScope;
-import org.mitre.oauth2.repository.AuthenticationHolderRepository;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
 import org.mitre.oauth2.service.SystemScopeService;
 import org.mitre.openid.connect.ClientDetailsEntityJsonProcessor;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
+import org.mitre.openid.connect.service.OIDCTokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
-import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -52,13 +45,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.nimbusds.jose.JWSAlgorithm;
-import com.nimbusds.jose.JWSHeader;
-import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.SignedJWT;
 
 @Controller
 @RequestMapping(value = "register")
@@ -72,18 +59,15 @@ public class ClientDynamicRegistrationEndpoint {
 	
 	@Autowired
 	private JwtSigningAndValidationService jwtService;
-	
-	@Autowired
-	private ConfigurationPropertiesBean configBean;
-	
-	@Autowired
-	private AuthenticationHolderRepository authenticationHolderRepository;
 
 	@Autowired
 	private SystemScopeService scopeService;
 
 	@Autowired
 	private ConfigurationPropertiesBean config;
+	
+	@Autowired
+	private OIDCTokenService connectTokenService;
 
 	private static Logger logger = LoggerFactory.getLogger(ClientDynamicRegistrationEndpoint.class);
 
@@ -170,7 +154,8 @@ public class ClientDynamicRegistrationEndpoint {
 				ClientDetailsEntity savedClient = clientService.saveNewClient(newClient);
 	
 				// generate the registration access token
-				OAuth2AccessTokenEntity token = createRegistrationAccessToken(savedClient);
+				OAuth2AccessTokenEntity token = connectTokenService.createRegistrationAccessToken(savedClient);
+				tokenService.saveAccessToken(token);
 	
 				// send it all out to the view
 	
@@ -343,52 +328,6 @@ public class ClientDynamicRegistrationEndpoint {
 
 			return "httpCodeView";
 		}
-	}
-
-
-
-	/**
-	 * @param client
-	 * @return
-	 * @throws AuthenticationException
-	 */
-	private OAuth2AccessTokenEntity createRegistrationAccessToken(ClientDetailsEntity client) throws AuthenticationException {
-
-		Map<String, String> authorizationParameters = Maps.newHashMap();
-		OAuth2Request clientAuth = new OAuth2Request(authorizationParameters, client.getClientId(),
-				Sets.newHashSet(new SimpleGrantedAuthority("ROLE_CLIENT")), true,
-				Sets.newHashSet(OAuth2AccessTokenEntity.REGISTRATION_TOKEN_SCOPE), null, null, null);
-		OAuth2Authentication authentication = new OAuth2Authentication(clientAuth, null);
-
-		OAuth2AccessTokenEntity token = new OAuth2AccessTokenEntity();
-		token.setClient(client);
-		token.setScope(Sets.newHashSet(OAuth2AccessTokenEntity.REGISTRATION_TOKEN_SCOPE));
-
-		AuthenticationHolderEntity authHolder = new AuthenticationHolderEntity();
-		authHolder.setAuthentication(authentication);
-		authHolder = authenticationHolderRepository.save(authHolder);
-		token.setAuthenticationHolder(authHolder);
-
-		JWTClaimsSet claims = new JWTClaimsSet();
-
-		claims.setAudience(Lists.newArrayList(client.getClientId()));
-		claims.setIssuer(configBean.getIssuer());
-		claims.setIssueTime(new Date());
-		claims.setExpirationTime(token.getExpiration());
-		claims.setJWTID(UUID.randomUUID().toString()); // set a random NONCE in the middle of it
-
-		// TODO: use client's default signing algorithm
-		JWSAlgorithm signingAlg = jwtService.getDefaultSigningAlgorithm();
-		SignedJWT signed = new SignedJWT(new JWSHeader(signingAlg), claims);
-
-		jwtService.signJwt(signed);
-
-		token.setJwt(signed);
-
-		tokenService.saveAccessToken(token);
-
-		return token;
-		
 	}
 
 }

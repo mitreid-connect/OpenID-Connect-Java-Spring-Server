@@ -17,7 +17,6 @@
 package org.mitre.openid.connect.token;
 
 import java.util.Date;
-import java.util.Set;
 import java.util.UUID;
 
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
@@ -27,25 +26,20 @@ import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.service.ApprovedSiteService;
+import org.mitre.openid.connect.service.OIDCTokenService;
 import org.mitre.openid.connect.service.UserInfoService;
-import org.mitre.openid.connect.util.IdTokenHashUtils;
-import org.mitre.openid.connect.web.AuthenticationTimeStamper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
-import org.springframework.security.oauth2.common.util.OAuth2Utils;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.stereotype.Service;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
-import com.nimbusds.jose.util.Base64URL;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 
@@ -68,6 +62,9 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 	
 	@Autowired
 	private UserInfoService userInfoService;
+	
+	@Autowired
+	private OIDCTokenService connectTokenService;
 
 	@Override
 	public OAuth2AccessToken enhance(OAuth2AccessToken accessToken,	OAuth2Authentication authentication) {
@@ -109,64 +106,12 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 		 */
 		if (originalAuthRequest.getScope().contains("openid")) {
 
-			// TODO: maybe id tokens need a service layer
-
 			String username = authentication.getName();
 			UserInfo userInfo = userInfoService.getByUsernameAndClientId(username, clientId);
-
-			OAuth2AccessTokenEntity idTokenEntity = new OAuth2AccessTokenEntity();
-
-			// FIXME: extend the "claims" section for id tokens
-			JWTClaimsSet idClaims = new JWTClaimsSet();
-
-
-			if (authentication.getOAuth2Request().getExtensions().containsKey(AuthenticationTimeStamper.AUTH_TIMESTAMP)) {
-				Date authTime = (Date) authentication.getOAuth2Request().getExtensions().get(AuthenticationTimeStamper.AUTH_TIMESTAMP);
-				idClaims.setClaim("auth_time", authTime.getTime() / 1000);
-			}
 			
-			idClaims.setIssueTime(claims.getIssueTime());
-
-			if (client.getIdTokenValiditySeconds() != null) {
-				Date expiration = new Date(System.currentTimeMillis() + (client.getIdTokenValiditySeconds() * 1000L));
-				idClaims.setExpirationTime(expiration);
-				idTokenEntity.setExpiration(expiration);
-			}
-
-			idClaims.setIssuer(configBean.getIssuer());
-			idClaims.setSubject(userInfo.getSub());
-			idClaims.setAudience(Lists.newArrayList(clientId));
-
-			String nonce = (String)originalAuthRequest.getExtensions().get("nonce");
-			if (!Strings.isNullOrEmpty(nonce)) {
-				idClaims.setCustomClaim("nonce", nonce);
-			}
-
-			// TODO: this ought to be getResponseType; issue #482
-			String responseType = authentication.getOAuth2Request().getRequestParameters().get("response_type");
-			
-			Set<String> responseTypes = OAuth2Utils.parseParameterList(responseType);
-			if (responseTypes.contains("token")) {
-				// calculate the token hash
-				Base64URL at_hash = IdTokenHashUtils.getAccessTokenHash(signingAlg, token);
-				//TODO: What should happen if the hash cannot be calculated?
-				idClaims.setClaim("at_hash", at_hash);
-			}
-
-			SignedJWT idToken = new SignedJWT(new JWSHeader(signingAlg), idClaims);
-
-			jwtService.signJwt(idToken);
-
-			idTokenEntity.setJwt(idToken);
-
-			idTokenEntity.setAuthenticationHolder(token.getAuthenticationHolder());
-
-			// create a scope set with just the special "id-token" scope
-			//Set<String> idScopes = new HashSet<String>(token.getScope()); // this would copy the original token's scopes in, we don't really want that
-			Set<String> idScopes = Sets.newHashSet(OAuth2AccessTokenEntity.ID_TOKEN_SCOPE);
-			idTokenEntity.setScope(idScopes);
-
-			idTokenEntity.setClient(token.getClient());
+			OAuth2AccessTokenEntity idTokenEntity = connectTokenService.createIdToken(client, 
+					originalAuthRequest, (java.util.Date) claims.getIssueTime(),
+					userInfo.getSub(), signingAlg, token);
 
 			// attach the id token to the parent access token
 			token.setIdToken(idTokenEntity);
