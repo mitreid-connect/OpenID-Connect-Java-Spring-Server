@@ -27,7 +27,7 @@ import java.util.List;
 import org.springframework.core.io.Resource;
 
 import com.google.common.base.Charsets;
-import com.google.co/Users/aanganes/Documents/OpenID/OpenID-Connect-Java-Spring-Server/openid-connect-common/src/main/java/org/mitre/jose/keystore/JWKSetKeyStore.javammon.io.CharStreams;
+import com.google.common.io.CharStreams;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
 
