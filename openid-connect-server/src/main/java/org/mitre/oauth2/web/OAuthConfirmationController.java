@@ -19,7 +19,6 @@
  */
 package org.mitre.oauth2.web;
 
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -72,8 +71,7 @@ public class OAuthConfirmationController {
 
 		// Check the "prompt" parameter to see if we need to do special processing
 
-		// TODO (issue #450)
-		String prompt = clientAuth.getRequestParameters().get("prompt");
+		String prompt = (String)clientAuth.getExtensions().get("prompt");
 		if ("none".equals(prompt)) {
 			// we're not supposed to prompt, so "return an error"
 			logger.info("Client requested no prompt, returning 403 from confirmation endpoint");

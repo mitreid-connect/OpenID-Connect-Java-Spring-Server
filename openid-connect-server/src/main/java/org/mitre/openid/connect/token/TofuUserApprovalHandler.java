@@ -126,8 +126,7 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 		boolean alreadyApproved = false;
 
 		// find out if we're supposed to force a prompt on the user or not
-		// TODO (issue #450)
-		String prompt = authorizationRequest.getRequestParameters().get("prompt");
+		String prompt = (String) authorizationRequest.getExtensions().get("prompt");
 		if (!"consent".equals(prompt)) {
 			// if the prompt parameter is set to "consent" then we can't use approved sites or whitelisted sites
 			// otherwise, we need to check them below

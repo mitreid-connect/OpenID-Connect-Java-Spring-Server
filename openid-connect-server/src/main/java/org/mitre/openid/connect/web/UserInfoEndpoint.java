@@ -73,7 +73,7 @@ public class UserInfoEndpoint {
 		}
 
 		model.addAttribute("scope", auth.getOAuth2Request().getScope());
-		model.addAttribute("requestObject", auth.getOAuth2Request().getRequestParameters().get("request"));
+		model.addAttribute("requestObject", auth.getOAuth2Request().getExtensions().get("request"));
 
 		model.addAttribute("userInfo", userInfo);
 

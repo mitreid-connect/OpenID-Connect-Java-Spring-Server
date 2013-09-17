@@ -137,14 +137,12 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 			idClaims.setSubject(userInfo.getSub());
 			idClaims.setAudience(Lists.newArrayList(clientId));
 
-
-			// TODO: issue #450
-			String nonce = originalAuthRequest.getRequestParameters().get("nonce");
+			String nonce = (String)originalAuthRequest.getExtensions().get("nonce");
 			if (!Strings.isNullOrEmpty(nonce)) {
 				idClaims.setCustomClaim("nonce", nonce);
 			}
 
-			// TODO: this ought to be getResponseType
+			// TODO: this ought to be getResponseType; issue #482
 			String responseType = authentication.getOAuth2Request().getRequestParameters().get("response_type");
 			
 			Set<String> responseTypes = OAuth2Utils.parseParameterList(responseType);

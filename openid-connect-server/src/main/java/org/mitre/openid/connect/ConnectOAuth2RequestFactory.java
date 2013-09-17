@@ -16,6 +16,7 @@
  ******************************************************************************/
 package org.mitre.openid.connect;
 
+import java.io.Serializable;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.text.ParseException;
@@ -34,7 +35,6 @@ import org.mitre.oauth2.service.SystemScopeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.security.oauth2.common.util.OAuth2Utils;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
@@ -45,6 +45,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import com.nimbusds.jose.Algorithm;
 import com.nimbusds.jose.JWEObject.State;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -119,6 +120,20 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 		}
 
 		request.setScope(scopes);
+		
+		//Add extension parameters to the 'extensions' map
+		Map<String, Serializable> extensions = Maps.newHashMap();
+		if (parameters.containsKey("prompt")) {
+			extensions.put("prompt", parameters.get("prompt"));
+		}
+		if (parameters.containsKey("request")) {
+			extensions.put("request", parameters.get("request"));
+		}
+		if (parameters.containsKey("nonce")) {
+			extensions.put("nonce", parameters.get("nonce"));
+		}
+		
+		request.setExtensions(extensions);
 
 		return request;
 	}
