@@ -68,13 +68,14 @@ public class UserInfoEndpoint {
 			return "httpCodeView";
 		}
 		
-		if (!Strings.isNullOrEmpty(claimsRequestJsonString)) {
-			model.addAttribute("claimsRequest", claimsRequestJsonString);
-		}
-
 		model.addAttribute("scope", auth.getOAuth2Request().getScope());
-		model.addAttribute("requestObject", auth.getOAuth2Request().getExtensions().get("request"));
+		
+		model.addAttribute("authorizedClaims", auth.getOAuth2Request().getExtensions().get("claims"));
 
+		if (!Strings.isNullOrEmpty(claimsRequestJsonString)) {
+			model.addAttribute("requestedClaims", claimsRequestJsonString);
+		}
+		
 		model.addAttribute("userInfo", userInfo);
 
 		return "userInfoView";
