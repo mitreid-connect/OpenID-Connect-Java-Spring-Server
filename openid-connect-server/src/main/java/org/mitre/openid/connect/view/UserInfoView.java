@@ -18,11 +18,8 @@ package org.mitre.openid.connect.view;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -37,9 +34,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.servlet.view.AbstractView;
 
-import com.google.common.base.CaseFormat;
 import com.google.common.base.Strings;
-import com.google.common.collect.Sets;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
@@ -49,7 +44,6 @@ import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
-import com.nimbusds.jose.JWEObject;
 import com.nimbusds.jwt.EncryptedJWT;
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTParser;
@@ -105,7 +99,6 @@ public class UserInfoView extends AbstractView {
 			}
 		}
 		
-
 		response.setContentType("application/json");
 
 		Writer out;
@@ -127,7 +120,7 @@ public class UserInfoView extends AbstractView {
 				gson.toJson(toJsonFromRequestObj(userInfo, scope, authorizedClaims, requestedClaims), out);
 			} else {
 
-				gson.toJson(toJson(userInfo, scope), out);
+				gson.toJson(UserInfoSerializer.toJson(userInfo, scope), out);
 
 			}
 
@@ -269,4 +262,5 @@ public class UserInfoView extends AbstractView {
 		return obj;
 
 	}
+
 }

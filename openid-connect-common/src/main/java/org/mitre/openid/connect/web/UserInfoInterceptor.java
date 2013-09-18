@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.mitre.openid.connect.model.OIDCAuthenticationToken;
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.service.UserInfoService;
+import org.mitre.openid.connect.view.UserInfoSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -83,8 +84,7 @@ public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 					// if they're logging into this server from a remote OIDC server, pass through their user info
 					OIDCAuthenticationToken oidc = (OIDCAuthenticationToken) p;
 					modelAndView.addObject("userInfo", oidc.getUserInfo());
-					// TODO: this should use the same serializer as UserInfoView (#488)
-					modelAndView.addObject("userInfoJson", gson.toJson(oidc.getUserInfo()));
+					modelAndView.addObject("userInfoJson", UserInfoSerializer.toJson(oidc.getUserInfo(), null));
 				} else {
 					if (p != null && p.getName() != null) { // don't bother checking if we don't have a principal
 	
@@ -94,8 +94,7 @@ public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 						// if we have one, inject it so views can use it
 						if (user != null) {
 							modelAndView.addObject("userInfo", user);
-							// TODO: this should use the same serializer as UserInfoView (#488)
-							modelAndView.addObject("userInfoJson", gson.toJson(user));
+							modelAndView.addObject("userInfoJson", UserInfoSerializer.toJson(user, null));
 						}
 					}
 				}
