@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.mitre.openid.connect.model.UserInfo;
+import org.mitre.openid.connect.service.ScopeClaimTranslationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +18,8 @@ import com.google.gson.JsonObject;
 public class UserInfoSerializer {
 
 	private static Logger logger = LoggerFactory.getLogger(UserInfoSerializer.class);
+	
+	private ScopeClaimTranslationService translator = new ScopeClaimTranslationService();
 	
 	/**
 	 * Build a JSON response according to the request object received.
@@ -60,6 +63,9 @@ public class UserInfoSerializer {
 			}
 			
 		}
+		
+		//TODO: is there a way to use bean processors to do bean.getfield(name)?
+		//Method reflection is OK, but need a service to translate scopes into claim names => field names
 		
 		// TODO: this method is likely to be fragile if the data model changes at all
 
