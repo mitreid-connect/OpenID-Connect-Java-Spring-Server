@@ -61,9 +61,6 @@ public class UserInfoView extends AbstractView {
 
 	private static Logger logger = LoggerFactory.getLogger(UserInfoView.class);
 	
-	@Autowired
-	private JwtEncryptionAndDecryptionService encryptionService;
-
 	private Gson gson = new GsonBuilder()
 	.setExclusionStrategies(new ExclusionStrategy() {
 
@@ -117,29 +114,17 @@ public class UserInfoView extends AbstractView {
 
 			out = response.getWriter();
 
-			if (model.get("requestObject") != null) {
+			JsonObject authorizedClaims = null;
+			JsonObject requestedClaims = null;
+			if (model.get("authorizedClaims") != null) {
+				authorizedClaims = jsonParser.parse((String) model.get("authorizedClaims")).getAsJsonObject();
+			}
+			if (model.get("requestedClaims") != null) {
+				requestedClaims = jsonParser.parse((String) model.get("requestedClaims")).getAsJsonObject();
+			}
+			if (authorizedClaims != null || requestedClaims != null) {
 
-				try {
-					// FIXME: re-parse the request object
-					String jwtString = (String)model.get("requestObject");
-					JWT requestObject = JWTParser.parse(jwtString);
-					if (requestObject instanceof EncryptedJWT) {
-						// we need to re-decrypt it :(
-						encryptionService.decryptJwt((EncryptedJWT) requestObject);
-					}
-
-					// FIXME: move to GSON for easier processing
-					JsonObject obj = (JsonObject) jsonParser.parse(requestObject.getJWTClaimsSet().toJSONObject().toJSONString());
-
-					gson.toJson(toJsonFromRequestObj(userInfo, scope, obj, claimsRequest), out);
-				} catch (JsonSyntaxException e) {
-					logger.error("JsonSyntaxException in UserInfoView.java: ", e);
-				} catch (JsonIOException e) {
-					logger.error("JsonIOException in UserInfoView.java: ", e);
-				} catch (ParseException e) {
-					logger.error("ParseException in UserInfoView.java: ", e);
-				}
-
+				gson.toJson(toJsonFromRequestObj(userInfo, scope, authorizedClaims, requestedClaims), out);
 			} else {
 
 				gson.toJson(toJson(userInfo, scope), out);
@@ -214,22 +199,19 @@ public class UserInfoView extends AbstractView {
 	 * 
 	 * @param ui
 	 * @param scope
-	 * @param requestObj
-	 * @param claimsRequest the claims request parameter object.
+	 * @param authorizedClaims
+	 * @param requestedClaims the claims request parameter object.
 	 * @return
 	 */
-	private JsonObject toJsonFromRequestObj(UserInfo ui, Set<String> scope, JsonObject requestObj, JsonObject claimsRequest) {
+	private JsonObject toJsonFromRequestObj(UserInfo ui, Set<String> scope, JsonObject authorizedClaims, JsonObject requestedClaims) {
 
+		// get the base object
 		JsonObject obj = toJson(ui, scope);
 
-		//Process list of requested claims out of the request object
-		JsonElement claims = requestObj.get("claims");
-		if (claims == null || !claims.isJsonObject()) {
-			return obj;
-		}
-
-		JsonElement userinfo = claims.getAsJsonObject().get("userinfo");
-		if (userinfo == null || !userinfo.isJsonObject()) {
+		JsonObject userinfoAuthorized = authorizedClaims.getAsJsonObject().get("userinfo").getAsJsonObject();
+		JsonObject userinfoRequested = requestedClaims.getAsJsonObject().get("userinfo").getAsJsonObject();
+		
+		if (userinfoAuthorized == null || !userinfoAuthorized.isJsonObject()) {
 			return obj;
 		}
 
@@ -240,10 +222,10 @@ public class UserInfoView extends AbstractView {
 		// the same claim but have different 'individual claim values', causing the Entry<> to be unequal, 
 		// which doesn't allow the use of the more compact Sets.intersection() type method.
 		Set<Entry<String, JsonElement>> requestClaimsSet = Sets.newHashSet();
-		if (claimsRequest != null) {
+		if (requestedClaims != null) {
 			
-			for (Entry<String, JsonElement> entry : userinfo.getAsJsonObject().entrySet()) {
-				if (claimsRequest.has(entry.getKey())) {
+			for (Entry<String, JsonElement> entry : userinfoAuthorized.getAsJsonObject().entrySet()) {
+				if (userinfoRequested.has(entry.getKey())) {
 					requestClaimsSet.add(entry);
 				}
 			}
