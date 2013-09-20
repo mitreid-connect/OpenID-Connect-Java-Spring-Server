@@ -31,7 +31,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
-import org.mitre.jwt.signer.service.impl.JWKSetSigningAndValidationServiceCacheService;
+import org.mitre.jwt.signer.service.impl.JWKSetCacheService;
 import org.mitre.oauth2.model.RegisteredClient;
 import org.mitre.openid.connect.client.model.IssuerServiceResponse;
 import org.mitre.openid.connect.client.service.AuthRequestOptionsService;
@@ -85,7 +85,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 	private int timeSkewAllowance = 300;
 
 	@Autowired
-	private JWKSetSigningAndValidationServiceCacheService validationServices;
+	private JWKSetCacheService validationServices;
 
 	// modular services to build out client filter
 	private ServerConfigurationService servers;
@@ -355,7 +355,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 				ReadOnlyJWTClaimsSet idClaims = idToken.getJWTClaimsSet();
 
 				// check the signature
-				JwtSigningAndValidationService jwtValidator = validationServices.get(serverConfig.getJwksUri());
+				JwtSigningAndValidationService jwtValidator = validationServices.getValidator(serverConfig.getJwksUri());
 				if (jwtValidator != null) {
 					if(!jwtValidator.validateSignature(idToken)) {
 						throw new AuthenticationServiceException("Signature validation failed");
@@ -543,14 +543,14 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 	/**
 	 * @return the validationServices
 	 */
-	public JWKSetSigningAndValidationServiceCacheService getValidationServices() {
+	public JWKSetCacheService getValidationServices() {
 		return validationServices;
 	}
 
 	/**
 	 * @param validationServices the validationServices to set
 	 */
-	public void setValidationServices(JWKSetSigningAndValidationServiceCacheService validationServices) {
+	public void setValidationServices(JWKSetCacheService validationServices) {
 		this.validationServices = validationServices;
 	}
 
