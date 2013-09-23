@@ -8,3 +8,5 @@ bin
 .project
 .settings
 .classpath
+/target
+.springBeans

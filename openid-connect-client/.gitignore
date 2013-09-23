@@ -9,3 +9,4 @@ bin
 .settings
 .classpath
 /target
+.springBeans
