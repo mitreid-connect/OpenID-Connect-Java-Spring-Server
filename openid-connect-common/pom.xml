@@ -27,6 +27,96 @@
   <description>OpenID Connect Common modules</description>
   <name>OpenID Connect Common</name>
   <dependencies>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${org.springframework-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-core</artifactId>
+            <version>${spring.security.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>14.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.2.3</version>
+        </dependency>
+    	<dependency>
+      		<groupId>org.springframework.security.oauth</groupId>
+ 		 	<version>1.1.0.M1</version>
+      		<artifactId>spring-security-oauth2</artifactId>
+		</dependency>
+        <dependency>
+        	<groupId>com.nimbusds</groupId>
+        	<artifactId>nimbus-jose-jwt</artifactId>
+        	<version>2.17.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>javax.persistence</artifactId>
+            <version>2.0.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.0</version>
+        </dependency>
+	
+        <!-- Servlet -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.5</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet.jsp</groupId>
+            <artifactId>jsp-api</artifactId>
+            <version>2.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+            <version>1.2</version>
+        </dependency>
+        <!-- /Servlet -->
+
+        <!-- Test -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.7</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.easymock</groupId>
+            <artifactId>easymock</artifactId>
+            <version>2.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${org.springframework-version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- /Test -->
+
+        <!-- Logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${org.slf4j-version}</version>
+        </dependency>
+        <!-- /Logging -->
+
   </dependencies>
   <packaging>jar</packaging>
   <build>
@@ -67,4 +157,19 @@
       </plugin>
     </plugins>
   </build>
+    <repositories>
+        <repository>
+            <id>org.eclipse.persistence</id>
+            <name>EclipseLink repository</name>
+            <url>http://download.eclipse.org/rt/eclipselink/maven.repo</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+		<repository>
+		    <id>spring-milestone</id>
+		    <name>Spring Maven MILESTONE Repository</name>
+		    <url>http://maven.springframework.org/milestone</url>
+		</repository>
+    </repositories>
 </project>

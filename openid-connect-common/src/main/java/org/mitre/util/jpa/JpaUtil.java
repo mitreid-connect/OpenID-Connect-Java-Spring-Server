@@ -20,8 +20,6 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
-
 /**
  * @author mfranklin
  *         Date: 4/28/11
@@ -35,7 +33,7 @@ public class JpaUtil {
 			case 1:
 				return list.get(0);
 			default:
-				throw new IncorrectResultSizeDataAccessException(1);
+				throw new IllegalStateException("Expected single result, got " + list.size());
 		}
 	}
 
