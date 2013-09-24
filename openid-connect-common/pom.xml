@@ -121,19 +121,4 @@
       </plugin>
     </plugins>
   </build>
-    <repositories>
-        <repository>
-            <id>org.eclipse.persistence</id>
-            <name>EclipseLink repository</name>
-            <url>http://download.eclipse.org/rt/eclipselink/maven.repo</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-		<repository>
-		    <id>spring-milestone</id>
-		    <name>Spring Maven MILESTONE Repository</name>
-		    <url>http://maven.springframework.org/milestone</url>
-		</repository>
-    </repositories>
 </project>
