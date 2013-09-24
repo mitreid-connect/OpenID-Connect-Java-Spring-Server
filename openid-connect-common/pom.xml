@@ -41,6 +41,12 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-core</artifactId>
             <version>${spring.security.version}</version>
+            <exclusions>
+            	<exclusion>
+            		<groupId>org.springframework</groupId>
+            		<artifactId>*</artifactId>
+            	</exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
