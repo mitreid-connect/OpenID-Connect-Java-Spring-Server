@@ -1,14 +1,17 @@
 package org.mitre.openid.connect.view;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.mitre.openid.connect.model.DefaultUserInfo;
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.service.ScopeClaimTranslationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.ReflectionUtils;
 
 import com.google.common.base.CaseFormat;
 import com.google.common.collect.Sets;
@@ -19,7 +22,7 @@ public class UserInfoSerializer {
 
 	private static Logger logger = LoggerFactory.getLogger(UserInfoSerializer.class);
 	
-	private ScopeClaimTranslationService translator = new ScopeClaimTranslationService();
+	private static ScopeClaimTranslationService translator = new ScopeClaimTranslationService();
 	
 	/**
 	 * Build a JSON response according to the request object received.
@@ -67,6 +70,8 @@ public class UserInfoSerializer {
 		//TODO: is there a way to use bean processors to do bean.getfield(name)?
 		//Method reflection is OK, but need a service to translate scopes into claim names => field names
 		
+		
+		
 		// TODO: this method is likely to be fragile if the data model changes at all
 
 		//For each claim found, add it if not already present
@@ -75,6 +80,14 @@ public class UserInfoSerializer {
 			if (!obj.has(claimName)) {
 				String value = "";
 
+				String fieldName = translator.getFieldNameForClaim(claimName);
+				Field field = ReflectionUtils.findField(DefaultUserInfo.class, fieldName);
+				
+				Object val = ReflectionUtils.getField(field, userinfo);
+				
+				//TODO:how to convert val to a String? Most claims can be converted directly; address is compound
+				
+				
 				//Process claim names to go from "claim_name" to "ClaimName"
 				String camelClaimName = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, claimName);
 				//Now we have "getClaimName"

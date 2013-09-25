@@ -45,12 +45,7 @@ public class ScopeClaimTranslationService {
 			scopesToClaims.put("phone", "phone_number");
 			scopesToClaims.put("phone", "phone_number_verified");
 			
-			scopesToClaims.put("address", "address.formatted");
-			scopesToClaims.put("address", "address.street_address");
-			scopesToClaims.put("address", "address.locality");
-			scopesToClaims.put("address", "address.region");
-			scopesToClaims.put("address", "address.postal_code");
-			scopesToClaims.put("address", "address.country");
+			scopesToClaims.put("address", "address");
 			
 			claimsToFields.put("sub", "sub");
 			
@@ -75,13 +70,7 @@ public class ScopeClaimTranslationService {
 			claimsToFields.put("phone_number", "phoneNumber");
 			claimsToFields.put("phone_number_verified", "phoneNumberVerified");
 			
-			//TODO: how to handle compound fields?
-			claimsToFields.put("address.formatted", "");
-			claimsToFields.put("address.street_address", "");
-			claimsToFields.put("address.locality", "");
-			claimsToFields.put("address.region", "");
-			claimsToFields.put("address.postal_code", "");
-			claimsToFields.put("address.country", "");
+			claimsToFields.put("address", "address");
 			
 		}
 		
