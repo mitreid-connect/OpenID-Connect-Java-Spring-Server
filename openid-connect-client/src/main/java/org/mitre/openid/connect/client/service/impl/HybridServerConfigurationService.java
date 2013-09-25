@@ -39,9 +39,9 @@ import org.mitre.openid.connect.config.ServerConfiguration;
  */
 public class HybridServerConfigurationService implements ServerConfigurationService {
 
-	private StaticServerConfigurationService staticServerService;
+	private StaticServerConfigurationService staticServerService = new StaticServerConfigurationService();
 
-	private DynamicServerConfigurationService dynamicServerService;
+	private DynamicServerConfigurationService dynamicServerService = new DynamicServerConfigurationService();
 
 
 	/* (non-Javadoc)
