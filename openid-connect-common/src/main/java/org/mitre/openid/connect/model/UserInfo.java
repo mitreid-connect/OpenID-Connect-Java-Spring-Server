@@ -16,6 +16,8 @@
  ******************************************************************************/
 package org.mitre.openid.connect.model;
 
+import com.google.gson.JsonObject;
+
 
 public interface UserInfo {
 
@@ -222,4 +224,12 @@ public interface UserInfo {
 	 * @param birthdate
 	 */
 	public abstract void setBirthdate(String birthdate);
+	
+	/**
+	 * Serialize this UserInfo object to JSON
+	 * 
+	 * @return
+	 */
+	public abstract JsonObject toJson();
+
 }

@@ -400,7 +400,50 @@ public class DefaultUserInfo implements UserInfo {
 	public void setBirthdate(String birthdate) {
 		this.birthdate = birthdate;
 	}
+	
+	@Override
+	public JsonObject toJson() {
+		JsonObject obj = new JsonObject();
 
+		obj.addProperty("sub", this.getSub());
+
+		obj.addProperty("name", this.getName());
+		obj.addProperty("preferred_username", this.getPreferredUsername());
+		obj.addProperty("given_name", this.getGivenName());
+		obj.addProperty("family_name", this.getFamilyName());
+		obj.addProperty("middle_name", this.getMiddleName());
+		obj.addProperty("nickname", this.getNickname());
+		obj.addProperty("profile", this.getProfile());
+		obj.addProperty("picture", this.getPicture());
+		obj.addProperty("website", this.getWebsite());
+		obj.addProperty("gender", this.getGender());
+		obj.addProperty("zone_info", this.getZoneinfo());
+		obj.addProperty("locale", this.getLocale());
+		obj.addProperty("updated_time", this.getUpdatedTime());
+		obj.addProperty("birthdate", this.getBirthdate());
+		
+		obj.addProperty("email", this.getEmail());
+		obj.addProperty("email_verified", this.getEmailVerified());
+
+		obj.addProperty("phone_number", this.getPhoneNumber());
+		obj.addProperty("phone_number_verified", this.getPhoneNumberVerified());
+
+		if (this.getAddress() != null) {
+
+			JsonObject addr = new JsonObject();
+			addr.addProperty("formatted", this.getAddress().getFormatted());
+			addr.addProperty("street_address", this.getAddress().getStreetAddress());
+			addr.addProperty("locality", this.getAddress().getLocality());
+			addr.addProperty("region", this.getAddress().getRegion());
+			addr.addProperty("postal_code", this.getAddress().getPostalCode());
+			addr.addProperty("country", this.getAddress().getCountry());
+
+			obj.add("address", addr);
+		}
+
+		return obj;
+	}
+	
 	/**
 	 * Parse a JsonObject into a UserInfo.
 	 * @param o

@@ -2,8 +2,10 @@ package org.mitre.openid.connect.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 /**
@@ -76,6 +78,14 @@ public class ScopeClaimTranslationService {
 		
 		public List<String> getClaimsForScope(String scope) {
 			return scopesToClaims.get(scope);
+		}
+		
+		public List<String> getClaimsForScopeSet(Set<String> scopes) {
+			List<String> result = Lists.newArrayList();
+			for (String scope : scopes) {
+				result.addAll(getClaimsForScope(scope));
+			}
+			return result;
 		}
 	
 		public String getFieldNameForClaim(String claim) {
