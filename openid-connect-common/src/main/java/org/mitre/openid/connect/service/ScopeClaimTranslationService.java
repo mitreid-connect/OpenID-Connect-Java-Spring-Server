@@ -1,12 +1,12 @@
 package org.mitre.openid.connect.service;
 
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Lists;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Maps;
+import com.google.common.collect.SetMultimap;
 
 /**
  * Service to map scopes to claims, and claims to Java field names
@@ -16,7 +16,7 @@ import com.google.common.collect.Maps;
  */
 public class ScopeClaimTranslationService {
 
-		private ArrayListMultimap<String, String> scopesToClaims = ArrayListMultimap.create();
+		private SetMultimap<String, String> scopesToClaims = HashMultimap.create();
 		private Map<String, String> claimsToFields = Maps.newHashMap();
 		
 		/**
@@ -76,12 +76,16 @@ public class ScopeClaimTranslationService {
 			
 		}
 		
-		public List<String> getClaimsForScope(String scope) {
-			return scopesToClaims.get(scope);
+		public Set<String> getClaimsForScope(String scope) {
+			if (scopesToClaims.containsKey(scope)) {
+				return scopesToClaims.get(scope);
+			} else {
+				return new HashSet<String>();
+			}
 		}
 		
-		public List<String> getClaimsForScopeSet(Set<String> scopes) {
-			List<String> result = Lists.newArrayList();
+		public Set<String> getClaimsForScopeSet(Set<String> scopes) {
+			Set<String> result = new HashSet<String>();
 			for (String scope : scopes) {
 				result.addAll(getClaimsForScope(scope));
 			}
