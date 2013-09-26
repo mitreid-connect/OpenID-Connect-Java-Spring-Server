@@ -108,6 +108,8 @@ CREATE TABLE IF NOT EXISTS client_details (
 	id_token_encrypted_response_alg VARCHAR(256),
 	id_token_encrypted_response_enc VARCHAR(256),
 	
+	token_endpoint_auth_signing_alg VARCHAR(256),
+	
 	default_max_age BIGINT,
 	require_auth_time BOOLEAN,
 	created_at TIMESTAMP,

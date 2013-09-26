@@ -63,6 +63,8 @@ var ClientModel = Backbone.Model.extend({
         idTokenEncryptedResponseAlg:null,
         idTokenEncryptedResponseEnc:null,
         
+        tokenEndpointAuthSigningAlg:null,
+        
         defaultMaxAge:60000,
         requireAuthTime:false,
         defaultACRvalues:null,
@@ -526,7 +528,8 @@ var ClientFormView = Backbone.View.extend({
             userInfoEncryptedResponseEnc: this.defaultToNull($('#userInfoEncryptedResponseEnc select').val()),
             idTokenSignedResponseAlg: this.defaultToNull($('#idTokenSignedResponseAlg select').val()),
             idTokenEncryptedResponseAlg: this.defaultToNull($('#idTokenEncryptedResponseAlg select').val()),
-            idTokenEncryptedResponseEnc: this.defaultToNull($('#idTokenEncryptedResponseEnc select').val())
+            idTokenEncryptedResponseEnc: this.defaultToNull($('#idTokenEncryptedResponseEnc select').val()),
+            tokenEndpointAuthSigningAlg: this.defaultToNull($('#tokenEndpointAuthSigningAlg select').val())
         };
 
         // post-validate
@@ -661,6 +664,7 @@ var ClientFormView = Backbone.View.extend({
         this.disableUnsupportedJOSEItems(app.serverConfiguration.id_token_signing_alg_values_supported, '#idTokenSignedResponseAlg option');
         this.disableUnsupportedJOSEItems(app.serverConfiguration.id_token_encryption_alg_values_supported, '#idTokenEncryptedResponseAlg option');
         this.disableUnsupportedJOSEItems(app.serverConfiguration.id_token_encryption_enc_values_supported, '#idTokenEncryptedResponseEnc option');
+        this.disableUnsupportedJOSEItems(app.serverConfiguration.token_endpoint_auth_signing_alg_values_supported, '#tokenEndpointAuthSigningAlg option');
         
         this.$('.nyi').clickover({
         	placement: 'right', 

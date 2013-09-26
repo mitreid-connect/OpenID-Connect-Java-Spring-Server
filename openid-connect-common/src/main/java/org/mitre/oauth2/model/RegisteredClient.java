@@ -801,6 +801,38 @@ public class RegisteredClient {
 
 	/**
 	 * @return
+	 * @see org.mitre.oauth2.model.ClientDetailsEntity#getTokenEndpointAuthSigningAlgEmbed()
+	 */
+    public JWSAlgorithmEmbed getTokenEndpointAuthSigningAlgEmbed() {
+	    return client.getTokenEndpointAuthSigningAlgEmbed();
+    }
+
+	/**
+	 * @param tokenEndpointAuthSigningAlgEmbed
+	 * @see org.mitre.oauth2.model.ClientDetailsEntity#setTokenEndpointAuthSigningAlgEmbed(org.mitre.jose.JWSAlgorithmEmbed)
+	 */
+    public void setTokenEndpointAuthSigningAlgEmbed(JWSAlgorithmEmbed tokenEndpointAuthSigningAlgEmbed) {
+	    client.setTokenEndpointAuthSigningAlgEmbed(tokenEndpointAuthSigningAlgEmbed);
+    }
+
+	/**
+	 * @return
+	 * @see org.mitre.oauth2.model.ClientDetailsEntity#getTokenEndpointAuthSigningAlg()
+	 */
+    public JWSAlgorithm getTokenEndpointAuthSigningAlg() {
+	    return client.getTokenEndpointAuthSigningAlg();
+    }
+
+	/**
+	 * @param tokenEndpointAuthSigningAlg
+	 * @see org.mitre.oauth2.model.ClientDetailsEntity#setTokenEndpointAuthSigningAlg(com.nimbusds.jose.JWSAlgorithm)
+	 */
+    public void setTokenEndpointAuthSigningAlg(JWSAlgorithm tokenEndpointAuthSigningAlg) {
+	    client.setTokenEndpointAuthSigningAlg(tokenEndpointAuthSigningAlg);
+    }
+
+	/**
+	 * @return
 	 * @see org.mitre.oauth2.model.ClientDetailsEntity#getCreatedAt()
 	 */
 	public Date getCreatedAt() {

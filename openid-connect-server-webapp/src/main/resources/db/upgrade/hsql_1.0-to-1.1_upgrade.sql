@@ -16,6 +16,8 @@ ALTER TABLE client_details ALTER COLUMN id_token_validity_seconds SET NOT NULL;
 
 ALTER TABLE client_details ALTER COLUMN id_token_validity_seconds SET DEFAULT 600;
 
+ALTER TABLE client_details ADD COLUMN token_endpoint_auth_signing_alg VARCHAR(256);
+	
 ALTER TABLE system_scope ADD COLUMN structured BOOLEAN NOT NULL DEFAULT false;
 
 ALTER TABLE system_scope ADD COLUMN structured_param_description VARCHAR(256);

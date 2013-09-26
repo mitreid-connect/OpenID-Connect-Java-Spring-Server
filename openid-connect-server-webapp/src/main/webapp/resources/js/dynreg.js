@@ -287,7 +287,8 @@ var DynRegEditView = Backbone.View.extend({
             userinfo_encrypted_response_enc: this.defaultToNull($('#userInfoEncryptedResponseEnc select').val()),
             id_token_signed_response_alg: this.defaultToNull($('#idTokenSignedResponseAlg select').val()),
             id_token_encrypted_response_alg: this.defaultToNull($('#idTokenEncryptedResponseAlg select').val()),
-            id_token_encrypted_response_enc: this.defaultToNull($('#idTokenEncryptedResponseEnc select').val())
+            id_token_encrypted_response_enc: this.defaultToNull($('#idTokenEncryptedResponseEnc select').val()),
+            token_endpoint_auth_signing_alg: this.defaultToNull($('#tokenEndpointAuthSigningAlg select').val())
         };
 
         // set all empty strings to nulls
@@ -394,6 +395,7 @@ var DynRegEditView = Backbone.View.extend({
         this.disableUnsupportedJOSEItems(app.serverConfiguration.id_token_signing_alg_values_supported, '#idTokenSignedResponseAlg option');
         this.disableUnsupportedJOSEItems(app.serverConfiguration.id_token_encryption_alg_values_supported, '#idTokenEncryptedResponseAlg option');
         this.disableUnsupportedJOSEItems(app.serverConfiguration.id_token_encryption_enc_values_supported, '#idTokenEncryptedResponseEnc option');
+        this.disableUnsupportedJOSEItems(app.serverConfiguration.token_endpoint_auth_signing_alg_values_supported, '#tokenEndpointAuthSigningAlg option');
         
         this.$('.nyi').clickover({
         	placement: 'right', 

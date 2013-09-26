@@ -110,6 +110,8 @@ public class ClientDetailsEntityJsonProcessor {
 			c.setIdTokenSignedResponseAlg(getAsJwsAlgorithm(o, "id_token_signed_response_alg"));
 			c.setIdTokenEncryptedResponseAlg(getAsJweAlgorithm(o, "id_token_encrypted_response_alg"));
 			c.setIdTokenEncryptedResponseEnc(getAsJweEncryptionMethod(o, "id_token_encrypted_response_enc"));
+			
+			c.setTokenEndpointAuthSigningAlg(getAsJwsAlgorithm(o, "token_endpoint_auth_signing_alg"));
 
 			if (o.has("default_max_age")) {
 				if (o.get("default_max_age").isJsonPrimitive()) {
@@ -220,6 +222,7 @@ public class ClientDetailsEntityJsonProcessor {
 		o.addProperty("id_token_signed_response_alg", c.getIdTokenSignedResponseAlg() != null ? c.getIdTokenSignedResponseAlg().getName() : null);
 		o.addProperty("id_token_encrypted_response_alg", c.getIdTokenEncryptedResponseAlg() != null ? c.getIdTokenEncryptedResponseAlg().getName() : null);
 		o.addProperty("id_token_encrypted_response_enc", c.getIdTokenEncryptedResponseEnc() != null ? c.getIdTokenEncryptedResponseEnc().getName() : null);
+		o.addProperty("token_endpoint_auth_signing_alg", c.getTokenEndpointAuthSigningAlg() != null ? c.getTokenEndpointAuthSigningAlg().getName() : null);
 		o.addProperty("default_max_age", c.getDefaultMaxAge());
 		o.addProperty("require_auth_time", c.getRequireAuthTime());
 		o.add("default_acr_values", getAsArray(c.getDefaultACRvalues()));

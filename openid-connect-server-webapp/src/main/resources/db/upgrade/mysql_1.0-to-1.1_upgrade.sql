@@ -14,6 +14,8 @@ ALTER TABLE authorization_code ADD COLUMN authentication LONGBLOB;
 
 ALTER TABLE client_details MODIFY id_token_validity_seconds BIGINT NOT NULL DEFAULT 600;
 
+ALTER TABLE client_details ADD COLUMN token_endpoint_auth_signing_alg VARCHAR(256);
+	
 ALTER TABLE system_scope ADD COLUMN structured BOOLEAN NOT NULL DEFAULT 0;
 
 ALTER TABLE system_scope ADD COLUMN structured_param_description VARCHAR(256);

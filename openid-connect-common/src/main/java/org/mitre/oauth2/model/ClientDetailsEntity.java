@@ -110,6 +110,8 @@ public class ClientDetailsEntity implements ClientDetails {
 	private JWSAlgorithmEmbed idTokenSignedResponseAlg = null; // id_token_signed_response_alg
 	private JWEAlgorithmEmbed idTokenEncryptedResponseAlg = null; // id_token_encrypted_response_alg
 	private JWEEncryptionMethodEmbed idTokenEncryptedResponseEnc = null; // id_token_encrypted_response_enc
+	
+	private JWSAlgorithmEmbed tokenEndpointAuthSigningAlg = null; // token_endpoint_auth_signing_alg
 
 	private Integer defaultMaxAge; // default_max_age
 	private Boolean requireAuthTime; // require_auth_time
@@ -772,6 +774,17 @@ public class ClientDetailsEntity implements ClientDetails {
 		this.idTokenEncryptedResponseEnc = idTokenEncryptedResponseEnc;
 	}
 
+	@Embedded
+	@AttributeOverrides({
+		@AttributeOverride(name = "algorithmName", column=@Column(name="token_endpoint_auth_signing_alg"))
+	})
+	public JWSAlgorithmEmbed getTokenEndpointAuthSigningAlgEmbed() {
+		return tokenEndpointAuthSigningAlg;
+	}
+	
+	public void setTokenEndpointAuthSigningAlgEmbed(JWSAlgorithmEmbed tokenEndpointAuthSigningAlgEmbed) {
+		this.tokenEndpointAuthSigningAlg = tokenEndpointAuthSigningAlgEmbed;
+	}
 	
 	//
 	// Transient passthrough methods for JOSE elements
@@ -867,6 +880,21 @@ public class ClientDetailsEntity implements ClientDetails {
 	public void setIdTokenEncryptedResponseEnc(EncryptionMethod idTokenEncryptedResponseEnc) {
 		this.idTokenEncryptedResponseEnc = new JWEEncryptionMethodEmbed(idTokenEncryptedResponseEnc);
 	}
+	
+	@Transient
+	public JWSAlgorithm getTokenEndpointAuthSigningAlg() {
+		if (tokenEndpointAuthSigningAlg != null) {
+			return tokenEndpointAuthSigningAlg.getAlgorithm();
+		} else {
+			return null;
+		}
+	}
+	
+	public void setTokenEndpointAuthSigningAlg(JWSAlgorithm tokenEndpointAuthSigningAlg) {
+		this.tokenEndpointAuthSigningAlg = new JWSAlgorithmEmbed(tokenEndpointAuthSigningAlg);
+	}
+	
+	// END Transient JOSE methods
 
 	@Basic
 	@Column(name="default_max_age")

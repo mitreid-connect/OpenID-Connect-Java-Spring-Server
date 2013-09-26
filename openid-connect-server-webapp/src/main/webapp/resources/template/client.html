@@ -566,6 +566,25 @@
 				</div>
 			</div>
 
+            <div class="control-group" id="tokenEndpointAuthSigningAlg">
+                <label class="control-label">Token Endpoint Authentication Signing Algorithm</label>
+                <div class="controls">
+					<select>
+						<option value="default" <%=tokenEndpointAuthSigningAlg == null ? 'selected ' : ''%>>Use server default</option>
+						<option value="none" <%=tokenEndpointAuthSigningAlg == "none" ? 'selected' : ''%>>No digital signature</option>
+						<option value="HS256" <%=tokenEndpointAuthSigningAlg == "HS256" ? 'selected' : ''%>>HMAC using SHA-256 hash algorithm</option>
+						<option value="HS384" <%=tokenEndpointAuthSigningAlg == "HS384" ? 'selected' : ''%>>HMAC using SHA-384 hash algorithm</option>
+						<option value="HS512" <%=tokenEndpointAuthSigningAlg == "HS512" ? 'selected' : ''%>>HMAC using SHA-512 hash algorithm</option>
+						<option value="RS256" <%=tokenEndpointAuthSigningAlg == "RS256" ? 'selected' : ''%>>RSASSA using SHA-256 hash algorithm</option>
+						<option value="RS384" <%=tokenEndpointAuthSigningAlg == "RS384" ? 'selected' : ''%>>RSASSA using SHA-384 hash algorithm</option>
+						<option value="RS512" <%=tokenEndpointAuthSigningAlg == "RS512" ? 'selected' : ''%>>RSASSA using SHA-512 hash algorithm</option>
+						<option value="ES256" <%=tokenEndpointAuthSigningAlg == "ES256" ? 'selected' : ''%>>ECDSA using P-256 curve and SHA-256 hash algorithm</option>
+						<option value="ES384" <%=tokenEndpointAuthSigningAlg == "ES384" ? 'selected' : ''%>>ECDSA using P-384 curve and SHA-384 hash algorithm</option>
+						<option value="ES512" <%=tokenEndpointAuthSigningAlg == "ES512" ? 'selected' : ''%>>ECDSA using P-512 curve and SHA-512 hash algorithm</option>
+					</select>
+                </div>
+            </div>
+			
 	</div>
 
 	<div class="tab-pane" id="client-other-tab">
