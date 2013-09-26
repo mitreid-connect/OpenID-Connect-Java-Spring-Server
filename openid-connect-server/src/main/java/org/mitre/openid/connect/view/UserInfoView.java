@@ -108,11 +108,7 @@ public class UserInfoView extends AbstractView {
 			if (model.get("requestedClaims") != null) {
 				requestedClaims = jsonParser.parse((String) model.get("requestedClaims")).getAsJsonObject();
 			}
-			if (authorizedClaims != null || requestedClaims != null) {
-				gson.toJson(UserInfoSerializer.toJsonFromRequestObj(userInfo, scope, authorizedClaims, requestedClaims), out);
-			} else {
-				gson.toJson(UserInfoSerializer.filterByScope(userInfo, scope), out);
-			}
+			gson.toJson(UserInfoSerializer.toJsonFromRequestObj(userInfo, scope, authorizedClaims, requestedClaims), out);
 
 		} catch (IOException e) {
 
