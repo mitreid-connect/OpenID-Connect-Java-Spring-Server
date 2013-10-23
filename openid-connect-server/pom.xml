@@ -26,6 +26,18 @@
     	<version>1.0.13-SNAPSHOT</version>
     	<relativePath>..</relativePath>
     </parent>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${java-version}</source>
+                    <target>${java-version}</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
     <dependencies>
 		<dependency>
 			<groupId>org.mitre</groupId>
