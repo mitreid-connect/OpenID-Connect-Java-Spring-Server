@@ -103,7 +103,7 @@ public class TestDefaultOAuth2ProviderTokenService {
 		
 		
 		authentication = Mockito.mock(OAuth2Authentication.class);
-		OAuth2Request clientAuth = new OAuth2Request(null, clientId, null, true, scope, null, null, null);
+		OAuth2Request clientAuth = new OAuth2Request(null, clientId, null, true, scope, null, null, null, null);
 		Mockito.when(authentication.getOAuth2Request()).thenReturn(clientAuth);
 
 		client = Mockito.mock(ClientDetailsEntity.class);
@@ -191,7 +191,7 @@ public class TestDefaultOAuth2ProviderTokenService {
 	@Test
 	public void createAccessToken_yesRefresh() {
 
-		OAuth2Request clientAuth = new OAuth2Request(null, clientId, null, true, Sets.newHashSet("offline_access"), null, null, null);
+		OAuth2Request clientAuth = new OAuth2Request(null, clientId, null, true, Sets.newHashSet("offline_access"), null, null, null, null);
 		Mockito.when(authentication.getOAuth2Request()).thenReturn(clientAuth);
 		Mockito.when(client.isAllowRefresh()).thenReturn(true);
 

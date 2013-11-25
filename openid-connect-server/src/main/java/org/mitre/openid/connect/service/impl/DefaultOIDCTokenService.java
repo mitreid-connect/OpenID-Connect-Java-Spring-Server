@@ -136,7 +136,7 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 		Map<String, String> authorizationParameters = Maps.newHashMap();
 		OAuth2Request clientAuth = new OAuth2Request(authorizationParameters, client.getClientId(),
 				Sets.newHashSet(new SimpleGrantedAuthority("ROLE_CLIENT")), true,
-				Sets.newHashSet(OAuth2AccessTokenEntity.REGISTRATION_TOKEN_SCOPE), null, null, null);
+				Sets.newHashSet(OAuth2AccessTokenEntity.REGISTRATION_TOKEN_SCOPE), null, null, null, null);
 		OAuth2Authentication authentication = new OAuth2Authentication(clientAuth, null);
 
 		OAuth2AccessTokenEntity token = new OAuth2AccessTokenEntity();

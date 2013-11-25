@@ -10,7 +10,10 @@ import org.mitre.oauth2.service.SystemScopeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.exceptions.InvalidScopeException;
 import org.springframework.security.oauth2.common.util.OAuth2Utils;
+import org.springframework.security.oauth2.provider.AuthorizationRequest;
+import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.OAuth2RequestValidator;
+import org.springframework.security.oauth2.provider.TokenRequest;
 
 /**
  * 
@@ -28,16 +31,24 @@ public class StructuredScopeAwareOAuth2RequestValidator implements OAuth2Request
 	/* (non-Javadoc)
 	 * @see org.springframework.security.oauth2.provider.OAuth2RequestValidator#validateScope(java.util.Map, java.util.Set)
 	 */
-	@Override
-	public void validateScope(Map<String, String> parameters, Set<String> clientScopes) throws InvalidScopeException {
-		if (parameters.containsKey("scope")) {
+	private void validateScope(Set<String> requestedScopes, Set<String> clientScopes) throws InvalidScopeException {
+		if (requestedScopes != null && !requestedScopes.isEmpty()) {
 			if (clientScopes != null && !clientScopes.isEmpty()) {
-				Set<String> requestedScopes = OAuth2Utils.parseParameterList(parameters.get("scope"));
 				if (!scopeService.scopesMatch(clientScopes, requestedScopes)) {
 					throw new InvalidScopeException("Invalid scope", clientScopes);
 				}
 			}
 		}
+	}
+
+	@Override
+	public void validateScope(AuthorizationRequest authorizationRequest, ClientDetails client) throws InvalidScopeException {
+		validateScope(authorizationRequest.getScope(), client.getScope());
+	}
+
+	@Override
+	public void validateScope(TokenRequest tokenRequest, ClientDetails client) throws InvalidScopeException {
+		validateScope(tokenRequest.getScope(), client.getScope());
 	}
 
 }

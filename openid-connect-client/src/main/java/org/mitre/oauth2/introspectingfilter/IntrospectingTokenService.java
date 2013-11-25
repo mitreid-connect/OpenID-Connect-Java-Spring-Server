@@ -122,7 +122,7 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 		Map<String, String> parameters = new HashMap<String, String>();
 		parameters.put("client_id", clientId);
 		parameters.put("scope", OAuth2Utils.formatParameterList(scopes));
-		OAuth2Request storedRequest = new OAuth2Request(parameters, clientId, null, true, scopes, null, null, null);
+		OAuth2Request storedRequest = new OAuth2Request(parameters, clientId, null, true, scopes, null, null, null, null);
 		return storedRequest;
 	}
 

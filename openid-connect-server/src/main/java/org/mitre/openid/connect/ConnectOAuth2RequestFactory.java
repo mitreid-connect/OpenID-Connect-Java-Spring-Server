@@ -93,7 +93,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 	@Override
 	public OAuth2Request createOAuth2Request(AuthorizationRequest request) {
 		return new OAuth2Request(request.getRequestParameters(), request.getClientId(), request.getAuthorities(), 
-				request.isApproved(), request.getScope(), request.getResourceIds(), request.getRedirectUri(), request.getExtensions());
+				request.isApproved(), request.getScope(), request.getResourceIds(), request.getRedirectUri(), request.getResponseTypes(), request.getExtensions());
 	}
 	
 	@Override

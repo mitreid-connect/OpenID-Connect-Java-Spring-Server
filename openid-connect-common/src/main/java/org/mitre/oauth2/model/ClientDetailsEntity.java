@@ -1024,4 +1024,12 @@ public class ClientDetailsEntity implements ClientDetails {
 		this.createdAt = createdAt;
 	}
 
+	/**
+	 * Our framework doesn't use this construct, we use WhitelistedSites and ApprovedSites instead.
+	 */
+	@Override
+	public boolean isAutoApprove(String scope) {
+		return false;
+	}
+
 }
