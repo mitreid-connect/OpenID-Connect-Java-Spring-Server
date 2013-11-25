@@ -22,7 +22,7 @@
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:security="http://www.springframework.org/schema/security"
 	xmlns:oauth="http://www.springframework.org/schema/security/oauth2"
-	xsi:schemaLocation="http://www.springframework.org/schema/security/oauth2 http://www.springframework.org/schema/security/spring-security-oauth2-1.0.xsd
+	xsi:schemaLocation="http://www.springframework.org/schema/security/oauth2 http://www.springframework.org/schema/security/spring-security-oauth2-2.0.xsd
 		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
 		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
@@ -147,6 +147,7 @@
 		authorization-request-manager-ref="connectOAuth2RequestFactory" 
 		token-services-ref="defaultOAuth2ProviderTokenService" 
 		user-approval-handler-ref="tofuUserApprovalHandler" 
+		request-validator-ref="oauthRequestValidator"
 		authorization-endpoint-url="/authorize" 
 		token-endpoint-url="/token">
 		
@@ -160,6 +161,8 @@
 	</oauth:authorization-server>
 
 	<bean id="oauthAccessDeniedHandler" class="org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler" />
+
+	<bean id="oauthRequestValidator" class="org.mitre.oauth2.token.StructuredScopeAwareOAuth2RequestValidator" />
 
 	<bean id="clientCredentialsTokenEndpointFilter" class="org.springframework.security.oauth2.provider.client.ClientCredentialsTokenEndpointFilter">
 		<property name="authenticationManager" ref="clientAuthenticationManager" />
