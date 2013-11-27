@@ -60,7 +60,6 @@ public class DynamicRegistrationClientConfigurationService implements ClientConf
 
 	private RegisteredClientService registeredClientService = new InMemoryRegisteredClientService();
 
-	// TODO: make sure the template doesn't have "client_id", "client_secret", or "registration_access_token" set on it already
 	private RegisteredClient template;
 
 	private Set<String> whitelist = new HashSet<String>();
@@ -99,6 +98,13 @@ public class DynamicRegistrationClientConfigurationService implements ClientConf
 	 * @param template the template to set
 	 */
 	public void setTemplate(RegisteredClient template) {
+		// make sure the template doesn't have unwanted fields set on it
+		if (template != null) {
+			template.setClientId(null);
+			template.setClientSecret(null);
+			template.setRegistrationClientUri(null);
+			template.setRegistrationAccessToken(null);
+		}
 		this.template = template;
 	}
 
