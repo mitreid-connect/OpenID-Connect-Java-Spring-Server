@@ -147,8 +147,6 @@ public class ClientDynamicRegistrationEndpoint {
 			// this client has been dynamically registered (obviously)
 			newClient.setDynamicallyRegistered(true);
 
-			// TODO: check and enforce the sector URI if it's not null (#504)
-			
 			// now save it
 			try {
 				ClientDetailsEntity savedClient = clientService.saveNewClient(newClient);
