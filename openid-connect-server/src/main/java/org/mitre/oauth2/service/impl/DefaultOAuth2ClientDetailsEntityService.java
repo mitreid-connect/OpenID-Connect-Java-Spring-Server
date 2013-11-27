@@ -73,6 +73,9 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 
 	@Autowired
 	private BlacklistedSiteService blacklistedSiteService;
+	
+	@Autowired
+	private SystemScopeService scopeService;
 
 	// map of sector URI -> list of redirect URIs
 	private LoadingCache<String, List<String>> sectorRedirects = CacheBuilder.newBuilder()
@@ -130,6 +133,9 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 		}
 		
 
+		// make sure a client doesn't get any special system scopes
+		client.setScope(scopeService.removeRestrictedScopes(client.getScope()));
+		
 		return clientRepository.saveClient(client);
 	}
 
@@ -226,6 +232,9 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 	            	throw new IllegalArgumentException("Unable to load sector identifier URI: " + newClient.getSectorIdentifierUri());
 	            }
 			}
+
+			// make sure a client doesn't get any special system scopes
+			newClient.setScope(scopeService.removeRestrictedScopes(newClient.getScope()));
 			
 			return clientRepository.updateClient(oldClient.getId(), newClient);
 		}

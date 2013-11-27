@@ -63,6 +63,15 @@ public class DefaultSystemScopeService implements SystemScopeService {
 			return (input != null && input.isAllowDynReg());
 		}
 	};
+	
+	private Predicate<String> isRestricted = new Predicate<String>() {
+		@Override
+		public boolean apply(String input) {
+			return (input != null &&
+					!input.equals(ID_TOKEN_SCOPE) &&
+					!input.equals(REGISTRATION_TOKEN_SCOPE));
+		}
+	};
 
 	private Function<String, SystemScope> stringToSystemScope = new Function<String, SystemScope>() {
 		@Override
@@ -229,6 +238,11 @@ public class DefaultSystemScopeService implements SystemScopeService {
     	return true;
     	
     }
+
+	@Override
+	public Set<String> removeRestrictedScopes(Set<String> scopes) {
+		return new LinkedHashSet<String>(Collections2.filter(scopes, isRestricted));		
+	}
 
 	
 	

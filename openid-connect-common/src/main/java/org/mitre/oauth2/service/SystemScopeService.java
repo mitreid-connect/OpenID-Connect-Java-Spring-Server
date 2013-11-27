@@ -78,4 +78,11 @@ public interface SystemScopeService {
 	 * a scope with or without a value in "actual".
 	 */
 	public boolean scopesMatch(Set<String> expected, Set<String> actual);
+
+	/**
+	 * Remove any system-restricted scopes from the set and return the result. 
+	 * @param scopes
+	 * @return
+	 */
+	public Set<String> removeRestrictedScopes(Set<String> scopes);
 }
