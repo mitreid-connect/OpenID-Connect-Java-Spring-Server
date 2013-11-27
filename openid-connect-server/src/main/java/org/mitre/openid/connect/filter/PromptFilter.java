@@ -121,7 +121,6 @@ public class PromptFilter extends GenericFilterBean {
 			}
 
 		} else if (authRequest.getExtensions().get("max_age") != null) {
-			// TODO: issue #450
 			String maxAge = (String) authRequest.getExtensions().get("max_age");
 			HttpSession session = request.getSession();
 			Date authTime = (Date) session.getAttribute(AuthenticationTimeStamper.AUTH_TIMESTAMP);
