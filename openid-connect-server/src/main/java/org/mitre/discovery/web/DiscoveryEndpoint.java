@@ -306,7 +306,8 @@ public class DiscoveryEndpoint {
 		m.put("op_tos_uri", baseUrl + "about");
 
 		m.put("introspection_endpoint", baseUrl + "introspect"); // token introspection endpoint for verifying tokens
-
+		m.put("revocation_endpoint", baseUrl + "revoke"); // token revocation endpoint
+		
 		model.addAttribute("entity", m);
 
 		return "jsonEntityView";
