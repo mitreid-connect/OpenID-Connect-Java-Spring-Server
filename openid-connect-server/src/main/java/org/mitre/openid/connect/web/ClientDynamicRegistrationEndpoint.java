@@ -189,7 +189,7 @@ public class ClientDynamicRegistrationEndpoint {
 	 * @param auth
 	 * @return
 	 */
-	@PreAuthorize("hasRole('ROLE_CLIENT') and #oauth2.hasScope('" + OAuth2AccessTokenEntity.REGISTRATION_TOKEN_SCOPE + "')")
+	@PreAuthorize("hasRole('ROLE_CLIENT') and #oauth2.hasScope('" + SystemScopeService.REGISTRATION_TOKEN_SCOPE + "')")
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = "application/json")
 	public String readClientConfiguration(@PathVariable("id") String clientId, Model m, OAuth2Authentication auth) {
 
@@ -228,7 +228,7 @@ public class ClientDynamicRegistrationEndpoint {
 	 * @param auth
 	 * @return
 	 */
-	@PreAuthorize("hasRole('ROLE_CLIENT') and #oauth2.hasScope('" + OAuth2AccessTokenEntity.REGISTRATION_TOKEN_SCOPE + "')")
+	@PreAuthorize("hasRole('ROLE_CLIENT') and #oauth2.hasScope('" + SystemScopeService.REGISTRATION_TOKEN_SCOPE + "')")
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
 	public String updateClient(@PathVariable("id") String clientId, @RequestBody String jsonString, Model m, OAuth2Authentication auth) {
 
@@ -307,7 +307,7 @@ public class ClientDynamicRegistrationEndpoint {
 	 * @param auth
 	 * @return
 	 */
-	@PreAuthorize("hasRole('ROLE_CLIENT') and #oauth2.hasScope('" + OAuth2AccessTokenEntity.REGISTRATION_TOKEN_SCOPE + "')")
+	@PreAuthorize("hasRole('ROLE_CLIENT') and #oauth2.hasScope('" + SystemScopeService.REGISTRATION_TOKEN_SCOPE + "')")
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "application/json")
 	public String deleteClient(@PathVariable("id") String clientId, Model m, OAuth2Authentication auth) {
 

@@ -34,6 +34,7 @@ import org.mitre.oauth2.repository.AuthenticationHolderRepository;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
+import org.mitre.oauth2.service.SystemScopeService;
 import org.mitre.openid.connect.model.ApprovedSite;
 import org.mitre.openid.connect.service.ApprovedSiteService;
 import org.slf4j.Logger;
@@ -159,8 +160,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 			token.setAuthenticationHolder(authHolder);
 
 			// attach a refresh token, if this client is allowed to request them and the user gets the offline scope
-			// TODO: tie this to some kind of scope service
-			if (client.isAllowRefresh() && scopes.contains("offline_access")) {
+			if (client.isAllowRefresh() && scopes.contains(SystemScopeService.OFFLINE_ACCESS)) {
 				OAuth2RefreshTokenEntity refreshToken = new OAuth2RefreshTokenEntity(); //refreshTokenFactory.createNewRefreshToken();
 				JWTClaimsSet refreshClaims = new JWTClaimsSet();
 

@@ -26,6 +26,7 @@ import org.mitre.oauth2.model.AuthenticationHolderEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.repository.AuthenticationHolderRepository;
+import org.mitre.oauth2.service.SystemScopeService;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.mitre.openid.connect.service.OIDCTokenService;
 import org.mitre.openid.connect.util.IdTokenHashUtils;
@@ -118,7 +119,7 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 
 		// create a scope set with just the special "id-token" scope
 		//Set<String> idScopes = new HashSet<String>(token.getScope()); // this would copy the original token's scopes in, we don't really want that
-		Set<String> idScopes = Sets.newHashSet(OAuth2AccessTokenEntity.ID_TOKEN_SCOPE);
+		Set<String> idScopes = Sets.newHashSet(SystemScopeService.ID_TOKEN_SCOPE);
 		idTokenEntity.setScope(idScopes);
 
 		idTokenEntity.setClient(accessToken.getClient());
@@ -136,12 +137,12 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 		Map<String, String> authorizationParameters = Maps.newHashMap();
 		OAuth2Request clientAuth = new OAuth2Request(authorizationParameters, client.getClientId(),
 				Sets.newHashSet(new SimpleGrantedAuthority("ROLE_CLIENT")), true,
-				Sets.newHashSet(OAuth2AccessTokenEntity.REGISTRATION_TOKEN_SCOPE), null, null, null, null);
+				Sets.newHashSet(SystemScopeService.REGISTRATION_TOKEN_SCOPE), null, null, null, null);
 		OAuth2Authentication authentication = new OAuth2Authentication(clientAuth, null);
 
 		OAuth2AccessTokenEntity token = new OAuth2AccessTokenEntity();
 		token.setClient(client);
-		token.setScope(Sets.newHashSet(OAuth2AccessTokenEntity.REGISTRATION_TOKEN_SCOPE));
+		token.setScope(Sets.newHashSet(SystemScopeService.REGISTRATION_TOKEN_SCOPE));
 
 		AuthenticationHolderEntity authHolder = new AuthenticationHolderEntity();
 		authHolder.setAuthentication(authentication);

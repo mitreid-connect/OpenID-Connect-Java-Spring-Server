@@ -68,10 +68,7 @@ import com.nimbusds.jwt.JWTParser;
 //@JsonDeserialize(using = OAuth2AccessTokenDeserializer.class)
 public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 
-	public static final String ID_TOKEN_SCOPE = "id-token";
-	public static final String REGISTRATION_TOKEN_SCOPE = "registration-token";
-
-	public static String ID_TOKEN = "id_token";
+	public static String ID_TOKEN_FIELD_NAME = "id_token";
 
 	private Long id;
 
@@ -123,7 +120,7 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	public Map<String, Object> getAdditionalInformation() {
 		Map<String, Object> map = new HashMap<String, Object>(); //super.getAdditionalInformation();
 		if (getIdToken() != null) {
-			map.put(ID_TOKEN, getIdTokenString());
+			map.put(ID_TOKEN_FIELD_NAME, getIdTokenString());
 		}
 		return map;
 	}

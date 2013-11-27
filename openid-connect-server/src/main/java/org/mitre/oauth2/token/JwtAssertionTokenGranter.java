@@ -27,6 +27,7 @@ import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
+import org.mitre.oauth2.service.SystemScopeService;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -79,7 +80,7 @@ public class JwtAssertionTokenGranter extends AbstractTokenGranter {
 		String incomingTokenValue = tokenRequest.getRequestParameters().get("assertion");
 		OAuth2AccessTokenEntity incomingToken = tokenServices.readAccessToken(incomingTokenValue);
 
-		if (incomingToken.getScope().contains(OAuth2AccessTokenEntity.ID_TOKEN_SCOPE)) {
+		if (incomingToken.getScope().contains(SystemScopeService.ID_TOKEN_SCOPE)) {
 
 			if (!client.getClientId().equals(tokenRequest.getClientId())) {
 				throw new InvalidClientException("Not the right client for this token");

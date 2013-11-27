@@ -33,6 +33,7 @@ import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.repository.OAuth2ClientRepository;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
+import org.mitre.oauth2.service.SystemScopeService;
 import org.mitre.openid.connect.model.WhitelistedSite;
 import org.mitre.openid.connect.service.ApprovedSiteService;
 import org.mitre.openid.connect.service.BlacklistedSiteService;
@@ -101,9 +102,9 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 
 		// if the client is flagged to allow for refresh tokens, make sure it's got the right granted scopes
 		if (client.isAllowRefresh()) {
-			client.getScope().add("offline_access");
+			client.getScope().add(SystemScopeService.OFFLINE_ACCESS);
 		} else {
-			client.getScope().remove("offline_access");
+			client.getScope().remove(SystemScopeService.OFFLINE_ACCESS);
 		}
 
 		// timestamp this to right now
@@ -203,9 +204,9 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 
 			// if the client is flagged to allow for refresh tokens, make sure it's got the right scope
 			if (newClient.isAllowRefresh()) {
-				newClient.getScope().add("offline_access");
+				newClient.getScope().add(SystemScopeService.OFFLINE_ACCESS);
 			} else {
-				newClient.getScope().remove("offline_access");
+				newClient.getScope().remove(SystemScopeService.OFFLINE_ACCESS);
 			}
 
 			// check the sector URI

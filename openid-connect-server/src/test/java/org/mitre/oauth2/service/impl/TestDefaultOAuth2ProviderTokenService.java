@@ -37,6 +37,7 @@ import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
 import org.mitre.oauth2.repository.AuthenticationHolderRepository;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
+import org.mitre.oauth2.service.SystemScopeService;
 import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
@@ -191,7 +192,7 @@ public class TestDefaultOAuth2ProviderTokenService {
 	@Test
 	public void createAccessToken_yesRefresh() {
 
-		OAuth2Request clientAuth = new OAuth2Request(null, clientId, null, true, Sets.newHashSet("offline_access"), null, null, null, null);
+		OAuth2Request clientAuth = new OAuth2Request(null, clientId, null, true, Sets.newHashSet(SystemScopeService.OFFLINE_ACCESS), null, null, null, null);
 		Mockito.when(authentication.getOAuth2Request()).thenReturn(clientAuth);
 		Mockito.when(client.isAllowRefresh()).thenReturn(true);
 

@@ -24,6 +24,7 @@ import org.junit.runner.RunWith;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.repository.OAuth2ClientRepository;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
+import org.mitre.oauth2.service.SystemScopeService;
 import org.mitre.openid.connect.model.WhitelistedSite;
 import org.mitre.openid.connect.service.ApprovedSiteService;
 import org.mitre.openid.connect.service.BlacklistedSiteService;
@@ -133,7 +134,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 
 		service.saveNewClient(client);
 
-		Mockito.verify(scopes).add("offline_access");
+		Mockito.verify(scopes).add(SystemScopeService.OFFLINE_ACCESS);
 	}
 
 	/**
@@ -155,7 +156,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 
 		service.saveNewClient(client);
 
-		Mockito.verify(scopes).remove("offline_access");
+		Mockito.verify(scopes).remove(SystemScopeService.OFFLINE_ACCESS);
 	}
 
 	@Test
@@ -281,7 +282,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 
 		service.updateClient(oldClient, newClient);
 
-		Mockito.verify(scopes).add("offline_access");
+		Mockito.verify(scopes).add(SystemScopeService.OFFLINE_ACCESS);
 	}
 
 	@Test
@@ -300,6 +301,6 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 
 		service.updateClient(oldClient, newClient);
 
-		Mockito.verify(scopes).remove("offline_access");
+		Mockito.verify(scopes).remove(SystemScopeService.OFFLINE_ACCESS);
 	}
 }
