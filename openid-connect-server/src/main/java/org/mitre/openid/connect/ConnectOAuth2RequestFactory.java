@@ -247,6 +247,8 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 				
 				encryptionService.decryptJwt(encryptedJWT);
 				
+				// TODO: what if the content is a signed JWT? (#525)
+				
 				if (!encryptedJWT.getState().equals(State.DECRYPTED)) {
 					throw new InvalidClientException("Unable to decrypt the request object");
 				}
@@ -267,18 +269,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 			
 			
 			/*
-			 * Claims precedence order logic:
-			 * 
-			 * if (in Claims):
-			 * 		if (in params):
-			 * 			if (equal):
-			 * 				OK
-			 * 			else (not equal):
-			 * 				error
-			 * 		else (not in params):
-			 * 			add to params
-			 * else (not in claims):
-			 * 		we don't care
+			 * NOTE: Claims inside the request object always take precedence over those in the parameter map.
 			 */
 
 			// now that we've got the JWT, and it's been parsed, validated, and/or decrypted, we can process the claims
@@ -287,76 +278,67 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 			
 			Set<String> responseTypes = OAuth2Utils.parseParameterList(claims.getStringClaim("response_type"));
 			if (responseTypes != null && !responseTypes.isEmpty()) {
-				if (request.getResponseTypes() == null || request.getResponseTypes().isEmpty()) {
-					// if it's null or empty, we fill in the value with what we were passed
-					request.setResponseTypes(responseTypes);
-				} else if (!request.getResponseTypes().equals(responseTypes)) {
-					// FIXME: throw an error					
+				if (!responseTypes.equals(request.getResponseTypes())) {
+					logger.info("Mismatch between request object and regular parameter for response_type, using request object");
 				}
+				request.setResponseTypes(responseTypes);
 			}
 
 			String redirectUri = claims.getStringClaim("redirect_uri"); 
 			if (redirectUri != null) {
-				if (request.getRedirectUri() == null) {
-					request.setRedirectUri(redirectUri);
-				} else if (!request.getRedirectUri().equals(redirectUri)) {
-					// FIXME: throw an error
+				if (!redirectUri.equals(request.getRedirectUri())) {
+					logger.info("Mismatch between request object and regular parameter for redirect_uri, using request object");
 				}
+				request.setRedirectUri(redirectUri);
 			}
 
 			String state = claims.getStringClaim("state");
 			if(state != null) {
-				if (request.getState() == null) {
-					request.setState(state);
-				} else if (!request.getState().equals(state)) {
-					// FIXME: throw an error
+				if (!state.equals(request.getState())) {
+					logger.info("Mismatch between request object and regular parameter for state, using request object");
 				}
+				request.setState(state);
 			}
 
 			String nonce = claims.getStringClaim("nonce");
 			if(nonce != null) {
-				if (request.getExtensions().get("nonce") == null) {
-					request.getExtensions().put("nonce", nonce);
-				} else if (!request.getExtensions().get("nonce").equals(nonce)) {
-					// FIXME: throw an error
+				if (!nonce.equals(request.getExtensions().get("nonce"))) {
+					logger.info("Mismatch between request object and regular parameter for nonce, using request object");
 				}
+				request.getExtensions().put("nonce", nonce);
 			}
 
 			String display = claims.getStringClaim("display");
 			if (display != null) {
-				if (request.getExtensions().get("display") == null) {
-					request.getExtensions().put("display", display);
-				} else if (!request.getExtensions().get("display").equals(display)) {
-					// FIXME: throw an error
+				if (!display.equals(request.getExtensions().get("display"))) {
+					logger.info("Mismatch between request object and regular parameter for display, using request object");
 				}
+				request.getExtensions().put("display", display);
 			}
 
 			String prompt = claims.getStringClaim("prompt");
 			if (prompt != null) {
-				if (request.getExtensions().get("prompt") == null) {
-					request.getExtensions().put("prompt", prompt);
-				} else if (!request.getExtensions().get("prompt").equals(prompt)) {
-					// FIXME: throw an error
+				if (!prompt.equals(request.getExtensions().get("prompt"))) {
+					 logger.info("Mismatch between request object and regular parameter for prompt, using request object");
 				}
+				request.getExtensions().put("prompt", prompt);
 			}
 			
 			Set<String> scope = OAuth2Utils.parseParameterList(claims.getStringClaim("scope"));
 			if (scope != null && !scope.isEmpty()) {
-				if (request.getScope() == null || request.getScope().isEmpty()) {
-					request.setScope(scope);
-				} else if (!request.getScope().equals(scope)) {
-					// FIXME: throw an error
+				if (!scope.equals(request.getScope())) {
+					logger.info("Mismatch between request object and regular parameter for scope, using request object");
 				}
+				request.setScope(scope);
 			}
 			
 			JsonObject claimRequest = parseClaimRequest(claims.getStringClaim("claims"));
 			if (claimRequest != null) {
-				if (request.getExtensions().get("claims") == null) {
-					// we save the string because the object might not serialize
-					request.getExtensions().put("claims", claimRequest.toString());
-				} else if (parseClaimRequest(request.getExtensions().get("claims").toString()).equals(claimRequest)) {
-					// FIXME: throw an error
+				if (!claimRequest.equals(parseClaimRequest(request.getExtensions().get("claims").toString()))) {
+					logger.info("Mismatch between request object and regular parameter for claims, using request object");
 				}
+				// we save the string because the object might not be a Java Serializable, and we can parse it easily enough anyway
+				request.getExtensions().put("claims", claimRequest.toString());
 			}
 			
 		} catch (ParseException e) {
