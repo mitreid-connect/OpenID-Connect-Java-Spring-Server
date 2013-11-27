@@ -386,10 +386,8 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 	        return service;
 	        
         } catch (NoSuchAlgorithmException e) {
-	        // TODO Auto-generated catch block
 	        logger.error("Couldn't create symmetric validator for client " + client.getClientId(), e);
         } catch (InvalidKeySpecException e) {
-	        // TODO Auto-generated catch block
 	        logger.error("Couldn't create symmetric validator for client " + client.getClientId(), e);
         }
     	

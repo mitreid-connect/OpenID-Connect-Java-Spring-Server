@@ -340,16 +340,14 @@ public class DefaultUserInfo implements UserInfo {
     @Basic
     @Column(name="phone_number_verified")
     public Boolean getPhoneNumberVerified() {
-	    // TODO Auto-generated method stub
-	    return null;
+	    return phoneNumberVerified;
     }
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.model.UserInfo#setPhoneNumberVerified(java.lang.Boolean)
 	 */
     @Override
     public void setPhoneNumberVerified(Boolean phoneNumberVerified) {
-	    // TODO Auto-generated method stub
-	    
+    	this.phoneNumberVerified = phoneNumberVerified;	    
     }
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.model.UserInfo#getAddress()
