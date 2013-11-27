@@ -158,7 +158,7 @@ var ApprovedSiteView = Backbone.View.extend({
 		
 		this.$el.html(this.template(json));
 
-        $('.scope-list', this.el).html(this.scopeTemplate({scopes: this.options.client.get('scope'), systemScopes: app.systemScopeList}));
+        $('.scope-list', this.el).html(this.scopeTemplate({scopes: this.model.get('scope'), systemScopes: app.systemScopeList}));
         
         this.$('.dynamically-registered').tooltip({title: 'This client was dynamically registered'});
         this.$('.whitelisted-site').tooltip({title: 'This site was whitelisted by an adminstrator'});
