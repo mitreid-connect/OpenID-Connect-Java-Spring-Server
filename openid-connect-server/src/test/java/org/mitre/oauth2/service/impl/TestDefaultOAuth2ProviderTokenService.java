@@ -38,11 +38,14 @@ import org.mitre.oauth2.repository.AuthenticationHolderRepository;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.SystemScopeService;
+import org.mockito.AdditionalAnswers;
 import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.security.oauth2.common.exceptions.InvalidScopeException;
@@ -91,6 +94,9 @@ public class TestDefaultOAuth2ProviderTokenService {
 	@Mock
 	private TokenEnhancer tokenEnhancer;
 
+	@Mock
+	private SystemScopeService scopeService;
+	
 	@InjectMocks
 	private DefaultOAuth2ProviderTokenService service;
 
@@ -131,6 +137,8 @@ public class TestDefaultOAuth2ProviderTokenService {
 		Mockito.when(storedAuthentication.getOAuth2Request()).thenReturn(storedAuthRequest);
 		
 		Mockito.when(authenticationHolderRepository.save(Matchers.any(AuthenticationHolderEntity.class))).thenReturn(storedAuthHolder);
+		
+		Mockito.when(scopeService.removeRestrictedScopes(Matchers.anySet())).then(AdditionalAnswers.returnsFirstArg());
 	}
 
 	/**

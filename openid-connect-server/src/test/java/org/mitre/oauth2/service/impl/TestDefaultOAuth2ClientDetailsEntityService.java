@@ -65,12 +65,15 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 	@Mock
 	private BlacklistedSiteService blacklistedSiteService;
 
+	@Mock
+	private SystemScopeService scopeService;
+	
 	@InjectMocks
 	private DefaultOAuth2ClientDetailsEntityService service;
 
 	@Before
 	public void prepare() {
-		Mockito.reset(clientRepository, tokenRepository, approvedSiteService, whitelistedSiteService, blacklistedSiteService);
+		Mockito.reset(clientRepository, tokenRepository, approvedSiteService, whitelistedSiteService, blacklistedSiteService, scopeService);
 	}
 
 	/**
