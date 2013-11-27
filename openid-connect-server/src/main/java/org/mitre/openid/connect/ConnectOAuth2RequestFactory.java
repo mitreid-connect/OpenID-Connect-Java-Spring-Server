@@ -91,12 +91,6 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 	}
 
 	@Override
-	public OAuth2Request createOAuth2Request(AuthorizationRequest request) {
-		return new OAuth2Request(request.getRequestParameters(), request.getClientId(), request.getAuthorities(), 
-				request.isApproved(), request.getScope(), request.getResourceIds(), request.getRedirectUri(), request.getResponseTypes(), request.getExtensions());
-	}
-	
-	@Override
 	public AuthorizationRequest createAuthorizationRequest(Map<String, String> inputParams) {
 
 
@@ -150,7 +144,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 		try {
 			JWT jwt = JWTParser.parse(jwtString);
 
-			// TODO: check parameter consistency, move keys to constants
+			// TODO: move keys to constants
 			
 			if (jwt instanceof SignedJWT) {
 				// it's a signed JWT, check the signature
