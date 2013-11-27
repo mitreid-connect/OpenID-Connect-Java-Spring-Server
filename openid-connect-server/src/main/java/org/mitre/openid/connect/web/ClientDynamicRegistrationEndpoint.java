@@ -16,9 +16,13 @@
  ******************************************************************************/
 package org.mitre.openid.connect.web;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
@@ -38,12 +42,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
+import org.springframework.security.web.util.UrlUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.util.UriUtils;
 
 import com.google.common.collect.Sets;
 
@@ -157,13 +163,15 @@ public class ClientDynamicRegistrationEndpoint {
 	
 				// send it all out to the view
 	
-				// TODO: urlencode the client id for safety?
-				RegisteredClient registered = new RegisteredClient(savedClient, token.getValue(), config.getIssuer() + "register/" + savedClient.getClientId());
-	
+				RegisteredClient registered = new RegisteredClient(savedClient, token.getValue(), config.getIssuer() + "register/" + UriUtils.encodePathSegment(savedClient.getClientId(), "UTF-8"));
 				m.addAttribute("client", registered);
 				m.addAttribute("code", HttpStatus.CREATED); // http 201
 	
 				return "clientInformationResponseView";
+			} catch (UnsupportedEncodingException e) {
+				logger.error("Unsupported encoding", e);
+				m.addAttribute("code", HttpStatus.INTERNAL_SERVER_ERROR);
+				return "httpCodeView";
 			} catch (IllegalArgumentException e) {
 				logger.error("Couldn't save client", e);
 				m.addAttribute("code", HttpStatus.BAD_REQUEST);
@@ -200,14 +208,19 @@ public class ClientDynamicRegistrationEndpoint {
 			OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
 			OAuth2AccessTokenEntity token = tokenService.readAccessToken(details.getTokenValue());
 
-			// TODO: urlencode the client id for safety?
-			RegisteredClient registered = new RegisteredClient(client, token.getValue(), config.getIssuer() + "register/" + client.getClientId());
+			try {
+				RegisteredClient registered = new RegisteredClient(client, token.getValue(), config.getIssuer() + "register/" +  UriUtils.encodePathSegment(client.getClientId(), "UTF-8"));
 
-			// send it all out to the view
-			m.addAttribute("client", registered);
-			m.addAttribute("code", HttpStatus.OK); // http 200
+				// send it all out to the view
+				m.addAttribute("client", registered);
+				m.addAttribute("code", HttpStatus.OK); // http 200
 
-			return "clientInformationResponseView";
+				return "clientInformationResponseView";
+			} catch (UnsupportedEncodingException e) {
+				logger.error("Unsupported encoding", e);
+				m.addAttribute("code", HttpStatus.INTERNAL_SERVER_ERROR);
+				return "httpCodeView";
+			}
 		} else {
 			// client mismatch
 			logger.error("readClientConfiguration failed, client ID mismatch: "
@@ -274,8 +287,7 @@ public class ClientDynamicRegistrationEndpoint {
 				OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
 				OAuth2AccessTokenEntity token = tokenService.readAccessToken(details.getTokenValue());
 	
-				// TODO: urlencode the client id for safety?
-				RegisteredClient registered = new RegisteredClient(savedClient, token.getValue(), config.getIssuer() + "register/" + savedClient.getClientId());
+				RegisteredClient registered = new RegisteredClient(savedClient, token.getValue(), config.getIssuer() + "register/" + UriUtils.encodePathSegment(savedClient.getClientId(), "UTF-8"));
 	
 				// send it all out to the view
 				m.addAttribute("client", registered);
@@ -286,6 +298,10 @@ public class ClientDynamicRegistrationEndpoint {
 				logger.error("Couldn't save client", e);
 				m.addAttribute("code", HttpStatus.BAD_REQUEST);
  
+				return "httpCodeView";
+			} catch (UnsupportedEncodingException e) {
+				logger.error("Unsupported encoding", e);
+				m.addAttribute("code", HttpStatus.INTERNAL_SERVER_ERROR);
 				return "httpCodeView";
 			}
 		} else {
