@@ -41,6 +41,17 @@
 	<security:http pattern="/login**" use-expressions="true" entry-point-ref="http403EntryPoint">
 		<security:intercept-url pattern="/login**" access="permitAll"/>	
 	</security:http>
+	
+	<security:http disable-url-rewriting="true" use-expressions="true" pattern="/authorize"> 
+<!-- 		<security:intercept-url pattern="/authorize" access="IS_AUTHENTICATED_FULLY" /> -->
+		<security:form-login login-page="/login" authentication-failure-url="/login?error=failure" authentication-success-handler-ref="authenticationTimeStamper" />
+		<security:custom-filter ref="promptFilter" after="SECURITY_CONTEXT_FILTER" />
+		<security:logout logout-url="/logout" />
+		<security:anonymous />
+		<security:expression-handler ref="oauthWebExpressionHandler" />
+	</security:http>	
+
+
 
 	<security:http disable-url-rewriting="true" use-expressions="true"> 
 		<security:form-login login-page="/login" authentication-failure-url="/login?error=failure" authentication-success-handler-ref="authenticationTimeStamper" />
