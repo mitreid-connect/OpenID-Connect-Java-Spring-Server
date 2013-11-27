@@ -33,8 +33,11 @@ import javax.servlet.http.HttpSession;
 import org.mitre.openid.connect.web.AuthenticationTimeStamper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.provider.AuthorizationRequest;
+import org.springframework.security.oauth2.provider.OAuth2RequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
 
@@ -52,6 +55,9 @@ public class PromptFilter extends GenericFilterBean {
 	public final static String PROMPTED = "PROMPT_FILTER_PROMPTED";
 	public final static String PROMPT_REQUESTED = "PROMPT_FILTER_REQUESTED";
 	
+	@Autowired
+	private OAuth2RequestFactory authRequestFactory;
+	
 	/**
 	 * 
 	 */
@@ -60,11 +66,14 @@ public class PromptFilter extends GenericFilterBean {
 
 		HttpServletRequest request = (HttpServletRequest) req;
 		HttpServletResponse response = (HttpServletResponse) res;
+		
+		AuthorizationRequest authRequest = authRequestFactory.createAuthorizationRequest(request.getParameterMap());
 
-		if (!Strings.isNullOrEmpty(request.getParameter("prompt"))) {
+		if (authRequest.getExtensions().get("prompt") != null) {
 			// we have a "prompt" parameter
+			String prompt = (String)authRequest.getExtensions().get("prompt");
 
-			if (request.getParameter("prompt").equals("none")) {
+			if (prompt.equals("none")) {
 				logger.info("Client requested no prompt");
 				// see if the user's logged in
 				Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -79,7 +88,7 @@ public class PromptFilter extends GenericFilterBean {
 					response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied");
 					return;
 				}
-			} else if (request.getParameter("prompt").equals("login")) {
+			} else if (prompt.equals("login")) {
 
     			// first see if the user's already been prompted in this session
 				HttpSession session = request.getSession();
@@ -111,9 +120,9 @@ public class PromptFilter extends GenericFilterBean {
 				chain.doFilter(req, res);
 			}
 
-		} else if (!Strings.isNullOrEmpty(request.getParameter("max_age"))) {
+		} else if (authRequest.getExtensions().get("max_age") != null) {
 			// TODO: issue #450
-			String maxAge = request.getParameter("max_age");
+			String maxAge = (String) authRequest.getExtensions().get("max_age");
 			HttpSession session = request.getSession();
 			Date authTime = (Date) session.getAttribute(AuthenticationTimeStamper.AUTH_TIMESTAMP);
 

@@ -117,17 +117,25 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 			}
 		}
 		
+		if (inputParams.containsKey("max_age")) {
+			request.getExtensions().put("max_age", inputParams.get("max_age"));
+		}
+		
 		if (inputParams.containsKey("request")) {
 			request.getExtensions().put("request", inputParams.get("request"));
 			processRequestObject(inputParams.get("request"), request);
 		}
 		
+		if (request.getClientId() != null) {
+			ClientDetailsEntity client = clientDetailsService.loadClientByClientId(request.getClientId());
 
-		if ((request.getScope() == null || request.getScope().isEmpty())) {
-			if (request.getClientId() != null) {
-				ClientDetails client = clientDetailsService.loadClientByClientId(request.getClientId());
+			if ((request.getScope() == null || request.getScope().isEmpty())) {
 				Set<String> clientScopes = client.getScope();
 				request.setScope(clientScopes);
+			}
+			
+			if (request.getExtensions().get("max_age") == null && client.getDefaultMaxAge() != null) {
+				request.getExtensions().put("max_age", client.getDefaultMaxAge().toString());
 			}
 		}
 
