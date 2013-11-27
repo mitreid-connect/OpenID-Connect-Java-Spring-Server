@@ -57,7 +57,7 @@ public class ServerConfiguration {
         RECOMMENDED. URL of the OP's Dynamic Client Registration Endpoint [OpenID.Registration]. 
     scopes_supported
         RECOMMENDED. JSON array containing a list of the OAuth 2.0 [RFC6749] scope values that this server 
-
+    response_types_supported
         REQUIRED. JSON array containing a list of the OAuth 2.0 response_type values that this server 
         supports. The server MUST support the code, id_token, and the token id_token response type values. 
     grant_types_supported

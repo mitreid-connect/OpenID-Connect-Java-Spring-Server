@@ -100,9 +100,8 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 		}
 		
 		// TODO: this ought to be getResponseType; issue #482
-		String responseType = request.getRequestParameters().get("response_type");
+		Set<String> responseTypes = request.getResponseTypes();
 		
-		Set<String> responseTypes = OAuth2Utils.parseParameterList(responseType);
 		if (responseTypes.contains("token")) {
 			// calculate the token hash
 			Base64URL at_hash = IdTokenHashUtils.getAccessTokenHash(signingAlg, accessToken);
