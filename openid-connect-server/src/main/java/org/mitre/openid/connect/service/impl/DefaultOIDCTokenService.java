@@ -99,7 +99,6 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 			idClaims.setCustomClaim("nonce", nonce);
 		}
 		
-		// TODO: this ought to be getResponseType; issue #482
 		Set<String> responseTypes = request.getResponseTypes();
 		
 		if (responseTypes.contains("token")) {
