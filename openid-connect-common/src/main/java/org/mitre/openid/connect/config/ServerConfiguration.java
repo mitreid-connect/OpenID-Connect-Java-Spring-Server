@@ -172,7 +172,15 @@ public class ServerConfiguration {
 	private String userInfoUri;
 
 	private String introspectionEndpointUri;
+	
+	private String revocationEndpointUri;
 
+	public String getRevocationEndpointUri() {
+		return revocationEndpointUri;
+	}
+	public void setRevocationEndpointUri(String revocationEndpointUri) {
+		this.revocationEndpointUri = revocationEndpointUri;
+	}
 	private String checkSessionIframe;
 	private String endSessionEndpoint;
 	private List<String> scopesSupported;
@@ -647,328 +655,445 @@ public class ServerConfiguration {
 	public void setOpTosUri(String opTosUri) {
 		this.opTosUri = opTosUri;
 	}
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-    @Override
-    public int hashCode() {
-	    final int prime = 31;
-	    int result = 1;
-	    result = prime * result + ((acrValuesSupported == null) ? 0 : acrValuesSupported.hashCode());
-	    result = prime * result + ((authorizationEndpointUri == null) ? 0 : authorizationEndpointUri.hashCode());
-	    result = prime * result + ((checkSessionIframe == null) ? 0 : checkSessionIframe.hashCode());
-	    result = prime * result + ((claimTypesSupported == null) ? 0 : claimTypesSupported.hashCode());
-	    result = prime * result + ((claimsLocalesSupported == null) ? 0 : claimsLocalesSupported.hashCode());
-	    result = prime * result + ((claimsParameterSupported == null) ? 0 : claimsParameterSupported.hashCode());
-	    result = prime * result + ((claimsSupported == null) ? 0 : claimsSupported.hashCode());
-	    result = prime * result + ((displayValuesSupported == null) ? 0 : displayValuesSupported.hashCode());
-	    result = prime * result + ((endSessionEndpoint == null) ? 0 : endSessionEndpoint.hashCode());
-	    result = prime * result + ((grantTypesSupported == null) ? 0 : grantTypesSupported.hashCode());
-	    result = prime * result + ((idTokenEncryptionAlgValuesSupported == null) ? 0 : idTokenEncryptionAlgValuesSupported.hashCode());
-	    result = prime * result + ((idTokenEncryptionEncValuesSupported == null) ? 0 : idTokenEncryptionEncValuesSupported.hashCode());
-	    result = prime * result + ((idTokenSigningAlgValuesSupported == null) ? 0 : idTokenSigningAlgValuesSupported.hashCode());
-	    result = prime * result + ((introspectionEndpointUri == null) ? 0 : introspectionEndpointUri.hashCode());
-	    result = prime * result + ((issuer == null) ? 0 : issuer.hashCode());
-	    result = prime * result + ((jwksUri == null) ? 0 : jwksUri.hashCode());
-	    result = prime * result + ((opPolicyUri == null) ? 0 : opPolicyUri.hashCode());
-	    result = prime * result + ((opTosUri == null) ? 0 : opTosUri.hashCode());
-	    result = prime * result + ((registrationEndpointUri == null) ? 0 : registrationEndpointUri.hashCode());
-	    result = prime * result + ((requestObjectEncryptionAlgValuesSupported == null) ? 0 : requestObjectEncryptionAlgValuesSupported.hashCode());
-	    result = prime * result + ((requestObjectEncryptionEncValuesSupported == null) ? 0 : requestObjectEncryptionEncValuesSupported.hashCode());
-	    result = prime * result + ((requestObjectSigningAlgValuesSupported == null) ? 0 : requestObjectSigningAlgValuesSupported.hashCode());
-	    result = prime * result + ((requestParameterSupported == null) ? 0 : requestParameterSupported.hashCode());
-	    result = prime * result + ((requestUriParameterSupported == null) ? 0 : requestUriParameterSupported.hashCode());
-	    result = prime * result + ((requireRequestUriRegistration == null) ? 0 : requireRequestUriRegistration.hashCode());
-	    result = prime * result + ((responseTypesSupported == null) ? 0 : responseTypesSupported.hashCode());
-	    result = prime * result + ((scopesSupported == null) ? 0 : scopesSupported.hashCode());
-	    result = prime * result + ((serviceDocumentation == null) ? 0 : serviceDocumentation.hashCode());
-	    result = prime * result + ((subjectTypesSupported == null) ? 0 : subjectTypesSupported.hashCode());
-	    result = prime * result + ((tokenEndpointAuthMethodsSupported == null) ? 0 : tokenEndpointAuthMethodsSupported.hashCode());
-	    result = prime * result + ((tokenEndpointAuthSigningAlgValuesSupported == null) ? 0 : tokenEndpointAuthSigningAlgValuesSupported.hashCode());
-	    result = prime * result + ((tokenEndpointUri == null) ? 0 : tokenEndpointUri.hashCode());
-	    result = prime * result + ((uiLocalesSupported == null) ? 0 : uiLocalesSupported.hashCode());
-	    result = prime * result + ((userInfoUri == null) ? 0 : userInfoUri.hashCode());
-	    result = prime * result + ((userinfoEncryptionAlgValuesSupported == null) ? 0 : userinfoEncryptionAlgValuesSupported.hashCode());
-	    result = prime * result + ((userinfoEncryptionEncValuesSupported == null) ? 0 : userinfoEncryptionEncValuesSupported.hashCode());
-	    result = prime * result + ((userinfoSigningAlgValuesSupported == null) ? 0 : userinfoSigningAlgValuesSupported.hashCode());
-	    return result;
-    }
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-    @Override
-    public boolean equals(Object obj) {
-	    if (this == obj) {
-		    return true;
-	    }
-	    if (obj == null) {
-		    return false;
-	    }
-	    if (!(obj instanceof ServerConfiguration)) {
-		    return false;
-	    }
-	    ServerConfiguration other = (ServerConfiguration) obj;
-	    if (acrValuesSupported == null) {
-		    if (other.acrValuesSupported != null) {
-			    return false;
-		    }
-	    } else if (!acrValuesSupported.equals(other.acrValuesSupported)) {
-		    return false;
-	    }
-	    if (authorizationEndpointUri == null) {
-		    if (other.authorizationEndpointUri != null) {
-			    return false;
-		    }
-	    } else if (!authorizationEndpointUri.equals(other.authorizationEndpointUri)) {
-		    return false;
-	    }
-	    if (checkSessionIframe == null) {
-		    if (other.checkSessionIframe != null) {
-			    return false;
-		    }
-	    } else if (!checkSessionIframe.equals(other.checkSessionIframe)) {
-		    return false;
-	    }
-	    if (claimTypesSupported == null) {
-		    if (other.claimTypesSupported != null) {
-			    return false;
-		    }
-	    } else if (!claimTypesSupported.equals(other.claimTypesSupported)) {
-		    return false;
-	    }
-	    if (claimsLocalesSupported == null) {
-		    if (other.claimsLocalesSupported != null) {
-			    return false;
-		    }
-	    } else if (!claimsLocalesSupported.equals(other.claimsLocalesSupported)) {
-		    return false;
-	    }
-	    if (claimsParameterSupported == null) {
-		    if (other.claimsParameterSupported != null) {
-			    return false;
-		    }
-	    } else if (!claimsParameterSupported.equals(other.claimsParameterSupported)) {
-		    return false;
-	    }
-	    if (claimsSupported == null) {
-		    if (other.claimsSupported != null) {
-			    return false;
-		    }
-	    } else if (!claimsSupported.equals(other.claimsSupported)) {
-		    return false;
-	    }
-	    if (displayValuesSupported == null) {
-		    if (other.displayValuesSupported != null) {
-			    return false;
-		    }
-	    } else if (!displayValuesSupported.equals(other.displayValuesSupported)) {
-		    return false;
-	    }
-	    if (endSessionEndpoint == null) {
-		    if (other.endSessionEndpoint != null) {
-			    return false;
-		    }
-	    } else if (!endSessionEndpoint.equals(other.endSessionEndpoint)) {
-		    return false;
-	    }
-	    if (grantTypesSupported == null) {
-		    if (other.grantTypesSupported != null) {
-			    return false;
-		    }
-	    } else if (!grantTypesSupported.equals(other.grantTypesSupported)) {
-		    return false;
-	    }
-	    if (idTokenEncryptionAlgValuesSupported == null) {
-		    if (other.idTokenEncryptionAlgValuesSupported != null) {
-			    return false;
-		    }
-	    } else if (!idTokenEncryptionAlgValuesSupported.equals(other.idTokenEncryptionAlgValuesSupported)) {
-		    return false;
-	    }
-	    if (idTokenEncryptionEncValuesSupported == null) {
-		    if (other.idTokenEncryptionEncValuesSupported != null) {
-			    return false;
-		    }
-	    } else if (!idTokenEncryptionEncValuesSupported.equals(other.idTokenEncryptionEncValuesSupported)) {
-		    return false;
-	    }
-	    if (idTokenSigningAlgValuesSupported == null) {
-		    if (other.idTokenSigningAlgValuesSupported != null) {
-			    return false;
-		    }
-	    } else if (!idTokenSigningAlgValuesSupported.equals(other.idTokenSigningAlgValuesSupported)) {
-		    return false;
-	    }
-	    if (introspectionEndpointUri == null) {
-		    if (other.introspectionEndpointUri != null) {
-			    return false;
-		    }
-	    } else if (!introspectionEndpointUri.equals(other.introspectionEndpointUri)) {
-		    return false;
-	    }
-	    if (issuer == null) {
-		    if (other.issuer != null) {
-			    return false;
-		    }
-	    } else if (!issuer.equals(other.issuer)) {
-		    return false;
-	    }
-	    if (jwksUri == null) {
-		    if (other.jwksUri != null) {
-			    return false;
-		    }
-	    } else if (!jwksUri.equals(other.jwksUri)) {
-		    return false;
-	    }
-	    if (opPolicyUri == null) {
-		    if (other.opPolicyUri != null) {
-			    return false;
-		    }
-	    } else if (!opPolicyUri.equals(other.opPolicyUri)) {
-		    return false;
-	    }
-	    if (opTosUri == null) {
-		    if (other.opTosUri != null) {
-			    return false;
-		    }
-	    } else if (!opTosUri.equals(other.opTosUri)) {
-		    return false;
-	    }
-	    if (registrationEndpointUri == null) {
-		    if (other.registrationEndpointUri != null) {
-			    return false;
-		    }
-	    } else if (!registrationEndpointUri.equals(other.registrationEndpointUri)) {
-		    return false;
-	    }
-	    if (requestObjectEncryptionAlgValuesSupported == null) {
-		    if (other.requestObjectEncryptionAlgValuesSupported != null) {
-			    return false;
-		    }
-	    } else if (!requestObjectEncryptionAlgValuesSupported.equals(other.requestObjectEncryptionAlgValuesSupported)) {
-		    return false;
-	    }
-	    if (requestObjectEncryptionEncValuesSupported == null) {
-		    if (other.requestObjectEncryptionEncValuesSupported != null) {
-			    return false;
-		    }
-	    } else if (!requestObjectEncryptionEncValuesSupported.equals(other.requestObjectEncryptionEncValuesSupported)) {
-		    return false;
-	    }
-	    if (requestObjectSigningAlgValuesSupported == null) {
-		    if (other.requestObjectSigningAlgValuesSupported != null) {
-			    return false;
-		    }
-	    } else if (!requestObjectSigningAlgValuesSupported.equals(other.requestObjectSigningAlgValuesSupported)) {
-		    return false;
-	    }
-	    if (requestParameterSupported == null) {
-		    if (other.requestParameterSupported != null) {
-			    return false;
-		    }
-	    } else if (!requestParameterSupported.equals(other.requestParameterSupported)) {
-		    return false;
-	    }
-	    if (requestUriParameterSupported == null) {
-		    if (other.requestUriParameterSupported != null) {
-			    return false;
-		    }
-	    } else if (!requestUriParameterSupported.equals(other.requestUriParameterSupported)) {
-		    return false;
-	    }
-	    if (requireRequestUriRegistration == null) {
-		    if (other.requireRequestUriRegistration != null) {
-			    return false;
-		    }
-	    } else if (!requireRequestUriRegistration.equals(other.requireRequestUriRegistration)) {
-		    return false;
-	    }
-	    if (responseTypesSupported == null) {
-		    if (other.responseTypesSupported != null) {
-			    return false;
-		    }
-	    } else if (!responseTypesSupported.equals(other.responseTypesSupported)) {
-		    return false;
-	    }
-	    if (scopesSupported == null) {
-		    if (other.scopesSupported != null) {
-			    return false;
-		    }
-	    } else if (!scopesSupported.equals(other.scopesSupported)) {
-		    return false;
-	    }
-	    if (serviceDocumentation == null) {
-		    if (other.serviceDocumentation != null) {
-			    return false;
-		    }
-	    } else if (!serviceDocumentation.equals(other.serviceDocumentation)) {
-		    return false;
-	    }
-	    if (subjectTypesSupported == null) {
-		    if (other.subjectTypesSupported != null) {
-			    return false;
-		    }
-	    } else if (!subjectTypesSupported.equals(other.subjectTypesSupported)) {
-		    return false;
-	    }
-	    if (tokenEndpointAuthMethodsSupported == null) {
-		    if (other.tokenEndpointAuthMethodsSupported != null) {
-			    return false;
-		    }
-	    } else if (!tokenEndpointAuthMethodsSupported.equals(other.tokenEndpointAuthMethodsSupported)) {
-		    return false;
-	    }
-	    if (tokenEndpointAuthSigningAlgValuesSupported == null) {
-		    if (other.tokenEndpointAuthSigningAlgValuesSupported != null) {
-			    return false;
-		    }
-	    } else if (!tokenEndpointAuthSigningAlgValuesSupported.equals(other.tokenEndpointAuthSigningAlgValuesSupported)) {
-		    return false;
-	    }
-	    if (tokenEndpointUri == null) {
-		    if (other.tokenEndpointUri != null) {
-			    return false;
-		    }
-	    } else if (!tokenEndpointUri.equals(other.tokenEndpointUri)) {
-		    return false;
-	    }
-	    if (uiLocalesSupported == null) {
-		    if (other.uiLocalesSupported != null) {
-			    return false;
-		    }
-	    } else if (!uiLocalesSupported.equals(other.uiLocalesSupported)) {
-		    return false;
-	    }
-	    if (userInfoUri == null) {
-		    if (other.userInfoUri != null) {
-			    return false;
-		    }
-	    } else if (!userInfoUri.equals(other.userInfoUri)) {
-		    return false;
-	    }
-	    if (userinfoEncryptionAlgValuesSupported == null) {
-		    if (other.userinfoEncryptionAlgValuesSupported != null) {
-			    return false;
-		    }
-	    } else if (!userinfoEncryptionAlgValuesSupported.equals(other.userinfoEncryptionAlgValuesSupported)) {
-		    return false;
-	    }
-	    if (userinfoEncryptionEncValuesSupported == null) {
-		    if (other.userinfoEncryptionEncValuesSupported != null) {
-			    return false;
-		    }
-	    } else if (!userinfoEncryptionEncValuesSupported.equals(other.userinfoEncryptionEncValuesSupported)) {
-		    return false;
-	    }
-	    if (userinfoSigningAlgValuesSupported == null) {
-		    if (other.userinfoSigningAlgValuesSupported != null) {
-			    return false;
-		    }
-	    } else if (!userinfoSigningAlgValuesSupported.equals(other.userinfoSigningAlgValuesSupported)) {
-		    return false;
-	    }
-	    return true;
-    }
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime
+				* result
+				+ ((acrValuesSupported == null) ? 0 : acrValuesSupported
+						.hashCode());
+		result = prime
+				* result
+				+ ((authorizationEndpointUri == null) ? 0
+						: authorizationEndpointUri.hashCode());
+		result = prime
+				* result
+				+ ((checkSessionIframe == null) ? 0 : checkSessionIframe
+						.hashCode());
+		result = prime
+				* result
+				+ ((claimTypesSupported == null) ? 0 : claimTypesSupported
+						.hashCode());
+		result = prime
+				* result
+				+ ((claimsLocalesSupported == null) ? 0
+						: claimsLocalesSupported.hashCode());
+		result = prime
+				* result
+				+ ((claimsParameterSupported == null) ? 0
+						: claimsParameterSupported.hashCode());
+		result = prime * result
+				+ ((claimsSupported == null) ? 0 : claimsSupported.hashCode());
+		result = prime
+				* result
+				+ ((displayValuesSupported == null) ? 0
+						: displayValuesSupported.hashCode());
+		result = prime
+				* result
+				+ ((endSessionEndpoint == null) ? 0 : endSessionEndpoint
+						.hashCode());
+		result = prime
+				* result
+				+ ((grantTypesSupported == null) ? 0 : grantTypesSupported
+						.hashCode());
+		result = prime
+				* result
+				+ ((idTokenEncryptionAlgValuesSupported == null) ? 0
+						: idTokenEncryptionAlgValuesSupported.hashCode());
+		result = prime
+				* result
+				+ ((idTokenEncryptionEncValuesSupported == null) ? 0
+						: idTokenEncryptionEncValuesSupported.hashCode());
+		result = prime
+				* result
+				+ ((idTokenSigningAlgValuesSupported == null) ? 0
+						: idTokenSigningAlgValuesSupported.hashCode());
+		result = prime
+				* result
+				+ ((introspectionEndpointUri == null) ? 0
+						: introspectionEndpointUri.hashCode());
+		result = prime * result + ((issuer == null) ? 0 : issuer.hashCode());
+		result = prime * result + ((jwksUri == null) ? 0 : jwksUri.hashCode());
+		result = prime * result
+				+ ((opPolicyUri == null) ? 0 : opPolicyUri.hashCode());
+		result = prime * result
+				+ ((opTosUri == null) ? 0 : opTosUri.hashCode());
+		result = prime
+				* result
+				+ ((registrationEndpointUri == null) ? 0
+						: registrationEndpointUri.hashCode());
+		result = prime
+				* result
+				+ ((requestObjectEncryptionAlgValuesSupported == null) ? 0
+						: requestObjectEncryptionAlgValuesSupported.hashCode());
+		result = prime
+				* result
+				+ ((requestObjectEncryptionEncValuesSupported == null) ? 0
+						: requestObjectEncryptionEncValuesSupported.hashCode());
+		result = prime
+				* result
+				+ ((requestObjectSigningAlgValuesSupported == null) ? 0
+						: requestObjectSigningAlgValuesSupported.hashCode());
+		result = prime
+				* result
+				+ ((requestParameterSupported == null) ? 0
+						: requestParameterSupported.hashCode());
+		result = prime
+				* result
+				+ ((requestUriParameterSupported == null) ? 0
+						: requestUriParameterSupported.hashCode());
+		result = prime
+				* result
+				+ ((requireRequestUriRegistration == null) ? 0
+						: requireRequestUriRegistration.hashCode());
+		result = prime
+				* result
+				+ ((responseTypesSupported == null) ? 0
+						: responseTypesSupported.hashCode());
+		result = prime
+				* result
+				+ ((revocationEndpointUri == null) ? 0 : revocationEndpointUri
+						.hashCode());
+		result = prime * result
+				+ ((scopesSupported == null) ? 0 : scopesSupported.hashCode());
+		result = prime
+				* result
+				+ ((serviceDocumentation == null) ? 0 : serviceDocumentation
+						.hashCode());
+		result = prime
+				* result
+				+ ((subjectTypesSupported == null) ? 0 : subjectTypesSupported
+						.hashCode());
+		result = prime
+				* result
+				+ ((tokenEndpointAuthMethodsSupported == null) ? 0
+						: tokenEndpointAuthMethodsSupported.hashCode());
+		result = prime
+				* result
+				+ ((tokenEndpointAuthSigningAlgValuesSupported == null) ? 0
+						: tokenEndpointAuthSigningAlgValuesSupported.hashCode());
+		result = prime
+				* result
+				+ ((tokenEndpointUri == null) ? 0 : tokenEndpointUri.hashCode());
+		result = prime
+				* result
+				+ ((uiLocalesSupported == null) ? 0 : uiLocalesSupported
+						.hashCode());
+		result = prime * result
+				+ ((userInfoUri == null) ? 0 : userInfoUri.hashCode());
+		result = prime
+				* result
+				+ ((userinfoEncryptionAlgValuesSupported == null) ? 0
+						: userinfoEncryptionAlgValuesSupported.hashCode());
+		result = prime
+				* result
+				+ ((userinfoEncryptionEncValuesSupported == null) ? 0
+						: userinfoEncryptionEncValuesSupported.hashCode());
+		result = prime
+				* result
+				+ ((userinfoSigningAlgValuesSupported == null) ? 0
+						: userinfoSigningAlgValuesSupported.hashCode());
+		return result;
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		ServerConfiguration other = (ServerConfiguration) obj;
+		if (acrValuesSupported == null) {
+			if (other.acrValuesSupported != null) {
+				return false;
+			}
+		} else if (!acrValuesSupported.equals(other.acrValuesSupported)) {
+			return false;
+		}
+		if (authorizationEndpointUri == null) {
+			if (other.authorizationEndpointUri != null) {
+				return false;
+			}
+		} else if (!authorizationEndpointUri
+				.equals(other.authorizationEndpointUri)) {
+			return false;
+		}
+		if (checkSessionIframe == null) {
+			if (other.checkSessionIframe != null) {
+				return false;
+			}
+		} else if (!checkSessionIframe.equals(other.checkSessionIframe)) {
+			return false;
+		}
+		if (claimTypesSupported == null) {
+			if (other.claimTypesSupported != null) {
+				return false;
+			}
+		} else if (!claimTypesSupported.equals(other.claimTypesSupported)) {
+			return false;
+		}
+		if (claimsLocalesSupported == null) {
+			if (other.claimsLocalesSupported != null) {
+				return false;
+			}
+		} else if (!claimsLocalesSupported.equals(other.claimsLocalesSupported)) {
+			return false;
+		}
+		if (claimsParameterSupported == null) {
+			if (other.claimsParameterSupported != null) {
+				return false;
+			}
+		} else if (!claimsParameterSupported
+				.equals(other.claimsParameterSupported)) {
+			return false;
+		}
+		if (claimsSupported == null) {
+			if (other.claimsSupported != null) {
+				return false;
+			}
+		} else if (!claimsSupported.equals(other.claimsSupported)) {
+			return false;
+		}
+		if (displayValuesSupported == null) {
+			if (other.displayValuesSupported != null) {
+				return false;
+			}
+		} else if (!displayValuesSupported.equals(other.displayValuesSupported)) {
+			return false;
+		}
+		if (endSessionEndpoint == null) {
+			if (other.endSessionEndpoint != null) {
+				return false;
+			}
+		} else if (!endSessionEndpoint.equals(other.endSessionEndpoint)) {
+			return false;
+		}
+		if (grantTypesSupported == null) {
+			if (other.grantTypesSupported != null) {
+				return false;
+			}
+		} else if (!grantTypesSupported.equals(other.grantTypesSupported)) {
+			return false;
+		}
+		if (idTokenEncryptionAlgValuesSupported == null) {
+			if (other.idTokenEncryptionAlgValuesSupported != null) {
+				return false;
+			}
+		} else if (!idTokenEncryptionAlgValuesSupported
+				.equals(other.idTokenEncryptionAlgValuesSupported)) {
+			return false;
+		}
+		if (idTokenEncryptionEncValuesSupported == null) {
+			if (other.idTokenEncryptionEncValuesSupported != null) {
+				return false;
+			}
+		} else if (!idTokenEncryptionEncValuesSupported
+				.equals(other.idTokenEncryptionEncValuesSupported)) {
+			return false;
+		}
+		if (idTokenSigningAlgValuesSupported == null) {
+			if (other.idTokenSigningAlgValuesSupported != null) {
+				return false;
+			}
+		} else if (!idTokenSigningAlgValuesSupported
+				.equals(other.idTokenSigningAlgValuesSupported)) {
+			return false;
+		}
+		if (introspectionEndpointUri == null) {
+			if (other.introspectionEndpointUri != null) {
+				return false;
+			}
+		} else if (!introspectionEndpointUri
+				.equals(other.introspectionEndpointUri)) {
+			return false;
+		}
+		if (issuer == null) {
+			if (other.issuer != null) {
+				return false;
+			}
+		} else if (!issuer.equals(other.issuer)) {
+			return false;
+		}
+		if (jwksUri == null) {
+			if (other.jwksUri != null) {
+				return false;
+			}
+		} else if (!jwksUri.equals(other.jwksUri)) {
+			return false;
+		}
+		if (opPolicyUri == null) {
+			if (other.opPolicyUri != null) {
+				return false;
+			}
+		} else if (!opPolicyUri.equals(other.opPolicyUri)) {
+			return false;
+		}
+		if (opTosUri == null) {
+			if (other.opTosUri != null) {
+				return false;
+			}
+		} else if (!opTosUri.equals(other.opTosUri)) {
+			return false;
+		}
+		if (registrationEndpointUri == null) {
+			if (other.registrationEndpointUri != null) {
+				return false;
+			}
+		} else if (!registrationEndpointUri
+				.equals(other.registrationEndpointUri)) {
+			return false;
+		}
+		if (requestObjectEncryptionAlgValuesSupported == null) {
+			if (other.requestObjectEncryptionAlgValuesSupported != null) {
+				return false;
+			}
+		} else if (!requestObjectEncryptionAlgValuesSupported
+				.equals(other.requestObjectEncryptionAlgValuesSupported)) {
+			return false;
+		}
+		if (requestObjectEncryptionEncValuesSupported == null) {
+			if (other.requestObjectEncryptionEncValuesSupported != null) {
+				return false;
+			}
+		} else if (!requestObjectEncryptionEncValuesSupported
+				.equals(other.requestObjectEncryptionEncValuesSupported)) {
+			return false;
+		}
+		if (requestObjectSigningAlgValuesSupported == null) {
+			if (other.requestObjectSigningAlgValuesSupported != null) {
+				return false;
+			}
+		} else if (!requestObjectSigningAlgValuesSupported
+				.equals(other.requestObjectSigningAlgValuesSupported)) {
+			return false;
+		}
+		if (requestParameterSupported == null) {
+			if (other.requestParameterSupported != null) {
+				return false;
+			}
+		} else if (!requestParameterSupported
+				.equals(other.requestParameterSupported)) {
+			return false;
+		}
+		if (requestUriParameterSupported == null) {
+			if (other.requestUriParameterSupported != null) {
+				return false;
+			}
+		} else if (!requestUriParameterSupported
+				.equals(other.requestUriParameterSupported)) {
+			return false;
+		}
+		if (requireRequestUriRegistration == null) {
+			if (other.requireRequestUriRegistration != null) {
+				return false;
+			}
+		} else if (!requireRequestUriRegistration
+				.equals(other.requireRequestUriRegistration)) {
+			return false;
+		}
+		if (responseTypesSupported == null) {
+			if (other.responseTypesSupported != null) {
+				return false;
+			}
+		} else if (!responseTypesSupported.equals(other.responseTypesSupported)) {
+			return false;
+		}
+		if (revocationEndpointUri == null) {
+			if (other.revocationEndpointUri != null) {
+				return false;
+			}
+		} else if (!revocationEndpointUri.equals(other.revocationEndpointUri)) {
+			return false;
+		}
+		if (scopesSupported == null) {
+			if (other.scopesSupported != null) {
+				return false;
+			}
+		} else if (!scopesSupported.equals(other.scopesSupported)) {
+			return false;
+		}
+		if (serviceDocumentation == null) {
+			if (other.serviceDocumentation != null) {
+				return false;
+			}
+		} else if (!serviceDocumentation.equals(other.serviceDocumentation)) {
+			return false;
+		}
+		if (subjectTypesSupported == null) {
+			if (other.subjectTypesSupported != null) {
+				return false;
+			}
+		} else if (!subjectTypesSupported.equals(other.subjectTypesSupported)) {
+			return false;
+		}
+		if (tokenEndpointAuthMethodsSupported == null) {
+			if (other.tokenEndpointAuthMethodsSupported != null) {
+				return false;
+			}
+		} else if (!tokenEndpointAuthMethodsSupported
+				.equals(other.tokenEndpointAuthMethodsSupported)) {
+			return false;
+		}
+		if (tokenEndpointAuthSigningAlgValuesSupported == null) {
+			if (other.tokenEndpointAuthSigningAlgValuesSupported != null) {
+				return false;
+			}
+		} else if (!tokenEndpointAuthSigningAlgValuesSupported
+				.equals(other.tokenEndpointAuthSigningAlgValuesSupported)) {
+			return false;
+		}
+		if (tokenEndpointUri == null) {
+			if (other.tokenEndpointUri != null) {
+				return false;
+			}
+		} else if (!tokenEndpointUri.equals(other.tokenEndpointUri)) {
+			return false;
+		}
+		if (uiLocalesSupported == null) {
+			if (other.uiLocalesSupported != null) {
+				return false;
+			}
+		} else if (!uiLocalesSupported.equals(other.uiLocalesSupported)) {
+			return false;
+		}
+		if (userInfoUri == null) {
+			if (other.userInfoUri != null) {
+				return false;
+			}
+		} else if (!userInfoUri.equals(other.userInfoUri)) {
+			return false;
+		}
+		if (userinfoEncryptionAlgValuesSupported == null) {
+			if (other.userinfoEncryptionAlgValuesSupported != null) {
+				return false;
+			}
+		} else if (!userinfoEncryptionAlgValuesSupported
+				.equals(other.userinfoEncryptionAlgValuesSupported)) {
+			return false;
+		}
+		if (userinfoEncryptionEncValuesSupported == null) {
+			if (other.userinfoEncryptionEncValuesSupported != null) {
+				return false;
+			}
+		} else if (!userinfoEncryptionEncValuesSupported
+				.equals(other.userinfoEncryptionEncValuesSupported)) {
+			return false;
+		}
+		if (userinfoSigningAlgValuesSupported == null) {
+			if (other.userinfoSigningAlgValuesSupported != null) {
+				return false;
+			}
+		} else if (!userinfoSigningAlgValuesSupported
+				.equals(other.userinfoSigningAlgValuesSupported)) {
+			return false;
+		}
+		return true;
+	}
 	
 
 }

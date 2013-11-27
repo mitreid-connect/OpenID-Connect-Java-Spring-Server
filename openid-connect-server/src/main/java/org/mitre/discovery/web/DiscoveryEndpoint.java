@@ -94,8 +94,7 @@ public class DiscoveryEndpoint {
 					&& resourceUri.getScheme().equals("acct")) {
 				// acct: URI
 
-				UserInfo user = null;
-				user = userService.getByUsername(resourceUri.getUserInfo()); // first part is the username
+				UserInfo user = userService.getByUsername(resourceUri.getUserInfo()); // first part is the username
 
 				if (user == null) {
 					logger.info("User not found: " + resource);
