@@ -24,6 +24,8 @@ import org.mitre.jose.JWEEncryptionMethodEmbed;
 import org.mitre.jose.JWSAlgorithmEmbed;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
+import org.mitre.openid.connect.model.UserInfo;
+import org.mitre.openid.connect.service.UserInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +42,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
@@ -61,6 +64,10 @@ public class ClientAPI {
 
 	@Autowired
 	private ClientDetailsEntityService clientService;
+	
+	@Autowired
+	private UserInfoService userInfoService;
+	
 	private JsonParser parser = new JsonParser();
 
 	private Gson gson = new GsonBuilder()
@@ -159,8 +166,14 @@ public class ClientAPI {
 		}
 
 		// set owners as current logged in user
-		//client.setOwner(principal.getName());
-		//TODO: owner has been replaced by a list of contacts, which should be styled as email addresses.
+		// try to look up a user based on the principal's name
+		if (client.getContacts() == null || client.getContacts().isEmpty()) {
+			UserInfo user = userInfoService.getByUsername(auth.getName());
+			if (user != null && user.getEmail() != null) {
+				client.setContacts(Sets.newHashSet(user.getEmail()));
+			}
+		}
+		
 		client.setDynamicallyRegistered(false);
 
 		ClientDetailsEntity newClient = clientService.saveNewClient(client);
@@ -225,8 +238,13 @@ public class ClientAPI {
 		}
 
 		// set owners as current logged in user
-		// client.setOwner(principal.getName());
-		//TODO: owner has been replaced by a list of contacts, which should be styled as email addresses.
+		// try to look up a user based on the principal's name
+		if (client.getContacts() == null || client.getContacts().isEmpty()) {
+			UserInfo user = userInfoService.getByUsername(auth.getName());
+			if (user != null && user.getEmail() != null) {
+				client.setContacts(Sets.newHashSet(user.getEmail()));
+			}
+		}
 
 		ClientDetailsEntity newClient = clientService.updateClient(oldClient, client);
 		m.addAttribute("entity", newClient);
