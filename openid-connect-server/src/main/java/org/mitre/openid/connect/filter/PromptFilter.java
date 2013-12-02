@@ -21,6 +21,8 @@ package org.mitre.openid.connect.filter;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -67,7 +69,7 @@ public class PromptFilter extends GenericFilterBean {
 		HttpServletRequest request = (HttpServletRequest) req;
 		HttpServletResponse response = (HttpServletResponse) res;
 		
-		AuthorizationRequest authRequest = authRequestFactory.createAuthorizationRequest(request.getParameterMap());
+		AuthorizationRequest authRequest = authRequestFactory.createAuthorizationRequest(createRequestMap(request.getParameterMap()));
 
 		if (authRequest.getExtensions().get("prompt") != null) {
 			// we have a "prompt" parameter
@@ -142,5 +144,21 @@ public class PromptFilter extends GenericFilterBean {
 		}
 
 	}
+
+	/**
+	 * @param parameterMap
+	 * @return
+	 */
+    private Map<String, String> createRequestMap(Map<String, String[]> parameterMap) {
+    	Map<String, String> requestMap = new HashMap<String, String>();
+    	for (String key : parameterMap.keySet()) {    		
+	        String[] val = parameterMap.get(key);
+			if (val != null && val.length > 0) {
+	        	requestMap.put(key, val[0]); // add the first value only (which is what Spring seems to do)
+	        }
+        }
+    	
+    	return requestMap;
+    }
 
 }
