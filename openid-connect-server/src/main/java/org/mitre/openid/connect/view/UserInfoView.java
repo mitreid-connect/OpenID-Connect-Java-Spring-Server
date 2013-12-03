@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
+ * Copyright 2013 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,8 +20,8 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -49,7 +49,7 @@ public class UserInfoView extends AbstractView {
 	private static JsonParser jsonParser = new JsonParser();
 
 	private static Logger logger = LoggerFactory.getLogger(UserInfoView.class);
-	
+
 	@Autowired
 	private ScopeClaimTranslationService translator;
 
@@ -129,11 +129,11 @@ public class UserInfoView extends AbstractView {
 
 		// get the base object
 		JsonObject obj = ui.toJson();
-		
+
 		Set<String> allowedByScope = translator.getClaimsForScopeSet(scope);
 		Set<String> authorizedByClaims = new HashSet<String>();
 		Set<String> requestedByClaims = new HashSet<String>();
-		
+
 		if (authorizedClaims != null) {
 			JsonObject userinfoAuthorized = authorizedClaims.getAsJsonObject().get("userinfo").getAsJsonObject();
 			for (Entry<String, JsonElement> entry : userinfoAuthorized.getAsJsonObject().entrySet()) {
@@ -146,24 +146,24 @@ public class UserInfoView extends AbstractView {
 				requestedByClaims.add(entry.getKey());
 			}
 		}
-		
+
 		// Filter claims by performing a manual intersection of claims that are allowed by the given scope, requested, and authorized.
 		// We cannot use Sets.intersection() or similar because Entry<> objects will evaluate to being unequal if their values are
 		// different, whereas we are only interested in matching the Entry<>'s key values.
-		JsonObject result = new JsonObject();		
+		JsonObject result = new JsonObject();
 		for (Entry<String, JsonElement> entry : obj.entrySet()) {
-			
+
 			if (allowedByScope.contains(entry.getKey())
 					|| authorizedByClaims.contains(entry.getKey())) {
 				// it's allowed either by scope or by the authorized claims (either way is fine with us)
-				
+
 				if (requestedByClaims.isEmpty() || requestedByClaims.contains(entry.getKey())) {
 					// the requested claims are empty (so we allow all), or they're not empty and this claim was specifically asked for
 					result.add(entry.getKey(), entry.getValue());
 				} // otherwise there were specific claims requested and this wasn't one of them
 			}
 		}
-		
+
 		return result;
 	}
 }

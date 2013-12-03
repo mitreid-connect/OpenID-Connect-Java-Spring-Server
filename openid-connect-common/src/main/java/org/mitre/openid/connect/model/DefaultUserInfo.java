@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
+ * Copyright 2013 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -336,19 +336,19 @@ public class DefaultUserInfo implements UserInfo {
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.model.UserInfo#getPhoneNumberVerified()
 	 */
-    @Override
-    @Basic
-    @Column(name="phone_number_verified")
-    public Boolean getPhoneNumberVerified() {
-	    return phoneNumberVerified;
-    }
+	@Override
+	@Basic
+	@Column(name="phone_number_verified")
+	public Boolean getPhoneNumberVerified() {
+		return phoneNumberVerified;
+	}
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.model.UserInfo#setPhoneNumberVerified(java.lang.Boolean)
 	 */
-    @Override
-    public void setPhoneNumberVerified(Boolean phoneNumberVerified) {
-    	this.phoneNumberVerified = phoneNumberVerified;	    
-    }
+	@Override
+	public void setPhoneNumberVerified(Boolean phoneNumberVerified) {
+		this.phoneNumberVerified = phoneNumberVerified;
+	}
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.model.UserInfo#getAddress()
 	 */
@@ -398,7 +398,7 @@ public class DefaultUserInfo implements UserInfo {
 	public void setBirthdate(String birthdate) {
 		this.birthdate = birthdate;
 	}
-	
+
 	@Override
 	public JsonObject toJson() {
 		JsonObject obj = new JsonObject();
@@ -419,7 +419,7 @@ public class DefaultUserInfo implements UserInfo {
 		obj.addProperty("locale", this.getLocale());
 		obj.addProperty("updated_time", this.getUpdatedTime());
 		obj.addProperty("birthdate", this.getBirthdate());
-		
+
 		obj.addProperty("email", this.getEmail());
 		obj.addProperty("email_verified", this.getEmailVerified());
 
@@ -441,7 +441,7 @@ public class DefaultUserInfo implements UserInfo {
 
 		return obj;
 	}
-	
+
 	/**
 	 * Parse a JsonObject into a UserInfo.
 	 * @param o
@@ -490,201 +490,201 @@ public class DefaultUserInfo implements UserInfo {
 		return ui;
 
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
-    @Override
-    public int hashCode() {
-	    final int prime = 31;
-	    int result = 1;
-	    result = prime * result + ((address == null) ? 0 : address.hashCode());
-	    result = prime * result + ((birthdate == null) ? 0 : birthdate.hashCode());
-	    result = prime * result + ((email == null) ? 0 : email.hashCode());
-	    result = prime * result + ((emailVerified == null) ? 0 : emailVerified.hashCode());
-	    result = prime * result + ((familyName == null) ? 0 : familyName.hashCode());
-	    result = prime * result + ((gender == null) ? 0 : gender.hashCode());
-	    result = prime * result + ((givenName == null) ? 0 : givenName.hashCode());
-	    result = prime * result + ((id == null) ? 0 : id.hashCode());
-	    result = prime * result + ((locale == null) ? 0 : locale.hashCode());
-	    result = prime * result + ((middleName == null) ? 0 : middleName.hashCode());
-	    result = prime * result + ((name == null) ? 0 : name.hashCode());
-	    result = prime * result + ((nickname == null) ? 0 : nickname.hashCode());
-	    result = prime * result + ((phoneNumber == null) ? 0 : phoneNumber.hashCode());
-	    result = prime * result + ((phoneNumberVerified == null) ? 0 : phoneNumberVerified.hashCode());
-	    result = prime * result + ((picture == null) ? 0 : picture.hashCode());
-	    result = prime * result + ((preferredUsername == null) ? 0 : preferredUsername.hashCode());
-	    result = prime * result + ((profile == null) ? 0 : profile.hashCode());
-	    result = prime * result + ((sub == null) ? 0 : sub.hashCode());
-	    result = prime * result + ((updatedTime == null) ? 0 : updatedTime.hashCode());
-	    result = prime * result + ((website == null) ? 0 : website.hashCode());
-	    result = prime * result + ((zoneinfo == null) ? 0 : zoneinfo.hashCode());
-	    return result;
-    }
-    
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((address == null) ? 0 : address.hashCode());
+		result = prime * result + ((birthdate == null) ? 0 : birthdate.hashCode());
+		result = prime * result + ((email == null) ? 0 : email.hashCode());
+		result = prime * result + ((emailVerified == null) ? 0 : emailVerified.hashCode());
+		result = prime * result + ((familyName == null) ? 0 : familyName.hashCode());
+		result = prime * result + ((gender == null) ? 0 : gender.hashCode());
+		result = prime * result + ((givenName == null) ? 0 : givenName.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((locale == null) ? 0 : locale.hashCode());
+		result = prime * result + ((middleName == null) ? 0 : middleName.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((nickname == null) ? 0 : nickname.hashCode());
+		result = prime * result + ((phoneNumber == null) ? 0 : phoneNumber.hashCode());
+		result = prime * result + ((phoneNumberVerified == null) ? 0 : phoneNumberVerified.hashCode());
+		result = prime * result + ((picture == null) ? 0 : picture.hashCode());
+		result = prime * result + ((preferredUsername == null) ? 0 : preferredUsername.hashCode());
+		result = prime * result + ((profile == null) ? 0 : profile.hashCode());
+		result = prime * result + ((sub == null) ? 0 : sub.hashCode());
+		result = prime * result + ((updatedTime == null) ? 0 : updatedTime.hashCode());
+		result = prime * result + ((website == null) ? 0 : website.hashCode());
+		result = prime * result + ((zoneinfo == null) ? 0 : zoneinfo.hashCode());
+		return result;
+	}
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
-    @Override
-    public boolean equals(Object obj) {
-	    if (this == obj) {
-		    return true;
-	    }
-	    if (obj == null) {
-		    return false;
-	    }
-	    if (!(obj instanceof DefaultUserInfo)) {
-		    return false;
-	    }
-	    DefaultUserInfo other = (DefaultUserInfo) obj;
-	    if (address == null) {
-		    if (other.address != null) {
-			    return false;
-		    }
-	    } else if (!address.equals(other.address)) {
-		    return false;
-	    }
-	    if (birthdate == null) {
-		    if (other.birthdate != null) {
-			    return false;
-		    }
-	    } else if (!birthdate.equals(other.birthdate)) {
-		    return false;
-	    }
-	    if (email == null) {
-		    if (other.email != null) {
-			    return false;
-		    }
-	    } else if (!email.equals(other.email)) {
-		    return false;
-	    }
-	    if (emailVerified == null) {
-		    if (other.emailVerified != null) {
-			    return false;
-		    }
-	    } else if (!emailVerified.equals(other.emailVerified)) {
-		    return false;
-	    }
-	    if (familyName == null) {
-		    if (other.familyName != null) {
-			    return false;
-		    }
-	    } else if (!familyName.equals(other.familyName)) {
-		    return false;
-	    }
-	    if (gender == null) {
-		    if (other.gender != null) {
-			    return false;
-		    }
-	    } else if (!gender.equals(other.gender)) {
-		    return false;
-	    }
-	    if (givenName == null) {
-		    if (other.givenName != null) {
-			    return false;
-		    }
-	    } else if (!givenName.equals(other.givenName)) {
-		    return false;
-	    }
-	    if (id == null) {
-		    if (other.id != null) {
-			    return false;
-		    }
-	    } else if (!id.equals(other.id)) {
-		    return false;
-	    }
-	    if (locale == null) {
-		    if (other.locale != null) {
-			    return false;
-		    }
-	    } else if (!locale.equals(other.locale)) {
-		    return false;
-	    }
-	    if (middleName == null) {
-		    if (other.middleName != null) {
-			    return false;
-		    }
-	    } else if (!middleName.equals(other.middleName)) {
-		    return false;
-	    }
-	    if (name == null) {
-		    if (other.name != null) {
-			    return false;
-		    }
-	    } else if (!name.equals(other.name)) {
-		    return false;
-	    }
-	    if (nickname == null) {
-		    if (other.nickname != null) {
-			    return false;
-		    }
-	    } else if (!nickname.equals(other.nickname)) {
-		    return false;
-	    }
-	    if (phoneNumber == null) {
-		    if (other.phoneNumber != null) {
-			    return false;
-		    }
-	    } else if (!phoneNumber.equals(other.phoneNumber)) {
-		    return false;
-	    }
-	    if (phoneNumberVerified == null) {
-		    if (other.phoneNumberVerified != null) {
-			    return false;
-		    }
-	    } else if (!phoneNumberVerified.equals(other.phoneNumberVerified)) {
-		    return false;
-	    }
-	    if (picture == null) {
-		    if (other.picture != null) {
-			    return false;
-		    }
-	    } else if (!picture.equals(other.picture)) {
-		    return false;
-	    }
-	    if (preferredUsername == null) {
-		    if (other.preferredUsername != null) {
-			    return false;
-		    }
-	    } else if (!preferredUsername.equals(other.preferredUsername)) {
-		    return false;
-	    }
-	    if (profile == null) {
-		    if (other.profile != null) {
-			    return false;
-		    }
-	    } else if (!profile.equals(other.profile)) {
-		    return false;
-	    }
-	    if (sub == null) {
-		    if (other.sub != null) {
-			    return false;
-		    }
-	    } else if (!sub.equals(other.sub)) {
-		    return false;
-	    }
-	    if (updatedTime == null) {
-		    if (other.updatedTime != null) {
-			    return false;
-		    }
-	    } else if (!updatedTime.equals(other.updatedTime)) {
-		    return false;
-	    }
-	    if (website == null) {
-		    if (other.website != null) {
-			    return false;
-		    }
-	    } else if (!website.equals(other.website)) {
-		    return false;
-	    }
-	    if (zoneinfo == null) {
-		    if (other.zoneinfo != null) {
-			    return false;
-		    }
-	    } else if (!zoneinfo.equals(other.zoneinfo)) {
-		    return false;
-	    }
-	    return true;
-    }
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof DefaultUserInfo)) {
+			return false;
+		}
+		DefaultUserInfo other = (DefaultUserInfo) obj;
+		if (address == null) {
+			if (other.address != null) {
+				return false;
+			}
+		} else if (!address.equals(other.address)) {
+			return false;
+		}
+		if (birthdate == null) {
+			if (other.birthdate != null) {
+				return false;
+			}
+		} else if (!birthdate.equals(other.birthdate)) {
+			return false;
+		}
+		if (email == null) {
+			if (other.email != null) {
+				return false;
+			}
+		} else if (!email.equals(other.email)) {
+			return false;
+		}
+		if (emailVerified == null) {
+			if (other.emailVerified != null) {
+				return false;
+			}
+		} else if (!emailVerified.equals(other.emailVerified)) {
+			return false;
+		}
+		if (familyName == null) {
+			if (other.familyName != null) {
+				return false;
+			}
+		} else if (!familyName.equals(other.familyName)) {
+			return false;
+		}
+		if (gender == null) {
+			if (other.gender != null) {
+				return false;
+			}
+		} else if (!gender.equals(other.gender)) {
+			return false;
+		}
+		if (givenName == null) {
+			if (other.givenName != null) {
+				return false;
+			}
+		} else if (!givenName.equals(other.givenName)) {
+			return false;
+		}
+		if (id == null) {
+			if (other.id != null) {
+				return false;
+			}
+		} else if (!id.equals(other.id)) {
+			return false;
+		}
+		if (locale == null) {
+			if (other.locale != null) {
+				return false;
+			}
+		} else if (!locale.equals(other.locale)) {
+			return false;
+		}
+		if (middleName == null) {
+			if (other.middleName != null) {
+				return false;
+			}
+		} else if (!middleName.equals(other.middleName)) {
+			return false;
+		}
+		if (name == null) {
+			if (other.name != null) {
+				return false;
+			}
+		} else if (!name.equals(other.name)) {
+			return false;
+		}
+		if (nickname == null) {
+			if (other.nickname != null) {
+				return false;
+			}
+		} else if (!nickname.equals(other.nickname)) {
+			return false;
+		}
+		if (phoneNumber == null) {
+			if (other.phoneNumber != null) {
+				return false;
+			}
+		} else if (!phoneNumber.equals(other.phoneNumber)) {
+			return false;
+		}
+		if (phoneNumberVerified == null) {
+			if (other.phoneNumberVerified != null) {
+				return false;
+			}
+		} else if (!phoneNumberVerified.equals(other.phoneNumberVerified)) {
+			return false;
+		}
+		if (picture == null) {
+			if (other.picture != null) {
+				return false;
+			}
+		} else if (!picture.equals(other.picture)) {
+			return false;
+		}
+		if (preferredUsername == null) {
+			if (other.preferredUsername != null) {
+				return false;
+			}
+		} else if (!preferredUsername.equals(other.preferredUsername)) {
+			return false;
+		}
+		if (profile == null) {
+			if (other.profile != null) {
+				return false;
+			}
+		} else if (!profile.equals(other.profile)) {
+			return false;
+		}
+		if (sub == null) {
+			if (other.sub != null) {
+				return false;
+			}
+		} else if (!sub.equals(other.sub)) {
+			return false;
+		}
+		if (updatedTime == null) {
+			if (other.updatedTime != null) {
+				return false;
+			}
+		} else if (!updatedTime.equals(other.updatedTime)) {
+			return false;
+		}
+		if (website == null) {
+			if (other.website != null) {
+				return false;
+			}
+		} else if (!website.equals(other.website)) {
+			return false;
+		}
+		if (zoneinfo == null) {
+			if (other.zoneinfo != null) {
+				return false;
+			}
+		} else if (!zoneinfo.equals(other.zoneinfo)) {
+			return false;
+		}
+		return true;
+	}
 
 }

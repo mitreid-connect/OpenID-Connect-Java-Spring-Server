@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
+ * Copyright 2013 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -60,7 +60,7 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 
 	// map of identifier to key
 	private Map<String, JWK> keys = new HashMap<String, JWK>();
-	
+
 	/**
 	 * Build this service based on the keys given. All public keys will be used
 	 * to make verifiers, all private keys will be used to make signers.
@@ -215,29 +215,29 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 	public void signJwt(SignedJWT jwt, JWSAlgorithm alg) {
 
 		JWSSigner signer = null;
-		
+
 		for (JWSSigner s : signers.values()) {
 			if (s.supportedAlgorithms().contains(alg)) {
 				signer = s;
 				break;
 			}
 		}
-		
+
 		if (signer == null) {
 			//If we can't find an algorithm that matches, we can't sign
 			logger.error("No matching algirthm found for alg=" + alg);
-			
+
 		}
-		
+
 		try {
 			jwt.sign(signer);
 		} catch (JOSEException e) {
 
 			logger.error("Failed to sign JWT, error was: ", e);
 		}
-		
+
 	}
-	
+
 	@Override
 	public boolean validateSignature(SignedJWT jwt) {
 

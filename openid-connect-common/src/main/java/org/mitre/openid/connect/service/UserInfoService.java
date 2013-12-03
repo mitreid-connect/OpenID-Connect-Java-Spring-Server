@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
+ * Copyright 2013 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -59,11 +59,11 @@ public interface UserInfoService {
 	 * @return
 	 */
 	public UserInfo getByUsername(String username);
-	
+
 	/**
 	 * Get the UserInfo for the given username (usually maps to the
 	 * preferredUsername field) and clientId. This allows pairwise
-	 * client identifiers where appropriate. 
+	 * client identifiers where appropriate.
 	 * @param username
 	 * @param clientId
 	 * @return

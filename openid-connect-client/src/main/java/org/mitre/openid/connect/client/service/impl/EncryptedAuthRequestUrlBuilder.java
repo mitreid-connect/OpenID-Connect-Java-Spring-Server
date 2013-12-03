@@ -27,13 +27,13 @@ import com.nimbusds.jwt.JWTClaimsSet;
  *
  */
 public class EncryptedAuthRequestUrlBuilder implements AuthRequestUrlBuilder {
-	
+
 	private JWKSetCacheService encrypterService;
-	
+
 	private JWEAlgorithm alg;
 	private EncryptionMethod enc;
-	
-	
+
+
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.client.service.AuthRequestUrlBuilder#buildAuthRequestUrl(org.mitre.openid.connect.config.ServerConfiguration, org.mitre.oauth2.model.RegisteredClient, java.lang.String, java.lang.String, java.lang.String, java.util.Map)
 	 */
@@ -56,18 +56,18 @@ public class EncryptedAuthRequestUrlBuilder implements AuthRequestUrlBuilder {
 
 		// this comes back in the auth request return
 		claims.setClaim("state", state);
-		
+
 		// Optional parameters
 		for (Entry<String, String> option : options.entrySet()) {
 			claims.setClaim(option.getKey(), option.getValue());
 		}
 
 		EncryptedJWT jwt = new EncryptedJWT(new JWEHeader(alg, enc), claims);
-		
+
 		JwtEncryptionAndDecryptionService encryptor = encrypterService.getEncrypter(serverConfig.getJwksUri());
-		
+
 		encryptor.encryptJwt(jwt);
-		
+
 		try {
 			URIBuilder uriBuilder = new URIBuilder(serverConfig.getAuthorizationEndpointUri());
 			uriBuilder.addParameter("request", jwt.serialize());

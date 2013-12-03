@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
+ * Copyright 2013 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -180,12 +180,12 @@ public interface UserInfo {
 	 * @param phoneNumber the phoneNumber to set
 	 */
 	public abstract void setPhoneNumber(String phoneNumber);
-	
+
 	/**
 	 * 
 	 */
 	public abstract Boolean getPhoneNumberVerified();
-	
+
 	/**
 	 * 
 	 * @param phoneNumberVerified
@@ -224,7 +224,7 @@ public interface UserInfo {
 	 * @param birthdate
 	 */
 	public abstract void setBirthdate(String birthdate);
-	
+
 	/**
 	 * Serialize this UserInfo object to JSON
 	 * 

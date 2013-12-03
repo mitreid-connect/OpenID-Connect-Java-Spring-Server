@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
+ * Copyright 2013 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,6 +19,8 @@
  */
 package org.mitre.openid.connect.repository.impl;
 
+import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
+
 import java.util.Collection;
 
 import javax.persistence.EntityManager;
@@ -29,8 +31,6 @@ import org.mitre.openid.connect.model.BlacklistedSite;
 import org.mitre.openid.connect.repository.BlacklistedSiteRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
-import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
 
 /**
  * @author jricher

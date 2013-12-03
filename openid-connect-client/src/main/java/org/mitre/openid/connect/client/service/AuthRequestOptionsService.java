@@ -12,7 +12,7 @@ import org.mitre.openid.connect.config.ServerConfiguration;
 
 /**
  * 
- * This service provides any extra options that need to be passed to the authentication request. 
+ * This service provides any extra options that need to be passed to the authentication request.
  * These options may depend on the server configuration, client configuration, or HTTP request.
  * 
  * @author jricher
@@ -21,5 +21,5 @@ import org.mitre.openid.connect.config.ServerConfiguration;
 public interface AuthRequestOptionsService {
 
 	public Map<String, String> getOptions(ServerConfiguration server, RegisteredClient client, HttpServletRequest request);
-	
+
 }

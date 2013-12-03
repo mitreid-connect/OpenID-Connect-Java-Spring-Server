@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
+ * Copyright 2013 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -54,7 +54,7 @@ public class JWKSetCacheService {
 
 	// map of jwk set uri -> signing/validation service built on the keys found in that jwk set
 	private LoadingCache<String, JwtSigningAndValidationService> validators;
-	
+
 	// map of jwk set uri -> encryption/decryption service built on the keys found in that jwk set
 	private LoadingCache<String, JwtEncryptionAndDecryptionService> encrypters;
 
@@ -92,7 +92,7 @@ public class JWKSetCacheService {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * @author jricher
 	 *
@@ -122,27 +122,27 @@ public class JWKSetCacheService {
 	}
 
 	/**
-     * @author jricher
-     *
-     */
-    private class JWKSetEncryptorFetcher extends CacheLoader<String, JwtEncryptionAndDecryptionService> {
+	 * @author jricher
+	 *
+	 */
+	private class JWKSetEncryptorFetcher extends CacheLoader<String, JwtEncryptionAndDecryptionService> {
 		private HttpClient httpClient = new DefaultHttpClient();
 		private HttpComponentsClientHttpRequestFactory httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
 		private RestTemplate restTemplate = new RestTemplate(httpFactory);
 		/* (non-Javadoc)
 		 * @see com.google.common.cache.CacheLoader#load(java.lang.Object)
 		 */
-        @Override
-        public JwtEncryptionAndDecryptionService load(String key) throws Exception {
+		@Override
+		public JwtEncryptionAndDecryptionService load(String key) throws Exception {
 			String jsonString = restTemplate.getForObject(key, String.class);
 			JWKSet jwkSet = JWKSet.parse(jsonString);
 
 			JWKSetKeyStore keyStore = new JWKSetKeyStore(jwkSet);
 
 			JwtEncryptionAndDecryptionService service = new DefaultJwtEncryptionAndDecryptionService(keyStore);
-			
+
 			return service;
-        }
-    }
+		}
+	}
 
 }

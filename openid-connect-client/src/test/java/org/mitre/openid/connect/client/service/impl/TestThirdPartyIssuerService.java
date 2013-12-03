@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
+ * Copyright 2013 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +16,10 @@
  ******************************************************************************/
 package org.mitre.openid.connect.client.service.impl;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.junit.Before;
@@ -25,10 +29,6 @@ import org.mockito.Mockito;
 import org.springframework.security.authentication.AuthenticationServiceException;
 
 import com.google.common.collect.Sets;
-
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
 
 /**
  * @author wkim

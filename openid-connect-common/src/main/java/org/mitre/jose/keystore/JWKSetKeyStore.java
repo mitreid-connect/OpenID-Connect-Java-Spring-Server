@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
+ * Copyright 2013 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -58,15 +58,15 @@ public class JWKSetKeyStore {
 				if (location.exists() && location.isReadable()) {
 
 					try {
-	                    // read in the file from disk
-	                    String s = CharStreams.toString(new InputStreamReader(location.getInputStream(), Charsets.UTF_8));
+						// read in the file from disk
+						String s = CharStreams.toString(new InputStreamReader(location.getInputStream(), Charsets.UTF_8));
 
-	                    // parse it into a jwkSet object
-	                    jwkSet = JWKSet.parse(s);
-                    } catch (IOException e) {
-                    	throw new IllegalArgumentException("Key Set resource could not be read: " + location);
-                    } catch (ParseException e) {
-                    	throw new IllegalArgumentException("Key Set resource could not be parsed: " + location);                    }
+						// parse it into a jwkSet object
+						jwkSet = JWKSet.parse(s);
+					} catch (IOException e) {
+						throw new IllegalArgumentException("Key Set resource could not be read: " + location);
+					} catch (ParseException e) {
+						throw new IllegalArgumentException("Key Set resource could not be parsed: " + location);                    }
 
 				} else {
 					throw new IllegalArgumentException("Key Set resource could not be read: " + location);

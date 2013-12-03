@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
+ * Copyright 2013 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,7 +34,7 @@ public interface IntrospectionConfigurationService {
 	 */
 	public String getIntrospectionUrl(String accessToken);
 
-	
+
 	/**
 	 * Get the client configuration to use to connect to the
 	 * introspection endpoint. In particular, this cares about
@@ -42,5 +42,5 @@ public interface IntrospectionConfigurationService {
 	 * fields.
 	 */
 	public RegisteredClient getClientConfiguration(String accessToken);
-	
+
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
+ * Copyright 2013 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -60,8 +60,8 @@ public class PlainAuthRequestUrlBuilder implements AuthRequestUrlBuilder {
 
 			// Optional parameters:
 			for (Entry<String, String> option : options.entrySet()) {
-	            uriBuilder.addParameter(option.getKey(), option.getValue());
-            }
+				uriBuilder.addParameter(option.getKey(), option.getValue());
+			}
 
 			return uriBuilder.build().toString();
 

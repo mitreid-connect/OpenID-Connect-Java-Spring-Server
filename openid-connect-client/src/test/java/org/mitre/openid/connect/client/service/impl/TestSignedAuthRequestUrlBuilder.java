@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
+ * Copyright 2013 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +15,10 @@
  * limitations under the License.
  ******************************************************************************/
 package org.mitre.openid.connect.client.service.impl;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -45,10 +49,6 @@ import com.nimbusds.jose.jwk.Use;
 import com.nimbusds.jose.util.Base64URL;
 import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 /**
  * @author wkim
@@ -148,8 +148,8 @@ public class TestSignedAuthRequestUrlBuilder {
 		assertEquals(nonce, claims.getClaim("nonce"));
 		assertEquals(state, claims.getClaim("state"));
 		for (String claim : options.keySet()) {
-	        assertEquals(options.get(claim), claims.getClaim(claim));
-        }
+			assertEquals(options.get(claim), claims.getClaim(claim));
+		}
 	}
 
 	@Test(expected = AuthenticationServiceException.class)

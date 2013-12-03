@@ -3,13 +3,11 @@
  */
 package org.mitre.oauth2.token;
 
-import java.util.Map;
 import java.util.Set;
 
 import org.mitre.oauth2.service.SystemScopeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.exceptions.InvalidScopeException;
-import org.springframework.security.oauth2.common.util.OAuth2Utils;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.OAuth2RequestValidator;
@@ -27,7 +25,7 @@ public class StructuredScopeAwareOAuth2RequestValidator implements OAuth2Request
 
 	@Autowired
 	private SystemScopeService scopeService;
-	
+
 	/* (non-Javadoc)
 	 * @see org.springframework.security.oauth2.provider.OAuth2RequestValidator#validateScope(java.util.Map, java.util.Set)
 	 */

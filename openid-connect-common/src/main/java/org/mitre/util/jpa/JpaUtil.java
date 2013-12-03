@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
+ * Copyright 2013 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,12 +28,12 @@ import javax.persistence.EntityManager;
 public class JpaUtil {
 	public static <T> T getSingleResult(List<T> list) {
 		switch(list.size()) {
-			case 0:
-				return null;
-			case 1:
-				return list.get(0);
-			default:
-				throw new IllegalStateException("Expected single result, got " + list.size());
+		case 0:
+			return null;
+		case 1:
+			return list.get(0);
+		default:
+			throw new IllegalStateException("Expected single result, got " + list.size());
 		}
 	}
 

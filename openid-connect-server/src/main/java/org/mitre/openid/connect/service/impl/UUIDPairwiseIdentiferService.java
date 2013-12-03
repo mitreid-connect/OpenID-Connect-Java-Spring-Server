@@ -6,7 +6,6 @@ package org.mitre.openid.connect.service.impl;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.http.client.utils.URIBuilder;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.openid.connect.model.PairwiseIdentifier;
 import org.mitre.openid.connect.model.UserInfo;
@@ -30,44 +29,44 @@ import com.google.common.collect.Iterables;
 public class UUIDPairwiseIdentiferService implements PairwiseIdentiferService {
 
 	private static Logger logger = LoggerFactory.getLogger(UUIDPairwiseIdentiferService.class);
-	
+
 	@Autowired
 	private PairwiseIdentifierRepository pairwiseIdentifierRepository;
-	
+
 	@Override
-    public String getIdentifier(UserInfo userInfo, ClientDetailsEntity client) {
-		
+	public String getIdentifier(UserInfo userInfo, ClientDetailsEntity client) {
+
 		String sectorIdentifier = null;
-		
+
 		if (!Strings.isNullOrEmpty(client.getSectorIdentifierUri())) {
 			UriComponents uri = UriComponentsBuilder.fromUriString(client.getSectorIdentifierUri()).build();
 			sectorIdentifier = uri.getHost(); // calculate based on the host component only
 		} else {
-			Set<String> redirectUris = client.getRedirectUris();			
+			Set<String> redirectUris = client.getRedirectUris();
 			UriComponents uri = UriComponentsBuilder.fromUriString(Iterables.getOnlyElement(redirectUris)).build();
 			sectorIdentifier = uri.getHost(); // calculate based on the host of the only redirect URI
 		}
-		
+
 		if (sectorIdentifier != null) {
 			// if there's a sector identifier, use that for the lookup
 			PairwiseIdentifier pairwise = pairwiseIdentifierRepository.getBySectorIdentifier(userInfo.getSub(), sectorIdentifier);
 
 			if (pairwise == null) {
 				// we don't have an identifier, need to make and save one
-				
+
 				pairwise = new PairwiseIdentifier();
 				pairwise.setIdentifier(UUID.randomUUID().toString());
 				pairwise.setUserSub(userInfo.getSub());
 				pairwise.setSectorIdentifier(sectorIdentifier);
-				
+
 				pairwiseIdentifierRepository.save(pairwise);
 			}
-			
+
 			return pairwise.getIdentifier();
 		} else {
-			
+
 			return null;
 		}
-    }
+	}
 
 }

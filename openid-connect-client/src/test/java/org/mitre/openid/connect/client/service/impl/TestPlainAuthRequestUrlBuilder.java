@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
+ * Copyright 2013 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,9 @@
  ******************************************************************************/
 package org.mitre.openid.connect.client.service.impl;
 
-import java.util.Collections;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertThat;
+
 import java.util.Map;
 
 import org.junit.Before;
@@ -28,9 +30,6 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
-
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
 
 /**
  * @author wkim
@@ -66,7 +65,7 @@ public class TestPlainAuthRequestUrlBuilder {
 				"&nonce=34fasf3ds" +
 				"&state=af0ifjsldkj" +
 				"&foo=bar";
-		
+
 		Map<String, String> options = ImmutableMap.of("foo", "bar");
 
 		String actualUrl = urlBuilder.buildAuthRequestUrl(serverConfig, clientConfig, "https://client.example.org/", "34fasf3ds", "af0ifjsldkj", options);

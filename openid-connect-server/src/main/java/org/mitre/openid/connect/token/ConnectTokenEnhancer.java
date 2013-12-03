@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
+ * Copyright 2013 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -59,10 +59,10 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 
 	@Autowired
 	private ApprovedSiteService approvedSiteService;
-	
+
 	@Autowired
 	private UserInfoService userInfoService;
-	
+
 	@Autowired
 	private OIDCTokenService connectTokenService;
 
@@ -91,7 +91,7 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 		if (client.getIdTokenSignedResponseAlg() != null) {
 			signingAlg = client.getIdTokenSignedResponseAlg();
 		}
-		
+
 		SignedJWT signed = new SignedJWT(new JWSHeader(signingAlg), claims);
 
 		jwtService.signJwt(signed);
@@ -108,9 +108,9 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 
 			String username = authentication.getName();
 			UserInfo userInfo = userInfoService.getByUsernameAndClientId(username, clientId);
-			
-			OAuth2AccessTokenEntity idTokenEntity = connectTokenService.createIdToken(client, 
-					originalAuthRequest, (java.util.Date) claims.getIssueTime(),
+
+			OAuth2AccessTokenEntity idTokenEntity = connectTokenService.createIdToken(client,
+					originalAuthRequest, claims.getIssueTime(),
 					userInfo.getSub(), signingAlg, token);
 
 			// attach the id token to the parent access token

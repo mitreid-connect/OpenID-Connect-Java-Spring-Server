@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
+ * Copyright 2013 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -36,9 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.security.oauth2.common.util.OAuth2Utils;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
-import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.DefaultOAuth2RequestFactory;
-import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
@@ -69,10 +67,10 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 
 	@Autowired
 	private JWKSetCacheService validators;
-	
+
 	@Autowired
 	private SystemScopeService systemScopes;
-	
+
 	@Autowired
 	private JwtEncryptionAndDecryptionService encryptionService;
 
@@ -100,32 +98,32 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 				null, false, inputParams.get(OAuth2Utils.STATE),
 				inputParams.get(OAuth2Utils.REDIRECT_URI),
 				OAuth2Utils.parseParameterList(inputParams.get(OAuth2Utils.RESPONSE_TYPE)));
-		
+
 		//Add extension parameters to the 'extensions' map
-		
+
 		if (inputParams.containsKey("prompt")) {
 			request.getExtensions().put("prompt", inputParams.get("prompt"));
 		}
 		if (inputParams.containsKey("nonce")) {
 			request.getExtensions().put("nonce", inputParams.get("nonce"));
 		}
-		
+
 		if (inputParams.containsKey("claims")) {
 			JsonObject claimsRequest = parseClaimRequest(inputParams.get("claims"));
 			if (claimsRequest != null) {
 				request.getExtensions().put("claims", claimsRequest.toString());
 			}
 		}
-		
+
 		if (inputParams.containsKey("max_age")) {
 			request.getExtensions().put("max_age", inputParams.get("max_age"));
 		}
-		
+
 		if (inputParams.containsKey("request")) {
 			request.getExtensions().put("request", inputParams.get("request"));
 			processRequestObject(inputParams.get("request"), request);
 		}
-		
+
 		if (request.getClientId() != null) {
 			ClientDetailsEntity client = clientDetailsService.loadClientByClientId(request.getClientId());
 
@@ -133,7 +131,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 				Set<String> clientScopes = client.getScope();
 				request.setScope(clientScopes);
 			}
-			
+
 			if (request.getExtensions().get("max_age") == null && client.getDefaultMaxAge() != null) {
 				request.getExtensions().put("max_age", client.getDefaultMaxAge().toString());
 			}
@@ -153,131 +151,131 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 			JWT jwt = JWTParser.parse(jwtString);
 
 			// TODO: move keys to constants
-			
+
 			if (jwt instanceof SignedJWT) {
 				// it's a signed JWT, check the signature
-				
+
 				SignedJWT signedJwt = (SignedJWT)jwt;
 
 				// need to check clientId first so that we can load the client to check other fields
 				if (request.getClientId() == null) {
 					request.setClientId(signedJwt.getJWTClaimsSet().getStringClaim("client_id"));
 				}
-				
+
 				ClientDetailsEntity client = clientDetailsService.loadClientByClientId(request.getClientId());
-				
+
 				if (client == null) {
 					throw new InvalidClientException("Client not found: " + request.getClientId());
 				}
-				
-				
+
+
 				JWSAlgorithm alg = signedJwt.getHeader().getAlgorithm();
-				
+
 				if (client.getRequestObjectSigningAlg() != null) {
 					if (!client.getRequestObjectSigningAlg().equals(alg)) {
 						throw new InvalidClientException("Client's registered request object signing algorithm (" + client.getRequestObjectSigningAlg() + ") does not match request object's actual algorithm (" + alg.getName() + ")");
 					}
 				}
-				
+
 				if (alg.equals(JWSAlgorithm.RS256)
 						|| alg.equals(JWSAlgorithm.RS384)
 						|| alg.equals(JWSAlgorithm.RS512)) {
 
-					// it's RSA, need to find the JWK URI and fetch the key 
+					// it's RSA, need to find the JWK URI and fetch the key
 
 					if (client.getJwksUri() == null) {
 						throw new InvalidClientException("Client must have a JWKS URI registered to use signed request objects.");
 					}
-					
+
 					// check JWT signature
 					JwtSigningAndValidationService validator = validators.getValidator(client.getJwksUri());
-					
+
 					if (validator == null) {
 						throw new InvalidClientException("Unable to create signature validator for client's JWKS URI: " + client.getJwksUri());
 					}
-					
+
 					if (!validator.validateSignature(signedJwt)) {
 						throw new InvalidClientException("Signature did not validate for presented JWT request object.");
 					}
 				} else if (alg.equals(JWSAlgorithm.HS256)
 						|| alg.equals(JWSAlgorithm.HS384)
 						|| alg.equals(JWSAlgorithm.HS512)) {
-					
+
 					// it's HMAC, we need to make a validator based on the client secret
-					
+
 					JwtSigningAndValidationService validator = getSymmetricValidtor(client);
-					
+
 					if (validator == null) {
 						throw new InvalidClientException("Unable to create signature validator for client's secret: " + client.getClientSecret());
 					}
-					
+
 					if (!validator.validateSignature(signedJwt)) {
 						throw new InvalidClientException("Signature did not validate for presented JWT request object.");
 					}
-					
-					
+
+
 				}
-					
-				
+
+
 			} else if (jwt instanceof PlainJWT) {
 				PlainJWT plainJwt = (PlainJWT)jwt;
-				
+
 				// need to check clientId first so that we can load the client to check other fields
 				if (request.getClientId() == null) {
 					request.setClientId(plainJwt.getJWTClaimsSet().getStringClaim("client_id"));
 				}
-				
+
 				ClientDetailsEntity client = clientDetailsService.loadClientByClientId(request.getClientId());
-				
+
 				if (client == null) {
 					throw new InvalidClientException("Client not found: " + request.getClientId());
 				}
-				
-				if (client.getRequestObjectSigningAlg() == null) { 
+
+				if (client.getRequestObjectSigningAlg() == null) {
 					throw new InvalidClientException("Client is not registered for unsigned request objects (no request_object_signing_alg registered)");
 				} else if (!client.getRequestObjectSigningAlg().equals(Algorithm.NONE)) {
 					throw new InvalidClientException("Client is not registered for unsigned request objects (request_object_signing_alg is " + client.getRequestObjectSigningAlg() +")");
 				}
-				
+
 				// if we got here, we're OK, keep processing
-				
+
 			} else if (jwt instanceof EncryptedJWT) {
-				
+
 				EncryptedJWT encryptedJWT = (EncryptedJWT)jwt;
-				
+
 				// decrypt the jwt if we can
-				
+
 				encryptionService.decryptJwt(encryptedJWT);
-				
+
 				// TODO: what if the content is a signed JWT? (#525)
-				
+
 				if (!encryptedJWT.getState().equals(State.DECRYPTED)) {
 					throw new InvalidClientException("Unable to decrypt the request object");
 				}
-				
+
 				// need to check clientId first so that we can load the client to check other fields
 				if (request.getClientId() == null) {
 					request.setClientId(encryptedJWT.getJWTClaimsSet().getStringClaim("client_id"));
 				}
-				
+
 				ClientDetailsEntity client = clientDetailsService.loadClientByClientId(request.getClientId());
-				
+
 				if (client == null) {
 					throw new InvalidClientException("Client not found: " + request.getClientId());
 				}
-				
-				
+
+
 			}
-			
-			
+
+
 			/*
 			 * NOTE: Claims inside the request object always take precedence over those in the parameter map.
 			 */
 
 			// now that we've got the JWT, and it's been parsed, validated, and/or decrypted, we can process the claims
-			
+
 			ReadOnlyJWTClaimsSet claims = jwt.getJWTClaimsSet();
-			
+
 			Set<String> responseTypes = OAuth2Utils.parseParameterList(claims.getStringClaim("response_type"));
 			if (responseTypes != null && !responseTypes.isEmpty()) {
 				if (!responseTypes.equals(request.getResponseTypes())) {
@@ -286,7 +284,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 				request.setResponseTypes(responseTypes);
 			}
 
-			String redirectUri = claims.getStringClaim("redirect_uri"); 
+			String redirectUri = claims.getStringClaim("redirect_uri");
 			if (redirectUri != null) {
 				if (!redirectUri.equals(request.getRedirectUri())) {
 					logger.info("Mismatch between request object and regular parameter for redirect_uri, using request object");
@@ -321,11 +319,11 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 			String prompt = claims.getStringClaim("prompt");
 			if (prompt != null) {
 				if (!prompt.equals(request.getExtensions().get("prompt"))) {
-					 logger.info("Mismatch between request object and regular parameter for prompt, using request object");
+					logger.info("Mismatch between request object and regular parameter for prompt, using request object");
 				}
 				request.getExtensions().put("prompt", prompt);
 			}
-			
+
 			Set<String> scope = OAuth2Utils.parseParameterList(claims.getStringClaim("scope"));
 			if (scope != null && !scope.isEmpty()) {
 				if (!scope.equals(request.getScope())) {
@@ -333,7 +331,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 				}
 				request.setScope(scope);
 			}
-			
+
 			JsonObject claimRequest = parseClaimRequest(claims.getStringClaim("claims"));
 			if (claimRequest != null) {
 				if (!claimRequest.equals(parseClaimRequest(request.getExtensions().get("claims").toString()))) {
@@ -342,7 +340,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 				// we save the string because the object might not be a Java Serializable, and we can parse it easily enough anyway
 				request.getExtensions().put("claims", claimRequest.toString());
 			}
-			
+
 		} catch (ParseException e) {
 			logger.error("ParseException while parsing RequestObject:", e);
 		}
@@ -352,14 +350,14 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 	 * @param claimRequestString
 	 * @return
 	 */
-    private JsonObject parseClaimRequest(String claimRequestString) {
-    	JsonElement el = parser .parse(claimRequestString);
-    	if (el != null && el.isJsonObject()) {
-    		return el.getAsJsonObject();
-    	} else {
-    		return null;
-    	}
-    }
+	private JsonObject parseClaimRequest(String claimRequestString) {
+		JsonElement el = parser .parse(claimRequestString);
+		if (el != null && el.isJsonObject()) {
+			return el.getAsJsonObject();
+		} else {
+			return null;
+		}
+	}
 
 	/**
 	 * Create a symmetric signing and validation service for the given client
@@ -367,34 +365,34 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 	 * @param client
 	 * @return
 	 */
-    private JwtSigningAndValidationService getSymmetricValidtor(ClientDetailsEntity client) {
+	private JwtSigningAndValidationService getSymmetricValidtor(ClientDetailsEntity client) {
 
-    	if (client == null) {
-    		logger.error("Couldn't create symmetric validator for null client");
-    		return null;
-    	}
-    	
-    	if (Strings.isNullOrEmpty(client.getClientSecret())) {
-    		logger.error("Couldn't create symmetric validator for client " + client.getClientId() + " without a client secret");
-    		return null;
-    	}
-    	
-    	try {
-    		
-    		JWK jwk = new OctetSequenceKey(Base64URL.encode(client.getClientSecret()), Use.SIGNATURE, null, client.getClientId(), null, null, null);
-    		Map<String, JWK> keys = ImmutableMap.of(client.getClientId(), jwk);
-	        JwtSigningAndValidationService service = new DefaultJwtSigningAndValidationService(keys);
-	        
-	        return service;
-	        
-        } catch (NoSuchAlgorithmException e) {
-	        logger.error("Couldn't create symmetric validator for client " + client.getClientId(), e);
-        } catch (InvalidKeySpecException e) {
-	        logger.error("Couldn't create symmetric validator for client " + client.getClientId(), e);
-        }
-    	
-    	return null;
-    	
-    }
+		if (client == null) {
+			logger.error("Couldn't create symmetric validator for null client");
+			return null;
+		}
+
+		if (Strings.isNullOrEmpty(client.getClientSecret())) {
+			logger.error("Couldn't create symmetric validator for client " + client.getClientId() + " without a client secret");
+			return null;
+		}
+
+		try {
+
+			JWK jwk = new OctetSequenceKey(Base64URL.encode(client.getClientSecret()), Use.SIGNATURE, null, client.getClientId(), null, null, null);
+			Map<String, JWK> keys = ImmutableMap.of(client.getClientId(), jwk);
+			JwtSigningAndValidationService service = new DefaultJwtSigningAndValidationService(keys);
+
+			return service;
+
+		} catch (NoSuchAlgorithmException e) {
+			logger.error("Couldn't create symmetric validator for client " + client.getClientId(), e);
+		} catch (InvalidKeySpecException e) {
+			logger.error("Couldn't create symmetric validator for client " + client.getClientId(), e);
+		}
+
+		return null;
+
+	}
 
 }

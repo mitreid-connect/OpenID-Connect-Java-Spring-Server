@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
+ * Copyright 2013 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,7 +32,7 @@ public interface SystemScopeService {
 	public static final String OFFLINE_ACCESS = "offline_access";
 	public static final String ID_TOKEN_SCOPE = "id-token";
 	public static final String REGISTRATION_TOKEN_SCOPE = "registration-token";
-	
+
 	public Set<SystemScope> getAll();
 
 	/**
@@ -80,7 +80,7 @@ public interface SystemScopeService {
 	public boolean scopesMatch(Set<String> expected, Set<String> actual);
 
 	/**
-	 * Remove any system-restricted scopes from the set and return the result. 
+	 * Remove any system-restricted scopes from the set and return the result.
 	 * @param scopes
 	 * @return
 	 */

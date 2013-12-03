@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
+ * Copyright 2013 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,30 +34,30 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
- * Utility class to fetch userinfo from the userinfo endpoint, if available. 
+ * Utility class to fetch userinfo from the userinfo endpoint, if available.
  * @author jricher
  *
  */
 public class UserInfoFetcher {
 
 	private Logger logger = LoggerFactory.getLogger(UserInfoFetcher.class);
-	
+
 	public UserInfo loadUserInfo(OIDCAuthenticationToken token) {
 
 		ServerConfiguration serverConfiguration = token.getServerConfiguration();
-		
+
 		if (serverConfiguration == null) {
 			logger.warn("No server configuration found.");
 			return null;
 		}
-		
+
 		if (Strings.isNullOrEmpty(serverConfiguration.getUserInfoUri())) {
 			logger.warn("No userinfo endpoint, not fetching.");
 			return null;
 		}
 
 		// if we got this far, try to actually get the userinfo
-		
+
 		HttpClient httpClient = new DefaultHttpClient();
 
 		HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
@@ -69,11 +69,11 @@ public class UserInfoFetcher {
 
 		try {
 			String userInfoString = restTemplate.postForObject(serverConfiguration.getUserInfoUri(), form, String.class);
-	
+
 			JsonObject userInfoJson = new JsonParser().parse(userInfoString).getAsJsonObject();
-	
+
 			UserInfo userInfo = DefaultUserInfo.fromJson(userInfoJson);
-	
+
 			return userInfo;
 		} catch (Exception e) {
 			logger.warn("Error fetching userinfo", e);

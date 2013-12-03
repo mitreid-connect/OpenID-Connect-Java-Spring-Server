@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
+ * Copyright 2013 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -65,13 +65,13 @@ public class SignedAuthRequestUrlBuilder implements AuthRequestUrlBuilder {
 
 		// this comes back in the auth request return
 		claims.setClaim("state", state);
-		
+
 		// Optional parameters
 		for (Entry<String, String> option : options.entrySet()) {
-            claims.setClaim(option.getKey(), option.getValue());
-        }
+			claims.setClaim(option.getKey(), option.getValue());
+		}
 
-		
+
 
 		SignedJWT jwt = new SignedJWT(new JWSHeader(signingAndValidationService.getDefaultSigningAlgorithm()), claims);
 

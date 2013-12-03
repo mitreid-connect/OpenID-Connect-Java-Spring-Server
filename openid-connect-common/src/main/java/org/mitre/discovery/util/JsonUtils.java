@@ -26,7 +26,7 @@ import com.nimbusds.jose.JWSAlgorithm;
 public class JsonUtils {
 
 	private static Gson gson = new Gson();
-	
+
 	/**
 	 * Translate a set of strings to a JSON array
 	 * @param value
@@ -119,7 +119,7 @@ public class JsonUtils {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Gets the value of the given given member as a set of strings, null if it doesn't exist
 	 */
@@ -130,7 +130,7 @@ public class JsonUtils {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Gets the value of the given given member as a set of strings, null if it doesn't exist
 	 */
@@ -141,7 +141,7 @@ public class JsonUtils {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Gets the value of the given member as a list of JWS Algorithms, null if it doesn't exist
 	 */
@@ -150,14 +150,14 @@ public class JsonUtils {
 		if (strings != null) {
 			List<JWSAlgorithm> algs = new ArrayList<JWSAlgorithm>();
 			for (String alg : strings) {
-	            algs.add(JWSAlgorithm.parse(alg));
-            }
+				algs.add(JWSAlgorithm.parse(alg));
+			}
 			return algs;
 		} else {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Gets the value of the given member as a list of JWS Algorithms, null if it doesn't exist
 	 */
@@ -166,14 +166,14 @@ public class JsonUtils {
 		if (strings != null) {
 			List<JWEAlgorithm> algs = new ArrayList<JWEAlgorithm>();
 			for (String alg : strings) {
-	            algs.add(JWEAlgorithm.parse(alg));
-            }
+				algs.add(JWEAlgorithm.parse(alg));
+			}
 			return algs;
 		} else {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Gets the value of the given member as a list of JWS Algorithms, null if it doesn't exist
 	 */
@@ -182,12 +182,12 @@ public class JsonUtils {
 		if (strings != null) {
 			List<EncryptionMethod> algs = new ArrayList<EncryptionMethod>();
 			for (String alg : strings) {
-	            algs.add(EncryptionMethod.parse(alg));
-            }
+				algs.add(EncryptionMethod.parse(alg));
+			}
 			return algs;
 		} else {
 			return null;
 		}
 	}
-	
+
 }

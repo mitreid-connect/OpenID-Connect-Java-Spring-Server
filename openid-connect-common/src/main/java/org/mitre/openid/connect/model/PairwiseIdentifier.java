@@ -58,14 +58,14 @@ public class PairwiseIdentifier {
 	public String getIdentifier() {
 		return identifier;
 	}
-	
+
 	/**
 	 * @param identifier the identifier to set
 	 */
 	public void setIdentifier(String identifier) {
 		this.identifier = identifier;
 	}
-	
+
 	/**
 	 * @return the userSub
 	 */
@@ -74,14 +74,14 @@ public class PairwiseIdentifier {
 	public String getUserSub() {
 		return userSub;
 	}
-	
+
 	/**
 	 * @param userSub the userSub to set
 	 */
 	public void setUserSub(String userSub) {
 		this.userSub = userSub;
 	}
-	
+
 	/**
 	 * @return the sectorIdentifier
 	 */
@@ -90,7 +90,7 @@ public class PairwiseIdentifier {
 	public String getSectorIdentifier() {
 		return sectorIdentifier;
 	}
-	
+
 	/**
 	 * @param sectorIdentifier the sectorIdentifier to set
 	 */

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
+ * Copyright 2013 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +16,8 @@
  ******************************************************************************/
 package org.mitre.oauth2.introspectingfilter;
 
+import static org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod.SECRET_BASIC;
+
 import java.io.IOException;
 import java.net.URI;
 import java.util.Date;
@@ -29,7 +31,6 @@ import org.mitre.oauth2.introspectingfilter.service.IntrospectionAuthorityGrante
 import org.mitre.oauth2.introspectingfilter.service.IntrospectionConfigurationService;
 import org.mitre.oauth2.introspectingfilter.service.impl.SimpleIntrospectionAuthorityGranter;
 import org.mitre.oauth2.model.RegisteredClient;
-import org.mitre.openid.connect.client.service.ClientConfigurationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
@@ -53,8 +54,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.nimbusds.jose.util.Base64;
 
-import static org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod.SECRET_BASIC;
-
 /**
  * This ResourceServerTokenServices implementation introspects incoming tokens at a
  * server's introspection endpoint URL and passes an Authentication object along
@@ -63,13 +62,13 @@ import static org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod.SECRET_BASIC
  *
  */
 public class IntrospectingTokenService implements ResourceServerTokenServices {
-	
+
 	private IntrospectionConfigurationService introspectionConfigurationService;
 	private IntrospectionAuthorityGranter introspectionAuthorityGranter = new SimpleIntrospectionAuthorityGranter();
 
 	private DefaultHttpClient httpClient = new DefaultHttpClient();
 	private HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
-	
+
 	// Inner class to store in the hash map
 	private class TokenCacheObject {
 		OAuth2AccessToken token;
@@ -142,14 +141,14 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 
 		// find out which URL to ask
 		String introspectionUrl;
-        RegisteredClient client;
-        try {
-	        introspectionUrl = introspectionConfigurationService.getIntrospectionUrl(accessToken);
-	        client = introspectionConfigurationService.getClientConfiguration(accessToken);
-        } catch (IllegalArgumentException e) {
-	        logger.error("Unable to load introspection URL or client configuration", e);
-	        return false;
-        }
+		RegisteredClient client;
+		try {
+			introspectionUrl = introspectionConfigurationService.getIntrospectionUrl(accessToken);
+			client = introspectionConfigurationService.getClientConfiguration(accessToken);
+		} catch (IllegalArgumentException e) {
+			logger.error("Unable to load introspection URL or client configuration", e);
+			return false;
+		}
 		// Use the SpringFramework RestTemplate to send the request to the
 		// endpoint
 		String validatedToken = null;
@@ -159,7 +158,7 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 
 		final String clientId = client.getClientId();
 		final String clientSecret = client.getClientSecret();
-		
+
 		if (SECRET_BASIC.equals(client.getTokenEndpointAuthMethod())){
 			// use BASIC auth if configured to do so
 			restTemplate = new RestTemplate(factory) {
@@ -178,7 +177,7 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 			form.add("client_id", clientId);
 			form.add("client_secret", clientSecret);
 		}
-		
+
 		form.add("token", accessToken);
 
 		try {

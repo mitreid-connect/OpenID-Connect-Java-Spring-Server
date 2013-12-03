@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
+ * Copyright 2013 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,12 +17,9 @@
 package org.mitre.openid.connect.web;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.client.utils.URLEncodedUtils;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
@@ -42,7 +39,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
-import org.springframework.security.web.util.UrlUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -62,7 +58,7 @@ public class ClientDynamicRegistrationEndpoint {
 
 	@Autowired
 	private OAuth2TokenEntityService tokenService;
-	
+
 	@Autowired
 	private JwtSigningAndValidationService jwtService;
 
@@ -71,7 +67,7 @@ public class ClientDynamicRegistrationEndpoint {
 
 	@Autowired
 	private ConfigurationPropertiesBean config;
-	
+
 	@Autowired
 	private OIDCTokenService connectTokenService;
 
@@ -113,7 +109,7 @@ public class ClientDynamicRegistrationEndpoint {
 			if (allowedScopes == null || allowedScopes.isEmpty()) {
 				allowedScopes = scopeService.getDefaults();
 			}
-			
+
 			newClient.setScope(scopeService.toStrings(allowedScopes));
 
 
@@ -156,17 +152,17 @@ public class ClientDynamicRegistrationEndpoint {
 			// now save it
 			try {
 				ClientDetailsEntity savedClient = clientService.saveNewClient(newClient);
-	
+
 				// generate the registration access token
 				OAuth2AccessTokenEntity token = connectTokenService.createRegistrationAccessToken(savedClient);
 				tokenService.saveAccessToken(token);
-	
+
 				// send it all out to the view
-	
+
 				RegisteredClient registered = new RegisteredClient(savedClient, token.getValue(), config.getIssuer() + "register/" + UriUtils.encodePathSegment(savedClient.getClientId(), "UTF-8"));
 				m.addAttribute("client", registered);
 				m.addAttribute("code", HttpStatus.CREATED); // http 201
-	
+
 				return "clientInformationResponseView";
 			} catch (UnsupportedEncodingException e) {
 				logger.error("Unsupported encoding", e);
@@ -175,7 +171,7 @@ public class ClientDynamicRegistrationEndpoint {
 			} catch (IllegalArgumentException e) {
 				logger.error("Couldn't save client", e);
 				m.addAttribute("code", HttpStatus.BAD_REQUEST);
- 
+
 				return "httpCodeView";
 			}
 		} else {
@@ -281,23 +277,23 @@ public class ClientDynamicRegistrationEndpoint {
 			try {
 				// save the client
 				ClientDetailsEntity savedClient = clientService.updateClient(oldClient, newClient);
-	
+
 				// we return the token that we got in
 				// TODO: rotate this after some set amount of time
 				OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
 				OAuth2AccessTokenEntity token = tokenService.readAccessToken(details.getTokenValue());
-	
+
 				RegisteredClient registered = new RegisteredClient(savedClient, token.getValue(), config.getIssuer() + "register/" + UriUtils.encodePathSegment(savedClient.getClientId(), "UTF-8"));
-	
+
 				// send it all out to the view
 				m.addAttribute("client", registered);
 				m.addAttribute("code", HttpStatus.OK); // http 200
-	
+
 				return "clientInformationResponseView";
 			} catch (IllegalArgumentException e) {
 				logger.error("Couldn't save client", e);
 				m.addAttribute("code", HttpStatus.BAD_REQUEST);
- 
+
 				return "httpCodeView";
 			} catch (UnsupportedEncodingException e) {
 				logger.error("Unsupported encoding", e);

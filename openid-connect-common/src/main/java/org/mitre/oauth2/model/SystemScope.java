@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
+ * Copyright 2013 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -51,7 +51,7 @@ public class SystemScope {
 	private boolean structured = false; // is this a default scope for newly-registered clients?
 	private String structuredParamDescription;
 	private String structuredValue;
-	
+
 	/**
 	 * Make a blank system scope with no value
 	 */
@@ -66,7 +66,7 @@ public class SystemScope {
 	public SystemScope(String value) {
 		this.value = value;
 	}
-	
+
 	/**
 	 * @return the id
 	 */
@@ -147,14 +147,14 @@ public class SystemScope {
 	public boolean isDefaultScope() {
 		return defaultScope;
 	}
-	
+
 	/**
 	 * @param defaultScope the defaultScope to set
 	 */
 	public void setDefaultScope(boolean defaultScope) {
 		this.defaultScope = defaultScope;
 	}
-	
+
 	/**
 	 * @return the isStructured status
 	 */
@@ -163,7 +163,7 @@ public class SystemScope {
 	public boolean isStructured() {
 		return structured;
 	}
-	
+
 	/**
 	 * @param structured the structured to set
 	 */
@@ -176,7 +176,7 @@ public class SystemScope {
 	public String getStructuredParamDescription() {
 		return structuredParamDescription;
 	}
-	
+
 	/**
 	 * @param isStructured the isStructured to set
 	 */
@@ -184,7 +184,7 @@ public class SystemScope {
 		this.structuredParamDescription = d;
 	}
 
-	
+
 	/**
 	 * @return the structuredValue
 	 */
@@ -204,98 +204,98 @@ public class SystemScope {
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
-    @Override
-    public int hashCode() {
-	    final int prime = 31;
-	    int result = 1;
-	    result = prime * result + (allowDynReg ? 1231 : 1237);
-	    result = prime * result + (defaultScope ? 1231 : 1237);
-	    result = prime * result + ((description == null) ? 0 : description.hashCode());
-	    result = prime * result + ((icon == null) ? 0 : icon.hashCode());
-	    result = prime * result + ((id == null) ? 0 : id.hashCode());
-	    result = prime * result + (structured ? 1231 : 1237);
-	    result = prime * result + ((structuredParamDescription == null) ? 0 : structuredParamDescription.hashCode());
-	    result = prime * result + ((structuredValue == null) ? 0 : structuredValue.hashCode());
-	    result = prime * result + ((value == null) ? 0 : value.hashCode());
-	    return result;
-    }
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (allowDynReg ? 1231 : 1237);
+		result = prime * result + (defaultScope ? 1231 : 1237);
+		result = prime * result + ((description == null) ? 0 : description.hashCode());
+		result = prime * result + ((icon == null) ? 0 : icon.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + (structured ? 1231 : 1237);
+		result = prime * result + ((structuredParamDescription == null) ? 0 : structuredParamDescription.hashCode());
+		result = prime * result + ((structuredValue == null) ? 0 : structuredValue.hashCode());
+		result = prime * result + ((value == null) ? 0 : value.hashCode());
+		return result;
+	}
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
-    @Override
-    public boolean equals(Object obj) {
-	    if (this == obj) {
-		    return true;
-	    }
-	    if (obj == null) {
-		    return false;
-	    }
-	    if (!(obj instanceof SystemScope)) {
-		    return false;
-	    }
-	    SystemScope other = (SystemScope) obj;
-	    if (allowDynReg != other.allowDynReg) {
-		    return false;
-	    }
-	    if (defaultScope != other.defaultScope) {
-		    return false;
-	    }
-	    if (description == null) {
-		    if (other.description != null) {
-			    return false;
-		    }
-	    } else if (!description.equals(other.description)) {
-		    return false;
-	    }
-	    if (icon == null) {
-		    if (other.icon != null) {
-			    return false;
-		    }
-	    } else if (!icon.equals(other.icon)) {
-		    return false;
-	    }
-	    if (id == null) {
-		    if (other.id != null) {
-			    return false;
-		    }
-	    } else if (!id.equals(other.id)) {
-		    return false;
-	    }
-	    if (structured != other.structured) {
-		    return false;
-	    }
-	    if (structuredParamDescription == null) {
-		    if (other.structuredParamDescription != null) {
-			    return false;
-		    }
-	    } else if (!structuredParamDescription.equals(other.structuredParamDescription)) {
-		    return false;
-	    }
-	    if (structuredValue == null) {
-		    if (other.structuredValue != null) {
-			    return false;
-		    }
-	    } else if (!structuredValue.equals(other.structuredValue)) {
-		    return false;
-	    }
-	    if (value == null) {
-		    if (other.value != null) {
-			    return false;
-		    }
-	    } else if (!value.equals(other.value)) {
-		    return false;
-	    }
-	    return true;
-    }
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof SystemScope)) {
+			return false;
+		}
+		SystemScope other = (SystemScope) obj;
+		if (allowDynReg != other.allowDynReg) {
+			return false;
+		}
+		if (defaultScope != other.defaultScope) {
+			return false;
+		}
+		if (description == null) {
+			if (other.description != null) {
+				return false;
+			}
+		} else if (!description.equals(other.description)) {
+			return false;
+		}
+		if (icon == null) {
+			if (other.icon != null) {
+				return false;
+			}
+		} else if (!icon.equals(other.icon)) {
+			return false;
+		}
+		if (id == null) {
+			if (other.id != null) {
+				return false;
+			}
+		} else if (!id.equals(other.id)) {
+			return false;
+		}
+		if (structured != other.structured) {
+			return false;
+		}
+		if (structuredParamDescription == null) {
+			if (other.structuredParamDescription != null) {
+				return false;
+			}
+		} else if (!structuredParamDescription.equals(other.structuredParamDescription)) {
+			return false;
+		}
+		if (structuredValue == null) {
+			if (other.structuredValue != null) {
+				return false;
+			}
+		} else if (!structuredValue.equals(other.structuredValue)) {
+			return false;
+		}
+		if (value == null) {
+			if (other.value != null) {
+				return false;
+			}
+		} else if (!value.equals(other.value)) {
+			return false;
+		}
+		return true;
+	}
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
-    @Override
-    public String toString() {
-	    return "SystemScope [id=" + id + ", value=" + value + ", description=" + description + ", icon=" + icon + ", allowDynReg=" + allowDynReg + ", defaultScope=" + defaultScope + ", structured=" + structured + ", structuredParamDescription=" + structuredParamDescription + ", structuredValue="
-	            + structuredValue + "]";
-    }
+	@Override
+	public String toString() {
+		return "SystemScope [id=" + id + ", value=" + value + ", description=" + description + ", icon=" + icon + ", allowDynReg=" + allowDynReg + ", defaultScope=" + defaultScope + ", structured=" + structured + ", structuredParamDescription=" + structuredParamDescription + ", structuredValue="
+				+ structuredValue + "]";
+	}
 
 }

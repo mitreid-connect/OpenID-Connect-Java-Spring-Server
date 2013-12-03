@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
+ * Copyright 2013 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,11 +19,12 @@
  */
 package org.mitre.openid.connect;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.sql.Date;
 
 import org.junit.Test;
-import org.mitre.jose.JWEAlgorithmEmbed;
-import org.mitre.jose.JWEEncryptionMethodEmbed;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.RegisteredClient;
 
@@ -32,9 +33,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JWEAlgorithm;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * @author jricher

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
+ * Copyright 2013 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +15,11 @@
  * limitations under the License.
  ******************************************************************************/
 package org.mitre.openid.connect.service.impl;
+
+import static org.hamcrest.core.IsNot.not;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.matchers.JUnitMatchers.hasItem;
 
 import java.util.ArrayList;
 
@@ -34,11 +39,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import com.google.common.collect.Lists;
 
-import static org.hamcrest.core.IsNot.not;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.matchers.JUnitMatchers.hasItem;
-
 @RunWith(MockitoJUnitRunner.class)
 public class TestDefaultUserInfoUserDetailsService {
 
@@ -50,12 +50,12 @@ public class TestDefaultUserInfoUserDetailsService {
 
 	private UserInfo userInfoAdmin;
 	private UserInfo userInfoRegular;
-	
+
 	private String adminUsername = "username";
 	private String regularUsername = "regular";
 	private String adminSub = "adminSub12d3a1f34a2";
 	private String regularSub = "regularSub652ha23b";
-	
+
 	/**
 	 * Initialize the service and the mocked repository.
 	 * Initialize 2 users, one of them an admin, for use in unit tests.

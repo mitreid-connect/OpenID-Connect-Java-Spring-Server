@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
+ * Copyright 2013 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +15,8 @@
  * limitations under the License.
  ******************************************************************************/
 package org.mitre.openid.connect.client;
+
+import static org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod.SECRET_BASIC;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -63,8 +65,6 @@ import com.nimbusds.jose.util.Base64;
 import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 
-import static org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod.*;
-
 /**
  * OpenID Connect Authentication Filter class
  * 
@@ -93,7 +93,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 	private IssuerService issuerService;
 	private AuthRequestOptionsService authOptions = new StaticAuthRequestOptionsService(); // initialize with an empty set of options
 	private AuthRequestUrlBuilder authRequestBuilder;
-	
+
 	protected int httpSocketTimeout = HTTP_SOCKET_TIMEOUT;
 
 	/**
@@ -206,7 +206,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 			String state = createState(session);
 
 			Map<String, String> options = authOptions.getOptions(serverConfig, clientConfig, request);
-			
+
 			String authRequest = authRequestBuilder.buildAuthRequestUrl(serverConfig, clientConfig, redirectUri, nonce, state, options);
 
 			logger.debug("Auth Request:  " + authRequest);

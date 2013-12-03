@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
+ * Copyright 2013 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -109,7 +109,7 @@ public class OAuthConfirmationController {
 		model.put("redirect_uri", redirect_uri);
 
 		Set<SystemScope> scopes = scopeService.fromStrings(clientAuth.getScope());
-		
+
 		Set<SystemScope> sortedScopes = new LinkedHashSet<SystemScope>(scopes.size());
 		Set<SystemScope> systemScopes = scopeService.getAll();
 
@@ -121,7 +121,7 @@ public class OAuthConfirmationController {
 		}
 
 		sortedScopes.addAll(Sets.difference(scopes, systemScopes));
-		
+
 		model.put("scopes", sortedScopes);
 
 		return "approve";

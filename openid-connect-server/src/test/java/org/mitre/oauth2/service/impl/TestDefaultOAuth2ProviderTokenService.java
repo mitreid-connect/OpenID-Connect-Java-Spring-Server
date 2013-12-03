@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
+ * Copyright 2013 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -43,9 +43,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.security.oauth2.common.exceptions.InvalidScopeException;
@@ -96,7 +94,7 @@ public class TestDefaultOAuth2ProviderTokenService {
 
 	@Mock
 	private SystemScopeService scopeService;
-	
+
 	@InjectMocks
 	private DefaultOAuth2ProviderTokenService service;
 
@@ -107,8 +105,8 @@ public class TestDefaultOAuth2ProviderTokenService {
 	public void prepare() {
 		Mockito.reset(tokenRepository, authenticationHolderRepository, clientDetailsService, tokenEnhancer);
 
-		
-		
+
+
 		authentication = Mockito.mock(OAuth2Authentication.class);
 		OAuth2Request clientAuth = new OAuth2Request(null, clientId, null, true, scope, null, null, null, null);
 		Mockito.when(authentication.getOAuth2Request()).thenReturn(clientAuth);
@@ -135,9 +133,9 @@ public class TestDefaultOAuth2ProviderTokenService {
 		Mockito.when(refreshToken.getAuthenticationHolder()).thenReturn(storedAuthHolder);
 		Mockito.when(storedAuthHolder.getAuthentication()).thenReturn(storedAuthentication);
 		Mockito.when(storedAuthentication.getOAuth2Request()).thenReturn(storedAuthRequest);
-		
+
 		Mockito.when(authenticationHolderRepository.save(Matchers.any(AuthenticationHolderEntity.class))).thenReturn(storedAuthHolder);
-		
+
 		Mockito.when(scopeService.removeRestrictedScopes(Matchers.anySet())).then(AdditionalAnswers.returnsFirstArg());
 	}
 

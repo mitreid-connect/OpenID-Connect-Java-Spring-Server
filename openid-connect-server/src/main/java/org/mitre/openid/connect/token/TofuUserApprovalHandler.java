@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
+ * Copyright 2013 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -133,39 +133,39 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 
 			Collection<ApprovedSite> aps = approvedSiteService.getByClientIdAndUserId(clientId, userId);
 			for (ApprovedSite ap : aps) {
-	
+
 				if (!ap.isExpired()) {
-	
+
 					// if we find one that fits...
 					if (systemScopes.scopesMatch(ap.getAllowedScopes(), authorizationRequest.getScope())) {
-	
+
 						//We have a match; update the access date on the AP entry and return true.
 						ap.setAccessDate(new Date());
 						approvedSiteService.save(ap);
-	
+
 						authorizationRequest.getExtensions().put("approved_site", ap.getId());
 						authorizationRequest.setApproved(true);
 						alreadyApproved = true;
-						
+
 						setAuthTime(authorizationRequest);
 					}
 				}
 			}
-	
+
 			if (!alreadyApproved) {
 				WhitelistedSite ws = whitelistedSiteService.getByClientId(clientId);
 				if (ws != null && systemScopes.scopesMatch(ws.getAllowedScopes(), authorizationRequest.getScope())) {
-	
+
 					//Create an approved site
 					ApprovedSite newSite = approvedSiteService.createApprovedSite(clientId, userId, null, ws.getAllowedScopes(), ws);
 					authorizationRequest.getExtensions().put("approved_site", newSite.getId());
 					authorizationRequest.setApproved(true);
-					
+
 					setAuthTime(authorizationRequest);
 				}
 			}
 		}
-		
+
 		return authorizationRequest;
 
 	}
@@ -199,7 +199,7 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 
 					String scope = approvalParams.get(key);
 					Set<String> approveSet = Sets.newHashSet(scope);
-					
+
 					//Make sure this scope is allowed for the given client
 					if (systemScopes.scopesMatch(client.getScope(), approveSet)) {
 
@@ -208,12 +208,12 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 						if (systemScope.isStructured()){
 							String paramValue = approvalParams.get("scopeparam_" + scope);
 							allowedScopes.add(scope + ":"+paramValue);
-						// .. and if it's unstructured, we're all set
+							// .. and if it's unstructured, we're all set
 						} else {
 							allowedScopes.add(scope);
 						}
 					}
-					
+
 				}
 			}
 
@@ -235,7 +235,7 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 				ApprovedSite newSite = approvedSiteService.createApprovedSite(clientId, userId, timeout, allowedScopes, null);
 				authorizationRequest.getExtensions().put("approved_site", newSite.getId());
 			}
-			
+
 			setAuthTime(authorizationRequest);
 
 
@@ -245,7 +245,7 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 	}
 
 	/**
-	 * Get the auth time out of the current session and add it to the 
+	 * Get the auth time out of the current session and add it to the
 	 * auth request in the extensions map.
 	 * 
 	 * @param authorizationRequest

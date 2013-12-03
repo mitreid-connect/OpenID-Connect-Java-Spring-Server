@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
+ * Copyright 2013 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +15,10 @@
  * limitations under the License.
  ******************************************************************************/
 package org.mitre.openid.connect.service.impl;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -33,10 +37,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.test.annotation.Rollback;
 
 import com.google.common.collect.Sets;
-
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TestDefaultApprovedSiteService {

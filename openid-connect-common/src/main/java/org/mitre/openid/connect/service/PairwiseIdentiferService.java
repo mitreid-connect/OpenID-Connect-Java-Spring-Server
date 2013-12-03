@@ -21,6 +21,6 @@ public interface PairwiseIdentiferService {
 	 * @param client
 	 * @return
 	 */
-    public String getIdentifier(UserInfo userInfo, ClientDetailsEntity client);
+	public String getIdentifier(UserInfo userInfo, ClientDetailsEntity client);
 
 }

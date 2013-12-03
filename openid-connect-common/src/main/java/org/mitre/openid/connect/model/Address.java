@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
+ * Copyright 2013 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -149,85 +149,85 @@ public class Address {
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
-    @Override
-    public int hashCode() {
-	    final int prime = 31;
-	    int result = 1;
-	    result = prime * result + ((country == null) ? 0 : country.hashCode());
-	    result = prime * result + ((formatted == null) ? 0 : formatted.hashCode());
-	    result = prime * result + ((id == null) ? 0 : id.hashCode());
-	    result = prime * result + ((locality == null) ? 0 : locality.hashCode());
-	    result = prime * result + ((postalCode == null) ? 0 : postalCode.hashCode());
-	    result = prime * result + ((region == null) ? 0 : region.hashCode());
-	    result = prime * result + ((streetAddress == null) ? 0 : streetAddress.hashCode());
-	    return result;
-    }
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((country == null) ? 0 : country.hashCode());
+		result = prime * result + ((formatted == null) ? 0 : formatted.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((locality == null) ? 0 : locality.hashCode());
+		result = prime * result + ((postalCode == null) ? 0 : postalCode.hashCode());
+		result = prime * result + ((region == null) ? 0 : region.hashCode());
+		result = prime * result + ((streetAddress == null) ? 0 : streetAddress.hashCode());
+		return result;
+	}
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
-    @Override
-    public boolean equals(Object obj) {
-	    if (this == obj) {
-		    return true;
-	    }
-	    if (obj == null) {
-		    return false;
-	    }
-	    if (!(obj instanceof Address)) {
-		    return false;
-	    }
-	    Address other = (Address) obj;
-	    if (country == null) {
-		    if (other.country != null) {
-			    return false;
-		    }
-	    } else if (!country.equals(other.country)) {
-		    return false;
-	    }
-	    if (formatted == null) {
-		    if (other.formatted != null) {
-			    return false;
-		    }
-	    } else if (!formatted.equals(other.formatted)) {
-		    return false;
-	    }
-	    if (id == null) {
-		    if (other.id != null) {
-			    return false;
-		    }
-	    } else if (!id.equals(other.id)) {
-		    return false;
-	    }
-	    if (locality == null) {
-		    if (other.locality != null) {
-			    return false;
-		    }
-	    } else if (!locality.equals(other.locality)) {
-		    return false;
-	    }
-	    if (postalCode == null) {
-		    if (other.postalCode != null) {
-			    return false;
-		    }
-	    } else if (!postalCode.equals(other.postalCode)) {
-		    return false;
-	    }
-	    if (region == null) {
-		    if (other.region != null) {
-			    return false;
-		    }
-	    } else if (!region.equals(other.region)) {
-		    return false;
-	    }
-	    if (streetAddress == null) {
-		    if (other.streetAddress != null) {
-			    return false;
-		    }
-	    } else if (!streetAddress.equals(other.streetAddress)) {
-		    return false;
-	    }
-	    return true;
-    }
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof Address)) {
+			return false;
+		}
+		Address other = (Address) obj;
+		if (country == null) {
+			if (other.country != null) {
+				return false;
+			}
+		} else if (!country.equals(other.country)) {
+			return false;
+		}
+		if (formatted == null) {
+			if (other.formatted != null) {
+				return false;
+			}
+		} else if (!formatted.equals(other.formatted)) {
+			return false;
+		}
+		if (id == null) {
+			if (other.id != null) {
+				return false;
+			}
+		} else if (!id.equals(other.id)) {
+			return false;
+		}
+		if (locality == null) {
+			if (other.locality != null) {
+				return false;
+			}
+		} else if (!locality.equals(other.locality)) {
+			return false;
+		}
+		if (postalCode == null) {
+			if (other.postalCode != null) {
+				return false;
+			}
+		} else if (!postalCode.equals(other.postalCode)) {
+			return false;
+		}
+		if (region == null) {
+			if (other.region != null) {
+				return false;
+			}
+		} else if (!region.equals(other.region)) {
+			return false;
+		}
+		if (streetAddress == null) {
+			if (other.streetAddress != null) {
+				return false;
+			}
+		} else if (!streetAddress.equals(other.streetAddress)) {
+			return false;
+		}
+		return true;
+	}
 
 }

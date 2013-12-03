@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
+ * Copyright 2013 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -36,7 +36,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.oauth2.common.util.OAuth2Utils;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.stereotype.Service;
@@ -61,29 +60,29 @@ import com.nimbusds.jwt.SignedJWT;
 public class DefaultOIDCTokenService implements OIDCTokenService {
 
 	Logger logger = LoggerFactory.getLogger(DefaultOIDCTokenService.class);
-	
+
 	@Autowired
 	private JwtSigningAndValidationService jwtService;
-	
+
 	@Autowired
 	private AuthenticationHolderRepository authenticationHolderRepository;
-	
+
 	@Autowired
 	private ConfigurationPropertiesBean configBean;
-	
+
 	@Override
 	public OAuth2AccessTokenEntity createIdToken(ClientDetailsEntity client, OAuth2Request request, Date issueTime, String sub, JWSAlgorithm signingAlg, OAuth2AccessTokenEntity accessToken) {
-		
+
 		OAuth2AccessTokenEntity idTokenEntity = new OAuth2AccessTokenEntity();
 		JWTClaimsSet idClaims = new JWTClaimsSet();
-		
+
 		if (request.getExtensions().containsKey(AuthenticationTimeStamper.AUTH_TIMESTAMP)) {
 			Date authTime = (Date) request.getExtensions().get(AuthenticationTimeStamper.AUTH_TIMESTAMP);
 			idClaims.setClaim("auth_time", authTime.getTime() / 1000);
 		}
-		
+
 		idClaims.setIssueTime(issueTime);
-		
+
 		if (client.getIdTokenValiditySeconds() != null) {
 			Date expiration = new Date(System.currentTimeMillis() + (client.getIdTokenValiditySeconds() * 1000L));
 			idClaims.setExpirationTime(expiration);
@@ -98,15 +97,15 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 		if (!Strings.isNullOrEmpty(nonce)) {
 			idClaims.setCustomClaim("nonce", nonce);
 		}
-		
+
 		Set<String> responseTypes = request.getResponseTypes();
-		
+
 		if (responseTypes.contains("token")) {
 			// calculate the token hash
 			Base64URL at_hash = IdTokenHashUtils.getAccessTokenHash(signingAlg, accessToken);
 			idClaims.setClaim("at_hash", at_hash);
 		}
-		
+
 		SignedJWT idToken = new SignedJWT(new JWSHeader(signingAlg), idClaims);
 
 		jwtService.signJwt(idToken);
@@ -121,15 +120,16 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 		idTokenEntity.setScope(idScopes);
 
 		idTokenEntity.setClient(accessToken.getClient());
-		
+
 		return idTokenEntity;
 	}
-	
+
 	/**
 	 * @param client
 	 * @return
 	 * @throws AuthenticationException
 	 */
+	@Override
 	public OAuth2AccessTokenEntity createRegistrationAccessToken(ClientDetailsEntity client) {
 
 		Map<String, String> authorizationParameters = Maps.newHashMap();
@@ -164,9 +164,9 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 		token.setJwt(signed);
 
 		return token;
-		
+
 	}
-	
+
 	/**
 	 * @return the configBean
 	 */
@@ -209,5 +209,5 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 			AuthenticationHolderRepository authenticationHolderRepository) {
 		this.authenticationHolderRepository = authenticationHolderRepository;
 	}
-	
+
 }

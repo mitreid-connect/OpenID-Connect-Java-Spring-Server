@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
+ * Copyright 2013 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -74,7 +74,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	/**
 	 * 
 	 */
-    private static final int DEFAULT_ID_TOKEN_VALIDITY_SECONDS = 600;
+	private static final int DEFAULT_ID_TOKEN_VALIDITY_SECONDS = 600;
 
 	private static final long serialVersionUID = -1617727085733786296L;
 
@@ -110,7 +110,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	private JWSAlgorithmEmbed idTokenSignedResponseAlg = null; // id_token_signed_response_alg
 	private JWEAlgorithmEmbed idTokenEncryptedResponseAlg = null; // id_token_encrypted_response_alg
 	private JWEEncryptionMethodEmbed idTokenEncryptedResponseEnc = null; // id_token_encrypted_response_enc
-	
+
 	private JWSAlgorithmEmbed tokenEndpointAuthSigningAlg = null; // token_endpoint_auth_signing_alg
 
 	private Integer defaultMaxAge; // default_max_age
@@ -233,8 +233,8 @@ public class ClientDetailsEntity implements ClientDetails {
 		if (getIdTokenValiditySeconds() == null) {
 			setIdTokenValiditySeconds(DEFAULT_ID_TOKEN_VALIDITY_SECONDS);
 		}
-	}	
-	
+	}
+
 	/**
 	 * @return the id
 	 */
@@ -781,11 +781,11 @@ public class ClientDetailsEntity implements ClientDetails {
 	public JWSAlgorithmEmbed getTokenEndpointAuthSigningAlgEmbed() {
 		return tokenEndpointAuthSigningAlg;
 	}
-	
+
 	public void setTokenEndpointAuthSigningAlgEmbed(JWSAlgorithmEmbed tokenEndpointAuthSigningAlgEmbed) {
 		this.tokenEndpointAuthSigningAlg = tokenEndpointAuthSigningAlgEmbed;
 	}
-	
+
 	//
 	// Transient passthrough methods for JOSE elements
 	//
@@ -880,7 +880,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	public void setIdTokenEncryptedResponseEnc(EncryptionMethod idTokenEncryptedResponseEnc) {
 		this.idTokenEncryptedResponseEnc = new JWEEncryptionMethodEmbed(idTokenEncryptedResponseEnc);
 	}
-	
+
 	@Transient
 	public JWSAlgorithm getTokenEndpointAuthSigningAlg() {
 		if (tokenEndpointAuthSigningAlg != null) {
@@ -889,11 +889,11 @@ public class ClientDetailsEntity implements ClientDetails {
 			return null;
 		}
 	}
-	
+
 	public void setTokenEndpointAuthSigningAlg(JWSAlgorithm tokenEndpointAuthSigningAlg) {
 		this.tokenEndpointAuthSigningAlg = new JWSAlgorithmEmbed(tokenEndpointAuthSigningAlg);
 	}
-	
+
 	// END Transient JOSE methods
 
 	@Basic

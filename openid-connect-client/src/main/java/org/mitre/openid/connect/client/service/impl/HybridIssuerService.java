@@ -13,7 +13,7 @@ import com.google.common.collect.Sets;
  * 
  * Issuer service that tries to parse input from the inputs from a third-party
  * account chooser service (if possible), but falls back to webfinger discovery
- * if not. 
+ * if not.
  * 
  * @author jricher
  *
@@ -22,10 +22,10 @@ public class HybridIssuerService implements IssuerService {
 
 	private ThirdPartyIssuerService thirdPartyIssuerService = new ThirdPartyIssuerService();
 	private WebfingerIssuerService webfingerIssuerService = new WebfingerIssuerService();
-	
+
 	@Override
 	public IssuerServiceResponse getIssuer(HttpServletRequest request) {
-		
+
 		IssuerServiceResponse resp = thirdPartyIssuerService.getIssuer(request);
 		if (resp.shouldRedirect()) {
 			// if it wants us to redirect, try the webfinger approach first
@@ -33,9 +33,9 @@ public class HybridIssuerService implements IssuerService {
 		} else {
 			return resp;
 		}
-		
+
 	}
-	
+
 	public Set<String> getWhitelist() {
 		return Sets.union(thirdPartyIssuerService.getWhitelist(), webfingerIssuerService.getWhitelist());
 	}

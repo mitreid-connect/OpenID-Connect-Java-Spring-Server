@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
+ * Copyright 2013 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -62,17 +62,17 @@ public class JWTParsingIntrospectionConfigurationService implements Introspectio
 
 	private String getIssuer(String accessToken) {
 		try {
-	        JWT jwt = JWTParser.parse(accessToken);
+			JWT jwt = JWTParser.parse(accessToken);
 
-	        String issuer = jwt.getJWTClaimsSet().getIssuer();
+			String issuer = jwt.getJWTClaimsSet().getIssuer();
 
-	        return issuer;
+			return issuer;
 
-        } catch (ParseException e) {
-        	throw new IllegalArgumentException("Unable to parse JWT", e);
-        }
+		} catch (ParseException e) {
+			throw new IllegalArgumentException("Unable to parse JWT", e);
+		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.mitre.oauth2.introspectingfilter.IntrospectionConfigurationService#getIntrospectionUrl(java.lang.String)
 	 */
@@ -98,28 +98,28 @@ public class JWTParsingIntrospectionConfigurationService implements Introspectio
 	/* (non-Javadoc)
 	 * @see org.mitre.oauth2.introspectingfilter.service.IntrospectionConfigurationService#getClientConfiguration(java.lang.String)
 	 */
-    @Override
-    public RegisteredClient getClientConfiguration(String accessToken) {
-    	
-    	String issuer = getIssuer(accessToken);
-    	if (!Strings.isNullOrEmpty(issuer)) {
-	    	ServerConfiguration server = serverConfigurationService.getServerConfiguration(issuer);
-	    	if (server != null) {
-	    		RegisteredClient client = clientConfigurationService.getClientConfiguration(server);
-	    		if (client != null) {
-	    			return client;
-	    		} else {
-	    			throw new IllegalArgumentException("Could not find client configuration for issuer " + issuer);
-	    		}
-	    	} else {
-	    		throw new IllegalArgumentException("Could not find server configuration for issuer " + issuer);
-	    	}
-    	} else {
-    		throw new IllegalArgumentException("No issuer claim found in JWT");
-    	}
-    	
-    }
+	@Override
+	public RegisteredClient getClientConfiguration(String accessToken) {
+
+		String issuer = getIssuer(accessToken);
+		if (!Strings.isNullOrEmpty(issuer)) {
+			ServerConfiguration server = serverConfigurationService.getServerConfiguration(issuer);
+			if (server != null) {
+				RegisteredClient client = clientConfigurationService.getClientConfiguration(server);
+				if (client != null) {
+					return client;
+				} else {
+					throw new IllegalArgumentException("Could not find client configuration for issuer " + issuer);
+				}
+			} else {
+				throw new IllegalArgumentException("Could not find server configuration for issuer " + issuer);
+			}
+		} else {
+			throw new IllegalArgumentException("No issuer claim found in JWT");
+		}
+
+	}
 
 
-	
+
 }

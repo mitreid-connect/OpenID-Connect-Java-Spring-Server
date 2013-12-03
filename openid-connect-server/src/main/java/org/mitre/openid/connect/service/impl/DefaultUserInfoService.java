@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
+ * Copyright 2013 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,13 +37,13 @@ public class DefaultUserInfoService implements UserInfoService {
 
 	@Autowired
 	private UserInfoRepository userInfoRepository;
-	
+
 	@Autowired
 	private ClientDetailsEntityService clientService;
-	
+
 	@Autowired
 	private PairwiseIdentiferService pairwiseIdentifierService;
-	
+
 	@Override
 	public void save(UserInfo userInfo) {
 		userInfoRepository.save(userInfo);

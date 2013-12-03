@@ -22,7 +22,7 @@ import org.mitre.openid.connect.config.ServerConfiguration;
 public class StaticAuthRequestOptionsService implements AuthRequestOptionsService {
 
 	private Map<String, String> options = new HashMap<String, String>();
-	
+
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.client.service.AuthRequestOptionsService#getOptions(org.mitre.openid.connect.config.ServerConfiguration, org.mitre.oauth2.model.RegisteredClient, javax.servlet.http.HttpServletRequest)
 	 */
@@ -45,6 +45,6 @@ public class StaticAuthRequestOptionsService implements AuthRequestOptionsServic
 		this.options = options;
 	}
 
-	
-	
+
+
 }

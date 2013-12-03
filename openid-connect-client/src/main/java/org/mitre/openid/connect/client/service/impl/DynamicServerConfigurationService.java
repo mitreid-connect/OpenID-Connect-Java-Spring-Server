@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
+ * Copyright 2013 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,6 +18,13 @@
  * 
  */
 package org.mitre.openid.connect.client.service.impl;
+
+import static org.mitre.discovery.util.JsonUtils.getAsBoolean;
+import static org.mitre.discovery.util.JsonUtils.getAsEncryptionMethodList;
+import static org.mitre.discovery.util.JsonUtils.getAsJweAlgorithmList;
+import static org.mitre.discovery.util.JsonUtils.getAsJwsAlgorithmList;
+import static org.mitre.discovery.util.JsonUtils.getAsString;
+import static org.mitre.discovery.util.JsonUtils.getAsStringList;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -39,8 +46,6 @@ import com.google.common.cache.LoadingCache;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
-import static org.mitre.discovery.util.JsonUtils.*;
 
 /**
  * 
@@ -150,7 +155,7 @@ public class DynamicServerConfigurationService implements ServerConfigurationSer
 
 				conf.setIssuer(o.get("issuer").getAsString());
 
-				
+
 				conf.setAuthorizationEndpointUri(getAsString(o, "authorization_endpoint"));
 				conf.setTokenEndpointUri(getAsString(o, "token_endpoint"));
 				conf.setJwksUri(getAsString(o, "jwks_uri"));

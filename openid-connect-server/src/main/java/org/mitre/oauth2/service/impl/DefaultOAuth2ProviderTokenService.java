@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
+ * Copyright 2013 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -78,10 +78,10 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 
 	@Autowired
 	private TokenEnhancer tokenEnhancer;
-	
-	@Autowired 
+
+	@Autowired
 	private SystemScopeService scopeService;
-	
+
 	@Override
 	public Set<OAuth2AccessTokenEntity> getAllAccessTokensForUser(String id) {
 
@@ -124,7 +124,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 
 	@Autowired
 	private ApprovedSiteService approvedSiteService;
-	
+
 
 	@Override
 	public OAuth2AccessTokenEntity createAccessToken(OAuth2Authentication authentication) throws AuthenticationException, InvalidClientException {
@@ -151,7 +151,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 			scopes = scopeService.removeRestrictedScopes(scopes);
 			token.setScope(scopes);
 
-			// make it expire if necessary 
+			// make it expire if necessary
 			if (client.getAccessTokenValiditySeconds() != null && client.getAccessTokenValiditySeconds() > 0) {
 				Date expiration = new Date(System.currentTimeMillis() + (client.getAccessTokenValiditySeconds() * 1000L));
 				token.setExpiration(expiration);
@@ -261,7 +261,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		Set<String> refreshScopes = new HashSet<String>(refreshToken.getAuthenticationHolder().getAuthentication().getOAuth2Request().getScope());
 		// remove any of the special system scopes
 		refreshScopes = scopeService.removeRestrictedScopes(refreshScopes);
-		
+
 		Set<String> scope = authRequest.getScope() == null ? new HashSet<String>() : new HashSet<String>(authRequest.getScope());
 		// remove any of the special system scopes
 		scope = scopeService.removeRestrictedScopes(scope);
@@ -408,21 +408,21 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 			revokeRefreshToken(oAuth2RefreshTokenEntity);
 		}
 	}
-	
+
 	private Predicate<OAuth2AccessTokenEntity> isAccessTokenExpired = new Predicate<OAuth2AccessTokenEntity>() {
 		@Override
 		public boolean apply(OAuth2AccessTokenEntity input) {
 			return (input != null && input.isExpired());
 		}
 	};
-	
+
 	private Predicate<OAuth2RefreshTokenEntity> isRefreshTokenExpired = new Predicate<OAuth2RefreshTokenEntity>() {
 		@Override
 		public boolean apply(OAuth2RefreshTokenEntity input) {
 			return (input != null && input.isExpired());
 		}
 	};
-	
+
 	private Collection<OAuth2AccessTokenEntity> getExpiredAccessTokens() {
 		return Collections2.filter(tokenRepository.getAllAccessTokens(), isAccessTokenExpired);
 	}

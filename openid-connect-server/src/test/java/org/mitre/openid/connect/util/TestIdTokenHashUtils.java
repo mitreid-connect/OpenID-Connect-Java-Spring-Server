@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
+ * Copyright 2013 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -39,31 +39,31 @@ import com.nimbusds.jwt.PlainJWT;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class TestIdTokenHashUtils {
-	
+
 	@Mock
 	OAuth2AccessTokenEntity mockToken256;
 	@Mock
 	OAuth2AccessTokenEntity mockToken384;
 	@Mock
 	OAuth2AccessTokenEntity mockToken512;
-	
+
 	@Before
 	public void prepare() {
-		
+
 		JWTClaimsSet claims = new JWTClaimsSet();
 		claims.setType("JWT");
 		claims.setIssuer("www.example.com");
 		claims.setSubject("example_user");
 		claims.setClaim("alg", "HS256");
 		Mockito.when(mockToken256.getJwt()).thenReturn(new PlainJWT(claims));
-		
+
 		claims = new JWTClaimsSet();
 		claims.setType("JWT");
 		claims.setIssuer("www.another-example.net");
 		claims.setSubject("another_user");
 		claims.setClaim("alg", "ES384");
 		Mockito.when(mockToken384.getJwt()).thenReturn(new PlainJWT(claims));
-		
+
 		claims = new JWTClaimsSet();
 		claims.setType("JWT");
 		claims.setIssuer("www.different.com");
@@ -71,10 +71,10 @@ public class TestIdTokenHashUtils {
 		claims.setClaim("alg", "RS512");
 		Mockito.when(mockToken512.getJwt()).thenReturn(new PlainJWT(claims));
 	}
-	
+
 	@Test
 	public void getAccessTokenHash256() {
-		
+
 		/*
 		 * independently generate hash
 		 ascii of token = eyJhbGciOiJub25lIn0.eyJhbGciOiJIUzI1NiIsInN1YiI6ImV4YW1wbGVfdXNlciIsImlzcyI6Ind3dy5leGFtcGxlLmNvbSIsInR5cCI6IkpXVCJ9.
@@ -82,55 +82,55 @@ public class TestIdTokenHashUtils {
 		 */
 		String token = mockToken256.getJwt().serialize();
 		Base64URL expectedHash = new Base64URL("EP1gXNeESRH-n57baopfTQ");
-		
+
 		Base64URL resultHash = IdTokenHashUtils.getAccessTokenHash(JWSAlgorithm.HS256, mockToken256);
-		
+
 		assertEquals(expectedHash, resultHash);
 	}
-	
+
 	@Test
 	public void getAccessTokenHash384() {
-		
+
 		/*
 		 * independently generate hash
 		 ascii of token = eyJhbGciOiJub25lIn0.eyJhbGciOiJFUzM4NCIsInN1YiI6ImFub3RoZXJfdXNlciIsImlzcyI6Ind3dy5hbm90aGVyLWV4YW1wbGUubmV0IiwidHlwIjoiSldUIn0.
 		 base64url of hash = BWfFK73PQI36M1rg9R6VjMyWOE0-XvBK
 		 */
-		
-		String token = mockToken384.getJwt().serialize(); 
+
+		String token = mockToken384.getJwt().serialize();
 		Base64URL expectedHash = new Base64URL("BWfFK73PQI36M1rg9R6VjMyWOE0-XvBK");
-		
+
 		Base64URL resultHash = IdTokenHashUtils.getAccessTokenHash(JWSAlgorithm.ES384, mockToken384);
-		
+
 		assertEquals(expectedHash, resultHash);
 	}
-	
+
 	@Test
 	public void getAccessTokenHash512() {
-		
+
 		/*
 		 * independently generate hash
 		 ascii of token = eyJhbGciOiJub25lIn0.eyJhbGciOiJSUzUxMiIsInN1YiI6ImRpZmZlcmVudF91c2VyIiwiaXNzIjoid3d3LmRpZmZlcmVudC5jb20iLCJ0eXAiOiJKV1QifQ.
 		 base64url of hash = vGH3QMY-knpACkLgzdkTqu3C9jtvbf2Wk_RSu2vAx8k
 		 */
-		
-		String token = mockToken512.getJwt().serialize(); 
+
+		String token = mockToken512.getJwt().serialize();
 		Base64URL expectedHash = new Base64URL("vGH3QMY-knpACkLgzdkTqu3C9jtvbf2Wk_RSu2vAx8k");
-		
+
 		Base64URL resultHash = IdTokenHashUtils.getAccessTokenHash(JWSAlgorithm.RS512, mockToken512);
-		
+
 		assertEquals(expectedHash, resultHash);
 	}
-	
+
 	@Test
 	public void getCodeHash512() {
-		
+
 		String testCode = "b0x0rZ";
-		
+
 		Base64URL expectedHash = new Base64URL("R5DCRi5eOjlvyTAJfry2dNM9adJ2ElpDEKYYByYU920"); // independently generated
-		
+
 		Base64URL resultHash = IdTokenHashUtils.getCodeHash(JWSAlgorithm.ES512, testCode);
-		
+
 		assertEquals(expectedHash, resultHash);
 	}
 }

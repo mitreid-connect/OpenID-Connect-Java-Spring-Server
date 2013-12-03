@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
+ * Copyright 2013 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,7 +24,7 @@ import org.mitre.oauth2.model.RegisteredClient;
 
 /**
  * 
- * Always provides the (configured) IntrospectionURL and RegisteredClient regardless 
+ * Always provides the (configured) IntrospectionURL and RegisteredClient regardless
  * of token. Useful for talking to a single, trusted authorization server.
  * 
  * @author jricher
@@ -74,9 +74,9 @@ public class StaticIntrospectionConfigurationService implements IntrospectionCon
 	/* (non-Javadoc)
 	 * @see org.mitre.oauth2.introspectingfilter.service.IntrospectionConfigurationService#getClientConfiguration(java.lang.String)
 	 */
-    @Override
-    public RegisteredClient getClientConfiguration(String accessToken) {
-	    return getClientConfiguration();
-    }
+	@Override
+	public RegisteredClient getClientConfiguration(String accessToken) {
+		return getClientConfiguration();
+	}
 
 }

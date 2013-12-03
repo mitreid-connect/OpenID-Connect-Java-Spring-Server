@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
+ * Copyright 2013 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +16,11 @@
  ******************************************************************************/
 package org.mitre.oauth2.service.impl;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
+
 import java.util.Set;
 
 import org.junit.Before;
@@ -31,11 +36,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
 import com.google.common.collect.Sets;
-
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
 
 /**
  * @author wkim
@@ -100,11 +100,11 @@ public class TestDefaultSystemScopeService {
 
 		// extraScope1 : extra scope that is neither (defaults to false/false)
 		extraScope1 = new SystemScope(extraScope1String);
-		
+
 		// structuredScope1 : structured scope
 		structuredScope1 = new SystemScope(structuredScope1String);
 		structuredScope1.setStructured(true);
-		
+
 		// structuredScope1Value : structured scope with value
 		structuredScope1Value = new SystemScope(structuredScope1String);
 		structuredScope1Value.setStructured(true);
@@ -122,14 +122,14 @@ public class TestDefaultSystemScopeService {
 		// we re-use this value so we've got to use thenAnswer instead
 		Mockito.when(repository.getByValue(structuredScope1String)).thenAnswer(new Answer<SystemScope>() {
 			@Override
-            public SystemScope answer(InvocationOnMock invocation) throws Throwable {
+			public SystemScope answer(InvocationOnMock invocation) throws Throwable {
 				SystemScope s = new SystemScope(structuredScope1String);
 				s.setStructured(true);
 				return s;
-            }
-			
+			}
+
 		});
-		
+
 		Mockito.when(repository.getAll()).thenReturn(allScopes);
 	}
 
@@ -175,41 +175,41 @@ public class TestDefaultSystemScopeService {
 
 	@Test
 	public void scopesMatch() {
-		
+
 		Set<String> expected = Sets.newHashSet("foo", "bar", "baz");
 		Set<String> actualGood = Sets.newHashSet("foo", "baz", "bar");
 		Set<String> actualGood2 = Sets.newHashSet("foo", "bar");
 		Set<String> actualBad = Sets.newHashSet("foo", "bob", "bar");
-		
+
 		// same scopes, different order
 		assertThat(service.scopesMatch(expected, actualGood), is(true));
 
 		// subset
 		assertThat(service.scopesMatch(expected, actualGood2), is(true));
-		
+
 		// extra scope (fail)
 		assertThat(service.scopesMatch(expected, actualBad), is(false));
 	}
-	
+
 	@Test
 	public void scopesMatch_structured() {
 		Set<String> expected = Sets.newHashSet("foo", "bar", "baz");
 		Set<String> actualGood = Sets.newHashSet("foo:value", "baz", "bar");
 		Set<String> actualBad = Sets.newHashSet("foo:value", "bar:value");
-		
+
 		// note: we have to use "thenAnswer" here to mimic the repository not serializing the structuredValue field
 		Mockito.when(repository.getByValue("foo")).thenAnswer(new Answer<SystemScope>() {
 			@Override
-            public SystemScope answer(InvocationOnMock invocation) throws Throwable {
+			public SystemScope answer(InvocationOnMock invocation) throws Throwable {
 				SystemScope foo = new SystemScope("foo");
 				foo.setStructured(true);
 				return foo;
-            }
-			
+			}
+
 		});
-		
+
 		assertThat(service.scopesMatch(expected, actualGood), is(true));
-		
+
 		assertThat(service.scopesMatch(expected, actualBad), is(false));
 	}
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
+ * Copyright 2013 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -61,12 +61,12 @@ public class AuthenticationTimeStamper extends SavedRequestAwareAuthenticationSu
 		HttpSession session = request.getSession();
 
 		session.setAttribute(AUTH_TIMESTAMP, authTimestamp);
-		
+
 		if (session.getAttribute(PromptFilter.PROMPT_REQUESTED) != null) {
 			session.setAttribute(PromptFilter.PROMPTED, Boolean.TRUE);
 			session.removeAttribute(PromptFilter.PROMPT_REQUESTED);
 		}
-		
+
 		logger.info("Successful Authentication at " + authTimestamp.toString());
 
 		super.onAuthenticationSuccess(request, response, authentication);

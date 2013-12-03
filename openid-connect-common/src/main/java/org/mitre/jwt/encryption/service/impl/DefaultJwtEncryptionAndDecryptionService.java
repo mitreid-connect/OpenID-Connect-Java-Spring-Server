@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
+ * Copyright 2013 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -61,7 +61,7 @@ public class DefaultJwtEncryptionAndDecryptionService implements JwtEncryptionAn
 	private Map<String, JWEDecrypter> decrypters = new HashMap<String, JWEDecrypter>();
 
 	private String defaultEncryptionKeyId;
-	
+
 	private String defaultDecryptionKeyId;
 
 	private JWEAlgorithm defaultAlgorithm;
@@ -70,7 +70,7 @@ public class DefaultJwtEncryptionAndDecryptionService implements JwtEncryptionAn
 	private Map<String, JWK> keys = new HashMap<String, JWK>();
 
 	/**
-	 * Build this service based on the keys given. All public keys will be used to make encrypters, 
+	 * Build this service based on the keys given. All public keys will be used to make encrypters,
 	 * all private keys will be used to make decrypters.
 	 * 
 	 * @param keys
@@ -82,7 +82,7 @@ public class DefaultJwtEncryptionAndDecryptionService implements JwtEncryptionAn
 		this.keys = keys;
 		buildEncryptersAndDecrypters();
 	}
-	
+
 	/**
 	 * Build this service based on the given keystore. All keys must have a key
 	 * id ({@code kid}) field in order to be used.
@@ -93,7 +93,7 @@ public class DefaultJwtEncryptionAndDecryptionService implements JwtEncryptionAn
 	 * @throws JOSEException
 	 */
 	public DefaultJwtEncryptionAndDecryptionService(JWKSetKeyStore keyStore) throws NoSuchAlgorithmException, InvalidKeySpecException, JOSEException {
-		
+
 		// convert all keys in the keystore to a map based on key id
 		for (JWK key : keyStore.getKeys()) {
 			if (!Strings.isNullOrEmpty(key.getKeyID())) {
@@ -102,11 +102,11 @@ public class DefaultJwtEncryptionAndDecryptionService implements JwtEncryptionAn
 				throw new IllegalArgumentException("Tried to load a key from a keystore without a 'kid' field: " + key);
 			}
 		}
-		
+
 		buildEncryptersAndDecrypters();
-		
+
 	}
-	
+
 
 	@PostConstruct
 	public void afterPropertiesSet() throws NoSuchAlgorithmException, InvalidKeySpecException, JOSEException{
@@ -169,7 +169,7 @@ public class DefaultJwtEncryptionAndDecryptionService implements JwtEncryptionAn
 		try {
 			jwt.encrypt(encrypter);
 		} catch (JOSEException e) {
-			
+
 			logger.error("Failed to encrypt JWT, error was: ", e);
 		}
 
@@ -189,7 +189,7 @@ public class DefaultJwtEncryptionAndDecryptionService implements JwtEncryptionAn
 		try {
 			jwt.decrypt(decrypter);
 		} catch (JOSEException e) {
-			
+
 			logger.error("Failed to decrypt JWT, error was: ", e);
 		}
 
@@ -197,10 +197,10 @@ public class DefaultJwtEncryptionAndDecryptionService implements JwtEncryptionAn
 
 	/**
 	 * Builds all the encrypters and decrypters for this service based on the key map.
-	 * @throws  
-	 * @throws InvalidKeySpecException 
-	 * @throws NoSuchAlgorithmException 
-	 * @throws JOSEException 
+	 * @throws
+	 * @throws InvalidKeySpecException
+	 * @throws NoSuchAlgorithmException
+	 * @throws JOSEException
 	 */
 	private void buildEncryptersAndDecrypters() throws NoSuchAlgorithmException, InvalidKeySpecException, JOSEException {
 
@@ -229,7 +229,7 @@ public class DefaultJwtEncryptionAndDecryptionService implements JwtEncryptionAn
 
 				DirectEncrypter encrypter = new DirectEncrypter(((OctetSequenceKey) jwk).toByteArray());
 				DirectDecrypter decrypter = new DirectDecrypter(((OctetSequenceKey) jwk).toByteArray());
-				
+
 				encrypters.put(id, encrypter);
 				decrypters.put(id, decrypter);
 
@@ -274,20 +274,20 @@ public class DefaultJwtEncryptionAndDecryptionService implements JwtEncryptionAn
 	/* (non-Javadoc)
 	 * @see org.mitre.jwt.encryption.service.JwtEncryptionAndDecryptionService#getAllEncryptionEncsSupported()
 	 */
-    @Override
-    public Collection<EncryptionMethod> getAllEncryptionEncsSupported() {
-    	Set<EncryptionMethod> encs = new HashSet<EncryptionMethod>();
-    	
-    	for (JWEEncrypter encrypter : encrypters.values()) {
-    		encs.addAll(encrypter.supportedEncryptionMethods());
-    	}
-    	
-    	for (JWEDecrypter decrypter : decrypters.values()) {
-    		encs.addAll(decrypter.supportedEncryptionMethods());
-    	}
-    	
-    	return encs;
-    }
+	@Override
+	public Collection<EncryptionMethod> getAllEncryptionEncsSupported() {
+		Set<EncryptionMethod> encs = new HashSet<EncryptionMethod>();
 
-	
+		for (JWEEncrypter encrypter : encrypters.values()) {
+			encs.addAll(encrypter.supportedEncryptionMethods());
+		}
+
+		for (JWEDecrypter decrypter : decrypters.values()) {
+			encs.addAll(decrypter.supportedEncryptionMethods());
+		}
+
+		return encs;
+	}
+
+
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
+ * Copyright 2013 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -61,7 +61,7 @@ public class DiscoveryEndpoint {
 
 	@Autowired
 	private JwtSigningAndValidationService signService;
-	
+
 	@Autowired
 	private JwtEncryptionAndDecryptionService encService;
 
@@ -306,7 +306,7 @@ public class DiscoveryEndpoint {
 
 		m.put("introspection_endpoint", baseUrl + "introspect"); // token introspection endpoint for verifying tokens
 		m.put("revocation_endpoint", baseUrl + "revoke"); // token revocation endpoint
-		
+
 		model.addAttribute("entity", m);
 
 		return "jsonEntityView";

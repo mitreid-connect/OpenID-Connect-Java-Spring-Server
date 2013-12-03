@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
+ * Copyright 2013 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -64,10 +64,10 @@ public class ClientAPI {
 
 	@Autowired
 	private ClientDetailsEntityService clientService;
-	
+
 	@Autowired
 	private UserInfoService userInfoService;
-	
+
 	private JsonParser parser = new JsonParser();
 
 	private Gson gson = new GsonBuilder()
@@ -173,7 +173,7 @@ public class ClientAPI {
 				client.setContacts(Sets.newHashSet(user.getEmail()));
 			}
 		}
-		
+
 		client.setDynamicallyRegistered(false);
 
 		ClientDetailsEntity newClient = clientService.saveNewClient(client);

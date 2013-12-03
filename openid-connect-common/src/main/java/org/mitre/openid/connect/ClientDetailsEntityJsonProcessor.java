@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
+ * Copyright 2013 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,6 +20,14 @@
 package org.mitre.openid.connect;
 
 
+import static org.mitre.discovery.util.JsonUtils.getAsArray;
+import static org.mitre.discovery.util.JsonUtils.getAsDate;
+import static org.mitre.discovery.util.JsonUtils.getAsJweAlgorithm;
+import static org.mitre.discovery.util.JsonUtils.getAsJweEncryptionMethod;
+import static org.mitre.discovery.util.JsonUtils.getAsJwsAlgorithm;
+import static org.mitre.discovery.util.JsonUtils.getAsString;
+import static org.mitre.discovery.util.JsonUtils.getAsStringSet;
+
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity.AppType;
 import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
@@ -32,8 +40,6 @@ import com.google.common.collect.Sets;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
-import static org.mitre.discovery.util.JsonUtils.*;
 
 /**
  * @author jricher
@@ -110,7 +116,7 @@ public class ClientDetailsEntityJsonProcessor {
 			c.setIdTokenSignedResponseAlg(getAsJwsAlgorithm(o, "id_token_signed_response_alg"));
 			c.setIdTokenEncryptedResponseAlg(getAsJweAlgorithm(o, "id_token_encrypted_response_alg"));
 			c.setIdTokenEncryptedResponseEnc(getAsJweEncryptionMethod(o, "id_token_encrypted_response_enc"));
-			
+
 			c.setTokenEndpointAuthSigningAlg(getAsJwsAlgorithm(o, "token_endpoint_auth_signing_alg"));
 
 			if (o.has("default_max_age")) {

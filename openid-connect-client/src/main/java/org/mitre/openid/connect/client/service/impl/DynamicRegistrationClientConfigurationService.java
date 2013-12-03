@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
+ * Copyright 2013 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -165,7 +165,7 @@ public class DynamicRegistrationClientConfigurationService implements ClientConf
 		private HttpClient httpClient = new DefaultHttpClient();
 		private HttpComponentsClientHttpRequestFactory httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
 		private Gson gson = new Gson(); // note that this doesn't serialize nulls by default
-		
+
 		@Override
 		public RegisteredClient load(ServerConfiguration serverConfig) throws Exception {
 			RestTemplate restTemplate = new RestTemplate(httpFactory);

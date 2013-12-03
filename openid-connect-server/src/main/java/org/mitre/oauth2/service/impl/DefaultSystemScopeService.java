@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
+ * Copyright 2013 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -63,7 +63,7 @@ public class DefaultSystemScopeService implements SystemScopeService {
 			return (input != null && input.isAllowDynReg());
 		}
 	};
-	
+
 	private Predicate<String> isRestricted = new Predicate<String>() {
 		@Override
 		public boolean apply(String input) {
@@ -90,11 +90,11 @@ public class DefaultSystemScopeService implements SystemScopeService {
 						s.setStructured(true);
 					}
 				}
-				
+
 				if (s.isStructured() && parts.size() > 1) {
 					s.setStructuredValue(parts.get(1));
 				}
-				
+
 				return s;
 			}
 		}
@@ -200,50 +200,50 @@ public class DefaultSystemScopeService implements SystemScopeService {
 	private List<String> parseStructuredScopeValue(String value) {
 		return Lists.newArrayList(Splitter.on(":").split(value));
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.mitre.oauth2.service.SystemScopeService#scopesMatch(java.util.Set, java.util.Set)
 	 */
-    @Override
-    public boolean scopesMatch(Set<String> expected, Set<String> actual) {
-    	
-    	Set<SystemScope> ex = fromStrings(expected);
-    	Set<SystemScope> act = fromStrings(actual);
-    	
-    	for (SystemScope actScope : act) {
-    		// first check to see if there's an exact match
-    		if (!ex.contains(actScope)) {
-    			// we didn't find an exact match
-    			if (actScope.isStructured() && !Strings.isNullOrEmpty(actScope.getStructuredValue())) {
-	    			// if we didn't get an exact match but the actual scope is structured, we need to check further
+	@Override
+	public boolean scopesMatch(Set<String> expected, Set<String> actual) {
 
-    				// first, find the "base" scope for this 
-    				SystemScope base = getByValue(actScope.getValue());
-	    			if (!ex.contains(base)) {
-	    				// if the expected doesn't contain the base scope, fail
-	    				return false;
-	    			} else {
-	    				// we did find an exact match, need to check the rest
-	    			}
-	    		} else {
-	    			// the scope wasn't structured, fail now
-	    			return false;
-	    		}
-    		} else {
-    			// if we did find an exact match, we need to check the rest
-    		}
-        }
-    	
-    	// if we got all the way down here, the setup passed
-    	return true;
-    	
-    }
+		Set<SystemScope> ex = fromStrings(expected);
+		Set<SystemScope> act = fromStrings(actual);
+
+		for (SystemScope actScope : act) {
+			// first check to see if there's an exact match
+			if (!ex.contains(actScope)) {
+				// we didn't find an exact match
+				if (actScope.isStructured() && !Strings.isNullOrEmpty(actScope.getStructuredValue())) {
+					// if we didn't get an exact match but the actual scope is structured, we need to check further
+
+					// first, find the "base" scope for this
+					SystemScope base = getByValue(actScope.getValue());
+					if (!ex.contains(base)) {
+						// if the expected doesn't contain the base scope, fail
+						return false;
+					} else {
+						// we did find an exact match, need to check the rest
+					}
+				} else {
+					// the scope wasn't structured, fail now
+					return false;
+				}
+			} else {
+				// if we did find an exact match, we need to check the rest
+			}
+		}
+
+		// if we got all the way down here, the setup passed
+		return true;
+
+	}
 
 	@Override
 	public Set<String> removeRestrictedScopes(Set<String> scopes) {
-		return new LinkedHashSet<String>(Collections2.filter(scopes, isRestricted));		
+		return new LinkedHashSet<String>(Collections2.filter(scopes, isRestricted));
 	}
 
-	
-	
+
+
 }

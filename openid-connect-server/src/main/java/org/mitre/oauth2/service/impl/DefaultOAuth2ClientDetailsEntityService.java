@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
+ * Copyright 2013 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -58,7 +58,7 @@ import com.google.gson.JsonParser;
 public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEntityService {
 
 	private static Logger logger = LoggerFactory.getLogger(DefaultOAuth2ClientDetailsEntityService.class);
-	
+
 	@Autowired
 	private OAuth2ClientRepository clientRepository;
 
@@ -73,7 +73,7 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 
 	@Autowired
 	private BlacklistedSiteService blacklistedSiteService;
-	
+
 	@Autowired
 	private SystemScopeService scopeService;
 
@@ -112,30 +112,30 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 
 		// timestamp this to right now
 		client.setCreatedAt(new Date());
-		
-		
+
+
 		// check the sector URI
 		if (!Strings.isNullOrEmpty(client.getSectorIdentifierUri())) {
 			try {
-	            List<String> redirects = sectorRedirects.get(client.getSectorIdentifierUri());
-	            
-	            if (client.getRegisteredRedirectUri() != null) {
-	            	for (String uri : client.getRegisteredRedirectUri()) {
-	            		if (!redirects.contains(uri)) {
-	            			throw new IllegalArgumentException("Requested Redirect URI " + uri + " is not listed at sector identifier " + redirects);
-	            		}
-	            	}
-	            }
-	            
-            } catch (ExecutionException e) {
-            	throw new IllegalArgumentException("Unable to load sector identifier URI: " + client.getSectorIdentifierUri());
-            }
+				List<String> redirects = sectorRedirects.get(client.getSectorIdentifierUri());
+
+				if (client.getRegisteredRedirectUri() != null) {
+					for (String uri : client.getRegisteredRedirectUri()) {
+						if (!redirects.contains(uri)) {
+							throw new IllegalArgumentException("Requested Redirect URI " + uri + " is not listed at sector identifier " + redirects);
+						}
+					}
+				}
+
+			} catch (ExecutionException e) {
+				throw new IllegalArgumentException("Unable to load sector identifier URI: " + client.getSectorIdentifierUri());
+			}
 		}
-		
+
 
 		// make sure a client doesn't get any special system scopes
 		client.setScope(scopeService.removeRestrictedScopes(client.getScope()));
-		
+
 		return clientRepository.saveClient(client);
 	}
 
@@ -218,24 +218,24 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 			// check the sector URI
 			if (!Strings.isNullOrEmpty(newClient.getSectorIdentifierUri())) {
 				try {
-		            List<String> redirects = sectorRedirects.get(newClient.getSectorIdentifierUri());
-		            
-		            if (newClient.getRegisteredRedirectUri() != null) {
-		            	for (String uri : newClient.getRegisteredRedirectUri()) {
-		            		if (!redirects.contains(uri)) {
-		            			throw new IllegalArgumentException("Requested Redirect URI " + uri + " is not listed at sector identifier " + redirects);
-		            		}
-		            	}
-		            }
-		            
-	            } catch (ExecutionException e) {
-	            	throw new IllegalArgumentException("Unable to load sector identifier URI: " + newClient.getSectorIdentifierUri());
-	            }
+					List<String> redirects = sectorRedirects.get(newClient.getSectorIdentifierUri());
+
+					if (newClient.getRegisteredRedirectUri() != null) {
+						for (String uri : newClient.getRegisteredRedirectUri()) {
+							if (!redirects.contains(uri)) {
+								throw new IllegalArgumentException("Requested Redirect URI " + uri + " is not listed at sector identifier " + redirects);
+							}
+						}
+					}
+
+				} catch (ExecutionException e) {
+					throw new IllegalArgumentException("Unable to load sector identifier URI: " + newClient.getSectorIdentifierUri());
+				}
 			}
 
 			// make sure a client doesn't get any special system scopes
 			newClient.setScope(scopeService.removeRestrictedScopes(newClient.getScope()));
-			
+
 			return clientRepository.updateClient(oldClient.getId(), newClient);
 		}
 		throw new IllegalArgumentException("Neither old client or new client can be null!");
@@ -270,42 +270,42 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 	/**
 	 * Utility class to load a sector identifier's set of authorized redirect URIs.
 	 * 
-     * @author jricher
-     *
-     */
-    private class SectorIdentifierLoader extends CacheLoader<String, List<String>> {
+	 * @author jricher
+	 *
+	 */
+	private class SectorIdentifierLoader extends CacheLoader<String, List<String>> {
 		private HttpClient httpClient = new DefaultHttpClient();
 		private HttpComponentsClientHttpRequestFactory httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
 		private RestTemplate restTemplate = new RestTemplate(httpFactory);
 		private JsonParser parser = new JsonParser();
-		
-        @Override
-        public List<String> load(String key) throws Exception {
 
-        	if (!key.startsWith("https")) {
-        		// TODO: this should optionally throw an error (#506)
-        		logger.error("Sector identifier doesn't start with https, loading anyway...");
-        	}
-        	
-        	// key is the sector URI
+		@Override
+		public List<String> load(String key) throws Exception {
+
+			if (!key.startsWith("https")) {
+				// TODO: this should optionally throw an error (#506)
+				logger.error("Sector identifier doesn't start with https, loading anyway...");
+			}
+
+			// key is the sector URI
 			String jsonString = restTemplate.getForObject(key, String.class);
 			JsonElement json = parser.parse(jsonString);
-			
+
 			if (json.isJsonArray()) {
 				List<String> redirectUris = new ArrayList<String>();
 				for (JsonElement el : json.getAsJsonArray()) {
-	                redirectUris.add(el.getAsString());
-                }
+					redirectUris.add(el.getAsString());
+				}
 
 				logger.info("Found " + redirectUris + " for sector " + key);
-				
+
 				return redirectUris;
 			} else {
 				return null;
 			}
-        	
-        }
 
-    }
+		}
+
+	}
 
 }

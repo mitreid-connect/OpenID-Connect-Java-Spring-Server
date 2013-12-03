@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
+ * Copyright 2013 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -67,15 +67,15 @@ public class UserInfoEndpoint {
 			model.addAttribute("code", HttpStatus.NOT_FOUND);
 			return "httpCodeView";
 		}
-		
+
 		model.addAttribute("scope", auth.getOAuth2Request().getScope());
-		
+
 		model.addAttribute("authorizedClaims", auth.getOAuth2Request().getExtensions().get("claims"));
 
 		if (!Strings.isNullOrEmpty(claimsRequestJsonString)) {
 			model.addAttribute("requestedClaims", claimsRequestJsonString);
 		}
-		
+
 		model.addAttribute("userInfo", userInfo);
 
 		return "userInfoView";

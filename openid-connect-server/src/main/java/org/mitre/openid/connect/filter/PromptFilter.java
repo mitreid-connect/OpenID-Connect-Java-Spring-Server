@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013 The MITRE Corporation 
+ * Copyright 2013 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -43,8 +43,6 @@ import org.springframework.security.oauth2.provider.OAuth2RequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
 
-import com.google.common.base.Strings;
-
 /**
  * @author jricher
  *
@@ -56,10 +54,10 @@ public class PromptFilter extends GenericFilterBean {
 
 	public final static String PROMPTED = "PROMPT_FILTER_PROMPTED";
 	public final static String PROMPT_REQUESTED = "PROMPT_FILTER_REQUESTED";
-	
+
 	@Autowired
 	private OAuth2RequestFactory authRequestFactory;
-	
+
 	/**
 	 * 
 	 */
@@ -68,7 +66,7 @@ public class PromptFilter extends GenericFilterBean {
 
 		HttpServletRequest request = (HttpServletRequest) req;
 		HttpServletResponse response = (HttpServletResponse) res;
-		
+
 		AuthorizationRequest authRequest = authRequestFactory.createAuthorizationRequest(createRequestMap(request.getParameterMap()));
 
 		if (authRequest.getExtensions().get("prompt") != null) {
@@ -92,31 +90,31 @@ public class PromptFilter extends GenericFilterBean {
 				}
 			} else if (prompt.equals("login")) {
 
-    			// first see if the user's already been prompted in this session
+				// first see if the user's already been prompted in this session
 				HttpSession session = request.getSession();
-    			if (session.getAttribute(PROMPTED) == null) {
-    				// user hasn't been PROMPTED yet, we need to check    			
+				if (session.getAttribute(PROMPTED) == null) {
+					// user hasn't been PROMPTED yet, we need to check
 
-    				session.setAttribute(PROMPT_REQUESTED, Boolean.TRUE);
-    				
-    				// see if the user's logged in
-    				Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-	        		if (auth != null) {
-	        			// user's been logged in already (by session management)
-	        			// log them out and continue
-	        			SecurityContextHolder.getContext().setAuthentication(null);
-	        			chain.doFilter(req, res);
-	        		} else {
-	        			// user hasn't been logged in yet, we can keep going since we'll get there
-	        			chain.doFilter(req, res);
-	        		}
-    			} else {
-    				// user has been PROMPTED, we're fine
-    				
-    				// but first, undo the prompt tag
-    				session.removeAttribute(PROMPTED);
-        			chain.doFilter(req, res);
-    			}
+					session.setAttribute(PROMPT_REQUESTED, Boolean.TRUE);
+
+					// see if the user's logged in
+					Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+					if (auth != null) {
+						// user's been logged in already (by session management)
+						// log them out and continue
+						SecurityContextHolder.getContext().setAuthentication(null);
+						chain.doFilter(req, res);
+					} else {
+						// user hasn't been logged in yet, we can keep going since we'll get there
+						chain.doFilter(req, res);
+					}
+				} else {
+					// user has been PROMPTED, we're fine
+
+					// but first, undo the prompt tag
+					session.removeAttribute(PROMPTED);
+					chain.doFilter(req, res);
+				}
 			} else {
 				// prompt parameter is a value we don't care about, not our business
 				chain.doFilter(req, res);
@@ -133,12 +131,12 @@ public class PromptFilter extends GenericFilterBean {
 				long seconds = (now.getTime() - authTime.getTime()) / 1000;
 				if (seconds > max) {
 					// session is too old, log the user out and continue
-        			SecurityContextHolder.getContext().setAuthentication(null);
+					SecurityContextHolder.getContext().setAuthentication(null);
 				}
 			}
-			
+
 			chain.doFilter(req, res);
-    	} else {
+		} else {
 			// no prompt parameter, not our business
 			chain.doFilter(req, res);
 		}
@@ -149,16 +147,16 @@ public class PromptFilter extends GenericFilterBean {
 	 * @param parameterMap
 	 * @return
 	 */
-    private Map<String, String> createRequestMap(Map<String, String[]> parameterMap) {
-    	Map<String, String> requestMap = new HashMap<String, String>();
-    	for (String key : parameterMap.keySet()) {    		
-	        String[] val = parameterMap.get(key);
+	private Map<String, String> createRequestMap(Map<String, String[]> parameterMap) {
+		Map<String, String> requestMap = new HashMap<String, String>();
+		for (String key : parameterMap.keySet()) {
+			String[] val = parameterMap.get(key);
 			if (val != null && val.length > 0) {
-	        	requestMap.put(key, val[0]); // add the first value only (which is what Spring seems to do)
-	        }
-        }
-    	
-    	return requestMap;
-    }
+				requestMap.put(key, val[0]); // add the first value only (which is what Spring seems to do)
+			}
+		}
+
+		return requestMap;
+	}
 
 }
