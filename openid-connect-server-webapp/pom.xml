@@ -52,6 +52,15 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.mortbay.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <configuration>
+                	<webAppConfig>
+                	    <contextPath>/openid-connect-server-webapp</contextPath>
+                	</webAppConfig>
+                </configuration>
+            </plugin>
         </plugins>
   </build>
   <dependencies>
