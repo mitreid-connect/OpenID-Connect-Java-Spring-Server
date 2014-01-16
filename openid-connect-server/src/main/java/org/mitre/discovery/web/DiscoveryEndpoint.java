@@ -260,7 +260,7 @@ public class DiscoveryEndpoint {
 		m.put("response_types_supported", Lists.newArrayList("code", "token")); // we don't support these yet: , "id_token", "id_token token"));
 		m.put("grant_types_supported", Lists.newArrayList("authorization_code", "implicit", "urn:ietf:params:oauth:grant-type:jwt-bearer", "client_credentials", "urn:ietf:params:oauth:grant_type:redelegate"));
 		//acr_values_supported
-		m.put("subject_types_supported", Lists.newArrayList("public", "pairwise"));
+		m.put("subject_types_supported", Lists.newArrayList("public"));
 		//userinfo_signing_alg_values_supported
 		//userinfo_encryption_alg_values_supported
 		//userinfo_encryption_enc_values_supported
