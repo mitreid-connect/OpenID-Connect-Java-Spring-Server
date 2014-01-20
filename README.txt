@@ -29,5 +29,5 @@ Authors: Justin Richer, Amanda Anganes, Michael Walsh, Michael Jett, Steve Moore
 
 
 
-Copyright 2013, The MITRE Corporation (http://www.mitre.org/)
+Copyright 2014, The MITRE Corporation (http://www.mitre.org/)
   and the MIT Kerberos and Internet Trust Consortium (http://kit.mit.edu/)
