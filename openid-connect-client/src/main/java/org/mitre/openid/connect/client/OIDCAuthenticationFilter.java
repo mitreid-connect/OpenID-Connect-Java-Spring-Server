@@ -26,6 +26,7 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.Map;
 
+import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -52,6 +53,7 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
@@ -77,6 +79,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 	protected final static String STATE_SESSION_VARIABLE = "state";
 	protected final static String NONCE_SESSION_VARIABLE = "nonce";
 	protected final static String ISSUER_SESSION_VARIABLE = "issuer";
+	protected static final String TARGET_SESSION_VARIABLE = "target";
 	protected final static int HTTP_SOCKET_TIMEOUT = 30000;
 
 	protected final static String FILTER_PROCESSES_URL = "/openid_connect_login";
@@ -94,6 +97,9 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 	private AuthRequestOptionsService authOptions = new StaticAuthRequestOptionsService(); // initialize with an empty set of options
 	private AuthRequestUrlBuilder authRequestBuilder;
 
+	// private helper to handle target link URLs
+	private TargetLinkURIAuthenticationSuccessHandler targetSuccessHandler = new TargetLinkURIAuthenticationSuccessHandler();
+	
 	protected int httpSocketTimeout = HTTP_SOCKET_TIMEOUT;
 
 	/**
@@ -101,6 +107,8 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 	 */
 	protected OIDCAuthenticationFilter() {
 		super(FILTER_PROCESSES_URL);
+		targetSuccessHandler.passthrough = super.getSuccessHandler();
+		super.setAuthenticationSuccessHandler(targetSuccessHandler);
 	}
 
 	@Override
@@ -169,6 +177,11 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 		} else {
 			String issuer = issResp.getIssuer();
 
+			if (!Strings.isNullOrEmpty(issResp.getTargetLinkUri())) {
+				// there's a target URL in the response, we should save this so we can forward to it later
+				session.setAttribute(TARGET_SESSION_VARIABLE, issResp.getTargetLinkUri());
+			}
+			
 			if (Strings.isNullOrEmpty(issuer)) {
 				logger.error("No issuer found: " + issuer);
 				throw new AuthenticationServiceException("No issuer found: " + issuer);
@@ -524,6 +537,47 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 		return getStoredSessionString(session, STATE_SESSION_VARIABLE);
 	}
 
+
+	@Override
+	public void setAuthenticationSuccessHandler(AuthenticationSuccessHandler successHandler) {
+		targetSuccessHandler.passthrough = successHandler;
+		super.setAuthenticationSuccessHandler(targetSuccessHandler);
+	}
+
+
+
+
+	/**
+	 * Handle a successful authentication event. If the issuer service sets
+	 * a target URL, we'll go to that. Otherwise we'll let the superclass handle
+	 * it for us with the configured behavior.
+	 */
+	protected class TargetLinkURIAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
+
+		private AuthenticationSuccessHandler passthrough;
+		
+		@Override
+		public void onAuthenticationSuccess(HttpServletRequest request,
+				HttpServletResponse response, Authentication authentication)
+				throws IOException, ServletException {
+			
+			HttpSession session = request.getSession();
+			
+			// check to see if we've got a target
+			String target = getStoredSessionString(session, TARGET_SESSION_VARIABLE);
+			
+			if (!Strings.isNullOrEmpty(target)) {
+				// TODO (#547): should we (can we?) check to see if this URL is part of our app's namespace?
+				session.removeAttribute(TARGET_SESSION_VARIABLE);
+				response.sendRedirect(target);
+			} else {
+				// if the target was blank, use the default behavior here
+				passthrough.onAuthenticationSuccess(request, response, authentication);
+			}
+
+		}
+
+	}
 
 
 	//
