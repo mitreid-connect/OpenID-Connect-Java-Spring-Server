@@ -114,7 +114,8 @@ CREATE TABLE IF NOT EXISTS client_details (
 	require_auth_time BOOLEAN,
 	created_at TIMESTAMP,
 	initiate_login_uri VARCHAR(2048),
-	post_logout_redirect_uri VARCHAR(2048)
+	post_logout_redirect_uri VARCHAR(2048),
+	UNIQUE (client_id)
 );
 
 CREATE TABLE IF NOT EXISTS client_request_uri (
