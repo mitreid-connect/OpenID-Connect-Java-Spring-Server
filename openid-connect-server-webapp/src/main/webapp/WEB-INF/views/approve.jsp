@@ -101,13 +101,22 @@
 								</c:choose>
 								
 								<c:if test="${ not empty claims[scope.value] }">
+									<span class="claim-tooltip" data-toggle="tooltip"
+										data-html="true"
+										data-placement="right"
+										data-title="<ul>
 									<c:forEach var="claim" items="${ claims[scope.value] }">
-										[ 
+										<li>
 										<c:out value="${ claim.key } " /> 
 										: 
 										<c:out value="${ claim.value }" />
-										]
+										</li>
 									</c:forEach>
+										</ul>
+										"
+									>
+										<i class="icon-question-sign"></i>
+									</span>
 								</c:if>
 								
 								<c:if test="${ scope.structured }">
