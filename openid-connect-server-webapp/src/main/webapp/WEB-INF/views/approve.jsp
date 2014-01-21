@@ -100,10 +100,21 @@
 									</c:otherwise>
 								</c:choose>
 								
-							</label>
+								<c:if test="${ not empty claims[scope.value] }">
+									<c:forEach var="claim" items="${ claims[scope.value] }">
+										[ 
+										<c:out value="${ claim.key } " /> 
+										: 
+										<c:out value="${ claim.value }" />
+										]
+									</c:forEach>
+								</c:if>
+								
 								<c:if test="${ scope.structured }">
 									<input name="scopeparam_${ scope.value }" type="text" value="${ scope.structuredValue }" placeholder="${scope.structuredParamDescription}">
 								</c:if>
+								
+							</label>
 
 						</c:forEach>
 

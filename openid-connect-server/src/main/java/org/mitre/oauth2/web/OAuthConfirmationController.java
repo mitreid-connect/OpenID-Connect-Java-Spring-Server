@@ -19,13 +19,19 @@
  */
 package org.mitre.oauth2.web;
 
+import java.security.Principal;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.SystemScopeService;
+import org.mitre.openid.connect.model.UserInfo;
+import org.mitre.openid.connect.service.ScopeClaimTranslationService;
+import org.mitre.openid.connect.service.UserInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +45,12 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 import com.google.common.collect.Sets;
+import com.google.gson.JsonObject;
 
 /**
  * @author jricher
@@ -55,6 +66,12 @@ public class OAuthConfirmationController {
 	@Autowired
 	private SystemScopeService scopeService;
 
+	@Autowired
+	private ScopeClaimTranslationService scopeClaimTranslationService;
+	
+	@Autowired
+	private UserInfoService userInfoService;
+	
 	private static Logger logger = LoggerFactory.getLogger(OAuthConfirmationController.class);
 
 	public OAuthConfirmationController() {
@@ -67,7 +84,8 @@ public class OAuthConfirmationController {
 
 	@PreAuthorize("hasRole('ROLE_USER')")
 	@RequestMapping("/oauth/confirm_access")
-	public String confimAccess(Map<String, Object> model, @ModelAttribute("authorizationRequest") AuthorizationRequest clientAuth) {
+	public String confimAccess(Map<String, Object> model, @ModelAttribute("authorizationRequest") AuthorizationRequest clientAuth,
+			Principal p) {
 
 		// Check the "prompt" parameter to see if we need to do special processing
 
@@ -113,16 +131,38 @@ public class OAuthConfirmationController {
 		Set<SystemScope> sortedScopes = new LinkedHashSet<SystemScope>(scopes.size());
 		Set<SystemScope> systemScopes = scopeService.getAll();
 
-		// sort scopes for display
+		// sort scopes for display based on the inherent order of system scopes
 		for (SystemScope s : systemScopes) {
 			if (scopes.contains(s)) {
 				sortedScopes.add(s);
 			}
 		}
 
+		// add in any scopes that aren't system scopes to the end of the list
 		sortedScopes.addAll(Sets.difference(scopes, systemScopes));
 
 		model.put("scopes", sortedScopes);
+
+		// get the userinfo claims for each scope
+		UserInfo user = userInfoService.getByUsername(p.getName());
+		JsonObject userJson = user.toJson();
+		Map<String, Map<String, String>> claimsForScopes = new HashMap<String, Map<String, String>>();
+
+		for (SystemScope systemScope : sortedScopes) {
+			Map<String, String> claimValues = new HashMap<String, String>();
+			
+			Set<String> claims = scopeClaimTranslationService.getClaimsForScope(systemScope.getValue());
+			for (String claim : claims) {
+				if (userJson.has(claim) && userJson.get(claim).isJsonPrimitive()) {
+					// TODO: this skips the address claim
+					claimValues.put(claim, userJson.get(claim).getAsString());
+				}
+			}
+			
+			claimsForScopes.put(systemScope.getValue(), claimValues);
+		}
+		
+		model.put("claims", claimsForScopes);
 
 		return "approve";
 	}
