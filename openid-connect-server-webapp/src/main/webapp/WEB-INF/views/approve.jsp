@@ -101,11 +101,12 @@
 								</c:choose>
 								
 								<c:if test="${ not empty claims[scope.value] }">
-									<span class="claim-tooltip" data-toggle="tooltip"
+									<span class="claim-tooltip" data-toggle="popover"
 										data-html="true"
 										data-placement="right"
-										data-title="<div style=&quot;text-align: left;&quot;>
-											Claim values:
+										data-trigger="hover"
+										data-title="Claim values:"
+										data-content="<div style=&quot;text-align: left;&quot;>
 											<ul>
 											<c:forEach var="claim" items="${ claims[scope.value] }">
 												<li>
@@ -168,7 +169,7 @@
 <!--
 
 $(document).ready(function() {
-		$('.claim-tooltip').tooltip();
+		$('.claim-tooltip').popover();
 });
 
 //-->
