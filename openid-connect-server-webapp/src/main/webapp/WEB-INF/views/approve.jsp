@@ -104,18 +104,21 @@
 									<span class="claim-tooltip" data-toggle="tooltip"
 										data-html="true"
 										data-placement="right"
-										data-title="<ul>
-									<c:forEach var="claim" items="${ claims[scope.value] }">
-										<li>
-										<c:out value="${ claim.key } " /> 
-										: 
-										<c:out value="${ claim.value }" />
-										</li>
-									</c:forEach>
-										</ul>
+										data-title="<div style=&quot;text-align: left;&quot;>
+											Claim values:
+											<ul>
+											<c:forEach var="claim" items="${ claims[scope.value] }">
+												<li>
+												<b><c:out value="${ claim.key }" /></b>: 
+												<c:out value="${ claim.value }" />
+												</li>
+											</c:forEach>
+											</ul>
+											</div>
 										"
 									>
 										<i class="icon-question-sign"></i>
+										
 									</span>
 								</c:if>
 								
@@ -161,4 +164,13 @@
 
 	</div>
 </div>
+<script type="text/javascript">
+<!--
+
+$(document).ready(function() {
+		$('.claim-tooltip').tooltip();
+});
+
+//-->
+</script>
 <o:footer/>
