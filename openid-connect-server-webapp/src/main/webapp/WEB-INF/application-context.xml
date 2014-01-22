@@ -66,9 +66,11 @@
 	<security:http pattern="/token" 
 		create-session="stateless"
 		authentication-manager-ref="clientAuthenticationManager"
-		entry-point-ref="oauthAuthenticationEntryPoint">
+		entry-point-ref="oauthAuthenticationEntryPoint"
+		user-expressions="true">
 		
-		<security:intercept-url pattern="/token" access="IS_AUTHENTICATED_FULLY" />
+		<security:intercept-url pattern="/token" access="permitAll" method="OPTIONS" /> <!-- allow OPTIONS calls without auth for CORS stuff -->
+		<security:intercept-url pattern="/token" access="isAuthenticated()" />
 		<security:anonymous enabled="false" />
 		<security:http-basic entry-point-ref="oauthAuthenticationEntryPoint" />
 		<!-- include this only if you need to authenticate clients via request parameters -->
