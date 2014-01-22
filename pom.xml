@@ -116,7 +116,7 @@
 				<version>2.5.1</version>
 			</plugin>
 			 <plugin>
-                <groupId>org.mortbay.jetty</groupId>
+                <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
                 <version>8.1.14.v20141031</version>
             </plugin>
