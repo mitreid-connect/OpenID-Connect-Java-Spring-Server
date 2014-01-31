@@ -17,7 +17,7 @@
 package org.mitre.openid.connect.client;
 
 import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.SystemDefaultHttpClient;
 import org.mitre.openid.connect.config.ServerConfiguration;
 import org.mitre.openid.connect.model.DefaultUserInfo;
 import org.mitre.openid.connect.model.OIDCAuthenticationToken;
@@ -58,7 +58,7 @@ public class UserInfoFetcher {
 
 		// if we got this far, try to actually get the userinfo
 		
-		HttpClient httpClient = new DefaultHttpClient();
+		HttpClient httpClient = new SystemDefaultHttpClient();
 
 		HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
 
