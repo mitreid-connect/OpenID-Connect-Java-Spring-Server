@@ -31,7 +31,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.SystemDefaultHttpClient;
 import org.mitre.openid.connect.client.service.ServerConfigurationService;
 import org.mitre.openid.connect.config.ServerConfiguration;
 import org.slf4j.Logger;
@@ -46,6 +46,13 @@ import com.google.common.cache.LoadingCache;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
+import static org.mitre.discovery.util.JsonUtils.getAsBoolean;
+import static org.mitre.discovery.util.JsonUtils.getAsEncryptionMethodList;
+import static org.mitre.discovery.util.JsonUtils.getAsJweAlgorithmList;
+import static org.mitre.discovery.util.JsonUtils.getAsJwsAlgorithmList;
+import static org.mitre.discovery.util.JsonUtils.getAsString;
+import static org.mitre.discovery.util.JsonUtils.getAsStringList;
 
 /**
  * 
@@ -122,7 +129,7 @@ public class DynamicServerConfigurationService implements ServerConfigurationSer
 	 *
 	 */
 	private class OpenIDConnectServiceConfigurationFetcher extends CacheLoader<String, ServerConfiguration> {
-		private HttpClient httpClient = new DefaultHttpClient();
+		private HttpClient httpClient = new SystemDefaultHttpClient();
 		private HttpComponentsClientHttpRequestFactory httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
 		private JsonParser parser = new JsonParser();
 

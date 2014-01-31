@@ -32,7 +32,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.SystemDefaultHttpClient;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.jwt.signer.service.impl.JWKSetCacheService;
 import org.mitre.oauth2.model.RegisteredClient;
@@ -267,7 +268,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 		}
 
 		// Handle Token Endpoint interaction
-		DefaultHttpClient httpClient = new DefaultHttpClient();
+		HttpClient httpClient = new SystemDefaultHttpClient();
 
 		httpClient.getParams().setParameter("http.socket.timeout", new Integer(httpSocketTimeout));
 

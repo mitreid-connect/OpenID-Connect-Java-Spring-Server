@@ -24,7 +24,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.SystemDefaultHttpClient;
 import org.mitre.oauth2.model.RegisteredClient;
 import org.mitre.openid.connect.ClientDetailsEntityJsonProcessor;
 import org.mitre.openid.connect.client.service.ClientConfigurationService;
@@ -162,7 +162,7 @@ public class DynamicRegistrationClientConfigurationService implements ClientConf
 	 *
 	 */
 	public class DynamicClientRegistrationLoader extends CacheLoader<ServerConfiguration, RegisteredClient> {
-		private HttpClient httpClient = new DefaultHttpClient();
+		private HttpClient httpClient = new SystemDefaultHttpClient();
 		private HttpComponentsClientHttpRequestFactory httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
 		private Gson gson = new Gson(); // note that this doesn't serialize nulls by default
 
