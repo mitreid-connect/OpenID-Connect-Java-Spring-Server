@@ -38,13 +38,13 @@
 
 					<%-- TODO: wire up to stats engine and customize display of this block --%>
 					<c:if test="${ client.dynamicallyRegistered }">
-						<div class="alert alert-block alert-info">
+						<div class="alert alert-block">
 							<h4>
 								<i class="icon-globe"></i> Caution:
 							</h4>
 							This software was dynamically registered and has been used by
 							<span class="label"><c:out value="${ count }" /></span>
-							users.
+							user<c:out value="${ count == 1 ? '' : 's' }"/>.
 						</div>
 					</c:if>
 
@@ -57,9 +57,8 @@
 							</li>
 						</ul>
 					</c:if>
-					<div>
+					<div class="alert alert-info">
 						${client.clientDescription}
-					</div>
 					<c:if test="${ (not empty client.clientUri) || (not empty client.policyUri) || (not empty client.tosUri) }">
 						<div>
 							<a id="toggleMoreInformation" class="small" href="#"><i class="icon-chevron-right"></i> more information</a>
@@ -69,9 +68,16 @@
 								<c:if test="${ not empty client.clientUri }">
 									<li>Home page: <a href="<c:out value="${ client.clientUri }" />"><c:out value="${ client.clientUri }" /></a>
 								</c:if>
+								<c:if test="${ not empty client.policyUri }">
+									<li>Policy: <a href="<c:out value="${ client.policyUri }" />"><c:out value="${ client.policyUri }" /></a>
+								</c:if>
+								<c:if test="${ not empty client.tosUri }">
+									<li>Terms of Service: <a href="<c:out value="${ client.tosUri }" />"><c:out value="${ client.tosUri }" /></a>
+								</c:if>
 							</ul>
 						</div>
 					</c:if>
+					</div>
 					<div>
 						<c:choose>
 							<c:when test="${ empty client.redirectUris }">
