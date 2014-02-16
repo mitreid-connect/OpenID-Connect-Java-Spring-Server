@@ -19,6 +19,7 @@ package org.mitre.openid.connect.token;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -41,6 +42,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 
@@ -127,7 +129,8 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 
 		// find out if we're supposed to force a prompt on the user or not
 		String prompt = (String) authorizationRequest.getExtensions().get("prompt");
-		if (!"consent".equals(prompt)) {
+		List<String> prompts = Splitter.on(" ").splitToList(Strings.nullToEmpty(prompt));
+		if (!prompts.contains("consent")) {
 			// if the prompt parameter is set to "consent" then we can't use approved sites or whitelisted sites
 			// otherwise, we need to check them below
 

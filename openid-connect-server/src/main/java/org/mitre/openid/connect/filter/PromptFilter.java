@@ -22,6 +22,7 @@ package org.mitre.openid.connect.filter;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.FilterChain;
@@ -42,6 +43,9 @@ import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.OAuth2RequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
+
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 
 /**
  * @author jricher
@@ -72,8 +76,9 @@ public class PromptFilter extends GenericFilterBean {
 		if (authRequest.getExtensions().get("prompt") != null) {
 			// we have a "prompt" parameter
 			String prompt = (String)authRequest.getExtensions().get("prompt");
+			List<String> prompts = Splitter.on(" ").splitToList(Strings.nullToEmpty(prompt));
 
-			if (prompt.equals("none")) {
+			if (prompts.contains("none")) {
 				logger.info("Client requested no prompt");
 				// see if the user's logged in
 				Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -88,7 +93,7 @@ public class PromptFilter extends GenericFilterBean {
 					response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied");
 					return;
 				}
-			} else if (prompt.equals("login")) {
+			} else if (prompts.contains("login")) {
 
 				// first see if the user's already been prompted in this session
 				HttpSession session = request.getSession();

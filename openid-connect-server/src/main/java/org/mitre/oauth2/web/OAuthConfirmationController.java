@@ -45,6 +45,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -90,7 +92,8 @@ public class OAuthConfirmationController {
 		// Check the "prompt" parameter to see if we need to do special processing
 
 		String prompt = (String)clientAuth.getExtensions().get("prompt");
-		if ("none".equals(prompt)) {
+		List<String> prompts = Splitter.on(" ").splitToList(Strings.nullToEmpty(prompt));
+		if (prompts.contains("none")) {
 			// we're not supposed to prompt, so "return an error"
 			logger.info("Client requested no prompt, returning 403 from confirmation endpoint");
 			model.put("code", HttpStatus.FORBIDDEN);
