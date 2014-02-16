@@ -19,13 +19,22 @@
 	<c:remove scope="session" var="SPRING_SECURITY_LAST_EXCEPTION" />
 
 	<div class="well" style="text-align: center">
-		<h1>Approve New Site</h1>
+		<h1>Approval Required for 
+			<c:choose>
+				<c:when test="${empty client.clientName}">
+					<em><c:out value="${client.clientId}" /></em>
+				</c:when>
+				<c:otherwise>
+					<em><c:out value="${client.clientName}" /></em>
+				</c:otherwise>
+			</c:choose>
+		</h1>
 
 		<form name="confirmationForm"
 			action="<%=request.getContextPath()%>/authorize" method="post">
 
 			<div class="row">
-				<div class="span4 offset2 well-small" style="text-align: left">
+				<div class="span5 offset1 well-small" style="text-align: left">
 
 					<%-- TODO: wire up to stats engine and customize display of this block --%>
 					<c:if test="${ client.dynamicallyRegistered }">
@@ -33,8 +42,9 @@
 							<h4>
 								<i class="icon-globe"></i> Caution:
 							</h4>
-							This client was dynamically registered and has very few other
-							users on this system.
+							This software was dynamically registered and has been used by
+							<span class="label"><c:out value="${ count }" /></span>
+							users.
 						</div>
 					</c:if>
 
@@ -47,30 +57,40 @@
 							</li>
 						</ul>
 					</c:if>
-					Do you authorize 
-					"<c:choose>
-						<c:when test="${empty client.clientName}">
-							<c:out value="${client.clientId}" />
-						</c:when>
-						<c:otherwise>
-							<c:out value="${client.clientName}" />
-						</c:otherwise>
-					</c:choose>"
-					to sign you into their site using your identity?
-					<c:if test="${not empty client.clientDescription}">
+					<div>
+						${client.clientDescription}
+					</div>
+					<c:if test="${ (not empty client.clientUri) || (not empty client.policyUri) || (not empty client.tosUri) }">
 						<div>
-							<a class="small" href="#"onclick="$('#description').toggle('fast'); return false;"><i class="icon-chevron-right"></i> more information</a>
+							<a id="toggleMoreInformation" class="small" href="#"><i class="icon-chevron-right"></i> more information</a>
 						</div>
-						<p>
-							<blockquote id="description" style="display: none">
-								${client.clientDescription}
-							</blockquote>
-						</p>
+						<div id="moreInformation" class="hide">
+							<ul>
+								<c:if test="${ not empty client.clientUri }">
+									<li>Home page: <a href="<c:out value="${ client.clientUri }" />"><c:out value="${ client.clientUri }" /></a>
+								</c:if>
+							</ul>
+						</div>
 					</c:if>
 					<div>
-						<small> 
-							<strong>Redirect URI: </strong><c:out value="${redirect_uri}" />
-						</small>
+						<c:choose>
+							<c:when test="${ empty client.redirectUris }">
+								<div class="alert alert-block alert-error">
+									<h4>
+										<i class="icon-info-sign"></i> Warning:
+									</h4>
+									This client does not have any redirect URIs registered and could be using a 
+									malicious URI. You will be redirected to the following page if you click Approve:
+									<code><c:out value="${redirect_uri}" /></code>
+								</div>
+							</c:when>
+							<c:otherwise>
+								<small> 
+									<strong>You will be redirected to the following page
+									if you click Approve: </strong><code><c:out value="${redirect_uri}" /></code>
+								</small>							
+							</c:otherwise>
+						</c:choose>
 					</div>
 
 					<c:if test="${ client.subjectType == 'PAIRWISE' }">
@@ -83,6 +103,16 @@
 				<div class="span4">
 					<fieldset style="text-align: left" class="well">
 						<legend style="margin-bottom: 0;">Access to:</legend>
+
+						<c:if test="${ empty client.scope }">
+								<div class="alert alert-block alert-error">
+									<h4>
+										<i class="icon-info-sign"></i> Warning:
+									</h4>
+									This client does not have any scopes registered and is therefore allowed to
+									request <em>any</em> scopes available on the system. Proceed with caution.
+								</div>
+						</c:if>
 
 						<c:forEach var="scope" items="${ scopes }">
 
@@ -153,6 +183,17 @@
 			</div>
 
 			<div class="row">
+			<h3>
+					Do you authorize 
+					"<c:choose>
+						<c:when test="${empty client.clientName}">
+							<c:out value="${client.clientId}" />
+						</c:when>
+						<c:otherwise>
+							<c:out value="${client.clientName}" />
+						</c:otherwise>
+					</c:choose>"?
+			</h3>
 				<input id="user_oauth_approval" name="user_oauth_approval" value="true" type="hidden" /> 
 					<input name="authorize" value="Authorize" type="submit"
 					onclick="$('#user_oauth_approval').attr('value',true)" class="btn btn-success btn-large" /> 
@@ -170,6 +211,20 @@
 
 $(document).ready(function() {
 		$('.claim-tooltip').popover();
+		
+		$('#toggleMoreInformation').on('click', function(event) {
+			event.preventDefault();
+			if ($('#moreInformation').is(':visible')) {
+				// hide it
+				$('#moreInformation').hide('fast');
+				$('#toggleMoreInformation i').attr('class', 'icon-chevron-right');
+			} else {
+				// show it
+				$('#moreInformation').show('fast');
+				$('#toggleMoreInformation i').attr('class', 'icon-chevron-down');
+			}
+		});
+		
 });
 
 //-->

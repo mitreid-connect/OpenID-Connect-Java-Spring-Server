@@ -26,11 +26,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.SystemScopeService;
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.service.ScopeClaimTranslationService;
+import org.mitre.openid.connect.service.StatsService;
 import org.mitre.openid.connect.service.UserInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +41,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
-import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,10 +48,6 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonObject;
 
@@ -73,6 +70,9 @@ public class OAuthConfirmationController {
 	
 	@Autowired
 	private UserInfoService userInfoService;
+	
+	@Autowired
+	private StatsService statsService;
 	
 	private static Logger logger = LoggerFactory.getLogger(OAuthConfirmationController.class);
 
@@ -102,7 +102,7 @@ public class OAuthConfirmationController {
 
 		//AuthorizationRequest clientAuth = (AuthorizationRequest) model.remove("authorizationRequest");
 
-		ClientDetails client = null;
+		ClientDetailsEntity client = null;
 
 		try {
 			client = clientService.loadClientByClientId(clientAuth.getClientId());
@@ -129,6 +129,8 @@ public class OAuthConfirmationController {
 
 		model.put("redirect_uri", redirect_uri);
 
+		
+		// pre-process the scopes
 		Set<SystemScope> scopes = scopeService.fromStrings(clientAuth.getScope());
 
 		Set<SystemScope> sortedScopes = new LinkedHashSet<SystemScope>(scopes.size());
@@ -167,6 +169,11 @@ public class OAuthConfirmationController {
 		
 		model.put("claims", claimsForScopes);
 
+		// client stats
+		Integer count = statsService.countForClientId(client.getId());
+		model.put("count", count);
+		
+		
 		return "approve";
 	}
 
