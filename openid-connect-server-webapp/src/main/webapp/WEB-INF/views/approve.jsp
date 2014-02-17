@@ -4,6 +4,7 @@
 <%@ taglib prefix="authz" uri="http://www.springframework.org/security/tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="o" tagdir="/WEB-INF/tags"%>
+<%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <o:header title="Approve Access" />
 <o:topbar />
 <div class="container main">
@@ -38,46 +39,74 @@
 
 					<%-- TODO: wire up to stats engine and customize display of this block --%>
 					<c:if test="${ client.dynamicallyRegistered }">
-						<div class="alert alert-block">
+						<div class="alert alert-block <c:out value="${ count eq 0 ? 'alert-error' : 'alert-warn' }" />">
 							<h4>
 								<i class="icon-globe"></i> Caution:
 							</h4>
-							This software was dynamically registered and has been used by
+							This software was dynamically registered and it has been approved
 							<span class="label"><c:out value="${ count }" /></span>
-							user<c:out value="${ count == 1 ? '' : 's' }"/>.
+							time<c:out value="${ count == 1 ? '' : 's' }"/> previously.
 						</div>
 					</c:if>
 
 					<c:if test="${ not empty client.logoUri }">
 						<ul class="thumbnails">
-							<li class="span4">
-								<div class="thumbnail">
-									<img src="${client.logoUri }" />
-								</div>
+							<li class="span5">
+								<a class="thumbnail" data-toggle="modal" data-target="#logoModal"><img src="${client.logoUri }" /></a>
 							</li>
 						</ul>
-					</c:if>
-					<div class="alert alert-info">
-						${client.clientDescription}
-					<c:if test="${ (not empty client.clientUri) || (not empty client.policyUri) || (not empty client.tosUri) }">
-						<div>
-							<a id="toggleMoreInformation" class="small" href="#"><i class="icon-chevron-right"></i> more information</a>
-						</div>
-						<div id="moreInformation" class="hide">
-							<ul>
+						<!-- Modal -->
+						<div id="logoModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="logoModalLabel" aria-hidden="true">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+								<h3 id="logoModalLabel">
+									<c:choose>
+										<c:when test="${empty client.clientName}">
+											<em><c:out value="${client.clientId}" /></em>
+										</c:when>
+										<c:otherwise>
+											<em><c:out value="${client.clientName}" /></em>
+										</c:otherwise>
+									</c:choose>
+								</h3>
+							</div>
+							<div class="modal-body">
+								<img src="${client.logoUri }" />
 								<c:if test="${ not empty client.clientUri }">
-									<li>Home page: <a href="<c:out value="${ client.clientUri }" />"><c:out value="${ client.clientUri }" /></a>
+									<a href="<c:out value="${ client.clientUri }" />"><c:out value="${ client.clientUri }" /></a>
 								</c:if>
-								<c:if test="${ not empty client.policyUri }">
-									<li>Policy: <a href="<c:out value="${ client.policyUri }" />"><c:out value="${ client.policyUri }" /></a>
-								</c:if>
-								<c:if test="${ not empty client.tosUri }">
-									<li>Terms of Service: <a href="<c:out value="${ client.tosUri }" />"><c:out value="${ client.tosUri }" /></a>
-								</c:if>
-							</ul>
+							</div>
+							<div class="modal-footer">
+								<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+							</div>
 						</div>
 					</c:if>
-					</div>
+					<c:if test="${ (not empty client.clientDescription) || (not empty client.clientUri) || (not empty client.policyUri) || (not empty client.tosUri) || (not empty contacts) }">
+						<div class="alert alert-info">
+							${client.clientDescription}
+							<c:if test="${ (not empty client.clientUri) || (not empty client.policyUri) || (not empty client.tosUri)  || (not empty contacts) }">
+								<div id="toggleMoreInformation" style="cursor: pointer;">
+									<i class="icon-chevron-right"></i> more information
+								</div>
+								<div id="moreInformation" class="hide">
+									<ul>
+										<c:if test="${ not empty client.clientUri }">
+											<li>Home page: <a href="<c:out value="${ client.clientUri }" />"><c:out value="${ client.clientUri }" /></a></li>
+										</c:if>
+										<c:if test="${ not empty client.policyUri }">
+											<li>Policy: <a href="<c:out value="${ client.policyUri }" />"><c:out value="${ client.policyUri }" /></a></li>
+										</c:if>
+										<c:if test="${ not empty client.tosUri }">
+											<li>Terms of Service: <a href="<c:out value="${ client.tosUri }" />"><c:out value="${ client.tosUri }" /></a></li>
+										</c:if>
+										<c:if test="${ (not empty contacts) }">
+											<li>Administrative Contacts: <c:out value="${ contacts }" /></li>
+										</c:if>
+									</ul>
+								</div>
+							</c:if>
+						</div>
+					</c:if>
 					<div>
 						<c:choose>
 							<c:when test="${ empty client.redirectUris }">
@@ -91,10 +120,8 @@
 								</div>
 							</c:when>
 							<c:otherwise>
-								<small> 
-									<strong>You will be redirected to the following page
-									if you click Approve: </strong><code><c:out value="${redirect_uri}" /></code>
-								</small>							
+								You will be redirected to the following page
+								if you click Approve: <code><c:out value="${redirect_uri}" /></code>
 							</c:otherwise>
 						</c:choose>
 					</div>
@@ -141,7 +168,7 @@
 										data-html="true"
 										data-placement="right"
 										data-trigger="hover"
-										data-title="Claim values:"
+										data-title="These values will be sent:"
 										data-content="<div style=&quot;text-align: left;&quot;>
 											<ul>
 											<c:forEach var="claim" items="${ claims[scope.value] }">

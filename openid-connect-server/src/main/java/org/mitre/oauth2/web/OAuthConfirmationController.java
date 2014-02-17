@@ -46,6 +46,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
@@ -172,6 +173,13 @@ public class OAuthConfirmationController {
 		// client stats
 		Integer count = statsService.countForClientId(client.getId());
 		model.put("count", count);
+		
+		
+		// contacts
+		if (client.getContacts() != null) {
+			String contacts = Joiner.on(", ").join(client.getContacts());
+			model.put("contacts", contacts);
+		}
 		
 		
 		return "approve";
