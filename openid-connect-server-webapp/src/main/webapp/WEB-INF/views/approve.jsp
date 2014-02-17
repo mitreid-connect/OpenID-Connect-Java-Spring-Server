@@ -114,8 +114,8 @@
 									<h4>
 										<i class="icon-info-sign"></i> Warning:
 									</h4>
-									This client does not have any redirect URIs registered and could be using a 
-									malicious URI. You will be redirected to the following page if you click Approve:
+									This client does not have any redirect URIs registered and someone could be using a 
+									malicious URI here. You will be redirected to the following page if you click Approve:
 									<code><c:out value="${redirect_uri}" /></code>
 								</div>
 							</c:when>
