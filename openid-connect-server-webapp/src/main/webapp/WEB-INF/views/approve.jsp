@@ -6,7 +6,7 @@
 <%@ taglib prefix="o" tagdir="/WEB-INF/tags"%>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <o:header title="Approve Access" />
-<o:topbar />
+<o:topbar pageName="Approve" />
 <div class="container main">
 	<% if (session.getAttribute(AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY) != null && !(session.getAttribute(AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY) instanceof UnapprovedClientAuthenticationException)) { %>
 	<div class="alert-message error">

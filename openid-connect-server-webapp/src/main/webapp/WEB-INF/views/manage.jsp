@@ -2,7 +2,7 @@
 <%@ taglib prefix="o" tagdir="/WEB-INF/tags"%>
 
 <o:header title="Management Console"/>
-<o:topbar />
+<o:topbar pageName="Home" />
 <div class="container-fluid main">
     <div class="row-fluid">
         <o:sidebar/>

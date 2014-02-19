@@ -3,7 +3,7 @@
 <%@ taglib prefix="security" uri="http://www.springframework.org/security/tags"%>
 
 <o:header title="welcome" />
-<o:topbar />
+<o:topbar pageName="Home" />
 <div class="container-fluid main">
 	<div class="row-fluid">
 		<o:sidebar />
