@@ -245,7 +245,7 @@
 $(document).ready(function() {
 		$('.claim-tooltip').popover();
 		
-		$('#toggleMoreInformation').on('click', function(event) {
+		$(document).on('click', '#toggleMoreInformation', function(event) {
 			event.preventDefault();
 			if ($('#moreInformation').is(':visible')) {
 				// hide it
