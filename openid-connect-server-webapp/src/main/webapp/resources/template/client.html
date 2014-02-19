@@ -655,7 +655,7 @@
 	</div>
 	<% if (generateClientSecret && clientSecret != null && clientSecret != '') { %>
 	<div>
-		<strong>Secret:</strong> <code><%= clientSecret %></code>
+		<strong>Secret:</strong> <button class="btn btn-mini" id="clientSaveShow">Show Secret</button><code id="savedClientSecret" class="hide" style="word-wrap: break-word;"><%= clientSecret %></code>
 	</div>
 	<% } else { %>
 	<div>

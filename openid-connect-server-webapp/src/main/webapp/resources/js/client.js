@@ -564,6 +564,12 @@ var ClientFormView = Backbone.View.extend({
             	
             	$('#modalAlert .modal-body').html(_self.clientSavedTemplate(_self.model.toJSON()));
             	
+            	$('#modalAlert').on('click', '#clientSaveShow', function(event) {
+            		event.preventDefault();
+            		$('#clientSaveShow').hide();
+            		$('#savedClientSecret').show();
+            	});
+            	
             	$('#modalAlert').modal({
             		'backdrop': 'static',
             		'keyboard': true,
