@@ -278,6 +278,10 @@ var ClientFormView = Backbone.View.extend({
         if (!this.template) {
             this.template = _.template($('#tmpl-client-form').html());
         }
+        
+        if (!this.clientSavedTemplate) {
+        	this.clientSavedTemplate = _.template($('#tmpl-client-saved').html());
+        }
 
         this.redirectUrisCollection = new Backbone.Collection();
         this.scopeCollection = new Backbone.Collection();
@@ -556,7 +560,9 @@ var ClientFormView = Backbone.View.extend({
         this.model.save(attrs, {
             success:function () {
 
-            	$('#modalAlert div.modal-body').html('Client Saved');
+            	$('#modalAlertLabel').html('Client Saved');
+            	
+            	$('#modalAlert .modal-body').html(_self.clientSavedTemplate(_self.model.toJSON()));
             	
             	$('#modalAlert').modal({
             		'backdrop': 'static',

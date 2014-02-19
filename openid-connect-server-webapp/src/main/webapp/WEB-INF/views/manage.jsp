@@ -5,14 +5,14 @@
 <o:topbar pageName="Home" />
 
 <!-- Modal dialogue for management UI -->
-<div id="modalAlert" class="modal hide fade" role="dialog">
+<div id="modalAlert" class="modal hide fade" tabindex="-1" role="dialog">
 	<div class="modal-header">
-		<button type="button" class="close" data-dismiss="modalAlert">&times;</button>
-		<h3 id="myModalLabel">Modal header</h3>
+		<button type="button" class="close" data-dismiss="modal">&times;</button>
+		<h3 id="modalAlertLabel"></h3>
 	</div>
 	<div class="modal-body"></div>
 	<div class="modal-footer">
-		<button class="btn btn-primary" data-dismiss="modalAlert">OK</button>
+		<button class="btn btn-primary" data-dismiss="modal">OK</button>
 	</div>
 </div>
 

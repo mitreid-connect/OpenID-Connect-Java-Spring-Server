@@ -78,7 +78,6 @@
     </div>
 </script>
 
-
 <script type="text/html" id="tmpl-client-form">
 
     <h1><%=(id == null ? 'New' : 'Edit')%> Client</h1>
@@ -648,3 +647,21 @@
     </form>
 
 </script>
+
+<script type="text/html" id="tmpl-client-saved">
+
+	<div>
+		<strong>ID:</strong> <code><%= clientId %></code>
+	</div>
+	<% if (generateClientSecret && clientSecret != null && clientSecret != '') { %>
+	<div>
+		<strong>Secret:</strong> <code><%= clientSecret %></code>
+	</div>
+	<% } else { %>
+	<div>
+		<strong>Secret:</strong> <i>unchanged</i>
+	</div>
+	<% } %>
+
+</script>
+
