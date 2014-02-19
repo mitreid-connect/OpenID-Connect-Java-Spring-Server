@@ -134,15 +134,6 @@
 
 <body>
 
-	<div id="modalAlert" class="modal hide fade">
-		<div class="alert alert-error">
-			<strong>Warning!</strong>
-			<div class="modal-body"></div>
-		</div>
-		<div class="modal-footer">
-			<button class="btn primary" type="button"
-				onclick="$('#modalAlert').modal('hide');">OK</button>
-		</div>
-	</div>
-
 <div id="wrap">
+
+<!-- Start body -->

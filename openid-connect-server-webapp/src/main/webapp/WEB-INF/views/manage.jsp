@@ -3,6 +3,19 @@
 
 <o:header title="Management Console"/>
 <o:topbar pageName="Home" />
+
+<!-- Modal dialogue for management UI -->
+<div id="modalAlert" class="modal hide fade" role="dialog">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modalAlert">&times;</button>
+		<h3 id="myModalLabel">Modal header</h3>
+	</div>
+	<div class="modal-body"></div>
+	<div class="modal-footer">
+		<button class="btn btn-primary" data-dismiss="modalAlert">OK</button>
+	</div>
+</div>
+
 <div class="container-fluid main">
     <div class="row-fluid">
         <o:sidebar/>

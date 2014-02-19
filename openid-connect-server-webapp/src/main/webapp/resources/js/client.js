@@ -555,7 +555,16 @@ var ClientFormView = Backbone.View.extend({
         var _self = this;
         this.model.save(attrs, {
             success:function () {
-                app.clientList.add(_self.model);
+
+            	$('#modalAlert div.modal-body').html('Client Saved');
+            	
+            	$('#modalAlert').modal({
+            		'backdrop': 'static',
+            		'keyboard': true,
+            		'show': true
+            	});
+            	
+            	app.clientList.add(_self.model);
                 app.navigate('admin/clients', {trigger:true});
             },
             error:function (error, response) {
