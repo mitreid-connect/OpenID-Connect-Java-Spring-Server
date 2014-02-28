@@ -371,7 +371,7 @@ var AppRouter = Backbone.Router.extend({
         "admin/scope/:id":"editScope",
         
         "user/approved":"approvedSites",
-        "user/tokens":"notImplemented",
+        "user/tokens":"tokens",
         "user/profile":"profile",
         
         "dev/dynreg":"dynReg",
@@ -398,6 +398,8 @@ var AppRouter = Backbone.Router.extend({
         this.approvedSiteList = new ApprovedSiteCollection();
         this.systemScopeList = new SystemScopeCollection();
         this.clientStats = new StatsModel(); 
+        this.accessTokensList = new AccessTokenCollection();
+        this.refreshTokensList = new RefreshTokenCollection();
 
         
         this.clientListView = new ClientListView({model:this.clientList, stats: this.clientStats});
@@ -405,6 +407,7 @@ var AppRouter = Backbone.Router.extend({
         this.approvedSiteListView = new ApprovedSiteListView({model:this.approvedSiteList});
         this.blackListListView = new BlackListListView({model:this.blackListList});
         this.systemScopeListView = new SystemScopeListView({model:this.systemScopeList});
+        this.tokensListView = new TokenListView({model: {access: this.accessTokensList, refresh: this.refreshTokensList}});
         
         this.breadCrumbView = new BreadCrumbView({
             collection:new Backbone.Collection()
@@ -648,6 +651,27 @@ var AppRouter = Backbone.Router.extend({
     	
     },
 
+    tokens:function() {
+    	this.breadCrumbView.collection.reset();
+        this.breadCrumbView.collection.add([
+            {text:"Home", href:""},
+            {text:"Manage Active Tokens", href:"manage/#user/tokens"}
+        ]);
+        
+        var view = this.tokensListView;
+        
+        app.accessTokensList.fetch({
+        	success:function(collection, response, options) {
+        		app.refreshTokensList.fetch({
+        			success:function(collection, response, options) {
+        				$('#content').html(view.render().el);
+        				setPageTitle("Manage Active Tokens");
+        			}
+        		});
+        	}
+        });
+    },
+    
     notImplemented:function(){
         this.breadCrumbView.collection.reset();
         this.breadCrumbView.collection.add([
@@ -819,7 +843,8 @@ $(function () {
     $.get('resources/template/scope.html', _load);
     $.get('resources/template/whitelist.html', _load);
     $.get('resources/template/dynreg.html', _load);
-
+    $.get('resources/template/token.html', _load);
+    
     jQuery.ajaxSetup({async:true});
     app = new AppRouter();
 
