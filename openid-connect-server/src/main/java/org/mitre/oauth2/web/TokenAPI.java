@@ -20,41 +20,44 @@ import java.security.Principal;
 import java.util.Set;
 
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
+import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
- * REST-ish API for managing access tokens (no PUT; tokens cannot be updated and creation = OAuth).
+ * REST-ish API for managing access tokens (GET/read only)
  * @author Amanda Anganes
  *
  */
-//@Controller
-//@RequestMapping("/api/tokens/at")
-//@PreAuthorize("hasRole('ROLE_USER')")
-public class AccessTokenAPI {
+@Controller
+@RequestMapping("/api/tokens")
+@PreAuthorize("hasRole('ROLE_USER')")
+public class TokenAPI {
 
 	@Autowired
 	private OAuth2TokenEntityService tokenService;
 
-	private static Logger logger = LoggerFactory.getLogger(AccessTokenAPI.class);
+	private static Logger logger = LoggerFactory.getLogger(TokenAPI.class);
 
-	@RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json")
-	public String getAll(ModelMap m, Principal p) {
+	@RequestMapping(value = "/access", method = RequestMethod.GET, produces = "application/json")
+	public String getAllAccessTokens(ModelMap m, Principal p) {
 
 		Set<OAuth2AccessTokenEntity> allTokens = tokenService.getAllAccessTokensForUser(p.getName());
 		m.put("entity", allTokens);
-		return "jsonEntityView";
+		return "tokenApiView";
 	}
 
-	@RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = "application/json")
-	public String getById(@PathVariable("id") Long id, ModelMap m, Principal p) {
+	@RequestMapping(value = "/access/{id}", method = RequestMethod.GET, produces = "application/json")
+	public String getAccessTokenById(@PathVariable("id") Long id, ModelMap m, Principal p) {
 
 		OAuth2AccessTokenEntity token = tokenService.getAccessTokenById(id);
 
@@ -70,8 +73,39 @@ public class AccessTokenAPI {
 			return "jsonErrorView";
 		} else {
 			m.put("entity", token);
-			return "jsonEntityView";
+			return "tokenApiView";
 		}
 	}
+	
+	@RequestMapping(value = "/refresh", method = RequestMethod.GET, produces = "application/json")
+	public String getAllRefreshTokens(ModelMap m, Principal p) {
+		
+		Set<OAuth2RefreshTokenEntity> allTokens = tokenService.getAllRefreshTokensForUser(p.getName());
+		m.put("entity", allTokens);
+		return "tokenApiView";
+		
+		
+	}
 
+	@RequestMapping(value = "/refresh/{id}", method = RequestMethod.GET, produces = "application/json")
+	public String getRefreshTokenById(@PathVariable("id") Long id, ModelMap m, Principal p) {
+
+		OAuth2RefreshTokenEntity token = tokenService.getRefreshTokenById(id);
+
+		if (token == null) {
+			logger.error("refresh token not found: " + id);
+			m.put("code", HttpStatus.NOT_FOUND);
+			m.put("errorMessage", "The requested token with id " + id + " could not be found.");
+			return "jsonErrorView";
+		} else if (!token.getAuthenticationHolder().getAuthentication().getName().equals(p.getName())) {
+			logger.error("refresh token " + id + " does not belong to principal " + p.getName());
+			m.put("code", HttpStatus.FORBIDDEN);
+			m.put("errorMessage", "You do not have permission to view this token");
+			return "jsonErrorView";
+		} else {
+			m.put("entity", token);
+			return "tokenApiView";
+		}
+	}
+	
 }
