@@ -29,7 +29,13 @@
 
 <script type="text/html" id="tmpl-list-widget-child">
     <td><%=(item.length > 30) ? item.substr(0,27) + '...' : item %></td>
-    <td><a class="btn btn-small btn-delete" href="#"><i class="icon-minus-sign"></i></a></td>
+   	<td><a class="btn btn-small btn-delete" href="#"><i class="icon-minus-sign"></i></a></td>
+</script>
+
+<script type="text/html" id="tmpl-list-widget-child-empty">
+	<tr class="info">
+		<td colspan="2">There are no items in this list.</td>
+	</tr>
 </script>
 
 <script type="text/html" id="tmpl-list-widget">

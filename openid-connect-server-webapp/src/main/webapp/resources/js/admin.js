@@ -75,8 +75,6 @@ var ListWidgetChildView = Backbone.View.extend({
             this.template = _.template($('#tmpl-list-widget-child').html());
         }
 
-        this.model.bind('destroy', this.remove, this);
-
     },
 
     render:function () {
@@ -115,7 +113,7 @@ var ListWidgetView = Backbone.View.extend({
 
         this.$el.addClass("table table-condensed table-hover table-striped span4");
         this.collection.bind('add', this.render, this);
-
+        this.collection.bind('remove', this.render, this);
     },
 
     addItem:function(e) {
@@ -156,10 +154,14 @@ var ListWidgetView = Backbone.View.extend({
 
         _self = this;
 
-        _.each(this.collection.models, function (model) {
-            var el = new this.childView({model:model}).render().el;
-            $("tbody", _self.el).append(el);
-        }, this);
+        if (_.size(this.collection.models) == 0) {
+    		$("tbody", _self.el).html($('#tmpl-list-widget-child-empty').html());
+        } else {
+        	_.each(this.collection.models, function (model) {
+        		var el = new this.childView({model:model}).render().el;
+        		$("tbody", _self.el).append(el);
+        	}, this);
+        }
 
         return this;
     }
