@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
- * REST-ish API for managing access tokens (GET/read only)
+ * REST-ish API for managing access tokens (GET/DELETE only)
  * @author Amanda Anganes
  *
  */
@@ -77,6 +77,28 @@ public class TokenAPI {
 		}
 	}
 	
+	@RequestMapping(value = "/access/{id}", method = RequestMethod.DELETE, produces = "application/json")
+	public String deleteAccessTokenById(@PathVariable("id") Long id, ModelMap m, Principal p) {
+
+		OAuth2AccessTokenEntity token = tokenService.getAccessTokenById(id);
+
+		if (token == null) {
+			logger.error("getToken failed; token not found: " + id);
+			m.put("code", HttpStatus.NOT_FOUND);
+			m.put("errorMessage", "The requested token with id " + id + " could not be found.");
+			return "jsonErrorView";
+		} else if (!token.getAuthenticationHolder().getAuthentication().getName().equals(p.getName())) {
+			logger.error("getToken failed; token does not belong to principal " + p.getName());
+			m.put("code", HttpStatus.FORBIDDEN);
+			m.put("errorMessage", "You do not have permission to view this token");
+			return "jsonErrorView";
+		} else {
+			tokenService.revokeAccessToken(token);
+			
+			return "httpCodeView";			
+		}
+	}
+	
 	@RequestMapping(value = "/refresh", method = RequestMethod.GET, produces = "application/json")
 	public String getAllRefreshTokens(ModelMap m, Principal p) {
 		
@@ -105,6 +127,28 @@ public class TokenAPI {
 		} else {
 			m.put("entity", token);
 			return "tokenApiView";
+		}
+	}
+	
+	@RequestMapping(value = "/refresh/{id}", method = RequestMethod.DELETE, produces = "application/json")
+	public String deleteRefreshTokenById(@PathVariable("id") Long id, ModelMap m, Principal p) {
+
+		OAuth2RefreshTokenEntity token = tokenService.getRefreshTokenById(id);
+
+		if (token == null) {
+			logger.error("refresh token not found: " + id);
+			m.put("code", HttpStatus.NOT_FOUND);
+			m.put("errorMessage", "The requested token with id " + id + " could not be found.");
+			return "jsonErrorView";
+		} else if (!token.getAuthenticationHolder().getAuthentication().getName().equals(p.getName())) {
+			logger.error("refresh token " + id + " does not belong to principal " + p.getName());
+			m.put("code", HttpStatus.FORBIDDEN);
+			m.put("errorMessage", "You do not have permission to view this token");
+			return "jsonErrorView";
+		} else {
+			tokenService.revokeRefreshToken(token);
+			
+			return "httpCodeView";			
 		}
 	}
 	
