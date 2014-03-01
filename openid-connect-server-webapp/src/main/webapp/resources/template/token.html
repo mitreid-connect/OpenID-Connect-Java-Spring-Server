@@ -20,6 +20,10 @@
 		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> Refresh</button> &nbsp;
     </div>
 
+	<h2>Access Tokens</h2>
+
+	<div><p>Access tokens and ID tokens are usually short-lived and provide clients with access to specific resources.</p></div>
+
 	<div id="access-token-table-empty" class="alert alert-info">
 		There are no active access tokens.
 	</div>
@@ -29,12 +33,17 @@
         <tr>
             <th>Client</th>
             <th>Token Information</th>
+			<th>Expires</th>
             <th></th>
         </tr>
         </thead>
         <tbody>
         </tbody>
     </table>
+
+	<h2>Refresh Tokens</h2>
+
+	<div><p>Refresh tokens are usually long-lived and provide clients with the ability to get new access tokens without end-user involvement.</p></div>
 
 	<div id="refresh-token-table-empty" class="alert alert-info">
 		There are no active refresh tokens.
@@ -45,6 +54,7 @@
         <tr>
             <th>Client</th>
             <th>Token Information</th>
+			<th>Expires</th>
             <th></th>
         </tr>
         </thead>
@@ -59,19 +69,31 @@
 
 <script type="text/html" id="tmpl-access-token">
     <td>
-        <%= client.clientName != null ? client.clientName : client.clientId %>
+        <span title="<%= client.clientId %>"><%= client.clientName != null ? client.clientName : ( client.clientId.substr(0,15) + '...' ) %></span>
+		<% if (token.refreshTokenId != null) { %>
+		<br />
+		<span class="label label-important" title="This access token was issued with an associated refresh token.">+ <i class="icon-time icon-white"></i> Refresh Token</span>
+		<% } %>
+		<% if (token.idTokenId != null) { %>
+		<br />
+		<span class="label label-info" title="This access token was issued with an associated ID token.">+ <i class="icon-user icon-white"></i> ID Token</span>
+		<% } %>
+
     </td>
 
     <td>
 		<div class="token-value">
-			<code class="token-substring"><%= token.value.substr(0,27) %> ...</code>
-			<code class="token-full hidden"><%= token.value %></code>
-			<button class="btn btn-mini">Show Full Token Value</button>
+			<code class="token-substring" style="cursor: pointer" title="Click to display full token value"><%= token.value.substr(0,27) %> ...</code>
+			<input type="text" readonly style="cursor: text" class="token-full input-xxlarge" value="<%= token.value %>" />
 		</div>
 		<div class="scope-list"></div>
         <!--expandable future information-->
     </td>
 
+	<td>
+		<%= formattedExpiration %>
+	</td>
+	
     <td>
 		<button class="btn btn-danger btn-delete pull-right"><i class="icon-trash icon-white"></i> Delete</button>
     </td>

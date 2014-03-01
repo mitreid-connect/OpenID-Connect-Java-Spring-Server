@@ -51,19 +51,41 @@ var AccessTokenView = Backbone.View.extend({
             this.template = _.template($('#tmpl-access-token').html());
         }
 
+        if (!this.scopeTemplate) {
+        	this.scopeTemplate = _.template($('#tmpl-scope-list').html());
+        }
+
         this.model.bind('change', this.render, this);
         
     },
     
     events: {
-		'click .btn-delete':'deleteToken'
+		'click .btn-delete':'deleteToken',
+		'click .token-substring':'showTokenValue'
 	},
 	
     render:function (eventName) {
-		var json = {token: this.model.toJSON(), client: this.options.client.toJSON()};
+    	
+		var expirationDate = this.model.get("expiration");
+
+		if (expirationDate == null) {
+			expirationDate = "Never";
+		} else if (!moment(expirationDate).isValid()) {
+			expirationDate = "Unknown";
+		} else {
+			expirationDate = moment(expirationDate).calendar();
+		}
+    	
+		var json = {token: this.model.toJSON(), client: this.options.client.toJSON(), formattedExpiration: expirationDate};
 
 		this.$el.html(this.template(json));
 
+		// hide full value
+    	$('.token-full', this.el).hide();
+		
+		// show scopes
+        $('.scope-list', this.el).html(this.scopeTemplate({scopes: this.model.get('scopes'), systemScopes: app.systemScopeList}));	
+		
         return this;
     },
     
@@ -108,6 +130,11 @@ var AccessTokenView = Backbone.View.extend({
     close:function () {
         $(this.el).unbind();
         $(this.el).empty();
+    },
+    
+    showTokenValue:function () {
+    	$('.token-substring', this.el).hide();
+    	$('.token-full', this.el).show();
     }
 });
 
