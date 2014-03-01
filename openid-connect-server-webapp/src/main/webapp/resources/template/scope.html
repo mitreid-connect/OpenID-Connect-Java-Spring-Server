@@ -192,14 +192,14 @@
 _.each(scopes, function(s) {
 	var ss = systemScopes.getByValue(s);
 %>
-	<span class="badge<%= (ss) ? ' badge-info' : '' %>">
-<%
-	if (ss && ss.get('icon')) {
-%>
+	<span class="badge<%= (ss) ? ' badge-info' : '' %>"
+<% if (ss && ss.get('description')) { %>
+	title="<%= ss.get('description') %>"
+<% } %>
+>
+<% if (ss && ss.get('icon')) { %>
 	<i class="icon-<%=ss.get('icon')%> icon-white"></i>
-<%		
-	}
-%>
+<% } %>
 <%=s%>
 </span>
 <%
