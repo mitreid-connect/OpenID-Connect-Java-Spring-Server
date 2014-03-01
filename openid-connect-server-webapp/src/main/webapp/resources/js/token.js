@@ -60,7 +60,9 @@ var AccessTokenView = Backbone.View.extend({
 	},
 	
     render:function (eventName) {
-        this.$el.html(this.template(this.model.toJSON()));
+		var json = {token: this.model.toJSON(), client: this.options.client.toJSON()};
+
+		this.$el.html(this.template(json));
 
         return this;
     },
@@ -77,7 +79,7 @@ var AccessTokenView = Backbone.View.extend({
                     self.$el.fadeTo("fast", 0.00, function () { //fade
                         $(this).slideUp("fast", function () { //slide up
                             $(this).remove(); //then remove from the DOM
-                            app.tokenListView.togglePlaceholder();
+                            app.tokensListView.togglePlaceholder();
                         });
                     });
                 },
@@ -97,7 +99,7 @@ var AccessTokenView = Backbone.View.extend({
             	}
             });
 
-            app.tokenListView.delegateEvents();
+            app.tokensListView.delegateEvents();
         }
 
         return false;
@@ -210,9 +212,13 @@ var TokenListView = Backbone.View.extend({
 
 	refreshTable:function() {
 		var _self = this;
-		this.model.fetch({
+		_self.model.access.fetch({
 			success: function() {
-				_self.render();
+				_self.model.refresh.fetch({
+					success:function() {
+						_self.render();
+					}
+				})
 			}
 		});
 	},
@@ -238,6 +244,18 @@ var TokenListView = Backbone.View.extend({
 		
 		// append and render the table structure
 		$(this.el).html($('#tmpl-token-table').html());
+	
+		var _self = this;
+		
+		_.each(this.model.access.models, function (token) {
+			// look up client
+			var client = app.clientList.getByClientId(token.get('clientId'));
+			
+			$('#access-token-table', _self.el).append(new AccessTokenView({model: token, client: client}).render().el);
+
+		});
+		
+		// refresh token goes here
 		
 /*
 		_.each(this.model.models, function (scope) {
