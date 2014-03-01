@@ -101,7 +101,8 @@ var AccessTokenView = Backbone.View.extend({
                     self.$el.fadeTo("fast", 0.00, function () { //fade
                         $(this).slideUp("fast", function () { //slide up
                             $(this).remove(); //then remove from the DOM
-                            app.tokensListView.togglePlaceholder();
+                            // refresh the table in case we removed an id token, too
+                            app.tokensListView.refreshTable();
                         });
                     });
                 },
@@ -172,23 +173,48 @@ var RefreshTokenView = Backbone.View.extend({
             this.template = _.template($('#tmpl-refresh-token').html());
         }
 
+        if (!this.scopeTemplate) {
+        	this.scopeTemplate = _.template($('#tmpl-scope-list').html());
+        }
+
         this.model.bind('change', this.render, this);
         
     },
     
     events: {
-		'click .btn-delete':'deleteToken'
+		'click .btn-delete':'deleteToken',
+		'click .token-substring':'showTokenValue'
 	},
 	
     render:function (eventName) {
-        this.$el.html(this.template(this.model.toJSON()));
+    	
+		var expirationDate = this.model.get("expiration");
 
+		if (expirationDate == null) {
+			expirationDate = "Never";
+		} else if (!moment(expirationDate).isValid()) {
+			expirationDate = "Unknown";
+		} else {
+			expirationDate = moment(expirationDate).calendar();
+		}
+    	
+		var json = {token: this.model.toJSON(), client: this.options.client.toJSON(), formattedExpiration: expirationDate};
+
+		this.$el.html(this.template(json));
+
+		// hide full value
+    	$('.token-full', this.el).hide();
+		
+		// show scopes
+        $('.scope-list', this.el).html(this.scopeTemplate({scopes: this.model.get('scopes'), systemScopes: app.systemScopeList}));	
+		
         return this;
+
     },
     
     deleteToken:function () {
 
-        if (confirm("Are you sure sure you would like to revoke this token?")) {
+        if (confirm("Are you sure sure you would like to revoke this refresh token and its associated access tokens?")) {
         	
             var self = this;
 
@@ -198,7 +224,8 @@ var RefreshTokenView = Backbone.View.extend({
                     self.$el.fadeTo("fast", 0.00, function () { //fade
                         $(this).slideUp("fast", function () { //slide up
                             $(this).remove(); //then remove from the DOM
-                            app.tokenListView.togglePlaceholder();
+                            // refresh the table in case the access tokens have changed, too
+                            app.tokensListView.refreshTable();
                         });
                     });
                 },
@@ -218,7 +245,7 @@ var RefreshTokenView = Backbone.View.extend({
             	}
             });
 
-            app.tokenListView.delegateEvents();
+            app.tokensListView.delegateEvents();
         }
 
         return false;
@@ -227,6 +254,11 @@ var RefreshTokenView = Backbone.View.extend({
     close:function () {
         $(this.el).unbind();
         $(this.el).empty();
+    },
+    
+    showTokenValue:function () {
+    	$('.token-substring', this.el).hide();
+    	$('.token-full', this.el).show();
     }
 });
 
@@ -282,7 +314,13 @@ var TokenListView = Backbone.View.extend({
 
 		});
 		
-		// refresh token goes here
+		_.each(this.model.refresh.models, function (token) {
+			// look up client
+			var client = app.clientList.getByClientId(token.get('clientId'));
+			
+			$('#refresh-token-table', _self.el).append(new RefreshTokenView({model: token, client: client}).render().el);
+
+		});
 		
 /*
 		_.each(this.model.models, function (scope) {

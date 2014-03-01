@@ -72,11 +72,11 @@
         <span title="<%= client.clientId %>"><%= client.clientName != null ? client.clientName : ( client.clientId.substr(0,15) + '...' ) %></span>
 		<% if (token.refreshTokenId != null) { %>
 		<br />
-		<span class="label label-important" title="This access token was issued with an associated refresh token.">+ <i class="icon-time icon-white"></i> Refresh Token</span>
+		<span class="label label-important" title="This access token was issued with an associated refresh token.">+ <i class="icon-time icon-white"></i> Refresh</span>
 		<% } %>
 		<% if (token.idTokenId != null) { %>
 		<br />
-		<span class="label label-info" title="This access token was issued with an associated ID token.">+ <i class="icon-user icon-white"></i> ID Token</span>
+		<span class="label label-success" title="This access token was issued with an associated ID token.">+ <i class="icon-user icon-white"></i> ID</span>
 		<% } %>
 
     </td>
@@ -95,7 +95,32 @@
 	</td>
 	
     <td>
-		<button class="btn btn-danger btn-delete pull-right"><i class="icon-trash icon-white"></i> Delete</button>
+		<button class="btn btn-danger btn-delete pull-right"><i class="icon-trash icon-white"></i> Revoke</button>
+    </td>
+
+</script>
+
+<script type="text/html" id="tmpl-refresh-token">
+    <td>
+        <span title="<%= client.clientId %>"><%= client.clientName != null ? client.clientName : ( client.clientId.substr(0,15) + '...' ) %></span>
+
+    </td>
+
+    <td>
+		<div class="token-value">
+			<code class="token-substring" style="cursor: pointer" title="Click to display full token value"><%= token.value.substr(0,27) %> ...</code>
+			<input type="text" readonly style="cursor: text" class="token-full input-xxlarge" value="<%= token.value %>" />
+		</div>
+		<div class="scope-list"></div>
+        <!--expandable future information-->
+    </td>
+
+	<td>
+		<%= formattedExpiration %>
+	</td>
+	
+    <td>
+		<button class="btn btn-danger btn-delete pull-right"><i class="icon-trash icon-white"></i> Revoke</button>
     </td>
 
 </script>
