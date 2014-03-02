@@ -317,6 +317,9 @@ var UserProfileView = Backbone.View.extend({
 	tagName: 'span',
 	
 	initialize:function() {
+        if (!this.template) {
+            this.template = _.template($('#tmpl-user-profile-element').html());
+        }
 	},
 	
 	render:function() {
@@ -324,32 +327,15 @@ var UserProfileView = Backbone.View.extend({
         $(this.el).html($('#tmpl-user-profile').html());
 
         _.each(this.model, function (value, key) {
-            $("fieldset",this.el).append(
-            		new UserProfileElementView({
-            				model:{key: key, value: value}
-            			}).render().el);
+        	if (key && value) {
+	            $('dl', this.el).append(
+	            		this.template({key: key, value: value})
+	            	);
+        	}
         }, this);
 		
 		return this;
 	}
-});
-
-var UserProfileElementView = Backbone.View.extend({
-	tagName: 'div',
-	
-	initialize:function() {
-        if (!this.template) {
-            this.template = _.template($('#tmpl-user-profile-element').html());
-        }
-	},
-	
-	render:function() {
-
-		$(this.el).html(this.template(this.model));
-		
-		return this;
-	}
-	
 });
 
 // Router
