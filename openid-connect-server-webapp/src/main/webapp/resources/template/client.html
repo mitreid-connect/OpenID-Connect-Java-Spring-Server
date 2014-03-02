@@ -29,16 +29,37 @@
 	</td>
 
     <td>
-        <%=client.clientId%>
+        <span title="<%= client.clientId %>"><%= client.clientName != null ? client.clientName : ( client.clientId.substr(0,8) + '...' ) %></span>
     </td>
 
     <td>
-        <%=client.clientName%>
-		<% if (client.clientDescription) { %>
-        <blockquote><small><%=client.clientDescription%></small></blockquote>
-		<% } %>
+					<% if (client.clientDescription || client.clientUri || client.policyUri || client.tosUri || client.contacts) { %>
+						<div class="alert alert-info">
+							<%=client.clientDescription%>
+							<% if (client.clientUri || client.policyUri || client.tosUri || client.contacts) { %>
+								<div class="toggleMoreInformation" style="cursor: pointer;">
+									<i class="icon-chevron-right"></i> more information
+								</div>
+								<div class="moreInformation hide">
+									<ul>
+										<% if (client.clientUri) { %>
+											<li>Home page: <a href="<%= client.clientUri %>"><%= client.clientUri %></a></li>
+										<% } %>
+										<% if (client.policyUri) { %>
+											<li>Policy: <a href="<%= client.policyUri %>"><%= client.policyUri %></a></li>
+										<% } %>
+										<% if (client.tosUri) { %>
+											<li>Terms of Service: <a href="<%= client.tosUri %>"><%= client.tosUri %></a></li>
+										<% } %>
+										<% if (client.contacts) { %>
+											<li>Administrative Contacts: <%= client.contacts.join(', ') %></li>
+										<% } %>
+									</ul>
+								</div>
+							<% } %>
+						</div>
+					<% } %>
 		<div class="scope-list"></div>
-        <!--expandable future information-->
     </td>
 
     <td>
@@ -63,8 +84,8 @@
         <thead>
         <tr>
 			<th></th>
-            <th>ID</th>
-            <th>Name</th>
+            <th>Client</th>
+            <th>Information</th>
             <th></th>
         </tr>
         </thead>

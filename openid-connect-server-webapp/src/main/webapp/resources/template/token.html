@@ -69,7 +69,7 @@
 
 <script type="text/html" id="tmpl-access-token">
     <td>
-        <span title="<%= client.clientId %>"><%= client.clientName != null ? client.clientName : ( client.clientId.substr(0,15) + '...' ) %></span>
+        <span title="<%= client.clientId %>"><%= client.clientName != null ? client.clientName : ( client.clientId.substr(0,8) + '...' ) %></span>
 		<% if (token.refreshTokenId != null) { %>
 		<br />
 		<span class="label label-important" title="This access token was issued with an associated refresh token.">+ <i class="icon-time icon-white"></i> Refresh</span>
@@ -87,7 +87,6 @@
 			<input type="text" readonly style="cursor: text" class="token-full input-xxlarge" value="<%= token.value %>" />
 		</div>
 		<div class="scope-list"></div>
-        <!--expandable future information-->
     </td>
 
 	<td>
@@ -102,7 +101,7 @@
 
 <script type="text/html" id="tmpl-refresh-token">
     <td>
-        <span title="<%= client.clientId %>"><%= client.clientName != null ? client.clientName : ( client.clientId.substr(0,15) + '...' ) %></span>
+        <span title="<%= client.clientId %>"><%= client.clientName != null ? client.clientName : ( client.clientId.substr(0,8) + '...' ) %></span>
 
     </td>
 
@@ -112,7 +111,6 @@
 			<input type="text" readonly style="cursor: text" class="token-full input-xxlarge" value="<%= token.value %>" />
 		</div>
 		<div class="scope-list"></div>
-        <!--expandable future information-->
     </td>
 
 	<td>

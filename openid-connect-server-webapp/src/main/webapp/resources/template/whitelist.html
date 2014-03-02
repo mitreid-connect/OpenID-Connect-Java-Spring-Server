@@ -24,16 +24,37 @@
 	</td>
 
     <td>
-        <%=whiteList.clientId%>
-		<% if (client.clientDescription) { %>
-        <blockquote><small><%=client.clientDescription%></small></blockquote>
-		<% } %>
-		<div class="scope-list"></div>
-    </td>
+        <span title="<%= client.clientId %>"><%= client.clientName != null ? client.clientName : ( client.clientId.substr(0,8) + '...' ) %></span>
+ 					<% if (client.clientDescription || client.clientUri || client.policyUri || client.tosUri || client.contacts) { %>
+						<div class="alert alert-info">
+							<%=client.clientDescription%>
+							<% if (client.clientUri || client.policyUri || client.tosUri || client.contacts) { %>
+								<div class="toggleMoreInformation" style="cursor: pointer;">
+									<i class="icon-chevron-right"></i> more information
+								</div>
+								<div class="moreInformation hide">
+									<ul>
+										<% if (client.clientUri) { %>
+											<li>Home page: <a href="<%= client.clientUri %>"><%= client.clientUri %></a></li>
+										<% } %>
+										<% if (client.policyUri) { %>
+											<li>Policy: <a href="<%= client.policyUri %>"><%= client.policyUri %></a></li>
+										<% } %>
+										<% if (client.tosUri) { %>
+											<li>Terms of Service: <a href="<%= client.tosUri %>"><%= client.tosUri %></a></li>
+										<% } %>
+										<% if (client.contacts) { %>
+											<li>Administrative Contacts: <%= client.contacts.join(', ') %></li>
+										<% } %>
+									</ul>
+								</div>
+							<% } %>
+						</div>
+					<% } %>
+   </td>
 
     <td>
-        <%=client.clientName%>
-        <!--expandable future information-->
+		<div class="scope-list"></div>
     </td>
 
     <td>
@@ -56,8 +77,8 @@
         <thead>
         <tr>
 			<th></th>
-            <th>ID</th>
-            <th>Name</th>
+            <th>Client</th>
+            <th>Scopes</th>
             <th></th>
         </tr>
         </thead>
@@ -87,7 +108,7 @@
 				<label class="control-label">Client</label>
 				<div class="controls">
 					<input type="hidden" name="clientId" value="<%= client.clientId %>" />
-					<%= client.clientName != null ? client.clientName : client.clientId %>
+			        <span title="<%= client.clientId %>"><%= client.clientName != null ? client.clientName : ( client.clientId.substr(0,8) + '...' ) %></span>
 				</div>
 			</div>
 

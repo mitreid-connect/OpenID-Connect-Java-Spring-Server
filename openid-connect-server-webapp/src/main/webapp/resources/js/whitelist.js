@@ -124,7 +124,8 @@ var WhiteListView = Backbone.View.extend({
 	
 	events:{
 		'click .btn-edit': 'editWhitelist',
-		'click .btn-delete': 'deleteWhitelist'
+		'click .btn-delete': 'deleteWhitelist',
+		'click .toggleMoreInformation': 'toggleMoreInformation'
 	},
 	
 	editWhitelist:function() {
@@ -169,6 +170,19 @@ var WhiteListView = Backbone.View.extend({
 		return false;
 	},
 	
+	toggleMoreInformation:function(event) {
+		event.preventDefault();
+		if ($('.moreInformation', this.el).is(':visible')) {
+			// hide it
+			$('.moreInformation', this.el).hide('fast');
+			$('.toggleMoreInformation i', this.el).attr('class', 'icon-chevron-right');
+		} else {
+			// show it
+			$('.moreInformation', this.el).show('fast');
+			$('.toggleMoreInformation i', this.el).attr('class', 'icon-chevron-down');
+		}
+	},
+
 	close:function() {
 		$(this.el).unbind();
 		$(this.el).empty();

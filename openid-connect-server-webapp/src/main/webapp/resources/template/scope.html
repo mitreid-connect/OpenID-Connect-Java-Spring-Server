@@ -191,18 +191,27 @@
 <% 
 _.each(scopes, function(s) {
 	var ss = systemScopes.getByValue(s);
+	
+	if (ss) {
 %>
-	<span class="badge<%= (ss) ? ' badge-info' : '' %>"
-<% if (ss && ss.get('description')) { %>
+	<span class="badge badge-info" 
+<% if (ss.get('description')) { %>
 	title="<%= ss.get('description') %>"
 <% } %>
->
-<% if (ss && ss.get('icon')) { %>
+
+style="cursor: default;" >
+<% if (ss.get('icon')) { %>
 	<i class="icon-<%=ss.get('icon')%> icon-white"></i>
 <% } %>
 <%=s%>
 </span>
 <%
+	} else {
+%>
+	<span class="badge" style="cursor: default;"><%=s%></span>
+<%
+	}
+
 });
 %>
 

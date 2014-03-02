@@ -167,7 +167,8 @@ var ApprovedSiteView = Backbone.View.extend({
 	},
 	
 	events: {
-		'click .btn-delete': 'deleteApprovedSite'
+		'click .btn-delete': 'deleteApprovedSite',
+		'click .toggleMoreInformation': 'toggleMoreInformation'
 	},
 	
 	deleteApprovedSite:function() {
@@ -204,6 +205,20 @@ var ApprovedSiteView = Backbone.View.extend({
 		}
 		
 		return false;
+	},
+	
+	toggleMoreInformation:function(event) {
+		event.preventDefault();
+		if ($('.moreInformation', this.el).is(':visible')) {
+			// hide it
+			$('.moreInformation', this.el).hide('fast');
+			$('.toggleMoreInformation i', this.el).attr('class', 'icon-chevron-right');
+		} else {
+			// show it
+			$('.moreInformation', this.el).show('fast');
+			$('.toggleMoreInformation i', this.el).attr('class', 'icon-chevron-down');
+		}
+
 	},
 	
 	close:function() {

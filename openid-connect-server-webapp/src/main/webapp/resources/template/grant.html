@@ -35,9 +35,7 @@
         <tr>
 			<th></th>
             <th>Application</th>
-			<th>Created</th>
-			<th>Last Accessed</th>
-			<th>Expires</th>
+			<th></th>
             <th></th>
         </tr>
         </thead>
@@ -59,9 +57,7 @@
         <tr>
 			<th></th>
             <th>Application</th>
-			<th>Created</th>
-			<th>Last Accessed</th>
-			<th>Expires</th>
+			<th></th>
             <th></th>
         </tr>
         </thead>
@@ -85,10 +81,35 @@
 	</td>
 
     <td>
-        <%= client.clientName != null ? client.clientName : client.clientId %>
-		<% if (client.clientDescription) { %>
-        <blockquote><small><%=client.clientDescription%></small></blockquote>
-		<% } %>
+
+        <span title="<%= client.clientId %>"><%= client.clientName != null ? client.clientName : ( client.clientId.substr(0,8) + '...' ) %></span>
+		
+					<% if (client.clientDescription || client.clientUri || client.policyUri || client.tosUri || client.contacts) { %>
+						<div class="alert alert-info">
+							<%=client.clientDescription%>
+							<% if (client.clientUri || client.policyUri || client.tosUri || client.contacts) { %>
+								<div class="toggleMoreInformation" style="cursor: pointer;">
+									<i class="icon-chevron-right"></i> more information
+								</div>
+								<div class="moreInformation hide">
+									<ul>
+										<% if (client.clientUri) { %>
+											<li>Home page: <a href="<%= client.clientUri %>"><%= client.clientUri %></a></li>
+										<% } %>
+										<% if (client.policyUri) { %>
+											<li>Policy: <a href="<%= client.policyUri %>"><%= client.policyUri %></a></li>
+										<% } %>
+										<% if (client.tosUri) { %>
+											<li>Terms of Service: <a href="<%= client.tosUri %>"><%= client.tosUri %></a></li>
+										<% } %>
+										<% if (client.contacts) { %>
+											<li>Administrative Contacts: <%= client.contacts.join(', ') %></li>
+										<% } %>
+									</ul>
+								</div>
+							<% } %>
+						</div>
+					<% } %>
 		<div class="scope-list"></div>
     </td>
 
@@ -96,15 +117,17 @@
 	<!-- TODO: make these dates collapsable/expandable -->
 
 	<td>
-		<%= formattedDate.creationDate %>
-	</td>
+		<div>
+			<i>Authorized:</i> <%= formattedDate.creationDate %>
+		</div>
 
-	<td>
-		<%= formattedDate.accessDate %>
-	</td>
+		<div>
+			<i>Last accessed:</i> <%= formattedDate.accessDate %>
+		</div>
 
-	<td>
-		<%= formattedDate.timeoutDate %>
+		<div>
+			<i>Expires:</i> <%= formattedDate.timeoutDate %>
+		</div>
 	</td>
 
     <td>

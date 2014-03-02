@@ -148,7 +148,8 @@ var ClientView = Backbone.View.extend({
     events:{
         "click .btn-edit":"editClient",
         "click .btn-delete":"deleteClient",
-        "click .btn-whitelist":"whiteListClient"
+        "click .btn-whitelist":"whiteListClient",
+		'click .toggleMoreInformation': 'toggleMoreInformation'
     },
 
     editClient:function () {
@@ -203,7 +204,20 @@ var ClientView = Backbone.View.extend({
         return false;
     },
 
-    close:function () {
+	toggleMoreInformation:function(event) {
+		event.preventDefault();
+		if ($('.moreInformation', this.el).is(':visible')) {
+			// hide it
+			$('.moreInformation', this.el).hide('fast');
+			$('.toggleMoreInformation i', this.el).attr('class', 'icon-chevron-right');
+		} else {
+			// show it
+			$('.moreInformation', this.el).show('fast');
+			$('.toggleMoreInformation i', this.el).attr('class', 'icon-chevron-down');
+		}
+	},
+	
+	close:function () {
         $(this.el).unbind();
         $(this.el).empty();
     }
