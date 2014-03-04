@@ -351,8 +351,14 @@ public class ClientDetailsEntity implements ClientDetails {
 	@Override
 	@Transient
 	public boolean isSecretRequired() {
-		// TODO: this should check the auth method field instead
-		return getClientSecret() != null;
+		if (getTokenEndpointAuthMethod() != null && 
+				getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_BASIC) ||
+				getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_POST)) {
+			return true;
+		} else {
+			return false;
+		}
+		
 	}
 
 	/**

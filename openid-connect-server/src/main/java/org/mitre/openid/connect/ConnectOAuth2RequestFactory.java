@@ -171,10 +171,9 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 
 				JWSAlgorithm alg = signedJwt.getHeader().getAlgorithm();
 
-				if (client.getRequestObjectSigningAlg() != null) {
-					if (!client.getRequestObjectSigningAlg().equals(alg)) {
-						throw new InvalidClientException("Client's registered request object signing algorithm (" + client.getRequestObjectSigningAlg() + ") does not match request object's actual algorithm (" + alg.getName() + ")");
-					}
+				if (client.getRequestObjectSigningAlg() == null ||
+					!client.getRequestObjectSigningAlg().equals(alg)) {
+					throw new InvalidClientException("Client's registered request object signing algorithm (" + client.getRequestObjectSigningAlg() + ") does not match request object's actual algorithm (" + alg.getName() + ")");
 				}
 
 				if (alg.equals(JWSAlgorithm.RS256)

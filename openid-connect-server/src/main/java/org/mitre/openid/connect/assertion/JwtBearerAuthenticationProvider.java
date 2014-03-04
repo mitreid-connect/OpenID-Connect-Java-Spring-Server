@@ -19,12 +19,17 @@
  */
 package org.mitre.openid.connect.assertion;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.Map;
 
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
+import org.mitre.jwt.signer.service.impl.DefaultJwtSigningAndValidationService;
 import org.mitre.jwt.signer.service.impl.JWKSetCacheService;
 import org.mitre.oauth2.model.ClientDetailsEntity;
+import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.slf4j.Logger;
@@ -37,6 +42,13 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 
+import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableMap;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.jwk.JWK;
+import com.nimbusds.jose.jwk.OctetSequenceKey;
+import com.nimbusds.jose.jwk.Use;
+import com.nimbusds.jose.util.Base64URL;
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
@@ -82,12 +94,48 @@ public class JwtBearerAuthenticationProvider implements AuthenticationProvider {
 			// check the signature with nimbus
 			if (jwt instanceof SignedJWT) {
 				SignedJWT jws = (SignedJWT)jwt;
-				JwtSigningAndValidationService validator = validators.getValidator(client.getJwksUri());
-				if (validator == null || !validator.validateSignature(jws)) {
-					throw new AuthenticationServiceException("Invalid signature");
+
+				JWSAlgorithm alg = jws.getHeader().getAlgorithm();
+
+				if (client.getTokenEndpointAuthSigningAlg() == null || 
+						!client.getTokenEndpointAuthSigningAlg().equals(alg)) {
+					throw new InvalidClientException("Client's registered request object signing algorithm (" + client.getRequestObjectSigningAlg() + ") does not match request object's actual algorithm (" + alg.getName() + ")");
+				}
+
+				if (client.getTokenEndpointAuthMethod().equals(AuthMethod.PRIVATE_KEY) &&
+						(alg.equals(JWSAlgorithm.RS256)
+						|| alg.equals(JWSAlgorithm.RS384)
+						|| alg.equals(JWSAlgorithm.RS512))) {
+
+					JwtSigningAndValidationService validator = validators.getValidator(client.getJwksUri());
+
+					if (validator == null) {
+						throw new AuthenticationServiceException("Unable to create signature validator for client's JWKS URI: " + client.getJwksUri());
+					}
+
+					if (!validator.validateSignature(jws)) {
+						throw new AuthenticationServiceException("Signature did not validate for presented JWT authentication.");
+					}
+				} else if (client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_JWT) &&
+						(alg.equals(JWSAlgorithm.HS256)
+						|| alg.equals(JWSAlgorithm.HS384)
+						|| alg.equals(JWSAlgorithm.HS512))) {
+
+					// it's HMAC, we need to make a validator based on the client secret
+	
+					JwtSigningAndValidationService validator = getSymmetricValidtor(client);
+	
+					if (validator == null) {
+						throw new AuthenticationServiceException("Unable to create signature validator for client's secret: " + client.getClientSecret());
+					}
+	
+					if (!validator.validateSignature(jws)) {
+						throw new AuthenticationServiceException("Signature did not validate for presented JWT authentication.");
+					}
+	
 				}
 			}
-
+			
 			// check the issuer
 			if (jwtClaims.getIssuer() == null) {
 				throw new AuthenticationServiceException("Assertion Token Issuer is null");
@@ -151,5 +199,43 @@ public class JwtBearerAuthenticationProvider implements AuthenticationProvider {
 		return (JwtBearerAssertionAuthenticationToken.class.isAssignableFrom(authentication));
 	}
 
+
+	/**
+	 * Create a symmetric signing and validation service for the given client
+	 * 
+	 * @param client
+	 * @return
+	 */
+	private JwtSigningAndValidationService getSymmetricValidtor(ClientDetailsEntity client) {
+
+		// TODO: cache
+		
+		if (client == null) {
+			logger.error("Couldn't create symmetric validator for null client");
+			return null;
+		}
+
+		if (Strings.isNullOrEmpty(client.getClientSecret())) {
+			logger.error("Couldn't create symmetric validator for client " + client.getClientId() + " without a client secret");
+			return null;
+		}
+
+		try {
+
+			JWK jwk = new OctetSequenceKey(Base64URL.encode(client.getClientSecret()), Use.SIGNATURE, null, client.getClientId(), null, null, null);
+			Map<String, JWK> keys = ImmutableMap.of(client.getClientId(), jwk);
+			JwtSigningAndValidationService service = new DefaultJwtSigningAndValidationService(keys);
+
+			return service;
+
+		} catch (NoSuchAlgorithmException e) {
+			logger.error("Couldn't create symmetric validator for client " + client.getClientId(), e);
+		} catch (InvalidKeySpecException e) {
+			logger.error("Couldn't create symmetric validator for client " + client.getClientId(), e);
+		}
+
+		return null;
+
+	}
 
 }
