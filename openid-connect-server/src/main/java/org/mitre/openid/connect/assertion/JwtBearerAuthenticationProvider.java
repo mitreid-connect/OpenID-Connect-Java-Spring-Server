@@ -174,8 +174,8 @@ public class JwtBearerAuthenticationProvider implements AuthenticationProvider {
 			// check audience
 			if (jwtClaims.getAudience() == null) {
 				throw new AuthenticationServiceException("Assertion token audience is null");
-			} else if (!jwtClaims.getAudience().contains(config.getIssuer())) {
-				throw new AuthenticationServiceException("Audience does not match, expected " + config.getIssuer() + " got " + jwtClaims.getAudience());
+			} else if (!(jwtClaims.getAudience().contains(config.getIssuer()) || jwtClaims.getAudience().contains(config.getIssuer() + "token"))) {
+				throw new AuthenticationServiceException("Audience does not match, expected " + config.getIssuer() + " or " + (config.getIssuer() + "token") + " got " + jwtClaims.getAudience());
 			}
 
 			// IFF we managed to get all the way down here, the token is valid

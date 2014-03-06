@@ -340,7 +340,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 				
 				claimsSet.setIssuer(clientConfig.getClientId());
 				claimsSet.setSubject(clientConfig.getClientId());
-				claimsSet.setAudience(Lists.newArrayList(serverConfig.getIssuer()));
+				claimsSet.setAudience(Lists.newArrayList(serverConfig.getTokenEndpointUri()));
 
 				// TODO: make this configurable
 				Date exp = new Date(System.currentTimeMillis() + (60 * 1000)); // auth good for 60 seconds
