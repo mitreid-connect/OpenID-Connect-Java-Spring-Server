@@ -16,7 +16,10 @@
  ******************************************************************************/
 package org.mitre.discovery.web;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.mitre.discovery.util.WebfingerURLNormalizer;
@@ -40,6 +43,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.nimbusds.jose.Algorithm;
+import com.nimbusds.jose.JWSAlgorithm;
 
 /**
  * 
@@ -246,6 +250,10 @@ public class DiscoveryEndpoint {
 			baseUrl = baseUrl.concat("/");
 		}
 
+		Collection<JWSAlgorithm> serverSigningAlgs = signService.getAllSigningAlgsSupported();
+		Collection<JWSAlgorithm> clientSymmetricSigningAlgs = Lists.newArrayList(JWSAlgorithm.HS256, JWSAlgorithm.HS384, JWSAlgorithm.HS512);
+		Collection<JWSAlgorithm> clientSymmetricAndAsymmetricSigningAlgs = Lists.newArrayList(JWSAlgorithm.HS256, JWSAlgorithm.HS384, JWSAlgorithm.HS512, JWSAlgorithm.RS256, JWSAlgorithm.RS384, JWSAlgorithm.RS512);
+		
 		Map<String, Object> m = new HashMap<String, Object>();
 		m.put("issuer", config.getIssuer());
 		m.put("authorization_endpoint", baseUrl + "authorize");
@@ -263,14 +271,14 @@ public class DiscoveryEndpoint {
 		//userinfo_signing_alg_values_supported
 		//userinfo_encryption_alg_values_supported
 		//userinfo_encryption_enc_values_supported
-		m.put("id_token_signing_alg_values_supported", Collections2.transform(signService.getAllSigningAlgsSupported(), toAlgorithmName));
+		m.put("id_token_signing_alg_values_supported", Collections2.transform(serverSigningAlgs, toAlgorithmName));
 		//id_token_encryption_alg_values_supported
 		//id_token_encryption_enc_values_supported
-		m.put("request_object_signing_alg_values_supported", Collections2.transform(signService.getAllSigningAlgsSupported(), toAlgorithmName));
+		m.put("request_object_signing_alg_values_supported", Collections2.transform(clientSymmetricAndAsymmetricSigningAlgs, toAlgorithmName));
 		m.put("request_object_encryption_alg_values_supported", Collections2.transform(encService.getAllEncryptionAlgsSupported(), toAlgorithmName));
 		m.put("request_object_encryption_enc_values_supported", Collections2.transform(encService.getAllEncryptionEncsSupported(), toAlgorithmName));
-		m.put("token_endpoint_auth_methods_supported", Lists.newArrayList("client_secret_post", "client_secret_basic", /*"client_secret_jwt",*/ "private_key_jwt", "none"));
-		//token_endpoint_auth_signing_alg_values_supported
+		m.put("token_endpoint_auth_methods_supported", Lists.newArrayList("client_secret_post", "client_secret_basic", "client_secret_jwt", "private_key_jwt", "none"));
+		m.put("token_endpoint_auth_signing_alg_values_supported", Collections2.transform(clientSymmetricAndAsymmetricSigningAlgs, toAlgorithmName));
 		//display_types_supported
 		m.put("claim_types_supported", Lists.newArrayList("normal" /*, "aggregated", "distributed"*/));
 		m.put("claims_supported", Lists.newArrayList(
