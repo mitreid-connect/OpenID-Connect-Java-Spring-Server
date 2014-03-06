@@ -321,19 +321,19 @@
 	<div class="tab-pane" id="client-secret-tab">
 
 			<div class="control-group" id="tokenEndpointAuthMethod">
-				<label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> Token Endpoint Authentication Method</label>
+				<label class="control-label">Token Endpoint Authentication Method</label>
 				<div class="controls">
 					<label class="radio">
-						<input type="radio" name="tokenEndpointAuthMethod" value="SECRET_BASIC" <%=(client.token_endpoint_auth_method == 'SECRET_BASIC' ? 'checked' : '')%>> Client Secret over HTTP Basic
+						<input type="radio" name="tokenEndpointAuthMethod" value="client_secret_basic" <%=(client.token_endpoint_auth_method == 'client_secret_basic' ? 'checked' : '')%>> Client Secret over HTTP Basic
 					</label>
 					<label class="radio">
-						<input type="radio" name="tokenEndpointAuthMethod" value="SECRET_POST" <%=(client.token_endpoint_auth_method == 'SECRET_POST' ? 'checked' : '')%>> Client Secret over HTTP POST
+						<input type="radio" name="tokenEndpointAuthMethod" value="client_secret_post" <%=(client.token_endpoint_auth_method == 'client_secret_post' ? 'checked' : '')%>> Client Secret over HTTP POST
 					</label>
 					<label class="radio">
-						<input type="radio" name="tokenEndpointAuthMethod" value="SECRET_JWT" <%=(client.token_endpoint_auth_method == 'SECRET_JWT' ? 'checked' : '')%>> Client Secret via symmetrically-signed JWT assertion
+						<input type="radio" name="tokenEndpointAuthMethod" value="client_secret_jwt" <%=(client.token_endpoint_auth_method == 'client_secret_jwt' ? 'checked' : '')%>> Client Secret via symmetrically-signed JWT assertion
 					</label>
 					<label class="radio">
-						<input type="radio" name="tokenEndpointAuthMethod" value="PRIVATE_KEY_JWT" <%=(client.token_endpoint_auth_method == 'PRIVATE_KEY_JWT' ? 'checked' : '')%>> Asymmetrically-signed JWT assertion
+						<input type="radio" name="tokenEndpointAuthMethod" value="private_key_jwt" <%=(client.token_endpoint_auth_method == 'private_key_jwt' ? 'checked' : '')%>> Asymmetrically-signed JWT assertion
 					</label>
 					<label class="radio">
 						<input type="radio" name="tokenEndpointAuthMethod" value="NONE" <%=(client.token_endpoint_auth_method == 'NONE' ? 'checked' : '')%>> No authentication

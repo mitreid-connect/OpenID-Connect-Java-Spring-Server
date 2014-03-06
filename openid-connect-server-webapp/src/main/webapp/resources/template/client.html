@@ -319,7 +319,7 @@
 	<div class="tab-pane" id="client-secret-tab">
 
 			<div class="control-group" id="tokenEndpointAuthMethod">
-				<label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> Token Endpoint Authentication Method</label>
+				<label class="control-label">Token Endpoint Authentication Method</label>
 				<div class="controls">
 					<label class="radio">
 						<input type="radio" name="tokenEndpointAuthMethod" value="SECRET_BASIC" <%=(tokenEndpointAuthMethod == 'SECRET_BASIC' ? 'checked' : '')%>> Client Secret over HTTP Basic
@@ -331,7 +331,7 @@
 						<input type="radio" name="tokenEndpointAuthMethod" value="SECRET_JWT" <%=(tokenEndpointAuthMethod == 'SECRET_JWT' ? 'checked' : '')%>> Client Secret via symmetrically-signed JWT assertion
 					</label>
 					<label class="radio">
-						<input type="radio" name="tokenEndpointAuthMethod" value="PRIVATE_KEY_JWT" <%=(tokenEndpointAuthMethod == 'PRIVATE_KEY_JWT' ? 'checked' : '')%>> Asymmetrically-signed JWT assertion
+						<input type="radio" name="tokenEndpointAuthMethod" value="PRIVATE_KEY" <%=(tokenEndpointAuthMethod == 'PRIVATE_KEY' ? 'checked' : '')%>> Asymmetrically-signed JWT assertion
 					</label>
 					<label class="radio">
 						<input type="radio" name="tokenEndpointAuthMethod" value="NONE" <%=(tokenEndpointAuthMethod == 'NONE' ? 'checked' : '')%>> No authentication
