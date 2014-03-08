@@ -35,12 +35,29 @@
     </td>
 
     <td>
+		<div class="client-more-info-block"></div>
+		<div class="scope-list"></div>
+    </td>
+
+    <td>
+        <button class="btn btn-edit"><i class="icon-edit"></i> Edit</button> &nbsp;
+		<% if (whiteList != null) { %> 
+			<button class="btn btn-warning btn-whitelist"><i class="icon-wrench icon-white"></i> Whitelist</button> &nbsp;
+		<% } else { %>
+			<button class="btn btn-warning btn-whitelist"><i class="icon-plus-sign icon-white"></i> Whitelist</button> &nbsp;
+		<% } %>
+		<button class="btn btn-danger btn-delete pull-right"><i class="icon-trash icon-white"></i> Delete</button>
+    </td>
+
+</script>
+
+<script type="text/html" id="tmpl-client-more-info-block">
 					<% if (client.clientDescription || client.clientUri || client.policyUri || client.tosUri || client.contacts != null && client.contacts.length > 0) { %>
 						<div class="alert alert-info">
 							<%=client.clientDescription%>
 							<% if (client.clientUri || client.policyUri || client.tosUri || client.contacts) { %>
 								<div class="toggleMoreInformation" style="cursor: pointer;">
-									<i class="icon-chevron-right"></i> more information
+									<i class="icon-chevron-right"></i> <small>more information</small>
 								</div>
 								<div class="moreInformation hide">
 									<ul>
@@ -61,19 +78,6 @@
 							<% } %>
 						</div>
 					<% } %>
-		<div class="scope-list"></div>
-    </td>
-
-    <td>
-        <button class="btn btn-edit"><i class="icon-edit"></i> Edit</button> &nbsp;
-		<% if (whiteList != null) { %> 
-			<button class="btn btn-warning btn-whitelist"><i class="icon-wrench icon-white"></i> Whitelist</button> &nbsp;
-		<% } else { %>
-			<button class="btn btn-warning btn-whitelist"><i class="icon-plus-sign icon-white"></i> Whitelist</button> &nbsp;
-		<% } %>
-		<button class="btn btn-danger btn-delete pull-right"><i class="icon-trash icon-white"></i> Delete</button>
-    </td>
-
 </script>
 
 <script type="text/html" id="tmpl-client-table">
@@ -678,11 +682,13 @@
 <script type="text/html" id="tmpl-client-saved">
 
 	<div>
-		<strong>ID:</strong> <code><%= clientId %></code>
+		<strong>ID:</strong> <input type="text" readonly style="cursor: text" class="token-full input-xxlarge" value="<%= clientId %>" />
+
 	</div>
 	<% if (generateClientSecret && clientSecret != null && clientSecret != '') { %>
 	<div>
-		<strong>Secret:</strong> <button class="btn btn-mini" id="clientSaveShow">Show Secret</button><code id="savedClientSecret" class="hide" style="word-wrap: break-word;"><%= clientSecret %></code>
+		<strong>Secret:</strong> <button class="btn btn-mini" id="clientSaveShow">Show Secret</button>
+		<input type="text" id="savedClientSecret" readonly style="cursor: text" class="token-full input-xxlarge" value="<%= clientSecret %>" />
 	</div>
 	<% } else { %>
 	<div>

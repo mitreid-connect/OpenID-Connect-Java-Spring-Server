@@ -55,13 +55,18 @@ var AccessTokenView = Backbone.View.extend({
         	this.scopeTemplate = _.template($('#tmpl-scope-list').html());
         }
 
+        if (!this.moreInfoTemplate) {
+        	this.moreInfoTemplate = _.template($('#tmpl-client-more-info-block').html());
+        }
+
         this.model.bind('change', this.render, this);
         
     },
     
     events: {
 		'click .btn-delete':'deleteToken',
-		'click .token-substring':'showTokenValue'
+		'click .token-substring':'showTokenValue',
+		'click .toggleMoreInformation': 'toggleMoreInformation'
 	},
 	
     render:function (eventName) {
@@ -86,6 +91,8 @@ var AccessTokenView = Backbone.View.extend({
 		// show scopes
         $('.scope-list', this.el).html(this.scopeTemplate({scopes: this.model.get('scopes'), systemScopes: this.options.systemScopeList}));	
 		
+        $('.client-more-info-block', this.el).html(this.moreInfoTemplate({client: this.options.client.toJSON()}));
+
         return this;
     },
     
@@ -128,7 +135,21 @@ var AccessTokenView = Backbone.View.extend({
         return false;
     },
     
-    close:function () {
+	toggleMoreInformation:function(event) {
+		event.preventDefault();
+		if ($('.moreInformation', this.el).is(':visible')) {
+			// hide it
+			$('.moreInformation', this.el).hide('fast');
+			$('.toggleMoreInformation i', this.el).attr('class', 'icon-chevron-right');
+		} else {
+			// show it
+			$('.moreInformation', this.el).show('fast');
+			$('.toggleMoreInformation i', this.el).attr('class', 'icon-chevron-down');
+		}
+
+	},
+
+	close:function () {
         $(this.el).unbind();
         $(this.el).empty();
     },
@@ -177,13 +198,18 @@ var RefreshTokenView = Backbone.View.extend({
         	this.scopeTemplate = _.template($('#tmpl-scope-list').html());
         }
 
+        if (!this.moreInfoTemplate) {
+        	this.moreInfoTemplate = _.template($('#tmpl-client-more-info-block').html());
+        }
+
         this.model.bind('change', this.render, this);
         
     },
     
     events: {
 		'click .btn-delete':'deleteToken',
-		'click .token-substring':'showTokenValue'
+		'click .token-substring':'showTokenValue',
+		'click .toggleMoreInformation': 'toggleMoreInformation'
 	},
 	
     render:function (eventName) {
@@ -208,6 +234,8 @@ var RefreshTokenView = Backbone.View.extend({
 		// show scopes
         $('.scope-list', this.el).html(this.scopeTemplate({scopes: this.model.get('scopes'), systemScopes: this.options.systemScopeList}));	
 		
+        $('.client-more-info-block', this.el).html(this.moreInfoTemplate({client: this.options.client.toJSON()}));
+        
         return this;
 
     },
@@ -251,7 +279,21 @@ var RefreshTokenView = Backbone.View.extend({
         return false;
     },
     
-    close:function () {
+	toggleMoreInformation:function(event) {
+		event.preventDefault();
+		if ($('.moreInformation', this.el).is(':visible')) {
+			// hide it
+			$('.moreInformation', this.el).hide('fast');
+			$('.toggleMoreInformation i', this.el).attr('class', 'icon-chevron-right');
+		} else {
+			// show it
+			$('.moreInformation', this.el).show('fast');
+			$('.toggleMoreInformation i', this.el).attr('class', 'icon-chevron-down');
+		}
+
+	},
+
+	close:function () {
         $(this.el).unbind();
         $(this.el).empty();
     },

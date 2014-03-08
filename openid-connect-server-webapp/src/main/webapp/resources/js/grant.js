@@ -114,6 +114,10 @@ var ApprovedSiteView = Backbone.View.extend({
         	this.scopeTemplate = _.template($('#tmpl-scope-list').html());
         }
 
+        if (!this.moreInfoTemplate) {
+        	this.moreInfoTemplate = _.template($('#tmpl-client-more-info-block').html());
+        }
+
 	},
 
 	render: function() {
@@ -159,6 +163,8 @@ var ApprovedSiteView = Backbone.View.extend({
 		this.$el.html(this.template(json));
 
         $('.scope-list', this.el).html(this.scopeTemplate({scopes: this.model.get('allowedScopes'), systemScopes: this.options.systemScopeList}));
+        
+        $('.client-more-info-block', this.el).html(this.moreInfoTemplate({client: this.options.client.toJSON()}));
         
         this.$('.dynamically-registered').tooltip({title: 'This client was dynamically registered'});
         this.$('.whitelisted-site').tooltip({title: 'This site was whitelisted by an adminstrator'});

@@ -130,6 +130,10 @@ var ClientView = Backbone.View.extend({
         	this.scopeTemplate = _.template($('#tmpl-scope-list').html());
         }
 
+        if (!this.moreInfoTemplate) {
+        	this.moreInfoTemplate = _.template($('#tmpl-client-more-info-block').html());
+        }
+        
         this.model.bind('change', this.render, this);
         
     },
@@ -139,6 +143,8 @@ var ClientView = Backbone.View.extend({
         this.$el.html(this.template(json));
 
         $('.scope-list', this.el).html(this.scopeTemplate({scopes: this.model.get('scope'), systemScopes: this.options.systemScopeList}));
+        
+        $('.client-more-info-block', this.el).html(this.moreInfoTemplate({client: this.model.toJSON()}));
         
         this.$('.dynamically-registered').tooltip({title: 'This client was dynamically registered'});
         
@@ -580,6 +586,8 @@ var ClientFormView = Backbone.View.extend({
             	$('#modalAlertLabel').html('Client Saved');
             	
             	$('#modalAlert .modal-body').html(_self.clientSavedTemplate(_self.model.toJSON()));
+            	
+            	$('#modalAlert .modal-body #savedClientSecret').hide();
             	
             	$('#modalAlert').on('click', '#clientSaveShow', function(event) {
             		event.preventDefault();

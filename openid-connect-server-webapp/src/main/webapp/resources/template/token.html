@@ -70,6 +70,7 @@
 <script type="text/html" id="tmpl-access-token">
     <td>
         <span title="<%= client.clientId %>"><%= client.clientName != null ? client.clientName : ( client.clientId.substr(0,8) + '...' ) %></span>
+		<div class="client-more-info-block"></div>
 		<% if (token.refreshTokenId != null) { %>
 		<br />
 		<span class="label label-important" title="This access token was issued with an associated refresh token.">+ <i class="icon-time icon-white"></i> Refresh</span>
@@ -102,7 +103,7 @@
 <script type="text/html" id="tmpl-refresh-token">
     <td>
         <span title="<%= client.clientId %>"><%= client.clientName != null ? client.clientName : ( client.clientId.substr(0,8) + '...' ) %></span>
-
+		<div class="client-more-info-block"></div>
     </td>
 
     <td>
