@@ -466,7 +466,7 @@ var AppRouter = Backbone.Router.extend({
     newClient:function() {
 
     	if (!isAdmin()) {
-    		this.root()();
+    		this.root();
     		return;
     	}
 
@@ -497,7 +497,7 @@ var AppRouter = Backbone.Router.extend({
     editClient:function(id) {
 
     	if (!isAdmin()) {
-    		this.root()();
+    		this.root();
     		return;
     	}
 
@@ -536,7 +536,7 @@ var AppRouter = Backbone.Router.extend({
     whiteList:function () {
 
     	if (!isAdmin()) {
-    		this.root()();
+    		this.root();
     		return;
     	}
 
@@ -555,7 +555,7 @@ var AppRouter = Backbone.Router.extend({
     newWhitelist:function(cid) {
 
     	if (!isAdmin()) {
-    		this.root()();
+    		this.root();
     		return;
     	}
 
@@ -590,7 +590,7 @@ var AppRouter = Backbone.Router.extend({
     editWhitelist:function(id) {
 
     	if (!isAdmin()) {
-    		this.root()();
+    		this.root();
     		return;
     	}
 
@@ -669,7 +669,7 @@ var AppRouter = Backbone.Router.extend({
     blackList:function() {
 
     	if (!isAdmin()) {
-    		this.root()();
+    		this.root();
     		return;
     	}
 
@@ -693,7 +693,7 @@ var AppRouter = Backbone.Router.extend({
     siteScope:function() {
 
     	if (!isAdmin()) {
-    		this.root()();
+    		this.root();
     		return;
     	}
 
@@ -712,7 +712,7 @@ var AppRouter = Backbone.Router.extend({
     newScope:function() {
 
     	if (!isAdmin()) {
-    		this.root()();
+    		this.root();
     		return;
     	}
 
@@ -734,7 +734,7 @@ var AppRouter = Backbone.Router.extend({
     editScope:function(sid) {
 
     	if (!isAdmin()) {
-    		this.root()();
+    		this.root();
     		return;
     	}
 
