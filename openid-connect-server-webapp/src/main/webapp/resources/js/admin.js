@@ -777,7 +777,7 @@ var AppRouter = Backbone.Router.extend({
     	this.dynRegEditView = new DynRegEditView({model: new DynRegClient()});
     	$('#content').html(this.dynRegEditView.render().el);
     	
-    	setPageTitle("Register a New Client");
+    	setPageTitle("Dynamically Register a New Client");
     },
     
     editDynReg:function() {
@@ -788,7 +788,7 @@ var AppRouter = Backbone.Router.extend({
              {text:"Edit", href:"manage/#dev/dynreg/new"}
         ]);
     	
-    	setPageTitle("Edit a New Client");
+    	setPageTitle("Edit a Dynamically Registered Client");
     	// note that this doesn't actually load the client, that's supposed to happen elsewhere...
     },
     
@@ -802,7 +802,7 @@ var AppRouter = Backbone.Router.extend({
     	this.userProfileView = new UserProfileView({model: getUserInfo()});
     	$('#content').html(this.userProfileView.render().el);
     	
-    	setPageTitle("Edit a New Client");
+    	setPageTitle("View User Profile");
     	
     }
 
