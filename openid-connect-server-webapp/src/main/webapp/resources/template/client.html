@@ -35,7 +35,7 @@
     </td>
 
     <td>
-					<% if (client.clientDescription || client.clientUri || client.policyUri || client.tosUri || client.contacts) { %>
+					<% if (client.clientDescription || client.clientUri || client.policyUri || client.tosUri || client.contacts != null && client.contacts.length > 0) { %>
 						<div class="alert alert-info">
 							<%=client.clientDescription%>
 							<% if (client.clientUri || client.policyUri || client.tosUri || client.contacts) { %>
@@ -53,7 +53,7 @@
 										<% if (client.tosUri) { %>
 											<li>Terms of Service: <a href="<%= client.tosUri %>"><%= client.tosUri %></a></li>
 										<% } %>
-										<% if (client.contacts) { %>
+										<% if (client.contacts != null && client.contacts.length > 0) { %>
 											<li>Administrative Contacts: <%= client.contacts.join(', ') %></li>
 										<% } %>
 									</ul>
