@@ -45,14 +45,14 @@ var ApprovedSiteListView = Backbone.View.extend({
 		
 		_.each(this.model.models, function(approvedSite) {
 			// look up client
-			var client = app.clientList.getByClientId(approvedSite.get('clientId'));
+			var client = this.options.clientList.getByClientId(approvedSite.get('clientId'));
 			
 			if (client != null) {
 				
 				if (approvedSite.get('whitelistedSite') != null) {
-					$('#grant-whitelist-table', this.el).append(new ApprovedSiteView({model: approvedSite, client: client}).render().el);
+					$('#grant-whitelist-table', this.el).append(new ApprovedSiteView({model: approvedSite, client: client, systemScopeList: this.options.systemScopeList}).render().el);
 				} else {
-					$('#grant-table', this.el).append(new ApprovedSiteView({model: approvedSite, client: client}).render().el);
+					$('#grant-table', this.el).append(new ApprovedSiteView({model: approvedSite, client: client, systemScopeList: this.options.systemScopeList}).render().el);
 				}
 				
 			}
@@ -158,7 +158,7 @@ var ApprovedSiteView = Backbone.View.extend({
 		
 		this.$el.html(this.template(json));
 
-        $('.scope-list', this.el).html(this.scopeTemplate({scopes: this.model.get('allowedScopes'), systemScopes: app.systemScopeList}));
+        $('.scope-list', this.el).html(this.scopeTemplate({scopes: this.model.get('allowedScopes'), systemScopes: this.options.systemScopeList}));
         
         this.$('.dynamically-registered').tooltip({title: 'This client was dynamically registered'});
         this.$('.whitelisted-site').tooltip({title: 'This site was whitelisted by an adminstrator'});

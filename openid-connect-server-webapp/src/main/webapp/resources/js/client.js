@@ -135,10 +135,10 @@ var ClientView = Backbone.View.extend({
     },
 
     render:function (eventName) {
-    	var json = {client: this.model.toJSON(), count: this.options.count};
+    	var json = {client: this.model.toJSON(), count: this.options.count, whiteList: this.options.whiteList};
         this.$el.html(this.template(json));
 
-        $('.scope-list', this.el).html(this.scopeTemplate({scopes: this.model.get('scope'), systemScopes: app.systemScopeList}));
+        $('.scope-list', this.el).html(this.scopeTemplate({scopes: this.model.get('scope'), systemScopes: this.options.systemScopeList}));
         
         this.$('.dynamically-registered').tooltip({title: 'This client was dynamically registered'});
         
@@ -157,8 +157,7 @@ var ClientView = Backbone.View.extend({
     },
 
     whiteListClient:function() {
-    	var whiteList = app.whiteListList.getByClientId(this.model.get('clientId'));
-    	if (whiteList == null) {
+    	if (this.options.whiteList == null) {
     		// create a new one
     		app.navigate('admin/whitelist/new/' + this.model.id, {trigger: true});
     	} else {
@@ -246,11 +245,15 @@ var ClientListView = Backbone.View.extend({
         // append and render table structure
         $(this.el).html($('#tmpl-client-table').html());
 
-        _.each(this.model.models, function (client) {
+    	var whiteList = this.options.whiteListList.getByClientId(this.model.get('clientId'));
+
+    	_.each(this.model.models, function (client) {
             $("#client-table",this.el).append(
             		new ClientView({
             				model:client, 
-            				count:this.options.stats.get(client.get('id'))
+            				count:this.options.stats.get(client.get('id')),
+            				systemScopeList: this.options.systemScopeList,
+            				whiteList: this.options.whiteListList.getByClientId(client.get('clientId'))
             			}).render().el);
         }, this);
 
@@ -637,7 +640,7 @@ var ClientFormView = Backbone.View.extend({
 
         $("#scope .controls",this.el).html(new ListWidgetView({
         	placeholder: 'new scope', 
-        	autocomplete: _.uniq(_.flatten(app.systemScopeList.pluck("value"))), 
+        	autocomplete: _.uniq(_.flatten(this.options.systemScopeList.pluck("value"))), 
             collection: this.scopeCollection}).render().el);
 
         // build and bind contacts

@@ -386,20 +386,29 @@ var AppRouter = Backbone.Router.extend({
         this.clientStats = new StatsModel(); 
         this.accessTokensList = new AccessTokenCollection();
         this.refreshTokensList = new RefreshTokenCollection();
-
         
-        this.clientListView = new ClientListView({model:this.clientList, stats: this.clientStats});
-        this.whiteListListView = new WhiteListListView({model:this.whiteListList});
-        this.approvedSiteListView = new ApprovedSiteListView({model:this.approvedSiteList});
+        this.clientListView = new ClientListView({model:this.clientList, stats: this.clientStats, systemScopeList: this.systemScopeList, whiteListList: this.whiteListList});
+        this.whiteListListView = new WhiteListListView({model:this.whiteListList, clientList: this.clientList, systemScopeList: this.systemScopeList});
+        this.approvedSiteListView = new ApprovedSiteListView({model:this.approvedSiteList, clientList: this.clientList, systemScopeList: this.systemScopeList});
         this.blackListListView = new BlackListListView({model:this.blackListList});
         this.systemScopeListView = new SystemScopeListView({model:this.systemScopeList});
-        this.tokensListView = new TokenListView({model: {access: this.accessTokensList, refresh: this.refreshTokensList}});
+        this.tokensListView = new TokenListView({model: {access: this.accessTokensList, refresh: this.refreshTokensList}, clientList: this.clientList, systemScopeList: this.systemScopeList});
+    	this.dynRegRootView = new DynRegRootView({systemScopeList: this.systemScopeList});
         
         this.breadCrumbView = new BreadCrumbView({
             collection:new Backbone.Collection()
         });
 
         this.breadCrumbView.render();
+
+        // set up loading dependencies
+        
+        /*
+        this.clientListView.dependsOn = [this.systemScopeList];
+        this.whiteListListView.dependsOn = [this.whiteListList, this.clientList];
+        this.accessTokensListView.dependsOn = [this.clientList];
+        this.refreshTokenListView.dependsOn = [this.clientList];
+        */
 
 
         //
@@ -408,11 +417,13 @@ var AppRouter = Backbone.Router.extend({
         //
         
         // load things in the right order:
+        
         $("#loading").html("server configuration");
         var base = $('base').attr('href');
         $.getJSON(base + '.well-known/openid-configuration', function(data) {
         	app.serverConfiguration = data;
-    		$("#content .progress .bar").css("width", "20%");
+  /**/
+        	$("#content .progress .bar").css("width", "20%");
 	        $("#loading").html("scopes");        
 	        app.systemScopeList.fetch({
 	        	success: function(collection, response) {
@@ -428,10 +439,12 @@ var AppRouter = Backbone.Router.extend({
 	        				        $("#loading").html("statistics");        						
 	        						app.clientStats.fetch({
 	        							success: function(model, response) {
+/**/
 	        				        		$("#content .progress .bar").css("width", "100%");
 	        						        $("#loading").html("console");
 			        						var baseUrl = $.url(app.serverConfiguration.issuer);
 			        						Backbone.history.start({pushState: true, root: baseUrl.attr('relative') + 'manage/'});
+/**/
 	        							}
 	        						});
 	        					}
@@ -440,6 +453,7 @@ var AppRouter = Backbone.Router.extend({
 	        		});
 	        	}
 	        });
+/**/
         });
 
     },
@@ -489,7 +503,7 @@ var AppRouter = Backbone.Router.extend({
     		idTokenValiditySeconds:600
     	}, { silent: true });
     	
-        this.clientFormView = new ClientFormView({model:client});
+        this.clientFormView = new ClientFormView({model:client, systemScopeList: this.systemScopeList});
         $('#content').html(this.clientFormView.render().el);
     	setPageTitle("New Client");
     },
@@ -527,7 +541,7 @@ var AppRouter = Backbone.Router.extend({
     		displayClientSecret:false
     	}, { silent: true });
         
-        this.clientFormView = new ClientFormView({model:client});
+        this.clientFormView = new ClientFormView({model:client, systemScopeList: this.systemScopeList});
         $('#content').html(this.clientFormView.render().el);
         
     	setPageTitle("Edit Client");
@@ -577,7 +591,7 @@ var AppRouter = Backbone.Router.extend({
             	allowedScopes: client.get('scope')
             }, { silent: true });
             
-        	this.whiteListFormView = new WhiteListFormView({model: whiteList, client: client});
+        	this.whiteListFormView = new WhiteListFormView({model: whiteList, client: client, systemScopeList: this.systemScopeList});
         	$('#content').html(this.whiteListFormView.render().el);
         	setPageTitle("Create New Whitelist");
         } else {
@@ -607,7 +621,7 @@ var AppRouter = Backbone.Router.extend({
             
             // if there's no client, this is an error
             if (client != null) {
-            	this.whiteListFormView = new WhiteListFormView({model: whiteList, client: client});
+            	this.whiteListFormView = new WhiteListFormView({model: whiteList, client: client, systemScopeList: this.systemScopeList});
             	$('#content').html(this.whiteListFormView.render().el);
             	setPageTitle("Edit Whitelist");
 
@@ -760,7 +774,6 @@ var AppRouter = Backbone.Router.extend({
              {text:"Client Registration", href:"manage/#dev/dynreg"}
         ]);
     	
-    	this.dynRegRootView = new DynRegRootView();
     	$('#content').html(this.dynRegRootView.render().el);
     	
     	setPageTitle("Self-service Client Registration");

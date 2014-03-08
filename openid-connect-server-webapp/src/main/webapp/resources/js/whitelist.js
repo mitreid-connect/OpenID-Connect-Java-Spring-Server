@@ -60,11 +60,11 @@ var WhiteListListView = Backbone.View.extend({
 		_.each(this.model.models, function (whiteList) {
 			
 			// look up client
-			var client = app.clientList.getByClientId(whiteList.get('clientId'));
+			var client = this.options.clientList.getByClientId(whiteList.get('clientId'));
 			
 			// if there's no client ID, this is an error!
 			if (client != null) {
-				$('#whitelist-table', this.el).append(new WhiteListView({model: whiteList, client: client}).render().el);
+				$('#whitelist-table', this.el).append(new WhiteListView({model: whiteList, client: client, systemScopeList: this.options.systemScopeList}).render().el);
 			}
 			
 		}, this);
@@ -115,7 +115,7 @@ var WhiteListView = Backbone.View.extend({
 		
 		this.$el.html(this.template(json));
 
-        $('.scope-list', this.el).html(this.scopeTemplate({scopes: this.model.get('allowedScopes'), systemScopes: app.systemScopeList}));
+        $('.scope-list', this.el).html(this.scopeTemplate({scopes: this.model.get('allowedScopes'), systemScopes: this.options.systemScopeList}));
         
 		this.$('.dynamically-registered').tooltip({title: 'This client was dynamically registered'});
 

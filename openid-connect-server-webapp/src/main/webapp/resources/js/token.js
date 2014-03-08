@@ -84,7 +84,7 @@ var AccessTokenView = Backbone.View.extend({
     	$('.token-full', this.el).hide();
 		
 		// show scopes
-        $('.scope-list', this.el).html(this.scopeTemplate({scopes: this.model.get('scopes'), systemScopes: app.systemScopeList}));	
+        $('.scope-list', this.el).html(this.scopeTemplate({scopes: this.model.get('scopes'), systemScopes: this.options.systemScopeList}));	
 		
         return this;
     },
@@ -206,7 +206,7 @@ var RefreshTokenView = Backbone.View.extend({
     	$('.token-full', this.el).hide();
 		
 		// show scopes
-        $('.scope-list', this.el).html(this.scopeTemplate({scopes: this.model.get('scopes'), systemScopes: app.systemScopeList}));	
+        $('.scope-list', this.el).html(this.scopeTemplate({scopes: this.model.get('scopes'), systemScopes: this.options.systemScopeList}));	
 		
         return this;
 
@@ -308,17 +308,17 @@ var TokenListView = Backbone.View.extend({
 		
 		_.each(this.model.access.models, function (token) {
 			// look up client
-			var client = app.clientList.getByClientId(token.get('clientId'));
+			var client = _self.options.clientList.getByClientId(token.get('clientId'));
 			
-			$('#access-token-table', _self.el).append(new AccessTokenView({model: token, client: client}).render().el);
+			$('#access-token-table', _self.el).append(new AccessTokenView({model: token, client: client, systemScopeList: _self.options.systemScopeList}).render().el);
 
 		});
 		
 		_.each(this.model.refresh.models, function (token) {
 			// look up client
-			var client = app.clientList.getByClientId(token.get('clientId'));
+			var client = _self.options.clientList.getByClientId(token.get('clientId'));
 			
-			$('#refresh-token-table', _self.el).append(new RefreshTokenView({model: token, client: client}).render().el);
+			$('#refresh-token-table', _self.el).append(new RefreshTokenView({model: token, client: client, systemScopeList: _self.options.systemScopeList}).render().el);
 
 		});
 		

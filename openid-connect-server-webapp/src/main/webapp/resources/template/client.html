@@ -18,10 +18,12 @@
 
 <script type="text/html" id="tmpl-client">
 	<td>
-		<% if (count) { %>
+		<% if (count == 0) { %>
+			<span class="label label-important">0</span>
+		<% } else if (count != null) { %>
 			<span class="label label-info"><%= count %></span>
 		<% } else { %>
-			<span class="label label-important">0</span>
+			<!-- hold for count -->
 		<% } %>
 		<% if (client.dynamicallyRegistered) { %>
 			<span class="label label-inverse dynamically-registered"><i class="icon-globe icon-white"></i></span>
@@ -63,8 +65,12 @@
     </td>
 
     <td>
-        <button class="btn btn-edit"><i class="icon-edit"></i> Edit</button> &nbsp; 
-		<button class="btn btn-warning btn-whitelist">Whitelist</button> &nbsp;
+        <button class="btn btn-edit"><i class="icon-edit"></i> Edit</button> &nbsp;
+		<% if (whiteList != null) { %> 
+			<button class="btn btn-warning btn-whitelist"><i class="icon-wrench icon-white"></i> Whitelist</button> &nbsp;
+		<% } else { %>
+			<button class="btn btn-warning btn-whitelist"><i class="icon-plus-sign icon-white"></i> Whitelist</button> &nbsp;
+		<% } %>
 		<button class="btn btn-danger btn-delete pull-right"><i class="icon-trash icon-white"></i> Delete</button>
     </td>
 

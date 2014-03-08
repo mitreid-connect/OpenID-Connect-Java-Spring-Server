@@ -96,7 +96,7 @@ var DynRegRootView = Backbone.View.extend({
 		
 		client.fetch({success: function() {
 			
-			var dynRegEditView = new DynRegEditView({model: client});
+			var dynRegEditView = new DynRegEditView({model: client, systemScopeList: this.systemScopeList});
 			
 			$('#content').html(dynRegEditView.render().el);
 			app.navigate('dev/dynreg/edit', {trigger: true});
@@ -352,7 +352,7 @@ var DynRegEditView = Backbone.View.extend({
 
         $("#scope .controls",this.el).html(new ListWidgetView({
         	placeholder: 'new scope', 
-        	autocomplete: _.uniq(_.flatten(app.systemScopeList.pluck("value"))), 
+        	autocomplete: _.uniq(_.flatten(this.options.systemScopeList.pluck("value"))), 
             collection: this.scopeCollection}).render().el);
 
         // build and bind contacts
