@@ -24,17 +24,25 @@
         /* The html and body elements cannot have any padding or margin. */
       }
 
-        .sidebar-nav {
-            padding: 9px 0;
-        }
+      .sidebar-nav {
+          padding: 9px 0;
+      }
 
-        h1,label {
-            text-shadow: 1px 1px 1px #FFFFFF;
-        }
-
-        .brand {
-            padding-left: 35px !important;
-        }
+      h1,label {
+          text-shadow: 1px 1px 1px #FFFFFF;
+      }
+      
+      .navbar .brand {
+      	max-height: 20px;
+      }
+      
+      .navbar .brand img {
+      	max-height: 24px;
+      	width: auto;
+      	position: relative;
+      	top: -2px;
+      	left: -6px;
+      }
 
       /* Wrapper for page content to push down footer */
       #wrap {
@@ -66,9 +74,6 @@
 	  	border: 1px solid #b94a48 !important;
 	  }
 	
-	  a.brand {
-	  	background: url('${config.logoImageUrl}') no-repeat scroll 7px 7px transparent;
-	  }
     </style>
     <link href="resources/bootstrap2/css/bootstrap-responsive.css" rel="stylesheet">
 	<style type="text/css">
