@@ -290,7 +290,7 @@ var BlackListListView = Backbone.View.extend({
     	$('#loadingbox').sheet('show');
     	$('#loading').html('blacklist');
 
-    	$.when(this.model.fetchIfNeeded()).done(function() {
+    	$.when(this.model.fetch()).done(function() {
     	    		$('#loadingbox').sheet('hide');
     	    		_self.render();
     			});    	

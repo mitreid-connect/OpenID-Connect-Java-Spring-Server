@@ -108,9 +108,9 @@ var WhiteListListView = Backbone.View.extend({
     	$('#loadingbox').sheet('show');
     	$('#loading').html('whitelist');
 
-    	$.when(this.model.fetchIfNeeded(),
-    			this.options.clientList.fetchIfNeeded(),
-    			this.options.systemScopeList.fetchIfNeeded()).done(function() {
+    	$.when(this.model.fetch(),
+    			this.options.clientList.fetch(),
+    			this.options.systemScopeList.fetch()).done(function() {
     	    		$('#loadingbox').sheet('hide');
     	    		_self.render();
     			});    	

@@ -300,11 +300,15 @@ var ClientListView = Backbone.View.extend({
 	},
 	
     refreshTable:function() {
+    	$('#loadingbox').sheet('show');
+    	$('#loading').html('clients');
+
     	var _self = this;
-    	$.when(this.model.fetchIfNeeded(),
-    			this.options.whiteListList.fetchIfNeeded(),
-    			this.options.stats.fetchIfNeeded(),
-    			this.options.systemScopeList.fetchIfNeeded()).done(function() {
+    	$.when(this.model.fetch(),
+    			this.options.whiteListList.fetch(),
+    			this.options.stats.fetch(),
+    			this.options.systemScopeList.fetch()).done(function() {
+    	    		$('#loadingbox').sheet('hide');
     	    		_self.render();
     			});
     }
