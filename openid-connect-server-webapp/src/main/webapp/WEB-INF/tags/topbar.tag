@@ -33,7 +33,7 @@
 				<span class="icon-bar"></span> 
 				<span class="icon-bar"></span>
 			</button>
-			<a class="brand" href=""><img src="${ config.logoImageUrl }" style="margin-bottom: 4px;" /> ${config.topbarTitle}</a>
+			<a class="brand" href=""><img src="${ config.logoImageUrl }" /> ${config.topbarTitle}</a>
 			<c:if test="${ not empty pageName }">
 				<div class="nav-collapse collapse">
 					<ul class="nav">
