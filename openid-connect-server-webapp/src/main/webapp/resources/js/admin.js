@@ -272,11 +272,11 @@ var BlackListListView = Backbone.View.extend({
     		return;
     	}
 
-    	$('#loadingbox').show();
+    	$('#loadingbox').sheet('show');
     	$('#loading').html('blacklist');
 
     	$.when(this.model.fetchIfNeeded()).done(function() {
-    	    		$('#loadingbox').hide('slow');
+    	    		$('#loadingbox').sheet('hide');
     	    		callback();
     			});    	
     },
@@ -287,11 +287,11 @@ var BlackListListView = Backbone.View.extend({
 	
     refreshTable:function() {
     	var _self = this;
-    	$('#loadingbox').show();
+    	$('#loadingbox').sheet('show');
     	$('#loading').html('blacklist');
 
     	$.when(this.model.fetchIfNeeded()).done(function() {
-    	    		$('#loadingbox').hide('slow');
+    	    		$('#loadingbox').sheet('hide');
     	    		_self.render();
     			});    	
     },	
@@ -501,7 +501,7 @@ var AppRouter = Backbone.Router.extend({
 	        						        $("#loading").html("console");
 			        						var baseUrl = $.url(app.serverConfiguration.issuer);
 			        						Backbone.history.start({pushState: true, root: baseUrl.attr('relative') + 'manage/'});
-			        						$('#loadingbox').hide('slow');
+			        						$('#loadingbox').sheet('hide');
 /** /
 	        							}
 	        						});

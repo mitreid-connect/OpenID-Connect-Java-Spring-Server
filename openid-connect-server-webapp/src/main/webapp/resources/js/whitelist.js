@@ -58,13 +58,13 @@ var WhiteListListView = Backbone.View.extend({
     		return;
     	}
 
-    	$('#loadingbox').show();
+    	$('#loadingbox').sheet('show');
     	$('#loading').html('whitelist');
 
     	$.when(this.model.fetchIfNeeded(),
     			this.options.clientList.fetchIfNeeded(),
     			this.options.systemScopeList.fetchIfNeeded()).done(function() {
-    	    		$('#loadingbox').hide('slow');
+    	    		$('#loadingbox').sheet('hide');
     	    		callback();
     			});    	
     },
@@ -105,13 +105,13 @@ var WhiteListListView = Backbone.View.extend({
 	
     refreshTable:function() {
     	var _self = this;
-    	$('#loadingbox').show();
+    	$('#loadingbox').sheet('show');
     	$('#loading').html('whitelist');
 
     	$.when(this.model.fetchIfNeeded(),
     			this.options.clientList.fetchIfNeeded(),
     			this.options.systemScopeList.fetchIfNeeded()).done(function() {
-    	    		$('#loadingbox').hide('slow');
+    	    		$('#loadingbox').sheet('hide');
     	    		_self.render();
     			});    	
     }

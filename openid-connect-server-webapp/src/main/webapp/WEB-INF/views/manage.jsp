@@ -22,10 +22,12 @@
         <div class="span10">
             <div class="content span12">
 				<div id="breadcrumbs"></div>
-				<div id="loadingbox" class="alert alert-warning">
+				<div id="loadingbox" class="sheet hide fade" data-sheet-parent="#breadcrumbs">
+					<div class="sheet-body">
 	                Loading <span id="loading"></span>...
 	                <div class="progress progress-striped active">
 	                	<div class="bar" style="width: 0%"></div>
+	                </div>
 	                </div>
 	            </div>
                 <span id="content">
@@ -34,4 +36,5 @@
         </div>
     </div>
 </div>
+
 <o:footer js="resources/js/admin.js" />

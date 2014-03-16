@@ -244,14 +244,14 @@ var ClientListView = Backbone.View.extend({
     		return;
     	}
     	
-    	$('#loadingbox').show();
+    	$('#loadingbox').sheet('show');
     	$('#loading').html('clients');
 
     	$.when(this.model.fetchIfNeeded(),
     			this.options.whiteListList.fetchIfNeeded(),
     			this.options.stats.fetchIfNeeded(),
     			this.options.systemScopeList.fetchIfNeeded()).done(function() {
-    	    		$('#loadingbox').hide('slow');
+    	    		$('#loadingbox').sheet('hide');
     	    		callback();
     			});
     	

@@ -140,11 +140,11 @@ var SystemScopeListView = Backbone.View.extend({
     		return;
     	}
 
-    	$('#loadingbox').show();
+    	$('#loadingbox').sheet('show');
     	$('#loading').html('approved sites');
 
     	$.when(this.model.fetchIfNeeded()).done(function() {
-    	    		$('#loadingbox').hide('slow');
+    	    		$('#loadingbox').sheet('hide');
     	    		callback();
     			});    	
     },
@@ -161,11 +161,11 @@ var SystemScopeListView = Backbone.View.extend({
 	
 	refreshTable:function() {
 		var _self = this;
-    	$('#loadingbox').show();
+    	$('#loadingbox').sheet('show');
     	$('#loading').html('approved sites');
 
     	$.when(this.model.fetch()).done(function() {
-    	    		$('#loadingbox').hide('slow');
+    	    		$('#loadingbox').sheet('hide');
     	    		_self.render();
     			});    	
 	},

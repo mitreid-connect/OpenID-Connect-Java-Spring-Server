@@ -320,21 +320,21 @@ var TokenListView = Backbone.View.extend({
     		return;
     	}
 
-    	$('#loadingbox').show();
+    	$('#loadingbox').sheet('show');
     	$('#loading').html('tokens');
 
     	$.when(this.model.access.fetchIfNeeded(),
     			this.model.refresh.fetchIfNeeded(),
     			this.options.clientList.fetchIfNeeded(),
     			this.options.systemScopeList.fetchIfNeeded()).done(function() {
-    	    		$('#loadingbox').hide('slow');
+    	    		$('#loadingbox').sheet('hide');
     	    		callback();
     	    	});
     	
     },
 
     refreshTable:function() {
-    	$('#loadingbox').show();
+    	$('#loadingbox').sheet('show');
     	$('#loading').html('tokens');
     	var _self = this;
     	$.when(this.model.access.fetch(),
@@ -342,7 +342,7 @@ var TokenListView = Backbone.View.extend({
     			this.options.clientList.fetch(),
     			this.options.systemScopeList.fetch()).done(function(){
     				_self.render();
-    	    		$('#loadingbox').hide('slow');
+    	    		$('#loadingbox').sheet('hide');
     			});
 	},
 	

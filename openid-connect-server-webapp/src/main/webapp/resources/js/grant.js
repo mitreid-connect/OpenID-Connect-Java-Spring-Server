@@ -44,13 +44,13 @@ var ApprovedSiteListView = Backbone.View.extend({
     		return;
     	}
 
-    	$('#loadingbox').show();
+    	$('#loadingbox').sheet('show');
     	$('#loading').html('approved sites');
 
     	$.when(this.model.fetchIfNeeded(),
     			this.options.clientList.fetchIfNeeded(),
     			this.options.systemScopeList.fetchIfNeeded()).done(function() {
-    	    		$('#loadingbox').hide('slow');
+    	    		$('#loadingbox').sheet('hide');
     	    		callback();
     			});    	
     },
@@ -113,13 +113,13 @@ var ApprovedSiteListView = Backbone.View.extend({
 	
     refreshTable:function() {
     	var _self = this;
-    	$('#loadingbox').show();
+    	$('#loadingbox').sheet('show');
     	$('#loading').html('approved sites');
 
     	$.when(this.model.fetch(),
     			this.options.clientList.fetch(),
     			this.options.systemScopeList.fetch()).done(function() {
-    	    		$('#loadingbox').hide('slow');
+    	    		$('#loadingbox').sheet('hide');
     	    		_self.render();
     			});
     }
