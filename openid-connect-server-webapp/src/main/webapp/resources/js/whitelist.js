@@ -51,6 +51,13 @@ var WhiteListListView = Backbone.View.extend({
 	},
 
 	load:function(callback) {
+    	if (this.model.isFetched &&
+    			this.options.clientList.isFetched &&
+    			this.options.systemScopeList.isFetched) {
+    		callback();
+    		return;
+    	}
+
     	$('#loadingbox').show();
     	$('#loading').html('whitelist');
 

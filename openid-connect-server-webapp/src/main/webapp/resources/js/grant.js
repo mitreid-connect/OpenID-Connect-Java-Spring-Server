@@ -37,6 +37,13 @@ var ApprovedSiteListView = Backbone.View.extend({
 	initialize:function() { },
 
 	load:function(callback) {
+    	if (this.model.isFetched &&
+    			this.options.clientList.isFetched &&
+    			this.options.systemScopeList.isFetched) {
+    		callback();
+    		return;
+    	}
+
     	$('#loadingbox').show();
     	$('#loading').html('approved sites');
 

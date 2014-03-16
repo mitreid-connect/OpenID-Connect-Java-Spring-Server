@@ -236,6 +236,14 @@ var ClientListView = Backbone.View.extend({
     },
     
     load:function(callback) {
+    	if (this.model.isFetched &&
+    			this.options.whiteListList.isFetched &&
+    			this.options.stats.isFetched &&
+    			this.options.systemScopeList.isFetched) {
+    		callback();
+    		return;
+    	}
+    	
     	$('#loadingbox').show();
     	$('#loading').html('clients');
 

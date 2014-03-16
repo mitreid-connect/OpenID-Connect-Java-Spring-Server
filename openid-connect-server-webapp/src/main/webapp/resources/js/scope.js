@@ -135,6 +135,11 @@ var SystemScopeListView = Backbone.View.extend({
 	tagName: 'span',
 	
 	load:function(callback) {
+    	if (this.model.isFetched) {
+    		callback();
+    		return;
+    	}
+
     	$('#loadingbox').show();
     	$('#loading').html('approved sites');
 

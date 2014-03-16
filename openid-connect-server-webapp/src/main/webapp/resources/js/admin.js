@@ -267,6 +267,11 @@ var BlackListListView = Backbone.View.extend({
 	},
 
 	load:function(callback) {
+    	if (this.model.isFetched) {
+    		callback();
+    		return;
+    	}
+
     	$('#loadingbox').show();
     	$('#loading').html('blacklist');
 

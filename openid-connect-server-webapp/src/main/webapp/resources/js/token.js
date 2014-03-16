@@ -312,6 +312,14 @@ var TokenListView = Backbone.View.extend({
 	},
 
     load:function(callback) {
+    	if (this.model.access.isFetched &&
+    			this.model.refresh.isFetched &&
+    			this.options.clientList.isFetched &&
+    			this.options.systemScopeList.isFetched) {
+    		callback();
+    		return;
+    	}
+
     	$('#loadingbox').show();
     	$('#loading').html('tokens');
 
