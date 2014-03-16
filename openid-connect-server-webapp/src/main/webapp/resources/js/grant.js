@@ -35,6 +35,18 @@ var ApprovedSiteListView = Backbone.View.extend({
 	tagName: 'span',
 	
 	initialize:function() { },
+
+	load:function(callback) {
+    	$('#loadingbox').show();
+    	$('#loading').html('approved sites');
+
+    	$.when(this.model.fetchIfNeeded(),
+    			this.options.clientList.fetchIfNeeded(),
+    			this.options.systemScopeList.fetchIfNeeded()).done(function() {
+    	    		$('#loadingbox').hide('slow');
+    	    		callback();
+    			});    	
+    },
 	
 	events: {
 		"click .refresh-table":"refreshTable"
@@ -94,11 +106,15 @@ var ApprovedSiteListView = Backbone.View.extend({
 	
     refreshTable:function() {
     	var _self = this;
-    	this.model.fetch({
-    		success: function() {
-    			_self.render();
-    		}
-    	});
+    	$('#loadingbox').show();
+    	$('#loading').html('approved sites');
+
+    	$.when(this.model.fetch(),
+    			this.options.clientList.fetch(),
+    			this.options.systemScopeList.fetch()).done(function() {
+    	    		$('#loadingbox').hide('slow');
+    	    		_self.render();
+    			});
     }
 
 });
@@ -120,7 +136,7 @@ var ApprovedSiteView = Backbone.View.extend({
 
 	},
 
-	render: function() {
+    render: function() {
 		
 		var creationDate = this.model.get("creationDate");
 		var accessDate = this.model.get("accessDate");

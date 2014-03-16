@@ -16,6 +16,17 @@
  ******************************************************************************/
 
 Backbone.Model.prototype.fetchIfNeeded = function(options) {
+	var _self = this;
+	if (!options) {
+		options = {};
+	}
+	var success = options.success;
+	options.success = function(c, r) {
+		_self.isFetched = true;
+		if (success) {
+			success(c, r);
+		}
+	};
 	if (!this.isFetched) {
 		return this.fetch(options);
 	} else {
@@ -23,6 +34,17 @@ Backbone.Model.prototype.fetchIfNeeded = function(options) {
 	}
 };
 Backbone.Collection.prototype.fetchIfNeeded = function(options) {
+	var _self = this;
+	if (!options) {
+		options = {};
+	}
+	var success = options.success;
+	options.success = function(c, r) {
+		_self.isFetched = true;
+		if (success) {
+			success(c, r);
+		}
+	};
 	if (!this.isFetched) {
 		return this.fetch(options);
 	} else {
@@ -243,6 +265,16 @@ var BlackListListView = Backbone.View.extend({
 			this.template = _.template($('#tmpl-blacklist-form').html());
 		}
 	},
+
+	load:function(callback) {
+    	$('#loadingbox').show();
+    	$('#loading').html('blacklist');
+
+    	$.when(this.model.fetchIfNeeded()).done(function() {
+    	    		$('#loadingbox').hide('slow');
+    	    		callback();
+    			});    	
+    },
 	
 	events: {
         "click .refresh-table":"refreshTable"    		
@@ -250,11 +282,13 @@ var BlackListListView = Backbone.View.extend({
 	
     refreshTable:function() {
     	var _self = this;
-    	this.model.fetch({
-    		success: function() {
-    			_self.render();
-    		}
-    	});
+    	$('#loadingbox').show();
+    	$('#loading').html('blacklist');
+
+    	$.when(this.model.fetchIfNeeded()).done(function() {
+    	    		$('#loadingbox').hide('slow');
+    	    		_self.render();
+    			});    	
     },	
 	
 	render:function (eventName) {
@@ -581,9 +615,16 @@ var AppRouter = Backbone.Router.extend({
             {text:"Manage Whitelisted Sites", href:"manage/#admin/whitelists"}
         ]);
         
-        $('#content').html(this.whiteListListView.render().el);
-        this.whiteListListView.delegateEvents();
-    	setPageTitle("Manage Whitelists");
+        var view = this.whiteListListView;
+        
+        view.load(
+        	function() {
+        		$('#content').html(view.render().el);
+        		view.delegateEvents();
+        		setPageTitle("Manage Whitelists");
+        	}
+        );
+        
 
     },
     
@@ -663,12 +704,12 @@ var AppRouter = Backbone.Router.extend({
 
     	var view = this.approvedSiteListView;
     	
-    	this.approvedSiteList.fetch({success: 
+    	this.approvedSiteListView.load( 
     		function(collection, response, options) {
     			$('#content').html(view.render().el);
     	    	setPageTitle("Manage Approved Sites");
     		}
-    	});
+    	);
     	
     },
 
@@ -681,16 +722,13 @@ var AppRouter = Backbone.Router.extend({
         
         var view = this.tokensListView;
         
-        app.accessTokensList.fetch({
-        	success:function(collection, response, options) {
-        		app.refreshTokensList.fetch({
-        			success:function(collection, response, options) {
-        				$('#content').html(view.render().el);
-        				setPageTitle("Manage Active Tokens");
-        			}
-        		});
-        	}
-        });
+        view.load(
+    		function(collection, response, options) {
+				$('#content').html(view.render().el);
+				setPageTitle("Manage Active Tokens");
+    		}
+        );
+        
     },
     
     notImplemented:function(){
@@ -716,13 +754,12 @@ var AppRouter = Backbone.Router.extend({
         
         var view = this.blackListListView;
         
-        this.blackListList.fetch({success:
+        view.load(
         	function(collection, response, options) {
         		$('#content').html(view.render().el);
             	setPageTitle("Manage Blacklist");
-
         	}
-        });
+        );
     },
     
     siteScope:function() {
@@ -738,9 +775,13 @@ var AppRouter = Backbone.Router.extend({
              {text:"Manage System Scopes", href:"manage/#admin/scope"}
         ]);
     	
-    	$('#content').html(this.systemScopeListView.render().el);
-        this.systemScopeListView.delegateEvents();
-    	setPageTitle("Manage System Scopes");
+    	var view = this.systemScopeListView;
+    	
+    	view.load(function() {
+    		$('#content').html(view.render().el);
+    		view.delegateEvents();
+    		setPageTitle("Manage System Scopes");    		
+    	});
 
     },
     

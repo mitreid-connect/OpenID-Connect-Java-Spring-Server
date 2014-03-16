@@ -134,7 +134,17 @@ var SystemScopeView = Backbone.View.extend({
 var SystemScopeListView = Backbone.View.extend({
 	tagName: 'span',
 	
-	events:{
+	load:function(callback) {
+    	$('#loadingbox').show();
+    	$('#loading').html('approved sites');
+
+    	$.when(this.model.fetchIfNeeded()).done(function() {
+    	    		$('#loadingbox').hide('slow');
+    	    		callback();
+    			});    	
+    },
+
+    events:{
 		"click .new-scope":"newScope",
 		"click .refresh-table":"refreshTable"
 	},
@@ -146,11 +156,13 @@ var SystemScopeListView = Backbone.View.extend({
 	
 	refreshTable:function() {
 		var _self = this;
-		this.model.fetch({
-			success: function() {
-				_self.render();
-			}
-		});
+    	$('#loadingbox').show();
+    	$('#loading').html('approved sites');
+
+    	$.when(this.model.fetch()).done(function() {
+    	    		$('#loadingbox').hide('slow');
+    	    		_self.render();
+    			});    	
 	},
 	
 	togglePlaceholder:function() {

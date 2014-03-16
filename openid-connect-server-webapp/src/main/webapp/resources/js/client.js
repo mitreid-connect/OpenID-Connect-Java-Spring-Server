@@ -236,20 +236,16 @@ var ClientListView = Backbone.View.extend({
     },
     
     load:function(callback) {
-    	var cleanup = function() {
-    		$('#loadingbox').hide('slow');
-    		callback();
-    	}
-
-    	$('#loadingbox').show('slow');
+    	$('#loadingbox').show();
     	$('#loading').html('clients');
 
     	$.when(this.model.fetchIfNeeded(),
     			this.options.whiteListList.fetchIfNeeded(),
     			this.options.stats.fetchIfNeeded(),
-    			this.options.systemScopeList.fetchIfNeeded()).done(cleanup);
-    	
-    	//this.model.fetchIfNeeded({success:cleanup});
+    			this.options.systemScopeList.fetchIfNeeded()).done(function() {
+    	    		$('#loadingbox').hide('slow');
+    	    		callback();
+    			});
     	
     },
 
@@ -297,15 +293,12 @@ var ClientListView = Backbone.View.extend({
 	
     refreshTable:function() {
     	var _self = this;
-    	_self.model.fetch({
-    		success: function() {
-    			_self.options.stats.fetch({
-    				success: function () {
-    					_self.render();
-    				}
+    	$.when(this.model.fetchIfNeeded(),
+    			this.options.whiteListList.fetchIfNeeded(),
+    			this.options.stats.fetchIfNeeded(),
+    			this.options.systemScopeList.fetchIfNeeded()).done(function() {
+    	    		_self.render();
     			});
-    		}
-    	});
     }
 });
 

@@ -311,17 +311,31 @@ var TokenListView = Backbone.View.extend({
 		"click .refresh-table":"refreshTable"
 	},
 
-	refreshTable:function() {
-		var _self = this;
-		_self.model.access.fetch({
-			success: function() {
-				_self.model.refresh.fetch({
-					success:function() {
-						_self.render();
-					}
-				})
-			}
-		});
+    load:function(callback) {
+    	$('#loadingbox').show();
+    	$('#loading').html('tokens');
+
+    	$.when(this.model.access.fetchIfNeeded(),
+    			this.model.refresh.fetchIfNeeded(),
+    			this.options.clientList.fetchIfNeeded(),
+    			this.options.systemScopeList.fetchIfNeeded()).done(function() {
+    	    		$('#loadingbox').hide('slow');
+    	    		callback();
+    	    	});
+    	
+    },
+
+    refreshTable:function() {
+    	$('#loadingbox').show();
+    	$('#loading').html('tokens');
+    	var _self = this;
+    	$.when(this.model.access.fetch(),
+    			this.model.refresh.fetch(),
+    			this.options.clientList.fetch(),
+    			this.options.systemScopeList.fetch()).done(function(){
+    				_self.render();
+    	    		$('#loadingbox').hide('slow');
+    			});
 	},
 	
 	togglePlaceholder:function() {
