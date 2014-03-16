@@ -233,7 +233,24 @@ var ClientListView = Backbone.View.extend({
     tagName: 'span',
 
     initialize:function () {
-        //this.model.bind("reset", this.render, this);
+    },
+    
+    load:function(callback) {
+    	var cleanup = function() {
+    		$('#loadingbox').hide('slow');
+    		callback();
+    	}
+
+    	$('#loadingbox').show('slow');
+    	$('#loading').html('clients');
+
+    	$.when(this.model.fetchIfNeeded(),
+    			this.options.whiteListList.fetchIfNeeded(),
+    			this.options.stats.fetchIfNeeded(),
+    			this.options.systemScopeList.fetchIfNeeded()).done(cleanup);
+    	
+    	//this.model.fetchIfNeeded({success:cleanup});
+    	
     },
 
     events:{

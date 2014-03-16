@@ -14,6 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
+
+Backbone.Model.prototype.fetchIfNeeded = function(options) {
+	if (!this.isFetched) {
+		return this.fetch(options);
+	} else {
+		return options.success(this, null);
+	}
+};
+Backbone.Collection.prototype.fetchIfNeeded = function(options) {
+	if (!this.isFetched) {
+		return this.fetch(options);
+	} else {
+		return options.success(this, null);
+	}
+};
+
+
 var URIModel = Backbone.Model.extend({
 
     validate: function(attrs){
@@ -418,11 +435,12 @@ var AppRouter = Backbone.Router.extend({
         
         // load things in the right order:
         
+        $('#loadingbox').show('slow');
         $("#loading").html("server configuration");
         var base = $('base').attr('href');
         $.getJSON(base + '.well-known/openid-configuration', function(data) {
         	app.serverConfiguration = data;
-  /**/
+  /** /
         	$("#content .progress .bar").css("width", "20%");
 	        $("#loading").html("scopes");        
 	        app.systemScopeList.fetch({
@@ -440,11 +458,12 @@ var AppRouter = Backbone.Router.extend({
 	        						app.clientStats.fetch({
 	        							success: function(model, response) {
 /**/
-	        				        		$("#content .progress .bar").css("width", "100%");
+	        				        		$("#loadingbox .progress .bar").css("width", "100%");
 	        						        $("#loading").html("console");
 			        						var baseUrl = $.url(app.serverConfiguration.issuer);
 			        						Backbone.history.start({pushState: true, root: baseUrl.attr('relative') + 'manage/'});
-/**/
+			        						$('#loadingbox').hide('slow');
+/** /
 	        							}
 	        						});
 	        					}
@@ -471,9 +490,11 @@ var AppRouter = Backbone.Router.extend({
             {text:"Manage Clients", href:"manage/#admin/clients"}
         ]);
 
-        $('#content').html(this.clientListView.render().el);
-        this.clientListView.delegateEvents();
-    	setPageTitle("Manage Clients");
+        this.clientListView.load(function() {
+        	$('#content').html(app.clientListView.render().el);
+        	app.clientListView.delegateEvents();
+        	setPageTitle("Manage Clients");        	
+        });
 
     },
 
