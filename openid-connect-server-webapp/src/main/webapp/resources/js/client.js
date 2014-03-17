@@ -248,12 +248,17 @@ var ClientListView = Backbone.View.extend({
     	}
     	
     	$('#loadingbox').sheet('show');
-    	$('#loading').html('clients');
+    	$('#loading').html('<span class="label" id="loading-clients">Clients</span> ' +
+    			'<span class="label" id="loading-whitelist">Whitelist</span> ' + 
+    			'<span class="label" id="loading-stats">Statistics</span> ' + 
+    			'<span class="label" id="loading-scopes">Scopes</span> '
+    			);
 
-    	$.when(this.model.fetchIfNeeded(),
-    			this.options.whiteListList.fetchIfNeeded(),
-    			this.options.stats.fetchIfNeeded(),
-    			this.options.systemScopeList.fetchIfNeeded()).done(function() {
+    	$.when(this.model.fetchIfNeeded({success:function(e) {$('#loading-clients').addClass('label-success');}}),
+    			this.options.whiteListList.fetchIfNeeded({success:function(e) {$('#loading-whitelist').addClass('label-success');}}),
+    			this.options.stats.fetchIfNeeded({success:function(e) {$('#loading-stats').addClass('label-success');}}),
+    			this.options.systemScopeList.fetchIfNeeded({success:function(e) {$('#loading-scopes').addClass('label-success');}}))
+    			.done(function() {
     	    		$('#loadingbox').sheet('hide');
     	    		callback();
     			});
@@ -306,13 +311,18 @@ var ClientListView = Backbone.View.extend({
     refreshTable:function(e) {
     	e.preventDefault();
     	$('#loadingbox').sheet('show');
-    	$('#loading').html('clients');
+    	$('#loading').html('<span class="label" id="loading-clients">Clients</span> ' +
+    			'<span class="label" id="loading-whitelist">Whitelist</span> ' + 
+    			'<span class="label" id="loading-stats">Statistics</span> ' + 
+    			'<span class="label" id="loading-scopes">Scopes</span> '
+    			);
 
     	var _self = this;
-    	$.when(this.model.fetch(),
-    			this.options.whiteListList.fetch(),
-    			this.options.stats.fetch(),
-    			this.options.systemScopeList.fetch()).done(function() {
+    	$.when(this.model.fetch({success:function(e) {$('#loading-clients').addClass('label-success');}}),
+    			this.options.whiteListList.fetch({success:function(e) {$('#loading-whitelist').addClass('label-success');}}),
+    			this.options.stats.fetch({success:function(e) {$('#loading-stats').addClass('label-success');}}),
+    			this.options.systemScopeList.fetch({success:function(e) {$('#loading-scopes').addClass('label-success');}}))
+    			.done(function() {
     	    		$('#loadingbox').sheet('hide');
     	    		_self.render();
     			});

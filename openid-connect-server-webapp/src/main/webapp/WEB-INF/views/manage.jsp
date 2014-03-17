@@ -24,10 +24,8 @@
 				<div id="breadcrumbs"></div>
 				<div id="loadingbox" class="sheet hide fade" data-sheet-parent="#breadcrumbs">
 					<div class="sheet-body">
-	                Loading <span id="loading"></span>...
-	                <div class="progress progress-striped active">
-	                	<div class="bar" style="width: 0%"></div>
-	                </div>
+			                <p>Loading...</p>
+			                <p><span id="loading"></span></p>
 	                </div>
 	            </div>
                 <span id="content">

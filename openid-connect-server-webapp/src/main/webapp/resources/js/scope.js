@@ -143,9 +143,10 @@ var SystemScopeListView = Backbone.View.extend({
     	}
 
     	$('#loadingbox').sheet('show');
-    	$('#loading').html('approved sites');
+    	$('#loading').html('<span class="label" id="loading-scopes">Scopes</span> ');
 
-    	$.when(this.model.fetchIfNeeded()).done(function() {
+    	$.when(this.model.fetchIfNeeded({success:function(e) {$('#loading-scopes').addClass('label-success');}}))
+    	.done(function() {
     	    		$('#loadingbox').sheet('hide');
     	    		callback();
     			});    	
@@ -166,9 +167,10 @@ var SystemScopeListView = Backbone.View.extend({
     	e.preventDefault();
 		var _self = this;
     	$('#loadingbox').sheet('show');
-    	$('#loading').html('approved sites');
+    	$('#loading').html('<span class="label" id="loading-scopes">Scopes</span> ');
 
-    	$.when(this.model.fetch()).done(function() {
+    	$.when(this.model.fetch({success:function(e) {$('#loading-scopes').addClass('label-success');}}))
+    	.done(function() {
     	    		$('#loadingbox').sheet('hide');
     	    		_self.render();
     			});    	

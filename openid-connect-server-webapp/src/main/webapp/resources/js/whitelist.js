@@ -59,11 +59,15 @@ var WhiteListListView = Backbone.View.extend({
     	}
 
     	$('#loadingbox').sheet('show');
-    	$('#loading').html('whitelist');
+    	$('#loading').html('<span class="label" id="loading-whitelist">Whitelist</span>' +
+    			'<span class="label" id="loading-clients">Clients</span>' + 
+    			'<span class="label" id="loading-scopes">Scopes</span>'
+    			);
 
-    	$.when(this.model.fetchIfNeeded(),
-    			this.options.clientList.fetchIfNeeded(),
-    			this.options.systemScopeList.fetchIfNeeded()).done(function() {
+    	$.when(this.model.fetchIfNeeded({success:function(e) {$('#loading-whitelist').addClass('label-success');}}),
+    			this.options.clientList.fetchIfNeeded({success:function(e) {$('#loading-clients').addClass('label-success');}}),
+    			this.options.systemScopeList.fetchIfNeeded({success:function(e) {$('#loading-scopes').addClass('label-success');}}))
+    			.done(function() {
     	    		$('#loadingbox').sheet('hide');
     	    		callback();
     			});    	
@@ -107,11 +111,15 @@ var WhiteListListView = Backbone.View.extend({
     	e.preventDefault();
     	var _self = this;
     	$('#loadingbox').sheet('show');
-    	$('#loading').html('whitelist');
+    	$('#loading').html('<span class="label" id="loading-whitelist">Whitelist</span> ' +
+    			'<span class="label" id="loading-clients">Clients</span> ' + 
+    			'<span class="label" id="loading-scopes">Scopes</span> '
+    			);
 
-    	$.when(this.model.fetch(),
-    			this.options.clientList.fetch(),
-    			this.options.systemScopeList.fetch()).done(function() {
+    	$.when(this.model.fetch({success:function(e) {$('#loading-whitelist').addClass('label-success');}}),
+    			this.options.clientList.fetch({success:function(e) {$('#loading-clients').addClass('label-success');}}),
+    			this.options.systemScopeList.fetch({success:function(e) {$('#loading-scopes').addClass('label-success');}}))
+    			.done(function() {
     	    		$('#loadingbox').sheet('hide');
     	    		_self.render();
     			});    	

@@ -325,12 +325,17 @@ var TokenListView = Backbone.View.extend({
     	}
 
     	$('#loadingbox').sheet('show');
-    	$('#loading').html('tokens');
+    	$('#loading').html('<span class="label" id="loading-access">Access Tokens</span> ' +
+    			'<span class="label" id="loading-refresh">Refresh Tokens</span> ' + 
+    			'<span class="label" id="loading-clients">Clients</span> ' + 
+    			'<span class="label" id="loading-scopes">Scopes</span> '
+    			);
 
-    	$.when(this.model.access.fetchIfNeeded(),
-    			this.model.refresh.fetchIfNeeded(),
-    			this.options.clientList.fetchIfNeeded(),
-    			this.options.systemScopeList.fetchIfNeeded()).done(function() {
+    	$.when(this.model.access.fetchIfNeeded({success:function(e) {$('#loading-access').addClass('label-success');}}),
+    			this.model.refresh.fetchIfNeeded({success:function(e) {$('#loading-refresh').addClass('label-success');}}),
+    			this.options.clientList.fetchIfNeeded({success:function(e) {$('#loading-clients').addClass('label-success');}}),
+    			this.options.systemScopeList.fetchIfNeeded({success:function(e) {$('#loading-scopes').addClass('label-success');}}))
+    			.done(function() {
     	    		$('#loadingbox').sheet('hide');
     	    		callback();
     	    	});
@@ -340,12 +345,17 @@ var TokenListView = Backbone.View.extend({
     refreshTable:function(e) {
     	e.preventDefault();
     	$('#loadingbox').sheet('show');
-    	$('#loading').html('tokens');
+    	$('#loading').html('<span class="label" id="loading-access">Access Tokens</span> ' +
+    			'<span class="label" id="loading-refresh">Refresh Tokens</span> ' + 
+    			'<span class="label" id="loading-clients">Clients</span> ' + 
+    			'<span class="label" id="loading-scopes">Scopes</span> '
+    			);
     	var _self = this;
-    	$.when(this.model.access.fetch(),
-    			this.model.refresh.fetch(),
-    			this.options.clientList.fetch(),
-    			this.options.systemScopeList.fetch()).done(function(){
+    	$.when(this.model.access.fetch({success:function(e) {$('#loading-access').addClass('label-success');}}),
+    			this.model.refresh.fetch({success:function(e) {$('#loading-refresh').addClass('label-success');}}),
+    			this.options.clientList.fetch({success:function(e) {$('#loading-clients').addClass('label-success');}}),
+    			this.options.systemScopeList.fetch({success:function(e) {$('#loading-scopes').addClass('label-success');}}))
+    			.done(function(){
     				_self.render();
     	    		$('#loadingbox').sheet('hide');
     			});
