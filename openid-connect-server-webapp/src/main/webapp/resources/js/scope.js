@@ -76,7 +76,8 @@ var SystemScopeView = Backbone.View.extend({
 		'click .btn-delete':'deleteScope'
 	},
 	
-	editScope:function() {
+	editScope:function(e) {
+    	e.preventDefault();
 		app.navigate('admin/scope/' + this.model.id, {trigger: true});
 	},
 	
@@ -88,7 +89,8 @@ var SystemScopeView = Backbone.View.extend({
         return this;
     },
     
-    deleteScope:function () {
+    deleteScope:function (e) {
+    	e.preventDefault();
 
         if (confirm("Are you sure sure you would like to delete this scope? Clients that have this scope will still be able to ask for it.")) {
             var self = this;
@@ -154,12 +156,14 @@ var SystemScopeListView = Backbone.View.extend({
 		"click .refresh-table":"refreshTable"
 	},
 
-	newScope:function() {
+	newScope:function(e) {
+    	e.preventDefault();
 		this.remove();
 		app.navigate('admin/scope/new', {trigger: true});
 	},
 	
-	refreshTable:function() {
+	refreshTable:function(e) {
+    	e.preventDefault();
 		var _self = this;
     	$('#loadingbox').sheet('show');
     	$('#loading').html('approved sites');
@@ -250,7 +254,8 @@ var SystemScopeFormView = Backbone.View.extend({
 		'change #isStructured input':'toggleStructuredParamDescription'
 	},
 	
-	toggleStructuredParamDescription:function(event) {
+	toggleStructuredParamDescription:function(e) {
+    	e.preventDefault();
 		if ($('#isStructured input', this.el).is(':checked')) {
 			$('#structuredParamDescription', this.el).show();
 		} else {
@@ -258,7 +263,8 @@ var SystemScopeFormView = Backbone.View.extend({
 		}
 	},
 	
-	saveScope:function(event) {
+	saveScope:function(e) {
+    	e.preventDefault();
 		
 		var value = $('#value input').val();
 		
@@ -318,7 +324,8 @@ var SystemScopeFormView = Backbone.View.extend({
 		return false;
 	},
 	
-	selectIcon:function(event) {
+	selectIcon:function(e) {
+    	e.preventDefault();
 		
 		var icon = event.target.value;
 		

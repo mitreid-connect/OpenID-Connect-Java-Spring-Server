@@ -158,11 +158,13 @@ var ClientView = Backbone.View.extend({
 		'click .toggleMoreInformation': 'toggleMoreInformation'
     },
 
-    editClient:function () {
+    editClient:function (e) {
+    	e.preventDefault();
         app.navigate('admin/client/' + this.model.id, {trigger: true});
     },
 
-    whiteListClient:function() {
+    whiteListClient:function(e) {
+    	e.preventDefault();
     	if (this.options.whiteList == null) {
     		// create a new one
     		app.navigate('admin/whitelist/new/' + this.model.id, {trigger: true});
@@ -172,7 +174,8 @@ var ClientView = Backbone.View.extend({
     	}
     },
     
-    deleteClient:function () {
+    deleteClient:function (e) {
+    	e.preventDefault();
 
         if (confirm("Are you sure sure you would like to delete this client?")) {
             var self = this;
@@ -209,8 +212,8 @@ var ClientView = Backbone.View.extend({
         return false;
     },
 
-	toggleMoreInformation:function(event) {
-		event.preventDefault();
+	toggleMoreInformation:function(e) {
+		e.preventDefault();
 		if ($('.moreInformation', this.el).is(':visible')) {
 			// hide it
 			$('.moreInformation', this.el).hide('fast');
@@ -262,7 +265,8 @@ var ClientListView = Backbone.View.extend({
         "click .refresh-table":"refreshTable"
     },
 
-    newClient:function () {
+    newClient:function (e) {
+    	e.preventDefault();
         this.remove();
         app.navigate('admin/client/new', {trigger: true});
     },
@@ -299,7 +303,8 @@ var ClientListView = Backbone.View.extend({
 		}
 	},
 	
-    refreshTable:function() {
+    refreshTable:function(e) {
+    	e.preventDefault();
     	$('#loadingbox').sheet('show');
     	$('#loading').html('clients');
 
@@ -356,11 +361,13 @@ var ClientFormView = Backbone.View.extend({
         "change #logoUri input":"previewLogo"
     },
 
-    toggleRefreshTokenTimeout:function () {
+    toggleRefreshTokenTimeout:function (e) {
+    	e.preventDefault();
         $("#refreshTokenValidityTime", this.$el).toggle();
     },
     
-    previewLogo:function(event) {
+    previewLogo:function(e) {
+    	e.preventDefault();
     	if ($('#logoUri input', this.el).val()) {
     		$('#logoPreview', this.el).empty();
     		$('#logoPreview', this.el).attr('src', $('#logoUri input').val());
@@ -373,7 +380,8 @@ var ClientFormView = Backbone.View.extend({
      * Set up the form based on the current state of the requireClientSecret checkbox parameter
      * @param event
      */
-    toggleRequireClientSecret:function(event) {
+    toggleRequireClientSecret:function(e) {
+    	e.preventDefault();
     	
     	if ($('#requireClientSecret input', this.el).is(':checked')) {
     		// client secret is required, show all the bits
@@ -390,7 +398,8 @@ var ClientFormView = Backbone.View.extend({
      * Set up the form based on the "Generate" checkbox
      * @param event
      */
-    toggleGenerateClientSecret:function(event) {
+    toggleGenerateClientSecret:function(e) {
+    	e.preventDefault();
 
     	if ($('#generateClientSecret input', this.el).is(':checked')) {
     		// show the "generated" block, hide the "display" checkbox
@@ -401,7 +410,7 @@ var ClientFormView = Backbone.View.extend({
     	} else {
     		// show the display checkbox, fall back to the "display" logic
     		$('#displayClientSecret', this.el).show();
-    		this.toggleDisplayClientSecret(event);
+    		this.toggleDisplayClientSecret(e);
     	}
     },
     
@@ -409,8 +418,9 @@ var ClientFormView = Backbone.View.extend({
      * Handle whether or not to display the client secret
      * @param event
      */
-    toggleDisplayClientSecret:function(event) {
-    	
+    toggleDisplayClientSecret:function(e) {
+    	e.preventDefault();
+
     	if ($('#displayClientSecret input').is(':checked')) {
     		// want to display it
     		$('#clientSecret', this.el).show();

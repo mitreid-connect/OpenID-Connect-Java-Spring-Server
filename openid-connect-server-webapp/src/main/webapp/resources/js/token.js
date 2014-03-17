@@ -96,7 +96,8 @@ var AccessTokenView = Backbone.View.extend({
         return this;
     },
     
-    deleteToken:function () {
+    deleteToken:function (e) {
+    	e.preventDefault();
 
         if (confirm("Are you sure sure you would like to revoke this token?")) {
         	
@@ -135,8 +136,8 @@ var AccessTokenView = Backbone.View.extend({
         return false;
     },
     
-	toggleMoreInformation:function(event) {
-		event.preventDefault();
+	toggleMoreInformation:function(e) {
+		e.preventDefault();
 		if ($('.moreInformation', this.el).is(':visible')) {
 			// hide it
 			$('.moreInformation', this.el).hide('fast');
@@ -154,7 +155,8 @@ var AccessTokenView = Backbone.View.extend({
         $(this.el).empty();
     },
     
-    showTokenValue:function () {
+    showTokenValue:function (e) {
+    	e.preventDefault();
     	$('.token-substring', this.el).hide();
     	$('.token-full', this.el).show();
     }
@@ -240,7 +242,8 @@ var RefreshTokenView = Backbone.View.extend({
 
     },
     
-    deleteToken:function () {
+    deleteToken:function (e) {
+    	e.preventDefault();
 
         if (confirm("Are you sure sure you would like to revoke this refresh token and its associated access tokens?")) {
         	
@@ -279,8 +282,8 @@ var RefreshTokenView = Backbone.View.extend({
         return false;
     },
     
-	toggleMoreInformation:function(event) {
-		event.preventDefault();
+	toggleMoreInformation:function(e) {
+		e.preventDefault();
 		if ($('.moreInformation', this.el).is(':visible')) {
 			// hide it
 			$('.moreInformation', this.el).hide('fast');
@@ -298,7 +301,8 @@ var RefreshTokenView = Backbone.View.extend({
         $(this.el).empty();
     },
     
-    showTokenValue:function () {
+    showTokenValue:function (e) {
+    	e.preventDefault();
     	$('.token-substring', this.el).hide();
     	$('.token-full', this.el).show();
     }
@@ -333,7 +337,8 @@ var TokenListView = Backbone.View.extend({
     	
     },
 
-    refreshTable:function() {
+    refreshTable:function(e) {
+    	e.preventDefault();
     	$('#loadingbox').sheet('show');
     	$('#loading').html('tokens');
     	var _self = this;

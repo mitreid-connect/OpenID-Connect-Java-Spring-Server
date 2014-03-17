@@ -78,12 +78,14 @@ var DynRegRootView = Backbone.View.extend({
     	return this;
 	},
 	
-	newReg:function() {
+	newReg:function(e) {
+    	e.preventDefault();
         this.remove();
         app.navigate('dev/dynreg/new', {trigger: true});		
 	},
 	
-	editReg:function() {
+	editReg:function(e) {
+    	e.preventDefault();
 		var clientId = $('#clientId').val();
 		var token = $('#regtoken').val();
 		
@@ -138,7 +140,8 @@ var DynRegEditView = Backbone.View.extend({
         "change #logoUri input":"previewLogo"
     },
 
-    deleteClient:function () {
+    deleteClient:function (e) {
+    	e.preventDefault();
 
         if (confirm("Are you sure sure you would like to delete this client?")) {
             var self = this;
@@ -171,7 +174,8 @@ var DynRegEditView = Backbone.View.extend({
         return false;
     },
 
-    previewLogo:function(event) {
+    previewLogo:function(e) {
+    	e.preventDefault();
     	if ($('#logoUri input', this.el).val()) {
     		$('#logoPreview', this.el).empty();
     		$('#logoPreview', this.el).attr('src', $('#logoUri input').val());
@@ -225,7 +229,8 @@ var DynRegEditView = Backbone.View.extend({
     	'code-token-idtoken': 'code token id_token'
     },
 
-    saveClient:function (event) {
+    saveClient:function (e) {
+    	e.preventDefault();
 
         $('.control-group').removeClass('error');
 

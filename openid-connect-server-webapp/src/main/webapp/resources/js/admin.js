@@ -83,29 +83,31 @@ var ListWidgetChildView = Backbone.View.extend({
     tagName: 'tr',
 
     events:{
-        "click .btn-delete":function (e) {
-        	e.preventDefault();
-            //this.$el.tooltip('delete');
-            
-            this.model.destroy({         
-            	error:function (error, response) {
-            		console.log("An error occurred when deleting from a list widget");
+        "click .btn-delete":'deleteItem'
+    },
     
-					//Pull out the response text.
-					var responseJson = JSON.parse(response.responseText);
-            		
-            		//Display an alert with an error message
-            		$('#modalAlert div.modal-body').html(responseJson.errorMessage);
-            		
-        			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
-        				 "backdrop" : "static",
-        				 "keyboard" : true,
-        				 "show" : true // ensure the modal is shown immediately
-        			 });
-            	}
-            });
-            
-        }
+    deleteItem:function (e) {
+    	e.preventDefault();
+        //this.$el.tooltip('delete');
+        
+        this.model.destroy({         
+        	error:function (error, response) {
+        		console.log("An error occurred when deleting from a list widget");
+
+				//Pull out the response text.
+				var responseJson = JSON.parse(response.responseText);
+        		
+        		//Display an alert with an error message
+        		$('#modalAlert div.modal-body').html(responseJson.errorMessage);
+        		
+    			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
+    				 "backdrop" : "static",
+    				 "keyboard" : true,
+    				 "show" : true // ensure the modal is shown immediately
+    			 });
+        	}
+        });
+        
     },
 
     initialize:function () {
@@ -284,8 +286,9 @@ var BlackListListView = Backbone.View.extend({
 	events: {
         "click .refresh-table":"refreshTable"    		
 	},
-	
-    refreshTable:function() {
+
+    refreshTable:function(e) {
+    	e.preventDefault();
     	var _self = this;
     	$('#loadingbox').sheet('show');
     	$('#loading').html('blacklist');

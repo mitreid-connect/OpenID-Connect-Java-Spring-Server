@@ -111,7 +111,8 @@ var ApprovedSiteListView = Backbone.View.extend({
 		}
 	},
 	
-    refreshTable:function() {
+    refreshTable:function(e) {
+    	e.preventDefault();
     	var _self = this;
     	$('#loadingbox').sheet('show');
     	$('#loading').html('approved sites');
@@ -200,7 +201,8 @@ var ApprovedSiteView = Backbone.View.extend({
 		'click .toggleMoreInformation': 'toggleMoreInformation'
 	},
 	
-	deleteApprovedSite:function() {
+	deleteApprovedSite:function(e) {
+    	e.preventDefault();
 		if (confirm("Are you sure you want to revoke access to this site?")) {
 			var self = this;
 			
@@ -236,8 +238,8 @@ var ApprovedSiteView = Backbone.View.extend({
 		return false;
 	},
 	
-	toggleMoreInformation:function(event) {
-		event.preventDefault();
+	toggleMoreInformation:function(e) {
+		e.preventDefault();
 		if ($('.moreInformation', this.el).is(':visible')) {
 			// hide it
 			$('.moreInformation', this.el).hide('fast');

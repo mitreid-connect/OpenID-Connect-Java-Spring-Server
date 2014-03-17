@@ -103,7 +103,8 @@ var WhiteListListView = Backbone.View.extend({
 		}
 	},
 	
-    refreshTable:function() {
+    refreshTable:function(e) {
+    	e.preventDefault();
     	var _self = this;
     	$('#loadingbox').sheet('show');
     	$('#loading').html('whitelist');
@@ -157,11 +158,13 @@ var WhiteListView = Backbone.View.extend({
 		'click .toggleMoreInformation': 'toggleMoreInformation'
 	},
 	
-	editWhitelist:function() {
+	editWhitelist:function(e) {
+    	e.preventDefault();
 		app.navigate('admin/whitelist/' + this.model.id, {trigger: true});
 	},
 	
-	deleteWhitelist:function() {
+	deleteWhitelist:function(e) {
+    	e.preventDefault();
 		
 		if (confirm("Are you sure you want to delete this whitelist entry?")) {
 			var self = this;
@@ -199,8 +202,8 @@ var WhiteListView = Backbone.View.extend({
 		return false;
 	},
 	
-	toggleMoreInformation:function(event) {
-		event.preventDefault();
+	toggleMoreInformation:function(e) {
+		e.preventDefault();
 		if ($('.moreInformation', this.el).is(':visible')) {
 			// hide it
 			$('.moreInformation', this.el).hide('fast');
@@ -235,7 +238,8 @@ var WhiteListFormView = Backbone.View.extend({
 		
 	},
 	
-	saveWhiteList:function (event) {
+	saveWhiteList:function (e) {
+    	e.preventDefault();
 		$('.control-group').removeClass('error');
 		
 		// process allowed scopes
@@ -278,7 +282,8 @@ var WhiteListFormView = Backbone.View.extend({
 		
 	},
 	
-	cancelWhiteList:function(event) {
+	cancelWhiteList:function(e) {
+    	e.preventDefault();
 		app.navigate('admin/whitelists', {trigger:true});
 	},
 	
