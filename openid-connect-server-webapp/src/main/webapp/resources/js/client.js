@@ -93,7 +93,22 @@ var ClientModel = Backbone.Model.extend({
         requireClientSecret: true,
     },
 
-    urlRoot:"api/clients"
+    urlRoot:"api/clients",
+    
+    matches:function(term) {
+    	if (term) {
+    		return (this.get('clientId').toLowerCase().indexOf(term.toLowerCase()) != -1)
+    		|| (this.get('clientName') != null && this.get('clientName').toLowerCase().indexOf(term.toLowerCase()) != -1)
+    		|| (this.get('clientDescription') != null && this.get('clientDescription').toLowerCase().indexOf(term.toLowerCase()) != -1)
+    		|| (this.get('clientUri') != null && this.get('clientUri').toLowerCase().indexOf(term.toLowerCase()) != -1)
+    		|| (this.get('contacts') != null && _.filter(this.get('contacts'), function(item) {
+    			return item.toLowerCase().indexOf(term.toLowerCase()) != -1;
+    		}));
+    	} else {
+    		return true;
+    	}
+
+    }
 
 });
 
@@ -236,6 +251,7 @@ var ClientListView = Backbone.View.extend({
     tagName: 'span',
 
     initialize:function () {
+    	this.filteredModel = this.model;
     },
     
     load:function(callback) {
@@ -267,7 +283,8 @@ var ClientListView = Backbone.View.extend({
 
     events:{
         "click .new-client":"newClient",
-        "click .refresh-table":"refreshTable"
+        "click .refresh-table":"refreshTable",
+        'keyup .search-query':'searchTable'
     },
 
     newClient:function (e) {
@@ -280,10 +297,15 @@ var ClientListView = Backbone.View.extend({
 
         // append and render table structure
         $(this.el).html($('#tmpl-client-table').html());
+        
+        this.renderInner();
 
-    	var whiteList = this.options.whiteListList.getByClientId(this.model.get('clientId'));
-
-    	_.each(this.model.models, function (client) {
+        return this;        
+    },
+    
+    renderInner:function(eventName) {
+    	
+    	_.each(this.filteredModel.models, function (client) {
             $("#client-table",this.el).append(
             		new ClientView({
             				model:client, 
@@ -293,13 +315,11 @@ var ClientListView = Backbone.View.extend({
             			}).render().el);
         }, this);
 
-        this.togglePlaceholder();
-        
-        return this;
+        this.togglePlaceholder();        
     },
     
 	togglePlaceholder:function() {
-		if (this.model.length > 0) {
+		if (this.filteredModel.length > 0) {
 			$('#client-table', this.el).show();
 			$('#client-table-empty', this.el).hide();
 		} else {
@@ -326,6 +346,30 @@ var ClientListView = Backbone.View.extend({
     	    		$('#loadingbox').sheet('hide');
     	    		_self.render();
     			});
+    },
+    
+    searchTable:function(e) {
+    	var term = $('.search-query', this.el).val();
+    	
+    	if (term) {
+    		this.filteredModel = new ClientCollection(this.model.filter(function(client) {
+    			return client.matches(term);
+    		}));
+    	} else {
+    		this.filteredModel = this.model;
+    	}
+    	
+    	console.log(this.filteredModel);
+    	
+    	// clear out the table
+    	$('tbody', this.el).html('');
+    	
+    	// re-render the table
+    	this.renderInner();
+    	
+    	//$('.search-query', this.el).val(term);
+    	//$('.search-query', this.el).focus();
+    	
     }
 });
 
@@ -371,13 +415,11 @@ var ClientFormView = Backbone.View.extend({
         "change #logoUri input":"previewLogo"
     },
 
-    toggleRefreshTokenTimeout:function (e) {
-    	e.preventDefault();
+    toggleRefreshTokenTimeout:function () {
         $("#refreshTokenValidityTime", this.$el).toggle();
     },
     
-    previewLogo:function(e) {
-    	e.preventDefault();
+    previewLogo:function() {
     	if ($('#logoUri input', this.el).val()) {
     		$('#logoPreview', this.el).empty();
     		$('#logoPreview', this.el).attr('src', $('#logoUri input').val());
@@ -390,8 +432,7 @@ var ClientFormView = Backbone.View.extend({
      * Set up the form based on the current state of the requireClientSecret checkbox parameter
      * @param event
      */
-    toggleRequireClientSecret:function(e) {
-    	e.preventDefault();
+    toggleRequireClientSecret:function() {
     	
     	if ($('#requireClientSecret input', this.el).is(':checked')) {
     		// client secret is required, show all the bits
@@ -408,8 +449,7 @@ var ClientFormView = Backbone.View.extend({
      * Set up the form based on the "Generate" checkbox
      * @param event
      */
-    toggleGenerateClientSecret:function(e) {
-    	e.preventDefault();
+    toggleGenerateClientSecret:function() {
 
     	if ($('#generateClientSecret input', this.el).is(':checked')) {
     		// show the "generated" block, hide the "display" checkbox
@@ -420,7 +460,7 @@ var ClientFormView = Backbone.View.extend({
     	} else {
     		// show the display checkbox, fall back to the "display" logic
     		$('#displayClientSecret', this.el).show();
-    		this.toggleDisplayClientSecret(e);
+    		this.toggleDisplayClientSecret();
     	}
     },
     
@@ -428,8 +468,7 @@ var ClientFormView = Backbone.View.extend({
      * Handle whether or not to display the client secret
      * @param event
      */
-    toggleDisplayClientSecret:function(e) {
-    	e.preventDefault();
+    toggleDisplayClientSecret:function() {
 
     	if ($('#displayClientSecret input').is(':checked')) {
     		// want to display it
