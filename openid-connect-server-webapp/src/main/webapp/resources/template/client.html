@@ -84,8 +84,18 @@
     <div class="well well-small">
 		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> Refresh</button> &nbsp;
         <button class="btn btn-small btn-primary new-client"><i class="icon-plus icon-white"></i> New Client</button>
-		<input type="text" class="search-query pull-right" placeholder="Search...">
+		<div class="form-search pull-right">
+			<div class="input-append">
+				<input type="text" class="search-query" placeholder="Search...">
+				<button class="btn">&times;</button>
+			</div>
+		</div>
     </div>
+
+
+	<div id="client-table-search-empty" class="alert alert-warning">
+		There are no clients that match your search criteria.
+	</div>
 
 	<div id="client-table-empty" class="alert alert-info">
 		There are no registered clients on this server.

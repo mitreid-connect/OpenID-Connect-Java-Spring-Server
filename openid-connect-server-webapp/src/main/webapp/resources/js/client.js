@@ -97,13 +97,28 @@ var ClientModel = Backbone.Model.extend({
     
     matches:function(term) {
     	if (term) {
-    		return (this.get('clientId').toLowerCase().indexOf(term.toLowerCase()) != -1)
-    		|| (this.get('clientName') != null && this.get('clientName').toLowerCase().indexOf(term.toLowerCase()) != -1)
-    		|| (this.get('clientDescription') != null && this.get('clientDescription').toLowerCase().indexOf(term.toLowerCase()) != -1)
-    		|| (this.get('clientUri') != null && this.get('clientUri').toLowerCase().indexOf(term.toLowerCase()) != -1)
-    		|| (this.get('contacts') != null && _.filter(this.get('contacts'), function(item) {
-    			return item.toLowerCase().indexOf(term.toLowerCase()) != -1;
-    		}));
+    		if (this.get('clientId').toLowerCase().indexOf(term.toLowerCase()) != -1) {
+    			return true;
+    		} else if (this.get('clientName') != null && this.get('clientName').toLowerCase().indexOf(term.toLowerCase()) != -1) {
+    			return true;
+    		} else if (this.get('clientDescription') != null && this.get('clientDescription').toLowerCase().indexOf(term.toLowerCase()) != -1) {
+    			return true;
+    		} else if (this.get('clientUri') != null && this.get('clientUri').toLowerCase().indexOf(term.toLowerCase()) != -1) {
+    			return true;
+    		} else {
+    			if (this.get('contacts') != null) {
+    				var f = _.filter(this.get('contacts'), function(item) {
+    					return item.toLowerCase().indexOf(term.toLowerCase()) != -1;
+    				});
+    				if (f.length > 0) {
+    					return true;
+    				} else {
+    					return false;
+    				}
+    			}  else {
+    				return false;
+    			}
+    		}
     	} else {
     		return true;
     	}
@@ -284,7 +299,8 @@ var ClientListView = Backbone.View.extend({
     events:{
         "click .new-client":"newClient",
         "click .refresh-table":"refreshTable",
-        'keyup .search-query':'searchTable'
+        'keyup .search-query':'searchTable',
+        'click .form-search button':'clearSearch'
     },
 
     newClient:function (e) {
@@ -322,9 +338,19 @@ var ClientListView = Backbone.View.extend({
 		if (this.filteredModel.length > 0) {
 			$('#client-table', this.el).show();
 			$('#client-table-empty', this.el).hide();
+			$('#client-table-search-empty', this.el).hide();
 		} else {
-			$('#client-table', this.el).hide();
-			$('#client-table-empty', this.el).show();
+			if (this.model.length > 0) {
+				// there's stuff in the model but it's been filtered out
+				$('#client-table', this.el).hide();
+				$('#client-table-empty', this.el).hide();
+				$('#client-table-search-empty', this.el).show();
+			} else {
+				// we're empty
+				$('#client-table', this.el).hide();
+				$('#client-table-empty', this.el).show();
+				$('#client-table-search-empty', this.el).hide();
+			}
 		}
 	},
 	
@@ -359,18 +385,20 @@ var ClientListView = Backbone.View.extend({
     		this.filteredModel = this.model;
     	}
     	
-    	console.log(this.filteredModel);
-    	
     	// clear out the table
     	$('tbody', this.el).html('');
     	
     	// re-render the table
     	this.renderInner();
     	
-    	//$('.search-query', this.el).val(term);
-    	//$('.search-query', this.el).focus();
-    	
+    },
+    
+    clearSearch:function(e) {
+    	$('.search-query', this.el).val('');
+    	this.searchTable();
     }
+    
+    
 });
 
 var ClientFormView = Backbone.View.extend({
