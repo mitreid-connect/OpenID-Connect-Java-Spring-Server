@@ -142,12 +142,14 @@ var AccessTokenView = Backbone.View.extend({
 			// hide it
 			$('.moreInformation', this.el).hide('fast');
 			$('.toggleMoreInformation i', this.el).attr('class', 'icon-chevron-right');
+			$('.moreInformationContainer', this.el).removeClass('alert').removeClass('alert-info').addClass('muted');
+		
 		} else {
 			// show it
 			$('.moreInformation', this.el).show('fast');
 			$('.toggleMoreInformation i', this.el).attr('class', 'icon-chevron-down');
+			$('.moreInformationContainer', this.el).addClass('alert').addClass('alert-info').removeClass('muted');
 		}
-
 	},
 
 	close:function () {

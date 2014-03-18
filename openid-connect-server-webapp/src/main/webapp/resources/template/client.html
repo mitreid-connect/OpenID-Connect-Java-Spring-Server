@@ -53,7 +53,7 @@
 
 <script type="text/html" id="tmpl-client-more-info-block">
 					<% if (client.clientDescription || client.clientUri || client.policyUri || client.tosUri || client.contacts != null && client.contacts.length > 0) { %>
-						<div class="alert alert-info">
+						<div class="muted moreInformationContainer">
 							<%=client.clientDescription%>
 							<% if (client.clientUri || client.policyUri || client.tosUri || client.contacts) { %>
 								<div class="toggleMoreInformation" style="cursor: pointer;">
