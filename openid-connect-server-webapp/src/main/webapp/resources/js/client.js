@@ -303,7 +303,8 @@ var ClientListView = Backbone.View.extend({
         "click .new-client":"newClient",
         "click .refresh-table":"refreshTable",
         'keyup .search-query':'searchTable',
-        'click .form-search button':'clearSearch'
+        'click .form-search button':'clearSearch',
+        'page #paginator':'changePage'
     },
 
     newClient:function (e) {
@@ -323,18 +324,36 @@ var ClientListView = Backbone.View.extend({
     },
     
     renderInner:function(eventName) {
-    	
-    	_.each(this.filteredModel.models, function (client) {
-            $("#client-table",this.el).append(
-            		new ClientView({
-            				model:client, 
-            				count:this.options.stats.get(client.get('id')),
-            				systemScopeList: this.options.systemScopeList,
-            				whiteList: this.options.whiteListList.getByClientId(client.get('clientId'))
-            			}).render().el);
+
+        // set up pagination
+        var numPages = Math.ceil(this.filteredModel.length / 10);
+        if (numPages > 1) {
+        	$('#paginator').show();
+        	$('#paginator', this.el).bootpag({
+        		total: numPages,
+        		page: 1
+        	});        	
+        } else {
+        	$('#paginator', this.el).hide();
+        }
+
+        // render the rows
+    	_.each(this.filteredModel.models, function (client, index) {
+    		var element = new ClientView({
+				model:client, 
+				count:this.options.stats.get(client.get('id')),
+				systemScopeList: this.options.systemScopeList,
+				whiteList: this.options.whiteListList.getByClientId(client.get('clientId'))
+			}).render().el;
+            $("#client-table",this.el).append(element);
+            if (Math.ceil((index + 1) / 10) != 1) {
+            	$(element).hide();
+            }
         }, this);
 
-        this.togglePlaceholder();        
+        this.togglePlaceholder();
+
+        
     },
     
 	togglePlaceholder:function() {
@@ -355,6 +374,18 @@ var ClientListView = Backbone.View.extend({
 				$('#client-table-search-empty', this.el).hide();
 			}
 		}
+	},
+	
+	changePage:function(event, num) {
+		this.page = num;
+		$('#client-table tbody tr', this.el).each(function(index, element) {
+			console.log([num, index]);
+			if (Math.ceil((index + 1) / 10) != num) {
+            	$(element).hide();
+            } else {
+            	$(element).show();
+            }
+		});
 	},
 	
     refreshTable:function(e) {
