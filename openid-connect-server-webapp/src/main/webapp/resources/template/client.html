@@ -54,12 +54,12 @@
 <script type="text/html" id="tmpl-client-more-info-block">
 					<% if (client.clientDescription || client.clientUri || client.policyUri || client.tosUri || client.contacts != null && client.contacts.length > 0) { %>
 						<div class="muted moreInformationContainer">
-							<%=client.clientDescription%>
 							<% if (client.clientUri || client.policyUri || client.tosUri || client.contacts) { %>
 								<div class="toggleMoreInformation" style="cursor: pointer;">
 									<i class="icon-chevron-right"></i> <small>more information</small>
 								</div>
 								<div class="moreInformation hide">
+									<%=client.clientDescription%>
 									<ul>
 										<% if (client.clientUri) { %>
 											<li>Home page: <a href="<%= client.clientUri %>"><%= client.clientUri %></a></li>
@@ -114,7 +114,7 @@
         </tbody>
     </table>
 
-	<div id="paginator" class="pagination"> </div>
+	<div class="pagination paginator"></div>
 
     <div class="well well-small">
 		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> Refresh</button> &nbsp; 

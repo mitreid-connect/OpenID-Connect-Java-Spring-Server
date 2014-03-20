@@ -290,10 +290,12 @@ var RefreshTokenView = Backbone.View.extend({
 			// hide it
 			$('.moreInformation', this.el).hide('fast');
 			$('.toggleMoreInformation i', this.el).attr('class', 'icon-chevron-right');
+			$('.moreInformationContainer', this.el).removeClass('alert').removeClass('alert-info').addClass('muted');
 		} else {
 			// show it
 			$('.moreInformation', this.el).show('fast');
 			$('.toggleMoreInformation i', this.el).attr('class', 'icon-chevron-down');
+			$('.moreInformationContainer', this.el).addClass('alert').addClass('alert-info').removeClass('muted');
 		}
 
 	},
@@ -314,7 +316,9 @@ var TokenListView = Backbone.View.extend({
 	tagName: 'span',
 	
 	events:{
-		"click .refresh-table":"refreshTable"
+		"click .refresh-table":"refreshTable",
+        'page .paginator-access':'changePageAccess',
+        'page .paginator-refresh':'changePageRefresh'
 	},
 
     load:function(callback) {
@@ -344,6 +348,28 @@ var TokenListView = Backbone.View.extend({
     	
     },
 
+	changePageAccess:function(event, num) {
+		$('.paginator-access', this.el).bootpag({page: num});
+		$('#access-token-table tbody tr', this.el).each(function(index, element) {
+			if (Math.ceil((index + 1) / 10) != num) {
+            	$(element).hide();
+            } else {
+            	$(element).show();
+            }
+		});
+	},
+	
+	changePageRefresh:function(event, num) {
+		$('.paginator-refresh', this.el).bootpag({page: num});
+		$('#refresh-token-table tbody tr', this.el).each(function(index, element) {
+			if (Math.ceil((index + 1) / 10) != num) {
+            	$(element).hide();
+            } else {
+            	$(element).show();
+            }
+		});
+	},
+	
     refreshTable:function(e) {
     	e.preventDefault();
     	$('#loadingbox').sheet('show');
@@ -387,19 +413,49 @@ var TokenListView = Backbone.View.extend({
 	
 		var _self = this;
 		
-		_.each(this.model.access.models, function (token) {
+        // set up pagination
+        var numPagesAccess = Math.ceil(this.model.access.length / 10);
+        if (numPagesAccess > 1) {
+        	$('.paginator-access', this.el).show();
+        	$('.paginator-access', this.el).bootpag({
+        		total: numPagesAccess,
+        		page: 1
+        	});        	
+        } else {
+        	$('.paginator-access', this.el).hide();
+        }
+
+        _.each(this.model.access.models, function (token, index) {
 			// look up client
 			var client = _self.options.clientList.getByClientId(token.get('clientId'));
-			
-			$('#access-token-table', _self.el).append(new AccessTokenView({model: token, client: client, systemScopeList: _self.options.systemScopeList}).render().el);
+			var element = new AccessTokenView({model: token, client: client, systemScopeList: _self.options.systemScopeList}).render().el;
+			$('#access-token-table', _self.el).append(element);
+            if (Math.ceil((index + 1) / 10) != 1) {
+            	$(element).hide();
+            }
 
 		});
 		
-		_.each(this.model.refresh.models, function (token) {
+        // set up pagination
+        var numPagesRefresh = Math.ceil(this.model.refresh.length / 10);
+        if (numPagesRefresh > 1) {
+        	$('.paginator-refresh', this.el).show();
+        	$('.paginator-refresh', this.el).bootpag({
+        		total: numPagesRefresh,
+        		page: 1
+        	});        	
+        } else {
+        	$('.paginator-refresh', this.el).hide();
+        }
+
+        _.each(this.model.refresh.models, function (token, index) {
 			// look up client
 			var client = _self.options.clientList.getByClientId(token.get('clientId'));
-			
-			$('#refresh-token-table', _self.el).append(new RefreshTokenView({model: token, client: client, systemScopeList: _self.options.systemScopeList}).render().el);
+			var element = new RefreshTokenView({model: token, client: client, systemScopeList: _self.options.systemScopeList}).render().el;
+			$('#refresh-token-table', _self.el).append(element);
+            if (Math.ceil((index + 1) / 10) != 1) {
+            	$(element).hide();
+            }
 
 		});
 		

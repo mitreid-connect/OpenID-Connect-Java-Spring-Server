@@ -304,7 +304,7 @@ var ClientListView = Backbone.View.extend({
         "click .refresh-table":"refreshTable",
         'keyup .search-query':'searchTable',
         'click .form-search button':'clearSearch',
-        'page #paginator':'changePage'
+        'page .paginator':'changePage'
     },
 
     newClient:function (e) {
@@ -328,13 +328,13 @@ var ClientListView = Backbone.View.extend({
         // set up pagination
         var numPages = Math.ceil(this.filteredModel.length / 10);
         if (numPages > 1) {
-        	$('#paginator').show();
-        	$('#paginator', this.el).bootpag({
+        	$('.paginator', this.el).show();
+        	$('.paginator', this.el).bootpag({
         		total: numPages,
         		page: 1
         	});        	
         } else {
-        	$('#paginator', this.el).hide();
+        	$('.paginator', this.el).hide();
         }
 
         // render the rows
@@ -377,9 +377,7 @@ var ClientListView = Backbone.View.extend({
 	},
 	
 	changePage:function(event, num) {
-		this.page = num;
 		$('#client-table tbody tr', this.el).each(function(index, element) {
-			console.log([num, index]);
 			if (Math.ceil((index + 1) / 10) != num) {
             	$(element).hide();
             } else {
