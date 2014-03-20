@@ -82,11 +82,11 @@
 						</div>
 					</c:if>
 					<c:if test="${ (not empty client.clientDescription) || (not empty client.clientUri) || (not empty client.policyUri) || (not empty client.tosUri) || (not empty contacts) }">
-						<div class="alert alert-info">
+						<div class="muted moreInformationContainer">
 							${client.clientDescription}
 							<c:if test="${ (not empty client.clientUri) || (not empty client.policyUri) || (not empty client.tosUri)  || (not empty contacts) }">
 								<div id="toggleMoreInformation" style="cursor: pointer;">
-									<i class="icon-chevron-right"></i> more information
+									<small><i class="icon-chevron-right"></i> more information</small>
 								</div>
 								<div id="moreInformation" class="hide">
 									<ul>
@@ -249,10 +249,12 @@ $(document).ready(function() {
 			event.preventDefault();
 			if ($('#moreInformation').is(':visible')) {
 				// hide it
+				$('.moreInformationContainer', this.el).removeClass('alert').removeClass('alert-info').addClass('muted');
 				$('#moreInformation').hide('fast');
 				$('#toggleMoreInformation i').attr('class', 'icon-chevron-right');
 			} else {
 				// show it
+				$('.moreInformationContainer', this.el).addClass('alert').addClass('alert-info').removeClass('muted');
 				$('#moreInformation').show('fast');
 				$('#toggleMoreInformation i').attr('class', 'icon-chevron-down');
 			}

@@ -246,15 +246,15 @@ var ClientView = Backbone.View.extend({
 		e.preventDefault();
 		if ($('.moreInformation', this.el).is(':visible')) {
 			// hide it
+			$('.moreInformationContainer', this.el).removeClass('alert').removeClass('alert-info').addClass('muted');
 			$('.moreInformation', this.el).hide('fast');
 			$('.toggleMoreInformation i', this.el).attr('class', 'icon-chevron-right');
-			$('.moreInformationContainer', this.el).removeClass('alert').removeClass('alert-info').addClass('muted');
 		
 		} else {
 			// show it
+			$('.moreInformationContainer', this.el).addClass('alert').addClass('alert-info').removeClass('muted');
 			$('.moreInformation', this.el).show('fast');
 			$('.toggleMoreInformation i', this.el).attr('class', 'icon-chevron-down');
-			$('.moreInformationContainer', this.el).addClass('alert').addClass('alert-info').removeClass('muted');
 		}
 	},
 	
