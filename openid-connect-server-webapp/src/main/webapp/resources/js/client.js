@@ -377,6 +377,7 @@ var ClientListView = Backbone.View.extend({
 	},
 	
 	changePage:function(event, num) {
+		$('.paginator', this.el).bootpag({page:num});
 		$('#client-table tbody tr', this.el).each(function(index, element) {
 			if (Math.ceil((index + 1) / 10) != num) {
             	$(element).hide();
