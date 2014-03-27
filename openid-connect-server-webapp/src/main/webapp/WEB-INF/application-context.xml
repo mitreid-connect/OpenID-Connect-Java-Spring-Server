@@ -156,6 +156,7 @@
 		<oauth:implicit />
 		<oauth:refresh-token/>
 		<oauth:client-credentials/>
+		<oauth:password/>
 		<oauth:custom-grant token-granter-ref="chainedTokenGranter" />
 		<oauth:custom-grant token-granter-ref="jwtAssertionTokenGranter" />
 
