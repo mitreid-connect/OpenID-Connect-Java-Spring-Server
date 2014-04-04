@@ -116,8 +116,8 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 	private OAuth2Request createStoredRequest(final JsonObject token) {
 		String clientId = token.get("client_id").getAsString();
 		Set<String> scopes = new HashSet<String>();
-		for (JsonElement e : token.get("scope").getAsJsonArray()) {
-			scopes.add(e.getAsString());
+		if (token.has("scope")) {
+			scopes.addAll(OAuth2Utils.parseParameterList(token.get("scope").getAsString()));
 		}
 		Map<String, String> parameters = new HashMap<String, String>();
 		parameters.put("client_id", clientId);
