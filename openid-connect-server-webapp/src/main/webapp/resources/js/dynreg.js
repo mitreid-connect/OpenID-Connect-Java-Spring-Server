@@ -98,11 +98,15 @@ var DynRegRootView = Backbone.View.extend({
 		
 		client.fetch({success: function() {
 			
-			var dynRegEditView = new DynRegEditView({model: client, systemScopeList: this.systemScopeList});
-			
-			$('#content').html(dynRegEditView.render().el);
-			app.navigate('dev/dynreg/edit', {trigger: true});
-			self.remove();
+	    	var view = new DynRegEditView({model: client, systemScopeList: app.systemScopeList}); 
+	    	
+	    	view.load(function() {
+	    		$('#content').html(view.render().el);
+	    		view.delegateEvents();
+	    		setPageTitle("Dynamically Register a New Client");
+	    		app.navigate('dev/dynreg/edit', {trigger: true});	    		
+	    		self.remove();
+	    	});
 		}, error: function() {
     		$('#modalAlert div.modal-body').html("Invalid client or registration access token.");
     		
@@ -133,7 +137,23 @@ var DynRegEditView = Backbone.View.extend({
         this.requestUrisCollection = new Backbone.Collection();
 	},
 	
-    events:{
+	load:function(callback) {
+    	if (this.options.systemScopeList.isFetched) {
+    		callback();
+    		return;
+    	}
+
+    	$('#loadingbox').sheet('show');
+    	$('#loading').html('<span class="label" id="loading-scopes">Scopes</span> ');
+
+    	$.when(this.options.systemScopeList.fetchIfNeeded({success:function(e) {$('#loading-scopes').addClass('label-success');}}))
+    	.done(function() {
+    	    		$('#loadingbox').sheet('hide');
+    	    		callback();
+    			});    	
+	},
+    	
+	events:{
         "click .btn-save":"saveClient",
         "click .btn-cancel": function() { window.history.back(); return false; },
         "click .btn-delete":"deleteClient",
@@ -174,8 +194,7 @@ var DynRegEditView = Backbone.View.extend({
         return false;
     },
 
-    previewLogo:function(e) {
-    	e.preventDefault();
+    previewLogo:function() {
     	if ($('#logoUri input', this.el).val()) {
     		$('#logoPreview', this.el).empty();
     		$('#logoPreview', this.el).attr('src', $('#logoUri input').val());
@@ -309,9 +328,13 @@ var DynRegEditView = Backbone.View.extend({
             	// switch to an "edit" view
             	app.navigate('dev/dynreg/edit', {trigger: true});
             	_self.remove();
-    			var dynRegEditView = new DynRegEditView({model: _self.model});
-    			// reload
-    			$('#content').html(dynRegEditView.render().el);
+    			var view = new DynRegEditView({model: _self.model, systemScopeList: _self.options.systemScopeList});
+    			
+    			view.load(function() {
+    				// reload
+    				$('#content').html(view.render().el);
+    				view.delegateEvents();
+    			});
             },
             error:function (error, response) {
         		console.log("An error occurred when deleting from a list widget");

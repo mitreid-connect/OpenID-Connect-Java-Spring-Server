@@ -811,10 +811,15 @@ var AppRouter = Backbone.Router.extend({
              {text:"New", href:"manage/#dev/dynreg/new"}
         ]);
     	
-    	this.dynRegEditView = new DynRegEditView({model: new DynRegClient()});
-    	$('#content').html(this.dynRegEditView.render().el);
+    	var view = new DynRegEditView({model: new DynRegClient(), systemScopeList:this.systemScopeList});
     	
-    	setPageTitle("Dynamically Register a New Client");
+    	view.load(function() {
+    		$('#content').html(view.render().el);
+    		view.delegateEvents();
+    		setPageTitle("Dynamically Register a New Client");
+    		
+    	});
+    	
     },
     
     editDynReg:function() {
