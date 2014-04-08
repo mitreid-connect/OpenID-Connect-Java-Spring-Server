@@ -208,7 +208,7 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 
 						// If it's structured, assign the user-specified parameter
 						SystemScope systemScope = systemScopes.getByValue(scope);
-						if (systemScope.isStructured()){
+						if (systemScope != null && systemScope.isStructured()){
 							String paramValue = approvalParams.get("scopeparam_" + scope);
 							allowedScopes.add(scope + ":"+paramValue);
 							// .. and if it's unstructured, we're all set
