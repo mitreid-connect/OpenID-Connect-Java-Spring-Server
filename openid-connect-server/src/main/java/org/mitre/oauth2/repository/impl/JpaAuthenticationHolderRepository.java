@@ -16,6 +16,8 @@
  ******************************************************************************/
 package org.mitre.oauth2.repository.impl;
 
+import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -31,6 +33,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class JpaAuthenticationHolderRepository implements AuthenticationHolderRepository {
 
+	private static final int MAXEXPIREDRESULTS = 1000;	
+	
 	@PersistenceContext
 	private EntityManager manager;
 
@@ -72,6 +76,15 @@ public class JpaAuthenticationHolderRepository implements AuthenticationHolderRe
 	@Transactional
 	public AuthenticationHolderEntity save(AuthenticationHolderEntity a) {
 		return JpaUtil.saveOrUpdate(a.getId(), manager, a);
+	}
+	
+	@Override
+	@Transactional
+	public List<AuthenticationHolderEntity> getOrphanedAuthenticationHolders() {
+		TypedQuery<AuthenticationHolderEntity> query = manager.createNamedQuery("AuthenticationHolderEntity.getUnusedAuthenticationHolders", AuthenticationHolderEntity.class);
+		query.setMaxResults(MAXEXPIREDRESULTS);
+		List<AuthenticationHolderEntity> unusedAuthenticationHolders = query.getResultList();
+		return unusedAuthenticationHolders;
 	}
 
 }

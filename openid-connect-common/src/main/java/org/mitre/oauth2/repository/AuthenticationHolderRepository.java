@@ -16,6 +16,8 @@
  ******************************************************************************/
 package org.mitre.oauth2.repository;
 
+import java.util.List;
+
 import org.mitre.oauth2.model.AuthenticationHolderEntity;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 
@@ -30,5 +32,8 @@ public interface AuthenticationHolderRepository {
 	public void remove(AuthenticationHolderEntity a);
 
 	public AuthenticationHolderEntity save(AuthenticationHolderEntity a);
+	
+	public List<AuthenticationHolderEntity> getOrphanedAuthenticationHolders();
+
 
 }
