@@ -399,7 +399,13 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		Collection<OAuth2AccessTokenEntity> accessTokens = getExpiredAccessTokens();
 		logger.info("Found " + accessTokens.size() + " expired access tokens");
 		for (OAuth2AccessTokenEntity oAuth2AccessTokenEntity : accessTokens) {
-			revokeAccessToken(oAuth2AccessTokenEntity);
+			try {
+				revokeAccessToken(oAuth2AccessTokenEntity);
+			} catch (IllegalArgumentException e) { 
+				//An ID token is deleted with its corresponding access token, but then the ID token is on the list of expired tokens as well and there is 
+				//nothing in place to distinguish it from any other.
+				//An attempt to delete an already deleted token returns an error, stopping the cleanup dead. We need it to keep going.
+			}
 		}
 
 		Collection<OAuth2RefreshTokenEntity> refreshTokens = getExpiredRefreshTokens();
@@ -407,28 +413,24 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		for (OAuth2RefreshTokenEntity oAuth2RefreshTokenEntity : refreshTokens) {
 			revokeRefreshToken(oAuth2RefreshTokenEntity);
 		}
+		
+		Collection<AuthenticationHolderEntity> authHolders = getOrphanedAuthenticationHolders();
+		logger.info("Found " + authHolders.size() + " orphaned authentication holders");
+		for(AuthenticationHolderEntity authHolder : authHolders) {
+			authenticationHolderRepository.remove(authHolder);
+		}
 	}
 
-	private Predicate<OAuth2AccessTokenEntity> isAccessTokenExpired = new Predicate<OAuth2AccessTokenEntity>() {
-		@Override
-		public boolean apply(OAuth2AccessTokenEntity input) {
-			return (input != null && input.isExpired());
-		}
-	};
-
-	private Predicate<OAuth2RefreshTokenEntity> isRefreshTokenExpired = new Predicate<OAuth2RefreshTokenEntity>() {
-		@Override
-		public boolean apply(OAuth2RefreshTokenEntity input) {
-			return (input != null && input.isExpired());
-		}
-	};
-
 	private Collection<OAuth2AccessTokenEntity> getExpiredAccessTokens() {
-		return Collections2.filter(tokenRepository.getAllAccessTokens(), isAccessTokenExpired);
+		return Sets.newHashSet(tokenRepository.getAllExpiredAccessTokens());
 	}
 
 	private Collection<OAuth2RefreshTokenEntity> getExpiredRefreshTokens() {
-		return Collections2.filter(tokenRepository.getAllRefreshTokens(), isRefreshTokenExpired);
+		return Sets.newHashSet(tokenRepository.getAllExpiredRefreshTokens());
+	}
+	
+	private Collection<AuthenticationHolderEntity> getOrphanedAuthenticationHolders() {
+		return Sets.newHashSet(authenticationHolderRepository.getOrphanedAuthenticationHolders());
 	}
 
 	/* (non-Javadoc)

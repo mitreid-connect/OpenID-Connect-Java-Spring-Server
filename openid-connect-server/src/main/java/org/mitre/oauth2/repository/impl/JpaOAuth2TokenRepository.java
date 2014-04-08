@@ -16,6 +16,7 @@
  ******************************************************************************/
 package org.mitre.oauth2.repository.impl;
 
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -35,6 +36,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
+
+	private static final int MAXEXPIREDRESULTS = 1000;
 
 	@PersistenceContext
 	private EntityManager manager;
@@ -177,6 +180,22 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 		queryA.setParameter("idToken", idToken);
 		List<OAuth2AccessTokenEntity> accessTokens = queryA.getResultList();
 		return JpaUtil.getSingleResult(accessTokens);
+	}
+	
+	@Override
+	public Set<OAuth2AccessTokenEntity> getAllExpiredAccessTokens() {
+		TypedQuery<OAuth2AccessTokenEntity> query = manager.createNamedQuery("OAuth2AccessTokenEntity.getAllExpiredByDate", OAuth2AccessTokenEntity.class);
+		query.setParameter("date", new Date());
+		query.setMaxResults(MAXEXPIREDRESULTS);
+		return new LinkedHashSet<OAuth2AccessTokenEntity>(query.getResultList());
+	}
+
+	@Override
+	public Set<OAuth2RefreshTokenEntity> getAllExpiredRefreshTokens() {
+		TypedQuery<OAuth2RefreshTokenEntity> query = manager.createNamedQuery("OAuth2RefreshTokenEntity.getAllExpiredByDate", OAuth2RefreshTokenEntity.class);
+		query.setParameter("date", new Date());
+		query.setMaxResults(MAXEXPIREDRESULTS);
+		return new LinkedHashSet<OAuth2RefreshTokenEntity>(query.getResultList());
 	}
 
 }
