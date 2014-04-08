@@ -7,7 +7,7 @@
 		<c:set var="shortName" value="${ userInfo.preferredUsername }" />
 	</c:when>
 	<c:otherwise>
-		<c:set var="shortName" value="${ userInfo.userId }" />
+		<c:set var="shortName" value="${ userInfo.sub }" />
 	</c:otherwise>
 </c:choose>
 <c:choose>
