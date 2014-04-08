@@ -50,6 +50,7 @@ import com.nimbusds.jwt.JWTParser;
 @Table(name = "refresh_token")
 @NamedQueries({
 	@NamedQuery(name = "OAuth2RefreshTokenEntity.getAll", query = "select r from OAuth2RefreshTokenEntity r"),
+	@NamedQuery(name = "OAuth2RefreshTokenEntity.getAllExpiredByDate", query = "select r from OAuth2RefreshTokenEntity r where r.expiration <= :date"),
 	@NamedQuery(name = "OAuth2RefreshTokenEntity.getByClient", query = "select r from OAuth2RefreshTokenEntity r where r.client = :client"),
 	@NamedQuery(name = "OAuth2RefreshTokenEntity.getByTokenValue", query = "select r from OAuth2RefreshTokenEntity r where r.value = :tokenValue"),
 	@NamedQuery(name = "OAuth2RefreshTokenEntity.getByAuthentication", query = "select r from OAuth2RefreshTokenEntity r where r.authenticationHolder.authentication = :authentication")
