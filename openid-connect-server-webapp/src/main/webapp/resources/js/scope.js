@@ -158,13 +158,11 @@ var SystemScopeListView = Backbone.View.extend({
 	},
 
 	newScope:function(e) {
-    	e.preventDefault();
 		this.remove();
 		app.navigate('admin/scope/new', {trigger: true});
 	},
 	
 	refreshTable:function(e) {
-    	e.preventDefault();
 		var _self = this;
     	$('#loadingbox').sheet('show');
     	$('#loading').html('<span class="label" id="loading-scopes">Scopes</span> ');
@@ -257,7 +255,6 @@ var SystemScopeFormView = Backbone.View.extend({
 	},
 	
 	toggleStructuredParamDescription:function(e) {
-    	e.preventDefault();
 		if ($('#isStructured input', this.el).is(':checked')) {
 			$('#structuredParamDescription', this.el).show();
 		} else {
@@ -329,7 +326,7 @@ var SystemScopeFormView = Backbone.View.extend({
 	selectIcon:function(e) {
     	e.preventDefault();
 		
-		var icon = event.target.value;
+		var icon = e.target.value;
 		
 		$('#iconDisplay input').val(icon);
 		$('#iconDisplay span').html(icon);
