@@ -679,7 +679,7 @@ var ClientFormView = Backbone.View.extend({
             clientUri: $('#clientUri input').val(),
             applicationType: $('#applicationType input').filter(':checked').val(),
             jwksUri: $('#jwksUri input').val(),
-            subjectType: $('#applicationType input').filter(':checked').val(),
+            subjectType: $('#subjectType input').filter(':checked').val(),
             tokenEndpointAuthMethod: $('#tokenEndpointAuthMethod input').filter(':checked').val(),
             responseTypes: responseTypes,
             sectorIdentifierUri: $('#sectorIdentifierUri input').val(),
