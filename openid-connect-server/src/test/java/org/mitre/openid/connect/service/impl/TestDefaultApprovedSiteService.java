@@ -30,6 +30,7 @@ import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.openid.connect.model.ApprovedSite;
 import org.mitre.openid.connect.repository.ApprovedSiteRepository;
 import org.mitre.openid.connect.service.ApprovedSiteService;
+import org.mitre.openid.connect.service.StatsService;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -50,6 +51,9 @@ public class TestDefaultApprovedSiteService {
 
 	@Mock
 	private ApprovedSiteRepository repository;
+	
+	@Mock
+	private StatsService statsService;
 
 	@InjectMocks
 	private ApprovedSiteService service = new DefaultApprovedSiteService();
@@ -80,7 +84,7 @@ public class TestDefaultApprovedSiteService {
 		site3.setUserId("user2");
 		site3.setClientId(clientId);
 
-		Mockito.reset(repository);
+		Mockito.reset(repository, statsService);
 
 	}
 

@@ -33,6 +33,7 @@ import org.mitre.oauth2.service.SystemScopeService;
 import org.mitre.openid.connect.model.WhitelistedSite;
 import org.mitre.openid.connect.service.ApprovedSiteService;
 import org.mitre.openid.connect.service.BlacklistedSiteService;
+import org.mitre.openid.connect.service.StatsService;
 import org.mitre.openid.connect.service.WhitelistedSiteService;
 import org.mockito.InjectMocks;
 import org.mockito.Matchers;
@@ -67,13 +68,16 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 
 	@Mock
 	private SystemScopeService scopeService;
+	
+	@Mock
+	private StatsService statsService;
 
 	@InjectMocks
 	private DefaultOAuth2ClientDetailsEntityService service;
 
 	@Before
 	public void prepare() {
-		Mockito.reset(clientRepository, tokenRepository, approvedSiteService, whitelistedSiteService, blacklistedSiteService, scopeService);
+		Mockito.reset(clientRepository, tokenRepository, approvedSiteService, whitelistedSiteService, blacklistedSiteService, scopeService, statsService);
 	}
 
 	/**
