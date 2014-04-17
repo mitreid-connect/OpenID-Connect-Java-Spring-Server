@@ -38,7 +38,7 @@ public class ManagerController {
 	@RequestMapping({"", "home", "index"})
 	public String showHomePage(ModelMap m) {
 
-		Map<String, Integer> summary = statsService.calculateSummaryStats();
+		Map<String, Integer> summary = statsService.getSummaryStats();
 
 		m.put("statsSummary", summary);
 		return "home";
@@ -53,7 +53,7 @@ public class ManagerController {
 	@RequestMapping({"stats", "stats/"})
 	public String showStatsPage(ModelMap m) {
 
-		Map<String, Integer> summary = statsService.calculateSummaryStats();
+		Map<String, Integer> summary = statsService.getSummaryStats();
 
 		m.put("statsSummary", summary);
 		return "stats";

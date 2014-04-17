@@ -37,6 +37,7 @@ import org.mitre.oauth2.service.SystemScopeService;
 import org.mitre.openid.connect.model.WhitelistedSite;
 import org.mitre.openid.connect.service.ApprovedSiteService;
 import org.mitre.openid.connect.service.BlacklistedSiteService;
+import org.mitre.openid.connect.service.StatsService;
 import org.mitre.openid.connect.service.WhitelistedSiteService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,6 +77,9 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 
 	@Autowired
 	private SystemScopeService scopeService;
+	
+	@Autowired
+	private StatsService statsService;
 
 	// map of sector URI -> list of redirect URIs
 	private LoadingCache<String, List<String>> sectorRedirects = CacheBuilder.newBuilder()
@@ -136,7 +140,11 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 		// make sure a client doesn't get any special system scopes
 		client.setScope(scopeService.removeRestrictedScopes(client.getScope()));
 
-		return clientRepository.saveClient(client);
+		ClientDetailsEntity c = clientRepository.saveClient(client);
+		
+		statsService.resetCache();
+		
+		return c;
 	}
 
 	/**
@@ -192,6 +200,8 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 		// take care of the client itself
 		clientRepository.deleteClient(client);
 
+		statsService.resetCache();
+		
 	}
 
 	/**

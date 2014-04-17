@@ -37,7 +37,7 @@ public class StatsAPI {
 	@RequestMapping(value = "summary", produces = "application/json")
 	public String statsSummary(ModelMap m) {
 
-		Map<String, Integer> e = statsService.calculateSummaryStats();
+		Map<String, Integer> e = statsService.getSummaryStats();
 
 		m.put("entity", e);
 
@@ -47,7 +47,7 @@ public class StatsAPI {
 
 	@RequestMapping(value = "byclientid", produces = "application/json")
 	public String statsByClient(ModelMap m) {
-		Map<Long, Integer> e = statsService.calculateByClientId();
+		Map<Long, Integer> e = statsService.getByClientId();
 
 		m.put("entity", e);
 
@@ -56,7 +56,7 @@ public class StatsAPI {
 
 	@RequestMapping(value = "byclientid/{id}", produces = "application/json")
 	public String statsByClientId(@PathVariable("id") Long id, ModelMap m) {
-		Integer e = statsService.countForClientId(id);
+		Integer e = statsService.getCountForClientId(id);
 
 		m.put("entity", e);
 
