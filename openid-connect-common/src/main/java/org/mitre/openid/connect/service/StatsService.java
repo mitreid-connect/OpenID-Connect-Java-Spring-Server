@@ -35,14 +35,14 @@ public interface StatsService {
 	 * 
 	 * @return
 	 */
-	public Map<String, Integer> calculateSummaryStats();
+	public Map<String, Integer> getSummaryStats();
 
 	/**
 	 * Calculate usage count for all clients
 	 * 
 	 * @return a map of id of client object to number of approvals
 	 */
-	public Map<Long, Integer> calculateByClientId();
+	public Map<Long, Integer> getByClientId();
 
 	/**
 	 * Calculate the usage count for a single client
@@ -50,6 +50,11 @@ public interface StatsService {
 	 * @param id the id of the client to search on
 	 * @return
 	 */
-	public Integer countForClientId(Long id);
+	public Integer getCountForClientId(Long id);
+	
+	/**
+	 * Trigger the stats to be recalculated upon next update.
+	 */
+	public void resetCache();
 
 }

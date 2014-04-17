@@ -53,25 +53,32 @@ public class DefaultStatsService implements StatsService {
 	private ClientDetailsEntityService clientService;
 	
 	// stats cache
-	private Supplier<Map<String, Integer>> summaryCache = Suppliers.memoizeWithExpiration(new Supplier<Map<String, Integer>>() {
-		@Override
-		public Map<String, Integer> get() {
-			return computeSummaryStats();
-		}
+	private Supplier<Map<String, Integer>> summaryCache = createSummaryCache();
+	
+	private Supplier<Map<String, Integer>> createSummaryCache() {
+		return Suppliers.memoizeWithExpiration(new Supplier<Map<String, Integer>>() {
+			@Override
+			public Map<String, Integer> get() {
+				return computeSummaryStats();
+			}
+	
+		}, 10, TimeUnit.MINUTES);
+	}
 
-	}, 10, TimeUnit.MINUTES);
-
-	private Supplier<Map<Long, Integer>> byClientIdCache = Suppliers.memoizeWithExpiration(new Supplier<Map<Long, Integer>>() {
-
-		@Override
-		public Map<Long, Integer> get() {
-			return computeByClientId();
-		}
-		
-	}, 10, TimeUnit.MINUTES);
+	private Supplier<Map<Long, Integer>> byClientIdCache = createByClientIdCache();
+	
+	private Supplier<Map<Long, Integer>> createByClientIdCache() {
+		return Suppliers.memoizeWithExpiration(new Supplier<Map<Long, Integer>>() {
+			@Override
+			public Map<Long, Integer> get() {
+				return computeByClientId();
+			}
+			
+		}, 10, TimeUnit.MINUTES);
+	}
 	
 	@Override
-	public Map<String, Integer> calculateSummaryStats() {
+	public Map<String, Integer> getSummaryStats() {
 		return summaryCache.get();
 	}
 	
@@ -100,7 +107,7 @@ public class DefaultStatsService implements StatsService {
 	 * @see org.mitre.openid.connect.service.StatsService#calculateByClientId()
 	 */
 	@Override
-	public Map<Long, Integer> calculateByClientId() {
+	public Map<Long, Integer> getByClientId() {
 		return byClientIdCache.get();
 	}
 	
@@ -126,9 +133,9 @@ public class DefaultStatsService implements StatsService {
 	 * @see org.mitre.openid.connect.service.StatsService#countForClientId(java.lang.String)
 	 */
 	@Override
-	public Integer countForClientId(Long id) {
+	public Integer getCountForClientId(Long id) {
 
-		Map<Long, Integer> counts = calculateByClientId();
+		Map<Long, Integer> counts = getByClientId();
 		return counts.get(id);
 
 	}
@@ -147,4 +154,13 @@ public class DefaultStatsService implements StatsService {
 		return counts;
 	}
 
+	/**
+	 * Reset both stats caches on a trigger (before the timer runs out). Resets the timers.
+	 */
+	@Override
+	public void resetCache() {
+		summaryCache = createSummaryCache();
+		byClientIdCache = createByClientIdCache();
+	}
+	
 }

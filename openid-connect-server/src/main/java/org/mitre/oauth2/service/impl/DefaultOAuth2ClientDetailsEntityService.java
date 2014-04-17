@@ -30,6 +30,7 @@ import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.openid.connect.model.WhitelistedSite;
 import org.mitre.openid.connect.service.ApprovedSiteService;
 import org.mitre.openid.connect.service.BlacklistedSiteService;
+import org.mitre.openid.connect.service.StatsService;
 import org.mitre.openid.connect.service.WhitelistedSiteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
@@ -56,6 +57,8 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 	@Autowired
 	private BlacklistedSiteService blacklistedSiteService;
 
+	@Autowired
+	private StatsService statsService;
 
 	@Override
 	public ClientDetailsEntity saveNewClient(ClientDetailsEntity client) {
@@ -87,7 +90,11 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 		// timestamp this to right now
 		client.setCreatedAt(new Date());
 
-		return clientRepository.saveClient(client);
+		ClientDetailsEntity c = clientRepository.saveClient(client);
+		
+		statsService.resetCache();
+		
+		return c;
 	}
 
 	/**
@@ -143,6 +150,8 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 		// take care of the client itself
 		clientRepository.deleteClient(client);
 
+		statsService.resetCache();
+		
 	}
 
 	/**

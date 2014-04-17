@@ -20,10 +20,12 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
 
+import org.mitre.oauth2.repository.OAuth2TokenRepository;
 import org.mitre.openid.connect.model.ApprovedSite;
 import org.mitre.openid.connect.model.WhitelistedSite;
 import org.mitre.openid.connect.repository.ApprovedSiteRepository;
 import org.mitre.openid.connect.service.ApprovedSiteService;
+import org.mitre.openid.connect.service.StatsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +51,12 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 	@Autowired
 	private ApprovedSiteRepository approvedSiteRepository;
 
+	@Autowired
+	private OAuth2TokenRepository tokenRepository;
+	
+	@Autowired
+	private StatsService statsService;
+
 	@Override
 	public Collection<ApprovedSite> getAll() {
 		return approvedSiteRepository.getAll();
@@ -57,7 +65,9 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 	@Override
 	@Transactional
 	public ApprovedSite save(ApprovedSite approvedSite) {
-		return approvedSiteRepository.save(approvedSite);
+		ApprovedSite a = approvedSiteRepository.save(approvedSite);
+		statsService.resetCache();
+		return a;
 	}
 
 	@Override
@@ -69,6 +79,8 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 	@Transactional
 	public void remove(ApprovedSite approvedSite) {
 		approvedSiteRepository.remove(approvedSite);
+		
+		statsService.resetCache();
 	}
 
 	@Override
@@ -124,7 +136,7 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 		Collection<ApprovedSite> approvedSites = approvedSiteRepository.getByClientId(client.getClientId());
 		if (approvedSites != null) {
 			for (ApprovedSite approvedSite : approvedSites) {
-				approvedSiteRepository.remove(approvedSite);
+				remove(approvedSite);
 			}
 		}
 	}
@@ -137,7 +149,7 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 		Collection<ApprovedSite> expiredSites = getExpired();
 		if (expiredSites != null) {
 			for (ApprovedSite expired : expiredSites) {
-				approvedSiteRepository.remove(expired);
+				remove(expired);
 			}
 		}
 	}
