@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
@@ -33,6 +34,8 @@ import org.mitre.openid.connect.service.StatsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
 
@@ -48,9 +51,32 @@ public class DefaultStatsService implements StatsService {
 
 	@Autowired
 	private ClientDetailsEntityService clientService;
+	
+	// stats cache
+	private Supplier<Map<String, Integer>> summaryCache = Suppliers.memoizeWithExpiration(new Supplier<Map<String, Integer>>() {
+		@Override
+		public Map<String, Integer> get() {
+			return computeSummaryStats();
+		}
 
+	}, 10, TimeUnit.MINUTES);
+
+	private Supplier<Map<Long, Integer>> byClientIdCache = Suppliers.memoizeWithExpiration(new Supplier<Map<Long, Integer>>() {
+
+		@Override
+		public Map<Long, Integer> get() {
+			return computeByClientId();
+		}
+		
+	}, 10, TimeUnit.MINUTES);
+	
 	@Override
 	public Map<String, Integer> calculateSummaryStats() {
+		return summaryCache.get();
+	}
+	
+	// do the actual computation
+	private Map<String, Integer> computeSummaryStats() {
 		// get all approved sites
 		Collection<ApprovedSite> allSites = approvedSiteService.getAll();
 
@@ -75,6 +101,10 @@ public class DefaultStatsService implements StatsService {
 	 */
 	@Override
 	public Map<Long, Integer> calculateByClientId() {
+		return byClientIdCache.get();
+	}
+	
+	private Map<Long, Integer> computeByClientId() {
 		// get all approved sites
 		Collection<ApprovedSite> allSites = approvedSiteService.getAll();
 
