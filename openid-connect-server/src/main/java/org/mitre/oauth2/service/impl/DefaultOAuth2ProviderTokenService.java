@@ -392,6 +392,9 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		return tokenRepository.getRefreshTokensForClient(client);
 	}
 
+	/**
+	 * Clears out expired tokens and any abandoned authentication objects
+	 */
 	@Override
 	public void clearExpiredTokens() {
 		logger.info("Cleaning out all expired tokens");

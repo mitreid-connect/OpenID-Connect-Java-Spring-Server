@@ -51,7 +51,7 @@
 
 	<!-- SPEL processors -->
 	<security:global-method-security pre-post-annotations="enabled" proxy-target-class="true" authentication-manager-ref="authenticationManager">
-	<!--you could also wire in the expression handler up at the layer of the http filters. See https://jira.springsource.org/browse/SEC-1452 -->
+		<!--you could also wire in the expression handler up at the layer of the http filters. See https://jira.springsource.org/browse/SEC-1452 -->
 		<security:expression-handler ref="oauthExpressionHandler" />
 	</security:global-method-security>
 
@@ -109,7 +109,7 @@
 		<security:expression-handler ref="oauthWebExpressionHandler" />
 	</security:http>
 
- 	<security:http pattern="/api/**" use-expressions="true" entry-point-ref="oauthAuthenticationEntryPoint">
+ 	<security:http pattern="/api/**" use-expressions="true" entry-point-ref="oauthAuthenticationEntryPoint" create-session="never">
 		<security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
 		<security:expression-handler ref="oauthWebExpressionHandler" />
 	</security:http>
@@ -143,27 +143,8 @@
 	<bean id="http403EntryPoint" class="org.springframework.security.web.authentication.Http403ForbiddenEntryPoint" />
 
 	<!-- SECOAUTH Authorization Server -->
-	<oauth:authorization-server 
-		client-details-service-ref="defaultOAuth2ClientDetailsEntityService"
-		authorization-request-manager-ref="connectOAuth2RequestFactory" 
-		token-services-ref="defaultOAuth2ProviderTokenService" 
-		user-approval-handler-ref="tofuUserApprovalHandler" 
-		request-validator-ref="oauthRequestValidator"
-		authorization-endpoint-url="/authorize" 
-		token-endpoint-url="/token">
-		
-		<oauth:authorization-code authorization-code-services-ref="defaultOAuth2AuthorizationCodeService"/>
-		<oauth:implicit />
-		<oauth:refresh-token/>
-		<oauth:client-credentials/>
-		<oauth:custom-grant token-granter-ref="chainedTokenGranter" />
-		<oauth:custom-grant token-granter-ref="jwtAssertionTokenGranter" />
 
-	</oauth:authorization-server>
-
-	<bean id="oauthAccessDeniedHandler" class="org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler" />
-
-	<bean id="oauthRequestValidator" class="org.mitre.oauth2.token.StructuredScopeAwareOAuth2RequestValidator" />
+	<import resource="authz-config.xml" />
 
 	<bean id="clientCredentialsTokenEndpointFilter" class="org.springframework.security.oauth2.provider.client.ClientCredentialsTokenEndpointFilter">
 		<property name="authenticationManager" ref="clientAuthenticationManager" />
