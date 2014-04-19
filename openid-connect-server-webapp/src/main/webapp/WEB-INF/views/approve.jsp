@@ -4,7 +4,7 @@
 <%@ taglib prefix="authz" uri="http://www.springframework.org/security/tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="o" tagdir="/WEB-INF/tags"%>
-<%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <o:header title="Approve Access" />
 <o:topbar pageName="Approve" />
 <div class="container main">
@@ -37,16 +37,24 @@
 			<div class="row">
 				<div class="span5 offset1 well-small" style="text-align: left">
 
-					<%-- TODO: wire up to stats engine and customize display of this block --%>
 					<c:if test="${ client.dynamicallyRegistered }">
-						<div class="alert alert-block <c:out value="${ count eq 0 ? 'alert-error' : 'alert-warn' }" />">
-							<h4>
-								<i class="icon-globe"></i> Caution:
-							</h4>
-							This software was dynamically registered and it has been approved
-							<span class="label"><c:out value="${ count }" /></span>
-							time<c:out value="${ count == 1 ? '' : 's' }"/> previously.
-						</div>
+						<c:choose>
+							<c:when test="${ gras }">
+								<!-- client is "generally recognized as safe, display a more muted block -->
+								<div><p class="alert alert-info"><i class="icon-globe"></i> This client was dynamically registered.</p></div>
+							</c:when>
+							<c:otherwise>
+								<!-- client is dynamically registered -->
+								<div class="alert alert-block <c:out value="${ count eq 0 ? 'alert-error' : 'alert-warn' }" />">
+									<h4>
+										<i class="icon-globe"></i> Caution:
+									</h4>
+									This software was dynamically registered and it has been approved
+									<span class="label"><c:out value="${ count }" /></span>
+									time<c:out value="${ count == 1 ? '' : 's' }"/> previously.
+								</div>
+							</c:otherwise>
+						</c:choose>
 					</c:if>
 
 					<c:if test="${ not empty client.logoUri }">

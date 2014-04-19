@@ -20,6 +20,7 @@
 package org.mitre.oauth2.web;
 
 import java.security.Principal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -179,6 +180,16 @@ public class OAuthConfirmationController {
 		if (client.getContacts() != null) {
 			String contacts = Joiner.on(", ").join(client.getContacts());
 			model.put("contacts", contacts);
+		}
+		
+		// if the client is over a week old and has more than one registration, don't give such a big warning
+		// instead, tag as "Generally Recognized As Safe (gras)
+		Date lastWeek = new Date(System.currentTimeMillis() + (60 * 60 * 24 * 7 * 1000));
+		//Date lastWeek = new Date(System.currentTimeMillis() - (60 * 60 * 24 * 7 * 1000));
+		if (count > 1 && client.getCreatedAt() != null && client.getCreatedAt().before(lastWeek)) {
+			model.put("gras", true);
+		} else {
+			model.put("gras", false);
 		}
 		
 		
