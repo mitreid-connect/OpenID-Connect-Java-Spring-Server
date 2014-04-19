@@ -23,15 +23,20 @@
 		<% } else if (count != null) { %>
 			<span class="label label-info"><%= count %></span>
 		<% } else { %>
-			<!-- hold for count -->
-		<% } %>
-		<% if (client.dynamicallyRegistered) { %>
-			<span class="label label-inverse dynamically-registered"><i class="icon-globe icon-white"></i></span>
+			<span class="label label-warning">?</span>
 		<% } %>
 	</td>
 
     <td>
-        <span title="<%= client.clientId %>"><%= client.clientName != null ? client.clientName : ( client.clientId.substr(0,8) + '...' ) %></span>
+		<div>
+	        <span title="<%= client.clientId %>"><%= client.clientName != null ? client.clientName : ( client.clientId.substr(0,8) + '...' ) %></span>
+		</div>
+		<div>
+			<% if (client.dynamicallyRegistered) { %>
+				<span class="label label-inverse dynamically-registered"><i class="icon-globe icon-white"></i></span>
+			<% } %>
+			<small class="muted" title="<%= hoverCreationDate %>">Registered <%= displayCreationDate %></small>
+		</div>
     </td>
 
     <td>
@@ -148,6 +153,13 @@
 
 <div class="tab-content">
 	<div class="tab-pane active" id="client-main-tab">
+
+			<div class="control-group" id="createdAt">
+				<label class="control-label">Registered at</label>
+				<div class="controls">
+					<%=createdAt%>
+				</div>
+			</div>
 
             <div class="control-group" id="clientName">
                 <label class="control-label">Client name</label>

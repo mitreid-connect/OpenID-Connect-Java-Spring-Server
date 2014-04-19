@@ -88,19 +88,17 @@
     </td>
 
 
-	<!-- TODO: make these dates collapsable/expandable -->
-
 	<td>
 		<div>
-			<i>Authorized:</i> <%= formattedDate.creationDate %>
+			<i>Authorized:</i> <span title="<%= formattedDate.hoverCreationDate %>"><%= formattedDate.displayCreationDate %></span>
 		</div>
 
 		<div>
-			<i>Last accessed:</i> <%= formattedDate.accessDate %>
+			<i>Last accessed:</i> <span title="<%= formattedDate.hoverAccessDate %>"><%= formattedDate.displayAccessDate %></span>
 		</div>
 
 		<div>
-			<i>Expires:</i> <%= formattedDate.timeoutDate %>
+			<i>Expires:</i> <span title="<%= formattedDate.hoverTimeoutDate %>"><%= formattedDate.displayTimeoutDate %></span>
 		</div>
 	</td>
 

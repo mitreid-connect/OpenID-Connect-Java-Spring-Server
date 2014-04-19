@@ -169,7 +169,26 @@ var ClientView = Backbone.View.extend({
     },
 
     render:function (eventName) {
-    	var json = {client: this.model.toJSON(), count: this.options.count, whiteList: this.options.whiteList};
+    	
+    	var creationDate = this.model.get('createdAt');
+		var displayCreationDate = "Unknown";
+		var hoverCreationDate = "";
+		if (creationDate == null || !moment(creationDate).isValid()) {
+			displayCreationDate = "Unknown";
+			hoverCreationDate = "";
+		} else {
+			creationDate = moment(creationDate);
+			if (moment().diff(creationDate, 'months') < 6) {
+				displayCreationDate = creationDate.fromNow();
+			} else {
+				displayCreationDate = "on " + creationDate.format("MMMM Do, YYYY");
+			}
+			hoverCreationDate = creationDate.format("MMMM Do, YYYY [at] h:mmA");
+		}
+
+    	
+    	var json = {client: this.model.toJSON(), count: this.options.count, whiteList: this.options.whiteList, 
+    			displayCreationDate: displayCreationDate, hoverCreationDate: hoverCreationDate};
         this.$el.html(this.template(json));
 
         $('.scope-list', this.el).html(this.scopeTemplate({scopes: this.model.get('scope'), systemScopes: this.options.systemScopeList}));
@@ -769,7 +788,6 @@ var ClientFormView = Backbone.View.extend({
     render:function (eventName) {
 
         $(this.el).html(this.template(this.model.toJSON()));
-
         
         var _self = this;
 

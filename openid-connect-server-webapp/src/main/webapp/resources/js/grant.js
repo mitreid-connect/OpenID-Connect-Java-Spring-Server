@@ -158,37 +158,58 @@ var ApprovedSiteView = Backbone.View.extend({
 		var accessDate = this.model.get("accessDate");
 		var timeoutDate = this.model.get("timeoutDate");
 		
+		var displayCreationDate = "Unknown";
+		var hoverCreationDate = "";
 		if (creationDate == null || !moment(creationDate).isValid()) {
-			creationDate = "Unknown";
+			displayCreationDate = "Unknown";
+			hoverCreationDate = "";
 		} else {
 			creationDate = moment(creationDate);
 			if (moment().diff(creationDate, 'months') < 6) {
-				creationDate = creationDate.fromNow();
+				displayCreationDate = creationDate.fromNow();
 			} else {
-				creationDate = creationDate.format("MMMM Do, YYYY");
+				displayCreationDate = creationDate.format("MMMM Do, YYYY");
 			}
+			hoverCreationDate = creationDate.format("MMMM Do, YYYY [at] h:mmA");
 		}
-		
+
+		var displayAccessDate = "Unknown";
+		var hoverAccessDate = "";
 		if (accessDate == null || !moment(accessDate).isValid()) {
-			accessDate = "Unknown";
+			displayAccessDate = "Unknown";
+			hoverAccessDate = "";
 		} else {
 			accessDate = moment(accessDate);
 			if (moment().diff(accessDate, 'months') < 6) {
-				accessDate = accessDate.fromNow();
+				displayAccessDate = accessDate.fromNow();
 			} else {
-				accessDate = accessDate.format("MMMM Do, YYYY");
+				displayAccessDate = accessDate.format("MMMM Do, YYYY");
 			}
+			hoverAccessDate = accessDate.format("MMMM Do, YYYY [at] h:mmA");
 		}
-		
+
+		var displayTimeoutDate = "Unknown";
+		var hoverTimeoutDate = "";
 		if (timeoutDate == null) {
-			timeoutDate = "Never";
-		} else if (!moment(timeoutDate).isValid()) {
-			timeoutDate = "Unknown";
+			displayTimeoutDate = "Never";
+			hoverTimeoutDate = "";
+		} else if(!moment(timeoutDate).isValid()) {
+			displayTimeoutDate = "Unknown";
+			hoverTimeoutDate = "";
 		} else {
-			timeoutDate = moment(timeoutDate).calendar();
+			timeoutDate = moment(timeoutDate);
+			if (moment().diff(timeoutDate, 'months') < 6) {
+				displayTimeoutDate = timeoutDate.fromNow();
+			} else {
+				displayTimeoutDate = timeoutDate.format("MMMM Do, YYYY");
+			}
+			hoverTimeoutDate = timeoutDate.format("MMMM Do, YYYY [at] h:mmA");
 		}
+
 		
-		var formattedDate = {creationDate: creationDate, accessDate: accessDate, timeoutDate: timeoutDate};
+		var formattedDate = {displayCreationDate: displayCreationDate, hoverCreationDate: hoverCreationDate,
+				displayAccessDate: displayAccessDate, hoverAccessDate: hoverAccessDate, 
+				displayTimeoutDate: displayTimeoutDate, hoverTimeoutDate: hoverTimeoutDate};
 		
 		var json = {grant: this.model.toJSON(), client: this.options.client.toJSON(), formattedDate: formattedDate};
 		

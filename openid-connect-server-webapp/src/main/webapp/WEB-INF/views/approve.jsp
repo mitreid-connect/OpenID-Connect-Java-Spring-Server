@@ -41,7 +41,7 @@
 						<c:choose>
 							<c:when test="${ gras }">
 								<!-- client is "generally recognized as safe, display a more muted block -->
-								<div><p class="alert alert-info"><i class="icon-globe"></i> This client was dynamically registered.</p></div>
+								<div><p class="alert alert-info"><i class="icon-globe"></i> This client was dynamically registered <span id="registrationTime"></span>.</p></div>
 							</c:when>
 							<c:otherwise>
 								<!-- client is dynamically registered -->
@@ -49,7 +49,8 @@
 									<h4>
 										<i class="icon-globe"></i> Caution:
 									</h4>
-									This software was dynamically registered and it has been approved
+									This software was dynamically registered <span id="registrationTime" class="label"></span> 
+									and it has been approved
 									<span class="label"><c:out value="${ count }" /></span>
 									time<c:out value="${ count == 1 ? '' : 's' }"/> previously.
 								</div>
@@ -268,6 +269,24 @@ $(document).ready(function() {
 			}
 		});
 		
+		var creationDate = "<c:out value="${ client.createdAt }" />";
+		var displayCreationDate = "Unknown";
+		var hoverCreationDate = "";
+		if (creationDate == null || !moment(creationDate).isValid()) {
+			displayCreationDate = "Unknown";
+			hoverCreationDate = "";
+		} else {
+			creationDate = moment(creationDate);
+			if (moment().diff(creationDate, 'months') < 6) {
+				displayCreationDate = creationDate.fromNow();
+			} else {
+				displayCreationDate = "on " + creationDate.format("MMMM Do, YYYY");
+			}
+			hoverCreationDate = creationDate.format("MMMM Do, YYYY [at] h:mmA")
+		}
+		
+		$('#registrationTime').html(displayCreationDate);
+		$('#registrationTime').attr('title', hoverCreationDate);
 });
 
 //-->
