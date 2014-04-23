@@ -16,11 +16,14 @@
  ******************************************************************************/
 package org.mitre.oauth2.repository;
 
+import java.util.Collection;
 import org.mitre.oauth2.model.AuthenticationHolderEntity;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 
 public interface AuthenticationHolderRepository {
 
+    public Collection<AuthenticationHolderEntity> getAll();
+    
 	public AuthenticationHolderEntity getById(Long id);
 
 	public AuthenticationHolderEntity getByAuthentication(OAuth2Authentication a);
