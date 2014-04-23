@@ -41,6 +41,8 @@ import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
 import org.mitre.oauth2.repository.AuthenticationHolderRepository;
 import org.mitre.oauth2.repository.OAuth2ClientRepository;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
+import org.mitre.openid.connect.model.ApprovedSite;
+import org.mitre.openid.connect.model.WhitelistedSite;
 import org.mitre.openid.connect.repository.ApprovedSiteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -107,7 +109,6 @@ public class MITREidDataService_1_0 implements MITREidDataService {
 		writeClients(writer);
 		writer.endArray();
 		
-		
 		writer.name(GRANTS);
 		writer.beginArray();
 		writeGrants(writer);
@@ -122,7 +123,6 @@ public class MITREidDataService_1_0 implements MITREidDataService {
 		writer.beginArray();
 		writeAccessTokens(writer);
 		writer.endArray();
-		
 		
 		writer.name(REFRESHTOKENS);
 		writer.beginArray();
@@ -191,6 +191,7 @@ public class MITREidDataService_1_0 implements MITREidDataService {
         logger.info("Done writing authentication holders");
     }
     
+    //used by writeAuthenticationHolders
     private void writeAuthorizationRequest(AuthorizationRequest authReq, JsonWriter writer) throws IOException {
         writer.beginObject();
         Map<String, String> authParams = authReq.getAuthorizationParameters();
@@ -254,7 +255,43 @@ public class MITREidDataService_1_0 implements MITREidDataService {
 	 * @param writer
 	 */
     private void writeGrants(JsonWriter writer) {
-        approvedSiteRepo.getAll();
+        for (ApprovedSite site : approvedSiteRepo.getAll()) {
+            try {
+                writer.beginObject();
+                writer.name("id").value(site.getId());
+                writer.name("accessDate").value(site.getAccessDate().toString());
+                writer.name("clientId").value(site.getClientId());
+                writer.name("creationDate").value(site.getCreationDate().toString());
+                writer.name("timeoutDate").value(site.getTimeoutDate().toString());
+                writer.name("userId").value(site.getUserId());
+                writer.name("allowedScopes");
+                writer.beginArray();
+                for (String s : site.getAllowedScopes()) {
+                    writer.value(s);
+                }
+                writer.endArray();
+                if(site.getIsWhitelisted()) {
+                    WhitelistedSite wlSite = site.getWhitelistedSite();
+                    writer.name("whitelistedSite");
+                    writer.beginObject();
+                    writer.name("id").value(wlSite.getId());
+                    writer.name("clientId").value(wlSite.getClientId());
+                    writer.name("creatorUserId").value(wlSite.getCreatorUserId());
+                    writer.name("allowedScopes");
+                    writer.beginArray();
+                    for(String s : wlSite.getAllowedScopes()) {
+                        writer.value(s);
+                    }
+                    writer.endArray();
+                    writer.endObject();
+                }
+                writer.endObject();
+                logger.debug("Wrote grant {}", site.getId());
+            } catch (IOException ex) {
+                logger.error("Unable to write grant {}", site.getId(), ex);
+            }
+        }
+        logger.info("Done writing grants");
     }
 
 	/**
@@ -265,7 +302,9 @@ public class MITREidDataService_1_0 implements MITREidDataService {
         for(ClientDetailsEntity client : clientRepo.getAllClients()) {
             String clientStr = gson.toJson(client);
             try {
+                //writer.beginObject();
                 writer.value(clientStr);
+                //writer.endObject();
                 logger.debug("Wrote client {}", client.getId());
             } catch (IOException ex) {
                 logger.error("Unable to write client {}", client.getId(), ex);
