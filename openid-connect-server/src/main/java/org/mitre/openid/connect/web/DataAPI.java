@@ -60,7 +60,8 @@ public class DataAPI {
 	@Autowired
 	private ConfigurationPropertiesBean config;
 	
-	private MITREidDataService dataService_1_0 = new MITREidDataService_1_0();
+    @Autowired
+	private MITREidDataService dataService_1_0;
 	
 	@RequestMapping(method = RequestMethod.POST, consumes = "application/json")
 	public String importData(Reader in, Model m) throws IOException {

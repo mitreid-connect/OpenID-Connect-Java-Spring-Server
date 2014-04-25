@@ -33,8 +33,10 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 @Entity
 @Table(name = "authentication_holder")
 @NamedQueries ({
-	@NamedQuery(name = "AuthenticationHolderEntity.getByAuthentication", query = "select a from AuthenticationHolderEntity a where a.authentication = :authentication")
+	@NamedQuery(name = "AuthenticationHolderEntity.getByAuthentication", query = "select a from AuthenticationHolderEntity a where a.authentication = :authentication"),
+    @NamedQuery(name = "AuthenticationHolderEntity.getAll", query = "select a from AuthenticationHolderEntity a")
 })
+
 public class AuthenticationHolderEntity {
 
 	private Long id;
