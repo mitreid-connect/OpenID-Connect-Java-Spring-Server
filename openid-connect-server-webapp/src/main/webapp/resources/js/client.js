@@ -798,7 +798,7 @@ var ClientFormView = Backbone.View.extend({
 
         $("#redirectUris .controls",this.el).html(new ListWidgetView({
         	type:'uri', 
-        	placeholder: 'http://',
+        	placeholder: 'https://',
         	collection: this.redirectUrisCollection}).render().el);
         
         // build and bind scopes
@@ -828,7 +828,7 @@ var ClientFormView = Backbone.View.extend({
         
         $('#requestUris .controls', this.el).html(new ListWidgetView({
         	type: 'uri',
-        	placeholder: 'http://',
+        	placeholder: 'https://',
         	collection: this.requestUrisCollection}).render().el);
         
         // build and bind default ACR values
