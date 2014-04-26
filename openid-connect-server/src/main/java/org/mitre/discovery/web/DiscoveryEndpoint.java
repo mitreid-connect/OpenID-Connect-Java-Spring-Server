@@ -38,8 +38,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.google.common.base.Function;
+import com.google.common.base.Strings;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.nimbusds.jose.Algorithm;
@@ -105,8 +107,16 @@ public class DiscoveryEndpoint {
 					model.addAttribute("code", HttpStatus.NOT_FOUND);
 					return "httpCodeView";
 				}
-				// TODO: check the "host" part against our issuer
 
+				UriComponents issuerComponents = UriComponentsBuilder.fromHttpUrl(config.getIssuer()).build();
+				if (!Strings.nullToEmpty(issuerComponents.getHost())
+						.equals(Strings.nullToEmpty(resourceUri.getHost()))) {
+					logger.info("Host mismatch, expected " + issuerComponents.getHost() + " got " + resourceUri.getHost());
+					model.addAttribute("code", HttpStatus.NOT_FOUND);
+					return "httpCodeView";
+				}
+				
+				
 			} else {
 				logger.info("Unknown URI format: " + resource);
 				model.addAttribute("code", HttpStatus.NOT_FOUND);
