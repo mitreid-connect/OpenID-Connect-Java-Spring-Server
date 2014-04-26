@@ -304,6 +304,7 @@ var BlackListListView = Backbone.View.extend({
 		$(this.el).html(this.template(this.model.toJSON()));
 		
 		$('#blacklist .controls', this.el).html(new BlackListWidgetView({
+			type: 'uri',
 			placeholder: 'http://',
 			collection: this.model
 		}).render().el);
