@@ -14,7 +14,7 @@
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *****************************************************************************
+ * ****************************************************************************
  */
 package org.mitre.openid.connect.service.impl;
 
@@ -25,16 +25,25 @@ import com.google.gson.stream.JsonWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.io.OutputStreamWriter;
+import java.io.Serializable;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TimeZone;
 import org.mitre.oauth2.model.AuthenticationHolderEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
+import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.repository.AuthenticationHolderRepository;
 import org.mitre.oauth2.repository.OAuth2ClientRepository;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
+import org.mitre.oauth2.repository.SystemScopeRepository;
 import org.mitre.openid.connect.model.ApprovedSite;
 import org.mitre.openid.connect.model.WhitelistedSite;
 import org.mitre.openid.connect.repository.ApprovedSiteRepository;
@@ -64,6 +73,7 @@ public class MITREidDataService_1_0 implements MITREidDataService {
     private static final String AUTHENTICATIONHOLDERS = "authenticationHolders";
     private static final String GRANTS = "grants";
     private static final String CLIENTS = "clients";
+    private static final String SYSTEMSCOPES = "systemScopes";
     @Autowired
     private OAuth2ClientRepository clientRepository;
     @Autowired
@@ -72,6 +82,11 @@ public class MITREidDataService_1_0 implements MITREidDataService {
     private AuthenticationHolderRepository authHolderRepository;
     @Autowired
     private OAuth2TokenRepository tokenRepository;
+    @Autowired
+    private SystemScopeRepository sysScopeRepository;
+    private static final String ISO_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+    private static final SimpleDateFormat sdf = new SimpleDateFormat(ISO_FORMAT);
+    private static final TimeZone utc = TimeZone.getTimeZone("UTC");
 
     /* (non-Javadoc)
      * @see org.mitre.openid.connect.service.MITREidDataService#export(com.google.gson.stream.JsonWriter)
@@ -110,9 +125,29 @@ public class MITREidDataService_1_0 implements MITREidDataService {
         writeRefreshTokens(writer);
         writer.endArray();
 
+        writer.name(SYSTEMSCOPES);
+        writer.beginArray();
+        writeSystemScopes(writer);
+        writer.endArray();
+
         writer.endObject(); // end mitreid-connect-1.0
 
 
+    }
+
+    private static String toUTCString(Date date) {
+        if (date == null) {
+            return null;
+        }
+        sdf.setTimeZone(utc);
+        return sdf.format(date);
+    }
+
+    private static Date utcToDate(String s) throws ParseException {
+        if (s == null) {
+            return null;
+        }
+        return sdf.parse(s);
     }
 
     /**
@@ -121,7 +156,15 @@ public class MITREidDataService_1_0 implements MITREidDataService {
     private void writeRefreshTokens(JsonWriter writer) {
         for (OAuth2RefreshTokenEntity token : tokenRepository.getAllRefreshTokens()) {
             try {
-                writer.value(token.getJwt().serialize());
+                writer.beginObject();
+                writer.name("id").value(token.getId());
+                writer.name("expiration").value(toUTCString(token.getExpiration()));
+                writer.name("clientId")
+                        .value((token.getClient() != null) ? token.getClient().getClientId() : null);
+                writer.name("authenticationHolderId")
+                        .value((token.getAuthenticationHolder() != null) ? token.getAuthenticationHolder().getId() : null);
+                writer.name("value").value(token.getValue());
+                writer.endObject();
                 logger.debug("Wrote refresh token {}", token.getId());
             } catch (IOException ex) {
                 logger.error("Unable to write refresh token {}", token.getId(), ex);
@@ -136,7 +179,26 @@ public class MITREidDataService_1_0 implements MITREidDataService {
     private void writeAccessTokens(JsonWriter writer) {
         for (OAuth2AccessTokenEntity token : tokenRepository.getAllAccessTokens()) {
             try {
-                writer.value(token.getJwt().serialize());
+                writer.beginObject();
+                writer.name("id").value(token.getId());
+                writer.name("expiration").value(toUTCString(token.getExpiration()));
+                writer.name("clientId")
+                        .value((token.getClient() != null) ? token.getClient().getClientId() : null);
+                writer.name("authenticationHolderId")
+                        .value((token.getAuthenticationHolder() != null) ? token.getAuthenticationHolder().getId() : null);
+                writer.name("refreshTokenId")
+                        .value((token.getRefreshToken() != null) ? token.getRefreshToken().getId() : null);
+                writer.name("idTokenId")
+                        .value((token.getIdToken() != null) ? token.getIdToken().getId() : null);
+                writer.name("scope");
+                writer.beginArray();
+                for (String s : token.getScope()) {
+                    writer.value(s);
+                }
+                writer.endArray();
+                writer.name("type").value(token.getTokenType());
+                writer.name("value").value(token.getValue());
+                writer.endObject();
                 logger.debug("Wrote access token {}", token.getId());
             } catch (IOException ex) {
                 logger.error("Unable to write access token {}", token.getId(), ex);
@@ -219,11 +281,12 @@ public class MITREidDataService_1_0 implements MITREidDataService {
         writer.endObject();
     }
 
-    private String base64UrlEncodeObject(Object obj) throws IOException {
+    private String base64UrlEncodeObject(Serializable obj) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ObjectOutputStream oos = new ObjectOutputStream(BaseEncoding.base64Url().encodingStream(new OutputStreamWriter(baos)));
+        ObjectOutputStream oos = new ObjectOutputStream(baos);
         oos.writeObject(obj);
-        return baos.toString("ascii");
+        oos.close();
+        return BaseEncoding.base64Url().encode(baos.toByteArray());
     }
 
     /**
@@ -234,10 +297,10 @@ public class MITREidDataService_1_0 implements MITREidDataService {
             try {
                 writer.beginObject();
                 writer.name("id").value(site.getId());
-                writer.name("accessDate").value(site.getAccessDate().toString());
+                writer.name("accessDate").value(toUTCString(site.getAccessDate()));
                 writer.name("clientId").value(site.getClientId());
-                writer.name("creationDate").value(site.getCreationDate().toString());
-                writer.name("timeoutDate").value(site.getTimeoutDate().toString());
+                writer.name("creationDate").value(toUTCString(site.getCreationDate()));
+                writer.name("timeoutDate").value(toUTCString(site.getTimeoutDate()));
                 writer.name("userId").value(site.getUserId());
                 writer.name("allowedScopes");
                 writer.beginArray();
@@ -324,7 +387,7 @@ public class MITREidDataService_1_0 implements MITREidDataService {
                 writer.endArray();
                 writer.name("tosUri").value(client.getTosUri());
                 writer.name("tokenEndpointAuthMethod")
-                      .value((client.getTokenEndpointAuthMethod() != null) ? client.getTokenEndpointAuthMethod().getValue() : null);
+                        .value((client.getTokenEndpointAuthMethod() != null) ? client.getTokenEndpointAuthMethod().getValue() : null);
                 writer.name("grantTypes");
                 writer.beginArray();
                 for (String s : client.getGrantTypes()) {
@@ -340,24 +403,25 @@ public class MITREidDataService_1_0 implements MITREidDataService {
                 writer.name("policyUri").value(client.getPolicyUri());
                 writer.name("jwksUri").value(client.getJwksUri());
                 writer.name("applicationType")
-                      .value((client.getApplicationType() != null) ? client.getApplicationType().getValue() : null);
+                        .value((client.getApplicationType() != null) ? client.getApplicationType().getValue() : null);
                 writer.name("sectorIdentifierUri").value(client.getSectorIdentifierUri());
                 writer.name("subjectType")
-                      .value((client.getSubjectType() != null) ? client.getSubjectType().getValue() : null);
+                        .value((client.getSubjectType() != null) ? client.getSubjectType().getValue() : null);
                 writer.name("requestObjectSigningAlg")
-                      .value((client.getRequestObjectSigningAlgEmbed() != null) ? client.getRequestObjectSigningAlgEmbed().getAlgorithmName() : null);
+                        .value((client.getRequestObjectSigningAlgEmbed() != null) ? client.getRequestObjectSigningAlgEmbed().getAlgorithmName() : null);
                 writer.name("userInfoEncryptedResponseAlg")
-                      .value((client.getUserInfoEncryptedResponseAlgEmbed() != null) ? client.getUserInfoEncryptedResponseAlgEmbed().getAlgorithmName() : null);
+                        .value((client.getUserInfoEncryptedResponseAlgEmbed() != null) ? client.getUserInfoEncryptedResponseAlgEmbed().getAlgorithmName() : null);
                 writer.name("userInfoEncryptedResponseEnc")
-                      .value((client.getUserInfoEncryptedResponseEncEmbed() != null) ? client.getUserInfoEncryptedResponseEncEmbed().getAlgorithmName() : null);
+                        .value((client.getUserInfoEncryptedResponseEncEmbed() != null) ? client.getUserInfoEncryptedResponseEncEmbed().getAlgorithmName() : null);
                 writer.name("userInfoSignedResponseAlg")
-                      .value((client.getUserInfoSignedResponseAlgEmbed() != null) ? client.getUserInfoSignedResponseAlgEmbed().getAlgorithmName() : null);
+                        .value((client.getUserInfoSignedResponseAlgEmbed() != null) ? client.getUserInfoSignedResponseAlgEmbed().getAlgorithmName() : null);
                 writer.name("defaultMaxAge").value(client.getDefaultMaxAge());
                 Boolean requireAuthTime = null;
                 try {
                     requireAuthTime = client.getRequireAuthTime();
-                } catch (NullPointerException e) {}
-                if(requireAuthTime != null) {
+                } catch (NullPointerException e) {
+                }
+                if (requireAuthTime != null) {
                     writer.name("requireAuthTime");
                     writer.value(requireAuthTime);
                 }
@@ -389,6 +453,28 @@ public class MITREidDataService_1_0 implements MITREidDataService {
         logger.info("Done writing clients");
     }
 
+    /**
+     * @param writer
+     */
+    private void writeSystemScopes(JsonWriter writer) {
+        for (SystemScope sysScope : sysScopeRepository.getAll()) {
+            try {
+                writer.beginObject();
+                writer.name("id").value(sysScope.getId());
+                writer.name("description").value(sysScope.getDescription());
+                writer.name("icon").value(sysScope.getIcon());
+                writer.name("value").value(sysScope.getValue());
+                writer.name("allowDynReg").value(sysScope.isAllowDynReg());
+                writer.name("defaultScope").value(sysScope.isDefaultScope());
+                writer.endObject();
+                logger.debug("Wrote system scope {}", sysScope.getId());
+            } catch (IOException ex) {
+                logger.error("Unable to write system scope {}", sysScope.getId(), ex);
+            }
+        }
+        logger.info("Done writing system scopes");
+    }
+
     /* (non-Javadoc)
      * @see org.mitre.openid.connect.service.MITREidDataService#importData(com.google.gson.stream.JsonReader)
      */
@@ -417,6 +503,8 @@ public class MITREidDataService_1_0 implements MITREidDataService {
                         readAccessTokens(reader);
                     } else if (name.equals(REFRESHTOKENS)) {
                         readRefreshTokens(reader);
+                    } else if (name.equals(SYSTEMSCOPES)) {
+                        readSystemScopes(reader);
                     } else {
                         // unknown token, skip it
                         reader.skipValue();
@@ -428,23 +516,121 @@ public class MITREidDataService_1_0 implements MITREidDataService {
             }
         }
     }
+    private Map<Long, String> refreshTokenToClientRefs = new HashMap<Long, String>();
+    private Map<Long, Long> refreshTokenToAuthHolderRefs = new HashMap<Long, Long>();
+    private Map<Long, Long> refreshTokenOldToNewIdMap = new HashMap<Long, Long>();
 
     /**
      * @param reader
      * @throws IOException
      */
     private void readRefreshTokens(JsonReader reader) throws IOException {
-        // TODO Auto-generated method stub
-        reader.skipValue();
+        reader.beginArray();
+        while (reader.hasNext()) {
+            try {
+                OAuth2RefreshTokenEntity token = new OAuth2RefreshTokenEntity();
+                reader.beginObject();
+                Long currentId = null;
+                String clientId = null;
+                Long authHolderId = null;
+                while (reader.hasNext()) {
+                    String name = reader.nextName();
+                    if (name.equals("id")) {
+                        currentId = reader.nextLong();
+                    } else if (name.equals("expiration")) {
+                        Date date = utcToDate(reader.nextString());
+                        token.setExpiration(date);
+                    } else if (name.equals("value")) {
+                        token.setValue(reader.nextString());
+                    } else if (name.equals("clientId")) {
+                        clientId = reader.nextString();
+                    } else if (name.equals("authenticationHolderId")) {
+                        authHolderId = reader.nextLong();
+                    } else {
+                        logger.debug("Found unexpected entry");
+                        reader.skipValue();
+                    }
+                }
+                reader.endObject();
+                Long newId = tokenRepository.saveRefreshToken(token).getId();
+                refreshTokenToClientRefs.put(currentId, clientId);
+                refreshTokenToAuthHolderRefs.put(currentId, authHolderId);
+                refreshTokenOldToNewIdMap.put(currentId, newId);
+                logger.debug("Read refresh token {}", token.getId());
+            } catch (ParseException ex) {
+                logger.error("Unable to read refresh token", ex);
+            }
+        }
+        reader.endArray();
+        logger.info("Done reading refresh tokens");
     }
+    private Map<Long, String> accessTokenToClientRefs = new HashMap<Long, String>();
+    private Map<Long, Long> accessTokenToAuthHolderRefs = new HashMap<Long, Long>();
+    private Map<Long, Long> accessTokenToRefreshTokenRefs = new HashMap<Long, Long>();
+    private Map<Long, Long> accessTokenToIdTokenRefs = new HashMap<Long, Long>();
+    private Map<Long, Long> accessTokenOldToNewIdMap = new HashMap<Long, Long>();
 
     /**
      * @param reader
      * @throws IOException
      */
     private void readAccessTokens(JsonReader reader) throws IOException {
-        // TODO Auto-generated method stub
-        reader.skipValue();
+        reader.beginArray();
+        while (reader.hasNext()) {
+            try {
+                OAuth2AccessTokenEntity token = new OAuth2AccessTokenEntity();
+                reader.beginObject();
+                Long currentId = null;
+                String clientId = null;
+                Long authHolderId = null;
+                Long refreshTokenId = null;
+                Long idTokenId = null;
+                while (reader.hasNext()) {
+                    String name = reader.nextName();
+                    if (name.equals("id")) {
+                        currentId = reader.nextLong();
+                    } else if (name.equals("expiration")) {
+                        Date date = utcToDate(reader.nextString());
+                        token.setExpiration(date);
+                    } else if (name.equals("value")) {
+                        token.setValue(reader.nextString());
+                    } else if (name.equals("clientId")) {
+                        clientId = reader.nextString();
+                    } else if (name.equals("authenticationHolderId")) {
+                        authHolderId = reader.nextLong();
+                    } else if (name.equals("refreshTokenId")) {
+                        refreshTokenId = reader.nextLong();
+                    } else if (name.equals("idTokenId")) {
+                        idTokenId = reader.nextLong();
+                    } else if (name.equals("scope")) {
+                        reader.beginArray();
+                        Set<String> scope = new HashSet<String>();
+                        while (reader.hasNext()) {
+                            scope.add(reader.nextString());
+                        }
+                        reader.endArray();
+                        token.setScope(scope);
+                    } else if (name.equals("type")) {
+                        token.setTokenType(reader.nextString());
+                    } else {
+                        logger.debug("Found unexpected entry");
+                        reader.skipValue();
+                    }
+                }
+                reader.endObject();
+                Long newId = tokenRepository.saveAccessToken(token).getId();
+                accessTokenToClientRefs.put(currentId, clientId);
+                accessTokenToAuthHolderRefs.put(currentId, authHolderId);
+                accessTokenToRefreshTokenRefs.put(currentId, refreshTokenId);
+                accessTokenToIdTokenRefs.put(currentId, idTokenId);
+                accessTokenOldToNewIdMap.put(currentId, newId);
+                logger.debug("Read access token {}", token.getId());
+            } catch (ParseException ex) {
+                logger.error("Unable to read access token", ex);
+            }
+        }
+        reader.endArray();
+        logger.info("Done reading access tokens");
     }
 
     /**
@@ -470,6 +656,15 @@ public class MITREidDataService_1_0 implements MITREidDataService {
      * @throws IOException
      */
     private void readClients(JsonReader reader) throws IOException {
+        // TODO Auto-generated method stub
+        reader.skipValue();
+    }
+
+    /**
+     * @param reader
+     * @throws IOException
+     */
+    private void readSystemScopes(JsonReader reader) throws IOException {
         // TODO Auto-generated method stub
         reader.skipValue();
     }
