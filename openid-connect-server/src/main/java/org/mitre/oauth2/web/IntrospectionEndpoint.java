@@ -24,8 +24,8 @@ import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
+import org.mitre.oauth2.service.IntrospectionAuthorizer;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
-import org.mitre.oauth2.service.SystemScopeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +50,7 @@ public class IntrospectionEndpoint {
 	private ClientDetailsEntityService clientService;
 
 	@Autowired
-	private SystemScopeService scopeService;
+	private IntrospectionAuthorizer introspectionAuthorizer;
 
 	private static Logger logger = LoggerFactory.getLogger(IntrospectionEndpoint.class);
 
@@ -117,14 +117,12 @@ public class IntrospectionEndpoint {
 
 		if (tokenClient != null && authClient != null) {
 			if (authClient.isAllowIntrospection()) {
-
-				// if it's the same client that the token was issued to, or it at least has all the scopes the token was issued with
-				if (authClient.getClientId().equals(tokenClient.getClientId()) || scopeService.scopesMatch(authClient.getScope(), scopes)) {
+				if (introspectionAuthorizer.isIntrospectionPermitted(authClient, tokenClient, scopes)) {
 					// if it's a valid token, we'll print out information on it
 					model.addAttribute("entity", token);
 					return "tokenIntrospection";
 				} else {
-					logger.error("Verify failed; client tried to introspect a token of an incorrect scope");
+					logger.error("Verify failed; client configuration or scope don't permit token introspection");
 					model.addAttribute("code", HttpStatus.FORBIDDEN);
 					return "httpCodeView";
 				}
