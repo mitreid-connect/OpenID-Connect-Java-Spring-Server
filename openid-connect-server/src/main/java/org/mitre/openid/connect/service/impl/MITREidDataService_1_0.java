@@ -652,11 +652,48 @@ public class MITREidDataService_1_0 implements MITREidDataService {
     }
 
     /**
+     * Read the list of system scopes from the reader and insert them
+     * into the scope repository.
      * @param reader
      * @throws IOException
      */
     private void readSystemScopes(JsonReader reader) throws IOException {
-        // TODO Auto-generated method stub
-        reader.skipValue();
+    	 reader.beginArray();
+         while (reader.hasNext()) {
+        	 SystemScope scope = new SystemScope();
+        	 reader.beginObject();
+        	 while (reader.hasNext()) {
+        		 switch (reader.peek()) {
+        		 	case END_OBJECT:
+        		 		continue;
+        		 	case NAME:
+        		 		String name = reader.nextName();
+        		 		if (name.equals("value")) {
+        		 			scope.setValue(reader.nextString());
+        		 		} else if (name.equals("description")) {
+        		 			scope.setDescription(reader.nextString());
+        		 		} else if (name.equals("allowDynReg")) {
+        		 			scope.setAllowDynReg(reader.nextBoolean());
+        		 		} else if (name.equals("defaultScope")) {
+        		 			scope.setDefaultScope(reader.nextBoolean());
+        		 		} else if (name.equals("icon")) {
+        		 			scope.setIcon(reader.nextString());
+        		 		} else {
+        		 			logger.debug("found unexpected entry");
+        		 			reader.skipValue();
+        		 		}
+        		 		break;
+					default:
+						logger.debug("Found unexpected entry");
+						reader.skipValue();
+						continue;
+				}
+        	 }
+        	 reader.endObject();
+        	 
+        	 sysScopeRepository.save(scope);
+         }
+         reader.endArray();
+         logger.info("Done reading system scopes.");
     }
 }
