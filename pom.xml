@@ -4,7 +4,7 @@
     <groupId>org.mitre</groupId>
     <artifactId>openid-connect-parent</artifactId>
     <name>MITREid Connect</name>
-    <version>1.0.15-SNAPSHOT</version>        
+    <version>1.0.15</version>        
     <packaging>pom</packaging>
   <parent>
     <groupId>org.sonatype.oss</groupId>
