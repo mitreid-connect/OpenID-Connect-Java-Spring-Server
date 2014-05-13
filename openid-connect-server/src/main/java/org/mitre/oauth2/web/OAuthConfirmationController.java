@@ -88,12 +88,12 @@ public class OAuthConfirmationController {
 
 	@PreAuthorize("hasRole('ROLE_USER')")
 	@RequestMapping("/oauth/confirm_access")
-	public String confimAccess(Map<String, Object> model, @ModelAttribute("authorizationRequest") AuthorizationRequest clientAuth,
+	public String confimAccess(Map<String, Object> model, @ModelAttribute("authorizationRequest") AuthorizationRequest authRequest,
 			Principal p) {
 
 		// Check the "prompt" parameter to see if we need to do special processing
 
-		String prompt = (String)clientAuth.getExtensions().get("prompt");
+		String prompt = (String)authRequest.getExtensions().get("prompt");
 		List<String> prompts = Splitter.on(" ").splitToList(Strings.nullToEmpty(prompt));
 		if (prompts.contains("none")) {
 			// we're not supposed to prompt, so "return an error"
@@ -107,7 +107,7 @@ public class OAuthConfirmationController {
 		ClientDetailsEntity client = null;
 
 		try {
-			client = clientService.loadClientByClientId(clientAuth.getClientId());
+			client = clientService.loadClientByClientId(authRequest.getClientId());
 		} catch (OAuth2Exception e) {
 			logger.error("confirmAccess: OAuth2Exception was thrown when attempting to load client", e);
 			model.put("code", HttpStatus.BAD_REQUEST);
@@ -119,21 +119,21 @@ public class OAuthConfirmationController {
 		}
 
 		if (client == null) {
-			logger.error("confirmAccess: could not find client " + clientAuth.getClientId());
+			logger.error("confirmAccess: could not find client " + authRequest.getClientId());
 			model.put("code", HttpStatus.NOT_FOUND);
 			return "httpCodeView";
 		}
 
-		model.put("auth_request", clientAuth);
+		model.put("auth_request", authRequest);
 		model.put("client", client);
 
-		String redirect_uri = clientAuth.getRedirectUri();
+		String redirect_uri = authRequest.getRedirectUri();
 
 		model.put("redirect_uri", redirect_uri);
 
 		
 		// pre-process the scopes
-		Set<SystemScope> scopes = scopeService.fromStrings(clientAuth.getScope());
+		Set<SystemScope> scopes = scopeService.fromStrings(authRequest.getScope());
 
 		Set<SystemScope> sortedScopes = new LinkedHashSet<SystemScope>(scopes.size());
 		Set<SystemScope> systemScopes = scopeService.getAll();
