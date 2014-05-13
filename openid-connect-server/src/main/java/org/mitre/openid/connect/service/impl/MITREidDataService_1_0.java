@@ -67,13 +67,6 @@ import org.springframework.stereotype.Service;
 public class MITREidDataService_1_0 implements MITREidDataService {
 
     private final static Logger logger = LoggerFactory.getLogger(MITREidDataService_1_0.class);
-    // member names
-    private static final String REFRESHTOKENS = "refreshTokens";
-    private static final String ACCESSTOKENS = "accessTokens";
-    private static final String AUTHENTICATIONHOLDERS = "authenticationHolders";
-    private static final String GRANTS = "grants";
-    private static final String CLIENTS = "clients";
-    private static final String SYSTEMSCOPES = "systemScopes";
     @Autowired
     private OAuth2ClientRepository clientRepository;
     @Autowired
@@ -339,22 +332,14 @@ public class MITREidDataService_1_0 implements MITREidDataService {
         for (ClientDetailsEntity client : clientRepository.getAllClients()) {
             try {
                 writer.beginObject();
-                writer.name("id").value(client.getClientId());
+                writer.name("clientId").value(client.getClientId());
                 writer.name("resourceIds");
-                writer.beginArray();
-                for (String s : client.getResourceIds()) {
-                    writer.value(s);
-                }
-                writer.endArray();
+                writeNullSafeArray(writer, client.getResourceIds());
 
                 writer.name("secret").value(client.getClientSecret());
 
                 writer.name("scope");
-                writer.beginArray();
-                for (String s : client.getScope()) {
-                    writer.value(s);
-                }
-                writer.endArray();
+                writeNullSafeArray(writer, client.getScope());
 
                 writer.name("authorities");
                 writer.beginArray();
@@ -364,27 +349,13 @@ public class MITREidDataService_1_0 implements MITREidDataService {
                 writer.endArray();
                 writer.name("accessTokenValiditySeconds").value(client.getAccessTokenValiditySeconds());
                 writer.name("refreshTokenValiditySeconds").value(client.getRefreshTokenValiditySeconds());
-                writer.name("additionalInformation");
-                writer.beginObject();
-                for (Entry<String, Object> entry : client.getAdditionalInformation().entrySet()) {
-                    writer.name(entry.getKey()).value(entry.getValue().toString());
-                }
-                writer.endObject();
                 writer.name("redirectUris");
-                writer.beginArray();
-                for (String s : client.getRedirectUris()) {
-                    writer.value(s);
-                }
-                writer.endArray();
+                writeNullSafeArray(writer, client.getRedirectUris());
                 writer.name("name").value(client.getClientName());
                 writer.name("uri").value(client.getClientUri());
                 writer.name("logoUri").value(client.getLogoUri());
                 writer.name("contacts");
-                writer.beginArray();
-                for (String s : client.getContacts()) {
-                    writer.value(s);
-                }
-                writer.endArray();
+                writeNullSafeArray(writer, client.getContacts());
                 writer.name("tosUri").value(client.getTosUri());
                 writer.name("tokenEndpointAuthMethod")
                         .value((client.getTokenEndpointAuthMethod() != null) ? client.getTokenEndpointAuthMethod().getValue() : null);
@@ -426,19 +397,11 @@ public class MITREidDataService_1_0 implements MITREidDataService {
                     writer.value(requireAuthTime);
                 }
                 writer.name("defaultACRValues");
-                writer.beginArray();
-                for (String s : client.getDefaultACRvalues()) {
-                    writer.value(s);
-                }
-                writer.endArray();
+                writeNullSafeArray(writer, client.getDefaultACRvalues());
                 writer.name("intitateLoginUri").value(client.getInitiateLoginUri());
                 writer.name("postLogoutRedirectUri").value(client.getPostLogoutRedirectUri());
                 writer.name("requestUris");
-                writer.beginArray();
-                for (String s : client.getRequestUris()) {
-                    writer.value(s);
-                }
-                writer.endArray();
+				writeNullSafeArray(writer, client.getRequestUris());
                 writer.name("description").value(client.getClientDescription());
                 writer.name("allowIntrospection").value(client.isAllowIntrospection());
                 writer.name("reuseRefreshToken").value(client.isReuseRefreshToken());
@@ -451,6 +414,19 @@ public class MITREidDataService_1_0 implements MITREidDataService {
         }
         logger.info("Done writing clients");
     }
+
+	private void writeNullSafeArray(JsonWriter writer, Set<String> items)
+			throws IOException {
+		if (items != null) {
+			writer.beginArray();
+		    for (String s : items) {
+		        writer.value(s);
+		    }
+		    writer.endArray();
+		} else {
+			writer.nullValue();
+		}
+	}
 
     /**
      * @param writer

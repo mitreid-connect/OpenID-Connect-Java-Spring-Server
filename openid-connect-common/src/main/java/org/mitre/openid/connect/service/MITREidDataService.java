@@ -32,7 +32,15 @@ public interface MITREidDataService {
 	 */
 	public static final String MITREID_CONNECT_1_0 = "mitreid-connect-1.0";
 
-	/**
+    // member names
+    public static final String REFRESHTOKENS = "refreshTokens";
+    public static final String ACCESSTOKENS = "accessTokens";
+    public static final String AUTHENTICATIONHOLDERS = "authenticationHolders";
+    public static final String GRANTS = "grants";
+    public static final String CLIENTS = "clients";
+    public static final String SYSTEMSCOPES = "systemScopes";
+
+    /**
 	 * Write out the current server state to the given JSON writer as a JSON object
 	 * 
 	 * @param writer
