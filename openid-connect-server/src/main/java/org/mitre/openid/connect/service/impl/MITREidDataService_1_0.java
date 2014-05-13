@@ -441,7 +441,6 @@ public class MITREidDataService_1_0 implements MITREidDataService {
                 writer.endArray();
                 writer.name("description").value(client.getClientDescription());
                 writer.name("allowIntrospection").value(client.isAllowIntrospection());
-                writer.name("allowRefresh").value(client.isAllowRefresh());
                 writer.name("reuseRefreshToken").value(client.isReuseRefreshToken());
                 writer.name("dynamicallyRegistered").value(client.isDynamicallyRegistered());
                 writer.endObject();
