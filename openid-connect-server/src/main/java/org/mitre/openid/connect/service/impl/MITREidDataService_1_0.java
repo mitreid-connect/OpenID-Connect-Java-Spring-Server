@@ -538,8 +538,12 @@ public class MITREidDataService_1_0 implements MITREidDataService {
                     if (name.equals("id")) {
                         currentId = reader.nextLong();
                     } else if (name.equals("expiration")) {
-                        Date date = utcToDate(reader.nextString());
-                        token.setExpiration(date);
+                    	if (reader.peek() == JsonToken.NULL) {
+                    		reader.nextNull();
+                    	} else {
+                    		Date date = utcToDate(reader.nextString());
+                    		token.setExpiration(date);
+                    	}
                     } else if (name.equals("value")) {
                         token.setValue(reader.nextString());
                     } else if (name.equals("clientId")) {
@@ -590,8 +594,12 @@ public class MITREidDataService_1_0 implements MITREidDataService {
                     if (name.equals("id")) {
                         currentId = reader.nextLong();
                     } else if (name.equals("expiration")) {
-                        Date date = utcToDate(reader.nextString());
-                        token.setExpiration(date);
+                    	if (reader.peek() == JsonToken.NULL) {
+                    		reader.nextNull();
+                    	} else {
+	                        Date date = utcToDate(reader.nextString());
+	                        token.setExpiration(date);
+                    	}
                     } else if (name.equals("value")) {
                         token.setValue(reader.nextString());
                     } else if (name.equals("clientId")) {
@@ -599,9 +607,17 @@ public class MITREidDataService_1_0 implements MITREidDataService {
                     } else if (name.equals("authenticationHolderId")) {
                         authHolderId = reader.nextLong();
                     } else if (name.equals("refreshTokenId")) {
-                        refreshTokenId = reader.nextLong();
+                    	if (reader.peek() == JsonToken.NULL) {
+                    		reader.nextNull();
+                    	} else {
+                    		refreshTokenId = reader.nextLong();
+                    	}
                     } else if (name.equals("idTokenId")) {
-                        idTokenId = reader.nextLong();
+                    	if (reader.peek() == JsonToken.NULL) {
+                    		reader.nextNull();
+                    	} else {
+                    		idTokenId = reader.nextLong();
+                    	}
                     } else if (name.equals("scope")) {
                         reader.beginArray();
                         Set<String> scope = new HashSet<String>();
