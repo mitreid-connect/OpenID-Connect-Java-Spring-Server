@@ -22,6 +22,7 @@ import java.text.ParseException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.mitre.jwt.encryption.service.JwtEncryptionAndDecryptionService;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
@@ -136,6 +137,13 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 				request.getExtensions().put("max_age", client.getDefaultMaxAge().toString());
 			}
 		}
+
+		
+		// add CSRF protection to the request on first parse
+		String csrf = UUID.randomUUID().toString();
+		request.getExtensions().put("csrf", csrf);		
+
+		
 
 		return request;
 	}
