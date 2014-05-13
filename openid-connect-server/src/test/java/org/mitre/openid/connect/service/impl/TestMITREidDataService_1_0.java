@@ -80,7 +80,9 @@ public class TestMITREidDataService_1_0 {
 		client2.setGrantTypes(ImmutableSet.of("client_credentials", "urn:ietf:params:oauth:grant_type:redelegate"));
 		client2.setAllowIntrospection(false);
 
-		Mockito.when(clientRepository.getAllClients()).thenReturn(ImmutableSet.of(client1, client2));
+		Set<ClientDetailsEntity> allClients = ImmutableSet.of(client1, client2);
+		
+		Mockito.when(clientRepository.getAllClients()).thenReturn(allClients);
 		Mockito.when(approvedSiteRepository.getAll()).thenReturn(new HashSet<ApprovedSite>());
 		Mockito.when(authHolderRepository.getAll()).thenReturn(new HashSet<AuthenticationHolderEntity>());
 		Mockito.when(tokenRepository.getAllAccessTokens()).thenReturn(new HashSet<OAuth2AccessTokenEntity>());
@@ -152,10 +154,115 @@ public class TestMITREidDataService_1_0 {
 			}
 		}
 		// make sure all of our clients were found
-		assertThat(checked.containsAll(ImmutableSet.of(client1, client2)), is(true));
+		assertThat(checked.containsAll(allClients), is(true));
 		
 	}
 	
+	@Test
+	public void testExportSystemScopes() throws IOException {
+		
+		SystemScope scope1 = new SystemScope();
+		scope1.setId(1L);
+		scope1.setValue("scope1");
+		scope1.setDescription("Scope 1");
+		scope1.setAllowDynReg(false);
+		scope1.setDefaultScope(false);
+		scope1.setIcon("glass");
+
+		SystemScope scope2 = new SystemScope();
+		scope2.setId(2L);
+		scope2.setValue("scope2");
+		scope2.setDescription("Scope 2");
+		scope2.setAllowDynReg(true);
+		scope2.setDefaultScope(false);
+		scope2.setIcon("ball");
+
+		SystemScope scope3 = new SystemScope();
+		scope3.setId(3L);
+		scope3.setValue("scope3");
+		scope3.setDescription("Scope 3");
+		scope3.setAllowDynReg(true);
+		scope3.setDefaultScope(true);
+		scope3.setIcon("road");
+
+		Set<SystemScope> allScopes = ImmutableSet.of(scope1, scope2, scope3);
+		
+		Mockito.when(clientRepository.getAllClients()).thenReturn(new HashSet<ClientDetailsEntity>());
+		Mockito.when(approvedSiteRepository.getAll()).thenReturn(new HashSet<ApprovedSite>());
+		Mockito.when(authHolderRepository.getAll()).thenReturn(new HashSet<AuthenticationHolderEntity>());
+		Mockito.when(tokenRepository.getAllAccessTokens()).thenReturn(new HashSet<OAuth2AccessTokenEntity>());
+		Mockito.when(tokenRepository.getAllRefreshTokens()).thenReturn(new HashSet<OAuth2RefreshTokenEntity>());
+		Mockito.when(sysScopeRepository.getAll()).thenReturn(allScopes);
+		
+		// do the data export
+		StringWriter stringWriter = new StringWriter();
+		JsonWriter writer = new JsonWriter(stringWriter);
+		writer.beginObject();
+		dataService.exportData(writer);
+		writer.endObject();
+		writer.close();
+		
+		// parse the output as a JSON object for testing
+		JsonElement elem = new JsonParser().parse(stringWriter.toString());
+		JsonObject root = elem.getAsJsonObject();
+		
+		// make sure the root is there
+		assertThat(root.has(MITREidDataService.MITREID_CONNECT_1_0), is(true));
+		
+		JsonObject config = root.get(MITREidDataService.MITREID_CONNECT_1_0).getAsJsonObject();
+		
+		// make sure all the root elements are there
+		assertThat(config.has(MITREidDataService.CLIENTS), is(true));
+		assertThat(config.has(MITREidDataService.GRANTS), is(true));
+		assertThat(config.has(MITREidDataService.REFRESHTOKENS), is(true));
+		assertThat(config.has(MITREidDataService.ACCESSTOKENS), is(true));
+		assertThat(config.has(MITREidDataService.SYSTEMSCOPES), is(true));
+		assertThat(config.has(MITREidDataService.AUTHENTICATIONHOLDERS), is(true));
+		
+		// make sure the root elements are all arrays
+		assertThat(config.get(MITREidDataService.CLIENTS).isJsonArray(), is(true));
+		assertThat(config.get(MITREidDataService.GRANTS).isJsonArray(), is(true));
+		assertThat(config.get(MITREidDataService.REFRESHTOKENS).isJsonArray(), is(true));
+		assertThat(config.get(MITREidDataService.ACCESSTOKENS).isJsonArray(), is(true));
+		assertThat(config.get(MITREidDataService.SYSTEMSCOPES).isJsonArray(), is(true));
+		assertThat(config.get(MITREidDataService.AUTHENTICATIONHOLDERS).isJsonArray(), is(true));
+
+		
+		// check our scope list (this test)
+		JsonArray scopes = config.get(MITREidDataService.SYSTEMSCOPES).getAsJsonArray();
+
+		assertThat(scopes.size(), is(3));
+		// check for both of our clients in turn
+		Set<SystemScope> checked = new HashSet<SystemScope>();
+		for (JsonElement e : scopes) {
+			assertThat(e.isJsonObject(), is(true));
+			JsonObject scope = e.getAsJsonObject();
+
+			SystemScope compare = null;
+			if (scope.get("value").getAsString().equals(scope1.getValue())) {
+				compare = scope1;
+			} else if (scope.get("value").getAsString().equals(scope2.getValue())) {
+				compare = scope2;
+			} else if (scope.get("value").getAsString().equals(scope3.getValue())) {
+				compare = scope3;
+			}
+			
+			if (compare == null) {
+				fail("Could not find matching scope value: " + scope.get("value").getAsString());
+			} else {
+				assertThat(scope.get("value").getAsString(), equalTo(compare.getValue()));
+				assertThat(scope.get("description").getAsString(), equalTo(compare.getDescription()));
+				assertThat(scope.get("icon").getAsString(), equalTo(compare.getIcon()));
+				assertThat(scope.get("allowDynReg").getAsBoolean(), equalTo(compare.isAllowDynReg()));
+				assertThat(scope.get("defaultScope").getAsBoolean(), equalTo(compare.isDefaultScope()));
+				checked.add(compare);
+			}
+		}
+		// make sure all of our clients were found
+		assertThat(checked.containsAll(allScopes), is(true));
+		
+	}
+
 	private Set<String> jsonArrayToStringSet(JsonArray a) {
 		Set<String> s = new HashSet<String>();
 		for (JsonElement jsonElement : a) {
