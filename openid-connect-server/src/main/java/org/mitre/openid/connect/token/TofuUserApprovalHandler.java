@@ -22,6 +22,8 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.HttpSession;
+
 import org.mitre.openid.connect.model.ApprovedSite;
 import org.mitre.openid.connect.model.WhitelistedSite;
 import org.mitre.openid.connect.service.ApprovedSiteService;
@@ -34,6 +36,8 @@ import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.DefaultAuthorizationRequest;
 import org.springframework.security.oauth2.provider.approval.UserApprovalHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
@@ -90,7 +94,17 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 			// TODO: make parameter name configurable?
 			boolean approved = Boolean.parseBoolean(authorizationRequest.getApprovalParameters().get("user_oauth_approval"));
 
-			return userAuthentication.isAuthenticated() && approved;
+			boolean csrfApproved = false;
+		    ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+		    HttpSession session = attr.getRequest().getSession(false);
+		    if (session != null) {
+		    	String csrf = (String) session.getAttribute("csrf");
+		    	if (csrf != null && csrf.equals(authorizationRequest.getApprovalParameters().get("csrf"))) {
+		    		csrfApproved = true;
+		    	}
+		    }
+
+			return userAuthentication.isAuthenticated() && approved && csrfApproved;
 		}
 
 	}
@@ -173,49 +187,66 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 
 		if (approved && !authorizationRequest.getApprovalParameters().isEmpty()) {
 
-			// TODO: Get SECOAUTH to stop breaking polymorphism and start using real objects, SRSLY
-			DefaultAuthorizationRequest ar = new DefaultAuthorizationRequest(authorizationRequest);
+			// get the session so we can store a CSRF protection value in it
+			boolean csrfApproved = false;
+		    ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+		    HttpSession session = attr.getRequest().getSession(false);
+		    if (session != null) {
+		    	String csrf = (String) session.getAttribute("csrf");
+		    	if (csrf != null && csrf.equals(authorizationRequest.getApprovalParameters().get("csrf"))) {
+		    		csrfApproved = true;
+		    	}
+		    }
 
-			// process scopes from user input
-			Set<String> allowedScopes = Sets.newHashSet();
-			Map<String,String> approvalParams = ar.getApprovalParameters();
-
-			Set<String> keys = approvalParams.keySet();
-
-			for (String key : keys) {
-				if (key.startsWith("scope_")) {
-					//This is a scope parameter from the approval page. The value sent back should
-					//be the scope string. Check to make sure it is contained in the client's
-					//registered allowed scopes.
-
-					String scope = approvalParams.get(key);
-
-					//Make sure this scope is allowed for the given client
-					if (client.getScope().contains(scope)) {
-						allowedScopes.add(scope);
+		    if (csrfApproved) {
+			
+				// TODO: Get SECOAUTH to stop breaking polymorphism and start using real objects, SRSLY
+				DefaultAuthorizationRequest ar = new DefaultAuthorizationRequest(authorizationRequest);
+	
+				// process scopes from user input
+				Set<String> allowedScopes = Sets.newHashSet();
+				Map<String,String> approvalParams = ar.getApprovalParameters();
+	
+				Set<String> keys = approvalParams.keySet();
+	
+				for (String key : keys) {
+					if (key.startsWith("scope_")) {
+						//This is a scope parameter from the approval page. The value sent back should
+						//be the scope string. Check to make sure it is contained in the client's
+						//registered allowed scopes.
+	
+						String scope = approvalParams.get(key);
+	
+						//Make sure this scope is allowed for the given client
+						if (client.getScope().contains(scope)) {
+							allowedScopes.add(scope);
+						}
 					}
 				}
-			}
-
-			// inject the user-allowed scopes into the auth request
-			ar.setScope(allowedScopes);
-
-			//Only store an ApprovedSite if the user has checked "remember this decision":
-			String remember = ar.getApprovalParameters().get("remember");
-			if (!Strings.isNullOrEmpty(remember) && !remember.equals("none")) {
-
-				Date timeout = null;
-				if (remember.equals("one-hour")) {
-					// set the timeout to one hour from now
-					Calendar cal = Calendar.getInstance();
-					cal.add(Calendar.HOUR, 1);
-					timeout = cal.getTime();
+	
+				// inject the user-allowed scopes into the auth request
+				ar.setScope(allowedScopes);
+	
+				//Only store an ApprovedSite if the user has checked "remember this decision":
+				String remember = ar.getApprovalParameters().get("remember");
+				if (!Strings.isNullOrEmpty(remember) && !remember.equals("none")) {
+	
+					Date timeout = null;
+					if (remember.equals("one-hour")) {
+						// set the timeout to one hour from now
+						Calendar cal = Calendar.getInstance();
+						cal.add(Calendar.HOUR, 1);
+						timeout = cal.getTime();
+					}
+	
+					approvedSiteService.createApprovedSite(clientId, userId, timeout, allowedScopes, null);
 				}
-
-				approvedSiteService.createApprovedSite(clientId, userId, timeout, allowedScopes, null);
-			}
-
-			return ar;
+	
+				return ar;
+		    } else {
+		    	// csrf didn't match, it's not approved, pass through
+		    	return authorizationRequest;
+		    }
 		}
 
 		return authorizationRequest;

@@ -21,6 +21,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
+
+import javax.servlet.http.HttpSession;
 
 import net.minidev.json.JSONObject;
 
@@ -45,6 +48,8 @@ import org.springframework.security.oauth2.provider.AuthorizationRequestManager;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.DefaultAuthorizationRequest;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.google.common.base.Strings;
 import com.nimbusds.jose.util.JSONObjectUtils;
@@ -123,6 +128,15 @@ public class ConnectAuthorizationRequestManager implements AuthorizationRequestM
 		// note that we have to inject the processed parameters in at this point so that SECOAUTH can find them later (and this object will get copy-constructored away anyway)
 		DefaultAuthorizationRequest request = new DefaultAuthorizationRequest(parameters, Collections.<String, String> emptyMap(), clientId, scopes);
 		request.addClientDetails(client);
+		
+		// get the session so we can store a CSRF protection value in it
+	    ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+	    HttpSession session = attr.getRequest().getSession(false);
+	    if (session != null) {
+	    	String csrf = UUID.randomUUID().toString();
+	    	session.setAttribute("csrf", csrf);
+	    }
+		
 		return request;
 
 	}

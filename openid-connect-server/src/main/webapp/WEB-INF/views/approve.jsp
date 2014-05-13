@@ -115,6 +115,7 @@
 
             <div class="row">
                 <input id="user_oauth_approval" name="user_oauth_approval" value="true" type="hidden"/>
+                <input name="csrf" value="${ sessionScope.csrf }" type="hidden" />
                 <input name="authorize" value="Authorize" type="submit"
                        onclick="$('#user_oauth_approval').attr('value',true)" class="btn btn-success btn-large"/>
                 &nbsp;
