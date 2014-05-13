@@ -1,8 +1,13 @@
 package org.mitre.openid.connect.service.impl;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -18,13 +23,16 @@ import org.mitre.oauth2.repository.OAuth2TokenRepository;
 import org.mitre.oauth2.repository.SystemScopeRepository;
 import org.mitre.openid.connect.model.ApprovedSite;
 import org.mitre.openid.connect.repository.ApprovedSiteRepository;
+import org.mitre.openid.connect.service.MITREidDataService;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonWriter;
 
@@ -89,10 +97,71 @@ public class TestMITREidDataService_1_0 {
 		
 		// parse the output as a JSON object for testing
 		JsonElement elem = new JsonParser().parse(stringWriter.toString());
+		JsonObject root = elem.getAsJsonObject();
 		
+		// make sure the root is there
+		assertThat(root.has(MITREidDataService.MITREID_CONNECT_1_0), is(true));
 		
+		JsonObject config = root.get(MITREidDataService.MITREID_CONNECT_1_0).getAsJsonObject();
 		
+		// make sure all the root elements are there
+		assertThat(config.has(MITREidDataService.CLIENTS), is(true));
+		assertThat(config.has(MITREidDataService.GRANTS), is(true));
+		assertThat(config.has(MITREidDataService.REFRESHTOKENS), is(true));
+		assertThat(config.has(MITREidDataService.ACCESSTOKENS), is(true));
+		assertThat(config.has(MITREidDataService.SYSTEMSCOPES), is(true));
+		assertThat(config.has(MITREidDataService.AUTHENTICATIONHOLDERS), is(true));
 		
+		// make sure the root elements are all arrays
+		assertThat(config.get(MITREidDataService.CLIENTS).isJsonArray(), is(true));
+		assertThat(config.get(MITREidDataService.GRANTS).isJsonArray(), is(true));
+		assertThat(config.get(MITREidDataService.REFRESHTOKENS).isJsonArray(), is(true));
+		assertThat(config.get(MITREidDataService.ACCESSTOKENS).isJsonArray(), is(true));
+		assertThat(config.get(MITREidDataService.SYSTEMSCOPES).isJsonArray(), is(true));
+		assertThat(config.get(MITREidDataService.AUTHENTICATIONHOLDERS).isJsonArray(), is(true));
+
+		
+		// check our client list (this test)
+		JsonArray clients = config.get(MITREidDataService.CLIENTS).getAsJsonArray();
+
+		assertThat(clients.size(), is(2));
+		// check for both of our clients in turn
+		Set<ClientDetailsEntity> checked = new HashSet<ClientDetailsEntity>();
+		for (JsonElement e : clients) {
+			assertThat(e.isJsonObject(), is(true));
+			JsonObject client = e.getAsJsonObject();
+
+			ClientDetailsEntity compare = null;
+			if (client.get("clientId").getAsString().equals(client1.getClientId())) {
+				compare = client1;
+			} else if (client.get("clientId").getAsString().equals(client2.getClientId())) {
+				compare = client2;
+			}
+			
+			if (compare == null) {
+				fail("Could not find matching clientId: " + client.get("clientId").getAsString());
+			} else {
+				assertThat(client.get("clientId").getAsString(), equalTo(compare.getClientId()));
+				assertThat(client.get("secret").getAsString(), equalTo(compare.getClientSecret()));
+				assertThat(client.get("accessTokenValiditySeconds").getAsInt(), equalTo(compare.getAccessTokenValiditySeconds()));
+				assertThat(client.get("allowIntrospection").getAsBoolean(), equalTo(compare.isAllowIntrospection()));
+				assertThat(jsonArrayToStringSet(client.get("redirectUris").getAsJsonArray()), equalTo(compare.getRedirectUris()));
+				assertThat(jsonArrayToStringSet(client.get("scope").getAsJsonArray()), equalTo(compare.getScope()));
+				assertThat(jsonArrayToStringSet(client.get("grantTypes").getAsJsonArray()), equalTo(compare.getGrantTypes()));
+				checked.add(compare);
+			}
+		}
+		// make sure all of our clients were found
+		assertThat(checked.containsAll(ImmutableSet.of(client1, client2)), is(true));
+		
+	}
+	
+	private Set<String> jsonArrayToStringSet(JsonArray a) {
+		Set<String> s = new HashSet<String>();
+		for (JsonElement jsonElement : a) {
+			s.add(jsonElement.getAsString());
+		}
+		return s;
 	}
 
 }
