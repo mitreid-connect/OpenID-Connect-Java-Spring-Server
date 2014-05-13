@@ -96,11 +96,21 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 			return true;
 		} else {
 			// if not, check to see if the user has approved it
-
-			// TODO: make parameter name configurable?
-			boolean approved = Boolean.parseBoolean(authorizationRequest.getApprovalParameters().get("user_oauth_approval"));
-
-			return userAuthentication.isAuthenticated() && approved;
+			if (Boolean.parseBoolean(authorizationRequest.getApprovalParameters().get("user_oauth_approval"))) {			// TODO: make parameter name configurable?
+				
+				// check the value of the CSRF parameter
+				
+				if (authorizationRequest.getExtensions().get("csrf") != null) {
+					if (authorizationRequest.getExtensions().get("csrf").equals(authorizationRequest.getApprovalParameters().get("csrf"))) {
+						
+						// make sure the user is actually authenticated
+						return userAuthentication.isAuthenticated();						
+					}
+				}
+			}
+			
+			// if the above doesn't pass, it's not yet approved
+			return false;
 		}
 
 	}
@@ -182,9 +192,9 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 		ClientDetails client = clientDetailsService.loadClientByClientId(clientId);
 
 		// This must be re-parsed here because SECOAUTH forces us to call things in a strange order
-		boolean approved = Boolean.parseBoolean(authorizationRequest.getApprovalParameters().get("user_oauth_approval"));
-
-		if (approved) {
+		if (Boolean.parseBoolean(authorizationRequest.getApprovalParameters().get("user_oauth_approval"))
+				&& authorizationRequest.getExtensions().get("csrf") != null
+				&& authorizationRequest.getExtensions().get("csrf").equals(authorizationRequest.getApprovalParameters().get("csrf"))) {
 
 			authorizationRequest.setApproved(true);
 

@@ -26,6 +26,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.SystemScope;
@@ -192,6 +193,10 @@ public class OAuthConfirmationController {
 			model.put("gras", false);
 		}
 		
+		// inject a random value for CSRF purposes
+		String csrf = UUID.randomUUID().toString();
+		model.put("csrf", csrf);
+		authRequest.getExtensions().put("csrf", csrf);		
 		
 		return "approve";
 	}

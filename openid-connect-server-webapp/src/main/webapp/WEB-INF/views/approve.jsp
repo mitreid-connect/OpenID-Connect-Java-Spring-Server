@@ -225,23 +225,24 @@
 			</div>
 
 			<div class="row">
-			<h3>
-					Do you authorize 
-					"<c:choose>
-						<c:when test="${empty client.clientName}">
-							<c:out value="${client.clientId}" />
-						</c:when>
-						<c:otherwise>
-							<c:out value="${client.clientName}" />
-						</c:otherwise>
-					</c:choose>"?
-			</h3>
+				<h3>
+						Do you authorize 
+						"<c:choose>
+							<c:when test="${empty client.clientName}">
+								<c:out value="${client.clientId}" />
+							</c:when>
+							<c:otherwise>
+								<c:out value="${client.clientName}" />
+							</c:otherwise>
+						</c:choose>"?
+				</h3>
 				<input id="user_oauth_approval" name="user_oauth_approval" value="true" type="hidden" /> 
-					<input name="authorize" value="Authorize" type="submit"
-					onclick="$('#user_oauth_approval').attr('value',true)" class="btn btn-success btn-large" /> 
-					&nbsp; 
-					<input name="deny" value="Deny" type="submit" onclick="$('#user_oauth_approval').attr('value',false)"
-					class="btn btn-secondary btn-large" />
+				<input name="csrf" value="${ csrf }" type="hidden" />
+				<input name="authorize" value="Authorize" type="submit"
+				onclick="$('#user_oauth_approval').attr('value',true)" class="btn btn-success btn-large" /> 
+				&nbsp; 
+				<input name="deny" value="Deny" type="submit" onclick="$('#user_oauth_approval').attr('value',false)"
+				class="btn btn-secondary btn-large" />
 			</div>
 
 		</form>
