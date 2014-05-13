@@ -1,12 +1,15 @@
 package org.mitre.openid.connect.service.impl;
 
 import static org.hamcrest.CoreMatchers.*;
+import static org.mockito.Mockito.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.Before;
@@ -24,16 +27,20 @@ import org.mitre.oauth2.repository.SystemScopeRepository;
 import org.mitre.openid.connect.model.ApprovedSite;
 import org.mitre.openid.connect.repository.ApprovedSiteRepository;
 import org.mitre.openid.connect.service.MITREidDataService;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -49,6 +56,9 @@ public class TestMITREidDataService_1_0 {
     private OAuth2TokenRepository tokenRepository;
 	@Mock
     private SystemScopeRepository sysScopeRepository;
+	
+	@Captor
+	private ArgumentCaptor<SystemScope> capturedScope;
 
 	@InjectMocks
 	private MITREidDataService_1_0 dataService;
@@ -205,7 +215,7 @@ public class TestMITREidDataService_1_0 {
 		// parse the output as a JSON object for testing
 		JsonElement elem = new JsonParser().parse(stringWriter.toString());
 		JsonObject root = elem.getAsJsonObject();
-		
+
 		// make sure the root is there
 		assertThat(root.has(MITREidDataService.MITREID_CONNECT_1_0), is(true));
 		
@@ -263,6 +273,78 @@ public class TestMITREidDataService_1_0 {
 		
 	}
 
+	@Test
+	public void testImportSystemScopes() throws IOException {
+		SystemScope scope1 = new SystemScope();
+		scope1.setId(1L);
+		scope1.setValue("scope1");
+		scope1.setDescription("Scope 1");
+		scope1.setAllowDynReg(false);
+		scope1.setDefaultScope(false);
+		scope1.setIcon("glass");
+
+		SystemScope scope2 = new SystemScope();
+		scope2.setId(2L);
+		scope2.setValue("scope2");
+		scope2.setDescription("Scope 2");
+		scope2.setAllowDynReg(true);
+		scope2.setDefaultScope(false);
+		scope2.setIcon("ball");
+
+		SystemScope scope3 = new SystemScope();
+		scope3.setId(3L);
+		scope3.setValue("scope3");
+		scope3.setDescription("Scope 3");
+		scope3.setAllowDynReg(true);
+		scope3.setDefaultScope(true);
+		scope3.setIcon("road");
+
+		String configJson = "{" +
+				"\"" + MITREidDataService.CLIENTS + "\": [], " +
+				"\"" + MITREidDataService.ACCESSTOKENS + "\": [], " +
+				"\"" + MITREidDataService.REFRESHTOKENS + "\": [], " +
+				"\"" + MITREidDataService.GRANTS + "\": [], " +
+				"\"" + MITREidDataService.AUTHENTICATIONHOLDERS + "\": [], " +
+				"\"" + MITREidDataService.SYSTEMSCOPES + "\": [" +
+				
+				"{\"id\":1,\"description\":\"Scope 1\",\"icon\":\"glass\",\"value\":\"scope1\",\"allowDynReg\":false,\"defaultScope\":false}," +
+				"{\"id\":2,\"description\":\"Scope 2\",\"icon\":\"ball\",\"value\":\"scope2\",\"allowDynReg\":true,\"defaultScope\":false}," +
+				"{\"id\":3,\"description\":\"Scope 3\",\"icon\":\"road\",\"value\":\"scope3\",\"allowDynReg\":true,\"defaultScope\":true}" +
+				
+				"  ]" +
+				"}";
+		
+		
+		System.err.println(configJson);
+		
+		JsonReader reader = new JsonReader(new StringReader(configJson));
+		
+		dataService.importData(reader);
+		verify(sysScopeRepository, times(3)).save(capturedScope.capture());
+		
+		List<SystemScope> savedScopes = capturedScope.getAllValues();
+		
+		assertThat(savedScopes.size(), is(3));
+		assertThat(savedScopes.get(0).getValue(), equalTo(scope1.getValue()));
+		assertThat(savedScopes.get(0).getDescription(), equalTo(scope1.getDescription()));
+		assertThat(savedScopes.get(0).getIcon(), equalTo(scope1.getIcon()));
+		assertThat(savedScopes.get(0).isDefaultScope(), equalTo(scope1.isDefaultScope()));
+		assertThat(savedScopes.get(0).isAllowDynReg(), equalTo(scope1.isAllowDynReg()));
+
+		assertThat(savedScopes.get(1).getValue(), equalTo(scope2.getValue()));
+		assertThat(savedScopes.get(1).getDescription(), equalTo(scope2.getDescription()));
+		assertThat(savedScopes.get(1).getIcon(), equalTo(scope2.getIcon()));
+		assertThat(savedScopes.get(1).isDefaultScope(), equalTo(scope2.isDefaultScope()));
+		assertThat(savedScopes.get(1).isAllowDynReg(), equalTo(scope2.isAllowDynReg()));
+
+		assertThat(savedScopes.get(2).getValue(), equalTo(scope3.getValue()));
+		assertThat(savedScopes.get(2).getDescription(), equalTo(scope3.getDescription()));
+		assertThat(savedScopes.get(2).getIcon(), equalTo(scope3.getIcon()));
+		assertThat(savedScopes.get(2).isDefaultScope(), equalTo(scope3.isDefaultScope()));
+		assertThat(savedScopes.get(2).isAllowDynReg(), equalTo(scope3.isAllowDynReg()));
+		
+	}
+	
 	private Set<String> jsonArrayToStringSet(JsonArray a) {
 		Set<String> s = new HashSet<String>();
 		for (JsonElement jsonElement : a) {
