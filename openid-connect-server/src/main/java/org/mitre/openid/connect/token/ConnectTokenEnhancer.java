@@ -31,6 +31,7 @@ import org.mitre.openid.connect.service.UserInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
@@ -104,17 +105,24 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 		 * has the proper scope, we can consider this a valid OpenID Connect request. Otherwise,
 		 * we consider it to be a vanilla OAuth2 request.
 		 */
-		if (originalAuthRequest.getScope().contains("openid")) {
+		if (originalAuthRequest.getScope().contains("openid") 
+				&& originalAuthRequest.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER"))) {
 
 			String username = authentication.getName();
 			UserInfo userInfo = userInfoService.getByUsernameAndClientId(username, clientId);
 
-			OAuth2AccessTokenEntity idTokenEntity = connectTokenService.createIdToken(client,
-					originalAuthRequest, claims.getIssueTime(),
-					userInfo.getSub(), signingAlg, token);
-
-			// attach the id token to the parent access token
-			token.setIdToken(idTokenEntity);
+			if (userInfo != null) {
+			
+				OAuth2AccessTokenEntity idTokenEntity = connectTokenService.createIdToken(client,
+						originalAuthRequest, claims.getIssueTime(),
+						userInfo.getSub(), signingAlg, token);
+	
+				// attach the id token to the parent access token
+				token.setIdToken(idTokenEntity);
+			} else {
+				// can't create an id token if we can't find the user
+				logger.warn("Request for ID token when no user is present.");
+			}
 		}
 
 		return token;
