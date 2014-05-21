@@ -98,7 +98,8 @@ var ListWidgetChildView = Backbone.View.extend({
 				var responseJson = JSON.parse(response.responseText);
         		
         		//Display an alert with an error message
-        		$('#modalAlert div.modal-body').html(responseJson.errorMessage);
+				$('#modalAlert div.modal-header').html(responseJson.error);
+        		$('#modalAlert div.modal-body').html(responseJson.error_description);
         		
     			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
     				 "backdrop" : "static",
@@ -351,7 +352,8 @@ var BlackListWidgetView = ListWidgetView.extend({
 				var responseJson = JSON.parse(response.responseText);
         		
         		//Display an alert with an error message
-        		$('#modalAlert div.modal-body').html(responseJson.errorMessage);
+				$('#modalAlert div.modal-header').html(responseJson.error);
+        		$('#modalAlert div.modal-body').html(responseJson.error_description);
         		
     			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
     				 "backdrop" : "static",

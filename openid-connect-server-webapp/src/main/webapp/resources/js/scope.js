@@ -111,7 +111,8 @@ var SystemScopeView = Backbone.View.extend({
 					var responseJson = JSON.parse(response.responseText);
             		
             		//Display an alert with an error message
-            		$('#modalAlert div.modal-body').html(responseJson.errorMessage);
+					$('#modalAlert div.modal-header').html(responseJson.error);
+	        		$('#modalAlert div.modal-body').html(responseJson.error_description);
             		
         			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
         				 "backdrop" : "static",
@@ -295,27 +296,15 @@ var SystemScopeFormView = Backbone.View.extend({
 					//Pull out the response text.
 					var responseJson = JSON.parse(response.responseText);
 	    			
-					if (response.status == 409) {
-	    				//Conflict, scope already exists
-	    				$('#value.control-group input').addClass('inputError');
-	    				$('#value.control-group').before('<div class="alert alert-error"><button type="button" class="close" data-dismiss="alert">&times;</button>' + responseText + '</div>');
-	    				
-	    				$('#value.control-group').bind('click.error', function() {
-	    					$('#value.control-group input').removeClass('inputError');
-	    					$('#value.control-group').unbind('click.error');
-	    				});
-	    				
-	    			}
-	    			else {
-	    				//Display an alert with an error message
-	            		$('#modalAlert div.modal-body').html(responseJson.errorMessage);
-	            		
-	        			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
-	        				 "backdrop" : "static",
-	        				 "keyboard" : true,
-	        				 "show" : true // ensure the modal is shown immediately
-	        			 });
-	    			}
+    				//Display an alert with an error message
+    				$('#modalAlert div.modal-header').html(responseJson.error);
+            		$('#modalAlert div.modal-body').html(responseJson.error_description);
+            		
+        			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
+        				 "backdrop" : "static",
+        				 "keyboard" : true,
+        				 "show" : true // ensure the modal is shown immediately
+        			 });
 	    		}
 			});
 		}

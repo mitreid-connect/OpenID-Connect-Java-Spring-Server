@@ -30,6 +30,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.servlet.view.AbstractView;
 
+import com.google.common.base.Strings;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
@@ -85,9 +86,14 @@ public class JsonErrorView extends AbstractView {
 
 			Writer out = response.getWriter();
 
+			String errorTitle = (String) model.get("error");
+			if (Strings.isNullOrEmpty(errorTitle)) {
+				errorTitle = "Error";
+			}
 			String errorMessage = (String) model.get("errorMessage");
 			JsonObject obj = new JsonObject();
-			obj.addProperty("error_message", errorMessage);
+			obj.addProperty("error", errorTitle);
+			obj.addProperty("error_description", errorMessage);
 			gson.toJson(obj, out);
 
 		} catch (IOException e) {
