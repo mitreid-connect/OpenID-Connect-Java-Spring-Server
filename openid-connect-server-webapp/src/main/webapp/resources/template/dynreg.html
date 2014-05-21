@@ -87,7 +87,7 @@
 				<label class="control-label">Client Secret</label>
     	        <div class="control-group">
             	    <div class="controls">
-						<pre><%=client.client_secret ? client.client_secret : 'Will be generated'%></pre>
+						<pre><%=client.client_id ? (client.client_secret ? client.client_secret : 'None (public client)') : 'Will be generated'%></pre>
 	                </div>
     	        </div>
 
@@ -336,7 +336,7 @@
 						<input type="radio" name="tokenEndpointAuthMethod" value="private_key_jwt" <%=(client.token_endpoint_auth_method == 'private_key_jwt' ? 'checked' : '')%>> Asymmetrically-signed JWT assertion
 					</label>
 					<label class="radio">
-						<input type="radio" name="tokenEndpointAuthMethod" value="NONE" <%=(client.token_endpoint_auth_method == 'NONE' ? 'checked' : '')%>> No authentication
+						<input type="radio" name="tokenEndpointAuthMethod" value="none" <%=(client.token_endpoint_auth_method == 'none' ? 'checked' : '')%>> No authentication
 					</label>
 				</div>
 			</div>
