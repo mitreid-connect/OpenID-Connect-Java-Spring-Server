@@ -1,4 +1,4 @@
-<%@attribute name="js" required="false"%>
+<%@ attribute name="js" required="false"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="o" tagdir="/WEB-INF/tags"%>
@@ -12,7 +12,7 @@
 		</p>
 	</div>
 </div>
-<!-- Le javascript
+<!-- javascript
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->
 <script type="text/javascript" src="resources/bootstrap2/js/bootstrap.js"></script>
