@@ -16,8 +16,6 @@
  ******************************************************************************/
 package org.mitre.openid.connect;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import java.text.ParseException;
 import java.util.Collections;
 import java.util.Map;
@@ -26,8 +24,8 @@ import java.util.UUID;
 
 import org.mitre.jwt.encryption.service.JwtEncryptionAndDecryptionService;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
-import org.mitre.jwt.signer.service.impl.DefaultJwtSigningAndValidationService;
 import org.mitre.jwt.signer.service.impl.JWKSetCacheService;
+import org.mitre.jwt.signer.service.impl.SymmetricCacheService;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.SystemScopeService;
@@ -35,23 +33,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
+import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.oauth2.common.util.OAuth2Utils;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.DefaultOAuth2RequestFactory;
 import org.springframework.stereotype.Component;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.nimbusds.jose.Algorithm;
 import com.nimbusds.jose.JWEObject.State;
 import com.nimbusds.jose.JWSAlgorithm;
-import com.nimbusds.jose.jwk.JWK;
-import com.nimbusds.jose.jwk.OctetSequenceKey;
-import com.nimbusds.jose.jwk.Use;
-import com.nimbusds.jose.util.Base64URL;
 import com.nimbusds.jwt.EncryptedJWT;
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTParser;
@@ -68,6 +61,9 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 
 	@Autowired
 	private JWKSetCacheService validators;
+	
+	@Autowired
+	private SymmetricCacheService symmetricCacheService;
 
 	@Autowired
 	private SystemScopeService systemScopes;
@@ -126,15 +122,19 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 		}
 
 		if (request.getClientId() != null) {
-			ClientDetailsEntity client = clientDetailsService.loadClientByClientId(request.getClientId());
-
-			if ((request.getScope() == null || request.getScope().isEmpty())) {
-				Set<String> clientScopes = client.getScope();
-				request.setScope(clientScopes);
-			}
-
-			if (request.getExtensions().get("max_age") == null && client.getDefaultMaxAge() != null) {
-				request.getExtensions().put("max_age", client.getDefaultMaxAge().toString());
+			try {
+				ClientDetailsEntity client = clientDetailsService.loadClientByClientId(request.getClientId());
+	
+				if ((request.getScope() == null || request.getScope().isEmpty())) {
+					Set<String> clientScopes = client.getScope();
+					request.setScope(clientScopes);
+				}
+	
+				if (request.getExtensions().get("max_age") == null && client.getDefaultMaxAge() != null) {
+					request.getExtensions().put("max_age", client.getDefaultMaxAge().toString());
+				}
+			} catch (OAuth2Exception e) {
+				logger.error("Caught OAuth2 exception trying to test client scopes and max age:", e);
 			}
 		}
 
@@ -210,7 +210,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 
 					// it's HMAC, we need to make a validator based on the client secret
 
-					JwtSigningAndValidationService validator = getSymmetricValidtor(client);
+					JwtSigningAndValidationService validator = symmetricCacheService.getSymmetricValidtor(client);
 
 					if (validator == null) {
 						throw new InvalidClientException("Unable to create signature validator for client's secret: " + client.getClientSecret());
@@ -364,42 +364,6 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 		} else {
 			return null;
 		}
-	}
-
-	/**
-	 * Create a symmetric signing and validation service for the given client
-	 * 
-	 * @param client
-	 * @return
-	 */
-	private JwtSigningAndValidationService getSymmetricValidtor(ClientDetailsEntity client) {
-
-		if (client == null) {
-			logger.error("Couldn't create symmetric validator for null client");
-			return null;
-		}
-
-		if (Strings.isNullOrEmpty(client.getClientSecret())) {
-			logger.error("Couldn't create symmetric validator for client " + client.getClientId() + " without a client secret");
-			return null;
-		}
-
-		try {
-
-			JWK jwk = new OctetSequenceKey(Base64URL.encode(client.getClientSecret()), Use.SIGNATURE, null, client.getClientId(), null, null, null);
-			Map<String, JWK> keys = ImmutableMap.of(client.getClientId(), jwk);
-			JwtSigningAndValidationService service = new DefaultJwtSigningAndValidationService(keys);
-
-			return service;
-
-		} catch (NoSuchAlgorithmException e) {
-			logger.error("Couldn't create symmetric validator for client " + client.getClientId(), e);
-		} catch (InvalidKeySpecException e) {
-			logger.error("Couldn't create symmetric validator for client " + client.getClientId(), e);
-		}
-
-		return null;
-
 	}
 
 }

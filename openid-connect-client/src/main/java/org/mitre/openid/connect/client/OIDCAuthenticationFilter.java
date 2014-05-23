@@ -16,19 +16,18 @@
  ******************************************************************************/
 package org.mitre.openid.connect.client;
 
-import static org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod.*;
+import static org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod.PRIVATE_KEY;
+import static org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod.SECRET_BASIC;
+import static org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod.SECRET_JWT;
 
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URI;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.security.spec.InvalidKeySpecException;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.Map;
 
-import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -37,9 +36,8 @@ import javax.servlet.http.HttpSession;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.SystemDefaultHttpClient;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
-import org.mitre.jwt.signer.service.impl.DefaultJwtSigningAndValidationService;
 import org.mitre.jwt.signer.service.impl.JWKSetCacheService;
-import org.mitre.oauth2.model.ClientDetailsEntity;
+import org.mitre.jwt.signer.service.impl.SymmetricCacheService;
 import org.mitre.oauth2.model.RegisteredClient;
 import org.mitre.openid.connect.client.model.IssuerServiceResponse;
 import org.mitre.openid.connect.client.service.AuthRequestOptionsService;
@@ -65,18 +63,13 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
-import com.nimbusds.jose.jwk.JWK;
-import com.nimbusds.jose.jwk.OctetSequenceKey;
-import com.nimbusds.jose.jwk.Use;
 import com.nimbusds.jose.util.Base64;
-import com.nimbusds.jose.util.Base64URL;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
@@ -105,6 +98,9 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 	private JWKSetCacheService validationServices;
 	
 	@Autowired(required=false)
+	private SymmetricCacheService symmetricCacheService;
+	
+	@Autowired(required=false)
 	private JwtSigningAndValidationService authenticationSignerService;
 
 	// modular services to build out client filter
@@ -131,6 +127,17 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 	@Override
 	public void afterPropertiesSet() {
 		super.afterPropertiesSet();
+		
+		// if our JOSE validators don't get wired in, drop defaults into place
+		
+		if (validationServices == null) {
+			validationServices = new JWKSetCacheService();
+		}
+		
+		if (symmetricCacheService == null) {
+			symmetricCacheService = new SymmetricCacheService();
+		}
+		
 	}
 
 	/*
@@ -324,7 +331,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 						|| alg.equals(JWSAlgorithm.HS512))) {
 					
 					// generate one based on client secret
-					signer = getSymmetricValidtor(clientConfig.getClient());
+					signer = symmetricCacheService.getSymmetricValidtor(clientConfig.getClient());
 					
 				} else if (PRIVATE_KEY.equals(clientConfig.getTokenEndpointAuthMethod())) {
 					
@@ -744,41 +751,4 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 		this.authOptions = authOptions;
 	}
 
-	/**
-	 * Create a symmetric signing and validation service for the given client
-	 * 
-	 * @param client
-	 * @return
-	 */
-	private JwtSigningAndValidationService getSymmetricValidtor(ClientDetailsEntity client) {
-
-		// TODO: cache
-		
-		if (client == null) {
-			logger.error("Couldn't create symmetric validator for null client");
-			return null;
-		}
-
-		if (Strings.isNullOrEmpty(client.getClientSecret())) {
-			logger.error("Couldn't create symmetric validator for client " + client.getClientId() + " without a client secret");
-			return null;
-		}
-
-		try {
-
-			JWK jwk = new OctetSequenceKey(Base64URL.encode(client.getClientSecret()), Use.SIGNATURE, null, client.getClientId(), null, null, null);
-			Map<String, JWK> keys = ImmutableMap.of(client.getClientId(), jwk);
-			JwtSigningAndValidationService service = new DefaultJwtSigningAndValidationService(keys);
-
-			return service;
-
-		} catch (NoSuchAlgorithmException e) {
-			logger.error("Couldn't create symmetric validator for client " + client.getClientId(), e);
-		} catch (InvalidKeySpecException e) {
-			logger.error("Couldn't create symmetric validator for client " + client.getClientId(), e);
-		}
-
-		return null;
-
-	}
 }
