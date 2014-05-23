@@ -104,9 +104,12 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 		 * may or may not include the scope parameter. As long as the AuthorizationRequest
 		 * has the proper scope, we can consider this a valid OpenID Connect request. Otherwise,
 		 * we consider it to be a vanilla OAuth2 request.
+		 * 
+		 * Also, there must be a user authentication involved in the request for it to be considered
+		 * OIDC and not OAuth, so we check for that as well.
 		 */
-		if (originalAuthRequest.getScope().contains("openid") 
-				&& originalAuthRequest.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER"))) {
+		if (originalAuthRequest.getScope().contains("openid")  
+				&& !authentication.isClientOnly()) {
 
 			String username = authentication.getName();
 			UserInfo userInfo = userInfoService.getByUsernameAndClientId(username, clientId);
