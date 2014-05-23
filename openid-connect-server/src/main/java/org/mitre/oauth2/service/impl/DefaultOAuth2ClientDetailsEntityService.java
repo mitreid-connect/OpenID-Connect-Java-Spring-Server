@@ -52,6 +52,7 @@ import com.google.common.base.Strings;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.util.concurrent.UncheckedExecutionException;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
@@ -207,6 +208,16 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 	/**
 	 * Update the oldClient with information from the newClient. The
 	 * id from oldClient is retained.
+	 * 
+	 * Checks to make sure the refresh grant type and 
+	 * the scopes are set appropriately.
+	 * 
+	 * Checks to make sure the redirect URIs aren't blacklisted.
+	 * 
+	 * Attempts to load the redirect URI (possibly cached) to check the
+	 * sector identifier against the contents there.
+	 * 
+	 * 
 	 */
 	@Override
 	public ClientDetailsEntity updateClient(ClientDetailsEntity oldClient, ClientDetailsEntity newClient) throws IllegalArgumentException {
@@ -237,7 +248,8 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 							}
 						}
 					}
-
+				} catch (UncheckedExecutionException ue) {
+					throw new IllegalArgumentException("Unable to load sector identifier URI: " + newClient.getSectorIdentifierUri());
 				} catch (ExecutionException e) {
 					throw new IllegalArgumentException("Unable to load sector identifier URI: " + newClient.getSectorIdentifierUri());
 				}

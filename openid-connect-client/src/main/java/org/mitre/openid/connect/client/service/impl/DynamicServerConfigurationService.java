@@ -43,6 +43,7 @@ import org.springframework.web.client.RestTemplate;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.util.concurrent.UncheckedExecutionException;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -117,6 +118,9 @@ public class DynamicServerConfigurationService implements ServerConfigurationSer
 			}
 
 			return servers.get(issuer);
+		} catch (UncheckedExecutionException ue) {
+			logger.warn("Couldn't load configuration for " + issuer, ue);
+			return null;
 		} catch (ExecutionException e) {
 			logger.warn("Couldn't load configuration for " + issuer, e);
 			return null;

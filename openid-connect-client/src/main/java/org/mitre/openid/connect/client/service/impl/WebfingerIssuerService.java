@@ -42,6 +42,7 @@ import com.google.common.base.Strings;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.util.concurrent.UncheckedExecutionException;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -95,6 +96,9 @@ public class WebfingerIssuerService implements IssuerService {
 				}
 
 				return new IssuerServiceResponse(issuer, null, null);
+			} catch (UncheckedExecutionException ue) {
+				logger.warn("Issue fetching issuer for user input: " + identifier, ue);
+				return null;
 			} catch (ExecutionException e) {
 				logger.warn("Issue fetching issuer for user input: " + identifier, e);
 				return null;

@@ -38,6 +38,7 @@ import org.springframework.web.client.RestTemplate;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.util.concurrent.UncheckedExecutionException;
 import com.nimbusds.jose.jwk.JWKSet;
 
 /**
@@ -79,6 +80,9 @@ public class JWKSetCacheService {
 	public JwtSigningAndValidationService getValidator(String jwksUri) {
 		try {
 			return validators.get(jwksUri);
+		} catch (UncheckedExecutionException ue) {
+			logger.warn("Couldn't load JWK Set from " + jwksUri, ue);
+			return null;
 		} catch (ExecutionException e) {
 			logger.warn("Couldn't load JWK Set from " + jwksUri, e);
 			return null;
@@ -88,6 +92,9 @@ public class JWKSetCacheService {
 	public JwtEncryptionAndDecryptionService getEncrypter(String jwksUri) {
 		try {
 			return encrypters.get(jwksUri);
+		} catch (UncheckedExecutionException ue) {
+			logger.warn("Couldn't load JWK Set from " + jwksUri, ue);
+			return null;
 		} catch (ExecutionException e) {
 			logger.warn("Couldn't load JWK Set from " + jwksUri, e);
 			return null;
