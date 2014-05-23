@@ -53,7 +53,7 @@ public class UserInfoView extends AbstractView {
 	@Autowired
 	private ScopeClaimTranslationService translator;
 
-	private Gson gson = new GsonBuilder().setExclusionStrategies(new ExclusionStrategy() {
+	protected Gson gson = new GsonBuilder().setExclusionStrategies(new ExclusionStrategy() {
 
 		@Override
 		public boolean shouldSkipField(FieldAttributes f) {
@@ -89,11 +89,6 @@ public class UserInfoView extends AbstractView {
 
 		response.setContentType("application/json");
 
-		Writer out;
-
-		try {
-
-			out = response.getWriter();
 
 			JsonObject authorizedClaims = null;
 			JsonObject requestedClaims = null;
@@ -103,14 +98,21 @@ public class UserInfoView extends AbstractView {
 			if (model.get("requestedClaims") != null) {
 				requestedClaims = jsonParser.parse((String) model.get("requestedClaims")).getAsJsonObject();
 			}
-			gson.toJson(toJsonFromRequestObj(userInfo, scope, authorizedClaims, requestedClaims), out);
+			JsonObject json = toJsonFromRequestObj(userInfo, scope, authorizedClaims, requestedClaims);
 
+			writeOut(json, model, request, response);
+	}
+	
+	protected void writeOut(JsonObject json, Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
+		try {
+			Writer out = response.getWriter();
+			gson.toJson(json, out);
 		} catch (IOException e) {
-
+			
 			logger.error("IOException in UserInfoView.java: ", e);
-
+			
 		}
-
+		
 	}
 
 	/**

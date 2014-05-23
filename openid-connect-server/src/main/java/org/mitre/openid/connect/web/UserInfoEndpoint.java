@@ -16,16 +16,23 @@
  ******************************************************************************/
 package org.mitre.openid.connect.web;
 
+import java.util.List;
+
+import org.mitre.oauth2.model.ClientDetailsEntity;
+import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.service.UserInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -43,6 +50,9 @@ public class UserInfoEndpoint {
 
 	@Autowired
 	private UserInfoService userInfoService;
+	
+	@Autowired
+	private ClientDetailsEntityService clientService;
 
 	private static Logger logger = LoggerFactory.getLogger(UserInfoEndpoint.class);
 
@@ -50,8 +60,10 @@ public class UserInfoEndpoint {
 	 * Get information about the user as specified in the accessToken included in this request
 	 */
 	@PreAuthorize("hasRole('ROLE_USER') and #oauth2.hasScope('openid')")
-	@RequestMapping(value="/userinfo", method= {RequestMethod.GET, RequestMethod.POST}, produces = "application/json")
-	public String getInfo(@RequestParam(value="claims", required=false) String claimsRequestJsonString, OAuth2Authentication auth, Model model) {
+	@RequestMapping(value="/userinfo", method= {RequestMethod.GET, RequestMethod.POST}, produces = {"application/json", "application/jwt"})
+	public String getInfo(@RequestParam(value="claims", required=false) String claimsRequestJsonString, 
+			@RequestHeader(value="Accept") String acceptHeader,
+			OAuth2Authentication auth, Model model) {
 
 		if (auth == null) {
 			logger.error("getInfo failed; no principal. Requester is not authorized.");
@@ -78,7 +90,22 @@ public class UserInfoEndpoint {
 
 		model.addAttribute("userInfo", userInfo);
 
-		return "userInfoView";
+		// content negotiation
+		List<MediaType> mediaTypes = MediaType.parseMediaTypes(acceptHeader);
+		MediaType.sortBySpecificityAndQuality(mediaTypes);
+		
+		MediaType jose = new MediaType("application", "jwt");
+		
+		for (MediaType m : mediaTypes) {
+			if (!m.isWildcardType() && m.isCompatibleWith(jose)) {
+				ClientDetailsEntity client = clientService.loadClientByClientId(auth.getOAuth2Request().getClientId());
+				model.addAttribute("client", client);
+
+				return "userInfoJwtView";
+			}
+		}
+		
+		return "userInfoView";			
 
 	}
 
