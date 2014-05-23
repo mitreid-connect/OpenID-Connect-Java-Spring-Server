@@ -110,8 +110,9 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 	private AuthRequestOptionsService authOptions = new StaticAuthRequestOptionsService(); // initialize with an empty set of options
 	private AuthRequestUrlBuilder authRequestBuilder;
 
-	// private helper to handle target link URLs
+	// private helpers to handle target link URLs
 	private TargetLinkURIAuthenticationSuccessHandler targetSuccessHandler = new TargetLinkURIAuthenticationSuccessHandler();
+	private TargetLinkURIChecker deepLinkFilter;
 	
 	protected int httpSocketTimeout = HTTP_SOCKET_TIMEOUT;
 
@@ -641,8 +642,10 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 			String target = getStoredSessionString(session, TARGET_SESSION_VARIABLE);
 			
 			if (!Strings.isNullOrEmpty(target)) {
-				// TODO (#547): should we (can we?) check to see if this URL is part of our app's namespace?
 				session.removeAttribute(TARGET_SESSION_VARIABLE);
+				
+				target = deepLinkFilter.filter(target);
+				
 				response.sendRedirect(target);
 			} else {
 				// if the target was blank, use the default behavior here
@@ -749,6 +752,31 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 	 */
 	public void setAuthRequestOptionsService(AuthRequestOptionsService authOptions) {
 		this.authOptions = authOptions;
+	}
+
+	public SymmetricCacheService getSymmetricCacheService() {
+		return symmetricCacheService;
+	}
+
+	public void setSymmetricCacheService(SymmetricCacheService symmetricCacheService) {
+		this.symmetricCacheService = symmetricCacheService;
+	}
+
+	public TargetLinkURIAuthenticationSuccessHandler getTargetLinkURIAuthenticationSuccessHandler() {
+		return targetSuccessHandler;
+	}
+
+	public void setTargetLinkURIAuthenticationSuccessHandler(
+			TargetLinkURIAuthenticationSuccessHandler targetSuccessHandler) {
+		this.targetSuccessHandler = targetSuccessHandler;
+	}
+
+	public TargetLinkURIChecker targetLinkURIChecker() {
+		return deepLinkFilter;
+	}
+
+	public void setTargetLinkURIChecker(TargetLinkURIChecker deepLinkFilter) {
+		this.deepLinkFilter = deepLinkFilter;
 	}
 
 }
