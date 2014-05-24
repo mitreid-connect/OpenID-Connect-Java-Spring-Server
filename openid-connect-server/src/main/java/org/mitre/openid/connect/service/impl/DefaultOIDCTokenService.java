@@ -21,7 +21,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import org.mitre.jwt.encryption.service.JwtEncryptionAndDecryptionService;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
+import org.mitre.jwt.signer.service.impl.JWKSetCacheService;
+import org.mitre.jwt.signer.service.impl.SymmetricCacheService;
 import org.mitre.oauth2.model.AuthenticationHolderEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
@@ -44,9 +47,12 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.nimbusds.jose.Algorithm;
+import com.nimbusds.jose.JWEHeader;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.util.Base64URL;
+import com.nimbusds.jwt.EncryptedJWT;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 
@@ -70,8 +76,21 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 	@Autowired
 	private ConfigurationPropertiesBean configBean;
 
+	@Autowired
+	private JWKSetCacheService encrypters;
+	
+	@Autowired
+	private SymmetricCacheService symmetricCacheService;
+
 	@Override
-	public OAuth2AccessTokenEntity createIdToken(ClientDetailsEntity client, OAuth2Request request, Date issueTime, String sub, JWSAlgorithm signingAlg, OAuth2AccessTokenEntity accessToken) {
+	public OAuth2AccessTokenEntity createIdToken(ClientDetailsEntity client, OAuth2Request request, Date issueTime, String sub, OAuth2AccessTokenEntity accessToken) {
+
+		JWSAlgorithm signingAlg = jwtService.getDefaultSigningAlgorithm();
+
+		if (client.getIdTokenSignedResponseAlg() != null) {
+			signingAlg = client.getIdTokenSignedResponseAlg();
+		}
+
 
 		OAuth2AccessTokenEntity idTokenEntity = new OAuth2AccessTokenEntity();
 		JWTClaimsSet idClaims = new JWTClaimsSet();
@@ -105,12 +124,44 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 			Base64URL at_hash = IdTokenHashUtils.getAccessTokenHash(signingAlg, accessToken);
 			idClaims.setClaim("at_hash", at_hash);
 		}
+		
+		if (client.getIdTokenEncryptedResponseAlg() != null && !client.getIdTokenEncryptedResponseAlg().equals(Algorithm.NONE)
+				&& client.getIdTokenEncryptedResponseEnc() != null && !client.getIdTokenEncryptedResponseEnc().equals(Algorithm.NONE)
+				&& !Strings.isNullOrEmpty(client.getJwksUri())) {
+			
+			JwtEncryptionAndDecryptionService encrypter = encrypters.getEncrypter(client.getJwksUri());
+			
+			if (encrypter != null) {
+				
+				EncryptedJWT idToken = new EncryptedJWT(new JWEHeader(client.getIdTokenEncryptedResponseAlg(), client.getIdTokenEncryptedResponseEnc()), idClaims);
+				
+				encrypter.encryptJwt(idToken);
+				
+				idTokenEntity.setJwt(idToken);
+				
+			} else {
+				logger.error("Couldn't find encrypter for client: " + client.getClientId());
+			}
+			
+		} else {
 
-		SignedJWT idToken = new SignedJWT(new JWSHeader(signingAlg), idClaims);
-
-		jwtService.signJwt(idToken);
-
-		idTokenEntity.setJwt(idToken);
+			SignedJWT idToken = new SignedJWT(new JWSHeader(signingAlg), idClaims);
+			
+			if (signingAlg.equals(JWSAlgorithm.HS256)
+					|| signingAlg.equals(JWSAlgorithm.HS384)
+					|| signingAlg.equals(JWSAlgorithm.HS512)) {
+				JwtSigningAndValidationService signer = symmetricCacheService.getSymmetricValidtor(client);
+				
+				// sign it with the client's secret
+				signer.signJwt(idToken);
+			} else {
+				
+				// sign it with the server's key
+				jwtService.signJwt(idToken);
+			}
+			
+			idTokenEntity.setJwt(idToken);
+		}
 
 		idTokenEntity.setAuthenticationHolder(accessToken.getAuthenticationHolder());
 

@@ -15,7 +15,10 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.mitre.jwt.encryption.service.JwtEncryptionAndDecryptionService;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
+import org.mitre.jwt.signer.service.impl.JWKSetCacheService;
+import org.mitre.jwt.signer.service.impl.SymmetricCacheService;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.slf4j.Logger;
@@ -23,11 +26,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.nimbusds.jose.Algorithm;
+import com.nimbusds.jose.JWEHeader;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jwt.EncryptedJWT;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 
@@ -46,6 +53,12 @@ public class UserInfoJwtView extends UserInfoView {
 	@Autowired
 	private ConfigurationPropertiesBean config;
 	
+	@Autowired
+	private JWKSetCacheService encrypters;
+	
+	@Autowired
+	private SymmetricCacheService symmetricCacheService;
+
 	@Override
 	protected void writeOut(JsonObject json, Map<String, Object> model,
 			HttpServletRequest request, HttpServletResponse response) {
@@ -67,17 +80,53 @@ public class UserInfoJwtView extends UserInfoView {
 	
 			claims.setJWTID(UUID.randomUUID().toString()); // set a random NONCE in the middle of it
 			
-			JWSAlgorithm signingAlg = jwtService.getDefaultSigningAlgorithm();
-			if (client.getUserInfoSignedResponseAlg() != null) {
-				signingAlg = client.getUserInfoSignedResponseAlg();
-			}
 			
-			SignedJWT signed = new SignedJWT(new JWSHeader(signingAlg), claims);
-	
-			jwtService.signJwt(signed);
+			if (client.getIdTokenEncryptedResponseAlg() != null && !client.getIdTokenEncryptedResponseAlg().equals(Algorithm.NONE)
+					&& client.getIdTokenEncryptedResponseEnc() != null && !client.getIdTokenEncryptedResponseEnc().equals(Algorithm.NONE)
+					&& !Strings.isNullOrEmpty(client.getJwksUri())) {
+
+				// encrypt it to the client's key
+				
+				JwtEncryptionAndDecryptionService encrypter = encrypters.getEncrypter(client.getJwksUri());
+				
+				if (encrypter != null) {
+					
+					EncryptedJWT encrypted = new EncryptedJWT(new JWEHeader(client.getIdTokenEncryptedResponseAlg(), client.getIdTokenEncryptedResponseEnc()), claims);
+					
+					encrypter.encryptJwt(encrypted);
+					
+					
+					Writer out = response.getWriter();
+					out.write(encrypted.serialize());
+					
+				} else {
+					logger.error("Couldn't find encrypter for client: " + client.getClientId());
+				}
+			} else {
+
+				JWSAlgorithm signingAlg = jwtService.getDefaultSigningAlgorithm();
+				if (client.getUserInfoSignedResponseAlg() != null) {
+					signingAlg = client.getUserInfoSignedResponseAlg();
+				}
+				
+				SignedJWT signed = new SignedJWT(new JWSHeader(signingAlg), claims);
 		
-			Writer out = response.getWriter();
-			out.write(signed.serialize());
+				if (signingAlg.equals(JWSAlgorithm.HS256)
+						|| signingAlg.equals(JWSAlgorithm.HS384)
+						|| signingAlg.equals(JWSAlgorithm.HS512)) {
+
+					// sign it with the client's secret
+					JwtSigningAndValidationService signer = symmetricCacheService.getSymmetricValidtor(client);
+					signer.signJwt(signed);
+
+				} else {
+					// sign it with the server's key
+					jwtService.signJwt(signed);
+				}
+				
+				Writer out = response.getWriter();
+				out.write(signed.serialize());
+}
 		} catch (IOException e) {
 			logger.error("IO Exception in UserInfoJwtView", e);
 		} catch (ParseException e) {

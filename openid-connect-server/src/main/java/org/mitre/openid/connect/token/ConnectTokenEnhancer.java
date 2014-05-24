@@ -20,6 +20,8 @@ import java.util.Date;
 import java.util.UUID;
 
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
+import org.mitre.jwt.signer.service.impl.JWKSetCacheService;
+import org.mitre.jwt.signer.service.impl.SymmetricCacheService;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
@@ -39,6 +41,7 @@ import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
+import com.nimbusds.jose.Algorithm;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jwt.JWTClaimsSet;
@@ -67,6 +70,13 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 	@Autowired
 	private OIDCTokenService connectTokenService;
 
+	@Autowired
+	private JWKSetCacheService encryptors;
+	
+	@Autowired
+	private SymmetricCacheService symmetricCacheService;
+
+
 	@Override
 	public OAuth2AccessToken enhance(OAuth2AccessToken accessToken,	OAuth2Authentication authentication) {
 
@@ -89,16 +99,13 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 		claims.setJWTID(UUID.randomUUID().toString()); // set a random NONCE in the middle of it
 
 		JWSAlgorithm signingAlg = jwtService.getDefaultSigningAlgorithm();
-		if (client.getIdTokenSignedResponseAlg() != null) {
-			signingAlg = client.getIdTokenSignedResponseAlg();
-		}
 
 		SignedJWT signed = new SignedJWT(new JWSHeader(signingAlg), claims);
 
 		jwtService.signJwt(signed);
 
 		token.setJwt(signed);
-
+		
 		/**
 		 * Authorization request scope MUST include "openid" in OIDC, but access token request
 		 * may or may not include the scope parameter. As long as the AuthorizationRequest
@@ -118,7 +125,7 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 			
 				OAuth2AccessTokenEntity idTokenEntity = connectTokenService.createIdToken(client,
 						originalAuthRequest, claims.getIssueTime(),
-						userInfo.getSub(), signingAlg, token);
+						userInfo.getSub(), token);
 	
 				// attach the id token to the parent access token
 				token.setIdToken(idTokenEntity);

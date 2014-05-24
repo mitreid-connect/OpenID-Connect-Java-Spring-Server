@@ -45,8 +45,7 @@ public interface OIDCTokenService {
 	 */
 	public OAuth2AccessTokenEntity createIdToken(
 			ClientDetailsEntity client, OAuth2Request request, Date issueTime,
-			String sub, JWSAlgorithm signingAlg,
-			OAuth2AccessTokenEntity accessToken);
+			String sub, OAuth2AccessTokenEntity accessToken);
 
 	/**
 	 * Create a registration access token for the given client.
