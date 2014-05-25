@@ -33,12 +33,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.mitre.oauth2.model.ClientDetailsEntity;
+import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.openid.connect.web.AuthenticationTimeStamper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
+import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.OAuth2RequestFactory;
 import org.springframework.stereotype.Component;
@@ -62,6 +66,9 @@ public class PromptFilter extends GenericFilterBean {
 	@Autowired
 	private OAuth2RequestFactory authRequestFactory;
 
+	@Autowired
+	private ClientDetailsEntityService clientService;
+	
 	/**
 	 * 
 	 */
@@ -70,9 +77,25 @@ public class PromptFilter extends GenericFilterBean {
 
 		HttpServletRequest request = (HttpServletRequest) req;
 		HttpServletResponse response = (HttpServletResponse) res;
+		
+		// skip everything that's not an authorize URL
+		if (!request.getRequestURI().startsWith("/authorize")) {
+			chain.doFilter(req, res);
+		}
 
+		// we have to create our own auth request in order to get at all the parmeters appropriately
 		AuthorizationRequest authRequest = authRequestFactory.createAuthorizationRequest(createRequestMap(request.getParameterMap()));
 
+		ClientDetailsEntity client = null;
+		
+		try {
+			client = clientService.loadClientByClientId(authRequest.getClientId());
+		} catch (InvalidClientException e) {
+			// no need to worry about this here, it would be caught elsewhere
+		} catch (IllegalArgumentException e) {
+			// no need to worry about this here, it would be caught elsewhere
+		}
+		
 		if (authRequest.getExtensions().get("prompt") != null) {
 			// we have a "prompt" parameter
 			String prompt = (String)authRequest.getExtensions().get("prompt");
@@ -125,21 +148,30 @@ public class PromptFilter extends GenericFilterBean {
 				chain.doFilter(req, res);
 			}
 
-		} else if (authRequest.getExtensions().get("max_age") != null) {
-			String maxAge = (String) authRequest.getExtensions().get("max_age");
-			HttpSession session = request.getSession();
-			Date authTime = (Date) session.getAttribute(AuthenticationTimeStamper.AUTH_TIMESTAMP);
+		} else if (authRequest.getExtensions().get("max_age") != null ||
+				(client != null && client.getDefaultMaxAge() != null)) {
 
-			Date now = new Date();
-			if (authTime != null) {
-				Integer max = Integer.parseInt(maxAge);
-				long seconds = (now.getTime() - authTime.getTime()) / 1000;
-				if (seconds > max) {
-					// session is too old, log the user out and continue
-					SecurityContextHolder.getContext().setAuthentication(null);
+			// default to the client's stored value, check the string parameter
+			Integer max = (client != null ? client.getDefaultMaxAge() : null);
+			String maxAge = (String) authRequest.getExtensions().get("max_age");
+			if (maxAge != null) {
+				max = Integer.parseInt(maxAge);	
+			}
+			
+			if (max != null) {
+				
+				HttpSession session = request.getSession();
+				Date authTime = (Date) session.getAttribute(AuthenticationTimeStamper.AUTH_TIMESTAMP);
+	
+				Date now = new Date();
+				if (authTime != null) {
+					long seconds = (now.getTime() - authTime.getTime()) / 1000;
+					if (seconds > max) {
+						// session is too old, log the user out and continue
+						SecurityContextHolder.getContext().setAuthentication(null);
+					}
 				}
 			}
-
 			chain.doFilter(req, res);
 		} else {
 			// no prompt parameter, not our business

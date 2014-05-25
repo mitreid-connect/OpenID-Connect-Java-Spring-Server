@@ -95,9 +95,15 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 		OAuth2AccessTokenEntity idTokenEntity = new OAuth2AccessTokenEntity();
 		JWTClaimsSet idClaims = new JWTClaimsSet();
 
-		if (request.getExtensions().containsKey(AuthenticationTimeStamper.AUTH_TIMESTAMP)) {
+		// if the auth time claim was explicitly requested OR if the client always wants the auth time, put it in
+		if (request.getExtensions().containsKey("max_age")
+				|| (request.getExtensions().containsKey("idtoken")) // TODO: parse the ID Token claims (#473) -- for now assume it could be in there
+				|| (client.getRequireAuthTime() != null && client.getRequireAuthTime())) {
+			
 			Date authTime = (Date) request.getExtensions().get(AuthenticationTimeStamper.AUTH_TIMESTAMP);
-			idClaims.setClaim("auth_time", authTime.getTime() / 1000);
+			if (authTime != null) {
+				idClaims.setClaim("auth_time", authTime.getTime() / 1000);
+			}
 		}
 
 		idClaims.setIssueTime(issueTime);
