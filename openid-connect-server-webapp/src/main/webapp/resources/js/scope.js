@@ -46,6 +46,20 @@ var SystemScopeCollection = Backbone.Collection.extend({
 		return new SystemScopeCollection(filtered);
 	},
 	
+	dynRegScopes: function() {
+		filtered = this.filter(function(scope) {
+			return scope.get("allowDynReg") === true;
+		});
+		return new SystemScopeCollection(filtered);
+	},
+	
+	defaultDynRegScopes: function() {
+		filtered = this.filter(function(scope) {
+			return scope.get("defaultScope") === true && scope.get("allowDynReg") === true;
+		});
+		return new SystemScopeCollection(filtered);		
+	},
+	
 	getByValue: function(value) {
 		var scopes = this.where({value: value});
 		if (scopes.length == 1) {

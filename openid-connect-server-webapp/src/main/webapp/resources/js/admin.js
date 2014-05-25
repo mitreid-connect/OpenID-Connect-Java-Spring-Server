@@ -513,19 +513,28 @@ var AppRouter = Backbone.Router.extend({
 
     	var client = new ClientModel();
     	
-    	// set up this new client to require a secret and have us autogenerate one
-    	client.set({
-    		requireClientSecret:true, 
-    		generateClientSecret:true,
-    		displayClientSecret:false,
-    		scope: _.uniq(_.flatten(this.systemScopeList.defaultScopes().pluck("value"))),
-    		accessTokenValiditySeconds:3600,
-    		idTokenValiditySeconds:600
-    	}, { silent: true });
-    	
         this.clientFormView = new ClientFormView({model:client, systemScopeList: this.systemScopeList});
-        $('#content').html(this.clientFormView.render().el);
-    	setPageTitle("New Client");
+        this.clientFormView.load(function() {
+        	// set up this new client to require a secret and have us autogenerate one
+        	client.set({
+        		tokenEndpointAuthMethod: "client_secret_basic",
+        		requireClientSecret:true, 
+        		generateClientSecret:true,
+        		displayClientSecret:false,
+        		requireAuthTime:true,
+        		defaultMaxAge:60000,
+        		scope: _.uniq(_.flatten(this.systemScopeList.defaultScopes().pluck("value"))),
+        		accessTokenValiditySeconds:3600,
+        		idTokenValiditySeconds:600,
+        		grantTypes: ["authorization_code"],
+        		responseTypes: ["code"],
+        		subjectType: "public"
+        	}, { silent: true });
+        	
+        	
+        	$('#content').html(this.clientFormView.render().el);
+        	setPageTitle("New Client");
+        });
     },
 
     editClient:function(id) {
@@ -801,9 +810,12 @@ var AppRouter = Backbone.Router.extend({
              {text:"Client Registration", href:"manage/#dev/dynreg"}
         ]);
     	
-    	$('#content').html(this.dynRegRootView.render().el);
+    	this.dynRegRootView.load(function() {
+    			$('#content').html(app.dynRegRootView.render().el);
+    			
+    			setPageTitle("Self-service Client Registration");
+    	});
     	
-    	setPageTitle("Self-service Client Registration");
     },
     
     newDynReg:function() {
@@ -814,9 +826,21 @@ var AppRouter = Backbone.Router.extend({
              {text:"New", href:"manage/#dev/dynreg/new"}
         ]);
     	
-    	var view = new DynRegEditView({model: new DynRegClient(), systemScopeList:this.systemScopeList});
+    	var client = new DynRegClient();
+    	var view = new DynRegEditView({model: client, systemScopeList:this.systemScopeList});
     	
     	view.load(function() {
+
+    		client.set({
+        		require_auth_time:true,
+        		default_max_age:60000,
+        		scope: _.uniq(_.flatten(app.systemScopeList.defaultDynRegScopes().pluck("value"))).join(" "),
+        		token_endpoint_auth_method: 'client_secret_basic',
+        		grant_types: ["authorization_code"],
+        		response_types: ["code"],
+        		subject_type: "public"
+        	}, { silent: true });
+    	
     		$('#content').html(view.render().el);
     		view.delegateEvents();
     		setPageTitle("Dynamically Register a New Client");

@@ -73,6 +73,22 @@ var DynRegRootView = Backbone.View.extend({
 		"click #editreg":"editReg"
 	},
 	
+	load:function(callback) {
+    	if (this.options.systemScopeList.isFetched) {
+    		callback();
+    		return;
+    	}
+
+    	$('#loadingbox').sheet('show');
+    	$('#loading').html('<span class="label" id="loading-scopes">Scopes</span> ');
+
+    	$.when(this.options.systemScopeList.fetchIfNeeded({success:function(e) {$('#loading-scopes').addClass('label-success');}}))
+    	.done(function() {
+    	    		$('#loadingbox').sheet('hide');
+    	    		callback();
+    			});    	
+	},
+    	
 	render:function() {
     	$(this.el).html($('#tmpl-dynreg').html());
     	return this;

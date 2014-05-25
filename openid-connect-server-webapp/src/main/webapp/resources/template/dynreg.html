@@ -182,7 +182,7 @@
 			</div>
 
 			<div class="control-group" id="tosUri">
-				<label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> Terms of Service</label>
+				<label class="control-label">Terms of Service</label>
 				<div class="controls">
 					<input placeholder="https://" value="<%=client.tos_uri ? client.tos_uri : ''%>" maxlength="1000" type="text" class=""/>
 					<p class="help-block">URL for the Terms of Service of this client, will be displayed to the user</p>
@@ -190,7 +190,7 @@
 			</div>
 
 			<div class="control-group" id="policyUri">
-				<label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> Policy</label>
+				<label class="control-label">Policy</label>
 				<div class="controls">
 					<input placeholder="https://" value="<%=client.policy_uri ? client.policy_uri : ''%>" maxlength="1000" type="text" class=""/>
 					<p class="help-block">URL for the Policy Statement of this client, will be displayed to the user</p>
@@ -198,7 +198,7 @@
 			</div>
 
 			<div class="control-group" id="clientUri">
-				<label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> Home Page</label>
+				<label class="control-label">Home Page</label>
 				<div class="controls">
 					<input placeholder="https://" value="<%=client.client_uri ? client.client_uri : ''%>" maxlength="1000" type="text" class=""/>
 					<p class="help-block">URL for the client's home page, will be displayed to the user</p>
@@ -495,6 +495,23 @@
 
 	<div class="tab-pane" id="client-other-tab">
 
+            <div class="control-group" id="requireAuthTime">
+                <label class="control-label">Require Authentication Time</label>
+                <div class="controls">
+                    <label class="checkbox">
+                        <input type="checkbox" <%=(client.require_auth_time == true ? 'checked' : '')%>> Always require that the auth_time claim be sent in the id token
+                    </label>
+                </div>
+            </div>
+
+			<div class="control-group" id="defaultMaxAge">
+				<label class="control-label">Default Max Age</label>
+				<div class="controls">
+					<input placeholder="" value="<%=client.default_max_age ? client.default_max_age : ''%>" maxlength="10" type="text" class=""/>
+					<p class="help-block">Default maximum session age before re-prompting</p>
+				</div>
+			</div>
+
 			<div class="control-group" id="initiateLoginUri">
 				<label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> Initiate Login</label>
 				<div class="controls">
@@ -511,23 +528,6 @@
 				</div>
 			</div>
 
-
-            <div class="control-group" id="requireAuthTime">
-                <label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> Require Auth Time</label>
-                <div class="controls">
-                    <label class="checkbox">
-                        <input type="checkbox" <%=(client.require_auth_time == true ? 'checked' : '')%>> Always require that the auth_time claim be sent in the id token
-                    </label>
-                </div>
-            </div>
-
-			<div class="control-group" id="defaultMaxAge">
-				<label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> Default Max Age</label>
-				<div class="controls">
-					<input placeholder="" value="<%=client.default_max_age ? client.default_max_age : ''%>" maxlength="1000" type="text" class=""/>
-					<p class="help-block">Default maximum session age before re-prompting</p>
-				</div>
-			</div>
 
             <div class="control-group" id="requestUris">
                 <label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> Request URIs</label>

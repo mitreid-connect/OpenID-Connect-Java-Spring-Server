@@ -44,7 +44,7 @@ var ClientModel = Backbone.Model.extend({
         tosUri:"",
         tokenEndpointAuthMethod:null,
         scope:[],
-        grantTypes:["authorization_code"],
+        grantTypes:[],
         responseTypes:[],
         policyUri:"",
         jwksUri:"",
@@ -65,7 +65,7 @@ var ClientModel = Backbone.Model.extend({
         
         tokenEndpointAuthSigningAlg:null,
         
-        defaultMaxAge:60000,
+        defaultMaxAge:null,
         requireAuthTime:false,
         defaultACRvalues:null,
         
