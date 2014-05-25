@@ -523,16 +523,16 @@ var AppRouter = Backbone.Router.extend({
         		displayClientSecret:false,
         		requireAuthTime:true,
         		defaultMaxAge:60000,
-        		scope: _.uniq(_.flatten(this.systemScopeList.defaultScopes().pluck("value"))),
+        		scope: _.uniq(_.flatten(app.systemScopeList.defaultScopes().pluck("value"))),
         		accessTokenValiditySeconds:3600,
         		idTokenValiditySeconds:600,
         		grantTypes: ["authorization_code"],
         		responseTypes: ["code"],
-        		subjectType: "public"
+        		subjectType: "PUBLIC"
         	}, { silent: true });
         	
         	
-        	$('#content').html(this.clientFormView.render().el);
+        	$('#content').html(app.clientFormView.render().el);
         	setPageTitle("New Client");
         });
     },
@@ -551,29 +551,68 @@ var AppRouter = Backbone.Router.extend({
             {text:"Edit", href:"manage/#admin/client/" + id}
         ]);
 
+        // TODO: this won't load on its own anymore, need to dynamically load the client in question first (don't need to load the rest)
+        
         var client = this.clientList.get(id);
+        
+        if (client == null) {
+        	// it wasn't in the list, try loading the client directly
+        	client = new ClientModel({id: id});
+        }
 
-        if (client.get("clientSecret") == null) {
-        	client.set({
-        		requireClientSecret:false
-        	}, { silent: true });
-        }
-        
-        if ($.inArray("refresh_token", client.get("grantTypes")) != -1) {
-        	client.set({
-        		allowRefresh: true
-        	}, { silent: true });
-        }
-        
-    	client.set({
-    		generateClientSecret:false,
-    		displayClientSecret:false
-    	}, { silent: true });
-        
-        this.clientFormView = new ClientFormView({model:client, systemScopeList: this.systemScopeList});
-        $('#content').html(this.clientFormView.render().el);
-        
-    	setPageTitle("Edit Client");
+    	$('#loadingbox').sheet('show');
+    	$('#loading').html('<span class="label" id="loading-scopes">Scopes</span> '
+    			+ '<span class="label" id="loading-client">Client</span> ');
+
+        // re-sync the client every time
+    	client.fetch({
+    			success: function(client, response, options) {
+    				$('#loading-client').addClass('label-success');
+    				
+    				if (client.get("clientSecret") == null) {
+    		        	client.set({
+    		        		requireClientSecret:false
+    		        	}, { silent: true });
+    		        }
+    		        
+    		        if ($.inArray("refresh_token", client.get("grantTypes")) != -1) {
+    		        	client.set({
+    		        		allowRefresh: true
+    		        	}, { silent: true });
+    		        }
+    		        
+    		    	client.set({
+    		    		generateClientSecret:false,
+    		    		displayClientSecret:false
+    		    	}, { silent: true });
+    		        
+    		        app.clientFormView = new ClientFormView({model:client, systemScopeList: app.systemScopeList});
+    		        app.clientFormView.load(function() {
+    		        	console.log("yup!");
+    		        	$('#content').html(app.clientFormView.render().el);
+    		        	setPageTitle("Edit Client");
+    		        });
+    		        
+    			
+    			},
+    			error: function(model, response, options) {
+            		
+					//Pull out the response text.
+					var responseJson = JSON.parse(response.responseText);
+            		
+            		//Display an alert with an error message
+					$('#modalAlert div.modal-header').html(responseJson.error);
+	        		$('#modalAlert div.modal-body').html(responseJson.error_description);
+            		
+        			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
+        				 "backdrop" : "static",
+        				 "keyboard" : true,
+        				 "show" : true // ensure the modal is shown immediately
+        			 });
+    				
+    			}
+    	});
+
     },
 
     whiteList:function () {

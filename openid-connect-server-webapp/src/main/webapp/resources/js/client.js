@@ -496,6 +496,26 @@ var ClientFormView = Backbone.View.extend({
         "change #logoUri input":"previewLogo"
     },
 
+	load:function(callback) {
+    	if (this.options.systemScopeList.isFetched) {
+    		$('#loadingbox').sheet('hide');
+    		callback();
+    		return;
+    	}
+
+    	if (this.model.get('id') == null) {
+    		// only show the box if this is a new client, otherwise the box is already showing
+	    	$('#loadingbox').sheet('show');
+	    	$('#loading').html('<span class="label" id="loading-scopes">Scopes</span> ');
+    	}
+
+    	$.when(this.options.systemScopeList.fetchIfNeeded({success:function(e) {$('#loading-scopes').addClass('label-success');}}))
+    	.done(function() {
+    	    		$('#loadingbox').sheet('hide');
+    	    		callback();
+    			});    	
+	},
+    	
     toggleRefreshTokenTimeout:function () {
         $("#refreshTokenValidityTime", this.$el).toggle();
     },
