@@ -92,7 +92,7 @@ public class JwtBearerAuthenticationProvider implements AuthenticationProvider {
 
 				JWSAlgorithm alg = jws.getHeader().getAlgorithm();
 
-				if (client.getTokenEndpointAuthSigningAlg() == null || 
+				if (client.getTokenEndpointAuthSigningAlg() != null && 
 						!client.getTokenEndpointAuthSigningAlg().equals(alg)) {
 					throw new InvalidClientException("Client's registered request object signing algorithm (" + client.getRequestObjectSigningAlg() + ") does not match request object's actual algorithm (" + alg.getName() + ")");
 				}
