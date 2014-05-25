@@ -81,6 +81,7 @@ public class PromptFilter extends GenericFilterBean {
 		// skip everything that's not an authorize URL
 		if (!request.getRequestURI().startsWith("/authorize")) {
 			chain.doFilter(req, res);
+			return;
 		}
 
 		// we have to create our own auth request in order to get at all the parmeters appropriately
