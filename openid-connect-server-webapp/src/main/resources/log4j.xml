@@ -30,7 +30,22 @@
 	<logger name="org.mitre.openid">
 		<level value="info" />
 	</logger>
-
+	<logger name="org.mitre.oauth2">
+		<level value="info" />
+	</logger>
+	<logger name="org.mitre.discovery">
+		<level value="info" />
+	</logger>
+	<logger name="org.mitre.jose">
+		<level value="info" />
+	</logger>
+	<logger name="org.mitre.jwt">
+		<level value="info" />
+	</logger>
+	<logger name="org.mitre.util">
+		<level value="info" />
+	</logger>
+					
 	<!-- 3rdparty Loggers -->
 	<logger name="org.springframework.core">
 		<level value="info" />

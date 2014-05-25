@@ -43,8 +43,7 @@ import com.google.common.collect.Collections2;
  * @author Michael Joseph Walsh, aanganes
  *
  */
-@Service
-@Transactional
+@Service("defaultApprovedSiteService")
 public class DefaultApprovedSiteService implements ApprovedSiteService {
 
 	private static Logger logger = LoggerFactory.getLogger(DefaultApprovedSiteService.class);
@@ -159,11 +158,13 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 		logger.info("Clearing expired approved sites");
 
 		Collection<ApprovedSite> expiredSites = getExpired();
+		logger.info("Found " + expiredSites.size() + " expired approved sites.");
 		if (expiredSites != null) {
 			for (ApprovedSite expired : expiredSites) {
 				remove(expired);
 			}
 		}
+		
 	}
 
 	private Predicate<ApprovedSite> isExpired = new Predicate<ApprovedSite>() {

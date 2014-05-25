@@ -62,7 +62,7 @@ import com.nimbusds.jwt.PlainJWT;
  * @author jricher
  * 
  */
-@Service
+@Service("defaultOAuth2ProviderTokenService")
 public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityService {
 
 	private static Logger logger = LoggerFactory.getLogger(DefaultOAuth2ProviderTokenService.class);
