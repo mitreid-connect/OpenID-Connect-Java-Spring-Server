@@ -79,7 +79,7 @@ public class PromptFilter extends GenericFilterBean {
 		HttpServletResponse response = (HttpServletResponse) res;
 		
 		// skip everything that's not an authorize URL
-		if (!request.getRequestURI().startsWith("/authorize")) {
+		if (!request.getServletPath().startsWith("/authorize")) {
 			chain.doFilter(req, res);
 			return;
 		}
