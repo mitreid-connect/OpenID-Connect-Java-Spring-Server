@@ -296,7 +296,7 @@ public class ClientAPI {
 		if (client == null) {
 			logger.error("apiShowClient failed; client with id " + id + " could not be found.");
 			model.addAttribute("code", HttpStatus.NOT_FOUND);
-			model.addAttribute("errorMessage", "The requested client with id " + id + "could not be found.");
+			model.addAttribute("errorMessage", "The requested client with id " + id + " could not be found.");
 			return "jsonErrorView";
 		}
 
