@@ -212,7 +212,6 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 		claims.setExpirationTime(token.getExpiration());
 		claims.setJWTID(UUID.randomUUID().toString()); // set a random NONCE in the middle of it
 
-		// TODO: use client's default signing algorithm
 		JWSAlgorithm signingAlg = jwtService.getDefaultSigningAlgorithm();
 		SignedJWT signed = new SignedJWT(new JWSHeader(signingAlg), claims);
 
@@ -221,7 +220,47 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 		token.setJwt(signed);
 
 		return token;
+	}
 
+	/**
+	 * @param client
+	 * @return
+	 * @throws AuthenticationException
+	 */
+	@Override
+	public OAuth2AccessTokenEntity createResourceAccessToken(ClientDetailsEntity client) {
+
+		Map<String, String> authorizationParameters = Maps.newHashMap();
+		OAuth2Request clientAuth = new OAuth2Request(authorizationParameters, client.getClientId(),
+				Sets.newHashSet(new SimpleGrantedAuthority("ROLE_CLIENT")), true,
+				Sets.newHashSet(SystemScopeService.RESOURCE_TOKEN_SCOPE), null, null, null, null);
+		OAuth2Authentication authentication = new OAuth2Authentication(clientAuth, null);
+
+		OAuth2AccessTokenEntity token = new OAuth2AccessTokenEntity();
+		token.setClient(client);
+		token.setScope(Sets.newHashSet(SystemScopeService.RESOURCE_TOKEN_SCOPE));
+
+		AuthenticationHolderEntity authHolder = new AuthenticationHolderEntity();
+		authHolder.setAuthentication(authentication);
+		authHolder = authenticationHolderRepository.save(authHolder);
+		token.setAuthenticationHolder(authHolder);
+
+		JWTClaimsSet claims = new JWTClaimsSet();
+
+		claims.setAudience(Lists.newArrayList(client.getClientId()));
+		claims.setIssuer(configBean.getIssuer());
+		claims.setIssueTime(new Date());
+		claims.setExpirationTime(token.getExpiration());
+		claims.setJWTID(UUID.randomUUID().toString()); // set a random NONCE in the middle of it
+
+		JWSAlgorithm signingAlg = jwtService.getDefaultSigningAlgorithm();
+		SignedJWT signed = new SignedJWT(new JWSHeader(signingAlg), claims);
+
+		jwtService.signJwt(signed);
+
+		token.setJwt(signed);
+
+		return token;
 	}
 
 	/**

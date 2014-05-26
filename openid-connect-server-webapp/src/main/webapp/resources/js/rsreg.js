@@ -105,7 +105,7 @@ var ResRegRootView = Backbone.View.extend({
 		var clientId = $('#clientId').val();
 		var token = $('#regtoken').val();
 		
-		var client = new DynRegClient({
+		var client = new ResRegClient({
 			client_id: clientId,
 			registration_access_token: token
 		});
@@ -185,7 +185,7 @@ var ResRegEditView = Backbone.View.extend({
             this.model.destroy({
                 success:function () {
                 	self.remove();
-                	app.navigate('dev/dynreg', {trigger: true});
+                	app.navigate('dev/resource', {trigger: true});
                 },
                 error:function (error, response) {
             		console.log("An error occurred when deleting a client");
@@ -299,10 +299,8 @@ var ResRegEditView = Backbone.View.extend({
 
         var attrs = {
             client_name:$('#clientName input').val(),
-            redirect_uris: this.redirectUrisCollection.pluck("item"),
             client_description:$('#clientDescription textarea').val(),
             logo_uri:$('#logoUri input').val(),
-            grant_types: grantTypes,
             scope: scopes,
             
             tos_uri: $('#tosUri input').val(),
@@ -310,25 +308,8 @@ var ResRegEditView = Backbone.View.extend({
             client_uri: $('#clientUri input').val(),
             application_type: $('#applicationType input').filter(':checked').val(),
             jwks_uri: $('#jwksUri input').val(),
-            subject_type: $('#subjectType input').filter(':checked').val(),
             token_endpoint_auth_method: $('#tokenEndpointAuthMethod input').filter(':checked').val(),
-            response_types: responseTypes,
-            sector_identifier_uri: $('#sectorIdentifierUri input').val(),
-            initiate_login_uri: $('#initiateLoginUri input').val(),
-            post_logout_redirect_uri: $('#postLogoutRedirectUri input').val(),
-            reuse_refresh_token: $('#reuseRefreshToken').is(':checked'),
-            require_auth_time: $('#requireAuthTime input').is(':checked'),
-            default_max_age: parseInt($('#defaultMaxAge input').val()),
             contacts: contacts,
-            request_uris: this.requestUrisCollection.pluck('item'),
-            default_acr_values: this.defaultAcrValuesCollection.pluck('item'),
-            request_object_signing_alg: this.defaultToNull($('#requestObjectSigningAlg select').val()),
-            userinfo_signed_response_alg: this.defaultToNull($('#userInfoSignedResponseAlg select').val()),
-            userinfo_encrypted_response_alg: this.defaultToNull($('#userInfoEncryptedResponseAlg select').val()),
-            userinfo_encrypted_response_enc: this.defaultToNull($('#userInfoEncryptedResponseEnc select').val()),
-            id_token_signed_response_alg: this.defaultToNull($('#idTokenSignedResponseAlg select').val()),
-            id_token_encrypted_response_alg: this.defaultToNull($('#idTokenEncryptedResponseAlg select').val()),
-            id_token_encrypted_response_enc: this.defaultToNull($('#idTokenEncryptedResponseEnc select').val()),
             token_endpoint_auth_signing_alg: this.defaultToNull($('#tokenEndpointAuthSigningAlg select').val())
         };
 
@@ -343,9 +324,9 @@ var ResRegEditView = Backbone.View.extend({
         this.model.save(attrs, {
             success:function () {
             	// switch to an "edit" view
-            	app.navigate('dev/dynreg/edit', {trigger: true});
+            	app.navigate('dev/resource/edit', {trigger: true});
             	_self.remove();
-    			var view = new DynRegEditView({model: _self.model, systemScopeList: _self.options.systemScopeList});
+    			var view = new ResRegEditView({model: _self.model, systemScopeList: _self.options.systemScopeList});
     			
     			view.load(function() {
     				// reload

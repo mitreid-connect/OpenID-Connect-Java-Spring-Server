@@ -17,6 +17,7 @@
 package org.mitre.openid.connect.web;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -53,8 +54,8 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 
 @Controller
-@RequestMapping(value = "register")
-public class ClientDynamicRegistrationEndpoint {
+@RequestMapping(value = "resource")
+public class ProtectedResourceRegistrationEndpoint {
 
 	@Autowired
 	private ClientDetailsEntityService clientService;
@@ -77,7 +78,7 @@ public class ClientDynamicRegistrationEndpoint {
 	@Autowired
 	private OIDCTokenService connectTokenService;
 
-	private static Logger logger = LoggerFactory.getLogger(ClientDynamicRegistrationEndpoint.class);
+	private static Logger logger = LoggerFactory.getLogger(ProtectedResourceRegistrationEndpoint.class);
 
 	/**
 	 * Create a new Client, issue a client ID, and create a registration access token.
@@ -87,7 +88,7 @@ public class ClientDynamicRegistrationEndpoint {
 	 * @return
 	 */
 	@RequestMapping(method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
-	public String registerNewClient(@RequestBody String jsonString, Model m) {
+	public String registerNewProtectedResource(@RequestBody String jsonString, Model m) {
 
 		ClientDetailsEntity newClient = ClientDetailsEntityJsonProcessor.parse(jsonString);
 
@@ -119,45 +120,11 @@ public class ClientDynamicRegistrationEndpoint {
 			newClient.setScope(scopeService.toStrings(allowedScopes));
 
 
-			// set default grant types if needed
-			if (newClient.getGrantTypes() == null || newClient.getGrantTypes().isEmpty()) {
-				if (newClient.getScope().contains("offline_access")) { // client asked for offline access
-					newClient.setGrantTypes(Sets.newHashSet("authorization_code", "refresh_token")); // allow authorization code and refresh token grant types by default
-				} else {
-					newClient.setGrantTypes(Sets.newHashSet("authorization_code")); // allow authorization code grant type by default
-				}
-			}
+			// no grant types are allowed
+			newClient.setGrantTypes(new HashSet<String>());
+			newClient.setResponseTypes(new HashSet<String>());
+			newClient.setRedirectUris(new HashSet<String>());
 			
-			// check to make sure this client registered a redirect URI if using a redirect flow
-			if (newClient.getGrantTypes().contains("authorization_code") || newClient.getGrantTypes().contains("implicit")) {
-				if (newClient.getRedirectUris() == null || newClient.getRedirectUris().isEmpty()) {
-					// return an error
-					m.addAttribute("error", "invalid_client_uri"); 
-					m.addAttribute("errorMessage", "Clients using a redirect-based grant type must register at least one redirect URI.");
-					m.addAttribute("code", HttpStatus.BAD_REQUEST);
-					return "jsonErrorView";
-				}
-				
-				for (String uri : newClient.getRedirectUris()) {
-					if (blacklistService.isBlacklisted(uri)) {
-						// return an error
-						m.addAttribute("error", "invalid_client_uri"); 
-						m.addAttribute("errorMessage", "Redirect URI is not allowed: " + uri);
-						m.addAttribute("code", HttpStatus.BAD_REQUEST);
-						return "jsonErrorView";
-					}					
-				}
-			}
-			
-
-			// set default response types if needed
-			// TODO: these aren't checked by SECOAUTH
-			// TODO: the consistency between the response_type and grant_type needs to be checked by the client service, most likely
-			
-			if (newClient.getResponseTypes() == null || newClient.getResponseTypes().isEmpty()) {
-				newClient.setResponseTypes(Sets.newHashSet("code")); // default to allowing only the auth code flow
-			}
-
 			if (newClient.getTokenEndpointAuthMethod() == null) {
 				newClient.setTokenEndpointAuthMethod(AuthMethod.SECRET_BASIC);
 			}
@@ -169,29 +136,46 @@ public class ClientDynamicRegistrationEndpoint {
 				// we need to generate a secret
 				newClient = clientService.generateClientSecret(newClient);
 			}
-
-			// set some defaults for token timeouts
-			newClient.setAccessTokenValiditySeconds((int)TimeUnit.HOURS.toSeconds(1)); // access tokens good for 1hr
-			newClient.setIdTokenValiditySeconds((int)TimeUnit.MINUTES.toSeconds(10)); // id tokens good for 10min
-			newClient.setRefreshTokenValiditySeconds(null); // refresh tokens good until revoked
+			
+			// don't issue tokens to this client
+			newClient.setAccessTokenValiditySeconds(0);
+			newClient.setIdTokenValiditySeconds(0);
+			newClient.setRefreshTokenValiditySeconds(0);
+			
+			// clear out unused fields
+			newClient.setDefaultACRvalues(new HashSet<String>());
+			newClient.setDefaultMaxAge(null);
+			newClient.setIdTokenEncryptedResponseAlg(null);
+			newClient.setIdTokenEncryptedResponseEnc(null);
+			newClient.setIdTokenSignedResponseAlg(null);
+			newClient.setInitiateLoginUri(null);
+			newClient.setPostLogoutRedirectUri(null);
+			newClient.setRequestObjectSigningAlg(null);
+			newClient.setRequireAuthTime(null);
+			newClient.setReuseRefreshToken(false);
+			newClient.setSectorIdentifierUri(null);
+			newClient.setSubjectType(null);
+			newClient.setUserInfoEncryptedResponseAlg(null);
+			newClient.setUserInfoEncryptedResponseEnc(null);
+			newClient.setUserInfoSignedResponseAlg(null);
 
 			// this client has been dynamically registered (obviously)
 			newClient.setDynamicallyRegistered(true);
 			
-			// this client can't do token introspection
-			newClient.setAllowIntrospection(false);
+			// this client has access to the introspection endpoint
+			newClient.setAllowIntrospection(true);
 
 			// now save it
 			try {
 				ClientDetailsEntity savedClient = clientService.saveNewClient(newClient);
 
 				// generate the registration access token
-				OAuth2AccessTokenEntity token = connectTokenService.createRegistrationAccessToken(savedClient);
+				OAuth2AccessTokenEntity token = connectTokenService.createResourceAccessToken(savedClient);
 				tokenService.saveAccessToken(token);
 
 				// send it all out to the view
 
-				RegisteredClient registered = new RegisteredClient(savedClient, token.getValue(), config.getIssuer() + "register/" + UriUtils.encodePathSegment(savedClient.getClientId(), "UTF-8"));
+				RegisteredClient registered = new RegisteredClient(savedClient, token.getValue(), config.getIssuer() + "resource/" + UriUtils.encodePathSegment(savedClient.getClientId(), "UTF-8"));
 				m.addAttribute("client", registered);
 				m.addAttribute("code", HttpStatus.CREATED); // http 201
 
@@ -223,9 +207,9 @@ public class ClientDynamicRegistrationEndpoint {
 	 * @param auth
 	 * @return
 	 */
-	@PreAuthorize("hasRole('ROLE_CLIENT') and #oauth2.hasScope('" + SystemScopeService.REGISTRATION_TOKEN_SCOPE + "')")
+	@PreAuthorize("hasRole('ROLE_CLIENT') and #oauth2.hasScope('" + SystemScopeService.RESOURCE_TOKEN_SCOPE + "')")
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = "application/json")
-	public String readClientConfiguration(@PathVariable("id") String clientId, Model m, OAuth2Authentication auth) {
+	public String readResourceConfiguration(@PathVariable("id") String clientId, Model m, OAuth2Authentication auth) {
 
 		ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
 
@@ -237,7 +221,7 @@ public class ClientDynamicRegistrationEndpoint {
 			OAuth2AccessTokenEntity token = tokenService.readAccessToken(details.getTokenValue());
 
 			try {
-				RegisteredClient registered = new RegisteredClient(client, token.getValue(), config.getIssuer() + "register/" +  UriUtils.encodePathSegment(client.getClientId(), "UTF-8"));
+				RegisteredClient registered = new RegisteredClient(client, token.getValue(), config.getIssuer() + "resource/" +  UriUtils.encodePathSegment(client.getClientId(), "UTF-8"));
 
 				// send it all out to the view
 				m.addAttribute("client", registered);
@@ -251,7 +235,7 @@ public class ClientDynamicRegistrationEndpoint {
 			}
 		} else {
 			// client mismatch
-			logger.error("readClientConfiguration failed, client ID mismatch: "
+			logger.error("readResourceConfiguration failed, client ID mismatch: "
 					+ clientId + " and " + auth.getOAuth2Request().getClientId() + " do not match.");
 			m.addAttribute("code", HttpStatus.FORBIDDEN); // http 403
 
@@ -267,9 +251,9 @@ public class ClientDynamicRegistrationEndpoint {
 	 * @param auth
 	 * @return
 	 */
-	@PreAuthorize("hasRole('ROLE_CLIENT') and #oauth2.hasScope('" + SystemScopeService.REGISTRATION_TOKEN_SCOPE + "')")
+	@PreAuthorize("hasRole('ROLE_CLIENT') and #oauth2.hasScope('" + SystemScopeService.RESOURCE_TOKEN_SCOPE + "')")
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
-	public String updateClient(@PathVariable("id") String clientId, @RequestBody String jsonString, Model m, OAuth2Authentication auth) {
+	public String updateProtectedResource(@PathVariable("id") String clientId, @RequestBody String jsonString, Model m, OAuth2Authentication auth) {
 
 
 		ClientDetailsEntity newClient = ClientDetailsEntityJsonProcessor.parse(jsonString);
@@ -288,7 +272,7 @@ public class ClientDynamicRegistrationEndpoint {
 			newClient.setIdTokenValiditySeconds(oldClient.getIdTokenValiditySeconds());
 			newClient.setRefreshTokenValiditySeconds(oldClient.getRefreshTokenValiditySeconds());
 			newClient.setDynamicallyRegistered(true); // it's still dynamically registered
-			newClient.setAllowIntrospection(false); // dynamically registered clients can't do introspection -- use the resource registration instead
+			newClient.setAllowIntrospection(oldClient.isAllowIntrospection());
 			newClient.setAuthorities(oldClient.getAuthorities());
 			newClient.setClientDescription(oldClient.getClientDescription());
 			newClient.setCreatedAt(oldClient.getCreatedAt());
@@ -349,9 +333,9 @@ public class ClientDynamicRegistrationEndpoint {
 	 * @param auth
 	 * @return
 	 */
-	@PreAuthorize("hasRole('ROLE_CLIENT') and #oauth2.hasScope('" + SystemScopeService.REGISTRATION_TOKEN_SCOPE + "')")
+	@PreAuthorize("hasRole('ROLE_CLIENT') and #oauth2.hasScope('" + SystemScopeService.RESOURCE_TOKEN_SCOPE + "')")
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "application/json")
-	public String deleteClient(@PathVariable("id") String clientId, Model m, OAuth2Authentication auth) {
+	public String deleteResource(@PathVariable("id") String clientId, Model m, OAuth2Authentication auth) {
 
 		ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
 

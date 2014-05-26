@@ -55,4 +55,12 @@ public interface OIDCTokenService {
 	 */
 	public OAuth2AccessTokenEntity createRegistrationAccessToken(ClientDetailsEntity client);
 
+	/**
+	 * Create a resource access token for the given client (protected resource).
+	 * 
+	 * @param client
+	 * @return
+	 */
+	public OAuth2AccessTokenEntity createResourceAccessToken(ClientDetailsEntity client);
+	
 }
