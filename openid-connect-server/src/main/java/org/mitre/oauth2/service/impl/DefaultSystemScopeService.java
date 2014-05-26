@@ -69,7 +69,8 @@ public class DefaultSystemScopeService implements SystemScopeService {
 		public boolean apply(String input) {
 			return (input != null &&
 					!input.equals(ID_TOKEN_SCOPE) &&
-					!input.equals(REGISTRATION_TOKEN_SCOPE));
+					!input.equals(REGISTRATION_TOKEN_SCOPE) &&
+					!input.equals(RESOURCE_TOKEN_SCOPE));
 		}
 	};
 
