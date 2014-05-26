@@ -40,8 +40,6 @@ var ResRegClient = Backbone.Model.extend({
         
         request_uris:[],
         
-        client_description:null,
-        
         registration_access_token:null,
         registration_client_uri:null
     },
@@ -299,7 +297,6 @@ var ResRegEditView = Backbone.View.extend({
 
         var attrs = {
             client_name:$('#clientName input').val(),
-            client_description:$('#clientDescription textarea').val(),
             logo_uri:$('#logoUri input').val(),
             scope: scopes,
             

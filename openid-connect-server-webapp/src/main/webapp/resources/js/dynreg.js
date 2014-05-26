@@ -40,8 +40,6 @@ var DynRegClient = Backbone.Model.extend({
         
         request_uris:[],
         
-        client_description:null,
-        
         registration_access_token:null,
         registration_client_uri:null
     },
@@ -300,7 +298,6 @@ var DynRegEditView = Backbone.View.extend({
         var attrs = {
             client_name:$('#clientName input').val(),
             redirect_uris: this.redirectUrisCollection.pluck("item"),
-            client_description:$('#clientDescription textarea').val(),
             logo_uri:$('#logoUri input').val(),
             grant_types: grantTypes,
             scope: scopes,
