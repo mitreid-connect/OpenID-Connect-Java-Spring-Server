@@ -525,7 +525,8 @@ var ClientFormView = Backbone.View.extend({
     		$('#logoPreview', this.el).empty();
     		$('#logoPreview', this.el).attr('src', $('#logoUri input').val());
     	} else {
-    		$('#logoBlock', this.el).hide();
+    		//$('#logoBlock', this.el).hide();
+    		$('#logoPreview', this.el).attr('src', 'resources/images/logo_placeholder.gif');
     	}
     },
 
