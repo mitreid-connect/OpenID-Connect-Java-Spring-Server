@@ -426,6 +426,10 @@ var AppRouter = Backbone.Router.extend({
         "dev/dynreg/new":"newDynReg",
         "dev/dynreg/edit":"editDynReg",
         
+        "dev/resource":"resReg",
+        "dev/resource/new":"newResReg",
+        "dev/resource/edit":"editResReg",
+        
         "": "root"
         	
     },
@@ -456,6 +460,7 @@ var AppRouter = Backbone.Router.extend({
         this.systemScopeListView = new SystemScopeListView({model:this.systemScopeList});
         this.tokensListView = new TokenListView({model: {access: this.accessTokensList, refresh: this.refreshTokensList}, clientList: this.clientList, systemScopeList: this.systemScopeList});
     	this.dynRegRootView = new DynRegRootView({systemScopeList: this.systemScopeList});
+        this.resRegRootView = new ResRegRootView({systemScopeList: this.systemScopeList});
         
         this.breadCrumbView = new BreadCrumbView({
             collection:new Backbone.Collection()
@@ -893,10 +898,63 @@ var AppRouter = Backbone.Router.extend({
     	this.breadCrumbView.collection.add([
              {text:"Home", href:""},
              {text:"Client Registration", href:"manage/#dev/dynreg"},
-             {text:"Edit", href:"manage/#dev/dynreg/new"}
+             {text:"Edit", href:"manage/#dev/dynreg/edit"}
         ]);
     	
     	setPageTitle("Edit a Dynamically Registered Client");
+    	// note that this doesn't actually load the client, that's supposed to happen elsewhere...
+    },
+    
+    resReg:function() {
+    	this.breadCrumbView.collection.reset();
+    	this.breadCrumbView.collection.add([
+             {text:"Home", href:""},
+             {text:"Protected Resource Registration", href:"manage/#dev/resource"}
+        ]);
+    	
+    	this.resRegRootView.load(function() {
+    			$('#content').html(app.resRegRootView.render().el);
+    			
+    			setPageTitle("Self-service Protected Resource Registration");
+    	});
+    	
+    },
+    
+    newResReg:function() {
+    	this.breadCrumbView.collection.reset();
+    	this.breadCrumbView.collection.add([
+             {text:"Home", href:""},
+             {text:"Protected Resource Registration", href:"manage/#dev/resource"},
+             {text:"New", href:"manage/#dev/resource/new"}
+        ]);
+    	
+    	var client = new ResRegClient();
+    	var view = new ResRegEditView({model: client, systemScopeList:this.systemScopeList});
+    	
+    	view.load(function() {
+
+    		client.set({
+        		scope: _.uniq(_.flatten(app.systemScopeList.defaultDynRegScopes().pluck("value"))).join(" "),
+        		token_endpoint_auth_method: 'client_secret_basic',
+        	}, { silent: true });
+    	
+    		$('#content').html(view.render().el);
+    		view.delegateEvents();
+    		setPageTitle("Dynamically Register a New Protected Resource");
+    		
+    	});
+    	
+    },
+    
+    editResReg:function() {
+    	this.breadCrumbView.collection.reset();
+    	this.breadCrumbView.collection.add([
+             {text:"Home", href:""},
+             {text:"Protected Resource Registration", href:"manage/#dev/resource"},
+             {text:"Edit", href:"manage/#dev/resource/edit"}
+        ]);
+    	
+    	setPageTitle("Edit a Dynamically Registered Protected Resource");
     	// note that this doesn't actually load the client, that's supposed to happen elsewhere...
     },
     
@@ -937,6 +995,7 @@ $(function () {
     $.get('resources/template/scope.html', _load);
     $.get('resources/template/whitelist.html', _load);
     $.get('resources/template/dynreg.html', _load);
+    $.get('resources/template/rsreg.html', _load);
     $.get('resources/template/token.html', _load);
     
     jQuery.ajaxSetup({async:true});

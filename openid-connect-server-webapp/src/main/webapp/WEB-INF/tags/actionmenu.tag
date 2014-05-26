@@ -16,3 +16,4 @@
 <li class="divider"></li>
 <li class="nav-header">Developer</li>
 <li><a href="manage/#dev/dynreg">Self-service client registration</a><li>
+<li><a href="manage/#dev/resource">Self-service protected resource registration</a><li>
