@@ -195,8 +195,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 				token.setRefreshToken(refreshToken);
 			}
 
-			tokenEnhancer.enhance(token, authentication);
-
+			token = (OAuth2AccessTokenEntity) tokenEnhancer.enhance(token, authentication);
 			tokenRepository.saveAccessToken(token);
 
 			//Add approved site reference, if any
