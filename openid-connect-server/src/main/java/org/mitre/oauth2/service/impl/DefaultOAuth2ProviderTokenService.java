@@ -190,13 +190,14 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 
 
 				// save the token first so that we can set it to a member of the access token (NOTE: is this step necessary?)
-				tokenRepository.saveRefreshToken(refreshToken);
+				OAuth2RefreshTokenEntity savedRefreshToken = tokenRepository.saveRefreshToken(refreshToken);
 
-				token.setRefreshToken(refreshToken);
+				token.setRefreshToken(savedRefreshToken);
 			}
+			
+			OAuth2AccessTokenEntity enhancedToken = (OAuth2AccessTokenEntity) tokenEnhancer.enhance(token, authentication);
 
-			token = (OAuth2AccessTokenEntity) tokenEnhancer.enhance(token, authentication);
-			tokenRepository.saveAccessToken(token);
+			OAuth2AccessTokenEntity savedToken = tokenRepository.saveAccessToken(enhancedToken);
 
 			//Add approved site reference, if any
 			OAuth2Request originalAuthRequest = authHolder.getAuthentication().getOAuth2Request();
@@ -206,17 +207,17 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 				Long apId = (Long) originalAuthRequest.getExtensions().get("approved_site");
 				ApprovedSite ap = approvedSiteService.getById(apId);
 				Set<OAuth2AccessTokenEntity> apTokens = ap.getApprovedAccessTokens();
-				apTokens.add(token);
+				apTokens.add(savedToken);
 				ap.setApprovedAccessTokens(apTokens);
 				approvedSiteService.save(ap);
 
 			}
 
-			if (token.getRefreshToken() != null) {
-				tokenRepository.saveRefreshToken(token.getRefreshToken()); // make sure we save any changes that might have been enhanced
+			if (savedToken.getRefreshToken() != null) {
+				tokenRepository.saveRefreshToken(savedToken.getRefreshToken()); // make sure we save any changes that might have been enhanced
 			}
 
-			return token;
+			return savedToken;
 		}
 
 		throw new AuthenticationCredentialsNotFoundException("No authentication credentials found");
