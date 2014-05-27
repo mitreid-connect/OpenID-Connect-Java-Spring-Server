@@ -18,9 +18,7 @@ package org.mitre.openid.connect.web;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.oauth2.model.ClientDetailsEntity;
@@ -50,7 +48,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.util.UriUtils;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 
 @Controller
@@ -318,7 +315,8 @@ public class ProtectedResourceRegistrationEndpoint {
 			}
 		} else {
 			// client mismatch
-			logger.error("readClientConfiguration failed, client ID mismatch: "
+			logger.error("updateProtectedResource" +
+					" failed, client ID mismatch: "
 					+ clientId + " and " + auth.getOAuth2Request().getClientId() + " do not match.");
 			m.addAttribute("code", HttpStatus.FORBIDDEN); // http 403
 
