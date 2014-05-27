@@ -55,7 +55,7 @@ public class JwtBearerAuthenticationProvider implements AuthenticationProvider {
 	// map of verifiers, load keys for clients
 	@Autowired
 	private JWKSetCacheService validators;
-	
+
 	// map of symmetric verifiers for client secrets
 	@Autowired
 	private SymmetricCacheService symmetricCacheService;
@@ -92,15 +92,15 @@ public class JwtBearerAuthenticationProvider implements AuthenticationProvider {
 
 				JWSAlgorithm alg = jws.getHeader().getAlgorithm();
 
-				if (client.getTokenEndpointAuthSigningAlg() != null && 
+				if (client.getTokenEndpointAuthSigningAlg() != null &&
 						!client.getTokenEndpointAuthSigningAlg().equals(alg)) {
 					throw new InvalidClientException("Client's registered request object signing algorithm (" + client.getRequestObjectSigningAlg() + ") does not match request object's actual algorithm (" + alg.getName() + ")");
 				}
 
 				if (client.getTokenEndpointAuthMethod().equals(AuthMethod.PRIVATE_KEY) &&
 						(alg.equals(JWSAlgorithm.RS256)
-						|| alg.equals(JWSAlgorithm.RS384)
-						|| alg.equals(JWSAlgorithm.RS512))) {
+								|| alg.equals(JWSAlgorithm.RS384)
+								|| alg.equals(JWSAlgorithm.RS512))) {
 
 					JwtSigningAndValidationService validator = validators.getValidator(client.getJwksUri());
 
@@ -113,24 +113,24 @@ public class JwtBearerAuthenticationProvider implements AuthenticationProvider {
 					}
 				} else if (client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_JWT) &&
 						(alg.equals(JWSAlgorithm.HS256)
-						|| alg.equals(JWSAlgorithm.HS384)
-						|| alg.equals(JWSAlgorithm.HS512))) {
+								|| alg.equals(JWSAlgorithm.HS384)
+								|| alg.equals(JWSAlgorithm.HS512))) {
 
 					// it's HMAC, we need to make a validator based on the client secret
-	
+
 					JwtSigningAndValidationService validator = symmetricCacheService.getSymmetricValidtor(client);
-	
+
 					if (validator == null) {
 						throw new AuthenticationServiceException("Unable to create signature validator for client's secret: " + client.getClientSecret());
 					}
-	
+
 					if (!validator.validateSignature(jws)) {
 						throw new AuthenticationServiceException("Signature did not validate for presented JWT authentication.");
 					}
-	
+
 				}
 			}
-			
+
 			// check the issuer
 			if (jwtClaims.getIssuer() == null) {
 				throw new AuthenticationServiceException("Assertion Token Issuer is null");

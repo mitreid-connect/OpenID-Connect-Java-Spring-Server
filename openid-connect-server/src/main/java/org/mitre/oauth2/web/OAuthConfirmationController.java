@@ -69,13 +69,13 @@ public class OAuthConfirmationController {
 
 	@Autowired
 	private ScopeClaimTranslationService scopeClaimTranslationService;
-	
+
 	@Autowired
 	private UserInfoService userInfoService;
-	
+
 	@Autowired
 	private StatsService statsService;
-	
+
 	private static Logger logger = LoggerFactory.getLogger(OAuthConfirmationController.class);
 
 	public OAuthConfirmationController() {
@@ -131,7 +131,7 @@ public class OAuthConfirmationController {
 
 		model.put("redirect_uri", redirect_uri);
 
-		
+
 		// pre-process the scopes
 		Set<SystemScope> scopes = scopeService.fromStrings(authRequest.getScope());
 
@@ -157,7 +157,7 @@ public class OAuthConfirmationController {
 
 		for (SystemScope systemScope : sortedScopes) {
 			Map<String, String> claimValues = new HashMap<String, String>();
-			
+
 			Set<String> claims = scopeClaimTranslationService.getClaimsForScope(systemScope.getValue());
 			for (String claim : claims) {
 				if (userJson.has(claim) && userJson.get(claim).isJsonPrimitive()) {
@@ -165,23 +165,23 @@ public class OAuthConfirmationController {
 					claimValues.put(claim, userJson.get(claim).getAsString());
 				}
 			}
-			
+
 			claimsForScopes.put(systemScope.getValue(), claimValues);
 		}
-		
+
 		model.put("claims", claimsForScopes);
 
 		// client stats
 		Integer count = statsService.getCountForClientId(client.getId());
 		model.put("count", count);
-		
-		
+
+
 		// contacts
 		if (client.getContacts() != null) {
 			String contacts = Joiner.on(", ").join(client.getContacts());
 			model.put("contacts", contacts);
 		}
-		
+
 		// if the client is over a week old and has more than one registration, don't give such a big warning
 		// instead, tag as "Generally Recognized As Safe (gras)
 		Date lastWeek = new Date(System.currentTimeMillis() + (60 * 60 * 24 * 7 * 1000));
@@ -191,10 +191,10 @@ public class OAuthConfirmationController {
 		} else {
 			model.put("gras", false);
 		}
-		
+
 		// inject a random value for CSRF purposes
 		model.put("csrf", authRequest.getExtensions().get("csrf"));
-		
+
 		return "approve";
 	}
 

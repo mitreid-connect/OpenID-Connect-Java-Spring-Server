@@ -113,8 +113,8 @@ public class DiscoveryEndpoint {
 					model.addAttribute("code", HttpStatus.NOT_FOUND);
 					return "httpCodeView";
 				}
-				
-				
+
+
 			} else {
 				logger.info("Unknown URI format: " + resource);
 				model.addAttribute("code", HttpStatus.NOT_FOUND);
@@ -261,7 +261,7 @@ public class DiscoveryEndpoint {
 		Collection<JWSAlgorithm> serverSigningAlgs = signService.getAllSigningAlgsSupported();
 		Collection<JWSAlgorithm> clientSymmetricSigningAlgs = Lists.newArrayList(JWSAlgorithm.HS256, JWSAlgorithm.HS384, JWSAlgorithm.HS512);
 		Collection<JWSAlgorithm> clientSymmetricAndAsymmetricSigningAlgs = Lists.newArrayList(JWSAlgorithm.HS256, JWSAlgorithm.HS384, JWSAlgorithm.HS512, JWSAlgorithm.RS256, JWSAlgorithm.RS384, JWSAlgorithm.RS512);
-		
+
 		Map<String, Object> m = new HashMap<String, Object>();
 		m.put("issuer", config.getIssuer());
 		m.put("authorization_endpoint", baseUrl + "authorize");

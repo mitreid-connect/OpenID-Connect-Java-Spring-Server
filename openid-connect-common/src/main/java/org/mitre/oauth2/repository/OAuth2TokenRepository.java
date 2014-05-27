@@ -57,7 +57,7 @@ public interface OAuth2TokenRepository {
 	public Set<OAuth2AccessTokenEntity> getAllAccessTokens();
 
 	public Set<OAuth2RefreshTokenEntity> getAllRefreshTokens();
-	
+
 	public Set<OAuth2AccessTokenEntity> getAllExpiredAccessTokens();
 
 	public Set<OAuth2RefreshTokenEntity> getAllExpiredRefreshTokens();

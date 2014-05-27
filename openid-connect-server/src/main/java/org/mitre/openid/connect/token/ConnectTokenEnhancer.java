@@ -33,7 +33,6 @@ import org.mitre.openid.connect.service.UserInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
@@ -41,7 +40,6 @@ import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
-import com.nimbusds.jose.Algorithm;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jwt.JWTClaimsSet;
@@ -72,7 +70,7 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 
 	@Autowired
 	private JWKSetCacheService encryptors;
-	
+
 	@Autowired
 	private SymmetricCacheService symmetricCacheService;
 
@@ -105,7 +103,7 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 		jwtService.signJwt(signed);
 
 		token.setJwt(signed);
-		
+
 		/**
 		 * Authorization request scope MUST include "openid" in OIDC, but access token request
 		 * may or may not include the scope parameter. As long as the AuthorizationRequest
@@ -115,18 +113,18 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 		 * Also, there must be a user authentication involved in the request for it to be considered
 		 * OIDC and not OAuth, so we check for that as well.
 		 */
-		if (originalAuthRequest.getScope().contains("openid")  
+		if (originalAuthRequest.getScope().contains("openid")
 				&& !authentication.isClientOnly()) {
 
 			String username = authentication.getName();
 			UserInfo userInfo = userInfoService.getByUsernameAndClientId(username, clientId);
 
 			if (userInfo != null) {
-			
+
 				OAuth2AccessTokenEntity idTokenEntity = connectTokenService.createIdToken(client,
 						originalAuthRequest, claims.getIssueTime(),
 						userInfo.getSub(), token);
-	
+
 				// attach the id token to the parent access token
 				token.setIdToken(idTokenEntity);
 			} else {

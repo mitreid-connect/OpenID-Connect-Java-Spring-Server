@@ -31,7 +31,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -50,7 +49,7 @@ public class UserInfoEndpoint {
 
 	@Autowired
 	private UserInfoService userInfoService;
-	
+
 	@Autowired
 	private ClientDetailsEntityService clientService;
 
@@ -61,7 +60,7 @@ public class UserInfoEndpoint {
 	 */
 	@PreAuthorize("hasRole('ROLE_USER') and #oauth2.hasScope('openid')")
 	@RequestMapping(value="/userinfo", method= {RequestMethod.GET, RequestMethod.POST}, produces = {"application/json", "application/jwt"})
-	public String getInfo(@RequestParam(value="claims", required=false) String claimsRequestJsonString, 
+	public String getInfo(@RequestParam(value="claims", required=false) String claimsRequestJsonString,
 			@RequestHeader(value="Accept") String acceptHeader,
 			OAuth2Authentication auth, Model model) {
 
@@ -93,9 +92,9 @@ public class UserInfoEndpoint {
 		// content negotiation
 		List<MediaType> mediaTypes = MediaType.parseMediaTypes(acceptHeader);
 		MediaType.sortBySpecificityAndQuality(mediaTypes);
-		
+
 		MediaType jose = new MediaType("application", "jwt");
-		
+
 		for (MediaType m : mediaTypes) {
 			if (!m.isWildcardType() && m.isCompatibleWith(jose)) {
 				ClientDetailsEntity client = clientService.loadClientByClientId(auth.getOAuth2Request().getClientId());
@@ -104,8 +103,8 @@ public class UserInfoEndpoint {
 				return "userInfoJwtView";
 			}
 		}
-		
-		return "userInfoView";			
+
+		return "userInfoView";
 
 	}
 

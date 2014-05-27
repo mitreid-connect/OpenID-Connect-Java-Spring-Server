@@ -53,7 +53,7 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 
 	@Autowired
 	private OAuth2TokenRepository tokenRepository;
-	
+
 	@Autowired
 	private StatsService statsService;
 
@@ -90,7 +90,7 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 		}
 
 		approvedSiteRepository.remove(approvedSite);
-		
+
 		statsService.resetCache();
 	}
 
@@ -164,7 +164,7 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 				remove(expired);
 			}
 		}
-		
+
 	}
 
 	private Predicate<ApprovedSite> isExpired = new Predicate<ApprovedSite>() {

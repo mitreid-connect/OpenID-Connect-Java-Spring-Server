@@ -61,7 +61,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 
 	@Autowired
 	private JWKSetCacheService validators;
-	
+
 	@Autowired
 	private SymmetricCacheService symmetricCacheService;
 
@@ -124,12 +124,12 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 		if (request.getClientId() != null) {
 			try {
 				ClientDetailsEntity client = clientDetailsService.loadClientByClientId(request.getClientId());
-	
+
 				if ((request.getScope() == null || request.getScope().isEmpty())) {
 					Set<String> clientScopes = client.getScope();
 					request.setScope(clientScopes);
 				}
-	
+
 				if (request.getExtensions().get("max_age") == null && client.getDefaultMaxAge() != null) {
 					request.getExtensions().put("max_age", client.getDefaultMaxAge().toString());
 				}
@@ -138,12 +138,12 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 			}
 		}
 
-		
+
 		// add CSRF protection to the request on first parse
 		String csrf = UUID.randomUUID().toString();
-		request.getExtensions().put("csrf", csrf);		
+		request.getExtensions().put("csrf", csrf);
 
-		
+
 
 		return request;
 	}
@@ -180,7 +180,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 				JWSAlgorithm alg = signedJwt.getHeader().getAlgorithm();
 
 				if (client.getRequestObjectSigningAlg() == null ||
-					!client.getRequestObjectSigningAlg().equals(alg)) {
+						!client.getRequestObjectSigningAlg().equals(alg)) {
 					throw new InvalidClientException("Client's registered request object signing algorithm (" + client.getRequestObjectSigningAlg() + ") does not match request object's actual algorithm (" + alg.getName() + ")");
 				}
 

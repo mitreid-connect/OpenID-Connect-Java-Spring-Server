@@ -51,8 +51,6 @@ import org.springframework.security.oauth2.provider.TokenRequest;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.stereotype.Service;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.Sets;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.PlainJWT;
@@ -404,8 +402,8 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		for (OAuth2AccessTokenEntity oAuth2AccessTokenEntity : accessTokens) {
 			try {
 				revokeAccessToken(oAuth2AccessTokenEntity);
-			} catch (IllegalArgumentException e) { 
-				//An ID token is deleted with its corresponding access token, but then the ID token is on the list of expired tokens as well and there is 
+			} catch (IllegalArgumentException e) {
+				//An ID token is deleted with its corresponding access token, but then the ID token is on the list of expired tokens as well and there is
 				//nothing in place to distinguish it from any other.
 				//An attempt to delete an already deleted token returns an error, stopping the cleanup dead. We need it to keep going.
 			}
@@ -416,7 +414,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		for (OAuth2RefreshTokenEntity oAuth2RefreshTokenEntity : refreshTokens) {
 			revokeRefreshToken(oAuth2RefreshTokenEntity);
 		}
-		
+
 		Collection<AuthenticationHolderEntity> authHolders = getOrphanedAuthenticationHolders();
 		logger.info("Found " + authHolders.size() + " orphaned authentication holders");
 		for(AuthenticationHolderEntity authHolder : authHolders) {
@@ -431,7 +429,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	private Collection<OAuth2RefreshTokenEntity> getExpiredRefreshTokens() {
 		return Sets.newHashSet(tokenRepository.getAllExpiredRefreshTokens());
 	}
-	
+
 	private Collection<AuthenticationHolderEntity> getOrphanedAuthenticationHolders() {
 		return Sets.newHashSet(authenticationHolderRepository.getOrphanedAuthenticationHolders());
 	}

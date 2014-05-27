@@ -9,7 +9,6 @@ import java.io.Writer;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,7 +27,6 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.nimbusds.jose.Algorithm;
 import com.nimbusds.jose.JWEHeader;
@@ -46,16 +44,16 @@ import com.nimbusds.jwt.SignedJWT;
 public class UserInfoJwtView extends UserInfoView {
 
 	private static Logger logger = LoggerFactory.getLogger(UserInfoJwtView.class);
-	
+
 	@Autowired
 	private JwtSigningAndValidationService jwtService;
-	
+
 	@Autowired
 	private ConfigurationPropertiesBean config;
-	
+
 	@Autowired
 	private JWKSetCacheService encrypters;
-	
+
 	@Autowired
 	private SymmetricCacheService symmetricCacheService;
 
@@ -65,40 +63,40 @@ public class UserInfoJwtView extends UserInfoView {
 
 		try {
 			ClientDetailsEntity client = (ClientDetailsEntity)model.get("client");
-			
+
 			// use the parser to import the user claims into the object
 			StringWriter writer = new StringWriter();
 			gson.toJson(json, writer);
-			
+
 			JWTClaimsSet claims = JWTClaimsSet.parse(writer.toString());
-					
+
 			claims.setAudience(Lists.newArrayList(client.getClientId()));
-	
+
 			claims.setIssuer(config.getIssuer());
-	
+
 			claims.setIssueTime(new Date());
-	
+
 			claims.setJWTID(UUID.randomUUID().toString()); // set a random NONCE in the middle of it
-			
-			
+
+
 			if (client.getIdTokenEncryptedResponseAlg() != null && !client.getIdTokenEncryptedResponseAlg().equals(Algorithm.NONE)
 					&& client.getIdTokenEncryptedResponseEnc() != null && !client.getIdTokenEncryptedResponseEnc().equals(Algorithm.NONE)
 					&& !Strings.isNullOrEmpty(client.getJwksUri())) {
 
 				// encrypt it to the client's key
-				
+
 				JwtEncryptionAndDecryptionService encrypter = encrypters.getEncrypter(client.getJwksUri());
-				
+
 				if (encrypter != null) {
-					
+
 					EncryptedJWT encrypted = new EncryptedJWT(new JWEHeader(client.getIdTokenEncryptedResponseAlg(), client.getIdTokenEncryptedResponseEnc()), claims);
-					
+
 					encrypter.encryptJwt(encrypted);
-					
-					
+
+
 					Writer out = response.getWriter();
 					out.write(encrypted.serialize());
-					
+
 				} else {
 					logger.error("Couldn't find encrypter for client: " + client.getClientId());
 				}
@@ -108,9 +106,9 @@ public class UserInfoJwtView extends UserInfoView {
 				if (client.getUserInfoSignedResponseAlg() != null) {
 					signingAlg = client.getUserInfoSignedResponseAlg();
 				}
-				
+
 				SignedJWT signed = new SignedJWT(new JWSHeader(signingAlg), claims);
-		
+
 				if (signingAlg.equals(JWSAlgorithm.HS256)
 						|| signingAlg.equals(JWSAlgorithm.HS384)
 						|| signingAlg.equals(JWSAlgorithm.HS512)) {
@@ -123,16 +121,16 @@ public class UserInfoJwtView extends UserInfoView {
 					// sign it with the server's key
 					jwtService.signJwt(signed);
 				}
-				
+
 				Writer out = response.getWriter();
 				out.write(signed.serialize());
-}
+			}
 		} catch (IOException e) {
 			logger.error("IO Exception in UserInfoJwtView", e);
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
 }

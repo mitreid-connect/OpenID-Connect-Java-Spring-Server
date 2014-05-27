@@ -32,7 +32,7 @@ public interface AuthenticationHolderRepository {
 	public void remove(AuthenticationHolderEntity a);
 
 	public AuthenticationHolderEntity save(AuthenticationHolderEntity a);
-	
+
 	public List<AuthenticationHolderEntity> getOrphanedAuthenticationHolders();
 
 

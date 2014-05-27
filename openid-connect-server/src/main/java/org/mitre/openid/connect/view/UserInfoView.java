@@ -90,29 +90,29 @@ public class UserInfoView extends AbstractView {
 		response.setContentType("application/json");
 
 
-			JsonObject authorizedClaims = null;
-			JsonObject requestedClaims = null;
-			if (model.get("authorizedClaims") != null) {
-				authorizedClaims = jsonParser.parse((String) model.get("authorizedClaims")).getAsJsonObject();
-			}
-			if (model.get("requestedClaims") != null) {
-				requestedClaims = jsonParser.parse((String) model.get("requestedClaims")).getAsJsonObject();
-			}
-			JsonObject json = toJsonFromRequestObj(userInfo, scope, authorizedClaims, requestedClaims);
+		JsonObject authorizedClaims = null;
+		JsonObject requestedClaims = null;
+		if (model.get("authorizedClaims") != null) {
+			authorizedClaims = jsonParser.parse((String) model.get("authorizedClaims")).getAsJsonObject();
+		}
+		if (model.get("requestedClaims") != null) {
+			requestedClaims = jsonParser.parse((String) model.get("requestedClaims")).getAsJsonObject();
+		}
+		JsonObject json = toJsonFromRequestObj(userInfo, scope, authorizedClaims, requestedClaims);
 
-			writeOut(json, model, request, response);
+		writeOut(json, model, request, response);
 	}
-	
+
 	protected void writeOut(JsonObject json, Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
 		try {
 			Writer out = response.getWriter();
 			gson.toJson(json, out);
 		} catch (IOException e) {
-			
+
 			logger.error("IOException in UserInfoView.java: ", e);
-			
+
 		}
-		
+
 	}
 
 	/**

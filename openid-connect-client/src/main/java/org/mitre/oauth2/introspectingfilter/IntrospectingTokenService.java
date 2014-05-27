@@ -97,7 +97,7 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 	public void setIntrospectionConfigurationService(IntrospectionConfigurationService introspectionUrlProvider) {
 		this.introspectionConfigurationService = introspectionUrlProvider;
 	}
-	
+
 	/**
 	 * @param introspectionAuthorityGranter the introspectionAuthorityGranter to set
 	 */
@@ -111,7 +111,7 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 	public IntrospectionAuthorityGranter getIntrospectionAuthorityGranter() {
 		return introspectionAuthorityGranter;
 	}
-	
+
 	// Check if there is a token and authentication in the cache
 	// and check if it is not expired.
 	private TokenCacheObject checkCache(String key) {

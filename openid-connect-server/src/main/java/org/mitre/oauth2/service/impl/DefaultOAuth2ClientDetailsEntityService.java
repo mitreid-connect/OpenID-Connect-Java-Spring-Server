@@ -78,7 +78,7 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 
 	@Autowired
 	private SystemScopeService scopeService;
-	
+
 	@Autowired
 	private StatsService statsService;
 
@@ -142,9 +142,9 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 		client.setScope(scopeService.removeRestrictedScopes(client.getScope()));
 
 		ClientDetailsEntity c = clientRepository.saveClient(client);
-		
+
 		statsService.resetCache();
-		
+
 		return c;
 	}
 
@@ -202,14 +202,14 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 		clientRepository.deleteClient(client);
 
 		statsService.resetCache();
-		
+
 	}
 
 	/**
 	 * Update the oldClient with information from the newClient. The
 	 * id from oldClient is retained.
 	 * 
-	 * Checks to make sure the refresh grant type and 
+	 * Checks to make sure the refresh grant type and
 	 * the scopes are set appropriately.
 	 * 
 	 * Checks to make sure the redirect URIs aren't blacklisted.

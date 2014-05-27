@@ -58,22 +58,22 @@ public class TokenApiView extends AbstractView {
 
 
 			JsonObject o = new JsonObject();
-			
+
 			o.addProperty("value", src.getValue());
 			o.addProperty("id", src.getId());
 			o.addProperty("idTokenId", src.getIdToken() != null ? src.getIdToken().getId() : null);
 			o.addProperty("refreshTokenId", src.getRefreshToken() != null ? src.getRefreshToken().getId() : null);
 
 			o.add("scopes", context.serialize(src.getScope()));
-			
+
 			o.addProperty("clientId", src.getClient().getClientId());
 			o.addProperty("userId", src.getAuthenticationHolder().getAuthentication().getName());
-			
+
 			o.add("expiration", context.serialize(src.getExpiration()));
-			
+
 			return o;
 		}
-		
+
 	})
 	.registerTypeAdapter(OAuth2RefreshTokenEntity.class, new JsonSerializer<OAuth2RefreshTokenEntity>() {
 
@@ -81,20 +81,20 @@ public class TokenApiView extends AbstractView {
 		public JsonElement serialize(OAuth2RefreshTokenEntity src,
 				Type typeOfSrc, JsonSerializationContext context) {
 			JsonObject o = new JsonObject();
-			
+
 			o.addProperty("value", src.getValue());
 			o.addProperty("id", src.getId());
 
 			o.add("scopes", context.serialize(src.getAuthenticationHolder().getAuthentication().getOAuth2Request().getScope()));
-						
+
 			o.addProperty("clientId", src.getClient().getClientId());
 			o.addProperty("userId", src.getAuthenticationHolder().getAuthentication().getName());
-			
+
 			o.add("expiration", context.serialize(src.getExpiration()));
-			
+
 			return o;
 		}
-		
+
 	})
 	.serializeNulls()
 	.setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")

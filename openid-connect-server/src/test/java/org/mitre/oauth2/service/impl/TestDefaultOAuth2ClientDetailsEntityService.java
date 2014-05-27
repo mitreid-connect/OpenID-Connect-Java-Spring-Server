@@ -68,7 +68,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 
 	@Mock
 	private SystemScopeService scopeService;
-	
+
 	@Mock
 	private StatsService statsService;
 

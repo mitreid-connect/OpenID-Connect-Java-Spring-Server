@@ -351,14 +351,14 @@ public class ClientDetailsEntity implements ClientDetails {
 	@Override
 	@Transient
 	public boolean isSecretRequired() {
-		if (getTokenEndpointAuthMethod() != null && 
+		if (getTokenEndpointAuthMethod() != null &&
 				getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_BASIC) ||
 				getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_POST)) {
 			return true;
 		} else {
 			return false;
 		}
-		
+
 	}
 
 	/**

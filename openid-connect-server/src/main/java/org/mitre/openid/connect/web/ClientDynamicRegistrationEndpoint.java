@@ -65,7 +65,7 @@ public class ClientDynamicRegistrationEndpoint {
 
 	@Autowired
 	private SystemScopeService scopeService;
-	
+
 	@Autowired
 	private BlacklistedSiteService blacklistService;
 
@@ -125,33 +125,33 @@ public class ClientDynamicRegistrationEndpoint {
 					newClient.setGrantTypes(Sets.newHashSet("authorization_code")); // allow authorization code grant type by default
 				}
 			}
-			
+
 			// check to make sure this client registered a redirect URI if using a redirect flow
 			if (newClient.getGrantTypes().contains("authorization_code") || newClient.getGrantTypes().contains("implicit")) {
 				if (newClient.getRedirectUris() == null || newClient.getRedirectUris().isEmpty()) {
 					// return an error
-					m.addAttribute("error", "invalid_client_uri"); 
+					m.addAttribute("error", "invalid_client_uri");
 					m.addAttribute("errorMessage", "Clients using a redirect-based grant type must register at least one redirect URI.");
 					m.addAttribute("code", HttpStatus.BAD_REQUEST);
 					return "jsonErrorView";
 				}
-				
+
 				for (String uri : newClient.getRedirectUris()) {
 					if (blacklistService.isBlacklisted(uri)) {
 						// return an error
-						m.addAttribute("error", "invalid_client_uri"); 
+						m.addAttribute("error", "invalid_client_uri");
 						m.addAttribute("errorMessage", "Redirect URI is not allowed: " + uri);
 						m.addAttribute("code", HttpStatus.BAD_REQUEST);
 						return "jsonErrorView";
-					}					
+					}
 				}
 			}
-			
+
 
 			// set default response types if needed
 			// TODO: these aren't checked by SECOAUTH
 			// TODO: the consistency between the response_type and grant_type needs to be checked by the client service, most likely
-			
+
 			if (newClient.getResponseTypes() == null || newClient.getResponseTypes().isEmpty()) {
 				newClient.setResponseTypes(Sets.newHashSet("code")); // default to allowing only the auth code flow
 			}
@@ -175,7 +175,7 @@ public class ClientDynamicRegistrationEndpoint {
 
 			// this client has been dynamically registered (obviously)
 			newClient.setDynamicallyRegistered(true);
-			
+
 			// this client can't do token introspection
 			newClient.setAllowIntrospection(false);
 

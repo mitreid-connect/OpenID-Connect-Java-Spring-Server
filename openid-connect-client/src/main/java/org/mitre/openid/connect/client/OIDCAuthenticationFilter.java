@@ -96,10 +96,10 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 
 	@Autowired
 	private JWKSetCacheService validationServices;
-	
+
 	@Autowired(required=false)
 	private SymmetricCacheService symmetricCacheService;
-	
+
 	@Autowired(required=false)
 	private JwtSigningAndValidationService authenticationSignerService;
 
@@ -113,7 +113,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 	// private helpers to handle target link URLs
 	private TargetLinkURIAuthenticationSuccessHandler targetSuccessHandler = new TargetLinkURIAuthenticationSuccessHandler();
 	private TargetLinkURIChecker deepLinkFilter;
-	
+
 	protected int httpSocketTimeout = HTTP_SOCKET_TIMEOUT;
 
 	/**
@@ -128,17 +128,17 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 	@Override
 	public void afterPropertiesSet() {
 		super.afterPropertiesSet();
-		
+
 		// if our JOSE validators don't get wired in, drop defaults into place
-		
+
 		if (validationServices == null) {
 			validationServices = new JWKSetCacheService();
 		}
-		
+
 		if (symmetricCacheService == null) {
 			symmetricCacheService = new SymmetricCacheService();
 		}
-		
+
 	}
 
 	/*
@@ -206,7 +206,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 				// there's a target URL in the response, we should save this so we can forward to it later
 				session.setAttribute(TARGET_SESSION_VARIABLE, issResp.getTargetLinkUri());
 			}
-			
+
 			if (Strings.isNullOrEmpty(issuer)) {
 				logger.error("No issuer found: " + issuer);
 				throw new AuthenticationServiceException("No issuer found: " + issuer);
@@ -315,37 +315,37 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 					return httpRequest;
 				}
 			};
-		} else {  
+		} else {
 			// we're not doing basic auth, figure out what other flavor we have
 			restTemplate = new RestTemplate(factory);
 
 			if (SECRET_JWT.equals(clientConfig.getTokenEndpointAuthMethod()) || PRIVATE_KEY.equals(clientConfig.getTokenEndpointAuthMethod())) {
 				// do a symmetric secret signed JWT for auth
-				
-				
+
+
 				JwtSigningAndValidationService signer = null;
 				JWSAlgorithm alg = clientConfig.getTokenEndpointAuthSigningAlg();
-				
+
 				if (SECRET_JWT.equals(clientConfig.getTokenEndpointAuthMethod()) &&
 						(alg.equals(JWSAlgorithm.HS256)
-						|| alg.equals(JWSAlgorithm.HS384)
-						|| alg.equals(JWSAlgorithm.HS512))) {
-					
+								|| alg.equals(JWSAlgorithm.HS384)
+								|| alg.equals(JWSAlgorithm.HS512))) {
+
 					// generate one based on client secret
 					signer = symmetricCacheService.getSymmetricValidtor(clientConfig.getClient());
-					
+
 				} else if (PRIVATE_KEY.equals(clientConfig.getTokenEndpointAuthMethod())) {
-					
+
 					// needs to be wired in to the bean
 					signer = authenticationSignerService;
 				}
-				
+
 				if (signer == null) {
 					throw new AuthenticationServiceException("Couldn't find required signer service for use with private key auth.");
 				}
-				
+
 				JWTClaimsSet claimsSet = new JWTClaimsSet();
-				
+
 				claimsSet.setIssuer(clientConfig.getClientId());
 				claimsSet.setSubject(clientConfig.getClientId());
 				claimsSet.setAudience(Lists.newArrayList(serverConfig.getTokenEndpointUri()));
@@ -353,15 +353,15 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 				// TODO: make this configurable
 				Date exp = new Date(System.currentTimeMillis() + (60 * 1000)); // auth good for 60 seconds
 				claimsSet.setExpirationTime(exp);
-				
+
 				Date now = new Date(System.currentTimeMillis());
 				claimsSet.setIssueTime(now);
 				claimsSet.setNotBeforeTime(now);
-				
+
 				SignedJWT jwt = new SignedJWT(new JWSHeader(alg), claimsSet);
-			
-				signer.signJwt(jwt, alg);				
-				
+
+				signer.signJwt(jwt, alg);
+
 				form.add("client_assertion_type", "urn:ietf:params:oauth:client-assertion-type:jwt-bearer");
 				form.add("client_assertion", jwt.serialize());
 			} else {
@@ -369,7 +369,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 				form.add("client_id", clientConfig.getClientId());
 				form.add("client_secret", clientConfig.getClientSecret());
 			}
-			
+
 		}
 
 		logger.debug("tokenEndpointURI = " + serverConfig.getTokenEndpointUri());
@@ -630,22 +630,22 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 	protected class TargetLinkURIAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
 		private AuthenticationSuccessHandler passthrough;
-		
+
 		@Override
 		public void onAuthenticationSuccess(HttpServletRequest request,
 				HttpServletResponse response, Authentication authentication)
-				throws IOException, ServletException {
-			
+						throws IOException, ServletException {
+
 			HttpSession session = request.getSession();
-			
+
 			// check to see if we've got a target
 			String target = getStoredSessionString(session, TARGET_SESSION_VARIABLE);
-			
+
 			if (!Strings.isNullOrEmpty(target)) {
 				session.removeAttribute(TARGET_SESSION_VARIABLE);
-				
+
 				target = deepLinkFilter.filter(target);
-				
+
 				response.sendRedirect(target);
 			} else {
 				// if the target was blank, use the default behavior here

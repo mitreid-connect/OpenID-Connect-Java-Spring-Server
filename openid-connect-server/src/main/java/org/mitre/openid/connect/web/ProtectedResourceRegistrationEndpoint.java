@@ -65,7 +65,7 @@ public class ProtectedResourceRegistrationEndpoint {
 
 	@Autowired
 	private SystemScopeService scopeService;
-	
+
 	@Autowired
 	private BlacklistedSiteService blacklistService;
 
@@ -121,7 +121,7 @@ public class ProtectedResourceRegistrationEndpoint {
 			newClient.setGrantTypes(new HashSet<String>());
 			newClient.setResponseTypes(new HashSet<String>());
 			newClient.setRedirectUris(new HashSet<String>());
-			
+
 			if (newClient.getTokenEndpointAuthMethod() == null) {
 				newClient.setTokenEndpointAuthMethod(AuthMethod.SECRET_BASIC);
 			}
@@ -133,12 +133,12 @@ public class ProtectedResourceRegistrationEndpoint {
 				// we need to generate a secret
 				newClient = clientService.generateClientSecret(newClient);
 			}
-			
+
 			// don't issue tokens to this client
 			newClient.setAccessTokenValiditySeconds(0);
 			newClient.setIdTokenValiditySeconds(0);
 			newClient.setRefreshTokenValiditySeconds(0);
-			
+
 			// clear out unused fields
 			newClient.setDefaultACRvalues(new HashSet<String>());
 			newClient.setDefaultMaxAge(null);
@@ -158,7 +158,7 @@ public class ProtectedResourceRegistrationEndpoint {
 
 			// this client has been dynamically registered (obviously)
 			newClient.setDynamicallyRegistered(true);
-			
+
 			// this client has access to the introspection endpoint
 			newClient.setAllowIntrospection(true);
 

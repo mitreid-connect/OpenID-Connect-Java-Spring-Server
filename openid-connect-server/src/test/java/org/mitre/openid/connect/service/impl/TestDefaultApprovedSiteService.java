@@ -51,7 +51,7 @@ public class TestDefaultApprovedSiteService {
 
 	@Mock
 	private ApprovedSiteRepository repository;
-	
+
 	@Mock
 	private StatsService statsService;
 

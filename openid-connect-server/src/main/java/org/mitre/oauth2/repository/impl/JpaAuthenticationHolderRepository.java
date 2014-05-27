@@ -33,8 +33,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class JpaAuthenticationHolderRepository implements AuthenticationHolderRepository {
 
-	private static final int MAXEXPIREDRESULTS = 1000;	
-	
+	private static final int MAXEXPIREDRESULTS = 1000;
+
 	@PersistenceContext
 	private EntityManager manager;
 
@@ -77,7 +77,7 @@ public class JpaAuthenticationHolderRepository implements AuthenticationHolderRe
 	public AuthenticationHolderEntity save(AuthenticationHolderEntity a) {
 		return JpaUtil.saveOrUpdate(a.getId(), manager, a);
 	}
-	
+
 	@Override
 	@Transactional
 	public List<AuthenticationHolderEntity> getOrphanedAuthenticationHolders() {

@@ -10,7 +10,7 @@ package org.mitre.openid.connect.client;
 public class StaticPrefixTargetLinkURIChecker implements TargetLinkURIChecker {
 
 	private String prefix = "";
-	
+
 	@Override
 	public String filter(String target) {
 		if (target == null) {

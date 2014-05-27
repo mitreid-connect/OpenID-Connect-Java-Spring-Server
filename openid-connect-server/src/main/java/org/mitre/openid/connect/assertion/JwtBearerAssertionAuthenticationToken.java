@@ -32,6 +32,10 @@ import com.nimbusds.jwt.JWT;
  */
 public class JwtBearerAssertionAuthenticationToken extends AbstractAuthenticationToken {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3138213539914074617L;
 	private String clientId;
 	private JWT jwt;
 

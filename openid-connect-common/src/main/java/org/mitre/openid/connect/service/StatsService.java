@@ -51,7 +51,7 @@ public interface StatsService {
 	 * @return
 	 */
 	public Integer getCountForClientId(Long id);
-	
+
 	/**
 	 * Trigger the stats to be recalculated upon next update.
 	 */

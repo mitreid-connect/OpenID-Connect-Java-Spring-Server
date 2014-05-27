@@ -51,37 +51,37 @@ public class DefaultStatsService implements StatsService {
 
 	@Autowired
 	private ClientDetailsEntityService clientService;
-	
+
 	// stats cache
 	private Supplier<Map<String, Integer>> summaryCache = createSummaryCache();
-	
+
 	private Supplier<Map<String, Integer>> createSummaryCache() {
 		return Suppliers.memoizeWithExpiration(new Supplier<Map<String, Integer>>() {
 			@Override
 			public Map<String, Integer> get() {
 				return computeSummaryStats();
 			}
-	
+
 		}, 10, TimeUnit.MINUTES);
 	}
 
 	private Supplier<Map<Long, Integer>> byClientIdCache = createByClientIdCache();
-	
+
 	private Supplier<Map<Long, Integer>> createByClientIdCache() {
 		return Suppliers.memoizeWithExpiration(new Supplier<Map<Long, Integer>>() {
 			@Override
 			public Map<Long, Integer> get() {
 				return computeByClientId();
 			}
-			
+
 		}, 10, TimeUnit.MINUTES);
 	}
-	
+
 	@Override
 	public Map<String, Integer> getSummaryStats() {
 		return summaryCache.get();
 	}
-	
+
 	// do the actual computation
 	private Map<String, Integer> computeSummaryStats() {
 		// get all approved sites
@@ -110,7 +110,7 @@ public class DefaultStatsService implements StatsService {
 	public Map<Long, Integer> getByClientId() {
 		return byClientIdCache.get();
 	}
-	
+
 	private Map<Long, Integer> computeByClientId() {
 		// get all approved sites
 		Collection<ApprovedSite> allSites = approvedSiteService.getAll();
@@ -162,5 +162,5 @@ public class DefaultStatsService implements StatsService {
 		summaryCache = createSummaryCache();
 		byClientIdCache = createByClientIdCache();
 	}
-	
+
 }

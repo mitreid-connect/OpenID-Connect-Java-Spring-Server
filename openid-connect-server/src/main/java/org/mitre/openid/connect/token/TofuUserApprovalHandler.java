@@ -97,18 +97,18 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 		} else {
 			// if not, check to see if the user has approved it
 			if (Boolean.parseBoolean(authorizationRequest.getApprovalParameters().get("user_oauth_approval"))) {			// TODO: make parameter name configurable?
-				
+
 				// check the value of the CSRF parameter
-				
+
 				if (authorizationRequest.getExtensions().get("csrf") != null) {
 					if (authorizationRequest.getExtensions().get("csrf").equals(authorizationRequest.getApprovalParameters().get("csrf"))) {
-						
+
 						// make sure the user is actually authenticated
-						return userAuthentication.isAuthenticated();						
+						return userAuthentication.isAuthenticated();
 					}
 				}
 			}
-			
+
 			// if the above doesn't pass, it's not yet approved
 			return false;
 		}

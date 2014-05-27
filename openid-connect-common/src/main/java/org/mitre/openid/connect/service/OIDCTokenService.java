@@ -22,8 +22,6 @@ import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 
-import com.nimbusds.jose.JWSAlgorithm;
-
 /**
  * Service to create specialty OpenID Connect tokens.
  * 
@@ -62,5 +60,5 @@ public interface OIDCTokenService {
 	 * @return
 	 */
 	public OAuth2AccessTokenEntity createResourceAccessToken(ClientDetailsEntity client);
-	
+
 }

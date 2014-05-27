@@ -48,13 +48,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import static org.mitre.discovery.util.JsonUtils.getAsBoolean;
-import static org.mitre.discovery.util.JsonUtils.getAsEncryptionMethodList;
-import static org.mitre.discovery.util.JsonUtils.getAsJweAlgorithmList;
-import static org.mitre.discovery.util.JsonUtils.getAsJwsAlgorithmList;
-import static org.mitre.discovery.util.JsonUtils.getAsString;
-import static org.mitre.discovery.util.JsonUtils.getAsStringList;
-
 /**
  * 
  * Dynamically fetches OpenID Connect server configurations based on the issuer. Caches the server configurations.

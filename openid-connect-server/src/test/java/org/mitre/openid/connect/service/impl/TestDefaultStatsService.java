@@ -99,7 +99,7 @@ public class TestDefaultStatsService {
 
 		Mockito.when(ap5.getUserId()).thenReturn(userId2);
 		Mockito.when(ap5.getClientId()).thenReturn(clientId1);
-		
+
 		Mockito.when(ap6.getUserId()).thenReturn(userId1);
 		Mockito.when(ap6.getClientId()).thenReturn(clientId4);
 
@@ -170,10 +170,10 @@ public class TestDefaultStatsService {
 		assertThat(service.getCountForClientId(3L), is(1));
 		assertThat(service.getCountForClientId(4L), is(0));
 	}
-	
+
 	@Test
 	public void cacheAndReset() {
-		
+
 		Map<String, Integer> stats = service.getSummaryStats();
 
 		assertThat(stats.get("approvalCount"), is(4));
@@ -181,22 +181,22 @@ public class TestDefaultStatsService {
 		assertThat(stats.get("clientCount"), is(3));
 
 		Mockito.when(approvedSiteService.getAll()).thenReturn(Sets.newHashSet(ap1, ap2, ap3, ap4, ap5, ap6));
-		
+
 		Map<String, Integer> stats2 = service.getSummaryStats();
-		
+
 		// cache should remain the same due to memoized functions
 		assertThat(stats2.get("approvalCount"), is(4));
 		assertThat(stats2.get("userCount"), is(2));
-		assertThat(stats2.get("clientCount"), is(3));		
-		
+		assertThat(stats2.get("clientCount"), is(3));
+
 		// reset the cache and make sure the count goes up
 		service.resetCache();
-		
+
 		Map<String, Integer> stats3 = service.getSummaryStats();
-		
+
 		assertThat(stats3.get("approvalCount"), is(6));
 		assertThat(stats3.get("userCount"), is(2));
-		assertThat(stats3.get("clientCount"), is(4));		
-		
+		assertThat(stats3.get("clientCount"), is(4));
+
 	}
 }

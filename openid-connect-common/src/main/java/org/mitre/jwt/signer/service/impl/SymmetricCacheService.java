@@ -31,11 +31,11 @@ import com.nimbusds.jose.util.Base64URL;
  */
 @Service
 public class SymmetricCacheService {
-	
+
 	private static Logger logger = LoggerFactory.getLogger(SymmetricCacheService.class);
-	
+
 	private LoadingCache<String, JwtSigningAndValidationService> validators;
-	
+
 
 	public SymmetricCacheService() {
 		validators = CacheBuilder.newBuilder()
@@ -43,8 +43,8 @@ public class SymmetricCacheService {
 				.maximumSize(100)
 				.build(new SymmetricValidatorBuilder());
 	}
-	
-	
+
+
 	/**
 	 * Create a symmetric signing and validation service for the given client
 	 * 
@@ -62,7 +62,7 @@ public class SymmetricCacheService {
 			logger.error("Couldn't create symmetric validator for client " + client.getClientId() + " without a client secret");
 			return null;
 		}
-		
+
 		try {
 			return validators.get(client.getClientSecret());
 		} catch (UncheckedExecutionException ue) {
@@ -72,28 +72,28 @@ public class SymmetricCacheService {
 			logger.error("Problem loading client validator", e);
 			return null;
 		}
-		
+
 	}
-	
+
 	public class SymmetricValidatorBuilder extends CacheLoader<String, JwtSigningAndValidationService> {
 		@Override
 		public JwtSigningAndValidationService load(String key) throws Exception {
 			try {
-				
+
 				String id = "SYMMETRIC-KEY";
-				
+
 				JWK jwk = new OctetSequenceKey(Base64URL.encode(key), Use.SIGNATURE, null, id, null, null, null);
 				Map<String, JWK> keys = ImmutableMap.of(id, jwk);
 				JwtSigningAndValidationService service = new DefaultJwtSigningAndValidationService(keys);
-				
+
 				return service;
-				
+
 			} catch (NoSuchAlgorithmException e) {
 				logger.error("Couldn't create symmetric validator for client", e);
 			} catch (InvalidKeySpecException e) {
 				logger.error("Couldn't create symmetric validator for client", e);
 			}
-			
+
 			throw new IllegalArgumentException("Couldn't create symmetric validator for client");
 		}
 

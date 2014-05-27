@@ -78,7 +78,7 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 
 	@Autowired
 	private JWKSetCacheService encrypters;
-	
+
 	@Autowired
 	private SymmetricCacheService symmetricCacheService;
 
@@ -99,7 +99,7 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 		if (request.getExtensions().containsKey("max_age")
 				|| (request.getExtensions().containsKey("idtoken")) // TODO: parse the ID Token claims (#473) -- for now assume it could be in there
 				|| (client.getRequireAuthTime() != null && client.getRequireAuthTime())) {
-			
+
 			Date authTime = (Date) request.getExtensions().get(AuthenticationTimeStamper.AUTH_TIMESTAMP);
 			if (authTime != null) {
 				idClaims.setClaim("auth_time", authTime.getTime() / 1000);
@@ -130,42 +130,42 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 			Base64URL at_hash = IdTokenHashUtils.getAccessTokenHash(signingAlg, accessToken);
 			idClaims.setClaim("at_hash", at_hash);
 		}
-		
+
 		if (client.getIdTokenEncryptedResponseAlg() != null && !client.getIdTokenEncryptedResponseAlg().equals(Algorithm.NONE)
 				&& client.getIdTokenEncryptedResponseEnc() != null && !client.getIdTokenEncryptedResponseEnc().equals(Algorithm.NONE)
 				&& !Strings.isNullOrEmpty(client.getJwksUri())) {
-			
+
 			JwtEncryptionAndDecryptionService encrypter = encrypters.getEncrypter(client.getJwksUri());
-			
+
 			if (encrypter != null) {
-				
+
 				EncryptedJWT idToken = new EncryptedJWT(new JWEHeader(client.getIdTokenEncryptedResponseAlg(), client.getIdTokenEncryptedResponseEnc()), idClaims);
-				
+
 				encrypter.encryptJwt(idToken);
-				
+
 				idTokenEntity.setJwt(idToken);
-				
+
 			} else {
 				logger.error("Couldn't find encrypter for client: " + client.getClientId());
 			}
-			
+
 		} else {
 
 			SignedJWT idToken = new SignedJWT(new JWSHeader(signingAlg), idClaims);
-			
+
 			if (signingAlg.equals(JWSAlgorithm.HS256)
 					|| signingAlg.equals(JWSAlgorithm.HS384)
 					|| signingAlg.equals(JWSAlgorithm.HS512)) {
 				JwtSigningAndValidationService signer = symmetricCacheService.getSymmetricValidtor(client);
-				
+
 				// sign it with the client's secret
 				signer.signJwt(idToken);
 			} else {
-				
+
 				// sign it with the server's key
 				jwtService.signJwt(idToken);
 			}
-			
+
 			idTokenEntity.setJwt(idToken);
 		}
 

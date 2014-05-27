@@ -76,7 +76,7 @@ public class TokenAPI {
 			return "tokenApiView";
 		}
 	}
-	
+
 	@RequestMapping(value = "/access/{id}", method = RequestMethod.DELETE, produces = "application/json")
 	public String deleteAccessTokenById(@PathVariable("id") Long id, ModelMap m, Principal p) {
 
@@ -94,19 +94,19 @@ public class TokenAPI {
 			return "jsonErrorView";
 		} else {
 			tokenService.revokeAccessToken(token);
-			
-			return "httpCodeView";			
+
+			return "httpCodeView";
 		}
 	}
-	
+
 	@RequestMapping(value = "/refresh", method = RequestMethod.GET, produces = "application/json")
 	public String getAllRefreshTokens(ModelMap m, Principal p) {
-		
+
 		Set<OAuth2RefreshTokenEntity> allTokens = tokenService.getAllRefreshTokensForUser(p.getName());
 		m.put("entity", allTokens);
 		return "tokenApiView";
-		
-		
+
+
 	}
 
 	@RequestMapping(value = "/refresh/{id}", method = RequestMethod.GET, produces = "application/json")
@@ -129,7 +129,7 @@ public class TokenAPI {
 			return "tokenApiView";
 		}
 	}
-	
+
 	@RequestMapping(value = "/refresh/{id}", method = RequestMethod.DELETE, produces = "application/json")
 	public String deleteRefreshTokenById(@PathVariable("id") Long id, ModelMap m, Principal p) {
 
@@ -147,9 +147,9 @@ public class TokenAPI {
 			return "jsonErrorView";
 		} else {
 			tokenService.revokeRefreshToken(token);
-			
-			return "httpCodeView";			
+
+			return "httpCodeView";
 		}
 	}
-	
+
 }

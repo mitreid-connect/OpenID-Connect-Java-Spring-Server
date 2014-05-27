@@ -181,7 +181,7 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 		List<OAuth2AccessTokenEntity> accessTokens = queryA.getResultList();
 		return JpaUtil.getSingleResult(accessTokens);
 	}
-	
+
 	@Override
 	public Set<OAuth2AccessTokenEntity> getAllExpiredAccessTokens() {
 		TypedQuery<OAuth2AccessTokenEntity> query = manager.createNamedQuery("OAuth2AccessTokenEntity.getAllExpiredByDate", OAuth2AccessTokenEntity.class);
