@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
+import org.mitre.openid.connect.model.WhitelistedSite;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -73,13 +74,17 @@ public class JsonApprovedSiteView extends AbstractView {
 
 	})
 	.registerTypeAdapter(OAuth2AccessTokenEntity.class, new JsonSerializer<OAuth2AccessTokenEntity>() {
-
 		@Override
 		public JsonElement serialize(OAuth2AccessTokenEntity src,
 				Type typeOfSrc, JsonSerializationContext context) {
 			return new JsonPrimitive(src.getId());
 		}
-
+	})
+	.registerTypeAdapter(WhitelistedSite.class, new JsonSerializer<WhitelistedSite>() {
+		@Override
+		public JsonElement serialize(WhitelistedSite src, Type typeOfSrc, JsonSerializationContext context) {
+			return new JsonPrimitive(src.getId());
+		}
 	})
 	.serializeNulls()
 	.setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")

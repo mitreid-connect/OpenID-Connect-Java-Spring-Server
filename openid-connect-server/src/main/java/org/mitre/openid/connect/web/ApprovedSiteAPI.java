@@ -65,7 +65,7 @@ public class ApprovedSiteAPI {
 
 		m.put("entity", all);
 
-		return "jsonEntityView";
+		return "jsonApprovedSiteView";
 	}
 
 	/**
