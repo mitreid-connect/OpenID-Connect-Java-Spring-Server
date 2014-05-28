@@ -43,9 +43,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.stubbing.Answer;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.security.oauth2.common.exceptions.InvalidScopeException;
@@ -149,7 +149,25 @@ public class TestDefaultOAuth2ProviderTokenService {
 			}
 		});
 
+		Mockito.when(tokenRepository.saveAccessToken(Matchers.any(OAuth2AccessTokenEntity.class)))
+			.thenAnswer(new Answer<OAuth2AccessTokenEntity>() {
+				@Override
+				public OAuth2AccessTokenEntity answer(InvocationOnMock invocation) throws Throwable {
+					Object[] args = invocation.getArguments();
+					return (OAuth2AccessTokenEntity) args[0];
+				}
+				
+			});
 
+		Mockito.when(tokenRepository.saveRefreshToken(Matchers.any(OAuth2RefreshTokenEntity.class)))
+			.thenAnswer(new Answer<OAuth2RefreshTokenEntity>() {
+				@Override
+				public OAuth2RefreshTokenEntity answer(InvocationOnMock invocation) throws Throwable {
+					Object[] args = invocation.getArguments();
+					return (OAuth2RefreshTokenEntity) args[0];
+				}
+			});
+		
 	}
 
 	/**
