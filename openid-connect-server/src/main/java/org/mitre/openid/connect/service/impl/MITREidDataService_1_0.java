@@ -67,13 +67,6 @@ import org.springframework.stereotype.Service;
 public class MITREidDataService_1_0 implements MITREidDataService {
 
     private final static Logger logger = LoggerFactory.getLogger(MITREidDataService_1_0.class);
-    // member names
-    private static final String REFRESHTOKENS = "refreshTokens";
-    private static final String ACCESSTOKENS = "accessTokens";
-    private static final String AUTHENTICATIONHOLDERS = "authenticationHolders";
-    private static final String GRANTS = "grants";
-    private static final String CLIENTS = "clients";
-    private static final String SYSTEMSCOPES = "systemScopes";
     @Autowired
     private OAuth2ClientRepository clientRepository;
     @Autowired
@@ -339,22 +332,14 @@ public class MITREidDataService_1_0 implements MITREidDataService {
         for (ClientDetailsEntity client : clientRepository.getAllClients()) {
             try {
                 writer.beginObject();
-                writer.name("id").value(client.getClientId());
+                writer.name("clientId").value(client.getClientId());
                 writer.name("resourceIds");
-                writer.beginArray();
-                for (String s : client.getResourceIds()) {
-                    writer.value(s);
-                }
-                writer.endArray();
+                writeNullSafeArray(writer, client.getResourceIds());
 
                 writer.name("secret").value(client.getClientSecret());
 
                 writer.name("scope");
-                writer.beginArray();
-                for (String s : client.getScope()) {
-                    writer.value(s);
-                }
-                writer.endArray();
+                writeNullSafeArray(writer, client.getScope());
 
                 writer.name("authorities");
                 writer.beginArray();
@@ -364,27 +349,13 @@ public class MITREidDataService_1_0 implements MITREidDataService {
                 writer.endArray();
                 writer.name("accessTokenValiditySeconds").value(client.getAccessTokenValiditySeconds());
                 writer.name("refreshTokenValiditySeconds").value(client.getRefreshTokenValiditySeconds());
-                writer.name("additionalInformation");
-                writer.beginObject();
-                for (Entry<String, Object> entry : client.getAdditionalInformation().entrySet()) {
-                    writer.name(entry.getKey()).value(entry.getValue().toString());
-                }
-                writer.endObject();
                 writer.name("redirectUris");
-                writer.beginArray();
-                for (String s : client.getRedirectUris()) {
-                    writer.value(s);
-                }
-                writer.endArray();
+                writeNullSafeArray(writer, client.getRedirectUris());
                 writer.name("name").value(client.getClientName());
                 writer.name("uri").value(client.getClientUri());
                 writer.name("logoUri").value(client.getLogoUri());
                 writer.name("contacts");
-                writer.beginArray();
-                for (String s : client.getContacts()) {
-                    writer.value(s);
-                }
-                writer.endArray();
+                writeNullSafeArray(writer, client.getContacts());
                 writer.name("tosUri").value(client.getTosUri());
                 writer.name("tokenEndpointAuthMethod")
                         .value((client.getTokenEndpointAuthMethod() != null) ? client.getTokenEndpointAuthMethod().getValue() : null);
@@ -425,22 +396,13 @@ public class MITREidDataService_1_0 implements MITREidDataService {
                     writer.name("requireAuthTime").value(requireAuthTime);
                 }
                 writer.name("defaultACRValues");
-                writer.beginArray();
-                for (String s : client.getDefaultACRvalues()) {
-                    writer.value(s);
-                }
-                writer.endArray();
+                writeNullSafeArray(writer, client.getDefaultACRvalues());
                 writer.name("intitateLoginUri").value(client.getInitiateLoginUri());
                 writer.name("postLogoutRedirectUri").value(client.getPostLogoutRedirectUri());
                 writer.name("requestUris");
-                writer.beginArray();
-                for (String s : client.getRequestUris()) {
-                    writer.value(s);
-                }
-                writer.endArray();
+				writeNullSafeArray(writer, client.getRequestUris());
                 writer.name("description").value(client.getClientDescription());
                 writer.name("allowIntrospection").value(client.isAllowIntrospection());
-                writer.name("allowRefresh").value(client.isAllowRefresh());
                 writer.name("reuseRefreshToken").value(client.isReuseRefreshToken());
                 writer.name("dynamicallyRegistered").value(client.isDynamicallyRegistered());
                 writer.endObject();
@@ -451,6 +413,19 @@ public class MITREidDataService_1_0 implements MITREidDataService {
         }
         logger.info("Done writing clients");
     }
+
+	private void writeNullSafeArray(JsonWriter writer, Set<String> items)
+			throws IOException {
+		if (items != null) {
+			writer.beginArray();
+		    for (String s : items) {
+		        writer.value(s);
+		    }
+		    writer.endArray();
+		} else {
+			writer.nullValue();
+		}
+	}
 
     /**
      * @param writer
@@ -537,8 +512,12 @@ public class MITREidDataService_1_0 implements MITREidDataService {
                     if (name.equals("id")) {
                         currentId = reader.nextLong();
                     } else if (name.equals("expiration")) {
-                        Date date = utcToDate(reader.nextString());
-                        token.setExpiration(date);
+                    	if (reader.peek() == JsonToken.NULL) {
+                    		reader.nextNull();
+                    	} else {
+                    		Date date = utcToDate(reader.nextString());
+                    		token.setExpiration(date);
+                    	}
                     } else if (name.equals("value")) {
                         token.setValue(reader.nextString());
                     } else if (name.equals("clientId")) {
@@ -589,8 +568,12 @@ public class MITREidDataService_1_0 implements MITREidDataService {
                     if (name.equals("id")) {
                         currentId = reader.nextLong();
                     } else if (name.equals("expiration")) {
-                        Date date = utcToDate(reader.nextString());
-                        token.setExpiration(date);
+                    	if (reader.peek() == JsonToken.NULL) {
+                    		reader.nextNull();
+                    	} else {
+	                        Date date = utcToDate(reader.nextString());
+	                        token.setExpiration(date);
+                    	}
                     } else if (name.equals("value")) {
                         token.setValue(reader.nextString());
                     } else if (name.equals("clientId")) {
@@ -598,9 +581,17 @@ public class MITREidDataService_1_0 implements MITREidDataService {
                     } else if (name.equals("authenticationHolderId")) {
                         authHolderId = reader.nextLong();
                     } else if (name.equals("refreshTokenId")) {
-                        refreshTokenId = reader.nextLong();
+                    	if (reader.peek() == JsonToken.NULL) {
+                    		reader.nextNull();
+                    	} else {
+                    		refreshTokenId = reader.nextLong();
+                    	}
                     } else if (name.equals("idTokenId")) {
-                        idTokenId = reader.nextLong();
+                    	if (reader.peek() == JsonToken.NULL) {
+                    		reader.nextNull();
+                    	} else {
+                    		idTokenId = reader.nextLong();
+                    	}
                     } else if (name.equals("scope")) {
                         reader.beginArray();
                         Set<String> scope = new HashSet<String>();
@@ -660,11 +651,48 @@ public class MITREidDataService_1_0 implements MITREidDataService {
     }
 
     /**
+     * Read the list of system scopes from the reader and insert them
+     * into the scope repository.
      * @param reader
      * @throws IOException
      */
     private void readSystemScopes(JsonReader reader) throws IOException {
-        // TODO Auto-generated method stub
-        reader.skipValue();
+    	 reader.beginArray();
+         while (reader.hasNext()) {
+        	 SystemScope scope = new SystemScope();
+        	 reader.beginObject();
+        	 while (reader.hasNext()) {
+        		 switch (reader.peek()) {
+        		 	case END_OBJECT:
+        		 		continue;
+        		 	case NAME:
+        		 		String name = reader.nextName();
+        		 		if (name.equals("value")) {
+        		 			scope.setValue(reader.nextString());
+        		 		} else if (name.equals("description")) {
+        		 			scope.setDescription(reader.nextString());
+        		 		} else if (name.equals("allowDynReg")) {
+        		 			scope.setAllowDynReg(reader.nextBoolean());
+        		 		} else if (name.equals("defaultScope")) {
+        		 			scope.setDefaultScope(reader.nextBoolean());
+        		 		} else if (name.equals("icon")) {
+        		 			scope.setIcon(reader.nextString());
+        		 		} else {
+        		 			logger.debug("found unexpected entry");
+        		 			reader.skipValue();
+        		 		}
+        		 		break;
+					default:
+						logger.debug("Found unexpected entry");
+						reader.skipValue();
+						continue;
+				}
+        	 }
+        	 reader.endObject();
+        	 
+        	 sysScopeRepository.save(scope);
+         }
+         reader.endArray();
+         logger.info("Done reading system scopes.");
     }
 }
