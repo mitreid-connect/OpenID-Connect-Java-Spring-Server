@@ -19,6 +19,8 @@ package org.mitre.openid.connect.util;
 
 import static org.junit.Assert.assertEquals;
 
+import java.text.ParseException;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,8 +31,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.util.Base64URL;
-import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.PlainJWT;
+import com.nimbusds.jwt.JWTParser;
 
 /**
  * 
@@ -48,28 +49,37 @@ public class TestIdTokenHashUtils {
 	OAuth2AccessTokenEntity mockToken512;
 
 	@Before
-	public void prepare() {
+	public void prepare() throws ParseException {
 
-		JWTClaimsSet claims = new JWTClaimsSet();
+		/*
+		Claims for first token: 
+		
 		claims.setType("JWT");
 		claims.setIssuer("www.example.com");
 		claims.setSubject("example_user");
 		claims.setClaim("alg", "HS256");
-		Mockito.when(mockToken256.getJwt()).thenReturn(new PlainJWT(claims));
+		*/
+		Mockito.when(mockToken256.getJwt()).thenReturn(JWTParser.parse("eyJhbGciOiJub25lIn0.eyJhbGciOiJIUzI1NiIsInN1YiI6ImV4YW1wbGVfdXNlciIsImlzcyI6Ind3dy5leGFtcGxlLmNvbSIsInR5cCI6IkpXVCJ9."));
 
+		/*
+		 * Claims for second token
 		claims = new JWTClaimsSet();
 		claims.setType("JWT");
 		claims.setIssuer("www.another-example.net");
 		claims.setSubject("another_user");
 		claims.setClaim("alg", "ES384");
-		Mockito.when(mockToken384.getJwt()).thenReturn(new PlainJWT(claims));
+		 */
+		Mockito.when(mockToken384.getJwt()).thenReturn(JWTParser.parse("eyJhbGciOiJub25lIn0.eyJhbGciOiJFUzM4NCIsInN1YiI6ImFub3RoZXJfdXNlciIsImlzcyI6Ind3dy5hbm90aGVyLWV4YW1wbGUubmV0IiwidHlwIjoiSldUIn0."));
 
+		/*
+		 * Claims for third token:
 		claims = new JWTClaimsSet();
 		claims.setType("JWT");
 		claims.setIssuer("www.different.com");
 		claims.setSubject("different_user");
 		claims.setClaim("alg", "RS512");
-		Mockito.when(mockToken512.getJwt()).thenReturn(new PlainJWT(claims));
+		 */
+		Mockito.when(mockToken512.getJwt()).thenReturn(JWTParser.parse("eyJhbGciOiJub25lIn0.eyJhbGciOiJSUzUxMiIsInN1YiI6ImRpZmZlcmVudF91c2VyIiwiaXNzIjoid3d3LmRpZmZlcmVudC5jb20iLCJ0eXAiOiJKV1QifQ."));
 	}
 
 	@Test
