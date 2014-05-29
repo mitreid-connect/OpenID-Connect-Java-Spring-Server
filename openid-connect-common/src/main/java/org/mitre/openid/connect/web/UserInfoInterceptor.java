@@ -59,7 +59,7 @@ public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 	})
 	.create();
 
-	@Autowired
+	@Autowired (required = false)
 	private UserInfoService userInfoService;
 
 	@Override
@@ -85,7 +85,8 @@ public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 					modelAndView.addObject("userInfo", oidc.getUserInfo());
 					modelAndView.addObject("userInfoJson", oidc.getUserInfo().toJson());
 				} else {
-					if (p != null && p.getName() != null) { // don't bother checking if we don't have a principal
+					// don't bother checking if we don't have a principal or a userInfoService to work with
+					if (p != null && p.getName() != null && userInfoService != null) { 
 
 						// try to look up a user based on the principal's name
 						UserInfo user = userInfoService.getByUsername(p.getName());
