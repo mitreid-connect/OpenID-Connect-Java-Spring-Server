@@ -422,8 +422,7 @@ public class MITREidDataService_1_0 implements MITREidDataService {
                 } catch (NullPointerException e) {
                 }
                 if (requireAuthTime != null) {
-                    writer.name("requireAuthTime");
-                    writer.value(requireAuthTime);
+                    writer.name("requireAuthTime").value(requireAuthTime);
                 }
                 writer.name("defaultACRValues");
                 writer.beginArray();
