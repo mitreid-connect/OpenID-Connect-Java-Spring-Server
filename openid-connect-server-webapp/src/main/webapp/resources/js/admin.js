@@ -88,6 +88,7 @@ var ListWidgetChildView = Backbone.View.extend({
     
     deleteItem:function (e) {
     	e.preventDefault();
+    	e.stopImmediatePropagation();
         //this.$el.tooltip('delete');
         
         this.model.destroy({         
@@ -137,6 +138,7 @@ var ListWidgetView = Backbone.View.extend({
 
     events:{
         "click .btn-add":"addItem",
+        "blur input": "addItem",
         "keypress":function (e) {
         	// trap the enter key
             if (e.which == 13) {
@@ -161,7 +163,11 @@ var ListWidgetView = Backbone.View.extend({
     addItem:function(e) {
     	e.preventDefault();
 
-    	var input_value = $("input", this.el).val().trim();
+        var input_value = $("input", this.el).val().trim();
+
+        if (input_value === ""){
+           return;
+        }
 
         var model;
 
