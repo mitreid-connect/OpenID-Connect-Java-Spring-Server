@@ -341,6 +341,10 @@ var BlackListWidgetView = ListWidgetView.extend({
 
     	var input_value = $("input", this.el).val().trim();
     	
+    	if (input_value === "") {
+    		return;
+    	}
+    	
     	// TODO: URI/pattern validation, check against existing clients
     	
     	var item = new BlackListModel({
