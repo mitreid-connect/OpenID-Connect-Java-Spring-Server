@@ -83,7 +83,7 @@ var ListWidgetChildView = Backbone.View.extend({
     tagName: 'tr',
 
     events:{
-        "click .btn-delete":'deleteItem'
+        "click .btn-delete-list-item":'deleteItem'
     },
     
     deleteItem:function (e) {
@@ -137,7 +137,7 @@ var ListWidgetView = Backbone.View.extend({
     childView:ListWidgetChildView,
 
     events:{
-        "click .btn-add":"addItem",
+    	"click .btn-add-list-item":"addItem",
         "blur input": "addItem",
         "keypress":function (e) {
         	// trap the enter key

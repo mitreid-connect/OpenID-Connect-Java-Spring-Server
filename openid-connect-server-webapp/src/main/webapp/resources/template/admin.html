@@ -29,7 +29,7 @@
 
 <script type="text/html" id="tmpl-list-widget-child">
     <td><%=(item.length > 30) ? item.substr(0,27) + '...' : item %></td>
-   	<td><a class="btn btn-small btn-delete" href="#"><i class="icon-minus-sign"></i></a></td>
+   	<td><a class="btn btn-small btn-delete-list-item" href="#"><i class="icon-minus-sign"></i></a></td>
 </script>
 
 <script type="text/html" id="tmpl-list-widget-child-empty">
@@ -43,7 +43,7 @@
     <tr>
         <th class="control-group">
             <input type="text" value="" placeholder="<%=(placeholder) ? placeholder : ''%>"></th>
-        <th><a class="btn btn-small btn-add" href="#"><i class="icon-plus-sign"></i></a></th>
+        <th><a class="btn btn-small btn-add-list-item" href="#"><i class="icon-plus-sign"></i></a></th>
     </tr>
     </thead>
 	<tbody>
