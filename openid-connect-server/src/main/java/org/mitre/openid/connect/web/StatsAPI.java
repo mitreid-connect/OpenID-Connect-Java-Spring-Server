@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@PreAuthorize("hasRole('ROLE_USER')")
 @RequestMapping("/api/stats")
 public class StatsAPI {
 
@@ -45,6 +44,7 @@ public class StatsAPI {
 
 	}
 
+	@PreAuthorize("hasRole('ROLE_USER')")
 	@RequestMapping(value = "byclientid", produces = "application/json")
 	public String statsByClient(ModelMap m) {
 		Map<Long, Integer> e = statsService.getByClientId();
@@ -54,6 +54,7 @@ public class StatsAPI {
 		return "jsonEntityView";
 	}
 
+	@PreAuthorize("hasRole('ROLE_USER')")
 	@RequestMapping(value = "byclientid/{id}", produces = "application/json")
 	public String statsByClientId(@PathVariable("id") Long id, ModelMap m) {
 		Integer e = statsService.getCountForClientId(id);
