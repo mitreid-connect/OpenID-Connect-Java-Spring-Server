@@ -499,7 +499,7 @@ var AppRouter = Backbone.Router.extend({
         
         view.load(function() {
         	$('#content').html(view.render().el);
-        	app.clientListView.delegateEvents();
+        	view.delegateEvents();
         	setPageTitle("Manage Clients");        	
         });
 
@@ -521,8 +521,8 @@ var AppRouter = Backbone.Router.extend({
 
     	var client = new ClientModel();
     	
-        this.clientFormView = new ClientFormView({model:client, systemScopeList: this.systemScopeList});
-        this.clientFormView.load(function() {
+        var view = new ClientFormView({model:client, systemScopeList: this.systemScopeList});
+        view.load(function() {
         	// set up this new client to require a secret and have us autogenerate one
         	client.set({
         		tokenEndpointAuthMethod: "client_secret_basic",
@@ -540,7 +540,7 @@ var AppRouter = Backbone.Router.extend({
         	}, { silent: true });
         	
         	
-        	$('#content').html(app.clientFormView.render().el);
+        	$('#content').html(view.render().el);
         	setPageTitle("New Client");
         });
     },
@@ -594,10 +594,10 @@ var AppRouter = Backbone.Router.extend({
     		    		displayClientSecret:false
     		    	}, { silent: true });
     		        
-    		        app.clientFormView = new ClientFormView({model:client, systemScopeList: app.systemScopeList});
-    		        app.clientFormView.load(function() {
+    		        var view = new ClientFormView({model:client, systemScopeList: app.systemScopeList});
+    		        view.load(function() {
     		        	console.log("yup!");
-    		        	$('#content').html(app.clientFormView.render().el);
+    		        	$('#content').html(view.render().el);
     		        	setPageTitle("Edit Client");
     		        });
     		        
