@@ -304,8 +304,8 @@ var ClientListView = Backbone.View.extend({
     	$('#loadingbox').sheet('show');
     	$('#loading').html('<span class="label" id="loading-clients">Clients</span> ' +
     			'<span class="label" id="loading-whitelist">Whitelist</span> ' + 
-    			'<span class="label" id="loading-stats">Statistics</span> ' + 
-    			'<span class="label" id="loading-scopes">Scopes</span> '
+    			'<span class="label" id="loading-scopes">Scopes</span> ' +
+    			'<span class="label" id="loading-stats">Statistics</span> ' 
     			);
 
     	$.when(this.model.fetchIfNeeded({success:function(e) {$('#loading-clients').addClass('label-success');}}),
@@ -412,8 +412,8 @@ var ClientListView = Backbone.View.extend({
     	$('#loadingbox').sheet('show');
     	$('#loading').html('<span class="label" id="loading-clients">Clients</span> ' +
     			'<span class="label" id="loading-whitelist">Whitelist</span> ' + 
-    			'<span class="label" id="loading-stats">Statistics</span> ' + 
-    			'<span class="label" id="loading-scopes">Scopes</span> '
+    			'<span class="label" id="loading-scopes">Scopes</span> ' + 
+    			'<span class="label" id="loading-stats">Statistics</span> ' 
     			);
 
     	var _self = this;

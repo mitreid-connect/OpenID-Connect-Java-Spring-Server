@@ -470,15 +470,11 @@ var AppRouter = Backbone.Router.extend({
 
         this.breadCrumbView.render();
 
-        $('#loadingbox').sheet('show');
-        $("#loading").html('<span class="label" id="loading-system">System Configuration</span>');
         var base = $('base').attr('href');
         $.getJSON(base + '.well-known/openid-configuration', function(data) {
         	app.serverConfiguration = data;
-        	$('#loading-system').addClass('label-success');
         	var baseUrl = $.url(app.serverConfiguration.issuer);
 			Backbone.history.start({pushState: true, root: baseUrl.attr('relative') + 'manage/'});
-			$('#loadingbox').sheet('hide');
         });
 
     },
