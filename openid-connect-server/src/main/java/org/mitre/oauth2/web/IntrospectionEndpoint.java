@@ -26,6 +26,8 @@ import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.IntrospectionAuthorizer;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
+import org.mitre.openid.connect.model.UserInfo;
+import org.mitre.openid.connect.service.UserInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +53,9 @@ public class IntrospectionEndpoint {
 
 	@Autowired
 	private IntrospectionAuthorizer introspectionAuthorizer;
+	
+	@Autowired
+	private UserInfoService userInfoService;
 
 	private static Logger logger = LoggerFactory.getLogger(IntrospectionEndpoint.class);
 
@@ -76,10 +81,14 @@ public class IntrospectionEndpoint {
 			return "jsonEntityView";
 		}
 
+		// clientID is the principal name in the authentication
+		String clientId = p.getName();
+		ClientDetailsEntity authClient = clientService.loadClientByClientId(clientId);
 
 		ClientDetailsEntity tokenClient = null;
 		Set<String> scopes = null;
 		Object token = null;
+		UserInfo user = null;
 
 		try {
 
@@ -91,6 +100,8 @@ public class IntrospectionEndpoint {
 
 			token = access;
 
+			user = userInfoService.getByUsernameAndClientId(access.getAuthenticationHolder().getAuthentication().getName(), tokenClient.getClientId());
+			
 		} catch (InvalidTokenException e) {
 			logger.error("Verify failed; Invalid access token. Checking refresh token.", e);
 			try {
@@ -101,6 +112,8 @@ public class IntrospectionEndpoint {
 				tokenClient = refresh.getClient();
 				scopes = refresh.getAuthenticationHolder().getAuthentication().getOAuth2Request().getScope();
 
+				user = userInfoService.getByUsernameAndClientId(refresh.getAuthenticationHolder().getAuthentication().getName(), tokenClient.getClientId());
+				
 				token = refresh;
 
 			} catch (InvalidTokenException e2) {
@@ -111,15 +124,12 @@ public class IntrospectionEndpoint {
 			}
 		}
 
-		// clientID is the principal name in the authentication
-		String clientId = p.getName();
-		ClientDetailsEntity authClient = clientService.loadClientByClientId(clientId);
-
 		if (tokenClient != null && authClient != null) {
 			if (authClient.isAllowIntrospection()) {
 				if (introspectionAuthorizer.isIntrospectionPermitted(authClient, tokenClient, scopes)) {
 					// if it's a valid token, we'll print out information on it
-					model.addAttribute("entity", token);
+					model.addAttribute("token", token);
+					model.addAttribute("user", user);
 					return "tokenIntrospection";
 				} else {
 					logger.error("Verify failed; client configuration or scope don't permit token introspection");
