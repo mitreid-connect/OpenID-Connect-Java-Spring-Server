@@ -28,14 +28,14 @@
 			                <p><span id="loading"></span></p>
 	                </div>
 	            </div>
-                <span id="content">
+                <div id="content">
                 	<div class="well">
 	                	<div><h3>Loading...</h3></div>
 	               	    <div class="progress progress-striped active">
 							<div class="bar" style="width: 100%;"></div>
 						</div>
 					</div>
-                </span>
+                </div>
             </div>
         </div>
     </div>
