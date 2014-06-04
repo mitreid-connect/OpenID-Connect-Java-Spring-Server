@@ -38,9 +38,9 @@ public class ManagerController {
 	@RequestMapping({"", "home", "index"})
 	public String showHomePage(ModelMap m) {
 
-		Map<String, Integer> summary = statsService.getSummaryStats();
+		//Map<String, Integer> summary = statsService.getSummaryStats();
 
-		m.put("statsSummary", summary);
+		//m.put("statsSummary", summary);
 		return "home";
 	}
 
