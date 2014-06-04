@@ -282,9 +282,10 @@ var BlackListListView = Backbone.View.extend({
     	}
 
     	$('#loadingbox').sheet('show');
-    	$('#loading').html('blacklist');
+    	$('#loading').html('<span class="label" id="loading-blacklist">Blacklist</span> ');
 
     	$.when(this.model.fetchIfNeeded()).done(function() {
+    				$('#loading-blacklist').addClass('label-success');
     	    		$('#loadingbox').sheet('hide');
     	    		callback();
     			});    	
@@ -298,7 +299,7 @@ var BlackListListView = Backbone.View.extend({
     	e.preventDefault();
     	var _self = this;
     	$('#loadingbox').sheet('show');
-    	$('#loading').html('blacklist');
+    	$('#loading').html('<span class="label" id="loading-scopes">Blacklist</span> ');
 
     	$.when(this.model.fetch()).done(function() {
     	    		$('#loadingbox').sheet('hide');
