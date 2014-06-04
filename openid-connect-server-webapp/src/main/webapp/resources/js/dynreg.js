@@ -185,11 +185,16 @@ var DynRegEditView = Backbone.View.extend({
     	
 	events:{
         "click .btn-save":"saveClient",
-        "click .btn-cancel": function() { window.history.back(); return false; },
+        "click .btn-cancel":"cancel",
         "click .btn-delete":"deleteClient",
         "change #logoUri input":"previewLogo"
     },
 
+    cancel:function(e) {
+    	e.preventDefault();
+    	app.navigate('dev/dynreg', {trigger: true});
+    },
+    
     deleteClient:function (e) {
     	e.preventDefault();
 

@@ -297,7 +297,14 @@ var WhiteListFormView = Backbone.View.extend({
 	
 	cancelWhiteList:function(e) {
     	e.preventDefault();
-		app.navigate('admin/whitelists', {trigger:true});
+    	// TODO: figure out where we came from and go back there instead
+    	if (this.model.get('id') == null) {
+    		// if it's a new whitelist entry, go back to the client listing page
+    		app.navigate('admin/clients', {trigger:true});    		
+    	} else {
+    		// if we're editing a whitelist, go back to the whitelists page
+    		app.navigate('admin/whitelists', {trigger:true});    		
+    	}
 	},
 	
 	render:function (eventName) {
