@@ -242,9 +242,6 @@
                         <%=($.inArray("client_credentials", client.grant_types) > -1 ? 'checked' : '')%>> client credentials
                     </label>
                     <label class="checkbox">
-                        <input id="grantTypes-password" type="checkbox" <%=($.inArray("password", client.grant_types) > -1 ? 'checked' : '')%>> password
-                    </label>
-                    <label class="checkbox">
                         <input id="grantTypes-implicit" type="checkbox" <%=($.inArray("implicit", client.grant_types) > -1 ? 'checked' : '')%>> implicit
                     </label>
 <!--

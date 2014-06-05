@@ -17,6 +17,7 @@
 package org.mitre.openid.connect.web;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -48,6 +49,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.util.UriUtils;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 
 @Controller
@@ -125,6 +127,87 @@ public class ClientDynamicRegistrationEndpoint {
 					newClient.setGrantTypes(Sets.newHashSet("authorization_code")); // allow authorization code grant type by default
 				}
 			}
+			
+			// filter out unknown grant types
+			// TODO: make this a pluggable service
+			Set<String> requestedGrantTypes = new HashSet<String>(newClient.getGrantTypes());
+			requestedGrantTypes.removeAll(
+						ImmutableSet.of("authorization_code", "implicit", 
+								"password", "client_credentials", "refresh_token",
+								"urn:ietf:params:oauth:grant_type:redelegate"));
+			if (requestedGrantTypes.isEmpty()) {
+				// return an error, there were unknown grant types requested
+				m.addAttribute("error", "invalid_client_metadata");
+				m.addAttribute("errorMessage", "Unknown grant types requested: " + newClient.getGrantTypes());
+				m.addAttribute("code", HttpStatus.BAD_REQUEST);
+				return "jsonErrorView";
+			}
+			
+			// don't allow "password" grant type for dynamic registration
+			if (newClient.getGrantTypes().contains("password")) {
+				// return an error, you can't dynamically register for the password grant
+				m.addAttribute("error", "invalid_client_metadata");
+				m.addAttribute("errorMessage", "The password grant type is not allowed in dynamic registration on this server.");
+				m.addAttribute("code", HttpStatus.BAD_REQUEST);
+				return "jsonErrorView";
+			}
+
+			// don't allow clients to have multiple incompatible grant types and scopes
+			if (newClient.getGrantTypes().contains("authorization_code")) {
+
+				// check for incompatible grants
+				if (newClient.getGrantTypes().contains("implicit") ||
+						newClient.getGrantTypes().contains("client_credentials")) {
+					// return an error, you can't have these grant types together
+					m.addAttribute("error", "invalid_client_metadata");
+					m.addAttribute("errorMessage", "Incompatible grant types requested: " + newClient.getGrantTypes());
+					m.addAttribute("code", HttpStatus.BAD_REQUEST);
+					return "jsonErrorView";
+				}
+			}
+			
+			if (newClient.getGrantTypes().contains("implicit")) {
+
+				// check for incompatible grants
+				if (newClient.getGrantTypes().contains("authorization_code") ||
+						newClient.getGrantTypes().contains("client_credentials")) {
+					// return an error, you can't have these grant types together
+					m.addAttribute("error", "invalid_client_metadata");
+					m.addAttribute("errorMessage", "Incompatible grant types requested: " + newClient.getGrantTypes());
+					m.addAttribute("code", HttpStatus.BAD_REQUEST);
+					return "jsonErrorView";
+				}
+				
+				// don't allow refresh tokens in implicit clients
+				newClient.getGrantTypes().remove("refresh_token");
+				newClient.getScope().remove("offline_access");
+			}
+			
+			if (newClient.getGrantTypes().contains("client_credentials")) {
+
+				// check for incompatible grants
+				if (newClient.getGrantTypes().contains("authorization_code") ||
+						newClient.getGrantTypes().contains("implicit")) {
+					// return an error, you can't have these grant types together
+					m.addAttribute("error", "invalid_client_metadata");
+					m.addAttribute("errorMessage", "Incompatible grant types requested: " + newClient.getGrantTypes());
+					m.addAttribute("code", HttpStatus.BAD_REQUEST);
+					return "jsonErrorView";
+				}
+				
+				// don't allow refresh tokens or id tokens in client_credentials clients
+				newClient.getGrantTypes().remove("refresh_token");
+				newClient.getScope().remove("offline_access");
+				newClient.getScope().remove("openid");
+			}
+			
+			if (newClient.getGrantTypes().isEmpty()) {
+				// return an error, you need at least one grant type selected
+				m.addAttribute("error", "invalid_client_metadata");
+				m.addAttribute("errorMessage", "Clients must register at least one grant type.");
+				m.addAttribute("code", HttpStatus.BAD_REQUEST);
+				return "jsonErrorView";
+			}
 
 			// check to make sure this client registered a redirect URI if using a redirect flow
 			if (newClient.getGrantTypes().contains("authorization_code") || newClient.getGrantTypes().contains("implicit")) {
@@ -155,6 +238,9 @@ public class ClientDynamicRegistrationEndpoint {
 			if (newClient.getResponseTypes() == null || newClient.getResponseTypes().isEmpty()) {
 				newClient.setResponseTypes(Sets.newHashSet("code")); // default to allowing only the auth code flow
 			}
+			
+			
+			
 
 			if (newClient.getTokenEndpointAuthMethod() == null) {
 				newClient.setTokenEndpointAuthMethod(AuthMethod.SECRET_BASIC);
@@ -301,8 +387,149 @@ public class ClientDynamicRegistrationEndpoint {
 			// the scopes that the client can have must be a subset of the dynamically allowed scopes
 			Set<SystemScope> allowedScopes = Sets.intersection(dynScopes, requestedScopes);
 
+			// if the client didn't ask for any, give them the defaults
+			if (allowedScopes == null || allowedScopes.isEmpty()) {
+				allowedScopes = scopeService.getDefaults();
+			}
+
 			// make sure that the client doesn't ask for scopes it can't have
 			newClient.setScope(scopeService.toStrings(allowedScopes));
+
+			// filter out unknown grant types
+			// TODO: make this a pluggable service
+			Set<String> requestedGrantTypes = new HashSet<String>(newClient.getGrantTypes());
+			requestedGrantTypes.removeAll(
+						ImmutableSet.of("authorization_code", "implicit", 
+								"password", "client_credentials", "refresh_token",
+								"urn:ietf:params:oauth:grant_type:redelegate"));
+			if (requestedGrantTypes.isEmpty()) {
+				// return an error, there were unknown grant types requested
+				m.addAttribute("error", "invalid_client_metadata");
+				m.addAttribute("errorMessage", "Unknown grant types requested: " + newClient.getGrantTypes());
+				m.addAttribute("code", HttpStatus.BAD_REQUEST);
+				return "jsonErrorView";
+			}
+			
+			// don't allow "password" grant type for dynamic registration
+			if (newClient.getGrantTypes().contains("password")) {
+				// return an error, you can't dynamically register for the password grant
+				m.addAttribute("error", "invalid_client_metadata");
+				m.addAttribute("errorMessage", "The password grant type is not allowed in dynamic registration on this server.");
+				m.addAttribute("code", HttpStatus.BAD_REQUEST);
+				return "jsonErrorView";
+			}
+
+			// don't allow clients to have multiple incompatible grant types and scopes
+			if (newClient.getGrantTypes().contains("authorization_code")) {
+
+				// check for incompatible grants
+				if (newClient.getGrantTypes().contains("implicit") ||
+						newClient.getGrantTypes().contains("client_credentials")) {
+					// return an error, you can't have these grant types together
+					m.addAttribute("error", "invalid_client_metadata");
+					m.addAttribute("errorMessage", "Incompatible grant types requested: " + newClient.getGrantTypes());
+					m.addAttribute("code", HttpStatus.BAD_REQUEST);
+					return "jsonErrorView";
+				}
+			}
+			
+			if (newClient.getGrantTypes().contains("implicit")) {
+
+				// check for incompatible grants
+				if (newClient.getGrantTypes().contains("authorization_code") ||
+						newClient.getGrantTypes().contains("client_credentials")) {
+					// return an error, you can't have these grant types together
+					m.addAttribute("error", "invalid_client_metadata");
+					m.addAttribute("errorMessage", "Incompatible grant types requested: " + newClient.getGrantTypes());
+					m.addAttribute("code", HttpStatus.BAD_REQUEST);
+					return "jsonErrorView";
+				}
+				
+				// don't allow refresh tokens in implicit clients
+				newClient.getGrantTypes().remove("refresh_token");
+				newClient.getScope().remove("offline_access");
+			}
+			
+			if (newClient.getGrantTypes().contains("client_credentials")) {
+
+				// check for incompatible grants
+				if (newClient.getGrantTypes().contains("authorization_code") ||
+						newClient.getGrantTypes().contains("implicit")) {
+					// return an error, you can't have these grant types together
+					m.addAttribute("error", "invalid_client_metadata");
+					m.addAttribute("errorMessage", "Incompatible grant types requested: " + newClient.getGrantTypes());
+					m.addAttribute("code", HttpStatus.BAD_REQUEST);
+					return "jsonErrorView";
+				}
+				
+				// don't allow refresh tokens or id tokens in client_credentials clients
+				newClient.getGrantTypes().remove("refresh_token");
+				newClient.getScope().remove("offline_access");
+				newClient.getScope().remove("openid");
+			}
+			
+			if (newClient.getGrantTypes().isEmpty()) {
+				// return an error, you need at least one grant type selected
+				m.addAttribute("error", "invalid_client_metadata");
+				m.addAttribute("errorMessage", "Clients must register at least one grant type.");
+				m.addAttribute("code", HttpStatus.BAD_REQUEST);
+				return "jsonErrorView";
+			}
+
+			// check to make sure this client registered a redirect URI if using a redirect flow
+			if (newClient.getGrantTypes().contains("authorization_code") || newClient.getGrantTypes().contains("implicit")) {
+				if (newClient.getRedirectUris() == null || newClient.getRedirectUris().isEmpty()) {
+					// return an error
+					m.addAttribute("error", "invalid_client_uri");
+					m.addAttribute("errorMessage", "Clients using a redirect-based grant type must register at least one redirect URI.");
+					m.addAttribute("code", HttpStatus.BAD_REQUEST);
+					return "jsonErrorView";
+				}
+
+				for (String uri : newClient.getRedirectUris()) {
+					if (blacklistService.isBlacklisted(uri)) {
+						// return an error
+						m.addAttribute("error", "invalid_client_uri");
+						m.addAttribute("errorMessage", "Redirect URI is not allowed: " + uri);
+						m.addAttribute("code", HttpStatus.BAD_REQUEST);
+						return "jsonErrorView";
+					}
+				}
+			}
+
+			// set default response types if needed
+			// TODO: these aren't checked by SECOAUTH
+			// TODO: the consistency between the response_type and grant_type needs to be checked by the client service, most likely
+
+			if (newClient.getResponseTypes() == null || newClient.getResponseTypes().isEmpty()) {
+				newClient.setResponseTypes(Sets.newHashSet("code")); // default to allowing only the auth code flow
+			}
+			
+			
+			
+
+			if (newClient.getTokenEndpointAuthMethod() == null) {
+				newClient.setTokenEndpointAuthMethod(AuthMethod.SECRET_BASIC);
+			}
+
+			if (newClient.getTokenEndpointAuthMethod() == AuthMethod.SECRET_BASIC ||
+					newClient.getTokenEndpointAuthMethod() == AuthMethod.SECRET_JWT ||
+					newClient.getTokenEndpointAuthMethod() == AuthMethod.SECRET_POST) {
+
+				// we need to generate a secret
+				newClient = clientService.generateClientSecret(newClient);
+			}
+
+			// set some defaults for token timeouts
+			newClient.setAccessTokenValiditySeconds((int)TimeUnit.HOURS.toSeconds(1)); // access tokens good for 1hr
+			newClient.setIdTokenValiditySeconds((int)TimeUnit.MINUTES.toSeconds(10)); // id tokens good for 10min
+			newClient.setRefreshTokenValiditySeconds(null); // refresh tokens good until revoked
+
+			// this client has been dynamically registered (obviously)
+			newClient.setDynamicallyRegistered(true);
+
+			// this client can't do token introspection
+			newClient.setAllowIntrospection(false);
 
 			try {
 				// save the client
