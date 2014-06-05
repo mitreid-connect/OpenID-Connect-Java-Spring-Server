@@ -138,6 +138,10 @@ public class ClientDynamicRegistrationEndpoint {
 				}
 			}
 			
+			if (newClient.getResponseTypes() == null) {
+				newClient.setResponseTypes(new HashSet<String>());
+			}
+
 			// filter out unknown grant types
 			// TODO: make this a pluggable service
 			Set<String> requestedGrantTypes = new HashSet<String>(newClient.getGrantTypes());
@@ -174,6 +178,18 @@ public class ClientDynamicRegistrationEndpoint {
 					m.addAttribute("code", HttpStatus.BAD_REQUEST);
 					return "jsonErrorView";
 				}
+
+				if (newClient.getResponseTypes().contains("token")) {
+					// return an error, you can't have this grant type and response type together
+					m.addAttribute("error", "invalid_client_metadata");
+					m.addAttribute("errorMessage", "Incompatible response types requested: " + newClient.getGrantTypes() + " / " + newClient.getResponseTypes());
+					m.addAttribute("code", HttpStatus.BAD_REQUEST);
+					return "jsonErrorView";
+				}
+				
+				newClient.getResponseTypes().add("code");
+				
+			
 			}
 			
 			if (newClient.getGrantTypes().contains("implicit")) {
@@ -188,6 +204,16 @@ public class ClientDynamicRegistrationEndpoint {
 					return "jsonErrorView";
 				}
 				
+				if (newClient.getResponseTypes().contains("code")) {
+					// return an error, you can't have this grant type and response type together
+					m.addAttribute("error", "invalid_client_metadata");
+					m.addAttribute("errorMessage", "Incompatible response types requested: " + newClient.getGrantTypes() + " / " + newClient.getResponseTypes());
+					m.addAttribute("code", HttpStatus.BAD_REQUEST);
+					return "jsonErrorView";
+				}
+				
+				newClient.getResponseTypes().add("token");
+				
 				// don't allow refresh tokens in implicit clients
 				newClient.getGrantTypes().remove("refresh_token");
 				newClient.getScope().remove("offline_access");
@@ -201,6 +227,14 @@ public class ClientDynamicRegistrationEndpoint {
 					// return an error, you can't have these grant types together
 					m.addAttribute("error", "invalid_client_metadata");
 					m.addAttribute("errorMessage", "Incompatible grant types requested: " + newClient.getGrantTypes());
+					m.addAttribute("code", HttpStatus.BAD_REQUEST);
+					return "jsonErrorView";
+				}
+				
+				if (!newClient.getResponseTypes().isEmpty()) {
+					// return an error, you can't have this grant type and response type together
+					m.addAttribute("error", "invalid_client_metadata");
+					m.addAttribute("errorMessage", "Incompatible response types requested: " + newClient.getGrantTypes() + " / " + newClient.getResponseTypes());
 					m.addAttribute("code", HttpStatus.BAD_REQUEST);
 					return "jsonErrorView";
 				}
@@ -240,17 +274,6 @@ public class ClientDynamicRegistrationEndpoint {
 				}
 			}
 
-
-			// set default response types if needed
-			// TODO: these aren't checked by SECOAUTH
-			// TODO: the consistency between the response_type and grant_type needs to be checked by the client service, most likely
-
-			if (newClient.getResponseTypes() == null || newClient.getResponseTypes().isEmpty()) {
-				newClient.setResponseTypes(Sets.newHashSet("code")); // default to allowing only the auth code flow
-			}
-			
-			
-			
 
 			if (newClient.getTokenEndpointAuthMethod() == null) {
 				newClient.setTokenEndpointAuthMethod(AuthMethod.SECRET_BASIC);
@@ -414,6 +437,10 @@ public class ClientDynamicRegistrationEndpoint {
 			// make sure that the client doesn't ask for scopes it can't have
 			newClient.setScope(scopeService.toStrings(allowedScopes));
 
+			if (newClient.getResponseTypes() == null) {
+				newClient.setResponseTypes(new HashSet<String>());
+			}
+
 			// filter out unknown grant types
 			// TODO: make this a pluggable service
 			Set<String> requestedGrantTypes = new HashSet<String>(newClient.getGrantTypes());
@@ -450,6 +477,9 @@ public class ClientDynamicRegistrationEndpoint {
 					m.addAttribute("code", HttpStatus.BAD_REQUEST);
 					return "jsonErrorView";
 				}
+				
+				newClient.getResponseTypes().add("code");
+				
 			}
 			
 			if (newClient.getGrantTypes().contains("implicit")) {
@@ -463,6 +493,8 @@ public class ClientDynamicRegistrationEndpoint {
 					m.addAttribute("code", HttpStatus.BAD_REQUEST);
 					return "jsonErrorView";
 				}
+
+				newClient.getResponseTypes().add("token");
 				
 				// don't allow refresh tokens in implicit clients
 				newClient.getGrantTypes().remove("refresh_token");
@@ -515,17 +547,6 @@ public class ClientDynamicRegistrationEndpoint {
 					}
 				}
 			}
-
-			// set default response types if needed
-			// TODO: these aren't checked by SECOAUTH
-			// TODO: the consistency between the response_type and grant_type needs to be checked by the client service, most likely
-
-			if (newClient.getResponseTypes() == null || newClient.getResponseTypes().isEmpty()) {
-				newClient.setResponseTypes(Sets.newHashSet("code")); // default to allowing only the auth code flow
-			}
-			
-			
-			
 
 			if (newClient.getTokenEndpointAuthMethod() == null) {
 				newClient.setTokenEndpointAuthMethod(AuthMethod.SECRET_BASIC);
