@@ -51,6 +51,7 @@ import org.springframework.web.util.UriUtils;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
+import com.google.gson.JsonSyntaxException;
 
 @Controller
 @RequestMapping(value = "register")
@@ -89,7 +90,16 @@ public class ClientDynamicRegistrationEndpoint {
 	@RequestMapping(method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
 	public String registerNewClient(@RequestBody String jsonString, Model m) {
 
-		ClientDetailsEntity newClient = ClientDetailsEntityJsonProcessor.parse(jsonString);
+		ClientDetailsEntity newClient = null;
+		try {
+			newClient = ClientDetailsEntityJsonProcessor.parse(jsonString);
+		} catch (JsonSyntaxException e) {
+			// bad parse
+			// didn't parse, this is a bad request
+			logger.error("registerNewClient failed; submitted JSON is malformed");
+			m.addAttribute("code", HttpStatus.BAD_REQUEST); // http 400
+			return "httpCodeView";
+		}
 
 		if (newClient != null) {
 			// it parsed!
@@ -135,7 +145,7 @@ public class ClientDynamicRegistrationEndpoint {
 						ImmutableSet.of("authorization_code", "implicit", 
 								"password", "client_credentials", "refresh_token",
 								"urn:ietf:params:oauth:grant_type:redelegate"));
-			if (requestedGrantTypes.isEmpty()) {
+			if (!requestedGrantTypes.isEmpty()) {
 				// return an error, there were unknown grant types requested
 				m.addAttribute("error", "invalid_client_metadata");
 				m.addAttribute("errorMessage", "Unknown grant types requested: " + newClient.getGrantTypes());
@@ -356,7 +366,16 @@ public class ClientDynamicRegistrationEndpoint {
 	public String updateClient(@PathVariable("id") String clientId, @RequestBody String jsonString, Model m, OAuth2Authentication auth) {
 
 
-		ClientDetailsEntity newClient = ClientDetailsEntityJsonProcessor.parse(jsonString);
+		ClientDetailsEntity newClient = null;
+		try {
+			newClient = ClientDetailsEntityJsonProcessor.parse(jsonString);
+		} catch (JsonSyntaxException e) {
+			// bad parse
+			// didn't parse, this is a bad request
+			logger.error("registerNewClient failed; submitted JSON is malformed");
+			m.addAttribute("code", HttpStatus.BAD_REQUEST); // http 400
+			return "httpCodeView";
+		}
 		ClientDetailsEntity oldClient = clientService.loadClientByClientId(clientId);
 
 		if (newClient != null && oldClient != null  // we have an existing client and the new one parsed
@@ -402,7 +421,7 @@ public class ClientDynamicRegistrationEndpoint {
 						ImmutableSet.of("authorization_code", "implicit", 
 								"password", "client_credentials", "refresh_token",
 								"urn:ietf:params:oauth:grant_type:redelegate"));
-			if (requestedGrantTypes.isEmpty()) {
+			if (!requestedGrantTypes.isEmpty()) {
 				// return an error, there were unknown grant types requested
 				m.addAttribute("error", "invalid_client_metadata");
 				m.addAttribute("errorMessage", "Unknown grant types requested: " + newClient.getGrantTypes());
@@ -520,16 +539,6 @@ public class ClientDynamicRegistrationEndpoint {
 				newClient = clientService.generateClientSecret(newClient);
 			}
 
-			// set some defaults for token timeouts
-			newClient.setAccessTokenValiditySeconds((int)TimeUnit.HOURS.toSeconds(1)); // access tokens good for 1hr
-			newClient.setIdTokenValiditySeconds((int)TimeUnit.MINUTES.toSeconds(10)); // id tokens good for 10min
-			newClient.setRefreshTokenValiditySeconds(null); // refresh tokens good until revoked
-
-			// this client has been dynamically registered (obviously)
-			newClient.setDynamicallyRegistered(true);
-
-			// this client can't do token introspection
-			newClient.setAllowIntrospection(false);
 
 			try {
 				// save the client
