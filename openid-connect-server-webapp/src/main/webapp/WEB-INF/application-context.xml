@@ -73,7 +73,9 @@
 		<security:intercept-url pattern="/token" access="isAuthenticated()" />
 		<security:http-basic entry-point-ref="oauthAuthenticationEntryPoint" />
 		<!-- include this only if you need to authenticate clients via request parameters -->
-		<security:custom-filter ref="clientAssertiontokenEndpointFilter" after="PRE_AUTH_FILTER" /> <!-- this one has to go first -->
+
+		<security:custom-filter ref="publicClientTokenEndpointFilter" before="PRE_AUTH_FILTER" />
+		<security:custom-filter ref="clientAssertiontokenEndpointFilter" after="PRE_AUTH_FILTER" /> <!-- these two need to go first -->
 		<security:custom-filter ref="clientCredentialsTokenEndpointFilter" before="BASIC_AUTH_FILTER" />
 		<security:custom-filter ref="corsFilter" after="SECURITY_CONTEXT_FILTER" />
 		<security:access-denied-handler ref="oauthAccessDeniedHandler" />
@@ -170,6 +172,11 @@
 	
 	<bean id="clientAssertiontokenEndpointFilter" class="org.mitre.openid.connect.assertion.JwtBearerClientAssertionTokenEndpointFilter">
 		<property name="authenticationManager" ref="clientAssertionAuthenticationManager" />
+		<property name="filterProcessesUrl" value="/token" />
+	</bean>
+	
+	<bean id="publicClientTokenEndpointFilter" class="org.mitre.oauth2.token.PublicClientTokenEndpointFilter">
+		<property name="authenticationManager" ref="clientAuthenticationManager" />
 		<property name="filterProcessesUrl" value="/token" />
 	</bean>
 
