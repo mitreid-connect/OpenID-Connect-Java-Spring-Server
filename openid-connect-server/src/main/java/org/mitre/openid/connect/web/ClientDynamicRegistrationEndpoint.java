@@ -247,7 +247,7 @@ public class ClientDynamicRegistrationEndpoint {
 		} catch (JsonSyntaxException e) {
 			// bad parse
 			// didn't parse, this is a bad request
-			logger.error("registerNewClient failed; submitted JSON is malformed");
+			logger.error("updateClient failed; submitted JSON is malformed");
 			m.addAttribute("code", HttpStatus.BAD_REQUEST); // http 400
 			return "httpCodeView";
 		}

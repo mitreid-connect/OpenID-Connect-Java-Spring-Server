@@ -49,6 +49,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.util.UriUtils;
 
 import com.google.common.collect.Sets;
+import com.google.gson.JsonSyntaxException;
 
 @Controller
 @RequestMapping(value = "resource")
@@ -87,7 +88,16 @@ public class ProtectedResourceRegistrationEndpoint {
 	@RequestMapping(method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
 	public String registerNewProtectedResource(@RequestBody String jsonString, Model m) {
 
-		ClientDetailsEntity newClient = ClientDetailsEntityJsonProcessor.parse(jsonString);
+		ClientDetailsEntity newClient = null;
+		try {
+			newClient = ClientDetailsEntityJsonProcessor.parse(jsonString);
+		} catch (JsonSyntaxException e) {
+			// bad parse
+			// didn't parse, this is a bad request
+			logger.error("registerNewProtectedResource failed; submitted JSON is malformed");
+			m.addAttribute("code", HttpStatus.BAD_REQUEST); // http 400
+			return "httpCodeView";
+		}
 
 		if (newClient != null) {
 			// it parsed!
@@ -253,7 +263,17 @@ public class ProtectedResourceRegistrationEndpoint {
 	public String updateProtectedResource(@PathVariable("id") String clientId, @RequestBody String jsonString, Model m, OAuth2Authentication auth) {
 
 
-		ClientDetailsEntity newClient = ClientDetailsEntityJsonProcessor.parse(jsonString);
+		ClientDetailsEntity newClient = null;
+		try {
+			newClient = ClientDetailsEntityJsonProcessor.parse(jsonString);
+		} catch (JsonSyntaxException e) {
+			// bad parse
+			// didn't parse, this is a bad request
+			logger.error("updateProtectedResource failed; submitted JSON is malformed");
+			m.addAttribute("code", HttpStatus.BAD_REQUEST); // http 400
+			return "httpCodeView";
+		}
+
 		ClientDetailsEntity oldClient = clientService.loadClientByClientId(clientId);
 
 		if (newClient != null && oldClient != null  // we have an existing client and the new one parsed
