@@ -399,7 +399,7 @@ var DynRegEditView = Backbone.View.extend({
         var _self = this;
 
         // build and bind registered redirect URI collection and view
-        _.each(this.model.get("redirectUris"), function (redirectUri) {
+        _.each(this.model.get("redirect_uris"), function (redirectUri) {
             _self.redirectUrisCollection.add(new URIModel({item:redirectUri}));
         });
 
@@ -431,7 +431,7 @@ var DynRegEditView = Backbone.View.extend({
         
         
         // build and bind request URIs
-        _.each(this.model.get('requestUris'), function (requestUri) {
+        _.each(this.model.get('request_uris'), function (requestUri) {
         	_self.requestUrisCollection.add(new URIModel({item:requestUri}));
         });
         
@@ -441,7 +441,7 @@ var DynRegEditView = Backbone.View.extend({
         	collection: this.requestUrisCollection}).render().el);
         
         // build and bind default ACR values
-        _.each(this.model.get('defaultAcrValues'), function (defaultAcrValue) {
+        _.each(this.model.get('default_acr_values'), function (defaultAcrValue) {
         	_self.defaultAcrValuesCollection.add(new Backbone.Model({item:defaultAcrValue}));
         });
         
