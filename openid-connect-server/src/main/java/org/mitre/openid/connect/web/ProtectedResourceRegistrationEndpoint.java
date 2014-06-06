@@ -31,6 +31,7 @@ import org.mitre.oauth2.service.OAuth2TokenEntityService;
 import org.mitre.oauth2.service.SystemScopeService;
 import org.mitre.openid.connect.ClientDetailsEntityJsonProcessor;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
+import org.mitre.openid.connect.exception.ValidationException;
 import org.mitre.openid.connect.service.BlacklistedSiteService;
 import org.mitre.openid.connect.service.OIDCTokenService;
 import org.slf4j.Logger;
@@ -110,39 +111,23 @@ public class ProtectedResourceRegistrationEndpoint {
 			newClient.setClientId(null);
 			newClient.setClientSecret(null);
 
-			// set of scopes that are OK for clients to dynamically register for
-			Set<SystemScope> dynScopes = scopeService.getDynReg();
-
-			// scopes that the client is asking for
-			Set<SystemScope> requestedScopes = scopeService.fromStrings(newClient.getScope());
-
-			// the scopes that the client can have must be a subset of the dynamically allowed scopes
-			Set<SystemScope> allowedScopes = Sets.intersection(dynScopes, requestedScopes);
-
-			// if the client didn't ask for any, give them the defaults
-			if (allowedScopes == null || allowedScopes.isEmpty()) {
-				allowedScopes = scopeService.getDefaults();
+			// do validation on the fields
+			try {
+				newClient = validateScopes(newClient);
+				newClient = validateAuth(newClient);
+			} catch (ValidationException ve) {
+				// validation failed, return an error
+				m.addAttribute("error", ve.getError());
+				m.addAttribute("errorMessage", ve.getErrorDescription());
+				m.addAttribute("code", ve.getStatus());
+				return "jsonErrorView";
 			}
-
-			newClient.setScope(scopeService.toStrings(allowedScopes));
 
 
 			// no grant types are allowed
 			newClient.setGrantTypes(new HashSet<String>());
 			newClient.setResponseTypes(new HashSet<String>());
 			newClient.setRedirectUris(new HashSet<String>());
-
-			if (newClient.getTokenEndpointAuthMethod() == null) {
-				newClient.setTokenEndpointAuthMethod(AuthMethod.SECRET_BASIC);
-			}
-
-			if (newClient.getTokenEndpointAuthMethod() == AuthMethod.SECRET_BASIC ||
-					newClient.getTokenEndpointAuthMethod() == AuthMethod.SECRET_JWT ||
-					newClient.getTokenEndpointAuthMethod() == AuthMethod.SECRET_POST) {
-
-				// we need to generate a secret
-				newClient = clientService.generateClientSecret(newClient);
-			}
 
 			// don't issue tokens to this client
 			newClient.setAccessTokenValiditySeconds(0);
@@ -205,6 +190,26 @@ public class ProtectedResourceRegistrationEndpoint {
 			return "httpCodeView";
 		}
 
+	}
+
+	private ClientDetailsEntity validateScopes(ClientDetailsEntity newClient) throws ValidationException {
+		// set of scopes that are OK for clients to dynamically register for
+		Set<SystemScope> dynScopes = scopeService.getDynReg();
+
+		// scopes that the client is asking for
+		Set<SystemScope> requestedScopes = scopeService.fromStrings(newClient.getScope());
+
+		// the scopes that the client can have must be a subset of the dynamically allowed scopes
+		Set<SystemScope> allowedScopes = Sets.intersection(dynScopes, requestedScopes);
+
+		// if the client didn't ask for any, give them the defaults
+		if (allowedScopes == null || allowedScopes.isEmpty()) {
+			allowedScopes = scopeService.getDefaults();
+		}
+
+		newClient.setScope(scopeService.toStrings(allowedScopes));
+		
+		return newClient;
 	}
 
 	/**
@@ -284,28 +289,51 @@ public class ProtectedResourceRegistrationEndpoint {
 			// a client can't ask to update its own client secret to any particular value
 			newClient.setClientSecret(oldClient.getClientSecret());
 
-			// we need to copy over all of the local and SECOAUTH fields
-			newClient.setAccessTokenValiditySeconds(oldClient.getAccessTokenValiditySeconds());
-			newClient.setIdTokenValiditySeconds(oldClient.getIdTokenValiditySeconds());
-			newClient.setRefreshTokenValiditySeconds(oldClient.getRefreshTokenValiditySeconds());
-			newClient.setDynamicallyRegistered(true); // it's still dynamically registered
-			newClient.setAllowIntrospection(oldClient.isAllowIntrospection());
-			newClient.setAuthorities(oldClient.getAuthorities());
-			newClient.setClientDescription(oldClient.getClientDescription());
-			newClient.setCreatedAt(oldClient.getCreatedAt());
-			newClient.setReuseRefreshToken(oldClient.isReuseRefreshToken());
+			// no grant types are allowed
+			newClient.setGrantTypes(new HashSet<String>());
+			newClient.setResponseTypes(new HashSet<String>());
+			newClient.setRedirectUris(new HashSet<String>());
 
-			// set of scopes that are OK for clients to dynamically register for
-			Set<SystemScope> dynScopes = scopeService.getDynReg();
+			// don't issue tokens to this client
+			newClient.setAccessTokenValiditySeconds(0);
+			newClient.setIdTokenValiditySeconds(0);
+			newClient.setRefreshTokenValiditySeconds(0);
 
-			// scopes that the client is asking for
-			Set<SystemScope> requestedScopes = scopeService.fromStrings(newClient.getScope());
+			// clear out unused fields
+			newClient.setDefaultACRvalues(new HashSet<String>());
+			newClient.setDefaultMaxAge(null);
+			newClient.setIdTokenEncryptedResponseAlg(null);
+			newClient.setIdTokenEncryptedResponseEnc(null);
+			newClient.setIdTokenSignedResponseAlg(null);
+			newClient.setInitiateLoginUri(null);
+			newClient.setPostLogoutRedirectUri(null);
+			newClient.setRequestObjectSigningAlg(null);
+			newClient.setRequireAuthTime(null);
+			newClient.setReuseRefreshToken(false);
+			newClient.setSectorIdentifierUri(null);
+			newClient.setSubjectType(null);
+			newClient.setUserInfoEncryptedResponseAlg(null);
+			newClient.setUserInfoEncryptedResponseEnc(null);
+			newClient.setUserInfoSignedResponseAlg(null);
 
-			// the scopes that the client can have must be a subset of the dynamically allowed scopes
-			Set<SystemScope> allowedScopes = Sets.intersection(dynScopes, requestedScopes);
+			// this client has been dynamically registered (obviously)
+			newClient.setDynamicallyRegistered(true);
 
-			// make sure that the client doesn't ask for scopes it can't have
-			newClient.setScope(scopeService.toStrings(allowedScopes));
+			// this client has access to the introspection endpoint
+			newClient.setAllowIntrospection(true);
+
+			// do validation on the fields
+			try {
+				newClient = validateScopes(newClient);
+				newClient = validateAuth(newClient);
+			} catch (ValidationException ve) {
+				// validation failed, return an error
+				m.addAttribute("error", ve.getError());
+				m.addAttribute("errorMessage", ve.getErrorDescription());
+				m.addAttribute("code", ve.getStatus());
+				return "jsonErrorView";
+			}
+
 
 			try {
 				// save the client
@@ -374,4 +402,19 @@ public class ProtectedResourceRegistrationEndpoint {
 		}
 	}
 
+	private ClientDetailsEntity validateAuth(ClientDetailsEntity newClient) throws ValidationException {
+		if (newClient.getTokenEndpointAuthMethod() == null) {
+			newClient.setTokenEndpointAuthMethod(AuthMethod.SECRET_BASIC);
+		}
+
+		if (newClient.getTokenEndpointAuthMethod() == AuthMethod.SECRET_BASIC ||
+				newClient.getTokenEndpointAuthMethod() == AuthMethod.SECRET_JWT ||
+				newClient.getTokenEndpointAuthMethod() == AuthMethod.SECRET_POST) {
+
+			// we need to generate a secret
+			newClient = clientService.generateClientSecret(newClient);
+		}
+		return newClient;
+	}
+	
 }

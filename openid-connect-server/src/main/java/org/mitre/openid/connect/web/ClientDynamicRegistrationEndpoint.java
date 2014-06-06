@@ -32,6 +32,7 @@ import org.mitre.oauth2.service.OAuth2TokenEntityService;
 import org.mitre.oauth2.service.SystemScopeService;
 import org.mitre.openid.connect.ClientDetailsEntityJsonProcessor;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
+import org.mitre.openid.connect.exception.ValidationException;
 import org.mitre.openid.connect.service.BlacklistedSiteService;
 import org.mitre.openid.connect.service.OIDCTokenService;
 import org.slf4j.Logger;
@@ -508,43 +509,6 @@ public class ClientDynamicRegistrationEndpoint {
 			newClient = clientService.generateClientSecret(newClient);
 		}
 		return newClient;
-	}
-	
-	/**
-	 * Thrown by utility methods when a client fails to validate. Contains information
-	 * to be returned.
-	 * @author jricher
-	 *
-	 */
-	private class ValidationException extends Exception {
-		private String error;
-		private String errorDescription;
-		private HttpStatus status;
-		public ValidationException(String error, String errorDescription,
-				HttpStatus status) {
-			this.error = error;
-			this.errorDescription = errorDescription;
-			this.status = status;
-		}
-		public String getError() {
-			return error;
-		}
-		public void setError(String error) {
-			this.error = error;
-		}
-		public String getErrorDescription() {
-			return errorDescription;
-		}
-		public void setErrorDescription(String errorDescription) {
-			this.errorDescription = errorDescription;
-		}
-		public HttpStatus getStatus() {
-			return status;
-		}
-		public void setStatus(HttpStatus status) {
-			this.status = status;
-		}
-		
 	}
 	
 }
