@@ -187,7 +187,8 @@ var ResRegEditView = Backbone.View.extend({
         "click .btn-save":"saveClient",
         "click .btn-cancel":"cancel",
         "click .btn-delete":"deleteClient",
-        "change #logoUri input":"previewLogo"
+        "change #logoUri input":"previewLogo",
+        "change #tokenEndpointAuthMethod input:radio":"toggleClientCredentials"
     },
 
     cancel:function(e) {
@@ -240,6 +241,23 @@ var ResRegEditView = Backbone.View.extend({
     	}
     },
 
+    /**
+     * Set up the form based on the current state of the tokenEndpointAuthMethod parameter
+     * @param event
+     */
+    toggleClientCredentials:function() {
+    	
+        var tokenEndpointAuthMethod = $('#tokenEndpointAuthMethod input', this.el).filter(':checked').val();
+        
+        // show or hide the signing algorithm method depending on what's selected
+        if (tokenEndpointAuthMethod == 'private_key_jwt'
+        	|| tokenEndpointAuthMethod == 'client_secret_jwt') {
+        	$('#tokenEndpointAuthSigningAlg', this.el).show();
+        } else {
+        	$('#tokenEndpointAuthSigningAlg', this.el).hide();
+        }
+    },
+    
     disableUnsupportedJOSEItems:function(serverSupported, query) {
         var supported = ['default'];
         if (serverSupported) {
@@ -262,27 +280,6 @@ var ResRegEditView = Backbone.View.extend({
     	} else {
     		return value;
     	}
-    },
-
-    // maps from a form-friendly name to the real grant parameter name
-    grantMap:{
-    	'authorization_code': 'authorization_code',
-    	'password': 'password',
-    	'implicit': 'implicit',
-    	'client_credentials': 'client_credentials',
-    	'redelegate': 'urn:ietf:params:oauth:grant_type:redelegate',
-    	'refresh_token': 'refresh_token'
-    },
-    
-    // maps from a form-friendly name to the real response type parameter name
-    responseMap:{
-    	'code': 'code',
-    	'token': 'token',
-    	'idtoken': 'id_token',
-    	'token-idtoken': 'token id_token',
-    	'code-idtoken': 'code id_token',
-    	'code-token': 'code token',
-    	'code-token-idtoken': 'code token id_token'
     },
 
     saveClient:function (e) {
@@ -415,6 +412,7 @@ var ResRegEditView = Backbone.View.extend({
         	// TODO: autocomplete from spec
         	collection: this.defaultAcrValuesCollection}).render().el);
 
+        this.toggleClientCredentials();
         this.previewLogo();
         
         // disable unsupported JOSE algorithms

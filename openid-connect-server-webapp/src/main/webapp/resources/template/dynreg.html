@@ -325,14 +325,6 @@
 				</div>
 			</div>
 
-			<div class="control-group" id="jwksUri">
-				<label class="control-label">JWK Set</label>
-				<div class="controls">
-					<input placeholder="https://" value="<%=client.jwks_uri ? client.jwks_uri : ''%>" maxlength="1000" type="text" class=""/>
-					<p class="help-block">URL for the client's JSON Web Key set</p>
-				</div>
-			</div>
-
             <div class="control-group" id="tokenEndpointAuthSigningAlg">
                 <label class="control-label">Token Endpoint Authentication Signing Algorithm</label>
                 <div class="controls">
@@ -350,6 +342,14 @@
 					</select>
                 </div>
             </div>
+
+			<div class="control-group" id="jwksUri">
+				<label class="control-label">JWK Set</label>
+				<div class="controls">
+					<input placeholder="https://" value="<%=client.jwks_uri ? client.jwks_uri : ''%>" maxlength="1000" type="text" class=""/>
+					<p class="help-block">URL for the client's JSON Web Key set</p>
+				</div>
+			</div>
 
 	</div>
 

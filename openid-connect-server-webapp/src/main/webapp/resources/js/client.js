@@ -489,7 +489,7 @@ var ClientFormView = Backbone.View.extend({
         	document.getElementById("refresh-token-timeout-time").value = ''; 	
         	},
         "click .btn-cancel":"cancel",
-        "change #tokenEndpointAuthMethod input:radio":"toggleRequireClientSecret",
+        "change #tokenEndpointAuthMethod input:radio":"toggleClientCredentials",
         "change #displayClientSecret":"toggleDisplayClientSecret",
         "change #generateClientSecret":"toggleGenerateClientSecret",
         "change #logoUri input":"previewLogo"
@@ -535,10 +535,10 @@ var ClientFormView = Backbone.View.extend({
     },
 
     /**
-     * Set up the form based on the current state of the requireClientSecret checkbox parameter
+     * Set up the form based on the current state of the tokenEndpointAuthMethod parameter
      * @param event
      */
-    toggleRequireClientSecret:function() {
+    toggleClientCredentials:function() {
     	
         var tokenEndpointAuthMethod = $('#tokenEndpointAuthMethod input', this.el).filter(':checked').val();
         
@@ -898,7 +898,7 @@ var ClientFormView = Backbone.View.extend({
         }
 
         // toggle other dynamic fields
-        this.toggleRequireClientSecret();
+        this.toggleClientCredentials();
         this.previewLogo();
         
         // disable unsupported JOSE algorithms
