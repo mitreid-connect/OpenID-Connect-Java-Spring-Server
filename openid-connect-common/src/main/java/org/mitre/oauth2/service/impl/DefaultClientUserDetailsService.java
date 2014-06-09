@@ -30,6 +30,8 @@ import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.stereotype.Service;
 
+import com.google.common.base.Strings;
+
 /**
  * Shim layer to convert a ClientDetails service into a UserDetails service
  * 
@@ -49,7 +51,7 @@ public class DefaultClientUserDetailsService implements UserDetailsService {
 
 		if (client != null) {
 
-			String password = client.getClientSecret();
+			String password = Strings.nullToEmpty(client.getClientSecret());
 			boolean enabled = true;
 			boolean accountNonExpired = true;
 			boolean credentialsNonExpired = true;
