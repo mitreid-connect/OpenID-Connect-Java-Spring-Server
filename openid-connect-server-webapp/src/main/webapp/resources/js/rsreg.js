@@ -293,22 +293,6 @@ var ResRegEditView = Backbone.View.extend({
         // build the scope object
         var scopes = this.scopeCollection.pluck("item").join(" ");
         
-        // build the grant type object
-        var grantTypes = [];
-        $.each(this.grantMap, function(index,type) {
-            if ($('#grantTypes-' + index).is(':checked')) {
-                grantTypes.push(type);
-            }
-        });
-        
-        // build the response type object
-        var responseTypes = [];
-        $.each(this.responseMap, function(index,type) {
-        	if ($('#responseTypes-' + index).is(':checked')) {
-        		responseTypes.push(type);
-        	}
-        });
-        
         var contacts = this.contactsCollection.pluck('item');
         var userInfo = getUserInfo();
         if (userInfo && userInfo.email) {
