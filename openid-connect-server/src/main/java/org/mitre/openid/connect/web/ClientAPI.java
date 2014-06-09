@@ -171,10 +171,30 @@ public class ClientAPI {
 				client = clientService.generateClientSecret(client);
 			}
 
-		} else {
-			// otherwise (PRIVATE_KEY or NONE), we shouldn't have a secret for this client
+		} else if (client.getTokenEndpointAuthMethod().equals(AuthMethod.PRIVATE_KEY)) {
+
+			if (Strings.isNullOrEmpty(client.getJwksUri())) {
+				logger.error("tried to create client with private key auth but no private key");
+				m.addAttribute("code", HttpStatus.BAD_REQUEST);
+				m.addAttribute("errorMessage", "Can not create a client with private key authentication without registering a key via the JWS Set URI.");
+				return "jsonErrorView";
+			}
+			
+			// otherwise we shouldn't have a secret for this client
+			client.setClientSecret(null);
+			
+		} else if (client.getTokenEndpointAuthMethod().equals(AuthMethod.NONE)) {
+			// we shouldn't have a secret for this client
 			
 			client.setClientSecret(null);
+			
+		} else {
+			
+			logger.error("unknown auth method");
+			m.addAttribute("code", HttpStatus.BAD_REQUEST);
+			m.addAttribute("errorMessage", "Unknown auth method requested");
+			return "jsonErrorView";
+			
 			
 		}
 
@@ -255,10 +275,30 @@ public class ClientAPI {
 				client = clientService.generateClientSecret(client);
 			}
 
-		} else {
-			// otherwise (PRIVATE_KEY or NONE), we shouldn't have a secret for this client
+		} else if (client.getTokenEndpointAuthMethod().equals(AuthMethod.PRIVATE_KEY)) {
+
+			if (Strings.isNullOrEmpty(client.getJwksUri())) {
+				logger.error("tried to create client with private key auth but no private key");
+				m.addAttribute("code", HttpStatus.BAD_REQUEST);
+				m.addAttribute("errorMessage", "Can not create a client with private key authentication without registering a key via the JWS Set URI.");
+				return "jsonErrorView";
+			}
+			
+			// otherwise we shouldn't have a secret for this client
+			client.setClientSecret(null);
+			
+		} else if (client.getTokenEndpointAuthMethod().equals(AuthMethod.NONE)) {
+			// we shouldn't have a secret for this client
 			
 			client.setClientSecret(null);
+			
+		} else {
+			
+			logger.error("unknown auth method");
+			m.addAttribute("code", HttpStatus.BAD_REQUEST);
+			m.addAttribute("errorMessage", "Unknown auth method requested");
+			return "jsonErrorView";
+			
 			
 		}
 
