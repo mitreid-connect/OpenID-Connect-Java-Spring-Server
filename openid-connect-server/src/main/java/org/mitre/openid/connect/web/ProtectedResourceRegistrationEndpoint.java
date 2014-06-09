@@ -344,7 +344,7 @@ public class ProtectedResourceRegistrationEndpoint {
 				OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
 				OAuth2AccessTokenEntity token = tokenService.readAccessToken(details.getTokenValue());
 
-				RegisteredClient registered = new RegisteredClient(savedClient, token.getValue(), config.getIssuer() + "register/" + UriUtils.encodePathSegment(savedClient.getClientId(), "UTF-8"));
+				RegisteredClient registered = new RegisteredClient(savedClient, token.getValue(), config.getIssuer() + "resource/" + UriUtils.encodePathSegment(savedClient.getClientId(), "UTF-8"));
 
 				// send it all out to the view
 				m.addAttribute("client", registered);
