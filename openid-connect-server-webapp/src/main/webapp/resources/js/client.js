@@ -90,7 +90,6 @@ var ClientModel = Backbone.Model.extend({
         allowRefresh:false,
         displayClientSecret: false,
         generateClientSecret: false,
-        requireClientSecret: true,
     },
 
     urlRoot:"api/clients",
@@ -490,7 +489,7 @@ var ClientFormView = Backbone.View.extend({
         	document.getElementById("refresh-token-timeout-time").value = ''; 	
         	},
         "click .btn-cancel":"cancel",
-        "change #requireClientSecret":"toggleRequireClientSecret",
+        "change #tokenEndpointAuthMethod input:radio":"toggleRequireClientSecret",
         "change #displayClientSecret":"toggleDisplayClientSecret",
         "change #generateClientSecret":"toggleGenerateClientSecret",
         "change #logoUri input":"previewLogo"
@@ -541,15 +540,28 @@ var ClientFormView = Backbone.View.extend({
      */
     toggleRequireClientSecret:function() {
     	
-    	if ($('#requireClientSecret input', this.el).is(':checked')) {
-    		// client secret is required, show all the bits
-    		$('#clientSecretPanel', this.el).show();
-    		// this function sets up the display portions
-    		this.toggleGenerateClientSecret();
-    	} else {
-    		// no client secret, hide all the bits
-    		$('#clientSecretPanel', this.el).hide();        		
-    	}
+        var tokenEndpointAuthMethod = $('#tokenEndpointAuthMethod input', this.el).filter(':checked').val();
+        
+        if (tokenEndpointAuthMethod == 'SECRET_BASIC' 
+        	|| tokenEndpointAuthMethod == 'SECRET_POST'
+        	|| tokenEndpointAuthMethod == 'SECRET_JWT') {
+        	
+        	// client secret is required, show all the bits
+        	$('#clientSecretPanel', this.el).show();
+        	// this function sets up the display portions
+        	this.toggleGenerateClientSecret();
+        } else {
+        	// no client secret, hide all the bits
+        	$('#clientSecretPanel', this.el).hide();        		        	
+        }
+        
+        // show or hide the signing algorithm method depending on what's selected
+        if (tokenEndpointAuthMethod == 'PRIVATE_KEY'
+        	|| tokenEndpointAuthMethod == 'SECRET_JWT') {
+        	$('#tokenEndpointAuthSigningAlg', this.el).show();
+        } else {
+        	$('#tokenEndpointAuthSigningAlg', this.el).hide();
+        }
     },
     
     /**
@@ -671,11 +683,10 @@ var ClientFormView = Backbone.View.extend({
         	}
         });
 
-        var requireClientSecret = $('#requireClientSecret input').is(':checked');
         var generateClientSecret = $('#generateClientSecret input').is(':checked');
         var clientSecret = null;
         
-        if (requireClientSecret && !generateClientSecret) {
+        if (!generateClientSecret) {
         	// if it's required but we're not generating it, send the value to preserve it
         	clientSecret = $('#clientSecret input').val();
         }

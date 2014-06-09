@@ -522,8 +522,7 @@ var AppRouter = Backbone.Router.extend({
         view.load(function() {
         	// set up this new client to require a secret and have us autogenerate one
         	client.set({
-        		tokenEndpointAuthMethod: "client_secret_basic",
-        		requireClientSecret:true, 
+        		tokenEndpointAuthMethod: "SECRET_BASIC",
         		generateClientSecret:true,
         		displayClientSecret:false,
         		requireAuthTime:true,
@@ -573,12 +572,6 @@ var AppRouter = Backbone.Router.extend({
     	client.fetch({
     			success: function(client, response, options) {
     				$('#loading-client').addClass('label-success');
-    				
-    				if (client.get("clientSecret") == null) {
-    		        	client.set({
-    		        		requireClientSecret:false
-    		        	}, { silent: true });
-    		        }
     		        
     		        if ($.inArray("refresh_token", client.get("grantTypes")) != -1) {
     		        	client.set({
