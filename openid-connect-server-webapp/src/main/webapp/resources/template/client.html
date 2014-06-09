@@ -702,10 +702,14 @@
 		<strong>ID:</strong> <input type="text" readonly style="cursor: text" class="token-full input-xxlarge" value="<%= clientId %>" />
 
 	</div>
-	<% if (generateClientSecret && clientSecret != null && clientSecret != '') { %>
+	<% if (secretChanged) { %>
 	<div>
 		<strong>Secret:</strong> <button class="btn btn-mini" id="clientSaveShow">Show Secret</button>
 		<input type="text" id="savedClientSecret" readonly style="cursor: text" class="token-full input-xxlarge" value="<%= clientSecret %>" />
+	</div>
+	<% } else if (clientSecret == null || clientSecret == '') { %>
+	<div>
+		<i>No client secret</i>
 	</div>
 	<% } else { %>
 	<div>

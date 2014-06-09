@@ -686,11 +686,29 @@ var ClientFormView = Backbone.View.extend({
         var generateClientSecret = $('#generateClientSecret input').is(':checked');
         var clientSecret = null;
         
-        if (!generateClientSecret) {
-        	// if it's required but we're not generating it, send the value to preserve it
-        	clientSecret = $('#clientSecret input').val();
-        }
+        var tokenEndpointAuthMethod = $('#tokenEndpointAuthMethod input').filter(':checked').val();
 
+        // whether or not the client secret changed
+        var secretChanged = false;
+        
+        if (tokenEndpointAuthMethod == 'SECRET_BASIC'
+        	|| tokenEndpointAuthMethod == 'SECRET_POST'
+        	|| tokenEndpointAuthMethod == 'SECRET_JWT') {
+        	
+        	if (!generateClientSecret) {
+        		// if it's required but we're not generating it, send the value to preserve it
+        		clientSecret = $('#clientSecret input').val();
+        		
+        		// if it's not the same as before, offer to display it
+        		if (clientSecret != this.model.get('clientSecret')) {
+        			secretChanged = true;
+        		}
+        	} else {
+        		// it's being generated anew
+        		secretChanged = true;
+        	}
+        }
+        
         var accessTokenValiditySeconds = null;
         if (!$('disableAccessTokenTimeout').is(':checked')) {
         	accessTokenValiditySeconds = this.getFormTokenNumberValue($('#accessTokenValidityTime input[type=text]').val(), $('#accessTokenValidityTime select').val()); 
@@ -729,15 +747,13 @@ var ClientFormView = Backbone.View.extend({
             allowRefresh: $('#allowRefresh').is(':checked'),
             allowIntrospection: $('#allowIntrospection input').is(':checked'), // <-- And here? --^
             scope: scopes,
-            
-            // TODO: items below this line are untested
             tosUri: $('#tosUri input').val(),
             policyUri: $('#policyUri input').val(),
             clientUri: $('#clientUri input').val(),
             applicationType: $('#applicationType input').filter(':checked').val(),
             jwksUri: $('#jwksUri input').val(),
             subjectType: $('#subjectType input').filter(':checked').val(),
-            tokenEndpointAuthMethod: $('#tokenEndpointAuthMethod input').filter(':checked').val(),
+            tokenEndpointAuthMethod: tokenEndpointAuthMethod,
             responseTypes: responseTypes,
             sectorIdentifierUri: $('#sectorIdentifierUri input').val(),
             initiateLoginUri: $('#initiateLoginUri input').val(),
@@ -784,7 +800,13 @@ var ClientFormView = Backbone.View.extend({
 
             	$('#modalAlertLabel').html('Client Saved');
             	
-            	$('#modalAlert .modal-body').html(_self.clientSavedTemplate(_self.model.toJSON()));
+            	var savedModel = {
+            		clientId: _self.model.get('clientId'),
+            		clientSecret: _self.model.get('clientSecret'),
+            		secretChanged: secretChanged
+            	};
+            	
+            	$('#modalAlert .modal-body').html(_self.clientSavedTemplate(savedModel));
             	
             	$('#modalAlert .modal-body #savedClientSecret').hide();
             	
