@@ -290,6 +290,8 @@ public class ProtectedResourceRegistrationEndpoint {
 			// a client can't ask to update its own client secret to any particular value
 			newClient.setClientSecret(oldClient.getClientSecret());
 
+			newClient.setCreatedAt(oldClient.getCreatedAt());
+
 			// no grant types are allowed
 			newClient.setGrantTypes(new HashSet<String>());
 			newClient.setResponseTypes(new HashSet<String>());
