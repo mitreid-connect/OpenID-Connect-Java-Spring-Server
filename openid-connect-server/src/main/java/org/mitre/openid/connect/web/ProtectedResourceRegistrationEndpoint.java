@@ -412,8 +412,10 @@ public class ProtectedResourceRegistrationEndpoint {
 				newClient.getTokenEndpointAuthMethod() == AuthMethod.SECRET_JWT ||
 				newClient.getTokenEndpointAuthMethod() == AuthMethod.SECRET_POST) {
 
-			// we need to generate a secret
-			newClient = clientService.generateClientSecret(newClient);
+			if (Strings.isNullOrEmpty(newClient.getClientSecret())) {
+				// no secret yet, we need to generate a secret
+				newClient = clientService.generateClientSecret(newClient);
+			}
 		} else if (newClient.getTokenEndpointAuthMethod() == AuthMethod.PRIVATE_KEY) {
 			if (Strings.isNullOrEmpty(newClient.getJwksUri())) {
 				throw new ValidationException("invalid_client_metadata", "JWK Set URI required when using private key authentication", HttpStatus.BAD_REQUEST);
