@@ -18,11 +18,20 @@
 
 <script type="text/html" id="tmpl-grant-table">
 
-	<h2>Approved sites</h2>
-
     <div class="well well-small">
 		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> Refresh</button>
     </div>
+
+	<div class="tabbable">
+
+ 		<ul class="nav nav-tabs">
+			<li class="active"><a data-target="#grant-approved-tab" data-toggle="tab" href="#">Approved Sites</a></li>
+			<li><a data-target="#grant-whitelist-tab" data-toggle="tab" href="#">Whitelisted Sites</a></li>
+		</ul>
+
+	<div class="tab-content">
+
+	<div class="tab-pane active" id="grant-approved-tab">
 
 	<h3>Sites you have manually approved</h3>
 
@@ -43,10 +52,12 @@
         </tbody>
     </table>
 
-	<div class="well">
+	</div>
+
+	<div class="tab-pane" id="grant-whitelist-tab">
 	
 	<h3>Sites that have been whitelisted by an administrator</h3>
-	<p>If you revoke them here, they will automatically be re-approved on your next visit.</p>
+	<p class="text-warning"><b>NOTE:</b> If you revoke them here, they will automatically be re-approved on your next visit.</p>
 
 	<div id="grant-whitelist-table-empty" class="alert alert-info">
 		You have not accessed any whitelisted sites.
@@ -64,6 +75,10 @@
         <tbody>
         </tbody>
     </table>
+
+	</div>
+
+	</div>
 
 	</div>
 
