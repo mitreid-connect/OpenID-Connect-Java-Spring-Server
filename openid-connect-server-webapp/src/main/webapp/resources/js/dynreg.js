@@ -341,7 +341,7 @@ var DynRegEditView = Backbone.View.extend({
             logo_uri:$('#logoUri input').val(),
             grant_types: grantTypes,
             scope: scopes,
-            
+            client_secret: null, // never send a client secret
             tos_uri: $('#tosUri input').val(),
             policy_uri: $('#policyUri input').val(),
             client_uri: $('#clientUri input').val(),

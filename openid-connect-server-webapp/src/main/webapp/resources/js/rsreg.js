@@ -302,7 +302,7 @@ var ResRegEditView = Backbone.View.extend({
             client_name:$('#clientName input').val(),
             logo_uri:$('#logoUri input').val(),
             scope: scopes,
-            
+            client_secret: null, // never send a client secret
             tos_uri: $('#tosUri input').val(),
             policy_uri: $('#policyUri input').val(),
             client_uri: $('#clientUri input').val(),
