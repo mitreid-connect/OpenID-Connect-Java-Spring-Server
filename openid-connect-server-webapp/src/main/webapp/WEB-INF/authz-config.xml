@@ -36,6 +36,7 @@
 		token-services-ref="defaultOAuth2ProviderTokenService" 
 		user-approval-handler-ref="tofuUserApprovalHandler" 
 		request-validator-ref="oauthRequestValidator"
+		redirect-resolver-ref="blacklistAwareRedirectResolver"
 		authorization-endpoint-url="/authorize" 
 		token-endpoint-url="/token">
 		
