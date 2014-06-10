@@ -29,7 +29,10 @@
 
     <td>
 		<div>
-	        <span title="<%= client.clientId %>"><%= client.clientName != null ? client.clientName : ( client.clientId.substr(0,8) + '...' ) %></span>
+	        <span class="clientid-substring" title="<%= client.clientId %> (click to display client ID)"><%= client.clientName != null ? client.clientName : ( client.clientId.substr(0,8) + '...' ) %></span>
+		</div>
+		<div>
+			<input type="text" readonly style="cursor: text" class="clientid-full input-xxlarge" value="<%= client.clientId %>" />
 		</div>
 		<div>
 			<% if (client.dynamicallyRegistered) { %>

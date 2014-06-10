@@ -194,6 +194,8 @@ var ClientView = Backbone.View.extend({
         
         $('.client-more-info-block', this.el).html(this.moreInfoTemplate({client: this.model.toJSON()}));
         
+        $('.clientid-full', this.el).hide();
+        
         this.$('.dynamically-registered').tooltip({title: 'This client was dynamically registered'});
         
         return this;
@@ -203,7 +205,8 @@ var ClientView = Backbone.View.extend({
         "click .btn-edit":"editClient",
         "click .btn-delete":"deleteClient",
         "click .btn-whitelist":"whiteListClient",
-		'click .toggleMoreInformation': 'toggleMoreInformation'
+		'click .toggleMoreInformation': 'toggleMoreInformation',
+        "click .clientid-substring":"showClientId"
     },
 
     editClient:function (e) {
@@ -275,6 +278,13 @@ var ClientView = Backbone.View.extend({
 			$('.moreInformation', this.el).show('fast');
 			$('.toggleMoreInformation i', this.el).attr('class', 'icon-chevron-down');
 		}
+	},
+	
+	showClientId:function(e) {
+		e.preventDefault();
+		
+		$('.clientid-full', this.el).show();
+		
 	},
 	
 	close:function () {
@@ -918,7 +928,7 @@ var ClientFormView = Backbone.View.extend({
             $("#refresh-token-timeout-time", this.$el).prop('disabled',true);
             $("#refresh-token-timeout-unit", this.$el).prop('disabled',true);
         }
-
+        
         // toggle other dynamic fields
         this.toggleClientCredentials();
         this.previewLogo();
