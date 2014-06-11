@@ -280,7 +280,7 @@ var RefreshTokenView = Backbone.View.extend({
             	}
             });
 
-            app.tokensListView.delegateEvents();
+            _self.parentView.delegateEvents();
         }
 
         return false;

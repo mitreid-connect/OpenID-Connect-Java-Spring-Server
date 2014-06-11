@@ -225,7 +225,6 @@ var ResRegEditView = Backbone.View.extend({
             	}
             });
 
-            app.clientListView.delegateEvents();
         }
 
         return false;

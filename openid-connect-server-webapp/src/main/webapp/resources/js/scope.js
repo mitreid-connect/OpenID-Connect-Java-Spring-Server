@@ -107,15 +107,15 @@ var SystemScopeView = Backbone.View.extend({
     	e.preventDefault();
 
         if (confirm("Are you sure sure you would like to delete this scope? Clients that have this scope will still be able to ask for it.")) {
-            var self = this;
+            var _self = this;
 
             this.model.destroy({
                 success:function () {
                 	
-                    self.$el.fadeTo("fast", 0.00, function () { //fade
+                    _self.$el.fadeTo("fast", 0.00, function () { //fade
                         $(this).slideUp("fast", function () { //slide up
                             $(this).remove(); //then remove from the DOM
-                            app.systemScopeListView.togglePlaceholder();
+                            _self.parentView.togglePlaceholder();
                         });
                     });
                 },
@@ -136,7 +136,7 @@ var SystemScopeView = Backbone.View.extend({
             	}
             });
 
-            app.systemScopeListView.delegateEvents();
+            _self.parentView.delegateEvents();
         }
 
         return false;
@@ -204,8 +204,12 @@ var SystemScopeListView = Backbone.View.extend({
 		// append and render the table structure
 		$(this.el).html($('#tmpl-system-scope-table').html());
 		
+		var _self = this;
+		
 		_.each(this.model.models, function (scope) {
-			$("#scope-table", this.el).append(new SystemScopeView({model: scope}).render().el);
+			var view = new SystemScopeView({model: scope});
+			view.parentView = _self;
+			$("#scope-table", _self.el).append(view.render().el);
 		}, this);
 		
 		this.togglePlaceholder();

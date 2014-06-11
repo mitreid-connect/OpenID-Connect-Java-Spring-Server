@@ -225,7 +225,6 @@ var DynRegEditView = Backbone.View.extend({
             	}
             });
 
-            app.clientListView.delegateEvents();
         }
 
         return false;

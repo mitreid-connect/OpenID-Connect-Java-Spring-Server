@@ -278,7 +278,7 @@ var ApprovedSiteView = Backbone.View.extend({
             
             });
             
-            app.approvedSiteListView.delegateEvents();
+            this.parentView.delegateEvents();
 		}
 		
 		return false;
