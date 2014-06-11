@@ -39,34 +39,34 @@
 					<ul class="nav">
 						<c:choose>
 							<c:when test="${pageName == 'Home'}">
-								<li class="active"><a href="">Home</a></li>
+								<li class="active"><a href="" data-toggle="collapse" data-target=".nav-collapse">Home</a></li>
 							</c:when>
 							<c:otherwise>
-								<li><a href="">Home</a></li>
+								<li><a href="" data-toggle="collapse" data-target=".nav-collapse">Home</a></li>
 							</c:otherwise>
 						</c:choose>
 						<c:choose>
 							<c:when test="${pageName == 'About'}">
-								<li class="active"><a href="">About</a></li>
+								<li class="active" data-toggle="collapse" data-target=".nav-collapse"><a href="">About</a></li>
 							</c:when>
 							<c:otherwise>
-								<li><a href="about">About</a></li>
+								<li><a href="about" data-toggle="collapse" data-target=".nav-collapse">About</a></li>
 							</c:otherwise>
 						</c:choose>
 						<c:choose>
 							<c:when test="${pageName == 'Statistics'}">
-								<li class="active"><a href="">Statistics</a></li>
+								<li class="active" data-toggle="collapse" data-target=".nav-collapse"><a href="">Statistics</a></li>
 							</c:when>
 							<c:otherwise>
-								<li><a href="stats">Statistics</a></li>
+								<li><a href="stats" data-toggle="collapse" data-target=".nav-collapse">Statistics</a></li>
 							</c:otherwise>
 						</c:choose>
 						<c:choose>
 							<c:when test="${pageName == 'Contact'}">
-								<li class="active"><a href="">Contact</a></li>
+								<li class="active" data-toggle="collapse" data-target=".nav-collapse"><a href="">Contact</a></li>
 							</c:when>
 							<c:otherwise>
-								<li><a href="contact">Contact</a></li>
+								<li><a href="contact" data-toggle="collapse" data-target=".nav-collapse">Contact</a></li>
 							</c:otherwise>
 						</c:choose>
 	
@@ -85,14 +85,14 @@
 						<div class="btn-group">
 							<a class="btn btn-primary btn-small dropdown-toggle" data-toggle="dropdown" href=""><i class="icon-user icon-white"></i> ${ shortName } <span class="caret"></span></a>
 							<ul class="dropdown-menu pull-right">
-								<li><a href="manage/#user/profile">${ longName }</a></li>
+								<li><a href="manage/#user/profile" data-toggle="collapse" data-target=".nav-collapse">${ longName }</a></li>
 								<li class="divider"></li>
-								<li><a href="logout"><i class="icon-remove"></i> Log out</a></li>
+								<li><a href="logout" data-toggle="collapse" data-target=".nav-collapse"><i class="icon-remove"></i> Log out</a></li>
 							</ul>
 						</div>
 	                    </security:authorize>
 	                    <security:authorize access="!hasRole('ROLE_USER')">
-	                    	<a class="btn btn-primary btn-small" href="login"><i class="icon-user icon-white"></i> Log in</a>
+	                    	<a class="btn btn-primary btn-small" href="login" data-toggle="collapse" data-target=".nav-collapse"><i class="icon-user icon-white"></i> Log in</a>
 	                    </security:authorize>
 	                </div>
 	                    
