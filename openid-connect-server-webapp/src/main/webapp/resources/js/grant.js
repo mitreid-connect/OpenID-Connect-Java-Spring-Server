@@ -34,7 +34,9 @@ var ApprovedSiteCollection = Backbone.Collection.extend({
 var ApprovedSiteListView = Backbone.View.extend({
 	tagName: 'span',
 	
-	initialize:function() { },
+	initialize:function(options) { 
+		this.options = options;
+	},
 
 	load:function(callback) {
     	if (this.model.isFetched &&
@@ -154,7 +156,8 @@ var ApprovedSiteListView = Backbone.View.extend({
 var ApprovedSiteView = Backbone.View.extend({
 	tagName: 'tr',
 	
-	initialize: function() {
+	initialize: function(options) {
+    	this.options = options;
 		if (!this.template) {
 			this.template = _.template($('#tmpl-grant').html());
 		}

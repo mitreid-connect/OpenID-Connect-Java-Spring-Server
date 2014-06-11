@@ -78,7 +78,8 @@ var DynRegRootView = Backbone.View.extend({
 	
 	tagName: 'span',
 	
-	initialize:function() {
+	initialize:function(options) {
+    	this.options = options;
 		
 	},
 	
@@ -155,7 +156,8 @@ var DynRegEditView = Backbone.View.extend({
 	
 	tagName: 'span',
 	
-	initialize:function() {
+	initialize:function(options) {
+    	this.options = options;
         if (!this.template) {
             this.template = _.template($('#tmpl-dynreg-client-form').html());
         }

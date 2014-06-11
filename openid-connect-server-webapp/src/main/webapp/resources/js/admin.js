@@ -112,8 +112,8 @@ var ListWidgetChildView = Backbone.View.extend({
         
     },
 
-    initialize:function () {
-
+    initialize:function (options) {
+    	this.options = options;
         if (!this.template) {
             this.template = _.template($('#tmpl-list-widget-child').html());
         }
@@ -149,7 +149,8 @@ var ListWidgetView = Backbone.View.extend({
         }
     },
 
-    initialize:function () {
+    initialize:function (options) {
+    	this.options = options;
 
         if (!this.template) {
             this.template = _.template($('#tmpl-list-widget').html());
@@ -232,7 +233,8 @@ var BreadCrumbView = Backbone.View.extend({
 
     tagName: 'ul',
 
-    initialize:function () {
+    initialize:function (options) {
+    	this.options = options;
 
         if (!this.template) {
             this.template = _.template($('#tmpl-breadcrumbs').html());
@@ -269,7 +271,8 @@ var BreadCrumbView = Backbone.View.extend({
 var BlackListListView = Backbone.View.extend({
 	tagName: 'span',
 	
-	initialize:function() {
+	initialize:function(options) {
+    	this.options = options;
 		if (!this.template) {
 			this.template = _.template($('#tmpl-blacklist-form').html());
 		}
@@ -324,7 +327,8 @@ var BlackListListView = Backbone.View.extend({
 var BlackListWidgetView = ListWidgetView.extend({
 	
 	childView: ListWidgetChildView.extend({
-		render:function() {
+		render:function(options) {
+	    	this.options = options;
 			var uri = this.model.get('uri');
 			
 			this.$el.html(this.template({item: uri}));
@@ -389,7 +393,8 @@ var StatsModel = Backbone.Model.extend({
 var UserProfileView = Backbone.View.extend({
 	tagName: 'span',
 	
-	initialize:function() {
+	initialize:function(options) {
+    	this.options = options;
         if (!this.template) {
             this.template = _.template($('#tmpl-user-profile-element').html());
         }
@@ -1000,6 +1005,11 @@ $(function () {
     // grab all hashed URLs and send them through the app router instead
     $(document).on('click', 'a[href^="manage/#"]', function(event) {
     	event.preventDefault();
+    	
+    	$('.sidebar-nav li.active').removeClass('active');
+    	
+    	$(this).parent().addClass('active');
+    	
     	app.navigate(this.hash.slice(1), {trigger: true});
     });
     

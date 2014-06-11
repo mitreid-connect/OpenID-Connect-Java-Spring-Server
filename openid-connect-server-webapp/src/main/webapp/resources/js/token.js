@@ -45,7 +45,8 @@ var AccessTokenView = Backbone.View.extend({
 	
 	tagName: 'tr',
 	
-    initialize:function () {
+    initialize:function (options) {
+    	this.options = options;
 
         if (!this.template) {
             this.template = _.template($('#tmpl-access-token').html());
@@ -193,7 +194,8 @@ var RefreshTokenView = Backbone.View.extend({
 	
 	tagName: 'tr',
 	
-    initialize:function () {
+    initialize:function (options) {
+    	this.options = options;
 
         if (!this.template) {
             this.template = _.template($('#tmpl-refresh-token').html());
@@ -316,6 +318,10 @@ var RefreshTokenView = Backbone.View.extend({
 
 var TokenListView = Backbone.View.extend({
 	tagName: 'span',
+	
+	initialize:function(options) {
+    	this.options = options;
+	},
 	
 	events:{
 		"click .refresh-table":"refreshTable",

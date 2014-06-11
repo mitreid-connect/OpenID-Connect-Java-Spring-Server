@@ -75,7 +75,8 @@ var SystemScopeView = Backbone.View.extend({
 	
 	tagName: 'tr',
 	
-    initialize:function () {
+    initialize:function (options) {
+    	this.options = options;
 
         if (!this.template) {
             this.template = _.template($('#tmpl-system-scope').html());
@@ -151,6 +152,10 @@ var SystemScopeView = Backbone.View.extend({
 var SystemScopeListView = Backbone.View.extend({
 	tagName: 'span',
 	
+	initialize:function(options) {
+    	this.options = options;
+	},
+	
 	load:function(callback) {
     	if (this.model.isFetched) {
     		callback();
@@ -221,7 +226,8 @@ var SystemScopeListView = Backbone.View.extend({
 var SystemScopeFormView = Backbone.View.extend({
 	tagName: 'span',
 	
-	initialize:function() {
+	initialize:function(options) {
+    	this.options = options;
 		if (!this.template) {
             	this.template = _.template($('#tmpl-system-scope-form').html());
 		}

@@ -46,8 +46,8 @@ var WhiteListCollection = Backbone.Collection.extend({
 var WhiteListListView = Backbone.View.extend({
 	tagName: 'span',
 	
-	initialize:function () {
-		//this.model.bind("reset", this.render, this);
+	initialize:function (options) {
+    	this.options = options;
 	},
 
 	load:function(callback) {
@@ -133,7 +133,8 @@ var WhiteListListView = Backbone.View.extend({
 var WhiteListView = Backbone.View.extend({
 	tagName: 'tr',
 	
-	initialize:function() {
+	initialize:function(options) {
+    	this.options = options;
 		if (!this.template) {
 			this.template = _.template($('#tmpl-whitelist').html());
 		}
@@ -240,7 +241,8 @@ var WhiteListView = Backbone.View.extend({
 var WhiteListFormView = Backbone.View.extend({
 	tagName: 'span',
 	
-	initialize:function () {
+	initialize:function (options) {
+    	this.options = options;
 		if (!this.template) {
 			this.template = _.template($('#tmpl-whitelist-form').html());
 		}

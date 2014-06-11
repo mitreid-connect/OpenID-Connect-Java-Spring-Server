@@ -149,7 +149,8 @@ var ClientView = Backbone.View.extend({
 
     tagName: 'tr',
 
-    initialize:function () {
+    initialize:function (options) {
+    	this.options = options;
 
         if (!this.template) {
             this.template = _.template($('#tmpl-client').html());
@@ -297,7 +298,8 @@ var ClientListView = Backbone.View.extend({
 
     tagName: 'span',
 
-    initialize:function () {
+    initialize:function (options) {
+    	this.options = options;
     	this.filteredModel = this.model;
     },
     
@@ -469,7 +471,8 @@ var ClientFormView = Backbone.View.extend({
 
     tagName:"span",
 
-    initialize:function () {
+    initialize:function (options) {
+    	this.options = options;
 
         if (!this.template) {
             this.template = _.template($('#tmpl-client-form').html());
