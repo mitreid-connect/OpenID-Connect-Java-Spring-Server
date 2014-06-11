@@ -229,14 +229,14 @@ var ClientView = Backbone.View.extend({
     	e.preventDefault();
 
         if (confirm("Are you sure sure you would like to delete this client?")) {
-            var self = this;
+            var _self = this;
 
             this.model.destroy({
                 success:function () {
-                    self.$el.fadeTo("fast", 0.00, function () { //fade
+                    _self.$el.fadeTo("fast", 0.00, function () { //fade
                         $(this).slideUp("fast", function () { //slide up
                             $(this).remove(); //then remove from the DOM
-                            app.clientListView.togglePlaceholder();
+                            _self.parentView.togglePlaceholder();
                         });
                     });
                 },
@@ -258,7 +258,7 @@ var ClientView = Backbone.View.extend({
             	}
             });
 
-            app.clientListView.delegateEvents();
+            _self.parentView.delegateEvents();
         }
 
         return false;
@@ -354,26 +354,16 @@ var ClientListView = Backbone.View.extend({
     
     renderInner:function(eventName) {
 
-        // set up pagination
-        var numPages = Math.ceil(this.filteredModel.length / 10);
-        if (numPages > 1) {
-        	$('.paginator', this.el).show();
-        	$('.paginator', this.el).bootpag({
-        		total: numPages,
-        		page: 1
-        	});        	
-        } else {
-        	$('.paginator', this.el).hide();
-        }
-
         // render the rows
     	_.each(this.filteredModel.models, function (client, index) {
-    		var element = new ClientView({
+    		var view = new ClientView({
 				model:client, 
 				count:this.options.stats.get(client.get('id')),
 				systemScopeList: this.options.systemScopeList,
 				whiteList: this.options.whiteListList.getByClientId(client.get('clientId'))
-			}).render().el;
+			});
+    		view.parentView = this;
+    		var element = view.render().el;
             $("#client-table",this.el).append(element);
             if (Math.ceil((index + 1) / 10) != 1) {
             	$(element).hide();
@@ -386,6 +376,18 @@ var ClientListView = Backbone.View.extend({
     },
     
 	togglePlaceholder:function() {
+        // set up pagination
+        var numPages = Math.ceil(this.filteredModel.length / 10);
+        if (numPages > 1) {
+        	$('.paginator', this.el).show();
+        	$('.paginator', this.el).bootpag({
+        		total: numPages,
+        		page: 1
+        	});        	
+        } else {
+        	$('.paginator', this.el).hide();
+        }
+
 		if (this.filteredModel.length > 0) {
 			$('#client-table', this.el).show();
 			$('#client-table-empty', this.el).hide();
