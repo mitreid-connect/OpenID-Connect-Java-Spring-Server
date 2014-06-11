@@ -20,7 +20,6 @@ var ResRegClient = Backbone.Model.extend({
     defaults:{
         client_id:null,
         client_secret:null,
-        redirect_uris:[],
         client_name:null,
         client_uri:null,
         logo_uri:null,
@@ -28,34 +27,10 @@ var ResRegClient = Backbone.Model.extend({
         tos_uri:null,
         token_endpoint_auth_method:null,
         scope:null,
-        grant_types:[],
-        response_types:[],
         policy_uri:null,
         jwks_uri:null,
         
         application_type:null,
-        sector_identifier_uri:null,
-        subject_type:null,
-        
-        request_object_signing_alg:null,
-        
-        userinfo_signed_response_alg:null,
-        userinfo_encrypted_response_alg:null,
-        userinfo_encrypted_response_enc:null,
-        
-        id_token_signed_response_alg:null,
-        id_token_encrypted_response_alg:null,
-        id_token_encrypted_response_enc:null,
-        
-        default_max_age:null,
-        require_auth_time:false,
-        default_acr_values:null,
-        
-        initiate_login_uri:null,
-        post_logout_redirect_uri:null,
-        
-        request_uris:[],
-        
         registration_access_token:null,
         registration_client_uri:null
     },
