@@ -202,10 +202,8 @@ public class ClientDynamicRegistrationEndpoint {
 
 		if (client != null && client.getClientId().equals(auth.getOAuth2Request().getClientId())) {
 
-
-			// we return the token that we got in
-			OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
-			OAuth2AccessTokenEntity token = tokenService.readAccessToken(details.getTokenValue());
+			//Get rid of the old token and issue a new token
+			OAuth2AccessTokenEntity token = rotateRegistrationToken(auth, client);
 
 			try {
 				RegisteredClient registered = new RegisteredClient(client, token.getValue(), config.getIssuer() + "register/" +  UriUtils.encodePathSegment(client.getClientId(), "UTF-8"));
@@ -293,10 +291,8 @@ public class ClientDynamicRegistrationEndpoint {
 				// save the client
 				ClientDetailsEntity savedClient = clientService.updateClient(oldClient, newClient);
 
-				// we return the token that we got in
-				// TODO: rotate this after some set amount of time
-				OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
-				OAuth2AccessTokenEntity token = tokenService.readAccessToken(details.getTokenValue());
+				//Get rid of the old token and issue a new token
+				OAuth2AccessTokenEntity token = rotateRegistrationToken(auth, savedClient);
 
 				RegisteredClient registered = new RegisteredClient(savedClient, token.getValue(), config.getIssuer() + "register/" + UriUtils.encodePathSegment(savedClient.getClientId(), "UTF-8"));
 
@@ -524,4 +520,14 @@ public class ClientDynamicRegistrationEndpoint {
 		return newClient;
 	}
 	
+	private OAuth2AccessTokenEntity rotateRegistrationToken(OAuth2Authentication auth, ClientDetailsEntity client)
+	{
+		OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
+		OAuth2AccessTokenEntity token = tokenService.readAccessToken(details.getTokenValue());		
+		tokenService.revokeAccessToken(token);
+		
+		OAuth2AccessTokenEntity newToken = connectTokenService.createRegistrationAccessToken(client);
+		tokenService.saveAccessToken(newToken);
+		return newToken;
+	}
 }
