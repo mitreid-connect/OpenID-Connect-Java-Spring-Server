@@ -49,6 +49,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.util.UriUtils;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonSyntaxException;
 
@@ -289,6 +290,8 @@ public class ProtectedResourceRegistrationEndpoint {
 			// a client can't ask to update its own client secret to any particular value
 			newClient.setClientSecret(oldClient.getClientSecret());
 
+			newClient.setCreatedAt(oldClient.getCreatedAt());
+
 			// no grant types are allowed
 			newClient.setGrantTypes(new HashSet<String>());
 			newClient.setResponseTypes(new HashSet<String>());
@@ -344,7 +347,7 @@ public class ProtectedResourceRegistrationEndpoint {
 				OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
 				OAuth2AccessTokenEntity token = tokenService.readAccessToken(details.getTokenValue());
 
-				RegisteredClient registered = new RegisteredClient(savedClient, token.getValue(), config.getIssuer() + "register/" + UriUtils.encodePathSegment(savedClient.getClientId(), "UTF-8"));
+				RegisteredClient registered = new RegisteredClient(savedClient, token.getValue(), config.getIssuer() + "resource/" + UriUtils.encodePathSegment(savedClient.getClientId(), "UTF-8"));
 
 				// send it all out to the view
 				m.addAttribute("client", registered);
@@ -411,8 +414,20 @@ public class ProtectedResourceRegistrationEndpoint {
 				newClient.getTokenEndpointAuthMethod() == AuthMethod.SECRET_JWT ||
 				newClient.getTokenEndpointAuthMethod() == AuthMethod.SECRET_POST) {
 
-			// we need to generate a secret
-			newClient = clientService.generateClientSecret(newClient);
+			if (Strings.isNullOrEmpty(newClient.getClientSecret())) {
+				// no secret yet, we need to generate a secret
+				newClient = clientService.generateClientSecret(newClient);
+			}
+		} else if (newClient.getTokenEndpointAuthMethod() == AuthMethod.PRIVATE_KEY) {
+			if (Strings.isNullOrEmpty(newClient.getJwksUri())) {
+				throw new ValidationException("invalid_client_metadata", "JWK Set URI required when using private key authentication", HttpStatus.BAD_REQUEST);
+			}
+			
+			newClient.setClientSecret(null);
+		} else if (newClient.getTokenEndpointAuthMethod() == AuthMethod.NONE) {
+			newClient.setClientSecret(null);
+		} else {
+			throw new ValidationException("invalid_client_metadata", "Unknown authentication method", HttpStatus.BAD_REQUEST);
 		}
 		return newClient;
 	}

@@ -34,7 +34,9 @@ var ApprovedSiteCollection = Backbone.Collection.extend({
 var ApprovedSiteListView = Backbone.View.extend({
 	tagName: 'span',
 	
-	initialize:function() { },
+	initialize:function(options) { 
+		this.options = options;
+	},
 
 	load:function(callback) {
     	if (this.model.isFetched &&
@@ -66,6 +68,11 @@ var ApprovedSiteListView = Backbone.View.extend({
 	render:function (eventName) {
 		$(this.el).html($('#tmpl-grant-table').html());
 		
+		var approvedSiteCount = 0;
+		var whitelistCount = 0;
+		
+		var _self = this;
+		
 		_.each(this.model.models, function(approvedSite) {
 			// look up client
 			var client = this.options.clientList.getByClientId(approvedSite.get('clientId'));
@@ -73,9 +80,15 @@ var ApprovedSiteListView = Backbone.View.extend({
 			if (client != null) {
 				
 				if (approvedSite.get('whitelistedSite') != null) {
-					$('#grant-whitelist-table', this.el).append(new ApprovedSiteView({model: approvedSite, client: client, systemScopeList: this.options.systemScopeList}).render().el);
+					var view = new ApprovedSiteView({model: approvedSite, client: client, systemScopeList: this.options.systemScopeList});
+					view.parentView = _self;
+					$('#grant-whitelist-table', this.el).append(view.render().el);
+					whitelistCount = whitelistCount + 1;
 				} else {
-					$('#grant-table', this.el).append(new ApprovedSiteView({model: approvedSite, client: client, systemScopeList: this.options.systemScopeList}).render().el);
+					var view = new ApprovedSiteView({model: approvedSite, client: client, systemScopeList: this.options.systemScopeList});
+					view.parentView = _self;
+					$('#grant-table', this.el).append(view.render().el);
+					approvedSiteCount = approvedSiteCount + 1;
 				}
 				
 			}
@@ -113,6 +126,11 @@ var ApprovedSiteListView = Backbone.View.extend({
 			$('#grant-table', this.el).hide();
 			$('#grant-table-empty', this.el).show();
 		}
+		
+		$('#approvde-site-count', this.el).html(gr);
+		$('#whitelist-count', this.el).html(wl);
+	
+		
 	},
 	
     refreshTable:function(e) {
@@ -138,7 +156,8 @@ var ApprovedSiteListView = Backbone.View.extend({
 var ApprovedSiteView = Backbone.View.extend({
 	tagName: 'tr',
 	
-	initialize: function() {
+	initialize: function(options) {
+    	this.options = options;
 		if (!this.template) {
 			this.template = _.template($('#tmpl-grant').html());
 		}
@@ -240,7 +259,7 @@ var ApprovedSiteView = Backbone.View.extend({
                     self.$el.fadeTo("fast", 0.00, function () { //fade
                         $(this).slideUp("fast", function () { //slide up
                             $(this).remove(); //then remove from the DOM
-                            app.approvedSiteListView.togglePlaceholder();
+                            self.parentView.togglePlaceholder();
                         });
                     });
                 },
@@ -262,7 +281,7 @@ var ApprovedSiteView = Backbone.View.extend({
             
             });
             
-            app.approvedSiteListView.delegateEvents();
+            this.parentView.delegateEvents();
 		}
 		
 		return false;

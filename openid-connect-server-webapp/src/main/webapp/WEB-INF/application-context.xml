@@ -74,7 +74,7 @@
 		<security:http-basic entry-point-ref="oauthAuthenticationEntryPoint" />
 		<!-- include this only if you need to authenticate clients via request parameters -->
 		<security:custom-filter ref="clientAssertiontokenEndpointFilter" after="PRE_AUTH_FILTER" /> <!-- this one has to go first -->
-		<security:custom-filter ref="clientCredentialsTokenEndpointFilter" before="BASIC_AUTH_FILTER" />
+		<security:custom-filter ref="clientCredentialsTokenEndpointFilter" after="BASIC_AUTH_FILTER" />
 		<security:custom-filter ref="corsFilter" after="SECURITY_CONTEXT_FILTER" />
 		<security:access-denied-handler ref="oauthAccessDeniedHandler" />
 	</security:http>
@@ -129,7 +129,7 @@
 		<security:http-basic entry-point-ref="oauthAuthenticationEntryPoint" />
 <!-- 		<security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" /> -->
 		<security:custom-filter ref="corsFilter" after="SECURITY_CONTEXT_FILTER" />
-		<security:custom-filter ref="clientCredentialsIntrospectionEndpointFilter" before="BASIC_AUTH_FILTER" />
+		<security:custom-filter ref="clientCredentialsIntrospectionEndpointFilter" after="BASIC_AUTH_FILTER" />
 	</security:http>
 
 	<security:http pattern="/revoke**"
@@ -140,7 +140,7 @@
 		<security:http-basic entry-point-ref="oauthAuthenticationEntryPoint" />
 <!-- 		<security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" /> -->
 		<security:custom-filter ref="corsFilter" after="SECURITY_CONTEXT_FILTER" />
-		<security:custom-filter ref="clientCredentialsRevocationEndpointFilter" before="BASIC_AUTH_FILTER" />
+		<security:custom-filter ref="clientCredentialsRevocationEndpointFilter" after="BASIC_AUTH_FILTER" />
 	</security:http>
 
 	<bean id="oauthAuthenticationEntryPoint" class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint">

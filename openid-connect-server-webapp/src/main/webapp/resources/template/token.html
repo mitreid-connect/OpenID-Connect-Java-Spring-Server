@@ -20,9 +20,19 @@
 		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> Refresh</button> &nbsp;
     </div>
 
-	<h2>Access Tokens</h2>
+	<div class="tabbable">
 
-	<div><p>Access tokens and ID tokens are usually short-lived and provide clients with access to specific resources.</p></div>
+ 		<ul class="nav nav-tabs">
+			<li class="active"><a data-target="#token-access-tab" data-toggle="tab" href="#">Access Tokens <span class="label label-info" id="access-token-count">?</span></a></li>
+			<li><a data-target="#token-refresh-tab" data-toggle="tab" href="#">Refresh Tokens <span class="label label-info" id="refresh-token-count">?</span></a></li>
+		</ul>
+
+	<div class="tab-content">
+
+	<div class="tab-pane active" id="token-access-tab">
+
+	<div><p>Access tokens are usually short-lived and provide clients with access to specific resources. 
+			ID Tokens are specialized access tokens to facilitate log on using OpenID Connect.</p></div>
 
 	<div id="access-token-table-empty" class="alert alert-info">
 		There are no active access tokens.
@@ -45,7 +55,9 @@
 
 	<div class="pagination paginator-access"></div>
 
-	<h2>Refresh Tokens</h2>
+	</div>
+
+	<div class="tab-pane" id="token-refresh-tab">
 
 	<div><p>Refresh tokens are usually long-lived and provide clients with the ability to get new access tokens without end-user involvement.</p></div>
 
@@ -69,6 +81,9 @@
     </table>
 
 	<div class="pagination paginator-refresh"></div>
+
+	</div>
+	</div>
 
     <div class="well well-small">
 		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> Refresh</button> &nbsp; 

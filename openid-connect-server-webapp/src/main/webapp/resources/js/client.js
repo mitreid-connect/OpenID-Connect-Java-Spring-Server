@@ -90,7 +90,6 @@ var ClientModel = Backbone.Model.extend({
         allowRefresh:false,
         displayClientSecret: false,
         generateClientSecret: false,
-        requireClientSecret: true,
     },
 
     urlRoot:"api/clients",
@@ -150,7 +149,8 @@ var ClientView = Backbone.View.extend({
 
     tagName: 'tr',
 
-    initialize:function () {
+    initialize:function (options) {
+    	this.options = options;
 
         if (!this.template) {
             this.template = _.template($('#tmpl-client').html());
@@ -195,6 +195,8 @@ var ClientView = Backbone.View.extend({
         
         $('.client-more-info-block', this.el).html(this.moreInfoTemplate({client: this.model.toJSON()}));
         
+        $('.clientid-full', this.el).hide();
+        
         this.$('.dynamically-registered').tooltip({title: 'This client was dynamically registered'});
         
         return this;
@@ -204,7 +206,8 @@ var ClientView = Backbone.View.extend({
         "click .btn-edit":"editClient",
         "click .btn-delete":"deleteClient",
         "click .btn-whitelist":"whiteListClient",
-		'click .toggleMoreInformation': 'toggleMoreInformation'
+		'click .toggleMoreInformation': 'toggleMoreInformation',
+        "click .clientid-substring":"showClientId"
     },
 
     editClient:function (e) {
@@ -227,14 +230,14 @@ var ClientView = Backbone.View.extend({
     	e.preventDefault();
 
         if (confirm("Are you sure sure you would like to delete this client?")) {
-            var self = this;
+            var _self = this;
 
             this.model.destroy({
                 success:function () {
-                    self.$el.fadeTo("fast", 0.00, function () { //fade
+                    _self.$el.fadeTo("fast", 0.00, function () { //fade
                         $(this).slideUp("fast", function () { //slide up
                             $(this).remove(); //then remove from the DOM
-                            app.clientListView.togglePlaceholder();
+                            _self.parentView.togglePlaceholder();
                         });
                     });
                 },
@@ -256,7 +259,7 @@ var ClientView = Backbone.View.extend({
             	}
             });
 
-            app.clientListView.delegateEvents();
+            _self.parentView.delegateEvents();
         }
 
         return false;
@@ -278,6 +281,13 @@ var ClientView = Backbone.View.extend({
 		}
 	},
 	
+	showClientId:function(e) {
+		e.preventDefault();
+		
+		$('.clientid-full', this.el).show();
+		
+	},
+	
 	close:function () {
         $(this.el).unbind();
         $(this.el).empty();
@@ -288,7 +298,8 @@ var ClientListView = Backbone.View.extend({
 
     tagName: 'span',
 
-    initialize:function () {
+    initialize:function (options) {
+    	this.options = options;
     	this.filteredModel = this.model;
     },
     
@@ -345,26 +356,16 @@ var ClientListView = Backbone.View.extend({
     
     renderInner:function(eventName) {
 
-        // set up pagination
-        var numPages = Math.ceil(this.filteredModel.length / 10);
-        if (numPages > 1) {
-        	$('.paginator', this.el).show();
-        	$('.paginator', this.el).bootpag({
-        		total: numPages,
-        		page: 1
-        	});        	
-        } else {
-        	$('.paginator', this.el).hide();
-        }
-
         // render the rows
     	_.each(this.filteredModel.models, function (client, index) {
-    		var element = new ClientView({
+    		var view = new ClientView({
 				model:client, 
 				count:this.options.stats.get(client.get('id')),
 				systemScopeList: this.options.systemScopeList,
 				whiteList: this.options.whiteListList.getByClientId(client.get('clientId'))
-			}).render().el;
+			});
+    		view.parentView = this;
+    		var element = view.render().el;
             $("#client-table",this.el).append(element);
             if (Math.ceil((index + 1) / 10) != 1) {
             	$(element).hide();
@@ -377,6 +378,18 @@ var ClientListView = Backbone.View.extend({
     },
     
 	togglePlaceholder:function() {
+        // set up pagination
+        var numPages = Math.ceil(this.filteredModel.length / 10);
+        if (numPages > 1) {
+        	$('.paginator', this.el).show();
+        	$('.paginator', this.el).bootpag({
+        		total: numPages,
+        		page: 1
+        	});        	
+        } else {
+        	$('.paginator', this.el).hide();
+        }
+
 		if (this.filteredModel.length > 0) {
 			$('#client-table', this.el).show();
 			$('#client-table-empty', this.el).hide();
@@ -458,7 +471,8 @@ var ClientFormView = Backbone.View.extend({
 
     tagName:"span",
 
-    initialize:function () {
+    initialize:function (options) {
+    	this.options = options;
 
         if (!this.template) {
             this.template = _.template($('#tmpl-client-form').html());
@@ -490,7 +504,7 @@ var ClientFormView = Backbone.View.extend({
         	document.getElementById("refresh-token-timeout-time").value = ''; 	
         	},
         "click .btn-cancel":"cancel",
-        "change #requireClientSecret":"toggleRequireClientSecret",
+        "change #tokenEndpointAuthMethod input:radio":"toggleClientCredentials",
         "change #displayClientSecret":"toggleDisplayClientSecret",
         "change #generateClientSecret":"toggleGenerateClientSecret",
         "change #logoUri input":"previewLogo"
@@ -536,20 +550,33 @@ var ClientFormView = Backbone.View.extend({
     },
 
     /**
-     * Set up the form based on the current state of the requireClientSecret checkbox parameter
+     * Set up the form based on the current state of the tokenEndpointAuthMethod parameter
      * @param event
      */
-    toggleRequireClientSecret:function() {
+    toggleClientCredentials:function() {
     	
-    	if ($('#requireClientSecret input', this.el).is(':checked')) {
-    		// client secret is required, show all the bits
-    		$('#clientSecretPanel', this.el).show();
-    		// this function sets up the display portions
-    		this.toggleGenerateClientSecret();
-    	} else {
-    		// no client secret, hide all the bits
-    		$('#clientSecretPanel', this.el).hide();        		
-    	}
+        var tokenEndpointAuthMethod = $('#tokenEndpointAuthMethod input', this.el).filter(':checked').val();
+        
+        if (tokenEndpointAuthMethod == 'SECRET_BASIC' 
+        	|| tokenEndpointAuthMethod == 'SECRET_POST'
+        	|| tokenEndpointAuthMethod == 'SECRET_JWT') {
+        	
+        	// client secret is required, show all the bits
+        	$('#clientSecretPanel', this.el).show();
+        	// this function sets up the display portions
+        	this.toggleGenerateClientSecret();
+        } else {
+        	// no client secret, hide all the bits
+        	$('#clientSecretPanel', this.el).hide();        		        	
+        }
+        
+        // show or hide the signing algorithm method depending on what's selected
+        if (tokenEndpointAuthMethod == 'PRIVATE_KEY'
+        	|| tokenEndpointAuthMethod == 'SECRET_JWT') {
+        	$('#tokenEndpointAuthSigningAlg', this.el).show();
+        } else {
+        	$('#tokenEndpointAuthSigningAlg', this.el).hide();
+        }
     },
     
     /**
@@ -671,15 +698,32 @@ var ClientFormView = Backbone.View.extend({
         	}
         });
 
-        var requireClientSecret = $('#requireClientSecret input').is(':checked');
         var generateClientSecret = $('#generateClientSecret input').is(':checked');
         var clientSecret = null;
         
-        if (requireClientSecret && !generateClientSecret) {
-        	// if it's required but we're not generating it, send the value to preserve it
-        	clientSecret = $('#clientSecret input').val();
-        }
+        var tokenEndpointAuthMethod = $('#tokenEndpointAuthMethod input').filter(':checked').val();
 
+        // whether or not the client secret changed
+        var secretChanged = false;
+        
+        if (tokenEndpointAuthMethod == 'SECRET_BASIC'
+        	|| tokenEndpointAuthMethod == 'SECRET_POST'
+        	|| tokenEndpointAuthMethod == 'SECRET_JWT') {
+        	
+        	if (!generateClientSecret) {
+        		// if it's required but we're not generating it, send the value to preserve it
+        		clientSecret = $('#clientSecret input').val();
+        		
+        		// if it's not the same as before, offer to display it
+        		if (clientSecret != this.model.get('clientSecret')) {
+        			secretChanged = true;
+        		}
+        	} else {
+        		// it's being generated anew
+        		secretChanged = true;
+        	}
+        }
+        
         var accessTokenValiditySeconds = null;
         if (!$('disableAccessTokenTimeout').is(':checked')) {
         	accessTokenValiditySeconds = this.getFormTokenNumberValue($('#accessTokenValidityTime input[type=text]').val(), $('#accessTokenValidityTime select').val()); 
@@ -718,15 +762,13 @@ var ClientFormView = Backbone.View.extend({
             allowRefresh: $('#allowRefresh').is(':checked'),
             allowIntrospection: $('#allowIntrospection input').is(':checked'), // <-- And here? --^
             scope: scopes,
-            
-            // TODO: items below this line are untested
             tosUri: $('#tosUri input').val(),
             policyUri: $('#policyUri input').val(),
             clientUri: $('#clientUri input').val(),
             applicationType: $('#applicationType input').filter(':checked').val(),
             jwksUri: $('#jwksUri input').val(),
             subjectType: $('#subjectType input').filter(':checked').val(),
-            tokenEndpointAuthMethod: $('#tokenEndpointAuthMethod input').filter(':checked').val(),
+            tokenEndpointAuthMethod: tokenEndpointAuthMethod,
             responseTypes: responseTypes,
             sectorIdentifierUri: $('#sectorIdentifierUri input').val(),
             initiateLoginUri: $('#initiateLoginUri input').val(),
@@ -773,7 +815,13 @@ var ClientFormView = Backbone.View.extend({
 
             	$('#modalAlertLabel').html('Client Saved');
             	
-            	$('#modalAlert .modal-body').html(_self.clientSavedTemplate(_self.model.toJSON()));
+            	var savedModel = {
+            		clientId: _self.model.get('clientId'),
+            		clientSecret: _self.model.get('clientSecret'),
+            		secretChanged: secretChanged
+            	};
+            	
+            	$('#modalAlert .modal-body').html(_self.clientSavedTemplate(savedModel));
             	
             	$('#modalAlert .modal-body #savedClientSecret').hide();
             	
@@ -885,9 +933,9 @@ var ClientFormView = Backbone.View.extend({
             $("#refresh-token-timeout-time", this.$el).prop('disabled',true);
             $("#refresh-token-timeout-unit", this.$el).prop('disabled',true);
         }
-
+        
         // toggle other dynamic fields
-        this.toggleRequireClientSecret();
+        this.toggleClientCredentials();
         this.previewLogo();
         
         // disable unsupported JOSE algorithms

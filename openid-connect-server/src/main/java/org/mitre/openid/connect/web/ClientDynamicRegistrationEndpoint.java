@@ -50,6 +50,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.util.UriUtils;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonSyntaxException;
@@ -505,8 +506,20 @@ public class ClientDynamicRegistrationEndpoint {
 				newClient.getTokenEndpointAuthMethod() == AuthMethod.SECRET_JWT ||
 				newClient.getTokenEndpointAuthMethod() == AuthMethod.SECRET_POST) {
 
-			// we need to generate a secret
-			newClient = clientService.generateClientSecret(newClient);
+			if (Strings.isNullOrEmpty(newClient.getClientSecret())) {
+				// no secret yet, we need to generate a secret
+				newClient = clientService.generateClientSecret(newClient);
+			}
+		} else if (newClient.getTokenEndpointAuthMethod() == AuthMethod.PRIVATE_KEY) {
+			if (Strings.isNullOrEmpty(newClient.getJwksUri())) {
+				throw new ValidationException("invalid_client_metadata", "JWK Set URI required when using private key authentication", HttpStatus.BAD_REQUEST);
+			}
+			
+			newClient.setClientSecret(null);
+		} else if (newClient.getTokenEndpointAuthMethod() == AuthMethod.NONE) {
+			newClient.setClientSecret(null);
+		} else {
+			throw new ValidationException("invalid_client_metadata", "Unknown authentication method", HttpStatus.BAD_REQUEST);
 		}
 		return newClient;
 	}

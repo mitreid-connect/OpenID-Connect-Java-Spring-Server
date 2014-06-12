@@ -112,8 +112,8 @@ var ListWidgetChildView = Backbone.View.extend({
         
     },
 
-    initialize:function () {
-
+    initialize:function (options) {
+    	this.options = options;
         if (!this.template) {
             this.template = _.template($('#tmpl-list-widget-child').html());
         }
@@ -149,7 +149,8 @@ var ListWidgetView = Backbone.View.extend({
         }
     },
 
-    initialize:function () {
+    initialize:function (options) {
+    	this.options = options;
 
         if (!this.template) {
             this.template = _.template($('#tmpl-list-widget').html());
@@ -232,7 +233,8 @@ var BreadCrumbView = Backbone.View.extend({
 
     tagName: 'ul',
 
-    initialize:function () {
+    initialize:function (options) {
+    	this.options = options;
 
         if (!this.template) {
             this.template = _.template($('#tmpl-breadcrumbs').html());
@@ -269,7 +271,8 @@ var BreadCrumbView = Backbone.View.extend({
 var BlackListListView = Backbone.View.extend({
 	tagName: 'span',
 	
-	initialize:function() {
+	initialize:function(options) {
+    	this.options = options;
 		if (!this.template) {
 			this.template = _.template($('#tmpl-blacklist-form').html());
 		}
@@ -324,7 +327,8 @@ var BlackListListView = Backbone.View.extend({
 var BlackListWidgetView = ListWidgetView.extend({
 	
 	childView: ListWidgetChildView.extend({
-		render:function() {
+		render:function(options) {
+	    	this.options = options;
 			var uri = this.model.get('uri');
 			
 			this.$el.html(this.template({item: uri}));
@@ -389,7 +393,8 @@ var StatsModel = Backbone.Model.extend({
 var UserProfileView = Backbone.View.extend({
 	tagName: 'span',
 	
-	initialize:function() {
+	initialize:function(options) {
+    	this.options = options;
         if (!this.template) {
             this.template = _.template($('#tmpl-user-profile-element').html());
         }
@@ -491,6 +496,8 @@ var AppRouter = Backbone.Router.extend({
             {text:"Home", href:""},
             {text:"Manage Clients", href:"manage/#admin/clients"}
         ]);
+        
+        this.updateSidebar('admin/clients');
 
         var view = new ClientListView({model:this.clientList, stats: this.clientStats, systemScopeList: this.systemScopeList, whiteListList: this.whiteListList});
         
@@ -516,14 +523,15 @@ var AppRouter = Backbone.Router.extend({
             {text:"New", href:""}
         ]);
 
-    	var client = new ClientModel();
+        this.updateSidebar('admin/clients');
+
+        var client = new ClientModel();
     	
         var view = new ClientFormView({model:client, systemScopeList: this.systemScopeList});
         view.load(function() {
         	// set up this new client to require a secret and have us autogenerate one
         	client.set({
-        		tokenEndpointAuthMethod: "client_secret_basic",
-        		requireClientSecret:true, 
+        		tokenEndpointAuthMethod: "SECRET_BASIC",
         		generateClientSecret:true,
         		displayClientSecret:false,
         		requireAuthTime:true,
@@ -556,8 +564,8 @@ var AppRouter = Backbone.Router.extend({
             {text:"Edit", href:"manage/#admin/client/" + id}
         ]);
 
-        // TODO: this won't load on its own anymore, need to dynamically load the client in question first (don't need to load the rest)
-        
+        this.updateSidebar('admin/clients');
+
         var client = this.clientList.get(id);
         
         if (client == null) {
@@ -573,12 +581,6 @@ var AppRouter = Backbone.Router.extend({
     	client.fetch({
     			success: function(client, response, options) {
     				$('#loading-client').addClass('label-success');
-    				
-    				if (client.get("clientSecret") == null) {
-    		        	client.set({
-    		        		requireClientSecret:false
-    		        	}, { silent: true });
-    		        }
     		        
     		        if ($.inArray("refresh_token", client.get("grantTypes")) != -1) {
     		        	client.set({
@@ -627,7 +629,9 @@ var AppRouter = Backbone.Router.extend({
     		return;
     	}
 
-    	this.breadCrumbView.collection.reset();
+        this.updateSidebar('admin/whitelists');
+
+        this.breadCrumbView.collection.reset();
         this.breadCrumbView.collection.add([
             {text:"Home", href:""},
             {text:"Manage Whitelisted Sites", href:"manage/#admin/whitelists"}
@@ -653,7 +657,9 @@ var AppRouter = Backbone.Router.extend({
     		return;
     	}
 
-    	var client = this.clientList.get(cid);
+        this.updateSidebar('admin/whitelists');
+
+        var client = this.clientList.get(cid);
 
         // if there's no client this is an error
         if (client != null) {
@@ -695,6 +701,8 @@ var AppRouter = Backbone.Router.extend({
             {text:"Manage Whitelisted Sites", href:"manage/#admin/whitelist/" + id}
         ]);
         
+        this.updateSidebar('admin/whitelists');
+
         var whiteList = this.whiteListList.get(id);
         if (whiteList != null) {
             var client = app.clientList.getByClientId(whiteList.get('clientId'));
@@ -720,7 +728,9 @@ var AppRouter = Backbone.Router.extend({
             {text:"Manage Approved Sites", href:"manage/#user/approve"}
         ]);
 
-    	var view = new ApprovedSiteListView({model:this.approvedSiteList, clientList: this.clientList, systemScopeList: this.systemScopeList});
+        this.updateSidebar('user/approved');
+
+        var view = new ApprovedSiteListView({model:this.approvedSiteList, clientList: this.clientList, systemScopeList: this.systemScopeList});
     	
     	view.load( 
     		function(collection, response, options) {
@@ -738,6 +748,8 @@ var AppRouter = Backbone.Router.extend({
             {text:"Manage Active Tokens", href:"manage/#user/tokens"}
         ]);
         
+        this.updateSidebar('user/tokens');
+
         var view = new TokenListView({model: {access: this.accessTokensList, refresh: this.refreshTokensList}, clientList: this.clientList, systemScopeList: this.systemScopeList});
         
         view.load(
@@ -754,7 +766,10 @@ var AppRouter = Backbone.Router.extend({
         this.breadCrumbView.collection.add([
             {text:"Home", href:""}
         ]);
-    		$('#content').html("<h2>Not implemented yet.</h2>");
+        
+        this.updateSidebar('none');
+        
+   		$('#content').html("<h2>Not implemented yet.</h2>");
     },
     
     blackList:function() {
@@ -769,6 +784,8 @@ var AppRouter = Backbone.Router.extend({
             {text:"Home", href:""},
             {text:"Manage Blacklisted Sites", href:"manage/#admin/blacklist"}
         ]);
+        
+        this.updateSidebar('admin/blacklist');
         
         var view = new BlackListListView({model:this.blackListList});
         
@@ -793,6 +810,8 @@ var AppRouter = Backbone.Router.extend({
              {text:"Manage System Scopes", href:"manage/#admin/scope"}
         ]);
     	
+        this.updateSidebar('admin/scope');
+        
     	var view = new SystemScopeListView({model:this.systemScopeList});
     	
     	view.load(function() {
@@ -817,6 +836,8 @@ var AppRouter = Backbone.Router.extend({
              {text:"New", href:"manage/#admin/scope/new"}
         ]);
     	
+        this.updateSidebar('admin/scope');
+        
     	var scope = new SystemScopeModel();
     	
     	this.systemScopeFormView = new SystemScopeFormView({model:scope});
@@ -839,6 +860,8 @@ var AppRouter = Backbone.Router.extend({
              {text:"Edit", href:"manage/#admin/scope/" + sid}
         ]);
 
+        this.updateSidebar('admin/scope');
+        
     	var scope = this.systemScopeList.get(sid);
     	
     	this.systemScopeFormView = new SystemScopeFormView({model:scope});
@@ -856,6 +879,8 @@ var AppRouter = Backbone.Router.extend({
     	
     	var view = new DynRegRootView({systemScopeList: this.systemScopeList});
     	
+        this.updateSidebar('dev/dynreg');
+        
     	view.load(function() {
     			$('#content').html(view.render().el);
     			
@@ -872,6 +897,8 @@ var AppRouter = Backbone.Router.extend({
              {text:"New", href:"manage/#dev/dynreg/new"}
         ]);
     	
+        this.updateSidebar('dev/dynreg');
+        
     	var client = new DynRegClient();
     	var view = new DynRegEditView({model: client, systemScopeList:this.systemScopeList});
     	
@@ -903,6 +930,8 @@ var AppRouter = Backbone.Router.extend({
              {text:"Edit", href:"manage/#dev/dynreg/edit"}
         ]);
     	
+        this.updateSidebar('dev/dynreg');
+        
     	setPageTitle("Edit a Dynamically Registered Client");
     	// note that this doesn't actually load the client, that's supposed to happen elsewhere...
     },
@@ -914,6 +943,8 @@ var AppRouter = Backbone.Router.extend({
              {text:"Protected Resource Registration", href:"manage/#dev/resource"}
         ]);
     	
+        this.updateSidebar('dev/resource');
+        
     	var view = new ResRegRootView({systemScopeList: this.systemScopeList});
     	view.load(function() {
     			$('#content').html(view.render().el);
@@ -931,6 +962,8 @@ var AppRouter = Backbone.Router.extend({
              {text:"New", href:"manage/#dev/resource/new"}
         ]);
     	
+        this.updateSidebar('dev/resource');
+        
     	var client = new ResRegClient();
     	var view = new ResRegEditView({model: client, systemScopeList:this.systemScopeList});
     	
@@ -957,6 +990,8 @@ var AppRouter = Backbone.Router.extend({
              {text:"Edit", href:"manage/#dev/resource/edit"}
         ]);
     	
+        this.updateSidebar('dev/resource');
+        
     	setPageTitle("Edit a Dynamically Registered Protected Resource");
     	// note that this doesn't actually load the client, that's supposed to happen elsewhere...
     },
@@ -968,14 +1003,20 @@ var AppRouter = Backbone.Router.extend({
              {text:"Profile", href:"manage/#user/profile"}
         ]);
     
+        this.updateSidebar('user/profile');
+        
     	this.userProfileView = new UserProfileView({model: getUserInfo()});
     	$('#content').html(this.userProfileView.render().el);
     	
     	setPageTitle("View User Profile");
     	
+    },
+    
+    updateSidebar:function(item) {
+    	$('.sidebar-nav li.active').removeClass('active');
+    	
+    	$('.sidebar-nav li a[href^="manage/#' + item + '"]').parent().addClass('active');
     }
-
-
 });
 
 // holds the global app.

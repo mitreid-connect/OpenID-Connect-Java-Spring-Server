@@ -65,9 +65,9 @@
 			<div class="control-group">
 				<div class="controls">
 					<div class="alert alert-error">
-						<strong>Warning!</strong> You MUST protect your resource ID, Secret, and your Registration Access Token. If
-						you lose your ID or Registration Access Token, you will no longer have access to your resource's registration
-						records and you will need to register a new resource.
+						<strong>Warning!</strong> You MUST protect your <b>Client ID</b>, <b>Client Secret (if provided)</b>, and your <b>Registration Access Token</b>. 
+						If you lose your Client ID or Registration Access Token, you will no longer have access to your client's registration
+						records and you will need to register a new client.
 					</div>
 				</div>
 
@@ -85,7 +85,21 @@
 				<label class="control-label">Client Secret</label>
     	        <div class="control-group">
             	    <div class="controls">
-						<pre><%=client.client_id ? (client.client_secret ? client.client_secret : 'None (public client)') : 'Will be generated'%></pre>
+						<% if (client.client_id) { %>
+							<% if (client.client_secret) { %>
+								<pre><%= client.client_secret %></pre>
+							<% } else { %>
+								<% if (client.token_endpoint_auth_method == 'none') { %>
+									<pre>None (public client)</pre>
+								<% } else if (client.token_endpoint_auth_method == 'private_key_jwt') { %>
+									<pre>None (private key authentication)</pre>
+								<% } else { %>
+									<p class="text-error"><b>Unknown error:</b> no client secret and unknown auth method.</p>
+								<% } %>
+							<% } %>
+						<% } else { %>
+							<pre>Will be generated</pre>
+						<% } %>
 	                </div>
     	        </div>
 
@@ -240,14 +254,6 @@
 				</div>
 			</div>
 
-			<div class="control-group" id="jwksUri">
-				<label class="control-label">JWK Set</label>
-				<div class="controls">
-					<input placeholder="https://" value="<%=client.jwks_uri ? client.jwks_uri : ''%>" maxlength="1000" type="text" class=""/>
-					<p class="help-block">URL for the client's JSON Web Key set</p>
-				</div>
-			</div>
-
             <div class="control-group" id="tokenEndpointAuthSigningAlg">
                 <label class="control-label">Introspection Endpoint Authentication Signing Algorithm</label>
                 <div class="controls">
@@ -265,6 +271,14 @@
 					</select>
                 </div>
             </div>
+
+			<div class="control-group" id="jwksUri">
+				<label class="control-label">JWK Set</label>
+				<div class="controls">
+					<input placeholder="https://" value="<%=client.jwks_uri ? client.jwks_uri : ''%>" maxlength="1000" type="text" class=""/>
+					<p class="help-block">URL for the client's JSON Web Key set</p>
+				</div>
+			</div>
 
 	</div>
 

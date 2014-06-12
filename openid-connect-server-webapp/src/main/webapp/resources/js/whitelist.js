@@ -46,8 +46,8 @@ var WhiteListCollection = Backbone.Collection.extend({
 var WhiteListListView = Backbone.View.extend({
 	tagName: 'span',
 	
-	initialize:function () {
-		//this.model.bind("reset", this.render, this);
+	initialize:function (options) {
+    	this.options = options;
 	},
 
 	load:function(callback) {
@@ -80,6 +80,8 @@ var WhiteListListView = Backbone.View.extend({
 	render:function (eventName) {
 		$(this.el).html($('#tmpl-whitelist-table').html());
 		
+		var _self = this;
+		
 		_.each(this.model.models, function (whiteList) {
 			
 			// look up client
@@ -87,7 +89,9 @@ var WhiteListListView = Backbone.View.extend({
 			
 			// if there's no client ID, this is an error!
 			if (client != null) {
-				$('#whitelist-table', this.el).append(new WhiteListView({model: whiteList, client: client, systemScopeList: this.options.systemScopeList}).render().el);
+				var view = new WhiteListView({model: whiteList, client: client, systemScopeList: this.options.systemScopeList});
+				view.parentView = _self;
+				$('#whitelist-table', this.el).append(view.render().el);
 			}
 			
 		}, this);
@@ -129,7 +133,8 @@ var WhiteListListView = Backbone.View.extend({
 var WhiteListView = Backbone.View.extend({
 	tagName: 'tr',
 	
-	initialize:function() {
+	initialize:function(options) {
+    	this.options = options;
 		if (!this.template) {
 			this.template = _.template($('#tmpl-whitelist').html());
 		}
@@ -175,15 +180,15 @@ var WhiteListView = Backbone.View.extend({
     	e.preventDefault();
 		
 		if (confirm("Are you sure you want to delete this whitelist entry?")) {
-			var self = this;
+			var _self = this;
 			
             this.model.destroy({
                 success:function () {
-                    self.$el.fadeTo("fast", 0.00, function () { //fade
+                    _self.$el.fadeTo("fast", 0.00, function () { //fade
                         $(this).slideUp("fast", function () { //slide up
                             $(this).remove(); //then remove from the DOM
                             // check the placeholder in case it's empty now
-                            app.whiteListListView.togglePlaceholder();
+                            _self.parentView.togglePlaceholder();
                         });
                     });
                 },
@@ -205,7 +210,7 @@ var WhiteListView = Backbone.View.extend({
             	}
             });
             
-            app.whiteListListView.delegateEvents();
+            _self.parentView.delegateEvents();
 		}
 		
 		return false;
@@ -236,7 +241,8 @@ var WhiteListView = Backbone.View.extend({
 var WhiteListFormView = Backbone.View.extend({
 	tagName: 'span',
 	
-	initialize:function () {
+	initialize:function (options) {
+    	this.options = options;
 		if (!this.template) {
 			this.template = _.template($('#tmpl-whitelist-form').html());
 		}

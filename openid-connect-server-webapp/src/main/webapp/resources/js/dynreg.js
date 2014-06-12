@@ -78,7 +78,8 @@ var DynRegRootView = Backbone.View.extend({
 	
 	tagName: 'span',
 	
-	initialize:function() {
+	initialize:function(options) {
+    	this.options = options;
 		
 	},
 	
@@ -155,7 +156,8 @@ var DynRegEditView = Backbone.View.extend({
 	
 	tagName: 'span',
 	
-	initialize:function() {
+	initialize:function(options) {
+    	this.options = options;
         if (!this.template) {
             this.template = _.template($('#tmpl-dynreg-client-form').html());
         }
@@ -187,7 +189,8 @@ var DynRegEditView = Backbone.View.extend({
         "click .btn-save":"saveClient",
         "click .btn-cancel":"cancel",
         "click .btn-delete":"deleteClient",
-        "change #logoUri input":"previewLogo"
+        "change #logoUri input":"previewLogo",
+        "change #tokenEndpointAuthMethod input:radio":"toggleClientCredentials"
     },
 
     cancel:function(e) {
@@ -224,7 +227,6 @@ var DynRegEditView = Backbone.View.extend({
             	}
             });
 
-            app.clientListView.delegateEvents();
         }
 
         return false;
@@ -240,6 +242,23 @@ var DynRegEditView = Backbone.View.extend({
     	}
     },
 
+    /**
+     * Set up the form based on the current state of the tokenEndpointAuthMethod parameter
+     * @param event
+     */
+    toggleClientCredentials:function() {
+    	
+        var tokenEndpointAuthMethod = $('#tokenEndpointAuthMethod input', this.el).filter(':checked').val();
+        
+        // show or hide the signing algorithm method depending on what's selected
+        if (tokenEndpointAuthMethod == 'private_key_jwt'
+        	|| tokenEndpointAuthMethod == 'client_secret_jwt') {
+        	$('#tokenEndpointAuthSigningAlg', this.el).show();
+        } else {
+        	$('#tokenEndpointAuthSigningAlg', this.el).hide();
+        }
+    },
+    
     disableUnsupportedJOSEItems:function(serverSupported, query) {
         var supported = ['default'];
         if (serverSupported) {
@@ -323,7 +342,7 @@ var DynRegEditView = Backbone.View.extend({
             logo_uri:$('#logoUri input').val(),
             grant_types: grantTypes,
             scope: scopes,
-            
+            client_secret: null, // never send a client secret
             tos_uri: $('#tosUri input').val(),
             policy_uri: $('#policyUri input').val(),
             client_uri: $('#clientUri input').val(),
@@ -399,7 +418,7 @@ var DynRegEditView = Backbone.View.extend({
         var _self = this;
 
         // build and bind registered redirect URI collection and view
-        _.each(this.model.get("redirectUris"), function (redirectUri) {
+        _.each(this.model.get("redirect_uris"), function (redirectUri) {
             _self.redirectUrisCollection.add(new URIModel({item:redirectUri}));
         });
 
@@ -431,7 +450,7 @@ var DynRegEditView = Backbone.View.extend({
         
         
         // build and bind request URIs
-        _.each(this.model.get('requestUris'), function (requestUri) {
+        _.each(this.model.get('request_uris'), function (requestUri) {
         	_self.requestUrisCollection.add(new URIModel({item:requestUri}));
         });
         
@@ -441,7 +460,7 @@ var DynRegEditView = Backbone.View.extend({
         	collection: this.requestUrisCollection}).render().el);
         
         // build and bind default ACR values
-        _.each(this.model.get('defaultAcrValues'), function (defaultAcrValue) {
+        _.each(this.model.get('default_acr_values'), function (defaultAcrValue) {
         	_self.defaultAcrValuesCollection.add(new Backbone.Model({item:defaultAcrValue}));
         });
         
@@ -450,6 +469,7 @@ var DynRegEditView = Backbone.View.extend({
         	// TODO: autocomplete from spec
         	collection: this.defaultAcrValuesCollection}).render().el);
 
+        this.toggleClientCredentials();
         this.previewLogo();
         
         // disable unsupported JOSE algorithms

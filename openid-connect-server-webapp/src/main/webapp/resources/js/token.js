@@ -45,7 +45,8 @@ var AccessTokenView = Backbone.View.extend({
 	
 	tagName: 'tr',
 	
-    initialize:function () {
+    initialize:function (options) {
+    	this.options = options;
 
         if (!this.template) {
             this.template = _.template($('#tmpl-access-token').html());
@@ -101,16 +102,16 @@ var AccessTokenView = Backbone.View.extend({
 
         if (confirm("Are you sure sure you would like to revoke this token?")) {
         	
-            var self = this;
+            var _self = this;
 
             this.model.destroy({
                 success:function () {
                 	
-                    self.$el.fadeTo("fast", 0.00, function () { //fade
+                    _self.$el.fadeTo("fast", 0.00, function () { //fade
                         $(this).slideUp("fast", function () { //slide up
                             $(this).remove(); //then remove from the DOM
                             // refresh the table in case we removed an id token, too
-                            app.tokensListView.refreshTable();
+                            _self.parentView.refreshTable();
                         });
                     });
                 },
@@ -131,7 +132,7 @@ var AccessTokenView = Backbone.View.extend({
             	}
             });
 
-            app.tokensListView.delegateEvents();
+            this.parentView.delegateEvents();
         }
 
         return false;
@@ -193,7 +194,8 @@ var RefreshTokenView = Backbone.View.extend({
 	
 	tagName: 'tr',
 	
-    initialize:function () {
+    initialize:function (options) {
+    	this.options = options;
 
         if (!this.template) {
             this.template = _.template($('#tmpl-refresh-token').html());
@@ -250,16 +252,16 @@ var RefreshTokenView = Backbone.View.extend({
 
         if (confirm("Are you sure sure you would like to revoke this refresh token and its associated access tokens?")) {
         	
-            var self = this;
+            var _self = this;
 
             this.model.destroy({
                 success:function () {
                 	
-                    self.$el.fadeTo("fast", 0.00, function () { //fade
+                    _self.$el.fadeTo("fast", 0.00, function () { //fade
                         $(this).slideUp("fast", function () { //slide up
                             $(this).remove(); //then remove from the DOM
                             // refresh the table in case the access tokens have changed, too
-                            app.tokensListView.refreshTable();
+                            _self.parentView.refreshTable();
                         });
                     });
                 },
@@ -280,7 +282,7 @@ var RefreshTokenView = Backbone.View.extend({
             	}
             });
 
-            app.tokensListView.delegateEvents();
+            _self.parentView.delegateEvents();
         }
 
         return false;
@@ -316,6 +318,10 @@ var RefreshTokenView = Backbone.View.extend({
 
 var TokenListView = Backbone.View.extend({
 	tagName: 'span',
+	
+	initialize:function(options) {
+    	this.options = options;
+	},
 	
 	events:{
 		"click .refresh-table":"refreshTable",
@@ -373,7 +379,6 @@ var TokenListView = Backbone.View.extend({
 	},
 	
     refreshTable:function(e) {
-    	e.preventDefault();
     	$('#loadingbox').sheet('show');
     	$('#loading').html('<span class="label" id="loading-access">Access Tokens</span> ' +
     			'<span class="label" id="loading-refresh">Refresh Tokens</span> ' + 
@@ -406,6 +411,9 @@ var TokenListView = Backbone.View.extend({
 			$('#refresh-token-table', this.el).hide();
 			$('#refresh-token-table-empty', this.el).show();
 		}
+		
+		$('#access-token-count', this.el).html(this.model.access.length);
+		$('#refresh-token-count', this.el).html(this.model.refresh.length);
 	},
 	
 	render: function (eventName) {
@@ -430,7 +438,9 @@ var TokenListView = Backbone.View.extend({
         _.each(this.model.access.models, function (token, index) {
 			// look up client
 			var client = _self.options.clientList.getByClientId(token.get('clientId'));
-			var element = new AccessTokenView({model: token, client: client, systemScopeList: _self.options.systemScopeList}).render().el;
+			var view = new AccessTokenView({model: token, client: client, systemScopeList: _self.options.systemScopeList});
+			view.parentView = _self;
+			var element = view.render().el;
 			$('#access-token-table', _self.el).append(element);
             if (Math.ceil((index + 1) / 10) != 1) {
             	$(element).hide();
@@ -453,7 +463,9 @@ var TokenListView = Backbone.View.extend({
         _.each(this.model.refresh.models, function (token, index) {
 			// look up client
 			var client = _self.options.clientList.getByClientId(token.get('clientId'));
-			var element = new RefreshTokenView({model: token, client: client, systemScopeList: _self.options.systemScopeList}).render().el;
+			var view = new RefreshTokenView({model: token, client: client, systemScopeList: _self.options.systemScopeList});
+			view.parentView = _self;
+			var element = view.render().el;
 			$('#refresh-token-table', _self.el).append(element);
             if (Math.ceil((index + 1) / 10) != 1) {
             	$(element).hide();

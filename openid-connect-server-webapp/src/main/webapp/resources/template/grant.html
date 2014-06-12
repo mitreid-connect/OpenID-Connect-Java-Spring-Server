@@ -18,13 +18,23 @@
 
 <script type="text/html" id="tmpl-grant-table">
 
-	<h2>Approved sites</h2>
-
     <div class="well well-small">
 		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> Refresh</button>
     </div>
 
-	<h3>Sites you have manually approved</h3>
+	<div class="tabbable">
+
+ 		<ul class="nav nav-tabs">
+			<li class="active"><a data-target="#grant-approved-tab" data-toggle="tab" href="#">Approved Sites <span class="label label-info" id="approvde-site-count">?</span></a></li>
+			<li><a data-target="#grant-whitelist-tab" data-toggle="tab" href="#">Whitelisted Sites <span class="label label-info" id="whitelist-count">?</span></a></li>
+		</ul>
+
+	<div class="tab-content">
+
+	<div class="tab-pane active" id="grant-approved-tab">
+
+	<p>These are sites you have approved manually. If the same site asks for the same access in the future, it will
+		be granted without prompting.</p>
 
 	<div id="grant-table-empty" class="alert alert-info">
 		You have not approved any sites.
@@ -43,10 +53,12 @@
         </tbody>
     </table>
 
-	<div class="well">
+	</div>
+
+	<div class="tab-pane" id="grant-whitelist-tab">
 	
-	<h3>Sites that have been whitelisted by an administrator</h3>
-	<p>If you revoke them here, they will automatically be re-approved on your next visit.</p>
+	<p>These are sites that have been pre-approved by an administrator.</p>
+	<p class="text-warning"><b>NOTE:</b> If you revoke them here, they will automatically be re-approved on your next visit wthout prompting.</p>
 
 	<div id="grant-whitelist-table-empty" class="alert alert-info">
 		You have not accessed any whitelisted sites.
@@ -64,6 +76,10 @@
         <tbody>
         </tbody>
     </table>
+
+	</div>
+
+	</div>
 
 	</div>
 
