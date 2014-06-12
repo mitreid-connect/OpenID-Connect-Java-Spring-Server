@@ -32,6 +32,7 @@
 		<property name="issuer" value="http://localhost:8080/openid-connect-server-webapp/" />
  		<property name="logoImageUrl" value="resources/images/openid_connect_small.png" />
  		<property name="topbarTitle" value="OpenID Connect Server" />
+ 		<property name="regTokenLifeTime" value="172800" />
 	</bean>
 	
 </beans>
