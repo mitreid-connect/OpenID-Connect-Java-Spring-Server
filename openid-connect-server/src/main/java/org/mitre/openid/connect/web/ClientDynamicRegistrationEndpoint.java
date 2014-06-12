@@ -217,10 +217,6 @@ public class ClientDynamicRegistrationEndpoint {
 				logger.error("Unsupported encoding", e);
 				m.addAttribute("code", HttpStatus.INTERNAL_SERVER_ERROR);
 				return "httpCodeView";
-			} catch (ParseException e) {
-				logger.error("Invalid Token", e);
-				m.addAttribute("code", HttpStatus.BAD_REQUEST);
-				return "httpCodeView";
 			}
 			
 		} else {
@@ -313,10 +309,6 @@ public class ClientDynamicRegistrationEndpoint {
 			} catch (UnsupportedEncodingException e) {
 				logger.error("Unsupported encoding", e);
 				m.addAttribute("code", HttpStatus.INTERNAL_SERVER_ERROR);
-				return "httpCodeView";
-			} catch (ParseException e) {
-				logger.error("Invalid Token", e);
-				m.addAttribute("code", HttpStatus.BAD_REQUEST);
 				return "httpCodeView";
 			}
 		} else {
@@ -528,18 +520,33 @@ public class ClientDynamicRegistrationEndpoint {
 		return newClient;
 	}
 	
-	private OAuth2AccessTokenEntity fetchValidRegistrationToken(OAuth2Authentication auth, ClientDetailsEntity client) throws ParseException
-	{
+	private OAuth2AccessTokenEntity fetchValidRegistrationToken(OAuth2Authentication auth, ClientDetailsEntity client) {
+		
 		OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
 		OAuth2AccessTokenEntity token = tokenService.readAccessToken(details.getTokenValue());
-		// Re-issue the token if it has been issued before [currentTime - validity]
-		Date validToDate = new Date(System.currentTimeMillis() - config.getRegTokenLifeTime() * 1000);
-		if(token.getJwt().getJWTClaimsSet().getIssueTime().before(validToDate))
-		{
-			tokenService.revokeAccessToken(token);
-			token = connectTokenService.createRegistrationAccessToken(client);
-			tokenService.saveAccessToken(token);
+		
+		if (config.getRegTokenLifeTime() != null) {
+		
+			try {
+				// Re-issue the token if it has been issued before [currentTime - validity]
+				Date validToDate = new Date(System.currentTimeMillis() - config.getRegTokenLifeTime() * 1000);
+				if(token.getJwt().getJWTClaimsSet().getIssueTime().before(validToDate)) {
+					logger.info("Rotating the registration access token for " + client.getClientId());
+					tokenService.revokeAccessToken(token);
+					OAuth2AccessTokenEntity newToken = connectTokenService.createRegistrationAccessToken(client);
+					tokenService.saveAccessToken(newToken);
+					return newToken;
+				} else {
+					// it's not expired, keep going
+					return token;
+				}
+			} catch (ParseException e) {
+				logger.error("Couldn't parse a known-valid token?", e);
+				return token;
+			}
+		} else {
+			// tokens don't expire, just return it
+			return token;
 		}
-		return token;
 	}
 }

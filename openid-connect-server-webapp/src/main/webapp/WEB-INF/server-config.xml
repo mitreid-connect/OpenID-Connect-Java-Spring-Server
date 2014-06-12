@@ -29,10 +29,19 @@
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.2.xsd">
 
 	<bean id="configBean" class="org.mitre.openid.connect.config.ConfigurationPropertiesBean">
+	    
+	    <!-- This property sets the root URL of the server, known as the issuer. -->
 		<property name="issuer" value="http://localhost:8080/openid-connect-server-webapp/" />
+		
+		<!-- This property is a URL pointing to a logo image 24px high to be used in the top bar -->
  		<property name="logoImageUrl" value="resources/images/openid_connect_small.png" />
+ 		
+ 		<!-- This property sets the display name of the server, displayed in the topbar and page title -->
  		<property name="topbarTitle" value="OpenID Connect Server" />
- 		<property name="regTokenLifeTime" value="172800" />
+ 		
+		<!-- This property sets the lifetime of registration access tokens, in seconds. Leave it unset (null) for no rotation. -->
+		<!-- <property name="regTokenLifeTime" value="172800" /> -->
+
 	</bean>
 	
 </beans>
