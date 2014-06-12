@@ -17,6 +17,8 @@
 package org.mitre.openid.connect.web;
 
 import java.io.UnsupportedEncodingException;
+import java.text.ParseException;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -229,11 +231,11 @@ public class ProtectedResourceRegistrationEndpoint {
 		if (client != null && client.getClientId().equals(auth.getOAuth2Request().getClientId())) {
 
 
-			// we return the token that we got in
-			OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
-			OAuth2AccessTokenEntity token = tokenService.readAccessToken(details.getTokenValue());
 
 			try {
+				// possibly update the token
+				OAuth2AccessTokenEntity token = fetchValidRegistrationToken(auth, client);
+
 				RegisteredClient registered = new RegisteredClient(client, token.getValue(), config.getIssuer() + "resource/" +  UriUtils.encodePathSegment(client.getClientId(), "UTF-8"));
 
 				// send it all out to the view
@@ -342,10 +344,8 @@ public class ProtectedResourceRegistrationEndpoint {
 				// save the client
 				ClientDetailsEntity savedClient = clientService.updateClient(oldClient, newClient);
 
-				// we return the token that we got in
-				// TODO: rotate this after some set amount of time
-				OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
-				OAuth2AccessTokenEntity token = tokenService.readAccessToken(details.getTokenValue());
+				// possibly update the token
+				OAuth2AccessTokenEntity token = fetchValidRegistrationToken(auth, savedClient);
 
 				RegisteredClient registered = new RegisteredClient(savedClient, token.getValue(), config.getIssuer() + "resource/" + UriUtils.encodePathSegment(savedClient.getClientId(), "UTF-8"));
 
@@ -432,4 +432,33 @@ public class ProtectedResourceRegistrationEndpoint {
 		return newClient;
 	}
 	
+	private OAuth2AccessTokenEntity fetchValidRegistrationToken(OAuth2Authentication auth, ClientDetailsEntity client) {
+		
+		OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
+		OAuth2AccessTokenEntity token = tokenService.readAccessToken(details.getTokenValue());
+		
+		if (config.getRegTokenLifeTime() != null) {
+		
+			try {
+				// Re-issue the token if it has been issued before [currentTime - validity]
+				Date validToDate = new Date(System.currentTimeMillis() - config.getRegTokenLifeTime() * 1000);
+				if(token.getJwt().getJWTClaimsSet().getIssueTime().before(validToDate)) {
+					logger.info("Rotating the registration access token for " + client.getClientId());
+					tokenService.revokeAccessToken(token);
+					OAuth2AccessTokenEntity newToken = connectTokenService.createResourceAccessToken(client);
+					tokenService.saveAccessToken(newToken);
+					return newToken;
+				} else {
+					// it's not expired, keep going
+					return token;
+				}
+			} catch (ParseException e) {
+				logger.error("Couldn't parse a known-valid token?", e);
+				return token;
+			}
+		} else {
+			// tokens don't expire, just return it
+			return token;
+		}
+	}
 }
