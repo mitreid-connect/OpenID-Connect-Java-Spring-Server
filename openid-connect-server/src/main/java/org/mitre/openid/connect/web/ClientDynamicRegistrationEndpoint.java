@@ -17,6 +17,8 @@
 package org.mitre.openid.connect.web;
 
 import java.io.UnsupportedEncodingException;
+import java.text.ParseException;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -202,10 +204,8 @@ public class ClientDynamicRegistrationEndpoint {
 
 		if (client != null && client.getClientId().equals(auth.getOAuth2Request().getClientId())) {
 
-			//Get rid of the old token and issue a new token
-			OAuth2AccessTokenEntity token = rotateRegistrationToken(auth, client);
-
 			try {
+				OAuth2AccessTokenEntity token = fetchValidRegistrationToken(auth, client);
 				RegisteredClient registered = new RegisteredClient(client, token.getValue(), config.getIssuer() + "register/" +  UriUtils.encodePathSegment(client.getClientId(), "UTF-8"));
 
 				// send it all out to the view
@@ -217,7 +217,12 @@ public class ClientDynamicRegistrationEndpoint {
 				logger.error("Unsupported encoding", e);
 				m.addAttribute("code", HttpStatus.INTERNAL_SERVER_ERROR);
 				return "httpCodeView";
+			} catch (ParseException e) {
+				logger.error("Invalid Token", e);
+				m.addAttribute("code", HttpStatus.BAD_REQUEST);
+				return "httpCodeView";
 			}
+			
 		} else {
 			// client mismatch
 			logger.error("readClientConfiguration failed, client ID mismatch: "
@@ -291,8 +296,7 @@ public class ClientDynamicRegistrationEndpoint {
 				// save the client
 				ClientDetailsEntity savedClient = clientService.updateClient(oldClient, newClient);
 
-				//Get rid of the old token and issue a new token
-				OAuth2AccessTokenEntity token = rotateRegistrationToken(auth, savedClient);
+				OAuth2AccessTokenEntity token = fetchValidRegistrationToken(auth, savedClient);
 
 				RegisteredClient registered = new RegisteredClient(savedClient, token.getValue(), config.getIssuer() + "register/" + UriUtils.encodePathSegment(savedClient.getClientId(), "UTF-8"));
 
@@ -309,6 +313,10 @@ public class ClientDynamicRegistrationEndpoint {
 			} catch (UnsupportedEncodingException e) {
 				logger.error("Unsupported encoding", e);
 				m.addAttribute("code", HttpStatus.INTERNAL_SERVER_ERROR);
+				return "httpCodeView";
+			} catch (ParseException e) {
+				logger.error("Invalid Token", e);
+				m.addAttribute("code", HttpStatus.BAD_REQUEST);
 				return "httpCodeView";
 			}
 		} else {
@@ -520,14 +528,18 @@ public class ClientDynamicRegistrationEndpoint {
 		return newClient;
 	}
 	
-	private OAuth2AccessTokenEntity rotateRegistrationToken(OAuth2Authentication auth, ClientDetailsEntity client)
+	private OAuth2AccessTokenEntity fetchValidRegistrationToken(OAuth2Authentication auth, ClientDetailsEntity client) throws ParseException
 	{
 		OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
-		OAuth2AccessTokenEntity token = tokenService.readAccessToken(details.getTokenValue());		
-		tokenService.revokeAccessToken(token);
-		
-		OAuth2AccessTokenEntity newToken = connectTokenService.createRegistrationAccessToken(client);
-		tokenService.saveAccessToken(newToken);
-		return newToken;
+		OAuth2AccessTokenEntity token = tokenService.readAccessToken(details.getTokenValue());
+		// Re-issue the token if it has been issued before [currentTime - validity]
+		Date validToDate = new Date(System.currentTimeMillis() - config.getRegTokenLifeTime() * 1000);
+		if(token.getJwt().getJWTClaimsSet().getIssueTime().before(validToDate))
+		{
+			tokenService.revokeAccessToken(token);
+			token = connectTokenService.createRegistrationAccessToken(client);
+			tokenService.saveAccessToken(token);
+		}
+		return token;
 	}
 }
