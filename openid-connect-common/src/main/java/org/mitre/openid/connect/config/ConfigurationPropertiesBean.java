@@ -41,6 +41,8 @@ public class ConfigurationPropertiesBean {
 	private String topbarTitle;
 
 	private String logoImageUrl;
+	
+	private Long regTokenLifeTime;
 
 	public ConfigurationPropertiesBean() {
 
@@ -98,4 +100,17 @@ public class ConfigurationPropertiesBean {
 		this.logoImageUrl = logoImageUrl;
 	}
 
+	/**
+	 * @return the regTokenLifeTime
+	 */
+	public Long getRegTokenLifeTime() {
+		return regTokenLifeTime;
+	}
+
+	/**
+	 * @param regTokenLifeTime the registration token lifetime to set in seconds
+	 */
+	public void setRegTokenLifeTime(Long regTokenLifeTime) {
+		this.regTokenLifeTime = regTokenLifeTime;
+	}
 }
