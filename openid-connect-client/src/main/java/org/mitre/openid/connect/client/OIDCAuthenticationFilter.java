@@ -444,6 +444,16 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 
 				// check the signature
 				JwtSigningAndValidationService jwtValidator = validationServices.getValidator(serverConfig.getJwksUri());
+				if (jwtValidator == null) {
+					JWSAlgorithm alg = idToken.getHeader().getAlgorithm();
+					if (alg.equals(JWSAlgorithm.HS256)
+						|| alg.equals(JWSAlgorithm.HS384)
+						|| alg.equals(JWSAlgorithm.HS512)) {
+
+						// generate one based on client secret
+						jwtValidator = symmetricCacheService.getSymmetricValidtor(clientConfig.getClient());
+					}
+				}
 				if (jwtValidator != null) {
 					if(!jwtValidator.validateSignature(idToken)) {
 						throw new AuthenticationServiceException("Signature validation failed");
