@@ -443,23 +443,27 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 				ReadOnlyJWTClaimsSet idClaims = idToken.getJWTClaimsSet();
 
 				// check the signature
-				JwtSigningAndValidationService jwtValidator = validationServices.getValidator(serverConfig.getJwksUri());
-				if (jwtValidator == null) {
-					JWSAlgorithm alg = idToken.getHeader().getAlgorithm();
-					if (alg.equals(JWSAlgorithm.HS256)
-						|| alg.equals(JWSAlgorithm.HS384)
-						|| alg.equals(JWSAlgorithm.HS512)) {
+				JwtSigningAndValidationService jwtValidator = null;
 
-						// generate one based on client secret
-						jwtValidator = symmetricCacheService.getSymmetricValidtor(clientConfig.getClient());
-					}
+				JWSAlgorithm alg = idToken.getHeader().getAlgorithm();
+				if (alg.equals(JWSAlgorithm.HS256)
+					|| alg.equals(JWSAlgorithm.HS384)
+					|| alg.equals(JWSAlgorithm.HS512)) {
+					
+					// generate one based on client secret
+					jwtValidator = symmetricCacheService.getSymmetricValidtor(clientConfig.getClient());
+				} else {
+					// otherwise load from the server's public key
+					jwtValidator = validationServices.getValidator(serverConfig.getJwksUri());
 				}
+				
 				if (jwtValidator != null) {
 					if(!jwtValidator.validateSignature(idToken)) {
 						throw new AuthenticationServiceException("Signature validation failed");
 					}
 				} else {
-					logger.info("No validation service found. Skipping signature validation");
+					logger.error("No validation service found. Skipping signature validation");
+					throw new AuthenticationServiceException("Unable to find an appropriate signature validator for ID Token.");
 				}
 
 				// check the issuer
