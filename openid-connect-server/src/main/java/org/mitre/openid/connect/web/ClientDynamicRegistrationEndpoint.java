@@ -175,9 +175,12 @@ public class ClientDynamicRegistrationEndpoint {
 				return "httpCodeView";
 			} catch (IllegalArgumentException e) {
 				logger.error("Couldn't save client", e);
-				m.addAttribute("code", HttpStatus.BAD_REQUEST);
-
-				return "httpCodeView";
+				
+				m.addAttribute("error", "invalid_client_metadata");
+				m.addAttribute("errorMessage", "Unable to save client due to invalid or inconsistent metadata.");
+				m.addAttribute("code", HttpStatus.BAD_REQUEST); // http 400
+				
+				return "jsonErrorView";
 			}
 		} else {
 			// didn't parse, this is a bad request
@@ -301,15 +304,18 @@ public class ClientDynamicRegistrationEndpoint {
 				m.addAttribute("code", HttpStatus.OK); // http 200
 
 				return "clientInformationResponseView";
-			} catch (IllegalArgumentException e) {
-				logger.error("Couldn't save client", e);
-				m.addAttribute("code", HttpStatus.BAD_REQUEST);
-
-				return "httpCodeView";
 			} catch (UnsupportedEncodingException e) {
 				logger.error("Unsupported encoding", e);
 				m.addAttribute("code", HttpStatus.INTERNAL_SERVER_ERROR);
 				return "httpCodeView";
+			} catch (IllegalArgumentException e) {
+				logger.error("Couldn't save client", e);
+				
+				m.addAttribute("error", "invalid_client_metadata");
+				m.addAttribute("errorMessage", "Unable to save client due to invalid or inconsistent metadata.");
+				m.addAttribute("code", HttpStatus.BAD_REQUEST); // http 400
+				
+				return "jsonErrorView";
 			}
 		} else {
 			// client mismatch
