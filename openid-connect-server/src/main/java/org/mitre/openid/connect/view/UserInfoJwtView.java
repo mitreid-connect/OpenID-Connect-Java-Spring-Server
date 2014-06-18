@@ -84,6 +84,8 @@ public class UserInfoJwtView extends UserInfoView {
 			StringWriter writer = new StringWriter();
 			gson.toJson(json, writer);
 
+			response.setContentType("application/jwt");
+			
 			JWTClaimsSet claims = JWTClaimsSet.parse(writer.toString());
 
 			claims.setAudience(Lists.newArrayList(client.getClientId()));
