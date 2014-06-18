@@ -493,6 +493,11 @@ public class ClientDynamicRegistrationEndpoint {
 					// return an error
 					throw new ValidationException("invalid_client_uri", "Redirect URI is not allowed: " + uri, HttpStatus.BAD_REQUEST);
 				}
+				
+				if (uri.contains("#")) { 
+					// if it contains the hash symbol then it has a fragment, which isn't allowed
+					throw new ValidationException("invalid_redirect_uri", "Redirect URI can not have a fragment", HttpStatus.BAD_REQUEST);
+				}
 			}
 		}
 		
