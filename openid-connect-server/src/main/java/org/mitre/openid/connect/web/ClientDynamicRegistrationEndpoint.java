@@ -485,13 +485,13 @@ public class ClientDynamicRegistrationEndpoint {
 		if (newClient.getGrantTypes().contains("authorization_code") || newClient.getGrantTypes().contains("implicit")) {
 			if (newClient.getRedirectUris() == null || newClient.getRedirectUris().isEmpty()) {
 				// return an error
-				throw new ValidationException("invalid_client_uri", "Clients using a redirect-based grant type must register at least one redirect URI.", HttpStatus.BAD_REQUEST);
+				throw new ValidationException("invalid_redirect_uri", "Clients using a redirect-based grant type must register at least one redirect URI.", HttpStatus.BAD_REQUEST);
 			}
 
 			for (String uri : newClient.getRedirectUris()) {
 				if (blacklistService.isBlacklisted(uri)) {
 					// return an error
-					throw new ValidationException("invalid_client_uri", "Redirect URI is not allowed: " + uri, HttpStatus.BAD_REQUEST);
+					throw new ValidationException("invalid_redirect_uri", "Redirect URI is not allowed: " + uri, HttpStatus.BAD_REQUEST);
 				}
 				
 				if (uri.contains("#")) { 
