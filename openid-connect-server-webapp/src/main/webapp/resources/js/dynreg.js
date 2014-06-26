@@ -235,7 +235,7 @@ var DynRegEditView = Backbone.View.extend({
     previewLogo:function() {
     	if ($('#logoUri input', this.el).val()) {
     		$('#logoPreview', this.el).empty();
-    		$('#logoPreview', this.el).attr('src', $('#logoUri input').val());
+    		$('#logoPreview', this.el).attr('src', $('#logoUri input', this.el).val());
     	} else {
     		//$('#logoBlock', this.el).hide();
     		$('#logoPreview', this.el).attr('src', 'resources/images/logo_placeholder.gif');
