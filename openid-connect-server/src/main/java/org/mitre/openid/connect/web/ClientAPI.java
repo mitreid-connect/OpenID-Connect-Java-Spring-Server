@@ -198,15 +198,6 @@ public class ClientAPI {
 			
 		}
 
-		// set owners as current logged in user if owners aren't set otherwise
-		// try to look up a user based on the principal's name
-		if (client.getContacts() == null || client.getContacts().isEmpty()) {
-			UserInfo user = userInfoService.getByUsername(auth.getName());
-			if (user != null && user.getEmail() != null) {
-				client.setContacts(Sets.newHashSet(user.getEmail()));
-			}
-		}
-
 		client.setDynamicallyRegistered(false);
 
 		ClientDetailsEntity newClient = clientService.saveNewClient(client);
@@ -300,15 +291,6 @@ public class ClientAPI {
 			return "jsonErrorView";
 			
 			
-		}
-
-		// set owners as current logged in user if owners aren't set otherwise
-		// try to look up a user based on the principal's name
-		if (client.getContacts() == null || client.getContacts().isEmpty()) {
-			UserInfo user = userInfoService.getByUsername(auth.getName());
-			if (user != null && user.getEmail() != null) {
-				client.setContacts(Sets.newHashSet(user.getEmail()));
-			}
 		}
 
 		ClientDetailsEntity newClient = clientService.updateClient(oldClient, client);
