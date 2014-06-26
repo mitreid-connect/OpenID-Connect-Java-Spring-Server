@@ -38,6 +38,9 @@
 			<% if (client.dynamicallyRegistered) { %>
 				<span class="label label-inverse dynamically-registered"><i class="icon-globe icon-white"></i></span>
 			<% } %>
+			<% if (client.allowIntrospection) { %>
+				<span class="label label-inverse allow-introspection"><i class="icon-eye-open icon-white"></i></span>
+			<% } %>
 			<small class="muted" title="<%= hoverCreationDate %>">Registered <%= displayCreationDate %></small>
 		</div>
     </td>
