@@ -595,7 +595,6 @@ var AppRouter = Backbone.Router.extend({
     		        
     		        var view = new ClientFormView({model:client, systemScopeList: app.systemScopeList});
     		        view.load(function() {
-    		        	console.log("yup!");
     		        	$('#content').html(view.render().el);
     		        	setPageTitle("Edit Client");
     		        });
