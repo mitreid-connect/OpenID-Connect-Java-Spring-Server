@@ -332,7 +332,7 @@ var ResRegEditView = Backbone.View.extend({
     },
 
     render:function() {
-		$(this.el).html(this.template({client: this.model.toJSON()}));
+		$(this.el).html(this.template({client: this.model.toJSON(), userInfo: getUserInfo()}));
 		
         var _self = this;
 
@@ -363,7 +363,7 @@ var ResRegEditView = Backbone.View.extend({
         	_self.contactsCollection.add(new Backbone.Model({item:contact}));
         });
         
-        $("#contacts .controls", this.el).html(new ListWidgetView({
+        $("#contacts .controls div", this.el).html(new ListWidgetView({
         	placeholder: 'new contact',
         	collection: this.contactsCollection}).render().el);
         

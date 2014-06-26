@@ -530,6 +530,12 @@ var AppRouter = Backbone.Router.extend({
         var view = new ClientFormView({model:client, systemScopeList: this.systemScopeList});
         view.load(function() {
         	// set up this new client to require a secret and have us autogenerate one
+    		var userInfo = getUserInfo();
+    		var contacts = [];
+    		if (userInfo != null && userInfo.email != null) {
+    			contacts.push(userInfo.email);
+    		}
+    		
         	client.set({
         		tokenEndpointAuthMethod: "SECRET_BASIC",
         		generateClientSecret:true,
@@ -541,7 +547,8 @@ var AppRouter = Backbone.Router.extend({
         		idTokenValiditySeconds:600,
         		grantTypes: ["authorization_code"],
         		responseTypes: ["code"],
-        		subjectType: "PUBLIC"
+        		subjectType: "PUBLIC",
+        		contacts: contacts
         	}, { silent: true });
         	
         	
@@ -903,6 +910,12 @@ var AppRouter = Backbone.Router.extend({
     	
     	view.load(function() {
 
+    		var userInfo = getUserInfo();
+    		var contacts = [];
+    		if (userInfo != null && userInfo.email != null) {
+    			contacts.push(userInfo.email);
+    		}
+    		
     		client.set({
         		require_auth_time:true,
         		default_max_age:60000,
@@ -910,7 +923,8 @@ var AppRouter = Backbone.Router.extend({
         		token_endpoint_auth_method: 'client_secret_basic',
         		grant_types: ["authorization_code"],
         		response_types: ["code"],
-        		subject_type: "public"
+        		subject_type: "public",
+        		contacts: contacts
         	}, { silent: true });
     	
     		$('#content').html(view.render().el);
@@ -968,9 +982,16 @@ var AppRouter = Backbone.Router.extend({
     	
     	view.load(function() {
 
+    		var userInfo = getUserInfo();
+    		var contacts = [];
+    		if (userInfo != null && userInfo.email != null) {
+    			contacts.push(userInfo.email);
+    		}
+    		
     		client.set({
         		scope: _.uniq(_.flatten(app.systemScopeList.defaultDynRegScopes().pluck("value"))).join(" "),
         		token_endpoint_auth_method: 'client_secret_basic',
+        		contacts: contacts
         	}, { silent: true });
     	
     		$('#content').html(view.render().el);

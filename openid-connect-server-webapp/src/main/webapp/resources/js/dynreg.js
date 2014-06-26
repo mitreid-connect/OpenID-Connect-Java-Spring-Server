@@ -128,13 +128,22 @@ var DynRegRootView = Backbone.View.extend({
 		var self = this;
 		
 		client.fetch({success: function() {
+
+    		var userInfo = getUserInfo();
+    		var contacts = client.get("contacts");
+    		if (userInfo != null && userInfo.email != null && ! _.contains(contacts, userInfo.email)) {
+    			contacts.push(userInfo.email);
+    		}
+    		client.set({
+    			contacts: contacts
+    		}, { silent: true });
 			
 	    	var view = new DynRegEditView({model: client, systemScopeList: app.systemScopeList}); 
 	    	
 	    	view.load(function() {
 	    		$('#content').html(view.render().el);
 	    		view.delegateEvents();
-	    		setPageTitle("Dynamically Register a New Client");
+	    		setPageTitle("Edit a Dynamically Registered Client");
 	    		app.navigate('dev/dynreg/edit', {trigger: true});	    		
 	    		self.remove();
 	    	});
@@ -383,7 +392,17 @@ var DynRegEditView = Backbone.View.extend({
             	// switch to an "edit" view
             	app.navigate('dev/dynreg/edit', {trigger: true});
             	_self.remove();
-    			var view = new DynRegEditView({model: _self.model, systemScopeList: _self.options.systemScopeList});
+
+            	var userInfo = getUserInfo();
+        		var contacts = _self.model.get("contacts");
+        		if (userInfo != null && userInfo.email != null && ! _.contains(contacts, userInfo.email)) {
+        			contacts.push(userInfo.email);
+        		}
+        		_self.model.set({
+        			contacts: contacts
+        		}, { silent: true });
+
+        		var view = new DynRegEditView({model: _self.model, systemScopeList: _self.options.systemScopeList});
     			
     			view.load(function() {
     				// reload
@@ -413,7 +432,7 @@ var DynRegEditView = Backbone.View.extend({
     },
 
     render:function() {
-		$(this.el).html(this.template({client: this.model.toJSON()}));
+		$(this.el).html(this.template({client: this.model.toJSON(), userInfo: getUserInfo()}));
 		
         var _self = this;
 
@@ -444,7 +463,7 @@ var DynRegEditView = Backbone.View.extend({
         	_self.contactsCollection.add(new Backbone.Model({item:contact}));
         });
         
-        $("#contacts .controls", this.el).html(new ListWidgetView({
+        $("#contacts .controls div", this.el).html(new ListWidgetView({
         	placeholder: 'new contact',
         	collection: this.contactsCollection}).render().el);
         
