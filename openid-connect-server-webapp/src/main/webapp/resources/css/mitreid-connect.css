@@ -30,7 +30,7 @@ h1,label {
 	min-height: 100%;
 	height: auto !important;
 	height: 100%;
-	/* Negative indent footer by it's height */
+	/* Negative indent footer by its height */
 	margin: 0 auto -60px;
 }
 
@@ -54,3 +54,34 @@ h1,label {
 .inputError {
 	border: 1px solid #b94a48 !important;
 }
+
+/* Fix for wonky forms */
+
+.input-append.input-block-level,
+.input-prepend.input-block-level {
+  display: table;
+}
+
+.input-append.input-block-level .add-on,
+.input-prepend.input-block-level .add-on {
+  display: table-cell;
+  width: 1%; /* remove this if you want default bootstrap button width */
+}
+
+.input-append.input-block-level > input,
+.input-prepend.input-block-level > input {
+  box-sizing: border-box; /* use bootstrap mixin or include vendor variants */
+  -moz-box-sizing: border-box; /* for Firefox */
+  display: table; /* table-cell is not working well in Chrome for small widths */
+  min-height: inherit;
+  width: 100%;
+}
+
+.input-append.input-block-level > input {
+  border-right: 0;
+}
+
+.input-prepend.input-block-level > input {
+  border-left: 0;
+}
+
