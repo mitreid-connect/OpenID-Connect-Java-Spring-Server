@@ -171,10 +171,10 @@ var ClientView = Backbone.View.extend({
     render:function (eventName) {
     	
     	var creationDate = this.model.get('createdAt');
-		var displayCreationDate = "Unknown";
+		var displayCreationDate = "at an unknown time";
 		var hoverCreationDate = "";
 		if (creationDate == null || !moment(creationDate).isValid()) {
-			displayCreationDate = "Unknown";
+			displayCreationDate = "at an unknown time";
 			hoverCreationDate = "";
 		} else {
 			creationDate = moment(creationDate);
