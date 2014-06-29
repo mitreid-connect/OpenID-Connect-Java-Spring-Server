@@ -120,9 +120,9 @@ public class UserInfoJwtView extends UserInfoView {
 				}
 			} else {
 
-				JWSAlgorithm signingAlg = jwtService.getDefaultSigningAlgorithm();
+				JWSAlgorithm signingAlg = jwtService.getDefaultSigningAlgorithm(); // default to the server's preference
 				if (client.getUserInfoSignedResponseAlg() != null) {
-					signingAlg = client.getUserInfoSignedResponseAlg();
+					signingAlg = client.getUserInfoSignedResponseAlg(); // override with the client's preference if available
 				}
 
 				SignedJWT signed = new SignedJWT(new JWSHeader(signingAlg), claims);

@@ -55,6 +55,8 @@ public class UserInfoEndpoint {
 
 	private static Logger logger = LoggerFactory.getLogger(UserInfoEndpoint.class);
 
+	private static final MediaType JOSE_MEDIA_TYPE = new MediaType("application", "jwt");
+
 	/**
 	 * Get information about the user as specified in the accessToken included in this request
 	 */
@@ -90,21 +92,37 @@ public class UserInfoEndpoint {
 		model.addAttribute("userInfo", userInfo);
 
 		// content negotiation
+
+		// start off by seeing if the client has registered for a signed/encrypted JWT from here
+		ClientDetailsEntity client = clientService.loadClientByClientId(auth.getOAuth2Request().getClientId());
+		model.addAttribute("client", client);
+		
 		List<MediaType> mediaTypes = MediaType.parseMediaTypes(acceptHeader);
 		MediaType.sortBySpecificityAndQuality(mediaTypes);
-
-		MediaType jose = new MediaType("application", "jwt");
-
-		for (MediaType m : mediaTypes) {
-			if (!m.isWildcardType() && m.isCompatibleWith(jose)) {
-				ClientDetailsEntity client = clientService.loadClientByClientId(auth.getOAuth2Request().getClientId());
-				model.addAttribute("client", client);
-
-				return "userInfoJwtView";
+		
+		if (client.getUserInfoSignedResponseAlg() != null 
+				|| client.getUserInfoEncryptedResponseAlg() != null
+				|| client.getUserInfoEncryptedResponseEnc() != null) {
+			// client has a preference, see if they ask for plain JSON specifically on this request
+			for (MediaType m : mediaTypes) {
+				if (!m.isWildcardType() && m.isCompatibleWith(MediaType.APPLICATION_JSON)) {
+					return "userInfoView";
+				}
 			}
-		}
+			
+			// otherwise return JWT
+			return "userInfoJwtView";
+		} else {
+			// client has no preference, see if they asked for JWT specifically on this request
+			for (MediaType m : mediaTypes) {
+				if (!m.isWildcardType() && m.isCompatibleWith(JOSE_MEDIA_TYPE)) {
+					return "userInfoJwtView";
+				}
+			}
 
-		return "userInfoView";
+			// otherwise return JSON
+			return "userInfoView";
+		}
 
 	}
 
