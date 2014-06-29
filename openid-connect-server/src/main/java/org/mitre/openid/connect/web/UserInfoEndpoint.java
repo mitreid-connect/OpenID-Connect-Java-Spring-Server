@@ -61,7 +61,7 @@ public class UserInfoEndpoint {
 	@PreAuthorize("hasRole('ROLE_USER') and #oauth2.hasScope('openid')")
 	@RequestMapping(value="/userinfo", method= {RequestMethod.GET, RequestMethod.POST}, produces = {"application/json", "application/jwt"})
 	public String getInfo(@RequestParam(value="claims", required=false) String claimsRequestJsonString,
-			@RequestHeader(value="Accept") String acceptHeader,
+			@RequestHeader(value="Accept", required=false) String acceptHeader,
 			OAuth2Authentication auth, Model model) {
 
 		if (auth == null) {
