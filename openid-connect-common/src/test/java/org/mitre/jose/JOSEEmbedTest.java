@@ -32,7 +32,7 @@ import com.nimbusds.jose.JWSAlgorithm;
  * These tests make sure that the algorithm name processing
  * is functional on the three embedded JOSE classes.
  * 
- * @author jricher
+ * @author jricher, tsitkov
  *
  */
 public class JOSEEmbedTest {
@@ -43,6 +43,13 @@ public class JOSEEmbedTest {
 
 		assertEquals(JWSAlgorithm.HS256, a.getAlgorithm());
 		assertEquals("HS256", a.getAlgorithmName());
+		
+		a.setAlgorithm(JWSAlgorithm.HS384);
+		assertEquals(JWSAlgorithm.HS384, a.getAlgorithm());
+		
+		JWSAlgorithmEmbed null_a = new JWSAlgorithmEmbed(null);
+		assertEquals(null, null_a.getAlgorithm());
+		assertEquals(null, null_a.getAlgorithmName());
 	}
 
 	@Test
@@ -51,6 +58,9 @@ public class JOSEEmbedTest {
 
 		assertEquals(JWSAlgorithm.RS256, a.getAlgorithm());
 		assertEquals("RS256", a.getAlgorithmName());
+		
+		JWSAlgorithmEmbed null_a = JWSAlgorithmEmbed.getForAlgorithmName("");	
+		assertEquals(null, null_a);
 	}
 
 	@Test
@@ -59,6 +69,13 @@ public class JOSEEmbedTest {
 
 		assertEquals(JWEAlgorithm.A128KW, a.getAlgorithm());
 		assertEquals("A128KW", a.getAlgorithmName());
+		
+		a.setAlgorithm(JWEAlgorithm.A256KW);
+		assertEquals(JWEAlgorithm.A256KW, a.getAlgorithm());
+		
+		JWEAlgorithmEmbed null_a = new JWEAlgorithmEmbed(null);
+		assertEquals(null, null_a.getAlgorithm());
+		assertEquals(null, null_a.getAlgorithmName());
 	}
 
 	@Test
@@ -67,6 +84,9 @@ public class JOSEEmbedTest {
 
 		assertEquals(JWEAlgorithm.RSA1_5, a.getAlgorithm());
 		assertEquals("RSA1_5", a.getAlgorithmName());
+		
+		JWEAlgorithmEmbed null_a = JWEAlgorithmEmbed.getForAlgorithmName("");
+		assertEquals(null, null_a);
 	}
 
 	@Test
@@ -75,6 +95,13 @@ public class JOSEEmbedTest {
 
 		assertEquals(EncryptionMethod.A128CBC_HS256, a.getAlgorithm());
 		assertEquals("A128CBC-HS256", a.getAlgorithmName());
+		
+		a.setAlgorithm(EncryptionMethod.A256GCM);
+		assertEquals(EncryptionMethod.A256GCM, a.getAlgorithm());
+		
+		JWEEncryptionMethodEmbed null_a = new JWEEncryptionMethodEmbed(null);
+		assertEquals(null, null_a.getAlgorithm());
+		assertEquals(null, null_a.getAlgorithmName());
 	}
 
 	@Test
@@ -83,6 +110,9 @@ public class JOSEEmbedTest {
 
 		assertEquals(EncryptionMethod.A256GCM, a.getAlgorithm());
 		assertEquals("A256GCM", a.getAlgorithmName());
+		
+		JWEEncryptionMethodEmbed null_a = JWEEncryptionMethodEmbed.getForAlgorithmName("");
+		assertEquals(null, null_a);
 	}
 
 }
