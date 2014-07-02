@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+import com.nimbusds.jose.Algorithm;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.slf4j.Logger;
@@ -36,7 +37,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.util.concurrent.UncheckedExecutionException;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.OctetSequenceKey;
-import com.nimbusds.jose.jwk.Use;
+import com.nimbusds.jose.jwk.KeyUse;
 import com.nimbusds.jose.util.Base64URL;
 
 /**
@@ -98,7 +99,7 @@ public class SymmetricCacheService {
 
 				String id = "SYMMETRIC-KEY";
 
-				JWK jwk = new OctetSequenceKey(Base64URL.encode(key), Use.SIGNATURE, null, id, null, null, null);
+				JWK jwk = new OctetSequenceKey(Base64URL.encode(key), KeyUse.SIGNATURE, null, new Algorithm(id), null, null, null, null);
 				Map<String, JWK> keys = ImmutableMap.of(id, jwk);
 				JwtSigningAndValidationService service = new DefaultJwtSigningAndValidationService(keys);
 
