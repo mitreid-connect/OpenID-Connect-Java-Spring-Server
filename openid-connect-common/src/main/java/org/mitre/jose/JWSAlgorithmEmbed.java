@@ -48,6 +48,11 @@ public class JWSAlgorithmEmbed {
 		this.algorithm = algorithm;
 	}
 
+	/**
+	 * 
+	 * @param algorithmName
+	 * @return null if algorithmName is empty or null
+	 */
 	public static JWSAlgorithmEmbed getForAlgorithmName (String algorithmName) {
 		JWSAlgorithmEmbed ent = new JWSAlgorithmEmbed();
 		ent.setAlgorithmName(algorithmName);
