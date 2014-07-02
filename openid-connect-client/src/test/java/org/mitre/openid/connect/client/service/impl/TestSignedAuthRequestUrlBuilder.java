@@ -45,7 +45,7 @@ import com.google.common.collect.Sets;
 import com.nimbusds.jose.Algorithm;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.RSAKey;
-import com.nimbusds.jose.jwk.Use;
+import com.nimbusds.jose.jwk.KeyUse;
 import com.nimbusds.jose.util.Base64URL;
 import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
@@ -90,7 +90,7 @@ public class TestSignedAuthRequestUrlBuilder {
 	@Before
 	public void prepare() throws NoSuchAlgorithmException, InvalidKeySpecException {
 
-		RSAKey key = new RSAKey(new Base64URL(n), new Base64URL(e), new Base64URL(d), Use.SIGNATURE, new Algorithm(alg), kid, null, null, null);
+		RSAKey key = new RSAKey(new Base64URL(n), new Base64URL(e), new Base64URL(d), KeyUse.SIGNATURE, null, new Algorithm(alg), kid, null, null, null);
 		Map<String, JWK> keys = Maps.newHashMap();
 		keys.put("client", key);
 
