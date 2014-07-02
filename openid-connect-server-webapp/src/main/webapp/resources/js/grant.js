@@ -240,6 +240,7 @@ var ApprovedSiteView = Backbone.View.extend({
         
         this.$('.dynamically-registered').tooltip({title: 'This client was dynamically registered'});
         this.$('.whitelisted-site').tooltip({title: 'This site was whitelisted by an adminstrator'});
+        this.$('.tokens').tooltip({title: 'Number of currently active access tokens.'});
         
 		return this;
 	},
