@@ -286,15 +286,6 @@ public class TestDefaultJwtEncryptionAndDecryptionService {
 
 
 	@Test
-	public void runAfterPropertiesSet() throws NoSuchAlgorithmException,
-						InvalidKeySpecException, JOSEException {
-
-		// TODO : Need more meaningful test here
-		service.afterPropertiesSet();
-	}
-
-
-	@Test
 	public void getAllPubKeys() throws ParseException { 
 
 		Map<String,JWK> keys2check = service_2.getAllPublicKeys();
