@@ -231,7 +231,7 @@ var RefreshTokenView = Backbone.View.extend({
 			expirationDate = moment(expirationDate).calendar();
 		}
     	
-		var json = {token: this.model.toJSON(), client: this.options.client.toJSON(), formattedExpiration: expirationDate};
+		var json = {token: this.model.toJSON(), client: this.options.client.toJSON(), formattedExpiration: expirationDate, accessTokenCount: this.options.accessTokenCount};
 
 		this.$el.html(this.template(json));
 
@@ -420,7 +420,7 @@ var TokenListView = Backbone.View.extend({
 		
 		// append and render the table structure
 		$(this.el).html($('#tmpl-token-table').html());
-	
+		
 		var _self = this;
 		
         // set up pagination
@@ -435,6 +435,9 @@ var TokenListView = Backbone.View.extend({
         	$('.paginator-access', this.el).hide();
         }
 
+        // count up refresh tokens
+        var refreshCount = {};
+        
         _.each(this.model.access.models, function (token, index) {
 			// look up client
 			var client = _self.options.clientList.getByClientId(token.get('clientId'));
@@ -445,9 +448,22 @@ var TokenListView = Backbone.View.extend({
             if (Math.ceil((index + 1) / 10) != 1) {
             	$(element).hide();
             }
+            
+            console.log(token.get('refreshTokenId'));
+            var refId = token.get('refreshTokenId');
+            if (refId != null) {
+            	if (refreshCount[refId]) {
+            		refreshCount[refId] += 1;
+            	} else {
+            		refreshCount[refId] = 1;
+            	}
+            	
+            }
 
 		});
-		
+
+        console.log(refreshCount);
+        
         // set up pagination
         var numPagesRefresh = Math.ceil(this.model.refresh.length / 10);
         if (numPagesRefresh > 1) {
@@ -463,7 +479,7 @@ var TokenListView = Backbone.View.extend({
         _.each(this.model.refresh.models, function (token, index) {
 			// look up client
 			var client = _self.options.clientList.getByClientId(token.get('clientId'));
-			var view = new RefreshTokenView({model: token, client: client, systemScopeList: _self.options.systemScopeList});
+			var view = new RefreshTokenView({model: token, client: client, systemScopeList: _self.options.systemScopeList, accessTokenCount: refreshCount[token.get('id')]});
 			view.parentView = _self;
 			var element = view.render().el;
 			$('#refresh-token-table', _self.el).append(element);
