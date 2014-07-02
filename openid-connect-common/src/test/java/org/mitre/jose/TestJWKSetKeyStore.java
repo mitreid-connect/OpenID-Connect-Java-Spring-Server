@@ -19,27 +19,25 @@ package org.mitre.jose;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.FileSystemResource;
-
-import java.io.IOException;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+import org.mitre.jose.keystore.JWKSetKeyStore;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 
 import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.jwk.KeyUse;
 import com.nimbusds.jose.jwk.RSAKey;
-import com.nimbusds.jose.jwk.Use;
 import com.nimbusds.jose.util.Base64URL;
-
-import org.mitre.jose.keystore.JWKSetKeyStore;
 
 
 /**
@@ -64,7 +62,7 @@ public class TestJWKSetKeyStore {
 					"qDp0Vqj3kbSCz1XyfCs6_LehBwtxHIyh8Ripy40p24moOAbgxVw3rxT_vl" +
 					"t3UVe4WO3JkJOzlpUf-KTVI2Ptgm-dARxTEtE-id-4OJr0h-K-VFs3VSnd" +
 					"VTIznSxfyrj8ILL6MG_Uv8YAu7VILSB3lOW085-4qE3DzgrTjgyQ"), // d
-					Use.ENCRYPTION, JWEAlgorithm.RSA_OAEP, RSAkid, null, null, null);
+					KeyUse.ENCRYPTION, null, JWEAlgorithm.RSA_OAEP, RSAkid, null, null, null);
 
 	private String RSAkid_rsa2 = "rsa_2";
 	private JWK RSAjwk_rsa2 = new RSAKey(
@@ -81,7 +79,7 @@ public class TestJWKSetKeyStore {
 					"qDp0Vqj3kbSCz1XyfCs6_LehBwtxHIyh8Ripy40p24moOAbgxVw3rxT_vl" +
 					"t3UVe4WO3JkJOzlpUf-KTVI2Ptgm-dARxTEtE-id-4OJr0h-K-VFs3VSnd" +
 					"VTIznSxfyrj8ILL6MG_Uv8YAu7VILSB3lOW085-4qE3DzgrTjgyQ"), // d
-					Use.ENCRYPTION, JWEAlgorithm.RSA1_5, RSAkid_rsa2, null, null, null);
+					KeyUse.ENCRYPTION, null, JWEAlgorithm.RSA1_5, RSAkid_rsa2, null, null, null);
 					
 
  	List<JWK> keys_list = new LinkedList<JWK>();	
