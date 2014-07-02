@@ -105,7 +105,9 @@ public class UserInfoEndpoint {
 				|| client.getUserInfoEncryptedResponseEnc() != null) {
 			// client has a preference, see if they ask for plain JSON specifically on this request
 			for (MediaType m : mediaTypes) {
-				if (!m.isWildcardType() && m.isCompatibleWith(MediaType.APPLICATION_JSON)) {
+				if (!m.isWildcardType() && m.isCompatibleWith(JOSE_MEDIA_TYPE)) {
+					return "userInfoJwtView";
+				} else if (!m.isWildcardType() && m.isCompatibleWith(MediaType.APPLICATION_JSON)) {
 					return "userInfoView";
 				}
 			}
@@ -115,7 +117,9 @@ public class UserInfoEndpoint {
 		} else {
 			// client has no preference, see if they asked for JWT specifically on this request
 			for (MediaType m : mediaTypes) {
-				if (!m.isWildcardType() && m.isCompatibleWith(JOSE_MEDIA_TYPE)) {
+				if (!m.isWildcardType() && m.isCompatibleWith(MediaType.APPLICATION_JSON)) {
+					return "userInfoView";
+				} else if (!m.isWildcardType() && m.isCompatibleWith(JOSE_MEDIA_TYPE)) {
 					return "userInfoJwtView";
 				}
 			}
