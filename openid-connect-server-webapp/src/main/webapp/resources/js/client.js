@@ -95,33 +95,77 @@ var ClientModel = Backbone.Model.extend({
     urlRoot:"api/clients",
     
     matches:function(term) {
+    	
+    	var matches = [];
+    	
     	if (term) {
     		if (this.get('clientId').toLowerCase().indexOf(term.toLowerCase()) != -1) {
-    			return true;
-    		} else if (this.get('clientName') != null && this.get('clientName').toLowerCase().indexOf(term.toLowerCase()) != -1) {
-    			return true;
-    		} else if (this.get('clientDescription') != null && this.get('clientDescription').toLowerCase().indexOf(term.toLowerCase()) != -1) {
-    			return true;
-    		} else if (this.get('clientUri') != null && this.get('clientUri').toLowerCase().indexOf(term.toLowerCase()) != -1) {
-    			return true;
-    		} else {
-    			if (this.get('contacts') != null) {
-    				var f = _.filter(this.get('contacts'), function(item) {
-    					return item.toLowerCase().indexOf(term.toLowerCase()) != -1;
-    				});
-    				if (f.length > 0) {
-    					return true;
-    				} else {
-    					return false;
-    				}
-    			}  else {
-    				return false;
-    			}
+    			matches.push('id');
+    		} 
+    		if (this.get('clientName') != null && this.get('clientName').toLowerCase().indexOf(term.toLowerCase()) != -1) {
+    			matches.push('name');
+    		} 
+    		if (this.get('clientDescription') != null && this.get('clientDescription').toLowerCase().indexOf(term.toLowerCase()) != -1) {
+    			matches.push('description');
+    		} 
+    		if (this.get('clientUri') != null && this.get('clientUri').toLowerCase().indexOf(term.toLowerCase()) != -1) {
+    			matches.push('homepage');
     		}
+    		if (this.get('policyUri') != null && this.get('policyUri').toLowerCase().indexOf(term.toLowerCase()) != -1) {
+    			matches.push('policy');
+    		}
+    		if (this.get('tosUri') != null && this.get('tosUri').toLowerCase().indexOf(term.toLowerCase()) != -1) {
+    			matches.push('terms of service');
+    		}
+    		if (this.get('logoUri') != null && this.get('logoUri').toLowerCase().indexOf(term.toLowerCase()) != -1) {
+    			matches.push('logo');
+    		}
+			if (this.get('contacts') != null) {
+				var f = _.filter(this.get('contacts'), function(item) {
+					return item.toLowerCase().indexOf(term.toLowerCase()) != -1;
+				});
+				if (f.length > 0) {
+					matches.push('contacts');
+				}
+			}
+			if (this.get('redirectUris') != null) {
+				var f = _.filter(this.get('redirectUris'), function (item) {
+					return item.toLowerCase().indexOf(term.toLowerCase()) != -1;
+				});
+				if (f.length > 0) {
+					matches.push('redirect uri');
+				}
+			}
+			if (this.get('scope') != null) {
+				var f = _.filter(this.get('scope'), function (item) {
+					return item.toLowerCase().indexOf(term.toLowerCase()) != -1;
+				});
+				if (f.length > 0) {
+					matches.push('scope');
+				}
+			}
     	} else {
-    		return true;
+    		// there's no search term, we always match
+    		
+	    	this.unset('matches', {silent: true});
+	    	console.log('no term');
+	    	return true;
     	}
-
+    
+    	
+    	var matchString = matches.join(' | ');
+    	
+	    if (matches.length > 0) {
+	    	this.set({
+	    		matches: matchString
+	    	}, {silent: true});
+	    	
+	    	return true;
+	    } else {
+	    	this.unset('matches', {silent: true});
+	    	
+	    	return false;
+	    }
     }
 
 });
@@ -200,7 +244,21 @@ var ClientView = Backbone.View.extend({
         this.$('.dynamically-registered').tooltip({title: 'This client was dynamically registered'});
         this.$('.allow-introspection').tooltip({title: 'This client can perform token introspection'});
         
+        this.updateMatched();
+        
         return this;
+    },
+    
+    updateMatched:function() {
+    	
+    	console.log(this.model.get('matches'));
+    	
+    	if (this.model.get('matches')) {
+    		$('.matched', this.el).show();
+    		$('.matched span', this.el).html(this.model.get('matches'));
+    	} else {
+    		$('.matched', this.el).hide();
+    	}
     },
 
     events:{
@@ -444,13 +502,9 @@ var ClientListView = Backbone.View.extend({
     searchTable:function(e) {
     	var term = $('.search-query', this.el).val();
     	
-    	if (term) {
-    		this.filteredModel = new ClientCollection(this.model.filter(function(client) {
-    			return client.matches(term);
-    		}));
-    	} else {
-    		this.filteredModel = this.model;
-    	}
+		this.filteredModel = new ClientCollection(this.model.filter(function(client) {
+			return client.matches(term);
+		}));
     	
     	// clear out the table
     	$('tbody', this.el).html('');
