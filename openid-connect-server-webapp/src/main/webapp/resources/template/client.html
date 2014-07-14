@@ -41,7 +41,9 @@
 			<% if (client.allowIntrospection) { %>
 				<span class="label label-inverse allow-introspection"><i class="icon-eye-open icon-white"></i></span>
 			<% } %>
-			<small class="muted" title="<%= hoverCreationDate %>">Registered <%= displayCreationDate %></small>
+		</div>
+		<div>
+			<small class="muted" title="<%= hoverCreationDate %>"><i class="icon-time"></i> Registered <%= displayCreationDate %></small>
 		</div>
 		<div class="matched text-info">
 			<small><i>Matched: <span class="label"></span></i></small>
@@ -125,7 +127,7 @@
 			<th></th>
             <th>Client</th>
             <th>Information</th>
-            <th></th>
+            <th><i class="icon-edit"></i></th>
         </tr>
         </thead>
         <tbody>
