@@ -67,10 +67,14 @@ import com.google.common.collect.Lists;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.nimbusds.jose.Algorithm;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.util.Base64;
+import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.JWTParser;
+import com.nimbusds.jwt.PlainJWT;
 import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 
@@ -437,7 +441,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 			}
 
 			try {
-				SignedJWT idToken = SignedJWT.parse(idTokenValue);
+				JWT idToken = JWTParser.parse(idTokenValue);
 
 				// validate our ID Token over a number of tests
 				ReadOnlyJWTClaimsSet idClaims = idToken.getJWTClaimsSet();
@@ -445,26 +449,49 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 				// check the signature
 				JwtSigningAndValidationService jwtValidator = null;
 
-				JWSAlgorithm alg = idToken.getHeader().getAlgorithm();
-				if (alg.equals(JWSAlgorithm.HS256)
-					|| alg.equals(JWSAlgorithm.HS384)
-					|| alg.equals(JWSAlgorithm.HS512)) {
-					
-					// generate one based on client secret
-					jwtValidator = symmetricCacheService.getSymmetricValidtor(clientConfig.getClient());
-				} else {
-					// otherwise load from the server's public key
-					jwtValidator = validationServices.getValidator(serverConfig.getJwksUri());
+				Algorithm tokenAlg = idToken.getHeader().getAlgorithm();
+				
+				Algorithm clientAlg = clientConfig.getIdTokenSignedResponseAlg();
+				
+				if (clientAlg != null) {
+					if (!clientAlg.equals(tokenAlg)) {
+						throw new AuthenticationServiceException("Token algorithm " + tokenAlg + " does not match expected algorithm " + clientAlg);
+					}
 				}
 				
-				if (jwtValidator != null) {
-					if(!jwtValidator.validateSignature(idToken)) {
-						throw new AuthenticationServiceException("Signature validation failed");
+				if (idToken instanceof PlainJWT) {
+					
+					if (clientAlg == null) {
+						throw new AuthenticationServiceException("Unsigned ID tokens can only be used if explicitly configured in client.");
 					}
-				} else {
-					logger.error("No validation service found. Skipping signature validation");
-					throw new AuthenticationServiceException("Unable to find an appropriate signature validator for ID Token.");
-				}
+					
+					if (tokenAlg != null && !tokenAlg.equals(JWSAlgorithm.NONE)) {
+						throw new AuthenticationServiceException("Unsigned token received, expected signature with " + tokenAlg);
+					}
+				} else if (idToken instanceof SignedJWT) {
+				
+					SignedJWT signedIdToken = (SignedJWT)idToken;
+					
+					if (tokenAlg.equals(JWSAlgorithm.HS256)
+						|| tokenAlg.equals(JWSAlgorithm.HS384)
+						|| tokenAlg.equals(JWSAlgorithm.HS512)) {
+						
+						// generate one based on client secret
+						jwtValidator = symmetricCacheService.getSymmetricValidtor(clientConfig.getClient());
+					} else {
+						// otherwise load from the server's public key
+						jwtValidator = validationServices.getValidator(serverConfig.getJwksUri());
+					}
+					
+					if (jwtValidator != null) {
+						if(!jwtValidator.validateSignature(signedIdToken)) {
+							throw new AuthenticationServiceException("Signature validation failed");
+						}
+					} else {
+						logger.error("No validation service found. Skipping signature validation");
+						throw new AuthenticationServiceException("Unable to find an appropriate signature validator for ID Token.");
+					}
+				} // TODO: encrypted id tokens
 
 				// check the issuer
 				if (idClaims.getIssuer() == null) {
