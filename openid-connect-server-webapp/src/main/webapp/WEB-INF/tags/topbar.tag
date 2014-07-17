@@ -80,21 +80,23 @@
 	
 						</security:authorize>
 	
-					<div class="nav pull-right">
+					<ul class="nav pull-right">
 	                    <security:authorize access="hasRole('ROLE_USER')">
-						<div class="btn-group">
-							<a class="btn btn-primary btn-small dropdown-toggle" data-toggle="dropdown" href=""><i class="icon-user icon-white"></i> ${ shortName } <span class="caret"></span></a>
+						<li class="dropdown">
+							<a id="userButton" class="dropdown-toggle" data-toggle="dropdown" href=""><i class="icon-user icon-white"></i> ${ shortName } <span class="caret"></span></a>
 							<ul class="dropdown-menu pull-right">
 								<li><a href="manage/#user/profile" data-toggle="collapse" data-target=".nav-collapse">${ longName }</a></li>
 								<li class="divider"></li>
 								<li><a href="logout" data-toggle="collapse" data-target=".nav-collapse"><i class="icon-remove"></i> Log out</a></li>
 							</ul>
-						</div>
+						</li>
 	                    </security:authorize>
 	                    <security:authorize access="!hasRole('ROLE_USER')">
-	                    	<a class="btn btn-primary btn-small" href="login" data-toggle="collapse" data-target=".nav-collapse"><i class="icon-user icon-white"></i> Log in</a>
+	                    <li>
+	                    	<a id="userButton" href="login" data-toggle="collapse" data-target=".nav-collapse"><i class="icon-lock icon-white"></i> Log in</a>
+	                    </li>
 	                    </security:authorize>
-	                </div>
+	                </ul>
 	                    
 	            </div><!--/.nav-collapse -->
 			</c:if>
