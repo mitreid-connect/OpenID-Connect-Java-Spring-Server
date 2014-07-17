@@ -53,7 +53,9 @@ import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.util.Base64URL;
 import com.nimbusds.jwt.EncryptedJWT;
+import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.PlainJWT;
 import com.nimbusds.jwt.SignedJWT;
 
 /**
@@ -150,21 +152,32 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 			}
 
 		} else {
+			
+			JWT idToken;
+			
+			if (signingAlg.equals(JWSAlgorithm.NONE)) {
+				// unsigned ID token
+				idToken = new PlainJWT(idClaims);
 
-			SignedJWT idToken = new SignedJWT(new JWSHeader(signingAlg), idClaims);
-
-			if (signingAlg.equals(JWSAlgorithm.HS256)
-					|| signingAlg.equals(JWSAlgorithm.HS384)
-					|| signingAlg.equals(JWSAlgorithm.HS512)) {
-				JwtSigningAndValidationService signer = symmetricCacheService.getSymmetricValidtor(client);
-
-				// sign it with the client's secret
-				signer.signJwt(idToken);
 			} else {
 
-				// sign it with the server's key
-				jwtService.signJwt(idToken);
+				// signed ID token
+				idToken = new SignedJWT(new JWSHeader(signingAlg), idClaims);
+	
+				if (signingAlg.equals(JWSAlgorithm.HS256)
+						|| signingAlg.equals(JWSAlgorithm.HS384)
+						|| signingAlg.equals(JWSAlgorithm.HS512)) {
+					JwtSigningAndValidationService signer = symmetricCacheService.getSymmetricValidtor(client);
+	
+					// sign it with the client's secret
+					signer.signJwt((SignedJWT) idToken);
+				} else {
+	
+					// sign it with the server's key
+					jwtService.signJwt((SignedJWT) idToken);
+				}
 			}
+				
 
 			idTokenEntity.setJwt(idToken);
 		}
