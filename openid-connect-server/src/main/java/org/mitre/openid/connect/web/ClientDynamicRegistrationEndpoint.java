@@ -397,14 +397,10 @@ public class ClientDynamicRegistrationEndpoint {
 		// filter out unknown grant types
 		// TODO: make this a pluggable service
 		Set<String> requestedGrantTypes = new HashSet<String>(newClient.getGrantTypes());
-		requestedGrantTypes.removeAll(
+		requestedGrantTypes.retainAll(
 					ImmutableSet.of("authorization_code", "implicit", 
 							"password", "client_credentials", "refresh_token",
 							"urn:ietf:params:oauth:grant_type:redelegate"));
-		if (!requestedGrantTypes.isEmpty()) {
-			// return an error, there were unknown grant types requested
-			throw new ValidationException("invalid_client_metadata", "Unknown grant types requested: " + newClient.getGrantTypes(), HttpStatus.BAD_REQUEST);
-		}
 		
 		// don't allow "password" grant type for dynamic registration
 		if (newClient.getGrantTypes().contains("password")) {
