@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.mitre.jose.keystore.JWKSetKeyStore;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
@@ -95,9 +96,13 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 		if (keyStore!= null && keyStore.getJwkSet() != null) {
 			for (JWK key : keyStore.getKeys()) {
 				if (!Strings.isNullOrEmpty(key.getKeyID())) {
+					// use the key ID that's built into the key itself
+					// TODO (#641): deal with JWK thumbprints
 					this.keys.put(key.getKeyID(), key);
 				} else {
-					throw new IllegalArgumentException("Tried to load a key from a keystore without a 'kid' field: " + key);
+					// create a random key id
+					String fakeKid = UUID.randomUUID().toString();
+					this.keys.put(fakeKid, key);
 				}
 			}
 		}
@@ -109,14 +114,7 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 	 * @return the defaultSignerKeyId
 	 */
 	public String getDefaultSignerKeyId() {
-		if (defaultSignerKeyId != null) {
 			return defaultSignerKeyId;
-		} else if (keys.size() == 1) {
-			// if there's only one key, it's the default
-			return keys.keySet().iterator().next();
-		} else {
-			return null;
-		}
 	}
 
 	/**
@@ -188,6 +186,11 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 			} else {
 				logger.warn("Unknown key type: " + jwk);
 			}
+		}
+		
+		if (defaultSignerKeyId == null && keys.size() == 1) {
+			// if there's only one key, it's the default
+			setDefaultSignerKeyId(keys.keySet().iterator().next());
 		}
 	}
 
