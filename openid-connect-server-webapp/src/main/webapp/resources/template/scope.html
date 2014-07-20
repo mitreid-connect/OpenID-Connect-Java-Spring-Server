@@ -55,11 +55,11 @@
     <td>
         <span class="badge badge-info">
 		<% if (icon) { %>
-			<i class="icon-<%= icon %> icon-white"></i>
+			<i class="icon-<%- icon %> icon-white"></i>
 		<% } %>
-		<%= value %>
+		<%- value %>
 		</span>
-        <p><small><%= description %></small></p>
+        <p><small><%- description %></small></p>
     </td>
 
     <td>
@@ -72,7 +72,7 @@
 </script>
 
 <script type="text/html" id="tmpl-system-scope-form">
-	<h1><%= id == null ? 'New' : 'Edit'%> Scope</h1>
+	<h1><%- id == null ? 'New' : 'Edit'%> Scope</h1>
 
 	<form class="form-horizontal">
 		<fieldset>
@@ -85,7 +85,7 @@
 			<div class="control-group" id="value">
 				<label class="control-label">Scope value</label>
 				<div class="controls">
-					<input value="<%=value != null ? value : ''%>" type="text" class="" placeholder="scope">
+					<input value="<%-value != null ? value : ''%>" type="text" class="" placeholder="scope">
 					<p class="help-block">Single string with no spaces</p>
 				</div>
 			</div>
@@ -93,7 +93,7 @@
 			<div class="control-group" id="description">
 				<label class="control-label">Description</label>
 				<div class="controls">
-					<textarea class="input-xlarge" placeholder="Type a description" maxlength="200" rows="3"><%=description != null ? description : ''%></textarea>
+					<textarea class="input-xlarge" placeholder="Type a description" maxlength="200" rows="3"><%-description != null ? description : ''%></textarea>
 					<p class="help-block">Human-readable text description</p>
 				</div>
 			</div>
@@ -103,9 +103,9 @@
 				<div class="controls">
 
 					<span id="iconDisplay">
-						<i class="icon-<%=icon%>"></i> <span class="uneditable-input"><%=icon%></span>
+						<i class="icon-<%-icon%>"></i> <span class="uneditable-input"><%-icon%></span>
 
-						<input type="hidden" value="<%=icon%>">
+						<input type="hidden" value="<%-icon%>">
 					</span>
 
 					<a href="#iconSelector" role="button" class="btn btn-info" data-toggle="modal"><i class="icon-white icon-picture"></i> Select an icon</a>
@@ -129,7 +129,7 @@
 			<div class="control-group" id="defaultScope">
 				<div class="controls">
 					<label class="checkbox">
-						<input type="checkbox" <%=defaultScope ? 'checked' : '' %>> default scope
+						<input type="checkbox" <%-defaultScope ? 'checked' : '' %>> default scope
 					</label>
 					<p class="help-block">Newly-created clients get this scope by default?</p>
 				</div>
@@ -138,7 +138,7 @@
 			<div class="control-group" id="allowDynReg">
 				<div class="controls">
 					<label class="checkbox">
-						<input type="checkbox" <%=allowDynReg ? 'checked' : '' %>> allow dynamic registration
+						<input type="checkbox" <%-allowDynReg ? 'checked' : '' %>> allow dynamic registration
 					</label>
 					<p class="help-block">Allow dynamically registered clients to request this scope?</p>
 				</div>
@@ -147,12 +147,12 @@
 			<div class="control-group">
 				<div class="controls" id="isStructured">
 					<label class="checkbox">
-						<input type="checkbox" <%=structured ? 'checked' : '' %>> is a structured scope
+						<input type="checkbox" <%-structured ? 'checked' : '' %>> is a structured scope
 					</label>
 					<p class="help-block">Is the scope structured with structured values like <code>base:extension</code>?</p>
 				</div>
 				<div class="controls" id="structuredParamDescription">
-					<input type="text" value="<%=structuredParamDescription ? structuredParamDescription : '' %>">
+					<input type="text" value="<%-structuredParamDescription ? structuredParamDescription : '' %>">
 					<p class="help-block">Human-readable description of the structured parameter</p>
 				</div>
 			</div>
@@ -171,17 +171,17 @@
 	<div class="row-fluid">
 		<div class="span4" style="margin-top: 5px; margin-bottom: 5px;">
 			<% if (items[0]) { %>
-			<button class="btn btn-block btn-icon" value="<%=items[0]%>"><i class="icon-<%=items[0]%>"></i> <%=items[0]%>
+			<button class="btn btn-block btn-icon" value="<%-items[0]%>"><i class="icon-<%-items[0]%>"></i> <%-items[0]%>
 			<% } %>
 		</div>
 		<div class="span4" style="margin-top: 5px; margin-bottom: 5px;">
 			<% if (items[1]) { %>
-			<button class="btn btn-block btn-icon" value="<%=items[1]%>"><i class="icon-<%=items[1]%>"></i> <%=items[1]%>
+			<button class="btn btn-block btn-icon" value="<%-items[1]%>"><i class="icon-<%-items[1]%>"></i> <%-items[1]%>
 			<% } %>
 		</div>
 		<div class="span4" style="margin-top: 5px; margin-bottom: 5px;">
 			<% if (items[2]) { %>
-			<button class="btn btn-block btn-icon" value="<%=items[2]%>"><i class="icon-<%=items[2]%>"></i> <%=items[2]%>
+			<button class="btn btn-block btn-icon" value="<%-items[2]%>"><i class="icon-<%-items[2]%>"></i> <%-items[2]%>
 			<% } %>
 		</div>
 	</div>
@@ -198,19 +198,19 @@ _.each(scopes, function(s) {
 %>
 	<span class="badge badge-info" 
 <% if (ss.get('description')) { %>
-	title="<%= ss.get('description') %>"
+	title="<%- ss.get('description') %>"
 <% } %>
 
 style="cursor: default;" >
 <% if (ss.get('icon')) { %>
-	<i class="icon-<%=ss.get('icon')%> icon-white"></i>
+	<i class="icon-<%-ss.get('icon')%> icon-white"></i>
 <% } %>
-<%=s%>
+<%-s%>
 </span>
 <%
 	} else {
 %>
-	<span class="badge" style="cursor: default;"><%=s%></span>
+	<span class="badge" style="cursor: default;">§s%></span>
 <%
 	}
 

@@ -38,7 +38,7 @@
 
 <script type="text/html" id="tmpl-rsreg-resource-form">
 
-    <h1><%=(client.client_id == null ? 'New' : 'Edit')%> Protected Resource</h1>
+    <h1><%-(client.client_id == null ? 'New' : 'Edit')%> Protected Resource</h1>
 
 
     <form class="form-horizontal tabbable">
@@ -76,7 +76,7 @@
             <div class="control-group" id="clientId">
                 <label class="control-label">Client ID</label>
                 <div class="controls">
-                    <pre><%=client.client_id ? client.client_id : '<code>Will be generated</code>'%></pre>
+                    <pre><%-client.client_id ? client.client_id : '<code>Will be generated</code>'%></pre>
                 </div>
             </div>
 
@@ -87,7 +87,7 @@
             	    <div class="controls">
 						<% if (client.client_id) { %>
 							<% if (client.client_secret) { %>
-								<pre><%= client.client_secret %></pre>
+								<pre><%- client.client_secret %></pre>
 							<% } else { %>
 								<% if (client.token_endpoint_auth_method == 'none') { %>
 									<pre>None (public client)</pre>
@@ -108,14 +108,14 @@
             <div class="control-group" id="clientConfigurationUri">
                 <label class="control-label">Client Configuration URL</label>
                 <div class="controls">
-                    <pre><%=client.registration_client_uri ? client.registration_client_uri : 'Will be generated'%></pre>
+                    <pre><%-client.registration_client_uri ? client.registration_client_uri : 'Will be generated'%></pre>
                 </div>
             </div>
 
             <div class="control-group" id="registrationAccessToken">
                 <label class="control-label">Registration Access Token</label>
                 <div class="controls">
-                    <pre><%=client.registration_access_token ? client.registration_access_token : 'Will be generated'%></pre>
+                    <pre><%-client.registration_access_token ? client.registration_access_token : 'Will be generated'%></pre>
                 </div>
             </div>
 
@@ -159,7 +159,7 @@
             <div class="control-group" id="clientName">
                 <label class="control-label">Resource name</label>
                 <div class="controls">
-                    <input value="<%=client.client_name ? client.client_name : ''%>" maxlength="100" type="text" class="" placeholder="Type something">
+                    <input value="<%-client.client_name ? client.client_name : ''%>" maxlength="100" type="text" class="" placeholder="Type something">
                     <p class="help-block">Human-readable application name</p>
                 </div>
             </div>
@@ -167,7 +167,7 @@
 			<div class="control-group" id="logoUri">
 				<label class="control-label">Logo</label>
 				<div class="controls">
-					<input placeholder="https://" value="<%=client.logo_uri ? client.logo_uri : ''%>" maxlength="1000" type="text" class=""/>
+					<input placeholder="https://" value="<%-client.logo_uri ? client.logo_uri : ''%>" maxlength="1000" type="text" class=""/>
 					<p class="help-block">URL that points to a logo image, will be displayed on approval page</p>
 				</div>
 			</div>
@@ -181,7 +181,7 @@
 			<div class="control-group" id="tosUri">
 				<label class="control-label">Terms of Service</label>
 				<div class="controls">
-					<input placeholder="https://" value="<%=client.tos_uri ? client.tos_uri : ''%>" maxlength="1000" type="text" class=""/>
+					<input placeholder="https://" value="<%-client.tos_uri ? client.tos_uri : ''%>" maxlength="1000" type="text" class=""/>
 					<p class="help-block">URL for the Terms of Service of this client, will be displayed to the user</p>
 				</div>
 			</div>
@@ -189,7 +189,7 @@
 			<div class="control-group" id="policyUri">
 				<label class="control-label">Policy</label>
 				<div class="controls">
-					<input placeholder="https://" value="<%=client.policy_uri ? client.policy_uri : ''%>" maxlength="1000" type="text" class=""/>
+					<input placeholder="https://" value="<%-client.policy_uri ? client.policy_uri : ''%>" maxlength="1000" type="text" class=""/>
 					<p class="help-block">URL for the Policy Statement of this client, will be displayed to the user</p>
 				</div>
 			</div>
@@ -197,7 +197,7 @@
 			<div class="control-group" id="clientUri">
 				<label class="control-label">Home Page</label>
 				<div class="controls">
-					<input placeholder="https://" value="<%=client.client_uri ? client.client_uri : ''%>" maxlength="1000" type="text" class=""/>
+					<input placeholder="https://" value="<%-client.client_uri ? client.client_uri : ''%>" maxlength="1000" type="text" class=""/>
 					<p class="help-block">URL for the client's home page, will be displayed to the user</p>
 				</div>
 			</div>
@@ -206,10 +206,10 @@
 				<label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> Application Type</label>
 				<div class="controls">
 					<label class="radio inline">
-						<input type="radio" name="applicationType" value="NATIVE" <%=(client.application_type == 'NATIVE' ? 'checked' : '')%>> Native
+						<input type="radio" name="applicationType" value="NATIVE" <%-(client.application_type == 'NATIVE' ? 'checked' : '')%>> Native
 					</label>
 					<label class="radio inline">
-						<input type="radio" name="applicationType" value="WEB" <%=(client.application_type == 'WEB' ? 'checked' : '')%>> Web
+						<input type="radio" name="applicationType" value="WEB" <%-(client.application_type == 'WEB' ? 'checked' : '')%>> Web
 					</label>
 				</div>
 			</div>
@@ -217,7 +217,7 @@
             <div class="control-group" id="contacts">
                 <label class="control-label">Contacts</label>
                 <div class="controls">
-					<span class="help-block">List of contacts for adminstrators of this client. Your email address (<%= userInfo.email %>) will be automatically added to this list on save.</span>
+					<span class="help-block">List of contacts for adminstrators of this client. Your email address (<%- userInfo.email %>) will be automatically added to this list on save.</span>
 					<div></div>
                 </div>
             </div>
@@ -239,19 +239,19 @@
 				<label class="control-label">Introspection Endpoint Authentication Method</label>
 				<div class="controls">
 					<label class="radio">
-						<input type="radio" name="tokenEndpointAuthMethod" value="client_secret_basic" <%=(client.token_endpoint_auth_method == 'client_secret_basic' ? 'checked' : '')%>> Client Secret over HTTP Basic
+						<input type="radio" name="tokenEndpointAuthMethod" value="client_secret_basic" <%-(client.token_endpoint_auth_method == 'client_secret_basic' ? 'checked' : '')%>> Client Secret over HTTP Basic
 					</label>
 					<label class="radio">
-						<input type="radio" name="tokenEndpointAuthMethod" value="client_secret_post" <%=(client.token_endpoint_auth_method == 'client_secret_post' ? 'checked' : '')%>> Client Secret over HTTP POST
+						<input type="radio" name="tokenEndpointAuthMethod" value="client_secret_post" <%-(client.token_endpoint_auth_method == 'client_secret_post' ? 'checked' : '')%>> Client Secret over HTTP POST
 					</label>
 					<label class="radio">
-						<input type="radio" name="tokenEndpointAuthMethod" value="client_secret_jwt" <%=(client.token_endpoint_auth_method == 'client_secret_jwt' ? 'checked' : '')%>> Client Secret via symmetrically-signed JWT assertion
+						<input type="radio" name="tokenEndpointAuthMethod" value="client_secret_jwt" <%-(client.token_endpoint_auth_method == 'client_secret_jwt' ? 'checked' : '')%>> Client Secret via symmetrically-signed JWT assertion
 					</label>
 					<label class="radio">
-						<input type="radio" name="tokenEndpointAuthMethod" value="private_key_jwt" <%=(client.token_endpoint_auth_method == 'private_key_jwt' ? 'checked' : '')%>> Asymmetrically-signed JWT assertion
+						<input type="radio" name="tokenEndpointAuthMethod" value="private_key_jwt" <%-(client.token_endpoint_auth_method == 'private_key_jwt' ? 'checked' : '')%>> Asymmetrically-signed JWT assertion
 					</label>
 					<label class="radio">
-						<input type="radio" name="tokenEndpointAuthMethod" value="none" <%=(client.token_endpoint_auth_method == 'none' ? 'checked' : '')%>> No authentication
+						<input type="radio" name="tokenEndpointAuthMethod" value="none" <%-(client.token_endpoint_auth_method == 'none' ? 'checked' : '')%>> No authentication
 					</label>
 				</div>
 			</div>
@@ -260,16 +260,16 @@
                 <label class="control-label">Introspection Endpoint Authentication Signing Algorithm</label>
                 <div class="controls">
 					<select>
-						<option value="default" <%=client.token_endpoint_auth_signing_alg == null ? 'selected ' : ''%>>Any allowed</option>
-						<option value="HS256" <%=client.token_endpoint_auth_signing_alg == "HS256" ? 'selected' : ''%>>HMAC using SHA-256 hash algorithm</option>
-						<option value="HS384" <%=client.token_endpoint_auth_signing_alg == "HS384" ? 'selected' : ''%>>HMAC using SHA-384 hash algorithm</option>
-						<option value="HS512" <%=client.token_endpoint_auth_signing_alg == "HS512" ? 'selected' : ''%>>HMAC using SHA-512 hash algorithm</option>
-						<option value="RS256" <%=client.token_endpoint_auth_signing_alg == "RS256" ? 'selected' : ''%>>RSASSA using SHA-256 hash algorithm</option>
-						<option value="RS384" <%=client.token_endpoint_auth_signing_alg == "RS384" ? 'selected' : ''%>>RSASSA using SHA-384 hash algorithm</option>
-						<option value="RS512" <%=client.token_endpoint_auth_signing_alg == "RS512" ? 'selected' : ''%>>RSASSA using SHA-512 hash algorithm</option>
-						<option value="ES256" <%=client.token_endpoint_auth_signing_alg == "ES256" ? 'selected' : ''%>>ECDSA using P-256 curve and SHA-256 hash algorithm</option>
-						<option value="ES384" <%=client.token_endpoint_auth_signing_alg == "ES384" ? 'selected' : ''%>>ECDSA using P-384 curve and SHA-384 hash algorithm</option>
-						<option value="ES512" <%=client.token_endpoint_auth_signing_alg == "ES512" ? 'selected' : ''%>>ECDSA using P-512 curve and SHA-512 hash algorithm</option>
+						<option value="default" <%-client.token_endpoint_auth_signing_alg == null ? 'selected ' : ''%>>Any allowed</option>
+						<option value="HS256" <%-client.token_endpoint_auth_signing_alg == "HS256" ? 'selected' : ''%>>HMAC using SHA-256 hash algorithm</option>
+						<option value="HS384" <%-client.token_endpoint_auth_signing_alg == "HS384" ? 'selected' : ''%>>HMAC using SHA-384 hash algorithm</option>
+						<option value="HS512" <%-client.token_endpoint_auth_signing_alg == "HS512" ? 'selected' : ''%>>HMAC using SHA-512 hash algorithm</option>
+						<option value="RS256" <%-client.token_endpoint_auth_signing_alg == "RS256" ? 'selected' : ''%>>RSASSA using SHA-256 hash algorithm</option>
+						<option value="RS384" <%-client.token_endpoint_auth_signing_alg == "RS384" ? 'selected' : ''%>>RSASSA using SHA-384 hash algorithm</option>
+						<option value="RS512" <%-client.token_endpoint_auth_signing_alg == "RS512" ? 'selected' : ''%>>RSASSA using SHA-512 hash algorithm</option>
+						<option value="ES256" <%-client.token_endpoint_auth_signing_alg == "ES256" ? 'selected' : ''%>>ECDSA using P-256 curve and SHA-256 hash algorithm</option>
+						<option value="ES384" <%-client.token_endpoint_auth_signing_alg == "ES384" ? 'selected' : ''%>>ECDSA using P-384 curve and SHA-384 hash algorithm</option>
+						<option value="ES512" <%-client.token_endpoint_auth_signing_alg == "ES512" ? 'selected' : ''%>>ECDSA using P-512 curve and SHA-512 hash algorithm</option>
 					</select>
                 </div>
             </div>
@@ -277,7 +277,7 @@
 			<div class="control-group" id="jwksUri">
 				<label class="control-label">JWK Set</label>
 				<div class="controls">
-					<input placeholder="https://" value="<%=client.jwks_uri ? client.jwks_uri : ''%>" maxlength="1000" type="text" class=""/>
+					<input placeholder="https://" value="<%-client.jwks_uri ? client.jwks_uri : ''%>" maxlength="1000" type="text" class=""/>
 					<p class="help-block">URL for the client's JSON Web Key set</p>
 				</div>
 			</div>
@@ -287,7 +287,7 @@
 	<div class="tab-pane" id="resource-json-tab">
 
 <pre>
-<%= JSON.stringify(client, undefined, 2) %>
+<%- JSON.stringify(client, undefined, 2) %>
 </pre>
 
 	</div>

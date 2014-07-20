@@ -19,16 +19,16 @@
 
 <script type="text/html" id="tmpl-breadcrumbs">
     <% if (active == false) { %>
-    <li><a href="<%=href%>"><%=text%></a> <span class="divider">/</span></li>
+    <li><a href="<%-href%>"><%-text%></a> <span class="divider">/</span></li>
     <% } else { %>
-    <li class="active"><%=text%></li>
+    <li class="active"><%-text%></li>
     <% } %>
 </script>
 
 <!-- list widget -->
 
 <script type="text/html" id="tmpl-list-widget-child">
-    <td><%=(item.length > 30) ? item.substr(0,27) + '...' : item %></td>
+    <td><%-(item.length > 30) ? item.substr(0,27) + '...' : item %></td>
    	<td><a class="btn btn-small btn-delete-list-item" href="#"><i class="icon-minus-sign"></i></a></td>
 </script>
 
@@ -42,7 +42,7 @@
     <thead>
     <tr>
         <th class="control-group">
-            <input type="text" value="" placeholder="<%=(placeholder) ? placeholder : ''%>"></th>
+            <input type="text" value="" placeholder="<%-(placeholder) ? placeholder : ''%>"></th>
         <th><a class="btn btn-small btn-add-list-item" href="#"><i class="icon-plus-sign"></i></a></th>
     </tr>
     </thead>
@@ -89,7 +89,7 @@
 
 <script type="text/html" id="tmpl-user-profile-element">
 
-            <dt><%= key %></dt>
-            <dd><%= value %></dd>
+            <dt><%- key %></dt>
+            <dd><%- value %></dd>
 
 </script>
