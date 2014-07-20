@@ -61,7 +61,7 @@
 					<c:if test="${ not empty client.logoUri }">
 						<ul class="thumbnails">
 							<li class="span5">
-								<a class="thumbnail" data-toggle="modal" data-target="#logoModal"><img src="${client.logoUri }" /></a>
+								<a class="thumbnail" data-toggle="modal" data-target="#logoModal"><img src="${ fn:escapeXml(client.logoUri) }" /></a>
 							</li>
 						</ul>
 						<!-- Modal -->
@@ -80,7 +80,7 @@
 								</h3>
 							</div>
 							<div class="modal-body">
-								<img src="${client.logoUri }" />
+								<img src="${ fn:escapeXml(client.logoUri) }" />
 								<c:if test="${ not empty client.clientUri }">
 									<a href="<c:out value="${ client.clientUri }" />"><c:out value="${ client.clientUri }" /></a>
 								</c:if>
@@ -158,10 +158,10 @@
 
 						<c:forEach var="scope" items="${ scopes }">
 
-							<label for="scope_${ scope.value }" class="checkbox"> 
-								<input type="checkbox" name="scope_${ scope.value }" id="scope_${ scope.value }" value="${ scope.value }" checked="checked"> 
+							<label for="scope_${ fn:escapeXml(scope.value) }" class="checkbox"> 
+								<input type="checkbox" name="scope_${ fn:escapeXml(scope.value) }" id="scope_${ fn:escapeXml(scope.value) }" value="${ fn:escapeXml(scope.value) }" checked="checked"> 
 								<c:if test="${ not empty scope.icon }">
-									<i class="icon-${ scope.icon }"></i>
+									<i class="icon-${ fn:escapeXml(scope.icon) }"></i>
 								</c:if> 
 								<c:choose>
 									<c:when test="${ not empty scope.description }">
@@ -196,7 +196,7 @@
 								</c:if>
 								
 								<c:if test="${ scope.structured }">
-									<input name="scopeparam_${ scope.value }" type="text" value="${ scope.structuredValue }" placeholder="${scope.structuredParamDescription}">
+									<input name="scopeparam_${ fn:escapeXml(scope.value) }" type="text" value="${ fn:escapeXml(scope.structuredValue) }" placeholder="${ fn:escapeXml(scope.structuredParamDescription) }">
 								</c:if>
 								
 							</label>
