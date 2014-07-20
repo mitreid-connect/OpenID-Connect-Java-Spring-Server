@@ -205,6 +205,14 @@ public class ServerConfiguration {
 	private Boolean requireRequestUriRegistration;
 	private String opPolicyUri;
 	private String opTosUri;
+	private UserInfoTokenMethod userInfoTokenMethod;	
+	
+	public enum UserInfoTokenMethod {
+		HEADER,
+		FORM,
+		QUERY;
+	}
+	
 	/**
 	 * @return the authorizationEndpointUri
 	 */
@@ -657,6 +665,12 @@ public class ServerConfiguration {
 		this.revocationEndpointUri = revocationEndpointUri;
 	}
 
+	public UserInfoTokenMethod getUserInfoTokenMethod() {
+		return userInfoTokenMethod;
+	}
+	public void setUserInfoTokenMethod(UserInfoTokenMethod userInfoTokenMethod) {
+		this.userInfoTokenMethod = userInfoTokenMethod;
+	}
 	@Override
 	public int hashCode() {
 		final int prime = 31;
