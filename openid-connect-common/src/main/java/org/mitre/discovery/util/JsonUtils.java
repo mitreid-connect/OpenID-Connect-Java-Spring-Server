@@ -24,6 +24,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -141,7 +143,11 @@ public class JsonUtils {
 	 */
 	public static Set<String> getAsStringSet(JsonObject o, String member) throws JsonSyntaxException {
 		if (o.has(member)) {
-			return gson.fromJson(o.get(member), new TypeToken<Set<String>>(){}.getType());
+			if (o.get(member).isJsonArray()) {
+				return gson.fromJson(o.get(member), new TypeToken<Set<String>>(){}.getType());
+			} else {
+				return Sets.newHashSet(o.get(member).getAsString());
+			}
 		} else {
 			return null;
 		}
@@ -152,7 +158,11 @@ public class JsonUtils {
 	 */
 	public static List<String> getAsStringList(JsonObject o, String member) throws JsonSyntaxException {
 		if (o.has(member)) {
-			return gson.fromJson(o.get(member), new TypeToken<List<String>>(){}.getType());
+			if (o.get(member).isJsonArray()) {
+				return gson.fromJson(o.get(member), new TypeToken<List<String>>(){}.getType());
+			} else {
+				return Lists.newArrayList(o.get(member).getAsString());
+			}
 		} else {
 			return null;
 		}
