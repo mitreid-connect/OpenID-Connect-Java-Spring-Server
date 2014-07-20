@@ -92,7 +92,7 @@
 					</c:if>
 					<c:if test="${ (not empty client.clientDescription) || (not empty client.clientUri) || (not empty client.policyUri) || (not empty client.tosUri) || (not empty contacts) }">
 						<div class="muted moreInformationContainer">
-							${client.clientDescription}
+							<c:out value="${client.clientDescription}" />
 							<c:if test="${ (not empty client.clientUri) || (not empty client.policyUri) || (not empty client.tosUri)  || (not empty contacts) }">
 								<div id="toggleMoreInformation" style="cursor: pointer;">
 									<small><i class="icon-chevron-right"></i> more information</small>
@@ -165,10 +165,10 @@
 								</c:if> 
 								<c:choose>
 									<c:when test="${ not empty scope.description }">
-										${ scope.description }
+										<c:out value="${ scope.description }" />
 									</c:when>
 									<c:otherwise>
-										${ scope.value }
+										<c:out value="${ scope.value }" />
 									</c:otherwise>
 								</c:choose>
 								
