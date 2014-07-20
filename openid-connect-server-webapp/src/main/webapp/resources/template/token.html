@@ -92,7 +92,7 @@
 
 <script type="text/html" id="tmpl-access-token">
     <td>
-        <span title="<%= client.clientId %>"><%= client.clientName != null ? client.clientName : ( client.clientId.substr(0,8) + '...' ) %></span>
+        <span title="<%- client.clientId %>"><%- client.clientName != null ? client.clientName : ( client.clientId.substr(0,8) + '...' ) %></span>
 		<div class="client-more-info-block"></div>
 		<% if (token.refreshTokenId != null) { %>
 		<br />
@@ -107,14 +107,14 @@
 
     <td>
 		<div class="token-value">
-			<code class="token-substring" style="cursor: pointer" title="Click to display full token value"><%= token.value.substr(0,27) %> ...</code>
-			<input type="text" readonly style="cursor: text" class="token-full input-xxlarge" value="<%= token.value %>" />
+			<code class="token-substring" style="cursor: pointer" title="Click to display full token value"><%- token.value.substr(0,27) %> ...</code>
+			<input type="text" readonly style="cursor: text" class="token-full input-xxlarge" value="<%- token.value %>" />
 		</div>
 		<div class="scope-list"></div>
     </td>
 
 	<td>
-		<%= formattedExpiration %>
+		<%- formattedExpiration %>
 	</td>
 	
     <td>
@@ -125,21 +125,21 @@
 
 <script type="text/html" id="tmpl-refresh-token">
     <td>
-        <span title="<%= client.clientId %>"><%= client.clientName != null ? client.clientName : ( client.clientId.substr(0,8) + '...' ) %></span>
+        <span title="<%- client.clientId %>"><%- client.clientName != null ? client.clientName : ( client.clientId.substr(0,8) + '...' ) %></span>
 		<div class="client-more-info-block"></div>
-		<span class="label label-info" title="Number of associated access tokens"><%= accessTokenCount %></span>
+		<span class="label label-info" title="Number of associated access tokens"><%- accessTokenCount %></span>
     </td>
 
     <td>
 		<div class="token-value">
-			<code class="token-substring" style="cursor: pointer" title="Click to display full token value"><%= token.value.substr(0,27) %> ...</code>
-			<input type="text" readonly style="cursor: text" class="token-full input-xxlarge" value="<%= token.value %>" />
+			<code class="token-substring" style="cursor: pointer" title="Click to display full token value"><%- token.value.substr(0,27) %> ...</code>
+			<input type="text" readonly style="cursor: text" class="token-full input-xxlarge" value="<%- token.value %>" />
 		</div>
 		<div class="scope-list"></div>
     </td>
 
 	<td>
-		<%= formattedExpiration %>
+		<%- formattedExpiration %>
 	</td>
 	
     <td>

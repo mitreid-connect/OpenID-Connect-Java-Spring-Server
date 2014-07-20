@@ -94,12 +94,12 @@
 		<% if (client.dynamicallyRegistered) { %>
 			<span class="label label-inverse dynamically-registered"><i class="icon-globe icon-white"></i></span>
 		<% } %>
-		<span class="label label-info tokens"><%= grant.approvedAccessTokens.length %></span>
+		<span class="label label-info tokens"><%- grant.approvedAccessTokens.length %></span>
 	</td>
 
     <td>
 
-        <span title="<%= client.clientId %>"><%= client.clientName != null ? client.clientName : ( client.clientId.substr(0,8) + '...' ) %></span>
+        <span title="<%- client.clientId %>"><%- client.clientName != null ? client.clientName : ( client.clientId.substr(0,8) + '...' ) %></span>
 		<div class="client-more-info-block"></div>
 		<div class="scope-list"></div>
     </td>
@@ -107,15 +107,15 @@
 
 	<td>
 		<div>
-			<i>Authorized:</i> <span title="<%= formattedDate.hoverCreationDate %>"><%= formattedDate.displayCreationDate %></span>
+			<i>Authorized:</i> <span title="<%- formattedDate.hoverCreationDate %>"><%- formattedDate.displayCreationDate %></span>
 		</div>
 
 		<div>
-			<i>Last accessed:</i> <span title="<%= formattedDate.hoverAccessDate %>"><%= formattedDate.displayAccessDate %></span>
+			<i>Last accessed:</i> <span title="<%- formattedDate.hoverAccessDate %>"><%- formattedDate.displayAccessDate %></span>
 		</div>
 
 		<div>
-			<i>Expires:</i> <span title="<%= formattedDate.hoverTimeoutDate %>"><%= formattedDate.displayTimeoutDate %></span>
+			<i>Expires:</i> <span title="<%- formattedDate.hoverTimeoutDate %>"><%- formattedDate.displayTimeoutDate %></span>
 		</div>
 	</td>
 
