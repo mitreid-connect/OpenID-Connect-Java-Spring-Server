@@ -175,12 +175,6 @@ public class ServerConfiguration {
 
 	private String revocationEndpointUri;
 
-	public String getRevocationEndpointUri() {
-		return revocationEndpointUri;
-	}
-	public void setRevocationEndpointUri(String revocationEndpointUri) {
-		this.revocationEndpointUri = revocationEndpointUri;
-	}
 	private String checkSessionIframe;
 	private String endSessionEndpoint;
 	private List<String> scopesSupported;
@@ -655,6 +649,14 @@ public class ServerConfiguration {
 	public void setOpTosUri(String opTosUri) {
 		this.opTosUri = opTosUri;
 	}
+	
+	public String getRevocationEndpointUri() {
+		return revocationEndpointUri;
+	}
+	public void setRevocationEndpointUri(String revocationEndpointUri) {
+		this.revocationEndpointUri = revocationEndpointUri;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
