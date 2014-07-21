@@ -18,8 +18,10 @@
     <link href="resources/bootstrap2/css/bootstrap.css" rel="stylesheet">
     <link href="resources/css/bootstrap-sheet.css" rel="stylesheet">
     <link href="resources/css/mitreid-connect.css" rel="stylesheet">
+    <link href="resources/css/mitreid-connect-local.css" rel="stylesheet">
     <link href="resources/bootstrap2/css/bootstrap-responsive.css" rel="stylesheet">
     <link href="resources/css/mitreid-connect-responsive.css" rel="stylesheet">
+    <link href="resources/css/mitreid-connect-responsive-local.css" rel="stylesheet">
 
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
