@@ -93,7 +93,7 @@
 	                    </security:authorize>
 	                    <security:authorize access="!hasRole('ROLE_USER')">
 	                    <li>
-	                    	<a id="userButton" href="login" data-toggle="collapse" data-target=".nav-collapse"><i class="icon-lock icon-white"></i> Log in</a>
+	                    	<a id="loginButton" href="login" data-toggle="collapse" data-target=".nav-collapse"><i class="icon-lock icon-white"></i> Log in</a>
 	                    </li>
 	                    </security:authorize>
 	                </ul>
