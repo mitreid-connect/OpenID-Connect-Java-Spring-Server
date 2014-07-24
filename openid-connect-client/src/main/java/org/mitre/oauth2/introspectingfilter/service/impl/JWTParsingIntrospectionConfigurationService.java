@@ -59,6 +59,12 @@ public class JWTParsingIntrospectionConfigurationService implements Introspectio
 		this.serverConfigurationService = serverConfigurationService;
 	}
 
+	/**
+	 * @param clientConfigurationService the clientConfigurationService to set
+	 */
+	public void setClientConfigurationService(ClientConfigurationService clientConfigurationService) {
+		this.clientConfigurationService = clientConfigurationService;
+	}
 
 	private String getIssuer(String accessToken) {
 		try {
