@@ -533,8 +533,8 @@ public class MITREidDataService_1_0 implements MITREidDataService {
                     } else if (name.equals(REFRESHTOKENS)) {
                         readRefreshTokens(reader);
                     } else if (name.equals(SYSTEMSCOPES)) {
-                        readSystemScopes(reader);
-                        //reader.skipValue();
+                        //readSystemScopes(reader);
+                        reader.skipValue();
                     } else {
                         // unknown token, skip it
                         reader.skipValue();
@@ -542,10 +542,11 @@ public class MITREidDataService_1_0 implements MITREidDataService {
                     break;
                 case END_OBJECT:
                     // the object ended, we're done here
-                    fixObjectReferences();
-                    return;
+                    reader.endObject();
+                    continue;
             }
         }
+        fixObjectReferences();
     }
     
     private Map<Long, String> refreshTokenToClientRefs = new HashMap<Long, String>();
@@ -669,8 +670,12 @@ public class MITREidDataService_1_0 implements MITREidDataService {
                 Long newId = tokenRepository.saveAccessToken(token).getId();
                 accessTokenToClientRefs.put(currentId, clientId);
                 accessTokenToAuthHolderRefs.put(currentId, authHolderId);
-                accessTokenToRefreshTokenRefs.put(currentId, refreshTokenId);
-                accessTokenToIdTokenRefs.put(currentId, idTokenId);
+                if(refreshTokenId != null) {
+                    accessTokenToRefreshTokenRefs.put(currentId, refreshTokenId);
+                }
+                if(idTokenId != null) {
+                    accessTokenToIdTokenRefs.put(currentId, idTokenId);
+                }
                 accessTokenOldToNewIdMap.put(currentId, newId);
                 logger.debug("Read access token {}", currentId);
             } catch (ParseException ex) {
