@@ -534,6 +534,7 @@ public class MITREidDataService_1_0 implements MITREidDataService {
                         readRefreshTokens(reader);
                     } else if (name.equals(SYSTEMSCOPES)) {
                         readSystemScopes(reader);
+                        //reader.skipValue();
                     } else {
                         // unknown token, skip it
                         reader.skipValue();
@@ -566,7 +567,9 @@ public class MITREidDataService_1_0 implements MITREidDataService {
                 Long authHolderId = null;
                 while (reader.hasNext()) {
                     String name = reader.nextName();
-                    if (name.equals("id")) {
+                    if (reader.peek() == JsonToken.NULL) {
+                        reader.skipValue();
+                    } else if (name.equals("id")) {
                         currentId = reader.nextLong();
                     } else if (name.equals("expiration")) {
                     	if (reader.peek() == JsonToken.NULL) {
@@ -623,12 +626,14 @@ public class MITREidDataService_1_0 implements MITREidDataService {
                 Long idTokenId = null;
                 while (reader.hasNext()) {
                     String name = reader.nextName();
-                    if (name.equals("id")) {
+                    if (reader.peek() == JsonToken.NULL) {
+                        reader.skipValue();
+                    } else if (name.equals("id")) {
                         currentId = reader.nextLong();
                     } else if (name.equals("expiration")) {
-                    	if (reader.peek() == JsonToken.NULL) {
-                    		reader.nextNull();
-                    	} else {
+                        if (reader.peek() == JsonToken.NULL) {
+                            reader.nextNull();
+                        } else {
 	                        Date date = utcToDate(reader.nextString());
 	                        token.setExpiration(date);
                     	}
@@ -689,32 +694,56 @@ public class MITREidDataService_1_0 implements MITREidDataService {
             reader.beginObject();
             Long currentId = null;
             while (reader.hasNext()) {
-                String name = reader.nextName();
-                if(name.equals("id")) {
-                    currentId = reader.nextLong();
-                } else if (name.equals("ownerId")) {
-                    //not needed
-                    reader.skipValue();
-                } else if (name.equals("authentication")) {
-                    AuthorizationRequest clientAuthorization = null;
-                    Authentication userAuthentication = null;
-                    reader.beginObject();
-                    while(reader.hasNext()) {
-                        if (name.equals("clientAuthorization")) {
-                            clientAuthorization = readAuthorizationRequest(reader);
-                        } else if (name.equals("userAuthentication")) {
-                            userAuthentication = base64UrlDecodeObject(reader.nextString(), Authentication.class);
+                switch (reader.peek()) {
+                    case END_OBJECT:
+                        continue;
+                    case NAME:
+                        String name = reader.nextName();
+                        if (reader.peek() == JsonToken.NULL) {
+                            reader.skipValue();
+                        } else if (name.equals("id")) {
+                            currentId = reader.nextLong();
+                        } else if (name.equals("ownerId")) {
+                            //not needed
+                            reader.skipValue();
+                        } else if (name.equals("authentication")) {
+                            AuthorizationRequest clientAuthorization = null;
+                            Authentication userAuthentication = null;
+                            reader.beginObject();
+                            while (reader.hasNext()) {
+                                switch (reader.peek()) {
+                                    case END_OBJECT:
+                                        continue;
+                                    case NAME:
+                                        String subName = reader.nextName();
+                                        if (subName.equals("clientAuthorization")) {
+                                            clientAuthorization = readAuthorizationRequest(reader);
+                                        } else if (subName.equals("userAuthentication")) {
+                                            String authString = reader.nextString();
+                                            userAuthentication = base64UrlDecodeObject(authString, Authentication.class);
+                                        } else {
+                                            logger.debug("Found unexpected entry");
+                                            reader.skipValue();
+                                        }
+                                        break;
+                                    default:
+                                        logger.debug("Found unexpected entry");
+                                        reader.skipValue();
+                                        continue;
+                                }
+                            }
+                            reader.endObject();
+                            OAuth2Authentication auth = new OAuth2Authentication(clientAuthorization, userAuthentication);
+                            ahe.setAuthentication(auth);
                         } else {
                             logger.debug("Found unexpected entry");
                             reader.skipValue();
                         }
-                    }
-                    reader.endObject();
-                    OAuth2Authentication auth = new OAuth2Authentication(clientAuthorization, userAuthentication);
-                    ahe.setAuthentication(auth);
-                } else {
-                    logger.debug("Found unexpected entry");
-                    reader.skipValue();
+                        break;
+                    default:
+                        logger.debug("Found unexpected entry");
+                        reader.skipValue();
+                        continue;
                 }
             }
             reader.endObject();
@@ -738,34 +767,46 @@ public class MITREidDataService_1_0 implements MITREidDataService {
         String clientId = null;
         reader.beginObject();
         while (reader.hasNext()) {
-            String name = reader.nextName();
-            if (name.equals("authorizationParameters")) {
-                authorizationParameters = readMap(reader);
-            } else if (name.equals("approvalParameters")) {
-                approvalParameters = readMap(reader);
-            } else if (name.equals("clientId")) {
-                clientId = reader.nextString();
-            } else if (name.equals("scope")) {
-                scope = readSet(reader);
-            } else if (name.equals("resourceIds")) {
-                resourceIds = readSet(reader);
-            } else if (name.equals("authorities")) {
-                Set<String> authorityStrs = readSet(reader);
-                authorities = new HashSet<GrantedAuthority>();
-                for (String s : authorityStrs) { 
-                   GrantedAuthority ga = new GrantedAuthorityImpl(s);
-                   authorities.add(ga);
-                }
-            } else if (name.equals("approved")) {
-                approved = reader.nextBoolean();
-            } else if (name.equals("denied")) {
-                if(approved == false) {
-                    approved = !reader.nextBoolean();
-                }
-            } else if (name.equals("redirectUri")) {
-                redirectUri = reader.nextString();
-            } else {
-                reader.skipValue();
+            switch (reader.peek()) {
+                case END_OBJECT:
+                    continue;
+                case NAME:
+                    String name = reader.nextName();
+                    if (reader.peek() == JsonToken.NULL) {
+                        reader.skipValue();
+                    } else if (name.equals("authorizationParameters")) {
+                        authorizationParameters = readMap(reader);
+                    } else if (name.equals("approvalParameters")) {
+                        approvalParameters = readMap(reader);
+                    } else if (name.equals("clientId")) {
+                        clientId = reader.nextString();
+                    } else if (name.equals("scope")) {
+                        scope = readSet(reader);
+                    } else if (name.equals("resourceIds")) {
+                        resourceIds = readSet(reader);
+                    } else if (name.equals("authorities")) {
+                        Set<String> authorityStrs = readSet(reader);
+                        authorities = new HashSet<GrantedAuthority>();
+                        for (String s : authorityStrs) {
+                            GrantedAuthority ga = new GrantedAuthorityImpl(s);
+                            authorities.add(ga);
+                        }
+                    } else if (name.equals("approved")) {
+                        approved = reader.nextBoolean();
+                    } else if (name.equals("denied")) {
+                        if (approved == false) {
+                            approved = !reader.nextBoolean();
+                        }
+                    } else if (name.equals("redirectUri")) {
+                        redirectUri = reader.nextString();
+                    } else {
+                        reader.skipValue();
+                    }
+                    break;
+                default:
+                    logger.debug("Found unexpected entry");
+                    reader.skipValue();
+                    continue;
             }
         }
         reader.endObject();
@@ -792,63 +833,75 @@ public class MITREidDataService_1_0 implements MITREidDataService {
                 Long currentId = null;
                 reader.beginObject();
                 while (reader.hasNext()) {
-                    String name = reader.nextName();
-                    if (name.equals("id")) {
-                        currentId = reader.nextLong();
-                    } else if (name.equals("accessDate")) {
-                        if (reader.peek() == JsonToken.NULL) {
-                            reader.nextNull();
-                        } else {
-                            Date date = utcToDate(reader.nextString());
-                            site.setAccessDate(date);
-                        }
-                    } else if (name.equals("clientId")) {
-                        site.setClientId(reader.nextString());
-                    } else if (name.equals("creationDate")) {
-                        if (reader.peek() == JsonToken.NULL) {
-                            reader.nextNull();
-                        } else {
-                            Date date = utcToDate(reader.nextString());
-                            site.setCreationDate(date);
-                        }
-                    } else if (name.equals("timeoutDate")) {
-                        if (reader.peek() == JsonToken.NULL) {
-                            reader.nextNull();
-                        } else {
-                            Date date = utcToDate(reader.nextString());
-                            site.setTimeoutDate(date);
-                        }
-                    } else if (name.equals("userId")) {
-                        site.setUserId(reader.nextString());
-                    } else if (name.equals("allowedScopes")) {
-                        Set<String> allowedScopes = readSet(reader);
-                        site.setAllowedScopes(allowedScopes);
-                    } else if (name.equals("whitelistedSite")) {
-                        WhitelistedSite wlSite = new WhitelistedSite();
-                        reader.beginObject();
-                        while(reader.hasNext()) {
-                            String wlName = reader.nextName();
-                            if (wlName.equals("id")) {
-                                //not needed
+                    switch (reader.peek()) {
+                        case END_OBJECT:
+                            continue;
+                        case NAME:
+                            String name = reader.nextName();
+                            if (reader.peek() == JsonToken.NULL) {
                                 reader.skipValue();
+                            } else if (name.equals("id")) {
+                                currentId = reader.nextLong();
+                            } else if (name.equals("accessDate")) {
+                                if (reader.peek() == JsonToken.NULL) {
+                                    reader.nextNull();
+                                } else {
+                                    Date date = utcToDate(reader.nextString());
+                                    site.setAccessDate(date);
+                                }
                             } else if (name.equals("clientId")) {
-                                wlSite.setClientId(reader.nextString());
-                            } else if (name.equals("creatorUserId")) {
-                                wlSite.setCreatorUserId(reader.nextString());
+                                site.setClientId(reader.nextString());
+                            } else if (name.equals("creationDate")) {
+                                if (reader.peek() == JsonToken.NULL) {
+                                    reader.nextNull();
+                                } else {
+                                    Date date = utcToDate(reader.nextString());
+                                    site.setCreationDate(date);
+                                }
+                            } else if (name.equals("timeoutDate")) {
+                                if (reader.peek() == JsonToken.NULL) {
+                                    reader.nextNull();
+                                } else {
+                                    Date date = utcToDate(reader.nextString());
+                                    site.setTimeoutDate(date);
+                                }
+                            } else if (name.equals("userId")) {
+                                site.setUserId(reader.nextString());
                             } else if (name.equals("allowedScopes")) {
                                 Set<String> allowedScopes = readSet(reader);
-                                wlSite.setAllowedScopes(allowedScopes);
+                                site.setAllowedScopes(allowedScopes);
+                            } else if (name.equals("whitelistedSite")) {
+                                WhitelistedSite wlSite = new WhitelistedSite();
+                                reader.beginObject();
+                                while (reader.hasNext()) {
+                                    String wlName = reader.nextName();
+                                    if (wlName.equals("id")) {
+                                        //not needed
+                                        reader.skipValue();
+                                    } else if (name.equals("clientId")) {
+                                        wlSite.setClientId(reader.nextString());
+                                    } else if (name.equals("creatorUserId")) {
+                                        wlSite.setCreatorUserId(reader.nextString());
+                                    } else if (name.equals("allowedScopes")) {
+                                        Set<String> allowedScopes = readSet(reader);
+                                        wlSite.setAllowedScopes(allowedScopes);
+                                    } else {
+                                        logger.debug("Found unexpected entry");
+                                        reader.skipValue();
+                                    }
+                                }
+                                reader.endObject();
+                                wlSite = wlSiteRepository.save(wlSite);
+                                site.setWhitelistedSite(wlSite);
                             } else {
                                 logger.debug("Found unexpected entry");
                                 reader.skipValue();
                             }
-                        }
-                        reader.endObject();
-                        wlSite = wlSiteRepository.save(wlSite);
-                        site.setWhitelistedSite(wlSite);
-                   } else {
-                        logger.debug("Found unexpected entry");
-                        reader.skipValue();
+                            break;
+                        default:
+                            logger.debug("Found unexpected entry");
+                            reader.skipValue();
+                            continue;
                     }
                 }
                 reader.endObject();
@@ -872,99 +925,111 @@ public class MITREidDataService_1_0 implements MITREidDataService {
             ClientDetailsEntity client = new ClientDetailsEntity();
             reader.beginObject();
             while (reader.hasNext()) {
-                String name = reader.nextName();
-                if (name.equals("clientId")) {
-                    client.setClientId(reader.nextString());
-                } else if (name.equals("resourceIds")) {
-                    Set<String> resourceIds = readSet(reader);
-                    client.setResourceIds(resourceIds);
-                } else if (name.equals("secret")) {
-                    client.setClientSecret(reader.nextString());
-                } else if (name.equals("scope")) {
-                    Set<String> scope = readSet(reader);
-                    client.setScope(scope);
-                } else if (name.equals("authorities")) {
-                    Set<String> authorityStrs = readSet(reader);
-                    Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
-                    for (String s : authorityStrs) {
-                        GrantedAuthority ga = new GrantedAuthorityImpl(s);
-                        authorities.add(ga);
-                    }
-                    client.setAuthorities(authorities);
-                } else if (name.equals("accessTokenValiditySeconds")) {
-                    client.setAccessTokenValiditySeconds(reader.nextInt());
-                } else if (name.equals("refreshTokenValiditySeconds")) {
-                    client.setRefreshTokenValiditySeconds(reader.nextInt());
-                } else if (name.equals("redirectUris")) {
-                    Set<String> redirectUris = readSet(reader);
-                    client.setRedirectUris(redirectUris);
-                } else if (name.equals("name")) {
-                    client.setClientName(reader.nextString());
-                } else if (name.equals("uri")) {
-                    client.setClientUri(reader.nextString());
-                } else if (name.equals("logoUri")) {
-                    client.setLogoUri(reader.nextString());
-                } else if (name.equals("contacts")) {
-                    Set<String> contacts = readSet(reader);
-                    client.setContacts(contacts);
-                } else if (name.equals("tosUri")) {
-                    client.setTosUri(reader.nextString());
-                } else if (name.equals("tokenEndpointAuthMethod")) {
-                    AuthMethod am = AuthMethod.getByValue(reader.nextString());
-                    client.setTokenEndpointAuthMethod(am);
-                } else if (name.equals("grantTypes")) {
-                    Set<String> grantTypes = readSet(reader);
-                    client.setGrantTypes(grantTypes);
-                } else if (name.equals("responseTypes")) {
-                    Set<String> responseTypes = readSet(reader);
-                    client.setGrantTypes(responseTypes);
-                } else if (name.equals("policyUri")) {
-                    client.setPolicyUri(reader.nextString());
-                } else if (name.equals("applicationType")) {
-                    AppType appType = AppType.getByValue(reader.nextString());
-                    client.setApplicationType(appType);
-                } else if (name.equals("sectorIdentifierUri")) {
-                    client.setSectorIdentifierUri(reader.nextString());
-                } else if (name.equals("subjectType")) {
-                    SubjectType st = SubjectType.getByValue(reader.nextString());
-                    client.setSubjectType(st);
-                } else if (name.equals("requestObjectSigningAlg")) {
-                    JWSAlgorithmEmbed alg = JWSAlgorithmEmbed.getForAlgorithmName(reader.nextString());
-                    client.setRequestObjectSigningAlgEmbed(alg);
-                } else if (name.equals("userInfoEncryptedResponseAlg")) {
-                    JWEAlgorithmEmbed alg = JWEAlgorithmEmbed.getForAlgorithmName(reader.nextString());
-                    client.setUserInfoEncryptedResponseAlgEmbed(alg);
-                } else if (name.equals("userInfoEncryptedResponseEnc")) {
-                    JWEEncryptionMethodEmbed alg = JWEEncryptionMethodEmbed.getForAlgorithmName(reader.nextString());
-                    client.setUserInfoEncryptedResponseEncEmbed(alg);
-                } else if (name.equals("userInfoSignedResponseAlg")) {
-                    JWSAlgorithmEmbed alg = JWSAlgorithmEmbed.getForAlgorithmName(reader.nextString());
-                    client.setUserInfoSignedResponseAlgEmbed(alg);
-                } else if (name.equals("defaultMaxAge")) {
-                    client.setDefaultMaxAge(reader.nextInt());
-                } else if (name.equals("requireAuthTime")) {
-                    client.setRequireAuthTime(reader.nextBoolean());
-                } else if (name.equals("defaultACRValues")) {
-                    Set<String> defaultACRvalues = readSet(reader);
-                    client.setDefaultACRvalues(defaultACRvalues);
-                } else if (name.equals("initiateLoginUri")) {
-                    client.setInitiateLoginUri(reader.nextString());
-                } else if (name.equals("postLogoutRedirectUri")) {
-                    client.setPostLogoutRedirectUri(reader.nextString());
-                } else if (name.equals("requestUris")) {
-                    Set<String> requestUris = readSet(reader);
-                    client.setRequestUris(requestUris);
-                } else if (name.equals("description")) {
-                    client.setClientDescription(reader.nextString());
-                } else if (name.equals("allowIntrospection")) {
-                    client.setAllowIntrospection(reader.nextBoolean());
-                } else if(name.equals("reuseRefreshToken")) {
-                    client.setReuseRefreshToken(reader.nextBoolean());
-                } else if(name.equals("dynamicallyRegistered")) {
-                    client.setDynamicallyRegistered(reader.nextBoolean());
-                } else {
-                    logger.debug("Found unexpected entry");
-                    reader.skipValue();
+                switch (reader.peek()) {
+                    case END_OBJECT:
+                        continue;
+                    case NAME:
+                        String name = reader.nextName();
+                        if (reader.peek() == JsonToken.NULL) {
+                            reader.skipValue();
+                        } else if (name.equals("clientId")) {
+                            client.setClientId(reader.nextString());
+                        } else if (name.equals("resourceIds")) {
+                            Set<String> resourceIds = readSet(reader);
+                            client.setResourceIds(resourceIds);
+                        } else if (name.equals("secret")) {
+                            client.setClientSecret(reader.nextString());
+                        } else if (name.equals("scope")) {
+                            Set<String> scope = readSet(reader);
+                            client.setScope(scope);
+                        } else if (name.equals("authorities")) {
+                            Set<String> authorityStrs = readSet(reader);
+                            Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
+                            for (String s : authorityStrs) {
+                                GrantedAuthority ga = new GrantedAuthorityImpl(s);
+                                authorities.add(ga);
+                            }
+                            client.setAuthorities(authorities);
+                        } else if (name.equals("accessTokenValiditySeconds")) {
+                            client.setAccessTokenValiditySeconds(reader.nextInt());
+                        } else if (name.equals("refreshTokenValiditySeconds")) {
+                            client.setRefreshTokenValiditySeconds(reader.nextInt());
+                        } else if (name.equals("redirectUris")) {
+                            Set<String> redirectUris = readSet(reader);
+                            client.setRedirectUris(redirectUris);
+                        } else if (name.equals("name")) {
+                            client.setClientName(reader.nextString());
+                        } else if (name.equals("uri")) {
+                            client.setClientUri(reader.nextString());
+                        } else if (name.equals("logoUri")) {
+                            client.setLogoUri(reader.nextString());
+                        } else if (name.equals("contacts")) {
+                            Set<String> contacts = readSet(reader);
+                            client.setContacts(contacts);
+                        } else if (name.equals("tosUri")) {
+                            client.setTosUri(reader.nextString());
+                        } else if (name.equals("tokenEndpointAuthMethod")) {
+                            AuthMethod am = AuthMethod.getByValue(reader.nextString());
+                            client.setTokenEndpointAuthMethod(am);
+                        } else if (name.equals("grantTypes")) {
+                            Set<String> grantTypes = readSet(reader);
+                            client.setGrantTypes(grantTypes);
+                        } else if (name.equals("responseTypes")) {
+                            Set<String> responseTypes = readSet(reader);
+                            client.setResponseTypes(responseTypes);
+                        } else if (name.equals("policyUri")) {
+                            client.setPolicyUri(reader.nextString());
+                        } else if (name.equals("applicationType")) {
+                            AppType appType = AppType.getByValue(reader.nextString());
+                            client.setApplicationType(appType);
+                        } else if (name.equals("sectorIdentifierUri")) {
+                            client.setSectorIdentifierUri(reader.nextString());
+                        } else if (name.equals("subjectType")) {
+                            SubjectType st = SubjectType.getByValue(reader.nextString());
+                            client.setSubjectType(st);
+                        } else if (name.equals("requestObjectSigningAlg")) {
+                            JWSAlgorithmEmbed alg = JWSAlgorithmEmbed.getForAlgorithmName(reader.nextString());
+                            client.setRequestObjectSigningAlgEmbed(alg);
+                        } else if (name.equals("userInfoEncryptedResponseAlg")) {
+                            JWEAlgorithmEmbed alg = JWEAlgorithmEmbed.getForAlgorithmName(reader.nextString());
+                            client.setUserInfoEncryptedResponseAlgEmbed(alg);
+                        } else if (name.equals("userInfoEncryptedResponseEnc")) {
+                            JWEEncryptionMethodEmbed alg = JWEEncryptionMethodEmbed.getForAlgorithmName(reader.nextString());
+                            client.setUserInfoEncryptedResponseEncEmbed(alg);
+                        } else if (name.equals("userInfoSignedResponseAlg")) {
+                            JWSAlgorithmEmbed alg = JWSAlgorithmEmbed.getForAlgorithmName(reader.nextString());
+                            client.setUserInfoSignedResponseAlgEmbed(alg);
+                        } else if (name.equals("defaultMaxAge")) {
+                            client.setDefaultMaxAge(reader.nextInt());
+                        } else if (name.equals("requireAuthTime")) {
+                            client.setRequireAuthTime(reader.nextBoolean());
+                        } else if (name.equals("defaultACRValues")) {
+                            Set<String> defaultACRvalues = readSet(reader);
+                            client.setDefaultACRvalues(defaultACRvalues);
+                        } else if (name.equals("initiateLoginUri")) {
+                            client.setInitiateLoginUri(reader.nextString());
+                        } else if (name.equals("postLogoutRedirectUri")) {
+                            client.setPostLogoutRedirectUri(reader.nextString());
+                        } else if (name.equals("requestUris")) {
+                            Set<String> requestUris = readSet(reader);
+                            client.setRequestUris(requestUris);
+                        } else if (name.equals("description")) {
+                            client.setClientDescription(reader.nextString());
+                        } else if (name.equals("allowIntrospection")) {
+                            client.setAllowIntrospection(reader.nextBoolean());
+                        } else if (name.equals("reuseRefreshToken")) {
+                            client.setReuseRefreshToken(reader.nextBoolean());
+                        } else if (name.equals("dynamicallyRegistered")) {
+                            client.setDynamicallyRegistered(reader.nextBoolean());
+                        } else {
+                            logger.debug("Found unexpected entry");
+                            reader.skipValue();
+                        }
+                        break;
+                    default:
+                        logger.debug("Found unexpected entry");
+                        reader.skipValue();
+                        continue;
                 }
             }
             reader.endObject();
@@ -990,14 +1055,16 @@ public class MITREidDataService_1_0 implements MITREidDataService {
         		 	case END_OBJECT:
         		 		continue;
         		 	case NAME:
-        		 		String name = reader.nextName();
-        		 		if (name.equals("value")) {
-        		 			scope.setValue(reader.nextString());
-        		 		} else if (name.equals("description")) {
-        		 			scope.setDescription(reader.nextString());
-        		 		} else if (name.equals("allowDynReg")) {
-        		 			scope.setAllowDynReg(reader.nextBoolean());
-        		 		} else if (name.equals("defaultScope")) {
+        		        String name = reader.nextName();
+                        if (reader.peek() == JsonToken.NULL) {
+                            reader.skipValue();
+                        } else if (name.equals("value")) {
+                            scope.setValue(reader.nextString());
+                        } else if (name.equals("description")) {
+                            scope.setDescription(reader.nextString());
+                        } else if (name.equals("allowDynReg")) {
+                            scope.setAllowDynReg(reader.nextBoolean());
+                        } else if (name.equals("defaultScope")) {
         		 			scope.setDefaultScope(reader.nextBoolean());
         		 		} else if (name.equals("icon")) {
         		 			scope.setIcon(reader.nextString());
