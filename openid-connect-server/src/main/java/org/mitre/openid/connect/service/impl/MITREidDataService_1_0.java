@@ -130,8 +130,7 @@ public class MITREidDataService_1_0 implements MITREidDataService {
                     } else if (name.equals(REFRESHTOKENS)) {
                         readRefreshTokens(reader);
                     } else if (name.equals(SYSTEMSCOPES)) {
-                        //readSystemScopes(reader);
-                        reader.skipValue();
+                        readSystemScopes(reader);
                     } else {
                         // unknown token, skip it
                         reader.skipValue();
