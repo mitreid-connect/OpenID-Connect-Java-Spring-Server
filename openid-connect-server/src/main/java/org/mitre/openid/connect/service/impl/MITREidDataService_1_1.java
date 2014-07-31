@@ -108,7 +108,7 @@ public class MITREidDataService_1_1 implements MITREidDataService {
         writer.beginObject();
 
         // clients list
-        /*writer.name(CLIENTS);
+        writer.name(CLIENTS);
         writer.beginArray();
         writeClients(writer);
         writer.endArray();
@@ -135,7 +135,7 @@ public class MITREidDataService_1_1 implements MITREidDataService {
 
         writer.name(SYSTEMSCOPES);
         writer.beginArray();
-        writeSystemScopes(writer);*/
+        writeSystemScopes(writer);
         writer.endArray();
 
         writer.endObject(); // end mitreid-connect-1.1
@@ -228,7 +228,7 @@ public class MITREidDataService_1_1 implements MITREidDataService {
     /**
      * @param writer
      */
-    /*private void writeAuthenticationHolders(JsonWriter writer) {
+    private void writeAuthenticationHolders(JsonWriter writer) {
         Collection<AuthenticationHolderEntity> holders = new ArrayList<AuthenticationHolderEntity>();
         try {
             holders = authHolderRepository.getAll();
@@ -255,20 +255,14 @@ public class MITREidDataService_1_1 implements MITREidDataService {
             }
         }
         logger.info("Done writing authentication holders");
-    }*/
+    }
 
     //used by writeAuthenticationHolders
-    /*private void writeAuthorizationRequest(OAuth2Request authReq, JsonWriter writer) throws IOException {
+    private void writeAuthorizationRequest(OAuth2Request authReq, JsonWriter writer) throws IOException {
         writer.beginObject();
-        writer.name("authorizationParameters");
+        writer.name("requestParameters");
         writer.beginObject();
-        for (Entry<String, String> entry : authReq.getAuthorizationParameters().entrySet()) {
-            writer.name(entry.getKey()).value(entry.getValue());
-        }
-        writer.endObject();
-        writer.name("approvalParameters");
-        writer.beginObject();
-        for (Entry<String, String> entry : authReq.getApprovalParameters().entrySet()) {
+        for (Entry<String, String> entry : authReq.getRequestParameters().entrySet()) {
             writer.name(entry.getKey()).value(entry.getValue());
         }
         writer.endObject();
@@ -293,8 +287,6 @@ public class MITREidDataService_1_1 implements MITREidDataService {
         }
         writer.endArray();
         writer.name("approved").value(authReq.isApproved());
-        writer.name("denied").value(authReq.isDenied());
-        writer.name("state").value(authReq.getState());
         writer.name("redirectUri").value(authReq.getRedirectUri());
         writer.name("responseTypes");
         writer.beginArray();
@@ -302,8 +294,14 @@ public class MITREidDataService_1_1 implements MITREidDataService {
             writer.value(s);
         }
         writer.endArray();
+        writer.name("extensions");
+        writer.beginObject();
+        for (Entry<String, Serializable> entry : authReq.getExtensions().entrySet()) {
+            writer.name(entry.getKey()).value(base64UrlEncodeObject(entry.getValue()));
+        }
         writer.endObject();
-    }*/
+        writer.endObject();
+    }
 
     private String base64UrlEncodeObject(Serializable obj) {
         String encoded = null;
@@ -508,7 +506,7 @@ public class MITREidDataService_1_1 implements MITREidDataService {
     @Override
     public void importData(JsonReader reader) throws IOException {
 
-        logger.info("Reading configuration for 1.0");
+        logger.info("Reading configuration for 1.1");
 
         // this *HAS* to start as an object
         /*reader.beginObject();
@@ -530,8 +528,7 @@ public class MITREidDataService_1_1 implements MITREidDataService {
                     } else if (name.equals(REFRESHTOKENS)) {
                         readRefreshTokens(reader);
                     } else if (name.equals(SYSTEMSCOPES)) {
-                        //readSystemScopes(reader);
-                        reader.skipValue();
+                        readSystemScopes(reader);
                     } else {
                         // unknown token, skip it
                         reader.skipValue();
