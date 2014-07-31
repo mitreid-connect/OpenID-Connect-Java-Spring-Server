@@ -276,8 +276,10 @@ public class MITREidDataService_1_1 implements MITREidDataService {
         writer.endArray();
         writer.name("resourceIds");
         writer.beginArray();
-        for (String s : authReq.getResourceIds()) {
-            writer.value(s);
+        if(authReq.getResourceIds() != null) {
+            for (String s : authReq.getResourceIds()) {
+                writer.value(s);
+            }
         }
         writer.endArray();
         writer.name("authorities");
