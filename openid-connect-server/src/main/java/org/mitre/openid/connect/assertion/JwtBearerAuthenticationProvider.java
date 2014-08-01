@@ -97,7 +97,15 @@ public class JwtBearerAuthenticationProvider implements AuthenticationProvider {
 					throw new InvalidClientException("Client's registered request object signing algorithm (" + client.getRequestObjectSigningAlg() + ") does not match request object's actual algorithm (" + alg.getName() + ")");
 				}
 
-				if (client.getTokenEndpointAuthMethod().equals(AuthMethod.PRIVATE_KEY) &&
+				if (client.getTokenEndpointAuthMethod() == null ||
+						client.getTokenEndpointAuthMethod().equals(AuthMethod.NONE) ||
+						client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_BASIC) ||
+						client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_POST)) {
+					
+					// this client doesn't support this type of authentication
+					throw new AuthenticationServiceException("Client does not support this authentication method.");
+					
+				} else if (client.getTokenEndpointAuthMethod().equals(AuthMethod.PRIVATE_KEY) &&
 						(alg.equals(JWSAlgorithm.RS256)
 								|| alg.equals(JWSAlgorithm.RS384)
 								|| alg.equals(JWSAlgorithm.RS512))) {

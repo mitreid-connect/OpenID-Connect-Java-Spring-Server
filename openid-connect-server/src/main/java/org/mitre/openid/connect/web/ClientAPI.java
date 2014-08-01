@@ -161,7 +161,13 @@ public class ClientAPI {
 			client = clientService.generateClientId(client);
 		}		
 		
-		if (client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_BASIC) 
+		if (client.getTokenEndpointAuthMethod() == null || 
+				client.getTokenEndpointAuthMethod().equals(AuthMethod.NONE)) {
+			// we shouldn't have a secret for this client
+			
+			client.setClientSecret(null);
+			
+		} else if (client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_BASIC) 
 				|| client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_POST) 
 				|| client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_JWT)) {
 			
@@ -181,11 +187,6 @@ public class ClientAPI {
 			}
 			
 			// otherwise we shouldn't have a secret for this client
-			client.setClientSecret(null);
-			
-		} else if (client.getTokenEndpointAuthMethod().equals(AuthMethod.NONE)) {
-			// we shouldn't have a secret for this client
-			
 			client.setClientSecret(null);
 			
 		} else {
@@ -256,7 +257,13 @@ public class ClientAPI {
 			client = clientService.generateClientId(client);
 		}
 
-		if (client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_BASIC) 
+		if (client.getTokenEndpointAuthMethod() == null ||
+				client.getTokenEndpointAuthMethod().equals(AuthMethod.NONE)) {
+			// we shouldn't have a secret for this client
+			
+			client.setClientSecret(null);
+			
+		} else if (client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_BASIC) 
 				|| client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_POST) 
 				|| client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_JWT)) {
 			
@@ -276,11 +283,6 @@ public class ClientAPI {
 			}
 			
 			// otherwise we shouldn't have a secret for this client
-			client.setClientSecret(null);
-			
-		} else if (client.getTokenEndpointAuthMethod().equals(AuthMethod.NONE)) {
-			// we shouldn't have a secret for this client
-			
 			client.setClientSecret(null);
 			
 		} else {
