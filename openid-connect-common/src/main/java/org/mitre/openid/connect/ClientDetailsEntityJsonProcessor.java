@@ -58,6 +58,10 @@ public class ClientDetailsEntityJsonProcessor {
 	 */
 	public static ClientDetailsEntity parse(String jsonString) {
 		JsonElement jsonEl = parser.parse(jsonString);
+		return parse(jsonEl);
+	}
+	
+	public static ClientDetailsEntity parse(JsonElement jsonEl) {
 		if (jsonEl.isJsonObject()) {
 
 			JsonObject o = jsonEl.getAsJsonObject();
@@ -149,10 +153,14 @@ public class ClientDetailsEntityJsonProcessor {
 
 
 		JsonElement jsonEl = parser.parse(jsonString);
+		return parseRegistered(jsonEl);
+	}
+	
+	public static RegisteredClient parseRegistered(JsonElement jsonEl) {
 		if (jsonEl.isJsonObject()) {
 
 			JsonObject o = jsonEl.getAsJsonObject();
-			ClientDetailsEntity c = parse(jsonString);
+			ClientDetailsEntity c = parse(jsonEl);
 
 			RegisteredClient rc = new RegisteredClient(c);
 			// get any fields from the registration

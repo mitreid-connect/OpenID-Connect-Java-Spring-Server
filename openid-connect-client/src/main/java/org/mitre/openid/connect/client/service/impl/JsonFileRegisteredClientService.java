@@ -25,11 +25,11 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.mitre.oauth2.model.RegisteredClient;
+import org.mitre.openid.connect.ClientDetailsEntityJsonProcessor;
 import org.mitre.openid.connect.client.service.RegisteredClientService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +40,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
@@ -57,38 +56,16 @@ public class JsonFileRegisteredClientService implements RegisteredClientService 
 	.registerTypeAdapter(RegisteredClient.class, new JsonSerializer<RegisteredClient>() {
 		@Override
 		public JsonElement serialize(RegisteredClient src, Type typeOfSrc, JsonSerializationContext context) {
-			JsonObject obj = new JsonObject();
-			obj.addProperty("token", src.getRegistrationAccessToken());
-			obj.addProperty("uri", src.getRegistrationClientUri());
-			if (src.getClientIdIssuedAt() != null) {
-				obj.addProperty("issued", src.getClientIdIssuedAt().getTime());
-			}
-			if (src.getClientSecretExpiresAt() != null) {
-				obj.addProperty("expires", src.getClientSecretExpiresAt().getTime());
-			}
-			return obj;
+			return ClientDetailsEntityJsonProcessor.serialize(src);
 		}
 	})
 	.registerTypeAdapter(RegisteredClient.class, new JsonDeserializer<RegisteredClient>() {
 		@Override
 		public RegisteredClient deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-			if (json.isJsonObject()) {
-				JsonObject src = json.getAsJsonObject();
-				RegisteredClient rc = new RegisteredClient();
-				rc.setRegistrationAccessToken(src.get("token").getAsString());
-				rc.setRegistrationClientUri(src.get("uri").getAsString());
-				if (src.has("issued") && !src.get("issued").isJsonNull()) {
-					rc.setClientIdIssuedAt(new Date(src.get("issued").getAsLong()));
-				}
-				if (src.has("expires") && !src.get("expires").isJsonNull()) {
-					rc.setClientSecretExpiresAt(new Date(src.get("expires").getAsLong()));
-				}
-				return rc;
-			} else {
-				return null;
-			}
+			return ClientDetailsEntityJsonProcessor.parseRegistered(json);
 		}
 	})
+	.setPrettyPrinting()
 	.create();
 
 	private File file;
