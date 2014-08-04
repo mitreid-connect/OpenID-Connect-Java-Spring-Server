@@ -16,6 +16,7 @@
  ******************************************************************************/
 package org.mitre.oauth2.repository.impl;
 
+import java.util.Collection;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -34,6 +35,12 @@ public class JpaAuthenticationHolderRepository implements AuthenticationHolderRe
 	@PersistenceContext
 	private EntityManager manager;
 
+    @Override
+    public Collection<AuthenticationHolderEntity> getAll() {
+		TypedQuery<AuthenticationHolderEntity> query = manager.createNamedQuery("AuthenticationHolderEntity.getAll", AuthenticationHolderEntity.class);
+		return query.getResultList();
+    }
+    
 	@Override
 	public AuthenticationHolderEntity getById(Long id) {
 		return manager.find(AuthenticationHolderEntity.class, id);
