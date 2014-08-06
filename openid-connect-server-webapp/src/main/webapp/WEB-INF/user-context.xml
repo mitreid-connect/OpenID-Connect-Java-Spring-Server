@@ -25,7 +25,7 @@
 	xmlns:mvc="http://www.springframework.org/schema/mvc"
 	xsi:schemaLocation="http://www.springframework.org/schema/security/oauth2 http://www.springframework.org/schema/security/spring-security-oauth2.xsd
 		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
-		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd
+		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.2.xsd
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd">
@@ -46,6 +46,7 @@
 		<security:form-login login-page="/login" authentication-failure-url="/login?error=failure" authentication-success-handler-ref="authenticationTimeStamper" />
 		<security:intercept-url pattern="/**" access="permitAll" />
 		<security:custom-filter ref="promptFilter" after="SECURITY_CONTEXT_FILTER" />
+		<security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
 		<security:logout logout-url="/logout" />
 		<security:anonymous />
 		<security:expression-handler ref="oauthWebExpressionHandler" />
