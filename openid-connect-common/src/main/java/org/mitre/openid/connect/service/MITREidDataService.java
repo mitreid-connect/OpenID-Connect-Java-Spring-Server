@@ -35,6 +35,8 @@ public interface MITREidDataService {
     // member names
     public static final String REFRESHTOKENS = "refreshTokens";
     public static final String ACCESSTOKENS = "accessTokens";
+    public static final String WHITELISTEDSITES = "whitelistedSites";
+    public static final String BLACKLISTEDSITES = "blacklistedSites";
     public static final String AUTHENTICATIONHOLDERS = "authenticationHolders";
     public static final String GRANTS = "grants";
     public static final String CLIENTS = "clients";
