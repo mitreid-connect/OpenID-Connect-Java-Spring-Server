@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS access_token (
 	expiration TIMESTAMP,
 	token_type VARCHAR(256),
 	refresh_token_id BIGINT,
-	client_id VARCHAR(256),
+	client_id BIGINT,
 	auth_holder_id BIGINT,
 	id_token_id BIGINT,
 	approved_site_id BIGINT
@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS approved_site (
 	creation_date TIMESTAMP,
 	access_date TIMESTAMP,
 	timeout_date TIMESTAMP,
-	whitelisted_site_id VARCHAR(256)
+	whitelisted_site_id BIGINT
 );
 
 CREATE TABLE IF NOT EXISTS approved_site_scope (
@@ -143,7 +143,7 @@ CREATE TABLE IF NOT EXISTS refresh_token (
 	token_value VARCHAR(4096),
 	expiration TIMESTAMP,
 	auth_holder_id BIGINT,
-	client_id VARCHAR(256)
+	client_id BIGINT
 );
 
 CREATE TABLE IF NOT EXISTS client_resource (
