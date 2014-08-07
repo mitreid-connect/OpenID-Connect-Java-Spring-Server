@@ -53,9 +53,10 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.eclipse.jetty</groupId>
+                <groupId>org.mortbay.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
                 <configuration>
+                	<contextXml>${basedir}/src/main/webapp/WEB-INF/jetty-context.xml</contextXml>
                 	<webAppConfig>
                 	    <contextPath>/openid-connect-server-webapp</contextPath>
                 	</webAppConfig>
@@ -67,7 +68,7 @@
   	<dependency>
   		<groupId>org.mitre</groupId>
   		<artifactId>openid-connect-server</artifactId>
-  		<version>1.1.10-SNAPSHOT</version>
+  		<version>${project.version}</version>
   	</dependency>
         <dependency>
             <groupId>org.springframework</groupId>
