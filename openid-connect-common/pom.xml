@@ -56,12 +56,12 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.2.3</version>
+            <version>4.3.3</version>
         </dependency>
     	<dependency>
       		<groupId>org.springframework.security.oauth</groupId>
- 		 	<version>2.0.0.M2</version>
       		<artifactId>spring-security-oauth2</artifactId>
+ 		 	<version>${spring.security.oauth2.version}</version>
 		</dependency>
         <dependency>
         	<groupId>com.nimbusds</groupId>

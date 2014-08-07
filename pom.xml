@@ -71,9 +71,10 @@
 
     <properties>
         <java-version>1.6</java-version>
-        <org.springframework-version>3.2.3.RELEASE</org.springframework-version>
-        <org.slf4j-version>1.7.2</org.slf4j-version>
-        <spring.security.version>3.1.4.RELEASE</spring.security.version>
+        <org.springframework-version>4.0.3.RELEASE</org.springframework-version>
+        <org.slf4j-version>1.7.6</org.slf4j-version>
+        <spring.security.version>3.2.3.RELEASE</spring.security.version>
+        <spring.security.oauth2.version>2.0.2.RELEASE</spring.security.oauth2.version>
     </properties>
     <description>A reference implementation of OpenID Connect (http://openid.net/connect/) and OAuth 2.0 built on top of Java, Spring, and Spring Security. The project contains a fully functioning server, client, and utility library.</description>
     <url>https://github.com/mitreid-connect</url>
@@ -116,9 +117,9 @@
 				<version>2.5.1</version>
 			</plugin>
 			<plugin>
-			    <groupId>org.eclipse.jetty</groupId>
+			    <groupId>org.mortbay.jetty</groupId>
 			    <artifactId>jetty-maven-plugin</artifactId>
-			    <version>9.1.1.v20140108</version>
+			    <version>8.1.15.v20140411</version>
 			</plugin>
 		</plugins>
 		</pluginManagement>
@@ -294,6 +295,13 @@
         	<scope>test</scope>
         	<version>${org.slf4j-version}</version>
         </dependency>
+        
+		<dependency>
+		  <groupId>org.apache.httpcomponents</groupId>
+		  <artifactId>httpclient</artifactId>
+		  <version>4.3.3</version>
+		</dependency>
+        
 	</dependencies>
 
     <repositories>
