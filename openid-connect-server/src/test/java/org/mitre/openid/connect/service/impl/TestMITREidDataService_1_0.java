@@ -35,13 +35,16 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import org.mitre.openid.connect.model.BlacklistedSite;
+import org.mitre.openid.connect.model.WhitelistedSite;
+import org.mitre.openid.connect.repository.BlacklistedSiteRepository;
+import org.mitre.openid.connect.repository.WhitelistedSiteRepository;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TestMITREidDataService_1_0 {
@@ -50,6 +53,10 @@ public class TestMITREidDataService_1_0 {
     private OAuth2ClientRepository clientRepository;
 	@Mock
     private ApprovedSiteRepository approvedSiteRepository;
+    @Mock
+    private WhitelistedSiteRepository wlSiteRepository;
+    @Mock
+    private BlacklistedSiteRepository blSiteRepository;
 	@Mock
     private AuthenticationHolderRepository authHolderRepository;
 	@Mock
@@ -94,6 +101,8 @@ public class TestMITREidDataService_1_0 {
 		
 		Mockito.when(clientRepository.getAllClients()).thenReturn(allClients);
 		Mockito.when(approvedSiteRepository.getAll()).thenReturn(new HashSet<ApprovedSite>());
+		Mockito.when(wlSiteRepository.getAll()).thenReturn(new HashSet<WhitelistedSite>());
+		Mockito.when(blSiteRepository.getAll()).thenReturn(new HashSet<BlacklistedSite>());
 		Mockito.when(authHolderRepository.getAll()).thenReturn(new HashSet<AuthenticationHolderEntity>());
 		Mockito.when(tokenRepository.getAllAccessTokens()).thenReturn(new HashSet<OAuth2AccessTokenEntity>());
 		Mockito.when(tokenRepository.getAllRefreshTokens()).thenReturn(new HashSet<OAuth2RefreshTokenEntity>());
@@ -119,6 +128,8 @@ public class TestMITREidDataService_1_0 {
 		// make sure all the root elements are there
 		assertThat(config.has(MITREidDataService.CLIENTS), is(true));
 		assertThat(config.has(MITREidDataService.GRANTS), is(true));
+        assertThat(config.has(MITREidDataService.WHITELISTEDSITES), is(true));
+        assertThat(config.has(MITREidDataService.BLACKLISTEDSITES), is(true));
 		assertThat(config.has(MITREidDataService.REFRESHTOKENS), is(true));
 		assertThat(config.has(MITREidDataService.ACCESSTOKENS), is(true));
 		assertThat(config.has(MITREidDataService.SYSTEMSCOPES), is(true));
@@ -127,6 +138,8 @@ public class TestMITREidDataService_1_0 {
 		// make sure the root elements are all arrays
 		assertThat(config.get(MITREidDataService.CLIENTS).isJsonArray(), is(true));
 		assertThat(config.get(MITREidDataService.GRANTS).isJsonArray(), is(true));
+        assertThat(config.get(MITREidDataService.WHITELISTEDSITES).isJsonArray(), is(true));
+        assertThat(config.get(MITREidDataService.BLACKLISTEDSITES).isJsonArray(), is(true));
 		assertThat(config.get(MITREidDataService.REFRESHTOKENS).isJsonArray(), is(true));
 		assertThat(config.get(MITREidDataService.ACCESSTOKENS).isJsonArray(), is(true));
 		assertThat(config.get(MITREidDataService.SYSTEMSCOPES).isJsonArray(), is(true));
@@ -199,6 +212,8 @@ public class TestMITREidDataService_1_0 {
 		
 		Mockito.when(clientRepository.getAllClients()).thenReturn(new HashSet<ClientDetailsEntity>());
 		Mockito.when(approvedSiteRepository.getAll()).thenReturn(new HashSet<ApprovedSite>());
+		Mockito.when(wlSiteRepository.getAll()).thenReturn(new HashSet<WhitelistedSite>());
+		Mockito.when(blSiteRepository.getAll()).thenReturn(new HashSet<BlacklistedSite>());
 		Mockito.when(authHolderRepository.getAll()).thenReturn(new HashSet<AuthenticationHolderEntity>());
 		Mockito.when(tokenRepository.getAllAccessTokens()).thenReturn(new HashSet<OAuth2AccessTokenEntity>());
 		Mockito.when(tokenRepository.getAllRefreshTokens()).thenReturn(new HashSet<OAuth2RefreshTokenEntity>());
@@ -224,6 +239,8 @@ public class TestMITREidDataService_1_0 {
 		// make sure all the root elements are there
 		assertThat(config.has(MITREidDataService.CLIENTS), is(true));
 		assertThat(config.has(MITREidDataService.GRANTS), is(true));
+        assertThat(config.has(MITREidDataService.WHITELISTEDSITES), is(true));
+        assertThat(config.has(MITREidDataService.BLACKLISTEDSITES), is(true));
 		assertThat(config.has(MITREidDataService.REFRESHTOKENS), is(true));
 		assertThat(config.has(MITREidDataService.ACCESSTOKENS), is(true));
 		assertThat(config.has(MITREidDataService.SYSTEMSCOPES), is(true));
@@ -232,6 +249,8 @@ public class TestMITREidDataService_1_0 {
 		// make sure the root elements are all arrays
 		assertThat(config.get(MITREidDataService.CLIENTS).isJsonArray(), is(true));
 		assertThat(config.get(MITREidDataService.GRANTS).isJsonArray(), is(true));
+        assertThat(config.get(MITREidDataService.WHITELISTEDSITES).isJsonArray(), is(true));
+        assertThat(config.get(MITREidDataService.BLACKLISTEDSITES).isJsonArray(), is(true));
 		assertThat(config.get(MITREidDataService.REFRESHTOKENS).isJsonArray(), is(true));
 		assertThat(config.get(MITREidDataService.ACCESSTOKENS).isJsonArray(), is(true));
 		assertThat(config.get(MITREidDataService.SYSTEMSCOPES).isJsonArray(), is(true));
@@ -304,6 +323,8 @@ public class TestMITREidDataService_1_0 {
 				"\"" + MITREidDataService.ACCESSTOKENS + "\": [], " +
 				"\"" + MITREidDataService.REFRESHTOKENS + "\": [], " +
 				"\"" + MITREidDataService.GRANTS + "\": [], " +
+				"\"" + MITREidDataService.WHITELISTEDSITES + "\": [], " +
+				"\"" + MITREidDataService.BLACKLISTEDSITES + "\": [], " +
 				"\"" + MITREidDataService.AUTHENTICATIONHOLDERS + "\": [], " +
 				"\"" + MITREidDataService.SYSTEMSCOPES + "\": [" +
 				

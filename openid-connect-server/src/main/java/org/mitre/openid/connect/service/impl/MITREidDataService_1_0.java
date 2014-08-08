@@ -39,7 +39,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TimeZone;
-import java.util.logging.Level;
 import org.mitre.jose.JWEAlgorithmEmbed;
 import org.mitre.jose.JWEEncryptionMethodEmbed;
 import org.mitre.jose.JWSAlgorithmEmbed;
@@ -740,6 +739,7 @@ public class MITREidDataService_1_0 implements MITREidDataService {
         Collection<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
         Map<String, String> authorizationParameters = new HashMap<String, String>();
         Map<String, String> approvalParameters = new HashMap<String, String>();
+        //Set<String> responseTypes = new HashSet<String>();
         String redirectUri = null;
         String clientId = null;
         reader.beginObject();
@@ -776,6 +776,10 @@ public class MITREidDataService_1_0 implements MITREidDataService {
                         }
                     } else if (name.equals("redirectUri")) {
                         redirectUri = reader.nextString();
+                    } else if (name.equals("responseTypes")) {
+                        //already contained in authorizationParameters
+                        //responseTypes = readSet(reader);
+                        reader.skipValue();
                     } else {
                         reader.skipValue();
                     }
@@ -861,7 +865,11 @@ public class MITREidDataService_1_0 implements MITREidDataService {
     }
     
     Map<Long, Long> whitelistedSiteOldToNewIdMap = new HashMap<Long, Long>();
-    
+ 
+    /**
+     * @param reader
+     * @throws IOException
+     */
     private void readWhitelistedSites(JsonReader reader) throws IOException {
         reader.beginArray();
         while (reader.hasNext()) {
@@ -902,6 +910,10 @@ public class MITREidDataService_1_0 implements MITREidDataService {
         logger.info("Done reading whitelisted sites");
     }
     
+    /**
+     * @param reader
+     * @throws IOException
+     */
     private void readBlacklistedSites(JsonReader reader) throws IOException {
         reader.beginArray();
         while (reader.hasNext()) {
