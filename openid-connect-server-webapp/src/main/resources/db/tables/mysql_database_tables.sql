@@ -26,12 +26,12 @@ CREATE TABLE IF NOT EXISTS address (
 
 CREATE TABLE IF NOT EXISTS approved_site (
 	id BIGINT AUTO_INCREMENT PRIMARY KEY,
-	user_id VARCHAR(4096),
-	client_id VARCHAR(4096),
+	user_id VARCHAR(256),
+	client_id VARCHAR(256),
 	creation_date TIMESTAMP NULL,
 	access_date TIMESTAMP NULL,
 	timeout_date TIMESTAMP NULL,
-	whitelisted_site_id VARCHAR(256)
+	whitelisted_site_id BIGINT
 );
 
 CREATE TABLE IF NOT EXISTS approved_site_scope (
@@ -143,7 +143,7 @@ CREATE TABLE IF NOT EXISTS refresh_token (
 	token_value VARCHAR(4096),
 	expiration TIMESTAMP NULL,
 	auth_holder_id BIGINT,
-	client_id VARCHAR(256)
+	client_id BIGINT
 );
 
 CREATE TABLE IF NOT EXISTS client_resource (
