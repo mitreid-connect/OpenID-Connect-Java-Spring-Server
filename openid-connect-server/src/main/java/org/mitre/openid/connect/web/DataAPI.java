@@ -16,16 +16,19 @@
  ******************************************************************************/
 package org.mitre.openid.connect.web;
 
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
+import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
 import javax.servlet.http.HttpServletResponse;
-
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.mitre.openid.connect.service.MITREidDataService;
+import org.mitre.openid.connect.service.impl.MITREidDataService_1_0;
+import org.mitre.openid.connect.service.impl.MITREidDataService_1_1;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,12 +37,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonToken;
-import com.google.gson.stream.JsonWriter;
-import org.mitre.openid.connect.service.impl.MITREidDataService_1_0;
-import org.mitre.openid.connect.service.impl.MITREidDataService_1_1;
 
 /**
  * API endpoint for importing and exporting the current state of a server.
@@ -128,10 +125,8 @@ public class DataAPI {
 			writer.close();
 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Unable to export data", e);
 		}
-
 	}
 
 
