@@ -35,7 +35,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -56,17 +55,17 @@ import org.mitre.oauth2.repository.OAuth2ClientRepository;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
 import org.mitre.oauth2.repository.SystemScopeRepository;
 import org.mitre.openid.connect.model.ApprovedSite;
+import org.mitre.openid.connect.model.BlacklistedSite;
 import org.mitre.openid.connect.model.WhitelistedSite;
 import org.mitre.openid.connect.repository.ApprovedSiteRepository;
+import org.mitre.openid.connect.repository.BlacklistedSiteRepository;
 import org.mitre.openid.connect.repository.WhitelistedSiteRepository;
 import org.mitre.openid.connect.service.MITREidDataService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.GrantedAuthorityImpl;
-import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.stereotype.Service;
@@ -87,6 +86,10 @@ public class MITREidDataService_1_1 implements MITREidDataService {
     @Autowired
     private ApprovedSiteRepository approvedSiteRepository;
     @Autowired
+    private WhitelistedSiteRepository wlSiteRepository;
+    @Autowired
+    private BlacklistedSiteRepository blSiteRepository;
+    @Autowired
     private AuthenticationHolderRepository authHolderRepository;
     @Autowired
     private OAuth2TokenRepository tokenRepository;
@@ -104,7 +107,7 @@ public class MITREidDataService_1_1 implements MITREidDataService {
 
         // version tag at the root
         writer.name(MITREID_CONNECT_1_1);
-
+        
         writer.beginObject();
 
         // clients list
@@ -116,6 +119,16 @@ public class MITREidDataService_1_1 implements MITREidDataService {
         writer.name(GRANTS);
         writer.beginArray();
         writeGrants(writer);
+        writer.endArray();
+
+        writer.name(WHITELISTEDSITES);
+        writer.beginArray();
+        writeWhitelistedSites(writer);
+        writer.endArray();
+        
+        writer.name(BLACKLISTEDSITES);
+        writer.beginArray();
+        writeBlacklistedSites(writer);
         writer.endArray();
 
         writer.name(AUTHENTICATIONHOLDERS);
@@ -338,45 +351,55 @@ public class MITREidDataService_1_1 implements MITREidDataService {
     /**
      * @param writer
      */
-    private void writeGrants(JsonWriter writer) {
+    private void writeGrants(JsonWriter writer) throws IOException {
         for (ApprovedSite site : approvedSiteRepository.getAll()) {
-            try {
-                writer.beginObject();
-                writer.name("id").value(site.getId());
-                writer.name("accessDate").value(toUTCString(site.getAccessDate()));
-                writer.name("clientId").value(site.getClientId());
-                writer.name("creationDate").value(toUTCString(site.getCreationDate()));
-                writer.name("timeoutDate").value(toUTCString(site.getTimeoutDate()));
-                writer.name("userId").value(site.getUserId());
-                writer.name("allowedScopes");
-                writer.beginArray();
-                for (String s : site.getAllowedScopes()) {
-                    writer.value(s);
-                }
-                writer.endArray();
-                if (site.getIsWhitelisted()) {
-                    WhitelistedSite wlSite = site.getWhitelistedSite();
-                    writer.name("whitelistedSite");
-                    writer.beginObject();
-                    writer.name("id").value(wlSite.getId());
-                    writer.name("clientId").value(wlSite.getClientId());
-                    writer.name("creatorUserId").value(wlSite.getCreatorUserId());
-                    writer.name("allowedScopes");
-                    writer.beginArray();
-                    for (String s : wlSite.getAllowedScopes()) {
-                        writer.value(s);
-                    }
-                    writer.endArray();
-                    writer.endObject();
-                }
-                writer.endObject();
-                logger.debug("Wrote grant {}", site.getId());
-            } catch (IOException ex) {
-                logger.error("Unable to write grant {}", site.getId(), ex);
-            }
+            writer.beginObject();
+            writer.name("id").value(site.getId());
+            writer.name("accessDate").value(toUTCString(site.getAccessDate()));
+            writer.name("clientId").value(site.getClientId());
+            writer.name("creationDate").value(toUTCString(site.getCreationDate()));
+            writer.name("timeoutDate").value(toUTCString(site.getTimeoutDate()));
+            writer.name("userId").value(site.getUserId());
+            writer.name("allowedScopes");
+            writeNullSafeArray(writer, site.getAllowedScopes());
+            writer.name("whitelistedSiteId").value(site.getIsWhitelisted() ? site.getWhitelistedSite().getId() : null);
+            writer.endObject();
+            logger.debug("Wrote grant {}", site.getId());
         }
         logger.info("Done writing grants");
     }
+
+    /**
+     * @param writer
+     */
+    private void writeWhitelistedSites(JsonWriter writer) throws IOException {
+        for (WhitelistedSite wlSite : wlSiteRepository.getAll()) {
+            writer.beginObject();
+            writer.name("id").value(wlSite.getId());
+            writer.name("clientId").value(wlSite.getClientId());
+            writer.name("creatorUserId").value(wlSite.getCreatorUserId());
+            writer.name("allowedScopes");
+            writeNullSafeArray(writer, wlSite.getAllowedScopes());
+            writer.endObject();
+            logger.debug("Wrote whitelisted site {}", wlSite.getId());
+        }
+        logger.info("Done writing whitelisted sites");
+    }
+    
+    /**
+     * @param writer
+     */
+    private void writeBlacklistedSites(JsonWriter writer) throws IOException {
+        for (BlacklistedSite blSite : blSiteRepository.getAll()) {
+            writer.beginObject();
+            writer.name("id").value(blSite.getId());
+            writer.name("uri").value(blSite.getUri());
+            writer.endObject();
+            logger.debug("Wrote blacklisted site {}", blSite.getId());
+        }
+        logger.info("Done writing blacklisted sites");
+    }
+    
 
     /**
      * @param writer
@@ -823,9 +846,6 @@ public class MITREidDataService_1_1 implements MITREidDataService {
         dar.setRedirectUri(redirectUri);
         return dar;
     }*/
-    
-    @Autowired
-    private WhitelistedSiteRepository wlSiteRepository;
     
     /**
      * @param reader
