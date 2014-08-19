@@ -18,27 +18,21 @@
  */
 package org.mitre.openid.connect.service.impl;
 
-import com.google.common.io.BaseEncoding;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.TimeZone;
 import org.mitre.jose.JWEAlgorithmEmbed;
 import org.mitre.jose.JWEEncryptionMethodEmbed;
 import org.mitre.jose.JWSAlgorithmEmbed;
@@ -60,12 +54,12 @@ import org.mitre.openid.connect.model.WhitelistedSite;
 import org.mitre.openid.connect.repository.ApprovedSiteRepository;
 import org.mitre.openid.connect.repository.BlacklistedSiteRepository;
 import org.mitre.openid.connect.repository.WhitelistedSiteRepository;
-import org.mitre.openid.connect.service.MITREidDataService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.GrantedAuthorityImpl;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.stereotype.Service;
@@ -78,7 +72,7 @@ import org.springframework.stereotype.Service;
  * @author arielak
  */
 @Service
-public class MITREidDataService_1_1 implements MITREidDataService {
+public class MITREidDataService_1_1 extends MITREidDataService_1_X {
     
     private final static Logger logger = LoggerFactory.getLogger(MITREidDataService_1_1.class);
     @Autowired
@@ -95,9 +89,7 @@ public class MITREidDataService_1_1 implements MITREidDataService {
     private OAuth2TokenRepository tokenRepository;
     @Autowired
     private SystemScopeRepository sysScopeRepository;
-    private static final String ISO_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
-    private static final SimpleDateFormat sdf = new SimpleDateFormat(ISO_FORMAT);
-    private static final TimeZone utc = TimeZone.getTimeZone("UTC");
+
 
     /* (non-Javadoc)
      * @see org.mitre.openid.connect.service.MITREidDataService#export(com.google.gson.stream.JsonWriter)
@@ -152,21 +144,6 @@ public class MITREidDataService_1_1 implements MITREidDataService {
         writer.endArray();
 
         writer.endObject(); // end mitreid-connect-1.1
-    }
-
-    private static String toUTCString(Date date) {
-        if (date == null) {
-            return null;
-        }
-        sdf.setTimeZone(utc);
-        return sdf.format(date);
-    }
-
-    private static Date utcToDate(String s) throws ParseException {
-        if (s == null) {
-            return null;
-        }
-        return sdf.parse(s);
     }
 
     /**
@@ -316,36 +293,6 @@ public class MITREidDataService_1_1 implements MITREidDataService {
         }
         writer.endObject();
         writer.endObject();
-    }
-
-    private String base64UrlEncodeObject(Serializable obj) {
-        String encoded = null;
-        try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ObjectOutputStream oos = new ObjectOutputStream(baos);
-            oos.writeObject(obj);
-            encoded = BaseEncoding.base64Url().encode(baos.toByteArray());
-            oos.close();
-            baos.close();
-        } catch (IOException ex) {
-            logger.error("Unable to encode object", ex);
-        }
-        return encoded;
-    }
-    
-    private <T> T base64UrlDecodeObject(String encoded, Class<T> type) {
-        T deserialized = null;
-        try {
-            byte[] decoded = BaseEncoding.base64Url().decode(encoded);
-            ByteArrayInputStream bais = new ByteArrayInputStream(decoded);
-            ObjectInputStream ois = new ObjectInputStream(bais);
-            deserialized = type.cast(ois.readObject());
-            ois.close();
-            bais.close();
-        } catch (Exception ex) {
-            logger.error("Unable to decode object", ex);
-        }
-        return deserialized;
     }
     
     /**
@@ -531,10 +478,10 @@ public class MITREidDataService_1_1 implements MITREidDataService {
     @Override
     public void importData(JsonReader reader) throws IOException {
 
-        logger.info("Reading configuration for 1.1");
+        logger.info("Reading configuration for 1.0");
 
         // this *HAS* to start as an object
-        /*reader.beginObject();
+        reader.beginObject();
 
         while (reader.hasNext()) {
             JsonToken tok = reader.peek();
@@ -546,6 +493,10 @@ public class MITREidDataService_1_1 implements MITREidDataService {
                         readClients(reader);
                     } else if (name.equals(GRANTS)) {
                         readGrants(reader);
+                    } else if (name.equals(WHITELISTEDSITES)) {
+                        readWhitelistedSites(reader);
+                    } else if (name.equals(BLACKLISTEDSITES)) {
+                        readBlacklistedSites(reader);
                     } else if (name.equals(AUTHENTICATIONHOLDERS)) {
                         readAuthenticationHolders(reader);
                     } else if (name.equals(ACCESSTOKENS)) {
@@ -566,7 +517,6 @@ public class MITREidDataService_1_1 implements MITREidDataService {
             }
         }
         fixObjectReferences();
-        * */
     }
     
     private Map<Long, String> refreshTokenToClientRefs = new HashMap<Long, String>();
@@ -577,54 +527,59 @@ public class MITREidDataService_1_1 implements MITREidDataService {
      * @param reader
      * @throws IOException
      */
+    /**
+     * @param reader
+     * @throws IOException
+     */
     private void readRefreshTokens(JsonReader reader) throws IOException {
         reader.beginArray();
         while (reader.hasNext()) {
-            try {
-                OAuth2RefreshTokenEntity token = new OAuth2RefreshTokenEntity();
-                reader.beginObject();
-                Long currentId = null;
-                String clientId = null;
-                Long authHolderId = null;
-                while (reader.hasNext()) {
-                    switch (reader.peek()) {
-                        case END_OBJECT:
-                            continue;
-                        case NAME:
-                            String name = reader.nextName();
-                            if (reader.peek() == JsonToken.NULL) {
-                                reader.skipValue();
-                            } else if (name.equals("id")) {
-                                currentId = reader.nextLong();
-                            } else if (name.equals("expiration")) {
-                                Date date = utcToDate(reader.nextString());
-                                token.setExpiration(date);
-                            } else if (name.equals("value")) {
-                                token.setValue(reader.nextString());
-                            } else if (name.equals("clientId")) {
-                                clientId = reader.nextString();
-                            } else if (name.equals("authenticationHolderId")) {
-                                authHolderId = reader.nextLong();
-                            } else {
-                                logger.debug("Found unexpected entry");
-                                reader.skipValue();
+            OAuth2RefreshTokenEntity token = new OAuth2RefreshTokenEntity();
+            reader.beginObject();
+            Long currentId = null;
+            String clientId = null;
+            Long authHolderId = null;
+            while (reader.hasNext()) {
+                switch (reader.peek()) {
+                    case END_OBJECT:
+                        continue;
+                    case NAME:
+                        String name = reader.nextName();
+                        if (reader.peek() == JsonToken.NULL) {
+                            reader.skipValue();
+                        } else if (name.equals("id")) {
+                            currentId = reader.nextLong();
+                        } else if (name.equals("expiration")) {
+                            Date date = utcToDate(reader.nextString());
+                            token.setExpiration(date);
+                        } else if (name.equals("value")) {
+                            String value = reader.nextString();
+                            try {
+                                token.setValue(value);
+                            } catch (ParseException ex) {
+                                logger.error("Unable to set refresh token value to {}", value, ex);
                             }
-                            break;
-                        default:
+                        } else if (name.equals("clientId")) {
+                            clientId = reader.nextString();
+                        } else if (name.equals("authenticationHolderId")) {
+                            authHolderId = reader.nextLong();
+                        } else {
                             logger.debug("Found unexpected entry");
                             reader.skipValue();
-                            continue;
-                    }
+                        }
+                        break;
+                    default:
+                        logger.debug("Found unexpected entry");
+                        reader.skipValue();
+                        continue;
                 }
-                reader.endObject();
-                Long newId = tokenRepository.saveRefreshToken(token).getId();
-                refreshTokenToClientRefs.put(currentId, clientId);
-                refreshTokenToAuthHolderRefs.put(currentId, authHolderId);
-                refreshTokenOldToNewIdMap.put(currentId, newId);
-                logger.debug("Read refresh token {}", currentId);
-            } catch (ParseException ex) {
-                logger.error("Unable to read refresh token", ex);
             }
+            reader.endObject();
+            Long newId = tokenRepository.saveRefreshToken(token).getId();
+            refreshTokenToClientRefs.put(currentId, clientId);
+            refreshTokenToAuthHolderRefs.put(currentId, authHolderId);
+            refreshTokenOldToNewIdMap.put(currentId, newId);
+            logger.debug("Read refresh token {}", currentId);
         }
         reader.endArray();
         logger.info("Done reading refresh tokens");
@@ -640,83 +595,88 @@ public class MITREidDataService_1_1 implements MITREidDataService {
      * @param reader
      * @throws IOException
      */
+    /**
+     * @param reader
+     * @throws IOException
+     */
     private void readAccessTokens(JsonReader reader) throws IOException {
         reader.beginArray();
         while (reader.hasNext()) {
-            try {
                 OAuth2AccessTokenEntity token = new OAuth2AccessTokenEntity();
                 reader.beginObject();
                 Long currentId = null;
                 String clientId = null;
                 Long authHolderId = null;
                 Long refreshTokenId = null;
-                Long idTokenId = null;
-                while (reader.hasNext()) {
-                    switch (reader.peek()) {
-                        case END_OBJECT:
-                            continue;
-                        case NAME:
-                            String name = reader.nextName();
-                            if (reader.peek() == JsonToken.NULL) {
-                                reader.skipValue();
-                            } else if (name.equals("id")) {
-                                currentId = reader.nextLong();
-                            } else if (name.equals("expiration")) {
-                                Date date = utcToDate(reader.nextString());
-                                token.setExpiration(date);
-                            } else if (name.equals("value")) {
-                                token.setValue(reader.nextString());
-                            } else if (name.equals("clientId")) {
-                                clientId = reader.nextString();
-                            } else if (name.equals("authenticationHolderId")) {
-                                authHolderId = reader.nextLong();
-                            } else if (name.equals("refreshTokenId")) {
-                                refreshTokenId = reader.nextLong();
-                            } else if (name.equals("idTokenId")) {
-                                idTokenId = reader.nextLong();
-                            } else if (name.equals("scope")) {
-                                Set<String> scope = readSet(reader);
-                                token.setScope(scope);
-                            } else if (name.equals("type")) {
-                                token.setTokenType(reader.nextString());
-                            } else {
-                                logger.debug("Found unexpected entry");
-                                reader.skipValue();
+            Long idTokenId = null;
+            while (reader.hasNext()) {
+                switch (reader.peek()) {
+                    case END_OBJECT:
+                        continue;
+                    case NAME:
+                        String name = reader.nextName();
+                        if (reader.peek() == JsonToken.NULL) {
+                            reader.skipValue();
+                        } else if (name.equals("id")) {
+                            currentId = reader.nextLong();
+                        } else if (name.equals("expiration")) {
+                            Date date = utcToDate(reader.nextString());
+                            token.setExpiration(date);
+                        } else if (name.equals("value")) {
+                            String value = reader.nextString();
+                            try {
+                                token.setValue(value);
+                            } catch (ParseException ex) {
+                                logger.error("Unable to set refresh token value to {}", value, ex);
                             }
-                            break;
-                        default:
+                        } else if (name.equals("clientId")) {
+                            clientId = reader.nextString();
+                        } else if (name.equals("authenticationHolderId")) {
+                            authHolderId = reader.nextLong();
+                        } else if (name.equals("refreshTokenId")) {
+                            refreshTokenId = reader.nextLong();
+                        } else if (name.equals("idTokenId")) {
+                            idTokenId = reader.nextLong();
+                        } else if (name.equals("scope")) {
+                            Set<String> scope = readSet(reader);
+                            token.setScope(scope);
+                        } else if (name.equals("type")) {
+                            token.setTokenType(reader.nextString());
+                        } else {
                             logger.debug("Found unexpected entry");
                             reader.skipValue();
-                            continue;
-                    }
+                        }
+                        break;
+                    default:
+                        logger.debug("Found unexpected entry");
+                        reader.skipValue();
+                        continue;
                 }
-                reader.endObject();
-                Long newId = tokenRepository.saveAccessToken(token).getId();
-                accessTokenToClientRefs.put(currentId, clientId);
-                accessTokenToAuthHolderRefs.put(currentId, authHolderId);
-                if(refreshTokenId != null) {
-                    accessTokenToRefreshTokenRefs.put(currentId, refreshTokenId);
-                }
-                if(idTokenId != null) {
-                    accessTokenToIdTokenRefs.put(currentId, idTokenId);
-                }
-                accessTokenOldToNewIdMap.put(currentId, newId);
-                logger.debug("Read access token {}", currentId);
-            } catch (ParseException ex) {
-                logger.error("Unable to read access token", ex);
             }
+            reader.endObject();
+            Long newId = tokenRepository.saveAccessToken(token).getId();
+            accessTokenToClientRefs.put(currentId, clientId);
+            accessTokenToAuthHolderRefs.put(currentId, authHolderId);
+            if (refreshTokenId != null) {
+                accessTokenToRefreshTokenRefs.put(currentId, refreshTokenId);
+            }
+            if (idTokenId != null) {
+                accessTokenToIdTokenRefs.put(currentId, idTokenId);
+            }
+            accessTokenOldToNewIdMap.put(currentId, newId);
+            logger.debug("Read access token {}", currentId);
         }
         reader.endArray();
         logger.info("Done reading access tokens");
     }
-
+    
     private Map<Long, Long> authHolderOldToNewIdMap = new HashMap<Long, Long>();
     
     /**
      * @param reader
      * @throws IOException
      */
-    /*private void readAuthenticationHolders(JsonReader reader) throws IOException {
+    private void readAuthenticationHolders(JsonReader reader) throws IOException {
         reader.beginArray();
         while (reader.hasNext()) {
             AuthenticationHolderEntity ahe = new AuthenticationHolderEntity();
@@ -736,7 +696,7 @@ public class MITREidDataService_1_1 implements MITREidDataService {
                             //not needed
                             reader.skipValue();
                         } else if (name.equals("authentication")) {
-                            AuthorizationRequest clientAuthorization = null;
+                            OAuth2Request clientAuthorization = null;
                             Authentication userAuthentication = null;
                             reader.beginObject();
                             while (reader.hasNext()) {
@@ -782,16 +742,17 @@ public class MITREidDataService_1_1 implements MITREidDataService {
         }
         reader.endArray();
         logger.info("Done reading authentication holders");
-    }*/
+    }
 
     //used by readAuthenticationHolders
-    /*private AuthorizationRequest readAuthorizationRequest(JsonReader reader) throws IOException {
+    private OAuth2Request readAuthorizationRequest(JsonReader reader) throws IOException {
         Set<String> scope = new LinkedHashSet<String>();
         Set<String> resourceIds = new HashSet<String>();
         boolean approved = false;
         Collection<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
-        Map<String, String> authorizationParameters = new HashMap<String, String>();
-        Map<String, String> approvalParameters = new HashMap<String, String>();
+        Map<String, String> requestParameters = new HashMap<String, String>();
+        Set<String> responseTypes = new HashSet<String>();
+        Map<String, Serializable> extensions = new HashMap<String, Serializable>();
         String redirectUri = null;
         String clientId = null;
         reader.beginObject();
@@ -803,10 +764,8 @@ public class MITREidDataService_1_1 implements MITREidDataService {
                     String name = reader.nextName();
                     if (reader.peek() == JsonToken.NULL) {
                         reader.skipValue();
-                    } else if (name.equals("authorizationParameters")) {
-                        authorizationParameters = readMap(reader);
-                    } else if (name.equals("approvalParameters")) {
-                        approvalParameters = readMap(reader);
+                    } else if (name.equals("requestParameters")) {
+                        requestParameters = readMap(reader);
                     } else if (name.equals("clientId")) {
                         clientId = reader.nextString();
                     } else if (name.equals("scope")) {
@@ -817,7 +776,7 @@ public class MITREidDataService_1_1 implements MITREidDataService {
                         Set<String> authorityStrs = readSet(reader);
                         authorities = new HashSet<GrantedAuthority>();
                         for (String s : authorityStrs) {
-                            GrantedAuthority ga = new GrantedAuthorityImpl(s);
+                            GrantedAuthority ga = new SimpleGrantedAuthority(s);
                             authorities.add(ga);
                         }
                     } else if (name.equals("approved")) {
@@ -828,6 +787,16 @@ public class MITREidDataService_1_1 implements MITREidDataService {
                         }
                     } else if (name.equals("redirectUri")) {
                         redirectUri = reader.nextString();
+                    } else if (name.equals("responseTypes")) {
+                        responseTypes = readSet(reader);
+                    } else if (name.equals("extensions")) {
+                        Map<String, String> extEnc = readMap(reader);
+                        for(Entry<String, String> entry : extEnc.entrySet()) {
+                            Serializable decoded = base64UrlDecodeObject(entry.getValue(), Serializable.class);
+                            if(decoded != null) {
+                                extensions.put(entry.getKey(), decoded);
+                            }
+                        }
                     } else {
                         reader.skipValue();
                     }
@@ -839,13 +808,11 @@ public class MITREidDataService_1_1 implements MITREidDataService {
             }
         }
         reader.endObject();
-        DefaultAuthorizationRequest dar = new DefaultAuthorizationRequest(authorizationParameters, approvalParameters, clientId, scope);
-        dar.setAuthorities(authorities);
-        dar.setResourceIds(resourceIds);
-        dar.setApproved(approved);
-        dar.setRedirectUri(redirectUri);
-        return dar;
-    }*/
+        return new OAuth2Request(requestParameters, clientId, authorities, approved, scope, resourceIds, redirectUri, responseTypes, extensions);
+    }
+    
+    Map<Long, Long> grantOldToNewIdMap = new HashMap<Long, Long>();
+    Map<Long, Long> grantToWhitelistedSiteRefs = new HashMap<Long, Long>();
     
     /**
      * @param reader
@@ -854,9 +821,9 @@ public class MITREidDataService_1_1 implements MITREidDataService {
     private void readGrants(JsonReader reader) throws IOException {
         reader.beginArray();
         while (reader.hasNext()) {
-            try {
                 ApprovedSite site = new ApprovedSite();
                 Long currentId = null;
+                Long whitelistedSiteId = null;
                 reader.beginObject();
                 while (reader.hasNext()) {
                     switch (reader.peek()) {
@@ -884,39 +851,8 @@ public class MITREidDataService_1_1 implements MITREidDataService {
                             } else if (name.equals("allowedScopes")) {
                                 Set<String> allowedScopes = readSet(reader);
                                 site.setAllowedScopes(allowedScopes);
-                            } else if (name.equals("whitelistedSite")) {
-                                WhitelistedSite wlSite = new WhitelistedSite();
-                                reader.beginObject();
-                                while (reader.hasNext()) {
-                                    switch (reader.peek()) {
-                                        case END_OBJECT:
-                                            continue;
-                                        case NAME:
-                                            String wlName = reader.nextName();
-                                            if (wlName.equals("id")) {
-                                                //not needed
-                                                reader.skipValue();
-                                            } else if (name.equals("clientId")) {
-                                                wlSite.setClientId(reader.nextString());
-                                            } else if (name.equals("creatorUserId")) {
-                                                wlSite.setCreatorUserId(reader.nextString());
-                                            } else if (name.equals("allowedScopes")) {
-                                                Set<String> allowedScopes = readSet(reader);
-                                                wlSite.setAllowedScopes(allowedScopes);
-                                            } else {
-                                                logger.debug("Found unexpected entry");
-                                                reader.skipValue();
-                                            }
-                                            break;
-                                        default:
-                                            logger.debug("Found unexpected entry");
-                                            reader.skipValue();
-                                            continue;
-                                    }
-                                }
-                                reader.endObject();
-                                wlSite = wlSiteRepository.save(wlSite);
-                                site.setWhitelistedSite(wlSite);
+                            } else if (name.equals("whitelistedSiteId")) {
+                                whitelistedSiteId = reader.nextLong();
                             } else {
                                 logger.debug("Found unexpected entry");
                                 reader.skipValue();
@@ -929,16 +865,99 @@ public class MITREidDataService_1_1 implements MITREidDataService {
                     }
                 }
                 reader.endObject();
-                approvedSiteRepository.save(site).getId();
+                Long newId = approvedSiteRepository.save(site).getId();
+                grantOldToNewIdMap.put(currentId, newId);
+                if(whitelistedSiteId != null) {
+                    grantToWhitelistedSiteRefs.put(currentId, whitelistedSiteId);
+                }
                 logger.debug("Read grant {}", currentId);
-            } catch (ParseException ex) {
-                logger.error("Unable to read grant", ex);
-            }
         }
         reader.endArray();
         logger.info("Done reading grants");
     }
-
+    
+    Map<Long, Long> whitelistedSiteOldToNewIdMap = new HashMap<Long, Long>();
+ 
+    /**
+     * @param reader
+     * @throws IOException
+     */
+    private void readWhitelistedSites(JsonReader reader) throws IOException {
+        reader.beginArray();
+        while (reader.hasNext()) {
+            WhitelistedSite wlSite = new WhitelistedSite();
+            Long currentId = null;
+            reader.beginObject();
+            while (reader.hasNext()) {
+                switch (reader.peek()) {
+                    case END_OBJECT:
+                        continue;
+                    case NAME:
+                        String name = reader.nextName();
+                        if (name.equals("id")) {
+                            currentId = reader.nextLong();
+                        } else if (name.equals("clientId")) {
+                            wlSite.setClientId(reader.nextString());
+                        } else if (name.equals("creatorUserId")) {
+                            wlSite.setCreatorUserId(reader.nextString());
+                        } else if (name.equals("allowedScopes")) {
+                            Set<String> allowedScopes = readSet(reader);
+                            wlSite.setAllowedScopes(allowedScopes);
+                        } else {
+                            logger.debug("Found unexpected entry");
+                            reader.skipValue();
+                        }
+                        break;
+                    default:
+                        logger.debug("Found unexpected entry");
+                        reader.skipValue();
+                        continue;
+                }
+            }
+            reader.endObject();
+            Long newId = wlSiteRepository.save(wlSite).getId();
+            whitelistedSiteOldToNewIdMap.put(currentId, newId);
+        }
+        reader.endArray();
+        logger.info("Done reading whitelisted sites");
+    }
+    
+    /**
+     * @param reader
+     * @throws IOException
+     */
+    private void readBlacklistedSites(JsonReader reader) throws IOException {
+        reader.beginArray();
+        while (reader.hasNext()) {
+            BlacklistedSite blSite = new BlacklistedSite();
+            reader.beginObject();
+            while (reader.hasNext()) {
+                switch (reader.peek()) {
+                    case END_OBJECT:
+                        continue;
+                    case NAME:
+                        String name = reader.nextName();
+                        if (name.equals("id")) {
+                            reader.skipValue();
+                        } else if (name.equals("uri")) {
+                            blSite.setUri(reader.nextString());
+                        } else {
+                            logger.debug("Found unexpected entry");
+                            reader.skipValue();
+                        }
+                        break;
+                    default:
+                        logger.debug("Found unexpected entry");
+                        reader.skipValue();
+                        continue;
+                }
+            }
+            reader.endObject();
+            blSiteRepository.save(blSite);
+        }
+        reader.endArray();
+        logger.info("Done reading blacklisted sites");
+    }
     /**
      * @param reader
      * @throws IOException
@@ -970,7 +989,7 @@ public class MITREidDataService_1_1 implements MITREidDataService {
                             Set<String> authorityStrs = readSet(reader);
                             Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
                             for (String s : authorityStrs) {
-                                GrantedAuthority ga = new GrantedAuthorityImpl(s);
+                                GrantedAuthority ga = new SimpleGrantedAuthority(s);
                                 authorities.add(ga);
                             }
                             client.setAuthorities(authorities);
@@ -1109,53 +1128,6 @@ public class MITREidDataService_1_1 implements MITREidDataService {
          reader.endArray();
          logger.info("Done reading system scopes");
     }
-  
-    private Set readSet(JsonReader reader) throws IOException {
-        Set arraySet = null;
-        reader.beginArray();
-        switch (reader.peek()) {
-            case STRING:
-                arraySet = new HashSet<String>();
-                while (reader.hasNext()) {
-                    arraySet.add(reader.nextString());
-                }
-                break;
-            case NUMBER:
-                arraySet = new HashSet<Long>();
-                while (reader.hasNext()) {
-                    arraySet.add(reader.nextLong());
-                }
-                break;
-            default:
-                arraySet = new HashSet();
-                break;
-        }
-        reader.endArray();
-        return arraySet;
-    }
-    
-    private Map readMap(JsonReader reader) throws IOException {
-        Map map = new HashMap<String, Object>();
-        reader.beginObject();
-        while(reader.hasNext()) {
-            String name = reader.nextName();
-            Object value = null;
-            switch(reader.peek()) {
-                case STRING:
-                    value = reader.nextString();
-                    break;
-                case BOOLEAN:
-                    value = reader.nextBoolean();
-                    break;
-                case NUMBER:
-                    value = reader.nextLong();
-                    break;
-            }
-            map.put(name, value);
-        }
-        reader.endObject();
-        return map;
-    }
     
     private void fixObjectReferences() {
         for(Long oldRefreshTokenId : refreshTokenToClientRefs.keySet()) {
@@ -1166,6 +1138,7 @@ public class MITREidDataService_1_1 implements MITREidDataService {
             refreshToken.setClient(client);
             tokenRepository.saveRefreshToken(refreshToken);
         }
+        refreshTokenToClientRefs.clear();
         for(Long oldRefreshTokenId : refreshTokenToAuthHolderRefs.keySet()) {
             Long oldAuthHolderId = refreshTokenToAuthHolderRefs.get(oldRefreshTokenId);
             Long newAuthHolderId = authHolderOldToNewIdMap.get(oldAuthHolderId);
@@ -1175,6 +1148,7 @@ public class MITREidDataService_1_1 implements MITREidDataService {
             refreshToken.setAuthenticationHolder(authHolder);
             tokenRepository.saveRefreshToken(refreshToken);
         }
+        refreshTokenToAuthHolderRefs.clear();
         for(Long oldAccessTokenId : accessTokenToClientRefs.keySet()) {
             String clientRef = accessTokenToClientRefs.get(oldAccessTokenId);
             ClientDetailsEntity client = clientRepository.getClientByClientId(clientRef);
@@ -1183,6 +1157,7 @@ public class MITREidDataService_1_1 implements MITREidDataService {
             accessToken.setClient(client);
             tokenRepository.saveAccessToken(accessToken);
         }
+        accessTokenToClientRefs.clear();
         for(Long oldAccessTokenId : accessTokenToAuthHolderRefs.keySet()) {
             Long oldAuthHolderId = accessTokenToAuthHolderRefs.get(oldAccessTokenId);
             Long newAuthHolderId = authHolderOldToNewIdMap.get(oldAuthHolderId);
@@ -1192,6 +1167,7 @@ public class MITREidDataService_1_1 implements MITREidDataService {
             accessToken.setAuthenticationHolder(authHolder);
             tokenRepository.saveAccessToken(accessToken);
         }
+        accessTokenToAuthHolderRefs.clear();
         for(Long oldAccessTokenId : accessTokenToRefreshTokenRefs.keySet()) {
             Long oldRefreshTokenId = accessTokenToRefreshTokenRefs.get(oldAccessTokenId);
             Long newRefreshTokenId = refreshTokenOldToNewIdMap.get(oldRefreshTokenId);
@@ -1201,6 +1177,8 @@ public class MITREidDataService_1_1 implements MITREidDataService {
             accessToken.setRefreshToken(refreshToken);
             tokenRepository.saveAccessToken(accessToken);
         }
+        accessTokenToRefreshTokenRefs.clear();
+        refreshTokenOldToNewIdMap.clear();
         for(Long oldAccessTokenId : accessTokenToIdTokenRefs.keySet()) {
             Long oldIdTokenId = accessTokenToIdTokenRefs.get(oldAccessTokenId);
             Long newIdTokenId = accessTokenOldToNewIdMap.get(oldIdTokenId);
@@ -1210,5 +1188,18 @@ public class MITREidDataService_1_1 implements MITREidDataService {
             accessToken.setIdToken(idToken);
             tokenRepository.saveAccessToken(accessToken);
         }
+        accessTokenToIdTokenRefs.clear();
+        accessTokenOldToNewIdMap.clear();
+        for(Long oldGrantId : grantToWhitelistedSiteRefs.keySet()) {
+            Long oldWhitelistedSiteId = grantToWhitelistedSiteRefs.get(oldGrantId);
+            Long newWhitelistedSiteId = whitelistedSiteOldToNewIdMap.get(oldWhitelistedSiteId);
+            WhitelistedSite wlSite = wlSiteRepository.getById(newWhitelistedSiteId);
+            Long newGrantId = grantOldToNewIdMap.get(oldGrantId);
+            ApprovedSite approvedSite = approvedSiteRepository.getById(newGrantId);
+            approvedSite.setWhitelistedSite(wlSite);
+            approvedSiteRepository.save(approvedSite);
+        }
+        grantOldToNewIdMap.clear();
+        grantToWhitelistedSiteRefs.clear();
     }
 }
