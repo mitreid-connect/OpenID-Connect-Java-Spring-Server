@@ -18,15 +18,11 @@
  */
 package org.mitre.openid.connect.service.impl;
 
-import com.google.common.io.BaseEncoding;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -55,7 +51,6 @@ import org.mitre.openid.connect.model.WhitelistedSite;
 import org.mitre.openid.connect.repository.ApprovedSiteRepository;
 import org.mitre.openid.connect.repository.BlacklistedSiteRepository;
 import org.mitre.openid.connect.repository.WhitelistedSiteRepository;
-import org.mitre.openid.connect.service.MITREidDataService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,7 +69,7 @@ import org.springframework.stereotype.Service;
  * @author arielak
  */
 @Service
-public class MITREidDataService_1_0 implements MITREidDataService {
+public class MITREidDataService_1_0 extends MITREidDataService_1_X {
     
     private final static Logger logger = LoggerFactory.getLogger(MITREidDataService_1_0.class);
     @Autowired
@@ -91,9 +86,6 @@ public class MITREidDataService_1_0 implements MITREidDataService {
     private OAuth2TokenRepository tokenRepository;
     @Autowired
     private SystemScopeRepository sysScopeRepository;
-    private static final String ISO_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
-    private static final SimpleDateFormat sdf = new SimpleDateFormat(ISO_FORMAT);
-
     /* (non-Javadoc)
      * @see org.mitre.openid.connect.service.MITREidDataService#export(com.google.gson.stream.JsonWriter)
      */
@@ -101,20 +93,7 @@ public class MITREidDataService_1_0 implements MITREidDataService {
     public void exportData(JsonWriter writer) throws IOException {
         throw new UnsupportedOperationException("Not supported.");
     }
-
-    private static Date utcToDate(String s) {
-        if (s == null) {
-            return null;
-        }
-        Date d = null;
-        try {
-            d = sdf.parse(s);
-        } catch(ParseException ex) {
-            logger.error("Unable to parse date string {}", s, ex);
-        }
-        return d;
-    }
-
+    
     /* (non-Javadoc)
      * @see org.mitre.openid.connect.service.MITREidDataService#importData(com.google.gson.stream.JsonReader)
      */
@@ -312,22 +291,6 @@ public class MITREidDataService_1_0 implements MITREidDataService {
         reader.endArray();
         logger.info("Done reading access tokens");
     }
-
-    
-    private <T> T base64UrlDecodeObject(String encoded, Class<T> type) {
-        T deserialized = null;
-        try {
-            byte[] decoded = BaseEncoding.base64Url().decode(encoded);
-            ByteArrayInputStream bais = new ByteArrayInputStream(decoded);
-            ObjectInputStream ois = new ObjectInputStream(bais);
-            deserialized = type.cast(ois.readObject());
-            ois.close();
-            bais.close();
-        } catch (Exception ex) {
-            logger.error("Unable to decode object", ex);
-        }
-        return deserialized;
-    }
     
     private Map<Long, Long> authHolderOldToNewIdMap = new HashMap<Long, Long>();
     
@@ -410,7 +373,6 @@ public class MITREidDataService_1_0 implements MITREidDataService {
         boolean approved = false;
         Collection<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
         Map<String, String> authorizationParameters = new HashMap<String, String>();
-        Map<String, String> approvalParameters = new HashMap<String, String>();
         Set<String> responseTypes = new HashSet<String>();
         String redirectUri = null;
         String clientId = null;
@@ -426,7 +388,7 @@ public class MITREidDataService_1_0 implements MITREidDataService {
                     } else if (name.equals("authorizationParameters")) {
                         authorizationParameters = readMap(reader);
                     } else if (name.equals("approvalParameters")) {
-                        approvalParameters = readMap(reader);
+                        reader.skipValue();
                     } else if (name.equals("clientId")) {
                         clientId = reader.nextString();
                     } else if (name.equals("scope")) {
@@ -782,53 +744,6 @@ public class MITREidDataService_1_0 implements MITREidDataService {
          logger.info("Done reading system scopes");
     }
   
-    private Set readSet(JsonReader reader) throws IOException {
-        Set arraySet = null;
-        reader.beginArray();
-        switch (reader.peek()) {
-            case STRING:
-                arraySet = new HashSet<String>();
-                while (reader.hasNext()) {
-                    arraySet.add(reader.nextString());
-                }
-                break;
-            case NUMBER:
-                arraySet = new HashSet<Long>();
-                while (reader.hasNext()) {
-                    arraySet.add(reader.nextLong());
-                }
-                break;
-            default:
-                arraySet = new HashSet();
-                break;
-        }
-        reader.endArray();
-        return arraySet;
-    }
-    
-    private Map readMap(JsonReader reader) throws IOException {
-        Map map = new HashMap<String, Object>();
-        reader.beginObject();
-        while(reader.hasNext()) {
-            String name = reader.nextName();
-            Object value = null;
-            switch(reader.peek()) {
-                case STRING:
-                    value = reader.nextString();
-                    break;
-                case BOOLEAN:
-                    value = reader.nextBoolean();
-                    break;
-                case NUMBER:
-                    value = reader.nextLong();
-                    break;
-            }
-            map.put(name, value);
-        }
-        reader.endObject();
-        return map;
-    }
-    
     private void fixObjectReferences() {
         for(Long oldRefreshTokenId : refreshTokenToClientRefs.keySet()) {
             String clientRef = refreshTokenToClientRefs.get(oldRefreshTokenId);
