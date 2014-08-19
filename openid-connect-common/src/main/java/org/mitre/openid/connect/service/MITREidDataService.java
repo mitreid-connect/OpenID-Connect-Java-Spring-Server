@@ -16,10 +16,9 @@
  ******************************************************************************/
 package org.mitre.openid.connect.service;
 
-import java.io.IOException;
-
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
 
 /**
  * @author jricher
@@ -36,6 +35,8 @@ public interface MITREidDataService {
     // member names
     public static final String REFRESHTOKENS = "refreshTokens";
     public static final String ACCESSTOKENS = "accessTokens";
+    public static final String WHITELISTEDSITES = "whitelistedSites";
+    public static final String BLACKLISTEDSITES = "blacklistedSites";
     public static final String AUTHENTICATIONHOLDERS = "authenticationHolders";
     public static final String GRANTS = "grants";
     public static final String CLIENTS = "clients";
