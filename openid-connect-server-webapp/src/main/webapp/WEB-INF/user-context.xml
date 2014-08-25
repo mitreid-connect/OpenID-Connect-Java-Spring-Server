@@ -46,7 +46,6 @@
 		<security:form-login login-page="/login" authentication-failure-url="/login?error=failure" authentication-success-handler-ref="authenticationTimeStamper" />
 		<security:intercept-url pattern="/**" access="permitAll" />
 		<security:custom-filter ref="promptFilter" after="SECURITY_CONTEXT_FILTER" />
-		<security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
 		<security:logout logout-url="/logout" />
 		<security:anonymous />
 		<security:expression-handler ref="oauthWebExpressionHandler" />
