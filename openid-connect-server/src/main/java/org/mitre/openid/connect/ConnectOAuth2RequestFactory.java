@@ -39,6 +39,7 @@ import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.DefaultOAuth2RequestFactory;
 import org.springframework.stereotype.Component;
 
+import com.google.common.base.Strings;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -358,11 +359,15 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 	 * @return
 	 */
 	private JsonObject parseClaimRequest(String claimRequestString) {
-		JsonElement el = parser .parse(claimRequestString);
-		if (el != null && el.isJsonObject()) {
-			return el.getAsJsonObject();
-		} else {
+		if (Strings.isNullOrEmpty(claimRequestString)) {
 			return null;
+		} else {
+			JsonElement el = parser.parse(claimRequestString);
+			if (el != null && el.isJsonObject()) {
+				return el.getAsJsonObject();
+			} else {
+				return null;
+			}
 		}
 	}
 
