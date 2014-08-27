@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<th:block data-sec-authorize="hasRole('ROLE_USER')">
+	<div class="span2 visible-desktop">
+	    <div class="well sidebar-nav">
+	        <ul class="nav nav-list">
+	        	<o:actionmenu />
+	        </ul>
+	    </div><!--/.well -->
+	</div><!--/span-->
+</th:block>
+<th:block data-sec-authorize="!hasRole('ROLE_USER')">
+	<div class="span1">
+		<!-- placeholder for non-logged-in users -->
+	</div><!--/span-->
+</th:block>
+
+</body>
+</html>

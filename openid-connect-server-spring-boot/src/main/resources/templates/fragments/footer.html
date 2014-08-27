@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<th:block data-th-fragment="footer">
+
+<div id="push"></div>
+<!-- end #wrap -->
+<div id="footer">
+	<div class="container">
+		<p class="muted credit">
+			<span data-th-replace="fragments/copyright :: copyright"></span>
+		</p>
+	</div>
+</div>
+<!-- javascript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script type="text/javascript" src="resources/bootstrap2/js/bootstrap.js"></script>
+<script type="text/javascript" src="resources/js/lib/underscore.js"></script>
+<script type="text/javascript" src="resources/js/lib/backbone.js"></script>
+<script type="text/javascript" src="resources/js/lib/purl.js"></script>
+<script type="text/javascript" src="resources/js/lib/bootstrapx-clickover.js"></script>
+<script type="text/javascript" src="resources/js/lib/moment.js"></script>
+<script type="text/javascript" src="resources/js/lib/bootstrap-sheet.js"></script>
+<script type="text/javascript" src="resources/js/lib/bootpag.js"></script>
+<th:block data-th-if="${js != null and js != ''}">
+	<script type="text/javascript" src="resources/js/client.js"></script>
+	<script type="text/javascript" src="resources/js/grant.js"></script>
+	<script type="text/javascript" src="resources/js/scope.js"></script>
+	<script type="text/javascript" src="resources/js/whitelist.js"></script>
+	<script type="text/javascript" src="resources/js/dynreg.js"></script>
+	<script type="text/javascript" src="resources/js/rsreg.js"></script>
+	<script type="text/javascript" src="resources/js/token.js"></script>
+	<script type="text/javascript" src="resources/js/admin.js"></script>
+</th:block>
+<script type="text/javascript" src="resources/js/lib/retina.js"></script>
+
+</th:block>
+
+</body>
+</html>
