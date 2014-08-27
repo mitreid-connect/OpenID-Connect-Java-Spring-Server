@@ -11,7 +11,7 @@
 				<span class="icon-bar"></span> 
 				<span class="icon-bar"></span>
 			</button>
-			<a class="brand" href=""><img data-th-src="${ config.logoImageUrl }" /> ${config.topbarTitle}</a>
+			<a class="brand" href=""><img data-th-src="${ config.logoImageUrl }" /> <th:block data-th-text="${config.topbarTitle}">Brand</th:block></a>
 			<div class="nav-collapse collapse" data-th-if="${!#strings.isEmpty(pageName)}">
 				<ul class="nav">
 					<li data-th-if="${pageName == 'Home'}" class="active"><a href="" data-toggle="collapse" data-target=".nav-collapse">Home</a></li>
@@ -33,11 +33,11 @@
 							<li><a href="logout" data-toggle="collapse" data-target=".nav-collapse"><i class="icon-remove"></i> Log out</a></li>
 						</ul>
 					</li>
-                    <li data-sec-authorize="hasRole('ROLE_USER')">
+                    <li data-sec-authorize="">
                     	<a id="loginButton" href="login" data-toggle="collapse" data-target=".nav-collapse"><i class="icon-lock icon-white"></i> Log in</a>
                     </li>
                 </ul>
-                    
+                    <b data-sec-authentication="principal.authorities"> roles </b>
             </div><!--/.nav-collapse -->
         </div>
     </div>
