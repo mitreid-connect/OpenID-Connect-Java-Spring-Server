@@ -1,0 +1,220 @@
+<!-- 
+ Copyright 2014 The MITRE Corporation 
+   and the MIT Kerberos and Internet Trust Consortium
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+   http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<!-- system scope -->
+<script type="text/html" id="tmpl-system-scope-table">
+
+    <div class="well well-small">
+		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> Refresh</button> &nbsp;
+        <button class="btn btn-small btn-primary new-scope"><i class="icon-plus icon-white"></i> New Scope</button>
+    </div>
+
+	<div id="scope-table-empty" class="alert alert-info">
+		There are no system scopes defined. Clients may still have custom scopes.
+	</div>
+
+    <table id="scope-table" class="table table-hover table-striped">
+        <thead>
+        <tr>
+			<th></th>
+            <th>Scope</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+    <div class="well well-small">
+		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> Refresh</button> &nbsp; 
+        <button class="btn btn-small btn-primary new-scope"><i class="icon-plus icon-white"></i> New Scope</button>
+    </div>
+
+</script>
+
+<script type="text/html" id="tmpl-system-scope">
+	<td>
+		<% if (allowDynReg) { %>
+			<span class="label label-inverse allow-dyn-reg"><i class="icon-globe icon-white"></i></span>
+		<% } %>
+	</td>
+
+    <td>
+        <span class="badge badge-info">
+		<% if (icon) { %>
+			<i class="icon-<%- icon %> icon-white"></i>
+		<% } %>
+		<%- value %>
+		</span>
+        <p><small><%- description %></small></p>
+    </td>
+
+    <td>
+		<div class="btn-group pull-right">
+	        <button class="btn btn-edit"><i class="icon-edit"></i> Edit</button> &nbsp;
+    	    <button class="btn btn-danger btn-delete"><i class="icon-trash icon-white"></i> Delete</button>
+		</div>
+    </td>
+
+</script>
+
+<script type="text/html" id="tmpl-system-scope-form">
+	<h1><%- id == null ? 'New' : 'Edit'%> Scope</h1>
+
+	<form class="form-horizontal">
+		<fieldset>
+
+            <div class="well well-small">
+                <button class="btn btn-small btn-save btn-success"><i class="icon-ok-circle icon-white"></i> Save</button> &nbsp; 
+				<button class="btn btn-small btn-cancel"><i class="icon-ban-circle"></i> Cancel</button>
+            </div>			
+
+			<div class="control-group" id="value">
+				<label class="control-label">Scope value</label>
+				<div class="controls">
+					<input value="<%-value != null ? value : ''%>" type="text" class="" placeholder="scope">
+					<p class="help-block">Single string with no spaces</p>
+				</div>
+			</div>
+
+			<div class="control-group" id="description">
+				<label class="control-label">Description</label>
+				<div class="controls">
+					<textarea class="input-xlarge" placeholder="Type a description" maxlength="200" rows="3"><%-description != null ? description : ''%></textarea>
+					<p class="help-block">Human-readable text description</p>
+				</div>
+			</div>
+
+			<div class="control-group" id="icon">
+				<label class="control-label">Icon</label>
+				<div class="controls">
+
+					<span id="iconDisplay">
+						<i class="icon-<%-icon%>"></i> <span class="uneditable-input"><%-icon%></span>
+
+						<input type="hidden" value="<%-icon%>">
+					</span>
+
+					<a href="#iconSelector" role="button" class="btn btn-info" data-toggle="modal"><i class="icon-white icon-picture"></i> Select an icon</a>
+
+					<div id="iconSelector" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="iconSelectorLabel" aria-hidden="true">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+							<h3 id="iconSelectorLabel">Select an Icon</h3>
+						</div>
+						<div class="modal-body">
+
+						</div>
+						<div class="modal-footer">
+							<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+						</div>
+					</div>
+				</div>
+
+			</div>
+
+			<div class="control-group" id="defaultScope">
+				<div class="controls">
+					<label class="checkbox">
+						<input type="checkbox" <%-defaultScope ? 'checked' : '' %>> default scope
+					</label>
+					<p class="help-block">Newly-created clients get this scope by default?</p>
+				</div>
+			</div>
+
+			<div class="control-group" id="allowDynReg">
+				<div class="controls">
+					<label class="checkbox">
+						<input type="checkbox" <%-allowDynReg ? 'checked' : '' %>> allow dynamic registration
+					</label>
+					<p class="help-block">Allow dynamically registered clients to request this scope?</p>
+				</div>
+			</div>
+
+			<div class="control-group">
+				<div class="controls" id="isStructured">
+					<label class="checkbox">
+						<input type="checkbox" <%-structured ? 'checked' : '' %>> is a structured scope
+					</label>
+					<p class="help-block">Is the scope structured with structured values like <code>base:extension</code>?</p>
+				</div>
+				<div class="controls" id="structuredParamDescription">
+					<input type="text" value="<%-structuredParamDescription ? structuredParamDescription : '' %>">
+					<p class="help-block">Human-readable description of the structured parameter</p>
+				</div>
+			</div>
+
+            <div class="well well-small">
+                <button class="btn btn-small btn-save btn-success"><i class="icon-ok-circle icon-white"></i> Save</button> &nbsp; 
+				<button class="btn btn-small btn-cancel"><i class="icon-ban-circle"></i> Cancel</button>
+            </div>			
+
+		</fieldset>
+	</form>
+</script>
+
+<script type="text/html" id="tmpl-system-scope-icon">
+
+	<div class="row-fluid">
+		<div class="span4" style="margin-top: 5px; margin-bottom: 5px;">
+			<% if (items[0]) { %>
+			<button class="btn btn-block btn-icon" value="<%-items[0]%>"><i class="icon-<%-items[0]%>"></i> <%-items[0]%>
+			<% } %>
+		</div>
+		<div class="span4" style="margin-top: 5px; margin-bottom: 5px;">
+			<% if (items[1]) { %>
+			<button class="btn btn-block btn-icon" value="<%-items[1]%>"><i class="icon-<%-items[1]%>"></i> <%-items[1]%>
+			<% } %>
+		</div>
+		<div class="span4" style="margin-top: 5px; margin-bottom: 5px;">
+			<% if (items[2]) { %>
+			<button class="btn btn-block btn-icon" value="<%-items[2]%>"><i class="icon-<%-items[2]%>"></i> <%-items[2]%>
+			<% } %>
+		</div>
+	</div>
+
+</script>
+
+<script type="text/html" id="tmpl-scope-list">
+
+<% 
+_.each(scopes, function(s) {
+	var ss = systemScopes.getByValue(s);
+	
+	if (ss) {
+%>
+	<span class="badge badge-info" 
+<% if (ss.get('description')) { %>
+	title="<%- ss.get('description') %>"
+<% } %>
+
+style="cursor: default;" >
+<% if (ss.get('icon')) { %>
+	<i class="icon-<%-ss.get('icon')%> icon-white"></i>
+<% } %>
+<%-s%>
+</span>
+<%
+	} else {
+%>
+	<span class="badge" style="cursor: default;"><%-s%></span>
+<%
+	}
+
+});
+%>
+
+</script>

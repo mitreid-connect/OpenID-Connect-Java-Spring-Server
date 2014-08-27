@@ -64,6 +64,29 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!-- openid-connect-server -->
+		<dependency>
+			<groupId>org.mitre</groupId>
+			<artifactId>openid-connect-server</artifactId>
+			<version>1.1.10-SNAPSHOT</version>
+			<exclusions>
+				<exclusion>
+					<groupId>javax.servlet*</groupId>
+				</exclusion>
+				<exclusion>
+					<groupId>javax.servlet*</groupId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework.security</groupId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 	</dependencies>
 
 	<properties>

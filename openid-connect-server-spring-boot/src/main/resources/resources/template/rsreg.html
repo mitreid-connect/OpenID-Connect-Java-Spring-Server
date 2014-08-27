@@ -1,0 +1,308 @@
+<!-- 
+ Copyright 2014 The MITRE Corporation 
+   and the MIT Kerberos and Internet Trust Consortium
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+   http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<!-- self-service resource registration -->
+
+<script type="text/html" id="tmpl-rsreg">
+
+<div class="row-fluid">
+
+<div class="span5 well">
+	<button class="btn btn-large" id="newreg">Register a new protected resource</button>
+</div>
+<div class="span2 text-center">
+	<strong> - OR - </strong>
+</div>
+<div class="span5 well">
+	<input type="text" id="clientId" placeholder="Enter Resource ID"> 
+	<input type="text" id="regtoken" placeholder="Enter Registration Access Token"> 
+	<button class="btn btn-large" id="editreg">Edit an existing protected resource</button>
+	<span class="help-block>Paste in your ID and registration access token to access the resource's properties.</span>
+</div>
+
+</script>
+
+
+<script type="text/html" id="tmpl-rsreg-resource-form">
+
+    <h1><%-(client.client_id == null ? 'New' : 'Edit')%> Protected Resource</h1>
+
+
+    <form class="form-horizontal tabbable">
+        <fieldset>
+            <div class="well well-small">
+                <button class="btn btn-small btn-save btn-success"><i class="icon-ok-circle icon-white"></i> Save</button> &nbsp; 
+				<button class="btn btn-small btn-cancel"><i class="icon-ban-circle"></i> Cancel</button>
+				<% if (client.client_id) { %>
+				<button class="btn btn-danger btn-delete pull-right"><i class="icon-trash icon-white"></i> Delete</button>
+				<% } %>
+            </div>
+
+				<ul class="nav nav-tabs">
+					<li class="active"><a data-target="#resource-main-tab" data-toggle="tab" href="#">Main</a></li>
+					<li><a data-target="#resource-access-tab" data-toggle="tab" href="#">Access</a></li>
+					<li><a data-target="#resource-secret-tab" data-toggle="tab" href="#">Credentials</a></li>
+					<li><a data-target="#resource-json-tab" data-toggle="tab" href="#">JSON</a></li>
+				</ul>
+
+<div class="tab-content">
+	<div class="tab-pane active" id="resource-main-tab">
+
+			<% if (client.client_id) { %>
+			<div class="control-group">
+				<div class="controls">
+					<div class="alert alert-error">
+						<strong>Warning!</strong> You MUST protect your <b>Client ID</b>, <b>Client Secret (if provided)</b>, and your <b>Registration Access Token</b>. 
+						If you lose your Client ID or Registration Access Token, you will no longer have access to your client's registration
+						records and you will need to register a new client.
+					</div>
+				</div>
+
+			</div>
+
+            <div class="control-group" id="clientId">
+                <label class="control-label">Client ID</label>
+                <div class="controls">
+                    <pre><%-client.client_id ? client.client_id : '<code>Will be generated</code>'%></pre>
+                </div>
+            </div>
+
+
+			<div class="control-group" id="requireClientSecret">
+				<label class="control-label">Client Secret</label>
+    	        <div class="control-group">
+            	    <div class="controls">
+						<% if (client.client_id) { %>
+							<% if (client.client_secret) { %>
+								<pre><%- client.client_secret %></pre>
+							<% } else { %>
+								<% if (client.token_endpoint_auth_method == 'none') { %>
+									<pre>None (public client)</pre>
+								<% } else if (client.token_endpoint_auth_method == 'private_key_jwt') { %>
+									<pre>None (private key authentication)</pre>
+								<% } else { %>
+									<p class="text-error"><b>Unknown error:</b> no client secret and unknown auth method.</p>
+								<% } %>
+							<% } %>
+						<% } else { %>
+							<pre>Will be generated</pre>
+						<% } %>
+	                </div>
+    	        </div>
+
+			</div>
+
+            <div class="control-group" id="clientConfigurationUri">
+                <label class="control-label">Client Configuration URL</label>
+                <div class="controls">
+                    <pre><%-client.registration_client_uri ? client.registration_client_uri : 'Will be generated'%></pre>
+                </div>
+            </div>
+
+            <div class="control-group" id="registrationAccessToken">
+                <label class="control-label">Registration Access Token</label>
+                <div class="controls">
+                    <pre><%-client.registration_access_token ? client.registration_access_token : 'Will be generated'%></pre>
+                </div>
+            </div>
+
+			<% } else { %>
+
+            <div class="control-group" id="clientId">
+                <label class="control-label">ID</label>
+                <div class="controls">
+                    <code>Will be generated</code>
+                </div>
+            </div>
+
+
+			<div class="control-group" id="requireClientSecret">
+				<label class="control-label">Secret</label>
+    	        <div class="control-group">
+            	    <div class="controls">
+						<code>Will be generated</code>
+	                </div>
+    	        </div>
+
+			</div>
+
+            <div class="control-group" id="clientConfigurationUri">
+                <label class="control-label">Configuration URL</label>
+                <div class="controls">
+                    <code>Will be generated</code>
+                </div>
+            </div>
+
+            <div class="control-group" id="registrationAccessToken">
+                <label class="control-label">Registration Access Token</label>
+                <div class="controls">
+                    <code>Will be generated</code>
+                </div>
+            </div>
+
+			<% } %>
+
+
+            <div class="control-group" id="clientName">
+                <label class="control-label">Resource name</label>
+                <div class="controls">
+                    <input value="<%-client.client_name ? client.client_name : ''%>" maxlength="100" type="text" class="" placeholder="Type something">
+                    <p class="help-block">Human-readable application name</p>
+                </div>
+            </div>
+
+			<div class="control-group" id="logoUri">
+				<label class="control-label">Logo</label>
+				<div class="controls">
+					<input placeholder="https://" value="<%-client.logo_uri ? client.logo_uri : ''%>" maxlength="1000" type="text" class=""/>
+					<p class="help-block">URL that points to a logo image, will be displayed on approval page</p>
+				</div>
+			</div>
+
+			<div class="control-group" id="logoBlock">
+				<div class="controls">
+					<img src="resources/images/logo_placeholder.gif" alt="logo" id="logoPreview" width="275px" class="thumbnail" />
+				</div>
+			</div>
+
+			<div class="control-group" id="tosUri">
+				<label class="control-label">Terms of Service</label>
+				<div class="controls">
+					<input placeholder="https://" value="<%-client.tos_uri ? client.tos_uri : ''%>" maxlength="1000" type="text" class=""/>
+					<p class="help-block">URL for the Terms of Service of this client, will be displayed to the user</p>
+				</div>
+			</div>
+
+			<div class="control-group" id="policyUri">
+				<label class="control-label">Policy</label>
+				<div class="controls">
+					<input placeholder="https://" value="<%-client.policy_uri ? client.policy_uri : ''%>" maxlength="1000" type="text" class=""/>
+					<p class="help-block">URL for the Policy Statement of this client, will be displayed to the user</p>
+				</div>
+			</div>
+
+			<div class="control-group" id="clientUri">
+				<label class="control-label">Home Page</label>
+				<div class="controls">
+					<input placeholder="https://" value="<%-client.client_uri ? client.client_uri : ''%>" maxlength="1000" type="text" class=""/>
+					<p class="help-block">URL for the client's home page, will be displayed to the user</p>
+				</div>
+			</div>
+
+			<div class="control-group" id="applicationType">
+				<label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> Application Type</label>
+				<div class="controls">
+					<label class="radio inline">
+						<input type="radio" name="applicationType" value="NATIVE" <%-(client.application_type == 'NATIVE' ? 'checked' : '')%>> Native
+					</label>
+					<label class="radio inline">
+						<input type="radio" name="applicationType" value="WEB" <%-(client.application_type == 'WEB' ? 'checked' : '')%>> Web
+					</label>
+				</div>
+			</div>
+			
+            <div class="control-group" id="contacts">
+                <label class="control-label">Contacts</label>
+                <div class="controls">
+					<span class="help-block">List of contacts for adminstrators of this client. Your email address (<%- userInfo.email %>) will be automatically added to this list on save.</span>
+					<div></div>
+                </div>
+            </div>
+
+	</div>
+	
+	<div class="tab-pane" id="resource-access-tab">
+
+            <div class="control-group" id="scope">
+                <label class="control-label">Scope</label>
+                <div class="controls">
+                </div>
+            </div>
+	</div>
+	
+	<div class="tab-pane" id="resource-secret-tab">
+
+			<div class="control-group" id="tokenEndpointAuthMethod">
+				<label class="control-label">Introspection Endpoint Authentication Method</label>
+				<div class="controls">
+					<label class="radio">
+						<input type="radio" name="tokenEndpointAuthMethod" value="client_secret_basic" <%-(client.token_endpoint_auth_method == 'client_secret_basic' ? 'checked' : '')%>> Client Secret over HTTP Basic
+					</label>
+					<label class="radio">
+						<input type="radio" name="tokenEndpointAuthMethod" value="client_secret_post" <%-(client.token_endpoint_auth_method == 'client_secret_post' ? 'checked' : '')%>> Client Secret over HTTP POST
+					</label>
+					<label class="radio">
+						<input type="radio" name="tokenEndpointAuthMethod" value="client_secret_jwt" <%-(client.token_endpoint_auth_method == 'client_secret_jwt' ? 'checked' : '')%>> Client Secret via symmetrically-signed JWT assertion
+					</label>
+					<label class="radio">
+						<input type="radio" name="tokenEndpointAuthMethod" value="private_key_jwt" <%-(client.token_endpoint_auth_method == 'private_key_jwt' ? 'checked' : '')%>> Asymmetrically-signed JWT assertion
+					</label>
+					<label class="radio">
+						<input type="radio" name="tokenEndpointAuthMethod" value="none" <%-(client.token_endpoint_auth_method == 'none' ? 'checked' : '')%>> No authentication
+					</label>
+				</div>
+			</div>
+
+            <div class="control-group" id="tokenEndpointAuthSigningAlg">
+                <label class="control-label">Introspection Endpoint Authentication Signing Algorithm</label>
+                <div class="controls">
+					<select>
+						<option value="default" <%-client.token_endpoint_auth_signing_alg == null ? 'selected ' : ''%>>Any allowed</option>
+						<option value="HS256" <%-client.token_endpoint_auth_signing_alg == "HS256" ? 'selected' : ''%>>HMAC using SHA-256 hash algorithm</option>
+						<option value="HS384" <%-client.token_endpoint_auth_signing_alg == "HS384" ? 'selected' : ''%>>HMAC using SHA-384 hash algorithm</option>
+						<option value="HS512" <%-client.token_endpoint_auth_signing_alg == "HS512" ? 'selected' : ''%>>HMAC using SHA-512 hash algorithm</option>
+						<option value="RS256" <%-client.token_endpoint_auth_signing_alg == "RS256" ? 'selected' : ''%>>RSASSA using SHA-256 hash algorithm</option>
+						<option value="RS384" <%-client.token_endpoint_auth_signing_alg == "RS384" ? 'selected' : ''%>>RSASSA using SHA-384 hash algorithm</option>
+						<option value="RS512" <%-client.token_endpoint_auth_signing_alg == "RS512" ? 'selected' : ''%>>RSASSA using SHA-512 hash algorithm</option>
+						<option value="ES256" <%-client.token_endpoint_auth_signing_alg == "ES256" ? 'selected' : ''%>>ECDSA using P-256 curve and SHA-256 hash algorithm</option>
+						<option value="ES384" <%-client.token_endpoint_auth_signing_alg == "ES384" ? 'selected' : ''%>>ECDSA using P-384 curve and SHA-384 hash algorithm</option>
+						<option value="ES512" <%-client.token_endpoint_auth_signing_alg == "ES512" ? 'selected' : ''%>>ECDSA using P-512 curve and SHA-512 hash algorithm</option>
+					</select>
+                </div>
+            </div>
+
+			<div class="control-group" id="jwksUri">
+				<label class="control-label">JWK Set</label>
+				<div class="controls">
+					<input placeholder="https://" value="<%-client.jwks_uri ? client.jwks_uri : ''%>" maxlength="1000" type="text" class=""/>
+					<p class="help-block">URL for the client's JSON Web Key set</p>
+				</div>
+			</div>
+
+	</div>
+
+	<div class="tab-pane" id="resource-json-tab">
+
+<pre>
+<%- JSON.stringify(client, undefined, 2) %>
+</pre>
+
+	</div>
+
+
+
+            <div class="well well-small">
+                <button class="btn btn-small btn-save btn-success"><i class="icon-ok-circle icon-white"></i> Save</button> &nbsp; 
+				<button class="btn btn-small btn-cancel"><i class="icon-ban-circle"></i> Cancel</button>
+				<% if (client.client_id) { %>
+				<button class="btn btn-danger btn-delete pull-right"><i class="icon-trash icon-white"></i> Delete</button>
+				<% } %>
+            </div>
+
+        </fieldset>
+    </form>
+
+</script>
