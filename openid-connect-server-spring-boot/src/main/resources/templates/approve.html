@@ -14,7 +14,7 @@
 	<!-- ${session.removeAttribute('SPRING_SECURITY_LAST_EXCEPTION') -->
 
 	<div class="well" style="text-align: center">
-		<h1><th:block data-th-text="Approval Required for {$client.clientName ?: client.clientId}"/> Approval Required for XXX
+		<h1 data-th-text="|Approval Required for ${client.clientName ?: client.clientId}|"> Approval Required for XXX
 		</h1>
 
 		<form name="confirmationForm"
@@ -23,12 +23,12 @@
 			<div class="row">
 				<div class="span5 offset1 well-small" style="text-align: left">
 
-                  <th:block data-th-if="${ client.dynamicallyRegistered }">
-                    <th:block data-th-if="${ gras }">
+                  <th-block data-th-if="${ client.dynamicallyRegistered }">
+                    <th-block data-th-if="${ gras }">
                       <!-- client is "generally recognized as safe, display a more muted block -->
                       <div><p class="alert alert-info"><i class="icon-globe"></i> This client was dynamically registered <span id="registrationTime"></span>.</p></div>
-                    </th:block>
-                    <th:block data-th-unless="${ gras }">
+                    </th-block>
+                    <th-block data-th-unless="${ gras }">
                       <!-- client is dynamically registered -->
                       <div data-th-class="alert alert-block ${ count eq 0 ? 'alert-error' : 'alert-warn' }">
                           <h4>
@@ -38,12 +38,12 @@
                           <span class="label" data-th-inline="text"> ${ count } 5 time${ count == 1 ? '' : 's' } previously.</span>
                       </div>
                         
-                    </th:block>
+                    </th-block>
 
-					<th:block data-th-if="${ #strings.isEmpty(client.logoUri) }">
+					<th-block data-th-if="${ #strings.isEmpty(client.logoUri) }">
 						<ul class="thumbnails">
 							<li class="span5">
-								<a class="thumbnail" data-toggle="modal" data-target="#logoModal"><img src="${ fn:escapeXml(client.logoUri) }" /></a>
+								<a class="thumbnail" data-toggle="modal" data-target="#logoModal"><img data-th-src="${client.logoUri}" /></a>
 							</li>
 						</ul>
 						<!-- Modal -->
@@ -62,10 +62,10 @@
 								<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
 							</div>
 						</div>
-					</th:block>
+					</th-block>
 						<div class="muted moreInformationContainer" data-th-if="${ not(#strings.isEmpty(client.clientDescription) and #strings.isEmpty(client.clientUri) and #strings.isEmpty(client.policyUri) and #strings.isEmpty(client.tosUri) and #strings.isEmpty(contacts)) }">
-							<th:block data-th-text="${client.clientDescription}" />
-							<th:block data-th-if="${ not( #strings.isEmpty(client.clientUri) and #strings.isEmpty(client.policyUri) and #strings.isEmpty(client.tosUri) and #strings.isEmpty(contacts) ) }">
+							<th-block data-th-text="${client.clientDescription}" />
+							<th-block data-th-if="${ not( #strings.isEmpty(client.clientUri) and #strings.isEmpty(client.policyUri) and #strings.isEmpty(client.tosUri) and #strings.isEmpty(contacts) ) }">
 								<div id="toggleMoreInformation" style="cursor: pointer;">
 									<small><i class="icon-chevron-right"></i> more information</small>
 								</div>
@@ -73,14 +73,14 @@
 									<ul>
 										<li data-th-if="${!#strings.isEmpty(client.clientUri)}">Home page: <a data-th-href="${ client.clientUri }" data-th-text="${ client.clientUri }"></a></li>
 										<li data-th-if="${!#strings.isEmpty(client.policyUri)}">Policy: <a data-th-href="${ client.policyUri }" data-th-text="${ client.policyUri }"></a></li>
-										<li data-th-if="${!#strings.isEmpty(client.tosUri)}">Terms of Service: <a href="<c:out value="${ client.tosUri }" />"><c:out value="${ client.tosUri }" /></a></li>
-										<li data-th-if="${!#strings.isEmpty(contacts))}" data-th-text="Administrative Contacts: ${ contacts }"></li>
+										<li data-th-if="${!#strings.isEmpty(client.tosUri)}">Terms of Service: <a data-th-href="${ client.tosUri }" data-th-text="${ client.tosUri }"></a></li>
+										<li data-th-if="${!#strings.isEmpty(contacts))}" data-th-text="|Administrative Contacts: ${ contacts }|"></li>
 									</ul>
 								</div>
-							</th:block>
+							</th-block>
 						</div>
 					<div>
-						<div class="alert alert-block alert-error" data-th-if="${#strings.isEmpty(client.redirectUris)}">
+						<div class="alert alert-block alert-error" data-th-if="${#sets.isEmpty(client.redirectUris)}">
 							<h4>
 								<i class="icon-info-sign"></i> Warning:
 							</h4>
@@ -88,16 +88,16 @@
 							malicious URI here. You will be redirected to the following page if you click Approve:
 							<code data-th-text="${redirect_uri}"></code>
 						</div>
-						<th:block data-th-unless="${#strings.isEmpty(client.redirectUris)}">
+						<th-block data-th-unless="${#sets.isEmpty(client.redirectUris)}">
 						You will be redirected to the following page
 						if you click Approve: <code data-th-text="${redirect_uri}"></code>
-						</th:block>
+						</th-block>
 					</div>
 
 					<div class="alert alert-success" data-th-if="${ client.subjectType == 'PAIRWISE' }">
 						This client uses a <b>pairwise</b> identifier, which makes it more difficult to correlate your identity between sites.
 					</div>
-
+					</th-block>
 				</div>
 				<div class="span4">
 					<fieldset style="text-align: left" class="well">
@@ -112,66 +112,40 @@
 						</div>
 
 
-						<th:block data-th-each="scope : ${ scopes }">
-
-							<label for="scope_${ fn:escapeXml(scope.value) }" class="checkbox"> 
-								<input type="checkbox" name="scope_${ fn:escapeXml(scope.value) }" id="scope_${ fn:escapeXml(scope.value) }" value="${ fn:escapeXml(scope.value) }" checked="checked"> 
-								<i class="icon-${ fn:escapeXml(scope.icon) }" data-th-if="${!#strings.isEmpty(scope.icon)}"></i>
-								<th:block data-th-text="${scope.description ?: scope.value}"/>
-								
-								<!--/* 
-								
-								<div style=&quot;text-align: left;&quot;><ul data-th-each="claim : ${claims[scope.value]}">
-                                      <li><b data-th-text="${ claim.key }"></b>: <th-block data-th-text="${ claim.value }"/></li>
-                                </ul></div>
-								
-								 */-->
-								
-								<c:if test="${ not empty claims[scope.value] }">
-									<span class="claim-tooltip" data-toggle="popover"
-										data-html="true"
-										data-placement="right"
-										data-trigger="hover"
-										data-title="These values will be sent:"
-										data-content="<div style=&quot;text-align: left;&quot;>
-											<ul>
-											<c:forEach var="claim" items="${ claims[scope.value] }">
-												<li>
-												<b><c:out value="${ claim.key }" /></b>: 
-												<c:out value="${ claim.value }" />
-												</li>
-											</c:forEach>
-											</ul>
-											</div>
-										"
-									>
-										<i class="icon-question-sign"></i>
-										
-									</span>
-								</c:if>
-								
-								<c:if test="${ scope.structured }">
-									<input name="scopeparam_${ fn:escapeXml(scope.value) }" type="text" value="${ fn:escapeXml(scope.structuredValue) }" placeholder="${ fn:escapeXml(scope.structuredParamDescription) }">
-								</c:if>
-								
-							</label>
-
-						</th:block>
+						<label data-th-each="scope : ${ scopes }" data-th-for="|scope_${scope.value}|" class="checkbox"> 
+							<input type="checkbox" data-th-name="|scope_${scope.value}|" data-th-id="|scope_${scope.value}|" data-th-value="${scope.value}" checked="checked"/> 
+							<i data-th-class="|icon-${scope.icon}|" data-th-if="${!#strings.isEmpty(scope.icon)}"></i>
+							<th-block data-th-text="${scope.description ?: scope.value}"/>
+							
+							<span class="claim-tooltip" data-toggle="popover"
+								data-html="true"
+								data-placement="right"
+								data-trigger="hover"
+								data-title="These values will be sent:"
+								data-th-attr="data-content=|&lt;div style=&quot;text-align: left;&quot;>&lt;ul>${#strings.listJoin(claims[scope.value].!['&lt;li>&lt;b>'+ key +'&lt;/b>: ' + value + '&lt;/li>' ], '')}&lt;/ul>&lt;/div>|"
+								data-th-if="${not #lists.isEmpty(claims[scope.value])}">
+									<i class="icon-question-sign"></i>
+									
+								</span>
+							
+							<input data-th-name="|scopeparam_${scope.value}|" type="text" data-th-value="${ scope.structuredValue }" data-th-placeholder="${ scope.structuredParamDescription }" data-th-if="${ scope.structured }"/>
+							
+						</label>
 
 					</fieldset>
 
 					<fieldset style="text-align: left" class="well">
 						<legend style="margin-bottom: 0;">Remember this decision:</legend>
 						<label for="remember-forever" class="radio"> 
-						<input type="radio" name="remember" id="remember-forever" value="until-revoked" checked="checked"> 
+						<input type="radio" name="remember" id="remember-forever" value="until-revoked" checked="checked"/> 
 							remember this decision until I revoke it
 						</label> 
 						<label for="remember-hour" class="radio"> 
-						<input type="radio" name="remember" id="remember-hour" value="one-hour">
+						<input type="radio" name="remember" id="remember-hour" value="one-hour"/>
 							remember this decision for one hour
 						</label> 
 						<label for="remember-not" class="radio"> 
-						<input type="radio" name="remember" id="remember-not" value="none">
+						<input type="radio" name="remember" id="remember-not" value="none"/>
 							prompt me again next time
 						</label>
 					</fieldset>
@@ -180,19 +154,11 @@
 			</div>
 
 			<div class="row">
-				<h3>
-						Do you authorize 
-						"<c:choose>
-							<c:when test="${empty client.clientName}">
-								<c:out value="${client.clientId}" />
-							</c:when>
-							<c:otherwise>
-								<c:out value="${client.clientName}" />
-							</c:otherwise>
-						</c:choose>"?
+				<h3 data-th-text="|Do you authorize &quot;${client.clientName ?: client.Name }&quot;?|">
+						Do you authorize "XXX"?
 				</h3>
 				<input id="user_oauth_approval" name="user_oauth_approval" value="true" type="hidden" /> 
-				<input name="csrf" value="${ csrf }" type="hidden" />
+				<input name="csrf" data-th-value="${ csrf }" type="hidden" />
 				<input name="authorize" value="Authorize" type="submit"
 				onclick="$('#user_oauth_approval').attr('value',true)" class="btn btn-success btn-large" /> 
 				&nbsp; 
@@ -204,8 +170,8 @@
 
 	</div>
 </div>
-<script type="text/javascript">
-<!--
+<script type="text/javascript" data-th-inline="javascript">
+/* <![CDATA[ */
 
 $(document).ready(function() {
 		$('.claim-tooltip').popover();
@@ -225,7 +191,7 @@ $(document).ready(function() {
 			}
 		});
 		
-		var creationDate = "<c:out value="${ client.createdAt }" />";
+		var creationDate = [[${ client.createdAt }]];
 		var displayCreationDate = "Unknown";
 		var hoverCreationDate = "";
 		if (creationDate == null || !moment(creationDate).isValid()) {
@@ -244,9 +210,7 @@ $(document).ready(function() {
 		$('#registrationTime').html(displayCreationDate);
 		$('#registrationTime').attr('title', hoverCreationDate);
 });
-
-//-->
-</script>
+/* ]]> */</script>
 <span data-th-replace="fragments/footer :: footer"></span>
 </body>
 </html>

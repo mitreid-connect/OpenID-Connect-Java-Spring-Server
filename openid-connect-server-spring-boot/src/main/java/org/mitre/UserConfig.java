@@ -21,7 +21,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @Configuration
 public class UserConfig {
 	
-	@Order(106)
+	@Order(200)
 	@Configuration
 	public static class EndUserLoginSecurityConfiguration extends WebSecurityConfigurerAdapter {
 		@Autowired
@@ -44,7 +44,7 @@ public class UserConfig {
 		}
 	}
 	
-	@Order(107)
+	@Order(201)
 	@Configuration
 	public static class EndUserSecurityConfiguration extends WebSecurityConfigurerAdapter {
 		
