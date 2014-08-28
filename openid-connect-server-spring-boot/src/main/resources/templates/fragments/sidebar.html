@@ -2,11 +2,12 @@
 <html>
 <body>
 
+<th:block data-th-fragment="sidebar">
+
 <th:block data-sec-authorize="hasRole('ROLE_USER')">
 	<div class="span2 visible-desktop">
 	    <div class="well sidebar-nav">
-	        <ul class="nav nav-list">
-	        	<o:actionmenu />
+	        <ul class="nav nav-list" data-th-include="fragments/actionmenu :: actionmenu">
 	        </ul>
 	    </div><!--/.well -->
 	</div><!--/span-->
@@ -15,6 +16,8 @@
 	<div class="span1">
 		<!-- placeholder for non-logged-in users -->
 	</div><!--/span-->
+</th:block>
+
 </th:block>
 
 </body>

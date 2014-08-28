@@ -29,7 +29,8 @@
 
     <!-- Load jQuery up here so that we can use in-page functions -->
     <script type="text/javascript" src="resources/js/lib/jquery.js"></script>
-    <script type="text/javascript" data-th-inline="javascript"><![CDATA[
+    <script type="text/javascript" data-th-inline="javascript">
+    /* <![CDATA[ */
     	// safely set the title of the application
     	function setPageTitle(title) {
     		document.title = [[${config.topbarTitle}]] + ' - ' + title;
@@ -37,7 +38,7 @@
     	
 		// get the info of the current user, if available (null otherwise)
     	function getUserInfo() {
-    		return [[${userInfoJson.toString()}]];
+    		return [[${userInfo}]];
     	}
 		
 		// get the authorities of the current user, if available (null otherwise)
@@ -55,7 +56,7 @@
 				return false;
 			}
 		}
-    ]]></script>    
+	/* ]]> */</script>
 </head>
 
 </html>
