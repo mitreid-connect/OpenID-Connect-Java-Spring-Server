@@ -79,6 +79,8 @@ public class UserConfig {
 					.enableSessionUrlRewriting(false)
 					.and()
 				.formLogin()
+					.usernameParameter("j_username")
+					.passwordParameter("j_password")
 					.loginPage("/login")
 					.loginProcessingUrl("/j_spring_security_check")
 					.failureUrl("/login?error=failure")
