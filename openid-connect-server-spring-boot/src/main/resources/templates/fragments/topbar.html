@@ -28,16 +28,15 @@
 					<li class="dropdown" data-sec-authorize="hasRole('ROLE_USER')">
 						<a id="userButton" class="dropdown-toggle" data-toggle="dropdown" href=""><i class="icon-user icon-white"></i> <th:block data-th-text="${ userInfo.preferredUsername } ?: ${ userInfo.sub }">shortName</th:block> <span class="caret"></span></a>
 						<ul class="dropdown-menu pull-right">
-							<li><a href="manage/#user/profile" data-toggle="collapse" data-target=".nav-collapse" data-th-text="${ userInfo.name } ?: ( !#strings.isEmpty(userInfo.givenName) || !#strings.isEmpty(userInfo.familyName)) ? ( userInfo.givenName } {$ userInfo.familyName} ) : (${ userInfo.preferredUsername } ?: ${ userInfo.sub })">longName</a></li>
+							<li><a href="manage/#user/profile" data-toggle="collapse" data-target=".nav-collapse" data-th-text="${ userInfo.name ?: userInfo.givenName + ' ' + userInfo.familyName}">longName</a></li>
 							<li class="divider"></li>
 							<li><a href="logout" data-toggle="collapse" data-target=".nav-collapse"><i class="icon-remove"></i> Log out</a></li>
 						</ul>
 					</li>
-                    <li data-sec-authorize="">
+                    <li sec:authorize="isAnonymous()">
                     	<a id="loginButton" href="login" data-toggle="collapse" data-target=".nav-collapse"><i class="icon-lock icon-white"></i> Log in</a>
                     </li>
                 </ul>
-                    <b data-sec-authentication="principal.authorities"> roles </b>
             </div><!--/.nav-collapse -->
         </div>
     </div>
