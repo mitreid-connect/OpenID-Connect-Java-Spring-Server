@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<th-block data-th-fragment="statsContent">
+<h2>Current Statistics</h2>
+
+<p>There have been 
+	<span class="label label-info" data-th-text="${statsSummary['userCount']}">X</span><th-block data-th-inline="text"> user[[${statsSummary['userCount'] == 1 ? '' : 's'}]] of this system who have logged in to </th-block> 
+	<span class="label label-info" data-th-text="${statsSummary['clientCount']}">X</span><th-block data-th-inline="text"> total site[[${statsSummary["clientCount"] == 1 ? "" : "s"}]],  for a total of </th-block> 
+	<span class="label label-info" data-th-text="${statsSummary['approvalCount']}">X</span><th-block data-th-inline="text"> site approval[[${statsSummary["approvalCount"] == 1 ? "" : "s"}]].</th-block></p>
+</th-block>
+</body>
+</html>

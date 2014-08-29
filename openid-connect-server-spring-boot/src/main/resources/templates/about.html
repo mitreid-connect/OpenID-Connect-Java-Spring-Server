@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head data-th-replace="fragments/header :: head(About)">
+</head>
+<body>
+<!--/* TODO: highlight proper section of topbar; what is the right way to do this? */-->
+<span data-th-replace="fragments/topbar :: topbar(pageName='About')"></span>
+
+<div class="container-fluid main">
+	<div class="row-fluid">
+		<th-block data-th-replace="fragments/sidebar :: sidebar"/>
+
+		<div class="span10">
+			<!-- Main hero unit for a primary marketing message or call to action -->
+			<div class="hero-unit">
+
+				<th-block data-th-replace="fragments/aboutContent :: aboutContent" />
+
+			</div>
+
+
+		</div>
+	</div>
+</div>
+<th-block data-th-replace="fragments/footer :: footer"/>
+</body>
+</html>

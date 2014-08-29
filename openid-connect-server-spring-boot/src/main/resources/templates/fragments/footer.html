@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html>
 <body>
 
-<th:block data-th-fragment="footer">
+<th-block data-th-fragment="footer">
 
 <div id="push"></div>
 <!-- end #wrap -->
@@ -24,7 +24,7 @@
 <script type="text/javascript" src="resources/js/lib/moment.js"></script>
 <script type="text/javascript" src="resources/js/lib/bootstrap-sheet.js"></script>
 <script type="text/javascript" src="resources/js/lib/bootpag.js"></script>
-<th:block data-th-if="${js != null and js != ''}">
+<th-block data-th-if="${not #strings.isEmpty(js)}">
 	<script type="text/javascript" src="resources/js/client.js"></script>
 	<script type="text/javascript" src="resources/js/grant.js"></script>
 	<script type="text/javascript" src="resources/js/scope.js"></script>
@@ -33,10 +33,10 @@
 	<script type="text/javascript" src="resources/js/rsreg.js"></script>
 	<script type="text/javascript" src="resources/js/token.js"></script>
 	<script type="text/javascript" src="resources/js/admin.js"></script>
-</th:block>
+</th-block>
 <script type="text/javascript" src="resources/js/lib/retina.js"></script>
 
-</th:block>
+</th-block>
 
 </body>
 </html>

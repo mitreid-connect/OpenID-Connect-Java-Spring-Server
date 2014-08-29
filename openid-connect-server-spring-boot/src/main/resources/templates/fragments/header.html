@@ -43,7 +43,7 @@
 		
 		// get the authorities of the current user, if available (null otherwise)
 		function getUserAuthorities() {
-			return [[${userAuthorities}]];
+			return [[${#authentication.authorities.![authority]}]];
 		}
 		
 		// is the current user an admin?

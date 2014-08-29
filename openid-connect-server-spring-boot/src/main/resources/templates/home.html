@@ -6,18 +6,18 @@
 <span data-th-replace="fragments/topbar :: topbar(pageName='Home')"></span>
 <div class="container-fluid main">
 	<div class="row-fluid">
-		<span data-th-replace="fragments/sidebar :: sidebar"></span>
+		<th-block data-th-replace="fragments/sidebar :: sidebar" />
 		<div class="span10">
 			<div class="hero-unit">
-				<span data-th-replace="fragments/landingPageWelcome :: landingPageWelcome"></span>
+				<th-block data-th-replace="fragments/landingPageWelcome :: landingPageWelcome" />
 			</div>
 			<!-- Example row of columns -->
 			<div class="row-fluid">
 				<div class="span6">
-					<span data-th-replace="fragments/landingPageAbout :: landingPageAbout"></span>
+					<th-block data-th-replace="fragments/landingPageAbout :: landingPageAbout" />
 				</div>
 				<div class="span6">
-					<span data-th-replace="fragments/landingPageContact :: landingPageContact"></span>
+					<th-block data-th-replace="fragments/landingPageContact :: landingPageContact" />
 				</div>
 
 			</div>
@@ -25,13 +25,13 @@
 			<!-- Example row of columns -->
 			<div class="row-fluid">
 				<div class="span12">
-					<span data-th-replace="fragments/landingPageStats :: landingPageStats"></span>
+					<th-block data-th-replace="fragments/landingPageStats :: landingPageStats" />
 				</div>
 			</div>
 
 		</div>
 	</div>
 </div>
-<span data-th-replace="fragments/footer :: footer"></span>
+<th-block data-th-replace="fragments/footer :: footer"/>
 </body>
 </html>
