@@ -30,17 +30,16 @@
                     </th-block>
                     <th-block data-th-unless="${ gras }">
                       <!-- client is dynamically registered -->
-                      <div data-th-class="alert alert-block ${ count eq 0 ? 'alert-error' : 'alert-warn' }">
+                      <div data-th-class="|alert alert-block ${ count eq 0 ? 'alert-error' : 'alert-warn' }|">
                           <h4>
                               <i class="icon-globe"></i> Caution:
                           </h4>
                           This software was dynamically registered <span id="registrationTime" class="label"></span> and it has been approved
-                          <span class="label" data-th-inline="text"> ${ count } 5 time${ count == 1 ? '' : 's' } previously.</span>
+                          <span class="label" data-th-text="|${ count } time${ count == 1 ? '' : 's' } previously.|">X times previously.</span>
                       </div>
-                        
-                    </th-block>
+                  </th-block>
 
-					<th-block data-th-if="${ #strings.isEmpty(client.logoUri) }">
+					<th-block data-th-if="${ not #strings.isEmpty(client.logoUri) }">
 						<ul class="thumbnails">
 							<li class="span5">
 								<a class="thumbnail" data-toggle="modal" data-target="#logoModal"><img data-th-src="${client.logoUri}" /></a>
@@ -56,31 +55,31 @@
 							</div>
 							<div class="modal-body">
 								<img data-th-src="${ client.logoUri }" />
-								<a data-th-if="${ #strings.isEmpty(client.clientUri) }" data-th-href="${ client.clientUri }" data-th-text="${ client.clientUri }"></a>
+								<a data-th-if="${ not #strings.isEmpty(client.clientUri) }" data-th-href="${ client.clientUri }" data-th-text="${ client.clientUri }"></a>
 							</div>
 							<div class="modal-footer">
 								<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
 							</div>
 						</div>
 					</th-block>
-						<div class="muted moreInformationContainer" data-th-if="${ not(#strings.isEmpty(client.clientDescription) and #strings.isEmpty(client.clientUri) and #strings.isEmpty(client.policyUri) and #strings.isEmpty(client.tosUri) and #strings.isEmpty(contacts)) }">
+						<div class="muted moreInformationContainer" data-th-if="${ not (#strings.isEmpty(client.clientDescription) and #strings.isEmpty(client.clientUri) and #strings.isEmpty(client.policyUri) and #strings.isEmpty(client.tosUri) and #strings.isEmpty(contacts)) }">
 							<th-block data-th-text="${client.clientDescription}" />
-							<th-block data-th-if="${ not( #strings.isEmpty(client.clientUri) and #strings.isEmpty(client.policyUri) and #strings.isEmpty(client.tosUri) and #strings.isEmpty(contacts) ) }">
+							<th-block data-th-if="${ not ( #strings.isEmpty(client.clientUri) and #strings.isEmpty(client.policyUri) and #strings.isEmpty(client.tosUri) and #strings.isEmpty(contacts) ) }">
 								<div id="toggleMoreInformation" style="cursor: pointer;">
 									<small><i class="icon-chevron-right"></i> more information</small>
 								</div>
 								<div id="moreInformation" class="hide">
 									<ul>
-										<li data-th-if="${!#strings.isEmpty(client.clientUri)}">Home page: <a data-th-href="${ client.clientUri }" data-th-text="${ client.clientUri }"></a></li>
-										<li data-th-if="${!#strings.isEmpty(client.policyUri)}">Policy: <a data-th-href="${ client.policyUri }" data-th-text="${ client.policyUri }"></a></li>
-										<li data-th-if="${!#strings.isEmpty(client.tosUri)}">Terms of Service: <a data-th-href="${ client.tosUri }" data-th-text="${ client.tosUri }"></a></li>
-										<li data-th-if="${!#strings.isEmpty(contacts))}" data-th-text="|Administrative Contacts: ${ contacts }|"></li>
+										<li data-th-if="${not #strings.isEmpty(client.clientUri)}">Home page: <a data-th-href="${ client.clientUri }" data-th-text="${ client.clientUri }"></a></li>
+										<li data-th-if="${not #strings.isEmpty(client.policyUri)}">Policy: <a data-th-href="${ client.policyUri }" data-th-text="${ client.policyUri }"></a></li>
+										<li data-th-if="${not #strings.isEmpty(client.tosUri)}">Terms of Service: <a data-th-href="${ client.tosUri }" data-th-text="${ client.tosUri }"></a></li>
+										<li data-th-if="${not #strings.isEmpty(contacts))}" data-th-text="|Administrative Contacts: ${ contacts }|"></li>
 									</ul>
 								</div>
 							</th-block>
 						</div>
 					<div>
-						<div class="alert alert-block alert-error" data-th-if="${#sets.isEmpty(client.redirectUris)}">
+						<div class="alert alert-block alert-error" data-th-if="${ #sets.isEmpty(client.redirectUris) }">
 							<h4>
 								<i class="icon-info-sign"></i> Warning:
 							</h4>
@@ -88,7 +87,7 @@
 							malicious URI here. You will be redirected to the following page if you click Approve:
 							<code data-th-text="${redirect_uri}"></code>
 						</div>
-						<th-block data-th-unless="${#sets.isEmpty(client.redirectUris)}">
+						<th-block data-th-unless="${ #sets.isEmpty(client.redirectUris) }">
 						You will be redirected to the following page
 						if you click Approve: <code data-th-text="${redirect_uri}"></code>
 						</th-block>
@@ -123,9 +122,8 @@
 								data-trigger="hover"
 								data-title="These values will be sent:"
 								data-th-attr="data-content=|&lt;div style=&quot;text-align: left;&quot;>&lt;ul>${#strings.listJoin(claims[scope.value].!['&lt;li>&lt;b>'+ key +'&lt;/b>: ' + value + '&lt;/li>' ], '')}&lt;/ul>&lt;/div>|"
-								data-th-if="${not #lists.isEmpty(claims[scope.value])}">
+								data-th-if="${not #maps.isEmpty(claims[scope.value])}">
 									<i class="icon-question-sign"></i>
-									
 								</span>
 							
 							<input data-th-name="|scopeparam_${scope.value}|" type="text" data-th-value="${ scope.structuredValue }" data-th-placeholder="${ scope.structuredParamDescription }" data-th-if="${ scope.structured }"/>
