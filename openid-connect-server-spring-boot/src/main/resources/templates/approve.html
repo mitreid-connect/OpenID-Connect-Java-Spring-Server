@@ -14,7 +14,7 @@
 	<!-- ${session.removeAttribute('SPRING_SECURITY_LAST_EXCEPTION') -->
 
 	<div class="well" style="text-align: center">
-		<h1 data-th-text="|Approval Required for ${client.clientName ?: client.clientId}|"> Approval Required for XXX
+		<h1> Approval Required for <em  data-th-text="${client.clientName ?: client.clientId}">XXX</em>
 		</h1>
 
 		<form name="confirmationForm"
@@ -38,6 +38,7 @@
                           <span class="label" data-th-text="|${ count } time${ count == 1 ? '' : 's' } previously.|">X times previously.</span>
                       </div>
                   </th-block>
+                </th-block>
 
 					<th-block data-th-if="${ not #strings.isEmpty(client.logoUri) }">
 						<ul class="thumbnails">
@@ -78,8 +79,8 @@
 								</div>
 							</th-block>
 						</div>
-					<div>
-						<div class="alert alert-block alert-error" data-th-if="${ #sets.isEmpty(client.redirectUris) }">
+					<div data-th-with="hasRedirectUris=${#sets.isEmpty(client.redirectUris)}">
+						<div class="alert alert-block alert-error" data-th-if="${hasRedirectUris}">
 							<h4>
 								<i class="icon-info-sign"></i> Warning:
 							</h4>
@@ -87,7 +88,7 @@
 							malicious URI here. You will be redirected to the following page if you click Approve:
 							<code data-th-text="${redirect_uri}"></code>
 						</div>
-						<th-block data-th-unless="${ #sets.isEmpty(client.redirectUris) }">
+						<th-block data-th-unless="${hasRedirectUris}">
 						You will be redirected to the following page
 						if you click Approve: <code data-th-text="${redirect_uri}"></code>
 						</th-block>
@@ -96,7 +97,6 @@
 					<div class="alert alert-success" data-th-if="${ client.subjectType == 'PAIRWISE' }">
 						This client uses a <b>pairwise</b> identifier, which makes it more difficult to correlate your identity between sites.
 					</div>
-					</th-block>
 				</div>
 				<div class="span4">
 					<fieldset style="text-align: left" class="well">

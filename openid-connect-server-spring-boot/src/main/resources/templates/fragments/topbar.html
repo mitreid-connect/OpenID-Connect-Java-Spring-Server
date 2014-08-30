@@ -11,7 +11,7 @@
 				<span class="icon-bar"></span> 
 				<span class="icon-bar"></span>
 			</button>
-			<a class="brand" href=""><img data-th-src="${ config.logoImageUrl }" /> <th:block data-th-text="${config.topbarTitle}">Brand</th:block></a>
+			<a class="brand" href=""><img data-th-src="${ config.logoImageUrl }" /> <th-block data-th-text="${config.topbarTitle}">Brand</th-block></a>
 			<div class="nav-collapse collapse" data-th-if="${!#strings.isEmpty(pageName)}">
 				<ul class="nav">
 					<li data-th-if="${pageName == 'Home'}" class="active"><a href="" data-toggle="collapse" data-target=".nav-collapse">Home</a></li>
@@ -26,7 +26,7 @@
 				<ul class="nav hidden-desktop" data-sec-authorize="hasRole('ROLE_USER')" data-th-include="fragments/actionmenu::actionmenu"></ul>
 				<ul class="nav pull-right">
 					<li class="dropdown" data-sec-authorize="hasRole('ROLE_USER')">
-						<a id="userButton" class="dropdown-toggle" data-toggle="dropdown" href=""><i class="icon-user icon-white"></i> <th:block data-th-text="${ userInfo.preferredUsername } ?: ${ userInfo.sub }">shortName</th:block> <span class="caret"></span></a>
+						<a id="userButton" class="dropdown-toggle" data-toggle="dropdown" href=""><i class="icon-user icon-white"></i> <th-block data-th-text="${ userInfo.preferredUsername } ?: ${ userInfo.sub }">shortName</th-block> <span class="caret"></span></a>
 						<ul class="dropdown-menu pull-right">
 							<li><a href="manage/#user/profile" data-toggle="collapse" data-target=".nav-collapse" data-th-text="${ userInfo.name ?: userInfo.givenName + ' ' + userInfo.familyName}">longName</a></li>
 							<li class="divider"></li>
