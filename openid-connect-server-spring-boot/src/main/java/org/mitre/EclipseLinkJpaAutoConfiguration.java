@@ -28,11 +28,6 @@ import org.springframework.util.ClassUtils;
 
 import org.mitre.EclipseLinkJpaAutoConfiguration.EclipseLinkEntityManagerCondition;
 
-/**
- * {@link EnableAutoConfiguration Auto-configuration} for Hibernate JPA.
- *
- * @author Phillip Webb
- */
 @Configuration
 @ConditionalOnClass({ LocalContainerEntityManagerFactoryBean.class,
 		EnableTransactionManagement.class, EntityManager.class })
@@ -57,6 +52,7 @@ public class EclipseLinkJpaAutoConfiguration extends JpaBaseConfiguration {
 	@Override
 	protected Map<String, String> getVendorProperties() {
 		Map<String, String> vendorProperties = new LinkedHashMap<String, String>();
+		// TODO why is this named HibernateProperties and not something line AdditionalProperties?
 		vendorProperties.putAll(this.properties.getHibernateProperties(this.dataSource));
 		return vendorProperties;
 	}
@@ -71,10 +67,10 @@ public class EclipseLinkJpaAutoConfiguration extends JpaBaseConfiguration {
 				AnnotatedTypeMetadata metadata) {
 			for (String className : CLASS_NAMES) {
 				if (ClassUtils.isPresent(className, context.getClassLoader())) {
-					return ConditionOutcome.match("found HibernateEntityManager class");
+					return ConditionOutcome.match("found (eclipse) JpaEntityManager class");
 				}
 			}
-			return ConditionOutcome.noMatch("did not find HibernateEntityManager class");
+			return ConditionOutcome.noMatch("did not find (eclipse) JpaEntityManager class");
 		}
 	}
 
