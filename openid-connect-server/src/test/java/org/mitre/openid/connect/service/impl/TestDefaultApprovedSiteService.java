@@ -27,6 +27,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mitre.oauth2.model.ClientDetailsEntity;
+import org.mitre.oauth2.model.impl.ModelFactory;
 import org.mitre.openid.connect.model.ApprovedSite;
 import org.mitre.openid.connect.repository.ApprovedSiteRepository;
 import org.mitre.openid.connect.service.ApprovedSiteService;
@@ -66,7 +67,7 @@ public class TestDefaultApprovedSiteService {
 	@Before
 	public void prepare() {
 
-		client = new ClientDetailsEntity();
+		client = ModelFactory.instance().getClientDetailsInstance();
 		client.setClientId(clientId);
 
 		site1 = new ApprovedSite();

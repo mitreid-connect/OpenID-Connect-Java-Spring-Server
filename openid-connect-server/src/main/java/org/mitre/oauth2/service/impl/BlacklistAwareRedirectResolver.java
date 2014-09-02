@@ -9,7 +9,6 @@ import org.springframework.security.oauth2.common.exceptions.InvalidRequestExcep
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.endpoint.DefaultRedirectResolver;
-import org.springframework.security.oauth2.provider.endpoint.RedirectResolver;
 import org.springframework.stereotype.Component;
 
 /**

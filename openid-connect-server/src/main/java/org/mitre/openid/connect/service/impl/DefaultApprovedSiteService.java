@@ -79,8 +79,8 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 	@Transactional
 	public void remove(ApprovedSite approvedSite) {
 
-		//Remove any associated access and refresh tokens
-		Set<OAuth2AccessTokenEntity> accessTokens = approvedSite.getApprovedAccessTokens();
+		//Remove any associated access and refresh tokens	
+		Set<? extends OAuth2AccessTokenEntity> accessTokens = approvedSite.getApprovedAccessTokens();
 
 		for (OAuth2AccessTokenEntity token : accessTokens) {
 			if (token.getRefreshToken() != null) {

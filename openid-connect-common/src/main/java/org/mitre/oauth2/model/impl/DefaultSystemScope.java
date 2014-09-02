@@ -14,10 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-/**
- * 
- */
-package org.mitre.oauth2.model;
+
+package org.mitre.oauth2.model.impl;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -30,6 +28,8 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.mitre.oauth2.model.SystemScope;
+
 /**
  * @author jricher
  *
@@ -37,10 +37,10 @@ import javax.persistence.Transient;
 @Entity
 @Table(name = "system_scope")
 @NamedQueries({
-	@NamedQuery(name = "SystemScope.findAll", query = "select s from SystemScope s ORDER BY s.id"),
-	@NamedQuery(name = "SystemScope.getByValue", query = "select s from SystemScope s WHERE s.value = :value")
+	@NamedQuery(name = "DefaultSystemScope.findAll", query = "select s from DefaultSystemScope s ORDER BY s.id"),
+	@NamedQuery(name = "DefaultSystemScope.getByValue", query = "select s from DefaultSystemScope s WHERE s.value = :value")
 })
-public class SystemScope {
+public class DefaultSystemScope implements SystemScope {
 
 	private Long id;
 	private String value; // scope value
@@ -55,18 +55,20 @@ public class SystemScope {
 	/**
 	 * Make a blank system scope with no value
 	 */
-	public SystemScope() {
-
+	DefaultSystemScope() {
+		
 	}
 
 	/**
 	 * Make a system scope with the given scope value
 	 * @param value
 	 */
-	public SystemScope(String value) {
+	/*
+	public DefaultSystemScope(String value) {
 		this.value = value;
 	}
-
+	*/
+	
 	/**
 	 * @return the id
 	 */
@@ -76,12 +78,14 @@ public class SystemScope {
 	public Long getId() {
 		return id;
 	}
+	
 	/**
 	 * @param id the id to set
 	 */
 	public void setId(Long id) {
 		this.id = id;
 	}
+	
 	/**
 	 * @return the value
 	 */
@@ -90,12 +94,14 @@ public class SystemScope {
 	public String getValue() {
 		return value;
 	}
+	
 	/**
 	 * @param value the value to set
 	 */
 	public void setValue(String value) {
 		this.value = value;
 	}
+	
 	/**
 	 * @return the description
 	 */
@@ -104,12 +110,14 @@ public class SystemScope {
 	public String getDescription() {
 		return description;
 	}
+	
 	/**
 	 * @param description the description to set
 	 */
 	public void setDescription(String description) {
 		this.description = description;
 	}
+	
 	/**
 	 * @return the icon
 	 */
@@ -118,12 +126,14 @@ public class SystemScope {
 	public String getIcon() {
 		return icon;
 	}
+	
 	/**
 	 * @param icon the icon to set
 	 */
 	public void setIcon(String icon) {
 		this.icon = icon;
 	}
+	
 	/**
 	 * @return the allowDynReg
 	 */
@@ -132,6 +142,7 @@ public class SystemScope {
 	public boolean isAllowDynReg() {
 		return allowDynReg;
 	}
+	
 	/**
 	 * @param allowDynReg the allowDynReg to set
 	 */
@@ -184,7 +195,6 @@ public class SystemScope {
 		this.structuredParamDescription = d;
 	}
 
-
 	/**
 	 * @return the structuredValue
 	 */
@@ -199,8 +209,7 @@ public class SystemScope {
 	public void setStructuredValue(String structuredValue) {
 		this.structuredValue = structuredValue;
 	}
-
-
+	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
@@ -231,10 +240,10 @@ public class SystemScope {
 		if (obj == null) {
 			return false;
 		}
-		if (!(obj instanceof SystemScope)) {
+		if (!(obj instanceof DefaultSystemScope)) {
 			return false;
 		}
-		SystemScope other = (SystemScope) obj;
+		DefaultSystemScope other = (DefaultSystemScope) obj;
 		if (allowDynReg != other.allowDynReg) {
 			return false;
 		}
@@ -294,7 +303,7 @@ public class SystemScope {
 	 */
 	@Override
 	public String toString() {
-		return "SystemScope [id=" + id + ", value=" + value + ", description=" + description + ", icon=" + icon + ", allowDynReg=" + allowDynReg + ", defaultScope=" + defaultScope + ", structured=" + structured + ", structuredParamDescription=" + structuredParamDescription + ", structuredValue="
+		return "DefaultSystemScope [id=" + id + ", value=" + value + ", description=" + description + ", icon=" + icon + ", allowDynReg=" + allowDynReg + ", defaultScope=" + defaultScope + ", structured=" + structured + ", structuredParamDescription=" + structuredParamDescription + ", structuredValue="
 				+ structuredValue + "]";
 	}
 

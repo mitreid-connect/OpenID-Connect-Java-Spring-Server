@@ -57,7 +57,7 @@ public class JpaOAuth2ClientRepository implements OAuth2ClientRepository {
 	 */
 	@Override
 	public ClientDetailsEntity getClientByClientId(String clientId) {
-		TypedQuery<ClientDetailsEntity> query = manager.createNamedQuery("ClientDetailsEntity.getByClientId", ClientDetailsEntity.class);
+		TypedQuery<ClientDetailsEntity> query = manager.createNamedQuery("DefaultClientDetailsEntity.getByClientId", ClientDetailsEntity.class);
 		query.setParameter("clientId", clientId);
 		return JpaUtil.getSingleResult(query.getResultList());
 	}
@@ -93,7 +93,7 @@ public class JpaOAuth2ClientRepository implements OAuth2ClientRepository {
 
 	@Override
 	public Collection<ClientDetailsEntity> getAllClients() {
-		TypedQuery<ClientDetailsEntity> query = manager.createNamedQuery("ClientDetailsEntity.findAll", ClientDetailsEntity.class);
+		TypedQuery<ClientDetailsEntity> query = manager.createNamedQuery("DefaultClientDetailsEntity.findAll", ClientDetailsEntity.class);
 		return query.getResultList();
 	}
 

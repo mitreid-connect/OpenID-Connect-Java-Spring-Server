@@ -34,6 +34,9 @@ import org.mitre.oauth2.model.AuthenticationHolderEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
+import org.mitre.oauth2.model.impl.DefaultAuthenticationHolderEntity;
+import org.mitre.oauth2.model.impl.DefaultClientDetailsEntity;
+import org.mitre.oauth2.model.impl.DefaultOAuth2RefreshTokenEntity;
 import org.mitre.oauth2.repository.AuthenticationHolderRepository;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
@@ -113,14 +116,14 @@ public class TestDefaultOAuth2ProviderTokenService {
 		OAuth2Request clientAuth = new OAuth2Request(null, clientId, null, true, scope, null, null, null, null);
 		Mockito.when(authentication.getOAuth2Request()).thenReturn(clientAuth);
 
-		client = Mockito.mock(ClientDetailsEntity.class);
+		client = Mockito.mock(DefaultClientDetailsEntity.class);
 		Mockito.when(client.getClientId()).thenReturn(clientId);
 		Mockito.when(clientDetailsService.loadClientByClientId(clientId)).thenReturn(client);
 
 		// by default in tests, allow refresh tokens
 		Mockito.when(client.isAllowRefresh()).thenReturn(true);
 
-		refreshToken = Mockito.mock(OAuth2RefreshTokenEntity.class);
+		refreshToken = Mockito.mock(DefaultOAuth2RefreshTokenEntity.class);
 		Mockito.when(tokenRepository.getRefreshTokenByValue(refreshTokenValue)).thenReturn(refreshToken);
 		Mockito.when(refreshToken.getClient()).thenReturn(client);
 		Mockito.when(refreshToken.isExpired()).thenReturn(false);
@@ -129,14 +132,14 @@ public class TestDefaultOAuth2ProviderTokenService {
 
 		storedAuthentication = authentication;
 		storedAuthRequest = clientAuth;
-		storedAuthHolder = Mockito.mock(AuthenticationHolderEntity.class);
+		storedAuthHolder = Mockito.mock(DefaultAuthenticationHolderEntity.class);
 		storedScope = Sets.newHashSet(scope);
 
 		Mockito.when(refreshToken.getAuthenticationHolder()).thenReturn(storedAuthHolder);
 		Mockito.when(storedAuthHolder.getAuthentication()).thenReturn(storedAuthentication);
 		Mockito.when(storedAuthentication.getOAuth2Request()).thenReturn(storedAuthRequest);
 
-		Mockito.when(authenticationHolderRepository.save(Matchers.any(AuthenticationHolderEntity.class))).thenReturn(storedAuthHolder);
+		Mockito.when(authenticationHolderRepository.save(Matchers.any(DefaultAuthenticationHolderEntity.class))).thenReturn(storedAuthHolder);
 
 		Mockito.when(scopeService.removeRestrictedScopes(Matchers.anySet())).then(AdditionalAnswers.returnsFirstArg());
 
@@ -215,7 +218,7 @@ public class TestDefaultOAuth2ProviderTokenService {
 		OAuth2AccessTokenEntity token = service.createAccessToken(authentication);
 
 		Mockito.verify(clientDetailsService).loadClientByClientId(Matchers.anyString());
-		Mockito.verify(authenticationHolderRepository).save(Matchers.any(AuthenticationHolderEntity.class));
+		Mockito.verify(authenticationHolderRepository).save(Matchers.any(DefaultAuthenticationHolderEntity.class));
 		Mockito.verify(tokenEnhancer).enhance(Matchers.any(OAuth2AccessTokenEntity.class), Mockito.eq(authentication));
 		Mockito.verify(tokenRepository).saveAccessToken(Matchers.any(OAuth2AccessTokenEntity.class));
 
@@ -286,15 +289,15 @@ public class TestDefaultOAuth2ProviderTokenService {
 	@Test
 	public void createAccessToken_checkAttachedAuthentication() {
 
-		AuthenticationHolderEntity authHolder = Mockito.mock(AuthenticationHolderEntity.class);
+		AuthenticationHolderEntity authHolder = Mockito.mock(DefaultAuthenticationHolderEntity.class);
 		Mockito.when(authHolder.getAuthentication()).thenReturn(authentication);
 
-		Mockito.when(authenticationHolderRepository.save(Matchers.any(AuthenticationHolderEntity.class))).thenReturn(authHolder);
+		Mockito.when(authenticationHolderRepository.save(Matchers.any(DefaultAuthenticationHolderEntity.class))).thenReturn(authHolder);
 
 		OAuth2AccessTokenEntity token = service.createAccessToken(authentication);
 
 		assertThat(token.getAuthenticationHolder().getAuthentication(), equalTo(authentication));
-		Mockito.verify(authenticationHolderRepository).save(Matchers.any(AuthenticationHolderEntity.class));
+		Mockito.verify(authenticationHolderRepository).save(Matchers.any(DefaultAuthenticationHolderEntity.class));
 	}
 
 	@Test(expected = InvalidTokenException.class)

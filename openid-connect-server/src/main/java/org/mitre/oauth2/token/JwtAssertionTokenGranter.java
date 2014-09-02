@@ -25,6 +25,7 @@ import java.util.Date;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
+import org.mitre.oauth2.model.impl.ModelFactory;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
 import org.mitre.oauth2.service.SystemScopeService;
@@ -99,7 +100,7 @@ public class JwtAssertionTokenGranter extends AbstractTokenGranter {
 
 					//OAuth2AccessTokenEntity newIdToken = tokenServices.get
 
-					OAuth2AccessTokenEntity newIdTokenEntity = new OAuth2AccessTokenEntity();
+					OAuth2AccessTokenEntity newIdTokenEntity = ModelFactory.instance().getAccessTokenInstance();
 
 					// copy over all existing claims
 					JWTClaimsSet claims = new JWTClaimsSet(idToken.getJWTClaimsSet());

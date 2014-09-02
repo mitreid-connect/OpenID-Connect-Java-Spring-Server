@@ -16,6 +16,7 @@
  ******************************************************************************/
 package org.mitre.openid.connect.model;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
 
@@ -39,6 +40,7 @@ import javax.persistence.Temporal;
 import javax.persistence.Transient;
 
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
+import org.mitre.oauth2.model.impl.DefaultOAuth2AccessTokenEntity;
 
 import com.google.common.collect.Sets;
 
@@ -78,7 +80,7 @@ public class ApprovedSite {
 	private WhitelistedSite whitelistedSite;
 
 	//Link to any access tokens approved through this stored decision
-	private Set<OAuth2AccessTokenEntity> approvedAccessTokens = Sets.newHashSet();
+	private Set<DefaultOAuth2AccessTokenEntity> approvedAccessTokens = Sets.newHashSet();
 
 	/**
 	 * Empty constructor
@@ -189,7 +191,7 @@ public class ApprovedSite {
 	public void setAllowedScopes(Set<String> allowedScopes) {
 		this.allowedScopes = allowedScopes;
 	}
-
+	
 	/**
 	 * @return the timeoutDate
 	 */
@@ -247,14 +249,25 @@ public class ApprovedSite {
 
 	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
 	@JoinColumn(name="approved_site_id")
-	public Set<OAuth2AccessTokenEntity> getApprovedAccessTokens() {
+	public Set<DefaultOAuth2AccessTokenEntity> getApprovedAccessTokens() {
 		return approvedAccessTokens;
 	}
-
+	
 	/**
 	 * @param approvedAccessTokens the approvedAccessTokens to set
 	 */
-	public void setApprovedAccessTokens(Set<OAuth2AccessTokenEntity> approvedAccessTokens) {
+	public void setApprovedAccessTokens(Set<DefaultOAuth2AccessTokenEntity> approvedAccessTokens) {
 		this.approvedAccessTokens = approvedAccessTokens;
 	}
+	
+	public void setApprovedAccessTokens(Collection<OAuth2AccessTokenEntity> approvedAccessTokens) {
+		Set<DefaultOAuth2AccessTokenEntity> tmpTokens = Sets.newHashSet();
+		for(OAuth2AccessTokenEntity aToken : approvedAccessTokens) {
+			if(aToken instanceof DefaultOAuth2AccessTokenEntity) {
+				tmpTokens.add((DefaultOAuth2AccessTokenEntity)aToken);
+			}
+		}
+		setApprovedAccessTokens(tmpTokens);
+	}
+	
 }

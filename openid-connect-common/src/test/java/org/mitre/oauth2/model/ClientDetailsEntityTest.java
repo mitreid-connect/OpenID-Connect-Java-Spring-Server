@@ -24,6 +24,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.Date;
 
 import org.junit.Test;
+import org.mitre.oauth2.model.impl.ModelFactory;
 
 import com.google.common.collect.ImmutableSet;
 import com.nimbusds.jose.EncryptionMethod;
@@ -34,16 +35,16 @@ import com.nimbusds.jose.JWEAlgorithm;
  *
  */
 public class ClientDetailsEntityTest {
-
+	
 	/**
 	 * Test method for {@link org.mitre.oauth2.model.ClientDetailsEntity#ClientDetailsEntity()}.
 	 */
 	@Test
 	public void testClientDetailsEntity() {
 		Date now = new Date();
-
-		ClientDetailsEntity c = new ClientDetailsEntity();
-
+		
+		ClientDetailsEntity c = ModelFactory.instance().getClientDetailsInstance();
+		
 		c.setClientId("s6BhdRkqt3");
 		c.setClientSecret("ZJYCqe3GGRvdrudKyZS0XhGv_Z45DuKhCUk0gBR1vZk");
 		c.setApplicationType(ClientDetailsEntity.AppType.WEB);

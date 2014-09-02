@@ -62,7 +62,7 @@ public class JpaAuthorizationCodeRepository implements AuthorizationCodeReposito
 	@Transactional
 	public OAuth2Authentication consume(String code) throws InvalidGrantException {
 
-		TypedQuery<AuthorizationCodeEntity> query = manager.createNamedQuery("AuthorizationCodeEntity.getByValue", AuthorizationCodeEntity.class);
+		TypedQuery<AuthorizationCodeEntity> query = manager.createNamedQuery("DefaultAuthorizationCodeEntity.getByValue", AuthorizationCodeEntity.class);
 		query.setParameter("code", code);
 
 		AuthorizationCodeEntity result = JpaUtil.getSingleResult(query.getResultList());

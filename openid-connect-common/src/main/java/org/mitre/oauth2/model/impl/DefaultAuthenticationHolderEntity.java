@@ -14,7 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package org.mitre.oauth2.model;
+
+package org.mitre.oauth2.model.impl;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -28,15 +29,20 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
+import org.mitre.oauth2.model.AuthenticationHolderEntity;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 
+/**
+ * @author jricher
+ *
+ */
 @Entity
 @Table(name = "authentication_holder")
 @NamedQueries ({
-	@NamedQuery(name = "AuthenticationHolderEntity.getByAuthentication", query = "select a from AuthenticationHolderEntity a where a.authentication = :authentication"),
-	@NamedQuery(name = "AuthenticationHolderEntity.getUnusedAuthenticationHolders", query = "select a from AuthenticationHolderEntity a where a.id not in (select t.authenticationHolder.id from OAuth2AccessTokenEntity t) and a.id not in (select r.authenticationHolder.id from OAuth2RefreshTokenEntity r)")
+	@NamedQuery(name = "DefaultAuthenticationHolderEntity.getByAuthentication", query = "select a from DefaultAuthenticationHolderEntity a where a.authentication = :authentication"),
+	@NamedQuery(name = "DefaultAuthenticationHolderEntity.getUnusedAuthenticationHolders", query = "select a from DefaultAuthenticationHolderEntity a where a.id not in (select t.authenticationHolder.id from DefaultOAuth2AccessTokenEntity t) and a.id not in (select r.authenticationHolder.id from DefaultOAuth2RefreshTokenEntity r)")
 })
-public class AuthenticationHolderEntity {
+public class DefaultAuthenticationHolderEntity implements AuthenticationHolderEntity {
 
 	private Long id;
 
@@ -44,7 +50,7 @@ public class AuthenticationHolderEntity {
 
 	private OAuth2Authentication authentication;
 
-	public AuthenticationHolderEntity() {
+	DefaultAuthenticationHolderEntity() {
 
 	}
 
@@ -79,7 +85,5 @@ public class AuthenticationHolderEntity {
 	public void setAuthentication(OAuth2Authentication authentication) {
 		this.authentication = authentication;
 	}
-
-
-
+	
 }

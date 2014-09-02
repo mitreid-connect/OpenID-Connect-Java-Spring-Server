@@ -14,10 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-/**
- * 
- */
-package org.mitre.oauth2.model;
+
+package org.mitre.oauth2.model.impl;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -37,7 +35,9 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.Transient;
 
-import org.springframework.security.oauth2.common.OAuth2RefreshToken;
+import org.mitre.oauth2.model.AuthenticationHolderEntity;
+import org.mitre.oauth2.model.ClientDetailsEntity;
+import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
 
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTParser;
@@ -49,19 +49,19 @@ import com.nimbusds.jwt.JWTParser;
 @Entity
 @Table(name = "refresh_token")
 @NamedQueries({
-	@NamedQuery(name = "OAuth2RefreshTokenEntity.getAll", query = "select r from OAuth2RefreshTokenEntity r"),
-	@NamedQuery(name = "OAuth2RefreshTokenEntity.getAllExpiredByDate", query = "select r from OAuth2RefreshTokenEntity r where r.expiration <= :date"),
-	@NamedQuery(name = "OAuth2RefreshTokenEntity.getByClient", query = "select r from OAuth2RefreshTokenEntity r where r.client = :client"),
-	@NamedQuery(name = "OAuth2RefreshTokenEntity.getByTokenValue", query = "select r from OAuth2RefreshTokenEntity r where r.value = :tokenValue"),
-	@NamedQuery(name = "OAuth2RefreshTokenEntity.getByAuthentication", query = "select r from OAuth2RefreshTokenEntity r where r.authenticationHolder.authentication = :authentication")
+	@NamedQuery(name = "DefaultOAuth2RefreshTokenEntity.getAll", query = "select r from DefaultOAuth2RefreshTokenEntity r"),
+	@NamedQuery(name = "DefaultOAuth2RefreshTokenEntity.getAllExpiredByDate", query = "select r from DefaultOAuth2RefreshTokenEntity r where r.expiration <= :date"),
+	@NamedQuery(name = "DefaultOAuth2RefreshTokenEntity.getByClient", query = "select r from DefaultOAuth2RefreshTokenEntity r where r.client = :client"),
+	@NamedQuery(name = "DefaultOAuth2RefreshTokenEntity.getByTokenValue", query = "select r from DefaultOAuth2RefreshTokenEntity r where r.value = :tokenValue"),
+	@NamedQuery(name = "DefaultOAuth2RefreshTokenEntity.getByAuthentication", query = "select r from DefaultOAuth2RefreshTokenEntity r where r.authenticationHolder.authentication = :authentication")
 })
-public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
+public class DefaultOAuth2RefreshTokenEntity implements OAuth2RefreshTokenEntity {
 
 	private Long id;
 
-	private AuthenticationHolderEntity authenticationHolder;
-
-	private ClientDetailsEntity client;
+	private DefaultAuthenticationHolderEntity authenticationHolder;
+	
+	private DefaultClientDetailsEntity client;
 
 	//JWT-encoded representation of this access token entity
 	private JWT jwt;
@@ -72,7 +72,7 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
 	/**
 	 * 
 	 */
-	public OAuth2RefreshTokenEntity() {
+	DefaultOAuth2RefreshTokenEntity() {
 
 	}
 
@@ -101,17 +101,25 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
 	 */
 	@ManyToOne
 	@JoinColumn(name = "auth_holder_id")
-	public AuthenticationHolderEntity getAuthenticationHolder() {
+	public DefaultAuthenticationHolderEntity getAuthenticationHolder() {
 		return authenticationHolder;
 	}
 
 	/**
 	 * @param authentication the authentication to set
 	 */
-	public void setAuthenticationHolder(AuthenticationHolderEntity authenticationHolder) {
+	public void setAuthenticationHolder(DefaultAuthenticationHolderEntity authenticationHolder) {
 		this.authenticationHolder = authenticationHolder;
 	}
-
+	
+	public void setAuthenticationHolder(AuthenticationHolderEntity authenticationHolder) {
+		if (!(authenticationHolder instanceof DefaultAuthenticationHolderEntity)) {
+			throw new IllegalArgumentException("Not a storable authentication holder entity!");
+		}
+		// force a pass through to the entity version
+		setAuthenticationHolder((DefaultAuthenticationHolderEntity)authenticationHolder);
+	}
+	
 	/**
 	 * Get the JWT-encoded value of this token
 	 */
@@ -160,17 +168,25 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
 	 */
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "client_id")
-	public ClientDetailsEntity getClient() {
+	public DefaultClientDetailsEntity getClient() {
 		return client;
 	}
-
+	
 	/**
 	 * @param client the client to set
 	 */
-	public void setClient(ClientDetailsEntity client) {
+	public void setClient(DefaultClientDetailsEntity client) {
 		this.client = client;
 	}
-
+	
+	public void setClient(ClientDetailsEntity client) {
+		if (!(client instanceof DefaultClientDetailsEntity)) {
+			throw new IllegalArgumentException("Not a storable client details entity!");
+		}
+		// force a pass through to the entity version
+		setClient((DefaultClientDetailsEntity)client);
+	}
+	
 	/**
 	 * Get the JWT object directly
 	 * @return the jwt
@@ -186,5 +202,5 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
 	public void setJwt(JWT jwt) {
 		this.jwt = jwt;
 	}
-
+	
 }

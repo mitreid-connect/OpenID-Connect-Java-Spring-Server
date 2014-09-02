@@ -32,6 +32,7 @@ import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity.AppType;
 import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
 import org.mitre.oauth2.model.ClientDetailsEntity.SubjectType;
+import org.mitre.oauth2.model.impl.ModelFactory;
 import org.mitre.oauth2.model.RegisteredClient;
 
 import com.google.common.base.Joiner;
@@ -65,8 +66,8 @@ public class ClientDetailsEntityJsonProcessor {
 		if (jsonEl.isJsonObject()) {
 
 			JsonObject o = jsonEl.getAsJsonObject();
-			ClientDetailsEntity c = new ClientDetailsEntity();
-
+			ClientDetailsEntity c = ModelFactory.instance().getClientDetailsInstance();
+			
 			// TODO: make these field names into constants
 
 			// these two fields should only be sent in the update request, and MUST match existing values
@@ -162,7 +163,8 @@ public class ClientDetailsEntityJsonProcessor {
 			JsonObject o = jsonEl.getAsJsonObject();
 			ClientDetailsEntity c = parse(jsonEl);
 
-			RegisteredClient rc = new RegisteredClient(c);
+			RegisteredClient rc = ModelFactory.instance().getRegisteredClientInstance();
+			rc.setClient(c);
 			// get any fields from the registration
 			rc.setRegistrationAccessToken(getAsString(o, "registration_access_token"));
 			rc.setRegistrationClientUri(getAsString(o, "registration_client_uri"));

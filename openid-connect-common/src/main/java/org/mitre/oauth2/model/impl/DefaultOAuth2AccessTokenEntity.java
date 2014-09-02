@@ -14,10 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-/**
- * 
- */
-package org.mitre.oauth2.model;
+
+package org.mitre.oauth2.model.impl;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -44,6 +42,10 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.Transient;
 
+import org.mitre.oauth2.model.AuthenticationHolderEntity;
+import org.mitre.oauth2.model.ClientDetailsEntity;
+import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
+import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2RefreshToken;
 
@@ -57,42 +59,40 @@ import com.nimbusds.jwt.JWTParser;
 @Entity
 @Table(name = "access_token")
 @NamedQueries({
-	@NamedQuery(name = "OAuth2AccessTokenEntity.getAll", query = "select a from OAuth2AccessTokenEntity a"),
-	@NamedQuery(name = "OAuth2AccessTokenEntity.getAllExpiredByDate", query = "select a from OAuth2AccessTokenEntity a where a.expiration <= :date"),
-	@NamedQuery(name = "OAuth2AccessTokenEntity.getByRefreshToken", query = "select a from OAuth2AccessTokenEntity a where a.refreshToken = :refreshToken"),
-	@NamedQuery(name = "OAuth2AccessTokenEntity.getByClient", query = "select a from OAuth2AccessTokenEntity a where a.client = :client"),
-	@NamedQuery(name = "OAuth2AccessTokenEntity.getByAuthentication", query = "select a from OAuth2AccessTokenEntity a where a.authenticationHolder.authentication = :authentication"),
-	@NamedQuery(name = "OAuth2AccessTokenEntity.getByIdToken", query = "select a from OAuth2AccessTokenEntity a where a.idToken = :idToken"),
-	@NamedQuery(name = "OAuth2AccessTokenEntity.getByTokenValue", query = "select a from OAuth2AccessTokenEntity a where a.value = :tokenValue")
+	@NamedQuery(name = "DefaultOAuth2AccessTokenEntity.getAll", query = "select a from DefaultOAuth2AccessTokenEntity a"),
+	@NamedQuery(name = "DefaultOAuth2AccessTokenEntity.getAllExpiredByDate", query = "select a from DefaultOAuth2AccessTokenEntity a where a.expiration <= :date"),
+	@NamedQuery(name = "DefaultOAuth2AccessTokenEntity.getByRefreshToken", query = "select a from DefaultOAuth2AccessTokenEntity a where a.refreshToken = :refreshToken"),
+	@NamedQuery(name = "DefaultOAuth2AccessTokenEntity.getByClient", query = "select a from DefaultOAuth2AccessTokenEntity a where a.client = :client"),
+	@NamedQuery(name = "DefaultOAuth2AccessTokenEntity.getByAuthentication", query = "select a from DefaultOAuth2AccessTokenEntity a where a.authenticationHolder.authentication = :authentication"),
+	@NamedQuery(name = "DefaultOAuth2AccessTokenEntity.getByIdToken", query = "select a from DefaultOAuth2AccessTokenEntity a where a.idToken = :idToken"),
+	@NamedQuery(name = "DefaultOAuth2AccessTokenEntity.getByTokenValue", query = "select a from DefaultOAuth2AccessTokenEntity a where a.value = :tokenValue")
 })
-//@JsonSerialize(using = OAuth2AccessTokenSerializer.class)
-//@JsonDeserialize(using = OAuth2AccessTokenDeserializer.class)
-public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
+public class DefaultOAuth2AccessTokenEntity implements OAuth2AccessTokenEntity {
 
 	public static String ID_TOKEN_FIELD_NAME = "id_token";
 
 	private Long id;
 
-	private ClientDetailsEntity client;
+	private DefaultClientDetailsEntity client;
 
-	private AuthenticationHolderEntity authenticationHolder; // the authentication that made this access
+	private DefaultAuthenticationHolderEntity authenticationHolder; // the authentication that made this access
 
 	private JWT jwtValue; // JWT-encoded access token value
 
-	private OAuth2AccessTokenEntity idToken; // JWT-encoded OpenID Connect IdToken
+	private DefaultOAuth2AccessTokenEntity idToken; // JWT-encoded OpenID Connect IdToken
 
 	private Date expiration;
 
 	private String tokenType = OAuth2AccessToken.BEARER_TYPE;
 
-	private OAuth2RefreshTokenEntity refreshToken;
+	private DefaultOAuth2RefreshTokenEntity refreshToken;
 
 	private Set<String> scope;
 
 	/**
 	 * Create a new, blank access token
 	 */
-	public OAuth2AccessTokenEntity() {
+	DefaultOAuth2AccessTokenEntity() {
 
 	}
 
@@ -132,33 +132,49 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	 */
 	@ManyToOne
 	@JoinColumn(name = "auth_holder_id")
-	public AuthenticationHolderEntity getAuthenticationHolder() {
+	public DefaultAuthenticationHolderEntity getAuthenticationHolder() {
 		return authenticationHolder;
 	}
 
 	/**
 	 * @param authentication the authentication to set
 	 */
-	public void setAuthenticationHolder(AuthenticationHolderEntity authenticationHolder) {
+	public void setAuthenticationHolder(DefaultAuthenticationHolderEntity authenticationHolder) {
 		this.authenticationHolder = authenticationHolder;
 	}
-
+	
+	public void setAuthenticationHolder(AuthenticationHolderEntity authenticationHolder) {
+		if (!(authenticationHolder instanceof DefaultAuthenticationHolderEntity)) {
+			throw new IllegalArgumentException("Not a storable authentication holder entity!");
+		}
+		// force a pass through to the entity version
+		setAuthenticationHolder((DefaultAuthenticationHolderEntity)authenticationHolder);
+	}
+	
 	/**
 	 * @return the client
 	 */
 	@ManyToOne
 	@JoinColumn(name = "client_id")
-	public ClientDetailsEntity getClient() {
+	public DefaultClientDetailsEntity getClient() {
 		return client;
 	}
-
+	
 	/**
 	 * @param client the client to set
 	 */
-	public void setClient(ClientDetailsEntity client) {
+	public void setClient(DefaultClientDetailsEntity client) {
 		this.client = client;
 	}
-
+	
+	public void setClient(ClientDetailsEntity client) {
+		if (!(client instanceof DefaultClientDetailsEntity)) {
+			throw new IllegalArgumentException("Not a storable client details entity!");
+		}
+		// force a pass through to the entity version
+		setClient((DefaultClientDetailsEntity)client);
+	}
+	
 	/**
 	 * Get the string-encoded value of this access token.
 	 */
@@ -205,20 +221,28 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	@Override
 	@ManyToOne
 	@JoinColumn(name="refresh_token_id")
-	public OAuth2RefreshTokenEntity getRefreshToken() {
+	public DefaultOAuth2RefreshTokenEntity getRefreshToken() {
 		return refreshToken;
 	}
-
-	public void setRefreshToken(OAuth2RefreshTokenEntity refreshToken) {
+	
+	public void setRefreshToken(DefaultOAuth2RefreshTokenEntity refreshToken) {
 		this.refreshToken = refreshToken;
 	}
-
-	public void setRefreshToken(OAuth2RefreshToken refreshToken) {
-		if (!(refreshToken instanceof OAuth2RefreshTokenEntity)) {
+	
+	public void setRefreshToken(OAuth2RefreshTokenEntity refreshToken) {
+		if (!(refreshToken instanceof DefaultOAuth2RefreshTokenEntity)) {
 			throw new IllegalArgumentException("Not a storable refresh token entity!");
 		}
 		// force a pass through to the entity version
-		setRefreshToken((OAuth2RefreshTokenEntity)refreshToken);
+		setRefreshToken((DefaultOAuth2RefreshTokenEntity)refreshToken);
+	}
+	
+	public void setRefreshToken(OAuth2RefreshToken refreshToken) {
+		if (!(refreshToken instanceof DefaultOAuth2RefreshTokenEntity)) {
+			throw new IllegalArgumentException("Not a storable refresh token entity!");
+		}
+		// force a pass through to the entity version
+		setRefreshToken((DefaultOAuth2RefreshTokenEntity)refreshToken);
 	}
 
 	@Override
@@ -246,17 +270,25 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	 */
 	@OneToOne(cascade=CascadeType.ALL) // one-to-one mapping for now
 	@JoinColumn(name = "id_token_id")
-	public OAuth2AccessTokenEntity getIdToken() {
+	public DefaultOAuth2AccessTokenEntity getIdToken() {
 		return idToken;
 	}
-
+	
 	/**
 	 * @param idToken the idToken to set
 	 */
-	public void setIdToken(OAuth2AccessTokenEntity idToken) {
+	public void setIdToken(DefaultOAuth2AccessTokenEntity idToken) {
 		this.idToken = idToken;
 	}
-
+	
+	public void setIdToken(OAuth2AccessTokenEntity idToken) {
+		if (!(idToken instanceof DefaultOAuth2AccessTokenEntity)) {
+			throw new IllegalArgumentException("Not a storable access token entity!");
+		}
+		// force a pass through to the entity version
+		setIdToken((DefaultOAuth2AccessTokenEntity)idToken);
+	}
+	
 	/**
 	 * @return the idTokenString
 	 */
