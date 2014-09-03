@@ -7,12 +7,12 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint;
 import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 
-@Order(106)
 @Configuration
-public class ResourceWebSecurityConfig extends WebSecurityConfigurerAdapter {
+public class ResourceWebSecurityConfig extends ResourceServerConfigurerAdapter {
 
 	@Autowired
 	private CorsFilter corsFilter;

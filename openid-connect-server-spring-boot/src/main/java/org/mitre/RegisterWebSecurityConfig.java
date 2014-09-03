@@ -10,7 +10,6 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.R
 import org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint;
 import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 
-@Order(105)
 @Configuration
 public class RegisterWebSecurityConfig extends ResourceServerConfigurerAdapter {
 

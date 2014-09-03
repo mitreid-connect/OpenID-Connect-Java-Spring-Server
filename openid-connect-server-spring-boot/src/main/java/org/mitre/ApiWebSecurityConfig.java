@@ -8,7 +8,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint;
 
-@Order(108)
 @Configuration
 public class ApiWebSecurityConfig extends ResourceServerConfigurerAdapter {
 
