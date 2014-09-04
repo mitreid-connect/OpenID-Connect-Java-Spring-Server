@@ -20,6 +20,7 @@ package org.mitre.openid.connect.service.impl;
 
 import com.google.common.io.BaseEncoding;
 import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -145,4 +146,16 @@ public abstract class MITREidDataService_1_X implements MITREidDataService {
         return map;
     }
     
+	protected void writeNullSafeArray(JsonWriter writer, Set<String> items)
+			throws IOException {
+		if (items != null) {
+			writer.beginArray();
+		    for (String s : items) {
+		        writer.value(s);
+		    }
+		    writer.endArray();
+		} else {
+			writer.nullValue();
+		}
+	}
 }
