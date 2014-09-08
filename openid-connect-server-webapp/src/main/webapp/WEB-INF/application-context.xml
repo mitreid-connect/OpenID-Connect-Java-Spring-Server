@@ -33,6 +33,10 @@
 		<property name="clientDetailsType" value="org.mitre.oauth2.model.impl.DefaultClientDetailsEntity" />
 		<property name="accessTokenType" value="org.mitre.oauth2.model.impl.DefaultOAuth2AccessTokenEntity" />
 		<property name="refreshTokenType" value="org.mitre.oauth2.model.impl.DefaultOAuth2RefreshTokenEntity" />
+		<property name="authCodeType" value="org.mitre.oauth2.model.impl.DefaultAuthorizationCodeEntity" />
+		<property name="authHolderType" value="org.mitre.oauth2.model.impl.DefaultAuthenticationHolderEntity" />
+		<property name="registeredClientType" value="org.mitre.oauth2.model.impl.DefaultRegisteredClient" />
+		<property name="systemScopeType" value="org.mitre.oauth2.model.impl.DefaultSystemScope" />
 	</bean>
 	
 	<!-- Scan for components -->

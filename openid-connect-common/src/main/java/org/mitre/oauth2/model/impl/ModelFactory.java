@@ -58,6 +58,46 @@ public class ModelFactory {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
+	public void setAuthCodeType(String type) {
+		try {
+			Class<?> localType = Class.forName(type);
+			setAuthCodeType((Class<? extends AuthorizationCodeEntity>)localType);
+		} catch (Throwable ex) {
+			throw new RuntimeException("failed while setting class", ex);
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void setAuthHolderType(String type) {
+		try {
+			Class<?> localType = Class.forName(type);
+			setAuthHolderType((Class<? extends AuthenticationHolderEntity>)localType);
+		} catch (Throwable ex) {
+			throw new RuntimeException("failed while setting class", ex);
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void setRegisteredClientType(String type) {
+		try {
+			Class<?> localType = Class.forName(type);
+			setRegisteredClientType((Class<? extends RegisteredClient>)localType);
+		} catch (Throwable ex) {
+			throw new RuntimeException("failed while setting class", ex);
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void setSystemScopeType(String type) {
+		try {
+			Class<?> localType = Class.forName(type);
+			setSystemScopeType((Class<? extends SystemScope>)localType);
+		} catch (Throwable ex) {
+			throw new RuntimeException("failed while setting class", ex);
+		}
+	}
+	
 	public void setClientDetailsType(Class<? extends ClientDetailsEntity> type) {
 		this.clientDetailsType = type;
 	}
@@ -68,6 +108,22 @@ public class ModelFactory {
 	
 	public void setRefreshTokenType(Class<? extends OAuth2RefreshTokenEntity> type) {
 		this.refreshTokenType = type;
+	}
+	
+	public void setAuthCodeType(Class<? extends AuthorizationCodeEntity> type) {
+		this.authCodeType = type;
+	}
+	
+	public void setAuthHolderType(Class<? extends AuthenticationHolderEntity> type) {
+		this.authHolderType = type;
+	}
+	
+	public void setRegisteredClientType(Class<? extends RegisteredClient> type) {
+		this.regClientType = type;
+	}
+	
+	public void setSystemScopeType(Class<? extends SystemScope> type) {
+		this.sysScopeType = type;
 	}
 	
 	@SuppressWarnings("unchecked")
