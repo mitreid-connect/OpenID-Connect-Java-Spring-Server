@@ -51,8 +51,24 @@
     </td>
 
     <td>
-		<div class="client-more-info-block"></div>
+		<% if (client.redirectUris) { %>
+		<div><span class="muted">
+			<% for (var i in client.redirectUris) {
+				var uri = $.url(client.redirectUris[i]);
+				if (uri.attr('protocol') == 'http' && uri.attr('host') != 'localhost') {
+					%><b class="text-error"><%- uri.attr('protocol') %></b>://<%
+				} else if (uri.attr('protocol') != 'https' && uri.attr('protocol') != 'http') {
+					%><span class="text-warning"><%- uri.attr('protocol') %></span>://<%
+				} else {
+					%><span class="text-success"><%- uri.attr('protocol') %></span>://<%
+				}
+			%><b><%- uri.attr('host') %><%- uri.attr('port') ? ':' + uri.attr('port') : ''%></b><%- uri.attr('relative') %>
+				
+			<% } %>
+		</span></div>
+		<% } %>
 		<div class="scope-list"></div>
+		<div class="client-more-info-block"></div>
     </td>
 
     <td>
