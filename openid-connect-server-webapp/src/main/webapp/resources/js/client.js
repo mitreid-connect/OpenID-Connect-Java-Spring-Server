@@ -197,7 +197,7 @@ var ClientView = Backbone.View.extend({
     	this.options = options;
 
         if (!this.template) {
-            this.template = _.template($('#tmpl-client').html());
+            this.template = _.template($('#tmpl-client-table-item').html());
         }
 
         if (!this.scopeTemplate) {
