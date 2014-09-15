@@ -66,7 +66,7 @@ public class TokenApiView extends AbstractView {
 		}
 
 	})
-	.registerTypeAdapter(OAuth2AccessTokenEntity.class, new JsonSerializer<OAuth2AccessTokenEntity>() {
+	.registerTypeHierarchyAdapter(OAuth2AccessTokenEntity.class, new JsonSerializer<OAuth2AccessTokenEntity>() {
 
 		@Override
 		public JsonElement serialize(OAuth2AccessTokenEntity src,
@@ -91,7 +91,7 @@ public class TokenApiView extends AbstractView {
 		}
 
 	})
-	.registerTypeAdapter(OAuth2RefreshTokenEntity.class, new JsonSerializer<OAuth2RefreshTokenEntity>() {
+	.registerTypeHierarchyAdapter(OAuth2RefreshTokenEntity.class, new JsonSerializer<OAuth2RefreshTokenEntity>() {
 
 		@Override
 		public JsonElement serialize(OAuth2RefreshTokenEntity src,
