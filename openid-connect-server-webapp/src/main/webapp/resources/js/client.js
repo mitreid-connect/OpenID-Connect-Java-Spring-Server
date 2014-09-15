@@ -148,7 +148,7 @@ var ClientModel = Backbone.Model.extend({
     		// there's no search term, we always match
     		
 	    	this.unset('matches', {silent: true});
-	    	console.log('no term');
+	    	//console.log('no term');
 	    	return true;
     	}
     
@@ -251,7 +251,7 @@ var ClientView = Backbone.View.extend({
     
     updateMatched:function() {
     	
-    	console.log(this.model.get('matches'));
+    	//console.log(this.model.get('matches'));
     	
     	if (this.model.get('matches')) {
     		$('.matched', this.el).show();

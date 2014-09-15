@@ -449,7 +449,7 @@ var TokenListView = Backbone.View.extend({
             	$(element).hide();
             }
             
-            console.log(token.get('refreshTokenId'));
+            //console.log(token.get('refreshTokenId'));
             var refId = token.get('refreshTokenId');
             if (refId != null) {
             	if (refreshCount[refId]) {
@@ -462,7 +462,7 @@ var TokenListView = Backbone.View.extend({
 
 		});
 
-        console.log(refreshCount);
+        //console.log(refreshCount);
         
         // set up pagination
         var numPagesRefresh = Math.ceil(this.model.refresh.length / 10);
