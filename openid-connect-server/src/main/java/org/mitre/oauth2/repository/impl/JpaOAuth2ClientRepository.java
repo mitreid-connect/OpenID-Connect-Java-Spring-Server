@@ -23,6 +23,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
 import org.mitre.oauth2.model.ClientDetailsEntity;
+import org.mitre.oauth2.model.impl.DefaultClientDetailsEntity;
 import org.mitre.oauth2.repository.OAuth2ClientRepository;
 import org.mitre.util.jpa.JpaUtil;
 import org.springframework.stereotype.Repository;
@@ -49,7 +50,7 @@ public class JpaOAuth2ClientRepository implements OAuth2ClientRepository {
 
 	@Override
 	public ClientDetailsEntity getById(Long id) {
-		return manager.find(ClientDetailsEntity.class, id);
+		return manager.find(DefaultClientDetailsEntity.class, id);
 	}
 
 	/* (non-Javadoc)

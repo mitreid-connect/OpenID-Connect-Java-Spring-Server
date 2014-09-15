@@ -28,6 +28,8 @@ import javax.persistence.TypedQuery;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
+import org.mitre.oauth2.model.impl.DefaultOAuth2AccessTokenEntity;
+import org.mitre.oauth2.model.impl.DefaultOAuth2RefreshTokenEntity;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
 import org.mitre.util.jpa.JpaUtil;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -64,7 +66,7 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 
 	@Override
 	public OAuth2AccessTokenEntity getAccessTokenById(Long id) {
-		return manager.find(OAuth2AccessTokenEntity.class, id);
+		return manager.find(DefaultOAuth2AccessTokenEntity.class, id);
 	}
 
 	@Override
@@ -104,7 +106,7 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 
 	@Override
 	public OAuth2RefreshTokenEntity getRefreshTokenById(Long id) {
-		return manager.find(OAuth2RefreshTokenEntity.class, id);
+		return manager.find(DefaultOAuth2RefreshTokenEntity.class, id);
 	}
 
 	@Override

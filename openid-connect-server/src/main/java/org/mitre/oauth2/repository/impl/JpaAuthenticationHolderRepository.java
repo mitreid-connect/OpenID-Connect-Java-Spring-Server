@@ -23,6 +23,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
 import org.mitre.oauth2.model.AuthenticationHolderEntity;
+import org.mitre.oauth2.model.impl.DefaultAuthenticationHolderEntity;
 import org.mitre.oauth2.repository.AuthenticationHolderRepository;
 import org.mitre.util.jpa.JpaUtil;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -40,7 +41,7 @@ public class JpaAuthenticationHolderRepository implements AuthenticationHolderRe
 
 	@Override
 	public AuthenticationHolderEntity getById(Long id) {
-		return manager.find(AuthenticationHolderEntity.class, id);
+		return manager.find(DefaultAuthenticationHolderEntity.class, id);
 	}
 
 	@Override
