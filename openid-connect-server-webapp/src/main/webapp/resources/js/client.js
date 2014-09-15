@@ -281,7 +281,7 @@ var ClientView = Backbone.View.extend({
     		app.navigate('admin/whitelist/new/' + this.model.id, {trigger: true});
     	} else {
     		// edit the existing one
-    		app.navigate('admin/whitelist/' + whiteList.id, {trigger: true});
+    		app.navigate('admin/whitelist/' + this.options.whiteList.id, {trigger: true});
     	}
     },
     
