@@ -129,10 +129,17 @@ h1,label {
 .input-prepend.input-block-level > input {
   box-sizing: border-box; /* use bootstrap mixin or include vendor variants */
   -moz-box-sizing: border-box; /* for Firefox */
-  display: table; /* table-cell is not working well in Chrome for small widths */
   min-height: inherit;
   width: 100%;
 }
+
+/* This block applies to Chrome only */
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  .input-append.input-block-level > input,
+  .input-prepend.input-block-level > input {
+    display: table; /* table-cell is not working well in Chrome for small widths */
+  }
+}		  }
 
 .input-append.input-block-level > input {
   border-right: 0;
