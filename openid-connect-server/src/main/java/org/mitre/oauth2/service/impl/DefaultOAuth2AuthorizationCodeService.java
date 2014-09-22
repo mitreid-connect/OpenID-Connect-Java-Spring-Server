@@ -20,6 +20,7 @@
 package org.mitre.oauth2.service.impl;
 
 import org.mitre.oauth2.model.AuthorizationCodeEntity;
+import org.mitre.oauth2.model.impl.ModelFactory;
 import org.mitre.oauth2.repository.AuthorizationCodeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.exceptions.InvalidGrantException;
@@ -54,7 +55,10 @@ public class DefaultOAuth2AuthorizationCodeService implements AuthorizationCodeS
 	public String createAuthorizationCode(OAuth2Authentication authentication) {
 		String code = generator.generate();
 
-		AuthorizationCodeEntity entity = new AuthorizationCodeEntity(code, authentication);
+		AuthorizationCodeEntity entity = ModelFactory.instance().getAuthCodeInstance();
+		entity.setCode(code);
+		entity.setAuthentication(authentication);
+		
 		repository.save(entity);
 
 		return code;

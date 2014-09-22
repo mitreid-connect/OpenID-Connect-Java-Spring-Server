@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity.SubjectType;
+import org.mitre.oauth2.model.impl.ModelFactory;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.openid.connect.model.DefaultUserInfo;
 import org.mitre.openid.connect.model.UserInfo;
@@ -88,16 +89,12 @@ public class TestDefaultUserInfoService {
 	private String sectorIdentifier2 = "https://sector-identifier-12/url2";
 	private String sectorIdentifier3 = "https://sector-identifier-3/url";
 
-
-
-
 	/**
 	 * Initialize the service and the mocked repository.
 	 * Initialize 2 users, one of them an admin, for use in unit tests.
 	 */
 	@Before
 	public void prepare() {
-
 
 		userInfoAdmin = new DefaultUserInfo();
 		userInfoAdmin.setPreferredUsername(adminUsername);
@@ -107,37 +104,34 @@ public class TestDefaultUserInfoService {
 		userInfoRegular.setPreferredUsername(regularUsername);
 		userInfoRegular.setSub(regularSub);
 
-		publicClient1 = new ClientDetailsEntity();
+		publicClient1 = ModelFactory.instance().getClientDetailsInstance();
 		publicClient1.setClientId(publicClientId1);
 
-		publicClient2 = new ClientDetailsEntity();
+		publicClient2 = ModelFactory.instance().getClientDetailsInstance();
 		publicClient2.setClientId(publicClientId2);
 		publicClient2.setSubjectType(SubjectType.PUBLIC);
 
 		// pairwise set 1
-		pairwiseClient1 = new ClientDetailsEntity();
+		pairwiseClient1 = ModelFactory.instance().getClientDetailsInstance();
 		pairwiseClient1.setClientId(pairwiseClientId1);
 		pairwiseClient1.setSubjectType(SubjectType.PAIRWISE);
 		pairwiseClient1.setSectorIdentifierUri(sectorIdentifier1);
 
-		pairwiseClient2 = new ClientDetailsEntity();
+		pairwiseClient2 = ModelFactory.instance().getClientDetailsInstance();
 		pairwiseClient2.setClientId(pairwiseClientId2);
 		pairwiseClient2.setSubjectType(SubjectType.PAIRWISE);
 		pairwiseClient2.setSectorIdentifierUri(sectorIdentifier2);
 
 		// pairwise set 2
-		pairwiseClient3 = new ClientDetailsEntity();
+		pairwiseClient3 = ModelFactory.instance().getClientDetailsInstance();
 		pairwiseClient3.setClientId(pairwiseClientId3);
 		pairwiseClient3.setSubjectType(SubjectType.PAIRWISE);
 		pairwiseClient3.setSectorIdentifierUri(sectorIdentifier3);
 
 		// pairwise with null sector
-		pairwiseClient4 = new ClientDetailsEntity();
+		pairwiseClient4 = ModelFactory.instance().getClientDetailsInstance();
 		pairwiseClient4.setClientId(pairwiseClientId4);
 		pairwiseClient4.setSubjectType(SubjectType.PAIRWISE);
-
-
-
 
 	}
 
@@ -235,7 +229,5 @@ public class TestDefaultUserInfoService {
 		assertEquals(pairwiseSub4, user4.getSub());
 
 	}
-
-
 
 }

@@ -30,6 +30,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity.SubjectType;
+import org.mitre.oauth2.model.impl.ModelFactory;
 import org.mitre.openid.connect.model.DefaultUserInfo;
 import org.mitre.openid.connect.model.PairwiseIdentifier;
 import org.mitre.openid.connect.model.UserInfo;
@@ -95,31 +96,31 @@ public class TestUUIDPairwiseIdentiferService {
 		userInfoRegular.setSub(regularSub);
 
 		// pairwise set 1
-		pairwiseClient1 = new ClientDetailsEntity();
+		pairwiseClient1 = ModelFactory.instance().getClientDetailsInstance();
 		pairwiseClient1.setClientId(pairwiseClientId1);
 		pairwiseClient1.setSubjectType(SubjectType.PAIRWISE);
 		pairwiseClient1.setSectorIdentifierUri(sectorIdentifier1);
 
-		pairwiseClient2 = new ClientDetailsEntity();
+		pairwiseClient2 = ModelFactory.instance().getClientDetailsInstance();
 		pairwiseClient2.setClientId(pairwiseClientId2);
 		pairwiseClient2.setSubjectType(SubjectType.PAIRWISE);
 		pairwiseClient2.setSectorIdentifierUri(sectorIdentifier2);
 
 		// pairwise set 2
-		pairwiseClient3 = new ClientDetailsEntity();
+		pairwiseClient3 = ModelFactory.instance().getClientDetailsInstance();
 		pairwiseClient3.setClientId(pairwiseClientId3);
 		pairwiseClient3.setSubjectType(SubjectType.PAIRWISE);
 		pairwiseClient3.setSectorIdentifierUri(sectorIdentifier3);
 		pairwiseClient3.setRedirectUris(pairwiseClient3RedirectUris);
 
 		// pairwise with null sector
-		pairwiseClient4 = new ClientDetailsEntity();
+		pairwiseClient4 = ModelFactory.instance().getClientDetailsInstance();
 		pairwiseClient4.setClientId(pairwiseClientId4);
 		pairwiseClient4.setSubjectType(SubjectType.PAIRWISE);
 		pairwiseClient4.setRedirectUris(pairwiseClient4RedirectUris);
 
 		// pairwise with multiple redirects and no sector (error)
-		pairwiseClient5 = new ClientDetailsEntity();
+		pairwiseClient5 = ModelFactory.instance().getClientDetailsInstance();
 		pairwiseClient5.setClientId(pairwiseClientId5);
 		pairwiseClient5.setSubjectType(SubjectType.PAIRWISE);
 		pairwiseClient5.setRedirectUris(pairwiseClient5RedirectUris);

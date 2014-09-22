@@ -14,72 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package org.mitre.oauth2.model;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
+package org.mitre.oauth2.model;
 
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 
-@Entity
-@Table(name = "authentication_holder")
-@NamedQueries ({
-	@NamedQuery(name = "AuthenticationHolderEntity.getByAuthentication", query = "select a from AuthenticationHolderEntity a where a.authentication = :authentication"),
-	@NamedQuery(name = "AuthenticationHolderEntity.getUnusedAuthenticationHolders", query = "select a from AuthenticationHolderEntity a where a.id not in (select t.authenticationHolder.id from OAuth2AccessTokenEntity t) and a.id not in (select r.authenticationHolder.id from OAuth2RefreshTokenEntity r)")
-})
-public class AuthenticationHolderEntity {
+/**
+ * @author jricher
+ *
+ */
+public interface AuthenticationHolderEntity {
 
-	private Long id;
+	Long getId();
 
-	private Long ownerId;
+	void setId(Long id);
 
-	private OAuth2Authentication authentication;
+	Long getOwnerId();
 
-	public AuthenticationHolderEntity() {
+	void setOwnerId(Long owner_id);
 
-	}
+	OAuth2Authentication getAuthentication();
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	@Basic
-	@Column(name = "owner_id")
-	public Long getOwnerId() {
-		return ownerId;
-	}
-
-	public void setOwnerId(Long owner_id) {
-		this.ownerId = owner_id;
-	}
-
-	@Lob
-	@Basic(fetch=FetchType.LAZY)
-	@Column(name = "authentication")
-	public OAuth2Authentication getAuthentication() {
-		return authentication;
-	}
-
-	public void setAuthentication(OAuth2Authentication authentication) {
-		this.authentication = authentication;
-	}
-
-
+	void setAuthentication(OAuth2Authentication authentication);
 
 }

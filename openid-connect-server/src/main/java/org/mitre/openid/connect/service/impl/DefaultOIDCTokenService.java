@@ -28,6 +28,7 @@ import org.mitre.jwt.signer.service.impl.SymmetricCacheService;
 import org.mitre.oauth2.model.AuthenticationHolderEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
+import org.mitre.oauth2.model.impl.ModelFactory;
 import org.mitre.oauth2.repository.AuthenticationHolderRepository;
 import org.mitre.oauth2.service.SystemScopeService;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
@@ -94,7 +95,7 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 		}
 
 
-		OAuth2AccessTokenEntity idTokenEntity = new OAuth2AccessTokenEntity();
+		OAuth2AccessTokenEntity idTokenEntity = ModelFactory.instance().getAccessTokenInstance();
 		JWTClaimsSet idClaims = new JWTClaimsSet();
 
 		// if the auth time claim was explicitly requested OR if the client always wants the auth time, put it in
@@ -208,11 +209,11 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 				Sets.newHashSet(SystemScopeService.REGISTRATION_TOKEN_SCOPE), null, null, null, null);
 		OAuth2Authentication authentication = new OAuth2Authentication(clientAuth, null);
 
-		OAuth2AccessTokenEntity token = new OAuth2AccessTokenEntity();
+		OAuth2AccessTokenEntity token = ModelFactory.instance().getAccessTokenInstance();
 		token.setClient(client);
 		token.setScope(Sets.newHashSet(SystemScopeService.REGISTRATION_TOKEN_SCOPE));
 
-		AuthenticationHolderEntity authHolder = new AuthenticationHolderEntity();
+		AuthenticationHolderEntity authHolder = ModelFactory.instance().getAuthHolderInstance();
 		authHolder.setAuthentication(authentication);
 		authHolder = authenticationHolderRepository.save(authHolder);
 		token.setAuthenticationHolder(authHolder);
@@ -249,11 +250,11 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 				Sets.newHashSet(SystemScopeService.RESOURCE_TOKEN_SCOPE), null, null, null, null);
 		OAuth2Authentication authentication = new OAuth2Authentication(clientAuth, null);
 
-		OAuth2AccessTokenEntity token = new OAuth2AccessTokenEntity();
+		OAuth2AccessTokenEntity token = ModelFactory.instance().getAccessTokenInstance();
 		token.setClient(client);
 		token.setScope(Sets.newHashSet(SystemScopeService.RESOURCE_TOKEN_SCOPE));
-
-		AuthenticationHolderEntity authHolder = new AuthenticationHolderEntity();
+		
+		AuthenticationHolderEntity authHolder = ModelFactory.instance().getAuthHolderInstance();
 		authHolder.setAuthentication(authentication);
 		authHolder = authenticationHolderRepository.save(authHolder);
 		token.setAuthenticationHolder(authHolder);

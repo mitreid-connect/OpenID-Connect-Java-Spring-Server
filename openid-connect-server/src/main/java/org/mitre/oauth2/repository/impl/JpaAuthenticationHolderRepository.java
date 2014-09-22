@@ -23,6 +23,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
 import org.mitre.oauth2.model.AuthenticationHolderEntity;
+import org.mitre.oauth2.model.impl.DefaultAuthenticationHolderEntity;
 import org.mitre.oauth2.repository.AuthenticationHolderRepository;
 import org.mitre.util.jpa.JpaUtil;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -40,12 +41,12 @@ public class JpaAuthenticationHolderRepository implements AuthenticationHolderRe
 
 	@Override
 	public AuthenticationHolderEntity getById(Long id) {
-		return manager.find(AuthenticationHolderEntity.class, id);
+		return manager.find(DefaultAuthenticationHolderEntity.class, id);
 	}
 
 	@Override
 	public AuthenticationHolderEntity getByAuthentication(OAuth2Authentication a) {
-		TypedQuery<AuthenticationHolderEntity> query = manager.createNamedQuery("AuthenticationHolderEntity.getByAuthentication", AuthenticationHolderEntity.class);
+		TypedQuery<AuthenticationHolderEntity> query = manager.createNamedQuery("DefaultAuthenticationHolderEntity.getByAuthentication", AuthenticationHolderEntity.class);
 		query.setParameter("authentication", a);
 		return JpaUtil.getSingleResult(query.getResultList());
 	}
@@ -81,7 +82,7 @@ public class JpaAuthenticationHolderRepository implements AuthenticationHolderRe
 	@Override
 	@Transactional
 	public List<AuthenticationHolderEntity> getOrphanedAuthenticationHolders() {
-		TypedQuery<AuthenticationHolderEntity> query = manager.createNamedQuery("AuthenticationHolderEntity.getUnusedAuthenticationHolders", AuthenticationHolderEntity.class);
+		TypedQuery<AuthenticationHolderEntity> query = manager.createNamedQuery("DefaultAuthenticationHolderEntity.getUnusedAuthenticationHolders", AuthenticationHolderEntity.class);
 		query.setMaxResults(MAXEXPIREDRESULTS);
 		List<AuthenticationHolderEntity> unusedAuthenticationHolders = query.getResultList();
 		return unusedAuthenticationHolders;

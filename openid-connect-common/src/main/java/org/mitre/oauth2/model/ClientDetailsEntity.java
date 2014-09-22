@@ -14,40 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-/**
- * 
- */
+
 package org.mitre.oauth2.model;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Basic;
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
 
 import org.mitre.jose.JWEAlgorithmEmbed;
 import org.mitre.jose.JWEEncryptionMethodEmbed;
@@ -63,79 +36,7 @@ import com.nimbusds.jose.JWSAlgorithm;
  * @author jricher
  * 
  */
-@Entity
-@Table(name = "client_details")
-@NamedQueries({
-	@NamedQuery(name = "ClientDetailsEntity.findAll", query = "SELECT c FROM ClientDetailsEntity c"),
-	@NamedQuery(name = "ClientDetailsEntity.getByClientId", query = "select c from ClientDetailsEntity c where c.clientId = :clientId")
-})
-public class ClientDetailsEntity implements ClientDetails {
-
-	/**
-	 * 
-	 */
-	private static final int DEFAULT_ID_TOKEN_VALIDITY_SECONDS = 600;
-
-	private static final long serialVersionUID = -1617727085733786296L;
-
-	private Long id;
-
-	/** Fields from the OAuth2 Dynamic Registration Specification */
-	private String clientId = null; // client_id
-	private String clientSecret = null; // client_secret
-	private Set<String> redirectUris = new HashSet<String>(); // redirect_uris
-	private String clientName; // client_name
-	private String clientUri; // client_uri
-	private String logoUri; // logo_uri
-	private Set<String> contacts; // contacts
-	private String tosUri; // tos_uri
-	private AuthMethod tokenEndpointAuthMethod = AuthMethod.SECRET_BASIC; // token_endpoint_auth_method
-	private Set<String> scope = new HashSet<String>(); // scope
-	private Set<String> grantTypes = new HashSet<String>(); // grant_types
-	private Set<String> responseTypes = new HashSet<String>(); // response_types
-	private String policyUri;
-	private String jwksUri;
-
-	/** Fields from OIDC Client Registration Specification **/
-	private AppType applicationType; // application_type
-	private String sectorIdentifierUri; // sector_identifier_uri
-	private SubjectType subjectType; // subject_type
-
-	private JWSAlgorithmEmbed requestObjectSigningAlg = null; // request_object_signing_alg
-
-	private JWSAlgorithmEmbed userInfoSignedResponseAlg = null; // user_info_signed_response_alg
-	private JWEAlgorithmEmbed userInfoEncryptedResponseAlg = null; // user_info_encrypted_response_alg
-	private JWEEncryptionMethodEmbed userInfoEncryptedResponseEnc = null; // user_info_encrypted_response_enc
-
-	private JWSAlgorithmEmbed idTokenSignedResponseAlg = null; // id_token_signed_response_alg
-	private JWEAlgorithmEmbed idTokenEncryptedResponseAlg = null; // id_token_encrypted_response_alg
-	private JWEEncryptionMethodEmbed idTokenEncryptedResponseEnc = null; // id_token_encrypted_response_enc
-
-	private JWSAlgorithmEmbed tokenEndpointAuthSigningAlg = null; // token_endpoint_auth_signing_alg
-
-	private Integer defaultMaxAge; // default_max_age
-	private Boolean requireAuthTime; // require_auth_time
-	private Set<String> defaultACRvalues; // default_acr_values
-
-	private String initiateLoginUri; // initiate_login_uri
-	private String postLogoutRedirectUri; // post_logout_redirect_uri
-
-	private Set<String> requestUris; // request_uris
-
-	/** Fields to support the ClientDetails interface **/
-	private Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
-	private Integer accessTokenValiditySeconds = 0; // in seconds
-	private Integer refreshTokenValiditySeconds = 0; // in seconds
-	private Set<String> resourceIds = new HashSet<String>();
-	private Map<String, Object> additionalInformation = new HashMap<String, Object>();
-
-	/** Our own fields **/
-	private String clientDescription = ""; // human-readable description
-	private boolean reuseRefreshToken = true; // do we let someone reuse a refresh token?
-	private boolean dynamicallyRegistered = false; // was this client dynamically registered?
-	private boolean allowIntrospection = false; // do we let this client call the introspection endpoint?
-	private Integer idTokenValiditySeconds; //timeout for id tokens
-	private Date createdAt; // time the client was created
+public interface ClientDetailsEntity extends ClientDetails {
 
 	public enum AuthMethod {
 		SECRET_POST("client_secret_post"),
@@ -220,823 +121,314 @@ public class ClientDetailsEntity implements ClientDetails {
 	}
 
 	/**
-	 * Create a blank ClientDetailsEntity
-	 */
-	public ClientDetailsEntity() {
-
-	}
-
-	@PrePersist
-	@PreUpdate
-	private void prePersist() {
-		// make sure that ID tokens always time out, default to 5 minutes
-		if (getIdTokenValiditySeconds() == null) {
-			setIdTokenValiditySeconds(DEFAULT_ID_TOKEN_VALIDITY_SECONDS);
-		}
-	}
-
-	/**
 	 * @return the id
 	 */
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
-	public Long getId() {
-		return id;
-	}
-
+	Long getId();
+	
 	/**
 	 * 
 	 * @param id the id to set
 	 */
-	public void setId(Long id) {
-		this.id = id;
-	}
+	void setId(Long id);
 
 	/**
 	 * @return the clientDescription
 	 */
-	@Basic
-	@Column(name="client_description")
-	public String getClientDescription() {
-		return clientDescription;
-	}
+	String getClientDescription();
 
 	/**
 	 * @param clientDescription Human-readable long description of the client (optional)
 	 */
-	public void setClientDescription(String clientDescription) {
-		this.clientDescription = clientDescription;
-	}
+	void setClientDescription(String clientDescription);
 
 	/**
 	 * @return the allowRefresh
 	 */
-	@Transient
-	public boolean isAllowRefresh() {
-		if (grantTypes != null) {
-			return getAuthorizedGrantTypes().contains("refresh_token");
-		} else {
-			return false; // if there are no grants, we can't be refreshing them, can we?
-		}
-	}
+	boolean isAllowRefresh();
 
-	@Basic
-	@Column(name="reuse_refresh_tokens")
-	public boolean isReuseRefreshToken() {
-		return reuseRefreshToken;
-	}
+	boolean isReuseRefreshToken();
 
-	public void setReuseRefreshToken(boolean reuseRefreshToken) {
-		this.reuseRefreshToken = reuseRefreshToken;
-	}
+	void setReuseRefreshToken(boolean reuseRefreshToken);
 
 	/**
 	 * Number of seconds ID token is valid for. MUST be a positive integer, can not be null.
 	 * 
 	 * @return the idTokenValiditySeconds
 	 */
-	@Basic
-	@Column(name="id_token_validity_seconds")
-	public Integer getIdTokenValiditySeconds() {
-		return idTokenValiditySeconds;
-	}
+	Integer getIdTokenValiditySeconds();
 
 	/**
 	 * @param idTokenValiditySeconds the idTokenValiditySeconds to set
 	 */
-	public void setIdTokenValiditySeconds(Integer idTokenValiditySeconds) {
-		this.idTokenValiditySeconds = idTokenValiditySeconds;
-	}
+	void setIdTokenValiditySeconds(Integer idTokenValiditySeconds);
 
 	/**
 	 * @return the dynamicallyRegistered
 	 */
-	@Basic
-	@Column(name="dynamically_registered")
-	public boolean isDynamicallyRegistered() {
-		return dynamicallyRegistered;
-	}
+	boolean isDynamicallyRegistered();
 
 	/**
 	 * @param dynamicallyRegistered the dynamicallyRegistered to set
 	 */
-	public void setDynamicallyRegistered(boolean dynamicallyRegistered) {
-		this.dynamicallyRegistered = dynamicallyRegistered;
-	}
-
-
-
-
+	void setDynamicallyRegistered(boolean dynamicallyRegistered);
 
 	/**
 	 * @return the allowIntrospection
 	 */
-	@Basic
-	@Column(name="allow_introspection")
-	public boolean isAllowIntrospection() {
-		return allowIntrospection;
-	}
+	boolean isAllowIntrospection();
 
 	/**
 	 * @param allowIntrospection the allowIntrospection to set
 	 */
-	public void setAllowIntrospection(boolean allowIntrospection) {
-		this.allowIntrospection = allowIntrospection;
-	}
-
-	/**
-	 * 
-	 */
-	@Override
-	@Transient
-	public boolean isSecretRequired() {
-		if (getTokenEndpointAuthMethod() != null &&
-				(getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_BASIC) ||
-				 getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_POST) ||
-				 getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_JWT))) {
-			return true;
-		} else {
-			return false;
-		}
-
-	}
-
-	/**
-	 * If the scope list is not null or empty, then this client has been scoped.
-	 */
-	@Override
-	@Transient
-	public boolean isScoped() {
-		return getScope() != null && !getScope().isEmpty();
-	}
-
-	/**
-	 * @return the clientId
-	 */
-	@Basic
-	@Override
-	@Column(name="client_id")
-	public String getClientId() {
-		return clientId;
-	}
-
+	void setAllowIntrospection(boolean allowIntrospection);
+	
 	/**
 	 * @param clientId The OAuth2 client_id, must be unique to this client
 	 */
-	public void setClientId(String clientId) {
-		this.clientId = clientId;
-	}
-
-	/**
-	 * @return the clientSecret
-	 */
-	@Basic
-	@Override
-	@Column(name="client_secret")
-	public String getClientSecret() {
-		return clientSecret;
-	}
+	void setClientId(String clientId);
 
 	/**
 	 * @param clientSecret the OAuth2 client_secret (optional)
 	 */
-	public void setClientSecret(String clientSecret) {
-		this.clientSecret = clientSecret;
-	}
-
-	/**
-	 * @return the scope
-	 */
-	@ElementCollection(fetch = FetchType.EAGER)
-	@CollectionTable(
-			name="client_scope",
-			joinColumns=@JoinColumn(name="owner_id")
-			)
-	@Override
-	@Column(name="scope")
-	public Set<String> getScope() {
-		return scope;
-	}
-
+	void setClientSecret(String clientSecret);
+	
 	/**
 	 * @param scope the set of scopes allowed to be issued to this client
 	 */
-	public void setScope(Set<String> scope) {
-		this.scope = scope;
-	}
+	void setScope(Set<String> scope);
 
 	/**
 	 * @return the authorizedGrantTypes
 	 */
-	@ElementCollection(fetch = FetchType.EAGER)
-	@CollectionTable(
-			name="client_grant_type",
-			joinColumns=@JoinColumn(name="owner_id")
-			)
-	@Column(name="grant_type")
-	public Set<String> getGrantTypes() {
-		return grantTypes;
-	}
+	Set<String> getGrantTypes();
 
 	/**
 	 * @param authorizedGrantTypes the OAuth2 grant types that this client is allowed to use
 	 */
-	public void setGrantTypes(Set<String> grantTypes) {
-		this.grantTypes = grantTypes;
-	}
+	void setGrantTypes(Set<String> grantTypes);
 
 	/**
-	 * passthrough for SECOAUTH api
+	 * @return the authorizedGrantTypes
 	 */
 	@Override
-	public Set<String> getAuthorizedGrantTypes() {
-		return getGrantTypes();
-	}
-
-	/**
-	 * @return the authorities
-	 */
-	@ElementCollection(fetch = FetchType.EAGER)
-	@CollectionTable(
-			name="client_authority",
-			joinColumns=@JoinColumn(name="owner_id")
-			)
-	@Override
-	@Column(name="authority")
-	public Set<GrantedAuthority> getAuthorities() {
-		return authorities;
-	}
+	Set<GrantedAuthority> getAuthorities();
 
 	/**
 	 * @param authorities the Spring Security authorities this client is given
 	 */
-	public void setAuthorities(Set<GrantedAuthority> authorities) {
-		this.authorities = authorities;
-	}
-
-	@Override
-	@Basic
-	@Column(name="access_token_validity_seconds")
-	public Integer getAccessTokenValiditySeconds() {
-		return accessTokenValiditySeconds;
-	}
+	void setAuthorities(Set<GrantedAuthority> authorities);
 
 	/**
 	 * @param accessTokenTimeout the accessTokenTimeout to set
 	 */
-	public void setAccessTokenValiditySeconds(Integer accessTokenValiditySeconds) {
-		this.accessTokenValiditySeconds = accessTokenValiditySeconds;
-	}
-
-	@Override
-	@Basic
-	@Column(name="refresh_token_validity_seconds")
-	public Integer getRefreshTokenValiditySeconds() {
-		return refreshTokenValiditySeconds;
-	}
-
+	void setAccessTokenValiditySeconds(Integer accessTokenValiditySeconds);
+	
 	/**
 	 * @param refreshTokenTimeout Lifetime of refresh tokens, in seconds (optional - leave null for no timeout)
 	 */
-	public void setRefreshTokenValiditySeconds(Integer refreshTokenValiditySeconds) {
-		this.refreshTokenValiditySeconds = refreshTokenValiditySeconds;
-	}
+	void setRefreshTokenValiditySeconds(Integer refreshTokenValiditySeconds);
 
 	/**
 	 * @return the registeredRedirectUri
 	 */
-	@ElementCollection(fetch = FetchType.EAGER)
-	@CollectionTable(
-			name="client_redirect_uri",
-			joinColumns=@JoinColumn(name="owner_id")
-			)
-	@Column(name="redirect_uri")
-	public Set<String> getRedirectUris() {
-		return redirectUris;
-	}
+	Set<String> getRedirectUris();
 
 	/**
 	 * @param registeredRedirectUri the registeredRedirectUri to set
 	 */
-	public void setRedirectUris(Set<String> redirectUris) {
-		this.redirectUris = redirectUris;
-	}
-
-	/**
-	 * Pass-through method to fulfill the ClientDetails interface with a bad name
-	 */
-	@Override
-	@Transient
-	public Set<String> getRegisteredRedirectUri() {
-		return getRedirectUris();
-	}
-
-	/**
-	 * @return the resourceIds
-	 */
-	@Override
-	@ElementCollection(fetch = FetchType.EAGER)
-	@CollectionTable(
-			name="client_resource",
-			joinColumns=@JoinColumn(name="owner_id")
-			)
-	@Column(name="resource_id")
-	public Set<String> getResourceIds() {
-		return resourceIds;
-	}
-
+	void setRedirectUris(Set<String> redirectUris);
+	
 	/**
 	 * @param resourceIds the resourceIds to set
 	 */
-	public void setResourceIds(Set<String> resourceIds) {
-		this.resourceIds = resourceIds;
-	}
+	void setResourceIds(Set<String> resourceIds);
+	
+	AppType getApplicationType();
 
+	void setApplicationType(AppType applicationType);
 
-	/**
-	 * This library does not make use of this field, so it is not
-	 * stored using our persistence layer.
-	 * 
-	 * However, it's somehow required by SECOUATH.
-	 * 
-	 * @return an empty map
-	 */
-	@Override
-	@Transient
-	public Map<String, Object> getAdditionalInformation() {
-		return this.additionalInformation;
-	}
+	String getClientName();
 
+	void setClientName(String clientName);
 
+	AuthMethod getTokenEndpointAuthMethod();
 
+	void setTokenEndpointAuthMethod(AuthMethod tokenEndpointAuthMethod);
 
-	@Enumerated(EnumType.STRING)
-	@Column(name="application_type")
-	public AppType getApplicationType() {
-		return applicationType;
-	}
+	SubjectType getSubjectType();
 
-	public void setApplicationType(AppType applicationType) {
-		this.applicationType = applicationType;
-	}
+	void setSubjectType(SubjectType subjectType);
 
-	@Basic
-	@Column(name="client_name")
-	public String getClientName() {
-		return clientName;
-	}
+	Set<String> getContacts();
 
-	public void setClientName(String clientName) {
-		this.clientName = clientName;
-	}
+	void setContacts(Set<String> contacts);
 
-	@Enumerated(EnumType.STRING)
-	@Column(name="token_endpoint_auth_method")
-	public AuthMethod getTokenEndpointAuthMethod() {
-		return tokenEndpointAuthMethod;
-	}
+	String getLogoUri();
 
-	public void setTokenEndpointAuthMethod(AuthMethod tokenEndpointAuthMethod) {
-		this.tokenEndpointAuthMethod = tokenEndpointAuthMethod;
-	}
+	void setLogoUri(String logoUri);
 
-	@Enumerated(EnumType.STRING)
-	@Column(name="subject_type")
-	public SubjectType getSubjectType() {
-		return subjectType;
-	}
-
-	public void setSubjectType(SubjectType subjectType) {
-		this.subjectType = subjectType;
-	}
-
-	@ElementCollection(fetch = FetchType.EAGER)
-	@CollectionTable(
-			name="client_contact",
-			joinColumns=@JoinColumn(name="owner_id")
-			)
-	@Column(name="contact")
-	public Set<String> getContacts() {
-		return contacts;
-	}
-
-	public void setContacts(Set<String> contacts) {
-		this.contacts = contacts;
-	}
-
-	@Basic
-	@Column(name="logo_uri")
-	public String getLogoUri() {
-		return logoUri;
-	}
-
-	public void setLogoUri(String logoUri) {
-		this.logoUri = logoUri;
-	}
-
-	@Basic
-	@Column(name="policy_uri")
-	public String getPolicyUri() {
-		return policyUri;
-	}
-
-	public void setPolicyUri(String policyUri) {
-		this.policyUri = policyUri;
-	}
-
+	String getPolicyUri();
+	
+	void setPolicyUri(String policyUri);
+	
 	/**
 	 * @return the clientUrl
 	 */
-	@Basic
-	@Column(name="client_uri")
-	public String getClientUri() {
-		return clientUri;
-	}
-
+	String getClientUri();
+	
 	/**
 	 * @param clientUrl the clientUrl to set
 	 */
-	public void setClientUri(String clientUri) {
-		this.clientUri = clientUri;
-	}
-
+	void setClientUri(String clientUri);
+	
 	/**
 	 * @return the tosUrl
 	 */
-	@Basic
-	@Column(name="tos_uri")
-	public String getTosUri() {
-		return tosUri;
-	}
-
+	String getTosUri();
+	
 	/**
 	 * @param tosUrl the tosUrl to set
 	 */
-	public void setTosUri(String tosUri) {
-		this.tosUri = tosUri;
-	}
+	void setTosUri(String tosUri);
+	
+	String getJwksUri();
+	
+	void setJwksUri(String jwksUri);
+	
+	String getSectorIdentifierUri();
+	
+	void setSectorIdentifierUri(String sectorIdentifierUri);
+	
+	JWSAlgorithmEmbed getRequestObjectSigningAlgEmbed();
+	
+	void setRequestObjectSigningAlgEmbed(JWSAlgorithmEmbed requestObjectSigningAlg);
+	
+	JWSAlgorithmEmbed getUserInfoSignedResponseAlgEmbed();
+	
+	void setUserInfoSignedResponseAlgEmbed(JWSAlgorithmEmbed userInfoSignedResponseAlg);
+	
+	JWEAlgorithmEmbed getUserInfoEncryptedResponseAlgEmbed();
 
-	@Basic
-	@Column(name="jwks_uri")
-	public String getJwksUri() {
-		return jwksUri;
-	}
+	void setUserInfoEncryptedResponseAlgEmbed(JWEAlgorithmEmbed userInfoEncryptedResponseAlg);
+	
+	JWEEncryptionMethodEmbed getUserInfoEncryptedResponseEncEmbed();
+	
+	void setUserInfoEncryptedResponseEncEmbed(JWEEncryptionMethodEmbed userInfoEncryptedResponseEnc);
+	
+	JWSAlgorithmEmbed getIdTokenSignedResponseAlgEmbed();
+	
+	void setIdTokenSignedResponseAlgEmbed(JWSAlgorithmEmbed idTokenSignedResponseAlg);
+	
+	JWEAlgorithmEmbed getIdTokenEncryptedResponseAlgEmbed();
+	
+	void setIdTokenEncryptedResponseAlgEmbed(JWEAlgorithmEmbed idTokenEncryptedResponseAlg);
+	
+	JWEEncryptionMethodEmbed getIdTokenEncryptedResponseEncEmbed();
+	
+	void setIdTokenEncryptedResponseEncEmbed(JWEEncryptionMethodEmbed idTokenEncryptedResponseEnc);
+	
+	JWSAlgorithmEmbed getTokenEndpointAuthSigningAlgEmbed();
+	
+	void setTokenEndpointAuthSigningAlgEmbed(JWSAlgorithmEmbed tokenEndpointAuthSigningAlgEmbed);
+	
+	JWSAlgorithm getRequestObjectSigningAlg();
+	
+	void setRequestObjectSigningAlg(JWSAlgorithm requestObjectSigningAlg);
+	
+	JWSAlgorithm getUserInfoSignedResponseAlg();
+	
+	void setUserInfoSignedResponseAlg(JWSAlgorithm userInfoSignedResponseAlg);
+	
+	JWEAlgorithm getUserInfoEncryptedResponseAlg();
+	
+	void setUserInfoEncryptedResponseAlg(JWEAlgorithm userInfoEncryptedResponseAlg);
+	
+	EncryptionMethod getUserInfoEncryptedResponseEnc();
 
-	public void setJwksUri(String jwksUri) {
-		this.jwksUri = jwksUri;
-	}
-
-	@Basic
-	@Column(name="sector_identifier_uri")
-	public String getSectorIdentifierUri() {
-		return sectorIdentifierUri;
-	}
-
-	public void setSectorIdentifierUri(String sectorIdentifierUri) {
-		this.sectorIdentifierUri = sectorIdentifierUri;
-	}
-
-	@Embedded
-	@AttributeOverrides({
-		@AttributeOverride(name = "algorithmName", column=@Column(name="request_object_signing_alg"))
-	})
-	public JWSAlgorithmEmbed getRequestObjectSigningAlgEmbed() {
-		return requestObjectSigningAlg;
-	}
-
-	public void setRequestObjectSigningAlgEmbed(JWSAlgorithmEmbed requestObjectSigningAlg) {
-		this.requestObjectSigningAlg = requestObjectSigningAlg;
-	}
-
-	@Embedded
-	@AttributeOverrides({
-		@AttributeOverride(name = "algorithmName", column=@Column(name="user_info_signed_response_alg"))
-	})
-	public JWSAlgorithmEmbed getUserInfoSignedResponseAlgEmbed() {
-		return userInfoSignedResponseAlg;
-	}
-
-	public void setUserInfoSignedResponseAlgEmbed(JWSAlgorithmEmbed userInfoSignedResponseAlg) {
-		this.userInfoSignedResponseAlg = userInfoSignedResponseAlg;
-	}
-
-	@Embedded
-	@AttributeOverrides({
-		@AttributeOverride(name = "algorithmName", column=@Column(name="user_info_encrypted_response_alg"))
-	})
-	public JWEAlgorithmEmbed getUserInfoEncryptedResponseAlgEmbed() {
-		return userInfoEncryptedResponseAlg;
-	}
-
-	public void setUserInfoEncryptedResponseAlgEmbed(JWEAlgorithmEmbed userInfoEncryptedResponseAlg) {
-		this.userInfoEncryptedResponseAlg = userInfoEncryptedResponseAlg;
-	}
-
-	@Embedded
-	@AttributeOverrides({
-		@AttributeOverride(name = "algorithmName", column=@Column(name="user_info_encrypted_response_enc"))
-	})
-	public JWEEncryptionMethodEmbed getUserInfoEncryptedResponseEncEmbed() {
-		return userInfoEncryptedResponseEnc;
-	}
-
-	public void setUserInfoEncryptedResponseEncEmbed(JWEEncryptionMethodEmbed userInfoEncryptedResponseEnc) {
-		this.userInfoEncryptedResponseEnc = userInfoEncryptedResponseEnc;
-	}
-
-	@Embedded
-	@AttributeOverrides({
-		@AttributeOverride(name = "algorithmName", column=@Column(name="id_token_signed_response_alg"))
-	})
-	public JWSAlgorithmEmbed getIdTokenSignedResponseAlgEmbed() {
-		return idTokenSignedResponseAlg;
-	}
-
-	public void setIdTokenSignedResponseAlgEmbed(JWSAlgorithmEmbed idTokenSignedResponseAlg) {
-		this.idTokenSignedResponseAlg = idTokenSignedResponseAlg;
-	}
-
-	@Embedded
-	@AttributeOverrides({
-		@AttributeOverride(name = "algorithmName", column=@Column(name="id_token_encrypted_response_alg"))
-	})
-	public JWEAlgorithmEmbed getIdTokenEncryptedResponseAlgEmbed() {
-		return idTokenEncryptedResponseAlg;
-	}
-
-	public void setIdTokenEncryptedResponseAlgEmbed(JWEAlgorithmEmbed idTokenEncryptedResponseAlg) {
-		this.idTokenEncryptedResponseAlg = idTokenEncryptedResponseAlg;
-	}
-
-	@Embedded
-	@AttributeOverrides({
-		@AttributeOverride(name = "algorithmName", column=@Column(name="id_token_encrypted_response_enc"))
-	})
-	public JWEEncryptionMethodEmbed getIdTokenEncryptedResponseEncEmbed() {
-		return idTokenEncryptedResponseEnc;
-	}
-
-	public void setIdTokenEncryptedResponseEncEmbed(JWEEncryptionMethodEmbed idTokenEncryptedResponseEnc) {
-		this.idTokenEncryptedResponseEnc = idTokenEncryptedResponseEnc;
-	}
-
-	@Embedded
-	@AttributeOverrides({
-		@AttributeOverride(name = "algorithmName", column=@Column(name="token_endpoint_auth_signing_alg"))
-	})
-	public JWSAlgorithmEmbed getTokenEndpointAuthSigningAlgEmbed() {
-		return tokenEndpointAuthSigningAlg;
-	}
-
-	public void setTokenEndpointAuthSigningAlgEmbed(JWSAlgorithmEmbed tokenEndpointAuthSigningAlgEmbed) {
-		this.tokenEndpointAuthSigningAlg = tokenEndpointAuthSigningAlgEmbed;
-	}
-
-	//
-	// Transient passthrough methods for JOSE elements
-	//
-
-	@Transient
-	public JWSAlgorithm getRequestObjectSigningAlg() {
-		if (requestObjectSigningAlg != null) {
-			return requestObjectSigningAlg.getAlgorithm();
-		} else {
-			return null;
-		}
-	}
-
-	public void setRequestObjectSigningAlg(JWSAlgorithm requestObjectSigningAlg) {
-		this.requestObjectSigningAlg = new JWSAlgorithmEmbed(requestObjectSigningAlg);
-	}
-
-	@Transient
-	public JWSAlgorithm getUserInfoSignedResponseAlg() {
-		if (userInfoSignedResponseAlg != null) {
-			return userInfoSignedResponseAlg.getAlgorithm();
-		} else {
-			return null;
-		}
-	}
-
-	public void setUserInfoSignedResponseAlg(JWSAlgorithm userInfoSignedResponseAlg) {
-		this.userInfoSignedResponseAlg = new JWSAlgorithmEmbed(userInfoSignedResponseAlg);
-	}
-
-	@Transient
-	public JWEAlgorithm getUserInfoEncryptedResponseAlg() {
-		if (userInfoEncryptedResponseAlg != null) {
-			return userInfoEncryptedResponseAlg.getAlgorithm();
-		} else {
-			return null;
-		}
-	}
-
-	public void setUserInfoEncryptedResponseAlg(JWEAlgorithm userInfoEncryptedResponseAlg) {
-		this.userInfoEncryptedResponseAlg = new JWEAlgorithmEmbed(userInfoEncryptedResponseAlg);
-	}
-
-	@Transient
-	public EncryptionMethod getUserInfoEncryptedResponseEnc() {
-		if (userInfoEncryptedResponseEnc != null) {
-			return userInfoEncryptedResponseEnc.getAlgorithm();
-		} else {
-			return null;
-		}
-	}
-
-	public void setUserInfoEncryptedResponseEnc(EncryptionMethod userInfoEncryptedResponseEnc) {
-		this.userInfoEncryptedResponseEnc = new JWEEncryptionMethodEmbed(userInfoEncryptedResponseEnc);
-	}
-
-	@Transient
-	public JWSAlgorithm getIdTokenSignedResponseAlg() {
-		if (idTokenSignedResponseAlg != null) {
-			return idTokenSignedResponseAlg.getAlgorithm();
-		} else {
-			return null;
-		}
-	}
-
-	public void setIdTokenSignedResponseAlg(JWSAlgorithm idTokenSignedResponseAlg) {
-		this.idTokenSignedResponseAlg = new JWSAlgorithmEmbed(idTokenSignedResponseAlg);
-	}
-
-	@Transient
-	public JWEAlgorithm getIdTokenEncryptedResponseAlg() {
-		if (idTokenEncryptedResponseAlg != null) {
-			return idTokenEncryptedResponseAlg.getAlgorithm();
-		} else {
-			return null;
-		}
-	}
-
-	public void setIdTokenEncryptedResponseAlg(JWEAlgorithm idTokenEncryptedResponseAlg) {
-		this.idTokenEncryptedResponseAlg = new JWEAlgorithmEmbed(idTokenEncryptedResponseAlg);
-	}
-
-	@Transient
-	public EncryptionMethod getIdTokenEncryptedResponseEnc() {
-		if (idTokenEncryptedResponseEnc != null) {
-			return idTokenEncryptedResponseEnc.getAlgorithm();
-		} else {
-			return null;
-		}
-	}
-
-	public void setIdTokenEncryptedResponseEnc(EncryptionMethod idTokenEncryptedResponseEnc) {
-		this.idTokenEncryptedResponseEnc = new JWEEncryptionMethodEmbed(idTokenEncryptedResponseEnc);
-	}
-
-	@Transient
-	public JWSAlgorithm getTokenEndpointAuthSigningAlg() {
-		if (tokenEndpointAuthSigningAlg != null) {
-			return tokenEndpointAuthSigningAlg.getAlgorithm();
-		} else {
-			return null;
-		}
-	}
-
-	public void setTokenEndpointAuthSigningAlg(JWSAlgorithm tokenEndpointAuthSigningAlg) {
-		this.tokenEndpointAuthSigningAlg = new JWSAlgorithmEmbed(tokenEndpointAuthSigningAlg);
-	}
-
-	// END Transient JOSE methods
-
-	@Basic
-	@Column(name="default_max_age")
-	public Integer getDefaultMaxAge() {
-		return defaultMaxAge;
-	}
-
-	public void setDefaultMaxAge(Integer defaultMaxAge) {
-		this.defaultMaxAge = defaultMaxAge;
-	}
-
-	@Basic
-	@Column(name="require_auth_time")
-	public Boolean getRequireAuthTime() {
-		return requireAuthTime;
-	}
-
-	public void setRequireAuthTime(Boolean requireAuthTime) {
-		this.requireAuthTime = requireAuthTime;
-	}
-
+	void setUserInfoEncryptedResponseEnc(EncryptionMethod userInfoEncryptedResponseEnc);
+	
+	JWSAlgorithm getIdTokenSignedResponseAlg();
+	
+	void setIdTokenSignedResponseAlg(JWSAlgorithm idTokenSignedResponseAlg);
+	
+	JWEAlgorithm getIdTokenEncryptedResponseAlg();
+	
+	void setIdTokenEncryptedResponseAlg(JWEAlgorithm idTokenEncryptedResponseAlg);
+	
+	EncryptionMethod getIdTokenEncryptedResponseEnc();
+	
+	void setIdTokenEncryptedResponseEnc(EncryptionMethod idTokenEncryptedResponseEnc);
+	
+	JWSAlgorithm getTokenEndpointAuthSigningAlg();
+	
+	void setTokenEndpointAuthSigningAlg(JWSAlgorithm tokenEndpointAuthSigningAlg);
+	
+	Integer getDefaultMaxAge();
+	
+	void setDefaultMaxAge(Integer defaultMaxAge);
+	
+	Boolean getRequireAuthTime();
+	
+	void setRequireAuthTime(Boolean requireAuthTime);
+	
 	/**
 	 * @return the responseTypes
 	 */
-	@ElementCollection(fetch = FetchType.EAGER)
-	@CollectionTable(
-			name="client_response_type",
-			joinColumns=@JoinColumn(name="owner_id")
-			)
-	@Column(name="response_type")
-	public Set<String> getResponseTypes() {
-		return responseTypes;
-	}
-
+	Set<String> getResponseTypes();
+	
 	/**
 	 * @param responseTypes the responseTypes to set
 	 */
-	public void setResponseTypes(Set<String> responseTypes) {
-		this.responseTypes = responseTypes;
-	}
-
+	void setResponseTypes(Set<String> responseTypes);
+	
 	/**
 	 * @return the defaultACRvalues
 	 */
-	@ElementCollection(fetch = FetchType.EAGER)
-	@CollectionTable(
-			name="client_default_acr_value",
-			joinColumns=@JoinColumn(name="owner_id")
-			)
-	@Column(name="default_acr_value")
-	public Set<String> getDefaultACRvalues() {
-		return defaultACRvalues;
-	}
-
+	Set<String> getDefaultACRvalues();
+	
 	/**
 	 * @param defaultACRvalues the defaultACRvalues to set
 	 */
-	public void setDefaultACRvalues(Set<String> defaultACRvalues) {
-		this.defaultACRvalues = defaultACRvalues;
-	}
-
+	void setDefaultACRvalues(Set<String> defaultACRvalues);
+	
 	/**
 	 * @return the initiateLoginUri
 	 */
-	@Basic
-	@Column(name="initiate_login_uri")
-	public String getInitiateLoginUri() {
-		return initiateLoginUri;
-	}
-
+	String getInitiateLoginUri();
+	
 	/**
 	 * @param initiateLoginUri the initiateLoginUri to set
 	 */
-	public void setInitiateLoginUri(String initiateLoginUri) {
-		this.initiateLoginUri = initiateLoginUri;
-	}
-
+	void setInitiateLoginUri(String initiateLoginUri);
+	
 	/**
 	 * @return the postLogoutRedirectUri
 	 */
-	@Basic
-	@Column(name="post_logout_redirect_uri")
-	public String getPostLogoutRedirectUri() {
-		return postLogoutRedirectUri;
-	}
-
+	String getPostLogoutRedirectUri();
+	
 	/**
 	 * @param postLogoutRedirectUri the postLogoutRedirectUri to set
 	 */
-	public void setPostLogoutRedirectUri(String postLogoutRedirectUri) {
-		this.postLogoutRedirectUri = postLogoutRedirectUri;
-	}
-
+	void setPostLogoutRedirectUri(String postLogoutRedirectUri);
+	
 	/**
 	 * @return the requestUris
 	 */
-	@ElementCollection(fetch = FetchType.EAGER)
-	@CollectionTable(
-			name="client_request_uri",
-			joinColumns=@JoinColumn(name="owner_id")
-			)
-	@Column(name="request_uri")
-	public Set<String> getRequestUris() {
-		return requestUris;
-	}
-
+	Set<String> getRequestUris();
+	
 	/**
 	 * @param requestUris the requestUris to set
 	 */
-	public void setRequestUris(Set<String> requestUris) {
-		this.requestUris = requestUris;
-	}
-
+	void setRequestUris(Set<String> requestUris);
+	
 	/**
 	 * @return the createdAt
 	 */
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name="created_at")
-	public Date getCreatedAt() {
-		return createdAt;
-	}
-
+	Date getCreatedAt();
+	
 	/**
 	 * @param createdAt the createdAt to set
 	 */
-	public void setCreatedAt(Date createdAt) {
-		this.createdAt = createdAt;
-	}
-
-	/**
-	 * Our framework doesn't use this construct, we use WhitelistedSites and ApprovedSites instead.
-	 */
-	@Override
-	public boolean isAutoApprove(String scope) {
-		return false;
-	}
-
+	void setCreatedAt(Date createdAt);
+	
 }

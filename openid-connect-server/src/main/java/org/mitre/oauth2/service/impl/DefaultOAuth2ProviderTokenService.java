@@ -30,6 +30,7 @@ import org.mitre.oauth2.model.AuthenticationHolderEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
+import org.mitre.oauth2.model.impl.ModelFactory;
 import org.mitre.oauth2.repository.AuthenticationHolderRepository;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
@@ -136,7 +137,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 				throw new InvalidClientException("Client not found: " + clientAuth.getClientId());
 			}
 
-			OAuth2AccessTokenEntity token = new OAuth2AccessTokenEntity();//accessTokenFactory.createNewAccessToken();
+			OAuth2AccessTokenEntity token = ModelFactory.instance().getAccessTokenInstance();
 
 			// attach the client
 			token.setClient(client);
@@ -156,15 +157,15 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 			}
 
 			// attach the authorization so that we can look it up later
-			AuthenticationHolderEntity authHolder = new AuthenticationHolderEntity();
+			AuthenticationHolderEntity authHolder = ModelFactory.instance().getAuthHolderInstance();
 			authHolder.setAuthentication(authentication);
 			authHolder = authenticationHolderRepository.save(authHolder);
-
+			
 			token.setAuthenticationHolder(authHolder);
 
 			// attach a refresh token, if this client is allowed to request them and the user gets the offline scope
 			if (client.isAllowRefresh() && scopes.contains(SystemScopeService.OFFLINE_ACCESS)) {
-				OAuth2RefreshTokenEntity refreshToken = new OAuth2RefreshTokenEntity(); //refreshTokenFactory.createNewRefreshToken();
+				OAuth2RefreshTokenEntity refreshToken = ModelFactory.instance().getRefreshTokenInstance();
 				JWTClaimsSet refreshClaims = new JWTClaimsSet();
 
 
@@ -206,9 +207,13 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 
 				Long apId = (Long) originalAuthRequest.getExtensions().get("approved_site");
 				ApprovedSite ap = approvedSiteService.getById(apId);
-				Set<OAuth2AccessTokenEntity> apTokens = ap.getApprovedAccessTokens();
-				apTokens.add(savedToken);
-				ap.setApprovedAccessTokens(apTokens);
+				
+				//TODO: FIX - JAVA GENERICS ISSUE
+				Set<? extends OAuth2AccessTokenEntity> apTokens = ap.getApprovedAccessTokens();
+				HashSet<OAuth2AccessTokenEntity> tmpTokens = Sets.newHashSet(apTokens);
+				tmpTokens.add(savedToken);
+				ap.setApprovedAccessTokens(tmpTokens);
+				
 				approvedSiteService.save(ap);
 
 			}
@@ -253,7 +258,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		// TODO: have the option to recycle the refresh token here, too
 		// for now, we just reuse it as long as it's valid, which is the original intent
 
-		OAuth2AccessTokenEntity token = new OAuth2AccessTokenEntity();
+		OAuth2AccessTokenEntity token = ModelFactory.instance().getAccessTokenInstance();
 
 		// get the stored scopes from the authentication holder's authorization request; these are the scopes associated with the refresh token
 		Set<String> refreshScopes = new HashSet<String>(refreshToken.getAuthenticationHolder().getAuthentication().getOAuth2Request().getScope());

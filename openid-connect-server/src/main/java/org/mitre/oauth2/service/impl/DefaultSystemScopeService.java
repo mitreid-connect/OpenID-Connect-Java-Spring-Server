@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.mitre.oauth2.model.SystemScope;
+import org.mitre.oauth2.model.impl.ModelFactory;
 import org.mitre.oauth2.repository.SystemScopeRepository;
 import org.mitre.oauth2.service.SystemScopeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,7 +87,8 @@ public class DefaultSystemScopeService implements SystemScopeService {
 				SystemScope s = getByValue(base);
 				if (s == null) {
 					// make a fake one otherwise
-					s = new SystemScope(base);
+					s = ModelFactory.instance().getSystemScopeInstance();
+					s.setValue(base);
 					if (parts.size() > 1) {
 						s.setStructured(true);
 					}

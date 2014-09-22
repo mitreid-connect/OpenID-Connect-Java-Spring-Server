@@ -14,19 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package org.mitre.oauth2.model;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
+package org.mitre.oauth2.model;
 
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 
@@ -36,85 +25,36 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
  * @author aanganes
  *
  */
-@Entity
-@Table(name = "authorization_code")
-@NamedQueries({
-	@NamedQuery(name = "AuthorizationCodeEntity.getByValue", query = "select a from AuthorizationCodeEntity a where a.code = :code")
-})
-public class AuthorizationCodeEntity {
-
-	private Long id;
-
-	private String code;
-
-	private OAuth2Authentication authentication;
-
-	/**
-	 * Default constructor.
-	 */
-	public AuthorizationCodeEntity() {
-
-	}
-
-	/**
-	 * Create a new AuthorizationCodeEntity with the given code and AuthorizationRequestHolder.
-	 * 
-	 * @param code 			the authorization code
-	 * @param authRequest	the AuthoriztionRequestHolder associated with the original code request
-	 */
-	public AuthorizationCodeEntity(String code, OAuth2Authentication authRequest) {
-		this.code = code;
-		this.authentication = authRequest;
-	}
+public interface AuthorizationCodeEntity {
 
 	/**
 	 * @return the id
 	 */
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
-	public Long getId() {
-		return id;
-	}
+	Long getId();
 
 	/**
 	 * @param id the id to set
 	 */
-	public void setId(Long id) {
-		this.id = id;
-	}
+	void setId(Long id);
 
 	/**
 	 * @return the code
 	 */
-	@Basic
-	@Column(name = "code")
-	public String getCode() {
-		return code;
-	}
+	String getCode();
 
 	/**
 	 * @param code the code to set
 	 */
-	public void setCode(String code) {
-		this.code = code;
-	}
+	void setCode(String code);
 
 	/**
 	 * @return the authentication
 	 */
-	@Lob
-	@Basic(fetch=FetchType.EAGER)
-	@Column(name="authentication")
-	public OAuth2Authentication getAuthentication() {
-		return authentication;
-	}
+	OAuth2Authentication getAuthentication();
 
 	/**
 	 * @param authentication the authentication to set
 	 */
-	public void setAuthentication(OAuth2Authentication authentication) {
-		this.authentication = authentication;
-	}
+	void setAuthentication(OAuth2Authentication authentication);
 
 }

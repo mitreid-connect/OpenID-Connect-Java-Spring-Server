@@ -26,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
+import org.mitre.oauth2.model.impl.ModelFactory;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.RegisteredClient;
 import org.mitre.oauth2.model.SystemScope;
@@ -164,7 +165,12 @@ public class ClientDynamicRegistrationEndpoint {
 
 				// send it all out to the view
 
-				RegisteredClient registered = new RegisteredClient(savedClient, token.getValue(), config.getIssuer() + "register/" + UriUtils.encodePathSegment(savedClient.getClientId(), "UTF-8"));
+				RegisteredClient registered = ModelFactory.instance().getRegisteredClientInstance();
+				registered.setClient(savedClient);
+				registered.setRegistrationAccessToken(token.getValue());
+				String clientUri = config.getIssuer() + "register/" + UriUtils.encodePathSegment(savedClient.getClientId(), "UTF-8");
+				registered.setRegistrationClientUri(clientUri);
+				
 				m.addAttribute("client", registered);
 				m.addAttribute("code", HttpStatus.CREATED); // http 201
 
@@ -209,8 +215,12 @@ public class ClientDynamicRegistrationEndpoint {
 
 			try {
 				OAuth2AccessTokenEntity token = fetchValidRegistrationToken(auth, client);
-				RegisteredClient registered = new RegisteredClient(client, token.getValue(), config.getIssuer() + "register/" +  UriUtils.encodePathSegment(client.getClientId(), "UTF-8"));
-
+				RegisteredClient registered = ModelFactory.instance().getRegisteredClientInstance();
+				registered.setClient(client);
+				registered.setRegistrationAccessToken(token.getValue());
+				String clientUri = config.getIssuer() + "register/" +  UriUtils.encodePathSegment(client.getClientId(), "UTF-8");
+				registered.setRegistrationClientUri(clientUri);
+				
 				// send it all out to the view
 				m.addAttribute("client", registered);
 				m.addAttribute("code", HttpStatus.OK); // http 200
@@ -296,9 +306,13 @@ public class ClientDynamicRegistrationEndpoint {
 				ClientDetailsEntity savedClient = clientService.updateClient(oldClient, newClient);
 
 				OAuth2AccessTokenEntity token = fetchValidRegistrationToken(auth, savedClient);
-
-				RegisteredClient registered = new RegisteredClient(savedClient, token.getValue(), config.getIssuer() + "register/" + UriUtils.encodePathSegment(savedClient.getClientId(), "UTF-8"));
-
+				
+				RegisteredClient registered = ModelFactory.instance().getRegisteredClientInstance();
+				registered.setClient(savedClient);
+				registered.setRegistrationAccessToken(token.getValue());
+				String clientUri = config.getIssuer() + "register/" + UriUtils.encodePathSegment(savedClient.getClientId(), "UTF-8");
+				registered.setRegistrationClientUri(clientUri);
+				
 				// send it all out to the view
 				m.addAttribute("client", registered);
 				m.addAttribute("code", HttpStatus.OK); // http 200

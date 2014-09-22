@@ -27,6 +27,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mitre.oauth2.model.SystemScope;
+import org.mitre.oauth2.model.impl.ModelFactory;
 import org.mitre.oauth2.repository.SystemScopeRepository;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -77,36 +78,44 @@ public class TestDefaultSystemScopeService {
 	 */
 	@Before
 	public void prepare() {
-
+		
 		Mockito.reset(repository);
-
+		
 		// two default and dynamically registerable scopes
-		defaultDynScope1 = new SystemScope(defaultDynScope1String);
-		defaultDynScope2 = new SystemScope(defaultDynScope2String);
+		defaultDynScope1 = ModelFactory.instance().getSystemScopeInstance();
+		defaultDynScope1.setValue(defaultDynScope1String);
+		defaultDynScope2 = ModelFactory.instance().getSystemScopeInstance();
+		defaultDynScope2.setValue(defaultDynScope2String);
 		defaultDynScope1.setAllowDynReg(true);
 		defaultDynScope2.setAllowDynReg(true);
 		defaultDynScope1.setDefaultScope(true);
 		defaultDynScope2.setDefaultScope(true);
 
 		// two strictly default scopes (isAllowDynReg false)
-		defaultScope1 = new SystemScope(defaultScope1String);
-		defaultScope2 = new SystemScope(defaultScope2String);
+		defaultScope1 = ModelFactory.instance().getSystemScopeInstance();
+		defaultScope1.setValue(defaultScope1String);
+		defaultScope2 = ModelFactory.instance().getSystemScopeInstance();
+		defaultScope2.setValue(defaultScope2String);
 		defaultScope1.setDefaultScope(true);
 		defaultScope2.setDefaultScope(true);
 
 		// one strictly dynamically registerable scope (isDefault false)
-		dynScope1 = new SystemScope(dynScope1String);
+		dynScope1 = ModelFactory.instance().getSystemScopeInstance();
+		dynScope1.setValue(dynScope1String);
 		dynScope1.setAllowDynReg(true);
 
 		// extraScope1 : extra scope that is neither (defaults to false/false)
-		extraScope1 = new SystemScope(extraScope1String);
+		extraScope1 = ModelFactory.instance().getSystemScopeInstance();
+		extraScope1.setValue(extraScope1String);
 
 		// structuredScope1 : structured scope
-		structuredScope1 = new SystemScope(structuredScope1String);
+		structuredScope1 = ModelFactory.instance().getSystemScopeInstance();
+		structuredScope1.setValue(structuredScope1String);
 		structuredScope1.setStructured(true);
 
 		// structuredScope1Value : structured scope with value
-		structuredScope1Value = new SystemScope(structuredScope1String);
+		structuredScope1Value = ModelFactory.instance().getSystemScopeInstance();
+		structuredScope1Value.setValue(structuredScope1String);
 		structuredScope1Value.setStructured(true);
 		structuredScope1Value.setStructuredValue(structuredValue);
 
@@ -123,7 +132,8 @@ public class TestDefaultSystemScopeService {
 		Mockito.when(repository.getByValue(structuredScope1String)).thenAnswer(new Answer<SystemScope>() {
 			@Override
 			public SystemScope answer(InvocationOnMock invocation) throws Throwable {
-				SystemScope s = new SystemScope(structuredScope1String);
+				SystemScope s = ModelFactory.instance().getSystemScopeInstance();
+				s.setValue(structuredScope1String);
 				s.setStructured(true);
 				return s;
 			}
@@ -201,7 +211,8 @@ public class TestDefaultSystemScopeService {
 		Mockito.when(repository.getByValue("foo")).thenAnswer(new Answer<SystemScope>() {
 			@Override
 			public SystemScope answer(InvocationOnMock invocation) throws Throwable {
-				SystemScope foo = new SystemScope("foo");
+				SystemScope foo = ModelFactory.instance().getSystemScopeInstance();
+				foo.setValue("foo");
 				foo.setStructured(true);
 				return foo;
 			}

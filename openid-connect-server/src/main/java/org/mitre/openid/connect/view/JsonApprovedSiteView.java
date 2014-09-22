@@ -73,14 +73,14 @@ public class JsonApprovedSiteView extends AbstractView {
 		}
 
 	})
-	.registerTypeAdapter(OAuth2AccessTokenEntity.class, new JsonSerializer<OAuth2AccessTokenEntity>() {
+	.registerTypeHierarchyAdapter(OAuth2AccessTokenEntity.class, new JsonSerializer<OAuth2AccessTokenEntity>() {
 		@Override
 		public JsonElement serialize(OAuth2AccessTokenEntity src,
 				Type typeOfSrc, JsonSerializationContext context) {
 			return new JsonPrimitive(src.getId());
 		}
 	})
-	.registerTypeAdapter(WhitelistedSite.class, new JsonSerializer<WhitelistedSite>() {
+	.registerTypeHierarchyAdapter(WhitelistedSite.class, new JsonSerializer<WhitelistedSite>() {
 		@Override
 		public JsonElement serialize(WhitelistedSite src, Type typeOfSrc, JsonSerializationContext context) {
 			return new JsonPrimitive(src.getId());

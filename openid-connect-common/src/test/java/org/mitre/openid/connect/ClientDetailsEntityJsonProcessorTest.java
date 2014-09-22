@@ -27,6 +27,7 @@ import java.sql.Date;
 import org.junit.Test;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.RegisteredClient;
+import org.mitre.oauth2.model.impl.ModelFactory;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonElement;
@@ -153,8 +154,8 @@ public class ClientDetailsEntityJsonProcessorTest {
 	 */
 	@Test
 	public void testSerialize() {
-		RegisteredClient c = new RegisteredClient();
-
+		RegisteredClient c = ModelFactory.instance().getRegisteredClientInstance();
+		
 		c.setClientId("s6BhdRkqt3");
 		c.setClientSecret("ZJYCqe3GGRvdrudKyZS0XhGv_Z45DuKhCUk0gBR1vZk");
 		c.setClientSecretExpiresAt(new Date(1577858400L * 1000L));

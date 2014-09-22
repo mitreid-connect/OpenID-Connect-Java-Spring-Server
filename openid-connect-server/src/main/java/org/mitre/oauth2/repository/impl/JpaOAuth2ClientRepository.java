@@ -23,6 +23,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
 import org.mitre.oauth2.model.ClientDetailsEntity;
+import org.mitre.oauth2.model.impl.DefaultClientDetailsEntity;
 import org.mitre.oauth2.repository.OAuth2ClientRepository;
 import org.mitre.util.jpa.JpaUtil;
 import org.springframework.stereotype.Repository;
@@ -49,7 +50,7 @@ public class JpaOAuth2ClientRepository implements OAuth2ClientRepository {
 
 	@Override
 	public ClientDetailsEntity getById(Long id) {
-		return manager.find(ClientDetailsEntity.class, id);
+		return manager.find(DefaultClientDetailsEntity.class, id);
 	}
 
 	/* (non-Javadoc)
@@ -57,7 +58,7 @@ public class JpaOAuth2ClientRepository implements OAuth2ClientRepository {
 	 */
 	@Override
 	public ClientDetailsEntity getClientByClientId(String clientId) {
-		TypedQuery<ClientDetailsEntity> query = manager.createNamedQuery("ClientDetailsEntity.getByClientId", ClientDetailsEntity.class);
+		TypedQuery<ClientDetailsEntity> query = manager.createNamedQuery("DefaultClientDetailsEntity.getByClientId", ClientDetailsEntity.class);
 		query.setParameter("clientId", clientId);
 		return JpaUtil.getSingleResult(query.getResultList());
 	}
@@ -93,7 +94,7 @@ public class JpaOAuth2ClientRepository implements OAuth2ClientRepository {
 
 	@Override
 	public Collection<ClientDetailsEntity> getAllClients() {
-		TypedQuery<ClientDetailsEntity> query = manager.createNamedQuery("ClientDetailsEntity.findAll", ClientDetailsEntity.class);
+		TypedQuery<ClientDetailsEntity> query = manager.createNamedQuery("DefaultClientDetailsEntity.findAll", ClientDetailsEntity.class);
 		return query.getResultList();
 	}
 

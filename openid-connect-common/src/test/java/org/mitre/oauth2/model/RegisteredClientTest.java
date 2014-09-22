@@ -24,6 +24,7 @@ import static org.junit.Assert.assertEquals;
 import java.sql.Date;
 
 import org.junit.Test;
+import org.mitre.oauth2.model.impl.ModelFactory;
 
 import com.google.common.collect.ImmutableSet;
 import com.nimbusds.jose.EncryptionMethod;
@@ -34,7 +35,7 @@ import com.nimbusds.jose.JWEAlgorithm;
  *
  */
 public class RegisteredClientTest {
-
+	
 	/**
 	 * Test method for {@link org.mitre.oauth2.model.RegisteredClient#RegisteredClient()}.
 	 */
@@ -42,9 +43,9 @@ public class RegisteredClientTest {
 	public void testRegisteredClient() {
 
 		// make sure all the pass-through getters and setters work
-
-		RegisteredClient c = new RegisteredClient();
-
+		
+		RegisteredClient c = ModelFactory.instance().getRegisteredClientInstance();
+		
 		c.setClientId("s6BhdRkqt3");
 		c.setClientSecret("ZJYCqe3GGRvdrudKyZS0XhGv_Z45DuKhCUk0gBR1vZk");
 		c.setClientSecretExpiresAt(new Date(1577858400L * 1000L));
@@ -87,7 +88,7 @@ public class RegisteredClientTest {
 	 */
 	@Test
 	public void testRegisteredClientClientDetailsEntity() {
-		ClientDetailsEntity c = new ClientDetailsEntity();
+		ClientDetailsEntity c = ModelFactory.instance().getClientDetailsInstance();
 
 		c.setClientId("s6BhdRkqt3");
 		c.setClientSecret("ZJYCqe3GGRvdrudKyZS0XhGv_Z45DuKhCUk0gBR1vZk");
@@ -105,7 +106,8 @@ public class RegisteredClientTest {
 		c.setRequestUris(ImmutableSet.of("https://client.example.org/rf.txt#qpXaRLh_n93TTR9F252ValdatUQvQiJi5BDub2BeznA"));
 
 		// Create a RegisteredClient based on a ClientDetailsEntity object and set several properties
-		RegisteredClient rc = new RegisteredClient(c);
+		RegisteredClient rc = ModelFactory.instance().getRegisteredClientInstance();
+		rc.setClient(c);
 		rc.setClientSecretExpiresAt(new Date(1577858400L * 1000L));
 		rc.setRegistrationAccessToken("this.is.an.access.token.value.ffx83");
 		rc.setRegistrationClientUri("https://server.example.com/connect/register?client_id=s6BhdRkqt3");
@@ -135,8 +137,8 @@ public class RegisteredClientTest {
 	 */
 	@Test
 	public void testRegisteredClientClientDetailsEntityStringString() {
-		ClientDetailsEntity c = new ClientDetailsEntity();
-
+		ClientDetailsEntity c = ModelFactory.instance().getClientDetailsInstance();
+		
 		c.setClientId("s6BhdRkqt3");
 		c.setClientSecret("ZJYCqe3GGRvdrudKyZS0XhGv_Z45DuKhCUk0gBR1vZk");
 		c.setApplicationType(ClientDetailsEntity.AppType.WEB);
@@ -153,8 +155,11 @@ public class RegisteredClientTest {
 		c.setRequestUris(ImmutableSet.of("https://client.example.org/rf.txt#qpXaRLh_n93TTR9F252ValdatUQvQiJi5BDub2BeznA"));
 
 		// Create a RegisteredClient based on a ClientDetails, a token, and a server URI
-		RegisteredClient rc = new RegisteredClient(c, "this.is.an.access.token.value.ffx83", "https://server.example.com/connect/register?client_id=s6BhdRkqt3");
-
+		RegisteredClient rc = ModelFactory.instance().getRegisteredClientInstance();
+		rc.setClient(c);
+		rc.setRegistrationAccessToken("this.is.an.access.token.value.ffx83");
+		rc.setRegistrationClientUri("https://server.example.com/connect/register?client_id=s6BhdRkqt3");
+		
 		// make sure all the pass-throughs work
 		assertEquals("s6BhdRkqt3", rc.getClientId());
 		assertEquals("ZJYCqe3GGRvdrudKyZS0XhGv_Z45DuKhCUk0gBR1vZk", rc.getClientSecret());
