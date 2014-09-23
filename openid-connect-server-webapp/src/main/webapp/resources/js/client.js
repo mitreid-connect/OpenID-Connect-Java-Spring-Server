@@ -148,7 +148,7 @@ var ClientModel = Backbone.Model.extend({
     		// there's no search term, we always match
     		
 	    	this.unset('matches', {silent: true});
-	    	console.log('no term');
+	    	//console.log('no term');
 	    	return true;
     	}
     
@@ -168,6 +168,11 @@ var ClientModel = Backbone.Model.extend({
 	    }
     }
 
+});
+
+var RegistrationTokenModel = Backbone.Model.extend({
+	idAttribute: 'clientId',
+	urlRoot: 'api/tokens/registration'
 });
 
 var ClientCollection = Backbone.Collection.extend({
@@ -197,7 +202,7 @@ var ClientView = Backbone.View.extend({
     	this.options = options;
 
         if (!this.template) {
-            this.template = _.template($('#tmpl-client').html());
+            this.template = _.template($('#tmpl-client-table-item').html());
         }
 
         if (!this.scopeTemplate) {
@@ -206,6 +211,10 @@ var ClientView = Backbone.View.extend({
 
         if (!this.moreInfoTemplate) {
         	this.moreInfoTemplate = _.template($('#tmpl-client-more-info-block').html());
+        }
+        
+        if (!this.registrationTokenTemplate) {
+        	this.registrationTokenTemplate = _.template($('#tmpl-client-registration-token').html());
         }
         
         this.model.bind('change', this.render, this);
@@ -241,7 +250,7 @@ var ClientView = Backbone.View.extend({
         
         $('.clientid-full', this.el).hide();
         
-        this.$('.dynamically-registered').tooltip({title: 'This client was dynamically registered'});
+        this.$('.dynamically-registered').tooltip({title: 'This client was dynamically registered. Click to view registration access token'});
         this.$('.allow-introspection').tooltip({title: 'This client can perform token introspection'});
         
         this.updateMatched();
@@ -249,9 +258,46 @@ var ClientView = Backbone.View.extend({
         return this;
     },
     
+    showRegistrationToken:function(e) {
+    	e.preventDefault();
+
+    	$('#modalAlertLabel').html('Registration Access Token');
+    	
+    	var token = new RegistrationTokenModel({clientId: this.model.get('clientId')});
+    	
+    	var _self = this;
+    	token.fetch({success:function() {
+	        	var savedModel = {
+	        		clientId: _self.model.get('clientId'),
+	        		registrationToken: token.get('value')
+	        	};
+	        	
+	        	$('#modalAlert .modal-body').html(_self.registrationTokenTemplate(savedModel));
+	        	
+	        	$('#modalAlert').modal({
+	        		'backdrop': 'static',
+	        		'keyboard': true,
+	        		'show': true
+	        	});
+	        	
+	    	},
+	    	error:function() {
+	    		$('#modalAlert .modal-body').html('There was a problem loading the registration access token for this client.');
+
+	    		$('#modalAlert').modal({
+	        		'backdrop': 'static',
+	        		'keyboard': true,
+	        		'show': true
+	        	});
+	        	
+	    	}
+    	});
+    	
+    },
+    
     updateMatched:function() {
     	
-    	console.log(this.model.get('matches'));
+    	//console.log(this.model.get('matches'));
     	
     	if (this.model.get('matches')) {
     		$('.matched', this.el).show();
@@ -266,7 +312,8 @@ var ClientView = Backbone.View.extend({
         "click .btn-delete":"deleteClient",
         "click .btn-whitelist":"whiteListClient",
 		'click .toggleMoreInformation': 'toggleMoreInformation',
-        "click .clientid-substring":"showClientId"
+        "click .clientid-substring":"showClientId",
+        "click .dynamically-registered": 'showRegistrationToken'
     },
 
     editClient:function (e) {
@@ -281,7 +328,7 @@ var ClientView = Backbone.View.extend({
     		app.navigate('admin/whitelist/new/' + this.model.id, {trigger: true});
     	} else {
     		// edit the existing one
-    		app.navigate('admin/whitelist/' + whiteList.id, {trigger: true});
+    		app.navigate('admin/whitelist/' + this.options.whiteList.id, {trigger: true});
     	}
     },
     

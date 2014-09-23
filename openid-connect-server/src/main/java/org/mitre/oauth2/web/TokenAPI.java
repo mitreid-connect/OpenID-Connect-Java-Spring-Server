@@ -17,10 +17,13 @@
 package org.mitre.oauth2.web;
 
 import java.security.Principal;
+import java.util.List;
 import java.util.Set;
 
+import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
+import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +48,9 @@ public class TokenAPI {
 
 	@Autowired
 	private OAuth2TokenEntityService tokenService;
+	
+	@Autowired
+	private ClientDetailsEntityService clientService;
 
 	private static Logger logger = LoggerFactory.getLogger(TokenAPI.class);
 
@@ -99,6 +105,50 @@ public class TokenAPI {
 		}
 	}
 
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@RequestMapping(value = "/client/{clientId}", method = RequestMethod.GET, produces = "application/json")
+	public String getAccessTokensByClientId(@PathVariable("clientId") String clientId, ModelMap m, Principal p) {
+		
+		ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
+		
+		if (client != null) {
+			List<OAuth2AccessTokenEntity> tokens = tokenService.getAccessTokensForClient(client);
+			m.put("entity", tokens);
+			return "tokenApiView";
+		} else {
+			// client not found
+			m.put("code", HttpStatus.NOT_FOUND);
+			m.put("errorMessage", "The requested client with id " + clientId + " could not be found.");
+			return "jsonErrorView";
+		}
+		
+	}
+
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@RequestMapping(value = "/registration/{clientId}", method = RequestMethod.GET, produces = "application/json")
+	public String getRegistrationTokenByClientId(@PathVariable("clientId") String clientId, ModelMap m, Principal p) {
+		
+		ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
+		
+		if (client != null) {
+			OAuth2AccessTokenEntity token = tokenService.getRegistrationAccessTokenForClient(client);
+			if (token != null) {
+				m.put("entity", token);
+				return "tokenApiView";
+			} else {
+				m.put("code", HttpStatus.NOT_FOUND);
+				m.put("errorMessage", "No registration token could be found.");
+				return "jsonErrorView";
+			}
+		} else {
+			// client not found
+			m.put("code", HttpStatus.NOT_FOUND);
+			m.put("errorMessage", "The requested client with id " + clientId + " could not be found.");
+			return "jsonErrorView";
+		}
+		
+	}
+	
 	@RequestMapping(value = "/refresh", method = RequestMethod.GET, produces = "application/json")
 	public String getAllRefreshTokens(ModelMap m, Principal p) {
 

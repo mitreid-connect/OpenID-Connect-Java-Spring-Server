@@ -42,7 +42,7 @@ public class OIDCAuthenticationToken extends AbstractAuthenticationToken {
 	private final String sub; // user id (parsed from the id token)
 
 	private final transient ServerConfiguration serverConfiguration; // server configuration used to fulfill this token, don't serialize it
-	private final transient UserInfo userInfo; // user info container, don't serialize it b/c it might be huge and can be re-fetched
+	private final UserInfo userInfo; // user info container, don't serialize it b/c it might be huge and can be re-fetched
 
 	/**
 	 * Constructs OIDCAuthenticationToken with a full set of authorities, marking this as authenticated.
