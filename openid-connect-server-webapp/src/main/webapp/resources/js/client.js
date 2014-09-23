@@ -170,6 +170,11 @@ var ClientModel = Backbone.Model.extend({
 
 });
 
+var RegistrationTokenModel = Backbone.Model.extend({
+	idAttribute: 'clientId',
+	urlRoot: 'api/tokens/access/registration'
+});
+
 var ClientCollection = Backbone.Collection.extend({
 
     initialize: function() {
@@ -208,6 +213,10 @@ var ClientView = Backbone.View.extend({
         	this.moreInfoTemplate = _.template($('#tmpl-client-more-info-block').html());
         }
         
+        if (!this.registrationTokenTemplate) {
+        	this.registrationTokenTemplate = _.template($('#tmpl-client-registration-token').html());
+        }
+        
         this.model.bind('change', this.render, this);
         
     },
@@ -241,12 +250,42 @@ var ClientView = Backbone.View.extend({
         
         $('.clientid-full', this.el).hide();
         
-        this.$('.dynamically-registered').tooltip({title: 'This client was dynamically registered'});
+        this.$('.dynamically-registered').tooltip({title: 'This client was dynamically registered. Click to view registration access token'});
         this.$('.allow-introspection').tooltip({title: 'This client can perform token introspection'});
         
         this.updateMatched();
         
         return this;
+    },
+    
+    showRegistrationToken:function(e) {
+    	e.preventDefault();
+
+    	$('#modalAlertLabel').html('Registration Access Token');
+    	
+    	var token = new RegistrationTokenModel({clientId: this.model.get('clientId')});
+    	
+    	var _self = this;
+    	token.fetch({success:function() {
+	        	var savedModel = {
+	        		clientId: _self.model.get('clientId'),
+	        		registrationToken: token.get('value')
+	        	};
+	        	
+	        	$('#modalAlert .modal-body').html(_self.registrationTokenTemplate(savedModel));
+	        	
+	    	},
+	    	error:function() {
+	    		$('#modalAlert .modal-body').html('There was a problem loading the registration access token for this client.');
+	    	}
+    	});
+    	
+    	$('#modalAlert').modal({
+    		'backdrop': 'static',
+    		'keyboard': true,
+    		'show': true
+    	});
+    	
     },
     
     updateMatched:function() {
@@ -266,7 +305,8 @@ var ClientView = Backbone.View.extend({
         "click .btn-delete":"deleteClient",
         "click .btn-whitelist":"whiteListClient",
 		'click .toggleMoreInformation': 'toggleMoreInformation',
-        "click .clientid-substring":"showClientId"
+        "click .clientid-substring":"showClientId",
+        "click .dynamically-registered": 'showRegistrationToken'
     },
 
     editClient:function (e) {

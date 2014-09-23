@@ -747,3 +747,16 @@
 	<% } %>
 
 </script>
+
+<script type="text/html" id="tmpl-client-registration-token">
+
+	<div>
+		<strong>ID:</strong> <input type="text" readonly style="cursor: text" class="token-full input-xxlarge" value="<%- clientId %>" />
+
+	</div>
+	<div>
+		<strong>Registration Token:</strong>
+		<input type="text" id="registrationToken" readonly style="cursor: text" class="token-full input-xxlarge" value="<%- registrationToken %>" />
+	</div>
+
+</script>
