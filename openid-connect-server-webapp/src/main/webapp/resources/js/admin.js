@@ -52,7 +52,6 @@ Backbone.Collection.prototype.fetchIfNeeded = function(options) {
 	}
 };
 
-
 var URIModel = Backbone.Model.extend({
 
     validate: function(attrs){
@@ -1046,30 +1045,30 @@ var app = null;
 // main
 $(function () {
 
-    jQuery.ajaxSetup({async:false});
-
     var _load = function (templates) {
         $('body').append(templates);
     };
 
     // load templates and append them to the body
-    $.get('resources/template/admin.html', _load);
-    $.get('resources/template/client.html', _load);
-    $.get('resources/template/grant.html', _load);
-    $.get('resources/template/scope.html', _load);
-    $.get('resources/template/whitelist.html', _load);
-    $.get('resources/template/dynreg.html', _load);
-    $.get('resources/template/rsreg.html', _load);
-    $.get('resources/template/token.html', _load);
-    
-    jQuery.ajaxSetup({async:true});
-    app = new AppRouter();
+    $.when(
+    		$.get('resources/template/admin.html', _load),
+    		$.get('resources/template/client.html', _load),
+    		$.get('resources/template/grant.html', _load),
+    		$.get('resources/template/scope.html', _load),
+    		$.get('resources/template/whitelist.html', _load),
+    		$.get('resources/template/dynreg.html', _load),
+    		$.get('resources/template/rsreg.html', _load),
+    		$.get('resources/template/token.html', _load)
+    		).done(function() {
+    		    $.ajaxSetup({cache:false});
+    		    app = new AppRouter();
 
-    // grab all hashed URLs and send them through the app router instead
-    $(document).on('click', 'a[href^="manage/#"]', function(event) {
-    	event.preventDefault();
-    	app.navigate(this.hash.slice(1), {trigger: true});
-    });
+    		    // grab all hashed URLs and send them through the app router instead
+    		    $(document).on('click', 'a[href^="manage/#"]', function(event) {
+    		    	event.preventDefault();
+    		    	app.navigate(this.hash.slice(1), {trigger: true});
+    		    });    		    
+    		});
     
 });
 
