@@ -172,7 +172,7 @@ var ClientModel = Backbone.Model.extend({
 
 var RegistrationTokenModel = Backbone.Model.extend({
 	idAttribute: 'clientId',
-	urlRoot: 'api/tokens/access/registration'
+	urlRoot: 'api/tokens/registration'
 });
 
 var ClientCollection = Backbone.Collection.extend({
@@ -274,16 +274,23 @@ var ClientView = Backbone.View.extend({
 	        	
 	        	$('#modalAlert .modal-body').html(_self.registrationTokenTemplate(savedModel));
 	        	
+	        	$('#modalAlert').modal({
+	        		'backdrop': 'static',
+	        		'keyboard': true,
+	        		'show': true
+	        	});
+	        	
 	    	},
 	    	error:function() {
 	    		$('#modalAlert .modal-body').html('There was a problem loading the registration access token for this client.');
+
+	    		$('#modalAlert').modal({
+	        		'backdrop': 'static',
+	        		'keyboard': true,
+	        		'show': true
+	        	});
+	        	
 	    	}
-    	});
-    	
-    	$('#modalAlert').modal({
-    		'backdrop': 'static',
-    		'keyboard': true,
-    		'show': true
     	});
     	
     },

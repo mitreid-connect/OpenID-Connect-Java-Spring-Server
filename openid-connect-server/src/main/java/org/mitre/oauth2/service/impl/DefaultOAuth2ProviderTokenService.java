@@ -478,7 +478,8 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		List<OAuth2AccessTokenEntity> allTokens = getAccessTokensForClient(client);
 		
 		for (OAuth2AccessTokenEntity token : allTokens) {
-			if (token.getScope().contains(SystemScopeService.REGISTRATION_TOKEN_SCOPE) && token.getScope().size() == 1) {
+			if ((token.getScope().contains(SystemScopeService.REGISTRATION_TOKEN_SCOPE) || token.getScope().contains(SystemScopeService.RESOURCE_TOKEN_SCOPE)) 
+					&& token.getScope().size() == 1) {
 				// if it only has the registration scope, then it's a registration token
 				return token;
 			}

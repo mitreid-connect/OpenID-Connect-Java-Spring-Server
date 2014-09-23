@@ -106,7 +106,7 @@ public class TokenAPI {
 	}
 
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	@RequestMapping(value = "/access/client/{clientId}", method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = "/client/{clientId}", method = RequestMethod.GET, produces = "application/json")
 	public String getAccessTokensByClientId(@PathVariable("clientId") String clientId, ModelMap m, Principal p) {
 		
 		ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
@@ -125,15 +125,21 @@ public class TokenAPI {
 	}
 
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	@RequestMapping(value = "/access/registration/{clientId}", method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = "/registration/{clientId}", method = RequestMethod.GET, produces = "application/json")
 	public String getRegistrationTokenByClientId(@PathVariable("clientId") String clientId, ModelMap m, Principal p) {
 		
 		ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
 		
 		if (client != null) {
 			OAuth2AccessTokenEntity token = tokenService.getRegistrationAccessTokenForClient(client);
-			m.put("entity", token);
-			return "tokenApiView";
+			if (token != null) {
+				m.put("entity", token);
+				return "tokenApiView";
+			} else {
+				m.put("code", HttpStatus.NOT_FOUND);
+				m.put("errorMessage", "No registration token could be found.");
+				return "jsonErrorView";
+			}
 		} else {
 			// client not found
 			m.put("code", HttpStatus.NOT_FOUND);
