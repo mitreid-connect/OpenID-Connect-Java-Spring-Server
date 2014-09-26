@@ -34,6 +34,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.SystemDefaultHttpClient;
 import org.mitre.openid.connect.client.service.ServerConfigurationService;
 import org.mitre.openid.connect.config.ServerConfiguration;
+import org.mitre.openid.connect.utils.UrlUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -157,9 +158,7 @@ public class DynamicServerConfigurationService implements ServerConfigurationSer
 				if (!issuer.equals(issNormalized)) {
 					throw new IllegalStateException("Discovered issuers didn't match, expected " + issuer + " got " + o.get("issuer").getAsString());
 				}
-
 				conf.setIssuer(issNormalized);
-
 
 				conf.setAuthorizationEndpointUri(getAsString(o, "authorization_endpoint"));
 				conf.setTokenEndpointUri(getAsString(o, "token_endpoint"));
