@@ -56,12 +56,10 @@ public class PlainAuthRequestUrlBuilder implements AuthRequestUrlBuilder {
 			String state, Map<String, String> options) {
 		try {
 
-			URIBuilder uriBuilder = new URIBuilder(
-					serverConfig.getAuthorizationEndpointUri());
+			URIBuilder uriBuilder = new URIBuilder(serverConfig.getAuthorizationEndpointUri());
 			uriBuilder.addParameter("response_type", "code");
 			uriBuilder.addParameter("client_id", clientConfig.getClientId());
-			uriBuilder.addParameter("scope",
-					Joiner.on(" ").join(clientConfig.getScope()));
+			uriBuilder.addParameter("scope", Joiner.on(" ").join(clientConfig.getScope()));
 
 			uriBuilder.addParameter("redirect_uri", redirectUri);
 
