@@ -153,11 +153,12 @@ public class DynamicServerConfigurationService implements ServerConfigurationSer
 					throw new IllegalStateException("Returned object did not have an 'issuer' field");
 				}
 
-				if (!issuer.equals(o.get("issuer").getAsString())) {
+				String issNormalized = UrlUtils.normalizeIssuerURL(o.get("issuer").getAsString());
+				if (!issuer.equals(issNormalized)) {
 					throw new IllegalStateException("Discovered issuers didn't match, expected " + issuer + " got " + o.get("issuer").getAsString());
 				}
 
-				conf.setIssuer(o.get("issuer").getAsString());
+				conf.setIssuer(issNormalized);
 
 
 				conf.setAuthorizationEndpointUri(getAsString(o, "authorization_endpoint"));

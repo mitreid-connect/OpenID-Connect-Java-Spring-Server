@@ -119,6 +119,8 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 	private TargetLinkURIChecker deepLinkFilter;
 
 	protected int httpSocketTimeout = HTTP_SOCKET_TIMEOUT;
+	
+	protected boolean useNonce = true;
 
 	/**
 	 * OpenIdConnectAuthenticationFilter constructor
@@ -493,11 +495,14 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 					}
 				} // TODO: encrypted id tokens
 
-				// check the issuer
-				if (idClaims.getIssuer() == null) {
+				String iss = idClaims.getIssuer();
+				if (iss == null) {
 					throw new AuthenticationServiceException("Id Token Issuer is null");
-				} else if (!idClaims.getIssuer().equals(serverConfig.getIssuer())){
-					throw new AuthenticationServiceException("Issuers do not match, expected " + serverConfig.getIssuer() + " got " + idClaims.getIssuer());
+				} else{
+					String issNormalized = UrlUtils.normalizeIssuerURL(iss);
+					if (!issNormalized.equals(serverConfig.getIssuer())){
+						throw new AuthenticationServiceException("Issuers do not match, expected " + serverConfig.getIssuer() + " got " + iss);
+					}
 				}
 
 				// check expiration
@@ -539,7 +544,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 
 				// compare the nonce to our stored claim
 				String nonce = idClaims.getStringClaim("nonce");
-				if (Strings.isNullOrEmpty(nonce)) {
+				if (useNonce && Strings.isNullOrEmpty(nonce)) {
 
 					logger.error("ID token did not contain a nonce claim.");
 
@@ -547,7 +552,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 				}
 
 				String storedNonce = getStoredNonce(session);
-				if (!nonce.equals(storedNonce)) {
+				if (useNonce && !nonce.equals(storedNonce)) {
 					logger.error("Possible replay attack detected! The comparison of the nonce in the returned "
 							+ "ID Token to the session " + NONCE_SESSION_VARIABLE + " failed. Expected " + storedNonce + " got " + nonce + ".");
 
@@ -555,6 +560,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 							"Possible replay attack detected! The comparison of the nonce in the returned "
 									+ "ID Token to the session " + NONCE_SESSION_VARIABLE + " failed. Expected " + storedNonce + " got " + nonce + ".");
 				}
+
 
 				// pull the subject (user id) out as a claim on the id_token
 
@@ -818,6 +824,9 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 
 	public void setTargetLinkURIChecker(TargetLinkURIChecker deepLinkFilter) {
 		this.deepLinkFilter = deepLinkFilter;
+	}
+	public void setUseNonce(boolean useNonce) {
+		this.useNonce = useNonce;
 	}
 
 }

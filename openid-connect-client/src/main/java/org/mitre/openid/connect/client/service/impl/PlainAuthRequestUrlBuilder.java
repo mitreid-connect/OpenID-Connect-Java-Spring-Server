@@ -40,21 +40,34 @@ import com.google.common.base.Joiner;
  */
 public class PlainAuthRequestUrlBuilder implements AuthRequestUrlBuilder {
 
-	/* (non-Javadoc)
-	 * @see org.mitre.openid.connect.client.service.AuthRequestUrlBuilder#buildAuthRequest(javax.servlet.http.HttpServletRequest, org.mitre.openid.connect.config.ServerConfiguration, org.springframework.security.oauth2.provider.ClientDetails)
+	protected boolean useNonce = true;
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.mitre.openid.connect.client.service.AuthRequestUrlBuilder#
+	 * buildAuthRequest(javax.servlet.http.HttpServletRequest,
+	 * org.mitre.openid.connect.config.ServerConfiguration,
+	 * org.springframework.security.oauth2.provider.ClientDetails)
 	 */
 	@Override
-	public String buildAuthRequestUrl(ServerConfiguration serverConfig, RegisteredClient clientConfig, String redirectUri, String nonce, String state, Map<String, String> options) {
+	public String buildAuthRequestUrl(ServerConfiguration serverConfig,
+			RegisteredClient clientConfig, String redirectUri, String nonce,
+			String state, Map<String, String> options) {
 		try {
 
-			URIBuilder uriBuilder = new URIBuilder(serverConfig.getAuthorizationEndpointUri());
+			URIBuilder uriBuilder = new URIBuilder(
+					serverConfig.getAuthorizationEndpointUri());
 			uriBuilder.addParameter("response_type", "code");
 			uriBuilder.addParameter("client_id", clientConfig.getClientId());
-			uriBuilder.addParameter("scope", Joiner.on(" ").join(clientConfig.getScope()));
+			uriBuilder.addParameter("scope",
+					Joiner.on(" ").join(clientConfig.getScope()));
 
 			uriBuilder.addParameter("redirect_uri", redirectUri);
 
-			uriBuilder.addParameter("nonce", nonce);
+			if (useNonce) {
+				uriBuilder.addParameter("nonce", nonce);
+			}
 
 			uriBuilder.addParameter("state", state);
 
@@ -66,12 +79,14 @@ public class PlainAuthRequestUrlBuilder implements AuthRequestUrlBuilder {
 			return uriBuilder.build().toString();
 
 		} catch (URISyntaxException e) {
-			throw new AuthenticationServiceException("Malformed Authorization Endpoint Uri", e);
+			throw new AuthenticationServiceException(
+					"Malformed Authorization Endpoint Uri", e);
 
 		}
 
-
-
+	}
+	public void setUseNonce(boolean useNonce) {
+		this.useNonce = useNonce;
 	}
 
 }
