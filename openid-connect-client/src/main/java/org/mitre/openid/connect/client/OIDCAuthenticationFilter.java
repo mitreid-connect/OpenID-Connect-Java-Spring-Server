@@ -48,7 +48,6 @@ import org.mitre.openid.connect.client.service.ServerConfigurationService;
 import org.mitre.openid.connect.client.service.impl.StaticAuthRequestOptionsService;
 import org.mitre.openid.connect.config.ServerConfiguration;
 import org.mitre.openid.connect.model.OIDCAuthenticationToken;
-import org.mitre.openid.connect.utils.UrlUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
@@ -500,8 +499,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 				if (iss == null) {
 					throw new AuthenticationServiceException("Id Token Issuer is null");
 				}
-				String issNormalized = UrlUtils.normalizeIssuerURL(iss);
-				if (!issNormalized.equals(serverConfig.getIssuer())){
+				if (!iss.equals(serverConfig.getIssuer())){
 					throw new AuthenticationServiceException("Issuers do not match, expected " + serverConfig.getIssuer() + " got " + iss);
 				}
 
