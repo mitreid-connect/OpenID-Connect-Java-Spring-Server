@@ -60,7 +60,7 @@ public class StaticSingleIssuerService implements IssuerService {
 	}
 
 	@PostConstruct
-	public void afterPropertiesSet() throws Exception {
+	public void afterPropertiesSet() {
 
 		if (Strings.isNullOrEmpty(issuer)) {
 			throw new IllegalArgumentException("Issuer must not be null or empty.");

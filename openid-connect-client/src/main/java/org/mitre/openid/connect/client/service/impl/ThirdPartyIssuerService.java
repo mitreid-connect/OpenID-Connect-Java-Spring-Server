@@ -127,11 +127,8 @@ public class ThirdPartyIssuerService implements IssuerService {
 		this.blacklist = blacklist;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-	 */
 	@PostConstruct
-	public void afterPropertiesSet() throws Exception {
+	public void afterPropertiesSet() {
 		if (Strings.isNullOrEmpty(this.accountChooserUrl)) {
 			throw new IllegalArgumentException("Account Chooser URL cannot be null or empty");
 		}

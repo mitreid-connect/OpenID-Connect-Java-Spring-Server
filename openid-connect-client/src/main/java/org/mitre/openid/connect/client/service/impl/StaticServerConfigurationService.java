@@ -60,7 +60,7 @@ public class StaticServerConfigurationService implements ServerConfigurationServ
 	}
 
 	@PostConstruct
-	public void afterPropertiesSet() throws Exception {
+	public void afterPropertiesSet() {
 		if (servers == null || servers.isEmpty()) {
 			throw new IllegalArgumentException("Servers map cannot be null or empty.");
 		}

@@ -66,7 +66,7 @@ public class StaticClientConfigurationService implements ClientConfigurationServ
 	}
 
 	@PostConstruct
-	public void afterPropertiesSet() throws Exception {
+	public void afterPropertiesSet() {
 		if (clients == null || clients.isEmpty()) {
 			throw new IllegalArgumentException("Clients map cannot be null or empty");
 		}
