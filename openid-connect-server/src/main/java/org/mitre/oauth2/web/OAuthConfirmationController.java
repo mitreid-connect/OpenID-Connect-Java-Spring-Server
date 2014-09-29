@@ -35,6 +35,7 @@ import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.service.ScopeClaimTranslationService;
 import org.mitre.openid.connect.service.StatsService;
 import org.mitre.openid.connect.service.UserInfoService;
+import org.mitre.openid.connect.view.HttpCodeView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,7 +100,7 @@ public class OAuthConfirmationController {
 			// we're not supposed to prompt, so "return an error"
 			logger.info("Client requested no prompt, returning 403 from confirmation endpoint");
 			model.put("code", HttpStatus.FORBIDDEN);
-			return "httpCodeView";
+			return HttpCodeView.VIEWNAME;
 		}
 
 		//AuthorizationRequest clientAuth = (AuthorizationRequest) model.remove("authorizationRequest");
@@ -111,17 +112,17 @@ public class OAuthConfirmationController {
 		} catch (OAuth2Exception e) {
 			logger.error("confirmAccess: OAuth2Exception was thrown when attempting to load client", e);
 			model.put("code", HttpStatus.BAD_REQUEST);
-			return "httpCodeView";
+			return HttpCodeView.VIEWNAME;
 		} catch (IllegalArgumentException e) {
 			logger.error("confirmAccess: IllegalArgumentException was thrown when attempting to load client", e);
 			model.put("code", HttpStatus.BAD_REQUEST);
-			return "httpCodeView";
+			return HttpCodeView.VIEWNAME;
 		}
 
 		if (client == null) {
 			logger.error("confirmAccess: could not find client " + authRequest.getClientId());
 			model.put("code", HttpStatus.NOT_FOUND);
-			return "httpCodeView";
+			return HttpCodeView.VIEWNAME;
 		}
 
 		model.put("auth_request", authRequest);

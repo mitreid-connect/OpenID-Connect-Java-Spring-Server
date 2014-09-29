@@ -36,9 +36,10 @@ import com.google.gson.FieldAttributes;
  * @author jricher
  *
  */
-@Component("clientEntityViewAdmins")
+@Component(ClientEntityViewForAdmins.VIEWNAME)
 public class ClientEntityViewForAdmins extends AbstractClientEntityView {
 
+	public static final String VIEWNAME = "clientEntityViewAdmins";
 	private Set<String> blacklistedFields = ImmutableSet.of("additionalInformation");
 
 	/**

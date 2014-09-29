@@ -41,11 +41,13 @@ import com.google.gson.JsonObject;
  * @author aanganes, jricher
  *
  */
-@Component("jsonErrorView")
+@Component(JsonErrorView.VIEWNAME)
 public class JsonErrorView extends AbstractView {
 
 	private static Logger logger = LoggerFactory.getLogger(JsonEntityView.class);
 
+	public static final String VIEWNAME = "jsonErrorView";
+	
 	private Gson gson = new GsonBuilder()
 	.setExclusionStrategies(new ExclusionStrategy() {
 

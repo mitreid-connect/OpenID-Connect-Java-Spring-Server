@@ -39,9 +39,10 @@ import com.nimbusds.jose.jwk.JWKSet;
  * @author jricher
  *
  */
-@Component("jwkKeyList")
+@Component(JwkKeyListView.VIEWNAME)
 public class JwkKeyListView extends AbstractView {
 
+	public static final String VIEWNAME = "jwkKeyList";
 	private static Logger logger = LoggerFactory.getLogger(JwkKeyListView.class);
 
 	@Override

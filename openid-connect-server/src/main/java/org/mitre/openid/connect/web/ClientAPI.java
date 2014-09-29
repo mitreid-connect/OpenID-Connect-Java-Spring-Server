@@ -26,6 +26,10 @@ import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.openid.connect.service.UserInfoService;
+import org.mitre.openid.connect.view.ClientEntityViewForAdmins;
+import org.mitre.openid.connect.view.ClientEntityViewForUsers;
+import org.mitre.openid.connect.view.HttpCodeView;
+import org.mitre.openid.connect.view.JsonErrorView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -118,9 +122,9 @@ public class ClientAPI {
 		model.addAttribute("entity", clients);
 
 		if (isAdmin(auth)) {
-			return "clientEntityViewAdmins";
+			return ClientEntityViewForAdmins.VIEWNAME;
 		} else {
-			return "clientEntityViewUsers";
+			return ClientEntityViewForUsers.VIEWNAME;
 		}
 	}
 
@@ -146,12 +150,12 @@ public class ClientAPI {
 			logger.error("apiAddClient failed due to JsonSyntaxException", e);
 			m.addAttribute("code", HttpStatus.BAD_REQUEST);
 			m.addAttribute("errorMessage", "Could not save new client. The server encountered a JSON syntax exception. Contact a system administrator for assistance.");
-			return "jsonErrorView";
+			return JsonErrorView.VIEWNAME;
 		} catch (IllegalStateException e) {
 			logger.error("apiAddClient failed due to IllegalStateException", e);
 			m.addAttribute("code", HttpStatus.BAD_REQUEST);
 			m.addAttribute("errorMessage", "Could not save new client. The server encountered an IllegalStateException. Refresh and try again - if the problem persists, contact a system administrator for assistance.");
-			return "jsonErrorView";
+			return JsonErrorView.VIEWNAME;
 		}
 
 		// if they leave the client identifier empty, force it to be generated
@@ -181,7 +185,7 @@ public class ClientAPI {
 				logger.error("tried to create client with private key auth but no private key");
 				m.addAttribute("code", HttpStatus.BAD_REQUEST);
 				m.addAttribute("errorMessage", "Can not create a client with private key authentication without registering a key via the JWS Set URI.");
-				return "jsonErrorView";
+				return JsonErrorView.VIEWNAME;
 			}
 			
 			// otherwise we shouldn't have a secret for this client
@@ -192,7 +196,7 @@ public class ClientAPI {
 			logger.error("unknown auth method");
 			m.addAttribute("code", HttpStatus.BAD_REQUEST);
 			m.addAttribute("errorMessage", "Unknown auth method requested");
-			return "jsonErrorView";
+			return JsonErrorView.VIEWNAME;
 			
 			
 		}
@@ -203,9 +207,9 @@ public class ClientAPI {
 		m.addAttribute("entity", newClient);
 
 		if (isAdmin(auth)) {
-			return "clientEntityViewAdmins";
+			return ClientEntityViewForAdmins.VIEWNAME;
 		} else {
-			return "clientEntityViewUsers";
+			return ClientEntityViewForUsers.VIEWNAME;
 		}
 	}
 
@@ -233,12 +237,12 @@ public class ClientAPI {
 			logger.error("apiUpdateClient failed due to JsonSyntaxException", e);
 			m.addAttribute("code", HttpStatus.BAD_REQUEST);
 			m.addAttribute("errorMessage", "Could not update client. The server encountered a JSON syntax exception. Contact a system administrator for assistance.");
-			return "jsonErrorView";
+			return JsonErrorView.VIEWNAME;
 		} catch (IllegalStateException e) {
 			logger.error("apiUpdateClient failed due to IllegalStateException", e);
 			m.addAttribute("code", HttpStatus.BAD_REQUEST);
 			m.addAttribute("errorMessage", "Could not update client. The server encountered an IllegalStateException. Refresh and try again - if the problem persists, contact a system administrator for assistance.");
-			return "jsonErrorView";
+			return JsonErrorView.VIEWNAME;
 		}
 
 		ClientDetailsEntity oldClient = clientService.getClientById(id);
@@ -247,7 +251,7 @@ public class ClientAPI {
 			logger.error("apiUpdateClient failed; client with id " + id + " could not be found.");
 			m.addAttribute("code", HttpStatus.NOT_FOUND);
 			m.addAttribute("errorMessage", "Could not update client. The requested client with id " + id + "could not be found.");
-			return "jsonErrorView";
+			return JsonErrorView.VIEWNAME;
 		}
 
 		// if they leave the client identifier empty, force it to be generated
@@ -277,7 +281,7 @@ public class ClientAPI {
 				logger.error("tried to create client with private key auth but no private key");
 				m.addAttribute("code", HttpStatus.BAD_REQUEST);
 				m.addAttribute("errorMessage", "Can not create a client with private key authentication without registering a key via the JWS Set URI.");
-				return "jsonErrorView";
+				return JsonErrorView.VIEWNAME;
 			}
 			
 			// otherwise we shouldn't have a secret for this client
@@ -288,7 +292,7 @@ public class ClientAPI {
 			logger.error("unknown auth method");
 			m.addAttribute("code", HttpStatus.BAD_REQUEST);
 			m.addAttribute("errorMessage", "Unknown auth method requested");
-			return "jsonErrorView";
+			return JsonErrorView.VIEWNAME;
 			
 			
 		}
@@ -297,9 +301,9 @@ public class ClientAPI {
 		m.addAttribute("entity", newClient);
 
 		if (isAdmin(auth)) {
-			return "clientEntityViewAdmins";
+			return ClientEntityViewForAdmins.VIEWNAME;
 		} else {
-			return "clientEntityViewUsers";
+			return ClientEntityViewForUsers.VIEWNAME;
 		}
 	}
 
@@ -319,13 +323,13 @@ public class ClientAPI {
 			logger.error("apiDeleteClient failed; client with id " + id + " could not be found.");
 			modelAndView.getModelMap().put("code", HttpStatus.NOT_FOUND);
 			modelAndView.getModelMap().put("errorMessage", "Could not delete client. The requested client with id " + id + "could not be found.");
-			return "jsonErrorView";
+			return JsonErrorView.VIEWNAME;
 		} else {
 			modelAndView.getModelMap().put("code", HttpStatus.OK);
 			clientService.deleteClient(client);
 		}
 
-		return "httpCodeView";
+		return HttpCodeView.VIEWNAME;
 	}
 
 
@@ -344,15 +348,15 @@ public class ClientAPI {
 			logger.error("apiShowClient failed; client with id " + id + " could not be found.");
 			model.addAttribute("code", HttpStatus.NOT_FOUND);
 			model.addAttribute("errorMessage", "The requested client with id " + id + " could not be found.");
-			return "jsonErrorView";
+			return JsonErrorView.VIEWNAME;
 		}
 
 		model.addAttribute("entity", client);
 
 		if (isAdmin(auth)) {
-			return "clientEntityViewAdmins";
+			return ClientEntityViewForAdmins.VIEWNAME;
 		} else {
-			return "clientEntityViewUsers";
+			return ClientEntityViewForUsers.VIEWNAME;
 		}
 	}
 

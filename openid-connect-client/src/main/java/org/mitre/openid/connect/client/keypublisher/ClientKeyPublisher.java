@@ -43,7 +43,7 @@ public class ClientKeyPublisher implements BeanDefinitionRegistryPostProcessor {
 
 	private BeanDefinitionRegistry registry;
 
-	private String jwkViewName = "jwkKeyList";
+	private String jwkViewName = JwkKeyListView.VIEWNAME;
 
 	/**
 	 * If the jwkPublishUrl field is set on this bean, set up a listener on that URL to publish keys.
@@ -61,12 +61,12 @@ public class ClientKeyPublisher implements BeanDefinitionRegistryPostProcessor {
 				clientKeyMapping.addPropertyValue("jwkPublishUrl", getJwkPublishUrl());
 
 				// randomize view name to make sure it doesn't conflict with local views
-				jwkViewName = "jwkKeyList-" + UUID.randomUUID().toString();
-				viewResolver.addPropertyValue("jwkViewName", jwkViewName);
+				jwkViewName = JwkKeyListView.VIEWNAME + "-" + UUID.randomUUID().toString();
+				viewResolver.addPropertyValue(JwkKeyListView.VIEWNAME, jwkViewName);
 
 				// view bean
 				BeanDefinitionBuilder jwkView = BeanDefinitionBuilder.rootBeanDefinition(JwkKeyListView.class);
-				registry.registerBeanDefinition("jwkKeyList", jwkView.getBeanDefinition());
+				registry.registerBeanDefinition(JwkKeyListView.VIEWNAME, jwkView.getBeanDefinition());
 				viewResolver.addPropertyReference("jwk", "jwkKeyList");
 			}
 

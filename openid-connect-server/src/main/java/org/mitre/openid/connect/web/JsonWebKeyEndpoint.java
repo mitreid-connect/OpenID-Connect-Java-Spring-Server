@@ -19,6 +19,7 @@ package org.mitre.openid.connect.web;
 import java.util.Map;
 
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
+import org.mitre.openid.connect.view.JwkKeyListView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -42,7 +43,7 @@ public class JsonWebKeyEndpoint {
 
 		m.addAttribute("keys", keys);
 
-		return "jwkKeyList";
+		return JwkKeyListView.VIEWNAME;
 	}
 
 	/**

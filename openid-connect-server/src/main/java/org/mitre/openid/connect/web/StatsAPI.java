@@ -19,6 +19,7 @@ package org.mitre.openid.connect.web;
 import java.util.Map;
 
 import org.mitre.openid.connect.service.StatsService;
+import org.mitre.openid.connect.view.JsonEntityView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -40,7 +41,7 @@ public class StatsAPI {
 
 		m.put("entity", e);
 
-		return "jsonEntityView";
+		return JsonEntityView.VIEWNAME;
 
 	}
 
@@ -51,7 +52,7 @@ public class StatsAPI {
 
 		m.put("entity", e);
 
-		return "jsonEntityView";
+		return JsonEntityView.VIEWNAME;
 	}
 
 	@PreAuthorize("hasRole('ROLE_USER')")
@@ -61,7 +62,7 @@ public class StatsAPI {
 
 		m.put("entity", e);
 
-		return "jsonEntityView";
+		return JsonEntityView.VIEWNAME;
 	}
 
 }
