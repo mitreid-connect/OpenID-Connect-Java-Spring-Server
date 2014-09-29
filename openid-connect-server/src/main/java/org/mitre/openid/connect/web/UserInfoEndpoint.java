@@ -22,6 +22,9 @@ import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.service.UserInfoService;
+import org.mitre.openid.connect.view.HttpCodeView;
+import org.mitre.openid.connect.view.UserInfoJwtView;
+import org.mitre.openid.connect.view.UserInfoView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,7 +72,7 @@ public class UserInfoEndpoint {
 		if (auth == null) {
 			logger.error("getInfo failed; no principal. Requester is not authorized.");
 			model.addAttribute("code", HttpStatus.FORBIDDEN);
-			return "httpCodeView";
+			return HttpCodeView.VIEWNAME;
 		}
 
 		String username = auth.getName();
@@ -78,7 +81,7 @@ public class UserInfoEndpoint {
 		if (userInfo == null) {
 			logger.error("getInfo failed; user not found: " + username);
 			model.addAttribute("code", HttpStatus.NOT_FOUND);
-			return "httpCodeView";
+			return HttpCodeView.VIEWNAME;
 		}
 
 		model.addAttribute("scope", auth.getOAuth2Request().getScope());
@@ -106,26 +109,26 @@ public class UserInfoEndpoint {
 			// client has a preference, see if they ask for plain JSON specifically on this request
 			for (MediaType m : mediaTypes) {
 				if (!m.isWildcardType() && m.isCompatibleWith(JOSE_MEDIA_TYPE)) {
-					return "userInfoJwtView";
+					return UserInfoJwtView.VIEWNAME;
 				} else if (!m.isWildcardType() && m.isCompatibleWith(MediaType.APPLICATION_JSON)) {
-					return "userInfoView";
+					return UserInfoView.VIEWNAME;
 				}
 			}
 			
 			// otherwise return JWT
-			return "userInfoJwtView";
+			return UserInfoJwtView.VIEWNAME;
 		} else {
 			// client has no preference, see if they asked for JWT specifically on this request
 			for (MediaType m : mediaTypes) {
 				if (!m.isWildcardType() && m.isCompatibleWith(MediaType.APPLICATION_JSON)) {
-					return "userInfoView";
+					return UserInfoView.VIEWNAME;
 				} else if (!m.isWildcardType() && m.isCompatibleWith(JOSE_MEDIA_TYPE)) {
-					return "userInfoJwtView";
+					return UserInfoJwtView.VIEWNAME;
 				}
 			}
 
 			// otherwise return JSON
-			return "userInfoView";
+			return UserInfoView.VIEWNAME;
 		}
 
 	}

@@ -42,11 +42,13 @@ import com.google.gson.GsonBuilder;
  * @author jricher
  *
  */
-@Component("jsonEntityView")
+@Component(JsonEntityView.VIEWNAME)
 public class JsonEntityView extends AbstractView {
 
 	private static Logger logger = LoggerFactory.getLogger(JsonEntityView.class);
 
+	public static final String VIEWNAME = "jsonEntityView";
+	
 	private Gson gson = new GsonBuilder()
 	.setExclusionStrategies(new ExclusionStrategy() {
 

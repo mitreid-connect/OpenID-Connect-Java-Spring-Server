@@ -27,6 +27,8 @@ import org.mitre.oauth2.service.SystemScopeService;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.service.UserInfoService;
+import org.mitre.openid.connect.view.HttpCodeView;
+import org.mitre.openid.connect.view.JsonEntityView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,7 +105,7 @@ public class DiscoveryEndpoint {
 				if (user == null) {
 					logger.info("User not found: " + resource);
 					model.addAttribute("code", HttpStatus.NOT_FOUND);
-					return "httpCodeView";
+					return HttpCodeView.VIEWNAME;
 				}
 
 				UriComponents issuerComponents = UriComponentsBuilder.fromHttpUrl(config.getIssuer()).build();
@@ -111,14 +113,14 @@ public class DiscoveryEndpoint {
 						.equals(Strings.nullToEmpty(resourceUri.getHost()))) {
 					logger.info("Host mismatch, expected " + issuerComponents.getHost() + " got " + resourceUri.getHost());
 					model.addAttribute("code", HttpStatus.NOT_FOUND);
-					return "httpCodeView";
+					return HttpCodeView.VIEWNAME;
 				}
 
 
 			} else {
 				logger.info("Unknown URI format: " + resource);
 				model.addAttribute("code", HttpStatus.NOT_FOUND);
-				return "httpCodeView";
+				return HttpCodeView.VIEWNAME;
 			}
 		}
 
@@ -326,7 +328,7 @@ public class DiscoveryEndpoint {
 
 		model.addAttribute("entity", m);
 
-		return "jsonEntityView";
+		return JsonEntityView.VIEWNAME;
 	}
 
 }

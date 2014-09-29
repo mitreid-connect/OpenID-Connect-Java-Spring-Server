@@ -49,11 +49,13 @@ import com.google.gson.JsonSerializer;
  * @author jricher
  *
  */
-@Component("jsonApprovedSiteView")
+@Component(JsonApprovedSiteView.VIEWNAME)
 public class JsonApprovedSiteView extends AbstractView {
 
 	private static Logger logger = LoggerFactory.getLogger(JsonApprovedSiteView.class);
 
+	public static final String VIEWNAME = "jsonApprovedSiteView";
+	
 	private Gson gson = new GsonBuilder()
 	.setExclusionStrategies(new ExclusionStrategy() {
 

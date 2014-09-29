@@ -46,11 +46,13 @@ import com.google.gson.JsonObject;
  * @author jricher
  *
  */
-@Component("clientInformationResponseView")
+@Component(ClientInformationResponseView.VIEWNAME)
 public class ClientInformationResponseView extends AbstractView {
 
 	private static Logger logger = LoggerFactory.getLogger(ClientInformationResponseView.class);
 
+	public static final String VIEWNAME = "clientInformationResponseView";
+	
 	// note that this won't serialize nulls by default
 	private Gson gson = new Gson();
 

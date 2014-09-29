@@ -24,6 +24,9 @@ import java.util.Collection;
 
 import org.mitre.openid.connect.model.WhitelistedSite;
 import org.mitre.openid.connect.service.WhitelistedSiteService;
+import org.mitre.openid.connect.view.HttpCodeView;
+import org.mitre.openid.connect.view.JsonEntityView;
+import org.mitre.openid.connect.view.JsonErrorView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,7 +73,7 @@ public class WhitelistAPI {
 
 		m.put("entity", all);
 
-		return "jsonEntityView";
+		return JsonEntityView.VIEWNAME;
 	}
 
 	/**
@@ -95,12 +98,12 @@ public class WhitelistAPI {
 			logger.error("addNewWhitelistedSite failed due to JsonParseException", e);
 			m.addAttribute("code", HttpStatus.BAD_REQUEST);
 			m.addAttribute("errorMessage", "Could not save new whitelisted site. The server encountered a JSON syntax exception. Contact a system administrator for assistance.");
-			return "jsonErrorView";
+			return JsonErrorView.VIEWNAME;
 		} catch (IllegalStateException e) {
 			logger.error("addNewWhitelistedSite failed due to IllegalStateException", e);
 			m.addAttribute("code", HttpStatus.BAD_REQUEST);
 			m.addAttribute("errorMessage", "Could not save new whitelisted site. The server encountered an IllegalStateException. Refresh and try again - if the problem persists, contact a system administrator for assistance.");
-			return "jsonErrorView";
+			return JsonErrorView.VIEWNAME;
 		}
 
 		// save the id of the person who created this
@@ -110,7 +113,7 @@ public class WhitelistAPI {
 
 		m.put("entity", newWhitelist);
 
-		return "jsonEntityView";
+		return JsonEntityView.VIEWNAME;
 
 	}
 
@@ -132,12 +135,12 @@ public class WhitelistAPI {
 			logger.error("updateWhitelistedSite failed due to JsonParseException", e);
 			m.put("code", HttpStatus.BAD_REQUEST);
 			m.put("errorMessage", "Could not update whitelisted site. The server encountered a JSON syntax exception. Contact a system administrator for assistance.");
-			return "jsonErrorView";
+			return JsonErrorView.VIEWNAME;
 		} catch (IllegalStateException e) {
 			logger.error("updateWhitelistedSite failed due to IllegalStateException", e);
 			m.put("code", HttpStatus.BAD_REQUEST);
 			m.put("errorMessage", "Could not update whitelisted site. The server encountered an IllegalStateException. Refresh and try again - if the problem persists, contact a system administrator for assistance.");
-			return "jsonErrorView";
+			return JsonErrorView.VIEWNAME;
 		}
 
 		WhitelistedSite oldWhitelist = whitelistService.getById(id);
@@ -146,14 +149,14 @@ public class WhitelistAPI {
 			logger.error("updateWhitelistedSite failed; whitelist with id " + id + " could not be found.");
 			m.put("code", HttpStatus.NOT_FOUND);
 			m.put("errorMessage", "Could not update whitelisted site. The requested whitelisted site with id " + id + "could not be found.");
-			return "jsonErrorView";
+			return JsonErrorView.VIEWNAME;
 		} else {
 
 			WhitelistedSite newWhitelist = whitelistService.update(oldWhitelist, whitelist);
 
 			m.put("entity", newWhitelist);
 
-			return "jsonEntityView";
+			return JsonEntityView.VIEWNAME;
 		}
 	}
 
@@ -170,13 +173,13 @@ public class WhitelistAPI {
 			logger.error("deleteWhitelistedSite failed; whitelist with id " + id + " could not be found.");
 			m.put("code", HttpStatus.NOT_FOUND);
 			m.put("errorMessage", "Could not delete whitelisted site. The requested whitelisted site with id " + id + "could not be found.");
-			return "jsonErrorView";
+			return JsonErrorView.VIEWNAME;
 		} else {
 			m.put("code", HttpStatus.OK);
 			whitelistService.remove(whitelist);
 		}
 
-		return "httpCodeView";
+		return HttpCodeView.VIEWNAME;
 	}
 
 	/**
@@ -189,12 +192,12 @@ public class WhitelistAPI {
 			logger.error("getWhitelistedSite failed; whitelist with id " + id + " could not be found.");
 			m.put("code", HttpStatus.NOT_FOUND);
 			m.put("errorMessage", "The requested whitelisted site with id " + id + "could not be found.");
-			return "jsonErrorView";
+			return JsonErrorView.VIEWNAME;
 		} else {
 
 			m.put("entity", whitelist);
 
-			return "jsonEntityView";
+			return JsonEntityView.VIEWNAME;
 		}
 
 	}

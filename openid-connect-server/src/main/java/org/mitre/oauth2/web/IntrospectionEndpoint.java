@@ -26,8 +26,11 @@ import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.IntrospectionAuthorizer;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
+import org.mitre.oauth2.view.TokenIntrospectionView;
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.service.UserInfoService;
+import org.mitre.openid.connect.view.HttpCodeView;
+import org.mitre.openid.connect.view.JsonEntityView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,7 +81,7 @@ public class IntrospectionEndpoint {
 			logger.error("Verify failed; token value is null");
 			Map<String,Boolean> entity = ImmutableMap.of("active", Boolean.FALSE);
 			model.addAttribute("entity", entity);
-			return "jsonEntityView";
+			return JsonEntityView.VIEWNAME;
 		}
 
 		// clientID is the principal name in the authentication
@@ -120,7 +123,7 @@ public class IntrospectionEndpoint {
 				logger.error("Verify failed; Invalid refresh token", e2);
 				Map<String,Boolean> entity = ImmutableMap.of("active", Boolean.FALSE);
 				model.addAttribute("entity", entity);
-				return "jsonEntityView";
+				return JsonEntityView.VIEWNAME;
 			}
 		}
 
@@ -130,22 +133,22 @@ public class IntrospectionEndpoint {
 					// if it's a valid token, we'll print out information on it
 					model.addAttribute("token", token);
 					model.addAttribute("user", user);
-					return "tokenIntrospection";
+					return TokenIntrospectionView.VIEWNAME;
 				} else {
 					logger.error("Verify failed; client configuration or scope don't permit token introspection");
 					model.addAttribute("code", HttpStatus.FORBIDDEN);
-					return "httpCodeView";
+					return HttpCodeView.VIEWNAME;
 				}
 			} else {
 				logger.error("Verify failed; client " + clientId + " is not allowed to call introspection endpoint");
 				model.addAttribute("code", HttpStatus.FORBIDDEN);
-				return "httpCodeView";
+				return HttpCodeView.VIEWNAME;
 			}
 		} else {
 			// This is a bad error -- I think it means we have a token outstanding that doesn't map to a client?
 			logger.error("Verify failed; client " + clientId + " not found.");
 			model.addAttribute("code", HttpStatus.NOT_FOUND);
-			return "httpCodeView";
+			return HttpCodeView.VIEWNAME;
 		}
 
 	}

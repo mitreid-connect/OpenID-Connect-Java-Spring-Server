@@ -56,11 +56,13 @@ import com.nimbusds.jwt.SignedJWT;
  * @author jricher
  *
  */
-@Component("userInfoJwtView")
+@Component(UserInfoJwtView.VIEWNAME)
 public class UserInfoJwtView extends UserInfoView {
 
 	private static Logger logger = LoggerFactory.getLogger(UserInfoJwtView.class);
 
+	public static final String VIEWNAME = "userInfoJwtView";
+	
 	@Autowired
 	private JwtSigningAndValidationService jwtService;
 

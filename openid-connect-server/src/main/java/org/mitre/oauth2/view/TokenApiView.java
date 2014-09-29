@@ -43,8 +43,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
-@Component("tokenApiView")
+@Component(TokenApiView.VIEWNAME)
 public class TokenApiView extends AbstractView {
+
+	public static final String VIEWNAME = "tokenApiView";
 
 	private static Logger logger = LoggerFactory.getLogger(JsonEntityView.class);
 
