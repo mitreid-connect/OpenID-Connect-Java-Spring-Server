@@ -109,12 +109,20 @@ public class DefaultJwtEncryptionAndDecryptionService implements JwtEncryptionAn
 
 
 	@PostConstruct
-	public void afterPropertiesSet() throws NoSuchAlgorithmException, InvalidKeySpecException, JOSEException{
+	public void afterPropertiesSet() {
 
 		if (keys == null) {
 			throw new IllegalArgumentException("Encryption and decryption service must have at least one key configured.");
 		}
-		buildEncryptersAndDecrypters();
+		try {
+			buildEncryptersAndDecrypters();
+		} catch (NoSuchAlgorithmException e) {
+			throw new IllegalArgumentException("Encryption and decryption service could not find given algorithm.");
+		} catch (InvalidKeySpecException e) {
+			throw new IllegalArgumentException("Encryption and decryption service saw an invalid key specification.");
+		} catch (JOSEException e) {
+			throw new IllegalArgumentException("Encryption and decryption service was unable to process JOSE object.");
+		}
 	}
 
 	public String getDefaultEncryptionKeyId() {
