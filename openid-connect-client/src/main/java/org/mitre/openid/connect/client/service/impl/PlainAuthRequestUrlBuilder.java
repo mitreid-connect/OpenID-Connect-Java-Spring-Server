@@ -64,7 +64,6 @@ public class PlainAuthRequestUrlBuilder implements AuthRequestUrlBuilder {
 			if (serverConfig.isUseNonce()) {
 				uriBuilder.addParameter("nonce", nonce);
 			}
-
 			uriBuilder.addParameter("state", state);
 
 			// Optional parameters:

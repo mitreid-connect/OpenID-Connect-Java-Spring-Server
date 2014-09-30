@@ -543,9 +543,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 				String nonce = idClaims.getStringClaim("nonce");
 				
 				if (serverConfig.isUseNonce() && Strings.isNullOrEmpty(nonce)) {
-
 					logger.error("ID token did not contain a nonce claim.");
-
 					throw new AuthenticationServiceException("ID token did not contain a nonce claim.");
 				}
 
