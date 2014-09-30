@@ -55,22 +55,32 @@ public class TestPlainAuthRequestUrlBuilder {
 	}
 
 	@Test
-	public void buildAuthRequestUrl() {
+	public void buildAuthRequestUrlWithNonce() {
+		executeTestWithOrWithoutNonce(true);
+	}
+	@Test
+	public void buildAuthRequestUrlWithoutNonce() {
+		executeTestWithOrWithoutNonce(false);
+	}
 
-		String expectedUrl = "https://server.example.com/authorize?" +
-				"response_type=code" +
-				"&client_id=s6BhdRkqt3" +
-				"&scope=openid+profile" + // plus sign used for space per application/x-www-form-encoded standard
-				"&redirect_uri=https%3A%2F%2Fclient.example.org%2F" +
-				"&nonce=34fasf3ds" +
-				"&state=af0ifjsldkj" +
-				"&foo=bar";
-
+	private void executeTestWithOrWithoutNonce(boolean useNonce) {
+		StringBuilder expectedUrl = new StringBuilder();
+		expectedUrl.append("https://server.example.com/authorize?");
+		expectedUrl.append("response_type=code");
+		expectedUrl.append("&client_id=s6BhdRkqt3");
+		expectedUrl.append("&scope=openid+profile"); // plus sign used for space per application/x-www-form-encoded standard
+		expectedUrl.append("&redirect_uri=https%3A%2F%2Fclient.example.org%2F");
+		if(useNonce){
+			expectedUrl.append("&nonce=34fasf3ds");
+		}
+		expectedUrl.append("&state=af0ifjsldkj");
+		expectedUrl.append("&foo=bar");
+		
 		Map<String, String> options = ImmutableMap.of("foo", "bar");
 
+		Mockito.when(serverConfig.isUseNonce()).thenReturn(useNonce);
 		String actualUrl = urlBuilder.buildAuthRequestUrl(serverConfig, clientConfig, "https://client.example.org/", "34fasf3ds", "af0ifjsldkj", options);
-
-		assertThat(actualUrl, equalTo(expectedUrl));
+		assertThat(actualUrl, equalTo(expectedUrl.toString()));
 	}
 
 	@Test(expected = AuthenticationServiceException.class)
