@@ -39,8 +39,6 @@ import com.google.common.base.Joiner;
  *
  */
 public class PlainAuthRequestUrlBuilder implements AuthRequestUrlBuilder {
-
-	protected boolean useNonce = true;
 	
 	/*
 	 * (non-Javadoc)
@@ -63,7 +61,7 @@ public class PlainAuthRequestUrlBuilder implements AuthRequestUrlBuilder {
 
 			uriBuilder.addParameter("redirect_uri", redirectUri);
 
-			if (useNonce) {
+			if (serverConfig.isUseNonce()) {
 				uriBuilder.addParameter("nonce", nonce);
 			}
 
@@ -83,8 +81,6 @@ public class PlainAuthRequestUrlBuilder implements AuthRequestUrlBuilder {
 		}
 
 	}
-	public void setUseNonce(boolean useNonce) {
-		this.useNonce = useNonce;
-	}
+	
 
 }

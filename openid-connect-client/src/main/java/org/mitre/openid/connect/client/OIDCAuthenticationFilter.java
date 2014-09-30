@@ -120,7 +120,6 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 
 	protected int httpSocketTimeout = HTTP_SOCKET_TIMEOUT;
 	
-	protected boolean useNonce = true;
 
 	/**
 	 * OpenIdConnectAuthenticationFilter constructor
@@ -542,7 +541,8 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 
 				// compare the nonce to our stored claim
 				String nonce = idClaims.getStringClaim("nonce");
-				if (useNonce && Strings.isNullOrEmpty(nonce)) {
+				
+				if (serverConfig.isUseNonce() && Strings.isNullOrEmpty(nonce)) {
 
 					logger.error("ID token did not contain a nonce claim.");
 
@@ -550,7 +550,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 				}
 
 				String storedNonce = getStoredNonce(session);
-				if (useNonce && !nonce.equals(storedNonce)) {
+				if (serverConfig.isUseNonce() && !nonce.equals(storedNonce)) {
 					logger.error("Possible replay attack detected! The comparison of the nonce in the returned "
 							+ "ID Token to the session " + NONCE_SESSION_VARIABLE + " failed. Expected " + storedNonce + " got " + nonce + ".");
 
@@ -823,8 +823,6 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 	public void setTargetLinkURIChecker(TargetLinkURIChecker deepLinkFilter) {
 		this.deepLinkFilter = deepLinkFilter;
 	}
-	public void setUseNonce(boolean useNonce) {
-		this.useNonce = useNonce;
-	}
+	
 
 }
