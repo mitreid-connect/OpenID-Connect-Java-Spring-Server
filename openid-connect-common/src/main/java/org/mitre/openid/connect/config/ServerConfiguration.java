@@ -17,6 +17,7 @@
 package org.mitre.openid.connect.config;
 
 import java.util.List;
+import java.util.Set;
 
 import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JWEAlgorithm;
@@ -206,6 +207,12 @@ public class ServerConfiguration {
 	private String opPolicyUri;
 	private String opTosUri;
 	private UserInfoTokenMethod userInfoTokenMethod;	
+	
+	
+	/**
+	 * this variable is used to indicate if the IdP either use or not the nonce value.
+	 */
+	private boolean useNonce = true;
 	
 	public enum UserInfoTokenMethod {
 		HEADER,
@@ -1111,5 +1118,12 @@ public class ServerConfiguration {
 		return true;
 	}
 
+	public void setUseNonce(boolean useNonce) {
+		this.useNonce = useNonce;
+	}
+	
+	public boolean isUseNonce() {
+		return useNonce;
+	}
 
 }
