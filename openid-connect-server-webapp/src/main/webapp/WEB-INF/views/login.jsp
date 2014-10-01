@@ -14,7 +14,7 @@ $(document).ready(function() {
 <o:topbar />
 <div class="container-fluid main">
 
-	<h1>Login with Username and Password</h1>
+	<h4>Log In with Username and Password</h4>
 
 	<c:if test="${ param.error != null }">
 		<div class="alert alert-error">The system was unable to log you
@@ -23,7 +23,7 @@ $(document).ready(function() {
 
 
 	<div class="row-fluid">
-		<div class="span4 offset1 well">
+		<div class="span3">
 			<form action="<%=request.getContextPath()%>/j_spring_security_check"
 				method="POST">
 				<div>
@@ -39,7 +39,7 @@ $(document).ready(function() {
 					</div>
 				</div>
 				<div>
-					<input type="submit" class="btn" value="Login" name="submit">
+					<input type="submit" class="btn btn-primary" value="Log In" name="submit">
 				</div>
 			</form>
 		</div>

@@ -1,4 +1,4 @@
-<h2>Current Statistics</h2>
+<h3>Current Statistics</h3>
 
 <p id="statsloader" class="muted">Loading statistics...</p>
 
