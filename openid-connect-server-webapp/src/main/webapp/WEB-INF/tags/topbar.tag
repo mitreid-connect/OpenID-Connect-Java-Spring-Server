@@ -25,7 +25,7 @@
 		</c:choose>
 	</c:otherwise>
 </c:choose>
-<div class="navbar navbar-fixed-top navbar-inverse">
+<div class="navbar navbar-fixed-top">
 	<div class="navbar-inner">
 		<div class="container">
 			<button class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
