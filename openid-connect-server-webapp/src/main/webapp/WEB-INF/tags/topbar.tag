@@ -25,7 +25,7 @@
 		</c:choose>
 	</c:otherwise>
 </c:choose>
-<div class="navbar navbar-fixed-top">
+<div class="navbar navbar-fixed-top navbar-inverse">
 	<div class="navbar-inner">
 		<div class="container">
 			<button class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
@@ -87,7 +87,7 @@
 							<ul class="dropdown-menu pull-right">
 								<li><a href="manage/#user/profile" data-toggle="collapse" data-target=".nav-collapse">${ longName }</a></li>
 								<li class="divider"></li>
-								<li><a href="logout" data-toggle="collapse" data-target=".nav-collapse"><i class="icon-remove"></i> Log Out</a></li>
+								<li><a href="logout" data-toggle="collapse" data-target=".nav-collapse">Log Out</a></li>
 							</ul>
 						</li>
 	                    </security:authorize>
