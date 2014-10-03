@@ -29,7 +29,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -38,7 +37,6 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.TimeZone;
 import org.mitre.jose.JWEAlgorithmEmbed;
 import org.mitre.jose.JWEEncryptionMethodEmbed;
 import org.mitre.jose.JWSAlgorithmEmbed;
@@ -61,6 +59,7 @@ import org.mitre.openid.connect.repository.ApprovedSiteRepository;
 import org.mitre.openid.connect.repository.BlacklistedSiteRepository;
 import org.mitre.openid.connect.repository.WhitelistedSiteRepository;
 import org.mitre.openid.connect.service.MITREidDataService;
+import org.mitre.openid.connect.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,9 +96,6 @@ public class MITREidDataService_1_0 implements MITREidDataService {
     private OAuth2TokenRepository tokenRepository;
     @Autowired
     private SystemScopeRepository sysScopeRepository;
-    private static final String ISO_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
-    private static final SimpleDateFormat sdf = new SimpleDateFormat(ISO_FORMAT);
-    private static final TimeZone utc = TimeZone.getTimeZone("UTC");
 
     /* (non-Javadoc)
      * @see org.mitre.openid.connect.service.MITREidDataService#export(com.google.gson.stream.JsonWriter)
@@ -158,27 +154,6 @@ public class MITREidDataService_1_0 implements MITREidDataService {
 
     }
 
-    private static String toUTCString(Date date) {
-        if (date == null) {
-            return null;
-        }
-        sdf.setTimeZone(utc);
-        return sdf.format(date);
-    }
-
-    private static Date utcToDate(String s) {
-        if (s == null) {
-            return null;
-        }
-        Date d = null;
-        try {
-            d = sdf.parse(s);
-        } catch(ParseException ex) {
-            logger.error("Unable to parse date string {}", s, ex);
-        }
-        return d;
-    }
-
     /**
      * @param writer
      */
@@ -186,7 +161,7 @@ public class MITREidDataService_1_0 implements MITREidDataService {
         for (OAuth2RefreshTokenEntity token : tokenRepository.getAllRefreshTokens()) {
             writer.beginObject();
             writer.name("id").value(token.getId());
-            writer.name("expiration").value(toUTCString(token.getExpiration()));
+            writer.name("expiration").value(DateUtil.toUTCString(token.getExpiration()));
             writer.name("clientId")
                     .value((token.getClient() != null) ? token.getClient().getClientId() : null);
             writer.name("authenticationHolderId")
@@ -205,7 +180,7 @@ public class MITREidDataService_1_0 implements MITREidDataService {
         for (OAuth2AccessTokenEntity token : tokenRepository.getAllAccessTokens()) {
             writer.beginObject();
             writer.name("id").value(token.getId());
-            writer.name("expiration").value(toUTCString(token.getExpiration()));
+            writer.name("expiration").value(DateUtil.toUTCString(token.getExpiration()));
             writer.name("clientId")
                     .value((token.getClient() != null) ? token.getClient().getClientId() : null);
             writer.name("authenticationHolderId")
@@ -314,10 +289,10 @@ public class MITREidDataService_1_0 implements MITREidDataService {
         for (ApprovedSite site : approvedSiteRepository.getAll()) {
             writer.beginObject();
             writer.name("id").value(site.getId());
-            writer.name("accessDate").value(toUTCString(site.getAccessDate()));
+            writer.name("accessDate").value(DateUtil.toUTCString(site.getAccessDate()));
             writer.name("clientId").value(site.getClientId());
-            writer.name("creationDate").value(toUTCString(site.getCreationDate()));
-            writer.name("timeoutDate").value(toUTCString(site.getTimeoutDate()));
+            writer.name("creationDate").value(DateUtil.toUTCString(site.getCreationDate()));
+            writer.name("timeoutDate").value(DateUtil.toUTCString(site.getTimeoutDate()));
             writer.name("userId").value(site.getUserId());
             writer.name("allowedScopes");
             writeNullSafeArray(writer, site.getAllowedScopes());
@@ -541,7 +516,7 @@ public class MITREidDataService_1_0 implements MITREidDataService {
                         } else if (name.equals("id")) {
                             currentId = reader.nextLong();
                         } else if (name.equals("expiration")) {
-                            Date date = utcToDate(reader.nextString());
+                            Date date = DateUtil.utcToDate(reader.nextString());
                             token.setExpiration(date);
                         } else if (name.equals("value")) {
                             String value = reader.nextString();
@@ -607,7 +582,7 @@ public class MITREidDataService_1_0 implements MITREidDataService {
                         } else if (name.equals("id")) {
                             currentId = reader.nextLong();
                         } else if (name.equals("expiration")) {
-                            Date date = utcToDate(reader.nextString());
+                            Date date = DateUtil.utcToDate(reader.nextString());
                             token.setExpiration(date);
                         } else if (name.equals("value")) {
                             String value = reader.nextString();
@@ -824,15 +799,15 @@ public class MITREidDataService_1_0 implements MITREidDataService {
                             } else if (name.equals("id")) {
                                 currentId = reader.nextLong();
                             } else if (name.equals("accessDate")) {
-                                Date date = utcToDate(reader.nextString());
+                                Date date = DateUtil.utcToDate(reader.nextString());
                                 site.setAccessDate(date);
                             } else if (name.equals("clientId")) {
                                 site.setClientId(reader.nextString());
                             } else if (name.equals("creationDate")) {
-                                Date date = utcToDate(reader.nextString());
+                                Date date = DateUtil.utcToDate(reader.nextString());
                                 site.setCreationDate(date);
                             } else if (name.equals("timeoutDate")) {
-                                Date date = utcToDate(reader.nextString());
+                                Date date = DateUtil.utcToDate(reader.nextString());
                                 site.setTimeoutDate(date);
                             } else if (name.equals("userId")) {
                                 site.setUserId(reader.nextString());
