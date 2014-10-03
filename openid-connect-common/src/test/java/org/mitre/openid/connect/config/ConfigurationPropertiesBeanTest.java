@@ -20,15 +20,20 @@
 package org.mitre.openid.connect.config;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 /**
  * @author jricher
  *
  */
 public class ConfigurationPropertiesBeanTest {
-
+	
+	@Rule
+	public ExpectedException expectedException = ExpectedException.none();
 	/**
 	 * Test getters and setters for configuration object.
 	 */
@@ -45,11 +50,68 @@ public class ConfigurationPropertiesBeanTest {
 		bean.setIssuer(iss);
 		bean.setTopbarTitle(title);
 		bean.setLogoImageUrl(logoUrl);
+		bean.setForceHttps(true);
 
 		assertEquals(iss, bean.getIssuer());
 		assertEquals(title, bean.getTopbarTitle());
 		assertEquals(logoUrl, bean.getLogoImageUrl());
-
+		assertEquals(true, bean.isForceHttps());
+	}
+	@Test
+	public void testCheckForHttps() throws HttpsUrlRequiredException {
+		ConfigurationPropertiesBean bean = new ConfigurationPropertiesBean();
+		
+		// issuer is http
+		// leave as default, which is unset/false
+		try {
+			bean.checkForHttps();			
+		}
+		catch (HttpsUrlRequiredException e) {
+			fail("Unexpected HttpsUrlRequiredException for http issuer with default forceHttps, message:" + e.getError());
+		}
+		
+		// set to false
+		try {
+		bean.setForceHttps(false);
+		bean.checkForHttps();
+		}
+		catch (HttpsUrlRequiredException e) {
+			fail("Unexpected HttpsUrlRequiredException for http issuer with forceHttps=false, message:" + e.getError());
+		}
+		
+		// set to true
+		
+		bean.setForceHttps(true);
+		this.expectedException.expect(HttpsUrlRequiredException.class);
+		bean.checkForHttps();
+		
+		// issuer is https
+		// leave as default, which is unset/false
+		try {
+			bean.checkForHttps();			
+		}
+		catch (HttpsUrlRequiredException e) {
+			fail("Unexpected HttpsUrlRequiredException for https issuer with default forceHttps, message:" + e.getError());
+		}
+		
+		// set to false
+		try {
+		bean.setForceHttps(false);
+		bean.checkForHttps();
+		}
+		catch (HttpsUrlRequiredException e) {
+			fail("Unexpected HttpsUrlRequiredException for https issuer with forceHttps=false, message:" + e.getError());
+		}
+		
+		// set to true
+		try {
+		bean.setForceHttps(true);
+		bean.checkForHttps();
+		}
+		catch (HttpsUrlRequiredException e) {
+			fail("Unexpected HttpsUrlRequiredException for https issuer with forceHttps=true, message:" + e.getError());
+		}
+		
 	}
 
 }

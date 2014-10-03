@@ -43,6 +43,8 @@ public class ConfigurationPropertiesBean {
 	private String logoImageUrl;
 	
 	private Long regTokenLifeTime;
+	
+	private boolean forceHttps;
 
 	public ConfigurationPropertiesBean() {
 
@@ -50,11 +52,18 @@ public class ConfigurationPropertiesBean {
 
 	/**
 	 * Endpoints protected by TLS must have https scheme in the URI.
+	 * @throws HttpsUrlRequiredException 
 	 */
 	@PostConstruct
-	public void checkForHttps() {
+	public void checkForHttps() throws HttpsUrlRequiredException {
 		if (!StringUtils.startsWithIgnoreCase(issuer, "https")) {
-			logger.warn("Configured issuer url is not using https scheme.");
+			if (this.forceHttps) {
+				logger.warn("Configured issuer url is not using https scheme. This is not allowed!");
+				throw new HttpsUrlRequiredException(issuer);
+			}
+			else {
+				logger.warn("Configured issuer url is not using https scheme.");
+			}
 		}
 	}
 
@@ -112,5 +121,13 @@ public class ConfigurationPropertiesBean {
 	 */
 	public void setRegTokenLifeTime(Long regTokenLifeTime) {
 		this.regTokenLifeTime = regTokenLifeTime;
+	}
+	
+	public boolean isForceHttps() {
+		return forceHttps;
+	}
+
+	public void setForceHttps(boolean forceHttps) {
+		this.forceHttps = forceHttps;
 	}
 }
