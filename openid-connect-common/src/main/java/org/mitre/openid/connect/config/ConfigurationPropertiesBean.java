@@ -44,7 +44,7 @@ public class ConfigurationPropertiesBean {
 	
 	private Long regTokenLifeTime;
 	
-	private boolean forceHttps;
+	private boolean forceHttps = false;
 
 	public ConfigurationPropertiesBean() {
 
