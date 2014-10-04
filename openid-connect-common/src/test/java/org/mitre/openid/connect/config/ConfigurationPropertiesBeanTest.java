@@ -21,10 +21,7 @@ package org.mitre.openid.connect.config;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 /**
  * @author jricher
@@ -32,8 +29,6 @@ import org.junit.rules.ExpectedException;
  */
 public class ConfigurationPropertiesBeanTest {
 	
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
 	/**
 	 * Test getters and setters for configuration object.
 	 */
@@ -57,8 +52,9 @@ public class ConfigurationPropertiesBeanTest {
 		assertEquals(logoUrl, bean.getLogoImageUrl());
 		assertEquals(true, bean.isForceHttps());
 	}
+
 	@Test
-	public void testCheckForHttps() throws HttpsUrlRequiredException {
+	public void testCheckForHttpsIssuerHttpDefaultFlag() {
 		ConfigurationPropertiesBean bean = new ConfigurationPropertiesBean();
 		
 		// issuer is http
@@ -69,22 +65,34 @@ public class ConfigurationPropertiesBeanTest {
 		catch (HttpsUrlRequiredException e) {
 			fail("Unexpected HttpsUrlRequiredException for http issuer with default forceHttps, message:" + e.getError());
 		}
-		
+	}
+
+	@Test
+	public void testCheckForHttpsIssuerHttpFalseFlag() {
+		ConfigurationPropertiesBean bean = new ConfigurationPropertiesBean();
+		// issuer is http
 		// set to false
 		try {
-		bean.setForceHttps(false);
-		bean.checkForHttps();
+			bean.setForceHttps(false);
+			bean.checkForHttps();
 		}
 		catch (HttpsUrlRequiredException e) {
 			fail("Unexpected HttpsUrlRequiredException for http issuer with forceHttps=false, message:" + e.getError());
 		}
-		
+	}
+
+	@Test(expected = HttpsUrlRequiredException.class)
+	public void testCheckForHttpsIssuerHttpTrueFlag() throws HttpsUrlRequiredException {
+		ConfigurationPropertiesBean bean = new ConfigurationPropertiesBean();
+		// issuer is http	
 		// set to true
-		
 		bean.setForceHttps(true);
-		this.expectedException.expect(HttpsUrlRequiredException.class);
 		bean.checkForHttps();
-		
+	}
+
+	@Test
+	public void testCheckForHttpsIssuerHttpsDefaultFlag() {
+		ConfigurationPropertiesBean bean = new ConfigurationPropertiesBean();
 		// issuer is https
 		// leave as default, which is unset/false
 		try {
@@ -93,7 +101,12 @@ public class ConfigurationPropertiesBeanTest {
 		catch (HttpsUrlRequiredException e) {
 			fail("Unexpected HttpsUrlRequiredException for https issuer with default forceHttps, message:" + e.getError());
 		}
-		
+	}
+	
+	@Test
+	public void testCheckForHttpsIssuerHttpsFalseFlag() {
+		ConfigurationPropertiesBean bean = new ConfigurationPropertiesBean();
+		// issuer is https
 		// set to false
 		try {
 		bean.setForceHttps(false);
@@ -102,7 +115,12 @@ public class ConfigurationPropertiesBeanTest {
 		catch (HttpsUrlRequiredException e) {
 			fail("Unexpected HttpsUrlRequiredException for https issuer with forceHttps=false, message:" + e.getError());
 		}
-		
+	}
+	
+	@Test
+	public void testCheckForHttpsIssuerHttpsTrueFlag() {
+		ConfigurationPropertiesBean bean = new ConfigurationPropertiesBean();
+		// issuer is https		
 		// set to true
 		try {
 		bean.setForceHttps(true);
