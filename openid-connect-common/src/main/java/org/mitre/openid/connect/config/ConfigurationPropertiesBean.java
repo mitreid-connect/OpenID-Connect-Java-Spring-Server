@@ -20,6 +20,7 @@ import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.util.StringUtils;
 
 
@@ -55,11 +56,11 @@ public class ConfigurationPropertiesBean {
 	 * @throws HttpsUrlRequiredException 
 	 */
 	@PostConstruct
-	public void checkForHttps() throws HttpsUrlRequiredException {
+	public void checkForHttps() {
 		if (!StringUtils.startsWithIgnoreCase(issuer, "https")) {
 			if (this.forceHttps) {
-				logger.warn("Configured issuer url is not using https scheme. This is not allowed!");
-				throw new HttpsUrlRequiredException(issuer);
+				logger.error("Configured issuer url is not using https scheme. Server will be shut down!");
+				throw new BeanCreationException("Issuer is not using https scheme as required: " + issuer);
 			}
 			else {
 				logger.warn("Configured issuer url is not using https scheme.");

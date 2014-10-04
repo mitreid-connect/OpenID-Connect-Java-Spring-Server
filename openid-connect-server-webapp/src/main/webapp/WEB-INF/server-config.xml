@@ -30,7 +30,7 @@
 
 	<bean id="configBean" class="org.mitre.openid.connect.config.ConfigurationPropertiesBean">
 	    
-	    <!-- This property sets the root URL of the server, known as the issuer. -->
+	    <!-- This property sets the root URL of the server, known as the issuer -->
 		<property name="issuer" value="http://localhost:8080/openid-connect-server-webapp/" />
 		
 		<!-- This property is a URL pointing to a logo image 24px high to be used in the top bar -->
@@ -41,6 +41,9 @@
  		
 		<!-- This property sets the lifetime of registration access tokens, in seconds. Leave it unset (null) for no rotation. -->
 		<!-- <property name="regTokenLifeTime" value="172800" /> -->
+		
+		<!-- This property forces the issuer value to start with "https" -->
+		<!-- <property name="forceHttps" value="true" /> -->
 
 	</bean>
 	
