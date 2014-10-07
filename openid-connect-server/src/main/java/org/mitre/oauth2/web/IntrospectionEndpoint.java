@@ -1,13 +1,13 @@
 /*******************************************************************************
  * Copyright 2014 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,17 +16,15 @@
  ******************************************************************************/
 package org.mitre.oauth2.web;
 
-import java.security.Principal;
-import java.util.Map;
-import java.util.Set;
-
+import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableMap;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.IntrospectionAuthorizer;
+import org.mitre.oauth2.service.IntrospectionResultAssembler;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
-import org.mitre.oauth2.view.TokenIntrospectionView;
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.service.UserInfoService;
 import org.mitre.openid.connect.view.HttpCodeView;
@@ -42,8 +40,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableMap;
+import java.security.Principal;
+import java.util.Map;
+import java.util.Set;
 
 @Controller
 public class IntrospectionEndpoint {
@@ -56,7 +55,10 @@ public class IntrospectionEndpoint {
 
 	@Autowired
 	private IntrospectionAuthorizer introspectionAuthorizer;
-	
+
+    @Autowired
+    private IntrospectionResultAssembler introspectionResultAssembler;
+
 	@Autowired
 	private UserInfoService userInfoService;
 
@@ -84,72 +86,64 @@ public class IntrospectionEndpoint {
 			return JsonEntityView.VIEWNAME;
 		}
 
-		// clientID is the principal name in the authentication
-		String clientId = p.getName();
-		ClientDetailsEntity authClient = clientService.loadClientByClientId(clientId);
-
-		ClientDetailsEntity tokenClient = null;
-		Set<String> scopes = null;
-		Object token = null;
-		UserInfo user = null;
+        OAuth2AccessTokenEntity accessToken = null;
+        OAuth2RefreshTokenEntity refreshToken = null;
+		ClientDetailsEntity tokenClient;
+		Set<String> scopes;
+		UserInfo user;
 
 		try {
 
 			// check access tokens first (includes ID tokens)
-			OAuth2AccessTokenEntity access = tokenServices.readAccessToken(tokenValue);
+			accessToken = tokenServices.readAccessToken(tokenValue);
 
-			tokenClient = access.getClient();
-			scopes = access.getScope();
+			tokenClient = accessToken.getClient();
+			scopes = accessToken.getScope();
 
-			token = access;
+            user = userInfoService.getByUsernameAndClientId(accessToken.getAuthenticationHolder().getAuthentication().getName(), tokenClient.getClientId());
 
-			user = userInfoService.getByUsernameAndClientId(access.getAuthenticationHolder().getAuthentication().getName(), tokenClient.getClientId());
-			
 		} catch (InvalidTokenException e) {
-			logger.error("Verify failed; Invalid access token. Checking refresh token.", e);
+			logger.info("Verify failed; Invalid access token. Checking refresh token.");
 			try {
 
 				// check refresh tokens next
-				OAuth2RefreshTokenEntity refresh = tokenServices.getRefreshToken(tokenValue);
+				refreshToken = tokenServices.getRefreshToken(tokenValue);
 
-				tokenClient = refresh.getClient();
-				scopes = refresh.getAuthenticationHolder().getAuthentication().getOAuth2Request().getScope();
+				tokenClient = refreshToken.getClient();
+				scopes = refreshToken.getAuthenticationHolder().getAuthentication().getOAuth2Request().getScope();
 
-				user = userInfoService.getByUsernameAndClientId(refresh.getAuthenticationHolder().getAuthentication().getName(), tokenClient.getClientId());
-				
-				token = refresh;
+				user = userInfoService.getByUsernameAndClientId(refreshToken.getAuthenticationHolder().getAuthentication().getName(), tokenClient.getClientId());
 
 			} catch (InvalidTokenException e2) {
-				logger.error("Verify failed; Invalid refresh token", e2);
+				logger.error("Verify failed; Invalid access/refresh token", e2);
 				Map<String,Boolean> entity = ImmutableMap.of("active", Boolean.FALSE);
 				model.addAttribute("entity", entity);
 				return JsonEntityView.VIEWNAME;
 			}
 		}
 
-		if (tokenClient != null && authClient != null) {
-			if (authClient.isAllowIntrospection()) {
-				if (introspectionAuthorizer.isIntrospectionPermitted(authClient, tokenClient, scopes)) {
-					// if it's a valid token, we'll print out information on it
-					model.addAttribute("token", token);
-					model.addAttribute("user", user);
-					return TokenIntrospectionView.VIEWNAME;
-				} else {
-					logger.error("Verify failed; client configuration or scope don't permit token introspection");
-					model.addAttribute("code", HttpStatus.FORBIDDEN);
-					return HttpCodeView.VIEWNAME;
-				}
-			} else {
-				logger.error("Verify failed; client " + clientId + " is not allowed to call introspection endpoint");
-				model.addAttribute("code", HttpStatus.FORBIDDEN);
-				return HttpCodeView.VIEWNAME;
-			}
-		} else {
-			// This is a bad error -- I think it means we have a token outstanding that doesn't map to a client?
-			logger.error("Verify failed; client " + clientId + " not found.");
-			model.addAttribute("code", HttpStatus.NOT_FOUND);
-			return HttpCodeView.VIEWNAME;
-		}
+        // clientID is the principal name in the authentication
+        String clientId = p.getName();
+        ClientDetailsEntity authClient = clientService.loadClientByClientId(clientId);
+
+        if (authClient.isAllowIntrospection()) {
+            if (introspectionAuthorizer.isIntrospectionPermitted(authClient, tokenClient, scopes)) {
+                // if it's a valid token, we'll print out information on it
+                Map<String, Object> entity = accessToken != null
+                        ? introspectionResultAssembler.assembleFrom(accessToken, user)
+                        : introspectionResultAssembler.assembleFrom(refreshToken, user);
+                model.addAttribute("entity", entity);
+                return JsonEntityView.VIEWNAME;
+            } else {
+                logger.error("Verify failed; client configuration or scope don't permit token introspection");
+                model.addAttribute("code", HttpStatus.FORBIDDEN);
+                return HttpCodeView.VIEWNAME;
+            }
+        } else {
+            logger.error("Verify failed; client " + clientId + " is not allowed to call introspection endpoint");
+            model.addAttribute("code", HttpStatus.FORBIDDEN);
+            return HttpCodeView.VIEWNAME;
+        }
 
 	}
 
