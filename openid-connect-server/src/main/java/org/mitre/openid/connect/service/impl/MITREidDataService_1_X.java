@@ -71,33 +71,41 @@ public abstract class MITREidDataService_1_X implements MITREidDataService {
     }
     
     protected static <T> T base64UrlDecodeObject(String encoded, Class<T> type) {
-        T deserialized = null;
-        try {
-            byte[] decoded = BaseEncoding.base64Url().decode(encoded);
-            ByteArrayInputStream bais = new ByteArrayInputStream(decoded);
-            ObjectInputStream ois = new ObjectInputStream(bais);
-            deserialized = type.cast(ois.readObject());
-            ois.close();
-            bais.close();
-        } catch (Exception ex) {
-            logger.error("Unable to decode object", ex);
-        }
-        return deserialized;
+    	if (encoded == null) {
+    		return null;
+    	} else {
+	        T deserialized = null;
+	        try {
+	            byte[] decoded = BaseEncoding.base64Url().decode(encoded);
+	            ByteArrayInputStream bais = new ByteArrayInputStream(decoded);
+	            ObjectInputStream ois = new ObjectInputStream(bais);
+	            deserialized = type.cast(ois.readObject());
+	            ois.close();
+	            bais.close();
+	        } catch (Exception ex) {
+	            logger.error("Unable to decode object", ex);
+	        }
+	        return deserialized;
+    	}
     }
     
     protected static String base64UrlEncodeObject(Serializable obj) {
-        String encoded = null;
-        try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ObjectOutputStream oos = new ObjectOutputStream(baos);
-            oos.writeObject(obj);
-            encoded = BaseEncoding.base64Url().encode(baos.toByteArray());
-            oos.close();
-            baos.close();
-        } catch (IOException ex) {
-            logger.error("Unable to encode object", ex);
-        }
-        return encoded;
+    	if (obj == null) {
+    		return null;
+    	} else {
+	        String encoded = null;
+	        try {
+	            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	            ObjectOutputStream oos = new ObjectOutputStream(baos);
+	            oos.writeObject(obj);
+	            encoded = BaseEncoding.base64Url().encode(baos.toByteArray());
+	            oos.close();
+	            baos.close();
+	        } catch (IOException ex) {
+	            logger.error("Unable to encode object", ex);
+	        }
+	        return encoded;
+    	}
     }
     protected static Set readSet(JsonReader reader) throws IOException {
         Set arraySet = null;
