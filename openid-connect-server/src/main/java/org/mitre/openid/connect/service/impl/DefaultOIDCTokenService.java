@@ -40,7 +40,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.token.TokenService;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.stereotype.Service;
@@ -207,7 +206,38 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 	@Override
 	public OAuth2AccessTokenEntity createRegistrationAccessToken(ClientDetailsEntity client) {
 
+		return createAssociatedToken(client, Sets.newHashSet(SystemScopeService.REGISTRATION_TOKEN_SCOPE));
+		
+	}
+	
+	/**
+	 * @param client
+	 * @return
+	 */
+	@Override
+	public OAuth2AccessTokenEntity createResourceAccessToken(ClientDetailsEntity client) {
+
+		return createAssociatedToken(client, Sets.newHashSet(SystemScopeService.RESOURCE_TOKEN_SCOPE));
+		
+	}
+
+	@Override
+	public OAuth2AccessTokenEntity rotateRegistrationAccessTokenForClient(ClientDetailsEntity client) {
 		// revoke any previous tokens
+		OAuth2AccessTokenEntity oldToken = tokenService.getRegistrationAccessTokenForClient(client);
+		if (oldToken != null) {
+			Set<String> scope = oldToken.getScope();
+			tokenService.revokeAccessToken(oldToken);
+			return createAssociatedToken(client, scope);
+		} else {
+			return null;
+		}
+		
+	}
+	
+	private OAuth2AccessTokenEntity createAssociatedToken(ClientDetailsEntity client, Set<String> scope) {
+		
+		// revoke any previous tokens that might exist, just to be sure
 		OAuth2AccessTokenEntity oldToken = tokenService.getRegistrationAccessTokenForClient(client);
 		if (oldToken != null) {
 			tokenService.revokeAccessToken(oldToken);
@@ -218,53 +248,12 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 		Map<String, String> authorizationParameters = Maps.newHashMap();
 		OAuth2Request clientAuth = new OAuth2Request(authorizationParameters, client.getClientId(),
 				Sets.newHashSet(new SimpleGrantedAuthority("ROLE_CLIENT")), true,
-				Sets.newHashSet(SystemScopeService.REGISTRATION_TOKEN_SCOPE), null, null, null, null);
+				scope, null, null, null, null);
 		OAuth2Authentication authentication = new OAuth2Authentication(clientAuth, null);
 
 		OAuth2AccessTokenEntity token = new OAuth2AccessTokenEntity();
 		token.setClient(client);
-		token.setScope(Sets.newHashSet(SystemScopeService.REGISTRATION_TOKEN_SCOPE));
-
-		AuthenticationHolderEntity authHolder = new AuthenticationHolderEntity();
-		authHolder.setAuthentication(authentication);
-		authHolder = authenticationHolderRepository.save(authHolder);
-		token.setAuthenticationHolder(authHolder);
-
-		JWTClaimsSet claims = new JWTClaimsSet();
-
-		claims.setAudience(Lists.newArrayList(client.getClientId()));
-		claims.setIssuer(configBean.getIssuer());
-		claims.setIssueTime(new Date());
-		claims.setExpirationTime(token.getExpiration());
-		claims.setJWTID(UUID.randomUUID().toString()); // set a random NONCE in the middle of it
-
-		JWSAlgorithm signingAlg = jwtService.getDefaultSigningAlgorithm();
-		SignedJWT signed = new SignedJWT(new JWSHeader(signingAlg), claims);
-
-		jwtService.signJwt(signed);
-
-		token.setJwt(signed);
-
-		return token;
-	}
-
-	/**
-	 * @param client
-	 * @return
-	 * @throws AuthenticationException
-	 */
-	@Override
-	public OAuth2AccessTokenEntity createResourceAccessToken(ClientDetailsEntity client) {
-
-		Map<String, String> authorizationParameters = Maps.newHashMap();
-		OAuth2Request clientAuth = new OAuth2Request(authorizationParameters, client.getClientId(),
-				Sets.newHashSet(new SimpleGrantedAuthority("ROLE_CLIENT")), true,
-				Sets.newHashSet(SystemScopeService.RESOURCE_TOKEN_SCOPE), null, null, null, null);
-		OAuth2Authentication authentication = new OAuth2Authentication(clientAuth, null);
-
-		OAuth2AccessTokenEntity token = new OAuth2AccessTokenEntity();
-		token.setClient(client);
-		token.setScope(Sets.newHashSet(SystemScopeService.RESOURCE_TOKEN_SCOPE));
+		token.setScope(scope);
 
 		AuthenticationHolderEntity authHolder = new AuthenticationHolderEntity();
 		authHolder.setAuthentication(authentication);

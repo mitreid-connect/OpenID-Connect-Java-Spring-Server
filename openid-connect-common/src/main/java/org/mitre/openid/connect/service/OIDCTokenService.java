@@ -61,4 +61,11 @@ public interface OIDCTokenService {
 	 */
 	public OAuth2AccessTokenEntity createResourceAccessToken(ClientDetailsEntity client);
 
+	/**
+	 * Rotate the registration or resource token for a client
+	 * @param client
+	 * @return
+	 */
+	public OAuth2AccessTokenEntity rotateRegistrationAccessTokenForClient(ClientDetailsEntity client);
+
 }
