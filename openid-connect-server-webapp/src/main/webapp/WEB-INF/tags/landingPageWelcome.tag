@@ -2,10 +2,11 @@
 	<div class="span2 visible-desktop"><img src="resources/images/openid_connect_large.png"/></div>
 	
 	<div class="span10">
-		<h1>Welcome!</h1>
+		<h1>Open ID Connect Pilot</h1>
 	
-		<p>OpenID Connect is an internet-scale federated identity protocol built on top of the OAuth2 authorization framework. OpenID Connect lets you log into a remote site using your identity without exposing your credentials, like a username and password.</p>
+		<p>OpenID Connect is an internet-scale federated identity protocol built on top of the OAuth2 authorization framework. You can Log In to a remote site without exposing your credentials, like a username and password. Since this is a new pilot, there may be a hiccup here and there, so please be patient.</p>
 	
-		<p><a class="btn btn-primary btn-large" href="http://openid.net/connect/">Learn more &raquo;</a></p>
+		<a class="btn btn-large" href="http://openid.net/connect/">Learn more</a>
+		
 	</div>
 </div>
