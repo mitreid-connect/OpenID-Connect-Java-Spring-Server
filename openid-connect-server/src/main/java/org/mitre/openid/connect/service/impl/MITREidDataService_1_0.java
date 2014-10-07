@@ -51,6 +51,7 @@ import org.mitre.openid.connect.model.WhitelistedSite;
 import org.mitre.openid.connect.repository.ApprovedSiteRepository;
 import org.mitre.openid.connect.repository.BlacklistedSiteRepository;
 import org.mitre.openid.connect.repository.WhitelistedSiteRepository;
+import org.mitre.openid.connect.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -172,7 +173,7 @@ public class MITREidDataService_1_0 extends MITREidDataService_1_X {
                         } else if (name.equals("id")) {
                             currentId = reader.nextLong();
                         } else if (name.equals("expiration")) {
-                            Date date = utcToDate(reader.nextString());
+                            Date date = DateUtil.utcToDate(reader.nextString());
                             token.setExpiration(date);
                         } else if (name.equals("value")) {
                             String value = reader.nextString();
@@ -241,7 +242,7 @@ public class MITREidDataService_1_0 extends MITREidDataService_1_X {
                         } else if (name.equals("id")) {
                             currentId = reader.nextLong();
                         } else if (name.equals("expiration")) {
-                            Date date = utcToDate(reader.nextString());
+                            Date date = DateUtil.utcToDate(reader.nextString());
                             token.setExpiration(date);
                         } else if (name.equals("value")) {
                             String value = reader.nextString();
@@ -454,15 +455,15 @@ public class MITREidDataService_1_0 extends MITREidDataService_1_X {
                         } else if (name.equals("id")) {
                             currentId = reader.nextLong();
                         } else if (name.equals("accessDate")) {
-                            Date date = utcToDate(reader.nextString());
+                            Date date = DateUtil.utcToDate(reader.nextString());
                             site.setAccessDate(date);
                         } else if (name.equals("clientId")) {
                             site.setClientId(reader.nextString());
                         } else if (name.equals("creationDate")) {
-                            Date date = utcToDate(reader.nextString());
+                            Date date = DateUtil.utcToDate(reader.nextString());
                             site.setCreationDate(date);
                         } else if (name.equals("timeoutDate")) {
-                            Date date = utcToDate(reader.nextString());
+                            Date date = DateUtil.utcToDate(reader.nextString());
                             site.setTimeoutDate(date);
                         } else if (name.equals("userId")) {
                             site.setUserId(reader.nextString());
