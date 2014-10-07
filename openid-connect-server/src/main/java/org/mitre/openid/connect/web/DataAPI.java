@@ -16,15 +16,14 @@
  ******************************************************************************/
 package org.mitre.openid.connect.web;
 
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonToken;
-import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
 import javax.servlet.http.HttpServletResponse;
+
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.mitre.openid.connect.service.MITREidDataService;
 import org.mitre.openid.connect.service.impl.MITREidDataService_1_0;
@@ -37,6 +36,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
+import com.google.gson.stream.JsonWriter;
 
 /**
  * API endpoint for importing and exporting the current state of a server.
