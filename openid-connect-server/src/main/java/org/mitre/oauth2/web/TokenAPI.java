@@ -162,7 +162,7 @@ public class TokenAPI {
 		ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
 		
 		if (client != null) {
-			OAuth2AccessTokenEntity token = oidcTokenService.createRegistrationAccessToken(client);
+			OAuth2AccessTokenEntity token = oidcTokenService.rotateRegistrationAccessTokenForClient(client);
 			token = tokenService.saveAccessToken(token);
 			
 			if (token != null) {
