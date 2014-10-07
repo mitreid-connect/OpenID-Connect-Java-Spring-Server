@@ -163,7 +163,7 @@ public class ClientDynamicRegistrationEndpoint {
 
 				// generate the registration access token
 				OAuth2AccessTokenEntity token = connectTokenService.createRegistrationAccessToken(savedClient);
-				tokenService.saveAccessToken(token);
+				token = tokenService.saveAccessToken(token);
 
 				// send it all out to the view
 
