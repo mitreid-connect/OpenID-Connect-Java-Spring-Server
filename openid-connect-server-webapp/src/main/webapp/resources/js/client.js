@@ -325,10 +325,10 @@ var ClientView = Backbone.View.extend({
     	e.preventDefault();
     	if (this.options.whiteList == null) {
     		// create a new one
-    		app.navigate('admin/whitelist/new/' + this.model.id, {trigger: true});
+    		app.navigate('admin/whitelist/new/' + this.model.get('id'), {trigger: true});
     	} else {
     		// edit the existing one
-    		app.navigate('admin/whitelist/' + this.options.whiteList.id, {trigger: true});
+    		app.navigate('admin/whitelist/' + this.options.whiteList.get('id'), {trigger: true});
     	}
     },
     
