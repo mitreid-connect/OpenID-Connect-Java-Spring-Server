@@ -173,7 +173,7 @@ var WhiteListView = Backbone.View.extend({
 	
 	editWhitelist:function(e) {
     	e.preventDefault();
-		app.navigate('admin/whitelist/' + this.model.id, {trigger: true});
+		app.navigate('admin/whitelist/' + this.model.get('id'), {trigger: true});
 	},
 	
 	deleteWhitelist:function(e) {
