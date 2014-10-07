@@ -18,10 +18,6 @@
  */
 package org.mitre.openid.connect.service.impl;
 
-import com.google.common.io.BaseEncoding;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonToken;
-import com.google.gson.stream.JsonWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -37,6 +33,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+
 import org.mitre.jose.JWEAlgorithmEmbed;
 import org.mitre.jose.JWEEncryptionMethodEmbed;
 import org.mitre.jose.JWSAlgorithmEmbed;
@@ -70,6 +67,11 @@ import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.DefaultAuthorizationRequest;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Service;
+
+import com.google.common.io.BaseEncoding;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
+import com.google.gson.stream.JsonWriter;
 
 /**
  *
@@ -257,6 +259,9 @@ public class MITREidDataService_1_0 implements MITREidDataService {
     }
 
     private String base64UrlEncodeObject(Serializable obj) throws IOException {
+    	if (obj == null) {
+    		return null;
+    	}
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream(baos);
         oos.writeObject(obj);
@@ -670,8 +675,12 @@ public class MITREidDataService_1_0 implements MITREidDataService {
                                         if (subName.equals("clientAuthorization")) {
                                             clientAuthorization = readAuthorizationRequest(reader);
                                         } else if (subName.equals("userAuthentication")) {
-                                            String authString = reader.nextString();
-                                            userAuthentication = base64UrlDecodeObject(authString, Authentication.class);
+                                        	if (reader.peek() == JsonToken.NULL) {
+                                        		reader.skipValue();
+                                        	} else {
+                                        		String authString = reader.nextString();
+                                        		userAuthentication = base64UrlDecodeObject(authString, Authentication.class);
+                                        	}
                                         } else {
                                             logger.debug("Found unexpected entry");
                                             reader.skipValue();
