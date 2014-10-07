@@ -328,8 +328,12 @@ public class MITREidDataService_1_0 extends MITREidDataService_1_X {
                                         if (subName.equals("clientAuthorization")) {
                                             clientAuthorization = readAuthorizationRequest(reader);
                                         } else if (subName.equals("userAuthentication")) {
-                                            String authString = reader.nextString();
-                                            userAuthentication = base64UrlDecodeObject(authString, Authentication.class);
+                                        	if (reader.peek() == JsonToken.NULL) {
+                                        		reader.skipValue();
+                                        	} else {
+	                                            String authString = reader.nextString();
+	                                            userAuthentication = base64UrlDecodeObject(authString, Authentication.class);
+                                        	}
                                         } else {
                                             logger.debug("Found unexpected entry");
                                             reader.skipValue();
