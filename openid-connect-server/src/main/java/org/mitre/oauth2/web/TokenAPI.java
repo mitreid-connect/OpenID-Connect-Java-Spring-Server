@@ -26,6 +26,7 @@ import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
 import org.mitre.oauth2.view.TokenApiView;
+import org.mitre.openid.connect.service.OIDCTokenService;
 import org.mitre.openid.connect.view.HttpCodeView;
 import org.mitre.openid.connect.view.JsonErrorView;
 import org.slf4j.Logger;
@@ -54,6 +55,9 @@ public class TokenAPI {
 	
 	@Autowired
 	private ClientDetailsEntityService clientService;
+	
+	@Autowired
+	private OIDCTokenService oidcTokenService;
 
 	private static Logger logger = LoggerFactory.getLogger(TokenAPI.class);
 
@@ -135,6 +139,32 @@ public class TokenAPI {
 		
 		if (client != null) {
 			OAuth2AccessTokenEntity token = tokenService.getRegistrationAccessTokenForClient(client);
+			if (token != null) {
+				m.put("entity", token);
+				return TokenApiView.VIEWNAME;
+			} else {
+				m.put("code", HttpStatus.NOT_FOUND);
+				m.put("errorMessage", "No registration token could be found.");
+				return JsonErrorView.VIEWNAME;
+			}
+		} else {
+			// client not found
+			m.put("code", HttpStatus.NOT_FOUND);
+			m.put("errorMessage", "The requested client with id " + clientId + " could not be found.");
+			return JsonErrorView.VIEWNAME;
+		}
+		
+	}
+	
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@RequestMapping(value = "/registration/{clientId}", method = RequestMethod.PUT, produces = "application/json")
+	public String rotateRegistrationTokenByClientId(@PathVariable("clientId") String clientId, ModelMap m, Principal p) {
+		ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
+		
+		if (client != null) {
+			OAuth2AccessTokenEntity token = oidcTokenService.createRegistrationAccessToken(client);
+			token = tokenService.saveAccessToken(token);
+			
 			if (token != null) {
 				m.put("entity", token);
 				return TokenApiView.VIEWNAME;

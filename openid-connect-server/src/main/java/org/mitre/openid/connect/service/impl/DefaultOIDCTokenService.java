@@ -29,6 +29,7 @@ import org.mitre.oauth2.model.AuthenticationHolderEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.repository.AuthenticationHolderRepository;
+import org.mitre.oauth2.service.OAuth2TokenEntityService;
 import org.mitre.oauth2.service.SystemScopeService;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.mitre.openid.connect.service.OIDCTokenService;
@@ -39,6 +40,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.token.TokenService;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.stereotype.Service;
@@ -83,6 +85,9 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 
 	@Autowired
 	private SymmetricCacheService symmetricCacheService;
+	
+	@Autowired
+	private OAuth2TokenEntityService tokenService;
 
 	@Override
 	public OAuth2AccessTokenEntity createIdToken(ClientDetailsEntity client, OAuth2Request request, Date issueTime, String sub, OAuth2AccessTokenEntity accessToken) {
@@ -202,6 +207,14 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 	@Override
 	public OAuth2AccessTokenEntity createRegistrationAccessToken(ClientDetailsEntity client) {
 
+		// revoke any previous tokens
+		OAuth2AccessTokenEntity oldToken = tokenService.getRegistrationAccessTokenForClient(client);
+		if (oldToken != null) {
+			tokenService.revokeAccessToken(oldToken);
+		}
+		
+		// create a new token
+		
 		Map<String, String> authorizationParameters = Maps.newHashMap();
 		OAuth2Request clientAuth = new OAuth2Request(authorizationParameters, client.getClientId(),
 				Sets.newHashSet(new SimpleGrantedAuthority("ROLE_CLIENT")), true,
