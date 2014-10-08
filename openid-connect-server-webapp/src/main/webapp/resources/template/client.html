@@ -51,11 +51,19 @@
     </td>
 
     <td>
-		<% if (client.redirectUris) { %>
+		<% if (_.isEmpty(client.redirectUris)) { 
+			if (_.contains(client.grantTypes, 'authorization_code') ||
+				_.contains(client.grantTypes, 'implicit')) {
+		%>
+			<div><span class="badge badge-important"><i class="icon-warning-sign icon-white"></i> NO REDIRECT URI</span></div>
+		<% 		}
+			} else { %>
 		<div><span class="muted">
 			<% for (var i in client.redirectUris) {
 				var uri = $.url(client.redirectUris[i]);
-				if (uri.attr('protocol') == 'http' && uri.attr('host') != 'localhost') {
+				if (!uri.attr('protocol')) {
+					%><b class="text-error" title="unknown protocol scheme">?</b><%
+				} else if (uri.attr('protocol') == 'http' && uri.attr('host') != 'localhost') {
 					%><b class="text-error"><%- uri.attr('protocol') %></b>://<%
 				} else if (uri.attr('protocol') != 'https' && uri.attr('protocol') != 'http') {
 					%><span class="text-warning"><%- uri.attr('protocol') %></span>://<%

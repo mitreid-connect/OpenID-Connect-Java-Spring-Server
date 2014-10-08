@@ -191,6 +191,13 @@
 <script type="text/html" id="tmpl-scope-list">
 
 <% 
+if (_.isEmpty(scopes)) {
+%>
+	<span class="badge badge-important"><i class="icon-warning-sign icon-white"></i> NO SCOPES</span>
+<%
+
+} else {
+
 _.each(scopes, function(s) {
 	var ss = systemScopes.getByValue(s);
 	
@@ -215,6 +222,8 @@ style="cursor: default;" >
 	}
 
 });
+
+}
 %>
 
 </script>
