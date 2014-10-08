@@ -149,3 +149,6 @@ h1,label {
   border-left: 0;
 }
 
+.label-matched, .badge-matched {
+	background-color: #D1D1FF;
+}
