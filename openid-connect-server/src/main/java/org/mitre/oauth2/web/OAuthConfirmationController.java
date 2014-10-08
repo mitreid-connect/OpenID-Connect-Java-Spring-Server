@@ -153,21 +153,23 @@ public class OAuthConfirmationController {
 
 		// get the userinfo claims for each scope
 		UserInfo user = userInfoService.getByUsername(p.getName());
-		JsonObject userJson = user.toJson();
 		Map<String, Map<String, String>> claimsForScopes = new HashMap<String, Map<String, String>>();
-
-		for (SystemScope systemScope : sortedScopes) {
-			Map<String, String> claimValues = new HashMap<String, String>();
-
-			Set<String> claims = scopeClaimTranslationService.getClaimsForScope(systemScope.getValue());
-			for (String claim : claims) {
-				if (userJson.has(claim) && userJson.get(claim).isJsonPrimitive()) {
-					// TODO: this skips the address claim
-					claimValues.put(claim, userJson.get(claim).getAsString());
+		if (user != null) {
+			JsonObject userJson = user.toJson();
+	
+			for (SystemScope systemScope : sortedScopes) {
+				Map<String, String> claimValues = new HashMap<String, String>();
+	
+				Set<String> claims = scopeClaimTranslationService.getClaimsForScope(systemScope.getValue());
+				for (String claim : claims) {
+					if (userJson.has(claim) && userJson.get(claim).isJsonPrimitive()) {
+						// TODO: this skips the address claim
+						claimValues.put(claim, userJson.get(claim).getAsString());
+					}
 				}
+	
+				claimsForScopes.put(systemScope.getValue(), claimValues);
 			}
-
-			claimsForScopes.put(systemScope.getValue(), claimValues);
 		}
 
 		model.put("claims", claimsForScopes);
