@@ -10,3 +10,4 @@ bin
 .classpath
 /target
 .springBeans
+nb-configuration.xml
