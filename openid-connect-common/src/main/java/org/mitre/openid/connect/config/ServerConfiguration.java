@@ -207,6 +207,12 @@ public class ServerConfiguration {
 	private String opTosUri;
 	private UserInfoTokenMethod userInfoTokenMethod;	
 	
+	
+	/**
+	 * It indicates if the IdP either use or not the nonce value.
+	 */
+	private boolean useNonce = true;
+	
 	public enum UserInfoTokenMethod {
 		HEADER,
 		FORM,
@@ -810,6 +816,9 @@ public class ServerConfiguration {
 				* result
 				+ ((userinfoSigningAlgValuesSupported == null) ? 0
 						: userinfoSigningAlgValuesSupported.hashCode());
+		
+		result = prime * result + (Boolean.hashCode(useNonce));
+		
 		return result;
 	}
 	@Override
@@ -1108,8 +1117,18 @@ public class ServerConfiguration {
 				.equals(other.userinfoSigningAlgValuesSupported)) {
 			return false;
 		}
+		if(useNonce != other.isUseNonce()){
+			return false;
+		}
 		return true;
 	}
 
+	public void setUseNonce(boolean useNonce) {
+		this.useNonce = useNonce;
+	}
+	
+	public boolean isUseNonce() {
+		return useNonce;
+	}
 
 }

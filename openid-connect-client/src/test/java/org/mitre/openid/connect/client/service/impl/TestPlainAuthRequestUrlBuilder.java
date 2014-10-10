@@ -37,10 +37,8 @@ import com.google.common.collect.Sets;
  */
 public class TestPlainAuthRequestUrlBuilder {
 
-	// Test fixture:
-	ServerConfiguration serverConfig;
-	RegisteredClient clientConfig;
-
+	private ServerConfiguration serverConfig;
+	private RegisteredClient clientConfig;
 	private PlainAuthRequestUrlBuilder urlBuilder = new PlainAuthRequestUrlBuilder();
 
 	@Before
@@ -55,22 +53,39 @@ public class TestPlainAuthRequestUrlBuilder {
 	}
 
 	@Test
-	public void buildAuthRequestUrl() {
+	public void buildAuthRequestUrlWithNonce() {
+		executeTestWithOrWithoutNonce(true);
+	}
+	@Test
+	public void buildAuthRequestUrlWithoutNonce() {
+		executeTestWithOrWithoutNonce(false);
+	}
 
-		String expectedUrl = "https://server.example.com/authorize?" +
-				"response_type=code" +
-				"&client_id=s6BhdRkqt3" +
-				"&scope=openid+profile" + // plus sign used for space per application/x-www-form-encoded standard
-				"&redirect_uri=https%3A%2F%2Fclient.example.org%2F" +
-				"&nonce=34fasf3ds" +
-				"&state=af0ifjsldkj" +
-				"&foo=bar";
-
+	private void executeTestWithOrWithoutNonce(boolean useNonce) {
 		Map<String, String> options = ImmutableMap.of("foo", "bar");
+		String actualUrl;
+		StringBuilder expectedUrl = expectedURLbuilder();
+		if(useNonce){
+			expectedUrl.append("&nonce=34fasf3ds");
+			actualUrl = urlBuilder.buildAuthRequestUrl(serverConfig, clientConfig, "https://client.example.org/","34fasf3ds", "af0ifjsldkj", options);
+		}else{
+			actualUrl = urlBuilder.buildAuthRequestUrl(serverConfig, clientConfig, "https://client.example.org/","af0ifjsldkj", options);
+		}
+		
+		Mockito.when(serverConfig.isUseNonce()).thenReturn(useNonce);
+		assertThat(actualUrl, equalTo(expectedUrl.toString()));
+	}
 
-		String actualUrl = urlBuilder.buildAuthRequestUrl(serverConfig, clientConfig, "https://client.example.org/", "34fasf3ds", "af0ifjsldkj", options);
-
-		assertThat(actualUrl, equalTo(expectedUrl));
+	private StringBuilder expectedURLbuilder() {
+		StringBuilder expectedUrl = new StringBuilder();
+		expectedUrl.append("https://server.example.com/authorize?");
+		expectedUrl.append("response_type=code");
+		expectedUrl.append("&client_id=s6BhdRkqt3");
+		expectedUrl.append("&scope=openid+profile"); // plus sign used for space per application/x-www-form-encoded standard
+		expectedUrl.append("&redirect_uri=https%3A%2F%2Fclient.example.org%2F");
+		expectedUrl.append("&state=af0ifjsldkj");
+		expectedUrl.append("&foo=bar");
+		return expectedUrl;
 	}
 
 	@Test(expected = AuthenticationServiceException.class)

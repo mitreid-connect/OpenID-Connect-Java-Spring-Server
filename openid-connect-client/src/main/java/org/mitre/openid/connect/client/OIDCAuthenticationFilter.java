@@ -119,6 +119,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 	private TargetLinkURIChecker deepLinkFilter;
 
 	protected int httpSocketTimeout = HTTP_SOCKET_TIMEOUT;
+	
 
 	/**
 	 * OpenIdConnectAuthenticationFilter constructor
@@ -248,13 +249,30 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 			String state = createState(session);
 
 			Map<String, String> options = authOptions.getOptions(serverConfig, clientConfig, request);
-
-			String authRequest = authRequestBuilder.buildAuthRequestUrl(serverConfig, clientConfig, redirectUri, nonce, state, options);
-
+			
+			String authRequest = getAuthRequestUrl(serverConfig,clientConfig, redirectUri, nonce, state, options);
 			logger.debug("Auth Request:  " + authRequest);
 
 			response.sendRedirect(authRequest);
 		}
+	}
+	/**
+	 * create the the authentication request url with the parameters
+	 * but don't use nonce if serverConfig is configured with useNonce false.
+	 * @param serverConfig
+	 * @param clientConfig
+	 * @param redirectUri
+	 * @param nonce
+	 * @param state
+	 * @param options
+	 * @return
+	 */
+
+	protected String getAuthRequestUrl(ServerConfiguration serverConfig,RegisteredClient clientConfig, String redirectUri, String nonce,String state, Map<String, String> options) {
+		if(serverConfig.isUseNonce()){
+		   return authRequestBuilder.buildAuthRequestUrl(serverConfig, clientConfig, redirectUri, nonce, state, options);
+		}
+		return authRequestBuilder.buildAuthRequestUrl(serverConfig, clientConfig, redirectUri, state, options);
 	}
 
 	/**
@@ -493,12 +511,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 					}
 				} // TODO: encrypted id tokens
 
-				// check the issuer
-				if (idClaims.getIssuer() == null) {
-					throw new AuthenticationServiceException("Id Token Issuer is null");
-				} else if (!idClaims.getIssuer().equals(serverConfig.getIssuer())){
-					throw new AuthenticationServiceException("Issuers do not match, expected " + serverConfig.getIssuer() + " got " + idClaims.getIssuer());
-				}
+				validateIssuer(serverConfig, idClaims);
 
 				// check expiration
 				if (idClaims.getExpirationTime() == null) {
@@ -539,15 +552,14 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 
 				// compare the nonce to our stored claim
 				String nonce = idClaims.getStringClaim("nonce");
-				if (Strings.isNullOrEmpty(nonce)) {
-
+				
+				if (serverConfig.isUseNonce() && Strings.isNullOrEmpty(nonce)) {
 					logger.error("ID token did not contain a nonce claim.");
-
 					throw new AuthenticationServiceException("ID token did not contain a nonce claim.");
 				}
 
 				String storedNonce = getStoredNonce(session);
-				if (!nonce.equals(storedNonce)) {
+				if (serverConfig.isUseNonce() && !nonce.equals(storedNonce)) {
 					logger.error("Possible replay attack detected! The comparison of the nonce in the returned "
 							+ "ID Token to the session " + NONCE_SESSION_VARIABLE + " failed. Expected " + storedNonce + " got " + nonce + ".");
 
@@ -555,6 +567,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 							"Possible replay attack detected! The comparison of the nonce in the returned "
 									+ "ID Token to the session " + NONCE_SESSION_VARIABLE + " failed. Expected " + storedNonce + " got " + nonce + ".");
 				}
+
 
 				// pull the subject (user id) out as a claim on the id_token
 
@@ -573,6 +586,22 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 
 
 
+		}
+	}
+	
+	/**
+	 * 
+	 * @param serverConfig
+	 * @param idClaims
+	 */	
+	private void validateIssuer(ServerConfiguration serverConfig,
+			ReadOnlyJWTClaimsSet idClaims) {
+		String iss = idClaims.getIssuer();
+		if (iss == null) {
+			throw new AuthenticationServiceException("Id Token Issuer is null");
+		}
+		if (!iss.equals(serverConfig.getIssuer())){
+			throw new AuthenticationServiceException("Issuers do not match, expected " + serverConfig.getIssuer() + " got " + iss);
 		}
 	}
 
@@ -819,5 +848,6 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 	public void setTargetLinkURIChecker(TargetLinkURIChecker deepLinkFilter) {
 		this.deepLinkFilter = deepLinkFilter;
 	}
+	
 
 }

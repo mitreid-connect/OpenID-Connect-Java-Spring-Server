@@ -39,5 +39,7 @@ public interface AuthRequestUrlBuilder {
 	 * @return
 	 */
 	public String buildAuthRequestUrl(ServerConfiguration serverConfig, RegisteredClient clientConfig, String redirectUri, String nonce, String state, Map<String, String> options);
+    
+	public String buildAuthRequestUrl(ServerConfiguration serverConfig, RegisteredClient clientConfig, String redirectUri, String state, Map<String, String> options);
 
 }
