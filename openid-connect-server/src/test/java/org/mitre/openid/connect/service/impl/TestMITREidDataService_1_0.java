@@ -650,19 +650,13 @@ public class TestMITREidDataService_1_0 {
     
     @Test
     public void testImportAuthenticationHolders() throws IOException {
-        OAuth2Request mockRequest1 = mock(OAuth2Request.class); 
-        when(mockRequest1.getRequestParameters()).thenReturn(new HashMap<String, String>());
-        Authentication mockAuth1 = null;
-        OAuth2Authentication auth1 = new OAuth2Authentication(mockRequest1, mockAuth1);
+        OAuth2Authentication auth1 = mock(OAuth2Authentication.class, withSettings().serializable());
         
         AuthenticationHolderEntity holder1 = new AuthenticationHolderEntity();
         holder1.setId(1L);
         holder1.setAuthentication(auth1);
         
-        OAuth2Request mockRequest2 = mock(OAuth2Request.class); 
-        when(mockRequest2.getRequestParameters()).thenReturn(new HashMap<String, String>());
-        Authentication mockAuth2 = null;
-        OAuth2Authentication auth2 = new OAuth2Authentication(mockRequest2, mockAuth2);
+        OAuth2Authentication auth2 = mock(OAuth2Authentication.class, withSettings().serializable());
         
         AuthenticationHolderEntity holder2 = new AuthenticationHolderEntity();
         holder2.setId(2L);
@@ -708,8 +702,8 @@ public class TestMITREidDataService_1_0 {
 		List<AuthenticationHolderEntity> savedAuthHolders = capturedAuthHolders.getAllValues();
 		
 		assertThat(savedAuthHolders.size(), is(2));
-		assertThat(savedAuthHolders.get(0).getAuthentication().getName(), equalTo(holder1.getAuthentication().getName()));
-        assertThat(savedAuthHolders.get(1).getAuthentication().getName(), equalTo(holder2.getAuthentication().getName()));
+		assertThat(savedAuthHolders.get(0).getAuthentication().getDetails(), equalTo(holder1.getAuthentication().getDetails()));
+        assertThat(savedAuthHolders.get(1).getAuthentication().getDetails(), equalTo(holder2.getAuthentication().getDetails()));
     }
 
 	@Test
@@ -784,13 +778,4 @@ public class TestMITREidDataService_1_0 {
 		assertThat(savedScopes.get(2).isAllowDynReg(), equalTo(scope3.isAllowDynReg()));
 		
 	}
-	
-	private Set<String> jsonArrayToStringSet(JsonArray a) {
-		Set<String> s = new HashSet<String>();
-		for (JsonElement jsonElement : a) {
-			s.add(jsonElement.getAsString());
-		}
-		return s;
-	}
-
 }
