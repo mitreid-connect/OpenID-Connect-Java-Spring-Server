@@ -16,7 +16,9 @@
  ******************************************************************************/
 package org.mitre.openid.connect.client.service.impl;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -150,6 +152,82 @@ public class TestSignedAuthRequestUrlBuilder {
 		for (String claim : options.keySet()) {
 			assertEquals(options.get(claim), claims.getClaim(claim));
 		}
+	}
+	@Test
+	public void buildAuthRequestUrlWithNonce() {
+		executeTestWithOrWithoutNonce(true);
+	}
+	@Test
+	public void buildAuthRequestUrlWithoutNonce() {
+		executeTestWithOrWithoutNonce(false);
+	}
+
+	private void executeTestWithOrWithoutNonce(boolean useNonce) {
+		String actualUrl;
+		StringBuilder expectedUrl = expectedURLbuilder();
+		if(useNonce){
+			expectedUrl.append("&nonce=34fasf3ds");
+			actualUrl = urlBuilder.buildAuthRequestUrl(serverConfig, clientConfig, "https://client.example.org/","34fasf3ds", "af0ifjsldkj", options);
+		}else{
+			actualUrl = urlBuilder.buildAuthRequestUrl(serverConfig, clientConfig, "https://client.example.org/","af0ifjsldkj", options);
+		}
+		UriComponentsBuilder builder = null;
+
+		try {
+			builder = UriComponentsBuilder.fromUri(new URI(actualUrl));
+		} catch (URISyntaxException e1) {
+			fail("URISyntaxException was thrown.");
+		}
+
+		UriComponents components = builder.build();
+		String jwtString = components.getQueryParams().get("request").get(0);
+		ReadOnlyJWTClaimsSet claims = null;
+
+		try {
+			SignedJWT jwt = SignedJWT.parse(jwtString);
+			claims = jwt.getJWTClaimsSet();
+		} catch (ParseException e) {
+			fail("ParseException was thrown.");
+		}
+		
+		String unsignedUrl = "https://server.example.com/authorize?" +
+							 "response_type="+
+		                     claims.getClaim("response_type")+
+		                     "&client_id="+
+		                     claims.getClaim("client_id")+
+		                     "&scope="+
+		                     claims.getClaim("scope").toString().replace(" ","+" )+
+		                     "&redirect_uri="+
+		                     claims.getClaim("redirect_uri").toString().replace(":", "%3A").replace("/", "%2F")+
+		                     "&state="+
+		                     claims.getClaim("state")+
+		                     "&foo=";
+		
+		for (String claim : options.keySet()) {
+			unsignedUrl+=claims.getClaim(claim);
+		}
+		
+		if(useNonce){
+			unsignedUrl+= "&nonce="+
+		                  claims.getClaim("nonce");
+		}
+		
+		Mockito.when(serverConfig.isUseNonce()).thenReturn(useNonce);
+		assertThat(unsignedUrl, equalTo(expectedUrl.toString()));
+	}
+	
+	
+
+	private StringBuilder expectedURLbuilder() {
+		StringBuilder expectedUrl = new StringBuilder();
+		expectedUrl.append("https://server.example.com/authorize?");
+		expectedUrl.append("response_type=code");
+		expectedUrl.append("&client_id=s6BhdRkqt3");
+		expectedUrl.append("&scope=openid+profile");
+		expectedUrl.append("&redirect_uri=https%3A%2F%2Fclient.example.org%2F");
+		expectedUrl.append("&state=af0ifjsldkj");
+		expectedUrl.append("&foo=bar");
+		return expectedUrl;
 	}
 
 	@Test(expected = AuthenticationServiceException.class)

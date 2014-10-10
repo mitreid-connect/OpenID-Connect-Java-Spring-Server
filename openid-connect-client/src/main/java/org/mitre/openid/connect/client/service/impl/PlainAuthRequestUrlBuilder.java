@@ -49,32 +49,58 @@ public class PlainAuthRequestUrlBuilder implements AuthRequestUrlBuilder {
 	 * org.springframework.security.oauth2.provider.ClientDetails)
 	 */
 	@Override
-	public String buildAuthRequestUrl(ServerConfiguration serverConfig,
-			RegisteredClient clientConfig, String redirectUri, String nonce,
-			String state, Map<String, String> options) {
+	public String buildAuthRequestUrl(ServerConfiguration serverConfig,RegisteredClient clientConfig, String redirectUri, String nonce,String state, Map<String, String> options) {
+		try {
+			URIBuilder uriBuilder = createURIforAuthorizationEndpoint(serverConfig,clientConfig, redirectUri, state, options);
+			uriBuilder.addParameter("nonce", nonce);
+
+			return uriBuilder.build().toString();
+		} catch (URISyntaxException e) {
+			throw new AuthenticationServiceException(
+					"Malformed Authorization Endpoint Uri", e);
+		}
+	}
+	/**
+	 * mount the final uri for access the IdP authorization endpoint
+	 * @param serverConfig
+	 * @param clientConfig
+	 * @param redirectUri
+	 * @param state
+	 * @param options
+	 * @return
+	 * @throws URISyntaxException
+	 */
+
+	private URIBuilder createURIforAuthorizationEndpoint(ServerConfiguration serverConfig,RegisteredClient clientConfig, String redirectUri, String state,Map<String, String> options) throws URISyntaxException {
+		
+		URIBuilder uriBuilder = new URIBuilder(serverConfig.getAuthorizationEndpointUri());
+		uriBuilder.addParameter("response_type", "code");
+		uriBuilder.addParameter("client_id", clientConfig.getClientId());
+		uriBuilder.addParameter("scope", Joiner.on(" ").join(clientConfig.getScope()));
+
+		uriBuilder.addParameter("redirect_uri", redirectUri);
+		
+		
+		
+		uriBuilder.addParameter("state", state);
+
+		// Optional parameters:
+		for (Entry<String, String> option : options.entrySet()) {
+			uriBuilder.addParameter(option.getKey(), option.getValue());
+		}
+		return uriBuilder;
+	}
+
+	@Override
+	public String buildAuthRequestUrl(ServerConfiguration serverConfig,RegisteredClient clientConfig, String redirectUri, String state,Map<String, String> options) {
 		try {
 
-			URIBuilder uriBuilder = new URIBuilder(serverConfig.getAuthorizationEndpointUri());
-			uriBuilder.addParameter("response_type", "code");
-			uriBuilder.addParameter("client_id", clientConfig.getClientId());
-			uriBuilder.addParameter("scope", Joiner.on(" ").join(clientConfig.getScope()));
-
-			uriBuilder.addParameter("redirect_uri", redirectUri);
-
-			if (serverConfig.isUseNonce()) {
-				uriBuilder.addParameter("nonce", nonce);
-			}
-			uriBuilder.addParameter("state", state);
-
-			// Optional parameters:
-			for (Entry<String, String> option : options.entrySet()) {
-				uriBuilder.addParameter(option.getKey(), option.getValue());
-			}
+			URIBuilder uriBuilder = createURIforAuthorizationEndpoint(serverConfig,clientConfig, redirectUri, state, options);
 
 			return uriBuilder.build().toString();
 
-		} catch (URISyntaxException e) {
-			throw new AuthenticationServiceException(
+			} catch (URISyntaxException e) {
+				throw new AuthenticationServiceException(
 					"Malformed Authorization Endpoint Uri", e);
 
 		}

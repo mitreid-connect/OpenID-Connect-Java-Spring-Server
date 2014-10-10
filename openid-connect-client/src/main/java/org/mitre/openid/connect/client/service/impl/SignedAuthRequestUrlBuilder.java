@@ -48,58 +48,89 @@ public class SignedAuthRequestUrlBuilder implements AuthRequestUrlBuilder {
 	 */
 	@Override
 	public String buildAuthRequestUrl(ServerConfiguration serverConfig, RegisteredClient clientConfig, String redirectUri, String nonce, String state, Map<String, String> options) {
-
-		// create our signed JWT for the request object
-		JWTClaimsSet claims = new JWTClaimsSet();
-
-		//set parameters to JwtClaims
-		claims.setClaim("response_type", "code");
-		claims.setClaim("client_id", clientConfig.getClientId());
-		claims.setClaim("scope", Joiner.on(" ").join(clientConfig.getScope()));
-
-		// build our redirect URI
-		claims.setClaim("redirect_uri", redirectUri);
-
-		// this comes back in the id token
+		JWTClaimsSet claims = createJWTforRequestObject(clientConfig,redirectUri, state, options);
 		claims.setClaim("nonce", nonce);
+		
+		SignedJWT jwt = createSignedJWT(claims);
+		return createURIforAuthorizationEndpoint(serverConfig, jwt);
+	}
+	/**
+	 * mount the final uri for access the IdP authorization endpoint
+	 * @param serverConfig
+	 * @param jwt
+	 * @return
+	 */
 
-		// this comes back in the auth request return
-		claims.setClaim("state", state);
-
-		// Optional parameters
-		for (Entry<String, String> option : options.entrySet()) {
-			claims.setClaim(option.getKey(), option.getValue());
-		}
-
-
-
-		SignedJWT jwt = new SignedJWT(new JWSHeader(signingAndValidationService.getDefaultSigningAlgorithm()), claims);
-
-		signingAndValidationService.signJwt(jwt);
-
+	private String createURIforAuthorizationEndpoint(ServerConfiguration serverConfig, SignedJWT jwt) {
 		try {
 			URIBuilder uriBuilder = new URIBuilder(serverConfig.getAuthorizationEndpointUri());
 			uriBuilder.addParameter("request", jwt.serialize());
 
-			// build out the URI
 			return uriBuilder.build().toString();
 		} catch (URISyntaxException e) {
 			throw new AuthenticationServiceException("Malformed Authorization Endpoint Uri", e);
 		}
 	}
+	
+	/**
+	 * sign the specified JWT
+	 * @param claims
+	 * @return
+	 */
+	private SignedJWT createSignedJWT(JWTClaimsSet claims) {
+		SignedJWT jwt = new SignedJWT(new JWSHeader(signingAndValidationService.getDefaultSigningAlgorithm()), claims);
 
+		signingAndValidationService.signJwt(jwt);
+		return jwt;
+	}
+	/**
+	 * create the JWT base for request to the IdP
+	 * @param clientConfig
+	 * @param redirectUri
+	 * @param state
+	 * @param options
+	 * @return
+	 */
+	private JWTClaimsSet createJWTforRequestObject(RegisteredClient clientConfig, String redirectUri, String state,Map<String, String> options) {
+		JWTClaimsSet claims = new JWTClaimsSet();
+		claims.setClaim("response_type", "code");
+		claims.setClaim("client_id", clientConfig.getClientId());
+		claims.setClaim("scope", Joiner.on(" ").join(clientConfig.getScope()));
+		claims.setClaim("redirect_uri", redirectUri);
+		claims.setClaim("state", state);
+
+		addOptionalParameters(options, claims);
+		return claims;
+	}
+	private void addOptionalParameters(Map<String, String> options,
+			JWTClaimsSet claims) {
+		for (Entry<String, String> option : options.entrySet()) {
+			claims.setClaim(option.getKey(), option.getValue());
+		}
+	}
+	
 	/**
 	 * @return the signingAndValidationService
 	 */
 	public JwtSigningAndValidationService getSigningAndValidationService() {
 		return signingAndValidationService;
 	}
+	
+	
 
 	/**
 	 * @param signingAndValidationService the signingAndValidationService to set
 	 */
 	public void setSigningAndValidationService(JwtSigningAndValidationService signingAndValidationService) {
 		this.signingAndValidationService = signingAndValidationService;
+	}
+
+	@Override
+	public String buildAuthRequestUrl(ServerConfiguration serverConfig,RegisteredClient clientConfig, String redirectUri, String state,Map<String, String> options) {
+		JWTClaimsSet claims = createJWTforRequestObject(clientConfig,redirectUri, state, options);		
+		
+		SignedJWT jwt = createSignedJWT(claims);
+		return createURIforAuthorizationEndpoint(serverConfig, jwt);
 	}
 
 }

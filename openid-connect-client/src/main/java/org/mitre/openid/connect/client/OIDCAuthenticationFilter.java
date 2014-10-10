@@ -249,13 +249,30 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 			String state = createState(session);
 
 			Map<String, String> options = authOptions.getOptions(serverConfig, clientConfig, request);
-
-			String authRequest = authRequestBuilder.buildAuthRequestUrl(serverConfig, clientConfig, redirectUri, nonce, state, options);
-
+			
+			String authRequest = getAuthRequestUrl(serverConfig,clientConfig, redirectUri, nonce, state, options);
 			logger.debug("Auth Request:  " + authRequest);
 
 			response.sendRedirect(authRequest);
 		}
+	}
+	/**
+	 * create the the authentication request url with the parameters
+	 * but don't use nonce if serverConfig is configured with useNonce false.
+	 * @param serverConfig
+	 * @param clientConfig
+	 * @param redirectUri
+	 * @param nonce
+	 * @param state
+	 * @param options
+	 * @return
+	 */
+
+	protected String getAuthRequestUrl(ServerConfiguration serverConfig,RegisteredClient clientConfig, String redirectUri, String nonce,String state, Map<String, String> options) {
+		if(serverConfig.isUseNonce()){
+		   return authRequestBuilder.buildAuthRequestUrl(serverConfig, clientConfig, redirectUri, nonce, state, options);
+		}
+		return authRequestBuilder.buildAuthRequestUrl(serverConfig, clientConfig, redirectUri, state, options);
 	}
 
 	/**
@@ -494,13 +511,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 					}
 				} // TODO: encrypted id tokens
 
-				String iss = idClaims.getIssuer();
-				if (iss == null) {
-					throw new AuthenticationServiceException("Id Token Issuer is null");
-				}
-				if (!iss.equals(serverConfig.getIssuer())){
-					throw new AuthenticationServiceException("Issuers do not match, expected " + serverConfig.getIssuer() + " got " + iss);
-				}
+				validateIssuer(serverConfig, idClaims);
 
 				// check expiration
 				if (idClaims.getExpirationTime() == null) {
@@ -575,6 +586,22 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 
 
 
+		}
+	}
+	
+	/**
+	 * 
+	 * @param serverConfig
+	 * @param idClaims
+	 */	
+	private void validateIssuer(ServerConfiguration serverConfig,
+			ReadOnlyJWTClaimsSet idClaims) {
+		String iss = idClaims.getIssuer();
+		if (iss == null) {
+			throw new AuthenticationServiceException("Id Token Issuer is null");
+		}
+		if (!iss.equals(serverConfig.getIssuer())){
+			throw new AuthenticationServiceException("Issuers do not match, expected " + serverConfig.getIssuer() + " got " + iss);
 		}
 	}
 

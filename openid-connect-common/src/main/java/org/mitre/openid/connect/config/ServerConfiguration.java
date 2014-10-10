@@ -816,6 +816,9 @@ public class ServerConfiguration {
 				* result
 				+ ((userinfoSigningAlgValuesSupported == null) ? 0
 						: userinfoSigningAlgValuesSupported.hashCode());
+		
+		result = prime * result + (Boolean.hashCode(useNonce));
+		
 		return result;
 	}
 	@Override
@@ -1112,6 +1115,9 @@ public class ServerConfiguration {
 			}
 		} else if (!userinfoSigningAlgValuesSupported
 				.equals(other.userinfoSigningAlgValuesSupported)) {
+			return false;
+		}
+		if(useNonce != other.isUseNonce()){
 			return false;
 		}
 		return true;
