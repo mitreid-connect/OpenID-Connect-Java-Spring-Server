@@ -18,6 +18,9 @@
  */
 package org.mitre.openid.connect.service.impl;
 
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
+import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Collection;
@@ -27,7 +30,6 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-
 import org.mitre.jose.JWEAlgorithmEmbed;
 import org.mitre.jose.JWEEncryptionMethodEmbed;
 import org.mitre.jose.JWSAlgorithmEmbed;
@@ -59,12 +61,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.stereotype.Service;
-
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonToken;
-import com.google.gson.stream.JsonWriter;
-
-/**
+/** 
  *
  * Data service to import and export MITREid 1.0 configuration.
  *
@@ -826,6 +823,7 @@ public class MITREidDataService_1_0 extends MITREidDataService_1_X {
             approvedSiteRepository.save(approvedSite);
         }
         grantToWhitelistedSiteRefs.clear();
+        whitelistedSiteOldToNewIdMap.clear();
         for (Long oldGrantId : grantToAccessTokensRefs.keySet()) {
             Set<Long> oldAccessTokenIds = grantToAccessTokensRefs.get(oldGrantId);
             Set<OAuth2AccessTokenEntity> tokens = new HashSet<OAuth2AccessTokenEntity>();
