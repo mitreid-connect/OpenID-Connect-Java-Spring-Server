@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -56,7 +57,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.provider.AuthorizationRequest;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 
@@ -161,9 +162,9 @@ public class TestMITREidDataService_1_1 {
 		JsonObject root = elem.getAsJsonObject();
 		
 		// make sure the root is there
-		assertThat(root.has(MITREidDataService.MITREID_CONNECT_1_0), is(true));
+		assertThat(root.has(MITREidDataService.MITREID_CONNECT_1_1), is(true));
 		
-		JsonObject config = root.get(MITREidDataService.MITREID_CONNECT_1_0).getAsJsonObject();
+		JsonObject config = root.get(MITREidDataService.MITREID_CONNECT_1_1).getAsJsonObject();
 		
 		// make sure all the root elements are there
 		assertThat(config.has(MITREidDataService.CLIENTS), is(true));
@@ -407,9 +408,9 @@ public class TestMITREidDataService_1_1 {
 		JsonObject root = elem.getAsJsonObject();
 		
 		// make sure the root is there
-		assertThat(root.has(MITREidDataService.MITREID_CONNECT_1_0), is(true));
+		assertThat(root.has(MITREidDataService.MITREID_CONNECT_1_1), is(true));
 		
-		JsonObject config = root.get(MITREidDataService.MITREID_CONNECT_1_0).getAsJsonObject();
+		JsonObject config = root.get(MITREidDataService.MITREID_CONNECT_1_1).getAsJsonObject();
 		
 		// make sure all the root elements are there
 		assertThat(config.has(MITREidDataService.CLIENTS), is(true));
@@ -657,9 +658,9 @@ public class TestMITREidDataService_1_1 {
 		JsonObject root = elem.getAsJsonObject();
 		
 		// make sure the root is there
-		assertThat(root.has(MITREidDataService.MITREID_CONNECT_1_0), is(true));
+		assertThat(root.has(MITREidDataService.MITREID_CONNECT_1_1), is(true));
 		
-		JsonObject config = root.get(MITREidDataService.MITREID_CONNECT_1_0).getAsJsonObject();
+		JsonObject config = root.get(MITREidDataService.MITREID_CONNECT_1_1).getAsJsonObject();
 		
 		// make sure all the root elements are there
 		assertThat(config.has(MITREidDataService.CLIENTS), is(true));
@@ -828,9 +829,9 @@ public class TestMITREidDataService_1_1 {
 		JsonObject root = elem.getAsJsonObject();
 
 		// make sure the root is there
-		assertThat(root.has(MITREidDataService.MITREID_CONNECT_1_0), is(true));
+		assertThat(root.has(MITREidDataService.MITREID_CONNECT_1_1), is(true));
 		
-		JsonObject config = root.get(MITREidDataService.MITREID_CONNECT_1_0).getAsJsonObject();
+		JsonObject config = root.get(MITREidDataService.MITREID_CONNECT_1_1).getAsJsonObject();
 		
 		// make sure all the root elements are there
 		assertThat(config.has(MITREidDataService.CLIENTS), is(true));
@@ -969,9 +970,9 @@ public class TestMITREidDataService_1_1 {
 		JsonObject root = elem.getAsJsonObject();
 
 		// make sure the root is there
-		assertThat(root.has(MITREidDataService.MITREID_CONNECT_1_0), is(true));
+		assertThat(root.has(MITREidDataService.MITREID_CONNECT_1_1), is(true));
 		
-		JsonObject config = root.get(MITREidDataService.MITREID_CONNECT_1_0).getAsJsonObject();
+		JsonObject config = root.get(MITREidDataService.MITREID_CONNECT_1_1).getAsJsonObject();
 		
 		// make sure all the root elements are there
 		assertThat(config.has(MITREidDataService.CLIENTS), is(true));
@@ -1101,6 +1102,9 @@ public class TestMITREidDataService_1_1 {
         WhitelistedSite mockWlSite1 = mock(WhitelistedSite.class);
         when(mockWlSite1.getId()).thenReturn(1L);
         
+        OAuth2AccessTokenEntity mockToken1 = mock(OAuth2AccessTokenEntity.class);
+        when(mockToken1.getId()).thenReturn(1L);
+        
 		ApprovedSite site1 = new ApprovedSite();
         site1.setId(1L);
         site1.setClientId("foo");
@@ -1109,6 +1113,7 @@ public class TestMITREidDataService_1_1 {
         site1.setUserId("user1");
         site1.setWhitelistedSite(mockWlSite1);
         site1.setAllowedScopes(ImmutableSet.of("openid", "phone"));
+        site1.setApprovedAccessTokens(ImmutableSet.of(mockToken1));
 
         Date creationDate2 = DateUtil.utcToDate("2014-09-11T18:49:44.090+0000");
         Date accessDate2 = DateUtil.utcToDate("2014-09-11T20:49:44.090+0000");
@@ -1147,9 +1152,9 @@ public class TestMITREidDataService_1_1 {
 		JsonObject root = elem.getAsJsonObject();
 
 		// make sure the root is there
-		assertThat(root.has(MITREidDataService.MITREID_CONNECT_1_0), is(true));
+		assertThat(root.has(MITREidDataService.MITREID_CONNECT_1_1), is(true));
 		
-		JsonObject config = root.get(MITREidDataService.MITREID_CONNECT_1_0).getAsJsonObject();
+		JsonObject config = root.get(MITREidDataService.MITREID_CONNECT_1_1).getAsJsonObject();
 		
 		// make sure all the root elements are there
 		assertThat(config.has(MITREidDataService.CLIENTS), is(true));
@@ -1206,6 +1211,16 @@ public class TestMITREidDataService_1_1 {
                 } else {
                     assertThat(site.get("whitelistedSiteId").getAsLong(), equalTo(compare.getWhitelistedSite().getId()));
                 }
+                if (site.get("approvedAccessTokens").isJsonNull() || site.getAsJsonArray("approvedAccessTokens") == null) {
+                    assertTrue(compare.getApprovedAccessTokens() == null || compare.getApprovedAccessTokens().isEmpty());
+                } else {
+                    assertNotNull(compare.getApprovedAccessTokens());
+                    Set<String> tokenIds = new HashSet<String>();
+                    for(OAuth2AccessTokenEntity entity : compare.getApprovedAccessTokens()) {
+                        tokenIds.add(entity.getId().toString());
+                    }
+                    assertThat(jsonArrayToStringSet(site.getAsJsonArray("approvedAccessTokens")), equalTo(tokenIds));
+                }
 				checked.add(compare);
 			}
 		}
@@ -1221,6 +1236,9 @@ public class TestMITREidDataService_1_1 {
         WhitelistedSite mockWlSite1 = mock(WhitelistedSite.class);
         when(mockWlSite1.getId()).thenReturn(1L);
         
+        OAuth2AccessTokenEntity mockToken1 = mock(OAuth2AccessTokenEntity.class);
+        when(mockToken1.getId()).thenReturn(1L);
+        
 		ApprovedSite site1 = new ApprovedSite();
         site1.setId(1L);
         site1.setClientId("foo");
@@ -1229,6 +1247,7 @@ public class TestMITREidDataService_1_1 {
         site1.setUserId("user1");
         site1.setWhitelistedSite(mockWlSite1);
         site1.setAllowedScopes(ImmutableSet.of("openid", "phone"));
+        site1.setApprovedAccessTokens(ImmutableSet.of(mockToken1));
 
         Date creationDate2 = DateUtil.utcToDate("2014-09-11T18:49:44.090+0000");
         Date accessDate2 = DateUtil.utcToDate("2014-09-11T20:49:44.090+0000");
@@ -1254,7 +1273,8 @@ public class TestMITREidDataService_1_1 {
 				"\"" + MITREidDataService.GRANTS + "\": [" +
 				
 				"{\"id\":1,\"clientId\":\"foo\",\"creationDate\":\"2014-09-10T22:49:44.090+0000\",\"accessDate\":\"2014-09-10T23:49:44.090+0000\","
-                + "\"userId\":\"user1\",\"whitelistedSiteId\":null,\"allowedScopes\":[\"openid\",\"phone\"], \"whitelistedSiteId\":1}," +
+                + "\"userId\":\"user1\",\"whitelistedSiteId\":null,\"allowedScopes\":[\"openid\",\"phone\"], \"whitelistedSiteId\":1,"
+                + "\"approvedAccessTokens\":[1]}," +
 				"{\"id\":2,\"clientId\":\"bar\",\"creationDate\":\"2014-09-11T18:49:44.090+0000\",\"accessDate\":\"2014-09-11T20:49:44.090+0000\","
                 + "\"timeoutDate\":\"2014-10-01T20:49:44.090+0000\",\"userId\":\"user2\","
                 + "\"allowedScopes\":[\"openid\",\"offline_access\",\"email\",\"profile\"]}" +
@@ -1295,10 +1315,19 @@ public class TestMITREidDataService_1_1 {
                 return _site;
             }
         });
-        
+        when(tokenRepository.getAccessTokenById(isNull(Long.class))).thenAnswer(new Answer<OAuth2AccessTokenEntity>() {
+            Long id = 2L;
+            @Override
+            public OAuth2AccessTokenEntity answer(InvocationOnMock invocation) throws Throwable {
+                OAuth2AccessTokenEntity _token = mock(OAuth2AccessTokenEntity.class);
+                when(_token.getId()).thenReturn(id++);
+                return _token;
+            }
+        });
+
 		dataService.importData(reader);
-        //2 for sites, 1 more for updating whitelistedSite ref on #2
-		verify(approvedSiteRepository, times(3)).save(capturedApprovedSites.capture());
+        //2 for sites, 1 for updating access token ref on #1, 1 more for updating whitelistedSite ref on #2
+		verify(approvedSiteRepository, times(4)).save(capturedApprovedSites.capture());
 		
 		List<ApprovedSite> savedSites = new ArrayList(fakeDb.values());
 		
@@ -1310,6 +1339,7 @@ public class TestMITREidDataService_1_1 {
         assertThat(savedSites.get(0).getAllowedScopes(), equalTo(site1.getAllowedScopes()));
         assertThat(savedSites.get(0).getIsWhitelisted(), equalTo(site1.getIsWhitelisted()));
         assertThat(savedSites.get(0).getTimeoutDate(), equalTo(site1.getTimeoutDate()));
+        assertThat(savedSites.get(0).getApprovedAccessTokens().size(), equalTo(site1.getApprovedAccessTokens().size()));
         
 		assertThat(savedSites.get(1).getClientId(), equalTo(site2.getClientId()));
         assertThat(savedSites.get(1).getAccessDate(), equalTo(site2.getAccessDate()));
@@ -1317,23 +1347,26 @@ public class TestMITREidDataService_1_1 {
         assertThat(savedSites.get(1).getAllowedScopes(), equalTo(site2.getAllowedScopes()));
 		assertThat(savedSites.get(1).getTimeoutDate(), equalTo(site2.getTimeoutDate()));
         assertThat(savedSites.get(1).getIsWhitelisted(), equalTo(site2.getIsWhitelisted()));
+        assertThat(savedSites.get(1).getApprovedAccessTokens(), equalTo(site2.getApprovedAccessTokens())); //both should be null or empty
     }
     
     @Test
     public void testExportAuthenticationHolders() throws IOException {
-        OAuth2Request mockRequest1 = mock(OAuth2Request.class); 
-        when(mockRequest1.getRequestParameters()).thenReturn(new HashMap<String, String>());
-        Authentication mockAuth1 = null;
-        OAuth2Authentication auth1 = new OAuth2Authentication(mockRequest1, mockAuth1);
+        OAuth2Request req1 = new OAuth2Request(new HashMap<String, String>(), "client1", new ArrayList<GrantedAuthority>(),
+                                               true, new HashSet<String>(), new HashSet<String>(), "http://foo.com", 
+                                               new HashSet<String>(), null);
+        Authentication mockAuth1 = mock(Authentication.class, withSettings().serializable());
+        OAuth2Authentication auth1 = new OAuth2Authentication(req1, mockAuth1);
         
         AuthenticationHolderEntity holder1 = new AuthenticationHolderEntity();
         holder1.setId(1L);
         holder1.setAuthentication(auth1);
         
-        OAuth2Request mockRequest2 = mock(OAuth2Request.class); 
-        when(mockRequest2.getRequestParameters()).thenReturn(new HashMap<String, String>());
-        Authentication mockAuth2 = null;
-        OAuth2Authentication auth2 = new OAuth2Authentication(mockRequest2, mockAuth2);
+        OAuth2Request req2 = new OAuth2Request(new HashMap<String, String>(), "client2", new ArrayList<GrantedAuthority>(),
+                                               true, new HashSet<String>(), new HashSet<String>(), "http://bar.com", 
+                                               new HashSet<String>(), null);
+        Authentication mockAuth2 = mock(Authentication.class, withSettings().serializable());
+        OAuth2Authentication auth2 = new OAuth2Authentication(req2, mockAuth2);
         
         AuthenticationHolderEntity holder2 = new AuthenticationHolderEntity();
         holder2.setId(2L);
@@ -1363,9 +1396,9 @@ public class TestMITREidDataService_1_1 {
 		JsonObject root = elem.getAsJsonObject();
 
 		// make sure the root is there
-		assertThat(root.has(MITREidDataService.MITREID_CONNECT_1_0), is(true));
+		assertThat(root.has(MITREidDataService.MITREID_CONNECT_1_1), is(true));
 		
-		JsonObject config = root.get(MITREidDataService.MITREID_CONNECT_1_0).getAsJsonObject();
+		JsonObject config = root.get(MITREidDataService.MITREID_CONNECT_1_1).getAsJsonObject();
 		
 		// make sure all the root elements are there
 		assertThat(config.has(MITREidDataService.CLIENTS), is(true));
@@ -1418,19 +1451,21 @@ public class TestMITREidDataService_1_1 {
     
     @Test
     public void testImportAuthenticationHolders() throws IOException {
-        OAuth2Request mockRequest1 = mock(OAuth2Request.class); 
-        when(mockRequest1.getRequestParameters()).thenReturn(new HashMap<String, String>());
-        Authentication mockAuth1 = null;
-        OAuth2Authentication auth1 = new OAuth2Authentication(mockRequest1, mockAuth1);
+        OAuth2Request req1 = new OAuth2Request(new HashMap<String, String>(), "client1", new ArrayList<GrantedAuthority>(),
+                                               true, new HashSet<String>(), new HashSet<String>(), "http://foo.com", 
+                                               new HashSet<String>(), null);
+        Authentication mockAuth1 = mock(Authentication.class, withSettings().serializable());
+        OAuth2Authentication auth1 = new OAuth2Authentication(req1, mockAuth1);
         
         AuthenticationHolderEntity holder1 = new AuthenticationHolderEntity();
         holder1.setId(1L);
         holder1.setAuthentication(auth1);
         
-        OAuth2Request mockRequest2 = mock(OAuth2Request.class); 
-        when(mockRequest2.getRequestParameters()).thenReturn(new HashMap<String, String>());
-        Authentication mockAuth2 = null;
-        OAuth2Authentication auth2 = new OAuth2Authentication(mockRequest2, mockAuth2);
+        OAuth2Request req2 = new OAuth2Request(new HashMap<String, String>(), "client2", new ArrayList<GrantedAuthority>(),
+                                               true, new HashSet<String>(), new HashSet<String>(), "http://bar.com", 
+                                               new HashSet<String>(), null);
+        Authentication mockAuth2 = mock(Authentication.class, withSettings().serializable());
+        OAuth2Authentication auth2 = new OAuth2Authentication(req2, mockAuth2);
         
         AuthenticationHolderEntity holder2 = new AuthenticationHolderEntity();
         holder2.setId(2L);
@@ -1530,9 +1565,9 @@ public class TestMITREidDataService_1_1 {
 		JsonObject root = elem.getAsJsonObject();
 
 		// make sure the root is there
-		assertThat(root.has(MITREidDataService.MITREID_CONNECT_1_0), is(true));
+		assertThat(root.has(MITREidDataService.MITREID_CONNECT_1_1), is(true));
 		
-		JsonObject config = root.get(MITREidDataService.MITREID_CONNECT_1_0).getAsJsonObject();
+		JsonObject config = root.get(MITREidDataService.MITREID_CONNECT_1_1).getAsJsonObject();
 		
 		// make sure all the root elements are there
 		assertThat(config.has(MITREidDataService.CLIENTS), is(true));
