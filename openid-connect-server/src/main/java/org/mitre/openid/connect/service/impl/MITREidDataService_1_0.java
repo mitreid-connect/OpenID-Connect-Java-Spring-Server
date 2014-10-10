@@ -272,6 +272,9 @@ public class MITREidDataService_1_0 implements MITREidDataService {
     }
     
     private <T> T base64UrlDecodeObject(String encoded, Class<T> type) throws IOException {
+        if(encoded == null || encoded.isEmpty()) {
+            return null;
+        }
         byte[] decoded = BaseEncoding.base64Url().decode(encoded);
         ByteArrayInputStream bais = new ByteArrayInputStream(decoded);
         ObjectInputStream ois = new ObjectInputStream(bais);
@@ -1221,5 +1224,6 @@ public class MITREidDataService_1_0 implements MITREidDataService {
         }
         grantOldToNewIdMap.clear();
         grantToWhitelistedSiteRefs.clear();
+        whitelistedSiteOldToNewIdMap.clear();
     }
 }
