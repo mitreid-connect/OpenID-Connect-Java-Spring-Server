@@ -1654,7 +1654,7 @@ public class TestMITREidDataService_1_0 {
 	}
     
     @Test
-    public void testFixRefreshTokenReferencesOnImport() throws IOException, ParseException {
+    public void testFixRefreshTokenAuthHolderReferencesOnImport() throws IOException, ParseException {
         String expiration1 = "2014-09-10T22:49:44.090+0000";
         Date expirationDate1 = DateUtil.utcToDate(expiration1);
         
