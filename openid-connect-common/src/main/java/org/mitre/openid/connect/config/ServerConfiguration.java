@@ -815,7 +815,7 @@ public class ServerConfiguration {
 				* result
 				+ ((userinfoSigningAlgValuesSupported == null) ? 0
 						: userinfoSigningAlgValuesSupported.hashCode());
-		result = prime * result + Boolean.hashCode(useNonce);
+		result = prime * result + new Boolean(useNonce).hashCode();
 		return result;
 	}
 	@Override
