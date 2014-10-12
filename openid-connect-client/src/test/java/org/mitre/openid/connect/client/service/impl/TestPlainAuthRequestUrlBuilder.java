@@ -37,48 +37,59 @@ import com.google.common.collect.Sets;
  */
 public class TestPlainAuthRequestUrlBuilder {
 
-	// Test fixture:
-	ServerConfiguration serverConfig;
-	RegisteredClient clientConfig;
-
+	private ServerConfiguration serverConfig;
+	private RegisteredClient clientConfig;
 	private PlainAuthRequestUrlBuilder urlBuilder = new PlainAuthRequestUrlBuilder();
-
+	private Map<String, String> options;
+	
 	@Before
 	public void prepare() {
-
 		serverConfig = Mockito.mock(ServerConfiguration.class);
 		Mockito.when(serverConfig.getAuthorizationEndpointUri()).thenReturn("https://server.example.com/authorize");
 
 		clientConfig = Mockito.mock(RegisteredClient.class);
 		Mockito.when(clientConfig.getClientId()).thenReturn("s6BhdRkqt3");
 		Mockito.when(clientConfig.getScope()).thenReturn(Sets.newHashSet("openid", "profile"));
+		
+		options = ImmutableMap.of("foo", "bar");
 	}
 
 	@Test
-	public void buildAuthRequestUrl() {
+	public void buildAuthRequestUrlWithNonce() {
+		executeTestWithOrWithoutNonce(true);
+	}
+	@Test
+	public void buildAuthRequestUrlWithoutNonce() {
+		executeTestWithOrWithoutNonce(false);
+	}
 
-		String expectedUrl = "https://server.example.com/authorize?" +
-				"response_type=code" +
-				"&client_id=s6BhdRkqt3" +
-				"&scope=openid+profile" + // plus sign used for space per application/x-www-form-encoded standard
-				"&redirect_uri=https%3A%2F%2Fclient.example.org%2F" +
-				"&nonce=34fasf3ds" +
-				"&state=af0ifjsldkj" +
-				"&foo=bar";
+	private void executeTestWithOrWithoutNonce(boolean useNonce) {
+		String actualUrl;
+		StringBuilder expectedUrl = createsExcpectedURL();
+		if(useNonce){
+			expectedUrl.append("&nonce=34fasf3ds");
+			actualUrl = urlBuilder.buildAuthRequestUrl(serverConfig, clientConfig, "https://client.example.org/","34fasf3ds", "af0ifjsldkj", options);
+		}else{
+			actualUrl = urlBuilder.buildAuthRequestUrl(serverConfig, clientConfig, "https://client.example.org/","af0ifjsldkj", options);
+		}
+		assertThat(actualUrl, equalTo(expectedUrl.toString()));
+	}
 
-		Map<String, String> options = ImmutableMap.of("foo", "bar");
-
-		String actualUrl = urlBuilder.buildAuthRequestUrl(serverConfig, clientConfig, "https://client.example.org/", "34fasf3ds", "af0ifjsldkj", options);
-
-		assertThat(actualUrl, equalTo(expectedUrl));
+	private StringBuilder createsExcpectedURL() {
+		StringBuilder expectedUrl = new StringBuilder();
+		expectedUrl.append("https://server.example.com/authorize?");
+		expectedUrl.append("response_type=code");
+		expectedUrl.append("&client_id=s6BhdRkqt3");
+		expectedUrl.append("&scope=openid+profile"); // plus sign used for space per application/x-www-form-encoded standard
+		expectedUrl.append("&redirect_uri=https%3A%2F%2Fclient.example.org%2F");
+		expectedUrl.append("&state=af0ifjsldkj");
+		expectedUrl.append("&foo=bar");
+		return expectedUrl;
 	}
 
 	@Test(expected = AuthenticationServiceException.class)
 	public void buildAuthRequestUrl_badUri() {
-
 		Mockito.when(serverConfig.getAuthorizationEndpointUri()).thenReturn("e=mc^2");
-
-		Map<String, String> options = ImmutableMap.of("foo", "bar");
 
 		urlBuilder.buildAuthRequestUrl(serverConfig, clientConfig, "example.com", "", "", options);
 	}
