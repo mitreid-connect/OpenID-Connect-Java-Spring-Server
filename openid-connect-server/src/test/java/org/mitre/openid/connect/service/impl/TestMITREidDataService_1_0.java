@@ -1776,10 +1776,8 @@ public class TestMITREidDataService_1_0 {
 		List<OAuth2RefreshTokenEntity> savedRefreshTokens = new ArrayList(fakeRefreshTokenTable.values()); //capturedRefreshTokens.getAllValues();
         Collections.sort(savedRefreshTokens, new refreshTokenIdComparator());
         
-        assertThat(savedRefreshTokens.get(0).getAuthenticationHolder().getAuthentication().getAuthorizationRequest().getClientId(), 
-                equalTo(token1.getAuthenticationHolder().getAuthentication().getAuthorizationRequest().getClientId()));
-        assertThat(savedRefreshTokens.get(1).getAuthenticationHolder().getAuthentication().getAuthorizationRequest().getClientId(), 
-                equalTo(token2.getAuthenticationHolder().getAuthentication().getAuthorizationRequest().getClientId()));
+        assertThat(savedRefreshTokens.get(0).getAuthenticationHolder().getId(), equalTo(356L));
+        assertThat(savedRefreshTokens.get(1).getAuthenticationHolder().getId(), equalTo(357L));
     }	
     
 	private Set<String> jsonArrayToStringSet(JsonArray a) {
