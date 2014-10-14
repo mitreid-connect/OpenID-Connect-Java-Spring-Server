@@ -62,7 +62,7 @@ public class ClientKeyPublisher implements BeanDefinitionRegistryPostProcessor {
 
 				// randomize view name to make sure it doesn't conflict with local views
 				jwkViewName = JwkKeyListView.VIEWNAME + "-" + UUID.randomUUID().toString();
-				viewResolver.addPropertyValue(JwkKeyListView.VIEWNAME, jwkViewName);
+				viewResolver.addPropertyValue("jwkViewName", jwkViewName);
 
 				// view bean
 				BeanDefinitionBuilder jwkView = BeanDefinitionBuilder.rootBeanDefinition(JwkKeyListView.class);
