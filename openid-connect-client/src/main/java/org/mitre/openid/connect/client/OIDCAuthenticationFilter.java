@@ -342,6 +342,10 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 
 					// needs to be wired in to the bean
 					signer = authenticationSignerService;
+					
+					if (alg == null) {
+						alg = authenticationSignerService.getDefaultSigningAlgorithm();
+					}
 				}
 
 				if (signer == null) {
