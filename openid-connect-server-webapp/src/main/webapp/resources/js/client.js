@@ -801,6 +801,10 @@ var ClientFormView = Backbone.View.extend({
         $('.control-group').removeClass('error');
 
         // build the scope object
+        var extraScope = $('#scope input').val();
+        if (extraScope) {
+        	this.scopeCollection.add(new ListWidgetItem(extraScope));
+        }
         var scopes = this.scopeCollection.pluck("item");
         
         // build the grant type object
