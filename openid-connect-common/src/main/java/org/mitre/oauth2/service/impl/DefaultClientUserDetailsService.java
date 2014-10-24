@@ -16,9 +16,14 @@
  ******************************************************************************/
 package org.mitre.oauth2.service.impl;
 
+import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.mitre.oauth2.model.ClientDetailsEntity;
+import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
+import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -26,8 +31,6 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.oauth2.provider.ClientDetails;
-import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Strings;
@@ -42,16 +45,27 @@ import com.google.common.base.Strings;
 public class DefaultClientUserDetailsService implements UserDetailsService {
 
 	@Autowired
-	private ClientDetailsService clientDetailsService;
+	private ClientDetailsEntityService clientDetailsService;
 
 	@Override
 	public UserDetails loadUserByUsername(String clientId) throws  UsernameNotFoundException {
 
-		ClientDetails client = clientDetailsService.loadClientByClientId(clientId);
+		ClientDetailsEntity client = clientDetailsService.loadClientByClientId(clientId);
 
 		if (client != null) {
 
 			String password = Strings.nullToEmpty(client.getClientSecret());
+			
+			if (client.getTokenEndpointAuthMethod() != null && 
+					(client.getTokenEndpointAuthMethod().equals(AuthMethod.PRIVATE_KEY) ||
+							client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_JWT))) {
+				
+				// Issue a random password each time to prevent password auth from being used (or skipped) 
+				// for private key or shared key clients, see #715
+				
+				password = new BigInteger(512, new SecureRandom()).toString(16);
+			}
+			
 			boolean enabled = true;
 			boolean accountNonExpired = true;
 			boolean credentialsNonExpired = true;
@@ -72,11 +86,11 @@ public class DefaultClientUserDetailsService implements UserDetailsService {
 
 	}
 
-	public ClientDetailsService getClientDetailsService() {
+	public ClientDetailsEntityService getClientDetailsService() {
 		return clientDetailsService;
 	}
 
-	public void setClientDetailsService(ClientDetailsService clientDetailsService) {
+	public void setClientDetailsService(ClientDetailsEntityService clientDetailsService) {
 		this.clientDetailsService = clientDetailsService;
 	}
 
