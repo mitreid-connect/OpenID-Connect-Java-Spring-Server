@@ -23,14 +23,14 @@
     <parent>
     	<groupId>org.mitre</groupId>
     	<artifactId>openid-connect-parent</artifactId>
-    	<version>1.0.19</version>
+    	<version>1.0.20-SNAPSHOT</version>
     	<relativePath>..</relativePath>
     </parent>
     <dependencies>
 		<dependency>
 			<groupId>org.mitre</groupId>
 			<artifactId>openid-connect-common</artifactId>
-			<version>1.0.19</version>
+			<version>1.0.20-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
     <description>Reference implementation of OpenID Connect spec (http://openid.net/connect/).
