@@ -16,10 +16,12 @@
  ******************************************************************************/
 package org.mitre.openid.connect.model;
 
+import java.io.Serializable;
+
 import com.google.gson.JsonObject;
 
 
-public interface UserInfo {
+public interface UserInfo extends Serializable {
 
 	/**
 	 * @return the userId
