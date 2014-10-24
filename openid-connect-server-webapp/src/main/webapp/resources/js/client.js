@@ -275,20 +275,22 @@ var ClientView = Backbone.View.extend({
 	        	$('#modalAlert .modal-body').html(_self.registrationTokenTemplate(savedModel));
 	        	
 	        	$('#modalAlert .modal-body #rotate-token').click(function(e) {
-	        		token.save(null, {success: function() {
-		    	        	console.log('token:' + token.get('value'));
-		    		        $('#modalAlert .modal-body #registrationToken').val(token.get('value'));
-		        		},
-		        		error: function() {
-		    	    		$('#modalAlert .modal-body').html('There was a problem rotating the registration access token for this client.');
-	
-		    	    		$('#modalAlert').modal({
-		    	        		'backdrop': 'static',
-		    	        		'keyboard': true,
-		    	        		'show': true
-		    	        	});
-		        		}
-		        	});	        		
+	        		if (confirm("Are you sure you want to rotate this client's registration token?")) {
+		        		token.save(null, {success: function() {
+			    	        	console.log('token:' + token.get('value'));
+			    		        $('#modalAlert .modal-body #registrationToken').val(token.get('value'));
+			        		},
+			        		error: function() {
+			    	    		$('#modalAlert .modal-body').html('There was a problem rotating the registration access token for this client.');
+		
+			    	    		$('#modalAlert').modal({
+			    	        		'backdrop': 'static',
+			    	        		'keyboard': true,
+			    	        		'show': true
+			    	        	});
+			        		}
+			        	});
+	        		}
 	        	});
 	        	
 	        	$('#modalAlert').modal({
