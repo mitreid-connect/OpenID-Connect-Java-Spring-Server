@@ -216,14 +216,14 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 				throw new AuthenticationServiceException("No issuer found: " + issuer);
 			}
 
-			session.setAttribute(ISSUER_SESSION_VARIABLE, issuer);
-
 			ServerConfiguration serverConfig = servers.getServerConfiguration(issuer);
 			if (serverConfig == null) {
 				logger.error("No server configuration found for issuer: " + issuer);
 				throw new AuthenticationServiceException("No server configuration found for issuer: " + issuer);
 			}
 
+
+			session.setAttribute(ISSUER_SESSION_VARIABLE, serverConfig.getIssuer());
 
 			RegisteredClient clientConfig = clients.getClientConfiguration(serverConfig);
 			if (clientConfig == null) {
