@@ -154,7 +154,7 @@ public class DynamicServerConfigurationService implements ServerConfigurationSer
 				}
 
 				if (!issuer.equals(o.get("issuer").getAsString())) {
-					throw new IllegalStateException("Discovered issuers didn't match, expected " + issuer + " got " + o.get("issuer").getAsString());
+					logger.info("Issuer used for discover was " + issuer + " but final issuer is " + o.get("issuer").getAsString());
 				}
 
 				conf.setIssuer(o.get("issuer").getAsString());
