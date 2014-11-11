@@ -34,7 +34,13 @@
 
 	<!-- Enables the Spring MVC @Controller programming model -->
 	<tx:annotation-driven transaction-manager="transactionManager" />
-	<mvc:annotation-driven ignore-default-model-on-redirect="true" />
+	<mvc:annotation-driven ignore-default-model-on-redirect="true">
+		<mvc:message-converters>
+			<bean class="org.springframework.http.converter.StringHttpMessageConverter" />
+			<bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter" />
+		</mvc:message-converters>
+	</mvc:annotation-driven>
+
 	<mvc:interceptors>
 		<!-- Inject the UserInfo into the current context -->
 		<bean id="userInfoInterceptor" class="org.mitre.openid.connect.web.UserInfoInterceptor" />
