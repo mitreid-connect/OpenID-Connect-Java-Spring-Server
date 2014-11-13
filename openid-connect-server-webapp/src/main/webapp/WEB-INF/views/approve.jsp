@@ -254,7 +254,11 @@
 
 $(document).ready(function() {
 		$('.claim-tooltip').popover();
-		
+		$('.claim-tooltip').on('click', function(e) {
+			e.preventDefault();
+			$(this).popover('show');
+		});
+
 		$(document).on('click', '#toggleMoreInformation', function(event) {
 			event.preventDefault();
 			if ($('#moreInformation').is(':visible')) {
