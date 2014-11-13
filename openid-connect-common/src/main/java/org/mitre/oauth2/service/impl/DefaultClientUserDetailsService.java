@@ -18,8 +18,8 @@ package org.mitre.oauth2.service.impl;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
@@ -44,6 +44,8 @@ import com.google.common.base.Strings;
 @Service("clientUserDetailsService")
 public class DefaultClientUserDetailsService implements UserDetailsService {
 
+	private static GrantedAuthority ROLE_CLIENT = new SimpleGrantedAuthority("ROLE_CLIENT");
+	
 	@Autowired
 	private ClientDetailsEntityService clientDetailsService;
 
@@ -70,14 +72,8 @@ public class DefaultClientUserDetailsService implements UserDetailsService {
 			boolean accountNonExpired = true;
 			boolean credentialsNonExpired = true;
 			boolean accountNonLocked = true;
-			Collection<GrantedAuthority> authorities = client.getAuthorities();
-			if (authorities == null || authorities.isEmpty()) {
-				// automatically inject ROLE_CLIENT if none exists ...
-				// TODO: this should probably happen on the client service side instead to keep it in the real data model
-				authorities = new ArrayList<GrantedAuthority>();
-				GrantedAuthority roleClient = new SimpleGrantedAuthority("ROLE_CLIENT");
-				authorities.add(roleClient);
-			}
+			Collection<GrantedAuthority> authorities = new HashSet<GrantedAuthority>(client.getAuthorities());
+			authorities.add(ROLE_CLIENT);
 
 			return new User(clientId, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
 		} else {
