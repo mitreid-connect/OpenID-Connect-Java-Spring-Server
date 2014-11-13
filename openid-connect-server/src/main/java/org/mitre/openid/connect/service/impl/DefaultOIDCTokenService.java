@@ -166,16 +166,21 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 			} else {
 
 				// signed ID token
-				idToken = new SignedJWT(new JWSHeader(signingAlg), idClaims);
 	
 				if (signingAlg.equals(JWSAlgorithm.HS256)
 						|| signingAlg.equals(JWSAlgorithm.HS384)
 						|| signingAlg.equals(JWSAlgorithm.HS512)) {
+
+					idToken = new SignedJWT(new JWSHeader(signingAlg), idClaims);
+
 					JwtSigningAndValidationService signer = symmetricCacheService.getSymmetricValidtor(client);
 	
 					// sign it with the client's secret
 					signer.signJwt((SignedJWT) idToken);
 				} else {
+					idClaims.setCustomClaim("kid", jwtService.getDefaultSignerKeyId());
+					
+					idToken = new SignedJWT(new JWSHeader(signingAlg), idClaims);
 	
 					// sign it with the server's key
 					jwtService.signJwt((SignedJWT) idToken);

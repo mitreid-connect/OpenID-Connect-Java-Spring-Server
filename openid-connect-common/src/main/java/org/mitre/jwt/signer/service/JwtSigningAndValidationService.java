@@ -74,6 +74,8 @@ public interface JwtSigningAndValidationService {
 	 */
 	public void signJwt(SignedJWT jwt, JWSAlgorithm alg);
 
+	public String getDefaultSignerKeyId();
+
 	/**
 	 * TODO: method to sign a jwt using a specified algorithm and a key id
 	 */
