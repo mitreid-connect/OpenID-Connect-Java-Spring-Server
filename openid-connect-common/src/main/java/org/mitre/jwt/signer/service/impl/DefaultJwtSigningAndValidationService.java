@@ -113,6 +113,7 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 	/**
 	 * @return the defaultSignerKeyId
 	 */
+	@Override
 	public String getDefaultSignerKeyId() {
 			return defaultSignerKeyId;
 	}
