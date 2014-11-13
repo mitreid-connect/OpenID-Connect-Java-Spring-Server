@@ -21,6 +21,8 @@ package org.mitre.openid.connect.assertion;
 
 import java.text.ParseException;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.jwt.signer.service.impl.JWKSetCacheService;
@@ -36,6 +38,8 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 
@@ -52,6 +56,8 @@ public class JwtBearerAuthenticationProvider implements AuthenticationProvider {
 
 	private static final Logger logger = LoggerFactory.getLogger(JwtBearerAuthenticationProvider.class);
 
+	private static final GrantedAuthority ROLE_CLIENT = new SimpleGrantedAuthority("ROLE_CLIENT");
+	
 	// map of verifiers, load keys for clients
 	@Autowired
 	private JWKSetCacheService validators;
@@ -182,7 +188,12 @@ public class JwtBearerAuthenticationProvider implements AuthenticationProvider {
 			}
 
 			// IFF we managed to get all the way down here, the token is valid
-			return new JwtBearerAssertionAuthenticationToken(client.getClientId(), jwt, client.getAuthorities());
+			
+			// add in the ROLE_CLIENT authority
+			Set<GrantedAuthority> authorities = new HashSet<>(client.getAuthorities());
+			authorities.add(ROLE_CLIENT);
+			
+			return new JwtBearerAssertionAuthenticationToken(client.getClientId(), jwt, authorities);
 
 		} catch (InvalidClientException e) {
 			throw new UsernameNotFoundException("Could not find client: " + jwtAuth.getClientId());
