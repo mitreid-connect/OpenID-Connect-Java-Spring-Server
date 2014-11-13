@@ -16,16 +16,11 @@
  ******************************************************************************/
 package org.mitre.oauth2.introspectingfilter;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2RefreshToken;
@@ -50,13 +45,8 @@ public class OAuth2AccessTokenImpl implements OAuth2AccessToken {
 			scopes = Sets.newHashSet(Splitter.on(" ").split(token.get("scope").getAsString()));
 		}
 
-		DateFormat dateFormater = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 		if (token.get("exp") != null) {
-			try {
-				expireDate = dateFormater.parse(token.get("exp").getAsString());
-			} catch (ParseException ex) {
-				Logger.getLogger(IntrospectingTokenService.class.getName()).log(Level.SEVERE, null, ex);
-			}
+			expireDate = new Date(token.get("exp").getAsLong() * 1000L);
 		}
 	}
 

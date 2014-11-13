@@ -24,9 +24,13 @@ import org.mitre.openid.connect.model.UserInfo;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
+
+import javax.swing.text.DateFormatter;
 
 import static com.google.common.collect.Sets.newHashSet;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -40,11 +44,13 @@ public class TestDefaultIntrospectionResultAssembler {
 
     private DefaultIntrospectionResultAssembler assembler = new DefaultIntrospectionResultAssembler();
 
+	private static DateFormatter dateFormat = new DateFormatter(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ"));    
+    
     @Test
-    public void shouldAssembleExpectedResultForAccessToken() {
+    public void shouldAssembleExpectedResultForAccessToken() throws ParseException {
 
         // given
-        OAuth2AccessTokenEntity accessToken = accessToken(new Date(123), scopes("foo", "bar"), "Bearer",
+        OAuth2AccessTokenEntity accessToken = accessToken(new Date(123 * 1000L), scopes("foo", "bar"), "Bearer",
                 authentication("name", request("clientId")));
 
         UserInfo userInfo = userInfo("sub");
@@ -56,7 +62,8 @@ public class TestDefaultIntrospectionResultAssembler {
         // then
         Map<String, Object> expected = new ImmutableMap.Builder<String, Object>()
                 .put("sub", "sub")
-                .put("exp", new Date(123))
+                .put("exp", 123L)
+                .put("expires_at", dateFormat.valueToString(new Date(123 * 1000L)))
                 .put("scope", "bar foo")
                 .put("active", Boolean.TRUE)
                 .put("user_id", "name")
@@ -67,10 +74,10 @@ public class TestDefaultIntrospectionResultAssembler {
     }
 
     @Test
-    public void shouldAssembleExpectedResultForAccessTokenWithoutUserInfo() {
+    public void shouldAssembleExpectedResultForAccessTokenWithoutUserInfo() throws ParseException {
 
         // given
-        OAuth2AccessTokenEntity accessToken = accessToken(new Date(123), scopes("foo", "bar"), "Bearer",
+        OAuth2AccessTokenEntity accessToken = accessToken(new Date(123 * 1000L), scopes("foo", "bar"), "Bearer",
                 authentication("name", request("clientId")));
 
         // when
@@ -80,7 +87,8 @@ public class TestDefaultIntrospectionResultAssembler {
         // then
         Map<String, Object> expected = new ImmutableMap.Builder<String, Object>()
                 .put("sub", "name")
-                .put("exp", new Date(123))
+                .put("exp", 123L)
+                .put("expires_at", dateFormat.valueToString(new Date(123 * 1000L)))
                 .put("scope", "bar foo")
                 .put("active", Boolean.TRUE)
                 .put("user_id", "name")
@@ -116,10 +124,10 @@ public class TestDefaultIntrospectionResultAssembler {
     }
 
     @Test
-    public void shouldAssembleExpectedResultForRefreshToken() {
+    public void shouldAssembleExpectedResultForRefreshToken() throws ParseException {
 
         // given
-        OAuth2RefreshTokenEntity refreshToken = refreshToken(new Date(123),
+        OAuth2RefreshTokenEntity refreshToken = refreshToken(new Date(123 * 1000L),
                 authentication("name", request("clientId", scopes("foo",  "bar"))));
 
         UserInfo userInfo = userInfo("sub");
@@ -131,7 +139,8 @@ public class TestDefaultIntrospectionResultAssembler {
         // then
         Map<String, Object> expected = new ImmutableMap.Builder<String, Object>()
                 .put("sub", "sub")
-                .put("exp", new Date(123))
+                .put("exp", 123L)
+                .put("expires_at", dateFormat.valueToString(new Date(123 * 1000L)))
                 .put("scope", "bar foo")
                 .put("active", Boolean.TRUE)
                 .put("user_id", "name")
@@ -141,10 +150,10 @@ public class TestDefaultIntrospectionResultAssembler {
     }
 
     @Test
-    public void shouldAssembleExpectedResultForRefreshTokenWithoutUserInfo() {
+    public void shouldAssembleExpectedResultForRefreshTokenWithoutUserInfo() throws ParseException {
 
         // given
-        OAuth2RefreshTokenEntity refreshToken = refreshToken(new Date(123),
+        OAuth2RefreshTokenEntity refreshToken = refreshToken(new Date(123 * 1000L),
                 authentication("name", request("clientId", scopes("foo",  "bar"))));
 
         // when
@@ -154,7 +163,8 @@ public class TestDefaultIntrospectionResultAssembler {
         // then
         Map<String, Object> expected = new ImmutableMap.Builder<String, Object>()
                 .put("sub", "name")
-                .put("exp", new Date(123))
+                .put("exp", 123L)
+                .put("expires_at", dateFormat.valueToString(new Date(123 * 1000L)))
                 .put("scope", "bar foo")
                 .put("active", Boolean.TRUE)
                 .put("user_id", "name")

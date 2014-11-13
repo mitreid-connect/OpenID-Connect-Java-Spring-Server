@@ -16,17 +16,24 @@
  ******************************************************************************/
 package org.mitre.oauth2.service.impl;
 
-import com.google.common.base.Joiner;
+import static com.google.common.collect.Maps.newLinkedHashMap;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Map;
+
+import javax.swing.text.DateFormatter;
+
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
 import org.mitre.oauth2.service.IntrospectionResultAssembler;
 import org.mitre.openid.connect.model.UserInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
-
-import static com.google.common.collect.Maps.newLinkedHashMap;
+import com.google.common.base.Joiner;
 
 /**
  * Default implementation of the {@link IntrospectionResultAssembler} interface.
@@ -34,6 +41,10 @@ import static com.google.common.collect.Maps.newLinkedHashMap;
 @Service
 public class DefaultIntrospectionResultAssembler implements IntrospectionResultAssembler {
 
+	private static Logger log = LoggerFactory.getLogger(DefaultIntrospectionResultAssembler.class);
+	
+	private static DateFormatter dateFormat = new DateFormatter(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ"));
+	
     @Override
     public Map<String, Object> assembleFrom(OAuth2AccessTokenEntity accessToken, UserInfo userInfo) {
 
@@ -45,7 +56,12 @@ public class DefaultIntrospectionResultAssembler implements IntrospectionResultA
         result.put("scope", Joiner.on(" ").join(accessToken.getScope()));
 
         if (accessToken.getExpiration() != null) {
-            result.put("exp", accessToken.getExpiration());
+            try {
+				result.put("expires_at", dateFormat.valueToString(accessToken.getExpiration()));
+				result.put("exp", accessToken.getExpiration().getTime() / 1000L);
+			} catch (ParseException e) {
+				log.error("Parse exception in token introspection", e);
+			}
         }
 
         if (userInfo != null) {
@@ -76,8 +92,14 @@ public class DefaultIntrospectionResultAssembler implements IntrospectionResultA
         result.put("scope", Joiner.on(" ").join(authentication.getOAuth2Request().getScope()));
 
         if (refreshToken.getExpiration() != null) {
-            result.put("exp", refreshToken.getExpiration());
+            try {
+				result.put("expires_at", dateFormat.valueToString(refreshToken.getExpiration()));
+				result.put("exp", refreshToken.getExpiration().getTime() / 1000L);
+			} catch (ParseException e) {
+				log.error("Parse exception in token introspection", e);
+			}
         }
+
 
         if (userInfo != null) {
             // if we have a UserInfo, use that for the subject
