@@ -208,7 +208,7 @@
 					<fieldset style="text-align: left" class="well">
 						<legend style="margin-bottom: 0;">Remember this decision:</legend>
 						<label for="remember-forever" class="radio"> 
-						<input type="radio" name="remember" id="remember-forever" value="until-revoked" checked="checked"> 
+						<input type="radio" name="remember" id="remember-forever" value="until-revoked"  ${ !consent ? 'checked="checked"' : '' }> 
 							remember this decision until I revoke it
 						</label> 
 						<label for="remember-hour" class="radio"> 
@@ -216,7 +216,7 @@
 							remember this decision for one hour
 						</label> 
 						<label for="remember-not" class="radio"> 
-						<input type="radio" name="remember" id="remember-not" value="none">
+						<input type="radio" name="remember" id="remember-not" value="none" ${ consent ? 'checked="checked"' : '' }>
 							prompt me again next time
 						</label>
 					</fieldset>

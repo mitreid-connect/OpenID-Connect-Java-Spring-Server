@@ -102,6 +102,10 @@ public class OAuthConfirmationController {
 			model.put("code", HttpStatus.FORBIDDEN);
 			return HttpCodeView.VIEWNAME;
 		}
+		
+		if (prompts.contains("consent")) {
+			model.put("consent", true);
+		}
 
 		//AuthorizationRequest clientAuth = (AuthorizationRequest) model.remove("authorizationRequest");
 
