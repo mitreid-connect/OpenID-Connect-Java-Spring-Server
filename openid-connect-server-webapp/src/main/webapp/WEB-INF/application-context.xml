@@ -73,7 +73,7 @@
 		<security:intercept-url pattern="/token" access="isAuthenticated()" />
 		<security:http-basic entry-point-ref="oauthAuthenticationEntryPoint" />
 		<!-- include this only if you need to authenticate clients via request parameters -->
-		<security:custom-filter ref="clientAssertiontokenEndpointFilter" after="PRE_AUTH_FILTER" /> <!-- this one has to go first -->
+		<security:custom-filter ref="clientAssertionTokenEndpointFilter" after="PRE_AUTH_FILTER" /> <!-- this one has to go first -->
 		<security:custom-filter ref="clientCredentialsTokenEndpointFilter" after="BASIC_AUTH_FILTER" />
 		<security:custom-filter ref="corsFilter" after="SECURITY_CONTEXT_FILTER" />
 		<security:access-denied-handler ref="oauthAccessDeniedHandler" />
@@ -128,6 +128,7 @@
 			authentication-manager-ref="clientAuthenticationManager">
 		<security:http-basic entry-point-ref="oauthAuthenticationEntryPoint" />
 <!-- 		<security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" /> -->
+		<security:custom-filter ref="clientAssertionIntrospectionEndpointFilter" after="PRE_AUTH_FILTER" /> <!-- this one has to go first -->
 		<security:custom-filter ref="corsFilter" after="SECURITY_CONTEXT_FILTER" />
 		<security:custom-filter ref="clientCredentialsIntrospectionEndpointFilter" after="BASIC_AUTH_FILTER" />
 	</security:http>
@@ -139,6 +140,7 @@
 			authentication-manager-ref="clientAuthenticationManager">
 		<security:http-basic entry-point-ref="oauthAuthenticationEntryPoint" />
 <!-- 		<security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" /> -->
+		<security:custom-filter ref="clientAssertionRevocationEndpointFilter" after="PRE_AUTH_FILTER" /> <!-- this one has to go first -->
 		<security:custom-filter ref="corsFilter" after="SECURITY_CONTEXT_FILTER" />
 		<security:custom-filter ref="clientCredentialsRevocationEndpointFilter" after="BASIC_AUTH_FILTER" />
 	</security:http>
@@ -168,11 +170,21 @@
 		<property name="filterProcessesUrl" value="/revoke"/>
 	</bean>
 	
-	<bean id="clientAssertiontokenEndpointFilter" class="org.mitre.openid.connect.assertion.JwtBearerClientAssertionTokenEndpointFilter">
+	<bean id="clientAssertionTokenEndpointFilter" class="org.mitre.openid.connect.assertion.JwtBearerClientAssertionTokenEndpointFilter">
 		<property name="authenticationManager" ref="clientAssertionAuthenticationManager" />
 		<property name="filterProcessesUrl" value="/token" />
 	</bean>
 
+	<bean id="clientAssertionIntrospectionEndpointFilter" class="org.mitre.openid.connect.assertion.JwtBearerClientAssertionTokenEndpointFilter">
+		<property name="authenticationManager" ref="clientAssertionAuthenticationManager" />
+		<property name="filterProcessesUrl" value="/introspect" />
+	</bean>
+
+	<bean id="clientAssertionRevocationEndpointFilter" class="org.mitre.openid.connect.assertion.JwtBearerClientAssertionTokenEndpointFilter">
+		<property name="authenticationManager" ref="clientAssertionAuthenticationManager" />
+		<property name="filterProcessesUrl" value="/revoke" />
+	</bean>
+	
 	<security:authentication-manager id="clientAuthenticationManager">
 		<security:authentication-provider user-service-ref="clientUserDetailsService" />
 	</security:authentication-manager>
