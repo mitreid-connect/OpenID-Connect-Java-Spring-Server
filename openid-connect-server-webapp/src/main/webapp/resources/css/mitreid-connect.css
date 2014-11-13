@@ -152,3 +152,10 @@ h1,label {
 .label-matched, .badge-matched {
 	background-color: #D1D1FF;
 }
+
+/* get rid of extraneous outline on tabs */
+
+.nav-tabs > .active > a, .nav-tabs > .active > a:hover {
+	outline: 0;
+}
+
