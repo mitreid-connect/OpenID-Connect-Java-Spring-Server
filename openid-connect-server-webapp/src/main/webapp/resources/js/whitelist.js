@@ -248,6 +248,9 @@ var WhiteListFormView = Backbone.View.extend({
 		}
 		
 		this.scopeCollection = new Backbone.Collection();
+
+		this.listWidgetViews = [];
+		
 	},
 
 	events:{
@@ -260,6 +263,11 @@ var WhiteListFormView = Backbone.View.extend({
     	e.preventDefault();
 		$('.control-group').removeClass('error');
 		
+        // sync any leftover collection items
+        _.each(this.listWidgetViews, function(v) {
+        	v.addItem($.Event('click'));
+        });
+        
 		// process allowed scopes
         var allowedScopes = this.scopeCollection.pluck("item");
 		
@@ -319,6 +327,7 @@ var WhiteListFormView = Backbone.View.extend({
 		
 		this.$el.html(this.template(json));
 		
+		this.listWidgetViews = [];
 		
         var _self = this;
         // build and bind scopes
@@ -326,10 +335,12 @@ var WhiteListFormView = Backbone.View.extend({
             _self.scopeCollection.add(new Backbone.Model({item:scope}));
         });
 
-        $("#scope .controls",this.el).html(new ListWidgetView({
+        var scopeView = new ListWidgetView({
         	placeholder: 'new scope here', 
         	autocomplete: this.options.client.scope, 
-        	collection: this.scopeCollection}).render().el);
+        	collection: this.scopeCollection});
+        $("#scope .controls",this.el).html(scopeView.render().el);
+        this.listWidgetViews.push(scopeView);
 		
 		
 		return this;

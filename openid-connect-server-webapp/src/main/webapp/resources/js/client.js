@@ -803,12 +803,10 @@ var ClientFormView = Backbone.View.extend({
 
         $('.control-group').removeClass('error');
 
-        
         // sync any leftover collection items
         _.each(this.listWidgetViews, function(v) {
         	v.addItem($.Event('click'));
         });
-        
         
         // build the scope object
         var scopes = this.scopeCollection.pluck("item");
