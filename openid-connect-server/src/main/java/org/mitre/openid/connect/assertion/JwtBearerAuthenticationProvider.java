@@ -190,7 +190,7 @@ public class JwtBearerAuthenticationProvider implements AuthenticationProvider {
 			// IFF we managed to get all the way down here, the token is valid
 			
 			// add in the ROLE_CLIENT authority
-			Set<GrantedAuthority> authorities = new HashSet<>(client.getAuthorities());
+			Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>(client.getAuthorities());
 			authorities.add(ROLE_CLIENT);
 			
 			return new JwtBearerAssertionAuthenticationToken(client.getClientId(), jwt, authorities);
