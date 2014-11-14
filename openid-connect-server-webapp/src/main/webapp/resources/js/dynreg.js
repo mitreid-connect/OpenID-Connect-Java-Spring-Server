@@ -176,6 +176,8 @@ var DynRegEditView = Backbone.View.extend({
         this.contactsCollection = new Backbone.Collection();
         this.defaultAcrValuesCollection = new Backbone.Collection();
         this.requestUrisCollection = new Backbone.Collection();
+        
+        this.listWidgetViews = [];
 	},
 	
 	load:function(callback) {
@@ -318,6 +320,11 @@ var DynRegEditView = Backbone.View.extend({
 
         $('.control-group').removeClass('error');
 
+        // sync any leftover collection items
+        _.each(this.listWidgetViews, function(v) {
+        	v.addItem($.Event('click'));
+        });
+        
         // build the scope object
         var scopes = this.scopeCollection.pluck("item").join(" ");
         
@@ -434,17 +441,21 @@ var DynRegEditView = Backbone.View.extend({
     render:function() {
 		$(this.el).html(this.template({client: this.model.toJSON(), userInfo: getUserInfo()}));
 		
-        var _self = this;
+		this.listWidgetViews = [];
+		
+		var _self = this;
 
         // build and bind registered redirect URI collection and view
         _.each(this.model.get("redirect_uris"), function (redirectUri) {
             _self.redirectUrisCollection.add(new URIModel({item:redirectUri}));
         });
 
-        $("#redirectUris .controls",this.el).html(new ListWidgetView({
+        var redirectUriView = new ListWidgetView({
         	type:'uri', 
         	placeholder: 'https://',
-        	collection: this.redirectUrisCollection}).render().el);
+        	collection: this.redirectUrisCollection});
+        $("#redirectUris .controls",this.el).html(redirectUriView.render().el);
+        this.listWidgetViews.push(redirectUriView);
         
         // build and bind scopes
         var scopes = this.model.get("scope");
@@ -453,40 +464,47 @@ var DynRegEditView = Backbone.View.extend({
             _self.scopeCollection.add(new Backbone.Model({item:scope}));
         });
 
-        $("#scope .controls",this.el).html(new ListWidgetView({
+        var scopeView = new ListWidgetView({
         	placeholder: 'new scope', 
         	autocomplete: _.uniq(_.flatten(this.options.systemScopeList.pluck("value"))), 
-            collection: this.scopeCollection}).render().el);
+            collection: this.scopeCollection});
+        $("#scope .controls",this.el).html(scopeView.render().el);
+        this.listWidgetViews.push(scopeView);
 
         // build and bind contacts
         _.each(this.model.get('contacts'), function (contact) {
         	_self.contactsCollection.add(new Backbone.Model({item:contact}));
         });
         
-        $("#contacts .controls div", this.el).html(new ListWidgetView({
+        var contactView = new ListWidgetView({
         	placeholder: 'new contact',
-        	collection: this.contactsCollection}).render().el);
-        
+        	collection: this.contactsCollection});
+        $("#contacts .controls div", this.el).html(contactView.render().el);
+        this.listWidgetViews.push(contactView);
         
         // build and bind request URIs
         _.each(this.model.get('request_uris'), function (requestUri) {
         	_self.requestUrisCollection.add(new URIModel({item:requestUri}));
         });
         
-        $('#requestUris .controls', this.el).html(new ListWidgetView({
+        var requestUriView = new ListWidgetView({
         	type: 'uri',
         	placeholder: 'https://',
-        	collection: this.requestUrisCollection}).render().el);
+        	collection: this.requestUrisCollection});
+        $('#requestUris .controls', this.el).html(requestUriView.render().el);
+        this.listWidgetViews.push(requestUriView);
         
         // build and bind default ACR values
         _.each(this.model.get('default_acr_values'), function (defaultAcrValue) {
         	_self.defaultAcrValuesCollection.add(new Backbone.Model({item:defaultAcrValue}));
         });
         
-        $('#defaultAcrValues .controls', this.el).html(new ListWidgetView({
+        var defaultAcrView = new ListWidgetView({
         	placeholder: 'new ACR value',
         	// TODO: autocomplete from spec
-        	collection: this.defaultAcrValuesCollection}).render().el);
+        	collection: this.defaultAcrValuesCollection});
+        $('#defaultAcrValues .controls', this.el).html(defaultAcrView.render().el);
+        this.listWidgetViews.push(defaultAcrView);
 
         this.toggleClientCredentials();
         this.previewLogo();
