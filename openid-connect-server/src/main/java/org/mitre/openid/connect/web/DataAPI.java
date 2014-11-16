@@ -66,6 +66,9 @@ public class DataAPI {
     @Autowired
 	private MITREidDataService_1_1 dataService_1_1;
 
+    @Autowired
+	private MITREidDataService_1_1 dataService_1_2;
+
 	@RequestMapping(method = RequestMethod.POST, consumes = "application/json")
 	public String importData(Reader in, Model m) throws IOException {
 
@@ -82,6 +85,8 @@ public class DataAPI {
 						dataService_1_0.importData(reader);
                     } else if (name.equals(MITREidDataService.MITREID_CONNECT_1_1)) {
 						dataService_1_1.importData(reader);
+                    } else if (name.equals(MITREidDataService.MITREID_CONNECT_1_2)) {
+                    	dataService_1_2.importData(reader);
 					} else {
 						// consume the next bit silently for now
 						logger.debug("Skipping value for " + name); // TODO: write these out?
@@ -122,7 +127,7 @@ public class DataAPI {
 			writer.value(prin.getName());
 
 			// delegate to the service to do the actual export
-			dataService_1_1.exportData(writer);
+			dataService_1_2.exportData(writer);
 
 			writer.endObject(); // end root
 			writer.close();

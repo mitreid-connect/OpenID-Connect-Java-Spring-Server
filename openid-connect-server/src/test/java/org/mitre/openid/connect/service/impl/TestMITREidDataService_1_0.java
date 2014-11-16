@@ -1,9 +1,21 @@
 package org.mitre.openid.connect.service.impl;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.gson.stream.JsonReader;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Matchers.isNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
+
 import java.io.IOException;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,8 +25,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,13 +49,8 @@ import org.mitre.openid.connect.util.DateUtil;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.isA;
-import static org.mockito.Matchers.isNull;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import static org.mockito.Mockito.*;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
@@ -52,6 +58,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
+
+import com.google.common.collect.ImmutableSet;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TestMITREidDataService_1_0 {
@@ -932,4 +942,11 @@ public class TestMITREidDataService_1_0 {
         assertThat(savedRefreshTokens.get(0).getAuthenticationHolder().getId(), equalTo(356L));
         assertThat(savedRefreshTokens.get(1).getAuthenticationHolder().getId(), equalTo(357L));
     }
+    
+    @Test(expected = UnsupportedOperationException.class)
+    public void testExportDisabled() throws IOException {
+    	JsonWriter writer = new JsonWriter(new StringWriter());
+    	dataService.exportData(writer);
+    }
+    
 }

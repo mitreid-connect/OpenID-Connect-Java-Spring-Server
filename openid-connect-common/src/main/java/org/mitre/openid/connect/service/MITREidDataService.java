@@ -28,10 +28,11 @@ import com.google.gson.stream.JsonWriter;
 public interface MITREidDataService {
 
 	/**
-	 * Data member for 1.0 configuration
+	 * Data member for 1.X configurations
 	 */
 	public static final String MITREID_CONNECT_1_0 = "mitreid-connect-1.0";
     public static final String MITREID_CONNECT_1_1 = "mitreid-connect-1.1";
+    public static final String MITREID_CONNECT_1_2 = "mitreid-connect-1.2";
 
     // member names
     public static final String REFRESHTOKENS = "refreshTokens";
