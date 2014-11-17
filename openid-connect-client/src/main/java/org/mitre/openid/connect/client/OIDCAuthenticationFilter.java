@@ -123,7 +123,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 	/**
 	 * OpenIdConnectAuthenticationFilter constructor
 	 */
-	protected OIDCAuthenticationFilter() {
+	public OIDCAuthenticationFilter() {
 		super(FILTER_PROCESSES_URL);
 		targetSuccessHandler.passthrough = super.getSuccessHandler();
 		super.setAuthenticationSuccessHandler(targetSuccessHandler);
