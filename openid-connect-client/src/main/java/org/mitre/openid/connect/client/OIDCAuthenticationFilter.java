@@ -568,9 +568,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 
 				OIDCAuthenticationToken token = new OIDCAuthenticationToken(userId, idClaims.getIssuer(), serverConfig, idTokenValue, accessTokenValue, refreshTokenValue);
 
-				Authentication authentication = this.getAuthenticationManager().authenticate(token);
-
-				return authentication;
+				return token;
 			} catch (ParseException e) {
 				throw new AuthenticationServiceException("Couldn't parse idToken: ", e);
 			}
