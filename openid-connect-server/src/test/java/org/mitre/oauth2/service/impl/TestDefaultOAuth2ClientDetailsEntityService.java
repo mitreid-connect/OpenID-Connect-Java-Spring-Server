@@ -16,11 +16,13 @@
  ******************************************************************************/
 package org.mitre.oauth2.service.impl;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Before;
@@ -39,7 +41,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 
 import com.google.common.collect.Sets;
@@ -78,6 +82,31 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 	@Before
 	public void prepare() {
 		Mockito.reset(clientRepository, tokenRepository, approvedSiteService, whitelistedSiteService, blacklistedSiteService, scopeService, statsService);
+		
+		Mockito.when(clientRepository.saveClient(Mockito.any(ClientDetailsEntity.class))).thenAnswer(new Answer<ClientDetailsEntity>() {
+			@Override
+			public ClientDetailsEntity answer(InvocationOnMock invocation) throws Throwable {
+				Object[] args = invocation.getArguments();
+				return (ClientDetailsEntity) args[0];
+			}
+		});
+		
+		Mockito.when(clientRepository.updateClient(Mockito.anyLong(), Mockito.any(ClientDetailsEntity.class))).thenAnswer(new Answer<ClientDetailsEntity>() {
+			@Override
+			public ClientDetailsEntity answer(InvocationOnMock invocation) throws Throwable {
+				Object[] args = invocation.getArguments();
+				return (ClientDetailsEntity) args[1];
+			}
+		});
+		
+		Mockito.when(scopeService.removeRestrictedScopes(Mockito.anySet())).thenAnswer(new Answer<Set<String>>() {
+			@Override
+			public Set<String> answer(InvocationOnMock invocation) throws Throwable {
+				Object[] args = invocation.getArguments();
+				return (Set<String>) args[0];
+			}
+		});
+		
 	}
 
 	/**
@@ -128,20 +157,15 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 	@Test
 	public void saveNewClient_yesOfflineAccess() {
 
-		ClientDetailsEntity client = Mockito.mock(ClientDetailsEntity.class);
-		Mockito.when(client.getId()).thenReturn(null);
+		ClientDetailsEntity client = new ClientDetailsEntity();
+		
+		Set<String> grantTypes = new HashSet<String>();
+		grantTypes.add("refresh_token");
+		client.setGrantTypes(grantTypes);
 
-		Mockito.when(client.isAllowRefresh()).thenReturn(true);
+		client = service.saveNewClient(client);
 
-		// scopes returned by client entities are Strings
-		@SuppressWarnings("unchecked")
-		Set<String> scopes = Mockito.mock(Set.class);
-
-		Mockito.when(client.getScope()).thenReturn(scopes);
-
-		service.saveNewClient(client);
-
-		Mockito.verify(scopes).add(SystemScopeService.OFFLINE_ACCESS);
+		assertThat(client.getScope().contains(SystemScopeService.OFFLINE_ACCESS), is(equalTo(true)));
 	}
 
 	/**
@@ -150,20 +174,11 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 	@Test
 	public void saveNewClient_noOfflineAccess() {
 
-		ClientDetailsEntity client = Mockito.mock(ClientDetailsEntity.class);
-		Mockito.when(client.getId()).thenReturn(null);
+		ClientDetailsEntity client = new ClientDetailsEntity();
+		
+		client = service.saveNewClient(client);
 
-		Mockito.when(client.isAllowRefresh()).thenReturn(false);
-
-		// scopes returned by client entities are Strings
-		@SuppressWarnings("unchecked")
-		Set<String> scopes = Mockito.mock(Set.class);
-
-		Mockito.when(client.getScope()).thenReturn(scopes);
-
-		service.saveNewClient(client);
-
-		Mockito.verify(scopes).remove(SystemScopeService.OFFLINE_ACCESS);
+		assertThat(client.getScope().contains(SystemScopeService.OFFLINE_ACCESS), is(equalTo(false)));
 	}
 
 	@Test
@@ -276,38 +291,29 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 	@Test
 	public void updateClient_yesOfflineAccess() {
 
-		ClientDetailsEntity oldClient = Mockito.mock(ClientDetailsEntity.class);
-		ClientDetailsEntity newClient = Mockito.mock(ClientDetailsEntity.class);
+		ClientDetailsEntity oldClient = new ClientDetailsEntity();
+		ClientDetailsEntity client = new ClientDetailsEntity();
+		
+		Set<String> grantTypes = new HashSet<String>();
+		grantTypes.add("refresh_token");
+		client.setGrantTypes(grantTypes);
 
-		Mockito.when(newClient.isAllowRefresh()).thenReturn(true);
+		client = service.updateClient(oldClient, client);
 
-		// scopes returned by client entities are Strings
-		@SuppressWarnings("unchecked")
-		Set<String> scopes = Mockito.mock(Set.class);
-
-		Mockito.when(newClient.getScope()).thenReturn(scopes);
-
-		service.updateClient(oldClient, newClient);
-
-		Mockito.verify(scopes).add(SystemScopeService.OFFLINE_ACCESS);
+		assertThat(client.getScope().contains(SystemScopeService.OFFLINE_ACCESS), is(equalTo(true)));
 	}
 
 	@Test
 	public void updateClient_noOfflineAccess() {
 
-		ClientDetailsEntity oldClient = Mockito.mock(ClientDetailsEntity.class);
-		ClientDetailsEntity newClient = Mockito.mock(ClientDetailsEntity.class);
+		ClientDetailsEntity oldClient = new ClientDetailsEntity();
+		
+		oldClient.getScope().add(SystemScopeService.OFFLINE_ACCESS);
+		
+		ClientDetailsEntity client = new ClientDetailsEntity();
+		
+		client = service.updateClient(oldClient, client);
 
-		Mockito.when(newClient.isAllowRefresh()).thenReturn(false);
-
-		// scopes returned by client entities are Strings
-		@SuppressWarnings("unchecked")
-		Set<String> scopes = Mockito.mock(Set.class);
-
-		Mockito.when(newClient.getScope()).thenReturn(scopes);
-
-		service.updateClient(oldClient, newClient);
-
-		Mockito.verify(scopes).remove(SystemScopeService.OFFLINE_ACCESS);
+		assertThat(client.getScope().contains(SystemScopeService.OFFLINE_ACCESS), is(equalTo(false)));
 	}
 }
