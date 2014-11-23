@@ -202,21 +202,18 @@ public class ProtectedResourceRegistrationEndpoint {
 	}
 
 	private ClientDetailsEntity validateScopes(ClientDetailsEntity newClient) throws ValidationException {
-		// set of scopes that are OK for clients to dynamically register for
-		Set<SystemScope> dynScopes = scopeService.getDynReg();
 
+		// note that protected resources can register for any scopes, even ones not used by the sysadmin
+		
 		// scopes that the client is asking for
 		Set<SystemScope> requestedScopes = scopeService.fromStrings(newClient.getScope());
 
-		// the scopes that the client can have must be a subset of the dynamically allowed scopes
-		Set<SystemScope> allowedScopes = Sets.intersection(dynScopes, requestedScopes);
-
 		// if the client didn't ask for any, give them the defaults
-		if (allowedScopes == null || allowedScopes.isEmpty()) {
-			allowedScopes = scopeService.getDefaults();
+		if (requestedScopes == null || requestedScopes.isEmpty()) {
+			requestedScopes = scopeService.getDefaults();
 		}
 
-		newClient.setScope(scopeService.toStrings(allowedScopes));
+		newClient.setScope(scopeService.toStrings(requestedScopes));
 		
 		return newClient;
 	}
