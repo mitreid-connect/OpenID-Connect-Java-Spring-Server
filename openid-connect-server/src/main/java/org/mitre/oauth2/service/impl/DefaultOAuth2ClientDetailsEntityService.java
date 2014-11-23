@@ -108,18 +108,28 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 			client = generateClientId(client);
 		}
 
-		// if the client is flagged to allow for refresh tokens, make sure it's got the right granted scopes
-		if (client.isAllowRefresh()) {
-			client.getScope().add(SystemScopeService.OFFLINE_ACCESS);
-		} else {
-			client.getScope().remove(SystemScopeService.OFFLINE_ACCESS);
-		}
+		// for refresh tokens, ensure consistency between grant types and tokens
+		ensureRefreshTokenConsistency(client);
 
 		// timestamp this to right now
 		client.setCreatedAt(new Date());
 
 
 		// check the sector URI
+		checkSectorIdentifierUri(client);
+
+
+		// make sure a client doesn't get any special system scopes
+		client.setScope(scopeService.removeRestrictedScopes(client.getScope()));
+
+		ClientDetailsEntity c = clientRepository.saveClient(client);
+
+		statsService.resetCache();
+
+		return c;
+	}
+
+	private void checkSectorIdentifierUri(ClientDetailsEntity client) {
 		if (!Strings.isNullOrEmpty(client.getSectorIdentifierUri())) {
 			try {
 				List<String> redirects = sectorRedirects.get(client.getSectorIdentifierUri());
@@ -136,16 +146,13 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 				throw new IllegalArgumentException("Unable to load sector identifier URI: " + client.getSectorIdentifierUri());
 			}
 		}
+	}
 
-
-		// make sure a client doesn't get any special system scopes
-		client.setScope(scopeService.removeRestrictedScopes(client.getScope()));
-
-		ClientDetailsEntity c = clientRepository.saveClient(client);
-
-		statsService.resetCache();
-
-		return c;
+	private void ensureRefreshTokenConsistency(ClientDetailsEntity client) {
+		if (client.getAuthorizedGrantTypes().contains("refresh_token") || client.getScope().contains(SystemScopeService.OFFLINE_ACCESS)) {
+			client.getScope().add(SystemScopeService.OFFLINE_ACCESS);
+			client.getAuthorizedGrantTypes().add("refresh_token");
+		}
 	}
 
 	/**
@@ -230,30 +237,10 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 			}
 
 			// if the client is flagged to allow for refresh tokens, make sure it's got the right scope
-			if (newClient.isAllowRefresh()) {
-				newClient.getScope().add(SystemScopeService.OFFLINE_ACCESS);
-			} else {
-				newClient.getScope().remove(SystemScopeService.OFFLINE_ACCESS);
-			}
-
+			ensureRefreshTokenConsistency(newClient);
+			
 			// check the sector URI
-			if (!Strings.isNullOrEmpty(newClient.getSectorIdentifierUri())) {
-				try {
-					List<String> redirects = sectorRedirects.get(newClient.getSectorIdentifierUri());
-
-					if (newClient.getRegisteredRedirectUri() != null) {
-						for (String uri : newClient.getRegisteredRedirectUri()) {
-							if (!redirects.contains(uri)) {
-								throw new IllegalArgumentException("Requested Redirect URI " + uri + " is not listed at sector identifier " + redirects);
-							}
-						}
-					}
-				} catch (UncheckedExecutionException ue) {
-					throw new IllegalArgumentException("Unable to load sector identifier URI: " + newClient.getSectorIdentifierUri());
-				} catch (ExecutionException e) {
-					throw new IllegalArgumentException("Unable to load sector identifier URI: " + newClient.getSectorIdentifierUri());
-				}
-			}
+			checkSectorIdentifierUri(newClient);
 
 			// make sure a client doesn't get any special system scopes
 			newClient.setScope(scopeService.removeRestrictedScopes(newClient.getScope()));
