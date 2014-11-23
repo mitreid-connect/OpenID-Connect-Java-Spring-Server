@@ -370,7 +370,6 @@ var DynRegEditView = Backbone.View.extend({
             sector_identifier_uri: $('#sectorIdentifierUri input').val(),
             initiate_login_uri: $('#initiateLoginUri input').val(),
             post_logout_redirect_uri: $('#postLogoutRedirectUri input').val(),
-            reuse_refresh_token: $('#reuseRefreshToken').is(':checked'),
             require_auth_time: $('#requireAuthTime input').is(':checked'),
             default_max_age: parseInt($('#defaultMaxAge input').val()),
             contacts: contacts,
