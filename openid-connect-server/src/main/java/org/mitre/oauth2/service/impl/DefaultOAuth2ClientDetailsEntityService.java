@@ -149,7 +149,8 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 	}
 
 	private void ensureRefreshTokenConsistency(ClientDetailsEntity client) {
-		if (client.getAuthorizedGrantTypes().contains("refresh_token") || client.getScope().contains(SystemScopeService.OFFLINE_ACCESS)) {
+		if (client.getAuthorizedGrantTypes().contains("refresh_token") 
+				|| client.getScope().contains(SystemScopeService.OFFLINE_ACCESS)) {
 			client.getScope().add(SystemScopeService.OFFLINE_ACCESS);
 			client.getAuthorizedGrantTypes().add("refresh_token");
 		}
