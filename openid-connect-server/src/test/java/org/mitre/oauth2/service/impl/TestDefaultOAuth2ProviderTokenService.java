@@ -119,6 +119,7 @@ public class TestDefaultOAuth2ProviderTokenService {
 		Mockito.when(refreshToken.isExpired()).thenReturn(false);
 
 		authRequest = Mockito.mock(AuthorizationRequest.class);
+		Mockito.when(authRequest.getClientId()).thenReturn(clientId);
 
 		storedAuthRequest = Mockito.mock(AuthorizationRequest.class);
 		storedAuthentication = Mockito.mock(OAuth2Authentication.class);
