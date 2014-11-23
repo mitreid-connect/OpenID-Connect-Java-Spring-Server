@@ -264,6 +264,9 @@
                     <label class="checkbox">
                         <input id="grantTypes-redelegate" type="checkbox" <%-($.inArray("urn:ietf:params:oauth:grant_type:redelegate", client.grant_types) > -1 ? 'checked' : '')%>> redelegate
                     </label>
+                    <label class="checkbox">
+                        <input id="grantTypes-refresh_token" type="checkbox" <%-($.inArray("refresh_token", client.grant_types) > -1 ? 'checked' : '')%>> refresh token
+                    </label>
 
                 </div>
             </div>
