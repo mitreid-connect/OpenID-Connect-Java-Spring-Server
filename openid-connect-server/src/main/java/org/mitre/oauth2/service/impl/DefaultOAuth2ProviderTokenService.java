@@ -235,7 +235,14 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		ClientDetailsEntity client = refreshToken.getClient();
 
 		AuthenticationHolderEntity authHolder = refreshToken.getAuthenticationHolder();
-
+		
+		// make sure that the client requesting the token is the one who owns the refresh token
+		ClientDetailsEntity requestingClient = clientDetailsService.loadClientByClientId(authRequest.getClientId());
+		if (requestingClient.getClientId() != client.getClientId()) {
+			tokenRepository.removeRefreshToken(refreshToken);
+			throw new InvalidClientException("Client does not own the presented refresh token");
+		}
+		
 		//Make sure this client allows access token refreshing
 		if (!client.isAllowRefresh()) {
 			throw new InvalidClientException("Client does not allow refreshing access token!");
