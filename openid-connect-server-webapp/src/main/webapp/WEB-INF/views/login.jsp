@@ -6,7 +6,8 @@
 <!--
 
 $(document).ready(function() {
-	$('#j_username').focus();
+	// select the appropriate field based on context
+	$('#<c:out value="${ login_hint != null ? 'j_password' : 'j_username' }" />').focus();
 });
 
 //-->
@@ -29,7 +30,7 @@ $(document).ready(function() {
 				<div>
 					<div class="input-prepend input-block-level">
 						<span class="add-on"><i class="icon-user"></i></span>
-						<input type="text" placeholder="Username" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false" value="" id="j_username" name="j_username">
+						<input type="text" placeholder="Username" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false" value="<c:out value="${ login_hint }" />" id="j_username" name="j_username">
 					</div>
 				</div>
 				<div>

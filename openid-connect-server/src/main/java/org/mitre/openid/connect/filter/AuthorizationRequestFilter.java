@@ -54,10 +54,10 @@ import com.google.common.base.Strings;
  * @author jricher
  *
  */
-@Component("promptFilter")
-public class PromptFilter extends GenericFilterBean {
+@Component("authRequestFilter")
+public class AuthorizationRequestFilter extends GenericFilterBean {
 
-	private Logger logger = LoggerFactory.getLogger(PromptFilter.class);
+	private Logger logger = LoggerFactory.getLogger(AuthorizationRequestFilter.class);
 
 	public final static String PROMPTED = "PROMPT_FILTER_PROMPTED";
 	public final static String PROMPT_REQUESTED = "PROMPT_FILTER_REQUESTED";
@@ -76,6 +76,7 @@ public class PromptFilter extends GenericFilterBean {
 
 		HttpServletRequest request = (HttpServletRequest) req;
 		HttpServletResponse response = (HttpServletResponse) res;
+		HttpSession session = request.getSession();
 
 		// skip everything that's not an authorize URL
 		if (!request.getServletPath().startsWith("/authorize")) {
@@ -96,6 +97,15 @@ public class PromptFilter extends GenericFilterBean {
 			// no need to worry about this here, it would be caught elsewhere
 		}
 
+		
+		// save the login hint to the session
+		if (authRequest.getExtensions().get("login_hint") != null) {
+			session.setAttribute("login_hint", authRequest.getExtensions().get("login_hint"));
+		} else {
+			session.removeAttribute("login_hint");
+		}
+		
+		
 		if (authRequest.getExtensions().get("prompt") != null) {
 			// we have a "prompt" parameter
 			String prompt = (String)authRequest.getExtensions().get("prompt");
@@ -119,7 +129,6 @@ public class PromptFilter extends GenericFilterBean {
 			} else if (prompts.contains("login")) {
 
 				// first see if the user's already been prompted in this session
-				HttpSession session = request.getSession();
 				if (session.getAttribute(PROMPTED) == null) {
 					// user hasn't been PROMPTED yet, we need to check
 
@@ -160,7 +169,6 @@ public class PromptFilter extends GenericFilterBean {
 
 			if (max != null) {
 
-				HttpSession session = request.getSession();
 				Date authTime = (Date) session.getAttribute(AuthenticationTimeStamper.AUTH_TIMESTAMP);
 
 				Date now = new Date();
