@@ -191,8 +191,7 @@ public class OAuthConfirmationController {
 
 		// if the client is over a week old and has more than one registration, don't give such a big warning
 		// instead, tag as "Generally Recognized As Safe (gras)
-		Date lastWeek = new Date(System.currentTimeMillis() + (60 * 60 * 24 * 7 * 1000));
-		//Date lastWeek = new Date(System.currentTimeMillis() - (60 * 60 * 24 * 7 * 1000));
+		Date lastWeek = new Date(System.currentTimeMillis() - (60 * 60 * 24 * 7 * 1000));
 		if (count > 1 && client.getCreatedAt() != null && client.getCreatedAt().before(lastWeek)) {
 			model.put("gras", true);
 		} else {
