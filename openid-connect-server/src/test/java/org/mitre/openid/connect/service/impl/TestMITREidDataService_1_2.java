@@ -1477,9 +1477,9 @@ public class TestMITREidDataService_1_2 {
 				"\"" + MITREidDataService.SYSTEMSCOPES + "\": [], " +
 				"\"" + MITREidDataService.AUTHENTICATIONHOLDERS + "\": [" +
 				
-				"{\"id\":1,\"authentication\":{\"clientAuthorization\":{\"clientId\":\"client1\",\"redirectUri\":\"http://foo.com\"},"
+				"{\"id\":1,\"authentication\":{\"authorizationRequest\":{\"clientId\":\"client1\",\"redirectUri\":\"http://foo.com\"},"
                 + "\"userAuthentication\":null}}," +
-				"{\"id\":2,\"authentication\":{\"clientAuthorization\":{\"clientId\":\"client2\",\"redirectUri\":\"http://bar.com\"},"
+				"{\"id\":2,\"authentication\":{\"authorizationRequest\":{\"clientId\":\"client2\",\"redirectUri\":\"http://bar.com\"},"
 				+ "\"userAuthentication\":null}}" +
 				"  ]" +
 				"}";
@@ -1752,9 +1752,9 @@ public class TestMITREidDataService_1_2 {
 				"\"" + MITREidDataService.BLACKLISTEDSITES + "\": [], " +
 				"\"" + MITREidDataService.AUTHENTICATIONHOLDERS + "\": [" +
 				
-				"{\"id\":1,\"authentication\":{\"clientAuthorization\":{\"clientId\":\"client1\",\"redirectUri\":\"http://foo.com\"},"
+				"{\"id\":1,\"authentication\":{\"authorizationRequest\":{\"clientId\":\"client1\",\"redirectUri\":\"http://foo.com\"},"
                 + "\"userAuthentication\":null}}," +
-				"{\"id\":2,\"authentication\":{\"clientAuthorization\":{\"clientId\":\"client2\",\"redirectUri\":\"http://bar.com\"},"
+				"{\"id\":2,\"authentication\":{\"authorizationRequest\":{\"clientId\":\"client2\",\"redirectUri\":\"http://bar.com\"},"
 				+ "\"userAuthentication\":null}}" +
 				"  ]," +
 				"\"" + MITREidDataService.REFRESHTOKENS + "\": [" +

@@ -207,8 +207,8 @@ public class MITREidDataService_1_2 extends MITREidDataService_1_X {
             writer.name("ownerId").value(holder.getOwnerId());
             writer.name("authentication");
             writer.beginObject();
+            writer.name("authorizationRequest");
             OAuth2Authentication oa2Auth = holder.getAuthentication();
-            writer.name("clientAuthorization");
             writeAuthorizationRequest(oa2Auth.getOAuth2Request(), writer);
             String userAuthentication = base64UrlEncodeObject(oa2Auth.getUserAuthentication());
             writer.name("userAuthentication").value(userAuthentication);
@@ -658,7 +658,7 @@ public class MITREidDataService_1_2 extends MITREidDataService_1_X {
                             //not needed
                             reader.skipValue();
                         } else if (name.equals("authentication")) {
-                            OAuth2Request clientAuthorization = null;
+                            OAuth2Request authorizationRequest = null;
                             Authentication userAuthentication = null;
                             reader.beginObject();
                             while (reader.hasNext()) {
@@ -667,8 +667,8 @@ public class MITREidDataService_1_2 extends MITREidDataService_1_X {
                                         continue;
                                     case NAME:
                                         String subName = reader.nextName();
-                                        if (subName.equals("clientAuthorization")) {
-                                            clientAuthorization = readAuthorizationRequest(reader);
+                                        if (subName.equals("authorizationRequest")) {
+                                            authorizationRequest = readAuthorizationRequest(reader);
                                         } else if (subName.equals("userAuthentication")) {
                                         	if (reader.peek() == JsonToken.NULL) {
                                         		reader.skipValue();
@@ -688,7 +688,7 @@ public class MITREidDataService_1_2 extends MITREidDataService_1_X {
                                 }
                             }
                             reader.endObject();
-                            OAuth2Authentication auth = new OAuth2Authentication(clientAuthorization, userAuthentication);
+                            OAuth2Authentication auth = new OAuth2Authentication(authorizationRequest, userAuthentication);
                             ahe.setAuthentication(auth);
                         } else {
                             logger.debug("Found unexpected entry");
