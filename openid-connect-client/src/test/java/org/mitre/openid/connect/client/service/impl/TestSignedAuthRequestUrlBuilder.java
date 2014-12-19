@@ -16,7 +16,9 @@
  ******************************************************************************/
 package org.mitre.openid.connect.client.service.impl;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -44,8 +46,8 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.nimbusds.jose.Algorithm;
 import com.nimbusds.jose.jwk.JWK;
-import com.nimbusds.jose.jwk.KeyUse;
 import com.nimbusds.jose.jwk.RSAKey;
+import com.nimbusds.jose.jwk.KeyUse;
 import com.nimbusds.jose.util.Base64URL;
 import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
@@ -89,7 +91,6 @@ public class TestSignedAuthRequestUrlBuilder {
 
 	@Before
 	public void prepare() throws NoSuchAlgorithmException, InvalidKeySpecException {
-
 		RSAKey key = new RSAKey(new Base64URL(n), new Base64URL(e), new Base64URL(d), KeyUse.SIGNATURE, null, new Algorithm(alg), kid, null, null, null);
 		Map<String, JWK> keys = Maps.newHashMap();
 		keys.put("client", key);
@@ -115,14 +116,59 @@ public class TestSignedAuthRequestUrlBuilder {
 	 */
 	@Test
 	public void buildAuthRequestUrl() {
-
 		String requestUri = urlBuilder.buildAuthRequestUrl(serverConfig, clientConfig, redirectUri, nonce, state, options);
 
-		// parsing the result
+		UriComponentsBuilder builder = null;
+		try {
+			builder = UriComponentsBuilder.fromUri(new URI(requestUri));
+		} catch (URISyntaxException e1) {
+			fail("URISyntaxException was thrown.");
+		}
+
+		UriComponents components = builder.build();
+		String jwtString = components.getQueryParams().get("request").get(0);
+		ReadOnlyJWTClaimsSet claims = null;
+		try {
+			SignedJWT jwt = SignedJWT.parse(jwtString);
+			claims = jwt.getJWTClaimsSet();
+		} catch (ParseException e) {
+			fail("ParseException was thrown.");
+		}
+		assertEquals(responseType, claims.getClaim("response_type"));
+		assertEquals(clientConfig.getClientId(), claims.getClaim("client_id"));
+
+		List<String> scopeList = Arrays.asList(((String) claims.getClaim("scope")).split(" "));
+		assertTrue(scopeList.containsAll(clientConfig.getScope()));
+
+		assertEquals(redirectUri, claims.getClaim("redirect_uri"));
+		assertEquals(nonce, claims.getClaim("nonce"));
+		assertEquals(state, claims.getClaim("state"));
+		for (String claim : options.keySet()) {
+			assertEquals(options.get(claim), claims.getClaim(claim));
+		}
+	}
+	@Test
+	public void buildAuthRequestUrlWithNonce() {
+		executeTestWithOrWithoutNonce(true);
+	}
+	@Test
+	public void buildAuthRequestUrlWithoutNonce() {
+		executeTestWithOrWithoutNonce(false);
+	}
+
+	private void executeTestWithOrWithoutNonce(boolean useNonce) {
+		String actualUrl;
+		StringBuilder expectedUrl = createsExcpectedURL();
+		if(useNonce){
+			expectedUrl.append("&nonce=34fasf3ds");
+			actualUrl = urlBuilder.buildAuthRequestUrl(serverConfig, clientConfig, "https://client.example.org/","34fasf3ds", "af0ifjsldkj", options);
+		}else{
+			actualUrl = urlBuilder.buildAuthRequestUrl(serverConfig, clientConfig, "https://client.example.org/","af0ifjsldkj", options);
+		}
 		UriComponentsBuilder builder = null;
 
 		try {
-			builder = UriComponentsBuilder.fromUri(new URI(requestUri));
+			builder = UriComponentsBuilder.fromUri(new URI(actualUrl));
 		} catch (URISyntaxException e1) {
 			fail("URISyntaxException was thrown.");
 		}
@@ -137,24 +183,48 @@ public class TestSignedAuthRequestUrlBuilder {
 		} catch (ParseException e) {
 			fail("ParseException was thrown.");
 		}
-
-		assertEquals(responseType, claims.getClaim("response_type"));
-		assertEquals(clientConfig.getClientId(), claims.getClaim("client_id"));
-
-		List<String> scopeList = Arrays.asList(((String) claims.getClaim("scope")).split(" "));
-		assertTrue(scopeList.containsAll(clientConfig.getScope()));
-
-		assertEquals(redirectUri, claims.getClaim("redirect_uri"));
-		assertEquals(nonce, claims.getClaim("nonce"));
-		assertEquals(state, claims.getClaim("state"));
+		
+		String unsignedUrl = "https://server.example.com/authorize?" +
+							 "response_type="+
+		                     claims.getClaim("response_type")+
+		                     "&client_id="+
+		                     claims.getClaim("client_id")+
+		                     "&scope="+
+		                     claims.getClaim("scope").toString().replace(" ","+" )+
+		                     "&redirect_uri="+
+		                     claims.getClaim("redirect_uri").toString().replace(":", "%3A").replace("/", "%2F")+
+		                     "&state="+
+		                     claims.getClaim("state")+
+		                     "&foo=";
+		
 		for (String claim : options.keySet()) {
-			assertEquals(options.get(claim), claims.getClaim(claim));
+			unsignedUrl+=claims.getClaim(claim);
 		}
+		
+		if(useNonce){
+			unsignedUrl+= "&nonce="+
+		                  claims.getClaim("nonce");
+		}
+		
+		assertThat(unsignedUrl, equalTo(expectedUrl.toString()));
+	}
+	
+	
+
+	private StringBuilder createsExcpectedURL() {
+		StringBuilder expectedUrl = new StringBuilder();
+		expectedUrl.append("https://server.example.com/authorize?");
+		expectedUrl.append("response_type=code");
+		expectedUrl.append("&client_id=s6BhdRkqt3");
+		expectedUrl.append("&scope=openid+profile");
+		expectedUrl.append("&redirect_uri=https%3A%2F%2Fclient.example.org%2F");
+		expectedUrl.append("&state=af0ifjsldkj");
+		expectedUrl.append("&foo=bar");
+		return expectedUrl;
 	}
 
 	@Test(expected = AuthenticationServiceException.class)
 	public void buildAuthRequestUrl_badUri() {
-
 		Mockito.when(serverConfig.getAuthorizationEndpointUri()).thenReturn("e=mc^2");
 
 		urlBuilder.buildAuthRequestUrl(serverConfig, clientConfig, "example.com", "", "", options);

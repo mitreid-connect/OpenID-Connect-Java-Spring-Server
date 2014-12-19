@@ -39,39 +39,69 @@ import com.google.common.base.Joiner;
  *
  */
 public class PlainAuthRequestUrlBuilder implements AuthRequestUrlBuilder {
-
-	/* (non-Javadoc)
-	 * @see org.mitre.openid.connect.client.service.AuthRequestUrlBuilder#buildAuthRequest(javax.servlet.http.HttpServletRequest, org.mitre.openid.connect.config.ServerConfiguration, org.springframework.security.oauth2.provider.ClientDetails)
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.mitre.openid.connect.client.service.AuthRequestUrlBuilder#
+	 * buildAuthRequest(javax.servlet.http.HttpServletRequest,
+	 * org.mitre.openid.connect.config.ServerConfiguration,
+	 * org.springframework.security.oauth2.provider.ClientDetails)
 	 */
 	@Override
-	public String buildAuthRequestUrl(ServerConfiguration serverConfig, RegisteredClient clientConfig, String redirectUri, String nonce, String state, Map<String, String> options) {
+	public String buildAuthRequestUrl(ServerConfiguration serverConfig,RegisteredClient clientConfig, String redirectUri, String nonce,String state, Map<String, String> options) {
 		try {
-
-			URIBuilder uriBuilder = new URIBuilder(serverConfig.getAuthorizationEndpointUri());
-			uriBuilder.addParameter("response_type", "code");
-			uriBuilder.addParameter("client_id", clientConfig.getClientId());
-			uriBuilder.addParameter("scope", Joiner.on(" ").join(clientConfig.getScope()));
-
-			uriBuilder.addParameter("redirect_uri", redirectUri);
-
+			URIBuilder uriBuilder = createURIforAuthorizationEndpoint(serverConfig,clientConfig, redirectUri, state, options);
 			uriBuilder.addParameter("nonce", nonce);
 
-			uriBuilder.addParameter("state", state);
+			return uriBuilder.build().toString();
+		} catch (URISyntaxException e) {
+			throw createAuthenticationServiceExceptionMalformedAuthorizationEndpoint(e);
+		}
+	}
+	private AuthenticationServiceException createAuthenticationServiceExceptionMalformedAuthorizationEndpoint(
+			URISyntaxException e) {
+		return new AuthenticationServiceException(
+				"Malformed Authorization Endpoint Uri", e);
+	}
 
-			// Optional parameters:
-			for (Entry<String, String> option : options.entrySet()) {
-				uriBuilder.addParameter(option.getKey(), option.getValue());
-			}
+	/**
+	 * It builds the URI to access the IdP authorization endpoint.
+	 * @param serverConfig
+	 * @param clientConfig
+	 * @param redirectUri
+	 * @param state
+	 * @param options
+	 * @return
+	 * @throws URISyntaxException
+	 */
+	private URIBuilder createURIforAuthorizationEndpoint(ServerConfiguration serverConfig,RegisteredClient clientConfig, String redirectUri, String state,Map<String, String> options) throws URISyntaxException {
+		URIBuilder uriBuilder = new URIBuilder(serverConfig.getAuthorizationEndpointUri());
+		uriBuilder.addParameter("response_type", "code");
+		uriBuilder.addParameter("client_id", clientConfig.getClientId());
+		uriBuilder.addParameter("scope", Joiner.on(" ").join(clientConfig.getScope()));
+		uriBuilder.addParameter("redirect_uri", redirectUri);
+		uriBuilder.addParameter("state", state);
+
+		addOptionalParameters(options, uriBuilder);
+		return uriBuilder;
+	}
+	protected void addOptionalParameters(Map<String, String> options,
+			URIBuilder uriBuilder) {
+		for (Entry<String, String> option : options.entrySet()) {
+			uriBuilder.addParameter(option.getKey(), option.getValue());
+		}
+	}
+
+	@Override
+	public String buildAuthRequestUrl(ServerConfiguration serverConfig,RegisteredClient clientConfig, String redirectUri, String state,Map<String, String> options) {
+		try {
+			URIBuilder uriBuilder = createURIforAuthorizationEndpoint(serverConfig,clientConfig, redirectUri, state, options);
 
 			return uriBuilder.build().toString();
-
-		} catch (URISyntaxException e) {
-			throw new AuthenticationServiceException("Malformed Authorization Endpoint Uri", e);
+			} catch (URISyntaxException e) {
+				throw createAuthenticationServiceExceptionMalformedAuthorizationEndpoint(e);
 
 		}
-
-
-
 	}
 
 }

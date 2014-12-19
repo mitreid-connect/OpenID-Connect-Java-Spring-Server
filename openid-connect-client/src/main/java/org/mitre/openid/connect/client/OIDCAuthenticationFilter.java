@@ -241,19 +241,51 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 			}
 			session.setAttribute(REDIRECT_URI_SESION_VARIABLE, redirectUri);
 
-			// this value comes back in the id token and is checked there
-			String nonce = createNonce(session);
-
 			// this value comes back in the auth code response
 			String state = createState(session);
 
 			Map<String, String> options = authOptions.getOptions(serverConfig, clientConfig, request);
 
-			String authRequest = authRequestBuilder.buildAuthRequestUrl(serverConfig, clientConfig, redirectUri, nonce, state, options);
+			String authRequest = getAuthRequestUrl(serverConfig,clientConfig, redirectUri, state, options, session);
 
 			logger.debug("Auth Request:  " + authRequest);
 
 			response.sendRedirect(authRequest);
+		}
+	}
+	
+	/**
+	 * It creates the authentication request URL with the given parameters.
+	 * Based on {@link ServerConfiguration#isUseNonce()} it adds or not the nonce value into requests.
+	 * 
+	 * @param serverConfig
+	 * @param clientConfig
+	 * @param redirectUri
+	 * @param state
+	 * @param options
+	 * @param session
+	 */
+	protected String getAuthRequestUrl(ServerConfiguration serverConfig,RegisteredClient clientConfig, String redirectUri, String state, Map<String, String> options, HttpSession session) {
+		if(serverConfig.isUseNonce()){
+		   String nonce = createNonce(session);
+		   return authRequestBuilder.buildAuthRequestUrl(serverConfig, clientConfig, redirectUri, nonce, state, options);
+		}
+		return authRequestBuilder.buildAuthRequestUrl(serverConfig, clientConfig, redirectUri, state, options);
+	}
+	
+	/**
+	 * Validates if the issuer in idClains is not null and if it is the same value as set in {@link ServerConfiguration#getIssuer()} 
+	 * 
+	 * @param serverConfig
+	 * @param idClaims
+	 */	
+	private void validateIssuer(ServerConfiguration serverConfig, ReadOnlyJWTClaimsSet idClaims) {
+		String iss = idClaims.getIssuer();
+		if (iss == null) {
+			throw new AuthenticationServiceException("Id Token Issuer is null");
+		}
+		if (!iss.equals(serverConfig.getIssuer())){
+			throw new AuthenticationServiceException("Issuers do not match, expected " + serverConfig.getIssuer() + " got " + iss);
 		}
 	}
 
@@ -496,13 +528,8 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 						throw new AuthenticationServiceException("Unable to find an appropriate signature validator for ID Token.");
 					}
 				} // TODO: encrypted id tokens
-
-				// check the issuer
-				if (idClaims.getIssuer() == null) {
-					throw new AuthenticationServiceException("Id Token Issuer is null");
-				} else if (!idClaims.getIssuer().equals(serverConfig.getIssuer())){
-					throw new AuthenticationServiceException("Issuers do not match, expected " + serverConfig.getIssuer() + " got " + idClaims.getIssuer());
-				}
+				
+				validateIssuer(serverConfig, idClaims);
 
 				// check expiration
 				if (idClaims.getExpirationTime() == null) {
@@ -541,27 +568,9 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 					throw new AuthenticationServiceException("Audience does not match, expected " + clientConfig.getClientId() + " got " + idClaims.getAudience());
 				}
 
-				// compare the nonce to our stored claim
-				String nonce = idClaims.getStringClaim("nonce");
-				if (Strings.isNullOrEmpty(nonce)) {
-
-					logger.error("ID token did not contain a nonce claim.");
-
-					throw new AuthenticationServiceException("ID token did not contain a nonce claim.");
-				}
-
-				String storedNonce = getStoredNonce(session);
-				if (!nonce.equals(storedNonce)) {
-					logger.error("Possible replay attack detected! The comparison of the nonce in the returned "
-							+ "ID Token to the session " + NONCE_SESSION_VARIABLE + " failed. Expected " + storedNonce + " got " + nonce + ".");
-
-					throw new AuthenticationServiceException(
-							"Possible replay attack detected! The comparison of the nonce in the returned "
-									+ "ID Token to the session " + NONCE_SESSION_VARIABLE + " failed. Expected " + storedNonce + " got " + nonce + ".");
-				}
+				validateNonceIfNeeded(session, idClaims, serverConfig);
 
 				// pull the subject (user id) out as a claim on the id_token
-
 				String userId = idClaims.getSubject();
 
 				// construct an OIDCAuthenticationToken and return a Authentication object w/the userId and the idToken
@@ -577,6 +586,34 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 
 
 
+		}
+	}
+
+	/**
+	 * Validate the nonce value with the stored one if needed.
+	 * The validation will only be performed if the {@link ServerConfiguration#isUseNonce()} returns true.
+	 * 
+	 * @param session
+	 * @param idClaims
+	 * @param serverConfig
+	 * @throws ParseException
+	 */
+	private void validateNonceIfNeeded(HttpSession session, ReadOnlyJWTClaimsSet idClaims, ServerConfiguration serverConfig) throws ParseException {
+		if(!serverConfig.isUseNonce()){
+			return;
+		}
+		String nonce = idClaims.getStringClaim("nonce");
+		if (Strings.isNullOrEmpty(nonce)) {
+			logger.error("ID token did not contain a nonce claim.");
+			throw new AuthenticationServiceException("ID token did not contain a nonce claim.");
+		}
+		String storedNonce = getStoredNonce(session);
+		if (!nonce.equals(storedNonce)) {
+			logger.error("Possible replay attack detected! The comparison of the nonce in the returned "
+					+ "ID Token to the session " + NONCE_SESSION_VARIABLE + " failed. Expected " + storedNonce + " got " + nonce + ".");
+			throw new AuthenticationServiceException(
+					"Possible replay attack detected! The comparison of the nonce in the returned "
+							+ "ID Token to the session " + NONCE_SESSION_VARIABLE + " failed. Expected " + storedNonce + " got " + nonce + ".");
 		}
 	}
 

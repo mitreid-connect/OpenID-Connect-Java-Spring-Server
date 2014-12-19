@@ -55,46 +55,68 @@ public class EncryptedAuthRequestUrlBuilder implements AuthRequestUrlBuilder {
 	 */
 	@Override
 	public String buildAuthRequestUrl(ServerConfiguration serverConfig, RegisteredClient clientConfig, String redirectUri, String nonce, String state, Map<String, String> options) {
-
-		// create our signed JWT for the request object
-		JWTClaimsSet claims = new JWTClaimsSet();
-
-		//set parameters to JwtClaims
-		claims.setClaim("response_type", "code");
-		claims.setClaim("client_id", clientConfig.getClientId());
-		claims.setClaim("scope", Joiner.on(" ").join(clientConfig.getScope()));
-
-		// build our redirect URI
-		claims.setClaim("redirect_uri", redirectUri);
-
-		// this comes back in the id token
+		JWTClaimsSet claims = createJWTforRequestObject(clientConfig,redirectUri,state, options);
 		claims.setClaim("nonce", nonce);
 
-		// this comes back in the auth request return
-		claims.setClaim("state", state);
+		EncryptedJWT jwt = createEncryptedJWT(serverConfig, claims);
+		return createURIforAuthorizationEndpoint(serverConfig, jwt);
+	}
 
-		// Optional parameters
-		for (Entry<String, String> option : options.entrySet()) {
-			claims.setClaim(option.getKey(), option.getValue());
-		}
-
-		EncryptedJWT jwt = new EncryptedJWT(new JWEHeader(alg, enc), claims);
-
-		JwtEncryptionAndDecryptionService encryptor = encrypterService.getEncrypter(serverConfig.getJwksUri());
-
-		encryptor.encryptJwt(jwt);
-
+	/**
+	 * It builds the URI to access the IdP authorization endpoint.
+	 * @param serverConfig
+	 * @param jwt
+	 */
+	private String createURIforAuthorizationEndpoint(ServerConfiguration serverConfig, EncryptedJWT jwt) {
 		try {
 			URIBuilder uriBuilder = new URIBuilder(serverConfig.getAuthorizationEndpointUri());
 			uriBuilder.addParameter("request", jwt.serialize());
 
-			// build out the URI
 			return uriBuilder.build().toString();
 		} catch (URISyntaxException e) {
 			throw new AuthenticationServiceException("Malformed Authorization Endpoint Uri", e);
 		}
 	}
 
+	/**
+	 * encrypt the specified JWT
+	 * @param claim
+	 * @return
+	 */
+	private EncryptedJWT createEncryptedJWT(ServerConfiguration serverConfig, JWTClaimsSet claims) {
+		EncryptedJWT jwt = new EncryptedJWT(new JWEHeader(alg, enc), claims);
+
+		JwtEncryptionAndDecryptionService encryptor = encrypterService.getEncrypter(serverConfig.getJwksUri());
+		encryptor.encryptJwt(jwt);
+		return jwt;
+	}
+	
+	/**
+	 * It creates the JWT base for request to the IdP
+	 * @param clientConfig
+	 * @param redirectUri
+	 * @param state
+	 * @param options
+	 */
+	private JWTClaimsSet createJWTforRequestObject(RegisteredClient clientConfig, String redirectUri,String state, Map<String, String> options) {
+		JWTClaimsSet claims = new JWTClaimsSet();
+		claims.setClaim("response_type", "code");
+		claims.setClaim("client_id", clientConfig.getClientId());
+		claims.setClaim("scope", Joiner.on(" ").join(clientConfig.getScope()));
+		claims.setClaim("redirect_uri", redirectUri);
+		claims.setClaim("state", state);
+
+		addOptionalParameters(options, claims);
+		return claims;
+	}
+
+	private void addOptionalParameters(Map<String, String> options,
+			JWTClaimsSet claims) {
+		for (Entry<String, String> option : options.entrySet()) {
+			claims.setClaim(option.getKey(), option.getValue());
+		}
+	}
+	
 	/**
 	 * @return the encrypterService
 	 */
@@ -137,4 +159,13 @@ public class EncryptedAuthRequestUrlBuilder implements AuthRequestUrlBuilder {
 		this.enc = enc;
 	}
 
-}
+	@Override
+	public String buildAuthRequestUrl(ServerConfiguration serverConfig, RegisteredClient clientConfig, String redirectUri, String state, Map<String, String> options) {
+				JWTClaimsSet claims = createJWTforRequestObject(clientConfig,redirectUri,state, options);
+				EncryptedJWT jwt = createEncryptedJWT(serverConfig, claims);
+
+				return createURIforAuthorizationEndpoint(serverConfig, jwt);
+			}
+	}
+
+
