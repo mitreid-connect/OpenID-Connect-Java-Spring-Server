@@ -205,6 +205,12 @@ public class ServerConfiguration {
 	private Boolean requireRequestUriRegistration;
 	private String opPolicyUri;
 	private String opTosUri;
+	
+	//
+	// extensions to the discoverable methods
+	//
+	
+	// how do we send the access token to the userinfo endpoint?
 	private UserInfoTokenMethod userInfoTokenMethod;	
 	
 	public enum UserInfoTokenMethod {
@@ -212,6 +218,9 @@ public class ServerConfiguration {
 		FORM,
 		QUERY;
 	}
+	
+	// do we create and send a nonce value?
+	private boolean nonceEnabled = true;
 	
 	/**
 	 * @return the authorizationEndpointUri
@@ -671,6 +680,23 @@ public class ServerConfiguration {
 	public void setUserInfoTokenMethod(UserInfoTokenMethod userInfoTokenMethod) {
 		this.userInfoTokenMethod = userInfoTokenMethod;
 	}
+
+	
+	/**
+	 * @return the nonceEnabled
+	 */
+	public boolean isNonceEnabled() {
+		return nonceEnabled;
+	}
+	/**
+	 * @param nonceEnabled the nonceEnabled to set
+	 */
+	public void setNonceEnabled(boolean nonceEnabled) {
+		this.nonceEnabled = nonceEnabled;
+	}
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -731,6 +757,7 @@ public class ServerConfiguration {
 						: introspectionEndpointUri.hashCode());
 		result = prime * result + ((issuer == null) ? 0 : issuer.hashCode());
 		result = prime * result + ((jwksUri == null) ? 0 : jwksUri.hashCode());
+		result = prime * result + (nonceEnabled ? 1231 : 1237);
 		result = prime * result
 				+ ((opPolicyUri == null) ? 0 : opPolicyUri.hashCode());
 		result = prime * result
@@ -796,6 +823,10 @@ public class ServerConfiguration {
 				* result
 				+ ((uiLocalesSupported == null) ? 0 : uiLocalesSupported
 						.hashCode());
+		result = prime
+				* result
+				+ ((userInfoTokenMethod == null) ? 0 : userInfoTokenMethod
+						.hashCode());
 		result = prime * result
 				+ ((userInfoUri == null) ? 0 : userInfoUri.hashCode());
 		result = prime
@@ -812,6 +843,9 @@ public class ServerConfiguration {
 						: userinfoSigningAlgValuesSupported.hashCode());
 		return result;
 	}
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
@@ -940,6 +974,9 @@ public class ServerConfiguration {
 				return false;
 			}
 		} else if (!jwksUri.equals(other.jwksUri)) {
+			return false;
+		}
+		if (nonceEnabled != other.nonceEnabled) {
 			return false;
 		}
 		if (opPolicyUri == null) {
@@ -1077,6 +1114,9 @@ public class ServerConfiguration {
 		} else if (!uiLocalesSupported.equals(other.uiLocalesSupported)) {
 			return false;
 		}
+		if (userInfoTokenMethod != other.userInfoTokenMethod) {
+			return false;
+		}
 		if (userInfoUri == null) {
 			if (other.userInfoUri != null) {
 				return false;
@@ -1110,6 +1150,5 @@ public class ServerConfiguration {
 		}
 		return true;
 	}
-
 
 }

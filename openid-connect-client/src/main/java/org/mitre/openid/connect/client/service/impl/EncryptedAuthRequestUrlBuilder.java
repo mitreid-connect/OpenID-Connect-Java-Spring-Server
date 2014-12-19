@@ -68,7 +68,9 @@ public class EncryptedAuthRequestUrlBuilder implements AuthRequestUrlBuilder {
 		claims.setClaim("redirect_uri", redirectUri);
 
 		// this comes back in the id token
-		claims.setClaim("nonce", nonce);
+		if (nonce != null) {
+			claims.setClaim("nonce", nonce);
+		}
 
 		// this comes back in the auth request return
 		claims.setClaim("state", state);

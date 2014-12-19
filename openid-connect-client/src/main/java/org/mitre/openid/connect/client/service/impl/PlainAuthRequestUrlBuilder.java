@@ -54,7 +54,9 @@ public class PlainAuthRequestUrlBuilder implements AuthRequestUrlBuilder {
 
 			uriBuilder.addParameter("redirect_uri", redirectUri);
 
-			uriBuilder.addParameter("nonce", nonce);
+			if (nonce != null) {
+				uriBuilder.addParameter("nonce", nonce);
+			}
 
 			uriBuilder.addParameter("state", state);
 
