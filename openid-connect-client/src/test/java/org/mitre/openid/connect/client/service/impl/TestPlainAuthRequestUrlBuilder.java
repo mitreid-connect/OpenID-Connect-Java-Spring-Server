@@ -82,5 +82,25 @@ public class TestPlainAuthRequestUrlBuilder {
 
 		urlBuilder.buildAuthRequestUrl(serverConfig, clientConfig, "example.com", "", "", options);
 	}
+	
+	@Test
+	public void buildAuthRequestUrl_withNoNonce() {
+		Mockito.when(serverConfig.isNonceEnabled()).thenReturn(false);
+		
+		String expectedUrl = "https://server.example.com/authorize?" +
+				"response_type=code" +
+				"&client_id=s6BhdRkqt3" +
+				"&scope=openid+profile" + // plus sign used for space per application/x-www-form-encoded standard
+				"&redirect_uri=https%3A%2F%2Fclient.example.org%2F" +
+				"&state=af0ifjsldkj" +
+				"&foo=bar";
+
+		Map<String, String> options = ImmutableMap.of("foo", "bar");
+
+		String actualUrl = urlBuilder.buildAuthRequestUrl(serverConfig, clientConfig, "https://client.example.org/", null, "af0ifjsldkj", options);
+
+		assertThat(actualUrl, equalTo(expectedUrl));
+		
+	}
 
 }
