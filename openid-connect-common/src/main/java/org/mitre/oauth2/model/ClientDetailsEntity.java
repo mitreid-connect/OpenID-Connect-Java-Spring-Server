@@ -450,6 +450,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	 * passthrough for SECOAUTH api
 	 */
 	@Override
+	@Transient
 	public Set<String> getAuthorizedGrantTypes() {
 		return getGrantTypes();
 	}
