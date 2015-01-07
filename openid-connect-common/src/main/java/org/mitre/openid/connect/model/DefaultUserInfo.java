@@ -450,45 +450,48 @@ public class DefaultUserInfo implements UserInfo {
 	public static UserInfo fromJson(JsonObject obj) {
 		DefaultUserInfo ui = new DefaultUserInfo();
 
-		ui.setSub(obj.has("sub") ? obj.get("sub").getAsString() : null);
+		ui.setSub(nullSafeGetString(obj, "sub"));
 
-		ui.setName(obj.has("name") ? obj.get("name").getAsString() : null);
-		ui.setPreferredUsername(obj.has("preferred_username") ? obj.get("preferred_username").getAsString() : null);
-		ui.setGivenName(obj.has("given_name") ? obj.get("given_name").getAsString() : null);
-		ui.setFamilyName(obj.has("family_name") ? obj.get("family_name").getAsString() : null);
-		ui.setMiddleName(obj.has("middle_name") ? obj.get("middle_name").getAsString() : null);
-		ui.setNickname(obj.has("nickname") ? obj.get("nickname").getAsString() : null);
-		ui.setProfile(obj.has("profile") ? obj.get("profile").getAsString() : null);
-		ui.setPicture(obj.has("picture") ? obj.get("picture").getAsString() : null);
-		ui.setWebsite(obj.has("website") ? obj.get("website").getAsString() : null);
-		ui.setGender(obj.has("gender") ? obj.get("gender").getAsString() : null);
-		ui.setZoneinfo(obj.has("zone_info") ? obj.get("zone_info").getAsString() : null);
-		ui.setLocale(obj.has("locale") ? obj.get("locale").getAsString() : null);
-		ui.setUpdatedTime(obj.has("updated_time") ? obj.get("updated_time").getAsString() : null);
-		ui.setBirthdate(obj.has("birthdate") ? obj.get("birthdate").getAsString() : null);
+		ui.setName(nullSafeGetString(obj, "name"));
+		ui.setPreferredUsername(nullSafeGetString(obj, "preferred_username"));
+		ui.setGivenName(nullSafeGetString(obj, "given_name"));
+		ui.setFamilyName(nullSafeGetString(obj, "family_name"));
+		ui.setMiddleName(nullSafeGetString(obj, "middle_name"));
+		ui.setNickname(nullSafeGetString(obj, "nickname"));
+		ui.setProfile(nullSafeGetString(obj, "profile"));
+		ui.setPicture(nullSafeGetString(obj, "picture"));
+		ui.setWebsite(nullSafeGetString(obj, "website"));
+		ui.setGender(nullSafeGetString(obj, "gender"));
+		ui.setZoneinfo(nullSafeGetString(obj, "zone_info"));
+		ui.setLocale(nullSafeGetString(obj, "locale"));
+		ui.setUpdatedTime(nullSafeGetString(obj, "updated_time"));
+		ui.setBirthdate(nullSafeGetString(obj, "birthdate"));
 
-		ui.setEmail(obj.has("email") ? obj.get("email").getAsString() : null);
-		ui.setEmailVerified(obj.has("email_verified") ? obj.get("email_verified").getAsBoolean() : null);
+		ui.setEmail(nullSafeGetString(obj, "email"));
+		ui.setEmailVerified(obj.has("email_verified") && obj.get("email_verified").isJsonPrimitive() ? obj.get("email_verified").getAsBoolean() : null);
 
-		ui.setPhoneNumber(obj.has("phone_number") ? obj.get("phone_number").getAsString() : null);
-		ui.setPhoneNumberVerified(obj.has("phone_number_verified") ? obj.get("phone_number_verified").getAsBoolean() : null);
+		ui.setPhoneNumber(nullSafeGetString(obj, "phone_number"));
+		ui.setPhoneNumberVerified(obj.has("phone_number_verified") && obj.get("phone_number_verified").isJsonPrimitive() ? obj.get("phone_number_verified").getAsBoolean() : null);
 
 		if (obj.has("address") && obj.get("address").isJsonObject()) {
 			JsonObject addr = obj.get("address").getAsJsonObject();
 			ui.setAddress(new Address());
 
-			ui.getAddress().setFormatted(addr.has("formatted") ? addr.get("formatted").getAsString() : null);
-			ui.getAddress().setStreetAddress(addr.has("street_address") ? addr.get("street_address").getAsString() : null);
-			ui.getAddress().setLocality(addr.has("locality") ? addr.get("locality").getAsString() : null);
-			ui.getAddress().setRegion(addr.has("region") ? addr.get("region").getAsString() : null);
-			ui.getAddress().setPostalCode(addr.has("postal_code") ? addr.get("postal_code").getAsString() : null);
-			ui.getAddress().setCountry(addr.has("country") ? addr.get("country").getAsString() : null);
+			ui.getAddress().setFormatted(nullSafeGetString(addr, "formatted"));
+			ui.getAddress().setStreetAddress(nullSafeGetString(addr, "street_address"));
+			ui.getAddress().setLocality(nullSafeGetString(addr, "locality"));
+			ui.getAddress().setRegion(nullSafeGetString(addr, "region"));
+			ui.getAddress().setPostalCode(nullSafeGetString(addr, "postal_code"));
+			ui.getAddress().setCountry(nullSafeGetString(addr, "country"));
 
 		}
 
 
 		return ui;
 
+	}
+	private static String nullSafeGetString(JsonObject obj, String field) {
+		return obj.has(field) && obj.get(field).isJsonPrimitive() ? obj.get(field).getAsString() : null;
 	}
 
 	/* (non-Javadoc)
