@@ -204,7 +204,6 @@ public class MITREidDataService_1_2 extends MITREidDataService_1_X {
         for (AuthenticationHolderEntity holder : authHolderRepository.getAll()) {
             writer.beginObject();
             writer.name("id").value(holder.getId());
-            writer.name("ownerId").value(holder.getOwnerId());
             writer.name("authentication");
             writer.beginObject();
             writer.name("authorizationRequest");

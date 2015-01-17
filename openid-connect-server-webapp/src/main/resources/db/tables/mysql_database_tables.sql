@@ -41,7 +41,6 @@ CREATE TABLE IF NOT EXISTS approved_site_scope (
 
 CREATE TABLE IF NOT EXISTS authentication_holder (
 	id BIGINT AUTO_INCREMENT PRIMARY KEY,
-	owner_id BIGINT,
 	authentication LONGBLOB
 );
 

@@ -41,8 +41,6 @@ public class AuthenticationHolderEntity {
 
 	private Long id;
 
-	private Long ownerId;
-
 	private OAuth2Authentication authentication;
 
 	public AuthenticationHolderEntity() {
@@ -58,16 +56,6 @@ public class AuthenticationHolderEntity {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	@Basic
-	@Column(name = "owner_id")
-	public Long getOwnerId() {
-		return ownerId;
-	}
-
-	public void setOwnerId(Long owner_id) {
-		this.ownerId = owner_id;
 	}
 
 	@Lob
