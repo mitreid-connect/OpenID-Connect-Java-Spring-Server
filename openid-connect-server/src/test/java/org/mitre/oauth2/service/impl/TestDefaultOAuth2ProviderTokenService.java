@@ -70,7 +70,9 @@ public class TestDefaultOAuth2ProviderTokenService {
 	// Test Fixture:
 	private OAuth2Authentication authentication;
 	private ClientDetailsEntity client;
+	private ClientDetailsEntity badClient;
 	private String clientId = "test_client";
+	private String badClientId = "bad_client";
 	private Set<String> scope = Sets.newHashSet("openid", "profile", "email", "offline_access");
 	private OAuth2RefreshTokenEntity refreshToken;
 	private String refreshTokenValue = "refresh_token_value";
@@ -119,6 +121,10 @@ public class TestDefaultOAuth2ProviderTokenService {
 
 		// by default in tests, allow refresh tokens
 		Mockito.when(client.isAllowRefresh()).thenReturn(true);
+		
+		badClient = Mockito.mock(ClientDetailsEntity.class);
+		Mockito.when(badClient.getClientId()).thenReturn(badClientId);
+		Mockito.when(clientDetailsService.loadClientByClientId(badClientId)).thenReturn(badClient);		
 
 		refreshToken = Mockito.mock(OAuth2RefreshTokenEntity.class);
 		Mockito.when(tokenRepository.getRefreshTokenByValue(refreshTokenValue)).thenReturn(refreshToken);
@@ -313,6 +319,14 @@ public class TestDefaultOAuth2ProviderTokenService {
 		service.refreshAccessToken(refreshTokenValue, tokenRequest);
 	}
 
+	@Test(expected = InvalidClientException.class)
+	public void refreshAccessToken_clientMismatch() {
+
+		tokenRequest = new TokenRequest(null, badClientId, null, null);
+
+		service.refreshAccessToken(refreshTokenValue, tokenRequest);
+	}
+	
 	@Test(expected = InvalidTokenException.class)
 	public void refreshAccessToken_expired() {
 
