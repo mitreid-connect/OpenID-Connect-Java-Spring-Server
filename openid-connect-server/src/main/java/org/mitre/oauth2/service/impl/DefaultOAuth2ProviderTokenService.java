@@ -213,7 +213,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		
 		// make sure that the client requesting the token is the one who owns the refresh token
 		ClientDetailsEntity requestingClient = clientDetailsService.loadClientByClientId(authRequest.getClientId());
-		if (requestingClient.getClientId() != client.getClientId()) {
+		if (!client.getClientId().equals(requestingClient.getClientId())) {
 			tokenRepository.removeRefreshToken(refreshToken);
 			throw new InvalidClientException("Client does not own the presented refresh token");
 		}
