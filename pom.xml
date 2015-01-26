@@ -18,7 +18,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.mitre</groupId>
     <artifactId>openid-connect-parent</artifactId>
-    <version>1.1.13</version>        
+    <version>1.1.14-SNAPSHOT</version>        
     <name>MITREid Connect</name>
     <packaging>pom</packaging>
   <parent>
