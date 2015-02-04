@@ -2,7 +2,8 @@
 <%@ taglib prefix="o" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-<o:header title="Management Console"/>
+<spring:message code="manage.title" var="title"/>
+<o:header title="${title}"/>
 <o:topbar pageName="Home" />
 
 <!-- Modal dialogue for management UI -->
