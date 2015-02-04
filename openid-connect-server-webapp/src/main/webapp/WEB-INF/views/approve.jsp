@@ -5,14 +5,17 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="o" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<o:header title="Approve Access" />
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+
+<spring:message code="approve.title" var="title"/>
+<o:header title="${title}"/>
 <o:topbar pageName="Approve" />
 <div class="container main">
 	<% if (session.getAttribute(AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY) != null && !(session.getAttribute(AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY) instanceof UnapprovedClientAuthenticationException)) { %>
 	<div class="alert-message error">
 		<a href="#" class="close">&times;</a>
 
-		<p><strong>Access could not be granted.</strong> 
+		<p><strong><spring:message code="approve.error.not_granted"/></strong> 
 			(<%= ((AuthenticationException) session.getAttribute(AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY)).getMessage() %>)
 		</p>
 	</div>
@@ -20,7 +23,7 @@
 	<c:remove scope="session" var="SPRING_SECURITY_LAST_EXCEPTION" />
 
 	<div class="well" style="text-align: center">
-		<h1>Approval Required for 
+		<h1><spring:message code="approve.required_for"/> 
 			<c:choose>
 				<c:when test="${empty client.clientName}">
 					<em><c:out value="${client.clientId}" /></em>
@@ -41,18 +44,15 @@
 						<c:choose>
 							<c:when test="${ gras }">
 								<!-- client is "generally recognized as safe, display a more muted block -->
-								<div><p class="alert alert-info"><i class="icon-globe"></i> This client was dynamically registered <span id="registrationTime"></span>.</p></div>
+								<div><p class="alert alert-info"><i class="icon-globe"></i> <spring:message code="approve.dynamically_registered"/></p></div>
 							</c:when>
 							<c:otherwise>
 								<!-- client is dynamically registered -->
 								<div class="alert alert-block <c:out value="${ count eq 0 ? 'alert-error' : 'alert-warn' }" />">
 									<h4>
-										<i class="icon-globe"></i> Caution:
+										<i class="icon-globe"></i> <spring:message code="approve.caution"/>:
 									</h4>
-									This software was dynamically registered <span id="registrationTime" class="label"></span> 
-									and it has been approved
-									<span class="label"><c:out value="${ count }" /></span>
-									time<c:out value="${ count == 1 ? '' : 's' }"/> previously.
+									<spring:message code="approve.caution.message" arguments="${count}"/>
 								</div>
 							</c:otherwise>
 						</c:choose>
@@ -95,21 +95,21 @@
 							<c:out value="${client.clientDescription}" />
 							<c:if test="${ (not empty client.clientUri) || (not empty client.policyUri) || (not empty client.tosUri)  || (not empty contacts) }">
 								<div id="toggleMoreInformation" style="cursor: pointer;">
-									<small><i class="icon-chevron-right"></i> more information</small>
+									<small><i class="icon-chevron-right"></i> <spring:message code="approve.more_information"/></small>
 								</div>
 								<div id="moreInformation" class="hide">
 									<ul>
 										<c:if test="${ not empty client.clientUri }">
-											<li>Home page: <a href="<c:out value="${ client.clientUri }" />"><c:out value="${ client.clientUri }" /></a></li>
+											<li><spring:message code="approve.home_page"/>: <a href="<c:out value="${ client.clientUri }" />"><c:out value="${ client.clientUri }" /></a></li>
 										</c:if>
 										<c:if test="${ not empty client.policyUri }">
-											<li>Policy: <a href="<c:out value="${ client.policyUri }" />"><c:out value="${ client.policyUri }" /></a></li>
+											<li><spring:message code="Policy"/>: <a href="<c:out value="${ client.policyUri }" />"><c:out value="${ client.policyUri }" /></a></li>
 										</c:if>
 										<c:if test="${ not empty client.tosUri }">
-											<li>Terms of Service: <a href="<c:out value="${ client.tosUri }" />"><c:out value="${ client.tosUri }" /></a></li>
+											<li><spring:message code="approve.terms"/>: <a href="<c:out value="${ client.tosUri }" />"><c:out value="${ client.tosUri }" /></a></li>
 										</c:if>
 										<c:if test="${ (not empty contacts) }">
-											<li>Administrative Contacts: <c:out value="${ contacts }" /></li>
+											<li><spring:message code="approve.contacts"/>: <c:out value="${ contacts }" /></li>
 										</c:if>
 									</ul>
 								</div>
@@ -121,38 +121,37 @@
 							<c:when test="${ empty client.redirectUris }">
 								<div class="alert alert-block alert-error">
 									<h4>
-										<i class="icon-info-sign"></i> Warning:
+										<i class="icon-info-sign"></i> <spring:message code="approve.warning"/>:
 									</h4>
-									This client does not have any redirect URIs registered and someone could be using a 
-									malicious URI here. You will be redirected to the following page if you click Approve:
-									<code><c:out value="${redirect_uri}" /></code>
+									<spring:message code="approve.no_request_uri"/>
+									<spring:message code="approve.redirect_uri" arguments="${redirect_uri}"/>
 								</div>
 							</c:when>
 							<c:otherwise>
-								You will be redirected to the following page
-								if you click Approve: <code><c:out value="${redirect_uri}" /></code>
+                                <spring:message code="approve.redirect_uri" arguments="${redirect_uri}" />
 							</c:otherwise>
 						</c:choose>
 					</div>
 
 					<c:if test="${ client.subjectType == 'PAIRWISE' }">
 						<div class="alert alert-success">
-							This client uses a <b>pairwise</b> identifier, which makes it more difficult to correlate your identity between sites.
+							<spring:message code="approve.pairwise"/>
 						</div>
 					</c:if>
 
 				</div>
 				<div class="span4">
 					<fieldset style="text-align: left" class="well">
-						<legend style="margin-bottom: 0;">Access to:</legend>
+						<legend style="margin-bottom: 0;"><spring:message code="approve.access_to"/>:</legend>
 
 						<c:if test="${ empty client.scope }">
 								<div class="alert alert-block alert-error">
 									<h4>
-										<i class="icon-info-sign"></i> Warning:
+										<i class="icon-info-sign"></i> <spring:message code="approve.warning"/>:
 									</h4>
-									This client does not have any scopes registered and is therefore allowed to
-									request <em>any</em> scopes available on the system. Proceed with caution.
+									<p>
+									   <spring:message code="approve.no_scopes"/>
+									</p>
 								</div>
 						</c:if>
 
@@ -206,18 +205,18 @@
 					</fieldset>
 
 					<fieldset style="text-align: left" class="well">
-						<legend style="margin-bottom: 0;">Remember this decision:</legend>
+						<legend style="margin-bottom: 0;"><spring:message code="approve.remember"/>:</legend>
 						<label for="remember-forever" class="radio"> 
 						<input type="radio" name="remember" id="remember-forever" value="until-revoked"  ${ !consent ? 'checked="checked"' : '' }> 
-							remember this decision until I revoke it
+							<spring:message code="approve.remember.until_revoke"/>
 						</label> 
 						<label for="remember-hour" class="radio"> 
 						<input type="radio" name="remember" id="remember-hour" value="one-hour">
-							remember this decision for one hour
+							<spring:message code="approve.remember.one_hour"/>
 						</label> 
 						<label for="remember-not" class="radio"> 
 						<input type="radio" name="remember" id="remember-not" value="none" ${ consent ? 'checked="checked"' : '' }>
-							prompt me again next time
+							<spring:message code="approve.remember.next_time"/>
 						</label>
 					</fieldset>
 				</div>
@@ -226,7 +225,7 @@
 
 			<div class="row">
 				<h3>
-						Do you authorize 
+						<spring:message code="approve.do_authorize"/> 
 						"<c:choose>
 							<c:when test="${empty client.clientName}">
 								<c:out value="${client.clientId}" />
@@ -236,12 +235,14 @@
 							</c:otherwise>
 						</c:choose>"?
 				</h3>
+                <spring:message code="approve.label.authorize" var="authorize_label"/>
+                <spring:message code="approve.label.deny" var="deny_label"/>
 				<input id="user_oauth_approval" name="user_oauth_approval" value="true" type="hidden" /> 
 				<input name="csrf" value="${ csrf }" type="hidden" />
-				<input name="authorize" value="Authorize" type="submit"
+				<input name="authorize" value="${authorize_label}" type="submit"
 				onclick="$('#user_oauth_approval').attr('value',true)" class="btn btn-success btn-large" /> 
 				&nbsp; 
-				<input name="deny" value="Deny" type="submit" onclick="$('#user_oauth_approval').attr('value',false)"
+				<input name="deny" value="${deny_label}" type="submit" onclick="$('#user_oauth_approval').attr('value',false)"
 				class="btn btn-secondary btn-large" />
 			</div>
 
