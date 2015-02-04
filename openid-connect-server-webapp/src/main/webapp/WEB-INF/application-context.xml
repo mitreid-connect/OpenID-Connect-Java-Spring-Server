@@ -200,7 +200,27 @@
 	</security:authentication-manager>
 	
 	<bean id="clientAssertionAuthenticationProvider" class="org.mitre.openid.connect.assertion.JwtBearerAuthenticationProvider" />
+
+	<!--	<bean id="localeResolver" class="org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver"> -->
+	<bean id="localeResolver" class="org.springframework.web.servlet.i18n.FixedLocaleResolver">
+	  <property name="defaultLocale" value="sv" />
+	</bean>
+
+	<bean id="localeChangeInterceptor" class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor" />
 	
+	<bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+	  <property name="basenames">
+	    <list>
+	      <value>classpath:custom_messages</value>
+	      <value>classpath:messages</value>
+	    </list>
+	  </property>
+	  <property name="fallbackToSystemLocale" value="false" />
+	  <property name="cacheSeconds" value="180" />
+	  <property name="defaultEncoding" value="UTF-8" />
+	  <property name="useCodeAsDefaultMessage" value="true" />
+	</bean>
+
 	<!-- user services -->
 	<import resource="user-context.xml" />
 

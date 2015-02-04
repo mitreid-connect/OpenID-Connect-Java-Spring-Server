@@ -1,4 +1,5 @@
-<h2>Current Statistics</h2>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<h2><spring:message code="statistics.title" text="Statistics"/></h2>
 
 <p>There have been 
 	<span class="label label-info">${statsSummary["userCount"]}</span> user${statsSummary["userCount"] == 1 ? "" : "s"} 

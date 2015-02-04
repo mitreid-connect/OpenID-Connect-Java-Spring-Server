@@ -1,6 +1,7 @@
 <%@attribute name="pageName" required="false"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib prefix="security" uri="http://www.springframework.org/security/tags"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="o" tagdir="/WEB-INF/tags"%>
 <c:choose>
 	<c:when test="${ not empty userInfo.preferredUsername }">
@@ -39,34 +40,34 @@
 					<ul class="nav">
 						<c:choose>
 							<c:when test="${pageName == 'Home'}">
-								<li class="active"><a href="" data-toggle="collapse" data-target=".nav-collapse">Home</a></li>
+								<li class="active"><a href="" data-toggle="collapse" data-target=".nav-collapse"><spring:message code="home.title" text="Home"/></a></li>
 							</c:when>
 							<c:otherwise>
-								<li><a href="" data-toggle="collapse" data-target=".nav-collapse">Home</a></li>
+								<li><a href="" data-toggle="collapse" data-target=".nav-collapse"><spring:message code="home.title" text="Home"/></a></li>
 							</c:otherwise>
 						</c:choose>
 						<c:choose>
 							<c:when test="${pageName == 'About'}">
-								<li class="active" data-toggle="collapse" data-target=".nav-collapse"><a href="">About</a></li>
+								<li class="active" data-toggle="collapse" data-target=".nav-collapse"><a href=""><spring:message code="about.title" text="About"/></a></li>
 							</c:when>
 							<c:otherwise>
-								<li><a href="about" data-toggle="collapse" data-target=".nav-collapse">About</a></li>
+								<li><a href="about" data-toggle="collapse" data-target=".nav-collapse"><spring:message code="about.title" text="About"/></a></li>
 							</c:otherwise>
 						</c:choose>
 						<c:choose>
 							<c:when test="${pageName == 'Statistics'}">
-								<li class="active" data-toggle="collapse" data-target=".nav-collapse"><a href="">Statistics</a></li>
+								<li class="active" data-toggle="collapse" data-target=".nav-collapse"><a href=""><spring:message code="statistics.title" text="Statistics"/></a></li>
 							</c:when>
 							<c:otherwise>
-								<li><a href="stats" data-toggle="collapse" data-target=".nav-collapse">Statistics</a></li>
+								<li><a href="stats" data-toggle="collapse" data-target=".nav-collapse"><spring:message code="statistics.title" text="Statistics"/></a></li>
 							</c:otherwise>
 						</c:choose>
 						<c:choose>
 							<c:when test="${pageName == 'Contact'}">
-								<li class="active" data-toggle="collapse" data-target=".nav-collapse"><a href="">Contact</a></li>
+								<li class="active" data-toggle="collapse" data-target=".nav-collapse"><a href=""><spring:message code="contact.title" text="Contact"/></a></li>
 							</c:when>
 							<c:otherwise>
-								<li><a href="contact" data-toggle="collapse" data-target=".nav-collapse">Contact</a></li>
+								<li><a href="contact" data-toggle="collapse" data-target=".nav-collapse"><spring:message code="contact.title" text="Contact"/></a></li>
 							</c:otherwise>
 						</c:choose>
 	
@@ -87,13 +88,13 @@
 							<ul class="dropdown-menu pull-right">
 								<li><a href="manage/#user/profile" data-toggle="collapse" data-target=".nav-collapse">${ longName }</a></li>
 								<li class="divider"></li>
-								<li><a href="logout" data-toggle="collapse" data-target=".nav-collapse"><i class="icon-remove"></i> Log out</a></li>
+								<li><a href="logout" data-toggle="collapse" data-target=".nav-collapse"><i class="icon-remove"></i> <spring:message code="common.logout" text="Log out"/></a></li>
 							</ul>
 						</li>
 	                    </security:authorize>
 	                    <security:authorize access="!hasRole('ROLE_USER')">
 	                    <li>
-	                    	<a id="loginButton" href="login" data-toggle="collapse" data-target=".nav-collapse"><i class="icon-lock icon-white"></i> Log in</a>
+	                    	<a id="loginButton" href="login" data-toggle="collapse" data-target=".nav-collapse"><i class="icon-lock icon-white"></i> <spring:message code="common.login" text="Log in"/></a>
 	                    </li>
 	                    </security:authorize>
 	                </ul>
