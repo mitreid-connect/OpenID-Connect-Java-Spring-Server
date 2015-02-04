@@ -1,7 +1,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-<h2><spring:message code="home.statistics" text="Current Statistics"/></h2>
+<h2><spring:message code="home.statistics"/></h2>
 
-<p id="statsloader" class="muted"><spring:message code="home.statistics.loading" text="Loading statistics..."/></p>
+<p id="statsloader" class="muted"><spring:message code="home.statistics.loading"/></p>
 
 <p id="stats">There have been 
 	<span class="label label-info" id="userCount">?</span> <span id="userCountLabel">user</span> 
