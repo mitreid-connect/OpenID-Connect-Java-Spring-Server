@@ -1,5 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib prefix="o" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <o:header title="Management Console"/>
 <o:topbar pageName="Home" />
@@ -12,7 +13,7 @@
 	</div>
 	<div class="modal-body"></div>
 	<div class="modal-footer">
-		<button class="btn btn-primary" data-dismiss="modal">OK</button>
+		<button class="btn btn-primary" data-dismiss="modal"><spring:message code="manage.ok"/></button>
 	</div>
 </div>
 
@@ -24,13 +25,13 @@
 				<div id="breadcrumbs"></div>
 				<div id="loadingbox" class="sheet hide fade" data-sheet-parent="#breadcrumbs">
 					<div class="sheet-body">
-			                <p>Loading:</p>
+			                <p><spring:message code="manage.loading"/>:</p>
 			                <p><span id="loading"></span></p>
 	                </div>
 	            </div>
                 <div id="content">
                 	<div class="well">
-	                	<div><h3>Loading...</h3></div>
+	                	<div><h3><spring:message code="manage.loading"/>...</h3></div>
 	               	    <div class="progress progress-striped active">
 							<div class="bar" style="width: 100%;"></div>
 						</div>
