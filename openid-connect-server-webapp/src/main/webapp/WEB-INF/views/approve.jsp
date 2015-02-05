@@ -3,6 +3,7 @@
 <%@ page import="org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter"%>
 <%@ taglib prefix="authz" uri="http://www.springframework.org/security/tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="o" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
@@ -23,7 +24,7 @@
 	<c:remove scope="session" var="SPRING_SECURITY_LAST_EXCEPTION" />
 
 	<div class="well" style="text-align: center">
-		<h1><spring:message code="approve.required_for"/> 
+		<h1><spring:message code="approve.required_for"/>&nbsp;
 			<c:choose>
 				<c:when test="${empty client.clientName}">
 					<em><c:out value="${client.clientId}" /></em>
@@ -39,12 +40,19 @@
 
 			<div class="row">
 				<div class="span5 offset1 well-small" style="text-align: left">
-
 					<c:if test="${ client.dynamicallyRegistered }">
+					   <fmt:formatDate type="both" value="${client.createdAt}" var="titleRegistrationTime"/>
+					   <fmt:formatDate type="date" value="${client.createdAt}" var="registrationTime"/>
 						<c:choose>
 							<c:when test="${ gras }">
 								<!-- client is "generally recognized as safe, display a more muted block -->
-								<div><p class="alert alert-info"><i class="icon-globe"></i> <spring:message code="approve.dynamically_registered"/></p></div>
+								<div>
+								    <p class="alert alert-info">
+								        <i class="icon-globe"></i>
+								        <spring:message code="approve.dynamically_registered"/>
+								        <span id="registrationTime" title='<c:out value="${titleRegistrationTime}"/>'><c:out value="${registrationTime}"/></span>.
+								   </p>
+								</div>
 							</c:when>
 							<c:otherwise>
 								<!-- client is dynamically registered -->
@@ -52,6 +60,8 @@
 									<h4>
 										<i class="icon-globe"></i> <spring:message code="approve.caution"/>:
 									</h4>
+                                    <spring:message code="approve.dynamically_registered"/>
+                                    <span id="registrationTime" title='<c:out value="${titleRegistrationTime}"/>'><c:out value="${registrationTime}"/></span>.
 									<c:choose>
                                        <c:when test="${count == 0}">
                                            <spring:message code="approve.caution.message.none" arguments="${count}"/>
@@ -284,25 +294,6 @@ $(document).ready(function() {
 				$('#toggleMoreInformation i').attr('class', 'icon-chevron-down');
 			}
 		});
-		
-		var creationDate = "<c:out value="${ client.createdAt }" />";
-		var displayCreationDate = "Unknown";
-		var hoverCreationDate = "";
-		if (creationDate == null || !moment(creationDate).isValid()) {
-			displayCreationDate = "Unknown";
-			hoverCreationDate = "";
-		} else {
-			creationDate = moment(creationDate);
-			if (moment().diff(creationDate, 'months') < 6) {
-				displayCreationDate = creationDate.fromNow();
-			} else {
-				displayCreationDate = "on " + creationDate.format("MMMM Do, YYYY");
-			}
-			hoverCreationDate = creationDate.format("MMMM Do, YYYY [at] h:mmA")
-		}
-		
-		$('#registrationTime').html(displayCreationDate);
-		$('#registrationTime').attr('title', hoverCreationDate);
 });
 
 //-->
