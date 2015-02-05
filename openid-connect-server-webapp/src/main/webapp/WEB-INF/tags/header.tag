@@ -4,7 +4,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ tag import="com.google.gson.Gson" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="${pageContext.response.locale}">
 <head>
 
     <base href="${config.issuer}">
