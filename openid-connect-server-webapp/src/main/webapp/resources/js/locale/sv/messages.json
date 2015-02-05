@@ -1,5 +1,10 @@
 {
     "client": {
         "newClient": "New Client"
+    },
+    "grant": {
+        "text": "Detta är webbplatser som du har godkänt manuellt. Om samma webbplatser begär samma åtkomst igen blir den medgiven utan att fråga på nytt."
+        
     }
+    
 }

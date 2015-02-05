@@ -37,8 +37,9 @@
     <script type="text/javascript" src="resources/js/lib/i18next-1.7.7.js"></script>
     <script type="text/javascript">
         $.i18n.init({
+            fallbackLng: "en",
             lng: "${pageContext.response.locale}",
-            resGetPath: 'resources/js/locale/__lng__/messages.json'
+            resGetPath: "resources/js/locale/__lng__/messages.json"
         });
     	// safely set the title of the application
     	function setPageTitle(title) {

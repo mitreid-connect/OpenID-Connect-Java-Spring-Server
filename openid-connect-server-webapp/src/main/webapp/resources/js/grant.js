@@ -96,7 +96,7 @@ var ApprovedSiteListView = Backbone.View.extend({
 		}, this);
 		
 		this.togglePlaceholder();
-		
+		$(this.el).i18n();
 		return this;
 	},
 	
@@ -241,7 +241,7 @@ var ApprovedSiteView = Backbone.View.extend({
         this.$('.dynamically-registered').tooltip({title: 'This client was dynamically registered'});
         this.$('.whitelisted-site').tooltip({title: 'This site was whitelisted by an adminstrator'});
         this.$('.tokens').tooltip({title: 'Number of currently active access tokens.'});
-        
+        $(this.el).i18n();
 		return this;
 	},
 	
