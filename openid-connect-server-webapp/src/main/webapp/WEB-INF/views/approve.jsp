@@ -52,7 +52,17 @@
 									<h4>
 										<i class="icon-globe"></i> <spring:message code="approve.caution"/>:
 									</h4>
-									<spring:message code="approve.caution.message" arguments="${count}"/>
+									<c:choose>
+                                       <c:when test="${count == 0}">
+                                           <spring:message code="approve.caution.message.none" arguments="${count}"/>
+                                       </c:when>
+                                       <c:when test="${count == 1}">
+                                           <spring:message code="approve.caution.message.singular" arguments="${count}"/>
+                                       </c:when>
+									   <c:otherwise>
+                                           <spring:message code="approve.caution.message.plural" arguments="${count}"/>
+									   </c:otherwise>
+								   </c:choose>
 								</div>
 							</c:otherwise>
 						</c:choose>
