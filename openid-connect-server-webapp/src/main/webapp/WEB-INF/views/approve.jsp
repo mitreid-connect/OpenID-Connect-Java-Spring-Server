@@ -50,7 +50,7 @@
 								    <p class="alert alert-info">
 								        <i class="icon-globe"></i>
 								        <spring:message code="approve.dynamically_registered"/>
-								        <span id="registrationTime" title='<c:out value="${titleRegistrationTime}"/>'><c:out value="${registrationTime}"/></span>.
+								        <span id="registrationTime" title='<c:out value="${titleRegistrationTime}"/>'> <c:out value="${registrationTime}"/></span>.
 								   </p>
 								</div>
 							</c:when>
@@ -60,8 +60,8 @@
 									<h4>
 										<i class="icon-globe"></i> <spring:message code="approve.caution"/>:
 									</h4>
-                                    <spring:message code="approve.dynamically_registered"/>
-                                    <span id="registrationTime" title='<c:out value="${titleRegistrationTime}"/>'><c:out value="${registrationTime}"/></span>.
+                                    <spring:message code="approve.dynamically_registered"/> 
+                                    <span id="registrationTime" title='<c:out value="${titleRegistrationTime}"/>'> <c:out value="${registrationTime}"/></span>.
 									<c:choose>
                                        <c:when test="${count == 0}">
                                            <spring:message code="approve.caution.message.none" arguments="${count}"/>
