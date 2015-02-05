@@ -34,5 +34,6 @@
 	<script type="text/javascript" src="resources/js/admin.js"></script>
 </c:if>
 <script type="text/javascript" src="resources/js/lib/retina.js"></script>
+<script type="text/javascript" src="resources/js/lib/i18next-1.7.7.js"></script>
 </body>
 </html>
