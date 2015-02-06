@@ -26,7 +26,9 @@
         "cancel": "Avbryt",
         "client": "Klient",
         "clients": "Klienter",
+        "close": "Stäng",
         "delete": "Ta bort",
+        "description": "Beskrivning",
         "dynamically-registered": "Denna klient registrerades dynamiskt",
         "edit": "Ändra",
         "refresh": "Uppdatera",
@@ -51,6 +53,27 @@
             "whitelist-note": "<b>OBS:</b> Om du återkallar dem kommer de automatiskt att godkännas igen nästa gång du besöker dem utan att du blir tillfrågad.",
             "whitelisted-site": "Denna webbplats är vitlistad av en administratör",
             "whitelisted-sites": "Vitlistade webbplatser"
+        }
+    },
+    "scope": {
+        "system-scope-form": {
+            "default": "default scope",
+            "default-help": "Ny klienter får detta scope per default?",
+            "description-help": "En begriplig, läsbar beskrivning",
+            "description-placeholder": "Mata in en beskrivning",
+            "dynamic": "tillåt dynamisk registrering",
+            "dynamic-help": "Tillåt dynamiskt registrerade klienter att begära detta scope?",
+            "edit": "Ändra scope",
+            "icon": "Ikon",
+            "new": "Nytt scope",
+            "select-icon": "Välj en ikon",
+            "value": "Scope-värde",
+            "value-help": "Ett ord utan mellanslag",
+            "value-placeholder": "scope"
+        },
+        "system-scope-table": {
+            "new": "Nytt scope",
+            "text": "Det finns inga system-scope definierade. Klienter kan ändå ha speciellt anpassade scope."
         }
     },
     "token": {

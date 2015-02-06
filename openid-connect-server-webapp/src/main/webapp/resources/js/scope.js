@@ -102,6 +102,7 @@ var SystemScopeView = Backbone.View.extend({
         this.$('.allow-dyn-reg').tooltip({title: 'This scope can be used by dynamically registered clients'});
         
         return this;
+        $(this.el).i18n();
     },
     
     deleteScope:function (e) {
@@ -218,7 +219,7 @@ var SystemScopeListView = Backbone.View.extend({
 		}, this);
 		
 		this.togglePlaceholder();
-		
+        $(this.el).i18n();
 		return this;
 	}
 });
@@ -359,8 +360,7 @@ var SystemScopeFormView = Backbone.View.extend({
 		}, this);
 		
 		this.toggleStructuredParamDescription();
-		
+        $(this.el).i18n();
 		return this;
 	}
 });
-

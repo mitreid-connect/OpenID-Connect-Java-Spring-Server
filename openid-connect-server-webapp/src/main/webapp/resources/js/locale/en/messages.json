@@ -26,7 +26,9 @@
         "cancel": "Cancel",
         "client": "Client",
         "clients": "Clients",
+        "close": "Close",
         "delete": "Delete",
+        "description": "Description",
         "dynamically-registered": "This client was dynamically registered",
         "edit": "Edit",
         "revoke": "Revoke",
@@ -51,6 +53,27 @@
             "whitelist-note": "<b>NOTE:</b> If you revoke them here, they will automatically be re-approved on your next visit wthout prompting.",
             "whitelisted-site": "This site was whitelisted by an adminstrator",
             "whitelisted-sites": "Whitelisted Sites"
+        }
+    },
+    "scope": {
+        "system-scope-form": {
+            "default": "default scope",
+            "default-help": "Newly-created clients get this scope by default?",
+            "description-help": "Human-readable text description",
+            "description-placeholder": "Type a description",
+            "dynamic": "allow dynamic registration",
+            "dynamic-help": "Allow dynamically registered clients to request this scope?",
+            "edit": "Edit Scope",
+            "icon": "Icon",
+            "new": "New Scope",
+            "select-icon": "Select an icon",
+            "value": "Scope value",
+            "value-help": "Single string with no spaces",
+            "value-placeholder": "scope"
+        },
+        "system-scope-table": {
+            "new": "New Scope",
+            "text": "There are no system scopes defined. Clients may still have custom scopes."
         }
     },
     "token": {

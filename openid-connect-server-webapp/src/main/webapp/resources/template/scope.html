@@ -18,11 +18,11 @@
 <script type="text/html" id="tmpl-system-scope-table">
 
     <div class="well well-small">
-		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> Refresh</button> &nbsp;
-        <button class="btn btn-small btn-primary new-scope"><i class="icon-plus icon-white"></i> New Scope</button>
+		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> <span data-i18n="common.refresh">Refresh</span></button> &nbsp;
+        <button class="btn btn-small btn-primary new-scope"><i class="icon-plus icon-white"></i> <span data-i18n="scope.system-scope-table.new">New Scope</span></button>
     </div>
 
-	<div id="scope-table-empty" class="alert alert-info">
+	<div id="scope-table-empty" class="alert alert-info" data-i18n="scope.system-scope-table.text">
 		There are no system scopes defined. Clients may still have custom scopes.
 	</div>
 
@@ -30,7 +30,7 @@
         <thead>
         <tr>
 			<th></th>
-            <th>Scope</th>
+            <th data-i18n="common.scope">Scope</th>
             <th></th>
         </tr>
         </thead>
@@ -39,8 +39,8 @@
     </table>
 
     <div class="well well-small">
-		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> Refresh</button> &nbsp; 
-        <button class="btn btn-small btn-primary new-scope"><i class="icon-plus icon-white"></i> New Scope</button>
+		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> <span data-i18n="common.refresh">Refresh</span></button> &nbsp; 
+        <button class="btn btn-small btn-primary new-scope"><i class="icon-plus icon-white"></i> <span data-i18n="scope.system-scope-table.new">New Scope</span></button>
     </div>
 
 </script>
@@ -64,42 +64,46 @@
 
     <td>
 		<div class="btn-group pull-right">
-	        <button class="btn btn-edit"><i class="icon-edit"></i> Edit</button> &nbsp;
-    	    <button class="btn btn-danger btn-delete"><i class="icon-trash icon-white"></i> Delete</button>
+	        <button class="btn btn-edit"><i class="icon-edit"></i> <span data-i18n="common.edit">Edit</span></button> &nbsp;
+    	    <button class="btn btn-danger btn-delete"><i class="icon-trash icon-white"></i> <span data-i18n="common.delete">Delete</span></button>
 		</div>
     </td>
 
 </script>
 
 <script type="text/html" id="tmpl-system-scope-form">
-	<h1><%- id == null ? 'New' : 'Edit'%> Scope</h1>
+    <% if (id == null) { %>
+        <h1 data-i18n="scope.system-scope-form.new">New Scope</h1>
+    <% } else { %>
+        <h1 data-i18n="scope.system-scope-form.edit">Edit Scope</h1>
+    <% } %>
 
 	<form class="form-horizontal">
 		<fieldset>
 
             <div class="well well-small">
-                <button class="btn btn-small btn-save btn-success"><i class="icon-ok-circle icon-white"></i> Save</button> &nbsp; 
-				<button class="btn btn-small btn-cancel"><i class="icon-ban-circle"></i> Cancel</button>
+                <button class="btn btn-small btn-save btn-success"><i class="icon-ok-circle icon-white"></i> <span data-i18n="common.save">Save</span></button> &nbsp; 
+				<button class="btn btn-small btn-cancel"><i class="icon-ban-circle"></i> <span data-i18n="common.cancel">Cancel</span></button>
             </div>			
 
 			<div class="control-group" id="value">
-				<label class="control-label">Scope value</label>
+				<label class="control-label" data-i18n="scope.system-scope-form.value">Scope value</label>
 				<div class="controls">
-					<input value="<%-value != null ? value : ''%>" type="text" class="" placeholder="scope">
-					<p class="help-block">Single string with no spaces</p>
+					<input value="<%-value != null ? value : ''%>" type="text" class="" placeholder="scope" data-i18n="[placeholder]scope.system-scope-form.value-placeholder">
+					<p class="help-block" data-i18n="scope.system-scope-form.value-help">Single string with no spaces</p>
 				</div>
 			</div>
 
 			<div class="control-group" id="description">
-				<label class="control-label">Description</label>
+				<label class="control-label" data-i18n="common.description">Description</label>
 				<div class="controls">
-					<textarea class="input-xlarge" placeholder="Type a description" maxlength="200" rows="3"><%-description != null ? description : ''%></textarea>
-					<p class="help-block">Human-readable text description</p>
+					<textarea class="input-xlarge" placeholder="Type a description" maxlength="200" rows="3" data-i18n="[placeholder]scope.system-scope-form.description-placeholder"><%-description != null ? description : ''%></textarea>
+					<p class="help-block" data-i18n="[placeholder]scope.system-scope-form.description-help">Human-readable text description</p>
 				</div>
 			</div>
 
 			<div class="control-group" id="icon">
-				<label class="control-label">Icon</label>
+				<label class="control-label" data-i18n="scope.system-scope-form.icon">Icon</label>
 				<div class="controls">
 
 					<span id="iconDisplay">
@@ -110,18 +114,18 @@
 						<input type="hidden" value="<%-icon%>">
 					</span>
 
-					<a href="#iconSelector" role="button" class="btn btn-info" data-toggle="modal"><i class="icon-white icon-picture"></i> Select an icon</a>
+					<a href="#iconSelector" role="button" class="btn btn-info" data-toggle="modal"><i class="icon-white icon-picture"></i> <span data-i18n="scope.system-scope-form.select-icon">Select an icon</span></a>
 
 					<div id="iconSelector" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="iconSelectorLabel" aria-hidden="true">
 						<div class="modal-header">
 							<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-							<h3 id="iconSelectorLabel">Select an Icon</h3>
+							<h3 id="iconSelectorLabel" data-i18n="scope.system-scope-form.select-icon">Select an Icon</h3>
 						</div>
 						<div class="modal-body">
 
 						</div>
 						<div class="modal-footer">
-							<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+							<button class="btn" data-dismiss="modal" aria-hidden="true" data-i18n="common.close">Close</button>
 						</div>
 					</div>
 				</div>
@@ -131,18 +135,18 @@
 			<div class="control-group" id="defaultScope">
 				<div class="controls">
 					<label class="checkbox">
-						<input type="checkbox" <%-defaultScope ? 'checked' : '' %>> default scope
+						<input type="checkbox" <%-defaultScope ? 'checked' : '' %>> <span data-i18n="scope.system-scope-form.default">default scope</span>
 					</label>
-					<p class="help-block">Newly-created clients get this scope by default?</p>
+					<p class="help-block" data-i18n="scope.system-scope-form.default-help">Newly-created clients get this scope by default?</p>
 				</div>
 			</div>
 
 			<div class="control-group" id="allowDynReg">
 				<div class="controls">
 					<label class="checkbox">
-						<input type="checkbox" <%-allowDynReg ? 'checked' : '' %>> allow dynamic registration
+						<input type="checkbox" <%-allowDynReg ? 'checked' : '' %>> <span data-i18n="scope.system-scope-form.dynamic">allow dynamic registration</span>
 					</label>
-					<p class="help-block">Allow dynamically registered clients to request this scope?</p>
+					<p class="help-block" data-i18n="scope.system-scope-form.dynamic-help">Allow dynamically registered clients to request this scope?</p>
 				</div>
 			</div>
 
@@ -160,8 +164,8 @@
 			</div>
 
             <div class="well well-small">
-                <button class="btn btn-small btn-save btn-success"><i class="icon-ok-circle icon-white"></i> Save</button> &nbsp; 
-				<button class="btn btn-small btn-cancel"><i class="icon-ban-circle"></i> Cancel</button>
+                <button class="btn btn-small btn-save btn-success"><i class="icon-ok-circle icon-white"></i> <span data-i18n="common.save">Save</span></button> &nbsp; 
+                <button class="btn btn-small btn-cancel"><i class="icon-ban-circle"></i> <span data-i18n="common.cancel">Cancel</span></button>
             </div>			
 
 		</fieldset>
