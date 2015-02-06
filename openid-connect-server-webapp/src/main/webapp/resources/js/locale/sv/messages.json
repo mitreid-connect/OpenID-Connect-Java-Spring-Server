@@ -1,10 +1,36 @@
 {
     "client": {
-        "newClient": "New Client"
+        "more-info": {
+            "contacts": "Administrativ kontakt:",
+            "home": "Webbplats:",
+            "more": "mer information",
+            "policy": "Policy:",
+            "terms": "Villkor för tjänsten"
+        },
+        "newClient": "Ny klient"
+    },
+    "common": {
+        "clients": "Klienter",
+        "scopes": "Scope"
     },
     "grant": {
-        "text": "Detta är webbplatser som du har godkänt manuellt. Om samma webbplatser begär samma åtkomst igen blir den medgiven utan att fråga på nytt."
-        
+        "refresh": "Uppdatera",
+        "revoke": "Återkalla",
+        "grant-table": {
+            "active-tokens": "Antal nu aktiva åtkomst-tokens",
+            "application": "Webbplats",
+            "approved-sites": "Godkända webbplatser",
+            "authorized": "Auktoriserad:",
+            "dynamically-registered": "Denna klient registrerades dynamiskt",
+            "expires": "Går ut:",
+            "last-accessed": "Senast använd:",
+            "no-sites": "Du har inte godkänt någon webbplats.",
+            "no-whitelisted": "Du har inte besökt några vitlistade webbplatser.",
+            "pre-approved": "Detta är webbplatser som är godkända i förväg av en administratör.",
+            "text": "Det här är webbplatser som du själv har godkänt. Om en av dessa webbplatser begär samma information igen blir det medgivet utan att du blir tillfrågad.",
+            "whitelist-note": "<b>OBS:</b> Om du återkallar dem kommer de automatiskt att godkännas igen nästa gång du besöker dem utan att du blir tillfrågad.",
+            "whitelisted-site": "Denna webbplats är vitlistad av en administratör",
+            "whitelisted-sites": "Vitlistade webbplatser"
+        }
     }
-    
 }

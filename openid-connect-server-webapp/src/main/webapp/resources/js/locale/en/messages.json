@@ -1,9 +1,37 @@
 {
     "client": {
+        "more-info": {
+            "contacts": "Administrative Contacts:",
+            "home": "Home Page:",
+            "more": "more information",
+            "policy": "Policy:",
+            "terms": "Terms of Service:"
+        },
         "newClient": "New Client"
     },
+    "common": {
+        "clients": "Clients",
+        "scopes": "Scopes"
+    },
     "grant": {
-        "text": "These are sites you have approved manually. If the same site asks for the same access in the future, it will be granted without prompting."
-        
+        "more-info": "more information",
+        "refresh": "Refresh",
+        "revoke": "Revoke",
+        "grant-table": {
+            "active-tokens": "Number of currently active access tokens",
+            "application": "Application",
+            "approved-sites": "Approved Sites",
+            "authorized": "Auktoriserad:",
+            "dynamically-registered": "This client was dynamically registered",
+            "expires": "Expires:",
+            "last-accessed": "Last accessed:",
+            "no-sites": "You have not approved any sites.",
+            "no-whitelisted": "You have not accessed any whitelisted sites.",
+            "pre-approved": "These are sites that have been pre-approved by an administrator.",
+            "text": "These are sites you have approved manually. If the same site asks for the same access in the future, it will be granted without prompting.",
+            "whitelist-note": "<b>NOTE:</b> If you revoke them here, they will automatically be re-approved on your next visit wthout prompting.",
+            "whitelisted-site": "This site was whitelisted by an adminstrator",
+            "whitelisted-sites": "Whitelisted Sites"
+        }
     }
 }

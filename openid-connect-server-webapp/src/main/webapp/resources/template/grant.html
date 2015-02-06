@@ -19,24 +19,24 @@
 <script type="text/html" id="tmpl-grant-table">
 
     <div class="well well-small">
-		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> Refresh</button>
+		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> <span data-i18n="grant.refresh">Refresh</span></button>
     </div>
 
 	<div class="tabbable">
 
  		<ul class="nav nav-tabs">
-			<li class="active"><a data-target="#grant-approved-tab" data-toggle="tab" href="#">Approved Sites <span class="label label-info" id="approvde-site-count">?</span></a></li>
-			<li><a data-target="#grant-whitelist-tab" data-toggle="tab" href="#">Whitelisted Sites <span class="label label-info" id="whitelist-count">?</span></a></li>
+			<li class="active"><a data-target="#grant-approved-tab" data-toggle="tab" href="#"><span data-i18n="grant.grant-table.approved-sites">Approved Sites</span> <span class="label label-info" id="approvde-site-count">?</span></a></li>
+			<li><a data-target="#grant-whitelist-tab" data-toggle="tab" href="#"><span data-i18n="grant.grant-table.whitelisted-sites">Whitelisted Sites</span> <span class="label label-info" id="whitelist-count">?</span></a></li>
 		</ul>
 
 	<div class="tab-content">
 
 	<div class="tab-pane active" id="grant-approved-tab">
 
-	<p data-i18n="grant.text">These are sites you have approved manually. If the same site asks for the same access in the future, it will
+	<p data-i18n="grant.grant-table.text">These are sites you have approved manually. If the same site asks for the same access in the future, it will
 		be granted without prompting.</p>
 
-	<div id="grant-table-empty" class="alert alert-info">
+	<div id="grant-table-empty" class="alert alert-info" data-i18n="grant.grant-table.no-sites">
 		You have not approved any sites.
 	</div>
 
@@ -44,7 +44,7 @@
         <thead>
         <tr>
 			<th></th>
-            <th>Application</th>
+            <th data-i18n="grant.grant-table.application">Application</th>
 			<th><i class="icon-time"></i></th>
             <th><i class="icon-edit"></i></th>
         </tr>
@@ -57,10 +57,10 @@
 
 	<div class="tab-pane" id="grant-whitelist-tab">
 	
-	<p>These are sites that have been pre-approved by an administrator.</p>
-	<p class="text-warning"><b>NOTE:</b> If you revoke them here, they will automatically be re-approved on your next visit wthout prompting.</p>
+	<p data-i18n="grant.grant-table.pre-approved">These are sites that have been pre-approved by an administrator.</p>
+	<p class="text-warning" data-i18n="[html]grant.grant-table.whitelist-note"><b>NOTE:</b> If you revoke them here, they will automatically be re-approved on your next visit wthout prompting.</p>
 
-	<div id="grant-whitelist-table-empty" class="alert alert-info">
+	<div id="grant-whitelist-table-empty" class="alert alert-info" data-i18n="grant.grant-table.no-whitelisted">
 		You have not accessed any whitelisted sites.
 	</div>
 
@@ -68,7 +68,7 @@
         <thead>
         <tr>
 			<th></th>
-            <th>Application</th>
+            <th data-i18n="grant.grant-table.application">Application</th>
 			<th><i class="icon-time"></i></th>
             <th><i class="icon-edit"></i></th>
         </tr>
@@ -84,7 +84,7 @@
 	</div>
 
     <div class="well well-small">
-		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> Refresh</button>
+		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> <span data-i18n="grant.refresh">Refresh</span></button>
     </div>
 
 </script>
@@ -107,20 +107,20 @@
 
 	<td>
 		<div>
-			<i>Authorized:</i> <span title="<%- formattedDate.hoverCreationDate %>"><%- formattedDate.displayCreationDate %></span>
+			<i data-i18n="grant.grant-table.authorized">Authorized:</i> <span title="<%- formattedDate.hoverCreationDate %>"><%- formattedDate.displayCreationDate %></span>
 		</div>
 
 		<div>
-			<i>Last accessed:</i> <span title="<%- formattedDate.hoverAccessDate %>"><%- formattedDate.displayAccessDate %></span>
+			<i data-i18n="grant.grant-table.last-accessed">Last accessed:</i> <span title="<%- formattedDate.hoverAccessDate %>"><%- formattedDate.displayAccessDate %></span>
 		</div>
 
 		<div>
-			<i>Expires:</i> <span title="<%- formattedDate.hoverTimeoutDate %>"><%- formattedDate.displayTimeoutDate %></span>
+			<i data-i18n="grant.grant-table.expires">Expires:</i> <span title="<%- formattedDate.hoverTimeoutDate %>"><%- formattedDate.displayTimeoutDate %></span>
 		</div>
 	</td>
 
     <td>
-        <button class="btn btn-danger btn-delete pull-right"><i class="icon-trash icon-white"></i> Revoke</button>
+        <button class="btn btn-danger btn-delete pull-right"><i class="icon-trash icon-white"></i> <span data-i18n="grant.revoke">Revoke</span></button>
     </td>
 
 </script>

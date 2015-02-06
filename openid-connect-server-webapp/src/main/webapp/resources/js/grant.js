@@ -47,9 +47,10 @@ var ApprovedSiteListView = Backbone.View.extend({
     	}
 
     	$('#loadingbox').sheet('show');
-    	$('#loading').html('<span class="label" id="loading-grants">Approved Sites</span> ' +
-    			'<span class="label" id="loading-clients">Clients</span> ' + 
-    			'<span class="label" id="loading-scopes">Scopes</span> '
+    	$('#loading').html(
+    	        '<span class="label" id="loading-grants">' + $.t('grant.grant-table.approved-sites') + '</span> ' +
+    			'<span class="label" id="loading-clients">' + $.t('common.clients') + '</span> ' + 
+    			'<span class="label" id="loading-scopes">' + $.t('common.scopes') + '</span> '
     			);
 
     	$.when(this.model.fetchIfNeeded({success:function(e) {$('#loading-grants').addClass('label-success');}}),
@@ -137,9 +138,9 @@ var ApprovedSiteListView = Backbone.View.extend({
     	e.preventDefault();
     	var _self = this;
     	$('#loadingbox').sheet('show');
-    	$('#loading').html('<span class="label" id="loading-grants">Approved Sites</span> ' +
-    			'<span class="label" id="loading-clients">Clients</span> ' + 
-    			'<span class="label" id="loading-scopes">Scopes</span> '
+    	$('#loading').html('<span class="label" id="loading-grants">' + $.t('grant.grant-table.approved-sites') + '</span> ' +
+    			'<span class="label" id="loading-clients">' + $.t('common.clients') + '</span> ' + 
+    			'<span class="label" id="loading-scopes">' + $.t('common.scopes') + '</span> '
     			);
 
     	$.when(this.model.fetch({success:function(e) {$('#loading-grants').addClass('label-success');}}),
@@ -238,9 +239,9 @@ var ApprovedSiteView = Backbone.View.extend({
         
         $('.client-more-info-block', this.el).html(this.moreInfoTemplate({client: this.options.client.toJSON()}));
         
-        this.$('.dynamically-registered').tooltip({title: 'This client was dynamically registered'});
-        this.$('.whitelisted-site').tooltip({title: 'This site was whitelisted by an adminstrator'});
-        this.$('.tokens').tooltip({title: 'Number of currently active access tokens.'});
+        this.$('.dynamically-registered').tooltip({title: $.t('grant.grant-table.dynamically-registered')});
+        this.$('.whitelisted-site').tooltip({title: $.t('grant.grant-table.whitelisted-site')});
+        this.$('.tokens').tooltip({title: $.t('grant.grant-table.active-tokens')});
         $(this.el).i18n();
 		return this;
 	},

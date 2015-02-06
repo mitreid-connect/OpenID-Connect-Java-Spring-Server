@@ -98,22 +98,22 @@
 						<div class="muted moreInformationContainer">
 							<% if (client.clientUri || client.policyUri || client.tosUri || client.contacts) { %>
 								<div class="toggleMoreInformation" style="cursor: pointer;">
-									<i class="icon-chevron-right"></i> <small>more information</small>
+									<i class="icon-chevron-right"></i> <small data-i18n="client.more-info.more">more information</small>
 								</div>
 								<div class="moreInformation hide">
 									<%-client.clientDescription%>
 									<ul>
 										<% if (client.clientUri) { %>
-											<li>Home page: <a href="<%- client.clientUri %>"><%- client.clientUri %></a></li>
+											<li><span data-i18n="client.more-info.home">Home Page:</span> <a href="<%- client.clientUri %>"><%- client.clientUri %></a></li>
 										<% } %>
 										<% if (client.policyUri) { %>
-											<li>Policy: <a href="<%- client.policyUri %>"><%- client.policyUri %></a></li>
+											<li><span data-i18n="client.more-info.policy">Policy:</span> <a href="<%- client.policyUri %>"><%- client.policyUri %></a></li>
 										<% } %>
 										<% if (client.tosUri) { %>
-											<li>Terms of Service: <a href="<%- client.tosUri %>"><%- client.tosUri %></a></li>
+											<li><span data-i18n="client.more-info.terms">Terms of Service:</span> <a href="<%- client.tosUri %>"><%- client.tosUri %></a></li>
 										<% } %>
 										<% if (client.contacts != null && client.contacts.length > 0) { %>
-											<li>Administrative Contacts: <%- client.contacts.join(', ') %></li>
+											<li><span data-i18n="client.more-info.contacts">Administrative Contacts:</span> <%- client.contacts.join(', ') %></li>
 										<% } %>
 									</ul>
 								</div>
