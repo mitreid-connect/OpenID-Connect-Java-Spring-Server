@@ -1,4 +1,17 @@
 {
+    "admin": {
+        "blacklist-form": {
+            "blacklisted-uris": "Svarlistade URIer"
+        },
+        "list-widget": {
+            "empty": "Det finns inget innehåll i denna lista."
+        },
+        "user-profile": {
+            "claim": "Claim-namn:",
+            "text": "Din användarprofil innehåller följande information:",
+            "value": "Claim-värde:"
+        }
+    },
     "client": {
         "more-info": {
             "contacts": "Administrativ kontakt:",

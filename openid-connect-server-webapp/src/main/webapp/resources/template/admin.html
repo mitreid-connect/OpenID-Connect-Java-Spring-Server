@@ -34,7 +34,7 @@
 
 <script type="text/html" id="tmpl-list-widget-child-empty">
 	<tr class="info">
-		<td colspan="2">There are no items in this list.</td>
+		<td colspan="2" data-i18n="admin.list-widget.empty">There are no items in this list.</td>
 	</tr>
 </script>
 
@@ -57,17 +57,17 @@
     <form class="form-horizontal">
         <fieldset>
             <div class="well well-small">
-				<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> Refresh</button>
+				<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> <span data-i18n="common.refresh">Refresh</span></button>
             </div>
 
             <div class="control-group" id="blacklist">
-                <label class="control-label">Blacklisted URIs</label>
+                <label class="control-label" data-i18n="admin.blacklist-form.blacklisted-uris">Blacklisted URIs</label>
                 <div class="controls">
                 </div>
             </div>
 
             <div class="well well-small">
-				<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> Refresh</button>
+				<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> <span data-i18n="common.refresh">Refresh</span></button>
             </div>
 
         </fieldset>
@@ -78,11 +78,11 @@
 <!-- user profile -->
 <script type="text/html" id="tmpl-user-profile">
 
-	<div>Your user profile has the following information:</div>
+	<div data-i18n="admin.user-profile.text">Your user profile has the following information:</div>
 
     <dl class="dl-horizontal">
-		<dt><span class="text-info">Claim name:</span></dt>
-		<dd><span class="text-info">Claim value:</span></dt>
+		<dt><span class="text-info" data-i18n="admin.user-profile.claim">Claim name:</span></dt>
+		<dd><span class="text-info" data-i18n="admin.user-profile.value">Claim value:</span></dt>
     </dl>
 
 </script>

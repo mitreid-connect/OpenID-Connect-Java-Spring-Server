@@ -125,6 +125,7 @@ var ListWidgetChildView = Backbone.View.extend({
         if (this.model.get('item').length > 30) {
             this.$el.tooltip({title:this.model.get('item')});
         }
+        $(this.el).i18n();
         return this;
     }
 });
@@ -210,6 +211,7 @@ var ListWidgetView = Backbone.View.extend({
         	}, this);
         }
 
+        $(this.el).i18n();
         return this;
     }
     
@@ -262,6 +264,7 @@ var BreadCrumbView = Backbone.View.extend({
         }, this);
 
         $('#breadcrumbs').html(this.el);
+        $(this.el).i18n();
     }
 });
 
@@ -318,6 +321,7 @@ var BlackListListView = Backbone.View.extend({
 			collection: this.model
 		}).render().el);
 		
+        $(this.el).i18n();
 		return this;
 	}
 });
@@ -410,6 +414,7 @@ var UserProfileView = Backbone.View.extend({
         	}
         }, this);
 		
+        $(this.el).i18n();
 		return this;
 	}
 });

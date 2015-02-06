@@ -1,4 +1,17 @@
 {
+    "admin": {
+        "blacklist-form": {
+            "blacklisted-uris": "Blacklisted URIs"
+        },
+        "list-widget": {
+            "empty": "There are no items in this list."
+        },
+        "user-profile": {
+            "claim": "Claim name:",
+            "text": "Your user profile has the following information:",
+            "value": "Claim value:"
+        }
+    },
     "client": {
         "more-info": {
             "contacts": "Administrative Contacts:",
