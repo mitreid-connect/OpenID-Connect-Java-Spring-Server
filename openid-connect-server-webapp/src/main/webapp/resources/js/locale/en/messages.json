@@ -10,13 +10,14 @@
         "newClient": "New Client"
     },
     "common": {
+        "client": "Client",
         "clients": "Clients",
+        "revoke": "Revoke",
         "scopes": "Scopes"
     },
     "grant": {
         "more-info": "more information",
         "refresh": "Refresh",
-        "revoke": "Revoke",
         "grant-table": {
             "active-tokens": "Number of currently active access tokens",
             "application": "Application",
@@ -32,6 +33,24 @@
             "whitelist-note": "<b>NOTE:</b> If you revoke them here, they will automatically be re-approved on your next visit wthout prompting.",
             "whitelisted-site": "This site was whitelisted by an adminstrator",
             "whitelisted-sites": "Whitelisted Sites"
+        }
+    },
+    "token": {
+        "token-table": {
+            "access-tokens": "Access Tokens",
+            "associated-id": "This access token was issued with an associated ID token.",
+            "associated-refresh": "This access token was issued with an associated refresh token.",
+            "click-to-display": "Click to display full token value",
+            "confirm": "Are you sure sure you would like to revoke this token?",
+            "confirm-refresh": "Are you sure sure you would like to revoke this refresh token and its associated access tokens?",
+            "expires": "Expires",
+            "no-access": "There are no active access tokens.",
+            "no-refresh": "There are no active refresh tokens.",
+            "number-of-tokens": "Number of associated access tokens",
+            "refresh-tokens": "Refresh Tokens",
+            "text": "Access tokens are usually short-lived and provide clients with access to specific resources. ID Tokens are specialized access tokens to facilitate log on using OpenID Connect.",
+            "text-refresh": "Refresh tokens are usually long-lived and provide clients with the ability to get new access tokens without end-user involvement.",
+            "token-info": "Token Information"
         }
     }
 }

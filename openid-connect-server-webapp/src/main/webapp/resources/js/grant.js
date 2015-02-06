@@ -138,9 +138,10 @@ var ApprovedSiteListView = Backbone.View.extend({
     	e.preventDefault();
     	var _self = this;
     	$('#loadingbox').sheet('show');
-    	$('#loading').html('<span class="label" id="loading-grants">' + $.t('grant.grant-table.approved-sites') + '</span> ' +
-    			'<span class="label" id="loading-clients">' + $.t('common.clients') + '</span> ' + 
-    			'<span class="label" id="loading-scopes">' + $.t('common.scopes') + '</span> '
+    	$('#loading').html(
+                '<span class="label" id="loading-grants">' + $.t('grant.grant-table.approved-sites') + '</span> ' +
+                '<span class="label" id="loading-clients">' + $.t('common.clients') + '</span> ' + 
+                '<span class="label" id="loading-scopes">' + $.t('common.scopes') + '</span> '
     			);
 
     	$.when(this.model.fetch({success:function(e) {$('#loading-grants').addClass('label-success');}}),

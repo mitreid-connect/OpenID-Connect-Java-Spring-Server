@@ -94,13 +94,14 @@ var AccessTokenView = Backbone.View.extend({
 		
         $('.client-more-info-block', this.el).html(this.moreInfoTemplate({client: this.options.client.toJSON()}));
 
+        $(this.el).i18n();
         return this;
     },
     
     deleteToken:function (e) {
     	e.preventDefault();
 
-        if (confirm("Are you sure sure you would like to revoke this token?")) {
+        if (confirm($.t("token.token-table.confirm"))) {
         	
             var _self = this;
 
@@ -243,6 +244,7 @@ var RefreshTokenView = Backbone.View.extend({
 		
         $('.client-more-info-block', this.el).html(this.moreInfoTemplate({client: this.options.client.toJSON()}));
         
+        $(this.el).i18n();
         return this;
 
     },
@@ -250,7 +252,7 @@ var RefreshTokenView = Backbone.View.extend({
     deleteToken:function (e) {
     	e.preventDefault();
 
-        if (confirm("Are you sure sure you would like to revoke this refresh token and its associated access tokens?")) {
+        if (confirm($.t('token.token-table.confirm-refresh'))) {
         	
             var _self = this;
 
@@ -339,10 +341,11 @@ var TokenListView = Backbone.View.extend({
     	}
 
     	$('#loadingbox').sheet('show');
-    	$('#loading').html('<span class="label" id="loading-access">Access Tokens</span> ' +
-    			'<span class="label" id="loading-refresh">Refresh Tokens</span> ' + 
-    			'<span class="label" id="loading-clients">Clients</span> ' + 
-    			'<span class="label" id="loading-scopes">Scopes</span> '
+    	$('#loading').html(
+                '<span class="label" id="loading-access">' + $.t('token.token-table.access-tokens') + '</span> ' +
+    			'<span class="label" id="loading-refresh">' + $.t('token.token-table.refresh-tokens') + '</span> ' +
+                '<span class="label" id="loading-clients">' + $.t('common.clients') + '</span> ' +
+                '<span class="label" id="loading-scopes">' + $.t('common.scopes') + '</span> '
     			);
 
     	$.when(this.model.access.fetchIfNeeded({success:function(e) {$('#loading-access').addClass('label-success');}}),
@@ -380,10 +383,11 @@ var TokenListView = Backbone.View.extend({
 	
     refreshTable:function(e) {
     	$('#loadingbox').sheet('show');
-    	$('#loading').html('<span class="label" id="loading-access">Access Tokens</span> ' +
-    			'<span class="label" id="loading-refresh">Refresh Tokens</span> ' + 
-    			'<span class="label" id="loading-clients">Clients</span> ' + 
-    			'<span class="label" id="loading-scopes">Scopes</span> '
+    	$('#loading').html(
+                '<span class="label" id="loading-access">' + $.t('token.token-table.access-tokens') + '</span> ' +
+                '<span class="label" id="loading-refresh">' + $.t('token.token-table.refresh-tokens') + '</span> ' +
+                '<span class="label" id="loading-clients">' + $.t('common.clients') + '</span> ' +
+                '<span class="label" id="loading-scopes">' + $.t('common.scopes') + '</span> '
     			);
     	var _self = this;
     	$.when(this.model.access.fetch({success:function(e) {$('#loading-access').addClass('label-success');}}),
@@ -496,8 +500,7 @@ var TokenListView = Backbone.View.extend({
 */
 		
 		this.togglePlaceholder();
-		
+        $(this.el).i18n();
 		return this;
 	}
 });
-

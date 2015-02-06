@@ -17,24 +17,24 @@
  
  <script type="text/html" id="tmpl-token-table">
     <div class="well well-small">
-		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> Refresh</button> &nbsp;
+		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> <span data-i18n="common.refresh">Refresh</span></button> &nbsp;
     </div>
 
 	<div class="tabbable">
 
  		<ul class="nav nav-tabs">
-			<li class="active"><a data-target="#token-access-tab" data-toggle="tab" href="#">Access Tokens <span class="label label-info" id="access-token-count">?</span></a></li>
-			<li><a data-target="#token-refresh-tab" data-toggle="tab" href="#">Refresh Tokens <span class="label label-info" id="refresh-token-count">?</span></a></li>
+			<li class="active"><a data-target="#token-access-tab" data-toggle="tab" href="#"><span data-i18n="token.token-table.access-tokens">Access Tokens</span> <span class="label label-info" id="access-token-count">?</span></a></li>
+			<li><a data-target="#token-refresh-tab" data-toggle="tab" href="#"><span data-i18n="token.token-table.refresh-tokens">Refresh Tokens</span> <span class="label label-info" id="refresh-token-count">?</span></a></li>
 		</ul>
 
 	<div class="tab-content">
 
 	<div class="tab-pane active" id="token-access-tab">
 
-	<div><p>Access tokens are usually short-lived and provide clients with access to specific resources. 
+	<div><p data-i18n="token.token-table.text">Access tokens are usually short-lived and provide clients with access to specific resources. 
 			ID Tokens are specialized access tokens to facilitate log on using OpenID Connect.</p></div>
 
-	<div id="access-token-table-empty" class="alert alert-info">
+	<div id="access-token-table-empty" class="alert alert-info" data-i18n="token.token-table.no-access">
 		There are no active access tokens.
 	</div>
 
@@ -43,9 +43,9 @@
     <table id="access-token-table" class="table table-hover table-striped">
         <thead>
         <tr>
-            <th>Client</th>
-            <th>Token Information</th>
-			<th>Expires</th>
+            <th data-i18n="common.client">Client</th>
+            <th data-i18n="token.token-table.token-info">Token Information</th>
+			<th data-i18n="token.token-table.expires">Expires</th>
             <th></th>
         </tr>
         </thead>
@@ -59,9 +59,9 @@
 
 	<div class="tab-pane" id="token-refresh-tab">
 
-	<div><p>Refresh tokens are usually long-lived and provide clients with the ability to get new access tokens without end-user involvement.</p></div>
+	<div><p data-i18n="token.token-table.text-refresh">Refresh tokens are usually long-lived and provide clients with the ability to get new access tokens without end-user involvement.</p></div>
 
-	<div id="refresh-token-table-empty" class="alert alert-info">
+	<div id="refresh-token-table-empty" class="alert alert-info" data-i18n="token.token-table.no-refresh">
 		There are no active refresh tokens.
 	</div>
 
@@ -70,9 +70,9 @@
     <table id="refresh-token-table" class="table table-hover table-striped">
         <thead>
         <tr>
-            <th>Client</th>
-            <th>Token Information</th>
-			<th>Expires</th>
+            <th data-i18n="common.client">Client</th>
+            <th data-i18n="token.token-table.token-info">Token Information</th>
+            <th data-i18n="token.token-table.expires">Expires</th>
             <th></th>
         </tr>
         </thead>
@@ -86,7 +86,7 @@
 	</div>
 
     <div class="well well-small">
-		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> Refresh</button> &nbsp; 
+		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> <span data-i18n="common.refresh">Refresh</span></button> &nbsp; 
     </div>
 </script>
 
@@ -96,18 +96,18 @@
 		<div class="client-more-info-block"></div>
 		<% if (token.refreshTokenId != null) { %>
 		<br />
-		<span class="label label-important" title="This access token was issued with an associated refresh token.">+ <i class="icon-time icon-white"></i> Refresh</span>
+		<span class="label label-important" title="This access token was issued with an associated refresh token." data-i18n="[title]token.token-table.associated-refresh">+ <i class="icon-time icon-white"></i> Refresh</span>
 		<% } %>
 		<% if (token.idTokenId != null) { %>
 		<br />
-		<span class="label label-success" title="This access token was issued with an associated ID token.">+ <i class="icon-user icon-white"></i> ID</span>
+		<span class="label label-success" title="This access token was issued with an associated ID token." data-i18n="[title]token.token-table.associated-refresh">+ <i class="icon-user icon-white"></i> ID</span>
 		<% } %>
 
     </td>
 
     <td>
 		<div class="token-value">
-			<code class="token-substring" style="cursor: pointer" title="Click to display full token value"><%- token.value.substr(0,27) %> ...</code>
+			<code class="token-substring" style="cursor: pointer" data-i18n="[title]token.token-table.click-to-display" title="Click to display full token value"><%- token.value.substr(0,27) %> ...</code>
 			<input type="text" readonly style="cursor: text" class="token-full input-xxlarge" value="<%- token.value %>" />
 		</div>
 		<div class="scope-list"></div>
@@ -118,7 +118,7 @@
 	</td>
 	
     <td>
-		<button class="btn btn-danger btn-delete pull-right"><i class="icon-trash icon-white"></i> Revoke</button>
+		<button class="btn btn-danger btn-delete pull-right"><i class="icon-trash icon-white"></i> <span data-i18n="common.revoke">Revoke</span></button>
     </td>
 
 </script>
@@ -127,12 +127,12 @@
     <td>
         <span title="<%- client.clientId %>"><%- client.clientName != null ? client.clientName : ( client.clientId.substr(0,8) + '...' ) %></span>
 		<div class="client-more-info-block"></div>
-		<span class="label label-info" title="Number of associated access tokens"><%- accessTokenCount %></span>
+		<span class="label label-info" title="Number of associated access tokens" data-i18n="[title]token.token-table.number-of-tokens"><%- accessTokenCount %></span>
     </td>
 
     <td>
 		<div class="token-value">
-			<code class="token-substring" style="cursor: pointer" title="Click to display full token value"><%- token.value.substr(0,27) %> ...</code>
+			<code class="token-substring" style="cursor: pointer" data-i18n="[title]token.token-table.click-to-display" title="Click to display full token value"><%- token.value.substr(0,27) %> ...</code>
 			<input type="text" readonly style="cursor: text" class="token-full input-xxlarge" value="<%- token.value %>" />
 		</div>
 		<div class="scope-list"></div>
@@ -143,7 +143,7 @@
 	</td>
 	
     <td>
-		<button class="btn btn-danger btn-delete pull-right"><i class="icon-trash icon-white"></i> Revoke</button>
+		<button class="btn btn-danger btn-delete pull-right"><i class="icon-trash icon-white"></i> <span data-i18n="common.revoke">Revoke</span></button>
     </td>
 
 </script>
