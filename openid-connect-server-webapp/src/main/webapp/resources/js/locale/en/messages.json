@@ -23,9 +23,14 @@
         "newClient": "New Client"
     },
     "common": {
+        "cancel": "Cancel",
         "client": "Client",
         "clients": "Clients",
+        "delete": "Delete",
+        "dynamically-registered": "This client was dynamically registered",
+        "edit": "Edit",
         "revoke": "Revoke",
+        "save": "Save",
         "scopes": "Scopes"
     },
     "grant": {
@@ -64,6 +69,18 @@
             "text": "Access tokens are usually short-lived and provide clients with access to specific resources. ID Tokens are specialized access tokens to facilitate log on using OpenID Connect.",
             "text-refresh": "Refresh tokens are usually long-lived and provide clients with the ability to get new access tokens without end-user involvement.",
             "token-info": "Token Information"
+        }
+    },
+    "whitelist": {
+        "confirm": "Are you sure you want to delete this whitelist entry?",
+        "whitelist": "Whitelist",
+        "whitelist-form": {
+            "allowed-scopes": "Allowed Scopes",
+            "edit": "Edit Whitelisted Site",
+            "new": "New Whitelisted Site"
+        },
+        "whitelist-table": {
+            "no-sites": "There are no whitelisted sites. Use the <strong>whitelist</strong> button on the client management page to create one."
         }
     }
 }

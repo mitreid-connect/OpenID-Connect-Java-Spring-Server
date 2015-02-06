@@ -23,10 +23,15 @@
         "newClient": "Ny klient"
     },
     "common": {
+        "cancel": "Avbryt",
         "client": "Klient",
         "clients": "Klienter",
+        "delete": "Ta bort",
+        "dynamically-registered": "Denna klient registrerades dynamiskt",
+        "edit": "Ändra",
         "refresh": "Uppdatera",
         "revoke": "Återkalla",
+        "save": "Spara",
         "scopes": "Scope"
     },
     "grant": {
@@ -64,6 +69,18 @@
             "text": "Biljetter för åtkomst (access-tokens) är vanligtvis kortlivade och ger klienter tillgång till specifika resurser. ID-tokens är speciella åtkomstbiljetter för att underlätta autentisering med OpenID Connect.",
             "text-refresh": "Biljetter för förnyelse (refresh-tokens) är vanligtvis långlivade och ger klienter möjligheten att skaffa nya åtkomstbiljetter utan att involvera slutanvändaren.",
             "token-info": "Biljettinformation"
+        }
+    },
+    "whitelist": {
+        "confirm": "Är du säker på att du vill ta bort den här klienten ifrån vitlistan?",
+        "whitelist": "Vitlista",
+        "whitelist-form": {
+            "allowed-scopes": "Tillåtna scope",
+            "edit": "Ändra vitlistad webbplats",
+            "new": "Ny vitlistad webbplats"
+        },
+        "whitelist-table": {
+            "no-sites": "Det finns inga vitlistade webbplatser. Använd knappen <strong>vitlista</strong> på klientadminstrationssidan för att skapa en."
         }
     }
 }

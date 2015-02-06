@@ -59,9 +59,10 @@ var WhiteListListView = Backbone.View.extend({
     	}
 
     	$('#loadingbox').sheet('show');
-    	$('#loading').html('<span class="label" id="loading-whitelist">Whitelist</span>' +
-    			'<span class="label" id="loading-clients">Clients</span>' + 
-    			'<span class="label" id="loading-scopes">Scopes</span>'
+    	$('#loading').html(
+                '<span class="label" id="loading-whitelist">' + $.t('whitelist.whitelist') + '</span> ' +
+                '<span class="label" id="loading-clients">' + $.t('common.clients') + '</span> ' +
+                '<span class="label" id="loading-scopes">' + $.t('common.scopes') + '</span> '
     			);
 
     	$.when(this.model.fetchIfNeeded({success:function(e) {$('#loading-whitelist').addClass('label-success');}}),
@@ -97,7 +98,7 @@ var WhiteListListView = Backbone.View.extend({
 		}, this);
 
 		this.togglePlaceholder();
-		
+        $(this.el).i18n();
 		return this;
 	},
 
@@ -115,9 +116,10 @@ var WhiteListListView = Backbone.View.extend({
     	e.preventDefault();
     	var _self = this;
     	$('#loadingbox').sheet('show');
-    	$('#loading').html('<span class="label" id="loading-whitelist">Whitelist</span> ' +
-    			'<span class="label" id="loading-clients">Clients</span> ' + 
-    			'<span class="label" id="loading-scopes">Scopes</span> '
+    	$('#loading').html(
+    	        '<span class="label" id="loading-whitelist">' + $.t('whitelist.whitelist') + '</span> ' +
+                '<span class="label" id="loading-clients">' + $.t('common.clients') + '</span> ' +
+                '<span class="label" id="loading-scopes">' + $.t('common.scopes') + '</span> '
     			);
 
     	$.when(this.model.fetch({success:function(e) {$('#loading-whitelist').addClass('label-success');}}),
@@ -160,8 +162,9 @@ var WhiteListView = Backbone.View.extend({
         
         $('.client-more-info-block', this.el).html(this.moreInfoTemplate({client: this.options.client.toJSON()}));
         
-		this.$('.dynamically-registered').tooltip({title: 'This client was dynamically registered'});
+		this.$('.dynamically-registered').tooltip({title: $.t('common.dynamically-registered')});
 
+        $(this.el).i18n();
         return this;
 	},
 	
@@ -179,7 +182,7 @@ var WhiteListView = Backbone.View.extend({
 	deleteWhitelist:function(e) {
     	e.preventDefault();
 		
-		if (confirm("Are you sure you want to delete this whitelist entry?")) {
+		if (confirm($.t('whitelist.confirm'))) {
 			var _self = this;
 			
             this.model.destroy({
@@ -342,7 +345,7 @@ var WhiteListFormView = Backbone.View.extend({
         $("#scope .controls",this.el).html(scopeView.render().el);
         this.listWidgetViews.push(scopeView);
 		
-		
+        $(this.el).i18n();
 		return this;
 
 	}
