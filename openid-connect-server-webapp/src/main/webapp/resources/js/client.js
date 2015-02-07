@@ -254,7 +254,7 @@ var ClientView = Backbone.View.extend({
         this.$('.allow-introspection').tooltip({title: 'This client can perform token introspection'});
         
         this.updateMatched();
-        
+        $(this.el).i18n();
         return this;
     },
     
@@ -475,7 +475,7 @@ var ClientListView = Backbone.View.extend({
         $(this.el).html($('#tmpl-client-table').html());
         
         this.renderInner();
-
+        $(this.el).i18n();
         return this;        
     },
     
@@ -1099,7 +1099,8 @@ var ClientFormView = Backbone.View.extend({
         		+'Future versions of the server library will make use of this.'
         	});
         
-       return this;
+        $(this.el).i18n();
+        return this;
     }
 });
 

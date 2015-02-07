@@ -14,6 +14,12 @@
         }
     },
     "client": {
+        "client-table": {
+            "new": "New Client",
+            "no-clients": "There are no registered clients on this server.",
+            "no-matches": "There are no clients that match your search criteria.",
+            "search": "Search..."
+        },
         "more-info": {
             "contacts": "Administrative Contacts:",
             "home": "Home Page:",
@@ -32,6 +38,7 @@
         "description": "Description",
         "dynamically-registered": "This client was dynamically registered",
         "edit": "Edit",
+        "information": "Information",
         "revoke": "Revoke",
         "save": "Save",
         "scopes": "Scopes"

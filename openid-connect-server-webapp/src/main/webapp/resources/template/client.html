@@ -124,22 +124,22 @@
 
 <script type="text/html" id="tmpl-client-table">
     <div class="well well-small">
-		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> Refresh</button> &nbsp;
-        <button class="btn btn-small btn-primary new-client"><i class="icon-plus icon-white"></i> New Client</button>
+		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> <span data-i18n="common.refresh">Refresh</span></button> &nbsp;
+        <button class="btn btn-small btn-primary new-client"><i class="icon-plus icon-white"></i> <span data-i18n="client.client-table.new">New Client</span></button>
 		<div class="form-search pull-right">
 			<div class="input-append">
-				<input type="text" class="search-query" placeholder="Search...">
+				<input type="text" class="search-query" placeholder="Search..." data-i18n="[placeholder]client.client-table.search">
 				<button class="btn">&times;</button>
 			</div>
 		</div>
     </div>
 
 
-	<div id="client-table-search-empty" class="alert alert-warning">
+	<div id="client-table-search-empty" class="alert alert-warning" data-i18n="client.client-table.no-matches">
 		There are no clients that match your search criteria.
 	</div>
 
-	<div id="client-table-empty" class="alert alert-info">
+	<div id="client-table-empty" class="alert alert-info" data-i18n="client.client-table.no-clients">
 		There are no registered clients on this server.
 	</div>
 
@@ -149,8 +149,8 @@
         <thead>
         <tr>
 			<th></th>
-            <th>Client</th>
-            <th>Information</th>
+            <th data-i18n="common.client">Client</th>
+            <th data-i18n="common.information">Information</th>
             <th><i class="icon-edit"></i></th>
         </tr>
         </thead>
@@ -161,8 +161,8 @@
 	<div class="pagination paginator"></div>
 
     <div class="well well-small">
-		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> Refresh</button> &nbsp; 
-        <button class="btn btn-small btn-primary new-client"><i class="icon-plus icon-white"></i> New Client</button>
+        <button class="btn btn-small refresh-table"><i class="icon-refresh"></i> <span data-i18n="common.refresh">Refresh</span></button> &nbsp;
+        <button class="btn btn-small btn-primary new-client"><i class="icon-plus icon-white"></i> <span data-i18n="client.client-table.new">New Client</span></button>
     </div>
 </script>
 
