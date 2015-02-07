@@ -57,6 +57,9 @@
         }
     },
     "scope": {
+        "scope-list": {
+            "no-scopes": "INGA SCOPE"
+        },
         "system-scope-form": {
             "default": "default scope",
             "default-help": "Ny klienter får detta scope per default?",
