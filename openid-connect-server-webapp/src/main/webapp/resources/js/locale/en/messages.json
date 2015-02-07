@@ -1,5 +1,6 @@
 {
     "admin": {
+        "blacklist": "Blacklist",
         "blacklist-form": {
             "blacklisted-uris": "Blacklisted URIs"
         },
@@ -67,13 +68,18 @@
             "icon": "Icon",
             "new": "New Scope",
             "select-icon": "Select an icon",
+            "structured": "is a structured scope",
+            "structured-help": "Is the scope structured with structured values like <code>base:extension</code>?",
+            "structured-param-help": "Human-readable description of the structured parameter",
             "value": "Scope value",
             "value-help": "Single string with no spaces",
             "value-placeholder": "scope"
         },
         "system-scope-table": {
+            "confirm": "Are you sure sure you would like to delete this scope? Clients that have this scope will still be able to ask for it.",
             "new": "New Scope",
-            "text": "There are no system scopes defined. Clients may still have custom scopes."
+            "text": "There are no system scopes defined. Clients may still have custom scopes.",
+            "tooltip-dynamic": "This scope can be used by dynamically registered clients"
         }
     },
     "token": {

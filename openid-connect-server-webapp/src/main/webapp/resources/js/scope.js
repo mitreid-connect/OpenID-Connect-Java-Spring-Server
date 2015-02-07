@@ -99,7 +99,7 @@ var SystemScopeView = Backbone.View.extend({
     render:function (eventName) {
         this.$el.html(this.template(this.model.toJSON()));
 
-        this.$('.allow-dyn-reg').tooltip({title: 'This scope can be used by dynamically registered clients'});
+        this.$('.allow-dyn-reg').tooltip({title: $.t('scope.system-scope-table.tooltip-dynamic')});
         
         return this;
         $(this.el).i18n();
@@ -108,7 +108,7 @@ var SystemScopeView = Backbone.View.extend({
     deleteScope:function (e) {
     	e.preventDefault();
 
-        if (confirm("Are you sure sure you would like to delete this scope? Clients that have this scope will still be able to ask for it.")) {
+        if (confirm($.t("scope.system-scope-table.confirm"))) {
             var _self = this;
 
             this.model.destroy({
@@ -164,7 +164,9 @@ var SystemScopeListView = Backbone.View.extend({
     	}
 
     	$('#loadingbox').sheet('show');
-    	$('#loading').html('<span class="label" id="loading-scopes">Scopes</span> ');
+    	$('#loading').html(
+                '<span class="label" id="loading-scopes">' + $.t('common.scopes') + '</span> '
+    	        );
 
     	$.when(this.model.fetchIfNeeded({success:function(e) {$('#loading-scopes').addClass('label-success');}}))
     	.done(function() {
@@ -186,7 +188,9 @@ var SystemScopeListView = Backbone.View.extend({
 	refreshTable:function(e) {
 		var _self = this;
     	$('#loadingbox').sheet('show');
-    	$('#loading').html('<span class="label" id="loading-scopes">Scopes</span> ');
+    	$('#loading').html(
+                '<span class="label" id="loading-scopes">' + $.t('common.scopes') + '</span> '
+    	        );
 
     	$.when(this.model.fetch({success:function(e) {$('#loading-scopes').addClass('label-success');}}))
     	.done(function() {

@@ -1,5 +1,6 @@
 {
     "admin": {
+        "blacklist": "Svartlista",
         "blacklist-form": {
             "blacklisted-uris": "Svarlistade URIer"
         },
@@ -67,13 +68,18 @@
             "icon": "Ikon",
             "new": "Nytt scope",
             "select-icon": "Välj en ikon",
+            "structured": "är ett scope med struktur",
+            "structured-help": "Har detta scope strukturerade värden som <code>base:extension</code>?",
+            "structured-param-help": "Läsbar och begriplig beskrivning av den strukturerade parametern",
             "value": "Scope-värde",
             "value-help": "Ett ord utan mellanslag",
             "value-placeholder": "scope"
         },
         "system-scope-table": {
+            "confirm": "Är du säker på att du vill ta bort detta scope? Klienter som har detta scope kommer att kunna fortsätta att begära det.",
             "new": "Nytt scope",
-            "text": "Det finns inga system-scope definierade. Klienter kan ändå ha speciellt anpassade scope."
+            "text": "Det finns inga system-scope definierade. Klienter kan ändå ha speciellt anpassade scope.",
+            "tooltip-dynamic": "Detta scope är tillgängligt för dynamiskt registrerade klienter"
         }
     },
     "token": {

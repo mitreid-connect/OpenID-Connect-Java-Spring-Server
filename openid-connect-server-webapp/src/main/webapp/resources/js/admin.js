@@ -286,7 +286,9 @@ var BlackListListView = Backbone.View.extend({
     	}
 
     	$('#loadingbox').sheet('show');
-    	$('#loading').html('<span class="label" id="loading-blacklist">Blacklist</span> ');
+    	$('#loading').html(
+                '<span class="label" id="loading-blacklist">' + $.t('admin.blacklist') + '</span> '
+    	        );
 
     	$.when(this.model.fetchIfNeeded()).done(function() {
     				$('#loading-blacklist').addClass('label-success');
@@ -303,7 +305,9 @@ var BlackListListView = Backbone.View.extend({
     	e.preventDefault();
     	var _self = this;
     	$('#loadingbox').sheet('show');
-    	$('#loading').html('<span class="label" id="loading-scopes">Blacklist</span> ');
+        $('#loading').html(
+                '<span class="label" id="loading-blacklist">' + $.t('admin.blacklist') + '</span> '
+                );
 
     	$.when(this.model.fetch()).done(function() {
     	    		$('#loadingbox').sheet('hide');
