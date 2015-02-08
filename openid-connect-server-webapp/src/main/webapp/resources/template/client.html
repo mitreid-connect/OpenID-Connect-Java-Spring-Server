@@ -167,73 +167,74 @@
 </script>
 
 <script type="text/html" id="tmpl-client-form">
-
-    <h1><%-(id == null ? 'New' : 'Edit')%> Client</h1>
-
+    <% if (id == null) { %>
+        <h1 data-i18n="scope.client.client-form.new"></h1>
+    <% } else { %>
+        <h1 data-i18n="scope.client.client-form.edit"></h1>
+    <% } %>
 
     <form class="form-horizontal tabbable">
         <fieldset>
             <div class="well well-small">
-                <button class="btn btn-small btn-save btn-success"><i class="icon-ok-circle icon-white"></i> Save</button> &nbsp; 
-				<button class="btn btn-small btn-cancel"><i class="icon-ban-circle"></i> Cancel</button>
-
+                <button class="btn btn-small btn-save btn-success"><i class="icon-ok-circle icon-white"></i> <span data-i18n="common.save">Save</span></button> &nbsp; 
+                <button class="btn btn-small btn-cancel"><i class="icon-ban-circle"></i> <span data-i18n="common.cancel">Cancel</span></button>
             </div>
 
 				<ul class="nav nav-tabs">
-					<li class="active"><a data-target="#client-main-tab" data-toggle="tab" href="#">Main</a></li>
-					<li><a data-target="#client-access-tab" data-toggle="tab" href="#">Access</a></li>
-					<li><a data-target="#client-secret-tab" data-toggle="tab" href="#">Credentials</a></li>
-					<li><a data-target="#client-token-tab" data-toggle="tab" href="#">Tokens</a></li>
-					<li><a data-target="#client-crypto-tab" data-toggle="tab" href="#">Crypto</a></li>
-					<li><a data-target="#client-other-tab" data-toggle="tab" href="#">Other</a></li>
+					<li class="active"><a data-target="#client-main-tab" data-toggle="tab" href="#" data-i18n="client.client-form.main">Main</a></li>
+					<li><a data-target="#client-access-tab" data-toggle="tab" href="#" data-i18n="client.client-form.access">Access</a></li>
+					<li><a data-target="#client-secret-tab" data-toggle="tab" href="#" data-i18n="client.client-form.credentials">Credentials</a></li>
+					<li><a data-target="#client-token-tab" data-toggle="tab" href="#" data-i18n="client.client-form.main">Tokens</a></li>
+					<li><a data-target="#client-crypto-tab" data-toggle="tab" href="#" data-i18n="client.client-form.crypto">Crypto</a></li>
+					<li><a data-target="#client-other-tab" data-toggle="tab" href="#" data-i18n="client.client-form.other">Other</a></li>
 				</ul>
 
 <div class="tab-content">
 	<div class="tab-pane active" id="client-main-tab">
 
 			<div class="control-group" id="createdAt">
-				<label class="control-label">Registered at</label>
+				<label class="control-label" data-i18n="client.client-form.registered">Registered at</label>
 				<div class="controls">
 					<%-createdAt%>
 				</div>
 			</div>
 
             <div class="control-group" id="clientName">
-                <label class="control-label">Client name</label>
+                <label class="control-label" data-i18n="client.client-form.client-name">Client name</label>
                 <div class="controls">
-                    <input value="<%-clientName%>" maxlength="100" type="text" class="" placeholder="Type something">
-                    <p class="help-block">Human-readable application name</p>
+                    <input value="<%-clientName%>" maxlength="100" type="text" class="" placeholder="Type something" data-i18n="[placeholder]client.client-form.client-name-placeholder">
+                    <p class="help-block" data-i18n="client.client-form.client-name-help">Human-readable application name</p>
                 </div>
             </div>
 
             <div class="control-group" id="clientId">
-                <label class="control-label">Client ID</label>
+                <label class="control-label" data-i18n="client.client-form.client-id">Client ID</label>
                 <div class="controls">
-                    <input value="<%-clientId%>" maxlength="100" type="text" class="" placeholder="Type something">
-                    <p class="help-block">Unique identifier. If you leave this blank it will be automatically generated.</p>
+                    <input value="<%-clientId%>" maxlength="100" type="text" class="" placeholder="Type something" data-i18n="[placeholder]client.client-form.client-id-placeholder">
+                    <p class="help-block" data-i18n="client.client-form.client-id-help">Unique identifier. If you leave this blank it will be automatically generated.</p>
                 </div>
             </div>
 
             <div class="control-group" id="redirectUris">
-                <label class="control-label">Redirect URI(s)</label>
+                <label class="control-label" data-i18n="client.client-form.redirect-uris">Redirect URI(s)</label>
                 <div class="controls">
                 </div>
             </div>
 
             <div class="control-group" id="clientDescription">
-                <label class="control-label">Description</label>
+                <label class="control-label" data-i18n="client.client-form.description">Description</label>
                 <div class="controls">
                     <textarea class="input-xlarge" placeholder="Type a description" maxlength="200"
-                              rows="3"><%-clientDescription%></textarea>
-                    <p class="help-block">Human-readable text description</p>
+                              rows="3" data-i18n="[placeholder]client.client-form.description-placeholder"><%-clientDescription%></textarea>
+                    <p class="help-block" data-i18n="client.client-form.description-help">Human-readable text description</p>
                 </div>
             </div>
 
 			<div class="control-group" id="logoUri">
-				<label class="control-label">Logo</label>
+				<label class="control-label" data-i18n="client.client-form.logo">Logo</label>
 				<div class="controls">
 					<input placeholder="https://" value="<%-logoUri%>" maxlength="1000" type="text" class=""/>
-					<p class="help-block">URL that points to a logo image, will be displayed on approval page</p>
+					<p class="help-block" data-i18n="client.client-form.logo-help">URL that points to a logo image, will be displayed on approval page</p>
 				</div>
 			</div>
 
@@ -244,50 +245,44 @@
 			</div>
 
 			<div class="control-group" id="tosUri">
-				<label class="control-label">Terms of Service</label>
+				<label class="control-label" data-i18n="client.client-form.terms">Terms of Service</label>
 				<div class="controls">
 					<input placeholder="https://" value="<%-tosUri%>" maxlength="1000" type="text" class=""/>
-					<p class="help-block">URL for the Terms of Service of this client, will be displayed to the user</p>
+					<p class="help-block" data-i18n="client.client-form.terms-help">URL for the Terms of Service of this client, will be displayed to the user</p>
 				</div>
 			</div>
 
 			<div class="control-group" id="policyUri">
-				<label class="control-label">Policy Statement</label>
+				<label class="control-label" data-i18n="client.client-form.policy">Policy Statement</label>
 				<div class="controls">
 					<input placeholder="https://" value="<%-policyUri%>" maxlength="1000" type="text" class=""/>
-					<p class="help-block">URL for the Policy Statement of this client, will be displayed to the user</p>
+					<p class="help-block" data-i18n="client.client-form.policy-help">URL for the Policy Statement of this client, will be displayed to the user</p>
 				</div>
 			</div>
 
 			<div class="control-group" id="clientUri">
-				<label class="control-label">Home Page</label>
+				<label class="control-label" data-i18n="client.client-form.home">Home Page</label>
 				<div class="controls">
 					<input placeholder="https://" value="<%-clientUri%>" maxlength="1000" type="text" class=""/>
-					<p class="help-block">URL for the client's home page, will be displayed to the user</p>
+					<p class="help-block" data-i18n="client.client-form.home-help">URL for the client's home page, will be displayed to the user</p>
 				</div>
 			</div>
 
 			<div class="control-group" id="applicationType">
-				<label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> Application Type</label>
+				<label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> <span data-i18n="client.client-form.type">Application Type</span></label>
 				<div class="controls">
-					<label class="radio inline">
-						<input type="radio" name="applicationType" value="NATIVE" <%-(applicationType == 'NATIVE' ? 'checked' : '')%>> Native
-					</label>
-					<label class="radio inline">
-						<input type="radio" name="applicationType" value="WEB" <%-(applicationType == 'WEB' ? 'checked' : '')%>> Web
-					</label>
+					<input type="radio" name="applicationType" value="NATIVE" <%-(applicationType == 'NATIVE' ? 'checked' : '')%>>
+                    <label class="radio inline" data-i18n="client.client-form.type-native">Native</label>
+					<input type="radio" name="applicationType" value="WEB" <%-(applicationType == 'WEB' ? 'checked' : '')%>>
+                    <label class="radio inline" data-i18n="client.client-form.type-web">Web</label>
 				</div>
 			</div>
 			
             <div class="control-group" id="contacts">
-                <label class="control-label">Contacts</label>
+                <label class="control-label" data-i18n="client.client-form.contacts">Contacts</label>
                 <div class="controls">
                 </div>
             </div>
-
-
-
-
 	</div>
 	
 	<div class="tab-pane" id="client-access-tab">
@@ -724,8 +719,8 @@
 
 
             <div class="well well-small">
-                <button class="btn btn-small btn-save btn-success"><i class="icon-ok-circle icon-white"></i> Save</button> &nbsp; 
-				<button class="btn btn-small btn-cancel"><i class="icon-ban-circle"></i> Cancel</button>
+                <button class="btn btn-small btn-save btn-success"><i class="icon-ok-circle icon-white"></i> <span data-i18n="common.save">Save</span></button> &nbsp; 
+                <button class="btn btn-small btn-cancel"><i class="icon-ban-circle"></i> <span data-i18n="common.cancel">Cancel</span></button>
             </div>
 
         </fieldset>

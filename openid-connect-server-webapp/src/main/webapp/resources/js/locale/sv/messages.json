@@ -2,7 +2,7 @@
     "admin": {
         "blacklist": "Svartlista",
         "blacklist-form": {
-            "blacklisted-uris": "Svarlistade URIer"
+            "blacklisted-uris": "Svarlistade länkar"
         },
         "list-widget": {
             "empty": "Det finns inget innehåll i denna lista."
@@ -14,6 +14,40 @@
         }
     },
     "client": {
+        "client-form": {
+            "access": "Behörigheter",
+            "client-description": "Beskrivning",
+            "client-description-help": "Läsbar och begriplig text som beskriver klienten",
+            "client-description-placeholder": "Mata in en beskrivning",
+            "client-id": "Klient-ID",
+            "client-id-help": "Unik identifierare. Om du lämnar detta fält tomt kommer ett nytt ID genereras automatiskt",
+            "client-id-placeholder": "Skriv någonting",
+            "client-name": "Klientnamn",
+            "client-name-help": "Läsbar och begripligt namn på klienten",
+            "client-name-placeholder": "Skriv någonting",
+            "contacts": "Kontakter",
+            "contacts-placeholder": "ny kontakt",
+            "credentials": "Hemligheter",
+            "crypto": "Krypto",
+            "edit": "Ändra klient",
+            "home": "Hemsida",
+            "home-help": "Länk till tjänstens hemsida. Den kommer att visas på bekräftelsesidan.",
+            "logo": "Logotyp",
+            "logo-help": "Länk till en logotyp. Den kommer att visas på bekräftelsesidan.",
+            "main": "Basinformation",
+            "new": "Ny klient",
+            "other": "Övrigt",
+            "policy": "Policy-information",
+            "policy-help": "Länk till en sida som beskriver tjänstens policy. Den visas på bekräftelsesidan.",
+            "redirect-uris": "Omdirigieringslänkar",
+            "registered": "Registrerad",
+            "terms": "Villkor för tjänsten",
+            "terms-help": "Länk till en sida som beskriver villkor för tjänsten. Den visas på bekräftelsesidan.",
+            "tokens": "Nycklar",
+            "type": "Typ av tjänst",
+            "type-native": "App",
+            "type-web": "Webb"
+        },
         "client-table": {
             "new": "Ny klient",
             "no-clients": "Det finns inga klienter registrerade.",

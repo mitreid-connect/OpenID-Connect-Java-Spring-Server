@@ -1030,7 +1030,7 @@ var ClientFormView = Backbone.View.extend({
         });
         
         var contactsView = new ListWidgetView({
-        	placeholder: 'new contact',
+        	placeholder: $.t("client.client-form.contacts-placeholder"),
         	collection: this.contactsCollection});
         $("#contacts .controls", this.el).html(contactsView.render().el);
         this.listWidgetViews.push(contactsView);
