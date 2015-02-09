@@ -63,6 +63,19 @@
             "type-web": "Webb"
         },
         "client-table": {
+            "match": {
+                "contacts": "kontakter",
+                "description": "beskrivning",
+                "homepage": "hemsida",
+                "id": "id",
+                "logo": "logotyp",
+                "name": "namn",
+                "policy": "policy",
+                "redirect": "omdirigeringslänk",
+                "scope": "scope",
+                "terms": "villkor för tjänsten"
+            },
+            "matched-search": "Matchade sökning:",
             "new": "Ny klient",
             "no-clients": "Det finns inga klienter registrerade.",
             "no-matches": "Det finns inga klienter som matchar din sökning.",

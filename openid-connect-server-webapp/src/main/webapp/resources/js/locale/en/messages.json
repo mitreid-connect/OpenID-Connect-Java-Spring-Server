@@ -63,6 +63,19 @@
             "type-web": "Web"
         },
         "client-table": {
+            "match": {
+                "contacts": "contacts",
+                "description": "description",
+                "homepage": "home page",
+                "id": "id",
+                "logo": "logo",
+                "name": "name",
+                "policy": "policy",
+                "redirect": "redirect uri",
+                "scope": "scope",
+                "terms": "terms of service"
+            },
+            "matched-search": "Matched search:",
             "new": "New Client",
             "no-clients": "There are no registered clients on this server.",
             "no-matches": "There are no clients that match your search criteria.",

@@ -100,32 +100,32 @@ var ClientModel = Backbone.Model.extend({
     	
     	if (term) {
     		if (this.get('clientId').toLowerCase().indexOf(term.toLowerCase()) != -1) {
-    			matches.push('id');
+    			matches.push($.t('client.client-table.match.id'));
     		} 
     		if (this.get('clientName') != null && this.get('clientName').toLowerCase().indexOf(term.toLowerCase()) != -1) {
-    			matches.push('name');
+    			matches.push($.t('client.client-table.match.name'));
     		} 
     		if (this.get('clientDescription') != null && this.get('clientDescription').toLowerCase().indexOf(term.toLowerCase()) != -1) {
-    			matches.push('description');
+    			matches.push($.t('client.client-table.match.description'));
     		} 
     		if (this.get('clientUri') != null && this.get('clientUri').toLowerCase().indexOf(term.toLowerCase()) != -1) {
-    			matches.push('homepage');
+    			matches.push($.t('client.client-table.match.homepage'));
     		}
     		if (this.get('policyUri') != null && this.get('policyUri').toLowerCase().indexOf(term.toLowerCase()) != -1) {
-    			matches.push('policy');
+    			matches.push($.t('client.client-table.match.policy'));
     		}
     		if (this.get('tosUri') != null && this.get('tosUri').toLowerCase().indexOf(term.toLowerCase()) != -1) {
-    			matches.push('terms of service');
+    			matches.push($.t('client.client-table.match.terms'));
     		}
     		if (this.get('logoUri') != null && this.get('logoUri').toLowerCase().indexOf(term.toLowerCase()) != -1) {
-    			matches.push('logo');
+    			matches.push($.t('client.client-table.match.logo'));
     		}
 			if (this.get('contacts') != null) {
 				var f = _.filter(this.get('contacts'), function(item) {
 					return item.toLowerCase().indexOf(term.toLowerCase()) != -1;
 				});
 				if (f.length > 0) {
-					matches.push('contacts');
+					matches.push($.t('client.client-table.match.contacts'));
 				}
 			}
 			if (this.get('redirectUris') != null) {
@@ -133,7 +133,7 @@ var ClientModel = Backbone.Model.extend({
 					return item.toLowerCase().indexOf(term.toLowerCase()) != -1;
 				});
 				if (f.length > 0) {
-					matches.push('redirect uri');
+					matches.push($.t('client.client-table.match.redirect'));
 				}
 			}
 			if (this.get('scope') != null) {
@@ -141,7 +141,7 @@ var ClientModel = Backbone.Model.extend({
 					return item.toLowerCase().indexOf(term.toLowerCase()) != -1;
 				});
 				if (f.length > 0) {
-					matches.push('scope');
+					matches.push($.t('client.client-table.match.scope'));
 				}
 			}
     	} else {
