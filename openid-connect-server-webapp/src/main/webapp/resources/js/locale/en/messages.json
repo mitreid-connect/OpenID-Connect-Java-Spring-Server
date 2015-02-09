@@ -89,6 +89,7 @@
         "description": "Description",
         "dynamically-registered": "This client was dynamically registered",
         "edit": "Edit",
+        "expires": "Expires:",
         "information": "Information",
         "revoke": "Revoke",
         "save": "Save",
