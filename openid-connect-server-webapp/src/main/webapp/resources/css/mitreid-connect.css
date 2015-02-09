@@ -173,7 +173,6 @@ h1,label {
   display: inline-block;
   padding: 0 5px 0 5px;
   line-height: 20px;
-  vertical-align: middle;
 }
 
 .control-group .controls div input[type=checkbox],
