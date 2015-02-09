@@ -499,47 +499,47 @@
 
 	<div class="tab-pane" id="client-token-tab">
             <div class="control-group" id="accessTokenValidityTime">
-                <label class="control-label">Access Token Timeout</label>
+                <label class="control-label" data-i18n="client.client-form.access-token-timeout">Access Token Timeout</label>
                 <div class="controls">
 					<div>
-						<label class="checkbox">
-                        	<input type="checkbox" id="disableAccessTokenTimeout" <%-(accessTokenValiditySeconds == null ? 'checked' : '')%>/> Access tokens do not time out
-						</label>
+                        <input type="checkbox" id="disableAccessTokenTimeout" <%-(accessTokenValiditySeconds == null ? 'checked' : '')%>/>
+                        <label for="disableAccessTokenTimeout" class="checkbox" data-i18n="client.client-form.access-token-no-timeout">Access tokens do not time out</label>
 					</div>
                     <div>
                         <input type="text" class="" value="<%-(accessTokenValiditySeconds == null ? '' : accessTokenValiditySeconds)%>" id="access-token-timeout-time" size="16" style="width:8em;">
 						<select id="access-token-timeout-unit" style="width:8em;">
-							<option>seconds</option>
-							<option>minutes</option>
-							<option>hours</option>
+							<option data-i18n="client.client-form.seconds">seconds</option>
+							<option data-i18n="client.client-form.minutes">minutes</option>
+							<option data-i18n="client.client-form.hours">hours</option>
 						</select>
                     </div>
-                    <p class="help-block">Enter this time in seconds, minutes, or hours.</p>
+                    <p class="help-block" data-i18n="client.client-form.token-timeout-help">Enter this time in seconds, minutes, or hours.</p>
                 </div>
             </div>
 
 
             <div class="control-group" id="idTokenValidityTime">
-                <label class="control-label">ID Token Timeout</label>
+                <label class="control-label" data-i18n="client.client-form.id-token-timeout">ID Token Timeout</label>
                 <div class="controls">
                     <div>
                         <input type="text" class="" value="<%-(idTokenValiditySeconds == null ? '' : idTokenValiditySeconds)%>" id="id-token-timeout-time" size="16" style="width:8em;">
 						<select id="id-token-timeout-unit" style="width:8em;">
-							<option>seconds</option>
-							<option>minutes</option>
-							<option>hours</option>
+							<option data-i18n="client.client-form.seconds">seconds</option>
+							<option data-i18n="client.client-form.minutes">minutes</option>
+							<option data-i18n="client.client-form.hours">hours</option>
 						</select>
                     </div>
-                    <p class="help-block">Enter this time in seconds, minutes, or hours.</p>
+                    <p class="help-block" data-i18n="client.client-form.token-timeout-help">Enter this time in seconds, minutes, or hours.</p>
                 </div>
             </div>
 
             <div class="control-group">
-                <label class="control-label">Refresh Tokens</label>
+                <label class="control-label" data-i18n="client.client-form.refresh-tokens">Refresh Tokens</label>
                 <div class="controls">
-                    <label class="checkbox">
-                        <input type="checkbox" id="allowRefresh" <%-(allowRefresh == true ? 'checked' : '')%>> Refresh tokens are issued for this client
-					</label>
+                    <div>
+                        <input type="checkbox" id="allowRefresh" <%-(allowRefresh == true ? 'checked' : '')%>>
+                        <label for="allowRefresh" class="checkbox" data-i18n="client.client-form.refresh-tokens-issued">Refresh tokens are issued for this client</label>
+                    </div>
                 </div>
             </div>
 
