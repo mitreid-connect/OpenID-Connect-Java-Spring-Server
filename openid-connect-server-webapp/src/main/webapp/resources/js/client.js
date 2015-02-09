@@ -354,7 +354,7 @@ var ClientView = Backbone.View.extend({
     deleteClient:function (e) {
     	e.preventDefault();
 
-        if (confirm("Are you sure sure you would like to delete this client?")) {
+        if (confirm($.t('client.client-table.confirm'))) {
             var _self = this;
 
             this.model.destroy({

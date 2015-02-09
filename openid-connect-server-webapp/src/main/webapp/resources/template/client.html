@@ -184,7 +184,7 @@
 					<li class="active"><a data-target="#client-main-tab" data-toggle="tab" href="#" data-i18n="client.client-form.main">Main</a></li>
 					<li><a data-target="#client-access-tab" data-toggle="tab" href="#" data-i18n="client.client-form.access">Access</a></li>
 					<li><a data-target="#client-secret-tab" data-toggle="tab" href="#" data-i18n="client.client-form.credentials">Credentials</a></li>
-					<li><a data-target="#client-token-tab" data-toggle="tab" href="#" data-i18n="client.client-form.main">Tokens</a></li>
+					<li><a data-target="#client-token-tab" data-toggle="tab" href="#" data-i18n="client.client-form.tokens">Tokens</a></li>
 					<li><a data-target="#client-crypto-tab" data-toggle="tab" href="#" data-i18n="client.client-form.crypto">Crypto</a></li>
 					<li><a data-target="#client-other-tab" data-toggle="tab" href="#" data-i18n="client.client-form.other">Other</a></li>
 				</ul>
@@ -343,31 +343,31 @@
 				<div class="controls">
                     <div>
                         <input id="responseTypes-code" type="checkbox" <%-($.inArray("code", responseTypes) > -1 ? 'checked' : '')%>>
-                        <label class="checkbox">code</label>
+                        <label for="responseTypes-code" class="checkbox">code</label>
                     </div>
                     <div>
                         <input id="responseTypes-token" type="checkbox" <%-($.inArray("token", responseTypes) > -1 ? 'checked' : '')%>>
-                        <label class="checkbox">token</label>
+                        <label for="responseTypes-token" class="checkbox">token</label>
                     </div>
                     <div>
                         <input id="responseTypes-idtoken" type="checkbox" <%-($.inArray("id_token", responseTypes) > -1 ? 'checked' : '')%>>
-                        <label class="checkbox">id_token</label>
+                        <label for="responseTypes-idtoken" class="checkbox">id_token</label>
                     </div>
                     <div>
                         <input id="responseTypes-token-idtoken" type="checkbox" <%-($.inArray("token id_token", responseTypes) > -1 ? 'checked' : '')%>>
-                        <label class="checkbox">token id_token</label>
+                        <label for="responseTypes-token-idtoken" class="checkbox">token id_token</label>
                     </div>
                     <div>
                         <input id="responseTypes-code-idtoken" type="checkbox" <%-($.inArray("code id_token", responseTypes) > -1 ? 'checked' : '')%>>
-                        <label class="checkbox">code id_token</label>
+                        <label for="responseTypes-code-idtoken" class="checkbox">code id_token</label>
                     </div>
                     <div>
                         <input id="responseTypes-code-token" type="checkbox" <%-($.inArray("code token", responseTypes) > -1 ? 'checked' : '')%>>
-                        <label class="checkbox">code token</label>
+                        <label for="responseTypes-code-token" class="checkbox">code token</label>
                     </div>
                     <div>
                         <input id="responseTypes-code-token-idtoken" type="checkbox" <%-($.inArray("code token id_token", responseTypes) > -1 ? 'checked' : '')%>>
-                        <label class="checkbox">code token id_token</label>
+                        <label for="responseTypes-code-token-idtoken" class="checkbox">code token id_token</label>
                     </div>
 				</div>
 			</div>
@@ -386,10 +386,10 @@
 				<label class="control-label" data-i18n="client.client-form.subject-type">Subject Type</label>
 				<div class="controls">
                     <div>
-                        <input type="radio" name="subjectType" value="PUBLIC" <%-(subjectType == 'PUBLIC' ? 'checked' : '')%>>
-                        <label class="radio inline" data-i18n="client.client-form.public">Public</label>
-                        <input type="radio" name="subjectType" value="PAIRWISE" <%-(subjectType == 'PAIRWISE' ? 'checked' : '')%>>
-                        <label class="radio inline" data-i18n="client.client-form.pairwise">Pairwise</label>
+                        <input id="control-label-public" type="radio" name="subjectType" value="PUBLIC" <%-(subjectType == 'PUBLIC' ? 'checked' : '')%>>
+                        <label for="control-label-public" class="radio inline" data-i18n="client.client-form.public">Public</label>
+                        <input id="control-label-pairwise" type="radio" name="subjectType" value="PAIRWISE" <%-(subjectType == 'PAIRWISE' ? 'checked' : '')%>>
+                        <label for="control-label-pairwise" class="radio inline" data-i18n="client.client-form.pairwise">Pairwise</label>
                     </div>
 				</div>
 			</div>
@@ -407,43 +407,50 @@
 	<div class="tab-pane" id="client-secret-tab">
 
 			<div class="control-group" id="tokenEndpointAuthMethod">
-				<label class="control-label">Token Endpoint Authentication Method</label>
+				<label class="control-label" data-i18n="client.client-form.authentication-method">Token Endpoint Authentication Method</label>
 				<div class="controls">
-					<label class="radio">
-						<input type="radio" name="tokenEndpointAuthMethod" value="SECRET_BASIC" <%-(tokenEndpointAuthMethod == 'SECRET_BASIC' ? 'checked' : '')%>> Client Secret over HTTP Basic
-					</label>
-					<label class="radio">
-						<input type="radio" name="tokenEndpointAuthMethod" value="SECRET_POST" <%-(tokenEndpointAuthMethod == 'SECRET_POST' ? 'checked' : '')%>> Client Secret over HTTP POST
-					</label>
-					<label class="radio">
-						<input type="radio" name="tokenEndpointAuthMethod" value="SECRET_JWT" <%-(tokenEndpointAuthMethod == 'SECRET_JWT' ? 'checked' : '')%>> Client Secret via symmetrically-signed JWT assertion
-					</label>
-					<label class="radio">
-						<input type="radio" name="tokenEndpointAuthMethod" value="PRIVATE_KEY" <%-(tokenEndpointAuthMethod == 'PRIVATE_KEY' ? 'checked' : '')%>> Asymmetrically-signed JWT assertion
-					</label>
-					<label class="radio">
-						<input type="radio" name="tokenEndpointAuthMethod" value="NONE" <%-(tokenEndpointAuthMethod == 'NONE' ? 'checked' : '')%>> No authentication
-					</label>
+                    <div>
+                        <input type="radio" id="tokenEndpointAuthMethodBasic" name="tokenEndpointAuthMethod" value="SECRET_BASIC" <%-(tokenEndpointAuthMethod == 'SECRET_BASIC' ? 'checked' : '')%>>
+                        <label for="tokenEndpointAuthMethodBasic" class="radio" data-i18n="client.client-form.secret-http">Client Secret over HTTP Basic</label>
+                    </div>
+                    <div>
+                        <input type="radio" id="tokenEndpointAuthMethodPost" name="tokenEndpointAuthMethod" value="SECRET_POST" <%-(tokenEndpointAuthMethod == 'SECRET_POST' ? 'checked' : '')%>>
+                        <label for="tokenEndpointAuthMethodPost" class="radio" data-i18n="client.client-form.secret-post">Client Secret over HTTP POST</label>
+                    </div>
+                    <div>
+                        <input type="radio" id="tokenEndpointAuthMethodSymm" name="tokenEndpointAuthMethod" value="SECRET_JWT" <%-(tokenEndpointAuthMethod == 'SECRET_JWT' ? 'checked' : '')%>>
+                        <label for="tokenEndpointAuthMethodSymm" class="radio" data-i18n="client.client-form.secret-symmetric-jwt">Client Secret via symmetrically-signed JWT assertion</label>
+                    </div>
+                    <div>
+                        <input type="radio" id="tokenEndpointAuthMethodAssym" name="tokenEndpointAuthMethod" value="PRIVATE_KEY" <%-(tokenEndpointAuthMethod == 'PRIVATE_KEY' ? 'checked' : '')%>>
+                        <label for="tokenEndpointAuthMethodAssym" class="radio" data-i18n="client.client-form.secret-asymmetric-jwt">Asymmetrically-signed JWT assertion</label>
+                    </div>
+                    <div>
+                        <input type="radio" id="tokenEndpointAuthMethodNone" name="tokenEndpointAuthMethod" value="NONE" <%-(tokenEndpointAuthMethod == 'NONE' ? 'checked' : '')%>>
+                        <label for="tokenEndpointAuthMethodNone" class="radio" data-i18n="client.client-form.secret-none">No authentication</label>
+                    </div>
 				</div>
 			</div>
 
 			<div id="clientSecretPanel">
-				<label class="control-label">Client Secret</label>
+				<label class="control-label" data-i18n="client.client-form.client-secret">Client Secret</label>
 
 				<div class="control-group" id="generateClientSecret">
 					<div class="controls">
-						<label class="checkbox">
-							<input type="checkbox" <%-(generateClientSecret == true ? 'checked' : '')%>> Generate a new client secret?
-						</label>
-						<p class="help-block">New secret will be generated when you click 'Save'</p>
+                        <div>
+                            <input id="clientSecretPanelInput" type="checkbox" <%-(generateClientSecret == true ? 'checked' : '')%>>
+                            <label for="clientSecretPanelInput" class="checkbox" data-i18n="client.client-form.generate-new-secret">Generate a new client secret?</label>
+                        </div>
+						<p class="help-block" data-i18n="client.client-form.generate-new-secret-help">New secret will be generated when you click 'Save'</p>
 					</div>
 				</div>
 	
 				<div class="control-group" id="displayClientSecret">
 					<div class="controls">
-						<label class="checkbox">
-							<input type="checkbox" <%-(displayClientSecret == true ? 'checked' : '')%>> Display/edit client secret:
-						</label>
+                        <div>
+                            <label id="displayClientSecretInput" class="checkbox" data-i18n="client.client-form.display-secret">Display/edit client secret:</label>
+                            <input for="displayClientSecretInput" type="checkbox" <%-(displayClientSecret == true ? 'checked' : '')%>>
+                        </div>
 					</div>
 				</div>
 	
