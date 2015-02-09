@@ -43,7 +43,7 @@
 			<% } %>
 		</div>
 		<div>
-			<small class="muted" title="<%- hoverCreationDate %>"><i class="icon-time"></i> Registered <%- displayCreationDate %></small>
+			<small class="muted" title="<%- hoverCreationDate %>"><i class="icon-time"></i> <span data-i18n="client.client-table.registered">Registered</span> <%- displayCreationDate %></small>
 		</div>
 		<div class="matched text-info">
 			<small><i>Matched search: <span class="label label-matched"></span></i></small>
@@ -55,7 +55,7 @@
 			if (_.contains(client.grantTypes, 'authorization_code') ||
 				_.contains(client.grantTypes, 'implicit')) {
 		%>
-			<div><span class="badge badge-important"><i class="icon-warning-sign icon-white"></i> NO REDIRECT URI</span></div>
+			<div><span class="badge badge-important"><i class="icon-warning-sign icon-white"></i> <span data-i18n="client.client-table.no-redirect">NO REDIRECT URI</span></span></div>
 		<% 		}
 			} else { %>
 		<div><span class="muted">
@@ -81,13 +81,13 @@
 
     <td>
 		<div class="btn-group pull-right">
-        	<button class="btn btn-edit"><i class="icon-edit"></i> Edit</button> &nbsp;
+        	<button class="btn btn-edit"><i class="icon-edit"></i> <span data-i18n="common.edit">Edit</span></button> &nbsp;
 			<% if (whiteList != null) { %> 
-				<button class="btn btn-warning btn-whitelist"><i class="icon-wrench icon-white"></i> Whitelist</button> &nbsp;
+				<button class="btn btn-warning btn-whitelist"><i class="icon-wrench icon-white"></i> <span data-i18n="client.client-table.whitelist">Whitelist</span></button> &nbsp;
 			<% } else { %>
-				<button class="btn btn-warning btn-whitelist"><i class="icon-plus-sign icon-white"></i> Whitelist</button> &nbsp;
+				<button class="btn btn-warning btn-whitelist"><i class="icon-plus-sign icon-white"></i> <span data-i18n="client.client-table.whitelist">Whitelist</span></button> &nbsp;
 			<% } %>
-			<button class="btn btn-danger btn-delete"><i class="icon-trash icon-white"></i> Delete</button>
+			<button class="btn btn-danger btn-delete"><i class="icon-trash icon-white"></i> <span data-i18n="common.delete">Delete</span></button>
 		</div>
     </td>
 
