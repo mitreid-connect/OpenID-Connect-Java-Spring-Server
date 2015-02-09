@@ -271,10 +271,12 @@
 			<div class="control-group" id="applicationType">
 				<label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> <span data-i18n="client.client-form.type">Application Type</span></label>
 				<div class="controls">
-					<input type="radio" name="applicationType" value="NATIVE" <%-(applicationType == 'NATIVE' ? 'checked' : '')%>>
+                    <div>
+                    <input type="radio" name="applicationType" value="NATIVE" <%-(applicationType == 'NATIVE' ? 'checked' : '')%>>
                     <label class="radio inline" data-i18n="client.client-form.type-native">Native</label>
-					<input type="radio" name="applicationType" value="WEB" <%-(applicationType == 'WEB' ? 'checked' : '')%>>
+                    <input type="radio" name="applicationType" value="WEB" <%-(applicationType == 'WEB' ? 'checked' : '')%>>
                     <label class="radio inline" data-i18n="client.client-form.type-web">Web</label>
+                    </div>
 				</div>
 			</div>
 			
@@ -288,97 +290,115 @@
 	<div class="tab-pane" id="client-access-tab">
 
             <div class="control-group" id="scope">
-                <label class="control-label">Scope</label>
+                <label class="control-label" data-i18n="common.scope">Scope</label>
                 <div class="controls">
                 </div>
             </div>
 
             <div class="control-group" id="grantTypes">
-                <label class="control-label">Grant Types</label>
+                <label class="control-label" data-i18n="client.client-form.grant-types">Grant Types</label>
 
                 <div class="controls">
-
-                    <label class="checkbox">
+                    <div>
                         <input id="grantTypes-authorization_code" type="checkbox"
-                        <%-($.inArray("authorization_code", grantTypes) > -1 ? 'checked' : '')%>>
-                        authorization code
-                    </label>
-                    <label class="checkbox">
-                        <input id="grantTypes-client_credentials" type="checkbox"
-                        <%-($.inArray("client_credentials", grantTypes) > -1 ? 'checked' : '')%>> client credentials
-                    </label>
-                    <label class="checkbox">
-                        <input id="grantTypes-password" type="checkbox" <%-($.inArray("password", grantTypes) > -1 ? 'checked' : '')%>> password
-                    </label>
-                    <label class="checkbox">
-                        <input id="grantTypes-implicit" type="checkbox" <%-($.inArray("implicit", grantTypes) > -1 ? 'checked' : '')%>> implicit
-                    </label>
-<!--
-                    <label class="checkbox">
-                        <input id="grantTypes-refresh_token" type="checkbox" <%-($.inArray("refresh_token", grantTypes) > -1 ? 'checked' : '')%>> refresh
-                    </label>
--->
-                    <label class="checkbox">
-                        <input id="grantTypes-redelegate" type="checkbox" <%-($.inArray("urn:ietf:params:oauth:grant_type:redelegate", grantTypes) > -1 ? 'checked' : '')%>> redelegate
-                    </label>
+                            <%-($.inArray("authorization_code", grantTypes) > -1 ? 'checked' : '')%>>
+                        <label for="grantTypes-authorization_code" class="checkbox" data-i18n="client.client-form.authorization-code">authorization code</label>
+                    </div>
 
+                    <div>
+                        <input id="grantTypes-client_credentials" type="checkbox"
+                            <%-($.inArray("client_credentials", grantTypes) > -1 ? 'checked' : '')%>>
+                        <label for="grantTypes-client_credentials" class="checkbox" data-i18n="client.client-form.client-credentials">client credentials</label>
+                    </div>
+
+                    <div>
+                        <input id="grantTypes-password" type="checkbox"
+                            <%-($.inArray("password", grantTypes) > -1 ? 'checked' : '')%>>
+                        <label for="grantTypes-password" class="checkbox" data-i18n="client.client-form.password">password</label>
+                    </div>
+
+                    <div>
+                        <input id="grantTypes-implicit" type="checkbox"
+                            <%-($.inArray("implicit", grantTypes) > -1 ? 'checked' : '')%>> 
+                        <label for="grantTypes-implicit" class="checkbox" data-i18n="client.client-form.implicit">implicit</label>
+                    </div>
+<!--
+                    <div>
+                        <input id="grantTypes-refresh_token" type="checkbox"
+                            <%-($.inArray("refresh_token", grantTypes) > -1 ? 'checked' : '')%>> 
+                        <label for="grantTypes-refresh_token" class="checkbox" data-i18n="client.client-form.refresh">refresh</label>
+                    </div>
+-->
+                    <div>
+                        <input id="grantTypes-redelegate" type="checkbox"
+                            <%-($.inArray("urn:ietf:params:oauth:grant_type:redelegate", grantTypes) > -1 ? 'checked' : '')%>> 
+                        <label for="grantTypes-redelegate" class="checkbox" data-i18n="client.client-form.redelegation">redelegate</label>
+                    </div>
                 </div>
             </div>
 
 			<div class="control-group" id="responseTypes">
-				<label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> Response Types</label>
+				<label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> <span data-i18n="client.client-form.response-types">Response Types</span></label>
 
 				<div class="controls">
-					<label class="checkbox">
-                        <input id="responseTypes-code" type="checkbox" <%-($.inArray("code", responseTypes) > -1 ? 'checked' : '')%>> code
-					</label>
-					<label class="checkbox">
-                        <input id="responseTypes-token" type="checkbox" <%-($.inArray("token", responseTypes) > -1 ? 'checked' : '')%>> token
-					</label>
-					<label class="checkbox">
-                        <input id="responseTypes-idtoken" type="checkbox" <%-($.inArray("id_token", responseTypes) > -1 ? 'checked' : '')%>> id_token
-					</label>
-					<label class="checkbox">
-                        <input id="responseTypes-token-idtoken" type="checkbox" <%-($.inArray("token id_token", responseTypes) > -1 ? 'checked' : '')%>> token id_token
-					</label>
-					<label class="checkbox">
-                        <input id="responseTypes-code-idtoken" type="checkbox" <%-($.inArray("code id_token", responseTypes) > -1 ? 'checked' : '')%>> code id_token
-					</label>
-					<label class="checkbox">
-                        <input id="responseTypes-code-token" type="checkbox" <%-($.inArray("code token", responseTypes) > -1 ? 'checked' : '')%>> code token
-					</label>
-					<label class="checkbox">
-                        <input id="responseTypes-code-token-idtoken" type="checkbox" <%-($.inArray("code token id_token", responseTypes) > -1 ? 'checked' : '')%>> code token id_token
-					</label>
+                    <div>
+                        <input id="responseTypes-code" type="checkbox" <%-($.inArray("code", responseTypes) > -1 ? 'checked' : '')%>>
+                        <label class="checkbox">code</label>
+                    </div>
+                    <div>
+                        <input id="responseTypes-token" type="checkbox" <%-($.inArray("token", responseTypes) > -1 ? 'checked' : '')%>>
+                        <label class="checkbox">token</label>
+                    </div>
+                    <div>
+                        <input id="responseTypes-idtoken" type="checkbox" <%-($.inArray("id_token", responseTypes) > -1 ? 'checked' : '')%>>
+                        <label class="checkbox">id_token</label>
+                    </div>
+                    <div>
+                        <input id="responseTypes-token-idtoken" type="checkbox" <%-($.inArray("token id_token", responseTypes) > -1 ? 'checked' : '')%>>
+                        <label class="checkbox">token id_token</label>
+                    </div>
+                    <div>
+                        <input id="responseTypes-code-idtoken" type="checkbox" <%-($.inArray("code id_token", responseTypes) > -1 ? 'checked' : '')%>>
+                        <label class="checkbox">code id_token</label>
+                    </div>
+                    <div>
+                        <input id="responseTypes-code-token" type="checkbox" <%-($.inArray("code token", responseTypes) > -1 ? 'checked' : '')%>>
+                        <label class="checkbox">code token</label>
+                    </div>
+                    <div>
+                        <input id="responseTypes-code-token-idtoken" type="checkbox" <%-($.inArray("code token id_token", responseTypes) > -1 ? 'checked' : '')%>>
+                        <label class="checkbox">code token id_token</label>
+                    </div>
 				</div>
 			</div>
 
 			<div class="control-group" id="allowIntrospection">
-				<label class="control-label">Introspection</label>
+				<label class="control-label" client.client.form.introspection" data-i18n="client.client-form.introspection">Introspection</label>
 				<div class="controls">
-					<label class="checkbox">
-						<input type="checkbox" <%-(allowIntrospection == true ? 'checked' : '')%>> Allow calls to the Introspection Endpoint?
-					</label>
+                    <div>
+                        <label class="checkbox" data-i18n="client.client-form.allow-introspection">Allow calls to the Introspection Endpoint?</label>
+                        <input type="checkbox" <%-(allowIntrospection == true ? 'checked' : '')%>>
+                    </div>
 				</div>
 			</div>
 
 			<div class="control-group" id="subjectType">
-				<label class="control-label">Subject Type</label>
+				<label class="control-label" data-i18n="client.client-form.subject-type">Subject Type</label>
 				<div class="controls">
-					<label class="radio inline">
-						<input type="radio" name="subjectType" value="PUBLIC" <%-(subjectType == 'PUBLIC' ? 'checked' : '')%>> Public
-					</label>
-					<label class="radio inline">
-						<input type="radio" name="subjectType" value="PAIRWISE" <%-(subjectType == 'PAIRWISE' ? 'checked' : '')%>> Pairwise
-					</label>
+                    <div>
+                        <input type="radio" name="subjectType" value="PUBLIC" <%-(subjectType == 'PUBLIC' ? 'checked' : '')%>>
+                        <label class="radio inline" data-i18n="client.client-form.public">Public</label>
+                        <input type="radio" name="subjectType" value="PAIRWISE" <%-(subjectType == 'PAIRWISE' ? 'checked' : '')%>>
+                        <label class="radio inline" data-i18n="client.client-form.pairwise">Pairwise</label>
+                    </div>
 				</div>
 			</div>
 
 			<div class="control-group" id="sectorIdentifierUri">
-				<label class="control-label">Sector Identifier URI</label>
+				<label class="control-label" data-i18n="client.client-form.sector-identifier">Sector Identifier URI</label>
 				<div class="controls">
 					<input placeholder="https://" value="<%-sectorIdentifierUri%>" maxlength="1000" type="text" class=""/>
-					<p class="help-block">Sector Identifier for JavaScript</p>
+					<p class="help-block" data-i18n="client.client-form.sector-identifier-help">Sector Identifier for JavaScript</p>
 				</div>
 			</div>
 
