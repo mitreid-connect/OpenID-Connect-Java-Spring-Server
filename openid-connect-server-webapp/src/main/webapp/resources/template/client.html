@@ -474,16 +474,16 @@
                 <label class="control-label" data-i18n="client.client-form.token-signing-algorithm">Token Endpoint Authentication Signing Algorithm</label>
                 <div class="controls">
 					<select>
-						<option value="default" <%-tokenEndpointAuthSigningAlg == null ? 'selected ' : ''%> data-i18n="client.client-form.token-signing-any">Any allowed</option>
-						<option value="HS256" <%-tokenEndpointAuthSigningAlg == "HS256" ? 'selected' : ''%> data-i18n="client.client-form.token-signing-hmac-256">HMAC using SHA-256 hash algorithm</option>
-						<option value="HS384" <%-tokenEndpointAuthSigningAlg == "HS384" ? 'selected' : ''%> data-i18n="client.client-form.token-signing-hmac-384">HMAC using SHA-384 hash algorithm</option>
-						<option value="HS512" <%-tokenEndpointAuthSigningAlg == "HS512" ? 'selected' : ''%> data-i18n="client.client-form.token-signing-hmac-512">HMAC using SHA-512 hash algorithm</option>
-						<option value="RS256" <%-tokenEndpointAuthSigningAlg == "RS256" ? 'selected' : ''%> data-i18n="client.client-form.token-signing-rsassa-256">RSASSA using SHA-256 hash algorithm</option>
-						<option value="RS384" <%-tokenEndpointAuthSigningAlg == "RS384" ? 'selected' : ''%> data-i18n="client.client-form.token-signing-rsassa-384">RSASSA using SHA-384 hash algorithm</option>
-						<option value="RS512" <%-tokenEndpointAuthSigningAlg == "RS512" ? 'selected' : ''%> data-i18n="client.client-form.token-signing-rsassa-512">RSASSA using SHA-512 hash algorithm</option>
-						<option value="ES256" <%-tokenEndpointAuthSigningAlg == "ES256" ? 'selected' : ''%> data-i18n="client.client-form.token-signing-ecdsa-256">ECDSA using P-256 curve and SHA-256 hash algorithm</option>
-						<option value="ES384" <%-tokenEndpointAuthSigningAlg == "ES384" ? 'selected' : ''%> data-i18n="client.client-form.token-signing-ecdsa-384">ECDSA using P-384 curve and SHA-384 hash algorithm</option>
-						<option value="ES512" <%-tokenEndpointAuthSigningAlg == "ES512" ? 'selected' : ''%> data-i18n="client.client-form.token-signing-ecdsa-512">ECDSA using P-512 curve and SHA-512 hash algorithm</option>
+						<option value="default" <%-tokenEndpointAuthSigningAlg == null ? 'selected ' : ''%> data-i18n="client.client-form.signing-any">Any allowed</option>
+						<option value="HS256" <%-tokenEndpointAuthSigningAlg == "HS256" ? 'selected' : ''%> data-i18n="client.client-form.signing-hmac-256">HMAC using SHA-256 hash algorithm</option>
+						<option value="HS384" <%-tokenEndpointAuthSigningAlg == "HS384" ? 'selected' : ''%> data-i18n="client.client-form.signing-hmac-384">HMAC using SHA-384 hash algorithm</option>
+						<option value="HS512" <%-tokenEndpointAuthSigningAlg == "HS512" ? 'selected' : ''%> data-i18n="client.client-form.signing-hmac-512">HMAC using SHA-512 hash algorithm</option>
+						<option value="RS256" <%-tokenEndpointAuthSigningAlg == "RS256" ? 'selected' : ''%> data-i18n="client.client-form.signing-rsassa-256">RSASSA using SHA-256 hash algorithm</option>
+						<option value="RS384" <%-tokenEndpointAuthSigningAlg == "RS384" ? 'selected' : ''%> data-i18n="client.client-form.signing-rsassa-384">RSASSA using SHA-384 hash algorithm</option>
+						<option value="RS512" <%-tokenEndpointAuthSigningAlg == "RS512" ? 'selected' : ''%> data-i18n="client.client-form.signing-rsassa-512">RSASSA using SHA-512 hash algorithm</option>
+						<option value="ES256" <%-tokenEndpointAuthSigningAlg == "ES256" ? 'selected' : ''%> data-i18n="client.client-form.signing-ecdsa-256">ECDSA using P-256 curve and SHA-256 hash algorithm</option>
+						<option value="ES384" <%-tokenEndpointAuthSigningAlg == "ES384" ? 'selected' : ''%> data-i18n="client.client-form.signing-ecdsa-384">ECDSA using P-384 curve and SHA-384 hash algorithm</option>
+						<option value="ES512" <%-tokenEndpointAuthSigningAlg == "ES512" ? 'selected' : ''%> data-i18n="client.client-form.signing-ecdsa-512">ECDSA using P-512 curve and SHA-512 hash algorithm</option>
 					</select>
                 </div>
             </div>
@@ -546,63 +546,61 @@
             <div class="control-group" id="refreshTokenValidityTime">
                 <div class="controls">
 					<div>
-						<label class="checkbox">
-	                        <input type="checkbox" id="reuseRefreshToken" <%-(reuseRefreshToken == true ? 'checked' : '')%>> Refresh tokens for this client are re-used
-    	                </label>
+                        <input type="checkbox" id="reuseRefreshToken" <%-(reuseRefreshToken == true ? 'checked' : '')%>>
+                        <label for="reuseRefreshToken" class="checkbox">Refresh tokens for this client are re-used</label>
 					</div>
 					<div>
-						<label class="checkbox">
-                        	<input type="checkbox" id="disableRefreshTokenTimeout" <%-(refreshTokenValiditySeconds == null ? 'checked' : '')%>/> Refresh tokens do not time out
-						</label>
+                        <input type="checkbox" id="disableRefreshTokenTimeout" <%-(refreshTokenValiditySeconds == null ? 'checked' : '')%>/> 
+                        <label for="disableRefreshTokenTimeout" class="checkbox">Refresh tokens do not time out</label>
 					</div>
                     <div>
                         <input type="text" class="" value="<%-(refreshTokenValiditySeconds == null ? '' : refreshTokenValiditySeconds)%>" id="refresh-token-timeout-time" size="16" style="width:8em;">
 						<select id="refresh-token-timeout-unit" style="width:8em;">
-							<option>seconds</option>
-							<option>minutes</option>
-							<option>hours</option>
+							<option data-i18n="client.client-form.seconds">seconds</option>
+							<option data-i18n="client.client-form.minutes">minutes</option>
+							<option data-i18n="client.client-form.hours">hours</option>
 						</select>
 					</div>
-                    <p class="help-block">Enter this time in seconds, minutes, or hours.</p>
+                    <p class="help-block" data-i18n="client.client-form.token-timeout-help">Enter this time in seconds, minutes, or hours.</p>
                 </div>
             </div>
 	</div>
 
 	<div class="tab-pane" id="client-crypto-tab">
             <div class="control-group" id="requestObjectSigningAlg">
-                <label class="control-label">Request Object Signing Algorithm</label>
+                <label class="control-label" data-i18n="client.client-form.request-object-signing-algorithm">Request Object Signing Algorithm</label>
                 <div class="controls">
 					<select>
-						<option value="default" <%-requestObjectSigningAlg == null ? 'selected ' : ''%>>Use server default</option>
-						<option value="none" <%-requestObjectSigningAlg == "none" ? 'selected' : ''%>>No digital signature</option>
-						<option value="HS256" <%-requestObjectSigningAlg == "HS256" ? 'selected' : ''%>>HMAC using SHA-256 hash algorithm</option>
-						<option value="HS384" <%-requestObjectSigningAlg == "HS384" ? 'selected' : ''%>>HMAC using SHA-384 hash algorithm</option>
-						<option value="HS512" <%-requestObjectSigningAlg == "HS512" ? 'selected' : ''%>>HMAC using SHA-512 hash algorithm</option>
-						<option value="RS256" <%-requestObjectSigningAlg == "RS256" ? 'selected' : ''%>>RSASSA using SHA-256 hash algorithm</option>
-						<option value="RS384" <%-requestObjectSigningAlg == "RS384" ? 'selected' : ''%>>RSASSA using SHA-384 hash algorithm</option>
-						<option value="RS512" <%-requestObjectSigningAlg == "RS512" ? 'selected' : ''%>>RSASSA using SHA-512 hash algorithm</option>
-						<option value="ES256" <%-requestObjectSigningAlg == "ES256" ? 'selected' : ''%>>ECDSA using P-256 curve and SHA-256 hash algorithm</option>
-						<option value="ES384" <%-requestObjectSigningAlg == "ES384" ? 'selected' : ''%>>ECDSA using P-384 curve and SHA-384 hash algorithm</option>
-						<option value="ES512" <%-requestObjectSigningAlg == "ES512" ? 'selected' : ''%>>ECDSA using P-512 curve and SHA-512 hash algorithm</option>
+						<option value="default" <%-requestObjectSigningAlg == null ? 'selected ' : ''%> data-i18n="client.client-form.signing-default">Use server default</option>
+						<option value="none" <%-requestObjectSigningAlg == "none" ? 'selected' : ''%> data-i18n="client.client-form.signing-none">No digital signature</option>
+						<option value="HS256" <%-requestObjectSigningAlg == "HS256" ? 'selected' : ''%> data-i18n="client.client-form.signing-hmac-256">HMAC using SHA-256 hash algorithm</option>
+						<option value="HS384" <%-requestObjectSigningAlg == "HS384" ? 'selected' : ''%> data-i18n="client.client-form.signing-hmac-384">HMAC using SHA-384 hash algorithm</option>
+						<option value="HS512" <%-requestObjectSigningAlg == "HS512" ? 'selected' : ''%> data-i18n="client.client-form.signing-hmac-512">HMAC using SHA-512 hash algorithm</option>
+						<option value="RS256" <%-requestObjectSigningAlg == "RS256" ? 'selected' : ''%> data-i18n="client.client-form.signing-rsassa-256">RSASSA using SHA-256 hash algorithm</option>
+						<option value="RS384" <%-requestObjectSigningAlg == "RS384" ? 'selected' : ''%> data-i18n="client.client-form.signing-rsassa-384">RSASSA using SHA-384 hash algorithm</option>
+						<option value="RS512" <%-requestObjectSigningAlg == "RS512" ? 'selected' : ''%> data-i18n="client.client-form.signing-rsassa-512">RSASSA using SHA-512 hash algorithm</option>
+						<option value="ES256" <%-requestObjectSigningAlg == "ES256" ? 'selected' : ''%> data-i18n="client.client-form.signing-ecdsa-256">ECDSA using P-256 curve and SHA-256 hash algorithm</option>
+						<option value="ES384" <%-requestObjectSigningAlg == "ES384" ? 'selected' : ''%> data-i18n="client.client-form.signing-ecdsa-384">ECDSA using P-384 curve and SHA-384 hash algorithm</option>
+						<option value="ES512" <%-requestObjectSigningAlg == "ES512" ? 'selected' : ''%> data-i18n="client.client-form.signing-ecdsa-512">ECDSA using P-512 curve and SHA-512 hash algorithm</option>
 					</select>
                 </div>
             </div>
 			
             <div class="control-group" id="userInfoSignedResponseAlg">
-                <label class="control-label">User Info Endpoint Signing Algorithm</label>
+                <label class="control-label" data-i18n="client.client-form.user-info-signing-algorithm">User Info Endpoint Signing Algorithm</label>
                 <div class="controls">
 					<select>
-						<option value="default" <%-userInfoSignedResponseAlg == null ? 'selected ' : ''%>>Use server default</option>
-						<option value="none" <%-userInfoSignedResponseAlg == "none" ? 'selected' : ''%>>No digital signature</option>
-						<option value="HS256" <%-userInfoSignedResponseAlg == "HS256" ? 'selected' : ''%>>HMAC using SHA-256 hash algorithm</option>
-						<option value="HS384" <%-userInfoSignedResponseAlg == "HS384" ? 'selected' : ''%>>HMAC using SHA-384 hash algorithm</option>
-						<option value="HS512" <%-userInfoSignedResponseAlg == "HS512" ? 'selected' : ''%>>HMAC using SHA-512 hash algorithm</option>
-						<option value="RS256" <%-userInfoSignedResponseAlg == "RS256" ? 'selected' : ''%>>RSASSA using SHA-256 hash algorithm</option>
-						<option value="RS384" <%-userInfoSignedResponseAlg == "RS384" ? 'selected' : ''%>>RSASSA using SHA-384 hash algorithm</option>
-						<option value="RS512" <%-userInfoSignedResponseAlg == "RS512" ? 'selected' : ''%>>RSASSA using SHA-512 hash algorithm</option>
-						<option value="ES256" <%-userInfoSignedResponseAlg == "ES256" ? 'selected' : ''%>>ECDSA using P-256 curve and SHA-256 hash algorithm</option>
-						<option value="ES384" <%-userInfoSignedResponseAlg == "ES384" ? 'selected' : ''%>>ECDSA using P-384 curve and SHA-384 hash algorithm</option>
-						<option value="ES512" <%-userInfoSignedResponseAlg == "ES512" ? 'selected' : ''%>>ECDSA using P-512 curve and SHA-512 hash algorithm</option>
+						<option value="default" <%-userInfoSignedResponseAlg == null ? 'selected ' : ''%> data-i18n="client.client-form.signing-default">Use server default</option>
+						<option value="none" <%-userInfoSignedResponseAlg == "none" ? 'selected' : ''%> data-i18n="client.client-form.signing-none">No digital signature</option>
+						<option value="HS256" <%-userInfoSignedResponseAlg == "HS256" ? 'selected' : ''%> data-i18n="client.client-form.signing-hmac-256">HMAC using SHA-256 hash algorithm</option>
+						<option value="HS384" <%-userInfoSignedResponseAlg == "HS384" ? 'selected' : ''%> data-i18n="client.client-form.signing-hmac-384">HMAC using SHA-384 hash algorithm</option>
+						<option value="HS512" <%-userInfoSignedResponseAlg == "HS512" ? 'selected' : ''%> data-i18n="client.client-form.signing-hmac-512">HMAC using SHA-512 hash algorithm</option>
+						<option value="RS256" <%-userInfoSignedResponseAlg == "RS256" ? 'selected' : ''%> data-i18n="client.client-form.signing-rsassa-256">RSASSA using SHA-256 hash algorithm</option>
+						<option value="RS384" <%-userInfoSignedResponseAlg == "RS384" ? 'selected' : ''%> data-i18n="client.client-form.signing-rsassa-384">RSASSA using SHA-384 hash algorithm</option>
+						<option value="RS512" <%-userInfoSignedResponseAlg == "RS512" ? 'selected' : ''%> data-i18n="client.client-form.signing-rsassa-512">RSASSA using SHA-512 hash algorithm</option>
+						<option value="ES256" <%-userInfoSignedResponseAlg == "ES256" ? 'selected' : ''%> data-i18n="client.client-form.signing-ecdsa-256">ECDSA using P-256 curve and SHA-256 hash algorithm</option>
+						<option value="ES384" <%-userInfoSignedResponseAlg == "ES384" ? 'selected' : ''%> data-i18n="client.client-form.signing-ecdsa-384">ECDSA using P-384 curve and SHA-384 hash algorithm</option>
+						<option value="ES512" <%-userInfoSignedResponseAlg == "ES512" ? 'selected' : ''%> data-i18n="client.client-form.signing-ecdsa-512">ECDSA using P-512 curve and SHA-512 hash algorithm</option>
 					</select>
                 </div>
             </div>
