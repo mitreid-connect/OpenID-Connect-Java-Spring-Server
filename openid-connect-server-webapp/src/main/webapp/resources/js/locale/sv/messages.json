@@ -93,7 +93,8 @@
         "refresh": "Uppdatera",
         "revoke": "Återkalla",
         "save": "Spara",
-        "scopes": "Scope"
+        "scopes": "Scope",
+        "statistics": "Statistik"
     },
     "grant": {
         "refresh": "Uppdatera",

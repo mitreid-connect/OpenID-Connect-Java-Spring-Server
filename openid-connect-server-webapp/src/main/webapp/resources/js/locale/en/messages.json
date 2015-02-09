@@ -92,7 +92,8 @@
         "information": "Information",
         "revoke": "Revoke",
         "save": "Save",
-        "scopes": "Scopes"
+        "scopes": "Scopes",
+        "statistics": "Statistics"
     },
     "grant": {
         "more-info": "more information",

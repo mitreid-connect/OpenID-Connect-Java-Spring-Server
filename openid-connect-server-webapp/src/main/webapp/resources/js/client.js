@@ -438,11 +438,12 @@ var ClientListView = Backbone.View.extend({
     	}
     	
     	$('#loadingbox').sheet('show');
-    	$('#loading').html('<span class="label" id="loading-clients">Clients</span> ' +
-    			'<span class="label" id="loading-whitelist">Whitelist</span> ' + 
-    			'<span class="label" id="loading-scopes">Scopes</span> ' +
-    			'<span class="label" id="loading-stats">Statistics</span> ' 
-    			);
+        $('#loading').html(
+                '<span class="label" id="loading-clients">' + $.t("common.clients") + '</span>' +
+                '<span class="label" id="loading-whitelist">' + $.t("whitelist.whitelist") + '</span> ' + 
+                '<span class="label" id="loading-scopes">' + $.t("common.scopes") + '</span> ' + 
+                '<span class="label" id="loading-stats">' + $.t("common.statistics") + '</span> ' 
+                );
 
     	$.when(this.model.fetchIfNeeded({success:function(e) {$('#loading-clients').addClass('label-success');}}),
     			this.options.whiteListList.fetchIfNeeded({success:function(e) {$('#loading-whitelist').addClass('label-success');}}),
@@ -548,10 +549,11 @@ var ClientListView = Backbone.View.extend({
     refreshTable:function(e) {
     	e.preventDefault();
     	$('#loadingbox').sheet('show');
-    	$('#loading').html('<span class="label" id="loading-clients">Clients</span> ' +
-    			'<span class="label" id="loading-whitelist">Whitelist</span> ' + 
-    			'<span class="label" id="loading-scopes">Scopes</span> ' + 
-    			'<span class="label" id="loading-stats">Statistics</span> ' 
+    	$('#loading').html(
+    	        '<span class="label" id="loading-clients">' + $.t("common.clients") + '</span>' +
+    			'<span class="label" id="loading-whitelist">' + $.t("whitelist.whitelist") + '</span> ' + 
+    			'<span class="label" id="loading-scopes">' + $.t("common.scopes") + '</span> ' + 
+    			'<span class="label" id="loading-stats">' + $.t("common.statistics") + '</span> ' 
     			);
 
     	var _self = this;
@@ -649,7 +651,7 @@ var ClientFormView = Backbone.View.extend({
     	if (this.model.get('id') == null) {
     		// only show the box if this is a new client, otherwise the box is already showing
 	    	$('#loadingbox').sheet('show');
-	    	$('#loading').html('<span class="label" id="loading-scopes">Scopes</span> ');
+	    	$('#loading').html('<span class="label" id="loading-scopes">' + $.t("common.scopes") + '</span> ');
     	}
 
     	$.when(this.options.systemScopeList.fetchIfNeeded({success:function(e) {$('#loading-scopes').addClass('label-success');}}))
