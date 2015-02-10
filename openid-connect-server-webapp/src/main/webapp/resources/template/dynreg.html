@@ -366,126 +366,125 @@
 
 	<div class="tab-pane" id="client-crypto-tab">
             <div class="control-group" id="requestObjectSigningAlg">
-                <label class="control-label">Request Object Signing Algorithm</label>
+                <label class="control-label" data-i18n="client.client-form.request-object-signing-algorithm">Request Object Signing Algorithm</label>
                 <div class="controls">
-					<select>
-						<option value="default" <%-client.request_object_signing_alg == null ? 'selected ' : ''%>>Use server default</option>
-						<option value="none" <%-client.request_object_signing_alg == "none" ? 'selected' : ''%>>No digital signature</option>
-						<option value="HS256" <%-client.request_object_signing_alg == "HS256" ? 'selected' : ''%>>HMAC using SHA-256 hash algorithm</option>
-						<option value="HS384" <%-client.request_object_signing_alg == "HS384" ? 'selected' : ''%>>HMAC using SHA-384 hash algorithm</option>
-						<option value="HS512" <%-client.request_object_signing_alg == "HS512" ? 'selected' : ''%>>HMAC using SHA-512 hash algorithm</option>
-						<option value="RS256" <%-client.request_object_signing_alg == "RS256" ? 'selected' : ''%>>RSASSA using SHA-256 hash algorithm</option>
-						<option value="RS384" <%-client.request_object_signing_alg == "RS384" ? 'selected' : ''%>>RSASSA using SHA-384 hash algorithm</option>
-						<option value="RS512" <%-client.request_object_signing_alg == "RS512" ? 'selected' : ''%>>RSASSA using SHA-512 hash algorithm</option>
-						<option value="ES256" <%-client.request_object_signing_alg == "ES256" ? 'selected' : ''%>>ECDSA using P-256 curve and SHA-256 hash algorithm</option>
-						<option value="ES384" <%-client.request_object_signing_alg == "ES384" ? 'selected' : ''%>>ECDSA using P-384 curve and SHA-384 hash algorithm</option>
-						<option value="ES512" <%-client.request_object_signing_alg == "ES512" ? 'selected' : ''%>>ECDSA using P-512 curve and SHA-512 hash algorithm</option>
-					</select>
+                    <select>
+                        <option value="default" <%-client.request_object_signing_alg == null ? 'selected ' : ''%> data-i18n="client.client-form.signing.default">Use server default</option>
+                        <option value="none" <%-client.request_object_signing_alg == "none" ? 'selected' : ''%> data-i18n="client.client-form.signing.none">No digital signature</option>
+                        <option value="HS256" <%-client.request_object_signing_alg == "HS256" ? 'selected' : ''%> data-i18n="client.client-form.signing.hs256">HMAC using SHA-256 hash algorithm</option>
+                        <option value="HS384" <%-client.request_object_signing_alg == "HS384" ? 'selected' : ''%> data-i18n="client.client-form.signing.hs384">HMAC using SHA-384 hash algorithm</option>
+                        <option value="HS512" <%-client.request_object_signing_alg == "HS512" ? 'selected' : ''%> data-i18n="client.client-form.signing.hs512">HMAC using SHA-512 hash algorithm</option>
+                        <option value="RS256" <%-client.request_object_signing_alg == "RS256" ? 'selected' : ''%> data-i18n="client.client-form.signing.rs256">RSASSA using SHA-256 hash algorithm</option>
+                        <option value="RS384" <%-client.request_object_signing_alg == "RS384" ? 'selected' : ''%> data-i18n="client.client-form.signing.rs384">RSASSA using SHA-384 hash algorithm</option>
+                        <option value="RS512" <%-client.request_object_signing_alg == "RS512" ? 'selected' : ''%> data-i18n="client.client-form.signing.rs512">RSASSA using SHA-512 hash algorithm</option>
+                        <option value="ES256" <%-client.request_object_signing_alg == "ES256" ? 'selected' : ''%> data-i18n="client.client-form.signing.es256">ECDSA using P-256 curve and SHA-256 hash algorithm</option>
+                        <option value="ES384" <%-client.request_object_signing_alg == "ES384" ? 'selected' : ''%> data-i18n="client.client-form.signing.es384">ECDSA using P-384 curve and SHA-384 hash algorithm</option>
+                        <option value="ES512" <%-client.request_object_signing_alg == "ES512" ? 'selected' : ''%> data-i18n="client.client-form.signing.es512">ECDSA using P-512 curve and SHA-512 hash algorithm</option>
+                    </select>
                 </div>
             </div>
 			
             <div class="control-group" id="userInfoSignedResponseAlg">
-                <label class="control-label">User Info Endpoint Signing Algorithm</label>
+                <label class="control-label" data-i18n="client.client-form.user-info-signing-algorithm">User Info Endpoint Signing Algorithm</label>
                 <div class="controls">
-					<select>
-						<option value="default" <%-client.userinfo_signed_response_alg == null ? 'selected ' : ''%>>Use server default</option>
-						<option value="none" <%-client.userinfo_signed_response_alg == "none" ? 'selected' : ''%>>No digital signature</option>
-						<option value="HS256" <%-client.userinfo_signed_response_alg == "HS256" ? 'selected' : ''%>>HMAC using SHA-256 hash algorithm</option>
-						<option value="HS384" <%-client.userinfo_signed_response_alg == "HS384" ? 'selected' : ''%>>HMAC using SHA-384 hash algorithm</option>
-						<option value="HS512" <%-client.userinfo_signed_response_alg == "HS512" ? 'selected' : ''%>>HMAC using SHA-512 hash algorithm</option>
-						<option value="RS256" <%-client.userinfo_signed_response_alg == "RS256" ? 'selected' : ''%>>RSASSA using SHA-256 hash algorithm</option>
-						<option value="RS384" <%-client.userinfo_signed_response_alg == "RS384" ? 'selected' : ''%>>RSASSA using SHA-384 hash algorithm</option>
-						<option value="RS512" <%-client.userinfo_signed_response_alg == "RS512" ? 'selected' : ''%>>RSASSA using SHA-512 hash algorithm</option>
-						<option value="ES256" <%-client.userinfo_signed_response_alg == "ES256" ? 'selected' : ''%>>ECDSA using P-256 curve and SHA-256 hash algorithm</option>
-						<option value="ES384" <%-client.userinfo_signed_response_alg == "ES384" ? 'selected' : ''%>>ECDSA using P-384 curve and SHA-384 hash algorithm</option>
-						<option value="ES512" <%-client.userinfo_signed_response_alg == "ES512" ? 'selected' : ''%>>ECDSA using P-512 curve and SHA-512 hash algorithm</option>
-					</select>
+                    <select>
+                        <option value="default" <%-client.userinfo_signed_response_alg == null ? 'selected ' : ''%> data-i18n="client.client-form.signing.default">Use server default</option>
+                        <option value="none" <%-client.userinfo_signed_response_alg == "none" ? 'selected' : ''%> data-i18n="client.client-form.signing.none">No digital signature</option>
+                        <option value="HS256" <%-client.userinfo_signed_response_alg == "HS256" ? 'selected' : ''%> data-i18n="client.client-form.signing.hs256">HMAC using SHA-256 hash algorithm</option>
+                        <option value="HS384" <%-client.userinfo_signed_response_alg == "HS384" ? 'selected' : ''%> data-i18n="client.client-form.signing.hs384">HMAC using SHA-384 hash algorithm</option>
+                        <option value="HS512" <%-client.userinfo_signed_response_alg == "HS512" ? 'selected' : ''%> data-i18n="client.client-form.signing.hs512">HMAC using SHA-512 hash algorithm</option>
+                        <option value="RS256" <%-client.userinfo_signed_response_alg == "RS256" ? 'selected' : ''%> data-i18n="client.client-form.signing.rs256">RSASSA using SHA-256 hash algorithm</option>
+                        <option value="RS384" <%-client.userinfo_signed_response_alg == "RS384" ? 'selected' : ''%> data-i18n="client.client-form.signing.rs384">RSASSA using SHA-384 hash algorithm</option>
+                        <option value="RS512" <%-client.userinfo_signed_response_alg == "RS512" ? 'selected' : ''%> data-i18n="client.client-form.signing.rs512">RSASSA using SHA-512 hash algorithm</option>
+                        <option value="ES256" <%-client.userinfo_signed_response_alg == "ES256" ? 'selected' : ''%> data-i18n="client.client-form.signing.es256">ECDSA using P-256 curve and SHA-256 hash algorithm</option>
+                        <option value="ES384" <%-client.userinfo_signed_response_alg == "ES384" ? 'selected' : ''%> data-i18n="client.client-form.signing.es384">ECDSA using P-384 curve and SHA-384 hash algorithm</option>
+                        <option value="ES512" <%-client.userinfo_signed_response_alg == "ES512" ? 'selected' : ''%> data-i18n="client.client-form.signing.es512">ECDSA using P-512 curve and SHA-512 hash algorithm</option>
+                    </select>
                 </div>
             </div>
 			
 			<div class="control-group" id="userInfoEncryptedResponseAlg">
-                <label class="control-label">User Info Endpoint Encryption Algorithm</label>
+                <label class="control-label" data-i18n="client.client-form.user-info-crypto-algorithm">User Info Endpoint Encryption Algorithm</label>
                 <div class="controls">
-					<select>
-						<option value="default" <%-client.userinfo_encrypted_response_alg == null ? 'selected ' : ''%>>Use server default</option>
-						<option value="none" <%-client.userinfo_encrypted_response_alg == "none" ? 'selected' : ''%>>No encryption</option>
-						<option value="RSA1_5" <%-client.userinfo_encrypted_response_alg == "RSA1_5" ? 'selected' : ''%>>RSAES-PKCS1-V1_5</option>
-						<option value="RSA-OAEP" <%-client.userinfo_encrypted_response_alg == "RSA-OAEP" ? 'selected' : ''%>>RSAES using Optimal Asymmetric Encryption Padding (OAEP)</option>
-						<option value="A128KW" <%-client.userinfo_encrypted_response_alg == "A128KW" ? 'selected' : ''%>>AES Key Wrap Algorithm using 128 bit keys </option>
-						<option value="A256KW" <%-client.userinfo_encrypted_response_alg == "A256KW" ? 'selected' : ''%>>AES Key Wrap Algorithm using 256 bit keys</option>
-						<option value="dir" <%-client.userinfo_encrypted_response_alg == "dir" ? 'selected' : ''%>>Direct use of a shared symmetric key as the Content Master Key (CMK) for the block encryption step</option>
-						<option value="ECDH-ES" <%-client.userinfo_encrypted_response_alg == "ECDH-ES" ? 'selected' : ''%>>Elliptic Curve Diffie-Hellman Ephemeral Static key agreement using the Concat KDF, with the agreed-upon key being used directly as the Content Master Key (CMK)</option>
-						<option value="ECDH-ES+A128KW" <%-client.userinfo_encrypted_response_alg == "ECDH-ES+A128KW" ? 'selected' : ''%>>Elliptic Curve Diffie-Hellman Ephemeral Static key agreement per ECDH-ES and Section 4.7, but where the agreed-upon key is used to wrap the Content Master Key (CMK) with the A128KW function</option>
-						<option value="ECDH-ES+A256KW" <%-client.userinfo_encrypted_response_alg == "ECDH-ES+A256KW" ? 'selected' : ''%>>Elliptic Curve Diffie-Hellman Ephemeral Static key agreement per ECDH-ES and Section 4.7, but where the agreed-upon key is used to wrap the Content Master Key (CMK) with the A256KW function</option>
-					</select>
-				</div>
+                    <select>
+                        <option value="default" <%-client.userinfo_encrypted_response_alg == null ? 'selected ' : ''%> data-i18n="client.client-form.crypto.default">Use server default</option>
+                        <option value="none" <%-client.userinfo_encrypted_response_alg == "none" ? 'selected' : ''%> data-i18n="client.client-form.crypto.none">No encryption</option>
+                        <option value="RSA1_5" <%-client.userinfo_encrypted_response_alg == "RSA1_5" ? 'selected' : ''%> data-i18n="client.client-form.crypto.rsa1-5">RSAES-PKCS1-V1_5</option>
+                        <option value="RSA-OAEP" <%-client.userinfo_encrypted_response_alg == "RSA-OAEP" ? 'selected' : ''%> data-i18n="client.client-form.crypto.rsa-oaep">RSAES using Optimal Asymmetric Encryption Padding (OAEP)</option>
+                        <option value="A128KW" <%-client.userinfo_encrypted_response_alg == "A128KW" ? 'selected' : ''%> data-i18n="client.client-form.crypto.a128kw">AES Key Wrap Algorithm using 128 bit keys </option>
+                        <option value="A256KW" <%-client.userinfo_encrypted_response_alg == "A256KW" ? 'selected' : ''%> data-i18n="client.client-form.crypto.a256kw">AES Key Wrap Algorithm using 256 bit keys</option>
+                        <option value="dir" <%-client.userinfo_encrypted_response_alg == "dir" ? 'selected' : ''%> data-i18n="client.client-form.crypto.dir">Direct use of a shared symmetric key as the Content Master Key (CMK) for the block encryption step</option>
+                        <option value="ECDH-ES" <%-client.userinfo_encrypted_response_alg == "ECDH-ES" ? 'selected' : ''%> data-i18n="client.client-form.crypto.ecdh-es">Elliptic Curve Diffie-Hellman Ephemeral Static key agreement using the Concat KDF, with the agreed-upon key being used directly as the Content Master Key (CMK)</option>
+                        <option value="ECDH-ES+A128KW" <%-client.userinfo_encrypted_response_alg == "ECDH-ES+A128KW" ? 'selected' : ''%> data-i18n="client.client-form.crypto.ecdh-es-a128kw">Elliptic Curve Diffie-Hellman Ephemeral Static key agreement per ECDH-ES and Section 4.7, but where the agreed-upon key is used to wrap the Content Master Key (CMK) with the A128KW function</option>
+                        <option value="ECDH-ES+A256KW" <%-client.userinfo_encrypted_response_alg == "ECDH-ES+A256KW" ? 'selected' : ''%> data-i18n="client.client-form.crypto.ecdh-es-a256kw">Elliptic Curve Diffie-Hellman Ephemeral Static key agreement per ECDH-ES and Section 4.7, but where the agreed-upon key is used to wrap the Content Master Key (CMK) with the A256KW function</option>
+                    </select>
+                </div>
 			</div>
 
 			<div class="control-group" id="userInfoEncryptedResponseEnc">
-                <label class="control-label">User Info Endpoint Encryption Method</label>
+                <label class="control-label" data-i18n="client.client-form.user-info-crypto-method">User Info Endpoint Encryption Method</label>
                 <div class="controls">
-					<select>
-						<option value="default" <%-client.userinfo_encrypted_response_enc == null ? 'selected ' : ''%>>Use server default</option>
-						<option value="none" <%-client.userinfo_encrypted_response_enc == "none" ? 'selected' : ''%>>No encryption</option>
-						<option value="A128CBC+HS256" <%-client.userinfo_encrypted_response_enc == "A128CBC+HS256" ? 'selected' : ''%>>Composite Authenticated Encryption algorithm using AES in Cipher Block Chaining (CBC) mode with PKCS #5 padding with an integrity calculation using HMAC SHA-256, using a 256 bit CMK (and 128 bit CEK)</option>
-						<option value="A256CBC+HS512" <%-client.userinfo_encrypted_response_enc == "A256CBC+HS512" ? 'selected' : ''%>>Composite Authenticated Encryption algorithm using AES in CBC mode with PKCS #5 padding with an integrity calculation using HMAC SHA-512, using a 512 bit CMK (and 256 bit CEK)</option>
-						<option value="A128GCM" <%-client.userinfo_encrypted_response_enc == "A128GCM" ? 'selected' : ''%>>AES GCM using 128 bit keys</option>
-						<option value="A256GCM" <%-client.userinfo_encrypted_response_enc == "A256GCM" ? 'selected' : ''%>>AES GCM using 256 bit keys</option>
-					</select>
-				</div>
+                    <select>
+                        <option value="default" <%-client.userinfo_encrypted_response_enc == null ? 'selected ' : ''%> data-i18n="client.client-form.crypto.default">Use server default</option>
+                        <option value="none" <%-client.userinfo_encrypted_response_enc == "none" ? 'selected' : ''%> data-i18n="client.client-form.crypto.none">No encryption</option>
+                        <option value="A128CBC+HS256" <%-client.userinfo_encrypted_response_enc == "A128CBC+HS256" ? 'selected' : ''%> data-i18n="client.client-form.crypto.a128cbc-hs256">Composite Authenticated Encryption algorithm using AES in Cipher Block Chaining (CBC) mode with PKCS #5 padding with an integrity calculation using HMAC SHA-256, using a 256 bit CMK (and 128 bit CEK)</option>
+                        <option value="A256CBC+HS512" <%-client.userinfo_encrypted_response_enc == "A256CBC+HS512" ? 'selected' : ''%> data-i18n="client.client-form.crypto.a256cbc-hs512">Composite Authenticated Encryption algorithm using AES in CBC mode with PKCS #5 padding with an integrity calculation using HMAC SHA-512, using a 512 bit CMK (and 256 bit CEK)</option>
+                        <option value="A128GCM" <%-client.userinfo_encrypted_response_enc == "A128GCM" ? 'selected' : ''%> data-i18n="client.client-form.crypto.a128gcm">AES GCM using 128 bit keys</option>
+                        <option value="A256GCM" <%-client.userinfo_encrypted_response_enc == "A256GCM" ? 'selected' : ''%> data-i18n="client.client-form.crypto.a256gcm">AES GCM using 256 bit keys</option>
+                    </select>
+                </div>
 			</div>
 
             <div class="control-group" id="idTokenSignedResponseAlg">
-                <label class="control-label">ID Token Signing Algorithm</label>
+                <label class="control-label" data-i18n="client.client-form.id-token-signing-algorithm">ID Token Signing Algorithm</label>
                 <div class="controls">
-					<select>
-						<option value="default" <%-client.id_token_signed_response_alg == null ? 'selected ' : ''%>>Use server default</option>
-						<option value="none" <%-client.id_token_signed_response_alg == "none" ? 'selected' : ''%>>No digital signature</option>
-						<option value="HS256" <%-client.id_token_signed_response_alg == "HS256" ? 'selected' : ''%>>HMAC using SHA-256 hash algorithm</option>
-						<option value="HS384" <%-client.id_token_signed_response_alg == "HS384" ? 'selected' : ''%>>HMAC using SHA-384 hash algorithm</option>
-						<option value="HS512" <%-client.id_token_signed_response_alg == "HS512" ? 'selected' : ''%>>HMAC using SHA-512 hash algorithm</option>
-						<option value="RS256" <%-client.id_token_signed_response_alg == "RS256" ? 'selected' : ''%>>RSASSA using SHA-256 hash algorithm</option>
-						<option value="RS384" <%-client.id_token_signed_response_alg == "RS384" ? 'selected' : ''%>>RSASSA using SHA-384 hash algorithm</option>
-						<option value="RS512" <%-client.id_token_signed_response_alg == "RS512" ? 'selected' : ''%>>RSASSA using SHA-512 hash algorithm</option>
-						<option value="ES256" <%-client.id_token_signed_response_alg == "ES256" ? 'selected' : ''%>>ECDSA using P-256 curve and SHA-256 hash algorithm</option>
-						<option value="ES384" <%-client.id_token_signed_response_alg == "ES384" ? 'selected' : ''%>>ECDSA using P-384 curve and SHA-384 hash algorithm</option>
-						<option value="ES512" <%-client.id_token_signed_response_alg == "ES512" ? 'selected' : ''%>>ECDSA using P-512 curve and SHA-512 hash algorithm</option>
-					</select>
+                    <select>
+                        <option value="default" <%-client.id_token_signed_response_alg == null ? 'selected ' : ''%> data-i18n="client.client-form.signing.default">Use server default</option>
+                        <option value="none" <%-client.id_token_signed_response_alg == "none" ? 'selected' : ''%> data-i18n="client.client-form.signing.none">No digital signature</option>
+                        <option value="HS256" <%-client.id_token_signed_response_alg == "HS256" ? 'selected' : ''%> data-i18n="client.client-form.signing.hs256">HMAC using SHA-256 hash algorithm</option>
+                        <option value="HS384" <%-client.id_token_signed_response_alg == "HS384" ? 'selected' : ''%> data-i18n="client.client-form.signing.hs384">HMAC using SHA-384 hash algorithm</option>
+                        <option value="HS512" <%-client.id_token_signed_response_alg == "HS512" ? 'selected' : ''%> data-i18n="client.client-form.signing.hs512">HMAC using SHA-512 hash algorithm</option>
+                        <option value="RS256" <%-client.id_token_signed_response_alg == "RS256" ? 'selected' : ''%> data-i18n="client.client-form.signing.rs256">RSASSA using SHA-256 hash algorithm</option>
+                        <option value="RS384" <%-client.id_token_signed_response_alg == "RS384" ? 'selected' : ''%> data-i18n="client.client-form.signing.rs384">RSASSA using SHA-384 hash algorithm</option>
+                        <option value="RS512" <%-client.id_token_signed_response_alg == "RS512" ? 'selected' : ''%> data-i18n="client.client-form.signing.rs512">RSASSA using SHA-512 hash algorithm</option>
+                        <option value="ES256" <%-client.id_token_signed_response_alg == "ES256" ? 'selected' : ''%> data-i18n="client.client-form.signing.es256">ECDSA using P-256 curve and SHA-256 hash algorithm</option>
+                        <option value="ES384" <%-client.id_token_signed_response_alg == "ES384" ? 'selected' : ''%> data-i18n="client.client-form.signing.es384">ECDSA using P-384 curve and SHA-384 hash algorithm</option>
+                        <option value="ES512" <%-client.id_token_signed_response_alg == "ES512" ? 'selected' : ''%> data-i18n="client.client-form.signing.es512">ECDSA using P-512 curve and SHA-512 hash algorithm</option>
+                    </select>
                 </div>
             </div>
 			
 			<div class="control-group" id="idTokenEncryptedResponseAlg">
-                <label class="control-label">ID Token Encryption Algorithm</label>
+                <label class="control-label" data-i18n="client.client-form.id-token-crypto-algorithm">ID Token Encryption Algorithm</label>
                 <div class="controls">
-					<select>
-						<option value="default" <%-client.id_token_encrypted_response_alg == null ? 'selected ' : ''%>>Use server default</option>
-						<option value="none" <%-client.id_token_encrypted_response_alg == "none" ? 'selected' : ''%>>No encryption</option>
-						<option value="RSA1_5" <%-client.id_token_encrypted_response_alg == "RSA1_5" ? 'selected' : ''%>>RSAES-PKCS1-V1_5</option>
-						<option value="RSA-OAEP" <%-client.id_token_encrypted_response_alg == "RSA-OAEP" ? 'selected' : ''%>>RSAES using Optimal Asymmetric Encryption Padding (OAEP)</option>
-						<option value="A128KW" <%-client.id_token_encrypted_response_alg == "A128KW" ? 'selected' : ''%>>Advanced Encryption Standard (AES) Key Wrap Algorithm using 128 bit keys </option>
-						<option value="A256KW" <%-client.id_token_encrypted_response_alg == "A256KW" ? 'selected' : ''%>>AES Key Wrap Algorithm using 256 bit keys</option>
-						<option value="dir" <%-client.id_token_encrypted_response_alg == "dir" ? 'selected' : ''%>>Direct use of a shared symmetric key as the Content Master Key (CMK) for the block encryption step</option>
-						<option value="ECDH-ES" <%-client.id_token_encrypted_response_alg == "ECDH-ES" ? 'selected' : ''%>>Elliptic Curve Diffie-Hellman Ephemeral Static key agreement using the Concat KDF, with the agreed-upon key being used directly as the Content Master Key (CMK)</option>
-						<option value="ECDH-ES+A128KW" <%-client.id_token_encrypted_response_alg == "ECDH-ES+A128KW" ? 'selected' : ''%>>Elliptic Curve Diffie-Hellman Ephemeral Static key agreement per ECDH-ES and Section 4.7, but where the agreed-upon key is used to wrap the Content Master Key (CMK) with the A128KW function</option>
-						<option value="ECDH-ES+A256KW" <%-client.id_token_encrypted_response_alg == "ECDH-ES+A256KW" ? 'selected' : ''%>>Elliptic Curve Diffie-Hellman Ephemeral Static key agreement per ECDH-ES and Section 4.7, but where the agreed-upon key is used to wrap the Content Master Key (CMK) with the A256KW function</option>
-					</select>
-				</div>
+                    <select>
+                        <option value="default" <%-client.id_token_encrypted_response_alg == null ? 'selected ' : ''%> data-i18n="client.client-form.crypto.default">Use server default</option>
+                        <option value="none" <%-client.id_token_encrypted_response_alg == "none" ? 'selected' : ''%> data-i18n="client.client-form.crypto.none">No encryption</option>
+                        <option value="RSA1_5" <%-client.id_token_encrypted_response_alg == "RSA1_5" ? 'selected' : ''%> data-i18n="client.client-form.crypto.rsa1-5">RSAES-PKCS1-V1_5</option>
+                        <option value="RSA-OAEP" <%-client.id_token_encrypted_response_alg == "RSA-OAEP" ? 'selected' : ''%> data-i18n="client.client-form.crypto.rsa-oaep">RSAES using Optimal Asymmetric Encryption Padding (OAEP)</option>
+                        <option value="A128KW" <%-client.id_token_encrypted_response_alg == "A128KW" ? 'selected' : ''%> data-i18n="client.client-form.crypto.a128kw">Advanced Encryption Standard (AES) Key Wrap Algorithm using 128 bit keys </option>
+                        <option value="A256KW" <%-client.id_token_encrypted_response_alg == "A256KW" ? 'selected' : ''%> data-i18n="client.client-form.crypto.a256kw">AES Key Wrap Algorithm using 256 bit keys</option>
+                        <option value="dir" <%-client.id_token_encrypted_response_alg == "dir" ? 'selected' : ''%> data-i18n="client.client-form.crypto.dir">Direct use of a shared symmetric key as the Content Master Key (CMK) for the block encryption step</option>
+                        <option value="ECDH-ES" <%-client.id_token_encrypted_response_alg == "ECDH-ES" ? 'selected' : ''%> data-i18n="client.client-form.crypto.ecdh-es">Elliptic Curve Diffie-Hellman Ephemeral Static key agreement using the Concat KDF, with the agreed-upon key being used directly as the Content Master Key (CMK)</option>
+                        <option value="ECDH-ES+A128KW" <%-client.id_token_encrypted_response_alg == "ECDH-ES+A128KW" ? 'selected' : ''%> data-i18n="client.client-form.crypto.ecdh-es-a128kw">Elliptic Curve Diffie-Hellman Ephemeral Static key agreement per ECDH-ES and Section 4.7, but where the agreed-upon key is used to wrap the Content Master Key (CMK) with the A128KW function</option>
+                        <option value="ECDH-ES+A256KW" <%-client.id_token_encrypted_response_alg == "ECDH-ES+A256KW" ? 'selected' : ''%> data-i18n="client.client-form.crypto.ecdh-es-a256kw">Elliptic Curve Diffie-Hellman Ephemeral Static key agreement per ECDH-ES and Section 4.7, but where the agreed-upon key is used to wrap the Content Master Key (CMK) with the A256KW function</option>
+                    </select>
+                </div>
 			</div>
 
 			<div class="control-group" id="idTokenEncryptedResponseEnc">
-                <label class="control-label">ID Token Encryption Method</label>
+                <label class="control-label" data-i18n="client.client-form.id-token-crypto-method">ID Token Encryption Method</label>
                 <div class="controls">
-					<select>
-						<option value="default" <%-client.id_token_encrypted_response_enc == null ? 'selected ' : ''%>>Use server default</option>
-						<option value="none" <%-client.id_token_encrypted_response_enc == "none" ? 'selected' : ''%>>No encryption</option>
-						<option value="A128CBC+HS256" <%-client.id_token_encrypted_response_enc == "A128CBC+HS256" ? 'selected' : ''%>>Composite Authenticated Encryption algorithm using AES in Cipher Block Chaining (CBC) mode with PKCS #5 padding with an integrity calculation using HMAC SHA-256, using a 256 bit CMK (and 128 bit CEK)</option>
-						<option value="A256CBC+HS512" <%-client.id_token_encrypted_response_enc == "A256CBC+HS512" ? 'selected' : ''%>>Composite Authenticated Encryption algorithm using AES in CBC mode with PKCS #5 padding with an integrity calculation using HMAC SHA-512, using a 512 bit CMK (and 256 bit CEK)</option>
-						<option value="A128GCM" <%-client.id_token_encrypted_response_enc == "A128GCM" ? 'selected' : ''%>>AES GCM using 128 bit keys</option>
-						<option value="A256GCM" <%-client.id_token_encrypted_response_enc == "A256GCM" ? 'selected' : ''%>>AES GCM using 256 bit keys</option>
-					</select>
-				</div>
+                    <select>
+                        <option value="default" <%-client.id_token_encrypted_response_enc == null ? 'selected ' : ''%> data-i18n="client.client-form.crypto.default">Use server default</option>
+                        <option value="none" <%-client.id_token_encrypted_response_enc == "none" ? 'selected' : ''%> data-i18n="client.client-form.crypto.none">No encryption</option>
+                        <option value="A128CBC+HS256" <%-client.id_token_encrypted_response_enc == "A128CBC+HS256" ? 'selected' : ''%> data-i18n="client.client-form.crypto.a128cbc-hs256">Composite Authenticated Encryption algorithm using AES in Cipher Block Chaining (CBC) mode with PKCS #5 padding with an integrity calculation using HMAC SHA-256, using a 256 bit CMK (and 128 bit CEK)</option>
+                        <option value="A256CBC+HS512" <%-client.id_token_encrypted_response_enc == "A256CBC+HS512" ? 'selected' : ''%> data-i18n="client.client-form.crypto.a256cbc-hs512">Composite Authenticated Encryption algorithm using AES in CBC mode with PKCS #5 padding with an integrity calculation using HMAC SHA-512, using a 512 bit CMK (and 256 bit CEK)</option>
+                        <option value="A128GCM" <%-client.id_token_encrypted_response_enc == "A128GCM" ? 'selected' : ''%> data-i18n="client.client-form.crypto.a128gcm">AES GCM using 128 bit keys</option>
+                        <option value="A256GCM" <%-client.id_token_encrypted_response_enc == "A256GCM" ? 'selected' : ''%> data-i18n="client.client-form.crypto.a256gcm">AES GCM using 256 bit keys</option>
+                    </select>
+                </div>
 			</div>
-
 	</div>
 
 	<div class="tab-pane" id="client-other-tab">
