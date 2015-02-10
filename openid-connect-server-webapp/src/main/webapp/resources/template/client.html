@@ -547,11 +547,11 @@
                 <div class="controls">
 					<div>
                         <input type="checkbox" id="reuseRefreshToken" <%-(reuseRefreshToken == true ? 'checked' : '')%>>
-                        <label for="reuseRefreshToken" class="checkbox">Refresh tokens for this client are re-used</label>
+                        <label for="reuseRefreshToken" class="checkbox" data-i18n="client.client-form.refresh-tokens-reused">Refresh tokens for this client are re-used</label>
 					</div>
 					<div>
                         <input type="checkbox" id="disableRefreshTokenTimeout" <%-(refreshTokenValiditySeconds == null ? 'checked' : '')%>/> 
-                        <label for="disableRefreshTokenTimeout" class="checkbox">Refresh tokens do not time out</label>
+                        <label for="disableRefreshTokenTimeout" class="checkbox" data-i18n="client.client-form.refresh-tokens-no-expire">Refresh tokens do not time out</label>
 					</div>
                     <div>
                         <input type="text" class="" value="<%-(refreshTokenValiditySeconds == null ? '' : refreshTokenValiditySeconds)%>" id="refresh-token-timeout-time" size="16" style="width:8em;">
@@ -756,21 +756,20 @@
 <script type="text/html" id="tmpl-client-saved">
 
 	<div>
-		<strong>ID:</strong> <input type="text" readonly style="cursor: text" class="token-full input-xxlarge" value="<%- clientId %>" />
-
+		<strong><span data-i18n="client.client-form.id">ID:</span></strong> <input type="text" readonly style="cursor: text" class="token-full input-xxlarge" value="<%- clientId %>" />
 	</div>
 	<% if (secretChanged) { %>
 	<div>
-		<strong>Secret:</strong> <button class="btn btn-mini" id="clientSaveShow">Show Secret</button>
+		<strong><span data-i18n="client.client-form.saved.secret">Secret:</span></strong> <button class="btn btn-mini" id="clientSaveShow" data-i18n="client.client-form.saved.show-secret">Show Secret</button>
 		<input type="text" id="savedClientSecret" readonly style="cursor: text" class="token-full input-xxlarge" value="<%- clientSecret %>" />
 	</div>
 	<% } else if (clientSecret == null || clientSecret == '') { %>
 	<div>
-		<i>No client secret</i>
+		<i><span data-i18n="client.client-form.saved.no-secret">No client secret</span></i>
 	</div>
 	<% } else { %>
 	<div>
-		<strong>Secret:</strong> <i>unchanged</i>
+		<strong><span data-i18n="client.client-form.saved.secret">Secret:</span></strong> <i><span data-i18n="client.client-form.saved.unchanged">unchanged</span></i>
 	</div>
 	<% } %>
 
@@ -779,16 +778,16 @@
 <script type="text/html" id="tmpl-client-registration-token">
 
 	<div>
-		<strong>ID:</strong> <input type="text" readonly style="cursor: text" class="token-full input-xxlarge" value="<%- clientId %>" />
+		<strong><span data-i18n="client.client-form.id">ID:</span></strong> <input type="text" readonly style="cursor: text" class="token-full input-xxlarge" value="<%- clientId %>" />
 
 	</div>
 	<div>
-		<strong>Registration Token:</strong>
+		<strong><span data-i18n="client.client-form.registration-token">Registration Token:</span></strong>
 		<input type="text" id="registrationToken" readonly style="cursor: text" class="token-full input-xxlarge" value="<%- registrationToken %>" />
 	</div>
 
 	<div>
-		<button class="btn btn-warning" id="rotate-token"><i class="icon-retweet icon-white"></i> Rotate registration token</button>
+		<button class="btn btn-warning" id="rotate-token"><i class="icon-retweet icon-white"></i> <span data-i18n="client.client-form.rotate-registration-token">Rotate registration token</span></button>
 	</div>
 
 </script>

@@ -261,7 +261,7 @@ var ClientView = Backbone.View.extend({
     showRegistrationToken:function(e) {
     	e.preventDefault();
 
-    	$('#modalAlertLabel').html('Registration Access Token');
+    	$('#modalAlertLabel').html($.t('client.client-form.registration-access-token'));
     	
     	var token = new RegistrationTokenModel({clientId: this.model.get('clientId')});
     	
@@ -275,14 +275,14 @@ var ClientView = Backbone.View.extend({
 	        	$('#modalAlert .modal-body').html(_self.registrationTokenTemplate(savedModel));
 	        	
 	        	$('#modalAlert .modal-body #rotate-token').click(function(e) {
-	        		if (confirm("Are you sure you want to rotate this client's registration token?")) {
+	        		if (confirm($.t('client.client-form.rotate-registration-token-confirm'))) {
 		        		token.save(null, {success: function() {
 			    	        	console.log('token:' + token.get('value'));
 			    		        $('#modalAlert .modal-body #registrationToken').val(token.get('value'));
 			        		},
 			        		error: function() {
-			    	    		$('#modalAlert .modal-body').html('There was a problem rotating the registration access token for this client.');
-		
+			    	    		$('#modalAlert').i18n();
+			    	    		$('#modalAlert .modal-body').html($t('client.client-form.rotate-registration-token-error'));
 			    	    		$('#modalAlert').modal({
 			    	        		'backdrop': 'static',
 			    	        		'keyboard': true,
@@ -293,6 +293,7 @@ var ClientView = Backbone.View.extend({
 	        		}
 	        	});
 	        	
+	    		$('#modalAlert').i18n();
 	        	$('#modalAlert').modal({
 	        		'backdrop': 'static',
 	        		'keyboard': true,
@@ -301,8 +302,8 @@ var ClientView = Backbone.View.extend({
 	        	
 	    	},
 	    	error:function() {
-	    		$('#modalAlert .modal-body').html('There was a problem loading the registration access token for this client.');
-
+	    		$('#modalAlert').i18n();
+	    		$('#modalAlert .modal-body').html($t('client.client-form.registration-token-error'));
 	    		$('#modalAlert').modal({
 	        		'backdrop': 'static',
 	        		'keyboard': true,
@@ -944,7 +945,7 @@ var ClientFormView = Backbone.View.extend({
         this.model.save(attrs, {
             success:function () {
 
-            	$('#modalAlertLabel').html('Client Saved');
+            	$('#modalAlertLabel').html($.t('client.client-form.saved.saved'));
             	
             	var savedModel = {
             		clientId: _self.model.get('clientId'),
@@ -962,6 +963,7 @@ var ClientFormView = Backbone.View.extend({
             		$('#savedClientSecret').show();
             	});
             	
+            	$('#modalAlert').i18n();
             	$('#modalAlert').modal({
             		'backdrop': 'static',
             		'keyboard': true,
