@@ -439,7 +439,7 @@ var ClientListView = Backbone.View.extend({
     	
     	$('#loadingbox').sheet('show');
         $('#loading').html(
-                '<span class="label" id="loading-clients">' + $.t("common.clients") + '</span>' +
+                '<span class="label" id="loading-clients">' + $.t("common.clients") + '</span> ' +
                 '<span class="label" id="loading-whitelist">' + $.t("whitelist.whitelist") + '</span> ' + 
                 '<span class="label" id="loading-scopes">' + $.t("common.scopes") + '</span> ' + 
                 '<span class="label" id="loading-stats">' + $.t("common.statistics") + '</span> ' 
@@ -550,7 +550,7 @@ var ClientListView = Backbone.View.extend({
     	e.preventDefault();
     	$('#loadingbox').sheet('show');
     	$('#loading').html(
-    	        '<span class="label" id="loading-clients">' + $.t("common.clients") + '</span>' +
+    	        '<span class="label" id="loading-clients">' + $.t("common.clients") + '</span> ' +
     			'<span class="label" id="loading-whitelist">' + $.t("whitelist.whitelist") + '</span> ' + 
     			'<span class="label" id="loading-scopes">' + $.t("common.scopes") + '</span> ' + 
     			'<span class="label" id="loading-stats">' + $.t("common.statistics") + '</span> ' 
