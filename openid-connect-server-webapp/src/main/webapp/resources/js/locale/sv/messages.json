@@ -250,7 +250,7 @@
     },
     "token": {
         "token-table": {
-            "access-tokens": "Access-tokens",
+            "access-tokens": "Access-token",
             "associated-id": "Denna access-token utfärdades med en tillhörande ID-token.",
             "associated-refresh": "Denna access-token utfärdades med en tillhörande refresh-token.",
             "click-to-display": "Klicka för att visa hela biljettvärdet",
@@ -259,7 +259,7 @@
             "no-access": "Det finns inga aktuella access-tokens.",
             "no-refresh": "Det finns inga aktiva refresh-tokens.",
             "number-of-tokens": "Antal utfärdade access-tokens",
-            "refresh-tokens": "Refresh-tokens",
+            "refresh-tokens": "Refresh-token",
             "text": "Biljetter för åtkomst (access-tokens) är vanligtvis kortlivade och ger klienter tillgång till specifika resurser. ID-tokens är speciella åtkomstbiljetter för att underlätta autentisering med OpenID Connect.",
             "text-refresh": "Biljetter för förnyelse (refresh-tokens) är vanligtvis långlivade och ger klienter möjligheten att skaffa nya åtkomstbiljetter utan att involvera slutanvändaren.",
             "token-info": "Biljettinformation"
