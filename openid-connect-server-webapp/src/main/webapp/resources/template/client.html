@@ -693,47 +693,48 @@
 	<div class="tab-pane" id="client-other-tab">
 
 			<div class="control-group" id="initiateLoginUri">
-				<label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> Initiate Login</label>
+				<label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> <span data-i18n="client.client-form.initiate-login">Initiate Login</span></label>
 				<div class="controls">
 					<input placeholder="https://" value="<%-initiateLoginUri%>" maxlength="1000" type="text" class=""/>
-					<p class="help-block">URL to initiate login on the client</p>
+					<p class="help-block" data-i18n="client.client-form.initiate-login-help">URL to initiate login on the client</p>
 				</div>
 			</div>
 
 			<div class="control-group" id="postLogoutRedirectUri">
-				<label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> Post-Logout Redirect</label>
+				<label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> <span data-i18n="client.client-form.post-logout">Post-Logout Redirect</span></label>
 				<div class="controls">
 					<input placeholder="https://" value="<%-postLogoutRedirectUri%>" maxlength="1000" type="text" class=""/>
-					<p class="help-block">URL to redirect the client to after a logout operation</p>
+					<p class="help-block" data-i18n="client.client-form.post-logout-help">URL to redirect the client to after a logout operation</p>
 				</div>
 			</div>
 
 
             <div class="control-group" id="requireAuthTime">
-                <label class="control-label">Require Authentication Time</label>
+                <label class="control-label" data-i18n="client.client-form.require-auth-time">Require Authentication Time</label>
                 <div class="controls">
-                    <label class="checkbox">
-                        <input type="checkbox" <%-(requireAuthTime == true ? 'checked' : '')%>> Always require that the auth_time claim be sent in the id token
-                    </label>
+                    <div>
+                        <input type="checkbox" <%-(requireAuthTime == true ? 'checked' : '')%>/>
+                        <label class="checkbox" data-i18n="client.client-form.require-auth-time-label">Always require that the auth_time claim be sent in the id token</label>
+                    </div>
                 </div>
             </div>
 
 			<div class="control-group" id="defaultMaxAge">
-				<label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> Default Max Age</label>
+				<label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> <span data-i18n="client.client-form.max-age">Default Max Age</span></label>
 				<div class="controls">
 					<input placeholder="" value="<%-defaultMaxAge%>" maxlength="1000" type="text" class=""/>
-					<p class="help-block">Default maximum session age before re-prompting</p>
+					<p class="help-block" data-i18n="client.client-form.max-age-help">Default maximum session age before re-prompting</p>
 				</div>
 			</div>
 
             <div class="control-group" id="requestUris">
-                <label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> Request URIs</label>
+                <label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> <span data-i18n="client.client-form.request-uri">Request URIs</span></label>
                 <div class="controls">
                 </div>
             </div>
 
             <div class="control-group" id="defaultAcrValues">
-                <label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> Default ACR Values</label>
+                <label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> <span data-i18n="client.client-form.acr-values">Default ACR Values</span></label>
                 <div class="controls">
                 </div>
             </div>			

@@ -1056,7 +1056,7 @@ var ClientFormView = Backbone.View.extend({
         });
         
         var defaultAcrView = new ListWidgetView({
-        	placeholder: 'new ACR value',
+        	placeholder: $.t('client.client-form.acr-values-placeholder'),
         	// TODO: autocomplete from spec
         	collection: this.defaultAcrValuesCollection});
         $('#defaultAcrValues .controls', this.el).html(defaultAcrView.render().el);
