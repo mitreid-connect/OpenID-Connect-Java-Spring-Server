@@ -21,16 +21,16 @@
 <div class="row-fluid">
 
 <div class="span5 well">
-	<button class="btn btn-large" id="newreg">Register a new client</button>
+	<button class="btn btn-large" id="newreg" data-i18n="dynreg.new-client">Register a new client</button>
 </div>
 <div class="span2 text-center">
-	<strong> - OR - </strong>
+	<strong><span data-i18n="dynreg.or"> - OR - </span></strong>
 </div>
 <div class="span5 well">
-	<input type="text" id="clientId" placeholder="Enter Client ID"> 
-	<input type="text" id="regtoken" placeholder="Enter Registration Access Token"> 
-	<button class="btn btn-large" id="editreg">Edit an existing client</button>
-	<span class="help-block>Paste in your client ID and registration access token to access the client.</span>
+	<input type="text" id="clientId" placeholder="Enter Client ID" data-i18n="[placeholder]dynreg.client-id-placeholder"> 
+	<input type="text" id="regtoken" placeholder="Enter Registration Access Token" data-i18n="[placeholder]dynreg.regtoken-placeholder"> 
+	<button class="btn btn-large" id="editreg" data-i18n="dynreg.edit-existing">Edit an existing client</button>
+	<span class="help-block" data-i18n="dynreg.edit-existing-help">Paste in your client ID and registration access token to access the client.</span>
 </div>
 
 </script>

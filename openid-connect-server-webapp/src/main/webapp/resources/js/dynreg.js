@@ -106,6 +106,7 @@ var DynRegRootView = Backbone.View.extend({
     	
 	render:function() {
     	$(this.el).html($('#tmpl-dynreg').html());
+        $(this.el).i18n();
     	return this;
 	},
 	
@@ -527,6 +528,7 @@ var DynRegEditView = Backbone.View.extend({
         	});
         
 
+        $(this.el).i18n();
         return this;
 	}
 	

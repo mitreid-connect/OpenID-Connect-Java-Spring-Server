@@ -101,7 +101,7 @@
             "registered": "Registrerad",
             "registration-token": "Registerings-token:",
             "registration-access-token": "Registrerings-access-token",
-            "registration-token-error": "Något problem uppstod när denna klients registrerings-token skulle hämtas.",
+            "registration-token-error": "Något problem uppstod när denna klients registrerings-access-token skulle hämtas.",
             "request-object-signing-algorithm": "Signeringsalgoritm för request-object ",
             "request-uri": "Request-länkar",
             "require-auth-time": "Kräv authentication-time",
@@ -200,6 +200,14 @@
         "save": "Spara",
         "scopes": "Scope",
         "statistics": "Statistik"
+    },
+    "dynreg": {
+        "client-id-placeholder": "Mata in klient-ID",
+        "edit-existing": "Ändra en befintlig klient",
+        "edit-existing-help": "Klistra in ditt klient-ID och registrerings-access-token för att komma åt klienten.",
+        "new-client": "Registrera en ny klient",
+        "or": " - ELLER - ",
+        "regtoken-placeholder": "Mata in registration-access-token"
     },
     "grant": {
         "refresh": "Uppdatera",
