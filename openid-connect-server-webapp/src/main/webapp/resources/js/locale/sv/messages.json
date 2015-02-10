@@ -205,8 +205,10 @@
     "dynreg": {
         "client-id-placeholder": "Mata in klient-ID",
         "configuration-url": "Konfigurationslänk för klienten",
+        "edit-dynamically-registered": "Ändra en dynamiskt registrerad klient",
         "edit-existing": "Ändra en befintlig klient",
         "edit-existing-help": "Klistra in ditt klient-ID och registrerings-access-token för att komma åt klienten.",
+        "invalid-access-token": "Ogiltig klient eller registration-access-token.",
         "new-client": "Registrera en ny klient",
         "or": " - ELLER - ",
         "regtoken-placeholder": "Mata in registration-access-token",

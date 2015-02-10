@@ -95,7 +95,7 @@ var DynRegRootView = Backbone.View.extend({
     	}
 
     	$('#loadingbox').sheet('show');
-    	$('#loading').html('<span class="label" id="loading-scopes">Scopes</span> ');
+    	$('#loading').html('<span class="label" id="loading-scopes">' + $.t('common.scopes') + '</span> ');
 
     	$.when(this.options.systemScopeList.fetchIfNeeded({success:function(e) {$('#loading-scopes').addClass('label-success');}}))
     	.done(function() {
@@ -144,12 +144,12 @@ var DynRegRootView = Backbone.View.extend({
 	    	view.load(function() {
 	    		$('#content').html(view.render().el);
 	    		view.delegateEvents();
-	    		setPageTitle("Edit a Dynamically Registered Client");
+	    		setPageTitle($.t('dynreg.edit-dynamically-registered'));
 	    		app.navigate('dev/dynreg/edit', {trigger: true});	    		
 	    		self.remove();
 	    	});
 		}, error: function() {
-    		$('#modalAlert div.modal-body').html("Invalid client or registration access token.");
+    		$('#modalAlert div.modal-body').html($.t('dynreg.invalid-access-token'));
     		
 			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
 				 "backdrop" : "static",
@@ -188,7 +188,7 @@ var DynRegEditView = Backbone.View.extend({
     	}
 
     	$('#loadingbox').sheet('show');
-    	$('#loading').html('<span class="label" id="loading-scopes">Scopes</span> ');
+    	$('#loading').html('<span class="label" id="loading-scopes">' + $.t('common.scopes') + '</span> ');
 
     	$.when(this.options.systemScopeList.fetchIfNeeded({success:function(e) {$('#loading-scopes').addClass('label-success');}}))
     	.done(function() {
@@ -213,7 +213,7 @@ var DynRegEditView = Backbone.View.extend({
     deleteClient:function (e) {
     	e.preventDefault();
 
-        if (confirm("Are you sure sure you would like to delete this client?")) {
+        if (confirm($.t('client.client-table.confirm'))) {
             var self = this;
 
             this.model.destroy({
