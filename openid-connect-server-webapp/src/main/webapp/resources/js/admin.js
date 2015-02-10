@@ -588,8 +588,9 @@ var AppRouter = Backbone.Router.extend({
         }
 
     	$('#loadingbox').sheet('show');
-    	$('#loading').html('<span class="label" id="loading-scopes">Scopes</span> '
-    			+ '<span class="label" id="loading-client">Client</span> ');
+    	$('#loading').html(
+    			'<span class="label" id="loading-scopes">' + $.t('common.scopes') + '</span> '
+    			+ '<span class="label" id="loading-client">' + $.t('common.client') + '</span> ');
 
         // re-sync the client every time
     	client.fetch({
