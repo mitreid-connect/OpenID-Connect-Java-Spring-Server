@@ -38,6 +38,7 @@
             "client-secret": "Klienthemlighet",
             "client-secret-placeholder": "Mata in en hemlighet",
             "contacts": "Kontakter",
+            "contacts-help": "Lista med e-postadresser till administratörer av denna klient.",
             "contacts-placeholder": "ny kontakt",
             "credentials": "Hemligheter",
             "crypto": {
@@ -203,11 +204,13 @@
     },
     "dynreg": {
         "client-id-placeholder": "Mata in klient-ID",
+        "configuration-url": "Konfigurationslänk för klienten",
         "edit-existing": "Ändra en befintlig klient",
         "edit-existing-help": "Klistra in ditt klient-ID och registrerings-access-token för att komma åt klienten.",
         "new-client": "Registrera en ny klient",
         "or": " - ELLER - ",
-        "regtoken-placeholder": "Mata in registration-access-token"
+        "regtoken-placeholder": "Mata in registration-access-token",
+        "will-be-generated": "Kommer att genereras"
     },
     "grant": {
         "refresh": "Uppdatera",

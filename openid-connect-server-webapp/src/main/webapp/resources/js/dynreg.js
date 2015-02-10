@@ -477,7 +477,7 @@ var DynRegEditView = Backbone.View.extend({
         });
         
         var contactView = new ListWidgetView({
-        	placeholder: 'new contact',
+        	placeholder: $.t('client.client-form.contacts-placeholder'),
         	collection: this.contactsCollection});
         $("#contacts .controls div", this.el).html(contactView.render().el);
         this.listWidgetViews.push(contactView);

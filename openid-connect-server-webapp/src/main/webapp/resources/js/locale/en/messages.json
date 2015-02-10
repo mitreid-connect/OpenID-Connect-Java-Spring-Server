@@ -37,6 +37,7 @@
             "client-secret": "Client Secret",
             "client-secret-placeholder": "Type a secret",
             "contacts": "Kontakter",
+            "contacts-help": "List of contacts for adminstrators of this client.",
             "contacts-placeholder": "new contact",
             "credentials": "Credentials",
             "crypto": {
@@ -200,11 +201,13 @@
     },
     "dynreg": {
         "client-id-placeholder": "Enter Client ID",
+        "configuration-url": "Client Configuration URL",
         "edit-existing": "Edit an existing client",
         "edit-existing-help": "Paste in your client ID and registration access token to access the client.",
         "new-client": "Register a new client",
         "or": " - OR - ",
-        "regtoken-placeholder": "Enter Registration Access Token"
+        "regtoken-placeholder": "Enter Registration Access Token",
+        "will-be-generated": "Will be generated"
     },
     "grant": {
         "more-info": "more information",

@@ -38,26 +38,30 @@
 
 <script type="text/html" id="tmpl-dynreg-client-form">
 
-    <h1><%-(client.client_id == null ? 'New' : 'Edit')%> Client</h1>
+    <% if (client.client_id == null) { %>
+        <h1 data-i18n="client.client-form.new"></h1>
+    <% } else { %>
+        <h1 data-i18n="client.client-form.edit"></h1>
+    <% } %>
 
 
     <form class="form-horizontal tabbable">
         <fieldset>
             <div class="well well-small">
-                <button class="btn btn-small btn-save btn-success"><i class="icon-ok-circle icon-white"></i> Save</button> &nbsp; 
-				<button class="btn btn-small btn-cancel"><i class="icon-ban-circle"></i> Cancel</button>
+                <button class="btn btn-small btn-save btn-success"><i class="icon-ok-circle icon-white"></i> <span data-i18n="common.save">Save</span></button> &nbsp; 
+                <button class="btn btn-small btn-cancel"><i class="icon-ban-circle"></i> <span data-i18n="common.cancel">Cancel</span></button>
 				<% if (client.client_id) { %>
-				<button class="btn btn-small btn-danger btn-delete pull-right"><i class="icon-trash icon-white"></i> Delete</button>
+				<button class="btn btn-small btn-danger btn-delete pull-right"><i class="icon-trash icon-white"></i> <span data-i18n="common.delete">Delete</span></button>
 				<% } %>
             </div>
 
 				<ul class="nav nav-tabs">
-					<li class="active"><a data-target="#client-main-tab" data-toggle="tab" href="#">Main</a></li>
-					<li><a data-target="#client-access-tab" data-toggle="tab" href="#">Access</a></li>
-					<li><a data-target="#client-secret-tab" data-toggle="tab" href="#">Credentials</a></li>
-					<li><a data-target="#client-crypto-tab" data-toggle="tab" href="#">Crypto</a></li>
-					<li><a data-target="#client-other-tab" data-toggle="tab" href="#">Other</a></li>
-					<li><a data-target="#client-json-tab" data-toggle="tab" href="#">JSON</a></li>
+                    <li class="active"><a data-target="#client-main-tab" data-toggle="tab" href="#" data-i18n="client.client-form.main">Main</a></li>
+                    <li><a data-target="#client-access-tab" data-toggle="tab" href="#" data-i18n="client.client-form.access">Access</a></li>
+                    <li><a data-target="#client-secret-tab" data-toggle="tab" href="#" data-i18n="client.client-form.credentials">Credentials</a></li>
+                    <li><a data-target="#client-crypto-tab" data-toggle="tab" href="#" data-i18n="client.client-form.cryptography">Crypto</a></li>
+                    <li><a data-target="#client-other-tab" data-toggle="tab" href="#" data-i18n="client.client-form.other">Other</a></li>
+                    <li><a data-target="#client-json-tab" data-toggle="tab" href="#">JSON</a></li>
 				</ul>
 
 <div class="tab-content">
@@ -72,19 +76,22 @@
 						records and you will need to register a new client.
 					</div>
 				</div>
-
 			</div>
+            <% } %>
 
             <div class="control-group" id="clientId">
-                <label class="control-label">Client ID</label>
+                <label class="control-label" data-i18n="client.client-form.client-id">Client ID</label>
                 <div class="controls">
-                    <pre><%-client.client_id ? client.client_id : '<code>Will be generated</code>'%></pre>
+                <% if (client.client_id) { %>
+                    <pre><%-client.client_id%></pre>
+                <% } else { %>
+                    <code data-i18n="dynreg.will-be-generated">Will be generated</code>
+                <% } %>
                 </div>
             </div>
 
-
 			<div class="control-group" id="requireClientSecret">
-				<label class="control-label">Client Secret</label>
+				<label class="control-label" data-i18n="client.client-form.client-secret">Client Secret</label>
     	        <div class="control-group">
             	    <div class="controls">
 						<% if (client.client_id) { %>
@@ -100,83 +107,53 @@
 								<% } %>
 							<% } %>
 						<% } else { %>
-							<pre>Will be generated</pre>
+                            <code data-i18n="dynreg.will-be-generated">Will be generated</code>
 						<% } %>
 	                </div>
     	        </div>
-
 			</div>
 
             <div class="control-group" id="clientConfigurationUri">
-                <label class="control-label">Client Configuration URL</label>
+                <label class="control-label" data-i18n="dynreg.configuration-url">Client Configuration URL</label>
                 <div class="controls">
-                    <pre><%-client.registration_client_uri ? client.registration_client_uri : 'Will be generated'%></pre>
+                <% if (client.registration_client_uri) { %>
+                    <pre><%-client.registration_client_uri%></pre>
+                <% } else { %>
+                    <code data-i18n="dynreg.will-be-generated">Will be generated</code>
+                <% } %>
                 </div>
             </div>
 
             <div class="control-group" id="registrationAccessToken">
-                <label class="control-label">Registration Access Token</label>
+                <label class="control-label" data-i18n="client.client-form.registration-access-token">Registration Access Token</label>
                 <div class="controls">
-                    <pre><%-client.registration_access_token ? client.registration_access_token : 'Will be generated'%></pre>
+                <% if (client.registration_access_token) { %>
+                    <pre><%-client.registration_access_token%></pre>
+                <% } else { %>
+                    <code data-i18n="dynreg.will-be-generated">Will be generated</code>
+                <% } %>
                 </div>
             </div>
-
-			<% } else { %>
-
-            <div class="control-group" id="clientId">
-                <label class="control-label">Client ID</label>
-                <div class="controls">
-                    <code>Will be generated</code>
-                </div>
-            </div>
-
-
-			<div class="control-group" id="requireClientSecret">
-				<label class="control-label">Client Secret</label>
-    	        <div class="control-group">
-            	    <div class="controls">
-						<code>Will be generated</code>
-	                </div>
-    	        </div>
-
-			</div>
-
-            <div class="control-group" id="clientConfigurationUri">
-                <label class="control-label">Client Configuration URL</label>
-                <div class="controls">
-                    <code>Will be generated</code>
-                </div>
-            </div>
-
-            <div class="control-group" id="registrationAccessToken">
-                <label class="control-label">Registration Access Token</label>
-                <div class="controls">
-                    <code>Will be generated</code>
-                </div>
-            </div>
-
-			<% } %>
-
 
             <div class="control-group" id="clientName">
-                <label class="control-label">Client name</label>
+                <label class="control-label" data-i18n="client.client-form.client-name">Client name</label>
                 <div class="controls">
                     <input value="<%-client.client_name ? client.client_name : ''%>" maxlength="100" type="text" class="" placeholder="Type something">
-                    <p class="help-block">Human-readable application name</p>
+                    <p class="help-block" data-i18n="client.client-form.client-name-help">Human-readable application name</p>
                 </div>
             </div>
 
             <div class="control-group" id="redirectUris">
-                <label class="control-label">Redirect URI(s)</label>
+                <label class="control-label" data-i18n="client.client-form.redirect-uris">Redirect URI(s)</label>
                 <div class="controls">
                 </div>
             </div>
 
 			<div class="control-group" id="logoUri">
-				<label class="control-label">Logo</label>
+				<label class="control-label" data-i18n="client.client-form.logo">Logo</label>
 				<div class="controls">
 					<input placeholder="https://" value="<%-client.logo_uri ? client.logo_uri : ''%>" maxlength="1000" type="text" class=""/>
-					<p class="help-block">URL that points to a logo image, will be displayed on approval page</p>
+					<p class="help-block" data-i18n="client.client-form.logo-help">URL that points to a logo image, will be displayed on approval page</p>
 				</div>
 			</div>
 
@@ -187,52 +164,48 @@
 			</div>
 
 			<div class="control-group" id="tosUri">
-				<label class="control-label">Terms of Service</label>
+				<label class="control-label" data-i18n="client.client-form.terms">Terms of Service</label>
 				<div class="controls">
 					<input placeholder="https://" value="<%-client.tos_uri ? client.tos_uri : ''%>" maxlength="1000" type="text" class=""/>
-					<p class="help-block">URL for the Terms of Service of this client, will be displayed to the user</p>
+					<p class="help-block" data-i18n="client.client-form.terms-help">URL for the Terms of Service of this client, will be displayed to the user</p>
 				</div>
 			</div>
 
 			<div class="control-group" id="policyUri">
-				<label class="control-label">Policy</label>
+				<label class="control-label" data-i18n="client.client-form.policy">Policy</label>
 				<div class="controls">
 					<input placeholder="https://" value="<%-client.policy_uri ? client.policy_uri : ''%>" maxlength="1000" type="text" class=""/>
-					<p class="help-block">URL for the Policy Statement of this client, will be displayed to the user</p>
+					<p class="help-block" data-i18n="client.client-form.policy-help">URL for the Policy Statement of this client, will be displayed to the user</p>
 				</div>
 			</div>
 
 			<div class="control-group" id="clientUri">
-				<label class="control-label">Home Page</label>
+				<label class="control-label" data-i18n="client.client-form.home">Home Page</label>
 				<div class="controls">
 					<input placeholder="https://" value="<%-client.client_uri ? client.client_uri : ''%>" maxlength="1000" type="text" class=""/>
-					<p class="help-block">URL for the client's home page, will be displayed to the user</p>
+					<p class="help-block" data-i18n="client.client-form.home-help">URL for the client's home page, will be displayed to the user</p>
 				</div>
 			</div>
 
 			<div class="control-group" id="applicationType">
-				<label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> Application Type</label>
+				<label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> <span data-i18n="client.client-form.type">Application Type</span></label>
 				<div class="controls">
 					<label class="radio inline">
-						<input type="radio" name="applicationType" value="NATIVE" <%-(client.application_type == 'NATIVE' ? 'checked' : '')%>> Native
+						<input type="radio" name="applicationType" value="NATIVE" <%-(client.application_type == 'NATIVE' ? 'checked' : '')%>> <span data-i18n="client.client-form.type-native">Native</span>
 					</label>
 					<label class="radio inline">
-						<input type="radio" name="applicationType" value="WEB" <%-(client.application_type == 'WEB' ? 'checked' : '')%>> Web
+						<input type="radio" name="applicationType" value="WEB" <%-(client.application_type == 'WEB' ? 'checked' : '')%>> <span data-i18n="client.client-form.type-web">Web</span>
 					</label>
 				</div>
 			</div>
 			
             <div class="control-group" id="contacts">
-                <label class="control-label">Contacts</label>
+                <label class="control-label" data-i18n="client.client-form.contacts">Contacts</label>
                 <div class="controls">
-					<p class="help-block">List of contacts for adminstrators of this client. Your email address (<%- userInfo.email %>) will be automatically added to this list on save.</p>
+					<p class="help-block" data-i18n="client.client-form.contacts-help">List of contacts for adminstrators of this client.</p>
 					<div></div>
                 </div>
             </div>
-
-
-
-
 	</div>
 	
 	<div class="tab-pane" id="client-access-tab">
@@ -559,10 +532,10 @@
 
 
             <div class="well well-small">
-                <button class="btn btn-small btn-save btn-success"><i class="icon-ok-circle icon-white"></i> Save</button> &nbsp; 
-				<button class="btn btn-small btn-cancel"><i class="icon-ban-circle"></i> Cancel</button>
+                <button class="btn btn-small btn-save btn-success"><i class="icon-ok-circle icon-white"></i> <span data-i18n="common.save">Save</span></button> &nbsp; 
+                <button class="btn btn-small btn-cancel"><i class="icon-ban-circle"></i> <span data-i18n="common.cancel">Cancel</span></button>
 				<% if (client.client_id) { %>
-				<button class="btn btn-small btn-danger btn-delete pull-right"><i class="icon-trash icon-white"></i> Delete</button>
+                <button class="btn btn-small btn-danger btn-delete pull-right"><i class="icon-trash icon-white"></i> <span data-i18n="common.delete">Delete</span></button>
 				<% } %>
             </div>
 
