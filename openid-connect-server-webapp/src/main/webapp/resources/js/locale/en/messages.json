@@ -222,7 +222,7 @@
         "or": " - OR - ",
         "regtoken-placeholder": "Enter Registration Access Token",
         "warning": "<strong>Warning!</strong> You MUST protect your <b>Client ID</b>, <b>Client Secret (if provided)</b>, and your <b>Registration Access Token</b>. If you lose your Client ID or Registration Access Token, you will no longer have access to your client's registration records and you will need to register a new client.",
-        "will-be-generated": "Will be generated",
+        "will-be-generated": "Will be generated"
     },
     "grant": {
         "manage-approved-sites": "Manage Approved Sites",
