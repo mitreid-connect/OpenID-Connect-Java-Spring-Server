@@ -224,6 +224,7 @@
         "new-client": "Registrera en ny klient",
         "or": " - ELLER - ",
         "regtoken-placeholder": "Mata in registration-access-token",
+        "warning": "<strong>Varning!</strong> Du MÅSTE bevara <b>ditt klient-ID</b>, <b>din klienthemlighet (om sådan tillhandahålls)</b> och <b>din registrerings-access-token</b>. Om du tappar bort ditt klient-ID eller regstrerings-access-token kommer du inte längre att ha tillgång till din klients registerinformation och måste då skapa en ny klient",
         "will-be-generated": "Kommer att genereras"
     },
     "grant": {
@@ -256,7 +257,8 @@
         "new": "Registrera en ny resurs",
         "edit": "Ändra en befintlig resurs",
         "new-resource": "Registrera en ny resurs",
-        "regtoken-placeholder": "Mata in registration-access-token"
+        "regtoken-placeholder": "Mata in registration-access-token",
+        "warning": "<strong>Varning!</strong> Du MÅSTE bevara <b>ditt klient-ID</b>, <b>din klienthemlighet (om sådan tillhandahålls)</b> och <b>din registrerings-access-token</b>. Om du tappar bort ditt klient-ID eller regstrerings-access-token kommer du inte längre att ha tillgång till din klients registerinformation och måste då skapa en ny klient"
     },
     "scope": {
         "manage": "Administrera system-scope",

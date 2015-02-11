@@ -221,7 +221,8 @@
         "new-client": "Register a new client",
         "or": " - OR - ",
         "regtoken-placeholder": "Enter Registration Access Token",
-        "will-be-generated": "Will be generated"
+        "warning": "<strong>Warning!</strong> You MUST protect your <b>Client ID</b>, <b>Client Secret (if provided)</b>, and your <b>Registration Access Token</b>. If you lose your Client ID or Registration Access Token, you will no longer have access to your client's registration records and you will need to register a new client.",
+        "will-be-generated": "Will be generated",
     },
     "grant": {
         "manage-approved-sites": "Manage Approved Sites",
@@ -256,7 +257,8 @@
         "new-resource": "Register a new protected resource",
         "or": " - OR - ",
         "regtoken-placeholder": "Enter Registration Access Token",
-        "will-be-generated": "Will be generated"
+        "will-be-generated": "Will be generated",
+        "warning": "<strong>Warning!</strong> You MUST protect your <b>Client ID</b>, <b>Client Secret (if provided)</b>, and your <b>Registration Access Token</b>. If you lose your Client ID or Registration Access Token, you will no longer have access to your client's registration records and you will need to register a new client."
     },
     "scope": {
         "manage": "Manage System Scopes",
