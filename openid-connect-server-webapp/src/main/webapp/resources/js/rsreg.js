@@ -81,6 +81,7 @@ var ResRegRootView = Backbone.View.extend({
     	
 	render:function() {
     	$(this.el).html($('#tmpl-rsreg').html());
+        $(this.el).i18n();
     	return this;
 	},
 	
@@ -429,6 +430,7 @@ var ResRegEditView = Backbone.View.extend({
         	});
         
 
+        $(this.el).i18n();
         return this;
 	}
 	

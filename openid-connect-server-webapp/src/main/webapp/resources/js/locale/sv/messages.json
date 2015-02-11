@@ -232,6 +232,17 @@
             "whitelisted-sites": "Vitlistade webbplatser"
         }
     },
+    "rsreg": {
+        "resource-id-placeholder": "Mata in resurs-ID",
+        "configuration-url": "Konfigurationslänk för klienten",
+        "edit-existing": "Ändra en befintlig resurs",
+        "edit-existing-help": "Klistra in ditt resurs-ID och registrerings-access-token för att komma åt resursens egenskaper.",
+        "invalid-access-token": "Ogiltig klient eller registration-access-token.",
+        "new-client": "Registrera en ny klient",
+        "or": " - ELLER - ",
+        "regtoken-placeholder": "Mata in registration-access-token",
+        "will-be-generated": "Kommer att genereras"
+    },
     "scope": {
         "scope-list": {
             "no-scopes": "INGA SCOPE"

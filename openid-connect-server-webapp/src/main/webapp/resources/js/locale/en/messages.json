@@ -231,6 +231,19 @@
             "whitelisted-sites": "Whitelisted Sites"
         }
     },
+    "rsreg": {
+        "resource-id-placeholder": "Enter Resource ID",
+        "configuration-url": "Client Configuration URL",
+        "edit": "Edit Protected Resource",
+        "edit-existing": "Edit an existing protected resource",
+        "edit-existing-help": "Paste in your ID and registration access token to access the resource's properties.",
+        "invalid-access-token": "Invalid client or registration access token.",
+        "new": "New Protected Resource",
+        "new-resource": "Register a new protected resource",
+        "or": " - OR - ",
+        "regtoken-placeholder": "Enter Registration Access Token",
+        "will-be-generated": "Will be generated"
+    },
     "scope": {
         "scope-list": {
             "no-scopes": "NO SCOPES"

@@ -21,16 +21,16 @@
 <div class="row-fluid">
 
 <div class="span5 well">
-	<button class="btn btn-large" id="newreg">Register a new protected resource</button>
+	<button class="btn btn-large" id="newreg" data-i18n="rsreg.new-resource">Register a new protected resource</button>
 </div>
 <div class="span2 text-center">
-	<strong> - OR - </strong>
+	<strong><span data-i18n="rsreg.or"> - OR - </span></strong>
 </div>
 <div class="span5 well">
-	<input type="text" id="clientId" placeholder="Enter Resource ID"> 
-	<input type="text" id="regtoken" placeholder="Enter Registration Access Token"> 
-	<button class="btn btn-large" id="editreg">Edit an existing protected resource</button>
-	<span class="help-block>Paste in your ID and registration access token to access the resource's properties.</span>
+	<input type="text" id="clientId" placeholder="Enter Resource ID" data-i18n="[placeholder]rsreg.resource-id-placeholder"> 
+	<input type="text" id="regtoken" placeholder="Enter Registration Access Token" data-i18n="[placeholder]rsreg.regtoken-placeholder"> 
+	<button class="btn btn-large" id="editreg" data-i18n="rsreg.edit-existing">Edit an existing protected resource</button>
+	<span class="help-block data-i18n="rsreg.edit-existing-help">Paste in your ID and registration access token to access the resource's properties.</span>
 </div>
 
 </script>
@@ -38,24 +38,28 @@
 
 <script type="text/html" id="tmpl-rsreg-resource-form">
 
-    <h1><%-(client.client_id == null ? 'New' : 'Edit')%> Protected Resource</h1>
+    <% if (client.client_id == null) { %>
+        <h1 data-i18n="rsreg.new"></h1>
+    <% } else { %>
+        <h1 data-i18n="rsreg.edit"></h1>
+    <% } %>
 
 
     <form class="form-horizontal tabbable">
         <fieldset>
             <div class="well well-small">
-                <button class="btn btn-small btn-save btn-success"><i class="icon-ok-circle icon-white"></i> Save</button> &nbsp; 
-				<button class="btn btn-small btn-cancel"><i class="icon-ban-circle"></i> Cancel</button>
-				<% if (client.client_id) { %>
-				<button class="btn btn-small btn-danger btn-delete pull-right"><i class="icon-trash icon-white"></i> Delete</button>
-				<% } %>
+                <button class="btn btn-small btn-save btn-success"><i class="icon-ok-circle icon-white"></i> <span data-i18n="common.save">Save</span></button> &nbsp; 
+                <button class="btn btn-small btn-cancel"><i class="icon-ban-circle"></i> <span data-i18n="common.cancel">Cancel</span></button>
+                <% if (client.client_id) { %>
+                <button class="btn btn-small btn-danger btn-delete pull-right"><i class="icon-trash icon-white"></i> <span data-i18n="common.delete">Delete</span></button>
+                <% } %>
             </div>
 
 				<ul class="nav nav-tabs">
-					<li class="active"><a data-target="#resource-main-tab" data-toggle="tab" href="#">Main</a></li>
-					<li><a data-target="#resource-access-tab" data-toggle="tab" href="#">Access</a></li>
-					<li><a data-target="#resource-secret-tab" data-toggle="tab" href="#">Credentials</a></li>
-					<li><a data-target="#resource-json-tab" data-toggle="tab" href="#">JSON</a></li>
+                    <li class="active"><a data-target="#resource-main-tab" data-toggle="tab" href="#" data-i18n="client.client-form.main">Main</a></li>
+                    <li><a data-target="#resource-access-tab" data-toggle="tab" href="#" data-i18n="client.client-form.access">Access</a></li>
+                    <li><a data-target="#resource-secret-tab" data-toggle="tab" href="#" data-i18n="client.client-form.credentials">Credentials</a></li>
+                    <li><a data-target="#resource-json-tab" data-toggle="tab" href="#">JSON</a></li>
 				</ul>
 
 <div class="tab-content">
@@ -295,11 +299,11 @@
 
 
             <div class="well well-small">
-                <button class="btn btn-small btn-save btn-success"><i class="icon-ok-circle icon-white"></i> Save</button> &nbsp; 
-				<button class="btn btn-small btn-cancel"><i class="icon-ban-circle"></i> Cancel</button>
-				<% if (client.client_id) { %>
-				<button class="btn btn-small btn-danger btn-delete pull-right"><i class="icon-trash icon-white"></i> Delete</button>
-				<% } %>
+                <button class="btn btn-small btn-save btn-success"><i class="icon-ok-circle icon-white"></i> <span data-i18n="common.save">Save</span></button> &nbsp; 
+                <button class="btn btn-small btn-cancel"><i class="icon-ban-circle"></i> <span data-i18n="common.cancel">Cancel</span></button>
+                <% if (client.client_id) { %>
+                <button class="btn btn-small btn-danger btn-delete pull-right"><i class="icon-trash icon-white"></i> <span data-i18n="common.delete">Delete</span></button>
+                <% } %>
             </div>
 
         </fieldset>
