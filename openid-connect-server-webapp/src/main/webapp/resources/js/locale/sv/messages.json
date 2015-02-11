@@ -160,7 +160,9 @@
             "user-info-signing-algorithm": "Signeringsalgoritm för user-info"
         },
         "client-table": {
+            "allow-introspection-tooltip": "Denna klient kan utföra token-introspektion",
             "confirm": "Är du säker på att du vill ta bort denna klient?",
+            "dynamically-registered-tooltip": "Denna klient registrerades dynamiskt. Klicka för att se registrerings-access-token",
             "match": {
                 "contacts": "kontakter",
                 "description": "beskrivning",

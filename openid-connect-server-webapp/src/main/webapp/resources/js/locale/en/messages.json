@@ -158,7 +158,9 @@
             "user-info-signing-algorithm": "User Info Endpoint Signing Algorithm"
         },
         "client-table": {
+            "allow-introspection-tooltip": "This client can perform token introspection",
             "confirm": "Are you sure sure you would like to delete this client?",
+            "dynamically-registered-tooltip": "This client was dynamically registered. Click to view registration access token",
             "match": {
                 "contacts": "contacts",
                 "description": "description",

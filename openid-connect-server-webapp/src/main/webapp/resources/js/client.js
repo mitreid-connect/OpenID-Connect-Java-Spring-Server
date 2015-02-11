@@ -250,8 +250,8 @@ var ClientView = Backbone.View.extend({
         
         $('.clientid-full', this.el).hide();
         
-        this.$('.dynamically-registered').tooltip({title: 'This client was dynamically registered. Click to view registration access token'});
-        this.$('.allow-introspection').tooltip({title: 'This client can perform token introspection'});
+        this.$('.dynamically-registered').tooltip({title: $.t('client.client-table.dynamically-registered-tooltip')});
+        this.$('.allow-introspection').tooltip({title: $.t('client.client-table.allow-introspection-tooltip')});
         
         this.updateMatched();
         $(this.el).i18n();
