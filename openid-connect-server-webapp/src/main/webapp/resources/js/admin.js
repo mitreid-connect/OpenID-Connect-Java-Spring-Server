@@ -500,8 +500,8 @@ var AppRouter = Backbone.Router.extend({
     	
         this.breadCrumbView.collection.reset();
         this.breadCrumbView.collection.add([
-            {text:"Home", href:""},
-            {text:"Manage Clients", href:"manage/#admin/clients"}
+            {text:$.t('admin.home'), href:""},
+            {text:$.t('client.manage'), href:"manage/#admin/clients"}
         ]);
         
         this.updateSidebar('admin/clients');
@@ -511,7 +511,7 @@ var AppRouter = Backbone.Router.extend({
         view.load(function() {
         	$('#content').html(view.render().el);
         	view.delegateEvents();
-        	setPageTitle("Manage Clients");        	
+        	setPageTitle($.t('client.manage'));
         });
 
     },
@@ -525,9 +525,9 @@ var AppRouter = Backbone.Router.extend({
 
         this.breadCrumbView.collection.reset();
         this.breadCrumbView.collection.add([
-            {text:"Home", href:""},
-            {text:"Manage Clients", href:"manage/#admin/clients"},
-            {text:"New", href:""}
+            {text:$.t('admin.home'), href:""},
+            {text:$.t('client.manage'), href:"manage/#admin/clients"},
+            {text:$.t('client.client-form.new'), href:""}
         ]);
 
         this.updateSidebar('admin/clients');
@@ -573,9 +573,9 @@ var AppRouter = Backbone.Router.extend({
 
         this.breadCrumbView.collection.reset();
         this.breadCrumbView.collection.add([
-            {text:"Home", href:""},
-            {text:"Manage Clients", href:"manage/#admin/clients"},
-            {text:"Edit", href:"manage/#admin/client/" + id}
+            {text:$.t('admin.home'), href:""},
+            {text:$.t('client.manage'), href:"manage/#admin/clients"},
+            {text:$.t('client.client-form.edit'), href:"manage/#admin/client/" + id}
         ]);
 
         this.updateSidebar('admin/clients');
@@ -647,8 +647,8 @@ var AppRouter = Backbone.Router.extend({
 
         this.breadCrumbView.collection.reset();
         this.breadCrumbView.collection.add([
-            {text:"Home", href:""},
-            {text:"Manage Whitelisted Sites", href:"manage/#admin/whitelists"}
+            {text:$.t('admin.home'), href:""},
+            {text:$.t('whitelist.manage'), href:"manage/#admin/whitelists"}
         ]);
         
         var view = new WhiteListListView({model:this.whiteListList, clientList: this.clientList, systemScopeList: this.systemScopeList});
@@ -657,7 +657,7 @@ var AppRouter = Backbone.Router.extend({
         	function() {
         		$('#content').html(view.render().el);
         		view.delegateEvents();
-        		setPageTitle("Manage Whitelists");
+        		setPageTitle($.t('whitelist.manage'));
         	}
         );
         
@@ -680,9 +680,9 @@ var AppRouter = Backbone.Router.extend({
 
         	this.breadCrumbView.collection.reset();
             this.breadCrumbView.collection.add([
-                {text:"Home", href:""},
-                {text:"Manage Whitelisted Sites", href:"manage/#admin/whitelists"},
-                {text:"Manage Whitelisted Sites", href:"manage/#admin/whitelist/new/" + cid}
+                {text:$.t('admin.home'), href:""},
+                {text:$.t('whitelist.manage'), href:"manage/#admin/whitelists"},
+                {text:$.t('whitelist.new'), href:"manage/#admin/whitelist/new/" + cid}
             ]);
             
             var whiteList = new WhiteListModel();
@@ -693,7 +693,7 @@ var AppRouter = Backbone.Router.extend({
             
         	this.whiteListFormView = new WhiteListFormView({model: whiteList, client: client, systemScopeList: this.systemScopeList});
         	$('#content').html(this.whiteListFormView.render().el);
-        	setPageTitle("Create New Whitelist");
+        	setPageTitle($.t('whitelist.new'));
         } else {
         	console.log('ERROR: no client found for ' + cid);
         }
@@ -710,9 +710,9 @@ var AppRouter = Backbone.Router.extend({
 
     	this.breadCrumbView.collection.reset();
         this.breadCrumbView.collection.add([
-            {text:"Home", href:""},
-            {text:"Manage Whitelisted Sites", href:"manage/#admin/whitelists"},
-            {text:"Manage Whitelisted Sites", href:"manage/#admin/whitelist/" + id}
+            {text:$.t('admin.home'), href:""},
+            {text:$.t('whitelist.manage'), href:"manage/#admin/whitelists"},
+            {text:$.t('whitelist.edit'), href:"manage/#admin/whitelist/" + id}
         ]);
         
         this.updateSidebar('admin/whitelists');
@@ -738,8 +738,8 @@ var AppRouter = Backbone.Router.extend({
     approvedSites:function() {
     	this.breadCrumbView.collection.reset();
         this.breadCrumbView.collection.add([
-            {text:"Home", href:""},
-            {text:"Manage Approved Sites", href:"manage/#user/approve"}
+            {text:$.t('admin.home'), href:""},
+            {text:$.t('grant.manage-approved-sites'), href:"manage/#user/approve"}
         ]);
 
         this.updateSidebar('user/approved');
@@ -758,8 +758,8 @@ var AppRouter = Backbone.Router.extend({
     tokens:function() {
     	this.breadCrumbView.collection.reset();
         this.breadCrumbView.collection.add([
-            {text:"Home", href:""},
-            {text:"Manage Active Tokens", href:"manage/#user/tokens"}
+            {text:$.t('admin.home'), href:""},
+            {text:$.t('token.manage'), href:"manage/#user/tokens"}
         ]);
         
         this.updateSidebar('user/tokens');
@@ -778,7 +778,7 @@ var AppRouter = Backbone.Router.extend({
     notImplemented:function(){
         this.breadCrumbView.collection.reset();
         this.breadCrumbView.collection.add([
-            {text:"Home", href:""}
+            {text:$.t('admin.home'), href:""}
         ]);
         
         this.updateSidebar('none');
@@ -795,8 +795,8 @@ var AppRouter = Backbone.Router.extend({
 
     	this.breadCrumbView.collection.reset();
         this.breadCrumbView.collection.add([
-            {text:"Home", href:""},
-            {text:"Manage Blacklisted Sites", href:"manage/#admin/blacklist"}
+            {text:$.t('admin.home'), href:""},
+            {text:$.t('admin.manage-blacklist'), href:"manage/#admin/blacklist"}
         ]);
         
         this.updateSidebar('admin/blacklist');
@@ -820,8 +820,8 @@ var AppRouter = Backbone.Router.extend({
 
     	this.breadCrumbView.collection.reset();
     	this.breadCrumbView.collection.add([
-             {text:"Home", href:""},
-             {text:"Manage System Scopes", href:"manage/#admin/scope"}
+             {text:$.t('admin.home'), href:""},
+             {text:$.t('scope.manage'), href:"manage/#admin/scope"}
         ]);
     	
         this.updateSidebar('admin/scope');
@@ -831,7 +831,7 @@ var AppRouter = Backbone.Router.extend({
     	view.load(function() {
     		$('#content').html(view.render().el);
     		view.delegateEvents();
-    		setPageTitle("Manage System Scopes");    		
+    		setPageTitle($.t('scope.manage'));    		
     	});
 
     },
@@ -845,9 +845,9 @@ var AppRouter = Backbone.Router.extend({
 
     	this.breadCrumbView.collection.reset();
     	this.breadCrumbView.collection.add([
-             {text:"Home", href:""},
-             {text:"Manage System Scopes", href:"manage/#admin/scope"},
-             {text:"New", href:"manage/#admin/scope/new"}
+             {text:$.t('admin.home'), href:""},
+             {text:$.t('scope.manage'), href:"manage/#admin/scope"},
+             {text:$.t('scope.system-scope-form.new'), href:"manage/#admin/scope/new"}
         ]);
     	
         this.updateSidebar('admin/scope');
@@ -856,7 +856,7 @@ var AppRouter = Backbone.Router.extend({
     	
     	this.systemScopeFormView = new SystemScopeFormView({model:scope});
     	$('#content').html(this.systemScopeFormView.render().el);
-    	setPageTitle("New System Scope");
+    	setPageTitle($.t('scope.system-scope-form.new'));
 
     },
     
@@ -869,9 +869,9 @@ var AppRouter = Backbone.Router.extend({
 
     	this.breadCrumbView.collection.reset();
     	this.breadCrumbView.collection.add([
-             {text:"Home", href:""},
-             {text:"Manage System Scopes", href:"manage/#admin/scope"},
-             {text:"Edit", href:"manage/#admin/scope/" + sid}
+             {text:$.t('admin.home'), href:""},
+             {text:$.t('scope.manage'), href:"manage/#admin/scope"},
+             {text:$.t('scope.system-scope-form.edit'), href:"manage/#admin/scope/" + sid}
         ]);
 
         this.updateSidebar('admin/scope');
@@ -880,15 +880,15 @@ var AppRouter = Backbone.Router.extend({
     	
     	this.systemScopeFormView = new SystemScopeFormView({model:scope});
     	$('#content').html(this.systemScopeFormView.render().el);
-    	setPageTitle("Edit System Scope");
+    	setPageTitle($.t('scope.system-scope-form.edit'));
     	
     },
     
     dynReg:function() {
     	this.breadCrumbView.collection.reset();
     	this.breadCrumbView.collection.add([
-             {text:"Home", href:""},
-             {text:"Client Registration", href:"manage/#dev/dynreg"}
+             {text:$.t('admin.home'), href:""},
+             {text:$.t('admin.self-service-client'), href:"manage/#dev/dynreg"}
         ]);
     	
     	var view = new DynRegRootView({systemScopeList: this.systemScopeList});
@@ -898,7 +898,7 @@ var AppRouter = Backbone.Router.extend({
     	view.load(function() {
     			$('#content').html(view.render().el);
     			
-    			setPageTitle("Self-service Client Registration");
+    			setPageTitle($.t('admin.self-service-client'));
     	});
     	
     },
@@ -906,9 +906,9 @@ var AppRouter = Backbone.Router.extend({
     newDynReg:function() {
     	this.breadCrumbView.collection.reset();
     	this.breadCrumbView.collection.add([
-             {text:"Home", href:""},
-             {text:"Client Registration", href:"manage/#dev/dynreg"},
-             {text:"New", href:"manage/#dev/dynreg/new"}
+             {text:$.t('admin.home'), href:""},
+             {text:$.t('admin.self-service-client'), href:"manage/#dev/dynreg"},
+             {text:$.t('dynreg.new-client'), href:"manage/#dev/dynreg/new"}
         ]);
     	
         this.updateSidebar('dev/dynreg');
@@ -946,9 +946,9 @@ var AppRouter = Backbone.Router.extend({
     editDynReg:function() {
     	this.breadCrumbView.collection.reset();
     	this.breadCrumbView.collection.add([
-             {text:"Home", href:""},
-             {text:"Client Registration", href:"manage/#dev/dynreg"},
-             {text:"Edit", href:"manage/#dev/dynreg/edit"}
+             {text:$.t('admin.home'), href:""},
+             {text:$.t('admin.self-service-client'), href:"manage/#dev/dynreg"},
+             {text:$.t('dynreg.edit-existing'), href:"manage/#dev/dynreg/edit"}
         ]);
     	
         this.updateSidebar('dev/dynreg');
@@ -960,8 +960,8 @@ var AppRouter = Backbone.Router.extend({
     resReg:function() {
     	this.breadCrumbView.collection.reset();
     	this.breadCrumbView.collection.add([
-             {text:"Home", href:""},
-             {text:"Protected Resource Registration", href:"manage/#dev/resource"}
+             {text:$.t('admin.home'), href:""},
+             {text:$.t('admin.self-service-resource'), href:"manage/#dev/resource"}
         ]);
     	
         this.updateSidebar('dev/resource');
@@ -970,7 +970,7 @@ var AppRouter = Backbone.Router.extend({
     	view.load(function() {
     			$('#content').html(view.render().el);
     			
-    			setPageTitle("Self-service Protected Resource Registration");
+    			setPageTitle($.t('admin.self-service-resource'));
     	});
     	
     },
@@ -978,9 +978,9 @@ var AppRouter = Backbone.Router.extend({
     newResReg:function() {
     	this.breadCrumbView.collection.reset();
     	this.breadCrumbView.collection.add([
-             {text:"Home", href:""},
-             {text:"Protected Resource Registration", href:"manage/#dev/resource"},
-             {text:"New", href:"manage/#dev/resource/new"}
+             {text:$.t('admin.home'), href:""},
+             {text:$.t('admin.self-service-resource'), href:"manage/#dev/resource"},
+             {text:$.t('rsreg.new'), href:"manage/#dev/resource/new"}
         ]);
     	
         this.updateSidebar('dev/resource');
@@ -1004,7 +1004,7 @@ var AppRouter = Backbone.Router.extend({
     	
     		$('#content').html(view.render().el);
     		view.delegateEvents();
-    		setPageTitle($.t('rsreg.new-resource'));
+    		setPageTitle($.t('rsreg.new'));
     		
     	});
     	
@@ -1013,22 +1013,22 @@ var AppRouter = Backbone.Router.extend({
     editResReg:function() {
     	this.breadCrumbView.collection.reset();
     	this.breadCrumbView.collection.add([
-             {text:"Home", href:""},
-             {text:"Protected Resource Registration", href:"manage/#dev/resource"},
-             {text:"Edit", href:"manage/#dev/resource/edit"}
+             {text:$.t('admin.home'), href:""},
+             {text:$.t('admin.self-service-resource'), href:"manage/#dev/resource"},
+             {text:$.t('rsreg.edit'), href:"manage/#dev/resource/edit"}
         ]);
     	
         this.updateSidebar('dev/resource');
         
-    	setPageTitle($.t('rsreg.edit-existing'));
+    	setPageTitle($.t('rsreg.edit'));
     	// note that this doesn't actually load the client, that's supposed to happen elsewhere...
     },
     
     profile:function() {
     	this.breadCrumbView.collection.reset();
     	this.breadCrumbView.collection.add([
-             {text:"Home", href:""},
-             {text:"Profile", href:"manage/#user/profile"}
+             {text:$.t('admin.home'), href:""},
+             {text:$.t('admin.user-profile.show'), href:"manage/#user/profile"}
         ]);
     
         this.updateSidebar('user/profile');
@@ -1036,7 +1036,7 @@ var AppRouter = Backbone.Router.extend({
     	this.userProfileView = new UserProfileView({model: getUserInfo()});
     	$('#content').html(this.userProfileView.render().el);
     	
-    	setPageTitle("View User Profile");
+    	setPageTitle($.t('admin.user-profile.show'));
     	
     },
     

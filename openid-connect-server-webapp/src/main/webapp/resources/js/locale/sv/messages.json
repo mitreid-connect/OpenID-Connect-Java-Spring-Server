@@ -4,12 +4,16 @@
         "blacklist-form": {
             "blacklisted-uris": "Svarlistade länkar"
         },
-        "manage-blacklist": "Administrera svartlista",
+        "home": "Hem",
+        "manage-blacklist": "Administrera svartlistade klienter",
         "list-widget": {
             "empty": "Det finns inget innehåll i denna lista."
         },
+        "self-service-client": "Self-service klientregistrering",
+        "self-service-resource": "Self-service registrering av skyddad resurs",
         "user-profile": {
             "claim": "Claim-namn:",
+            "show": "Visa profilinformation",
             "text": "Din användarprofil innehåller följande information:",
             "value": "Claim-värde:"
         }
@@ -178,6 +182,7 @@
             "search": "Sök...",
             "whitelist": "Vitlista"
         },
+        "manage": "Administrera klienter",
         "more-info": {
             "contacts": "Administrativ kontakt:",
             "home": "Webbplats:",
@@ -198,6 +203,7 @@
         "edit": "Ändra",
         "expires": "Går ut:",
         "information": "Information",
+        "new": "Ny",
         "refresh": "Uppdatera",
         "revoke": "Återkalla",
         "save": "Spara",
@@ -217,7 +223,7 @@
         "will-be-generated": "Kommer att genereras"
     },
     "grant": {
-        "manage-approved-sites": "Manage Approved Sites",
+        "manage-approved-sites": "Administrera godkända webbplatser",
         "refresh": "Uppdatera",
         "grant-table": {
             "active-tokens": "Antal nu aktiva åtkomst-tokens",
@@ -247,6 +253,7 @@
         "regtoken-placeholder": "Mata in registration-access-token"
     },
     "scope": {
+        "manage": "Administrera system-scope",
         "scope-list": {
             "no-scopes": "INGA SCOPE"
         },
@@ -276,7 +283,7 @@
         }
     },
     "token": {
-        "manage-tokens": "Manage Active Tokens",
+        "manage": "Administrera aktiva tokens",
         "token-table": {
             "access-tokens": "Access-token",
             "associated-id": "Denna access-token utfärdades med en tillhörande ID-token.",
@@ -296,6 +303,8 @@
     "whitelist": {
         "confirm": "Är du säker på att du vill ta bort den här klienten ifrån vitlistan?",
         "edit": "Redigera vitlista",
+        "manage": "Administrera vitlistade webbplatser",
+        "new": "Ny vitlista",
         "whitelist": "Vitlista",
         "whitelist-form": {
             "allowed-scopes": "Tillåtna scope",

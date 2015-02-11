@@ -4,12 +4,16 @@
         "blacklist-form": {
             "blacklisted-uris": "Blacklisted URIs"
         },
+        "home": "Home",
         "list-widget": {
             "empty": "There are no items in this list."
         },
-        "manage-blacklist": "Manage Blacklist",
+        "manage-blacklist": "Manage Blacklisted Clients",
+        "self-service-client": "Self-service Client Registration",
+        "self-service-resource": "Self-service Protected Resource Registration",
         "user-profile": {
             "claim": "Claim name:",
+            "show": "View User Profile",
             "text": "Your user profile has the following information:",
             "value": "Claim value:"
         }
@@ -176,6 +180,7 @@
             "search": "Search...",
             "whitelist": "Whitelist"
         },
+        "manage": "Manage Clients",
         "more-info": {
             "contacts": "Administrative Contacts:",
             "home": "Home Page:",
@@ -196,6 +201,7 @@
         "edit": "Edit",
         "expires": "Expires:",
         "information": "Information",
+        "new": "New",
         "revoke": "Revoke",
         "save": "Save",
         "scopes": "Scopes",
@@ -247,6 +253,7 @@
         "will-be-generated": "Will be generated"
     },
     "scope": {
+        "manage": "Manage System Scopes",
         "scope-list": {
             "no-scopes": "NO SCOPES"
         },
@@ -277,7 +284,7 @@
         }
     },
     "token": {
-        "manage": "Administrera aktiva tokens",
+        "manage": "Manage Active Tokens",
         "token-table": {
             "access-tokens": "Access Tokens",
             "associated-id": "This access token was issued with an associated ID token.",
@@ -298,6 +305,8 @@
     "whitelist": {
         "confirm": "Are you sure you want to delete this whitelist entry?",
         "edit": "Edit Whitelist",
+        "manage": "Manage Whitelisted Sites",
+        "new": "New Whitelist",
         "whitelist": "Whitelist",
         "whitelist-form": {
             "allowed-scopes": "Allowed Scopes",
