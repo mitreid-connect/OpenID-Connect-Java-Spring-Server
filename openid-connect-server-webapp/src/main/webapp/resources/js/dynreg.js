@@ -465,7 +465,7 @@ var DynRegEditView = Backbone.View.extend({
         });
 
         var scopeView = new ListWidgetView({
-        	placeholder: 'new scope', 
+        	placeholder: $.t('client.client-form.scope-placeholder'), 
         	autocomplete: _.uniq(_.flatten(this.options.systemScopeList.pluck("value"))), 
             collection: this.scopeCollection});
         $("#scope .controls",this.el).html(scopeView.render().el);
@@ -500,7 +500,7 @@ var DynRegEditView = Backbone.View.extend({
         });
         
         var defaultAcrView = new ListWidgetView({
-        	placeholder: 'new ACR value',
+        	placeholder: $.t('client.client-form.acr-values-placeholder'),
         	// TODO: autocomplete from spec
         	collection: this.defaultAcrValuesCollection});
         $('#defaultAcrValues .controls', this.el).html(defaultAcrView.render().el);

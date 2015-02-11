@@ -4,6 +4,7 @@
         "blacklist-form": {
             "blacklisted-uris": "Svarlistade länkar"
         },
+        "manage-blacklist": "Administrera svartlista",
         "list-widget": {
             "empty": "Det finns inget innehåll i denna lista."
         },
@@ -32,7 +33,7 @@
             "client-id-help": "Unik identifierare. Om du lämnar detta fält tomt kommer ett nytt ID genereras automatiskt",
             "client-id-placeholder": "Skriv någonting",
             "client-name": "Klientnamn",
-            "client-name-help": "Läsbar och begripligt namn på klienten",
+            "client-name-help": "Läsbart och begripligt namn på klienten",
             "client-name-placeholder": "Skriv någonting",
             "client-password": "lösenord",
             "client-secret": "Klienthemlighet",
@@ -65,7 +66,7 @@
             "generate-on-save": "Genereras vid sparande",
             "grant-types": "Grant-typer",
             "home": "Hemsida",
-            "home-help": "Länk till tjänstens hemsida. Den kommer att visas på bekräftelsesidan.",
+            "home-help": "Länk till tjänstens hemsida. Den visas på bekräftelsesidan.",
             "hours": "timmar",
             "id": "ID:",
             "id-token-crypto-algorithm": "Krypteringsalgoritm för ID-token",
@@ -79,7 +80,7 @@
             "jwk-set": "JWK Set",
             "jwk-set-help": "Länk till klientens JSON Webb-nyckel-set",
             "logo": "Logotyp",
-            "logo-help": "Länk till en logotyp. Den kommer att visas på bekräftelsesidan.",
+            "logo-help": "Länk till en logotyp. Den visas på bekräftelsesidan.",
             "main": "Basinformation",
             "max-age": "Max sessions-längd",
             "max-age-help": "Default maximal sessions-längd innan användaren tillfrågas igen",
@@ -118,6 +119,7 @@
                 "show-secret": "Visa hemlighet",
                 "unchanged": "oförändrad"
             },
+            "scope-placeholder": "new scope",
             "seconds": "sekunder",
             "secret-asymmetric-jwt": "Asymmetriskt signerad JWT assertion",
             "secret-http": "Klienthemlighet över HTTP Basic",
@@ -215,6 +217,7 @@
         "will-be-generated": "Kommer att genereras"
     },
     "grant": {
+        "manage-approved-sites": "Manage Approved Sites",
         "refresh": "Uppdatera",
         "grant-table": {
             "active-tokens": "Antal nu aktiva åtkomst-tokens",
@@ -234,14 +237,14 @@
     },
     "rsreg": {
         "resource-id-placeholder": "Mata in resurs-ID",
-        "configuration-url": "Konfigurationslänk för klienten",
+        "configuration-url": "Konfigurationslänk för resursen",
         "edit-existing": "Ändra en befintlig resurs",
         "edit-existing-help": "Klistra in ditt resurs-ID och registrerings-access-token för att komma åt resursens egenskaper.",
-        "invalid-access-token": "Ogiltig klient eller registration-access-token.",
-        "new-client": "Registrera en ny klient",
-        "or": " - ELLER - ",
-        "regtoken-placeholder": "Mata in registration-access-token",
-        "will-be-generated": "Kommer att genereras"
+        "invalid-access-token": "Ogiltig resurs eller registration-access-token.",
+        "new": "Registrera en ny resurs",
+        "edit": "Ändra en befintlig resurs",
+        "new-resource": "Registrera en ny resurs",
+        "regtoken-placeholder": "Mata in registration-access-token"
     },
     "scope": {
         "scope-list": {
@@ -273,6 +276,7 @@
         }
     },
     "token": {
+        "manage-tokens": "Manage Active Tokens",
         "token-table": {
             "access-tokens": "Access-token",
             "associated-id": "Denna access-token utfärdades med en tillhörande ID-token.",
@@ -291,6 +295,7 @@
     },
     "whitelist": {
         "confirm": "Är du säker på att du vill ta bort den här klienten ifrån vitlistan?",
+        "edit": "Redigera vitlista",
         "whitelist": "Vitlista",
         "whitelist-form": {
             "allowed-scopes": "Tillåtna scope",

@@ -70,7 +70,7 @@ var ResRegRootView = Backbone.View.extend({
     	}
 
     	$('#loadingbox').sheet('show');
-    	$('#loading').html('<span class="label" id="loading-scopes">Scopes</span> ');
+    	$('#loading').html('<span class="label" id="loading-scopes">' + $.t('common.scopes') + '</span> ');
 
     	$.when(this.options.systemScopeList.fetchIfNeeded({success:function(e) {$('#loading-scopes').addClass('label-success');}}))
     	.done(function() {
@@ -110,7 +110,7 @@ var ResRegRootView = Backbone.View.extend({
 	    	view.load(function() {
 	    		$('#content').html(view.render().el);
 	    		view.delegateEvents();
-	    		setPageTitle("Dynamically Register a New Protected Resource");
+	    		setPageTitle($.t('rsreg.new'));
 	    		app.navigate('dev/resource/edit', {trigger: true});	    		
 	    		self.remove();
 	    	});
@@ -154,7 +154,7 @@ var ResRegEditView = Backbone.View.extend({
     	}
 
     	$('#loadingbox').sheet('show');
-    	$('#loading').html('<span class="label" id="loading-scopes">Scopes</span> ');
+    	$('#loading').html('<span class="label" id="loading-scopes">' + $.t('common.scopes') + '</span> ');
 
     	$.when(this.options.systemScopeList.fetchIfNeeded({success:function(e) {$('#loading-scopes').addClass('label-success');}}))
     	.done(function() {
@@ -179,7 +179,7 @@ var ResRegEditView = Backbone.View.extend({
     deleteClient:function (e) {
     	e.preventDefault();
 
-        if (confirm("Are you sure sure you would like to delete this client?")) {
+        if (confirm($.t('client.client-table.confirm'))) {
             var self = this;
 
             this.model.destroy({
@@ -366,7 +366,7 @@ var ResRegEditView = Backbone.View.extend({
         });
 
         var scopeView = new ListWidgetView({
-        	placeholder: 'new scope', 
+        	placeholder: $.t('client.client-form.scope-placeholder'), 
         	autocomplete: _.uniq(_.flatten(this.options.systemScopeList.pluck("value"))), 
             collection: this.scopeCollection});
         $("#scope .controls",this.el).html(scopeView.render().el);
@@ -378,7 +378,7 @@ var ResRegEditView = Backbone.View.extend({
         });
         
         var contactView = new ListWidgetView({
-        	placeholder: 'new contact',
+        	placeholder: $.t('client.client-form.contacts-placeholder'),
         	collection: this.contactsCollection});
         $("#contacts .controls div", this.el).html(contactView.render().el);
         this.listWidgetViews.push(contactView);
@@ -402,7 +402,7 @@ var ResRegEditView = Backbone.View.extend({
         });
         
         var defaultAcrView = new ListWidgetView({
-        	placeholder: 'new ACR value',
+        	placeholder: $.t('client.client-form.acr-values-placeholder'),
         	// TODO: autocomplete from spec
         	collection: this.defaultAcrValuesCollection});
         $('#defaultAcrValues .controls', this.el).html(defaultAcrView.render().el);

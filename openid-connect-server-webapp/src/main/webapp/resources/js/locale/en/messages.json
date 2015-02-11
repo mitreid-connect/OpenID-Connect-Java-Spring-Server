@@ -7,6 +7,7 @@
         "list-widget": {
             "empty": "There are no items in this list."
         },
+        "manage-blacklist": "Manage Blacklist",
         "user-profile": {
             "claim": "Claim name:",
             "text": "Your user profile has the following information:",
@@ -118,6 +119,7 @@
                 "show-secret": "Show Secret",
                 "unchanged": "unchanged"
             },
+            "scope-placeholder": "nytt scope",
             "seconds": "seconds",
             "secret-asymmetric-jwt": "Asymmetrically-signed JWT assertion",
             "secret-http": "Client Secret over HTTP Basic",
@@ -212,7 +214,7 @@
         "will-be-generated": "Will be generated"
     },
     "grant": {
-        "more-info": "more information",
+        "manage-approved-sites": "Manage Approved Sites",
         "refresh": "Refresh",
         "grant-table": {
             "active-tokens": "Number of currently active access tokens",
@@ -275,6 +277,7 @@
         }
     },
     "token": {
+        "manage": "Administrera aktiva tokens",
         "token-table": {
             "access-tokens": "Access Tokens",
             "associated-id": "This access token was issued with an associated ID token.",
@@ -294,6 +297,7 @@
     },
     "whitelist": {
         "confirm": "Are you sure you want to delete this whitelist entry?",
+        "edit": "Edit Whitelist",
         "whitelist": "Whitelist",
         "whitelist-form": {
             "allowed-scopes": "Allowed Scopes",

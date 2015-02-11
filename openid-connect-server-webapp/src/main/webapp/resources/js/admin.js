@@ -560,7 +560,7 @@ var AppRouter = Backbone.Router.extend({
         	
         	
         	$('#content').html(view.render().el);
-        	setPageTitle("New Client");
+        	setPageTitle($.t('client.client-form.new'));
         });
     },
 
@@ -611,7 +611,7 @@ var AppRouter = Backbone.Router.extend({
     		        var view = new ClientFormView({model:client, systemScopeList: app.systemScopeList});
     		        view.load(function() {
     		        	$('#content').html(view.render().el);
-    		        	setPageTitle("Edit Client");
+    		        	setPageTitle($.t('client.client-form.edit'));
     		        });
     		        
     			
@@ -725,7 +725,7 @@ var AppRouter = Backbone.Router.extend({
             if (client != null) {
             	this.whiteListFormView = new WhiteListFormView({model: whiteList, client: client, systemScopeList: this.systemScopeList});
             	$('#content').html(this.whiteListFormView.render().el);
-            	setPageTitle("Edit Whitelist");
+            	setPageTitle($.t('whitelist.edit'));
 
             } else {
             	console.log('ERROR: no client found for ' + whiteList.get('clientId'));
@@ -749,7 +749,7 @@ var AppRouter = Backbone.Router.extend({
     	view.load( 
     		function(collection, response, options) {
     			$('#content').html(view.render().el);
-    	    	setPageTitle("Manage Approved Sites");
+    	    	setPageTitle($.t('grant.manage-approved-sites'));
     		}
     	);
     	
@@ -769,7 +769,7 @@ var AppRouter = Backbone.Router.extend({
         view.load(
     		function(collection, response, options) {
 				$('#content').html(view.render().el);
-				setPageTitle("Manage Active Tokens");
+    	    	setPageTitle($.t('token.manage'));
     		}
         );
         
@@ -806,7 +806,7 @@ var AppRouter = Backbone.Router.extend({
         view.load(
         	function(collection, response, options) {
         		$('#content').html(view.render().el);
-            	setPageTitle("Manage Blacklist");
+            	setPageTitle($.t('admin.manage-blacklist'));
         	}
         );
     },
@@ -937,7 +937,7 @@ var AppRouter = Backbone.Router.extend({
     	
     		$('#content').html(view.render().el);
     		view.delegateEvents();
-    		setPageTitle("Dynamically Register a New Client");
+    		setPageTitle($.t('dynreg.new-client'));
     		
     	});
     	
@@ -953,7 +953,7 @@ var AppRouter = Backbone.Router.extend({
     	
         this.updateSidebar('dev/dynreg');
         
-    	setPageTitle("Edit a Dynamically Registered Client");
+    	setPageTitle($.t('dynreg.edit-existing'));
     	// note that this doesn't actually load the client, that's supposed to happen elsewhere...
     },
     
@@ -1004,7 +1004,7 @@ var AppRouter = Backbone.Router.extend({
     	
     		$('#content').html(view.render().el);
     		view.delegateEvents();
-    		setPageTitle("Dynamically Register a New Protected Resource");
+    		setPageTitle($.t('rsreg.new-resource'));
     		
     	});
     	
@@ -1020,7 +1020,7 @@ var AppRouter = Backbone.Router.extend({
     	
         this.updateSidebar('dev/resource');
         
-    	setPageTitle("Edit a Dynamically Registered Protected Resource");
+    	setPageTitle($.t('rsreg.edit-existing'));
     	// note that this doesn't actually load the client, that's supposed to happen elsewhere...
     },
     
