@@ -34,6 +34,7 @@
 
     <!-- Load jQuery up here so that we can use in-page functions -->
     <script type="text/javascript" src="resources/js/lib/jquery.js"></script>
+    <script type="text/javascript" charset="UTF-8" src="resources/js/lib/moment-with-locales.js"></script>
     <script type="text/javascript" src="resources/js/lib/i18next-1.7.7.js"></script>
     <script type="text/javascript">
         $.i18n.init({
@@ -41,6 +42,7 @@
             lng: "${pageContext.response.locale}",
             resGetPath: "resources/js/locale/__lng__/messages.json"
         });
+        moment.locale("${pageContext.response.locale}");
     	// safely set the title of the application
     	function setPageTitle(title) {
     		document.title = "${config.topbarTitle} - " + title;
