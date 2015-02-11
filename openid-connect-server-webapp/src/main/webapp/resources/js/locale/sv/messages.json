@@ -232,10 +232,12 @@
             "authorized": "Auktoriserad:",
             "dynamically-registered": "Denna klient registrerades dynamiskt",
             "last-accessed": "Senast använd:",
+            "never": "Aldrig",
             "no-sites": "Du har inte godkänt någon webbplats.",
             "no-whitelisted": "Du har inte besökt några vitlistade webbplatser.",
             "pre-approved": "Detta är webbplatser som är godkända i förväg av en administratör.",
             "text": "Det här är webbplatser som du själv har godkänt. Om en av dessa webbplatser begär samma information igen blir det medgivet utan att du blir tillfrågad.",
+            "unknown": "Okänt",
             "whitelist-note": "<b>OBS:</b> Om du återkallar dem kommer de automatiskt att godkännas igen nästa gång du besöker dem utan att du blir tillfrågad.",
             "whitelisted-site": "Denna webbplats är vitlistad av en administratör",
             "whitelisted-sites": "Vitlistade webbplatser"

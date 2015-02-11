@@ -179,52 +179,42 @@ var ApprovedSiteView = Backbone.View.extend({
 		var accessDate = this.model.get("accessDate");
 		var timeoutDate = this.model.get("timeoutDate");
 		
-		var displayCreationDate = "Unknown";
+		var displayCreationDate = $.t('grant.grant-table.unknown');
 		var hoverCreationDate = "";
-		if (creationDate == null || !moment(creationDate).isValid()) {
-			displayCreationDate = "Unknown";
-			hoverCreationDate = "";
-		} else {
+		if ((creationDate != null) && moment(creationDate).isValid()) {
 			creationDate = moment(creationDate);
 			if (moment().diff(creationDate, 'months') < 6) {
 				displayCreationDate = creationDate.fromNow();
 			} else {
-				displayCreationDate = creationDate.format("MMMM Do, YYYY");
+				displayCreationDate = creationDate.format("LL");
 			}
-			hoverCreationDate = creationDate.format("MMMM Do, YYYY [at] h:mmA");
+			hoverCreationDate = creationDate.format("LLL");
 		}
 
-		var displayAccessDate = "Unknown";
+		var displayAccessDate = $.t('grant.grant-table.unknown');
 		var hoverAccessDate = "";
-		if (accessDate == null || !moment(accessDate).isValid()) {
-			displayAccessDate = "Unknown";
-			hoverAccessDate = "";
-		} else {
+		if ((accessDate != null) && moment(accessDate).isValid()) {
 			accessDate = moment(accessDate);
 			if (moment().diff(accessDate, 'months') < 6) {
 				displayAccessDate = accessDate.fromNow();
 			} else {
-				displayAccessDate = accessDate.format("MMMM Do, YYYY");
+				displayAccessDate = accessDate.format("LL");
 			}
-			hoverAccessDate = accessDate.format("MMMM Do, YYYY [at] h:mmA");
+			hoverAccessDate = accessDate.format("LLL");
 		}
 
-		var displayTimeoutDate = "Unknown";
+		var displayTimeoutDate = $.t('grant.grant-table.unknown');
 		var hoverTimeoutDate = "";
 		if (timeoutDate == null) {
-			displayTimeoutDate = "Never";
-			hoverTimeoutDate = "";
-		} else if(!moment(timeoutDate).isValid()) {
-			displayTimeoutDate = "Unknown";
-			hoverTimeoutDate = "";
-		} else {
+			displayTimeoutDate = $.t('grant.grant-table.never');
+		} else if(moment(timeoutDate).isValid()) {
 			timeoutDate = moment(timeoutDate);
 			if (moment().diff(timeoutDate, 'months') < 6) {
 				displayTimeoutDate = timeoutDate.fromNow();
 			} else {
-				displayTimeoutDate = timeoutDate.format("MMMM Do, YYYY");
+				displayTimeoutDate = timeoutDate.format("LL");
 			}
-			hoverTimeoutDate = timeoutDate.format("MMMM Do, YYYY [at] h:mmA");
+			hoverTimeoutDate = timeoutDate.format("LLL");
 		}
 
 		
