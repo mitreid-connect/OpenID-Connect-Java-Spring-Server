@@ -202,6 +202,8 @@
         "expires": "Expires:",
         "information": "Information",
         "new": "New",
+        "not-yet-implemented": "Not Yet Implemented",
+        "not-yet-implemented-content": "The value of this field will be saved with the client, but the server does not currently process anything with it. Future versions of the server library will make use of this.",
         "revoke": "Revoke",
         "save": "Save",
         "scopes": "Scopes",

@@ -204,6 +204,8 @@
         "expires": "Går ut:",
         "information": "Information",
         "new": "Ny",
+        "not-yet-implemented": "Ännu inte implementerad",
+        "not-yet-implemented-content": "Värdet i detta fält kommer att sparas i databasen, men servern gör för närvarande ingenting med det. Framtida versioner av server-biblioteket kommer att använda detta fält.",
         "refresh": "Uppdatera",
         "revoke": "Återkalla",
         "save": "Spara",
