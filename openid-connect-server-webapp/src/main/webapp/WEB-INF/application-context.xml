@@ -41,8 +41,15 @@
 		</mvc:message-converters>
 	</mvc:annotation-driven>
 
+    <bean id="localeResolver" class="org.springframework.web.servlet.i18n.FixedLocaleResolver">
+      <property name="defaultLocale" value="en" />
+    </bean>
+
+    <bean id="localeChangeInterceptor" class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor" />
+
 	<mvc:interceptors>
 		<!-- Inject the UserInfo into the current context -->
+		<ref bean="localeChangeInterceptor"/>
 		<bean id="userInfoInterceptor" class="org.mitre.openid.connect.web.UserInfoInterceptor" />
 		<bean id="serverConfigInterceptor" class="org.mitre.openid.connect.web.ServerConfigInterceptor" />
 	</mvc:interceptors>
@@ -201,13 +208,6 @@
 	
 	<bean id="clientAssertionAuthenticationProvider" class="org.mitre.openid.connect.assertion.JwtBearerAuthenticationProvider" />
 
-	<!--	<bean id="localeResolver" class="org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver"> -->
-	<bean id="localeResolver" class="org.springframework.web.servlet.i18n.FixedLocaleResolver">
-	  <property name="defaultLocale" value="en" />
-	</bean>
-
-	<bean id="localeChangeInterceptor" class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor" />
-	
 	<bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
 	  <property name="basenames">
 	    <list>
