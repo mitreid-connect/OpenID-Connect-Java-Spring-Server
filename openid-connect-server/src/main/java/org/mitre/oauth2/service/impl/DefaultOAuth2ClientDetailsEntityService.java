@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -29,7 +30,9 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.mitre.oauth2.model.ClientDetailsEntity;
+import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.repository.OAuth2ClientRepository;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
@@ -284,7 +287,7 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 	 *
 	 */
 	private class SectorIdentifierLoader extends CacheLoader<String, List<String>> {
-		private HttpClient httpClient = new DefaultHttpClient();
+		private HttpClient httpClient = HttpClientBuilder.create().useSystemProperties().build();
 		private HttpComponentsClientHttpRequestFactory httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
 		private RestTemplate restTemplate = new RestTemplate(httpFactory);
 		private JsonParser parser = new JsonParser();

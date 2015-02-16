@@ -34,7 +34,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.SystemDefaultHttpClient;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.jwt.signer.service.impl.JWKSetCacheService;
 import org.mitre.jwt.signer.service.impl.SymmetricCacheService;
@@ -307,10 +308,16 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 		}
 
 		// Handle Token Endpoint interaction
-		HttpClient httpClient = new SystemDefaultHttpClient();
-
-		httpClient.getParams().setParameter("http.socket.timeout", new Integer(httpSocketTimeout));
-
+		
+		HttpClient httpClient = HttpClientBuilder.create()
+				.useSystemProperties()
+				.setDefaultRequestConfig(
+						RequestConfig.custom()
+							.setSocketTimeout(httpSocketTimeout)
+							.build()
+						)
+				.build();
+		
 		HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
 
 		RestTemplate restTemplate;

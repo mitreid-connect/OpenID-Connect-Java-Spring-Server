@@ -31,7 +31,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.SystemDefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.mitre.openid.connect.client.service.ServerConfigurationService;
 import org.mitre.openid.connect.config.ServerConfiguration;
 import org.slf4j.Logger;
@@ -126,7 +126,9 @@ public class DynamicServerConfigurationService implements ServerConfigurationSer
 	 *
 	 */
 	private class OpenIDConnectServiceConfigurationFetcher extends CacheLoader<String, ServerConfiguration> {
-		private HttpClient httpClient = new SystemDefaultHttpClient();
+		private HttpClient httpClient = HttpClientBuilder.create()
+				.useSystemProperties()
+				.build();
 		private HttpComponentsClientHttpRequestFactory httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
 		private JsonParser parser = new JsonParser();
 

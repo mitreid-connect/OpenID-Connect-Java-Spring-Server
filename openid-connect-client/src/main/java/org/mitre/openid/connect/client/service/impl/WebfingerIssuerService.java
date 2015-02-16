@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.impl.client.SystemDefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.mitre.discovery.util.WebfingerURLNormalizer;
 import org.mitre.openid.connect.client.model.IssuerServiceResponse;
 import org.mitre.openid.connect.client.service.IssuerService;
@@ -172,7 +172,9 @@ public class WebfingerIssuerService implements IssuerService {
 	 *
 	 */
 	private class WebfingerIssuerFetcher extends CacheLoader<UriComponents, String> {
-		private HttpClient httpClient = new SystemDefaultHttpClient();
+		private HttpClient httpClient = HttpClientBuilder.create()
+				.useSystemProperties()
+				.build();
 		private HttpComponentsClientHttpRequestFactory httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
 		private JsonParser parser = new JsonParser();
 
