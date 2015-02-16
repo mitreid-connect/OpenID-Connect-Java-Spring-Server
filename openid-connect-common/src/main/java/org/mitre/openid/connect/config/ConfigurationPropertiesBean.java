@@ -16,6 +16,8 @@
  ******************************************************************************/
 package org.mitre.openid.connect.config;
 
+import java.util.Locale;
+
 import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
@@ -46,6 +48,8 @@ public class ConfigurationPropertiesBean {
 	private Long regTokenLifeTime;
 	
 	private boolean forceHttps = false;
+	
+	private Locale locale = Locale.getDefault();
 
 	public ConfigurationPropertiesBean() {
 
@@ -130,5 +134,19 @@ public class ConfigurationPropertiesBean {
 
 	public void setForceHttps(boolean forceHttps) {
 		this.forceHttps = forceHttps;
+	}
+
+	/**
+	 * @return the locale
+	 */
+	public Locale getLocale() {
+		return locale;
+	}
+
+	/**
+	 * @param locale the locale to set
+	 */
+	public void setLocale(Locale locale) {
+		this.locale = locale;
 	}
 }
