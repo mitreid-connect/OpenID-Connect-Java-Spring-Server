@@ -30,75 +30,55 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
-            <version>${org.springframework-version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
-            <version>${org.springframework-version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-core</artifactId>
-            <version>${spring.security.version}</version>
-            <exclusions>
-            	<exclusion>
-            		<groupId>org.springframework</groupId>
-            		<artifactId>*</artifactId>
-            	</exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>16.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.3.6</version>
         </dependency>
     	<dependency>
       		<groupId>org.springframework.security.oauth</groupId>
- 		 	<version>2.0.3.RELEASE</version>
       		<artifactId>spring-security-oauth2</artifactId>
 		</dependency>
         <dependency>
         	<groupId>com.nimbusds</groupId>
         	<artifactId>nimbus-jose-jwt</artifactId>
-        	<version>2.26.1</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>javax.persistence</artifactId>
-            <version>2.1.0</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>2.0</version>
         </dependency>
-	
-        <!-- Logging -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>${org.slf4j-version}</version>
         </dependency>
-        <!-- /Logging -->
-
         <dependency>
         	<groupId>com.fasterxml.jackson.core</groupId>
         	<artifactId>jackson-databind</artifactId>
-        	<version>2.3.4</version>
         </dependency>
         <dependency>
         	<groupId>com.fasterxml.jackson.core</groupId>
         	<artifactId>jackson-annotations</artifactId>
-        	<version>2.3.4</version>
         </dependency>
   </dependencies>
+  
   <packaging>jar</packaging>
+  
   <build>
     <plugins>
       <plugin>
