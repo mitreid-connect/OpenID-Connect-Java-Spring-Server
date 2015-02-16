@@ -32,7 +32,6 @@
 		<dependency>
 			<groupId>org.mitre</groupId>
 			<artifactId>openid-connect-common</artifactId>
-			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
 	<packaging>jar</packaging>
