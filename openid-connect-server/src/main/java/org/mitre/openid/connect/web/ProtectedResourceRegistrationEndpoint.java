@@ -147,7 +147,7 @@ public class ProtectedResourceRegistrationEndpoint {
 			newClient.setIdTokenEncryptedResponseEnc(null);
 			newClient.setIdTokenSignedResponseAlg(null);
 			newClient.setInitiateLoginUri(null);
-			newClient.setPostLogoutRedirectUri(null);
+			newClient.setPostLogoutRedirectUris(null);
 			newClient.setRequestObjectSigningAlg(null);
 			newClient.setRequireAuthTime(null);
 			newClient.setReuseRefreshToken(false);
@@ -314,7 +314,7 @@ public class ProtectedResourceRegistrationEndpoint {
 			newClient.setIdTokenEncryptedResponseEnc(null);
 			newClient.setIdTokenSignedResponseAlg(null);
 			newClient.setInitiateLoginUri(null);
-			newClient.setPostLogoutRedirectUri(null);
+			newClient.setPostLogoutRedirectUris(null);
 			newClient.setRequestObjectSigningAlg(null);
 			newClient.setRequireAuthTime(null);
 			newClient.setReuseRefreshToken(false);

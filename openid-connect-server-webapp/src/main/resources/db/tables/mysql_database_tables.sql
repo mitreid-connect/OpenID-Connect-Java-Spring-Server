@@ -137,6 +137,11 @@ CREATE TABLE IF NOT EXISTS client_redirect_uri (
 	redirect_uri VARCHAR(2048) 
 );
 
+CREATE TABLE IF NOT EXISTS client_post_logout_redirect_uri (
+	owner_id BIGINT,
+	post_logout_redirect_uri VARCHAR(2000)
+);
+
 CREATE TABLE IF NOT EXISTS refresh_token (
 	id BIGINT AUTO_INCREMENT PRIMARY KEY,
 	token_value VARCHAR(4096),

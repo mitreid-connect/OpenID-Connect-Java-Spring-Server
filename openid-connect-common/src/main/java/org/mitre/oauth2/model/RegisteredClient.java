@@ -549,17 +549,17 @@ public class RegisteredClient {
 	}
 	/**
 	 * @return
-	 * @see org.mitre.oauth2.model.ClientDetailsEntity#getPostLogoutRedirectUri()
+	 * @see org.mitre.oauth2.model.ClientDetailsEntity#getPostLogoutRedirectUris()
 	 */
-	public String getPostLogoutRedirectUri() {
-		return client.getPostLogoutRedirectUri();
+	public Set<String> getPostLogoutRedirectUris() {
+		return client.getPostLogoutRedirectUris();
 	}
 	/**
 	 * @param postLogoutRedirectUri
-	 * @see org.mitre.oauth2.model.ClientDetailsEntity#setPostLogoutRedirectUri(java.lang.String)
+	 * @see org.mitre.oauth2.model.ClientDetailsEntity#setPostLogoutRedirectUris(java.lang.String)
 	 */
-	public void setPostLogoutRedirectUri(String postLogoutRedirectUri) {
-		client.setPostLogoutRedirectUri(postLogoutRedirectUri);
+	public void setPostLogoutRedirectUris(Set<String> postLogoutRedirectUri) {
+		client.setPostLogoutRedirectUris(postLogoutRedirectUri);
 	}
 	/**
 	 * @return

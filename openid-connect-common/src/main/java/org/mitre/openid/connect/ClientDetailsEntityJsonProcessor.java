@@ -137,7 +137,7 @@ public class ClientDetailsEntityJsonProcessor {
 
 			c.setDefaultACRvalues(getAsStringSet(o, "default_acr_values"));
 			c.setInitiateLoginUri(getAsString(o, "initiate_login_uri"));
-			c.setPostLogoutRedirectUri(getAsString(o, "post_logout_redirect_uri"));
+			c.setPostLogoutRedirectUris(getAsStringSet(o, "post_logout_redirect_uris"));
 			c.setRequestUris(getAsStringSet(o, "request_uris"));
 
 			return c;
@@ -241,7 +241,7 @@ public class ClientDetailsEntityJsonProcessor {
 		o.addProperty("require_auth_time", c.getRequireAuthTime());
 		o.add("default_acr_values", getAsArray(c.getDefaultACRvalues()));
 		o.addProperty("initiate_login_uri", c.getInitiateLoginUri());
-		o.addProperty("post_logout_redirect_uri", c.getPostLogoutRedirectUri());
+		o.add("post_logout_redirect_uris", getAsArray(c.getPostLogoutRedirectUris()));
 		o.add("request_uris", getAsArray(c.getRequestUris()));
 		return o;
 	}

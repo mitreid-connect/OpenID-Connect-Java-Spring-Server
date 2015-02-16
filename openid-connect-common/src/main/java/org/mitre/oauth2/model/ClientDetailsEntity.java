@@ -118,7 +118,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	private Set<String> defaultACRvalues; // default_acr_values
 
 	private String initiateLoginUri; // initiate_login_uri
-	private String postLogoutRedirectUri; // post_logout_redirect_uri
+	private Set<String> postLogoutRedirectUris; // post_logout_redirect_uris
 
 	private Set<String> requestUris; // request_uris
 
@@ -983,17 +983,21 @@ public class ClientDetailsEntity implements ClientDetails {
 	/**
 	 * @return the postLogoutRedirectUri
 	 */
-	@Basic
+	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(
+			name="client_post_logout_redirect_uri",
+			joinColumns=@JoinColumn(name="owner_id")
+			)
 	@Column(name="post_logout_redirect_uri")
-	public String getPostLogoutRedirectUri() {
-		return postLogoutRedirectUri;
+	public Set<String> getPostLogoutRedirectUris() {
+		return postLogoutRedirectUris;
 	}
 
 	/**
 	 * @param postLogoutRedirectUri the postLogoutRedirectUri to set
 	 */
-	public void setPostLogoutRedirectUri(String postLogoutRedirectUri) {
-		this.postLogoutRedirectUri = postLogoutRedirectUri;
+	public void setPostLogoutRedirectUris(Set<String> postLogoutRedirectUri) {
+		this.postLogoutRedirectUris = postLogoutRedirectUri;
 	}
 
 	/**

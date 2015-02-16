@@ -122,6 +122,11 @@ CREATE TABLE IF NOT EXISTS client_request_uri (
 	request_uri VARCHAR(2000)
 );
 
+CREATE TABLE IF NOT EXISTS client_post_logout_redirect_uri (
+	owner_id BIGINT,
+	post_logout_redirect_uri VARCHAR(2000)
+);
+
 CREATE TABLE IF NOT EXISTS client_default_acr_value (
 	owner_id BIGINT,
 	default_acr_value VARCHAR(2000)

@@ -398,7 +398,7 @@ public class MITREidDataService_1_2 extends MITREidDataService_1_X {
                 writer.name("defaultACRValues");
                 writeNullSafeArray(writer, client.getDefaultACRvalues());
                 writer.name("intitateLoginUri").value(client.getInitiateLoginUri());
-                writer.name("postLogoutRedirectUri").value(client.getPostLogoutRedirectUri());
+                writer.name("postLogoutRedirectUri").value(client.getPostLogoutRedirectUris());
                 writer.name("requestUris");
                 writeNullSafeArray(writer, client.getRequestUris());
                 writer.name("description").value(client.getClientDescription());
@@ -1022,7 +1022,7 @@ public class MITREidDataService_1_2 extends MITREidDataService_1_X {
                         } else if (name.equals("initiateLoginUri")) {
                             client.setInitiateLoginUri(reader.nextString());
                         } else if (name.equals("postLogoutRedirectUri")) {
-                            client.setPostLogoutRedirectUri(reader.nextString());
+                            client.setPostLogoutRedirectUris(reader.nextString());
                         } else if (name.equals("requestUris")) {
                             Set<String> requestUris = readSet(reader);
                             client.setRequestUris(requestUris);
