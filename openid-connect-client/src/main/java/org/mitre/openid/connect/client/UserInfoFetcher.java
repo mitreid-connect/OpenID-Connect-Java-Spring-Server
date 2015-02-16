@@ -21,7 +21,7 @@ import java.net.URI;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.impl.client.SystemDefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.mitre.openid.connect.config.ServerConfiguration;
 import org.mitre.openid.connect.config.ServerConfiguration.UserInfoTokenMethod;
 import org.mitre.openid.connect.model.DefaultUserInfo;
@@ -66,7 +66,9 @@ public class UserInfoFetcher {
 		try {
 		
 			// if we got this far, try to actually get the userinfo
-			HttpClient httpClient = new SystemDefaultHttpClient();
+			HttpClient httpClient = HttpClientBuilder.create()
+					.useSystemProperties()
+					.build();
 			
 			HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
 			

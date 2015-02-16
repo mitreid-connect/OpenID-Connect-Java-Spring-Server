@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.SystemDefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.mitre.oauth2.introspectingfilter.service.IntrospectionAuthorityGranter;
 import org.mitre.oauth2.introspectingfilter.service.IntrospectionConfigurationService;
 import org.mitre.oauth2.introspectingfilter.service.impl.SimpleIntrospectionAuthorityGranter;
@@ -67,7 +67,9 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 	private IntrospectionConfigurationService introspectionConfigurationService;
 	private IntrospectionAuthorityGranter introspectionAuthorityGranter = new SimpleIntrospectionAuthorityGranter();
 
-	private HttpClient httpClient = new SystemDefaultHttpClient();
+	private HttpClient httpClient = HttpClientBuilder.create()
+			.useSystemProperties()
+			.build();
 	private HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
 
 	// Inner class to store in the hash map
