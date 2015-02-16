@@ -14,7 +14,6 @@ import org.springframework.context.i18n.LocaleContext;
 import org.springframework.context.i18n.TimeZoneAwareLocaleContext;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.i18n.AbstractLocaleContextResolver;
-import org.springframework.web.servlet.i18n.FixedLocaleResolver;
 
 /**
  * 

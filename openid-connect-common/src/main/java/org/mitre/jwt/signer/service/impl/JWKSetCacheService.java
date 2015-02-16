@@ -24,7 +24,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.SystemDefaultHttpClient;
 import org.mitre.jose.keystore.JWKSetKeyStore;
 import org.mitre.jwt.encryption.service.JwtEncryptionAndDecryptionService;
 import org.mitre.jwt.encryption.service.impl.DefaultJwtEncryptionAndDecryptionService;
