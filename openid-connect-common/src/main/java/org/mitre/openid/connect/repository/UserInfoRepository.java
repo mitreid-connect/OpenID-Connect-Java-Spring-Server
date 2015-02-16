@@ -16,8 +16,6 @@
  ******************************************************************************/
 package org.mitre.openid.connect.repository;
 
-import java.util.Collection;
-
 import org.mitre.openid.connect.model.UserInfo;
 
 /**
@@ -29,36 +27,20 @@ import org.mitre.openid.connect.model.UserInfo;
 public interface UserInfoRepository {
 
 	/**
-	 * Returns the UserInfo for the given subject
+	 * Persists a UserInfo object, if possible.
 	 * 
-	 * @param sub
-	 *            the subject of the UserInfo
-	 * @return a valid UserInfo if it exists, null otherwise
-	 */
-	public UserInfo getBySubject(String sub);
-
-	/**
-	 * Persists a UserInfo
-	 *
 	 * @param user
-	 * @return
+	 * @return the persisted object
 	 */
 	public UserInfo save(UserInfo userInfo);
 
 	/**
-	 * Removes the given UserInfo from the repository
+	 * Removes the given UserInfo from the repository, if possible.
 	 * 
 	 * @param userInfo
 	 *            the UserInfo object to remove
 	 */
 	public void remove(UserInfo userInfo);
-
-	/**
-	 * Return a collection of all UserInfos managed by this repository
-	 * 
-	 * @return the UserInfo collection, or null
-	 */
-	public Collection<? extends UserInfo> getAll();
 
 	/**
 	 * Get a UserInfo object by its preferred_username field

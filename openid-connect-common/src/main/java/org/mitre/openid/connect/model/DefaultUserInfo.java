@@ -33,9 +33,7 @@ import com.google.gson.JsonObject;
 @Entity
 @Table(name="user_info")
 @NamedQueries({
-	@NamedQuery(name="DefaultUserInfo.getAll", query = "select u from DefaultUserInfo u"),
-	@NamedQuery(name="DefaultUserInfo.getByUsername", query = "select u from DefaultUserInfo u WHERE u.preferredUsername = :username"),
-	@NamedQuery(name="DefaultUserInfo.getBySubject", query = "select u from DefaultUserInfo u WHERE u.sub = :sub")
+	@NamedQuery(name="DefaultUserInfo.getByUsername", query = "select u from DefaultUserInfo u WHERE u.preferredUsername = :username")
 })
 public class DefaultUserInfo implements UserInfo {
 

@@ -37,20 +37,11 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Michael Joseph Walsh
  *
  */
-@Repository
+@Repository("jpaUserInfoRepository")
 public class JpaUserInfoRepository implements UserInfoRepository {
 
 	@PersistenceContext
 	private EntityManager manager;
-
-	@Override
-	@Transactional
-	public UserInfo getBySubject(String sub) {
-		TypedQuery<DefaultUserInfo> query = manager.createNamedQuery("DefaultUserInfo.getBySubject", DefaultUserInfo.class);
-		query.setParameter("sub", sub);
-
-		return getSingleResult(query.getResultList());
-	}
 
 	@Override
 	@Transactional
@@ -70,15 +61,6 @@ public class JpaUserInfoRepository implements UserInfoRepository {
 		} else {
 			throw new IllegalArgumentException();
 		}
-	}
-
-	@Override
-	@Transactional
-	public Collection<DefaultUserInfo> getAll() {
-
-		TypedQuery<DefaultUserInfo> query = manager.createNamedQuery("DefaultUserInfo.getAll", DefaultUserInfo.class);
-
-		return query.getResultList();
 	}
 
 	/**

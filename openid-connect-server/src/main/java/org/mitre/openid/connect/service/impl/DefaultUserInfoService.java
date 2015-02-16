@@ -50,11 +50,6 @@ public class DefaultUserInfoService implements UserInfoService {
 	}
 
 	@Override
-	public UserInfo getBySubject(String userId) {
-		return userInfoRepository.getBySubject(userId);
-	}
-
-	@Override
 	public void remove(UserInfo userInfo) {
 		userInfoRepository.remove(userInfo);
 	}

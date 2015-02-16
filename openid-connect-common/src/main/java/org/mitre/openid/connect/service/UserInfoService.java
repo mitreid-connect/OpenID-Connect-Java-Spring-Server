@@ -35,15 +35,6 @@ public interface UserInfoService {
 	public void save(UserInfo userInfo);
 
 	/**
-	 * Get UserInfo for the Subject
-	 * 
-	 * @param sub
-	 *            subject for UserInfo
-	 * @return UserInfo for sub, or null
-	 */
-	public UserInfo getBySubject(String userId);
-
-	/**
 	 * Remove the UserInfo
 	 * 
 	 * @param userInfo
