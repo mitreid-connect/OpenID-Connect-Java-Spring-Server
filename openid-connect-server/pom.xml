@@ -15,40 +15,41 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>    
-    <artifactId>openid-connect-server</artifactId>
-    <name>OpenID Connect Server Library</name>
-    <parent>
-    	<groupId>org.mitre</groupId>
-    	<artifactId>openid-connect-parent</artifactId>
-    	<version>1.2.0-SNAPSHOT</version>
-    	<relativePath>..</relativePath>
-    </parent>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>${java-version}</source>
-                    <target>${java-version}</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-    <dependencies>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>openid-connect-server</artifactId>
+	<name>OpenID Connect Server Library</name>
+	<parent>
+		<groupId>org.mitre</groupId>
+		<artifactId>openid-connect-parent</artifactId>
+		<version>1.2.0-SNAPSHOT</version>
+		<relativePath>..</relativePath>
+	</parent>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>${java-version}</source>
+					<target>${java-version}</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	<dependencies>
 		<dependency>
 			<groupId>org.mitre</groupId>
 			<artifactId>openid-connect-common</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-tx</artifactId>
-        </dependency>
-		
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-tx</artifactId>
+		</dependency>
+
 	</dependencies>
-    <description>OpenID Connect server libraries for Spring and Spring Security.</description>
-    <url />
+	<description>OpenID Connect server libraries for Spring and Spring Security.</description>
+	<url />
 </project>
