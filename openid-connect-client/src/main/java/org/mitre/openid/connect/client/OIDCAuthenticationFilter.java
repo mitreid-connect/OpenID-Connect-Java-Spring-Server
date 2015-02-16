@@ -98,20 +98,31 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 	// Allow for time sync issues by having a window of X seconds.
 	private int timeSkewAllowance = 300;
 
-	@Autowired
+	// fetches and caches public keys for servers
+	@Autowired(required=false)
 	private JWKSetCacheService validationServices;
 
+	// creates JWT signer/validators for symmetric keys
 	@Autowired(required=false)
 	private SymmetricCacheService symmetricCacheService;
 
-	@Autowired(required=false)
+	// signer based on keypair for this client (for outgoing auth requests)
+	@Autowired
 	private JwtSigningAndValidationService authenticationSignerService;
 
-	// modular services to build out client filter
-	private ServerConfigurationService servers;
-	private ClientConfigurationService clients;
+
+	/*
+	 * Modular services to build out client filter.
+	 */
+	// looks at the request and determines which issuer to use for lookup on the server
 	private IssuerService issuerService;
+	// holds server information (auth URI, token URI, etc.), indexed by issuer
+	private ServerConfigurationService servers;
+	// holds client information (client ID, redirect URI, etc.), indexed by issuer of the server
+	private ClientConfigurationService clients;
+	// provides extra options to inject into the outbound request
 	private AuthRequestOptionsService authOptions = new StaticAuthRequestOptionsService(); // initialize with an empty set of options
+	// builds the actual request URI based on input from all other services
 	private AuthRequestUrlBuilder authRequestBuilder;
 
 	// private helpers to handle target link URLs
