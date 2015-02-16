@@ -97,6 +97,7 @@ public class JsonFileRegisteredClientService implements RegisteredClientService 
 	/**
 	 * Sync the map of clients out to disk.
 	 */
+	@SuppressWarnings("serial")
 	private void write() {
 		try {
 			if (!file.exists()) {
@@ -120,6 +121,7 @@ public class JsonFileRegisteredClientService implements RegisteredClientService 
 	/**
 	 * Load the map in from disk.
 	 */
+	@SuppressWarnings("serial")
 	private void load() {
 		try {
 			if (!file.exists()) {
