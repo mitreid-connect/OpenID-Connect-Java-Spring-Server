@@ -52,7 +52,7 @@ var DynRegClient = Backbone.Model.extend({
         default_acr_values:null,
         
         initiate_login_uri:null,
-        post_logout_redirect_uri:null,
+        post_logout_redirect_uris:null,
         
         request_uris:[],
         
@@ -177,6 +177,7 @@ var DynRegEditView = Backbone.View.extend({
         this.contactsCollection = new Backbone.Collection();
         this.defaultAcrValuesCollection = new Backbone.Collection();
         this.requestUrisCollection = new Backbone.Collection();
+        this.postLogoutRedirectUrisCollection = new Backbone.Collection();
         
         this.listWidgetViews = [];
 	},
@@ -370,7 +371,7 @@ var DynRegEditView = Backbone.View.extend({
             response_types: responseTypes,
             sector_identifier_uri: $('#sectorIdentifierUri input').val(),
             initiate_login_uri: $('#initiateLoginUri input').val(),
-            post_logout_redirect_uri: $('#postLogoutRedirectUri input').val(),
+            post_logout_redirect_uris: this.postLogoutRedirectUrisCollection.pluck('item'),
             require_auth_time: $('#requireAuthTime input').is(':checked'),
             default_max_age: parseInt($('#defaultMaxAge input').val()),
             contacts: contacts,
@@ -482,6 +483,19 @@ var DynRegEditView = Backbone.View.extend({
         $("#contacts .controls div", this.el).html(contactView.render().el);
         this.listWidgetViews.push(contactView);
         
+        // build and bind post-logout redirect URIs
+        _.each(this.model.get('post_logout_redirect_uris'), function(postLogoutRedirectUri) {
+        	_self.postLogoutRedirectUrisCollection.add(new URIModel({item:postLogoutRedirectUri}));
+        });
+        
+        var postLogoutRedirectUrisView = new ListWidgetView({
+        	type: 'uri',
+        	placeholder: 'https://',
+        	helpBlockText: $.t('client.client-form.post-logout-help'),
+        	collection: this.postLogoutRedirectUrisCollection});
+        $('#postLogoutRedirectUri .controls', this.el).html(postLogoutRedirectUrisView.render().el);
+        this.listWidgetViews.push(postLogoutRedirectUrisView);
+
         // build and bind request URIs
         _.each(this.model.get('request_uris'), function (requestUri) {
         	_self.requestUrisCollection.add(new URIModel({item:requestUri}));
