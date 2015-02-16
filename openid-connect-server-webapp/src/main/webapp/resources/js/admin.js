@@ -132,7 +132,7 @@ var ListWidgetChildView = Backbone.View.extend({
 
 var ListWidgetView = Backbone.View.extend({
 
-    tagName: "table",
+    tagName: "div",
 
     childView:ListWidgetChildView,
 
@@ -155,7 +155,6 @@ var ListWidgetView = Backbone.View.extend({
             this.template = _.template($('#tmpl-list-widget').html());
         }
 
-        this.$el.addClass("table table-condensed table-hover table-striped span4");
         this.collection.bind('add', this.render, this);
         this.collection.bind('remove', this.render, this);
     },
@@ -193,7 +192,8 @@ var ListWidgetView = Backbone.View.extend({
 
     render:function (eventName) {
 
-        this.$el.html(this.template({placeholder:this.options.placeholder}));
+        this.$el.html(this.template({placeholder:this.options.placeholder,
+        							helpBlockText:this.options.helpBlockText}));
 
         // bind autocomplete options
         if (this.options.autocomplete) {

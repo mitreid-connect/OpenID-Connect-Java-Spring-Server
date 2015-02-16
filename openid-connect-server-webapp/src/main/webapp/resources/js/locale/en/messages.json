@@ -110,6 +110,7 @@
             "registration-token-error": "There was a problem loading the registration access token for this client.",
             "request-object-signing-algorithm": "Request Object Signing Algorithm",
             "request-uri": "Request URIs",
+            "request-uri-help": "URIs containing request objects used by this client",
             "require-auth-time": "Require Authentication Time",
             "require-auth-time-label": "Always require that the auth_time claim be sent in the id token",
             "response-types": "Response Types",

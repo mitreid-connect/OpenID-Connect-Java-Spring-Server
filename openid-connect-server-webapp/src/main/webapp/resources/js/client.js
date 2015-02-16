@@ -1036,6 +1036,7 @@ var ClientFormView = Backbone.View.extend({
         
         var contactsView = new ListWidgetView({
         	placeholder: $.t("client.client-form.contacts-placeholder"),
+        	helpBlockText: $.t("client.client-form.contacts-help"),
         	collection: this.contactsCollection});
         $("#contacts .controls", this.el).html(contactsView.render().el);
         this.listWidgetViews.push(contactsView);
@@ -1061,6 +1062,7 @@ var ClientFormView = Backbone.View.extend({
         var requestUriView = new ListWidgetView({
         	type: 'uri',
         	placeholder: 'https://',
+        	helpBlockText: $.t('client.client-form.request-uri-help'),
         	collection: this.requestUrisCollection});
         $('#requestUris .controls', this.el).html(requestUriView.render().el);
         this.listWidgetViews.push(requestUriView);
