@@ -370,7 +370,7 @@ var ResRegEditView = Backbone.View.extend({
         	placeholder: $.t('client.client-form.contacts-placeholder'),
         	helpBlockText: $.t('client.client-form.contacts-help'),
         	collection: this.contactsCollection});
-        $("#contacts .controls div", this.el).html(contactView.render().el);
+        $("#contacts .controls", this.el).html(contactView.render().el);
         this.listWidgetViews.push(contactView);
         
         
