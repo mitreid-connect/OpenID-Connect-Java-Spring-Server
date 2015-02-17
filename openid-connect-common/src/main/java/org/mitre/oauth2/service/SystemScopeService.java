@@ -30,6 +30,7 @@ import org.mitre.oauth2.model.SystemScope;
 public interface SystemScopeService {
 
 	public static final String OFFLINE_ACCESS = "offline_access";
+	public static final Object OPENID_SCOPE = "openid";
 	public static final String ID_TOKEN_SCOPE = "id-token";
 	public static final String REGISTRATION_TOKEN_SCOPE = "registration-token";
 	public static final String RESOURCE_TOKEN_SCOPE = "resource-token";

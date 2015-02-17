@@ -19,6 +19,8 @@
  */
 package org.mitre.openid.connect.filter;
 
+import static org.mitre.openid.connect.request.ConnectRequestParameters.*;
+
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
@@ -56,6 +58,7 @@ import com.google.common.base.Strings;
  */
 @Component("authRequestFilter")
 public class AuthorizationRequestFilter extends GenericFilterBean {
+
 
 	private Logger logger = LoggerFactory.getLogger(AuthorizationRequestFilter.class);
 
@@ -99,19 +102,19 @@ public class AuthorizationRequestFilter extends GenericFilterBean {
 
 
 		// save the login hint to the session
-		if (authRequest.getExtensions().get("login_hint") != null) {
-			session.setAttribute("login_hint", authRequest.getExtensions().get("login_hint"));
+		if (authRequest.getExtensions().get(LOGIN_HINT) != null) {
+			session.setAttribute(LOGIN_HINT, authRequest.getExtensions().get(LOGIN_HINT));
 		} else {
-			session.removeAttribute("login_hint");
+			session.removeAttribute(LOGIN_HINT);
 		}
 
 
-		if (authRequest.getExtensions().get("prompt") != null) {
+		if (authRequest.getExtensions().get(PROMPT) != null) {
 			// we have a "prompt" parameter
-			String prompt = (String)authRequest.getExtensions().get("prompt");
+			String prompt = (String)authRequest.getExtensions().get(PROMPT);
 			List<String> prompts = Splitter.on(" ").splitToList(Strings.nullToEmpty(prompt));
 
-			if (prompts.contains("none")) {
+			if (prompts.contains(PROMPT_NONE)) {
 				logger.info("Client requested no prompt");
 				// see if the user's logged in
 				Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -126,7 +129,7 @@ public class AuthorizationRequestFilter extends GenericFilterBean {
 					response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied");
 					return;
 				}
-			} else if (prompts.contains("login")) {
+			} else if (prompts.contains(PROMPT_LOGIN)) {
 
 				// first see if the user's already been prompted in this session
 				if (session.getAttribute(PROMPTED) == null) {
@@ -157,12 +160,12 @@ public class AuthorizationRequestFilter extends GenericFilterBean {
 				chain.doFilter(req, res);
 			}
 
-		} else if (authRequest.getExtensions().get("max_age") != null ||
+		} else if (authRequest.getExtensions().get(MAX_AGE) != null ||
 				(client != null && client.getDefaultMaxAge() != null)) {
 
 			// default to the client's stored value, check the string parameter
 			Integer max = (client != null ? client.getDefaultMaxAge() : null);
-			String maxAge = (String) authRequest.getExtensions().get("max_age");
+			String maxAge = (String) authRequest.getExtensions().get(MAX_AGE);
 			if (maxAge != null) {
 				max = Integer.parseInt(maxAge);
 			}

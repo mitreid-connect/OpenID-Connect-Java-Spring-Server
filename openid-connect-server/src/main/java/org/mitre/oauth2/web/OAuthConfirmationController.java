@@ -19,6 +19,8 @@
  */
 package org.mitre.oauth2.web;
 
+import static org.mitre.openid.connect.request.ConnectRequestParameters.*;
+
 import java.security.Principal;
 import java.util.Date;
 import java.util.HashMap;
@@ -62,6 +64,7 @@ import com.google.gson.JsonObject;
 @SessionAttributes("authorizationRequest")
 public class OAuthConfirmationController {
 
+
 	@Autowired
 	private ClientDetailsEntityService clientService;
 
@@ -94,17 +97,17 @@ public class OAuthConfirmationController {
 
 		// Check the "prompt" parameter to see if we need to do special processing
 
-		String prompt = (String)authRequest.getExtensions().get("prompt");
-		List<String> prompts = Splitter.on(" ").splitToList(Strings.nullToEmpty(prompt));
-		if (prompts.contains("none")) {
+		String prompt = (String)authRequest.getExtensions().get(PROMPT);
+		List<String> prompts = Splitter.on(PROMPT_SEPARATOR).splitToList(Strings.nullToEmpty(prompt));
+		if (prompts.contains(PROMPT_NONE)) {
 			// we're not supposed to prompt, so "return an error"
 			logger.info("Client requested no prompt, returning 403 from confirmation endpoint");
 			model.put("code", HttpStatus.FORBIDDEN);
 			return HttpCodeView.VIEWNAME;
 		}
 
-		if (prompts.contains("consent")) {
-			model.put("consent", true);
+		if (prompts.contains(PROMPT_CONSENT)) {
+			model.put(PROMPT_CONSENT, true);
 		}
 
 		//AuthorizationRequest clientAuth = (AuthorizationRequest) model.remove("authorizationRequest");
@@ -190,7 +193,7 @@ public class OAuthConfirmationController {
 		}
 
 		// if the client is over a week old and has more than one registration, don't give such a big warning
-		// instead, tag as "Generally Recognized As Safe (gras)
+		// instead, tag as "Generally Recognized As Safe" (gras)
 		Date lastWeek = new Date(System.currentTimeMillis() - (60 * 60 * 24 * 7 * 1000));
 		if (count > 1 && client.getCreatedAt() != null && client.getCreatedAt().before(lastWeek)) {
 			model.put("gras", true);
@@ -199,7 +202,7 @@ public class OAuthConfirmationController {
 		}
 
 		// inject a random value for CSRF purposes
-		model.put("csrf", authRequest.getExtensions().get("csrf"));
+		model.put("csrf", authRequest.getExtensions().get(CSRF));
 
 		return "approve";
 	}

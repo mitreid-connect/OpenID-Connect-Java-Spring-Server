@@ -14,7 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package org.mitre.openid.connect;
+package org.mitre.openid.connect.request;
+
+import static org.mitre.openid.connect.request.ConnectRequestParameters.*;
 
 import java.text.ParseException;
 import java.util.Collections;
@@ -99,31 +101,31 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 
 		//Add extension parameters to the 'extensions' map
 
-		if (inputParams.containsKey("prompt")) {
-			request.getExtensions().put("prompt", inputParams.get("prompt"));
+		if (inputParams.containsKey(PROMPT)) {
+			request.getExtensions().put(PROMPT, inputParams.get(PROMPT));
 		}
-		if (inputParams.containsKey("nonce")) {
-			request.getExtensions().put("nonce", inputParams.get("nonce"));
+		if (inputParams.containsKey(NONCE)) {
+			request.getExtensions().put(NONCE, inputParams.get(NONCE));
 		}
 
-		if (inputParams.containsKey("claims")) {
-			JsonObject claimsRequest = parseClaimRequest(inputParams.get("claims"));
+		if (inputParams.containsKey(CLAIMS)) {
+			JsonObject claimsRequest = parseClaimRequest(inputParams.get(CLAIMS));
 			if (claimsRequest != null) {
-				request.getExtensions().put("claims", claimsRequest.toString());
+				request.getExtensions().put(CLAIMS, claimsRequest.toString());
 			}
 		}
 
-		if (inputParams.containsKey("max_age")) {
-			request.getExtensions().put("max_age", inputParams.get("max_age"));
+		if (inputParams.containsKey(MAX_AGE)) {
+			request.getExtensions().put(MAX_AGE, inputParams.get(MAX_AGE));
 		}
 
-		if (inputParams.containsKey("login_hint")) {
-			request.getExtensions().put("login_hint", inputParams.get("login_hint"));
+		if (inputParams.containsKey(LOGIN_HINT)) {
+			request.getExtensions().put(LOGIN_HINT, inputParams.get(LOGIN_HINT));
 		}
 
-		if (inputParams.containsKey("request")) {
-			request.getExtensions().put("request", inputParams.get("request"));
-			processRequestObject(inputParams.get("request"), request);
+		if (inputParams.containsKey(REQUEST)) {
+			request.getExtensions().put(REQUEST, inputParams.get(REQUEST));
+			processRequestObject(inputParams.get(REQUEST), request);
 		}
 
 		if (request.getClientId() != null) {
@@ -135,8 +137,8 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 					request.setScope(clientScopes);
 				}
 
-				if (request.getExtensions().get("max_age") == null && client.getDefaultMaxAge() != null) {
-					request.getExtensions().put("max_age", client.getDefaultMaxAge().toString());
+				if (request.getExtensions().get(MAX_AGE) == null && client.getDefaultMaxAge() != null) {
+					request.getExtensions().put(MAX_AGE, client.getDefaultMaxAge().toString());
 				}
 			} catch (OAuth2Exception e) {
 				logger.error("Caught OAuth2 exception trying to test client scopes and max age:", e);
@@ -146,7 +148,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 
 		// add CSRF protection to the request on first parse
 		String csrf = UUID.randomUUID().toString();
-		request.getExtensions().put("csrf", csrf);
+		request.getExtensions().put(CSRF, csrf);
 
 
 
@@ -172,7 +174,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 
 				// need to check clientId first so that we can load the client to check other fields
 				if (request.getClientId() == null) {
-					request.setClientId(signedJwt.getJWTClaimsSet().getStringClaim("client_id"));
+					request.setClientId(signedJwt.getJWTClaimsSet().getStringClaim(CLIENT_ID));
 				}
 
 				ClientDetailsEntity client = clientDetailsService.loadClientByClientId(request.getClientId());
@@ -234,7 +236,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 
 				// need to check clientId first so that we can load the client to check other fields
 				if (request.getClientId() == null) {
-					request.setClientId(plainJwt.getJWTClaimsSet().getStringClaim("client_id"));
+					request.setClientId(plainJwt.getJWTClaimsSet().getStringClaim(CLIENT_ID));
 				}
 
 				ClientDetailsEntity client = clientDetailsService.loadClientByClientId(request.getClientId());
@@ -267,7 +269,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 
 				// need to check clientId first so that we can load the client to check other fields
 				if (request.getClientId() == null) {
-					request.setClientId(encryptedJWT.getJWTClaimsSet().getStringClaim("client_id"));
+					request.setClientId(encryptedJWT.getJWTClaimsSet().getStringClaim(CLIENT_ID));
 				}
 
 				ClientDetailsEntity client = clientDetailsService.loadClientByClientId(request.getClientId());
@@ -288,7 +290,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 
 			ReadOnlyJWTClaimsSet claims = jwt.getJWTClaimsSet();
 
-			Set<String> responseTypes = OAuth2Utils.parseParameterList(claims.getStringClaim("response_type"));
+			Set<String> responseTypes = OAuth2Utils.parseParameterList(claims.getStringClaim(RESPONSE_TYPE));
 			if (responseTypes != null && !responseTypes.isEmpty()) {
 				if (!responseTypes.equals(request.getResponseTypes())) {
 					logger.info("Mismatch between request object and regular parameter for response_type, using request object");
@@ -296,7 +298,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 				request.setResponseTypes(responseTypes);
 			}
 
-			String redirectUri = claims.getStringClaim("redirect_uri");
+			String redirectUri = claims.getStringClaim(REDIRECT_URI);
 			if (redirectUri != null) {
 				if (!redirectUri.equals(request.getRedirectUri())) {
 					logger.info("Mismatch between request object and regular parameter for redirect_uri, using request object");
@@ -304,7 +306,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 				request.setRedirectUri(redirectUri);
 			}
 
-			String state = claims.getStringClaim("state");
+			String state = claims.getStringClaim(STATE);
 			if(state != null) {
 				if (!state.equals(request.getState())) {
 					logger.info("Mismatch between request object and regular parameter for state, using request object");
@@ -312,28 +314,28 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 				request.setState(state);
 			}
 
-			String nonce = claims.getStringClaim("nonce");
+			String nonce = claims.getStringClaim(NONCE);
 			if(nonce != null) {
-				if (!nonce.equals(request.getExtensions().get("nonce"))) {
+				if (!nonce.equals(request.getExtensions().get(NONCE))) {
 					logger.info("Mismatch between request object and regular parameter for nonce, using request object");
 				}
-				request.getExtensions().put("nonce", nonce);
+				request.getExtensions().put(NONCE, nonce);
 			}
 
-			String display = claims.getStringClaim("display");
+			String display = claims.getStringClaim(DISPLAY);
 			if (display != null) {
-				if (!display.equals(request.getExtensions().get("display"))) {
+				if (!display.equals(request.getExtensions().get(DISPLAY))) {
 					logger.info("Mismatch between request object and regular parameter for display, using request object");
 				}
-				request.getExtensions().put("display", display);
+				request.getExtensions().put(DISPLAY, display);
 			}
 
-			String prompt = claims.getStringClaim("prompt");
+			String prompt = claims.getStringClaim(PROMPT);
 			if (prompt != null) {
-				if (!prompt.equals(request.getExtensions().get("prompt"))) {
+				if (!prompt.equals(request.getExtensions().get(PROMPT))) {
 					logger.info("Mismatch between request object and regular parameter for prompt, using request object");
 				}
-				request.getExtensions().put("prompt", prompt);
+				request.getExtensions().put(PROMPT, prompt);
 			}
 
 			Set<String> scope = OAuth2Utils.parseParameterList(claims.getStringClaim("scope"));
@@ -344,21 +346,21 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 				request.setScope(scope);
 			}
 
-			JsonObject claimRequest = parseClaimRequest(claims.getStringClaim("claims"));
+			JsonObject claimRequest = parseClaimRequest(claims.getStringClaim(CLAIMS));
 			if (claimRequest != null) {
-				if (!claimRequest.equals(parseClaimRequest(request.getExtensions().get("claims").toString()))) {
+				if (!claimRequest.equals(parseClaimRequest(request.getExtensions().get(CLAIMS).toString()))) {
 					logger.info("Mismatch between request object and regular parameter for claims, using request object");
 				}
 				// we save the string because the object might not be a Java Serializable, and we can parse it easily enough anyway
-				request.getExtensions().put("claims", claimRequest.toString());
+				request.getExtensions().put(CLAIMS, claimRequest.toString());
 			}
 
-			String loginHint = claims.getStringClaim("login_hint");
+			String loginHint = claims.getStringClaim(LOGIN_HINT);
 			if (loginHint != null) {
-				if (!loginHint.equals(request.getExtensions().get("login_hint"))) {
+				if (!loginHint.equals(request.getExtensions().get(LOGIN_HINT))) {
 					logger.info("Mistmatch between request object and regular parameter for login_hint, using requst object");
 				}
-				request.getExtensions().put("login_hint", loginHint);
+				request.getExtensions().put(LOGIN_HINT, loginHint);
 			}
 
 		} catch (ParseException e) {

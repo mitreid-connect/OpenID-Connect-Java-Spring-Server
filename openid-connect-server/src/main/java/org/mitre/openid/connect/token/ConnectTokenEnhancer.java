@@ -25,6 +25,7 @@ import org.mitre.jwt.signer.service.impl.SymmetricKeyJWTValidatorCacheService;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
+import org.mitre.oauth2.service.SystemScopeService;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.service.ApprovedSiteService;
@@ -113,7 +114,7 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 		 * Also, there must be a user authentication involved in the request for it to be considered
 		 * OIDC and not OAuth, so we check for that as well.
 		 */
-		if (originalAuthRequest.getScope().contains("openid")
+		if (originalAuthRequest.getScope().contains(SystemScopeService.OPENID_SCOPE)
 				&& !authentication.isClientOnly()) {
 
 			String username = authentication.getName();

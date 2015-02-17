@@ -19,10 +19,8 @@ package org.mitre.oauth2.service.impl;
 import static com.google.common.collect.Maps.newLinkedHashMap;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Map;
 
-import javax.swing.text.DateFormatter;
 
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
@@ -43,22 +41,20 @@ public class DefaultIntrospectionResultAssembler implements IntrospectionResultA
 
 	private static Logger log = LoggerFactory.getLogger(DefaultIntrospectionResultAssembler.class);
 
-	private static DateFormatter dateFormat = new DateFormatter(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ"));
-
 	@Override
 	public Map<String, Object> assembleFrom(OAuth2AccessTokenEntity accessToken, UserInfo userInfo) {
 
 		Map<String, Object> result = newLinkedHashMap();
 		OAuth2Authentication authentication = accessToken.getAuthenticationHolder().getAuthentication();
 
-		result.put("active", true);
+		result.put(ACTIVE, true);
 
-		result.put("scope", Joiner.on(" ").join(accessToken.getScope()));
+		result.put(SCOPE, Joiner.on(SCOPE_SEPARATOR).join(accessToken.getScope()));
 
 		if (accessToken.getExpiration() != null) {
 			try {
-				result.put("expires_at", dateFormat.valueToString(accessToken.getExpiration()));
-				result.put("exp", accessToken.getExpiration().getTime() / 1000L);
+				result.put(EXPIRES_AT, dateFormat.valueToString(accessToken.getExpiration()));
+				result.put(EXP, accessToken.getExpiration().getTime() / 1000L);
 			} catch (ParseException e) {
 				log.error("Parse exception in token introspection", e);
 			}
@@ -66,17 +62,17 @@ public class DefaultIntrospectionResultAssembler implements IntrospectionResultA
 
 		if (userInfo != null) {
 			// if we have a UserInfo, use that for the subject
-			result.put("sub", userInfo.getSub());
+			result.put(SUB, userInfo.getSub());
 		} else {
 			// otherwise, use the authentication's username
-			result.put("sub", authentication.getName());
+			result.put(SUB, authentication.getName());
 		}
 
-		result.put("user_id", authentication.getName());
+		result.put(USER_ID, authentication.getName());
 
-		result.put("client_id", authentication.getOAuth2Request().getClientId());
+		result.put(CLIENT_ID, authentication.getOAuth2Request().getClientId());
 
-		result.put("token_type", accessToken.getTokenType());
+		result.put(TOKEN_TYPE, accessToken.getTokenType());
 
 		return result;
 	}
@@ -87,14 +83,14 @@ public class DefaultIntrospectionResultAssembler implements IntrospectionResultA
 		Map<String, Object> result = newLinkedHashMap();
 		OAuth2Authentication authentication = refreshToken.getAuthenticationHolder().getAuthentication();
 
-		result.put("active", true);
+		result.put(ACTIVE, true);
 
-		result.put("scope", Joiner.on(" ").join(authentication.getOAuth2Request().getScope()));
+		result.put(SCOPE, Joiner.on(SCOPE_SEPARATOR).join(authentication.getOAuth2Request().getScope()));
 
 		if (refreshToken.getExpiration() != null) {
 			try {
-				result.put("expires_at", dateFormat.valueToString(refreshToken.getExpiration()));
-				result.put("exp", refreshToken.getExpiration().getTime() / 1000L);
+				result.put(EXPIRES_AT, dateFormat.valueToString(refreshToken.getExpiration()));
+				result.put(EXP, refreshToken.getExpiration().getTime() / 1000L);
 			} catch (ParseException e) {
 				log.error("Parse exception in token introspection", e);
 			}
@@ -103,15 +99,15 @@ public class DefaultIntrospectionResultAssembler implements IntrospectionResultA
 
 		if (userInfo != null) {
 			// if we have a UserInfo, use that for the subject
-			result.put("sub", userInfo.getSub());
+			result.put(SUB, userInfo.getSub());
 		} else {
 			// otherwise, use the authentication's username
-			result.put("sub", authentication.getName());
+			result.put(SUB, authentication.getName());
 		}
 
-		result.put("user_id", authentication.getName());
+		result.put(USER_ID, authentication.getName());
 
-		result.put("client_id", authentication.getOAuth2Request().getClientId());
+		result.put(CLIENT_ID, authentication.getOAuth2Request().getClientId());
 
 		return result;
 	}

@@ -35,6 +35,7 @@ import javax.swing.text.DateFormatter;
 import org.junit.Test;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
+import org.mitre.oauth2.service.IntrospectionResultAssembler;
 import org.mitre.openid.connect.model.UserInfo;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
@@ -43,7 +44,7 @@ import com.google.common.collect.ImmutableMap;
 
 public class TestDefaultIntrospectionResultAssembler {
 
-	private DefaultIntrospectionResultAssembler assembler = new DefaultIntrospectionResultAssembler();
+	private IntrospectionResultAssembler assembler = new DefaultIntrospectionResultAssembler();
 
 	private static DateFormatter dateFormat = new DateFormatter(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ"));
 

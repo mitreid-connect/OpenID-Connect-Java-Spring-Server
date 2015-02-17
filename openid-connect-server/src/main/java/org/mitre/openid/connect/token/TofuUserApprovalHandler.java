@@ -16,6 +16,8 @@
  *******************************************************************************/
 package org.mitre.openid.connect.token;
 
+import static org.mitre.openid.connect.request.ConnectRequestParameters.*;
+
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -101,8 +103,8 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 
 				// check the value of the CSRF parameter
 
-				if (authorizationRequest.getExtensions().get("csrf") != null) {
-					if (authorizationRequest.getExtensions().get("csrf").equals(authorizationRequest.getApprovalParameters().get("csrf"))) {
+				if (authorizationRequest.getExtensions().get(CSRF) != null) {
+					if (authorizationRequest.getExtensions().get(CSRF).equals(authorizationRequest.getApprovalParameters().get(CSRF))) {
 
 						// make sure the user is actually authenticated
 						return userAuthentication.isAuthenticated();
@@ -139,9 +141,9 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 		boolean alreadyApproved = false;
 
 		// find out if we're supposed to force a prompt on the user or not
-		String prompt = (String) authorizationRequest.getExtensions().get("prompt");
-		List<String> prompts = Splitter.on(" ").splitToList(Strings.nullToEmpty(prompt));
-		if (!prompts.contains("consent")) {
+		String prompt = (String) authorizationRequest.getExtensions().get(PROMPT);
+		List<String> prompts = Splitter.on(PROMPT_SEPARATOR).splitToList(Strings.nullToEmpty(prompt));
+		if (!prompts.contains(PROMPT_SEPARATOR)) {
 			// if the prompt parameter is set to "consent" then we can't use approved sites or whitelisted sites
 			// otherwise, we need to check them below
 
@@ -157,7 +159,7 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 						ap.setAccessDate(new Date());
 						approvedSiteService.save(ap);
 
-						authorizationRequest.getExtensions().put("approved_site", ap.getId());
+						authorizationRequest.getExtensions().put(APPROVED_SITE, ap.getId());
 						authorizationRequest.setApproved(true);
 						alreadyApproved = true;
 
@@ -172,7 +174,7 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 
 					//Create an approved site
 					ApprovedSite newSite = approvedSiteService.createApprovedSite(clientId, userId, null, ws.getAllowedScopes(), ws);
-					authorizationRequest.getExtensions().put("approved_site", newSite.getId());
+					authorizationRequest.getExtensions().put(APPROVED_SITE, newSite.getId());
 					authorizationRequest.setApproved(true);
 
 					setAuthTime(authorizationRequest);
@@ -194,8 +196,8 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 
 		// This must be re-parsed here because SECOAUTH forces us to call things in a strange order
 		if (Boolean.parseBoolean(authorizationRequest.getApprovalParameters().get("user_oauth_approval"))
-				&& authorizationRequest.getExtensions().get("csrf") != null
-				&& authorizationRequest.getExtensions().get("csrf").equals(authorizationRequest.getApprovalParameters().get("csrf"))) {
+				&& authorizationRequest.getExtensions().get(CSRF) != null
+				&& authorizationRequest.getExtensions().get(CSRF).equals(authorizationRequest.getApprovalParameters().get(CSRF))) {
 
 			authorizationRequest.setApproved(true);
 
@@ -247,7 +249,7 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 				}
 
 				ApprovedSite newSite = approvedSiteService.createApprovedSite(clientId, userId, timeout, allowedScopes, null);
-				authorizationRequest.getExtensions().put("approved_site", newSite.getId());
+				authorizationRequest.getExtensions().put(APPROVED_SITE, newSite.getId());
 			}
 
 			setAuthTime(authorizationRequest);
