@@ -33,13 +33,13 @@
 		<property name="location" value="classpath:keystore.jwks" />
 	</bean>
 	
-	<bean id="defaultsignerService" class="org.mitre.jwt.signer.service.impl.DefaultJwtSigningAndValidationService">
+	<bean id="defaultsignerService" class="org.mitre.jwt.signer.service.impl.DefaultJWTSigningAndValidationService">
 		<constructor-arg name="keyStore" ref="defaultKeyStore" />
 		<property name="defaultSignerKeyId" value="rsa1" />
  		<property name="defaultSigningAlgorithmName" value="RS256" />
 	</bean>
 
-	<bean id="defaultEncryptionService" class="org.mitre.jwt.encryption.service.impl.DefaultJwtEncryptionAndDecryptionService">
+	<bean id="defaultEncryptionService" class="org.mitre.jwt.encryption.service.impl.DefaultJWTEncryptionAndDecryptionService">
 		<constructor-arg name="keyStore" ref="defaultKeyStore" />
 		<property name="defaultAlgorithm" value="RSA1_5" />
 		<property name="defaultDecryptionKeyId" value="rsa1" />

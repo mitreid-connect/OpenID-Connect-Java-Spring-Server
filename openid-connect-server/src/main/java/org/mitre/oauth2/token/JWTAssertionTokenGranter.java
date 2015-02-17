@@ -52,7 +52,7 @@ import com.nimbusds.jwt.SignedJWT;
  *
  */
 @Component("jwtAssertionTokenGranter")
-public class JwtAssertionTokenGranter extends AbstractTokenGranter {
+public class JWTAssertionTokenGranter extends AbstractTokenGranter {
 
 	private static final String grantType = "urn:ietf:params:oauth:grant-type:jwt-bearer";
 
@@ -66,7 +66,7 @@ public class JwtAssertionTokenGranter extends AbstractTokenGranter {
 	private ConfigurationPropertiesBean config;
 
 	@Autowired
-	public JwtAssertionTokenGranter(OAuth2TokenEntityService tokenServices, ClientDetailsEntityService clientDetailsService, OAuth2RequestFactory requestFactory) {
+	public JWTAssertionTokenGranter(OAuth2TokenEntityService tokenServices, ClientDetailsEntityService clientDetailsService, OAuth2RequestFactory requestFactory) {
 		super(tokenServices, clientDetailsService, requestFactory, grantType);
 		this.tokenServices = tokenServices;
 	}
