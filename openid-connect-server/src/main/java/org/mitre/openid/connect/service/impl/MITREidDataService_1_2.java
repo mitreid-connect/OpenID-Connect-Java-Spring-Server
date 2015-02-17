@@ -73,7 +73,7 @@ import com.google.gson.stream.JsonWriter;
  * @author arielak
  */
 @Service
-public class MITREidDataService_1_2 extends MITREidDataService_1_X {
+public class MITREidDataService_1_2 extends AbstractMITREidDataService {
 
 	private final static Logger logger = LoggerFactory.getLogger(MITREidDataService_1_2.class);
 	@Autowired

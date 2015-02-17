@@ -39,8 +39,8 @@ import com.google.gson.stream.JsonWriter;
  *
  * @author arielak
  */
-public abstract class MITREidDataService_1_X implements MITREidDataService {
-	private static Logger logger = LoggerFactory.getLogger(MITREidDataService_1_X.class);
+public abstract class AbstractMITREidDataService implements MITREidDataService {
+	private static Logger logger = LoggerFactory.getLogger(AbstractMITREidDataService.class);
 
 	protected static <T> T base64UrlDecodeObject(String encoded, Class<T> type) {
 		if (encoded == null) {
