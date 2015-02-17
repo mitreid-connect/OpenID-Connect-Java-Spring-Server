@@ -60,7 +60,7 @@ public class ClientDetailsEntityJsonProcessor {
 		JsonElement jsonEl = parser.parse(jsonString);
 		return parse(jsonEl);
 	}
-	
+
 	public static ClientDetailsEntity parse(JsonElement jsonEl) {
 		if (jsonEl.isJsonObject()) {
 
@@ -155,7 +155,7 @@ public class ClientDetailsEntityJsonProcessor {
 		JsonElement jsonEl = parser.parse(jsonString);
 		return parseRegistered(jsonEl);
 	}
-	
+
 	public static RegisteredClient parseRegistered(JsonElement jsonEl) {
 		if (jsonEl.isJsonObject()) {
 

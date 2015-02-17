@@ -32,73 +32,73 @@ import com.google.gson.JsonObject;
 public class TestOAuth2AccessTokenImpl {
 
 	private static String tokenString = "thisisatokenstring";
-	
+
 	private static Set<String> scopes = ImmutableSet.of("bar", "foo");
 	private static String scopeString = "foo bar";
-	
+
 	private static Date exp = new Date(123 * 1000L);
 	private static Long expVal = 123L;
-	
+
 	@Test
 	public void testFullToken() {
-		
-		
+
+
 		JsonObject tokenObj = new JsonObject();
 		tokenObj.addProperty("active", true);
 		tokenObj.addProperty("scope", scopeString);
 		tokenObj.addProperty("exp", expVal);
 		tokenObj.addProperty("sub", "subject");
 		tokenObj.addProperty("client_id", "123-456-789");
-		
+
 		OAuth2AccessTokenImpl tok = new OAuth2AccessTokenImpl(tokenObj, tokenString);
-		
+
 		assertThat(tok.getScope(), is(equalTo(scopes)));
 		assertThat(tok.getExpiration(), is(equalTo(exp)));
 	}
 
 	@Test
 	public void testNullExp() {
-		
-		
+
+
 		JsonObject tokenObj = new JsonObject();
 		tokenObj.addProperty("active", true);
 		tokenObj.addProperty("scope", scopeString);
 		tokenObj.addProperty("sub", "subject");
 		tokenObj.addProperty("client_id", "123-456-789");
-		
+
 		OAuth2AccessTokenImpl tok = new OAuth2AccessTokenImpl(tokenObj, tokenString);
-		
+
 		assertThat(tok.getScope(), is(equalTo(scopes)));
 		assertThat(tok.getExpiration(), is(equalTo(null)));
 	}
 
 	@Test
 	public void testNullScopes() {
-		
-		
+
+
 		JsonObject tokenObj = new JsonObject();
 		tokenObj.addProperty("active", true);
 		tokenObj.addProperty("exp", expVal);
 		tokenObj.addProperty("sub", "subject");
 		tokenObj.addProperty("client_id", "123-456-789");
-		
+
 		OAuth2AccessTokenImpl tok = new OAuth2AccessTokenImpl(tokenObj, tokenString);
-		
+
 		assertThat(tok.getScope(), is(equalTo(Collections.EMPTY_SET)));
 		assertThat(tok.getExpiration(), is(equalTo(exp)));
 	}
 
 	@Test
 	public void testNullScopesNullExp() {
-		
-		
+
+
 		JsonObject tokenObj = new JsonObject();
 		tokenObj.addProperty("active", true);
 		tokenObj.addProperty("sub", "subject");
 		tokenObj.addProperty("client_id", "123-456-789");
-		
+
 		OAuth2AccessTokenImpl tok = new OAuth2AccessTokenImpl(tokenObj, tokenString);
-		
+
 		assertThat(tok.getScope(), is(equalTo(Collections.EMPTY_SET)));
 		assertThat(tok.getExpiration(), is(equalTo(null)));
 	}

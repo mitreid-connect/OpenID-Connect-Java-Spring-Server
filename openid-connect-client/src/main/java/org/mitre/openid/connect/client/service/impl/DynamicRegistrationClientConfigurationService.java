@@ -203,19 +203,19 @@ public class DynamicRegistrationClientConfigurationService implements ClientConf
 			} else {
 
 				if (knownClient.getClientId() == null) {
-				
+
 					// load this client's information from the server
 					HttpHeaders headers = new HttpHeaders();
 					headers.set("Authorization", String.format("%s %s", OAuth2AccessToken.BEARER_TYPE, knownClient.getRegistrationAccessToken()));
 					headers.setAccept(Lists.newArrayList(MediaType.APPLICATION_JSON));
-	
+
 					HttpEntity<String> entity = new HttpEntity<String>(headers);
-	
+
 					String registered = restTemplate.exchange(knownClient.getRegistrationClientUri(), HttpMethod.GET, entity, String.class).getBody();
 					// TODO: handle HTTP errors
-	
+
 					RegisteredClient client = ClientDetailsEntityJsonProcessor.parseRegistered(registered);
-	
+
 					return client;
 				} else {
 					// it's got a client ID from the store, don't bother trying to load it

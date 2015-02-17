@@ -82,11 +82,11 @@ public class TestPlainAuthRequestUrlBuilder {
 
 		urlBuilder.buildAuthRequestUrl(serverConfig, clientConfig, "example.com", "", "", options);
 	}
-	
+
 	@Test
 	public void buildAuthRequestUrl_withNoNonce() {
 		Mockito.when(serverConfig.isNonceEnabled()).thenReturn(false);
-		
+
 		String expectedUrl = "https://server.example.com/authorize?" +
 				"response_type=code" +
 				"&client_id=s6BhdRkqt3" +
@@ -100,7 +100,7 @@ public class TestPlainAuthRequestUrlBuilder {
 		String actualUrl = urlBuilder.buildAuthRequestUrl(serverConfig, clientConfig, "https://client.example.org/", null, "af0ifjsldkj", options);
 
 		assertThat(actualUrl, equalTo(expectedUrl));
-		
+
 	}
 
 }

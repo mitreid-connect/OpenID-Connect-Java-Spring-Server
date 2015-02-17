@@ -49,7 +49,7 @@ public class UserInfoView extends AbstractView {
 	private static JsonParser jsonParser = new JsonParser();
 
 	public static final String VIEWNAME = "userInfoView";
-	
+
 	private static Logger logger = LoggerFactory.getLogger(UserInfoView.class);
 
 	@Autowired

@@ -133,7 +133,7 @@ public class ClientDynamicRegistrationEndpoint {
 				m.addAttribute("code", ve.getStatus());
 				return JsonErrorView.VIEWNAME;
 			}
-			
+
 			if (newClient.getTokenEndpointAuthMethod() == null) {
 				newClient.setTokenEndpointAuthMethod(AuthMethod.SECRET_BASIC);
 			}
@@ -178,11 +178,11 @@ public class ClientDynamicRegistrationEndpoint {
 				return HttpCodeView.VIEWNAME;
 			} catch (IllegalArgumentException e) {
 				logger.error("Couldn't save client", e);
-				
+
 				m.addAttribute("error", "invalid_client_metadata");
 				m.addAttribute("errorMessage", "Unable to save client due to invalid or inconsistent metadata.");
 				m.addAttribute("code", HttpStatus.BAD_REQUEST); // http 400
-				
+
 				return JsonErrorView.VIEWNAME;
 			}
 		} else {
@@ -224,7 +224,7 @@ public class ClientDynamicRegistrationEndpoint {
 				m.addAttribute("code", HttpStatus.INTERNAL_SERVER_ERROR);
 				return HttpCodeView.VIEWNAME;
 			}
-			
+
 		} else {
 			// client mismatch
 			logger.error("readClientConfiguration failed, client ID mismatch: "
@@ -293,7 +293,7 @@ public class ClientDynamicRegistrationEndpoint {
 				m.addAttribute("code", ve.getStatus());
 				return JsonErrorView.VIEWNAME;
 			}
-			
+
 			try {
 				// save the client
 				ClientDetailsEntity savedClient = clientService.updateClient(oldClient, newClient);
@@ -313,11 +313,11 @@ public class ClientDynamicRegistrationEndpoint {
 				return HttpCodeView.VIEWNAME;
 			} catch (IllegalArgumentException e) {
 				logger.error("Couldn't save client", e);
-				
+
 				m.addAttribute("error", "invalid_client_metadata");
 				m.addAttribute("errorMessage", "Unable to save client due to invalid or inconsistent metadata.");
 				m.addAttribute("code", HttpStatus.BAD_REQUEST); // http 400
-				
+
 				return JsonErrorView.VIEWNAME;
 			}
 		} else {
@@ -376,17 +376,17 @@ public class ClientDynamicRegistrationEndpoint {
 		}
 
 		newClient.setScope(scopeService.toStrings(allowedScopes));
-		
+
 		return newClient;
 	}
-	
+
 	private ClientDetailsEntity validateResponseTypes(ClientDetailsEntity newClient) throws ValidationException {
 		if (newClient.getResponseTypes() == null) {
 			newClient.setResponseTypes(new HashSet<String>());
 		}
 		return newClient;
 	}
-	
+
 	private ClientDetailsEntity validateGrantTypes(ClientDetailsEntity newClient) throws ValidationException {
 		// set default grant types if needed
 		if (newClient.getGrantTypes() == null || newClient.getGrantTypes().isEmpty()) {
@@ -396,15 +396,15 @@ public class ClientDynamicRegistrationEndpoint {
 				newClient.setGrantTypes(Sets.newHashSet("authorization_code")); // allow authorization code grant type by default
 			}
 		}
-		
+
 		// filter out unknown grant types
 		// TODO: make this a pluggable service
 		Set<String> requestedGrantTypes = new HashSet<String>(newClient.getGrantTypes());
 		requestedGrantTypes.retainAll(
-					ImmutableSet.of("authorization_code", "implicit", 
-							"password", "client_credentials", "refresh_token",
-							"urn:ietf:params:oauth:grant_type:redelegate"));
-		
+				ImmutableSet.of("authorization_code", "implicit",
+						"password", "client_credentials", "refresh_token",
+						"urn:ietf:params:oauth:grant_type:redelegate"));
+
 		// don't allow "password" grant type for dynamic registration
 		if (newClient.getGrantTypes().contains("password")) {
 			// return an error, you can't dynamically register for the password grant
@@ -425,12 +425,12 @@ public class ClientDynamicRegistrationEndpoint {
 				// return an error, you can't have this grant type and response type together
 				throw new ValidationException("invalid_client_metadata", "Incompatible response types requested: " + newClient.getGrantTypes() + " / " + newClient.getResponseTypes(), HttpStatus.BAD_REQUEST);
 			}
-			
+
 			newClient.getResponseTypes().add("code");
-			
-		
+
+
 		}
-		
+
 		if (newClient.getGrantTypes().contains("implicit")) {
 
 			// check for incompatible grants
@@ -439,19 +439,19 @@ public class ClientDynamicRegistrationEndpoint {
 				// return an error, you can't have these grant types together
 				throw new ValidationException("invalid_client_metadata", "Incompatible grant types requested: " + newClient.getGrantTypes(), HttpStatus.BAD_REQUEST);
 			}
-			
+
 			if (newClient.getResponseTypes().contains("code")) {
 				// return an error, you can't have this grant type and response type together
 				throw new ValidationException("invalid_client_metadata", "Incompatible response types requested: " + newClient.getGrantTypes() + " / " + newClient.getResponseTypes(), HttpStatus.BAD_REQUEST);
 			}
-			
+
 			newClient.getResponseTypes().add("token");
-			
+
 			// don't allow refresh tokens in implicit clients
 			newClient.getGrantTypes().remove("refresh_token");
 			newClient.getScope().remove("offline_access");
 		}
-		
+
 		if (newClient.getGrantTypes().contains("client_credentials")) {
 
 			// check for incompatible grants
@@ -460,25 +460,25 @@ public class ClientDynamicRegistrationEndpoint {
 				// return an error, you can't have these grant types together
 				throw new ValidationException("invalid_client_metadata", "Incompatible grant types requested: " + newClient.getGrantTypes(), HttpStatus.BAD_REQUEST);
 			}
-			
+
 			if (!newClient.getResponseTypes().isEmpty()) {
 				// return an error, you can't have this grant type and response type together
 				throw new ValidationException("invalid_client_metadata", "Incompatible response types requested: " + newClient.getGrantTypes() + " / " + newClient.getResponseTypes(), HttpStatus.BAD_REQUEST);
 			}
-			
+
 			// don't allow refresh tokens or id tokens in client_credentials clients
 			newClient.getGrantTypes().remove("refresh_token");
 			newClient.getScope().remove("offline_access");
 			newClient.getScope().remove("openid");
 		}
-		
+
 		if (newClient.getGrantTypes().isEmpty()) {
 			// return an error, you need at least one grant type selected
 			throw new ValidationException("invalid_client_metadata", "Clients must register at least one grant type.", HttpStatus.BAD_REQUEST);
-		}		
+		}
 		return newClient;
 	}
-	
+
 	private ClientDetailsEntity validateRedirectUris(ClientDetailsEntity newClient) throws ValidationException {
 		// check to make sure this client registered a redirect URI if using a redirect flow
 		if (newClient.getGrantTypes().contains("authorization_code") || newClient.getGrantTypes().contains("implicit")) {
@@ -492,17 +492,17 @@ public class ClientDynamicRegistrationEndpoint {
 					// return an error
 					throw new ValidationException("invalid_redirect_uri", "Redirect URI is not allowed: " + uri, HttpStatus.BAD_REQUEST);
 				}
-				
-				if (uri.contains("#")) { 
+
+				if (uri.contains("#")) {
 					// if it contains the hash symbol then it has a fragment, which isn't allowed
 					throw new ValidationException("invalid_redirect_uri", "Redirect URI can not have a fragment", HttpStatus.BAD_REQUEST);
 				}
 			}
 		}
-		
+
 		return newClient;
 	}
-	
+
 	private ClientDetailsEntity validateAuth(ClientDetailsEntity newClient) throws ValidationException {
 		if (newClient.getTokenEndpointAuthMethod() == null) {
 			newClient.setTokenEndpointAuthMethod(AuthMethod.SECRET_BASIC);
@@ -520,7 +520,7 @@ public class ClientDynamicRegistrationEndpoint {
 			if (Strings.isNullOrEmpty(newClient.getJwksUri())) {
 				throw new ValidationException("invalid_client_metadata", "JWK Set URI required when using private key authentication", HttpStatus.BAD_REQUEST);
 			}
-			
+
 			newClient.setClientSecret(null);
 		} else if (newClient.getTokenEndpointAuthMethod() == AuthMethod.NONE) {
 			newClient.setClientSecret(null);
@@ -529,14 +529,14 @@ public class ClientDynamicRegistrationEndpoint {
 		}
 		return newClient;
 	}
-	
+
 	private OAuth2AccessTokenEntity fetchValidRegistrationToken(OAuth2Authentication auth, ClientDetailsEntity client) {
-		
+
 		OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
 		OAuth2AccessTokenEntity token = tokenService.readAccessToken(details.getTokenValue());
-		
+
 		if (config.getRegTokenLifeTime() != null) {
-		
+
 			try {
 				// Re-issue the token if it has been issued before [currentTime - validity]
 				Date validToDate = new Date(System.currentTimeMillis() - config.getRegTokenLifeTime() * 1000);

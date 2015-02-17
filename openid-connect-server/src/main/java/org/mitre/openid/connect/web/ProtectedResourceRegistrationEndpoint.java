@@ -55,7 +55,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.util.UriUtils;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Sets;
 import com.google.gson.JsonSyntaxException;
 
 @Controller
@@ -184,11 +183,11 @@ public class ProtectedResourceRegistrationEndpoint {
 				return HttpCodeView.VIEWNAME;
 			} catch (IllegalArgumentException e) {
 				logger.error("Couldn't save client", e);
-				
+
 				m.addAttribute("error", "invalid_client_metadata");
 				m.addAttribute("errorMessage", "Unable to save client due to invalid or inconsistent metadata.");
 				m.addAttribute("code", HttpStatus.BAD_REQUEST); // http 400
-				
+
 				return JsonErrorView.VIEWNAME;
 			}
 		} else {
@@ -204,7 +203,7 @@ public class ProtectedResourceRegistrationEndpoint {
 	private ClientDetailsEntity validateScopes(ClientDetailsEntity newClient) throws ValidationException {
 
 		// note that protected resources can register for any scopes, even ones not used by the sysadmin
-		
+
 		// scopes that the client is asking for
 		Set<SystemScope> requestedScopes = scopeService.fromStrings(newClient.getScope());
 
@@ -214,7 +213,7 @@ public class ProtectedResourceRegistrationEndpoint {
 		}
 
 		newClient.setScope(scopeService.toStrings(requestedScopes));
-		
+
 		return newClient;
 	}
 
@@ -363,11 +362,11 @@ public class ProtectedResourceRegistrationEndpoint {
 				return HttpCodeView.VIEWNAME;
 			} catch (IllegalArgumentException e) {
 				logger.error("Couldn't save client", e);
-				
+
 				m.addAttribute("error", "invalid_client_metadata");
 				m.addAttribute("errorMessage", "Unable to save client due to invalid or inconsistent metadata.");
 				m.addAttribute("code", HttpStatus.BAD_REQUEST); // http 400
-				
+
 				return JsonErrorView.VIEWNAME;
 			}
 		} else {
@@ -428,7 +427,7 @@ public class ProtectedResourceRegistrationEndpoint {
 			if (Strings.isNullOrEmpty(newClient.getJwksUri())) {
 				throw new ValidationException("invalid_client_metadata", "JWK Set URI required when using private key authentication", HttpStatus.BAD_REQUEST);
 			}
-			
+
 			newClient.setClientSecret(null);
 		} else if (newClient.getTokenEndpointAuthMethod() == AuthMethod.NONE) {
 			newClient.setClientSecret(null);
@@ -437,14 +436,14 @@ public class ProtectedResourceRegistrationEndpoint {
 		}
 		return newClient;
 	}
-	
+
 	private OAuth2AccessTokenEntity fetchValidRegistrationToken(OAuth2Authentication auth, ClientDetailsEntity client) {
-		
+
 		OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
 		OAuth2AccessTokenEntity token = tokenService.readAccessToken(details.getTokenValue());
-		
+
 		if (config.getRegTokenLifeTime() != null) {
-		
+
 			try {
 				// Re-issue the token if it has been issued before [currentTime - validity]
 				Date validToDate = new Date(System.currentTimeMillis() - config.getRegTokenLifeTime() * 1000);

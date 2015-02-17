@@ -102,7 +102,7 @@ public class OAuthConfirmationController {
 			model.put("code", HttpStatus.FORBIDDEN);
 			return HttpCodeView.VIEWNAME;
 		}
-		
+
 		if (prompts.contains("consent")) {
 			model.put("consent", true);
 		}
@@ -160,10 +160,10 @@ public class OAuthConfirmationController {
 		Map<String, Map<String, String>> claimsForScopes = new HashMap<String, Map<String, String>>();
 		if (user != null) {
 			JsonObject userJson = user.toJson();
-	
+
 			for (SystemScope systemScope : sortedScopes) {
 				Map<String, String> claimValues = new HashMap<String, String>();
-	
+
 				Set<String> claims = scopeClaimTranslationService.getClaimsForScope(systemScope.getValue());
 				for (String claim : claims) {
 					if (userJson.has(claim) && userJson.get(claim).isJsonPrimitive()) {
@@ -171,7 +171,7 @@ public class OAuthConfirmationController {
 						claimValues.put(claim, userJson.get(claim).getAsString());
 					}
 				}
-	
+
 				claimsForScopes.put(systemScope.getValue(), claimValues);
 			}
 		}

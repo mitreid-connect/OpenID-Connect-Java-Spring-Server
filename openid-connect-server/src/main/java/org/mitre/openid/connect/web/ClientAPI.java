@@ -161,20 +161,20 @@ public class ClientAPI {
 		// if they leave the client identifier empty, force it to be generated
 		if (Strings.isNullOrEmpty(client.getClientId())) {
 			client = clientService.generateClientId(client);
-		}		
-		
-		if (client.getTokenEndpointAuthMethod() == null || 
+		}
+
+		if (client.getTokenEndpointAuthMethod() == null ||
 				client.getTokenEndpointAuthMethod().equals(AuthMethod.NONE)) {
 			// we shouldn't have a secret for this client
-			
+
 			client.setClientSecret(null);
-			
-		} else if (client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_BASIC) 
-				|| client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_POST) 
+
+		} else if (client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_BASIC)
+				|| client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_POST)
 				|| client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_JWT)) {
-			
+
 			// if they've asked for us to generate a client secret (or they left it blank but require one), do so here
-			if (json.has("generateClientSecret") && json.get("generateClientSecret").getAsBoolean() 
+			if (json.has("generateClientSecret") && json.get("generateClientSecret").getAsBoolean()
 					|| Strings.isNullOrEmpty(client.getClientSecret())) {
 				client = clientService.generateClientSecret(client);
 			}
@@ -187,18 +187,18 @@ public class ClientAPI {
 				m.addAttribute("errorMessage", "Can not create a client with private key authentication without registering a key via the JWS Set URI.");
 				return JsonErrorView.VIEWNAME;
 			}
-			
+
 			// otherwise we shouldn't have a secret for this client
 			client.setClientSecret(null);
-			
+
 		} else {
-			
+
 			logger.error("unknown auth method");
 			m.addAttribute("code", HttpStatus.BAD_REQUEST);
 			m.addAttribute("errorMessage", "Unknown auth method requested");
 			return JsonErrorView.VIEWNAME;
-			
-			
+
+
 		}
 
 		client.setDynamicallyRegistered(false);
@@ -262,15 +262,15 @@ public class ClientAPI {
 		if (client.getTokenEndpointAuthMethod() == null ||
 				client.getTokenEndpointAuthMethod().equals(AuthMethod.NONE)) {
 			// we shouldn't have a secret for this client
-			
+
 			client.setClientSecret(null);
-			
-		} else if (client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_BASIC) 
-				|| client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_POST) 
+
+		} else if (client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_BASIC)
+				|| client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_POST)
 				|| client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_JWT)) {
-			
+
 			// if they've asked for us to generate a client secret (or they left it blank but require one), do so here
-			if (json.has("generateClientSecret") && json.get("generateClientSecret").getAsBoolean() 
+			if (json.has("generateClientSecret") && json.get("generateClientSecret").getAsBoolean()
 					|| Strings.isNullOrEmpty(client.getClientSecret())) {
 				client = clientService.generateClientSecret(client);
 			}
@@ -283,18 +283,18 @@ public class ClientAPI {
 				m.addAttribute("errorMessage", "Can not create a client with private key authentication without registering a key via the JWS Set URI.");
 				return JsonErrorView.VIEWNAME;
 			}
-			
+
 			// otherwise we shouldn't have a secret for this client
 			client.setClientSecret(null);
-			
+
 		} else {
-			
+
 			logger.error("unknown auth method");
 			m.addAttribute("code", HttpStatus.BAD_REQUEST);
 			m.addAttribute("errorMessage", "Unknown auth method requested");
 			return JsonErrorView.VIEWNAME;
-			
-			
+
+
 		}
 
 		ClientDetailsEntity newClient = clientService.updateClient(oldClient, client);

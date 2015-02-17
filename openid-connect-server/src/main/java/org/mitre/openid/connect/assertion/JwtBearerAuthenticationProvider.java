@@ -57,7 +57,7 @@ public class JwtBearerAuthenticationProvider implements AuthenticationProvider {
 	private static final Logger logger = LoggerFactory.getLogger(JwtBearerAuthenticationProvider.class);
 
 	private static final GrantedAuthority ROLE_CLIENT = new SimpleGrantedAuthority("ROLE_CLIENT");
-	
+
 	// map of verifiers, load keys for clients
 	@Autowired
 	private JWKSetCacheService validators;
@@ -107,10 +107,10 @@ public class JwtBearerAuthenticationProvider implements AuthenticationProvider {
 						client.getTokenEndpointAuthMethod().equals(AuthMethod.NONE) ||
 						client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_BASIC) ||
 						client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_POST)) {
-					
+
 					// this client doesn't support this type of authentication
 					throw new AuthenticationServiceException("Client does not support this authentication method.");
-					
+
 				} else if (client.getTokenEndpointAuthMethod().equals(AuthMethod.PRIVATE_KEY) &&
 						(alg.equals(JWSAlgorithm.RS256)
 								|| alg.equals(JWSAlgorithm.RS384)
@@ -188,11 +188,11 @@ public class JwtBearerAuthenticationProvider implements AuthenticationProvider {
 			}
 
 			// IFF we managed to get all the way down here, the token is valid
-			
+
 			// add in the ROLE_CLIENT authority
 			Set<GrantedAuthority> authorities = new HashSet<>(client.getAuthorities());
 			authorities.add(ROLE_CLIENT);
-			
+
 			return new JwtBearerAssertionAuthenticationToken(client.getClientId(), jwt, authorities);
 
 		} catch (InvalidClientException e) {

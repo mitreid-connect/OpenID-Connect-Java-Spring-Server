@@ -120,12 +120,12 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 		if (inputParams.containsKey("login_hint")) {
 			request.getExtensions().put("login_hint", inputParams.get("login_hint"));
 		}
-		
+
 		if (inputParams.containsKey("request")) {
 			request.getExtensions().put("request", inputParams.get("request"));
 			processRequestObject(inputParams.get("request"), request);
 		}
-		
+
 		if (request.getClientId() != null) {
 			try {
 				ClientDetailsEntity client = clientDetailsService.loadClientByClientId(request.getClientId());
@@ -352,7 +352,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 				// we save the string because the object might not be a Java Serializable, and we can parse it easily enough anyway
 				request.getExtensions().put("claims", claimRequest.toString());
 			}
-			
+
 			String loginHint = claims.getStringClaim("login_hint");
 			if (loginHint != null) {
 				if (!loginHint.equals(request.getExtensions().get("login_hint"))) {

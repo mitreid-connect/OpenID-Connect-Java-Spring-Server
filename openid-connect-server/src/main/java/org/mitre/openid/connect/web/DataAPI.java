@@ -60,13 +60,13 @@ public class DataAPI {
 	@Autowired
 	private ConfigurationPropertiesBean config;
 
-    @Autowired
+	@Autowired
 	private MITREidDataService_1_0 dataService_1_0;
-    
-    @Autowired
+
+	@Autowired
 	private MITREidDataService_1_1 dataService_1_1;
 
-    @Autowired
+	@Autowired
 	private MITREidDataService_1_1 dataService_1_2;
 
 	@RequestMapping(method = RequestMethod.POST, consumes = "application/json")
@@ -79,29 +79,29 @@ public class DataAPI {
 		while (reader.hasNext()) {
 			JsonToken tok = reader.peek();
 			switch (tok) {
-				case NAME:
-					String name = reader.nextName();
-					if (name.equals(MITREidDataService.MITREID_CONNECT_1_0)) {
-						dataService_1_0.importData(reader);
-                    } else if (name.equals(MITREidDataService.MITREID_CONNECT_1_1)) {
-						dataService_1_1.importData(reader);
-                    } else if (name.equals(MITREidDataService.MITREID_CONNECT_1_2)) {
-                    	dataService_1_2.importData(reader);
-					} else {
-						// consume the next bit silently for now
-						logger.debug("Skipping value for " + name); // TODO: write these out?
-						reader.skipValue();
-					}
-					break;
-				case END_OBJECT:
-					reader.endObject();
-					break;
-				case END_DOCUMENT:
-					break;
+			case NAME:
+				String name = reader.nextName();
+				if (name.equals(MITREidDataService.MITREID_CONNECT_1_0)) {
+					dataService_1_0.importData(reader);
+				} else if (name.equals(MITREidDataService.MITREID_CONNECT_1_1)) {
+					dataService_1_1.importData(reader);
+				} else if (name.equals(MITREidDataService.MITREID_CONNECT_1_2)) {
+					dataService_1_2.importData(reader);
+				} else {
+					// consume the next bit silently for now
+					logger.debug("Skipping value for " + name); // TODO: write these out?
+					reader.skipValue();
+				}
+				break;
+			case END_OBJECT:
+				reader.endObject();
+				break;
+			case END_DOCUMENT:
+				break;
 			}
-		}		
+		}
 
-		return "httpCodeView"; 
+		return "httpCodeView";
 	}
 
 	@RequestMapping(method = RequestMethod.GET, produces = "application/json")
@@ -115,7 +115,7 @@ public class DataAPI {
 
 		try {
 
-	        writer.beginObject();
+			writer.beginObject();
 
 			writer.name("exported-at");
 			writer.value(dateFormat.format(new Date()));

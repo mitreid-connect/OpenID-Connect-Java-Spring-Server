@@ -19,8 +19,6 @@ package org.mitre.openid.connect.repository.impl;
 import static org.mitre.util.jpa.JpaUtil.getSingleResult;
 import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
 
-import java.util.Collection;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;

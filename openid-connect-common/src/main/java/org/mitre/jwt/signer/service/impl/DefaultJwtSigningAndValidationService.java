@@ -115,7 +115,7 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 	 */
 	@Override
 	public String getDefaultSignerKeyId() {
-			return defaultSignerKeyId;
+		return defaultSignerKeyId;
 	}
 
 	/**
@@ -188,7 +188,7 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 				logger.warn("Unknown key type: " + jwk);
 			}
 		}
-		
+
 		if (defaultSignerKeyId == null && keys.size() == 1) {
 			// if there's only one key, it's the default
 			setDefaultSignerKeyId(keys.keySet().iterator().next());

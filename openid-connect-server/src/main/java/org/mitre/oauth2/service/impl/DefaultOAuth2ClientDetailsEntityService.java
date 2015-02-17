@@ -52,7 +52,6 @@ import com.google.common.base.Strings;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.google.common.util.concurrent.UncheckedExecutionException;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
@@ -149,7 +148,7 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 	}
 
 	private void ensureRefreshTokenConsistency(ClientDetailsEntity client) {
-		if (client.getAuthorizedGrantTypes().contains("refresh_token") 
+		if (client.getAuthorizedGrantTypes().contains("refresh_token")
 				|| client.getScope().contains(SystemScopeService.OFFLINE_ACCESS)) {
 			client.getScope().add(SystemScopeService.OFFLINE_ACCESS);
 			client.getAuthorizedGrantTypes().add("refresh_token");
@@ -239,7 +238,7 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 
 			// if the client is flagged to allow for refresh tokens, make sure it's got the right scope
 			ensureRefreshTokenConsistency(newClient);
-			
+
 			// check the sector URI
 			checkSectorIdentifierUri(newClient);
 

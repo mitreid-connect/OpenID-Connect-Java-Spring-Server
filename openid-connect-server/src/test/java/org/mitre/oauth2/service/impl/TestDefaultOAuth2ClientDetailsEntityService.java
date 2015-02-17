@@ -82,31 +82,31 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 	@Before
 	public void prepare() {
 		Mockito.reset(clientRepository, tokenRepository, approvedSiteService, whitelistedSiteService, blacklistedSiteService, scopeService, statsService);
-		
-		Mockito.when(clientRepository.saveClient(Mockito.any(ClientDetailsEntity.class))).thenAnswer(new Answer<ClientDetailsEntity>() {
+
+		Mockito.when(clientRepository.saveClient(Matchers.any(ClientDetailsEntity.class))).thenAnswer(new Answer<ClientDetailsEntity>() {
 			@Override
 			public ClientDetailsEntity answer(InvocationOnMock invocation) throws Throwable {
 				Object[] args = invocation.getArguments();
 				return (ClientDetailsEntity) args[0];
 			}
 		});
-		
-		Mockito.when(clientRepository.updateClient(Mockito.anyLong(), Mockito.any(ClientDetailsEntity.class))).thenAnswer(new Answer<ClientDetailsEntity>() {
+
+		Mockito.when(clientRepository.updateClient(Matchers.anyLong(), Matchers.any(ClientDetailsEntity.class))).thenAnswer(new Answer<ClientDetailsEntity>() {
 			@Override
 			public ClientDetailsEntity answer(InvocationOnMock invocation) throws Throwable {
 				Object[] args = invocation.getArguments();
 				return (ClientDetailsEntity) args[1];
 			}
 		});
-		
-		Mockito.when(scopeService.removeRestrictedScopes(Mockito.anySet())).thenAnswer(new Answer<Set<String>>() {
+
+		Mockito.when(scopeService.removeRestrictedScopes(Matchers.anySet())).thenAnswer(new Answer<Set<String>>() {
 			@Override
 			public Set<String> answer(InvocationOnMock invocation) throws Throwable {
 				Object[] args = invocation.getArguments();
 				return (Set<String>) args[0];
 			}
 		});
-		
+
 	}
 
 	/**
@@ -158,7 +158,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 	public void saveNewClient_yesOfflineAccess() {
 
 		ClientDetailsEntity client = new ClientDetailsEntity();
-		
+
 		Set<String> grantTypes = new HashSet<String>();
 		grantTypes.add("refresh_token");
 		client.setGrantTypes(grantTypes);
@@ -175,7 +175,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 	public void saveNewClient_noOfflineAccess() {
 
 		ClientDetailsEntity client = new ClientDetailsEntity();
-		
+
 		client = service.saveNewClient(client);
 
 		assertThat(client.getScope().contains(SystemScopeService.OFFLINE_ACCESS), is(equalTo(false)));
@@ -293,7 +293,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 
 		ClientDetailsEntity oldClient = new ClientDetailsEntity();
 		ClientDetailsEntity client = new ClientDetailsEntity();
-		
+
 		Set<String> grantTypes = new HashSet<String>();
 		grantTypes.add("refresh_token");
 		client.setGrantTypes(grantTypes);
@@ -307,11 +307,11 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 	public void updateClient_noOfflineAccess() {
 
 		ClientDetailsEntity oldClient = new ClientDetailsEntity();
-		
+
 		oldClient.getScope().add(SystemScopeService.OFFLINE_ACCESS);
-		
+
 		ClientDetailsEntity client = new ClientDetailsEntity();
-		
+
 		client = service.updateClient(oldClient, client);
 
 		assertThat(client.getScope().contains(SystemScopeService.OFFLINE_ACCESS), is(equalTo(false)));

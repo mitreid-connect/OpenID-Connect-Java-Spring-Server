@@ -54,7 +54,7 @@ public class ValidationException extends Exception {
 	public void setStatus(HttpStatus status) {
 		this.status = status;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "ValidationException [error=" + error + ", errorDescription="

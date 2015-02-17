@@ -16,33 +16,33 @@
  *******************************************************************************/
 package org.mitre.oauth2.service;
 
+import java.util.Map;
+
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
 import org.mitre.openid.connect.model.UserInfo;
-
-import java.util.Map;
 
 /**
  * Strategy interface for assembling a token introspection result.
  */
 public interface IntrospectionResultAssembler {
 
-    /**
-     * Assemble a token introspection result from the given access token and user info.
-     *
-     * @param accessToken the access token
-     * @param userInfo the user info
-     * @return the token introspection result
-     */
-    Map<String, Object> assembleFrom(OAuth2AccessTokenEntity accessToken, UserInfo userInfo);
+	/**
+	 * Assemble a token introspection result from the given access token and user info.
+	 *
+	 * @param accessToken the access token
+	 * @param userInfo the user info
+	 * @return the token introspection result
+	 */
+	Map<String, Object> assembleFrom(OAuth2AccessTokenEntity accessToken, UserInfo userInfo);
 
-    /**
-     * Assemble a token introspection result from the given refresh token and user info.
-     *
-     * @param refreshToken the refresh token
-     * @param userInfo the user info
-     * @return the token introspection result
-     */
-    Map<String, Object> assembleFrom(OAuth2RefreshTokenEntity refreshToken, UserInfo userInfo);
+	/**
+	 * Assemble a token introspection result from the given refresh token and user info.
+	 *
+	 * @param refreshToken the refresh token
+	 * @param userInfo the user info
+	 * @return the token introspection result
+	 */
+	Map<String, Object> assembleFrom(OAuth2RefreshTokenEntity refreshToken, UserInfo userInfo);
 
 }

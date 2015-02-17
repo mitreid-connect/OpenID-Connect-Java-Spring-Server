@@ -52,10 +52,10 @@ public class TokenAPI {
 
 	@Autowired
 	private OAuth2TokenEntityService tokenService;
-	
+
 	@Autowired
 	private ClientDetailsEntityService clientService;
-	
+
 	@Autowired
 	private OIDCTokenService oidcTokenService;
 
@@ -115,9 +115,9 @@ public class TokenAPI {
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@RequestMapping(value = "/client/{clientId}", method = RequestMethod.GET, produces = "application/json")
 	public String getAccessTokensByClientId(@PathVariable("clientId") String clientId, ModelMap m, Principal p) {
-		
+
 		ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
-		
+
 		if (client != null) {
 			List<OAuth2AccessTokenEntity> tokens = tokenService.getAccessTokensForClient(client);
 			m.put("entity", tokens);
@@ -128,15 +128,15 @@ public class TokenAPI {
 			m.put("errorMessage", "The requested client with id " + clientId + " could not be found.");
 			return JsonErrorView.VIEWNAME;
 		}
-		
+
 	}
 
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@RequestMapping(value = "/registration/{clientId}", method = RequestMethod.GET, produces = "application/json")
 	public String getRegistrationTokenByClientId(@PathVariable("clientId") String clientId, ModelMap m, Principal p) {
-		
+
 		ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
-		
+
 		if (client != null) {
 			OAuth2AccessTokenEntity token = tokenService.getRegistrationAccessTokenForClient(client);
 			if (token != null) {
@@ -153,18 +153,18 @@ public class TokenAPI {
 			m.put("errorMessage", "The requested client with id " + clientId + " could not be found.");
 			return JsonErrorView.VIEWNAME;
 		}
-		
+
 	}
-	
+
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@RequestMapping(value = "/registration/{clientId}", method = RequestMethod.PUT, produces = "application/json")
 	public String rotateRegistrationTokenByClientId(@PathVariable("clientId") String clientId, ModelMap m, Principal p) {
 		ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
-		
+
 		if (client != null) {
 			OAuth2AccessTokenEntity token = oidcTokenService.rotateRegistrationAccessTokenForClient(client);
 			token = tokenService.saveAccessToken(token);
-			
+
 			if (token != null) {
 				m.put("entity", token);
 				return TokenApiView.VIEWNAME;
@@ -179,9 +179,9 @@ public class TokenAPI {
 			m.put("errorMessage", "The requested client with id " + clientId + " could not be found.");
 			return JsonErrorView.VIEWNAME;
 		}
-		
+
 	}
-	
+
 	@RequestMapping(value = "/refresh", method = RequestMethod.GET, produces = "application/json")
 	public String getAllRefreshTokens(ModelMap m, Principal p) {
 

@@ -99,11 +99,11 @@ public class UserInfoEndpoint {
 		// start off by seeing if the client has registered for a signed/encrypted JWT from here
 		ClientDetailsEntity client = clientService.loadClientByClientId(auth.getOAuth2Request().getClientId());
 		model.addAttribute("client", client);
-		
+
 		List<MediaType> mediaTypes = MediaType.parseMediaTypes(acceptHeader);
 		MediaType.sortBySpecificityAndQuality(mediaTypes);
-		
-		if (client.getUserInfoSignedResponseAlg() != null 
+
+		if (client.getUserInfoSignedResponseAlg() != null
 				|| client.getUserInfoEncryptedResponseAlg() != null
 				|| client.getUserInfoEncryptedResponseEnc() != null) {
 			// client has a preference, see if they ask for plain JSON specifically on this request
@@ -114,7 +114,7 @@ public class UserInfoEndpoint {
 					return UserInfoView.VIEWNAME;
 				}
 			}
-			
+
 			// otherwise return JWT
 			return UserInfoJwtView.VIEWNAME;
 		} else {

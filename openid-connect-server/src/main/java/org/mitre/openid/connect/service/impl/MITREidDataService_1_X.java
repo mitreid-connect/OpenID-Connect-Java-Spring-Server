@@ -16,9 +16,6 @@
  *******************************************************************************/
 package org.mitre.openid.connect.service.impl;
 
-import com.google.common.io.BaseEncoding;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -29,9 +26,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
 import org.mitre.openid.connect.service.MITREidDataService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.io.BaseEncoding;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 
 /**
  *
@@ -39,99 +41,99 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class MITREidDataService_1_X implements MITREidDataService {
 	private static Logger logger = LoggerFactory.getLogger(MITREidDataService_1_X.class);
-    
-    protected static <T> T base64UrlDecodeObject(String encoded, Class<T> type) {
-    	if (encoded == null) {
-    		return null;
-    	} else {
-	        T deserialized = null;
-	        try {
-	            byte[] decoded = BaseEncoding.base64Url().decode(encoded);
-	            ByteArrayInputStream bais = new ByteArrayInputStream(decoded);
-	            ObjectInputStream ois = new ObjectInputStream(bais);
-	            deserialized = type.cast(ois.readObject());
-	            ois.close();
-	            bais.close();
-	        } catch (Exception ex) {
-	            logger.error("Unable to decode object", ex);
-	        }
-	        return deserialized;
-    	}
-    }
-    
-    protected static String base64UrlEncodeObject(Serializable obj) {
-    	if (obj == null) {
-    		return null;
-    	} else {
-	        String encoded = null;
-	        try {
-	            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	            ObjectOutputStream oos = new ObjectOutputStream(baos);
-	            oos.writeObject(obj);
-	            encoded = BaseEncoding.base64Url().encode(baos.toByteArray());
-	            oos.close();
-	            baos.close();
-	        } catch (IOException ex) {
-	            logger.error("Unable to encode object", ex);
-	        }
-	        return encoded;
-    	}
-    }
-    protected static Set readSet(JsonReader reader) throws IOException {
-        Set arraySet = null;
-        reader.beginArray();
-        switch (reader.peek()) {
-            case STRING:
-                arraySet = new HashSet<String>();
-                while (reader.hasNext()) {
-                    arraySet.add(reader.nextString());
-                }
-                break;
-            case NUMBER:
-                arraySet = new HashSet<Long>();
-                while (reader.hasNext()) {
-                    arraySet.add(reader.nextLong());
-                }
-                break;
-            default:
-                arraySet = new HashSet();
-                break;
-        }
-        reader.endArray();
-        return arraySet;
-    }
-    
-    protected static Map readMap(JsonReader reader) throws IOException {
-        Map map = new HashMap<String, Object>();
-        reader.beginObject();
-        while(reader.hasNext()) {
-            String name = reader.nextName();
-            Object value = null;
-            switch(reader.peek()) {
-                case STRING:
-                    value = reader.nextString();
-                    break;
-                case BOOLEAN:
-                    value = reader.nextBoolean();
-                    break;
-                case NUMBER:
-                    value = reader.nextLong();
-                    break;
-            }
-            map.put(name, value);
-        }
-        reader.endObject();
-        return map;
-    }
-    
+
+	protected static <T> T base64UrlDecodeObject(String encoded, Class<T> type) {
+		if (encoded == null) {
+			return null;
+		} else {
+			T deserialized = null;
+			try {
+				byte[] decoded = BaseEncoding.base64Url().decode(encoded);
+				ByteArrayInputStream bais = new ByteArrayInputStream(decoded);
+				ObjectInputStream ois = new ObjectInputStream(bais);
+				deserialized = type.cast(ois.readObject());
+				ois.close();
+				bais.close();
+			} catch (Exception ex) {
+				logger.error("Unable to decode object", ex);
+			}
+			return deserialized;
+		}
+	}
+
+	protected static String base64UrlEncodeObject(Serializable obj) {
+		if (obj == null) {
+			return null;
+		} else {
+			String encoded = null;
+			try {
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				ObjectOutputStream oos = new ObjectOutputStream(baos);
+				oos.writeObject(obj);
+				encoded = BaseEncoding.base64Url().encode(baos.toByteArray());
+				oos.close();
+				baos.close();
+			} catch (IOException ex) {
+				logger.error("Unable to encode object", ex);
+			}
+			return encoded;
+		}
+	}
+	protected static Set readSet(JsonReader reader) throws IOException {
+		Set arraySet = null;
+		reader.beginArray();
+		switch (reader.peek()) {
+		case STRING:
+			arraySet = new HashSet<String>();
+			while (reader.hasNext()) {
+				arraySet.add(reader.nextString());
+			}
+			break;
+		case NUMBER:
+			arraySet = new HashSet<Long>();
+			while (reader.hasNext()) {
+				arraySet.add(reader.nextLong());
+			}
+			break;
+		default:
+			arraySet = new HashSet();
+			break;
+		}
+		reader.endArray();
+		return arraySet;
+	}
+
+	protected static Map readMap(JsonReader reader) throws IOException {
+		Map map = new HashMap<String, Object>();
+		reader.beginObject();
+		while(reader.hasNext()) {
+			String name = reader.nextName();
+			Object value = null;
+			switch(reader.peek()) {
+			case STRING:
+				value = reader.nextString();
+				break;
+			case BOOLEAN:
+				value = reader.nextBoolean();
+				break;
+			case NUMBER:
+				value = reader.nextLong();
+				break;
+			}
+			map.put(name, value);
+		}
+		reader.endObject();
+		return map;
+	}
+
 	protected void writeNullSafeArray(JsonWriter writer, Set<String> items)
 			throws IOException {
 		if (items != null) {
 			writer.beginArray();
-		    for (String s : items) {
-		        writer.value(s);
-		    }
-		    writer.endArray();
+			for (String s : items) {
+				writer.value(s);
+			}
+			writer.endArray();
 		} else {
 			writer.nullValue();
 		}

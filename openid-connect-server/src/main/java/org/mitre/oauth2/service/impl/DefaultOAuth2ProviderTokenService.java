@@ -194,7 +194,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 
 				token.setRefreshToken(savedRefreshToken);
 			}
-			
+
 			OAuth2AccessTokenEntity enhancedToken = (OAuth2AccessTokenEntity) tokenEnhancer.enhance(token, authentication);
 
 			OAuth2AccessTokenEntity savedToken = tokenRepository.saveAccessToken(enhancedToken);
@@ -235,14 +235,14 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		ClientDetailsEntity client = refreshToken.getClient();
 
 		AuthenticationHolderEntity authHolder = refreshToken.getAuthenticationHolder();
-		
+
 		// make sure that the client requesting the token is the one who owns the refresh token
 		ClientDetailsEntity requestingClient = clientDetailsService.loadClientByClientId(authRequest.getClientId());
 		if (!client.getClientId().equals(requestingClient.getClientId())) {
 			tokenRepository.removeRefreshToken(refreshToken);
 			throw new InvalidClientException("Client does not own the presented refresh token");
 		}
-		
+
 		//Make sure this client allows access token refreshing
 		if (!client.isAllowRefresh()) {
 			throw new InvalidClientException("Client does not allow refreshing access token!");
@@ -483,18 +483,18 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	@Override
 	public OAuth2AccessTokenEntity getRegistrationAccessTokenForClient(ClientDetailsEntity client) {
 		List<OAuth2AccessTokenEntity> allTokens = getAccessTokensForClient(client);
-		
+
 		for (OAuth2AccessTokenEntity token : allTokens) {
-			if ((token.getScope().contains(SystemScopeService.REGISTRATION_TOKEN_SCOPE) || token.getScope().contains(SystemScopeService.RESOURCE_TOKEN_SCOPE)) 
+			if ((token.getScope().contains(SystemScopeService.REGISTRATION_TOKEN_SCOPE) || token.getScope().contains(SystemScopeService.RESOURCE_TOKEN_SCOPE))
 					&& token.getScope().size() == 1) {
 				// if it only has the registration scope, then it's a registration token
 				return token;
 			}
 		}
-		
+
 		return null;
 	}
-	
-	
+
+
 
 }

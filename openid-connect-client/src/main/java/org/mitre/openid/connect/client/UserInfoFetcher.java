@@ -64,19 +64,19 @@ public class UserInfoFetcher {
 		}
 
 		try {
-		
+
 			// if we got this far, try to actually get the userinfo
 			HttpClient httpClient = HttpClientBuilder.create()
 					.useSystemProperties()
 					.build();
-			
+
 			HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
-			
+
 			String userInfoString = null;
-			
+
 			if (serverConfiguration.getUserInfoTokenMethod() == null || serverConfiguration.getUserInfoTokenMethod().equals(UserInfoTokenMethod.HEADER)) {
 				RestTemplate restTemplate = new RestTemplate(factory) {
-					
+
 					@Override
 					protected ClientHttpRequest createRequest(URI url, HttpMethod method) throws IOException {
 						ClientHttpRequest httpRequest = super.createRequest(url, method);
@@ -84,19 +84,19 @@ public class UserInfoFetcher {
 						return httpRequest;
 					}
 				};
-				
+
 				userInfoString = restTemplate.getForObject(serverConfiguration.getUserInfoUri(), String.class);
-				
+
 			} else if (serverConfiguration.getUserInfoTokenMethod().equals(UserInfoTokenMethod.FORM)) {
 				MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
 				form.add("access_token", token.getAccessTokenValue());
-				
+
 				RestTemplate restTemplate = new RestTemplate(factory);
 				userInfoString = restTemplate.postForObject(serverConfiguration.getUserInfoUri(), form, String.class);
 			} else if (serverConfiguration.getUserInfoTokenMethod().equals(UserInfoTokenMethod.QUERY)) {
 				URIBuilder builder = new URIBuilder(serverConfiguration.getUserInfoUri());
 				builder.setParameter("access_token",  token.getAccessTokenValue());
-				
+
 				RestTemplate restTemplate = new RestTemplate(factory);
 				userInfoString = restTemplate.getForObject(builder.toString(), String.class);
 			}
@@ -105,7 +105,7 @@ public class UserInfoFetcher {
 			if (!Strings.isNullOrEmpty(userInfoString)) {
 
 				JsonObject userInfoJson = new JsonParser().parse(userInfoString).getAsJsonObject();
-	
+
 				UserInfo userInfo = DefaultUserInfo.fromJson(userInfoJson);
 
 				return userInfo;

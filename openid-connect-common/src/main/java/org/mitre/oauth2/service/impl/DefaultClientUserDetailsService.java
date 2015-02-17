@@ -45,7 +45,7 @@ import com.google.common.base.Strings;
 public class DefaultClientUserDetailsService implements UserDetailsService {
 
 	private static GrantedAuthority ROLE_CLIENT = new SimpleGrantedAuthority("ROLE_CLIENT");
-	
+
 	@Autowired
 	private ClientDetailsEntityService clientDetailsService;
 
@@ -57,17 +57,17 @@ public class DefaultClientUserDetailsService implements UserDetailsService {
 		if (client != null) {
 
 			String password = Strings.nullToEmpty(client.getClientSecret());
-			
-			if (client.getTokenEndpointAuthMethod() != null && 
+
+			if (client.getTokenEndpointAuthMethod() != null &&
 					(client.getTokenEndpointAuthMethod().equals(AuthMethod.PRIVATE_KEY) ||
 							client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_JWT))) {
-				
-				// Issue a random password each time to prevent password auth from being used (or skipped) 
+
+				// Issue a random password each time to prevent password auth from being used (or skipped)
 				// for private key or shared key clients, see #715
-				
+
 				password = new BigInteger(512, new SecureRandom()).toString(16);
 			}
-			
+
 			boolean enabled = true;
 			boolean accountNonExpired = true;
 			boolean credentialsNonExpired = true;

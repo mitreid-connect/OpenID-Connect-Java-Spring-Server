@@ -84,7 +84,7 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 
 	@Autowired
 	private SymmetricCacheService symmetricCacheService;
-	
+
 	@Autowired
 	private OAuth2TokenEntityService tokenService;
 
@@ -156,17 +156,17 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 			}
 
 		} else {
-			
+
 			JWT idToken;
-			
-			if (signingAlg.equals(JWSAlgorithm.NONE)) {
+
+			if (signingAlg.equals(Algorithm.NONE)) {
 				// unsigned ID token
 				idToken = new PlainJWT(idClaims);
 
 			} else {
 
 				// signed ID token
-	
+
 				if (signingAlg.equals(JWSAlgorithm.HS256)
 						|| signingAlg.equals(JWSAlgorithm.HS384)
 						|| signingAlg.equals(JWSAlgorithm.HS512)) {
@@ -174,19 +174,19 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 					idToken = new SignedJWT(new JWSHeader(signingAlg), idClaims);
 
 					JwtSigningAndValidationService signer = symmetricCacheService.getSymmetricValidtor(client);
-	
+
 					// sign it with the client's secret
 					signer.signJwt((SignedJWT) idToken);
 				} else {
 					idClaims.setCustomClaim("kid", jwtService.getDefaultSignerKeyId());
-					
+
 					idToken = new SignedJWT(new JWSHeader(signingAlg), idClaims);
-	
+
 					// sign it with the server's key
 					jwtService.signJwt((SignedJWT) idToken);
 				}
 			}
-				
+
 
 			idTokenEntity.setJwt(idToken);
 		}
@@ -212,9 +212,9 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 	public OAuth2AccessTokenEntity createRegistrationAccessToken(ClientDetailsEntity client) {
 
 		return createAssociatedToken(client, Sets.newHashSet(SystemScopeService.REGISTRATION_TOKEN_SCOPE));
-		
+
 	}
-	
+
 	/**
 	 * @param client
 	 * @return
@@ -223,7 +223,7 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 	public OAuth2AccessTokenEntity createResourceAccessToken(ClientDetailsEntity client) {
 
 		return createAssociatedToken(client, Sets.newHashSet(SystemScopeService.RESOURCE_TOKEN_SCOPE));
-		
+
 	}
 
 	@Override
@@ -237,19 +237,19 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 		} else {
 			return null;
 		}
-		
+
 	}
-	
+
 	private OAuth2AccessTokenEntity createAssociatedToken(ClientDetailsEntity client, Set<String> scope) {
-		
+
 		// revoke any previous tokens that might exist, just to be sure
 		OAuth2AccessTokenEntity oldToken = tokenService.getRegistrationAccessTokenForClient(client);
 		if (oldToken != null) {
 			tokenService.revokeAccessToken(oldToken);
 		}
-		
+
 		// create a new token
-		
+
 		Map<String, String> authorizationParameters = Maps.newHashMap();
 		OAuth2Request clientAuth = new OAuth2Request(authorizationParameters, client.getClientId(),
 				Sets.newHashSet(new SimpleGrantedAuthority("ROLE_CLIENT")), true,

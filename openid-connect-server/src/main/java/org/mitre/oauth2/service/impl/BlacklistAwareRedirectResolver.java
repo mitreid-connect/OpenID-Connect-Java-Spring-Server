@@ -36,7 +36,7 @@ public class BlacklistAwareRedirectResolver extends DefaultRedirectResolver {
 
 	@Autowired
 	private BlacklistedSiteService blacklistService;
-	
+
 	/* (non-Javadoc)
 	 * @see org.springframework.security.oauth2.provider.endpoint.RedirectResolver#resolveRedirect(java.lang.String, org.springframework.security.oauth2.provider.ClientDetails)
 	 */

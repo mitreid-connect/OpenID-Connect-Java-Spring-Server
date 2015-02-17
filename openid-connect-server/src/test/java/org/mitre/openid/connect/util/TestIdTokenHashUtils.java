@@ -52,13 +52,13 @@ public class TestIdTokenHashUtils {
 	public void prepare() throws ParseException {
 
 		/*
-		Claims for first token: 
-		
+		Claims for first token:
+
 		claims.setType("JWT");
 		claims.setIssuer("www.example.com");
 		claims.setSubject("example_user");
 		claims.setClaim("alg", "HS256");
-		*/
+		 */
 		Mockito.when(mockToken256.getJwt()).thenReturn(JWTParser.parse("eyJhbGciOiJub25lIn0.eyJhbGciOiJIUzI1NiIsInN1YiI6ImV4YW1wbGVfdXNlciIsImlzcyI6Ind3dy5leGFtcGxlLmNvbSIsInR5cCI6IkpXVCJ9."));
 
 		/*
@@ -85,12 +85,7 @@ public class TestIdTokenHashUtils {
 	@Test
 	public void getAccessTokenHash256() {
 
-		/*
-		 * independently generate hash
-		 ascii of token = eyJhbGciOiJub25lIn0.eyJhbGciOiJIUzI1NiIsInN1YiI6ImV4YW1wbGVfdXNlciIsImlzcyI6Ind3dy5leGFtcGxlLmNvbSIsInR5cCI6IkpXVCJ9.
-		 base64url of hash = EP1gXNeESRH-n57baopfTQ
-		 */
-		String token = mockToken256.getJwt().serialize();
+		mockToken256.getJwt().serialize();
 		Base64URL expectedHash = new Base64URL("EP1gXNeESRH-n57baopfTQ");
 
 		Base64URL resultHash = IdTokenHashUtils.getAccessTokenHash(JWSAlgorithm.HS256, mockToken256);
@@ -107,7 +102,7 @@ public class TestIdTokenHashUtils {
 		 base64url of hash = BWfFK73PQI36M1rg9R6VjMyWOE0-XvBK
 		 */
 
-		String token = mockToken384.getJwt().serialize();
+		mockToken384.getJwt().serialize();
 		Base64URL expectedHash = new Base64URL("BWfFK73PQI36M1rg9R6VjMyWOE0-XvBK");
 
 		Base64URL resultHash = IdTokenHashUtils.getAccessTokenHash(JWSAlgorithm.ES384, mockToken384);
@@ -124,7 +119,7 @@ public class TestIdTokenHashUtils {
 		 base64url of hash = vGH3QMY-knpACkLgzdkTqu3C9jtvbf2Wk_RSu2vAx8k
 		 */
 
-		String token = mockToken512.getJwt().serialize();
+		mockToken512.getJwt().serialize();
 		Base64URL expectedHash = new Base64URL("vGH3QMY-knpACkLgzdkTqu3C9jtvbf2Wk_RSu2vAx8k");
 
 		Base64URL resultHash = IdTokenHashUtils.getAccessTokenHash(JWSAlgorithm.RS512, mockToken512);

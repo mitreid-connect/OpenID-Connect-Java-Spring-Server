@@ -311,16 +311,16 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 		}
 
 		// Handle Token Endpoint interaction
-		
+
 		HttpClient httpClient = HttpClientBuilder.create()
 				.useSystemProperties()
 				.setDefaultRequestConfig(
 						RequestConfig.custom()
-							.setSocketTimeout(httpSocketTimeout)
-							.build()
+						.setSocketTimeout(httpSocketTimeout)
+						.build()
 						)
-				.build();
-		
+						.build();
+
 		HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
 
 		RestTemplate restTemplate;
@@ -363,7 +363,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 
 					// needs to be wired in to the bean
 					signer = authenticationSignerService;
-					
+
 					if (alg == null) {
 						alg = authenticationSignerService.getDefaultSigningAlgorithm();
 					}
@@ -475,39 +475,39 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 				JwtSigningAndValidationService jwtValidator = null;
 
 				Algorithm tokenAlg = idToken.getHeader().getAlgorithm();
-				
+
 				Algorithm clientAlg = clientConfig.getIdTokenSignedResponseAlg();
-				
+
 				if (clientAlg != null) {
 					if (!clientAlg.equals(tokenAlg)) {
 						throw new AuthenticationServiceException("Token algorithm " + tokenAlg + " does not match expected algorithm " + clientAlg);
 					}
 				}
-				
+
 				if (idToken instanceof PlainJWT) {
-					
+
 					if (clientAlg == null) {
 						throw new AuthenticationServiceException("Unsigned ID tokens can only be used if explicitly configured in client.");
 					}
-					
-					if (tokenAlg != null && !tokenAlg.equals(JWSAlgorithm.NONE)) {
+
+					if (tokenAlg != null && !tokenAlg.equals(Algorithm.NONE)) {
 						throw new AuthenticationServiceException("Unsigned token received, expected signature with " + tokenAlg);
 					}
 				} else if (idToken instanceof SignedJWT) {
-				
+
 					SignedJWT signedIdToken = (SignedJWT)idToken;
-					
+
 					if (tokenAlg.equals(JWSAlgorithm.HS256)
-						|| tokenAlg.equals(JWSAlgorithm.HS384)
-						|| tokenAlg.equals(JWSAlgorithm.HS512)) {
-						
+							|| tokenAlg.equals(JWSAlgorithm.HS384)
+							|| tokenAlg.equals(JWSAlgorithm.HS512)) {
+
 						// generate one based on client secret
 						jwtValidator = symmetricCacheService.getSymmetricValidtor(clientConfig.getClient());
 					} else {
 						// otherwise load from the server's public key
 						jwtValidator = validationServices.getValidator(serverConfig.getJwksUri());
 					}
-					
+
 					if (jwtValidator != null) {
 						if(!jwtValidator.validateSignature(signedIdToken)) {
 							throw new AuthenticationServiceException("Signature validation failed");
@@ -564,20 +564,20 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 
 				// compare the nonce to our stored claim
 				String nonce = idClaims.getStringClaim("nonce");
-				
+
 				if (serverConfig.isNonceEnabled()) {
 					if (Strings.isNullOrEmpty(nonce)) {
-	
+
 						logger.error("ID token did not contain a nonce claim.");
-	
+
 						throw new AuthenticationServiceException("ID token did not contain a nonce claim.");
 					}
-	
+
 					String storedNonce = getStoredNonce(session);
 					if (!nonce.equals(storedNonce)) {
 						logger.error("Possible replay attack detected! The comparison of the nonce in the returned "
 								+ "ID Token to the session " + NONCE_SESSION_VARIABLE + " failed. Expected " + storedNonce + " got " + nonce + ".");
-	
+
 						throw new AuthenticationServiceException(
 								"Possible replay attack detected! The comparison of the nonce in the returned "
 										+ "ID Token to the session " + NONCE_SESSION_VARIABLE + " failed. Expected " + storedNonce + " got " + nonce + ".");

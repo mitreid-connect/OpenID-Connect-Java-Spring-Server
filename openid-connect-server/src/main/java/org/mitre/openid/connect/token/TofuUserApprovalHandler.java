@@ -277,7 +277,7 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 			}
 		}
 	}
-	
+
 	@Override
 	public Map<String, Object> getUserApprovalRequest(AuthorizationRequest authorizationRequest,
 			Authentication userAuthentication) {

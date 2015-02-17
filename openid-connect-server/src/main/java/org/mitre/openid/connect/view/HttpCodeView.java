@@ -37,7 +37,7 @@ import org.springframework.web.servlet.view.AbstractView;
 public class HttpCodeView extends AbstractView {
 
 	public static final String VIEWNAME = "httpCodeView";
-	
+
 	@Override
 	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
 		HttpStatus code = (HttpStatus) model.get("code");

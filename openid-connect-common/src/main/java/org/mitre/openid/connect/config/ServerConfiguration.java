@@ -205,23 +205,23 @@ public class ServerConfiguration {
 	private Boolean requireRequestUriRegistration;
 	private String opPolicyUri;
 	private String opTosUri;
-	
+
 	//
 	// extensions to the discoverable methods
 	//
-	
+
 	// how do we send the access token to the userinfo endpoint?
-	private UserInfoTokenMethod userInfoTokenMethod;	
-	
+	private UserInfoTokenMethod userInfoTokenMethod;
+
 	public enum UserInfoTokenMethod {
 		HEADER,
 		FORM,
 		QUERY;
 	}
-	
+
 	// do we create and send a nonce value?
 	private boolean nonceEnabled = true;
-	
+
 	/**
 	 * @return the authorizationEndpointUri
 	 */
@@ -666,7 +666,7 @@ public class ServerConfiguration {
 	public void setOpTosUri(String opTosUri) {
 		this.opTosUri = opTosUri;
 	}
-	
+
 	public String getRevocationEndpointUri() {
 		return revocationEndpointUri;
 	}
@@ -681,7 +681,7 @@ public class ServerConfiguration {
 		this.userInfoTokenMethod = userInfoTokenMethod;
 	}
 
-	
+
 	/**
 	 * @return the nonceEnabled
 	 */

@@ -37,6 +37,10 @@ import com.google.gson.JsonObject;
 })
 public class DefaultUserInfo implements UserInfo {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6078310513185681918L;
 	private Long id;
 	private String sub;
 	private String preferredUsername;

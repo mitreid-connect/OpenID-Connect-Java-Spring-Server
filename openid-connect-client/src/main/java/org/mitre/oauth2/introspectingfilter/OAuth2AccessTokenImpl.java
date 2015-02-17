@@ -32,21 +32,21 @@ import com.google.gson.JsonObject;
 
 public class OAuth2AccessTokenImpl implements OAuth2AccessToken {
 
-	private JsonObject token;
+	private JsonObject introspectionResponse;
 	private String tokenString;
 	private Set<String> scopes = new HashSet<String>();
 	private Date expireDate;
 
 
-	public OAuth2AccessTokenImpl(JsonObject token, String tokenString) {
-		this.token = token;
+	public OAuth2AccessTokenImpl(JsonObject introspectionResponse, String tokenString) {
+		this.setIntrospectionResponse(introspectionResponse);
 		this.tokenString = tokenString;
-		if (token.get("scope") != null) {
-			scopes = Sets.newHashSet(Splitter.on(" ").split(token.get("scope").getAsString()));
+		if (introspectionResponse.get("scope") != null) {
+			scopes = Sets.newHashSet(Splitter.on(" ").split(introspectionResponse.get("scope").getAsString()));
 		}
 
-		if (token.get("exp") != null) {
-			expireDate = new Date(token.get("exp").getAsLong() * 1000L);
+		if (introspectionResponse.get("exp") != null) {
+			expireDate = new Date(introspectionResponse.get("exp").getAsLong() * 1000L);
 		}
 	}
 
@@ -95,6 +95,22 @@ public class OAuth2AccessTokenImpl implements OAuth2AccessToken {
 	@Override
 	public String getValue() {
 		return tokenString;
+	}
+
+
+	/**
+	 * @return the token
+	 */
+	public JsonObject getIntrospectionResponse() {
+		return introspectionResponse;
+	}
+
+
+	/**
+	 * @param token the token to set
+	 */
+	public void setIntrospectionResponse(JsonObject token) {
+		this.introspectionResponse = token;
 	}
 
 }

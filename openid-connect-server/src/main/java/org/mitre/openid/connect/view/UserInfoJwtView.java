@@ -62,7 +62,7 @@ public class UserInfoJwtView extends UserInfoView {
 	private static Logger logger = LoggerFactory.getLogger(UserInfoJwtView.class);
 
 	public static final String VIEWNAME = "userInfoJwtView";
-	
+
 	@Autowired
 	private JwtSigningAndValidationService jwtService;
 
@@ -87,7 +87,7 @@ public class UserInfoJwtView extends UserInfoView {
 			gson.toJson(json, writer);
 
 			response.setContentType("application/jwt");
-			
+
 			JWTClaimsSet claims = JWTClaimsSet.parse(writer.toString());
 
 			claims.setAudience(Lists.newArrayList(client.getClientId()));

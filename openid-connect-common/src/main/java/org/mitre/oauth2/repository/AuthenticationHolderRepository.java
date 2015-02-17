@@ -22,7 +22,7 @@ import org.mitre.oauth2.model.AuthenticationHolderEntity;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 
 public interface AuthenticationHolderRepository {
-    public List<AuthenticationHolderEntity> getAll();
+	public List<AuthenticationHolderEntity> getAll();
 
 	public AuthenticationHolderEntity getById(Long id);
 

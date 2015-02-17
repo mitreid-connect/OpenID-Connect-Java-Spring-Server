@@ -44,11 +44,11 @@ public class ConfigurationPropertiesBean {
 	private String topbarTitle;
 
 	private String logoImageUrl;
-	
+
 	private Long regTokenLifeTime;
-	
+
 	private boolean forceHttps = false;
-	
+
 	private Locale locale = Locale.getDefault();
 
 	public ConfigurationPropertiesBean() {
@@ -57,7 +57,7 @@ public class ConfigurationPropertiesBean {
 
 	/**
 	 * Endpoints protected by TLS must have https scheme in the URI.
-	 * @throws HttpsUrlRequiredException 
+	 * @throws HttpsUrlRequiredException
 	 */
 	@PostConstruct
 	public void checkForHttps() {
@@ -127,7 +127,7 @@ public class ConfigurationPropertiesBean {
 	public void setRegTokenLifeTime(Long regTokenLifeTime) {
 		this.regTokenLifeTime = regTokenLifeTime;
 	}
-	
+
 	public boolean isForceHttps() {
 		return forceHttps;
 	}

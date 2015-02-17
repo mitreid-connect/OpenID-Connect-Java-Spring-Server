@@ -97,15 +97,15 @@ public class AuthorizationRequestFilter extends GenericFilterBean {
 			// no need to worry about this here, it would be caught elsewhere
 		}
 
-		
+
 		// save the login hint to the session
 		if (authRequest.getExtensions().get("login_hint") != null) {
 			session.setAttribute("login_hint", authRequest.getExtensions().get("login_hint"));
 		} else {
 			session.removeAttribute("login_hint");
 		}
-		
-		
+
+
 		if (authRequest.getExtensions().get("prompt") != null) {
 			// we have a "prompt" parameter
 			String prompt = (String)authRequest.getExtensions().get("prompt");

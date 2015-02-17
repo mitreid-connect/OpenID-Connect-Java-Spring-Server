@@ -40,7 +40,7 @@ import org.springframework.web.servlet.i18n.AbstractLocaleContextResolver;
  */
 @Component("localeResolver")
 public class ConfigurationBeanLocaleResolver extends AbstractLocaleContextResolver {
-	
+
 	@Autowired
 	private ConfigurationPropertiesBean config;
 

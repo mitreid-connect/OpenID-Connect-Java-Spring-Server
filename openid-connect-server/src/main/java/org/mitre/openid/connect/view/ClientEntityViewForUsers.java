@@ -43,7 +43,7 @@ public class ClientEntityViewForUsers extends AbstractClientEntityView {
 	private Set<String> whitelistedFields = ImmutableSet.of("clientName", "clientId", "id", "clientDescription", "scope", "logoUri");
 
 	public static final String VIEWNAME = "clientEntityViewUsers";
-	
+
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.view.AbstractClientEntityView#getExclusionStrategy()
 	 */

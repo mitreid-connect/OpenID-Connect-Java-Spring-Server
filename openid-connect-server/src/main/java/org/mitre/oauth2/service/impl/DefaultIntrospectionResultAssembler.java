@@ -42,77 +42,77 @@ import com.google.common.base.Joiner;
 public class DefaultIntrospectionResultAssembler implements IntrospectionResultAssembler {
 
 	private static Logger log = LoggerFactory.getLogger(DefaultIntrospectionResultAssembler.class);
-	
+
 	private static DateFormatter dateFormat = new DateFormatter(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ"));
-	
-    @Override
-    public Map<String, Object> assembleFrom(OAuth2AccessTokenEntity accessToken, UserInfo userInfo) {
 
-        Map<String, Object> result = newLinkedHashMap();
-        OAuth2Authentication authentication = accessToken.getAuthenticationHolder().getAuthentication();
+	@Override
+	public Map<String, Object> assembleFrom(OAuth2AccessTokenEntity accessToken, UserInfo userInfo) {
 
-        result.put("active", true);
+		Map<String, Object> result = newLinkedHashMap();
+		OAuth2Authentication authentication = accessToken.getAuthenticationHolder().getAuthentication();
 
-        result.put("scope", Joiner.on(" ").join(accessToken.getScope()));
+		result.put("active", true);
 
-        if (accessToken.getExpiration() != null) {
-            try {
+		result.put("scope", Joiner.on(" ").join(accessToken.getScope()));
+
+		if (accessToken.getExpiration() != null) {
+			try {
 				result.put("expires_at", dateFormat.valueToString(accessToken.getExpiration()));
 				result.put("exp", accessToken.getExpiration().getTime() / 1000L);
 			} catch (ParseException e) {
 				log.error("Parse exception in token introspection", e);
 			}
-        }
+		}
 
-        if (userInfo != null) {
-            // if we have a UserInfo, use that for the subject
-            result.put("sub", userInfo.getSub());
-        } else {
-            // otherwise, use the authentication's username
-            result.put("sub", authentication.getName());
-        }
+		if (userInfo != null) {
+			// if we have a UserInfo, use that for the subject
+			result.put("sub", userInfo.getSub());
+		} else {
+			// otherwise, use the authentication's username
+			result.put("sub", authentication.getName());
+		}
 
-        result.put("user_id", authentication.getName());
+		result.put("user_id", authentication.getName());
 
-        result.put("client_id", authentication.getOAuth2Request().getClientId());
+		result.put("client_id", authentication.getOAuth2Request().getClientId());
 
-        result.put("token_type", accessToken.getTokenType());
+		result.put("token_type", accessToken.getTokenType());
 
-        return result;
-    }
+		return result;
+	}
 
-    @Override
-    public Map<String, Object> assembleFrom(OAuth2RefreshTokenEntity refreshToken, UserInfo userInfo) {
+	@Override
+	public Map<String, Object> assembleFrom(OAuth2RefreshTokenEntity refreshToken, UserInfo userInfo) {
 
-        Map<String, Object> result = newLinkedHashMap();
-        OAuth2Authentication authentication = refreshToken.getAuthenticationHolder().getAuthentication();
+		Map<String, Object> result = newLinkedHashMap();
+		OAuth2Authentication authentication = refreshToken.getAuthenticationHolder().getAuthentication();
 
-        result.put("active", true);
+		result.put("active", true);
 
-        result.put("scope", Joiner.on(" ").join(authentication.getOAuth2Request().getScope()));
+		result.put("scope", Joiner.on(" ").join(authentication.getOAuth2Request().getScope()));
 
-        if (refreshToken.getExpiration() != null) {
-            try {
+		if (refreshToken.getExpiration() != null) {
+			try {
 				result.put("expires_at", dateFormat.valueToString(refreshToken.getExpiration()));
 				result.put("exp", refreshToken.getExpiration().getTime() / 1000L);
 			} catch (ParseException e) {
 				log.error("Parse exception in token introspection", e);
 			}
-        }
+		}
 
 
-        if (userInfo != null) {
-            // if we have a UserInfo, use that for the subject
-            result.put("sub", userInfo.getSub());
-        } else {
-            // otherwise, use the authentication's username
-            result.put("sub", authentication.getName());
-        }
+		if (userInfo != null) {
+			// if we have a UserInfo, use that for the subject
+			result.put("sub", userInfo.getSub());
+		} else {
+			// otherwise, use the authentication's username
+			result.put("sub", authentication.getName());
+		}
 
-        result.put("user_id", authentication.getName());
+		result.put("user_id", authentication.getName());
 
-        result.put("client_id", authentication.getOAuth2Request().getClientId());
+		result.put("client_id", authentication.getOAuth2Request().getClientId());
 
-        return result;
-    }
+		return result;
+	}
 }

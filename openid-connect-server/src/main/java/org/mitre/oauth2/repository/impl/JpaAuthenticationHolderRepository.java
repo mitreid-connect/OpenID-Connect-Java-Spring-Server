@@ -37,13 +37,13 @@ public class JpaAuthenticationHolderRepository implements AuthenticationHolderRe
 
 	@PersistenceContext
 	private EntityManager manager;
-    
-    @Override
-    public List<AuthenticationHolderEntity> getAll() {
+
+	@Override
+	public List<AuthenticationHolderEntity> getAll() {
 		TypedQuery<AuthenticationHolderEntity> query = manager.createNamedQuery("AuthenticationHolderEntity.getAll", AuthenticationHolderEntity.class);
 		return query.getResultList();
-    }
- 
+	}
+
 	@Override
 	public AuthenticationHolderEntity getById(Long id) {
 		return manager.find(AuthenticationHolderEntity.class, id);

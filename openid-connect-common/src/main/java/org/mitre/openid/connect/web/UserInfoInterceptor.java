@@ -87,11 +87,11 @@ public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 						modelAndView.addObject("userInfoJson", oidc.getUserInfo().toJson());
 					} else {
 						modelAndView.addObject("userInfo", null);
-						modelAndView.addObject("userInfoJson", "null");						
+						modelAndView.addObject("userInfoJson", "null");
 					}
 				} else {
 					// don't bother checking if we don't have a principal or a userInfoService to work with
-					if (p != null && p.getName() != null && userInfoService != null) { 
+					if (p != null && p.getName() != null && userInfoService != null) {
 
 						// try to look up a user based on the principal's name
 						UserInfo user = userInfoService.getByUsername(p.getName());

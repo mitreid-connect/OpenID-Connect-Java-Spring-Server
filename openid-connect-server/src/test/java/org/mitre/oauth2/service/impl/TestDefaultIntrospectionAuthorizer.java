@@ -83,8 +83,7 @@ public class TestDefaultIntrospectionAuthorizer {
 		String tokenClient = "token";
 		Set<String> authScope = scope("scope1", "scope2");
 		Set<String> tokenScope = scope("scope1", "scope2", "scope3");
-		given(scopeService.scopesMatch(authScope, tokenScope))
-				.willReturn(false);
+		given(scopeService.scopesMatch(authScope, tokenScope)).willReturn(false);
 
 		// when
 		boolean permitted = introspectionPermitter.isIntrospectionPermitted(
@@ -101,8 +100,7 @@ public class TestDefaultIntrospectionAuthorizer {
 		return client;
 	}
 
-	private ClientDetails clientWithIdAndScope(String clientId,
-			Set<String> scope) {
+	private ClientDetails clientWithIdAndScope(String clientId, Set<String> scope) {
 		ClientDetails client = clientWithId(clientId);
 		given(client.getScope()).willReturn(scope);
 		return client;
