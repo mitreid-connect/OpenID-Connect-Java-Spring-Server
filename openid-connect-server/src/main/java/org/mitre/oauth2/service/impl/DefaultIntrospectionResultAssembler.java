@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2014 The MITRE Corporation
+ * Copyright 2015 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,7 +13,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- ******************************************************************************/
+ *******************************************************************************/
 package org.mitre.oauth2.service.impl;
 
 import static com.google.common.collect.Maps.newLinkedHashMap;
