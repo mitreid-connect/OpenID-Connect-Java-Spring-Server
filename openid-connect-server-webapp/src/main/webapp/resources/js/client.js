@@ -1013,6 +1013,7 @@ var ClientFormView = Backbone.View.extend({
         var redirUriView = new ListWidgetView({
         	type:'uri', 
         	placeholder: 'https://',
+        	helpBlockText: $.t('client.client-form.redirect-uris-help'),
         	collection: this.redirectUrisCollection});
         $("#redirectUris .controls",this.el).html(redirUriView.render().el);
         this.listWidgetViews.push(redirUriView);
@@ -1023,8 +1024,9 @@ var ClientFormView = Backbone.View.extend({
         });
 
         var scopeView = new ListWidgetView({
-        	placeholder: 'new scope', 
+        	placeholder: $.t('client.client-form.scope-placeholder'), 
         	autocomplete: _.uniq(_.flatten(this.options.systemScopeList.pluck("value"))), 
+        	helpBlockText: $.t('client.client-form.scope-help'),
             collection: this.scopeCollection});
         $("#scope .controls",this.el).html(scopeView.render().el);
         this.listWidgetViews.push(scopeView);
@@ -1075,6 +1077,7 @@ var ClientFormView = Backbone.View.extend({
         var defaultAcrView = new ListWidgetView({
         	placeholder: $.t('client.client-form.acr-values-placeholder'),
         	// TODO: autocomplete from spec
+        	helpBlockText: $.t('client.client-form.acr-values-help'),
         	collection: this.defaultAcrValuesCollection});
         $('#defaultAcrValues .controls', this.el).html(defaultAcrView.render().el);
         this.listWidgetViews.push(defaultAcrView);

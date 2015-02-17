@@ -346,18 +346,6 @@ var ResRegEditView = Backbone.View.extend({
 		
 		var _self = this;
 
-        // build and bind registered redirect URI collection and view
-        _.each(this.model.get("redirectUris"), function (redirectUri) {
-            _self.redirectUrisCollection.add(new URIModel({item:redirectUri}));
-        });
-
-        var redirectUriView = new ListWidgetView({
-        	type:'uri', 
-        	placeholder: 'https://',
-        	collection: this.redirectUrisCollection});
-        $("#redirectUris .controls",this.el).html(redirectUriView.render().el);
-        this.listWidgetViews.push(redirectUriView);
-        
         // build and bind scopes
         var scopes = this.model.get("scope");
         var scopeSet = scopes ? scopes.split(" ") : [];
@@ -368,6 +356,7 @@ var ResRegEditView = Backbone.View.extend({
         var scopeView = new ListWidgetView({
         	placeholder: $.t('client.client-form.scope-placeholder'), 
         	autocomplete: _.uniq(_.flatten(this.options.systemScopeList.pluck("value"))), 
+        	helpBlockText: $.t('rsreg.client-form.scope-help'),
             collection: this.scopeCollection});
         $("#scope .controls",this.el).html(scopeView.render().el);
         this.listWidgetViews.push(scopeView);
@@ -379,46 +368,16 @@ var ResRegEditView = Backbone.View.extend({
         
         var contactView = new ListWidgetView({
         	placeholder: $.t('client.client-form.contacts-placeholder'),
+        	helpBlockText: $.t('client.client-form.contacts-help'),
         	collection: this.contactsCollection});
         $("#contacts .controls div", this.el).html(contactView.render().el);
         this.listWidgetViews.push(contactView);
         
         
-        // build and bind request URIs
-        _.each(this.model.get('requestUris'), function (requestUri) {
-        	_self.requestUrisCollection.add(new URIModel({item:requestUri}));
-        });
-        
-        var requestUriView = new ListWidgetView({
-        	type: 'uri',
-        	placeholder: 'https://',
-        	collection: this.requestUrisCollection});
-        $('#requestUris .controls', this.el).html(requestUriView.render().el);
-        this.listWidgetViews.push(requestUriView);
-        
-        // build and bind default ACR values
-        _.each(this.model.get('defaultAcrValues'), function (defaultAcrValue) {
-        	_self.defaultAcrValuesCollection.add(new Backbone.Model({item:defaultAcrValue}));
-        });
-        
-        var defaultAcrView = new ListWidgetView({
-        	placeholder: $.t('client.client-form.acr-values-placeholder'),
-        	// TODO: autocomplete from spec
-        	collection: this.defaultAcrValuesCollection});
-        $('#defaultAcrValues .controls', this.el).html(defaultAcrView.render().el);
-        this.listWidgetViews.push(defaultAcrView);
-
         this.toggleClientCredentials();
         this.previewLogo();
         
         // disable unsupported JOSE algorithms
-        this.disableUnsupportedJOSEItems(app.serverConfiguration.request_object_signing_alg_values_supported, '#requestObjectSigningAlg option');
-        this.disableUnsupportedJOSEItems(app.serverConfiguration.userinfo_signing_alg_values_supported, '#userInfoSignedResponseAlg option');
-        this.disableUnsupportedJOSEItems(app.serverConfiguration.userinfo_encryption_alg_values_supported, '#userInfoEncryptedResponseAlg option');
-        this.disableUnsupportedJOSEItems(app.serverConfiguration.userinfo_encryption_enc_values_supported, '#userInfoEncryptedResponseEnc option');
-        this.disableUnsupportedJOSEItems(app.serverConfiguration.id_token_signing_alg_values_supported, '#idTokenSignedResponseAlg option');
-        this.disableUnsupportedJOSEItems(app.serverConfiguration.id_token_encryption_alg_values_supported, '#idTokenEncryptedResponseAlg option');
-        this.disableUnsupportedJOSEItems(app.serverConfiguration.id_token_encryption_enc_values_supported, '#idTokenEncryptedResponseEnc option');
         this.disableUnsupportedJOSEItems(app.serverConfiguration.token_endpoint_auth_signing_alg_values_supported, '#tokenEndpointAuthSigningAlg option');
         
         this.$('.nyi').clickover({

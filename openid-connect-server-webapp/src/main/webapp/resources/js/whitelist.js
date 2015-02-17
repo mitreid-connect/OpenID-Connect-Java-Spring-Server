@@ -339,8 +339,9 @@ var WhiteListFormView = Backbone.View.extend({
         });
 
         var scopeView = new ListWidgetView({
-        	placeholder: 'new scope here', 
+        	placeholder: $.t('whitelist.whitelist-form.scope-placeholder'),        	
         	autocomplete: this.options.client.scope, 
+        	helpBlockText: $.t('whitelist.whitelist-form.scope-help'),
         	collection: this.scopeCollection});
         $("#scope .controls",this.el).html(scopeView.render().el);
         this.listWidgetViews.push(scopeView);

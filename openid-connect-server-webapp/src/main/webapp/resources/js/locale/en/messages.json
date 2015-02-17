@@ -26,6 +26,7 @@
             "access-token-timeout-help": "Enter this time in seconds, minutes, or hours.",
             "acr-values": "Default ACR Values",
             "acr-values-placeholder": "new ACR value",
+            "acr-values-help": "Default Authentication Context Reference to request for this client",
             "allow-introspection": "Allow calls to the Introspection Endpoint?",
             "authentication-method": "Token Endpoint Authentication Method",
             "authorization-code": "authorization code",
@@ -42,7 +43,7 @@
             "client-secret": "Client Secret",
             "client-secret-placeholder": "Type a secret",
             "contacts": "Contacts",
-            "contacts-help": "List of contacts for adminstrators of this client.",
+            "contacts-help": "List of contacts for administrators of this client.",
             "contacts-placeholder": "new contact",
             "credentials": "Credentials",
             "crypto": {
@@ -99,6 +100,7 @@
             "public": "Public",
             "redelegation": "redelegation",
             "redirect-uris": "Redirect URI(s)",
+            "redirect-uris-help": "URIs that the client can be redirected to after the authorization page",
             "refresh": "refresh",
             "refresh-tokens": "Refresh Tokens",
             "refresh-tokens-issued": "Refresh tokens are issued for this client",
@@ -124,7 +126,8 @@
                 "show-secret": "Show Secret",
                 "unchanged": "unchanged"
             },
-            "scope-placeholder": "nytt scope",
+            "scope-placeholder": "new scope",
+            "scope-help": "OAuth scopes this client is allowed to request",
             "seconds": "seconds",
             "secret-asymmetric-jwt": "Asymmetrically-signed JWT assertion",
             "secret-http": "Client Secret over HTTP Basic",
@@ -232,7 +235,7 @@
             "active-tokens": "Number of currently active access tokens",
             "application": "Application",
             "approved-sites": "Approved Sites",
-            "authorized": "Auktoriserad:",
+            "authorized": "Authorized:",
             "dynamically-registered": "This client was dynamically registered",
             "expires": "Expires:",
             "last-accessed": "Last accessed:",
@@ -259,7 +262,10 @@
         "or": " - OR - ",
         "regtoken-placeholder": "Enter Registration Access Token",
         "will-be-generated": "Will be generated",
-        "warning": "<strong>Warning!</strong> You MUST protect your <b>Client ID</b>, <b>Client Secret (if provided)</b>, and your <b>Registration Access Token</b>. If you lose your Client ID or Registration Access Token, you will no longer have access to your client's registration records and you will need to register a new client."
+        "warning": "<strong>Warning!</strong> You MUST protect your <b>Client ID</b>, <b>Client Secret (if provided)</b>, and your <b>Registration Access Token</b>. If you lose your Client ID or Registration Access Token, you will no longer have access to your client's registration records and you will need to register a new client.",
+        "client-form": {
+        	"scope-help": "Scopes that this resource will be able to introspect tokens for."
+        }
     },
     "scope": {
         "manage": "Manage System Scopes",
@@ -320,7 +326,9 @@
         "whitelist-form": {
             "allowed-scopes": "Allowed Scopes",
             "edit": "Edit Whitelisted Site",
-            "new": "New Whitelisted Site"
+            "new": "New Whitelisted Site",
+            "scope-help": "List of scopes that will be automatically approved when this client makes a request",
+            "scope-placeholder": "new scope"
         },
         "whitelist-table": {
             "no-sites": "There are no whitelisted sites. Use the <strong>whitelist</strong> button on the client management page to create one."

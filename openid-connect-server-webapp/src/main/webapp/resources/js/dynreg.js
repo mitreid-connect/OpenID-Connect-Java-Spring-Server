@@ -454,6 +454,7 @@ var DynRegEditView = Backbone.View.extend({
         var redirectUriView = new ListWidgetView({
         	type:'uri', 
         	placeholder: 'https://',
+        	helpBlockText: $.t('client.client-form.redirect-uris-help'),
         	collection: this.redirectUrisCollection});
         $("#redirectUris .controls",this.el).html(redirectUriView.render().el);
         this.listWidgetViews.push(redirectUriView);
@@ -468,6 +469,7 @@ var DynRegEditView = Backbone.View.extend({
         var scopeView = new ListWidgetView({
         	placeholder: $.t('client.client-form.scope-placeholder'), 
         	autocomplete: _.uniq(_.flatten(this.options.systemScopeList.pluck("value"))), 
+        	helpBlockText: $.t('client.client-form.scope-help'),
             collection: this.scopeCollection});
         $("#scope .controls",this.el).html(scopeView.render().el);
         this.listWidgetViews.push(scopeView);
@@ -479,6 +481,7 @@ var DynRegEditView = Backbone.View.extend({
         
         var contactView = new ListWidgetView({
         	placeholder: $.t('client.client-form.contacts-placeholder'),
+        	helpBlockText: $.t('client.client-form.contacts-help'),
         	collection: this.contactsCollection});
         $("#contacts .controls div", this.el).html(contactView.render().el);
         this.listWidgetViews.push(contactView);
@@ -504,6 +507,7 @@ var DynRegEditView = Backbone.View.extend({
         var requestUriView = new ListWidgetView({
         	type: 'uri',
         	placeholder: 'https://',
+        	helpBlockText: $.t('client.client-form.request-uri-help'),
         	collection: this.requestUrisCollection});
         $('#requestUris .controls', this.el).html(requestUriView.render().el);
         this.listWidgetViews.push(requestUriView);
@@ -516,6 +520,7 @@ var DynRegEditView = Backbone.View.extend({
         var defaultAcrView = new ListWidgetView({
         	placeholder: $.t('client.client-form.acr-values-placeholder'),
         	// TODO: autocomplete from spec
+        	helpBlockText: $.t('client.client-form.acr-values-help'),
         	collection: this.defaultAcrValuesCollection});
         $('#defaultAcrValues .controls', this.el).html(defaultAcrView.render().el);
         this.listWidgetViews.push(defaultAcrView);
