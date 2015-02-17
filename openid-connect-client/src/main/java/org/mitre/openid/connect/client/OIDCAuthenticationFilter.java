@@ -36,9 +36,9 @@ import javax.servlet.http.HttpSession;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
+import org.mitre.jwt.signer.service.JWTSigningAndValidationService;
 import org.mitre.jwt.signer.service.impl.JWKSetCacheService;
-import org.mitre.jwt.signer.service.impl.SymmetricCacheService;
+import org.mitre.jwt.signer.service.impl.SymmetricKeyJWTValidatorCacheService;
 import org.mitre.oauth2.model.RegisteredClient;
 import org.mitre.openid.connect.client.model.IssuerServiceResponse;
 import org.mitre.openid.connect.client.service.AuthRequestOptionsService;
@@ -105,11 +105,11 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 
 	// creates JWT signer/validators for symmetric keys
 	@Autowired(required=false)
-	private SymmetricCacheService symmetricCacheService;
+	private SymmetricKeyJWTValidatorCacheService symmetricCacheService;
 
 	// signer based on keypair for this client (for outgoing auth requests)
 	@Autowired
-	private JwtSigningAndValidationService authenticationSignerService;
+	private JWTSigningAndValidationService authenticationSignerService;
 
 
 	/*
@@ -152,7 +152,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 		}
 
 		if (symmetricCacheService == null) {
-			symmetricCacheService = new SymmetricCacheService();
+			symmetricCacheService = new SymmetricKeyJWTValidatorCacheService();
 		}
 
 	}
@@ -348,7 +348,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 				// do a symmetric secret signed JWT for auth
 
 
-				JwtSigningAndValidationService signer = null;
+				JWTSigningAndValidationService signer = null;
 				JWSAlgorithm alg = clientConfig.getTokenEndpointAuthSigningAlg();
 
 				if (SECRET_JWT.equals(clientConfig.getTokenEndpointAuthMethod()) &&
@@ -472,7 +472,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 				ReadOnlyJWTClaimsSet idClaims = idToken.getJWTClaimsSet();
 
 				// check the signature
-				JwtSigningAndValidationService jwtValidator = null;
+				JWTSigningAndValidationService jwtValidator = null;
 
 				Algorithm tokenAlg = idToken.getHeader().getAlgorithm();
 
@@ -829,11 +829,11 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 		this.authOptions = authOptions;
 	}
 
-	public SymmetricCacheService getSymmetricCacheService() {
+	public SymmetricKeyJWTValidatorCacheService getSymmetricCacheService() {
 		return symmetricCacheService;
 	}
 
-	public void setSymmetricCacheService(SymmetricCacheService symmetricCacheService) {
+	public void setSymmetricCacheService(SymmetricKeyJWTValidatorCacheService symmetricCacheService) {
 		this.symmetricCacheService = symmetricCacheService;
 	}
 

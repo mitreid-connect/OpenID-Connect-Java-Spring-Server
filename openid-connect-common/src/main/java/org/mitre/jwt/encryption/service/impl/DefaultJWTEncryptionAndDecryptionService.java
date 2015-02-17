@@ -27,7 +27,7 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 
 import org.mitre.jose.keystore.JWKSetKeyStore;
-import org.mitre.jwt.encryption.service.JwtEncryptionAndDecryptionService;
+import org.mitre.jwt.encryption.service.JWTEncryptionAndDecryptionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,9 +50,9 @@ import com.nimbusds.jose.jwk.RSAKey;
  * @author wkim
  *
  */
-public class DefaultJwtEncryptionAndDecryptionService implements JwtEncryptionAndDecryptionService {
+public class DefaultJWTEncryptionAndDecryptionService implements JWTEncryptionAndDecryptionService {
 
-	private static Logger logger = LoggerFactory.getLogger(DefaultJwtEncryptionAndDecryptionService.class);
+	private static Logger logger = LoggerFactory.getLogger(DefaultJWTEncryptionAndDecryptionService.class);
 
 	// map of identifier to encrypter
 	private Map<String, JWEEncrypter> encrypters = new HashMap<String, JWEEncrypter>();
@@ -78,7 +78,7 @@ public class DefaultJwtEncryptionAndDecryptionService implements JwtEncryptionAn
 	 * @throws InvalidKeySpecException
 	 * @throws JOSEException
 	 */
-	public DefaultJwtEncryptionAndDecryptionService(Map<String, JWK> keys) throws NoSuchAlgorithmException, InvalidKeySpecException, JOSEException {
+	public DefaultJWTEncryptionAndDecryptionService(Map<String, JWK> keys) throws NoSuchAlgorithmException, InvalidKeySpecException, JOSEException {
 		this.keys = keys;
 		buildEncryptersAndDecrypters();
 	}
@@ -92,7 +92,7 @@ public class DefaultJwtEncryptionAndDecryptionService implements JwtEncryptionAn
 	 * @throws InvalidKeySpecException
 	 * @throws JOSEException
 	 */
-	public DefaultJwtEncryptionAndDecryptionService(JWKSetKeyStore keyStore) throws NoSuchAlgorithmException, InvalidKeySpecException, JOSEException {
+	public DefaultJWTEncryptionAndDecryptionService(JWKSetKeyStore keyStore) throws NoSuchAlgorithmException, InvalidKeySpecException, JOSEException {
 
 		// convert all keys in the keystore to a map based on key id
 		for (JWK key : keyStore.getKeys()) {

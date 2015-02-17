@@ -18,8 +18,8 @@ package org.mitre.openid.connect.web;
 
 import java.util.Map;
 
-import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
-import org.mitre.openid.connect.view.JwkKeyListView;
+import org.mitre.jwt.signer.service.JWTSigningAndValidationService;
+import org.mitre.openid.connect.view.JWKSetView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,10 +28,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.nimbusds.jose.jwk.JWK;
 
 @Controller
-public class JsonWebKeyEndpoint {
+public class JWKSetPublishingEndpoint {
 
 	@Autowired
-	private JwtSigningAndValidationService jwtService;
+	private JWTSigningAndValidationService jwtService;
 
 	@RequestMapping(value = "/jwk", produces = "application/json")
 	public String getJwk(Model m) {
@@ -43,20 +43,20 @@ public class JsonWebKeyEndpoint {
 
 		m.addAttribute("keys", keys);
 
-		return JwkKeyListView.VIEWNAME;
+		return JWKSetView.VIEWNAME;
 	}
 
 	/**
 	 * @return the jwtService
 	 */
-	public JwtSigningAndValidationService getJwtService() {
+	public JWTSigningAndValidationService getJwtService() {
 		return jwtService;
 	}
 
 	/**
 	 * @param jwtService the jwtService to set
 	 */
-	public void setJwtService(JwtSigningAndValidationService jwtService) {
+	public void setJwtService(JWTSigningAndValidationService jwtService) {
 		this.jwtService = jwtService;
 	}
 

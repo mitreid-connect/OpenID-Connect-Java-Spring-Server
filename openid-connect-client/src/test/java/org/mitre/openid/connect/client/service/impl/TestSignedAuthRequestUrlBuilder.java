@@ -31,7 +31,7 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mitre.jwt.signer.service.impl.DefaultJwtSigningAndValidationService;
+import org.mitre.jwt.signer.service.impl.DefaultJWTSigningAndValidationService;
 import org.mitre.oauth2.model.RegisteredClient;
 import org.mitre.openid.connect.config.ServerConfiguration;
 import org.mockito.Mockito;
@@ -83,7 +83,7 @@ public class TestSignedAuthRequestUrlBuilder {
 	private String alg = "RS256";
 	private String kid = "2011-04-29";
 
-	private DefaultJwtSigningAndValidationService signingAndValidationService;
+	private DefaultJWTSigningAndValidationService signingAndValidationService;
 
 	private SignedAuthRequestUrlBuilder urlBuilder = new SignedAuthRequestUrlBuilder();
 
@@ -94,7 +94,7 @@ public class TestSignedAuthRequestUrlBuilder {
 		Map<String, JWK> keys = Maps.newHashMap();
 		keys.put("client", key);
 
-		signingAndValidationService = new DefaultJwtSigningAndValidationService(keys);
+		signingAndValidationService = new DefaultJWTSigningAndValidationService(keys);
 		signingAndValidationService.setDefaultSignerKeyId("client");
 		signingAndValidationService.setDefaultSigningAlgorithmName(alg);
 

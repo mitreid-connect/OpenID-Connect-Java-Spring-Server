@@ -25,9 +25,9 @@ import java.util.concurrent.TimeUnit;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.mitre.jose.keystore.JWKSetKeyStore;
-import org.mitre.jwt.encryption.service.JwtEncryptionAndDecryptionService;
-import org.mitre.jwt.encryption.service.impl.DefaultJwtEncryptionAndDecryptionService;
-import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
+import org.mitre.jwt.encryption.service.JWTEncryptionAndDecryptionService;
+import org.mitre.jwt.encryption.service.impl.DefaultJWTEncryptionAndDecryptionService;
+import org.mitre.jwt.signer.service.JWTSigningAndValidationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -54,10 +54,10 @@ public class JWKSetCacheService {
 	private static Logger logger = LoggerFactory.getLogger(JWKSetCacheService.class);
 
 	// map of jwk set uri -> signing/validation service built on the keys found in that jwk set
-	private LoadingCache<String, JwtSigningAndValidationService> validators;
+	private LoadingCache<String, JWTSigningAndValidationService> validators;
 
 	// map of jwk set uri -> encryption/decryption service built on the keys found in that jwk set
-	private LoadingCache<String, JwtEncryptionAndDecryptionService> encrypters;
+	private LoadingCache<String, JWTEncryptionAndDecryptionService> encrypters;
 
 	public JWKSetCacheService() {
 		this.validators = CacheBuilder.newBuilder()
@@ -76,7 +76,7 @@ public class JWKSetCacheService {
 	 * @throws ExecutionException
 	 * @see com.google.common.cache.Cache#get(java.lang.Object)
 	 */
-	public JwtSigningAndValidationService getValidator(String jwksUri) {
+	public JWTSigningAndValidationService getValidator(String jwksUri) {
 		try {
 			return validators.get(jwksUri);
 		} catch (UncheckedExecutionException ue) {
@@ -88,7 +88,7 @@ public class JWKSetCacheService {
 		}
 	}
 
-	public JwtEncryptionAndDecryptionService getEncrypter(String jwksUri) {
+	public JWTEncryptionAndDecryptionService getEncrypter(String jwksUri) {
 		try {
 			return encrypters.get(jwksUri);
 		} catch (UncheckedExecutionException ue) {
@@ -104,7 +104,7 @@ public class JWKSetCacheService {
 	 * @author jricher
 	 *
 	 */
-	private class JWKSetVerifierFetcher extends CacheLoader<String, JwtSigningAndValidationService> {
+	private class JWKSetVerifierFetcher extends CacheLoader<String, JWTSigningAndValidationService> {
 		private HttpClient httpClient = HttpClientBuilder.create().useSystemProperties().build();
 		private HttpComponentsClientHttpRequestFactory httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
 		private RestTemplate restTemplate = new RestTemplate(httpFactory);
@@ -113,14 +113,14 @@ public class JWKSetCacheService {
 		 * Load the JWK Set and build the appropriate signing service.
 		 */
 		@Override
-		public JwtSigningAndValidationService load(String key) throws Exception {
+		public JWTSigningAndValidationService load(String key) throws Exception {
 
 			String jsonString = restTemplate.getForObject(key, String.class);
 			JWKSet jwkSet = JWKSet.parse(jsonString);
 
 			JWKSetKeyStore keyStore = new JWKSetKeyStore(jwkSet);
 
-			JwtSigningAndValidationService service = new DefaultJwtSigningAndValidationService(keyStore);
+			JWTSigningAndValidationService service = new DefaultJWTSigningAndValidationService(keyStore);
 
 			return service;
 
@@ -132,7 +132,7 @@ public class JWKSetCacheService {
 	 * @author jricher
 	 *
 	 */
-	private class JWKSetEncryptorFetcher extends CacheLoader<String, JwtEncryptionAndDecryptionService> {
+	private class JWKSetEncryptorFetcher extends CacheLoader<String, JWTEncryptionAndDecryptionService> {
 		private HttpClient httpClient = HttpClientBuilder.create().useSystemProperties().build();
 		private HttpComponentsClientHttpRequestFactory httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
 		private RestTemplate restTemplate = new RestTemplate(httpFactory);
@@ -140,13 +140,13 @@ public class JWKSetCacheService {
 		 * @see com.google.common.cache.CacheLoader#load(java.lang.Object)
 		 */
 		@Override
-		public JwtEncryptionAndDecryptionService load(String key) throws Exception {
+		public JWTEncryptionAndDecryptionService load(String key) throws Exception {
 			String jsonString = restTemplate.getForObject(key, String.class);
 			JWKSet jwkSet = JWKSet.parse(jsonString);
 
 			JWKSetKeyStore keyStore = new JWKSetKeyStore(jwkSet);
 
-			JwtEncryptionAndDecryptionService service = new DefaultJwtEncryptionAndDecryptionService(keyStore);
+			JWTEncryptionAndDecryptionService service = new DefaultJWTEncryptionAndDecryptionService(keyStore);
 
 			return service;
 		}

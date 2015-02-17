@@ -19,8 +19,8 @@ package org.mitre.openid.connect.client.keypublisher;
 import java.util.Map;
 import java.util.UUID;
 
-import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
-import org.mitre.openid.connect.view.JwkKeyListView;
+import org.mitre.jwt.signer.service.JWTSigningAndValidationService;
+import org.mitre.openid.connect.view.JWKSetView;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -37,13 +37,13 @@ import com.nimbusds.jose.jwk.JWK;
  */
 public class ClientKeyPublisher implements BeanDefinitionRegistryPostProcessor {
 
-	private JwtSigningAndValidationService signingAndValidationService;
+	private JWTSigningAndValidationService signingAndValidationService;
 
 	private String jwkPublishUrl;
 
 	private BeanDefinitionRegistry registry;
 
-	private String jwkViewName = JwkKeyListView.VIEWNAME;
+	private String jwkViewName = JWKSetView.VIEWNAME;
 
 	/**
 	 * If the jwkPublishUrl field is set on this bean, set up a listener on that URL to publish keys.
@@ -61,12 +61,12 @@ public class ClientKeyPublisher implements BeanDefinitionRegistryPostProcessor {
 				clientKeyMapping.addPropertyValue("jwkPublishUrl", getJwkPublishUrl());
 
 				// randomize view name to make sure it doesn't conflict with local views
-				jwkViewName = JwkKeyListView.VIEWNAME + "-" + UUID.randomUUID().toString();
+				jwkViewName = JWKSetView.VIEWNAME + "-" + UUID.randomUUID().toString();
 				viewResolver.addPropertyValue("jwkViewName", jwkViewName);
 
 				// view bean
-				BeanDefinitionBuilder jwkView = BeanDefinitionBuilder.rootBeanDefinition(JwkKeyListView.class);
-				registry.registerBeanDefinition(JwkKeyListView.VIEWNAME, jwkView.getBeanDefinition());
+				BeanDefinitionBuilder jwkView = BeanDefinitionBuilder.rootBeanDefinition(JWKSetView.class);
+				registry.registerBeanDefinition(JWKSetView.VIEWNAME, jwkView.getBeanDefinition());
 				viewResolver.addPropertyReference("jwk", "jwkKeyList");
 			}
 
@@ -114,14 +114,14 @@ public class ClientKeyPublisher implements BeanDefinitionRegistryPostProcessor {
 	/**
 	 * @return the signingAndValidationService
 	 */
-	public JwtSigningAndValidationService getSigningAndValidationService() {
+	public JWTSigningAndValidationService getSigningAndValidationService() {
 		return signingAndValidationService;
 	}
 
 	/**
 	 * @param signingAndValidationService the signingAndValidationService to set
 	 */
-	public void setSigningAndValidationService(JwtSigningAndValidationService signingAndValidationService) {
+	public void setSigningAndValidationService(JWTSigningAndValidationService signingAndValidationService) {
 		this.signingAndValidationService = signingAndValidationService;
 	}
 

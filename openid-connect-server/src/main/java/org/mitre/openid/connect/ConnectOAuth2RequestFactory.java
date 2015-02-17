@@ -22,10 +22,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import org.mitre.jwt.encryption.service.JwtEncryptionAndDecryptionService;
-import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
+import org.mitre.jwt.encryption.service.JWTEncryptionAndDecryptionService;
+import org.mitre.jwt.signer.service.JWTSigningAndValidationService;
 import org.mitre.jwt.signer.service.impl.JWKSetCacheService;
-import org.mitre.jwt.signer.service.impl.SymmetricCacheService;
+import org.mitre.jwt.signer.service.impl.SymmetricKeyJWTValidatorCacheService;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.SystemScopeService;
@@ -64,13 +64,13 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 	private JWKSetCacheService validators;
 
 	@Autowired
-	private SymmetricCacheService symmetricCacheService;
+	private SymmetricKeyJWTValidatorCacheService symmetricCacheService;
 
 	@Autowired
 	private SystemScopeService systemScopes;
 
 	@Autowired
-	private JwtEncryptionAndDecryptionService encryptionService;
+	private JWTEncryptionAndDecryptionService encryptionService;
 
 	private JsonParser parser = new JsonParser();
 
@@ -200,7 +200,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 					}
 
 					// check JWT signature
-					JwtSigningAndValidationService validator = validators.getValidator(client.getJwksUri());
+					JWTSigningAndValidationService validator = validators.getValidator(client.getJwksUri());
 
 					if (validator == null) {
 						throw new InvalidClientException("Unable to create signature validator for client's JWKS URI: " + client.getJwksUri());
@@ -215,7 +215,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 
 					// it's HMAC, we need to make a validator based on the client secret
 
-					JwtSigningAndValidationService validator = symmetricCacheService.getSymmetricValidtor(client);
+					JWTSigningAndValidationService validator = symmetricCacheService.getSymmetricValidtor(client);
 
 					if (validator == null) {
 						throw new InvalidClientException("Unable to create signature validator for client's secret: " + client.getClientSecret());

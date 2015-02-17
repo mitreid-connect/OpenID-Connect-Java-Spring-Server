@@ -28,7 +28,7 @@ import com.nimbusds.jose.jwk.JWK;
  * @author wkim
  *
  */
-public interface JwtEncryptionAndDecryptionService {
+public interface JWTEncryptionAndDecryptionService {
 
 	/**
 	 * Encrypts the JWT in place with the default encrypter.

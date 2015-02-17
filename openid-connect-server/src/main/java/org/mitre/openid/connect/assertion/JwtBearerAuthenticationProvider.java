@@ -24,9 +24,9 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
+import org.mitre.jwt.signer.service.JWTSigningAndValidationService;
 import org.mitre.jwt.signer.service.impl.JWKSetCacheService;
-import org.mitre.jwt.signer.service.impl.SymmetricCacheService;
+import org.mitre.jwt.signer.service.impl.SymmetricKeyJWTValidatorCacheService;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
@@ -64,7 +64,7 @@ public class JwtBearerAuthenticationProvider implements AuthenticationProvider {
 
 	// map of symmetric verifiers for client secrets
 	@Autowired
-	private SymmetricCacheService symmetricCacheService;
+	private SymmetricKeyJWTValidatorCacheService symmetricCacheService;
 
 	// Allow for time sync issues by having a window of X seconds.
 	private int timeSkewAllowance = 300;
@@ -116,7 +116,7 @@ public class JwtBearerAuthenticationProvider implements AuthenticationProvider {
 								|| alg.equals(JWSAlgorithm.RS384)
 								|| alg.equals(JWSAlgorithm.RS512))) {
 
-					JwtSigningAndValidationService validator = validators.getValidator(client.getJwksUri());
+					JWTSigningAndValidationService validator = validators.getValidator(client.getJwksUri());
 
 					if (validator == null) {
 						throw new AuthenticationServiceException("Unable to create signature validator for client's JWKS URI: " + client.getJwksUri());
@@ -132,7 +132,7 @@ public class JwtBearerAuthenticationProvider implements AuthenticationProvider {
 
 					// it's HMAC, we need to make a validator based on the client secret
 
-					JwtSigningAndValidationService validator = symmetricCacheService.getSymmetricValidtor(client);
+					JWTSigningAndValidationService validator = symmetricCacheService.getSymmetricValidtor(client);
 
 					if (validator == null) {
 						throw new AuthenticationServiceException("Unable to create signature validator for client's secret: " + client.getClientSecret());

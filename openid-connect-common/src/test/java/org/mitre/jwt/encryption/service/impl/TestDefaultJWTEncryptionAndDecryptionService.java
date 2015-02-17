@@ -56,7 +56,7 @@ import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
  *
  */
 
-public class TestDefaultJwtEncryptionAndDecryptionService {
+public class TestDefaultJWTEncryptionAndDecryptionService {
 
 	private String plainText = "The true sign of intelligence is not knowledge but imagination.";
 
@@ -136,20 +136,20 @@ public class TestDefaultJwtEncryptionAndDecryptionService {
 
 	private List<JWK> keys_list = new LinkedList<JWK>();
 
-	private DefaultJwtEncryptionAndDecryptionService service;
-	private DefaultJwtEncryptionAndDecryptionService service_2;
-	private DefaultJwtEncryptionAndDecryptionService service_3;
-	private DefaultJwtEncryptionAndDecryptionService service_4;
-	private DefaultJwtEncryptionAndDecryptionService service_ks;
+	private DefaultJWTEncryptionAndDecryptionService service;
+	private DefaultJWTEncryptionAndDecryptionService service_2;
+	private DefaultJWTEncryptionAndDecryptionService service_3;
+	private DefaultJWTEncryptionAndDecryptionService service_4;
+	private DefaultJWTEncryptionAndDecryptionService service_ks;
 
 
 	@Before
 	public void prepare() throws NoSuchAlgorithmException, InvalidKeySpecException, JOSEException {
 
-		service = new DefaultJwtEncryptionAndDecryptionService(keys);
-		service_2 = new DefaultJwtEncryptionAndDecryptionService(keys_2);
-		service_3 = new DefaultJwtEncryptionAndDecryptionService(keys_3);
-		service_4 = new DefaultJwtEncryptionAndDecryptionService(keys_4);
+		service = new DefaultJWTEncryptionAndDecryptionService(keys);
+		service_2 = new DefaultJWTEncryptionAndDecryptionService(keys_2);
+		service_3 = new DefaultJWTEncryptionAndDecryptionService(keys_3);
+		service_4 = new DefaultJWTEncryptionAndDecryptionService(keys_4);
 
 		claimsSet.setIssuer(issuer);
 		claimsSet.setSubject(subject);
@@ -161,7 +161,7 @@ public class TestDefaultJwtEncryptionAndDecryptionService {
 		JWKSet jwkSet = new JWKSet(keys_list);
 		JWKSetKeyStore keyStore = new JWKSetKeyStore(jwkSet);
 
-		service_ks = new DefaultJwtEncryptionAndDecryptionService(keyStore);
+		service_ks = new DefaultJWTEncryptionAndDecryptionService(keyStore);
 	}
 
 

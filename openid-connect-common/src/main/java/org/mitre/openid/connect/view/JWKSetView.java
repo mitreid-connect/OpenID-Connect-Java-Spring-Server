@@ -39,11 +39,11 @@ import com.nimbusds.jose.jwk.JWKSet;
  * @author jricher
  *
  */
-@Component(JwkKeyListView.VIEWNAME)
-public class JwkKeyListView extends AbstractView {
+@Component(JWKSetView.VIEWNAME)
+public class JWKSetView extends AbstractView {
 
-	public static final String VIEWNAME = "jwkKeyList";
-	private static Logger logger = LoggerFactory.getLogger(JwkKeyListView.class);
+	public static final String VIEWNAME = "jwkSet";
+	private static Logger logger = LoggerFactory.getLogger(JWKSetView.class);
 
 	@Override
 	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
@@ -63,7 +63,7 @@ public class JwkKeyListView extends AbstractView {
 
 		} catch (IOException e) {
 
-			logger.error("IOException in JwkKeyListView.java: ", e);
+			logger.error("IOException in JWKSetView.java: ", e);
 
 		}
 

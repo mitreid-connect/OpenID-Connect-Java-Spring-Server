@@ -21,8 +21,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.mitre.discovery.util.WebfingerURLNormalizer;
-import org.mitre.jwt.encryption.service.JwtEncryptionAndDecryptionService;
-import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
+import org.mitre.jwt.encryption.service.JWTEncryptionAndDecryptionService;
+import org.mitre.jwt.signer.service.JWTSigningAndValidationService;
 import org.mitre.oauth2.service.SystemScopeService;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.mitre.openid.connect.model.UserInfo;
@@ -66,10 +66,10 @@ public class DiscoveryEndpoint {
 	private SystemScopeService scopeService;
 
 	@Autowired
-	private JwtSigningAndValidationService signService;
+	private JWTSigningAndValidationService signService;
 
 	@Autowired
-	private JwtEncryptionAndDecryptionService encService;
+	private JWTEncryptionAndDecryptionService encService;
 
 	@Autowired
 	private UserInfoService userService;

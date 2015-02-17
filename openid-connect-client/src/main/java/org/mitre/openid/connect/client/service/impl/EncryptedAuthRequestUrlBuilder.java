@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.http.client.utils.URIBuilder;
-import org.mitre.jwt.encryption.service.JwtEncryptionAndDecryptionService;
+import org.mitre.jwt.encryption.service.JWTEncryptionAndDecryptionService;
 import org.mitre.jwt.signer.service.impl.JWKSetCacheService;
 import org.mitre.oauth2.model.RegisteredClient;
 import org.mitre.openid.connect.client.service.AuthRequestUrlBuilder;
@@ -82,7 +82,7 @@ public class EncryptedAuthRequestUrlBuilder implements AuthRequestUrlBuilder {
 
 		EncryptedJWT jwt = new EncryptedJWT(new JWEHeader(alg, enc), claims);
 
-		JwtEncryptionAndDecryptionService encryptor = encrypterService.getEncrypter(serverConfig.getJwksUri());
+		JWTEncryptionAndDecryptionService encryptor = encrypterService.getEncrypter(serverConfig.getJwksUri());
 
 		encryptor.encryptJwt(jwt);
 

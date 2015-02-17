@@ -23,7 +23,7 @@ import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.service.UserInfoService;
 import org.mitre.openid.connect.view.HttpCodeView;
-import org.mitre.openid.connect.view.UserInfoJwtView;
+import org.mitre.openid.connect.view.UserInfoJWTView;
 import org.mitre.openid.connect.view.UserInfoView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -109,21 +109,21 @@ public class UserInfoEndpoint {
 			// client has a preference, see if they ask for plain JSON specifically on this request
 			for (MediaType m : mediaTypes) {
 				if (!m.isWildcardType() && m.isCompatibleWith(JOSE_MEDIA_TYPE)) {
-					return UserInfoJwtView.VIEWNAME;
+					return UserInfoJWTView.VIEWNAME;
 				} else if (!m.isWildcardType() && m.isCompatibleWith(MediaType.APPLICATION_JSON)) {
 					return UserInfoView.VIEWNAME;
 				}
 			}
 
 			// otherwise return JWT
-			return UserInfoJwtView.VIEWNAME;
+			return UserInfoJWTView.VIEWNAME;
 		} else {
 			// client has no preference, see if they asked for JWT specifically on this request
 			for (MediaType m : mediaTypes) {
 				if (!m.isWildcardType() && m.isCompatibleWith(MediaType.APPLICATION_JSON)) {
 					return UserInfoView.VIEWNAME;
 				} else if (!m.isWildcardType() && m.isCompatibleWith(JOSE_MEDIA_TYPE)) {
-					return UserInfoJwtView.VIEWNAME;
+					return UserInfoJWTView.VIEWNAME;
 				}
 			}
 

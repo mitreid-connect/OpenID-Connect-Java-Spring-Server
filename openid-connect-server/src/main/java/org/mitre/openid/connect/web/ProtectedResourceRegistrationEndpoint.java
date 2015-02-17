@@ -22,7 +22,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
+import org.mitre.jwt.signer.service.JWTSigningAndValidationService;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
@@ -68,7 +68,7 @@ public class ProtectedResourceRegistrationEndpoint {
 	private OAuth2TokenEntityService tokenService;
 
 	@Autowired
-	private JwtSigningAndValidationService jwtService;
+	private JWTSigningAndValidationService jwtService;
 
 	@Autowired
 	private SystemScopeService scopeService;

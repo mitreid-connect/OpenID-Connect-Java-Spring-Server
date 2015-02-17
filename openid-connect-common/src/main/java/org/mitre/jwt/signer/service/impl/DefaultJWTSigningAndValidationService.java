@@ -26,7 +26,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.mitre.jose.keystore.JWKSetKeyStore;
-import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
+import org.mitre.jwt.signer.service.JWTSigningAndValidationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +45,7 @@ import com.nimbusds.jose.jwk.OctetSequenceKey;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jwt.SignedJWT;
 
-public class DefaultJwtSigningAndValidationService implements JwtSigningAndValidationService {
+public class DefaultJWTSigningAndValidationService implements JWTSigningAndValidationService {
 
 	// map of identifier to signer
 	private Map<String, JWSSigner> signers = new HashMap<String, JWSSigner>();
@@ -53,7 +53,7 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 	// map of identifier to verifier
 	private Map<String, JWSVerifier> verifiers = new HashMap<String, JWSVerifier>();
 
-	private static Logger logger = LoggerFactory.getLogger(DefaultJwtSigningAndValidationService.class);
+	private static Logger logger = LoggerFactory.getLogger(DefaultJWTSigningAndValidationService.class);
 
 	private String defaultSignerKeyId;
 
@@ -74,7 +74,7 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 	 * @throws NoSuchAlgorithmException
 	 *             If there is no appropriate algorithm to tie the keys to.
 	 */
-	public DefaultJwtSigningAndValidationService(Map<String, JWK> keys) throws NoSuchAlgorithmException, InvalidKeySpecException {
+	public DefaultJWTSigningAndValidationService(Map<String, JWK> keys) throws NoSuchAlgorithmException, InvalidKeySpecException {
 		this.keys = keys;
 		buildSignersAndVerifiers();
 	}
@@ -91,7 +91,7 @@ public class DefaultJwtSigningAndValidationService implements JwtSigningAndValid
 	 * @throws NoSuchAlgorithmException
 	 *             If there is no appropriate algorithm to tie the keys to.
 	 */
-	public DefaultJwtSigningAndValidationService(JWKSetKeyStore keyStore) throws NoSuchAlgorithmException, InvalidKeySpecException {
+	public DefaultJWTSigningAndValidationService(JWKSetKeyStore keyStore) throws NoSuchAlgorithmException, InvalidKeySpecException {
 		// convert all keys in the keystore to a map based on key id
 		if (keyStore!= null && keyStore.getJwkSet() != null) {
 			for (JWK key : keyStore.getKeys()) {

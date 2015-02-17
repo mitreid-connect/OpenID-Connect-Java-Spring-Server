@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
+import org.mitre.jwt.signer.service.JWTSigningAndValidationService;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,14 +46,14 @@ import com.nimbusds.jose.util.Base64URL;
  *
  */
 @Service
-public class SymmetricCacheService {
+public class SymmetricKeyJWTValidatorCacheService {
 
-	private static Logger logger = LoggerFactory.getLogger(SymmetricCacheService.class);
+	private static Logger logger = LoggerFactory.getLogger(SymmetricKeyJWTValidatorCacheService.class);
 
-	private LoadingCache<String, JwtSigningAndValidationService> validators;
+	private LoadingCache<String, JWTSigningAndValidationService> validators;
 
 
-	public SymmetricCacheService() {
+	public SymmetricKeyJWTValidatorCacheService() {
 		validators = CacheBuilder.newBuilder()
 				.expireAfterAccess(24, TimeUnit.HOURS)
 				.maximumSize(100)
@@ -67,7 +67,7 @@ public class SymmetricCacheService {
 	 * @param client
 	 * @return
 	 */
-	public JwtSigningAndValidationService getSymmetricValidtor(ClientDetailsEntity client) {
+	public JWTSigningAndValidationService getSymmetricValidtor(ClientDetailsEntity client) {
 
 		if (client == null) {
 			logger.error("Couldn't create symmetric validator for null client");
@@ -91,16 +91,16 @@ public class SymmetricCacheService {
 
 	}
 
-	public class SymmetricValidatorBuilder extends CacheLoader<String, JwtSigningAndValidationService> {
+	public class SymmetricValidatorBuilder extends CacheLoader<String, JWTSigningAndValidationService> {
 		@Override
-		public JwtSigningAndValidationService load(String key) throws Exception {
+		public JWTSigningAndValidationService load(String key) throws Exception {
 			try {
 
 				String id = "SYMMETRIC-KEY";
 
 				JWK jwk = new OctetSequenceKey(Base64URL.encode(key), KeyUse.SIGNATURE, null, null, id, null, null, null);
 				Map<String, JWK> keys = ImmutableMap.of(id, jwk);
-				JwtSigningAndValidationService service = new DefaultJwtSigningAndValidationService(keys);
+				JWTSigningAndValidationService service = new DefaultJWTSigningAndValidationService(keys);
 
 				return service;
 

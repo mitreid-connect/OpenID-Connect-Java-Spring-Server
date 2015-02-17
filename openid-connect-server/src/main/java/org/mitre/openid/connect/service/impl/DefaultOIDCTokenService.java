@@ -21,10 +21,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import org.mitre.jwt.encryption.service.JwtEncryptionAndDecryptionService;
-import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
+import org.mitre.jwt.encryption.service.JWTEncryptionAndDecryptionService;
+import org.mitre.jwt.signer.service.JWTSigningAndValidationService;
 import org.mitre.jwt.signer.service.impl.JWKSetCacheService;
-import org.mitre.jwt.signer.service.impl.SymmetricCacheService;
+import org.mitre.jwt.signer.service.impl.SymmetricKeyJWTValidatorCacheService;
 import org.mitre.oauth2.model.AuthenticationHolderEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
@@ -71,7 +71,7 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 	Logger logger = LoggerFactory.getLogger(DefaultOIDCTokenService.class);
 
 	@Autowired
-	private JwtSigningAndValidationService jwtService;
+	private JWTSigningAndValidationService jwtService;
 
 	@Autowired
 	private AuthenticationHolderRepository authenticationHolderRepository;
@@ -83,7 +83,7 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 	private JWKSetCacheService encrypters;
 
 	@Autowired
-	private SymmetricCacheService symmetricCacheService;
+	private SymmetricKeyJWTValidatorCacheService symmetricCacheService;
 
 	@Autowired
 	private OAuth2TokenEntityService tokenService;
@@ -141,7 +141,7 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 				&& client.getIdTokenEncryptedResponseEnc() != null && !client.getIdTokenEncryptedResponseEnc().equals(Algorithm.NONE)
 				&& !Strings.isNullOrEmpty(client.getJwksUri())) {
 
-			JwtEncryptionAndDecryptionService encrypter = encrypters.getEncrypter(client.getJwksUri());
+			JWTEncryptionAndDecryptionService encrypter = encrypters.getEncrypter(client.getJwksUri());
 
 			if (encrypter != null) {
 
@@ -173,7 +173,7 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 
 					idToken = new SignedJWT(new JWSHeader(signingAlg), idClaims);
 
-					JwtSigningAndValidationService signer = symmetricCacheService.getSymmetricValidtor(client);
+					JWTSigningAndValidationService signer = symmetricCacheService.getSymmetricValidtor(client);
 
 					// sign it with the client's secret
 					signer.signJwt((SignedJWT) idToken);
@@ -300,14 +300,14 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 	/**
 	 * @return the jwtService
 	 */
-	public JwtSigningAndValidationService getJwtService() {
+	public JWTSigningAndValidationService getJwtService() {
 		return jwtService;
 	}
 
 	/**
 	 * @param jwtService the jwtService to set
 	 */
-	public void setJwtService(JwtSigningAndValidationService jwtService) {
+	public void setJwtService(JWTSigningAndValidationService jwtService) {
 		this.jwtService = jwtService;
 	}
 

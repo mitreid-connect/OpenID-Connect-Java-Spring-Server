@@ -30,10 +30,10 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.mitre.jwt.encryption.service.JwtEncryptionAndDecryptionService;
-import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
+import org.mitre.jwt.encryption.service.JWTEncryptionAndDecryptionService;
+import org.mitre.jwt.signer.service.JWTSigningAndValidationService;
 import org.mitre.jwt.signer.service.impl.JWKSetCacheService;
-import org.mitre.jwt.signer.service.impl.SymmetricCacheService;
+import org.mitre.jwt.signer.service.impl.SymmetricKeyJWTValidatorCacheService;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.slf4j.Logger;
@@ -56,15 +56,15 @@ import com.nimbusds.jwt.SignedJWT;
  * @author jricher
  *
  */
-@Component(UserInfoJwtView.VIEWNAME)
-public class UserInfoJwtView extends UserInfoView {
+@Component(UserInfoJWTView.VIEWNAME)
+public class UserInfoJWTView extends UserInfoView {
 
-	private static Logger logger = LoggerFactory.getLogger(UserInfoJwtView.class);
+	private static Logger logger = LoggerFactory.getLogger(UserInfoJWTView.class);
 
 	public static final String VIEWNAME = "userInfoJwtView";
 
 	@Autowired
-	private JwtSigningAndValidationService jwtService;
+	private JWTSigningAndValidationService jwtService;
 
 	@Autowired
 	private ConfigurationPropertiesBean config;
@@ -73,7 +73,7 @@ public class UserInfoJwtView extends UserInfoView {
 	private JWKSetCacheService encrypters;
 
 	@Autowired
-	private SymmetricCacheService symmetricCacheService;
+	private SymmetricKeyJWTValidatorCacheService symmetricCacheService;
 
 	@Override
 	protected void writeOut(JsonObject json, Map<String, Object> model,
@@ -105,7 +105,7 @@ public class UserInfoJwtView extends UserInfoView {
 
 				// encrypt it to the client's key
 
-				JwtEncryptionAndDecryptionService encrypter = encrypters.getEncrypter(client.getJwksUri());
+				JWTEncryptionAndDecryptionService encrypter = encrypters.getEncrypter(client.getJwksUri());
 
 				if (encrypter != null) {
 
@@ -134,7 +134,7 @@ public class UserInfoJwtView extends UserInfoView {
 						|| signingAlg.equals(JWSAlgorithm.HS512)) {
 
 					// sign it with the client's secret
-					JwtSigningAndValidationService signer = symmetricCacheService.getSymmetricValidtor(client);
+					JWTSigningAndValidationService signer = symmetricCacheService.getSymmetricValidtor(client);
 					signer.signJwt(signed);
 
 				} else {

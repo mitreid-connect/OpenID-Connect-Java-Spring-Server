@@ -22,7 +22,7 @@ package org.mitre.oauth2.token;
 import java.text.ParseException;
 import java.util.Date;
 
-import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
+import org.mitre.jwt.signer.service.JWTSigningAndValidationService;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
@@ -60,7 +60,7 @@ public class JwtAssertionTokenGranter extends AbstractTokenGranter {
 	private OAuth2TokenEntityService tokenServices;
 
 	@Autowired
-	private JwtSigningAndValidationService jwtService;
+	private JWTSigningAndValidationService jwtService;
 
 	@Autowired
 	private ConfigurationPropertiesBean config;

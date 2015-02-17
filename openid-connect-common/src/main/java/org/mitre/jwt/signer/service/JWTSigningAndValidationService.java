@@ -24,7 +24,7 @@ import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jwt.SignedJWT;
 
-public interface JwtSigningAndValidationService {
+public interface JWTSigningAndValidationService {
 
 	/**
 	 * Get all public keys for this service, mapped by their Key ID

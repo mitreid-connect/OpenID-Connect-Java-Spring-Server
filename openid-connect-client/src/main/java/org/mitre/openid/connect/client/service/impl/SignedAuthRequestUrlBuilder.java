@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.http.client.utils.URIBuilder;
-import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
+import org.mitre.jwt.signer.service.JWTSigningAndValidationService;
 import org.mitre.oauth2.model.RegisteredClient;
 import org.mitre.openid.connect.client.service.AuthRequestUrlBuilder;
 import org.mitre.openid.connect.config.ServerConfiguration;
@@ -41,7 +41,7 @@ import com.nimbusds.jwt.SignedJWT;
  */
 public class SignedAuthRequestUrlBuilder implements AuthRequestUrlBuilder {
 
-	private JwtSigningAndValidationService signingAndValidationService;
+	private JWTSigningAndValidationService signingAndValidationService;
 
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.client.service.AuthRequestUrlBuilder#buildAuthRequestUrl(org.mitre.openid.connect.config.ServerConfiguration, org.springframework.security.oauth2.provider.ClientDetails, java.lang.String, java.lang.String, java.lang.String)
@@ -93,14 +93,14 @@ public class SignedAuthRequestUrlBuilder implements AuthRequestUrlBuilder {
 	/**
 	 * @return the signingAndValidationService
 	 */
-	public JwtSigningAndValidationService getSigningAndValidationService() {
+	public JWTSigningAndValidationService getSigningAndValidationService() {
 		return signingAndValidationService;
 	}
 
 	/**
 	 * @param signingAndValidationService the signingAndValidationService to set
 	 */
-	public void setSigningAndValidationService(JwtSigningAndValidationService signingAndValidationService) {
+	public void setSigningAndValidationService(JWTSigningAndValidationService signingAndValidationService) {
 		this.signingAndValidationService = signingAndValidationService;
 	}
 

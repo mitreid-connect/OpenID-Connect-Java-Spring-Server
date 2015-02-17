@@ -19,9 +19,9 @@ package org.mitre.openid.connect.token;
 import java.util.Date;
 import java.util.UUID;
 
-import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
+import org.mitre.jwt.signer.service.JWTSigningAndValidationService;
 import org.mitre.jwt.signer.service.impl.JWKSetCacheService;
-import org.mitre.jwt.signer.service.impl.SymmetricCacheService;
+import org.mitre.jwt.signer.service.impl.SymmetricKeyJWTValidatorCacheService;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
@@ -54,7 +54,7 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 	private ConfigurationPropertiesBean configBean;
 
 	@Autowired
-	private JwtSigningAndValidationService jwtService;
+	private JWTSigningAndValidationService jwtService;
 
 	@Autowired
 	private ClientDetailsEntityService clientService;
@@ -72,7 +72,7 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 	private JWKSetCacheService encryptors;
 
 	@Autowired
-	private SymmetricCacheService symmetricCacheService;
+	private SymmetricKeyJWTValidatorCacheService symmetricCacheService;
 
 
 	@Override
@@ -144,11 +144,11 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 		this.configBean = configBean;
 	}
 
-	public JwtSigningAndValidationService getJwtService() {
+	public JWTSigningAndValidationService getJwtService() {
 		return jwtService;
 	}
 
-	public void setJwtService(JwtSigningAndValidationService jwtService) {
+	public void setJwtService(JWTSigningAndValidationService jwtService) {
 		this.jwtService = jwtService;
 	}
 
