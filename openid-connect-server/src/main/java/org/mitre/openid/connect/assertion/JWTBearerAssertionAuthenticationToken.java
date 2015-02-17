@@ -30,7 +30,7 @@ import com.nimbusds.jwt.JWT;
  * @author jricher
  *
  */
-public class JwtBearerAssertionAuthenticationToken extends AbstractAuthenticationToken {
+public class JWTBearerAssertionAuthenticationToken extends AbstractAuthenticationToken {
 
 	/**
 	 * 
@@ -44,7 +44,7 @@ public class JwtBearerAssertionAuthenticationToken extends AbstractAuthenticatio
 	 * @param clientId
 	 * @param jwt
 	 */
-	public JwtBearerAssertionAuthenticationToken(String clientId, JWT jwt) {
+	public JWTBearerAssertionAuthenticationToken(String clientId, JWT jwt) {
 		super(null);
 		this.clientId = clientId;
 		this.jwt = jwt;
@@ -57,7 +57,7 @@ public class JwtBearerAssertionAuthenticationToken extends AbstractAuthenticatio
 	 * @param jwt
 	 * @param authorities
 	 */
-	public JwtBearerAssertionAuthenticationToken(String clientId, JWT jwt, Collection<? extends GrantedAuthority> authorities) {
+	public JWTBearerAssertionAuthenticationToken(String clientId, JWT jwt, Collection<? extends GrantedAuthority> authorities) {
 		super(authorities);
 		this.clientId = clientId;
 		this.jwt = jwt;

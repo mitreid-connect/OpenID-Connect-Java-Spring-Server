@@ -52,9 +52,9 @@ import com.nimbusds.jwt.SignedJWT;
  * @author jricher
  *
  */
-public class JwtBearerAuthenticationProvider implements AuthenticationProvider {
+public class JWTBearerAuthenticationProvider implements AuthenticationProvider {
 
-	private static final Logger logger = LoggerFactory.getLogger(JwtBearerAuthenticationProvider.class);
+	private static final Logger logger = LoggerFactory.getLogger(JWTBearerAuthenticationProvider.class);
 
 	private static final GrantedAuthority ROLE_CLIENT = new SimpleGrantedAuthority("ROLE_CLIENT");
 
@@ -83,7 +83,7 @@ public class JwtBearerAuthenticationProvider implements AuthenticationProvider {
 	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 
-		JwtBearerAssertionAuthenticationToken jwtAuth = (JwtBearerAssertionAuthenticationToken)authentication;
+		JWTBearerAssertionAuthenticationToken jwtAuth = (JWTBearerAssertionAuthenticationToken)authentication;
 
 
 		try {
@@ -193,7 +193,7 @@ public class JwtBearerAuthenticationProvider implements AuthenticationProvider {
 			Set<GrantedAuthority> authorities = new HashSet<>(client.getAuthorities());
 			authorities.add(ROLE_CLIENT);
 
-			return new JwtBearerAssertionAuthenticationToken(client.getClientId(), jwt, authorities);
+			return new JWTBearerAssertionAuthenticationToken(client.getClientId(), jwt, authorities);
 
 		} catch (InvalidClientException e) {
 			throw new UsernameNotFoundException("Could not find client: " + jwtAuth.getClientId());
@@ -206,11 +206,11 @@ public class JwtBearerAuthenticationProvider implements AuthenticationProvider {
 	}
 
 	/**
-	 * We support {@link JwtBearerAssertionAuthenticationToken}s only.
+	 * We support {@link JWTBearerAssertionAuthenticationToken}s only.
 	 */
 	@Override
 	public boolean supports(Class<?> authentication) {
-		return (JwtBearerAssertionAuthenticationToken.class.isAssignableFrom(authentication));
+		return (JWTBearerAssertionAuthenticationToken.class.isAssignableFrom(authentication));
 	}
 
 }

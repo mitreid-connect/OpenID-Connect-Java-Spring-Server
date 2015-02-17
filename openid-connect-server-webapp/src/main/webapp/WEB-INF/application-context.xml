@@ -177,17 +177,17 @@
 		<property name="filterProcessesUrl" value="/revoke"/>
 	</bean>
 	
-	<bean id="clientAssertionTokenEndpointFilter" class="org.mitre.openid.connect.assertion.JwtBearerClientAssertionTokenEndpointFilter">
+	<bean id="clientAssertionTokenEndpointFilter" class="org.mitre.openid.connect.assertion.JWTBearerClientAssertionTokenEndpointFilter">
 		<property name="authenticationManager" ref="clientAssertionAuthenticationManager" />
 		<property name="filterProcessesUrl" value="/token" />
 	</bean>
 
-	<bean id="clientAssertionIntrospectionEndpointFilter" class="org.mitre.openid.connect.assertion.JwtBearerClientAssertionTokenEndpointFilter">
+	<bean id="clientAssertionIntrospectionEndpointFilter" class="org.mitre.openid.connect.assertion.JWTBearerClientAssertionTokenEndpointFilter">
 		<property name="authenticationManager" ref="clientAssertionAuthenticationManager" />
 		<property name="filterProcessesUrl" value="/introspect" />
 	</bean>
 
-	<bean id="clientAssertionRevocationEndpointFilter" class="org.mitre.openid.connect.assertion.JwtBearerClientAssertionTokenEndpointFilter">
+	<bean id="clientAssertionRevocationEndpointFilter" class="org.mitre.openid.connect.assertion.JWTBearerClientAssertionTokenEndpointFilter">
 		<property name="authenticationManager" ref="clientAssertionAuthenticationManager" />
 		<property name="filterProcessesUrl" value="/revoke" />
 	</bean>
@@ -200,7 +200,7 @@
 		<security:authentication-provider ref="clientAssertionAuthenticationProvider" />
 	</security:authentication-manager>
 	
-	<bean id="clientAssertionAuthenticationProvider" class="org.mitre.openid.connect.assertion.JwtBearerAuthenticationProvider" />
+	<bean id="clientAssertionAuthenticationProvider" class="org.mitre.openid.connect.assertion.JWTBearerAuthenticationProvider" />
 
 	<!-- Configure locale information -->
 	<bean id="messageSource"

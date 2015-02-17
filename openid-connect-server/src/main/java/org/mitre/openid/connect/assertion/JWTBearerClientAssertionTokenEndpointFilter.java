@@ -41,13 +41,13 @@ import com.nimbusds.jwt.JWTParser;
  * @author jricher
  *
  */
-public class JwtBearerClientAssertionTokenEndpointFilter extends ClientCredentialsTokenEndpointFilter {
+public class JWTBearerClientAssertionTokenEndpointFilter extends ClientCredentialsTokenEndpointFilter {
 
-	public JwtBearerClientAssertionTokenEndpointFilter() {
+	public JWTBearerClientAssertionTokenEndpointFilter() {
 		super();
 	}
 
-	public JwtBearerClientAssertionTokenEndpointFilter(String path) {
+	public JWTBearerClientAssertionTokenEndpointFilter(String path) {
 		super(path);
 	}
 
@@ -66,7 +66,7 @@ public class JwtBearerClientAssertionTokenEndpointFilter extends ClientCredentia
 
 			String clientId = jwt.getJWTClaimsSet().getSubject();
 
-			Authentication authRequest = new JwtBearerAssertionAuthenticationToken(clientId, jwt);
+			Authentication authRequest = new JWTBearerAssertionAuthenticationToken(clientId, jwt);
 
 			return this.getAuthenticationManager().authenticate(authRequest);
 		} catch (ParseException e) {
