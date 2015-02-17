@@ -27,23 +27,6 @@ import org.mitre.openid.connect.model.UserInfo;
 public interface UserInfoService {
 
 	/**
-	 * Save an UserInfo
-	 * 
-	 * @param userInfo
-	 *            the UserInfo to be saved
-	 */
-	public void save(UserInfo userInfo);
-
-	/**
-	 * Remove the UserInfo
-	 * 
-	 * @param userInfo
-	 *            the UserInfo to remove
-	 */
-	public void remove(UserInfo userInfo);
-
-
-	/**
 	 * Get the UserInfo for the given username (usually maps to the
 	 * preferredUsername field).
 	 * @param username

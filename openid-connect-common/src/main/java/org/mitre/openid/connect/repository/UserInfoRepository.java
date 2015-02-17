@@ -27,22 +27,6 @@ import org.mitre.openid.connect.model.UserInfo;
 public interface UserInfoRepository {
 
 	/**
-	 * Persists a UserInfo object, if possible.
-	 * 
-	 * @param user
-	 * @return the persisted object
-	 */
-	public UserInfo save(UserInfo userInfo);
-
-	/**
-	 * Removes the given UserInfo from the repository, if possible.
-	 * 
-	 * @param userInfo
-	 *            the UserInfo object to remove
-	 */
-	public void remove(UserInfo userInfo);
-
-	/**
 	 * Get a UserInfo object by its preferred_username field
 	 * @param username
 	 * @return

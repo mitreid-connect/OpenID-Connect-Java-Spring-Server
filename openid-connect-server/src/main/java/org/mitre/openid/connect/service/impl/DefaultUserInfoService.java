@@ -45,16 +45,6 @@ public class DefaultUserInfoService implements UserInfoService {
 	private PairwiseIdentiferService pairwiseIdentifierService;
 
 	@Override
-	public void save(UserInfo userInfo) {
-		userInfoRepository.save(userInfo);
-	}
-
-	@Override
-	public void remove(UserInfo userInfo) {
-		userInfoRepository.remove(userInfo);
-	}
-
-	@Override
 	public UserInfo getByUsername(String username) {
 		return userInfoRepository.getByUsername(username);
 	}

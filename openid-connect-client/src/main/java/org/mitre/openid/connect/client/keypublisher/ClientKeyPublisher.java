@@ -67,7 +67,7 @@ public class ClientKeyPublisher implements BeanDefinitionRegistryPostProcessor {
 				// view bean
 				BeanDefinitionBuilder jwkView = BeanDefinitionBuilder.rootBeanDefinition(JWKSetView.class);
 				registry.registerBeanDefinition(JWKSetView.VIEWNAME, jwkView.getBeanDefinition());
-				viewResolver.addPropertyReference("jwk", "jwkKeyList");
+				viewResolver.addPropertyReference("jwk", JWKSetView.VIEWNAME);
 			}
 
 			registry.registerBeanDefinition("clientKeyMapping", clientKeyMapping.getBeanDefinition());

@@ -67,11 +67,6 @@ public class DefaultWhitelistedSiteService implements WhitelistedSiteService {
 	}
 
 	@Override
-	public Collection<WhitelistedSite> getByCreator(String creatorId) {
-		return repository.getByCreator(creatorId);
-	}
-
-	@Override
 	public WhitelistedSite update(WhitelistedSite oldWhitelistedSite, WhitelistedSite whitelistedSite) {
 		if (oldWhitelistedSite == null || whitelistedSite == null) {
 			throw new IllegalArgumentException("Neither the old or new sites may be null");

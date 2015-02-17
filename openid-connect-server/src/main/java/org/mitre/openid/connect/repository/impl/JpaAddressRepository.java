@@ -44,29 +44,4 @@ public class JpaAddressRepository implements AddressRepository {
 		return manager.find(Address.class, id);
 	}
 
-	@Override
-	@Transactional
-	public void remove(Address address) {
-		Address found = manager.find(Address.class, address.getId());
-
-		if (found != null) {
-			manager.remove(address);
-		} else {
-			throw new IllegalArgumentException();
-		}
-	}
-
-	@Override
-	@Transactional
-	public void removeById(Long id) {
-		Address found = getById(id);
-
-		manager.remove(found);
-	}
-
-	@Override
-	@Transactional
-	public Address save(Address address) {
-		return saveOrUpdate(address.getId(), manager, address);
-	}
 }

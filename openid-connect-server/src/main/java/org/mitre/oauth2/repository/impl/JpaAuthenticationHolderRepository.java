@@ -50,24 +50,6 @@ public class JpaAuthenticationHolderRepository implements AuthenticationHolderRe
 	}
 
 	@Override
-	public AuthenticationHolderEntity getByAuthentication(OAuth2Authentication a) {
-		TypedQuery<AuthenticationHolderEntity> query = manager.createNamedQuery("AuthenticationHolderEntity.getByAuthentication", AuthenticationHolderEntity.class);
-		query.setParameter("authentication", a);
-		return JpaUtil.getSingleResult(query.getResultList());
-	}
-
-	@Override
-	@Transactional
-	public void removeById(Long id) {
-		AuthenticationHolderEntity found = getById(id);
-		if (found != null) {
-			manager.remove(found);
-		} else {
-			throw new IllegalArgumentException("AuthenticationHolderEntity not found: " + id);
-		}
-	}
-
-	@Override
 	@Transactional
 	public void remove(AuthenticationHolderEntity a) {
 		AuthenticationHolderEntity found = getById(a.getId());

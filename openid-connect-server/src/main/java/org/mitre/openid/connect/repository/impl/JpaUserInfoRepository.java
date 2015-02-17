@@ -41,26 +41,6 @@ public class JpaUserInfoRepository implements UserInfoRepository {
 	@PersistenceContext
 	private EntityManager manager;
 
-	@Override
-	@Transactional
-	public UserInfo save(UserInfo userInfo) {
-		DefaultUserInfo dui = (DefaultUserInfo)userInfo;
-		return saveOrUpdate(dui.getId(), manager, dui);
-	}
-
-	@Override
-	@Transactional
-	public void remove(UserInfo userInfo) {
-		DefaultUserInfo dui = (DefaultUserInfo)userInfo;
-		UserInfo found = manager.find(DefaultUserInfo.class, dui.getId());
-
-		if (found != null) {
-			manager.remove(userInfo);
-		} else {
-			throw new IllegalArgumentException();
-		}
-	}
-
 	/**
 	 * Get a single UserInfo object by its username
 	 */

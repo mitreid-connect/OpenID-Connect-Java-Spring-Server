@@ -52,13 +52,7 @@ public interface WhitelistedSiteService {
 	 */
 	public WhitelistedSite getByClientId(String clientId);
 
-	/**
-	 * Return a collection of the WhitelistedSites created by a given user
-	 * 
-	 * @param creator	the user id of an admin who may have made some WhitelistedSites
-	 * @return			the collection of corresponding WhitelistedSites, if any, or null
-	 */
-	public Collection<WhitelistedSite> getByCreator(String creatorId);
+	
 
 	/**
 	 * Removes the given WhitelistedSite from the repository

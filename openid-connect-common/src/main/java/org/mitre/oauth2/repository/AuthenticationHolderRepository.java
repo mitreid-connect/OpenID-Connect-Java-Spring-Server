@@ -26,10 +26,6 @@ public interface AuthenticationHolderRepository {
 
 	public AuthenticationHolderEntity getById(Long id);
 
-	public AuthenticationHolderEntity getByAuthentication(OAuth2Authentication a);
-
-	public void removeById(Long id);
-
 	public void remove(AuthenticationHolderEntity a);
 
 	public AuthenticationHolderEntity save(AuthenticationHolderEntity a);
