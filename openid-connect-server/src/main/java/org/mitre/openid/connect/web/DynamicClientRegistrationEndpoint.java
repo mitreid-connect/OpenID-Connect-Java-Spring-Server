@@ -62,7 +62,7 @@ import com.google.gson.JsonSyntaxException;
 
 @Controller
 @RequestMapping(value = "register")
-public class ClientDynamicRegistrationEndpoint {
+public class DynamicClientRegistrationEndpoint {
 
 	@Autowired
 	private ClientDetailsEntityService clientService;
@@ -85,7 +85,7 @@ public class ClientDynamicRegistrationEndpoint {
 	@Autowired
 	private OIDCTokenService connectTokenService;
 
-	private static Logger logger = LoggerFactory.getLogger(ClientDynamicRegistrationEndpoint.class);
+	private static Logger logger = LoggerFactory.getLogger(DynamicClientRegistrationEndpoint.class);
 
 	/**
 	 * Create a new Client, issue a client ID, and create a registration access token.
@@ -361,14 +361,11 @@ public class ClientDynamicRegistrationEndpoint {
 	}
 
 	private ClientDetailsEntity validateScopes(ClientDetailsEntity newClient) throws ValidationException {
-		// set of scopes that are OK for clients to dynamically register for
-		Set<SystemScope> dynScopes = scopeService.getDynReg();
-
 		// scopes that the client is asking for
 		Set<SystemScope> requestedScopes = scopeService.fromStrings(newClient.getScope());
 
 		// the scopes that the client can have must be a subset of the dynamically allowed scopes
-		Set<SystemScope> allowedScopes = Sets.intersection(dynScopes, requestedScopes);
+		Set<SystemScope> allowedScopes = scopeService.removeRestrictedAndReservedScopes(requestedScopes);
 
 		// if the client didn't ask for any, give them the defaults
 		if (allowedScopes == null || allowedScopes.isEmpty()) {

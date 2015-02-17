@@ -274,7 +274,7 @@ public class DiscoveryEndpoint {
 		//end_session_endpoint
 		m.put("jwks_uri", baseUrl + "jwk");
 		m.put("registration_endpoint", baseUrl + "register");
-		m.put("scopes_supported", scopeService.toStrings(scopeService.getDynReg())); // these are the scopes that you can dynamically register for, which is what matters for discovery
+		m.put("scopes_supported", scopeService.toStrings(scopeService.getUnrestricted())); // these are the scopes that you can dynamically register for, which is what matters for discovery
 		m.put("response_types_supported", Lists.newArrayList("code", "token")); // we don't support these yet: , "id_token", "id_token token"));
 		m.put("grant_types_supported", Lists.newArrayList("authorization_code", "implicit", "urn:ietf:params:oauth:grant-type:jwt-bearer", "client_credentials", "urn:ietf:params:oauth:grant_type:redelegate"));
 		//acr_values_supported
@@ -311,6 +311,7 @@ public class DiscoveryEndpoint {
 				"email",
 				"email_verified",
 				"phone_number",
+				"phone_number_verified",
 				"address"
 				));
 		m.put("service_documentation", baseUrl + "about");

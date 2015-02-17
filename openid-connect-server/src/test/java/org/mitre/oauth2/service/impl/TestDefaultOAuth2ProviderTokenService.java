@@ -144,7 +144,7 @@ public class TestDefaultOAuth2ProviderTokenService {
 
 		Mockito.when(authenticationHolderRepository.save(Matchers.any(AuthenticationHolderEntity.class))).thenReturn(storedAuthHolder);
 
-		Mockito.when(scopeService.removeRestrictedScopes(Matchers.anySet())).then(AdditionalAnswers.returnsFirstArg());
+		Mockito.when(scopeService.removeRestrictedAndReservedScopes(Matchers.anySet())).then(AdditionalAnswers.returnsFirstArg());
 
 		Mockito.when(tokenEnhancer.enhance(Matchers.any(OAuth2AccessTokenEntity.class), Matchers.any(OAuth2Authentication.class)))
 		.thenAnswer(new Answer<OAuth2AccessTokenEntity>(){

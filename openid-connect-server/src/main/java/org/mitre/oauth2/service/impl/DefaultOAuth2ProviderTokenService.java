@@ -30,6 +30,7 @@ import org.mitre.oauth2.model.AuthenticationHolderEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
+import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.repository.AuthenticationHolderRepository;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
@@ -144,10 +145,12 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 			// inherit the scope from the auth, but make a new set so it is
 			//not unmodifiable. Unmodifiables don't play nicely with Eclipselink, which
 			//wants to use the clone operation.
-			Set<String> scopes = Sets.newHashSet(clientAuth.getScope());
+			Set<SystemScope> scopes = scopeService.fromStrings(clientAuth.getScope());
+
 			// remove any of the special system scopes
-			scopes = scopeService.removeRestrictedScopes(scopes);
-			token.setScope(scopes);
+			scopes = scopeService.removeRestrictedAndReservedScopes(scopes);			
+			
+			token.setScope(scopeService.toStrings(scopes));
 
 			// make it expire if necessary
 			if (client.getAccessTokenValiditySeconds() != null && client.getAccessTokenValiditySeconds() > 0) {
@@ -263,19 +266,22 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		OAuth2AccessTokenEntity token = new OAuth2AccessTokenEntity();
 
 		// get the stored scopes from the authentication holder's authorization request; these are the scopes associated with the refresh token
-		Set<String> refreshScopes = new HashSet<String>(refreshToken.getAuthenticationHolder().getAuthentication().getOAuth2Request().getScope());
+		Set<String> refreshScopesRequested = new HashSet<String>(refreshToken.getAuthenticationHolder().getAuthentication().getOAuth2Request().getScope());
+		Set<SystemScope> refreshScopes = scopeService.fromStrings(refreshScopesRequested);
 		// remove any of the special system scopes
-		refreshScopes = scopeService.removeRestrictedScopes(refreshScopes);
+		refreshScopes = scopeService.removeRestrictedAndReservedScopes(refreshScopes);
 
-		Set<String> scope = authRequest.getScope() == null ? new HashSet<String>() : new HashSet<String>(authRequest.getScope());
+		Set<String> scopeRequested = authRequest.getScope() == null ? new HashSet<String>() : new HashSet<String>(authRequest.getScope());
+		Set<SystemScope> scope = scopeService.fromStrings(scopeRequested);
+		
 		// remove any of the special system scopes
-		scope = scopeService.removeRestrictedScopes(scope);
+		scope = scopeService.removeRestrictedAndReservedScopes(scope);
 
 		if (scope != null && !scope.isEmpty()) {
 			// ensure a proper subset of scopes
 			if (refreshScopes != null && refreshScopes.containsAll(scope)) {
 				// set the scope of the new access token if requested
-				token.setScope(scope);
+				token.setScope(scopeService.toStrings(scope));
 			} else {
 				String errorMsg = "Up-scoping is not allowed.";
 				logger.error(errorMsg);
@@ -283,7 +289,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 			}
 		} else {
 			// otherwise inherit the scope of the refresh token (if it's there -- this can return a null scope set)
-			token.setScope(refreshScopes);
+			token.setScope(scopeService.toStrings(refreshScopes));
 		}
 
 		token.setClient(client);

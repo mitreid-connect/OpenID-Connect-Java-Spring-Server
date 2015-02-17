@@ -80,6 +80,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
 @RunWith(MockitoJUnitRunner.class)
+@SuppressWarnings(value = {"rawtypes", "unchecked"})
 public class TestMITREidDataService_1_0 {
 
 	@Mock

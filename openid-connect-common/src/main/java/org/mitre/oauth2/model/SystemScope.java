@@ -46,8 +46,8 @@ public class SystemScope {
 	private String value; // scope value
 	private String description; // human-readable description
 	private String icon; // class of the icon to display on the auth page
-	private boolean allowDynReg = false; // can a dynamically registered client ask for this scope?
 	private boolean defaultScope = false; // is this a default scope for newly-registered clients?
+	private boolean restricted = false; // is this scope restricted to admin-only registration access?
 	private boolean structured = false; // is this a default scope for newly-registered clients?
 	private String structuredParamDescription;
 	private String structuredValue;
@@ -124,20 +124,6 @@ public class SystemScope {
 	public void setIcon(String icon) {
 		this.icon = icon;
 	}
-	/**
-	 * @return the allowDynReg
-	 */
-	@Basic
-	@Column(name = "allow_dyn_reg")
-	public boolean isAllowDynReg() {
-		return allowDynReg;
-	}
-	/**
-	 * @param allowDynReg the allowDynReg to set
-	 */
-	public void setAllowDynReg(boolean allowDynReg) {
-		this.allowDynReg = allowDynReg;
-	}
 
 	/**
 	 * @return the defaultScope
@@ -153,6 +139,22 @@ public class SystemScope {
 	 */
 	public void setDefaultScope(boolean defaultScope) {
 		this.defaultScope = defaultScope;
+	}
+
+	/**
+	 * @return the restricted
+	 */
+	@Basic
+	@Column(name = "restricted")
+	public boolean isRestricted() {
+		return restricted;
+	}
+
+	/**
+	 * @param restricted the restricted to set
+	 */
+	public void setRestricted(boolean restricted) {
+		this.restricted = restricted;
 	}
 
 	/**
@@ -208,14 +210,19 @@ public class SystemScope {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + (allowDynReg ? 1231 : 1237);
 		result = prime * result + (defaultScope ? 1231 : 1237);
-		result = prime * result + ((description == null) ? 0 : description.hashCode());
+		result = prime * result
+				+ ((description == null) ? 0 : description.hashCode());
 		result = prime * result + ((icon == null) ? 0 : icon.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + (restricted ? 1231 : 1237);
 		result = prime * result + (structured ? 1231 : 1237);
-		result = prime * result + ((structuredParamDescription == null) ? 0 : structuredParamDescription.hashCode());
-		result = prime * result + ((structuredValue == null) ? 0 : structuredValue.hashCode());
+		result = prime
+				* result
+				+ ((structuredParamDescription == null) ? 0
+						: structuredParamDescription.hashCode());
+		result = prime * result
+				+ ((structuredValue == null) ? 0 : structuredValue.hashCode());
 		result = prime * result + ((value == null) ? 0 : value.hashCode());
 		return result;
 	}
@@ -231,13 +238,10 @@ public class SystemScope {
 		if (obj == null) {
 			return false;
 		}
-		if (!(obj instanceof SystemScope)) {
+		if (getClass() != obj.getClass()) {
 			return false;
 		}
 		SystemScope other = (SystemScope) obj;
-		if (allowDynReg != other.allowDynReg) {
-			return false;
-		}
 		if (defaultScope != other.defaultScope) {
 			return false;
 		}
@@ -262,6 +266,9 @@ public class SystemScope {
 		} else if (!id.equals(other.id)) {
 			return false;
 		}
+		if (restricted != other.restricted) {
+			return false;
+		}
 		if (structured != other.structured) {
 			return false;
 		}
@@ -269,7 +276,8 @@ public class SystemScope {
 			if (other.structuredParamDescription != null) {
 				return false;
 			}
-		} else if (!structuredParamDescription.equals(other.structuredParamDescription)) {
+		} else if (!structuredParamDescription
+				.equals(other.structuredParamDescription)) {
 			return false;
 		}
 		if (structuredValue == null) {
@@ -294,7 +302,11 @@ public class SystemScope {
 	 */
 	@Override
 	public String toString() {
-		return "SystemScope [id=" + id + ", value=" + value + ", description=" + description + ", icon=" + icon + ", allowDynReg=" + allowDynReg + ", defaultScope=" + defaultScope + ", structured=" + structured + ", structuredParamDescription=" + structuredParamDescription + ", structuredValue="
+		return "SystemScope [id=" + id + ", value=" + value + ", description="
+				+ description + ", icon=" + icon + ", defaultScope="
+				+ defaultScope + ", restricted=" + restricted + ", structured="
+				+ structured + ", structuredParamDescription="
+				+ structuredParamDescription + ", structuredValue="
 				+ structuredValue + "]";
 	}
 

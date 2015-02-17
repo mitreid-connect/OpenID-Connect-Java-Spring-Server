@@ -99,7 +99,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 			}
 		});
 
-		Mockito.when(scopeService.removeRestrictedScopes(Matchers.anySet())).thenAnswer(new Answer<Set<String>>() {
+		Mockito.when(scopeService.removeRestrictedAndReservedScopes(Matchers.anySet())).thenAnswer(new Answer<Set<String>>() {
 			@Override
 			public Set<String> answer(InvocationOnMock invocation) throws Throwable {
 				Object[] args = invocation.getArguments();

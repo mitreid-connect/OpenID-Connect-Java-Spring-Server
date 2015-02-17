@@ -23,6 +23,8 @@ import java.util.Set;
 
 import org.mitre.oauth2.model.SystemScope;
 
+import com.google.common.collect.Sets;
+
 /**
  * @author jricher
  *
@@ -34,6 +36,13 @@ public interface SystemScopeService {
 	public static final String ID_TOKEN_SCOPE = "id-token";
 	public static final String REGISTRATION_TOKEN_SCOPE = "registration-token";
 	public static final String RESOURCE_TOKEN_SCOPE = "resource-token";
+	
+	public static final Set<SystemScope> reservedScopes = 
+		Sets.newHashSet(
+			new SystemScope(ID_TOKEN_SCOPE),
+			new SystemScope(REGISTRATION_TOKEN_SCOPE),
+			new SystemScope(RESOURCE_TOKEN_SCOPE)
+		);
 
 	public Set<SystemScope> getAll();
 
@@ -42,13 +51,28 @@ public interface SystemScopeService {
 	 * @return
 	 */
 	public Set<SystemScope> getDefaults();
-
+	
 	/**
-	 * Get all scopes that are allowed for dynamic registration on this system
+	 * Get all the reserved system scopes. These can't be used
+	 * by clients directly, but are instead tied to special system
+	 * tokens like id tokens and registration access tokens.
+	 * 
 	 * @return
 	 */
-	public Set<SystemScope> getDynReg();
+	public Set<SystemScope> getReserved();
+	
+	/**
+	 * Get all the registered scopes that are restricted.
+	 * @return
+	 */
+	public Set<SystemScope> getRestricted();
 
+	/**
+	 * Get all the registered scopes that aren't restricted.
+	 * @return
+	 */
+	public Set<SystemScope> getUnrestricted();
+	
 	public SystemScope getById(Long id);
 
 	public SystemScope getByValue(String value);
@@ -82,9 +106,18 @@ public interface SystemScopeService {
 	public boolean scopesMatch(Set<String> expected, Set<String> actual);
 
 	/**
-	 * Remove any system-restricted scopes from the set and return the result.
+	 * Remove any system-reserved or registered restricted scopes from the 
+	 * set and return the result.
 	 * @param scopes
 	 * @return
 	 */
-	public Set<String> removeRestrictedScopes(Set<String> scopes);
+	public Set<SystemScope> removeRestrictedAndReservedScopes(Set<SystemScope> scopes);
+	
+	/**
+	 * Remove any system-reserved scopes from the set and return the result.
+	 * @param scopes
+	 * @return
+	 */
+	public Set<SystemScope> removeReservedScopes(Set<SystemScope> scopes);
+
 }

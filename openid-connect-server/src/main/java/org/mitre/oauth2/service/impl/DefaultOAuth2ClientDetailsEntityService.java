@@ -121,14 +121,22 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 		checkSectorIdentifierUri(client);
 
 
-		// make sure a client doesn't get any special system scopes
-		client.setScope(scopeService.removeRestrictedScopes(client.getScope()));
+		ensureNoReservedScopes(client);
 
 		ClientDetailsEntity c = clientRepository.saveClient(client);
 
 		statsService.resetCache();
 
 		return c;
+	}
+
+	private void ensureNoReservedScopes(ClientDetailsEntity client) {
+		// make sure a client doesn't get any special system scopes
+		Set<SystemScope> requestedScope = scopeService.fromStrings(client.getScope());
+		
+		requestedScope = scopeService.removeReservedScopes(requestedScope);
+		
+		client.setScope(scopeService.toStrings(requestedScope));
 	}
 
 	private void checkSectorIdentifierUri(ClientDetailsEntity client) {
@@ -246,7 +254,7 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 			checkSectorIdentifierUri(newClient);
 
 			// make sure a client doesn't get any special system scopes
-			newClient.setScope(scopeService.removeRestrictedScopes(newClient.getScope()));
+			ensureNoReservedScopes(newClient);
 
 			return clientRepository.updateClient(oldClient.getId(), newClient);
 		}

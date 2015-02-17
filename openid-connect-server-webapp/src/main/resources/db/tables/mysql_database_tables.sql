@@ -170,7 +170,7 @@ CREATE TABLE IF NOT EXISTS system_scope (
 	scope VARCHAR(256) NOT NULL,
 	description VARCHAR(4096),
 	icon VARCHAR(256),
-	allow_dyn_reg BOOLEAN NOT NULL DEFAULT 0,
+	restricted BOOLEAN NOT NULL DEFAULT 0,
 	default_scope BOOLEAN NOT NULL DEFAULT 0,
 	structured BOOLEAN NOT NULL DEFAULT 0,
 	structured_param_description VARCHAR(256),
