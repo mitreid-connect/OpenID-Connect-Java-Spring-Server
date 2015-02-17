@@ -62,6 +62,7 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Sets;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
@@ -687,7 +688,8 @@ public class MITREidDataService_1_1 extends MITREidDataService_1_X {
                         } else if (name.equals("initiateLoginUri")) {
                             client.setInitiateLoginUri(reader.nextString());
                         } else if (name.equals("postLogoutRedirectUri")) {
-                            client.setPostLogoutRedirectUri(reader.nextString());
+                            HashSet<String> postLogoutUris = Sets.newHashSet(reader.nextString());
+							client.setPostLogoutRedirectUris(postLogoutUris);
                         } else if (name.equals("requestUris")) {
                             Set<String> requestUris = readSet(reader);
                             client.setRequestUris(requestUris);
