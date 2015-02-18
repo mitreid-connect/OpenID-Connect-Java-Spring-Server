@@ -201,6 +201,8 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 
 		client = service.saveNewClient(client);
 
+		Mockito.verify(scopeService, Mockito.atLeastOnce()).removeReservedScopes(Matchers.anySet());
+		
 		assertThat(client.getScope().contains(SystemScopeService.OFFLINE_ACCESS), is(equalTo(false)));
 	}
 
@@ -323,6 +325,8 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 
 		client = service.updateClient(oldClient, client);
 
+		Mockito.verify(scopeService, Mockito.atLeastOnce()).removeReservedScopes(Matchers.anySet());		
+
 		assertThat(client.getScope().contains(SystemScopeService.OFFLINE_ACCESS), is(equalTo(true)));
 	}
 
@@ -337,6 +341,8 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 
 		client = service.updateClient(oldClient, client);
 
+		Mockito.verify(scopeService, Mockito.atLeastOnce()).removeReservedScopes(Matchers.anySet());
+		
 		assertThat(client.getScope().contains(SystemScopeService.OFFLINE_ACCESS), is(equalTo(false)));
 	}
 }

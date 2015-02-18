@@ -148,7 +148,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 			Set<SystemScope> scopes = scopeService.fromStrings(clientAuth.getScope());
 
 			// remove any of the special system scopes
-			scopes = scopeService.removeRestrictedAndReservedScopes(scopes);			
+			scopes = scopeService.removeReservedScopes(scopes);			
 			
 			token.setScope(scopeService.toStrings(scopes));
 
@@ -269,13 +269,13 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		Set<String> refreshScopesRequested = new HashSet<String>(refreshToken.getAuthenticationHolder().getAuthentication().getOAuth2Request().getScope());
 		Set<SystemScope> refreshScopes = scopeService.fromStrings(refreshScopesRequested);
 		// remove any of the special system scopes
-		refreshScopes = scopeService.removeRestrictedAndReservedScopes(refreshScopes);
+		refreshScopes = scopeService.removeReservedScopes(refreshScopes);
 
 		Set<String> scopeRequested = authRequest.getScope() == null ? new HashSet<String>() : new HashSet<String>(authRequest.getScope());
 		Set<SystemScope> scope = scopeService.fromStrings(scopeRequested);
 		
 		// remove any of the special system scopes
-		scope = scopeService.removeRestrictedAndReservedScopes(scope);
+		scope = scopeService.removeReservedScopes(scope);
 
 		if (scope != null && !scope.isEmpty()) {
 			// ensure a proper subset of scopes
