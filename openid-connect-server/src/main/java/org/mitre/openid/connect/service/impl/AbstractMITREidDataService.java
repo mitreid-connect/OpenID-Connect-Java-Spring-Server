@@ -39,6 +39,7 @@ import com.google.gson.stream.JsonWriter;
  *
  * @author arielak
  */
+@SuppressWarnings(value = {"rawtypes", "unchecked"})
 public abstract class AbstractMITREidDataService implements MITREidDataService {
 	private static Logger logger = LoggerFactory.getLogger(AbstractMITREidDataService.class);
 

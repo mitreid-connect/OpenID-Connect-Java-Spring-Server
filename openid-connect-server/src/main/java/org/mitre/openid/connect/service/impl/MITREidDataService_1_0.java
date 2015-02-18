@@ -70,6 +70,7 @@ import com.google.gson.stream.JsonWriter;
  * @author arielak
  */
 @Service
+@SuppressWarnings(value = {"unchecked"})
 public class MITREidDataService_1_0 extends AbstractMITREidDataService {
 
 	private final static Logger logger = LoggerFactory.getLogger(MITREidDataService_1_0.class);
