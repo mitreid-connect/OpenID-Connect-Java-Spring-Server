@@ -112,15 +112,18 @@ var ListWidgetChildView = Backbone.View.extend({
     },
 
     initialize:function (options) {
-    	this.options = options;
+    	this.options = {toggle: false, checked: false};
+    	_.extend(this.options, options);
         if (!this.template) {
             this.template = _.template($('#tmpl-list-widget-child').html());
         }
-
     },
 
     render:function () {
-        this.$el.html(this.template(this.model.toJSON()));
+    	
+    	var data = {model: this.model.toJSON(), opt: this.options};
+    	
+        this.$el.html(this.template(data));
 
         $('.item-full', this.el).hide();
         
@@ -214,17 +217,46 @@ var ListWidgetView = Backbone.View.extend({
             $('input', this.$el).typeahead({source:this.options.autocomplete});
         }
         
-        // render toggleable options
-        if (this.options.toggles) {
-        	
-        }
-
         _self = this;
 
-        if (_.size(this.collection.models) == 0) {
+        if (_.size(this.collection.models) == 0 && _.size(this.options.autocomplete) == 0) {
     		$("tbody", _self.el).html($('#tmpl-list-widget-child-empty').html());
         } else {
-        	_.each(this.collection.models, function (model) {
+        	
+        	// make a copy of our collection to work from
+        	var values = this.collection.clone();
+
+        	// look through our autocomplete values (if we have them) and render them all as checkboxes
+        	if (this.options.autocomplete) {
+        		_.each(this.options.autocomplete, function(option) {
+        			var found = _.find(values.models, function(element) {
+        				return element.get('item') == option;
+        			});
+        			
+        			var model = null;
+        			var checked = false;
+        			
+        			if (found) {
+        				// if we found the element, check the box
+        				model = found;
+        				checked = true;
+        				// and remove it from the list of items to be rendered later
+        				values.remove(found, {silent: true});
+        			} else {
+        				model = new Backbone.Model({item:option});
+        				checked = false;
+        			}
+        			
+        			var el = new this.childView({model:model, toggle: true, checked: checked}).render().el;
+        			$("tbody", _self.el).append(el);
+        			
+        		}, this);
+        	}
+        	
+        	
+        	// now render everything not in the autocomplete list
+        	_.each(values.models, function (model) {
+        		
         		var el = new this.childView({model:model}).render().el;
         		$("tbody", _self.el).append(el);
         	}, this);
