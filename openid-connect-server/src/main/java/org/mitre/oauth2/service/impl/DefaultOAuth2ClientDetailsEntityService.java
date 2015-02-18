@@ -110,7 +110,7 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 			client = generateClientId(client);
 		}
 
-		// for refresh tokens, ensure consistency between grant types and tokens
+		// make sure that clients with the "refresh_token" grant type have the "offline_access" scope, and vice versa
 		ensureRefreshTokenConsistency(client);
 
 		// timestamp this to right now

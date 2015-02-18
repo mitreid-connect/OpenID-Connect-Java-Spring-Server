@@ -166,7 +166,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 			token.setAuthenticationHolder(authHolder);
 
 			// attach a refresh token, if this client is allowed to request them and the user gets the offline scope
-			if (client.isAllowRefresh() && scopes.contains(SystemScopeService.OFFLINE_ACCESS)) {
+			if (client.isAllowRefresh() && token.getScope().contains(SystemScopeService.OFFLINE_ACCESS)) {
 				OAuth2RefreshTokenEntity refreshToken = new OAuth2RefreshTokenEntity(); //refreshTokenFactory.createNewRefreshToken();
 				JWTClaimsSet refreshClaims = new JWTClaimsSet();
 

@@ -29,6 +29,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mitre.oauth2.model.ClientDetailsEntity;
+import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.repository.OAuth2ClientRepository;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
 import org.mitre.oauth2.service.SystemScopeService;
@@ -37,6 +38,7 @@ import org.mitre.openid.connect.service.ApprovedSiteService;
 import org.mitre.openid.connect.service.BlacklistedSiteService;
 import org.mitre.openid.connect.service.StatsService;
 import org.mitre.openid.connect.service.WhitelistedSiteService;
+import org.mockito.AdditionalAnswers;
 import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
@@ -99,13 +101,34 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 			}
 		});
 
-		Mockito.when(scopeService.removeRestrictedAndReservedScopes(Matchers.anySet())).thenAnswer(new Answer<Set<String>>() {
+		Mockito.when(scopeService.fromStrings(Matchers.anySet())).thenAnswer(new Answer<Set<SystemScope>>() {
+			@Override
+			public Set<SystemScope> answer(InvocationOnMock invocation) throws Throwable {
+				Object[] args = invocation.getArguments();
+				Set<String> input = (Set<String>) args[0];
+				Set<SystemScope> output = new HashSet<>();
+				for (String scope : input) {
+					output.add(new SystemScope(scope));
+				}
+				return output;
+			}
+		});
+		
+		Mockito.when(scopeService.toStrings(Matchers.anySet())).thenAnswer(new Answer<Set<String>>() {
 			@Override
 			public Set<String> answer(InvocationOnMock invocation) throws Throwable {
 				Object[] args = invocation.getArguments();
-				return (Set<String>) args[0];
+				Set<SystemScope> input = (Set<SystemScope>) args[0];
+				Set<String> output = new HashSet<>();
+				for (SystemScope scope : input) {
+					output.add(scope.getValue());
+				}
+				return output;
 			}
 		});
+		
+		// we're not testing reserved scopes here, just pass through when it's called
+		Mockito.when(scopeService.removeReservedScopes(Matchers.anySet())).then(AdditionalAnswers.returnsFirstArg());
 
 	}
 
@@ -117,7 +140,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 
 		// Set up a mock client.
 		ClientDetailsEntity client = Mockito.mock(ClientDetailsEntity.class);
-		Mockito.when(client.getId()).thenReturn(12345L); // doesn't matter what id it returns
+		Mockito.when(client.getId()).thenReturn(12345L); // any non-null ID will work
 
 		service.saveNewClient(client);
 	}

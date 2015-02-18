@@ -25,6 +25,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Before;
@@ -34,6 +35,7 @@ import org.mitre.oauth2.model.AuthenticationHolderEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
+import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.repository.AuthenticationHolderRepository;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
@@ -144,6 +146,34 @@ public class TestDefaultOAuth2ProviderTokenService {
 
 		Mockito.when(authenticationHolderRepository.save(Matchers.any(AuthenticationHolderEntity.class))).thenReturn(storedAuthHolder);
 
+		Mockito.when(scopeService.fromStrings(Matchers.anySet())).thenAnswer(new Answer<Set<SystemScope>>() {
+			@Override
+			public Set<SystemScope> answer(InvocationOnMock invocation) throws Throwable {
+				Object[] args = invocation.getArguments();
+				Set<String> input = (Set<String>) args[0];
+				Set<SystemScope> output = new HashSet<>();
+				for (String scope : input) {
+					output.add(new SystemScope(scope));
+				}
+				return output;
+			}
+		});
+		
+		Mockito.when(scopeService.toStrings(Matchers.anySet())).thenAnswer(new Answer<Set<String>>() {
+			@Override
+			public Set<String> answer(InvocationOnMock invocation) throws Throwable {
+				Object[] args = invocation.getArguments();
+				Set<SystemScope> input = (Set<SystemScope>) args[0];
+				Set<String> output = new HashSet<>();
+				for (SystemScope scope : input) {
+					output.add(scope.getValue());
+				}
+				return output;
+			}
+		});
+
+		// we're not testing restricted or reserved scopes here, just pass through
+		Mockito.when(scopeService.removeReservedScopes(Matchers.anySet())).then(AdditionalAnswers.returnsFirstArg());
 		Mockito.when(scopeService.removeRestrictedAndReservedScopes(Matchers.anySet())).then(AdditionalAnswers.returnsFirstArg());
 
 		Mockito.when(tokenEnhancer.enhance(Matchers.any(OAuth2AccessTokenEntity.class), Matchers.any(OAuth2Authentication.class)))
