@@ -82,7 +82,8 @@ var ListWidgetChildView = Backbone.View.extend({
     tagName: 'tr',
 
     events:{
-        "click .btn-delete-list-item":'deleteItem'
+        "click .btn-delete-list-item":'deleteItem',
+        "change .checkbox-list-item":'toggleCheckbox'
     },
     
     deleteItem:function (e) {
@@ -109,6 +110,17 @@ var ListWidgetChildView = Backbone.View.extend({
         	}
         });
         
+    },
+    
+    toggleCheckbox:function(e) {
+    	e.preventDefault();
+    	e.stopImmediatePropagation();
+    	if ($(e.target).is(':checked')) {
+    		this.options.collection.add(this.model);
+    	} else {
+    		this.options.collection.remove(this.model);
+    	}
+    	
     },
 
     initialize:function (options) {
@@ -212,11 +224,6 @@ var ListWidgetView = Backbone.View.extend({
         this.$el.html(this.template({placeholder:this.options.placeholder,
         							helpBlockText:this.options.helpBlockText}));
 
-        // bind autocomplete options
-        if (this.options.autocomplete) {
-            $('input', this.$el).typeahead({source:this.options.autocomplete});
-        }
-        
         _self = this;
 
         if (_.size(this.collection.models) == 0 && _.size(this.options.autocomplete) == 0) {
@@ -247,7 +254,7 @@ var ListWidgetView = Backbone.View.extend({
         				checked = false;
         			}
         			
-        			var el = new this.childView({model:model, toggle: true, checked: checked}).render().el;
+        			var el = new this.childView({model:model, toggle: true, checked: checked, collection: _self.collection}).render().el;
         			$("tbody", _self.el).append(el);
         			
         		}, this);
@@ -257,7 +264,7 @@ var ListWidgetView = Backbone.View.extend({
         	// now render everything not in the autocomplete list
         	_.each(values.models, function (model) {
         		
-        		var el = new this.childView({model:model}).render().el;
+        		var el = new this.childView({model:model, collection: _self.collection}).render().el;
         		$("tbody", _self.el).append(el);
         	}, this);
         }
