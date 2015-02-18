@@ -106,7 +106,7 @@ public class MITREidDataService_1_1 extends AbstractMITREidDataService {
 	@Override
 	public void importData(JsonReader reader) throws IOException {
 
-		logger.info("Reading configuration for 1.0");
+		logger.info("Reading configuration for 1.1");
 
 		// this *HAS* to start as an object
 		reader.beginObject();
