@@ -90,6 +90,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
 @RunWith(MockitoJUnitRunner.class)
+@SuppressWarnings(value = {"rawtypes", "unchecked"})
 public class TestMITREidDataService_1_2 {
 
 	@Mock
@@ -1546,7 +1547,7 @@ public class TestMITREidDataService_1_2 {
 		scope1.setId(1L);
 		scope1.setValue("scope1");
 		scope1.setDescription("Scope 1");
-		scope1.setAllowDynReg(false);
+		scope1.setRestricted(true);
 		scope1.setDefaultScope(false);
 		scope1.setIcon("glass");
 
@@ -1554,7 +1555,7 @@ public class TestMITREidDataService_1_2 {
 		scope2.setId(2L);
 		scope2.setValue("scope2");
 		scope2.setDescription("Scope 2");
-		scope2.setAllowDynReg(true);
+		scope2.setRestricted(false);
 		scope2.setDefaultScope(false);
 		scope2.setIcon("ball");
 
@@ -1562,7 +1563,7 @@ public class TestMITREidDataService_1_2 {
 		scope3.setId(3L);
 		scope3.setValue("scope3");
 		scope3.setDescription("Scope 3");
-		scope3.setAllowDynReg(true);
+		scope3.setRestricted(false);
 		scope3.setDefaultScope(true);
 		scope3.setIcon("road");
 
@@ -1640,7 +1641,7 @@ public class TestMITREidDataService_1_2 {
 				assertThat(scope.get("value").getAsString(), equalTo(compare.getValue()));
 				assertThat(scope.get("description").getAsString(), equalTo(compare.getDescription()));
 				assertThat(scope.get("icon").getAsString(), equalTo(compare.getIcon()));
-				assertThat(scope.get("allowDynReg").getAsBoolean(), equalTo(compare.isAllowDynReg()));
+				assertThat(scope.get("restricted").getAsBoolean(), equalTo(compare.isRestricted()));
 				assertThat(scope.get("defaultScope").getAsBoolean(), equalTo(compare.isDefaultScope()));
 				checked.add(compare);
 			}
@@ -1656,7 +1657,7 @@ public class TestMITREidDataService_1_2 {
 		scope1.setId(1L);
 		scope1.setValue("scope1");
 		scope1.setDescription("Scope 1");
-		scope1.setAllowDynReg(false);
+		scope1.setRestricted(true);
 		scope1.setDefaultScope(false);
 		scope1.setIcon("glass");
 
@@ -1664,7 +1665,7 @@ public class TestMITREidDataService_1_2 {
 		scope2.setId(2L);
 		scope2.setValue("scope2");
 		scope2.setDescription("Scope 2");
-		scope2.setAllowDynReg(true);
+		scope2.setRestricted(false);
 		scope2.setDefaultScope(false);
 		scope2.setIcon("ball");
 
@@ -1672,9 +1673,11 @@ public class TestMITREidDataService_1_2 {
 		scope3.setId(3L);
 		scope3.setValue("scope3");
 		scope3.setDescription("Scope 3");
-		scope3.setAllowDynReg(true);
+		scope3.setRestricted(false);
 		scope3.setDefaultScope(true);
 		scope3.setIcon("road");
+		scope3.setStructured(true);
+		scope3.setStructuredParamDescription("Structured Parameter");
 
 		String configJson = "{" +
 				"\"" + MITREidDataService.CLIENTS + "\": [], " +
@@ -1686,9 +1689,9 @@ public class TestMITREidDataService_1_2 {
 				"\"" + MITREidDataService.AUTHENTICATIONHOLDERS + "\": [], " +
 				"\"" + MITREidDataService.SYSTEMSCOPES + "\": [" +
 
-				"{\"id\":1,\"description\":\"Scope 1\",\"icon\":\"glass\",\"value\":\"scope1\",\"allowDynReg\":false,\"defaultScope\":false}," +
-				"{\"id\":2,\"description\":\"Scope 2\",\"icon\":\"ball\",\"value\":\"scope2\",\"allowDynReg\":true,\"defaultScope\":false}," +
-				"{\"id\":3,\"description\":\"Scope 3\",\"icon\":\"road\",\"value\":\"scope3\",\"allowDynReg\":true,\"defaultScope\":true}" +
+				"{\"id\":1,\"description\":\"Scope 1\",\"icon\":\"glass\",\"value\":\"scope1\",\"restricted\":true,\"defaultScope\":false}," +
+				"{\"id\":2,\"description\":\"Scope 2\",\"icon\":\"ball\",\"value\":\"scope2\",\"restricted\":false,\"defaultScope\":false}," +
+				"{\"id\":3,\"description\":\"Scope 3\",\"icon\":\"road\",\"value\":\"scope3\",\"restricted\":false,\"defaultScope\":true,\"structured\":true,\"structuredParameter\":\"Structured Parameter\"}" +
 
 				"  ]" +
 				"}";
@@ -1707,19 +1710,25 @@ public class TestMITREidDataService_1_2 {
 		assertThat(savedScopes.get(0).getDescription(), equalTo(scope1.getDescription()));
 		assertThat(savedScopes.get(0).getIcon(), equalTo(scope1.getIcon()));
 		assertThat(savedScopes.get(0).isDefaultScope(), equalTo(scope1.isDefaultScope()));
-		assertThat(savedScopes.get(0).isAllowDynReg(), equalTo(scope1.isAllowDynReg()));
+		assertThat(savedScopes.get(0).isRestricted(), equalTo(scope1.isRestricted()));
+		assertThat(savedScopes.get(0).isStructured(), equalTo(scope1.isStructured()));
+		assertThat(savedScopes.get(0).getStructuredParamDescription(), equalTo(scope1.getStructuredParamDescription()));
 
 		assertThat(savedScopes.get(1).getValue(), equalTo(scope2.getValue()));
 		assertThat(savedScopes.get(1).getDescription(), equalTo(scope2.getDescription()));
 		assertThat(savedScopes.get(1).getIcon(), equalTo(scope2.getIcon()));
 		assertThat(savedScopes.get(1).isDefaultScope(), equalTo(scope2.isDefaultScope()));
-		assertThat(savedScopes.get(1).isAllowDynReg(), equalTo(scope2.isAllowDynReg()));
+		assertThat(savedScopes.get(1).isRestricted(), equalTo(scope2.isRestricted()));
+		assertThat(savedScopes.get(1).isStructured(), equalTo(scope2.isStructured()));
+		assertThat(savedScopes.get(1).getStructuredParamDescription(), equalTo(scope2.getStructuredParamDescription()));
 
 		assertThat(savedScopes.get(2).getValue(), equalTo(scope3.getValue()));
 		assertThat(savedScopes.get(2).getDescription(), equalTo(scope3.getDescription()));
 		assertThat(savedScopes.get(2).getIcon(), equalTo(scope3.getIcon()));
 		assertThat(savedScopes.get(2).isDefaultScope(), equalTo(scope3.isDefaultScope()));
-		assertThat(savedScopes.get(2).isAllowDynReg(), equalTo(scope3.isAllowDynReg()));
+		assertThat(savedScopes.get(2).isRestricted(), equalTo(scope3.isRestricted()));
+		assertThat(savedScopes.get(2).isStructured(), equalTo(scope3.isStructured()));
+		assertThat(savedScopes.get(2).getStructuredParamDescription(), equalTo(scope3.getStructuredParamDescription()));
 
 	}
 

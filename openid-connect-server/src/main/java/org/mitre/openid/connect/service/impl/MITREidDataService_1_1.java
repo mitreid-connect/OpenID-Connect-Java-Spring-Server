@@ -742,9 +742,14 @@ public class MITREidDataService_1_1 extends AbstractMITREidDataService {
 					} else if (name.equals("description")) {
 						scope.setDescription(reader.nextString());
 					} else if (name.equals("allowDynReg")) {
-						scope.setAllowDynReg(reader.nextBoolean());
+						// previously "allowDynReg" scopes are now tagged as "not restricted" and vice versa
+						scope.setRestricted(!reader.nextBoolean());
 					} else if (name.equals("defaultScope")) {
 						scope.setDefaultScope(reader.nextBoolean());
+					} else if (name.equals("structured")) {
+						scope.setStructured(reader.nextBoolean());
+					} else if (name.equals("structuredParameter")) {
+						scope.setStructuredParamDescription(reader.nextString());
 					} else if (name.equals("icon")) {
 						scope.setIcon(reader.nextString());
 					} else {

@@ -425,7 +425,9 @@ public class MITREidDataService_1_2 extends AbstractMITREidDataService {
 				writer.name("description").value(sysScope.getDescription());
 				writer.name("icon").value(sysScope.getIcon());
 				writer.name("value").value(sysScope.getValue());
-				writer.name("allowDynReg").value(sysScope.isAllowDynReg());
+				writer.name("restricted").value(sysScope.isRestricted());
+				writer.name("structured").value(sysScope.isStructured());
+				writer.name("structuredParameter").value(sysScope.getStructuredParamDescription());
 				writer.name("defaultScope").value(sysScope.isDefaultScope());
 				writer.endObject();
 				logger.debug("Wrote system scope {}", sysScope.getId());
@@ -1077,12 +1079,16 @@ public class MITREidDataService_1_2 extends AbstractMITREidDataService {
 						scope.setValue(reader.nextString());
 					} else if (name.equals("description")) {
 						scope.setDescription(reader.nextString());
-					} else if (name.equals("allowDynReg")) {
-						scope.setAllowDynReg(reader.nextBoolean());
+					} else if (name.equals("restricted")) {
+						scope.setRestricted(reader.nextBoolean());
 					} else if (name.equals("defaultScope")) {
 						scope.setDefaultScope(reader.nextBoolean());
 					} else if (name.equals("icon")) {
 						scope.setIcon(reader.nextString());
+					} else if (name.equals("structured")) {
+						scope.setStructured(reader.nextBoolean());
+					} else if (name.equals("structuredParameter")) {
+						scope.setStructuredParamDescription(reader.nextString());
 					} else {
 						logger.debug("found unexpected entry");
 						reader.skipValue();
