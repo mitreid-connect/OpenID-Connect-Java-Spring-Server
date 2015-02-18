@@ -927,7 +927,7 @@ var AppRouter = Backbone.Router.extend({
     		client.set({
         		require_auth_time:true,
         		default_max_age:60000,
-        		scope: _.uniq(_.flatten(app.systemScopeList.defaultDynRegScopes().pluck("value"))).join(" "),
+        		scope: _.uniq(_.flatten(app.systemScopeList.defaultUnrestrictedScopes().pluck("value"))).join(" "),
         		token_endpoint_auth_method: 'client_secret_basic',
         		grant_types: ["authorization_code"],
         		response_types: ["code"],
@@ -997,7 +997,7 @@ var AppRouter = Backbone.Router.extend({
     		}
     		
     		client.set({
-        		scope: _.uniq(_.flatten(app.systemScopeList.defaultDynRegScopes().pluck("value"))).join(" "),
+        		scope: _.uniq(_.flatten(app.systemScopeList.defaultUnrestrictedScopes().pluck("value"))).join(" "),
         		token_endpoint_auth_method: 'client_secret_basic',
         		contacts: contacts
         	}, { silent: true });

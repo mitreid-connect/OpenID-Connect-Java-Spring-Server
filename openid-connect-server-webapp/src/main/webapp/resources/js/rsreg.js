@@ -355,7 +355,7 @@ var ResRegEditView = Backbone.View.extend({
 
         var scopeView = new ListWidgetView({
         	placeholder: $.t('client.client-form.scope-placeholder'), 
-        	autocomplete: _.uniq(_.flatten(this.options.systemScopeList.pluck("value"))), 
+        	autocomplete: _.uniq(_.flatten(this.options.systemScopeList.unrestrictedScopes().pluck("value"))), 
         	helpBlockText: $.t('rsreg.client-form.scope-help'),
             collection: this.scopeCollection});
         $("#scope .controls",this.el).html(scopeView.render().el);
