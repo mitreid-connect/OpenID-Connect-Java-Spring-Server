@@ -99,7 +99,8 @@ var SystemScopeView = Backbone.View.extend({
     render:function (eventName) {
         this.$el.html(this.template(this.model.toJSON()));
 
-        this.$('.restricted').tooltip({title: $.t('scope.system-scope-table.tooltip-restricted')});
+        $('.restricted', this.el).tooltip({title: $.t('scope.system-scope-table.tooltip-restricted')});
+        $('.default', this.el).tooltip({title: $.t('scope.system-scope-table.tooltip-default')});
         
         return this;
         $(this.el).i18n();

@@ -296,7 +296,8 @@
             "confirm": "Are you sure sure you would like to delete this scope? Clients that have this scope will still be able to ask for it.",
             "new": "New Scope",
             "text": "There are no system scopes defined. Clients may still have custom scopes.",
-            "tooltip-restricted": "This scope can be used only by adminisrtators. It is not available for dynamic registration."
+            "tooltip-restricted": "This scope can be used only by adminisrtators. It is not available for dynamic registration.",
+            "tooltip-default": "This scope is automatically assigned to newly registered clients."
         }
     },
     "token": {

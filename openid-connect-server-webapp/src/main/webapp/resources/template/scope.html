@@ -47,6 +47,9 @@
 
 <script type="text/html" id="tmpl-system-scope">
 	<td>
+		<% if (defaultScope) { %>
+			<span class="label label-success default"><i class="icon-flag icon-white"></i></span>
+		<% } %>
 		<% if (restricted) { %>
 			<span class="label label-warning restricted"><i class="icon-ban-circle icon-white"></i></span>
 		<% } %>
