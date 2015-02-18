@@ -28,7 +28,10 @@
 <!-- list widget -->
 
 <script type="text/html" id="tmpl-list-widget-child">
-    <td><%-(item.length > 30) ? item.substr(0,27) + '...' : item %></td>
+    <td>
+		<span class="item-short"><%-(item.length > 30) ? item.substr(0,27) + '...' : item %></span>
+		<input type="text" readonly style="cursor: text" class="item-full input-xxlarge" value="<%- item %>" />
+	</td>
    	<td><a class="btn btn-small btn-delete-list-item" href="#"><i class="icon-minus-sign"></i></a></td>
 </script>
 

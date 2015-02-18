@@ -6,7 +6,8 @@
         },
         "home": "Home",
         "list-widget": {
-            "empty": "There are no items in this list."
+            "empty": "There are no items in this list.",
+            "tooltip": "Click to display full value."
         },
         "manage-blacklist": "Manage Blacklisted Clients",
         "self-service-client": "Self-service Client Registration",

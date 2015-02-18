@@ -122,9 +122,23 @@ var ListWidgetChildView = Backbone.View.extend({
     render:function () {
         this.$el.html(this.template(this.model.toJSON()));
 
+        $('.item-full', this.el).hide();
+        
         if (this.model.get('item').length > 30) {
-            this.$el.tooltip({title:this.model.get('item')});
+            this.$el.tooltip({title:$.t('admin.list-widget.tooltip')});
+            
+            var _self = this;
+            
+            $(this.el).click(function(event) {
+            	event.preventDefault();
+            	$('.item-short', _self.el).hide();
+            	$('.item-full', _self.el).show();
+            	_self.$el.tooltip('destroy');
+            });
         }
+        
+        
+        
         $(this.el).i18n();
         return this;
     }
@@ -198,6 +212,11 @@ var ListWidgetView = Backbone.View.extend({
         // bind autocomplete options
         if (this.options.autocomplete) {
             $('input', this.$el).typeahead({source:this.options.autocomplete});
+        }
+        
+        // render toggleable options
+        if (this.options.toggles) {
+        	
         }
 
         _self = this;
