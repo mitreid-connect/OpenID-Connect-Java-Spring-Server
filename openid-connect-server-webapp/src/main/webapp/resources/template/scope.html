@@ -47,8 +47,8 @@
 
 <script type="text/html" id="tmpl-system-scope">
 	<td>
-		<% if (allowDynReg) { %>
-			<span class="label label-inverse allow-dyn-reg"><i class="icon-globe icon-white"></i></span>
+		<% if (restricted) { %>
+			<span class="label label-warning restricted"><i class="icon-ban-circle icon-white"></i></span>
 		<% } %>
 	</td>
 
@@ -141,12 +141,12 @@
 				</div>
 			</div>
 
-			<div class="control-group" id="allowDynReg">
+			<div class="control-group" id="restricted">
 				<div class="controls">
 					<label class="checkbox">
-						<input type="checkbox" <%-allowDynReg ? 'checked' : '' %>> <span data-i18n="scope.system-scope-form.dynamic">allow dynamic registration</span>
+						<input type="checkbox" <%-restricted ? 'checked' : '' %>> <span data-i18n="scope.system-scope-form.restricted">restricted</span>
 					</label>
-					<p class="help-block" data-i18n="scope.system-scope-form.dynamic-help">Allow dynamically registered clients to request this scope?</p>
+					<p class="help-block" data-i18n="scope.system-scope-form.restricted-help">Restricted scopes are only usable by system administrators and are unavailable to dynamically registered clients and protected resources</p>
 				</div>
 			</div>
 
@@ -209,7 +209,7 @@ _.each(scopes, function(s) {
 	
 	if (ss) {
 %>
-	<span class="badge badge-info" 
+	<span class="badge badge-<%-ss.get('restricted') ? 'warning' : 'info'%>" 
 <% if (ss.get('description')) { %>
 	title="<%- ss.get('description') %>"
 <% } %>

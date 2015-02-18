@@ -23,7 +23,7 @@ var SystemScopeModel = Backbone.Model.extend({
 		icon:null,
 		value:null,
 		defaultScope:false,
-		allowDynReg:false,
+		restricted:false,
 		structured:false,
 		structuredParamDescription:null,
 		structuredValue:null
@@ -46,18 +46,18 @@ var SystemScopeCollection = Backbone.Collection.extend({
 		return new SystemScopeCollection(filtered);
 	},
 	
-	dynRegScopes: function() {
+	unrestrictedScopes: function() {
 		filtered = this.filter(function(scope) {
-			return scope.get("allowDynReg") === true;
+			return scope.get("restricted") !== true;
 		});
 		return new SystemScopeCollection(filtered);
 	},
 	
-	defaultDynRegScopes: function() {
+	defaultUnrestrictedScopes: function() {
 		filtered = this.filter(function(scope) {
-			return scope.get("defaultScope") === true && scope.get("allowDynReg") === true;
+			return scope.get("defaultScope") === true && scope.get("restricted") !== true;
 		});
-		return new SystemScopeCollection(filtered);		
+		return new SystemScopeCollection(filtered);
 	},
 	
 	getByValue: function(value) {
@@ -99,7 +99,7 @@ var SystemScopeView = Backbone.View.extend({
     render:function (eventName) {
         this.$el.html(this.template(this.model.toJSON()));
 
-        this.$('.allow-dyn-reg').tooltip({title: $.t('scope.system-scope-table.tooltip-dynamic')});
+        this.$('.restricted').tooltip({title: $.t('scope.system-scope-table.tooltip-restricted')});
         
         return this;
         $(this.el).i18n();
@@ -306,7 +306,7 @@ var SystemScopeFormView = Backbone.View.extend({
 			description:$('#description textarea').val(),
 			icon:$('#iconDisplay input').val(),
 			defaultScope:$('#defaultScope input').is(':checked'),
-			allowDynReg:$('#allowDynReg input').is(':checked'),
+			restricted:$('#restricted input').is(':checked'),
 			structured:$('#isStructured input').is(':checked'),
 			structuredParamDescription:$('#structuredParamDescription input').val()
 		});
