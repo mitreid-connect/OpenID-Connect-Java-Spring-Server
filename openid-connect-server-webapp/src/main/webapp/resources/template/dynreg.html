@@ -221,21 +221,21 @@
 
                 <div class="controls">
                     <div>
-                        <input id="grantTypes-authorization_code" type="checkbox" name="grantTypes"
+                        <input id="grantTypes-authorization_code" type="radio" name="grantTypes"
                             <%-($.inArray("authorization_code", client.grant_types) > -1 ? 'checked' : '')%>>
-                        <label for="grantTypes-authorization_code" class="checkbox" data-i18n="client.client-form.authorization-code">authorization code</label>
+                        <label for="grantTypes-authorization_code" class="radio" data-i18n="client.client-form.authorization-code">authorization code</label>
                     </div>
 
                     <div>
-                        <input id="grantTypes-client_credentials" type="checkbox" name="grantTypes"
+                        <input id="grantTypes-client_credentials" type="radio" name="grantTypes"
                             <%-($.inArray("client_credentials", client.grant_types) > -1 ? 'checked' : '')%>>
-                        <label for="grantTypes-client_credentials" class="checkbox" data-i18n="client.client-form.client-credentials">client credentials</label>
+                        <label for="grantTypes-client_credentials" class="radio" data-i18n="client.client-form.client-credentials">client credentials</label>
                     </div>
 
                     <div>
-                        <input id="grantTypes-implicit" type="checkbox" name="grantTypes"
+                        <input id="grantTypes-implicit" type="radio" name="grantTypes"
                             <%-($.inArray("implicit", client.grant_types) > -1 ? 'checked' : '')%>> 
-                        <label for="grantTypes-implicit" class="checkbox" data-i18n="client.client-form.implicit">implicit</label>
+                        <label for="grantTypes-implicit" class="radio" data-i18n="client.client-form.implicit">implicit</label>
                     </div>
 
                     <div>
