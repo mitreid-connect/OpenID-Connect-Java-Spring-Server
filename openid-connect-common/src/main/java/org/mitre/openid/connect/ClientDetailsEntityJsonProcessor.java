@@ -20,13 +20,6 @@
 package org.mitre.openid.connect;
 
 
-import static org.mitre.discovery.util.JsonUtils.getAsArray;
-import static org.mitre.discovery.util.JsonUtils.getAsDate;
-import static org.mitre.discovery.util.JsonUtils.getAsJweAlgorithm;
-import static org.mitre.discovery.util.JsonUtils.getAsJweEncryptionMethod;
-import static org.mitre.discovery.util.JsonUtils.getAsJwsAlgorithm;
-import static org.mitre.discovery.util.JsonUtils.getAsString;
-import static org.mitre.discovery.util.JsonUtils.getAsStringSet;
 import static org.mitre.oauth2.model.RegisteredClientFields.APPLICATION_TYPE;
 import static org.mitre.oauth2.model.RegisteredClientFields.CLIENT_ID;
 import static org.mitre.oauth2.model.RegisteredClientFields.CLIENT_ID_ISSUED_AT;
@@ -63,6 +56,13 @@ import static org.mitre.oauth2.model.RegisteredClientFields.TOS_URI;
 import static org.mitre.oauth2.model.RegisteredClientFields.USERINFO_ENCRYPTED_RESPONSE_ALG;
 import static org.mitre.oauth2.model.RegisteredClientFields.USERINFO_ENCRYPTED_RESPONSE_ENC;
 import static org.mitre.oauth2.model.RegisteredClientFields.USERINFO_SIGNED_RESPONSE_ALG;
+import static org.mitre.util.JsonUtils.getAsArray;
+import static org.mitre.util.JsonUtils.getAsDate;
+import static org.mitre.util.JsonUtils.getAsJweAlgorithm;
+import static org.mitre.util.JsonUtils.getAsJweEncryptionMethod;
+import static org.mitre.util.JsonUtils.getAsJwsAlgorithm;
+import static org.mitre.util.JsonUtils.getAsString;
+import static org.mitre.util.JsonUtils.getAsStringSet;
 
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity.AppType;

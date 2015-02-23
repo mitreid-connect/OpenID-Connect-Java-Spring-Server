@@ -19,12 +19,12 @@
  */
 package org.mitre.openid.connect.client.service.impl;
 
-import static org.mitre.discovery.util.JsonUtils.getAsBoolean;
-import static org.mitre.discovery.util.JsonUtils.getAsEncryptionMethodList;
-import static org.mitre.discovery.util.JsonUtils.getAsJweAlgorithmList;
-import static org.mitre.discovery.util.JsonUtils.getAsJwsAlgorithmList;
-import static org.mitre.discovery.util.JsonUtils.getAsString;
-import static org.mitre.discovery.util.JsonUtils.getAsStringList;
+import static org.mitre.util.JsonUtils.getAsBoolean;
+import static org.mitre.util.JsonUtils.getAsEncryptionMethodList;
+import static org.mitre.util.JsonUtils.getAsJweAlgorithmList;
+import static org.mitre.util.JsonUtils.getAsJwsAlgorithmList;
+import static org.mitre.util.JsonUtils.getAsString;
+import static org.mitre.util.JsonUtils.getAsStringList;
 
 import java.util.HashSet;
 import java.util.Set;

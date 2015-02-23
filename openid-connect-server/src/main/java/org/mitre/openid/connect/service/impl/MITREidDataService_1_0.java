@@ -16,6 +16,10 @@
  *******************************************************************************/
 package org.mitre.openid.connect.service.impl;
 
+import static org.mitre.util.JsonUtils.base64UrlDecodeObject;
+import static org.mitre.util.JsonUtils.readMap;
+import static org.mitre.util.JsonUtils.readSet;
+
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Collection;
@@ -47,6 +51,7 @@ import org.mitre.openid.connect.model.WhitelistedSite;
 import org.mitre.openid.connect.repository.ApprovedSiteRepository;
 import org.mitre.openid.connect.repository.BlacklistedSiteRepository;
 import org.mitre.openid.connect.repository.WhitelistedSiteRepository;
+import org.mitre.openid.connect.service.MITREidDataService;
 import org.mitre.openid.connect.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,7 +76,7 @@ import com.google.gson.stream.JsonWriter;
  */
 @Service
 @SuppressWarnings(value = {"unchecked"})
-public class MITREidDataService_1_0 extends AbstractMITREidDataService {
+public class MITREidDataService_1_0 implements MITREidDataService {
 
 	private final static Logger logger = LoggerFactory.getLogger(MITREidDataService_1_0.class);
 	@Autowired
