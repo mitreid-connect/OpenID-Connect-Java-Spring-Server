@@ -17,20 +17,35 @@
 /**
  * 
  */
-package org.mitre.discovery.util;
+package org.mitre.util;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.google.common.io.BaseEncoding;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -41,8 +56,11 @@ import com.nimbusds.jose.JWSAlgorithm;
  * @author jricher
  *
  */
+@SuppressWarnings(value = {"rawtypes", "unchecked"})
 public class JsonUtils {
 
+	private static Logger logger = LoggerFactory.getLogger(JsonUtils.class);
+	
 	private static Gson gson = new Gson();
 
 	/**
@@ -213,6 +231,103 @@ public class JsonUtils {
 			return algs;
 		} else {
 			return null;
+		}
+	}
+
+	public static <T> T base64UrlDecodeObject(String encoded, Class<T> type) {
+		if (encoded == null) {
+			return null;
+		} else {
+			T deserialized = null;
+			try {
+				byte[] decoded = BaseEncoding.base64Url().decode(encoded);
+				ByteArrayInputStream bais = new ByteArrayInputStream(decoded);
+				ObjectInputStream ois = new ObjectInputStream(bais);
+				deserialized = type.cast(ois.readObject());
+				ois.close();
+				bais.close();
+			} catch (Exception ex) {
+				logger.error("Unable to decode object", ex);
+			}
+			return deserialized;
+		}
+	}
+
+	public static String base64UrlEncodeObject(Serializable obj) {
+		if (obj == null) {
+			return null;
+		} else {
+			String encoded = null;
+			try {
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				ObjectOutputStream oos = new ObjectOutputStream(baos);
+				oos.writeObject(obj);
+				encoded = BaseEncoding.base64Url().encode(baos.toByteArray());
+				oos.close();
+				baos.close();
+			} catch (IOException ex) {
+				logger.error("Unable to encode object", ex);
+			}
+			return encoded;
+		}
+	}
+
+	public static Map readMap(JsonReader reader) throws IOException {
+		Map map = new HashMap<String, Object>();
+		reader.beginObject();
+		while(reader.hasNext()) {
+			String name = reader.nextName();
+			Object value = null;
+			switch(reader.peek()) {
+			case STRING:
+				value = reader.nextString();
+				break;
+			case BOOLEAN:
+				value = reader.nextBoolean();
+				break;
+			case NUMBER:
+				value = reader.nextLong();
+				break;
+			}
+			map.put(name, value);
+		}
+		reader.endObject();
+		return map;
+	}
+
+	public static Set readSet(JsonReader reader) throws IOException {
+		Set arraySet = null;
+		reader.beginArray();
+		switch (reader.peek()) {
+		case STRING:
+			arraySet = new HashSet<String>();
+			while (reader.hasNext()) {
+				arraySet.add(reader.nextString());
+			}
+			break;
+		case NUMBER:
+			arraySet = new HashSet<Long>();
+			while (reader.hasNext()) {
+				arraySet.add(reader.nextLong());
+			}
+			break;
+		default:
+			arraySet = new HashSet();
+			break;
+		}
+		reader.endArray();
+		return arraySet;
+	}
+
+	public static void writeNullSafeArray(JsonWriter writer, Set<String> items) throws IOException {
+		if (items != null) {
+			writer.beginArray();
+			for (String s : items) {
+				writer.value(s);
+			}
+			writer.endArray();
+		} else {
+			writer.nullValue();
 		}
 	}
 
