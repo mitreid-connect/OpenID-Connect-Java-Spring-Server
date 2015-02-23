@@ -41,8 +41,6 @@ public class ResourceSet {
 	private Set<String> scopes;
 	private String iconUri;
 	
-	private String policyUri;
-	
 	private String owner; // username of the person responsible for the reigistration (either directly or via OAuth token)
 	
 	/**
@@ -143,16 +141,6 @@ public class ResourceSet {
 	 */
 	public void setIconUri(String iconUri) {
 		this.iconUri = iconUri;
-	}
-	
-	@Basic
-	@Column(name = "policy_uri")
-	public String getPolicyUri() {
-		return this.policyUri;
-	}
-	
-	public void setPolicyUri(String policyUri) {
-		this.policyUri = policyUri;
 	}
 	
 	/**
