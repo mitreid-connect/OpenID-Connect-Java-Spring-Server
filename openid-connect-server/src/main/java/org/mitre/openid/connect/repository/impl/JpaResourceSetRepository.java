@@ -42,4 +42,9 @@ public class JpaResourceSetRepository implements ResourceSetRepository {
 		return JpaUtil.saveOrUpdate(rs.getId(), em, rs);
 	}
 
+	@Override
+	public ResourceSet getById(Long id) {
+		return em.find(ResourceSet.class, id);
+	}
+
 }

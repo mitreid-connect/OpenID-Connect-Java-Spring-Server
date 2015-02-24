@@ -45,6 +45,11 @@ public class DefaultResourceSetService implements ResourceSetService {
 		return saved;
 		
 	}
+
+	@Override
+	public ResourceSet getById(Long id) {
+		return repository.getById(id);
+	}
 	
 	
 	

@@ -29,4 +29,6 @@ public interface ResourceSetService {
 
 	public ResourceSet saveNew(ResourceSet rs);
 
+	public ResourceSet getById(Long id);
+
 }
