@@ -25,6 +25,7 @@ import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.google.gson.LongSerializationPolicy;
 
 @Component(ResourceSetEntityView.VIEWNAME)
 public class ResourceSetEntityView extends AbstractView {
@@ -56,6 +57,7 @@ public class ResourceSetEntityView extends AbstractView {
 		})
 		.serializeNulls()
 		.setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+		.setLongSerializationPolicy(LongSerializationPolicy.STRING)
 		.create();
 
 	@Override
@@ -83,7 +85,7 @@ public class ResourceSetEntityView extends AbstractView {
 
 			JsonObject o = new JsonObject();
 			
-			o.addProperty("_id", rs.getId());
+			o.addProperty("_id", rs.getId().toString()); // send the id as a string
 			o.addProperty("user_access_policy_uri", config.getIssuer() + "manage/resource/" + rs.getId());
 			o.addProperty("name", rs.getName());
 			o.addProperty("uri", rs.getUri());
