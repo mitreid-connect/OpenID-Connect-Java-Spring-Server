@@ -16,7 +16,8 @@
  *******************************************************************************/
 package org.mitre.openid.connect.web;
 
-import static org.mitre.util.JsonUtils.*;
+import static org.mitre.util.JsonUtils.getAsLong;
+import static org.mitre.util.JsonUtils.getAsString;
 import static org.mitre.util.JsonUtils.getAsStringSet;
 
 import org.mitre.oauth2.service.SystemScopeService;
@@ -138,6 +139,61 @@ public class ResourceSetRegistrationEndpoint {
 		
 	}
 
+	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+	public String updateResourceSet(@PathVariable ("id") Long id, @RequestBody String jsonString, Model m, Authentication auth) {
+		// if auth is OAuth, make sure we've got the right scope
+		if (auth instanceof OAuth2Authentication) {
+			OAuth2Authentication oAuth2Authentication = (OAuth2Authentication) auth;
+			if (oAuth2Authentication.getOAuth2Request().getScope() == null
+					|| oAuth2Authentication.getOAuth2Request().getScope().contains(SystemScopeService.RESOURCE_SET_REGISTRATION_SCOPE)) {
+				throw new InsufficientScopeException("Insufficient scope", ImmutableSet.of(SystemScopeService.RESOURCE_SET_REGISTRATION_SCOPE));
+			}
+		}
+
+		ResourceSet newRs = parseResourceSet(jsonString);
+
+		if (newRs == null // there was no resource set in the body
+				|| Strings.isNullOrEmpty(newRs.getName()) // there was no name (required)
+				|| newRs.getScopes() == null // there were no scopes (required)
+				|| newRs.getId() == null || !newRs.getId().equals(id) // the IDs didn't match
+			) {
+
+			logger.warn("Resource set registration missing one or more required fields.");
+			
+			m.addAttribute("code", HttpStatus.BAD_REQUEST);
+			m.addAttribute("error_description", "Resource request was missing one or more required fields.");
+			return JsonErrorView.VIEWNAME;
+		}
+
+		ResourceSet rs = resourceSetService.getById(id);
+		
+		if (rs == null) {
+			m.addAttribute("code", HttpStatus.NOT_FOUND);
+			m.addAttribute("error", "not_found");
+			return JsonErrorView.VIEWNAME;
+		} else {
+			if (!auth.getName().equals(rs.getOwner())) {
+				
+				logger.warn("Unauthorized resource set request from bad user; expected " + rs.getOwner() + " got " + auth.getName());
+				
+				// it wasn't issued to this user
+				m.addAttribute("code", HttpStatus.FORBIDDEN);
+				return JsonErrorView.VIEWNAME;
+			} else {
+				
+				ResourceSet saved = resourceSetService.update(rs, newRs);
+				
+				m.addAttribute("entity", saved);
+				m.addAttribute("location", config.getIssuer() + URL + "/" + rs.getId());
+				return ResourceSetEntityAbbreviatedView.VIEWNAME;
+			}
+			
+		}
+		
+		
+		
+	}
+	
 	private ResourceSet parseResourceSet(String jsonString) {
 
 		try {

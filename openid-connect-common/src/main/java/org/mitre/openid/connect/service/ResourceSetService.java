@@ -31,4 +31,6 @@ public interface ResourceSetService {
 
 	public ResourceSet getById(Long id);
 
+	public ResourceSet update(ResourceSet oldRs, ResourceSet newRs);
+
 }
