@@ -24,6 +24,7 @@ import org.mitre.oauth2.service.SystemScopeService;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.mitre.openid.connect.model.ResourceSet;
 import org.mitre.openid.connect.service.ResourceSetService;
+import org.mitre.openid.connect.view.HttpCodeView;
 import org.mitre.openid.connect.view.JsonErrorView;
 import org.mitre.openid.connect.view.ResourceSetEntityAbbreviatedView;
 import org.mitre.openid.connect.view.ResourceSetEntityView;
@@ -69,14 +70,7 @@ public class ResourceSetRegistrationEndpoint {
 	
 	@RequestMapping(method = RequestMethod.POST, produces = MimeTypeUtils.APPLICATION_JSON_VALUE, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
 	public String createResourceSet(@RequestBody String jsonString, Model m, Authentication auth) {
-		// if auth is OAuth, make sure we've got the right scope
-		if (auth instanceof OAuth2Authentication) {
-			OAuth2Authentication oAuth2Authentication = (OAuth2Authentication) auth;
-			if (oAuth2Authentication.getOAuth2Request().getScope() == null
-					|| oAuth2Authentication.getOAuth2Request().getScope().contains(SystemScopeService.RESOURCE_SET_REGISTRATION_SCOPE)) {
-				throw new InsufficientScopeException("Insufficient scope", ImmutableSet.of(SystemScopeService.RESOURCE_SET_REGISTRATION_SCOPE));
-			}
-		}
+		ensureOAuthScope(auth);
 		
 		ResourceSet rs = parseResourceSet(jsonString);
 		
@@ -106,14 +100,7 @@ public class ResourceSetRegistrationEndpoint {
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
 	public String readResourceSet(@PathVariable ("id") Long id, Model m, Authentication auth) {
-		// if auth is OAuth, make sure we've got the right scope
-		if (auth instanceof OAuth2Authentication) {
-			OAuth2Authentication oAuth2Authentication = (OAuth2Authentication) auth;
-			if (oAuth2Authentication.getOAuth2Request().getScope() == null
-					|| oAuth2Authentication.getOAuth2Request().getScope().contains(SystemScopeService.RESOURCE_SET_REGISTRATION_SCOPE)) {
-				throw new InsufficientScopeException("Insufficient scope", ImmutableSet.of(SystemScopeService.RESOURCE_SET_REGISTRATION_SCOPE));
-			}
-		}
+		ensureOAuthScope(auth);
 		
 		ResourceSet rs = resourceSetService.getById(id);
 		
@@ -141,14 +128,7 @@ public class ResourceSetRegistrationEndpoint {
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
 	public String updateResourceSet(@PathVariable ("id") Long id, @RequestBody String jsonString, Model m, Authentication auth) {
-		// if auth is OAuth, make sure we've got the right scope
-		if (auth instanceof OAuth2Authentication) {
-			OAuth2Authentication oAuth2Authentication = (OAuth2Authentication) auth;
-			if (oAuth2Authentication.getOAuth2Request().getScope() == null
-					|| oAuth2Authentication.getOAuth2Request().getScope().contains(SystemScopeService.RESOURCE_SET_REGISTRATION_SCOPE)) {
-				throw new InsufficientScopeException("Insufficient scope", ImmutableSet.of(SystemScopeService.RESOURCE_SET_REGISTRATION_SCOPE));
-			}
-		}
+		ensureOAuthScope(auth);
 
 		ResourceSet newRs = parseResourceSet(jsonString);
 
@@ -189,9 +169,46 @@ public class ResourceSetRegistrationEndpoint {
 			}
 			
 		}
+	}
+	
+	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+	public String deleteResourceSet(@PathVariable ("id") Long id, Model m, Authentication auth) {
+		ensureOAuthScope(auth);
+
+		ResourceSet rs = resourceSetService.getById(id);
 		
-		
-		
+		if (rs == null) {
+			m.addAttribute("code", HttpStatus.NOT_FOUND);
+			m.addAttribute("error", "not_found");
+			return JsonErrorView.VIEWNAME;
+		} else {
+			if (!auth.getName().equals(rs.getOwner())) {
+				
+				logger.warn("Unauthorized resource set request from bad user; expected " + rs.getOwner() + " got " + auth.getName());
+				
+				// it wasn't issued to this user
+				m.addAttribute("code", HttpStatus.FORBIDDEN);
+				return JsonErrorView.VIEWNAME;
+			} else {
+				
+				resourceSetService.remove(rs);
+				
+				m.addAttribute("code", HttpStatus.NO_CONTENT);
+				return HttpCodeView.VIEWNAME;
+			}
+			
+		}
+	}
+
+	private void ensureOAuthScope(Authentication auth) {
+		// if auth is OAuth, make sure we've got the right scope
+		if (auth instanceof OAuth2Authentication) {
+			OAuth2Authentication oAuth2Authentication = (OAuth2Authentication) auth;
+			if (oAuth2Authentication.getOAuth2Request().getScope() == null
+					|| oAuth2Authentication.getOAuth2Request().getScope().contains(SystemScopeService.RESOURCE_SET_REGISTRATION_SCOPE)) {
+				throw new InsufficientScopeException("Insufficient scope", ImmutableSet.of(SystemScopeService.RESOURCE_SET_REGISTRATION_SCOPE));
+			}
+		}
 	}
 	
 	private ResourceSet parseResourceSet(String jsonString) {

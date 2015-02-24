@@ -23,6 +23,8 @@ import javax.persistence.PersistenceContext;
 import org.mitre.openid.connect.model.ResourceSet;
 import org.mitre.openid.connect.repository.ResourceSetRepository;
 import org.mitre.util.jpa.JpaUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +37,7 @@ public class JpaResourceSetRepository implements ResourceSetRepository {
 
 	@PersistenceContext
 	private EntityManager em;
+	private static Logger logger = LoggerFactory.getLogger(JpaResourceSetRepository.class);
 	
 	@Override
 	@Transactional
@@ -45,6 +48,17 @@ public class JpaResourceSetRepository implements ResourceSetRepository {
 	@Override
 	public ResourceSet getById(Long id) {
 		return em.find(ResourceSet.class, id);
+	}
+
+	@Override
+	@Transactional
+	public void remove(ResourceSet rs) {
+		ResourceSet found = getById(rs.getId());
+		if (found != null) {
+			em.remove(found);
+		} else {
+			logger.info("Tried to remove unknown resource set: " + rs.getId());
+		}
 	}
 
 }

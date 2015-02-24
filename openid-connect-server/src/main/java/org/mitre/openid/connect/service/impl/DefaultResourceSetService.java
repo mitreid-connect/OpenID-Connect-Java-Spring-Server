@@ -20,6 +20,8 @@ package org.mitre.openid.connect.service.impl;
 import org.mitre.openid.connect.model.ResourceSet;
 import org.mitre.openid.connect.repository.ResourceSetRepository;
 import org.mitre.openid.connect.service.ResourceSetService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +32,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class DefaultResourceSetService implements ResourceSetService {
 
+	private static Logger logger = LoggerFactory.getLogger(DefaultResourceSetService.class);
+	
 	@Autowired
 	private ResourceSetRepository repository;
 
@@ -61,12 +65,17 @@ public class DefaultResourceSetService implements ResourceSetService {
 			
 		}
 		
-		newRs.setOwner(oldRs.getOwner());
+		newRs.setOwner(oldRs.getOwner()); // preserve the owner tag across updates
 		
 		ResourceSet saved = repository.save(newRs);
 		
 		return saved;
 		
+	}
+
+	@Override
+	public void remove(ResourceSet rs) {
+		repository.remove(rs);
 	}
 	
 	

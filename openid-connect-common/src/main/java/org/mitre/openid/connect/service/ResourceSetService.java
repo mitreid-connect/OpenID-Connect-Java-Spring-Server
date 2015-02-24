@@ -33,4 +33,6 @@ public interface ResourceSetService {
 
 	public ResourceSet update(ResourceSet oldRs, ResourceSet newRs);
 
+	public void remove(ResourceSet rs);
+
 }

@@ -29,4 +29,6 @@ public interface ResourceSetRepository {
 
 	public ResourceSet getById(Long id);
 
+	public void remove(ResourceSet rs);
+
 }
