@@ -14,19 +14,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package org.mitre.openid.connect.service;
+
+package org.mitre.openid.connect.repository.impl;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 import org.mitre.openid.connect.model.ResourceSet;
+import org.mitre.openid.connect.repository.ResourceSetRepository;
+import org.mitre.util.jpa.JpaUtil;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
- * 
- * Manage registered resource sets at this authorization server.
- * 
  * @author jricher
  *
  */
-public interface ResourceSetService {
+@Repository
+public class JpaResourceSetRepository implements ResourceSetRepository {
 
-	public ResourceSet saveNew(ResourceSet rs);
+	@PersistenceContext
+	private EntityManager em;
+	
+	@Override
+	@Transactional
+	public ResourceSet save(ResourceSet rs) {
+		return JpaUtil.saveOrUpdate(rs.getId(), em, rs);
+	}
 
 }

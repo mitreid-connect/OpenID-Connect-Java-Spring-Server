@@ -17,7 +17,10 @@
 
 package org.mitre.openid.connect.service.impl;
 
+import org.mitre.openid.connect.model.ResourceSet;
+import org.mitre.openid.connect.repository.ResourceSetRepository;
 import org.mitre.openid.connect.service.ResourceSetService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -27,4 +30,22 @@ import org.springframework.stereotype.Service;
 @Service
 public class DefaultResourceSetService implements ResourceSetService {
 
+	@Autowired
+	private ResourceSetRepository repository;
+
+	@Override
+	public ResourceSet saveNew(ResourceSet rs) {
+		
+		if (rs.getId() != null) {
+			throw new IllegalArgumentException("Can't save a new resource set with an ID already set to it.");
+		}
+		
+		ResourceSet saved = repository.save(rs);
+		
+		return saved;
+		
+	}
+	
+	
+	
 }

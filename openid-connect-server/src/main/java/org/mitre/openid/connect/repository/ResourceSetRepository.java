@@ -14,19 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package org.mitre.openid.connect.service;
+
+package org.mitre.openid.connect.repository;
 
 import org.mitre.openid.connect.model.ResourceSet;
 
 /**
- * 
- * Manage registered resource sets at this authorization server.
- * 
  * @author jricher
  *
  */
-public interface ResourceSetService {
+public interface ResourceSetRepository {
 
-	public ResourceSet saveNew(ResourceSet rs);
+	public ResourceSet save(ResourceSet rs);
 
 }

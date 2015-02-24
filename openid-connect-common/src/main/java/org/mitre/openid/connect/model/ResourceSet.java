@@ -97,7 +97,7 @@ public class ResourceSet {
 	 * @return the type
 	 */
 	@Basic
-	@Column(name = "type")
+	@Column(name = "rs_type")
 	public String getType() {
 		return type;
 	}

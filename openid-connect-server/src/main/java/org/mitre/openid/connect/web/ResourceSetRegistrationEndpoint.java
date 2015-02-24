@@ -40,10 +40,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
 
 @Controller
 @RequestMapping(ResourceSetRegistrationEndpoint.URL)
+@PreAuthorize("hasRole('ROLE_USER')")
 public class ResourceSetRegistrationEndpoint {
 
 	public static final String URL = "/resource_set/resource_set";
@@ -54,7 +54,6 @@ public class ResourceSetRegistrationEndpoint {
 	private JsonParser parser = new JsonParser();
 	
 	@RequestMapping(method = RequestMethod.POST, produces = MimeTypeUtils.APPLICATION_JSON_VALUE, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
-	@PreAuthorize("hasRole('ROLE_USER')")
 	public String createResourceSet(@RequestBody String jsonString, Model m, Authentication auth) {
 		
 		// if auth is OAuth, make sure we've got the right scope
@@ -80,8 +79,10 @@ public class ResourceSetRegistrationEndpoint {
 		
 		rs.setOwner(auth.getName());
 		
+		ResourceSet saved = resourceSetService.saveNew(rs);
+		
 		m.addAttribute("code", HttpStatus.CREATED);
-		m.addAttribute("entity", rs);
+		m.addAttribute("entity", saved);
 		return ResourceSetEntityView.VIEWNAME;
 		
 	}

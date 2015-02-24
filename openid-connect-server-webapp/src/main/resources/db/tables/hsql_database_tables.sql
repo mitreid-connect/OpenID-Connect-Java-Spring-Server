@@ -224,7 +224,7 @@ CREATE TABLE IF NOT EXISTS resource_set (
 	name VARCHAR(1024),
 	uri VARCHAR(1024),
 	icon_uri VARCHAR(1024),
-	policy_uri VARCHAR(1024),	
+	rs_type VARCHAR(256),
 	owner VARCHAR(256)
 );
 
