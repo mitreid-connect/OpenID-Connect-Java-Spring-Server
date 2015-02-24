@@ -21,6 +21,7 @@ import java.util.Set;
 import javax.persistence.Basic;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -111,7 +112,7 @@ public class ResourceSet {
 	/**
 	 * @return the scopes
 	 */
-	@OneToMany(fetch=FetchType.EAGER)
+	@ElementCollection(fetch=FetchType.EAGER)
 	@CollectionTable(
 		name="resource_set_scope",
 		joinColumns=@JoinColumn(name="owner_id")
