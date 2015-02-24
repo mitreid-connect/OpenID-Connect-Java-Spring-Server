@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.mitre.openid.connect.model.ResourceSet;
+import org.mitre.util.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,11 +26,11 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
-@Component(ResourceSetEntityAbbreviatedView.VIEWNAME)
-public class ResourceSetEntityAbbreviatedView extends AbstractView {
+@Component(ResourceSetEntityView.VIEWNAME)
+public class ResourceSetEntityView extends AbstractView {
 	private static Logger logger = LoggerFactory.getLogger(JsonEntityView.class);
 
-	public static final String VIEWNAME = "resourceSetEntityAbbreviatedView";
+	public static final String VIEWNAME = "resourceSetEntityView";
 	
 	@Autowired
 	private ConfigurationPropertiesBean config;
@@ -84,7 +85,11 @@ public class ResourceSetEntityAbbreviatedView extends AbstractView {
 			
 			o.addProperty("_id", rs.getId());
 			o.addProperty("user_access_policy_uri", config.getIssuer() + "manage/resource/" + rs.getId());
-
+			o.addProperty("name", rs.getName());
+			o.addProperty("uri", rs.getUri());
+			o.addProperty("type", rs.getType());
+			o.add("scopes", JsonUtils.getAsArray(rs.getScopes()));
+			o.addProperty("icon_uri", rs.getIconUri());
 			
 			gson.toJson(o, out);
 			
