@@ -16,6 +16,8 @@
  *******************************************************************************/
 package org.mitre.openid.connect.service;
 
+import java.util.Collection;
+
 import org.mitre.openid.connect.model.ResourceSet;
 
 /**
@@ -34,5 +36,7 @@ public interface ResourceSetService {
 	public ResourceSet update(ResourceSet oldRs, ResourceSet newRs);
 
 	public void remove(ResourceSet rs);
+
+	public Collection<ResourceSet> getAllForOwner(String owner);
 
 }

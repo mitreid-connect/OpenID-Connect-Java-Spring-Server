@@ -17,6 +17,8 @@
 
 package org.mitre.openid.connect.service.impl;
 
+import java.util.Collection;
+
 import org.mitre.openid.connect.model.ResourceSet;
 import org.mitre.openid.connect.repository.ResourceSetRepository;
 import org.mitre.openid.connect.service.ResourceSetService;
@@ -76,6 +78,11 @@ public class DefaultResourceSetService implements ResourceSetService {
 	@Override
 	public void remove(ResourceSet rs) {
 		repository.remove(rs);
+	}
+
+	@Override
+	public Collection<ResourceSet> getAllForOwner(String owner) {
+		return repository.getAllForOwner(owner);
 	}
 	
 	

@@ -17,8 +17,11 @@
 
 package org.mitre.openid.connect.repository.impl;
 
+import java.util.Collection;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 
 import org.mitre.openid.connect.model.ResourceSet;
 import org.mitre.openid.connect.repository.ResourceSetRepository;
@@ -59,6 +62,13 @@ public class JpaResourceSetRepository implements ResourceSetRepository {
 		} else {
 			logger.info("Tried to remove unknown resource set: " + rs.getId());
 		}
+	}
+
+	@Override
+	public Collection<ResourceSet> getAllForOwner(String owner) {
+		TypedQuery<ResourceSet> query = em.createNamedQuery(ResourceSet.QUERY_BY_OWNER, ResourceSet.class);
+		query.setParameter("owner", owner);
+		return query.getResultList();
 	}
 
 }

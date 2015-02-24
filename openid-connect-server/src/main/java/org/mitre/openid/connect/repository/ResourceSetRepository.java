@@ -17,6 +17,8 @@
 
 package org.mitre.openid.connect.repository;
 
+import java.util.Collection;
+
 import org.mitre.openid.connect.model.ResourceSet;
 
 /**
@@ -30,5 +32,7 @@ public interface ResourceSetRepository {
 	public ResourceSet getById(Long id);
 
 	public void remove(ResourceSet rs);
+
+	public Collection<ResourceSet> getAllForOwner(String owner);
 
 }

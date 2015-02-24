@@ -20,11 +20,16 @@ import static org.mitre.util.JsonUtils.getAsLong;
 import static org.mitre.util.JsonUtils.getAsString;
 import static org.mitre.util.JsonUtils.getAsStringSet;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.mitre.oauth2.service.SystemScopeService;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.mitre.openid.connect.model.ResourceSet;
 import org.mitre.openid.connect.service.ResourceSetService;
 import org.mitre.openid.connect.view.HttpCodeView;
+import org.mitre.openid.connect.view.JsonEntityView;
 import org.mitre.openid.connect.view.JsonErrorView;
 import org.mitre.openid.connect.view.ResourceSetEntityAbbreviatedView;
 import org.mitre.openid.connect.view.ResourceSetEntityView;
@@ -198,6 +203,25 @@ public class ResourceSetRegistrationEndpoint {
 			}
 			
 		}
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+	public String listResourceSets(Model m, Authentication auth) {
+		ensureOAuthScope(auth);
+		
+		String owner = auth.getName();
+		
+		Collection<ResourceSet> resourceSets = resourceSetService.getAllForOwner(owner);
+		
+		// build the entity here and send to the display
+		
+		Set<String> ids = new HashSet<>();
+		for (ResourceSet resourceSet : resourceSets) {
+			ids.add(resourceSet.getId().toString()); // add them all as strings so that gson renders them properly
+		}
+		
+		m.addAttribute("entity", ids);
+		return JsonEntityView.VIEWNAME;
 	}
 
 	private void ensureOAuthScope(Authentication auth) {
