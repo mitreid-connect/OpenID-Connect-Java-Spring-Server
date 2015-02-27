@@ -261,7 +261,7 @@ var WhiteListFormView = Backbone.View.extend({
 		if (this.options.client) {
 			// we know what client we're dealing with already
 	    	if (this.model.isFetched &&
-	    			this.options.client.isFetched()) {
+	    			this.options.client.isFetched) {
 	    		callback();
 	    		return;
 	    	}

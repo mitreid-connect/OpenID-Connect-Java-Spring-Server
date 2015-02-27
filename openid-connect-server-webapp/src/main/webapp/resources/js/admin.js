@@ -33,6 +33,7 @@ Backbone.Model.prototype.fetchIfNeeded = function(options) {
 		return options.success(this, null);
 	}
 };
+
 Backbone.Collection.prototype.fetchIfNeeded = function(options) {
 	var _self = this;
 	if (!options) {
@@ -639,58 +640,26 @@ var AppRouter = Backbone.Router.extend({
         this.updateSidebar('admin/clients');
 
         var client = this.clientList.get(id);
-        
-        if (client == null) {
-        	// it wasn't in the list, try loading the client directly
-        	client = new ClientModel({id: id});
+        if (!client) {
+        	client = new ClientModel({id:id});
         }
-
-    	$('#loadingbox').sheet('show');
-    	$('#loading').html(
-    			'<span class="label" id="loading-scopes">' + $.t('common.scopes') + '</span> '
-    			+ '<span class="label" id="loading-client">' + $.t('common.client') + '</span> ');
-
-        // re-sync the client every time
-    	client.fetch({
-    			success: function(client, response, options) {
-    				$('#loading-client').addClass('label-success');
-    		        
-    		        if ($.inArray("refresh_token", client.get("grantTypes")) != -1) {
-    		        	client.set({
-    		        		allowRefresh: true
-    		        	}, { silent: true });
-    		        }
-    		        
-    		    	client.set({
-    		    		generateClientSecret:false,
-    		    		displayClientSecret:false
-    		    	}, { silent: true });
-    		        
-    		        var view = new ClientFormView({model:client, systemScopeList: app.systemScopeList});
-    		        view.load(function() {
-    		        	$('#content').html(view.render().el);
-    		        	setPageTitle($.t('client.client-form.edit'));
-    		        });
-    		        
-    			
-    			},
-    			error: function(model, response, options) {
-            		
-					//Pull out the response text.
-					var responseJson = JSON.parse(response.responseText);
-            		
-            		//Display an alert with an error message
-					$('#modalAlert div.modal-header').html(responseJson.error);
-	        		$('#modalAlert div.modal-body').html(responseJson.error_description);
-            		
-        			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
-        				 "backdrop" : "static",
-        				 "keyboard" : true,
-        				 "show" : true // ensure the modal is shown immediately
-        			 });
-    				
-    			}
-    	});
+        
+        var view = new ClientFormView({model:client, systemScopeList: app.systemScopeList});
+        view.load(function() {
+	        if ($.inArray("refresh_token", client.get("grantTypes")) != -1) {
+	        	client.set({
+	        		allowRefresh: true
+	        	}, { silent: true });
+	        }
+	        
+	    	client.set({
+	    		generateClientSecret:false,
+	    		displayClientSecret:false
+	    	}, { silent: true });
+	        
+        	$('#content').html(view.render().el);
+        	setPageTitle($.t('client.client-form.edit'));
+        });
 
     },
 

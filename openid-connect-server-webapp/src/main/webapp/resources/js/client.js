@@ -644,20 +644,21 @@ var ClientFormView = Backbone.View.extend({
     },
     
 	load:function(callback) {
-    	if (this.options.systemScopeList.isFetched) {
-    		$('#loadingbox').sheet('hide');
+    	if (this.model.isFetched &&
+    			this.options.systemScopeList.isFetched) {
     		callback();
     		return;
     	}
 
-    	if (this.model.get('id') == null) {
-    		// only show the box if this is a new client, otherwise the box is already showing
-	    	$('#loadingbox').sheet('show');
-	    	$('#loading').html('<span class="label" id="loading-scopes">' + $.t("common.scopes") + '</span> ');
-    	}
-
-    	$.when(this.options.systemScopeList.fetchIfNeeded({success:function(e) {$('#loading-scopes').addClass('label-success');}}))
-    	.done(function() {
+    	$('#loadingbox').sheet('show');
+    	$('#loading').html(
+                '<span class="label" id="loading-clients">' + $.t('common.clients') + '</span> ' +
+    			'<span class="label" id="loading-scopes">' + $.t("common.scopes") + '</span> '
+    			);
+    	
+    	$.when(this.options.systemScopeList.fetchIfNeeded({success:function(e) {$('#loading-scopes').addClass('label-success');}}),
+    		    			this.model.fetchIfNeeded({success:function(e) {$('#loading-clients').addClass('label-success');}}))
+	    	.done(function() {
     	    		$('#loadingbox').sheet('hide');
     	    		callback();
     			});    	
