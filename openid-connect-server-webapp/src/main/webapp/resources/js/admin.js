@@ -882,9 +882,11 @@ var AppRouter = Backbone.Router.extend({
         
     	var scope = new SystemScopeModel();
     	
-    	this.systemScopeFormView = new SystemScopeFormView({model:scope});
-    	$('#content').html(this.systemScopeFormView.render().el);
-    	setPageTitle($.t('scope.system-scope-form.new'));
+    	var view = new SystemScopeFormView({model:scope});
+    	view.load(function() {
+    		$('#content').html(view.render().el);
+    		setPageTitle($.t('scope.system-scope-form.new'));
+    	});
 
     },
     
@@ -905,10 +907,15 @@ var AppRouter = Backbone.Router.extend({
         this.updateSidebar('admin/scope');
         
     	var scope = this.systemScopeList.get(sid);
+    	if (!scope) {
+    		scope = new SystemScopeModel({id: sid});
+    	}
     	
-    	this.systemScopeFormView = new SystemScopeFormView({model:scope});
-    	$('#content').html(this.systemScopeFormView.render().el);
-    	setPageTitle($.t('scope.system-scope-form.edit'));
+    	var view = new SystemScopeFormView({model:scope});
+    	view.load(function() {
+    		$('#content').html(view.render().el);
+    		setPageTitle($.t('scope.system-scope-form.new'));
+    	});
     	
     },
     

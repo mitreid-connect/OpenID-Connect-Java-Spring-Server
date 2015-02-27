@@ -284,6 +284,25 @@ var SystemScopeFormView = Backbone.View.extend({
 		'change #isStructured input':'toggleStructuredParamDescription'
 	},
 	
+	load:function(callback) {
+		if (this.model.isFetched) {
+			callback();
+			return;
+		}
+		
+    	$('#loadingbox').sheet('show');
+        $('#loading').html(
+                '<span class="label" id="loading-scopes">' + $.t("common.scopes") + '</span> '
+                );
+
+    	$.when(this.model.fetchIfNeeded({success:function(e) {$('#loading-scopes').addClass('label-success');}}))
+    			.done(function() {
+    	    		$('#loadingbox').sheet('hide');
+    	    		callback();
+    			});
+		
+	},
+	
 	toggleStructuredParamDescription:function(e) {
 		if ($('#isStructured input', this.el).is(':checked')) {
 			$('#structuredParamDescription', this.el).show();
