@@ -738,9 +738,7 @@ var AppRouter = Backbone.Router.extend({
 
         this.updateSidebar('admin/whitelists');
         
-        ////
-        var whiteList = this.whiteListList.get(id);
-        whiteList = new WhiteListModel({id: id});
+        var whiteList = new WhiteListModel();
 
         var client = this.clientList.get(cid);
         if (!client) {
@@ -751,6 +749,10 @@ var AppRouter = Backbone.Router.extend({
       
         view.load(
         	function() {
+        		
+        		// set the scopes on the model now that everything's loaded
+        		whiteList.set({allowedScopes: client.get('scope')}, {silent: true});
+        		
         		$('#content').html(view.render().el);
         		view.delegateEvents();
         		setPageTitle($.t('whitelist.manage'));

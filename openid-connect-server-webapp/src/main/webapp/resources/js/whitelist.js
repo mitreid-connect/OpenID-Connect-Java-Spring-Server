@@ -341,7 +341,7 @@ var WhiteListFormView = Backbone.View.extend({
 		// process allowed scopes
         var allowedScopes = this.scopeCollection.pluck("item");
 		
-        this.model.set(this.options.client.get('clientId'));
+        this.model.set({clientId: this.options.client.get('clientId')}, {silent: true});
         
 		var valid = this.model.set({
 			allowedScopes: allowedScopes
