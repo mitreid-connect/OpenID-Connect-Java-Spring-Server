@@ -33,6 +33,7 @@ Backbone.Model.prototype.fetchIfNeeded = function(options) {
 		return options.success(this, null);
 	}
 };
+
 Backbone.Collection.prototype.fetchIfNeeded = function(options) {
 	var _self = this;
 	if (!options) {
@@ -639,58 +640,26 @@ var AppRouter = Backbone.Router.extend({
         this.updateSidebar('admin/clients');
 
         var client = this.clientList.get(id);
-        
-        if (client == null) {
-        	// it wasn't in the list, try loading the client directly
-        	client = new ClientModel({id: id});
+        if (!client) {
+        	client = new ClientModel({id:id});
         }
-
-    	$('#loadingbox').sheet('show');
-    	$('#loading').html(
-    			'<span class="label" id="loading-scopes">' + $.t('common.scopes') + '</span> '
-    			+ '<span class="label" id="loading-client">' + $.t('common.client') + '</span> ');
-
-        // re-sync the client every time
-    	client.fetch({
-    			success: function(client, response, options) {
-    				$('#loading-client').addClass('label-success');
-    		        
-    		        if ($.inArray("refresh_token", client.get("grantTypes")) != -1) {
-    		        	client.set({
-    		        		allowRefresh: true
-    		        	}, { silent: true });
-    		        }
-    		        
-    		    	client.set({
-    		    		generateClientSecret:false,
-    		    		displayClientSecret:false
-    		    	}, { silent: true });
-    		        
-    		        var view = new ClientFormView({model:client, systemScopeList: app.systemScopeList});
-    		        view.load(function() {
-    		        	$('#content').html(view.render().el);
-    		        	setPageTitle($.t('client.client-form.edit'));
-    		        });
-    		        
-    			
-    			},
-    			error: function(model, response, options) {
-            		
-					//Pull out the response text.
-					var responseJson = JSON.parse(response.responseText);
-            		
-            		//Display an alert with an error message
-					$('#modalAlert div.modal-header').html(responseJson.error);
-	        		$('#modalAlert div.modal-body').html(responseJson.error_description);
-            		
-        			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
-        				 "backdrop" : "static",
-        				 "keyboard" : true,
-        				 "show" : true // ensure the modal is shown immediately
-        			 });
-    				
-    			}
-    	});
+        
+        var view = new ClientFormView({model:client, systemScopeList: app.systemScopeList});
+        view.load(function() {
+	        if ($.inArray("refresh_token", client.get("grantTypes")) != -1) {
+	        	client.set({
+	        		allowRefresh: true
+	        	}, { silent: true });
+	        }
+	        
+	    	client.set({
+	    		generateClientSecret:false,
+	    		displayClientSecret:false
+	    	}, { silent: true });
+	        
+        	$('#content').html(view.render().el);
+        	setPageTitle($.t('client.client-form.edit'));
+        });
 
     },
 
@@ -729,33 +698,35 @@ var AppRouter = Backbone.Router.extend({
     		return;
     	}
 
+    	this.breadCrumbView.collection.reset();
+        this.breadCrumbView.collection.add([
+            {text:$.t('admin.home'), href:""},
+            {text:$.t('whitelist.manage'), href:"manage/#admin/whitelists"},
+            {text:$.t('whitelist.new'), href:"manage/#admin/whitelist/new/" + cid}
+        ]);
+
         this.updateSidebar('admin/whitelists');
+        
+        var whiteList = new WhiteListModel();
 
         var client = this.clientList.get(cid);
-
-        // if there's no client this is an error
-        if (client != null) {
-
-        	this.breadCrumbView.collection.reset();
-            this.breadCrumbView.collection.add([
-                {text:$.t('admin.home'), href:""},
-                {text:$.t('whitelist.manage'), href:"manage/#admin/whitelists"},
-                {text:$.t('whitelist.new'), href:"manage/#admin/whitelist/new/" + cid}
-            ]);
-            
-            var whiteList = new WhiteListModel();
-            whiteList.set({
-            	clientId: client.get('clientId'),
-            	allowedScopes: client.get('scope')
-            }, { silent: true });
-            
-        	this.whiteListFormView = new WhiteListFormView({model: whiteList, client: client, systemScopeList: this.systemScopeList});
-        	$('#content').html(this.whiteListFormView.render().el);
-        	setPageTitle($.t('whitelist.new'));
-        } else {
-        	console.log('ERROR: no client found for ' + cid);
+        if (!client) {
+        	client = new ClientModel({id: cid});
         }
         
+        var view = new WhiteListFormView({model: whiteList, client: client, systemScopeList: this.systemScopeList});
+      
+        view.load(
+        	function() {
+        		
+        		// set the scopes on the model now that everything's loaded
+        		whiteList.set({allowedScopes: client.get('scope')}, {silent: true});
+        		
+        		$('#content').html(view.render().el);
+        		view.delegateEvents();
+        		setPageTitle($.t('whitelist.manage'));
+        	}
+        );        
     	
     },
     
@@ -776,21 +747,20 @@ var AppRouter = Backbone.Router.extend({
         this.updateSidebar('admin/whitelists');
 
         var whiteList = this.whiteListList.get(id);
-        if (whiteList != null) {
-            var client = app.clientList.getByClientId(whiteList.get('clientId'));
-            
-            // if there's no client, this is an error
-            if (client != null) {
-            	this.whiteListFormView = new WhiteListFormView({model: whiteList, client: client, systemScopeList: this.systemScopeList});
-            	$('#content').html(this.whiteListFormView.render().el);
-            	setPageTitle($.t('whitelist.edit'));
-
-            } else {
-            	console.log('ERROR: no client found for ' + whiteList.get('clientId'));
-            }
-        } else {
-        	console.error('ERROR: no whitelist found for id ' + id);
+        if (!whiteList) {
+        	whiteList = new WhiteListModel({id: id});
         }
+        
+        var view = new WhiteListFormView({model: whiteList, clientList: this.clientList, systemScopeList: this.systemScopeList});
+      
+        view.load(
+        	function() {
+        		$('#content').html(view.render().el);
+        		view.delegateEvents();
+        		setPageTitle($.t('whitelist.manage'));
+        	}
+        );
+
     },
     
     approvedSites:function() {
@@ -912,9 +882,11 @@ var AppRouter = Backbone.Router.extend({
         
     	var scope = new SystemScopeModel();
     	
-    	this.systemScopeFormView = new SystemScopeFormView({model:scope});
-    	$('#content').html(this.systemScopeFormView.render().el);
-    	setPageTitle($.t('scope.system-scope-form.new'));
+    	var view = new SystemScopeFormView({model:scope});
+    	view.load(function() {
+    		$('#content').html(view.render().el);
+    		setPageTitle($.t('scope.system-scope-form.new'));
+    	});
 
     },
     
@@ -935,10 +907,15 @@ var AppRouter = Backbone.Router.extend({
         this.updateSidebar('admin/scope');
         
     	var scope = this.systemScopeList.get(sid);
+    	if (!scope) {
+    		scope = new SystemScopeModel({id: sid});
+    	}
     	
-    	this.systemScopeFormView = new SystemScopeFormView({model:scope});
-    	$('#content').html(this.systemScopeFormView.render().el);
-    	setPageTitle($.t('scope.system-scope-form.edit'));
+    	var view = new SystemScopeFormView({model:scope});
+    	view.load(function() {
+    		$('#content').html(view.render().el);
+    		setPageTitle($.t('scope.system-scope-form.new'));
+    	});
     	
     },
     
