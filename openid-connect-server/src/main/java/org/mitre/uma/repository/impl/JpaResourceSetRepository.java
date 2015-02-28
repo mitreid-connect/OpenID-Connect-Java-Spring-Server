@@ -15,7 +15,7 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.mitre.openid.connect.repository.impl;
+package org.mitre.uma.repository.impl;
 
 import java.util.Collection;
 
@@ -23,8 +23,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
-import org.mitre.openid.connect.model.ResourceSet;
-import org.mitre.openid.connect.repository.ResourceSetRepository;
+import org.mitre.uma.model.ResourceSet;
+import org.mitre.uma.repository.ResourceSetRepository;
 import org.mitre.util.jpa.JpaUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

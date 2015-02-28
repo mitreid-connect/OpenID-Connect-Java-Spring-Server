@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package org.mitre.openid.connect.web;
+package org.mitre.uma.web;
 
 import static org.mitre.util.JsonUtils.getAsLong;
 import static org.mitre.util.JsonUtils.getAsString;
@@ -26,13 +26,13 @@ import java.util.Set;
 
 import org.mitre.oauth2.service.SystemScopeService;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
-import org.mitre.openid.connect.model.ResourceSet;
-import org.mitre.openid.connect.service.ResourceSetService;
 import org.mitre.openid.connect.view.HttpCodeView;
 import org.mitre.openid.connect.view.JsonEntityView;
 import org.mitre.openid.connect.view.JsonErrorView;
-import org.mitre.openid.connect.view.ResourceSetEntityAbbreviatedView;
-import org.mitre.openid.connect.view.ResourceSetEntityView;
+import org.mitre.uma.model.ResourceSet;
+import org.mitre.uma.service.ResourceSetService;
+import org.mitre.uma.view.ResourceSetEntityAbbreviatedView;
+import org.mitre.uma.view.ResourceSetEntityView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

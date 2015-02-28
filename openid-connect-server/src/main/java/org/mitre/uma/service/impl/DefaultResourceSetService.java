@@ -15,13 +15,13 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.mitre.openid.connect.service.impl;
+package org.mitre.uma.service.impl;
 
 import java.util.Collection;
 
-import org.mitre.openid.connect.model.ResourceSet;
-import org.mitre.openid.connect.repository.ResourceSetRepository;
-import org.mitre.openid.connect.service.ResourceSetService;
+import org.mitre.uma.model.ResourceSet;
+import org.mitre.uma.repository.ResourceSetRepository;
+import org.mitre.uma.service.ResourceSetService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

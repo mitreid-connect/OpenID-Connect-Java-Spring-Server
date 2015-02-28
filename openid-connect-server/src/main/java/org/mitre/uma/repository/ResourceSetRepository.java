@@ -15,11 +15,11 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.mitre.openid.connect.repository;
+package org.mitre.uma.repository;
 
 import java.util.Collection;
 
-import org.mitre.openid.connect.model.ResourceSet;
+import org.mitre.uma.model.ResourceSet;
 
 /**
  * @author jricher

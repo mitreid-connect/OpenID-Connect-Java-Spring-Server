@@ -1,4 +1,4 @@
-package org.mitre.openid.connect.view;
+package org.mitre.uma.view;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -8,7 +8,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
-import org.mitre.openid.connect.model.ResourceSet;
+import org.mitre.openid.connect.view.JsonEntityView;
+import org.mitre.uma.model.ResourceSet;
 import org.mitre.util.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

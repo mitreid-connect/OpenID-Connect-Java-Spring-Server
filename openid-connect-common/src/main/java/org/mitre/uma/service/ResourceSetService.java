@@ -14,11 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package org.mitre.openid.connect.service;
+package org.mitre.uma.service;
 
 import java.util.Collection;
 
-import org.mitre.openid.connect.model.ResourceSet;
+import org.mitre.uma.model.ResourceSet;
 
 /**
  * 
