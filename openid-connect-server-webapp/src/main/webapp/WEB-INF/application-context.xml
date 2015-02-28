@@ -117,7 +117,13 @@
 		<security:intercept-url pattern="/resource/**" access="permitAll"/>
 	</security:http>
 
-	<security:http pattern="/#{T(org.mitre.openid.connect.web.ResourceSetRegistrationEndpoint).URL}/**" use-expressions="true" entry-point-ref="oauthAuthenticationEntryPoint" create-session="never">
+	<security:http pattern="/#{T(org.mitre.uma.web.ResourceSetRegistrationEndpoint).URL}/**" use-expressions="true" entry-point-ref="oauthAuthenticationEntryPoint" create-session="never">
+		<security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
+		<security:custom-filter ref="corsFilter" after="SECURITY_CONTEXT_FILTER" />
+		<security:expression-handler ref="oauthWebExpressionHandler" />
+	</security:http>
+
+	<security:http pattern="/#{T(org.mitre.uma.web.PermissionRegistrationEndpoint).URL}/**" use-expressions="true" entry-point-ref="oauthAuthenticationEntryPoint" create-session="never">
 		<security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
 		<security:custom-filter ref="corsFilter" after="SECURITY_CONTEXT_FILTER" />
 		<security:expression-handler ref="oauthWebExpressionHandler" />

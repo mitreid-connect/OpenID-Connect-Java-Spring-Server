@@ -15,25 +15,20 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.mitre.uma.service;
-
-import java.util.Set;
+package org.mitre.uma.repository;
 
 import org.mitre.uma.model.Permission;
-import org.mitre.uma.model.ResourceSet;
-
 
 /**
  * @author jricher
  *
  */
-public interface PermissionService {
+public interface PermissionRepository {
 
 	/**
-	 * @param resourceSet the resource set to create the permission on
-	 * @param scopes the set of scopes that this permission is for
-	 * @return the created (and stored) permission object, with ticket
+	 * @param p
+	 * @return
 	 */
-	public Permission create(ResourceSet resourceSet, Set<String> scopes);
+	public Permission save(Permission p);
 
 }

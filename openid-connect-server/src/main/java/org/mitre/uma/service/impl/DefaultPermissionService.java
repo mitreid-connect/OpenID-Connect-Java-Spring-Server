@@ -15,25 +15,40 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.mitre.uma.service;
+package org.mitre.uma.service.impl;
 
 import java.util.Set;
+import java.util.UUID;
 
 import org.mitre.uma.model.Permission;
 import org.mitre.uma.model.ResourceSet;
-
+import org.mitre.uma.repository.PermissionRepository;
+import org.mitre.uma.service.PermissionService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * @author jricher
  *
  */
-public interface PermissionService {
+@Service
+public class DefaultPermissionService implements PermissionService {
 
-	/**
-	 * @param resourceSet the resource set to create the permission on
-	 * @param scopes the set of scopes that this permission is for
-	 * @return the created (and stored) permission object, with ticket
+	@Autowired
+	private PermissionRepository repository;
+	
+	/* (non-Javadoc)
+	 * @see org.mitre.uma.service.PermissionService#create(org.mitre.uma.model.ResourceSet, java.util.Set)
 	 */
-	public Permission create(ResourceSet resourceSet, Set<String> scopes);
+	@Override
+	public Permission create(ResourceSet resourceSet, Set<String> scopes) {
+		Permission p = new Permission();
+		p.setResourceSet(resourceSet);
+		p.setScopes(scopes);
+		p.setTicket(UUID.randomUUID().toString());
+		
+		return repository.save(p);
+		
+	}
 
 }

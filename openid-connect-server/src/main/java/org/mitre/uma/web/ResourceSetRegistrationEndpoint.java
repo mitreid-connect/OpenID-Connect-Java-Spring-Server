@@ -116,7 +116,7 @@ public class ResourceSetRegistrationEndpoint {
 			
 			if (!auth.getName().equals(rs.getOwner())) {
 				
-				logger.warn("Unauthorized resource set request from bad user; expected " + rs.getOwner() + " got " + auth.getName());
+				logger.warn("Unauthorized resource set request from wrong user; expected " + rs.getOwner() + " got " + auth.getName());
 				
 				// it wasn't issued to this user
 				m.addAttribute("code", HttpStatus.FORBIDDEN);

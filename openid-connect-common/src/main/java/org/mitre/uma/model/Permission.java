@@ -17,10 +17,19 @@
 
 package org.mitre.uma.model;
 
-import java.util.Date;
 import java.util.Set;
 
+import javax.persistence.Basic;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
@@ -38,6 +47,75 @@ public class Permission {
 	private ResourceSet resourceSet;
 	private Set<String> scopes;
 	private String ticket;
+	
+	/**
+	 * @return the id
+	 */
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id")
+	public Long getId() {
+		return id;
+	}
+	
+	/**
+	 * @param id the id to set
+	 */
+	public void setId(Long id) {
+		this.id = id;
+	}
+	
+	/**
+	 * @return the resourceSet
+	 */
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "resource_set_id")
+	public ResourceSet getResourceSet() {
+		return resourceSet;
+	}
+	
+	/**
+	 * @param resourceSet the resourceSet to set
+	 */
+	public void setResourceSet(ResourceSet resourceSet) {
+		this.resourceSet = resourceSet;
+	}
+	
+	/**
+	 * @return the scopes
+	 */
+	@ElementCollection(fetch = FetchType.EAGER)
+	@Column(name = "scope")
+	@CollectionTable(
+		name = "permission_scope",
+		joinColumns = @JoinColumn(name = "owner_id")
+	)
+	public Set<String> getScopes() {
+		return scopes;
+	}
+	
+	/**
+	 * @param scopes the scopes to set
+	 */
+	public void setScopes(Set<String> scopes) {
+		this.scopes = scopes;
+	}
+	
+	/**
+	 * @return the ticket
+	 */
+	@Basic
+	@Column(name = "ticket")
+	public String getTicket() {
+		return ticket;
+	}
+	
+	/**
+	 * @param ticket the ticket to set
+	 */
+	public void setTicket(String ticket) {
+		this.ticket = ticket;
+	}
 	
 	
 }

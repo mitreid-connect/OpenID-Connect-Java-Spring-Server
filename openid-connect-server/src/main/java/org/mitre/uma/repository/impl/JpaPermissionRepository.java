@@ -15,12 +15,31 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.mitre.uma.repository;
+package org.mitre.uma.repository.impl;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
+import org.mitre.uma.model.Permission;
+import org.mitre.uma.repository.PermissionRepository;
+import org.mitre.util.jpa.JpaUtil;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author jricher
  *
  */
-public interface PermissionRespository {
+@Repository
+public class JpaPermissionRepository implements PermissionRepository {
+
+	@PersistenceContext
+	private EntityManager em;
+	
+	@Override
+	@Transactional
+	public Permission save(Permission p) {
+		return JpaUtil.saveOrUpdate(p.getId(), em, p);
+	}
 
 }
