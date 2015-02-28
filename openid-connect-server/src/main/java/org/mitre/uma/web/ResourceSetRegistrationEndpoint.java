@@ -16,6 +16,8 @@
  *******************************************************************************/
 package org.mitre.uma.web;
 
+
+import static org.mitre.uma.web.OAuthScopeEnforcementUtilities.ensureOAuthScope;
 import static org.mitre.util.JsonUtils.getAsLong;
 import static org.mitre.util.JsonUtils.getAsString;
 import static org.mitre.util.JsonUtils.getAsStringSet;
@@ -39,8 +41,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.common.exceptions.InsufficientScopeException;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.MimeTypeUtils;
@@ -50,7 +50,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
@@ -75,7 +74,7 @@ public class ResourceSetRegistrationEndpoint {
 	
 	@RequestMapping(method = RequestMethod.POST, produces = MimeTypeUtils.APPLICATION_JSON_VALUE, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
 	public String createResourceSet(@RequestBody String jsonString, Model m, Authentication auth) {
-		ensureOAuthScope(auth);
+		ensureOAuthScope(auth, SystemScopeService.UMA_PROTECTION_SCOPE);
 		
 		ResourceSet rs = parseResourceSet(jsonString);
 		
@@ -105,7 +104,7 @@ public class ResourceSetRegistrationEndpoint {
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
 	public String readResourceSet(@PathVariable ("id") Long id, Model m, Authentication auth) {
-		ensureOAuthScope(auth);
+		ensureOAuthScope(auth, SystemScopeService.UMA_PROTECTION_SCOPE);
 		
 		ResourceSet rs = resourceSetService.getById(id);
 		
@@ -133,7 +132,7 @@ public class ResourceSetRegistrationEndpoint {
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
 	public String updateResourceSet(@PathVariable ("id") Long id, @RequestBody String jsonString, Model m, Authentication auth) {
-		ensureOAuthScope(auth);
+		ensureOAuthScope(auth, SystemScopeService.UMA_PROTECTION_SCOPE);
 
 		ResourceSet newRs = parseResourceSet(jsonString);
 
@@ -178,7 +177,7 @@ public class ResourceSetRegistrationEndpoint {
 	
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
 	public String deleteResourceSet(@PathVariable ("id") Long id, Model m, Authentication auth) {
-		ensureOAuthScope(auth);
+		ensureOAuthScope(auth, SystemScopeService.UMA_PROTECTION_SCOPE);
 
 		ResourceSet rs = resourceSetService.getById(id);
 		
@@ -207,7 +206,7 @@ public class ResourceSetRegistrationEndpoint {
 	
 	@RequestMapping(method = RequestMethod.GET, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
 	public String listResourceSets(Model m, Authentication auth) {
-		ensureOAuthScope(auth);
+		ensureOAuthScope(auth, SystemScopeService.UMA_PROTECTION_SCOPE);
 		
 		String owner = auth.getName();
 		
@@ -224,17 +223,6 @@ public class ResourceSetRegistrationEndpoint {
 		return JsonEntityView.VIEWNAME;
 	}
 
-	private void ensureOAuthScope(Authentication auth) {
-		// if auth is OAuth, make sure we've got the right scope
-		if (auth instanceof OAuth2Authentication) {
-			OAuth2Authentication oAuth2Authentication = (OAuth2Authentication) auth;
-			if (oAuth2Authentication.getOAuth2Request().getScope() == null
-					|| !oAuth2Authentication.getOAuth2Request().getScope().contains(SystemScopeService.UMA_PROTECTION_SCOPE)) {
-				throw new InsufficientScopeException("Insufficient scope", ImmutableSet.of(SystemScopeService.UMA_PROTECTION_SCOPE));
-			}
-		}
-	}
-	
 	private ResourceSet parseResourceSet(String jsonString) {
 
 		try {
