@@ -229,8 +229,8 @@ public class ResourceSetRegistrationEndpoint {
 		if (auth instanceof OAuth2Authentication) {
 			OAuth2Authentication oAuth2Authentication = (OAuth2Authentication) auth;
 			if (oAuth2Authentication.getOAuth2Request().getScope() == null
-					|| !oAuth2Authentication.getOAuth2Request().getScope().contains(SystemScopeService.RESOURCE_SET_REGISTRATION_SCOPE)) {
-				throw new InsufficientScopeException("Insufficient scope", ImmutableSet.of(SystemScopeService.RESOURCE_SET_REGISTRATION_SCOPE));
+					|| !oAuth2Authentication.getOAuth2Request().getScope().contains(SystemScopeService.UMA_PROTECTION_SCOPE)) {
+				throw new InsufficientScopeException("Insufficient scope", ImmutableSet.of(SystemScopeService.UMA_PROTECTION_SCOPE));
 			}
 		}
 	}

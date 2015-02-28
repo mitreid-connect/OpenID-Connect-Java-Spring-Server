@@ -36,7 +36,7 @@ public interface SystemScopeService {
 	public static final String ID_TOKEN_SCOPE = "id-token"; // ID tokens are generated using this scope
 	public static final String REGISTRATION_TOKEN_SCOPE = "registration-token"; // this scope manages dynamic client registrations
 	public static final String RESOURCE_TOKEN_SCOPE = "resource-token"; // this scope manages client-style protected resources
-	public static final String RESOURCE_SET_REGISTRATION_SCOPE = "resource_set_registration";
+	public static final String UMA_PROTECTION_SCOPE = "uma_protection";
 	
 	public static final Set<SystemScope> reservedScopes = 
 		Sets.newHashSet(
