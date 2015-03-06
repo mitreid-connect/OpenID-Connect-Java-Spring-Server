@@ -21,6 +21,7 @@ import java.util.Set;
 
 import org.mitre.uma.model.Permission;
 import org.mitre.uma.model.ResourceSet;
+import org.springframework.security.oauth2.common.exceptions.InsufficientScopeException;
 
 
 /**
@@ -33,6 +34,7 @@ public interface PermissionService {
 	 * @param resourceSet the resource set to create the permission on
 	 * @param scopes the set of scopes that this permission is for
 	 * @return the created (and stored) permission object, with ticket
+	 * @throws InsufficientScopeException if the scopes in scopes don't match those in resourceSet.getScopes
 	 */
 	public Permission create(ResourceSet resourceSet, Set<String> scopes);
 
