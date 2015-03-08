@@ -11,7 +11,7 @@ import org.springframework.format.datetime.DateFormatter;
 
 public abstract class MITREidDataServiceSupport {
 	private final DateFormatter dateFormatter;
-	private final static Logger logger = LoggerFactory.getLogger(MITREidDataService_1_2.class);
+	private static final Logger logger = LoggerFactory.getLogger(MITREidDataServiceSupport.class);
 
 	public MITREidDataServiceSupport() {
 		dateFormatter = new DateFormatter();
