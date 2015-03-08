@@ -19,6 +19,9 @@ public abstract class MITREidDataServiceSupport {
 	}
 	
 	protected Date utcToDate(String value) {
+		if (value == null) {
+			return null;
+		}
 		try {
 			return dateFormatter.parse(value, Locale.ENGLISH);
 		} catch (ParseException ex) {
