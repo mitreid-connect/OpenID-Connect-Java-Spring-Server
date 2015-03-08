@@ -52,7 +52,6 @@ import org.mitre.openid.connect.repository.ApprovedSiteRepository;
 import org.mitre.openid.connect.repository.BlacklistedSiteRepository;
 import org.mitre.openid.connect.repository.WhitelistedSiteRepository;
 import org.mitre.openid.connect.service.MITREidDataService;
-import org.mitre.openid.connect.util.DateUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,7 +75,7 @@ import com.google.gson.stream.JsonWriter;
  */
 @Service
 @SuppressWarnings(value = {"unchecked"})
-public class MITREidDataService_1_0 implements MITREidDataService {
+public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements MITREidDataService {
 
 	private final static Logger logger = LoggerFactory.getLogger(MITREidDataService_1_0.class);
 	@Autowired
@@ -93,6 +92,7 @@ public class MITREidDataService_1_0 implements MITREidDataService {
 	private OAuth2TokenRepository tokenRepository;
 	@Autowired
 	private SystemScopeRepository sysScopeRepository;
+	
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.service.MITREidDataService#export(com.google.gson.stream.JsonWriter)
 	 */
@@ -151,7 +151,7 @@ public class MITREidDataService_1_0 implements MITREidDataService {
 	private Map<Long, String> refreshTokenToClientRefs = new HashMap<Long, String>();
 	private Map<Long, Long> refreshTokenToAuthHolderRefs = new HashMap<Long, Long>();
 	private Map<Long, Long> refreshTokenOldToNewIdMap = new HashMap<Long, Long>();
-
+	
 	/**
 	 * @param reader
 	 * @throws IOException
@@ -179,7 +179,7 @@ public class MITREidDataService_1_0 implements MITREidDataService {
 					} else if (name.equals("id")) {
 						currentId = reader.nextLong();
 					} else if (name.equals("expiration")) {
-						Date date = DateUtil.utcToDate(reader.nextString());
+						Date date = utcToDate(reader.nextString());
 						token.setExpiration(date);
 					} else if (name.equals("value")) {
 						String value = reader.nextString();
@@ -248,7 +248,7 @@ public class MITREidDataService_1_0 implements MITREidDataService {
 					} else if (name.equals("id")) {
 						currentId = reader.nextLong();
 					} else if (name.equals("expiration")) {
-						Date date = DateUtil.utcToDate(reader.nextString());
+						Date date = utcToDate(reader.nextString());
 						token.setExpiration(date);
 					} else if (name.equals("value")) {
 						String value = reader.nextString();
@@ -461,15 +461,15 @@ public class MITREidDataService_1_0 implements MITREidDataService {
 					} else if (name.equals("id")) {
 						currentId = reader.nextLong();
 					} else if (name.equals("accessDate")) {
-						Date date = DateUtil.utcToDate(reader.nextString());
+						Date date = utcToDate(reader.nextString());
 						site.setAccessDate(date);
 					} else if (name.equals("clientId")) {
 						site.setClientId(reader.nextString());
 					} else if (name.equals("creationDate")) {
-						Date date = DateUtil.utcToDate(reader.nextString());
+						Date date = utcToDate(reader.nextString());
 						site.setCreationDate(date);
 					} else if (name.equals("timeoutDate")) {
-						Date date = DateUtil.utcToDate(reader.nextString());
+						Date date = utcToDate(reader.nextString());
 						site.setTimeoutDate(date);
 					} else if (name.equals("userId")) {
 						site.setUserId(reader.nextString());
@@ -848,4 +848,5 @@ public class MITREidDataService_1_0 implements MITREidDataService {
 		accessTokenOldToNewIdMap.clear();
 		grantOldToNewIdMap.clear();
 	}
+
 }

@@ -40,6 +40,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.junit.Before;
@@ -61,7 +62,6 @@ import org.mitre.openid.connect.repository.ApprovedSiteRepository;
 import org.mitre.openid.connect.repository.BlacklistedSiteRepository;
 import org.mitre.openid.connect.repository.WhitelistedSiteRepository;
 import org.mitre.openid.connect.service.MITREidDataService;
-import org.mitre.openid.connect.util.DateUtil;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
@@ -70,6 +70,8 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
+import org.springframework.format.datetime.DateFormatter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -117,9 +119,13 @@ public class TestMITREidDataService_1_0 {
 
 	@InjectMocks
 	private MITREidDataService_1_0 dataService;
+	
+	private DateFormatter formatter;
 
 	@Before
 	public void prepare() {
+		formatter = new DateFormatter();
+		formatter.setIso(ISO.DATE_TIME);
 		Mockito.reset(clientRepository, approvedSiteRepository, authHolderRepository, tokenRepository, sysScopeRepository, wlSiteRepository, blSiteRepository);
 	}
 
@@ -129,11 +135,10 @@ public class TestMITREidDataService_1_0 {
 			return entity1.getId().compareTo(entity2.getId());
 		}
 	}
-
+	
 	@Test
 	public void testImportRefreshTokens() throws IOException, ParseException {
-		String expiration1 = "2014-09-10T22:49:44.090+0000";
-		Date expirationDate1 = DateUtil.utcToDate(expiration1);
+		Date expirationDate1 = formatter.parse("2014-09-10T22:49:44.090+0000", Locale.ENGLISH);
 
 		ClientDetailsEntity mockedClient1 = mock(ClientDetailsEntity.class);
 		when(mockedClient1.getClientId()).thenReturn("mocked_client_1");
@@ -148,8 +153,7 @@ public class TestMITREidDataService_1_0 {
 		token1.setValue("eyJhbGciOiJub25lIn0.eyJqdGkiOiJmOTg4OWQyOS0xMTk1LTQ4ODEtODgwZC1lZjVlYzAwY2Y4NDIifQ.");
 		token1.setAuthenticationHolder(mockedAuthHolder1);
 
-		String expiration2 = "2015-01-07T18:31:50.079+0000";
-		Date expirationDate2 = DateUtil.utcToDate(expiration2);
+		Date expirationDate2 = formatter.parse("2015-01-07T18:31:50.079+0000", Locale.ENGLISH);
 
 		ClientDetailsEntity mockedClient2 = mock(ClientDetailsEntity.class);
 		when(mockedClient2.getClientId()).thenReturn("mocked_client_2");
@@ -251,8 +255,7 @@ public class TestMITREidDataService_1_0 {
 
 	@Test
 	public void testImportAccessTokens() throws IOException, ParseException {
-		String expiration1 = "2014-09-10T22:49:44.090+0000";
-		Date expirationDate1 = DateUtil.utcToDate(expiration1);
+		Date expirationDate1 = formatter.parse("2014-09-10T22:49:44.090+0000", Locale.ENGLISH);
 
 		ClientDetailsEntity mockedClient1 = mock(ClientDetailsEntity.class);
 		when(mockedClient1.getClientId()).thenReturn("mocked_client_1");
@@ -270,7 +273,7 @@ public class TestMITREidDataService_1_0 {
 		token1.setTokenType("Bearer");
 
 		String expiration2 = "2015-01-07T18:31:50.079+0000";
-		Date expirationDate2 = DateUtil.utcToDate(expiration2);
+		Date expirationDate2 = formatter.parse(expiration2, Locale.ENGLISH);
 
 		ClientDetailsEntity mockedClient2 = mock(ClientDetailsEntity.class);
 		when(mockedClient2.getClientId()).thenReturn("mocked_client_2");
@@ -567,9 +570,9 @@ public class TestMITREidDataService_1_0 {
 	}
 
 	@Test
-	public void testImportGrants() throws IOException {
-		Date creationDate1 = DateUtil.utcToDate("2014-09-10T22:49:44.090+0000");
-		Date accessDate1 = DateUtil.utcToDate("2014-09-10T23:49:44.090+0000");
+	public void testImportGrants() throws IOException, ParseException {
+		Date creationDate1 = formatter.parse("2014-09-10T22:49:44.090+0000", Locale.ENGLISH);
+		Date accessDate1 = formatter.parse("2014-09-10T23:49:44.090+0000", Locale.ENGLISH);
 
 		WhitelistedSite mockWlSite1 = mock(WhitelistedSite.class);
 		when(mockWlSite1.getId()).thenReturn(1L);
@@ -587,9 +590,9 @@ public class TestMITREidDataService_1_0 {
 		site1.setAllowedScopes(ImmutableSet.of("openid", "phone"));
 		site1.setApprovedAccessTokens(ImmutableSet.of(mockToken1));
 
-		Date creationDate2 = DateUtil.utcToDate("2014-09-11T18:49:44.090+0000");
-		Date accessDate2 = DateUtil.utcToDate("2014-09-11T20:49:44.090+0000");
-		Date timeoutDate2 = DateUtil.utcToDate("2014-10-01T20:49:44.090+0000");
+		Date creationDate2 = formatter.parse("2014-09-11T18:49:44.090+0000", Locale.ENGLISH);
+		Date accessDate2 = formatter.parse("2014-09-11T20:49:44.090+0000", Locale.ENGLISH);
+		Date timeoutDate2 = formatter.parse("2014-10-01T20:49:44.090+0000", Locale.ENGLISH);
 
 		ApprovedSite site2 = new ApprovedSite();
 		site2.setId(2L);
@@ -831,7 +834,7 @@ public class TestMITREidDataService_1_0 {
 	@Test
 	public void testFixRefreshTokenAuthHolderReferencesOnImport() throws IOException, ParseException {
 		String expiration1 = "2014-09-10T22:49:44.090+0000";
-		Date expirationDate1 = DateUtil.utcToDate(expiration1);
+		Date expirationDate1 = formatter.parse(expiration1, Locale.ENGLISH);
 
 		ClientDetailsEntity mockedClient1 = mock(ClientDetailsEntity.class);
 		when(mockedClient1.getClientId()).thenReturn("mocked_client_1");
@@ -854,7 +857,7 @@ public class TestMITREidDataService_1_0 {
 		token1.setAuthenticationHolder(holder1);
 
 		String expiration2 = "2015-01-07T18:31:50.079+0000";
-		Date expirationDate2 = DateUtil.utcToDate(expiration2);
+		Date expirationDate2 = formatter.parse(expiration2, Locale.ENGLISH);
 
 		ClientDetailsEntity mockedClient2 = mock(ClientDetailsEntity.class);
 		when(mockedClient2.getClientId()).thenReturn("mocked_client_2");
