@@ -59,7 +59,7 @@ public class DefaultIntrospectionResultAssembler implements IntrospectionResultA
 				result.put(EXPIRES_AT, dateFormat.valueToString(accessToken.getExpiration()));
 				result.put(EXP, accessToken.getExpiration().getTime() / 1000L);
 			} catch (ParseException e) {
-				log.error("Parse exception in token introspection", e);
+				logger.error("Parse exception in token introspection", e);
 			}
 		}
 
@@ -95,7 +95,7 @@ public class DefaultIntrospectionResultAssembler implements IntrospectionResultA
 				result.put(EXPIRES_AT, dateFormat.valueToString(refreshToken.getExpiration()));
 				result.put(EXP, refreshToken.getExpiration().getTime() / 1000L);
 			} catch (ParseException e) {
-				log.error("Parse exception in token introspection", e);
+				logger.error("Parse exception in token introspection", e);
 			}
 		}
 
