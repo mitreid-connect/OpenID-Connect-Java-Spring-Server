@@ -16,6 +16,7 @@
  *******************************************************************************/
 package org.mitre.discovery.web;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +30,8 @@ import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.service.UserInfoService;
 import org.mitre.openid.connect.view.HttpCodeView;
 import org.mitre.openid.connect.view.JsonEntityView;
+import org.mitre.uma.web.PermissionRegistrationEndpoint;
+import org.mitre.uma.web.ResourceSetRegistrationEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +46,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.google.common.base.Function;
 import com.google.common.base.Strings;
 import com.google.common.collect.Collections2;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.nimbusds.jose.Algorithm;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -264,6 +268,7 @@ public class DiscoveryEndpoint {
 		Collection<JWSAlgorithm> clientSymmetricSigningAlgs = Lists.newArrayList(JWSAlgorithm.HS256, JWSAlgorithm.HS384, JWSAlgorithm.HS512);
 		Collection<JWSAlgorithm> clientSymmetricAndAsymmetricSigningAlgs = Lists.newArrayList(JWSAlgorithm.HS256, JWSAlgorithm.HS384, JWSAlgorithm.HS512, JWSAlgorithm.RS256, JWSAlgorithm.RS384, JWSAlgorithm.RS512);
 		Collection<Algorithm> clientSymmetricAndAsymmetricSigningAlgsWithNone = Lists.newArrayList(JWSAlgorithm.HS256, JWSAlgorithm.HS384, JWSAlgorithm.HS512, JWSAlgorithm.RS256, JWSAlgorithm.RS384, JWSAlgorithm.RS512, Algorithm.NONE);
+		ArrayList<String> grantTypes = Lists.newArrayList("authorization_code", "implicit", "urn:ietf:params:oauth:grant-type:jwt-bearer", "client_credentials", "urn:ietf:params:oauth:grant_type:redelegate");
 
 		Map<String, Object> m = new HashMap<String, Object>();
 		m.put("issuer", config.getIssuer());
@@ -276,7 +281,7 @@ public class DiscoveryEndpoint {
 		m.put("registration_endpoint", baseUrl + "register");
 		m.put("scopes_supported", scopeService.toStrings(scopeService.getUnrestricted())); // these are the scopes that you can dynamically register for, which is what matters for discovery
 		m.put("response_types_supported", Lists.newArrayList("code", "token")); // we don't support these yet: , "id_token", "id_token token"));
-		m.put("grant_types_supported", Lists.newArrayList("authorization_code", "implicit", "urn:ietf:params:oauth:grant-type:jwt-bearer", "client_credentials", "urn:ietf:params:oauth:grant_type:redelegate"));
+		m.put("grant_types_supported", grantTypes);
 		//acr_values_supported
 		m.put("subject_types_supported", Lists.newArrayList("public", "pairwise"));
 		m.put("userinfo_signing_alg_values_supported", Collections2.transform(clientSymmetricAndAsymmetricSigningAlgs, toAlgorithmName));
@@ -332,4 +337,38 @@ public class DiscoveryEndpoint {
 		return JsonEntityView.VIEWNAME;
 	}
 
+	
+	@RequestMapping(".well-known/uma-configuration")
+	public String umaConfiguration(Model model) {
+
+		Map<String, Object> m = new HashMap<String, Object>();
+
+		String issuer = config.getIssuer();
+		ImmutableSet<String> tokenProfiles = ImmutableSet.of("bearer");
+		ArrayList<String> grantTypes = Lists.newArrayList("authorization_code", "implicit", "urn:ietf:params:oauth:grant-type:jwt-bearer", "client_credentials", "urn:ietf:params:oauth:grant_type:redelegate");
+
+		m.put("version", "1.0");
+		m.put("issuer", issuer);
+		m.put("pat_profiles_supported", tokenProfiles);
+		m.put("aat_profiles_supported", tokenProfiles);
+		m.put("rpt_profiles_supported", tokenProfiles);
+		m.put("pat_grant_types_supported", grantTypes);
+		m.put("aat_grant_types_supported", grantTypes);
+		m.put("claim_token_profiles_supported", ImmutableSet.of());
+		m.put("uma_profiles_supported", ImmutableSet.of());
+		m.put("dynamic_client_endpoint", issuer + "register");
+		m.put("token_endpoint", issuer + "token");
+		m.put("authorization_endpoint", issuer + "authorize");
+//		m.put("requesting_party_claims_endpoint", issuer + REQUESTING_PARTY_CLAIMS);
+		m.put("introspection_endpoint", issuer + "introspect");
+		m.put("resource_set_registration_endpoint", issuer + ResourceSetRegistrationEndpoint.URL);
+		m.put("permission_registration_endpoint", issuer + PermissionRegistrationEndpoint.URL);
+//		m.put("rpt_endpoint", issuer + RPT_ENDPOINT);
+		
+		
+		
+		model.addAttribute("entity", m);
+		return JsonEntityView.VIEWNAME;
+	}
+	
 }
