@@ -39,7 +39,10 @@ import com.google.common.base.Joiner;
 @Service
 public class DefaultIntrospectionResultAssembler implements IntrospectionResultAssembler {
 
-	private static Logger log = LoggerFactory.getLogger(DefaultIntrospectionResultAssembler.class);
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.getLogger(DefaultIntrospectionResultAssembler.class);
 
 	@Override
 	public Map<String, Object> assembleFrom(OAuth2AccessTokenEntity accessToken, UserInfo userInfo) {

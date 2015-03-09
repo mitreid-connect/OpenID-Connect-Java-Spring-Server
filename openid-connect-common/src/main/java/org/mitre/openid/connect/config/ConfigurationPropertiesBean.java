@@ -37,7 +37,10 @@ import org.springframework.util.StringUtils;
  */
 public class ConfigurationPropertiesBean {
 
-	private static Logger logger = LoggerFactory.getLogger(ConfigurationPropertiesBean.class);
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.getLogger(ConfigurationPropertiesBean.class);
 
 	private String issuer;
 

@@ -53,7 +53,10 @@ public class DefaultJWTSigningAndValidationService implements JWTSigningAndValid
 	// map of identifier to verifier
 	private Map<String, JWSVerifier> verifiers = new HashMap<String, JWSVerifier>();
 
-	private static Logger logger = LoggerFactory.getLogger(DefaultJWTSigningAndValidationService.class);
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.getLogger(DefaultJWTSigningAndValidationService.class);
 
 	private String defaultSignerKeyId;
 

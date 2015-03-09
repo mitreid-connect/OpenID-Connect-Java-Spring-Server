@@ -80,7 +80,10 @@ import com.google.gson.stream.JsonWriter;
 @SuppressWarnings(value = {"unchecked"})
 public class MITREidDataService_1_1 extends MITREidDataServiceSupport implements MITREidDataService {
 
-	private final static Logger logger = LoggerFactory.getLogger(MITREidDataService_1_1.class);
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.getLogger(MITREidDataService_1_1.class);
 	@Autowired
 	private OAuth2ClientRepository clientRepository;
 	@Autowired

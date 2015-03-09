@@ -57,7 +57,10 @@ import com.nimbusds.jose.JWSAlgorithm;
 @Controller
 public class DiscoveryEndpoint {
 
-	private static Logger logger = LoggerFactory.getLogger(DiscoveryEndpoint.class);
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.getLogger(DiscoveryEndpoint.class);
 
 	@Autowired
 	private ConfigurationPropertiesBean config;

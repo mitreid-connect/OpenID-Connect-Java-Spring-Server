@@ -51,7 +51,10 @@ import com.nimbusds.jose.jwk.JWKSet;
 @Service
 public class JWKSetCacheService {
 
-	private static Logger logger = LoggerFactory.getLogger(JWKSetCacheService.class);
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.getLogger(JWKSetCacheService.class);
 
 	// map of jwk set uri -> signing/validation service built on the keys found in that jwk set
 	private LoadingCache<String, JWTSigningAndValidationService> validators;

@@ -53,7 +53,10 @@ import com.google.gson.stream.JsonWriter;
 @PreAuthorize("hasRole('ROLE_ADMIN')") // you need to be an admin to even think about this -- this is a potentially dangerous API!!
 public class DataAPI {
 
-	private static Logger logger = LoggerFactory.getLogger(DataAPI.class);
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.getLogger(DataAPI.class);
 
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 

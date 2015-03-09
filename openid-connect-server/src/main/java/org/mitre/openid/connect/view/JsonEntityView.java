@@ -45,7 +45,10 @@ import com.google.gson.GsonBuilder;
 @Component(JsonEntityView.VIEWNAME)
 public class JsonEntityView extends AbstractView {
 
-	private static Logger logger = LoggerFactory.getLogger(JsonEntityView.class);
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.getLogger(JsonEntityView.class);
 
 	public static final String VIEWNAME = "jsonEntityView";
 

@@ -85,7 +85,10 @@ public class DynamicClientRegistrationEndpoint {
 	@Autowired
 	private OIDCTokenService connectTokenService;
 
-	private static Logger logger = LoggerFactory.getLogger(DynamicClientRegistrationEndpoint.class);
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.getLogger(DynamicClientRegistrationEndpoint.class);
 
 	/**
 	 * Create a new Client, issue a client ID, and create a registration access token.

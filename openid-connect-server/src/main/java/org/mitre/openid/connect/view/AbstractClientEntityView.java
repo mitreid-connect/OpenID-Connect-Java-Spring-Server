@@ -54,7 +54,10 @@ import com.google.gson.JsonSerializer;
  *
  */
 public abstract class AbstractClientEntityView extends AbstractView {
-	private static Logger logger = LoggerFactory.getLogger(ClientEntityViewForAdmins.class);
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.getLogger(AbstractClientEntityView.class);
 
 	private Gson gson = new GsonBuilder()
 	.setExclusionStrategies(getExclusionStrategy())

@@ -64,7 +64,10 @@ import com.nimbusds.jwt.PlainJWT;
 @Service("defaultOAuth2ProviderTokenService")
 public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityService {
 
-	private static Logger logger = LoggerFactory.getLogger(DefaultOAuth2ProviderTokenService.class);
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.getLogger(DefaultOAuth2ProviderTokenService.class);
 
 	@Autowired
 	private OAuth2TokenRepository tokenRepository;

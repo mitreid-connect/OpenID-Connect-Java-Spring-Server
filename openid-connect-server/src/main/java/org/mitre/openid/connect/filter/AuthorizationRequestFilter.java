@@ -59,8 +59,10 @@ import com.google.common.base.Strings;
 @Component("authRequestFilter")
 public class AuthorizationRequestFilter extends GenericFilterBean {
 
-
-	private Logger logger = LoggerFactory.getLogger(AuthorizationRequestFilter.class);
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.getLogger(AuthorizationRequestFilter.class);
 
 	public final static String PROMPTED = "PROMPT_FILTER_PROMPTED";
 	public final static String PROMPT_REQUESTED = "PROMPT_FILTER_REQUESTED";

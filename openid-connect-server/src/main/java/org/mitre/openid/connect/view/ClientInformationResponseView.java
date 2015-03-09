@@ -49,7 +49,10 @@ import com.google.gson.JsonObject;
 @Component(ClientInformationResponseView.VIEWNAME)
 public class ClientInformationResponseView extends AbstractView {
 
-	private static Logger logger = LoggerFactory.getLogger(ClientInformationResponseView.class);
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.getLogger(ClientInformationResponseView.class);
 
 	public static final String VIEWNAME = "clientInformationResponseView";
 

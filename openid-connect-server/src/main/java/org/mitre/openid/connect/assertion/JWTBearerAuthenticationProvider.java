@@ -54,6 +54,9 @@ import com.nimbusds.jwt.SignedJWT;
  */
 public class JWTBearerAuthenticationProvider implements AuthenticationProvider {
 
+	/**
+	 * Logger for this class
+	 */
 	private static final Logger logger = LoggerFactory.getLogger(JWTBearerAuthenticationProvider.class);
 
 	private static final GrantedAuthority ROLE_CLIENT = new SimpleGrantedAuthority("ROLE_CLIENT");

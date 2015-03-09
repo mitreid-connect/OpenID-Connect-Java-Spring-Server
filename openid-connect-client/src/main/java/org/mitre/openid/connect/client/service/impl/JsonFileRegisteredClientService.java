@@ -50,7 +50,10 @@ import com.google.gson.JsonSerializer;
  */
 public class JsonFileRegisteredClientService implements RegisteredClientService {
 
-	private static Logger logger = LoggerFactory.getLogger(JsonFileRegisteredClientService.class);
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.getLogger(JsonFileRegisteredClientService.class);
 
 	private Gson gson = new GsonBuilder()
 	.registerTypeAdapter(RegisteredClient.class, new JsonSerializer<RegisteredClient>() {

@@ -56,7 +56,10 @@ public class UserInfoEndpoint {
 	@Autowired
 	private ClientDetailsEntityService clientService;
 
-	private static Logger logger = LoggerFactory.getLogger(UserInfoEndpoint.class);
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.getLogger(UserInfoEndpoint.class);
 
 	private static final MediaType JOSE_MEDIA_TYPE = new MediaType("application", "jwt");
 
