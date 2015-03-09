@@ -105,7 +105,7 @@ public class IntrospectionEndpoint {
 			
 			String authClientId = auth.getName(); // direct authentication puts the client_id into the authentication's name field
 			authClient = clientService.loadClientByClientId(authClientId);
-			
+
 			if (!AuthenticationUtilities.hasRole(auth, "ROLE_CLIENT")
 					|| !authClient.isAllowIntrospection()) {
 				
@@ -119,7 +119,7 @@ public class IntrospectionEndpoint {
 			
 		}
 		
-		if (authClient != null) {
+		if (authClient == null) {
 			// shouldn't ever get here, if the client's been authenticated by now it should exist
 			logger.error("Introspection client wasn't found");
 			model.addAttribute("code", HttpStatus.FORBIDDEN);
@@ -147,7 +147,7 @@ public class IntrospectionEndpoint {
 			user = userInfoService.getByUsernameAndClientId(userName, tokenClient.getClientId());
 
 		} catch (InvalidTokenException e) {
-			logger.info("Invalid access token. Checking refresh token.");
+			logger.info("Invalid access token. Checking refresh token.", e);
 			try {
 
 				// check refresh tokens next
@@ -168,9 +168,6 @@ public class IntrospectionEndpoint {
 			}
 		}
 
-		if (accessToken == null && refreshToken == null) {
-		}
-		
 		if (introspectionAuthorizer.isIntrospectionPermitted(authClient, tokenClient, scopes)) {
 			// if it's a valid token, we'll print out information on it
 			
