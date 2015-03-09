@@ -17,7 +17,7 @@
 
 package org.mitre.uma.web;
 
-import static org.mitre.uma.web.OAuthScopeEnforcementUtilities.ensureOAuthScope;
+import static org.mitre.oauth2.web.AuthenticationUtilities.ensureOAuthScope;
 import static org.mitre.util.JsonUtils.getAsLong;
 import static org.mitre.util.JsonUtils.getAsStringSet;
 
