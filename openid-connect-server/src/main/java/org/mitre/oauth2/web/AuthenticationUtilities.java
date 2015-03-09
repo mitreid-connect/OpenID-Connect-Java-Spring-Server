@@ -15,9 +15,10 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.mitre.uma.web;
+package org.mitre.oauth2.web;
 
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.common.exceptions.InsufficientScopeException;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 
@@ -30,7 +31,7 @@ import com.google.common.collect.ImmutableSet;
  * @author jricher
  *
  */
-public abstract class OAuthScopeEnforcementUtilities {
+public abstract class AuthenticationUtilities {
 	
 	/**
 	 * Makes sure the authentication contains the given scope, throws an exception otherwise
@@ -49,6 +50,30 @@ public abstract class OAuthScopeEnforcementUtilities {
 			}
 		}
 	}
+
+	/**
+	 * Check to see if the given auth object has ROLE_ADMIN assigned to it or not
+	 * @param auth
+	 * @return
+	 */
+	public static boolean isAdmin(Authentication auth) {
+		for (GrantedAuthority grantedAuthority : auth.getAuthorities()) {
+			if (grantedAuthority.getAuthority().equals("ROLE_ADMIN")) {
+				return true;
+			}
+		}
+		return false;
+	}
 	
 
+	public static boolean hasRole(Authentication auth, String role) {
+		for (GrantedAuthority grantedAuthority : auth.getAuthorities()) {
+			if (grantedAuthority.getAuthority().equals(role)) {
+				return true;
+			}
+		}
+		return false;
+		
+	}
+	
 }

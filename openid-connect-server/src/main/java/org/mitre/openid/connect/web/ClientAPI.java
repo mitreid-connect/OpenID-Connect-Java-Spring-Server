@@ -25,6 +25,7 @@ import org.mitre.jose.JWSAlgorithmEmbed;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
+import org.mitre.oauth2.web.AuthenticationUtilities;
 import org.mitre.openid.connect.service.UserInfoService;
 import org.mitre.openid.connect.view.ClientEntityViewForAdmins;
 import org.mitre.openid.connect.view.ClientEntityViewForUsers;
@@ -36,7 +37,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -121,7 +121,7 @@ public class ClientAPI {
 		Collection<ClientDetailsEntity> clients = clientService.getAllClients();
 		model.addAttribute("entity", clients);
 
-		if (isAdmin(auth)) {
+		if (AuthenticationUtilities.isAdmin(auth)) {
 			return ClientEntityViewForAdmins.VIEWNAME;
 		} else {
 			return ClientEntityViewForUsers.VIEWNAME;
@@ -206,7 +206,7 @@ public class ClientAPI {
 		ClientDetailsEntity newClient = clientService.saveNewClient(client);
 		m.addAttribute("entity", newClient);
 
-		if (isAdmin(auth)) {
+		if (AuthenticationUtilities.isAdmin(auth)) {
 			return ClientEntityViewForAdmins.VIEWNAME;
 		} else {
 			return ClientEntityViewForUsers.VIEWNAME;
@@ -300,7 +300,7 @@ public class ClientAPI {
 		ClientDetailsEntity newClient = clientService.updateClient(oldClient, client);
 		m.addAttribute("entity", newClient);
 
-		if (isAdmin(auth)) {
+		if (AuthenticationUtilities.isAdmin(auth)) {
 			return ClientEntityViewForAdmins.VIEWNAME;
 		} else {
 			return ClientEntityViewForUsers.VIEWNAME;
@@ -353,24 +353,10 @@ public class ClientAPI {
 
 		model.addAttribute("entity", client);
 
-		if (isAdmin(auth)) {
+		if (AuthenticationUtilities.isAdmin(auth)) {
 			return ClientEntityViewForAdmins.VIEWNAME;
 		} else {
 			return ClientEntityViewForUsers.VIEWNAME;
 		}
-	}
-
-	/**
-	 * Check to see if the given auth object has ROLE_ADMIN assigned to it or not
-	 * @param auth
-	 * @return
-	 */
-	private boolean isAdmin(Authentication auth) {
-		for (GrantedAuthority grantedAuthority : auth.getAuthorities()) {
-			if (grantedAuthority.getAuthority().equals("ROLE_ADMIN")) {
-				return true;
-			}
-		}
-		return false;
 	}
 }
