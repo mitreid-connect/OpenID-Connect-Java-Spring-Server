@@ -244,6 +244,3 @@ CREATE TABLE IF NOT EXISTS permission_scope (
 	owner_id BIGINT NOT NULL,
 	scope VARCHAR(256) NOT NULL
 );
-
-
-	

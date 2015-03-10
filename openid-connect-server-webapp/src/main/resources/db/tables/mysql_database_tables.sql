@@ -218,3 +218,29 @@ CREATE TABLE IF NOT EXISTS pairwise_identifier (
 	sub VARCHAR(256),
 	sector_identifier VARCHAR(2048)
 );
+
+CREATE TABLE IF NOT EXISTS resource_set (
+	id BIGINT AUTO_INCREMENT PRIMARY KEY,
+	name VARCHAR(1024) NOT NULL,
+	uri VARCHAR(1024),
+	icon_uri VARCHAR(1024),
+	rs_type VARCHAR(256),
+	owner VARCHAR(256) NOT NULL,
+	client_id VARCHAR(256)
+);
+
+CREATE TABLE IF NOT EXISTS resource_set_scope (
+	owner_id BIGINT NOT NULL,
+	scope VARCHAR(256) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS permission (
+	id BIGINT AUTO_INCREMENT PRIMARY KEY,
+	resource_set_id BIGINT NOT NULL,
+	ticket VARCHAR(256) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS permission_scope (
+	owner_id BIGINT NOT NULL,
+	scope VARCHAR(256) NOT NULL
+);
