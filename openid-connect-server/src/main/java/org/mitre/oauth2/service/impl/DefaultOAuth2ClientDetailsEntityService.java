@@ -61,7 +61,10 @@ import com.google.gson.JsonParser;
 @Service
 public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEntityService {
 
-	private static Logger logger = LoggerFactory.getLogger(DefaultOAuth2ClientDetailsEntityService.class);
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.getLogger(DefaultOAuth2ClientDetailsEntityService.class);
 
 	@Autowired
 	private OAuth2ClientRepository clientRepository;

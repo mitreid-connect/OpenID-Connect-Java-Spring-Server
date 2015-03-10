@@ -55,7 +55,10 @@ import com.google.gson.JsonParser;
  */
 public class WebfingerIssuerService implements IssuerService {
 
-	private static Logger logger = LoggerFactory.getLogger(WebfingerIssuerService.class);
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.getLogger(WebfingerIssuerService.class);
 
 	// map of user input -> issuer, loaded dynamically from webfinger discover
 	private LoadingCache<UriComponents, String> issuers;

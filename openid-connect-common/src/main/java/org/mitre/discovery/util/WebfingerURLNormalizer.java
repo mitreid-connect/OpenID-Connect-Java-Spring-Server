@@ -35,7 +35,10 @@ import com.google.common.base.Strings;
  */
 public class WebfingerURLNormalizer {
 
-	private static Logger logger = LoggerFactory.getLogger(WebfingerURLNormalizer.class);
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.getLogger(WebfingerURLNormalizer.class);
 
 	// pattern used to parse user input; we can't use the built-in java URI parser
 	private static final Pattern pattern = Pattern.compile("^" +

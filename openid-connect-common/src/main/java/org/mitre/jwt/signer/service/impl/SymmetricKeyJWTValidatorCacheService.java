@@ -48,7 +48,10 @@ import com.nimbusds.jose.util.Base64URL;
 @Service
 public class SymmetricKeyJWTValidatorCacheService {
 
-	private static Logger logger = LoggerFactory.getLogger(SymmetricKeyJWTValidatorCacheService.class);
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.getLogger(SymmetricKeyJWTValidatorCacheService.class);
 
 	private LoadingCache<String, JWTSigningAndValidationService> validators;
 

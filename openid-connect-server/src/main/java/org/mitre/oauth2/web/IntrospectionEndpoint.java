@@ -69,7 +69,10 @@ public class IntrospectionEndpoint {
 	@Autowired
 	private ResourceSetService resourceSetService;
 
-	private static Logger logger = LoggerFactory.getLogger(IntrospectionEndpoint.class);
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.getLogger(IntrospectionEndpoint.class);
 
 	public IntrospectionEndpoint() {
 

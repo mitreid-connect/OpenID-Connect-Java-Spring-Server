@@ -43,7 +43,10 @@ import com.nimbusds.jose.jwk.JWKSet;
 public class JWKSetView extends AbstractView {
 
 	public static final String VIEWNAME = "jwkSet";
-	private static Logger logger = LoggerFactory.getLogger(JWKSetView.class);
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.getLogger(JWKSetView.class);
 
 	@Override
 	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {

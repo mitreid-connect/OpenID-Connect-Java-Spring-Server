@@ -55,7 +55,10 @@ import com.google.gson.JsonObject;
  */
 public class DynamicRegistrationClientConfigurationService implements ClientConfigurationService {
 
-	private static Logger logger = LoggerFactory.getLogger(DynamicServerConfigurationService.class);
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.getLogger(DynamicRegistrationClientConfigurationService.class);
 
 	private LoadingCache<ServerConfiguration, RegisteredClient> clients;
 

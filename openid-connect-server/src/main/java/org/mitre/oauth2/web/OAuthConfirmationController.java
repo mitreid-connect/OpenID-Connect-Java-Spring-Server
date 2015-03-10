@@ -80,7 +80,10 @@ public class OAuthConfirmationController {
 	@Autowired
 	private StatsService statsService;
 
-	private static Logger logger = LoggerFactory.getLogger(OAuthConfirmationController.class);
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.getLogger(OAuthConfirmationController.class);
 
 	public OAuthConfirmationController() {
 

@@ -47,7 +47,10 @@ import com.google.gson.JsonParser;
  */
 public class UserInfoFetcher {
 
-	private Logger logger = LoggerFactory.getLogger(UserInfoFetcher.class);
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.getLogger(UserInfoFetcher.class);
 
 	public UserInfo loadUserInfo(final OIDCAuthenticationToken token) {
 

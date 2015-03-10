@@ -58,7 +58,10 @@ import com.nimbusds.jwt.SignedJWT;
 @Component("connectOAuth2RequestFactory")
 public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 
-	private static Logger logger = LoggerFactory.getLogger(ConnectOAuth2RequestFactory.class);
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.getLogger(ConnectOAuth2RequestFactory.class);
 
 	private ClientDetailsEntityService clientDetailsService;
 

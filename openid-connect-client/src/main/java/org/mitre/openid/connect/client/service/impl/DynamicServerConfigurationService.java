@@ -57,7 +57,10 @@ import com.google.gson.JsonParser;
  */
 public class DynamicServerConfigurationService implements ServerConfigurationService {
 
-	private static Logger logger = LoggerFactory.getLogger(DynamicServerConfigurationService.class);
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.getLogger(DynamicServerConfigurationService.class);
 
 	// map of issuer -> server configuration, loaded dynamically from service discovery
 	private LoadingCache<String, ServerConfiguration> servers;

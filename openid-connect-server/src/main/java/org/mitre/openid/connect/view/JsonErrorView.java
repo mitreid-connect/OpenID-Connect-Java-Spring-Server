@@ -44,7 +44,10 @@ import com.google.gson.JsonObject;
 @Component(JsonErrorView.VIEWNAME)
 public class JsonErrorView extends AbstractView {
 
-	private static Logger logger = LoggerFactory.getLogger(JsonEntityView.class);
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.getLogger(JsonErrorView.class);
 
 	public static final String VIEWNAME = "jsonErrorView";
 

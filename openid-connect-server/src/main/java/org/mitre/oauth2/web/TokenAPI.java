@@ -59,7 +59,10 @@ public class TokenAPI {
 	@Autowired
 	private OIDCTokenService oidcTokenService;
 
-	private static Logger logger = LoggerFactory.getLogger(TokenAPI.class);
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.getLogger(TokenAPI.class);
 
 	@RequestMapping(value = "/access", method = RequestMethod.GET, produces = "application/json")
 	public String getAllAccessTokens(ModelMap m, Principal p) {

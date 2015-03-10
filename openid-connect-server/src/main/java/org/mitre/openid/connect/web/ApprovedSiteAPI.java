@@ -54,7 +54,10 @@ public class ApprovedSiteAPI {
 	@Autowired
 	OAuth2TokenEntityService tokenServices;
 
-	private static Logger logger = LoggerFactory.getLogger(ApprovedSiteAPI.class);
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.getLogger(ApprovedSiteAPI.class);
 
 	/**
 	 * Get a list of all of this user's approved sites

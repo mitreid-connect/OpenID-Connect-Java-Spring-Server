@@ -41,7 +41,10 @@ import com.google.common.collect.Sets;
 @Service
 public class DefaultIntrospectionResultAssembler implements IntrospectionResultAssembler {
 
-	private static Logger log = LoggerFactory.getLogger(DefaultIntrospectionResultAssembler.class);
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.getLogger(DefaultIntrospectionResultAssembler.class);
 
 	@Override
 	public Map<String, Object> assembleFrom(OAuth2AccessTokenEntity accessToken, UserInfo userInfo, Set<String> authScopes) {
@@ -60,7 +63,7 @@ public class DefaultIntrospectionResultAssembler implements IntrospectionResultA
 				result.put(EXPIRES_AT, dateFormat.valueToString(accessToken.getExpiration()));
 				result.put(EXP, accessToken.getExpiration().getTime() / 1000L);
 			} catch (ParseException e) {
-				log.error("Parse exception in token introspection", e);
+				logger.error("Parse exception in token introspection", e);
 			}
 		}
 
@@ -98,7 +101,7 @@ public class DefaultIntrospectionResultAssembler implements IntrospectionResultA
 				result.put(EXPIRES_AT, dateFormat.valueToString(refreshToken.getExpiration()));
 				result.put(EXP, refreshToken.getExpiration().getTime() / 1000L);
 			} catch (ParseException e) {
-				log.error("Parse exception in token introspection", e);
+				logger.error("Parse exception in token introspection", e);
 			}
 		}
 

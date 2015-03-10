@@ -52,7 +52,10 @@ import com.nimbusds.jose.jwk.RSAKey;
  */
 public class DefaultJWTEncryptionAndDecryptionService implements JWTEncryptionAndDecryptionService {
 
-	private static Logger logger = LoggerFactory.getLogger(DefaultJWTEncryptionAndDecryptionService.class);
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.getLogger(DefaultJWTEncryptionAndDecryptionService.class);
 
 	// map of identifier to encrypter
 	private Map<String, JWEEncrypter> encrypters = new HashMap<String, JWEEncrypter>();

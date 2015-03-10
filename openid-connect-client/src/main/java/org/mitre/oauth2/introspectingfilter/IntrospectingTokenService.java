@@ -84,7 +84,10 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 	}
 
 	private Map<String, TokenCacheObject> authCache = new HashMap<String, TokenCacheObject>();
-	private static Logger logger = LoggerFactory.getLogger(IntrospectingTokenService.class);
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.getLogger(IntrospectingTokenService.class);
 
 	/**
 	 * @return the introspectionConfigurationService

@@ -108,7 +108,10 @@ public class ClientAPI {
 	.setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
 	.create();
 
-	private static Logger logger = LoggerFactory.getLogger(ClientAPI.class);
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.getLogger(ClientAPI.class);
 
 	/**
 	 * Get a list of all clients

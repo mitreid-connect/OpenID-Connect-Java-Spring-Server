@@ -52,7 +52,10 @@ public class ScopeAPI {
 	@Autowired
 	private SystemScopeService scopeService;
 
-	private static Logger logger = LoggerFactory.getLogger(ScopeAPI.class);
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.getLogger(ScopeAPI.class);
 
 	private Gson gson = new Gson();
 

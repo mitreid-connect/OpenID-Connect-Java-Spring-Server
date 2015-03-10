@@ -44,7 +44,10 @@ import org.springframework.stereotype.Component;
 @Component("authenticationTimeStamper")
 public class AuthenticationTimeStamper extends SavedRequestAwareAuthenticationSuccessHandler {
 
-	private static Logger logger = LoggerFactory.getLogger(AuthenticationTimeStamper.class);
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.getLogger(AuthenticationTimeStamper.class);
 
 	public static final String AUTH_TIMESTAMP = "AUTH_TIMESTAMP";
 
