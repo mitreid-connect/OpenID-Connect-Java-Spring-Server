@@ -20,6 +20,7 @@ import static com.google.common.collect.Maps.newLinkedHashMap;
 
 import java.text.ParseException;
 import java.util.Map;
+import java.util.Set;
 
 
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
@@ -32,6 +33,7 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.Sets;
 
 /**
  * Default implementation of the {@link IntrospectionResultAssembler} interface.
@@ -42,14 +44,16 @@ public class DefaultIntrospectionResultAssembler implements IntrospectionResultA
 	private static Logger log = LoggerFactory.getLogger(DefaultIntrospectionResultAssembler.class);
 
 	@Override
-	public Map<String, Object> assembleFrom(OAuth2AccessTokenEntity accessToken, UserInfo userInfo) {
+	public Map<String, Object> assembleFrom(OAuth2AccessTokenEntity accessToken, UserInfo userInfo, Set<String> authScopes) {
 
 		Map<String, Object> result = newLinkedHashMap();
 		OAuth2Authentication authentication = accessToken.getAuthenticationHolder().getAuthentication();
 
 		result.put(ACTIVE, true);
 
-		result.put(SCOPE, Joiner.on(SCOPE_SEPARATOR).join(accessToken.getScope()));
+		Set<String> scopes = Sets.intersection(authScopes, accessToken.getScope());
+		
+		result.put(SCOPE, Joiner.on(SCOPE_SEPARATOR).join(scopes));
 
 		if (accessToken.getExpiration() != null) {
 			try {
@@ -78,14 +82,16 @@ public class DefaultIntrospectionResultAssembler implements IntrospectionResultA
 	}
 
 	@Override
-	public Map<String, Object> assembleFrom(OAuth2RefreshTokenEntity refreshToken, UserInfo userInfo) {
+	public Map<String, Object> assembleFrom(OAuth2RefreshTokenEntity refreshToken, UserInfo userInfo, Set<String> authScopes) {
 
 		Map<String, Object> result = newLinkedHashMap();
 		OAuth2Authentication authentication = refreshToken.getAuthenticationHolder().getAuthentication();
 
 		result.put(ACTIVE, true);
 
-		result.put(SCOPE, Joiner.on(SCOPE_SEPARATOR).join(authentication.getOAuth2Request().getScope()));
+		Set<String> scopes = Sets.intersection(authScopes, authentication.getOAuth2Request().getScope());
+		
+		result.put(SCOPE, Joiner.on(SCOPE_SEPARATOR).join(scopes));
 
 		if (refreshToken.getExpiration() != null) {
 			try {

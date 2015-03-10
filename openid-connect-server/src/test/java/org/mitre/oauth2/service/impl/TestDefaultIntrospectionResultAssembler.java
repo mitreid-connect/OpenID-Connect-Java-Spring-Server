@@ -56,9 +56,11 @@ public class TestDefaultIntrospectionResultAssembler {
 				authentication("name", request("clientId")));
 
 		UserInfo userInfo = userInfo("sub");
+		
+		Set<String> authScopes = scopes("foo", "bar", "baz");
 
 		// when
-		Map<String, Object> result = assembler.assembleFrom(accessToken, userInfo);
+		Map<String, Object> result = assembler.assembleFrom(accessToken, userInfo, authScopes);
 
 
 		// then
@@ -82,8 +84,10 @@ public class TestDefaultIntrospectionResultAssembler {
 		OAuth2AccessTokenEntity accessToken = accessToken(new Date(123 * 1000L), scopes("foo", "bar"), "Bearer",
 				authentication("name", request("clientId")));
 
+		Set<String> authScopes = scopes("foo", "bar", "baz");
+
 		// when
-		Map<String, Object> result = assembler.assembleFrom(accessToken, null);
+		Map<String, Object> result = assembler.assembleFrom(accessToken, null, authScopes);
 
 
 		// then
@@ -109,8 +113,10 @@ public class TestDefaultIntrospectionResultAssembler {
 
 		UserInfo userInfo = userInfo("sub");
 
+		Set<String> authScopes = scopes("foo", "bar", "baz");
+
 		// when
-		Map<String, Object> result = assembler.assembleFrom(accessToken, userInfo);
+		Map<String, Object> result = assembler.assembleFrom(accessToken, userInfo, authScopes);
 
 
 		// then
@@ -134,8 +140,10 @@ public class TestDefaultIntrospectionResultAssembler {
 
 		UserInfo userInfo = userInfo("sub");
 
+		Set<String> authScopes = scopes("foo", "bar", "baz");
+
 		// when
-		Map<String, Object> result = assembler.assembleFrom(refreshToken, userInfo);
+		Map<String, Object> result = assembler.assembleFrom(refreshToken, userInfo, authScopes);
 
 
 		// then
@@ -158,8 +166,10 @@ public class TestDefaultIntrospectionResultAssembler {
 		OAuth2RefreshTokenEntity refreshToken = refreshToken(new Date(123 * 1000L),
 				authentication("name", request("clientId", scopes("foo",  "bar"))));
 
+		Set<String> authScopes = scopes("foo", "bar", "baz");
+
 		// when
-		Map<String, Object> result = assembler.assembleFrom(refreshToken, null);
+		Map<String, Object> result = assembler.assembleFrom(refreshToken, null, authScopes);
 
 
 		// then
@@ -184,8 +194,10 @@ public class TestDefaultIntrospectionResultAssembler {
 
 		UserInfo userInfo = userInfo("sub");
 
+		Set<String> authScopes = scopes("foo", "bar", "baz");
+
 		// when
-		Map<String, Object> result = assembler.assembleFrom(refreshToken, userInfo);
+		Map<String, Object> result = assembler.assembleFrom(refreshToken, userInfo, authScopes);
 
 
 		// then

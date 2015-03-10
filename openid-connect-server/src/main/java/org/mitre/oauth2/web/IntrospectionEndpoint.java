@@ -16,6 +16,8 @@
  *******************************************************************************/
 package org.mitre.oauth2.web;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -30,6 +32,8 @@ import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.service.UserInfoService;
 import org.mitre.openid.connect.view.HttpCodeView;
 import org.mitre.openid.connect.view.JsonEntityView;
+import org.mitre.uma.model.ResourceSet;
+import org.mitre.uma.service.ResourceSetService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,6 +65,9 @@ public class IntrospectionEndpoint {
 
 	@Autowired
 	private UserInfoService userInfoService;
+	
+	@Autowired
+	private ResourceSetService resourceSetService;
 
 	private static Logger logger = LoggerFactory.getLogger(IntrospectionEndpoint.class);
 
@@ -85,6 +92,7 @@ public class IntrospectionEndpoint {
 		}
 
 		ClientDetailsEntity authClient = null;
+		Set<String> authScopes = new HashSet<>();
 		
 		if (auth instanceof OAuth2Authentication) {
 			// the client authenticated with OAuth, do our UMA checks
@@ -96,12 +104,28 @@ public class IntrospectionEndpoint {
 			String authClientId = o2a.getOAuth2Request().getClientId();
 			authClient = clientService.loadClientByClientId(authClientId);
 			
+			// the owner is the user who authorized the token in the first place
+			String ownerId = o2a.getUserAuthentication().getName();
+			
+			authScopes.addAll(authClient.getScope());
+			
+			// UMA style clients also get a subset of scopes of all the resource sets they've registered
+			Collection<ResourceSet> resourceSets = resourceSetService.getAllForOwnerAndClient(ownerId, authClientId);
+			
+			// collect all the scopes
+			for (ResourceSet rs : resourceSets) {
+				authScopes.addAll(rs.getScopes());
+			}
+			
 		} else {
 			// the client authenticated directly, make sure it's got the right access
 			
 			String authClientId = auth.getName(); // direct authentication puts the client_id into the authentication's name field
 			authClient = clientService.loadClientByClientId(authClientId);
 
+			// directly authenticated clients get a subset of any scopes that they've registered for
+			authScopes.addAll(authClient.getScope());
+			
 			if (!AuthenticationUtilities.hasRole(auth, "ROLE_CLIENT")
 					|| !authClient.isAllowIntrospection()) {
 				
@@ -115,19 +139,11 @@ public class IntrospectionEndpoint {
 			
 		}
 		
-		if (authClient == null) {
-			// shouldn't ever get here, if the client's been authenticated by now it should exist
-			logger.error("Introspection client wasn't found");
-			model.addAttribute("code", HttpStatus.FORBIDDEN);
-			return HttpCodeView.VIEWNAME;
-		}
-
 		// now we need to look up the token in our token stores
 		
 		OAuth2AccessTokenEntity accessToken = null;
 		OAuth2RefreshTokenEntity refreshToken = null;
 		ClientDetailsEntity tokenClient;
-		Set<String> scopes;
 		UserInfo user;
 
 		try {
@@ -136,7 +152,6 @@ public class IntrospectionEndpoint {
 			accessToken = tokenServices.readAccessToken(tokenValue);
 
 			tokenClient = accessToken.getClient();
-			scopes = accessToken.getScope();
 
 			// get the user information of the user that authorized this token in the first place
 			String userName = accessToken.getAuthenticationHolder().getAuthentication().getName();
@@ -150,7 +165,6 @@ public class IntrospectionEndpoint {
 				refreshToken = tokenServices.getRefreshToken(tokenValue);
 
 				tokenClient = refreshToken.getClient();
-				scopes = refreshToken.getAuthenticationHolder().getAuthentication().getOAuth2Request().getScope();
 
 				// get the user information of the user that authorized this token in the first place
 				String userName = refreshToken.getAuthenticationHolder().getAuthentication().getName();
@@ -167,10 +181,10 @@ public class IntrospectionEndpoint {
 		// if it's a valid token, we'll print out information on it
 		
 		if (accessToken != null) {
-			Map<String, Object> entity = introspectionResultAssembler.assembleFrom(accessToken, user);
+			Map<String, Object> entity = introspectionResultAssembler.assembleFrom(accessToken, user, authScopes);
 			model.addAttribute("entity", entity);
 		} else if (refreshToken != null) {
-			Map<String, Object> entity = introspectionResultAssembler.assembleFrom(refreshToken, user);
+			Map<String, Object> entity = introspectionResultAssembler.assembleFrom(refreshToken, user, authScopes);
 			model.addAttribute("entity", entity);
 		} else {
 			// no tokens were found (we shouldn't get here)
