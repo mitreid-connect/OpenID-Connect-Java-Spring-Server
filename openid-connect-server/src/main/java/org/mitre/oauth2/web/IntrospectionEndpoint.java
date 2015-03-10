@@ -158,7 +158,7 @@ public class IntrospectionEndpoint {
 			user = userInfoService.getByUsernameAndClientId(userName, tokenClient.getClientId());
 
 		} catch (InvalidTokenException e) {
-			logger.info("Invalid access token. Checking refresh token.", e);
+			logger.info("Invalid access token. Checking refresh token.");
 			try {
 
 				// check refresh tokens next
@@ -171,7 +171,7 @@ public class IntrospectionEndpoint {
 				user = userInfoService.getByUsernameAndClientId(userName, tokenClient.getClientId());
 
 			} catch (InvalidTokenException e2) {
-				logger.error("Invalid refresh token", e2);
+				logger.error("Invalid refresh token");
 				Map<String,Boolean> entity = ImmutableMap.of("active", Boolean.FALSE);
 				model.addAttribute("entity", entity);
 				return JsonEntityView.VIEWNAME;
