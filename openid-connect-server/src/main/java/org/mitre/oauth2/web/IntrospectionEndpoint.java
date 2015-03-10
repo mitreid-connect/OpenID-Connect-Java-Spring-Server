@@ -23,7 +23,6 @@ import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
-import org.mitre.oauth2.service.IntrospectionAuthorizer;
 import org.mitre.oauth2.service.IntrospectionResultAssembler;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
 import org.mitre.oauth2.service.SystemScopeService;
@@ -56,9 +55,6 @@ public class IntrospectionEndpoint {
 
 	@Autowired
 	private ClientDetailsEntityService clientService;
-
-	@Autowired
-	private IntrospectionAuthorizer introspectionAuthorizer;
 
 	@Autowired
 	private IntrospectionResultAssembler introspectionResultAssembler;
@@ -168,30 +164,24 @@ public class IntrospectionEndpoint {
 			}
 		}
 
-		if (introspectionAuthorizer.isIntrospectionPermitted(authClient, tokenClient, scopes)) {
-			// if it's a valid token, we'll print out information on it
-			
-			if (accessToken != null) {
-				Map<String, Object> entity = introspectionResultAssembler.assembleFrom(accessToken, user);
-				model.addAttribute("entity", entity);
-			} else if (refreshToken != null) {
-				Map<String, Object> entity = introspectionResultAssembler.assembleFrom(refreshToken, user);
-				model.addAttribute("entity", entity);
-			} else {
-				// no tokens were found (we shouldn't get here)
-				logger.error("Verify failed; Invalid access/refresh token");
-				Map<String,Boolean> entity = ImmutableMap.of("active", Boolean.FALSE);
-				model.addAttribute("entity", entity);
-				return JsonEntityView.VIEWNAME;
-			}
-			
-			return JsonEntityView.VIEWNAME;
-			
+		// if it's a valid token, we'll print out information on it
+		
+		if (accessToken != null) {
+			Map<String, Object> entity = introspectionResultAssembler.assembleFrom(accessToken, user);
+			model.addAttribute("entity", entity);
+		} else if (refreshToken != null) {
+			Map<String, Object> entity = introspectionResultAssembler.assembleFrom(refreshToken, user);
+			model.addAttribute("entity", entity);
 		} else {
-			logger.error("Verify failed; client configuration or scope don't permit token introspection");
-			model.addAttribute("code", HttpStatus.FORBIDDEN);
-			return HttpCodeView.VIEWNAME;
+			// no tokens were found (we shouldn't get here)
+			logger.error("Verify failed; Invalid access/refresh token");
+			Map<String,Boolean> entity = ImmutableMap.of("active", Boolean.FALSE);
+			model.addAttribute("entity", entity);
+			return JsonEntityView.VIEWNAME;
 		}
+		
+		return JsonEntityView.VIEWNAME;
+			
 	}
 
 }
