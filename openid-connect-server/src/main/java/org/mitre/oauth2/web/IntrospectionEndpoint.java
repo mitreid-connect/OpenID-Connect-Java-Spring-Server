@@ -87,13 +87,6 @@ public class IntrospectionEndpoint {
 			@RequestParam(value = "token_type_hint", required = false) String tokenType,
 			Authentication auth, Model model) {
 
-		if (Strings.isNullOrEmpty(tokenValue)) {
-			logger.error("Verify failed; token value is null");
-			Map<String,Boolean> entity = ImmutableMap.of("active", Boolean.FALSE);
-			model.addAttribute("entity", entity);
-			return JsonEntityView.VIEWNAME;
-		}
-
 		ClientDetailsEntity authClient = null;
 		Set<String> authScopes = new HashSet<>();
 		
@@ -142,8 +135,16 @@ public class IntrospectionEndpoint {
 			
 		}
 		
-		// now we need to look up the token in our token stores
-		
+		// by here we're allowed to introspect, now we need to look up the token in our token stores
+
+		// first make sure the token is there
+		if (Strings.isNullOrEmpty(tokenValue)) {
+			logger.error("Verify failed; token value is null");
+			Map<String,Boolean> entity = ImmutableMap.of("active", Boolean.FALSE);
+			model.addAttribute("entity", entity);
+			return JsonEntityView.VIEWNAME;
+		}
+
 		OAuth2AccessTokenEntity accessToken = null;
 		OAuth2RefreshTokenEntity refreshToken = null;
 		ClientDetailsEntity tokenClient;
