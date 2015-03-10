@@ -34,7 +34,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class DefaultResourceSetService implements ResourceSetService {
 
-	private static Logger logger = LoggerFactory.getLogger(DefaultResourceSetService.class);
+	private static final Logger logger = LoggerFactory.getLogger(DefaultResourceSetService.class);
 	
 	@Autowired
 	private ResourceSetRepository repository;
@@ -68,6 +68,7 @@ public class DefaultResourceSetService implements ResourceSetService {
 		}
 		
 		newRs.setOwner(oldRs.getOwner()); // preserve the owner tag across updates
+		newRs.setClientId(oldRs.getClientId()); // preserve the client id across updates
 		
 		ResourceSet saved = repository.save(newRs);
 		
@@ -83,6 +84,11 @@ public class DefaultResourceSetService implements ResourceSetService {
 	@Override
 	public Collection<ResourceSet> getAllForOwner(String owner) {
 		return repository.getAllForOwner(owner);
+	}
+
+	@Override
+	public Collection<ResourceSet> getAllForOwnerAndClient(String owner, String clientId) {
+		return repository.getAllForOwnerAndClient(owner, clientId);
 	}
 	
 	

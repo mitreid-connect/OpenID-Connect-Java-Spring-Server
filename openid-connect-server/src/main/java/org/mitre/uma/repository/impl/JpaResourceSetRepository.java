@@ -67,7 +67,15 @@ public class JpaResourceSetRepository implements ResourceSetRepository {
 	@Override
 	public Collection<ResourceSet> getAllForOwner(String owner) {
 		TypedQuery<ResourceSet> query = em.createNamedQuery(ResourceSet.QUERY_BY_OWNER, ResourceSet.class);
-		query.setParameter("owner", owner);
+		query.setParameter(ResourceSet.PARAM_OWNER, owner);
+		return query.getResultList();
+	}
+
+	@Override
+	public Collection<ResourceSet> getAllForOwnerAndClient(String owner, String clientId) {
+		TypedQuery<ResourceSet> query = em.createNamedQuery(ResourceSet.QUERY_BY_OWNER_AND_CLIENT, ResourceSet.class);
+		query.setParameter(ResourceSet.PARAM_OWNER, owner);
+		query.setParameter(ResourceSet.PARAM_CLIENTID, clientId);
 		return query.getResultList();
 	}
 

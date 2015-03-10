@@ -225,7 +225,8 @@ CREATE TABLE IF NOT EXISTS resource_set (
 	uri VARCHAR(1024),
 	icon_uri VARCHAR(1024),
 	rs_type VARCHAR(256),
-	owner VARCHAR(256) NOT NULL
+	owner VARCHAR(256) NOT NULL,
+	client_id VARCHAR(256)
 );
 
 CREATE TABLE IF NOT EXISTS resource_set_scope (

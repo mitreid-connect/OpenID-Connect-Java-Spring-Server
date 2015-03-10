@@ -35,4 +35,6 @@ public interface ResourceSetRepository {
 
 	public Collection<ResourceSet> getAllForOwner(String owner);
 
+	public Collection<ResourceSet> getAllForOwnerAndClient(String owner, String clientId);
+
 }

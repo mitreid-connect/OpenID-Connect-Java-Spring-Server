@@ -34,12 +34,18 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "resource_set")
-@NamedQueries (
-	@NamedQuery(name = ResourceSet.QUERY_BY_OWNER, query = "select r from ResourceSet r where r.owner = :owner")
-)
+@NamedQueries ({
+		@NamedQuery(name = ResourceSet.QUERY_BY_OWNER, query = "select r from ResourceSet r where r.owner = :" + ResourceSet.PARAM_OWNER),
+		@NamedQuery(name = ResourceSet.QUERY_BY_OWNER_AND_CLIENT, query = "select r from ResourceSet r where r.owner = :" + ResourceSet.PARAM_OWNER + " and r.clientId = :" + ResourceSet.PARAM_CLIENTID)
+})
 public class ResourceSet {
 
 	public static final String QUERY_BY_OWNER = "ResourceSet.queryByOwner";
+	public static final String QUERY_BY_OWNER_AND_CLIENT = "ResourceSet.queryByOwnerAndClient";
+
+	public static final String PARAM_OWNER = "owner";
+	public static final String PARAM_CLIENTID = "clientId";
+
 	
 	private Long id;
 	private String name;
@@ -48,7 +54,8 @@ public class ResourceSet {
 	private Set<String> scopes;
 	private String iconUri;
 	
-	private String owner; // username of the person responsible for the reigistration (either directly or via OAuth token)
+	private String owner; // username of the person responsible for the registration (either directly or via OAuth token)
+	private String clientId; // client id of the protected resource that registered this resource set via OAuth token
 	
 	/**
 	 * @return the id
@@ -165,6 +172,22 @@ public class ResourceSet {
 	 */
 	public void setOwner(String owner) {
 		this.owner = owner;
+	}
+
+	/**
+	 * @return the clientId
+	 */
+	@Basic
+	@Column(name = "client_id")
+	public String getClientId() {
+		return clientId;
+	}
+
+	/**
+	 * @param clientId the clientId to set
+	 */
+	public void setClientId(String clientId) {
+		this.clientId = clientId;
 	}
 	
 	

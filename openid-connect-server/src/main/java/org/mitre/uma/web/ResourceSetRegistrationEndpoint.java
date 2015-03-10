@@ -17,11 +17,6 @@
 package org.mitre.uma.web;
 
 
-import static org.mitre.oauth2.web.AuthenticationUtilities.ensureOAuthScope;
-import static org.mitre.util.JsonUtils.getAsLong;
-import static org.mitre.util.JsonUtils.getAsString;
-import static org.mitre.util.JsonUtils.getAsStringSet;
-
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -41,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.MimeTypeUtils;
@@ -54,6 +50,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
+
+import static org.mitre.oauth2.web.AuthenticationUtilities.ensureOAuthScope;
+import static org.mitre.util.JsonUtils.getAsLong;
+import static org.mitre.util.JsonUtils.getAsString;
+import static org.mitre.util.JsonUtils.getAsStringSet;
 
 @Controller
 @RequestMapping("/" + ResourceSetRegistrationEndpoint.URL)
@@ -90,7 +91,12 @@ public class ResourceSetRegistrationEndpoint {
 			return JsonErrorView.VIEWNAME;
 		}
 		
-		rs.setOwner(auth.getName());
+		if (auth instanceof OAuth2Authentication) {
+			// if it's an OAuth mediated call, it's on behalf of a client, so store that
+			OAuth2Authentication o2a = (OAuth2Authentication) auth;
+			rs.setClientId(o2a.getOAuth2Request().getClientId());
+		}
+		rs.setOwner(auth.getName()); // the username is going to be in the auth object
 		
 		ResourceSet saved = resourceSetService.saveNew(rs);
 		
