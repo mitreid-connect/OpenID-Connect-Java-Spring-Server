@@ -18,6 +18,7 @@ package org.mitre.uma.web;
 
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -216,7 +217,15 @@ public class ResourceSetRegistrationEndpoint {
 		
 		String owner = auth.getName();
 		
-		Collection<ResourceSet> resourceSets = resourceSetService.getAllForOwner(owner);
+		Collection<ResourceSet> resourceSets = Collections.emptySet();
+		if (auth instanceof OAuth2Authentication) {
+			// if it's an OAuth mediated call, it's on behalf of a client, so look that up too
+			OAuth2Authentication o2a = (OAuth2Authentication) auth;
+			resourceSets = resourceSetService.getAllForOwnerAndClient(owner, o2a.getOAuth2Request().getClientId());
+		} else {
+			// otherwise get everything for the current user
+			resourceSets = resourceSetService.getAllForOwner(owner);
+		}
 		
 		// build the entity here and send to the display
 		
