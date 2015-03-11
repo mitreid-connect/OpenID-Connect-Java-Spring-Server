@@ -109,7 +109,7 @@ public abstract class AbstractClientEntityView extends AbstractView {
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
 
-		HttpStatus code = (HttpStatus) model.get("code");
+		HttpStatus code = (HttpStatus) model.get(HttpCodeView.CODE);
 		if (code == null) {
 			code = HttpStatus.OK; // default to 200
 		}

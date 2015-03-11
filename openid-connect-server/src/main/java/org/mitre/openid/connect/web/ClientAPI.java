@@ -161,12 +161,12 @@ public class ClientAPI {
 		}
 		catch (JsonSyntaxException e) {
 			logger.error("apiAddClient failed due to JsonSyntaxException", e);
-			m.addAttribute("code", HttpStatus.BAD_REQUEST);
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 			m.addAttribute("errorMessage", "Could not save new client. The server encountered a JSON syntax exception. Contact a system administrator for assistance.");
 			return JsonErrorView.VIEWNAME;
 		} catch (IllegalStateException e) {
 			logger.error("apiAddClient failed due to IllegalStateException", e);
-			m.addAttribute("code", HttpStatus.BAD_REQUEST);
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 			m.addAttribute("errorMessage", "Could not save new client. The server encountered an IllegalStateException. Refresh and try again - if the problem persists, contact a system administrator for assistance.");
 			return JsonErrorView.VIEWNAME;
 		}
@@ -196,7 +196,7 @@ public class ClientAPI {
 
 			if (Strings.isNullOrEmpty(client.getJwksUri())) {
 				logger.error("tried to create client with private key auth but no private key");
-				m.addAttribute("code", HttpStatus.BAD_REQUEST);
+				m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 				m.addAttribute("errorMessage", "Can not create a client with private key authentication without registering a key via the JWS Set URI.");
 				return JsonErrorView.VIEWNAME;
 			}
@@ -207,7 +207,7 @@ public class ClientAPI {
 		} else {
 
 			logger.error("unknown auth method");
-			m.addAttribute("code", HttpStatus.BAD_REQUEST);
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 			m.addAttribute("errorMessage", "Unknown auth method requested");
 			return JsonErrorView.VIEWNAME;
 
@@ -248,12 +248,12 @@ public class ClientAPI {
 		}
 		catch (JsonSyntaxException e) {
 			logger.error("apiUpdateClient failed due to JsonSyntaxException", e);
-			m.addAttribute("code", HttpStatus.BAD_REQUEST);
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 			m.addAttribute("errorMessage", "Could not update client. The server encountered a JSON syntax exception. Contact a system administrator for assistance.");
 			return JsonErrorView.VIEWNAME;
 		} catch (IllegalStateException e) {
 			logger.error("apiUpdateClient failed due to IllegalStateException", e);
-			m.addAttribute("code", HttpStatus.BAD_REQUEST);
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 			m.addAttribute("errorMessage", "Could not update client. The server encountered an IllegalStateException. Refresh and try again - if the problem persists, contact a system administrator for assistance.");
 			return JsonErrorView.VIEWNAME;
 		}
@@ -262,7 +262,7 @@ public class ClientAPI {
 
 		if (oldClient == null) {
 			logger.error("apiUpdateClient failed; client with id " + id + " could not be found.");
-			m.addAttribute("code", HttpStatus.NOT_FOUND);
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 			m.addAttribute("errorMessage", "Could not update client. The requested client with id " + id + "could not be found.");
 			return JsonErrorView.VIEWNAME;
 		}
@@ -292,7 +292,7 @@ public class ClientAPI {
 
 			if (Strings.isNullOrEmpty(client.getJwksUri())) {
 				logger.error("tried to create client with private key auth but no private key");
-				m.addAttribute("code", HttpStatus.BAD_REQUEST);
+				m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 				m.addAttribute("errorMessage", "Can not create a client with private key authentication without registering a key via the JWS Set URI.");
 				return JsonErrorView.VIEWNAME;
 			}
@@ -303,7 +303,7 @@ public class ClientAPI {
 		} else {
 
 			logger.error("unknown auth method");
-			m.addAttribute("code", HttpStatus.BAD_REQUEST);
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 			m.addAttribute("errorMessage", "Unknown auth method requested");
 			return JsonErrorView.VIEWNAME;
 
@@ -334,11 +334,11 @@ public class ClientAPI {
 
 		if (client == null) {
 			logger.error("apiDeleteClient failed; client with id " + id + " could not be found.");
-			modelAndView.getModelMap().put("code", HttpStatus.NOT_FOUND);
+			modelAndView.getModelMap().put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 			modelAndView.getModelMap().put("errorMessage", "Could not delete client. The requested client with id " + id + "could not be found.");
 			return JsonErrorView.VIEWNAME;
 		} else {
-			modelAndView.getModelMap().put("code", HttpStatus.OK);
+			modelAndView.getModelMap().put(HttpCodeView.CODE, HttpStatus.OK);
 			clientService.deleteClient(client);
 		}
 
@@ -359,7 +359,7 @@ public class ClientAPI {
 
 		if (client == null) {
 			logger.error("apiShowClient failed; client with id " + id + " could not be found.");
-			model.addAttribute("code", HttpStatus.NOT_FOUND);
+			model.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 			model.addAttribute("errorMessage", "The requested client with id " + id + " could not be found.");
 			return JsonErrorView.VIEWNAME;
 		}

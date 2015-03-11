@@ -94,7 +94,7 @@ public class ScopeAPI {
 
 			logger.error("getScope failed; scope not found: " + id);
 
-			m.put("code", HttpStatus.NOT_FOUND);
+			m.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 			m.put("errorMessage", "The requested scope with id " + id + " could not be found.");
 			return JsonErrorView.VIEWNAME;
 		}
@@ -123,7 +123,7 @@ public class ScopeAPI {
 				logger.error("updateScope failed; scope ids to not match: got "
 						+ existing.getId() + " and " + scope.getId());
 
-				m.put("code", HttpStatus.BAD_REQUEST);
+				m.put(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 				m.put("errorMessage", "Could not update scope. Scope ids to not match: got "
 						+ existing.getId() + " and " + scope.getId());
 				return JsonErrorView.VIEWNAME;
@@ -132,7 +132,7 @@ public class ScopeAPI {
 		} else {
 
 			logger.error("updateScope failed; scope with id " + id + " not found.");
-			m.put("code", HttpStatus.NOT_FOUND);
+			m.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 			m.put("errorMessage", "Could not update scope. The scope with id " + id + " could not be found.");
 			return JsonErrorView.VIEWNAME;
 		}
@@ -147,7 +147,7 @@ public class ScopeAPI {
 		if (alreadyExists != null) {
 			//Error, cannot save a scope with the same value as an existing one
 			logger.error("Error: attempting to save a scope with a value that already exists: " + scope.getValue());
-			m.put("code", HttpStatus.CONFLICT);
+			m.put(HttpCodeView.CODE, HttpStatus.CONFLICT);
 			m.put("errorMessage", "A scope with value " + scope.getValue() + " already exists, please choose a different value.");
 			return JsonErrorView.VIEWNAME;
 		}
@@ -162,7 +162,7 @@ public class ScopeAPI {
 		} else {
 
 			logger.error("createScope failed; JSON was invalid: " + json);
-			m.put("code", HttpStatus.BAD_REQUEST);
+			m.put(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 			m.put("errorMessage", "Could not save new scope " + scope + ". The scope service failed to return a saved entity.");
 			return JsonErrorView.VIEWNAME;
 
@@ -182,7 +182,7 @@ public class ScopeAPI {
 		} else {
 
 			logger.error("deleteScope failed; scope with id " + id + " not found.");
-			m.put("code", HttpStatus.NOT_FOUND);
+			m.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 			m.put("errorMessage", "Could not delete scope. The requested scope with id " + id + " could not be found.");
 			return JsonErrorView.VIEWNAME;
 		}

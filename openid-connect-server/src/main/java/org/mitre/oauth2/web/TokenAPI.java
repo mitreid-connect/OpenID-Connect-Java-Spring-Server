@@ -90,12 +90,12 @@ public class TokenAPI {
 
 		if (token == null) {
 			logger.error("getToken failed; token not found: " + id);
-			m.put("code", HttpStatus.NOT_FOUND);
+			m.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 			m.put("errorMessage", "The requested token with id " + id + " could not be found.");
 			return JsonErrorView.VIEWNAME;
 		} else if (!token.getAuthenticationHolder().getAuthentication().getName().equals(p.getName())) {
 			logger.error("getToken failed; token does not belong to principal " + p.getName());
-			m.put("code", HttpStatus.FORBIDDEN);
+			m.put(HttpCodeView.CODE, HttpStatus.FORBIDDEN);
 			m.put("errorMessage", "You do not have permission to view this token");
 			return JsonErrorView.VIEWNAME;
 		} else {
@@ -111,12 +111,12 @@ public class TokenAPI {
 
 		if (token == null) {
 			logger.error("getToken failed; token not found: " + id);
-			m.put("code", HttpStatus.NOT_FOUND);
+			m.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 			m.put("errorMessage", "The requested token with id " + id + " could not be found.");
 			return JsonErrorView.VIEWNAME;
 		} else if (!token.getAuthenticationHolder().getAuthentication().getName().equals(p.getName())) {
 			logger.error("getToken failed; token does not belong to principal " + p.getName());
-			m.put("code", HttpStatus.FORBIDDEN);
+			m.put(HttpCodeView.CODE, HttpStatus.FORBIDDEN);
 			m.put("errorMessage", "You do not have permission to view this token");
 			return JsonErrorView.VIEWNAME;
 		} else {
@@ -138,7 +138,7 @@ public class TokenAPI {
 			return TokenApiView.VIEWNAME;
 		} else {
 			// client not found
-			m.put("code", HttpStatus.NOT_FOUND);
+			m.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 			m.put("errorMessage", "The requested client with id " + clientId + " could not be found.");
 			return JsonErrorView.VIEWNAME;
 		}
@@ -157,13 +157,13 @@ public class TokenAPI {
 				m.put("entity", token);
 				return TokenApiView.VIEWNAME;
 			} else {
-				m.put("code", HttpStatus.NOT_FOUND);
+				m.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 				m.put("errorMessage", "No registration token could be found.");
 				return JsonErrorView.VIEWNAME;
 			}
 		} else {
 			// client not found
-			m.put("code", HttpStatus.NOT_FOUND);
+			m.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 			m.put("errorMessage", "The requested client with id " + clientId + " could not be found.");
 			return JsonErrorView.VIEWNAME;
 		}
@@ -183,13 +183,13 @@ public class TokenAPI {
 				m.put("entity", token);
 				return TokenApiView.VIEWNAME;
 			} else {
-				m.put("code", HttpStatus.NOT_FOUND);
+				m.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 				m.put("errorMessage", "No registration token could be found.");
 				return JsonErrorView.VIEWNAME;
 			}
 		} else {
 			// client not found
-			m.put("code", HttpStatus.NOT_FOUND);
+			m.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 			m.put("errorMessage", "The requested client with id " + clientId + " could not be found.");
 			return JsonErrorView.VIEWNAME;
 		}
@@ -213,12 +213,12 @@ public class TokenAPI {
 
 		if (token == null) {
 			logger.error("refresh token not found: " + id);
-			m.put("code", HttpStatus.NOT_FOUND);
+			m.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 			m.put("errorMessage", "The requested token with id " + id + " could not be found.");
 			return JsonErrorView.VIEWNAME;
 		} else if (!token.getAuthenticationHolder().getAuthentication().getName().equals(p.getName())) {
 			logger.error("refresh token " + id + " does not belong to principal " + p.getName());
-			m.put("code", HttpStatus.FORBIDDEN);
+			m.put(HttpCodeView.CODE, HttpStatus.FORBIDDEN);
 			m.put("errorMessage", "You do not have permission to view this token");
 			return JsonErrorView.VIEWNAME;
 		} else {
@@ -234,12 +234,12 @@ public class TokenAPI {
 
 		if (token == null) {
 			logger.error("refresh token not found: " + id);
-			m.put("code", HttpStatus.NOT_FOUND);
+			m.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 			m.put("errorMessage", "The requested token with id " + id + " could not be found.");
 			return JsonErrorView.VIEWNAME;
 		} else if (!token.getAuthenticationHolder().getAuthentication().getName().equals(p.getName())) {
 			logger.error("refresh token " + id + " does not belong to principal " + p.getName());
-			m.put("code", HttpStatus.FORBIDDEN);
+			m.put(HttpCodeView.CODE, HttpStatus.FORBIDDEN);
 			m.put("errorMessage", "You do not have permission to view this token");
 			return JsonErrorView.VIEWNAME;
 		} else {

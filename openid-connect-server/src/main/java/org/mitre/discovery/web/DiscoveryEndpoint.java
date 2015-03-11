@@ -117,7 +117,7 @@ public class DiscoveryEndpoint {
 
 				if (user == null) {
 					logger.info("User not found: " + resource);
-					model.addAttribute("code", HttpStatus.NOT_FOUND);
+					model.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 					return HttpCodeView.VIEWNAME;
 				}
 
@@ -125,14 +125,14 @@ public class DiscoveryEndpoint {
 				if (!Strings.nullToEmpty(issuerComponents.getHost())
 						.equals(Strings.nullToEmpty(resourceUri.getHost()))) {
 					logger.info("Host mismatch, expected " + issuerComponents.getHost() + " got " + resourceUri.getHost());
-					model.addAttribute("code", HttpStatus.NOT_FOUND);
+					model.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 					return HttpCodeView.VIEWNAME;
 				}
 
 
 			} else {
 				logger.info("Unknown URI format: " + resource);
-				model.addAttribute("code", HttpStatus.NOT_FOUND);
+				model.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 				return HttpCodeView.VIEWNAME;
 			}
 		}

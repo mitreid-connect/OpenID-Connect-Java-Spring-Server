@@ -86,7 +86,7 @@ public class UserInfoEndpoint {
 
 		if (auth == null) {
 			logger.error("getInfo failed; no principal. Requester is not authorized.");
-			model.addAttribute("code", HttpStatus.FORBIDDEN);
+			model.addAttribute(HttpCodeView.CODE, HttpStatus.FORBIDDEN);
 			return HttpCodeView.VIEWNAME;
 		}
 
@@ -95,7 +95,7 @@ public class UserInfoEndpoint {
 
 		if (userInfo == null) {
 			logger.error("getInfo failed; user not found: " + username);
-			model.addAttribute("code", HttpStatus.NOT_FOUND);
+			model.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 			return HttpCodeView.VIEWNAME;
 		}
 

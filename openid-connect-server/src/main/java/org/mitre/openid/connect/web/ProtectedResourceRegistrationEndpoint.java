@@ -117,7 +117,7 @@ public class ProtectedResourceRegistrationEndpoint {
 			// bad parse
 			// didn't parse, this is a bad request
 			logger.error("registerNewProtectedResource failed; submitted JSON is malformed");
-			m.addAttribute("code", HttpStatus.BAD_REQUEST); // http 400
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST); // http 400
 			return HttpCodeView.VIEWNAME;
 		}
 
@@ -140,7 +140,7 @@ public class ProtectedResourceRegistrationEndpoint {
 				// validation failed, return an error
 				m.addAttribute("error", ve.getError());
 				m.addAttribute("errorMessage", ve.getErrorDescription());
-				m.addAttribute("code", ve.getStatus());
+				m.addAttribute(HttpCodeView.CODE, ve.getStatus());
 				return JsonErrorView.VIEWNAME;
 			}
 
@@ -190,26 +190,26 @@ public class ProtectedResourceRegistrationEndpoint {
 
 				RegisteredClient registered = new RegisteredClient(savedClient, token.getValue(), config.getIssuer() + "resource/" + UriUtils.encodePathSegment(savedClient.getClientId(), "UTF-8"));
 				m.addAttribute("client", registered);
-				m.addAttribute("code", HttpStatus.CREATED); // http 201
+				m.addAttribute(HttpCodeView.CODE, HttpStatus.CREATED); // http 201
 
 				return ClientInformationResponseView.VIEWNAME;
 			} catch (UnsupportedEncodingException e) {
 				logger.error("Unsupported encoding", e);
-				m.addAttribute("code", HttpStatus.INTERNAL_SERVER_ERROR);
+				m.addAttribute(HttpCodeView.CODE, HttpStatus.INTERNAL_SERVER_ERROR);
 				return HttpCodeView.VIEWNAME;
 			} catch (IllegalArgumentException e) {
 				logger.error("Couldn't save client", e);
 
 				m.addAttribute("error", "invalid_client_metadata");
 				m.addAttribute("errorMessage", "Unable to save client due to invalid or inconsistent metadata.");
-				m.addAttribute("code", HttpStatus.BAD_REQUEST); // http 400
+				m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST); // http 400
 
 				return JsonErrorView.VIEWNAME;
 			}
 		} else {
 			// didn't parse, this is a bad request
 			logger.error("registerNewClient failed; submitted JSON is malformed");
-			m.addAttribute("code", HttpStatus.BAD_REQUEST); // http 400
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST); // http 400
 
 			return HttpCodeView.VIEWNAME;
 		}
@@ -258,19 +258,19 @@ public class ProtectedResourceRegistrationEndpoint {
 
 				// send it all out to the view
 				m.addAttribute("client", registered);
-				m.addAttribute("code", HttpStatus.OK); // http 200
+				m.addAttribute(HttpCodeView.CODE, HttpStatus.OK); // http 200
 
 				return ClientInformationResponseView.VIEWNAME;
 			} catch (UnsupportedEncodingException e) {
 				logger.error("Unsupported encoding", e);
-				m.addAttribute("code", HttpStatus.INTERNAL_SERVER_ERROR);
+				m.addAttribute(HttpCodeView.CODE, HttpStatus.INTERNAL_SERVER_ERROR);
 				return HttpCodeView.VIEWNAME;
 			}
 		} else {
 			// client mismatch
 			logger.error("readResourceConfiguration failed, client ID mismatch: "
 					+ clientId + " and " + auth.getOAuth2Request().getClientId() + " do not match.");
-			m.addAttribute("code", HttpStatus.FORBIDDEN); // http 403
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.FORBIDDEN); // http 403
 
 			return HttpCodeView.VIEWNAME;
 		}
@@ -296,7 +296,7 @@ public class ProtectedResourceRegistrationEndpoint {
 			// bad parse
 			// didn't parse, this is a bad request
 			logger.error("updateProtectedResource failed; submitted JSON is malformed");
-			m.addAttribute("code", HttpStatus.BAD_REQUEST); // http 400
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST); // http 400
 			return HttpCodeView.VIEWNAME;
 		}
 
@@ -353,7 +353,7 @@ public class ProtectedResourceRegistrationEndpoint {
 				// validation failed, return an error
 				m.addAttribute("error", ve.getError());
 				m.addAttribute("errorMessage", ve.getErrorDescription());
-				m.addAttribute("code", ve.getStatus());
+				m.addAttribute(HttpCodeView.CODE, ve.getStatus());
 				return JsonErrorView.VIEWNAME;
 			}
 
@@ -369,19 +369,19 @@ public class ProtectedResourceRegistrationEndpoint {
 
 				// send it all out to the view
 				m.addAttribute("client", registered);
-				m.addAttribute("code", HttpStatus.OK); // http 200
+				m.addAttribute(HttpCodeView.CODE, HttpStatus.OK); // http 200
 
 				return ClientInformationResponseView.VIEWNAME;
 			} catch (UnsupportedEncodingException e) {
 				logger.error("Unsupported encoding", e);
-				m.addAttribute("code", HttpStatus.INTERNAL_SERVER_ERROR);
+				m.addAttribute(HttpCodeView.CODE, HttpStatus.INTERNAL_SERVER_ERROR);
 				return HttpCodeView.VIEWNAME;
 			} catch (IllegalArgumentException e) {
 				logger.error("Couldn't save client", e);
 
 				m.addAttribute("error", "invalid_client_metadata");
 				m.addAttribute("errorMessage", "Unable to save client due to invalid or inconsistent metadata.");
-				m.addAttribute("code", HttpStatus.BAD_REQUEST); // http 400
+				m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST); // http 400
 
 				return JsonErrorView.VIEWNAME;
 			}
@@ -390,7 +390,7 @@ public class ProtectedResourceRegistrationEndpoint {
 			logger.error("updateProtectedResource" +
 					" failed, client ID mismatch: "
 					+ clientId + " and " + auth.getOAuth2Request().getClientId() + " do not match.");
-			m.addAttribute("code", HttpStatus.FORBIDDEN); // http 403
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.FORBIDDEN); // http 403
 
 			return HttpCodeView.VIEWNAME;
 		}
@@ -413,14 +413,14 @@ public class ProtectedResourceRegistrationEndpoint {
 
 			clientService.deleteClient(client);
 
-			m.addAttribute("code", HttpStatus.NO_CONTENT); // http 204
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.NO_CONTENT); // http 204
 
 			return HttpCodeView.VIEWNAME;
 		} else {
 			// client mismatch
 			logger.error("readClientConfiguration failed, client ID mismatch: "
 					+ clientId + " and " + auth.getOAuth2Request().getClientId() + " do not match.");
-			m.addAttribute("code", HttpStatus.FORBIDDEN); // http 403
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.FORBIDDEN); // http 403
 
 			return HttpCodeView.VIEWNAME;
 		}

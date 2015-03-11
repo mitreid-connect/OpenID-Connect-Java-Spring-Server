@@ -68,14 +68,14 @@ public class RevocationEndpoint {
 				// client acting on its own, make sure it owns the token
 				if (!accessToken.getClient().getClientId().equals(authRequest.getClientId())) {
 					// trying to revoke a token we don't own, throw a 403
-					model.addAttribute("code", HttpStatus.FORBIDDEN);
+					model.addAttribute(HttpCodeView.CODE, HttpStatus.FORBIDDEN);
 					return HttpCodeView.VIEWNAME;
 				}
 			}
 
 			// if we got this far, we're allowed to do this
 			tokenServices.revokeAccessToken(accessToken);
-			model.addAttribute("code", HttpStatus.OK);
+			model.addAttribute(HttpCodeView.CODE, HttpStatus.OK);
 			return HttpCodeView.VIEWNAME;
 
 		} catch (InvalidTokenException e) {
@@ -88,21 +88,21 @@ public class RevocationEndpoint {
 					// client acting on its own, make sure it owns the token
 					if (!refreshToken.getClient().getClientId().equals(authRequest.getClientId())) {
 						// trying to revoke a token we don't own, throw a 403
-						model.addAttribute("code", HttpStatus.FORBIDDEN);
+						model.addAttribute(HttpCodeView.CODE, HttpStatus.FORBIDDEN);
 						return HttpCodeView.VIEWNAME;
 					}
 				}
 
 				// if we got this far, we're allowed to do this
 				tokenServices.revokeRefreshToken(refreshToken);
-				model.addAttribute("code", HttpStatus.OK);
+				model.addAttribute(HttpCodeView.CODE, HttpStatus.OK);
 				return HttpCodeView.VIEWNAME;
 
 			} catch (InvalidTokenException e1) {
 
 				// neither token type was found, simply say "OK" and be on our way.
 
-				model.addAttribute("code", HttpStatus.OK);
+				model.addAttribute(HttpCodeView.CODE, HttpStatus.OK);
 				return HttpCodeView.VIEWNAME;
 			}
 		}

@@ -72,7 +72,7 @@ public class ClientInformationResponseView extends AbstractView {
 		//OAuth2AccessTokenEntity token = (OAuth2AccessTokenEntity) model.get("token");
 		//String uri = (String)model.get("uri"); //request.getRequestURL() + "/" + c.getClientId();
 
-		HttpStatus code = (HttpStatus) model.get("code");
+		HttpStatus code = (HttpStatus) model.get(HttpCodeView.CODE);
 		if (code == null) {
 			code = HttpStatus.OK;
 		}

@@ -152,12 +152,12 @@ public class IntrospectionEndpoint {
 						return JsonEntityView.VIEWNAME;
 			} else {
 				logger.error("Verify failed; client configuration or scope don't permit token introspection");
-				model.addAttribute("code", HttpStatus.FORBIDDEN);
+				model.addAttribute(HttpCodeView.CODE, HttpStatus.FORBIDDEN);
 				return HttpCodeView.VIEWNAME;
 			}
 		} else {
 			logger.error("Verify failed; client " + clientId + " is not allowed to call introspection endpoint");
-			model.addAttribute("code", HttpStatus.FORBIDDEN);
+			model.addAttribute(HttpCodeView.CODE, HttpStatus.FORBIDDEN);
 			return HttpCodeView.VIEWNAME;
 		}
 

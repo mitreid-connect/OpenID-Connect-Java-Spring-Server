@@ -94,17 +94,17 @@ public class ApprovedSiteAPI {
 
 		if (approvedSite == null) {
 			logger.error("deleteApprovedSite failed; no approved site found for id: " + id);
-			m.put("code", HttpStatus.NOT_FOUND);
+			m.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 			m.put("errorMessage", "Could not delete approved site. The requested approved site with id: " + id + " could not be found.");
 			return JsonErrorView.VIEWNAME;
 		} else if (!approvedSite.getUserId().equals(p.getName())) {
 			logger.error("deleteApprovedSite failed; principal "
 					+ p.getName() + " does not own approved site" + id);
-			m.put("code", HttpStatus.FORBIDDEN);
+			m.put(HttpCodeView.CODE, HttpStatus.FORBIDDEN);
 			m.put("errorMessage", "You do not have permission to delete this approved site. The approved site decision will not be deleted.");
 			return JsonErrorView.VIEWNAME;
 		} else {
-			m.put("code", HttpStatus.OK);
+			m.put(HttpCodeView.CODE, HttpStatus.OK);
 			approvedSiteService.remove(approvedSite);
 		}
 
@@ -119,13 +119,13 @@ public class ApprovedSiteAPI {
 		ApprovedSite approvedSite = approvedSiteService.getById(id);
 		if (approvedSite == null) {
 			logger.error("getApprovedSite failed; no approved site found for id: " + id);
-			m.put("code", HttpStatus.NOT_FOUND);
+			m.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 			m.put("errorMessage", "The requested approved site with id: " + id + " could not be found.");
 			return JsonErrorView.VIEWNAME;
 		} else if (!approvedSite.getUserId().equals(p.getName())) {
 			logger.error("getApprovedSite failed; principal "
 					+ p.getName() + " does not own approved site" + id);
-			m.put("code", HttpStatus.FORBIDDEN);
+			m.put(HttpCodeView.CODE, HttpStatus.FORBIDDEN);
 			m.put("errorMessage", "You do not have permission to view this approved site.");
 			return JsonErrorView.VIEWNAME;
 		} else {
