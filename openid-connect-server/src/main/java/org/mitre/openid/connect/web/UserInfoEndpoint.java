@@ -72,14 +72,11 @@ public class UserInfoEndpoint {
 	 */
 	private static final Logger logger = LoggerFactory.getLogger(UserInfoEndpoint.class);
 
-	private static final MediaType JOSE_MEDIA_TYPE = new MediaType("application", "jwt");
-	private static final String JOSE_MEDIA_TYPE_VALUE = "application/jwt";
-
 	/**
 	 * Get information about the user as specified in the accessToken included in this request
 	 */
 	@PreAuthorize("hasRole('ROLE_USER') and #oauth2.hasScope('" + SystemScopeService.OPENID_SCOPE + "')")
-	@RequestMapping(method= {RequestMethod.GET, RequestMethod.POST}, produces = {MediaType.APPLICATION_JSON_VALUE, JOSE_MEDIA_TYPE_VALUE})
+	@RequestMapping(method= {RequestMethod.GET, RequestMethod.POST}, produces = {MediaType.APPLICATION_JSON_VALUE, UserInfoJWTView.JOSE_MEDIA_TYPE_VALUE})
 	public String getInfo(@RequestParam(value="claims", required=false) String claimsRequestJsonString,
 			@RequestHeader(value="Accept", required=false) String acceptHeader,
 			OAuth2Authentication auth, Model model) {
@@ -99,21 +96,21 @@ public class UserInfoEndpoint {
 			return HttpCodeView.VIEWNAME;
 		}
 
-		model.addAttribute("scope", auth.getOAuth2Request().getScope());
+		model.addAttribute(UserInfoView.SCOPE, auth.getOAuth2Request().getScope());
 
-		model.addAttribute("authorizedClaims", auth.getOAuth2Request().getExtensions().get("claims"));
+		model.addAttribute(UserInfoView.AUTHORIZED_CLAIMS, auth.getOAuth2Request().getExtensions().get("claims"));
 
 		if (!Strings.isNullOrEmpty(claimsRequestJsonString)) {
-			model.addAttribute("requestedClaims", claimsRequestJsonString);
+			model.addAttribute(UserInfoView.REQUESTED_CLAIMS, claimsRequestJsonString);
 		}
 
-		model.addAttribute("userInfo", userInfo);
+		model.addAttribute(UserInfoView.USER_INFO, userInfo);
 
 		// content negotiation
 
 		// start off by seeing if the client has registered for a signed/encrypted JWT from here
 		ClientDetailsEntity client = clientService.loadClientByClientId(auth.getOAuth2Request().getClientId());
-		model.addAttribute("client", client);
+		model.addAttribute(UserInfoJWTView.CLIENT, client);
 
 		List<MediaType> mediaTypes = MediaType.parseMediaTypes(acceptHeader);
 		MediaType.sortBySpecificityAndQuality(mediaTypes);
@@ -123,7 +120,7 @@ public class UserInfoEndpoint {
 				|| client.getUserInfoEncryptedResponseEnc() != null) {
 			// client has a preference, see if they ask for plain JSON specifically on this request
 			for (MediaType m : mediaTypes) {
-				if (!m.isWildcardType() && m.isCompatibleWith(JOSE_MEDIA_TYPE)) {
+				if (!m.isWildcardType() && m.isCompatibleWith(UserInfoJWTView.JOSE_MEDIA_TYPE)) {
 					return UserInfoJWTView.VIEWNAME;
 				} else if (!m.isWildcardType() && m.isCompatibleWith(MediaType.APPLICATION_JSON)) {
 					return UserInfoView.VIEWNAME;
@@ -137,7 +134,7 @@ public class UserInfoEndpoint {
 			for (MediaType m : mediaTypes) {
 				if (!m.isWildcardType() && m.isCompatibleWith(MediaType.APPLICATION_JSON)) {
 					return UserInfoView.VIEWNAME;
-				} else if (!m.isWildcardType() && m.isCompatibleWith(JOSE_MEDIA_TYPE)) {
+				} else if (!m.isWildcardType() && m.isCompatibleWith(UserInfoJWTView.JOSE_MEDIA_TYPE)) {
 					return UserInfoJWTView.VIEWNAME;
 				}
 			}
