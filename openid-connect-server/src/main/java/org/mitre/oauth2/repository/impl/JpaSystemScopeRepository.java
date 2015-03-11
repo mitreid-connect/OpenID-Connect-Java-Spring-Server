@@ -50,7 +50,7 @@ public class JpaSystemScopeRepository implements SystemScopeRepository {
 	@Override
 	@Transactional
 	public Set<SystemScope> getAll() {
-		TypedQuery<SystemScope> query = em.createNamedQuery("SystemScope.findAll", SystemScope.class);
+		TypedQuery<SystemScope> query = em.createNamedQuery(SystemScope.QUERY_ALL, SystemScope.class);
 
 		return new LinkedHashSet<SystemScope>(query.getResultList());
 	}
@@ -70,8 +70,8 @@ public class JpaSystemScopeRepository implements SystemScopeRepository {
 	@Override
 	@Transactional
 	public SystemScope getByValue(String value) {
-		TypedQuery<SystemScope> query = em.createNamedQuery("SystemScope.getByValue", SystemScope.class);
-		query.setParameter("value", value);
+		TypedQuery<SystemScope> query = em.createNamedQuery(SystemScope.QUERY_BY_VALUE, SystemScope.class);
+		query.setParameter(SystemScope.PARAM_VALUE, value);
 		return getSingleResult(query.getResultList());
 	}
 

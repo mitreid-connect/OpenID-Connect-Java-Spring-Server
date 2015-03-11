@@ -36,9 +36,11 @@ import javax.persistence.Table;
 @Entity
 @Table(name="blacklisted_site")
 @NamedQueries({
-	@NamedQuery(name = "BlacklistedSite.getAll", query = "select b from BlacklistedSite b")
+	@NamedQuery(name = BlacklistedSite.QUERY_ALL, query = "select b from BlacklistedSite b")
 })
 public class BlacklistedSite {
+
+	public static final String QUERY_ALL = "BlacklistedSite.getAll";
 
 	// unique id
 	private Long id;

@@ -45,12 +45,20 @@ import com.google.common.collect.Sets;
 @Entity
 @Table(name="approved_site")
 @NamedQueries({
-	@NamedQuery(name = "ApprovedSite.getAll", query = "select a from ApprovedSite a"),
-	@NamedQuery(name = "ApprovedSite.getByUserId", query = "select a from ApprovedSite a where a.userId = :userId"),
-	@NamedQuery(name = "ApprovedSite.getByClientId", query = "select a from ApprovedSite a where a.clientId = :clientId"),
-	@NamedQuery(name = "ApprovedSite.getByClientIdAndUserId", query = "select a from ApprovedSite a where a.clientId = :clientId and a.userId = :userId")
+	@NamedQuery(name = ApprovedSite.QUERY_ALL, query = "select a from ApprovedSite a"),
+	@NamedQuery(name = ApprovedSite.QUERY_BY_USER_ID, query = "select a from ApprovedSite a where a.userId = :" + ApprovedSite.PARAM_USER_ID),
+	@NamedQuery(name = ApprovedSite.QUERY_BY_CLIENT_ID, query = "select a from ApprovedSite a where a.clientId = :" + ApprovedSite.PARAM_CLIENT_ID),
+	@NamedQuery(name = ApprovedSite.QUERY_BY_CLIENT_ID_AND_USER_ID, query = "select a from ApprovedSite a where a.clientId = :" + ApprovedSite.PARAM_CLIENT_ID + " and a.userId = :" + ApprovedSite.PARAM_USER_ID)
 })
 public class ApprovedSite {
+
+	public static final String QUERY_BY_CLIENT_ID_AND_USER_ID = "ApprovedSite.getByClientIdAndUserId";
+	public static final String QUERY_BY_CLIENT_ID = "ApprovedSite.getByClientId";
+	public static final String QUERY_BY_USER_ID = "ApprovedSite.getByUserId";
+	public static final String QUERY_ALL = "ApprovedSite.getAll";
+	
+	public static final String PARAM_CLIENT_ID = "clientId";
+	public static final String PARAM_USER_ID = "userId";
 
 	// unique id
 	private Long id;

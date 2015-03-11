@@ -44,8 +44,8 @@ public class JpaUserInfoRepository implements UserInfoRepository {
 	 */
 	@Override
 	public UserInfo getByUsername(String username) {
-		TypedQuery<DefaultUserInfo> query = manager.createNamedQuery("DefaultUserInfo.getByUsername", DefaultUserInfo.class);
-		query.setParameter("username", username);
+		TypedQuery<DefaultUserInfo> query = manager.createNamedQuery(DefaultUserInfo.QUERY_BY_USERNAME, DefaultUserInfo.class);
+		query.setParameter(DefaultUserInfo.PARAM_USERNAME, username);
 
 		return getSingleResult(query.getResultList());
 

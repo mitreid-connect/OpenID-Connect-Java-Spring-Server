@@ -37,11 +37,16 @@ import javax.persistence.Transient;
 @Entity
 @Table(name = "system_scope")
 @NamedQueries({
-	@NamedQuery(name = "SystemScope.findAll", query = "select s from SystemScope s ORDER BY s.id"),
-	@NamedQuery(name = "SystemScope.getByValue", query = "select s from SystemScope s WHERE s.value = :value")
+	@NamedQuery(name = SystemScope.QUERY_ALL, query = "select s from SystemScope s ORDER BY s.id"),
+	@NamedQuery(name = SystemScope.QUERY_BY_VALUE, query = "select s from SystemScope s WHERE s.value = :" + SystemScope.PARAM_VALUE)
 })
 public class SystemScope {
 
+	public static final String QUERY_BY_VALUE = "SystemScope.getByValue";
+	public static final String QUERY_ALL = "SystemScope.findAll";
+	
+	public static final String PARAM_VALUE = "value";
+	
 	private Long id;
 	private String value; // scope value
 	private String description; // human-readable description

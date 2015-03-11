@@ -46,9 +46,9 @@ public class JpaPairwiseIdentifierRepository implements PairwiseIdentifierReposi
 	 */
 	@Override
 	public PairwiseIdentifier getBySectorIdentifier(String sub, String sectorIdentifierUri) {
-		TypedQuery<PairwiseIdentifier> query = manager.createNamedQuery("PairwiseIdentifier.getBySectorIdentifier", PairwiseIdentifier.class);
-		query.setParameter("sub", sub);
-		query.setParameter("sectorIdentifier", sectorIdentifierUri);
+		TypedQuery<PairwiseIdentifier> query = manager.createNamedQuery(PairwiseIdentifier.QUERY_BY_SECTOR_IDENTIFIER, PairwiseIdentifier.class);
+		query.setParameter(PairwiseIdentifier.PARAM_SUB, sub);
+		query.setParameter(PairwiseIdentifier.PARAM_SECTOR_IDENTIFIER, sectorIdentifierUri);
 
 		return getSingleResult(query.getResultList());
 	}

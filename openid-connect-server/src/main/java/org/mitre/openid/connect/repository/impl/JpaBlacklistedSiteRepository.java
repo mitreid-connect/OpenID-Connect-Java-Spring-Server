@@ -48,7 +48,7 @@ public class JpaBlacklistedSiteRepository implements BlacklistedSiteRepository {
 	@Override
 	@Transactional
 	public Collection<BlacklistedSite> getAll() {
-		TypedQuery<BlacklistedSite> query = manager.createNamedQuery("BlacklistedSite.getAll", BlacklistedSite.class);
+		TypedQuery<BlacklistedSite> query = manager.createNamedQuery(BlacklistedSite.QUERY_ALL, BlacklistedSite.class);
 		return query.getResultList();
 	}
 

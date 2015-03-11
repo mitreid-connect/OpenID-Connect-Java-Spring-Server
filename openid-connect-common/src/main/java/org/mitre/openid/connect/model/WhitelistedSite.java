@@ -41,11 +41,18 @@ import javax.persistence.Table;
 @Entity
 @Table(name="whitelisted_site")
 @NamedQueries({
-	@NamedQuery(name = "WhitelistedSite.getAll", query = "select w from WhitelistedSite w"),
-	@NamedQuery(name = "WhitelistedSite.getByClientId", query = "select w from WhitelistedSite w where w.clientId = :clientId"),
-	@NamedQuery(name = "WhitelistedSite.getByCreatoruserId", query = "select w from WhitelistedSite w where w.creatorUserId = :userId")
+	@NamedQuery(name = WhitelistedSite.QUERY_ALL, query = "select w from WhitelistedSite w"),
+	@NamedQuery(name = WhitelistedSite.QUERY_BY_CLIENT_ID, query = "select w from WhitelistedSite w where w.clientId = :" + WhitelistedSite.PARAM_CLIENT_ID),
+	@NamedQuery(name = WhitelistedSite.QUERY_BY_CREATOR, query = "select w from WhitelistedSite w where w.creatorUserId = :" + WhitelistedSite.PARAM_USER_ID)
 })
 public class WhitelistedSite {
+
+	public static final String QUERY_BY_CREATOR = "WhitelistedSite.getByCreatoruserId";
+	public static final String QUERY_BY_CLIENT_ID = "WhitelistedSite.getByClientId";
+	public static final String QUERY_ALL = "WhitelistedSite.getAll";
+	
+	public static final String PARAM_USER_ID = "userId";
+	public static final String PARAM_CLIENT_ID = "clientId";
 
 	// unique id
 	private Long id;
