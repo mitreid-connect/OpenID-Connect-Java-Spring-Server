@@ -410,7 +410,7 @@
 				<label class="control-label" data-i18n="client.client-form.authentication-method">Token Endpoint Authentication Method</label>
 				<div class="controls">
                     <div>
-                        <input type="radio" id="tokenEndpointAuthMethodBasic" name="tokenEndpointAuthMethod" value="SECRET_BASIC" <%-(tokenEndpointAuthMethod == 'SECRET_BASIC' ? 'checked' : '')%>>
+                        <input type="radio" id="tokenEndpointAuthMethodBasic" name="tokenEndpointAuthMethod" value="SECRET_BASIC" <%-((tokenEndpointAuthMethod == 'SECRET_BASIC') || (!tokenEndpointAuthMethod) ? 'checked' : '')%>>
                         <label for="tokenEndpointAuthMethodBasic" class="radio" data-i18n="client.client-form.secret-http">Client Secret over HTTP Basic</label>
                     </div>
                     <div>
