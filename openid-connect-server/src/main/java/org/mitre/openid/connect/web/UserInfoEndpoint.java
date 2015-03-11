@@ -29,6 +29,7 @@ import org.mitre.openid.connect.view.UserInfoView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -78,7 +79,7 @@ public class UserInfoEndpoint {
 	@PreAuthorize("hasRole('ROLE_USER') and #oauth2.hasScope('" + SystemScopeService.OPENID_SCOPE + "')")
 	@RequestMapping(method= {RequestMethod.GET, RequestMethod.POST}, produces = {MediaType.APPLICATION_JSON_VALUE, UserInfoJWTView.JOSE_MEDIA_TYPE_VALUE})
 	public String getInfo(@RequestParam(value="claims", required=false) String claimsRequestJsonString,
-			@RequestHeader(value="Accept", required=false) String acceptHeader,
+			@RequestHeader(value=HttpHeaders.ACCEPT, required=false) String acceptHeader,
 			OAuth2Authentication auth, Model model) {
 
 		if (auth == null) {

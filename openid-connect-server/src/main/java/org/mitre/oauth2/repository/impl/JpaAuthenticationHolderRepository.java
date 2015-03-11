@@ -39,7 +39,7 @@ public class JpaAuthenticationHolderRepository implements AuthenticationHolderRe
 
 	@Override
 	public List<AuthenticationHolderEntity> getAll() {
-		TypedQuery<AuthenticationHolderEntity> query = manager.createNamedQuery("AuthenticationHolderEntity.getAll", AuthenticationHolderEntity.class);
+		TypedQuery<AuthenticationHolderEntity> query = manager.createNamedQuery(AuthenticationHolderEntity.QUERY_ALL, AuthenticationHolderEntity.class);
 		return query.getResultList();
 	}
 
@@ -68,7 +68,7 @@ public class JpaAuthenticationHolderRepository implements AuthenticationHolderRe
 	@Override
 	@Transactional
 	public List<AuthenticationHolderEntity> getOrphanedAuthenticationHolders() {
-		TypedQuery<AuthenticationHolderEntity> query = manager.createNamedQuery("AuthenticationHolderEntity.getUnusedAuthenticationHolders", AuthenticationHolderEntity.class);
+		TypedQuery<AuthenticationHolderEntity> query = manager.createNamedQuery(AuthenticationHolderEntity.QUERY_GET_UNUSED, AuthenticationHolderEntity.class);
 		query.setMaxResults(MAXEXPIREDRESULTS);
 		List<AuthenticationHolderEntity> unusedAuthenticationHolders = query.getResultList();
 		return unusedAuthenticationHolders;

@@ -39,9 +39,11 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 @Entity
 @Table(name = "authorization_code")
 @NamedQueries({
-	@NamedQuery(name = "AuthorizationCodeEntity.getByValue", query = "select a from AuthorizationCodeEntity a where a.code = :code")
+	@NamedQuery(name = AuthorizationCodeEntity.QUERY_BY_VALUE, query = "select a from AuthorizationCodeEntity a where a.code = :code")
 })
 public class AuthorizationCodeEntity {
+
+	public static final String QUERY_BY_VALUE = "AuthorizationCodeEntity.getByValue";
 
 	private Long id;
 
