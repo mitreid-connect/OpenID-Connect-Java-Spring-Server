@@ -46,6 +46,16 @@ import com.google.gson.JsonObject;
 public class JsonErrorView extends AbstractView {
 
 	/**
+	 * 
+	 */
+	public static final String ERROR_MESSAGE = "errorMessage";
+
+	/**
+	 * 
+	 */
+	public static final String ERROR = "error";
+
+	/**
 	 * Logger for this class
 	 */
 	private static final Logger logger = LoggerFactory.getLogger(JsonErrorView.class);
@@ -83,7 +93,7 @@ public class JsonErrorView extends AbstractView {
 
 		HttpStatus code = (HttpStatus) model.get(HttpCodeView.CODE);
 		if (code == null) {
-			code = HttpStatus.OK; // default to 200
+			code = HttpStatus.INTERNAL_SERVER_ERROR; // default to 500
 		}
 
 		response.setStatus(code.value());
@@ -92,11 +102,11 @@ public class JsonErrorView extends AbstractView {
 
 			Writer out = response.getWriter();
 
-			String errorTitle = (String) model.get("error");
+			String errorTitle = (String) model.get(ERROR);
 			if (Strings.isNullOrEmpty(errorTitle)) {
-				errorTitle = "Error";
+				errorTitle = "mitreid_error";
 			}
-			String errorMessage = (String) model.get("errorMessage");
+			String errorMessage = (String) model.get(ERROR_MESSAGE);
 			JsonObject obj = new JsonObject();
 			obj.addProperty("error", errorTitle);
 			obj.addProperty("error_description", errorMessage);

@@ -28,6 +28,7 @@ import org.mitre.oauth2.service.OAuth2TokenEntityService;
 import org.mitre.oauth2.view.TokenApiView;
 import org.mitre.openid.connect.service.OIDCTokenService;
 import org.mitre.openid.connect.view.HttpCodeView;
+import org.mitre.openid.connect.view.JsonEntityView;
 import org.mitre.openid.connect.view.JsonErrorView;
 import org.mitre.openid.connect.web.RootController;
 import org.slf4j.Logger;
@@ -79,7 +80,7 @@ public class TokenAPI {
 	public String getAllAccessTokens(ModelMap m, Principal p) {
 
 		Set<OAuth2AccessTokenEntity> allTokens = tokenService.getAllAccessTokensForUser(p.getName());
-		m.put("entity", allTokens);
+		m.put(JsonEntityView.ENTITY, allTokens);
 		return TokenApiView.VIEWNAME;
 	}
 
@@ -91,15 +92,15 @@ public class TokenAPI {
 		if (token == null) {
 			logger.error("getToken failed; token not found: " + id);
 			m.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
-			m.put("errorMessage", "The requested token with id " + id + " could not be found.");
+			m.put(JsonErrorView.ERROR_MESSAGE, "The requested token with id " + id + " could not be found.");
 			return JsonErrorView.VIEWNAME;
 		} else if (!token.getAuthenticationHolder().getAuthentication().getName().equals(p.getName())) {
 			logger.error("getToken failed; token does not belong to principal " + p.getName());
 			m.put(HttpCodeView.CODE, HttpStatus.FORBIDDEN);
-			m.put("errorMessage", "You do not have permission to view this token");
+			m.put(JsonErrorView.ERROR_MESSAGE, "You do not have permission to view this token");
 			return JsonErrorView.VIEWNAME;
 		} else {
-			m.put("entity", token);
+			m.put(JsonEntityView.ENTITY, token);
 			return TokenApiView.VIEWNAME;
 		}
 	}
@@ -112,12 +113,12 @@ public class TokenAPI {
 		if (token == null) {
 			logger.error("getToken failed; token not found: " + id);
 			m.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
-			m.put("errorMessage", "The requested token with id " + id + " could not be found.");
+			m.put(JsonErrorView.ERROR_MESSAGE, "The requested token with id " + id + " could not be found.");
 			return JsonErrorView.VIEWNAME;
 		} else if (!token.getAuthenticationHolder().getAuthentication().getName().equals(p.getName())) {
 			logger.error("getToken failed; token does not belong to principal " + p.getName());
 			m.put(HttpCodeView.CODE, HttpStatus.FORBIDDEN);
-			m.put("errorMessage", "You do not have permission to view this token");
+			m.put(JsonErrorView.ERROR_MESSAGE, "You do not have permission to view this token");
 			return JsonErrorView.VIEWNAME;
 		} else {
 			tokenService.revokeAccessToken(token);
@@ -134,12 +135,12 @@ public class TokenAPI {
 
 		if (client != null) {
 			List<OAuth2AccessTokenEntity> tokens = tokenService.getAccessTokensForClient(client);
-			m.put("entity", tokens);
+			m.put(JsonEntityView.ENTITY, tokens);
 			return TokenApiView.VIEWNAME;
 		} else {
 			// client not found
 			m.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
-			m.put("errorMessage", "The requested client with id " + clientId + " could not be found.");
+			m.put(JsonErrorView.ERROR_MESSAGE, "The requested client with id " + clientId + " could not be found.");
 			return JsonErrorView.VIEWNAME;
 		}
 
@@ -154,17 +155,17 @@ public class TokenAPI {
 		if (client != null) {
 			OAuth2AccessTokenEntity token = tokenService.getRegistrationAccessTokenForClient(client);
 			if (token != null) {
-				m.put("entity", token);
+				m.put(JsonEntityView.ENTITY, token);
 				return TokenApiView.VIEWNAME;
 			} else {
 				m.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
-				m.put("errorMessage", "No registration token could be found.");
+				m.put(JsonErrorView.ERROR_MESSAGE, "No registration token could be found.");
 				return JsonErrorView.VIEWNAME;
 			}
 		} else {
 			// client not found
 			m.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
-			m.put("errorMessage", "The requested client with id " + clientId + " could not be found.");
+			m.put(JsonErrorView.ERROR_MESSAGE, "The requested client with id " + clientId + " could not be found.");
 			return JsonErrorView.VIEWNAME;
 		}
 
@@ -180,17 +181,17 @@ public class TokenAPI {
 			token = tokenService.saveAccessToken(token);
 
 			if (token != null) {
-				m.put("entity", token);
+				m.put(JsonEntityView.ENTITY, token);
 				return TokenApiView.VIEWNAME;
 			} else {
 				m.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
-				m.put("errorMessage", "No registration token could be found.");
+				m.put(JsonErrorView.ERROR_MESSAGE, "No registration token could be found.");
 				return JsonErrorView.VIEWNAME;
 			}
 		} else {
 			// client not found
 			m.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
-			m.put("errorMessage", "The requested client with id " + clientId + " could not be found.");
+			m.put(JsonErrorView.ERROR_MESSAGE, "The requested client with id " + clientId + " could not be found.");
 			return JsonErrorView.VIEWNAME;
 		}
 
@@ -200,7 +201,7 @@ public class TokenAPI {
 	public String getAllRefreshTokens(ModelMap m, Principal p) {
 
 		Set<OAuth2RefreshTokenEntity> allTokens = tokenService.getAllRefreshTokensForUser(p.getName());
-		m.put("entity", allTokens);
+		m.put(JsonEntityView.ENTITY, allTokens);
 		return TokenApiView.VIEWNAME;
 
 
@@ -214,15 +215,15 @@ public class TokenAPI {
 		if (token == null) {
 			logger.error("refresh token not found: " + id);
 			m.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
-			m.put("errorMessage", "The requested token with id " + id + " could not be found.");
+			m.put(JsonErrorView.ERROR_MESSAGE, "The requested token with id " + id + " could not be found.");
 			return JsonErrorView.VIEWNAME;
 		} else if (!token.getAuthenticationHolder().getAuthentication().getName().equals(p.getName())) {
 			logger.error("refresh token " + id + " does not belong to principal " + p.getName());
 			m.put(HttpCodeView.CODE, HttpStatus.FORBIDDEN);
-			m.put("errorMessage", "You do not have permission to view this token");
+			m.put(JsonErrorView.ERROR_MESSAGE, "You do not have permission to view this token");
 			return JsonErrorView.VIEWNAME;
 		} else {
-			m.put("entity", token);
+			m.put(JsonEntityView.ENTITY, token);
 			return TokenApiView.VIEWNAME;
 		}
 	}
@@ -235,12 +236,12 @@ public class TokenAPI {
 		if (token == null) {
 			logger.error("refresh token not found: " + id);
 			m.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
-			m.put("errorMessage", "The requested token with id " + id + " could not be found.");
+			m.put(JsonErrorView.ERROR_MESSAGE, "The requested token with id " + id + " could not be found.");
 			return JsonErrorView.VIEWNAME;
 		} else if (!token.getAuthenticationHolder().getAuthentication().getName().equals(p.getName())) {
 			logger.error("refresh token " + id + " does not belong to principal " + p.getName());
 			m.put(HttpCodeView.CODE, HttpStatus.FORBIDDEN);
-			m.put("errorMessage", "You do not have permission to view this token");
+			m.put(JsonErrorView.ERROR_MESSAGE, "You do not have permission to view this token");
 			return JsonErrorView.VIEWNAME;
 		} else {
 			tokenService.revokeRefreshToken(token);

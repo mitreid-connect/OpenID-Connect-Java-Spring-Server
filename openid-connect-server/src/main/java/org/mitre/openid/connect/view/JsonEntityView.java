@@ -46,6 +46,8 @@ import com.google.gson.GsonBuilder;
 @Component(JsonEntityView.VIEWNAME)
 public class JsonEntityView extends AbstractView {
 
+	public static final String ENTITY = "entity";
+
 	/**
 	 * Logger for this class
 	 */
@@ -92,7 +94,7 @@ public class JsonEntityView extends AbstractView {
 		try {
 
 			Writer out = response.getWriter();
-			Object obj = model.get("entity");
+			Object obj = model.get(ENTITY);
 			gson.toJson(obj, out);
 
 		} catch (IOException e) {

@@ -84,7 +84,7 @@ public class BlacklistAPI {
 
 		Collection<BlacklistedSite> all = blacklistService.getAll();
 
-		m.put("entity", all);
+		m.put(JsonEntityView.ENTITY, all);
 
 		return JsonEntityView.VIEWNAME;
 	}
@@ -108,18 +108,18 @@ public class BlacklistAPI {
 			json = parser.parse(jsonString).getAsJsonObject();
 			blacklist = gson.fromJson(json, BlacklistedSite.class);
 			BlacklistedSite newBlacklist = blacklistService.saveNew(blacklist);
-			m.put("entity", newBlacklist);
+			m.put(JsonEntityView.ENTITY, newBlacklist);
 
 		}
 		catch (JsonSyntaxException e) {
 			logger.error("addNewBlacklistedSite failed due to JsonSyntaxException: ", e);
 			m.put(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
-			m.put("errorMessage", "Could not save new blacklisted site. The server encountered a JSON syntax exception. Contact a system administrator for assistance.");
+			m.put(JsonErrorView.ERROR_MESSAGE, "Could not save new blacklisted site. The server encountered a JSON syntax exception. Contact a system administrator for assistance.");
 			return JsonErrorView.VIEWNAME;
 		} catch (IllegalStateException e) {
 			logger.error("addNewBlacklistedSite failed due to IllegalStateException", e);
 			m.put(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
-			m.put("errorMessage", "Could not save new blacklisted site. The server encountered an IllegalStateException. Refresh and try again - if the problem persists, contact a system administrator for assistance.");
+			m.put(JsonErrorView.ERROR_MESSAGE, "Could not save new blacklisted site. The server encountered an IllegalStateException. Refresh and try again - if the problem persists, contact a system administrator for assistance.");
 			return JsonErrorView.VIEWNAME;
 		}
 
@@ -146,12 +146,12 @@ public class BlacklistAPI {
 		catch (JsonSyntaxException e) {
 			logger.error("updateBlacklistedSite failed due to JsonSyntaxException", e);
 			m.put(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
-			m.put("errorMessage", "Could not update blacklisted site. The server encountered a JSON syntax exception. Contact a system administrator for assistance.");
+			m.put(JsonErrorView.ERROR_MESSAGE, "Could not update blacklisted site. The server encountered a JSON syntax exception. Contact a system administrator for assistance.");
 			return JsonErrorView.VIEWNAME;
 		} catch (IllegalStateException e) {
 			logger.error("updateBlacklistedSite failed due to IllegalStateException", e);
 			m.put(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
-			m.put("errorMessage", "Could not update blacklisted site. The server encountered an IllegalStateException. Refresh and try again - if the problem persists, contact a system administrator for assistance.");
+			m.put(JsonErrorView.ERROR_MESSAGE, "Could not update blacklisted site. The server encountered an IllegalStateException. Refresh and try again - if the problem persists, contact a system administrator for assistance.");
 			return JsonErrorView.VIEWNAME;
 		}
 
@@ -161,13 +161,13 @@ public class BlacklistAPI {
 		if (oldBlacklist == null) {
 			logger.error("updateBlacklistedSite failed; blacklist with id " + id + " could not be found");
 			m.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
-			m.put("errorMessage", "Could not update blacklisted site. The requested blacklist with id " + id + "could not be found.");
+			m.put(JsonErrorView.ERROR_MESSAGE, "Could not update blacklisted site. The requested blacklist with id " + id + "could not be found.");
 			return JsonErrorView.VIEWNAME;
 		} else {
 
 			BlacklistedSite newBlacklist = blacklistService.update(oldBlacklist, blacklist);
 
-			m.put("entity", newBlacklist);
+			m.put(JsonEntityView.ENTITY, newBlacklist);
 
 			return JsonEntityView.VIEWNAME;
 		}
@@ -183,7 +183,7 @@ public class BlacklistAPI {
 
 		if (blacklist == null) {
 			logger.error("deleteBlacklistedSite failed; blacklist with id " + id + " could not be found");
-			m.put("errorMessage", "Could not delete bladklist. The requested bladklist with id " + id + " could not be found.");
+			m.put(JsonErrorView.ERROR_MESSAGE, "Could not delete bladklist. The requested bladklist with id " + id + " could not be found.");
 			return JsonErrorView.VIEWNAME;
 		} else {
 			m.put(HttpCodeView.CODE, HttpStatus.OK);
@@ -202,11 +202,11 @@ public class BlacklistAPI {
 		if (blacklist == null) {
 			logger.error("getBlacklistedSite failed; blacklist with id " + id + " could not be found");
 			m.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
-			m.put("errorMessage", "Could not delete bladklist. The requested bladklist with id " + id + " could not be found.");
+			m.put(JsonErrorView.ERROR_MESSAGE, "Could not delete bladklist. The requested bladklist with id " + id + " could not be found.");
 			return JsonErrorView.VIEWNAME;
 		} else {
 
-			m.put("entity", blacklist);
+			m.put(JsonEntityView.ENTITY, blacklist);
 
 			return JsonEntityView.VIEWNAME;
 		}

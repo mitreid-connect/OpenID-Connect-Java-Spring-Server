@@ -84,7 +84,7 @@ public class WhitelistAPI {
 
 		Collection<WhitelistedSite> all = whitelistService.getAll();
 
-		m.put("entity", all);
+		m.put(JsonEntityView.ENTITY, all);
 
 		return JsonEntityView.VIEWNAME;
 	}
@@ -110,12 +110,12 @@ public class WhitelistAPI {
 		} catch (JsonParseException e) {
 			logger.error("addNewWhitelistedSite failed due to JsonParseException", e);
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
-			m.addAttribute("errorMessage", "Could not save new whitelisted site. The server encountered a JSON syntax exception. Contact a system administrator for assistance.");
+			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Could not save new whitelisted site. The server encountered a JSON syntax exception. Contact a system administrator for assistance.");
 			return JsonErrorView.VIEWNAME;
 		} catch (IllegalStateException e) {
 			logger.error("addNewWhitelistedSite failed due to IllegalStateException", e);
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
-			m.addAttribute("errorMessage", "Could not save new whitelisted site. The server encountered an IllegalStateException. Refresh and try again - if the problem persists, contact a system administrator for assistance.");
+			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Could not save new whitelisted site. The server encountered an IllegalStateException. Refresh and try again - if the problem persists, contact a system administrator for assistance.");
 			return JsonErrorView.VIEWNAME;
 		}
 
@@ -124,7 +124,7 @@ public class WhitelistAPI {
 
 		WhitelistedSite newWhitelist = whitelistService.saveNew(whitelist);
 
-		m.put("entity", newWhitelist);
+		m.put(JsonEntityView.ENTITY, newWhitelist);
 
 		return JsonEntityView.VIEWNAME;
 
@@ -147,12 +147,12 @@ public class WhitelistAPI {
 		} catch (JsonParseException e) {
 			logger.error("updateWhitelistedSite failed due to JsonParseException", e);
 			m.put(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
-			m.put("errorMessage", "Could not update whitelisted site. The server encountered a JSON syntax exception. Contact a system administrator for assistance.");
+			m.put(JsonErrorView.ERROR_MESSAGE, "Could not update whitelisted site. The server encountered a JSON syntax exception. Contact a system administrator for assistance.");
 			return JsonErrorView.VIEWNAME;
 		} catch (IllegalStateException e) {
 			logger.error("updateWhitelistedSite failed due to IllegalStateException", e);
 			m.put(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
-			m.put("errorMessage", "Could not update whitelisted site. The server encountered an IllegalStateException. Refresh and try again - if the problem persists, contact a system administrator for assistance.");
+			m.put(JsonErrorView.ERROR_MESSAGE, "Could not update whitelisted site. The server encountered an IllegalStateException. Refresh and try again - if the problem persists, contact a system administrator for assistance.");
 			return JsonErrorView.VIEWNAME;
 		}
 
@@ -161,13 +161,13 @@ public class WhitelistAPI {
 		if (oldWhitelist == null) {
 			logger.error("updateWhitelistedSite failed; whitelist with id " + id + " could not be found.");
 			m.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
-			m.put("errorMessage", "Could not update whitelisted site. The requested whitelisted site with id " + id + "could not be found.");
+			m.put(JsonErrorView.ERROR_MESSAGE, "Could not update whitelisted site. The requested whitelisted site with id " + id + "could not be found.");
 			return JsonErrorView.VIEWNAME;
 		} else {
 
 			WhitelistedSite newWhitelist = whitelistService.update(oldWhitelist, whitelist);
 
-			m.put("entity", newWhitelist);
+			m.put(JsonEntityView.ENTITY, newWhitelist);
 
 			return JsonEntityView.VIEWNAME;
 		}
@@ -185,7 +185,7 @@ public class WhitelistAPI {
 		if (whitelist == null) {
 			logger.error("deleteWhitelistedSite failed; whitelist with id " + id + " could not be found.");
 			m.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
-			m.put("errorMessage", "Could not delete whitelisted site. The requested whitelisted site with id " + id + "could not be found.");
+			m.put(JsonErrorView.ERROR_MESSAGE, "Could not delete whitelisted site. The requested whitelisted site with id " + id + "could not be found.");
 			return JsonErrorView.VIEWNAME;
 		} else {
 			m.put(HttpCodeView.CODE, HttpStatus.OK);
@@ -204,11 +204,11 @@ public class WhitelistAPI {
 		if (whitelist == null) {
 			logger.error("getWhitelistedSite failed; whitelist with id " + id + " could not be found.");
 			m.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
-			m.put("errorMessage", "The requested whitelisted site with id " + id + "could not be found.");
+			m.put(JsonErrorView.ERROR_MESSAGE, "The requested whitelisted site with id " + id + "could not be found.");
 			return JsonErrorView.VIEWNAME;
 		} else {
 
-			m.put("entity", whitelist);
+			m.put(JsonEntityView.ENTITY, whitelist);
 
 			return JsonEntityView.VIEWNAME;
 		}

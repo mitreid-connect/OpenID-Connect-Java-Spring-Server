@@ -141,8 +141,8 @@ public class DynamicClientRegistrationEndpoint {
 				newClient = validateAuth(newClient);
 			} catch (ValidationException ve) {
 				// validation failed, return an error
-				m.addAttribute("error", ve.getError());
-				m.addAttribute("errorMessage", ve.getErrorDescription());
+				m.addAttribute(JsonErrorView.ERROR, ve.getError());
+				m.addAttribute(JsonErrorView.ERROR_MESSAGE, ve.getErrorDescription());
 				m.addAttribute(HttpCodeView.CODE, ve.getStatus());
 				return JsonErrorView.VIEWNAME;
 			}
@@ -192,8 +192,8 @@ public class DynamicClientRegistrationEndpoint {
 			} catch (IllegalArgumentException e) {
 				logger.error("Couldn't save client", e);
 
-				m.addAttribute("error", "invalid_client_metadata");
-				m.addAttribute("errorMessage", "Unable to save client due to invalid or inconsistent metadata.");
+				m.addAttribute(JsonErrorView.ERROR, "invalid_client_metadata");
+				m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Unable to save client due to invalid or inconsistent metadata.");
 				m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST); // http 400
 
 				return JsonErrorView.VIEWNAME;
@@ -301,8 +301,8 @@ public class DynamicClientRegistrationEndpoint {
 				newClient = validateAuth(newClient);
 			} catch (ValidationException ve) {
 				// validation failed, return an error
-				m.addAttribute("error", ve.getError());
-				m.addAttribute("errorMessage", ve.getErrorDescription());
+				m.addAttribute(JsonErrorView.ERROR, ve.getError());
+				m.addAttribute(JsonErrorView.ERROR_MESSAGE, ve.getErrorDescription());
 				m.addAttribute(HttpCodeView.CODE, ve.getStatus());
 				return JsonErrorView.VIEWNAME;
 			}
@@ -327,8 +327,8 @@ public class DynamicClientRegistrationEndpoint {
 			} catch (IllegalArgumentException e) {
 				logger.error("Couldn't save client", e);
 
-				m.addAttribute("error", "invalid_client_metadata");
-				m.addAttribute("errorMessage", "Unable to save client due to invalid or inconsistent metadata.");
+				m.addAttribute(JsonErrorView.ERROR, "invalid_client_metadata");
+				m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Unable to save client due to invalid or inconsistent metadata.");
 				m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST); // http 400
 
 				return JsonErrorView.VIEWNAME;

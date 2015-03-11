@@ -112,7 +112,7 @@ public class JsonApprovedSiteView extends AbstractView {
 		try {
 
 			Writer out = response.getWriter();
-			Object obj = model.get("entity");
+			Object obj = model.get(JsonEntityView.ENTITY);
 			gson.toJson(obj, out);
 
 		} catch (IOException e) {

@@ -98,7 +98,7 @@ public class IntrospectionEndpoint {
 		if (Strings.isNullOrEmpty(tokenValue)) {
 			logger.error("Verify failed; token value is null");
 			Map<String,Boolean> entity = ImmutableMap.of("active", Boolean.FALSE);
-			model.addAttribute("entity", entity);
+			model.addAttribute(JsonEntityView.ENTITY, entity);
 			return JsonEntityView.VIEWNAME;
 		}
 
@@ -133,7 +133,7 @@ public class IntrospectionEndpoint {
 			} catch (InvalidTokenException e2) {
 				logger.error("Verify failed; Invalid access/refresh token", e2);
 				Map<String,Boolean> entity = ImmutableMap.of("active", Boolean.FALSE);
-				model.addAttribute("entity", entity);
+				model.addAttribute(JsonEntityView.ENTITY, entity);
 				return JsonEntityView.VIEWNAME;
 			}
 		}
@@ -148,7 +148,7 @@ public class IntrospectionEndpoint {
 				Map<String, Object> entity = accessToken != null
 						? introspectionResultAssembler.assembleFrom(accessToken, user)
 								: introspectionResultAssembler.assembleFrom(refreshToken, user);
-						model.addAttribute("entity", entity);
+						model.addAttribute(JsonEntityView.ENTITY, entity);
 						return JsonEntityView.VIEWNAME;
 			} else {
 				logger.error("Verify failed; client configuration or scope don't permit token introspection");

@@ -340,7 +340,7 @@ public class DiscoveryEndpoint {
 		m.put("introspection_endpoint", baseUrl + IntrospectionEndpoint.URL); // token introspection endpoint for verifying tokens
 		m.put("revocation_endpoint", baseUrl + RevocationEndpoint.URL); // token revocation endpoint
 
-		model.addAttribute("entity", m);
+		model.addAttribute(JsonEntityView.ENTITY, m);
 
 		return JsonEntityView.VIEWNAME;
 	}

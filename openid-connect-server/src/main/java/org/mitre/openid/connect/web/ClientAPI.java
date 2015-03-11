@@ -29,6 +29,7 @@ import org.mitre.openid.connect.service.UserInfoService;
 import org.mitre.openid.connect.view.ClientEntityViewForAdmins;
 import org.mitre.openid.connect.view.ClientEntityViewForUsers;
 import org.mitre.openid.connect.view.HttpCodeView;
+import org.mitre.openid.connect.view.JsonEntityView;
 import org.mitre.openid.connect.view.JsonErrorView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -132,7 +133,7 @@ public class ClientAPI {
 	public String apiGetAllClients(Model model, Authentication auth) {
 
 		Collection<ClientDetailsEntity> clients = clientService.getAllClients();
-		model.addAttribute("entity", clients);
+		model.addAttribute(JsonEntityView.ENTITY, clients);
 
 		if (isAdmin(auth)) {
 			return ClientEntityViewForAdmins.VIEWNAME;
@@ -162,12 +163,12 @@ public class ClientAPI {
 		catch (JsonSyntaxException e) {
 			logger.error("apiAddClient failed due to JsonSyntaxException", e);
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
-			m.addAttribute("errorMessage", "Could not save new client. The server encountered a JSON syntax exception. Contact a system administrator for assistance.");
+			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Could not save new client. The server encountered a JSON syntax exception. Contact a system administrator for assistance.");
 			return JsonErrorView.VIEWNAME;
 		} catch (IllegalStateException e) {
 			logger.error("apiAddClient failed due to IllegalStateException", e);
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
-			m.addAttribute("errorMessage", "Could not save new client. The server encountered an IllegalStateException. Refresh and try again - if the problem persists, contact a system administrator for assistance.");
+			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Could not save new client. The server encountered an IllegalStateException. Refresh and try again - if the problem persists, contact a system administrator for assistance.");
 			return JsonErrorView.VIEWNAME;
 		}
 
@@ -197,7 +198,7 @@ public class ClientAPI {
 			if (Strings.isNullOrEmpty(client.getJwksUri())) {
 				logger.error("tried to create client with private key auth but no private key");
 				m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
-				m.addAttribute("errorMessage", "Can not create a client with private key authentication without registering a key via the JWS Set URI.");
+				m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Can not create a client with private key authentication without registering a key via the JWS Set URI.");
 				return JsonErrorView.VIEWNAME;
 			}
 
@@ -208,7 +209,7 @@ public class ClientAPI {
 
 			logger.error("unknown auth method");
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
-			m.addAttribute("errorMessage", "Unknown auth method requested");
+			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Unknown auth method requested");
 			return JsonErrorView.VIEWNAME;
 
 
@@ -217,7 +218,7 @@ public class ClientAPI {
 		client.setDynamicallyRegistered(false);
 
 		ClientDetailsEntity newClient = clientService.saveNewClient(client);
-		m.addAttribute("entity", newClient);
+		m.addAttribute(JsonEntityView.ENTITY, newClient);
 
 		if (isAdmin(auth)) {
 			return ClientEntityViewForAdmins.VIEWNAME;
@@ -249,12 +250,12 @@ public class ClientAPI {
 		catch (JsonSyntaxException e) {
 			logger.error("apiUpdateClient failed due to JsonSyntaxException", e);
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
-			m.addAttribute("errorMessage", "Could not update client. The server encountered a JSON syntax exception. Contact a system administrator for assistance.");
+			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Could not update client. The server encountered a JSON syntax exception. Contact a system administrator for assistance.");
 			return JsonErrorView.VIEWNAME;
 		} catch (IllegalStateException e) {
 			logger.error("apiUpdateClient failed due to IllegalStateException", e);
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
-			m.addAttribute("errorMessage", "Could not update client. The server encountered an IllegalStateException. Refresh and try again - if the problem persists, contact a system administrator for assistance.");
+			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Could not update client. The server encountered an IllegalStateException. Refresh and try again - if the problem persists, contact a system administrator for assistance.");
 			return JsonErrorView.VIEWNAME;
 		}
 
@@ -263,7 +264,7 @@ public class ClientAPI {
 		if (oldClient == null) {
 			logger.error("apiUpdateClient failed; client with id " + id + " could not be found.");
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
-			m.addAttribute("errorMessage", "Could not update client. The requested client with id " + id + "could not be found.");
+			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Could not update client. The requested client with id " + id + "could not be found.");
 			return JsonErrorView.VIEWNAME;
 		}
 
@@ -293,7 +294,7 @@ public class ClientAPI {
 			if (Strings.isNullOrEmpty(client.getJwksUri())) {
 				logger.error("tried to create client with private key auth but no private key");
 				m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
-				m.addAttribute("errorMessage", "Can not create a client with private key authentication without registering a key via the JWS Set URI.");
+				m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Can not create a client with private key authentication without registering a key via the JWS Set URI.");
 				return JsonErrorView.VIEWNAME;
 			}
 
@@ -304,14 +305,14 @@ public class ClientAPI {
 
 			logger.error("unknown auth method");
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
-			m.addAttribute("errorMessage", "Unknown auth method requested");
+			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Unknown auth method requested");
 			return JsonErrorView.VIEWNAME;
 
 
 		}
 
 		ClientDetailsEntity newClient = clientService.updateClient(oldClient, client);
-		m.addAttribute("entity", newClient);
+		m.addAttribute(JsonEntityView.ENTITY, newClient);
 
 		if (isAdmin(auth)) {
 			return ClientEntityViewForAdmins.VIEWNAME;
@@ -335,7 +336,7 @@ public class ClientAPI {
 		if (client == null) {
 			logger.error("apiDeleteClient failed; client with id " + id + " could not be found.");
 			modelAndView.getModelMap().put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
-			modelAndView.getModelMap().put("errorMessage", "Could not delete client. The requested client with id " + id + "could not be found.");
+			modelAndView.getModelMap().put(JsonErrorView.ERROR_MESSAGE, "Could not delete client. The requested client with id " + id + "could not be found.");
 			return JsonErrorView.VIEWNAME;
 		} else {
 			modelAndView.getModelMap().put(HttpCodeView.CODE, HttpStatus.OK);
@@ -360,11 +361,11 @@ public class ClientAPI {
 		if (client == null) {
 			logger.error("apiShowClient failed; client with id " + id + " could not be found.");
 			model.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
-			model.addAttribute("errorMessage", "The requested client with id " + id + " could not be found.");
+			model.addAttribute(JsonErrorView.ERROR_MESSAGE, "The requested client with id " + id + " could not be found.");
 			return JsonErrorView.VIEWNAME;
 		}
 
-		model.addAttribute("entity", client);
+		model.addAttribute(JsonEntityView.ENTITY, client);
 
 		if (isAdmin(auth)) {
 			return ClientEntityViewForAdmins.VIEWNAME;

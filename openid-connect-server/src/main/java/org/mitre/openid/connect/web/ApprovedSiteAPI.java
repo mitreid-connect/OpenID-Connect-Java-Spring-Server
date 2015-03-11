@@ -27,6 +27,7 @@ import org.mitre.openid.connect.model.ApprovedSite;
 import org.mitre.openid.connect.service.ApprovedSiteService;
 import org.mitre.openid.connect.view.HttpCodeView;
 import org.mitre.openid.connect.view.JsonApprovedSiteView;
+import org.mitre.openid.connect.view.JsonEntityView;
 import org.mitre.openid.connect.view.JsonErrorView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,7 +80,7 @@ public class ApprovedSiteAPI {
 
 		Collection<ApprovedSite> all = approvedSiteService.getByUserId(p.getName());
 
-		m.put("entity", all);
+		m.put(JsonEntityView.ENTITY, all);
 
 		return JsonApprovedSiteView.VIEWNAME;
 	}
@@ -95,13 +96,13 @@ public class ApprovedSiteAPI {
 		if (approvedSite == null) {
 			logger.error("deleteApprovedSite failed; no approved site found for id: " + id);
 			m.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
-			m.put("errorMessage", "Could not delete approved site. The requested approved site with id: " + id + " could not be found.");
+			m.put(JsonErrorView.ERROR_MESSAGE, "Could not delete approved site. The requested approved site with id: " + id + " could not be found.");
 			return JsonErrorView.VIEWNAME;
 		} else if (!approvedSite.getUserId().equals(p.getName())) {
 			logger.error("deleteApprovedSite failed; principal "
 					+ p.getName() + " does not own approved site" + id);
 			m.put(HttpCodeView.CODE, HttpStatus.FORBIDDEN);
-			m.put("errorMessage", "You do not have permission to delete this approved site. The approved site decision will not be deleted.");
+			m.put(JsonErrorView.ERROR_MESSAGE, "You do not have permission to delete this approved site. The approved site decision will not be deleted.");
 			return JsonErrorView.VIEWNAME;
 		} else {
 			m.put(HttpCodeView.CODE, HttpStatus.OK);
@@ -120,16 +121,16 @@ public class ApprovedSiteAPI {
 		if (approvedSite == null) {
 			logger.error("getApprovedSite failed; no approved site found for id: " + id);
 			m.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
-			m.put("errorMessage", "The requested approved site with id: " + id + " could not be found.");
+			m.put(JsonErrorView.ERROR_MESSAGE, "The requested approved site with id: " + id + " could not be found.");
 			return JsonErrorView.VIEWNAME;
 		} else if (!approvedSite.getUserId().equals(p.getName())) {
 			logger.error("getApprovedSite failed; principal "
 					+ p.getName() + " does not own approved site" + id);
 			m.put(HttpCodeView.CODE, HttpStatus.FORBIDDEN);
-			m.put("errorMessage", "You do not have permission to view this approved site.");
+			m.put(JsonErrorView.ERROR_MESSAGE, "You do not have permission to view this approved site.");
 			return JsonErrorView.VIEWNAME;
 		} else {
-			m.put("entity", approvedSite);
+			m.put(JsonEntityView.ENTITY, approvedSite);
 			return JsonApprovedSiteView.VIEWNAME;
 		}
 

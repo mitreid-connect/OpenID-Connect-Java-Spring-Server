@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
 import org.mitre.openid.connect.view.HttpCodeView;
+import org.mitre.openid.connect.view.JsonEntityView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -138,7 +139,7 @@ public class TokenApiView extends AbstractView {
 		try {
 
 			Writer out = response.getWriter();
-			Object obj = model.get("entity");
+			Object obj = model.get(JsonEntityView.ENTITY);
 			gson.toJson(obj, out);
 
 		} catch (IOException e) {

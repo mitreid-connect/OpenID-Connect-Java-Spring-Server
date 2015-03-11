@@ -54,7 +54,7 @@ public class StatsAPI {
 
 		Map<String, Integer> e = statsService.getSummaryStats();
 
-		m.put("entity", e);
+		m.put(JsonEntityView.ENTITY, e);
 
 		return JsonEntityView.VIEWNAME;
 
@@ -65,7 +65,7 @@ public class StatsAPI {
 	public String statsByClient(ModelMap m) {
 		Map<Long, Integer> e = statsService.getByClientId();
 
-		m.put("entity", e);
+		m.put(JsonEntityView.ENTITY, e);
 
 		return JsonEntityView.VIEWNAME;
 	}
@@ -75,7 +75,7 @@ public class StatsAPI {
 	public String statsByClientId(@PathVariable("id") Long id, ModelMap m) {
 		Integer e = statsService.getCountForClientId(id);
 
-		m.put("entity", e);
+		m.put(JsonEntityView.ENTITY, e);
 
 		return JsonEntityView.VIEWNAME;
 	}
