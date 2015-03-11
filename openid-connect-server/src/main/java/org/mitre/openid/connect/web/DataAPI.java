@@ -54,9 +54,11 @@ import com.google.gson.stream.JsonWriter;
  * 
  */
 @Controller
-@RequestMapping("/api/data")
+@RequestMapping("/" + DataAPI.URL)
 @PreAuthorize("hasRole('ROLE_ADMIN')") // you need to be an admin to even think about this -- this is a potentially dangerous API!!
 public class DataAPI {
+
+	public static final String URL = RootController.API_URL + "/data";
 
 	/**
 	 * Logger for this class

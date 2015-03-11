@@ -54,9 +54,11 @@ import com.google.gson.JsonParser;
  *
  */
 @Controller
-@RequestMapping("/api/whitelist")
+@RequestMapping("/" + WhitelistAPI.URL)
 @PreAuthorize("hasRole('ROLE_USER')")
 public class WhitelistAPI {
+
+	public static final String URL = RootController.API_URL + "/whitelist";
 
 	@Autowired
 	private WhitelistedSiteService whitelistService;

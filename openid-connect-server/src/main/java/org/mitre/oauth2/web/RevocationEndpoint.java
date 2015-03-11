@@ -45,8 +45,10 @@ public class RevocationEndpoint {
 	 */
 	private static final Logger logger = LoggerFactory.getLogger(RevocationEndpoint.class);
 
+	public static final String URL = "revoke";
+
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
-	@RequestMapping("/revoke")
+	@RequestMapping("/" + URL)
 	public String revoke(@RequestParam("token") String tokenValue, @RequestParam(value = "token_type_hint", required = false) String tokenType, Principal principal, Model model) {
 
 		// This is the token as passed in from OAuth (in case we need it some day)

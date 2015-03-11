@@ -86,13 +86,13 @@
 		<security:access-denied-handler ref="oauthAccessDeniedHandler" />
 	</security:http>
 
-	<!-- Allow open access to required endpoints -->
-	<security:http pattern="/jwk**" use-expressions="true" entry-point-ref="http403EntryPoint" create-session="stateless">
-		<security:intercept-url pattern="/jwk**" access="permitAll"/>
+	<!-- Allow open access to discovery endpoints -->
+	<security:http pattern="/#{T(org.mitre.openid.connect.web.JWKSetPublishingEndpoint).URL}**" use-expressions="true" entry-point-ref="http403EntryPoint" create-session="stateless">
+		<security:intercept-url pattern="/#{T(org.mitre.openid.connect.web.JWKSetPublishingEndpoint).URL}**" access="permitAll"/>
 		<security:custom-filter ref="corsFilter" after="SECURITY_CONTEXT_FILTER" />
 	</security:http>
-	<security:http pattern="/.well-known/**" use-expressions="true" entry-point-ref="http403EntryPoint" create-session="stateless">
-		<security:intercept-url pattern="/.well-known/**" access="permitAll"/>
+	<security:http pattern="/#{T(org.mitre.discovery.web.DiscoveryEndpoint).WELL_KNOWN_URL}/**" use-expressions="true" entry-point-ref="http403EntryPoint" create-session="stateless">
+		<security:intercept-url pattern="/#{T(org.mitre.discovery.web.DiscoveryEndpoint).WELL_KNOWN_URL}/**" access="permitAll"/>
 		<security:custom-filter ref="corsFilter" after="SECURITY_CONTEXT_FILTER" />
 	</security:http>
 
@@ -103,32 +103,32 @@
 	</security:http>
 	
 	<!-- OAuth-protect API and other endpoints -->
-	<security:http pattern="/register/**" use-expressions="true" entry-point-ref="oauthAuthenticationEntryPoint" create-session="stateless">
+	<security:http pattern="/#{T(org.mitre.openid.connect.web.DynamicClientRegistrationEndpoint).URL}/**" use-expressions="true" entry-point-ref="oauthAuthenticationEntryPoint" create-session="stateless">
 		<security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
 		<security:custom-filter ref="corsFilter" after="SECURITY_CONTEXT_FILTER" />
 		<security:expression-handler ref="oauthWebExpressionHandler" />
 		<security:intercept-url pattern="/register/**" access="permitAll"/>
 	</security:http>
 
-	<security:http pattern="/resource/**" use-expressions="true" entry-point-ref="oauthAuthenticationEntryPoint" create-session="stateless">
+	<security:http pattern="/#{T(org.mitre.openid.connect.web.ProtectedResourceRegistrationEndpoint).URL}/**" use-expressions="true" entry-point-ref="oauthAuthenticationEntryPoint" create-session="stateless">
 		<security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
 		<security:custom-filter ref="corsFilter" after="SECURITY_CONTEXT_FILTER" />
 		<security:expression-handler ref="oauthWebExpressionHandler" />
 		<security:intercept-url pattern="/resource/**" access="permitAll"/>
 	</security:http>
 
-	<security:http pattern="/userinfo**" use-expressions="true" entry-point-ref="oauthAuthenticationEntryPoint" create-session="stateless">
+	<security:http pattern="/#{T(org.mitre.openid.connect.web.UserInfoEndpoint).URL}**" use-expressions="true" entry-point-ref="oauthAuthenticationEntryPoint" create-session="stateless">
 		<security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
 		<security:custom-filter ref="corsFilter" after="SECURITY_CONTEXT_FILTER" />
 		<security:expression-handler ref="oauthWebExpressionHandler" />
 	</security:http>
 
- 	<security:http pattern="/api/**" use-expressions="true" entry-point-ref="oauthAuthenticationEntryPoint" create-session="never">
+ 	<security:http pattern="/#{T(org.mitre.openid.connect.web.RootController).API_URL}/**" use-expressions="true" entry-point-ref="oauthAuthenticationEntryPoint" create-session="never">
 		<security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
 		<security:expression-handler ref="oauthWebExpressionHandler" />
 	</security:http>
 	
-	<security:http pattern="/introspect**" 
+	<security:http pattern="/#{T(org.mitre.oauth2.web.IntrospectionEndpoint).URL}**" 
 			use-expressions="true" 
 			entry-point-ref="oauthAuthenticationEntryPoint" 
 			create-session="stateless"
@@ -140,7 +140,7 @@
 		<security:custom-filter ref="clientCredentialsIntrospectionEndpointFilter" after="BASIC_AUTH_FILTER" />
 	</security:http>
 
-	<security:http pattern="/revoke**"
+	<security:http pattern="/#{T(org.mitre.oauth2.web.RevocationEndpoint).URL}**"
 			use-expressions="true" 
 			entry-point-ref="oauthAuthenticationEntryPoint" 
 			create-session="stateless"

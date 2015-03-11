@@ -66,8 +66,10 @@ import com.google.common.collect.Sets;
 import com.google.gson.JsonSyntaxException;
 
 @Controller
-@RequestMapping(value = "register")
+@RequestMapping(value = DynamicClientRegistrationEndpoint.URL)
 public class DynamicClientRegistrationEndpoint {
+
+	public static final String URL = "register";
 
 	@Autowired
 	private ClientDetailsEntityService clientService;

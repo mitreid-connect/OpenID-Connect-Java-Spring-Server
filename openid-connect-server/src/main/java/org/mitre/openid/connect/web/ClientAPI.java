@@ -66,9 +66,11 @@ import com.google.gson.JsonSyntaxException;
  */
 
 @Controller
-@RequestMapping("/api/clients")
+@RequestMapping("/" + ClientAPI.URL)
 @PreAuthorize("hasRole('ROLE_USER')")
 public class ClientAPI {
+
+	public static final String URL = RootController.API_URL + "/clients";
 
 	@Autowired
 	private ClientDetailsEntityService clientService;

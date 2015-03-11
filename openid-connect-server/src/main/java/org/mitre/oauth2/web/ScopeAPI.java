@@ -26,6 +26,7 @@ import org.mitre.oauth2.service.SystemScopeService;
 import org.mitre.openid.connect.view.HttpCodeView;
 import org.mitre.openid.connect.view.JsonEntityView;
 import org.mitre.openid.connect.view.JsonErrorView;
+import org.mitre.openid.connect.web.RootController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,10 +51,12 @@ import com.google.gson.Gson;
  *
  */
 @Controller
-@RequestMapping("/api/scopes")
+@RequestMapping("/" + ScopeAPI.URL)
 @PreAuthorize("hasRole('ROLE_USER')")
 public class ScopeAPI {
 
+	public static final String URL = RootController.API_URL + "/scopes";
+	
 	@Autowired
 	private SystemScopeService scopeService;
 

@@ -35,8 +35,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/api/stats")
+@RequestMapping("/" + StatsAPI.URL)
 public class StatsAPI {
+
+	public static final String URL = RootController.API_URL + "/stats";
+
 	// Logger for this class
 	private static final Logger logger = LoggerFactory.getLogger(StatsAPI.class);
 

@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
+import org.mitre.oauth2.service.SystemScopeService;
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.service.UserInfoService;
 import org.mitre.openid.connect.view.HttpCodeView;
@@ -52,8 +53,11 @@ import com.google.common.base.Strings;
  *
  */
 @Controller
+@RequestMapping("/" + UserInfoEndpoint.URL)
 public class UserInfoEndpoint {
 
+	public static final String URL = "userinfo";
+	
 	@Autowired
 	private UserInfoService userInfoService;
 
@@ -74,8 +78,8 @@ public class UserInfoEndpoint {
 	/**
 	 * Get information about the user as specified in the accessToken included in this request
 	 */
-	@PreAuthorize("hasRole('ROLE_USER') and #oauth2.hasScope('openid')")
-	@RequestMapping(value="/userinfo", method= {RequestMethod.GET, RequestMethod.POST}, produces = {MediaType.APPLICATION_JSON_VALUE, JOSE_MEDIA_TYPE_VALUE})
+	@PreAuthorize("hasRole('ROLE_USER') and #oauth2.hasScope('" + SystemScopeService.OPENID_SCOPE + "')")
+	@RequestMapping(method= {RequestMethod.GET, RequestMethod.POST}, produces = {MediaType.APPLICATION_JSON_VALUE, JOSE_MEDIA_TYPE_VALUE})
 	public String getInfo(@RequestParam(value="claims", required=false) String claimsRequestJsonString,
 			@RequestHeader(value="Accept", required=false) String acceptHeader,
 			OAuth2Authentication auth, Model model) {

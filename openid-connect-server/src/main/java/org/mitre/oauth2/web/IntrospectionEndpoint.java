@@ -52,6 +52,11 @@ import com.google.common.collect.ImmutableMap;
 @Controller
 public class IntrospectionEndpoint {
 
+	/**
+	 * 
+	 */
+	public static final String URL = "introspect";
+
 	@Autowired
 	private OAuth2TokenEntityService tokenServices;
 
@@ -84,7 +89,7 @@ public class IntrospectionEndpoint {
 	}
 
 	@PreAuthorize("hasRole('ROLE_CLIENT')")
-	@RequestMapping("/introspect")
+	@RequestMapping("/" + URL)
 	public String verify(@RequestParam("token") String tokenValue,
 			@RequestParam(value = "resource_id", required = false) String resourceId,
 			@RequestParam(value = "token_type_hint", required = false) String tokenType,

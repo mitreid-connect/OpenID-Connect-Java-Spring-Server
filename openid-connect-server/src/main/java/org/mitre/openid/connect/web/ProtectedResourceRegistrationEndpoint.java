@@ -63,8 +63,13 @@ import com.google.common.base.Strings;
 import com.google.gson.JsonSyntaxException;
 
 @Controller
-@RequestMapping(value = "resource")
+@RequestMapping(value = ProtectedResourceRegistrationEndpoint.URL)
 public class ProtectedResourceRegistrationEndpoint {
+
+	/**
+	 * 
+	 */
+	public static final String URL = "resource";
 
 	@Autowired
 	private ClientDetailsEntityService clientService;

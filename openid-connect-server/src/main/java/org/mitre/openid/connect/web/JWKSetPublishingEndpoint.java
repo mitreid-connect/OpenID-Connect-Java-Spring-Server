@@ -31,10 +31,12 @@ import com.nimbusds.jose.jwk.JWK;
 @Controller
 public class JWKSetPublishingEndpoint {
 
+	public static final String URL = "jwk";
+	
 	@Autowired
 	private JWTSigningAndValidationService jwtService;
 
-	@RequestMapping(value = "/jwk", produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/" + URL, produces = MediaType.APPLICATION_JSON_VALUE)
 	public String getJwk(Model m) {
 
 		// map from key id to key
