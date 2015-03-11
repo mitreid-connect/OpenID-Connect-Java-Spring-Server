@@ -16,12 +16,6 @@
  *******************************************************************************/
 package org.mitre.oauth2.service.impl;
 
-import static com.google.common.collect.Sets.newHashSet;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-
 import java.util.Set;
 
 import org.junit.Test;
@@ -31,6 +25,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.security.oauth2.provider.ClientDetails;
+
+import static com.google.common.collect.Sets.newHashSet;
+
+import static org.hamcrest.CoreMatchers.is;
+
+import static org.mockito.BDDMockito.given;
+
+import static org.mockito.Mockito.mock;
+
+import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TestDefaultIntrospectionAuthorizer {

@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
@@ -66,7 +67,7 @@ public class ScopeAPI {
 
 	private Gson gson = new Gson();
 
-	@RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public String getAll(ModelMap m) {
 
 		Set<SystemScope> allScopes = scopeService.getAll();
@@ -76,7 +77,7 @@ public class ScopeAPI {
 		return JsonEntityView.VIEWNAME;
 	}
 
-	@RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public String getScope(@PathVariable("id") Long id, ModelMap m) {
 
 		SystemScope scope = scopeService.getById(id);
@@ -97,7 +98,7 @@ public class ScopeAPI {
 	}
 
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
+	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public String updateScope(@PathVariable("id") Long id, @RequestBody String json, ModelMap m) {
 
 		SystemScope existing = scopeService.getById(id);
@@ -135,7 +136,7 @@ public class ScopeAPI {
 	}
 
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	@RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json", consumes = "application/json")
+	@RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public String createScope(@RequestBody String json, ModelMap m) {
 		SystemScope scope = gson.fromJson(json, SystemScope.class);
 

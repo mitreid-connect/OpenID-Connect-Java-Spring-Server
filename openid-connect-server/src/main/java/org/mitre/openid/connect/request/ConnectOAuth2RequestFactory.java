@@ -16,8 +16,6 @@
  *******************************************************************************/
 package org.mitre.openid.connect.request;
 
-import static org.mitre.openid.connect.request.ConnectRequestParameters.*;
-
 import java.text.ParseException;
 import java.util.Collections;
 import java.util.Map;
@@ -54,6 +52,19 @@ import com.nimbusds.jwt.JWTParser;
 import com.nimbusds.jwt.PlainJWT;
 import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+
+import static org.mitre.openid.connect.request.ConnectRequestParameters.CLAIMS;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.CLIENT_ID;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.CSRF;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.DISPLAY;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.LOGIN_HINT;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.MAX_AGE;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.NONCE;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.PROMPT;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.REDIRECT_URI;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.REQUEST;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.RESPONSE_TYPE;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.STATE;
 
 @Component("connectOAuth2RequestFactory")
 public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {

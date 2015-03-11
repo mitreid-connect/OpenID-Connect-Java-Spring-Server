@@ -69,12 +69,13 @@ public class UserInfoEndpoint {
 	private static final Logger logger = LoggerFactory.getLogger(UserInfoEndpoint.class);
 
 	private static final MediaType JOSE_MEDIA_TYPE = new MediaType("application", "jwt");
+	private static final String JOSE_MEDIA_TYPE_VALUE = "application/jwt";
 
 	/**
 	 * Get information about the user as specified in the accessToken included in this request
 	 */
 	@PreAuthorize("hasRole('ROLE_USER') and #oauth2.hasScope('openid')")
-	@RequestMapping(value="/userinfo", method= {RequestMethod.GET, RequestMethod.POST}, produces = {"application/json", "application/jwt"})
+	@RequestMapping(value="/userinfo", method= {RequestMethod.GET, RequestMethod.POST}, produces = {MediaType.APPLICATION_JSON_VALUE, JOSE_MEDIA_TYPE_VALUE})
 	public String getInfo(@RequestParam(value="claims", required=false) String claimsRequestJsonString,
 			@RequestHeader(value="Accept", required=false) String acceptHeader,
 			OAuth2Authentication auth, Model model) {

@@ -19,9 +19,6 @@
  */
 package org.mitre.openid.connect.repository.impl;
 
-import static org.mitre.util.jpa.JpaUtil.getSingleResult;
-import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -30,6 +27,9 @@ import org.mitre.openid.connect.model.PairwiseIdentifier;
 import org.mitre.openid.connect.repository.PairwiseIdentifierRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import static org.mitre.util.jpa.JpaUtil.getSingleResult;
+import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
 
 /**
  * @author jricher

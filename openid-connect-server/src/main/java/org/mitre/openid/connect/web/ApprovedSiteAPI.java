@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
@@ -71,7 +72,7 @@ public class ApprovedSiteAPI {
 	 * @param m
 	 * @return
 	 */
-	@RequestMapping(method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public String getAllApprovedSites(ModelMap m, Principal p) {
 
 		Collection<ApprovedSite> all = approvedSiteService.getByUserId(p.getName());
@@ -111,7 +112,7 @@ public class ApprovedSiteAPI {
 	/**
 	 * Get a single approved site
 	 */
-	@RequestMapping(value="/{id}", method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value="/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public String getApprovedSite(@PathVariable("id") Long id, ModelMap m, Principal p) {
 		ApprovedSite approvedSite = approvedSiteService.getById(id);
 		if (approvedSite == null) {

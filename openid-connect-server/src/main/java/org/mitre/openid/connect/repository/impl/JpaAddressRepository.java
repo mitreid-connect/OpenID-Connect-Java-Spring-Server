@@ -16,8 +16,6 @@
  *******************************************************************************/
 package org.mitre.openid.connect.repository.impl;
 
-import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 

@@ -16,10 +16,6 @@
  *******************************************************************************/
 package org.mitre.openid.connect.service.impl;
 
-import static org.mitre.util.JsonUtils.base64UrlDecodeObject;
-import static org.mitre.util.JsonUtils.readMap;
-import static org.mitre.util.JsonUtils.readSet;
-
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Collection;
@@ -66,6 +62,10 @@ import com.google.common.collect.Sets;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
+
+import static org.mitre.util.JsonUtils.base64UrlDecodeObject;
+import static org.mitre.util.JsonUtils.readMap;
+import static org.mitre.util.JsonUtils.readSet;
 /**
  *
  * Data service to import MITREid 1.0 configuration.

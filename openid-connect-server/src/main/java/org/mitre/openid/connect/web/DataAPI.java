@@ -31,6 +31,7 @@ import org.mitre.openid.connect.service.impl.MITREidDataService_1_1;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
@@ -79,7 +80,7 @@ public class DataAPI {
 	@Autowired
 	private WebResponseExceptionTranslator providerExceptionHandler;
 
-	@RequestMapping(method = RequestMethod.POST, consumes = "application/json")
+	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public String importData(Reader in, Model m) throws IOException {
 
 		JsonReader reader = new JsonReader(in);
@@ -114,10 +115,10 @@ public class DataAPI {
 		return "httpCodeView";
 	}
 
-	@RequestMapping(method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public void exportData(HttpServletResponse resp, Principal prin) throws IOException {
 
-		resp.setContentType("application/json");
+		resp.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
 		// this writer puts things out onto the wire
 		JsonWriter writer = new JsonWriter(resp.getWriter());

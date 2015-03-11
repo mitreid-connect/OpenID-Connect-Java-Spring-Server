@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
@@ -76,7 +77,7 @@ public class BlacklistAPI {
 	 * @param m
 	 * @return
 	 */
-	@RequestMapping(method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public String getAllBlacklistedSites(ModelMap m) {
 
 		Collection<BlacklistedSite> all = blacklistService.getAll();
@@ -93,7 +94,7 @@ public class BlacklistAPI {
 	 * @param p
 	 * @return
 	 */
-	@RequestMapping(method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
+	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public String addNewBlacklistedSite(@RequestBody String jsonString, ModelMap m, Principal p) {
 
 		JsonObject json;
@@ -127,7 +128,7 @@ public class BlacklistAPI {
 	/**
 	 * Update an existing blacklisted site
 	 */
-	@RequestMapping(value="/{id}", method = RequestMethod.PUT, consumes = "application/json", produces = "application/json")
+	@RequestMapping(value="/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public String updateBlacklistedSite(@PathVariable("id") Long id, @RequestBody String jsonString, ModelMap m, Principal p) {
 
 		JsonObject json;
@@ -193,7 +194,7 @@ public class BlacklistAPI {
 	/**
 	 * Get a single blacklisted site
 	 */
-	@RequestMapping(value="/{id}", method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value="/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public String getBlacklistedSite(@PathVariable("id") Long id, ModelMap m) {
 		BlacklistedSite blacklist = blacklistService.getById(id);
 		if (blacklist == null) {

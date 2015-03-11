@@ -19,13 +19,6 @@
  */
 package org.mitre.openid.connect.client.service.impl;
 
-import static org.mitre.util.JsonUtils.getAsBoolean;
-import static org.mitre.util.JsonUtils.getAsEncryptionMethodList;
-import static org.mitre.util.JsonUtils.getAsJweAlgorithmList;
-import static org.mitre.util.JsonUtils.getAsJwsAlgorithmList;
-import static org.mitre.util.JsonUtils.getAsString;
-import static org.mitre.util.JsonUtils.getAsStringList;
-
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -47,6 +40,13 @@ import com.google.common.util.concurrent.UncheckedExecutionException;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
+import static org.mitre.util.JsonUtils.getAsBoolean;
+import static org.mitre.util.JsonUtils.getAsEncryptionMethodList;
+import static org.mitre.util.JsonUtils.getAsJweAlgorithmList;
+import static org.mitre.util.JsonUtils.getAsJwsAlgorithmList;
+import static org.mitre.util.JsonUtils.getAsString;
+import static org.mitre.util.JsonUtils.getAsStringList;
 
 /**
  * 

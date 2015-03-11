@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -91,7 +92,7 @@ public class DiscoveryEndpoint {
 	};
 
 	@RequestMapping(value={"/.well-known/webfinger"},
-			params={"resource", "rel=http://openid.net/specs/connect/1.0/issuer"}, produces = "application/json")
+			params={"resource", "rel=http://openid.net/specs/connect/1.0/issuer"}, produces = MediaType.APPLICATION_JSON_VALUE)
 	public String webfinger(@RequestParam("resource") String resource, Model model) {
 
 		if (!resource.equals(config.getIssuer())) {

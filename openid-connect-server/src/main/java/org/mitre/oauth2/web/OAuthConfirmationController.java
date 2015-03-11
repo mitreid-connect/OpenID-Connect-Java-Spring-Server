@@ -19,8 +19,6 @@
  */
 package org.mitre.oauth2.web;
 
-import static org.mitre.openid.connect.request.ConnectRequestParameters.*;
-
 import java.security.Principal;
 import java.util.Date;
 import java.util.HashMap;
@@ -55,6 +53,12 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonObject;
+
+import static org.mitre.openid.connect.request.ConnectRequestParameters.CSRF;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.PROMPT;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.PROMPT_CONSENT;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.PROMPT_NONE;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.PROMPT_SEPARATOR;
 
 /**
  * @author jricher

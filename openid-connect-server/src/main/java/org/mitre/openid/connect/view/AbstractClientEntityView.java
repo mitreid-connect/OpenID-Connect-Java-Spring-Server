@@ -33,6 +33,7 @@ import org.mitre.jose.JWSAlgorithmEmbed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.servlet.view.AbstractView;
 
 import com.google.gson.ExclusionStrategy;
@@ -105,7 +106,7 @@ public abstract class AbstractClientEntityView extends AbstractView {
 	@Override
 	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
 
-		response.setContentType("application/json");
+		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
 
 		HttpStatus code = (HttpStatus) model.get("code");

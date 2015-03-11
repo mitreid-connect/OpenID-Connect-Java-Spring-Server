@@ -16,14 +16,14 @@
  *******************************************************************************/
 package org.mitre.openid.connect.web;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.Map;
 
 import org.mitre.openid.connect.service.StatsService;
 import org.mitre.openid.connect.view.JsonEntityView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
@@ -46,7 +46,7 @@ public class StatsAPI {
 	@Autowired
 	private WebResponseExceptionTranslator providerExceptionHandler;
 
-	@RequestMapping(value = "summary", produces = "application/json")
+	@RequestMapping(value = "summary", produces = MediaType.APPLICATION_JSON_VALUE)
 	public String statsSummary(ModelMap m) {
 
 		Map<String, Integer> e = statsService.getSummaryStats();
@@ -58,7 +58,7 @@ public class StatsAPI {
 	}
 
 	@PreAuthorize("hasRole('ROLE_USER')")
-	@RequestMapping(value = "byclientid", produces = "application/json")
+	@RequestMapping(value = "byclientid", produces = MediaType.APPLICATION_JSON_VALUE)
 	public String statsByClient(ModelMap m) {
 		Map<Long, Integer> e = statsService.getByClientId();
 
@@ -68,7 +68,7 @@ public class StatsAPI {
 	}
 
 	@PreAuthorize("hasRole('ROLE_USER')")
-	@RequestMapping(value = "byclientid/{id}", produces = "application/json")
+	@RequestMapping(value = "byclientid/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public String statsByClientId(@PathVariable("id") Long id, ModelMap m) {
 		Integer e = statsService.getCountForClientId(id);
 
