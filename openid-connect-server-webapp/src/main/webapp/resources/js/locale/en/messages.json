@@ -158,6 +158,7 @@
             "type": "Application Type",
             "type-native": "Native",
             "type-web": "Web",
+            "unknown": "(Unknown)",
             "user-info-crypto-algorithm": "User Info Endpoint Encryption Algorithm",
             "user-info-crypto-method": "User Info Endpoint Encryption Method",
             "user-info-signing-algorithm": "User Info Endpoint Signing Algorithm"
@@ -185,7 +186,8 @@
             "no-redirect": "NO REDIRECT URI",
             "registered": "Registrered",
             "search": "Search...",
-            "whitelist": "Whitelist"
+            "whitelist": "Whitelist",
+            "unknown": "at an unknown time"
         },
         "manage": "Manage Clients",
         "more-info": {
@@ -335,5 +337,8 @@
         "whitelist-table": {
             "no-sites": "There are no whitelisted sites. Use the <strong>whitelist</strong> button on the client management page to create one."
         }
+    },
+    approve: {
+    	"dynamically-registered-unknown": "at an unknown time"
     }
 }

@@ -195,7 +195,11 @@
 			<div class="control-group" id="createdAt">
 				<label class="control-label" data-i18n="client.client-form.registered">Registered at</label>
 				<div class="controls">
-					<%-createdAt%>
+					<% if (createdAt) { %>
+						<%-createdAt%>
+					<% } else { %>
+						<span data-i18n="client.client-form.unknown">Unknown</span>
+					<% } %>
 				</div>
 			</div>
 
