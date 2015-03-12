@@ -338,7 +338,7 @@
             "no-sites": "There are no whitelisted sites. Use the <strong>whitelist</strong> button on the client management page to create one."
         }
     },
-    approve: {
+    "approve": {
     	"dynamically-registered-unknown": "at an unknown time"
     }
 }
