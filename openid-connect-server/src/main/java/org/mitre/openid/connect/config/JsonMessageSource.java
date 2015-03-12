@@ -18,8 +18,6 @@
 package org.mitre.openid.connect.config;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.MessageFormat;
@@ -121,7 +119,7 @@ public class JsonMessageSource extends AbstractMessageSource {
 				logger.info("No locale loaded, trying to load from " + r);
 				
 				JsonParser parser = new JsonParser();
-				JsonObject obj = (JsonObject) parser.parse(new InputStreamReader(r.getInputStream()));
+				JsonObject obj = (JsonObject) parser.parse(new InputStreamReader(r.getInputStream(), "UTF-8"));
 				
 				languageMaps.put(locale, obj);
 			} catch (JsonIOException | JsonSyntaxException | IOException e) {

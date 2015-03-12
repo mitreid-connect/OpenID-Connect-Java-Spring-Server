@@ -52,6 +52,7 @@
 						<nonFilteredFileExtension>ttf</nonFilteredFileExtension>
 						<nonFilteredFileExtension>svg</nonFilteredFileExtension>
 						<nonFilteredFileExtension>jwks</nonFilteredFileExtension>
+						<nonFilteredFileExtension>json</nonFilteredFileExtension>
 					</nonFilteredFileExtensions>
 					<webResources>
 						<resource>

@@ -322,5 +322,28 @@
         "whitelist-table": {
             "no-sites": "Det finns inga vitlistade webbplatser. Använd knappen <strong>vitlista</strong> på klientadminstrationssidan för att skapa en."
         }
+    },
+    "home": {
+		"title": "Hem",
+		"welcome": {
+			"title": "Välkommen!",
+			"body": "\nOpenID Connect är ett internet-kapabelt federerat identitetsprotokoll byggt ovanpå autentiseringsramverket OAuth2. \nOpenID Connect låter dig logga in på en webbplats med din identitet utan att avslöja dina inloggningshemligheter, som ett användarnamn och lösenord.</p>\n<p><a class=\"btn btn-primary btn-large\" href=\"http://openid.net/connect/\">Lär dig mer &raquo;</a>"
+		},
+		"more": "Mer",
+		"about": {
+			"title": "Om&nbsp;tjänsten",
+			"body": "\nDenna OpenID Connect-tjänst är byggd från det öpnna källkodsprojektet MITREid, av \n<a href=\"http://www.mitre.org/\">MITRE Corporation</a> och <a href=\"http://kit.mit.edu/\">MIT Kerberos and Internet Trust Consortium</a>."
+		},
+		"contact": {
+			"title": "Kontakt",
+			"body": "\nFör mer information eller användarstöd, kontakta administratörerna av detta system.</p>\n<p><a class=\"btn\" href=\"mailto:idp@example.com?Subject=OpenID Connect\">E-post &raquo;</a>"
+		},
+		"statistics": {
+			"title": "Nuvarande statistik",
+			"loading": "Laddar...",
+			"number_users": "Antal användare: <span class=\"label label-info\" id=\"userCount\">{0}</span>",
+			"number_clients": "Auktoriserade klienter: <span class=\"label label-info\" id=\"clientCount\">{0}</span>",
+			"number_approvals": "Godkända webbplatser: <span class=\"label label-info\" id=\"approvalCount\">{0}</span>"
+		}
     }
 }
