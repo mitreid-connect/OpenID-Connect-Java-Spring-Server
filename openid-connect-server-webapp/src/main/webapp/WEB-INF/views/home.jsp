@@ -3,7 +3,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="security" uri="http://www.springframework.org/security/tags"%>
 
-<spring:message code="home.welcome" var="title"/>
+<spring:message code="home.title" var="title"/>
 <o:header title="${title}" />
 <o:topbar pageName="Home" />
 <div class="container-fluid main">

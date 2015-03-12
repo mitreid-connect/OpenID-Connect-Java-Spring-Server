@@ -47,6 +47,8 @@ public class JsonMessageSource extends AbstractMessageSource {
 	private static final Logger logger = LoggerFactory.getLogger(JsonMessageSource.class);
 
 	private Resource baseDirectory;
+	
+	private Locale fallbackLocale = new Locale("en"); // US English is the fallback language
 
 	private Map<Locale, JsonObject> languageMaps = new HashMap<>();
 	
@@ -55,9 +57,20 @@ public class JsonMessageSource extends AbstractMessageSource {
 		
 		JsonObject lang = getLanguageMap(locale);
 
-		MessageFormat mf = getMessageFormat(code, locale, lang);
+		String value = getValue(code, lang);
 		
-		// TODO Auto-generated method stub
+		if (value == null) {
+			// if we haven't found anything, try the default locale
+			lang = getLanguageMap(fallbackLocale);
+			value = getValue(code, lang);
+		}
+		
+		if (value == null) {
+			value = code;
+		}
+
+		MessageFormat mf = new MessageFormat(value, locale);
+		
 		return mf;
 	}
 
@@ -67,14 +80,19 @@ public class JsonMessageSource extends AbstractMessageSource {
 	 * @param lang
 	 * @return
 	 */
-	private MessageFormat getMessageFormat(String code, Locale locale, JsonObject lang) {
+	private String getValue(String code, JsonObject lang) {
+		
+		// if there's no language map, nothing to look up
+		if (lang == null) {
+			return null;
+		}
 		
 		JsonElement e = lang;
 		
 		Iterable<String> parts = Splitter.on('.').split(code);
 		Iterator<String> it = parts.iterator();
 		
-		String value = code;
+		String value = null;
 		
 		while (it.hasNext()) {
 			String p = it.next();
@@ -99,9 +117,8 @@ public class JsonMessageSource extends AbstractMessageSource {
 		}
 		
 		
-		MessageFormat mf = new MessageFormat(value, locale);
+		return value;
 		
-		return mf;
 	}
 
 	/**

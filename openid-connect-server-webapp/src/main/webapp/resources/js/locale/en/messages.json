@@ -363,5 +363,13 @@
 			"number_clients": "Authorized clients: <span class=\"label label-info\" id=\"clientCount\">{0}</span>",
 			"number_approvals": "Approved sites: <span class=\"label label-info\" id=\"approvalCount\">{0}</span>"
 		}
+	},
+	"topbar": {
+		"about": "About",
+		"contact": "Contact",
+		"statistics": "Statistics",
+		"home": "Home",
+		"login": "Log in",
+		"logout": "Log out"
 	}
 }
