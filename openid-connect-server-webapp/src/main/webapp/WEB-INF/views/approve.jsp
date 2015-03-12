@@ -57,7 +57,7 @@
 								<!-- client is dynamically registered -->
 								<div class="alert alert-block <c:out value="${ count eq 0 ? 'alert-error' : 'alert-warn' }" />">
 									<h4>
-										<i class="icon-globe"></i> <spring:message code="approve.caution"/>:
+										<i class="icon-globe"></i> <spring:message code="approve.caution.title"/>:
 									</h4>
 									
 									<p>
@@ -146,7 +146,7 @@
 									<h4>
 										<i class="icon-info-sign"></i> <spring:message code="approve.warning"/>:
 									</h4>
-									<spring:message code="approve.no_request_uri"/>
+									<spring:message code="approve.no_redirect_uri"/>
 									<spring:message code="approve.redirect_uri" arguments="${redirect_uri}"/>
 								</div>
 							</c:when>
@@ -228,7 +228,7 @@
 					</fieldset>
 
 					<fieldset style="text-align: left" class="well">
-						<legend style="margin-bottom: 0;"><spring:message code="approve.remember"/>:</legend>
+						<legend style="margin-bottom: 0;"><spring:message code="approve.remember.title"/>:</legend>
 						<label for="remember-forever" class="radio"> 
 						<input type="radio" name="remember" id="remember-forever" value="until-revoked"  ${ !consent ? 'checked="checked"' : '' }> 
 							<spring:message code="approve.remember.until_revoke"/>
