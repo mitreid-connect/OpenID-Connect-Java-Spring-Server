@@ -1,5 +1,5 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-<h2><spring:message code="home.about"/></h2>
+<h2><spring:message code="home.about.title"/></h2>
 
 <p><spring:message code="home.about.body"/></p>
 
