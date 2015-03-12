@@ -24,6 +24,8 @@ public interface ConnectRequestParameters {
 	public String CSRF = "csrf";
 	public String APPROVED_SITE = "approved_site";
 
-
+	// responses
+	public String ERROR = "error";
+	public String LOGIN_REQUIRED = "login_required";
 
 }
