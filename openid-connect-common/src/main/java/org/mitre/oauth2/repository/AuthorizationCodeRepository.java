@@ -16,9 +16,9 @@
  *******************************************************************************/
 package org.mitre.oauth2.repository;
 
+import java.util.Collection;
+
 import org.mitre.oauth2.model.AuthorizationCodeEntity;
-import org.springframework.security.oauth2.common.exceptions.InvalidGrantException;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
 
 /**
  * Interface for saving and consuming OAuth2 authorization codes as AuthorizationCodeEntitys.
@@ -37,12 +37,23 @@ public interface AuthorizationCodeRepository {
 	public AuthorizationCodeEntity save(AuthorizationCodeEntity authorizationCode);
 
 	/**
-	 * Consume an authorization code.
+	 * Get an authorization code from the repository by value.
 	 * 
 	 * @param code						the authorization code value
 	 * @return							the authentication associated with the code
-	 * @throws InvalidGrantException	if no AuthorizationCodeEntity is found with the given value
 	 */
-	public OAuth2Authentication consume(String code) throws InvalidGrantException;
+	public AuthorizationCodeEntity getByCode(String code);
 
+	/**
+	 * Remove an authorization code from the repository
+	 * 
+	 * @param authorizationCodeEntity
+	 */
+	public void remove(AuthorizationCodeEntity authorizationCodeEntity);
+
+	/**
+	 * @return A collection of all expired codes.
+	 */
+	public Collection<AuthorizationCodeEntity> getExpiredCodes();
+	
 }

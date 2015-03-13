@@ -52,7 +52,8 @@ CREATE TABLE IF NOT EXISTS client_authority (
 CREATE TABLE IF NOT EXISTS authorization_code (
 	id BIGINT AUTO_INCREMENT PRIMARY KEY,
 	code VARCHAR(256),
-	authentication LONGBLOB
+	auth_holder_id BIGINT,
+	expiration TIMESTAMP NULL
 );
 
 CREATE TABLE IF NOT EXISTS client_grant_type (

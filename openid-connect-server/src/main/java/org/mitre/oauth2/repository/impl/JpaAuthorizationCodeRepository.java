@@ -19,6 +19,9 @@
  */
 package org.mitre.oauth2.repository.impl;
 
+import java.util.Collection;
+import java.util.Date;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -26,8 +29,6 @@ import javax.persistence.TypedQuery;
 import org.mitre.oauth2.model.AuthorizationCodeEntity;
 import org.mitre.oauth2.repository.AuthorizationCodeRepository;
 import org.mitre.util.jpa.JpaUtil;
-import org.springframework.security.oauth2.common.exceptions.InvalidGrantException;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,27 +57,39 @@ public class JpaAuthorizationCodeRepository implements AuthorizationCodeReposito
 	}
 
 	/* (non-Javadoc)
-	 * @see org.mitre.oauth2.repository.AuthorizationCodeRepository#consume(java.lang.String)
+	 * @see org.mitre.oauth2.repository.AuthorizationCodeRepository#getByCode(java.lang.String)
 	 */
 	@Override
 	@Transactional
-	public OAuth2Authentication consume(String code) throws InvalidGrantException {
-
+	public AuthorizationCodeEntity getByCode(String code) {
 		TypedQuery<AuthorizationCodeEntity> query = manager.createNamedQuery(AuthorizationCodeEntity.QUERY_BY_VALUE, AuthorizationCodeEntity.class);
 		query.setParameter("code", code);
 
 		AuthorizationCodeEntity result = JpaUtil.getSingleResult(query.getResultList());
-
-		if (result == null) {
-			throw new InvalidGrantException("JpaAuthorizationCodeRepository: no authorization code found for value " + code);
-		}
-
-		OAuth2Authentication authRequest = result.getAuthentication();
-
-		manager.remove(result);
-
-		return authRequest;
-
+		return result;
 	}
+
+	/* (non-Javadoc)
+	 * @see org.mitre.oauth2.repository.AuthorizationCodeRepository#remove(org.mitre.oauth2.model.AuthorizationCodeEntity)
+	 */
+	@Override
+	public void remove(AuthorizationCodeEntity authorizationCodeEntity) {
+		AuthorizationCodeEntity found = manager.find(AuthorizationCodeEntity.class, authorizationCodeEntity.getId());
+		if (found != null) {
+			manager.remove(found);
+		}		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.mitre.oauth2.repository.AuthorizationCodeRepository#getExpiredCodes()
+	 */
+	@Override
+	public Collection<AuthorizationCodeEntity> getExpiredCodes() {
+		TypedQuery<AuthorizationCodeEntity> query = manager.createNamedQuery(AuthorizationCodeEntity.QUERY_EXPIRATION_BY_DATE, AuthorizationCodeEntity.class);
+		query.setParameter(AuthorizationCodeEntity.PARAM_DATE, new Date()); // this gets anything that's already expired
+		return query.getResultList();
+	}
+	
+	
 
 }
