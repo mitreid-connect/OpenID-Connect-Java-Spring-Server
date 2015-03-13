@@ -22,10 +22,12 @@
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:security="http://www.springframework.org/schema/security"
 	xmlns:oauth="http://www.springframework.org/schema/security/oauth2"
+	xmlns:util="http://www.springframework.org/schema/util"
 	xsi:schemaLocation="http://www.springframework.org/schema/security/oauth2 http://www.springframework.org/schema/security/spring-security-oauth2-2.0.xsd
 		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.1.xsd
 		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.1.xsd
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd">
 
@@ -80,8 +82,8 @@
 		<security:intercept-url pattern="/token" access="isAuthenticated()" />
 		<security:http-basic entry-point-ref="oauthAuthenticationEntryPoint" />
 		<!-- include this only if you need to authenticate clients via request parameters -->
-		<security:custom-filter ref="clientAssertionTokenEndpointFilter" after="PRE_AUTH_FILTER" /> <!-- this one has to go first -->
-		<security:custom-filter ref="clientCredentialsTokenEndpointFilter" after="BASIC_AUTH_FILTER" />
+		<security:custom-filter ref="clientAssertionEndpointFilter" after="PRE_AUTH_FILTER" /> <!-- this one has to go first -->
+		<security:custom-filter ref="clientCredentialsEndpointFilter" after="BASIC_AUTH_FILTER" />
 		<security:custom-filter ref="corsFilter" after="SECURITY_CONTEXT_FILTER" />
 		<security:access-denied-handler ref="oauthAccessDeniedHandler" />
 	</security:http>
@@ -135,9 +137,9 @@
 			authentication-manager-ref="clientAuthenticationManager">
 		<security:http-basic entry-point-ref="oauthAuthenticationEntryPoint" />
 <!-- 		<security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" /> -->
-		<security:custom-filter ref="clientAssertionIntrospectionEndpointFilter" after="PRE_AUTH_FILTER" /> <!-- this one has to go first -->
+		<security:custom-filter ref="clientAssertionEndpointFilter" after="PRE_AUTH_FILTER" /> <!-- this one has to go first -->
 		<security:custom-filter ref="corsFilter" after="SECURITY_CONTEXT_FILTER" />
-		<security:custom-filter ref="clientCredentialsIntrospectionEndpointFilter" after="BASIC_AUTH_FILTER" />
+		<security:custom-filter ref="clientCredentialsEndpointFilter" after="BASIC_AUTH_FILTER" />
 	</security:http>
 
 	<security:http pattern="/#{T(org.mitre.oauth2.web.RevocationEndpoint).URL}**"
@@ -147,9 +149,9 @@
 			authentication-manager-ref="clientAuthenticationManager">
 		<security:http-basic entry-point-ref="oauthAuthenticationEntryPoint" />
 <!-- 		<security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" /> -->
-		<security:custom-filter ref="clientAssertionRevocationEndpointFilter" after="PRE_AUTH_FILTER" /> <!-- this one has to go first -->
+		<security:custom-filter ref="clientAssertionEndpointFilter" after="PRE_AUTH_FILTER" /> <!-- this one has to go first -->
 		<security:custom-filter ref="corsFilter" after="SECURITY_CONTEXT_FILTER" />
-		<security:custom-filter ref="clientCredentialsRevocationEndpointFilter" after="BASIC_AUTH_FILTER" />
+		<security:custom-filter ref="clientCredentialsEndpointFilter" after="BASIC_AUTH_FILTER" />
 	</security:http>
 
 	<bean id="oauthAuthenticationEntryPoint" class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint">
@@ -164,36 +166,26 @@
 
 	<bean id="oauth2ExceptionTranslator" class="org.springframework.security.oauth2.provider.error.DefaultWebResponseExceptionTranslator" />
 
-	<bean id="clientCredentialsTokenEndpointFilter" class="org.springframework.security.oauth2.provider.client.ClientCredentialsTokenEndpointFilter">
-		<property name="authenticationManager" ref="clientAuthenticationManager" />
-		<property name="filterProcessesUrl" value="/token"/>
-	</bean>
-	
-	<bean id="clientCredentialsIntrospectionEndpointFilter" class="org.springframework.security.oauth2.provider.client.ClientCredentialsTokenEndpointFilter">
-		<property name="authenticationManager" ref="clientAuthenticationManager" />
-		<property name="filterProcessesUrl" value="/introspect"/>
-	</bean>
-
-	<bean id="clientCredentialsRevocationEndpointFilter" class="org.springframework.security.oauth2.provider.client.ClientCredentialsTokenEndpointFilter">
-		<property name="authenticationManager" ref="clientAuthenticationManager" />
-		<property name="filterProcessesUrl" value="/revoke"/>
-	</bean>
-	
-	<bean id="clientAssertionTokenEndpointFilter" class="org.mitre.openid.connect.assertion.JWTBearerClientAssertionTokenEndpointFilter">
-		<property name="authenticationManager" ref="clientAssertionAuthenticationManager" />
-		<property name="filterProcessesUrl" value="/token" />
+	<bean id="clientAuthMatcher" class="org.mitre.openid.connect.filter.MultiUrlRequestMatcher">
+		<constructor-arg name="filterProcessesUrls">
+			<set>
+				<value>/introspect</value>
+				<value>/revoke</value>
+				<value>/token</value>
+			</set>
+		</constructor-arg>
 	</bean>
 
-	<bean id="clientAssertionIntrospectionEndpointFilter" class="org.mitre.openid.connect.assertion.JWTBearerClientAssertionTokenEndpointFilter">
-		<property name="authenticationManager" ref="clientAssertionAuthenticationManager" />
-		<property name="filterProcessesUrl" value="/introspect" />
-	</bean>
-
-	<bean id="clientAssertionRevocationEndpointFilter" class="org.mitre.openid.connect.assertion.JWTBearerClientAssertionTokenEndpointFilter">
-		<property name="authenticationManager" ref="clientAssertionAuthenticationManager" />
-		<property name="filterProcessesUrl" value="/revoke" />
+	<bean id="clientCredentialsEndpointFilter" class="org.springframework.security.oauth2.provider.client.ClientCredentialsTokenEndpointFilter">
+		<property name="authenticationManager" ref="clientAuthenticationManager" />
+		<property name="requiresAuthenticationRequestMatcher" ref="clientAuthMatcher" />
 	</bean>
 	
+	<bean id="clientAssertionEndpointFilter" class="org.mitre.openid.connect.assertion.JWTBearerClientAssertionTokenEndpointFilter">
+		<constructor-arg name="additionalMatcher" ref="clientAuthMatcher" />
+		<property name="authenticationManager" ref="clientAssertionAuthenticationManager" />
+	</bean>
+
 	<security:authentication-manager id="clientAuthenticationManager">
 		<security:authentication-provider user-service-ref="clientUserDetailsService" />
 	</security:authentication-manager>
