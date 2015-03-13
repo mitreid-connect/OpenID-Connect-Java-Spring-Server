@@ -31,6 +31,7 @@ import org.mitre.openid.connect.ClientDetailsEntityJsonProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.view.AbstractView;
 
@@ -65,13 +66,13 @@ public class ClientInformationResponseView extends AbstractView {
 	@Override
 	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
 
-		response.setContentType("application/json");
+		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
 		RegisteredClient c = (RegisteredClient) model.get("client");
 		//OAuth2AccessTokenEntity token = (OAuth2AccessTokenEntity) model.get("token");
 		//String uri = (String)model.get("uri"); //request.getRequestURL() + "/" + c.getClientId();
 
-		HttpStatus code = (HttpStatus) model.get("code");
+		HttpStatus code = (HttpStatus) model.get(HttpCodeView.CODE);
 		if (code == null) {
 			code = HttpStatus.OK;
 		}

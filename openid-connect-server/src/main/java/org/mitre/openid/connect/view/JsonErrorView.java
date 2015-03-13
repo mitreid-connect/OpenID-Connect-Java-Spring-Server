@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.servlet.view.AbstractView;
@@ -43,6 +44,16 @@ import com.google.gson.JsonObject;
  */
 @Component(JsonErrorView.VIEWNAME)
 public class JsonErrorView extends AbstractView {
+
+	/**
+	 * 
+	 */
+	public static final String ERROR_MESSAGE = "errorMessage";
+
+	/**
+	 * 
+	 */
+	public static final String ERROR = "error";
 
 	/**
 	 * Logger for this class
@@ -77,12 +88,12 @@ public class JsonErrorView extends AbstractView {
 	@Override
 	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
 
-		response.setContentType("application/json");
+		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
 
-		HttpStatus code = (HttpStatus) model.get("code");
+		HttpStatus code = (HttpStatus) model.get(HttpCodeView.CODE);
 		if (code == null) {
-			code = HttpStatus.OK; // default to 200
+			code = HttpStatus.INTERNAL_SERVER_ERROR; // default to 500
 		}
 
 		response.setStatus(code.value());
@@ -91,11 +102,11 @@ public class JsonErrorView extends AbstractView {
 
 			Writer out = response.getWriter();
 
-			String errorTitle = (String) model.get("error");
+			String errorTitle = (String) model.get(ERROR);
 			if (Strings.isNullOrEmpty(errorTitle)) {
-				errorTitle = "Error";
+				errorTitle = "mitreid_error";
 			}
-			String errorMessage = (String) model.get("errorMessage");
+			String errorMessage = (String) model.get(ERROR_MESSAGE);
 			JsonObject obj = new JsonObject();
 			obj.addProperty("error", errorTitle);
 			obj.addProperty("error_description", errorMessage);

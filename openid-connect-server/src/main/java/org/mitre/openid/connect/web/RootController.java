@@ -30,29 +30,25 @@ import org.springframework.web.bind.annotation.RequestMapping;
  */
 
 @Controller
-public class ManagerController {
+public class RootController {
+	
+	public static final String API_URL = "api";
 
 	@Autowired
 	private StatsService statsService;
 
 	@RequestMapping({"", "home", "index"})
 	public String showHomePage(ModelMap m) {
-
-		//Map<String, Integer> summary = statsService.getSummaryStats();
-
-		//m.put("statsSummary", summary);
 		return "home";
 	}
 
 	@RequestMapping({"about", "about/"})
 	public String showAboutPage(ModelMap m) {
-
 		return "about";
 	}
 
 	@RequestMapping({"stats", "stats/"})
 	public String showStatsPage(ModelMap m) {
-
 		Map<String, Integer> summary = statsService.getSummaryStats();
 
 		m.put("statsSummary", summary);
@@ -61,7 +57,6 @@ public class ManagerController {
 
 	@RequestMapping({"contact", "contact/"})
 	public String showContactPage(ModelMap m) {
-
 		return "contact";
 	}
 

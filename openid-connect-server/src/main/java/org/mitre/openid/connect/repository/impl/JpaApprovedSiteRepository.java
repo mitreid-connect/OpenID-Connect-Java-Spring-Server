@@ -16,8 +16,6 @@
  *******************************************************************************/
 package org.mitre.openid.connect.repository.impl;
 
-import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
-
 import java.util.Collection;
 
 import javax.persistence.EntityManager;
@@ -28,6 +26,8 @@ import org.mitre.openid.connect.model.ApprovedSite;
 import org.mitre.openid.connect.repository.ApprovedSiteRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
 
 /**
  * JPA ApprovedSite repository implementation
@@ -44,8 +44,7 @@ public class JpaApprovedSiteRepository implements ApprovedSiteRepository {
 	@Override
 	@Transactional
 	public Collection<ApprovedSite> getAll() {
-		TypedQuery<ApprovedSite> query = manager.createNamedQuery(
-				"ApprovedSite.getAll", ApprovedSite.class);
+		TypedQuery<ApprovedSite> query = manager.createNamedQuery(ApprovedSite.QUERY_ALL, ApprovedSite.class);
 		return query.getResultList();
 	}
 
@@ -76,9 +75,9 @@ public class JpaApprovedSiteRepository implements ApprovedSiteRepository {
 	@Override
 	public Collection<ApprovedSite> getByClientIdAndUserId(String clientId, String userId) {
 
-		TypedQuery<ApprovedSite> query = manager.createNamedQuery("ApprovedSite.getByClientIdAndUserId", ApprovedSite.class);
-		query.setParameter("userId", userId);
-		query.setParameter("clientId", clientId);
+		TypedQuery<ApprovedSite> query = manager.createNamedQuery(ApprovedSite.QUERY_BY_CLIENT_ID_AND_USER_ID, ApprovedSite.class);
+		query.setParameter(ApprovedSite.PARAM_USER_ID, userId);
+		query.setParameter(ApprovedSite.PARAM_CLIENT_ID, clientId);
 
 		return query.getResultList();
 	}
@@ -86,8 +85,8 @@ public class JpaApprovedSiteRepository implements ApprovedSiteRepository {
 	@Override
 	@Transactional
 	public Collection<ApprovedSite> getByUserId(String userId) {
-		TypedQuery<ApprovedSite> query = manager.createNamedQuery("ApprovedSite.getByUserId", ApprovedSite.class);
-		query.setParameter("userId", userId);
+		TypedQuery<ApprovedSite> query = manager.createNamedQuery(ApprovedSite.QUERY_BY_USER_ID, ApprovedSite.class);
+		query.setParameter(ApprovedSite.PARAM_USER_ID, userId);
 
 		return query.getResultList();
 
@@ -96,8 +95,8 @@ public class JpaApprovedSiteRepository implements ApprovedSiteRepository {
 	@Override
 	@Transactional
 	public Collection<ApprovedSite> getByClientId(String clientId) {
-		TypedQuery<ApprovedSite> query = manager.createNamedQuery("ApprovedSite.getByClientId", ApprovedSite.class);
-		query.setParameter("clientId", clientId);
+		TypedQuery<ApprovedSite> query = manager.createNamedQuery(ApprovedSite.QUERY_BY_CLIENT_ID, ApprovedSite.class);
+		query.setParameter(ApprovedSite.PARAM_CLIENT_ID, clientId);
 
 		return query.getResultList();
 	}

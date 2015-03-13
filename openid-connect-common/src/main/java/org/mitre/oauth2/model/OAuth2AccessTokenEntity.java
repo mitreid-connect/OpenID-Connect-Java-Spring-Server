@@ -61,13 +61,13 @@ import com.nimbusds.jwt.JWTParser;
 @Entity
 @Table(name = "access_token")
 @NamedQueries({
-	@NamedQuery(name = "OAuth2AccessTokenEntity.getAll", query = "select a from OAuth2AccessTokenEntity a"),
-	@NamedQuery(name = "OAuth2AccessTokenEntity.getAllExpiredByDate", query = "select a from OAuth2AccessTokenEntity a where a.expiration <= :date"),
-	@NamedQuery(name = "OAuth2AccessTokenEntity.getByRefreshToken", query = "select a from OAuth2AccessTokenEntity a where a.refreshToken = :refreshToken"),
-	@NamedQuery(name = "OAuth2AccessTokenEntity.getByClient", query = "select a from OAuth2AccessTokenEntity a where a.client = :client"),
-	@NamedQuery(name = "OAuth2AccessTokenEntity.getByAuthentication", query = "select a from OAuth2AccessTokenEntity a where a.authenticationHolder.authentication = :authentication"),
-	@NamedQuery(name = "OAuth2AccessTokenEntity.getByIdToken", query = "select a from OAuth2AccessTokenEntity a where a.idToken = :idToken"),
-	@NamedQuery(name = "OAuth2AccessTokenEntity.getByTokenValue", query = "select a from OAuth2AccessTokenEntity a where a.value = :tokenValue")
+	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_ALL, query = "select a from OAuth2AccessTokenEntity a"),
+	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_EXPIRED_BY_DATE, query = "select a from OAuth2AccessTokenEntity a where a.expiration <= :" + OAuth2AccessTokenEntity.PARAM_DATE),
+	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_REFRESH_TOKEN, query = "select a from OAuth2AccessTokenEntity a where a.refreshToken = :" + OAuth2AccessTokenEntity.PARAM_REFERSH_TOKEN),
+	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_CLIENT, query = "select a from OAuth2AccessTokenEntity a where a.client = :" + OAuth2AccessTokenEntity.PARAM_CLIENT),
+	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_AUTHENTICATION, query = "select a from OAuth2AccessTokenEntity a where a.authenticationHolder.authentication = :" + OAuth2AccessTokenEntity.PARAM_AUTHENTICATION),
+	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_ID_TOKEN, query = "select a from OAuth2AccessTokenEntity a where a.idToken = :" + OAuth2AccessTokenEntity.PARAM_ID_TOKEN),
+	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_TOKEN_VALUE, query = "select a from OAuth2AccessTokenEntity a where a.value = :" + OAuth2AccessTokenEntity.PARAM_TOKEN_VALUE)
 })
 @org.codehaus.jackson.map.annotate.JsonSerialize(using = OAuth2AccessTokenJackson1Serializer.class)
 @org.codehaus.jackson.map.annotate.JsonDeserialize(using = OAuth2AccessTokenJackson1Deserializer.class)
@@ -75,6 +75,21 @@ import com.nimbusds.jwt.JWTParser;
 @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = OAuth2AccessTokenJackson2Deserializer.class)
 public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 
+	public static final String QUERY_BY_TOKEN_VALUE = "OAuth2AccessTokenEntity.getByTokenValue";
+	public static final String QUERY_BY_ID_TOKEN = "OAuth2AccessTokenEntity.getByIdToken";
+	public static final String QUERY_BY_AUTHENTICATION = "OAuth2AccessTokenEntity.getByAuthentication";
+	public static final String QUERY_BY_CLIENT = "OAuth2AccessTokenEntity.getByClient";
+	public static final String QUERY_BY_REFRESH_TOKEN = "OAuth2AccessTokenEntity.getByRefreshToken";
+	public static final String QUERY_EXPIRED_BY_DATE = "OAuth2AccessTokenEntity.getAllExpiredByDate";
+	public static final String QUERY_ALL = "OAuth2AccessTokenEntity.getAll";
+
+	public static final String PARAM_TOKEN_VALUE = "tokenValue";
+	public static final String PARAM_ID_TOKEN = "idToken";
+	public static final String PARAM_AUTHENTICATION = "authentication";
+	public static final String PARAM_CLIENT = "client";
+	public static final String PARAM_REFERSH_TOKEN = "refreshToken";
+	public static final String PARAM_DATE = "date";
+	
 	public static String ID_TOKEN_FIELD_NAME = "id_token";
 
 	private Long id;

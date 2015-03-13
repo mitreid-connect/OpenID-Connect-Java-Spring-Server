@@ -31,9 +31,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
+import org.springframework.security.oauth2.provider.error.WebResponseExceptionTranslator;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,9 +54,11 @@ import com.google.gson.JsonParser;
  *
  */
 @Controller
-@RequestMapping("/api/whitelist")
+@RequestMapping("/" + WhitelistAPI.URL)
 @PreAuthorize("hasRole('ROLE_USER')")
 public class WhitelistAPI {
+
+	public static final String URL = RootController.API_URL + "/whitelist";
 
 	@Autowired
 	private WhitelistedSiteService whitelistService;
@@ -61,6 +68,9 @@ public class WhitelistAPI {
 	 */
 	private static final Logger logger = LoggerFactory.getLogger(WhitelistAPI.class);
 
+	@Autowired
+	private WebResponseExceptionTranslator providerExceptionHandler;
+
 	private Gson gson = new Gson();
 	private JsonParser parser = new JsonParser();
 
@@ -69,12 +79,12 @@ public class WhitelistAPI {
 	 * @param m
 	 * @return
 	 */
-	@RequestMapping(method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public String getAllWhitelistedSites(ModelMap m) {
 
 		Collection<WhitelistedSite> all = whitelistService.getAll();
 
-		m.put("entity", all);
+		m.put(JsonEntityView.ENTITY, all);
 
 		return JsonEntityView.VIEWNAME;
 	}
@@ -87,7 +97,7 @@ public class WhitelistAPI {
 	 * @return
 	 */
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	@RequestMapping(method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
+	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public String addNewWhitelistedSite(@RequestBody String jsonString, ModelMap m, Principal p) {
 
 		JsonObject json;
@@ -99,13 +109,13 @@ public class WhitelistAPI {
 
 		} catch (JsonParseException e) {
 			logger.error("addNewWhitelistedSite failed due to JsonParseException", e);
-			m.addAttribute("code", HttpStatus.BAD_REQUEST);
-			m.addAttribute("errorMessage", "Could not save new whitelisted site. The server encountered a JSON syntax exception. Contact a system administrator for assistance.");
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
+			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Could not save new whitelisted site. The server encountered a JSON syntax exception. Contact a system administrator for assistance.");
 			return JsonErrorView.VIEWNAME;
 		} catch (IllegalStateException e) {
 			logger.error("addNewWhitelistedSite failed due to IllegalStateException", e);
-			m.addAttribute("code", HttpStatus.BAD_REQUEST);
-			m.addAttribute("errorMessage", "Could not save new whitelisted site. The server encountered an IllegalStateException. Refresh and try again - if the problem persists, contact a system administrator for assistance.");
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
+			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Could not save new whitelisted site. The server encountered an IllegalStateException. Refresh and try again - if the problem persists, contact a system administrator for assistance.");
 			return JsonErrorView.VIEWNAME;
 		}
 
@@ -114,7 +124,7 @@ public class WhitelistAPI {
 
 		WhitelistedSite newWhitelist = whitelistService.saveNew(whitelist);
 
-		m.put("entity", newWhitelist);
+		m.put(JsonEntityView.ENTITY, newWhitelist);
 
 		return JsonEntityView.VIEWNAME;
 
@@ -124,7 +134,7 @@ public class WhitelistAPI {
 	 * Update an existing whitelisted site
 	 */
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	@RequestMapping(value="/{id}", method = RequestMethod.PUT, consumes = "application/json", produces = "application/json")
+	@RequestMapping(value="/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public String updateWhitelistedSite(@PathVariable("id") Long id, @RequestBody String jsonString, ModelMap m, Principal p) {
 
 		JsonObject json;
@@ -136,13 +146,13 @@ public class WhitelistAPI {
 
 		} catch (JsonParseException e) {
 			logger.error("updateWhitelistedSite failed due to JsonParseException", e);
-			m.put("code", HttpStatus.BAD_REQUEST);
-			m.put("errorMessage", "Could not update whitelisted site. The server encountered a JSON syntax exception. Contact a system administrator for assistance.");
+			m.put(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
+			m.put(JsonErrorView.ERROR_MESSAGE, "Could not update whitelisted site. The server encountered a JSON syntax exception. Contact a system administrator for assistance.");
 			return JsonErrorView.VIEWNAME;
 		} catch (IllegalStateException e) {
 			logger.error("updateWhitelistedSite failed due to IllegalStateException", e);
-			m.put("code", HttpStatus.BAD_REQUEST);
-			m.put("errorMessage", "Could not update whitelisted site. The server encountered an IllegalStateException. Refresh and try again - if the problem persists, contact a system administrator for assistance.");
+			m.put(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
+			m.put(JsonErrorView.ERROR_MESSAGE, "Could not update whitelisted site. The server encountered an IllegalStateException. Refresh and try again - if the problem persists, contact a system administrator for assistance.");
 			return JsonErrorView.VIEWNAME;
 		}
 
@@ -150,14 +160,14 @@ public class WhitelistAPI {
 
 		if (oldWhitelist == null) {
 			logger.error("updateWhitelistedSite failed; whitelist with id " + id + " could not be found.");
-			m.put("code", HttpStatus.NOT_FOUND);
-			m.put("errorMessage", "Could not update whitelisted site. The requested whitelisted site with id " + id + "could not be found.");
+			m.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
+			m.put(JsonErrorView.ERROR_MESSAGE, "Could not update whitelisted site. The requested whitelisted site with id " + id + "could not be found.");
 			return JsonErrorView.VIEWNAME;
 		} else {
 
 			WhitelistedSite newWhitelist = whitelistService.update(oldWhitelist, whitelist);
 
-			m.put("entity", newWhitelist);
+			m.put(JsonEntityView.ENTITY, newWhitelist);
 
 			return JsonEntityView.VIEWNAME;
 		}
@@ -174,11 +184,11 @@ public class WhitelistAPI {
 
 		if (whitelist == null) {
 			logger.error("deleteWhitelistedSite failed; whitelist with id " + id + " could not be found.");
-			m.put("code", HttpStatus.NOT_FOUND);
-			m.put("errorMessage", "Could not delete whitelisted site. The requested whitelisted site with id " + id + "could not be found.");
+			m.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
+			m.put(JsonErrorView.ERROR_MESSAGE, "Could not delete whitelisted site. The requested whitelisted site with id " + id + "could not be found.");
 			return JsonErrorView.VIEWNAME;
 		} else {
-			m.put("code", HttpStatus.OK);
+			m.put(HttpCodeView.CODE, HttpStatus.OK);
 			whitelistService.remove(whitelist);
 		}
 
@@ -188,20 +198,26 @@ public class WhitelistAPI {
 	/**
 	 * Get a single whitelisted site
 	 */
-	@RequestMapping(value="/{id}", method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value="/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public String getWhitelistedSite(@PathVariable("id") Long id, ModelMap m) {
 		WhitelistedSite whitelist = whitelistService.getById(id);
 		if (whitelist == null) {
 			logger.error("getWhitelistedSite failed; whitelist with id " + id + " could not be found.");
-			m.put("code", HttpStatus.NOT_FOUND);
-			m.put("errorMessage", "The requested whitelisted site with id " + id + "could not be found.");
+			m.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
+			m.put(JsonErrorView.ERROR_MESSAGE, "The requested whitelisted site with id " + id + "could not be found.");
 			return JsonErrorView.VIEWNAME;
 		} else {
 
-			m.put("entity", whitelist);
+			m.put(JsonEntityView.ENTITY, whitelist);
 
 			return JsonEntityView.VIEWNAME;
 		}
 
+	}
+
+	@ExceptionHandler(OAuth2Exception.class)
+	public ResponseEntity<OAuth2Exception> handleException(Exception e) throws Exception {
+		logger.info("Handling error: " + e.getClass().getSimpleName() + ", " + e.getMessage());
+		return providerExceptionHandler.translate(e);
 	}
 }

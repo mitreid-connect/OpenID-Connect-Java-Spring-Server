@@ -33,10 +33,16 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 @Entity
 @Table(name = "authentication_holder")
 @NamedQueries ({
-	@NamedQuery(name = "AuthenticationHolderEntity.getAll", query = "select a from AuthenticationHolderEntity a"),
-	@NamedQuery(name = "AuthenticationHolderEntity.getUnusedAuthenticationHolders", query = "select a from AuthenticationHolderEntity a where a.id not in (select t.authenticationHolder.id from OAuth2AccessTokenEntity t) and a.id not in (select r.authenticationHolder.id from OAuth2RefreshTokenEntity r)")
+	@NamedQuery(name = AuthenticationHolderEntity.QUERY_ALL, query = "select a from AuthenticationHolderEntity a"),
+	@NamedQuery(name = AuthenticationHolderEntity.QUERY_GET_UNUSED, query = "select a from AuthenticationHolderEntity a where " +
+			"a.id not in (select t.authenticationHolder.id from OAuth2AccessTokenEntity t) and " +
+			"a.id not in (select r.authenticationHolder.id from OAuth2RefreshTokenEntity r) and " +
+			"a.id not in (select c.authenticationHolder.id from AuthorizationCodeEntity c)")
 })
 public class AuthenticationHolderEntity {
+
+	public static final String QUERY_GET_UNUSED = "AuthenticationHolderEntity.getUnusedAuthenticationHolders";
+	public static final String QUERY_ALL = "AuthenticationHolderEntity.getAll";
 
 	private Long id;
 

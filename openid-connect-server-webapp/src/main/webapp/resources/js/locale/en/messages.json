@@ -158,6 +158,7 @@
             "type": "Application Type",
             "type-native": "Native",
             "type-web": "Web",
+            "unknown": "(Unknown)",
             "user-info-crypto-algorithm": "User Info Endpoint Encryption Algorithm",
             "user-info-crypto-method": "User Info Endpoint Encryption Method",
             "user-info-signing-algorithm": "User Info Endpoint Signing Algorithm"
@@ -185,7 +186,8 @@
             "no-redirect": "NO REDIRECT URI",
             "registered": "Registrered",
             "search": "Search...",
-            "whitelist": "Whitelist"
+            "whitelist": "Whitelist",
+            "unknown": "at an unknown time"
         },
         "manage": "Manage Clients",
         "more-info": {
@@ -335,5 +337,116 @@
         "whitelist-table": {
             "no-sites": "There are no whitelisted sites. Use the <strong>whitelist</strong> button on the client management page to create one."
         }
-    }
+    },
+	"copyright": "Powered by <a href=\"https://github.com/mitreid-connect/\">MITREid Connect <span class=\"label\">{0}</span></a> <span class=\"pull-right\">&copy; 2015 The MITRE Corporation and MIT KIT.</span>.",
+	"about": {
+		"title": "About",
+		"body": "\nThis OpenID Connect service is built from the MITREid Connect Open Source project, from \n<a href=\"http://www.mitre.org/\">The MITRE Corporation</a> and the <a href=\"http://kit.mit.edu/\">MIT Kerberos and Internet Trust Consortium</a>.\n</p>\n<p>\nMore information about the project can be found at \n<a href=\"http://github.com/mitreid-connect/\">MITREid Connect on GitHub</a>. \nThere, you can submit bug reports, give feedback, or even contribute code patches for additional features you'd like to see."
+	},
+	"statistics": {
+		"title": "Statistics",
+		"number_users": "Number of users: <span class=\"label label-info\" id=\"userCount\">{0}</span>",
+		"number_clients": "Authorized clients: <span class=\"label label-info\" id=\"clientCount\">{0}</span>",
+		"number_approvals": "Approved sites: <span class=\"label label-info\" id=\"approvalCount\">{0}</span>"
+	},
+    "home": {
+    	"title": "Home",
+    	"welcome": {
+    		"title": "Welcome!",
+			"body": "\nOpenID Connect is an internet-scale federated identity protocol built on top of the OAuth2 authorization framework. \nOpenID Connect lets you log into a remote site using your identity without exposing your credentials, like a username and password.</p>\n<p><a class=\"btn btn-primary btn-large\" href=\"http://openid.net/connect/\">Learn more &raquo;</a>"
+		},
+		"more": "More",
+		"about": {
+			"title": "About",
+			"body": "This OpenID Connect service is built from the MITREid Connect Open Source project, from \n<a href=\"http://www.mitre.org/\">The MITRE Corporation</a> and the <a href=\"http://kit.mit.edu/\">MIT Kerberos and Internet Trust Consortium</a>."
+		},
+		"contact": {
+			"title": "Contact",
+			"body": "\nFor more information or support, contact the administrators of this system.</p>\n<p><a class=\"btn\" href=\"mailto:idp@example.com?Subject=OpenID Connect\">Email &raquo;</a>"
+		},
+		"statistics": {
+			"title": "Current Statistics",
+			"loading": "Loading...",
+			"number_users": "Number of users: <span class=\"label label-info\" id=\"userCount\">{0}</span>",
+			"number_clients": "Authorized clients: <span class=\"label label-info\" id=\"clientCount\">{0}</span>",
+			"number_approvals": "Approved sites: <span class=\"label label-info\" id=\"approvalCount\">{0}</span>"
+		}
+	},
+	"contact": {
+		"title": "Contact",
+		"body": "To report bugs with the MITREid Connect software itself, use the \n<a href=\"https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server/issues\">GitHub issue tracker</a>. \nFor problems relating to this server, contact the server's administrator."
+	},
+	"topbar": {
+		"about": "About",
+		"contact": "Contact",
+		"statistics": "Statistics",
+		"home": "Home",
+		"login": "Log in",
+		"logout": "Log out"
+	},
+	"sidebar": {
+		"administrative": {
+			"title": "Administrative",
+			"manage_clients": "Manage Clients",
+			"whitelisted_clients": "Whitelisted Clients",
+			"blacklisted_clients": "Blacklisted Clients",
+			"system_scopes": "System Scopes"
+		},
+		"personal": {
+			"title": "Personal",
+			"approved_sites": "Manage Approved Sites",
+			"active_tokens": "Manage Active Tokens",
+			"profile_information": "View Profile Information"
+		},
+		"developer": {
+			"title": "Developer",
+			"client_registration": "Self-service client registration",
+			"resource_registration": "Self-service protected resource registration"
+		}
+	},
+	"manage": {
+		"ok": "OK",
+		"loading": "Loading",
+		"title": "Management Console"
+	},
+    "approve": {
+    	"dynamically-registered-unknown": "at an unknown time",
+		"title": "Approve Access",
+		"error": {
+			"not_granted": "Access could not be granted."
+		},
+		"required_for": "Approval Required for",
+		"dynamically_registered": "This client was dynamically registered <span class=\"label label-info\" id=\"registrationTime\">{0}</span>.",
+		"caution": {
+			"title": "Caution",
+			"message": {
+				"none": "It has <span class=\"label label-important\">never</span> been approved previously.",
+				"singular": "It has been approved <span class=\"label label-warning\">{0}</span> time previously.",
+				"plural": "It has been approved <span class=\"label\">{0}</span> times previously."
+			}
+		},
+		"more_information": "more information",
+		"home_page": "Home page",
+		"policy": "Policy",
+		"terms": "Terms of Service",
+		"contacts": "Administrative Contacts",
+		"warning": "Warning",
+		"no_redirect_uri": "This client does not have any redirect URIs registered and someone could be using a malicious URI here.",
+		"redirect_uri": "You will be redirected to the following page if you click Approve: <code>{0}</code>",
+		"pairwise": "This client uses a <b>pairwise</b> identifier, which makes it more difficult to correlate your identity between sites.",
+		"no_scopes": "This client does not have any scopes registered and is therefore allowed to request <em>any</em> scopes available on the system. Proceed with caution.",
+		"access_to": "Access to",
+		"remember": { 
+			"title": "Remember this decision",
+			"until_revoke": "remember this decision until I revoke it",
+			"one_hour": "remember this decision for one hour",
+			"next_time": "prompt me again next time"
+		},
+		"do_authorize": "Do you authorize",
+		"label": {
+			"authorize": "Authorize",
+			"deny": "Deny"
+		}
+	}
+	
 }

@@ -41,16 +41,15 @@
 			<div class="row">
 				<div class="span5 offset1 well-small" style="text-align: left">
 					<c:if test="${ client.dynamicallyRegistered }">
-					   <fmt:formatDate type="both" value="${client.createdAt}" var="titleRegistrationTime"/>
-					   <fmt:formatDate type="date" value="${client.createdAt}" var="registrationTime"/>
 						<c:choose>
 							<c:when test="${ gras }">
 								<!-- client is "generally recognized as safe, display a more muted block -->
 								<div>
 								    <p class="alert alert-info">
 								        <i class="icon-globe"></i>
+								        
 								        <spring:message code="approve.dynamically_registered"/>
-								        <span id="registrationTime" title='<c:out value="${titleRegistrationTime}"/>'> <c:out value="${registrationTime}"/></span>.
+								        
 								   </p>
 								</div>
 							</c:when>
@@ -58,10 +57,13 @@
 								<!-- client is dynamically registered -->
 								<div class="alert alert-block <c:out value="${ count eq 0 ? 'alert-error' : 'alert-warn' }" />">
 									<h4>
-										<i class="icon-globe"></i> <spring:message code="approve.caution"/>:
+										<i class="icon-globe"></i> <spring:message code="approve.caution.title"/>:
 									</h4>
-                                    <spring:message code="approve.dynamically_registered"/> 
-                                    <span id="registrationTime" title='<c:out value="${titleRegistrationTime}"/>'> <c:out value="${registrationTime}"/></span>.
+									
+									<p>
+                                    <spring:message code="approve.dynamically_registered" arguments="${ client.createdAt }"/>
+                                    </p>
+                                    <p>
 									<c:choose>
                                        <c:when test="${count == 0}">
                                            <spring:message code="approve.caution.message.none" arguments="${count}"/>
@@ -73,6 +75,7 @@
                                            <spring:message code="approve.caution.message.plural" arguments="${count}"/>
 									   </c:otherwise>
 								   </c:choose>
+								   </p>
 								</div>
 							</c:otherwise>
 						</c:choose>
@@ -143,7 +146,7 @@
 									<h4>
 										<i class="icon-info-sign"></i> <spring:message code="approve.warning"/>:
 									</h4>
-									<spring:message code="approve.no_request_uri"/>
+									<spring:message code="approve.no_redirect_uri"/>
 									<spring:message code="approve.redirect_uri" arguments="${redirect_uri}"/>
 								</div>
 							</c:when>
@@ -225,7 +228,7 @@
 					</fieldset>
 
 					<fieldset style="text-align: left" class="well">
-						<legend style="margin-bottom: 0;"><spring:message code="approve.remember"/>:</legend>
+						<legend style="margin-bottom: 0;"><spring:message code="approve.remember.title"/>:</legend>
 						<label for="remember-forever" class="radio"> 
 						<input type="radio" name="remember" id="remember-forever" value="until-revoked"  ${ !consent ? 'checked="checked"' : '' }> 
 							<spring:message code="approve.remember.until_revoke"/>
@@ -294,6 +297,25 @@ $(document).ready(function() {
 				$('#toggleMoreInformation i').attr('class', 'icon-chevron-down');
 			}
 		});
+		
+    	var creationDate = "<c:out value="${ client.createdAt }" />";
+		var displayCreationDate = $.t('approve.dynamically-registered-unkown');
+		var hoverCreationDate = "";
+		if (creationDate != null && moment(creationDate).isValid()) {
+			creationDate = moment(creationDate);
+			if (moment().diff(creationDate, 'months') < 6) {
+				displayCreationDate = creationDate.fromNow();
+			} else {
+				displayCreationDate = "on " + creationDate.format("LL");
+			}
+			hoverCreationDate = creationDate.format("LLL");
+		}
+		
+		$('#registrationTime').html(displayCreationDate);
+		$('#registrationTime').attr('title', hoverCreationDate);
+
+		
+		
 });
 
 //-->

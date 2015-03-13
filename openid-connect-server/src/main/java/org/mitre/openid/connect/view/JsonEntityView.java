@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.servlet.view.AbstractView;
@@ -44,6 +45,8 @@ import com.google.gson.GsonBuilder;
  */
 @Component(JsonEntityView.VIEWNAME)
 public class JsonEntityView extends AbstractView {
+
+	public static final String ENTITY = "entity";
 
 	/**
 	 * Logger for this class
@@ -78,10 +81,10 @@ public class JsonEntityView extends AbstractView {
 	@Override
 	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
 
-		response.setContentType("application/json");
+		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
 
-		HttpStatus code = (HttpStatus) model.get("code");
+		HttpStatus code = (HttpStatus) model.get(HttpCodeView.CODE);
 		if (code == null) {
 			code = HttpStatus.OK; // default to 200
 		}
@@ -91,7 +94,7 @@ public class JsonEntityView extends AbstractView {
 		try {
 
 			Writer out = response.getWriter();
-			Object obj = model.get("entity");
+			Object obj = model.get(ENTITY);
 			gson.toJson(obj, out);
 
 		} catch (IOException e) {

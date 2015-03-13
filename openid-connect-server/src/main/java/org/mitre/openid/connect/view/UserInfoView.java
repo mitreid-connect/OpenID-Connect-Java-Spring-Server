@@ -31,6 +31,7 @@ import org.mitre.openid.connect.service.ScopeClaimTranslationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.servlet.view.AbstractView;
@@ -46,9 +47,14 @@ import com.google.gson.JsonParser;
 @Component(UserInfoView.VIEWNAME)
 public class UserInfoView extends AbstractView {
 
-	private static JsonParser jsonParser = new JsonParser();
+	public static final String REQUESTED_CLAIMS = "requestedClaims";
+	public static final String AUTHORIZED_CLAIMS = "authorizedClaims";
+	public static final String SCOPE = "scope";
+	public static final String USER_INFO = "userInfo";
 
 	public static final String VIEWNAME = "userInfoView";
+	
+	private static JsonParser jsonParser = new JsonParser();
 
 	/**
 	 * Logger for this class
@@ -88,20 +94,20 @@ public class UserInfoView extends AbstractView {
 	@Override
 	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
 
-		UserInfo userInfo = (UserInfo) model.get("userInfo");
+		UserInfo userInfo = (UserInfo) model.get(USER_INFO);
 
-		Set<String> scope = (Set<String>) model.get("scope");
+		Set<String> scope = (Set<String>) model.get(SCOPE);
 
-		response.setContentType("application/json");
+		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
 
 		JsonObject authorizedClaims = null;
 		JsonObject requestedClaims = null;
-		if (model.get("authorizedClaims") != null) {
-			authorizedClaims = jsonParser.parse((String) model.get("authorizedClaims")).getAsJsonObject();
+		if (model.get(AUTHORIZED_CLAIMS) != null) {
+			authorizedClaims = jsonParser.parse((String) model.get(AUTHORIZED_CLAIMS)).getAsJsonObject();
 		}
-		if (model.get("requestedClaims") != null) {
-			requestedClaims = jsonParser.parse((String) model.get("requestedClaims")).getAsJsonObject();
+		if (model.get(REQUESTED_CLAIMS) != null) {
+			requestedClaims = jsonParser.parse((String) model.get(REQUESTED_CLAIMS)).getAsJsonObject();
 		}
 		JsonObject json = toJsonFromRequestObj(userInfo, scope, authorizedClaims, requestedClaims);
 

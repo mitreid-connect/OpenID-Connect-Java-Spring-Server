@@ -39,6 +39,7 @@ import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
@@ -59,6 +60,8 @@ import com.nimbusds.jwt.SignedJWT;
 @Component(UserInfoJWTView.VIEWNAME)
 public class UserInfoJWTView extends UserInfoView {
 
+	public static final String CLIENT = "client";
+
 	/**
 	 * Logger for this class
 	 */
@@ -66,6 +69,10 @@ public class UserInfoJWTView extends UserInfoView {
 
 	public static final String VIEWNAME = "userInfoJwtView";
 
+	public static final String JOSE_MEDIA_TYPE_VALUE = "application/jwt";
+	public static final MediaType JOSE_MEDIA_TYPE = new MediaType("application", "jwt");
+	
+	
 	@Autowired
 	private JWTSigningAndValidationService jwtService;
 
@@ -83,13 +90,13 @@ public class UserInfoJWTView extends UserInfoView {
 			HttpServletRequest request, HttpServletResponse response) {
 
 		try {
-			ClientDetailsEntity client = (ClientDetailsEntity)model.get("client");
+			ClientDetailsEntity client = (ClientDetailsEntity)model.get(CLIENT);
 
 			// use the parser to import the user claims into the object
 			StringWriter writer = new StringWriter();
 			gson.toJson(json, writer);
 
-			response.setContentType("application/jwt");
+			response.setContentType(JOSE_MEDIA_TYPE_VALUE);
 
 			JWTClaimsSet claims = JWTClaimsSet.parse(writer.toString());
 

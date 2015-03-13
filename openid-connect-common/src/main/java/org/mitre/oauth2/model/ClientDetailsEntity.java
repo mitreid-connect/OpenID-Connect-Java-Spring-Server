@@ -66,14 +66,16 @@ import com.nimbusds.jose.JWSAlgorithm;
 @Entity
 @Table(name = "client_details")
 @NamedQueries({
-	@NamedQuery(name = "ClientDetailsEntity.findAll", query = "SELECT c FROM ClientDetailsEntity c"),
-	@NamedQuery(name = "ClientDetailsEntity.getByClientId", query = "select c from ClientDetailsEntity c where c.clientId = :clientId")
+	@NamedQuery(name = ClientDetailsEntity.QUERY_ALL, query = "SELECT c FROM ClientDetailsEntity c"),
+	@NamedQuery(name = ClientDetailsEntity.QUERY_BY_CLIENT_ID, query = "select c from ClientDetailsEntity c where c.clientId = :" + ClientDetailsEntity.PARAM_CLIENT_ID)
 })
 public class ClientDetailsEntity implements ClientDetails {
 
-	/**
-	 * 
-	 */
+	public static final String QUERY_BY_CLIENT_ID = "ClientDetailsEntity.getByClientId";
+	public static final String QUERY_ALL = "ClientDetailsEntity.findAll";
+
+	public static final String PARAM_CLIENT_ID = "clientId";
+	
 	private static final int DEFAULT_ID_TOKEN_VALIDITY_SECONDS = 600;
 
 	private static final long serialVersionUID = -1617727085733786296L;

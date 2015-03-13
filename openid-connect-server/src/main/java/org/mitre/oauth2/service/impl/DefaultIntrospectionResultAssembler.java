@@ -16,12 +16,9 @@
  *******************************************************************************/
 package org.mitre.oauth2.service.impl;
 
-import static com.google.common.collect.Maps.newLinkedHashMap;
-
 import java.text.ParseException;
 import java.util.Map;
 import java.util.Set;
-
 
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
@@ -34,6 +31,8 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Sets;
+
+import static com.google.common.collect.Maps.newLinkedHashMap;
 
 /**
  * Default implementation of the {@link IntrospectionResultAssembler} interface.

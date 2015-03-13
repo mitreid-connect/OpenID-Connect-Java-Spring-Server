@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
+import org.mitre.oauth2.service.SystemScopeService;
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.service.UserInfoService;
 import org.mitre.openid.connect.view.HttpCodeView;
@@ -28,12 +29,17 @@ import org.mitre.openid.connect.view.UserInfoView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.error.WebResponseExceptionTranslator;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -48,33 +54,37 @@ import com.google.common.base.Strings;
  *
  */
 @Controller
+@RequestMapping("/" + UserInfoEndpoint.URL)
 public class UserInfoEndpoint {
 
+	public static final String URL = "userinfo";
+	
 	@Autowired
 	private UserInfoService userInfoService;
 
 	@Autowired
 	private ClientDetailsEntityService clientService;
 
+	@Autowired
+	private WebResponseExceptionTranslator providerExceptionHandler;
+
 	/**
 	 * Logger for this class
 	 */
 	private static final Logger logger = LoggerFactory.getLogger(UserInfoEndpoint.class);
 
-	private static final MediaType JOSE_MEDIA_TYPE = new MediaType("application", "jwt");
-
 	/**
 	 * Get information about the user as specified in the accessToken included in this request
 	 */
-	@PreAuthorize("hasRole('ROLE_USER') and #oauth2.hasScope('openid')")
-	@RequestMapping(value="/userinfo", method= {RequestMethod.GET, RequestMethod.POST}, produces = {"application/json", "application/jwt"})
+	@PreAuthorize("hasRole('ROLE_USER') and #oauth2.hasScope('" + SystemScopeService.OPENID_SCOPE + "')")
+	@RequestMapping(method= {RequestMethod.GET, RequestMethod.POST}, produces = {MediaType.APPLICATION_JSON_VALUE, UserInfoJWTView.JOSE_MEDIA_TYPE_VALUE})
 	public String getInfo(@RequestParam(value="claims", required=false) String claimsRequestJsonString,
-			@RequestHeader(value="Accept", required=false) String acceptHeader,
+			@RequestHeader(value=HttpHeaders.ACCEPT, required=false) String acceptHeader,
 			OAuth2Authentication auth, Model model) {
 
 		if (auth == null) {
 			logger.error("getInfo failed; no principal. Requester is not authorized.");
-			model.addAttribute("code", HttpStatus.FORBIDDEN);
+			model.addAttribute(HttpCodeView.CODE, HttpStatus.FORBIDDEN);
 			return HttpCodeView.VIEWNAME;
 		}
 
@@ -83,25 +93,25 @@ public class UserInfoEndpoint {
 
 		if (userInfo == null) {
 			logger.error("getInfo failed; user not found: " + username);
-			model.addAttribute("code", HttpStatus.NOT_FOUND);
+			model.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 			return HttpCodeView.VIEWNAME;
 		}
 
-		model.addAttribute("scope", auth.getOAuth2Request().getScope());
+		model.addAttribute(UserInfoView.SCOPE, auth.getOAuth2Request().getScope());
 
-		model.addAttribute("authorizedClaims", auth.getOAuth2Request().getExtensions().get("claims"));
+		model.addAttribute(UserInfoView.AUTHORIZED_CLAIMS, auth.getOAuth2Request().getExtensions().get("claims"));
 
 		if (!Strings.isNullOrEmpty(claimsRequestJsonString)) {
-			model.addAttribute("requestedClaims", claimsRequestJsonString);
+			model.addAttribute(UserInfoView.REQUESTED_CLAIMS, claimsRequestJsonString);
 		}
 
-		model.addAttribute("userInfo", userInfo);
+		model.addAttribute(UserInfoView.USER_INFO, userInfo);
 
 		// content negotiation
 
 		// start off by seeing if the client has registered for a signed/encrypted JWT from here
 		ClientDetailsEntity client = clientService.loadClientByClientId(auth.getOAuth2Request().getClientId());
-		model.addAttribute("client", client);
+		model.addAttribute(UserInfoJWTView.CLIENT, client);
 
 		List<MediaType> mediaTypes = MediaType.parseMediaTypes(acceptHeader);
 		MediaType.sortBySpecificityAndQuality(mediaTypes);
@@ -111,7 +121,7 @@ public class UserInfoEndpoint {
 				|| client.getUserInfoEncryptedResponseEnc() != null) {
 			// client has a preference, see if they ask for plain JSON specifically on this request
 			for (MediaType m : mediaTypes) {
-				if (!m.isWildcardType() && m.isCompatibleWith(JOSE_MEDIA_TYPE)) {
+				if (!m.isWildcardType() && m.isCompatibleWith(UserInfoJWTView.JOSE_MEDIA_TYPE)) {
 					return UserInfoJWTView.VIEWNAME;
 				} else if (!m.isWildcardType() && m.isCompatibleWith(MediaType.APPLICATION_JSON)) {
 					return UserInfoView.VIEWNAME;
@@ -125,7 +135,7 @@ public class UserInfoEndpoint {
 			for (MediaType m : mediaTypes) {
 				if (!m.isWildcardType() && m.isCompatibleWith(MediaType.APPLICATION_JSON)) {
 					return UserInfoView.VIEWNAME;
-				} else if (!m.isWildcardType() && m.isCompatibleWith(JOSE_MEDIA_TYPE)) {
+				} else if (!m.isWildcardType() && m.isCompatibleWith(UserInfoJWTView.JOSE_MEDIA_TYPE)) {
 					return UserInfoJWTView.VIEWNAME;
 				}
 			}
@@ -136,4 +146,9 @@ public class UserInfoEndpoint {
 
 	}
 
+	@ExceptionHandler(OAuth2Exception.class)
+	public ResponseEntity<OAuth2Exception> handleException(Exception e) throws Exception {
+		logger.info("Handling error: " + e.getClass().getSimpleName() + ", " + e.getMessage());
+		return providerExceptionHandler.translate(e);
+	}
 }

@@ -38,11 +38,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
+import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.error.WebResponseExceptionTranslator;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -53,6 +57,11 @@ import static org.mitre.oauth2.web.AuthenticationUtilities.ensureOAuthScope;
 
 @Controller
 public class IntrospectionEndpoint {
+
+	/**
+	 * 
+	 */
+	public static final String URL = "introspect";
 
 	@Autowired
 	private OAuth2TokenEntityService tokenServices;
@@ -69,6 +78,9 @@ public class IntrospectionEndpoint {
 	@Autowired
 	private ResourceSetService resourceSetService;
 
+	@Autowired
+	private WebResponseExceptionTranslator providerExceptionHandler;
+	
 	/**
 	 * Logger for this class
 	 */
@@ -82,7 +94,7 @@ public class IntrospectionEndpoint {
 		this.tokenServices = tokenServices;
 	}
 
-	@RequestMapping("/introspect")
+	@RequestMapping("/" + URL)
 	public String verify(@RequestParam("token") String tokenValue,
 			@RequestParam(value = "token_type_hint", required = false) String tokenType,
 			Authentication auth, Model model) {
@@ -141,7 +153,7 @@ public class IntrospectionEndpoint {
 		if (Strings.isNullOrEmpty(tokenValue)) {
 			logger.error("Verify failed; token value is null");
 			Map<String,Boolean> entity = ImmutableMap.of("active", Boolean.FALSE);
-			model.addAttribute("entity", entity);
+			model.addAttribute(JsonEntityView.ENTITY, entity);
 			return JsonEntityView.VIEWNAME;
 		}
 
@@ -176,8 +188,8 @@ public class IntrospectionEndpoint {
 
 			} catch (InvalidTokenException e2) {
 				logger.error("Invalid refresh token");
-				Map<String,Boolean> entity = ImmutableMap.of("active", Boolean.FALSE);
-				model.addAttribute("entity", entity);
+				Map<String,Boolean> entity = ImmutableMap.of(IntrospectionResultAssembler.ACTIVE, Boolean.FALSE);
+				model.addAttribute(JsonEntityView.ENTITY, entity);
 				return JsonEntityView.VIEWNAME;
 			}
 		}
@@ -186,20 +198,27 @@ public class IntrospectionEndpoint {
 		
 		if (accessToken != null) {
 			Map<String, Object> entity = introspectionResultAssembler.assembleFrom(accessToken, user, authScopes);
-			model.addAttribute("entity", entity);
+			model.addAttribute(JsonEntityView.ENTITY, entity);
 		} else if (refreshToken != null) {
 			Map<String, Object> entity = introspectionResultAssembler.assembleFrom(refreshToken, user, authScopes);
-			model.addAttribute("entity", entity);
+			model.addAttribute(JsonEntityView.ENTITY, entity);
 		} else {
 			// no tokens were found (we shouldn't get here)
 			logger.error("Verify failed; Invalid access/refresh token");
-			Map<String,Boolean> entity = ImmutableMap.of("active", Boolean.FALSE);
-			model.addAttribute("entity", entity);
+			Map<String,Boolean> entity = ImmutableMap.of(IntrospectionResultAssembler.ACTIVE, Boolean.FALSE);
+			model.addAttribute(JsonEntityView.ENTITY, entity);
 			return JsonEntityView.VIEWNAME;
 		}
 		
 		return JsonEntityView.VIEWNAME;
 			
 	}
+	
+	@ExceptionHandler(OAuth2Exception.class)
+	public ResponseEntity<OAuth2Exception> handleException(Exception e) throws Exception {
+		logger.info("Handling error: " + e.getClass().getSimpleName() + ", " + e.getMessage());
+		return providerExceptionHandler.translate(e);
+	}
+	
 
 }

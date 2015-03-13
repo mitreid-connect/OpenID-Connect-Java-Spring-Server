@@ -19,8 +19,6 @@
  */
 package org.mitre.oauth2.web;
 
-import static org.mitre.openid.connect.request.ConnectRequestParameters.*;
-
 import java.security.Principal;
 import java.util.Date;
 import java.util.HashMap;
@@ -55,6 +53,12 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonObject;
+
+import static org.mitre.openid.connect.request.ConnectRequestParameters.CSRF;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.PROMPT;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.PROMPT_CONSENT;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.PROMPT_NONE;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.PROMPT_SEPARATOR;
 
 /**
  * @author jricher
@@ -105,7 +109,7 @@ public class OAuthConfirmationController {
 		if (prompts.contains(PROMPT_NONE)) {
 			// we're not supposed to prompt, so "return an error"
 			logger.info("Client requested no prompt, returning 403 from confirmation endpoint");
-			model.put("code", HttpStatus.FORBIDDEN);
+			model.put(HttpCodeView.CODE, HttpStatus.FORBIDDEN);
 			return HttpCodeView.VIEWNAME;
 		}
 
@@ -121,17 +125,17 @@ public class OAuthConfirmationController {
 			client = clientService.loadClientByClientId(authRequest.getClientId());
 		} catch (OAuth2Exception e) {
 			logger.error("confirmAccess: OAuth2Exception was thrown when attempting to load client", e);
-			model.put("code", HttpStatus.BAD_REQUEST);
+			model.put(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 			return HttpCodeView.VIEWNAME;
 		} catch (IllegalArgumentException e) {
 			logger.error("confirmAccess: IllegalArgumentException was thrown when attempting to load client", e);
-			model.put("code", HttpStatus.BAD_REQUEST);
+			model.put(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 			return HttpCodeView.VIEWNAME;
 		}
 
 		if (client == null) {
 			logger.error("confirmAccess: could not find client " + authRequest.getClientId());
-			model.put("code", HttpStatus.NOT_FOUND);
+			model.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 			return HttpCodeView.VIEWNAME;
 		}
 

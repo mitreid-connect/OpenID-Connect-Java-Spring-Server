@@ -22,14 +22,23 @@ package org.mitre.openid.connect.assertion;
 import java.io.IOException;
 import java.text.ParseException;
 
+import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.mockito.AdditionalMatchers;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.oauth2.common.exceptions.BadClientCredentialsException;
 import org.springframework.security.oauth2.provider.client.ClientCredentialsTokenEndpointFilter;
+import org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import com.google.common.base.Strings;
 import com.nimbusds.jwt.JWT;
@@ -41,14 +50,34 @@ import com.nimbusds.jwt.JWTParser;
  * @author jricher
  *
  */
-public class JWTBearerClientAssertionTokenEndpointFilter extends ClientCredentialsTokenEndpointFilter {
+public class JWTBearerClientAssertionTokenEndpointFilter extends AbstractAuthenticationProcessingFilter {
 
-	public JWTBearerClientAssertionTokenEndpointFilter() {
-		super();
+	private AuthenticationEntryPoint authenticationEntryPoint = new OAuth2AuthenticationEntryPoint();
+
+	public JWTBearerClientAssertionTokenEndpointFilter(RequestMatcher additionalMatcher) {
+		super(new ClientAssertionRequestMatcher(additionalMatcher));
+		// If authentication fails the type is "Form"
+		((OAuth2AuthenticationEntryPoint) authenticationEntryPoint).setTypeName("Form");
 	}
 
-	public JWTBearerClientAssertionTokenEndpointFilter(String path) {
-		super(path);
+	@Override
+	public void afterPropertiesSet() {
+		super.afterPropertiesSet();
+		setAuthenticationFailureHandler(new AuthenticationFailureHandler() {
+			public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
+					AuthenticationException exception) throws IOException, ServletException {
+				if (exception instanceof BadCredentialsException) {
+					exception = new BadCredentialsException(exception.getMessage(), new BadClientCredentialsException());
+				}
+				authenticationEntryPoint.commence(request, response, exception);
+			}
+		});
+		setAuthenticationSuccessHandler(new AuthenticationSuccessHandler() {
+			public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+					Authentication authentication) throws IOException, ServletException {
+				// no-op - just allow filter chain to continue to token endpoint
+			}
+		});
 	}
 
 	/**
@@ -74,41 +103,37 @@ public class JWTBearerClientAssertionTokenEndpointFilter extends ClientCredentia
 		}
 	}
 
-	/**
-	 * Check to see if the "client_assertion_type" and "client_assertion" parameters are present and contain the right values.
-	 */
 	@Override
-	protected boolean requiresAuthentication(HttpServletRequest request, HttpServletResponse response) {
-		// check for appropriate parameters
-		String assertionType = request.getParameter("client_assertion_type");
-		String assertion = request.getParameter("client_assertion");
-
-		if (Strings.isNullOrEmpty(assertionType) || Strings.isNullOrEmpty(assertion)) {
-			return false;
-		} else if (!assertionType.equals("urn:ietf:params:oauth:client-assertion-type:jwt-bearer")) {
-			return false;
-		}
-
-
-		// Can't call to superclass here b/c client creds would break for lack of client_id
-		//	    return super.requiresAuthentication(request, response);
-
-		String uri = request.getRequestURI();
-		int pathParamIndex = uri.indexOf(';');
-
-		if (pathParamIndex > 0) {
-			// strip everything after the first semi-colon
-			uri = uri.substring(0, pathParamIndex);
-		}
-
-		if ("".equals(request.getContextPath())) {
-			return uri.endsWith(getFilterProcessesUrl());
-		}
-
-		return uri.endsWith(request.getContextPath() + getFilterProcessesUrl());
-
+	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,
+			FilterChain chain, Authentication authResult) throws IOException, ServletException {
+		super.successfulAuthentication(request, response, chain, authResult);
+		chain.doFilter(request, response);
 	}
 
+	private static class ClientAssertionRequestMatcher implements RequestMatcher {
+		
+		private RequestMatcher additionalMatcher;
+		
+		public ClientAssertionRequestMatcher(RequestMatcher additionalMatcher) {
+			this.additionalMatcher = additionalMatcher;
+		}
+		
+		@Override
+		public boolean matches(HttpServletRequest request) {
+			// check for appropriate parameters
+			String assertionType = request.getParameter("client_assertion_type");
+			String assertion = request.getParameter("client_assertion");
+
+			if (Strings.isNullOrEmpty(assertionType) || Strings.isNullOrEmpty(assertion)) {
+				return false;
+			} else if (!assertionType.equals("urn:ietf:params:oauth:client-assertion-type:jwt-bearer")) {
+				return false;
+			}
+			
+			return additionalMatcher.matches(request);
+		}
+		
+	}
 
 
 

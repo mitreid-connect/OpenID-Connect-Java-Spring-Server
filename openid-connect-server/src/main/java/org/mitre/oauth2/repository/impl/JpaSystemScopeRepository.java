@@ -19,9 +19,6 @@
  */
 package org.mitre.oauth2.repository.impl;
 
-import static org.mitre.util.jpa.JpaUtil.getSingleResult;
-import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
-
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -33,6 +30,9 @@ import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.repository.SystemScopeRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import static org.mitre.util.jpa.JpaUtil.getSingleResult;
+import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
 
 /**
  * @author jricher
@@ -50,7 +50,7 @@ public class JpaSystemScopeRepository implements SystemScopeRepository {
 	@Override
 	@Transactional
 	public Set<SystemScope> getAll() {
-		TypedQuery<SystemScope> query = em.createNamedQuery("SystemScope.findAll", SystemScope.class);
+		TypedQuery<SystemScope> query = em.createNamedQuery(SystemScope.QUERY_ALL, SystemScope.class);
 
 		return new LinkedHashSet<SystemScope>(query.getResultList());
 	}
@@ -70,8 +70,8 @@ public class JpaSystemScopeRepository implements SystemScopeRepository {
 	@Override
 	@Transactional
 	public SystemScope getByValue(String value) {
-		TypedQuery<SystemScope> query = em.createNamedQuery("SystemScope.getByValue", SystemScope.class);
-		query.setParameter("value", value);
+		TypedQuery<SystemScope> query = em.createNamedQuery(SystemScope.QUERY_BY_VALUE, SystemScope.class);
+		query.setParameter(SystemScope.PARAM_VALUE, value);
 		return getSingleResult(query.getResultList());
 	}
 

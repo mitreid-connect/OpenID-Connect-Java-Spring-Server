@@ -19,8 +19,6 @@
  */
 package org.mitre.openid.connect.repository.impl;
 
-import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
-
 import java.util.Collection;
 
 import javax.persistence.EntityManager;
@@ -31,6 +29,8 @@ import org.mitre.openid.connect.model.BlacklistedSite;
 import org.mitre.openid.connect.repository.BlacklistedSiteRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
 
 /**
  * @author jricher
@@ -48,7 +48,7 @@ public class JpaBlacklistedSiteRepository implements BlacklistedSiteRepository {
 	@Override
 	@Transactional
 	public Collection<BlacklistedSite> getAll() {
-		TypedQuery<BlacklistedSite> query = manager.createNamedQuery("BlacklistedSite.getAll", BlacklistedSite.class);
+		TypedQuery<BlacklistedSite> query = manager.createNamedQuery(BlacklistedSite.QUERY_ALL, BlacklistedSite.class);
 		return query.getResultList();
 	}
 

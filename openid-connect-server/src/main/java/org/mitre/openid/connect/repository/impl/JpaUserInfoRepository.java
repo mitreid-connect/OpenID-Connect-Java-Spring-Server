@@ -16,9 +16,6 @@
  *******************************************************************************/
 package org.mitre.openid.connect.repository.impl;
 
-import static org.mitre.util.jpa.JpaUtil.getSingleResult;
-import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -27,7 +24,8 @@ import org.mitre.openid.connect.model.DefaultUserInfo;
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.repository.UserInfoRepository;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
+
+import static org.mitre.util.jpa.JpaUtil.getSingleResult;
 
 /**
  * JPA UserInfo repository implementation
@@ -46,8 +44,8 @@ public class JpaUserInfoRepository implements UserInfoRepository {
 	 */
 	@Override
 	public UserInfo getByUsername(String username) {
-		TypedQuery<DefaultUserInfo> query = manager.createNamedQuery("DefaultUserInfo.getByUsername", DefaultUserInfo.class);
-		query.setParameter("username", username);
+		TypedQuery<DefaultUserInfo> query = manager.createNamedQuery(DefaultUserInfo.QUERY_BY_USERNAME, DefaultUserInfo.class);
+		query.setParameter(DefaultUserInfo.PARAM_USERNAME, username);
 
 		return getSingleResult(query.getResultList());
 

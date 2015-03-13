@@ -25,6 +25,8 @@ import org.mitre.discovery.util.WebfingerURLNormalizer;
 import org.mitre.jwt.encryption.service.JWTEncryptionAndDecryptionService;
 import org.mitre.jwt.signer.service.JWTSigningAndValidationService;
 import org.mitre.oauth2.service.SystemScopeService;
+import org.mitre.oauth2.web.IntrospectionEndpoint;
+import org.mitre.oauth2.web.RevocationEndpoint;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.service.UserInfoService;
@@ -32,10 +34,14 @@ import org.mitre.openid.connect.view.HttpCodeView;
 import org.mitre.openid.connect.view.JsonEntityView;
 import org.mitre.uma.web.PermissionRegistrationEndpoint;
 import org.mitre.uma.web.ResourceSetRegistrationEndpoint;
+import org.mitre.openid.connect.web.DynamicClientRegistrationEndpoint;
+import org.mitre.openid.connect.web.JWKSetPublishingEndpoint;
+import org.mitre.openid.connect.web.UserInfoEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -60,6 +66,10 @@ import com.nimbusds.jose.JWSAlgorithm;
  */
 @Controller
 public class DiscoveryEndpoint {
+
+	public static final String WELL_KNOWN_URL = ".well-known";
+	public static final String OPENID_CONFIGURATION_URL = WELL_KNOWN_URL + "/openid-configuration";
+	public static final String WEBFINGER_URL = WELL_KNOWN_URL + "/webfinger";
 
 	/**
 	 * Logger for this class
@@ -94,8 +104,8 @@ public class DiscoveryEndpoint {
 		}
 	};
 
-	@RequestMapping(value={"/.well-known/webfinger"},
-			params={"resource", "rel=http://openid.net/specs/connect/1.0/issuer"}, produces = "application/json")
+	@RequestMapping(value={"/" + WEBFINGER_URL},
+			params={"resource", "rel=http://openid.net/specs/connect/1.0/issuer"}, produces = MediaType.APPLICATION_JSON_VALUE)
 	public String webfinger(@RequestParam("resource") String resource, Model model) {
 
 		if (!resource.equals(config.getIssuer())) {
@@ -111,7 +121,7 @@ public class DiscoveryEndpoint {
 
 				if (user == null) {
 					logger.info("User not found: " + resource);
-					model.addAttribute("code", HttpStatus.NOT_FOUND);
+					model.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 					return HttpCodeView.VIEWNAME;
 				}
 
@@ -119,14 +129,14 @@ public class DiscoveryEndpoint {
 				if (!Strings.nullToEmpty(issuerComponents.getHost())
 						.equals(Strings.nullToEmpty(resourceUri.getHost()))) {
 					logger.info("Host mismatch, expected " + issuerComponents.getHost() + " got " + resourceUri.getHost());
-					model.addAttribute("code", HttpStatus.NOT_FOUND);
+					model.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 					return HttpCodeView.VIEWNAME;
 				}
 
 
 			} else {
 				logger.info("Unknown URI format: " + resource);
-				model.addAttribute("code", HttpStatus.NOT_FOUND);
+				model.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 				return HttpCodeView.VIEWNAME;
 			}
 		}
@@ -138,7 +148,7 @@ public class DiscoveryEndpoint {
 		return "webfingerView";
 	}
 
-	@RequestMapping("/.well-known/openid-configuration")
+	@RequestMapping("/" + OPENID_CONFIGURATION_URL)
 	public String providerConfiguration(Model model) {
 
 		/*
@@ -277,11 +287,11 @@ public class DiscoveryEndpoint {
 		m.put("issuer", config.getIssuer());
 		m.put("authorization_endpoint", baseUrl + "authorize");
 		m.put("token_endpoint", baseUrl + "token");
-		m.put("userinfo_endpoint", baseUrl + "userinfo");
+		m.put("userinfo_endpoint", baseUrl + UserInfoEndpoint.URL);
 		//check_session_iframe
 		//end_session_endpoint
-		m.put("jwks_uri", baseUrl + "jwk");
-		m.put("registration_endpoint", baseUrl + "register");
+		m.put("jwks_uri", baseUrl + JWKSetPublishingEndpoint.URL);
+		m.put("registration_endpoint", baseUrl + DynamicClientRegistrationEndpoint.URL);
 		m.put("scopes_supported", scopeService.toStrings(scopeService.getUnrestricted())); // these are the scopes that you can dynamically register for, which is what matters for discovery
 		m.put("response_types_supported", Lists.newArrayList("code", "token")); // we don't support these yet: , "id_token", "id_token token"));
 		m.put("grant_types_supported", grantTypes);
@@ -332,10 +342,10 @@ public class DiscoveryEndpoint {
 		m.put("op_policy_uri", baseUrl + "about");
 		m.put("op_tos_uri", baseUrl + "about");
 
-		m.put("introspection_endpoint", baseUrl + "introspect"); // token introspection endpoint for verifying tokens
-		m.put("revocation_endpoint", baseUrl + "revoke"); // token revocation endpoint
+		m.put("introspection_endpoint", baseUrl + IntrospectionEndpoint.URL); // token introspection endpoint for verifying tokens
+		m.put("revocation_endpoint", baseUrl + RevocationEndpoint.URL); // token revocation endpoint
 
-		model.addAttribute("entity", m);
+		model.addAttribute(JsonEntityView.ENTITY, m);
 
 		return JsonEntityView.VIEWNAME;
 	}

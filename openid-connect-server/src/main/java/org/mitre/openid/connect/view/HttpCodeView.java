@@ -37,10 +37,12 @@ import org.springframework.web.servlet.view.AbstractView;
 public class HttpCodeView extends AbstractView {
 
 	public static final String VIEWNAME = "httpCodeView";
+	
+	public static final String CODE = "code";
 
 	@Override
 	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
-		HttpStatus code = (HttpStatus) model.get("code");
+		HttpStatus code = (HttpStatus) model.get(CODE);
 		if (code == null) {
 			code = HttpStatus.OK; // default to 200
 		}

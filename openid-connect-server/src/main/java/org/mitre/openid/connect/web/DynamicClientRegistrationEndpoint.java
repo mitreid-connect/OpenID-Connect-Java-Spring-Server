@@ -44,11 +44,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
+import org.springframework.security.oauth2.provider.error.WebResponseExceptionTranslator;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -61,8 +66,10 @@ import com.google.common.collect.Sets;
 import com.google.gson.JsonSyntaxException;
 
 @Controller
-@RequestMapping(value = "register")
+@RequestMapping(value = DynamicClientRegistrationEndpoint.URL)
 public class DynamicClientRegistrationEndpoint {
+
+	public static final String URL = "register";
 
 	@Autowired
 	private ClientDetailsEntityService clientService;
@@ -85,6 +92,9 @@ public class DynamicClientRegistrationEndpoint {
 	@Autowired
 	private OIDCTokenService connectTokenService;
 
+	@Autowired
+	private WebResponseExceptionTranslator providerExceptionHandler;
+
 	/**
 	 * Logger for this class
 	 */
@@ -97,7 +107,7 @@ public class DynamicClientRegistrationEndpoint {
 	 * @param p
 	 * @return
 	 */
-	@RequestMapping(method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
+	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public String registerNewClient(@RequestBody String jsonString, Model m) {
 
 		ClientDetailsEntity newClient = null;
@@ -107,7 +117,7 @@ public class DynamicClientRegistrationEndpoint {
 			// bad parse
 			// didn't parse, this is a bad request
 			logger.error("registerNewClient failed; submitted JSON is malformed");
-			m.addAttribute("code", HttpStatus.BAD_REQUEST); // http 400
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST); // http 400
 			return HttpCodeView.VIEWNAME;
 		}
 
@@ -131,9 +141,9 @@ public class DynamicClientRegistrationEndpoint {
 				newClient = validateAuth(newClient);
 			} catch (ValidationException ve) {
 				// validation failed, return an error
-				m.addAttribute("error", ve.getError());
-				m.addAttribute("errorMessage", ve.getErrorDescription());
-				m.addAttribute("code", ve.getStatus());
+				m.addAttribute(JsonErrorView.ERROR, ve.getError());
+				m.addAttribute(JsonErrorView.ERROR_MESSAGE, ve.getErrorDescription());
+				m.addAttribute(HttpCodeView.CODE, ve.getStatus());
 				return JsonErrorView.VIEWNAME;
 			}
 
@@ -172,26 +182,26 @@ public class DynamicClientRegistrationEndpoint {
 
 				RegisteredClient registered = new RegisteredClient(savedClient, token.getValue(), config.getIssuer() + "register/" + UriUtils.encodePathSegment(savedClient.getClientId(), "UTF-8"));
 				m.addAttribute("client", registered);
-				m.addAttribute("code", HttpStatus.CREATED); // http 201
+				m.addAttribute(HttpCodeView.CODE, HttpStatus.CREATED); // http 201
 
 				return ClientInformationResponseView.VIEWNAME;
 			} catch (UnsupportedEncodingException e) {
 				logger.error("Unsupported encoding", e);
-				m.addAttribute("code", HttpStatus.INTERNAL_SERVER_ERROR);
+				m.addAttribute(HttpCodeView.CODE, HttpStatus.INTERNAL_SERVER_ERROR);
 				return HttpCodeView.VIEWNAME;
 			} catch (IllegalArgumentException e) {
 				logger.error("Couldn't save client", e);
 
-				m.addAttribute("error", "invalid_client_metadata");
-				m.addAttribute("errorMessage", "Unable to save client due to invalid or inconsistent metadata.");
-				m.addAttribute("code", HttpStatus.BAD_REQUEST); // http 400
+				m.addAttribute(JsonErrorView.ERROR, "invalid_client_metadata");
+				m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Unable to save client due to invalid or inconsistent metadata.");
+				m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST); // http 400
 
 				return JsonErrorView.VIEWNAME;
 			}
 		} else {
 			// didn't parse, this is a bad request
 			logger.error("registerNewClient failed; submitted JSON is malformed");
-			m.addAttribute("code", HttpStatus.BAD_REQUEST); // http 400
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST); // http 400
 
 			return HttpCodeView.VIEWNAME;
 		}
@@ -206,7 +216,7 @@ public class DynamicClientRegistrationEndpoint {
 	 * @return
 	 */
 	@PreAuthorize("hasRole('ROLE_CLIENT') and #oauth2.hasScope('" + SystemScopeService.REGISTRATION_TOKEN_SCOPE + "')")
-	@RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public String readClientConfiguration(@PathVariable("id") String clientId, Model m, OAuth2Authentication auth) {
 
 		ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
@@ -219,12 +229,12 @@ public class DynamicClientRegistrationEndpoint {
 
 				// send it all out to the view
 				m.addAttribute("client", registered);
-				m.addAttribute("code", HttpStatus.OK); // http 200
+				m.addAttribute(HttpCodeView.CODE, HttpStatus.OK); // http 200
 
 				return ClientInformationResponseView.VIEWNAME;
 			} catch (UnsupportedEncodingException e) {
 				logger.error("Unsupported encoding", e);
-				m.addAttribute("code", HttpStatus.INTERNAL_SERVER_ERROR);
+				m.addAttribute(HttpCodeView.CODE, HttpStatus.INTERNAL_SERVER_ERROR);
 				return HttpCodeView.VIEWNAME;
 			}
 
@@ -232,7 +242,7 @@ public class DynamicClientRegistrationEndpoint {
 			// client mismatch
 			logger.error("readClientConfiguration failed, client ID mismatch: "
 					+ clientId + " and " + auth.getOAuth2Request().getClientId() + " do not match.");
-			m.addAttribute("code", HttpStatus.FORBIDDEN); // http 403
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.FORBIDDEN); // http 403
 
 			return HttpCodeView.VIEWNAME;
 		}
@@ -247,7 +257,7 @@ public class DynamicClientRegistrationEndpoint {
 	 * @return
 	 */
 	@PreAuthorize("hasRole('ROLE_CLIENT') and #oauth2.hasScope('" + SystemScopeService.REGISTRATION_TOKEN_SCOPE + "')")
-	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
+	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public String updateClient(@PathVariable("id") String clientId, @RequestBody String jsonString, Model m, OAuth2Authentication auth) {
 
 
@@ -258,7 +268,7 @@ public class DynamicClientRegistrationEndpoint {
 			// bad parse
 			// didn't parse, this is a bad request
 			logger.error("updateClient failed; submitted JSON is malformed");
-			m.addAttribute("code", HttpStatus.BAD_REQUEST); // http 400
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST); // http 400
 			return HttpCodeView.VIEWNAME;
 		}
 		ClientDetailsEntity oldClient = clientService.loadClientByClientId(clientId);
@@ -291,9 +301,9 @@ public class DynamicClientRegistrationEndpoint {
 				newClient = validateAuth(newClient);
 			} catch (ValidationException ve) {
 				// validation failed, return an error
-				m.addAttribute("error", ve.getError());
-				m.addAttribute("errorMessage", ve.getErrorDescription());
-				m.addAttribute("code", ve.getStatus());
+				m.addAttribute(JsonErrorView.ERROR, ve.getError());
+				m.addAttribute(JsonErrorView.ERROR_MESSAGE, ve.getErrorDescription());
+				m.addAttribute(HttpCodeView.CODE, ve.getStatus());
 				return JsonErrorView.VIEWNAME;
 			}
 
@@ -307,19 +317,19 @@ public class DynamicClientRegistrationEndpoint {
 
 				// send it all out to the view
 				m.addAttribute("client", registered);
-				m.addAttribute("code", HttpStatus.OK); // http 200
+				m.addAttribute(HttpCodeView.CODE, HttpStatus.OK); // http 200
 
 				return ClientInformationResponseView.VIEWNAME;
 			} catch (UnsupportedEncodingException e) {
 				logger.error("Unsupported encoding", e);
-				m.addAttribute("code", HttpStatus.INTERNAL_SERVER_ERROR);
+				m.addAttribute(HttpCodeView.CODE, HttpStatus.INTERNAL_SERVER_ERROR);
 				return HttpCodeView.VIEWNAME;
 			} catch (IllegalArgumentException e) {
 				logger.error("Couldn't save client", e);
 
-				m.addAttribute("error", "invalid_client_metadata");
-				m.addAttribute("errorMessage", "Unable to save client due to invalid or inconsistent metadata.");
-				m.addAttribute("code", HttpStatus.BAD_REQUEST); // http 400
+				m.addAttribute(JsonErrorView.ERROR, "invalid_client_metadata");
+				m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Unable to save client due to invalid or inconsistent metadata.");
+				m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST); // http 400
 
 				return JsonErrorView.VIEWNAME;
 			}
@@ -327,7 +337,7 @@ public class DynamicClientRegistrationEndpoint {
 			// client mismatch
 			logger.error("updateClient failed, client ID mismatch: "
 					+ clientId + " and " + auth.getOAuth2Request().getClientId() + " do not match.");
-			m.addAttribute("code", HttpStatus.FORBIDDEN); // http 403
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.FORBIDDEN); // http 403
 
 			return HttpCodeView.VIEWNAME;
 		}
@@ -341,7 +351,7 @@ public class DynamicClientRegistrationEndpoint {
 	 * @return
 	 */
 	@PreAuthorize("hasRole('ROLE_CLIENT') and #oauth2.hasScope('" + SystemScopeService.REGISTRATION_TOKEN_SCOPE + "')")
-	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "application/json")
+	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public String deleteClient(@PathVariable("id") String clientId, Model m, OAuth2Authentication auth) {
 
 		ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
@@ -350,14 +360,14 @@ public class DynamicClientRegistrationEndpoint {
 
 			clientService.deleteClient(client);
 
-			m.addAttribute("code", HttpStatus.NO_CONTENT); // http 204
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.NO_CONTENT); // http 204
 
 			return HttpCodeView.VIEWNAME;
 		} else {
 			// client mismatch
 			logger.error("readClientConfiguration failed, client ID mismatch: "
 					+ clientId + " and " + auth.getOAuth2Request().getClientId() + " do not match.");
-			m.addAttribute("code", HttpStatus.FORBIDDEN); // http 403
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.FORBIDDEN); // http 403
 
 			return HttpCodeView.VIEWNAME;
 		}
@@ -558,5 +568,11 @@ public class DynamicClientRegistrationEndpoint {
 			// tokens don't expire, just return it
 			return token;
 		}
+	}
+
+	@ExceptionHandler(OAuth2Exception.class)
+	public ResponseEntity<OAuth2Exception> handleException(Exception e) throws Exception {
+		logger.info("Handling error: " + e.getClass().getSimpleName() + ", " + e.getMessage());
+		return providerExceptionHandler.translate(e);
 	}
 }

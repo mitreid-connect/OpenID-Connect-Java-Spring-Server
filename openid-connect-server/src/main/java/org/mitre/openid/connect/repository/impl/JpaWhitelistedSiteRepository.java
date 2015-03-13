@@ -16,8 +16,6 @@
  *******************************************************************************/
 package org.mitre.openid.connect.repository.impl;
 
-import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
-
 import java.util.Collection;
 
 import javax.persistence.EntityManager;
@@ -29,6 +27,8 @@ import org.mitre.openid.connect.repository.WhitelistedSiteRepository;
 import org.mitre.util.jpa.JpaUtil;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
 
 /**
  * JPA WhitelistedSite repository implementation
@@ -45,7 +45,7 @@ public class JpaWhitelistedSiteRepository implements WhitelistedSiteRepository {
 	@Override
 	@Transactional
 	public Collection<WhitelistedSite> getAll() {
-		TypedQuery<WhitelistedSite> query = manager.createNamedQuery("WhitelistedSite.getAll", WhitelistedSite.class);
+		TypedQuery<WhitelistedSite> query = manager.createNamedQuery(WhitelistedSite.QUERY_ALL, WhitelistedSite.class);
 		return query.getResultList();
 	}
 
@@ -85,16 +85,16 @@ public class JpaWhitelistedSiteRepository implements WhitelistedSiteRepository {
 	@Override
 	@Transactional
 	public WhitelistedSite getByClientId(String clientId) {
-		TypedQuery<WhitelistedSite> query = manager.createNamedQuery("WhitelistedSite.getByClientId", WhitelistedSite.class);
-		query.setParameter("clientId", clientId);
+		TypedQuery<WhitelistedSite> query = manager.createNamedQuery(WhitelistedSite.QUERY_BY_CLIENT_ID, WhitelistedSite.class);
+		query.setParameter(WhitelistedSite.PARAM_CLIENT_ID, clientId);
 		return JpaUtil.getSingleResult(query.getResultList());
 	}
 
 	@Override
 	@Transactional
 	public Collection<WhitelistedSite> getByCreator(String creatorId) {
-		TypedQuery<WhitelistedSite> query = manager.createNamedQuery("WhitelistedSite.getByCreaterUserId", WhitelistedSite.class);
-		query.setParameter("userId", creatorId);
+		TypedQuery<WhitelistedSite> query = manager.createNamedQuery(WhitelistedSite.QUERY_BY_CREATOR, WhitelistedSite.class);
+		query.setParameter(WhitelistedSite.PARAM_USER_ID, creatorId);
 
 		return query.getResultList();
 	}

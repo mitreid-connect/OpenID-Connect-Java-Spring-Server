@@ -22,10 +22,12 @@
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:security="http://www.springframework.org/schema/security"
 	xmlns:oauth="http://www.springframework.org/schema/security/oauth2"
+	xmlns:util="http://www.springframework.org/schema/util"
 	xsi:schemaLocation="http://www.springframework.org/schema/security/oauth2 http://www.springframework.org/schema/security/spring-security-oauth2-2.0.xsd
 		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.1.xsd
 		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.1.xsd
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd">
 
@@ -80,19 +82,19 @@
 		<security:intercept-url pattern="/token" access="isAuthenticated()" />
 		<security:http-basic entry-point-ref="oauthAuthenticationEntryPoint" />
 		<!-- include this only if you need to authenticate clients via request parameters -->
-		<security:custom-filter ref="clientAssertionTokenEndpointFilter" after="PRE_AUTH_FILTER" /> <!-- this one has to go first -->
-		<security:custom-filter ref="clientCredentialsTokenEndpointFilter" after="BASIC_AUTH_FILTER" />
+		<security:custom-filter ref="clientAssertionEndpointFilter" after="PRE_AUTH_FILTER" /> <!-- this one has to go first -->
+		<security:custom-filter ref="clientCredentialsEndpointFilter" after="BASIC_AUTH_FILTER" />
 		<security:custom-filter ref="corsFilter" after="SECURITY_CONTEXT_FILTER" />
 		<security:access-denied-handler ref="oauthAccessDeniedHandler" />
 	</security:http>
 
-	<!-- Allow open access to required endpoints -->
-	<security:http pattern="/jwk**" use-expressions="true" entry-point-ref="http403EntryPoint" create-session="stateless">
-		<security:intercept-url pattern="/jwk**" access="permitAll"/>
+	<!-- Allow open access to discovery endpoints -->
+	<security:http pattern="/#{T(org.mitre.openid.connect.web.JWKSetPublishingEndpoint).URL}**" use-expressions="true" entry-point-ref="http403EntryPoint" create-session="stateless">
+		<security:intercept-url pattern="/#{T(org.mitre.openid.connect.web.JWKSetPublishingEndpoint).URL}**" access="permitAll"/>
 		<security:custom-filter ref="corsFilter" after="SECURITY_CONTEXT_FILTER" />
 	</security:http>
-	<security:http pattern="/.well-known/**" use-expressions="true" entry-point-ref="http403EntryPoint" create-session="stateless">
-		<security:intercept-url pattern="/.well-known/**" access="permitAll"/>
+	<security:http pattern="/#{T(org.mitre.discovery.web.DiscoveryEndpoint).WELL_KNOWN_URL}/**" use-expressions="true" entry-point-ref="http403EntryPoint" create-session="stateless">
+		<security:intercept-url pattern="/#{T(org.mitre.discovery.web.DiscoveryEndpoint).WELL_KNOWN_URL}/**" access="permitAll"/>
 		<security:custom-filter ref="corsFilter" after="SECURITY_CONTEXT_FILTER" />
 	</security:http>
 
@@ -103,14 +105,14 @@
 	</security:http>
 	
 	<!-- OAuth-protect API and other endpoints -->
-	<security:http pattern="/register/**" use-expressions="true" entry-point-ref="oauthAuthenticationEntryPoint" create-session="stateless">
+	<security:http pattern="/#{T(org.mitre.openid.connect.web.DynamicClientRegistrationEndpoint).URL}/**" use-expressions="true" entry-point-ref="oauthAuthenticationEntryPoint" create-session="stateless">
 		<security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
 		<security:custom-filter ref="corsFilter" after="SECURITY_CONTEXT_FILTER" />
 		<security:expression-handler ref="oauthWebExpressionHandler" />
 		<security:intercept-url pattern="/register/**" access="permitAll"/>
 	</security:http>
 
-	<security:http pattern="/resource/**" use-expressions="true" entry-point-ref="oauthAuthenticationEntryPoint" create-session="stateless">
+	<security:http pattern="/#{T(org.mitre.openid.connect.web.ProtectedResourceRegistrationEndpoint).URL}/**" use-expressions="true" entry-point-ref="oauthAuthenticationEntryPoint" create-session="stateless">
 		<security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
 		<security:custom-filter ref="corsFilter" after="SECURITY_CONTEXT_FILTER" />
 		<security:expression-handler ref="oauthWebExpressionHandler" />
@@ -129,39 +131,39 @@
 		<security:expression-handler ref="oauthWebExpressionHandler" />
 	</security:http>
 
-	<security:http pattern="/userinfo**" use-expressions="true" entry-point-ref="oauthAuthenticationEntryPoint" create-session="stateless">
+	<security:http pattern="/#{T(org.mitre.openid.connect.web.UserInfoEndpoint).URL}**" use-expressions="true" entry-point-ref="oauthAuthenticationEntryPoint" create-session="stateless">
 		<security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
 		<security:custom-filter ref="corsFilter" after="SECURITY_CONTEXT_FILTER" />
 		<security:expression-handler ref="oauthWebExpressionHandler" />
 	</security:http>
 
- 	<security:http pattern="/api/**" use-expressions="true" entry-point-ref="oauthAuthenticationEntryPoint" create-session="never">
+ 	<security:http pattern="/#{T(org.mitre.openid.connect.web.RootController).API_URL}/**" use-expressions="true" entry-point-ref="oauthAuthenticationEntryPoint" create-session="never">
 		<security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
 		<security:expression-handler ref="oauthWebExpressionHandler" />
 	</security:http>
 	
-	<security:http pattern="/introspect**" 
+	<security:http pattern="/#{T(org.mitre.oauth2.web.IntrospectionEndpoint).URL}**" 
 			use-expressions="true" 
 			entry-point-ref="oauthAuthenticationEntryPoint" 
 			create-session="stateless"
 			authentication-manager-ref="clientAuthenticationManager">
 		<security:http-basic entry-point-ref="oauthAuthenticationEntryPoint" />
 		<security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
-		<security:custom-filter ref="clientAssertionIntrospectionEndpointFilter" after="PRE_AUTH_FILTER" /> <!-- this one has to go first -->
+		<security:custom-filter ref="clientAssertionEndpointFilter" after="PRE_AUTH_FILTER" /> <!-- this one has to go first -->
 		<security:custom-filter ref="corsFilter" after="SECURITY_CONTEXT_FILTER" />
-		<security:custom-filter ref="clientCredentialsIntrospectionEndpointFilter" after="BASIC_AUTH_FILTER" />
+		<security:custom-filter ref="clientCredentialsEndpointFilter" after="BASIC_AUTH_FILTER" />
 	</security:http>
 
-	<security:http pattern="/revoke**"
+	<security:http pattern="/#{T(org.mitre.oauth2.web.RevocationEndpoint).URL}**"
 			use-expressions="true" 
 			entry-point-ref="oauthAuthenticationEntryPoint" 
 			create-session="stateless"
 			authentication-manager-ref="clientAuthenticationManager">
 		<security:http-basic entry-point-ref="oauthAuthenticationEntryPoint" />
 <!-- 		<security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" /> -->
-		<security:custom-filter ref="clientAssertionRevocationEndpointFilter" after="PRE_AUTH_FILTER" /> <!-- this one has to go first -->
+		<security:custom-filter ref="clientAssertionEndpointFilter" after="PRE_AUTH_FILTER" /> <!-- this one has to go first -->
 		<security:custom-filter ref="corsFilter" after="SECURITY_CONTEXT_FILTER" />
-		<security:custom-filter ref="clientCredentialsRevocationEndpointFilter" after="BASIC_AUTH_FILTER" />
+		<security:custom-filter ref="clientCredentialsEndpointFilter" after="BASIC_AUTH_FILTER" />
 	</security:http>
 
 	<bean id="oauthAuthenticationEntryPoint" class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint">
@@ -174,36 +176,28 @@
 
 	<import resource="authz-config.xml" />
 
-	<bean id="clientCredentialsTokenEndpointFilter" class="org.springframework.security.oauth2.provider.client.ClientCredentialsTokenEndpointFilter">
-		<property name="authenticationManager" ref="clientAuthenticationManager" />
-		<property name="filterProcessesUrl" value="/token"/>
-	</bean>
-	
-	<bean id="clientCredentialsIntrospectionEndpointFilter" class="org.springframework.security.oauth2.provider.client.ClientCredentialsTokenEndpointFilter">
-		<property name="authenticationManager" ref="clientAuthenticationManager" />
-		<property name="filterProcessesUrl" value="/introspect"/>
+	<bean id="oauth2ExceptionTranslator" class="org.springframework.security.oauth2.provider.error.DefaultWebResponseExceptionTranslator" />
+
+	<bean id="clientAuthMatcher" class="org.mitre.openid.connect.filter.MultiUrlRequestMatcher">
+		<constructor-arg name="filterProcessesUrls">
+			<set>
+				<value>/introspect</value>
+				<value>/revoke</value>
+				<value>/token</value>
+			</set>
+		</constructor-arg>
 	</bean>
 
-	<bean id="clientCredentialsRevocationEndpointFilter" class="org.springframework.security.oauth2.provider.client.ClientCredentialsTokenEndpointFilter">
+	<bean id="clientCredentialsEndpointFilter" class="org.springframework.security.oauth2.provider.client.ClientCredentialsTokenEndpointFilter">
 		<property name="authenticationManager" ref="clientAuthenticationManager" />
-		<property name="filterProcessesUrl" value="/revoke"/>
+		<property name="requiresAuthenticationRequestMatcher" ref="clientAuthMatcher" />
 	</bean>
 	
-	<bean id="clientAssertionTokenEndpointFilter" class="org.mitre.openid.connect.assertion.JWTBearerClientAssertionTokenEndpointFilter">
+	<bean id="clientAssertionEndpointFilter" class="org.mitre.openid.connect.assertion.JWTBearerClientAssertionTokenEndpointFilter">
+		<constructor-arg name="additionalMatcher" ref="clientAuthMatcher" />
 		<property name="authenticationManager" ref="clientAssertionAuthenticationManager" />
-		<property name="filterProcessesUrl" value="/token" />
 	</bean>
 
-	<bean id="clientAssertionIntrospectionEndpointFilter" class="org.mitre.openid.connect.assertion.JWTBearerClientAssertionTokenEndpointFilter">
-		<property name="authenticationManager" ref="clientAssertionAuthenticationManager" />
-		<property name="filterProcessesUrl" value="/introspect" />
-	</bean>
-
-	<bean id="clientAssertionRevocationEndpointFilter" class="org.mitre.openid.connect.assertion.JWTBearerClientAssertionTokenEndpointFilter">
-		<property name="authenticationManager" ref="clientAssertionAuthenticationManager" />
-		<property name="filterProcessesUrl" value="/revoke" />
-	</bean>
-	
 	<security:authentication-manager id="clientAuthenticationManager">
 		<security:authentication-provider user-service-ref="clientUserDetailsService" />
 	</security:authentication-manager>
@@ -215,18 +209,8 @@
 	<bean id="clientAssertionAuthenticationProvider" class="org.mitre.openid.connect.assertion.JWTBearerAuthenticationProvider" />
 
 	<!-- Configure locale information -->
-	<bean id="messageSource"
-		class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
-		<property name="basenames">
-			<list>
-				<value>classpath:custom_messages</value>
-				<value>classpath:messages</value>
-			</list>
-		</property>
-		<property name="fallbackToSystemLocale" value="false" />
-		<property name="cacheSeconds" value="180" />
-		<property name="defaultEncoding" value="UTF-8" />
-		<property name="useCodeAsDefaultMessage" value="true" />
+	<bean id="messageSource" class="org.mitre.openid.connect.config.JsonMessageSource">
+		<property name="baseDirectory" value="/resources/js/locale/" />
 	</bean>
 
 	<!-- user services -->

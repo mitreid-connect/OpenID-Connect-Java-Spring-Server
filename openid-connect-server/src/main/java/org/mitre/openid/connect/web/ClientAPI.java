@@ -30,15 +30,22 @@ import org.mitre.openid.connect.service.UserInfoService;
 import org.mitre.openid.connect.view.ClientEntityViewForAdmins;
 import org.mitre.openid.connect.view.ClientEntityViewForUsers;
 import org.mitre.openid.connect.view.HttpCodeView;
+import org.mitre.openid.connect.view.JsonEntityView;
 import org.mitre.openid.connect.view.JsonErrorView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
+import org.springframework.security.oauth2.provider.error.WebResponseExceptionTranslator;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -61,15 +68,20 @@ import com.google.gson.JsonSyntaxException;
  */
 
 @Controller
-@RequestMapping("/api/clients")
+@RequestMapping("/" + ClientAPI.URL)
 @PreAuthorize("hasRole('ROLE_USER')")
 public class ClientAPI {
+
+	public static final String URL = RootController.API_URL + "/clients";
 
 	@Autowired
 	private ClientDetailsEntityService clientService;
 
 	@Autowired
 	private UserInfoService userInfoService;
+
+	@Autowired
+	private WebResponseExceptionTranslator providerExceptionHandler;
 
 	private JsonParser parser = new JsonParser();
 
@@ -118,11 +130,11 @@ public class ClientAPI {
 	 * @param modelAndView
 	 * @return
 	 */
-	@RequestMapping(method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public String apiGetAllClients(Model model, Authentication auth) {
 
 		Collection<ClientDetailsEntity> clients = clientService.getAllClients();
-		model.addAttribute("entity", clients);
+		model.addAttribute(JsonEntityView.ENTITY, clients);
 
 		if (AuthenticationUtilities.isAdmin(auth)) {
 			return ClientEntityViewForAdmins.VIEWNAME;
@@ -139,7 +151,7 @@ public class ClientAPI {
 	 * @return
 	 */
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	@RequestMapping(method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
+	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public String apiAddClient(@RequestBody String jsonString, Model m, Authentication auth) {
 
 		JsonObject json = null;
@@ -151,13 +163,13 @@ public class ClientAPI {
 		}
 		catch (JsonSyntaxException e) {
 			logger.error("apiAddClient failed due to JsonSyntaxException", e);
-			m.addAttribute("code", HttpStatus.BAD_REQUEST);
-			m.addAttribute("errorMessage", "Could not save new client. The server encountered a JSON syntax exception. Contact a system administrator for assistance.");
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
+			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Could not save new client. The server encountered a JSON syntax exception. Contact a system administrator for assistance.");
 			return JsonErrorView.VIEWNAME;
 		} catch (IllegalStateException e) {
 			logger.error("apiAddClient failed due to IllegalStateException", e);
-			m.addAttribute("code", HttpStatus.BAD_REQUEST);
-			m.addAttribute("errorMessage", "Could not save new client. The server encountered an IllegalStateException. Refresh and try again - if the problem persists, contact a system administrator for assistance.");
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
+			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Could not save new client. The server encountered an IllegalStateException. Refresh and try again - if the problem persists, contact a system administrator for assistance.");
 			return JsonErrorView.VIEWNAME;
 		}
 
@@ -186,8 +198,8 @@ public class ClientAPI {
 
 			if (Strings.isNullOrEmpty(client.getJwksUri())) {
 				logger.error("tried to create client with private key auth but no private key");
-				m.addAttribute("code", HttpStatus.BAD_REQUEST);
-				m.addAttribute("errorMessage", "Can not create a client with private key authentication without registering a key via the JWS Set URI.");
+				m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
+				m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Can not create a client with private key authentication without registering a key via the JWS Set URI.");
 				return JsonErrorView.VIEWNAME;
 			}
 
@@ -197,8 +209,8 @@ public class ClientAPI {
 		} else {
 
 			logger.error("unknown auth method");
-			m.addAttribute("code", HttpStatus.BAD_REQUEST);
-			m.addAttribute("errorMessage", "Unknown auth method requested");
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
+			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Unknown auth method requested");
 			return JsonErrorView.VIEWNAME;
 
 
@@ -207,7 +219,7 @@ public class ClientAPI {
 		client.setDynamicallyRegistered(false);
 
 		ClientDetailsEntity newClient = clientService.saveNewClient(client);
-		m.addAttribute("entity", newClient);
+		m.addAttribute(JsonEntityView.ENTITY, newClient);
 
 		if (AuthenticationUtilities.isAdmin(auth)) {
 			return ClientEntityViewForAdmins.VIEWNAME;
@@ -225,7 +237,7 @@ public class ClientAPI {
 	 * @return
 	 */
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	@RequestMapping(value="/{id}", method = RequestMethod.PUT, consumes = "application/json", produces = "application/json")
+	@RequestMapping(value="/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public String apiUpdateClient(@PathVariable("id") Long id, @RequestBody String jsonString, Model m, Authentication auth) {
 
 		JsonObject json = null;
@@ -238,13 +250,13 @@ public class ClientAPI {
 		}
 		catch (JsonSyntaxException e) {
 			logger.error("apiUpdateClient failed due to JsonSyntaxException", e);
-			m.addAttribute("code", HttpStatus.BAD_REQUEST);
-			m.addAttribute("errorMessage", "Could not update client. The server encountered a JSON syntax exception. Contact a system administrator for assistance.");
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
+			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Could not update client. The server encountered a JSON syntax exception. Contact a system administrator for assistance.");
 			return JsonErrorView.VIEWNAME;
 		} catch (IllegalStateException e) {
 			logger.error("apiUpdateClient failed due to IllegalStateException", e);
-			m.addAttribute("code", HttpStatus.BAD_REQUEST);
-			m.addAttribute("errorMessage", "Could not update client. The server encountered an IllegalStateException. Refresh and try again - if the problem persists, contact a system administrator for assistance.");
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
+			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Could not update client. The server encountered an IllegalStateException. Refresh and try again - if the problem persists, contact a system administrator for assistance.");
 			return JsonErrorView.VIEWNAME;
 		}
 
@@ -252,8 +264,8 @@ public class ClientAPI {
 
 		if (oldClient == null) {
 			logger.error("apiUpdateClient failed; client with id " + id + " could not be found.");
-			m.addAttribute("code", HttpStatus.NOT_FOUND);
-			m.addAttribute("errorMessage", "Could not update client. The requested client with id " + id + "could not be found.");
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
+			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Could not update client. The requested client with id " + id + "could not be found.");
 			return JsonErrorView.VIEWNAME;
 		}
 
@@ -282,8 +294,8 @@ public class ClientAPI {
 
 			if (Strings.isNullOrEmpty(client.getJwksUri())) {
 				logger.error("tried to create client with private key auth but no private key");
-				m.addAttribute("code", HttpStatus.BAD_REQUEST);
-				m.addAttribute("errorMessage", "Can not create a client with private key authentication without registering a key via the JWS Set URI.");
+				m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
+				m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Can not create a client with private key authentication without registering a key via the JWS Set URI.");
 				return JsonErrorView.VIEWNAME;
 			}
 
@@ -293,15 +305,15 @@ public class ClientAPI {
 		} else {
 
 			logger.error("unknown auth method");
-			m.addAttribute("code", HttpStatus.BAD_REQUEST);
-			m.addAttribute("errorMessage", "Unknown auth method requested");
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
+			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Unknown auth method requested");
 			return JsonErrorView.VIEWNAME;
 
 
 		}
 
 		ClientDetailsEntity newClient = clientService.updateClient(oldClient, client);
-		m.addAttribute("entity", newClient);
+		m.addAttribute(JsonEntityView.ENTITY, newClient);
 
 		if (AuthenticationUtilities.isAdmin(auth)) {
 			return ClientEntityViewForAdmins.VIEWNAME;
@@ -324,11 +336,11 @@ public class ClientAPI {
 
 		if (client == null) {
 			logger.error("apiDeleteClient failed; client with id " + id + " could not be found.");
-			modelAndView.getModelMap().put("code", HttpStatus.NOT_FOUND);
-			modelAndView.getModelMap().put("errorMessage", "Could not delete client. The requested client with id " + id + "could not be found.");
+			modelAndView.getModelMap().put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
+			modelAndView.getModelMap().put(JsonErrorView.ERROR_MESSAGE, "Could not delete client. The requested client with id " + id + "could not be found.");
 			return JsonErrorView.VIEWNAME;
 		} else {
-			modelAndView.getModelMap().put("code", HttpStatus.OK);
+			modelAndView.getModelMap().put(HttpCodeView.CODE, HttpStatus.OK);
 			clientService.deleteClient(client);
 		}
 
@@ -342,24 +354,30 @@ public class ClientAPI {
 	 * @param modelAndView
 	 * @return
 	 */
-	@RequestMapping(value="/{id}", method=RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value="/{id}", method=RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public String apiShowClient(@PathVariable("id") Long id, Model model, Authentication auth) {
 
 		ClientDetailsEntity client = clientService.getClientById(id);
 
 		if (client == null) {
 			logger.error("apiShowClient failed; client with id " + id + " could not be found.");
-			model.addAttribute("code", HttpStatus.NOT_FOUND);
-			model.addAttribute("errorMessage", "The requested client with id " + id + " could not be found.");
+			model.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
+			model.addAttribute(JsonErrorView.ERROR_MESSAGE, "The requested client with id " + id + " could not be found.");
 			return JsonErrorView.VIEWNAME;
 		}
 
-		model.addAttribute("entity", client);
+		model.addAttribute(JsonEntityView.ENTITY, client);
 
 		if (AuthenticationUtilities.isAdmin(auth)) {
 			return ClientEntityViewForAdmins.VIEWNAME;
 		} else {
 			return ClientEntityViewForUsers.VIEWNAME;
 		}
+	}
+
+	@ExceptionHandler(OAuth2Exception.class)
+	public ResponseEntity<OAuth2Exception> handleException(Exception e) throws Exception {
+		logger.info("Handling error: " + e.getClass().getSimpleName() + ", " + e.getMessage());
+		return providerExceptionHandler.translate(e);
 	}
 }

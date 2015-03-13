@@ -224,19 +224,19 @@ var ClientView = Backbone.View.extend({
     render:function (eventName) {
     	
     	var creationDate = this.model.get('createdAt');
-		var displayCreationDate = "at an unknown time";
+		var displayCreationDate = $.t('client.client-table.unknown');
 		var hoverCreationDate = "";
 		if (creationDate == null || !moment(creationDate).isValid()) {
-			displayCreationDate = "at an unknown time";
+			displayCreationDate = $.t('client.client-table.unknown');
 			hoverCreationDate = "";
 		} else {
 			creationDate = moment(creationDate);
 			if (moment().diff(creationDate, 'months') < 6) {
 				displayCreationDate = creationDate.fromNow();
 			} else {
-				displayCreationDate = "on " + creationDate.format("MMMM Do, YYYY");
+				displayCreationDate = "on " + creationDate.format("LL");
 			}
-			hoverCreationDate = creationDate.format("MMMM Do, YYYY [at] h:mmA");
+			hoverCreationDate = creationDate.format("LLL");
 		}
 
     	

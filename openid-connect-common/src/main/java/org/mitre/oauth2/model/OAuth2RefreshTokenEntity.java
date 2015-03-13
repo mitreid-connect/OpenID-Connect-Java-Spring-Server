@@ -49,14 +49,25 @@ import com.nimbusds.jwt.JWTParser;
 @Entity
 @Table(name = "refresh_token")
 @NamedQueries({
-	@NamedQuery(name = "OAuth2RefreshTokenEntity.getAll", query = "select r from OAuth2RefreshTokenEntity r"),
-	@NamedQuery(name = "OAuth2RefreshTokenEntity.getAllExpiredByDate", query = "select r from OAuth2RefreshTokenEntity r where r.expiration <= :date"),
-	@NamedQuery(name = "OAuth2RefreshTokenEntity.getByClient", query = "select r from OAuth2RefreshTokenEntity r where r.client = :client"),
-	@NamedQuery(name = "OAuth2RefreshTokenEntity.getByTokenValue", query = "select r from OAuth2RefreshTokenEntity r where r.value = :tokenValue"),
-	@NamedQuery(name = "OAuth2RefreshTokenEntity.getByAuthentication", query = "select r from OAuth2RefreshTokenEntity r where r.authenticationHolder.authentication = :authentication")
+	@NamedQuery(name = OAuth2RefreshTokenEntity.QUERY_ALL, query = "select r from OAuth2RefreshTokenEntity r"),
+	@NamedQuery(name = OAuth2RefreshTokenEntity.QUERY_EXPIRED_BY_DATE, query = "select r from OAuth2RefreshTokenEntity r where r.expiration <= :" + OAuth2RefreshTokenEntity.PARAM_DATE),
+	@NamedQuery(name = OAuth2RefreshTokenEntity.QUERY_BY_CLIENT, query = "select r from OAuth2RefreshTokenEntity r where r.client = :" + OAuth2RefreshTokenEntity.PARAM_CLIENT),
+	@NamedQuery(name = OAuth2RefreshTokenEntity.QUERY_BY_TOKEN_VALUE, query = "select r from OAuth2RefreshTokenEntity r where r.value = :" + OAuth2RefreshTokenEntity.PARAM_TOKEN_VALUE),
+	@NamedQuery(name = OAuth2RefreshTokenEntity.QUERY_BY_AUTHENTICATION, query = "select r from OAuth2RefreshTokenEntity r where r.authenticationHolder.authentication = :" + OAuth2RefreshTokenEntity.PARAM_AUTHENTICATION)
 })
 public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
 
+	public static final String QUERY_BY_AUTHENTICATION = "OAuth2RefreshTokenEntity.getByAuthentication";
+	public static final String QUERY_BY_TOKEN_VALUE = "OAuth2RefreshTokenEntity.getByTokenValue";
+	public static final String QUERY_BY_CLIENT = "OAuth2RefreshTokenEntity.getByClient";
+	public static final String QUERY_EXPIRED_BY_DATE = "OAuth2RefreshTokenEntity.getAllExpiredByDate";
+	public static final String QUERY_ALL = "OAuth2RefreshTokenEntity.getAll";
+
+	public static final String PARAM_AUTHENTICATION = "authentication";
+	public static final String PARAM_TOKEN_VALUE = "tokenValue";
+	public static final String PARAM_CLIENT = "client";
+	public static final String PARAM_DATE = "date";
+	
 	private Long id;
 
 	private AuthenticationHolderEntity authenticationHolder;

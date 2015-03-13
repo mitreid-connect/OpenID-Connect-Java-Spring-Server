@@ -19,13 +19,13 @@
  */
 package org.mitre.jose;
 
-import static org.junit.Assert.assertEquals;
-
 import org.junit.Test;
 
 import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWSAlgorithm;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * 

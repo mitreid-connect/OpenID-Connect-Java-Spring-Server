@@ -16,12 +16,6 @@
  *******************************************************************************/
 package org.mitre.openid.connect.service.impl;
 
-import static org.mitre.util.JsonUtils.base64UrlDecodeObject;
-import static org.mitre.util.JsonUtils.base64UrlEncodeObject;
-import static org.mitre.util.JsonUtils.readMap;
-import static org.mitre.util.JsonUtils.readSet;
-import static org.mitre.util.JsonUtils.writeNullSafeArray;
-
 import java.io.IOException;
 import java.io.Serializable;
 import java.text.ParseException;
@@ -70,6 +64,12 @@ import com.google.common.collect.Sets;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
+
+import static org.mitre.util.JsonUtils.base64UrlDecodeObject;
+import static org.mitre.util.JsonUtils.base64UrlEncodeObject;
+import static org.mitre.util.JsonUtils.readMap;
+import static org.mitre.util.JsonUtils.readSet;
+import static org.mitre.util.JsonUtils.writeNullSafeArray;
 
 /**
  *

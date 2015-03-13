@@ -30,6 +30,7 @@
 	<task:scheduled-tasks scheduler="taskScheduler">
 	    <task:scheduled ref="defaultOAuth2ProviderTokenService" method="clearExpiredTokens" fixed-delay="300000" initial-delay="600000"/>
 	    <task:scheduled ref="defaultApprovedSiteService" method="clearExpiredSites" fixed-delay="300000" initial-delay="600000"/>
+	    <task:scheduled ref="defaultOAuth2AuthorizationCodeService" method="clearExpiredAuthorizationCodes" fixed-delay="300000" initial-delay="600000"/>
 	</task:scheduled-tasks>
 
 </beans>
