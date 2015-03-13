@@ -205,21 +205,6 @@
 	<bean id="clientAssertionAuthenticationProvider" class="org.mitre.openid.connect.assertion.JWTBearerAuthenticationProvider" />
 
 	<!-- Configure locale information -->
-<!-- 	<bean id="messageSource" -->
-<!-- 		class="org.springframework.context.support.ReloadableResourceBundleMessageSource"> -->
-<!-- 		<property name="basenames"> -->
-<!-- 			<list> -->
-<!-- 				<value>classpath:custom_messages</value> -->
-<!-- 				<value>classpath:messages</value> -->
-<!-- 			</list> -->
-<!-- 		</property> -->
-<!-- 		<property name="fallbackToSystemLocale" value="false" /> -->
-<!-- 		<property name="cacheSeconds" value="180" /> -->
-<!-- 		<property name="defaultEncoding" value="UTF-8" /> -->
-<!-- 		<property name="useCodeAsDefaultMessage" value="true" /> -->
-<!-- 	</bean> -->
-
-
 	<bean id="messageSource" class="org.mitre.openid.connect.config.JsonMessageSource">
 		<property name="baseDirectory" value="/resources/js/locale/" />
 	</bean>
