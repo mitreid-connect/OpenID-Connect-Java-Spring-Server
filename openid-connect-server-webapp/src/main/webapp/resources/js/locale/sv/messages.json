@@ -323,6 +323,17 @@
             "no-sites": "Det finns inga vitlistade webbplatser. Använd knappen <strong>vitlista</strong> på klientadminstrationssidan för att skapa en."
         }
     },
+	"copyright": "Levererat av <a href=\"https://github.com/mitreid-connect/\">MITREid Connect <span class=\"label\">{0}</span></a> <span class=\"pull-right\">&copy; 2015 MITRE Corporation och MIT KIT.</span>.",
+	"about": {
+		"title": "Om&nbsp;tjänsten",
+		"body": "\nDenna OpenID Connect-tjänst är baserad på öppen källkod ifrån projektet MITREid, skapat av \n<a href=\"http://www.mitre.org/\">MITRE Corporation</a> och <a href=\"http://kit.mit.edu/\">MIT Kerberos and Internet Trust Consortium</a>.\n</p>\n<p>\nMer information om projektet kan finns i projektet \n<a href=\"http://github.com/mitreid-connect/\">MITREid Connect på GitHub</a>. \nDär kan du skicka in felrapporter, komma med återkoppling, eller till och med bidra med kodtillägg för ytterligare funktioner du skulle vilja ha."
+	},
+	"statistics": {
+		"title": "Statistik",
+		"number_users": "Antal användare: <span class=\"label label-info\" id=\"userCount\">{0}</span>",
+		"number_clients": "Auktoriserade klienter: <span class=\"label label-info\" id=\"clientCount\">{0}</span>",
+		"number_approvals": "Godkända webbplatser: <span class=\"label label-info\" id=\"approvalCount\">{0}</span>"
+	},
     "home": {
 		"title": "Hem",
 		"welcome": {
@@ -345,5 +356,81 @@
 			"number_clients": "Auktoriserade klienter: <span class=\"label label-info\" id=\"clientCount\">{0}</span>",
 			"number_approvals": "Godkända webbplatser: <span class=\"label label-info\" id=\"approvalCount\">{0}</span>"
 		}
-    }
+    },
+	"contact": {
+		"title": "Kontakt",
+		"body": "\nFör att rapportera fel i själva programvaran MITREid Connect, använd \n<a href=\"https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server/issues\">GitHub issue tracker</a>. \nFör problem som är specifika för denna server, kontakta tjänstens administrator."
+	},
+	"topbar": {
+		"about": "Om&nbsp;tjänsten",
+		"contact": "Kontakt",
+		"statistics": "Statistik",
+		"home": "Hem",
+		"login": "Logga in",
+		"logout": "Logga ut"
+	},
+	"sidebar": {
+		"administrative": {
+			"title": "Administrativt",
+			"manage_clients": "Hantera klienter",
+			"whitelisted_clients": "Vitlistade klienter",
+			"blacklisted_clients": "Svartlistade klienter",
+			"system_scopes": "System-scope"
+		},
+		"personal": {
+			"title": "Personligt",
+			"approved_sites": "Hantera godkända platser",
+			"active_tokens": "Hantera aktiva biljetter",
+			"profile_information": "Visa profilinformation"
+		},
+		"developer": {
+			"title": "Utvecklare",
+			"client_registration": "Self-service klientregistering",
+			"resource_registration": "Self-service registrering av skyddad resurs"
+		}
+	},
+	"manage": {
+		"ok": "OK",
+		"loading": "Laddar",
+		"title": "Administrationsgränssnitt"
+	},
+    "approve": {
+    	"dynamically-registered-unknown": "(Okänt)",
+		"title": "Medge åtkomst",
+		"error": {
+			"not_granted": "Åtkomst kunde inte medges."
+		},
+		"required_for": "Åtkomst måste medges för",
+		"dynamically_registered": "Denna klient blev registrerad dynamiskt <span class=\"label label-info\" id=\"registrationTime\">{0}</span>.",
+		"caution": {
+			"title": "Försiktigt",
+			"message": {
+				"none": "Den har <span class=\"label label-important\">aldrig</span> tidigare blivit medgiven åtkomst.",
+				"singular": "Den har tidigare blivit medgiven åtkomst <span class=\"label label-warning\">{0}</span> gång.",
+				"plural": "Den har tidigare blivit medgiven åtkomst <span class=\"label\">{0}</span> gånger."
+			}
+		},
+		"more_information": "mer information",
+		"home_page": "Hemsida",
+		"policy": "Policy",
+		"terms": "Användarvillkor",
+		"contacts": "Administrativ kontakt",
+		"warning": "Varning",
+		"no_redirect_uri": "Denna klient har inte någon omdirigerings URI registrerad och någon kan använda en skadlig URI hit.",
+		"redirect_uri": "Du kommer att omdirigeras till denna sida om du medger åtkomst: <code>{0}</code>",
+		"pairwise": "Denna klient använder en <b>pairwise</b>-identifierare, vilket gör det svårare att koppla samman dina identititer mellan olika webbplatser.",
+		"no_scopes": "Denna klient har inga \"scopes\" registrerade och kan därför begära <em>alla</em> scope som finns tillgängliga i systemet. Iakttag försiktighet.",
+		"access_to": "Åtkomst till",
+		"remember": { 
+			"title": "Kom ihåg detta val",
+			"until_revoke": "tills jag återkallar det",
+			"one_hour": "i en timme",
+			"next_time": "fråga igen nästa gång"
+		},
+		"do_authorize": "Medger du åtkomst för",
+		"label": {
+			"authorize": "Medge åtkomst",
+			"deny": "Avbryt"
+		}
+	}
 }
