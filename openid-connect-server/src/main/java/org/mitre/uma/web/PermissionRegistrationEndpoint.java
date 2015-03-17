@@ -26,6 +26,7 @@ import static org.mitre.util.JsonUtils.getAsStringSet;
 
 import java.util.Set;
 
+import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.service.SystemScopeService;
 import org.mitre.openid.connect.view.JsonEntityView;
 import org.mitre.openid.connect.view.JsonErrorView;
@@ -71,6 +72,9 @@ public class PermissionRegistrationEndpoint {
 	
 	@Autowired
 	private ResourceSetService resourceSetService;
+	
+	@Autowired
+	private SystemScopeService scopeService;
 
 	@Autowired
 	private WebResponseExceptionTranslator providerExceptionHandler;
@@ -99,6 +103,11 @@ public class PermissionRegistrationEndpoint {
 					m.addAttribute("errorMessage", "Missing required component of resource registration request.");
 					return JsonErrorView.VIEWNAME;
 				}
+				
+				// trim any restricted scopes
+				Set<SystemScope> scopesRequested = scopeService.fromStrings(scopes);
+				scopesRequested = scopeService.removeRestrictedAndReservedScopes(scopesRequested);
+				scopes = scopeService.toStrings(scopesRequested);
 				
 				ResourceSet resourceSet = resourceSetService.getById(rsid);
 				

@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.service.SystemScopeService;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.mitre.openid.connect.view.HttpCodeView;
@@ -52,7 +53,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
@@ -78,6 +79,8 @@ public class ResourceSetRegistrationEndpoint {
 	@Autowired
 	private ConfigurationPropertiesBean config;
 
+	@Autowired
+	private SystemScopeService scopeService;
 
 	@Autowired
 	private WebResponseExceptionTranslator providerExceptionHandler;
@@ -91,8 +94,17 @@ public class ResourceSetRegistrationEndpoint {
 		
 		ResourceSet rs = parseResourceSet(jsonString);
 		
-		if (rs == null // there was no resource set in the body
-				|| Strings.isNullOrEmpty(rs.getName()) // there was no name (required)
+		if (rs == null) { // there was no resource set in the body
+			logger.warn("Resource set registration missing body.");
+			
+			m.addAttribute("code", HttpStatus.BAD_REQUEST);
+			m.addAttribute("error_description", "Resource request was missing body.");
+			return JsonErrorView.VIEWNAME;
+		}
+		
+		rs = validateScopes(rs);
+		
+		if (Strings.isNullOrEmpty(rs.getName()) // there was no name (required)
 				|| rs.getScopes() == null // there were no scopes (required)
 			) {
 
@@ -131,6 +143,8 @@ public class ResourceSetRegistrationEndpoint {
 			m.addAttribute("error", "not_found");
 			return JsonErrorView.VIEWNAME;
 		} else {
+			
+			rs = validateScopes(rs);
 			
 			if (!auth.getName().equals(rs.getOwner())) {
 				
@@ -277,6 +291,29 @@ public class ResourceSetRegistrationEndpoint {
 		
 	}
 	
+
+	/**
+	 * 
+	 * Make sure the resource set doesn't have any restricted or reserved scopes.
+	 * 
+	 * @param rs
+	 */
+	private ResourceSet validateScopes(ResourceSet rs) {
+		// scopes that the client is asking for
+		Set<SystemScope> requestedScopes = scopeService.fromStrings(rs.getScopes());
+
+		// the scopes that the client can have must be a subset of the dynamically allowed scopes
+		Set<SystemScope> allowedScopes = scopeService.removeRestrictedAndReservedScopes(requestedScopes);
+
+		// if the client didn't ask for any, give them the defaults
+		if (allowedScopes == null || allowedScopes.isEmpty()) {
+			allowedScopes = scopeService.getDefaults();
+		}
+
+		rs.setScopes(scopeService.toStrings(allowedScopes));
+
+		return rs;
+	}
 
 	@ExceptionHandler(OAuth2Exception.class)
 	public ResponseEntity<OAuth2Exception> handleException(Exception e) throws Exception {
