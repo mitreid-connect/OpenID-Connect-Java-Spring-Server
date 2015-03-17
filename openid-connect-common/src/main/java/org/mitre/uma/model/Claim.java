@@ -43,6 +43,7 @@ public class Claim {
 	private String name;
 	private String friendlyName;
 	private String claimType;
+	private String value;
 	private Set<String> claimTokenFormat;
 	private Set<String> issuer;
 	
@@ -143,5 +144,19 @@ public class Claim {
 	public void setIssuer(Set<String> issuer) {
 		this.issuer = issuer;
 	}
-	
+
+	/**
+	 * @return the value
+	 */
+	@Basic
+	@Column(name = "claim_value")
+	public String getValue() {
+		return value;
+	}
+	/**
+	 * @param value the value to set
+	 */
+	public void setValue(String value) {
+		this.value = value;
+	}
 }
