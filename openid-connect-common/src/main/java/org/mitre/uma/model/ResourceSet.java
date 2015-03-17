@@ -16,9 +16,11 @@
  *******************************************************************************/
 package org.mitre.uma.model;
 
+import java.util.Collection;
 import java.util.Set;
 
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -30,6 +32,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -46,7 +49,6 @@ public class ResourceSet {
 	public static final String PARAM_OWNER = "owner";
 	public static final String PARAM_CLIENTID = "clientId";
 
-	
 	private Long id;
 	private String name;
 	private String uri;
@@ -56,6 +58,8 @@ public class ResourceSet {
 	
 	private String owner; // username of the person responsible for the registration (either directly or via OAuth token)
 	private String clientId; // client id of the protected resource that registered this resource set via OAuth token
+	
+	private Collection<Claim> claimsRequired;
 	
 	/**
 	 * @return the id
@@ -188,6 +192,22 @@ public class ResourceSet {
 	 */
 	public void setClientId(String clientId) {
 		this.clientId = clientId;
+	}
+
+	/**
+	 * @return the claimsRequired
+	 */
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@JoinColumn(name = "resource_set_id")
+	public Collection<Claim> getClaimsRequired() {
+		return claimsRequired;
+	}
+
+	/**
+	 * @param claimsRequired the claimsRequired to set
+	 */
+	public void setClaimsRequired(Collection<Claim> claimsRequired) {
+		this.claimsRequired = claimsRequired;
 	}
 	
 	

@@ -17,9 +17,12 @@
 
 package org.mitre.uma.model;
 
+import java.util.Collection;
+import java.util.Date;
 import java.util.Set;
 
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -30,7 +33,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 /**
  * 
@@ -41,12 +49,21 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "permission")
+@NamedQueries({
+	@NamedQuery(name = Permission.QUERY_TICKET, query = "select p from Permission p where p.ticket = :" + Permission.PARAM_TICKET)
+})
 public class Permission {
 
+	public static final String QUERY_TICKET = "Permission.queryByTicket";
+	public static final String PARAM_TICKET = "ticket";
+	
+	
 	private Long id;
 	private ResourceSet resourceSet;
 	private Set<String> scopes;
 	private String ticket;
+	private Date expiration;
+	private Collection<Claim> claimsSupplied;
 	
 	/**
 	 * @return the id
@@ -115,6 +132,39 @@ public class Permission {
 	 */
 	public void setTicket(String ticket) {
 		this.ticket = ticket;
+	}
+
+	/**
+	 * @return the expiration
+	 */
+	@Basic
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "expiration")
+	public Date getExpiration() {
+		return expiration;
+	}
+
+	/**
+	 * @param expiration the expiration to set
+	 */
+	public void setExpiration(Date expiration) {
+		this.expiration = expiration;
+	}
+
+	/**
+	 * @return the claimsSupplied
+	 */
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@JoinColumn(name = "permission_id")
+	public Collection<Claim> getClaimsSupplied() {
+		return claimsSupplied;
+	}
+
+	/**
+	 * @param claimsSupplied the claimsSupplied to set
+	 */
+	public void setClaimsSupplied(Collection<Claim> claimsSupplied) {
+		this.claimsSupplied = claimsSupplied;
 	}
 	
 	

@@ -32,6 +32,7 @@ import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.service.UserInfoService;
 import org.mitre.openid.connect.view.HttpCodeView;
 import org.mitre.openid.connect.view.JsonEntityView;
+import org.mitre.uma.web.AuthorizationRequestEndpoint;
 import org.mitre.uma.web.PermissionRegistrationEndpoint;
 import org.mitre.uma.web.ResourceSetRegistrationEndpoint;
 import org.mitre.openid.connect.web.DynamicClientRegistrationEndpoint;
@@ -376,7 +377,7 @@ public class DiscoveryEndpoint {
 		m.put("introspection_endpoint", issuer + "introspect");
 		m.put("resource_set_registration_endpoint", issuer + ResourceSetRegistrationEndpoint.URL);
 		m.put("permission_registration_endpoint", issuer + PermissionRegistrationEndpoint.URL);
-//		m.put("rpt_endpoint", issuer + RPT_ENDPOINT);
+		m.put("rpt_endpoint", issuer + issuer + AuthorizationRequestEndpoint.URL);
 		
 		
 		

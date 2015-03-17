@@ -31,4 +31,12 @@ public interface PermissionRepository {
 	 */
 	public Permission save(Permission p);
 
+	/**
+	 * Get the permission indicated by its ticket value.
+	 * 
+	 * @param ticket
+	 * @return
+	 */
+	public Permission getByTicket(String ticket);
+
 }

@@ -17,6 +17,7 @@
 
 package org.mitre.uma.service.impl;
 
+import java.sql.Date;
 import java.util.Set;
 import java.util.UUID;
 
@@ -42,6 +43,8 @@ public class DefaultPermissionService implements PermissionService {
 	@Autowired
 	private SystemScopeService scopeService;
 	
+	private Long permissionExpirationSeconds = 60L * 60L; // 1 hr
+	
 	/* (non-Javadoc)
 	 * @see org.mitre.uma.service.PermissionService#create(org.mitre.uma.model.ResourceSet, java.util.Set)
 	 */
@@ -58,9 +61,18 @@ public class DefaultPermissionService implements PermissionService {
 		p.setResourceSet(resourceSet);
 		p.setScopes(scopes);
 		p.setTicket(UUID.randomUUID().toString());
+		p.setExpiration(new Date(System.currentTimeMillis() + permissionExpirationSeconds * 1000L));
 		
 		return repository.save(p);
 		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.mitre.uma.service.PermissionService#getByTicket(java.lang.String)
+	 */
+	@Override
+	public Permission getByTicket(String ticket) {
+		return repository.getByTicket(ticket);
 	}
 
 }

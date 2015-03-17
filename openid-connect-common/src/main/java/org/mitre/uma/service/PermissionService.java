@@ -38,4 +38,13 @@ public interface PermissionService {
 	 */
 	public Permission create(ResourceSet resourceSet, Set<String> scopes);
 
+	/**
+	 * 
+	 * Read the permission associated with the given ticket.
+	 * 
+	 * @param the ticket value to search on
+	 * @return the permission object, or null if none is found
+	 */
+	public Permission getByTicket(String ticket);
+
 }
