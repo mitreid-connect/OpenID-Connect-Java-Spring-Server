@@ -130,9 +130,9 @@ public class Claim {
 	 * @return the issuer
 	 */
 	@ElementCollection(fetch = FetchType.EAGER)
-	@Column(name = "claim_issuer")
+	@Column(name = "issuer")
 	@CollectionTable(
-		name = "issuer",
+		name = "claim_issuer",
 		joinColumns = @JoinColumn(name = "owner_id")
 	)
 	public Set<String> getIssuer() {
