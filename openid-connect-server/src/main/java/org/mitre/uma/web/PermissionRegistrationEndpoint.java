@@ -17,6 +17,9 @@
 
 package org.mitre.uma.web;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import static org.mitre.oauth2.web.AuthenticationUtilities.ensureOAuthScope;
 import static org.mitre.util.JsonUtils.getAsLong;
 import static org.mitre.util.JsonUtils.getAsStringSet;
@@ -32,11 +35,15 @@ import org.mitre.uma.service.PermissionService;
 import org.mitre.uma.service.ResourceSetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
+import org.springframework.security.oauth2.provider.error.WebResponseExceptionTranslator;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.MimeTypeUtils;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -54,6 +61,8 @@ import com.google.gson.JsonParser;
 @RequestMapping("/" + PermissionRegistrationEndpoint.URL)
 @PreAuthorize("hasRole('ROLE_USER')")
 public class PermissionRegistrationEndpoint {
+	// Logger for this class
+	private static final Logger logger = LoggerFactory.getLogger(PermissionRegistrationEndpoint.class);
 	
 	public static final String URL = "permission";
 	
@@ -62,6 +71,9 @@ public class PermissionRegistrationEndpoint {
 	
 	@Autowired
 	private ResourceSetService resourceSetService;
+
+	@Autowired
+	private WebResponseExceptionTranslator providerExceptionHandler;
 
 	private JsonParser parser = new JsonParser();
 	
@@ -140,4 +152,11 @@ public class PermissionRegistrationEndpoint {
 		
 	}
 
+
+	@ExceptionHandler(OAuth2Exception.class)
+	public ResponseEntity<OAuth2Exception> handleException(Exception e) throws Exception {
+		logger.info("Handling error: " + e.getClass().getSimpleName() + ", " + e.getMessage());
+		return providerExceptionHandler.translate(e);
+	}
+	
 }
