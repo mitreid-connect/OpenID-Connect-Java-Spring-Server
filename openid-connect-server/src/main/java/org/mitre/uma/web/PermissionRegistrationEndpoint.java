@@ -30,7 +30,7 @@ import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.service.SystemScopeService;
 import org.mitre.openid.connect.view.JsonEntityView;
 import org.mitre.openid.connect.view.JsonErrorView;
-import org.mitre.uma.model.Permission;
+import org.mitre.uma.model.PermissionTicket;
 import org.mitre.uma.model.ResourceSet;
 import org.mitre.uma.service.PermissionService;
 import org.mitre.uma.service.ResourceSetService;
@@ -126,7 +126,7 @@ public class PermissionRegistrationEndpoint {
 				}
 				
 				// create the permission
-				Permission permission = permissionService.create(resourceSet, scopes);
+				PermissionTicket permission = permissionService.createTicket(resourceSet, scopes);
 				
 				if (permission != null) {
 					// we've created the permission, return the ticket

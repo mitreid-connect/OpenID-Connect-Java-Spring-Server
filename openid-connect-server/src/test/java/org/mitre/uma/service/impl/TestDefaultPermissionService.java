@@ -24,7 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mitre.oauth2.service.SystemScopeService;
-import org.mitre.uma.model.Permission;
+import org.mitre.uma.model.PermissionTicket;
 import org.mitre.uma.model.ResourceSet;
 import org.mitre.uma.repository.PermissionRepository;
 import org.mockito.AdditionalAnswers;
@@ -94,7 +94,7 @@ public class TestDefaultPermissionService {
 		rs2.setScopes(scopes2);
 
 		// have the repository just pass the argument through
-		when(permissionRepository.save(Mockito.any(Permission.class))).then(AdditionalAnswers.returnsFirstArg());
+		when(permissionRepository.save(Mockito.any(PermissionTicket.class))).then(AdditionalAnswers.returnsFirstArg());
 		
 		when(scopeService.scopesMatch(anySetOf(String.class), anySetOf(String.class))).then(new Answer<Boolean>() {
 
@@ -114,12 +114,12 @@ public class TestDefaultPermissionService {
 	
 	
 	/**
-	 * Test method for {@link org.mitre.uma.service.impl.DefaultPermissionService#create(org.mitre.uma.model.ResourceSet, java.util.Set)}.
+	 * Test method for {@link org.mitre.uma.service.impl.DefaultPermissionService#createTicket(org.mitre.uma.model.ResourceSet, java.util.Set)}.
 	 */
 	@Test
 	public void testCreate_ticket() {
 		
-		Permission perm = permissionService.create(rs1, scopes1);
+		PermissionTicket perm = permissionService.createTicket(rs1, scopes1);
 		
 		// we want there to be a non-null ticket
 		assertNotNull(perm.getTicket());
@@ -127,7 +127,7 @@ public class TestDefaultPermissionService {
 	
 	@Test
 	public void testCreate_uuid() {
-		Permission perm = permissionService.create(rs1, scopes1);
+		PermissionTicket perm = permissionService.createTicket(rs1, scopes1);
 
 		// we expect this to be a UUID
 		UUID uuid = UUID.fromString(perm.getTicket());
@@ -139,8 +139,8 @@ public class TestDefaultPermissionService {
 	@Test
 	public void testCreate_differentTicketsSameClient() {
 		
-		Permission perm1 = permissionService.create(rs1, scopes1);
-		Permission perm2 = permissionService.create(rs1, scopes1);
+		PermissionTicket perm1 = permissionService.createTicket(rs1, scopes1);
+		PermissionTicket perm2 = permissionService.createTicket(rs1, scopes1);
 		
 		assertNotNull(perm1.getTicket());
 		assertNotNull(perm2.getTicket());
@@ -153,8 +153,8 @@ public class TestDefaultPermissionService {
 	@Test
 	public void testCreate_differentTicketsDifferentClient() {
 		
-		Permission perm1 = permissionService.create(rs1, scopes1);
-		Permission perm2 = permissionService.create(rs2, scopes2);
+		PermissionTicket perm1 = permissionService.createTicket(rs1, scopes1);
+		PermissionTicket perm2 = permissionService.createTicket(rs2, scopes2);
 		
 		assertNotNull(perm1.getTicket());
 		assertNotNull(perm2.getTicket());
@@ -168,7 +168,7 @@ public class TestDefaultPermissionService {
 	public void testCreate_scopeMismatch() {
 		@SuppressWarnings("unused")
 		// try to get scopes outside of what we're allowed to do, this should throw an exception
-		Permission perm = permissionService.create(rs1, scopes2);
+		PermissionTicket perm = permissionService.createTicket(rs1, scopes2);
 	}
 
 }

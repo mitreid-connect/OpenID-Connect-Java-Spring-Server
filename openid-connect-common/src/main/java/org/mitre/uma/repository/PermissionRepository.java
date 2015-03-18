@@ -17,7 +17,7 @@
 
 package org.mitre.uma.repository;
 
-import org.mitre.uma.model.Permission;
+import org.mitre.uma.model.PermissionTicket;
 
 /**
  * @author jricher
@@ -26,10 +26,13 @@ import org.mitre.uma.model.Permission;
 public interface PermissionRepository {
 
 	/**
+	 * 
+	 * Save a permission ticket.
+	 * 
 	 * @param p
 	 * @return
 	 */
-	public Permission save(Permission p);
+	public PermissionTicket save(PermissionTicket p);
 
 	/**
 	 * Get the permission indicated by its ticket value.
@@ -37,6 +40,6 @@ public interface PermissionRepository {
 	 * @param ticket
 	 * @return
 	 */
-	public Permission getByTicket(String ticket);
+	public PermissionTicket getByTicket(String ticket);
 
 }

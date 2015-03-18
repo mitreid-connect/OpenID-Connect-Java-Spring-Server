@@ -32,7 +32,7 @@ import org.mitre.openid.connect.view.HttpCodeView;
 import org.mitre.openid.connect.view.JsonEntityView;
 import org.mitre.openid.connect.view.JsonErrorView;
 import org.mitre.uma.model.Claim;
-import org.mitre.uma.model.Permission;
+import org.mitre.uma.model.PermissionTicket;
 import org.mitre.uma.model.ResourceSet;
 import org.mitre.uma.service.PermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,15 +102,15 @@ public class AuthorizationRequestEndpoint {
 				
 				String ticketValue = o.get(TICKET).getAsString();
 				
-				Permission perm = permissionService.getByTicket(ticketValue);
+				PermissionTicket ticket = permissionService.getByTicket(ticketValue);
 				
-				if (perm != null) {
+				if (ticket != null) {
 					// found the ticket, see if it's any good
 					
-					ResourceSet rs = perm.getResourceSet();
+					ResourceSet rs = ticket.getPermission().getResourceSet();
 					Collection<Claim> claimsRequired = rs.getClaimsRequired();
 					
-					Collection<Claim> claimsSupplied = perm.getClaimsSupplied();
+					Collection<Claim> claimsSupplied = ticket.getClaimsSupplied();
 					
 					Collection<Claim> claimsUnmatched = new HashSet<>(claimsRequired);
 					

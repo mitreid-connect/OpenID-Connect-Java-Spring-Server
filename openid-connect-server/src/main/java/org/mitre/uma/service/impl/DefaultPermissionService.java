@@ -23,6 +23,7 @@ import java.util.UUID;
 
 import org.mitre.oauth2.service.SystemScopeService;
 import org.mitre.uma.model.Permission;
+import org.mitre.uma.model.PermissionTicket;
 import org.mitre.uma.model.ResourceSet;
 import org.mitre.uma.repository.PermissionRepository;
 import org.mitre.uma.service.PermissionService;
@@ -49,7 +50,7 @@ public class DefaultPermissionService implements PermissionService {
 	 * @see org.mitre.uma.service.PermissionService#create(org.mitre.uma.model.ResourceSet, java.util.Set)
 	 */
 	@Override
-	public Permission create(ResourceSet resourceSet, Set<String> scopes) {
+	public PermissionTicket createTicket(ResourceSet resourceSet, Set<String> scopes) {
 		
 		// check to ensure that the scopes requested are a subset of those in the resource set
 		
@@ -57,13 +58,16 @@ public class DefaultPermissionService implements PermissionService {
 			throw new InsufficientScopeException("Scopes of resource set are not enough for requested permission.");
 		}
 		
-		Permission p = new Permission();
-		p.setResourceSet(resourceSet);
-		p.setScopes(scopes);
-		p.setTicket(UUID.randomUUID().toString());
-		p.setExpiration(new Date(System.currentTimeMillis() + permissionExpirationSeconds * 1000L));
+		Permission perm = new Permission();
+		perm.setResourceSet(resourceSet);
+		perm.setScopes(scopes);
 		
-		return repository.save(p);
+		PermissionTicket ticket = new PermissionTicket();
+		ticket.setPermission(perm);
+		ticket.setTicket(UUID.randomUUID().toString());
+		ticket.setExpiration(new Date(System.currentTimeMillis() + permissionExpirationSeconds * 1000L));
+		
+		return repository.save(ticket);
 		
 	}
 
@@ -71,7 +75,7 @@ public class DefaultPermissionService implements PermissionService {
 	 * @see org.mitre.uma.service.PermissionService#getByTicket(java.lang.String)
 	 */
 	@Override
-	public Permission getByTicket(String ticket) {
+	public PermissionTicket getByTicket(String ticket) {
 		return repository.getByTicket(ticket);
 	}
 

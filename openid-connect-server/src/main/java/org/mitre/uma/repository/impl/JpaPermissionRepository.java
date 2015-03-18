@@ -21,7 +21,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
-import org.mitre.uma.model.Permission;
+import org.mitre.uma.model.PermissionTicket;
 import org.mitre.uma.repository.PermissionRepository;
 import org.mitre.util.jpa.JpaUtil;
 import org.springframework.stereotype.Repository;
@@ -39,7 +39,7 @@ public class JpaPermissionRepository implements PermissionRepository {
 	
 	@Override
 	@Transactional
-	public Permission save(Permission p) {
+	public PermissionTicket save(PermissionTicket p) {
 		return JpaUtil.saveOrUpdate(p.getId(), em, p);
 	}
 
@@ -47,9 +47,9 @@ public class JpaPermissionRepository implements PermissionRepository {
 	 * @see org.mitre.uma.repository.PermissionRepository#getByTicket(java.lang.String)
 	 */
 	@Override
-	public Permission getByTicket(String ticket) {
-		TypedQuery<Permission> query = em.createNamedQuery(Permission.QUERY_TICKET, Permission.class);
-		query.setParameter(Permission.PARAM_TICKET, ticket);
+	public PermissionTicket getByTicket(String ticket) {
+		TypedQuery<PermissionTicket> query = em.createNamedQuery(PermissionTicket.QUERY_TICKET, PermissionTicket.class);
+		query.setParameter(PermissionTicket.PARAM_TICKET, ticket);
 		return JpaUtil.getSingleResult(query.getResultList());
 	}
 

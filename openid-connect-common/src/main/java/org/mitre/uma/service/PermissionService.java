@@ -19,7 +19,7 @@ package org.mitre.uma.service;
 
 import java.util.Set;
 
-import org.mitre.uma.model.Permission;
+import org.mitre.uma.model.PermissionTicket;
 import org.mitre.uma.model.ResourceSet;
 import org.springframework.security.oauth2.common.exceptions.InsufficientScopeException;
 
@@ -36,7 +36,7 @@ public interface PermissionService {
 	 * @return the created (and stored) permission object, with ticket
 	 * @throws InsufficientScopeException if the scopes in scopes don't match those in resourceSet.getScopes
 	 */
-	public Permission create(ResourceSet resourceSet, Set<String> scopes);
+	public PermissionTicket createTicket(ResourceSet resourceSet, Set<String> scopes);
 
 	/**
 	 * 
@@ -45,6 +45,6 @@ public interface PermissionService {
 	 * @param the ticket value to search on
 	 * @return the permission object, or null if none is found
 	 */
-	public Permission getByTicket(String ticket);
+	public PermissionTicket getByTicket(String ticket);
 
 }
