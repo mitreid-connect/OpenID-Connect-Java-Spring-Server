@@ -124,6 +124,21 @@ public class ResourceSetRegistrationEndpoint {
 		
 		ResourceSet saved = resourceSetService.saveNew(rs);
 		
+		///////
+		// TODO: REMOVE
+		///////
+		/*
+		Claim c = new Claim();
+		c.setName("email");
+		c.setValue("bob@bob.com");
+		c.setIssuer(Sets.newHashSet("https://bob.com/"));
+		saved.setClaimsRequired(Sets.newHashSet(c));
+		saved = resourceSetService.update(saved, saved);
+		*/
+		///////
+		/// END: REMOVE
+		///////
+		
 		m.addAttribute("code", HttpStatus.CREATED);
 		m.addAttribute("entity", saved);
 		m.addAttribute("location", config.getIssuer() + URL + "/" + rs.getId());

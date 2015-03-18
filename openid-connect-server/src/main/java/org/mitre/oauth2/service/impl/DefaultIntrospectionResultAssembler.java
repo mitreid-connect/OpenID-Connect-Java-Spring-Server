@@ -24,6 +24,7 @@ import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
 import org.mitre.oauth2.service.IntrospectionResultAssembler;
 import org.mitre.openid.connect.model.UserInfo;
+import org.mitre.uma.model.Permission;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -53,9 +54,26 @@ public class DefaultIntrospectionResultAssembler implements IntrospectionResultA
 
 		result.put(ACTIVE, true);
 
-		Set<String> scopes = Sets.intersection(authScopes, accessToken.getScope());
-		
-		result.put(SCOPE, Joiner.on(SCOPE_SEPARATOR).join(scopes));
+		if (accessToken.getPermissions() != null && !accessToken.getPermissions().isEmpty()) {
+
+			Set<Object> permissions = Sets.newHashSet();
+			
+			for (Permission perm : accessToken.getPermissions()) {
+				Map<String, Object> o = newLinkedHashMap();
+				o.put("resource_set_id", perm.getResourceSet().getId().toString());
+				Set<String> scopes = Sets.newHashSet(perm.getScopes());
+				o.put("scopes", scopes);
+				permissions.add(o);
+			}
+			
+			result.put("permissions", permissions);
+			
+		} else {
+			Set<String> scopes = Sets.intersection(authScopes, accessToken.getScope());
+			
+			result.put(SCOPE, Joiner.on(SCOPE_SEPARATOR).join(scopes));
+			
+		}
 
 		if (accessToken.getExpiration() != null) {
 			try {
