@@ -29,6 +29,7 @@ import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
 import org.mitre.oauth2.service.IntrospectionResultAssembler;
 import org.mitre.openid.connect.model.UserInfo;
+import org.mitre.uma.model.Permission;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 
@@ -56,7 +57,7 @@ public class TestDefaultIntrospectionResultAssembler {
 	public void shouldAssembleExpectedResultForAccessToken() throws ParseException {
 
 		// given
-		OAuth2AccessTokenEntity accessToken = accessToken(new Date(123 * 1000L), scopes("foo", "bar"), "Bearer",
+		OAuth2AccessTokenEntity accessToken = accessToken(new Date(123 * 1000L), scopes("foo", "bar"), null, "Bearer",
 				authentication("name", request("clientId")));
 
 		UserInfo userInfo = userInfo("sub");
@@ -85,7 +86,7 @@ public class TestDefaultIntrospectionResultAssembler {
 	public void shouldAssembleExpectedResultForAccessTokenWithoutUserInfo() throws ParseException {
 
 		// given
-		OAuth2AccessTokenEntity accessToken = accessToken(new Date(123 * 1000L), scopes("foo", "bar"), "Bearer",
+		OAuth2AccessTokenEntity accessToken = accessToken(new Date(123 * 1000L), scopes("foo", "bar"), null, "Bearer",
 				authentication("name", request("clientId")));
 
 		Set<String> authScopes = scopes("foo", "bar", "baz");
@@ -112,7 +113,7 @@ public class TestDefaultIntrospectionResultAssembler {
 	public void shouldAssembleExpectedResultForAccessTokenWithoutExpiry() {
 
 		// given
-		OAuth2AccessTokenEntity accessToken = accessToken(null, scopes("foo", "bar"), "Bearer",
+		OAuth2AccessTokenEntity accessToken = accessToken(null, scopes("foo", "bar"), null, "Bearer",
 				authentication("name", request("clientId")));
 
 		UserInfo userInfo = userInfo("sub");
@@ -221,10 +222,11 @@ public class TestDefaultIntrospectionResultAssembler {
 		return userInfo;
 	}
 
-	private OAuth2AccessTokenEntity accessToken(Date exp, Set<String> scopes, String tokenType, OAuth2Authentication authentication) {
+	private OAuth2AccessTokenEntity accessToken(Date exp, Set<String> scopes, Set<Permission> permissions, String tokenType, OAuth2Authentication authentication) {
 		OAuth2AccessTokenEntity accessToken = mock(OAuth2AccessTokenEntity.class, RETURNS_DEEP_STUBS);
 		given(accessToken.getExpiration()).willReturn(exp);
 		given(accessToken.getScope()).willReturn(scopes);
+		given(accessToken.getPermissions()).willReturn(permissions);
 		given(accessToken.getTokenType()).willReturn(tokenType);
 		given(accessToken.getAuthenticationHolder().getAuthentication()).willReturn(authentication);
 		return accessToken;
