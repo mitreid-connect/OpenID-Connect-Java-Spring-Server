@@ -8,10 +8,15 @@ CREATE TABLE IF NOT EXISTS access_token (
 	expiration TIMESTAMP NULL,
 	token_type VARCHAR(256),
 	refresh_token_id BIGINT,
-	client_id VARCHAR(256),
+	client_id BIGINT,
 	auth_holder_id BIGINT,
 	id_token_id BIGINT,
 	approved_site_id BIGINT
+);
+
+CREATE TABLE IF NOT EXISTS access_token_permissions (
+	access_token_id BIGINT NOT NULL,
+	permission_id BIGINT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS address (
@@ -235,13 +240,39 @@ CREATE TABLE IF NOT EXISTS resource_set_scope (
 	scope VARCHAR(256) NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS permission_ticket (
+	id BIGINT AUTO_INCREMENT PRIMARY KEY,
+	ticket VARCHAR(256) NOT NULL,
+	permission_id BIGINT NOT NULL,
+	expiration TIMESTAMP NULL
+);
+
 CREATE TABLE IF NOT EXISTS permission (
 	id BIGINT AUTO_INCREMENT PRIMARY KEY,
-	resource_set_id BIGINT NOT NULL,
-	ticket VARCHAR(256) NOT NULL
+	resource_set_id BIGINT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS permission_scope (
 	owner_id BIGINT NOT NULL,
 	scope VARCHAR(256) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS claim (
+	id BIGINT AUTO_INCREMENT PRIMARY KEY,
+	name VARCHAR(256),
+	friendly_name VARCHAR(1024),
+	claim_type VARCHAR(1024),
+	claim_value VARCHAR(1024),
+	resource_set_id BIGINT,
+	permission_ticket_id BIGINT
+);
+
+CREATE TABLE IF NOT EXISTS claim_token_format (
+	owner_id BIGINT NOT NULL,
+	claim_token_format VARCHAR(1024)
+);
+
+CREATE TABLE IF NOT EXISTS claim_issuer (
+	owner_id BIGINT NOT NULL,
+	issuer VARCHAR(1024)
 );
