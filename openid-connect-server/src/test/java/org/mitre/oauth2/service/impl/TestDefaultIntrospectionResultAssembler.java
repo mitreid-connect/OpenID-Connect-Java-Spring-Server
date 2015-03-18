@@ -34,6 +34,7 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 
 import static com.google.common.collect.Sets.newHashSet;
 
@@ -74,6 +75,45 @@ public class TestDefaultIntrospectionResultAssembler {
 				.put("exp", 123L)
 				.put("expires_at", dateFormat.valueToString(new Date(123 * 1000L)))
 				.put("scope", "bar foo")
+				.put("active", Boolean.TRUE)
+				.put("user_id", "name")
+				.put("client_id", "clientId")
+				.put("token_type", "Bearer")
+				.build();
+		assertThat(result, is(equalTo(expected)));
+	}
+
+	@Test
+	public void shouldAssembleExpectedResultForAccessToken_withPermissions() throws ParseException {
+
+		// given
+		OAuth2AccessTokenEntity accessToken = accessToken(new Date(123 * 1000L), scopes("foo", "bar"), 
+				permissions(permission(1L, "foo", "bar")),
+				"Bearer", authentication("name", request("clientId")));
+
+		UserInfo userInfo = userInfo("sub");
+		
+		Set<String> authScopes = scopes("foo", "bar", "baz");
+
+		// when
+		Map<String, Object> result = assembler.assembleFrom(accessToken, userInfo, authScopes);
+
+
+		// then
+		Map<String, Object> expected = new ImmutableMap.Builder<String, Object>()
+				.put("sub", "sub")
+				.put("exp", 123L)
+				.put("expires_at", dateFormat.valueToString(new Date(123 * 1000L)))
+				.put("permissions", new ImmutableSet.Builder<Object>()
+						.add(new ImmutableMap.Builder<String, Object>()
+								.put("resource_set_id", "1") // note that the resource ID comes out as a string
+								.put("scopes", new ImmutableSet.Builder<>()
+										.add("bar")
+										.add("foo")
+										.build())
+								.build())
+						.build())
+				// note that scopes are not included if permissions are included
 				.put("active", Boolean.TRUE)
 				.put("user_id", "name")
 				.put("client_id", "clientId")
@@ -256,5 +296,16 @@ public class TestDefaultIntrospectionResultAssembler {
 
 	private Set<String> scopes(String... scopes) {
 		return newHashSet(scopes);
+	}
+	
+	private Set<Permission> permissions(Permission... permissions) {
+		return newHashSet(permissions);
+	}
+	
+	private Permission permission(Long resourceSetId, String... scopes) {
+		Permission permission = mock(Permission.class, RETURNS_DEEP_STUBS);
+		given(permission.getResourceSet().getId()).willReturn(resourceSetId);
+		given(permission.getScopes()).willReturn(scopes(scopes));
+		return permission;
 	}
 }
