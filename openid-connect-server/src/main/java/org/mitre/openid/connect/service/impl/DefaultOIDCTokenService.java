@@ -183,7 +183,11 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 				} else {
 					idClaims.setCustomClaim("kid", jwtService.getDefaultSignerKeyId());
 
-					idToken = new SignedJWT(new JWSHeader(signingAlg), idClaims);
+					JWSHeader header = new JWSHeader(signingAlg, null, null, null, null, null, null, null, null, null,
+							jwtService.getDefaultSignerKeyId(),
+							null, null);
+					
+					idToken = new SignedJWT(header, idClaims);
 
 					// sign it with the server's key
 					jwtService.signJwt((SignedJWT) idToken);

@@ -28,6 +28,7 @@ import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.mitre.openid.connect.service.MITREidDataService;
 import org.mitre.openid.connect.service.impl.MITREidDataService_1_0;
 import org.mitre.openid.connect.service.impl.MITREidDataService_1_1;
+import org.mitre.openid.connect.service.impl.MITREidDataService_1_2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,7 +78,7 @@ public class DataAPI {
 	private MITREidDataService_1_1 dataService_1_1;
 
 	@Autowired
-	private MITREidDataService_1_1 dataService_1_2;
+	private MITREidDataService_1_2 dataService_1_2;
 
 	@Autowired
 	private WebResponseExceptionTranslator providerExceptionHandler;
