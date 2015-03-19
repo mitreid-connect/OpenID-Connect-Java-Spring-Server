@@ -1033,7 +1033,7 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 					} else if (name.equals("initiateLoginUri")) {
 						client.setInitiateLoginUri(reader.nextString());
 					} else if (name.equals("postLogoutRedirectUri")) {
-						HashSet<String> postLogoutUris = Sets.newHashSet(reader.nextString());
+						Set<String> postLogoutUris = readSet(reader);
 						client.setPostLogoutRedirectUris(postLogoutUris);
 					} else if (name.equals("requestUris")) {
 						Set<String> requestUris = readSet(reader);
