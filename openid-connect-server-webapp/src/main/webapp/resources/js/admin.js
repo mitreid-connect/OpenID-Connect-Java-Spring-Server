@@ -504,6 +504,7 @@ var AppRouter = Backbone.Router.extend({
         "user/tokens":"tokens",
         "user/profile":"profile",
         "user/policy":"policy",
+        "user/policy/:rsid":"editPolicy",
         
         "dev/dynreg":"dynReg",
         "dev/dynreg/new":"newDynReg",
@@ -1081,7 +1082,7 @@ var AppRouter = Backbone.Router.extend({
     	this.breadCrumbView.collection.reset();
     	this.breadCrumbView.collection.add([
 	        {text:$.t('admin.home'), href:""},
-	        {text:$.t('policy.resource-sets'), href:"manage/#user/profile"}
+	        {text:$.t('policy.resource-sets'), href:"manage/#user/policy"}
     	]);
     	
     	this.updateSidebar('user/policy');
@@ -1091,6 +1092,37 @@ var AppRouter = Backbone.Router.extend({
     	view.load(function() {
     		$('#content').html(view.render().el);
     		setPageTitle($.t('policy.resource-sets'));
+    	});
+    	
+    },
+    
+    editPolicy:function(rsid) {
+    	this.breadCrumbView.collection.reset();
+    	this.breadCrumbView.collection.add([
+	        {text:$.t('admin.home'), href:""},
+	        {text:$.t('policy.resource-sets'), href:"manage/#user/policy"},
+	        {text:$.t('policy.edit-policy'), href:"manage/#user/policy/" + rsid}
+    	]);
+    	
+    	this.updateSidebar('user/policy');
+    	
+    	var rs = this.resourceSetList.get(rsid);
+    	if (rs == null) {
+    		// need to load it directly
+    		var claims = new ClaimCollection();
+    	} else {
+    		// the resource set is loaded, preload the claims
+    		var claims = new ClaimCollection(rs.get('claimsRequired'));
+    		claims.isFetched = true;
+    	}
+    	// set the URL for the collection
+    	claims.url = 'api/claims/' + rsid;
+    	
+    	var view = new ClaimListView({model: claims});
+    	
+    	view.load(function() {
+    		$('#content').html(view.render().el);
+    		setPageTitle($.t('policy.edit-policy'));
     	});
     	
     },

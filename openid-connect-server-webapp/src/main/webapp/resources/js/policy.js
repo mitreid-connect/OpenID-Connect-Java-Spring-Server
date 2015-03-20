@@ -184,5 +184,82 @@ var ResourceSetView = Backbone.View.extend({
 		}
 	},
 
+});
 
+var ClaimListView = Backbone.View.extend({
+	tagName: 'span',
+	
+	initialize:function(options) {
+		this.options = options;
+	},
+	
+	load:function(callback) {
+    	if (this.model.isFetched) {
+    		callback();
+    		return;
+    	}
+
+    	$('#loadingbox').sheet('show');
+    	$('#loading').html(
+                '<span class="label" id="loading-claims">' + $.t('policy.required-claims') + '</span> '
+    			);
+
+    	$.when(this.model.fetchIfNeeded({success:function(e) {$('#loading-claims').addClass('label-success');}}))
+    			.done(function() {
+    	    		$('#loadingbox').sheet('hide');
+    	    		callback();
+    			});    	
+    },
+	
+	togglePlaceholder:function() {
+		if (this.model.length > 0) {
+			$('#required-claim-table', this.el).show();
+			$('#required-claim-table-empty', this.el).hide();
+		} else {
+			$('#required-claim-table', this.el).hide();
+			$('#required-claim-table-empty', this.el).show();
+		}
+	},
+	
+	render:function (eventName) {
+		$(this.el).html($('#tmpl-required-claim-table').html());
+		
+		var _self = this;
+		
+		_.each(this.model.models, function (claim) {
+			
+			var view = new ClaimView({model: claim});
+			view.parentView = _self;
+			$('#required-claim-table', this.el).append(view.render().el);
+			
+		}, this);
+
+		this.togglePlaceholder();
+        $(this.el).i18n();
+		return this;
+	}
+});
+
+
+var ClaimView = Backbone.View.extend({
+	tagName: 'tr',
+	
+	initialize:function(options) {
+		this.options = options;
+		
+		if (!this.template) {
+			this.template = _.template($('#tmpl-required-claim').html());
+		}
+	},
+	
+	render:function (eventName) {
+		var json = this.model.toJSON();
+		
+		this.$el.html(this.template(json));
+		
+		$(this.el).i18n();
+		return this;		
+	}
+	
+	
 });
