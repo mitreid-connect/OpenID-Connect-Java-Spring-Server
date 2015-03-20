@@ -50,9 +50,9 @@ public class ConfigurationPropertiesBean {
 
 	private Long regTokenLifeTime;
 
-	private boolean forceHttps = false;
+	private boolean forceHttps = false; // by default we just log a warning for HTTPS deployment
 
-	private Locale locale = Locale.getDefault();
+	private Locale locale = Locale.ENGLISH; // we default to the english translation
 
 	public ConfigurationPropertiesBean() {
 
