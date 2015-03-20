@@ -39,10 +39,10 @@
     <script type="text/javascript">
         $.i18n.init({
             fallbackLng: "en",
-            lng: "${pageContext.response.locale}",
+            lng: "${config.locale}",
             resGetPath: "resources/js/locale/__lng__/messages.json"
         });
-        moment.locale("${pageContext.response.locale}");
+        moment.locale("${config.locale}");
     	// safely set the title of the application
     	function setPageTitle(title) {
     		document.title = "${config.topbarTitle} - " + title;
