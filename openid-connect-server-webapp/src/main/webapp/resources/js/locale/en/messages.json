@@ -17,7 +17,8 @@
             "show": "View User Profile",
             "text": "Your user profile has the following information:",
             "value": "Claim value:"
-        }
+        },
+        "policies": "Manage Protected Resource Policies"
     },
     "client": {
         "client-form": {
@@ -338,6 +339,13 @@
             "no-sites": "There are no whitelisted sites. Use the <strong>whitelist</strong> button on the client management page to create one."
         }
     },
+    "policy" : {
+    	"resource-sets": "Resource sets",
+    	"policy-table": {
+    		"edit": "Edit Policies",
+    		"no-resource-sets": "There are no resource sets registered. Introduce a protected to this authorization server to let it register some."
+    	}	
+    },
 	"copyright": "Powered by <a href=\"https://github.com/mitreid-connect/\">MITREid Connect <span class=\"label\">{0}</span></a> <span class=\"pull-right\">&copy; 2015 The MITRE Corporation and MIT KIT.</span>.",
 	"about": {
 		"title": "About",
@@ -396,7 +404,8 @@
 			"title": "Personal",
 			"approved_sites": "Manage Approved Sites",
 			"active_tokens": "Manage Active Tokens",
-			"profile_information": "View Profile Information"
+			"profile_information": "View Profile Information",
+			"resource_policies": "Manage Protected Resource Policies"
 		},
 		"developer": {
 			"title": "Developer",

@@ -503,6 +503,7 @@ var AppRouter = Backbone.Router.extend({
         "user/approved":"approvedSites",
         "user/tokens":"tokens",
         "user/profile":"profile",
+        "user/policy":"policy",
         
         "dev/dynreg":"dynReg",
         "dev/dynreg/new":"newDynReg",
@@ -534,6 +535,7 @@ var AppRouter = Backbone.Router.extend({
         this.clientStats = new StatsModel(); 
         this.accessTokensList = new AccessTokenCollection();
         this.refreshTokensList = new RefreshTokenCollection();
+        this.resourceSetList = new ResourceSetCollection();
                 
         this.breadCrumbView = new BreadCrumbView({
             collection:new Backbone.Collection()
@@ -1068,10 +1070,28 @@ var AppRouter = Backbone.Router.extend({
     
         this.updateSidebar('user/profile');
         
-    	this.userProfileView = new UserProfileView({model: getUserInfo()});
-    	$('#content').html(this.userProfileView.render().el);
+    	var view = new UserProfileView({model: getUserInfo()});
+    	$('#content').html(view.render().el);
     	
     	setPageTitle($.t('admin.user-profile.show'));
+    	
+    },
+    
+    policy:function() {
+    	this.breadCrumbView.collection.reset();
+    	this.breadCrumbView.collection.add([
+	        {text:$.t('admin.home'), href:""},
+	        {text:$.t('policy.resource-sets'), href:"manage/#user/profile"}
+    	]);
+    	
+    	this.updateSidebar('user/policy');
+    	
+    	var view = new ResourceSetListView({model: this.resourceSetList, clientList: this.clientList, systemScopeList: this.systemScopeList});
+
+    	view.load(function() {
+    		$('#content').html(view.render().el);
+    		setPageTitle($.t('policy.resource-sets'));
+    	});
     	
     },
     
@@ -1102,7 +1122,8 @@ $(function () {
     		$.get('resources/template/whitelist.html', _load),
     		$.get('resources/template/dynreg.html', _load),
     		$.get('resources/template/rsreg.html', _load),
-    		$.get('resources/template/token.html', _load)
+    		$.get('resources/template/token.html', _load),
+    		$.get('resources/template/policy.html', _load)
     		).done(function() {
     		    $.ajaxSetup({cache:false});
     		    app = new AppRouter();
