@@ -345,9 +345,14 @@
     	"required-claims": "Required Claims",
     	"policy-table": {
     		"edit": "Edit Policies",
+    		"email-address": "email address",
+    		"required-claims": "Users that you share this resource will with need to be able to present the following claims in order to access the resource.",
     		"no-resource-sets": "There are no resource sets registered. Introduce a protected to this authorization server to let it register some.",
-    		"no-required-claims": "There are no required claims for this resource set.",
-    		"share-email": "Share with email address"
+    		"no-required-claims": "There are no required claims for this resource set: This resource set is inaccessible by others.",
+    		"share-email": "Share with email address",
+    		"issuers": "Issuers",
+    		"claim": "Claim",
+    		"value": "Value"
     	}	
     },
 	"copyright": "Powered by <a href=\"https://github.com/mitreid-connect/\">MITREid Connect <span class=\"label\">{0}</span></a> <span class=\"pull-right\">&copy; 2015 The MITRE Corporation and MIT KIT.</span>.",

@@ -211,7 +211,48 @@ var ClaimListView = Backbone.View.extend({
     			});    	
     },
 	
-	togglePlaceholder:function() {
+    events:{
+		'click .btn-save':'savePolicy',
+		'click .btn-cancel':'cancel',
+		'click .btn-share':'addClaim'
+    },
+
+    cancel:function(e) {
+    	e.preventDefault();
+    	app.navigate('user/policy', {trigger: true});
+    },
+    
+    savePolicy:function(e) {
+    	e.preventDefault();
+
+    	var _self = this;
+
+    	console.log(this);
+    	
+    	this.model.sync('update', this.model, {
+    		success:function() {
+    	    	app.navigate('user/policy', {trigger: true});
+    		},
+            error:function (error, response) {
+        		console.log("An error occurred when saving a policy set");
+
+				//Pull out the response text.
+				var responseJson = JSON.parse(response.responseText);
+        		
+        		//Display an alert with an error message
+				$('#modalAlert div.modal-header').html(responseJson.error);
+        		$('#modalAlert div.modal-body').html(responseJson.error_description);
+        		
+    			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
+    				 "backdrop" : "static",
+    				 "keyboard" : true,
+    				 "show" : true // ensure the modal is shown immediately
+    			 });
+        	}
+    	});
+    },
+    
+    togglePlaceholder:function() {
 		if (this.model.length > 0) {
 			$('#required-claim-table', this.el).show();
 			$('#required-claim-table-empty', this.el).hide();
@@ -250,6 +291,26 @@ var ClaimView = Backbone.View.extend({
 		if (!this.template) {
 			this.template = _.template($('#tmpl-required-claim').html());
 		}
+	},
+	
+	events:{
+		'click .btn-remove':'removeClaim'
+	},
+	
+	removeClaim:function(e) {
+		e.preventDefault();
+		
+		var _self = this;
+		
+		this.model.collection.remove(this.model);
+        _self.$el.fadeTo("fast", 0.00, function () { //fade
+            $(this).slideUp("fast", function () { //slide up
+                $(this).remove(); //then remove from the DOM
+                _self.parentView.togglePlaceholder();
+            });
+        });
+		
+		
 	},
 	
 	render:function (eventName) {

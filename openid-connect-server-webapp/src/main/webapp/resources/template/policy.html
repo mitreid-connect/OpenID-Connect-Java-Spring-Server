@@ -63,25 +63,29 @@
 		<button class="btn btn-small btn-cancel"><i class="icon-ban-circle"></i> <span data-i18n="common.cancel">Cancel</span></button>
     </div>
 
-	<div id="required-claim-table-empty" class="alert alert-info" data-i18n="policy.policy-table.no-required-claims">
-		There are no required claims for this resource set.
-	</div>
-
 	<div id="add-required-claim">
 		<form class="form-horizontal">
 			<fieldset>
-				<input type="text" id="email" placeholder="email address" />
+				<input type="text" id="email" placeholder="email address" data-i18n="[placeholder]policy.policy-table.email-address" />
 				<button id="add-email" class="btn btn-info"><i class="icon-share icon-white"></i> <span data-i18n="policy.policy-table.share-email">Share with email address</span></button>
 			</fieldset>
 		</form>
 	</div>
 
+	<div class="alert alert-info" data-i18n="policy.policy-table.required-claims">
+		Users that you share this resource will with need to be able to present the following claims in order to access the resource.
+	</div>
+
+	<div id="required-claim-table-empty" class="alert alert-danger" data-i18n="policy.policy-table.no-required-claims">
+		There are no required claims for this resource set: This resource set is inaccessible by others.
+	</div>
+
     <table id="required-claim-table" class="table table-hover table-striped">
         <thead>
 			<tr>
-				<th>Issuers</th>
-				<th>Claim</th>
-				<th>Value</th>
+				<th data-i18n="policy.policy-table.issuers">Issuers</th>
+				<th data-i18n="policy.policy-table.claim">Claim</th>
+				<th data-i18n="policy.policy-table.value">Value</th>
 				<th></th>			
         </thead>
         <tbody>
