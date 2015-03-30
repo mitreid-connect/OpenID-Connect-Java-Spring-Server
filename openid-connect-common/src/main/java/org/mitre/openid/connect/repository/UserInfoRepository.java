@@ -33,4 +33,13 @@ public interface UserInfoRepository {
 	 */
 	public UserInfo getByUsername(String username);
 
+	/**
+	 * 
+	 * Get the UserInfo object by its email field
+	 * 
+	 * @param email
+	 * @return
+	 */
+	public UserInfo getByEmailAddress(String email);
+
 }
