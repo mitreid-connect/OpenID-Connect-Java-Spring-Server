@@ -33,15 +33,19 @@ import com.google.gson.JsonObject;
 @Entity
 @Table(name="user_info")
 @NamedQueries({
-	@NamedQuery(name=DefaultUserInfo.QUERY_BY_USERNAME, query = "select u from DefaultUserInfo u WHERE u.preferredUsername = :" + DefaultUserInfo.PARAM_USERNAME)
+	@NamedQuery(name=DefaultUserInfo.QUERY_BY_USERNAME, query = "select u from DefaultUserInfo u WHERE u.preferredUsername = :" + DefaultUserInfo.PARAM_USERNAME),
+	@NamedQuery(name=DefaultUserInfo.QUERY_BY_EMAIL, query = "select u from DefaultUserInfo u WHERE u.email = :" + DefaultUserInfo.PARAM_EMAIL)
 })
 public class DefaultUserInfo implements UserInfo {
 
 	public static final String QUERY_BY_USERNAME = "DefaultUserInfo.getByUsername";
+	public static final String QUERY_BY_EMAIL = "DefaultUserInfo.getByEmailAddress";
 
 	public static final String PARAM_USERNAME = "username";
+	public static final String PARAM_EMAIL = "email";
 
 	private static final long serialVersionUID = 6078310513185681918L;
+
 	private Long id;
 	private String sub;
 	private String preferredUsername;

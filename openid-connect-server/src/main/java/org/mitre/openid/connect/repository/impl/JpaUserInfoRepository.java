@@ -51,4 +51,15 @@ public class JpaUserInfoRepository implements UserInfoRepository {
 
 	}
 
+	/**
+	 * Get a single UserInfo object by its email address
+	 */
+	@Override
+	public UserInfo getByEmailAddress(String email) {
+		TypedQuery<DefaultUserInfo> query = manager.createNamedQuery(DefaultUserInfo.QUERY_BY_EMAIL, DefaultUserInfo.class);
+		query.setParameter(DefaultUserInfo.PARAM_EMAIL, email);
+		
+		return getSingleResult(query.getResultList());
+	}
+
 }
