@@ -317,13 +317,8 @@ public class ResourceSetRegistrationEndpoint {
 		// scopes that the client is asking for
 		Set<SystemScope> requestedScopes = scopeService.fromStrings(rs.getScopes());
 
-		// the scopes that the client can have must be a subset of the dynamically allowed scopes
+		// the scopes that the resource set can have must be a subset of the dynamically allowed scopes
 		Set<SystemScope> allowedScopes = scopeService.removeRestrictedAndReservedScopes(requestedScopes);
-
-		// if the client didn't ask for any, give them the defaults
-		if (allowedScopes == null || allowedScopes.isEmpty()) {
-			allowedScopes = scopeService.getDefaults();
-		}
 
 		rs.setScopes(scopeService.toStrings(allowedScopes));
 
