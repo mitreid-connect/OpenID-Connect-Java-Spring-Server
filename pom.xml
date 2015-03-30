@@ -480,6 +480,11 @@
 				<version>3.9</version>
 			</dependency>
 
+			<dependency>
+				<groupId>org.mitre</groupId>
+				<artifactId>openid-connect-client</artifactId>
+				<version>${project.version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
