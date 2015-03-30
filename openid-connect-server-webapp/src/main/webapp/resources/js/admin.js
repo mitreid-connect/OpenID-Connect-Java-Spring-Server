@@ -1118,7 +1118,7 @@ var AppRouter = Backbone.Router.extend({
     	// set the URL for the collection
     	claims.url = 'api/claims/' + rsid;
     	
-    	var view = new ClaimListView({model: claims});
+    	var view = new ClaimListView({model: claims, rs: rs});
     	
     	view.load(function() {
     		$('#content').html(view.render().el);
