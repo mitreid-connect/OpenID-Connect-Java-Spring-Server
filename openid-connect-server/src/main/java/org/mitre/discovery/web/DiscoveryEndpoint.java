@@ -111,24 +111,36 @@ public class DiscoveryEndpoint {
 			if (resourceUri != null
 					&& resourceUri.getScheme() != null
 					&& resourceUri.getScheme().equals("acct")) {
-				// acct: URI
+				// acct: URI (email address format)
 
-				UserInfo user = userService.getByUsername(resourceUri.getUserInfo()); // first part is the username
-
+				// check on email addresses first
+				UserInfo user = userService.getByEmailAddress(resourceUri.getUserInfo() + "@" + resourceUri.getHost());
+				
 				if (user == null) {
-					logger.info("User not found: " + resource);
-					model.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
-					return HttpCodeView.VIEWNAME;
+					// user wasn't found, see if the local part of the username matches, plus our issuer host
+				
+					user = userService.getByUsername(resourceUri.getUserInfo()); // first part is the username
+					
+					if (user != null) {
+						// username matched, check the host component
+						UriComponents issuerComponents = UriComponentsBuilder.fromHttpUrl(config.getIssuer()).build();
+						if (!Strings.nullToEmpty(issuerComponents.getHost())
+								.equals(Strings.nullToEmpty(resourceUri.getHost()))) {
+							logger.info("Host mismatch, expected " + issuerComponents.getHost() + " got " + resourceUri.getHost());
+							model.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
+							return HttpCodeView.VIEWNAME;
+						}
+						
+					} else {
+					
+						// if the user's still null, punt and say we didn't find them
+						
+						logger.info("User not found: " + resource);
+						model.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
+						return HttpCodeView.VIEWNAME;
+					}
+					
 				}
-
-				UriComponents issuerComponents = UriComponentsBuilder.fromHttpUrl(config.getIssuer()).build();
-				if (!Strings.nullToEmpty(issuerComponents.getHost())
-						.equals(Strings.nullToEmpty(resourceUri.getHost()))) {
-					logger.info("Host mismatch, expected " + issuerComponents.getHost() + " got " + resourceUri.getHost());
-					model.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
-					return HttpCodeView.VIEWNAME;
-				}
-
 
 			} else {
 				logger.info("Unknown URI format: " + resource);
@@ -137,7 +149,7 @@ public class DiscoveryEndpoint {
 			}
 		}
 
-		// if we got here, then we're good
+		// if we got here, then we're good, return ourselves
 		model.addAttribute("resource", resource);
 		model.addAttribute("issuer", config.getIssuer());
 
