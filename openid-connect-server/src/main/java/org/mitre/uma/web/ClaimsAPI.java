@@ -22,7 +22,6 @@ import java.util.Set;
 
 import org.mitre.openid.connect.view.HttpCodeView;
 import org.mitre.openid.connect.view.JsonEntityView;
-import org.mitre.openid.connect.view.JsonErrorView;
 import org.mitre.openid.connect.web.RootController;
 import org.mitre.uma.model.Claim;
 import org.mitre.uma.model.ResourceSet;

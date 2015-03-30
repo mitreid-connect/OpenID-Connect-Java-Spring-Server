@@ -28,7 +28,6 @@ import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.mitre.openid.connect.view.HttpCodeView;
 import org.mitre.openid.connect.view.JsonEntityView;
 import org.mitre.openid.connect.view.JsonErrorView;
-import org.mitre.uma.model.Claim;
 import org.mitre.uma.model.ResourceSet;
 import org.mitre.uma.service.ResourceSetService;
 import org.mitre.uma.view.ResourceSetEntityAbbreviatedView;
@@ -53,7 +52,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Sets;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
@@ -123,21 +121,6 @@ public class ResourceSetRegistrationEndpoint {
 		rs.setOwner(auth.getName()); // the username is going to be in the auth object
 		
 		ResourceSet saved = resourceSetService.saveNew(rs);
-		
-		///////
-		// TODO: REMOVE
-		///////
-		
-		Claim c = new Claim();
-		c.setName("email");
-		c.setValue("bob@bob.com");
-		c.setIssuer(Sets.newHashSet("https://bob.com/"));
-		saved.setClaimsRequired(Sets.newHashSet(c));
-		saved = resourceSetService.update(saved, saved);
-		
-		///////
-		/// END: REMOVE
-		///////
 		
 		m.addAttribute("code", HttpStatus.CREATED);
 		m.addAttribute("entity", saved);
