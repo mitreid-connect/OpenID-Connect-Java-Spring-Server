@@ -24,6 +24,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.mitre.openid.connect.client.model.IssuerServiceResponse;
 import org.mitre.openid.connect.client.service.impl.WebfingerIssuerService;
+import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
+import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.service.UserInfoService;
 import org.mitre.openid.connect.view.HttpCodeView;
 import org.mitre.openid.connect.view.JsonEntityView;
@@ -58,18 +60,32 @@ public class UserClaimSearchHelper {
 	
 	@Autowired
 	private UserInfoService userInfoService;
+	
+	@Autowired
+	private ConfigurationPropertiesBean config;
 
 	
 	@RequestMapping(method = RequestMethod.GET, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
 	public String search(@RequestParam(value = "identifier") String email, Model m, Authentication auth, HttpServletRequest req) {
 		
 		// check locally first
-		//UserInfo localUser = userInfoService.getByEmailAddress(email);
+		UserInfo localUser = userInfoService.getByEmailAddress(email);
+		
+		if (localUser != null) {
+			Map<String, Object> entity = new HashMap<>();
+			entity.put("issuers", ImmutableSet.of(config.getIssuer()));
+			entity.put("name", "email");
+			entity.put("value", localUser.getEmail());
+			
+			m.addAttribute(JsonEntityView.ENTITY, entity);
+			return JsonEntityView.VIEWNAME;
+		}
 		
 		
+		// otherwise do a webfinger lookup
 		IssuerServiceResponse resp = webfingerIssuerService.getIssuer(req);
 		
-		if (resp.getIssuer() != null) {
+		if (resp != null && resp.getIssuer() != null) {
 			// we found an issuer, return that
 			Map<String, Object> entity = new HashMap<>();
 			entity.put("issuers", ImmutableSet.of(resp.getIssuer()));
