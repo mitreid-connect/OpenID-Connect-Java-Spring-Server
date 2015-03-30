@@ -73,7 +73,7 @@ public class UserClaimSearchHelper {
 		
 		if (localUser != null) {
 			Map<String, Object> entity = new HashMap<>();
-			entity.put("issuers", ImmutableSet.of(config.getIssuer()));
+			entity.put("issuer", ImmutableSet.of(config.getIssuer()));
 			entity.put("name", "email");
 			entity.put("value", localUser.getEmail());
 			
@@ -88,7 +88,7 @@ public class UserClaimSearchHelper {
 		if (resp != null && resp.getIssuer() != null) {
 			// we found an issuer, return that
 			Map<String, Object> entity = new HashMap<>();
-			entity.put("issuers", ImmutableSet.of(resp.getIssuer()));
+			entity.put("issuer", ImmutableSet.of(resp.getIssuer()));
 			entity.put("name", "email");
 			entity.put("value", email);
 			

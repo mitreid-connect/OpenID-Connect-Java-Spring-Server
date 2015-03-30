@@ -214,7 +214,7 @@ var ClaimListView = Backbone.View.extend({
     events:{
 		'click .btn-save':'savePolicy',
 		'click .btn-cancel':'cancel',
-		'click .btn-share':'addClaim'
+		'click #add-email':'addClaim'
     },
 
     cancel:function(e) {
@@ -250,6 +250,28 @@ var ClaimListView = Backbone.View.extend({
     			 });
         	}
     	});
+    },
+    
+    addClaim:function(e) {
+    	e.preventDefault();
+    	
+    	// post to the webfinger helper and get the response back
+    	
+    	var _self = this;
+    	
+    	var email = $('#email', this.el).val();
+    	
+        var base = $('base').attr('href');
+    	$.getJSON(base + '/api/emailsearch?' + $.param({'identifier': email}), function(data) {
+    		
+    		var claim = new ClaimModel(data);
+    		_self.model.add(claim, {'trigger': false});
+    		_self.render();
+    		
+    	}).error(function(jqXHR, textStatus, errorThrown) {
+    		console.log(errorThrown);
+    	});
+    	
     },
     
     togglePlaceholder:function() {
