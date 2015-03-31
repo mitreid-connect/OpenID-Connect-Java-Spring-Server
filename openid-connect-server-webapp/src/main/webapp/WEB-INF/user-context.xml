@@ -34,8 +34,6 @@
 
 	<mvc:view-controller path="/external_login" view-name="external_login" />
 	
-	<mvc:view-controller path="/openid_connect_login" view-name="openid_connect_login" />
-	
 	<security:http pattern="/external_login**" use-expressions="true" entry-point-ref="http403EntryPoint">
 		<security:intercept-url pattern="/external_login**" access="permitAll"/>	
 	</security:http>
@@ -52,7 +50,7 @@
 		<property name="loginFormUrl" value="/openid_connect_login" />
 	</bean>
 
-	<security:authentication-manager alias="externalAuthenticationManager">
+	<security:authentication-manager id="externalAuthenticationManager">
 		<security:authentication-provider ref="externalAuthenticationProvider" />
 	</security:authentication-manager>
 
@@ -82,7 +80,7 @@
 	<bean class="org.mitre.openid.connect.client.service.impl.DynamicRegistrationClientConfigurationService" id="dynamicClientConfigurationService">
 		<property name="template">
 			<bean class="org.mitre.oauth2.model.RegisteredClient">
-				<property name="clientName" value="Simple Web App" />
+				<property name="clientName" value="HealthAuth Authorization Server" />
 				<property name="scope">
 					<set value-type="java.lang.String">
 						<value>openid</value>
