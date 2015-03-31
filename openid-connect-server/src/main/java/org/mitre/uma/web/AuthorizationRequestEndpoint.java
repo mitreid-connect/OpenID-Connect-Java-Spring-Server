@@ -139,6 +139,7 @@ public class AuthorizationRequestEndpoint {
 					Collection<Claim> claimsUnmatched = new HashSet<>(claimsRequired);
 					
 					// see if each of the required claims has a counterpart in the supplied claims set
+					// TODO: move this component to a claims checking service (#796)
 					for (Claim required : claimsRequired) {
 						for (Claim supplied : claimsSupplied) {
 							
@@ -153,16 +154,17 @@ public class AuthorizationRequestEndpoint {
 									
 								}
 								
+								
 							}
-							
 						}
 					}
 					
-					if (claimsUnmatched.isEmpty()) {
+					// note that if the required claims are empty we don't want to return a token
+					if (!claimsRequired.isEmpty() && claimsUnmatched.isEmpty()) {
 						// we matched all the claims, create and return the token
 						
 						
-						// TODO: move this whole mess to the OIDCTokenService
+						// TODO: move this whole mess to the OIDCTokenService (#797)
 						
 						OAuth2Authentication o2auth = (OAuth2Authentication) auth;
 						
