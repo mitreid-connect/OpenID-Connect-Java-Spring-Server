@@ -47,4 +47,12 @@ public interface PermissionService {
 	 */
 	public PermissionTicket getByTicket(String ticket);
 
+	/**
+	 * Save the updated permission ticket to the database. Does not create a new ticket. 
+	 * 
+	 * @param ticket
+	 * @return 
+	 */
+	public PermissionTicket updateTicket(PermissionTicket ticket);
+
 }

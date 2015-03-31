@@ -79,4 +79,19 @@ public class DefaultPermissionService implements PermissionService {
 		return repository.getByTicket(ticket);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.mitre.uma.service.PermissionService#updateTicket(org.mitre.uma.model.PermissionTicket)
+	 */
+	@Override
+	public PermissionTicket updateTicket(PermissionTicket ticket) {
+		if (ticket.getId() != null) {
+			return repository.save(ticket);
+		} else {
+			return null;
+		}
+		
+	}
+
+	
+	
 }
