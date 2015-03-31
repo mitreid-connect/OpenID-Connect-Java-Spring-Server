@@ -389,7 +389,7 @@ public class DiscoveryEndpoint {
 		m.put("introspection_endpoint", issuer + "introspect");
 		m.put("resource_set_registration_endpoint", issuer + ResourceSetRegistrationEndpoint.URL);
 		m.put("permission_registration_endpoint", issuer + PermissionRegistrationEndpoint.URL);
-		m.put("rpt_endpoint", issuer + issuer + AuthorizationRequestEndpoint.URL);
+		m.put("rpt_endpoint", issuer + AuthorizationRequestEndpoint.URL);
 		
 		
 		
