@@ -302,6 +302,9 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 		final RegisteredClient clientConfig = clients.getClientConfiguration(serverConfig);
 
 		MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
+
+		form.setAll(authOptions.getOptions(serverConfig, clientConfig, null));
+
 		form.add("grant_type", "authorization_code");
 		form.add("code", authorizationCode);
 
