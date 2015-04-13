@@ -99,6 +99,18 @@ public class ResourceSetRegistrationEndpoint {
 			m.addAttribute("error_description", "Resource request was missing body.");
 			return JsonErrorView.VIEWNAME;
 		}
+
+		if (auth instanceof OAuth2Authentication) {
+			// if it's an OAuth mediated call, it's on behalf of a client, so store that
+			OAuth2Authentication o2a = (OAuth2Authentication) auth;
+			rs.setClientId(o2a.getOAuth2Request().getClientId());
+			rs.setOwner(auth.getName()); // the username is going to be in the auth object
+		} else {
+			// this one shouldn't be called if it's not OAuth
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
+			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "This call must be made with an OAuth token");
+			return JsonErrorView.VIEWNAME;
+		}
 		
 		rs = validateScopes(rs);
 		
@@ -108,23 +120,16 @@ public class ResourceSetRegistrationEndpoint {
 
 			logger.warn("Resource set registration missing one or more required fields.");
 			
-			m.addAttribute("code", HttpStatus.BAD_REQUEST);
-			m.addAttribute("error_description", "Resource request was missing one or more required fields.");
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
+			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Resource request was missing one or more required fields.");
 			return JsonErrorView.VIEWNAME;
 		}
-		
-		if (auth instanceof OAuth2Authentication) {
-			// if it's an OAuth mediated call, it's on behalf of a client, so store that
-			OAuth2Authentication o2a = (OAuth2Authentication) auth;
-			rs.setClientId(o2a.getOAuth2Request().getClientId());
-		}
-		rs.setOwner(auth.getName()); // the username is going to be in the auth object
-		
+				
 		ResourceSet saved = resourceSetService.saveNew(rs);
 		
-		m.addAttribute("code", HttpStatus.CREATED);
-		m.addAttribute("entity", saved);
-		m.addAttribute("location", config.getIssuer() + URL + "/" + rs.getId());
+		m.addAttribute(HttpCodeView.CODE, HttpStatus.CREATED);
+		m.addAttribute(JsonEntityView.ENTITY, saved);
+		m.addAttribute(ResourceSetEntityAbbreviatedView.LOCATION, config.getIssuer() + URL + "/" + rs.getId());
 		
 		return ResourceSetEntityAbbreviatedView.VIEWNAME;
 		
@@ -149,10 +154,10 @@ public class ResourceSetRegistrationEndpoint {
 				logger.warn("Unauthorized resource set request from wrong user; expected " + rs.getOwner() + " got " + auth.getName());
 				
 				// it wasn't issued to this user
-				m.addAttribute("code", HttpStatus.FORBIDDEN);
+				m.addAttribute(HttpCodeView.CODE, HttpStatus.FORBIDDEN);
 				return JsonErrorView.VIEWNAME;
 			} else {
-				m.addAttribute("entity", rs);
+				m.addAttribute(JsonEntityView.ENTITY, rs);
 				return ResourceSetEntityView.VIEWNAME;
 			}
 			
@@ -174,16 +179,16 @@ public class ResourceSetRegistrationEndpoint {
 
 			logger.warn("Resource set registration missing one or more required fields.");
 			
-			m.addAttribute("code", HttpStatus.BAD_REQUEST);
-			m.addAttribute("error_description", "Resource request was missing one or more required fields.");
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
+			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Resource request was missing one or more required fields.");
 			return JsonErrorView.VIEWNAME;
 		}
 
 		ResourceSet rs = resourceSetService.getById(id);
 		
 		if (rs == null) {
-			m.addAttribute("code", HttpStatus.NOT_FOUND);
-			m.addAttribute("error", "not_found");
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
+			m.addAttribute(JsonErrorView.ERROR, "not_found");
 			return JsonErrorView.VIEWNAME;
 		} else {
 			if (!auth.getName().equals(rs.getOwner())) {
@@ -191,14 +196,14 @@ public class ResourceSetRegistrationEndpoint {
 				logger.warn("Unauthorized resource set request from bad user; expected " + rs.getOwner() + " got " + auth.getName());
 				
 				// it wasn't issued to this user
-				m.addAttribute("code", HttpStatus.FORBIDDEN);
+				m.addAttribute(HttpCodeView.CODE, HttpStatus.FORBIDDEN);
 				return JsonErrorView.VIEWNAME;
 			} else {
 				
 				ResourceSet saved = resourceSetService.update(rs, newRs);
 				
-				m.addAttribute("entity", saved);
-				m.addAttribute("location", config.getIssuer() + URL + "/" + rs.getId());
+				m.addAttribute(JsonEntityView.ENTITY, saved);
+				m.addAttribute(ResourceSetEntityAbbreviatedView.LOCATION, config.getIssuer() + URL + "/" + rs.getId());
 				return ResourceSetEntityAbbreviatedView.VIEWNAME;
 			}
 			
@@ -212,8 +217,8 @@ public class ResourceSetRegistrationEndpoint {
 		ResourceSet rs = resourceSetService.getById(id);
 		
 		if (rs == null) {
-			m.addAttribute("code", HttpStatus.NOT_FOUND);
-			m.addAttribute("error", "not_found");
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
+			m.addAttribute(JsonErrorView.ERROR, "not_found");
 			return JsonErrorView.VIEWNAME;
 		} else {
 			if (!auth.getName().equals(rs.getOwner())) {
@@ -266,7 +271,7 @@ public class ResourceSetRegistrationEndpoint {
 			ids.add(resourceSet.getId().toString()); // add them all as strings so that gson renders them properly
 		}
 		
-		m.addAttribute("entity", ids);
+		m.addAttribute(JsonEntityView.ENTITY, ids);
 		return JsonEntityView.VIEWNAME;
 	}
 

@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
+import org.mitre.openid.connect.view.HttpCodeView;
 import org.mitre.openid.connect.view.JsonEntityView;
 import org.mitre.uma.model.ResourceSet;
 import org.slf4j.Logger;
@@ -48,6 +49,8 @@ public class ResourceSetEntityAbbreviatedView extends AbstractView {
 	private static Logger logger = LoggerFactory.getLogger(JsonEntityView.class);
 
 	public static final String VIEWNAME = "resourceSetEntityAbbreviatedView";
+
+	public static final String LOCATION = "location";
 	
 	@Autowired
 	private ConfigurationPropertiesBean config;
@@ -82,14 +85,14 @@ public class ResourceSetEntityAbbreviatedView extends AbstractView {
 		response.setContentType("application/json");
 
 
-		HttpStatus code = (HttpStatus) model.get("code");
+		HttpStatus code = (HttpStatus) model.get(HttpCodeView.CODE);
 		if (code == null) {
 			code = HttpStatus.OK; // default to 200
 		}
 
 		response.setStatus(code.value());
 
-		String location = (String) model.get("location");
+		String location = (String) model.get(LOCATION);
 		if (!Strings.isNullOrEmpty(location)) {
 			response.setHeader(HttpHeaders.LOCATION, location);
 		}
@@ -97,7 +100,7 @@ public class ResourceSetEntityAbbreviatedView extends AbstractView {
 		try {
 
 			Writer out = response.getWriter();
-			ResourceSet rs = (ResourceSet) model.get("entity");
+			ResourceSet rs = (ResourceSet) model.get(JsonEntityView.ENTITY);
 
 			JsonObject o = new JsonObject();
 			
