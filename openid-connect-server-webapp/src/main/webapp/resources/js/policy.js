@@ -233,7 +233,7 @@ var ClaimListView = Backbone.View.extend({
     		success:function() {
     			// update our copy of the resource set object (if we have it)
     			if (_self.options.rs != null) {
-    				rs.set({claimsRequired: _self.model.toJSON()}, {trigger: false});
+    				_self.options.rs.set({claimsRequired: _self.model.toJSON()}, {trigger: false});
     			}
     			
     	    	app.navigate('user/policy', {trigger: true});
