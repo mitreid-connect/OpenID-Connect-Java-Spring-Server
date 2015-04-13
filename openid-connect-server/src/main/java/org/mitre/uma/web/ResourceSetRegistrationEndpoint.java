@@ -221,13 +221,22 @@ public class ResourceSetRegistrationEndpoint {
 				logger.warn("Unauthorized resource set request from bad user; expected " + rs.getOwner() + " got " + auth.getName());
 				
 				// it wasn't issued to this user
-				m.addAttribute("code", HttpStatus.FORBIDDEN);
+				m.addAttribute(HttpCodeView.CODE, HttpStatus.FORBIDDEN);
+				return JsonErrorView.VIEWNAME;
+			} else if (auth instanceof OAuth2Authentication && 
+					!((OAuth2Authentication)auth).getOAuth2Request().getClientId().equals(rs.getClientId())){
+				
+				logger.warn("Unauthorized resource set request from bad client; expected " + rs.getClientId() + " got " + ((OAuth2Authentication)auth).getOAuth2Request().getClientId());
+				
+				// it wasn't issued to this user
+				m.addAttribute(HttpCodeView.CODE, HttpStatus.FORBIDDEN);
 				return JsonErrorView.VIEWNAME;
 			} else {
 				
+				// user and client matched
 				resourceSetService.remove(rs);
 				
-				m.addAttribute("code", HttpStatus.NO_CONTENT);
+				m.addAttribute(HttpCodeView.CODE, HttpStatus.NO_CONTENT);
 				return HttpCodeView.VIEWNAME;
 			}
 			
