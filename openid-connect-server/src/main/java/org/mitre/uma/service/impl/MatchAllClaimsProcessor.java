@@ -15,12 +15,13 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.mitre.uma.service;
+package org.mitre.uma.service.impl;
 
 import java.util.Collection;
 import java.util.HashSet;
 
 import org.mitre.uma.model.Claim;
+import org.mitre.uma.service.ClaimsProcessingService;
 import org.springframework.stereotype.Service;
 
 /**
