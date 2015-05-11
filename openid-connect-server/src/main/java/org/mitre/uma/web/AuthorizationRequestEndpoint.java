@@ -43,6 +43,7 @@ import org.mitre.uma.model.PermissionTicket;
 import org.mitre.uma.model.ResourceSet;
 import org.mitre.uma.service.ClaimsProcessingService;
 import org.mitre.uma.service.PermissionService;
+import org.mitre.uma.service.UmaTokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,19 +97,14 @@ public class AuthorizationRequestEndpoint {
 	@Autowired
 	private OIDCTokenService oidcTokenService;
 	
-	/////// TODO: TEMPORARY
-	@Autowired private AuthenticationHolderRepository authenticationHolderRepository;
-	@Autowired private OAuth2TokenRepository tokenRepository;
-	@Autowired private ClientDetailsEntityService clientService;
-	@Autowired private ConfigurationPropertiesBean configBean;
-	@Autowired private JWTSigningAndValidationService jwtService;
-	////////
-
 	@Autowired
 	private WebResponseExceptionTranslator providerExceptionHandler;
 
 	@Autowired
 	private ClaimsProcessingService claimsProcessingService;
+
+	@Autowired
+	private UmaTokenService umaTokenService;
 
 	@RequestMapping(method = RequestMethod.POST, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
 	public String authorizationRequest(@RequestBody String jsonString, Model m, Authentication auth) {
@@ -152,38 +148,10 @@ public class AuthorizationRequestEndpoint {
 						
 						if (claimsUnmatched.isEmpty()) {
 							// if the unmatched claims come back empty, by function contract that means we're happy and can issue a token
-							
-							// TODO: move this whole mess to the OIDCTokenService (#797)
-							
+
 							OAuth2Authentication o2auth = (OAuth2Authentication) auth;
 							
-							OAuth2AccessTokenEntity token = new OAuth2AccessTokenEntity();
-							AuthenticationHolderEntity authHolder = new AuthenticationHolderEntity();
-							authHolder.setAuthentication(o2auth);
-							authHolder = authenticationHolderRepository.save(authHolder);
-							
-							token.setAuthenticationHolder(authHolder);
-							
-							ClientDetailsEntity client = clientService.loadClientByClientId(o2auth.getOAuth2Request().getClientId());
-							token.setClient(client);
-							
-							token.setPermissions(Sets.newHashSet(ticket.getPermission()));
-							
-							
-							JWTClaimsSet claims = new JWTClaimsSet();
-							
-							claims.setAudience(Lists.newArrayList(ticket.getPermission().getResourceSet().getId().toString()));
-							claims.setIssuer(configBean.getIssuer());
-							claims.setJWTID(UUID.randomUUID().toString());
-							
-							JWSAlgorithm signingAlgorithm = jwtService.getDefaultSigningAlgorithm();
-							SignedJWT signed = new SignedJWT(new JWSHeader(signingAlgorithm), claims);
-							
-							jwtService.signJwt(signed);
-							
-							token.setJwt(signed);
-							
-							tokenService.saveAccessToken(token);
+							OAuth2AccessTokenEntity token = umaTokenService.createRequestingPartyToken(o2auth, ticket);
 							
 							Map<String, String> entity = ImmutableMap.of("rpt", token.getValue());
 							
