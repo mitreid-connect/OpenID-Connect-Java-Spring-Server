@@ -36,7 +36,6 @@ public abstract class AuthenticationUtilities {
 	/**
 	 * Makes sure the authentication contains the given scope, throws an exception otherwise
 	 * @param auth the authentication object to check
-	 * @param scope TODO
 	 * @param scope the scope to look for
 	 * @throws InsufficientScopeException if the authentication does not contain that scope
 	 */

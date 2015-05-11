@@ -47,7 +47,7 @@ public interface IntrospectionResultAssembler {
 	 *
 	 * @param accessToken the access token
 	 * @param userInfo the user info
-	 * @param authScopes TODO
+	 * @param authScopes the scopes the client is authorized for
 	 * @return the token introspection result
 	 */
 	Map<String, Object> assembleFrom(OAuth2AccessTokenEntity accessToken, UserInfo userInfo, Set<String> authScopes);
@@ -57,7 +57,7 @@ public interface IntrospectionResultAssembler {
 	 *
 	 * @param refreshToken the refresh token
 	 * @param userInfo the user info
-	 * @param authScopes TODO
+	 * @param authScopes the scopes the client is authorized for
 	 * @return the token introspection result
 	 */
 	Map<String, Object> assembleFrom(OAuth2RefreshTokenEntity refreshToken, UserInfo userInfo, Set<String> authScopes);
