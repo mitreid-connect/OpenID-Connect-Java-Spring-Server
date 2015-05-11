@@ -17,6 +17,7 @@
 
 package org.mitre.uma.service.impl;
 
+import java.util.Date;
 import java.util.UUID;
 
 import org.mitre.jwt.signer.service.JWTSigningAndValidationService;
@@ -57,7 +58,7 @@ public class DefaultUmaTokenService implements UmaTokenService {
 	private ClientDetailsEntityService clientService;
 	
 	@Autowired 
-	private ConfigurationPropertiesBean configBean;
+	private ConfigurationPropertiesBean config;
 	
 	@Autowired 
 	private JWTSigningAndValidationService jwtService;
@@ -81,8 +82,16 @@ public class DefaultUmaTokenService implements UmaTokenService {
 		JWTClaimsSet claims = new JWTClaimsSet();
 		
 		claims.setAudience(Lists.newArrayList(ticket.getPermission().getResourceSet().getId().toString()));
-		claims.setIssuer(configBean.getIssuer());
+		claims.setIssuer(config.getIssuer());
 		claims.setJWTID(UUID.randomUUID().toString());
+		
+		if (config.getRqpTokenLifeTime() != null) {
+			Date exp = new Date(System.currentTimeMillis() + config.getRqpTokenLifeTime() * 1000L);
+			
+			claims.setExpirationTime(exp);
+			token.setExpiration(exp);
+		}
+		
 		
 		JWSAlgorithm signingAlgorithm = jwtService.getDefaultSigningAlgorithm();
 		SignedJWT signed = new SignedJWT(new JWSHeader(signingAlgorithm), claims);
