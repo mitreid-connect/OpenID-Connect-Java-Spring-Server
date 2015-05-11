@@ -144,95 +144,99 @@ public class AuthorizationRequestEndpoint {
 						m.addAttribute(JsonErrorView.ERROR, "not_authorized");
 						m.addAttribute(JsonErrorView.ERROR_MESSAGE, "This resource set can not be accessed.");
 						m.addAttribute(HttpCodeView.CODE, HttpStatus.FORBIDDEN);
-					}
-
-					Collection<Claim> claimsUnmatched = claimsProcessingService.claimsAreSatisfied(rs.getClaimsRequired(), ticket.getClaimsSupplied());
-					
-					if (claimsUnmatched.isEmpty()) {
-						
-						// TODO: move this whole mess to the OIDCTokenService (#797)
-						
-						OAuth2Authentication o2auth = (OAuth2Authentication) auth;
-						
-						OAuth2AccessTokenEntity token = new OAuth2AccessTokenEntity();
-						AuthenticationHolderEntity authHolder = new AuthenticationHolderEntity();
-						authHolder.setAuthentication(o2auth);
-						authHolder = authenticationHolderRepository.save(authHolder);
-						
-						token.setAuthenticationHolder(authHolder);
-						
-						ClientDetailsEntity client = clientService.loadClientByClientId(o2auth.getOAuth2Request().getClientId());
-						token.setClient(client);
-						
-						token.setPermissions(Sets.newHashSet(ticket.getPermission()));
-						
-						
-						JWTClaimsSet claims = new JWTClaimsSet();
-						
-						claims.setAudience(Lists.newArrayList(ticket.getPermission().getResourceSet().getId().toString()));
-						claims.setIssuer(configBean.getIssuer());
-						claims.setJWTID(UUID.randomUUID().toString());
-						
-						JWSAlgorithm signingAlgorithm = jwtService.getDefaultSigningAlgorithm();
-						SignedJWT signed = new SignedJWT(new JWSHeader(signingAlgorithm), claims);
-						
-						jwtService.signJwt(signed);
-						
-						token.setJwt(signed);
-						
-						tokenService.saveAccessToken(token);
-						
-						Map<String, String> entity = ImmutableMap.of("rpt", token.getValue());
-						
-						m.addAttribute(JsonEntityView.ENTITY, entity);
-						
-						return JsonEntityView.VIEWNAME;
-						
+						return JsonErrorView.VIEWNAME;
 					} else {
+						// claims weren't empty or missing, we need to check against what we have
 						
-						// if we got here, the claim didn't match, forward the user to the claim gathering endpoint
-						JsonObject entity = new JsonObject();
+						Collection<Claim> claimsUnmatched = claimsProcessingService.claimsAreSatisfied(rs.getClaimsRequired(), ticket.getClaimsSupplied());
 						
-						entity.addProperty("error", "need_info");
-						JsonObject details = new JsonObject();
-						
-						JsonObject rpClaims = new JsonObject();
-						rpClaims.addProperty("redirect_user", true);
-						rpClaims.addProperty("ticket", ticketValue);
-						JsonArray req = new JsonArray();
-						for (Claim claim : claimsUnmatched) {
-							JsonObject c = new JsonObject();
-							c.addProperty("name", claim.getName());
-							c.addProperty("friendly_name", claim.getFriendlyName());
-							c.addProperty("claim_type", claim.getClaimType());
-							JsonArray f = new JsonArray();
-							for (String format : claim.getClaimTokenFormat()) {
-								f.add(new JsonPrimitive(format));
+						if (claimsUnmatched.isEmpty()) {
+							// if the unmatched claims come back empty, by function contract that means we're happy and can issue a token
+							
+							// TODO: move this whole mess to the OIDCTokenService (#797)
+							
+							OAuth2Authentication o2auth = (OAuth2Authentication) auth;
+							
+							OAuth2AccessTokenEntity token = new OAuth2AccessTokenEntity();
+							AuthenticationHolderEntity authHolder = new AuthenticationHolderEntity();
+							authHolder.setAuthentication(o2auth);
+							authHolder = authenticationHolderRepository.save(authHolder);
+							
+							token.setAuthenticationHolder(authHolder);
+							
+							ClientDetailsEntity client = clientService.loadClientByClientId(o2auth.getOAuth2Request().getClientId());
+							token.setClient(client);
+							
+							token.setPermissions(Sets.newHashSet(ticket.getPermission()));
+							
+							
+							JWTClaimsSet claims = new JWTClaimsSet();
+							
+							claims.setAudience(Lists.newArrayList(ticket.getPermission().getResourceSet().getId().toString()));
+							claims.setIssuer(configBean.getIssuer());
+							claims.setJWTID(UUID.randomUUID().toString());
+							
+							JWSAlgorithm signingAlgorithm = jwtService.getDefaultSigningAlgorithm();
+							SignedJWT signed = new SignedJWT(new JWSHeader(signingAlgorithm), claims);
+							
+							jwtService.signJwt(signed);
+							
+							token.setJwt(signed);
+							
+							tokenService.saveAccessToken(token);
+							
+							Map<String, String> entity = ImmutableMap.of("rpt", token.getValue());
+							
+							m.addAttribute(JsonEntityView.ENTITY, entity);
+							
+							return JsonEntityView.VIEWNAME;
+							
+						} else {
+							
+							// if we got here, the claim didn't match, forward the user to the claim gathering endpoint
+							JsonObject entity = new JsonObject();
+							
+							entity.addProperty("error", "need_info");
+							JsonObject details = new JsonObject();
+							
+							JsonObject rpClaims = new JsonObject();
+							rpClaims.addProperty("redirect_user", true);
+							rpClaims.addProperty("ticket", ticketValue);
+							JsonArray req = new JsonArray();
+							for (Claim claim : claimsUnmatched) {
+								JsonObject c = new JsonObject();
+								c.addProperty("name", claim.getName());
+								c.addProperty("friendly_name", claim.getFriendlyName());
+								c.addProperty("claim_type", claim.getClaimType());
+								JsonArray f = new JsonArray();
+								for (String format : claim.getClaimTokenFormat()) {
+									f.add(new JsonPrimitive(format));
+								}
+								c.add("claim_token_format", f);
+								JsonArray i = new JsonArray();
+								for (String issuer : claim.getIssuer()) {
+									i.add(new JsonPrimitive(issuer));
+								}
+								c.add("issuer", i);
+								req.add(c);
 							}
-							c.add("claim_token_format", f);
-							JsonArray i = new JsonArray();
-							for (String issuer : claim.getIssuer()) {
-								i.add(new JsonPrimitive(issuer));
-							}
-							c.add("issuer", i);
-							req.add(c);
-						}
-						rpClaims.add("required_claims", req);
-						details.add("requesting_party_claims", rpClaims);
-						entity.add("error_details", details);
+							rpClaims.add("required_claims", req);
+							details.add("requesting_party_claims", rpClaims);
+							entity.add("error_details", details);
+							
+							m.addAttribute(JsonEntityView.ENTITY, entity);
+							return JsonEntityView.VIEWNAME;
+						}						
 						
-						m.addAttribute(JsonEntityView.ENTITY, entity);
-						return JsonEntityView.VIEWNAME;
-					}						
-					
-					
+						
+					}
 				} else {
 					// ticket wasn't found, return an error
 					m.addAttribute(HttpStatus.BAD_REQUEST);
 					m.addAttribute(JsonErrorView.ERROR, "invalid_ticket");
 					return JsonErrorView.VIEWNAME;
 				}
-				
+
 			} else {
 				m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 				m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Missing JSON elements.");
