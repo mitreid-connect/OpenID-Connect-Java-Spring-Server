@@ -31,6 +31,7 @@ import org.mitre.uma.model.PermissionTicket;
 import org.mitre.uma.service.UmaTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -43,6 +44,7 @@ import com.nimbusds.jwt.SignedJWT;
  * @author jricher
  *
  */
+@Service("defaultUmaTokenService")
 public class DefaultUmaTokenService implements UmaTokenService {
 
 	@Autowired 
