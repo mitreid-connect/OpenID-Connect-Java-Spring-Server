@@ -119,10 +119,10 @@ public class AuthorizationRequestEndpoint {
 			
 			if (o.has(TICKET)) {
 				
-				OAuth2AccessTokenEntity rpt = null;
+				OAuth2AccessTokenEntity incomingRpt = null;
 				if (o.has(RPT)) {
 					String rptValue = o.get(RPT).getAsString();
-					rpt = tokenService.readAccessToken(rptValue);
+					incomingRpt = tokenService.readAccessToken(rptValue);
 				}				
 				
 				String ticketValue = o.get(TICKET).getAsString();
@@ -152,6 +152,11 @@ public class AuthorizationRequestEndpoint {
 							OAuth2Authentication o2auth = (OAuth2Authentication) auth;
 							
 							OAuth2AccessTokenEntity token = umaTokenService.createRequestingPartyToken(o2auth, ticket);
+
+							// if we have an inbound RPT, throw it out because we're replacing it
+							if (incomingRpt != null) {
+								tokenService.revokeAccessToken(incomingRpt);
+							}
 							
 							Map<String, String> entity = ImmutableMap.of("rpt", token.getValue());
 							
@@ -164,7 +169,7 @@ public class AuthorizationRequestEndpoint {
 							// if we got here, the claim didn't match, forward the user to the claim gathering endpoint
 							JsonObject entity = new JsonObject();
 							
-							entity.addProperty("error", "need_info");
+							entity.addProperty(JsonErrorView.ERROR, "need_info");
 							JsonObject details = new JsonObject();
 							
 							JsonObject rpClaims = new JsonObject();
