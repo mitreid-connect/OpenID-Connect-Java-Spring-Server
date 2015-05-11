@@ -18,6 +18,7 @@
 package org.mitre.uma.web;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
@@ -40,6 +41,7 @@ import org.mitre.openid.connect.view.JsonErrorView;
 import org.mitre.uma.model.Claim;
 import org.mitre.uma.model.PermissionTicket;
 import org.mitre.uma.model.ResourceSet;
+import org.mitre.uma.service.ClaimsProcessingService;
 import org.mitre.uma.service.PermissionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,6 +107,9 @@ public class AuthorizationRequestEndpoint {
 	@Autowired
 	private WebResponseExceptionTranslator providerExceptionHandler;
 
+	@Autowired
+	private ClaimsProcessingService claimsProcessingService;
+
 	@RequestMapping(method = RequestMethod.POST, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
 	public String authorizationRequest(@RequestBody String jsonString, Model m, Authentication auth) {
 		
@@ -132,37 +137,18 @@ public class AuthorizationRequestEndpoint {
 					// found the ticket, see if it's any good
 					
 					ResourceSet rs = ticket.getPermission().getResourceSet();
-					Collection<Claim> claimsRequired = rs.getClaimsRequired();
 					
-					Collection<Claim> claimsSupplied = ticket.getClaimsSupplied();
-					
-					Collection<Claim> claimsUnmatched = new HashSet<>(claimsRequired);
-					
-					// see if each of the required claims has a counterpart in the supplied claims set
-					// TODO: move this component to a claims checking service (#796)
-					for (Claim required : claimsRequired) {
-						for (Claim supplied : claimsSupplied) {
-							
-							if (required.getIssuer().containsAll(supplied.getIssuer())) {
-								// it's from the right issuer
-								
-								if (required.getName().equals(supplied.getName()) &&
-										required.getValue().equals(supplied.getValue())) {
-									
-									// the claim matched, pull it from the set
-									claimsUnmatched.remove(required);
-									
-								}
-								
-								
-							}
-						}
-					}
-					
-					// note that if the required claims are empty we don't want to return a token
-					if (!claimsRequired.isEmpty() && claimsUnmatched.isEmpty()) {
-						// we matched all the claims, create and return the token
+					if (rs.getClaimsRequired() == null || rs.getClaimsRequired().isEmpty()) {
+						// the required claims are empty, this resource has no way to be authorized
 						
+						m.addAttribute(JsonErrorView.ERROR, "not_authorized");
+						m.addAttribute(JsonErrorView.ERROR_MESSAGE, "This resource set can not be accessed.");
+						m.addAttribute(HttpCodeView.CODE, HttpStatus.FORBIDDEN);
+					}
+
+					Collection<Claim> claimsUnmatched = claimsProcessingService.claimsAreSatisfied(rs.getClaimsRequired(), ticket.getClaimsSupplied());
+					
+					if (claimsUnmatched.isEmpty()) {
 						
 						// TODO: move this whole mess to the OIDCTokenService (#797)
 						
