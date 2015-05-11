@@ -54,12 +54,7 @@
 		<developer>
 			<id>jricher</id>
 			<name>Justin Richer</name>
-			<email>jricher@mitre.org</email>
-		</developer>
-		<developer>
-			<id>aanganes</id>
-			<name>Amanda Anganes</name>
-			<email>aanganes@mitre.org</email>
+			<email>jricher@mit.edu</email>
 		</developer>
 	</developers>
 
@@ -77,7 +72,7 @@
 		<spring.security.version>3.2.5.RELEASE</spring.security.version>
 		<org.slf4j-version>1.7.7</org.slf4j-version>
 	</properties>
-	<description>A reference implementation of OpenID Connect (http://openid.net/connect/) and OAuth 2.0 built on top of Java, Spring, and Spring Security. The project contains a fully functioning server, client, and utility library.</description>
+	<description>A reference implementation of OpenID Connect (http://openid.net/connect/), OAuth 2.0, and UMA built on top of Java, Spring, and Spring Security. The project contains a fully functioning server, client, and utility library.</description>
 	<url>https://github.com/mitreid-connect</url>
 	<build>
 		<pluginManagement>
