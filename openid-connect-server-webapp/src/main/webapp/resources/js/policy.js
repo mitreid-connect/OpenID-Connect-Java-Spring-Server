@@ -315,7 +315,17 @@ var ClaimListView = Backbone.View.extend({
     		_self.render();
     		
     	}).error(function(jqXHR, textStatus, errorThrown) {
-    		console.log(errorThrown);
+    		console.log("An error occurred when doing a webfinger lookup", errorThrown);
+    	    
+    		//Display an alert with an error message
+			$('#modalAlert div.modal-header').html($.t('policy.webfinger-error'));
+    		$('#modalAlert div.modal-body').html($.t('policy.webfinger-error-description', {email: email}));
+    		
+			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
+				 "backdrop" : "static",
+				 "keyboard" : true,
+				 "show" : true // ensure the modal is shown immediately
+			 });
     	});
     	
     },

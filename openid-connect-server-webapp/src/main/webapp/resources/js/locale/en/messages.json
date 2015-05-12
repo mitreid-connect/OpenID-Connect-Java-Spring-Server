@@ -80,8 +80,8 @@
             "id-token-signing-algorithm": "ID Token Signing Algorithm",
             "id-token-timeout": "ID Token Timeout",
             "implicit": "implicit",
-            "intiate-login": "Intiate Login",
-            "intiate-login-help": "URL to initiate login on the client",
+            "initiate-login": "Initiate Login",
+            "initiate-login-help": "URL to initiate login on the client",
             "introspection": "Introspection",
             "jwk-set": "JWK Set",
             "jwk-set-help": "URL for the client's JSON Web Key set",
@@ -358,7 +358,9 @@
     		"issuers": "Issuers",
     		"claim": "Claim",
     		"value": "Value"
-    	}	
+    	},
+    	"webfinger-error": "Error",
+    	"webfinger-error-description": "The server was unable to find an identity provider for <code>__email__</code>."
     },
 	"copyright": "Powered by <a href=\"https://github.com/mitreid-connect/\">MITREid Connect <span class=\"label\">{0}</span></a> <span class=\"pull-right\">&copy; 2015 The MITRE Corporation and MIT KIT.</span>.",
 	"about": {
