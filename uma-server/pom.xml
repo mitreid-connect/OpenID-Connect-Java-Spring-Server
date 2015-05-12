@@ -15,17 +15,15 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<artifactId>openid-connect-server</artifactId>
-	<name>OpenID Connect Server Library</name>
-	<parent>
-		<groupId>org.mitre</groupId>
-		<artifactId>openid-connect-parent</artifactId>
-		<version>1.2.0.UMA-SNAPSHOT</version>
-		<relativePath>..</relativePath>
-	</parent>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.mitre</groupId>
+    <artifactId>openid-connect-parent</artifactId>
+    <version>1.2.0.UMA-SNAPSHOT</version>
+  </parent>
+  <artifactId>uma-server</artifactId>
+  <name>User Managed Access (UMA) extension of the MITREid Connect server</name>
 	<build>
 		<plugins>
 			<plugin>
@@ -38,17 +36,14 @@
 			</plugin>
 		</plugins>
 	</build>
-	<dependencies>
-		<dependency>
-			<groupId>org.mitre</groupId>
-			<artifactId>openid-connect-common</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-tx</artifactId>
-		</dependency>
-
-	</dependencies>
-	<description>OpenID Connect server libraries for Spring and Spring Security.</description>
-	<url />
+  <dependencies>
+  	<dependency>
+  		<groupId>org.mitre</groupId>
+  		<artifactId>openid-connect-server</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>org.mitre</groupId>
+		<artifactId>openid-connect-client</artifactId>
+	</dependency>
+  </dependencies>
 </project>

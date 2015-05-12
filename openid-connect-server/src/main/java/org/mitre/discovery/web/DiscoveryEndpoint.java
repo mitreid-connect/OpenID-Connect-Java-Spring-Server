@@ -32,10 +32,6 @@ import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.service.UserInfoService;
 import org.mitre.openid.connect.view.HttpCodeView;
 import org.mitre.openid.connect.view.JsonEntityView;
-import org.mitre.uma.web.AuthorizationRequestEndpoint;
-import org.mitre.uma.web.ClaimsCollectionEndpoint;
-import org.mitre.uma.web.PermissionRegistrationEndpoint;
-import org.mitre.uma.web.ResourceSetRegistrationEndpoint;
 import org.mitre.openid.connect.web.DynamicClientRegistrationEndpoint;
 import org.mitre.openid.connect.web.JWKSetPublishingEndpoint;
 import org.mitre.openid.connect.web.UserInfoEndpoint;
@@ -54,7 +50,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.google.common.base.Function;
 import com.google.common.base.Strings;
 import com.google.common.collect.Collections2;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.nimbusds.jose.Algorithm;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -364,38 +359,5 @@ public class DiscoveryEndpoint {
 		return JsonEntityView.VIEWNAME;
 	}
 
-	
-	@RequestMapping(".well-known/uma-configuration")
-	public String umaConfiguration(Model model) {
-
-		Map<String, Object> m = new HashMap<String, Object>();
-
-		String issuer = config.getIssuer();
-		ImmutableSet<String> tokenProfiles = ImmutableSet.of("bearer");
-		ArrayList<String> grantTypes = Lists.newArrayList("authorization_code", "implicit", "urn:ietf:params:oauth:grant-type:jwt-bearer", "client_credentials", "urn:ietf:params:oauth:grant_type:redelegate");
-
-		m.put("version", "1.0");
-		m.put("issuer", issuer);
-		m.put("pat_profiles_supported", tokenProfiles);
-		m.put("aat_profiles_supported", tokenProfiles);
-		m.put("rpt_profiles_supported", tokenProfiles);
-		m.put("pat_grant_types_supported", grantTypes);
-		m.put("aat_grant_types_supported", grantTypes);
-		m.put("claim_token_profiles_supported", ImmutableSet.of());
-		m.put("uma_profiles_supported", ImmutableSet.of());
-		m.put("dynamic_client_endpoint", issuer + DynamicClientRegistrationEndpoint.URL);
-		m.put("token_endpoint", issuer + "token");
-		m.put("authorization_endpoint", issuer + "authorize");
-		m.put("requesting_party_claims_endpoint", issuer + ClaimsCollectionEndpoint.URL);
-		m.put("introspection_endpoint", issuer + IntrospectionEndpoint.URL);
-		m.put("resource_set_registration_endpoint", issuer + ResourceSetRegistrationEndpoint.DISCOVERY_URL);
-		m.put("permission_registration_endpoint", issuer + PermissionRegistrationEndpoint.URL);
-		m.put("rpt_endpoint", issuer + AuthorizationRequestEndpoint.URL);
-		
-		
-		
-		model.addAttribute("entity", m);
-		return JsonEntityView.VIEWNAME;
-	}
 	
 }
