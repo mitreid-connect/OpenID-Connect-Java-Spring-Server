@@ -179,8 +179,6 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 		try {
 			JWT jwt = JWTParser.parse(jwtString);
 
-			// TODO: move keys to constants
-
 			if (jwt instanceof SignedJWT) {
 				// it's a signed JWT, check the signature
 
