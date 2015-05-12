@@ -160,12 +160,53 @@ var ResourceSetView = Backbone.View.extend({
 
 	events:{
 		'click .btn-edit': 'editPolicies',
+		'click .btn-delete': 'deleteResourceSet',
 		'click .toggleMoreInformation': 'toggleMoreInformation'
 	},
 	
 	editPolicies:function(e) {
 		e.preventDefault();
 		app.navigate('user/policy/' + this.model.get('id'), {trigger: true});
+	},
+	
+	deleteResourceSet:function(e) {
+    	e.preventDefault();
+
+        if (confirm($.t('policy.policy-table.confirm'))) {
+            var _self = this;
+
+            this.model.destroy({
+                success:function () {
+                    _self.$el.fadeTo("fast", 0.00, function () { //fade
+                        $(this).slideUp("fast", function () { //slide up
+                            $(this).remove(); //then remove from the DOM
+                            _self.parentView.togglePlaceholder();
+                        });
+                    });
+                },
+                error:function (error, response) {
+            		console.log("An error occurred when deleting a resource set");
+    
+					//Pull out the response text.
+					var responseJson = JSON.parse(response.responseText);
+            		
+            		//Display an alert with an error message
+					$('#modalAlert div.modal-header').html(responseJson.error);
+	        		$('#modalAlert div.modal-body').html(responseJson.error_description);
+            		
+        			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
+        				 "backdrop" : "static",
+        				 "keyboard" : true,
+        				 "show" : true // ensure the modal is shown immediately
+        			 });
+            	}
+            });
+
+            _self.parentView.delegateEvents();
+        }
+
+        return false;
+		
 	},
 	
 	toggleMoreInformation:function(e) {

@@ -20,8 +20,10 @@ package org.mitre.uma.web;
 import java.util.Collection;
 import java.util.Set;
 
+import org.mitre.oauth2.service.SystemScopeService;
 import org.mitre.openid.connect.view.HttpCodeView;
 import org.mitre.openid.connect.view.JsonEntityView;
+import org.mitre.openid.connect.view.JsonErrorView;
 import org.mitre.openid.connect.web.RootController;
 import org.mitre.uma.model.Claim;
 import org.mitre.uma.model.ResourceSet;
@@ -32,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.MimeTypeUtils;
@@ -42,6 +45,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
+
+import static org.mitre.oauth2.web.AuthenticationUtilities.ensureOAuthScope;
 
 /**
  * @author jricher
@@ -116,6 +121,34 @@ public class ClaimsAPI {
 		m.addAttribute(JsonEntityView.ENTITY, rs.getClaimsRequired());
 		
 		return JsonEntityView.VIEWNAME;
+	}
+	
+	@RequestMapping(value = "/{rsid}", method = RequestMethod.DELETE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+	public String deleteResourceSet(@PathVariable ("rsid") Long id, Model m, Authentication auth) {
+
+		ResourceSet rs = resourceSetService.getById(id);
+		
+		if (rs == null) {
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
+			m.addAttribute(JsonErrorView.ERROR, "not_found");
+			return JsonErrorView.VIEWNAME;
+		} else {
+			if (!auth.getName().equals(rs.getOwner())) {
+				
+				logger.warn("Unauthorized resource set request from bad user; expected " + rs.getOwner() + " got " + auth.getName());
+				
+				// it wasn't issued to this user
+				m.addAttribute(HttpCodeView.CODE, HttpStatus.FORBIDDEN);
+				return JsonErrorView.VIEWNAME;
+			} else {
+				
+				resourceSetService.remove(rs);
+				
+				m.addAttribute(HttpCodeView.CODE, HttpStatus.NO_CONTENT);
+				return HttpCodeView.VIEWNAME;
+			}
+			
+		}
 	}
 	
 }

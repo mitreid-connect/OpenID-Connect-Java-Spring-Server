@@ -234,7 +234,7 @@ public class ResourceSetRegistrationEndpoint {
 				
 				logger.warn("Unauthorized resource set request from bad client; expected " + rs.getClientId() + " got " + ((OAuth2Authentication)auth).getOAuth2Request().getClientId());
 				
-				// it wasn't issued to this user
+				// it wasn't issued to this client
 				m.addAttribute(HttpCodeView.CODE, HttpStatus.FORBIDDEN);
 				return JsonErrorView.VIEWNAME;
 			} else {

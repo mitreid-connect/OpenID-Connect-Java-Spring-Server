@@ -344,6 +344,8 @@
     	"edit-policy": "Edit Policy",
     	"required-claims": "Required Claims",
     	"policy-table": {
+    		"confirm": "Are you sure you want to delete this resource set?",
+    		"delete": "Delete",
     		"edit": "Edit Policies",
     		"email-address": "email address",
     		"required-claims": "Users that you share this resource will with need to be able to present the following claims in order to access the resource.",
