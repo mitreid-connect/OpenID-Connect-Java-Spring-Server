@@ -30,6 +30,18 @@
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>org.appfuse</groupId>
+				<artifactId>maven-warpath-plugin</artifactId>
+				<extensions>true</extensions>
+				<executions>
+					<execution>
+						<goals>
+							<goal>add-classes</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+   			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
 				<configuration>
@@ -48,6 +60,11 @@
 			<groupId>org.mitre</groupId>
 			<artifactId>openid-connect-server-webapp</artifactId>
 			<type>war</type>
+		</dependency>
+		<dependency>
+			<groupId>org.mitre</groupId>
+			<artifactId>openid-connect-server-webapp</artifactId>
+			<type>warpath</type>
 		</dependency>
 		<dependency>
 			<groupId>org.mitre</groupId>
