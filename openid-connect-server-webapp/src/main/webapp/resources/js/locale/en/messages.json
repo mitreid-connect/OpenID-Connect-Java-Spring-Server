@@ -350,6 +350,9 @@
     		"no-resource-sets": "There are no resource sets registered. Introduce a protected to this authorization server to let it register some.",
     		"no-required-claims": "There are no required claims for this resource set: This resource set is inaccessible by others.",
     		"share-email": "Share with email address",
+    		"shared-with": "Shared with:",
+    		"shared-nobody": "NOBODY",
+    		"shared-nobody-tooltip": "This resource is not accessible by anyone else, edit the policies and share it with someone.",
     		"issuers": "Issuers",
     		"claim": "Claim",
     		"value": "Value"
