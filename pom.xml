@@ -451,8 +451,30 @@
 			</dependency>
 			<dependency>
 				<groupId>org.mitre</groupId>
+				<artifactId>openid-connect-client</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.mitre</groupId>
 				<artifactId>openid-connect-server</artifactId>
 				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.mitre</groupId>
+				<artifactId>openid-connect-server-webapp</artifactId>
+				<version>${project.version}</version>
+				<type>war</type>
+			</dependency>
+			<dependency>
+				<groupId>org.mitre</groupId>
+				<artifactId>uma-server</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.mitre</groupId>
+				<artifactId>uma-server-webapp</artifactId>
+				<version>${project.version}</version>
+				<type>war</type>
 			</dependency>
 
 			<!-- Other libraries -->
