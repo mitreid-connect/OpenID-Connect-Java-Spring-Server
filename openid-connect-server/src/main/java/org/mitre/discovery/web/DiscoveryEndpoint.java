@@ -359,5 +359,4 @@ public class DiscoveryEndpoint {
 		return JsonEntityView.VIEWNAME;
 	}
 
-	
 }
