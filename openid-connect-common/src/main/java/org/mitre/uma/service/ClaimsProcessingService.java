@@ -14,23 +14,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package org.mitre.oauth2.service;
 
-import java.util.Set;
+package org.mitre.uma.service;
 
-import org.springframework.security.oauth2.provider.ClientDetails;
+import java.util.Collection;
+
+import org.mitre.uma.model.Claim;
 
 /**
- * Strategy interface used for authorizing token introspection.
+ * 
+ * Processes claims presented during an UMA transaction.
+ * 
+ * @author jricher
+ *
  */
-public interface IntrospectionAuthorizer {
+public interface ClaimsProcessingService {
 
 	/**
-	 * @param authClient the authenticated client wanting to perform token introspection
-	 * @param tokenClient the client the token was issued to
-	 * @param tokenScope the scope associated with the token
-	 * @return {@code true} in case introspection is permitted; {@code false} otherwise
+	 * 
+	 * Determine whether or not the claims that have been supplied are
+	 * sufficient to fulfill the requirements given by the claims that
+	 * are required.
+	 * 
+	 * @param claimsRequired the required claims to check against
+	 * @param claimsSupplied the supplied claims to test
+	 * @return the unmatched claims (if any), an empty set if the claims are satisfied, never null
 	 */
-	boolean isIntrospectionPermitted(ClientDetails authClient, ClientDetails tokenClient, Set<String> tokenScope);
+	public Collection<Claim> claimsAreSatisfied(Collection<Claim> claimsRequired, Collection<Claim> claimsSupplied);
 
 }

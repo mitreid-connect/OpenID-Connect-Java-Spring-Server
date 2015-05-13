@@ -18,17 +18,20 @@ package org.mitre.oauth2.service.impl;
 
 import java.text.ParseException;
 import java.util.Map;
+import java.util.Set;
 
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
 import org.mitre.oauth2.service.IntrospectionResultAssembler;
 import org.mitre.openid.connect.model.UserInfo;
+import org.mitre.uma.model.Permission;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.Sets;
 
 import static com.google.common.collect.Maps.newLinkedHashMap;
 
@@ -44,14 +47,33 @@ public class DefaultIntrospectionResultAssembler implements IntrospectionResultA
 	private static final Logger logger = LoggerFactory.getLogger(DefaultIntrospectionResultAssembler.class);
 
 	@Override
-	public Map<String, Object> assembleFrom(OAuth2AccessTokenEntity accessToken, UserInfo userInfo) {
+	public Map<String, Object> assembleFrom(OAuth2AccessTokenEntity accessToken, UserInfo userInfo, Set<String> authScopes) {
 
 		Map<String, Object> result = newLinkedHashMap();
 		OAuth2Authentication authentication = accessToken.getAuthenticationHolder().getAuthentication();
 
 		result.put(ACTIVE, true);
 
-		result.put(SCOPE, Joiner.on(SCOPE_SEPARATOR).join(accessToken.getScope()));
+		if (accessToken.getPermissions() != null && !accessToken.getPermissions().isEmpty()) {
+
+			Set<Object> permissions = Sets.newHashSet();
+			
+			for (Permission perm : accessToken.getPermissions()) {
+				Map<String, Object> o = newLinkedHashMap();
+				o.put("resource_set_id", perm.getResourceSet().getId().toString());
+				Set<String> scopes = Sets.newHashSet(perm.getScopes());
+				o.put("scopes", scopes);
+				permissions.add(o);
+			}
+			
+			result.put("permissions", permissions);
+			
+		} else {
+			Set<String> scopes = Sets.intersection(authScopes, accessToken.getScope());
+			
+			result.put(SCOPE, Joiner.on(SCOPE_SEPARATOR).join(scopes));
+			
+		}
 
 		if (accessToken.getExpiration() != null) {
 			try {
@@ -80,14 +102,16 @@ public class DefaultIntrospectionResultAssembler implements IntrospectionResultA
 	}
 
 	@Override
-	public Map<String, Object> assembleFrom(OAuth2RefreshTokenEntity refreshToken, UserInfo userInfo) {
+	public Map<String, Object> assembleFrom(OAuth2RefreshTokenEntity refreshToken, UserInfo userInfo, Set<String> authScopes) {
 
 		Map<String, Object> result = newLinkedHashMap();
 		OAuth2Authentication authentication = refreshToken.getAuthenticationHolder().getAuthentication();
 
 		result.put(ACTIVE, true);
 
-		result.put(SCOPE, Joiner.on(SCOPE_SEPARATOR).join(authentication.getOAuth2Request().getScope()));
+		Set<String> scopes = Sets.intersection(authScopes, authentication.getOAuth2Request().getScope());
+		
+		result.put(SCOPE, Joiner.on(SCOPE_SEPARATOR).join(scopes));
 
 		if (refreshToken.getExpiration() != null) {
 			try {

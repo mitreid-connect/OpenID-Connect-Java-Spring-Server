@@ -18,6 +18,7 @@ package org.mitre.oauth2.service;
 
 import java.text.SimpleDateFormat;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.text.DateFormatter;
 
@@ -46,17 +47,19 @@ public interface IntrospectionResultAssembler {
 	 *
 	 * @param accessToken the access token
 	 * @param userInfo the user info
+	 * @param authScopes the scopes the client is authorized for
 	 * @return the token introspection result
 	 */
-	Map<String, Object> assembleFrom(OAuth2AccessTokenEntity accessToken, UserInfo userInfo);
+	Map<String, Object> assembleFrom(OAuth2AccessTokenEntity accessToken, UserInfo userInfo, Set<String> authScopes);
 
 	/**
 	 * Assemble a token introspection result from the given refresh token and user info.
 	 *
 	 * @param refreshToken the refresh token
 	 * @param userInfo the user info
+	 * @param authScopes the scopes the client is authorized for
 	 * @return the token introspection result
 	 */
-	Map<String, Object> assembleFrom(OAuth2RefreshTokenEntity refreshToken, UserInfo userInfo);
+	Map<String, Object> assembleFrom(OAuth2RefreshTokenEntity refreshToken, UserInfo userInfo, Set<String> authScopes);
 
 }

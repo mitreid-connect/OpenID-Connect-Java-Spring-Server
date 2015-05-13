@@ -86,13 +86,13 @@ var WhiteListListView = Backbone.View.extend({
 		_.each(this.model.models, function (whiteList) {
 			
 			// look up client
-			var client = this.options.clientList.getByClientId(whiteList.get('clientId'));
+			var client = _self.options.clientList.getByClientId(whiteList.get('clientId'));
 			
 			// if there's no client ID, this is an error!
 			if (client != null) {
-				var view = new WhiteListView({model: whiteList, client: client, systemScopeList: this.options.systemScopeList});
+				var view = new WhiteListView({model: whiteList, client: client, systemScopeList: _self.options.systemScopeList});
 				view.parentView = _self;
-				$('#whitelist-table', this.el).append(view.render().el);
+				$('#whitelist-table', _self.el).append(view.render().el);
 			}
 			
 		}, this);

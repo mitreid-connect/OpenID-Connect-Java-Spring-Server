@@ -1,0 +1,137 @@
+<!-- 
+ Copyright 2015 The MITRE Corporation 
+   and the MIT Kerberos and Internet Trust Consortium
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+   http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<!-- policy: resource sets and claims -->
+
+<script type="text/html" id="tmpl-resource-set-table">
+    <div class="well well-small">
+		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> <span data-i18n="common.refresh">Refresh</span></button>
+    </div>
+
+	<div id="resource-set-table-empty" class="alert alert-info" data-i18n="policy.policy-table.no-resource-sets">
+		There are no resource sets registered. Introduce a protected to this authorization server to let it register some.
+	</div>
+
+    <table id="resource-set-table" class="table table-hover table-striped">
+        <thead>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+    <div class="well well-small">
+		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> <span data-i18n="common.refresh">Refresh</span></button>
+    </div>
+
+</script>
+
+<script type="text/html" id="tmpl-resource-set">
+    <td>
+		<%- rs.name %>
+   </td>
+
+    <td>
+        <span title="<%- client.clientId %>"><%- client.clientName != null ? client.clientName : ( client.clientId.substr(0,8) + '...' ) %></span>
+		<div class="client-more-info-block"></div>
+		<div class="scope-list"></div>
+		<div><span class="text-warning" data-i18n="policy.policy-table.shared-with"><i class="icon-share"></i> Shared with:</span>
+			<% if (!_.isEmpty(rs.claimsRequired)) { 
+				_.each(rs.claimsRequired, function(claim) { %>
+					<span class="label label-info"><%- claim.value %></span>
+				<% });
+			} else { %>
+				<span class="label label-important" data-i18n="policy.policy-table.shared-nobody;[title]policy.policy-table.shared-nobody-tooltip" title="This resource is not accessible by anyone else, edit the policies and share it with someone.">NOBODY</span> 
+			<% } %>
+
+			
+		</div>
+    </td>
+
+    <td>
+		<div class="btn-group pull-right">
+	        <button class="btn btn-edit"><i class="icon-edit"></i> <span data-i18n="policy.policy-table.edit">Edit Policies</span></button> &nbsp; 
+	        <button class="btn btn-danger btn-delete"><i class="icon-trash icon-white"></i> <span data-i18n="policy.policy-table.delete">Delete</span></button> &nbsp; 
+		</div>
+    </td>
+
+</script>
+
+<script type="text/html" id="tmpl-required-claim-table">
+    <div class="well well-small">
+		<button class="btn btn-small btn-save btn-success"><i class="icon-ok-circle icon-white"></i> <span data-i18n="common.save">Save</span></button> &nbsp; 
+		<button class="btn btn-small btn-cancel"><i class="icon-ban-circle"></i> <span data-i18n="common.cancel">Cancel</span></button>
+    </div>
+
+	<div id="add-required-claim">
+		<form class="form-horizontal">
+			<fieldset>
+				<input type="text" id="email" placeholder="email address" data-i18n="[placeholder]policy.policy-table.email-address" />
+				<button id="add-email" class="btn btn-info"><i class="icon-share icon-white"></i> <span data-i18n="policy.policy-table.share-email">Share with email address</span></button>
+			</fieldset>
+		</form>
+	</div>
+
+	<div class="alert alert-info" data-i18n="policy.policy-table.required-claims">
+		Users that you share this resource will with need to be able to present the following claims in order to access the resource.
+	</div>
+
+	<div id="required-claim-table-empty" class="alert alert-danger" data-i18n="policy.policy-table.no-required-claims">
+		There are no required claims for this resource set: This resource set is inaccessible by others.
+	</div>
+
+    <table id="required-claim-table" class="table table-hover table-striped">
+        <thead>
+			<tr>
+				<th data-i18n="policy.policy-table.issuers">Issuers</th>
+				<th data-i18n="policy.policy-table.claim">Claim</th>
+				<th data-i18n="policy.policy-table.value">Value</th>
+				<th></th>			
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+    <div class="well well-small">
+		<button class="btn btn-small btn-save btn-success"><i class="icon-ok-circle icon-white"></i> <span data-i18n="common.save">Save</span></button> &nbsp; 
+		<button class="btn btn-small btn-cancel"><i class="icon-ban-circle"></i> <span data-i18n="common.cancel">Cancel</span></button>
+    </div>
+
+</script>
+
+<script type="text/html" id="tmpl-required-claim">
+    <td>
+		<% _.each(issuer, function(issuer) { %>
+			<span class="label label-info"><%- issuer %></span>
+		<% }); %>
+   </td>
+
+    <td>
+		<%- name %>
+    </td>
+
+	<td>
+		<%- value %>
+	</td>
+
+    <td>
+		<div class="btn-group pull-right">
+	        <button class="btn btn-danger btn-remove"><i class="icon-trash icon-white"></i> <span data-i18n="policy.policy-table.remove">Remove</span></button> &nbsp; 
+		</div>
+    </td>
+
+</script>
+
+ 

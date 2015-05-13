@@ -49,6 +49,8 @@ public class ConfigurationPropertiesBean {
 	private String logoImageUrl;
 
 	private Long regTokenLifeTime;
+	
+	private Long rqpTokenLifeTime;
 
 	private boolean forceHttps = false; // by default we just log a warning for HTTPS deployment
 
@@ -129,6 +131,20 @@ public class ConfigurationPropertiesBean {
 	 */
 	public void setRegTokenLifeTime(Long regTokenLifeTime) {
 		this.regTokenLifeTime = regTokenLifeTime;
+	}
+
+	/**
+	 * @return the rqpTokenLifeTime
+	 */
+	public Long getRqpTokenLifeTime() {
+		return rqpTokenLifeTime;
+	}
+
+	/**
+	 * @param rqpTokenLifeTime the rqpTokenLifeTime to set
+	 */
+	public void setRqpTokenLifeTime(Long rqpTokenLifeTime) {
+		this.rqpTokenLifeTime = rqpTokenLifeTime;
 	}
 
 	public boolean isForceHttps() {

@@ -36,14 +36,17 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.Transient;
 
+import org.mitre.uma.model.Permission;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2AccessTokenJackson1Deserializer;
 import org.springframework.security.oauth2.common.OAuth2AccessTokenJackson1Serializer;
@@ -109,6 +112,8 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	private OAuth2RefreshTokenEntity refreshToken;
 
 	private Set<String> scope;
+	
+	private Set<Permission> permissions;
 
 	/**
 	 * Create a new, blank access token
@@ -319,6 +324,26 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 				return secondsRemaining;
 			}
 		}
+	}
+
+	/**
+	 * @return the permissions
+	 */
+	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@JoinTable(
+			name = "access_token_permissions",
+			joinColumns = @JoinColumn(name = "access_token_id"),
+			inverseJoinColumns = @JoinColumn(name = "permission_id")
+	)
+	public Set<Permission> getPermissions() {
+		return permissions;
+	}
+
+	/**
+	 * @param permissions the permissions to set
+	 */
+	public void setPermissions(Set<Permission> permissions) {
+		this.permissions = permissions;
 	}
 
 }

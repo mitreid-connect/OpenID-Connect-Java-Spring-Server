@@ -158,6 +158,22 @@ public class JsonUtils {
 			return null;
 		}
 	}
+	
+	/**
+	 * Gets the value of the given member as a Long, null if it doesn't exist
+	 */
+	public static Long getAsLong(JsonObject o, String member) {
+		if (o.has(member)) {
+			JsonElement e = o.get(member);
+			if (e != null && e.isJsonPrimitive()) {
+				return e.getAsLong();
+			} else {
+				return null;
+			}			
+		} else {
+			return null;
+		}
+	}
 
 	/**
 	 * Gets the value of the given given member as a set of strings, null if it doesn't exist

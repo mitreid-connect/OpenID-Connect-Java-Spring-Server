@@ -16,6 +16,7 @@
  *******************************************************************************/
 package org.mitre.discovery.web;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -289,6 +290,7 @@ public class DiscoveryEndpoint {
 		Collection<JWSAlgorithm> clientSymmetricSigningAlgs = Lists.newArrayList(JWSAlgorithm.HS256, JWSAlgorithm.HS384, JWSAlgorithm.HS512);
 		Collection<JWSAlgorithm> clientSymmetricAndAsymmetricSigningAlgs = Lists.newArrayList(JWSAlgorithm.HS256, JWSAlgorithm.HS384, JWSAlgorithm.HS512, JWSAlgorithm.RS256, JWSAlgorithm.RS384, JWSAlgorithm.RS512);
 		Collection<Algorithm> clientSymmetricAndAsymmetricSigningAlgsWithNone = Lists.newArrayList(JWSAlgorithm.HS256, JWSAlgorithm.HS384, JWSAlgorithm.HS512, JWSAlgorithm.RS256, JWSAlgorithm.RS384, JWSAlgorithm.RS512, Algorithm.NONE);
+		ArrayList<String> grantTypes = Lists.newArrayList("authorization_code", "implicit", "urn:ietf:params:oauth:grant-type:jwt-bearer", "client_credentials", "urn:ietf:params:oauth:grant_type:redelegate");
 
 		Map<String, Object> m = new HashMap<String, Object>();
 		m.put("issuer", config.getIssuer());
@@ -301,7 +303,7 @@ public class DiscoveryEndpoint {
 		m.put("registration_endpoint", baseUrl + DynamicClientRegistrationEndpoint.URL);
 		m.put("scopes_supported", scopeService.toStrings(scopeService.getUnrestricted())); // these are the scopes that you can dynamically register for, which is what matters for discovery
 		m.put("response_types_supported", Lists.newArrayList("code", "token")); // we don't support these yet: , "id_token", "id_token token"));
-		m.put("grant_types_supported", Lists.newArrayList("authorization_code", "implicit", "urn:ietf:params:oauth:grant-type:jwt-bearer", "client_credentials", "urn:ietf:params:oauth:grant_type:redelegate"));
+		m.put("grant_types_supported", grantTypes);
 		//acr_values_supported
 		m.put("subject_types_supported", Lists.newArrayList("public", "pairwise"));
 		m.put("userinfo_signing_alg_values_supported", Collections2.transform(clientSymmetricAndAsymmetricSigningAlgs, toAlgorithmName));
