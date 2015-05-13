@@ -72,7 +72,7 @@ public class ConfigurationPropertiesBean {
 				throw new BeanCreationException("Issuer is not using https scheme as required: " + issuer);
 			}
 			else {
-				logger.warn("Configured issuer url is not using https scheme.");
+				logger.warn("\n\n**\n** WARNING: Configured issuer url is not using https scheme.\n**\n\n");
 			}
 		}
 	}
