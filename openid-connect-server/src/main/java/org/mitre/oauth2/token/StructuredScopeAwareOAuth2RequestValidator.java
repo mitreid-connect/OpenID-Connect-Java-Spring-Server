@@ -49,7 +49,7 @@ public class StructuredScopeAwareOAuth2RequestValidator implements OAuth2Request
 		if (requestedScopes != null && !requestedScopes.isEmpty()) {
 			if (clientScopes != null && !clientScopes.isEmpty()) {
 				if (!scopeService.scopesMatch(clientScopes, requestedScopes)) {
-					throw new InvalidScopeException("Invalid scope", clientScopes);
+					throw new InvalidScopeException("Invalid scope; requested:" + requestedScopes, clientScopes);
 				}
 			}
 		}
