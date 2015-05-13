@@ -17,8 +17,7 @@
             "show": "View User Profile",
             "text": "Your user profile has the following information:",
             "value": "Claim value:"
-        },
-        "policies": "Manage Protected Resource Policies"
+        }
     },
     "client": {
         "client-form": {
@@ -339,29 +338,6 @@
             "no-sites": "There are no whitelisted sites. Use the <strong>whitelist</strong> button on the client management page to create one."
         }
     },
-    "policy" : {
-    	"resource-sets": "Resource Sets",
-    	"edit-policy": "Edit Policy",
-    	"required-claims": "Required Claims",
-    	"policy-table": {
-    		"confirm": "Are you sure you want to delete this resource set?",
-    		"delete": "Delete",
-    		"edit": "Edit Policies",
-    		"email-address": "email address",
-    		"required-claims": "Users that you share this resource will with need to be able to present the following claims in order to access the resource.",
-    		"no-resource-sets": "There are no resource sets registered. Introduce a protected to this authorization server to let it register some.",
-    		"no-required-claims": "There are no required claims for this resource set: This resource set is inaccessible by others.",
-    		"share-email": "Share with email address",
-    		"shared-with": "Shared with:",
-    		"shared-nobody": "NOBODY",
-    		"shared-nobody-tooltip": "This resource is not accessible by anyone else, edit the policies and share it with someone.",
-    		"issuers": "Issuers",
-    		"claim": "Claim",
-    		"value": "Value"
-    	},
-    	"webfinger-error": "Error",
-    	"webfinger-error-description": "The server was unable to find an identity provider for <code>__email__</code>."
-    },
 	"copyright": "Powered by <a href=\"https://github.com/mitreid-connect/\">MITREid Connect <span class=\"label\">{0}</span></a> <span class=\"pull-right\">&copy; 2015 The MITRE Corporation and MIT KIT.</span>.",
 	"about": {
 		"title": "About",
@@ -420,8 +396,7 @@
 			"title": "Personal",
 			"approved_sites": "Manage Approved Sites",
 			"active_tokens": "Manage Active Tokens",
-			"profile_information": "View Profile Information",
-			"resource_policies": "Manage Protected Resource Policies"
+			"profile_information": "View Profile Information"
 		},
 		"developer": {
 			"title": "Developer",
