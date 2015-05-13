@@ -105,6 +105,7 @@
             "refresh": "refresh",
             "refresh-tokens": "Refresh Tokens",
             "refresh-tokens-issued": "Refresh tokens are issued for this client",
+			"refresh-tokens-issued-help": "This will add the offline_access scope to the client's scopes.",
             "refresh-tokens-reused": "Refresh tokens for this client are re-used",
             "refresh-tokens-no-expire": "Refresh tokens do not time out",
             "registered": "Registered at",

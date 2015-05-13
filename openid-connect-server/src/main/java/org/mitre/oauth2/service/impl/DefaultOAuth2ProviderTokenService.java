@@ -170,33 +170,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 
 			// attach a refresh token, if this client is allowed to request them and the user gets the offline scope
 			if (client.isAllowRefresh() && token.getScope().contains(SystemScopeService.OFFLINE_ACCESS)) {
-				OAuth2RefreshTokenEntity refreshToken = new OAuth2RefreshTokenEntity(); //refreshTokenFactory.createNewRefreshToken();
-				JWTClaimsSet refreshClaims = new JWTClaimsSet();
-
-
-				// make it expire if necessary
-				if (client.getRefreshTokenValiditySeconds() != null) {
-					Date expiration = new Date(System.currentTimeMillis() + (client.getRefreshTokenValiditySeconds() * 1000L));
-					refreshToken.setExpiration(expiration);
-					refreshClaims.setExpirationTime(expiration);
-				}
-
-				// set a random identifier
-				refreshClaims.setJWTID(UUID.randomUUID().toString());
-
-				// TODO: add issuer fields, signature to JWT
-
-				PlainJWT refreshJwt = new PlainJWT(refreshClaims);
-				refreshToken.setJwt(refreshJwt);
-
-				//Add the authentication
-				refreshToken.setAuthenticationHolder(authHolder);
-				refreshToken.setClient(client);
-
-
-
-				// save the token first so that we can set it to a member of the access token (NOTE: is this step necessary?)
-				OAuth2RefreshTokenEntity savedRefreshToken = tokenRepository.saveRefreshToken(refreshToken);
+				OAuth2RefreshTokenEntity savedRefreshToken = createRefreshToken(client, authHolder);
 
 				token.setRefreshToken(savedRefreshToken);
 			}
@@ -227,6 +201,38 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		}
 
 		throw new AuthenticationCredentialsNotFoundException("No authentication credentials found");
+	}
+
+
+	private OAuth2RefreshTokenEntity createRefreshToken(ClientDetailsEntity client, AuthenticationHolderEntity authHolder) {
+		OAuth2RefreshTokenEntity refreshToken = new OAuth2RefreshTokenEntity(); //refreshTokenFactory.createNewRefreshToken();
+		JWTClaimsSet refreshClaims = new JWTClaimsSet();
+
+
+		// make it expire if necessary
+		if (client.getRefreshTokenValiditySeconds() != null) {
+			Date expiration = new Date(System.currentTimeMillis() + (client.getRefreshTokenValiditySeconds() * 1000L));
+			refreshToken.setExpiration(expiration);
+			refreshClaims.setExpirationTime(expiration);
+		}
+
+		// set a random identifier
+		refreshClaims.setJWTID(UUID.randomUUID().toString());
+
+		// TODO: add issuer fields, signature to JWT
+
+		PlainJWT refreshJwt = new PlainJWT(refreshClaims);
+		refreshToken.setJwt(refreshJwt);
+
+		//Add the authentication
+		refreshToken.setAuthenticationHolder(authHolder);
+		refreshToken.setClient(client);
+
+
+
+		// save the token first so that we can set it to a member of the access token (NOTE: is this step necessary?)
+		OAuth2RefreshTokenEntity savedRefreshToken = tokenRepository.saveRefreshToken(refreshToken);
+		return savedRefreshToken;
 	}
 
 	@Override
@@ -262,9 +268,6 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 			tokenRepository.removeRefreshToken(refreshToken);
 			throw new InvalidTokenException("Expired refresh token: " + refreshTokenValue);
 		}
-
-		// TODO: have the option to recycle the refresh token here, too
-		// for now, we just reuse it as long as it's valid, which is the original intent
 
 		OAuth2AccessTokenEntity token = new OAuth2AccessTokenEntity();
 
@@ -302,7 +305,17 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 			token.setExpiration(expiration);
 		}
 
-		token.setRefreshToken(refreshToken);
+		if (client.isReuseRefreshToken()) {
+			// if the client re-uses refresh tokens, do that
+			token.setRefreshToken(refreshToken);
+		} else {
+			// otherwise, make a new refresh token
+			OAuth2RefreshTokenEntity newRefresh = createRefreshToken(client, authHolder);
+			token.setRefreshToken(newRefresh);
+			
+			// clean up the old refresh token
+			tokenRepository.removeRefreshToken(refreshToken);
+		}
 
 		token.setAuthenticationHolder(authHolder);
 
