@@ -30,8 +30,8 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.appfuse</groupId>
-				<artifactId>maven-warpath-plugin</artifactId>
+				<groupId>org.appfuse.plugins</groupId>
+				<artifactId>warpath-maven-plugin</artifactId>
 				<extensions>true</extensions>
 				<executions>
 					<execution>
