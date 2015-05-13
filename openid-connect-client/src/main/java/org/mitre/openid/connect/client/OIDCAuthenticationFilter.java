@@ -304,6 +304,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 		MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
 		form.add("grant_type", "authorization_code");
 		form.add("code", authorizationCode);
+		form.setAll(authOptions.getTokenOptions(serverConfig, clientConfig, request));
 
 		String redirectUri = getStoredSessionString(session, REDIRECT_URI_SESION_VARIABLE);
 		if (redirectUri != null) {

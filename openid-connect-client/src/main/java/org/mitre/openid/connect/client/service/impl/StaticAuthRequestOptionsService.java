@@ -37,7 +37,8 @@ import org.mitre.openid.connect.config.ServerConfiguration;
  */
 public class StaticAuthRequestOptionsService implements AuthRequestOptionsService {
 
-	private Map<String, String> options = new HashMap<String, String>();
+	private Map<String, String> options = new HashMap<>();
+	private Map<String, String> tokenOptions = new HashMap<>();
 
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.client.service.AuthRequestOptionsService#getOptions(org.mitre.openid.connect.config.ServerConfiguration, org.mitre.oauth2.model.RegisteredClient, javax.servlet.http.HttpServletRequest)
@@ -47,8 +48,16 @@ public class StaticAuthRequestOptionsService implements AuthRequestOptionsServic
 		return options;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.mitre.openid.connect.client.service.AuthRequestOptionsService#getTokenOptions(org.mitre.openid.connect.config.ServerConfiguration, org.mitre.oauth2.model.RegisteredClient, javax.servlet.http.HttpServletRequest)
+	 */
+	@Override
+	public Map<String, String> getTokenOptions(ServerConfiguration server, RegisteredClient client, HttpServletRequest request) {
+		return tokenOptions;
+	}
+
 	/**
-	 * @return the options
+	 * @return the options object directly
 	 */
 	public Map<String, String> getOptions() {
 		return options;
@@ -61,6 +70,18 @@ public class StaticAuthRequestOptionsService implements AuthRequestOptionsServic
 		this.options = options;
 	}
 
+	/**
+	 * @return the tokenOptions
+	 */
+	public Map<String, String> getTokenOptions() {
+		return tokenOptions;
+	}
 
+	/**
+	 * @param tokenOptions the tokenOptions to set
+	 */
+	public void setTokenOptions(Map<String, String> tokenOptions) {
+		this.tokenOptions = tokenOptions;
+	}
 
 }
