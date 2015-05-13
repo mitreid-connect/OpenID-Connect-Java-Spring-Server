@@ -105,7 +105,8 @@
 
 <script type="text/html" id="tmpl-user-profile-element">
 
-            <dt><%- key %></dt>
+            <dt><% if (typeof(category) !== 'undefined') { %>
+				<small class="muted"><%- category %>.</small><% } %><%- key %></dt>
             <dd><%- value %></dd>
 
 </script>

@@ -468,12 +468,29 @@ var UserProfileView = Backbone.View.extend({
 	render:function() {
 		
         $(this.el).html($('#tmpl-user-profile').html());
+        
+        var t = this.template;
 
         _.each(this.model, function (value, key) {
         	if (key && value) {
-	            $('dl', this.el).append(
-	            		this.template({key: key, value: value})
-	            	);
+        		
+        		if (typeof(value) === 'object') {
+        			
+        			var el = this.el;
+        			var k = key;
+        			
+        			_.each(value, function (value, key) {
+        				$('dl', el).append(
+       	            		t({key: key, value: value, category: k})
+        				);
+        			});
+        		} else if (typeof(value) === 'array') {
+        			// TODO: handle array types
+        		} else {
+    	            $('dl', this.el).append(
+    	            		t({key: key, value: value})
+    	            	);
+        		}
         	}
         }, this);
 		
