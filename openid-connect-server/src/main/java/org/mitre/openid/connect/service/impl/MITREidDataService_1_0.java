@@ -26,9 +26,6 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.mitre.jose.JWEAlgorithmEmbed;
-import org.mitre.jose.JWEEncryptionMethodEmbed;
-import org.mitre.jose.JWSAlgorithmEmbed;
 import org.mitre.oauth2.model.AuthenticationHolderEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity.AppType;
@@ -62,6 +59,9 @@ import com.google.common.collect.Sets;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
+import com.nimbusds.jose.EncryptionMethod;
+import com.nimbusds.jose.JWEAlgorithm;
+import com.nimbusds.jose.JWSAlgorithm;
 
 import static org.mitre.util.JsonUtils.base64UrlDecodeObject;
 import static org.mitre.util.JsonUtils.readMap;
@@ -664,17 +664,29 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 						SubjectType st = SubjectType.getByValue(reader.nextString());
 						client.setSubjectType(st);
 					} else if (name.equals("requestObjectSigningAlg")) {
-						JWSAlgorithmEmbed alg = JWSAlgorithmEmbed.getForAlgorithmName(reader.nextString());
-						client.setRequestObjectSigningAlgEmbed(alg);
+						JWSAlgorithm alg = JWSAlgorithm.parse(reader.nextString());
+						client.setRequestObjectSigningAlg(alg);
 					} else if (name.equals("userInfoEncryptedResponseAlg")) {
-						JWEAlgorithmEmbed alg = JWEAlgorithmEmbed.getForAlgorithmName(reader.nextString());
-						client.setUserInfoEncryptedResponseAlgEmbed(alg);
+						JWEAlgorithm alg = JWEAlgorithm.parse(reader.nextString());
+						client.setUserInfoEncryptedResponseAlg(alg);
 					} else if (name.equals("userInfoEncryptedResponseEnc")) {
-						JWEEncryptionMethodEmbed alg = JWEEncryptionMethodEmbed.getForAlgorithmName(reader.nextString());
-						client.setUserInfoEncryptedResponseEncEmbed(alg);
+						EncryptionMethod alg = EncryptionMethod.parse(reader.nextString());
+						client.setUserInfoEncryptedResponseEnc(alg);
 					} else if (name.equals("userInfoSignedResponseAlg")) {
-						JWSAlgorithmEmbed alg = JWSAlgorithmEmbed.getForAlgorithmName(reader.nextString());
-						client.setUserInfoSignedResponseAlgEmbed(alg);
+						JWSAlgorithm alg = JWSAlgorithm.parse(reader.nextString());
+						client.setUserInfoSignedResponseAlg(alg);
+					} else if (name.equals("idTokenSignedResonseAlg")) {
+						JWSAlgorithm alg = JWSAlgorithm.parse(reader.nextString());
+						client.setIdTokenSignedResponseAlg(alg);
+					} else if (name.equals("idTokenEncryptedResponseAlg")) {
+						JWEAlgorithm alg = JWEAlgorithm.parse(reader.nextString());
+						client.setIdTokenEncryptedResponseAlg(alg);
+					} else if (name.equals("idTokenEncryptedResponseEnc")) {
+						EncryptionMethod alg = EncryptionMethod.parse(reader.nextString());
+						client.setIdTokenEncryptedResponseEnc(alg);
+					} else if (name.equals("tokenEndpointAuthSigningAlg")) {
+						JWSAlgorithm alg = JWSAlgorithm.parse(reader.nextString());
+						client.setTokenEndpointAuthSigningAlg(alg);
 					} else if (name.equals("defaultMaxAge")) {
 						client.setDefaultMaxAge(reader.nextInt());
 					} else if (name.equals("requireAuthTime")) {

@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS authentication_holder (
 
 CREATE TABLE IF NOT EXISTS client_authority (
 	owner_id BIGINT,
-	authority LONGVARBINARY
+	authority VARCHAR(256)
 );
 
 CREATE TABLE IF NOT EXISTS authorization_code (

@@ -23,9 +23,6 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
-import org.mitre.jose.JWEAlgorithmEmbed;
-import org.mitre.jose.JWEEncryptionMethodEmbed;
-import org.mitre.jose.JWSAlgorithmEmbed;
 import org.mitre.oauth2.model.ClientDetailsEntity.AppType;
 import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
 import org.mitre.oauth2.model.ClientDetailsEntity.SubjectType;
@@ -575,118 +572,7 @@ public class RegisteredClient {
 	public void setRequestUris(Set<String> requestUris) {
 		client.setRequestUris(requestUris);
 	}
-	/**
-	 * @return
-	 * @see org.mitre.oauth2.model.ClientDetailsEntity#getRequestObjectSigningAlgEmbed()
-	 */
-	public JWSAlgorithmEmbed getRequestObjectSigningAlgEmbed() {
-		return client.getRequestObjectSigningAlgEmbed();
-	}
-
-	/**
-	 * @param requestObjectSigningAlg
-	 * @see org.mitre.oauth2.model.ClientDetailsEntity#setRequestObjectSigningAlgEmbed(org.mitre.jose.JWSAlgorithmEmbed)
-	 */
-	public void setRequestObjectSigningAlgEmbed(JWSAlgorithmEmbed requestObjectSigningAlg) {
-		client.setRequestObjectSigningAlgEmbed(requestObjectSigningAlg);
-	}
-
-	/**
-	 * @return
-	 * @see org.mitre.oauth2.model.ClientDetailsEntity#getUserInfoSignedResponseAlgEmbed()
-	 */
-	public JWSAlgorithmEmbed getUserInfoSignedResponseAlgEmbed() {
-		return client.getUserInfoSignedResponseAlgEmbed();
-	}
-
-	/**
-	 * @param userInfoSignedResponseAlg
-	 * @see org.mitre.oauth2.model.ClientDetailsEntity#setUserInfoSignedResponseAlgEmbed(org.mitre.jose.JWSAlgorithmEmbed)
-	 */
-	public void setUserInfoSignedResponseAlgEmbed(JWSAlgorithmEmbed userInfoSignedResponseAlg) {
-		client.setUserInfoSignedResponseAlgEmbed(userInfoSignedResponseAlg);
-	}
-
-	/**
-	 * @return
-	 * @see org.mitre.oauth2.model.ClientDetailsEntity#getUserInfoEncryptedResponseAlgEmbed()
-	 */
-	public JWEAlgorithmEmbed getUserInfoEncryptedResponseAlgEmbed() {
-		return client.getUserInfoEncryptedResponseAlgEmbed();
-	}
-
-	/**
-	 * @param userInfoEncryptedResponseAlg
-	 * @see org.mitre.oauth2.model.ClientDetailsEntity#setUserInfoEncryptedResponseAlgEmbed(org.mitre.jose.JWEAlgorithmEmbed)
-	 */
-	public void setUserInfoEncryptedResponseAlgEmbed(JWEAlgorithmEmbed userInfoEncryptedResponseAlg) {
-		client.setUserInfoEncryptedResponseAlgEmbed(userInfoEncryptedResponseAlg);
-	}
-
-	/**
-	 * @return
-	 * @see org.mitre.oauth2.model.ClientDetailsEntity#getUserInfoEncryptedResponseEncEmbed()
-	 */
-	public JWEEncryptionMethodEmbed getUserInfoEncryptedResponseEncEmbed() {
-		return client.getUserInfoEncryptedResponseEncEmbed();
-	}
-
-	/**
-	 * @param userInfoEncryptedResponseEnc
-	 * @see org.mitre.oauth2.model.ClientDetailsEntity#setUserInfoEncryptedResponseEncEmbed(org.mitre.jose.JWEEncryptionMethodEmbed)
-	 */
-	public void setUserInfoEncryptedResponseEncEmbed(JWEEncryptionMethodEmbed userInfoEncryptedResponseEnc) {
-		client.setUserInfoEncryptedResponseEncEmbed(userInfoEncryptedResponseEnc);
-	}
-
-	/**
-	 * @return
-	 * @see org.mitre.oauth2.model.ClientDetailsEntity#getIdTokenSignedResponseAlgEmbed()
-	 */
-	public JWSAlgorithmEmbed getIdTokenSignedResponseAlgEmbed() {
-		return client.getIdTokenSignedResponseAlgEmbed();
-	}
-
-	/**
-	 * @param idTokenSignedResponseAlg
-	 * @see org.mitre.oauth2.model.ClientDetailsEntity#setIdTokenSignedResponseAlgEmbed(org.mitre.jose.JWSAlgorithmEmbed)
-	 */
-	public void setIdTokenSignedResponseAlgEmbed(JWSAlgorithmEmbed idTokenSignedResponseAlg) {
-		client.setIdTokenSignedResponseAlgEmbed(idTokenSignedResponseAlg);
-	}
-
-	/**
-	 * @return
-	 * @see org.mitre.oauth2.model.ClientDetailsEntity#getIdTokenEncryptedResponseAlgEmbed()
-	 */
-	public JWEAlgorithmEmbed getIdTokenEncryptedResponseAlgEmbed() {
-		return client.getIdTokenEncryptedResponseAlgEmbed();
-	}
-
-	/**
-	 * @param idTokenEncryptedResponseAlg
-	 * @see org.mitre.oauth2.model.ClientDetailsEntity#setIdTokenEncryptedResponseAlgEmbed(org.mitre.jose.JWEAlgorithmEmbed)
-	 */
-	public void setIdTokenEncryptedResponseAlgEmbed(JWEAlgorithmEmbed idTokenEncryptedResponseAlg) {
-		client.setIdTokenEncryptedResponseAlgEmbed(idTokenEncryptedResponseAlg);
-	}
-
-	/**
-	 * @return
-	 * @see org.mitre.oauth2.model.ClientDetailsEntity#getIdTokenEncryptedResponseEncEmbed()
-	 */
-	public JWEEncryptionMethodEmbed getIdTokenEncryptedResponseEncEmbed() {
-		return client.getIdTokenEncryptedResponseEncEmbed();
-	}
-
-	/**
-	 * @param idTokenEncryptedResponseEnc
-	 * @see org.mitre.oauth2.model.ClientDetailsEntity#setIdTokenEncryptedResponseEncEmbed(org.mitre.jose.JWEEncryptionMethodEmbed)
-	 */
-	public void setIdTokenEncryptedResponseEncEmbed(JWEEncryptionMethodEmbed idTokenEncryptedResponseEnc) {
-		client.setIdTokenEncryptedResponseEncEmbed(idTokenEncryptedResponseEnc);
-	}
-
+	
 	/**
 	 * @return
 	 * @see org.mitre.oauth2.model.ClientDetailsEntity#getRequestObjectSigningAlg()
@@ -797,22 +683,6 @@ public class RegisteredClient {
 	 */
 	public void setIdTokenEncryptedResponseEnc(EncryptionMethod idTokenEncryptedResponseEnc) {
 		client.setIdTokenEncryptedResponseEnc(idTokenEncryptedResponseEnc);
-	}
-
-	/**
-	 * @return
-	 * @see org.mitre.oauth2.model.ClientDetailsEntity#getTokenEndpointAuthSigningAlgEmbed()
-	 */
-	public JWSAlgorithmEmbed getTokenEndpointAuthSigningAlgEmbed() {
-		return client.getTokenEndpointAuthSigningAlgEmbed();
-	}
-
-	/**
-	 * @param tokenEndpointAuthSigningAlgEmbed
-	 * @see org.mitre.oauth2.model.ClientDetailsEntity#setTokenEndpointAuthSigningAlgEmbed(org.mitre.jose.JWSAlgorithmEmbed)
-	 */
-	public void setTokenEndpointAuthSigningAlgEmbed(JWSAlgorithmEmbed tokenEndpointAuthSigningAlgEmbed) {
-		client.setTokenEndpointAuthSigningAlgEmbed(tokenEndpointAuthSigningAlgEmbed);
 	}
 
 	/**

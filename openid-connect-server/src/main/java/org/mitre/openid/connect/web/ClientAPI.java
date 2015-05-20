@@ -19,9 +19,6 @@ package org.mitre.openid.connect.web;
 import java.lang.reflect.Type;
 import java.util.Collection;
 
-import org.mitre.jose.JWEAlgorithmEmbed;
-import org.mitre.jose.JWEEncryptionMethodEmbed;
-import org.mitre.jose.JWSAlgorithmEmbed;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
@@ -40,7 +37,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.oauth2.provider.error.WebResponseExceptionTranslator;
 import org.springframework.stereotype.Controller;
@@ -62,6 +58,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
+import com.nimbusds.jose.Algorithm;
+import com.nimbusds.jose.EncryptionMethod;
+import com.nimbusds.jose.JWEAlgorithm;
+import com.nimbusds.jose.JWSAlgorithm;
 
 /**
  * @author Michael Jett <mjett@mitre.org>
@@ -87,31 +87,31 @@ public class ClientAPI {
 
 	private Gson gson = new GsonBuilder()
 	.serializeNulls()
-	.registerTypeAdapter(JWSAlgorithmEmbed.class, new JsonDeserializer<JWSAlgorithmEmbed>() {
+	.registerTypeAdapter(JWSAlgorithm.class, new JsonDeserializer<Algorithm>() {
 		@Override
-		public JWSAlgorithmEmbed deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+		public JWSAlgorithm deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
 			if (json.isJsonPrimitive()) {
-				return JWSAlgorithmEmbed.getForAlgorithmName(json.getAsString());
+				return JWSAlgorithm.parse(json.getAsString());
 			} else {
 				return null;
 			}
 		}
 	})
-	.registerTypeAdapter(JWEAlgorithmEmbed.class, new JsonDeserializer<JWEAlgorithmEmbed>() {
+	.registerTypeAdapter(JWEAlgorithm.class, new JsonDeserializer<Algorithm>() {
 		@Override
-		public JWEAlgorithmEmbed deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+		public JWEAlgorithm deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
 			if (json.isJsonPrimitive()) {
-				return JWEAlgorithmEmbed.getForAlgorithmName(json.getAsString());
+				return JWEAlgorithm.parse(json.getAsString());
 			} else {
 				return null;
 			}
 		}
 	})
-	.registerTypeAdapter(JWEEncryptionMethodEmbed.class, new JsonDeserializer<JWEEncryptionMethodEmbed>() {
+	.registerTypeAdapter(EncryptionMethod.class, new JsonDeserializer<Algorithm>() {
 		@Override
-		public JWEEncryptionMethodEmbed deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+		public EncryptionMethod deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
 			if (json.isJsonPrimitive()) {
-				return JWEEncryptionMethodEmbed.getForAlgorithmName(json.getAsString());
+				return EncryptionMethod.parse(json.getAsString());
 			} else {
 				return null;
 			}
