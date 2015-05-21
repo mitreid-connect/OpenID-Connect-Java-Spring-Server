@@ -261,7 +261,7 @@ public class DefaultJWTSigningAndValidationService implements JWTSigningAndValid
 				}
 			} catch (JOSEException e) {
 
-				logger.error("Failed to validate signature, error was: ", e);
+				logger.error("Failed to validate signature with " + verifier + " error message: " + e.getMessage());
 			}
 		}
 		return false;
