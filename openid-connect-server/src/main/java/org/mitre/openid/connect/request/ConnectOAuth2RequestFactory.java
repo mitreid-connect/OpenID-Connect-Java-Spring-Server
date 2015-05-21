@@ -205,12 +205,18 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 
 				if (alg.equals(JWSAlgorithm.RS256)
 						|| alg.equals(JWSAlgorithm.RS384)
-						|| alg.equals(JWSAlgorithm.RS512)) {
+						|| alg.equals(JWSAlgorithm.RS512)
+						|| alg.equals(JWSAlgorithm.ES256)
+						|| alg.equals(JWSAlgorithm.ES384)
+						|| alg.equals(JWSAlgorithm.ES512)
+						|| alg.equals(JWSAlgorithm.PS256)
+						|| alg.equals(JWSAlgorithm.PS384)
+						|| alg.equals(JWSAlgorithm.PS512)) {
 
-					// it's RSA, need to find the JWK URI and fetch the key
+					// it's a public key, need to find the JWK URI and fetch the key
 
 					if (client.getJwksUri() == null) {
-						throw new InvalidClientException("Client must have a JWKS URI registered to use signed request objects.");
+						throw new InvalidClientException("Client must have a JWKS registered to use signed request objects with a public key.");
 					}
 
 					// check JWT signature

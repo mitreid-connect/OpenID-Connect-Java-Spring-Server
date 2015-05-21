@@ -117,8 +117,16 @@ public class JWTBearerAuthenticationProvider implements AuthenticationProvider {
 				} else if (client.getTokenEndpointAuthMethod().equals(AuthMethod.PRIVATE_KEY) &&
 						(alg.equals(JWSAlgorithm.RS256)
 								|| alg.equals(JWSAlgorithm.RS384)
-								|| alg.equals(JWSAlgorithm.RS512))) {
+								|| alg.equals(JWSAlgorithm.RS512)
+								|| alg.equals(JWSAlgorithm.ES256)
+								|| alg.equals(JWSAlgorithm.ES384)
+								|| alg.equals(JWSAlgorithm.ES512)
+								|| alg.equals(JWSAlgorithm.PS256)
+								|| alg.equals(JWSAlgorithm.PS384)
+								|| alg.equals(JWSAlgorithm.PS512))) {
 
+					// it's a known public/private key algorithm
+					
 					JWTSigningAndValidationService validator = validators.getValidator(client.getJwksUri());
 
 					if (validator == null) {

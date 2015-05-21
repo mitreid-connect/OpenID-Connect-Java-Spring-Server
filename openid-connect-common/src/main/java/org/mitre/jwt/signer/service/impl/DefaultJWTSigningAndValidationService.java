@@ -35,6 +35,8 @@ import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSSigner;
 import com.nimbusds.jose.JWSVerifier;
+import com.nimbusds.jose.crypto.ECDSASigner;
+import com.nimbusds.jose.crypto.ECDSAVerifier;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jose.crypto.RSASSASigner;
@@ -100,7 +102,6 @@ public class DefaultJWTSigningAndValidationService implements JWTSigningAndValid
 			for (JWK key : keyStore.getKeys()) {
 				if (!Strings.isNullOrEmpty(key.getKeyID())) {
 					// use the key ID that's built into the key itself
-					// TODO (#641): deal with JWK thumbprints
 					this.keys.put(key.getKeyID(), key);
 				} else {
 					// create a random key id
@@ -173,9 +174,14 @@ public class DefaultJWTSigningAndValidationService implements JWTSigningAndValid
 			} else if (jwk instanceof ECKey) {
 				// build EC signers & verifiers
 
-				// TODO: add support for EC keys
-				logger.warn("EC Keys are not yet supported.");
-
+				if (jwk.isPrivate()) {
+					ECDSASigner signer = new ECDSASigner(((ECKey) jwk).getD().decodeToBigInteger());
+					signers.put(id, signer);
+				}
+				
+				ECDSAVerifier verifier = new ECDSAVerifier(((ECKey) jwk).getX().decodeToBigInteger(), ((ECKey) jwk).getY().decodeToBigInteger());
+				verifiers.put(id, verifier);
+				
 			} else if (jwk instanceof OctetSequenceKey) {
 				// build HMAC signers & verifiers
 
