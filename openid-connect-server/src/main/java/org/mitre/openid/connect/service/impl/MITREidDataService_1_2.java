@@ -65,7 +65,6 @@ import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWSAlgorithm;
 
 import static org.mitre.util.JsonUtils.base64UrlDecodeObject;
-import static org.mitre.util.JsonUtils.base64UrlEncodeObject;
 import static org.mitre.util.JsonUtils.readMap;
 import static org.mitre.util.JsonUtils.readSet;
 import static org.mitre.util.JsonUtils.writeNullSafeArray;
@@ -211,66 +210,78 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 		for (AuthenticationHolderEntity holder : authHolderRepository.getAll()) {
 			writer.beginObject();
 			writer.name("id").value(holder.getId());
-			writer.name("authentication");
+			
+			writer.name("requestParameters");
 			writer.beginObject();
-			writer.name("authorizationRequest");
-			OAuth2Authentication oa2Auth = holder.getAuthentication();
-			writeAuthorizationRequest(oa2Auth.getOAuth2Request(), writer);
-			String userAuthentication = base64UrlEncodeObject(oa2Auth.getUserAuthentication());
-			writer.name("userAuthentication").value(userAuthentication);
+			for (Entry<String, String> entry : holder.getRequestParameters().entrySet()) {
+				writer.name(entry.getKey()).value(entry.getValue());
+			}
 			writer.endObject();
+			writer.name("clientId").value(holder.getClientId());
+			Set<String> scope = holder.getScope();
+			writer.name("scope");
+			writer.beginArray();
+			for (String s : scope) {
+				writer.value(s);
+			}
+			writer.endArray();
+			writer.name("resourceIds");
+			writer.beginArray();
+			if (holder.getResourceIds() != null) {
+				for (String s : holder.getResourceIds()) {
+					writer.value(s);
+				}
+			}
+			writer.endArray();
+			writer.name("authorities");
+			writer.beginArray();
+			for (GrantedAuthority authority : holder.getAuthorities()) {
+				writer.value(authority.getAuthority());
+			}
+			writer.endArray();
+			writer.name("approved").value(holder.isApproved());
+			writer.name("redirectUri").value(holder.getRedirectUri());
+			writer.name("responseTypes");
+			writer.beginArray();
+			for (String s : holder.getResponseTypes()) {
+				writer.value(s);
+			}
+			writer.endArray();
+			writer.name("extensions");
+			writer.beginObject();
+			for (Entry<String, Serializable> entry : holder.getExtensions().entrySet()) {
+				// while the extension map itself is Serializable, we enforce storage of Strings
+				if (entry.getValue() instanceof String) {
+					writer.name(entry.getKey()).value((String) entry.getValue());
+				} else {
+					logger.warn("Skipping non-string extension: " + entry);
+				}
+			}
+			writer.endObject();
+
+			writer.name("savedUserAuthentication");
+			if (holder.getUserAuth() != null) {
+				writer.beginObject();
+				writer.name("name").value(holder.getUserAuth().getName());
+				writer.name("sourceClass").value(holder.getUserAuth().getSourceClass());
+
+				writer.name("authorities");
+				writer.beginArray();
+				for (GrantedAuthority authority : holder.getUserAuth().getAuthorities()) {
+					writer.value(authority.getAuthority());
+				}
+				writer.endArray();
+				
+				writer.endObject();
+			} else {
+				writer.nullValue();
+			}
+			
+			
 			writer.endObject();
 			logger.debug("Wrote authentication holder {}", holder.getId());
 		}
 		logger.info("Done writing authentication holders");
-	}
-
-	//used by writeAuthenticationHolders
-	private void writeAuthorizationRequest(OAuth2Request authReq, JsonWriter writer) throws IOException {
-		writer.beginObject();
-		writer.name("requestParameters");
-		writer.beginObject();
-		for (Entry<String, String> entry : authReq.getRequestParameters().entrySet()) {
-			writer.name(entry.getKey()).value(entry.getValue());
-		}
-		writer.endObject();
-		writer.name("clientId").value(authReq.getClientId());
-		Set<String> scope = authReq.getScope();
-		writer.name("scope");
-		writer.beginArray();
-		for (String s : scope) {
-			writer.value(s);
-		}
-		writer.endArray();
-		writer.name("resourceIds");
-		writer.beginArray();
-		if (authReq.getResourceIds() != null) {
-			for (String s : authReq.getResourceIds()) {
-				writer.value(s);
-			}
-		}
-		writer.endArray();
-		writer.name("authorities");
-		writer.beginArray();
-		for (GrantedAuthority authority : authReq.getAuthorities()) {
-			writer.value(authority.getAuthority());
-		}
-		writer.endArray();
-		writer.name("approved").value(authReq.isApproved());
-		writer.name("redirectUri").value(authReq.getRedirectUri());
-		writer.name("responseTypes");
-		writer.beginArray();
-		for (String s : authReq.getResponseTypes()) {
-			writer.value(s);
-		}
-		writer.endArray();
-		writer.name("extensions");
-		writer.beginObject();
-		for (Entry<String, Serializable> entry : authReq.getExtensions().entrySet()) {
-			writer.name(entry.getKey()).value(base64UrlEncodeObject(entry.getValue()));
-		}
-		writer.endObject();
-		writer.endObject();
 	}
 
 	/**

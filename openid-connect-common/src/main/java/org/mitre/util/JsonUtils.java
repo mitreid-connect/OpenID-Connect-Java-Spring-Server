@@ -272,25 +272,6 @@ public class JsonUtils {
 		}
 	}
 
-	public static String base64UrlEncodeObject(Serializable obj) {
-		if (obj == null) {
-			return null;
-		} else {
-			String encoded = null;
-			try {
-				ByteArrayOutputStream baos = new ByteArrayOutputStream();
-				ObjectOutputStream oos = new ObjectOutputStream(baos);
-				oos.writeObject(obj);
-				encoded = BaseEncoding.base64Url().encode(baos.toByteArray());
-				oos.close();
-				baos.close();
-			} catch (IOException ex) {
-				logger.error("Unable to encode object", ex);
-			}
-			return encoded;
-		}
-	}
-
 	public static Map readMap(JsonReader reader) throws IOException {
 		Map map = new HashMap<String, Object>();
 		reader.beginObject();
