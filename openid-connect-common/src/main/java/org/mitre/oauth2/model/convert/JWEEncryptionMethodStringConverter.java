@@ -15,18 +15,18 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.mitre.oauth2.model;
+package org.mitre.oauth2.model.convert;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 
-import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.EncryptionMethod;
 
 @Converter
-public class JWSAlgorithmStringConverter implements AttributeConverter<JWSAlgorithm, String> {
+public class JWEEncryptionMethodStringConverter implements AttributeConverter<EncryptionMethod, String> {
 
 	@Override
-	public String convertToDatabaseColumn(JWSAlgorithm attribute) {
+	public String convertToDatabaseColumn(EncryptionMethod attribute) {
 		if (attribute != null) {
 			return attribute.getName();
 		} else {
@@ -38,9 +38,9 @@ public class JWSAlgorithmStringConverter implements AttributeConverter<JWSAlgori
 	 * @see javax.persistence.AttributeConverter#convertToEntityAttribute(java.lang.Object)
 	 */
 	@Override
-	public JWSAlgorithm convertToEntityAttribute(String dbData) {
+	public EncryptionMethod convertToEntityAttribute(String dbData) {
 		if (dbData != null) {
-			return JWSAlgorithm.parse(dbData);
+			return EncryptionMethod.parse(dbData);
 		} else {
 			return null;
 		}

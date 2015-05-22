@@ -47,7 +47,12 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import org.mitre.oauth2.model.convert.JWEAlgorithmStringConverter;
+import org.mitre.oauth2.model.convert.JWEEncryptionMethodStringConverter;
+import org.mitre.oauth2.model.convert.JWSAlgorithmStringConverter;
+import org.mitre.oauth2.model.convert.SimpleGrantedAuthorityStringConverter;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.provider.ClientDetails;
 
 import com.nimbusds.jose.EncryptionMethod;
@@ -461,6 +466,7 @@ public class ClientDetailsEntity implements ClientDetails {
 			joinColumns=@JoinColumn(name="owner_id")
 			)
 	@Override
+	@Convert(converter = SimpleGrantedAuthorityStringConverter.class)
 	@Column(name="authority")
 	public Set<GrantedAuthority> getAuthorities() {
 		return authorities;
