@@ -35,6 +35,7 @@ import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
 import org.mitre.oauth2.model.ClientDetailsEntity.SubjectType;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
+import org.mitre.oauth2.model.SavedUserAuthentication;
 import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.repository.AuthenticationHolderRepository;
 import org.mitre.oauth2.repository.OAuth2ClientRepository;
@@ -681,43 +682,34 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 					if (reader.peek() == JsonToken.NULL) {
 						reader.skipValue();
 					} else if (name.equals("id")) {
-						currentId = reader.nextLong();
-					} else if (name.equals("ownerId")) {
-						//not needed
-						reader.skipValue();
-					} else if (name.equals("authentication")) {
-						OAuth2Request authorizationRequest = null;
-						Authentication userAuthentication = null;
-						reader.beginObject();
-						while (reader.hasNext()) {
-							switch (reader.peek()) {
-							case END_OBJECT:
-								continue;
-							case NAME:
-								String subName = reader.nextName();
-								if (subName.equals("authorizationRequest")) {
-									authorizationRequest = readAuthorizationRequest(reader);
-								} else if (subName.equals("userAuthentication")) {
-									if (reader.peek() == JsonToken.NULL) {
-										reader.skipValue();
-									} else {
-										String authString = reader.nextString();
-										userAuthentication = base64UrlDecodeObject(authString, Authentication.class);
-									}
-								} else {
-									logger.debug("Found unexpected entry");
-									reader.skipValue();
-								}
-								break;
-							default:
-								logger.debug("Found unexpected entry");
-								reader.skipValue();
-								continue;
-							}
+						ahe.setId(reader.nextLong());
+						currentId = ahe.getId();
+					} else if (name.equals("requestParameters")) {
+						ahe.setRequestParameters(readMap(reader));
+					} else if (name.equals("clientId")) {
+						ahe.setClientId(reader.nextString());
+					} else if (name.equals("scope")) {
+						ahe.setScope(readSet(reader));
+					} else if (name.equals("resourceIds")) {
+						ahe.setResourceIds(readSet(reader));
+					} else if (name.equals("authorities")) {
+						Set<String> authorityStrs = readSet(reader);
+						Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
+						for (String s : authorityStrs) {
+							GrantedAuthority ga = new SimpleGrantedAuthority(s);
+							authorities.add(ga);
 						}
-						reader.endObject();
-						OAuth2Authentication auth = new OAuth2Authentication(authorizationRequest, userAuthentication);
-						ahe.setAuthentication(auth);
+						ahe.setAuthorities(authorities);
+					} else if (name.equals("approved")) {
+						ahe.setApproved(reader.nextBoolean());
+					} else if (name.equals("redirectUri")) {
+						ahe.setRedirectUri(reader.nextString());
+					} else if (name.equals("responseTypes")) {
+						ahe.setResponseTypes(readSet(reader));
+					} else if (name.equals("extensions")) {
+						ahe.setExtensions(readMap(reader));
+					} else if (name.equals("savedUserAuthentication")) {
+						ahe.setUserAuth(readSavedUserAuthentication(reader));
 					} else {
 						logger.debug("Found unexpected entry");
 						reader.skipValue();
@@ -738,72 +730,47 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 		logger.info("Done reading authentication holders");
 	}
 
-	//used by readAuthenticationHolders
-	private OAuth2Request readAuthorizationRequest(JsonReader reader) throws IOException {
-		Set<String> scope = new LinkedHashSet<String>();
-		Set<String> resourceIds = new HashSet<String>();
-		boolean approved = false;
-		Collection<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
-		Map<String, String> requestParameters = new HashMap<String, String>();
-		Set<String> responseTypes = new HashSet<String>();
-		Map<String, Serializable> extensions = new HashMap<String, Serializable>();
-		String redirectUri = null;
-		String clientId = null;
+	/**
+	 * @param reader
+	 * @return
+	 * @throws IOException 
+	 */
+	private SavedUserAuthentication readSavedUserAuthentication(JsonReader reader) throws IOException {
+		SavedUserAuthentication savedUserAuth = new SavedUserAuthentication();
 		reader.beginObject();
+		
 		while (reader.hasNext()) {
-			switch (reader.peek()) {
+			switch(reader.peek()) {
 			case END_OBJECT:
 				continue;
 			case NAME:
 				String name = reader.nextName();
 				if (reader.peek() == JsonToken.NULL) {
 					reader.skipValue();
-				} else if (name.equals("requestParameters")) {
-					requestParameters = readMap(reader);
-				} else if (name.equals("clientId")) {
-					clientId = reader.nextString();
-				} else if (name.equals("scope")) {
-					scope = readSet(reader);
-				} else if (name.equals("resourceIds")) {
-					resourceIds = readSet(reader);
+				} else if (name.equals("name")) {
+					savedUserAuth.setName(reader.nextString());
+				} else if (name.equals("sourceClass")) {
+					savedUserAuth.setSourceClass(reader.nextString());
 				} else if (name.equals("authorities")) {
 					Set<String> authorityStrs = readSet(reader);
-					authorities = new HashSet<GrantedAuthority>();
+					Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
 					for (String s : authorityStrs) {
 						GrantedAuthority ga = new SimpleGrantedAuthority(s);
 						authorities.add(ga);
 					}
-				} else if (name.equals("approved")) {
-					approved = reader.nextBoolean();
-				} else if (name.equals("denied")) {
-					if (approved == false) {
-						approved = !reader.nextBoolean();
-					}
-				} else if (name.equals("redirectUri")) {
-					redirectUri = reader.nextString();
-				} else if (name.equals("responseTypes")) {
-					responseTypes = readSet(reader);
-				} else if (name.equals("extensions")) {
-					Map<String, String> extEnc = readMap(reader);
-					for (Entry<String, String> entry : extEnc.entrySet()) {
-						Serializable decoded = base64UrlDecodeObject(entry.getValue(), Serializable.class);
-						if (decoded != null) {
-							extensions.put(entry.getKey(), decoded);
-						}
-					}
+					savedUserAuth.setAuthorities(authorities);
 				} else {
+					logger.debug("Found unexpected entry");
 					reader.skipValue();
 				}
 				break;
-			default:
-				logger.debug("Found unexpected entry");
-				reader.skipValue();
-				continue;
 			}
 		}
+		
 		reader.endObject();
-		return new OAuth2Request(requestParameters, clientId, authorities, approved, scope, resourceIds, redirectUri, responseTypes, extensions);
+		return savedUserAuth;
 	}
+
 	Map<Long, Long> grantOldToNewIdMap = new HashMap<Long, Long>();
 	Map<Long, Long> grantToWhitelistedSiteRefs = new HashMap<Long, Long>();
 	Map<Long, Set<Long>> grantToAccessTokensRefs = new HashMap<Long, Set<Long>>();
@@ -1147,6 +1114,7 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 	}
 
 	private void fixObjectReferences() {
+		logger.info("Fixing object references...");
 		for (Long oldRefreshTokenId : refreshTokenToClientRefs.keySet()) {
 			String clientRef = refreshTokenToClientRefs.get(oldRefreshTokenId);
 			ClientDetailsEntity client = clientRepository.getClientByClientId(clientRef);
@@ -1230,6 +1198,7 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 		}
 		accessTokenOldToNewIdMap.clear();
 		grantOldToNewIdMap.clear();
+		logger.info("Done fixing object references.");
 	}
 	
 }
