@@ -18,7 +18,7 @@
 	<c:otherwise>
 		<c:choose>
 			<c:when test="${ not empty userInfo.givenName || not empty userInfo.familyName }">
-				<c:set var="longName" value="${ userInfo.givenName } {$ userInfo.familyName }" />
+				<c:set var="longName" value="${ userInfo.givenName } ${ userInfo.familyName }" />
 			</c:when>
 			<c:otherwise>
 				<c:set var="longName" value="${ shortName }" />
