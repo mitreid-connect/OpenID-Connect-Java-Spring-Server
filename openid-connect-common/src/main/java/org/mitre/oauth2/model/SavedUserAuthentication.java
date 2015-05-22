@@ -18,6 +18,7 @@
 package org.mitre.oauth2.model;
 
 import java.util.Collection;
+import java.util.HashSet;
 
 import javax.persistence.Basic;
 import javax.persistence.CollectionTable;
@@ -30,6 +31,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.mitre.oauth2.model.convert.SimpleGrantedAuthorityStringConverter;
@@ -43,6 +45,7 @@ import org.springframework.security.core.GrantedAuthority;
  *
  */
 @Entity
+@Table(name="saved_user_auth")
 public class SavedUserAuthentication implements Authentication {
 
 	private static final long serialVersionUID = -1804249963940323488L;
@@ -167,7 +170,11 @@ public class SavedUserAuthentication implements Authentication {
 	 * @param authorities the authorities to set
 	 */
 	public void setAuthorities(Collection<? extends GrantedAuthority> authorities) {
-		this.authorities = authorities;
+		if (authorities != null) {
+			this.authorities = new HashSet<>(authorities);
+		} else {
+			this.authorities = null;
+		}
 	}
 
 	

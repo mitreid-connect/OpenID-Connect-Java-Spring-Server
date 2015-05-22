@@ -18,10 +18,13 @@ package org.mitre.oauth2.model;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -35,6 +38,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -122,13 +126,17 @@ public class AuthenticationHolderEntity {
 		setScope(o2Request.getScope());
 		setApproved(o2Request.isApproved());
 		
-		this.userAuth = new SavedUserAuthentication(authentication.getUserAuthentication());
+		if (authentication.getUserAuthentication() != null) {
+			this.userAuth = new SavedUserAuthentication(authentication.getUserAuthentication());
+		} else {
+			this.userAuth = null;
+		}
 	}
 
 	/**
 	 * @return the userAuth
 	 */
-	@Basic
+	@OneToOne(cascade=CascadeType.ALL)
 	@JoinColumn(name = "user_auth_id")
 	public SavedUserAuthentication getUserAuth() {
 		return userAuth;
@@ -159,7 +167,11 @@ public class AuthenticationHolderEntity {
 	 * @param authorities the authorities to set
 	 */
 	public void setAuthorities(Collection<? extends GrantedAuthority> authorities) {
-		this.authorities = authorities;
+		if (authorities != null) {
+			this.authorities = new HashSet<>(authorities);
+		} else {
+			this.authorities = null;
+		}
 	}
 
 	/**
@@ -179,7 +191,11 @@ public class AuthenticationHolderEntity {
 	 * @param resourceIds the resourceIds to set
 	 */
 	public void setResourceIds(Set<String> resourceIds) {
-		this.resourceIds = resourceIds;
+		if (resourceIds != null) {
+			this.resourceIds = new HashSet<>(resourceIds);
+		} else {
+			this.resourceIds = null;
+		}
 	}
 
 	/**
@@ -231,7 +247,11 @@ public class AuthenticationHolderEntity {
 	 * @param responseTypes the responseTypes to set
 	 */
 	public void setResponseTypes(Set<String> responseTypes) {
-		this.responseTypes = responseTypes;
+		if (responseTypes != null) {
+			this.responseTypes = new HashSet<>(responseTypes);
+		} else {
+			this.responseTypes = null;
+		}
 	}
 
 	/**
@@ -253,7 +273,11 @@ public class AuthenticationHolderEntity {
 	 * @param extensions the extensions to set
 	 */
 	public void setExtensions(Map<String, Serializable> extensions) {
-		this.extensions = extensions;
+		if (extensions != null) {
+			this.extensions = new HashMap<>(extensions);
+		} else {
+			this.extensions = null;
+		}
 	}
 
 	/**
@@ -289,7 +313,11 @@ public class AuthenticationHolderEntity {
 	 * @param scope the scope to set
 	 */
 	public void setScope(Set<String> scope) {
-		this.scope = scope;
+		if (scope != null) {
+			this.scope = new HashSet<>(scope);
+		} else {
+			this.scope = null;
+		}
 	}
 
 	/**
@@ -310,7 +338,11 @@ public class AuthenticationHolderEntity {
 	 * @param requestParameters the requestParameters to set
 	 */
 	public void setRequestParameters(Map<String, String> requestParameters) {
-		this.requestParameters = requestParameters;
+		if (requestParameters != null) {
+			this.requestParameters = new HashMap<>(requestParameters);
+		} else {
+			this.requestParameters = null;
+		}
 	}
 
 
