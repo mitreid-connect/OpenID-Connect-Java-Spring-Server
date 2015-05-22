@@ -67,7 +67,13 @@ public class SavedUserAuthentication implements Authentication {
 		setName(src.getName());
 		setAuthorities(src.getAuthorities());
 		setAuthenticated(src.isAuthenticated());
-		setSourceClass(src.getClass().getName());
+
+		if (src instanceof SavedUserAuthentication) {
+			// if we're copying in a saved auth, carry over the original class name
+			setSourceClass(((SavedUserAuthentication) src).getSourceClass());
+		} else {
+			setSourceClass(src.getClass().getName());
+		}
 	}
 
 	/**
