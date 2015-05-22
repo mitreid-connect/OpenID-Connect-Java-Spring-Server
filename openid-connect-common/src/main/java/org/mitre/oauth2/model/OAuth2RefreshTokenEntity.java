@@ -52,8 +52,8 @@ import com.nimbusds.jwt.JWTParser;
 	@NamedQuery(name = OAuth2RefreshTokenEntity.QUERY_ALL, query = "select r from OAuth2RefreshTokenEntity r"),
 	@NamedQuery(name = OAuth2RefreshTokenEntity.QUERY_EXPIRED_BY_DATE, query = "select r from OAuth2RefreshTokenEntity r where r.expiration <= :" + OAuth2RefreshTokenEntity.PARAM_DATE),
 	@NamedQuery(name = OAuth2RefreshTokenEntity.QUERY_BY_CLIENT, query = "select r from OAuth2RefreshTokenEntity r where r.client = :" + OAuth2RefreshTokenEntity.PARAM_CLIENT),
-	@NamedQuery(name = OAuth2RefreshTokenEntity.QUERY_BY_TOKEN_VALUE, query = "select r from OAuth2RefreshTokenEntity r where r.value = :" + OAuth2RefreshTokenEntity.PARAM_TOKEN_VALUE),
-	@NamedQuery(name = OAuth2RefreshTokenEntity.QUERY_BY_AUTHENTICATION, query = "select r from OAuth2RefreshTokenEntity r where r.authenticationHolder.authentication = :" + OAuth2RefreshTokenEntity.PARAM_AUTHENTICATION)
+	@NamedQuery(name = OAuth2RefreshTokenEntity.QUERY_BY_TOKEN_VALUE, query = "select r from OAuth2RefreshTokenEntity r where r.value = :" + OAuth2RefreshTokenEntity.PARAM_TOKEN_VALUE)
+//	@NamedQuery(name = OAuth2RefreshTokenEntity.QUERY_BY_AUTHENTICATION, query = "select r from OAuth2RefreshTokenEntity r where r.authenticationHolder.authentication = :" + OAuth2RefreshTokenEntity.PARAM_AUTHENTICATION)
 })
 public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
 
