@@ -109,7 +109,7 @@ public class AuthenticationHolderEntity {
 	 * @return
 	 */
 	private OAuth2Request createOAuth2Request() {
-		return new OAuth2Request(requestParameters, clientId, authorities, approved, scope, scope, redirectUri, responseTypes, extensions);
+		return new OAuth2Request(requestParameters, clientId, authorities, approved, scope, resourceIds, redirectUri, responseTypes, extensions);
 	}
 
 	public void setAuthentication(OAuth2Authentication authentication) {
