@@ -16,6 +16,7 @@
  *******************************************************************************/
 package org.mitre.openid.connect.request;
 
+
 import java.text.ParseException;
 import java.util.Collections;
 import java.util.Map;
@@ -64,6 +65,7 @@ import static org.mitre.openid.connect.request.ConnectRequestParameters.PROMPT;
 import static org.mitre.openid.connect.request.ConnectRequestParameters.REDIRECT_URI;
 import static org.mitre.openid.connect.request.ConnectRequestParameters.REQUEST;
 import static org.mitre.openid.connect.request.ConnectRequestParameters.RESPONSE_TYPE;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.SCOPE;
 import static org.mitre.openid.connect.request.ConnectRequestParameters.STATE;
 
 @Component("connectOAuth2RequestFactory")
@@ -356,7 +358,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 				request.getExtensions().put(PROMPT, prompt);
 			}
 
-			Set<String> scope = OAuth2Utils.parseParameterList(claims.getStringClaim("scope"));
+			Set<String> scope = OAuth2Utils.parseParameterList(claims.getStringClaim(SCOPE));
 			if (scope != null && !scope.isEmpty()) {
 				if (!scope.equals(request.getScope())) {
 					logger.info("Mismatch between request object and regular parameter for scope, using request object");

@@ -27,6 +27,7 @@ public interface ConnectRequestParameters {
 	public String LOGIN_HINT = "login_hint";
 	public String MAX_AGE = "max_age";
 	public String CLAIMS = "claims";
+	public String SCOPE = "scope";
 	public String NONCE = "nonce";
 	public String PROMPT = "prompt";
 

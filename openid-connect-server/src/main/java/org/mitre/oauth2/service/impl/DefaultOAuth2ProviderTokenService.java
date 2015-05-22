@@ -184,7 +184,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 
 			if (originalAuthRequest.getExtensions() != null && originalAuthRequest.getExtensions().containsKey("approved_site")) {
 
-				Long apId = (Long) originalAuthRequest.getExtensions().get("approved_site");
+				Long apId = Long.parseLong((String) originalAuthRequest.getExtensions().get("approved_site"));
 				ApprovedSite ap = approvedSiteService.getById(apId);
 				Set<OAuth2AccessTokenEntity> apTokens = ap.getApprovedAccessTokens();
 				apTokens.add(savedToken);

@@ -109,9 +109,9 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 				|| (request.getExtensions().containsKey("idtoken")) // TODO: parse the ID Token claims (#473) -- for now assume it could be in there
 				|| (client.getRequireAuthTime() != null && client.getRequireAuthTime())) {
 
-			Date authTime = (Date) request.getExtensions().get(AuthenticationTimeStamper.AUTH_TIMESTAMP);
-			if (authTime != null) {
-				idClaims.setClaim("auth_time", authTime.getTime() / 1000);
+			Long authTimestamp = Long.parseLong((String) request.getExtensions().get(AuthenticationTimeStamper.AUTH_TIMESTAMP));
+			if (authTimestamp != null) {
+				idClaims.setClaim("auth_time", authTimestamp / 1000L);
 			}
 		}
 

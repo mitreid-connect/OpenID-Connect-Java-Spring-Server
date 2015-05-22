@@ -162,7 +162,8 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 						ap.setAccessDate(new Date());
 						approvedSiteService.save(ap);
 
-						authorizationRequest.getExtensions().put(APPROVED_SITE, ap.getId());
+						String apId = ap.getId().toString();
+						authorizationRequest.getExtensions().put(APPROVED_SITE, apId);
 						authorizationRequest.setApproved(true);
 						alreadyApproved = true;
 
@@ -177,7 +178,8 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 
 					//Create an approved site
 					ApprovedSite newSite = approvedSiteService.createApprovedSite(clientId, userId, null, ws.getAllowedScopes(), ws);
-					authorizationRequest.getExtensions().put(APPROVED_SITE, newSite.getId());
+					String newSiteId = newSite.getId().toString();
+					authorizationRequest.getExtensions().put(APPROVED_SITE, newSiteId);
 					authorizationRequest.setApproved(true);
 
 					setAuthTime(authorizationRequest);
@@ -252,7 +254,8 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 				}
 
 				ApprovedSite newSite = approvedSiteService.createApprovedSite(clientId, userId, timeout, allowedScopes, null);
-				authorizationRequest.getExtensions().put(APPROVED_SITE, newSite.getId());
+				String newSiteId = newSite.getId().toString();
+				authorizationRequest.getExtensions().put(APPROVED_SITE, newSiteId);
 			}
 
 			setAuthTime(authorizationRequest);
@@ -277,7 +280,8 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 			if (session != null) {
 				Date authTime = (Date) session.getAttribute(AuthenticationTimeStamper.AUTH_TIMESTAMP);
 				if (authTime != null) {
-					authorizationRequest.getExtensions().put(AuthenticationTimeStamper.AUTH_TIMESTAMP, authTime);
+					String authTimeString = Long.toString(authTime.getTime());
+					authorizationRequest.getExtensions().put(AuthenticationTimeStamper.AUTH_TIMESTAMP, authTimeString);
 				}
 			}
 		}
