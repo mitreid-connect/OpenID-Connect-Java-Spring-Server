@@ -26,9 +26,9 @@
 		<property name="url" value="jdbc:hsqldb:mem:oic;sql.syntax_mys=true" />
 <!-- 		<property name="url" value="jdbc:hsqldb:file:/tmp/oic;sql.syntax_mys=true" /> -->
 		<property name="username" value="oic" />
-		<property name="password" value="oic" />	
+		<property name="password" value="oic" />
 	</bean>
-	
+
 	<!-- Use the following to set up the OIC tables in the in-memory DB
 		   If you are using a file based HSQLDB you should not run this every time. -->
 	<jdbc:initialize-database data-source="dataSource">
@@ -41,7 +41,7 @@
 		<jdbc:script location="classpath:/db/clients.sql"/>
 		<jdbc:script location="classpath:/db/scopes.sql"/>
 	</jdbc:initialize-database>
-	
+
 	<bean id="jpaAdapter" class="org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter">
  		<property name="databasePlatform" value="org.eclipse.persistence.platform.database.HSQLPlatform" />
 		<property name="showSql" value="true" />
@@ -62,5 +62,21 @@
 		<property name="showSql" value="true" />
 	</bean>
 
+	-->
+
+	<!--  The following is for connecting to a PostgreSQL database that has been initialized with
+			src/main/resources/db/tables/psql_database_tables.sql -->
+	<!--
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="org.postgresql.Driver" />
+		<property name="url" value="jdbc:postgresql://localhost/oic" />
+		<property name="username" value="oic" />
+		<property name="password" value="oic" />
+	</bean>
+
+	<bean id="jpaAdapter" class="org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter">
+		<property name="databasePlatform" value="org.eclipse.persistence.platform.database.PostgreSQLPlatform" />
+		<property name="showSql" value="true" />
+	</bean>
 	-->
 </beans>
