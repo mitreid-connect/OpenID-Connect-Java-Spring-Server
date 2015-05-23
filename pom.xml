@@ -357,6 +357,11 @@
 				<version>2.2.9</version>
 			</dependency>
 			<dependency>
+				<groupId>org.postgresql</groupId>
+				<artifactId>postgresql</artifactId>
+				<version>9.4-1201-jdbc4</version>
+			</dependency>
+			<dependency>
 				<groupId>org.eclipse.persistence</groupId>
 				<artifactId>org.eclipse.persistence.jpa</artifactId>
 				<version>2.5.1</version>
