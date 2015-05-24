@@ -107,9 +107,7 @@ public class AuthorizationRequestFilter extends GenericFilterBean {
 
 		try {
 			client = clientService.loadClientByClientId(authRequest.getClientId());
-		} catch (InvalidClientException e) {
-			// no need to worry about this here, it would be caught elsewhere
-		} catch (IllegalArgumentException e) {
+		} catch (InvalidClientException | IllegalArgumentException e) {
 			// no need to worry about this here, it would be caught elsewhere
 		}
 
