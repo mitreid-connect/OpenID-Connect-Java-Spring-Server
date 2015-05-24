@@ -403,7 +403,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 		logger.debug("tokenEndpointURI = " + serverConfig.getTokenEndpointUri());
 		logger.debug("form = " + form);
 
-		String jsonString = null;
+		String jsonString;
 
 		try {
 			jsonString = restTemplate.postForObject(serverConfig.getTokenEndpointUri(), form, String.class);
@@ -443,8 +443,8 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 			// OIDCAuthenticationToken
 
 			// get out all the token strings
-			String accessTokenValue = null;
-			String idTokenValue = null;
+			String accessTokenValue;
+			String idTokenValue;
 			String refreshTokenValue = null;
 
 			if (tokenResponse.has("access_token")) {
@@ -471,7 +471,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 				ReadOnlyJWTClaimsSet idClaims = idToken.getJWTClaimsSet();
 
 				// check the signature
-				JWTSigningAndValidationService jwtValidator = null;
+				JWTSigningAndValidationService jwtValidator;
 
 				Algorithm tokenAlg = idToken.getHeader().getAlgorithm();
 

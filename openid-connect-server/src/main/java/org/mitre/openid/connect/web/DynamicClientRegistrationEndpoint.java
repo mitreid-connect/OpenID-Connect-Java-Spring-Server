@@ -110,7 +110,7 @@ public class DynamicClientRegistrationEndpoint {
 	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public String registerNewClient(@RequestBody String jsonString, Model m) {
 
-		ClientDetailsEntity newClient = null;
+		ClientDetailsEntity newClient;
 		try {
 			newClient = ClientDetailsEntityJsonProcessor.parse(jsonString);
 		} catch (JsonSyntaxException e) {
@@ -261,7 +261,7 @@ public class DynamicClientRegistrationEndpoint {
 	public String updateClient(@PathVariable("id") String clientId, @RequestBody String jsonString, Model m, OAuth2Authentication auth) {
 
 
-		ClientDetailsEntity newClient = null;
+		ClientDetailsEntity newClient;
 		try {
 			newClient = ClientDetailsEntityJsonProcessor.parse(jsonString);
 		} catch (JsonSyntaxException e) {

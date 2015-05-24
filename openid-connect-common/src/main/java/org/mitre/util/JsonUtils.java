@@ -275,7 +275,7 @@ public class JsonUtils {
 	}
 
 	public static Set readSet(JsonReader reader) throws IOException {
-		Set arraySet = null;
+		Set arraySet;
 		reader.beginArray();
 		switch (reader.peek()) {
 		case STRING:

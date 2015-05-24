@@ -110,7 +110,7 @@ public class ProtectedResourceRegistrationEndpoint {
 	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public String registerNewProtectedResource(@RequestBody String jsonString, Model m) {
 
-		ClientDetailsEntity newClient = null;
+		ClientDetailsEntity newClient;
 		try {
 			newClient = ClientDetailsEntityJsonProcessor.parse(jsonString);
 		} catch (JsonSyntaxException e) {
@@ -289,7 +289,7 @@ public class ProtectedResourceRegistrationEndpoint {
 	public String updateProtectedResource(@PathVariable("id") String clientId, @RequestBody String jsonString, Model m, OAuth2Authentication auth) {
 
 
-		ClientDetailsEntity newClient = null;
+		ClientDetailsEntity newClient;
 		try {
 			newClient = ClientDetailsEntityJsonProcessor.parse(jsonString);
 		} catch (JsonSyntaxException e) {

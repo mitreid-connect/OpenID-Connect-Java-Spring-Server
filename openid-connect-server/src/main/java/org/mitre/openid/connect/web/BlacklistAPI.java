@@ -101,7 +101,7 @@ public class BlacklistAPI {
 
 		JsonObject json;
 
-		BlacklistedSite blacklist = null;
+		BlacklistedSite blacklist;
 
 		try {
 
@@ -135,7 +135,7 @@ public class BlacklistAPI {
 
 		JsonObject json;
 
-		BlacklistedSite blacklist = null;
+		BlacklistedSite blacklist;
 
 		try {
 

@@ -102,7 +102,7 @@ public class WhitelistAPI {
 
 		JsonObject json;
 
-		WhitelistedSite whitelist = null;
+		WhitelistedSite whitelist;
 		try {
 			json = parser.parse(jsonString).getAsJsonObject();
 			whitelist = gson.fromJson(json, WhitelistedSite.class);
@@ -139,7 +139,7 @@ public class WhitelistAPI {
 
 		JsonObject json;
 
-		WhitelistedSite whitelist = null;
+		WhitelistedSite whitelist;
 		try {
 			json = parser.parse(jsonString).getAsJsonObject();
 			whitelist = gson.fromJson(json, WhitelistedSite.class);

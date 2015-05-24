@@ -112,7 +112,7 @@ public class OAuthConfirmationController {
 
 		String prompt = (String)authRequest.getExtensions().get(PROMPT);
 		List<String> prompts = Splitter.on(PROMPT_SEPARATOR).splitToList(Strings.nullToEmpty(prompt));
-		ClientDetailsEntity client = null;
+		ClientDetailsEntity client;
 
 		try {
 			client = clientService.loadClientByClientId(authRequest.getClientId());
