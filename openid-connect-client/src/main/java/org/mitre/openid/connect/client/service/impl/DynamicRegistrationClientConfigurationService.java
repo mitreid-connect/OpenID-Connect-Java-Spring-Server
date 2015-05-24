@@ -76,11 +76,11 @@ public class DynamicRegistrationClientConfigurationService implements ClientConf
 	@Override
 	public RegisteredClient getClientConfiguration(ServerConfiguration issuer) {
 		try {
-			if (!whitelist.isEmpty() && !whitelist.contains(issuer)) {
+			if (!whitelist.isEmpty() && !whitelist.contains(issuer.getIssuer())) {
 				throw new AuthenticationServiceException("Whitelist was nonempty, issuer was not in whitelist: " + issuer);
 			}
 
-			if (blacklist.contains(issuer)) {
+			if (blacklist.contains(issuer.getIssuer())) {
 				throw new AuthenticationServiceException("Issuer was in blacklist: " + issuer);
 			}
 
