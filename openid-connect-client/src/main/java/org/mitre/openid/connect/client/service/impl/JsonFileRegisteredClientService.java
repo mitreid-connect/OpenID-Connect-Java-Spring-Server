@@ -114,8 +114,6 @@ public class JsonFileRegisteredClientService implements RegisteredClientService 
 
 			out.close();
 
-		} catch (FileNotFoundException e) {
-			logger.error("Could not write to output file", e);
 		} catch (IOException e) {
 			logger.error("Could not write to output file", e);
 		}
@@ -137,8 +135,6 @@ public class JsonFileRegisteredClientService implements RegisteredClientService 
 
 			in.close();
 
-		} catch (FileNotFoundException e) {
-			logger.error("Could not read from input file", e);
 		} catch (IOException e) {
 			logger.error("Could not read from input file", e);
 		}
