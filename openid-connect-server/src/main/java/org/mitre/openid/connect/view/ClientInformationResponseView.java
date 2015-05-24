@@ -76,6 +76,7 @@ public class ClientInformationResponseView extends AbstractView {
 		if (code == null) {
 			code = HttpStatus.OK;
 		}
+		response.setStatus(code.value());
 
 		JsonObject o = ClientDetailsEntityJsonProcessor.serialize(c);
 

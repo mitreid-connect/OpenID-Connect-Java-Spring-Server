@@ -63,7 +63,7 @@ public class DefaultResourceSetService implements ResourceSetService {
 	public ResourceSet update(ResourceSet oldRs, ResourceSet newRs) {
 
 		if (oldRs.getId() == null || newRs.getId() == null
-				|| oldRs.getId() != newRs.getId()) {
+				|| !oldRs.getId().equals(newRs.getId())) {
 			
 			throw new IllegalArgumentException("Resource set IDs mismatched");
 			
