@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.google.common.collect.Iterables;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -246,7 +247,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 			String redirectUri = null;
 			if (clientConfig.getRegisteredRedirectUri() != null && clientConfig.getRegisteredRedirectUri().size() == 1) {
 				// if there's a redirect uri configured (and only one), use that
-				redirectUri = clientConfig.getRegisteredRedirectUri().toArray(new String[] {})[0];
+				redirectUri = Iterables.getOnlyElement(clientConfig.getRegisteredRedirectUri());
 			} else {
 				// otherwise our redirect URI is this current URL, with no query parameters
 				redirectUri = request.getRequestURL().toString();
