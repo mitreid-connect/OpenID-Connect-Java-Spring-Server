@@ -48,6 +48,9 @@
 		<security:logout logout-url="/logout" />
 		<security:anonymous />
 		<security:expression-handler ref="oauthWebExpressionHandler" />
+		<security:headers>
+			<security:frame-options policy="DENY" />
+		</security:headers>
 	</security:http>	
 
 </beans>
