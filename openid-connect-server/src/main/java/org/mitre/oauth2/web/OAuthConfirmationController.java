@@ -19,6 +19,7 @@
  */
 package org.mitre.oauth2.web;
 
+import java.net.URISyntaxException;
 import java.security.Principal;
 import java.util.Date;
 import java.util.HashMap;
@@ -27,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.http.client.utils.URIBuilder;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
@@ -43,10 +45,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
+import org.springframework.security.oauth2.provider.endpoint.RedirectResolver;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
@@ -76,6 +80,9 @@ public class OAuthConfirmationController {
 
 	@Autowired
 	private StatsService statsService;
+	
+	@Autowired
+	private RedirectResolver redirectResolver;
 
 	private static Logger logger = LoggerFactory.getLogger(OAuthConfirmationController.class);
 
@@ -90,22 +97,9 @@ public class OAuthConfirmationController {
 	@PreAuthorize("hasRole('ROLE_USER')")
 	@RequestMapping("/oauth/confirm_access")
 	public String confimAccess(Map<String, Object> model, @ModelAttribute("authorizationRequest") AuthorizationRequest authRequest,
-			Principal p) {
+			Principal p, RedirectAttributes ra) {
 
 		// Check the "prompt" parameter to see if we need to do special processing
-
-		String prompt = (String)authRequest.getExtensions().get("prompt");
-		List<String> prompts = Splitter.on(" ").splitToList(Strings.nullToEmpty(prompt));
-		if (prompts.contains("none")) {
-			// we're not supposed to prompt, so "return an error"
-			logger.info("Client requested no prompt, returning 403 from confirmation endpoint");
-			model.put("code", HttpStatus.FORBIDDEN);
-			return HttpCodeView.VIEWNAME;
-		}
-		
-		if (prompts.contains("consent")) {
-			model.put("consent", true);
-		}
 
 		//AuthorizationRequest clientAuth = (AuthorizationRequest) model.remove("authorizationRequest");
 
@@ -123,6 +117,34 @@ public class OAuthConfirmationController {
 			return HttpCodeView.VIEWNAME;
 		}
 
+		String prompt = (String)authRequest.getExtensions().get("prompt");
+		List<String> prompts = Splitter.on(" ").splitToList(Strings.nullToEmpty(prompt));
+		if (prompts.contains("none")) {
+			// if we've got a redirect URI then we'll send it 
+			
+			String url = redirectResolver.resolveRedirect(authRequest.getRedirectUri(), client);
+			
+			try {
+				URIBuilder uriBuilder = new URIBuilder(url);
+			
+				uriBuilder.addParameter("error", "interaction_required");
+				if (!Strings.isNullOrEmpty(authRequest.getState())) {
+					uriBuilder.addParameter("state", authRequest.getState()); // copy the state parameter if one was given
+				}
+
+				return "redirect:" + uriBuilder.toString();
+				
+			} catch (URISyntaxException e) {
+				logger.error("Can't build redirect URI for prompt=none, sending error instead", e);
+				model.put("code", HttpStatus.FORBIDDEN);
+				return HttpCodeView.VIEWNAME;
+			}
+		}
+		
+		if (prompts.contains("consent")) {
+			model.put("consent", true);
+		}
+		
 		if (client == null) {
 			logger.error("confirmAccess: could not find client " + authRequest.getClientId());
 			model.put("code", HttpStatus.NOT_FOUND);

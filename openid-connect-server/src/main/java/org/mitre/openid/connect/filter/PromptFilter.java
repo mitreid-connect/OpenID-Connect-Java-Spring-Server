@@ -20,6 +20,7 @@
 package org.mitre.openid.connect.filter;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -33,6 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.http.client.utils.URIBuilder;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.openid.connect.web.AuthenticationTimeStamper;
@@ -44,6 +46,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.OAuth2RequestFactory;
+import org.springframework.security.oauth2.provider.endpoint.RedirectResolver;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
 
@@ -67,6 +70,9 @@ public class PromptFilter extends GenericFilterBean {
 
 	@Autowired
 	private ClientDetailsEntityService clientService;
+
+	@Autowired
+	private RedirectResolver redirectResolver;
 
 	/**
 	 * 
@@ -102,17 +108,41 @@ public class PromptFilter extends GenericFilterBean {
 			List<String> prompts = Splitter.on(" ").splitToList(Strings.nullToEmpty(prompt));
 
 			if (prompts.contains("none")) {
-				logger.info("Client requested no prompt");
 				// see if the user's logged in
 				Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
 				if (auth != null) {
 					// user's been logged in already (by session management)
-					// we're OK, continue without prompting
+					// we're OK, continue without prompting (in case the user already has a saved state)
 					chain.doFilter(req, res);
 				} else {
+					logger.info("Client requested no prompt");
 					// user hasn't been logged in, we need to "return an error"
-					logger.info("User not logged in, no prompt requested, returning 403 from filter");
+					if (client != null && authRequest.getRedirectUri() != null) {
+						
+						// if we've got a redirect URI then we'll send it 
+						
+						String url = redirectResolver.resolveRedirect(authRequest.getRedirectUri(), client);
+						
+						try {
+							URIBuilder uriBuilder = new URIBuilder(url);
+						
+							uriBuilder.addParameter("error", "login_required");
+							if (!Strings.isNullOrEmpty(authRequest.getState())) {
+								uriBuilder.addParameter("state", authRequest.getState()); // copy the state parameter if one was given
+							}
+							
+							response.sendRedirect(uriBuilder.toString());
+							return;
+							
+						} catch (URISyntaxException e) {
+							logger.error("Can't build redirect URI for prompt=none, sending error instead", e);
+							response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied");
+							return;
+						}
+					}
+					
+					logger.error("Can't build redirect URI for prompt=none, sending error instead");
 					response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied");
 					return;
 				}
