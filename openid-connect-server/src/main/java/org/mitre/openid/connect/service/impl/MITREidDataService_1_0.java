@@ -216,6 +216,26 @@ public class MITREidDataService_1_0 implements MITREidDataService {
             writeAuthorizationRequest(oa2Auth.getAuthorizationRequest(), writer);
             String userAuthentication = base64UrlEncodeObject(oa2Auth.getUserAuthentication());
             writer.name("userAuthentication").value(userAuthentication);
+
+            // this value is for 1.2+ compatibility (dropping binary objects from exports)
+			writer.name("savedUserAuthentication");
+			if (oa2Auth.getUserAuthentication() != null) {
+				writer.beginObject();
+				writer.name("name").value(oa2Auth.getUserAuthentication().getName());
+				writer.name("sourceClass").value(oa2Auth.getUserAuthentication().getClass().getName());
+				writer.name("authenticated").value(oa2Auth.getUserAuthentication().isAuthenticated());
+				writer.name("authorities");
+				writer.beginArray();
+				for (GrantedAuthority authority : oa2Auth.getUserAuthentication().getAuthorities()) {
+					writer.value(authority.getAuthority());
+				}
+				writer.endArray();
+				
+				writer.endObject();
+			} else {
+				writer.nullValue();
+			}
+			
             writer.endObject();
             writer.endObject();
             logger.debug("Wrote authentication holder {}", holder.getId());
