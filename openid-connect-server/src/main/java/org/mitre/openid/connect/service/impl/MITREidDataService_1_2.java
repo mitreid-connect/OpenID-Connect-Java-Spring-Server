@@ -265,7 +265,7 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 				writer.beginObject();
 				writer.name("name").value(holder.getUserAuth().getName());
 				writer.name("sourceClass").value(holder.getUserAuth().getSourceClass());
-
+				writer.name("authenticated").value(holder.getUserAuth().isAuthenticated());
 				writer.name("authorities");
 				writer.beginArray();
 				for (GrantedAuthority authority : holder.getUserAuth().getAuthorities()) {
@@ -682,8 +682,7 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 					if (reader.peek() == JsonToken.NULL) {
 						reader.skipValue();
 					} else if (name.equals("id")) {
-						ahe.setId(reader.nextLong());
-						currentId = ahe.getId();
+						currentId = reader.nextLong();
 					} else if (name.equals("requestParameters")) {
 						ahe.setRequestParameters(readMap(reader));
 					} else if (name.equals("clientId")) {
@@ -751,6 +750,8 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 					savedUserAuth.setName(reader.nextString());
 				} else if (name.equals("sourceClass")) {
 					savedUserAuth.setSourceClass(reader.nextString());
+				} else if (name.equals("authenticated")) {
+					savedUserAuth.setAuthenticated(reader.nextBoolean());
 				} else if (name.equals("authorities")) {
 					Set<String> authorityStrs = readSet(reader);
 					Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
