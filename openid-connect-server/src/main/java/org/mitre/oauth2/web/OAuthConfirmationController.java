@@ -19,6 +19,7 @@
  */
 package org.mitre.oauth2.web;
 
+import java.net.URISyntaxException;
 import java.security.Principal;
 import java.util.Date;
 import java.util.HashMap;
@@ -27,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.http.client.utils.URIBuilder;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
@@ -43,6 +45,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
+import org.springframework.security.oauth2.provider.endpoint.RedirectResolver;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -84,6 +87,9 @@ public class OAuthConfirmationController {
 	@Autowired
 	private StatsService statsService;
 
+	@Autowired
+	private RedirectResolver redirectResolver;
+
 	/**
 	 * Logger for this class
 	 */
@@ -106,19 +112,6 @@ public class OAuthConfirmationController {
 
 		String prompt = (String)authRequest.getExtensions().get(PROMPT);
 		List<String> prompts = Splitter.on(PROMPT_SEPARATOR).splitToList(Strings.nullToEmpty(prompt));
-		if (prompts.contains(PROMPT_NONE)) {
-			// we're not supposed to prompt, so "return an error"
-			logger.info("Client requested no prompt, returning 403 from confirmation endpoint");
-			model.put(HttpCodeView.CODE, HttpStatus.FORBIDDEN);
-			return HttpCodeView.VIEWNAME;
-		}
-
-		if (prompts.contains(PROMPT_CONSENT)) {
-			model.put(PROMPT_CONSENT, true);
-		}
-
-		//AuthorizationRequest clientAuth = (AuthorizationRequest) model.remove("authorizationRequest");
-
 		ClientDetailsEntity client = null;
 
 		try {
@@ -137,6 +130,28 @@ public class OAuthConfirmationController {
 			logger.error("confirmAccess: could not find client " + authRequest.getClientId());
 			model.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 			return HttpCodeView.VIEWNAME;
+		}
+
+		if (prompts.contains("none")) {
+			// if we've got a redirect URI then we'll send it 
+			
+			String url = redirectResolver.resolveRedirect(authRequest.getRedirectUri(), client);
+			
+			try {
+				URIBuilder uriBuilder = new URIBuilder(url);
+			
+				uriBuilder.addParameter("error", "interaction_required");
+				if (!Strings.isNullOrEmpty(authRequest.getState())) {
+					uriBuilder.addParameter("state", authRequest.getState()); // copy the state parameter if one was given
+				}
+
+				return "redirect:" + uriBuilder.toString();
+				
+			} catch (URISyntaxException e) {
+				logger.error("Can't build redirect URI for prompt=none, sending error instead", e);
+				model.put("code", HttpStatus.FORBIDDEN);
+				return HttpCodeView.VIEWNAME;
+			}
 		}
 
 		model.put("auth_request", authRequest);
