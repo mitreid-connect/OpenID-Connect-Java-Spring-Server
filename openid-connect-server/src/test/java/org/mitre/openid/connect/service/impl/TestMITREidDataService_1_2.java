@@ -58,10 +58,14 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.format.datetime.DateFormatter;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 
@@ -97,6 +101,8 @@ import static org.junit.Assert.fail;
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings(value = {"rawtypes", "unchecked"})
 public class TestMITREidDataService_1_2 {
+	
+	private static Logger logger = LoggerFactory.getLogger(TestMITREidDataService_1_2.class);
 
 	@Mock
 	private OAuth2ClientRepository clientRepository;
@@ -317,7 +323,7 @@ public class TestMITREidDataService_1_2 {
 				"  ]" +
 				"}";
 
-		System.err.println(configJson);
+		logger.debug(configJson);
 		JsonReader reader = new JsonReader(new StringReader(configJson));
 
 		final Map<Long, OAuth2RefreshTokenEntity> fakeDb = new HashMap<Long, OAuth2RefreshTokenEntity>();
@@ -585,7 +591,7 @@ public class TestMITREidDataService_1_2 {
 				"}";
 
 
-		System.err.println(configJson);
+		logger.debug(configJson);
 
 		JsonReader reader = new JsonReader(new StringReader(configJson));
 
@@ -797,7 +803,7 @@ public class TestMITREidDataService_1_2 {
 				"  ]" +
 				"}";
 
-		System.err.println(configJson);
+		logger.debug(configJson);
 
 		JsonReader reader = new JsonReader(new StringReader(configJson));
 
@@ -950,7 +956,7 @@ public class TestMITREidDataService_1_2 {
 				"}";
 
 
-		System.err.println(configJson);
+		logger.debug(configJson);
 
 		JsonReader reader = new JsonReader(new StringReader(configJson));
 
@@ -1091,7 +1097,7 @@ public class TestMITREidDataService_1_2 {
 				"  ]" +
 				"}";
 
-		System.err.println(configJson);
+		logger.debug(configJson);
 
 		JsonReader reader = new JsonReader(new StringReader(configJson));
 
@@ -1316,7 +1322,7 @@ public class TestMITREidDataService_1_2 {
 				"  ]" +
 				"}";
 
-		System.err.println(configJson);
+		logger.debug(configJson);
 
 		JsonReader reader = new JsonReader(new StringReader(configJson));
 
@@ -1389,7 +1395,7 @@ public class TestMITREidDataService_1_2 {
 		OAuth2Request req1 = new OAuth2Request(new HashMap<String, String>(), "client1", new ArrayList<GrantedAuthority>(),
 				true, new HashSet<String>(), new HashSet<String>(), "http://foo.com",
 				new HashSet<String>(), null);
-		Authentication mockAuth1 = mock(Authentication.class, withSettings().serializable());
+		Authentication mockAuth1 = new UsernamePasswordAuthenticationToken("user1", "pass1", AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_USER"));
 		OAuth2Authentication auth1 = new OAuth2Authentication(req1, mockAuth1);
 
 		AuthenticationHolderEntity holder1 = new AuthenticationHolderEntity();
@@ -1399,8 +1405,7 @@ public class TestMITREidDataService_1_2 {
 		OAuth2Request req2 = new OAuth2Request(new HashMap<String, String>(), "client2", new ArrayList<GrantedAuthority>(),
 				true, new HashSet<String>(), new HashSet<String>(), "http://bar.com",
 				new HashSet<String>(), null);
-		Authentication mockAuth2 = mock(Authentication.class, withSettings().serializable());
-		OAuth2Authentication auth2 = new OAuth2Authentication(req2, mockAuth2);
+		OAuth2Authentication auth2 = new OAuth2Authentication(req2, null);
 
 		AuthenticationHolderEntity holder2 = new AuthenticationHolderEntity();
 		holder2.setId(2L);
@@ -1408,15 +1413,15 @@ public class TestMITREidDataService_1_2 {
 
 		List<AuthenticationHolderEntity> allAuthHolders = ImmutableList.of(holder1, holder2);
 
-		Mockito.when(clientRepository.getAllClients()).thenReturn(new HashSet<ClientDetailsEntity>());
-		Mockito.when(approvedSiteRepository.getAll()).thenReturn(new HashSet<ApprovedSite>());
-		Mockito.when(wlSiteRepository.getAll()).thenReturn(new HashSet<WhitelistedSite>());
-		Mockito.when(blSiteRepository.getAll()).thenReturn(new HashSet<BlacklistedSite>());
-		Mockito.when(authHolderRepository.getAll()).thenReturn(allAuthHolders);
-		Mockito.when(tokenRepository.getAllAccessTokens()).thenReturn(new HashSet<OAuth2AccessTokenEntity>());
-		Mockito.when(tokenRepository.getAllRefreshTokens()).thenReturn(new HashSet<OAuth2RefreshTokenEntity>());
-		Mockito.when(sysScopeRepository.getAll()).thenReturn(new HashSet<SystemScope>());
-
+		when(clientRepository.getAllClients()).thenReturn(new HashSet<ClientDetailsEntity>());
+		when(approvedSiteRepository.getAll()).thenReturn(new HashSet<ApprovedSite>());
+		when(wlSiteRepository.getAll()).thenReturn(new HashSet<WhitelistedSite>());
+		when(blSiteRepository.getAll()).thenReturn(new HashSet<BlacklistedSite>());
+		when(authHolderRepository.getAll()).thenReturn(allAuthHolders);
+		when(tokenRepository.getAllAccessTokens()).thenReturn(new HashSet<OAuth2AccessTokenEntity>());
+		when(tokenRepository.getAllRefreshTokens()).thenReturn(new HashSet<OAuth2RefreshTokenEntity>());
+		when(sysScopeRepository.getAll()).thenReturn(new HashSet<SystemScope>());
+		
 		// do the data export
 		StringWriter stringWriter = new StringWriter();
 		JsonWriter writer = new JsonWriter(stringWriter);
@@ -1475,7 +1480,16 @@ public class TestMITREidDataService_1_2 {
 			if (compare == null) {
 				fail("Could not find matching authentication holder id: " + holder.get("id").getAsString());
 			} else {
-				assertTrue(holder.get("authentication").isJsonObject());
+				assertTrue(holder.get("clientId").getAsString().equals(compare.getClientId()));
+				assertTrue(holder.get("approved").getAsBoolean() == compare.isApproved());
+				assertTrue(holder.get("redirectUri").getAsString().equals(compare.getRedirectUri()));
+				if (compare.getUserAuth() != null) {
+					assertTrue(holder.get("savedUserAuthentication").isJsonObject());
+					JsonObject savedAuth = holder.get("savedUserAuthentication").getAsJsonObject();
+					assertTrue(savedAuth.get("name").getAsString().equals(compare.getUserAuth().getName()));
+					assertTrue(savedAuth.get("authenticated").getAsBoolean() == compare.getUserAuth().isAuthenticated());
+					assertTrue(savedAuth.get("sourceClass").getAsString().equals(compare.getUserAuth().getSourceClass()));
+				}
 				checked.add(compare);
 			}
 		}
@@ -1515,14 +1529,14 @@ public class TestMITREidDataService_1_2 {
 				"\"" + MITREidDataService.SYSTEMSCOPES + "\": [], " +
 				"\"" + MITREidDataService.AUTHENTICATIONHOLDERS + "\": [" +
 
-				"{\"id\":1,\"authentication\":{\"authorizationRequest\":{\"clientId\":\"client1\",\"redirectUri\":\"http://foo.com\"},"
-				+ "\"userAuthentication\":null}}," +
-				"{\"id\":2,\"authentication\":{\"authorizationRequest\":{\"clientId\":\"client2\",\"redirectUri\":\"http://bar.com\"},"
-				+ "\"userAuthentication\":null}}" +
+				"{\"id\":1,\"clientId\":\"client1\",\"redirectUri\":\"http://foo.com\","
+				+ "\"savedUserAuthentication\":null}," +
+				"{\"id\":2,\"clientId\":\"client2\",\"redirectUri\":\"http://bar.com\","
+				+ "\"savedUserAuthentication\":null}" +
 				"  ]" +
 				"}";
 
-		System.err.println(configJson);
+		logger.debug(configJson);
 
 		JsonReader reader = new JsonReader(new StringReader(configJson));
 
@@ -1705,7 +1719,7 @@ public class TestMITREidDataService_1_2 {
 				"  ]" +
 				"}";
 
-		System.err.println(configJson);
+		logger.debug(configJson);
 
 		JsonReader reader = new JsonReader(new StringReader(configJson));
 
@@ -1812,7 +1826,7 @@ public class TestMITREidDataService_1_2 {
 
 				"  ]" +
 				"}";
-		System.err.println(configJson);
+		logger.debug(configJson);
 
 		JsonReader reader = new JsonReader(new StringReader(configJson));
 		final Map<Long, OAuth2RefreshTokenEntity> fakeRefreshTokenTable = new HashMap<Long, OAuth2RefreshTokenEntity>();
