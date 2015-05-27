@@ -128,7 +128,6 @@ public class AuthorizationRequestFilter extends GenericFilterBean {
 			List<String> prompts = Splitter.on(PROMPT_SEPARATOR).splitToList(Strings.nullToEmpty(prompt));
 
 			if (prompts.contains(PROMPT_NONE)) {
-				logger.info("Client requested no prompt");
 				// see if the user's logged in
 				Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
@@ -137,9 +136,8 @@ public class AuthorizationRequestFilter extends GenericFilterBean {
 					// we're OK, continue without prompting
 					chain.doFilter(req, res);
 				} else {
+					logger.info("Client requested no prompt");
 					// user hasn't been logged in, we need to "return an error"
-					logger.info("User not logged in, no prompt requested, returning error from filter");
-					
 					if (client != null && authRequest.getRedirectUri() != null) {
 						
 						// if we've got a redirect URI then we'll send it 

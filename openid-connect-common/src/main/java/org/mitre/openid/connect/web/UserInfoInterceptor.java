@@ -20,7 +20,6 @@
 package org.mitre.openid.connect.web;
 
 import java.lang.reflect.Type;
-import java.security.Principal;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,10 +30,13 @@ import org.mitre.openid.connect.service.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.web.servlet.view.UrlBasedViewResolver;
 
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -69,46 +71,57 @@ public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 			// or if there's already a userInfo object in there
 
 			// TODO: this is a patch to get around a potential information leak from #492
-			if (!(modelAndView.getView() instanceof RedirectView)) {
 
-				// get our principal from the security context
-				Principal p = request.getUserPrincipal();
-
-				if (p instanceof Authentication && !modelAndView.getModel().containsKey("userAuthorities")){
-					Authentication auth = (Authentication)p;
-					modelAndView.addObject("userAuthorities", gson.toJson(auth.getAuthorities()));
-				}
-
-				if (p instanceof OIDCAuthenticationToken) {
-					// if they're logging into this server from a remote OIDC server, pass through their user info
-					OIDCAuthenticationToken oidc = (OIDCAuthenticationToken) p;
-					if (oidc.getUserInfo() != null) {
-						modelAndView.addObject("userInfo", oidc.getUserInfo());
-						modelAndView.addObject("userInfoJson", oidc.getUserInfo().toJson());
-					} else {
-						modelAndView.addObject("userInfo", null);
-						modelAndView.addObject("userInfoJson", "null");
-					}
+			if (modelAndView.getView() instanceof RedirectView) {
+				// don't add them
+			} else {
+				if (Strings.isNullOrEmpty(modelAndView.getViewName())) {
+					// add them
+					injectUserInfo(modelAndView);
 				} else {
-					// don't bother checking if we don't have a principal or a userInfoService to work with
-					if (p != null && p.getName() != null && userInfoService != null) {
-
-						// try to look up a user based on the principal's name
-						UserInfo user = userInfoService.getByUsername(p.getName());
-
-						// if we have one, inject it so views can use it
-						if (user != null) {
-							modelAndView.addObject("userInfo", user);
-							modelAndView.addObject("userInfoJson", user.toJson());
-						}
+					if (modelAndView.getViewName().startsWith(UrlBasedViewResolver.FORWARD_URL_PREFIX) || 
+							modelAndView.getViewName().startsWith(UrlBasedViewResolver.REDIRECT_URL_PREFIX)) {
+						// don't add them
+					} else {
+						// add them
+						injectUserInfo(modelAndView);
 					}
 				}
 			}
 		}
-
 	}
 
+	private void injectUserInfo(ModelAndView modelAndView) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
+		if (auth instanceof Authentication && !modelAndView.getModel().containsKey("userAuthorities")){
+			modelAndView.addObject("userAuthorities", gson.toJson(auth.getAuthorities()));
+		}
 
+		if (auth instanceof OIDCAuthenticationToken) {
+			// if they're logging into this server from a remote OIDC server, pass through their user info
+			OIDCAuthenticationToken oidc = (OIDCAuthenticationToken) auth;
+			if (oidc.getUserInfo() != null) {
+				modelAndView.addObject("userInfo", oidc.getUserInfo());
+				modelAndView.addObject("userInfoJson", oidc.getUserInfo().toJson());
+			} else {
+				modelAndView.addObject("userInfo", null);
+				modelAndView.addObject("userInfoJson", "null");
+			}
+		} else {
+			// don't bother checking if we don't have a principal or a userInfoService to work with
+			if (auth != null && auth.getName() != null && userInfoService != null) {
+
+				// try to look up a user based on the principal's name
+				UserInfo user = userInfoService.getByUsername(auth.getName());
+
+				// if we have one, inject it so views can use it
+				if (user != null) {
+					modelAndView.addObject("userInfo", user);
+					modelAndView.addObject("userInfoJson", user.toJson());
+				}
+			}
+		}
+	}
 
 }
