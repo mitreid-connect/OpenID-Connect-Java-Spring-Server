@@ -212,7 +212,28 @@ public class MITREidDataService_1_1 extends MITREidDataService_1_X {
             writeAuthorizationRequest(oa2Auth.getOAuth2Request(), writer);
             String userAuthentication = base64UrlEncodeObject(oa2Auth.getUserAuthentication());
             writer.name("userAuthentication").value(userAuthentication);
-            writer.endObject();
+            
+            // this value is for 1.2+ compatibility (dropping binary objects from exports)
+			writer.name("savedUserAuthentication");
+			if (oa2Auth.getUserAuthentication() != null) {
+				writer.beginObject();
+				writer.name("name").value(oa2Auth.getUserAuthentication().getName());
+				writer.name("sourceClass").value(oa2Auth.getUserAuthentication().getClass().getName());
+				writer.name("authenticated").value(oa2Auth.getUserAuthentication().isAuthenticated());
+				writer.name("authorities");
+				writer.beginArray();
+				for (GrantedAuthority authority : oa2Auth.getUserAuthentication().getAuthorities()) {
+					writer.value(authority.getAuthority());
+				}
+				writer.endArray();
+				
+				writer.endObject();
+			} else {
+				writer.nullValue();
+			}
+			
+			writer.endObject();
+			
             writer.endObject();
             logger.debug("Wrote authentication holder {}", holder.getId());
         }
@@ -264,6 +285,21 @@ public class MITREidDataService_1_1 extends MITREidDataService_1_X {
             writer.name(entry.getKey()).value(base64UrlEncodeObject(entry.getValue()));
         }
         writer.endObject();
+        writer.name("extensionStrings");
+        writer.beginObject();
+		for (Entry<String, Serializable> entry : authReq.getExtensions().entrySet()) {
+			if (entry.getValue() instanceof String) {
+				writer.name(entry.getKey()).value((String) entry.getValue());
+			} else if (entry.getValue() instanceof Long) {
+				writer.name(entry.getKey()).value(((Long) entry.getValue()).toString());
+			} else if (entry.getValue() instanceof Date) {
+				writer.name(entry.getKey()).value(Long.toString(((Date) entry.getValue()).getTime()));
+			} else {
+				logger.warn("Skipping non-string extension: " + entry);
+			}
+		}
+        writer.endObject();
+        
         writer.endObject();
     }
 
