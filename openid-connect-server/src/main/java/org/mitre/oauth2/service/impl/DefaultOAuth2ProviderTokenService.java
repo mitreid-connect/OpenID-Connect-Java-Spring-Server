@@ -365,10 +365,8 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	 */
 	@Override
 	public OAuth2AccessTokenEntity getAccessToken(OAuth2Authentication authentication) {
-
-		OAuth2AccessTokenEntity accessToken = tokenRepository.getByAuthentication(authentication);
-
-		return accessToken;
+		// TODO: implement this against the new service (#825)
+		throw new UnsupportedOperationException("Unable to look up access token from authentication object.");
 	}
 
 	/**

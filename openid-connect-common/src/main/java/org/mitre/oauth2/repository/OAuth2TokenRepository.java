@@ -22,7 +22,6 @@ import java.util.Set;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
 
 public interface OAuth2TokenRepository {
 
@@ -49,8 +48,6 @@ public interface OAuth2TokenRepository {
 	public List<OAuth2AccessTokenEntity> getAccessTokensForClient(ClientDetailsEntity client);
 
 	public List<OAuth2RefreshTokenEntity> getRefreshTokensForClient(ClientDetailsEntity client);
-
-	public OAuth2AccessTokenEntity getByAuthentication(OAuth2Authentication auth);
 
 	public OAuth2AccessTokenEntity getAccessTokenForIdToken(OAuth2AccessTokenEntity idToken);
 

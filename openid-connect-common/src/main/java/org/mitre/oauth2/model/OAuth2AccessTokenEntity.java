@@ -68,7 +68,6 @@ import com.nimbusds.jwt.JWTParser;
 	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_EXPIRED_BY_DATE, query = "select a from OAuth2AccessTokenEntity a where a.expiration <= :" + OAuth2AccessTokenEntity.PARAM_DATE),
 	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_REFRESH_TOKEN, query = "select a from OAuth2AccessTokenEntity a where a.refreshToken = :" + OAuth2AccessTokenEntity.PARAM_REFERSH_TOKEN),
 	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_CLIENT, query = "select a from OAuth2AccessTokenEntity a where a.client = :" + OAuth2AccessTokenEntity.PARAM_CLIENT),
-//	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_AUTHENTICATION, query = "select a from OAuth2AccessTokenEntity a where a.authenticationHolder.authentication = :" + OAuth2AccessTokenEntity.PARAM_AUTHENTICATION),
 	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_ID_TOKEN, query = "select a from OAuth2AccessTokenEntity a where a.idToken = :" + OAuth2AccessTokenEntity.PARAM_ID_TOKEN),
 	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_TOKEN_VALUE, query = "select a from OAuth2AccessTokenEntity a where a.value = :" + OAuth2AccessTokenEntity.PARAM_TOKEN_VALUE)
 })
@@ -80,7 +79,6 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 
 	public static final String QUERY_BY_TOKEN_VALUE = "OAuth2AccessTokenEntity.getByTokenValue";
 	public static final String QUERY_BY_ID_TOKEN = "OAuth2AccessTokenEntity.getByIdToken";
-	public static final String QUERY_BY_AUTHENTICATION = "OAuth2AccessTokenEntity.getByAuthentication";
 	public static final String QUERY_BY_CLIENT = "OAuth2AccessTokenEntity.getByClient";
 	public static final String QUERY_BY_REFRESH_TOKEN = "OAuth2AccessTokenEntity.getByRefreshToken";
 	public static final String QUERY_EXPIRED_BY_DATE = "OAuth2AccessTokenEntity.getAllExpiredByDate";
@@ -88,7 +86,6 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 
 	public static final String PARAM_TOKEN_VALUE = "tokenValue";
 	public static final String PARAM_ID_TOKEN = "idToken";
-	public static final String PARAM_AUTHENTICATION = "authentication";
 	public static final String PARAM_CLIENT = "client";
 	public static final String PARAM_REFERSH_TOKEN = "refreshToken";
 	public static final String PARAM_DATE = "date";
