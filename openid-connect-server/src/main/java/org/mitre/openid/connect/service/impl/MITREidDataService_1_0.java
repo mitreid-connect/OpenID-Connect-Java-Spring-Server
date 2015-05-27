@@ -33,6 +33,7 @@ import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
 import org.mitre.oauth2.model.ClientDetailsEntity.SubjectType;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
+import org.mitre.oauth2.model.SavedUserAuthentication;
 import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.repository.AuthenticationHolderRepository;
 import org.mitre.oauth2.repository.OAuth2ClientRepository;
@@ -63,7 +64,6 @@ import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWSAlgorithm;
 
-import static org.mitre.util.JsonUtils.base64UrlDecodeObject;
 import static org.mitre.util.JsonUtils.readMap;
 import static org.mitre.util.JsonUtils.readSet;
 /**
@@ -147,7 +147,10 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 				// the object ended, we're done here
 				reader.endObject();
 				continue;
-			}
+			default:
+                logger.debug("Found unexpected entry");
+                reader.skipValue();
+                continue;			}
 		}
 		fixObjectReferences();
 	}
@@ -335,15 +338,17 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 								continue;
 							case NAME:
 								String subName = reader.nextName();
-								if (subName.equals("clientAuthorization")) {
+								if (reader.peek() == JsonToken.NULL) {
+									reader.skipValue();
+								} else if (subName.equals("clientAuthorization")) {
 									clientAuthorization = readAuthorizationRequest(reader);
 								} else if (subName.equals("userAuthentication")) {
-									if (reader.peek() == JsonToken.NULL) {
-										reader.skipValue();
-									} else {
-										String authString = reader.nextString();
-										userAuthentication = base64UrlDecodeObject(authString, Authentication.class);
-									}
+									// skip binary encoded version
+									reader.skipValue();
+									
+								} else if (subName.equals("savedUserAuthentication")) {
+									userAuthentication = readSavedUserAuthentication(reader);
+									
 								} else {
 									logger.debug("Found unexpected entry");
 									reader.skipValue();
@@ -437,6 +442,56 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 		reader.endObject();
 		return new OAuth2Request(authorizationParameters, clientId, authorities, approved, scope, resourceIds, redirectUri, responseTypes, null);
 	}
+	
+	/**
+	 * @param reader
+	 * @return
+	 * @throws IOException 
+	 */
+	private SavedUserAuthentication readSavedUserAuthentication(JsonReader reader) throws IOException {
+		SavedUserAuthentication savedUserAuth = new SavedUserAuthentication();
+		reader.beginObject();
+		
+		while (reader.hasNext()) {
+			switch(reader.peek()) {
+			case END_OBJECT:
+				continue;
+			case NAME:
+				String name = reader.nextName();
+				if (reader.peek() == JsonToken.NULL) {
+					reader.skipValue();
+				} else if (name.equals("name")) {
+					savedUserAuth.setName(reader.nextString());
+				} else if (name.equals("sourceClass")) {
+					savedUserAuth.setSourceClass(reader.nextString());
+				} else if (name.equals("authenticated")) {
+					savedUserAuth.setAuthenticated(reader.nextBoolean());
+				} else if (name.equals("authorities")) {
+					Set<String> authorityStrs = readSet(reader);
+					Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
+					for (String s : authorityStrs) {
+						GrantedAuthority ga = new SimpleGrantedAuthority(s);
+						authorities.add(ga);
+					}
+					savedUserAuth.setAuthorities(authorities);
+				} else {
+					logger.debug("Found unexpected entry");
+					reader.skipValue();
+				}
+				break;
+			default:
+				logger.debug("Found unexpected entry");
+				reader.skipValue();
+				continue;
+			}
+		}
+		
+		reader.endObject();
+		return savedUserAuth;
+	}
+
+
+	
 	Map<Long, Long> grantOldToNewIdMap = new HashMap<Long, Long>();
 	Map<Long, Long> grantToWhitelistedSiteRefs = new HashMap<Long, Long>();
 	Map<Long, Set<Long>> grantToAccessTokensRefs = new HashMap<Long, Set<Long>>();

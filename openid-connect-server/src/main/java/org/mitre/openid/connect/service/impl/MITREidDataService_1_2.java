@@ -19,11 +19,9 @@ package org.mitre.openid.connect.service.impl;
 import java.io.IOException;
 import java.io.Serializable;
 import java.text.ParseException;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -51,11 +49,8 @@ import org.mitre.openid.connect.service.MITREidDataService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
-import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.stream.JsonReader;
@@ -65,7 +60,6 @@ import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWSAlgorithm;
 
-import static org.mitre.util.JsonUtils.base64UrlDecodeObject;
 import static org.mitre.util.JsonUtils.readMap;
 import static org.mitre.util.JsonUtils.readSet;
 import static org.mitre.util.JsonUtils.writeNullSafeArray;
@@ -508,6 +502,10 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 				// the object ended, we're done here
 				reader.endObject();
 				continue;
+			default:
+				logger.debug("Found unexpected entry");
+				reader.skipValue();
+				continue;
 			}
 		}
 		fixObjectReferences();
@@ -765,6 +763,10 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 					reader.skipValue();
 				}
 				break;
+			default:
+				logger.debug("Found unexpected entry");
+				reader.skipValue();
+				continue;
 			}
 		}
 		

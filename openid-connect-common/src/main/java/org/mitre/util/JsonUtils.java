@@ -19,12 +19,7 @@
  */
 package org.mitre.util;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -38,7 +33,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.google.common.io.BaseEncoding;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -253,25 +247,6 @@ public class JsonUtils {
 		}
 	}
 
-	public static <T> T base64UrlDecodeObject(String encoded, Class<T> type) {
-		if (encoded == null) {
-			return null;
-		} else {
-			T deserialized = null;
-			try {
-				byte[] decoded = BaseEncoding.base64Url().decode(encoded);
-				ByteArrayInputStream bais = new ByteArrayInputStream(decoded);
-				ObjectInputStream ois = new ObjectInputStream(bais);
-				deserialized = type.cast(ois.readObject());
-				ois.close();
-				bais.close();
-			} catch (Exception ex) {
-				logger.error("Unable to decode object", ex);
-			}
-			return deserialized;
-		}
-	}
-
 	public static Map readMap(JsonReader reader) throws IOException {
 		Map map = new HashMap<String, Object>();
 		reader.beginObject();
@@ -288,6 +263,10 @@ public class JsonUtils {
 			case NUMBER:
 				value = reader.nextLong();
 				break;
+			default:
+				logger.debug("Found unexpected entry");
+				reader.skipValue();
+				continue;
 			}
 			map.put(name, value);
 		}
