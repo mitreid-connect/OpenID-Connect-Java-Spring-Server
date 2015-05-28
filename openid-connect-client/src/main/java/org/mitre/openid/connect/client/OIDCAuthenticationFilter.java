@@ -254,10 +254,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 			session.setAttribute(REDIRECT_URI_SESION_VARIABLE, redirectUri);
 
 			// this value comes back in the id token and is checked there
-			String nonce = null;
-			if (serverConfig.isNonceEnabled()) {
-				nonce = createNonce(session);
-			}
+			String nonce = createNonce(session);
 
 			// this value comes back in the auth code response
 			String state = createState(session);
@@ -565,30 +562,21 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 
 				// compare the nonce to our stored claim
 				String nonce = idClaims.getStringClaim("nonce");
+				if (Strings.isNullOrEmpty(nonce)) {
 
-				if (serverConfig.isNonceEnabled()) {
-					if (Strings.isNullOrEmpty(nonce)) {
+					logger.error("ID token did not contain a nonce claim.");
 
-						logger.error("ID token did not contain a nonce claim.");
+					throw new AuthenticationServiceException("ID token did not contain a nonce claim.");
+				}
 
-						throw new AuthenticationServiceException("ID token did not contain a nonce claim.");
-					}
+				String storedNonce = getStoredNonce(session);
+				if (!nonce.equals(storedNonce)) {
+					logger.error("Possible replay attack detected! The comparison of the nonce in the returned "
+							+ "ID Token to the session " + NONCE_SESSION_VARIABLE + " failed. Expected " + storedNonce + " got " + nonce + ".");
 
-					String storedNonce = getStoredNonce(session);
-					if (!nonce.equals(storedNonce)) {
-						logger.error("Possible replay attack detected! The comparison of the nonce in the returned "
-								+ "ID Token to the session " + NONCE_SESSION_VARIABLE + " failed. Expected " + storedNonce + " got " + nonce + ".");
-
-						throw new AuthenticationServiceException(
-								"Possible replay attack detected! The comparison of the nonce in the returned "
-										+ "ID Token to the session " + NONCE_SESSION_VARIABLE + " failed. Expected " + storedNonce + " got " + nonce + ".");
-					}
-				} else {
-					if (!Strings.isNullOrEmpty(nonce)) {
-						logger.error("Possible injection attack! The server returned a nonce value where none was sent or expected: " + nonce);
-						throw new AuthenticationServiceException(
-								"Possible injection attack! The server returned a nonce value where none was sent or expected: " + nonce);
-					}
+					throw new AuthenticationServiceException(
+							"Possible replay attack detected! The comparison of the nonce in the returned "
+									+ "ID Token to the session " + NONCE_SESSION_VARIABLE + " failed. Expected " + storedNonce + " got " + nonce + ".");
 				}
 
 				// pull the subject (user id) out as a claim on the id_token
