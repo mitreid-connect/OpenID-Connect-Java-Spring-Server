@@ -46,12 +46,60 @@ CREATE TABLE IF NOT EXISTS approved_site_scope (
 
 CREATE TABLE IF NOT EXISTS authentication_holder (
 	id SERIAL PRIMARY KEY,
-	authentication LONGVARBINARY
+	user_auth_id BIGINT,
+	approved BOOLEAN,
+	redirect_uri VARCHAR(2048),
+	client_id VARCHAR(256),
+	
+);
+
+CREATE TABLE IF NOT EXISTS authentication_holder_authority (
+	owner_id BIGINT,
+	authority VARCHAR(256)
+);
+
+CREATE TABLE IF NOT EXISTS authentication_holder_resource_id (
+	owner_id BIGINT,
+	resource_id VARCHAR(2048)
+);
+
+CREATE TABLE IF NOT EXISTS authentication_holder_response_type (
+	owner_id BIGINT,
+	response_type VARCHAR(2048)
+);
+
+CREATE TABLE IF NOT EXISTS authentication_holder_extension (
+	owner_id BIGINT,
+	extension VARCHAR(2048),
+	val VARCHAR(2048)
+);
+
+CREATE TABLE IF NOT EXISTS authentication_holder_scope (
+	owner_id BIGINT,
+	scope VARCHAR(2048)
+);
+
+CREATE TABLE IF NOT EXISTS authentication_holder_request_parameter (
+	owner_id BIGINT,
+	param VARCHAR(2048),
+	val VARCHAR(2048)
+);
+
+CREATE TABLE IF NOT EXISTS saved_user_auth (
+	id SERIAL PRIMARY KEY,
+	name VARCHAR(1024),
+	authenticated BOOLEAN,
+	source_class VARCHAR(2048)
+);
+
+CREATE TABLE IF NOT EXISTS saved_user_auth_authority (
+	owner_id BIGINT,
+	authority VARCHAR(256)
 );
 
 CREATE TABLE IF NOT EXISTS client_authority (
 	owner_id BIGINT,
-	authority LONGVARBINARY
+	authority VARCHAR(256)
 );
 
 CREATE TABLE IF NOT EXISTS authorization_code (
