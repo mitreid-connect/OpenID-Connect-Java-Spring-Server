@@ -25,8 +25,7 @@ import java.util.UUID;
 
 import org.mitre.jwt.encryption.service.JWTEncryptionAndDecryptionService;
 import org.mitre.jwt.signer.service.JWTSigningAndValidationService;
-import org.mitre.jwt.signer.service.impl.JWKSetCacheService;
-import org.mitre.jwt.signer.service.impl.SymmetricKeyJWTValidatorCacheService;
+import org.mitre.jwt.signer.service.impl.ClientKeyCacheService;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.SystemScopeService;
@@ -79,10 +78,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 	private ClientDetailsEntityService clientDetailsService;
 
 	@Autowired
-	private JWKSetCacheService validators;
-
-	@Autowired
-	private SymmetricKeyJWTValidatorCacheService symmetricCacheService;
+	private ClientKeyCacheService validators;
 
 	@Autowired
 	private SystemScopeService systemScopes;
@@ -205,51 +201,15 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 					throw new InvalidClientException("Client's registered request object signing algorithm (" + client.getRequestObjectSigningAlg() + ") does not match request object's actual algorithm (" + alg.getName() + ")");
 				}
 
-				if (alg.equals(JWSAlgorithm.RS256)
-						|| alg.equals(JWSAlgorithm.RS384)
-						|| alg.equals(JWSAlgorithm.RS512)
-						|| alg.equals(JWSAlgorithm.ES256)
-						|| alg.equals(JWSAlgorithm.ES384)
-						|| alg.equals(JWSAlgorithm.ES512)
-						|| alg.equals(JWSAlgorithm.PS256)
-						|| alg.equals(JWSAlgorithm.PS384)
-						|| alg.equals(JWSAlgorithm.PS512)) {
+				JWTSigningAndValidationService validator = validators.getValidator(client, alg);
 
-					// it's a public key, need to find the JWK URI and fetch the key
-
-					if (Strings.isNullOrEmpty(client.getJwksUri()) && client.getJwks() == null) {
-						throw new InvalidClientException("Client must have a JWKS registered to use signed request objects with a public key.");
-					}
-
-					// check JWT signature
-					JWTSigningAndValidationService validator = validators.getValidator(client.getJwksUri());
-
-					if (validator == null) {
-						throw new InvalidClientException("Unable to create signature validator for client's JWKS URI: " + client.getJwksUri());
-					}
-
-					if (!validator.validateSignature(signedJwt)) {
-						throw new InvalidClientException("Signature did not validate for presented JWT request object.");
-					}
-				} else if (alg.equals(JWSAlgorithm.HS256)
-						|| alg.equals(JWSAlgorithm.HS384)
-						|| alg.equals(JWSAlgorithm.HS512)) {
-
-					// it's HMAC, we need to make a validator based on the client secret
-
-					JWTSigningAndValidationService validator = symmetricCacheService.getSymmetricValidtor(client);
-
-					if (validator == null) {
-						throw new InvalidClientException("Unable to create signature validator for client's secret: " + client.getClientSecret());
-					}
-
-					if (!validator.validateSignature(signedJwt)) {
-						throw new InvalidClientException("Signature did not validate for presented JWT request object.");
-					}
-
-
+				if (validator == null) {
+					throw new InvalidClientException("Unable to create signature validator for client " + client + " and algorithm " + alg);
 				}
 
+				if (!validator.validateSignature(signedJwt)) {
+					throw new InvalidClientException("Signature did not validate for presented JWT request object.");
+				}
 
 			} else if (jwt instanceof PlainJWT) {
 				PlainJWT plainJwt = (PlainJWT)jwt;

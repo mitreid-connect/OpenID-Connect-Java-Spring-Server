@@ -23,7 +23,7 @@ import java.util.UUID;
 
 import org.mitre.jwt.encryption.service.JWTEncryptionAndDecryptionService;
 import org.mitre.jwt.signer.service.JWTSigningAndValidationService;
-import org.mitre.jwt.signer.service.impl.JWKSetCacheService;
+import org.mitre.jwt.signer.service.impl.ClientKeyCacheService;
 import org.mitre.jwt.signer.service.impl.SymmetricKeyJWTValidatorCacheService;
 import org.mitre.oauth2.model.AuthenticationHolderEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity;
@@ -83,7 +83,7 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 	private ConfigurationPropertiesBean configBean;
 
 	@Autowired
-	private JWKSetCacheService encrypters;
+	private ClientKeyCacheService encrypters;
 
 	@Autowired
 	private SymmetricKeyJWTValidatorCacheService symmetricCacheService;
@@ -144,7 +144,7 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 				&& client.getIdTokenEncryptedResponseEnc() != null && !client.getIdTokenEncryptedResponseEnc().equals(Algorithm.NONE)
 				&& (!Strings.isNullOrEmpty(client.getJwksUri()) || client.getJwks() != null)) {
 
-			JWTEncryptionAndDecryptionService encrypter = encrypters.getEncrypter(client.getJwksUri());
+			JWTEncryptionAndDecryptionService encrypter = encrypters.getEncrypter(client);
 
 			if (encrypter != null) {
 

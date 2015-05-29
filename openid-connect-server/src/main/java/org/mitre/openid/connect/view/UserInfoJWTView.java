@@ -32,7 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.mitre.jwt.encryption.service.JWTEncryptionAndDecryptionService;
 import org.mitre.jwt.signer.service.JWTSigningAndValidationService;
-import org.mitre.jwt.signer.service.impl.JWKSetCacheService;
+import org.mitre.jwt.signer.service.impl.ClientKeyCacheService;
 import org.mitre.jwt.signer.service.impl.SymmetricKeyJWTValidatorCacheService;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
@@ -80,7 +80,7 @@ public class UserInfoJWTView extends UserInfoView {
 	private ConfigurationPropertiesBean config;
 
 	@Autowired
-	private JWKSetCacheService encrypters;
+	private ClientKeyCacheService encrypters;
 
 	@Autowired
 	private SymmetricKeyJWTValidatorCacheService symmetricCacheService;
@@ -115,7 +115,7 @@ public class UserInfoJWTView extends UserInfoView {
 
 				// encrypt it to the client's key
 
-				JWTEncryptionAndDecryptionService encrypter = encrypters.getEncrypter(client.getJwksUri());
+				JWTEncryptionAndDecryptionService encrypter = encrypters.getEncrypter(client);
 
 				if (encrypter != null) {
 

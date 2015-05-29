@@ -25,8 +25,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.mitre.jwt.signer.service.JWTSigningAndValidationService;
-import org.mitre.jwt.signer.service.impl.JWKSetCacheService;
-import org.mitre.jwt.signer.service.impl.SymmetricKeyJWTValidatorCacheService;
+import org.mitre.jwt.signer.service.impl.ClientKeyCacheService;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
@@ -63,11 +62,7 @@ public class JWTBearerAuthenticationProvider implements AuthenticationProvider {
 
 	// map of verifiers, load keys for clients
 	@Autowired
-	private JWKSetCacheService validators;
-
-	// map of symmetric verifiers for client secrets
-	@Autowired
-	private SymmetricKeyJWTValidatorCacheService symmetricCacheService;
+	private ClientKeyCacheService validators;
 
 	// Allow for time sync issues by having a window of X seconds.
 	private int timeSkewAllowance = 300;
@@ -114,7 +109,7 @@ public class JWTBearerAuthenticationProvider implements AuthenticationProvider {
 					// this client doesn't support this type of authentication
 					throw new AuthenticationServiceException("Client does not support this authentication method.");
 
-				} else if (client.getTokenEndpointAuthMethod().equals(AuthMethod.PRIVATE_KEY) &&
+				} else if ((client.getTokenEndpointAuthMethod().equals(AuthMethod.PRIVATE_KEY) &&
 						(alg.equals(JWSAlgorithm.RS256)
 								|| alg.equals(JWSAlgorithm.RS384)
 								|| alg.equals(JWSAlgorithm.RS512)
@@ -123,36 +118,23 @@ public class JWTBearerAuthenticationProvider implements AuthenticationProvider {
 								|| alg.equals(JWSAlgorithm.ES512)
 								|| alg.equals(JWSAlgorithm.PS256)
 								|| alg.equals(JWSAlgorithm.PS384)
-								|| alg.equals(JWSAlgorithm.PS512))) {
-
-					// it's a known public/private key algorithm
-					
-					JWTSigningAndValidationService validator = validators.getValidator(client.getJwksUri());
-
-					if (validator == null) {
-						throw new AuthenticationServiceException("Unable to create signature validator for client's JWKS URI: " + client.getJwksUri());
-					}
-
-					if (!validator.validateSignature(jws)) {
-						throw new AuthenticationServiceException("Signature did not validate for presented JWT authentication.");
-					}
-				} else if (client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_JWT) &&
+								|| alg.equals(JWSAlgorithm.PS512))) 
+					|| (client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_JWT) &&
 						(alg.equals(JWSAlgorithm.HS256)
 								|| alg.equals(JWSAlgorithm.HS384)
-								|| alg.equals(JWSAlgorithm.HS512))) {
+								|| alg.equals(JWSAlgorithm.HS512)))) {
 
-					// it's HMAC, we need to make a validator based on the client secret
-
-					JWTSigningAndValidationService validator = symmetricCacheService.getSymmetricValidtor(client);
+					JWTSigningAndValidationService validator = validators.getValidator(client, alg);
 
 					if (validator == null) {
-						throw new AuthenticationServiceException("Unable to create signature validator for client's secret: " + client.getClientSecret());
+						throw new AuthenticationServiceException("Unable to create signature validator for client " + client + " and algorithm " + alg);
 					}
 
 					if (!validator.validateSignature(jws)) {
 						throw new AuthenticationServiceException("Signature did not validate for presented JWT authentication.");
 					}
-
+				} else {
+					throw new AuthenticationServiceException("Unable to create signature validator for method " + client.getTokenEndpointAuthMethod() + " and algorithm " + alg);
 				}
 			}
 
