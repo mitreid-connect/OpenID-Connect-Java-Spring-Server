@@ -111,7 +111,7 @@ public class UserInfoJWTView extends UserInfoView {
 
 			if (client.getIdTokenEncryptedResponseAlg() != null && !client.getIdTokenEncryptedResponseAlg().equals(Algorithm.NONE)
 					&& client.getIdTokenEncryptedResponseEnc() != null && !client.getIdTokenEncryptedResponseEnc().equals(Algorithm.NONE)
-					&& !Strings.isNullOrEmpty(client.getJwksUri())) {
+					&& (!Strings.isNullOrEmpty(client.getJwksUri()) || client.getJwks() != null)) {
 
 				// encrypt it to the client's key
 

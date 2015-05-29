@@ -527,7 +527,7 @@ public class DynamicClientRegistrationEndpoint {
 				newClient = clientService.generateClientSecret(newClient);
 			}
 		} else if (newClient.getTokenEndpointAuthMethod() == AuthMethod.PRIVATE_KEY) {
-			if (Strings.isNullOrEmpty(newClient.getJwksUri())) {
+			if (Strings.isNullOrEmpty(newClient.getJwksUri()) && newClient.getJwks() == null) {
 				throw new ValidationException("invalid_client_metadata", "JWK Set URI required when using private key authentication", HttpStatus.BAD_REQUEST);
 			}
 

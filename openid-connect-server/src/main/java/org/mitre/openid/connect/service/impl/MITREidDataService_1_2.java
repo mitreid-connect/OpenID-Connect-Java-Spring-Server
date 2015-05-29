@@ -59,6 +59,7 @@ import com.google.gson.stream.JsonWriter;
 import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jwt.JWTParser;
 
 import static org.mitre.util.JsonUtils.readMap;
@@ -387,6 +388,7 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 				writer.endArray();
 				writer.name("policyUri").value(client.getPolicyUri());
 				writer.name("jwksUri").value(client.getJwksUri());
+				writer.name("jwks").value((client.getJwks() != null) ? client.getJwks().toString() : null);
 				writer.name("applicationType")
 				.value((client.getApplicationType() != null) ? client.getApplicationType().getValue() : null);
 				writer.name("sectorIdentifierUri").value(client.getSectorIdentifierUri());
@@ -1001,6 +1003,14 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 					} else if (name.equals("subjectType")) {
 						SubjectType st = SubjectType.getByValue(reader.nextString());
 						client.setSubjectType(st);
+					} else if (name.equals("jwks_uri")) {
+						client.setJwksUri(reader.nextString());
+					} else if (name.equals("jwks")) {
+						try {
+							client.setJwks(JWKSet.parse(reader.nextString()));
+						} catch (ParseException e) {
+							logger.error("Couldn't parse JWK Set", e);
+						}
 					} else if (name.equals("requestObjectSigningAlg")) {
 						JWSAlgorithm alg = JWSAlgorithm.parse(reader.nextString());
 						client.setRequestObjectSigningAlg(alg);

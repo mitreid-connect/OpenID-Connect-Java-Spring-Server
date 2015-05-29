@@ -37,12 +37,14 @@ import com.google.gson.ExclusionStrategy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.jwk.JWKSet;
 
 /**
  * 
@@ -60,6 +62,8 @@ public abstract class AbstractClientEntityView extends AbstractView {
 	 */
 	private static final Logger logger = LoggerFactory.getLogger(AbstractClientEntityView.class);
 
+	private JsonParser parser = new JsonParser();
+	
 	private Gson gson = new GsonBuilder()
 	.setExclusionStrategies(getExclusionStrategy())
 	.registerTypeAdapter(JWSAlgorithm.class, new JsonSerializer<JWSAlgorithm>() {
@@ -87,6 +91,16 @@ public abstract class AbstractClientEntityView extends AbstractView {
 		public JsonElement serialize(EncryptionMethod src, Type typeOfSrc, JsonSerializationContext context) {
 			if (src != null) {
 				return new JsonPrimitive(src.getName());
+			} else {
+				return null;
+			}
+		}
+	})
+	.registerTypeAdapter(JWKSet.class, new JsonSerializer<JWKSet>() {
+		@Override
+		public JsonElement serialize(JWKSet src, Type typeOfSrc, JsonSerializationContext context) {
+			if (src != null) {
+				return parser.parse(src.toString());
 			} else {
 				return null;
 			}

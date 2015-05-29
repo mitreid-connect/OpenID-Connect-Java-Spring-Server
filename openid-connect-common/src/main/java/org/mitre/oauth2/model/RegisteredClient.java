@@ -31,6 +31,7 @@ import org.springframework.security.core.GrantedAuthority;
 import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.jwk.JWKSet;
 
 /**
  * @author jricher
@@ -460,6 +461,22 @@ public class RegisteredClient {
 	public void setJwksUri(String jwksUri) {
 		client.setJwksUri(jwksUri);
 	}
+	/**
+	 * @return
+	 * @see org.mitre.oauth2.model.ClientDetailsEntity#getJwks()
+	 */
+	public JWKSet getJwks() {
+		return client.getJwks();
+	}
+
+	/**
+	 * @param jwks
+	 * @see org.mitre.oauth2.model.ClientDetailsEntity#setJwks(com.nimbusds.jose.jwk.JWKSet)
+	 */
+	public void setJwks(JWKSet jwks) {
+		client.setJwks(jwks);
+	}
+
 	/**
 	 * @return
 	 * @see org.mitre.oauth2.model.ClientDetailsEntity#getSectorIdentifierUri()

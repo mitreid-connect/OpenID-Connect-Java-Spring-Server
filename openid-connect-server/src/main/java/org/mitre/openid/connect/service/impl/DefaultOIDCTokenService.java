@@ -142,7 +142,7 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 
 		if (client.getIdTokenEncryptedResponseAlg() != null && !client.getIdTokenEncryptedResponseAlg().equals(Algorithm.NONE)
 				&& client.getIdTokenEncryptedResponseEnc() != null && !client.getIdTokenEncryptedResponseEnc().equals(Algorithm.NONE)
-				&& !Strings.isNullOrEmpty(client.getJwksUri())) {
+				&& (!Strings.isNullOrEmpty(client.getJwksUri()) || client.getJwks() != null)) {
 
 			JWTEncryptionAndDecryptionService encrypter = encrypters.getEncrypter(client.getJwksUri());
 

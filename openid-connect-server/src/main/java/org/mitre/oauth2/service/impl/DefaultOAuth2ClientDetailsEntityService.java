@@ -114,6 +114,9 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 
 		// make sure that clients with the "refresh_token" grant type have the "offline_access" scope, and vice versa
 		ensureRefreshTokenConsistency(client);
+		
+		// make sure we don't have both a JWKS and a JWKS URI
+		ensureKeyConsistency(client);
 
 		// timestamp this to right now
 		client.setCreatedAt(new Date());
@@ -130,6 +133,16 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 		statsService.resetCache();
 
 		return c;
+	}
+
+	/**
+	 * @param client
+	 */
+	private void ensureKeyConsistency(ClientDetailsEntity client) {
+		if (client.getJwksUri() != null && client.getJwks() != null) {
+			// a client can only have one key type or the other, not both
+			throw new IllegalArgumentException("A client cannot have both JWKS URI and JWKS value");
+		}
 	}
 
 	private void ensureNoReservedScopes(ClientDetailsEntity client) {
@@ -251,6 +264,9 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 
 			// if the client is flagged to allow for refresh tokens, make sure it's got the right scope
 			ensureRefreshTokenConsistency(newClient);
+
+			// make sure we don't have both a JWKS and a JWKS URI
+			ensureKeyConsistency(newClient);
 
 			// check the sector URI
 			checkSectorIdentifierUri(newClient);

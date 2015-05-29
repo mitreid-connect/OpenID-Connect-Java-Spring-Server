@@ -17,6 +17,7 @@
 package org.mitre.openid.connect.web;
 
 import java.lang.reflect.Type;
+import java.text.ParseException;
 import java.util.Collection;
 
 import org.mitre.oauth2.model.ClientDetailsEntity;
@@ -62,6 +63,7 @@ import com.nimbusds.jose.Algorithm;
 import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.jwk.JWKSet;
 
 /**
  * @author Michael Jett <mjett@mitre.org>
@@ -112,6 +114,20 @@ public class ClientAPI {
 		public EncryptionMethod deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
 			if (json.isJsonPrimitive()) {
 				return EncryptionMethod.parse(json.getAsString());
+			} else {
+				return null;
+			}
+		}
+	})
+	.registerTypeAdapter(JWKSet.class, new JsonDeserializer<JWKSet>() {
+		@Override
+		public JWKSet deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			if (json.isJsonObject()) {
+				try {
+					return JWKSet.parse(json.toString());
+				} catch (ParseException e) {
+					return null;
+				}
 			} else {
 				return null;
 			}
@@ -196,7 +212,7 @@ public class ClientAPI {
 
 		} else if (client.getTokenEndpointAuthMethod().equals(AuthMethod.PRIVATE_KEY)) {
 
-			if (Strings.isNullOrEmpty(client.getJwksUri())) {
+			if (Strings.isNullOrEmpty(client.getJwksUri()) && client.getJwks() == null) {
 				logger.error("tried to create client with private key auth but no private key");
 				m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 				m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Can not create a client with private key authentication without registering a key via the JWS Set URI.");
@@ -215,16 +231,23 @@ public class ClientAPI {
 
 
 		}
-
+		
 		client.setDynamicallyRegistered(false);
 
-		ClientDetailsEntity newClient = clientService.saveNewClient(client);
-		m.addAttribute(JsonEntityView.ENTITY, newClient);
-
-		if (AuthenticationUtilities.isAdmin(auth)) {
-			return ClientEntityViewForAdmins.VIEWNAME;
-		} else {
-			return ClientEntityViewForUsers.VIEWNAME;
+		try {
+			ClientDetailsEntity newClient = clientService.saveNewClient(client);
+			m.addAttribute(JsonEntityView.ENTITY, newClient);
+	
+			if (AuthenticationUtilities.isAdmin(auth)) {
+				return ClientEntityViewForAdmins.VIEWNAME;
+			} else {
+				return ClientEntityViewForUsers.VIEWNAME;
+			}
+		} catch (IllegalArgumentException e) {
+			logger.error("Unable to save client: {}", e.getMessage());
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
+			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Unable to save client");
+			return JsonErrorView.VIEWNAME;
 		}
 	}
 
@@ -292,7 +315,7 @@ public class ClientAPI {
 
 		} else if (client.getTokenEndpointAuthMethod().equals(AuthMethod.PRIVATE_KEY)) {
 
-			if (Strings.isNullOrEmpty(client.getJwksUri())) {
+			if (Strings.isNullOrEmpty(client.getJwksUri()) && client.getJwks() != null) {
 				logger.error("tried to create client with private key auth but no private key");
 				m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 				m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Can not create a client with private key authentication without registering a key via the JWS Set URI.");
@@ -312,13 +335,20 @@ public class ClientAPI {
 
 		}
 
-		ClientDetailsEntity newClient = clientService.updateClient(oldClient, client);
-		m.addAttribute(JsonEntityView.ENTITY, newClient);
-
-		if (AuthenticationUtilities.isAdmin(auth)) {
-			return ClientEntityViewForAdmins.VIEWNAME;
-		} else {
-			return ClientEntityViewForUsers.VIEWNAME;
+		try {
+			ClientDetailsEntity newClient = clientService.updateClient(oldClient, client);
+			m.addAttribute(JsonEntityView.ENTITY, newClient);
+	
+			if (AuthenticationUtilities.isAdmin(auth)) {
+				return ClientEntityViewForAdmins.VIEWNAME;
+			} else {
+				return ClientEntityViewForUsers.VIEWNAME;
+			}
+		} catch (IllegalArgumentException e) {
+			logger.error("Unable to save client: {}", e.getMessage());
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
+			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Unable to save client");
+			return JsonErrorView.VIEWNAME;
 		}
 	}
 

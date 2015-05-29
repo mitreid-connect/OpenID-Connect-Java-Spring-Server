@@ -23,6 +23,7 @@ public interface RegisteredClientFields {
 	public String SECTOR_IDENTIFIER_URI = "sector_identifier_uri";
 	public String APPLICATION_TYPE = "application_type";
 	public String JWKS_URI = "jwks_uri";
+	public String JWKS = "jwks";
 	public String SCOPE_SEPARATOR = " ";
 	public String POLICY_URI = "policy_uri";
 	public String RESPONSE_TYPES = "response_types";

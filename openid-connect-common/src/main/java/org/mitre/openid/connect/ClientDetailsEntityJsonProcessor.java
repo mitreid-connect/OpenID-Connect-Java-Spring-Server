@@ -20,11 +20,15 @@
 package org.mitre.openid.connect;
 
 
+import java.text.ParseException;
+
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity.AppType;
 import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
 import org.mitre.oauth2.model.ClientDetailsEntity.SubjectType;
 import org.mitre.oauth2.model.RegisteredClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
@@ -32,6 +36,7 @@ import com.google.common.collect.Sets;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.nimbusds.jose.jwk.JWKSet;
 
 import static org.mitre.oauth2.model.RegisteredClientFields.APPLICATION_TYPE;
 import static org.mitre.oauth2.model.RegisteredClientFields.CLIENT_ID;
@@ -49,6 +54,7 @@ import static org.mitre.oauth2.model.RegisteredClientFields.ID_TOKEN_ENCRYPTED_R
 import static org.mitre.oauth2.model.RegisteredClientFields.ID_TOKEN_SIGNED_RESPONSE_ALG;
 import static org.mitre.oauth2.model.RegisteredClientFields.INITIATE_LOGIN_URI;
 import static org.mitre.oauth2.model.RegisteredClientFields.JWKS_URI;
+import static org.mitre.oauth2.model.RegisteredClientFields.JWKS;
 import static org.mitre.oauth2.model.RegisteredClientFields.LOGO_URI;
 import static org.mitre.oauth2.model.RegisteredClientFields.POLICY_URI;
 import static org.mitre.oauth2.model.RegisteredClientFields.POST_LOGOUT_REDIRECT_URIS;
@@ -78,11 +84,14 @@ import static org.mitre.util.JsonUtils.getAsString;
 import static org.mitre.util.JsonUtils.getAsStringSet;
 
 /**
+ * Utility class to handle the parsing and serialization of ClientDetails objects.
+ * 
  * @author jricher
  *
  */
 public class ClientDetailsEntityJsonProcessor {
 
+	private static Logger logger = LoggerFactory.getLogger(ClientDetailsEntityJsonProcessor.class);
 	
 	private static JsonParser parser = new JsonParser();
 
@@ -103,8 +112,6 @@ public class ClientDetailsEntityJsonProcessor {
 
 			JsonObject o = jsonEl.getAsJsonObject();
 			ClientDetailsEntity c = new ClientDetailsEntity();
-
-			// TODO: make these field names into constants
 
 			// these two fields should only be sent in the update request, and MUST match existing values
 			c.setClientId(getAsString(o, CLIENT_ID));
@@ -133,7 +140,16 @@ public class ClientDetailsEntityJsonProcessor {
 			c.setResponseTypes(getAsStringSet(o, RESPONSE_TYPES));
 			c.setPolicyUri(getAsString(o, POLICY_URI));
 			c.setJwksUri(getAsString(o, JWKS_URI));
-
+			
+			JsonElement jwksEl = o.get(JWKS);
+			if (jwksEl != null && jwksEl.isJsonObject()) {
+				try {
+					JWKSet jwks = JWKSet.parse(jwksEl.toString()); // we have to pass this through Nimbus's parser as a string
+					c.setJwks(jwks);
+				} catch (ParseException e) {
+					logger.error("Unable to parse JWK Set for client", e);
+				}
+			}
 
 			// OIDC Additions
 			String appType = getAsString(o, APPLICATION_TYPE);
@@ -261,6 +277,15 @@ public class ClientDetailsEntityJsonProcessor {
 		o.add(RESPONSE_TYPES, getAsArray(c.getResponseTypes()));
 		o.addProperty(POLICY_URI, c.getPolicyUri());
 		o.addProperty(JWKS_URI, c.getJwksUri());
+		
+		// get the JWKS sub-object
+		if (c.getJwks() != null) {
+			// We have to re-parse it into GSON because Nimbus uses a different parser
+			JsonElement jwks = parser.parse(c.getJwks().toString());
+			o.add(JWKS, jwks);
+		} else {
+			o.add(JWKS, null);
+		}
 
 		// OIDC Registration
 		o.addProperty(APPLICATION_TYPE, c.getApplicationType() != null ? c.getApplicationType().getValue() : null);

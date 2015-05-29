@@ -217,7 +217,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 
 					// it's a public key, need to find the JWK URI and fetch the key
 
-					if (client.getJwksUri() == null) {
+					if (Strings.isNullOrEmpty(client.getJwksUri()) && client.getJwks() == null) {
 						throw new InvalidClientException("Client must have a JWKS registered to use signed request objects with a public key.");
 					}
 
