@@ -59,8 +59,6 @@ import com.google.gson.JsonObject;
 
 import static org.mitre.openid.connect.request.ConnectRequestParameters.CSRF;
 import static org.mitre.openid.connect.request.ConnectRequestParameters.PROMPT;
-import static org.mitre.openid.connect.request.ConnectRequestParameters.PROMPT_CONSENT;
-import static org.mitre.openid.connect.request.ConnectRequestParameters.PROMPT_NONE;
 import static org.mitre.openid.connect.request.ConnectRequestParameters.PROMPT_SEPARATOR;
 
 /**

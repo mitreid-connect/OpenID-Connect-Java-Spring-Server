@@ -53,8 +53,8 @@ import static org.mitre.oauth2.model.RegisteredClientFields.ID_TOKEN_ENCRYPTED_R
 import static org.mitre.oauth2.model.RegisteredClientFields.ID_TOKEN_ENCRYPTED_RESPONSE_ENC;
 import static org.mitre.oauth2.model.RegisteredClientFields.ID_TOKEN_SIGNED_RESPONSE_ALG;
 import static org.mitre.oauth2.model.RegisteredClientFields.INITIATE_LOGIN_URI;
-import static org.mitre.oauth2.model.RegisteredClientFields.JWKS_URI;
 import static org.mitre.oauth2.model.RegisteredClientFields.JWKS;
+import static org.mitre.oauth2.model.RegisteredClientFields.JWKS_URI;
 import static org.mitre.oauth2.model.RegisteredClientFields.LOGO_URI;
 import static org.mitre.oauth2.model.RegisteredClientFields.POLICY_URI;
 import static org.mitre.oauth2.model.RegisteredClientFields.POST_LOGOUT_REDIRECT_URIS;

@@ -19,7 +19,6 @@
  */
 package org.mitre.oauth2.model;
 
-import java.text.ParseException;
 import java.util.Date;
 
 import javax.persistence.Basic;
@@ -42,7 +41,6 @@ import org.mitre.oauth2.model.convert.JWTStringConverter;
 import org.springframework.security.oauth2.common.OAuth2RefreshToken;
 
 import com.nimbusds.jwt.JWT;
-import com.nimbusds.jwt.JWTParser;
 
 /**
  * @author jricher
