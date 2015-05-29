@@ -19,7 +19,6 @@
  */
 package org.mitre.oauth2.model;
 
-import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +28,7 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -46,6 +46,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.Transient;
 
+import org.mitre.oauth2.model.convert.JWTStringConverter;
 import org.mitre.uma.model.Permission;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2AccessTokenJackson1Deserializer;
@@ -55,7 +56,6 @@ import org.springframework.security.oauth2.common.OAuth2AccessTokenJackson2Seria
 import org.springframework.security.oauth2.common.OAuth2RefreshToken;
 
 import com.nimbusds.jwt.JWT;
-import com.nimbusds.jwt.JWTParser;
 
 /**
  * @author jricher
@@ -69,7 +69,7 @@ import com.nimbusds.jwt.JWTParser;
 	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_REFRESH_TOKEN, query = "select a from OAuth2AccessTokenEntity a where a.refreshToken = :" + OAuth2AccessTokenEntity.PARAM_REFERSH_TOKEN),
 	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_CLIENT, query = "select a from OAuth2AccessTokenEntity a where a.client = :" + OAuth2AccessTokenEntity.PARAM_CLIENT),
 	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_ID_TOKEN, query = "select a from OAuth2AccessTokenEntity a where a.idToken = :" + OAuth2AccessTokenEntity.PARAM_ID_TOKEN),
-	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_TOKEN_VALUE, query = "select a from OAuth2AccessTokenEntity a where a.value = :" + OAuth2AccessTokenEntity.PARAM_TOKEN_VALUE)
+	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_TOKEN_VALUE, query = "select a from OAuth2AccessTokenEntity a where a.jwt = :" + OAuth2AccessTokenEntity.PARAM_TOKEN_VALUE)
 })
 @org.codehaus.jackson.map.annotate.JsonSerialize(using = OAuth2AccessTokenJackson1Serializer.class)
 @org.codehaus.jackson.map.annotate.JsonDeserialize(using = OAuth2AccessTokenJackson1Deserializer.class)
@@ -186,20 +186,9 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	 * Get the string-encoded value of this access token.
 	 */
 	@Override
-	@Basic
-	@Column(name="token_value")
+	@Transient
 	public String getValue() {
 		return jwtValue.serialize();
-	}
-
-	/**
-	 * Set the "value" of this Access Token
-	 * 
-	 * @param value the JWT string
-	 * @throws ParseException if "value" is not a properly formatted JWT string
-	 */
-	public void setValue(String value) throws ParseException {
-		setJwt(JWTParser.parse(value));
 	}
 
 	@Override
@@ -295,7 +284,9 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	/**
 	 * @return the jwtValue
 	 */
-	@Transient
+	@Basic
+	@Column(name="token_value")
+	@Convert(converter = JWTStringConverter.class)
 	public JWT getJwt() {
 		return jwtValue;
 	}

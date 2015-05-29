@@ -65,6 +65,7 @@ import com.google.gson.stream.JsonWriter;
 import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jwt.JWTParser;
 
 import static org.mitre.util.JsonUtils.readMap;
 import static org.mitre.util.JsonUtils.readSet;
@@ -262,7 +263,8 @@ public class MITREidDataService_1_1 extends MITREidDataServiceSupport implements
 					} else if (name.equals("value")) {
 						String value = reader.nextString();
 						try {
-							token.setValue(value);
+							// all tokens are JWTs
+							token.setJwt(JWTParser.parse(value));
 						} catch (ParseException ex) {
 							logger.error("Unable to set refresh token value to {}", value, ex);
 						}

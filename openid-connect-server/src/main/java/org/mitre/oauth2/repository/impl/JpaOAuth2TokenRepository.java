@@ -16,6 +16,7 @@
  *******************************************************************************/
 package org.mitre.oauth2.repository.impl;
 
+import java.text.ParseException;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -32,6 +33,9 @@ import org.mitre.oauth2.repository.OAuth2TokenRepository;
 import org.mitre.util.jpa.JpaUtil;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.nimbusds.jwt.JWT;
+import com.nimbusds.jwt.JWTParser;
 
 @Repository
 public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
@@ -56,9 +60,14 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 
 	@Override
 	public OAuth2AccessTokenEntity getAccessTokenByValue(String accessTokenValue) {
-		TypedQuery<OAuth2AccessTokenEntity> query = manager.createNamedQuery(OAuth2AccessTokenEntity.QUERY_BY_TOKEN_VALUE, OAuth2AccessTokenEntity.class);
-		query.setParameter(OAuth2AccessTokenEntity.PARAM_TOKEN_VALUE, accessTokenValue);
-		return JpaUtil.getSingleResult(query.getResultList());
+		try {
+			JWT jwt = JWTParser.parse(accessTokenValue);
+			TypedQuery<OAuth2AccessTokenEntity> query = manager.createNamedQuery(OAuth2AccessTokenEntity.QUERY_BY_TOKEN_VALUE, OAuth2AccessTokenEntity.class);
+			query.setParameter(OAuth2AccessTokenEntity.PARAM_TOKEN_VALUE, jwt);
+			return JpaUtil.getSingleResult(query.getResultList());
+		} catch (ParseException e) {
+			return null;
+		}
 	}
 
 	@Override
