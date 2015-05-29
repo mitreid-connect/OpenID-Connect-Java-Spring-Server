@@ -49,15 +49,16 @@ import javax.persistence.Transient;
 
 import org.mitre.oauth2.model.convert.JWEAlgorithmStringConverter;
 import org.mitre.oauth2.model.convert.JWEEncryptionMethodStringConverter;
+import org.mitre.oauth2.model.convert.JWKSetStringConverter;
 import org.mitre.oauth2.model.convert.JWSAlgorithmStringConverter;
 import org.mitre.oauth2.model.convert.SimpleGrantedAuthorityStringConverter;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.provider.ClientDetails;
 
 import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.jwk.JWKSet;
 
 /**
  * @author jricher
@@ -96,7 +97,8 @@ public class ClientDetailsEntity implements ClientDetails {
 	private Set<String> grantTypes = new HashSet<String>(); // grant_types
 	private Set<String> responseTypes = new HashSet<String>(); // response_types
 	private String policyUri;
-	private String jwksUri;
+	private String jwksUri; // URI pointer to keys
+	private JWKSet jwks; // public key stored by value
 
 	/** Fields from OIDC Client Registration Specification **/
 	private AppType applicationType; // application_type
@@ -689,6 +691,23 @@ public class ClientDetailsEntity implements ClientDetails {
 
 	public void setJwksUri(String jwksUri) {
 		this.jwksUri = jwksUri;
+	}
+
+	/**
+	 * @return the jwks
+	 */
+	@Basic
+	@Column(name="jwks")
+	@Convert(converter = JWKSetStringConverter.class)
+	public JWKSet getJwks() {
+		return jwks;
+	}
+
+	/**
+	 * @param jwks the jwks to set
+	 */
+	public void setJwks(JWKSet jwks) {
+		this.jwks = jwks;
 	}
 
 	@Basic

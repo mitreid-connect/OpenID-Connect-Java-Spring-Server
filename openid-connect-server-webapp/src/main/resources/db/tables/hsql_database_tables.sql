@@ -149,6 +149,7 @@ CREATE TABLE IF NOT EXISTS client_details (
 	tos_uri VARCHAR(2048),
 
 	jwks_uri VARCHAR(2048),
+	jwks VARCHAR(8192),
 	sector_identifier_uri VARCHAR(2048),
 	
 	request_object_signing_alg VARCHAR(256),
