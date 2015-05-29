@@ -157,7 +157,7 @@ public class TestMITREidDataService_1_1 {
 		token1.setId(1L);
 		token1.setClient(mockedClient1);
 		token1.setExpiration(expirationDate1);
-		token1.setValue("eyJhbGciOiJub25lIn0.eyJqdGkiOiJmOTg4OWQyOS0xMTk1LTQ4ODEtODgwZC1lZjVlYzAwY2Y4NDIifQ.");
+		token1.setJwt(JWTParser.parse("eyJhbGciOiJub25lIn0.eyJqdGkiOiJmOTg4OWQyOS0xMTk1LTQ4ODEtODgwZC1lZjVlYzAwY2Y4NDIifQ."));
 		token1.setAuthenticationHolder(mockedAuthHolder1);
 
 		String expiration2 = "2015-01-07T18:31:50.079+0000";
@@ -173,7 +173,7 @@ public class TestMITREidDataService_1_1 {
 		token2.setId(2L);
 		token2.setClient(mockedClient2);
 		token2.setExpiration(expirationDate2);
-		token2.setValue("eyJhbGciOiJub25lIn0.eyJqdGkiOiJlYmEyYjc3My0xNjAzLTRmNDAtOWQ3MS1hMGIxZDg1OWE2MDAifQ.");
+		token2.setJwt(JWTParser.parse("eyJhbGciOiJub25lIn0.eyJqdGkiOiJlYmEyYjc3My0xNjAzLTRmNDAtOWQ3MS1hMGIxZDg1OWE2MDAifQ."));
 		token2.setAuthenticationHolder(mockedAuthHolder2);
 
 		String configJson = "{" +
@@ -869,7 +869,7 @@ public class TestMITREidDataService_1_1 {
 		token1.setId(1L);
 		token1.setClient(mockedClient1);
 		token1.setExpiration(expirationDate1);
-		token1.setValue("eyJhbGciOiJub25lIn0.eyJqdGkiOiJmOTg4OWQyOS0xMTk1LTQ4ODEtODgwZC1lZjVlYzAwY2Y4NDIifQ.");
+		token1.setJwt(JWTParser.parse("eyJhbGciOiJub25lIn0.eyJqdGkiOiJmOTg4OWQyOS0xMTk1LTQ4ODEtODgwZC1lZjVlYzAwY2Y4NDIifQ."));
 		token1.setAuthenticationHolder(holder1);
 
 		String expiration2 = "2015-01-07T18:31:50.079+0000";
@@ -892,7 +892,7 @@ public class TestMITREidDataService_1_1 {
 		token2.setId(2L);
 		token2.setClient(mockedClient2);
 		token2.setExpiration(expirationDate2);
-		token2.setValue("eyJhbGciOiJub25lIn0.eyJqdGkiOiJlYmEyYjc3My0xNjAzLTRmNDAtOWQ3MS1hMGIxZDg1OWE2MDAifQ.");
+		token2.setJwt(JWTParser.parse("eyJhbGciOiJub25lIn0.eyJqdGkiOiJlYmEyYjc3My0xNjAzLTRmNDAtOWQ3MS1hMGIxZDg1OWE2MDAifQ."));
 		token2.setAuthenticationHolder(holder2);
 
 		String configJson = "{" +

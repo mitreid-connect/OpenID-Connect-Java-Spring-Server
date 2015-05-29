@@ -24,6 +24,7 @@ import java.util.Date;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -37,6 +38,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.Transient;
 
+import org.mitre.oauth2.model.convert.JWTStringConverter;
 import org.springframework.security.oauth2.common.OAuth2RefreshToken;
 
 import com.nimbusds.jwt.JWT;
@@ -52,7 +54,7 @@ import com.nimbusds.jwt.JWTParser;
 	@NamedQuery(name = OAuth2RefreshTokenEntity.QUERY_ALL, query = "select r from OAuth2RefreshTokenEntity r"),
 	@NamedQuery(name = OAuth2RefreshTokenEntity.QUERY_EXPIRED_BY_DATE, query = "select r from OAuth2RefreshTokenEntity r where r.expiration <= :" + OAuth2RefreshTokenEntity.PARAM_DATE),
 	@NamedQuery(name = OAuth2RefreshTokenEntity.QUERY_BY_CLIENT, query = "select r from OAuth2RefreshTokenEntity r where r.client = :" + OAuth2RefreshTokenEntity.PARAM_CLIENT),
-	@NamedQuery(name = OAuth2RefreshTokenEntity.QUERY_BY_TOKEN_VALUE, query = "select r from OAuth2RefreshTokenEntity r where r.value = :" + OAuth2RefreshTokenEntity.PARAM_TOKEN_VALUE)
+	@NamedQuery(name = OAuth2RefreshTokenEntity.QUERY_BY_TOKEN_VALUE, query = "select r from OAuth2RefreshTokenEntity r where r.jwt = :" + OAuth2RefreshTokenEntity.PARAM_TOKEN_VALUE)
 })
 public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
 
@@ -124,19 +126,9 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
 	 * Get the JWT-encoded value of this token
 	 */
 	@Override
-	@Basic
-	@Column(name="token_value")
+	@Transient
 	public String getValue() {
 		return jwt.serialize();
-	}
-
-	/**
-	 * Set the value of this token as a string. Parses the string into a JWT.
-	 * @param value
-	 * @throws ParseException if the value is not a valid JWT string
-	 */
-	public void setValue(String value) throws ParseException {
-		setJwt(JWTParser.parse(value));
 	}
 
 	@Basic
@@ -183,7 +175,9 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
 	 * Get the JWT object directly
 	 * @return the jwt
 	 */
-	@Transient
+	@Basic
+	@Column(name="token_value")
+	@Convert(converter = JWTStringConverter.class)
 	public JWT getJwt() {
 		return jwt;
 	}

@@ -194,7 +194,7 @@ public class MITREidDataService_1_1 extends MITREidDataServiceSupport implements
 					} else if (name.equals("value")) {
 						String value = reader.nextString();
 						try {
-							token.setValue(value);
+							token.setJwt(JWTParser.parse(value));
 						} catch (ParseException ex) {
 							logger.error("Unable to set refresh token value to {}", value, ex);
 						}
