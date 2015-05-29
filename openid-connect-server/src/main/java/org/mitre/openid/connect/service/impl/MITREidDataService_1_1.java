@@ -1037,6 +1037,8 @@ public class MITREidDataService_1_1 extends MITREidDataService_1_X {
                         } else if (name.equals("subjectType")) {
                             SubjectType st = SubjectType.getByValue(reader.nextString());
                             client.setSubjectType(st);
+    					} else if (name.equals("jwks_uri")) {
+    						client.setJwksUri(reader.nextString());
                         } else if (name.equals("requestObjectSigningAlg")) {
                             JWSAlgorithmEmbed alg = JWSAlgorithmEmbed.getForAlgorithmName(reader.nextString());
                             client.setRequestObjectSigningAlgEmbed(alg);
