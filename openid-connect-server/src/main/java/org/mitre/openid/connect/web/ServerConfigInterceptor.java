@@ -29,7 +29,8 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 /**
  * 
- * Injects the server configuration bean into the Model context, if it exists. Allows JSPs and the like to call "config.logoUrl" among others.
+ * Injects the server configuration bean into the request context. 
+ * This allows JSPs and the like to call "config.logoUrl" among others.
  * 
  * @author jricher
  *
@@ -40,10 +41,9 @@ public class ServerConfigInterceptor extends HandlerInterceptorAdapter {
 	private ConfigurationPropertiesBean config;
 
 	@Override
-	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-		if (modelAndView != null) { // skip checking at all if we have no model and view to hand the config to
-			modelAndView.addObject("config", config);
-		}
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+		request.setAttribute("config", config);
+		return true;
 	}
-
+	
 }
