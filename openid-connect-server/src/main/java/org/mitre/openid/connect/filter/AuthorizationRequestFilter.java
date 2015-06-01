@@ -235,7 +235,7 @@ public class AuthorizationRequestFilter extends GenericFilterBean {
 	 * @return
 	 */
 	private Map<String, String> createRequestMap(Map<String, String[]> parameterMap) {
-		Map<String, String> requestMap = new HashMap<String, String>();
+		Map<String, String> requestMap = new HashMap<>();
 		for (String key : parameterMap.keySet()) {
 			String[] val = parameterMap.get(key);
 			if (val != null && val.length > 0) {

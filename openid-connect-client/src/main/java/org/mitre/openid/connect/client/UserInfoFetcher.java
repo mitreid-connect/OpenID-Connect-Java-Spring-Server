@@ -91,7 +91,7 @@ public class UserInfoFetcher {
 				userInfoString = restTemplate.getForObject(serverConfiguration.getUserInfoUri(), String.class);
 
 			} else if (serverConfiguration.getUserInfoTokenMethod().equals(UserInfoTokenMethod.FORM)) {
-				MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
+				MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
 				form.add("access_token", token.getAccessTokenValue());
 
 				RestTemplate restTemplate = new RestTemplate(factory);

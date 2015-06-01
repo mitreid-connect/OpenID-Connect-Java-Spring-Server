@@ -272,12 +272,12 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		OAuth2AccessTokenEntity token = new OAuth2AccessTokenEntity();
 
 		// get the stored scopes from the authentication holder's authorization request; these are the scopes associated with the refresh token
-		Set<String> refreshScopesRequested = new HashSet<String>(refreshToken.getAuthenticationHolder().getAuthentication().getOAuth2Request().getScope());
+		Set<String> refreshScopesRequested = new HashSet<>(refreshToken.getAuthenticationHolder().getAuthentication().getOAuth2Request().getScope());
 		Set<SystemScope> refreshScopes = scopeService.fromStrings(refreshScopesRequested);
 		// remove any of the special system scopes
 		refreshScopes = scopeService.removeReservedScopes(refreshScopes);
 
-		Set<String> scopeRequested = authRequest.getScope() == null ? new HashSet<String>() : new HashSet<String>(authRequest.getScope());
+		Set<String> scopeRequested = authRequest.getScope() == null ? new HashSet<String>() : new HashSet<>(authRequest.getScope());
 		Set<SystemScope> scope = scopeService.fromStrings(scopeRequested);
 		
 		// remove any of the special system scopes

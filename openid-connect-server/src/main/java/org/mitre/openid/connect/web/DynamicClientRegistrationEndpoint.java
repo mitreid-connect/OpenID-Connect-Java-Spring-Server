@@ -409,7 +409,7 @@ public class DynamicClientRegistrationEndpoint {
 
 		// filter out unknown grant types
 		// TODO: make this a pluggable service
-		Set<String> requestedGrantTypes = new HashSet<String>(newClient.getGrantTypes());
+		Set<String> requestedGrantTypes = new HashSet<>(newClient.getGrantTypes());
 		requestedGrantTypes.retainAll(
 				ImmutableSet.of("authorization_code", "implicit",
 						"password", "client_credentials", "refresh_token",

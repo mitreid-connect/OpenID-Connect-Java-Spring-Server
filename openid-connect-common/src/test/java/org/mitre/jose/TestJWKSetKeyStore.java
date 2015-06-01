@@ -82,7 +82,7 @@ public class TestJWKSetKeyStore {
 			KeyUse.ENCRYPTION, null, JWEAlgorithm.RSA1_5, RSAkid_rsa2, null, null, null);
 
 
-	List<JWK> keys_list = new LinkedList<JWK>();
+	List<JWK> keys_list = new LinkedList<>();
 	private JWKSet jwkSet;
 	private String ks_file = "ks.txt";
 	private String ks_file_badJWK = "ks_badJWK.txt";

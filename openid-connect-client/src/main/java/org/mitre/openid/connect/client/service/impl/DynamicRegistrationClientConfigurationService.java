@@ -66,8 +66,8 @@ public class DynamicRegistrationClientConfigurationService implements ClientConf
 
 	private RegisteredClient template;
 
-	private Set<String> whitelist = new HashSet<String>();
-	private Set<String> blacklist = new HashSet<String>();
+	private Set<String> whitelist = new HashSet<>();
+	private Set<String> blacklist = new HashSet<>();
 
 	public DynamicRegistrationClientConfigurationService() {
 		clients = CacheBuilder.newBuilder().build(new DynamicClientRegistrationLoader());
@@ -192,7 +192,7 @@ public class DynamicRegistrationClientConfigurationService implements ClientConf
 				headers.setContentType(MediaType.APPLICATION_JSON);
 				headers.setAccept(Lists.newArrayList(MediaType.APPLICATION_JSON));
 
-				HttpEntity<String> entity = new HttpEntity<String>(serializedClient, headers);
+				HttpEntity<String> entity = new HttpEntity<>(serializedClient, headers);
 
 				String registered = restTemplate.postForObject(serverConfig.getRegistrationEndpointUri(), entity, String.class);
 				// TODO: handle HTTP errors
@@ -212,7 +212,7 @@ public class DynamicRegistrationClientConfigurationService implements ClientConf
 					headers.set("Authorization", String.format("%s %s", OAuth2AccessToken.BEARER_TYPE, knownClient.getRegistrationAccessToken()));
 					headers.setAccept(Lists.newArrayList(MediaType.APPLICATION_JSON));
 
-					HttpEntity<String> entity = new HttpEntity<String>(headers);
+					HttpEntity<String> entity = new HttpEntity<>(headers);
 
 					String registered = restTemplate.exchange(knownClient.getRegistrationClientUri(), HttpMethod.GET, entity, String.class).getBody();
 					// TODO: handle HTTP errors

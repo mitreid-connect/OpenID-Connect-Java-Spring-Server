@@ -86,16 +86,16 @@ public class ClientDetailsEntity implements ClientDetails {
 	/** Fields from the OAuth2 Dynamic Registration Specification */
 	private String clientId = null; // client_id
 	private String clientSecret = null; // client_secret
-	private Set<String> redirectUris = new HashSet<String>(); // redirect_uris
+	private Set<String> redirectUris = new HashSet<>(); // redirect_uris
 	private String clientName; // client_name
 	private String clientUri; // client_uri
 	private String logoUri; // logo_uri
 	private Set<String> contacts; // contacts
 	private String tosUri; // tos_uri
 	private AuthMethod tokenEndpointAuthMethod = AuthMethod.SECRET_BASIC; // token_endpoint_auth_method
-	private Set<String> scope = new HashSet<String>(); // scope
-	private Set<String> grantTypes = new HashSet<String>(); // grant_types
-	private Set<String> responseTypes = new HashSet<String>(); // response_types
+	private Set<String> scope = new HashSet<>(); // scope
+	private Set<String> grantTypes = new HashSet<>(); // grant_types
+	private Set<String> responseTypes = new HashSet<>(); // response_types
 	private String policyUri;
 	private String jwksUri; // URI pointer to keys
 	private JWKSet jwks; // public key stored by value
@@ -127,11 +127,11 @@ public class ClientDetailsEntity implements ClientDetails {
 	private Set<String> requestUris; // request_uris
 
 	/** Fields to support the ClientDetails interface **/
-	private Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
+	private Set<GrantedAuthority> authorities = new HashSet<>();
 	private Integer accessTokenValiditySeconds = 0; // in seconds
 	private Integer refreshTokenValiditySeconds = 0; // in seconds
-	private Set<String> resourceIds = new HashSet<String>();
-	private Map<String, Object> additionalInformation = new HashMap<String, Object>();
+	private Set<String> resourceIds = new HashSet<>();
+	private Map<String, Object> additionalInformation = new HashMap<>();
 
 	/** Our own fields **/
 	private String clientDescription = ""; // human-readable description
@@ -151,7 +151,7 @@ public class ClientDetailsEntity implements ClientDetails {
 		private final String value;
 
 		// map to aid reverse lookup
-		private static final Map<String, AuthMethod> lookup = new HashMap<String, AuthMethod>();
+		private static final Map<String, AuthMethod> lookup = new HashMap<>();
 		static {
 			for (AuthMethod a : AuthMethod.values()) {
 				lookup.put(a.getValue(), a);
@@ -177,7 +177,7 @@ public class ClientDetailsEntity implements ClientDetails {
 		private final String value;
 
 		// map to aid reverse lookup
-		private static final Map<String, AppType> lookup = new HashMap<String, AppType>();
+		private static final Map<String, AppType> lookup = new HashMap<>();
 		static {
 			for (AppType a : AppType.values()) {
 				lookup.put(a.getValue(), a);
@@ -203,7 +203,7 @@ public class ClientDetailsEntity implements ClientDetails {
 		private final String value;
 
 		// map to aid reverse lookup
-		private static final Map<String, SubjectType> lookup = new HashMap<String, SubjectType>();
+		private static final Map<String, SubjectType> lookup = new HashMap<>();
 		static {
 			for (SubjectType u : SubjectType.values()) {
 				lookup.put(u.getValue(), u);

@@ -65,8 +65,8 @@ public class DynamicServerConfigurationService implements ServerConfigurationSer
 	// map of issuer -> server configuration, loaded dynamically from service discovery
 	private LoadingCache<String, ServerConfiguration> servers;
 
-	private Set<String> whitelist = new HashSet<String>();
-	private Set<String> blacklist = new HashSet<String>();
+	private Set<String> whitelist = new HashSet<>();
+	private Set<String> blacklist = new HashSet<>();
 
 	public DynamicServerConfigurationService() {
 		// initialize the cache

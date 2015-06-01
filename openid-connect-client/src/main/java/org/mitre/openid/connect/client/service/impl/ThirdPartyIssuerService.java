@@ -44,8 +44,8 @@ public class ThirdPartyIssuerService implements IssuerService {
 
 	private String accountChooserUrl;
 
-	private Set<String> whitelist = new HashSet<String>();
-	private Set<String> blacklist = new HashSet<String>();
+	private Set<String> whitelist = new HashSet<>();
+	private Set<String> blacklist = new HashSet<>();
 
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.client.service.IssuerService#getIssuer(javax.servlet.http.HttpServletRequest)

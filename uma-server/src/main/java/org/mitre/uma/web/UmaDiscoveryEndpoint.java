@@ -46,7 +46,7 @@ public class UmaDiscoveryEndpoint {
 	@RequestMapping(".well-known/uma-configuration")
 	public String umaConfiguration(Model model) {
 
-		Map<String, Object> m = new HashMap<String, Object>();
+		Map<String, Object> m = new HashMap<>();
 
 		String issuer = config.getIssuer();
 		ImmutableSet<String> tokenProfiles = ImmutableSet.of("bearer");

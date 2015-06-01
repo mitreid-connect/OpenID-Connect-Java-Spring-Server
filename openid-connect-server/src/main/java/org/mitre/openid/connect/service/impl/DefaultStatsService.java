@@ -88,14 +88,14 @@ public class DefaultStatsService implements StatsService {
 		Collection<ApprovedSite> allSites = approvedSiteService.getAll();
 
 		// process to find number of unique users and sites
-		Set<String> userIds = new HashSet<String>();
-		Set<String> clientIds = new HashSet<String>();
+		Set<String> userIds = new HashSet<>();
+		Set<String> clientIds = new HashSet<>();
 		for (ApprovedSite approvedSite : allSites) {
 			userIds.add(approvedSite.getUserId());
 			clientIds.add(approvedSite.getClientId());
 		}
 
-		Map<String, Integer> e = new HashMap<String, Integer>();
+		Map<String, Integer> e = new HashMap<>();
 
 		e.put("approvalCount", allSites.size());
 		e.put("userCount", userIds.size());
@@ -145,7 +145,7 @@ public class DefaultStatsService implements StatsService {
 	 * @return
 	 */
 	private Map<Long, Integer> getEmptyClientCountMap() {
-		Map<Long, Integer> counts = new HashMap<Long, Integer>();
+		Map<Long, Integer> counts = new HashMap<>();
 		Collection<ClientDetailsEntity> clients = clientService.getAllClients();
 		for (ClientDetailsEntity client : clients) {
 			counts.put(client.getId(), 0);

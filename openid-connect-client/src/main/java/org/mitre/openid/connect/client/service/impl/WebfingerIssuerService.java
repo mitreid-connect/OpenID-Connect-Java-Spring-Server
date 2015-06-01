@@ -63,8 +63,8 @@ public class WebfingerIssuerService implements IssuerService {
 	// map of user input -> issuer, loaded dynamically from webfinger discover
 	private LoadingCache<UriComponents, String> issuers;
 
-	private Set<String> whitelist = new HashSet<String>();
-	private Set<String> blacklist = new HashSet<String>();
+	private Set<String> whitelist = new HashSet<>();
+	private Set<String> blacklist = new HashSet<>();
 
 	/**
 	 * Name of the incoming parameter to check for discovery purposes.

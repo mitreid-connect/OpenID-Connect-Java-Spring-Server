@@ -52,7 +52,7 @@ public class JpaSystemScopeRepository implements SystemScopeRepository {
 	public Set<SystemScope> getAll() {
 		TypedQuery<SystemScope> query = em.createNamedQuery(SystemScope.QUERY_ALL, SystemScope.class);
 
-		return new LinkedHashSet<SystemScope>(query.getResultList());
+		return new LinkedHashSet<>(query.getResultList());
 	}
 
 	/* (non-Javadoc)
