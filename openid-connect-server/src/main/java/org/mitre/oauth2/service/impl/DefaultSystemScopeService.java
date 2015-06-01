@@ -165,7 +165,7 @@ public class DefaultSystemScopeService implements SystemScopeService {
 		if (scope == null) {
 			return null;
 		} else {
-			return new LinkedHashSet<SystemScope>(Collections2.filter(Collections2.transform(scope, stringToSystemScope), Predicates.notNull()));
+			return new LinkedHashSet<>(Collections2.filter(Collections2.transform(scope, stringToSystemScope), Predicates.notNull()));
 		}
 	}
 
@@ -177,7 +177,7 @@ public class DefaultSystemScopeService implements SystemScopeService {
 		if (scope == null) {
 			return null;
 		} else {
-			return new LinkedHashSet<String>(Collections2.filter(Collections2.transform(scope, systemScopeToString), Predicates.notNull()));
+			return new LinkedHashSet<>(Collections2.filter(Collections2.transform(scope, systemScopeToString), Predicates.notNull()));
 		}
 	}
 

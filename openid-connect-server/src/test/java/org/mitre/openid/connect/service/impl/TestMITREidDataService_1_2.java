@@ -236,7 +236,7 @@ public class TestMITREidDataService_1_2 {
 
 		assertThat(refreshTokens.size(), is(2));
 		// check for both of our refresh tokens in turn
-		Set<OAuth2RefreshTokenEntity> checked = new HashSet<OAuth2RefreshTokenEntity>();
+		Set<OAuth2RefreshTokenEntity> checked = new HashSet<>();
 		for (JsonElement e : refreshTokens) {
 			assertThat(e.isJsonObject(), is(true));
 			JsonObject token = e.getAsJsonObject();
@@ -326,7 +326,7 @@ public class TestMITREidDataService_1_2 {
 		logger.debug(configJson);
 		JsonReader reader = new JsonReader(new StringReader(configJson));
 
-		final Map<Long, OAuth2RefreshTokenEntity> fakeDb = new HashMap<Long, OAuth2RefreshTokenEntity>();
+		final Map<Long, OAuth2RefreshTokenEntity> fakeDb = new HashMap<>();
 		when(tokenRepository.saveRefreshToken(isA(OAuth2RefreshTokenEntity.class))).thenAnswer(new Answer<OAuth2RefreshTokenEntity>() {
 			Long id = 332L;
 			@Override
@@ -480,7 +480,7 @@ public class TestMITREidDataService_1_2 {
 
 		assertThat(accessTokens.size(), is(2));
 		// check for both of our access tokens in turn
-		Set<OAuth2AccessTokenEntity> checked = new HashSet<OAuth2AccessTokenEntity>();
+		Set<OAuth2AccessTokenEntity> checked = new HashSet<>();
 		for (JsonElement e : accessTokens) {
 			assertTrue(e.isJsonObject());
 			JsonObject token = e.getAsJsonObject();
@@ -595,7 +595,7 @@ public class TestMITREidDataService_1_2 {
 
 		JsonReader reader = new JsonReader(new StringReader(configJson));
 
-		final Map<Long, OAuth2AccessTokenEntity> fakeDb = new HashMap<Long, OAuth2AccessTokenEntity>();
+		final Map<Long, OAuth2AccessTokenEntity> fakeDb = new HashMap<>();
 		when(tokenRepository.saveAccessToken(isA(OAuth2AccessTokenEntity.class))).thenAnswer(new Answer<OAuth2AccessTokenEntity>() {
 			Long id = 324L;
 			@Override
@@ -728,7 +728,7 @@ public class TestMITREidDataService_1_2 {
 
 		assertThat(clients.size(), is(2));
 		// check for both of our clients in turn
-		Set<ClientDetailsEntity> checked = new HashSet<ClientDetailsEntity>();
+		Set<ClientDetailsEntity> checked = new HashSet<>();
 		for (JsonElement e : clients) {
 			assertThat(e.isJsonObject(), is(true));
 			JsonObject client = e.getAsJsonObject();
@@ -898,7 +898,7 @@ public class TestMITREidDataService_1_2 {
 
 		assertThat(sites.size(), is(3));
 		// check for both of our sites in turn
-		Set<BlacklistedSite> checked = new HashSet<BlacklistedSite>();
+		Set<BlacklistedSite> checked = new HashSet<>();
 		for (JsonElement e : sites) {
 			assertThat(e.isJsonObject(), is(true));
 			JsonObject site = e.getAsJsonObject();
@@ -1039,7 +1039,7 @@ public class TestMITREidDataService_1_2 {
 
 		assertThat(sites.size(), is(3));
 		// check for both of our sites in turn
-		Set<WhitelistedSite> checked = new HashSet<WhitelistedSite>();
+		Set<WhitelistedSite> checked = new HashSet<>();
 		for (JsonElement e : sites) {
 			assertThat(e.isJsonObject(), is(true));
 			JsonObject site = e.getAsJsonObject();
@@ -1101,7 +1101,7 @@ public class TestMITREidDataService_1_2 {
 
 		JsonReader reader = new JsonReader(new StringReader(configJson));
 
-		final Map<Long, WhitelistedSite> fakeDb = new HashMap<Long, WhitelistedSite>();
+		final Map<Long, WhitelistedSite> fakeDb = new HashMap<>();
 		when(wlSiteRepository.save(isA(WhitelistedSite.class))).thenAnswer(new Answer<WhitelistedSite>() {
 			Long id = 333L;
 			@Override
@@ -1221,7 +1221,7 @@ public class TestMITREidDataService_1_2 {
 
 		assertThat(sites.size(), is(2));
 		// check for both of our sites in turn
-		Set<ApprovedSite> checked = new HashSet<ApprovedSite>();
+		Set<ApprovedSite> checked = new HashSet<>();
 		for (JsonElement e : sites) {
 			assertThat(e.isJsonObject(), is(true));
 			JsonObject site = e.getAsJsonObject();
@@ -1255,7 +1255,7 @@ public class TestMITREidDataService_1_2 {
 					assertTrue(compare.getApprovedAccessTokens() == null || compare.getApprovedAccessTokens().isEmpty());
 				} else {
 					assertNotNull(compare.getApprovedAccessTokens());
-					Set<String> tokenIds = new HashSet<String>();
+					Set<String> tokenIds = new HashSet<>();
 					for(OAuth2AccessTokenEntity entity : compare.getApprovedAccessTokens()) {
 						tokenIds.add(entity.getId().toString());
 					}
@@ -1326,7 +1326,7 @@ public class TestMITREidDataService_1_2 {
 
 		JsonReader reader = new JsonReader(new StringReader(configJson));
 
-		final Map<Long, ApprovedSite> fakeDb = new HashMap<Long, ApprovedSite>();
+		final Map<Long, ApprovedSite> fakeDb = new HashMap<>();
 		when(approvedSiteRepository.save(isA(ApprovedSite.class))).thenAnswer(new Answer<ApprovedSite>() {
 			Long id = 364L;
 			@Override
@@ -1465,7 +1465,7 @@ public class TestMITREidDataService_1_2 {
 
 		assertThat(holders.size(), is(2));
 		// check for both of our clients in turn
-		Set<AuthenticationHolderEntity> checked = new HashSet<AuthenticationHolderEntity>();
+		Set<AuthenticationHolderEntity> checked = new HashSet<>();
 		for (JsonElement e : holders) {
 			assertThat(e.isJsonObject(), is(true));
 			JsonObject holder = e.getAsJsonObject();
@@ -1540,7 +1540,7 @@ public class TestMITREidDataService_1_2 {
 
 		JsonReader reader = new JsonReader(new StringReader(configJson));
 
-		final Map<Long, AuthenticationHolderEntity> fakeDb = new HashMap<Long, AuthenticationHolderEntity>();
+		final Map<Long, AuthenticationHolderEntity> fakeDb = new HashMap<>();
 		when(authHolderRepository.save(isA(AuthenticationHolderEntity.class))).thenAnswer(new Answer<AuthenticationHolderEntity>() {
 			Long id = 243L;
 			@Override
@@ -1644,7 +1644,7 @@ public class TestMITREidDataService_1_2 {
 
 		assertThat(scopes.size(), is(3));
 		// check for both of our clients in turn
-		Set<SystemScope> checked = new HashSet<SystemScope>();
+		Set<SystemScope> checked = new HashSet<>();
 		for (JsonElement e : scopes) {
 			assertThat(e.isJsonObject(), is(true));
 			JsonObject scope = e.getAsJsonObject();
@@ -1829,8 +1829,8 @@ public class TestMITREidDataService_1_2 {
 		logger.debug(configJson);
 
 		JsonReader reader = new JsonReader(new StringReader(configJson));
-		final Map<Long, OAuth2RefreshTokenEntity> fakeRefreshTokenTable = new HashMap<Long, OAuth2RefreshTokenEntity>();
-		final Map<Long, AuthenticationHolderEntity> fakeAuthHolderTable = new HashMap<Long, AuthenticationHolderEntity>();
+		final Map<Long, OAuth2RefreshTokenEntity> fakeRefreshTokenTable = new HashMap<>();
+		final Map<Long, AuthenticationHolderEntity> fakeAuthHolderTable = new HashMap<>();
 		when(tokenRepository.saveRefreshToken(isA(OAuth2RefreshTokenEntity.class))).thenAnswer(new Answer<OAuth2RefreshTokenEntity>() {
 			Long id = 343L;
 			@Override
@@ -1888,7 +1888,7 @@ public class TestMITREidDataService_1_2 {
 	}
 
 	private Set<String> jsonArrayToStringSet(JsonArray a) {
-		Set<String> s = new HashSet<String>();
+		Set<String> s = new HashSet<>();
 		for (JsonElement jsonElement : a) {
 			s.add(jsonElement.getAsString());
 		}

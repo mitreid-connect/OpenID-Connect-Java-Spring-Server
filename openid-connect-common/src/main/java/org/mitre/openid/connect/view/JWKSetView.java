@@ -58,7 +58,7 @@ public class JWKSetView extends AbstractView {
 		//BiMap<String, PublicKey> keyMap = (BiMap<String, PublicKey>) model.get("keys");
 		Map<String, JWK> keys = (Map<String, JWK>) model.get("keys");
 
-		JWKSet jwkSet = new JWKSet(new ArrayList<JWK>(keys.values()));
+		JWKSet jwkSet = new JWKSet(new ArrayList<>(keys.values()));
 
 		try {
 

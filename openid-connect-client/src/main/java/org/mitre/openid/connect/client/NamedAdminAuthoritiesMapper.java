@@ -42,14 +42,14 @@ public class NamedAdminAuthoritiesMapper implements GrantedAuthoritiesMapper {
 	private static final SimpleGrantedAuthority ROLE_ADMIN = new SimpleGrantedAuthority("ROLE_ADMIN");
 	private static final SimpleGrantedAuthority ROLE_USER = new SimpleGrantedAuthority("ROLE_USER");
 
-	private Set<SubjectIssuerGrantedAuthority> admins = new HashSet<SubjectIssuerGrantedAuthority>();
+	private Set<SubjectIssuerGrantedAuthority> admins = new HashSet<>();
 
 	private GrantedAuthoritiesMapper chain = new NullAuthoritiesMapper();
 
 	@Override
 	public Collection<? extends GrantedAuthority> mapAuthorities(Collection<? extends GrantedAuthority> authorities) {
 
-		Set<GrantedAuthority> out = new HashSet<GrantedAuthority>();
+		Set<GrantedAuthority> out = new HashSet<>();
 		out.addAll(authorities);
 
 		for (GrantedAuthority authority : authorities) {

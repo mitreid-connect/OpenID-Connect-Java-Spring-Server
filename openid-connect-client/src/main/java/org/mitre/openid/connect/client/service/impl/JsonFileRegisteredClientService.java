@@ -73,7 +73,7 @@ public class JsonFileRegisteredClientService implements RegisteredClientService 
 
 	private File file;
 
-	private Map<String, RegisteredClient> clients = new HashMap<String, RegisteredClient>();
+	private Map<String, RegisteredClient> clients = new HashMap<>();
 
 	public JsonFileRegisteredClientService(String filename) {
 		this.file = new File(filename);

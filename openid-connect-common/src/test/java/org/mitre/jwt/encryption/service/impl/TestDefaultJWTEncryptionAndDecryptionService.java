@@ -135,7 +135,7 @@ public class TestDefaultJWTEncryptionAndDecryptionService {
 			.build();
 
 
-	private List<JWK> keys_list = new LinkedList<JWK>();
+	private List<JWK> keys_list = new LinkedList<>();
 
 	private DefaultJWTEncryptionAndDecryptionService service;
 	private DefaultJWTEncryptionAndDecryptionService service_2;

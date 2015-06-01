@@ -53,7 +53,7 @@ public class TestStaticServerConfigurationService {
 
 		service = new StaticServerConfigurationService();
 
-		Map<String, ServerConfiguration> servers = new HashMap<String, ServerConfiguration>();
+		Map<String, ServerConfiguration> servers = new HashMap<>();
 		servers.put(issuer, mockServerConfig);
 
 		service.setServers(servers);

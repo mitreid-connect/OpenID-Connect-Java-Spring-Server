@@ -314,7 +314,7 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 			JsonElement json = parser.parse(jsonString);
 
 			if (json.isJsonArray()) {
-				List<String> redirectUris = new ArrayList<String>();
+				List<String> redirectUris = new ArrayList<>();
 				for (JsonElement el : json.getAsJsonArray()) {
 					redirectUris.add(el.getAsString());
 				}

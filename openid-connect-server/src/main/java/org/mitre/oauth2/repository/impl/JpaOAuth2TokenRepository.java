@@ -44,13 +44,13 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	@Override
 	public Set<OAuth2AccessTokenEntity> getAllAccessTokens() {
 		TypedQuery<OAuth2AccessTokenEntity> query = manager.createNamedQuery(OAuth2AccessTokenEntity.QUERY_ALL, OAuth2AccessTokenEntity.class);
-		return new LinkedHashSet<OAuth2AccessTokenEntity>(query.getResultList());
+		return new LinkedHashSet<>(query.getResultList());
 	}
 
 	@Override
 	public Set<OAuth2RefreshTokenEntity> getAllRefreshTokens() {
 		TypedQuery<OAuth2RefreshTokenEntity> query = manager.createNamedQuery(OAuth2RefreshTokenEntity.QUERY_ALL, OAuth2RefreshTokenEntity.class);
-		return new LinkedHashSet<OAuth2RefreshTokenEntity>(query.getResultList());
+		return new LinkedHashSet<>(query.getResultList());
 	}
 
 
@@ -178,7 +178,7 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 		TypedQuery<OAuth2AccessTokenEntity> query = manager.createNamedQuery(OAuth2AccessTokenEntity.QUERY_EXPIRED_BY_DATE, OAuth2AccessTokenEntity.class);
 		query.setParameter(OAuth2AccessTokenEntity.PARAM_DATE, new Date());
 		query.setMaxResults(MAXEXPIREDRESULTS);
-		return new LinkedHashSet<OAuth2AccessTokenEntity>(query.getResultList());
+		return new LinkedHashSet<>(query.getResultList());
 	}
 
 	@Override
@@ -186,7 +186,7 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 		TypedQuery<OAuth2RefreshTokenEntity> query = manager.createNamedQuery(OAuth2RefreshTokenEntity.QUERY_EXPIRED_BY_DATE, OAuth2RefreshTokenEntity.class);
 		query.setParameter(OAuth2RefreshTokenEntity.PARAM_DATE, new Date());
 		query.setMaxResults(MAXEXPIREDRESULTS);
-		return new LinkedHashSet<OAuth2RefreshTokenEntity>(query.getResultList());
+		return new LinkedHashSet<>(query.getResultList());
 	}
 
 }

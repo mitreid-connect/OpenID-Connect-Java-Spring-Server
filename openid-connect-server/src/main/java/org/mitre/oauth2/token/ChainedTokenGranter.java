@@ -75,12 +75,12 @@ public class ChainedTokenGranter extends AbstractTokenGranter {
 		Set<String> requestedScopes = tokenRequest.getScope();
 
 		if (requestedScopes == null) {
-			requestedScopes = new HashSet<String>();
+			requestedScopes = new HashSet<>();
 		}
 
 		// do a check on the requested scopes -- if they exactly match the client scopes, they were probably shadowed by the token granter
 		if (client.getScope().equals(requestedScopes)) {
-			requestedScopes = new HashSet<String>();
+			requestedScopes = new HashSet<>();
 		}
 
 		// if our scopes are a valid subset of what's allowed, we can continue

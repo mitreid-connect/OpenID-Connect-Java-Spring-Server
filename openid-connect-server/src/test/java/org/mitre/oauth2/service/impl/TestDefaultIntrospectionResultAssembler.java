@@ -104,7 +104,7 @@ public class TestDefaultIntrospectionResultAssembler {
 				.put("sub", "sub")
 				.put("exp", 123L)
 				.put("expires_at", dateFormat.valueToString(new Date(123 * 1000L)))
-				.put("permissions", new ImmutableSet.Builder<Object>()
+				.put("permissions", new ImmutableSet.Builder<>()
 						.add(new ImmutableMap.Builder<String, Object>()
 								.put("resource_set_id", "1") // note that the resource ID comes out as a string
 								.put("scopes", new ImmutableSet.Builder<>()
