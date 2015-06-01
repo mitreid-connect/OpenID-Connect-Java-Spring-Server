@@ -82,8 +82,9 @@
             "initiate-login": "Initiate Login",
             "initiate-login-help": "URL to initiate login on the client",
             "introspection": "Introspection",
-            "jwk-set": "JWK Set",
-            "jwk-set-help": "URL for the client's JSON Web Key set",
+            "jwk-set": "Public Key Set",
+            "jwk-set-help": "URL for the client's JSON Web Key set (must be reachable by the server)",
+            "jwk-set-value-help": "URL for the client's JSON Web Key set (must be reachable by the server)",
             "logo": "Logo",
             "logo-help": "URL that points to a logo image, will be displayed on approval page",
             "main": "Main",
@@ -451,6 +452,9 @@
 			"authorize": "Authorize",
 			"deny": "Deny"
 		}
+	},
+	"error": {
+		"title": "Error"
 	}
 	
 }
