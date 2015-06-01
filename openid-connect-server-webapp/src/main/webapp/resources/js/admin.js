@@ -631,6 +631,7 @@ var AppRouter = Backbone.Router.extend({
         		grantTypes: ["authorization_code"],
         		responseTypes: ["code"],
         		subjectType: "PUBLIC",
+        		jwksType: "URI",
         		contacts: contacts
         	}, { silent: true });
         	
@@ -666,6 +667,16 @@ var AppRouter = Backbone.Router.extend({
 	        if ($.inArray("refresh_token", client.get("grantTypes")) != -1) {
 	        	client.set({
 	        		allowRefresh: true
+	        	}, { silent: true });
+	        }
+	        
+	        if (client.get("jwks")) {
+	        	client.set({
+	        		jwksType: "VAL"
+	        	}, { silent: true });
+	        } else {
+	        	client.set({
+	        		jwksType: "URI"
 	        	}, { silent: true });
 	        }
 	        

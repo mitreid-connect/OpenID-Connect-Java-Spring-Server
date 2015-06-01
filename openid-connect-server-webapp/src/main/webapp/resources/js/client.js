@@ -47,7 +47,10 @@ var ClientModel = Backbone.Model.extend({
         grantTypes:[],
         responseTypes:[],
         policyUri:"",
+        
         jwksUri:"",
+        jwks:null,
+        jwksType:"URI",
         
         applicationType:null,
         sectorIdentifierUri:"",
@@ -635,7 +638,8 @@ var ClientFormView = Backbone.View.extend({
         "change #tokenEndpointAuthMethod input:radio":"toggleClientCredentials",
         "change #displayClientSecret":"toggleDisplayClientSecret",
         "change #generateClientSecret":"toggleGenerateClientSecret",
-        "change #logoUri input":"previewLogo"
+        "change #logoUri input":"previewLogo",
+        "change #jwkSelector input:radio":"toggleJWKSetType"
     },
 
     cancel:function(e) {
@@ -706,6 +710,25 @@ var ClientFormView = Backbone.View.extend({
         } else {
         	$('#tokenEndpointAuthSigningAlg', this.el).hide();
         }
+    },
+    
+    /**
+     * Set up the form based on the JWK Set selector 
+     */
+    toggleJWKSetType:function() {
+    	var jwkSelector = $('#jwkSelector input:radio', this.el).filter(':checked').val();
+    	
+    	if (jwkSelector == 'URI') {
+    		$('#jwksUri', this.el).show();
+    		$('#jwks', this.el).hide();
+    	} else if (jwkSelector == 'VAL') {
+    		$('#jwksUri', this.el).hide();
+    		$('#jwks', this.el).show();
+    	} else {
+    		$('#jwksUri', this.el).hide();
+    		$('#jwks', this.el).hide();
+    	}
+    	
     },
     
     /**
@@ -880,6 +903,40 @@ var ClientFormView = Backbone.View.extend({
         		refreshTokenValiditySeconds = this.getFormTokenNumberValue($('#refreshTokenValidityTime input[type=text]').val(), $('#refreshTokenValidityTime select').val());
         	}
         }
+
+        // process the JWKS
+        var jwksUri = null;
+        var jwks = null;
+        var jwkSelector = $('#jwkSelector input:radio', this.el).filter(':checked').val();
+    	
+    	if (jwkSelector == 'URI') {
+            jwksUri = $('#jwksUri input').val();
+    		jwks = null;
+    	} else if (jwkSelector == 'VAL') {
+    		jwksUri = null;
+    		try {
+    			jwks = JSON.parse($('#jwks textarea').val());
+    		} catch (e) {
+        		console.log("An error occurred when parsing the JWK Set");
+
+        		//Display an alert with an error message
+				$('#modalAlert div.modal-header').html("JWK Set Error");
+        		$('#modalAlert div.modal-body').html("There was an error parsing the public key from the JSON Web Key set. Check the value and try again.");
+        		
+    			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
+    				 "backdrop" : "static",
+    				 "keyboard" : true,
+    				 "show" : true // ensure the modal is shown immediately
+    			 });
+    			 
+    			 return false;
+    		}
+    	} else {
+    		jwksUri = null;
+    		jwks = null;
+    	}
+        
+        
         
         var attrs = {
             clientName:$('#clientName input').val(),
@@ -900,7 +957,8 @@ var ClientFormView = Backbone.View.extend({
             policyUri: $('#policyUri input').val(),
             clientUri: $('#clientUri input').val(),
             applicationType: $('#applicationType input').filter(':checked').val(),
-            jwksUri: $('#jwksUri input').val(),
+            jwksUri: jwksUri,
+            jwks: jwks,
             subjectType: $('#subjectType input').filter(':checked').val(),
             tokenEndpointAuthMethod: tokenEndpointAuthMethod,
             responseTypes: responseTypes,
@@ -976,7 +1034,7 @@ var ClientFormView = Backbone.View.extend({
                 app.navigate('admin/clients', {trigger:true});
             },
             error:function (error, response) {
-        		console.log("An error occurred when deleting from a list widget");
+        		console.log("An error occurred when saving a client");
 
 				//Pull out the response text.
 				var responseJson = JSON.parse(response.responseText);
@@ -1103,6 +1161,7 @@ var ClientFormView = Backbone.View.extend({
         // toggle other dynamic fields
         this.toggleClientCredentials();
         this.previewLogo();
+        this.toggleJWKSetType();
         
         // disable unsupported JOSE algorithms
         this.disableUnsupportedJOSEItems(app.serverConfiguration.request_object_signing_alg_values_supported, '#requestObjectSigningAlg option');

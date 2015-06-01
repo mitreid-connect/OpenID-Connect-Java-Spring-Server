@@ -215,7 +215,7 @@ public class ClientAPI {
 			if (Strings.isNullOrEmpty(client.getJwksUri()) && client.getJwks() == null) {
 				logger.error("tried to create client with private key auth but no private key");
 				m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
-				m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Can not create a client with private key authentication without registering a key via the JWS Set URI.");
+				m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Can not create a client with private key authentication without registering a key via the JWK Set URI or JWK Set Value.");
 				return JsonErrorView.VIEWNAME;
 			}
 
@@ -315,10 +315,10 @@ public class ClientAPI {
 
 		} else if (client.getTokenEndpointAuthMethod().equals(AuthMethod.PRIVATE_KEY)) {
 
-			if (Strings.isNullOrEmpty(client.getJwksUri()) && client.getJwks() != null) {
+			if (Strings.isNullOrEmpty(client.getJwksUri()) && client.getJwks() == null) {
 				logger.error("tried to create client with private key auth but no private key");
 				m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
-				m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Can not create a client with private key authentication without registering a key via the JWS Set URI.");
+				m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Can not create a client with private key authentication without registering a key via the JWK Set URI or JWK Set Value.");
 				return JsonErrorView.VIEWNAME;
 			}
 
