@@ -10,10 +10,10 @@
 	<div class="row-fluid">
 		<div class="offset1 span10">
 			<div class="hero-unit">
-				<h1>Error:</h1>
+				<h1><spring:message code="error.header"/></h1>
 				<h2 class="text-error"><c:out value="${error.getOAuth2ErrorCode()}" /></h2>
 				<p>
-					There was an error processing your request. The server's message was:
+					<spring:message code="error.message"/>
 					<blockquote class="text-error"><b><c:out value="${error.message}" /></b></blockquote>
                 </p>
 				

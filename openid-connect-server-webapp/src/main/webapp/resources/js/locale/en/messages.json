@@ -454,7 +454,13 @@
 		}
 	},
 	"error": {
-		"title": "Error"
+		"title": "Error",
+		"header": "Error:",
+		"message": "There was an error processing your request. The server''s message was:"
+	},
+	"login": {
+		"login_with_username_and_password": "Login with Username and Password",
+		"error": "The system was unable to log you in. Please try again."
 	}
 	
 }
