@@ -183,7 +183,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 
 		ClientDetailsEntity client = new ClientDetailsEntity();
 
-		Set<String> grantTypes = new HashSet<String>();
+		Set<String> grantTypes = new HashSet<>();
 		grantTypes.add("refresh_token");
 		client.setGrantTypes(grantTypes);
 
@@ -320,7 +320,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		ClientDetailsEntity oldClient = new ClientDetailsEntity();
 		ClientDetailsEntity client = new ClientDetailsEntity();
 
-		Set<String> grantTypes = new HashSet<String>();
+		Set<String> grantTypes = new HashSet<>();
 		grantTypes.add("refresh_token");
 		client.setGrantTypes(grantTypes);
 

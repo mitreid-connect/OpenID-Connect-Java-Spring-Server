@@ -73,7 +73,7 @@ public class JsonFileRegisteredClientService implements RegisteredClientService 
 
 	private File file;
 
-	private Map<String, RegisteredClient> clients = new HashMap<String, RegisteredClient>();
+	private Map<String, RegisteredClient> clients = new HashMap<>();
 
 	public JsonFileRegisteredClientService(String filename) {
 		this.file = new File(filename);
@@ -114,8 +114,6 @@ public class JsonFileRegisteredClientService implements RegisteredClientService 
 
 			out.close();
 
-		} catch (FileNotFoundException e) {
-			logger.error("Could not write to output file", e);
 		} catch (IOException e) {
 			logger.error("Could not write to output file", e);
 		}
@@ -137,8 +135,6 @@ public class JsonFileRegisteredClientService implements RegisteredClientService 
 
 			in.close();
 
-		} catch (FileNotFoundException e) {
-			logger.error("Could not read from input file", e);
 		} catch (IOException e) {
 			logger.error("Could not read from input file", e);
 		}

@@ -112,7 +112,7 @@ public class OAuthConfirmationController {
 
 		String prompt = (String)authRequest.getExtensions().get(PROMPT);
 		List<String> prompts = Splitter.on(PROMPT_SEPARATOR).splitToList(Strings.nullToEmpty(prompt));
-		ClientDetailsEntity client = null;
+		ClientDetailsEntity client;
 
 		try {
 			client = clientService.loadClientByClientId(authRequest.getClientId());
@@ -165,7 +165,7 @@ public class OAuthConfirmationController {
 		// pre-process the scopes
 		Set<SystemScope> scopes = scopeService.fromStrings(authRequest.getScope());
 
-		Set<SystemScope> sortedScopes = new LinkedHashSet<SystemScope>(scopes.size());
+		Set<SystemScope> sortedScopes = new LinkedHashSet<>(scopes.size());
 		Set<SystemScope> systemScopes = scopeService.getAll();
 
 		// sort scopes for display based on the inherent order of system scopes
@@ -182,12 +182,12 @@ public class OAuthConfirmationController {
 
 		// get the userinfo claims for each scope
 		UserInfo user = userInfoService.getByUsername(p.getName());
-		Map<String, Map<String, String>> claimsForScopes = new HashMap<String, Map<String, String>>();
+		Map<String, Map<String, String>> claimsForScopes = new HashMap<>();
 		if (user != null) {
 			JsonObject userJson = user.toJson();
 
 			for (SystemScope systemScope : sortedScopes) {
-				Map<String, String> claimValues = new HashMap<String, String>();
+				Map<String, String> claimValues = new HashMap<>();
 
 				Set<String> claims = scopeClaimTranslationService.getClaimsForScope(systemScope.getValue());
 				for (String claim : claims) {

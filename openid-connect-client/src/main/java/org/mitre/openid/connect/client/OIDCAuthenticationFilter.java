@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.google.common.collect.Iterables;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -243,10 +244,10 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 				throw new AuthenticationServiceException("No client configuration found for issuer: " + issuer);
 			}
 
-			String redirectUri = null;
+			String redirectUri;
 			if (clientConfig.getRegisteredRedirectUri() != null && clientConfig.getRegisteredRedirectUri().size() == 1) {
 				// if there's a redirect uri configured (and only one), use that
-				redirectUri = clientConfig.getRegisteredRedirectUri().toArray(new String[] {})[0];
+				redirectUri = Iterables.getOnlyElement(clientConfig.getRegisteredRedirectUri());
 			} else {
 				// otherwise our redirect URI is this current URL, with no query parameters
 				redirectUri = request.getRequestURL().toString();
@@ -298,7 +299,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 		ServerConfiguration serverConfig = servers.getServerConfiguration(issuer);
 		final RegisteredClient clientConfig = clients.getClientConfiguration(serverConfig);
 
-		MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
+		MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
 		form.add("grant_type", "authorization_code");
 		form.add("code", authorizationCode);
 		form.setAll(authOptions.getTokenOptions(serverConfig, clientConfig, request));
@@ -402,7 +403,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 		logger.debug("tokenEndpointURI = " + serverConfig.getTokenEndpointUri());
 		logger.debug("form = " + form);
 
-		String jsonString = null;
+		String jsonString;
 
 		try {
 			jsonString = restTemplate.postForObject(serverConfig.getTokenEndpointUri(), form, String.class);
@@ -442,8 +443,8 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 			// OIDCAuthenticationToken
 
 			// get out all the token strings
-			String accessTokenValue = null;
-			String idTokenValue = null;
+			String accessTokenValue;
+			String idTokenValue;
 			String refreshTokenValue = null;
 
 			if (tokenResponse.has("access_token")) {
@@ -470,7 +471,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 				ReadOnlyJWTClaimsSet idClaims = idToken.getJWTClaimsSet();
 
 				// check the signature
-				JWTSigningAndValidationService jwtValidator = null;
+				JWTSigningAndValidationService jwtValidator;
 
 				Algorithm tokenAlg = idToken.getHeader().getAlgorithm();
 

@@ -255,7 +255,7 @@ public class ResourceSetRegistrationEndpoint {
 		
 		String owner = auth.getName();
 		
-		Collection<ResourceSet> resourceSets = Collections.emptySet();
+		Collection<ResourceSet> resourceSets;
 		if (auth instanceof OAuth2Authentication) {
 			// if it's an OAuth mediated call, it's on behalf of a client, so look that up too
 			OAuth2Authentication o2a = (OAuth2Authentication) auth;

@@ -31,7 +31,7 @@ import org.mitre.openid.connect.client.service.RegisteredClientService;
  */
 public class InMemoryRegisteredClientService implements RegisteredClientService {
 
-	private Map<String, RegisteredClient> clients = new HashMap<String, RegisteredClient>();
+	private Map<String, RegisteredClient> clients = new HashMap<>();
 
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.client.service.RegisteredClientService#getByIssuer(java.lang.String)

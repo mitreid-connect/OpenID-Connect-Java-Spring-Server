@@ -55,7 +55,7 @@ public class UUIDPairwiseIdentiferService implements PairwiseIdentiferService {
 	@Override
 	public String getIdentifier(UserInfo userInfo, ClientDetailsEntity client) {
 
-		String sectorIdentifier = null;
+		String sectorIdentifier;
 
 		if (!Strings.isNullOrEmpty(client.getSectorIdentifierUri())) {
 			UriComponents uri = UriComponentsBuilder.fromUriString(client.getSectorIdentifierUri()).build();

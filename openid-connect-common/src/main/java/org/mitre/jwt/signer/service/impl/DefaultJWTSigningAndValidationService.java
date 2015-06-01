@@ -50,10 +50,10 @@ import com.nimbusds.jwt.SignedJWT;
 public class DefaultJWTSigningAndValidationService implements JWTSigningAndValidationService {
 
 	// map of identifier to signer
-	private Map<String, JWSSigner> signers = new HashMap<String, JWSSigner>();
+	private Map<String, JWSSigner> signers = new HashMap<>();
 
 	// map of identifier to verifier
-	private Map<String, JWSVerifier> verifiers = new HashMap<String, JWSVerifier>();
+	private Map<String, JWSVerifier> verifiers = new HashMap<>();
 
 	/**
 	 * Logger for this class
@@ -65,7 +65,7 @@ public class DefaultJWTSigningAndValidationService implements JWTSigningAndValid
 	private JWSAlgorithm defaultAlgorithm;
 
 	// map of identifier to key
-	private Map<String, JWK> keys = new HashMap<String, JWK>();
+	private Map<String, JWK> keys = new HashMap<>();
 
 	/**
 	 * Build this service based on the keys given. All public keys will be used
@@ -269,7 +269,7 @@ public class DefaultJWTSigningAndValidationService implements JWTSigningAndValid
 
 	@Override
 	public Map<String, JWK> getAllPublicKeys() {
-		Map<String, JWK> pubKeys = new HashMap<String, JWK>();
+		Map<String, JWK> pubKeys = new HashMap<>();
 
 		// pull all keys out of the verifiers if we know how
 		for (String keyId : keys.keySet()) {
@@ -289,7 +289,7 @@ public class DefaultJWTSigningAndValidationService implements JWTSigningAndValid
 	@Override
 	public Collection<JWSAlgorithm> getAllSigningAlgsSupported() {
 
-		Set<JWSAlgorithm> algs = new HashSet<JWSAlgorithm>();
+		Set<JWSAlgorithm> algs = new HashSet<>();
 
 		for (JWSSigner signer : signers.values()) {
 			algs.addAll(signer.supportedAlgorithms());

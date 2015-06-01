@@ -154,8 +154,8 @@ public class ClientAPI {
 	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public String apiAddClient(@RequestBody String jsonString, Model m, Authentication auth) {
 
-		JsonObject json = null;
-		ClientDetailsEntity client = null;
+		JsonObject json;
+		ClientDetailsEntity client;
 
 		try {
 			json = parser.parse(jsonString).getAsJsonObject();
@@ -240,8 +240,8 @@ public class ClientAPI {
 	@RequestMapping(value="/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public String apiUpdateClient(@PathVariable("id") Long id, @RequestBody String jsonString, Model m, Authentication auth) {
 
-		JsonObject json = null;
-		ClientDetailsEntity client = null;
+		JsonObject json;
+		ClientDetailsEntity client;
 
 		try {
 			// parse the client passed in (from JSON) and fetch the old client from the store

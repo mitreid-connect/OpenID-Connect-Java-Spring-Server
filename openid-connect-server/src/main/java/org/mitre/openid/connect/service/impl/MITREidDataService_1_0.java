@@ -154,9 +154,9 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 		}
 		fixObjectReferences();
 	}
-	private Map<Long, String> refreshTokenToClientRefs = new HashMap<Long, String>();
-	private Map<Long, Long> refreshTokenToAuthHolderRefs = new HashMap<Long, Long>();
-	private Map<Long, Long> refreshTokenOldToNewIdMap = new HashMap<Long, Long>();
+	private Map<Long, String> refreshTokenToClientRefs = new HashMap<>();
+	private Map<Long, Long> refreshTokenToAuthHolderRefs = new HashMap<>();
+	private Map<Long, Long> refreshTokenOldToNewIdMap = new HashMap<>();
 	
 	/**
 	 * @param reader
@@ -219,11 +219,11 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 		reader.endArray();
 		logger.info("Done reading refresh tokens");
 	}
-	private Map<Long, String> accessTokenToClientRefs = new HashMap<Long, String>();
-	private Map<Long, Long> accessTokenToAuthHolderRefs = new HashMap<Long, Long>();
-	private Map<Long, Long> accessTokenToRefreshTokenRefs = new HashMap<Long, Long>();
-	private Map<Long, Long> accessTokenToIdTokenRefs = new HashMap<Long, Long>();
-	private Map<Long, Long> accessTokenOldToNewIdMap = new HashMap<Long, Long>();
+	private Map<Long, String> accessTokenToClientRefs = new HashMap<>();
+	private Map<Long, Long> accessTokenToAuthHolderRefs = new HashMap<>();
+	private Map<Long, Long> accessTokenToRefreshTokenRefs = new HashMap<>();
+	private Map<Long, Long> accessTokenToIdTokenRefs = new HashMap<>();
+	private Map<Long, Long> accessTokenOldToNewIdMap = new HashMap<>();
 
 	/**
 	 * @param reader
@@ -303,7 +303,7 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 		reader.endArray();
 		logger.info("Done reading access tokens");
 	}
-	private Map<Long, Long> authHolderOldToNewIdMap = new HashMap<Long, Long>();
+	private Map<Long, Long> authHolderOldToNewIdMap = new HashMap<>();
 
 	/**
 	 * @param reader
@@ -385,12 +385,12 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 
 	//used by readAuthenticationHolders
 	private OAuth2Request readAuthorizationRequest(JsonReader reader) throws IOException {
-		Set<String> scope = new LinkedHashSet<String>();
-		Set<String> resourceIds = new HashSet<String>();
+		Set<String> scope = new LinkedHashSet<>();
+		Set<String> resourceIds = new HashSet<>();
 		boolean approved = false;
-		Collection<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
-		Map<String, String> authorizationParameters = new HashMap<String, String>();
-		Set<String> responseTypes = new HashSet<String>();
+		Collection<GrantedAuthority> authorities = new HashSet<>();
+		Map<String, String> authorizationParameters = new HashMap<>();
+		Set<String> responseTypes = new HashSet<>();
 		String redirectUri = null;
 		String clientId = null;
 		reader.beginObject();
@@ -414,7 +414,7 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 					resourceIds = readSet(reader);
 				} else if (name.equals("authorities")) {
 					Set<String> authorityStrs = readSet(reader);
-					authorities = new HashSet<GrantedAuthority>();
+					authorities = new HashSet<>();
 					for (String s : authorityStrs) {
 						GrantedAuthority ga = new SimpleGrantedAuthority(s);
 						authorities.add(ga);
@@ -490,11 +490,9 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 		return savedUserAuth;
 	}
 
-
-	
-	Map<Long, Long> grantOldToNewIdMap = new HashMap<Long, Long>();
-	Map<Long, Long> grantToWhitelistedSiteRefs = new HashMap<Long, Long>();
-	Map<Long, Set<Long>> grantToAccessTokensRefs = new HashMap<Long, Set<Long>>();
+	Map<Long, Long> grantOldToNewIdMap = new HashMap<>();
+	Map<Long, Long> grantToWhitelistedSiteRefs = new HashMap<>();
+	Map<Long, Set<Long>> grantToAccessTokensRefs = new HashMap<>();
 
 	/**
 	 * @param reader
@@ -563,7 +561,7 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 		reader.endArray();
 		logger.info("Done reading grants");
 	}
-	Map<Long, Long> whitelistedSiteOldToNewIdMap = new HashMap<Long, Long>();
+	Map<Long, Long> whitelistedSiteOldToNewIdMap = new HashMap<>();
 
 	/**
 	 * @param reader
@@ -675,7 +673,7 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 						client.setScope(scope);
 					} else if (name.equals("authorities")) {
 						Set<String> authorityStrs = readSet(reader);
-						Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
+						Set<GrantedAuthority> authorities = new HashSet<>();
 						for (String s : authorityStrs) {
 							GrantedAuthority ga = new SimpleGrantedAuthority(s);
 							authorities.add(ga);
@@ -905,7 +903,7 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 		whitelistedSiteOldToNewIdMap.clear();
 		for (Long oldGrantId : grantToAccessTokensRefs.keySet()) {
 			Set<Long> oldAccessTokenIds = grantToAccessTokensRefs.get(oldGrantId);
-			Set<OAuth2AccessTokenEntity> tokens = new HashSet<OAuth2AccessTokenEntity>();
+			Set<OAuth2AccessTokenEntity> tokens = new HashSet<>();
 			for(Long oldTokenId : oldAccessTokenIds) {
 				Long newTokenId = accessTokenOldToNewIdMap.get(oldTokenId);
 				tokens.add(tokenRepository.getAccessTokenById(newTokenId));

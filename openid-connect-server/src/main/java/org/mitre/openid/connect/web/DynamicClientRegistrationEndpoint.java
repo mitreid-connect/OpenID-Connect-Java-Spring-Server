@@ -110,7 +110,7 @@ public class DynamicClientRegistrationEndpoint {
 	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public String registerNewClient(@RequestBody String jsonString, Model m) {
 
-		ClientDetailsEntity newClient = null;
+		ClientDetailsEntity newClient;
 		try {
 			newClient = ClientDetailsEntityJsonProcessor.parse(jsonString);
 		} catch (JsonSyntaxException e) {
@@ -261,7 +261,7 @@ public class DynamicClientRegistrationEndpoint {
 	public String updateClient(@PathVariable("id") String clientId, @RequestBody String jsonString, Model m, OAuth2Authentication auth) {
 
 
-		ClientDetailsEntity newClient = null;
+		ClientDetailsEntity newClient;
 		try {
 			newClient = ClientDetailsEntityJsonProcessor.parse(jsonString);
 		} catch (JsonSyntaxException e) {
@@ -409,7 +409,7 @@ public class DynamicClientRegistrationEndpoint {
 
 		// filter out unknown grant types
 		// TODO: make this a pluggable service
-		Set<String> requestedGrantTypes = new HashSet<String>(newClient.getGrantTypes());
+		Set<String> requestedGrantTypes = new HashSet<>(newClient.getGrantTypes());
 		requestedGrantTypes.retainAll(
 				ImmutableSet.of("authorization_code", "implicit",
 						"password", "client_credentials", "refresh_token",
