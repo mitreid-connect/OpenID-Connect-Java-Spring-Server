@@ -355,12 +355,24 @@
                 </div>
             </div>
 
-			<div class="control-group" id="jwksUri">
-                <label class="control-label" data-i18n="client.client-form.jwk-set">JWK Set</label>
-                <div class="controls">
-                    <input placeholder="https://" value="<%-client.jwks_uri ? client.jwks_uri : ''%>" maxlength="1000" type="text" class=""/>
-                    <p class="help-block" data-i18n="client.client-form.jwk-set-help">URL for the client's JSON Web Key set</p>
-                </div>
+			<div class="control-group">
+				<label class="control-label" data-i18n="client.client-form.jwk-set">Public Key Set</label>
+				<div class="controls" id="jwkSelector">
+					<div>
+                        <input id="jwkstype-uri" type="radio" name="jwksType" value="URI" <%-(client.jwksType == 'URI' ? 'checked' : '')%>>
+                        <label for="jwkstype-uri" class="radio inline" data-i18n="client.client-form.jwks-by-uri">By URI</label>
+                        <input id="jwkstype-value" type="radio" name="jwksType" value="VAL" <%-(client.jwksType == 'VAL' ? 'checked' : '')%>>
+                        <label for="jwkstype-value" class="radio inline" data-i18n="client.client-form.jwks-by-value">By Value</label>
+					</div>
+				</div>
+				<div class="controls" id="jwksUri">
+					<input placeholder="https://" value="<%-client.jwks_uri%>" maxlength="1000" type="text" class=""/>
+					<p class="help-block" data-i18n="client.client-form.jwk-set-help">URL for the client's JSON Web Key set (must be reachable by the server)</p>
+				</div>
+				<div class="controls" id="jwks">
+					<textarea  class="input-xlarge" placeholder="{ &quot;keys&quot: [ ] }" maxlength="4000" type="text" rows="8"><%- (client.jwks != null ? JSON.stringify(client.jwks, null, '  ') : "") %></textarea>
+					<p class="help-block" data-i18n="client.client-form.jwk-set-value-help">JSON Web Key set</p>
+				</div>
 			</div>
 	</div>
 
