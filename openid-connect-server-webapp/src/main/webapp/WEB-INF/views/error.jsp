@@ -10,8 +10,9 @@
 	<div class="row-fluid">
 		<div class="offset1 span10">
 			<div class="hero-unit">
-				<h1><spring:message code="error.header"/></h1>
-				<h2 class="text-error"><c:out value="${error.getOAuth2ErrorCode()}" /></h2>
+				<h1><span><spring:message code="error.header"/></span>
+					<span class="text-error"><c:out value="${error.getOAuth2ErrorCode()}" /></span>
+				</h1>
 				<p>
 					<spring:message code="error.message"/>
 					<blockquote class="text-error"><b><c:out value="${error.message}" /></b></blockquote>
