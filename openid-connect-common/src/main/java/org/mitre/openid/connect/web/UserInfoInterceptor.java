@@ -31,12 +31,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
-import org.springframework.web.servlet.view.RedirectView;
-import org.springframework.web.servlet.view.UrlBasedViewResolver;
 
-import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -65,48 +61,23 @@ public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 	private UserInfoService userInfoService;
 
 	@Override
-	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
-		if (modelAndView != null && !modelAndView.getModel().containsKey("userInfo")) { // skip checking at all if we have no model and view to hand the user to
-			// or if there's already a userInfo object in there
-
-			// TODO: this is a patch to get around a potential information leak from #492
-
-			if (modelAndView.getView() instanceof RedirectView) {
-				// don't add them
-			} else {
-				if (Strings.isNullOrEmpty(modelAndView.getViewName())) {
-					// add them
-					injectUserInfo(modelAndView);
-				} else {
-					if (modelAndView.getViewName().startsWith(UrlBasedViewResolver.FORWARD_URL_PREFIX) || 
-							modelAndView.getViewName().startsWith(UrlBasedViewResolver.REDIRECT_URL_PREFIX)) {
-						// don't add them
-					} else {
-						// add them
-						injectUserInfo(modelAndView);
-					}
-				}
-			}
-		}
-	}
-
-	private void injectUserInfo(ModelAndView modelAndView) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-		if (auth instanceof Authentication && !modelAndView.getModel().containsKey("userAuthorities")){
-			modelAndView.addObject("userAuthorities", gson.toJson(auth.getAuthorities()));
+		if (auth instanceof Authentication){
+			request.setAttribute("userAuthorities", gson.toJson(auth.getAuthorities()));
 		}
 
 		if (auth instanceof OIDCAuthenticationToken) {
 			// if they're logging into this server from a remote OIDC server, pass through their user info
 			OIDCAuthenticationToken oidc = (OIDCAuthenticationToken) auth;
 			if (oidc.getUserInfo() != null) {
-				modelAndView.addObject("userInfo", oidc.getUserInfo());
-				modelAndView.addObject("userInfoJson", oidc.getUserInfo().toJson());
+				request.setAttribute("userInfo", oidc.getUserInfo());
+				request.setAttribute("userInfoJson", oidc.getUserInfo().toJson());
 			} else {
-				modelAndView.addObject("userInfo", null);
-				modelAndView.addObject("userInfoJson", "null");
+				request.setAttribute("userInfo", null);
+				request.setAttribute("userInfoJson", "null");
 			}
 		} else {
 			// don't bother checking if we don't have a principal or a userInfoService to work with
@@ -117,11 +88,13 @@ public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 
 				// if we have one, inject it so views can use it
 				if (user != null) {
-					modelAndView.addObject("userInfo", user);
-					modelAndView.addObject("userInfoJson", user.toJson());
+					request.setAttribute("userInfo", user);
+					request.setAttribute("userInfoJson", user.toJson());
 				}
 			}
 		}
+		
+		return true;
 	}
 
 }
