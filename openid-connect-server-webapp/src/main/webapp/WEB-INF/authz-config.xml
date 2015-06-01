@@ -38,7 +38,8 @@
 		request-validator-ref="oauthRequestValidator"
 		redirect-resolver-ref="blacklistAwareRedirectResolver"
 		authorization-endpoint-url="/authorize" 
-		token-endpoint-url="/token">
+		token-endpoint-url="/token"
+		error-page="/error">
 		
 		<oauth:authorization-code authorization-code-services-ref="defaultOAuth2AuthorizationCodeService"/>
 		<oauth:implicit />
@@ -53,6 +54,7 @@
 
 	<bean id="oauthRequestValidator" class="org.mitre.oauth2.token.StructuredScopeAwareOAuth2RequestValidator" />
 
-
+	<!-- Error page handler. -->
+	<mvc:view-controller path="/error" view-name="error" />
 
 </beans>

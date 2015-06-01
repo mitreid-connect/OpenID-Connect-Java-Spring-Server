@@ -103,131 +103,129 @@ public class AuthorizationRequestFilter extends GenericFilterBean {
 			return;
 		}
 
-		// we have to create our own auth request in order to get at all the parmeters appropriately
-		AuthorizationRequest authRequest = authRequestFactory.createAuthorizationRequest(createRequestMap(request.getParameterMap()));
-
-		ClientDetailsEntity client = null;
-
 		try {
+			// we have to create our own auth request in order to get at all the parmeters appropriately
+			AuthorizationRequest authRequest = null;
+	
+			ClientDetailsEntity client = null;
+
+			authRequest = authRequestFactory.createAuthorizationRequest(createRequestMap(request.getParameterMap()));
 			client = clientService.loadClientByClientId(authRequest.getClientId());
-		} catch (InvalidClientException e) {
-			// no need to worry about this here, it would be caught elsewhere
-		} catch (IllegalArgumentException e) {
-			// no need to worry about this here, it would be caught elsewhere
-		}
 
-
-		// save the login hint to the session
-		if (authRequest.getExtensions().get(LOGIN_HINT) != null) {
-			session.setAttribute(LOGIN_HINT, authRequest.getExtensions().get(LOGIN_HINT));
-		} else {
-			session.removeAttribute(LOGIN_HINT);
-		}
-
-
-		if (authRequest.getExtensions().get(PROMPT) != null) {
-			// we have a "prompt" parameter
-			String prompt = (String)authRequest.getExtensions().get(PROMPT);
-			List<String> prompts = Splitter.on(PROMPT_SEPARATOR).splitToList(Strings.nullToEmpty(prompt));
-
-			if (prompts.contains(PROMPT_NONE)) {
-				// see if the user's logged in
-				Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-				if (auth != null) {
-					// user's been logged in already (by session management)
-					// we're OK, continue without prompting
-					chain.doFilter(req, res);
-				} else {
-					logger.info("Client requested no prompt");
-					// user hasn't been logged in, we need to "return an error"
-					if (client != null && authRequest.getRedirectUri() != null) {
-						
-						// if we've got a redirect URI then we'll send it 
-						
-						String url = redirectResolver.resolveRedirect(authRequest.getRedirectUri(), client);
-						
-						try {
-							URIBuilder uriBuilder = new URIBuilder(url);
-						
-							uriBuilder.addParameter(ERROR, LOGIN_REQUIRED);
-							if (!Strings.isNullOrEmpty(authRequest.getState())) {
-								uriBuilder.addParameter(STATE, authRequest.getState()); // copy the state parameter if one was given
-							}
-							
-							response.sendRedirect(uriBuilder.toString());
-							return;
-							
-						} catch (URISyntaxException e) {
-							logger.error("Can't build redirect URI for prompt=none, sending error instead", e);
-							response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied");
-							return;
-						}
-					}
-					
-					response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied");
-					return;
-				}
-			} else if (prompts.contains(PROMPT_LOGIN)) {
-
-				// first see if the user's already been prompted in this session
-				if (session.getAttribute(PROMPTED) == null) {
-					// user hasn't been PROMPTED yet, we need to check
-
-					session.setAttribute(PROMPT_REQUESTED, Boolean.TRUE);
-
+			// save the login hint to the session
+			if (authRequest.getExtensions().get(LOGIN_HINT) != null) {
+				session.setAttribute(LOGIN_HINT, authRequest.getExtensions().get(LOGIN_HINT));
+			} else {
+				session.removeAttribute(LOGIN_HINT);
+			}
+	
+			if (authRequest.getExtensions().get(PROMPT) != null) {
+				// we have a "prompt" parameter
+				String prompt = (String)authRequest.getExtensions().get(PROMPT);
+				List<String> prompts = Splitter.on(PROMPT_SEPARATOR).splitToList(Strings.nullToEmpty(prompt));
+	
+				if (prompts.contains(PROMPT_NONE)) {
 					// see if the user's logged in
 					Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+	
 					if (auth != null) {
 						// user's been logged in already (by session management)
-						// log them out and continue
-						SecurityContextHolder.getContext().setAuthentication(null);
+						// we're OK, continue without prompting
 						chain.doFilter(req, res);
 					} else {
-						// user hasn't been logged in yet, we can keep going since we'll get there
+						logger.info("Client requested no prompt");
+						// user hasn't been logged in, we need to "return an error"
+						if (client != null && authRequest.getRedirectUri() != null) {
+							
+							// if we've got a redirect URI then we'll send it 
+							
+							String url = redirectResolver.resolveRedirect(authRequest.getRedirectUri(), client);
+							
+							try {
+								URIBuilder uriBuilder = new URIBuilder(url);
+							
+								uriBuilder.addParameter(ERROR, LOGIN_REQUIRED);
+								if (!Strings.isNullOrEmpty(authRequest.getState())) {
+									uriBuilder.addParameter(STATE, authRequest.getState()); // copy the state parameter if one was given
+								}
+								
+								response.sendRedirect(uriBuilder.toString());
+								return;
+								
+							} catch (URISyntaxException e) {
+								logger.error("Can't build redirect URI for prompt=none, sending error instead", e);
+								response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied");
+								return;
+							}
+						}
+						
+						response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied");
+						return;
+					}
+				} else if (prompts.contains(PROMPT_LOGIN)) {
+	
+					// first see if the user's already been prompted in this session
+					if (session.getAttribute(PROMPTED) == null) {
+						// user hasn't been PROMPTED yet, we need to check
+	
+						session.setAttribute(PROMPT_REQUESTED, Boolean.TRUE);
+	
+						// see if the user's logged in
+						Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+						if (auth != null) {
+							// user's been logged in already (by session management)
+							// log them out and continue
+							SecurityContextHolder.getContext().setAuthentication(null);
+							chain.doFilter(req, res);
+						} else {
+							// user hasn't been logged in yet, we can keep going since we'll get there
+							chain.doFilter(req, res);
+						}
+					} else {
+						// user has been PROMPTED, we're fine
+	
+						// but first, undo the prompt tag
+						session.removeAttribute(PROMPTED);
 						chain.doFilter(req, res);
 					}
 				} else {
-					// user has been PROMPTED, we're fine
-
-					// but first, undo the prompt tag
-					session.removeAttribute(PROMPTED);
+					// prompt parameter is a value we don't care about, not our business
 					chain.doFilter(req, res);
 				}
-			} else {
-				// prompt parameter is a value we don't care about, not our business
-				chain.doFilter(req, res);
-			}
-
-		} else if (authRequest.getExtensions().get(MAX_AGE) != null ||
-				(client != null && client.getDefaultMaxAge() != null)) {
-
-			// default to the client's stored value, check the string parameter
-			Integer max = (client != null ? client.getDefaultMaxAge() : null);
-			String maxAge = (String) authRequest.getExtensions().get(MAX_AGE);
-			if (maxAge != null) {
-				max = Integer.parseInt(maxAge);
-			}
-
-			if (max != null) {
-
-				Date authTime = (Date) session.getAttribute(AuthenticationTimeStamper.AUTH_TIMESTAMP);
-
-				Date now = new Date();
-				if (authTime != null) {
-					long seconds = (now.getTime() - authTime.getTime()) / 1000;
-					if (seconds > max) {
-						// session is too old, log the user out and continue
-						SecurityContextHolder.getContext().setAuthentication(null);
+	
+			} else if (authRequest.getExtensions().get(MAX_AGE) != null ||
+					(client != null && client.getDefaultMaxAge() != null)) {
+	
+				// default to the client's stored value, check the string parameter
+				Integer max = (client != null ? client.getDefaultMaxAge() : null);
+				String maxAge = (String) authRequest.getExtensions().get(MAX_AGE);
+				if (maxAge != null) {
+					max = Integer.parseInt(maxAge);
+				}
+	
+				if (max != null) {
+	
+					Date authTime = (Date) session.getAttribute(AuthenticationTimeStamper.AUTH_TIMESTAMP);
+	
+					Date now = new Date();
+					if (authTime != null) {
+						long seconds = (now.getTime() - authTime.getTime()) / 1000;
+						if (seconds > max) {
+							// session is too old, log the user out and continue
+							SecurityContextHolder.getContext().setAuthentication(null);
+						}
 					}
 				}
+				chain.doFilter(req, res);
+			} else {
+				// no prompt parameter, not our business
+				chain.doFilter(req, res);
 			}
-			chain.doFilter(req, res);
-		} else {
-			// no prompt parameter, not our business
+	
+		} catch (InvalidClientException e) {
+			// we couldn't find the client, move on and let the rest of the system catch the error
 			chain.doFilter(req, res);
 		}
-
 	}
 
 	/**
