@@ -67,6 +67,7 @@ public class DefaultUserInfo implements UserInfo {
 	private Address address;
 	private String updatedTime;
 	private String birthdate;
+	private JsonObject src; // source JSON if this is loaded remotely
 
 
 	/**
@@ -408,45 +409,52 @@ public class DefaultUserInfo implements UserInfo {
 
 	@Override
 	public JsonObject toJson() {
-		JsonObject obj = new JsonObject();
-
-		obj.addProperty("sub", this.getSub());
-
-		obj.addProperty("name", this.getName());
-		obj.addProperty("preferred_username", this.getPreferredUsername());
-		obj.addProperty("given_name", this.getGivenName());
-		obj.addProperty("family_name", this.getFamilyName());
-		obj.addProperty("middle_name", this.getMiddleName());
-		obj.addProperty("nickname", this.getNickname());
-		obj.addProperty("profile", this.getProfile());
-		obj.addProperty("picture", this.getPicture());
-		obj.addProperty("website", this.getWebsite());
-		obj.addProperty("gender", this.getGender());
-		obj.addProperty("zone_info", this.getZoneinfo());
-		obj.addProperty("locale", this.getLocale());
-		obj.addProperty("updated_time", this.getUpdatedTime());
-		obj.addProperty("birthdate", this.getBirthdate());
-
-		obj.addProperty("email", this.getEmail());
-		obj.addProperty("email_verified", this.getEmailVerified());
-
-		obj.addProperty("phone_number", this.getPhoneNumber());
-		obj.addProperty("phone_number_verified", this.getPhoneNumberVerified());
-
-		if (this.getAddress() != null) {
-
-			JsonObject addr = new JsonObject();
-			addr.addProperty("formatted", this.getAddress().getFormatted());
-			addr.addProperty("street_address", this.getAddress().getStreetAddress());
-			addr.addProperty("locality", this.getAddress().getLocality());
-			addr.addProperty("region", this.getAddress().getRegion());
-			addr.addProperty("postal_code", this.getAddress().getPostalCode());
-			addr.addProperty("country", this.getAddress().getCountry());
-
-			obj.add("address", addr);
+		
+		if (src == null) {
+		
+			JsonObject obj = new JsonObject();
+	
+			obj.addProperty("sub", this.getSub());
+	
+			obj.addProperty("name", this.getName());
+			obj.addProperty("preferred_username", this.getPreferredUsername());
+			obj.addProperty("given_name", this.getGivenName());
+			obj.addProperty("family_name", this.getFamilyName());
+			obj.addProperty("middle_name", this.getMiddleName());
+			obj.addProperty("nickname", this.getNickname());
+			obj.addProperty("profile", this.getProfile());
+			obj.addProperty("picture", this.getPicture());
+			obj.addProperty("website", this.getWebsite());
+			obj.addProperty("gender", this.getGender());
+			obj.addProperty("zone_info", this.getZoneinfo());
+			obj.addProperty("locale", this.getLocale());
+			obj.addProperty("updated_time", this.getUpdatedTime());
+			obj.addProperty("birthdate", this.getBirthdate());
+	
+			obj.addProperty("email", this.getEmail());
+			obj.addProperty("email_verified", this.getEmailVerified());
+	
+			obj.addProperty("phone_number", this.getPhoneNumber());
+			obj.addProperty("phone_number_verified", this.getPhoneNumberVerified());
+	
+			if (this.getAddress() != null) {
+	
+				JsonObject addr = new JsonObject();
+				addr.addProperty("formatted", this.getAddress().getFormatted());
+				addr.addProperty("street_address", this.getAddress().getStreetAddress());
+				addr.addProperty("locality", this.getAddress().getLocality());
+				addr.addProperty("region", this.getAddress().getRegion());
+				addr.addProperty("postal_code", this.getAddress().getPostalCode());
+				addr.addProperty("country", this.getAddress().getCountry());
+	
+				obj.add("address", addr);
+			}
+	
+			return obj;
+		} else {
+			return src;
 		}
 
-		return obj;
 	}
 
 	/**
@@ -456,6 +464,7 @@ public class DefaultUserInfo implements UserInfo {
 	 */
 	public static UserInfo fromJson(JsonObject obj) {
 		DefaultUserInfo ui = new DefaultUserInfo();
+		ui.setSource(obj);
 
 		ui.setSub(nullSafeGetString(obj, "sub"));
 
@@ -497,6 +506,22 @@ public class DefaultUserInfo implements UserInfo {
 		return ui;
 
 	}
+	/**
+	 * @return the jsonString
+	 */
+	@Override
+	public JsonObject getSource() {
+		return src;
+	}
+
+	/**
+	 * @param jsonString the jsonString to set
+	 */
+	public void setSource(JsonObject src) {
+		this.src = src;
+	}
+	
+	
 	private static String nullSafeGetString(JsonObject obj, String field) {
 		return obj.has(field) && obj.get(field).isJsonPrimitive() ? obj.get(field).getAsString() : null;
 	}
