@@ -122,7 +122,8 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 	private TokenCacheObject checkCache(String key) {
 		if (authCache.containsKey(key)) {
 			TokenCacheObject tco = authCache.get(key);
-			if (tco.token.getExpiration().after(new Date())) {
+			// for this introspection service, null expiration means tokens don't expire
+			if (tco.token.getExpiration() == null || tco.token.getExpiration().after(new Date())) {
 				return tco;
 			} else {
 				// if the token is expired, don't keep things around.
@@ -156,7 +157,7 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 
 	// Validate a token string against the introspection endpoint,
 	// then parse it and store it in the local cache. Return true on
-	// sucess, false otherwise.
+	// success, false otherwise.
 	private boolean parseToken(String accessToken) {
 
 		// find out which URL to ask
@@ -230,7 +231,7 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 			// create an OAuth2AccessToken
 			OAuth2AccessToken token = createAccessToken(tokenResponse, accessToken);
 
-			if (token.getExpiration().after(new Date())) {
+			if (token.getExpiration() == null || token.getExpiration().after(new Date())) {
 				// Store them in the cache
 				authCache.put(accessToken, new TokenCacheObject(token, auth));
 
@@ -253,7 +254,7 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 		} else {
 			if (parseToken(accessToken)) {
 				cacheAuth = authCache.get(accessToken);
-				if (cacheAuth != null && (cacheAuth.token.getExpiration().after(new Date()))) {
+				if (cacheAuth != null && (cacheAuth.token.getExpiration() == null || cacheAuth.token.getExpiration().after(new Date()))) {
 					return cacheAuth.auth;
 				} else {
 					return null;
@@ -275,7 +276,7 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 		} else {
 			if (parseToken(accessToken)) {
 				cacheAuth = authCache.get(accessToken);
-				if (cacheAuth != null && (cacheAuth.token.getExpiration().after(new Date()))) {
+				if (cacheAuth != null && (cacheAuth.token.getExpiration() == null || cacheAuth.token.getExpiration().after(new Date()))) {
 					return cacheAuth.token;
 				} else {
 					return null;
