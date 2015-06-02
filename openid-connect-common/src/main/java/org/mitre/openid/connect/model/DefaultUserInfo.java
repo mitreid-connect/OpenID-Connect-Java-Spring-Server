@@ -18,6 +18,7 @@ package org.mitre.openid.connect.model;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -27,6 +28,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import org.mitre.openid.connect.model.convert.JsonObjectStringConverter;
 
 import com.google.gson.JsonObject;
 
@@ -510,6 +513,9 @@ public class DefaultUserInfo implements UserInfo {
 	 * @return the jsonString
 	 */
 	@Override
+	@Basic
+	@Column(name = "src")
+	@Convert(converter = JsonObjectStringConverter.class)
 	public JsonObject getSource() {
 		return src;
 	}

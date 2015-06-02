@@ -19,14 +19,19 @@
  */
 package org.mitre.openid.connect.client;
 
+import java.text.ParseException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.mitre.openid.connect.model.UserInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
-import org.springframework.security.core.authority.mapping.NullAuthoritiesMapper;
+
+import com.nimbusds.jwt.JWT;
+import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
 
 /**
  * 
@@ -37,31 +42,36 @@ import org.springframework.security.core.authority.mapping.NullAuthoritiesMapper
  * @author jricher
  * 
  */
-public class NamedAdminAuthoritiesMapper implements GrantedAuthoritiesMapper {
+public class NamedAdminAuthoritiesMapper implements OIDCAuthoritiesMapper {
 
+	private static Logger logger = LoggerFactory.getLogger(NamedAdminAuthoritiesMapper.class);
+	
 	private static final SimpleGrantedAuthority ROLE_ADMIN = new SimpleGrantedAuthority("ROLE_ADMIN");
 	private static final SimpleGrantedAuthority ROLE_USER = new SimpleGrantedAuthority("ROLE_USER");
 
 	private Set<SubjectIssuerGrantedAuthority> admins = new HashSet<SubjectIssuerGrantedAuthority>();
 
-	private GrantedAuthoritiesMapper chain = new NullAuthoritiesMapper();
-
 	@Override
-	public Collection<? extends GrantedAuthority> mapAuthorities(Collection<? extends GrantedAuthority> authorities) {
+	public Collection<? extends GrantedAuthority> mapAuthorities(JWT idToken, UserInfo userInfo) {
 
 		Set<GrantedAuthority> out = new HashSet<GrantedAuthority>();
-		out.addAll(authorities);
+		try {
+			ReadOnlyJWTClaimsSet claims = idToken.getJWTClaimsSet();
+			
+			SubjectIssuerGrantedAuthority authority = new SubjectIssuerGrantedAuthority(claims.getSubject(), claims.getIssuer());
+			out.add(authority);
 
-		for (GrantedAuthority authority : authorities) {
 			if (admins.contains(authority)) {
 				out.add(ROLE_ADMIN);
 			}
+	
+			// everybody's a user by default
+			out.add(ROLE_USER);
+			
+		} catch (ParseException e) {
+			logger.error("Unable to parse ID Token inside of authorities mapper (huh?)");
 		}
-
-		// everybody's a user by default
-		out.add(ROLE_USER);
-
-		return chain.mapAuthorities(out);
+		return out;
 	}
 
 	/**
@@ -76,20 +86,6 @@ public class NamedAdminAuthoritiesMapper implements GrantedAuthoritiesMapper {
 	 */
 	public void setAdmins(Set<SubjectIssuerGrantedAuthority> admins) {
 		this.admins = admins;
-	}
-
-	/**
-	 * @return the chain
-	 */
-	public GrantedAuthoritiesMapper getChain() {
-		return chain;
-	}
-
-	/**
-	 * @param chain the chain to set
-	 */
-	public void setChain(GrantedAuthoritiesMapper chain) {
-		this.chain = chain;
 	}
 
 }

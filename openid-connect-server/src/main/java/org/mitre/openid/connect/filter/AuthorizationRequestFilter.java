@@ -110,7 +110,9 @@ public class AuthorizationRequestFilter extends GenericFilterBean {
 			ClientDetailsEntity client = null;
 
 			authRequest = authRequestFactory.createAuthorizationRequest(createRequestMap(request.getParameterMap()));
-			client = clientService.loadClientByClientId(authRequest.getClientId());
+			if (!Strings.isNullOrEmpty(authRequest.getClientId())) {
+				client = clientService.loadClientByClientId(authRequest.getClientId());
+			}
 
 			// save the login hint to the session
 			if (authRequest.getExtensions().get(LOGIN_HINT) != null) {

@@ -253,7 +253,8 @@ CREATE TABLE IF NOT EXISTS user_info (
 	phone_number_verified BOOLEAN,
 	address_id VARCHAR(256),
 	updated_time VARCHAR(256),
-	birthdate VARCHAR(256)
+	birthdate VARCHAR(256),
+	src VARCHAR(4096)
 );
 
 CREATE TABLE IF NOT EXISTS whitelisted_site (

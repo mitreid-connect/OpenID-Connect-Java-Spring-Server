@@ -16,18 +16,22 @@
  *******************************************************************************/
 package org.mitre.openid.connect.client;
 
+import java.text.ParseException;
 import java.util.Collection;
 
 import org.mitre.openid.connect.model.OIDCAuthenticationToken;
 import org.mitre.openid.connect.model.UserInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
+import com.nimbusds.jwt.JWT;
+import com.nimbusds.jwt.JWTParser;
 
 /**
  * @author nemonik
@@ -35,9 +39,11 @@ import com.google.common.collect.Lists;
  */
 public class OIDCAuthenticationProvider implements AuthenticationProvider {
 
+	private static Logger logger = LoggerFactory.getLogger(OIDCAuthenticationProvider.class);
+	
 	private UserInfoFetcher userInfoFetcher = new UserInfoFetcher();
 
-	private GrantedAuthoritiesMapper authoritiesMapper = new NamedAdminAuthoritiesMapper();
+	private OIDCAuthoritiesMapper authoritiesMapper = new NamedAdminAuthoritiesMapper();
 
 	/*
 	 * (non-Javadoc)
@@ -46,8 +52,7 @@ public class OIDCAuthenticationProvider implements AuthenticationProvider {
 	 * authenticate(org.springframework.security.core.Authentication)
 	 */
 	@Override
-	public Authentication authenticate(final Authentication authentication)
-			throws AuthenticationException {
+	public Authentication authenticate(final Authentication authentication) throws AuthenticationException {
 
 		if (!supports(authentication.getClass())) {
 			return null;
@@ -56,33 +61,56 @@ public class OIDCAuthenticationProvider implements AuthenticationProvider {
 		if (authentication instanceof OIDCAuthenticationToken) {
 
 			OIDCAuthenticationToken token = (OIDCAuthenticationToken) authentication;
-
-			Collection<SubjectIssuerGrantedAuthority> authorities = Lists.newArrayList(new SubjectIssuerGrantedAuthority(token.getSub(), token.getIssuer()));
-
-			UserInfo userInfo = userInfoFetcher.loadUserInfo(token);
-
-			if (userInfo == null) {
-				// TODO: user Info not found -- error?
-			} else {
-				if (!Strings.isNullOrEmpty(userInfo.getSub()) && !userInfo.getSub().equals(token.getSub())) {
-					// the userinfo came back and the user_id fields don't match what was in the id_token
-					throw new UsernameNotFoundException("user_id mismatch between id_token and user_info call: " + token.getSub() + " / " + userInfo.getSub());
+			
+			try {
+				
+				// get the ID Token value out
+				String idTokenString = token.getIdTokenValue();
+				JWT idToken = JWTParser.parse(idTokenString);
+	
+				// load the user info if we can
+				UserInfo userInfo = userInfoFetcher.loadUserInfo(token);
+	
+				if (userInfo == null) {
+					// user info not found -- could be an error, could be fine 
+				} else {
+					// if we found userinfo, double check it
+					if (!Strings.isNullOrEmpty(userInfo.getSub()) && !userInfo.getSub().equals(token.getSub())) {
+						// the userinfo came back and the user_id fields don't match what was in the id_token
+						throw new UsernameNotFoundException("user_id mismatch between id_token and user_info call: " + token.getSub() + " / " + userInfo.getSub());
+					}
 				}
+	
+				return createAuthenticationToken(token, authoritiesMapper.mapAuthorities(idToken, userInfo), userInfo);
+			} catch (ParseException e) {
+				logger.error("Unable to parse ID token in the token");
+				return null;
 			}
-
-			return new OIDCAuthenticationToken(token.getSub(),
-					token.getIssuer(),
-					userInfo, authoritiesMapper.mapAuthorities(authorities),
-					token.getIdTokenValue(), token.getAccessTokenValue(), token.getRefreshTokenValue());
 		}
 
 		return null;
 	}
 
 	/**
+	 * Override this function to return a different kind of Authentication, processes the authorities differently,
+	 * or do post-processing based on the UserInfo object.
+	 * 
+	 * @param token
+	 * @param authorities
+	 * @param userInfo
+	 * @return
+	 */
+	protected Authentication createAuthenticationToken(OIDCAuthenticationToken token, Collection<? extends GrantedAuthority> authorities, UserInfo userInfo) {
+		return new OIDCAuthenticationToken(token.getSub(),
+				token.getIssuer(),
+				userInfo, authorities,
+				token.getIdTokenValue(), token.getAccessTokenValue(), token.getRefreshTokenValue());
+	}
+
+	/**
 	 * @param authoritiesMapper
 	 */
-	public void setAuthoritiesMapper(GrantedAuthoritiesMapper authoritiesMapper) {
+	public void setAuthoritiesMapper(OIDCAuthoritiesMapper authoritiesMapper) {
 		this.authoritiesMapper = authoritiesMapper;
 	}
 
