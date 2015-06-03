@@ -28,6 +28,7 @@ import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
 import org.mitre.oauth2.model.ClientDetailsEntity.SubjectType;
 import org.springframework.security.core.GrantedAuthority;
 
+import com.google.gson.JsonObject;
 import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -45,6 +46,7 @@ public class RegisteredClient {
 	private Date clientSecretExpiresAt;
 	private Date clientIdIssuedAt;
 	private ClientDetailsEntity client;
+	private JsonObject src;
 
 	/**
 	 * 
@@ -779,6 +781,20 @@ public class RegisteredClient {
 	 */
 	public void setClientIdIssuedAt(Date issuedAt) {
 		this.clientIdIssuedAt = issuedAt;
+	}
+
+	/**
+	 * @return the src
+	 */
+	public JsonObject getSource() {
+		return src;
+	}
+
+	/**
+	 * @param src the src to set
+	 */
+	public void setSource(JsonObject src) {
+		this.src = src;
 	}
 
 

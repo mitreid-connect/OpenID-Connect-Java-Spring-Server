@@ -222,6 +222,8 @@ public class ClientDetailsEntityJsonProcessor {
 			rc.setClientIdIssuedAt(getAsDate(o, CLIENT_ID_ISSUED_AT));
 			rc.setClientSecretExpiresAt(getAsDate(o, CLIENT_SECRET_EXPIRES_AT));
 
+			rc.setSource(o);
+			
 			return rc;
 		} else {
 			return null;
@@ -235,78 +237,84 @@ public class ClientDetailsEntityJsonProcessor {
 	 * @return
 	 */
 	public static JsonObject serialize(RegisteredClient c) {
-		JsonObject o = new JsonObject();
-
-		o.addProperty(CLIENT_ID, c.getClientId());
-		if (c.getClientSecret() != null) {
-			o.addProperty(CLIENT_SECRET, c.getClientSecret());
-
-			if (c.getClientSecretExpiresAt() == null) {
-				o.addProperty(CLIENT_SECRET_EXPIRES_AT, 0); // TODO: do we want to let secrets expire?
-			} else {
-				o.addProperty(CLIENT_SECRET_EXPIRES_AT, c.getClientSecretExpiresAt().getTime() / 1000L);
-			}
-		}
-
-		if (c.getClientIdIssuedAt() != null) {
-			o.addProperty(CLIENT_ID_ISSUED_AT, c.getClientIdIssuedAt().getTime() / 1000L);
-		} else if (c.getCreatedAt() != null) {
-			o.addProperty(CLIENT_ID_ISSUED_AT, c.getCreatedAt().getTime() / 1000L);
-		}
-		if (c.getRegistrationAccessToken() != null) {
-			o.addProperty(REGISTRATION_ACCESS_TOKEN, c.getRegistrationAccessToken());
-		}
-
-		if (c.getRegistrationClientUri() != null) {
-			o.addProperty(REGISTRATION_CLIENT_URI, c.getRegistrationClientUri());
-		}
-
-
-		// add in all other client properties
-
-		// OAuth DynReg
-		o.add(REDIRECT_URIS, getAsArray(c.getRedirectUris()));
-		o.addProperty(CLIENT_NAME, c.getClientName());
-		o.addProperty(CLIENT_URI, c.getClientUri());
-		o.addProperty(LOGO_URI, c.getLogoUri());
-		o.add(CONTACTS, getAsArray(c.getContacts()));
-		o.addProperty(TOS_URI, c.getTosUri());
-		o.addProperty(TOKEN_ENDPOINT_AUTH_METHOD, c.getTokenEndpointAuthMethod() != null ? c.getTokenEndpointAuthMethod().getValue() : null);
-		o.addProperty(SCOPE, c.getScope() != null ? Joiner.on(SCOPE_SEPARATOR).join(c.getScope()) : null);
-		o.add(GRANT_TYPES, getAsArray(c.getGrantTypes()));
-		o.add(RESPONSE_TYPES, getAsArray(c.getResponseTypes()));
-		o.addProperty(POLICY_URI, c.getPolicyUri());
-		o.addProperty(JWKS_URI, c.getJwksUri());
 		
-		// get the JWKS sub-object
-		if (c.getJwks() != null) {
-			// We have to re-parse it into GSON because Nimbus uses a different parser
-			JsonElement jwks = parser.parse(c.getJwks().toString());
-			o.add(JWKS, jwks);
+		if (c.getSource() != null) {
+			// if we have the original object, just use that
+			return c.getSource();
 		} else {
-			o.add(JWKS, null);
+		
+			JsonObject o = new JsonObject();
+	
+			o.addProperty(CLIENT_ID, c.getClientId());
+			if (c.getClientSecret() != null) {
+				o.addProperty(CLIENT_SECRET, c.getClientSecret());
+	
+				if (c.getClientSecretExpiresAt() == null) {
+					o.addProperty(CLIENT_SECRET_EXPIRES_AT, 0); // TODO: do we want to let secrets expire?
+				} else {
+					o.addProperty(CLIENT_SECRET_EXPIRES_AT, c.getClientSecretExpiresAt().getTime() / 1000L);
+				}
+			}
+	
+			if (c.getClientIdIssuedAt() != null) {
+				o.addProperty(CLIENT_ID_ISSUED_AT, c.getClientIdIssuedAt().getTime() / 1000L);
+			} else if (c.getCreatedAt() != null) {
+				o.addProperty(CLIENT_ID_ISSUED_AT, c.getCreatedAt().getTime() / 1000L);
+			}
+			if (c.getRegistrationAccessToken() != null) {
+				o.addProperty(REGISTRATION_ACCESS_TOKEN, c.getRegistrationAccessToken());
+			}
+	
+			if (c.getRegistrationClientUri() != null) {
+				o.addProperty(REGISTRATION_CLIENT_URI, c.getRegistrationClientUri());
+			}
+	
+	
+			// add in all other client properties
+	
+			// OAuth DynReg
+			o.add(REDIRECT_URIS, getAsArray(c.getRedirectUris()));
+			o.addProperty(CLIENT_NAME, c.getClientName());
+			o.addProperty(CLIENT_URI, c.getClientUri());
+			o.addProperty(LOGO_URI, c.getLogoUri());
+			o.add(CONTACTS, getAsArray(c.getContacts()));
+			o.addProperty(TOS_URI, c.getTosUri());
+			o.addProperty(TOKEN_ENDPOINT_AUTH_METHOD, c.getTokenEndpointAuthMethod() != null ? c.getTokenEndpointAuthMethod().getValue() : null);
+			o.addProperty(SCOPE, c.getScope() != null ? Joiner.on(SCOPE_SEPARATOR).join(c.getScope()) : null);
+			o.add(GRANT_TYPES, getAsArray(c.getGrantTypes()));
+			o.add(RESPONSE_TYPES, getAsArray(c.getResponseTypes()));
+			o.addProperty(POLICY_URI, c.getPolicyUri());
+			o.addProperty(JWKS_URI, c.getJwksUri());
+			
+			// get the JWKS sub-object
+			if (c.getJwks() != null) {
+				// We have to re-parse it into GSON because Nimbus uses a different parser
+				JsonElement jwks = parser.parse(c.getJwks().toString());
+				o.add(JWKS, jwks);
+			} else {
+				o.add(JWKS, null);
+			}
+	
+			// OIDC Registration
+			o.addProperty(APPLICATION_TYPE, c.getApplicationType() != null ? c.getApplicationType().getValue() : null);
+			o.addProperty(SECTOR_IDENTIFIER_URI, c.getSectorIdentifierUri());
+			o.addProperty(SUBJECT_TYPE, c.getSubjectType() != null ? c.getSubjectType().getValue() : null);
+			o.addProperty(REQUEST_OBJECT_SIGNING_ALG, c.getRequestObjectSigningAlg() != null ? c.getRequestObjectSigningAlg().getName() : null);
+			o.addProperty(USERINFO_SIGNED_RESPONSE_ALG, c.getUserInfoSignedResponseAlg() != null ? c.getUserInfoSignedResponseAlg().getName() : null);
+			o.addProperty(USERINFO_ENCRYPTED_RESPONSE_ALG, c.getUserInfoEncryptedResponseAlg() != null ? c.getUserInfoEncryptedResponseAlg().getName() : null);
+			o.addProperty(USERINFO_ENCRYPTED_RESPONSE_ENC, c.getUserInfoEncryptedResponseEnc() != null ? c.getUserInfoEncryptedResponseEnc().getName() : null);
+			o.addProperty(ID_TOKEN_SIGNED_RESPONSE_ALG, c.getIdTokenSignedResponseAlg() != null ? c.getIdTokenSignedResponseAlg().getName() : null);
+			o.addProperty(ID_TOKEN_ENCRYPTED_RESPONSE_ALG, c.getIdTokenEncryptedResponseAlg() != null ? c.getIdTokenEncryptedResponseAlg().getName() : null);
+			o.addProperty(ID_TOKEN_ENCRYPTED_RESPONSE_ENC, c.getIdTokenEncryptedResponseEnc() != null ? c.getIdTokenEncryptedResponseEnc().getName() : null);
+			o.addProperty(TOKEN_ENDPOINT_AUTH_SIGNING_ALG, c.getTokenEndpointAuthSigningAlg() != null ? c.getTokenEndpointAuthSigningAlg().getName() : null);
+			o.addProperty(DEFAULT_MAX_AGE, c.getDefaultMaxAge());
+			o.addProperty(REQUIRE_AUTH_TIME, c.getRequireAuthTime());
+			o.add(DEFAULT_ACR_VALUES, getAsArray(c.getDefaultACRvalues()));
+			o.addProperty(INITIATE_LOGIN_URI, c.getInitiateLoginUri());
+			o.add(POST_LOGOUT_REDIRECT_URIS, getAsArray(c.getPostLogoutRedirectUris()));
+			o.add(REQUEST_URIS, getAsArray(c.getRequestUris()));
+			return o;
 		}
 
-		// OIDC Registration
-		o.addProperty(APPLICATION_TYPE, c.getApplicationType() != null ? c.getApplicationType().getValue() : null);
-		o.addProperty(SECTOR_IDENTIFIER_URI, c.getSectorIdentifierUri());
-		o.addProperty(SUBJECT_TYPE, c.getSubjectType() != null ? c.getSubjectType().getValue() : null);
-		o.addProperty(REQUEST_OBJECT_SIGNING_ALG, c.getRequestObjectSigningAlg() != null ? c.getRequestObjectSigningAlg().getName() : null);
-		o.addProperty(USERINFO_SIGNED_RESPONSE_ALG, c.getUserInfoSignedResponseAlg() != null ? c.getUserInfoSignedResponseAlg().getName() : null);
-		o.addProperty(USERINFO_ENCRYPTED_RESPONSE_ALG, c.getUserInfoEncryptedResponseAlg() != null ? c.getUserInfoEncryptedResponseAlg().getName() : null);
-		o.addProperty(USERINFO_ENCRYPTED_RESPONSE_ENC, c.getUserInfoEncryptedResponseEnc() != null ? c.getUserInfoEncryptedResponseEnc().getName() : null);
-		o.addProperty(ID_TOKEN_SIGNED_RESPONSE_ALG, c.getIdTokenSignedResponseAlg() != null ? c.getIdTokenSignedResponseAlg().getName() : null);
-		o.addProperty(ID_TOKEN_ENCRYPTED_RESPONSE_ALG, c.getIdTokenEncryptedResponseAlg() != null ? c.getIdTokenEncryptedResponseAlg().getName() : null);
-		o.addProperty(ID_TOKEN_ENCRYPTED_RESPONSE_ENC, c.getIdTokenEncryptedResponseEnc() != null ? c.getIdTokenEncryptedResponseEnc().getName() : null);
-		o.addProperty(TOKEN_ENDPOINT_AUTH_SIGNING_ALG, c.getTokenEndpointAuthSigningAlg() != null ? c.getTokenEndpointAuthSigningAlg().getName() : null);
-		o.addProperty(DEFAULT_MAX_AGE, c.getDefaultMaxAge());
-		o.addProperty(REQUIRE_AUTH_TIME, c.getRequireAuthTime());
-		o.add(DEFAULT_ACR_VALUES, getAsArray(c.getDefaultACRvalues()));
-		o.addProperty(INITIATE_LOGIN_URI, c.getInitiateLoginUri());
-		o.add(POST_LOGOUT_REDIRECT_URIS, getAsArray(c.getPostLogoutRedirectUris()));
-		o.add(REQUEST_URIS, getAsArray(c.getRequestUris()));
-		return o;
 	}
-
-
 }
