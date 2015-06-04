@@ -19,6 +19,7 @@ package org.mitre.oauth2.introspectingfilter;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Date;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -67,6 +68,11 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 	private IntrospectionConfigurationService introspectionConfigurationService;
 	private IntrospectionAuthorityGranter introspectionAuthorityGranter = new SimpleIntrospectionAuthorityGranter();
 
+	private int defaultExpireTime = 300000; // 5 minutes in milliseconds 
+	private boolean forceCacheExpireTime = false; // force removal of cached tokens based on default expire time
+	private boolean cacheNonExpiringTokens = false;
+	private boolean cacheTokens = true;
+	
 	private HttpClient httpClient = HttpClientBuilder.create()
 			.useSystemProperties()
 			.build();
@@ -76,10 +82,22 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 	private class TokenCacheObject {
 		OAuth2AccessToken token;
 		OAuth2Authentication auth;
-
+		Date cacheExpire;
+		
 		private TokenCacheObject(OAuth2AccessToken token, OAuth2Authentication auth) {
 			this.token = token;
 			this.auth = auth;
+			
+			
+			// if the token doesn't have an expire time, use the default expire time
+			// also use the default expire time if the token is valid for longer than that time (i.e. force a check of the token, if force check is valid)
+			if (this.token.getExpiration() != null || (forceCacheExpireTime && (this.token.getExpiration().getTime() - System.currentTimeMillis() <= defaultExpireTime))) {
+				this.cacheExpire = this.token.getExpiration();
+			} else {
+				Calendar cal = Calendar.getInstance();
+				cal.add(Calendar.MILLISECOND, defaultExpireTime);
+				this.cacheExpire = cal.getTime();
+			}
 		}
 	}
 
@@ -117,13 +135,29 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 		return introspectionAuthorityGranter;
 	}
 
+	/**
+	 * get the default cache expire time in milliseconds
+	 * @return
+	 */
+	public int getDefaultExpireTime() {
+		return defaultExpireTime;
+	}
+
+	/**
+	 * set the default cache expire time in milliseconds
+	 * @param defaultExpireTime
+	 */
+	public void setDefaultExpireTime(int defaultExpireTime) {
+		this.defaultExpireTime = defaultExpireTime;
+	}
+	
 	// Check if there is a token and authentication in the cache
 	// and check if it is not expired.
 	private TokenCacheObject checkCache(String key) {
-		if (authCache.containsKey(key)) {
+		if (cacheTokens && authCache.containsKey(key)) {
 			TokenCacheObject tco = authCache.get(key);
-			// for this introspection service, null expiration means tokens don't expire
-			if (tco.token.getExpiration() == null || tco.token.getExpiration().after(new Date())) {
+			
+			if (tco != null && tco.cacheExpire != null && tco.cacheExpire.after(new Date())) {
 				return tco;
 			} else {
 				// if the token is expired, don't keep things around.
@@ -156,9 +190,9 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 	}
 
 	// Validate a token string against the introspection endpoint,
-	// then parse it and store it in the local cache. Return true on
-	// success, false otherwise.
-	private boolean parseToken(String accessToken) {
+	// then parse it and store it in the local cache. Return TokenCacheObject
+	// if token is valid, otherwise return null
+	private TokenCacheObject parseToken(String accessToken) {
 
 		// find out which URL to ask
 		String introspectionUrl;
@@ -168,7 +202,7 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 			client = introspectionConfigurationService.getClientConfiguration(accessToken);
 		} catch (IllegalArgumentException e) {
 			logger.error("Unable to load introspection URL or client configuration", e);
-			return false;
+			return null;
 		}
 		// Use the SpringFramework RestTemplate to send the request to the
 		// endpoint
@@ -210,7 +244,7 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 			// parse the json
 			JsonElement jsonRoot = new JsonParser().parse(validatedToken);
 			if (!jsonRoot.isJsonObject()) {
-				return false; // didn't get a proper JSON object
+				return null; // didn't get a proper JSON object
 			}
 
 			JsonObject tokenResponse = jsonRoot.getAsJsonObject();
@@ -218,13 +252,13 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 			if (tokenResponse.get("error") != null) {
 				// report an error?
 				logger.error("Got an error back: " + tokenResponse.get("error") + ", " + tokenResponse.get("error_description"));
-				return false;
+				return null;
 			}
 
 			if (!tokenResponse.get("active").getAsBoolean()) {
 				// non-valid token
 				logger.info("Server returned non-active token");
-				return false;
+				return null;
 			}
 			// create an OAuth2Authentication
 			OAuth2Authentication auth = new OAuth2Authentication(createStoredRequest(tokenResponse), createAuthentication(tokenResponse));
@@ -233,14 +267,16 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 
 			if (token.getExpiration() == null || token.getExpiration().after(new Date())) {
 				// Store them in the cache
-				authCache.put(accessToken, new TokenCacheObject(token, auth));
-
-				return true;
+				TokenCacheObject tco = new TokenCacheObject(token, auth);
+				if (cacheTokens && (cacheNonExpiringTokens || token.getExpiration() != null)) {
+					authCache.put(accessToken, tco);
+				}
+				return tco;
 			}
 		}
 
 		// If we never put a token and an authentication in the cache...
-		return false;
+		return null;
 	}
 
 	@Override
@@ -252,13 +288,9 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 		if (cacheAuth != null) {
 			return cacheAuth.auth;
 		} else {
-			if (parseToken(accessToken)) {
-				cacheAuth = authCache.get(accessToken);
-				if (cacheAuth != null && (cacheAuth.token.getExpiration() == null || cacheAuth.token.getExpiration().after(new Date()))) {
-					return cacheAuth.auth;
-				} else {
-					return null;
-				}
+			cacheAuth = parseToken(accessToken);
+			if (cacheAuth != null) {
+				return cacheAuth.auth;
 			} else {
 				return null;
 			}
@@ -274,13 +306,9 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 		if (cacheAuth != null) {
 			return cacheAuth.token;
 		} else {
-			if (parseToken(accessToken)) {
-				cacheAuth = authCache.get(accessToken);
-				if (cacheAuth != null && (cacheAuth.token.getExpiration() == null || cacheAuth.token.getExpiration().after(new Date()))) {
-					return cacheAuth.token;
-				} else {
-					return null;
-				}
+			cacheAuth = parseToken(accessToken);
+			if (cacheAuth != null) {
+				return cacheAuth.token;
 			} else {
 				return null;
 			}
