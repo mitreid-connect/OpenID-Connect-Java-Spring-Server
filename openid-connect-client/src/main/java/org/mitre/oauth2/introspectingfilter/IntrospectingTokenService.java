@@ -88,12 +88,12 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 			this.token = token;
 			this.auth = auth;
 			
-			
-			// if the token doesn't have an expire time, use the default expire time
-			// also use the default expire time if the token is valid for longer than that time (i.e. force a check of the token, if force check is valid)
-			if (this.token.getExpiration() != null || (forceCacheExpireTime && (this.token.getExpiration().getTime() - System.currentTimeMillis() <= defaultExpireTime))) {
+			// we don't need to check the cacheTokens values, because this won't actually be added to the cache if cacheTokens is false
+			// if the token isn't null we use the token expire time
+			// if forceCacheExpireTime is also true, we also make sure that the token expire time is shorter than the default expire time
+			if ((this.token.getExpiration() != null) && (!forceCacheExpireTime || (forceCacheExpireTime && (this.token.getExpiration().getTime() - System.currentTimeMillis() <= defaultExpireTime)))) { 
 				this.cacheExpire = this.token.getExpiration();
-			} else {
+			} else { // if the token doesn't have an expire time, or if the using forceCacheExpireTime the token expire time is longer than the default, then use the default expire time
 				Calendar cal = Calendar.getInstance();
 				cal.add(Calendar.MILLISECOND, defaultExpireTime);
 				this.cacheExpire = cal.getTime();
@@ -151,8 +151,63 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 		this.defaultExpireTime = defaultExpireTime;
 	}
 	
-	// Check if there is a token and authentication in the cache
-	// and check if it is not expired.
+	/**
+	 * check if forcing a cache expire time maximum value
+	 * @return the forceCacheExpireTime setting
+	 */
+	public boolean isForceCacheExpireTime() {
+		return forceCacheExpireTime;
+	}
+
+	/**
+	 * set forcing a cache expire time maximum value
+	 * @param forceCacheExpireTime
+	 */
+	public void setForceCacheExpireTime(boolean forceCacheExpireTime) {
+		this.forceCacheExpireTime = forceCacheExpireTime;
+	}
+
+	/**
+	 * Are non-expiring tokens cached using the default cache time
+	 * @return state of cacheNonExpiringTokens
+	 */
+	public boolean isCacheNonExpiringTokens() {
+		return cacheNonExpiringTokens;
+	}
+
+	/**
+	 * should non-expiring tokens be cached using the default cache timeout
+	 * @param cacheNonExpiringTokens
+	 */
+	public void setCacheNonExpiringTokens(boolean cacheNonExpiringTokens) {
+		this.cacheNonExpiringTokens = cacheNonExpiringTokens;
+	}
+
+	/**
+	 * Is the service caching tokens, or is it hitting the introspection end point every time
+	 * @return true is caching tokens locally, false hits the introspection end point every time
+	 */
+	public boolean isCacheTokens() {
+		return cacheTokens;
+	}
+
+	/**
+	 * Configure if the client should cache tokens locally or not
+	 * @param cacheTokens
+	 */
+	public void setCacheTokens(boolean cacheTokens) {
+		this.cacheTokens = cacheTokens;
+	}
+	
+	/**
+	 * Check to see if the introspection end point response for a token has been cached locally
+	 * This call will return the token if it has been cached and is still valid according to 
+	 * the cache expire time on the TokenCacheObject. If a cached value has been found but is
+	 * expired, either by default expire times or the token's own expire time, then the token is
+	 * removed from the cache and null is returned.
+	 * @param key is the token to check
+	 * @return the cached TokenCacheObject or null
+	 */
 	private TokenCacheObject checkCache(String key) {
 		if (cacheTokens && authCache.containsKey(key)) {
 			TokenCacheObject tco = authCache.get(key);
@@ -189,9 +244,13 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 		return accessToken;
 	}
 
-	// Validate a token string against the introspection endpoint,
-	// then parse it and store it in the local cache. Return TokenCacheObject
-	// if token is valid, otherwise return null
+	/**
+	 * Validate a token string against the introspection endpoint,
+	 * then parse it and store it in the local cache if caching is enabled. 
+	 *
+	 * @param accessToken Token to pass to the introspection endpoint
+	 * @return TokenCacheObject containing authentication and token if the token was valid, otherwise null
+	 */
 	private TokenCacheObject parseToken(String accessToken) {
 
 		// find out which URL to ask
@@ -275,7 +334,7 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 			}
 		}
 
-		// If we never put a token and an authentication in the cache...
+		// when the token is invalid for whatever reason
 		return null;
 	}
 
