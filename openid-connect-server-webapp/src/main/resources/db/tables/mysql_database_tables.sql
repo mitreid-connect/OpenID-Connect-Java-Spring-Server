@@ -49,8 +49,7 @@ CREATE TABLE IF NOT EXISTS authentication_holder (
 	user_auth_id BIGINT,
 	approved BOOLEAN,
 	redirect_uri VARCHAR(2048),
-	client_id VARCHAR(256),
-	
+	client_id VARCHAR(256)	
 );
 
 CREATE TABLE IF NOT EXISTS authentication_holder_authority (
@@ -126,12 +125,12 @@ CREATE TABLE IF NOT EXISTS blacklisted_site (
 
 CREATE TABLE IF NOT EXISTS client_details (
 	id BIGINT AUTO_INCREMENT PRIMARY KEY,
-	
+
 	client_description VARCHAR(1024),
-	reuse_refresh_tokens BOOLEAN NOT NULL DEFAULT 1,
-	dynamically_registered BOOLEAN NOT NULL DEFAULT 0,
-	allow_introspection BOOLEAN NOT NULL DEFAULT 0,
-	id_token_validity_seconds BIGINT NOT NULL DEFAULT 600,
+	reuse_refresh_tokens BOOLEAN DEFAULT true NOT NULL,
+	dynamically_registered BOOLEAN DEFAULT false NOT NULL,
+	allow_introspection BOOLEAN DEFAULT false NOT NULL,
+	id_token_validity_seconds BIGINT DEFAULT 600 NOT NULL,
 	
 	client_id VARCHAR(256),
 	client_secret VARCHAR(2048),
@@ -149,6 +148,7 @@ CREATE TABLE IF NOT EXISTS client_details (
 	tos_uri VARCHAR(2048),
 
 	jwks_uri VARCHAR(2048),
+	jwks VARCHAR(8192),
 	sector_identifier_uri VARCHAR(2048),
 	
 	request_object_signing_alg VARCHAR(256),
@@ -168,7 +168,7 @@ CREATE TABLE IF NOT EXISTS client_details (
 	created_at TIMESTAMP NULL,
 	initiate_login_uri VARCHAR(2048),
 	post_logout_redirect_uri VARCHAR(2048),
-	unique(client_id)
+	UNIQUE (client_id)
 );
 
 CREATE TABLE IF NOT EXISTS client_request_uri (
@@ -224,11 +224,11 @@ CREATE TABLE IF NOT EXISTS system_scope (
 	scope VARCHAR(256) NOT NULL,
 	description VARCHAR(4096),
 	icon VARCHAR(256),
-	restricted BOOLEAN NOT NULL DEFAULT 0,
-	default_scope BOOLEAN NOT NULL DEFAULT 0,
-	structured BOOLEAN NOT NULL DEFAULT 0,
+	restricted BOOLEAN DEFAULT false NOT NULL,
+	default_scope BOOLEAN DEFAULT false NOT NULL,
+	structured BOOLEAN DEFAULT false NOT NULL,
 	structured_param_description VARCHAR(256),
-	unique(scope)
+	UNIQUE (scope)
 );
 
 CREATE TABLE IF NOT EXISTS user_info (
@@ -252,7 +252,8 @@ CREATE TABLE IF NOT EXISTS user_info (
 	phone_number_verified BOOLEAN,
 	address_id VARCHAR(256),
 	updated_time VARCHAR(256),
-	birthdate VARCHAR(256)
+	birthdate VARCHAR(256),
+	src VARCHAR(4096)
 );
 
 CREATE TABLE IF NOT EXISTS whitelisted_site (
