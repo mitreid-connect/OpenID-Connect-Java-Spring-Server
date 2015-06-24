@@ -69,7 +69,27 @@ public class TestPlainAuthRequestUrlBuilder {
 
 		Map<String, String> options = ImmutableMap.of("foo", "bar");
 
-		String actualUrl = urlBuilder.buildAuthRequestUrl(serverConfig, clientConfig, "https://client.example.org/", "34fasf3ds", "af0ifjsldkj", options);
+		String actualUrl = urlBuilder.buildAuthRequestUrl(serverConfig, clientConfig, "https://client.example.org/", "34fasf3ds", "af0ifjsldkj", options, null);
+
+		assertThat(actualUrl, equalTo(expectedUrl));
+	}
+
+	@Test
+	public void buildAuthRequestUrl_withLoginHint() {
+
+		String expectedUrl = "https://server.example.com/authorize?" +
+				"response_type=code" +
+				"&client_id=s6BhdRkqt3" +
+				"&scope=openid+profile" + // plus sign used for space per application/x-www-form-encoded standard
+				"&redirect_uri=https%3A%2F%2Fclient.example.org%2F" +
+				"&nonce=34fasf3ds" +
+				"&state=af0ifjsldkj" +
+				"&foo=bar" +
+				"&login_hint=bob";
+
+		Map<String, String> options = ImmutableMap.of("foo", "bar");
+
+		String actualUrl = urlBuilder.buildAuthRequestUrl(serverConfig, clientConfig, "https://client.example.org/", "34fasf3ds", "af0ifjsldkj", options, "bob");
 
 		assertThat(actualUrl, equalTo(expectedUrl));
 	}
@@ -81,7 +101,7 @@ public class TestPlainAuthRequestUrlBuilder {
 
 		Map<String, String> options = ImmutableMap.of("foo", "bar");
 
-		urlBuilder.buildAuthRequestUrl(serverConfig, clientConfig, "example.com", "", "", options);
+		urlBuilder.buildAuthRequestUrl(serverConfig, clientConfig, "example.com", "", "", options, null);
 	}
 
 }

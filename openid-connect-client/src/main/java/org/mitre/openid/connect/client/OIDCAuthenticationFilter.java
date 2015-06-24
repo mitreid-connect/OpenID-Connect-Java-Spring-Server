@@ -262,7 +262,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 
 			Map<String, String> options = authOptions.getOptions(serverConfig, clientConfig, request);
 
-			String authRequest = authRequestBuilder.buildAuthRequestUrl(serverConfig, clientConfig, redirectUri, nonce, state, options);
+			String authRequest = authRequestBuilder.buildAuthRequestUrl(serverConfig, clientConfig, redirectUri, nonce, state, options, issResp.getLoginHint());
 
 			logger.debug("Auth Request:  " + authRequest);
 

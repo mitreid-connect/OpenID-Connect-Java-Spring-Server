@@ -30,6 +30,7 @@ import org.mitre.openid.connect.config.ServerConfiguration;
 import org.springframework.security.authentication.AuthenticationServiceException;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 
 /**
  * 
@@ -44,7 +45,7 @@ public class PlainAuthRequestUrlBuilder implements AuthRequestUrlBuilder {
 	 * @see org.mitre.openid.connect.client.service.AuthRequestUrlBuilder#buildAuthRequest(javax.servlet.http.HttpServletRequest, org.mitre.openid.connect.config.ServerConfiguration, org.springframework.security.oauth2.provider.ClientDetails)
 	 */
 	@Override
-	public String buildAuthRequestUrl(ServerConfiguration serverConfig, RegisteredClient clientConfig, String redirectUri, String nonce, String state, Map<String, String> options) {
+	public String buildAuthRequestUrl(ServerConfiguration serverConfig, RegisteredClient clientConfig, String redirectUri, String nonce, String state, Map<String, String> options, String loginHint) {
 		try {
 
 			URIBuilder uriBuilder = new URIBuilder(serverConfig.getAuthorizationEndpointUri());
@@ -61,6 +62,11 @@ public class PlainAuthRequestUrlBuilder implements AuthRequestUrlBuilder {
 			// Optional parameters:
 			for (Entry<String, String> option : options.entrySet()) {
 				uriBuilder.addParameter(option.getKey(), option.getValue());
+			}
+			
+			// if there's a login hint, send it
+			if (!Strings.isNullOrEmpty(loginHint)) {
+				uriBuilder.addParameter("login_hint", loginHint);
 			}
 
 			return uriBuilder.build().toString();

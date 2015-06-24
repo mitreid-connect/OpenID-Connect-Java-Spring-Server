@@ -32,6 +32,7 @@ import org.mitre.openid.connect.config.ServerConfiguration;
 import org.springframework.security.authentication.AuthenticationServiceException;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWEHeader;
@@ -54,7 +55,7 @@ public class EncryptedAuthRequestUrlBuilder implements AuthRequestUrlBuilder {
 	 * @see org.mitre.openid.connect.client.service.AuthRequestUrlBuilder#buildAuthRequestUrl(org.mitre.openid.connect.config.ServerConfiguration, org.mitre.oauth2.model.RegisteredClient, java.lang.String, java.lang.String, java.lang.String, java.util.Map)
 	 */
 	@Override
-	public String buildAuthRequestUrl(ServerConfiguration serverConfig, RegisteredClient clientConfig, String redirectUri, String nonce, String state, Map<String, String> options) {
+	public String buildAuthRequestUrl(ServerConfiguration serverConfig, RegisteredClient clientConfig, String redirectUri, String nonce, String state, Map<String, String> options, String loginHint) {
 
 		// create our signed JWT for the request object
 		JWTClaimsSet claims = new JWTClaimsSet();
@@ -76,6 +77,11 @@ public class EncryptedAuthRequestUrlBuilder implements AuthRequestUrlBuilder {
 		// Optional parameters
 		for (Entry<String, String> option : options.entrySet()) {
 			claims.setClaim(option.getKey(), option.getValue());
+		}
+		
+		// if there's a login hint, send it
+		if (!Strings.isNullOrEmpty(loginHint)) {
+			claims.setClaim("login_hint", loginHint);
 		}
 
 		EncryptedJWT jwt = new EncryptedJWT(new JWEHeader(alg, enc), claims);

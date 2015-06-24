@@ -98,7 +98,7 @@ public class WebfingerIssuerService implements IssuerService {
 					throw new AuthenticationServiceException("Issuer was in blacklist: " + issuer);
 				}
 
-				return new IssuerServiceResponse(issuer, null, null);
+				return new IssuerServiceResponse(issuer, identifier, null);
 			} catch (UncheckedExecutionException ue) {
 				logger.warn("Issue fetching issuer for user input: " + identifier, ue);
 				return null;

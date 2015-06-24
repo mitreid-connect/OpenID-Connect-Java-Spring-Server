@@ -31,6 +31,7 @@ import org.mitre.openid.connect.config.ServerConfiguration;
 import org.springframework.security.authentication.AuthenticationServiceException;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jwt.JWTClaimsSet;
@@ -48,7 +49,7 @@ public class SignedAuthRequestUrlBuilder implements AuthRequestUrlBuilder {
 	 * @see org.mitre.openid.connect.client.service.AuthRequestUrlBuilder#buildAuthRequestUrl(org.mitre.openid.connect.config.ServerConfiguration, org.springframework.security.oauth2.provider.ClientDetails, java.lang.String, java.lang.String, java.lang.String)
 	 */
 	@Override
-	public String buildAuthRequestUrl(ServerConfiguration serverConfig, RegisteredClient clientConfig, String redirectUri, String nonce, String state, Map<String, String> options) {
+	public String buildAuthRequestUrl(ServerConfiguration serverConfig, RegisteredClient clientConfig, String redirectUri, String nonce, String state, Map<String, String> options, String loginHint) {
 
 		// create our signed JWT for the request object
 		JWTClaimsSet claims = new JWTClaimsSet();
@@ -70,6 +71,11 @@ public class SignedAuthRequestUrlBuilder implements AuthRequestUrlBuilder {
 		// Optional parameters
 		for (Entry<String, String> option : options.entrySet()) {
 			claims.setClaim(option.getKey(), option.getValue());
+		}
+		
+		// if there's a login hint, send it
+		if (!Strings.isNullOrEmpty(loginHint)) {
+			claims.setClaim("login_hint", loginHint);
 		}
 
 		JWSAlgorithm alg = clientConfig.getRequestObjectSigningAlg();
