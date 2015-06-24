@@ -584,7 +584,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 
 				// construct an OIDCAuthenticationToken and return a Authentication object w/the userId and the idToken
 
-				OIDCAuthenticationToken token = new OIDCAuthenticationToken(userId, idClaims.getIssuer(), serverConfig, idTokenValue, accessTokenValue, refreshTokenValue);
+				OIDCAuthenticationToken token = new OIDCAuthenticationToken(userId, idClaims.getIssuer(), serverConfig, idToken, accessTokenValue, refreshTokenValue);
 
 				Authentication authentication = this.getAuthenticationManager().authenticate(token);
 

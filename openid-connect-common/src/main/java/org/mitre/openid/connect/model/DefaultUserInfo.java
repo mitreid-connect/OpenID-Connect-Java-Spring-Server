@@ -16,6 +16,10 @@
  *******************************************************************************/
 package org.mitre.openid.connect.model;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -32,6 +36,7 @@ import javax.persistence.Table;
 import org.mitre.openid.connect.model.convert.JsonObjectStringConverter;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 @Entity
 @Table(name="user_info")
@@ -70,7 +75,7 @@ public class DefaultUserInfo implements UserInfo {
 	private Address address;
 	private String updatedTime;
 	private String birthdate;
-	private JsonObject src; // source JSON if this is loaded remotely
+	private transient JsonObject src; // source JSON if this is loaded remotely
 
 
 	/**
@@ -727,5 +732,26 @@ public class DefaultUserInfo implements UserInfo {
 		}
 		return true;
 	}
+	
+
+	/*
+	 * Custom serialization to handle the JSON object
+	 */
+    private void writeObject(ObjectOutputStream out) throws IOException {
+    	out.defaultWriteObject();
+    	if (src == null) {
+    		out.writeObject(null);
+    	} else {
+    		out.writeObject(src.toString());
+    	}
+    }
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+    	in.defaultReadObject();
+    	Object o = in.readObject();
+    	if (o != null) {
+    		JsonParser parser = new JsonParser();
+    		src = parser.parse((String)o).getAsJsonObject();
+    	}
+    }
 
 }

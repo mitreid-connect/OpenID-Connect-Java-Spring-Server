@@ -16,6 +16,10 @@
  *******************************************************************************/
 package org.mitre.openid.connect.model;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -24,6 +28,8 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 
 import com.google.common.collect.ImmutableMap;
+import com.nimbusds.jwt.JWT;
+import com.nimbusds.jwt.JWTParser;
 
 /**
  * 
@@ -35,14 +41,14 @@ public class OIDCAuthenticationToken extends AbstractAuthenticationToken {
 	private static final long serialVersionUID = 22100073066377804L;
 
 	private final ImmutableMap<String, String> principal;
-	private final String idTokenValue; // string representation of the id token
 	private final String accessTokenValue; // string representation of the access token
 	private final String refreshTokenValue; // string representation of the refresh token
+	private transient JWT idToken; // this needs a custom serializer
 	private final String issuer; // issuer URL (parsed from the id token)
 	private final String sub; // user id (parsed from the id token)
 
 	private final transient ServerConfiguration serverConfiguration; // server configuration used to fulfill this token, don't serialize it
-	private final UserInfo userInfo; // user info container, don't serialize it b/c it might be huge and can be re-fetched
+	private final UserInfo userInfo; // user info container
 
 	/**
 	 * Constructs OIDCAuthenticationToken with a full set of authorities, marking this as authenticated.
@@ -57,7 +63,7 @@ public class OIDCAuthenticationToken extends AbstractAuthenticationToken {
 	 */
 	public OIDCAuthenticationToken(String subject, String issuer,
 			UserInfo userInfo, Collection<? extends GrantedAuthority> authorities,
-			String idTokenValue, String accessTokenValue, String refreshTokenValue) {
+			JWT idToken, String accessTokenValue, String refreshTokenValue) {
 
 		super(authorities);
 
@@ -65,7 +71,7 @@ public class OIDCAuthenticationToken extends AbstractAuthenticationToken {
 		this.userInfo = userInfo;
 		this.sub = subject;
 		this.issuer = issuer;
-		this.idTokenValue = idTokenValue;
+		this.idToken = idToken;
 		this.accessTokenValue = accessTokenValue;
 		this.refreshTokenValue = refreshTokenValue;
 
@@ -85,14 +91,14 @@ public class OIDCAuthenticationToken extends AbstractAuthenticationToken {
 	 */
 	public OIDCAuthenticationToken(String subject, String issuer,
 			ServerConfiguration serverConfiguration,
-			String idTokenValue, String accessTokenValue, String refreshTokenValue) {
+			JWT idToken, String accessTokenValue, String refreshTokenValue) {
 
 		super(new ArrayList<GrantedAuthority>(0));
 
 		this.principal = ImmutableMap.of("sub", subject, "iss", issuer);
 		this.sub = subject;
 		this.issuer = issuer;
-		this.idTokenValue = idTokenValue;
+		this.idToken = idToken;
 		this.accessTokenValue = accessTokenValue;
 		this.refreshTokenValue = refreshTokenValue;
 
@@ -129,8 +135,8 @@ public class OIDCAuthenticationToken extends AbstractAuthenticationToken {
 	/**
 	 * @return the idTokenValue
 	 */
-	public String getIdTokenValue() {
-		return idTokenValue;
+	public JWT getIdToken() {
+		return idToken;
 	}
 
 	/**
@@ -168,5 +174,23 @@ public class OIDCAuthenticationToken extends AbstractAuthenticationToken {
 		return userInfo;
 	}
 
+	/*
+	 * Custom serialization to handle the JSON object
+	 */
+    private void writeObject(ObjectOutputStream out) throws IOException {
+    	out.defaultWriteObject();
+    	if (idToken == null) {
+    		out.writeObject(null);
+    	} else {
+    		out.writeObject(idToken.serialize());
+    	}
+    }
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException, ParseException {
+    	in.defaultReadObject();
+    	Object o = in.readObject();
+    	if (o != null) {
+    		idToken = JWTParser.parse((String)o);
+    	}
+    }
 
 }

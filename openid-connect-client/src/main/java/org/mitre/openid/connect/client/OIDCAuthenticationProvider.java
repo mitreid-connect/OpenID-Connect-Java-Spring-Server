@@ -62,30 +62,23 @@ public class OIDCAuthenticationProvider implements AuthenticationProvider {
 
 			OIDCAuthenticationToken token = (OIDCAuthenticationToken) authentication;
 			
-			try {
-				
-				// get the ID Token value out
-				String idTokenString = token.getIdTokenValue();
-				JWT idToken = JWTParser.parse(idTokenString);
-	
-				// load the user info if we can
-				UserInfo userInfo = userInfoFetcher.loadUserInfo(token);
-	
-				if (userInfo == null) {
-					// user info not found -- could be an error, could be fine 
-				} else {
-					// if we found userinfo, double check it
-					if (!Strings.isNullOrEmpty(userInfo.getSub()) && !userInfo.getSub().equals(token.getSub())) {
-						// the userinfo came back and the user_id fields don't match what was in the id_token
-						throw new UsernameNotFoundException("user_id mismatch between id_token and user_info call: " + token.getSub() + " / " + userInfo.getSub());
-					}
+			// get the ID Token value out
+			JWT idToken = token.getIdToken();
+
+			// load the user info if we can
+			UserInfo userInfo = userInfoFetcher.loadUserInfo(token);
+
+			if (userInfo == null) {
+				// user info not found -- could be an error, could be fine 
+			} else {
+				// if we found userinfo, double check it
+				if (!Strings.isNullOrEmpty(userInfo.getSub()) && !userInfo.getSub().equals(token.getSub())) {
+					// the userinfo came back and the user_id fields don't match what was in the id_token
+					throw new UsernameNotFoundException("user_id mismatch between id_token and user_info call: " + token.getSub() + " / " + userInfo.getSub());
 				}
-	
-				return createAuthenticationToken(token, authoritiesMapper.mapAuthorities(idToken, userInfo), userInfo);
-			} catch (ParseException e) {
-				logger.error("Unable to parse ID token in the token");
-				return null;
 			}
+
+			return createAuthenticationToken(token, authoritiesMapper.mapAuthorities(idToken, userInfo), userInfo);
 		}
 
 		return null;
@@ -104,7 +97,7 @@ public class OIDCAuthenticationProvider implements AuthenticationProvider {
 		return new OIDCAuthenticationToken(token.getSub(),
 				token.getIssuer(),
 				userInfo, authorities,
-				token.getIdTokenValue(), token.getAccessTokenValue(), token.getRefreshTokenValue());
+				token.getIdToken(), token.getAccessTokenValue(), token.getRefreshTokenValue());
 	}
 
 	/**
