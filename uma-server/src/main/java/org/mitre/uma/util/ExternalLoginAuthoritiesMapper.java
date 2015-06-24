@@ -18,27 +18,29 @@
 package org.mitre.uma.util;
 
 import java.util.Collection;
-import java.util.Set;
 
+import org.mitre.openid.connect.client.OIDCAuthoritiesMapper;
+import org.mitre.openid.connect.model.UserInfo;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
 
 import com.google.common.collect.Sets;
+import com.nimbusds.jwt.JWT;
 
 /**
+ * Utility class to map all external logins to the ROLE_EXTERNAL_USER authority
+ * to prevent them from accessing other parts of the server.
+ * 
  * @author jricher
  *
  */
-public class ExternalLoginAuthoritiesMapper implements GrantedAuthoritiesMapper {
+public class ExternalLoginAuthoritiesMapper implements OIDCAuthoritiesMapper {
 
 	private static final GrantedAuthority ROLE_EXTERNAL_USER = new SimpleGrantedAuthority("ROLE_EXTERNAL_USER");
 	
 	@Override
-	public Collection<? extends GrantedAuthority> mapAuthorities(Collection<? extends GrantedAuthority> authorities) {
-		Set<GrantedAuthority> out = Sets.newHashSet(authorities);
-		out.add(ROLE_EXTERNAL_USER);
-		return out;
+	public Collection<? extends GrantedAuthority> mapAuthorities(JWT idToken, UserInfo userInfo) {
+		return Sets.newHashSet(ROLE_EXTERNAL_USER);
 	}
 
 }
