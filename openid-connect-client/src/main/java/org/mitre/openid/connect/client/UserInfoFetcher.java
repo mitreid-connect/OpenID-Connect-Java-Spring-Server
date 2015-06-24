@@ -25,7 +25,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.mitre.openid.connect.config.ServerConfiguration;
 import org.mitre.openid.connect.config.ServerConfiguration.UserInfoTokenMethod;
 import org.mitre.openid.connect.model.DefaultUserInfo;
-import org.mitre.openid.connect.model.OIDCAuthenticationToken;
+import org.mitre.openid.connect.model.PendingOIDCAuthenticationToken;
 import org.mitre.openid.connect.model.UserInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +52,7 @@ public class UserInfoFetcher {
 	 */
 	private static final Logger logger = LoggerFactory.getLogger(UserInfoFetcher.class);
 
-	public UserInfo loadUserInfo(final OIDCAuthenticationToken token) {
+	public UserInfo loadUserInfo(final PendingOIDCAuthenticationToken token) {
 
 		ServerConfiguration serverConfiguration = token.getServerConfiguration();
 

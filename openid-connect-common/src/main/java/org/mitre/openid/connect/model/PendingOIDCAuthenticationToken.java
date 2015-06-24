@@ -14,14 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
+
 package org.mitre.openid.connect.model;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.text.ParseException;
-import java.util.Collection;
+import java.util.ArrayList;
 
+import org.mitre.openid.connect.config.ServerConfiguration;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -30,11 +32,12 @@ import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTParser;
 
 /**
+ * AuthenticationToken for use as a data shuttle from the filter to the auth provider.
  * 
- * @author Michael Walsh, Justin Richer
- * 
+ * @author jricher
+ *
  */
-public class OIDCAuthenticationToken extends AbstractAuthenticationToken {
+public class PendingOIDCAuthenticationToken extends AbstractAuthenticationToken {
 
 	private static final long serialVersionUID = 22100073066377804L;
 
@@ -45,36 +48,35 @@ public class OIDCAuthenticationToken extends AbstractAuthenticationToken {
 	private final String issuer; // issuer URL (parsed from the id token)
 	private final String sub; // user id (parsed from the id token)
 
-	private final UserInfo userInfo; // user info container
+	private final transient ServerConfiguration serverConfiguration; // server configuration used to fulfill this token, don't serialize it
 
 	/**
-	 * Constructs OIDCAuthenticationToken with a full set of authorities, marking this as authenticated.
+	 * Constructs OIDCAuthenticationToken for use as a data shuttle from the filter to the auth provider.
 	 * 
-	 * Set to authenticated.
+	 * Set to not-authenticated.
 	 * 
 	 * Constructs a Principal out of the subject and issuer.
-	 * @param subject
-	 * @param authorities
-	 * @param principal
+	 * @param sub
 	 * @param idToken
 	 */
-	public OIDCAuthenticationToken(String subject, String issuer,
-			UserInfo userInfo, Collection<? extends GrantedAuthority> authorities,
+	public PendingOIDCAuthenticationToken (String subject, String issuer,
+			ServerConfiguration serverConfiguration,
 			JWT idToken, String accessTokenValue, String refreshTokenValue) {
 
-		super(authorities);
+		super(new ArrayList<GrantedAuthority>(0));
 
 		this.principal = ImmutableMap.of("sub", subject, "iss", issuer);
-		this.userInfo = userInfo;
 		this.sub = subject;
 		this.issuer = issuer;
 		this.idToken = idToken;
 		this.accessTokenValue = accessTokenValue;
 		this.refreshTokenValue = refreshTokenValue;
 
-		setAuthenticated(true);
-	}
+		this.serverConfiguration = serverConfiguration;
 
+
+		setAuthenticated(false);
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -120,17 +122,17 @@ public class OIDCAuthenticationToken extends AbstractAuthenticationToken {
 	}
 
 	/**
+	 * @return the serverConfiguration
+	 */
+	public ServerConfiguration getServerConfiguration() {
+		return serverConfiguration;
+	}
+
+	/**
 	 * @return the issuer
 	 */
 	public String getIssuer() {
 		return issuer;
-	}
-
-	/**
-	 * @return the userInfo
-	 */
-	public UserInfo getUserInfo() {
-		return userInfo;
 	}
 
 	/*

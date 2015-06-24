@@ -16,10 +16,10 @@
  *******************************************************************************/
 package org.mitre.openid.connect.client;
 
-import java.text.ParseException;
 import java.util.Collection;
 
 import org.mitre.openid.connect.model.OIDCAuthenticationToken;
+import org.mitre.openid.connect.model.PendingOIDCAuthenticationToken;
 import org.mitre.openid.connect.model.UserInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,10 +31,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import com.google.common.base.Strings;
 import com.nimbusds.jwt.JWT;
-import com.nimbusds.jwt.JWTParser;
 
 /**
- * @author nemonik
+ * @author nemonik, Justin Richer
  * 
  */
 public class OIDCAuthenticationProvider implements AuthenticationProvider {
@@ -58,9 +57,9 @@ public class OIDCAuthenticationProvider implements AuthenticationProvider {
 			return null;
 		}
 
-		if (authentication instanceof OIDCAuthenticationToken) {
+		if (authentication instanceof PendingOIDCAuthenticationToken) {
 
-			OIDCAuthenticationToken token = (OIDCAuthenticationToken) authentication;
+			PendingOIDCAuthenticationToken token = (PendingOIDCAuthenticationToken) authentication;
 			
 			// get the ID Token value out
 			JWT idToken = token.getIdToken();
@@ -93,7 +92,7 @@ public class OIDCAuthenticationProvider implements AuthenticationProvider {
 	 * @param userInfo
 	 * @return
 	 */
-	protected Authentication createAuthenticationToken(OIDCAuthenticationToken token, Collection<? extends GrantedAuthority> authorities, UserInfo userInfo) {
+	protected Authentication createAuthenticationToken(PendingOIDCAuthenticationToken token, Collection<? extends GrantedAuthority> authorities, UserInfo userInfo) {
 		return new OIDCAuthenticationToken(token.getSub(),
 				token.getIssuer(),
 				userInfo, authorities,
@@ -116,6 +115,6 @@ public class OIDCAuthenticationProvider implements AuthenticationProvider {
 	 */
 	@Override
 	public boolean supports(Class<?> authentication) {
-		return OIDCAuthenticationToken.class.isAssignableFrom(authentication);
+		return PendingOIDCAuthenticationToken.class.isAssignableFrom(authentication);
 	}
 }

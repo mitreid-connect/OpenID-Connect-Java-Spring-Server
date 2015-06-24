@@ -44,7 +44,7 @@ import org.mitre.openid.connect.client.service.IssuerService;
 import org.mitre.openid.connect.client.service.ServerConfigurationService;
 import org.mitre.openid.connect.client.service.impl.StaticAuthRequestOptionsService;
 import org.mitre.openid.connect.config.ServerConfiguration;
-import org.mitre.openid.connect.model.OIDCAuthenticationToken;
+import org.mitre.openid.connect.model.PendingOIDCAuthenticationToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
@@ -578,14 +578,12 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 									+ "ID Token to the session " + NONCE_SESSION_VARIABLE + " failed. Expected " + storedNonce + " got " + nonce + ".");
 				}
 
-				// pull the subject (user id) out as a claim on the id_token
+				// construct an PendingOIDCAuthenticationToken and return a Authentication object w/the userId and the idToken
 
-				String userId = idClaims.getSubject();
-
-				// construct an OIDCAuthenticationToken and return a Authentication object w/the userId and the idToken
-
-				OIDCAuthenticationToken token = new OIDCAuthenticationToken(userId, idClaims.getIssuer(), serverConfig, idToken, accessTokenValue, refreshTokenValue);
-
+				PendingOIDCAuthenticationToken token = new PendingOIDCAuthenticationToken(idClaims.getSubject(), idClaims.getIssuer(), 
+						serverConfig, 
+						idToken, accessTokenValue, refreshTokenValue);
+				
 				Authentication authentication = this.getAuthenticationManager().authenticate(token);
 
 				return authentication;
