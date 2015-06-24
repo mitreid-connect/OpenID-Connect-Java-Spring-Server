@@ -109,9 +109,15 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 				|| (request.getExtensions().containsKey("idtoken")) // TODO: parse the ID Token claims (#473) -- for now assume it could be in there
 				|| (client.getRequireAuthTime() != null && client.getRequireAuthTime())) {
 
-			Long authTimestamp = Long.parseLong((String) request.getExtensions().get(AuthenticationTimeStamper.AUTH_TIMESTAMP));
-			if (authTimestamp != null) {
-				idClaims.setClaim("auth_time", authTimestamp / 1000L);
+			if (request.getExtensions().get(AuthenticationTimeStamper.AUTH_TIMESTAMP) != null) {
+			
+				Long authTimestamp = Long.parseLong((String) request.getExtensions().get(AuthenticationTimeStamper.AUTH_TIMESTAMP));
+				if (authTimestamp != null) {
+					idClaims.setClaim("auth_time", authTimestamp / 1000L);
+				}
+			} else {
+				// we couldn't find the timestamp!
+				logger.warn("Unable to find authentication timestamp! There is likely something wrong witht he configuration.");
 			}
 		}
 
