@@ -29,7 +29,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.google.common.collect.Iterables;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -57,10 +56,11 @@ import org.springframework.security.web.authentication.AbstractAuthenticationPro
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -407,15 +407,13 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 
 		try {
 			jsonString = restTemplate.postForObject(serverConfig.getTokenEndpointUri(), form, String.class);
-		} catch (HttpClientErrorException httpClientErrorException) {
+		} catch (RestClientException e) {
 
 			// Handle error
 
-			logger.error("Token Endpoint error response:  "
-					+ httpClientErrorException.getStatusText() + " : "
-					+ httpClientErrorException.getMessage());
+			logger.error("Token Endpoint error response:  " + e.getMessage());
 
-			throw new AuthenticationServiceException("Unable to obtain Access Token: " + httpClientErrorException.getMessage());
+			throw new AuthenticationServiceException("Unable to obtain Access Token: " + e.getMessage());
 		}
 
 		logger.debug("from TokenEndpoint jsonString = " + jsonString);

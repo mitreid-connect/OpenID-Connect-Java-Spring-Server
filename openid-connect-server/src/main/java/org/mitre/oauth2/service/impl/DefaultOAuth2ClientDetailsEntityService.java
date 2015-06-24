@@ -36,6 +36,7 @@ import org.mitre.oauth2.repository.OAuth2ClientRepository;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.SystemScopeService;
+import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.mitre.openid.connect.model.WhitelistedSite;
 import org.mitre.openid.connect.service.ApprovedSiteService;
 import org.mitre.openid.connect.service.BlacklistedSiteService;
@@ -54,6 +55,7 @@ import com.google.common.base.Strings;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.util.concurrent.UncheckedExecutionException;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
@@ -85,6 +87,9 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 
 	@Autowired
 	private StatsService statsService;
+	
+	@Autowired
+	private ConfigurationPropertiesBean config;
 
 	// map of sector URI -> list of redirect URIs
 	private LoadingCache<String, List<String>> sectorRedirects = CacheBuilder.newBuilder()
@@ -167,8 +172,8 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 					}
 				}
 
-			} catch (ExecutionException e) {
-				throw new IllegalArgumentException("Unable to load sector identifier URI: " + client.getSectorIdentifierUri());
+			} catch (UncheckedExecutionException | ExecutionException e) {
+				throw new IllegalArgumentException("Unable to load sector identifier URI " + client.getSectorIdentifierUri() + ": " + e.getMessage());
 			}
 		}
 	}
@@ -321,7 +326,9 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 		public List<String> load(String key) throws Exception {
 
 			if (!key.startsWith("https")) {
-				// TODO: this should optionally throw an error (#506)
+				if (config.isForceHttps()) {
+					throw new IllegalArgumentException("Sector identifier must start with https: " + key);
+				}
 				logger.error("Sector identifier doesn't start with https, loading anyway...");
 			}
 
@@ -339,7 +346,7 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 
 				return redirectUris;
 			} else {
-				return null;
+				throw new IllegalArgumentException("JSON Format Error");
 			}
 
 		}

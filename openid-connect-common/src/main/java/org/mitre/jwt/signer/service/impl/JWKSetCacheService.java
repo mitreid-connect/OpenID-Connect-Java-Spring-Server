@@ -82,11 +82,8 @@ public class JWKSetCacheService {
 	public JWTSigningAndValidationService getValidator(String jwksUri) {
 		try {
 			return validators.get(jwksUri);
-		} catch (UncheckedExecutionException ue) {
-			logger.warn("Couldn't load JWK Set from " + jwksUri, ue);
-			return null;
-		} catch (ExecutionException e) {
-			logger.warn("Couldn't load JWK Set from " + jwksUri, e);
+		} catch (UncheckedExecutionException | ExecutionException e) {
+			logger.warn("Couldn't load JWK Set from " + jwksUri + ": " + e.getMessage());
 			return null;
 		}
 	}
@@ -94,11 +91,8 @@ public class JWKSetCacheService {
 	public JWTEncryptionAndDecryptionService getEncrypter(String jwksUri) {
 		try {
 			return encrypters.get(jwksUri);
-		} catch (UncheckedExecutionException ue) {
-			logger.warn("Couldn't load JWK Set from " + jwksUri, ue);
-			return null;
-		} catch (ExecutionException e) {
-			logger.warn("Couldn't load JWK Set from " + jwksUri, e);
+		} catch (UncheckedExecutionException | ExecutionException e) {
+			logger.warn("Couldn't load JWK Set from " + jwksUri + ": " + e.getMessage());
 			return null;
 		}
 	}
@@ -117,7 +111,6 @@ public class JWKSetCacheService {
 		 */
 		@Override
 		public JWTSigningAndValidationService load(String key) throws Exception {
-
 			String jsonString = restTemplate.getForObject(key, String.class);
 			JWKSet jwkSet = JWKSet.parse(jsonString);
 
@@ -126,7 +119,6 @@ public class JWKSetCacheService {
 			JWTSigningAndValidationService service = new DefaultJWTSigningAndValidationService(keyStore);
 
 			return service;
-
 		}
 
 	}

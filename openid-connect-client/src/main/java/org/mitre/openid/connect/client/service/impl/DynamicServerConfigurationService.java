@@ -114,11 +114,8 @@ public class DynamicServerConfigurationService implements ServerConfigurationSer
 			}
 
 			return servers.get(issuer);
-		} catch (UncheckedExecutionException ue) {
-			logger.warn("Couldn't load configuration for " + issuer, ue);
-			return null;
-		} catch (ExecutionException e) {
-			logger.warn("Couldn't load configuration for " + issuer, e);
+		} catch (UncheckedExecutionException | ExecutionException e) {
+			logger.warn("Couldn't load configuration for " + issuer + ": " + e);
 			return null;
 		}
 

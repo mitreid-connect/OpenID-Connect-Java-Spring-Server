@@ -77,6 +77,11 @@ public class WebfingerIssuerService implements IssuerService {
 	 * URL of the page to forward to if no identifier is given.
 	 */
 	private String loginPageUrl;
+	
+	/**
+	 * Strict enfocement of "https"
+	 */
+	private boolean forceHttps = true;
 
 	public WebfingerIssuerService() {
 		issuers = CacheBuilder.newBuilder().build(new WebfingerIssuerFetcher());
@@ -102,7 +107,7 @@ public class WebfingerIssuerService implements IssuerService {
 
 				return new IssuerServiceResponse(issuer, identifier, null);
 			} catch (UncheckedExecutionException | ExecutionException e) {
-				logger.warn("Issue fetching issuer for user input: " + identifier, e.getMessage());
+				logger.warn("Issue fetching issuer for user input: " + identifier + ": " + e.getMessage());
 				return null;
 			}
 
@@ -170,6 +175,20 @@ public class WebfingerIssuerService implements IssuerService {
 	}
 
 	/**
+	 * @return the forceHttps
+	 */
+	public boolean isForceHttps() {
+		return forceHttps;
+	}
+
+	/**
+	 * @param forceHttps the forceHttps to set
+	 */
+	public void setForceHttps(boolean forceHttps) {
+		this.forceHttps = forceHttps;
+	}
+
+	/**
 	 * @author jricher
 	 *
 	 */
@@ -188,9 +207,16 @@ public class WebfingerIssuerService implements IssuerService {
 
 			// preserving http scheme is strictly for demo system use only.
 			String scheme = key.getScheme();
-			if (!Strings.isNullOrEmpty(scheme) && scheme.equals("http")) {
-				scheme = "http://"; // add on colon and slashes.
-				logger.warn("Webfinger endpoint MUST use the https URI scheme.");
+			
+			if (!Strings.isNullOrEmpty(scheme)) {
+				if (scheme.equals("http")) {
+					if (forceHttps) {
+						throw new IllegalArgumentException("Scheme must start with htps");
+					} else {
+						logger.warn("Webfinger endpoint MUST use the https URI scheme, overriding by configuration");
+						scheme = "http://"; // add on colon and slashes.
+					}
+				}
 			} else {
 				scheme = "https://";
 			}
