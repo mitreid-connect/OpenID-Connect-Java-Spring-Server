@@ -24,7 +24,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 /**

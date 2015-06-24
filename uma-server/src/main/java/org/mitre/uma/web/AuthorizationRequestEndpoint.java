@@ -98,9 +98,6 @@ public class AuthorizationRequestEndpoint {
 	private OIDCTokenService oidcTokenService;
 	
 	@Autowired
-	private WebResponseExceptionTranslator providerExceptionHandler;
-
-	@Autowired
 	private ClaimsProcessingService claimsProcessingService;
 
 	@Autowired
@@ -223,14 +220,6 @@ public class AuthorizationRequestEndpoint {
 			return JsonErrorView.VIEWNAME;
 		}
 		
-	}
-	
-
-
-	@ExceptionHandler(OAuth2Exception.class)
-	public ResponseEntity<OAuth2Exception> handleException(Exception e) throws Exception {
-		logger.info("Handling error: " + e.getClass().getSimpleName() + ", " + e.getMessage());
-		return providerExceptionHandler.translate(e);
 	}
 	
 }

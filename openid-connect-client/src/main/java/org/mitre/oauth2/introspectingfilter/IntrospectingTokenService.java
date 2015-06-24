@@ -18,8 +18,8 @@ package org.mitre.oauth2.introspectingfilter;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.Date;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;

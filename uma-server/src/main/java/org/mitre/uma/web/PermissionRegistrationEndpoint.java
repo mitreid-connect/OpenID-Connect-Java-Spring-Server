@@ -76,9 +76,6 @@ public class PermissionRegistrationEndpoint {
 	@Autowired
 	private SystemScopeService scopeService;
 
-	@Autowired
-	private WebResponseExceptionTranslator providerExceptionHandler;
-
 	private JsonParser parser = new JsonParser();
 	
 	@RequestMapping(method = RequestMethod.POST, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
@@ -161,11 +158,4 @@ public class PermissionRegistrationEndpoint {
 		
 	}
 
-
-	@ExceptionHandler(OAuth2Exception.class)
-	public ResponseEntity<OAuth2Exception> handleException(Exception e) throws Exception {
-		logger.info("Handling error: " + e.getClass().getSimpleName() + ", " + e.getMessage());
-		return providerExceptionHandler.translate(e);
-	}
-	
 }

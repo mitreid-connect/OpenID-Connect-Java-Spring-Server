@@ -81,10 +81,6 @@ public class ResourceSetRegistrationEndpoint {
 	@Autowired
 	private SystemScopeService scopeService;
 
-	@Autowired
-	private WebResponseExceptionTranslator providerExceptionHandler;
-
-	
 	private JsonParser parser = new JsonParser();
 	
 	@RequestMapping(method = RequestMethod.POST, produces = MimeTypeUtils.APPLICATION_JSON_VALUE, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
@@ -323,11 +319,4 @@ public class ResourceSetRegistrationEndpoint {
 		return rs;
 	}
 
-	@ExceptionHandler(OAuth2Exception.class)
-	public ResponseEntity<OAuth2Exception> handleException(Exception e) throws Exception {
-		logger.info("Handling error: " + e.getClass().getSimpleName() + ", " + e.getMessage());
-		return providerExceptionHandler.translate(e);
-	}
-	
-	
 }
