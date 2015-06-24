@@ -49,8 +49,7 @@ CREATE TABLE IF NOT EXISTS authentication_holder (
 	user_auth_id BIGINT,
 	approved BOOLEAN,
 	redirect_uri VARCHAR(2048),
-	client_id VARCHAR(256),
-	
+	client_id VARCHAR(256)
 );
 
 CREATE TABLE IF NOT EXISTS authentication_holder_authority (

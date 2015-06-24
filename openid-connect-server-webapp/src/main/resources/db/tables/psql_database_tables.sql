@@ -148,6 +148,7 @@ CREATE TABLE IF NOT EXISTS client_details (
 	tos_uri VARCHAR(2048),
 
 	jwks_uri VARCHAR(2048),
+	jwks VARCHAR(8192),
 	sector_identifier_uri VARCHAR(2048),
 	
 	request_object_signing_alg VARCHAR(256),
@@ -251,7 +252,8 @@ CREATE TABLE IF NOT EXISTS user_info (
 	phone_number_verified BOOLEAN,
 	address_id VARCHAR(256),
 	updated_time VARCHAR(256),
-	birthdate VARCHAR(256)
+	birthdate VARCHAR(256),
+	src VARCHAR(4096)
 );
 
 CREATE TABLE IF NOT EXISTS whitelisted_site (
