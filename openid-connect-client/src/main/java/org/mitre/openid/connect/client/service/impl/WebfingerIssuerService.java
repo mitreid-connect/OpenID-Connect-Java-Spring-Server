@@ -35,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 
@@ -46,6 +47,7 @@ import com.google.common.util.concurrent.UncheckedExecutionException;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
 /**
@@ -99,11 +101,8 @@ public class WebfingerIssuerService implements IssuerService {
 				}
 
 				return new IssuerServiceResponse(issuer, identifier, null);
-			} catch (UncheckedExecutionException ue) {
-				logger.warn("Issue fetching issuer for user input: " + identifier, ue);
-				return null;
-			} catch (ExecutionException e) {
-				logger.warn("Issue fetching issuer for user input: " + identifier, e);
+			} catch (UncheckedExecutionException | ExecutionException e) {
+				logger.warn("Issue fetching issuer for user input: " + identifier, e.getMessage());
 				return null;
 			}
 
@@ -207,43 +206,44 @@ public class WebfingerIssuerService implements IssuerService {
 			builder.addParameter("resource", key.toString());
 			builder.addParameter("rel", "http://openid.net/specs/connect/1.0/issuer");
 
-			// do the fetch
-			logger.info("Loading: " + builder.toString());
-			String webfingerResponse = restTemplate.getForObject(builder.build(), String.class);
-
-			// TODO: catch and handle HTTP errors
-
-			JsonElement json = parser.parse(webfingerResponse);
-
-			// TODO: catch and handle JSON errors
-
-			if (json != null && json.isJsonObject()) {
-				// find the issuer
-				JsonArray links = json.getAsJsonObject().get("links").getAsJsonArray();
-				for (JsonElement link : links) {
-					if (link.isJsonObject()) {
-						JsonObject linkObj = link.getAsJsonObject();
-						if (linkObj.has("href")
-								&& linkObj.has("rel")
-								&& linkObj.get("rel").getAsString().equals("http://openid.net/specs/connect/1.0/issuer")) {
-
-							// we found the issuer, return it
-							return linkObj.get("href").getAsString();
+			try {
+			
+				// do the fetch
+				logger.info("Loading: " + builder.toString());
+				String webfingerResponse = restTemplate.getForObject(builder.build(), String.class);
+	
+				JsonElement json = parser.parse(webfingerResponse);
+	
+				if (json != null && json.isJsonObject()) {
+					// find the issuer
+					JsonArray links = json.getAsJsonObject().get("links").getAsJsonArray();
+					for (JsonElement link : links) {
+						if (link.isJsonObject()) {
+							JsonObject linkObj = link.getAsJsonObject();
+							if (linkObj.has("href")
+									&& linkObj.has("rel")
+									&& linkObj.get("rel").getAsString().equals("http://openid.net/specs/connect/1.0/issuer")) {
+	
+								// we found the issuer, return it
+								return linkObj.get("href").getAsString();
+							}
 						}
 					}
 				}
+			} catch (JsonParseException | RestClientException e) {
+				logger.warn("Failure in fetching webfinger input", e.getMessage());
 			}
 
-			// we couldn't find it
+			// we couldn't find it!
 
 			if (key.getScheme().equals("http") || key.getScheme().equals("https")) {
-				// if it looks like HTTP then punt and return the input
+				// if it looks like HTTP then punt: return the input, hope for the best
 				logger.warn("Returning normalized input string as issuer, hoping for the best: " + key.toString());
 				return key.toString();
 			} else {
 				// if it's not HTTP, give up
 				logger.warn("Couldn't find issuer: " + key.toString());
-				return null;
+				throw new IllegalArgumentException();
 			}
 
 		}
