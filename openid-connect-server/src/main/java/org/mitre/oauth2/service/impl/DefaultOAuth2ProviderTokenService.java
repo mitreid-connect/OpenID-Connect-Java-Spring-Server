@@ -261,8 +261,9 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		}
 
 		// clear out any access tokens
-		// TODO: make this a configurable option
-		tokenRepository.clearAccessTokensForRefreshToken(refreshToken);
+		if (client.isClearAccessTokensOnRefresh()) {
+			tokenRepository.clearAccessTokensForRefreshToken(refreshToken);
+		}
 
 		if (refreshToken.isExpired()) {
 			tokenRepository.removeRefreshToken(refreshToken);

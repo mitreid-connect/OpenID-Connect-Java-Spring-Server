@@ -85,10 +85,11 @@ var ClientModel = Backbone.Model.extend({
         
         clientDescription:"",
         reuseRefreshToken:true,
+        clearAccessTokensOnRefresh:true,
         dynamicallyRegistered:false,
         allowIntrospection:false,
         idTokenValiditySeconds: null,
-        createdAt:null,     
+        createdAt:null,
 
         allowRefresh:false,
         displayClientSecret: false,
@@ -966,6 +967,7 @@ var ClientFormView = Backbone.View.extend({
             initiateLoginUri: $('#initiateLoginUri input').val(),
             postLogoutRedirectUris: this.postLogoutRedirectUrisCollection.pluck('item'),
             reuseRefreshToken: $('#reuseRefreshToken').is(':checked'),
+            clearAccessTokensOnRefresh: $('#clearAccessTokensOnRefresh').is(':checked'),
             requireAuthTime: $('#requireAuthTime input').is(':checked'),
             defaultMaxAge: parseInt($('#defaultMaxAge input').val()),
             contacts: this.contactsCollection.pluck('item'),

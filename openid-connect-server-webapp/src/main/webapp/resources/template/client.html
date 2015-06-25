@@ -570,6 +570,10 @@
                         <label for="reuseRefreshToken" class="checkbox" data-i18n="client.client-form.refresh-tokens-reused">Refresh tokens for this client are re-used</label>
 					</div>
 					<div>
+                        <input type="checkbox" id="clearAccessTokensOnRefresh" <%-(clearAccessTokensOnRefresh == true ? 'checked' : '')%>>
+                        <label for="clearAccessTokensOnRefresh" class="checkbox" data-i18n="client.client-form.clear-access-tokens">Active access tokens are revoked when the refresh token is used</label>
+					</div>
+					<div>
                         <input type="checkbox" id="disableRefreshTokenTimeout" <%-(refreshTokenValiditySeconds == null ? 'checked' : '')%>/> 
                         <label for="disableRefreshTokenTimeout" class="checkbox" data-i18n="client.client-form.refresh-tokens-no-expire">Refresh tokens do not time out</label>
 					</div>

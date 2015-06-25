@@ -140,6 +140,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	private boolean allowIntrospection = false; // do we let this client call the introspection endpoint?
 	private Integer idTokenValiditySeconds; //timeout for id tokens
 	private Date createdAt; // time the client was created
+	private boolean clearAccessTokensOnRefresh = true; // do we clear access tokens on refresh?
 
 	public enum AuthMethod {
 		SECRET_POST("client_secret_post"),
@@ -946,6 +947,22 @@ public class ClientDetailsEntity implements ClientDetails {
 	@Override
 	public boolean isAutoApprove(String scope) {
 		return false;
+	}
+
+	/**
+	 * @return the clearAccessTokensOnRefresh
+	 */
+	@Basic
+	@Column(name = "clear_access_tokens_on_refresh")
+	public boolean isClearAccessTokensOnRefresh() {
+		return clearAccessTokensOnRefresh;
+	}
+
+	/**
+	 * @param clearAccessTokensOnRefresh the clearAccessTokensOnRefresh to set
+	 */
+	public void setClearAccessTokensOnRefresh(boolean clearAccessTokensOnRefresh) {
+		this.clearAccessTokensOnRefresh = clearAccessTokensOnRefresh;
 	}
 	
 }
