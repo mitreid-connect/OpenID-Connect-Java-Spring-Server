@@ -429,6 +429,7 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 				writer.name("description").value(client.getClientDescription());
 				writer.name("allowIntrospection").value(client.isAllowIntrospection());
 				writer.name("reuseRefreshToken").value(client.isReuseRefreshToken());
+				writer.name("clearAccessTokensOnRefresh").value(client.isClearAccessTokensOnRefresh());
 				writer.name("dynamicallyRegistered").value(client.isDynamicallyRegistered());
 				writer.endObject();
 				logger.debug("Wrote client {}", client.getId());
@@ -1057,6 +1058,8 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 						client.setAllowIntrospection(reader.nextBoolean());
 					} else if (name.equals("reuseRefreshToken")) {
 						client.setReuseRefreshToken(reader.nextBoolean());
+					} else if (name.equals("clearAccessTokensOnRefresh")) {
+						client.setClearAccessTokensOnRefresh(reader.nextBoolean());
 					} else if (name.equals("dynamicallyRegistered")) {
 						client.setDynamicallyRegistered(reader.nextBoolean());
 					} else {
