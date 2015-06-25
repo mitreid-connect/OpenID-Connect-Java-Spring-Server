@@ -57,6 +57,7 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
 
 import static org.junit.Assert.assertThat;
@@ -128,6 +129,9 @@ public class TestDefaultOAuth2ProviderTokenService {
 
 		// by default in tests, allow refresh tokens
 		Mockito.when(client.isAllowRefresh()).thenReturn(true);
+		
+		// by default, clear access tokens on refresh
+		Mockito.when(client.isClearAccessTokensOnRefresh()).thenReturn(true);
 
 		badClient = Mockito.mock(ClientDetailsEntity.class);
 		Mockito.when(badClient.getClientId()).thenReturn(badClientId);
@@ -419,6 +423,25 @@ public class TestDefaultOAuth2ProviderTokenService {
 		
 	}
 
+	@Test
+	public void refreshAccessToken_keepAccessTokens() {
+
+		when(client.isClearAccessTokensOnRefresh()).thenReturn(false);
+		
+		OAuth2AccessTokenEntity token = service.refreshAccessToken(refreshTokenValue, tokenRequest);
+
+		Mockito.verify(tokenRepository, never()).clearAccessTokensForRefreshToken(refreshToken);
+
+		assertThat(token.getClient(), equalTo(client));
+		assertThat(token.getRefreshToken(), equalTo(refreshToken));
+		assertThat(token.getAuthenticationHolder(), equalTo(storedAuthHolder));
+
+		Mockito.verify(tokenEnhancer).enhance(token, storedAuthentication);
+		Mockito.verify(tokenRepository).saveAccessToken(token);
+		Mockito.verify(scopeService, Mockito.atLeastOnce()).removeReservedScopes(Matchers.anySet());
+		
+	}
+	
 	@Test
 	public void refreshAccessToken_requestingSameScope() {
 
