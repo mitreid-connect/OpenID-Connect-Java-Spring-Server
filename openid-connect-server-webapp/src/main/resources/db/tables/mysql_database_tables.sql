@@ -167,7 +167,8 @@ CREATE TABLE IF NOT EXISTS client_details (
 	require_auth_time BOOLEAN,
 	created_at TIMESTAMP NULL,
 	initiate_login_uri VARCHAR(2048),
-	post_logout_redirect_uri VARCHAR(2048),
+	clear_access_tokens_on_refresh BOOLEAN DEFAULT true NOT NULL,
+
 	UNIQUE (client_id)
 );
 
