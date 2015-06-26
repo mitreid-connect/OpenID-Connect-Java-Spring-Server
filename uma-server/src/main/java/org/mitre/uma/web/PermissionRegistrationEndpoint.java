@@ -97,7 +97,7 @@ public class PermissionRegistrationEndpoint {
 				if (rsid == null || scopes == null || scopes.isEmpty()){
 					// missing information
 					m.addAttribute("code", HttpStatus.BAD_REQUEST);
-					m.addAttribute("errorMessage", "Missing required component of resource registration request.");
+					m.addAttribute("errorMessage", "Missing required component of permission registration request.");
 					return JsonErrorView.VIEWNAME;
 				}
 				

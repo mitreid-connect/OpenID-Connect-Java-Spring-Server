@@ -47,6 +47,7 @@ public class MatchAllClaimsProcessor implements ClaimsProcessingService {
 				// we found something that's satisfied the claims, let's go with it!
 				return unmatched;
 			} else {
+				// otherwise add it to the stack to send back
 				allUnmatched.addAll(unmatched);
 			}
 		}

@@ -28,6 +28,8 @@ import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.mitre.openid.connect.view.HttpCodeView;
 import org.mitre.openid.connect.view.JsonEntityView;
 import org.mitre.openid.connect.view.JsonErrorView;
+import org.mitre.uma.model.Claim;
+import org.mitre.uma.model.RequiredClaimSet;
 import org.mitre.uma.model.ResourceSet;
 import org.mitre.uma.service.ResourceSetService;
 import org.mitre.uma.view.ResourceSetEntityAbbreviatedView;
@@ -36,22 +38,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
-import org.springframework.security.oauth2.provider.error.WebResponseExceptionTranslator;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.MimeTypeUtils;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
@@ -121,7 +120,35 @@ public class ResourceSetRegistrationEndpoint {
 			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Resource request was missing one or more required fields.");
 			return JsonErrorView.VIEWNAME;
 		}
-				
+
+		////
+		//// TEMP
+		////
+		
+		Set<Claim> claims = new HashSet<>();
+		Claim e = new Claim();
+		e.setIssuer(Sets.newHashSet("https://healthauth.org/"));
+		e.setName("email");
+		e.setValue("alice@healthauth.org");
+		claims.add(e);
+		
+		/* TODO: claims need to be multi-typed
+		Claim ev = new Claim();
+		ev.setIssuer(Sets.newHashSet("https://healthauth.org/"));
+		e.setName("email_verified");
+		ev.setValue(true);
+		claims.add(e);
+		*/
+		RequiredClaimSet reqired = new RequiredClaimSet();
+		reqired.setScopes(rs.getScopes());
+		reqired.setClaimsRequired(claims);
+		
+		rs.setRequiredClaimSets(Sets.newHashSet(reqired));
+		////
+		//// END TEMP
+		////
+		
+		
 		ResourceSet saved = resourceSetService.saveNew(rs);
 		
 		m.addAttribute(HttpCodeView.CODE, HttpStatus.CREATED);

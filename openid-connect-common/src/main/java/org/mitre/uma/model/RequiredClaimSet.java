@@ -20,6 +20,7 @@ package org.mitre.uma.model;
 import java.util.Collection;
 import java.util.Set;
 
+import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -45,6 +46,7 @@ import javax.persistence.Table;
 public class RequiredClaimSet {
 
 	private Long id;
+	private String name;
 	private Collection<Claim> claimsRequired;
 	private Set<String> scopes;
 	
@@ -66,12 +68,28 @@ public class RequiredClaimSet {
 	}
 	
 	/**
+	 * @return the name
+	 */
+	@Basic
+	@Column(name = "name")
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * @param name the name to set
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	/**
 	 * @return the claimsRequired
 	 */
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(
-			name = "claim_to_permission_ticket",
-			joinColumns = @JoinColumn(name = "permission_ticket_id"),
+			name = "claim_to_claim_set",
+			joinColumns = @JoinColumn(name = "required_claim_set_id"),
 			inverseJoinColumns = @JoinColumn(name = "claim_id")
 	)
 	public Collection<Claim> getClaimsRequired() {
