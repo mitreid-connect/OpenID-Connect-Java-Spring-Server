@@ -208,14 +208,12 @@ public class WebfingerIssuerService implements IssuerService {
 			// preserving http scheme is strictly for demo system use only.
 			String scheme = key.getScheme();
 			
-			if (!Strings.isNullOrEmpty(scheme)) {
-				if (scheme.equals("http")) {
-					if (forceHttps) {
-						throw new IllegalArgumentException("Scheme must start with htps");
-					} else {
-						logger.warn("Webfinger endpoint MUST use the https URI scheme, overriding by configuration");
-						scheme = "http://"; // add on colon and slashes.
-					}
+			if (!Strings.isNullOrEmpty(scheme) &&scheme.equals("http")) {
+				if (forceHttps) {
+					throw new IllegalArgumentException("Scheme must start with htps");
+				} else {
+					logger.warn("Webfinger endpoint MUST use the https URI scheme, overriding by configuration");
+					scheme = "http://"; // add on colon and slashes.
 				}
 			} else {
 				scheme = "https://";
