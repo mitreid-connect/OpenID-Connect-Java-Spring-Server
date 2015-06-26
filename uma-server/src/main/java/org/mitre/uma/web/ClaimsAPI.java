@@ -26,6 +26,7 @@ import org.mitre.openid.connect.view.JsonEntityView;
 import org.mitre.openid.connect.view.JsonErrorView;
 import org.mitre.openid.connect.web.RootController;
 import org.mitre.uma.model.Claim;
+import org.mitre.uma.model.RequiredClaimSet;
 import org.mitre.uma.model.ResourceSet;
 import org.mitre.uma.service.ResourceSetService;
 import org.slf4j.Logger;
@@ -56,6 +57,13 @@ import static org.mitre.oauth2.web.AuthenticationUtilities.ensureOAuthScope;
 @RequestMapping("/" + ClaimsAPI.URL)
 @PreAuthorize("hasRole('ROLE_USER')")
 public class ClaimsAPI {
+	
+	//
+	//
+	// FIXME
+	//
+	//
+	
 	// Logger for this class
 	private static final Logger logger = LoggerFactory.getLogger(ClaimsAPI.class);
 	
@@ -90,7 +98,7 @@ public class ClaimsAPI {
 			return HttpCodeView.VIEWNAME;
 		}
 				
-		m.addAttribute(JsonEntityView.ENTITY, rs.getClaimsRequired());
+		m.addAttribute(JsonEntityView.ENTITY, rs.getRequiredClaimSets());
 		
 		return JsonEntityView.VIEWNAME;
 	}
@@ -114,11 +122,11 @@ public class ClaimsAPI {
 		@SuppressWarnings("serial")
 		Set<Claim> claims = (new Gson()).fromJson(jsonString, new TypeToken<Set<Claim>>() {}.getType());
 		
-		rs.setClaimsRequired(claims);
-		
+		//rs.setClaimsRequired(claims);
+
 		resourceSetService.update(rs, rs);
 
-		m.addAttribute(JsonEntityView.ENTITY, rs.getClaimsRequired());
+		m.addAttribute(JsonEntityView.ENTITY, rs.getRequiredClaimSets());
 		
 		return JsonEntityView.VIEWNAME;
 	}

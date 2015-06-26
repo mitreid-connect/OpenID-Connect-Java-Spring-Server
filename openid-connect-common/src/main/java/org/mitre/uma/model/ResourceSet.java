@@ -59,7 +59,7 @@ public class ResourceSet {
 	private String owner; // username of the person responsible for the registration (either directly or via OAuth token)
 	private String clientId; // client id of the protected resource that registered this resource set via OAuth token
 	
-	private Collection<Claim> claimsRequired;
+	private Collection<RequiredClaimSet> requiredClaimSets;
 	
 	/**
 	 * @return the id
@@ -199,15 +199,15 @@ public class ResourceSet {
 	 */
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinColumn(name = "resource_set_id")
-	public Collection<Claim> getClaimsRequired() {
-		return claimsRequired;
+	public Collection<RequiredClaimSet> getRequiredClaimSets() {
+		return requiredClaimSets;
 	}
 
 	/**
 	 * @param claimsRequired the claimsRequired to set
 	 */
-	public void setClaimsRequired(Collection<Claim> claimsRequired) {
-		this.claimsRequired = claimsRequired;
+	public void setRequiredClaimSets(Collection<RequiredClaimSet> claimsRequired) {
+		this.requiredClaimSets = claimsRequired;
 	}
 	
 	

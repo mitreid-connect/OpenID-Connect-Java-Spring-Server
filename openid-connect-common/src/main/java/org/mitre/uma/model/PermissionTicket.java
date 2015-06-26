@@ -29,6 +29,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -130,7 +131,11 @@ public class PermissionTicket {
 	 * @return the claimsSupplied
 	 */
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	@JoinColumn(name = "permission_ticket_id")
+	@JoinTable(
+			name = "claim_to_permission_ticket",
+			joinColumns = @JoinColumn(name = "permission_ticket_id"),
+			inverseJoinColumns = @JoinColumn(name = "claim_id")
+	)
 	public Collection<Claim> getClaimsSupplied() {
 		return claimsSupplied;
 	}
