@@ -17,23 +17,12 @@
 
 package org.mitre.uma.web;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.UUID;
 
-import org.mitre.jwt.signer.service.JWTSigningAndValidationService;
-import org.mitre.oauth2.model.AuthenticationHolderEntity;
-import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
-import org.mitre.oauth2.repository.AuthenticationHolderRepository;
-import org.mitre.oauth2.repository.OAuth2TokenRepository;
-import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
 import org.mitre.oauth2.service.SystemScopeService;
 import org.mitre.oauth2.web.AuthenticationUtilities;
-import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.mitre.openid.connect.service.OIDCTokenService;
 import org.mitre.openid.connect.view.HttpCodeView;
 import org.mitre.openid.connect.view.JsonEntityView;
@@ -49,31 +38,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
-import org.springframework.security.oauth2.provider.error.WebResponseExceptionTranslator;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.MimeTypeUtils;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
-import com.nimbusds.jose.JWSAlgorithm;
-import com.nimbusds.jose.JWSHeader;
-import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.SignedJWT;
 
 /**
  * @author jricher
@@ -142,13 +121,13 @@ public class AuthorizationRequestEndpoint {
 					} else {
 						// claims weren't empty or missing, we need to check against what we have
 						
-						ClaimProcessingResult result = claimsProcessingService.claimsAreSatisfied(rs.getPolicies(), ticket.getClaimsSupplied());
+						ClaimProcessingResult result = claimsProcessingService.claimsAreSatisfied(rs, ticket);
 						
-						// we need to downscope this based on the required set that was matched if it was matched
 						
 						if (result.isSatisfied()) {
 							// the service found what it was looking for, issue a token
 
+							// we need to downscope this based on the required set that was matched if it was matched
 							OAuth2Authentication o2auth = (OAuth2Authentication) auth;
 							
 							OAuth2AccessTokenEntity token = umaTokenService.createRequestingPartyToken(o2auth, ticket);

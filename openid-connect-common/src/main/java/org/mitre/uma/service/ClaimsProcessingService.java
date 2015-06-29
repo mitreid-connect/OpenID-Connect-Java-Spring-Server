@@ -17,11 +17,9 @@
 
 package org.mitre.uma.service;
 
-import java.util.Collection;
-
-import org.mitre.uma.model.Claim;
 import org.mitre.uma.model.ClaimProcessingResult;
-import org.mitre.uma.model.Policy;
+import org.mitre.uma.model.PermissionTicket;
+import org.mitre.uma.model.ResourceSet;
 
 /**
  * 
@@ -38,10 +36,10 @@ public interface ClaimsProcessingService {
 	 * sufficient to fulfill the requirements given by the claims that
 	 * are required.
 	 * 
-	 * @param claimsRequired the required claims to check against
-	 * @param claimsSupplied the supplied claims to test
+	 * @param rs the required claims to check against
+	 * @param ticket the supplied claims to test
 	 * @return the result of the claims processing action
 	 */
-	public ClaimProcessingResult claimsAreSatisfied(Collection<Policy> claimsRequired, Collection<Claim> claimsSupplied);
+	public ClaimProcessingResult claimsAreSatisfied(ResourceSet rs, PermissionTicket ticket);
 
 }

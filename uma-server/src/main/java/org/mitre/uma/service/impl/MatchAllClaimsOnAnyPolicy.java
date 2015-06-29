@@ -22,7 +22,9 @@ import java.util.HashSet;
 
 import org.mitre.uma.model.Claim;
 import org.mitre.uma.model.ClaimProcessingResult;
+import org.mitre.uma.model.PermissionTicket;
 import org.mitre.uma.model.Policy;
+import org.mitre.uma.model.ResourceSet;
 import org.mitre.uma.service.ClaimsProcessingService;
 import org.springframework.stereotype.Service;
 
@@ -40,16 +42,22 @@ public class MatchAllClaimsOnAnyPolicy implements ClaimsProcessingService {
 	 * @see org.mitre.uma.service.ClaimsProcessingService#claimsAreSatisfied(java.util.Collection, java.util.Collection)
 	 */
 	@Override
-	public ClaimProcessingResult claimsAreSatisfied(Collection<Policy> claimsRequired, Collection<Claim> claimsSupplied) {
+	public ClaimProcessingResult claimsAreSatisfied(ResourceSet rs, PermissionTicket ticket) {
 		Collection<Claim> allUnmatched = new HashSet<>();
-		for (Policy policy : claimsRequired) {
-			Collection<Claim> unmatched = checkIndividualClaims(policy.getClaimsRequired(), claimsSupplied);
-			if (unmatched.isEmpty()) {
-				// we found something that's satisfied the claims, let's go with it!
-				return new ClaimProcessingResult(policy);
+		for (Policy policy : rs.getPolicies()) {
+			if (policy.getScopes().equals(ticket.getPermission().getScopes())) {
+			
+				Collection<Claim> unmatched = checkIndividualClaims(policy.getClaimsRequired(), ticket.getClaimsSupplied());
+				if (unmatched.isEmpty()) {
+					// we found something that's satisfied the claims, let's go with it!
+					return new ClaimProcessingResult(policy);
+				} else {
+					// otherwise add it to the stack to send back
+					allUnmatched.addAll(unmatched);
+				}
 			} else {
-				// otherwise add it to the stack to send back
-				allUnmatched.addAll(unmatched);
+				// scopes didn't match, skip it
+				allUnmatched.addAll(policy.getClaimsRequired());
 			}
 		}
 		
