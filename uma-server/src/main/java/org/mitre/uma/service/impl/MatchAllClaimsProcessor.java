@@ -21,7 +21,7 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import org.mitre.uma.model.Claim;
-import org.mitre.uma.model.RequiredClaimSet;
+import org.mitre.uma.model.Policy;
 import org.mitre.uma.service.ClaimsProcessingService;
 import org.springframework.stereotype.Service;
 
@@ -39,10 +39,10 @@ public class MatchAllClaimsProcessor implements ClaimsProcessingService {
 	 * @see org.mitre.uma.service.ClaimsProcessingService#claimsAreSatisfied(java.util.Collection, java.util.Collection)
 	 */
 	@Override
-	public Collection<Claim> claimsAreSatisfied(Collection<RequiredClaimSet> claimsRequired, Collection<Claim> claimsSupplied) {
+	public Collection<Claim> claimsAreSatisfied(Collection<Policy> claimsRequired, Collection<Claim> claimsSupplied) {
 		Collection<Claim> allUnmatched = new HashSet<>();
-		for (RequiredClaimSet requiredClaimSet : claimsRequired) {
-			Collection<Claim> unmatched = checkIndividualClaims(requiredClaimSet.getClaimsRequired(), claimsSupplied);
+		for (Policy policy : claimsRequired) {
+			Collection<Claim> unmatched = checkIndividualClaims(policy.getClaimsRequired(), claimsSupplied);
 			if (unmatched.isEmpty()) {
 				// we found something that's satisfied the claims, let's go with it!
 				return unmatched;

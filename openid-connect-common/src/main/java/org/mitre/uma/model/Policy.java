@@ -42,8 +42,8 @@ import javax.persistence.Table;
  *
  */
 @Entity
-@Table(name = "required_claim_set")
-public class RequiredClaimSet {
+@Table(name = "policy")
+public class Policy {
 
 	private Long id;
 	private String name;
@@ -88,8 +88,8 @@ public class RequiredClaimSet {
 	 */
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@JoinTable(
-			name = "claim_to_claim_set",
-			joinColumns = @JoinColumn(name = "required_claim_set_id"),
+			name = "claim_to_policy",
+			joinColumns = @JoinColumn(name = "policy_id"),
 			inverseJoinColumns = @JoinColumn(name = "claim_id")
 	)
 	public Collection<Claim> getClaimsRequired() {
@@ -109,7 +109,7 @@ public class RequiredClaimSet {
 	@ElementCollection(fetch = FetchType.EAGER)
 	@Column(name = "scope")
 	@CollectionTable(
-		name = "resource_set_scope",
+		name = "policy_scope",
 		joinColumns = @JoinColumn(name = "owner_id")
 	)
 	public Set<String> getScopes() {

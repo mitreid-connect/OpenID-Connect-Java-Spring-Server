@@ -29,7 +29,7 @@ import org.mitre.openid.connect.view.HttpCodeView;
 import org.mitre.openid.connect.view.JsonEntityView;
 import org.mitre.openid.connect.view.JsonErrorView;
 import org.mitre.uma.model.Claim;
-import org.mitre.uma.model.RequiredClaimSet;
+import org.mitre.uma.model.Policy;
 import org.mitre.uma.model.ResourceSet;
 import org.mitre.uma.service.ResourceSetService;
 import org.mitre.uma.view.ResourceSetEntityAbbreviatedView;
@@ -139,11 +139,11 @@ public class ResourceSetRegistrationEndpoint {
 		ev.setValue(true);
 		claims.add(e);
 		*/
-		RequiredClaimSet reqired = new RequiredClaimSet();
+		Policy reqired = new Policy();
 		reqired.setScopes(rs.getScopes());
 		reqired.setClaimsRequired(claims);
 		
-		rs.setRequiredClaimSets(Sets.newHashSet(reqired));
+		rs.setPolicies(Sets.newHashSet(reqired));
 		////
 		//// END TEMP
 		////

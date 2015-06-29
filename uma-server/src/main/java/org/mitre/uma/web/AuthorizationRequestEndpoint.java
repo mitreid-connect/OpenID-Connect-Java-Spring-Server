@@ -131,7 +131,7 @@ public class AuthorizationRequestEndpoint {
 					
 					ResourceSet rs = ticket.getPermission().getResourceSet();
 					
-					if (rs.getRequiredClaimSets() == null || rs.getRequiredClaimSets().isEmpty()) {
+					if (rs.getPolicies() == null || rs.getPolicies().isEmpty()) {
 						// the required claims are empty, this resource has no way to be authorized
 						
 						m.addAttribute(JsonErrorView.ERROR, "not_authorized");
@@ -141,7 +141,9 @@ public class AuthorizationRequestEndpoint {
 					} else {
 						// claims weren't empty or missing, we need to check against what we have
 						
-						Collection<Claim> claimsUnmatched = claimsProcessingService.claimsAreSatisfied(rs.getRequiredClaimSets(), ticket.getClaimsSupplied());
+						Collection<Claim> claimsUnmatched = claimsProcessingService.claimsAreSatisfied(rs.getPolicies(), ticket.getClaimsSupplied());
+						
+						// we need to downscope this based on the required set that was matched if it was matched
 						
 						if (claimsUnmatched.isEmpty()) {
 							// if the unmatched claims come back empty, by function contract that means we're happy and can issue a token

@@ -26,7 +26,7 @@ import org.mitre.openid.connect.view.JsonEntityView;
 import org.mitre.openid.connect.view.JsonErrorView;
 import org.mitre.openid.connect.web.RootController;
 import org.mitre.uma.model.Claim;
-import org.mitre.uma.model.RequiredClaimSet;
+import org.mitre.uma.model.Policy;
 import org.mitre.uma.model.ResourceSet;
 import org.mitre.uma.service.ResourceSetService;
 import org.slf4j.Logger;
@@ -98,7 +98,7 @@ public class ClaimsAPI {
 			return HttpCodeView.VIEWNAME;
 		}
 				
-		m.addAttribute(JsonEntityView.ENTITY, rs.getRequiredClaimSets());
+		m.addAttribute(JsonEntityView.ENTITY, rs.getPolicies());
 		
 		return JsonEntityView.VIEWNAME;
 	}
@@ -126,7 +126,7 @@ public class ClaimsAPI {
 
 		resourceSetService.update(rs, rs);
 
-		m.addAttribute(JsonEntityView.ENTITY, rs.getRequiredClaimSets());
+		m.addAttribute(JsonEntityView.ENTITY, rs.getPolicies());
 		
 		return JsonEntityView.VIEWNAME;
 	}
