@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import org.mitre.uma.model.Claim;
+import org.mitre.uma.model.ClaimProcessingResult;
 import org.mitre.uma.model.Policy;
 import org.mitre.uma.service.ClaimsProcessingService;
 import org.springframework.stereotype.Service;
@@ -32,20 +33,20 @@ import org.springframework.stereotype.Service;
  * @author jricher
  *
  */
-@Service("matchAllClaimsProcessor")
-public class MatchAllClaimsProcessor implements ClaimsProcessingService {
+@Service("matchAllClaimsOnAnyPolicy")
+public class MatchAllClaimsOnAnyPolicy implements ClaimsProcessingService {
 
 	/* (non-Javadoc)
 	 * @see org.mitre.uma.service.ClaimsProcessingService#claimsAreSatisfied(java.util.Collection, java.util.Collection)
 	 */
 	@Override
-	public Collection<Claim> claimsAreSatisfied(Collection<Policy> claimsRequired, Collection<Claim> claimsSupplied) {
+	public ClaimProcessingResult claimsAreSatisfied(Collection<Policy> claimsRequired, Collection<Claim> claimsSupplied) {
 		Collection<Claim> allUnmatched = new HashSet<>();
 		for (Policy policy : claimsRequired) {
 			Collection<Claim> unmatched = checkIndividualClaims(policy.getClaimsRequired(), claimsSupplied);
 			if (unmatched.isEmpty()) {
 				// we found something that's satisfied the claims, let's go with it!
-				return unmatched;
+				return new ClaimProcessingResult(policy);
 			} else {
 				// otherwise add it to the stack to send back
 				allUnmatched.addAll(unmatched);
@@ -53,7 +54,7 @@ public class MatchAllClaimsProcessor implements ClaimsProcessingService {
 		}
 		
 		// otherwise, tell the caller that we'll need some set of these fulfilled somehow
-		return allUnmatched;
+		return new ClaimProcessingResult(allUnmatched);
 	}
 
 	private Collection<Claim> checkIndividualClaims(Collection<Claim> claimsRequired, Collection<Claim> claimsSupplied) {

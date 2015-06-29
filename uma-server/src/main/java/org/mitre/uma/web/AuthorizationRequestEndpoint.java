@@ -39,6 +39,7 @@ import org.mitre.openid.connect.view.HttpCodeView;
 import org.mitre.openid.connect.view.JsonEntityView;
 import org.mitre.openid.connect.view.JsonErrorView;
 import org.mitre.uma.model.Claim;
+import org.mitre.uma.model.ClaimProcessingResult;
 import org.mitre.uma.model.PermissionTicket;
 import org.mitre.uma.model.ResourceSet;
 import org.mitre.uma.service.ClaimsProcessingService;
@@ -141,12 +142,12 @@ public class AuthorizationRequestEndpoint {
 					} else {
 						// claims weren't empty or missing, we need to check against what we have
 						
-						Collection<Claim> claimsUnmatched = claimsProcessingService.claimsAreSatisfied(rs.getPolicies(), ticket.getClaimsSupplied());
+						ClaimProcessingResult result = claimsProcessingService.claimsAreSatisfied(rs.getPolicies(), ticket.getClaimsSupplied());
 						
 						// we need to downscope this based on the required set that was matched if it was matched
 						
-						if (claimsUnmatched.isEmpty()) {
-							// if the unmatched claims come back empty, by function contract that means we're happy and can issue a token
+						if (result.isSatisfied()) {
+							// the service found what it was looking for, issue a token
 
 							OAuth2Authentication o2auth = (OAuth2Authentication) auth;
 							
@@ -175,7 +176,7 @@ public class AuthorizationRequestEndpoint {
 							rpClaims.addProperty("redirect_user", true);
 							rpClaims.addProperty("ticket", ticketValue);
 							JsonArray req = new JsonArray();
-							for (Claim claim : claimsUnmatched) {
+							for (Claim claim : result.getUnmatched()) {
 								JsonObject c = new JsonObject();
 								c.addProperty("name", claim.getName());
 								c.addProperty("friendly_name", claim.getFriendlyName());

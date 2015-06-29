@@ -20,6 +20,7 @@ package org.mitre.uma.service;
 import java.util.Collection;
 
 import org.mitre.uma.model.Claim;
+import org.mitre.uma.model.ClaimProcessingResult;
 import org.mitre.uma.model.Policy;
 
 /**
@@ -39,8 +40,8 @@ public interface ClaimsProcessingService {
 	 * 
 	 * @param claimsRequired the required claims to check against
 	 * @param claimsSupplied the supplied claims to test
-	 * @return the unmatched claims (if any), an empty set if the claims are satisfied, never null
+	 * @return the result of the claims processing action
 	 */
-	public Collection<Claim> claimsAreSatisfied(Collection<Policy> claimsRequired, Collection<Claim> claimsSupplied);
+	public ClaimProcessingResult claimsAreSatisfied(Collection<Policy> claimsRequired, Collection<Claim> claimsSupplied);
 
 }
