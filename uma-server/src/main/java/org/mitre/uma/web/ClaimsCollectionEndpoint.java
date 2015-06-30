@@ -24,7 +24,6 @@ import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.openid.connect.model.OIDCAuthenticationToken;
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.view.HttpCodeView;
-import org.mitre.openid.connect.view.JsonErrorView;
 import org.mitre.uma.model.Claim;
 import org.mitre.uma.model.PermissionTicket;
 import org.mitre.uma.service.PermissionService;
@@ -42,6 +41,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonPrimitive;
 
 /**
  * 
@@ -90,11 +91,13 @@ public class ClaimsCollectionEndpoint {
 		String issuer = auth.getIssuer();
 		UserInfo userInfo = auth.getUserInfo();
 		
-		claimsSupplied.add(mkClaim(issuer, "sub", auth.getSub()));
-		claimsSupplied.add(mkClaim(issuer, "email", userInfo.getEmail()));
-		claimsSupplied.add(mkClaim(issuer, "phone_number", auth.getUserInfo().getPhoneNumber()));
-		claimsSupplied.add(mkClaim(issuer, "preferred_username", auth.getUserInfo().getPreferredUsername()));
-		claimsSupplied.add(mkClaim(issuer, "profile", auth.getUserInfo().getProfile()));
+		claimsSupplied.add(mkClaim(issuer, "sub", new JsonPrimitive(auth.getSub())));
+		claimsSupplied.add(mkClaim(issuer, "email", new JsonPrimitive(userInfo.getEmail())));
+		claimsSupplied.add(mkClaim(issuer, "email_verified", new JsonPrimitive(userInfo.getEmailVerified())));
+		claimsSupplied.add(mkClaim(issuer, "phone_number", new JsonPrimitive(auth.getUserInfo().getPhoneNumber())));
+		claimsSupplied.add(mkClaim(issuer, "phone_number_verified", new JsonPrimitive(auth.getUserInfo().getPhoneNumberVerified())));
+		claimsSupplied.add(mkClaim(issuer, "preferred_username", new JsonPrimitive(auth.getUserInfo().getPreferredUsername())));
+		claimsSupplied.add(mkClaim(issuer, "profile", new JsonPrimitive(auth.getUserInfo().getProfile())));
 		
 		ticket.setClaimsSupplied(claimsSupplied);
 		
@@ -120,7 +123,7 @@ public class ClaimsCollectionEndpoint {
 	}
 
 	
-	private Claim mkClaim(String issuer, String name, String value) {
+	private Claim mkClaim(String issuer, String name, JsonElement value) {
 		Claim c = new Claim();
 		c.setIssuer(Sets.newHashSet(issuer));
 		c.setName(name);

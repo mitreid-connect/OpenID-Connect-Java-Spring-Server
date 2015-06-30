@@ -55,6 +55,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 
 import static org.mitre.oauth2.web.AuthenticationUtilities.ensureOAuthScope;
 import static org.mitre.util.JsonUtils.getAsLong;
@@ -129,16 +130,15 @@ public class ResourceSetRegistrationEndpoint {
 		Claim e = new Claim();
 		e.setIssuer(Sets.newHashSet("https://healthauth.org/"));
 		e.setName("email");
-		e.setValue("alice@healthauth.org");
+		e.setValue(new JsonPrimitive("alice@healthauth.org"));
 		claims.add(e);
 		
-		/* TODO: claims need to be multi-typed
 		Claim ev = new Claim();
 		ev.setIssuer(Sets.newHashSet("https://healthauth.org/"));
 		e.setName("email_verified");
-		ev.setValue(true);
+		ev.setValue(new JsonPrimitive(true));
 		claims.add(e);
-		*/
+
 		Policy reqired = new Policy();
 		reqired.setScopes(rs.getScopes());
 		reqired.setClaimsRequired(claims);

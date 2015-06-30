@@ -22,6 +22,7 @@ import java.util.Set;
 import javax.persistence.Basic;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -30,6 +31,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
+
+import org.mitre.oauth2.model.convert.JsonElementStringConverter;
+
+import com.google.gson.JsonElement;
 
 /**
  * @author jricher
@@ -43,7 +48,7 @@ public class Claim {
 	private String name;
 	private String friendlyName;
 	private String claimType;
-	private String value;
+	private JsonElement value;
 	private Set<String> claimTokenFormat;
 	private Set<String> issuer;
 	
@@ -150,13 +155,14 @@ public class Claim {
 	 */
 	@Basic
 	@Column(name = "claim_value")
-	public String getValue() {
+	@Convert(converter = JsonElementStringConverter.class)
+	public JsonElement getValue() {
 		return value;
 	}
 	/**
 	 * @param value the value to set
 	 */
-	public void setValue(String value) {
+	public void setValue(JsonElement value) {
 		this.value = value;
 	}
 }
