@@ -92,12 +92,24 @@ public class ClaimsCollectionEndpoint {
 		UserInfo userInfo = auth.getUserInfo();
 		
 		claimsSupplied.add(mkClaim(issuer, "sub", new JsonPrimitive(auth.getSub())));
-		claimsSupplied.add(mkClaim(issuer, "email", new JsonPrimitive(userInfo.getEmail())));
-		claimsSupplied.add(mkClaim(issuer, "email_verified", new JsonPrimitive(userInfo.getEmailVerified())));
-		claimsSupplied.add(mkClaim(issuer, "phone_number", new JsonPrimitive(auth.getUserInfo().getPhoneNumber())));
-		claimsSupplied.add(mkClaim(issuer, "phone_number_verified", new JsonPrimitive(auth.getUserInfo().getPhoneNumberVerified())));
-		claimsSupplied.add(mkClaim(issuer, "preferred_username", new JsonPrimitive(auth.getUserInfo().getPreferredUsername())));
-		claimsSupplied.add(mkClaim(issuer, "profile", new JsonPrimitive(auth.getUserInfo().getProfile())));
+		if (userInfo.getEmail() != null) {
+			claimsSupplied.add(mkClaim(issuer, "email", new JsonPrimitive(userInfo.getEmail())));
+		}
+		if (userInfo.getEmailVerified() != null) {
+			claimsSupplied.add(mkClaim(issuer, "email_verified", new JsonPrimitive(userInfo.getEmailVerified())));
+		}
+		if (userInfo.getPhoneNumber() != null) {
+			claimsSupplied.add(mkClaim(issuer, "phone_number", new JsonPrimitive(auth.getUserInfo().getPhoneNumber())));
+		}
+		if (userInfo.getPhoneNumberVerified() != null) {
+			claimsSupplied.add(mkClaim(issuer, "phone_number_verified", new JsonPrimitive(auth.getUserInfo().getPhoneNumberVerified())));
+		}
+		if (userInfo.getPreferredUsername() != null) {
+			claimsSupplied.add(mkClaim(issuer, "preferred_username", new JsonPrimitive(auth.getUserInfo().getPreferredUsername())));
+		}
+		if (userInfo.getProfile() != null) {
+			claimsSupplied.add(mkClaim(issuer, "profile", new JsonPrimitive(auth.getUserInfo().getProfile())));
+		}
 		
 		ticket.setClaimsSupplied(claimsSupplied);
 		
