@@ -18,6 +18,8 @@
 package org.mitre.uma.service.impl;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import org.mitre.jwt.signer.service.JWTSigningAndValidationService;
@@ -28,7 +30,9 @@ import org.mitre.oauth2.repository.AuthenticationHolderRepository;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
+import org.mitre.uma.model.Permission;
 import org.mitre.uma.model.PermissionTicket;
+import org.mitre.uma.model.Policy;
 import org.mitre.uma.service.UmaTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -65,7 +69,7 @@ public class DefaultUmaTokenService implements UmaTokenService {
 
 	
 	@Override
-	public OAuth2AccessTokenEntity createRequestingPartyToken(OAuth2Authentication o2auth, PermissionTicket ticket) {
+	public OAuth2AccessTokenEntity createRequestingPartyToken(OAuth2Authentication o2auth, PermissionTicket ticket, Policy policy) {
 		OAuth2AccessTokenEntity token = new OAuth2AccessTokenEntity();
 		AuthenticationHolderEntity authHolder = new AuthenticationHolderEntity();
 		authHolder.setAuthentication(o2auth);
@@ -76,8 +80,14 @@ public class DefaultUmaTokenService implements UmaTokenService {
 		ClientDetailsEntity client = clientService.loadClientByClientId(o2auth.getOAuth2Request().getClientId());
 		token.setClient(client);
 		
-		token.setPermissions(Sets.newHashSet(ticket.getPermission()));
+		Set<String> ticketScopes = ticket.getPermission().getScopes();
+		Set<String> policyScopes = policy.getScopes();
 		
+		Permission perm = new Permission();
+		perm.setResourceSet(ticket.getPermission().getResourceSet());
+		perm.setScopes(new HashSet<>(Sets.intersection(ticketScopes, policyScopes)));
+		
+		token.setPermissions(Sets.newHashSet(perm));
 		
 		JWTClaimsSet claims = new JWTClaimsSet();
 		

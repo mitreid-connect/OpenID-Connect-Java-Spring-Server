@@ -45,19 +45,13 @@ public class MatchAllClaimsOnAnyPolicy implements ClaimsProcessingService {
 	public ClaimProcessingResult claimsAreSatisfied(ResourceSet rs, PermissionTicket ticket) {
 		Collection<Claim> allUnmatched = new HashSet<>();
 		for (Policy policy : rs.getPolicies()) {
-			if (policy.getScopes().equals(ticket.getPermission().getScopes())) {
-			
-				Collection<Claim> unmatched = checkIndividualClaims(policy.getClaimsRequired(), ticket.getClaimsSupplied());
-				if (unmatched.isEmpty()) {
-					// we found something that's satisfied the claims, let's go with it!
-					return new ClaimProcessingResult(policy);
-				} else {
-					// otherwise add it to the stack to send back
-					allUnmatched.addAll(unmatched);
-				}
+			Collection<Claim> unmatched = checkIndividualClaims(policy.getClaimsRequired(), ticket.getClaimsSupplied());
+			if (unmatched.isEmpty()) {
+				// we found something that's satisfied the claims, let's go with it!
+				return new ClaimProcessingResult(policy);
 			} else {
-				// scopes didn't match, skip it
-				allUnmatched.addAll(policy.getClaimsRequired());
+				// otherwise add it to the stack to send back
+				allUnmatched.addAll(unmatched);
 			}
 		}
 		

@@ -130,7 +130,7 @@ public class AuthorizationRequestEndpoint {
 							// we need to downscope this based on the required set that was matched if it was matched
 							OAuth2Authentication o2auth = (OAuth2Authentication) auth;
 							
-							OAuth2AccessTokenEntity token = umaTokenService.createRequestingPartyToken(o2auth, ticket);
+							OAuth2AccessTokenEntity token = umaTokenService.createRequestingPartyToken(o2auth, ticket, result.getMatched());
 
 							// if we have an inbound RPT, throw it out because we're replacing it
 							if (incomingRpt != null) {
