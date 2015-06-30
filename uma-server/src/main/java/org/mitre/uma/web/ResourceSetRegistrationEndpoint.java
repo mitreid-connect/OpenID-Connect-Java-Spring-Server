@@ -135,12 +135,12 @@ public class ResourceSetRegistrationEndpoint {
 		
 		Claim ev = new Claim();
 		ev.setIssuer(Sets.newHashSet("https://healthauth.org/"));
-		e.setName("email_verified");
+		ev.setName("email_verified");
 		ev.setValue(new JsonPrimitive(true));
-		claims.add(e);
+		claims.add(ev);
 
 		Policy reqired = new Policy();
-		reqired.setScopes(rs.getScopes());
+		reqired.setScopes(Sets.newHashSet("foo", "batman"));
 		reqired.setClaimsRequired(claims);
 		
 		rs.setPolicies(Sets.newHashSet(reqired));
