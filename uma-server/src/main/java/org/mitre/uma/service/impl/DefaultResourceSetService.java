@@ -19,6 +19,7 @@ package org.mitre.uma.service.impl;
 
 import java.util.Collection;
 
+import org.mitre.uma.model.Policy;
 import org.mitre.uma.model.ResourceSet;
 import org.mitre.uma.repository.ResourceSetRepository;
 import org.mitre.uma.service.ResourceSetService;
@@ -48,6 +49,10 @@ public class DefaultResourceSetService implements ResourceSetService {
 			throw new IllegalArgumentException("Can't save a new resource set with an ID already set to it.");
 		}
 		
+		if (!checkScopeConsistency(rs)) {
+			throw new IllegalArgumentException("Can't save a resource set with inconsistent claims.");
+		}
+		
 		ResourceSet saved = repository.save(rs);
 		
 		return saved;
@@ -67,6 +72,10 @@ public class DefaultResourceSetService implements ResourceSetService {
 			
 			throw new IllegalArgumentException("Resource set IDs mismatched");
 			
+		}
+
+		if (!checkScopeConsistency(newRs)) {
+			throw new IllegalArgumentException("Can't save a resource set with inconsistent claims.");
 		}
 		
 		newRs.setOwner(oldRs.getOwner()); // preserve the owner tag across updates
@@ -93,6 +102,14 @@ public class DefaultResourceSetService implements ResourceSetService {
 		return repository.getAllForOwnerAndClient(owner, clientId);
 	}
 	
-	
+	private boolean checkScopeConsistency(ResourceSet rs) {
+		for (Policy policy : rs.getPolicies()) {
+			if (!rs.getScopes().containsAll(policy.getScopes())) {
+				return false;
+			}
+		}
+		// we've checked everything, we're good
+		return true;
+	}
 	
 }
