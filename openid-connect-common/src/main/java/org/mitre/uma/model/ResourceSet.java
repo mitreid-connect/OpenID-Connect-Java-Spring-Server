@@ -209,6 +209,114 @@ public class ResourceSet {
 	public void setPolicies(Collection<Policy> policies) {
 		this.policies = policies;
 	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "ResourceSet [id=" + id + ", name=" + name + ", uri=" + uri + ", type=" + type + ", scopes=" + scopes + ", iconUri=" + iconUri + ", owner=" + owner + ", clientId=" + clientId + ", policies=" + policies + "]";
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((clientId == null) ? 0 : clientId.hashCode());
+		result = prime * result + ((iconUri == null) ? 0 : iconUri.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((owner == null) ? 0 : owner.hashCode());
+		result = prime * result + ((policies == null) ? 0 : policies.hashCode());
+		result = prime * result + ((scopes == null) ? 0 : scopes.hashCode());
+		result = prime * result + ((type == null) ? 0 : type.hashCode());
+		result = prime * result + ((uri == null) ? 0 : uri.hashCode());
+		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		ResourceSet other = (ResourceSet) obj;
+		if (clientId == null) {
+			if (other.clientId != null) {
+				return false;
+			}
+		} else if (!clientId.equals(other.clientId)) {
+			return false;
+		}
+		if (iconUri == null) {
+			if (other.iconUri != null) {
+				return false;
+			}
+		} else if (!iconUri.equals(other.iconUri)) {
+			return false;
+		}
+		if (id == null) {
+			if (other.id != null) {
+				return false;
+			}
+		} else if (!id.equals(other.id)) {
+			return false;
+		}
+		if (name == null) {
+			if (other.name != null) {
+				return false;
+			}
+		} else if (!name.equals(other.name)) {
+			return false;
+		}
+		if (owner == null) {
+			if (other.owner != null) {
+				return false;
+			}
+		} else if (!owner.equals(other.owner)) {
+			return false;
+		}
+		if (policies == null) {
+			if (other.policies != null) {
+				return false;
+			}
+		} else if (!policies.equals(other.policies)) {
+			return false;
+		}
+		if (scopes == null) {
+			if (other.scopes != null) {
+				return false;
+			}
+		} else if (!scopes.equals(other.scopes)) {
+			return false;
+		}
+		if (type == null) {
+			if (other.type != null) {
+				return false;
+			}
+		} else if (!type.equals(other.type)) {
+			return false;
+		}
+		if (uri == null) {
+			if (other.uri != null) {
+				return false;
+			}
+		} else if (!uri.equals(other.uri)) {
+			return false;
+		}
+		return true;
+	}
 	
 	
 	
