@@ -272,41 +272,6 @@ var PolicyListView = Backbone.View.extend({
     	app.navigate('user/policy', {trigger: true});
     },
     
-    savePolicy:function(e) {
-    	e.preventDefault();
-
-    	var _self = this;
-
-    	console.log(this);
-    	
-    	this.model.sync('update', this.model, {
-    		success:function() {
-    			// update our copy of the resource set object (if we have it)
-    			if (_self.options.rs != null) {
-    				_self.options.rs.set({claimsRequired: _self.model.toJSON()}, {trigger: false});
-    			}
-    			
-    	    	app.navigate('user/policy', {trigger: true});
-    		},
-            error:function (error, response) {
-        		console.log("An error occurred when saving a policy set");
-
-				//Pull out the response text.
-				var responseJson = JSON.parse(response.responseText);
-        		
-        		//Display an alert with an error message
-				$('#modalAlert div.modal-header').html(responseJson.error);
-        		$('#modalAlert div.modal-body').html(responseJson.error_description);
-        		
-    			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
-    				 "backdrop" : "static",
-    				 "keyboard" : true,
-    				 "show" : true // ensure the modal is shown immediately
-    			 });
-        	}
-    	});
-    },
-    
     addPolicy:function(e) {
     	e.preventDefault();
     	
