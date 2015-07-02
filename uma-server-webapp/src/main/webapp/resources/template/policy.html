@@ -72,15 +72,6 @@
 		<button class="btn btn-small btn-cancel"><i class="icon-ban-circle"></i> <span data-i18n="common.cancel">Cancel</span></button>
     </div>
 
-	<div id="add-required-claim">
-		<form class="form-horizontal">
-			<fieldset>
-				<input type="text" id="email" placeholder="email address" data-i18n="[placeholder]policy.policy-table.email-address" />
-				<button id="add-email" class="btn btn-info"><i class="icon-share icon-white"></i> <span data-i18n="policy.policy-table.share-email">Share with email address</span></button>
-			</fieldset>
-		</form>
-	</div>
-
 	<div class="alert alert-info" data-i18n="policy.policy-table.required-claims">
 		Users that you share this resource will with need to be able to present the following claims in order to access the resource.
 	</div>
@@ -141,6 +132,75 @@
 	        <button class="btn btn-danger btn-remove"><i class="icon-trash icon-white"></i> <span data-i18n="policy.policy-table.remove">Remove</span></button> &nbsp; 
 		</div>
     </td>
+
+</script>
+
+<script type="text/html" id="tmpl-policy-form">
+
+    <% if (policy.id == null) { %>
+        <h1 data-i18n="policy.policy-form.new">New Policy</h1>
+    <% } else { %>
+        <h1 data-i18n="policy.policy-form.edit">Edit Policy</h1>
+    <% } %>
+
+   <div class="well well-small">
+        <button class="btn btn-small btn-save btn-success"><i class="icon-ok-circle icon-white"></i> <span data-i18n="common.save">Save</span></button> &nbsp; 
+		<button class="btn btn-small btn-cancel"><i class="icon-ban-circle"></i> <span data-i18n="common.cancel">Cancel</span></button>
+    </div>
+
+	<div id="add-required-claim">
+		<form class="form-horizontal">
+			<fieldset>
+				<input type="text" id="email" placeholder="email address" data-i18n="[placeholder]policy.policy-table.email-address" />
+				<button id="add-email" class="btn btn-info"><i class="icon-share icon-white"></i> <span data-i18n="policy.policy-table.share-email">Share with email address</span></button>
+			</fieldset>
+		</form>
+	</div>
+
+	<form class="form-horizontal">
+		<fieldset>
+
+            <div class="control-group" id="scopes">
+                <label class="control-label" data-i18n="common.scope">Scopes</label>
+                <div class="controls">
+					<% _.each(rs.scopes, function(scope) { %>
+                    <div>
+                        <input type="checkbox"
+                            <%-($.inArray(scope, policy.scopes) > -1 ? 'checked' : '')%>>
+                        <label class="checkbox"><%- scope %></label>
+                    </div>
+					<% }); %>
+                </div>
+            </div>
+
+		</fieldset>
+	</form>
+
+			<table class="table table-striped table-hover">
+				<tbody>
+					<% _.each(policy.claimsRequired, function(claim) { %>
+					<tr>
+						<td>
+						<% _.each(claim.issuer, function(issuer) { %>
+							<span class="label label-info"><%- issuer %></span>
+						<% }); %>
+						</td>
+						<td>
+							<%- claim.friendlyName ? claim.friendlyName : claim.name %>
+						</td>
+						<td>
+							<%- JSON.stringify(claim.value) %>
+						</td>
+					</tr>
+					<% }); %>
+				</tbody>
+
+			</table>
+
+   <div class="well well-small">
+        <button class="btn btn-small btn-save btn-success"><i class="icon-ok-circle icon-white"></i> <span data-i18n="common.save">Save</span></button> &nbsp; 
+		<button class="btn btn-small btn-cancel"><i class="icon-ban-circle"></i> <span data-i18n="common.cancel">Cancel</span></button>
+    </div>
 
 </script>
 

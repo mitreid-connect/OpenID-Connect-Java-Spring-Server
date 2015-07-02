@@ -25,7 +25,12 @@ var ResourceSetCollection = Backbone.Collection.extend({
 });
 
 var PolicyModel = Backbone.Model.extend({
-	
+	urlRoot: function() {
+		return 'api/policy/' + this.options.rsid + '/';
+	},
+	initialize: function(model, options) {
+		this.options = options;
+	}
 });
 
 var PolicyCollection = Backbone.Collection.extend({
@@ -242,6 +247,7 @@ var PolicyListView = Backbone.View.extend({
 	
 	load:function(callback) {
     	if (this.model.isFetched &&
+    			this.options.rs.isFetched &&
     			this.options.systemScopeList.isFetched) {
     		callback();
     		return;
@@ -250,10 +256,12 @@ var PolicyListView = Backbone.View.extend({
     	$('#loadingbox').sheet('show');
     	$('#loading').html(
                 '<span class="label" id="loading-policies">' + $.t('policy.loading-policies') + '</span> ' + 
+                '<span class="label" id="loading-rs">' + $.t('policy.loading-rs') + '</span> ' + 
                 '<span class="label" id="loading-scopes">' + $.t("common.scopes") + '</span> '
     			);
 
     	$.when(this.model.fetchIfNeeded({success:function(e) {$('#loading-policies').addClass('label-success');}}),
+    			this.options.rs.fetchIfNeeded({success:function(e) {$('#loading-rs').addClass('label-success');}}),
     			this.options.systemScopeList.fetchIfNeeded({success:function(e) {$('#loading-scopes').addClass('label-success');}}))
     			.done(function() {
     	    		$('#loadingbox').sheet('hide');
@@ -344,10 +352,6 @@ var PolicyView = Backbone.View.extend({
 			this.template = _.template($('#tmpl-policy').html());
 		}
 
-		if (!this.scopeTemplate) {
-        	this.scopeTemplate = _.template($('#tmpl-scope-list').html());
-        }
-
 	},
 	
 	events:{
@@ -414,11 +418,38 @@ var PolicyFormView = Backbone.View.extend({
 		if (!this.template) {
 			this.template = _.template($('#tmpl-policy-form').html());
 		}
+		
+        this.scopeCollection = new Backbone.Collection();
 	},
 	
-	render:function (eventName) {
+	load:function(callback) {
+    	if (this.model.isFetched &&
+    			this.options.rs.isFetched &&
+    			this.options.systemScopeList.isFetched) {
+    		callback();
+    		return;
+    	}
+
+    	$('#loadingbox').sheet('show');
+    	$('#loading').html(
+                '<span class="label" id="loading-policies">' + $.t('policy.loading-policies') + '</span> ' + 
+                '<span class="label" id="loading-rs">' + $.t('policy.loading-rs') + '</span> ' + 
+                '<span class="label" id="loading-scopes">' + $.t("common.scopes") + '</span> '
+    			);
+
+    	$.when(this.model.fetchIfNeeded({success:function(e) {$('#loading-policies').addClass('label-success');}}),
+    			this.options.rs.fetchIfNeeded({success:function(e) {$('#loading-rs').addClass('label-success');}}),
+    			this.options.systemScopeList.fetchIfNeeded({success:function(e) {$('#loading-scopes').addClass('label-success');}}))
+    			.done(function() {
+    	    		$('#loadingbox').sheet('hide');
+    	    		callback();
+    			});    	
+    },
+
+    render:function (eventName) {
+		var json = this.model.toJSON();
 		
-		
+		this.$el.html(this.template({policy: json, rs: this.options.rs}));
 		
 		return this;
 	}
