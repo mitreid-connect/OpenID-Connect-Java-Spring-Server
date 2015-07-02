@@ -21,15 +21,16 @@ var ResourceSetModel = Backbone.Model.extend({
 
 var ResourceSetCollection = Backbone.Collection.extend({
 	model: ResourceSetModel,
-	url: 'api/claims'
+	url: 'api/policy'
 });
 
-var ClaimModel = Backbone.Model.extend({
+var PolicyModel = Backbone.Model.extend({
 	
 });
 
-var ClaimCollection = Backbone.Collection.extend({
-	model: ClaimModel
+var PolicyCollection = Backbone.Collection.extend({
+	model: PolicyModel,
+	baseUrl: 'api/policy'
 });
 
 var ResourceSetListView = Backbone.View.extend({

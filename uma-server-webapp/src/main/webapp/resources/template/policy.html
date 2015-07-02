@@ -48,11 +48,9 @@
 		<div class="client-more-info-block"></div>
 		<div class="scope-list"></div>
 		<div><span class="text-warning" data-i18n="policy.policy-table.shared-with"><i class="icon-share"></i> Shared with:</span>
-			<% if (!_.isEmpty(rs.claimsRequired)) { 
-				_.each(rs.claimsRequired, function(claim) { %>
-					<span class="label label-info"><%- claim.value %></span>
-				<% });
-			} else { %>
+			<% if (!_.isEmpty(rs.policies)) { 
+				%><span class="label label-info"><%- _.size(rs.policies) %></span>
+			<% } else { %>
 				<span class="label label-important" data-i18n="policy.policy-table.shared-nobody;[title]policy.policy-table.shared-nobody-tooltip" title="This resource is not accessible by anyone else, edit the policies and share it with someone.">NOBODY</span> 
 			<% } %>
 
