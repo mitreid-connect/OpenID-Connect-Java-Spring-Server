@@ -30,7 +30,12 @@ var PolicyModel = Backbone.Model.extend({
 
 var PolicyCollection = Backbone.Collection.extend({
 	model: PolicyModel,
-	baseUrl: 'api/policy'
+	url: function() {
+		return 'api/policy/' + this.options.rsid;
+	},
+	initialize: function(models, options) {
+		this.options = options;
+	}
 });
 
 var ResourceSetListView = Backbone.View.extend({
@@ -228,7 +233,7 @@ var ResourceSetView = Backbone.View.extend({
 
 });
 
-var ClaimListView = Backbone.View.extend({
+var PolicyListView = Backbone.View.extend({
 	tagName: 'span',
 	
 	initialize:function(options) {
@@ -243,10 +248,10 @@ var ClaimListView = Backbone.View.extend({
 
     	$('#loadingbox').sheet('show');
     	$('#loading').html(
-                '<span class="label" id="loading-claims">' + $.t('policy.required-claims') + '</span> '
+                '<span class="label" id="loading-policies">' + $.t('policy.loading-policies') + '</span> '
     			);
 
-    	$.when(this.model.fetchIfNeeded({success:function(e) {$('#loading-claims').addClass('label-success');}}))
+    	$.when(this.model.fetchIfNeeded({success:function(e) {$('#loading-policies').addClass('label-success');}}))
     			.done(function() {
     	    		$('#loadingbox').sheet('hide');
     	    		callback();
@@ -256,7 +261,7 @@ var ClaimListView = Backbone.View.extend({
     events:{
 		'click .btn-save':'savePolicy',
 		'click .btn-cancel':'cancel',
-		'click #add-email':'addClaim'
+		'click #add-email':'addPolicy'
     },
 
     cancel:function(e) {
@@ -299,7 +304,7 @@ var ClaimListView = Backbone.View.extend({
     	});
     },
     
-    addClaim:function(e) {
+    addPolicy:function(e) {
     	e.preventDefault();
     	
     	// post to the webfinger helper and get the response back
@@ -333,50 +338,50 @@ var ClaimListView = Backbone.View.extend({
     
     togglePlaceholder:function() {
 		if (this.model.length > 0) {
-			$('#required-claim-table', this.el).show();
-			$('#required-claim-table-empty', this.el).hide();
+			$('#policy-table', this.el).show();
+			$('#policy-table-empty', this.el).hide();
 		} else {
-			$('#required-claim-table', this.el).hide();
-			$('#required-claim-table-empty', this.el).show();
+			$('#policy-table', this.el).hide();
+			$('#policy-table-empty', this.el).show();
 		}
 	},
 	
 	render:function (eventName) {
-		$(this.el).html($('#tmpl-required-claim-table').html());
+		$(this.el).html($('#tmpl-policy-table').html());
 		
 		var _self = this;
 		
-		_.each(this.model.models, function (claim) {
+		_.each(this.model.models, function (policy) {
 			
-			var view = new ClaimView({model: claim});
+			var view = new PolicyView({model: policy});
 			view.parentView = _self;
-			$('#required-claim-table', this.el).append(view.render().el);
+			$('#policy-table', this.el).append(view.render().el);
 			
 		}, this);
 
 		this.togglePlaceholder();
-        $(this.el).i18n();
+       // $(this.el).i18n();
 		return this;
 	}
 });
 
 
-var ClaimView = Backbone.View.extend({
+var PolicyView = Backbone.View.extend({
 	tagName: 'tr',
 	
 	initialize:function(options) {
 		this.options = options;
 		
 		if (!this.template) {
-			this.template = _.template($('#tmpl-required-claim').html());
+			this.template = _.template($('#tmpl-policy').html());
 		}
 	},
 	
 	events:{
-		'click .btn-remove':'removeClaim'
+		'click .btn-remove':'removePolicy'
 	},
 	
-	removeClaim:function(e) {
+	removePolicy:function(e) {
 		e.preventDefault();
 		
 		var _self = this;
@@ -402,4 +407,24 @@ var ClaimView = Backbone.View.extend({
 	}
 	
 	
+});
+
+
+var PolicyFormView = Backbone.View.extend({
+	tagName: 'span',
+	
+	initialize:function(options) {
+		this.options = options;
+		
+		if (!this.template) {
+			this.template = _.template($('#tmpl-policy-form').html());
+		}
+	},
+	
+	render:function (eventName) {
+		
+		
+		
+		return this;
+	}
 });

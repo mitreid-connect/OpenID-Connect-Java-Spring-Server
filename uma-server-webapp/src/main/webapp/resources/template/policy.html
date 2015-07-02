@@ -67,7 +67,7 @@
 
 </script>
 
-<script type="text/html" id="tmpl-required-claim-table">
+<script type="text/html" id="tmpl-policy-table">
     <div class="well well-small">
 		<button class="btn btn-small btn-save btn-success"><i class="icon-ok-circle icon-white"></i> <span data-i18n="common.save">Save</span></button> &nbsp; 
 		<button class="btn btn-small btn-cancel"><i class="icon-ban-circle"></i> <span data-i18n="common.cancel">Cancel</span></button>
@@ -86,16 +86,15 @@
 		Users that you share this resource will with need to be able to present the following claims in order to access the resource.
 	</div>
 
-	<div id="required-claim-table-empty" class="alert alert-danger" data-i18n="policy.policy-table.no-required-claims">
-		There are no required claims for this resource set: This resource set is inaccessible by others.
+	<div id="policy-table-empty" class="alert alert-danger" data-i18n="policy.policy-table.no-required-claims">
+		There are no policies for this resource set: This resource set is inaccessible by others.
 	</div>
 
-    <table id="required-claim-table" class="table table-hover table-striped">
+    <table id="policy-table" class="table table-hover table-striped">
         <thead>
 			<tr>
-				<th data-i18n="policy.policy-table.issuers">Issuers</th>
-				<th data-i18n="policy.policy-table.claim">Claim</th>
-				<th data-i18n="policy.policy-table.value">Value</th>
+				<th data-i18n="policy.policy-table.issuers">Required Claims</th>
+				<th data-i18n="policy.policy-table.claim">Scopes</th>
 				<th></th>			
         </thead>
         <tbody>
@@ -109,20 +108,35 @@
 
 </script>
 
-<script type="text/html" id="tmpl-required-claim">
+<script type="text/html" id="tmpl-policy">
     <td>
-		<% _.each(issuer, function(issuer) { %>
-			<span class="label label-info"><%- issuer %></span>
-		<% }); %>
+		<div class="well">
+			<table class="table table-condensed">
+				<tbody>
+					<% _.each(claimsRequired, function(claim) { %>
+					<tr>
+						<td>
+						<% _.each(claim.issuer, function(issuer) { %>
+							<span class="label label-info"><%- issuer %></span>
+						<% }); %>
+						</td>
+						<td>
+							<%- claim.friendlyName ? claim.friendlyName : claim.name %>
+						</td>
+						<td>
+							<%- JSON.stringify(claim.value) %>
+						</td>
+					</tr>
+					<% }); %>
+				</tbody>
+
+			</table>
+		</div>
    </td>
 
     <td>
-		<%- name %>
+		<div class="scope-list"></div>
     </td>
-
-	<td>
-		<%- value %>
-	</td>
 
     <td>
 		<div class="btn-group pull-right">

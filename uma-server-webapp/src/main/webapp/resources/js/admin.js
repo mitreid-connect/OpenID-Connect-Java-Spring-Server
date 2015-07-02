@@ -1109,16 +1109,14 @@ var AppRouter = Backbone.Router.extend({
     	var rs = this.resourceSetList.get(rsid);
     	if (rs == null) {
     		// need to load it directly
-    		var claims = new ClaimCollection();
+    		var policy = new PolicyCollection([], {rsid: rsid});
     	} else {
     		// the resource set is loaded, preload the claims
-    		var claims = new ClaimCollection(rs.get('claimsRequired'));
-    		claims.isFetched = true;
+    		var policy = new PolicyCollection(rs.get('policies'), {rsid: rsid});
+    		policy.isFetched = true;
     	}
-    	// set the URL for the collection
-    	claims.url = 'api/claims/' + rsid;
     	
-    	var view = new ClaimListView({model: claims, rs: rs});
+    	var view = new PolicyListView({model: policy, rs: rs});
     	
     	view.load(function() {
     		$('#content').html(view.render().el);
