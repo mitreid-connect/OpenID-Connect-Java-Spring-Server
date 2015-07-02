@@ -241,17 +241,20 @@ var PolicyListView = Backbone.View.extend({
 	},
 	
 	load:function(callback) {
-    	if (this.model.isFetched) {
+    	if (this.model.isFetched &&
+    			this.options.systemScopeList.isFetched) {
     		callback();
     		return;
     	}
 
     	$('#loadingbox').sheet('show');
     	$('#loading').html(
-                '<span class="label" id="loading-policies">' + $.t('policy.loading-policies') + '</span> '
+                '<span class="label" id="loading-policies">' + $.t('policy.loading-policies') + '</span> ' + 
+                '<span class="label" id="loading-scopes">' + $.t("common.scopes") + '</span> '
     			);
 
-    	$.when(this.model.fetchIfNeeded({success:function(e) {$('#loading-policies').addClass('label-success');}}))
+    	$.when(this.model.fetchIfNeeded({success:function(e) {$('#loading-policies').addClass('label-success');}}),
+    			this.options.systemScopeList.fetchIfNeeded({success:function(e) {$('#loading-scopes').addClass('label-success');}}))
     			.done(function() {
     	    		$('#loadingbox').sheet('hide');
     	    		callback();
@@ -353,7 +356,7 @@ var PolicyListView = Backbone.View.extend({
 		
 		_.each(this.model.models, function (policy) {
 			
-			var view = new PolicyView({model: policy});
+			var view = new PolicyView({model: policy, systemScopeList: _self.options.systemScopeList});
 			view.parentView = _self;
 			$('#policy-table', this.el).append(view.render().el);
 			
@@ -375,6 +378,11 @@ var PolicyView = Backbone.View.extend({
 		if (!this.template) {
 			this.template = _.template($('#tmpl-policy').html());
 		}
+
+		if (!this.scopeTemplate) {
+        	this.scopeTemplate = _.template($('#tmpl-scope-list').html());
+        }
+
 	},
 	
 	events:{
@@ -384,17 +392,37 @@ var PolicyView = Backbone.View.extend({
 	removePolicy:function(e) {
 		e.preventDefault();
 		
-		var _self = this;
-		
-		this.model.collection.remove(this.model);
-        _self.$el.fadeTo("fast", 0.00, function () { //fade
-            $(this).slideUp("fast", function () { //slide up
-                $(this).remove(); //then remove from the DOM
-                _self.parentView.togglePlaceholder();
-            });
-        });
-		
-		
+		if (confirm($.t('policy.policy-table.policy-confirm'))) {
+            var _self = this;
+	        this.model.destroy({
+	            success:function () {
+	                _self.$el.fadeTo("fast", 0.00, function () { //fade
+	                    $(this).slideUp("fast", function () { //slide up
+	                        $(this).remove(); //then remove from the DOM
+	                        _self.parentView.togglePlaceholder();
+	                    });
+	                });
+	            },
+	            error:function (error, response) {
+	        		console.log("An error occurred when deleting a client");
+	
+					//Pull out the response text.
+					var responseJson = JSON.parse(response.responseText);
+	        		
+	        		//Display an alert with an error message
+					$('#modalAlert div.modal-header').html(responseJson.error);
+	        		$('#modalAlert div.modal-body').html(responseJson.error_description);
+	        		
+	    			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
+	    				 "backdrop" : "static",
+	    				 "keyboard" : true,
+	    				 "show" : true // ensure the modal is shown immediately
+	    			 });
+	        	}
+	        });
+	
+	        _self.parentView.delegateEvents();
+		}
 	},
 	
 	render:function (eventName) {
@@ -402,7 +430,9 @@ var PolicyView = Backbone.View.extend({
 		
 		this.$el.html(this.template(json));
 		
-		$(this.el).i18n();
+        $('.scope-list', this.el).html(this.scopeTemplate({scopes: this.model.get('scopes'), systemScopes: this.options.systemScopeList}));
+
+        //$(this.el).i18n();
 		return this;		
 	}
 	

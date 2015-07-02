@@ -503,8 +503,10 @@ var AppRouter = Backbone.Router.extend({
         "user/approved":"approvedSites",
         "user/tokens":"tokens",
         "user/profile":"profile",
+
         "user/policy":"policy",
-        "user/policy/:rsid":"editPolicy",
+        "user/policy/:rsid":"editPolicies",
+        "user/policy/:rsid/:pid":"editPolicy",
         
         "dev/dynreg":"dynReg",
         "dev/dynreg/new":"newDynReg",
@@ -1096,12 +1098,12 @@ var AppRouter = Backbone.Router.extend({
     	
     },
     
-    editPolicy:function(rsid) {
+    editPolicies:function(rsid) {
     	this.breadCrumbView.collection.reset();
     	this.breadCrumbView.collection.add([
 	        {text:$.t('admin.home'), href:""},
 	        {text:$.t('policy.resource-sets'), href:"manage/#user/policy"},
-	        {text:$.t('policy.edit-policy'), href:"manage/#user/policy/" + rsid}
+	        {text:$.t('policy.edit-policies'), href:"manage/#user/policy/" + rsid}
     	]);
     	
     	this.updateSidebar('user/policy');
@@ -1116,7 +1118,7 @@ var AppRouter = Backbone.Router.extend({
     		policy.isFetched = true;
     	}
     	
-    	var view = new PolicyListView({model: policy, rs: rs});
+    	var view = new PolicyListView({model: policy, rs: rs, systemScopeList: this.systemScopeList});
     	
     	view.load(function() {
     		$('#content').html(view.render().el);
