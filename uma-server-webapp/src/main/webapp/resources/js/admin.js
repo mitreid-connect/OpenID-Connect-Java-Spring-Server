@@ -1109,13 +1109,15 @@ var AppRouter = Backbone.Router.extend({
     	this.updateSidebar('user/policy');
     	
     	var rs = this.resourceSetList.get(rsid);
+    	var policies = null;
     	if (rs == null) {
     		// need to load it directly
-    		var policies = new PolicyCollection([], {rsid: rsid});
+    		policies = new PolicyCollection([], {rsid: rsid});
+    		rs = new ResourceSetModel({id: rsid});
     	} else {
     		// the resource set is loaded, preload the claims
-    		var policies = new PolicyCollection(rs.get('policies'), {rsid: rsid});
-    		policy.isFetched = true;
+    		policies = new PolicyCollection(rs.get('policies'), {rsid: rsid});
+    		policies.isFetched = true;
     	}
     	
     	var view = new PolicyListView({model: policies, rs: rs, systemScopeList: this.systemScopeList});

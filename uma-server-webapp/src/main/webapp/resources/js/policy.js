@@ -16,17 +16,17 @@
  *******************************************************************************/
 
 var ResourceSetModel = Backbone.Model.extend({
-	
+	urlRoot: 'api/resourceset'
 });
 
 var ResourceSetCollection = Backbone.Collection.extend({
 	model: ResourceSetModel,
-	url: 'api/policy'
+	url: 'api/resourceset'
 });
 
 var PolicyModel = Backbone.Model.extend({
 	urlRoot: function() {
-		return 'api/policy/' + this.options.rsid + '/';
+		return 'api/resourceset/' + this.options.rsid + '/policy/';
 	},
 	initialize: function(model, options) {
 		this.options = options;
@@ -36,7 +36,7 @@ var PolicyModel = Backbone.Model.extend({
 var PolicyCollection = Backbone.Collection.extend({
 	model: PolicyModel,
 	url: function() {
-		return 'api/policy/' + this.options.rsid;
+		return 'api/resourceset/' + this.options.rsid + '/policy/';
 	},
 	initialize: function(models, options) {
 		this.options = options;
@@ -352,6 +352,11 @@ var PolicyView = Backbone.View.extend({
 			this.template = _.template($('#tmpl-policy').html());
 		}
 
+		if (!this.scopeTemplate) {
+        	this.scopeTemplate = _.template($('#tmpl-scope-list').html());
+        }
+
+
 	},
 	
 	events:{
@@ -448,8 +453,9 @@ var PolicyFormView = Backbone.View.extend({
 
     render:function (eventName) {
 		var json = this.model.toJSON();
+		var rs = this.options.rs.toJSON();
 		
-		this.$el.html(this.template({policy: json, rs: this.options.rs}));
+		this.$el.html(this.template({policy: json, rs: rs}));
 		
 		return this;
 	}

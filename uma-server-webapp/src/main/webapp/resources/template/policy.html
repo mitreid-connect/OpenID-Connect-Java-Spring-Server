@@ -163,6 +163,7 @@
             <div class="control-group" id="scopes">
                 <label class="control-label" data-i18n="common.scope">Scopes</label>
                 <div class="controls">
+					<% console.log(rs); console.log(policy); %>
 					<% _.each(rs.scopes, function(scope) { %>
                     <div>
                         <input type="checkbox"
