@@ -481,7 +481,12 @@ var PolicyFormView = Backbone.View.extend({
 			this.model.save({}, {
 				success:function() {
 					app.systemScopeList.add(_self.model);
-					app.navigate('user/policy/' + _self.options.rs.get('id'), {trigger: true});
+					
+					// refresh the associated RS
+					_self.options.rs.fetch({success: function() {
+						app.navigate('user/policy/' + _self.options.rs.get('id'), {trigger: true});
+					}});
+					
 				},
 				error:function(error, response) {
 					
