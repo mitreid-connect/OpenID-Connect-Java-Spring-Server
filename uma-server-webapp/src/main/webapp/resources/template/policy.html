@@ -162,14 +162,13 @@
 		<fieldset>
 
             <div class="control-group" id="scopes">
-                <label class="control-label" data-i18n="common.scope">Scopes</label>
+                <label class="control-label" data-i18n="common.scope">Scopes:</label>
                 <div class="controls">
-					<% console.log(rs); console.log(policy); %>
 					<% _.each(rs.scopes, function(scope) { %>
                     <div>
-                        <input type="checkbox"
-                            <%-($.inArray(scope, policy.scopes) > -1 ? 'checked' : '')%>>
-                        <label class="checkbox"><%- scope %></label>
+                        <input type="checkbox" id="scope-<%- scope %>"
+                            <%-($.inArray(scope, policy.scopes) > -1 ? 'checked' : '')%> value="<%- scope %>">
+                        <label for="scope-<%- scope %>" class="checkbox"><%- scope %></label>
                     </div>
 					<% }); %>
                 </div>

@@ -419,7 +419,7 @@ var PolicyView = Backbone.View.extend({
 
 
 var PolicyFormView = Backbone.View.extend({
-	tagName: 'span',
+	tagName: 'div',
 	
 	initialize:function(options) {
 		this.options = options;
@@ -429,6 +429,10 @@ var PolicyFormView = Backbone.View.extend({
 		}
 		
         this.scopeCollection = new Backbone.Collection();
+	},
+	
+	events:{
+		'click .btn-save': 'savePolicy'
 	},
 	
 	load:function(callback) {
@@ -455,6 +459,46 @@ var PolicyFormView = Backbone.View.extend({
     			});    	
     },
 
+    savePolicy:function(e) {
+    	e.preventDefault();
+    	
+    	// get all the scopes that are checked
+    	var scopes = $('#scopes input[type="checkbox"]:checked').map(function(idx, elem) { return $(elem).val(); }).get();
+    	
+    	var valid = this.model.set({
+    		scopes: scopes
+    	});
+    	
+		if (valid) {
+			
+			var _self = this;
+			this.model.save({}, {
+				success:function() {
+					app.systemScopeList.add(_self.model);
+					app.navigate('user/policy/' + _self.options.rs.get('id'), {trigger: true});
+				},
+				error:function(error, response) {
+					
+					//Pull out the response text.
+					var responseJson = JSON.parse(response.responseText);
+	    			
+    				//Display an alert with an error message
+    				$('#modalAlert div.modal-header').html(responseJson.error);
+            		$('#modalAlert div.modal-body').html(responseJson.error_description);
+            		
+        			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
+        				 "backdrop" : "static",
+        				 "keyboard" : true,
+        				 "show" : true // ensure the modal is shown immediately
+        			 });
+	    		}
+			});
+		}
+
+		return false;
+    	
+    },
+    
     render:function (eventName) {
 		var json = this.model.toJSON();
 		var rs = this.options.rs.toJSON();

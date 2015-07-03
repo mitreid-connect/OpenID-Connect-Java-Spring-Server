@@ -1114,6 +1114,7 @@ var AppRouter = Backbone.Router.extend({
     		// need to load it directly
     		policies = new PolicyCollection([], {rsid: rsid});
     		rs = new ResourceSetModel({id: rsid});
+    		this.resourceSetList.add(rs); // it will be loaded below, don't need to load it again in the future
     	} else {
     		// the resource set is loaded, preload the claims
     		policies = new PolicyCollection(rs.get('policies'), {rsid: rsid});
@@ -1148,8 +1149,9 @@ var AppRouter = Backbone.Router.extend({
     	var policy = null;
     	if (rs == null) {
     		// need to load it directly
-    		rs = new ResourceSetModel({id: rsid});
     		policy = new PolicyModel({id: pid}, {rsid: rsid});
+    		rs = new ResourceSetModel({id: rsid});
+    		this.resourceSetList.add(rs); // it will be loaded below, don't need to load it again in the future
     	} else {
     		// the resource set is loaded, preload the claims
     		_.each(rs.get('policies'), function(p) {
