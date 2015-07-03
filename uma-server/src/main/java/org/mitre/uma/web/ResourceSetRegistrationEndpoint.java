@@ -122,33 +122,6 @@ public class ResourceSetRegistrationEndpoint {
 			return JsonErrorView.VIEWNAME;
 		}
 
-		////
-		//// TEMP
-		////
-		
-		Set<Claim> claims = new HashSet<>();
-		Claim e = new Claim();
-		e.setIssuer(Sets.newHashSet("https://healthauth.org/"));
-		e.setName("email");
-		e.setValue(new JsonPrimitive("alice@healthauth.org"));
-		claims.add(e);
-		
-		Claim ev = new Claim();
-		ev.setIssuer(Sets.newHashSet("https://healthauth.org/"));
-		ev.setName("email_verified");
-		ev.setValue(new JsonPrimitive(true));
-		claims.add(ev);
-
-		Policy reqired = new Policy();
-		reqired.setScopes(Sets.newHashSet("foo", "batman"));
-		reqired.setClaimsRequired(claims);
-		
-		rs.setPolicies(Sets.newHashSet(reqired));
-		////
-		//// END TEMP
-		////
-		
-		
 		ResourceSet saved = resourceSetService.saveNew(rs);
 		
 		m.addAttribute(HttpCodeView.CODE, HttpStatus.CREATED);
