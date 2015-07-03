@@ -270,6 +270,7 @@ var PolicyListView = Backbone.View.extend({
     },
 	
     events:{
+    	'click .btn-add':'addPolicy',
 		'click .btn-cancel':'cancel'
     },
 
@@ -288,6 +289,11 @@ var PolicyListView = Backbone.View.extend({
 			$('#policy-table', this.el).hide();
 			$('#policy-table-empty', this.el).show();
 		}
+	},
+	
+	addPolicy:function(e) {
+		e.preventDefault();
+    	app.navigate('user/policy/' + this.options.rs.get('id') +'/new', {trigger: true});
 	},
 	
 	render:function (eventName) {
@@ -442,8 +448,12 @@ var PolicyFormView = Backbone.View.extend({
     	
         var base = $('base').attr('href');
     	$.getJSON(base + '/api/emailsearch?' + $.param({'identifier': email}), function(data) {
-    		
-    		_self.model.set({
+
+    		// grab the current state of the scopes checkboxes just in case
+        	var scopes = $('#scopes input[type="checkbox"]:checked').map(function(idx, elem) { return $(elem).val(); }).get();
+        	
+        	_self.model.set({
+        		scopes: scopes,
     			claimsRequired: data
     		}, {trigger: false});
 

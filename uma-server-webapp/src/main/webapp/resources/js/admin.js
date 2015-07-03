@@ -506,6 +506,7 @@ var AppRouter = Backbone.Router.extend({
 
         "user/policy":"policy",
         "user/policy/:rsid":"editPolicies",
+        "user/policy/:rsid/new":"newPolicy",
         "user/policy/:rsid/:pid":"editPolicy",
         
         "dev/dynreg":"dynReg",
@@ -1131,7 +1132,31 @@ var AppRouter = Backbone.Router.extend({
     },
     
     newPolicy:function(rsid) {
+    	this.breadCrumbView.collection.reset();
+    	this.breadCrumbView.collection.add([
+	        {text:$.t('admin.home'), href:""},
+	        {text:$.t('policy.resource-sets'), href:"manage/#user/policy"},
+	        {text:$.t('policy.edit-policies'), href:"manage/#user/policy/" + rsid},
+	        {text:$.t('policy.edit-policy'), href:"manage/#user/policy/" + rsid + "/new"}
+    	]);
     	
+    	this.updateSidebar('user/policy');
+    	
+    	var policy = policy = new PolicyModel({}, {rsid: rsid});
+
+    	var rs = this.resourceSetList.get(rsid);
+    	if (rs == null) {
+    		// need to load it directly
+    		rs = new ResourceSetModel({id: rsid});
+    		this.resourceSetList.add(rs); // it will be loaded below, don't need to load it again in the future
+    	}
+    	
+    	var view = new PolicyFormView({model: policy, rs: rs, systemScopeList: this.systemScopeList});
+    	
+    	view.load(function() {
+    		$('#content').html(view.render().el);
+    		setPageTitle($.t('policy.edit-policy'));
+    	});
     },
     
     editPolicy:function(rsid, pid) {
