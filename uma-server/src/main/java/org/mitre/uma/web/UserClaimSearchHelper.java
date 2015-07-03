@@ -72,31 +72,46 @@ public class UserClaimSearchHelper {
 		UserInfo localUser = userInfoService.getByEmailAddress(email);
 		
 		if (localUser != null) {
-			Map<String, Object> entity = new HashMap<>();
-			entity.put("issuer", ImmutableSet.of(config.getIssuer()));
-			entity.put("name", "email");
-			entity.put("value", localUser.getEmail());
-			
-			m.addAttribute(JsonEntityView.ENTITY, entity);
-			return JsonEntityView.VIEWNAME;
-		}
-		
-		
-		// otherwise do a webfinger lookup
-		IssuerServiceResponse resp = webfingerIssuerService.getIssuer(req);
-		
-		if (resp != null && resp.getIssuer() != null) {
-			// we found an issuer, return that
-			Map<String, Object> entity = new HashMap<>();
-			entity.put("issuer", ImmutableSet.of(resp.getIssuer()));
-			entity.put("name", "email");
-			entity.put("value", email);
-			
-			m.addAttribute(JsonEntityView.ENTITY, entity);
+			Map<String, Object> e = new HashMap<>();
+			e.put("issuer", ImmutableSet.of(config.getIssuer()));
+			e.put("name", "email");
+			e.put("value", localUser.getEmail());
+
+			Map<String, Object> ev = new HashMap<>();
+			ev.put("issuer", ImmutableSet.of(config.getIssuer()));
+			ev.put("name", "email_verified");
+			ev.put("value", localUser.getEmailVerified());
+
+			Map<String, Object> s = new HashMap<>();
+			s.put("issuer", ImmutableSet.of(config.getIssuer()));
+			s.put("name", "sub");
+			s.put("value", localUser.getSub());
+
+			m.addAttribute(JsonEntityView.ENTITY, ImmutableSet.of(e, ev, s));
 			return JsonEntityView.VIEWNAME;
 		} else {
-			m.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
-			return JsonErrorView.VIEWNAME;
+		
+			// otherwise do a webfinger lookup
+			IssuerServiceResponse resp = webfingerIssuerService.getIssuer(req);
+			
+			if (resp != null && resp.getIssuer() != null) {
+				// we found an issuer, return that
+				Map<String, Object> e = new HashMap<>();
+				e.put("issuer", ImmutableSet.of(resp.getIssuer()));
+				e.put("name", "email");
+				e.put("value", email);
+	
+				Map<String, Object> ev = new HashMap<>();
+				ev.put("issuer", ImmutableSet.of(resp.getIssuer()));
+				ev.put("name", "email_verified");
+				ev.put("value", true);
+	
+				m.addAttribute(JsonEntityView.ENTITY, ImmutableSet.of(e, ev));
+				return JsonEntityView.VIEWNAME;
+			} else {
+				m.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
+				return JsonErrorView.VIEWNAME;
+			}
 		}
 	}
 	

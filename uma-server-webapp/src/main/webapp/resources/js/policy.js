@@ -278,43 +278,13 @@ var PolicyListView = Backbone.View.extend({
     	app.navigate('user/policy', {trigger: true});
     },
     
-    addPolicy:function(e) {
-    	e.preventDefault();
-    	
-    	// post to the webfinger helper and get the response back
-    	
-    	var _self = this;
-    	
-    	var email = $('#email', this.el).val();
-    	
-        var base = $('base').attr('href');
-    	$.getJSON(base + '/api/emailsearch?' + $.param({'identifier': email}), function(data) {
-    		
-    		var claim = new ClaimModel(data);
-    		_self.model.add(claim, {'trigger': false});
-    		_self.render();
-    		
-    	}).error(function(jqXHR, textStatus, errorThrown) {
-    		console.log("An error occurred when doing a webfinger lookup", errorThrown);
-    	    
-    		//Display an alert with an error message
-			$('#modalAlert div.modal-header').html($.t('policy.webfinger-error'));
-    		$('#modalAlert div.modal-body').html($.t('policy.webfinger-error-description', {email: email}));
-    		
-			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
-				 "backdrop" : "static",
-				 "keyboard" : true,
-				 "show" : true // ensure the modal is shown immediately
-			 });
-    	});
-    	
-    },
-    
     togglePlaceholder:function() {
 		if (this.model.length > 0) {
+			$('#policy-info', this.el).show();
 			$('#policy-table', this.el).show();
 			$('#policy-table-empty', this.el).hide();
 		} else {
+			$('#policy-info', this.el).hide();
 			$('#policy-table', this.el).hide();
 			$('#policy-table-empty', this.el).show();
 		}
@@ -432,7 +402,9 @@ var PolicyFormView = Backbone.View.extend({
 	},
 	
 	events:{
-		'click .btn-save': 'savePolicy'
+		'click .btn-share': 'addClaim',
+		'click .btn-save': 'savePolicy',
+		'click .btn-cancel': 'cancel'
 	},
 	
 	load:function(callback) {
@@ -459,6 +431,40 @@ var PolicyFormView = Backbone.View.extend({
     			});    	
     },
 
+    addClaim:function(e) {
+    	e.preventDefault();
+    	
+    	// post to the webfinger helper and get the response back
+    	
+    	var _self = this;
+    	
+    	var email = $('#email', this.el).val();
+    	
+        var base = $('base').attr('href');
+    	$.getJSON(base + '/api/emailsearch?' + $.param({'identifier': email}), function(data) {
+    		
+    		_self.model.set({
+    			claimsRequired: data
+    		}, {trigger: false});
+
+    		_self.render();
+    		
+    	}).error(function(jqXHR, textStatus, errorThrown) {
+    		console.log("An error occurred when doing a webfinger lookup", errorThrown);
+    	    
+    		//Display an alert with an error message
+			$('#modalAlert div.modal-header').html($.t('policy.webfinger-error'));
+    		$('#modalAlert div.modal-body').html($.t('policy.webfinger-error-description', {email: email}));
+    		
+			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
+				 "backdrop" : "static",
+				 "keyboard" : true,
+				 "show" : true // ensure the modal is shown immediately
+			 });
+    	});
+    	
+    },
+    
     savePolicy:function(e) {
     	e.preventDefault();
     	
@@ -497,6 +503,11 @@ var PolicyFormView = Backbone.View.extend({
 
 		return false;
     	
+    },
+    
+    cancel:function(e) {
+    	e.preventDefault();
+		app.navigate('user/policy/' + this.options.rs.get('id'), {trigger: true});
     },
     
     render:function (eventName) {
