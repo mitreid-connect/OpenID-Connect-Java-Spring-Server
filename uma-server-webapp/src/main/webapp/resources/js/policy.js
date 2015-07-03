@@ -270,9 +270,7 @@ var PolicyListView = Backbone.View.extend({
     },
 	
     events:{
-		'click .btn-save':'savePolicy',
-		'click .btn-cancel':'cancel',
-		'click #add-email':'addPolicy'
+		'click .btn-cancel':'cancel'
     },
 
     cancel:function(e) {
@@ -329,7 +327,7 @@ var PolicyListView = Backbone.View.extend({
 		
 		_.each(this.model.models, function (policy) {
 			
-			var view = new PolicyView({model: policy, systemScopeList: _self.options.systemScopeList});
+			var view = new PolicyView({model: policy, systemScopeList: _self.options.systemScopeList, rs: _self.options.rs});
 			view.parentView = _self;
 			$('#policy-table', this.el).append(view.render().el);
 			
@@ -360,7 +358,13 @@ var PolicyView = Backbone.View.extend({
 	},
 	
 	events:{
+		'click .btn-edit':'editPolicy',
 		'click .btn-remove':'removePolicy'
+	},
+	
+	editPolicy:function(e) {
+		e.preventDefault();
+		app.navigate('user/policy/' + this.options.rs.get("id") + '/' + this.model.get('id'), {trigger: true});
 	},
 	
 	removePolicy:function(e) {
