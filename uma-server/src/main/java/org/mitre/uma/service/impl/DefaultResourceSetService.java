@@ -103,6 +103,10 @@ public class DefaultResourceSetService implements ResourceSetService {
 	}
 	
 	private boolean checkScopeConsistency(ResourceSet rs) {
+		if (rs.getPolicies() == null) {
+			// nothing to check, no problem!
+			return true;
+		}
 		for (Policy policy : rs.getPolicies()) {
 			if (!rs.getScopes().containsAll(policy.getScopes())) {
 				return false;
