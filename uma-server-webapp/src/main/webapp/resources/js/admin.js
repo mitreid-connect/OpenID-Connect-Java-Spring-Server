@@ -1137,7 +1137,7 @@ var AppRouter = Backbone.Router.extend({
 	        {text:$.t('admin.home'), href:""},
 	        {text:$.t('policy.resource-sets'), href:"manage/#user/policy"},
 	        {text:$.t('policy.edit-policies'), href:"manage/#user/policy/" + rsid},
-	        {text:$.t('policy.edit-policy'), href:"manage/#user/policy/" + rsid + "/new"}
+	        {text:$.t('policy.new-policy'), href:"manage/#user/policy/" + rsid + "/new"}
     	]);
     	
     	this.updateSidebar('user/policy');

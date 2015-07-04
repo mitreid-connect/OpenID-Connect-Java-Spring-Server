@@ -183,7 +183,7 @@ var ResourceSetView = Backbone.View.extend({
 	deleteResourceSet:function(e) {
     	e.preventDefault();
 
-        if (confirm($.t('policy.policy-table.confirm'))) {
+        if (confirm($.t('policy.rs-table.confirm'))) {
             var _self = this;
 
             this.model.destroy({
@@ -310,7 +310,7 @@ var PolicyListView = Backbone.View.extend({
 		}, this);
 
 		this.togglePlaceholder();
-       // $(this.el).i18n();
+       $(this.el).i18n();
 		return this;
 	}
 });
@@ -346,7 +346,7 @@ var PolicyView = Backbone.View.extend({
 	removePolicy:function(e) {
 		e.preventDefault();
 		
-		if (confirm($.t('policy.policy-table.policy-confirm'))) {
+		if (confirm($.t('policy.policy-table.confirm'))) {
             var _self = this;
 	        this.model.destroy({
 	            success:function () {
@@ -386,7 +386,7 @@ var PolicyView = Backbone.View.extend({
 		
         $('.scope-list', this.el).html(this.scopeTemplate({scopes: this.model.get('scopes'), systemScopes: this.options.systemScopeList}));
 
-        //$(this.el).i18n();
+        $(this.el).i18n();
 		return this;		
 	}
 	
@@ -423,7 +423,7 @@ var PolicyFormView = Backbone.View.extend({
 
     	$('#loadingbox').sheet('show');
     	$('#loading').html(
-                '<span class="label" id="loading-policies">' + $.t('policy.loading-policies') + '</span> ' + 
+                '<span class="label" id="loading-policies">' + $.t('policy.loading-policy') + '</span> ' + 
                 '<span class="label" id="loading-rs">' + $.t('policy.loading-rs') + '</span> ' + 
                 '<span class="label" id="loading-scopes">' + $.t("common.scopes") + '</span> '
     			);
@@ -531,6 +531,8 @@ var PolicyFormView = Backbone.View.extend({
 		
 		this.$el.html(this.template({policy: json, rs: rs}));
 		
+        $(this.el).i18n();
+
 		return this;
 	}
 });
