@@ -168,7 +168,7 @@ CREATE TABLE IF NOT EXISTS client_details (
 	created_at TIMESTAMP,
 	initiate_login_uri VARCHAR(2048),
 	clear_access_tokens_on_refresh BOOLEAN DEFAULT true NOT NULL,
-
+	
 	UNIQUE (client_id)
 );
 
@@ -313,8 +313,27 @@ CREATE TABLE IF NOT EXISTS claim (
 	friendly_name VARCHAR(1024),
 	claim_type VARCHAR(1024),
 	claim_value VARCHAR(1024),
-	resource_set_id BIGINT,
-	permission_ticket_id BIGINT
+);
+
+CREATE TABLE IF NOT EXISTS claim_to_policy (
+	policy_id BIGINT NOT NULL,
+	claim_id BIGINT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS claim_to_permission_ticket (
+	permission_ticket_id BIGINT NOT NULL,
+	claim_id BIGINT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS policy (
+	id SERIAL PRIMARY KEY,
+	name VARCHAR(1024),
+	resource_set_id BIGINT
+);
+
+CREATE TABLE IF NOT EXISTS policy_scope (
+	owner_id BIGINT NOT NULL,
+	scope VARCHAR(256) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS claim_token_format (
