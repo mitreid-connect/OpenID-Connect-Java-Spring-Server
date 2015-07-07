@@ -16,6 +16,7 @@
  *******************************************************************************/
 package org.mitre.oauth2.service.impl;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.Collection;
@@ -33,17 +34,20 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriUtils;
 
 import com.google.common.base.Strings;
 
 /**
- * Shim layer to convert a ClientDetails service into a UserDetails service
+ * Loads client details based on URI encoding as passed in from basic auth.
  * 
+ *  Should only get called if non-encoded provider fails.
+ *  
  * @author AANGANES
  *
  */
-@Service("clientUserDetailsService")
-public class DefaultClientUserDetailsService implements UserDetailsService {
+@Service("uriEncodedClientUserDetailsService")
+public class UriEncodedClientUserDetailsService implements UserDetailsService {
 
 	private static GrantedAuthority ROLE_CLIENT = new SimpleGrantedAuthority("ROLE_CLIENT");
 
@@ -54,11 +58,13 @@ public class DefaultClientUserDetailsService implements UserDetailsService {
 	public UserDetails loadUserByUsername(String clientId) throws  UsernameNotFoundException {
 
 		try {
-			ClientDetailsEntity client = clientDetailsService.loadClientByClientId(clientId);
+			String decodedClientId = UriUtils.decode(clientId, "UTF-8");
+			
+			ClientDetailsEntity client = clientDetailsService.loadClientByClientId(decodedClientId);
 	
 			if (client != null) {
 	
-				String password = Strings.nullToEmpty(client.getClientSecret());
+				String encodedPassword = UriUtils.encodeQueryParam(Strings.nullToEmpty(client.getClientSecret()), "UTF-8");
 	
 				if (client.getTokenEndpointAuthMethod() != null &&
 						(client.getTokenEndpointAuthMethod().equals(AuthMethod.PRIVATE_KEY) ||
@@ -67,7 +73,7 @@ public class DefaultClientUserDetailsService implements UserDetailsService {
 					// Issue a random password each time to prevent password auth from being used (or skipped)
 					// for private key or shared key clients, see #715
 	
-					password = new BigInteger(512, new SecureRandom()).toString(16);
+					encodedPassword = new BigInteger(512, new SecureRandom()).toString(16);
 				}
 	
 				boolean enabled = true;
@@ -77,11 +83,11 @@ public class DefaultClientUserDetailsService implements UserDetailsService {
 				Collection<GrantedAuthority> authorities = new HashSet<>(client.getAuthorities());
 				authorities.add(ROLE_CLIENT);
 	
-				return new User(clientId, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
+				return new User(decodedClientId, encodedPassword, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
 			} else {
 				throw new UsernameNotFoundException("Client not found: " + clientId);
 			}
-		} catch (InvalidClientException e) {
+		} catch (UnsupportedEncodingException | InvalidClientException e) {
 			throw new UsernameNotFoundException("Client not found: " + clientId);
 		}
 

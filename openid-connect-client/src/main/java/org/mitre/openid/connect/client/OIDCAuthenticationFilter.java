@@ -58,6 +58,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriUtils;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
@@ -332,9 +333,9 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 				protected ClientHttpRequest createRequest(URI url, HttpMethod method) throws IOException {
 					ClientHttpRequest httpRequest = super.createRequest(url, method);
 					httpRequest.getHeaders().add("Authorization",
-							String.format("Basic %s", Base64.encode(String.format("%s:%s", clientConfig.getClientId(), clientConfig.getClientSecret())) ));
-
-
+							String.format("Basic %s", Base64.encode(String.format("%s:%s", 
+									UriUtils.encodePathSegment(clientConfig.getClientId(), "UTF-8"), 
+									UriUtils.encodePathSegment(clientConfig.getClientSecret(), "UTF-8")))));
 
 					return httpRequest;
 				}

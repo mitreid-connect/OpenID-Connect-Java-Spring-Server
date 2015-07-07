@@ -188,6 +188,7 @@
 
 	<security:authentication-manager id="clientAuthenticationManager">
 		<security:authentication-provider user-service-ref="clientUserDetailsService" />
+		<security:authentication-provider user-service-ref="uriEncodedClientUserDetailsService" />
 	</security:authentication-manager>
 
 	<security:authentication-manager id="clientAssertionAuthenticationManager">
