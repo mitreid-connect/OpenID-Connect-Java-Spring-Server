@@ -2,7 +2,22 @@
 <%@ taglib prefix="o" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="security" uri="http://www.springframework.org/security/tags"%>
+<%@page import="org.springframework.security.oauth2.common.exceptions.OAuth2Exception"%>
+<% 
 
+if (request.getAttribute("error") != null && request.getAttribute("error") instanceof OAuth2Exception) {
+	request.setAttribute("errorCode", ((OAuth2Exception)request.getAttribute("error")).getOAuth2ErrorCode());
+	request.setAttribute("message", ((OAuth2Exception)request.getAttribute("error")).getMessage());
+} else if (request.getAttribute("javax.servlet.error.exception") != null) {
+	Throwable t = (Throwable)request.getAttribute("javax.servlet.error.exception");
+	request.setAttribute("errorCode",  t.getClass().getSimpleName() + " (" + request.getAttribute("javax.servlet.error.status_code") + ")");
+	request.setAttribute("message", t.getMessage());
+} else {
+	request.setAttribute("errorCode", "Server error");
+	request.setAttribute("message", "See the logs for details");
+}
+
+%>
 <spring:message code="error.title" var="title"/>
 <o:header title="${title}" />
 <o:topbar pageName="Error" />
@@ -11,11 +26,11 @@
 		<div class="offset1 span10">
 			<div class="hero-unit">
 				<h1><span><spring:message code="error.header"/></span>
-					<span class="text-error"><c:out value="${error.getOAuth2ErrorCode()}" /></span>
+					<span class="text-error"><c:out value="${ errorCode }" /></span>
 				</h1>
 				<p>
 					<spring:message code="error.message"/>
-					<blockquote class="text-error"><b><c:out value="${error.message}" /></b></blockquote>
+					<blockquote class="text-error"><b><c:out value="${ message }" /></b></blockquote>
                 </p>
 				
 			</div>
