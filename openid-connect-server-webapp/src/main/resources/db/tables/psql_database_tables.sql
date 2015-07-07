@@ -312,7 +312,7 @@ CREATE TABLE IF NOT EXISTS claim (
 	name VARCHAR(256),
 	friendly_name VARCHAR(1024),
 	claim_type VARCHAR(1024),
-	claim_value VARCHAR(1024),
+	claim_value VARCHAR(1024)
 );
 
 CREATE TABLE IF NOT EXISTS claim_to_policy (
