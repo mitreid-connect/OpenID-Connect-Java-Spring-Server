@@ -85,10 +85,7 @@ public class DynamicRegistrationClientConfigurationService implements ClientConf
 			}
 
 			return clients.get(issuer);
-		} catch (UncheckedExecutionException ue) {
-			logger.warn("Unable to get client configuration", ue);
-			return null;
-		} catch (ExecutionException e) {
+		} catch (UncheckedExecutionException | ExecutionException e) {
 			logger.warn("Unable to get client configuration", e);
 			return null;
 		}
