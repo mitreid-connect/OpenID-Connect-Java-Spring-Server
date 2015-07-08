@@ -22,16 +22,7 @@
 		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> <span data-i18n="common.refresh">Refresh</span></button>
     </div>
 
-	<div class="tabbable">
-
- 		<ul class="nav nav-tabs">
-			<li class="active"><a data-target="#grant-approved-tab" data-toggle="tab" href="#"><span data-i18n="grant.grant-table.approved-sites">Approved Sites</span> <span class="label label-info" id="approvde-site-count">?</span></a></li>
-			<li><a data-target="#grant-whitelist-tab" data-toggle="tab" href="#"><span data-i18n="grant.grant-table.whitelisted-sites">Whitelisted Sites</span> <span class="label label-info" id="whitelist-count">?</span></a></li>
-		</ul>
-
-	<div class="tab-content">
-
-	<div class="tab-pane active" id="grant-approved-tab">
+	<div id="grant-approved-tab">
 
 	<p data-i18n="grant.grant-table.text">These are sites you have approved manually. If the same site asks for the same access in the future, it will
 		be granted without prompting.</p>
@@ -52,34 +43,6 @@
         <tbody>
         </tbody>
     </table>
-
-	</div>
-
-	<div class="tab-pane" id="grant-whitelist-tab">
-	
-	<p data-i18n="grant.grant-table.pre-approved">These are sites that have been pre-approved by an administrator.</p>
-	<p class="text-warning" data-i18n="[html]grant.grant-table.whitelist-note"><b>NOTE:</b> If you revoke them here, they will automatically be re-approved on your next visit wthout prompting.</p>
-
-	<div id="grant-whitelist-table-empty" class="alert alert-info" data-i18n="grant.grant-table.no-whitelisted">
-		You have not accessed any whitelisted sites.
-	</div>
-
-    <table id="grant-whitelist-table" class="table table-hover table-striped">
-        <thead>
-        <tr>
-			<th></th>
-            <th data-i18n="grant.grant-table.application">Application</th>
-			<th><i class="icon-time"></i></th>
-            <th><i class="icon-edit"></i></th>
-        </tr>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>
-
-	</div>
-
-	</div>
 
 	</div>
 

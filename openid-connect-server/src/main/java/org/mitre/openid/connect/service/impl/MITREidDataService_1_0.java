@@ -493,7 +493,6 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 	}
 
 	Map<Long, Long> grantOldToNewIdMap = new HashMap<>();
-	Map<Long, Long> grantToWhitelistedSiteRefs = new HashMap<>();
 	Map<Long, Set<Long>> grantToAccessTokensRefs = new HashMap<>();
 
 	/**
@@ -553,7 +552,7 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 			Long newId = approvedSiteRepository.save(site).getId();
 			grantOldToNewIdMap.put(currentId, newId);
 			if (whitelistedSiteId != null) {
-				grantToWhitelistedSiteRefs.put(currentId, whitelistedSiteId);
+				logger.debug("Ignoring whitelisted site marker on approved site.");
 			}
 			if (tokenIds != null) {
 				grantToAccessTokensRefs.put(currentId, tokenIds);
@@ -894,16 +893,6 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 			tokenRepository.saveAccessToken(accessToken);
 		}
 		accessTokenToIdTokenRefs.clear();
-		for (Long oldGrantId : grantToWhitelistedSiteRefs.keySet()) {
-			Long oldWhitelistedSiteId = grantToWhitelistedSiteRefs.get(oldGrantId);
-			Long newWhitelistedSiteId = whitelistedSiteOldToNewIdMap.get(oldWhitelistedSiteId);
-			WhitelistedSite wlSite = wlSiteRepository.getById(newWhitelistedSiteId);
-			Long newGrantId = grantOldToNewIdMap.get(oldGrantId);
-			ApprovedSite approvedSite = approvedSiteRepository.getById(newGrantId);
-			approvedSite.setWhitelistedSite(wlSite);
-			approvedSiteRepository.save(approvedSite);
-		}
-		grantToWhitelistedSiteRefs.clear();
 		whitelistedSiteOldToNewIdMap.clear();
 		for (Long oldGrantId : grantToAccessTokensRefs.keySet()) {
 			Set<Long> oldAccessTokenIds = grantToAccessTokensRefs.get(oldGrantId);

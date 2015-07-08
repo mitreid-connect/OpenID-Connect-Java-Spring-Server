@@ -175,11 +175,6 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 			if (!alreadyApproved) {
 				WhitelistedSite ws = whitelistedSiteService.getByClientId(clientId);
 				if (ws != null && systemScopes.scopesMatch(ws.getAllowedScopes(), authorizationRequest.getScope())) {
-
-					//Create an approved site
-					ApprovedSite newSite = approvedSiteService.createApprovedSite(clientId, userId, null, ws.getAllowedScopes(), ws);
-					String newSiteId = newSite.getId().toString();
-					authorizationRequest.getExtensions().put(APPROVED_SITE, newSiteId);
 					authorizationRequest.setApproved(true);
 
 					setAuthTime(authorizationRequest);
@@ -253,7 +248,7 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 					timeout = cal.getTime();
 				}
 
-				ApprovedSite newSite = approvedSiteService.createApprovedSite(clientId, userId, timeout, allowedScopes, null);
+				ApprovedSite newSite = approvedSiteService.createApprovedSite(clientId, userId, timeout, allowedScopes);
 				String newSiteId = newSite.getId().toString();
 				authorizationRequest.getExtensions().put(APPROVED_SITE, newSiteId);
 			}

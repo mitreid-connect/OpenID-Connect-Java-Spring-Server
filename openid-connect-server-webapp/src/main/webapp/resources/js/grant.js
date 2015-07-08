@@ -70,7 +70,6 @@ var ApprovedSiteListView = Backbone.View.extend({
 		$(this.el).html($('#tmpl-grant-table').html());
 		
 		var approvedSiteCount = 0;
-		var whitelistCount = 0;
 		
 		var _self = this;
 		
@@ -80,17 +79,10 @@ var ApprovedSiteListView = Backbone.View.extend({
 			
 			if (client != null) {
 				
-				if (approvedSite.get('whitelistedSite') != null) {
-					var view = new ApprovedSiteView({model: approvedSite, client: client, systemScopeList: this.options.systemScopeList});
-					view.parentView = _self;
-					$('#grant-whitelist-table', this.el).append(view.render().el);
-					whitelistCount = whitelistCount + 1;
-				} else {
-					var view = new ApprovedSiteView({model: approvedSite, client: client, systemScopeList: this.options.systemScopeList});
-					view.parentView = _self;
-					$('#grant-table', this.el).append(view.render().el);
-					approvedSiteCount = approvedSiteCount + 1;
-				}
+				var view = new ApprovedSiteView({model: approvedSite, client: client, systemScopeList: this.options.systemScopeList});
+				view.parentView = _self;
+				$('#grant-table', this.el).append(view.render().el);
+				approvedSiteCount = approvedSiteCount + 1;
 				
 			}
 			
@@ -102,35 +94,14 @@ var ApprovedSiteListView = Backbone.View.extend({
 	},
 	
 	togglePlaceholder:function() {
-		// count the whitelisted and non-whitelisted entries
-		var wl = 0;
-		var gr = 0;
-		for (var i = 0; i < this.model.length; i++) {
-			if (this.model.at(i).get('whitelistedSite') != null) {
-				wl += 1;
-			} else {
-				gr += 1;
-			}
-		}
-		
-		if (wl > 0) {
-			$('#grant-whitelist-table', this.el).show();
-			$('#grant-whitelist-table-empty', this.el).hide();
-		} else {
-			$('#grant-whitelist-table', this.el).hide();
-			$('#grant-whitelist-table-empty', this.el).show();
-		}
-		if (gr > 0) {
+		// count entries
+		if (this.model.length > 0) {
 			$('#grant-table', this.el).show();
 			$('#grant-table-empty', this.el).hide();
 		} else {
 			$('#grant-table', this.el).hide();
 			$('#grant-table-empty', this.el).show();
 		}
-		
-		$('#approvde-site-count', this.el).html(gr);
-		$('#whitelist-count', this.el).html(wl);
-	
 		
 	},
 	
@@ -231,7 +202,6 @@ var ApprovedSiteView = Backbone.View.extend({
         $('.client-more-info-block', this.el).html(this.moreInfoTemplate({client: this.options.client.toJSON()}));
         
         this.$('.dynamically-registered').tooltip({title: $.t('grant.grant-table.dynamically-registered')});
-        this.$('.whitelisted-site').tooltip({title: $.t('grant.grant-table.whitelisted-site')});
         this.$('.tokens').tooltip({title: $.t('grant.grant-table.active-tokens')});
         $(this.el).i18n();
 		return this;

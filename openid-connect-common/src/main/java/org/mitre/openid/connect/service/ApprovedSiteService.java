@@ -21,7 +21,6 @@ import java.util.Date;
 import java.util.Set;
 
 import org.mitre.openid.connect.model.ApprovedSite;
-import org.mitre.openid.connect.model.WhitelistedSite;
 import org.springframework.security.oauth2.provider.ClientDetails;
 
 /**
@@ -33,7 +32,7 @@ import org.springframework.security.oauth2.provider.ClientDetails;
 public interface ApprovedSiteService {
 
 
-	public ApprovedSite createApprovedSite(String clientId, String userId, Date timeoutDate, Set<String> allowedScopes, WhitelistedSite whitelistedSite);
+	public ApprovedSite createApprovedSite(String clientId, String userId, Date timeoutDate, Set<String> allowedScopes);
 
 	/**
 	 * Return a collection of all ApprovedSites

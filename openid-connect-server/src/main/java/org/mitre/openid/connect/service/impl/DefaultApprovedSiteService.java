@@ -23,7 +23,6 @@ import java.util.Set;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
 import org.mitre.openid.connect.model.ApprovedSite;
-import org.mitre.openid.connect.model.WhitelistedSite;
 import org.mitre.openid.connect.repository.ApprovedSiteRepository;
 import org.mitre.openid.connect.service.ApprovedSiteService;
 import org.mitre.openid.connect.service.StatsService;
@@ -99,8 +98,7 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 
 	@Override
 	@Transactional
-	public ApprovedSite createApprovedSite(String clientId, String userId, Date timeoutDate, Set<String> allowedScopes,
-			WhitelistedSite whitelistedSite) {
+	public ApprovedSite createApprovedSite(String clientId, String userId, Date timeoutDate, Set<String> allowedScopes) {
 
 		ApprovedSite as = approvedSiteRepository.save(new ApprovedSite());
 
@@ -111,7 +109,6 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 		as.setUserId(userId);
 		as.setTimeoutDate(timeoutDate);
 		as.setAllowedScopes(allowedScopes);
-		as.setWhitelistedSite(whitelistedSite);
 
 		return save(as);
 

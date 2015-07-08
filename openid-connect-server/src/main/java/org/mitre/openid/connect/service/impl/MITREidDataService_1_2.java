@@ -295,7 +295,6 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 			writer.name("userId").value(site.getUserId());
 			writer.name("allowedScopes");
 			writeNullSafeArray(writer, site.getAllowedScopes());
-			writer.name("whitelistedSiteId").value(site.getIsWhitelisted() ? site.getWhitelistedSite().getId() : null);
 			Set<OAuth2AccessTokenEntity> tokens = site.getApprovedAccessTokens();
 			writer.name("approvedAccessTokens");
 			writer.beginArray();
@@ -780,7 +779,6 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 	}
 
 	Map<Long, Long> grantOldToNewIdMap = new HashMap<>();
-	Map<Long, Long> grantToWhitelistedSiteRefs = new HashMap<>();
 	Map<Long, Set<Long>> grantToAccessTokensRefs = new HashMap<>();
 
 	/**
@@ -792,7 +790,6 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 		while (reader.hasNext()) {
 			ApprovedSite site = new ApprovedSite();
 			Long currentId = null;
-			Long whitelistedSiteId = null;
 			Set<Long> tokenIds = null;
 			reader.beginObject();
 			while (reader.hasNext()) {
@@ -821,8 +818,6 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 					} else if (name.equals("allowedScopes")) {
 						Set<String> allowedScopes = readSet(reader);
 						site.setAllowedScopes(allowedScopes);
-					} else if (name.equals("whitelistedSiteId")) {
-						whitelistedSiteId = reader.nextLong();
 					} else if (name.equals("approvedAccessTokens")) {
 						tokenIds = readSet(reader);
 					} else {
@@ -839,9 +834,6 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 			reader.endObject();
 			Long newId = approvedSiteRepository.save(site).getId();
 			grantOldToNewIdMap.put(currentId, newId);
-			if (whitelistedSiteId != null) {
-				grantToWhitelistedSiteRefs.put(currentId, whitelistedSiteId);
-			}
 			if (tokenIds != null) {
 				grantToAccessTokensRefs.put(currentId, tokenIds);
 			}
@@ -1193,16 +1185,6 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 			tokenRepository.saveAccessToken(accessToken);
 		}
 		accessTokenToIdTokenRefs.clear();
-		for (Long oldGrantId : grantToWhitelistedSiteRefs.keySet()) {
-			Long oldWhitelistedSiteId = grantToWhitelistedSiteRefs.get(oldGrantId);
-			Long newWhitelistedSiteId = whitelistedSiteOldToNewIdMap.get(oldWhitelistedSiteId);
-			WhitelistedSite wlSite = wlSiteRepository.getById(newWhitelistedSiteId);
-			Long newGrantId = grantOldToNewIdMap.get(oldGrantId);
-			ApprovedSite approvedSite = approvedSiteRepository.getById(newGrantId);
-			approvedSite.setWhitelistedSite(wlSite);
-			approvedSiteRepository.save(approvedSite);
-		}
-		grantToWhitelistedSiteRefs.clear();
 		for (Long oldGrantId : grantToAccessTokensRefs.keySet()) {
 			Set<Long> oldAccessTokenIds = grantToAccessTokensRefs.get(oldGrantId);
 			Set<OAuth2AccessTokenEntity> tokens = new HashSet<OAuth2AccessTokenEntity>();

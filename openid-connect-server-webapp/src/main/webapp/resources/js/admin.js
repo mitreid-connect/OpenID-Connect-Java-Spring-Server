@@ -801,7 +801,6 @@ var AppRouter = Backbone.Router.extend({
         this.updateSidebar('user/approved');
 
         var view = new ApprovedSiteListView({model:this.approvedSiteList, clientList: this.clientList, systemScopeList: this.systemScopeList});
-    	
     	view.load( 
     		function(collection, response, options) {
     			$('#content').html(view.render().el);

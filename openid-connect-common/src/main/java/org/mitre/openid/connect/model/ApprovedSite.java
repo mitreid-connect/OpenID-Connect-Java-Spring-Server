@@ -82,9 +82,6 @@ public class ApprovedSite {
 	// this should include all information for what data to access
 	private Set<String> allowedScopes;
 
-	// If this AP is a WS, link to the WS
-	private WhitelistedSite whitelistedSite;
-
 	//Link to any access tokens approved through this stored decision
 	private Set<OAuth2AccessTokenEntity> approvedAccessTokens = Sets.newHashSet();
 
@@ -213,26 +210,6 @@ public class ApprovedSite {
 	 */
 	public void setTimeoutDate(Date timeoutDate) {
 		this.timeoutDate = timeoutDate;
-	}
-
-	/**
-	 * Does this AP entry correspond to a WS?
-	 * @return
-	 */
-	@Transient
-	public Boolean getIsWhitelisted() {
-		return (whitelistedSite != null);
-	}
-
-
-	@ManyToOne
-	@JoinColumn(name="whitelisted_site_id")
-	public WhitelistedSite getWhitelistedSite() {
-		return whitelistedSite;
-	}
-
-	public void setWhitelistedSite(WhitelistedSite whitelistedSite) {
-		this.whitelistedSite = whitelistedSite;
 	}
 
 	/**
