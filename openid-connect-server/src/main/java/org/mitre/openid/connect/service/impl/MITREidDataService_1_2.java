@@ -77,6 +77,73 @@ import static org.mitre.util.JsonUtils.writeNullSafeArray;
 @SuppressWarnings(value = {"unchecked"})
 public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements MITREidDataService {
 
+	private static final String DEFAULT_SCOPE = "defaultScope";
+	private static final String STRUCTURED_PARAMETER = "structuredParameter";
+	private static final String STRUCTURED = "structured";
+	private static final String RESTRICTED = "restricted";
+	private static final String ICON = "icon";
+	private static final String DYNAMICALLY_REGISTERED = "dynamicallyRegistered";
+	private static final String CLEAR_ACCESS_TOKENS_ON_REFRESH = "clearAccessTokensOnRefresh";
+	private static final String REUSE_REFRESH_TOKEN = "reuseRefreshToken";
+	private static final String ALLOW_INTROSPECTION = "allowIntrospection";
+	private static final String DESCRIPTION = "description";
+	private static final String REQUEST_URIS = "requestUris";
+	private static final String POST_LOGOUT_REDIRECT_URI = "postLogoutRedirectUri";
+	private static final String INTITATE_LOGIN_URI = "intitateLoginUri";
+	private static final String DEFAULT_ACR_VALUES = "defaultACRValues";
+	private static final String REQUIRE_AUTH_TIME = "requireAuthTime";
+	private static final String DEFAULT_MAX_AGE = "defaultMaxAge";
+	private static final String TOKEN_ENDPOINT_AUTH_SIGNING_ALG = "tokenEndpointAuthSigningAlg";
+	private static final String USER_INFO_ENCRYPTED_RESPONSE_ENC = "userInfoEncryptedResponseEnc";
+	private static final String USER_INFO_ENCRYPTED_RESPONSE_ALG = "userInfoEncryptedResponseAlg";
+	private static final String USER_INFO_SIGNED_RESPONSE_ALG = "userInfoSignedResponseAlg";
+	private static final String ID_TOKEN_ENCRYPTED_RESPONSE_ENC = "idTokenEncryptedResponseEnc";
+	private static final String ID_TOKEN_ENCRYPTED_RESPONSE_ALG = "idTokenEncryptedResponseAlg";
+	private static final String ID_TOKEN_SIGNED_RESPONSE_ALG = "idTokenSignedResponseAlg";
+	private static final String REQUEST_OBJECT_SIGNING_ALG = "requestObjectSigningAlg";
+	private static final String SUBJECT_TYPE = "subjectType";
+	private static final String SECTOR_IDENTIFIER_URI = "sectorIdentifierUri";
+	private static final String APPLICATION_TYPE = "applicationType";
+	private static final String JWKS = "jwks";
+	private static final String JWKS_URI = "jwksUri";
+	private static final String POLICY_URI = "policyUri";
+	private static final String GRANT_TYPES = "grantTypes";
+	private static final String TOKEN_ENDPOINT_AUTH_METHOD = "tokenEndpointAuthMethod";
+	private static final String TOS_URI = "tosUri";
+	private static final String CONTACTS = "contacts";
+	private static final String LOGO_URI = "logoUri";
+	private static final String REDIRECT_URIS = "redirectUris";
+	private static final String REFRESH_TOKEN_VALIDITY_SECONDS = "refreshTokenValiditySeconds";
+	private static final String ACCESS_TOKEN_VALIDITY_SECONDS = "accessTokenValiditySeconds";
+	private static final String SECRET = "secret";
+	private static final String URI = "uri";
+	private static final String CREATOR_USER_ID = "creatorUserId";
+	private static final String APPROVED_ACCESS_TOKENS = "approvedAccessTokens";
+	private static final String ALLOWED_SCOPES = "allowedScopes";
+	private static final String USER_ID = "userId";
+	private static final String TIMEOUT_DATE = "timeoutDate";
+	private static final String CREATION_DATE = "creationDate";
+	private static final String ACCESS_DATE = "accessDate";
+	private static final String AUTHENTICATED = "authenticated";
+	private static final String SOURCE_CLASS = "sourceClass";
+	private static final String NAME = "name";
+	private static final String SAVED_USER_AUTHENTICATION = "savedUserAuthentication";
+	private static final String EXTENSIONS = "extensions";
+	private static final String RESPONSE_TYPES = "responseTypes";
+	private static final String REDIRECT_URI = "redirectUri";
+	private static final String APPROVED = "approved";
+	private static final String AUTHORITIES = "authorities";
+	private static final String RESOURCE_IDS = "resourceIds";
+	private static final String REQUEST_PARAMETERS = "requestParameters";
+	private static final String TYPE = "type";
+	private static final String SCOPE = "scope";
+	private static final String ID_TOKEN_ID = "idTokenId";
+	private static final String REFRESH_TOKEN_ID = "refreshTokenId";
+	private static final String VALUE = "value";
+	private static final String AUTHENTICATION_HOLDER_ID = "authenticationHolderId";
+	private static final String CLIENT_ID = "clientId";
+	private static final String EXPIRATION = "expiration";
+	private static final String ID = "id";
 	/**
 	 * Logger for this class
 	 */
@@ -157,13 +224,13 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 	private void writeRefreshTokens(JsonWriter writer) throws IOException {
 		for (OAuth2RefreshTokenEntity token : tokenRepository.getAllRefreshTokens()) {
 			writer.beginObject();
-			writer.name("id").value(token.getId());
-			writer.name("expiration").value(toUTCString(token.getExpiration()));
-			writer.name("clientId")
+			writer.name(ID).value(token.getId());
+			writer.name(EXPIRATION).value(toUTCString(token.getExpiration()));
+			writer.name(CLIENT_ID)
 			.value((token.getClient() != null) ? token.getClient().getClientId() : null);
-			writer.name("authenticationHolderId")
+			writer.name(AUTHENTICATION_HOLDER_ID)
 			.value((token.getAuthenticationHolder() != null) ? token.getAuthenticationHolder().getId() : null);
-			writer.name("value").value(token.getValue());
+			writer.name(VALUE).value(token.getValue());
 			writer.endObject();
 			logger.debug("Wrote refresh token {}", token.getId());
 		}
@@ -176,24 +243,24 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 	private void writeAccessTokens(JsonWriter writer) throws IOException {
 		for (OAuth2AccessTokenEntity token : tokenRepository.getAllAccessTokens()) {
 			writer.beginObject();
-			writer.name("id").value(token.getId());
-			writer.name("expiration").value(toUTCString(token.getExpiration()));
-			writer.name("clientId")
+			writer.name(ID).value(token.getId());
+			writer.name(EXPIRATION).value(toUTCString(token.getExpiration()));
+			writer.name(CLIENT_ID)
 			.value((token.getClient() != null) ? token.getClient().getClientId() : null);
-			writer.name("authenticationHolderId")
+			writer.name(AUTHENTICATION_HOLDER_ID)
 			.value((token.getAuthenticationHolder() != null) ? token.getAuthenticationHolder().getId() : null);
-			writer.name("refreshTokenId")
+			writer.name(REFRESH_TOKEN_ID)
 			.value((token.getRefreshToken() != null) ? token.getRefreshToken().getId() : null);
-			writer.name("idTokenId")
+			writer.name(ID_TOKEN_ID)
 			.value((token.getIdToken() != null) ? token.getIdToken().getId() : null);
-			writer.name("scope");
+			writer.name(SCOPE);
 			writer.beginArray();
 			for (String s : token.getScope()) {
 				writer.value(s);
 			}
 			writer.endArray();
-			writer.name("type").value(token.getTokenType());
-			writer.name("value").value(token.getValue());
+			writer.name(TYPE).value(token.getTokenType());
+			writer.name(VALUE).value(token.getValue());
 			writer.endObject();
 			logger.debug("Wrote access token {}", token.getId());
 		}
@@ -206,23 +273,23 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 	private void writeAuthenticationHolders(JsonWriter writer) throws IOException {
 		for (AuthenticationHolderEntity holder : authHolderRepository.getAll()) {
 			writer.beginObject();
-			writer.name("id").value(holder.getId());
+			writer.name(ID).value(holder.getId());
 			
-			writer.name("requestParameters");
+			writer.name(REQUEST_PARAMETERS);
 			writer.beginObject();
 			for (Entry<String, String> entry : holder.getRequestParameters().entrySet()) {
 				writer.name(entry.getKey()).value(entry.getValue());
 			}
 			writer.endObject();
-			writer.name("clientId").value(holder.getClientId());
+			writer.name(CLIENT_ID).value(holder.getClientId());
 			Set<String> scope = holder.getScope();
-			writer.name("scope");
+			writer.name(SCOPE);
 			writer.beginArray();
 			for (String s : scope) {
 				writer.value(s);
 			}
 			writer.endArray();
-			writer.name("resourceIds");
+			writer.name(RESOURCE_IDS);
 			writer.beginArray();
 			if (holder.getResourceIds() != null) {
 				for (String s : holder.getResourceIds()) {
@@ -230,21 +297,21 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 				}
 			}
 			writer.endArray();
-			writer.name("authorities");
+			writer.name(AUTHORITIES);
 			writer.beginArray();
 			for (GrantedAuthority authority : holder.getAuthorities()) {
 				writer.value(authority.getAuthority());
 			}
 			writer.endArray();
-			writer.name("approved").value(holder.isApproved());
-			writer.name("redirectUri").value(holder.getRedirectUri());
-			writer.name("responseTypes");
+			writer.name(APPROVED).value(holder.isApproved());
+			writer.name(REDIRECT_URI).value(holder.getRedirectUri());
+			writer.name(RESPONSE_TYPES);
 			writer.beginArray();
 			for (String s : holder.getResponseTypes()) {
 				writer.value(s);
 			}
 			writer.endArray();
-			writer.name("extensions");
+			writer.name(EXTENSIONS);
 			writer.beginObject();
 			for (Entry<String, Serializable> entry : holder.getExtensions().entrySet()) {
 				// while the extension map itself is Serializable, we enforce storage of Strings
@@ -256,13 +323,13 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 			}
 			writer.endObject();
 
-			writer.name("savedUserAuthentication");
+			writer.name(SAVED_USER_AUTHENTICATION);
 			if (holder.getUserAuth() != null) {
 				writer.beginObject();
-				writer.name("name").value(holder.getUserAuth().getName());
-				writer.name("sourceClass").value(holder.getUserAuth().getSourceClass());
-				writer.name("authenticated").value(holder.getUserAuth().isAuthenticated());
-				writer.name("authorities");
+				writer.name(NAME).value(holder.getUserAuth().getName());
+				writer.name(SOURCE_CLASS).value(holder.getUserAuth().getSourceClass());
+				writer.name(AUTHENTICATED).value(holder.getUserAuth().isAuthenticated());
+				writer.name(AUTHORITIES);
 				writer.beginArray();
 				for (GrantedAuthority authority : holder.getUserAuth().getAuthorities()) {
 					writer.value(authority.getAuthority());
@@ -287,16 +354,16 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 	private void writeGrants(JsonWriter writer) throws IOException {
 		for (ApprovedSite site : approvedSiteRepository.getAll()) {
 			writer.beginObject();
-			writer.name("id").value(site.getId());
-			writer.name("accessDate").value(toUTCString(site.getAccessDate()));
-			writer.name("clientId").value(site.getClientId());
-			writer.name("creationDate").value(toUTCString(site.getCreationDate()));
-			writer.name("timeoutDate").value(toUTCString(site.getTimeoutDate()));
-			writer.name("userId").value(site.getUserId());
-			writer.name("allowedScopes");
+			writer.name(ID).value(site.getId());
+			writer.name(ACCESS_DATE).value(toUTCString(site.getAccessDate()));
+			writer.name(CLIENT_ID).value(site.getClientId());
+			writer.name(CREATION_DATE).value(toUTCString(site.getCreationDate()));
+			writer.name(TIMEOUT_DATE).value(toUTCString(site.getTimeoutDate()));
+			writer.name(USER_ID).value(site.getUserId());
+			writer.name(ALLOWED_SCOPES);
 			writeNullSafeArray(writer, site.getAllowedScopes());
 			Set<OAuth2AccessTokenEntity> tokens = site.getApprovedAccessTokens();
-			writer.name("approvedAccessTokens");
+			writer.name(APPROVED_ACCESS_TOKENS);
 			writer.beginArray();
 			for (OAuth2AccessTokenEntity token : tokens) {
 				writer.value(token.getId());
@@ -314,10 +381,10 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 	private void writeWhitelistedSites(JsonWriter writer) throws IOException {
 		for (WhitelistedSite wlSite : wlSiteRepository.getAll()) {
 			writer.beginObject();
-			writer.name("id").value(wlSite.getId());
-			writer.name("clientId").value(wlSite.getClientId());
-			writer.name("creatorUserId").value(wlSite.getCreatorUserId());
-			writer.name("allowedScopes");
+			writer.name(ID).value(wlSite.getId());
+			writer.name(CLIENT_ID).value(wlSite.getClientId());
+			writer.name(CREATOR_USER_ID).value(wlSite.getCreatorUserId());
+			writer.name(ALLOWED_SCOPES);
 			writeNullSafeArray(writer, wlSite.getAllowedScopes());
 			writer.endObject();
 			logger.debug("Wrote whitelisted site {}", wlSite.getId());
@@ -331,8 +398,8 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 	private void writeBlacklistedSites(JsonWriter writer) throws IOException {
 		for (BlacklistedSite blSite : blSiteRepository.getAll()) {
 			writer.beginObject();
-			writer.name("id").value(blSite.getId());
-			writer.name("uri").value(blSite.getUri());
+			writer.name(ID).value(blSite.getId());
+			writer.name(URI).value(blSite.getUri());
 			writer.endObject();
 			logger.debug("Wrote blacklisted site {}", blSite.getId());
 		}
@@ -346,90 +413,90 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 		for (ClientDetailsEntity client : clientRepository.getAllClients()) {
 			try {
 				writer.beginObject();
-				writer.name("clientId").value(client.getClientId());
-				writer.name("resourceIds");
+				writer.name(CLIENT_ID).value(client.getClientId());
+				writer.name(RESOURCE_IDS);
 				writeNullSafeArray(writer, client.getResourceIds());
 
-				writer.name("secret").value(client.getClientSecret());
+				writer.name(SECRET).value(client.getClientSecret());
 
-				writer.name("scope");
+				writer.name(SCOPE);
 				writeNullSafeArray(writer, client.getScope());
 
-				writer.name("authorities");
+				writer.name(AUTHORITIES);
 				writer.beginArray();
 				for (GrantedAuthority authority : client.getAuthorities()) {
 					writer.value(authority.getAuthority());
 				}
 				writer.endArray();
-				writer.name("accessTokenValiditySeconds").value(client.getAccessTokenValiditySeconds());
-				writer.name("refreshTokenValiditySeconds").value(client.getRefreshTokenValiditySeconds());
-				writer.name("redirectUris");
+				writer.name(ACCESS_TOKEN_VALIDITY_SECONDS).value(client.getAccessTokenValiditySeconds());
+				writer.name(REFRESH_TOKEN_VALIDITY_SECONDS).value(client.getRefreshTokenValiditySeconds());
+				writer.name(REDIRECT_URIS);
 				writeNullSafeArray(writer, client.getRedirectUris());
-				writer.name("name").value(client.getClientName());
-				writer.name("uri").value(client.getClientUri());
-				writer.name("logoUri").value(client.getLogoUri());
-				writer.name("contacts");
+				writer.name(NAME).value(client.getClientName());
+				writer.name(URI).value(client.getClientUri());
+				writer.name(LOGO_URI).value(client.getLogoUri());
+				writer.name(CONTACTS);
 				writeNullSafeArray(writer, client.getContacts());
-				writer.name("tosUri").value(client.getTosUri());
-				writer.name("tokenEndpointAuthMethod")
+				writer.name(TOS_URI).value(client.getTosUri());
+				writer.name(TOKEN_ENDPOINT_AUTH_METHOD)
 				.value((client.getTokenEndpointAuthMethod() != null) ? client.getTokenEndpointAuthMethod().getValue() : null);
-				writer.name("grantTypes");
+				writer.name(GRANT_TYPES);
 				writer.beginArray();
 				for (String s : client.getGrantTypes()) {
 					writer.value(s);
 				}
 				writer.endArray();
-				writer.name("responseTypes");
+				writer.name(RESPONSE_TYPES);
 				writer.beginArray();
 				for (String s : client.getResponseTypes()) {
 					writer.value(s);
 				}
 				writer.endArray();
-				writer.name("policyUri").value(client.getPolicyUri());
-				writer.name("jwksUri").value(client.getJwksUri());
-				writer.name("jwks").value((client.getJwks() != null) ? client.getJwks().toString() : null);
-				writer.name("applicationType")
+				writer.name(POLICY_URI).value(client.getPolicyUri());
+				writer.name(JWKS_URI).value(client.getJwksUri());
+				writer.name(JWKS).value((client.getJwks() != null) ? client.getJwks().toString() : null);
+				writer.name(APPLICATION_TYPE)
 				.value((client.getApplicationType() != null) ? client.getApplicationType().getValue() : null);
-				writer.name("sectorIdentifierUri").value(client.getSectorIdentifierUri());
-				writer.name("subjectType")
+				writer.name(SECTOR_IDENTIFIER_URI).value(client.getSectorIdentifierUri());
+				writer.name(SUBJECT_TYPE)
 				.value((client.getSubjectType() != null) ? client.getSubjectType().getValue() : null);
-				writer.name("requestObjectSigningAlg")
+				writer.name(REQUEST_OBJECT_SIGNING_ALG)
 				.value((client.getRequestObjectSigningAlg() != null) ? client.getRequestObjectSigningAlg().getName() : null);
-				writer.name("idTokenSignedResponseAlg")
+				writer.name(ID_TOKEN_SIGNED_RESPONSE_ALG)
 				.value((client.getIdTokenSignedResponseAlg() != null) ? client.getIdTokenSignedResponseAlg().getName() : null);
-				writer.name("idTokenEncryptedResponseAlg")
+				writer.name(ID_TOKEN_ENCRYPTED_RESPONSE_ALG)
 				.value((client.getIdTokenEncryptedResponseAlg() != null) ? client.getIdTokenEncryptedResponseAlg().getName() : null);
-				writer.name("idTokenEncryptedResponseEnc")
+				writer.name(ID_TOKEN_ENCRYPTED_RESPONSE_ENC)
 				.value((client.getIdTokenEncryptedResponseEnc() != null) ? client.getIdTokenEncryptedResponseEnc().getName() : null);
-				writer.name("userInfoSignedResponseAlg")
+				writer.name(USER_INFO_SIGNED_RESPONSE_ALG)
 				.value((client.getUserInfoSignedResponseAlg() != null) ? client.getUserInfoSignedResponseAlg().getName() : null);
-				writer.name("userInfoEncryptedResponseAlg")
+				writer.name(USER_INFO_ENCRYPTED_RESPONSE_ALG)
 				.value((client.getUserInfoEncryptedResponseAlg() != null) ? client.getUserInfoEncryptedResponseAlg().getName() : null);
-				writer.name("userInfoEncryptedResponseEnc")
+				writer.name(USER_INFO_ENCRYPTED_RESPONSE_ENC)
 				.value((client.getUserInfoEncryptedResponseEnc() != null) ? client.getUserInfoEncryptedResponseEnc().getName() : null);
-				writer.name("tokenEndpointAuthSigningAlg")
+				writer.name(TOKEN_ENDPOINT_AUTH_SIGNING_ALG)
 				.value((client.getTokenEndpointAuthSigningAlg() != null) ? client.getTokenEndpointAuthSigningAlg().getName() : null);
-				writer.name("defaultMaxAge").value(client.getDefaultMaxAge());
+				writer.name(DEFAULT_MAX_AGE).value(client.getDefaultMaxAge());
 				Boolean requireAuthTime = null;
 				try {
 					requireAuthTime = client.getRequireAuthTime();
 				} catch (NullPointerException e) {
 				}
 				if (requireAuthTime != null) {
-					writer.name("requireAuthTime").value(requireAuthTime);
+					writer.name(REQUIRE_AUTH_TIME).value(requireAuthTime);
 				}
-				writer.name("defaultACRValues");
+				writer.name(DEFAULT_ACR_VALUES);
 				writeNullSafeArray(writer, client.getDefaultACRvalues());
-				writer.name("intitateLoginUri").value(client.getInitiateLoginUri());
-				writer.name("postLogoutRedirectUri");
+				writer.name(INTITATE_LOGIN_URI).value(client.getInitiateLoginUri());
+				writer.name(POST_LOGOUT_REDIRECT_URI);
 				writeNullSafeArray(writer, client.getPostLogoutRedirectUris());
-				writer.name("requestUris");
+				writer.name(REQUEST_URIS);
 				writeNullSafeArray(writer, client.getRequestUris());
-				writer.name("description").value(client.getClientDescription());
-				writer.name("allowIntrospection").value(client.isAllowIntrospection());
-				writer.name("reuseRefreshToken").value(client.isReuseRefreshToken());
-				writer.name("clearAccessTokensOnRefresh").value(client.isClearAccessTokensOnRefresh());
-				writer.name("dynamicallyRegistered").value(client.isDynamicallyRegistered());
+				writer.name(DESCRIPTION).value(client.getClientDescription());
+				writer.name(ALLOW_INTROSPECTION).value(client.isAllowIntrospection());
+				writer.name(REUSE_REFRESH_TOKEN).value(client.isReuseRefreshToken());
+				writer.name(CLEAR_ACCESS_TOKENS_ON_REFRESH).value(client.isClearAccessTokensOnRefresh());
+				writer.name(DYNAMICALLY_REGISTERED).value(client.isDynamicallyRegistered());
 				writer.endObject();
 				logger.debug("Wrote client {}", client.getId());
 			} catch (IOException ex) {
@@ -446,14 +513,14 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 		for (SystemScope sysScope : sysScopeRepository.getAll()) {
 			try {
 				writer.beginObject();
-				writer.name("id").value(sysScope.getId());
-				writer.name("description").value(sysScope.getDescription());
-				writer.name("icon").value(sysScope.getIcon());
-				writer.name("value").value(sysScope.getValue());
-				writer.name("restricted").value(sysScope.isRestricted());
-				writer.name("structured").value(sysScope.isStructured());
-				writer.name("structuredParameter").value(sysScope.getStructuredParamDescription());
-				writer.name("defaultScope").value(sysScope.isDefaultScope());
+				writer.name(ID).value(sysScope.getId());
+				writer.name(DESCRIPTION).value(sysScope.getDescription());
+				writer.name(ICON).value(sysScope.getIcon());
+				writer.name(VALUE).value(sysScope.getValue());
+				writer.name(RESTRICTED).value(sysScope.isRestricted());
+				writer.name(STRUCTURED).value(sysScope.isStructured());
+				writer.name(STRUCTURED_PARAMETER).value(sysScope.getStructuredParamDescription());
+				writer.name(DEFAULT_SCOPE).value(sysScope.isDefaultScope());
 				writer.endObject();
 				logger.debug("Wrote system scope {}", sysScope.getId());
 			} catch (IOException ex) {
@@ -541,21 +608,21 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 					String name = reader.nextName();
 					if (reader.peek() == JsonToken.NULL) {
 						reader.skipValue();
-					} else if (name.equals("id")) {
+					} else if (name.equals(ID)) {
 						currentId = reader.nextLong();
-					} else if (name.equals("expiration")) {
+					} else if (name.equals(EXPIRATION)) {
 						Date date = utcToDate(reader.nextString());
 						token.setExpiration(date);
-					} else if (name.equals("value")) {
+					} else if (name.equals(VALUE)) {
 						String value = reader.nextString();
 						try {
 							token.setJwt(JWTParser.parse(value));
 						} catch (ParseException ex) {
 							logger.error("Unable to set refresh token value to {}", value, ex);
 						}
-					} else if (name.equals("clientId")) {
+					} else if (name.equals(CLIENT_ID)) {
 						clientId = reader.nextString();
-					} else if (name.equals("authenticationHolderId")) {
+					} else if (name.equals(AUTHENTICATION_HOLDER_ID)) {
 						authHolderId = reader.nextLong();
 					} else {
 						logger.debug("Found unexpected entry");
@@ -610,12 +677,12 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 					String name = reader.nextName();
 					if (reader.peek() == JsonToken.NULL) {
 						reader.skipValue();
-					} else if (name.equals("id")) {
+					} else if (name.equals(ID)) {
 						currentId = reader.nextLong();
-					} else if (name.equals("expiration")) {
+					} else if (name.equals(EXPIRATION)) {
 						Date date = utcToDate(reader.nextString());
 						token.setExpiration(date);
-					} else if (name.equals("value")) {
+					} else if (name.equals(VALUE)) {
 						String value = reader.nextString();
 						try {
 							// all tokens are JWTs
@@ -623,18 +690,18 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 						} catch (ParseException ex) {
 							logger.error("Unable to set refresh token value to {}", value, ex);
 						}
-					} else if (name.equals("clientId")) {
+					} else if (name.equals(CLIENT_ID)) {
 						clientId = reader.nextString();
-					} else if (name.equals("authenticationHolderId")) {
+					} else if (name.equals(AUTHENTICATION_HOLDER_ID)) {
 						authHolderId = reader.nextLong();
-					} else if (name.equals("refreshTokenId")) {
+					} else if (name.equals(REFRESH_TOKEN_ID)) {
 						refreshTokenId = reader.nextLong();
-					} else if (name.equals("idTokenId")) {
+					} else if (name.equals(ID_TOKEN_ID)) {
 						idTokenId = reader.nextLong();
-					} else if (name.equals("scope")) {
+					} else if (name.equals(SCOPE)) {
 						Set<String> scope = readSet(reader);
 						token.setScope(scope);
-					} else if (name.equals("type")) {
+					} else if (name.equals(TYPE)) {
 						token.setTokenType(reader.nextString());
 					} else {
 						logger.debug("Found unexpected entry");
@@ -683,17 +750,17 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 					String name = reader.nextName();
 					if (reader.peek() == JsonToken.NULL) {
 						reader.skipValue();
-					} else if (name.equals("id")) {
+					} else if (name.equals(ID)) {
 						currentId = reader.nextLong();
-					} else if (name.equals("requestParameters")) {
+					} else if (name.equals(REQUEST_PARAMETERS)) {
 						ahe.setRequestParameters(readMap(reader));
-					} else if (name.equals("clientId")) {
+					} else if (name.equals(CLIENT_ID)) {
 						ahe.setClientId(reader.nextString());
-					} else if (name.equals("scope")) {
+					} else if (name.equals(SCOPE)) {
 						ahe.setScope(readSet(reader));
-					} else if (name.equals("resourceIds")) {
+					} else if (name.equals(RESOURCE_IDS)) {
 						ahe.setResourceIds(readSet(reader));
-					} else if (name.equals("authorities")) {
+					} else if (name.equals(AUTHORITIES)) {
 						Set<String> authorityStrs = readSet(reader);
 						Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
 						for (String s : authorityStrs) {
@@ -701,15 +768,15 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 							authorities.add(ga);
 						}
 						ahe.setAuthorities(authorities);
-					} else if (name.equals("approved")) {
+					} else if (name.equals(APPROVED)) {
 						ahe.setApproved(reader.nextBoolean());
-					} else if (name.equals("redirectUri")) {
+					} else if (name.equals(REDIRECT_URI)) {
 						ahe.setRedirectUri(reader.nextString());
-					} else if (name.equals("responseTypes")) {
+					} else if (name.equals(RESPONSE_TYPES)) {
 						ahe.setResponseTypes(readSet(reader));
-					} else if (name.equals("extensions")) {
+					} else if (name.equals(EXTENSIONS)) {
 						ahe.setExtensions(readMap(reader));
-					} else if (name.equals("savedUserAuthentication")) {
+					} else if (name.equals(SAVED_USER_AUTHENTICATION)) {
 						ahe.setUserAuth(readSavedUserAuthentication(reader));
 					} else {
 						logger.debug("Found unexpected entry");
@@ -748,13 +815,13 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 				String name = reader.nextName();
 				if (reader.peek() == JsonToken.NULL) {
 					reader.skipValue();
-				} else if (name.equals("name")) {
+				} else if (name.equals(NAME)) {
 					savedUserAuth.setName(reader.nextString());
-				} else if (name.equals("sourceClass")) {
+				} else if (name.equals(SOURCE_CLASS)) {
 					savedUserAuth.setSourceClass(reader.nextString());
-				} else if (name.equals("authenticated")) {
+				} else if (name.equals(AUTHENTICATED)) {
 					savedUserAuth.setAuthenticated(reader.nextBoolean());
-				} else if (name.equals("authorities")) {
+				} else if (name.equals(AUTHORITIES)) {
 					Set<String> authorityStrs = readSet(reader);
 					Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
 					for (String s : authorityStrs) {
@@ -800,25 +867,25 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 					String name = reader.nextName();
 					if (reader.peek() == JsonToken.NULL) {
 						reader.skipValue();
-					} else if (name.equals("id")) {
+					} else if (name.equals(ID)) {
 						currentId = reader.nextLong();
-					} else if (name.equals("accessDate")) {
+					} else if (name.equals(ACCESS_DATE)) {
 						Date date = utcToDate(reader.nextString());
 						site.setAccessDate(date);
-					} else if (name.equals("clientId")) {
+					} else if (name.equals(CLIENT_ID)) {
 						site.setClientId(reader.nextString());
-					} else if (name.equals("creationDate")) {
+					} else if (name.equals(CREATION_DATE)) {
 						Date date = utcToDate(reader.nextString());
 						site.setCreationDate(date);
-					} else if (name.equals("timeoutDate")) {
+					} else if (name.equals(TIMEOUT_DATE)) {
 						Date date = utcToDate(reader.nextString());
 						site.setTimeoutDate(date);
-					} else if (name.equals("userId")) {
+					} else if (name.equals(USER_ID)) {
 						site.setUserId(reader.nextString());
-					} else if (name.equals("allowedScopes")) {
+					} else if (name.equals(ALLOWED_SCOPES)) {
 						Set<String> allowedScopes = readSet(reader);
 						site.setAllowedScopes(allowedScopes);
-					} else if (name.equals("approvedAccessTokens")) {
+					} else if (name.equals(APPROVED_ACCESS_TOKENS)) {
 						tokenIds = readSet(reader);
 					} else {
 						logger.debug("Found unexpected entry");
@@ -860,13 +927,13 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 					continue;
 				case NAME:
 					String name = reader.nextName();
-					if (name.equals("id")) {
+					if (name.equals(ID)) {
 						currentId = reader.nextLong();
-					} else if (name.equals("clientId")) {
+					} else if (name.equals(CLIENT_ID)) {
 						wlSite.setClientId(reader.nextString());
-					} else if (name.equals("creatorUserId")) {
+					} else if (name.equals(CREATOR_USER_ID)) {
 						wlSite.setCreatorUserId(reader.nextString());
-					} else if (name.equals("allowedScopes")) {
+					} else if (name.equals(ALLOWED_SCOPES)) {
 						Set<String> allowedScopes = readSet(reader);
 						wlSite.setAllowedScopes(allowedScopes);
 					} else {
@@ -903,9 +970,9 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 					continue;
 				case NAME:
 					String name = reader.nextName();
-					if (name.equals("id")) {
+					if (name.equals(ID)) {
 						reader.skipValue();
-					} else if (name.equals("uri")) {
+					} else if (name.equals(URI)) {
 						blSite.setUri(reader.nextString());
 					} else {
 						logger.debug("Found unexpected entry");
@@ -942,17 +1009,17 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 					String name = reader.nextName();
 					if (reader.peek() == JsonToken.NULL) {
 						reader.skipValue();
-					} else if (name.equals("clientId")) {
+					} else if (name.equals(CLIENT_ID)) {
 						client.setClientId(reader.nextString());
-					} else if (name.equals("resourceIds")) {
+					} else if (name.equals(RESOURCE_IDS)) {
 						Set<String> resourceIds = readSet(reader);
 						client.setResourceIds(resourceIds);
-					} else if (name.equals("secret")) {
+					} else if (name.equals(SECRET)) {
 						client.setClientSecret(reader.nextString());
-					} else if (name.equals("scope")) {
+					} else if (name.equals(SCOPE)) {
 						Set<String> scope = readSet(reader);
 						client.setScope(scope);
-					} else if (name.equals("authorities")) {
+					} else if (name.equals(AUTHORITIES)) {
 						Set<String> authorityStrs = readSet(reader);
 						Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
 						for (String s : authorityStrs) {
@@ -960,99 +1027,99 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 							authorities.add(ga);
 						}
 						client.setAuthorities(authorities);
-					} else if (name.equals("accessTokenValiditySeconds")) {
+					} else if (name.equals(ACCESS_TOKEN_VALIDITY_SECONDS)) {
 						client.setAccessTokenValiditySeconds(reader.nextInt());
-					} else if (name.equals("refreshTokenValiditySeconds")) {
+					} else if (name.equals(REFRESH_TOKEN_VALIDITY_SECONDS)) {
 						client.setRefreshTokenValiditySeconds(reader.nextInt());
-					} else if (name.equals("redirectUris")) {
+					} else if (name.equals(REDIRECT_URIS)) {
 						Set<String> redirectUris = readSet(reader);
 						client.setRedirectUris(redirectUris);
-					} else if (name.equals("name")) {
+					} else if (name.equals(NAME)) {
 						client.setClientName(reader.nextString());
-					} else if (name.equals("uri")) {
+					} else if (name.equals(URI)) {
 						client.setClientUri(reader.nextString());
-					} else if (name.equals("logoUri")) {
+					} else if (name.equals(LOGO_URI)) {
 						client.setLogoUri(reader.nextString());
-					} else if (name.equals("contacts")) {
+					} else if (name.equals(CONTACTS)) {
 						Set<String> contacts = readSet(reader);
 						client.setContacts(contacts);
-					} else if (name.equals("tosUri")) {
+					} else if (name.equals(TOS_URI)) {
 						client.setTosUri(reader.nextString());
-					} else if (name.equals("tokenEndpointAuthMethod")) {
+					} else if (name.equals(TOKEN_ENDPOINT_AUTH_METHOD)) {
 						AuthMethod am = AuthMethod.getByValue(reader.nextString());
 						client.setTokenEndpointAuthMethod(am);
-					} else if (name.equals("grantTypes")) {
+					} else if (name.equals(GRANT_TYPES)) {
 						Set<String> grantTypes = readSet(reader);
 						client.setGrantTypes(grantTypes);
-					} else if (name.equals("responseTypes")) {
+					} else if (name.equals(RESPONSE_TYPES)) {
 						Set<String> responseTypes = readSet(reader);
 						client.setResponseTypes(responseTypes);
-					} else if (name.equals("policyUri")) {
+					} else if (name.equals(POLICY_URI)) {
 						client.setPolicyUri(reader.nextString());
-					} else if (name.equals("applicationType")) {
+					} else if (name.equals(APPLICATION_TYPE)) {
 						AppType appType = AppType.getByValue(reader.nextString());
 						client.setApplicationType(appType);
-					} else if (name.equals("sectorIdentifierUri")) {
+					} else if (name.equals(SECTOR_IDENTIFIER_URI)) {
 						client.setSectorIdentifierUri(reader.nextString());
-					} else if (name.equals("subjectType")) {
+					} else if (name.equals(SUBJECT_TYPE)) {
 						SubjectType st = SubjectType.getByValue(reader.nextString());
 						client.setSubjectType(st);
-					} else if (name.equals("jwks_uri")) {
+					} else if (name.equals(JWKS_URI)) {
 						client.setJwksUri(reader.nextString());
-					} else if (name.equals("jwks")) {
+					} else if (name.equals(JWKS)) {
 						try {
 							client.setJwks(JWKSet.parse(reader.nextString()));
 						} catch (ParseException e) {
 							logger.error("Couldn't parse JWK Set", e);
 						}
-					} else if (name.equals("requestObjectSigningAlg")) {
+					} else if (name.equals(REQUEST_OBJECT_SIGNING_ALG)) {
 						JWSAlgorithm alg = JWSAlgorithm.parse(reader.nextString());
 						client.setRequestObjectSigningAlg(alg);
-					} else if (name.equals("userInfoEncryptedResponseAlg")) {
+					} else if (name.equals(USER_INFO_ENCRYPTED_RESPONSE_ALG)) {
 						JWEAlgorithm alg = JWEAlgorithm.parse(reader.nextString());
 						client.setUserInfoEncryptedResponseAlg(alg);
-					} else if (name.equals("userInfoEncryptedResponseEnc")) {
+					} else if (name.equals(USER_INFO_ENCRYPTED_RESPONSE_ENC)) {
 						EncryptionMethod alg = EncryptionMethod.parse(reader.nextString());
 						client.setUserInfoEncryptedResponseEnc(alg);
-					} else if (name.equals("userInfoSignedResponseAlg")) {
+					} else if (name.equals(USER_INFO_SIGNED_RESPONSE_ALG)) {
 						JWSAlgorithm alg = JWSAlgorithm.parse(reader.nextString());
 						client.setUserInfoSignedResponseAlg(alg);
-					} else if (name.equals("idTokenSignedResonseAlg")) {
+					} else if (name.equals(ID_TOKEN_SIGNED_RESPONSE_ALG)) {
 						JWSAlgorithm alg = JWSAlgorithm.parse(reader.nextString());
 						client.setIdTokenSignedResponseAlg(alg);
-					} else if (name.equals("idTokenEncryptedResponseAlg")) {
+					} else if (name.equals(ID_TOKEN_ENCRYPTED_RESPONSE_ALG)) {
 						JWEAlgorithm alg = JWEAlgorithm.parse(reader.nextString());
 						client.setIdTokenEncryptedResponseAlg(alg);
-					} else if (name.equals("idTokenEncryptedResponseEnc")) {
+					} else if (name.equals(ID_TOKEN_ENCRYPTED_RESPONSE_ENC)) {
 						EncryptionMethod alg = EncryptionMethod.parse(reader.nextString());
 						client.setIdTokenEncryptedResponseEnc(alg);
-					} else if (name.equals("tokenEndpointAuthSigningAlg")) {
+					} else if (name.equals(TOKEN_ENDPOINT_AUTH_SIGNING_ALG)) {
 						JWSAlgorithm alg = JWSAlgorithm.parse(reader.nextString());
 						client.setTokenEndpointAuthSigningAlg(alg);
-					} else if (name.equals("defaultMaxAge")) {
+					} else if (name.equals(DEFAULT_MAX_AGE)) {
 						client.setDefaultMaxAge(reader.nextInt());
-					} else if (name.equals("requireAuthTime")) {
+					} else if (name.equals(REQUIRE_AUTH_TIME)) {
 						client.setRequireAuthTime(reader.nextBoolean());
-					} else if (name.equals("defaultACRValues")) {
+					} else if (name.equals(DEFAULT_ACR_VALUES)) {
 						Set<String> defaultACRvalues = readSet(reader);
 						client.setDefaultACRvalues(defaultACRvalues);
 					} else if (name.equals("initiateLoginUri")) {
 						client.setInitiateLoginUri(reader.nextString());
-					} else if (name.equals("postLogoutRedirectUri")) {
+					} else if (name.equals(POST_LOGOUT_REDIRECT_URI)) {
 						Set<String> postLogoutUris = readSet(reader);
 						client.setPostLogoutRedirectUris(postLogoutUris);
-					} else if (name.equals("requestUris")) {
+					} else if (name.equals(REQUEST_URIS)) {
 						Set<String> requestUris = readSet(reader);
 						client.setRequestUris(requestUris);
-					} else if (name.equals("description")) {
+					} else if (name.equals(DESCRIPTION)) {
 						client.setClientDescription(reader.nextString());
-					} else if (name.equals("allowIntrospection")) {
+					} else if (name.equals(ALLOW_INTROSPECTION)) {
 						client.setAllowIntrospection(reader.nextBoolean());
-					} else if (name.equals("reuseRefreshToken")) {
+					} else if (name.equals(REUSE_REFRESH_TOKEN)) {
 						client.setReuseRefreshToken(reader.nextBoolean());
-					} else if (name.equals("clearAccessTokensOnRefresh")) {
+					} else if (name.equals(CLEAR_ACCESS_TOKENS_ON_REFRESH)) {
 						client.setClearAccessTokensOnRefresh(reader.nextBoolean());
-					} else if (name.equals("dynamicallyRegistered")) {
+					} else if (name.equals(DYNAMICALLY_REGISTERED)) {
 						client.setDynamicallyRegistered(reader.nextBoolean());
 					} else {
 						logger.debug("Found unexpected entry");
@@ -1092,19 +1159,19 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 					String name = reader.nextName();
 					if (reader.peek() == JsonToken.NULL) {
 						reader.skipValue();
-					} else if (name.equals("value")) {
+					} else if (name.equals(VALUE)) {
 						scope.setValue(reader.nextString());
-					} else if (name.equals("description")) {
+					} else if (name.equals(DESCRIPTION)) {
 						scope.setDescription(reader.nextString());
-					} else if (name.equals("restricted")) {
+					} else if (name.equals(RESTRICTED)) {
 						scope.setRestricted(reader.nextBoolean());
-					} else if (name.equals("defaultScope")) {
+					} else if (name.equals(DEFAULT_SCOPE)) {
 						scope.setDefaultScope(reader.nextBoolean());
-					} else if (name.equals("icon")) {
+					} else if (name.equals(ICON)) {
 						scope.setIcon(reader.nextString());
-					} else if (name.equals("structured")) {
+					} else if (name.equals(STRUCTURED)) {
 						scope.setStructured(reader.nextBoolean());
-					} else if (name.equals("structuredParameter")) {
+					} else if (name.equals(STRUCTURED_PARAMETER)) {
 						scope.setStructuredParamDescription(reader.nextString());
 					} else {
 						logger.debug("found unexpected entry");
