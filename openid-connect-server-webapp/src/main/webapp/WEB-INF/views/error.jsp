@@ -1,3 +1,4 @@
+<%@page import="org.springframework.http.HttpStatus"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib prefix="o" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
@@ -12,6 +13,11 @@ if (request.getAttribute("error") != null && request.getAttribute("error") insta
 	Throwable t = (Throwable)request.getAttribute("javax.servlet.error.exception");
 	request.setAttribute("errorCode",  t.getClass().getSimpleName() + " (" + request.getAttribute("javax.servlet.error.status_code") + ")");
 	request.setAttribute("message", t.getMessage());
+} else if (request.getAttribute("javax.servlet.error.status_code") != null) {
+	Integer code = (Integer)request.getAttribute("javax.servlet.error.status_code");
+	HttpStatus status = HttpStatus.valueOf(code);
+	request.setAttribute("errorCode", status.toString());
+	request.setAttribute("message", status.getReasonPhrase());
 } else {
 	request.setAttribute("errorCode", "Server error");
 	request.setAttribute("message", "See the logs for details");
