@@ -345,3 +345,9 @@ CREATE TABLE IF NOT EXISTS claim_issuer (
 	owner_id BIGINT NOT NULL,
 	issuer VARCHAR(1024)
 );
+
+CREATE TABLE IF NOT EXISTS saved_registered_client (
+	id BIGINT AUTO_INCREMENT PRIMARY KEY,
+	issuer VARCHAR(1024),
+	registered_client VARCHAR(8192)
+);
