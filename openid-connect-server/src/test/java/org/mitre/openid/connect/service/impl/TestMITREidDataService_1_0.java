@@ -578,9 +578,6 @@ public class TestMITREidDataService_1_0 {
 		Date creationDate1 = formatter.parse("2014-09-10T22:49:44.090+0000", Locale.ENGLISH);
 		Date accessDate1 = formatter.parse("2014-09-10T23:49:44.090+0000", Locale.ENGLISH);
 
-		WhitelistedSite mockWlSite1 = mock(WhitelistedSite.class);
-		when(mockWlSite1.getId()).thenReturn(1L);
-
 		OAuth2AccessTokenEntity mockToken1 = mock(OAuth2AccessTokenEntity.class);
 		when(mockToken1.getId()).thenReturn(1L);
 
@@ -590,7 +587,6 @@ public class TestMITREidDataService_1_0 {
 		site1.setCreationDate(creationDate1);
 		site1.setAccessDate(accessDate1);
 		site1.setUserId("user1");
-		site1.setWhitelistedSite(mockWlSite1);
 		site1.setAllowedScopes(ImmutableSet.of("openid", "phone"));
 		site1.setApprovedAccessTokens(ImmutableSet.of(mockToken1));
 
@@ -671,8 +667,8 @@ public class TestMITREidDataService_1_0 {
 		});
 
 		dataService.importData(reader);
-		//2 for sites, 1 for updating access token ref on #1, 1 more for updating whitelistedSite ref on #2
-		verify(approvedSiteRepository, times(4)).save(capturedApprovedSites.capture());
+		//2 for sites, 1 for updating access token ref on #1
+		verify(approvedSiteRepository, times(3)).save(capturedApprovedSites.capture());
 
 				List<ApprovedSite> savedSites = new ArrayList(fakeDb.values());
 
@@ -682,7 +678,6 @@ public class TestMITREidDataService_1_0 {
 				assertThat(savedSites.get(0).getAccessDate(), equalTo(site1.getAccessDate()));
 				assertThat(savedSites.get(0).getCreationDate(), equalTo(site1.getCreationDate()));
 				assertThat(savedSites.get(0).getAllowedScopes(), equalTo(site1.getAllowedScopes()));
-				assertThat(savedSites.get(0).getIsWhitelisted(), equalTo(site1.getIsWhitelisted()));
 				assertThat(savedSites.get(0).getTimeoutDate(), equalTo(site1.getTimeoutDate()));
 				assertThat(savedSites.get(0).getApprovedAccessTokens().size(), equalTo(site1.getApprovedAccessTokens().size()));
 
@@ -691,7 +686,6 @@ public class TestMITREidDataService_1_0 {
 				assertThat(savedSites.get(1).getCreationDate(), equalTo(site2.getCreationDate()));
 				assertThat(savedSites.get(1).getAllowedScopes(), equalTo(site2.getAllowedScopes()));
 				assertThat(savedSites.get(1).getTimeoutDate(), equalTo(site2.getTimeoutDate()));
-				assertThat(savedSites.get(1).getIsWhitelisted(), equalTo(site2.getIsWhitelisted()));
 				assertThat(savedSites.get(1).getApprovedAccessTokens().size(), equalTo(site2.getApprovedAccessTokens().size()));
 	}
 
