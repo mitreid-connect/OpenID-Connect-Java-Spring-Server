@@ -348,9 +348,9 @@
     	"loading-policy": "Policy",
     	"loading-rs": "Resource Set",
     	"rs-table": {
-    		"confirm": "Are you sure you want to delete this resource set?"
+    		"confirm": "Are you sure you want to delete this resource set?",
     		"no-resource-sets": "There are no resource sets registered. Introduce a protected to this authorization server to let it register some.",
-    		"scopes": "Scopes"
+    		"scopes": "Scopes",
     		"shared-with": "Shared with:",
     		"shared-nobody": "NOBODY",
     		"shared-nobody-tooltip": "This resource is not accessible by anyone else, edit the policies and share it with someone.",
