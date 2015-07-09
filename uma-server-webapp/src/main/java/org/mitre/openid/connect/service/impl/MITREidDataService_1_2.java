@@ -1,3 +1,4 @@
+package org.mitre.openid.connect.service.impl;
 /*******************************************************************************
  * Copyright 2015 The MITRE Corporation
  *   and the MIT Kerberos and Internet Trust Consortium
@@ -14,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package org.mitre.openid.connect.service.impl;
+
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -46,6 +47,15 @@ import org.mitre.openid.connect.repository.ApprovedSiteRepository;
 import org.mitre.openid.connect.repository.BlacklistedSiteRepository;
 import org.mitre.openid.connect.repository.WhitelistedSiteRepository;
 import org.mitre.openid.connect.service.MITREidDataService;
+import org.mitre.uma.model.Claim;
+import org.mitre.uma.model.Permission;
+import org.mitre.uma.model.PermissionTicket;
+import org.mitre.uma.model.Policy;
+import org.mitre.uma.model.ResourceSet;
+import org.mitre.uma.model.SavedRegisteredClient;
+import org.mitre.uma.service.PermissionService;
+import org.mitre.uma.service.ResourceSetService;
+import org.mitre.uma.service.impl.JpaRegisteredClientService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,6 +77,8 @@ import static org.mitre.util.JsonUtils.readSet;
 import static org.mitre.util.JsonUtils.writeNullSafeArray;
 
 /**
+ *
+ * UMA EXPORT OVERRIDE
  *
  * Data service to import and export MITREid 1.2 configuration.
  *
@@ -144,6 +156,25 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 	private static final String CLIENT_ID = "clientId";
 	private static final String EXPIRATION = "expiration";
 	private static final String ID = "id";
+	private static final String ICON_URI = "iconUri";
+	private static final String OWNER = "owner";
+	private static final String POLICIES = "policies";
+	private static final String SCOPES = "scopes";
+	private static final String CLAIMS_REQUIRED = "claimsRequired";
+	private static final String ISSUER = "issuer";
+	private static final String CLAIM_TOKEN_FORMAT = "claimTokenFormat";
+	private static final String CLAIM_TYPE = "claimType";
+	private static final String FRIENDLY_NAME = "friendlyName";
+	private static final String PERMISSIONS = "permissions";
+	private static final String RESOURCE_SET = "resourceSet";
+	private static final String PERMISSION_TICKETS = "permissionTickets";
+	private static final String PERMISSION = "permission";
+	private static final String TICKET = "ticket";
+	private static final String CLAIMS_SUPPLIED = "claimsSupplied";
+	
+	private static final String SAVED_REGISTERED_CLIENTS = "savedRegisteredClients";
+	private static final String RESOURCE_SETS = "resourceSets";
+	
 	/**
 	 * Logger for this class
 	 */
@@ -162,6 +193,12 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 	private OAuth2TokenRepository tokenRepository;
 	@Autowired
 	private SystemScopeRepository sysScopeRepository;
+	@Autowired
+	private JpaRegisteredClientService registeredClientService;
+	@Autowired
+	private ResourceSetService resourceSetService;
+	@Autowired
+	private PermissionService permissionService;
 	
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.service.MITREidDataService#export(com.google.gson.stream.JsonWriter)
@@ -214,8 +251,157 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 		writer.beginArray();
 		writeSystemScopes(writer);
 		writer.endArray();
-
+		
+		writer.name(SAVED_REGISTERED_CLIENTS);
+		writer.beginArray();
+		writeSavedRegisteredClients(writer);
+		writer.endArray();
+		
+		writer.name(RESOURCE_SETS);
+		writer.beginArray();
+		writeResourceSets(writer);
+		writer.endArray();
+		
+		writer.name(PERMISSION_TICKETS);
+		writer.beginArray();
+		writePermissionTickets(writer);
+		writer.endArray();
+		
 		writer.endObject(); // end mitreid-connect-1.2
+	}
+
+	/**
+	 * @param writer
+	 * @throws IOException 
+	 */
+	private void writePermissionTickets(JsonWriter writer) throws IOException {
+		for (PermissionTicket ticket : permissionService.getAll()) {
+			writer.beginObject();
+			
+			writer.name(CLAIMS_SUPPLIED);
+			writer.beginArray();
+			for (Claim claim : ticket.getClaimsSupplied()) {
+				writer.beginObject();
+				
+				writer.name(ISSUER);
+				writer.beginArray();
+				for (String issuer : claim.getIssuer()) {
+					writer.value(issuer);
+				}
+				writer.endArray();
+				writer.name(CLAIM_TOKEN_FORMAT);
+				writer.beginArray();
+				for (String format : claim.getClaimTokenFormat()) {
+					writer.value(format);
+				}
+				writer.endArray();
+				writer.name(CLAIM_TYPE).value(claim.getClaimType());
+				writer.name(FRIENDLY_NAME).value(claim.getFriendlyName());
+				writer.name(NAME).value(claim.getName());
+				writer.name(VALUE).value(claim.getValue().toString());
+				writer.endObject();
+			}
+			writer.endArray();
+			
+			writer.name(EXPIRATION).value(toUTCString(ticket.getExpiration()));
+
+			writer.name(PERMISSION);
+			writer.beginObject();
+			Permission p = ticket.getPermission();
+			writer.name(RESOURCE_SET).value(p.getResourceSet().getId());
+			writer.name(SCOPE);
+			writer.beginArray();
+			for (String s : p.getScopes()) {
+				writer.value(s);
+			}
+			writer.endArray();
+			writer.endObject();
+
+			writer.name(TICKET).value(ticket.getTicket());
+			
+			writer.endObject();
+		}
+		
+		
+	}
+
+	/**
+	 * @param writer
+	 * @throws IOException 
+	 */
+	private void writeResourceSets(JsonWriter writer) throws IOException {
+		for (ResourceSet rs : resourceSetService.getAll()) {
+			writer.beginObject();
+			writer.name(ID).value(rs.getId());
+			writer.name(CLIENT_ID).value(rs.getClientId());
+			writer.name(ICON_URI).value(rs.getIconUri());
+			writer.name(NAME).value(rs.getName());
+			writer.name(TYPE).value(rs.getType());
+			writer.name(URI).value(rs.getUri());
+			writer.name(OWNER).value(rs.getOwner());
+			writer.name(POLICIES);
+			writer.beginArray();
+			for (Policy policy : rs.getPolicies()) {
+				writer.beginObject();
+				writer.name(ID).value(policy.getId());
+				writer.name(NAME).value(policy.getName());
+				writer.name(SCOPES);
+				writer.beginArray();
+				for (String scope : policy.getScopes()) {
+					writer.value(scope);
+				}
+				writer.endArray();
+				writer.name(CLAIMS_REQUIRED);
+				writer.beginArray();
+				for (Claim claim : policy.getClaimsRequired()) {
+					writer.beginObject();
+					
+					writer.name(ISSUER);
+					writer.beginArray();
+					for (String issuer : claim.getIssuer()) {
+						writer.value(issuer);
+					}
+					writer.endArray();
+					writer.name(CLAIM_TOKEN_FORMAT);
+					writer.beginArray();
+					for (String format : claim.getClaimTokenFormat()) {
+						writer.value(format);
+					}
+					writer.endArray();
+					writer.name(CLAIM_TYPE).value(claim.getClaimType());
+					writer.name(FRIENDLY_NAME).value(claim.getFriendlyName());
+					writer.name(NAME).value(claim.getName());
+					writer.name(VALUE).value(claim.getValue().toString());
+					writer.endObject();
+				}
+				writer.endArray();
+				writer.endObject();
+			}
+			writer.endArray();
+			writer.name(SCOPES);
+			writer.beginArray();
+			for (String scope : rs.getScopes()) {
+				writer.value(scope);
+			}
+			writer.endArray();
+			writer.endObject();
+			logger.debug("Finished writing resource set {}", rs.getId());
+		}
+		
+	}
+
+	/**
+	 * @param writer
+	 */
+	private void writeSavedRegisteredClients(JsonWriter writer) throws IOException {
+		for (SavedRegisteredClient src : registeredClientService.getAll()) {
+			writer.beginObject();
+			writer.name("issuer").value(src.getIssuer());
+			writer.name("registeredClient").value(src.getRegisteredClient().getSource().toString());
+			writer.endObject();
+			logger.debug("Wrote saved registered client {}", src.getId());
+		}
+		logger.info("Done writing saved registered clients");
 	}
 
 	/**
@@ -259,6 +445,21 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 				writer.value(s);
 			}
 			writer.endArray();
+			writer.name(PERMISSIONS);
+			writer.beginArray();
+			for (Permission p : token.getPermissions()) {
+				writer.beginObject();
+				writer.name(RESOURCE_SET).value(p.getResourceSet().getId());
+				writer.name(SCOPE);
+				writer.beginArray();
+				for (String s : p.getScopes()) {
+					writer.value(s);
+				}
+				writer.endArray();
+				writer.endObject();
+			}
+			writer.endArray();
+			
 			writer.name(TYPE).value(token.getTokenType());
 			writer.name(VALUE).value(token.getValue());
 			writer.endObject();

@@ -17,6 +17,8 @@
 
 package org.mitre.uma.service.impl;
 
+import java.util.Collection;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -79,6 +81,14 @@ public class JpaRegisteredClientService implements RegisteredClientService {
 		
 		SavedRegisteredClient saved = JpaUtil.getSingleResult(query.getResultList());
 		return saved;
+	}
+
+	/**
+	 * @return
+	 */
+	public Collection<SavedRegisteredClient> getAll() {
+		TypedQuery<SavedRegisteredClient> query = em.createQuery("SELECT c from SavedRegisteredClient c", SavedRegisteredClient.class);
+		return query.getResultList();
 	}
 	
 }

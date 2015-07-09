@@ -48,12 +48,14 @@ import javax.persistence.TemporalType;
 @Entity
 @Table(name = "permission_ticket")
 @NamedQueries({
-	@NamedQuery(name = PermissionTicket.QUERY_TICKET, query = "select p from PermissionTicket p where p.ticket = :" + PermissionTicket.PARAM_TICKET)
+	@NamedQuery(name = PermissionTicket.QUERY_TICKET, query = "select p from PermissionTicket p where p.ticket = :" + PermissionTicket.PARAM_TICKET),
+	@NamedQuery(name = PermissionTicket.QUERY_ALL, query = "select p from PermissionTicket p")
 })
 public class PermissionTicket {
 
 	public static final String QUERY_TICKET = "PermissionTicket.queryByTicket";
 	public static final String PARAM_TICKET = "ticket";
+	public static final String QUERY_ALL = "PermissionTicket.queryAll";
 	
 	private Long id;
 	private Permission permission;

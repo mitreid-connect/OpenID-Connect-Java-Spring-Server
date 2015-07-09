@@ -78,5 +78,11 @@ public class JpaResourceSetRepository implements ResourceSetRepository {
 		query.setParameter(ResourceSet.PARAM_CLIENTID, clientId);
 		return query.getResultList();
 	}
+	
+	@Override
+	public Collection<ResourceSet> getAll() {
+		TypedQuery<ResourceSet> query = em.createNamedQuery(ResourceSet.QUERY_ALL, ResourceSet.class);
+		return query.getResultList();
+	}
 
 }

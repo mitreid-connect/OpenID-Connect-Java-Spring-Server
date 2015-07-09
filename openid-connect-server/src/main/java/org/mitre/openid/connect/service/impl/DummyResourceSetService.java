@@ -64,4 +64,9 @@ public class DummyResourceSetService implements ResourceSetService {
 		return Collections.emptySet();
 	}
 
+	@Override
+	public Collection<ResourceSet> getAll() {
+		return Collections.emptySet();
+	}
+
 }

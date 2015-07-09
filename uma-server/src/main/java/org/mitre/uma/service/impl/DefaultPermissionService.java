@@ -18,6 +18,7 @@
 package org.mitre.uma.service.impl;
 
 import java.sql.Date;
+import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
 
@@ -90,6 +91,14 @@ public class DefaultPermissionService implements PermissionService {
 			return null;
 		}
 		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.mitre.uma.service.PermissionService#getAll()
+	 */
+	@Override
+	public Collection<PermissionTicket> getAll() {
+		return repository.getAll();
 	}
 
 	

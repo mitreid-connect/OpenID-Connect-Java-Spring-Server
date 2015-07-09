@@ -17,6 +17,8 @@
 
 package org.mitre.uma.repository.impl;
 
+import java.util.Collection;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -51,6 +53,15 @@ public class JpaPermissionRepository implements PermissionRepository {
 		TypedQuery<PermissionTicket> query = em.createNamedQuery(PermissionTicket.QUERY_TICKET, PermissionTicket.class);
 		query.setParameter(PermissionTicket.PARAM_TICKET, ticket);
 		return JpaUtil.getSingleResult(query.getResultList());
+	}
+
+	/* (non-Javadoc)
+	 * @see org.mitre.uma.repository.PermissionRepository#getAll()
+	 */
+	@Override
+	public Collection<PermissionTicket> getAll() {
+		TypedQuery<PermissionTicket> query = em.createNamedQuery(PermissionTicket.QUERY_ALL, PermissionTicket.class);
+		return query.getResultList();
 	}
 
 }

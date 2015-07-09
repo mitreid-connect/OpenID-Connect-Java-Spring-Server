@@ -17,6 +17,7 @@
 
 package org.mitre.uma.service;
 
+import java.util.Collection;
 import java.util.Set;
 
 import org.mitre.uma.model.PermissionTicket;
@@ -54,5 +55,10 @@ public interface PermissionService {
 	 * @return 
 	 */
 	public PermissionTicket updateTicket(PermissionTicket ticket);
+
+	/**
+	 * @return
+	 */
+	public Collection<PermissionTicket> getAll();
 
 }

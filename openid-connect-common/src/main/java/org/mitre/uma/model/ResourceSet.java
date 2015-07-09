@@ -40,12 +40,14 @@ import javax.persistence.Table;
 @Table(name = "resource_set")
 @NamedQueries ({
 		@NamedQuery(name = ResourceSet.QUERY_BY_OWNER, query = "select r from ResourceSet r where r.owner = :" + ResourceSet.PARAM_OWNER),
-		@NamedQuery(name = ResourceSet.QUERY_BY_OWNER_AND_CLIENT, query = "select r from ResourceSet r where r.owner = :" + ResourceSet.PARAM_OWNER + " and r.clientId = :" + ResourceSet.PARAM_CLIENTID)
+		@NamedQuery(name = ResourceSet.QUERY_BY_OWNER_AND_CLIENT, query = "select r from ResourceSet r where r.owner = :" + ResourceSet.PARAM_OWNER + " and r.clientId = :" + ResourceSet.PARAM_CLIENTID),
+		@NamedQuery(name = ResourceSet.QUERY_ALL, query = "select r from ResourceSet r")
 })
 public class ResourceSet {
 
 	public static final String QUERY_BY_OWNER = "ResourceSet.queryByOwner";
 	public static final String QUERY_BY_OWNER_AND_CLIENT = "ResourceSet.queryByOwnerAndClient";
+	public static final String QUERY_ALL = "ResourceSet.queryAll";
 
 	public static final String PARAM_OWNER = "owner";
 	public static final String PARAM_CLIENTID = "clientId";

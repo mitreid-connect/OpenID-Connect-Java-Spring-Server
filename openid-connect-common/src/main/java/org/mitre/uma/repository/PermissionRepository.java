@@ -17,6 +17,8 @@
 
 package org.mitre.uma.repository;
 
+import java.util.Collection;
+
 import org.mitre.uma.model.PermissionTicket;
 
 /**
@@ -41,5 +43,10 @@ public interface PermissionRepository {
 	 * @return
 	 */
 	public PermissionTicket getByTicket(String ticket);
+
+	/**
+	 * @return
+	 */
+	public Collection<PermissionTicket> getAll();
 
 }

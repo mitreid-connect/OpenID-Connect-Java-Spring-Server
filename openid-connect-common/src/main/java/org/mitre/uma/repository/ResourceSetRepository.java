@@ -37,4 +37,6 @@ public interface ResourceSetRepository {
 
 	public Collection<ResourceSet> getAllForOwnerAndClient(String owner, String clientId);
 
+	public Collection<ResourceSet> getAll();
+
 }
