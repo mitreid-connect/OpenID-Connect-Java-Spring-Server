@@ -71,9 +71,9 @@
 
     <properties>
         <java-version>1.6</java-version>
-        <org.springframework-version>3.2.13.RELEASE</org.springframework-version>
+        <org.springframework-version>3.2.14.RELEASE</org.springframework-version>
         <org.slf4j-version>1.7.2</org.slf4j-version>
-        <spring.security.version>3.1.4.RELEASE</spring.security.version>
+        <spring.security.version>3.1.7.RELEASE</spring.security.version>
     </properties>
     <description>A reference implementation of OpenID Connect (http://openid.net/connect/) and OAuth 2.0 built on top of Java, Spring, and Spring Security. The project contains a fully functioning server, client, and utility library.</description>
     <url>https://github.com/mitreid-connect</url>
