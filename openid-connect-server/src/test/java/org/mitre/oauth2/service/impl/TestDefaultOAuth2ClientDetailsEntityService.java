@@ -32,6 +32,8 @@ import org.mitre.openid.connect.service.ApprovedSiteService;
 import org.mitre.openid.connect.service.BlacklistedSiteService;
 import org.mitre.openid.connect.service.StatsService;
 import org.mitre.openid.connect.service.WhitelistedSiteService;
+import org.mitre.uma.model.ResourceSet;
+import org.mitre.uma.service.ResourceSetService;
 import org.mockito.AdditionalAnswers;
 import org.mockito.InjectMocks;
 import org.mockito.Matchers;
@@ -75,6 +77,9 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 
 	@Mock
 	private SystemScopeService scopeService;
+	
+	@Mock
+	private ResourceSetService resourceSetService;
 
 	@Mock
 	private StatsService statsService;
@@ -264,6 +269,8 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		WhitelistedSite site = Mockito.mock(WhitelistedSite.class);
 		Mockito.when(whitelistedSiteService.getByClientId(clientId)).thenReturn(site);
 
+		Mockito.when(resourceSetService.getAllForClient(client)).thenReturn(new HashSet<ResourceSet>());
+		
 		service.deleteClient(client);
 
 		Mockito.verify(tokenRepository).clearTokensForClient(client);
