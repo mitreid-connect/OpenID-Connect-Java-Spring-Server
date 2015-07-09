@@ -39,4 +39,6 @@ public interface ResourceSetRepository {
 
 	public Collection<ResourceSet> getAll();
 
+	public Collection<ResourceSet> getAllForClient(String clientId);
+
 }

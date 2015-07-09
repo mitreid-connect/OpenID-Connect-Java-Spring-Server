@@ -18,6 +18,7 @@ package org.mitre.uma.service;
 
 import java.util.Collection;
 
+import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.uma.model.ResourceSet;
 
 /**
@@ -40,5 +41,7 @@ public interface ResourceSetService {
 	public Collection<ResourceSet> getAllForOwner(String owner);
 
 	public Collection<ResourceSet> getAllForOwnerAndClient(String owner, String authClientId);
+
+	public Collection<ResourceSet> getAllForClient(ClientDetailsEntity client);
 
 }

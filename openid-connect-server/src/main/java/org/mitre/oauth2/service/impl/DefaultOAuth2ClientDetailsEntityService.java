@@ -42,6 +42,8 @@ import org.mitre.openid.connect.service.ApprovedSiteService;
 import org.mitre.openid.connect.service.BlacklistedSiteService;
 import org.mitre.openid.connect.service.StatsService;
 import org.mitre.openid.connect.service.WhitelistedSiteService;
+import org.mitre.uma.model.ResourceSet;
+import org.mitre.uma.service.ResourceSetService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,6 +89,9 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 
 	@Autowired
 	private StatsService statsService;
+	
+	@Autowired
+	private ResourceSetService resourceSetService;
 	
 	@Autowired
 	private ConfigurationPropertiesBean config;
@@ -234,6 +239,12 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 		WhitelistedSite whitelistedSite = whitelistedSiteService.getByClientId(client.getClientId());
 		if (whitelistedSite != null) {
 			whitelistedSiteService.remove(whitelistedSite);
+		}
+		
+		// clear out resource sets registered for this client
+		Collection<ResourceSet> resourceSets = resourceSetService.getAllForClient(client);
+		for (ResourceSet rs : resourceSets) {
+			resourceSetService.remove(rs);
 		}
 
 		// take care of the client itself

@@ -885,7 +885,9 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 						reader.endObject();
 						Permission saved = permissionRepository.saveRawPermission(p);
 						permissionToResourceRefs.put(saved.getId(), rsid);
+						ticket.setPermission(saved);
 					} else if (name.equals(TICKET)) {
+						ticket.setTicket(reader.nextString());
 					} else {
 						logger.debug("Found unexpected entry");
 						reader.skipValue();
@@ -1225,6 +1227,7 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 									continue;
 								}
 							}
+							reader.endObject();
 							p.setScopes(scope);
 							Permission saved = permissionRepository.saveRawPermission(p);
 							permissionToResourceRefs.put(saved.getId(), rsid);
@@ -1807,6 +1810,7 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 			ResourceSet rs = resourceSetRepository.getById(newResourceId);
 			p.setResourceSet(rs);
 			permissionRepository.saveRawPermission(p);
+			logger.debug("Mapping rsid " + oldResourceId + " to " + newResourceId + " for permission " + permissionId);
 		}
 		permissionToResourceRefs.clear();
 		resourceSetOldToNewIdMap.clear();

@@ -85,4 +85,14 @@ public class JpaResourceSetRepository implements ResourceSetRepository {
 		return query.getResultList();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.mitre.uma.repository.ResourceSetRepository#getAllForClient(org.mitre.oauth2.model.ClientDetailsEntity)
+	 */
+	@Override
+	public Collection<ResourceSet> getAllForClient(String clientId) {
+		TypedQuery<ResourceSet> query = em.createNamedQuery(ResourceSet.QUERY_BY_CLIENT, ResourceSet.class);
+		query.setParameter(ResourceSet.PARAM_CLIENTID, clientId);
+		return query.getResultList();
+	}
+
 }

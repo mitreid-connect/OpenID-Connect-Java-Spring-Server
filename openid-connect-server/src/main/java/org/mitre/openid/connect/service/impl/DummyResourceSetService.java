@@ -20,6 +20,7 @@ package org.mitre.openid.connect.service.impl;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.uma.model.ResourceSet;
 import org.mitre.uma.service.ResourceSetService;
 import org.springframework.stereotype.Service;
@@ -61,6 +62,11 @@ public class DummyResourceSetService implements ResourceSetService {
 
 	@Override
 	public Collection<ResourceSet> getAllForOwnerAndClient(String owner, String authClientId) {
+		return Collections.emptySet();
+	}
+
+	@Override
+	public Collection<ResourceSet> getAllForClient(ClientDetailsEntity client) {
 		return Collections.emptySet();
 	}
 

@@ -19,6 +19,7 @@ package org.mitre.uma.service.impl;
 
 import java.util.Collection;
 
+import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
 import org.mitre.uma.model.PermissionTicket;
@@ -136,6 +137,14 @@ public class DefaultResourceSetService implements ResourceSetService {
 		}
 		// we've checked everything, we're good
 		return true;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.mitre.uma.service.ResourceSetService#getAllForClient(org.mitre.oauth2.model.ClientDetailsEntity)
+	 */
+	@Override
+	public Collection<ResourceSet> getAllForClient(ClientDetailsEntity client) {
+		return repository.getAllForClient(client.getClientId());
 	}
 	
 }

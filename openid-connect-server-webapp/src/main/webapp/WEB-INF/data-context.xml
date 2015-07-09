@@ -38,8 +38,8 @@
 		<!-- The following files are for safely bootstrapping users and clients into the database -->
 		<jdbc:script location="classpath:/db/tables/loading_temp_tables.sql"/>
 		<jdbc:script location="classpath:/db/users.sql"/>
-		<jdbc:script location="classpath:/db/clients.sql"/>
-		<jdbc:script location="classpath:/db/scopes.sql"/>
+<!-- 		<jdbc:script location="classpath:/db/clients.sql"/> -->
+<!-- 		<jdbc:script location="classpath:/db/scopes.sql"/> -->
 	</jdbc:initialize-database>
 
 	<bean id="jpaAdapter" class="org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter">
