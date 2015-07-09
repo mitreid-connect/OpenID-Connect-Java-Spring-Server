@@ -21,6 +21,7 @@ import java.util.Collection;
 
 import org.mitre.uma.model.Permission;
 import org.mitre.uma.model.PermissionTicket;
+import org.mitre.uma.model.ResourceSet;
 
 /**
  * @author jricher
@@ -61,9 +62,26 @@ public interface PermissionRepository {
 	public Permission saveRawPermission(Permission p);
 
 	/**
+	 * Get a permission object by its ID (used by the import/export API)
+	 * 
 	 * @param permissionId
 	 * @return
 	 */
 	public Permission getById(Long permissionId);
+
+	/**
+	 * Get all permission tickets issued against a resource set (called when RS is deleted)
+	 * 
+	 * @param rs
+	 * @return
+	 */
+	public Collection<PermissionTicket> getPermissionTicketsForResourceSet(ResourceSet rs);
+
+	/**
+	 * Remove the specified ticket.
+	 * 
+	 * @param ticket
+	 */
+	public void remove(PermissionTicket ticket);
 
 }

@@ -23,8 +23,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
+import org.apache.http.MethodNotSupportedException;
 import org.mitre.uma.model.Permission;
 import org.mitre.uma.model.PermissionTicket;
+import org.mitre.uma.model.ResourceSet;
 import org.mitre.uma.repository.PermissionRepository;
 import org.mitre.util.jpa.JpaUtil;
 import org.springframework.stereotype.Repository;
@@ -69,6 +71,7 @@ public class JpaPermissionRepository implements PermissionRepository {
 	 * @see org.mitre.uma.repository.PermissionRepository#saveRawPermission(org.mitre.uma.model.Permission)
 	 */
 	@Override
+	@Transactional
 	public Permission saveRawPermission(Permission p) {
 		return JpaUtil.saveOrUpdate(p.getId(), em, p);
 	}
@@ -79,6 +82,28 @@ public class JpaPermissionRepository implements PermissionRepository {
 	@Override
 	public Permission getById(Long permissionId) {
 		return em.find(Permission.class, permissionId);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.mitre.uma.repository.PermissionRepository#getPermissionTicketsForResourceSet(org.mitre.uma.model.ResourceSet)
+	 */
+	@Override
+	public Collection<PermissionTicket> getPermissionTicketsForResourceSet(ResourceSet rs) {
+		TypedQuery<PermissionTicket> query = em.createNamedQuery(PermissionTicket.QUERY_BY_RESOURCE_SET, PermissionTicket.class);
+		query.setParameter(PermissionTicket.PARAM_RESOURCE_SET_ID, rs.getId());
+		return query.getResultList();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.mitre.uma.repository.PermissionRepository#remove(org.mitre.uma.model.PermissionTicket)
+	 */
+	@Override
+	@Transactional
+	public void remove(PermissionTicket ticket) {
+		PermissionTicket found = getByTicket(ticket.getTicket());
+		if (found != null) {
+			em.remove(found);
+		}
 	}
 
 }

@@ -30,6 +30,7 @@ import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
+import org.mitre.uma.model.ResourceSet;
 import org.mitre.util.jpa.JpaUtil;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -200,6 +201,16 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 		TypedQuery<OAuth2RefreshTokenEntity> query = manager.createNamedQuery(OAuth2RefreshTokenEntity.QUERY_EXPIRED_BY_DATE, OAuth2RefreshTokenEntity.class);
 		query.setParameter(OAuth2RefreshTokenEntity.PARAM_DATE, new Date());
 		query.setMaxResults(MAXEXPIREDRESULTS);
+		return new LinkedHashSet<>(query.getResultList());
+	}
+
+	/* (non-Javadoc)
+	 * @see org.mitre.oauth2.repository.OAuth2TokenRepository#getAccessTokensForResourceSet(org.mitre.uma.model.ResourceSet)
+	 */
+	@Override
+	public Set<OAuth2AccessTokenEntity> getAccessTokensForResourceSet(ResourceSet rs) {
+		TypedQuery<OAuth2AccessTokenEntity> query = manager.createNamedQuery(OAuth2AccessTokenEntity.QUERY_BY_RESOURCE_SET, OAuth2AccessTokenEntity.class);
+		query.setParameter(OAuth2AccessTokenEntity.PARAM_RESOURCE_SET_ID, rs.getId());
 		return new LinkedHashSet<>(query.getResultList());
 	}
 

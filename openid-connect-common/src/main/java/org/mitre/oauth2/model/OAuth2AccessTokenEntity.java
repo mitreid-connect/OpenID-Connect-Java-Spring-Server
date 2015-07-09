@@ -69,7 +69,8 @@ import com.nimbusds.jwt.JWT;
 	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_REFRESH_TOKEN, query = "select a from OAuth2AccessTokenEntity a where a.refreshToken = :" + OAuth2AccessTokenEntity.PARAM_REFERSH_TOKEN),
 	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_CLIENT, query = "select a from OAuth2AccessTokenEntity a where a.client = :" + OAuth2AccessTokenEntity.PARAM_CLIENT),
 	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_ID_TOKEN, query = "select a from OAuth2AccessTokenEntity a where a.idToken = :" + OAuth2AccessTokenEntity.PARAM_ID_TOKEN),
-	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_TOKEN_VALUE, query = "select a from OAuth2AccessTokenEntity a where a.jwt = :" + OAuth2AccessTokenEntity.PARAM_TOKEN_VALUE)
+	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_TOKEN_VALUE, query = "select a from OAuth2AccessTokenEntity a where a.jwt = :" + OAuth2AccessTokenEntity.PARAM_TOKEN_VALUE),
+	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_RESOURCE_SET, query = "select a from OAuth2AccessTokenEntity a join a.permissions p where p.resourceSet.id = :" + OAuth2AccessTokenEntity.PARAM_RESOURCE_SET_ID)
 })
 @org.codehaus.jackson.map.annotate.JsonSerialize(using = OAuth2AccessTokenJackson1Serializer.class)
 @org.codehaus.jackson.map.annotate.JsonDeserialize(using = OAuth2AccessTokenJackson1Deserializer.class)
@@ -83,12 +84,14 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	public static final String QUERY_BY_REFRESH_TOKEN = "OAuth2AccessTokenEntity.getByRefreshToken";
 	public static final String QUERY_EXPIRED_BY_DATE = "OAuth2AccessTokenEntity.getAllExpiredByDate";
 	public static final String QUERY_ALL = "OAuth2AccessTokenEntity.getAll";
+	public static final String QUERY_BY_RESOURCE_SET = "OAuth2AccessTokenEntity.getByResourceSet";
 
 	public static final String PARAM_TOKEN_VALUE = "tokenValue";
 	public static final String PARAM_ID_TOKEN = "idToken";
 	public static final String PARAM_CLIENT = "client";
 	public static final String PARAM_REFERSH_TOKEN = "refreshToken";
 	public static final String PARAM_DATE = "date";
+	public static final String PARAM_RESOURCE_SET_ID = "rsid";
 	
 	public static String ID_TOKEN_FIELD_NAME = "id_token";
 

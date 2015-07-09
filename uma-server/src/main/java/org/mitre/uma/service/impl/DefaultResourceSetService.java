@@ -19,8 +19,12 @@ package org.mitre.uma.service.impl;
 
 import java.util.Collection;
 
+import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
+import org.mitre.oauth2.repository.OAuth2TokenRepository;
+import org.mitre.uma.model.PermissionTicket;
 import org.mitre.uma.model.Policy;
 import org.mitre.uma.model.ResourceSet;
+import org.mitre.uma.repository.PermissionRepository;
 import org.mitre.uma.repository.ResourceSetRepository;
 import org.mitre.uma.service.ResourceSetService;
 import org.slf4j.Logger;
@@ -41,6 +45,12 @@ public class DefaultResourceSetService implements ResourceSetService {
 	
 	@Autowired
 	private ResourceSetRepository repository;
+	
+	@Autowired
+	private OAuth2TokenRepository tokenRepository;
+	
+	@Autowired
+	private PermissionRepository ticketRepository;
 
 	@Override
 	public ResourceSet saveNew(ResourceSet rs) {
@@ -89,6 +99,18 @@ public class DefaultResourceSetService implements ResourceSetService {
 
 	@Override
 	public void remove(ResourceSet rs) {
+		// find all the access tokens issued against this resource set and revoke them
+		Collection<OAuth2AccessTokenEntity> tokens = tokenRepository.getAccessTokensForResourceSet(rs);
+		for (OAuth2AccessTokenEntity token : tokens) {
+			tokenRepository.removeAccessToken(token);
+		}
+		
+		// find all outstanding tickets issued against this resource set and revoke them too
+		Collection<PermissionTicket> tickets = ticketRepository.getPermissionTicketsForResourceSet(rs);
+		for (PermissionTicket ticket : tickets) {
+			ticketRepository.remove(ticket);
+		}
+		
 		repository.remove(rs);
 	}
 
