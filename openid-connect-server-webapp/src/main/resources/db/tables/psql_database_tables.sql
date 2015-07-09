@@ -299,7 +299,7 @@ CREATE TABLE IF NOT EXISTS permission_ticket (
 
 CREATE TABLE IF NOT EXISTS permission (
 	id SERIAL PRIMARY KEY,
-	resource_set_id BIGINT NOT NULL
+	resource_set_id BIGINT
 );
 
 CREATE TABLE IF NOT EXISTS permission_scope (
