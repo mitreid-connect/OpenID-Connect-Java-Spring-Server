@@ -38,14 +38,8 @@ public class JpaUtil {
 	}
 
 	public static <T, I> T saveOrUpdate(I id, EntityManager entityManager, T entity) {
-		if (id == null) {
-			entityManager.persist(entity);
-			entityManager.flush();
-			return entity;
-		} else {
-			T tmp = entityManager.merge(entity);
-			entityManager.flush();
-			return tmp;
-		}
+		T tmp = entityManager.merge(entity);
+		entityManager.flush();
+		return tmp;
 	}
 }
