@@ -19,6 +19,7 @@ package org.mitre.uma.repository;
 
 import java.util.Collection;
 
+import org.mitre.uma.model.Permission;
 import org.mitre.uma.model.PermissionTicket;
 
 /**
@@ -45,8 +46,24 @@ public interface PermissionRepository {
 	public PermissionTicket getByTicket(String ticket);
 
 	/**
+	 * Get all the tickets in the system (used by the import/export API)
+	 * 
 	 * @return
 	 */
 	public Collection<PermissionTicket> getAll();
+
+	/**
+	 * Save a permission object with no associated ticket (used by the import/export API)
+	 * 
+	 * @param p
+	 * @return 
+	 */
+	public Permission saveRawPermission(Permission p);
+
+	/**
+	 * @param permissionId
+	 * @return
+	 */
+	public Permission getById(Long permissionId);
 
 }

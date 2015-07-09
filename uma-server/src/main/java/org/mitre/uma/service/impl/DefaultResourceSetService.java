@@ -115,13 +115,5 @@ public class DefaultResourceSetService implements ResourceSetService {
 		// we've checked everything, we're good
 		return true;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.mitre.uma.service.ResourceSetService#getAll()
-	 */
-	@Override
-	public Collection<ResourceSet> getAll() {
-		return repository.getAll();
-	}
 	
 }

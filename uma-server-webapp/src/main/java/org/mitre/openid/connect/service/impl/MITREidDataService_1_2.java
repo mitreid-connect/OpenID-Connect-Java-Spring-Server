@@ -34,12 +34,14 @@ import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
 import org.mitre.oauth2.model.ClientDetailsEntity.SubjectType;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
+import org.mitre.oauth2.model.RegisteredClient;
 import org.mitre.oauth2.model.SavedUserAuthentication;
 import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.repository.AuthenticationHolderRepository;
 import org.mitre.oauth2.repository.OAuth2ClientRepository;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
 import org.mitre.oauth2.repository.SystemScopeRepository;
+import org.mitre.openid.connect.ClientDetailsEntityJsonProcessor;
 import org.mitre.openid.connect.model.ApprovedSite;
 import org.mitre.openid.connect.model.BlacklistedSite;
 import org.mitre.openid.connect.model.WhitelistedSite;
@@ -53,8 +55,8 @@ import org.mitre.uma.model.PermissionTicket;
 import org.mitre.uma.model.Policy;
 import org.mitre.uma.model.ResourceSet;
 import org.mitre.uma.model.SavedRegisteredClient;
-import org.mitre.uma.service.PermissionService;
-import org.mitre.uma.service.ResourceSetService;
+import org.mitre.uma.repository.PermissionRepository;
+import org.mitre.uma.repository.ResourceSetRepository;
 import org.mitre.uma.service.impl.JpaRegisteredClientService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,6 +65,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
@@ -89,6 +93,7 @@ import static org.mitre.util.JsonUtils.writeNullSafeArray;
 @SuppressWarnings(value = {"unchecked"})
 public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements MITREidDataService {
 
+	private static final String REGISTERED_CLIENT = "registeredClient";
 	private static final String DEFAULT_SCOPE = "defaultScope";
 	private static final String STRUCTURED_PARAMETER = "structuredParameter";
 	private static final String STRUCTURED = "structured";
@@ -196,9 +201,9 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 	@Autowired
 	private JpaRegisteredClientService registeredClientService;
 	@Autowired
-	private ResourceSetService resourceSetService;
+	private ResourceSetRepository resourceSetRepository;
 	@Autowired
-	private PermissionService permissionService;
+	private PermissionRepository permissionRepository;
 	
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.service.MITREidDataService#export(com.google.gson.stream.JsonWriter)
@@ -275,7 +280,7 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 	 * @throws IOException 
 	 */
 	private void writePermissionTickets(JsonWriter writer) throws IOException {
-		for (PermissionTicket ticket : permissionService.getAll()) {
+		for (PermissionTicket ticket : permissionRepository.getAll()) {
 			writer.beginObject();
 			
 			writer.name(CLAIMS_SUPPLIED);
@@ -309,7 +314,7 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 			writer.beginObject();
 			Permission p = ticket.getPermission();
 			writer.name(RESOURCE_SET).value(p.getResourceSet().getId());
-			writer.name(SCOPE);
+			writer.name(SCOPES);
 			writer.beginArray();
 			for (String s : p.getScopes()) {
 				writer.value(s);
@@ -330,7 +335,7 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 	 * @throws IOException 
 	 */
 	private void writeResourceSets(JsonWriter writer) throws IOException {
-		for (ResourceSet rs : resourceSetService.getAll()) {
+		for (ResourceSet rs : resourceSetRepository.getAll()) {
 			writer.beginObject();
 			writer.name(ID).value(rs.getId());
 			writer.name(CLIENT_ID).value(rs.getClientId());
@@ -343,7 +348,6 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 			writer.beginArray();
 			for (Policy policy : rs.getPolicies()) {
 				writer.beginObject();
-				writer.name(ID).value(policy.getId());
 				writer.name(NAME).value(policy.getName());
 				writer.name(SCOPES);
 				writer.beginArray();
@@ -396,8 +400,8 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 	private void writeSavedRegisteredClients(JsonWriter writer) throws IOException {
 		for (SavedRegisteredClient src : registeredClientService.getAll()) {
 			writer.beginObject();
-			writer.name("issuer").value(src.getIssuer());
-			writer.name("registeredClient").value(src.getRegisteredClient().getSource().toString());
+			writer.name(ISSUER).value(src.getIssuer());
+			writer.name(REGISTERED_CLIENT).value(src.getRegisteredClient().getSource().toString());
 			writer.endObject();
 			logger.debug("Wrote saved registered client {}", src.getId());
 		}
@@ -450,7 +454,7 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 			for (Permission p : token.getPermissions()) {
 				writer.beginObject();
 				writer.name(RESOURCE_SET).value(p.getResourceSet().getId());
-				writer.name(SCOPE);
+				writer.name(SCOPES);
 				writer.beginArray();
 				for (String s : p.getScopes()) {
 					writer.value(s);
@@ -764,6 +768,12 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 					readRefreshTokens(reader);
 				} else if (name.equals(SYSTEMSCOPES)) {
 					readSystemScopes(reader);
+				} else if (name.equals(SAVED_REGISTERED_CLIENTS)) {
+					readSavedRegisteredClients(reader);
+				} else if (name.equals(RESOURCE_SETS)) {
+					readResourceSets(reader);
+				} else if (name.equals(PERMISSION_TICKETS)) {
+					readPermissionTickets(reader);
 				} else {
 					// unknown token, skip it
 					reader.skipValue();
@@ -781,14 +791,295 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 		}
 		fixObjectReferences();
 	}
-	private Map<Long, String> refreshTokenToClientRefs = new HashMap<Long, String>();
-	private Map<Long, Long> refreshTokenToAuthHolderRefs = new HashMap<Long, Long>();
-	private Map<Long, Long> refreshTokenOldToNewIdMap = new HashMap<Long, Long>();
+	
 
 	/**
 	 * @param reader
-	 * @throws IOException
 	 */
+	private void readPermissionTickets(JsonReader reader) throws IOException {
+		JsonParser parser = new JsonParser();
+		reader.beginArray();
+		while (reader.hasNext()) {
+			PermissionTicket ticket = new PermissionTicket();
+			reader.beginObject();
+			while (reader.hasNext()) {
+				switch (reader.peek()) {
+				case END_OBJECT:
+					continue;
+				case NAME:
+					String name = reader.nextName();
+					if (reader.peek() == JsonToken.NULL) {
+						reader.skipValue();
+					} else if (name.equals(CLAIMS_SUPPLIED)) {
+						Set<Claim> claimsSupplied = new HashSet<>();
+						reader.beginArray();
+						while (reader.hasNext()) {
+							Claim c = new Claim();
+							reader.beginObject();
+							while (reader.hasNext()) {
+								switch (reader.peek()) {
+								case END_OBJECT:
+									continue;
+								case NAME:
+									String cname = reader.nextName();
+									if (reader.peek() == JsonToken.NULL) {
+										reader.skipValue();
+									} else if (cname.equals(ISSUER)) {
+										c.setIssuer(readSet(reader));
+									} else if (cname.equals(CLAIM_TOKEN_FORMAT)) {
+										c.setClaimTokenFormat(readSet(reader));
+									} else if (cname.equals(CLAIM_TYPE)) {
+										c.setClaimType(reader.nextString());
+									} else if (cname.equals(FRIENDLY_NAME)) {
+										c.setFriendlyName(reader.nextString());
+									} else if (cname.equals(NAME)) {
+										c.setName(reader.nextString());
+									} else if (cname.equals(VALUE)) {
+										JsonElement e = parser.parse(reader.nextString());
+										c.setValue(e);
+									} else {
+										logger.debug("Found unexpected entry");
+										reader.skipValue();
+									}
+									break;
+								default:
+									logger.debug("Found unexpected entry");
+									reader.skipValue();
+									continue;
+								}
+							}
+							reader.endObject();
+							claimsSupplied.add(c);
+						}
+						reader.endArray();
+						ticket.setClaimsSupplied(claimsSupplied);
+					} else if (name.equals(EXPIRATION)) {
+						ticket.setExpiration(utcToDate(reader.nextString()));
+					} else if (name.equals(PERMISSION)) {
+						Permission p = new Permission();
+						Long rsid = null;
+						reader.beginObject();
+						while (reader.hasNext()) {
+							switch (reader.peek()) {
+							case END_OBJECT:
+								continue;
+							case NAME:
+								String pname = reader.nextName();
+								if (reader.peek() == JsonToken.NULL) {
+									reader.skipValue();
+								} else if (pname.equals(RESOURCE_SET)) {
+									rsid = reader.nextLong();
+								} else if (pname.equals(SCOPES)) {
+									p.setScopes(readSet(reader));
+								} else {
+									logger.debug("Found unexpected entry");
+									reader.skipValue();
+								}
+								break;
+							default:
+								logger.debug("Found unexpected entry");
+								reader.skipValue();
+								continue;
+							}
+						}
+						reader.endObject();
+						Permission saved = permissionRepository.saveRawPermission(p);
+						permissionToResourceRefs.put(saved.getId(), rsid);
+					} else if (name.equals(TICKET)) {
+					} else {
+						logger.debug("Found unexpected entry");
+						reader.skipValue();
+					}
+					break;
+				default:
+					logger.debug("Found unexpected entry");
+					reader.skipValue();
+					continue;
+				}
+			}
+			reader.endObject();
+			permissionRepository.save(ticket);
+		}
+		reader.endArray();
+	}
+
+
+	private Map<Long, Long> resourceSetOldToNewIdMap = new HashMap<>();
+	
+	/**
+	 * @param reader
+	 */
+	private void readResourceSets(JsonReader reader) throws IOException {
+		JsonParser parser = new JsonParser();
+		reader.beginArray();
+		while (reader.hasNext()) {
+			Long oldId = null;
+			ResourceSet rs = new ResourceSet();
+			reader.beginObject();
+			while (reader.hasNext()) {
+				switch (reader.peek()) {
+				case END_OBJECT:
+					continue;
+				case NAME:
+					String name = reader.nextName();
+					if (reader.peek() == JsonToken.NULL) {
+						reader.skipValue();
+					} else if (name.equals(ID)) {
+						oldId = reader.nextLong();
+					} else if (name.equals(CLIENT_ID)) {
+						rs.setClientId(reader.nextString());
+					} else if (name.equals(ICON_URI)) {
+						rs.setIconUri(reader.nextString());
+					} else if (name.equals(NAME)) {
+						rs.setName(reader.nextString());
+					} else if (name.equals(TYPE)) {
+						rs.setType(reader.nextString());
+					} else if (name.equals(URI)) {
+						rs.setUri(reader.nextString());
+					} else if (name.equals(OWNER)) {
+						rs.setOwner(reader.nextString());
+					} else if (name.equals(POLICIES)) {
+						Set<Policy> policies = new HashSet<>();
+						reader.beginArray();
+						while (reader.hasNext()) {
+							Policy p = new Policy();
+							reader.beginObject();
+							while (reader.hasNext()) {
+								switch (reader.peek()) {
+								case END_OBJECT:
+									continue;
+								case NAME:
+									String pname = reader.nextName();
+									if (reader.peek() == JsonToken.NULL) {
+										reader.skipValue();
+									} else if (pname.equals(NAME)) {
+										p.setName(reader.nextString());
+									} else if (pname.equals(SCOPES)) {
+										p.setScopes(readSet(reader));
+									} else if (pname.equals(CLAIMS_REQUIRED)) {
+										Set<Claim> claimsRequired = new HashSet<>();
+										reader.beginArray();
+										while (reader.hasNext()) {
+											Claim c = new Claim();
+											reader.beginObject();
+											while (reader.hasNext()) {
+												switch (reader.peek()) {
+												case END_OBJECT:
+													continue;
+												case NAME:
+													String cname = reader.nextName();
+													if (reader.peek() == JsonToken.NULL) {
+														reader.skipValue();
+													} else if (cname.equals(ISSUER)) {
+														c.setIssuer(readSet(reader));
+													} else if (cname.equals(CLAIM_TOKEN_FORMAT)) {
+														c.setClaimTokenFormat(readSet(reader));
+													} else if (cname.equals(CLAIM_TYPE)) {
+														c.setClaimType(reader.nextString());
+													} else if (cname.equals(FRIENDLY_NAME)) {
+														c.setFriendlyName(reader.nextString());
+													} else if (cname.equals(NAME)) {
+														c.setName(reader.nextString());
+													} else if (cname.equals(VALUE)) {
+														JsonElement e = parser.parse(reader.nextString());
+														c.setValue(e);
+													} else {
+														logger.debug("Found unexpected entry");
+														reader.skipValue();
+													}
+													break;
+												default:
+													logger.debug("Found unexpected entry");
+													reader.skipValue();
+													continue;
+												}
+											}
+											reader.endObject();
+											claimsRequired.add(c);
+										}
+										reader.endArray();
+										p.setClaimsRequired(claimsRequired);
+									} else {
+										logger.debug("Found unexpected entry");
+										reader.skipValue();
+									}
+									break;
+								default:
+									logger.debug("Found unexpected entry");
+									reader.skipValue();
+									continue;
+								}
+							}
+							reader.endObject();
+							policies.add(p);
+						}
+						reader.endArray();
+						rs.setPolicies(policies);
+					} else if (name.equals(SCOPES)) {
+						rs.setScopes(readSet(reader));
+					} else {
+						logger.debug("Found unexpected entry");
+						reader.skipValue();
+					}
+					break;
+				default:
+					logger.debug("Found unexpected entry");
+					reader.skipValue();
+					continue;
+				}
+			}
+			reader.endObject();
+			Long newId = resourceSetRepository.save(rs).getId();
+			resourceSetOldToNewIdMap.put(oldId, newId);
+		}
+		reader.endArray();
+		logger.info("Done reading resource sets");
+	}
+
+	/**
+	 * @param reader
+	 */
+	private void readSavedRegisteredClients(JsonReader reader) throws IOException{
+		reader.beginArray();
+		while (reader.hasNext()) {
+			String issuer = null;
+			String clientString = null;
+			reader.beginObject();
+			while (reader.hasNext()) {
+				switch (reader.peek()) {
+				case END_OBJECT:
+					continue;
+				case NAME:
+					String name = reader.nextName();
+					if (reader.peek() == JsonToken.NULL) {
+						reader.skipValue();
+					} else if (name.equals(ISSUER)) {
+						issuer = reader.nextString();
+					} else if (name.equals(REGISTERED_CLIENT)) {
+						clientString = reader.nextString();
+					} else {
+						logger.debug("Found unexpected entry");
+						reader.skipValue();
+					}
+					break;
+				default:
+					logger.debug("Found unexpected entry");
+					reader.skipValue();
+					continue;
+				}
+			}
+			reader.endObject();
+			RegisteredClient client = ClientDetailsEntityJsonProcessor.parseRegistered(clientString);
+			registeredClientService.save(issuer, client);
+			logger.debug("Saved registered client");
+		}
+		reader.endArray();
+		logger.info("Done reading saved registered clients");
+	}
+
+	private Map<Long, String> refreshTokenToClientRefs = new HashMap<Long, String>();
+	private Map<Long, Long> refreshTokenToAuthHolderRefs = new HashMap<Long, Long>();
+	private Map<Long, Long> refreshTokenOldToNewIdMap = new HashMap<Long, Long>();
 	/**
 	 * @param reader
 	 * @throws IOException
@@ -851,6 +1142,7 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 	private Map<Long, Long> accessTokenToRefreshTokenRefs = new HashMap<Long, Long>();
 	private Map<Long, Long> accessTokenToIdTokenRefs = new HashMap<Long, Long>();
 	private Map<Long, Long> accessTokenOldToNewIdMap = new HashMap<Long, Long>();
+	private Map<Long, Long> permissionToResourceRefs = new HashMap<>();
 
 	/**
 	 * @param reader
@@ -870,6 +1162,7 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 			Long authHolderId = null;
 			Long refreshTokenId = null;
 			Long idTokenId = null;
+			Set<Permission> permissions = new HashSet<>();
 			while (reader.hasNext()) {
 				switch (reader.peek()) {
 				case END_OBJECT:
@@ -902,6 +1195,43 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 					} else if (name.equals(SCOPE)) {
 						Set<String> scope = readSet(reader);
 						token.setScope(scope);
+					} else if (name.equals(PERMISSIONS)) {
+						reader.beginArray();
+						while (reader.hasNext()) {
+							Permission p = new Permission();
+							Long rsid = null;
+							Set<String> scope = new HashSet<>();
+							reader.beginObject();
+							while (reader.hasNext()) {
+								switch (reader.peek()) {
+								case END_OBJECT:
+									continue;
+								case NAME:
+									String pname = reader.nextName();
+									if (reader.peek() == JsonToken.NULL) {
+										reader.skipValue();
+									} else if (pname.equals(RESOURCE_SET)) {
+										rsid = reader.nextLong();
+									} else if (pname.equals(SCOPES)) {
+										scope = readSet(reader);
+									} else {
+										logger.debug("Found unexpected entry");
+										reader.skipValue();
+									}
+									break;
+								default:
+									logger.debug("Found unexpected entry");
+									reader.skipValue();
+									continue;
+								}
+							}
+							p.setScopes(scope);
+							Permission saved = permissionRepository.saveRawPermission(p);
+							permissionToResourceRefs.put(saved.getId(), rsid);
+							permissions.add(saved);
+						}
+						reader.endArray();
+						token.setPermissions(permissions);
 					} else if (name.equals(TYPE)) {
 						token.setTokenType(reader.nextString());
 					} else {
@@ -931,6 +1261,8 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 		reader.endArray();
 		logger.info("Done reading access tokens");
 	}
+	
+	
 	private Map<Long, Long> authHolderOldToNewIdMap = new HashMap<Long, Long>();
 
 	/**
@@ -1046,8 +1378,8 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 		return savedUserAuth;
 	}
 
-	Map<Long, Long> grantOldToNewIdMap = new HashMap<>();
-	Map<Long, Set<Long>> grantToAccessTokensRefs = new HashMap<>();
+	private Map<Long, Long> grantOldToNewIdMap = new HashMap<>();
+	private Map<Long, Set<Long>> grantToAccessTokensRefs = new HashMap<>();
 
 	/**
 	 * @param reader
@@ -1110,7 +1442,8 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 		reader.endArray();
 		logger.info("Done reading grants");
 	}
-	Map<Long, Long> whitelistedSiteOldToNewIdMap = new HashMap<Long, Long>();
+	
+	private Map<Long, Long> whitelistedSiteOldToNewIdMap = new HashMap<Long, Long>();
 
 	/**
 	 * @param reader
@@ -1467,6 +1800,17 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 		}
 		accessTokenOldToNewIdMap.clear();
 		grantOldToNewIdMap.clear();
+		for (Long permissionId : permissionToResourceRefs.keySet()) {
+			Long oldResourceId = permissionToResourceRefs.get(permissionId);
+			Long newResourceId = resourceSetOldToNewIdMap.get(oldResourceId);
+			Permission p = permissionRepository.getById(permissionId);
+			ResourceSet rs = resourceSetRepository.getById(newResourceId);
+			p.setResourceSet(rs);
+			permissionRepository.saveRawPermission(p);
+		}
+		permissionToResourceRefs.clear();
+		resourceSetOldToNewIdMap.clear();
+		
 		logger.info("Done fixing object references.");
 	}
 	

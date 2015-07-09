@@ -41,6 +41,4 @@ public interface ResourceSetService {
 
 	public Collection<ResourceSet> getAllForOwnerAndClient(String owner, String authClientId);
 
-	public Collection<ResourceSet> getAll();
-
 }
