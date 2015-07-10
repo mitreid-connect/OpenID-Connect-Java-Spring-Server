@@ -20,6 +20,15 @@
 
 
 (function(Backbone) {
+
+// Require Underscore and Backbone if there's a `require` function.
+// This makes `backbone.validations` work on the server or when using
+// `browserify`.
+if (typeof require !== 'undefined') {
+  _ = require('underscore');
+  Backbone = require('backbone');
+}
+
 // Premade Validators
 Backbone.Validations = {};
 
@@ -28,8 +37,8 @@ var validators = {
     return model[methodName](attributeName, valueToSet);
   },
 
-  "required" : function(attributeName, model, valueToSet) {
-    if (_.isNull(valueToSet) || _.isUndefined(valueToSet) || valueToSet === "") {
+  "required" : function(isRequired, attributeName, model, valueToSet) {
+    if (isRequired && (_.isNull(valueToSet) || _.isUndefined(valueToSet) || valueToSet === "")) {
       return "required";
     } else {
       return false;
@@ -59,7 +68,19 @@ var validators = {
   "number" : function(type, attributeName, model, valueToSet) {
     return isNaN(valueToSet) ? 'number' : undefined;
   },
-  
+
+  "Array": function(type, attributeName, model, valueToSet) {
+    return _.isArray(valueToSet) ? undefined : 'Array';
+  },
+
+  "Boolean": function(type, attributeName, model, valueToSet) {
+    return _.isBoolean(valueToSet) ? undefined : 'Boolean';
+  },
+
+  "String": function(type, attributeName, model, valueToSet) {
+    return _.isString(valueToSet) ? undefined : 'String';
+  },
+
   "digits": function (type, attributeName, model, valueToSet) {
     var isBeingSet = !_.isUndefined(valueToSet);
     return (!/^\d+$/.test(valueToSet) && isBeingSet) ? 'digits' : undefined;
@@ -97,6 +118,12 @@ var validators = {
     if (_.isString(valueToSet)) {
       if (valueToSet.length > maxlength) { return "maxlength"; }
     }
+  },
+
+  "arrayElem": function(validator, attributeName, model, valueToSet) {
+    if (_.isArray(valueToSet) && !_.all(valueToSet, validator)) {
+      return "validElem";
+    } else return false;
   }
 };
 
@@ -183,13 +210,7 @@ function createValidator(attributeName, type, description) {
 
   if (!validator) { throw "Improper validation type '"+type+"'" ; }
 
-  if (type !== "required") { // doesn't need the description
-    validator = _.bind(validator, null, description, attributeName);
-  } else {
-    validator = _.bind(validator, null, attributeName);
-  }
-
-  return validator;
+  return _.bind(validator, null, description, attributeName);
 }
 
 function createAttributeValidator(attributeName, attributeDescription) {
@@ -239,22 +260,16 @@ function createValidators(modelValidations) {
   return attributeValidators;
 }
 
-var oldPerformValidation = Backbone.Model.prototype._performValidation;
+var oldValidate = Backbone.Model.prototype._validate;
 function newPerformValidation(attrs, options) {
-  if (options.silent || !this.validate) return true;
-  var errors = this.validate(attrs);
-  if (errors) {
-    if (options.error) {
-      options.error(this, errors, options);
-    } else {
-      this.trigger('error', this, errors, options);
-      _.each(errors, function(error, name) {
-        this.trigger('error:' + name, this, errors, options);
-      }, this);
-    }
-    return false;
+  var result = oldValidate.apply(this, arguments);
+
+  if(!result){
+    _.each(this.validationError, function(error, name) {
+      this.trigger('invalid:' + name, this, this.validationError, options);
+    }, this);
   }
-  return true;
+  return result;
 }
 
 // save the old backbone
@@ -285,4 +300,4 @@ Backbone.Validations.Model.noConflict =  function() {
   Backbone.Model = oldModel;
 };
 
-}(Backbone));
+}(typeof Backbone === 'undefined' ? null : Backbone));
