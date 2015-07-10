@@ -380,7 +380,7 @@ var SystemScopeFormView = Backbone.View.extend({
 		this.$el.html(this.template(this.model.toJSON()));
 		
 		_.each(this.bootstrapIcons, function (items) {
-			$(".modal-body", this.el).append(this.iconTemplate({items:items}));
+			$("#iconSelector .modal-body", this.el).append(this.iconTemplate({items:items}));
 		}, this);
 		
 		this.toggleStructuredParamDescription();
