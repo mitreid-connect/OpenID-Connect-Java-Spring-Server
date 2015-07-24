@@ -835,7 +835,7 @@ public class MITREidDataService_1_0 extends MITREidDataService_1_X {
             }
             Long newGrantId = grantOldToNewIdMap.get(oldGrantId);
             ApprovedSite site = approvedSiteRepository.getById(newGrantId);
-            site.setApprovedAccessTokens(tokens);
+//            site.setApprovedAccessTokens(tokens);
             approvedSiteRepository.save(site);
         }
         accessTokenOldToNewIdMap.clear();

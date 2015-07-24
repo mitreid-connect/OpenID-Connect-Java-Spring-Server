@@ -27,6 +27,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mitre.oauth2.model.ClientDetailsEntity;
+import org.mitre.oauth2.repository.OAuth2TokenRepository;
 import org.mitre.openid.connect.model.ApprovedSite;
 import org.mitre.openid.connect.repository.ApprovedSiteRepository;
 import org.mitre.openid.connect.service.ApprovedSiteService;
@@ -51,6 +52,9 @@ public class TestDefaultApprovedSiteService {
 
 	@Mock
 	private ApprovedSiteRepository repository;
+	
+	@Mock
+	private OAuth2TokenRepository tokenRepository;
 
 	@Mock
 	private StatsService statsService;
@@ -84,7 +88,7 @@ public class TestDefaultApprovedSiteService {
 		site3.setUserId("user2");
 		site3.setClientId(clientId);
 
-		Mockito.reset(repository, statsService);
+		Mockito.reset(tokenRepository, repository, statsService);
 
 	}
 

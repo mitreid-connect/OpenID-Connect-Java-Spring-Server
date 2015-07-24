@@ -318,13 +318,13 @@ public class MITREidDataService_1_1 extends MITREidDataService_1_X {
             writer.name("allowedScopes");
             writeNullSafeArray(writer, site.getAllowedScopes());
             writer.name("whitelistedSiteId").value(site.getIsWhitelisted() ? site.getWhitelistedSite().getId() : null);
-            Set<OAuth2AccessTokenEntity> tokens = site.getApprovedAccessTokens();
-            writer.name("approvedAccessTokens");
-            writer.beginArray();
-            for (OAuth2AccessTokenEntity token : tokens) {
-                writer.value(token.getId());
-            }
-            writer.endArray();
+//            Set<OAuth2AccessTokenEntity> tokens = site.getApprovedAccessTokens();
+//            writer.name("approvedAccessTokens");
+//            writer.beginArray();
+//            for (OAuth2AccessTokenEntity token : tokens) {
+//                writer.value(token.getId());
+//            }
+//            writer.endArray();
             writer.endObject();
             logger.debug("Wrote grant {}", site.getId());
         }
@@ -1218,7 +1218,7 @@ public class MITREidDataService_1_1 extends MITREidDataService_1_X {
             }
             Long newGrantId = grantOldToNewIdMap.get(oldGrantId);
             ApprovedSite site = approvedSiteRepository.getById(newGrantId);
-            site.setApprovedAccessTokens(tokens);
+//            site.setApprovedAccessTokens(tokens);
             approvedSiteRepository.save(site);
         }
         accessTokenOldToNewIdMap.clear();
