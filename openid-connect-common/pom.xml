@@ -62,12 +62,6 @@
       		<groupId>org.springframework.security.oauth</groupId>
  		 	<version>2.0.0.M2</version>
       		<artifactId>spring-security-oauth2</artifactId>
-            <exclusions>
-               <exclusion>
-                  <groupId>org.springframework.security</groupId>
-                  <artifactId>spring-security-config</artifactId>
-               </exclusion>
-            </exclusions>
 		</dependency>
         <dependency>
         	<groupId>com.nimbusds</groupId>
