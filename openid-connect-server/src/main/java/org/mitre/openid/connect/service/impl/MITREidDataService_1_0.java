@@ -209,6 +209,7 @@ public class MITREidDataService_1_0 extends MITREidDataService_1_X {
     private Map<Long, String> accessTokenToClientRefs = new HashMap<Long, String>();
     private Map<Long, Long> accessTokenToAuthHolderRefs = new HashMap<Long, Long>();
     private Map<Long, Long> accessTokenToRefreshTokenRefs = new HashMap<Long, Long>();
+    private Map<Long, Long> accessTokenToApprovedSitesRefs = new HashMap<Long, Long>();
     private Map<Long, Long> accessTokenToIdTokenRefs = new HashMap<Long, Long>();
     private Map<Long, Long> accessTokenOldToNewIdMap = new HashMap<Long, Long>();
 
@@ -828,15 +829,14 @@ public class MITREidDataService_1_0 extends MITREidDataService_1_X {
         whitelistedSiteOldToNewIdMap.clear();
         for (Long oldGrantId : grantToAccessTokensRefs.keySet()) {
             Set<Long> oldAccessTokenIds = grantToAccessTokensRefs.get(oldGrantId);
-            Set<OAuth2AccessTokenEntity> tokens = new HashSet<OAuth2AccessTokenEntity>();
-            for(Long oldTokenId : oldAccessTokenIds) {
-                Long newTokenId = accessTokenOldToNewIdMap.get(oldTokenId);
-                tokens.add(tokenRepository.getAccessTokenById(newTokenId));
-            }
             Long newGrantId = grantOldToNewIdMap.get(oldGrantId);
             ApprovedSite site = approvedSiteRepository.getById(newGrantId);
-//            site.setApprovedAccessTokens(tokens);
-            approvedSiteRepository.save(site);
+            for(Long oldTokenId : oldAccessTokenIds) {
+                Long newTokenId = accessTokenOldToNewIdMap.get(oldTokenId);
+                OAuth2AccessTokenEntity token = tokenRepository.getAccessTokenById(newTokenId);
+                token.setApprovedSite(site);
+                tokenRepository.saveAccessToken(token);
+            }
         }
         accessTokenOldToNewIdMap.clear();
         grantOldToNewIdMap.clear();

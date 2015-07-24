@@ -1,13 +1,22 @@
 package org.mitre.openid.connect.service.impl;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Matchers.isNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
+
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -18,15 +27,11 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,7 +57,6 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import static org.mockito.Mockito.*;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
@@ -60,6 +64,15 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TestMITREidDataService_1_1 {
@@ -1109,7 +1122,7 @@ public class TestMITREidDataService_1_1 {
         site1.setUserId("user1");
         site1.setWhitelistedSite(mockWlSite1);
         site1.setAllowedScopes(ImmutableSet.of("openid", "phone"));
-//        site1.setApprovedAccessTokens(ImmutableSet.of(mockToken1));
+        Map<Long, OAuth2AccessTokenEntity> site1AccessTokens = new LinkedHashMap<Long, OAuth2AccessTokenEntity>();
 
         Date creationDate2 = DateUtil.utcToDate("2014-09-11T18:49:44.090+0000");
         Date accessDate2 = DateUtil.utcToDate("2014-09-11T20:49:44.090+0000");
@@ -1123,6 +1136,11 @@ public class TestMITREidDataService_1_1 {
         site2.setUserId("user2");
         site2.setAllowedScopes(ImmutableSet.of("openid", "offline_access", "email", "profile"));
         site2.setTimeoutDate(timeoutDate2);
+        Map<Long, OAuth2AccessTokenEntity> site2AccessTokens = new LinkedHashMap<Long, OAuth2AccessTokenEntity>();
+        
+        Set<OAuth2AccessTokenEntity> allAccessTokens = new HashSet<OAuth2AccessTokenEntity>();
+        allAccessTokens.addAll(site1AccessTokens.values());
+        allAccessTokens.addAll(site2AccessTokens.values());
 
 		Set<ApprovedSite> allApprovedSites = ImmutableSet.of(site1, site2);
 		
@@ -1131,7 +1149,7 @@ public class TestMITREidDataService_1_1 {
 		Mockito.when(blSiteRepository.getAll()).thenReturn(new HashSet<BlacklistedSite>());
 		Mockito.when(wlSiteRepository.getAll()).thenReturn(new HashSet<WhitelistedSite>());
 		Mockito.when(authHolderRepository.getAll()).thenReturn(new ArrayList<AuthenticationHolderEntity>());
-		Mockito.when(tokenRepository.getAllAccessTokens()).thenReturn(new HashSet<OAuth2AccessTokenEntity>());
+		Mockito.when(tokenRepository.getAllAccessTokens()).thenReturn(allAccessTokens);
 		Mockito.when(tokenRepository.getAllRefreshTokens()).thenReturn(new HashSet<OAuth2RefreshTokenEntity>());
 		Mockito.when(sysScopeRepository.getAll()).thenReturn(new HashSet<SystemScope>());
 		
@@ -1183,10 +1201,13 @@ public class TestMITREidDataService_1_1 {
 			JsonObject site = e.getAsJsonObject();
 
 			ApprovedSite compare = null;
+			Map<Long, OAuth2AccessTokenEntity> compareAccessTokens = null;
 			if (site.get("id").getAsLong() == site1.getId().longValue()) {
 				compare = site1;
+				compareAccessTokens = site1AccessTokens;
 			} else if (site.get("id").getAsLong() == site2.getId().longValue()) {
 				compare = site2;
+				compareAccessTokens = site2AccessTokens;
 			}
 			
 			if (compare == null) {
@@ -1207,16 +1228,16 @@ public class TestMITREidDataService_1_1 {
                 } else {
                     assertThat(site.get("whitelistedSiteId").getAsLong(), equalTo(compare.getWhitelistedSite().getId()));
                 }
-//                if (site.get("approvedAccessTokens").isJsonNull() || site.getAsJsonArray("approvedAccessTokens") == null) {
-//                    assertTrue(compare.getApprovedAccessTokens() == null || compare.getApprovedAccessTokens().isEmpty());
-//                } else {
-//                    assertNotNull(compare.getApprovedAccessTokens());
-//                    Set<String> tokenIds = new HashSet<String>();
-//                    for(OAuth2AccessTokenEntity entity : compare.getApprovedAccessTokens()) {
-//                        tokenIds.add(entity.getId().toString());
-//                    }
-//                    assertThat(jsonArrayToStringSet(site.getAsJsonArray("approvedAccessTokens")), equalTo(tokenIds));
-//                }
+                if (site.get("approvedAccessTokens").isJsonNull() || site.getAsJsonArray("approvedAccessTokens") == null) {
+                    assertTrue(compareAccessTokens == null || compareAccessTokens.isEmpty());
+                } else {
+                    assertNotNull(compareAccessTokens);
+                    Set<String> tokenIds = new HashSet<String>();
+                    for(OAuth2AccessTokenEntity entity : compareAccessTokens.values()) {
+                        tokenIds.add(entity.getId().toString());
+                    }
+                    assertThat(jsonArrayToStringSet(site.getAsJsonArray("approvedAccessTokens")), equalTo(tokenIds));
+                }
 				checked.add(compare);
 			}
 		}
@@ -1260,7 +1281,16 @@ public class TestMITREidDataService_1_1 {
 
 		String configJson = "{" +
 				"\"" + MITREidDataService.CLIENTS + "\": [], " +
-				"\"" + MITREidDataService.ACCESSTOKENS + "\": [], " +
+				"\"" + MITREidDataService.ACCESSTOKENS + "\": [" +
+				
+				"{\"id\":1,\"clientId\":\"mocked_client_1\",\"expiration\":\"2014-09-10T22:49:44.090+0000\","
+                + "\"refreshTokenId\":null,\"idTokenId\":null,\"scope\":[\"id-token\"],\"type\":\"Bearer\","
+                + "\"authenticationHolderId\":1,\"value\":\"eyJhbGciOiJSUzI1NiJ9.eyJleHAiOjE0MTI3ODk5NjgsInN1YiI6IjkwMzQyLkFTREZKV0ZBIiwiYXRfaGFzaCI6InptTmt1QmNRSmNYQktNaVpFODZqY0EiLCJhdWQiOlsiY2xpZW50Il0sImlzcyI6Imh0dHA6XC9cL2xvY2FsaG9zdDo4MDgwXC9vcGVuaWQtY29ubmVjdC1zZXJ2ZXItd2ViYXBwXC8iLCJpYXQiOjE0MTI3ODkzNjh9.xkEJ9IMXpH7qybWXomfq9WOOlpGYnrvGPgey9UQ4GLzbQx7JC0XgJK83PmrmBZosvFPCmota7FzI_BtwoZLgAZfFiH6w3WIlxuogoH-TxmYbxEpTHoTsszZppkq9mNgOlArV4jrR9y3TPo4MovsH71dDhS_ck-CvAlJunHlqhs0\"}," +
+				"{\"id\":2,\"clientId\":\"mocked_client_2\",\"expiration\":\"2015-01-07T18:31:50.079+0000\","
+                + "\"refreshTokenId\":1,\"idTokenId\":1,\"scope\":[\"openid\",\"offline_access\",\"email\",\"profile\"],\"type\":\"Bearer\","
+                + "\"authenticationHolderId\":2,\"value\":\"eyJhbGciOiJSUzI1NiJ9.eyJleHAiOjE0MTI3OTI5NjgsImF1ZCI6WyJjbGllbnQiXSwiaXNzIjoiaHR0cDpcL1wvbG9jYWxob3N0OjgwODBcL29wZW5pZC1jb25uZWN0LXNlcnZlci13ZWJhcHBcLyIsImp0aSI6IjBmZGE5ZmRiLTYyYzItNGIzZS05OTdiLWU0M2VhMDUwMzNiOSIsImlhdCI6MTQxMjc4OTM2OH0.xgaVpRLYE5MzbgXfE0tZt823tjAm6Oh3_kdR1P2I9jRLR6gnTlBQFlYi3Y_0pWNnZSerbAE8Tn6SJHZ9k-curVG0-ByKichV7CNvgsE5X_2wpEaUzejvKf8eZ-BammRY-ie6yxSkAarcUGMvGGOLbkFcz5CtrBpZhfd75J49BIQ\"}" +
+				
+				"  ], " +
 				"\"" + MITREidDataService.REFRESHTOKENS + "\": [], " +
 				"\"" + MITREidDataService.WHITELISTEDSITES + "\": [], " +
 				"\"" + MITREidDataService.BLACKLISTEDSITES + "\": [], " +
@@ -1282,7 +1312,52 @@ public class TestMITREidDataService_1_1 {
 		
 		JsonReader reader = new JsonReader(new StringReader(configJson));
 		
-        final Map<Long, ApprovedSite> fakeDb = new HashMap<Long, ApprovedSite>();
+        final Map<Long, ApprovedSite> siteDb = new HashMap<Long, ApprovedSite>();
+        final Map<Long, OAuth2AccessTokenEntity> tokenDb = new HashMap<Long, OAuth2AccessTokenEntity>();
+        
+        when(tokenRepository.saveAccessToken(isA(OAuth2AccessTokenEntity.class))).thenAnswer(new Answer<OAuth2AccessTokenEntity>() {
+            Long id = 343L;
+            @Override
+            public OAuth2AccessTokenEntity answer(InvocationOnMock invocation) throws Throwable {
+                OAuth2AccessTokenEntity _token = (OAuth2AccessTokenEntity) invocation.getArguments()[0];
+                if(_token.getId() == null) {
+                    _token.setId(id++);
+                }
+                tokenDb.put(_token.getId(), _token);
+                return _token;
+            }
+        });
+        when(tokenRepository.getAccessTokenById(isA(Long.class))).thenAnswer(new Answer<OAuth2AccessTokenEntity>() {
+            Long id = 221L;
+            @Override
+            public OAuth2AccessTokenEntity answer(InvocationOnMock invocation) throws Throwable {
+            	if (invocation.getArguments() != null && invocation.getArguments().length > 0) {
+            		id = (Long) invocation.getArguments()[0];
+            		if (tokenDb.containsKey(id)) {
+            			return tokenDb.get(id);
+            		}
+            	}
+            		
+                OAuth2AccessTokenEntity _token =  mock(OAuth2AccessTokenEntity.class);
+                when(_token.getId()).thenReturn(id++);
+                return _token;
+            }
+        });
+        when(tokenRepository.getAccessTokensForApprovedSite(isA(ApprovedSite.class))).thenAnswer(new Answer<List<OAuth2AccessTokenEntity>>() {
+            Long id = 221L;
+            @Override
+            public List<OAuth2AccessTokenEntity> answer(InvocationOnMock invocation) throws Throwable {
+            	ApprovedSite site = (ApprovedSite)invocation.getArguments()[0];
+            	List<OAuth2AccessTokenEntity> siteTokens = new ArrayList<OAuth2AccessTokenEntity>();
+            	for (OAuth2AccessTokenEntity token: tokenDb.values()) {
+            		if (token.getApprovedSite() != null && token.getApprovedSite().getId().equals(site.getId())) {
+            			siteTokens.add(token);
+            		}
+            	}
+            	return siteTokens;
+            }
+        });
+
         when(approvedSiteRepository.save(isA(ApprovedSite.class))).thenAnswer(new Answer<ApprovedSite>() {
             Long id = 364L;
             @Override
@@ -1291,7 +1366,7 @@ public class TestMITREidDataService_1_1 {
                 if(_site.getId() == null) {
                     _site.setId(id++);
                 }
-                fakeDb.put(_site.getId(), _site);
+                siteDb.put(_site.getId(), _site);
                 return _site;
             }
         });
@@ -1299,7 +1374,7 @@ public class TestMITREidDataService_1_1 {
             @Override
             public ApprovedSite answer(InvocationOnMock invocation) throws Throwable {
                 Long _id = (Long) invocation.getArguments()[0];
-                return fakeDb.get(_id);
+                return siteDb.get(_id);
             }
         });
         when(wlSiteRepository.getById(isNull(Long.class))).thenAnswer(new Answer<WhitelistedSite>() {
@@ -1311,21 +1386,12 @@ public class TestMITREidDataService_1_1 {
                 return _site;
             }
         });
-        when(tokenRepository.getAccessTokenById(isNull(Long.class))).thenAnswer(new Answer<OAuth2AccessTokenEntity>() {
-            Long id = 245L;
-            @Override
-            public OAuth2AccessTokenEntity answer(InvocationOnMock invocation) throws Throwable {
-                OAuth2AccessTokenEntity _token = mock(OAuth2AccessTokenEntity.class);
-                when(_token.getId()).thenReturn(id++);
-                return _token;
-            }
-        });
 
 		dataService.importData(reader);
-        //2 for sites, 1 for updating access token ref on #1, 1 more for updating whitelistedSite ref on #2
-		verify(approvedSiteRepository, times(4)).save(capturedApprovedSites.capture());
+        //2 for sites, 1 more for updating whitelistedSite ref on #2
+		verify(approvedSiteRepository, times(3)).save(capturedApprovedSites.capture());
 		
-		List<ApprovedSite> savedSites = new ArrayList(fakeDb.values());
+		List<ApprovedSite> savedSites = new ArrayList(siteDb.values());
 		
 		assertThat(savedSites.size(), is(2));
                 
@@ -1335,7 +1401,7 @@ public class TestMITREidDataService_1_1 {
         assertThat(savedSites.get(0).getAllowedScopes(), equalTo(site1.getAllowedScopes()));
         assertThat(savedSites.get(0).getIsWhitelisted(), equalTo(site1.getIsWhitelisted()));
         assertThat(savedSites.get(0).getTimeoutDate(), equalTo(site1.getTimeoutDate()));
-//        assertThat(savedSites.get(0).getApprovedAccessTokens().size(), equalTo(site1.getApprovedAccessTokens().size()));
+        assertThat(tokenRepository.getAccessTokensForApprovedSite(savedSites.get(0)).size(), equalTo(1));
         
 		assertThat(savedSites.get(1).getClientId(), equalTo(site2.getClientId()));
         assertThat(savedSites.get(1).getAccessDate(), equalTo(site2.getAccessDate()));
@@ -1343,7 +1409,7 @@ public class TestMITREidDataService_1_1 {
         assertThat(savedSites.get(1).getAllowedScopes(), equalTo(site2.getAllowedScopes()));
 		assertThat(savedSites.get(1).getTimeoutDate(), equalTo(site2.getTimeoutDate()));
         assertThat(savedSites.get(1).getIsWhitelisted(), equalTo(site2.getIsWhitelisted()));
-//        assertThat(savedSites.get(1).getApprovedAccessTokens().size(), equalTo(site2.getApprovedAccessTokens().size()));
+        assertThat(tokenRepository.getAccessTokensForApprovedSite(savedSites.get(1)).size(), equalTo(0));
     }
     
     @Test
