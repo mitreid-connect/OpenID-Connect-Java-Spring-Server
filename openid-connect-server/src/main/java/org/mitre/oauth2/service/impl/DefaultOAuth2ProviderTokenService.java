@@ -187,18 +187,12 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 				refreshToken.setAuthenticationHolder(authHolder);
 				refreshToken.setClient(client);
 
-
-
 				// save the token first so that we can set it to a member of the access token (NOTE: is this step necessary?)
 				OAuth2RefreshTokenEntity savedRefreshToken = tokenRepository.saveRefreshToken(refreshToken);
 
 				token.setRefreshToken(savedRefreshToken);
 			}
 			
-			OAuth2AccessTokenEntity enhancedToken = (OAuth2AccessTokenEntity) tokenEnhancer.enhance(token, authentication);
-
-			OAuth2AccessTokenEntity savedToken = tokenRepository.saveAccessToken(enhancedToken);
-
 			//Add approved site reference, if any
 			OAuth2Request originalAuthRequest = authHolder.getAuthentication().getOAuth2Request();
 
@@ -207,6 +201,10 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 				ApprovedSite ap = approvedSiteService.getById(apId);
 				token.setApprovedSite(ap);
 			}
+			
+			OAuth2AccessTokenEntity enhancedToken = (OAuth2AccessTokenEntity) tokenEnhancer.enhance(token, authentication);
+
+			OAuth2AccessTokenEntity savedToken = tokenRepository.saveAccessToken(enhancedToken);
 
 			if (savedToken.getRefreshToken() != null) {
 				tokenRepository.saveRefreshToken(savedToken.getRefreshToken()); // make sure we save any changes that might have been enhanced
