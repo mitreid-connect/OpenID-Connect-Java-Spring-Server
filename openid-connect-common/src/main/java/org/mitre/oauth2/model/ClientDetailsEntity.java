@@ -141,6 +141,9 @@ public class ClientDetailsEntity implements ClientDetails {
 	private Integer idTokenValiditySeconds; //timeout for id tokens
 	private Date createdAt; // time the client was created
 	private boolean clearAccessTokensOnRefresh = true; // do we clear access tokens on refresh?
+	
+	/** fields for UMA */
+	private Set<String> claimsRedirectUris;
 
 	public enum AuthMethod {
 		SECRET_POST("client_secret_post"),
@@ -964,5 +967,25 @@ public class ClientDetailsEntity implements ClientDetails {
 	public void setClearAccessTokensOnRefresh(boolean clearAccessTokensOnRefresh) {
 		this.clearAccessTokensOnRefresh = clearAccessTokensOnRefresh;
 	}
-	
+
+	/**
+	 * @return the claimsRedirectUris
+	 */
+	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(
+			name="client_claims_redirect_uri",
+			joinColumns=@JoinColumn(name="owner_id")
+			)
+	@Column(name="redirect_uri")
+	public Set<String> getClaimsRedirectUris() {
+		return claimsRedirectUris;
+	}
+
+	/**
+	 * @param claimsRedirectUris the claimsRedirectUris to set
+	 */
+	public void setClaimsRedirectUris(Set<String> claimsRedirectUris) {
+		this.claimsRedirectUris = claimsRedirectUris;
+	}
+
 }

@@ -143,6 +143,7 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 	private static final String AUTHENTICATION_HOLDER_ID = "authenticationHolderId";
 	private static final String CLIENT_ID = "clientId";
 	private static final String EXPIRATION = "expiration";
+	private static final String CLAIMS_REDIRECT_URIS = "claimsRedirectUris";
 	private static final String ID = "id";
 	/**
 	 * Logger for this class
@@ -432,6 +433,8 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 				writer.name(REFRESH_TOKEN_VALIDITY_SECONDS).value(client.getRefreshTokenValiditySeconds());
 				writer.name(REDIRECT_URIS);
 				writeNullSafeArray(writer, client.getRedirectUris());
+				writer.name(CLAIMS_REDIRECT_URIS);
+				writeNullSafeArray(writer, client.getClaimsRedirectUris());
 				writer.name(NAME).value(client.getClientName());
 				writer.name(URI).value(client.getClientUri());
 				writer.name(LOGO_URI).value(client.getLogoUri());
@@ -1034,6 +1037,9 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 					} else if (name.equals(REDIRECT_URIS)) {
 						Set<String> redirectUris = readSet(reader);
 						client.setRedirectUris(redirectUris);
+					} else if (name.equals(CLAIMS_REDIRECT_URIS)) {
+						Set<String> claimsRedirectUris = readSet(reader);
+						client.setClaimsRedirectUris(claimsRedirectUris);
 					} else if (name.equals(NAME)) {
 						client.setClientName(reader.nextString());
 					} else if (name.equals(URI)) {

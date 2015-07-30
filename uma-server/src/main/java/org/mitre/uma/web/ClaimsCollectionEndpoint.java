@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.oauth2.common.exceptions.RedirectMismatchException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -116,9 +117,15 @@ public class ClaimsCollectionEndpoint {
 		PermissionTicket updatedTicket = permissionService.updateTicket(ticket);
 		
 		if (Strings.isNullOrEmpty(redirectUri)) {
-			if (client.getRedirectUris().size() == 1) {
-				redirectUri = client.getRedirectUris().iterator().next(); // get the first (and only) redirect URI to use here
+			if (client.getClaimsRedirectUris().size() == 1) {
+				redirectUri = client.getClaimsRedirectUris().iterator().next(); // get the first (and only) redirect URI to use here
 				logger.info("No redirect URI passed in, using registered value: " + redirectUri);
+			} else {
+				throw new RedirectMismatchException("Unable to find redirect URI and none passed in.");
+			}
+		} else {
+			if (!client.getClaimsRedirectUris().contains(redirectUri)) {
+				throw new RedirectMismatchException("Claims redirect did not match the registered values.");
 			}
 		}
 		
