@@ -135,6 +135,10 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 		// check the sector URI
 		checkSectorIdentifierUri(client);
 
+		// if no scopes were specified, use default system scopes
+		if(! client.isScoped()){
+			client.setScope(scopeService.toStrings(scopeService.getDefaults()));
+		}
 
 		ensureNoReservedScopes(client);
 

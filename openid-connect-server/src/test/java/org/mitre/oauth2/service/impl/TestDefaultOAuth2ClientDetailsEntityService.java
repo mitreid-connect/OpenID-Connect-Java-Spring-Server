@@ -132,6 +132,20 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 				return output;
 			}
 		});
+
+		Mockito.when(scopeService.getDefaults()).thenAnswer(new Answer<Set<SystemScope>>() {
+			@Override
+			public Set<SystemScope> answer(InvocationOnMock invocation) throws Throwable {
+				Set<SystemScope> output = new HashSet<>();
+				SystemScope scope1 = new SystemScope("default_scope_1");
+				scope1.setDefaultScope(true);
+				SystemScope scope2 = new SystemScope("default_scope_2");
+				scope2.setDefaultScope(true);
+				output.add(scope1);
+				output.add(scope2);
+				return output;
+			}
+		});
 		
 		// we're not testing reserved scopes here, just pass through when it's called
 		Mockito.when(scopeService.removeReservedScopes(Matchers.anySet())).then(AdditionalAnswers.returnsFirstArg());
@@ -210,6 +224,41 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		Mockito.verify(scopeService, Mockito.atLeastOnce()).removeReservedScopes(Matchers.anySet());
 		
 		assertThat(client.getScope().contains(SystemScopeService.OFFLINE_ACCESS), is(equalTo(false)));
+	}
+
+	/**
+	 * Makes sure client get default system scopes if no scopes provided
+	 */
+	@Test
+	public void saveNewClient_noScope() {
+
+		ClientDetailsEntity client = new ClientDetailsEntity();
+		client = Mockito.spy(client);
+
+		client = service.saveNewClient(client);
+
+		Mockito.verify(scopeService, Mockito.atLeastOnce()).getDefaults();
+		Mockito.verify(client, Mockito.atLeastOnce()).setScope(Matchers.anySet());
+
+		assertThat(client.getScope().containsAll(scopeService.toStrings(scopeService.getDefaults())), is(equalTo(true)));
+	}
+
+	@Test
+	public void saveNewClient_withScopes() {
+
+		ClientDetailsEntity client = new ClientDetailsEntity();
+		Set<SystemScope> scopes = new HashSet<>();
+		SystemScope scope1 = new SystemScope("test_scope_1");
+		SystemScope scope2 = new SystemScope("test_scope_2");
+		scopes.add(scope1);
+		scopes.add(scope2);
+		client.setScope(scopeService.toStrings(scopes));
+		client = Mockito.spy(client);
+
+		client = service.saveNewClient(client);
+
+		assertThat(client.getScope().containsAll(scopeService.toStrings(scopeService.getDefaults())), is(equalTo(false)));
+		assertThat(client.getScope().containsAll(scopeService.toStrings(scopes)), is(equalTo(true)));
 	}
 
 	@Test
