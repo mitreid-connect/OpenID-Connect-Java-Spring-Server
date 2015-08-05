@@ -16,7 +16,6 @@
  *******************************************************************************/
 package org.mitre.oauth2.repository;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 

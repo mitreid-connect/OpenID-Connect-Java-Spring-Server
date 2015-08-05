@@ -22,7 +22,6 @@ import javax.persistence.Converter;
 
 import com.google.common.base.Strings;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
