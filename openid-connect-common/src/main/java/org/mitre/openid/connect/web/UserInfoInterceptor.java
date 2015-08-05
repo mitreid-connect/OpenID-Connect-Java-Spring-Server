@@ -93,7 +93,7 @@ public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 				}
 			}
 		}
-		
+
 		return true;
 	}
 

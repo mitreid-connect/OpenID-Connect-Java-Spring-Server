@@ -36,7 +36,7 @@ import com.nimbusds.jwt.JWTParser;
 public class JWTStringConverter implements AttributeConverter<JWT, String> {
 
 	public static Logger logger = LoggerFactory.getLogger(JWTStringConverter.class);
-	
+
 	@Override
 	public String convertToDatabaseColumn(JWT attribute) {
 		if (attribute != null) {

@@ -67,14 +67,14 @@ public class Permission {
 	public ResourceSet getResourceSet() {
 		return resourceSet;
 	}
-	
+
 	/**
 	 * @param resourceSet the resourceSet to set
 	 */
 	public void setResourceSet(ResourceSet resourceSet) {
 		this.resourceSet = resourceSet;
 	}
-	
+
 	/**
 	 * @return the scopes
 	 */
@@ -87,7 +87,7 @@ public class Permission {
 	public Set<String> getScopes() {
 		return scopes;
 	}
-	
+
 	/**
 	 * @param scopes the scopes to set
 	 */

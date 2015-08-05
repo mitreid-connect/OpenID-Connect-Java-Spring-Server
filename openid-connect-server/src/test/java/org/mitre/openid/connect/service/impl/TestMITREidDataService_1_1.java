@@ -240,18 +240,18 @@ public class TestMITREidDataService_1_1 {
 		//2 times for token, 2 times to update client, 2 times to update authHolder
 		verify(tokenRepository, times(6)).saveRefreshToken(capturedRefreshTokens.capture());
 
-				List<OAuth2RefreshTokenEntity> savedRefreshTokens = new ArrayList(fakeDb.values()); //capturedRefreshTokens.getAllValues();
-				Collections.sort(savedRefreshTokens, new refreshTokenIdComparator());
+		List<OAuth2RefreshTokenEntity> savedRefreshTokens = new ArrayList(fakeDb.values()); //capturedRefreshTokens.getAllValues();
+		Collections.sort(savedRefreshTokens, new refreshTokenIdComparator());
 
-				assertThat(savedRefreshTokens.size(), is(2));
+		assertThat(savedRefreshTokens.size(), is(2));
 
-				assertThat(savedRefreshTokens.get(0).getClient().getClientId(), equalTo(token1.getClient().getClientId()));
-				assertThat(savedRefreshTokens.get(0).getExpiration(), equalTo(token1.getExpiration()));
-				assertThat(savedRefreshTokens.get(0).getValue(), equalTo(token1.getValue()));
+		assertThat(savedRefreshTokens.get(0).getClient().getClientId(), equalTo(token1.getClient().getClientId()));
+		assertThat(savedRefreshTokens.get(0).getExpiration(), equalTo(token1.getExpiration()));
+		assertThat(savedRefreshTokens.get(0).getValue(), equalTo(token1.getValue()));
 
-				assertThat(savedRefreshTokens.get(1).getClient().getClientId(), equalTo(token2.getClient().getClientId()));
-				assertThat(savedRefreshTokens.get(1).getExpiration(), equalTo(token2.getExpiration()));
-				assertThat(savedRefreshTokens.get(1).getValue(), equalTo(token2.getValue()));
+		assertThat(savedRefreshTokens.get(1).getClient().getClientId(), equalTo(token2.getClient().getClientId()));
+		assertThat(savedRefreshTokens.get(1).getExpiration(), equalTo(token2.getExpiration()));
+		assertThat(savedRefreshTokens.get(1).getValue(), equalTo(token2.getValue()));
 	}
 
 	private class accessTokenIdComparator implements Comparator<OAuth2AccessTokenEntity>  {
@@ -372,18 +372,18 @@ public class TestMITREidDataService_1_1 {
 		//2 times for token, 2 times to update client, 2 times to update authHolder, 2 times to update id token, 2 times to update refresh token
 		verify(tokenRepository, times(8)).saveAccessToken(capturedAccessTokens.capture());
 
-				List<OAuth2AccessTokenEntity> savedAccessTokens = new ArrayList(fakeDb.values()); //capturedAccessTokens.getAllValues();
-				Collections.sort(savedAccessTokens, new accessTokenIdComparator());
+		List<OAuth2AccessTokenEntity> savedAccessTokens = new ArrayList(fakeDb.values()); //capturedAccessTokens.getAllValues();
+		Collections.sort(savedAccessTokens, new accessTokenIdComparator());
 
-				assertThat(savedAccessTokens.size(), is(2));
+		assertThat(savedAccessTokens.size(), is(2));
 
-				assertThat(savedAccessTokens.get(0).getClient().getClientId(), equalTo(token1.getClient().getClientId()));
-				assertThat(savedAccessTokens.get(0).getExpiration(), equalTo(token1.getExpiration()));
-				assertThat(savedAccessTokens.get(0).getValue(), equalTo(token1.getValue()));
+		assertThat(savedAccessTokens.get(0).getClient().getClientId(), equalTo(token1.getClient().getClientId()));
+		assertThat(savedAccessTokens.get(0).getExpiration(), equalTo(token1.getExpiration()));
+		assertThat(savedAccessTokens.get(0).getValue(), equalTo(token1.getValue()));
 
-				assertThat(savedAccessTokens.get(1).getClient().getClientId(), equalTo(token2.getClient().getClientId()));
-				assertThat(savedAccessTokens.get(1).getExpiration(), equalTo(token2.getExpiration()));
-				assertThat(savedAccessTokens.get(1).getValue(), equalTo(token2.getValue()));
+		assertThat(savedAccessTokens.get(1).getClient().getClientId(), equalTo(token2.getClient().getClientId()));
+		assertThat(savedAccessTokens.get(1).getExpiration(), equalTo(token2.getExpiration()));
+		assertThat(savedAccessTokens.get(1).getValue(), equalTo(token2.getValue()));
 	}
 
 	@Test
@@ -674,23 +674,23 @@ public class TestMITREidDataService_1_1 {
 		//2 for sites, 1 for updating access token ref on #1
 		verify(approvedSiteRepository, times(3)).save(capturedApprovedSites.capture());
 
-				List<ApprovedSite> savedSites = new ArrayList(fakeDb.values());
+		List<ApprovedSite> savedSites = new ArrayList(fakeDb.values());
 
-				assertThat(savedSites.size(), is(2));
+		assertThat(savedSites.size(), is(2));
 
-				assertThat(savedSites.get(0).getClientId(), equalTo(site1.getClientId()));
-				assertThat(savedSites.get(0).getAccessDate(), equalTo(site1.getAccessDate()));
-				assertThat(savedSites.get(0).getCreationDate(), equalTo(site1.getCreationDate()));
-				assertThat(savedSites.get(0).getAllowedScopes(), equalTo(site1.getAllowedScopes()));
-				assertThat(savedSites.get(0).getTimeoutDate(), equalTo(site1.getTimeoutDate()));
-				assertThat(savedSites.get(0).getApprovedAccessTokens().size(), equalTo(site1.getApprovedAccessTokens().size()));
+		assertThat(savedSites.get(0).getClientId(), equalTo(site1.getClientId()));
+		assertThat(savedSites.get(0).getAccessDate(), equalTo(site1.getAccessDate()));
+		assertThat(savedSites.get(0).getCreationDate(), equalTo(site1.getCreationDate()));
+		assertThat(savedSites.get(0).getAllowedScopes(), equalTo(site1.getAllowedScopes()));
+		assertThat(savedSites.get(0).getTimeoutDate(), equalTo(site1.getTimeoutDate()));
+		assertThat(savedSites.get(0).getApprovedAccessTokens().size(), equalTo(site1.getApprovedAccessTokens().size()));
 
-				assertThat(savedSites.get(1).getClientId(), equalTo(site2.getClientId()));
-				assertThat(savedSites.get(1).getAccessDate(), equalTo(site2.getAccessDate()));
-				assertThat(savedSites.get(1).getCreationDate(), equalTo(site2.getCreationDate()));
-				assertThat(savedSites.get(1).getAllowedScopes(), equalTo(site2.getAllowedScopes()));
-				assertThat(savedSites.get(1).getTimeoutDate(), equalTo(site2.getTimeoutDate()));
-				assertThat(savedSites.get(1).getApprovedAccessTokens().size(), equalTo(site2.getApprovedAccessTokens().size()));
+		assertThat(savedSites.get(1).getClientId(), equalTo(site2.getClientId()));
+		assertThat(savedSites.get(1).getAccessDate(), equalTo(site2.getAccessDate()));
+		assertThat(savedSites.get(1).getCreationDate(), equalTo(site2.getCreationDate()));
+		assertThat(savedSites.get(1).getAllowedScopes(), equalTo(site2.getAllowedScopes()));
+		assertThat(savedSites.get(1).getTimeoutDate(), equalTo(site2.getTimeoutDate()));
+		assertThat(savedSites.get(1).getApprovedAccessTokens().size(), equalTo(site2.getApprovedAccessTokens().size()));
 	}
 
 	@Test

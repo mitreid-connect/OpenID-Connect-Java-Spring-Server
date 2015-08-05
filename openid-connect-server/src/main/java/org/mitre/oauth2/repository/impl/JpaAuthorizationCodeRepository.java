@@ -77,7 +77,7 @@ public class JpaAuthorizationCodeRepository implements AuthorizationCodeReposito
 		AuthorizationCodeEntity found = manager.find(AuthorizationCodeEntity.class, authorizationCodeEntity.getId());
 		if (found != null) {
 			manager.remove(found);
-		}		
+		}
 	}
 
 	/* (non-Javadoc)
@@ -89,7 +89,7 @@ public class JpaAuthorizationCodeRepository implements AuthorizationCodeReposito
 		query.setParameter(AuthorizationCodeEntity.PARAM_DATE, new Date()); // this gets anything that's already expired
 		return query.getResultList();
 	}
-	
-	
+
+
 
 }

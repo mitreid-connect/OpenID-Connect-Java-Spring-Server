@@ -138,20 +138,20 @@ public class PendingOIDCAuthenticationToken extends AbstractAuthenticationToken 
 	/*
 	 * Custom serialization to handle the JSON object
 	 */
-    private void writeObject(ObjectOutputStream out) throws IOException {
-    	out.defaultWriteObject();
-    	if (idToken == null) {
-    		out.writeObject(null);
-    	} else {
-    		out.writeObject(idToken.serialize());
-    	}
-    }
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException, ParseException {
-    	in.defaultReadObject();
-    	Object o = in.readObject();
-    	if (o != null) {
-    		idToken = JWTParser.parse((String)o);
-    	}
-    }
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		out.defaultWriteObject();
+		if (idToken == null) {
+			out.writeObject(null);
+		} else {
+			out.writeObject(idToken.serialize());
+		}
+	}
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException, ParseException {
+		in.defaultReadObject();
+		Object o = in.readObject();
+		if (o != null) {
+			idToken = JWTParser.parse((String)o);
+		}
+	}
 
 }

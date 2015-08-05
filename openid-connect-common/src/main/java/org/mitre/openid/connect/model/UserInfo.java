@@ -233,7 +233,7 @@ public interface UserInfo extends Serializable {
 	 * @return
 	 */
 	public JsonObject toJson();
-	
+
 	/**
 	 * The JSON source of this UserInfo (if it was fetched), or null if it's local.
 	 * @return

@@ -39,10 +39,10 @@ import com.google.common.collect.Lists;
  */
 @Controller
 public class UmaDiscoveryEndpoint {
-	
+
 	@Autowired
 	private ConfigurationPropertiesBean config;
-	
+
 	@RequestMapping(".well-known/uma-configuration")
 	public String umaConfiguration(Model model) {
 
@@ -69,12 +69,12 @@ public class UmaDiscoveryEndpoint {
 		m.put("resource_set_registration_endpoint", issuer + ResourceSetRegistrationEndpoint.DISCOVERY_URL);
 		m.put("permission_registration_endpoint", issuer + PermissionRegistrationEndpoint.URL);
 		m.put("rpt_endpoint", issuer + AuthorizationRequestEndpoint.URL);
-		
-		
-		
+
+
+
 		model.addAttribute("entity", m);
 		return JsonEntityView.VIEWNAME;
 	}
-	
+
 
 }

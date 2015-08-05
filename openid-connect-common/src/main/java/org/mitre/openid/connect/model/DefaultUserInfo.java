@@ -417,13 +417,13 @@ public class DefaultUserInfo implements UserInfo {
 
 	@Override
 	public JsonObject toJson() {
-		
+
 		if (src == null) {
-		
+
 			JsonObject obj = new JsonObject();
-	
+
 			obj.addProperty("sub", this.getSub());
-	
+
 			obj.addProperty("name", this.getName());
 			obj.addProperty("preferred_username", this.getPreferredUsername());
 			obj.addProperty("given_name", this.getGivenName());
@@ -438,15 +438,15 @@ public class DefaultUserInfo implements UserInfo {
 			obj.addProperty("locale", this.getLocale());
 			obj.addProperty("updated_time", this.getUpdatedTime());
 			obj.addProperty("birthdate", this.getBirthdate());
-	
+
 			obj.addProperty("email", this.getEmail());
 			obj.addProperty("email_verified", this.getEmailVerified());
-	
+
 			obj.addProperty("phone_number", this.getPhoneNumber());
 			obj.addProperty("phone_number_verified", this.getPhoneNumberVerified());
-	
+
 			if (this.getAddress() != null) {
-	
+
 				JsonObject addr = new JsonObject();
 				addr.addProperty("formatted", this.getAddress().getFormatted());
 				addr.addProperty("street_address", this.getAddress().getStreetAddress());
@@ -454,10 +454,10 @@ public class DefaultUserInfo implements UserInfo {
 				addr.addProperty("region", this.getAddress().getRegion());
 				addr.addProperty("postal_code", this.getAddress().getPostalCode());
 				addr.addProperty("country", this.getAddress().getCountry());
-	
+
 				obj.add("address", addr);
 			}
-	
+
 			return obj;
 		} else {
 			return src;
@@ -531,8 +531,8 @@ public class DefaultUserInfo implements UserInfo {
 	public void setSource(JsonObject src) {
 		this.src = src;
 	}
-	
-	
+
+
 	private static String nullSafeGetString(JsonObject obj, String field) {
 		return obj.has(field) && obj.get(field).isJsonPrimitive() ? obj.get(field).getAsString() : null;
 	}
@@ -732,26 +732,26 @@ public class DefaultUserInfo implements UserInfo {
 		}
 		return true;
 	}
-	
+
 
 	/*
 	 * Custom serialization to handle the JSON object
 	 */
-    private void writeObject(ObjectOutputStream out) throws IOException {
-    	out.defaultWriteObject();
-    	if (src == null) {
-    		out.writeObject(null);
-    	} else {
-    		out.writeObject(src.toString());
-    	}
-    }
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-    	in.defaultReadObject();
-    	Object o = in.readObject();
-    	if (o != null) {
-    		JsonParser parser = new JsonParser();
-    		src = parser.parse((String)o).getAsJsonObject();
-    	}
-    }
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		out.defaultWriteObject();
+		if (src == null) {
+			out.writeObject(null);
+		} else {
+			out.writeObject(src.toString());
+		}
+	}
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		in.defaultReadObject();
+		Object o = in.readObject();
+		if (o != null) {
+			JsonParser parser = new JsonParser();
+			src = parser.parse((String)o).getAsJsonObject();
+		}
+	}
 
 }

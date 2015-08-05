@@ -45,7 +45,7 @@ import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
 public class NamedAdminAuthoritiesMapper implements OIDCAuthoritiesMapper {
 
 	private static Logger logger = LoggerFactory.getLogger(NamedAdminAuthoritiesMapper.class);
-	
+
 	private static final SimpleGrantedAuthority ROLE_ADMIN = new SimpleGrantedAuthority("ROLE_ADMIN");
 	private static final SimpleGrantedAuthority ROLE_USER = new SimpleGrantedAuthority("ROLE_USER");
 
@@ -57,17 +57,17 @@ public class NamedAdminAuthoritiesMapper implements OIDCAuthoritiesMapper {
 		Set<GrantedAuthority> out = new HashSet<>();
 		try {
 			ReadOnlyJWTClaimsSet claims = idToken.getJWTClaimsSet();
-			
+
 			SubjectIssuerGrantedAuthority authority = new SubjectIssuerGrantedAuthority(claims.getSubject(), claims.getIssuer());
 			out.add(authority);
 
 			if (admins.contains(authority)) {
 				out.add(ROLE_ADMIN);
 			}
-	
+
 			// everybody's a user by default
 			out.add(ROLE_USER);
-			
+
 		} catch (ParseException e) {
 			logger.error("Unable to parse ID Token inside of authorities mapper (huh?)");
 		}

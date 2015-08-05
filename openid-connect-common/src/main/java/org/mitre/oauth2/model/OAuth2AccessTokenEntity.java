@@ -92,7 +92,7 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	public static final String PARAM_REFERSH_TOKEN = "refreshToken";
 	public static final String PARAM_DATE = "date";
 	public static final String PARAM_RESOURCE_SET_ID = "rsid";
-	
+
 	public static String ID_TOKEN_FIELD_NAME = "id_token";
 
 	private Long id;
@@ -112,7 +112,7 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	private OAuth2RefreshTokenEntity refreshToken;
 
 	private Set<String> scope;
-	
+
 	private Set<Permission> permissions;
 
 	/**

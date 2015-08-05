@@ -51,33 +51,33 @@ public class ResourceSetEntityAbbreviatedView extends AbstractView {
 	public static final String VIEWNAME = "resourceSetEntityAbbreviatedView";
 
 	public static final String LOCATION = "location";
-	
+
 	@Autowired
 	private ConfigurationPropertiesBean config;
 
 	private Gson gson = new GsonBuilder()
-		.setExclusionStrategies(new ExclusionStrategy() {
-	
-			@Override
-			public boolean shouldSkipField(FieldAttributes f) {
-	
-				return false;
+	.setExclusionStrategies(new ExclusionStrategy() {
+
+		@Override
+		public boolean shouldSkipField(FieldAttributes f) {
+
+			return false;
+		}
+
+		@Override
+		public boolean shouldSkipClass(Class<?> clazz) {
+			// skip the JPA binding wrapper
+			if (clazz.equals(BeanPropertyBindingResult.class)) {
+				return true;
 			}
-	
-			@Override
-			public boolean shouldSkipClass(Class<?> clazz) {
-				// skip the JPA binding wrapper
-				if (clazz.equals(BeanPropertyBindingResult.class)) {
-					return true;
-				}
-				return false;
-			}
-	
-		})
-		.serializeNulls()
-		.setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
-		.setLongSerializationPolicy(LongSerializationPolicy.STRING)
-		.create();
+			return false;
+		}
+
+	})
+	.serializeNulls()
+	.setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+	.setLongSerializationPolicy(LongSerializationPolicy.STRING)
+	.create();
 
 	@Override
 	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
@@ -96,20 +96,20 @@ public class ResourceSetEntityAbbreviatedView extends AbstractView {
 		if (!Strings.isNullOrEmpty(location)) {
 			response.setHeader(HttpHeaders.LOCATION, location);
 		}
-		
+
 		try {
 
 			Writer out = response.getWriter();
 			ResourceSet rs = (ResourceSet) model.get(JsonEntityView.ENTITY);
 
 			JsonObject o = new JsonObject();
-			
+
 			o.addProperty("_id", rs.getId().toString()); // set the ID to a string
 			o.addProperty("user_access_policy_uri", config.getIssuer() + "manage/user/policy/" + rs.getId());
 
-			
+
 			gson.toJson(o, out);
-			
+
 		} catch (IOException e) {
 
 			logger.error("IOException in ResourceSetEntityView.java: ", e);

@@ -40,7 +40,7 @@ public class SavedRegisteredClient {
 	private Long id;
 	private String issuer;
 	private RegisteredClient registeredClient;
-	
+
 	/**
 	 * @return the id
 	 */
@@ -93,5 +93,5 @@ public class SavedRegisteredClient {
 	}
 
 
-	
+
 }

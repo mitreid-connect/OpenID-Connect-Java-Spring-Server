@@ -110,7 +110,7 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 				|| (client.getRequireAuthTime() != null && client.getRequireAuthTime())) {
 
 			if (request.getExtensions().get(AuthenticationTimeStamper.AUTH_TIMESTAMP) != null) {
-			
+
 				Long authTimestamp = Long.parseLong((String) request.getExtensions().get(AuthenticationTimeStamper.AUTH_TIMESTAMP));
 				if (authTimestamp != null) {
 					idClaims.setClaim("auth_time", authTimestamp / 1000L);
@@ -192,7 +192,7 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 					JWSHeader header = new JWSHeader(signingAlg, null, null, null, null, null, null, null, null, null,
 							jwtService.getDefaultSignerKeyId(),
 							null, null);
-					
+
 					idToken = new SignedJWT(header, idClaims);
 
 					// sign it with the server's key

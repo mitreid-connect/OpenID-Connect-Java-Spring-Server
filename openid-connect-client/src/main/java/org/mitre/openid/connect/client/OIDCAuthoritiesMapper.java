@@ -32,7 +32,7 @@ public interface OIDCAuthoritiesMapper {
 
 	/**
 	 * @param idToken the ID Token (parsed as a JWT, cannot be @null)
-	 * @param userInfo userInfo of the current user (could be @null) 
+	 * @param userInfo userInfo of the current user (could be @null)
 	 * @return the set of authorities to map to this user
 	 */
 	Collection<? extends GrantedAuthority> mapAuthorities(JWT idToken, UserInfo userInfo);

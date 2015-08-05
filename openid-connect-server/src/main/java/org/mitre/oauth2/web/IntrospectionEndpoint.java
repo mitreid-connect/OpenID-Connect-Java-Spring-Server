@@ -70,7 +70,7 @@ public class IntrospectionEndpoint {
 
 	@Autowired
 	private UserInfoService userInfoService;
-	
+
 	@Autowired
 	private ResourceSetService resourceSetService;
 
@@ -94,52 +94,52 @@ public class IntrospectionEndpoint {
 
 		ClientDetailsEntity authClient = null;
 		Set<String> authScopes = new HashSet<>();
-		
+
 		if (auth instanceof OAuth2Authentication) {
 			// the client authenticated with OAuth, do our UMA checks
 			ensureOAuthScope(auth, SystemScopeService.UMA_PROTECTION_SCOPE);
-			
+
 			// get out the client that was issued the access token (not the token being introspected)
 			OAuth2Authentication o2a = (OAuth2Authentication) auth;
-			
+
 			String authClientId = o2a.getOAuth2Request().getClientId();
 			authClient = clientService.loadClientByClientId(authClientId);
-			
+
 			// the owner is the user who authorized the token in the first place
 			String ownerId = o2a.getUserAuthentication().getName();
-			
+
 			authScopes.addAll(authClient.getScope());
-			
+
 			// UMA style clients also get a subset of scopes of all the resource sets they've registered
 			Collection<ResourceSet> resourceSets = resourceSetService.getAllForOwnerAndClient(ownerId, authClientId);
-			
+
 			// collect all the scopes
 			for (ResourceSet rs : resourceSets) {
 				authScopes.addAll(rs.getScopes());
 			}
-			
+
 		} else {
 			// the client authenticated directly, make sure it's got the right access
-			
+
 			String authClientId = auth.getName(); // direct authentication puts the client_id into the authentication's name field
 			authClient = clientService.loadClientByClientId(authClientId);
 
 			// directly authenticated clients get a subset of any scopes that they've registered for
 			authScopes.addAll(authClient.getScope());
-			
+
 			if (!AuthenticationUtilities.hasRole(auth, "ROLE_CLIENT")
 					|| !authClient.isAllowIntrospection()) {
-				
+
 				// this client isn't allowed to do direct introspection
-				
+
 				logger.error("Client " + authClient.getClientId() + " is not allowed to call introspection endpoint");
 				model.addAttribute("code", HttpStatus.FORBIDDEN);
 				return HttpCodeView.VIEWNAME;
 
 			}
-			
+
 		}
-		
+
 		// by here we're allowed to introspect, now we need to look up the token in our token stores
 
 		// first make sure the token is there
@@ -188,7 +188,7 @@ public class IntrospectionEndpoint {
 		}
 
 		// if it's a valid token, we'll print out information on it
-		
+
 		if (accessToken != null) {
 			Map<String, Object> entity = introspectionResultAssembler.assembleFrom(accessToken, user, authScopes);
 			model.addAttribute(JsonEntityView.ENTITY, entity);
@@ -202,9 +202,9 @@ public class IntrospectionEndpoint {
 			model.addAttribute(JsonEntityView.ENTITY, entity);
 			return JsonEntityView.VIEWNAME;
 		}
-		
+
 		return JsonEntityView.VIEWNAME;
-			
+
 	}
-	
+
 }

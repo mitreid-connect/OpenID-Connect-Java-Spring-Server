@@ -63,35 +63,35 @@ public class ClaimsCollectionEndpoint {
 
 	@Autowired
 	private ClientDetailsEntityService clientService;
-	
+
 	@Autowired
 	private PermissionService permissionService;
-	
-	
+
+
 	@RequestMapping(method = RequestMethod.GET)
-	public String collectClaims(@RequestParam("client_id") String clientId, @RequestParam(value = "redirect_uri", required = false) String redirectUri, 
+	public String collectClaims(@RequestParam("client_id") String clientId, @RequestParam(value = "redirect_uri", required = false) String redirectUri,
 			@RequestParam("ticket") String ticketValue, @RequestParam(value = "state", required = false) String state,
 			Model m, OIDCAuthenticationToken auth) {
 
 
 		ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
-		
+
 		PermissionTicket ticket = permissionService.getByTicket(ticketValue);
-		
+
 		if (client == null || ticket == null) {
 			logger.info("Client or ticket not found: " + clientId + " :: " + ticketValue);
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 			return HttpCodeView.VIEWNAME;
 		}
-		
+
 		// we've got a client and ticket, let's attach the claims that we have from the token and userinfo
-		
+
 		// subject
 		Set<Claim> claimsSupplied = Sets.newHashSet(ticket.getClaimsSupplied());
-		
+
 		String issuer = auth.getIssuer();
 		UserInfo userInfo = auth.getUserInfo();
-		
+
 		claimsSupplied.add(mkClaim(issuer, "sub", new JsonPrimitive(auth.getSub())));
 		if (userInfo.getEmail() != null) {
 			claimsSupplied.add(mkClaim(issuer, "email", new JsonPrimitive(userInfo.getEmail())));
@@ -111,7 +111,7 @@ public class ClaimsCollectionEndpoint {
 		if (userInfo.getProfile() != null) {
 			claimsSupplied.add(mkClaim(issuer, "profile", new JsonPrimitive(auth.getUserInfo().getProfile())));
 		}
-		
+
 		ticket.setClaimsSupplied(claimsSupplied);
 		
 		PermissionTicket updatedTicket = permissionService.updateTicket(ticket);
@@ -128,7 +128,7 @@ public class ClaimsCollectionEndpoint {
 				throw new RedirectMismatchException("Claims redirect did not match the registered values.");
 			}
 		}
-		
+
 		UriComponentsBuilder template = UriComponentsBuilder.fromUriString(redirectUri);
 		template.queryParam("authorization_state", "claims_submitted");
 		if (!Strings.isNullOrEmpty(state)) {
@@ -137,11 +137,11 @@ public class ClaimsCollectionEndpoint {
 
 		String uriString = template.toUriString();
 		logger.info("Redirecting to " + uriString);
-		
+
 		return "redirect:" + uriString;
 	}
 
-	
+
 	private Claim mkClaim(String issuer, String name, JsonElement value) {
 		Claim c = new Claim();
 		c.setIssuer(Sets.newHashSet(issuer));
@@ -149,5 +149,5 @@ public class ClaimsCollectionEndpoint {
 		c.setValue(value);
 		return c;
 	}
-	
+
 }

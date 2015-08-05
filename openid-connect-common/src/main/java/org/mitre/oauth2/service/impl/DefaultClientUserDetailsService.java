@@ -55,28 +55,28 @@ public class DefaultClientUserDetailsService implements UserDetailsService {
 
 		try {
 			ClientDetailsEntity client = clientDetailsService.loadClientByClientId(clientId);
-	
+
 			if (client != null) {
-	
+
 				String password = Strings.nullToEmpty(client.getClientSecret());
-	
+
 				if (client.getTokenEndpointAuthMethod() != null &&
 						(client.getTokenEndpointAuthMethod().equals(AuthMethod.PRIVATE_KEY) ||
 								client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_JWT))) {
-	
+
 					// Issue a random password each time to prevent password auth from being used (or skipped)
 					// for private key or shared key clients, see #715
-	
+
 					password = new BigInteger(512, new SecureRandom()).toString(16);
 				}
-	
+
 				boolean enabled = true;
 				boolean accountNonExpired = true;
 				boolean credentialsNonExpired = true;
 				boolean accountNonLocked = true;
 				Collection<GrantedAuthority> authorities = new HashSet<>(client.getAuthorities());
 				authorities.add(ROLE_CLIENT);
-	
+
 				return new User(clientId, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
 			} else {
 				throw new UsernameNotFoundException("Client not found: " + clientId);

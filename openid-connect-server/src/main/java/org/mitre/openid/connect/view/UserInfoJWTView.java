@@ -71,8 +71,8 @@ public class UserInfoJWTView extends UserInfoView {
 
 	public static final String JOSE_MEDIA_TYPE_VALUE = "application/jwt";
 	public static final MediaType JOSE_MEDIA_TYPE = new MediaType("application", "jwt");
-	
-	
+
+
 	@Autowired
 	private JWTSigningAndValidationService jwtService;
 

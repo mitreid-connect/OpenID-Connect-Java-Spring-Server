@@ -104,7 +104,7 @@ public class TestDefaultSystemScopeService {
 		restrictedScope1 = new SystemScope(restrictedScope1String);
 		restrictedScope1.setRestricted(true);
 
-		
+
 		// structuredScope1 : structured scope
 		structuredScope1 = new SystemScope(structuredScope1String);
 		structuredScope1.setStructured(true);
@@ -167,9 +167,9 @@ public class TestDefaultSystemScopeService {
 		Set<SystemScope> restricted = Sets.newHashSet(defaultScope1, defaultScope2, restrictedScope1);
 
 		assertThat(service.getRestricted(), equalTo(restricted));
-		
+
 	}
-	
+
 	@Test
 	public void fromStrings() {
 

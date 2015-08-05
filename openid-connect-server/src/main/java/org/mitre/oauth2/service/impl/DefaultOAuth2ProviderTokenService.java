@@ -151,8 +151,8 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 			Set<SystemScope> scopes = scopeService.fromStrings(clientAuth.getScope());
 
 			// remove any of the special system scopes
-			scopes = scopeService.removeReservedScopes(scopes);			
-			
+			scopes = scopeService.removeReservedScopes(scopes);
+
 			token.setScope(scopeService.toStrings(scopes));
 
 			// make it expire if necessary
@@ -280,7 +280,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 
 		Set<String> scopeRequested = authRequest.getScope() == null ? new HashSet<String>() : new HashSet<>(authRequest.getScope());
 		Set<SystemScope> scope = scopeService.fromStrings(scopeRequested);
-		
+
 		// remove any of the special system scopes
 		scope = scopeService.removeReservedScopes(scope);
 
@@ -313,7 +313,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 			// otherwise, make a new refresh token
 			OAuth2RefreshTokenEntity newRefresh = createRefreshToken(client, authHolder);
 			token.setRefreshToken(newRefresh);
-			
+
 			// clean up the old refresh token
 			tokenRepository.removeRefreshToken(refreshToken);
 		}

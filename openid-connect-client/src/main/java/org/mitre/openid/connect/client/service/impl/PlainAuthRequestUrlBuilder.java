@@ -63,7 +63,7 @@ public class PlainAuthRequestUrlBuilder implements AuthRequestUrlBuilder {
 			for (Entry<String, String> option : options.entrySet()) {
 				uriBuilder.addParameter(option.getKey(), option.getValue());
 			}
-			
+
 			// if there's a login hint, send it
 			if (!Strings.isNullOrEmpty(loginHint)) {
 				uriBuilder.addParameter("login_hint", loginHint);

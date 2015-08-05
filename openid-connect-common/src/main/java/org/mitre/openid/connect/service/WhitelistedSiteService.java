@@ -52,7 +52,7 @@ public interface WhitelistedSiteService {
 	 */
 	public WhitelistedSite getByClientId(String clientId);
 
-	
+
 
 	/**
 	 * Removes the given WhitelistedSite from the repository

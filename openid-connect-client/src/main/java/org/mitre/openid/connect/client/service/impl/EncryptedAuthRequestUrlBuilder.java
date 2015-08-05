@@ -78,7 +78,7 @@ public class EncryptedAuthRequestUrlBuilder implements AuthRequestUrlBuilder {
 		for (Entry<String, String> option : options.entrySet()) {
 			claims.setClaim(option.getKey(), option.getValue());
 		}
-		
+
 		// if there's a login hint, send it
 		if (!Strings.isNullOrEmpty(loginHint)) {
 			claims.setClaim("login_hint", loginHint);

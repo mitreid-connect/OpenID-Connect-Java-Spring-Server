@@ -54,7 +54,7 @@ import com.google.common.base.Strings;
 public class UserInfoEndpoint {
 
 	public static final String URL = "userinfo";
-	
+
 	@Autowired
 	private UserInfoService userInfoService;
 

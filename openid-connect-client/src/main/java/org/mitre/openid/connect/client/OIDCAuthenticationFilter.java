@@ -333,8 +333,8 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 				protected ClientHttpRequest createRequest(URI url, HttpMethod method) throws IOException {
 					ClientHttpRequest httpRequest = super.createRequest(url, method);
 					httpRequest.getHeaders().add("Authorization",
-							String.format("Basic %s", Base64.encode(String.format("%s:%s", 
-									UriUtils.encodePathSegment(clientConfig.getClientId(), "UTF-8"), 
+							String.format("Basic %s", Base64.encode(String.format("%s:%s",
+									UriUtils.encodePathSegment(clientConfig.getClientId(), "UTF-8"),
 									UriUtils.encodePathSegment(clientConfig.getClientSecret(), "UTF-8")))));
 
 					return httpRequest;
@@ -581,10 +581,10 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 
 				// construct an PendingOIDCAuthenticationToken and return a Authentication object w/the userId and the idToken
 
-				PendingOIDCAuthenticationToken token = new PendingOIDCAuthenticationToken(idClaims.getSubject(), idClaims.getIssuer(), 
-						serverConfig, 
+				PendingOIDCAuthenticationToken token = new PendingOIDCAuthenticationToken(idClaims.getSubject(), idClaims.getIssuer(),
+						serverConfig,
 						idToken, accessTokenValue, refreshTokenValue);
-				
+
 				Authentication authentication = this.getAuthenticationManager().authenticate(token);
 
 				return authentication;

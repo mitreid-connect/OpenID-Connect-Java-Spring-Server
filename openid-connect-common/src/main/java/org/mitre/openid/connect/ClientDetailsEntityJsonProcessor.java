@@ -92,7 +92,7 @@ import static org.mitre.util.JsonUtils.getAsStringSet;
 public class ClientDetailsEntityJsonProcessor {
 
 	private static Logger logger = LoggerFactory.getLogger(ClientDetailsEntityJsonProcessor.class);
-	
+
 	private static JsonParser parser = new JsonParser();
 
 	/**
@@ -140,7 +140,7 @@ public class ClientDetailsEntityJsonProcessor {
 			c.setResponseTypes(getAsStringSet(o, RESPONSE_TYPES));
 			c.setPolicyUri(getAsString(o, POLICY_URI));
 			c.setJwksUri(getAsString(o, JWKS_URI));
-			
+
 			JsonElement jwksEl = o.get(JWKS);
 			if (jwksEl != null && jwksEl.isJsonObject()) {
 				try {
@@ -223,7 +223,7 @@ public class ClientDetailsEntityJsonProcessor {
 			rc.setClientSecretExpiresAt(getAsDate(o, CLIENT_SECRET_EXPIRES_AT));
 
 			rc.setSource(o);
-			
+
 			return rc;
 		} else {
 			return null;
@@ -237,25 +237,25 @@ public class ClientDetailsEntityJsonProcessor {
 	 * @return
 	 */
 	public static JsonObject serialize(RegisteredClient c) {
-		
+
 		if (c.getSource() != null) {
 			// if we have the original object, just use that
 			return c.getSource();
 		} else {
-		
+
 			JsonObject o = new JsonObject();
-	
+
 			o.addProperty(CLIENT_ID, c.getClientId());
 			if (c.getClientSecret() != null) {
 				o.addProperty(CLIENT_SECRET, c.getClientSecret());
-	
+
 				if (c.getClientSecretExpiresAt() == null) {
 					o.addProperty(CLIENT_SECRET_EXPIRES_AT, 0); // TODO: do we want to let secrets expire?
 				} else {
 					o.addProperty(CLIENT_SECRET_EXPIRES_AT, c.getClientSecretExpiresAt().getTime() / 1000L);
 				}
 			}
-	
+
 			if (c.getClientIdIssuedAt() != null) {
 				o.addProperty(CLIENT_ID_ISSUED_AT, c.getClientIdIssuedAt().getTime() / 1000L);
 			} else if (c.getCreatedAt() != null) {
@@ -264,14 +264,14 @@ public class ClientDetailsEntityJsonProcessor {
 			if (c.getRegistrationAccessToken() != null) {
 				o.addProperty(REGISTRATION_ACCESS_TOKEN, c.getRegistrationAccessToken());
 			}
-	
+
 			if (c.getRegistrationClientUri() != null) {
 				o.addProperty(REGISTRATION_CLIENT_URI, c.getRegistrationClientUri());
 			}
-	
-	
+
+
 			// add in all other client properties
-	
+
 			// OAuth DynReg
 			o.add(REDIRECT_URIS, getAsArray(c.getRedirectUris()));
 			o.addProperty(CLIENT_NAME, c.getClientName());
@@ -285,7 +285,7 @@ public class ClientDetailsEntityJsonProcessor {
 			o.add(RESPONSE_TYPES, getAsArray(c.getResponseTypes()));
 			o.addProperty(POLICY_URI, c.getPolicyUri());
 			o.addProperty(JWKS_URI, c.getJwksUri());
-			
+
 			// get the JWKS sub-object
 			if (c.getJwks() != null) {
 				// We have to re-parse it into GSON because Nimbus uses a different parser
@@ -294,7 +294,7 @@ public class ClientDetailsEntityJsonProcessor {
 			} else {
 				o.add(JWKS, null);
 			}
-	
+
 			// OIDC Registration
 			o.addProperty(APPLICATION_TYPE, c.getApplicationType() != null ? c.getApplicationType().getValue() : null);
 			o.addProperty(SECTOR_IDENTIFIER_URI, c.getSectorIdentifierUri());

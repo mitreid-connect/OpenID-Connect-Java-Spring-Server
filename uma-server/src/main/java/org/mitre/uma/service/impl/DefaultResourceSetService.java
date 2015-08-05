@@ -43,31 +43,31 @@ import org.springframework.stereotype.Service;
 public class DefaultResourceSetService implements ResourceSetService {
 
 	private static final Logger logger = LoggerFactory.getLogger(DefaultResourceSetService.class);
-	
+
 	@Autowired
 	private ResourceSetRepository repository;
-	
+
 	@Autowired
 	private OAuth2TokenRepository tokenRepository;
-	
+
 	@Autowired
 	private PermissionRepository ticketRepository;
 
 	@Override
 	public ResourceSet saveNew(ResourceSet rs) {
-		
+
 		if (rs.getId() != null) {
 			throw new IllegalArgumentException("Can't save a new resource set with an ID already set to it.");
 		}
-		
+
 		if (!checkScopeConsistency(rs)) {
 			throw new IllegalArgumentException("Can't save a resource set with inconsistent claims.");
 		}
-		
+
 		ResourceSet saved = repository.save(rs);
-		
+
 		return saved;
-		
+
 	}
 
 	@Override
@@ -80,22 +80,22 @@ public class DefaultResourceSetService implements ResourceSetService {
 
 		if (oldRs.getId() == null || newRs.getId() == null
 				|| !oldRs.getId().equals(newRs.getId())) {
-			
+
 			throw new IllegalArgumentException("Resource set IDs mismatched");
-			
+
 		}
 
 		if (!checkScopeConsistency(newRs)) {
 			throw new IllegalArgumentException("Can't save a resource set with inconsistent claims.");
 		}
-		
+
 		newRs.setOwner(oldRs.getOwner()); // preserve the owner tag across updates
 		newRs.setClientId(oldRs.getClientId()); // preserve the client id across updates
-		
+
 		ResourceSet saved = repository.save(newRs);
-		
+
 		return saved;
-		
+
 	}
 
 	@Override
@@ -105,13 +105,13 @@ public class DefaultResourceSetService implements ResourceSetService {
 		for (OAuth2AccessTokenEntity token : tokens) {
 			tokenRepository.removeAccessToken(token);
 		}
-		
+
 		// find all outstanding tickets issued against this resource set and revoke them too
 		Collection<PermissionTicket> tickets = ticketRepository.getPermissionTicketsForResourceSet(rs);
 		for (PermissionTicket ticket : tickets) {
 			ticketRepository.remove(ticket);
 		}
-		
+
 		repository.remove(rs);
 	}
 
@@ -124,7 +124,7 @@ public class DefaultResourceSetService implements ResourceSetService {
 	public Collection<ResourceSet> getAllForOwnerAndClient(String owner, String clientId) {
 		return repository.getAllForOwnerAndClient(owner, clientId);
 	}
-	
+
 	private boolean checkScopeConsistency(ResourceSet rs) {
 		if (rs.getPolicies() == null) {
 			// nothing to check, no problem!
@@ -146,5 +146,5 @@ public class DefaultResourceSetService implements ResourceSetService {
 	public Collection<ResourceSet> getAllForClient(ClientDetailsEntity client) {
 		return repository.getAllForClient(client.getClientId());
 	}
-	
+
 }

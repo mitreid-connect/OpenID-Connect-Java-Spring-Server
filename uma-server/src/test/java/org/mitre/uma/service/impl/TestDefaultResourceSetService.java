@@ -40,18 +40,18 @@ public class TestDefaultResourceSetService {
 
 	@Mock
 	private ResourceSetRepository repository;
-	
+
 	@InjectMocks
 	private DefaultResourceSetService resourceSetService;
-	
+
 	/**
 	 * @throws java.lang.Exception
 	 */
 	@Before
 	public void setUp() throws Exception {
-		
+
 		when(repository.save(any(ResourceSet.class))).then(AdditionalAnswers.returnsFirstArg());
-		
+
 	}
 
 	/**
@@ -59,34 +59,34 @@ public class TestDefaultResourceSetService {
 	 */
 	@Test(expected = IllegalArgumentException.class)
 	public void testSaveNew_hasId() {
-		
+
 		ResourceSet rs = new ResourceSet();
 		rs.setId(1L);
-	
+
 		resourceSetService.saveNew(rs);
-		
+
 	}
-	
+
 	@Test(expected = IllegalArgumentException.class)
 	public void testUpdate_nullId() {
 		ResourceSet rs = new ResourceSet();
 		rs.setId(1L);
 
 		ResourceSet rs2 = new ResourceSet();
-		
+
 		resourceSetService.update(rs, rs2);
 	}
-	
+
 	@Test(expected = IllegalArgumentException.class)
 	public void testUpdate_nullId2() {
 		ResourceSet rs = new ResourceSet();
 
 		ResourceSet rs2 = new ResourceSet();
 		rs2.setId(1L);
-		
+
 		resourceSetService.update(rs, rs2);
 	}
-	
+
 	@Test(expected = IllegalArgumentException.class)
 	public void testUpdate_mismatchedIds() {
 		ResourceSet rs = new ResourceSet();
@@ -94,7 +94,7 @@ public class TestDefaultResourceSetService {
 
 		ResourceSet rs2 = new ResourceSet();
 		rs2.setId(2L);
-		
+
 		resourceSetService.update(rs, rs2);
 
 	}

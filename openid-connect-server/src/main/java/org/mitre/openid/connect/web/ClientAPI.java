@@ -224,13 +224,13 @@ public class ClientAPI {
 
 
 		}
-		
+
 		client.setDynamicallyRegistered(false);
 
 		try {
 			ClientDetailsEntity newClient = clientService.saveNewClient(client);
 			m.addAttribute(JsonEntityView.ENTITY, newClient);
-	
+
 			if (AuthenticationUtilities.isAdmin(auth)) {
 				return ClientEntityViewForAdmins.VIEWNAME;
 			} else {
@@ -331,7 +331,7 @@ public class ClientAPI {
 		try {
 			ClientDetailsEntity newClient = clientService.updateClient(oldClient, client);
 			m.addAttribute(JsonEntityView.ENTITY, newClient);
-	
+
 			if (AuthenticationUtilities.isAdmin(auth)) {
 				return ClientEntityViewForAdmins.VIEWNAME;
 			} else {

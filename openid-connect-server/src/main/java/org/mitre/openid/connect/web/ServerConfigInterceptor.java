@@ -28,7 +28,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 /**
  * 
- * Injects the server configuration bean into the request context. 
+ * Injects the server configuration bean into the request context.
  * This allows JSPs and the like to call "config.logoUrl" among others.
  * 
  * @author jricher
@@ -44,5 +44,5 @@ public class ServerConfigInterceptor extends HandlerInterceptorAdapter {
 		request.setAttribute("config", config);
 		return true;
 	}
-	
+
 }

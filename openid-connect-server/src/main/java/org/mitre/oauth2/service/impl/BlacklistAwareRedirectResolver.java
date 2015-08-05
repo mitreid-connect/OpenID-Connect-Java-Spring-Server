@@ -42,9 +42,9 @@ public class BlacklistAwareRedirectResolver extends DefaultRedirectResolver {
 
 	@Autowired
 	private BlacklistedSiteService blacklistService;
-	
+
 	private boolean strictMatch = false;
-	
+
 	/* (non-Javadoc)
 	 * @see org.springframework.security.oauth2.provider.endpoint.RedirectResolver#resolveRedirect(java.lang.String, org.springframework.security.oauth2.provider.ClientDetails)
 	 */
@@ -65,7 +65,7 @@ public class BlacklistAwareRedirectResolver extends DefaultRedirectResolver {
 	 */
 	@Override
 	protected boolean redirectMatches(String requestedRedirect, String redirectUri) {
-		
+
 		if (isStrictMatch()) {
 			// we're doing a strict string match for all clients
 			return Strings.nullToEmpty(requestedRedirect).equals(redirectUri);
@@ -73,7 +73,7 @@ public class BlacklistAwareRedirectResolver extends DefaultRedirectResolver {
 			// otherwise do the prefix-match from the library
 			return super.redirectMatches(requestedRedirect, redirectUri);
 		}
-		
+
 	}
 
 	/**
@@ -92,6 +92,6 @@ public class BlacklistAwareRedirectResolver extends DefaultRedirectResolver {
 		this.strictMatch = strictMatch;
 	}
 
-	
-	
+
+
 }

@@ -49,7 +49,7 @@ public class PairwiseIdentifier {
 
 	public static final String PARAM_SECTOR_IDENTIFIER = "sectorIdentifier";
 	public static final String PARAM_SUB = "sub";
-	
+
 	private Long id;
 	private String identifier;
 	private String userSub;

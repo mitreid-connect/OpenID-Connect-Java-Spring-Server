@@ -50,16 +50,16 @@ import com.nimbusds.jose.jwk.JWKSet;
 public class ClientKeyCacheService {
 
 	private static Logger logger = LoggerFactory.getLogger(ClientKeyCacheService.class);
-	
+
 	@Autowired
 	private JWKSetCacheService jwksUriCache = new JWKSetCacheService();
-	
+
 	@Autowired
 	private SymmetricKeyJWTValidatorCacheService symmetricCache = new SymmetricKeyJWTValidatorCacheService();
-	
+
 	// cache of validators for by-value JWKs
 	private LoadingCache<JWKSet, JWTSigningAndValidationService> jwksValidators;
-	
+
 	// cache of encryptors for by-value JWKs
 	private LoadingCache<JWKSet, JWTEncryptionAndDecryptionService> jwksEncrypters;
 
@@ -74,7 +74,7 @@ public class ClientKeyCacheService {
 				.build(new JWKSetEncryptorBuilder());
 	}
 
-	
+
 	public JWTSigningAndValidationService getValidator(ClientDetailsEntity client, JWSAlgorithm alg) {
 
 		try {
@@ -87,7 +87,7 @@ public class ClientKeyCacheService {
 					|| alg.equals(JWSAlgorithm.PS256)
 					|| alg.equals(JWSAlgorithm.PS384)
 					|| alg.equals(JWSAlgorithm.PS512)) {
-				
+
 				// asymmetric key
 				if (client.getJwks() != null) {
 					return jwksValidators.get(client.getJwks());
@@ -96,28 +96,28 @@ public class ClientKeyCacheService {
 				} else {
 					return null;
 				}
-				
+
 			} else if (alg.equals(JWSAlgorithm.HS256)
 					|| alg.equals(JWSAlgorithm.HS384)
 					|| alg.equals(JWSAlgorithm.HS512)) {
-	
+
 				// symmetric key
-				
+
 				return symmetricCache.getSymmetricValidtor(client);
-	
+
 			} else {
-				
+
 				return null;
 			}
- 		} catch (UncheckedExecutionException | ExecutionException e) {
+		} catch (UncheckedExecutionException | ExecutionException e) {
 			logger.error("Problem loading client validator", e);
 			return null;
 		}
 
 	}
-	
+
 	public JWTEncryptionAndDecryptionService getEncrypter(ClientDetailsEntity client) {
-	
+
 		try {
 			if (client.getJwks() != null) {
 				return jwksEncrypters.get(client.getJwks());
@@ -130,17 +130,17 @@ public class ClientKeyCacheService {
 			logger.error("Problem loading client encrypter", e);
 			return null;
 		}
-			
+
 	}
-	
-	
+
+
 	private class JWKSetEncryptorBuilder extends CacheLoader<JWKSet, JWTEncryptionAndDecryptionService> {
 
 		@Override
 		public JWTEncryptionAndDecryptionService load(JWKSet key) throws Exception {
 			return new DefaultJWTEncryptionAndDecryptionService(new JWKSetKeyStore(key));
 		}
-		
+
 	}
 
 	private class JWKSetVerifierBuilder extends CacheLoader<JWKSet, JWTSigningAndValidationService> {
@@ -152,5 +152,5 @@ public class ClientKeyCacheService {
 
 	}
 
-	
+
 }

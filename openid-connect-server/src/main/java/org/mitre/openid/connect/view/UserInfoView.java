@@ -53,7 +53,7 @@ public class UserInfoView extends AbstractView {
 	public static final String USER_INFO = "userInfo";
 
 	public static final String VIEWNAME = "userInfoView";
-	
+
 	private static JsonParser jsonParser = new JsonParser();
 
 	/**

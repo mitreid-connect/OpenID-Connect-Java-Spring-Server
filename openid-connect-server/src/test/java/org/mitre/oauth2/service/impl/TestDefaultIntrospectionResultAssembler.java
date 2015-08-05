@@ -62,7 +62,7 @@ public class TestDefaultIntrospectionResultAssembler {
 				authentication("name", request("clientId")));
 
 		UserInfo userInfo = userInfo("sub");
-		
+
 		Set<String> authScopes = scopes("foo", "bar", "baz");
 
 		// when
@@ -87,12 +87,12 @@ public class TestDefaultIntrospectionResultAssembler {
 	public void shouldAssembleExpectedResultForAccessToken_withPermissions() throws ParseException {
 
 		// given
-		OAuth2AccessTokenEntity accessToken = accessToken(new Date(123 * 1000L), scopes("foo", "bar"), 
+		OAuth2AccessTokenEntity accessToken = accessToken(new Date(123 * 1000L), scopes("foo", "bar"),
 				permissions(permission(1L, "foo", "bar")),
 				"Bearer", authentication("name", request("clientId")));
 
 		UserInfo userInfo = userInfo("sub");
-		
+
 		Set<String> authScopes = scopes("foo", "bar", "baz");
 
 		// when
@@ -297,11 +297,11 @@ public class TestDefaultIntrospectionResultAssembler {
 	private Set<String> scopes(String... scopes) {
 		return newHashSet(scopes);
 	}
-	
+
 	private Set<Permission> permissions(Permission... permissions) {
 		return newHashSet(permissions);
 	}
-	
+
 	private Permission permission(Long resourceSetId, String... scopes) {
 		Permission permission = mock(Permission.class, RETURNS_DEEP_STUBS);
 		given(permission.getResourceSet().getId()).willReturn(resourceSetId);

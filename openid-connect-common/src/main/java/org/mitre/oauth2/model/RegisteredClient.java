@@ -591,7 +591,7 @@ public class RegisteredClient {
 	public void setRequestUris(Set<String> requestUris) {
 		client.setRequestUris(requestUris);
 	}
-	
+
 	/**
 	 * @return
 	 * @see org.mitre.oauth2.model.ClientDetailsEntity#getRequestObjectSigningAlg()

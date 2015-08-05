@@ -62,7 +62,7 @@ public class DefaultSystemScopeService implements SystemScopeService {
 			return (input != null && input.isRestricted());
 		}
 	};
-	
+
 	private Predicate<SystemScope> isReserved = new Predicate<SystemScope>() {
 		@Override
 		public boolean apply(SystemScope input) {

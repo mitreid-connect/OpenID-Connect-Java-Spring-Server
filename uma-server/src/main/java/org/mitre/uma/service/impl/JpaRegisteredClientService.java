@@ -39,14 +39,14 @@ public class JpaRegisteredClientService implements RegisteredClientService {
 
 	@PersistenceContext
 	private EntityManager em;
-	
+
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.client.service.RegisteredClientService#getByIssuer(java.lang.String)
 	 */
 	@Override
 	public RegisteredClient getByIssuer(String issuer) {
 		SavedRegisteredClient saved = getSavedRegisteredClientFromStorage(issuer);
-		
+
 		if (saved == null) {
 			return null;
 		} else {
@@ -60,17 +60,17 @@ public class JpaRegisteredClientService implements RegisteredClientService {
 	@Override
 	@Transactional
 	public void save(String issuer, RegisteredClient client) {
-		
-		
+
+
 		SavedRegisteredClient saved = getSavedRegisteredClientFromStorage(issuer);
-		
+
 		if (saved == null) {
 			saved = new SavedRegisteredClient();
 			saved.setIssuer(issuer);
 		}
-		
+
 		saved.setRegisteredClient(client);
-		
+
 		em.persist(saved);
 
 	}
@@ -78,7 +78,7 @@ public class JpaRegisteredClientService implements RegisteredClientService {
 	private SavedRegisteredClient getSavedRegisteredClientFromStorage(String issuer) {
 		TypedQuery<SavedRegisteredClient> query = em.createQuery("SELECT c from SavedRegisteredClient c where c.issuer = :issuer", SavedRegisteredClient.class);
 		query.setParameter("issuer", issuer);
-		
+
 		SavedRegisteredClient saved = JpaUtil.getSingleResult(query.getResultList());
 		return saved;
 	}
@@ -90,5 +90,5 @@ public class JpaRegisteredClientService implements RegisteredClientService {
 		TypedQuery<SavedRegisteredClient> query = em.createQuery("SELECT c from SavedRegisteredClient c", SavedRegisteredClient.class);
 		return query.getResultList();
 	}
-	
+
 }

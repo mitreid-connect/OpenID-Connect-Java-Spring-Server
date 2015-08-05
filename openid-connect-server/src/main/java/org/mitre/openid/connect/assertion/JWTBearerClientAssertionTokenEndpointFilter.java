@@ -62,6 +62,7 @@ public class JWTBearerClientAssertionTokenEndpointFilter extends AbstractAuthent
 	public void afterPropertiesSet() {
 		super.afterPropertiesSet();
 		setAuthenticationFailureHandler(new AuthenticationFailureHandler() {
+			@Override
 			public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
 					AuthenticationException exception) throws IOException, ServletException {
 				if (exception instanceof BadCredentialsException) {
@@ -71,6 +72,7 @@ public class JWTBearerClientAssertionTokenEndpointFilter extends AbstractAuthent
 			}
 		});
 		setAuthenticationSuccessHandler(new AuthenticationSuccessHandler() {
+			@Override
 			public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 					Authentication authentication) throws IOException, ServletException {
 				// no-op - just allow filter chain to continue to token endpoint
@@ -109,13 +111,13 @@ public class JWTBearerClientAssertionTokenEndpointFilter extends AbstractAuthent
 	}
 
 	private static class ClientAssertionRequestMatcher implements RequestMatcher {
-		
+
 		private RequestMatcher additionalMatcher;
-		
+
 		public ClientAssertionRequestMatcher(RequestMatcher additionalMatcher) {
 			this.additionalMatcher = additionalMatcher;
 		}
-		
+
 		@Override
 		public boolean matches(HttpServletRequest request) {
 			// check for appropriate parameters
@@ -127,10 +129,10 @@ public class JWTBearerClientAssertionTokenEndpointFilter extends AbstractAuthent
 			} else if (!assertionType.equals("urn:ietf:params:oauth:client-assertion-type:jwt-bearer")) {
 				return false;
 			}
-			
+
 			return additionalMatcher.matches(request);
 		}
-		
+
 	}
 
 

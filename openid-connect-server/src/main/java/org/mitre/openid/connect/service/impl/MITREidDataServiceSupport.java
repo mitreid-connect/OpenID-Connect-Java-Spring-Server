@@ -36,7 +36,7 @@ public abstract class MITREidDataServiceSupport {
 		dateFormatter = new DateFormatter();
 		dateFormatter.setIso(ISO.DATE_TIME);
 	}
-	
+
 	protected Date utcToDate(String value) {
 		if (value == null) {
 			return null;
@@ -48,7 +48,7 @@ public abstract class MITREidDataServiceSupport {
 		}
 		return null;
 	}
-	
+
 	protected String toUTCString(Date value) {
 		if (value == null) {
 			return null;

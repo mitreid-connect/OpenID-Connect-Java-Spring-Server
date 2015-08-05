@@ -52,7 +52,7 @@ import com.google.gson.Gson;
 public class ScopeAPI {
 
 	public static final String URL = RootController.API_URL + "/scopes";
-	
+
 	@Autowired
 	private SystemScopeService scopeService;
 

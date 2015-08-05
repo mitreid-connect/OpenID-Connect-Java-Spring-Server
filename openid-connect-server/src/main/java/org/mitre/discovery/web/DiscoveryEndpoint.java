@@ -116,12 +116,12 @@ public class DiscoveryEndpoint {
 
 				// check on email addresses first
 				UserInfo user = userService.getByEmailAddress(resourceUri.getUserInfo() + "@" + resourceUri.getHost());
-				
+
 				if (user == null) {
 					// user wasn't found, see if the local part of the username matches, plus our issuer host
-				
+
 					user = userService.getByUsername(resourceUri.getUserInfo()); // first part is the username
-					
+
 					if (user != null) {
 						// username matched, check the host component
 						UriComponents issuerComponents = UriComponentsBuilder.fromHttpUrl(config.getIssuer()).build();
@@ -131,16 +131,16 @@ public class DiscoveryEndpoint {
 							model.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 							return HttpCodeView.VIEWNAME;
 						}
-						
+
 					} else {
-					
+
 						// if the user's still null, punt and say we didn't find them
-						
+
 						logger.info("User not found: " + resource);
 						model.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 						return HttpCodeView.VIEWNAME;
 					}
-					
+
 				}
 
 			} else {

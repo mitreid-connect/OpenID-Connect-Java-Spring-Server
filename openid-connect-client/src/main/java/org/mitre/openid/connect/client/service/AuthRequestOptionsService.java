@@ -46,7 +46,7 @@ public interface AuthRequestOptionsService {
 	 * @return
 	 */
 	public Map<String, String> getOptions(ServerConfiguration server, RegisteredClient client, HttpServletRequest request);
-	
+
 	/**
 	 * The set of options needed at the token endpoint.
 	 * 

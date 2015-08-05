@@ -37,7 +37,7 @@ import org.springframework.web.servlet.view.AbstractView;
 public class HttpCodeView extends AbstractView {
 
 	public static final String VIEWNAME = "httpCodeView";
-	
+
 	public static final String CODE = "code";
 
 	@Override

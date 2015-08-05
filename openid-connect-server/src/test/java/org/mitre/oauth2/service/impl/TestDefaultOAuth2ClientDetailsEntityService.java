@@ -77,7 +77,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 
 	@Mock
 	private SystemScopeService scopeService;
-	
+
 	@Mock
 	private ResourceSetService resourceSetService;
 
@@ -119,7 +119,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 				return output;
 			}
 		});
-		
+
 		Mockito.when(scopeService.toStrings(Matchers.anySet())).thenAnswer(new Answer<Set<String>>() {
 			@Override
 			public Set<String> answer(InvocationOnMock invocation) throws Throwable {
@@ -132,7 +132,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 				return output;
 			}
 		});
-		
+
 		// we're not testing reserved scopes here, just pass through when it's called
 		Mockito.when(scopeService.removeReservedScopes(Matchers.anySet())).then(AdditionalAnswers.returnsFirstArg());
 
@@ -208,7 +208,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		client = service.saveNewClient(client);
 
 		Mockito.verify(scopeService, Mockito.atLeastOnce()).removeReservedScopes(Matchers.anySet());
-		
+
 		assertThat(client.getScope().contains(SystemScopeService.OFFLINE_ACCESS), is(equalTo(false)));
 	}
 
@@ -270,7 +270,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		Mockito.when(whitelistedSiteService.getByClientId(clientId)).thenReturn(site);
 
 		Mockito.when(resourceSetService.getAllForClient(client)).thenReturn(new HashSet<ResourceSet>());
-		
+
 		service.deleteClient(client);
 
 		Mockito.verify(tokenRepository).clearTokensForClient(client);
@@ -333,7 +333,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 
 		client = service.updateClient(oldClient, client);
 
-		Mockito.verify(scopeService, Mockito.atLeastOnce()).removeReservedScopes(Matchers.anySet());		
+		Mockito.verify(scopeService, Mockito.atLeastOnce()).removeReservedScopes(Matchers.anySet());
 
 		assertThat(client.getScope().contains(SystemScopeService.OFFLINE_ACCESS), is(equalTo(true)));
 	}
@@ -350,7 +350,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		client = service.updateClient(oldClient, client);
 
 		Mockito.verify(scopeService, Mockito.atLeastOnce()).removeReservedScopes(Matchers.anySet());
-		
+
 		assertThat(client.getScope().contains(SystemScopeService.OFFLINE_ACCESS), is(equalTo(false)));
 	}
 }

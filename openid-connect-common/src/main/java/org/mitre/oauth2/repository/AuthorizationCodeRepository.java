@@ -55,5 +55,5 @@ public interface AuthorizationCodeRepository {
 	 * @return A collection of all expired codes.
 	 */
 	public Collection<AuthorizationCodeEntity> getExpiredCodes();
-	
+
 }

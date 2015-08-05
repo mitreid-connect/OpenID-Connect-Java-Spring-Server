@@ -44,9 +44,9 @@ public class SystemScope {
 
 	public static final String QUERY_BY_VALUE = "SystemScope.getByValue";
 	public static final String QUERY_ALL = "SystemScope.findAll";
-	
+
 	public static final String PARAM_VALUE = "value";
-	
+
 	private Long id;
 	private String value; // scope value
 	private String description; // human-readable description

@@ -35,7 +35,7 @@ public class SimpleGrantedAuthorityStringConverter implements AttributeConverter
 			return attribute.getAuthority();
 		} else {
 			return null;
-		}		
+		}
 	}
 
 	@Override

@@ -32,7 +32,7 @@ import com.google.common.collect.ImmutableSet;
  *
  */
 public abstract class AuthenticationUtilities {
-	
+
 	/**
 	 * Makes sure the authentication contains the given scope, throws an exception otherwise
 	 * @param auth the authentication object to check
@@ -63,7 +63,7 @@ public abstract class AuthenticationUtilities {
 		}
 		return false;
 	}
-	
+
 
 	public static boolean hasRole(Authentication auth, String role) {
 		for (GrantedAuthority grantedAuthority : auth.getAuthorities()) {
@@ -72,7 +72,7 @@ public abstract class AuthenticationUtilities {
 			}
 		}
 		return false;
-		
+
 	}
-	
+
 }

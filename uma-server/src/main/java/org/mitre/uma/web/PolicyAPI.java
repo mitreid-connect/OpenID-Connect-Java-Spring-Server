@@ -56,18 +56,18 @@ import com.google.gson.Gson;
 @RequestMapping("/" + PolicyAPI.URL)
 @PreAuthorize("hasRole('ROLE_USER')")
 public class PolicyAPI {
-	
+
 	// Logger for this class
 	private static final Logger logger = LoggerFactory.getLogger(PolicyAPI.class);
-	
+
 	public static final String URL = RootController.API_URL + "/resourceset";
 	public static final String POLICYURL = "/policy";
-	
+
 	private Gson gson = new Gson();
-	
+
 	@Autowired
 	private ResourceSetService resourceSetService;
-	
+
 	/**
 	 * List all resource sets for the current user
 	 * @param m
@@ -76,14 +76,14 @@ public class PolicyAPI {
 	 */
 	@RequestMapping(value = "", method = RequestMethod.GET, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
 	public String getResourceSetsForCurrentUser(Model m, Authentication auth) {
-		
+
 		Collection<ResourceSet> resourceSets = resourceSetService.getAllForOwner(auth.getName());
-		
+
 		m.addAttribute(JsonEntityView.ENTITY, resourceSets);
-		
+
 		return JsonEntityView.VIEWNAME;
 	}
-	
+
 	/**
 	 * Get the indicated resource set
 	 * @param rsid
@@ -93,14 +93,14 @@ public class PolicyAPI {
 	 */
 	@RequestMapping(value = "/{rsid}", method = RequestMethod.GET, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
 	public String getResourceSet(@PathVariable (value = "rsid") Long rsid, Model m, Authentication auth) {
-		
+
 		ResourceSet rs = resourceSetService.getById(rsid);
 
 		if (rs == null) {
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 			return HttpCodeView.VIEWNAME;
 		}
-		
+
 		if (!rs.getOwner().equals(auth.getName())) {
 			logger.warn("Unauthorized resource set request from bad user; expected " + rs.getOwner() + " got " + auth.getName());
 
@@ -108,12 +108,12 @@ public class PolicyAPI {
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.FORBIDDEN);
 			return HttpCodeView.VIEWNAME;
 		}
-				
+
 		m.addAttribute(JsonEntityView.ENTITY, rs);
-		
+
 		return JsonEntityView.VIEWNAME;
 	}
-	
+
 	/**
 	 * Delete the indicated resource set
 	 * @param rsid
@@ -123,14 +123,14 @@ public class PolicyAPI {
 	 */
 	@RequestMapping(value = "/{rsid}", method = RequestMethod.DELETE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
 	public String deleteResourceSet(@PathVariable (value = "rsid") Long rsid, Model m, Authentication auth) {
-		
+
 		ResourceSet rs = resourceSetService.getById(rsid);
 
 		if (rs == null) {
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 			return HttpCodeView.VIEWNAME;
 		}
-		
+
 		if (!rs.getOwner().equals(auth.getName())) {
 			logger.warn("Unauthorized resource set request from bad user; expected " + rs.getOwner() + " got " + auth.getName());
 
@@ -142,9 +142,9 @@ public class PolicyAPI {
 		resourceSetService.remove(rs);
 		m.addAttribute(HttpCodeView.CODE, HttpStatus.NO_CONTENT);
 		return HttpCodeView.VIEWNAME;
-		
+
 	}
-	
+
 	/**
 	 * List all the policies for the given resource set
 	 * @param rsid
@@ -154,14 +154,14 @@ public class PolicyAPI {
 	 */
 	@RequestMapping(value = "/{rsid}" + POLICYURL, method = RequestMethod.GET, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
 	public String getPoliciesForResourceSet(@PathVariable (value = "rsid") Long rsid, Model m, Authentication auth) {
-		
+
 		ResourceSet rs = resourceSetService.getById(rsid);
 
 		if (rs == null) {
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 			return HttpCodeView.VIEWNAME;
 		}
-		
+
 		if (!rs.getOwner().equals(auth.getName())) {
 			logger.warn("Unauthorized resource set request from bad user; expected " + rs.getOwner() + " got " + auth.getName());
 
@@ -169,12 +169,12 @@ public class PolicyAPI {
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.FORBIDDEN);
 			return HttpCodeView.VIEWNAME;
 		}
-				
+
 		m.addAttribute(JsonEntityView.ENTITY, rs.getPolicies());
-		
+
 		return JsonEntityView.VIEWNAME;
 	}
-	
+
 	/**
 	 * Create a new policy on the given resource set
 	 * @param rsid
@@ -190,7 +190,7 @@ public class PolicyAPI {
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 			return HttpCodeView.VIEWNAME;
 		}
-		
+
 		if (!rs.getOwner().equals(auth.getName())) {
 			logger.warn("Unauthorized resource set request from bad user; expected " + rs.getOwner() + " got " + auth.getName());
 
@@ -200,13 +200,13 @@ public class PolicyAPI {
 		}
 
 		Policy p = gson.fromJson(jsonString, Policy.class);
-		
+
 		if (p.getId() != null) {
 			logger.warn("Tried to add a policy with a non-null ID: " + p.getId());
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 			return HttpCodeView.VIEWNAME;
 		}
-		
+
 		for (Claim claim : p.getClaimsRequired()) {
 			if (claim.getId() != null) {
 				logger.warn("Tried to add a policy with a non-null claim ID: " + claim.getId());
@@ -220,7 +220,7 @@ public class PolicyAPI {
 
 		// find the new policy object
 		Collection<Policy> newPolicies = Sets.difference(new HashSet<>(saved.getPolicies()), new HashSet<>(rs.getPolicies()));
-		
+
 		if (newPolicies.size() == 1) {
 			Policy newPolicy = newPolicies.iterator().next();
 			m.addAttribute(JsonEntityView.ENTITY, newPolicy);
@@ -230,9 +230,9 @@ public class PolicyAPI {
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.INTERNAL_SERVER_ERROR);
 			return HttpCodeView.VIEWNAME;
 		}
-		
+
 	}
-	
+
 	/**
 	 * Get a specific policy
 	 * @param rsid
@@ -243,14 +243,14 @@ public class PolicyAPI {
 	 */
 	@RequestMapping(value = "/{rsid}" + POLICYURL + "/{pid}", method = RequestMethod.GET, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
 	public String getPolicy(@PathVariable (value = "rsid") Long rsid, @PathVariable (value = "pid") Long pid, Model m, Authentication auth) {
-		
+
 		ResourceSet rs = resourceSetService.getById(rsid);
 
 		if (rs == null) {
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 			return HttpCodeView.VIEWNAME;
 		}
-		
+
 		if (!rs.getOwner().equals(auth.getName())) {
 			logger.warn("Unauthorized resource set request from bad user; expected " + rs.getOwner() + " got " + auth.getName());
 
@@ -266,12 +266,12 @@ public class PolicyAPI {
 				return JsonEntityView.VIEWNAME;
 			}
 		}
-		
+
 		// if we made it this far, we haven't found it
 		m.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 		return HttpCodeView.VIEWNAME;
 	}
-	
+
 	/**
 	 * Update a specific policy
 	 * @param rsid
@@ -285,12 +285,12 @@ public class PolicyAPI {
 	public String setClaimsForResourceSet(@PathVariable (value = "rsid") Long rsid, @PathVariable (value = "pid") Long pid, @RequestBody String jsonString, Model m, Authentication auth) {
 
 		ResourceSet rs = resourceSetService.getById(rsid);
-		
+
 		if (rs == null) {
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 			return HttpCodeView.VIEWNAME;
 		}
-		
+
 		if (!rs.getOwner().equals(auth.getName())) {
 			logger.warn("Unauthorized resource set request from bad user; expected " + rs.getOwner() + " got " + auth.getName());
 
@@ -298,16 +298,16 @@ public class PolicyAPI {
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.FORBIDDEN);
 			return HttpCodeView.VIEWNAME;
 		}
-		
+
 		Policy p = gson.fromJson(jsonString, Policy.class);
-		
+
 		if (!pid.equals(p.getId())) {
 			logger.warn("Policy ID mismatch, expected " + pid + " got " + p.getId());
-			
+
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 			return HttpCodeView.VIEWNAME;
 		}
-		
+
 		for (Policy policy : rs.getPolicies()) {
 			if (policy.getId().equals(pid)) {
 				// found it!
@@ -325,14 +325,14 @@ public class PolicyAPI {
 						return HttpCodeView.VIEWNAME;
 					}
 				}
-				
+
 				// update the existing object with the new values
 				policy.setClaimsRequired(p.getClaimsRequired());
 				policy.setName(p.getName());
 				policy.setScopes(p.getScopes());
-				
+
 				resourceSetService.update(rs, rs);
-				
+
 				m.addAttribute(JsonEntityView.ENTITY, policy);
 				return JsonEntityView.VIEWNAME;
 			}
@@ -342,7 +342,7 @@ public class PolicyAPI {
 		m.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 		return HttpCodeView.VIEWNAME;
 	}
-	
+
 	/**
 	 * Delete a specific policy
 	 * @param rsid
@@ -355,38 +355,38 @@ public class PolicyAPI {
 	public String deleteResourceSet(@PathVariable ("rsid") Long rsid, @PathVariable (value = "pid") Long pid, Model m, Authentication auth) {
 
 		ResourceSet rs = resourceSetService.getById(rsid);
-		
+
 		if (rs == null) {
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 			m.addAttribute(JsonErrorView.ERROR, "not_found");
 			return JsonErrorView.VIEWNAME;
 		}
-		
+
 		if (!auth.getName().equals(rs.getOwner())) {
-			
+
 			logger.warn("Unauthorized resource set request from bad user; expected " + rs.getOwner() + " got " + auth.getName());
-			
+
 			// it wasn't issued to this user
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.FORBIDDEN);
 			return JsonErrorView.VIEWNAME;
 		}
-			
-				
+
+
 		for (Policy policy : rs.getPolicies()) {
 			if (policy.getId().equals(pid)) {
 				// found it!
 				rs.getPolicies().remove(policy);
 				resourceSetService.update(rs, rs);
-		
+
 				m.addAttribute(HttpCodeView.CODE, HttpStatus.NO_CONTENT);
 				return HttpCodeView.VIEWNAME;
 			}
 		}
-		
+
 		// if we made it this far, we haven't found it
 		m.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 		return HttpCodeView.VIEWNAME;
-		
+
 	}
-	
+
 }

@@ -40,35 +40,35 @@ public class DefaultPermissionService implements PermissionService {
 
 	@Autowired
 	private PermissionRepository repository;
-	
+
 	@Autowired
 	private SystemScopeService scopeService;
-	
+
 	private Long permissionExpirationSeconds = 60L * 60L; // 1 hr
-	
+
 	/* (non-Javadoc)
 	 * @see org.mitre.uma.service.PermissionService#create(org.mitre.uma.model.ResourceSet, java.util.Set)
 	 */
 	@Override
 	public PermissionTicket createTicket(ResourceSet resourceSet, Set<String> scopes) {
-		
+
 		// check to ensure that the scopes requested are a subset of those in the resource set
-		
+
 		if (!scopeService.scopesMatch(resourceSet.getScopes(), scopes)) {
 			throw new InsufficientScopeException("Scopes of resource set are not enough for requested permission.");
 		}
-		
+
 		Permission perm = new Permission();
 		perm.setResourceSet(resourceSet);
 		perm.setScopes(scopes);
-		
+
 		PermissionTicket ticket = new PermissionTicket();
 		ticket.setPermission(perm);
 		ticket.setTicket(UUID.randomUUID().toString());
 		ticket.setExpiration(new Date(System.currentTimeMillis() + permissionExpirationSeconds * 1000L));
-		
+
 		return repository.save(ticket);
-		
+
 	}
 
 	/* (non-Javadoc)
@@ -89,9 +89,9 @@ public class DefaultPermissionService implements PermissionService {
 		} else {
 			return null;
 		}
-		
+
 	}
 
-	
-	
+
+
 }

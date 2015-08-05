@@ -51,7 +51,7 @@ public class Claim {
 	private JsonElement value;
 	private Set<String> claimTokenFormat;
 	private Set<String> issuer;
-	
+
 	/**
 	 * @return the id
 	 */
@@ -81,7 +81,7 @@ public class Claim {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	/**
 	 * @return the friendlyName
 	 */
@@ -96,7 +96,7 @@ public class Claim {
 	public void setFriendlyName(String friendlyName) {
 		this.friendlyName = friendlyName;
 	}
-	
+
 	/**
 	 * @return the claimType
 	 */
@@ -111,7 +111,7 @@ public class Claim {
 	public void setClaimType(String claimType) {
 		this.claimType = claimType;
 	}
-	
+
 	/**
 	 * @return the claimTokenFormat
 	 */

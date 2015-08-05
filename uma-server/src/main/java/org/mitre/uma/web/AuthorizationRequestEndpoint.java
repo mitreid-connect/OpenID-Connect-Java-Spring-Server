@@ -70,13 +70,13 @@ public class AuthorizationRequestEndpoint {
 
 	@Autowired
 	private PermissionService permissionService;
-	
+
 	@Autowired
 	private OAuth2TokenEntityService tokenService;
-	
+
 	@Autowired
 	private OIDCTokenService oidcTokenService;
-	
+
 	@Autowired
 	private ClaimsProcessingService claimsProcessingService;
 
@@ -85,72 +85,72 @@ public class AuthorizationRequestEndpoint {
 
 	@RequestMapping(method = RequestMethod.POST, consumes = MimeTypeUtils.APPLICATION_JSON_VALUE, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
 	public String authorizationRequest(@RequestBody String jsonString, Model m, Authentication auth) {
-		
+
 		AuthenticationUtilities.ensureOAuthScope(auth, SystemScopeService.UMA_AUTHORIZATION_SCOPE);
-		
+
 		JsonParser parser = new JsonParser();
 		JsonElement e = parser.parse(jsonString);
-		
+
 		if (e.isJsonObject()) {
 			JsonObject o = e.getAsJsonObject();
-			
+
 			if (o.has(TICKET)) {
-				
+
 				OAuth2AccessTokenEntity incomingRpt = null;
 				if (o.has(RPT)) {
 					String rptValue = o.get(RPT).getAsString();
 					incomingRpt = tokenService.readAccessToken(rptValue);
-				}				
-				
+				}
+
 				String ticketValue = o.get(TICKET).getAsString();
-				
+
 				PermissionTicket ticket = permissionService.getByTicket(ticketValue);
-				
+
 				if (ticket != null) {
 					// found the ticket, see if it's any good
-					
+
 					ResourceSet rs = ticket.getPermission().getResourceSet();
-					
+
 					if (rs.getPolicies() == null || rs.getPolicies().isEmpty()) {
 						// the required claims are empty, this resource has no way to be authorized
-						
+
 						m.addAttribute(JsonErrorView.ERROR, "not_authorized");
 						m.addAttribute(JsonErrorView.ERROR_MESSAGE, "This resource set can not be accessed.");
 						m.addAttribute(HttpCodeView.CODE, HttpStatus.FORBIDDEN);
 						return JsonErrorView.VIEWNAME;
 					} else {
 						// claims weren't empty or missing, we need to check against what we have
-						
+
 						ClaimProcessingResult result = claimsProcessingService.claimsAreSatisfied(rs, ticket);
-						
-						
+
+
 						if (result.isSatisfied()) {
 							// the service found what it was looking for, issue a token
 
 							// we need to downscope this based on the required set that was matched if it was matched
 							OAuth2Authentication o2auth = (OAuth2Authentication) auth;
-							
+
 							OAuth2AccessTokenEntity token = umaTokenService.createRequestingPartyToken(o2auth, ticket, result.getMatched());
 
 							// if we have an inbound RPT, throw it out because we're replacing it
 							if (incomingRpt != null) {
 								tokenService.revokeAccessToken(incomingRpt);
 							}
-							
+
 							Map<String, String> entity = ImmutableMap.of("rpt", token.getValue());
-							
+
 							m.addAttribute(JsonEntityView.ENTITY, entity);
-							
+
 							return JsonEntityView.VIEWNAME;
-							
+
 						} else {
-							
+
 							// if we got here, the claim didn't match, forward the user to the claim gathering endpoint
 							JsonObject entity = new JsonObject();
-							
+
 							entity.addProperty(JsonErrorView.ERROR, "need_info");
 							JsonObject details = new JsonObject();
-							
+
 							JsonObject rpClaims = new JsonObject();
 							rpClaims.addProperty("redirect_user", true);
 							rpClaims.addProperty("ticket", ticketValue);
@@ -175,12 +175,12 @@ public class AuthorizationRequestEndpoint {
 							rpClaims.add("required_claims", req);
 							details.add("requesting_party_claims", rpClaims);
 							entity.add("error_details", details);
-							
+
 							m.addAttribute(JsonEntityView.ENTITY, entity);
 							return JsonEntityView.VIEWNAME;
-						}						
-						
-						
+						}
+
+
 					}
 				} else {
 					// ticket wasn't found, return an error
@@ -194,14 +194,14 @@ public class AuthorizationRequestEndpoint {
 				m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Missing JSON elements.");
 				return JsonErrorView.VIEWNAME;
 			}
-			
-			
+
+
 		} else {
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Malformed JSON request.");
 			return JsonErrorView.VIEWNAME;
 		}
-		
+
 	}
-	
+
 }

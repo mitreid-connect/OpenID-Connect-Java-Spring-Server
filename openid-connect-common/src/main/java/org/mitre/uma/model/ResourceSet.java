@@ -39,10 +39,10 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "resource_set")
 @NamedQueries ({
-		@NamedQuery(name = ResourceSet.QUERY_BY_OWNER, query = "select r from ResourceSet r where r.owner = :" + ResourceSet.PARAM_OWNER),
-		@NamedQuery(name = ResourceSet.QUERY_BY_OWNER_AND_CLIENT, query = "select r from ResourceSet r where r.owner = :" + ResourceSet.PARAM_OWNER + " and r.clientId = :" + ResourceSet.PARAM_CLIENTID),
-		@NamedQuery(name = ResourceSet.QUERY_BY_CLIENT, query = "select r from ResourceSet r where r.clientId = :" + ResourceSet.PARAM_CLIENTID),
-		@NamedQuery(name = ResourceSet.QUERY_ALL, query = "select r from ResourceSet r")
+	@NamedQuery(name = ResourceSet.QUERY_BY_OWNER, query = "select r from ResourceSet r where r.owner = :" + ResourceSet.PARAM_OWNER),
+	@NamedQuery(name = ResourceSet.QUERY_BY_OWNER_AND_CLIENT, query = "select r from ResourceSet r where r.owner = :" + ResourceSet.PARAM_OWNER + " and r.clientId = :" + ResourceSet.PARAM_CLIENTID),
+	@NamedQuery(name = ResourceSet.QUERY_BY_CLIENT, query = "select r from ResourceSet r where r.clientId = :" + ResourceSet.PARAM_CLIENTID),
+	@NamedQuery(name = ResourceSet.QUERY_ALL, query = "select r from ResourceSet r")
 })
 public class ResourceSet {
 
@@ -60,12 +60,12 @@ public class ResourceSet {
 	private String type;
 	private Set<String> scopes = new HashSet<>();
 	private String iconUri;
-	
+
 	private String owner; // username of the person responsible for the registration (either directly or via OAuth token)
 	private String clientId; // client id of the protected resource that registered this resource set via OAuth token
-	
+
 	private Collection<Policy> policies = new HashSet<>();
-	
+
 	/**
 	 * @return the id
 	 */
@@ -75,7 +75,7 @@ public class ResourceSet {
 	public Long getId() {
 		return id;
 	}
-	
+
 	/**
 	 * @param id the id to set
 	 */
@@ -91,14 +91,14 @@ public class ResourceSet {
 	public String getName() {
 		return name;
 	}
-	
+
 	/**
 	 * @param name the name to set
 	 */
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	/**
 	 * @return the uri
 	 */
@@ -107,14 +107,14 @@ public class ResourceSet {
 	public String getUri() {
 		return uri;
 	}
-	
+
 	/**
 	 * @param uri the uri to set
 	 */
 	public void setUri(String uri) {
 		this.uri = uri;
 	}
-	
+
 	/**
 	 * @return the type
 	 */
@@ -123,14 +123,14 @@ public class ResourceSet {
 	public String getType() {
 		return type;
 	}
-	
+
 	/**
 	 * @param type the type to set
 	 */
 	public void setType(String type) {
 		this.type = type;
 	}
-	
+
 	/**
 	 * @return the scopes
 	 */
@@ -143,14 +143,14 @@ public class ResourceSet {
 	public Set<String> getScopes() {
 		return scopes;
 	}
-	
+
 	/**
 	 * @param scopes the scopes to set
 	 */
 	public void setScopes(Set<String> scopes) {
 		this.scopes = scopes;
 	}
-	
+
 	/**
 	 * @return the iconUri
 	 */
@@ -159,14 +159,14 @@ public class ResourceSet {
 	public String getIconUri() {
 		return iconUri;
 	}
-	
+
 	/**
 	 * @param iconUri the iconUri to set
 	 */
 	public void setIconUri(String iconUri) {
 		this.iconUri = iconUri;
 	}
-	
+
 	/**
 	 * @return the owner
 	 */
@@ -175,7 +175,7 @@ public class ResourceSet {
 	public String getOwner() {
 		return owner;
 	}
-	
+
 	/**
 	 * @param owner the owner to set
 	 */
@@ -322,9 +322,9 @@ public class ResourceSet {
 		}
 		return true;
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 }

@@ -40,7 +40,7 @@ public class ClaimProcessingResult {
 		this.unmatched = unmatched;
 		this.matched = null;
 	}
-	
+
 	/**
 	 * Create a matched result. isSatisfied is true.
 	 * @param matched
@@ -92,5 +92,5 @@ public class ClaimProcessingResult {
 	public void setMatched(Policy matched) {
 		this.matched = matched;
 	}
-	
+
 }

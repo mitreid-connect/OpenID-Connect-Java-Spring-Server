@@ -65,25 +65,25 @@ public class AuthenticationHolderEntity {
 	private Long id;
 
 	private SavedUserAuthentication userAuth;
-	
+
 	private Collection<? extends GrantedAuthority> authorities;
-	
+
 	private Set<String> resourceIds;
-	
+
 	private boolean approved;
-	
+
 	private String redirectUri;
-	
+
 	private Set<String> responseTypes;
-	
+
 	private Map<String, Serializable> extensions;
-	
+
 	private String clientId;
-	
+
 	private Set<String> scope;
-	
+
 	private Map<String, String> requestParameters;
-	
+
 	public AuthenticationHolderEntity() {
 
 	}
@@ -125,7 +125,7 @@ public class AuthenticationHolderEntity {
 		setResponseTypes(o2Request.getResponseTypes());
 		setScope(o2Request.getScope());
 		setApproved(o2Request.isApproved());
-		
+
 		if (authentication.getUserAuthentication() != null) {
 			this.userAuth = new SavedUserAuthentication(authentication.getUserAuthentication());
 		} else {

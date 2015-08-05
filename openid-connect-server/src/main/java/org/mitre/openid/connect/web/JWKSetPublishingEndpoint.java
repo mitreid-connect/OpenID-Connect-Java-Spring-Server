@@ -32,7 +32,7 @@ import com.nimbusds.jose.jwk.JWK;
 public class JWKSetPublishingEndpoint {
 
 	public static final String URL = "jwk";
-	
+
 	@Autowired
 	private JWTSigningAndValidationService jwtService;
 

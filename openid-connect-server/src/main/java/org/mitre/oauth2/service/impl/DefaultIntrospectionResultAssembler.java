@@ -57,7 +57,7 @@ public class DefaultIntrospectionResultAssembler implements IntrospectionResultA
 		if (accessToken.getPermissions() != null && !accessToken.getPermissions().isEmpty()) {
 
 			Set<Object> permissions = Sets.newHashSet();
-			
+
 			for (Permission perm : accessToken.getPermissions()) {
 				Map<String, Object> o = newLinkedHashMap();
 				o.put("resource_set_id", perm.getResourceSet().getId().toString());
@@ -65,14 +65,14 @@ public class DefaultIntrospectionResultAssembler implements IntrospectionResultA
 				o.put("scopes", scopes);
 				permissions.add(o);
 			}
-			
+
 			result.put("permissions", permissions);
-			
+
 		} else {
 			Set<String> scopes = Sets.intersection(authScopes, accessToken.getScope());
-			
+
 			result.put(SCOPE, Joiner.on(SCOPE_SEPARATOR).join(scopes));
-			
+
 		}
 
 		if (accessToken.getExpiration() != null) {
@@ -110,7 +110,7 @@ public class DefaultIntrospectionResultAssembler implements IntrospectionResultA
 		result.put(ACTIVE, true);
 
 		Set<String> scopes = Sets.intersection(authScopes, authentication.getOAuth2Request().getScope());
-		
+
 		result.put(SCOPE, Joiner.on(SCOPE_SEPARATOR).join(scopes));
 
 		if (refreshToken.getExpiration() != null) {

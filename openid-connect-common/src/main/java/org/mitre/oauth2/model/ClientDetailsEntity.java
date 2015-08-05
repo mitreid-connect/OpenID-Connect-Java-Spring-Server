@@ -76,7 +76,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	public static final String QUERY_ALL = "ClientDetailsEntity.findAll";
 
 	public static final String PARAM_CLIENT_ID = "clientId";
-	
+
 	private static final int DEFAULT_ID_TOKEN_VALIDITY_SECONDS = 600;
 
 	private static final long serialVersionUID = -1617727085733786296L;
@@ -141,7 +141,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	private Integer idTokenValiditySeconds; //timeout for id tokens
 	private Date createdAt; // time the client was created
 	private boolean clearAccessTokensOnRefresh = true; // do we clear access tokens on refresh?
-	
+
 	/** fields for UMA */
 	private Set<String> claimsRedirectUris;
 

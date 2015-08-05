@@ -42,6 +42,7 @@ public class MultiUrlRequestMatcher implements RequestMatcher {
 		this.filterProcessesUrls = ImmutableSet.copyOf(filterProcessesUrls);
 	}
 
+	@Override
 	public boolean matches(HttpServletRequest request) {
 		String uri = request.getRequestURI();
 		int pathParamIndex = uri.indexOf(';');

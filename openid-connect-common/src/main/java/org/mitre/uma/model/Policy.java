@@ -49,7 +49,7 @@ public class Policy {
 	private String name;
 	private Collection<Claim> claimsRequired;
 	private Set<String> scopes;
-	
+
 	/**
 	 * @return the id
 	 */
@@ -59,14 +59,14 @@ public class Policy {
 	public Long getId() {
 		return id;
 	}
-	
+
 	/**
 	 * @param id the id to set
 	 */
 	public void setId(Long id) {
 		this.id = id;
 	}
-	
+
 	/**
 	 * @return the name
 	 */
@@ -91,7 +91,7 @@ public class Policy {
 			name = "claim_to_policy",
 			joinColumns = @JoinColumn(name = "policy_id"),
 			inverseJoinColumns = @JoinColumn(name = "claim_id")
-	)
+			)
 	public Collection<Claim> getClaimsRequired() {
 		return claimsRequired;
 	}
@@ -102,7 +102,7 @@ public class Policy {
 	public void setClaimsRequired(Collection<Claim> claimsRequired) {
 		this.claimsRequired = claimsRequired;
 	}
-	
+
 	/**
 	 * @return the scopes
 	 */
@@ -115,7 +115,7 @@ public class Policy {
 	public Set<String> getScopes() {
 		return scopes;
 	}
-	
+
 	/**
 	 * @param scopes the scopes to set
 	 */
@@ -190,5 +190,5 @@ public class Policy {
 		}
 		return true;
 	}
-	
+
 }

@@ -176,10 +176,10 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 	private static final String PERMISSION = "permission";
 	private static final String TICKET = "ticket";
 	private static final String CLAIMS_SUPPLIED = "claimsSupplied";
-	
+
 	private static final String SAVED_REGISTERED_CLIENTS = "savedRegisteredClients";
 	private static final String RESOURCE_SETS = "resourceSets";
-	
+
 	/**
 	 * Logger for this class
 	 */
@@ -204,7 +204,7 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 	private ResourceSetRepository resourceSetRepository;
 	@Autowired
 	private PermissionRepository permissionRepository;
-	
+
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.service.MITREidDataService#export(com.google.gson.stream.JsonWriter)
 	 */
@@ -256,38 +256,38 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 		writer.beginArray();
 		writeSystemScopes(writer);
 		writer.endArray();
-		
+
 		writer.name(SAVED_REGISTERED_CLIENTS);
 		writer.beginArray();
 		writeSavedRegisteredClients(writer);
 		writer.endArray();
-		
+
 		writer.name(RESOURCE_SETS);
 		writer.beginArray();
 		writeResourceSets(writer);
 		writer.endArray();
-		
+
 		writer.name(PERMISSION_TICKETS);
 		writer.beginArray();
 		writePermissionTickets(writer);
 		writer.endArray();
-		
+
 		writer.endObject(); // end mitreid-connect-1.2
 	}
 
 	/**
 	 * @param writer
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	private void writePermissionTickets(JsonWriter writer) throws IOException {
 		for (PermissionTicket ticket : permissionRepository.getAll()) {
 			writer.beginObject();
-			
+
 			writer.name(CLAIMS_SUPPLIED);
 			writer.beginArray();
 			for (Claim claim : ticket.getClaimsSupplied()) {
 				writer.beginObject();
-				
+
 				writer.name(ISSUER);
 				writer.beginArray();
 				for (String issuer : claim.getIssuer()) {
@@ -307,7 +307,7 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 				writer.endObject();
 			}
 			writer.endArray();
-			
+
 			writer.name(EXPIRATION).value(toUTCString(ticket.getExpiration()));
 
 			writer.name(PERMISSION);
@@ -323,16 +323,16 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 			writer.endObject();
 
 			writer.name(TICKET).value(ticket.getTicket());
-			
+
 			writer.endObject();
 		}
-		
-		
+
+
 	}
 
 	/**
 	 * @param writer
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	private void writeResourceSets(JsonWriter writer) throws IOException {
 		for (ResourceSet rs : resourceSetRepository.getAll()) {
@@ -359,7 +359,7 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 				writer.beginArray();
 				for (Claim claim : policy.getClaimsRequired()) {
 					writer.beginObject();
-					
+
 					writer.name(ISSUER);
 					writer.beginArray();
 					for (String issuer : claim.getIssuer()) {
@@ -391,7 +391,7 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 			writer.endObject();
 			logger.debug("Finished writing resource set {}", rs.getId());
 		}
-		
+
 	}
 
 	/**
@@ -463,7 +463,7 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 				writer.endObject();
 			}
 			writer.endArray();
-			
+
 			writer.name(TYPE).value(token.getTokenType());
 			writer.name(VALUE).value(token.getValue());
 			writer.endObject();
@@ -479,7 +479,7 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 		for (AuthenticationHolderEntity holder : authHolderRepository.getAll()) {
 			writer.beginObject();
 			writer.name(ID).value(holder.getId());
-			
+
 			writer.name(REQUEST_PARAMETERS);
 			writer.beginObject();
 			for (Entry<String, String> entry : holder.getRequestParameters().entrySet()) {
@@ -540,13 +540,13 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 					writer.value(authority.getAuthority());
 				}
 				writer.endArray();
-				
+
 				writer.endObject();
 			} else {
 				writer.nullValue();
 			}
-			
-			
+
+
 			writer.endObject();
 			logger.debug("Wrote authentication holder {}", holder.getId());
 		}
@@ -791,7 +791,7 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 		}
 		fixObjectReferences();
 	}
-	
+
 
 	/**
 	 * @param reader
@@ -907,7 +907,7 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 
 
 	private Map<Long, Long> resourceSetOldToNewIdMap = new HashMap<>();
-	
+
 	/**
 	 * @param reader
 	 */
@@ -1264,8 +1264,8 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 		reader.endArray();
 		logger.info("Done reading access tokens");
 	}
-	
-	
+
+
 	private Map<Long, Long> authHolderOldToNewIdMap = new HashMap<Long, Long>();
 
 	/**
@@ -1337,12 +1337,12 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 	/**
 	 * @param reader
 	 * @return
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	private SavedUserAuthentication readSavedUserAuthentication(JsonReader reader) throws IOException {
 		SavedUserAuthentication savedUserAuth = new SavedUserAuthentication();
 		reader.beginObject();
-		
+
 		while (reader.hasNext()) {
 			switch(reader.peek()) {
 			case END_OBJECT:
@@ -1376,7 +1376,7 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 				continue;
 			}
 		}
-		
+
 		reader.endObject();
 		return savedUserAuth;
 	}
@@ -1445,7 +1445,7 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 		reader.endArray();
 		logger.info("Done reading grants");
 	}
-	
+
 	private Map<Long, Long> whitelistedSiteOldToNewIdMap = new HashMap<Long, Long>();
 
 	/**
@@ -1814,8 +1814,8 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 		}
 		permissionToResourceRefs.clear();
 		resourceSetOldToNewIdMap.clear();
-		
+
 		logger.info("Done fixing object references.");
 	}
-	
+
 }

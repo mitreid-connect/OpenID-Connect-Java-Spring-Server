@@ -49,10 +49,10 @@ public class DefaultOAuth2AuthorizationCodeService implements AuthorizationCodeS
 
 	@Autowired
 	private AuthorizationCodeRepository repository;
-	
+
 	@Autowired
 	private AuthenticationHolderRepository authenticationHolderRepository;
-	
+
 	private int authCodeExpirationSeconds = 60 * 5; // expire in 5 minutes by default
 
 	private RandomValueStringGenerator generator = new RandomValueStringGenerator();
@@ -75,8 +75,8 @@ public class DefaultOAuth2AuthorizationCodeService implements AuthorizationCodeS
 		authHolder = authenticationHolderRepository.save(authHolder);
 
 		// set the auth code to expire
-		Date expiration = new Date(System.currentTimeMillis() + (getAuthCodeExpirationSeconds() * 1000L));		
-		
+		Date expiration = new Date(System.currentTimeMillis() + (getAuthCodeExpirationSeconds() * 1000L));
+
 		AuthorizationCodeEntity entity = new AuthorizationCodeEntity(code, authHolder, expiration);
 		repository.save(entity);
 
@@ -97,32 +97,32 @@ public class DefaultOAuth2AuthorizationCodeService implements AuthorizationCodeS
 	public OAuth2Authentication consumeAuthorizationCode(String code) throws InvalidGrantException {
 
 		AuthorizationCodeEntity result = repository.getByCode(code);
-		
+
 		if (result == null) {
 			throw new InvalidGrantException("JpaAuthorizationCodeRepository: no authorization code found for value " + code);
 		}
-		
+
 		OAuth2Authentication auth = result.getAuthenticationHolder().getAuthentication();
-		
+
 		repository.remove(result);
-		
+
 		return auth;
 	}
-	
+
 	/**
 	 * Find and remove all expired auth codes.
 	 */
 	@Transactional
 	public void clearExpiredAuthorizationCodes() {
-		
+
 		Collection<AuthorizationCodeEntity> codes = repository.getExpiredCodes();
-		
+
 		for (AuthorizationCodeEntity code : codes) {
 			repository.remove(code);
 		}
-		
+
 		logger.info("Removed " + codes.size() + " expired authorization codes.");
-		
+
 	}
 
 	/**

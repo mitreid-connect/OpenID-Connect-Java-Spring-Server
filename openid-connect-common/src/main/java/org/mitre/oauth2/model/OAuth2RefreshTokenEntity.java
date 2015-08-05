@@ -64,7 +64,7 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
 	public static final String PARAM_TOKEN_VALUE = "tokenValue";
 	public static final String PARAM_CLIENT = "client";
 	public static final String PARAM_DATE = "date";
-	
+
 	private Long id;
 
 	private AuthenticationHolderEntity authenticationHolder;

@@ -39,7 +39,7 @@ import com.nimbusds.jwt.JWT;
 public class OIDCAuthenticationProvider implements AuthenticationProvider {
 
 	private static Logger logger = LoggerFactory.getLogger(OIDCAuthenticationProvider.class);
-	
+
 	private UserInfoFetcher userInfoFetcher = new UserInfoFetcher();
 
 	private OIDCAuthoritiesMapper authoritiesMapper = new NamedAdminAuthoritiesMapper();
@@ -60,7 +60,7 @@ public class OIDCAuthenticationProvider implements AuthenticationProvider {
 		if (authentication instanceof PendingOIDCAuthenticationToken) {
 
 			PendingOIDCAuthenticationToken token = (PendingOIDCAuthenticationToken) authentication;
-			
+
 			// get the ID Token value out
 			JWT idToken = token.getIdToken();
 
@@ -68,7 +68,7 @@ public class OIDCAuthenticationProvider implements AuthenticationProvider {
 			UserInfo userInfo = userInfoFetcher.loadUserInfo(token);
 
 			if (userInfo == null) {
-				// user info not found -- could be an error, could be fine 
+				// user info not found -- could be an error, could be fine
 			} else {
 				// if we found userinfo, double check it
 				if (!Strings.isNullOrEmpty(userInfo.getSub()) && !userInfo.getSub().equals(token.getSub())) {

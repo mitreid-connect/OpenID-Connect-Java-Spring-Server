@@ -50,7 +50,7 @@ public class WhitelistedSite {
 	public static final String QUERY_BY_CREATOR = "WhitelistedSite.getByCreatoruserId";
 	public static final String QUERY_BY_CLIENT_ID = "WhitelistedSite.getByClientId";
 	public static final String QUERY_ALL = "WhitelistedSite.getAll";
-	
+
 	public static final String PARAM_USER_ID = "userId";
 	public static final String PARAM_CLIENT_ID = "clientId";
 

@@ -49,17 +49,17 @@ import org.springframework.security.core.GrantedAuthority;
 public class SavedUserAuthentication implements Authentication {
 
 	private static final long serialVersionUID = -1804249963940323488L;
-	
+
 	private Long id;
-	
+
 	private String name;
-	
+
 	private Collection<? extends GrantedAuthority> authorities;
-	
+
 	private boolean authenticated;
-	
+
 	private String sourceClass;
-	
+
 	/**
 	 * Create a Saved Auth from an existing Auth token
 	 */
@@ -80,7 +80,7 @@ public class SavedUserAuthentication implements Authentication {
 	 * Create an empty saved auth
 	 */
 	public SavedUserAuthentication() {
-		
+
 	}
 
 	/**
@@ -104,7 +104,7 @@ public class SavedUserAuthentication implements Authentication {
 	@Basic
 	@Column(name="name")
 	public String getName() {
-		return name;		
+		return name;
 	}
 
 	@Override
@@ -116,7 +116,7 @@ public class SavedUserAuthentication implements Authentication {
 	@Convert(converter = SimpleGrantedAuthorityStringConverter.class)
 	@Column(name="authority")
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return authorities;		
+		return authorities;
 	}
 
 	@Override
@@ -183,5 +183,5 @@ public class SavedUserAuthentication implements Authentication {
 		}
 	}
 
-	
+
 }

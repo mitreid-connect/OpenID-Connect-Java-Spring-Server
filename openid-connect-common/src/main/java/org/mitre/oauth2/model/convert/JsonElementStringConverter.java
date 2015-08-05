@@ -32,7 +32,7 @@ import com.google.gson.JsonParser;
 public class JsonElementStringConverter implements AttributeConverter<JsonElement, String> {
 
 	private JsonParser parser = new JsonParser();
-	
+
 	@Override
 	public String convertToDatabaseColumn(JsonElement attribute) {
 		if (attribute != null) {

@@ -52,64 +52,64 @@ import com.nimbusds.jwt.SignedJWT;
 @Service("defaultUmaTokenService")
 public class DefaultUmaTokenService implements UmaTokenService {
 
-	@Autowired 
+	@Autowired
 	private AuthenticationHolderRepository authenticationHolderRepository;
-	
+
 	@Autowired
 	private OAuth2TokenEntityService tokenService;
-		
-	@Autowired 
+
+	@Autowired
 	private ClientDetailsEntityService clientService;
-	
-	@Autowired 
+
+	@Autowired
 	private ConfigurationPropertiesBean config;
-	
-	@Autowired 
+
+	@Autowired
 	private JWTSigningAndValidationService jwtService;
 
-	
+
 	@Override
 	public OAuth2AccessTokenEntity createRequestingPartyToken(OAuth2Authentication o2auth, PermissionTicket ticket, Policy policy) {
 		OAuth2AccessTokenEntity token = new OAuth2AccessTokenEntity();
 		AuthenticationHolderEntity authHolder = new AuthenticationHolderEntity();
 		authHolder.setAuthentication(o2auth);
 		authHolder = authenticationHolderRepository.save(authHolder);
-		
+
 		token.setAuthenticationHolder(authHolder);
-		
+
 		ClientDetailsEntity client = clientService.loadClientByClientId(o2auth.getOAuth2Request().getClientId());
 		token.setClient(client);
-		
+
 		Set<String> ticketScopes = ticket.getPermission().getScopes();
 		Set<String> policyScopes = policy.getScopes();
-		
+
 		Permission perm = new Permission();
 		perm.setResourceSet(ticket.getPermission().getResourceSet());
 		perm.setScopes(new HashSet<>(Sets.intersection(ticketScopes, policyScopes)));
-		
+
 		token.setPermissions(Sets.newHashSet(perm));
-		
+
 		JWTClaimsSet claims = new JWTClaimsSet();
-		
+
 		claims.setAudience(Lists.newArrayList(ticket.getPermission().getResourceSet().getId().toString()));
 		claims.setIssuer(config.getIssuer());
 		claims.setJWTID(UUID.randomUUID().toString());
-		
+
 		if (config.getRqpTokenLifeTime() != null) {
 			Date exp = new Date(System.currentTimeMillis() + config.getRqpTokenLifeTime() * 1000L);
-			
+
 			claims.setExpirationTime(exp);
 			token.setExpiration(exp);
 		}
-		
-		
+
+
 		JWSAlgorithm signingAlgorithm = jwtService.getDefaultSigningAlgorithm();
 		SignedJWT signed = new SignedJWT(new JWSHeader(signingAlgorithm), claims);
-		
+
 		jwtService.signJwt(signed);
-		
+
 		token.setJwt(signed);
-		
+
 		tokenService.saveAccessToken(token);
 
 		return token;

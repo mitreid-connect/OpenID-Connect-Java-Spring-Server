@@ -61,7 +61,7 @@ public class JWKSetStringConverter implements AttributeConverter<JWKSet, String>
 		} else {
 			return null;
 		}
-		
+
 	}
 
 }

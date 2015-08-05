@@ -49,7 +49,7 @@ public class ConfigurationPropertiesBean {
 	private String logoImageUrl;
 
 	private Long regTokenLifeTime;
-	
+
 	private Long rqpTokenLifeTime;
 
 	private boolean forceHttps = false; // by default we just log a warning for HTTPS deployment

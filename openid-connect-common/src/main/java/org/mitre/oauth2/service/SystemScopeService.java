@@ -53,7 +53,7 @@ public interface SystemScopeService {
 	 * @return
 	 */
 	public Set<SystemScope> getDefaults();
-	
+
 	/**
 	 * Get all the reserved system scopes. These can't be used
 	 * by clients directly, but are instead tied to special system
@@ -62,7 +62,7 @@ public interface SystemScopeService {
 	 * @return
 	 */
 	public Set<SystemScope> getReserved();
-	
+
 	/**
 	 * Get all the registered scopes that are restricted.
 	 * @return
@@ -74,7 +74,7 @@ public interface SystemScopeService {
 	 * @return
 	 */
 	public Set<SystemScope> getUnrestricted();
-	
+
 	public SystemScope getById(Long id);
 
 	public SystemScope getByValue(String value);
@@ -108,13 +108,13 @@ public interface SystemScopeService {
 	public boolean scopesMatch(Set<String> expected, Set<String> actual);
 
 	/**
-	 * Remove any system-reserved or registered restricted scopes from the 
+	 * Remove any system-reserved or registered restricted scopes from the
 	 * set and return the result.
 	 * @param scopes
 	 * @return
 	 */
 	public Set<SystemScope> removeRestrictedAndReservedScopes(Set<SystemScope> scopes);
-	
+
 	/**
 	 * Remove any system-reserved scopes from the set and return the result.
 	 * @param scopes

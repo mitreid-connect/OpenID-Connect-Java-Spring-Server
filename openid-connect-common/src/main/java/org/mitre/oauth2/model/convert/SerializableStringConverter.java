@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Translates a Serializable object of certain primitive types 
+ * Translates a Serializable object of certain primitive types
  * into a String for storage in the database, for use with the
  * OAuth2Request extensions map.
  * 
@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
 public class SerializableStringConverter implements AttributeConverter<Serializable, String> {
 
 	private static Logger logger = LoggerFactory.getLogger(SerializableStringConverter.class);
-	
+
 	@Override
 	public String convertToDatabaseColumn(Serializable attribute) {
 		if (attribute == null) {

@@ -29,7 +29,7 @@ import org.mitre.uma.service.ClaimsProcessingService;
 import org.springframework.stereotype.Service;
 
 /**
- * Tests if all the claims in the required set have a matching 
+ * Tests if all the claims in the required set have a matching
  * value in the supplied set.
  * 
  * @author jricher
@@ -54,7 +54,7 @@ public class MatchAllClaimsOnAnyPolicy implements ClaimsProcessingService {
 				allUnmatched.addAll(unmatched);
 			}
 		}
-		
+
 		// otherwise, tell the caller that we'll need some set of these fulfilled somehow
 		return new ClaimProcessingResult(allUnmatched);
 	}
@@ -62,29 +62,29 @@ public class MatchAllClaimsOnAnyPolicy implements ClaimsProcessingService {
 	private Collection<Claim> checkIndividualClaims(Collection<Claim> claimsRequired, Collection<Claim> claimsSupplied) {
 
 		Collection<Claim> claimsUnmatched = new HashSet<>(claimsRequired);
-		
+
 		// see if each of the required claims has a counterpart in the supplied claims set
 		for (Claim required : claimsRequired) {
 			for (Claim supplied : claimsSupplied) {
-				
+
 				if (required.getIssuer().containsAll(supplied.getIssuer())) {
 					// it's from the right issuer
-					
+
 					if (required.getName().equals(supplied.getName()) &&
 							required.getValue().equals(supplied.getValue())) {
-						
+
 						// the claim matched, pull it from the set
 						claimsUnmatched.remove(required);
-						
+
 					}
-					
+
 				}
 			}
 		}
 
 		// if there's anything left then the claims aren't satisfied, return the leftovers
 		return claimsUnmatched;
-		
+
 	}
-	
+
 }

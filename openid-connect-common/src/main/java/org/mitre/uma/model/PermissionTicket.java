@@ -57,16 +57,16 @@ public class PermissionTicket {
 	public static final String QUERY_TICKET = "PermissionTicket.queryByTicket";
 	public static final String QUERY_ALL = "PermissionTicket.queryAll";
 	public static final String QUERY_BY_RESOURCE_SET = "PermissionTicket.queryByResourceSet";
-	
+
 	public static final String PARAM_TICKET = "ticket";
 	public static final String PARAM_RESOURCE_SET_ID = "rsid";
-	
+
 	private Long id;
 	private Permission permission;
 	private String ticket;
 	private Date expiration;
 	private Collection<Claim> claimsSupplied;
-	
+
 	/**
 	 * @return the id
 	 */
@@ -76,14 +76,14 @@ public class PermissionTicket {
 	public Long getId() {
 		return id;
 	}
-	
+
 	/**
 	 * @param id the id to set
 	 */
 	public void setId(Long id) {
 		this.id = id;
 	}
-	
+
 	/**
 	 * @return the permission
 	 */
@@ -108,7 +108,7 @@ public class PermissionTicket {
 	public String getTicket() {
 		return ticket;
 	}
-	
+
 	/**
 	 * @param ticket the ticket to set
 	 */
@@ -152,6 +152,6 @@ public class PermissionTicket {
 	public void setClaimsSupplied(Collection<Claim> claimsSupplied) {
 		this.claimsSupplied = claimsSupplied;
 	}
-	
-	
+
+
 }

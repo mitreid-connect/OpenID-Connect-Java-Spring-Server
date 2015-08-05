@@ -26,7 +26,7 @@ import org.mitre.uma.service.ResourceSetService;
 import org.springframework.stereotype.Service;
 
 /**
- * Dummy resource set service that doesn't do anything; acts as a stub for the 
+ * Dummy resource set service that doesn't do anything; acts as a stub for the
  * introspection service when the UMA functionality is disabled.
  * 
  * @author jricher

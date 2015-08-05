@@ -40,7 +40,7 @@ public class JpaPermissionRepository implements PermissionRepository {
 
 	@PersistenceContext
 	private EntityManager em;
-	
+
 	@Override
 	@Transactional
 	public PermissionTicket save(PermissionTicket p) {

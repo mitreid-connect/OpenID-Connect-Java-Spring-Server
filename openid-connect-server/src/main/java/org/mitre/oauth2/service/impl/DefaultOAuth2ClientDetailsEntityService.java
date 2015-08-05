@@ -89,10 +89,10 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 
 	@Autowired
 	private StatsService statsService;
-	
+
 	@Autowired
 	private ResourceSetService resourceSetService;
-	
+
 	@Autowired
 	private ConfigurationPropertiesBean config;
 
@@ -124,7 +124,7 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 
 		// make sure that clients with the "refresh_token" grant type have the "offline_access" scope, and vice versa
 		ensureRefreshTokenConsistency(client);
-		
+
 		// make sure we don't have both a JWKS and a JWKS URI
 		ensureKeyConsistency(client);
 
@@ -158,9 +158,9 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 	private void ensureNoReservedScopes(ClientDetailsEntity client) {
 		// make sure a client doesn't get any special system scopes
 		Set<SystemScope> requestedScope = scopeService.fromStrings(client.getScope());
-		
+
 		requestedScope = scopeService.removeReservedScopes(requestedScope);
-		
+
 		client.setScope(scopeService.toStrings(requestedScope));
 	}
 
@@ -240,7 +240,7 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 		if (whitelistedSite != null) {
 			whitelistedSiteService.remove(whitelistedSite);
 		}
-		
+
 		// clear out resource sets registered for this client
 		Collection<ResourceSet> resourceSets = resourceSetService.getAllForClient(client);
 		for (ResourceSet rs : resourceSets) {

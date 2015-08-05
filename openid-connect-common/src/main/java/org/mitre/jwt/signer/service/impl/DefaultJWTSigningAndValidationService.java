@@ -178,10 +178,10 @@ public class DefaultJWTSigningAndValidationService implements JWTSigningAndValid
 					ECDSASigner signer = new ECDSASigner(((ECKey) jwk).getD().decodeToBigInteger());
 					signers.put(id, signer);
 				}
-				
+
 				ECDSAVerifier verifier = new ECDSAVerifier(((ECKey) jwk).getX().decodeToBigInteger(), ((ECKey) jwk).getY().decodeToBigInteger());
 				verifiers.put(id, verifier);
-				
+
 			} else if (jwk instanceof OctetSequenceKey) {
 				// build HMAC signers & verifiers
 

@@ -37,7 +37,7 @@ import com.nimbusds.jwt.JWT;
 public class ExternalLoginAuthoritiesMapper implements OIDCAuthoritiesMapper {
 
 	private static final GrantedAuthority ROLE_EXTERNAL_USER = new SimpleGrantedAuthority("ROLE_EXTERNAL_USER");
-	
+
 	@Override
 	public Collection<? extends GrantedAuthority> mapAuthorities(JWT idToken, UserInfo userInfo) {
 		return Sets.newHashSet(ROLE_EXTERNAL_USER);

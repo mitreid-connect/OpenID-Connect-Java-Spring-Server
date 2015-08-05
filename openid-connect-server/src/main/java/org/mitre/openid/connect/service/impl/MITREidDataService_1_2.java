@@ -163,7 +163,7 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 	private OAuth2TokenRepository tokenRepository;
 	@Autowired
 	private SystemScopeRepository sysScopeRepository;
-	
+
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.service.MITREidDataService#export(com.google.gson.stream.JsonWriter)
 	 */
@@ -275,7 +275,7 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 		for (AuthenticationHolderEntity holder : authHolderRepository.getAll()) {
 			writer.beginObject();
 			writer.name(ID).value(holder.getId());
-			
+
 			writer.name(REQUEST_PARAMETERS);
 			writer.beginObject();
 			for (Entry<String, String> entry : holder.getRequestParameters().entrySet()) {
@@ -336,13 +336,13 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 					writer.value(authority.getAuthority());
 				}
 				writer.endArray();
-				
+
 				writer.endObject();
 			} else {
 				writer.nullValue();
 			}
-			
-			
+
+
 			writer.endObject();
 			logger.debug("Wrote authentication holder {}", holder.getId());
 		}
@@ -804,12 +804,12 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 	/**
 	 * @param reader
 	 * @return
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	private SavedUserAuthentication readSavedUserAuthentication(JsonReader reader) throws IOException {
 		SavedUserAuthentication savedUserAuth = new SavedUserAuthentication();
 		reader.beginObject();
-		
+
 		while (reader.hasNext()) {
 			switch(reader.peek()) {
 			case END_OBJECT:
@@ -843,7 +843,7 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 				continue;
 			}
 		}
-		
+
 		reader.endObject();
 		return savedUserAuth;
 	}
@@ -1274,5 +1274,5 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 		grantOldToNewIdMap.clear();
 		logger.info("Done fixing object references.");
 	}
-	
+
 }

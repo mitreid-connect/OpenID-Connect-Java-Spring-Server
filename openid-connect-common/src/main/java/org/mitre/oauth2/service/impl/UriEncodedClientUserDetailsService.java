@@ -42,7 +42,7 @@ import com.google.common.base.Strings;
  * Loads client details based on URI encoding as passed in from basic auth.
  * 
  *  Should only get called if non-encoded provider fails.
- *  
+ * 
  * @author AANGANES
  *
  */
@@ -59,30 +59,30 @@ public class UriEncodedClientUserDetailsService implements UserDetailsService {
 
 		try {
 			String decodedClientId = UriUtils.decode(clientId, "UTF-8");
-			
+
 			ClientDetailsEntity client = clientDetailsService.loadClientByClientId(decodedClientId);
-	
+
 			if (client != null) {
-	
+
 				String encodedPassword = UriUtils.encodeQueryParam(Strings.nullToEmpty(client.getClientSecret()), "UTF-8");
-	
+
 				if (client.getTokenEndpointAuthMethod() != null &&
 						(client.getTokenEndpointAuthMethod().equals(AuthMethod.PRIVATE_KEY) ||
 								client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_JWT))) {
-	
+
 					// Issue a random password each time to prevent password auth from being used (or skipped)
 					// for private key or shared key clients, see #715
-	
+
 					encodedPassword = new BigInteger(512, new SecureRandom()).toString(16);
 				}
-	
+
 				boolean enabled = true;
 				boolean accountNonExpired = true;
 				boolean credentialsNonExpired = true;
 				boolean accountNonLocked = true;
 				Collection<GrantedAuthority> authorities = new HashSet<>(client.getAuthorities());
 				authorities.add(ROLE_CLIENT);
-	
+
 				return new User(decodedClientId, encodedPassword, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
 			} else {
 				throw new UsernameNotFoundException("Client not found: " + clientId);

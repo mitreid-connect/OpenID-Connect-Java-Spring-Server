@@ -77,7 +77,7 @@ public class WebfingerIssuerService implements IssuerService {
 	 * URL of the page to forward to if no identifier is given.
 	 */
 	private String loginPageUrl;
-	
+
 	/**
 	 * Strict enfocement of "https"
 	 */
@@ -207,7 +207,7 @@ public class WebfingerIssuerService implements IssuerService {
 
 			// preserving http scheme is strictly for demo system use only.
 			String scheme = key.getScheme();
-			
+
 			if (!Strings.isNullOrEmpty(scheme) &&scheme.equals("http")) {
 				if (forceHttps) {
 					throw new IllegalArgumentException("Scheme must start with htps");
@@ -231,13 +231,13 @@ public class WebfingerIssuerService implements IssuerService {
 			builder.addParameter("rel", "http://openid.net/specs/connect/1.0/issuer");
 
 			try {
-			
+
 				// do the fetch
 				logger.info("Loading: " + builder.toString());
 				String webfingerResponse = restTemplate.getForObject(builder.build(), String.class);
-	
+
 				JsonElement json = parser.parse(webfingerResponse);
-	
+
 				if (json != null && json.isJsonObject()) {
 					// find the issuer
 					JsonArray links = json.getAsJsonObject().get("links").getAsJsonArray();
@@ -247,7 +247,7 @@ public class WebfingerIssuerService implements IssuerService {
 							if (linkObj.has("href")
 									&& linkObj.has("rel")
 									&& linkObj.get("rel").getAsString().equals("http://openid.net/specs/connect/1.0/issuer")) {
-	
+
 								// we found the issuer, return it
 								return linkObj.get("href").getAsString();
 							}

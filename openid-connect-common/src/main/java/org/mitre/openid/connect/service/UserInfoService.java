@@ -45,7 +45,7 @@ public interface UserInfoService {
 	public UserInfo getByUsernameAndClientId(String username, String clientId);
 
 	/**
-	 * Get the user registered at this server with the given email address. 
+	 * Get the user registered at this server with the given email address.
 	 * 
 	 * @param email
 	 * @return

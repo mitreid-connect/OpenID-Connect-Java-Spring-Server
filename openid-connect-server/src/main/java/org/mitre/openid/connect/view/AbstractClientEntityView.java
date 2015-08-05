@@ -63,7 +63,7 @@ public abstract class AbstractClientEntityView extends AbstractView {
 	private static final Logger logger = LoggerFactory.getLogger(AbstractClientEntityView.class);
 
 	private JsonParser parser = new JsonParser();
-	
+
 	private Gson gson = new GsonBuilder()
 	.setExclusionStrategies(getExclusionStrategy())
 	.registerTypeAdapter(JWSAlgorithm.class, new JsonSerializer<JWSAlgorithm>() {

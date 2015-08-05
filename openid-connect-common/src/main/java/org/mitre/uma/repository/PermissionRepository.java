@@ -57,7 +57,7 @@ public interface PermissionRepository {
 	 * Save a permission object with no associated ticket (used by the import/export API)
 	 * 
 	 * @param p
-	 * @return 
+	 * @return
 	 */
 	public Permission saveRawPermission(Permission p);
 

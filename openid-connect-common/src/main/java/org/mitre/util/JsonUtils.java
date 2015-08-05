@@ -152,7 +152,7 @@ public class JsonUtils {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Gets the value of the given member as a Long, null if it doesn't exist
 	 */
@@ -163,7 +163,7 @@ public class JsonUtils {
 				return e.getAsLong();
 			} else {
 				return null;
-			}			
+			}
 		} else {
 			return null;
 		}

@@ -96,7 +96,7 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 	private OAuth2TokenRepository tokenRepository;
 	@Autowired
 	private SystemScopeRepository sysScopeRepository;
-	
+
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.service.MITREidDataService#export(com.google.gson.stream.JsonWriter)
 	 */
@@ -149,16 +149,16 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 				reader.endObject();
 				continue;
 			default:
-                logger.debug("Found unexpected entry");
-                reader.skipValue();
-                continue;			}
+				logger.debug("Found unexpected entry");
+				reader.skipValue();
+				continue;			}
 		}
 		fixObjectReferences();
 	}
 	private Map<Long, String> refreshTokenToClientRefs = new HashMap<>();
 	private Map<Long, Long> refreshTokenToAuthHolderRefs = new HashMap<>();
 	private Map<Long, Long> refreshTokenOldToNewIdMap = new HashMap<>();
-	
+
 	/**
 	 * @param reader
 	 * @throws IOException
@@ -347,10 +347,10 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 								} else if (subName.equals("userAuthentication")) {
 									// skip binary encoded version
 									reader.skipValue();
-									
+
 								} else if (subName.equals("savedUserAuthentication")) {
 									userAuthentication = readSavedUserAuthentication(reader);
-									
+
 								} else {
 									logger.debug("Found unexpected entry");
 									reader.skipValue();
@@ -444,16 +444,16 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 		reader.endObject();
 		return new OAuth2Request(authorizationParameters, clientId, authorities, approved, scope, resourceIds, redirectUri, responseTypes, null);
 	}
-	
+
 	/**
 	 * @param reader
 	 * @return
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	private SavedUserAuthentication readSavedUserAuthentication(JsonReader reader) throws IOException {
 		SavedUserAuthentication savedUserAuth = new SavedUserAuthentication();
 		reader.beginObject();
-		
+
 		while (reader.hasNext()) {
 			switch(reader.peek()) {
 			case END_OBJECT:
@@ -487,7 +487,7 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 				continue;
 			}
 		}
-		
+
 		reader.endObject();
 		return savedUserAuth;
 	}

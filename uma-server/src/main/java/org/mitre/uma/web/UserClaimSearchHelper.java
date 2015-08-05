@@ -55,22 +55,22 @@ import com.google.common.collect.ImmutableSet;
 public class UserClaimSearchHelper {
 
 	public static final String URL = RootController.API_URL + "/emailsearch";
-	
+
 	private WebfingerIssuerService webfingerIssuerService = new WebfingerIssuerService();
-	
+
 	@Autowired
 	private UserInfoService userInfoService;
-	
+
 	@Autowired
 	private ConfigurationPropertiesBean config;
 
-	
+
 	@RequestMapping(method = RequestMethod.GET, produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
 	public String search(@RequestParam(value = "identifier") String email, Model m, Authentication auth, HttpServletRequest req) {
-		
+
 		// check locally first
 		UserInfo localUser = userInfoService.getByEmailAddress(email);
-		
+
 		if (localUser != null) {
 			Map<String, Object> e = new HashMap<>();
 			e.put("issuer", ImmutableSet.of(config.getIssuer()));
@@ -90,22 +90,22 @@ public class UserClaimSearchHelper {
 			m.addAttribute(JsonEntityView.ENTITY, ImmutableSet.of(e, ev, s));
 			return JsonEntityView.VIEWNAME;
 		} else {
-		
+
 			// otherwise do a webfinger lookup
 			IssuerServiceResponse resp = webfingerIssuerService.getIssuer(req);
-			
+
 			if (resp != null && resp.getIssuer() != null) {
 				// we found an issuer, return that
 				Map<String, Object> e = new HashMap<>();
 				e.put("issuer", ImmutableSet.of(resp.getIssuer()));
 				e.put("name", "email");
 				e.put("value", email);
-	
+
 				Map<String, Object> ev = new HashMap<>();
 				ev.put("issuer", ImmutableSet.of(resp.getIssuer()));
 				ev.put("name", "email_verified");
 				ev.put("value", true);
-	
+
 				m.addAttribute(JsonEntityView.ENTITY, ImmutableSet.of(e, ev));
 				return JsonEntityView.VIEWNAME;
 			} else {
@@ -114,5 +114,5 @@ public class UserClaimSearchHelper {
 			}
 		}
 	}
-	
+
 }

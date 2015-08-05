@@ -47,7 +47,7 @@ public class AuthorizationCodeEntity {
 
 	public static final String QUERY_BY_VALUE = "AuthorizationCodeEntity.getByValue";
 	public static final String QUERY_EXPIRATION_BY_DATE = "AuthorizationCodeEntity.expirationByDate";
-	
+
 	public static final String PARAM_DATE = "date";
 
 	private Long id;
@@ -55,7 +55,7 @@ public class AuthorizationCodeEntity {
 	private String code;
 
 	private AuthenticationHolderEntity authenticationHolder;
-	
+
 	private Date expiration;
 
 	/**

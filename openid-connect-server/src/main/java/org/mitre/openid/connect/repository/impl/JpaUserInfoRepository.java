@@ -58,7 +58,7 @@ public class JpaUserInfoRepository implements UserInfoRepository {
 	public UserInfo getByEmailAddress(String email) {
 		TypedQuery<DefaultUserInfo> query = manager.createNamedQuery(DefaultUserInfo.QUERY_BY_EMAIL, DefaultUserInfo.class);
 		query.setParameter(DefaultUserInfo.PARAM_EMAIL, email);
-		
+
 		return getSingleResult(query.getResultList());
 	}
 

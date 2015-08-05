@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 public class RootController {
-	
+
 	public static final String API_URL = "api";
 
 	@Autowired

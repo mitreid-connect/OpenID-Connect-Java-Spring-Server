@@ -220,7 +220,7 @@ public class ProtectedResourceRegistrationEndpoint {
 		if (allowedScopes == null || allowedScopes.isEmpty()) {
 			allowedScopes = scopeService.getDefaults();
 		}
-		
+
 		newClient.setScope(scopeService.toStrings(allowedScopes));
 
 		return newClient;

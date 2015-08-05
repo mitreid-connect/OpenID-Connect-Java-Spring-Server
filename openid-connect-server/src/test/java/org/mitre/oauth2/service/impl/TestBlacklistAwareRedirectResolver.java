@@ -47,84 +47,84 @@ public class TestBlacklistAwareRedirectResolver {
 
 	@Mock
 	private BlacklistedSiteService blacklistService;
-	
+
 	@Mock
 	private ClientDetails client;
-	
+
 	@InjectMocks
 	private BlacklistAwareRedirectResolver resolver;
-	
+
 	private String blacklistedUri = "https://evil.example.com/";
 
 	private String goodUri = "https://good.example.com/";
-	
+
 	private String pathUri = "https://good.example.com/with/path";
-	
+
 	/**
 	 * @throws java.lang.Exception
 	 */
 	@Before
 	public void setUp() throws Exception {
-		
+
 		when(blacklistService.isBlacklisted(anyString())).thenReturn(false);
 		when(blacklistService.isBlacklisted(blacklistedUri)).thenReturn(true);
-		
+
 		when(client.getAuthorizedGrantTypes()).thenReturn(ImmutableSet.of("authorization_code"));
 		when(client.getRegisteredRedirectUri()).thenReturn(ImmutableSet.of(goodUri, blacklistedUri));
-		
+
 	}
 
 	@Test
 	public void testResolveRedirect_safe() {
 
 		// default uses prefix matching, both of these should work
-		
+
 		String res1 = resolver.resolveRedirect(goodUri, client);
-		
+
 		assertThat(res1, is(equalTo(goodUri)));
-		
+
 		String res2 = resolver.resolveRedirect(pathUri, client);
-		
+
 		assertThat(res2, is(equalTo(pathUri)));
-		
-		
+
+
 	}
-	
+
 	@Test(expected = InvalidRequestException.class)
 	public void testResolveRedirect_blacklisted() {
-		
-		// this should fail with an error 
+
+		// this should fail with an error
 		resolver.resolveRedirect(blacklistedUri, client);
-		
+
 	}
 
 	@Test
 	public void testRedirectMatches_strict() {
 		resolver.setStrictMatch(true);
-		
+
 		// this is not an exact match
 		boolean res1 = resolver.redirectMatches(pathUri, goodUri);
-		
+
 		assertThat(res1, is(false));
-		
+
 		// this is an exact match
 		boolean res2 = resolver.redirectMatches(goodUri, goodUri);
-		
+
 		assertThat(res2, is(true));
-		
+
 	}
-	
+
 	@Test
 	public void testRedirectMatches_default() {
-		
+
 		// this is not an exact match (but that's OK)
 		boolean res1 = resolver.redirectMatches(pathUri, goodUri);
-		
+
 		assertThat(res1, is(true));
-		
+
 		// this is an exact match
 		boolean res2 = resolver.redirectMatches(goodUri, goodUri);
-		
+
 		assertThat(res2, is(true));
 
 	}

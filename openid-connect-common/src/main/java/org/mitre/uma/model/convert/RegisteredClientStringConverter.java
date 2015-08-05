@@ -42,7 +42,7 @@ public class RegisteredClientStringConverter implements AttributeConverter<Regis
 		} else {
 			return attribute.getSource().toString();
 		}
-		
+
 	}
 
 	/* (non-Javadoc)
