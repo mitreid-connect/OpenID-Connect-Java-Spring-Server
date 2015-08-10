@@ -43,6 +43,7 @@ import org.springframework.transaction.annotation.Transactional;
  *
  */
 @Service("defaultOAuth2AuthorizationCodeService")
+@Transactional(value="defaultTransactionManagerIdentifier")
 public class DefaultOAuth2AuthorizationCodeService implements AuthorizationCodeServices {
 	// Logger for this class
 	private static final Logger logger = LoggerFactory.getLogger(DefaultOAuth2AuthorizationCodeService.class);
@@ -112,7 +113,6 @@ public class DefaultOAuth2AuthorizationCodeService implements AuthorizationCodeS
 	/**
 	 * Find and remove all expired auth codes.
 	 */
-	@Transactional
 	public void clearExpiredAuthorizationCodes() {
 
 		Collection<AuthorizationCodeEntity> codes = repository.getExpiredCodes();

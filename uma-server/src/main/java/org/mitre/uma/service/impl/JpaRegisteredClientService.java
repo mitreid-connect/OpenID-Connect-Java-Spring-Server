@@ -19,12 +19,11 @@ package org.mitre.uma.service.impl;
 
 import java.util.Collection;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
 import org.mitre.oauth2.model.RegisteredClient;
 import org.mitre.openid.connect.client.service.RegisteredClientService;
+import org.mitre.openid.connect.repository.impl.DefaultEntityManager;
 import org.mitre.uma.model.SavedRegisteredClient;
 import org.mitre.util.jpa.JpaUtil;
 import org.springframework.stereotype.Service;
@@ -35,10 +34,9 @@ import org.springframework.transaction.annotation.Transactional;
  *
  */
 @Service
-public class JpaRegisteredClientService implements RegisteredClientService {
+@Transactional(value="defaultTransactionManagerIdentifier")
+public class JpaRegisteredClientService extends DefaultEntityManager implements RegisteredClientService {
 
-	@PersistenceContext
-	private EntityManager em;
 
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.client.service.RegisteredClientService#getByIssuer(java.lang.String)
@@ -58,7 +56,6 @@ public class JpaRegisteredClientService implements RegisteredClientService {
 	 * @see org.mitre.openid.connect.client.service.RegisteredClientService#save(java.lang.String, org.mitre.oauth2.model.RegisteredClient)
 	 */
 	@Override
-	@Transactional
 	public void save(String issuer, RegisteredClient client) {
 
 
@@ -71,12 +68,12 @@ public class JpaRegisteredClientService implements RegisteredClientService {
 
 		saved.setRegisteredClient(client);
 
-		em.persist(saved);
+		manager.persist(saved);
 
 	}
 
 	private SavedRegisteredClient getSavedRegisteredClientFromStorage(String issuer) {
-		TypedQuery<SavedRegisteredClient> query = em.createQuery("SELECT c from SavedRegisteredClient c where c.issuer = :issuer", SavedRegisteredClient.class);
+		TypedQuery<SavedRegisteredClient> query = manager.createQuery("SELECT c from SavedRegisteredClient c where c.issuer = :issuer", SavedRegisteredClient.class);
 		query.setParameter("issuer", issuer);
 
 		SavedRegisteredClient saved = JpaUtil.getSingleResult(query.getResultList());
@@ -87,7 +84,7 @@ public class JpaRegisteredClientService implements RegisteredClientService {
 	 * @return
 	 */
 	public Collection<SavedRegisteredClient> getAll() {
-		TypedQuery<SavedRegisteredClient> query = em.createQuery("SELECT c from SavedRegisteredClient c", SavedRegisteredClient.class);
+		TypedQuery<SavedRegisteredClient> query = manager.createQuery("SELECT c from SavedRegisteredClient c", SavedRegisteredClient.class);
 		return query.getResultList();
 	}
 

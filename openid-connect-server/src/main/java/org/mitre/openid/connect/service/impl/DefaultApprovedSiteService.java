@@ -43,6 +43,7 @@ import com.google.common.collect.Collections2;
  *
  */
 @Service("defaultApprovedSiteService")
+@Transactional(value="defaultTransactionManagerIdentifier")
 public class DefaultApprovedSiteService implements ApprovedSiteService {
 
 	/**
@@ -65,7 +66,6 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 	}
 
 	@Override
-	@Transactional
 	public ApprovedSite save(ApprovedSite approvedSite) {
 		ApprovedSite a = approvedSiteRepository.save(approvedSite);
 		statsService.resetCache();
@@ -78,7 +78,6 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 	}
 
 	@Override
-	@Transactional
 	public void remove(ApprovedSite approvedSite) {
 
 		//Remove any associated access and refresh tokens
@@ -97,7 +96,6 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 	}
 
 	@Override
-	@Transactional
 	public ApprovedSite createApprovedSite(String clientId, String userId, Date timeoutDate, Set<String> allowedScopes) {
 
 		ApprovedSite as = approvedSiteRepository.save(new ApprovedSite());

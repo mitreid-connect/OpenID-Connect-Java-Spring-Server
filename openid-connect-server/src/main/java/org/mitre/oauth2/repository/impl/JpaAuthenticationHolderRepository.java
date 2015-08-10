@@ -18,24 +18,20 @@ package org.mitre.oauth2.repository.impl;
 
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
 import org.mitre.oauth2.model.AuthenticationHolderEntity;
 import org.mitre.oauth2.repository.AuthenticationHolderRepository;
+import org.mitre.openid.connect.repository.impl.DefaultEntityManager;
 import org.mitre.util.jpa.JpaUtil;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
-@Transactional
-public class JpaAuthenticationHolderRepository implements AuthenticationHolderRepository {
+@Transactional(value="defaultTransactionManagerIdentifier")
+public class JpaAuthenticationHolderRepository extends DefaultEntityManager implements AuthenticationHolderRepository {
 
 	private static final int MAXEXPIREDRESULTS = 1000;
-
-	@PersistenceContext
-	private EntityManager manager;
 
 	@Override
 	public List<AuthenticationHolderEntity> getAll() {
@@ -49,7 +45,6 @@ public class JpaAuthenticationHolderRepository implements AuthenticationHolderRe
 	}
 
 	@Override
-	@Transactional
 	public void remove(AuthenticationHolderEntity a) {
 		AuthenticationHolderEntity found = getById(a.getId());
 		if (found != null) {
@@ -60,13 +55,11 @@ public class JpaAuthenticationHolderRepository implements AuthenticationHolderRe
 	}
 
 	@Override
-	@Transactional
 	public AuthenticationHolderEntity save(AuthenticationHolderEntity a) {
 		return JpaUtil.saveOrUpdate(a.getId(), manager, a);
 	}
 
 	@Override
-	@Transactional
 	public List<AuthenticationHolderEntity> getOrphanedAuthenticationHolders() {
 		TypedQuery<AuthenticationHolderEntity> query = manager.createNamedQuery(AuthenticationHolderEntity.QUERY_GET_UNUSED, AuthenticationHolderEntity.class);
 		query.setMaxResults(MAXEXPIREDRESULTS);

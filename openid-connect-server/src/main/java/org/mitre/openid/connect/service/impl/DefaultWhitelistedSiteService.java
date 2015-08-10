@@ -32,7 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
  * 
  */
 @Service
-@Transactional
+@Transactional(value="defaultTransactionManagerIdentifier")
 public class DefaultWhitelistedSiteService implements WhitelistedSiteService {
 
 	@Autowired

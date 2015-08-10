@@ -14,26 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
+
 package org.mitre.openid.connect.repository.impl;
 
-import org.mitre.openid.connect.model.Address;
-import org.mitre.openid.connect.repository.AddressRepository;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 /**
- * JPA Address repository implementation
+ * Default Entity Manager implementation
  * 
- * @author Michael Joseph Walsh
- * 
+ * @author Selvaraj Kumarasamy
+ *
  */
-@Repository
-@Transactional(value="defaultTransactionManagerIdentifier")
-public class JpaAddressRepository extends DefaultEntityManager implements AddressRepository {
 
-	@Override
-	public Address getById(Long id) {
-		return manager.find(Address.class, id);
-	}
+public abstract class DefaultEntityManager {
 
+	/**
+	 * Adding unit name
+	 */
+	@PersistenceContext(unitName="defaultPersistenceUnit")
+	public EntityManager manager;
+	
 }

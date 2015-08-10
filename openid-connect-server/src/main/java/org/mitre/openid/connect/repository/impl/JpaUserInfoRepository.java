@@ -16,16 +16,14 @@
  *******************************************************************************/
 package org.mitre.openid.connect.repository.impl;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import static org.mitre.util.jpa.JpaUtil.getSingleResult;
+
 import javax.persistence.TypedQuery;
 
 import org.mitre.openid.connect.model.DefaultUserInfo;
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.repository.UserInfoRepository;
 import org.springframework.stereotype.Repository;
-
-import static org.mitre.util.jpa.JpaUtil.getSingleResult;
 
 /**
  * JPA UserInfo repository implementation
@@ -34,10 +32,7 @@ import static org.mitre.util.jpa.JpaUtil.getSingleResult;
  *
  */
 @Repository("jpaUserInfoRepository")
-public class JpaUserInfoRepository implements UserInfoRepository {
-
-	@PersistenceContext
-	private EntityManager manager;
+public class JpaUserInfoRepository extends DefaultEntityManager implements UserInfoRepository {
 
 	/**
 	 * Get a single UserInfo object by its username
