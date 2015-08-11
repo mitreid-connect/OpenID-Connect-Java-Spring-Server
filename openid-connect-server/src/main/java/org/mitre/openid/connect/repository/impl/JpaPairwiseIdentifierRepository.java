@@ -22,6 +22,8 @@ package org.mitre.openid.connect.repository.impl;
 import static org.mitre.util.jpa.JpaUtil.getSingleResult;
 import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
 import org.mitre.openid.connect.model.PairwiseIdentifier;
@@ -35,7 +37,10 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Repository
 @Transactional(value="defaultTransactionManagerIdentifier")
-public class JpaPairwiseIdentifierRepository extends DefaultEntityManager implements PairwiseIdentifierRepository {
+public class JpaPairwiseIdentifierRepository implements PairwiseIdentifierRepository {
+	
+	@PersistenceContext(unitName="defaultPersistenceUnit")
+	public EntityManager manager;
 
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.repository.PairwiseIdentifierRepository#getBySectorIdentifier(java.lang.String, java.lang.String)

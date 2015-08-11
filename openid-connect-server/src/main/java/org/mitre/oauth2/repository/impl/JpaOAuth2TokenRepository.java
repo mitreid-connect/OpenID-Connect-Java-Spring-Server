@@ -22,13 +22,14 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
-import org.mitre.openid.connect.repository.impl.DefaultEntityManager;
 import org.mitre.uma.model.ResourceSet;
 import org.mitre.util.jpa.JpaUtil;
 import org.springframework.stereotype.Repository;
@@ -39,10 +40,13 @@ import com.nimbusds.jwt.JWTParser;
 
 @Repository
 @Transactional(value="defaultTransactionManagerIdentifier")
-public class JpaOAuth2TokenRepository extends DefaultEntityManager implements OAuth2TokenRepository {
+public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 
+	@PersistenceContext(unitName="defaultPersistenceUnit")
+	public EntityManager manager;
+	
 	private static final int MAXEXPIREDRESULTS = 1000;
-
+	
 	@Override
 	public Set<OAuth2AccessTokenEntity> getAllAccessTokens() {
 		TypedQuery<OAuth2AccessTokenEntity> query = manager.createNamedQuery(OAuth2AccessTokenEntity.QUERY_ALL, OAuth2AccessTokenEntity.class);

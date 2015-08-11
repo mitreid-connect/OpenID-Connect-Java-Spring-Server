@@ -18,21 +18,25 @@ package org.mitre.oauth2.repository.impl;
 
 import java.util.List;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
 import org.mitre.oauth2.model.AuthenticationHolderEntity;
 import org.mitre.oauth2.repository.AuthenticationHolderRepository;
-import org.mitre.openid.connect.repository.impl.DefaultEntityManager;
 import org.mitre.util.jpa.JpaUtil;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @Transactional(value="defaultTransactionManagerIdentifier")
-public class JpaAuthenticationHolderRepository extends DefaultEntityManager implements AuthenticationHolderRepository {
+public class JpaAuthenticationHolderRepository implements AuthenticationHolderRepository {
 
 	private static final int MAXEXPIREDRESULTS = 1000;
-
+	
+	@PersistenceContext(unitName="defaultPersistenceUnit")
+	public EntityManager manager;
+	
 	@Override
 	public List<AuthenticationHolderEntity> getAll() {
 		TypedQuery<AuthenticationHolderEntity> query = manager.createNamedQuery(AuthenticationHolderEntity.QUERY_ALL, AuthenticationHolderEntity.class);

@@ -23,6 +23,8 @@ import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
 
 import java.util.Collection;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
 import org.mitre.openid.connect.model.BlacklistedSite;
@@ -36,7 +38,10 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Repository
 @Transactional(value="defaultTransactionManagerIdentifier")
-public class JpaBlacklistedSiteRepository extends DefaultEntityManager implements BlacklistedSiteRepository {
+public class JpaBlacklistedSiteRepository implements BlacklistedSiteRepository {
+	
+	@PersistenceContext(unitName="defaultPersistenceUnit")
+	public EntityManager manager;
 
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.repository.BlacklistedSiteRepository#getAll()

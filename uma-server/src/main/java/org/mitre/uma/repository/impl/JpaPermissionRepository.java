@@ -19,9 +19,10 @@ package org.mitre.uma.repository.impl;
 
 import java.util.Collection;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
-import org.mitre.openid.connect.repository.impl.DefaultEntityManager;
 import org.mitre.uma.model.Permission;
 import org.mitre.uma.model.PermissionTicket;
 import org.mitre.uma.model.ResourceSet;
@@ -36,7 +37,10 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Repository
 @Transactional(value="defaultTransactionManagerIdentifier")
-public class JpaPermissionRepository extends DefaultEntityManager implements PermissionRepository {
+public class JpaPermissionRepository implements PermissionRepository {
+	
+	@PersistenceContext(unitName="defaultPersistenceUnit")
+	public EntityManager manager;
 
 	@Override
 	public PermissionTicket save(PermissionTicket p) {

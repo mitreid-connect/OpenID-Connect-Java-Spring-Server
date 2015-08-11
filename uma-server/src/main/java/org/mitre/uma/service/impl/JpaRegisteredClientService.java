@@ -19,11 +19,12 @@ package org.mitre.uma.service.impl;
 
 import java.util.Collection;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
 import org.mitre.oauth2.model.RegisteredClient;
 import org.mitre.openid.connect.client.service.RegisteredClientService;
-import org.mitre.openid.connect.repository.impl.DefaultEntityManager;
 import org.mitre.uma.model.SavedRegisteredClient;
 import org.mitre.util.jpa.JpaUtil;
 import org.springframework.stereotype.Service;
@@ -35,8 +36,10 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional(value="defaultTransactionManagerIdentifier")
-public class JpaRegisteredClientService extends DefaultEntityManager implements RegisteredClientService {
+public class JpaRegisteredClientService implements RegisteredClientService {
 
+	@PersistenceContext(unitName="defaultPersistenceUnit")
+	public EntityManager manager;
 
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.client.service.RegisteredClientService#getByIssuer(java.lang.String)

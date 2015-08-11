@@ -20,6 +20,8 @@ import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
 
 import java.util.Collection;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
 import org.mitre.openid.connect.model.WhitelistedSite;
@@ -36,7 +38,10 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Repository
 @Transactional(value="defaultTransactionManagerIdentifier")
-public class JpaWhitelistedSiteRepository extends DefaultEntityManager implements WhitelistedSiteRepository {
+public class JpaWhitelistedSiteRepository implements WhitelistedSiteRepository {
+	
+	@PersistenceContext(unitName="defaultPersistenceUnit")
+	public EntityManager manager;
 
 	@Override
 	public Collection<WhitelistedSite> getAll() {

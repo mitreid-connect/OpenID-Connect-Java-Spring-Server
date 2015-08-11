@@ -28,7 +28,6 @@ import javax.persistence.TypedQuery;
 
 import org.mitre.oauth2.model.AuthorizationCodeEntity;
 import org.mitre.oauth2.repository.AuthorizationCodeRepository;
-import org.mitre.openid.connect.repository.impl.DefaultEntityManager;
 import org.mitre.util.jpa.JpaUtil;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,8 +40,11 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Repository
 @Transactional(value="defaultTransactionManagerIdentifier")
-public class JpaAuthorizationCodeRepository extends DefaultEntityManager implements AuthorizationCodeRepository {
+public class JpaAuthorizationCodeRepository implements AuthorizationCodeRepository {
 
+	@PersistenceContext(unitName="defaultPersistenceUnit")
+	public EntityManager manager;
+	
 	/* (non-Javadoc)
 	 * @see org.mitre.oauth2.repository.AuthorizationCodeRepository#save(org.mitre.oauth2.model.AuthorizationCodeEntity)
 	 */

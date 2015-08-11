@@ -19,11 +19,11 @@ package org.mitre.oauth2.repository.impl;
 import java.util.Collection;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.repository.OAuth2ClientRepository;
-import org.mitre.openid.connect.repository.impl.DefaultEntityManager;
 import org.mitre.util.jpa.JpaUtil;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +34,10 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Repository
 @Transactional(value="defaultTransactionManagerIdentifier")
-public class JpaOAuth2ClientRepository extends DefaultEntityManager implements OAuth2ClientRepository {
+public class JpaOAuth2ClientRepository implements OAuth2ClientRepository {
+	
+	@PersistenceContext(unitName="defaultPersistenceUnit")
+	public EntityManager manager;
 
 	public JpaOAuth2ClientRepository() {
 

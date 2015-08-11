@@ -19,9 +19,10 @@ package org.mitre.uma.repository.impl;
 
 import java.util.Collection;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
-import org.mitre.openid.connect.repository.impl.DefaultEntityManager;
 import org.mitre.uma.model.ResourceSet;
 import org.mitre.uma.repository.ResourceSetRepository;
 import org.mitre.util.jpa.JpaUtil;
@@ -36,10 +37,13 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Repository
 @Transactional(value="defaultTransactionManagerIdentifier")
-public class JpaResourceSetRepository extends DefaultEntityManager implements ResourceSetRepository {
+public class JpaResourceSetRepository implements ResourceSetRepository {
 
 	private static Logger logger = LoggerFactory.getLogger(JpaResourceSetRepository.class);
 
+	@PersistenceContext(unitName="defaultPersistenceUnit")
+	public EntityManager manager;
+	
 	@Override
 	public ResourceSet save(ResourceSet rs) {
 		return JpaUtil.saveOrUpdate(rs.getId(), manager, rs);

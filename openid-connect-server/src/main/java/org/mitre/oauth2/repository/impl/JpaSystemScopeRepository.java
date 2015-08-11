@@ -25,11 +25,12 @@ import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
 import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.repository.SystemScopeRepository;
-import org.mitre.openid.connect.repository.impl.DefaultEntityManager;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,7 +40,10 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Repository("jpaSystemScopeRepository")
 @Transactional(value="defaultTransactionManagerIdentifier")
-public class JpaSystemScopeRepository extends DefaultEntityManager implements SystemScopeRepository {
+public class JpaSystemScopeRepository implements SystemScopeRepository {
+	
+	@PersistenceContext(unitName="defaultPersistenceUnit")
+	public EntityManager manager;
 
 	/* (non-Javadoc)
 	 * @see org.mitre.oauth2.repository.SystemScopeRepository#getAll()
