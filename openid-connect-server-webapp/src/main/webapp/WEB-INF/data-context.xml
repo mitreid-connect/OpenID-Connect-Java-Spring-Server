@@ -50,9 +50,9 @@
 	<!--  The following is for connecting to a MySQL database that has been initialized with 
 			src/main/resources/db/tables/mysql_database_tables.sql -->
 	<!-- 
-	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+	<bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
-		<property name="url" value="jdbc:mysql://localhost/oic" />
+		<property name="jdbcUrl" value="jdbc:mysql://localhost/oic" />
 		<property name="username" value="oic" />
 		<property name="password" value="oic" />		
 	</bean>
@@ -67,9 +67,9 @@
 	<!--  The following is for connecting to a PostgreSQL database that has been initialized with
 			src/main/resources/db/tables/psql_database_tables.sql -->
 	<!--
-	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+	<bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
 		<property name="driverClassName" value="org.postgresql.Driver" />
-		<property name="url" value="jdbc:postgresql://localhost/oic" />
+		<property name="jdbcUrl" value="jdbc:postgresql://localhost/oic" />
 		<property name="username" value="oic" />
 		<property name="password" value="oic" />
 	</bean>
