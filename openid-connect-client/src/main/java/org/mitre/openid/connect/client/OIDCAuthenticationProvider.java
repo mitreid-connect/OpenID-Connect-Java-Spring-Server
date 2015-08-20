@@ -100,6 +100,13 @@ public class OIDCAuthenticationProvider implements AuthenticationProvider {
 	}
 
 	/**
+	 * @param userInfoFetcher
+	 */
+	public void setUserInfoFetcher(UserInfoFetcher userInfoFetcher) {
+		this.userInfoFetcher = userInfoFetcher;
+	}
+
+	/**
 	 * @param authoritiesMapper
 	 */
 	public void setAuthoritiesMapper(OIDCAuthoritiesMapper authoritiesMapper) {
