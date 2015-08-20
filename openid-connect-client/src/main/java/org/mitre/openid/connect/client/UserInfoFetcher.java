@@ -109,7 +109,7 @@ public class UserInfoFetcher {
 
 				JsonObject userInfoJson = new JsonParser().parse(userInfoString).getAsJsonObject();
 
-				UserInfo userInfo = DefaultUserInfo.fromJson(userInfoJson);
+				UserInfo userInfo = fromJson(userInfoJson);
 
 				return userInfo;
 			} else {
@@ -123,4 +123,7 @@ public class UserInfoFetcher {
 
 	}
 
+	protected UserInfo fromJson(JsonObject userInfoJson) {
+		return DefaultUserInfo.fromJson(userInfoJson);
+	}
 }

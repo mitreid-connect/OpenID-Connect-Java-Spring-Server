@@ -110,7 +110,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 	private SymmetricKeyJWTValidatorCacheService symmetricCacheService;
 
 	// signer based on keypair for this client (for outgoing auth requests)
-	@Autowired
+	@Autowired(required=false)
 	private JWTSigningAndValidationService authenticationSignerService;
 
 
