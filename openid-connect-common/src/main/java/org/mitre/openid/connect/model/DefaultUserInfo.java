@@ -495,7 +495,7 @@ public class DefaultUserInfo implements UserInfo {
 
 		if (obj.has("address") && obj.get("address").isJsonObject()) {
 			JsonObject addr = obj.get("address").getAsJsonObject();
-			ui.setAddress(new Address());
+			ui.setAddress(new DefaultAddress());
 
 			ui.getAddress().setFormatted(nullSafeGetString(addr, "formatted"));
 			ui.getAddress().setStreetAddress(nullSafeGetString(addr, "street_address"));
