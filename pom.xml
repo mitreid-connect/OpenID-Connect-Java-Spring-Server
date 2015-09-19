@@ -71,7 +71,7 @@
 	<properties>
 		<java-version>1.7</java-version>
 		<org.springframework-version>4.1.7.RELEASE</org.springframework-version>
-		<spring.security.version>3.2.7.RELEASE</spring.security.version>
+		<spring.security.version>3.2.8.RELEASE</spring.security.version>
 		<org.slf4j-version>1.7.7</org.slf4j-version>
 	</properties>
 	<description>A reference implementation of OpenID Connect (http://openid.net/connect/), OAuth 2.0, and UMA built on top of Java, Spring, and Spring Security. The project contains a fully functioning server, client, and utility library.</description>
