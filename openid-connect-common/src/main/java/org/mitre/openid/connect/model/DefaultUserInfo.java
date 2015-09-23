@@ -417,7 +417,6 @@ public class DefaultUserInfo implements UserInfo {
 
 	@Override
 	public JsonObject toJson() {
-
 		if (src == null) {
 
 			JsonObject obj = new JsonObject();
@@ -436,7 +435,7 @@ public class DefaultUserInfo implements UserInfo {
 			obj.addProperty("gender", this.getGender());
 			obj.addProperty("zone_info", this.getZoneinfo());
 			obj.addProperty("locale", this.getLocale());
-			obj.addProperty("updated_time", this.getUpdatedTime());
+			obj.addProperty("updated_at", this.getUpdatedTime());
 			obj.addProperty("birthdate", this.getBirthdate());
 
 			obj.addProperty("email", this.getEmail());
@@ -488,14 +487,11 @@ public class DefaultUserInfo implements UserInfo {
 		ui.setGender(nullSafeGetString(obj, "gender"));
 		ui.setZoneinfo(nullSafeGetString(obj, "zone_info"));
 		ui.setLocale(nullSafeGetString(obj, "locale"));
-		ui.setUpdatedTime(nullSafeGetString(obj, "updated_time"));
+		ui.setUpdatedTime(nullSafeGetString(obj, "updated_at"));
 		ui.setBirthdate(nullSafeGetString(obj, "birthdate"));
 
 		ui.setEmail(nullSafeGetString(obj, "email"));
 		ui.setEmailVerified(obj.has("email_verified") && obj.get("email_verified").isJsonPrimitive() ? obj.get("email_verified").getAsBoolean() : null);
-
-		ui.setPhoneNumber(nullSafeGetString(obj, "phone_number"));
-		ui.setPhoneNumberVerified(obj.has("phone_number_verified") && obj.get("phone_number_verified").isJsonPrimitive() ? obj.get("phone_number_verified").getAsBoolean() : null);
 
 		if (obj.has("address") && obj.get("address").isJsonObject()) {
 			JsonObject addr = obj.get("address").getAsJsonObject();
