@@ -417,7 +417,7 @@ public class DefaultUserInfo implements UserInfo {
 		obj.addProperty("gender", this.getGender());
 		obj.addProperty("zone_info", this.getZoneinfo());
 		obj.addProperty("locale", this.getLocale());
-		obj.addProperty("updated_time", this.getUpdatedTime());
+		obj.addProperty("updated_at", this.getUpdatedTime());
 		obj.addProperty("birthdate", this.getBirthdate());
 
 		obj.addProperty("email", this.getEmail());
@@ -464,7 +464,7 @@ public class DefaultUserInfo implements UserInfo {
 		ui.setGender(obj.has("gender") ? obj.get("gender").getAsString() : null);
 		ui.setZoneinfo(obj.has("zone_info") ? obj.get("zone_info").getAsString() : null);
 		ui.setLocale(obj.has("locale") ? obj.get("locale").getAsString() : null);
-		ui.setUpdatedTime(obj.has("updated_time") ? obj.get("updated_time").getAsString() : null);
+		ui.setUpdatedTime(obj.has("updated_at") ? obj.get("updated_at").getAsString() : null);
 		ui.setBirthdate(obj.has("birthdate") ? obj.get("birthdate").getAsString() : null);
 
 		ui.setEmail(obj.has("email") ? obj.get("email").getAsString() : null);
