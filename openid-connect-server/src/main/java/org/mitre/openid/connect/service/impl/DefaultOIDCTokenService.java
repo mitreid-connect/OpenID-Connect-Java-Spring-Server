@@ -117,7 +117,7 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 				}
 			} else {
 				// we couldn't find the timestamp!
-				logger.warn("Unable to find authentication timestamp! There is likely something wrong witht he configuration.");
+				logger.warn("Unable to find authentication timestamp! There is likely something wrong with the configuration.");
 			}
 		}
 
