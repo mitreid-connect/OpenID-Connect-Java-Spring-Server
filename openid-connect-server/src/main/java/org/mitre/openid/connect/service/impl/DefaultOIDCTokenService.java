@@ -172,7 +172,10 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 						|| signingAlg.equals(JWSAlgorithm.HS384)
 						|| signingAlg.equals(JWSAlgorithm.HS512)) {
 
-					idToken = new SignedJWT(new JWSHeader(signingAlg), idClaims);
+					JWSHeader header = new JWSHeader(signingAlg, null, null, null, null, null, null, null, null, null,
+							jwtService.getDefaultSignerKeyId(),
+							null, null);
+					idToken = new SignedJWT(header, idClaims);
 
 					JwtSigningAndValidationService signer = symmetricCacheService.getSymmetricValidtor(client);
 	
@@ -279,7 +282,10 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 		claims.setJWTID(UUID.randomUUID().toString()); // set a random NONCE in the middle of it
 
 		JWSAlgorithm signingAlg = jwtService.getDefaultSigningAlgorithm();
-		SignedJWT signed = new SignedJWT(new JWSHeader(signingAlg), claims);
+		JWSHeader header = new JWSHeader(signingAlg, null, null, null, null, null, null, null, null, null,
+				jwtService.getDefaultSignerKeyId(),
+				null, null);
+		SignedJWT signed = new SignedJWT(header, claims);
 
 		jwtService.signJwt(signed);
 

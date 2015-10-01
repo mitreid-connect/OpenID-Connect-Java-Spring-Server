@@ -384,7 +384,10 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 				claimsSet.setIssueTime(now);
 				claimsSet.setNotBeforeTime(now);
 
-				SignedJWT jwt = new SignedJWT(new JWSHeader(alg), claimsSet);
+				JWSHeader header = new JWSHeader(alg, null, null, null, null, null, null, null, null, null,
+						signer.getDefaultSignerKeyId(),
+						null, null);
+				SignedJWT jwt = new SignedJWT(header, claimsSet);
 
 				signer.signJwt(jwt, alg);
 
