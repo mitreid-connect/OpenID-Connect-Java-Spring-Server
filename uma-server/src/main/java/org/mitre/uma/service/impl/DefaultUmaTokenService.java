@@ -104,7 +104,10 @@ public class DefaultUmaTokenService implements UmaTokenService {
 
 
 		JWSAlgorithm signingAlgorithm = jwtService.getDefaultSigningAlgorithm();
-		SignedJWT signed = new SignedJWT(new JWSHeader(signingAlgorithm), claims);
+		JWSHeader header = new JWSHeader(signingAlgorithm, null, null, null, null, null, null, null, null, null,
+				jwtService.getDefaultSignerKeyId(),
+				null, null);
+		SignedJWT signed = new SignedJWT(header, claims);
 
 		jwtService.signJwt(signed);
 

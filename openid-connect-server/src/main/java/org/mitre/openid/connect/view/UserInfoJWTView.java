@@ -136,8 +136,10 @@ public class UserInfoJWTView extends UserInfoView {
 				if (client.getUserInfoSignedResponseAlg() != null) {
 					signingAlg = client.getUserInfoSignedResponseAlg(); // override with the client's preference if available
 				}
-
-				SignedJWT signed = new SignedJWT(new JWSHeader(signingAlg), claims);
+				JWSHeader header = new JWSHeader(signingAlg, null, null, null, null, null, null, null, null, null,
+						jwtService.getDefaultSignerKeyId(),
+						null, null);
+				SignedJWT signed = new SignedJWT(header, claims);
 
 				if (signingAlg.equals(JWSAlgorithm.HS256)
 						|| signingAlg.equals(JWSAlgorithm.HS384)
