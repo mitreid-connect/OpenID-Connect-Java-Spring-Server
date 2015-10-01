@@ -123,6 +123,7 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 		idClaims.setIssuer(configBean.getIssuer());
 		idClaims.setSubject(sub);
 		idClaims.setAudience(Lists.newArrayList(client.getClientId()));
+		idClaims.setJWTID(UUID.randomUUID().toString()); // set a random NONCE in the middle of it
 
 		String nonce = (String)request.getExtensions().get("nonce");
 		if (!Strings.isNullOrEmpty(nonce)) {

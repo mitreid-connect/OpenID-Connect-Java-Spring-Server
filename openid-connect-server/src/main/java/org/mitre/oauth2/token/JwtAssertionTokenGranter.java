@@ -21,6 +21,7 @@ package org.mitre.oauth2.token;
 
 import java.text.ParseException;
 import java.util.Date;
+import java.util.UUID;
 
 import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
 import org.mitre.oauth2.model.ClientDetailsEntity;
@@ -122,6 +123,7 @@ public class JwtAssertionTokenGranter extends AbstractTokenGranter {
 					}
 
 					claims.setIssueTime(new Date());
+					claims.setJWTID(UUID.randomUUID().toString()); // set a random NONCE in the middle of it
 
 
 					SignedJWT newIdToken = new SignedJWT((JWSHeader) idToken.getHeader(), claims);
