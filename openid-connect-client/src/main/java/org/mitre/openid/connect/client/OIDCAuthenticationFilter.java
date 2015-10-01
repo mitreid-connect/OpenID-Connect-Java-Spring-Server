@@ -23,6 +23,7 @@ import java.security.SecureRandom;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -378,6 +379,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 				claimsSet.setIssuer(clientConfig.getClientId());
 				claimsSet.setSubject(clientConfig.getClientId());
 				claimsSet.setAudience(Lists.newArrayList(serverConfig.getTokenEndpointUri()));
+				claimsSet.setJWTID(UUID.randomUUID().toString());
 
 				// TODO: make this configurable
 				Date exp = new Date(System.currentTimeMillis() + (60 * 1000)); // auth good for 60 seconds
