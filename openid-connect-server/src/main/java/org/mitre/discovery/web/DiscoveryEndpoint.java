@@ -340,7 +340,7 @@ public class DiscoveryEndpoint {
 				"gender",
 				"zone_info",
 				"locale",
-				"updated_time",
+				"updated_at",
 				"birthdate",
 				"email",
 				"email_verified",

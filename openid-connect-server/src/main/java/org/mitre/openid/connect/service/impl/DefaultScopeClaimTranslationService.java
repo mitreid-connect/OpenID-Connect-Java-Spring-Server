@@ -58,7 +58,7 @@ public class DefaultScopeClaimTranslationService implements ScopeClaimTranslatio
 		scopesToClaims.put("profile", "gender");
 		scopesToClaims.put("profile", "zone_info");
 		scopesToClaims.put("profile", "locale");
-		scopesToClaims.put("profile", "updated_time");
+		scopesToClaims.put("profile", "updated_at");
 		scopesToClaims.put("profile", "birthdate");
 
 		scopesToClaims.put("email", "email");
@@ -83,7 +83,7 @@ public class DefaultScopeClaimTranslationService implements ScopeClaimTranslatio
 		claimsToFields.put("gender", "gender");
 		claimsToFields.put("zone_info", "zoneinfo");
 		claimsToFields.put("locale", "locale");
-		claimsToFields.put("updated_time", "updatedTime");
+		claimsToFields.put("updated_at", "updatedTime");
 		claimsToFields.put("birthdate", "birthdate");
 
 		claimsToFields.put("email", "email");
