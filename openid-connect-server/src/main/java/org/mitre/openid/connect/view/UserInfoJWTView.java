@@ -109,8 +109,8 @@ public class UserInfoJWTView extends UserInfoView {
 			claims.setJWTID(UUID.randomUUID().toString()); // set a random NONCE in the middle of it
 
 
-			if (client.getIdTokenEncryptedResponseAlg() != null && !client.getIdTokenEncryptedResponseAlg().equals(Algorithm.NONE)
-					&& client.getIdTokenEncryptedResponseEnc() != null && !client.getIdTokenEncryptedResponseEnc().equals(Algorithm.NONE)
+			if (client.getUserInfoEncryptedResponseAlg() != null && !client.getUserInfoEncryptedResponseAlg().equals(Algorithm.NONE)
+					&& client.getUserInfoEncryptedResponseEnc() != null && !client.getUserInfoEncryptedResponseEnc().equals(Algorithm.NONE)
 					&& (!Strings.isNullOrEmpty(client.getJwksUri()) || client.getJwks() != null)) {
 
 				// encrypt it to the client's key
@@ -119,7 +119,7 @@ public class UserInfoJWTView extends UserInfoView {
 
 				if (encrypter != null) {
 
-					EncryptedJWT encrypted = new EncryptedJWT(new JWEHeader(client.getIdTokenEncryptedResponseAlg(), client.getIdTokenEncryptedResponseEnc()), claims);
+					EncryptedJWT encrypted = new EncryptedJWT(new JWEHeader(client.getUserInfoEncryptedResponseAlg(), client.getUserInfoEncryptedResponseEnc()), claims);
 
 					encrypter.encryptJwt(encrypted);
 
