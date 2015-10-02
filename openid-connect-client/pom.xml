@@ -21,7 +21,7 @@
 	<parent>
 		<artifactId>openid-connect-parent</artifactId>
 		<groupId>org.mitre</groupId>
-		<version>1.2.1</version>
+		<version>1.2.2-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
 	<artifactId>openid-connect-client</artifactId>
