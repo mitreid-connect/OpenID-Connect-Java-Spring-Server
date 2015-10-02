@@ -97,9 +97,8 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 		claims.setJWTID(UUID.randomUUID().toString()); // set a random NONCE in the middle of it
 
 		JWSAlgorithm signingAlg = jwtService.getDefaultSigningAlgorithm();
-		JWSHeader header = new JWSHeader(signingAlg, null, null, null, null, null, null, null, null, null,
-				jwtService.getDefaultSignerKeyId(),
-				null, null);
+		JWSHeader header = new JWSHeader(signingAlg);
+		header.setKeyID(jwtService.getDefaultSignerKeyId());
 		SignedJWT signed = new SignedJWT(header, claims);
 
 		jwtService.signJwt(signed);
