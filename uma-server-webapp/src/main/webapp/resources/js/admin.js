@@ -92,7 +92,8 @@ var ListWidgetChildView = Backbone.View.extend({
     	e.stopImmediatePropagation();
         //this.$el.tooltip('delete');
         
-        this.model.destroy({         
+        this.model.destroy({
+        	dataType: false, processData: false,
         	error:function (error, response) {
         		console.log("An error occurred when deleting from a list widget");
 

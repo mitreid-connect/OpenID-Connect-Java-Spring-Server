@@ -92,7 +92,8 @@ var ListWidgetChildView = Backbone.View.extend({
     	e.stopImmediatePropagation();
         //this.$el.tooltip('delete');
         
-        this.model.destroy({         
+        this.model.destroy({
+        	dataType: false, processData: false,
         	error:function (error, response) {
         		console.log("An error occurred when deleting from a list widget");
 
@@ -164,8 +165,6 @@ var ListWidgetView = Backbone.View.extend({
 
     tagName: "div",
 
-    childView:ListWidgetChildView,
-
     events:{
     	"click .btn-add-list-item":"addItem",
         "keypress":function (e) {
@@ -225,7 +224,7 @@ var ListWidgetView = Backbone.View.extend({
         this.$el.html(this.template({placeholder:this.options.placeholder,
         							helpBlockText:this.options.helpBlockText}));
 
-        _self = this;
+        var _self = this;
 
         if (_.size(this.collection.models) == 0 && _.size(this.options.autocomplete) == 0) {
     		$("tbody", _self.el).html($('#tmpl-list-widget-child-empty').html());
@@ -255,7 +254,7 @@ var ListWidgetView = Backbone.View.extend({
         				checked = false;
         			}
         			
-        			var el = new this.childView({model:model, toggle: true, checked: checked, collection: _self.collection}).render().el;
+        			var el = new ListWidgetChildView({model:model, toggle: true, checked: checked, collection: _self.collection}).render().el;
         			$("tbody", _self.el).append(el);
         			
         		}, this);
@@ -264,8 +263,7 @@ var ListWidgetView = Backbone.View.extend({
         	
         	// now render everything not in the autocomplete list
         	_.each(values.models, function (model) {
-        		
-        		var el = new this.childView({model:model, collection: _self.collection}).render().el;
+        		var el = new ListWidgetChildView({model:model, collection: _self.collection}).render().el;
         		$("tbody", _self.el).append(el);
         	}, this);
         }
@@ -274,18 +272,6 @@ var ListWidgetView = Backbone.View.extend({
         return this;
     }
     
-});
-
-var BlackListModel = Backbone.Model.extend({
-	idAttribute: 'id',
-	
-	urlRoot: 'api/blacklist'
-});
-
-var BlackListCollection = Backbone.Collection.extend({
-	initialize: function() { },
-
-	url: "api/blacklist"
 });
 
 var BreadCrumbView = Backbone.View.extend({
@@ -327,125 +313,6 @@ var BreadCrumbView = Backbone.View.extend({
     }
 });
 
-
-var BlackListListView = Backbone.View.extend({
-	tagName: 'span',
-	
-	initialize:function(options) {
-    	this.options = options;
-		if (!this.template) {
-			this.template = _.template($('#tmpl-blacklist-form').html());
-		}
-	},
-
-	load:function(callback) {
-    	if (this.model.isFetched) {
-    		callback();
-    		return;
-    	}
-
-    	$('#loadingbox').sheet('show');
-    	$('#loading').html(
-                '<span class="label" id="loading-blacklist">' + $.t('admin.blacklist') + '</span> '
-    	        );
-
-    	$.when(this.model.fetchIfNeeded()).done(function() {
-    				$('#loading-blacklist').addClass('label-success');
-    	    		$('#loadingbox').sheet('hide');
-    	    		callback();
-    			});    	
-    },
-	
-	events: {
-        "click .refresh-table":"refreshTable"    		
-	},
-
-    refreshTable:function(e) {
-    	e.preventDefault();
-    	var _self = this;
-    	$('#loadingbox').sheet('show');
-        $('#loading').html(
-                '<span class="label" id="loading-blacklist">' + $.t('admin.blacklist') + '</span> '
-                );
-
-    	$.when(this.model.fetch()).done(function() {
-    	    		$('#loadingbox').sheet('hide');
-    	    		_self.render();
-    			});    	
-    },	
-	
-	render:function (eventName) {
-		
-		$(this.el).html(this.template(this.model.toJSON()));
-		
-		$('#blacklist .controls', this.el).html(new BlackListWidgetView({
-			type: 'uri',
-			placeholder: 'http://',
-			collection: this.model
-		}).render().el);
-		
-        $(this.el).i18n();
-		return this;
-	}
-});
-
-var BlackListWidgetView = ListWidgetView.extend({
-	
-	childView: ListWidgetChildView.extend({
-		render:function(options) {
-	    	this.options = options;
-			var uri = this.model.get('uri');
-			
-			this.$el.html(this.template({item: uri}));
-
-            if (uri.length > 30) {
-                this.$el.tooltip({title:uri});
-            }
-            return this;
-			
-		}
-	}),
-	
-	addItem:function(e) {
-    	e.preventDefault();
-
-    	var input_value = $("input", this.el).val().trim();
-    	
-    	if (input_value === "") {
-    		return;
-    	}
-    	
-    	// TODO: URI/pattern validation, check against existing clients
-    	
-    	var item = new BlackListModel({
-    		uri: input_value
-    	});
-    	
-    	var _self = this; // closures...
-    	
-    	item.save({}, {
-    		success:function() {
-    			_self.collection.add(item);
-    		},
-    		error:function(error, response) {
-    			//Pull out the response text.
-				var responseJson = JSON.parse(response.responseText);
-        		
-        		//Display an alert with an error message
-				$('#modalAlert div.modal-header').html(responseJson.error);
-        		$('#modalAlert div.modal-body').html(responseJson.error_description);
-        		
-    			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
-    				 "backdrop" : "static",
-    				 "keyboard" : true,
-    				 "show" : true // ensure the modal is shown immediately
-    			 });
-    		}
-    	});
-
-	}
-	
-});
 
 // Stats table
 
@@ -856,7 +723,7 @@ var AppRouter = Backbone.Router.extend({
         
         this.updateSidebar('admin/blacklist');
         
-        var view = new BlackListListView({model:this.blackListList});
+        var view = new BlackListListView({collection: this.blackListList});
         
         view.load(
         	function(collection, response, options) {
@@ -1129,7 +996,8 @@ $(function () {
     		$.get('resources/template/whitelist.html', _load),
     		$.get('resources/template/dynreg.html', _load),
     		$.get('resources/template/rsreg.html', _load),
-    		$.get('resources/template/token.html', _load)
+    		$.get('resources/template/token.html', _load),
+    		$.get('resources/template/blacklist.html', _load)
     		).done(function() {
     		    $.ajaxSetup({cache:false});
     		    app = new AppRouter();

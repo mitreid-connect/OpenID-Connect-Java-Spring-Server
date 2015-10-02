@@ -218,6 +218,7 @@ var ApprovedSiteView = Backbone.View.extend({
 			var self = this;
 			
             this.model.destroy({
+            	dataType: false, processData: false,
                 success:function () {
                     self.$el.fadeTo("fast", 0.00, function () { //fade
                         $(this).slideUp("fast", function () { //slide up

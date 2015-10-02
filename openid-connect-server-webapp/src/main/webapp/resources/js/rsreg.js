@@ -197,6 +197,7 @@ var ResRegEditView = Backbone.View.extend({
             var self = this;
 
             this.model.destroy({
+            	dataType: false, processData: false,
                 success:function () {
                 	self.remove();
                 	app.navigate('dev/resource', {trigger: true});

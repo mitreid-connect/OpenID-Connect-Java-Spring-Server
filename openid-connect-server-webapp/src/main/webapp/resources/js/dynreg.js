@@ -232,6 +232,7 @@ var DynRegEditView = Backbone.View.extend({
             var self = this;
 
             this.model.destroy({
+            	dataType: false, processData: false,
                 success:function () {
                 	self.remove();
                 	app.navigate('dev/dynreg', {trigger: true});

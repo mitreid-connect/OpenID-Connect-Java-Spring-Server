@@ -113,6 +113,7 @@ var SystemScopeView = Backbone.View.extend({
             var _self = this;
 
             this.model.destroy({
+            	dataType: false, processData: false,
                 success:function () {
                 	
                     _self.$el.fadeTo("fast", 0.00, function () { //fade
