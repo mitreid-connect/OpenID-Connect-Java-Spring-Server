@@ -37,10 +37,6 @@
 		
 	<mvc:view-controller path="/login" view-name="login" />
 
-	<security:http pattern="/login**" use-expressions="true" entry-point-ref="http403EntryPoint">
-		<security:intercept-url pattern="/login**" access="permitAll"/>	
-	</security:http>
-	
 	<security:http disable-url-rewriting="true" use-expressions="true"> 
 		<security:form-login login-page="/login" authentication-failure-url="/login?error=failure" authentication-success-handler-ref="authenticationTimeStamper" />
 		<security:intercept-url pattern="/authorize" access="hasRole('ROLE_USER')" />
@@ -52,6 +48,7 @@
 		<security:headers>
 			<security:frame-options policy="DENY" />
 		</security:headers>
+		<security:csrf />
 	</security:http>	
 
 </beans>

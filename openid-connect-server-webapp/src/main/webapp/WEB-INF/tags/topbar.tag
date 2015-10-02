@@ -89,7 +89,7 @@
 							<ul class="dropdown-menu pull-right">
 								<li><a href="manage/#user/profile" data-toggle="collapse" data-target=".nav-collapse">${ longName }</a></li>
 								<li class="divider"></li>
-								<li><a href="logout" data-toggle="collapse" data-target=".nav-collapse"><i class="icon-remove"></i> <spring:message code="topbar.logout"/></a></li>
+								<li><a href="" data-toggle="collapse" data-target=".nav-collapse" class="logoutLink"><i class="icon-remove"></i> <spring:message code="topbar.logout"/></a></li>
 							</ul>
 						</li>
 	                    </security:authorize>
@@ -105,7 +105,7 @@
 	                    <security:authorize access="hasRole('ROLE_USER')">
 						<li><a href="manage/#user/profile">${ longName }</a></li>
 						<li class="divider"></li>
-						<li><a href="logout"><i class="icon-remove"></i> <spring:message code="topbar.logout"/></a></li>
+						<li><a href="" class="logoutLink"><i class="icon-remove"></i> <spring:message code="topbar.logout"/></a></li>
 	                    </security:authorize>
 	                    <security:authorize access="!hasRole('ROLE_USER')">
 	                    <li>
@@ -113,9 +113,21 @@
 	                    </li>
 	                    </security:authorize>
 	                </ul>
-	                    
+	                <form action="${ config.issuer }${ config.issuer.endsWith('/') ? '' : '/' }logout" method="POST" class="hidden" id="logoutForm">
+						<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+					</form>
+	                
 	            </div><!--/.nav-collapse -->
 			</c:if>
         </div>
     </div>
 </div>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('.logoutLink').on('click', function(e) {
+			e.preventDefault();
+			$('#logoutForm').submit();
+		});
+	});
+</script>

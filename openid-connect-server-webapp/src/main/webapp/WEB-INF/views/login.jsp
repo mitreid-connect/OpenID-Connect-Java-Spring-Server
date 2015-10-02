@@ -26,8 +26,7 @@ $(document).ready(function() {
 
 	<div class="row-fluid">
 		<div class="span6 offset1 well">
-			<form action="<%=request.getContextPath()%>/j_spring_security_check"
-				method="POST">
+			<form action="${ config.issuer }${ config.issuer.endsWith('/') ? '' : '/' }j_spring_security_check" method="POST">
 				<div>
 					<div class="input-prepend input-block-level">
 						<span class="add-on"><i class="icon-user"></i></span>
@@ -41,6 +40,7 @@ $(document).ready(function() {
 					</div>
 				</div>
 				<div>
+					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
 					<input type="submit" class="btn" value="Login" name="submit">
 				</div>
 			</form>
