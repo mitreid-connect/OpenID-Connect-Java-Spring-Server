@@ -48,6 +48,19 @@ public class DefaultAddress implements Address {
 	}
 
 	/**
+	 * Copy constructor from an existing address.
+	 * @param address
+	 */
+	public DefaultAddress(Address address) {
+		setFormatted(address.getFormatted());
+		setStreetAddress(address.getStreetAddress());
+		setLocality(address.getLocality());
+		setRegion(address.getRegion());
+		setPostalCode(address.getPostalCode());
+		setCountry(address.getCountry());
+	}
+
+	/**
 	 * @return the formatted address string
 	 */
 	@Basic

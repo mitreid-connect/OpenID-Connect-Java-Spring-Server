@@ -72,7 +72,7 @@ public class DefaultUserInfo implements UserInfo {
 	private String locale;
 	private String phoneNumber;
 	private Boolean phoneNumberVerified;
-	private Address address;
+	private DefaultAddress address;
 	private String updatedTime;
 	private String birthdate;
 	private transient JsonObject src; // source JSON if this is loaded remotely
@@ -369,7 +369,7 @@ public class DefaultUserInfo implements UserInfo {
 	 * @see org.mitre.openid.connect.model.UserInfo#getAddress()
 	 */
 	@Override
-	@OneToOne
+	@OneToOne(targetEntity = DefaultAddress.class)
 	@JoinColumn(name="address_id")
 	public Address getAddress() {
 		return address;
@@ -379,7 +379,11 @@ public class DefaultUserInfo implements UserInfo {
 	 */
 	@Override
 	public void setAddress(Address address) {
-		this.address = address;
+		if (address != null) { 
+			this.address = new DefaultAddress(address);
+		} else {
+			this.address = null;
+		}
 	}
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.model.UserInfo#getUpdatedTime()
