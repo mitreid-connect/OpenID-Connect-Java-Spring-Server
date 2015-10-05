@@ -394,11 +394,14 @@ public class DynamicClientRegistrationEndpoint {
 		// set default grant types if needed
 		if (newClient.getGrantTypes() == null || newClient.getGrantTypes().isEmpty()) {
 			if (newClient.getScope().contains("offline_access")) { // client asked for offline access
-				// allow authorization code, client credentials and refresh token grant types by default
-				newClient.setGrantTypes(Sets.newHashSet("authorization_code", "client_credentials", "refresh_token"));
+				newClient.setGrantTypes(Sets.newHashSet("authorization_code", "refresh_token")); // allow authorization code and refresh token grant types by default
 			} else {
-				// allow authorization code grant type by default
-				newClient.setGrantTypes(Sets.newHashSet("authorization_code", "client_credentials"));
+				newClient.setGrantTypes(Sets.newHashSet("authorization_code")); // allow authorization code grant type by default
+			}
+			if (config.isDualClient()) {
+				Set<String> extendedGrandTypes = newClient.getGrantTypes();
+				extendedGrandTypes.add("client_credentials");
+				newClient.setGrantTypes(extendedGrandTypes);
 			}
 		}
 
@@ -420,7 +423,8 @@ public class DynamicClientRegistrationEndpoint {
 		if (newClient.getGrantTypes().contains("authorization_code")) {
 
 			// check for incompatible grants
-			if (newClient.getGrantTypes().contains("implicit")) {
+			if (newClient.getGrantTypes().contains("implicit") ||
+					(!config.isDualClient() && newClient.getGrantTypes().contains("client_credentials"))) {
 				// return an error, you can't have these grant types together
 				throw new ValidationException("invalid_client_metadata", "Incompatible grant types requested: " + newClient.getGrantTypes(), HttpStatus.BAD_REQUEST);
 			}
@@ -436,7 +440,8 @@ public class DynamicClientRegistrationEndpoint {
 		if (newClient.getGrantTypes().contains("implicit")) {
 
 			// check for incompatible grants
-			if (newClient.getGrantTypes().contains("authorization_code")) {
+			if (newClient.getGrantTypes().contains("authorization_code") ||
+					(!config.isDualClient() && newClient.getGrantTypes().contains("client_credentials"))) {
 				// return an error, you can't have these grant types together
 				throw new ValidationException("invalid_client_metadata", "Incompatible grant types requested: " + newClient.getGrantTypes(), HttpStatus.BAD_REQUEST);
 			}
@@ -454,7 +459,14 @@ public class DynamicClientRegistrationEndpoint {
 		}
 
 		if (newClient.getGrantTypes().contains("client_credentials")) {
-			
+
+			// check for incompatible grants
+			if (!config.isDualClient() &&
+					(newClient.getGrantTypes().contains("authorization_code") || newClient.getGrantTypes().contains("implicit"))) {
+				// return an error, you can't have these grant types together
+				throw new ValidationException("invalid_client_metadata", "Incompatible grant types requested: " + newClient.getGrantTypes(), HttpStatus.BAD_REQUEST);
+			}
+
 			if (!newClient.getResponseTypes().isEmpty()) {
 				// return an error, you can't have this grant type and response type together
 				throw new ValidationException("invalid_client_metadata", "Incompatible response types requested: " + newClient.getGrantTypes() + " / " + newClient.getResponseTypes(), HttpStatus.BAD_REQUEST);
