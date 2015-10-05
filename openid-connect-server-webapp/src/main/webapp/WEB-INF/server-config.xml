@@ -49,6 +49,10 @@
 		<!-- This property sets the locale for server text -->
 		<!-- <property name="locale" value="sv" /> -->
 
+		<!-- This property indicates if a dynamically registered client supports dual flows, such as client_credentials
+		at the same time with authorization_code or implicit -->
+		<property name="dualClient" value="false"/>
+
 	</bean>
 	
 </beans>

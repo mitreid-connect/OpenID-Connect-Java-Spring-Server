@@ -56,7 +56,9 @@ public class ConfigurationPropertiesBean {
 
 	private Locale locale = Locale.ENGLISH; // we default to the english translation
 
-	public ConfigurationPropertiesBean() {
+    public boolean dualClient = false;
+
+    public ConfigurationPropertiesBean() {
 
 	}
 
@@ -168,4 +170,18 @@ public class ConfigurationPropertiesBean {
 	public void setLocale(Locale locale) {
 		this.locale = locale;
 	}
+
+    /**
+     * @return true if dual client is configured, otherwise false
+     */
+    public boolean isDualClient() {
+        return dualClient;
+    }
+
+    /**
+     * @param dualClient the dual client configuration
+     */
+    public void setDualClient(boolean dualClient) {
+        this.dualClient = dualClient;
+    }
 }
