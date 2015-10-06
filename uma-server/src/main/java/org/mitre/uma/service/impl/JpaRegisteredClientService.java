@@ -35,11 +35,10 @@ import org.springframework.transaction.annotation.Transactional;
  *
  */
 @Service
-@Transactional(value="defaultTransactionManagerIdentifier")
 public class JpaRegisteredClientService implements RegisteredClientService {
 
 	@PersistenceContext(unitName="defaultPersistenceUnit")
-	public EntityManager manager;
+	private EntityManager em;
 
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.client.service.RegisteredClientService#getByIssuer(java.lang.String)
@@ -59,6 +58,7 @@ public class JpaRegisteredClientService implements RegisteredClientService {
 	 * @see org.mitre.openid.connect.client.service.RegisteredClientService#save(java.lang.String, org.mitre.oauth2.model.RegisteredClient)
 	 */
 	@Override
+	@Transactional(value="defaultTransactionManagerIdentifier")
 	public void save(String issuer, RegisteredClient client) {
 
 
@@ -71,12 +71,12 @@ public class JpaRegisteredClientService implements RegisteredClientService {
 
 		saved.setRegisteredClient(client);
 
-		manager.persist(saved);
+		em.persist(saved);
 
 	}
 
 	private SavedRegisteredClient getSavedRegisteredClientFromStorage(String issuer) {
-		TypedQuery<SavedRegisteredClient> query = manager.createQuery("SELECT c from SavedRegisteredClient c where c.issuer = :issuer", SavedRegisteredClient.class);
+		TypedQuery<SavedRegisteredClient> query = em.createQuery("SELECT c from SavedRegisteredClient c where c.issuer = :issuer", SavedRegisteredClient.class);
 		query.setParameter("issuer", issuer);
 
 		SavedRegisteredClient saved = JpaUtil.getSingleResult(query.getResultList());
@@ -87,7 +87,7 @@ public class JpaRegisteredClientService implements RegisteredClientService {
 	 * @return
 	 */
 	public Collection<SavedRegisteredClient> getAll() {
-		TypedQuery<SavedRegisteredClient> query = manager.createQuery("SELECT c from SavedRegisteredClient c", SavedRegisteredClient.class);
+		TypedQuery<SavedRegisteredClient> query = em.createQuery("SELECT c from SavedRegisteredClient c", SavedRegisteredClient.class);
 		return query.getResultList();
 	}
 

@@ -37,7 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class JpaOAuth2ClientRepository implements OAuth2ClientRepository {
 	
 	@PersistenceContext(unitName="defaultPersistenceUnit")
-	public EntityManager manager;
+	private EntityManager manager;
 
 	public JpaOAuth2ClientRepository() {
 

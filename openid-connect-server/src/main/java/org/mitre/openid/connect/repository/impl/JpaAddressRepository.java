@@ -31,13 +31,13 @@ import org.springframework.transaction.annotation.Transactional;
  * 
  */
 @Repository
-@Transactional(value="defaultTransactionManagerIdentifier")
 public class JpaAddressRepository implements AddressRepository {
 	
 	@PersistenceContext(unitName="defaultPersistenceUnit")
-	public EntityManager manager;
+	private EntityManager manager;
 
 	@Override
+	@Transactional(value="defaultTransactionManagerIdentifier")
 	public Address getById(Long id) {
 		return manager.find(Address.class, id);
 	}

@@ -35,7 +35,7 @@ public class JpaAuthenticationHolderRepository implements AuthenticationHolderRe
 	private static final int MAXEXPIREDRESULTS = 1000;
 	
 	@PersistenceContext(unitName="defaultPersistenceUnit")
-	public EntityManager manager;
+	private EntityManager manager;
 	
 	@Override
 	public List<AuthenticationHolderEntity> getAll() {
@@ -49,6 +49,7 @@ public class JpaAuthenticationHolderRepository implements AuthenticationHolderRe
 	}
 
 	@Override
+	@Transactional(value="defaultTransactionManagerIdentifier")
 	public void remove(AuthenticationHolderEntity a) {
 		AuthenticationHolderEntity found = getById(a.getId());
 		if (found != null) {
@@ -59,11 +60,13 @@ public class JpaAuthenticationHolderRepository implements AuthenticationHolderRe
 	}
 
 	@Override
+	@Transactional(value="defaultTransactionManagerIdentifier")
 	public AuthenticationHolderEntity save(AuthenticationHolderEntity a) {
 		return JpaUtil.saveOrUpdate(a.getId(), manager, a);
 	}
 
 	@Override
+	@Transactional(value="defaultTransactionManagerIdentifier")
 	public List<AuthenticationHolderEntity> getOrphanedAuthenticationHolders() {
 		TypedQuery<AuthenticationHolderEntity> query = manager.createNamedQuery(AuthenticationHolderEntity.QUERY_GET_UNUSED, AuthenticationHolderEntity.class);
 		query.setMaxResults(MAXEXPIREDRESULTS);

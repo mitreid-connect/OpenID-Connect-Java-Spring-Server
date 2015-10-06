@@ -36,24 +36,26 @@ import org.springframework.transaction.annotation.Transactional;
  *
  */
 @Repository
-@Transactional(value="defaultTransactionManagerIdentifier")
 public class JpaApprovedSiteRepository implements ApprovedSiteRepository {
 	
 	@PersistenceContext(unitName="defaultPersistenceUnit")
-	public EntityManager manager;
+	private EntityManager manager;
 
 	@Override
+	@Transactional(value="defaultTransactionManagerIdentifier")
 	public Collection<ApprovedSite> getAll() {
 		TypedQuery<ApprovedSite> query = manager.createNamedQuery(ApprovedSite.QUERY_ALL, ApprovedSite.class);
 		return query.getResultList();
 	}
 
 	@Override
+	@Transactional(value="defaultTransactionManagerIdentifier")
 	public ApprovedSite getById(Long id) {
 		return manager.find(ApprovedSite.class, id);
 	}
 
 	@Override
+	@Transactional(value="defaultTransactionManagerIdentifier")
 	public void remove(ApprovedSite approvedSite) {
 		ApprovedSite found = manager.find(ApprovedSite.class, approvedSite.getId());
 
@@ -65,6 +67,7 @@ public class JpaApprovedSiteRepository implements ApprovedSiteRepository {
 	}
 
 	@Override
+	@Transactional(value="defaultTransactionManagerIdentifier")
 	public ApprovedSite save(ApprovedSite approvedSite) {
 		return saveOrUpdate(approvedSite.getId(), manager, approvedSite);
 	}
@@ -80,6 +83,7 @@ public class JpaApprovedSiteRepository implements ApprovedSiteRepository {
 	}
 
 	@Override
+	@Transactional(value="defaultTransactionManagerIdentifier")
 	public Collection<ApprovedSite> getByUserId(String userId) {
 		TypedQuery<ApprovedSite> query = manager.createNamedQuery(ApprovedSite.QUERY_BY_USER_ID, ApprovedSite.class);
 		query.setParameter(ApprovedSite.PARAM_USER_ID, userId);
@@ -89,6 +93,7 @@ public class JpaApprovedSiteRepository implements ApprovedSiteRepository {
 	}
 
 	@Override
+	@Transactional(value="defaultTransactionManagerIdentifier")
 	public Collection<ApprovedSite> getByClientId(String clientId) {
 		TypedQuery<ApprovedSite> query = manager.createNamedQuery(ApprovedSite.QUERY_BY_CLIENT_ID, ApprovedSite.class);
 		query.setParameter(ApprovedSite.PARAM_CLIENT_ID, clientId);

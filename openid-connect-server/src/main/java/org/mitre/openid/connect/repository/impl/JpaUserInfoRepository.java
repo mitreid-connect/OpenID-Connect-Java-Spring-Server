@@ -37,7 +37,7 @@ import org.springframework.stereotype.Repository;
 public class JpaUserInfoRepository implements UserInfoRepository {
 	
 	@PersistenceContext(unitName="defaultPersistenceUnit")
-	public EntityManager manager;
+	private EntityManager manager;
 
 	/**
 	 * Get a single UserInfo object by its username

@@ -39,18 +39,18 @@ import org.springframework.transaction.annotation.Transactional;
  *
  */
 @Repository("jpaSystemScopeRepository")
-@Transactional(value="defaultTransactionManagerIdentifier")
 public class JpaSystemScopeRepository implements SystemScopeRepository {
 	
 	@PersistenceContext(unitName="defaultPersistenceUnit")
-	public EntityManager manager;
+	private EntityManager em;
 
 	/* (non-Javadoc)
 	 * @see org.mitre.oauth2.repository.SystemScopeRepository#getAll()
 	 */
 	@Override
+	@Transactional(value="defaultTransactionManagerIdentifier")
 	public Set<SystemScope> getAll() {
-		TypedQuery<SystemScope> query = manager.createNamedQuery(SystemScope.QUERY_ALL, SystemScope.class);
+		TypedQuery<SystemScope> query = em.createNamedQuery(SystemScope.QUERY_ALL, SystemScope.class);
 
 		return new LinkedHashSet<>(query.getResultList());
 	}
@@ -59,16 +59,18 @@ public class JpaSystemScopeRepository implements SystemScopeRepository {
 	 * @see org.mitre.oauth2.repository.SystemScopeRepository#getById(java.lang.Long)
 	 */
 	@Override
+	@Transactional(value="defaultTransactionManagerIdentifier")
 	public SystemScope getById(Long id) {
-		return manager.find(SystemScope.class, id);
+		return em.find(SystemScope.class, id);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.mitre.oauth2.repository.SystemScopeRepository#getByValue(java.lang.String)
 	 */
 	@Override
+	@Transactional(value="defaultTransactionManagerIdentifier")
 	public SystemScope getByValue(String value) {
-		TypedQuery<SystemScope> query = manager.createNamedQuery(SystemScope.QUERY_BY_VALUE, SystemScope.class);
+		TypedQuery<SystemScope> query = em.createNamedQuery(SystemScope.QUERY_BY_VALUE, SystemScope.class);
 		query.setParameter(SystemScope.PARAM_VALUE, value);
 		return getSingleResult(query.getResultList());
 	}
@@ -77,11 +79,12 @@ public class JpaSystemScopeRepository implements SystemScopeRepository {
 	 * @see org.mitre.oauth2.repository.SystemScopeRepository#remove(org.mitre.oauth2.model.SystemScope)
 	 */
 	@Override
+	@Transactional(value="defaultTransactionManagerIdentifier")
 	public void remove(SystemScope scope) {
 		SystemScope found = getById(scope.getId());
 
 		if (found != null) {
-			manager.remove(found);
+			em.remove(found);
 		}
 
 	}
@@ -90,8 +93,9 @@ public class JpaSystemScopeRepository implements SystemScopeRepository {
 	 * @see org.mitre.oauth2.repository.SystemScopeRepository#save(org.mitre.oauth2.model.SystemScope)
 	 */
 	@Override
+	@Transactional(value="defaultTransactionManagerIdentifier")
 	public SystemScope save(SystemScope scope) {
-		return saveOrUpdate(scope.getId(), manager, scope);
+		return saveOrUpdate(scope.getId(), em, scope);
 	}
 
 }

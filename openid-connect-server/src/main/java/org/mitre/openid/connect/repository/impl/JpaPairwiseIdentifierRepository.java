@@ -36,11 +36,10 @@ import org.springframework.transaction.annotation.Transactional;
  *
  */
 @Repository
-@Transactional(value="defaultTransactionManagerIdentifier")
 public class JpaPairwiseIdentifierRepository implements PairwiseIdentifierRepository {
 	
 	@PersistenceContext(unitName="defaultPersistenceUnit")
-	public EntityManager manager;
+	private EntityManager manager;
 
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.repository.PairwiseIdentifierRepository#getBySectorIdentifier(java.lang.String, java.lang.String)
@@ -58,6 +57,7 @@ public class JpaPairwiseIdentifierRepository implements PairwiseIdentifierReposi
 	 * @see org.mitre.openid.connect.repository.PairwiseIdentifierRepository#save(org.mitre.openid.connect.model.PairwiseIdentifier)
 	 */
 	@Override
+	@Transactional(value="defaultTransactionManagerIdentifier")
 	public void save(PairwiseIdentifier pairwise) {
 		saveOrUpdate(pairwise.getId(), manager, pairwise);
 	}

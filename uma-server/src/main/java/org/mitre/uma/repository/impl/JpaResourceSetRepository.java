@@ -36,29 +36,30 @@ import org.springframework.transaction.annotation.Transactional;
  *
  */
 @Repository
-@Transactional(value="defaultTransactionManagerIdentifier")
 public class JpaResourceSetRepository implements ResourceSetRepository {
 
 	private static Logger logger = LoggerFactory.getLogger(JpaResourceSetRepository.class);
 
 	@PersistenceContext(unitName="defaultPersistenceUnit")
-	public EntityManager manager;
+	private EntityManager em;
 	
 	@Override
+	@Transactional(value="defaultTransactionManagerIdentifier")
 	public ResourceSet save(ResourceSet rs) {
-		return JpaUtil.saveOrUpdate(rs.getId(), manager, rs);
+		return JpaUtil.saveOrUpdate(rs.getId(), em, rs);
 	}
 
 	@Override
 	public ResourceSet getById(Long id) {
-		return manager.find(ResourceSet.class, id);
+		return em.find(ResourceSet.class, id);
 	}
 
 	@Override
+	@Transactional(value="defaultTransactionManagerIdentifier")
 	public void remove(ResourceSet rs) {
 		ResourceSet found = getById(rs.getId());
 		if (found != null) {
-			manager.remove(found);
+			em.remove(found);
 		} else {
 			logger.info("Tried to remove unknown resource set: " + rs.getId());
 		}
@@ -66,14 +67,14 @@ public class JpaResourceSetRepository implements ResourceSetRepository {
 
 	@Override
 	public Collection<ResourceSet> getAllForOwner(String owner) {
-		TypedQuery<ResourceSet> query = manager.createNamedQuery(ResourceSet.QUERY_BY_OWNER, ResourceSet.class);
+		TypedQuery<ResourceSet> query = em.createNamedQuery(ResourceSet.QUERY_BY_OWNER, ResourceSet.class);
 		query.setParameter(ResourceSet.PARAM_OWNER, owner);
 		return query.getResultList();
 	}
 
 	@Override
 	public Collection<ResourceSet> getAllForOwnerAndClient(String owner, String clientId) {
-		TypedQuery<ResourceSet> query = manager.createNamedQuery(ResourceSet.QUERY_BY_OWNER_AND_CLIENT, ResourceSet.class);
+		TypedQuery<ResourceSet> query = em.createNamedQuery(ResourceSet.QUERY_BY_OWNER_AND_CLIENT, ResourceSet.class);
 		query.setParameter(ResourceSet.PARAM_OWNER, owner);
 		query.setParameter(ResourceSet.PARAM_CLIENTID, clientId);
 		return query.getResultList();
@@ -81,7 +82,7 @@ public class JpaResourceSetRepository implements ResourceSetRepository {
 
 	@Override
 	public Collection<ResourceSet> getAll() {
-		TypedQuery<ResourceSet> query = manager.createNamedQuery(ResourceSet.QUERY_ALL, ResourceSet.class);
+		TypedQuery<ResourceSet> query = em.createNamedQuery(ResourceSet.QUERY_ALL, ResourceSet.class);
 		return query.getResultList();
 	}
 
@@ -90,7 +91,7 @@ public class JpaResourceSetRepository implements ResourceSetRepository {
 	 */
 	@Override
 	public Collection<ResourceSet> getAllForClient(String clientId) {
-		TypedQuery<ResourceSet> query = manager.createNamedQuery(ResourceSet.QUERY_BY_CLIENT, ResourceSet.class);
+		TypedQuery<ResourceSet> query = em.createNamedQuery(ResourceSet.QUERY_BY_CLIENT, ResourceSet.class);
 		query.setParameter(ResourceSet.PARAM_CLIENTID, clientId);
 		return query.getResultList();
 	}

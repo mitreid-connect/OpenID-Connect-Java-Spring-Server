@@ -36,15 +36,15 @@ import org.springframework.transaction.annotation.Transactional;
  *
  */
 @Repository
-@Transactional(value="defaultTransactionManagerIdentifier")
 public class JpaPermissionRepository implements PermissionRepository {
 	
 	@PersistenceContext(unitName="defaultPersistenceUnit")
-	public EntityManager manager;
+	private EntityManager em;
 
 	@Override
+	@Transactional(value="defaultTransactionManagerIdentifier")
 	public PermissionTicket save(PermissionTicket p) {
-		return JpaUtil.saveOrUpdate(p.getId(), manager, p);
+		return JpaUtil.saveOrUpdate(p.getId(), em, p);
 	}
 
 	/* (non-Javadoc)
@@ -52,7 +52,7 @@ public class JpaPermissionRepository implements PermissionRepository {
 	 */
 	@Override
 	public PermissionTicket getByTicket(String ticket) {
-		TypedQuery<PermissionTicket> query = manager.createNamedQuery(PermissionTicket.QUERY_TICKET, PermissionTicket.class);
+		TypedQuery<PermissionTicket> query = em.createNamedQuery(PermissionTicket.QUERY_TICKET, PermissionTicket.class);
 		query.setParameter(PermissionTicket.PARAM_TICKET, ticket);
 		return JpaUtil.getSingleResult(query.getResultList());
 	}
@@ -62,7 +62,7 @@ public class JpaPermissionRepository implements PermissionRepository {
 	 */
 	@Override
 	public Collection<PermissionTicket> getAll() {
-		TypedQuery<PermissionTicket> query = manager.createNamedQuery(PermissionTicket.QUERY_ALL, PermissionTicket.class);
+		TypedQuery<PermissionTicket> query = em.createNamedQuery(PermissionTicket.QUERY_ALL, PermissionTicket.class);
 		return query.getResultList();
 	}
 
@@ -70,8 +70,9 @@ public class JpaPermissionRepository implements PermissionRepository {
 	 * @see org.mitre.uma.repository.PermissionRepository#saveRawPermission(org.mitre.uma.model.Permission)
 	 */
 	@Override
+	@Transactional(value="defaultTransactionManagerIdentifier")
 	public Permission saveRawPermission(Permission p) {
-		return JpaUtil.saveOrUpdate(p.getId(), manager, p);
+		return JpaUtil.saveOrUpdate(p.getId(), em, p);
 	}
 
 	/* (non-Javadoc)
@@ -79,7 +80,7 @@ public class JpaPermissionRepository implements PermissionRepository {
 	 */
 	@Override
 	public Permission getById(Long permissionId) {
-		return manager.find(Permission.class, permissionId);
+		return em.find(Permission.class, permissionId);
 	}
 
 	/* (non-Javadoc)
@@ -87,7 +88,7 @@ public class JpaPermissionRepository implements PermissionRepository {
 	 */
 	@Override
 	public Collection<PermissionTicket> getPermissionTicketsForResourceSet(ResourceSet rs) {
-		TypedQuery<PermissionTicket> query = manager.createNamedQuery(PermissionTicket.QUERY_BY_RESOURCE_SET, PermissionTicket.class);
+		TypedQuery<PermissionTicket> query = em.createNamedQuery(PermissionTicket.QUERY_BY_RESOURCE_SET, PermissionTicket.class);
 		query.setParameter(PermissionTicket.PARAM_RESOURCE_SET_ID, rs.getId());
 		return query.getResultList();
 	}
@@ -96,10 +97,11 @@ public class JpaPermissionRepository implements PermissionRepository {
 	 * @see org.mitre.uma.repository.PermissionRepository#remove(org.mitre.uma.model.PermissionTicket)
 	 */
 	@Override
+	@Transactional(value="defaultTransactionManagerIdentifier")
 	public void remove(PermissionTicket ticket) {
 		PermissionTicket found = getByTicket(ticket.getTicket());
 		if (found != null) {
-			manager.remove(found);
+			em.remove(found);
 		}
 	}
 

@@ -39,11 +39,10 @@ import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTParser;
 
 @Repository
-@Transactional(value="defaultTransactionManagerIdentifier")
 public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 
 	@PersistenceContext(unitName="defaultPersistenceUnit")
-	public EntityManager manager;
+	private EntityManager manager;
 	
 	private static final int MAXEXPIREDRESULTS = 1000;
 	
@@ -78,11 +77,13 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	}
 
 	@Override
+	@Transactional(value="defaultTransactionManagerIdentifier")
 	public OAuth2AccessTokenEntity saveAccessToken(OAuth2AccessTokenEntity token) {
 		return JpaUtil.saveOrUpdate(token.getId(), manager, token);
 	}
 
 	@Override
+	@Transactional(value="defaultTransactionManagerIdentifier")
 	public void removeAccessToken(OAuth2AccessTokenEntity accessToken) {
 		OAuth2AccessTokenEntity found = getAccessTokenByValue(accessToken.getValue());
 		if (found != null) {
@@ -93,6 +94,7 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	}
 
 	@Override
+	@Transactional(value="defaultTransactionManagerIdentifier")
 	public void clearAccessTokensForRefreshToken(OAuth2RefreshTokenEntity refreshToken) {
 		TypedQuery<OAuth2AccessTokenEntity> query = manager.createNamedQuery(OAuth2AccessTokenEntity.QUERY_BY_REFRESH_TOKEN, OAuth2AccessTokenEntity.class);
 		query.setParameter(OAuth2AccessTokenEntity.PARAM_REFERSH_TOKEN, refreshToken);
@@ -120,11 +122,13 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	}
 
 	@Override
+	@Transactional(value="defaultTransactionManagerIdentifier")
 	public OAuth2RefreshTokenEntity saveRefreshToken(OAuth2RefreshTokenEntity refreshToken) {
 		return JpaUtil.saveOrUpdate(refreshToken.getId(), manager, refreshToken);
 	}
 
 	@Override
+	@Transactional(value="defaultTransactionManagerIdentifier")
 	public void removeRefreshToken(OAuth2RefreshTokenEntity refreshToken) {
 		OAuth2RefreshTokenEntity found = getRefreshTokenByValue(refreshToken.getValue());
 		if (found != null) {
@@ -135,6 +139,7 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	}
 
 	@Override
+	@Transactional(value="defaultTransactionManagerIdentifier")
 	public void clearTokensForClient(ClientDetailsEntity client) {
 		TypedQuery<OAuth2AccessTokenEntity> queryA = manager.createNamedQuery(OAuth2AccessTokenEntity.QUERY_BY_CLIENT, OAuth2AccessTokenEntity.class);
 		queryA.setParameter(OAuth2AccessTokenEntity.PARAM_CLIENT, client);
