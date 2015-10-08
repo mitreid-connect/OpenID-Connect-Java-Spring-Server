@@ -16,8 +16,8 @@ if (request.getAttribute("error") != null && request.getAttribute("error") insta
 } else if (request.getAttribute("javax.servlet.error.status_code") != null) {
 	Integer code = (Integer)request.getAttribute("javax.servlet.error.status_code");
 	HttpStatus status = HttpStatus.valueOf(code);
-	request.setAttribute("errorCode", status.toString());
-	request.setAttribute("message", status.getReasonPhrase());
+	request.setAttribute("errorCode", status.toString() + " " + status.getReasonPhrase());
+	request.setAttribute("message", request.getAttribute("javax.servlet.error.message"));
 } else {
 	request.setAttribute("errorCode", "Server error");
 	request.setAttribute("message", "See the logs for details");
