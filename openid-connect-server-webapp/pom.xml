@@ -78,6 +78,7 @@
 				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-maven-plugin</artifactId>
 				<configuration>
+					<war>${project.build.directory}/openid-connect-server-webapp.war</war>
 					<webAppConfig>
 						<contextPath>/openid-connect-server-webapp</contextPath>
 					</webAppConfig>
