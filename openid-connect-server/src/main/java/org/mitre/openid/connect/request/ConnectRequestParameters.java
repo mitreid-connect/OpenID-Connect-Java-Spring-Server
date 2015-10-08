@@ -38,7 +38,6 @@ public interface ConnectRequestParameters {
 	public String PROMPT_SEPARATOR = " ";
 
 	// extensions
-	public String CSRF = "csrf";
 	public String APPROVED_SITE = "approved_site";
 
 	// responses

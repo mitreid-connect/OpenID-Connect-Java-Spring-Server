@@ -57,7 +57,6 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonObject;
 
-import static org.mitre.openid.connect.request.ConnectRequestParameters.CSRF;
 import static org.mitre.openid.connect.request.ConnectRequestParameters.PROMPT;
 import static org.mitre.openid.connect.request.ConnectRequestParameters.PROMPT_SEPARATOR;
 
@@ -220,9 +219,6 @@ public class OAuthConfirmationController {
 		} else {
 			model.put("gras", false);
 		}
-
-		// inject a random value for CSRF purposes
-		model.put("csrf", authRequest.getExtensions().get(CSRF));
 
 		return "approve";
 	}

@@ -55,7 +55,6 @@ import com.nimbusds.jwt.SignedJWT;
 
 import static org.mitre.openid.connect.request.ConnectRequestParameters.CLAIMS;
 import static org.mitre.openid.connect.request.ConnectRequestParameters.CLIENT_ID;
-import static org.mitre.openid.connect.request.ConnectRequestParameters.CSRF;
 import static org.mitre.openid.connect.request.ConnectRequestParameters.DISPLAY;
 import static org.mitre.openid.connect.request.ConnectRequestParameters.LOGIN_HINT;
 import static org.mitre.openid.connect.request.ConnectRequestParameters.MAX_AGE;
@@ -156,13 +155,6 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 				logger.error("Caught OAuth2 exception trying to test client scopes and max age:", e);
 			}
 		}
-
-
-		// add CSRF protection to the request on first parse
-		String csrf = UUID.randomUUID().toString();
-		request.getExtensions().put(CSRF, csrf);
-
-
 
 		return request;
 	}

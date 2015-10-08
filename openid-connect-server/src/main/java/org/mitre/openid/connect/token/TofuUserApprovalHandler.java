@@ -48,7 +48,6 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 
 import static org.mitre.openid.connect.request.ConnectRequestParameters.APPROVED_SITE;
-import static org.mitre.openid.connect.request.ConnectRequestParameters.CSRF;
 import static org.mitre.openid.connect.request.ConnectRequestParameters.PROMPT;
 import static org.mitre.openid.connect.request.ConnectRequestParameters.PROMPT_SEPARATOR;
 
@@ -102,21 +101,8 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 			return true;
 		} else {
 			// if not, check to see if the user has approved it
-			if (Boolean.parseBoolean(authorizationRequest.getApprovalParameters().get("user_oauth_approval"))) {			// TODO: make parameter name configurable?
-
-				// check the value of the CSRF parameter
-
-				if (authorizationRequest.getExtensions().get(CSRF) != null) {
-					if (authorizationRequest.getExtensions().get(CSRF).equals(authorizationRequest.getApprovalParameters().get(CSRF))) {
-
-						// make sure the user is actually authenticated
-						return userAuthentication.isAuthenticated();
-					}
-				}
-			}
-
-			// if the above doesn't pass, it's not yet approved
-			return false;
+			// TODO: make parameter name configurable?
+			return Boolean.parseBoolean(authorizationRequest.getApprovalParameters().get("user_oauth_approval"));
 		}
 
 	}
@@ -195,9 +181,7 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 		ClientDetails client = clientDetailsService.loadClientByClientId(clientId);
 
 		// This must be re-parsed here because SECOAUTH forces us to call things in a strange order
-		if (Boolean.parseBoolean(authorizationRequest.getApprovalParameters().get("user_oauth_approval"))
-				&& authorizationRequest.getExtensions().get(CSRF) != null
-				&& authorizationRequest.getExtensions().get(CSRF).equals(authorizationRequest.getApprovalParameters().get(CSRF))) {
+		if (Boolean.parseBoolean(authorizationRequest.getApprovalParameters().get("user_oauth_approval"))) {
 
 			authorizationRequest.setApproved(true);
 
