@@ -63,8 +63,18 @@ public class WebfingerIssuerService implements IssuerService {
 	private static final Logger logger = LoggerFactory.getLogger(WebfingerIssuerService.class);
 
 	// map of user input -> issuer, loaded dynamically from webfinger discover
-	private LoadingCache<UriComponents, String> issuers;
+	private LoadingCache<String, LoadingResult> issuers;
 
+	// private data shuttle class to get back two bits of info from the cache loader
+	private class LoadingResult {
+		public String loginHint;
+		public String issuer;
+		public LoadingResult(String loginHint, String issuer) {
+			this.loginHint = loginHint;
+			this.issuer = issuer;
+		}
+	}
+	
 	private Set<String> whitelist = new HashSet<>();
 	private Set<String> blacklist = new HashSet<>();
 
@@ -96,16 +106,16 @@ public class WebfingerIssuerService implements IssuerService {
 		String identifier = request.getParameter(parameterName);
 		if (!Strings.isNullOrEmpty(identifier)) {
 			try {
-				String issuer = issuers.get(WebfingerURLNormalizer.normalizeResource(identifier));
-				if (!whitelist.isEmpty() && !whitelist.contains(issuer)) {
-					throw new AuthenticationServiceException("Whitelist was nonempty, issuer was not in whitelist: " + issuer);
+				LoadingResult lr = issuers.get(identifier);
+				if (!whitelist.isEmpty() && !whitelist.contains(lr.issuer)) {
+					throw new AuthenticationServiceException("Whitelist was nonempty, issuer was not in whitelist: " + lr.issuer);
 				}
 
-				if (blacklist.contains(issuer)) {
-					throw new AuthenticationServiceException("Issuer was in blacklist: " + issuer);
+				if (blacklist.contains(lr.issuer)) {
+					throw new AuthenticationServiceException("Issuer was in blacklist: " + lr.issuer);
 				}
 
-				return new IssuerServiceResponse(issuer, identifier, null);
+				return new IssuerServiceResponse(lr.issuer, lr.loginHint, null);
 			} catch (UncheckedExecutionException | ExecutionException e) {
 				logger.warn("Issue fetching issuer for user input: " + identifier + ": " + e.getMessage());
 				return null;
@@ -192,7 +202,7 @@ public class WebfingerIssuerService implements IssuerService {
 	 * @author jricher
 	 *
 	 */
-	private class WebfingerIssuerFetcher extends CacheLoader<UriComponents, String> {
+	private class WebfingerIssuerFetcher extends CacheLoader<String, LoadingResult> {
 		private HttpClient httpClient = HttpClientBuilder.create()
 				.useSystemProperties()
 				.build();
@@ -200,22 +210,25 @@ public class WebfingerIssuerService implements IssuerService {
 		private JsonParser parser = new JsonParser();
 
 		@Override
-		public String load(UriComponents key) throws Exception {
+		public LoadingResult load(String identifier) throws Exception {
 
+			UriComponents key = WebfingerURLNormalizer.normalizeResource(identifier);
+			
 			RestTemplate restTemplate = new RestTemplate(httpFactory);
 			// construct the URL to go to
 
-			// preserving http scheme is strictly for demo system use only.
 			String scheme = key.getScheme();
 
+			// preserving http scheme is strictly for demo system use only.
 			if (!Strings.isNullOrEmpty(scheme) &&scheme.equals("http")) {
 				if (forceHttps) {
-					throw new IllegalArgumentException("Scheme must start with htps");
+					throw new IllegalArgumentException("Scheme must not be 'http'");
 				} else {
 					logger.warn("Webfinger endpoint MUST use the https URI scheme, overriding by configuration");
 					scheme = "http://"; // add on colon and slashes.
 				}
 			} else {
+				// otherwise we don't know the scheme, assume HTTPS
 				scheme = "https://";
 			}
 
@@ -227,7 +240,7 @@ public class WebfingerIssuerService implements IssuerService {
 					+ "/.well-known/webfinger"
 					+ (Strings.isNullOrEmpty(key.getQuery()) ? "" : "?" + key.getQuery())
 					);
-			builder.addParameter("resource", key.toString());
+			builder.addParameter("resource", identifier);
 			builder.addParameter("rel", "http://openid.net/specs/connect/1.0/issuer");
 
 			try {
@@ -249,7 +262,16 @@ public class WebfingerIssuerService implements IssuerService {
 									&& linkObj.get("rel").getAsString().equals("http://openid.net/specs/connect/1.0/issuer")) {
 
 								// we found the issuer, return it
-								return linkObj.get("href").getAsString();
+								String href = linkObj.get("href").getAsString();
+								
+								if (identifier.equals(href)
+										|| identifier.startsWith("http")) {
+									// try to avoid sending a URL as the login hint
+									return new LoadingResult(null, href);
+								} else {
+									// otherwise pass back whatever the user typed as a login hint
+									return new LoadingResult(identifier, href);
+								}
 							}
 						}
 					}
@@ -262,11 +284,11 @@ public class WebfingerIssuerService implements IssuerService {
 
 			if (key.getScheme().equals("http") || key.getScheme().equals("https")) {
 				// if it looks like HTTP then punt: return the input, hope for the best
-				logger.warn("Returning normalized input string as issuer, hoping for the best: " + key.toString());
-				return key.toString();
+				logger.warn("Returning normalized input string as issuer, hoping for the best: " + identifier);
+				return new LoadingResult(null, identifier);
 			} else {
 				// if it's not HTTP, give up
-				logger.warn("Couldn't find issuer: " + key.toString());
+				logger.warn("Couldn't find issuer: " + identifier);
 				throw new IllegalArgumentException();
 			}
 
