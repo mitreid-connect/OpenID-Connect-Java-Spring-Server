@@ -70,7 +70,7 @@
 
 	<properties>
 		<java-version>1.7</java-version>
-		<org.slf4j-version>1.7.7</org.slf4j-version>
+		<org.slf4j-version>1.7.12</org.slf4j-version>
 	</properties>
 	<description>A reference implementation of OpenID Connect (http://openid.net/connect/), OAuth 2.0, and UMA built on top of Java, Spring, and Spring Security. The project contains a fully functioning server, client, and utility library.</description>
 	<url>https://github.com/mitreid-connect</url>
@@ -353,7 +353,6 @@
 				<groupId>org.slf4j</groupId>
 				<artifactId>jcl-over-slf4j</artifactId>
 				<version>${org.slf4j-version}</version>
-				<scope>runtime</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.slf4j</groupId>
@@ -509,6 +508,10 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-jdk14</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
