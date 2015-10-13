@@ -29,12 +29,12 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
-@Transactional
+@Transactional(value="defaultTransactionManager")
 public class JpaAuthenticationHolderRepository implements AuthenticationHolderRepository {
 
 	private static final int MAXEXPIREDRESULTS = 1000;
 
-	@PersistenceContext
+	@PersistenceContext(unitName="defaultPersistenceUnit")
 	private EntityManager manager;
 
 	@Override
@@ -49,7 +49,7 @@ public class JpaAuthenticationHolderRepository implements AuthenticationHolderRe
 	}
 
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManager")
 	public void remove(AuthenticationHolderEntity a) {
 		AuthenticationHolderEntity found = getById(a.getId());
 		if (found != null) {
@@ -60,13 +60,13 @@ public class JpaAuthenticationHolderRepository implements AuthenticationHolderRe
 	}
 
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManager")
 	public AuthenticationHolderEntity save(AuthenticationHolderEntity a) {
 		return JpaUtil.saveOrUpdate(a.getId(), manager, a);
 	}
 
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManager")
 	public List<AuthenticationHolderEntity> getOrphanedAuthenticationHolders() {
 		TypedQuery<AuthenticationHolderEntity> query = manager.createNamedQuery(AuthenticationHolderEntity.QUERY_GET_UNUSED, AuthenticationHolderEntity.class);
 		query.setMaxResults(MAXEXPIREDRESULTS);

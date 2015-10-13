@@ -65,7 +65,7 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 	}
 
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManager")
 	public ApprovedSite save(ApprovedSite approvedSite) {
 		ApprovedSite a = approvedSiteRepository.save(approvedSite);
 		statsService.resetCache();
@@ -78,7 +78,7 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 	}
 
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManager")
 	public void remove(ApprovedSite approvedSite) {
 
 		//Remove any associated access and refresh tokens
@@ -97,7 +97,7 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 	}
 
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManager")
 	public ApprovedSite createApprovedSite(String clientId, String userId, Date timeoutDate, Set<String> allowedScopes) {
 
 		ApprovedSite as = approvedSiteRepository.save(new ApprovedSite());

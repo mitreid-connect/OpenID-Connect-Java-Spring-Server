@@ -112,7 +112,7 @@ public class DefaultOAuth2AuthorizationCodeService implements AuthorizationCodeS
 	/**
 	 * Find and remove all expired auth codes.
 	 */
-	@Transactional
+	@Transactional(value="defaultTransactionManager")
 	public void clearExpiredAuthorizationCodes() {
 
 		Collection<AuthorizationCodeEntity> codes = repository.getExpiredCodes();

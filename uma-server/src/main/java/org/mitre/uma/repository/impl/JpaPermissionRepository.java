@@ -38,11 +38,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public class JpaPermissionRepository implements PermissionRepository {
 
-	@PersistenceContext
+	@PersistenceContext(unitName="defaultPersistenceUnit")
 	private EntityManager em;
 
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManager")
 	public PermissionTicket save(PermissionTicket p) {
 		return JpaUtil.saveOrUpdate(p.getId(), em, p);
 	}
@@ -70,7 +70,7 @@ public class JpaPermissionRepository implements PermissionRepository {
 	 * @see org.mitre.uma.repository.PermissionRepository#saveRawPermission(org.mitre.uma.model.Permission)
 	 */
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManager")
 	public Permission saveRawPermission(Permission p) {
 		return JpaUtil.saveOrUpdate(p.getId(), em, p);
 	}
@@ -97,7 +97,7 @@ public class JpaPermissionRepository implements PermissionRepository {
 	 * @see org.mitre.uma.repository.PermissionRepository#remove(org.mitre.uma.model.PermissionTicket)
 	 */
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManager")
 	public void remove(PermissionTicket ticket) {
 		PermissionTicket found = getByTicket(ticket.getTicket());
 		if (found != null) {

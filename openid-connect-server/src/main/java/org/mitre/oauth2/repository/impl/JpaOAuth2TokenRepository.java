@@ -43,7 +43,7 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 
 	private static final int MAXEXPIREDRESULTS = 1000;
 
-	@PersistenceContext
+	@PersistenceContext(unitName="defaultPersistenceUnit")
 	private EntityManager manager;
 
 	@Override
@@ -77,13 +77,13 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	}
 
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManager")
 	public OAuth2AccessTokenEntity saveAccessToken(OAuth2AccessTokenEntity token) {
 		return JpaUtil.saveOrUpdate(token.getId(), manager, token);
 	}
 
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManager")
 	public void removeAccessToken(OAuth2AccessTokenEntity accessToken) {
 		OAuth2AccessTokenEntity found = getAccessTokenByValue(accessToken.getValue());
 		if (found != null) {
@@ -94,7 +94,7 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	}
 
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManager")
 	public void clearAccessTokensForRefreshToken(OAuth2RefreshTokenEntity refreshToken) {
 		TypedQuery<OAuth2AccessTokenEntity> query = manager.createNamedQuery(OAuth2AccessTokenEntity.QUERY_BY_REFRESH_TOKEN, OAuth2AccessTokenEntity.class);
 		query.setParameter(OAuth2AccessTokenEntity.PARAM_REFERSH_TOKEN, refreshToken);
@@ -122,13 +122,13 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	}
 
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManager")
 	public OAuth2RefreshTokenEntity saveRefreshToken(OAuth2RefreshTokenEntity refreshToken) {
 		return JpaUtil.saveOrUpdate(refreshToken.getId(), manager, refreshToken);
 	}
 
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManager")
 	public void removeRefreshToken(OAuth2RefreshTokenEntity refreshToken) {
 		OAuth2RefreshTokenEntity found = getRefreshTokenByValue(refreshToken.getValue());
 		if (found != null) {
@@ -139,7 +139,7 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	}
 
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManager")
 	public void clearTokensForClient(ClientDetailsEntity client) {
 		TypedQuery<OAuth2AccessTokenEntity> queryA = manager.createNamedQuery(OAuth2AccessTokenEntity.QUERY_BY_CLIENT, OAuth2AccessTokenEntity.class);
 		queryA.setParameter(OAuth2AccessTokenEntity.PARAM_CLIENT, client);

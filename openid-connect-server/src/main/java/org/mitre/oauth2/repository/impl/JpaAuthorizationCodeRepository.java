@@ -39,17 +39,17 @@ import org.springframework.transaction.annotation.Transactional;
  *
  */
 @Repository
-@Transactional
+@Transactional(value="defaultTransactionManager")
 public class JpaAuthorizationCodeRepository implements AuthorizationCodeRepository {
 
-	@PersistenceContext
+	@PersistenceContext(unitName="defaultPersistenceUnit")
 	EntityManager manager;
 
 	/* (non-Javadoc)
 	 * @see org.mitre.oauth2.repository.AuthorizationCodeRepository#save(org.mitre.oauth2.model.AuthorizationCodeEntity)
 	 */
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManager")
 	public AuthorizationCodeEntity save(AuthorizationCodeEntity authorizationCode) {
 
 		return JpaUtil.saveOrUpdate(authorizationCode.getId(), manager, authorizationCode);
@@ -60,7 +60,7 @@ public class JpaAuthorizationCodeRepository implements AuthorizationCodeReposito
 	 * @see org.mitre.oauth2.repository.AuthorizationCodeRepository#getByCode(java.lang.String)
 	 */
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManager")
 	public AuthorizationCodeEntity getByCode(String code) {
 		TypedQuery<AuthorizationCodeEntity> query = manager.createNamedQuery(AuthorizationCodeEntity.QUERY_BY_VALUE, AuthorizationCodeEntity.class);
 		query.setParameter("code", code);

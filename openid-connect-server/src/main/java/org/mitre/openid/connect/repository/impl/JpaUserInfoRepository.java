@@ -36,7 +36,7 @@ import static org.mitre.util.jpa.JpaUtil.getSingleResult;
 @Repository("jpaUserInfoRepository")
 public class JpaUserInfoRepository implements UserInfoRepository {
 
-	@PersistenceContext
+	@PersistenceContext(unitName="defaultPersistenceUnit")
 	private EntityManager manager;
 
 	/**

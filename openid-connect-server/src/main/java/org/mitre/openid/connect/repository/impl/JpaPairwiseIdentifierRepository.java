@@ -38,7 +38,7 @@ import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
 @Repository
 public class JpaPairwiseIdentifierRepository implements PairwiseIdentifierRepository {
 
-	@PersistenceContext
+	@PersistenceContext(unitName="defaultPersistenceUnit")
 	private EntityManager manager;
 
 	/* (non-Javadoc)
@@ -57,7 +57,7 @@ public class JpaPairwiseIdentifierRepository implements PairwiseIdentifierReposi
 	 * @see org.mitre.openid.connect.repository.PairwiseIdentifierRepository#save(org.mitre.openid.connect.model.PairwiseIdentifier)
 	 */
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManager")
 	public void save(PairwiseIdentifier pairwise) {
 		saveOrUpdate(pairwise.getId(), manager, pairwise);
 	}

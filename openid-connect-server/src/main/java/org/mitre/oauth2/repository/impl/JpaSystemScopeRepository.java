@@ -41,14 +41,14 @@ import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
 @Repository("jpaSystemScopeRepository")
 public class JpaSystemScopeRepository implements SystemScopeRepository {
 
-	@PersistenceContext
+	@PersistenceContext(unitName="defaultPersistenceUnit")
 	private EntityManager em;
 
 	/* (non-Javadoc)
 	 * @see org.mitre.oauth2.repository.SystemScopeRepository#getAll()
 	 */
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManager")
 	public Set<SystemScope> getAll() {
 		TypedQuery<SystemScope> query = em.createNamedQuery(SystemScope.QUERY_ALL, SystemScope.class);
 
@@ -59,7 +59,7 @@ public class JpaSystemScopeRepository implements SystemScopeRepository {
 	 * @see org.mitre.oauth2.repository.SystemScopeRepository#getById(java.lang.Long)
 	 */
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManager")
 	public SystemScope getById(Long id) {
 		return em.find(SystemScope.class, id);
 	}
@@ -68,7 +68,7 @@ public class JpaSystemScopeRepository implements SystemScopeRepository {
 	 * @see org.mitre.oauth2.repository.SystemScopeRepository#getByValue(java.lang.String)
 	 */
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManager")
 	public SystemScope getByValue(String value) {
 		TypedQuery<SystemScope> query = em.createNamedQuery(SystemScope.QUERY_BY_VALUE, SystemScope.class);
 		query.setParameter(SystemScope.PARAM_VALUE, value);
@@ -79,7 +79,7 @@ public class JpaSystemScopeRepository implements SystemScopeRepository {
 	 * @see org.mitre.oauth2.repository.SystemScopeRepository#remove(org.mitre.oauth2.model.SystemScope)
 	 */
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManager")
 	public void remove(SystemScope scope) {
 		SystemScope found = getById(scope.getId());
 
@@ -93,7 +93,7 @@ public class JpaSystemScopeRepository implements SystemScopeRepository {
 	 * @see org.mitre.oauth2.repository.SystemScopeRepository#save(org.mitre.oauth2.model.SystemScope)
 	 */
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManager")
 	public SystemScope save(SystemScope scope) {
 		return saveOrUpdate(scope.getId(), em, scope);
 	}
