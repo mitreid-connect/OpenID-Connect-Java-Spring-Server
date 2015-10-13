@@ -19,6 +19,8 @@
  */
 package org.mitre.openid.connect.filter;
 
+import static org.mitre.openid.connect.request.ConnectRequestParameters.*;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Date;
@@ -37,6 +39,8 @@ import javax.servlet.http.HttpSession;
 import org.apache.http.client.utils.URIBuilder;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
+import org.mitre.openid.connect.service.LoginHintExtracter;
+import org.mitre.openid.connect.service.impl.RemoveLoginHintsWithHTTP;
 import org.mitre.openid.connect.web.AuthenticationTimeStamper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,16 +56,6 @@ import org.springframework.web.filter.GenericFilterBean;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-
-import static org.mitre.openid.connect.request.ConnectRequestParameters.ERROR;
-import static org.mitre.openid.connect.request.ConnectRequestParameters.LOGIN_HINT;
-import static org.mitre.openid.connect.request.ConnectRequestParameters.LOGIN_REQUIRED;
-import static org.mitre.openid.connect.request.ConnectRequestParameters.MAX_AGE;
-import static org.mitre.openid.connect.request.ConnectRequestParameters.PROMPT;
-import static org.mitre.openid.connect.request.ConnectRequestParameters.PROMPT_LOGIN;
-import static org.mitre.openid.connect.request.ConnectRequestParameters.PROMPT_NONE;
-import static org.mitre.openid.connect.request.ConnectRequestParameters.PROMPT_SEPARATOR;
-import static org.mitre.openid.connect.request.ConnectRequestParameters.STATE;
 
 /**
  * @author jricher
@@ -86,6 +80,9 @@ public class AuthorizationRequestFilter extends GenericFilterBean {
 
 	@Autowired
 	private RedirectResolver redirectResolver;
+
+	@Autowired(required = false)
+	private LoginHintExtracter loginHintExtracter = new RemoveLoginHintsWithHTTP();
 
 	/**
 	 * 
@@ -115,8 +112,10 @@ public class AuthorizationRequestFilter extends GenericFilterBean {
 			}
 
 			// save the login hint to the session
-			if (authRequest.getExtensions().get(LOGIN_HINT) != null) {
-				session.setAttribute(LOGIN_HINT, authRequest.getExtensions().get(LOGIN_HINT));
+			// but first check to see if the login hint makes any sense
+			String loginHint = loginHintExtracter.extractHint((String) authRequest.getExtensions().get(LOGIN_HINT));
+			if (!Strings.isNullOrEmpty(loginHint)) {
+				session.setAttribute(LOGIN_HINT, loginHint);
 			} else {
 				session.removeAttribute(LOGIN_HINT);
 			}
