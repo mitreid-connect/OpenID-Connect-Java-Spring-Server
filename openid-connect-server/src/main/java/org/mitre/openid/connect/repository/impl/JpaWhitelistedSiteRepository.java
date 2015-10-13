@@ -16,6 +16,8 @@
  *******************************************************************************/
 package org.mitre.openid.connect.repository.impl;
 
+import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
+
 import java.util.Collection;
 
 import javax.persistence.EntityManager;
@@ -28,8 +30,6 @@ import org.mitre.util.jpa.JpaUtil;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
-
 /**
  * JPA WhitelistedSite repository implementation
  * 
@@ -38,25 +38,25 @@ import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
  */
 @Repository
 public class JpaWhitelistedSiteRepository implements WhitelistedSiteRepository {
-
-	@PersistenceContext
+	
+	@PersistenceContext(unitName="defaultPersistenceUnit")
 	private EntityManager manager;
 
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManagerIdentifier")
 	public Collection<WhitelistedSite> getAll() {
 		TypedQuery<WhitelistedSite> query = manager.createNamedQuery(WhitelistedSite.QUERY_ALL, WhitelistedSite.class);
 		return query.getResultList();
 	}
 
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManagerIdentifier")
 	public WhitelistedSite getById(Long id) {
 		return manager.find(WhitelistedSite.class, id);
 	}
 
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManagerIdentifier")
 	public void remove(WhitelistedSite whitelistedSite) {
 		WhitelistedSite found = manager.find(WhitelistedSite.class, whitelistedSite.getId());
 
@@ -68,13 +68,13 @@ public class JpaWhitelistedSiteRepository implements WhitelistedSiteRepository {
 	}
 
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManagerIdentifier")
 	public WhitelistedSite save(WhitelistedSite whiteListedSite) {
 		return saveOrUpdate(whiteListedSite.getId(), manager, whiteListedSite);
 	}
 
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManagerIdentifier")
 	public WhitelistedSite update(WhitelistedSite oldWhitelistedSite, WhitelistedSite whitelistedSite) {
 		// sanity check
 		whitelistedSite.setId(oldWhitelistedSite.getId());
@@ -83,7 +83,7 @@ public class JpaWhitelistedSiteRepository implements WhitelistedSiteRepository {
 	}
 
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManagerIdentifier")
 	public WhitelistedSite getByClientId(String clientId) {
 		TypedQuery<WhitelistedSite> query = manager.createNamedQuery(WhitelistedSite.QUERY_BY_CLIENT_ID, WhitelistedSite.class);
 		query.setParameter(WhitelistedSite.PARAM_CLIENT_ID, clientId);
@@ -91,7 +91,7 @@ public class JpaWhitelistedSiteRepository implements WhitelistedSiteRepository {
 	}
 
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManagerIdentifier")
 	public Collection<WhitelistedSite> getByCreator(String creatorId) {
 		TypedQuery<WhitelistedSite> query = manager.createNamedQuery(WhitelistedSite.QUERY_BY_CREATOR, WhitelistedSite.class);
 		query.setParameter(WhitelistedSite.PARAM_USER_ID, creatorId);

@@ -32,12 +32,12 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Repository
 public class JpaAddressRepository implements AddressRepository {
-
-	@PersistenceContext
+	
+	@PersistenceContext(unitName="defaultPersistenceUnit")
 	private EntityManager manager;
 
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManagerIdentifier")
 	public Address getById(Long id) {
 		return manager.find(Address.class, id);
 	}

@@ -16,6 +16,8 @@
  *******************************************************************************/
 package org.mitre.openid.connect.repository.impl;
 
+import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
+
 import java.util.Collection;
 
 import javax.persistence.EntityManager;
@@ -27,8 +29,6 @@ import org.mitre.openid.connect.repository.ApprovedSiteRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
-
 /**
  * JPA ApprovedSite repository implementation
  * 
@@ -37,25 +37,25 @@ import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
  */
 @Repository
 public class JpaApprovedSiteRepository implements ApprovedSiteRepository {
-
-	@PersistenceContext
+	
+	@PersistenceContext(unitName="defaultPersistenceUnit")
 	private EntityManager manager;
 
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManagerIdentifier")
 	public Collection<ApprovedSite> getAll() {
 		TypedQuery<ApprovedSite> query = manager.createNamedQuery(ApprovedSite.QUERY_ALL, ApprovedSite.class);
 		return query.getResultList();
 	}
 
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManagerIdentifier")
 	public ApprovedSite getById(Long id) {
 		return manager.find(ApprovedSite.class, id);
 	}
 
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManagerIdentifier")
 	public void remove(ApprovedSite approvedSite) {
 		ApprovedSite found = manager.find(ApprovedSite.class, approvedSite.getId());
 
@@ -67,7 +67,7 @@ public class JpaApprovedSiteRepository implements ApprovedSiteRepository {
 	}
 
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManagerIdentifier")
 	public ApprovedSite save(ApprovedSite approvedSite) {
 		return saveOrUpdate(approvedSite.getId(), manager, approvedSite);
 	}
@@ -83,7 +83,7 @@ public class JpaApprovedSiteRepository implements ApprovedSiteRepository {
 	}
 
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManagerIdentifier")
 	public Collection<ApprovedSite> getByUserId(String userId) {
 		TypedQuery<ApprovedSite> query = manager.createNamedQuery(ApprovedSite.QUERY_BY_USER_ID, ApprovedSite.class);
 		query.setParameter(ApprovedSite.PARAM_USER_ID, userId);
@@ -93,7 +93,7 @@ public class JpaApprovedSiteRepository implements ApprovedSiteRepository {
 	}
 
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManagerIdentifier")
 	public Collection<ApprovedSite> getByClientId(String clientId) {
 		TypedQuery<ApprovedSite> query = manager.createNamedQuery(ApprovedSite.QUERY_BY_CLIENT_ID, ApprovedSite.class);
 		query.setParameter(ApprovedSite.PARAM_CLIENT_ID, clientId);

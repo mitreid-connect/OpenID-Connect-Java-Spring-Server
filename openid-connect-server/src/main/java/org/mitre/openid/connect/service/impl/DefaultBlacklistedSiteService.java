@@ -35,7 +35,7 @@ import com.google.common.base.Strings;
  *
  */
 @Service
-@Transactional
+@Transactional(value="defaultTransactionManagerIdentifier")
 public class DefaultBlacklistedSiteService implements BlacklistedSiteService {
 
 	@Autowired

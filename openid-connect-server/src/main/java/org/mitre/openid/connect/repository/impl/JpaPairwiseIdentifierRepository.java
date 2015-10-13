@@ -19,6 +19,9 @@
  */
 package org.mitre.openid.connect.repository.impl;
 
+import static org.mitre.util.jpa.JpaUtil.getSingleResult;
+import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -28,17 +31,14 @@ import org.mitre.openid.connect.repository.PairwiseIdentifierRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.mitre.util.jpa.JpaUtil.getSingleResult;
-import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
-
 /**
  * @author jricher
  *
  */
 @Repository
 public class JpaPairwiseIdentifierRepository implements PairwiseIdentifierRepository {
-
-	@PersistenceContext
+	
+	@PersistenceContext(unitName="defaultPersistenceUnit")
 	private EntityManager manager;
 
 	/* (non-Javadoc)
@@ -57,7 +57,7 @@ public class JpaPairwiseIdentifierRepository implements PairwiseIdentifierReposi
 	 * @see org.mitre.openid.connect.repository.PairwiseIdentifierRepository#save(org.mitre.openid.connect.model.PairwiseIdentifier)
 	 */
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManagerIdentifier")
 	public void save(PairwiseIdentifier pairwise) {
 		saveOrUpdate(pairwise.getId(), manager, pairwise);
 	}

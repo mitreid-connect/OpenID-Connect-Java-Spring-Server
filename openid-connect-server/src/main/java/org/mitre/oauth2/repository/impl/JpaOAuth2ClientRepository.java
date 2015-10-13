@@ -33,10 +33,10 @@ import org.springframework.transaction.annotation.Transactional;
  *
  */
 @Repository
-@Transactional
+@Transactional(value="defaultTransactionManagerIdentifier")
 public class JpaOAuth2ClientRepository implements OAuth2ClientRepository {
-
-	@PersistenceContext
+	
+	@PersistenceContext(unitName="defaultPersistenceUnit")
 	private EntityManager manager;
 
 	public JpaOAuth2ClientRepository() {
