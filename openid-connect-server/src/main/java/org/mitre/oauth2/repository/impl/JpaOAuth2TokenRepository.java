@@ -17,6 +17,7 @@
 package org.mitre.oauth2.repository.impl;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -24,7 +25,11 @@ import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
+import javax.persistence.criteria.Root;
 
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
@@ -32,6 +37,8 @@ import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
 import org.mitre.uma.model.ResourceSet;
 import org.mitre.util.jpa.JpaUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +49,8 @@ import com.nimbusds.jwt.JWTParser;
 public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 
 	private static final int MAXEXPIREDRESULTS = 1000;
+	
+	private static final Logger logger = LoggerFactory.getLogger(JpaOAuth2TokenRepository.class);
 
 	@PersistenceContext(unitName="defaultPersistenceUnit")
 	private EntityManager manager;
@@ -212,6 +221,44 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 		TypedQuery<OAuth2AccessTokenEntity> query = manager.createNamedQuery(OAuth2AccessTokenEntity.QUERY_BY_RESOURCE_SET, OAuth2AccessTokenEntity.class);
 		query.setParameter(OAuth2AccessTokenEntity.PARAM_RESOURCE_SET_ID, rs.getId());
 		return new LinkedHashSet<>(query.getResultList());
+	}
+
+	/* (non-Javadoc)
+	 * @see org.mitre.oauth2.repository.OAuth2TokenRepository#clearDuplicateAccessTokens()
+	 */
+	@Override
+	@Transactional(value="defaultTransactionManager")
+	public void clearDuplicateAccessTokens() {
+		/*
+		 * 
+		 * delete from access_token where token_value in
+		 * (select token_value from (select token_value, count(*) as count from
+		 * access_token group by token_value having count > 1) duplicate_tokens)
+		 */
+
+		Query query = manager.createQuery("select a.jwt, count(1) as c from OAuth2AccessTokenEntity a GROUP BY a.jwt HAVING c > 1");
+		List<Object[]> resultList = query.getResultList();
+		List<JWT> values = new ArrayList<>();
+		for (Object[] r : resultList) {
+			logger.warn("Found duplicate: {}, {}", r[0], r[1]);
+			values.add((JWT) r[0]);
+		}
+		if (values.size() > 0) {
+			CriteriaBuilder cb = manager.getCriteriaBuilder();
+			CriteriaDelete<OAuth2AccessTokenEntity> criteriaDelete = cb.createCriteriaDelete(OAuth2AccessTokenEntity.class);
+			Root<OAuth2AccessTokenEntity> root = criteriaDelete.from(OAuth2AccessTokenEntity.class);
+			criteriaDelete.where(root.get("jwt").in(values));
+			int result = manager.createQuery(criteriaDelete).executeUpdate();
+			logger.warn("Results from delete: {}", result);
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.mitre.oauth2.repository.OAuth2TokenRepository#clearDuplicateRefreshTokens()
+	 */
+	@Override
+	public void clearDuplicateRefreshTokens() {
+
 	}
 
 }

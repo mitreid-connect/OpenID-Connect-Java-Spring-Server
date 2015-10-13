@@ -424,6 +424,10 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	@Override
 	public void clearExpiredTokens() {
 		logger.info("Cleaning out all expired tokens");
+		
+		// get all the duplicated tokens first to maintain consistency
+		tokenRepository.clearDuplicateAccessTokens();
+		tokenRepository.clearDuplicateRefreshTokens();
 
 		Collection<OAuth2AccessTokenEntity> accessTokens = getExpiredAccessTokens();
 		logger.info("Found " + accessTokens.size() + " expired access tokens");

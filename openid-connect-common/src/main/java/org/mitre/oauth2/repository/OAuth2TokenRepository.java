@@ -62,4 +62,8 @@ public interface OAuth2TokenRepository {
 
 	public Set<OAuth2AccessTokenEntity> getAccessTokensForResourceSet(ResourceSet rs);
 
+	public void clearDuplicateAccessTokens();
+
+	public void clearDuplicateRefreshTokens();
+
 }
