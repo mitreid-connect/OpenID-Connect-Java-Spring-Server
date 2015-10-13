@@ -31,7 +31,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import com.nimbusds.jwt.JWT;
-import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
+import com.nimbusds.jwt.JWTClaimsSet;
 
 /**
  * 
@@ -56,7 +56,7 @@ public class NamedAdminAuthoritiesMapper implements OIDCAuthoritiesMapper {
 
 		Set<GrantedAuthority> out = new HashSet<>();
 		try {
-			ReadOnlyJWTClaimsSet claims = idToken.getJWTClaimsSet();
+			JWTClaimsSet claims = idToken.getJWTClaimsSet();
 
 			SubjectIssuerGrantedAuthority authority = new SubjectIssuerGrantedAuthority(claims.getSubject(), claims.getIssuer());
 			out.add(authority);

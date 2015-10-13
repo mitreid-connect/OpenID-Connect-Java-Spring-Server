@@ -52,30 +52,30 @@ public class SignedAuthRequestUrlBuilder implements AuthRequestUrlBuilder {
 	public String buildAuthRequestUrl(ServerConfiguration serverConfig, RegisteredClient clientConfig, String redirectUri, String nonce, String state, Map<String, String> options, String loginHint) {
 
 		// create our signed JWT for the request object
-		JWTClaimsSet claims = new JWTClaimsSet();
+		JWTClaimsSet.Builder claims = new JWTClaimsSet.Builder();
 
 		//set parameters to JwtClaims
-		claims.setClaim("response_type", "code");
-		claims.setClaim("client_id", clientConfig.getClientId());
-		claims.setClaim("scope", Joiner.on(" ").join(clientConfig.getScope()));
+		claims.claim("response_type", "code");
+		claims.claim("client_id", clientConfig.getClientId());
+		claims.claim("scope", Joiner.on(" ").join(clientConfig.getScope()));
 
 		// build our redirect URI
-		claims.setClaim("redirect_uri", redirectUri);
+		claims.claim("redirect_uri", redirectUri);
 
 		// this comes back in the id token
-		claims.setClaim("nonce", nonce);
+		claims.claim("nonce", nonce);
 
 		// this comes back in the auth request return
-		claims.setClaim("state", state);
+		claims.claim("state", state);
 
 		// Optional parameters
 		for (Entry<String, String> option : options.entrySet()) {
-			claims.setClaim(option.getKey(), option.getValue());
+			claims.claim(option.getKey(), option.getValue());
 		}
 
 		// if there's a login hint, send it
 		if (!Strings.isNullOrEmpty(loginHint)) {
-			claims.setClaim("login_hint", loginHint);
+			claims.claim("login_hint", loginHint);
 		}
 
 		JWSAlgorithm alg = clientConfig.getRequestObjectSigningAlg();
@@ -83,7 +83,7 @@ public class SignedAuthRequestUrlBuilder implements AuthRequestUrlBuilder {
 			alg = signingAndValidationService.getDefaultSigningAlgorithm();
 		}
 
-		SignedJWT jwt = new SignedJWT(new JWSHeader(alg), claims);
+		SignedJWT jwt = new SignedJWT(new JWSHeader(alg), claims.build());
 
 		signingAndValidationService.signJwt(jwt, alg);
 

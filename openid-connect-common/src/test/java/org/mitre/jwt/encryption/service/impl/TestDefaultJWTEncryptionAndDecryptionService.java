@@ -42,7 +42,6 @@ import com.nimbusds.jose.util.Base64URL;
 import com.nimbusds.jose.util.JSONObjectUtils;
 import com.nimbusds.jwt.EncryptedJWT;
 import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
 
 import static org.hamcrest.CoreMatchers.nullValue;
 
@@ -63,7 +62,7 @@ public class TestDefaultJWTEncryptionAndDecryptionService {
 
 	private String issuer = "www.example.net";
 	private String subject = "example_user";
-	private JWTClaimsSet claimsSet = new JWTClaimsSet();
+	private JWTClaimsSet claimsSet = null;
 
 	// Example data taken from Mike Jones's draft-ietf-jose-json-web-encryption-14 appendix examples
 	private String compactSerializedJwe = "eyJhbGciOiJSU0EtT0FFUCIsImVuYyI6IkEyNTZHQ00ifQ." +
@@ -152,8 +151,10 @@ public class TestDefaultJWTEncryptionAndDecryptionService {
 		service_3 = new DefaultJWTEncryptionAndDecryptionService(keys_3);
 		service_4 = new DefaultJWTEncryptionAndDecryptionService(keys_4);
 
-		claimsSet.setIssuer(issuer);
-		claimsSet.setSubject(subject);
+		claimsSet = new JWTClaimsSet.Builder()
+			.issuer(issuer)
+			.subject(subject)
+			.build();
 
 		// Key Store
 
@@ -203,7 +204,7 @@ public class TestDefaultJWTEncryptionAndDecryptionService {
 		assertThat(encryptedJwt.getJWTClaimsSet(), nullValue());
 		service.decryptJwt(encryptedJwt);
 
-		ReadOnlyJWTClaimsSet resultClaims = encryptedJwt.getJWTClaimsSet();
+		JWTClaimsSet resultClaims = encryptedJwt.getJWTClaimsSet();
 
 		assertEquals(claimsSet.getIssuer(), resultClaims.getIssuer());
 		assertEquals(claimsSet.getSubject(), resultClaims.getSubject());
@@ -231,7 +232,7 @@ public class TestDefaultJWTEncryptionAndDecryptionService {
 		assertThat(encryptedJwt.getJWTClaimsSet(), nullValue());
 		service.decryptJwt(encryptedJwt);
 
-		ReadOnlyJWTClaimsSet resultClaims = encryptedJwt.getJWTClaimsSet();
+		JWTClaimsSet resultClaims = encryptedJwt.getJWTClaimsSet();
 
 		assertEquals(claimsSet.getIssuer(), resultClaims.getIssuer());
 		assertEquals(claimsSet.getSubject(), resultClaims.getSubject());

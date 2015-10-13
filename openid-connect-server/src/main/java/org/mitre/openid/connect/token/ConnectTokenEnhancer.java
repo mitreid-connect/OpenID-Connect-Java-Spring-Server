@@ -88,17 +88,13 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 		String clientId = originalAuthRequest.getClientId();
 		ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
 
-		JWTClaimsSet claims = new JWTClaimsSet();
-
-		claims.setAudience(Lists.newArrayList(clientId));
-
-		claims.setIssuer(configBean.getIssuer());
-
-		claims.setIssueTime(new Date());
-
-		claims.setExpirationTime(token.getExpiration());
-
-		claims.setJWTID(UUID.randomUUID().toString()); // set a random NONCE in the middle of it
+		JWTClaimsSet claims = new JWTClaimsSet.Builder()
+				.audience(Lists.newArrayList(clientId))
+				.issuer(configBean.getIssuer())
+				.issueTime(new Date())
+				.expirationTime(token.getExpiration())
+				.jwtID(UUID.randomUUID().toString()) // set a random NONCE in the middle of it
+				.build();
 
 		JWSAlgorithm signingAlg = jwtService.getDefaultSigningAlgorithm();
 		JWSHeader header = new JWSHeader(signingAlg, null, null, null, null, null, null, null, null, null,

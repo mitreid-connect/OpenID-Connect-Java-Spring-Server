@@ -102,7 +102,7 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 
 
 		OAuth2AccessTokenEntity idTokenEntity = new OAuth2AccessTokenEntity();
-		JWTClaimsSet idClaims = new JWTClaimsSet();
+		JWTClaimsSet.Builder idClaims = new JWTClaimsSet.Builder();
 
 		// if the auth time claim was explicitly requested OR if the client always wants the auth time, put it in
 		if (request.getExtensions().containsKey("max_age")
@@ -113,7 +113,7 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 
 				Long authTimestamp = Long.parseLong((String) request.getExtensions().get(AuthenticationTimeStamper.AUTH_TIMESTAMP));
 				if (authTimestamp != null) {
-					idClaims.setClaim("auth_time", authTimestamp / 1000L);
+					idClaims.claim("auth_time", authTimestamp / 1000L);
 				}
 			} else {
 				// we couldn't find the timestamp!
@@ -121,22 +121,22 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 			}
 		}
 
-		idClaims.setIssueTime(issueTime);
+		idClaims.issueTime(issueTime);
 
 		if (client.getIdTokenValiditySeconds() != null) {
 			Date expiration = new Date(System.currentTimeMillis() + (client.getIdTokenValiditySeconds() * 1000L));
-			idClaims.setExpirationTime(expiration);
+			idClaims.expirationTime(expiration);
 			idTokenEntity.setExpiration(expiration);
 		}
 
-		idClaims.setIssuer(configBean.getIssuer());
-		idClaims.setSubject(sub);
-		idClaims.setAudience(Lists.newArrayList(client.getClientId()));
-		idClaims.setJWTID(UUID.randomUUID().toString()); // set a random NONCE in the middle of it
+		idClaims.issuer(configBean.getIssuer());
+		idClaims.subject(sub);
+		idClaims.audience(Lists.newArrayList(client.getClientId()));
+		idClaims.jwtID(UUID.randomUUID().toString()); // set a random NONCE in the middle of it
 
 		String nonce = (String)request.getExtensions().get("nonce");
 		if (!Strings.isNullOrEmpty(nonce)) {
-			idClaims.setCustomClaim("nonce", nonce);
+			idClaims.claim("nonce", nonce);
 		}
 
 		Set<String> responseTypes = request.getResponseTypes();
@@ -144,7 +144,7 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 		if (responseTypes.contains("token")) {
 			// calculate the token hash
 			Base64URL at_hash = IdTokenHashUtils.getAccessTokenHash(signingAlg, accessToken);
-			idClaims.setClaim("at_hash", at_hash);
+			idClaims.claim("at_hash", at_hash);
 		}
 
 		if (client.getIdTokenEncryptedResponseAlg() != null && !client.getIdTokenEncryptedResponseAlg().equals(Algorithm.NONE)
@@ -155,7 +155,7 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 
 			if (encrypter != null) {
 
-				EncryptedJWT idToken = new EncryptedJWT(new JWEHeader(client.getIdTokenEncryptedResponseAlg(), client.getIdTokenEncryptedResponseEnc()), idClaims);
+				EncryptedJWT idToken = new EncryptedJWT(new JWEHeader(client.getIdTokenEncryptedResponseAlg(), client.getIdTokenEncryptedResponseEnc()), idClaims.build());
 
 				encrypter.encryptJwt(idToken);
 
@@ -171,7 +171,7 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 
 			if (signingAlg.equals(Algorithm.NONE)) {
 				// unsigned ID token
-				idToken = new PlainJWT(idClaims);
+				idToken = new PlainJWT(idClaims.build());
 
 			} else {
 
@@ -184,20 +184,20 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 					JWSHeader header = new JWSHeader(signingAlg, null, null, null, null, null, null, null, null, null,
 							jwtService.getDefaultSignerKeyId(),
 							null, null);
-					idToken = new SignedJWT(header, idClaims);
+					idToken = new SignedJWT(header, idClaims.build());
 
 					JWTSigningAndValidationService signer = symmetricCacheService.getSymmetricValidtor(client);
 
 					// sign it with the client's secret
 					signer.signJwt((SignedJWT) idToken);
 				} else {
-					idClaims.setCustomClaim("kid", jwtService.getDefaultSignerKeyId());
+					idClaims.claim("kid", jwtService.getDefaultSignerKeyId());
 
 					JWSHeader header = new JWSHeader(signingAlg, null, null, null, null, null, null, null, null, null,
 							jwtService.getDefaultSignerKeyId(),
 							null, null);
 
-					idToken = new SignedJWT(header, idClaims);
+					idToken = new SignedJWT(header, idClaims.build());
 
 					// sign it with the server's key
 					jwtService.signJwt((SignedJWT) idToken);
@@ -282,13 +282,13 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 		authHolder = authenticationHolderRepository.save(authHolder);
 		token.setAuthenticationHolder(authHolder);
 
-		JWTClaimsSet claims = new JWTClaimsSet();
-
-		claims.setAudience(Lists.newArrayList(client.getClientId()));
-		claims.setIssuer(configBean.getIssuer());
-		claims.setIssueTime(new Date());
-		claims.setExpirationTime(token.getExpiration());
-		claims.setJWTID(UUID.randomUUID().toString()); // set a random NONCE in the middle of it
+		JWTClaimsSet claims = new JWTClaimsSet.Builder()
+			.audience(Lists.newArrayList(client.getClientId()))
+			.issuer(configBean.getIssuer())
+			.issueTime(new Date())
+			.expirationTime(token.getExpiration())
+			.jwtID(UUID.randomUUID().toString()) // set a random NONCE in the middle of it
+			.build();
 
 		JWSAlgorithm signingAlg = jwtService.getDefaultSigningAlgorithm();
 		JWSHeader header = new JWSHeader(signingAlg, null, null, null, null, null, null, null, null, null,

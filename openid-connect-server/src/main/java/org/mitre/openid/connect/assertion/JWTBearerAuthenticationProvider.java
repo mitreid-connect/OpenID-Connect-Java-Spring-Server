@@ -44,7 +44,7 @@ import org.springframework.security.oauth2.common.exceptions.InvalidClientExcept
 
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jwt.JWT;
-import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
+import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 
 /**
@@ -88,7 +88,7 @@ public class JWTBearerAuthenticationProvider implements AuthenticationProvider {
 			ClientDetailsEntity client = clientService.loadClientByClientId(jwtAuth.getClientId());
 
 			JWT jwt = jwtAuth.getJwt();
-			ReadOnlyJWTClaimsSet jwtClaims = jwt.getJWTClaimsSet();
+			JWTClaimsSet jwtClaims = jwt.getJWTClaimsSet();
 
 			// check the signature with nimbus
 			if (jwt instanceof SignedJWT) {

@@ -272,11 +272,11 @@ public class DefaultJWTEncryptionAndDecryptionService implements JWTEncryptionAn
 		Set<JWEAlgorithm> algs = new HashSet<>();
 
 		for (JWEEncrypter encrypter : encrypters.values()) {
-			algs.addAll(encrypter.supportedAlgorithms());
+			algs.addAll(encrypter.supportedJWEAlgorithms());
 		}
 
 		for (JWEDecrypter decrypter : decrypters.values()) {
-			algs.addAll(decrypter.supportedAlgorithms());
+			algs.addAll(decrypter.supportedJWEAlgorithms());
 		}
 
 		return algs;

@@ -17,11 +17,23 @@
 package org.mitre.openid.connect.request;
 
 
+import static org.mitre.openid.connect.request.ConnectRequestParameters.CLAIMS;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.CLIENT_ID;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.DISPLAY;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.LOGIN_HINT;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.MAX_AGE;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.NONCE;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.PROMPT;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.REDIRECT_URI;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.REQUEST;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.RESPONSE_TYPE;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.SCOPE;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.STATE;
+
 import java.text.ParseException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 import org.mitre.jwt.encryption.service.JWTEncryptionAndDecryptionService;
 import org.mitre.jwt.signer.service.JWTSigningAndValidationService;
@@ -48,23 +60,10 @@ import com.nimbusds.jose.JWEObject.State;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jwt.EncryptedJWT;
 import com.nimbusds.jwt.JWT;
+import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.JWTParser;
 import com.nimbusds.jwt.PlainJWT;
-import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-
-import static org.mitre.openid.connect.request.ConnectRequestParameters.CLAIMS;
-import static org.mitre.openid.connect.request.ConnectRequestParameters.CLIENT_ID;
-import static org.mitre.openid.connect.request.ConnectRequestParameters.DISPLAY;
-import static org.mitre.openid.connect.request.ConnectRequestParameters.LOGIN_HINT;
-import static org.mitre.openid.connect.request.ConnectRequestParameters.MAX_AGE;
-import static org.mitre.openid.connect.request.ConnectRequestParameters.NONCE;
-import static org.mitre.openid.connect.request.ConnectRequestParameters.PROMPT;
-import static org.mitre.openid.connect.request.ConnectRequestParameters.REDIRECT_URI;
-import static org.mitre.openid.connect.request.ConnectRequestParameters.REQUEST;
-import static org.mitre.openid.connect.request.ConnectRequestParameters.RESPONSE_TYPE;
-import static org.mitre.openid.connect.request.ConnectRequestParameters.SCOPE;
-import static org.mitre.openid.connect.request.ConnectRequestParameters.STATE;
 
 @Component("connectOAuth2RequestFactory")
 public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
@@ -260,7 +259,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 
 			// now that we've got the JWT, and it's been parsed, validated, and/or decrypted, we can process the claims
 
-			ReadOnlyJWTClaimsSet claims = jwt.getJWTClaimsSet();
+			JWTClaimsSet claims = jwt.getJWTClaimsSet();
 
 			Set<String> responseTypes = OAuth2Utils.parseParameterList(claims.getStringClaim(RESPONSE_TYPE));
 			if (responseTypes != null && !responseTypes.isEmpty()) {

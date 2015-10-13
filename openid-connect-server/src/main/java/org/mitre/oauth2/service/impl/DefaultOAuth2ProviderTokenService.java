@@ -206,22 +206,22 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 
 	private OAuth2RefreshTokenEntity createRefreshToken(ClientDetailsEntity client, AuthenticationHolderEntity authHolder) {
 		OAuth2RefreshTokenEntity refreshToken = new OAuth2RefreshTokenEntity(); //refreshTokenFactory.createNewRefreshToken();
-		JWTClaimsSet refreshClaims = new JWTClaimsSet();
+		JWTClaimsSet.Builder refreshClaims = new JWTClaimsSet.Builder();
 
 
 		// make it expire if necessary
 		if (client.getRefreshTokenValiditySeconds() != null) {
 			Date expiration = new Date(System.currentTimeMillis() + (client.getRefreshTokenValiditySeconds() * 1000L));
 			refreshToken.setExpiration(expiration);
-			refreshClaims.setExpirationTime(expiration);
+			refreshClaims.expirationTime(expiration);
 		}
 
 		// set a random identifier
-		refreshClaims.setJWTID(UUID.randomUUID().toString());
+		refreshClaims.jwtID(UUID.randomUUID().toString());
 
 		// TODO: add issuer fields, signature to JWT
 
-		PlainJWT refreshJwt = new PlainJWT(refreshClaims);
+		PlainJWT refreshJwt = new PlainJWT(refreshClaims.build());
 		refreshToken.setJwt(refreshJwt);
 
 		//Add the authentication

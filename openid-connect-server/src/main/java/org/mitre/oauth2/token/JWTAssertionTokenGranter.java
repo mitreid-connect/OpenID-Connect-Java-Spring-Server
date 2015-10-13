@@ -103,7 +103,7 @@ public class JWTAssertionTokenGranter extends AbstractTokenGranter {
 					OAuth2AccessTokenEntity newIdTokenEntity = new OAuth2AccessTokenEntity();
 
 					// copy over all existing claims
-					JWTClaimsSet claims = new JWTClaimsSet(idToken.getJWTClaimsSet());
+					JWTClaimsSet.Builder claims = new JWTClaimsSet.Builder(idToken.getJWTClaimsSet());
 
 					if (client instanceof ClientDetailsEntity) {
 
@@ -112,7 +112,7 @@ public class JWTAssertionTokenGranter extends AbstractTokenGranter {
 						// update expiration and issued-at claims
 						if (clientEntity.getIdTokenValiditySeconds() != null) {
 							Date expiration = new Date(System.currentTimeMillis() + (clientEntity.getIdTokenValiditySeconds() * 1000L));
-							claims.setExpirationTime(expiration);
+							claims.expirationTime(expiration);
 							newIdTokenEntity.setExpiration(expiration);
 						}
 
@@ -122,11 +122,11 @@ public class JWTAssertionTokenGranter extends AbstractTokenGranter {
 						throw new BadCredentialsException("SEVERE: Client is not an instance of ClientDetailsEntity; JwtAssertionTokenGranter cannot process this request.");
 					}
 
-					claims.setIssueTime(new Date());
-					claims.setJWTID(UUID.randomUUID().toString()); // set a random NONCE in the middle of it
+					claims.issueTime(new Date());
+					claims.jwtID(UUID.randomUUID().toString()); // set a random NONCE in the middle of it
 
 
-					SignedJWT newIdToken = new SignedJWT((JWSHeader) idToken.getHeader(), claims);
+					SignedJWT newIdToken = new SignedJWT((JWSHeader) idToken.getHeader(), claims.build());
 					jwtService.signJwt(newIdToken);
 
 					newIdTokenEntity.setJwt(newIdToken);

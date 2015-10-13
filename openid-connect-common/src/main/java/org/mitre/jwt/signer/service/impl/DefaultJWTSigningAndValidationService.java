@@ -17,6 +17,8 @@
 package org.mitre.jwt.signer.service.impl;
 
 import java.security.NoSuchAlgorithmException;
+import java.security.interfaces.ECPrivateKey;
+import java.security.interfaces.ECPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -160,41 +162,45 @@ public class DefaultJWTSigningAndValidationService implements JWTSigningAndValid
 			String id = jwkEntry.getKey();
 			JWK jwk = jwkEntry.getValue();
 
-			if (jwk instanceof RSAKey) {
-				// build RSA signers & verifiers
-
-				if (jwk.isPrivate()) { // only add the signer if there's a private key
-					RSASSASigner signer = new RSASSASigner(((RSAKey) jwk).toRSAPrivateKey());
-					signers.put(id, signer);
+			try {
+				if (jwk instanceof RSAKey) {
+					// build RSA signers & verifiers
+	
+					if (jwk.isPrivate()) { // only add the signer if there's a private key
+						RSASSASigner signer = new RSASSASigner((RSAKey) jwk);
+						signers.put(id, signer);
+					}
+	
+					RSASSAVerifier verifier = new RSASSAVerifier((RSAKey) jwk);
+					verifiers.put(id, verifier);
+	
+				} else if (jwk instanceof ECKey) {
+					// build EC signers & verifiers
+	
+					if (jwk.isPrivate()) {
+						ECDSASigner signer = new ECDSASigner((ECKey) jwk);
+						signers.put(id, signer);
+					}
+	
+					ECDSAVerifier verifier = new ECDSAVerifier((ECKey) jwk);
+					verifiers.put(id, verifier);
+	
+				} else if (jwk instanceof OctetSequenceKey) {
+					// build HMAC signers & verifiers
+	
+					if (jwk.isPrivate()) { // technically redundant check because all HMAC keys are private
+						MACSigner signer = new MACSigner((OctetSequenceKey) jwk);
+						signers.put(id, signer);
+					}
+	
+					MACVerifier verifier = new MACVerifier((OctetSequenceKey) jwk);
+					verifiers.put(id, verifier);
+	
+				} else {
+					logger.warn("Unknown key type: " + jwk);
 				}
-
-				RSASSAVerifier verifier = new RSASSAVerifier(((RSAKey) jwk).toRSAPublicKey());
-				verifiers.put(id, verifier);
-
-			} else if (jwk instanceof ECKey) {
-				// build EC signers & verifiers
-
-				if (jwk.isPrivate()) {
-					ECDSASigner signer = new ECDSASigner(((ECKey) jwk).getD().decodeToBigInteger());
-					signers.put(id, signer);
-				}
-
-				ECDSAVerifier verifier = new ECDSAVerifier(((ECKey) jwk).getX().decodeToBigInteger(), ((ECKey) jwk).getY().decodeToBigInteger());
-				verifiers.put(id, verifier);
-
-			} else if (jwk instanceof OctetSequenceKey) {
-				// build HMAC signers & verifiers
-
-				if (jwk.isPrivate()) { // technically redundant check because all HMAC keys are private
-					MACSigner signer = new MACSigner(((OctetSequenceKey) jwk).toByteArray());
-					signers.put(id, signer);
-				}
-
-				MACVerifier verifier = new MACVerifier(((OctetSequenceKey) jwk).toByteArray());
-				verifiers.put(id, verifier);
-
-			} else {
-				logger.warn("Unknown key type: " + jwk);
+			} catch (JOSEException e) {
+				logger.warn("Exception loading signer/verifier", e);
 			}
 		}
 
@@ -230,7 +236,7 @@ public class DefaultJWTSigningAndValidationService implements JWTSigningAndValid
 		JWSSigner signer = null;
 
 		for (JWSSigner s : signers.values()) {
-			if (s.supportedAlgorithms().contains(alg)) {
+			if (s.supportedJWSAlgorithms().contains(alg)) {
 				signer = s;
 				break;
 			}
@@ -292,11 +298,11 @@ public class DefaultJWTSigningAndValidationService implements JWTSigningAndValid
 		Set<JWSAlgorithm> algs = new HashSet<>();
 
 		for (JWSSigner signer : signers.values()) {
-			algs.addAll(signer.supportedAlgorithms());
+			algs.addAll(signer.supportedJWSAlgorithms());
 		}
 
 		for (JWSVerifier verifier : verifiers.values()) {
-			algs.addAll(verifier.supportedAlgorithms());
+			algs.addAll(verifier.supportedJWSAlgorithms());
 		}
 
 		return algs;

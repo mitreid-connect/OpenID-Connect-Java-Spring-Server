@@ -16,6 +16,10 @@
  *******************************************************************************/
 package org.mitre.openid.connect.client;
 
+import static org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod.PRIVATE_KEY;
+import static org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod.SECRET_BASIC;
+import static org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod.SECRET_JWT;
+
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URI;
@@ -75,12 +79,7 @@ import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.JWTParser;
 import com.nimbusds.jwt.PlainJWT;
-import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-
-import static org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod.PRIVATE_KEY;
-import static org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod.SECRET_BASIC;
-import static org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod.SECRET_JWT;
 
 /**
  * OpenID Connect Authentication Filter class
@@ -374,25 +373,25 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 					throw new AuthenticationServiceException("Couldn't find required signer service for use with private key auth.");
 				}
 
-				JWTClaimsSet claimsSet = new JWTClaimsSet();
+				JWTClaimsSet.Builder claimsSet = new JWTClaimsSet.Builder();
 
-				claimsSet.setIssuer(clientConfig.getClientId());
-				claimsSet.setSubject(clientConfig.getClientId());
-				claimsSet.setAudience(Lists.newArrayList(serverConfig.getTokenEndpointUri()));
-				claimsSet.setJWTID(UUID.randomUUID().toString());
+				claimsSet.issuer(clientConfig.getClientId());
+				claimsSet.subject(clientConfig.getClientId());
+				claimsSet.audience(Lists.newArrayList(serverConfig.getTokenEndpointUri()));
+				claimsSet.jwtID(UUID.randomUUID().toString());
 
 				// TODO: make this configurable
 				Date exp = new Date(System.currentTimeMillis() + (60 * 1000)); // auth good for 60 seconds
-				claimsSet.setExpirationTime(exp);
+				claimsSet.expirationTime(exp);
 
 				Date now = new Date(System.currentTimeMillis());
-				claimsSet.setIssueTime(now);
-				claimsSet.setNotBeforeTime(now);
+				claimsSet.issueTime(now);
+				claimsSet.notBeforeTime(now);
 
 				JWSHeader header = new JWSHeader(alg, null, null, null, null, null, null, null, null, null,
 						signer.getDefaultSignerKeyId(),
 						null, null);
-				SignedJWT jwt = new SignedJWT(header, claimsSet);
+				SignedJWT jwt = new SignedJWT(header, claimsSet.build());
 
 				signer.signJwt(jwt, alg);
 
@@ -472,7 +471,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 				JWT idToken = JWTParser.parse(idTokenValue);
 
 				// validate our ID Token over a number of tests
-				ReadOnlyJWTClaimsSet idClaims = idToken.getJWTClaimsSet();
+				JWTClaimsSet idClaims = idToken.getJWTClaimsSet();
 
 				// check the signature
 				JWTSigningAndValidationService jwtValidator = null;

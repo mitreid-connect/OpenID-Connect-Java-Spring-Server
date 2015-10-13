@@ -43,7 +43,7 @@ import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.KeyUse;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.util.Base64URL;
-import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
+import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 
 import static org.junit.Assert.assertEquals;
@@ -130,7 +130,7 @@ public class TestSignedAuthRequestUrlBuilder {
 
 		UriComponents components = builder.build();
 		String jwtString = components.getQueryParams().get("request").get(0);
-		ReadOnlyJWTClaimsSet claims = null;
+		JWTClaimsSet claims = null;
 
 		try {
 			SignedJWT jwt = SignedJWT.parse(jwtString);
@@ -169,7 +169,7 @@ public class TestSignedAuthRequestUrlBuilder {
 
 		UriComponents components = builder.build();
 		String jwtString = components.getQueryParams().get("request").get(0);
-		ReadOnlyJWTClaimsSet claims = null;
+		JWTClaimsSet claims = null;
 
 		try {
 			SignedJWT jwt = SignedJWT.parse(jwtString);
