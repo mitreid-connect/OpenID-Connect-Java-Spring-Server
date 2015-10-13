@@ -229,18 +229,12 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public void clearDuplicateAccessTokens() {
-		/*
-		 * 
-		 * delete from access_token where token_value in
-		 * (select token_value from (select token_value, count(*) as count from
-		 * access_token group by token_value having count > 1) duplicate_tokens)
-		 */
 
 		Query query = manager.createQuery("select a.jwt, count(1) as c from OAuth2AccessTokenEntity a GROUP BY a.jwt HAVING c > 1");
 		List<Object[]> resultList = query.getResultList();
 		List<JWT> values = new ArrayList<>();
 		for (Object[] r : resultList) {
-			logger.warn("Found duplicate: {}, {}", r[0], r[1]);
+			logger.warn("Found duplicate access tokens: {}, {}", ((JWT)r[0]).serialize(), r[1]);
 			values.add((JWT) r[0]);
 		}
 		if (values.size() > 0) {
@@ -249,7 +243,7 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 			Root<OAuth2AccessTokenEntity> root = criteriaDelete.from(OAuth2AccessTokenEntity.class);
 			criteriaDelete.where(root.get("jwt").in(values));
 			int result = manager.createQuery(criteriaDelete).executeUpdate();
-			logger.warn("Results from delete: {}", result);
+			logger.warn("Deleted {} duplicate access tokens", result);
 		}
 	}
 
@@ -258,6 +252,21 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	 */
 	@Override
 	public void clearDuplicateRefreshTokens() {
+		Query query = manager.createQuery("select a.jwt, count(1) as c from OAuth2RefreshTokenEntity a GROUP BY a.jwt HAVING c > 1");
+		List<Object[]> resultList = query.getResultList();
+		List<JWT> values = new ArrayList<>();
+		for (Object[] r : resultList) {
+			logger.warn("Found duplicate refresh tokens: {}, {}", ((JWT)r[0]).serialize(), r[1]);
+			values.add((JWT) r[0]);
+		}
+		if (values.size() > 0) {
+			CriteriaBuilder cb = manager.getCriteriaBuilder();
+			CriteriaDelete<OAuth2RefreshTokenEntity> criteriaDelete = cb.createCriteriaDelete(OAuth2RefreshTokenEntity.class);
+			Root<OAuth2RefreshTokenEntity> root = criteriaDelete.from(OAuth2RefreshTokenEntity.class);
+			criteriaDelete.where(root.get("jwt").in(values));
+			int result = manager.createQuery(criteriaDelete).executeUpdate();
+			logger.warn("Deleted {} duplicate refresh tokens", result);
+		}
 
 	}
 
