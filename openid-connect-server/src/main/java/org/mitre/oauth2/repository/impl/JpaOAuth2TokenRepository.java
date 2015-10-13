@@ -231,6 +231,7 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	public void clearDuplicateAccessTokens() {
 
 		Query query = manager.createQuery("select a.jwt, count(1) as c from OAuth2AccessTokenEntity a GROUP BY a.jwt HAVING c > 1");
+		@SuppressWarnings("unchecked")
 		List<Object[]> resultList = query.getResultList();
 		List<JWT> values = new ArrayList<>();
 		for (Object[] r : resultList) {
@@ -251,8 +252,10 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	 * @see org.mitre.oauth2.repository.OAuth2TokenRepository#clearDuplicateRefreshTokens()
 	 */
 	@Override
+	@Transactional(value="defaultTransactionManager")
 	public void clearDuplicateRefreshTokens() {
 		Query query = manager.createQuery("select a.jwt, count(1) as c from OAuth2RefreshTokenEntity a GROUP BY a.jwt HAVING c > 1");
+		@SuppressWarnings("unchecked")
 		List<Object[]> resultList = query.getResultList();
 		List<JWT> values = new ArrayList<>();
 		for (Object[] r : resultList) {
