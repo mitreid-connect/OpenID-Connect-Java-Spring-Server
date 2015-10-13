@@ -89,16 +89,16 @@ public class DefaultUmaTokenService implements UmaTokenService {
 
 		token.setPermissions(Sets.newHashSet(perm));
 
-		JWTClaimsSet claims = new JWTClaimsSet();
+		JWTClaimsSet.Builder claims = new JWTClaimsSet.Builder();
 
-		claims.setAudience(Lists.newArrayList(ticket.getPermission().getResourceSet().getId().toString()));
-		claims.setIssuer(config.getIssuer());
-		claims.setJWTID(UUID.randomUUID().toString());
+		claims.audience(Lists.newArrayList(ticket.getPermission().getResourceSet().getId().toString()));
+		claims.issuer(config.getIssuer());
+		claims.jwtID(UUID.randomUUID().toString());
 
 		if (config.getRqpTokenLifeTime() != null) {
 			Date exp = new Date(System.currentTimeMillis() + config.getRqpTokenLifeTime() * 1000L);
 
-			claims.setExpirationTime(exp);
+			claims.expirationTime(exp);
 			token.setExpiration(exp);
 		}
 
@@ -107,7 +107,7 @@ public class DefaultUmaTokenService implements UmaTokenService {
 		JWSHeader header = new JWSHeader(signingAlgorithm, null, null, null, null, null, null, null, null, null,
 				jwtService.getDefaultSignerKeyId(),
 				null, null);
-		SignedJWT signed = new SignedJWT(header, claims);
+		SignedJWT signed = new SignedJWT(header, claims.build());
 
 		jwtService.signJwt(signed);
 
