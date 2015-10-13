@@ -516,6 +516,8 @@ var ClientListView = Backbone.View.extend({
         	$('.paginator', this.el).show();
         	$('.paginator', this.el).bootpag({
         		total: numPages,
+        		maxVisible: 10,
+        		leaps: false,
         		page: 1
         	});        	
         } else {
