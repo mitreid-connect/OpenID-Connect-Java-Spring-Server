@@ -16,6 +16,11 @@
  *******************************************************************************/
 package org.mitre.openid.connect.token;
 
+import static org.mitre.openid.connect.request.ConnectRequestParameters.APPROVED_SITE;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.PROMPT;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.PROMPT_CONSENT;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.PROMPT_SEPARATOR;
+
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -46,10 +51,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
-
-import static org.mitre.openid.connect.request.ConnectRequestParameters.APPROVED_SITE;
-import static org.mitre.openid.connect.request.ConnectRequestParameters.PROMPT;
-import static org.mitre.openid.connect.request.ConnectRequestParameters.PROMPT_SEPARATOR;
 
 /**
  * Custom User Approval Handler implementation which uses a concept of a whitelist,
@@ -132,7 +133,7 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 		// find out if we're supposed to force a prompt on the user or not
 		String prompt = (String) authorizationRequest.getExtensions().get(PROMPT);
 		List<String> prompts = Splitter.on(PROMPT_SEPARATOR).splitToList(Strings.nullToEmpty(prompt));
-		if (!prompts.contains(PROMPT_SEPARATOR)) {
+		if (!prompts.contains(PROMPT_CONSENT)) {
 			// if the prompt parameter is set to "consent" then we can't use approved sites or whitelisted sites
 			// otherwise, we need to check them below
 
