@@ -23,9 +23,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.crypto.Cipher;
+
+import org.junit.Assume;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.mitre.jose.keystore.JWKSetKeyStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableMap;
 import com.nimbusds.jose.EncryptionMethod;
@@ -33,6 +40,7 @@ import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWEHeader;
 import com.nimbusds.jose.JWEObject;
+import com.nimbusds.jose.jca.JCASupport;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.KeyUse;
@@ -57,14 +65,19 @@ import static org.junit.Assert.assertTrue;
  */
 
 public class TestDefaultJWTEncryptionAndDecryptionService {
+	
+	private static Logger logger = LoggerFactory.getLogger(TestDefaultJWTEncryptionAndDecryptionService.class); 
 
 	private String plainText = "The true sign of intelligence is not knowledge but imagination.";
 
 	private String issuer = "www.example.net";
 	private String subject = "example_user";
 	private JWTClaimsSet claimsSet = null;
+	
+	@Rule
+	public ExpectedException exception = ExpectedException.none();
 
-	// Example data taken from Mike Jones's draft-ietf-jose-json-web-encryption-14 appendix examples
+	// Example data taken from rfc7516 appendix A
 	private String compactSerializedJwe = "eyJhbGciOiJSU0EtT0FFUCIsImVuYyI6IkEyNTZHQ00ifQ." +
 			"OKOawDo13gRp2ojaHV7LFpZcgV7T6DVZKTyKOMTYUmKoTCVJRgckCL9kiMT03JGe" +
 			"ipsEdY3mx_etLbbWSrFr05kLzcSr4qKAq7YN7e9jwQRb23nfa6c9d-StnImGyFDb" +
@@ -167,9 +180,13 @@ public class TestDefaultJWTEncryptionAndDecryptionService {
 	}
 
 
-	//@Test
-	public void decrypt_RSA() throws ParseException {
+	@Test
+	public void decrypt_RSA() throws ParseException, NoSuchAlgorithmException {
 
+		Assume.assumeTrue(JCASupport.isSupported(JWEAlgorithm.RSA_OAEP) // check for algorithm support
+				&& JCASupport.isSupported(EncryptionMethod.A256GCM)
+				&& Cipher.getMaxAllowedKeyLength("RC5") >= 256); // check for unlimited crypto strength
+		
 		service.setDefaultDecryptionKeyId(RSAkid);
 		service.setDefaultEncryptionKeyId(RSAkid);
 
@@ -184,9 +201,13 @@ public class TestDefaultJWTEncryptionAndDecryptionService {
 	}
 
 
-	//@Test
-	public void encryptThenDecrypt_RSA() throws ParseException {
+	@Test
+	public void encryptThenDecrypt_RSA() throws ParseException, NoSuchAlgorithmException {
 
+		Assume.assumeTrue(JCASupport.isSupported(JWEAlgorithm.RSA_OAEP) // check for algorithm support
+				&& JCASupport.isSupported(EncryptionMethod.A256GCM)
+				&& Cipher.getMaxAllowedKeyLength("RC5") >= 256); // check for unlimited crypto strength
+		
 		service.setDefaultDecryptionKeyId(RSAkid);
 		service.setDefaultEncryptionKeyId(RSAkid);
 
@@ -212,9 +233,13 @@ public class TestDefaultJWTEncryptionAndDecryptionService {
 
 
 	// The same as encryptThenDecrypt_RSA() but relies on the key from the map
-	//@Test
-	public void encryptThenDecrypt_nullID() throws ParseException {
-
+	@Test
+	public void encryptThenDecrypt_nullID() throws ParseException, NoSuchAlgorithmException {
+		
+		Assume.assumeTrue(JCASupport.isSupported(JWEAlgorithm.RSA_OAEP) // check for algorithm support
+				&& JCASupport.isSupported(EncryptionMethod.A256GCM)
+				&& Cipher.getMaxAllowedKeyLength("RC5") >= 256); // check for unlimited crypto strength
+		
 		service.setDefaultDecryptionKeyId(null);
 		service.setDefaultEncryptionKeyId(null);
 
@@ -239,9 +264,15 @@ public class TestDefaultJWTEncryptionAndDecryptionService {
 	}
 
 
-	@Test(expected=IllegalStateException.class)
-	public void encrypt_nullID_oneKey() {
+	@Test
+	public void encrypt_nullID_oneKey() throws NoSuchAlgorithmException {
 
+		Assume.assumeTrue(JCASupport.isSupported(JWEAlgorithm.RSA_OAEP) // check for algorithm support
+				&& JCASupport.isSupported(EncryptionMethod.A256GCM)
+				&& Cipher.getMaxAllowedKeyLength("RC5") >= 256); // check for unlimited crypto strength
+
+		exception.expect(IllegalStateException.class);
+		
 		service_2.setDefaultEncryptionKeyId(null);
 		assertEquals(null, service_2.getDefaultEncryptionKeyId());
 
@@ -254,9 +285,16 @@ public class TestDefaultJWTEncryptionAndDecryptionService {
 	}
 
 
-	@Test(expected=IllegalStateException.class)
-	public void decrypt_nullID() throws ParseException {
+	@Test
+	public void decrypt_nullID() throws ParseException, NoSuchAlgorithmException {
 
+		Assume.assumeTrue(JCASupport.isSupported(JWEAlgorithm.RSA_OAEP) // check for algorithm support
+				&& JCASupport.isSupported(EncryptionMethod.A256GCM)
+				&& Cipher.getMaxAllowedKeyLength("RC5") >= 256); // check for unlimited crypto strength
+		
+
+		exception.expect(IllegalStateException.class);
+		
 		service_2.setDefaultEncryptionKeyId(RSAkid);
 		service_2.setDefaultDecryptionKeyId(null);
 

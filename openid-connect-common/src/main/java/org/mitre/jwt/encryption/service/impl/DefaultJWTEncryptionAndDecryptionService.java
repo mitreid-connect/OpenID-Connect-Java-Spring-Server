@@ -40,8 +40,13 @@ import com.nimbusds.jose.JWEEncrypter;
 import com.nimbusds.jose.JWEObject;
 import com.nimbusds.jose.crypto.DirectDecrypter;
 import com.nimbusds.jose.crypto.DirectEncrypter;
+import com.nimbusds.jose.crypto.ECDHDecrypter;
+import com.nimbusds.jose.crypto.ECDHEncrypter;
 import com.nimbusds.jose.crypto.RSADecrypter;
 import com.nimbusds.jose.crypto.RSAEncrypter;
+import com.nimbusds.jose.crypto.bc.BouncyCastleProviderSingleton;
+import com.nimbusds.jose.jca.JCAContext;
+import com.nimbusds.jose.jwk.ECKey;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.OctetSequenceKey;
 import com.nimbusds.jose.jwk.RSAKey;
@@ -223,23 +228,40 @@ public class DefaultJWTEncryptionAndDecryptionService implements JWTEncryptionAn
 			if (jwk instanceof RSAKey) {
 				// build RSA encrypters and decrypters
 
-				RSAEncrypter encrypter = new RSAEncrypter(((RSAKey) jwk).toRSAPublicKey()); // there should always at least be the public key
+				RSAEncrypter encrypter = new RSAEncrypter((RSAKey) jwk); // there should always at least be the public key
+				encrypter.getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());
 				encrypters.put(id, encrypter);
 
 				if (jwk.isPrivate()) { // we can decrypt!
-					RSADecrypter decrypter = new RSADecrypter(((RSAKey) jwk).toRSAPrivateKey());
+					RSADecrypter decrypter = new RSADecrypter((RSAKey) jwk);
+					decrypter.getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());
 					decrypters.put(id, decrypter);
 				} else {
 					logger.warn("No private key for key #" + jwk.getKeyID());
 				}
-
-				// TODO: add support for EC keys
+			} else if (jwk instanceof ECKey) {
+				
+				// build EC Encrypters and decrypters
+				
+				ECDHEncrypter encrypter = new ECDHEncrypter((ECKey) jwk);
+				encrypter.getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());
+				encrypters.put(id, encrypter);
+				
+				if (jwk.isPrivate()) { // we can decrypt too
+					ECDHDecrypter decrypter = new ECDHDecrypter((ECKey) jwk);
+					decrypter.getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());
+					decrypters.put(id, decrypter);
+				} else {
+					logger.warn("No private key for key # " + jwk.getKeyID());
+				}
 
 			} else if (jwk instanceof OctetSequenceKey) {
 				// build symmetric encrypters and decrypters
 
-				DirectEncrypter encrypter = new DirectEncrypter(((OctetSequenceKey) jwk).toByteArray());
-				DirectDecrypter decrypter = new DirectDecrypter(((OctetSequenceKey) jwk).toByteArray());
+				DirectEncrypter encrypter = new DirectEncrypter((OctetSequenceKey) jwk);
+				encrypter.getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());
+				DirectDecrypter decrypter = new DirectDecrypter((OctetSequenceKey) jwk);
+				decrypter.getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());
 
 				encrypters.put(id, encrypter);
 				decrypters.put(id, decrypter);
