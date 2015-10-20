@@ -96,7 +96,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 	protected static final String TARGET_SESSION_VARIABLE = "target";
 	protected final static int HTTP_SOCKET_TIMEOUT = 30000;
 
-	protected final static String FILTER_PROCESSES_URL = "/openid_connect_login";
+	public final static String FILTER_PROCESSES_URL = "/openid_connect_login";
 
 	// Allow for time sync issues by having a window of X seconds.
 	private int timeSkewAllowance = 300;
