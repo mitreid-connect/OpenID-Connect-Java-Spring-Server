@@ -155,6 +155,8 @@
 
 	<import resource="authz-config.xml" />
 
+	<bean id="oauth2ExceptionTranslator" class="org.springframework.security.oauth2.provider.error.DefaultWebResponseExceptionTranslator" />
+
 	<bean id="clientCredentialsTokenEndpointFilter" class="org.springframework.security.oauth2.provider.client.ClientCredentialsTokenEndpointFilter">
 		<property name="authenticationManager" ref="clientAuthenticationManager" />
 		<property name="filterProcessesUrl" value="/token"/>

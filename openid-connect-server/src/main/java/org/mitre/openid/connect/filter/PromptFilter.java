@@ -90,11 +90,12 @@ public class PromptFilter extends GenericFilterBean {
 		}
 
 		// we have to create our own auth request in order to get at all the parmeters appropriately
-		AuthorizationRequest authRequest = authRequestFactory.createAuthorizationRequest(createRequestMap(request.getParameterMap()));
+		AuthorizationRequest authRequest = null;
 
 		ClientDetailsEntity client = null;
 
 		try {
+			authRequest = authRequestFactory.createAuthorizationRequest(createRequestMap(request.getParameterMap()));
 			client = clientService.loadClientByClientId(authRequest.getClientId());
 		} catch (InvalidClientException e) {
 			// no need to worry about this here, it would be caught elsewhere
