@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.mitre</groupId>
     <artifactId>openid-connect-parent</artifactId>
-    <version>1.1.19</version>
+    <version>1.1.20-SNAPSHOT</version>
   </parent>
   <artifactId>openid-connect-server-webapp</artifactId>
   <packaging>war</packaging>
@@ -67,7 +67,7 @@
   	<dependency>
   		<groupId>org.mitre</groupId>
   		<artifactId>openid-connect-server</artifactId>
-  		<version>1.1.19</version>
+  		<version>1.1.20-SNAPSHOT</version>
   	</dependency>
         <dependency>
             <groupId>org.springframework</groupId>
