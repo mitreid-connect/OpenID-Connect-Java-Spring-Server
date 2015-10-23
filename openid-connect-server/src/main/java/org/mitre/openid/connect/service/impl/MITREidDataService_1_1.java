@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -318,7 +319,7 @@ public class MITREidDataService_1_1 extends MITREidDataService_1_X {
             writer.name("allowedScopes");
             writeNullSafeArray(writer, site.getAllowedScopes());
             writer.name("whitelistedSiteId").value(site.getIsWhitelisted() ? site.getWhitelistedSite().getId() : null);
-            Set<OAuth2AccessTokenEntity> tokens = site.getApprovedAccessTokens();
+            List<OAuth2AccessTokenEntity> tokens = tokenRepository.getAccessTokensForApprovedSite(site);
             writer.name("approvedAccessTokens");
             writer.beginArray();
             for (OAuth2AccessTokenEntity token : tokens) {
@@ -1211,15 +1212,14 @@ public class MITREidDataService_1_1 extends MITREidDataService_1_X {
         grantToWhitelistedSiteRefs.clear();
         for (Long oldGrantId : grantToAccessTokensRefs.keySet()) {
             Set<Long> oldAccessTokenIds = grantToAccessTokensRefs.get(oldGrantId);
-            Set<OAuth2AccessTokenEntity> tokens = new HashSet<OAuth2AccessTokenEntity>();
-            for(Long oldTokenId : oldAccessTokenIds) {
-                Long newTokenId = accessTokenOldToNewIdMap.get(oldTokenId);
-                tokens.add(tokenRepository.getAccessTokenById(newTokenId));
-            }
             Long newGrantId = grantOldToNewIdMap.get(oldGrantId);
             ApprovedSite site = approvedSiteRepository.getById(newGrantId);
-            site.setApprovedAccessTokens(tokens);
-            approvedSiteRepository.save(site);
+            for(Long oldTokenId : oldAccessTokenIds) {
+                Long newTokenId = accessTokenOldToNewIdMap.get(oldTokenId);
+                OAuth2AccessTokenEntity token = tokenRepository.getAccessTokenById(newTokenId);
+                token.setApprovedSite(site);
+                tokenRepository.saveAccessToken(token);
+            }
         }
         accessTokenOldToNewIdMap.clear();
         grantOldToNewIdMap.clear();

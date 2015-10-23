@@ -29,6 +29,7 @@ import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
+import org.mitre.openid.connect.model.ApprovedSite;
 import org.mitre.util.jpa.JpaUtil;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Repository;
@@ -196,6 +197,14 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 		query.setParameter("date", new Date());
 		query.setMaxResults(MAXEXPIREDRESULTS);
 		return new LinkedHashSet<OAuth2RefreshTokenEntity>(query.getResultList());
+	}
+	
+	@Override
+	public List<OAuth2AccessTokenEntity> getAccessTokensForApprovedSite(ApprovedSite approvedSite) {
+		TypedQuery<OAuth2AccessTokenEntity> queryA = manager.createNamedQuery("OAuth2AccessTokenEntity.getByApprovedSite", OAuth2AccessTokenEntity.class);
+		queryA.setParameter("approvedSite", approvedSite);
+		List<OAuth2AccessTokenEntity> accessTokens = queryA.getResultList();
+		return accessTokens;
 	}
 
 }

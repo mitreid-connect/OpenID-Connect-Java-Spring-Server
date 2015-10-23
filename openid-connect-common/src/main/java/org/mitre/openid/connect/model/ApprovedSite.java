@@ -245,16 +245,4 @@ public class ApprovedSite {
 		}
 	}
 
-	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
-	@JoinColumn(name="approved_site_id")
-	public Set<OAuth2AccessTokenEntity> getApprovedAccessTokens() {
-		return approvedAccessTokens;
-	}
-
-	/**
-	 * @param approvedAccessTokens the approvedAccessTokens to set
-	 */
-	public void setApprovedAccessTokens(Set<OAuth2AccessTokenEntity> approvedAccessTokens) {
-		this.approvedAccessTokens = approvedAccessTokens;
-	}
 }
