@@ -54,7 +54,7 @@ public class SavedUserAuthentication implements Authentication {
 
 	private String name;
 
-	private Collection<? extends GrantedAuthority> authorities;
+	private Collection<GrantedAuthority> authorities;
 
 	private boolean authenticated;
 
@@ -65,7 +65,7 @@ public class SavedUserAuthentication implements Authentication {
 	 */
 	public SavedUserAuthentication(Authentication src) {
 		setName(src.getName());
-		setAuthorities(src.getAuthorities());
+		setAuthorities(new HashSet<>(src.getAuthorities()));
 		setAuthenticated(src.isAuthenticated());
 
 		if (src instanceof SavedUserAuthentication) {
@@ -115,7 +115,7 @@ public class SavedUserAuthentication implements Authentication {
 			)
 	@Convert(converter = SimpleGrantedAuthorityStringConverter.class)
 	@Column(name="authority")
-	public Collection<? extends GrantedAuthority> getAuthorities() {
+	public Collection<GrantedAuthority> getAuthorities() {
 		return authorities;
 	}
 
@@ -175,12 +175,8 @@ public class SavedUserAuthentication implements Authentication {
 	/**
 	 * @param authorities the authorities to set
 	 */
-	public void setAuthorities(Collection<? extends GrantedAuthority> authorities) {
-		if (authorities != null) {
-			this.authorities = new HashSet<>(authorities);
-		} else {
-			this.authorities = null;
-		}
+	public void setAuthorities(Collection<GrantedAuthority> authorities) {
+		this.authorities = authorities;
 	}
 
 
