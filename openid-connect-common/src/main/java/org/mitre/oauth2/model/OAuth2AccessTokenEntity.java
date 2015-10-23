@@ -259,7 +259,7 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	/**
 	 * @return the idToken
 	 */
-	@OneToOne(cascade=CascadeType.ALL) // one-to-one mapping for now
+	@OneToOne(cascade=CascadeType.ALL, orphanRemoval=true) // one-to-one mapping for now
 	@JoinColumn(name = "id_token_id")
 	public OAuth2AccessTokenEntity getIdToken() {
 		return idToken;
