@@ -181,3 +181,8 @@ h1,label {
   vertical-align: middle;
   margin: 0;
 }
+
+/* User profile claims alignment */
+.user-profile dd, .user-profile dt {
+    height: 20px;
+}
