@@ -286,11 +286,9 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 
 		// check for state, if it doesn't match we bail early
 		String storedState = getStoredState(session);
-		if (!Strings.isNullOrEmpty(storedState)) {
-			String state = request.getParameter("state");
-			if (!storedState.equals(state)) {
-				throw new AuthenticationServiceException("State parameter mismatch on return. Expected " + storedState + " got " + state);
-			}
+		String requestState = request.getParameter("state");
+		if (storedState == null || !storedState.equals(requestState)) {
+			throw new AuthenticationServiceException("State parameter mismatch on return. Expected " + storedState + " got " + requestState);
 		}
 
 		// look up the issuer that we set out to talk to
