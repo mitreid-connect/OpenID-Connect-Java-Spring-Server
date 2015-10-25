@@ -37,13 +37,11 @@ import com.google.common.collect.SetMultimap;
 public class DefaultScopeClaimTranslationService implements ScopeClaimTranslationService {
 
 	private SetMultimap<String, String> scopesToClaims = HashMultimap.create();
-	private Map<String, String> claimsToFields = Maps.newHashMap();
 
 	/**
 	 * Default constructor; initializes scopesToClaims map
 	 */
 	public DefaultScopeClaimTranslationService() {
-
 		scopesToClaims.put("openid", "sub");
 
 		scopesToClaims.put("profile", "name");
@@ -68,32 +66,6 @@ public class DefaultScopeClaimTranslationService implements ScopeClaimTranslatio
 		scopesToClaims.put("phone", "phone_number_verified");
 
 		scopesToClaims.put("address", "address");
-
-		claimsToFields.put("sub", "sub");
-
-		claimsToFields.put("name", "name");
-		claimsToFields.put("preferred_username", "preferredUsername");
-		claimsToFields.put("given_name", "givenName");
-		claimsToFields.put("family_name", "familyName");
-		claimsToFields.put("middle_name", "middleName");
-		claimsToFields.put("nickname", "nickname");
-		claimsToFields.put("profile", "profile");
-		claimsToFields.put("picture", "picture");
-		claimsToFields.put("website", "website");
-		claimsToFields.put("gender", "gender");
-		claimsToFields.put("zone_info", "zoneinfo");
-		claimsToFields.put("locale", "locale");
-		claimsToFields.put("updated_at", "updatedTime");
-		claimsToFields.put("birthdate", "birthdate");
-
-		claimsToFields.put("email", "email");
-		claimsToFields.put("email_verified", "emailVerified");
-
-		claimsToFields.put("phone_number", "phoneNumber");
-		claimsToFields.put("phone_number_verified", "phoneNumberVerified");
-
-		claimsToFields.put("address", "address");
-
 	}
 
 	/* (non-Javadoc)
@@ -118,14 +90,6 @@ public class DefaultScopeClaimTranslationService implements ScopeClaimTranslatio
 			result.addAll(getClaimsForScope(scope));
 		}
 		return result;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.mitre.openid.connect.service.ScopeClaimTranslationService#getFieldNameForClaim(java.lang.String)
-	 */
-	@Override
-	public String getFieldNameForClaim(String claim) {
-		return claimsToFields.get(claim);
 	}
 
 }

@@ -31,6 +31,4 @@ public interface ScopeClaimTranslationService {
 
 	public Set<String> getClaimsForScopeSet(Set<String> scopes);
 
-	public String getFieldNameForClaim(String claim);
-
 }
