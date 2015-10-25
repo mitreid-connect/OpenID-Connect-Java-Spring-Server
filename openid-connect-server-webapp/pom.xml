@@ -40,23 +40,20 @@
 				<artifactId>maven-war-plugin</artifactId>
 				<configuration>
 					<warName>openid-connect-server-webapp</warName>
-					<nonFilteredFileExtensions>
-						<nonFilteredFileExtension>gif</nonFilteredFileExtension>
-						<nonFilteredFileExtension>ico</nonFilteredFileExtension>
-						<nonFilteredFileExtension>jpg</nonFilteredFileExtension>
-						<nonFilteredFileExtension>png</nonFilteredFileExtension>
-						<nonFilteredFileExtension>pdf</nonFilteredFileExtension>
-						<nonFilteredFileExtension>eot</nonFilteredFileExtension>
-						<nonFilteredFileExtension>woff</nonFilteredFileExtension>
-						<nonFilteredFileExtension>ttf</nonFilteredFileExtension>
-						<nonFilteredFileExtension>svg</nonFilteredFileExtension>
-						<nonFilteredFileExtension>jwks</nonFilteredFileExtension>
-						<nonFilteredFileExtension>json</nonFilteredFileExtension>
-					</nonFilteredFileExtensions>
 					<webResources>
 						<resource>
 							<directory>src/main/webapp</directory>
 							<filtering>true</filtering>
+							<includes>
+								<include>**/*.tag</include>
+							</includes>
+						</resource>
+						<resource>
+							<directory>src/main/webapp</directory>
+							<filtering>false</filtering>
+							<excludes>
+								<exclude>**/*.tag</exclude>
+							</excludes>
 						</resource>
 					</webResources>
 				</configuration>
