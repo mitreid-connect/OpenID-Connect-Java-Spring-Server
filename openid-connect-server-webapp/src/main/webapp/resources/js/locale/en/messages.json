@@ -349,6 +349,10 @@
 		"title": "About",
 		"body": "\nThis OpenID Connect service is built from the MITREid Connect Open Source project, from \n<a href=\"http://www.mitre.org/\">The MITRE Corporation</a> and the <a href=\"http://kit.mit.edu/\">MIT Kerberos and Internet Trust Consortium</a>.\n</p>\n<p>\nMore information about the project can be found at \n<a href=\"http://github.com/mitreid-connect/\">MITREid Connect on GitHub</a>. \nThere, you can submit bug reports, give feedback, or even contribute code patches for additional features you'd like to see."
 	},
+	"logout": {
+		"title": "Log out",
+		"body": "Are you sure you want to log out?"
+	},
 	"statistics": {
 		"title": "Statistics",
 		"number_users": "Number of users: <span class=\"label label-info\" id=\"userCount\">{0}</span>",
