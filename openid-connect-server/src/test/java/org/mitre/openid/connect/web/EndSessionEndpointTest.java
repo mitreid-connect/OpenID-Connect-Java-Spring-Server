@@ -33,9 +33,9 @@ public class EndSessionEndpointTest {
 	@Before
 	public void before() {
 		fixture = new EndSessionEndpoint();
-		fixture.tokenService = tokenService;
-		fixture.endSessionValidator = endSessionValidator;
-		fixture.signOutHelper = signOutHelper;
+		fixture.setTokenService(tokenService);
+		fixture.setEndSessionValidator(endSessionValidator);
+		fixture.setSignOutHelper(signOutHelper);
 	}
 
 	@Test

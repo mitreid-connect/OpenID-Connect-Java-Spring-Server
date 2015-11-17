@@ -47,13 +47,13 @@ public class EndSessionEndpoint {
 	public static final String URL = "endsession";
 	
 	@Autowired
-	EndSessionValidator endSessionValidator;
+	private EndSessionValidator endSessionValidator;
 
 	@Autowired
-	OAuth2TokenEntityService tokenService;
+	private OAuth2TokenEntityService tokenService;
 	
 	@Autowired
-	SignOutHelper signOutHelper;
+	private SignOutHelper signOutHelper;
 	
 	/**
 	 * Logger for this class
@@ -92,6 +92,18 @@ public class EndSessionEndpoint {
 		HttpServletResponse response) throws Exception {
 		
 		return new ModelAndView("logout");
+	}
+
+	public void setTokenService(OAuth2TokenEntityService tokenService) {
+		this.tokenService = tokenService;
+	}
+
+	public void setEndSessionValidator(EndSessionValidator endSessionValidator) {
+		this.endSessionValidator = endSessionValidator;
+	}
+
+	public void setSignOutHelper(SignOutHelper signOutHelper) {
+		this.signOutHelper = signOutHelper;
 	}
 	
 }

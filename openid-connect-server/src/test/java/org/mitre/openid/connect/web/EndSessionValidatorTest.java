@@ -31,7 +31,7 @@ public class EndSessionValidatorTest {
 	@Before
 	public void before() {
 		fixture = new EndSessionValidator();
-		fixture.tokenService = tokenService;
+		fixture.setTokenService(tokenService);
 	}
 	
 	@Test

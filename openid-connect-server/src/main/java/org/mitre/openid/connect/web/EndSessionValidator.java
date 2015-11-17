@@ -22,7 +22,7 @@ public class EndSessionValidator {
 	private static final Logger logger = LoggerFactory.getLogger(EndSessionValidator.class);
 	
 	@Autowired
-	OAuth2TokenEntityService tokenService;
+	private OAuth2TokenEntityService tokenService;
 
 	public boolean isValid(String idTokenHint, String postLogoutRedirectUri, AbstractAuthenticationToken auth) {
 		if (idTokenHint == null || !isValidSyntax(idTokenHint) || isEmpty(postLogoutRedirectUri)) {
@@ -54,9 +54,9 @@ public class EndSessionValidator {
 		try {
 			accessToken = tokenService.readAccessToken(idTokenHint);
 		} catch (AuthenticationException e) {
-			logger.info("Error reading id_token: " + idTokenHint, e);
+			logger.info("Error reading id_token: " + idTokenHint);
 		} catch (InvalidTokenException e) {
-			logger.info("Error reading id_token: " + idTokenHint, e);
+			logger.info("Error reading id_token: " + idTokenHint);
 		}
 		return accessToken;
 	}
@@ -66,10 +66,13 @@ public class EndSessionValidator {
 			SignedJWT.parse(idTokenHint);
 			return true;
 		} catch (ParseException e) {
-			e.printStackTrace();
 			logger.info("bad id_token: " + idTokenHint);
 			return false;
 		}
+	}
+
+	public void setTokenService(OAuth2TokenEntityService tokenService) {
+		this.tokenService = tokenService;
 	}
 
 }
