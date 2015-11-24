@@ -46,6 +46,7 @@
 							<filtering>true</filtering>
 							<includes>
 								<include>**/*.tag</include>
+								<include>**/*.jsp</include>
 							</includes>
 						</resource>
 						<resource>
@@ -53,6 +54,7 @@
 							<filtering>false</filtering>
 							<excludes>
 								<exclude>**/*.tag</exclude>
+								<exclude>**/*.jsp</exclude>
 							</excludes>
 						</resource>
 					</webResources>
