@@ -66,12 +66,13 @@ public class JsonMessageSource extends AbstractMessageSource {
 		}
 
 		if (value == null) {
-			value = code;
+			// if it's still null, return null
+			return null;
+		} else {
+			// otherwise format the message
+			return new MessageFormat(value, locale);
 		}
-
-		MessageFormat mf = new MessageFormat(value, locale);
-
-		return mf;
+	
 	}
 
 	/**
