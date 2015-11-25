@@ -121,8 +121,9 @@ public class DefaultOAuth2AuthorizationCodeService implements AuthorizationCodeS
 			repository.remove(code);
 		}
 
-		logger.info("Removed " + codes.size() + " expired authorization codes.");
-
+		if (codes.size() > 0) {
+			logger.info("Removed " + codes.size() + " expired authorization codes.");
+		}
 	}
 
 	/**

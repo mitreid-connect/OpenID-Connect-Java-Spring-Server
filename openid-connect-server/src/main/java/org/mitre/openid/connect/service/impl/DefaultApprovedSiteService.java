@@ -158,7 +158,9 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 		logger.info("Clearing expired approved sites");
 
 		Collection<ApprovedSite> expiredSites = getExpired();
-		logger.info("Found " + expiredSites.size() + " expired approved sites.");
+		if (expiredSites.size() > 0) {
+			logger.info("Found " + expiredSites.size() + " expired approved sites.");
+		}
 		if (expiredSites != null) {
 			for (ApprovedSite expired : expiredSites) {
 				remove(expired);

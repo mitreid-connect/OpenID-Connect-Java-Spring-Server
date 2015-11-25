@@ -423,14 +423,16 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	 */
 	@Override
 	public void clearExpiredTokens() {
-		logger.info("Cleaning out all expired tokens");
+		logger.debug("Cleaning out all expired tokens");
 		
 		// get all the duplicated tokens first to maintain consistency
 		tokenRepository.clearDuplicateAccessTokens();
 		tokenRepository.clearDuplicateRefreshTokens();
 
 		Collection<OAuth2AccessTokenEntity> accessTokens = getExpiredAccessTokens();
-		logger.info("Found " + accessTokens.size() + " expired access tokens");
+		if (accessTokens.size() > 0) {
+			logger.info("Found " + accessTokens.size() + " expired access tokens");
+		}
 		for (OAuth2AccessTokenEntity oAuth2AccessTokenEntity : accessTokens) {
 			try {
 				revokeAccessToken(oAuth2AccessTokenEntity);
@@ -442,13 +444,17 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		}
 
 		Collection<OAuth2RefreshTokenEntity> refreshTokens = getExpiredRefreshTokens();
-		logger.info("Found " + refreshTokens.size() + " expired refresh tokens");
+		if (refreshTokens.size() > 0) {
+			logger.info("Found " + refreshTokens.size() + " expired refresh tokens");
+		}
 		for (OAuth2RefreshTokenEntity oAuth2RefreshTokenEntity : refreshTokens) {
 			revokeRefreshToken(oAuth2RefreshTokenEntity);
 		}
 
 		Collection<AuthenticationHolderEntity> authHolders = getOrphanedAuthenticationHolders();
-		logger.info("Found " + authHolders.size() + " orphaned authentication holders");
+		if (authHolders.size() > 0) {
+			logger.info("Found " + authHolders.size() + " orphaned authentication holders");
+		}
 		for(AuthenticationHolderEntity authHolder : authHolders) {
 			authenticationHolderRepository.remove(authHolder);
 		}
