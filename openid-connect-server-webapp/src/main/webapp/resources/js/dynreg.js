@@ -388,6 +388,25 @@ var DynRegEditView = Backbone.View.extend({
         	}
         }
 
+        // make sure that the subject identifier is consistent with the redirect URIs
+        var subjectType = $('#subjectType input').filter(':checked').val();
+        var redirectUris = this.redirectUrisCollection.pluck("item");
+        var sectorIdentifierUri = $('#sectorIdentifierUri input').val();
+        if (subjectType == 'PAIRWISE' && redirectUris.length > 1 && sectorIdentifierUri == '') {
+    		//Display an alert with an error message
+			$('#modalAlert div.modal-header').html("Consistency error");
+    		$('#modalAlert div.modal-body').html("Pairwise identifiers cannot be used with multiple redirect URIs unless a sector identifier URI is also registered.");
+    		
+			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
+				 "backdrop" : "static",
+				 "keyboard" : true,
+				 "show" : true // ensure the modal is shown immediately
+			 });
+			 
+			 return false;
+      	
+        }
+        
         // process the JWKS
         var jwksUri = null;
         var jwks = null;
@@ -422,7 +441,7 @@ var DynRegEditView = Backbone.View.extend({
 
     	var attrs = {
             client_name:$('#clientName input').val(),
-            redirect_uris: this.redirectUrisCollection.pluck("item"),
+            redirect_uris: redirectUris,
             logo_uri:$('#logoUri input').val(),
             grant_types: grantTypes,
             scope: scopes,
@@ -433,10 +452,10 @@ var DynRegEditView = Backbone.View.extend({
             application_type: $('#applicationType input').filter(':checked').val(),
             jwks_uri: jwksUri,
             jwks: jwks,
-            subject_type: $('#subjectType input').filter(':checked').val(),
+            subject_type: subjectType,
             token_endpoint_auth_method: $('#tokenEndpointAuthMethod input').filter(':checked').val(),
             response_types: responseTypes,
-            sector_identifier_uri: $('#sectorIdentifierUri input').val(),
+            sector_identifier_uri: sectorIdentifierUri,
             initiate_login_uri: $('#initiateLoginUri input').val(),
             post_logout_redirect_uris: this.postLogoutRedirectUrisCollection.pluck('item'),
             require_auth_time: $('#requireAuthTime input').is(':checked'),

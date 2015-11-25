@@ -907,7 +907,26 @@ var ClientFormView = Backbone.View.extend({
         		refreshTokenValiditySeconds = this.getFormTokenNumberValue($('#refreshTokenValidityTime input[type=text]').val(), $('#refreshTokenValidityTime select').val());
         	}
         }
-
+        
+        // make sure that the subject identifier is consistent with the redirect URIs
+        var subjectType = $('#subjectType input').filter(':checked').val();
+        var redirectUris = this.redirectUrisCollection.pluck("item");
+        var sectorIdentifierUri = $('#sectorIdentifierUri input').val();
+        if (subjectType == 'PAIRWISE' && redirectUris.length > 1 && sectorIdentifierUri == '') {
+    		//Display an alert with an error message
+			$('#modalAlert div.modal-header').html("Consistency error");
+    		$('#modalAlert div.modal-body').html("Pairwise identifiers cannot be used with multiple redirect URIs unless a sector identifier URI is also registered.");
+    		
+			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
+				 "backdrop" : "static",
+				 "keyboard" : true,
+				 "show" : true // ensure the modal is shown immediately
+			 });
+			 
+			 return false;
+      	
+        }
+        
         // process the JWKS
         var jwksUri = null;
         var jwks = null;
@@ -947,7 +966,7 @@ var ClientFormView = Backbone.View.extend({
             clientId:$('#clientId input').val(),
             clientSecret: clientSecret,
             generateClientSecret:generateClientSecret,
-            redirectUris: this.redirectUrisCollection.pluck("item"),
+            redirectUris: redirectUris,
             clientDescription:$('#clientDescription textarea').val(),
             logoUri:$('#logoUri input').val(),
             grantTypes: grantTypes,
@@ -963,10 +982,10 @@ var ClientFormView = Backbone.View.extend({
             applicationType: $('#applicationType input').filter(':checked').val(),
             jwksUri: jwksUri,
             jwks: jwks,
-            subjectType: $('#subjectType input').filter(':checked').val(),
+            subjectType: subjectType,
             tokenEndpointAuthMethod: tokenEndpointAuthMethod,
             responseTypes: responseTypes,
-            sectorIdentifierUri: $('#sectorIdentifierUri input').val(),
+            sectorIdentifierUri: sectorIdentifierUri,
             initiateLoginUri: $('#initiateLoginUri input').val(),
             postLogoutRedirectUris: this.postLogoutRedirectUrisCollection.pluck('item'),
             reuseRefreshToken: $('#reuseRefreshToken').is(':checked'),
