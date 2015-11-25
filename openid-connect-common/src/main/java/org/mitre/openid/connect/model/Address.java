@@ -21,6 +21,12 @@ import java.io.Serializable;
 public interface Address extends Serializable {
 
 	/**
+	 * Get the system-specific ID of the Address object
+	 * @return
+	 */
+	public Long getId();
+	
+	/**
 	 * @return the formatted address
 	 */
 	public String getFormatted();
