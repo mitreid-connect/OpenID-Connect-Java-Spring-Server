@@ -48,7 +48,18 @@
 		
 		<!-- This property sets the locale for server text -->
 		<!-- <property name="locale" value="sv" /> -->
-		
+
+		<!-- This property sets the set of namespaces for language translation files. The default is "messages". These are checked in the order presented here. -->
+		<!-- 
+		<property name="languageNamespaces">
+			<list>
+				<value>foo</value>
+				<value>bar</value>
+				<value>messages</value>
+			</list>
+		</property>
+		-->
+
 		<!-- This property indicates if a dynamically registered client supports dual flows, such as client_credentials
 		at the same time with authorization_code or implicit -->
 		<!-- <property name="dualClient" value="true" /> -->

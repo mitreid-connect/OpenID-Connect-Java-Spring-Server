@@ -63,7 +63,7 @@ public class ConfigurationPropertiesBeanTest {
 		// leave as default, which is unset/false
 		try {
 			bean.setIssuer("http://localhost:8080/openid-connect-server/");
-			bean.checkForHttps();
+			bean.checkConfigConsistency();
 		} catch (BeanCreationException e) {
 			fail("Unexpected BeanCreationException for http issuer with default forceHttps, message:" + e.getMessage());
 		}
@@ -77,7 +77,7 @@ public class ConfigurationPropertiesBeanTest {
 		try {
 			bean.setIssuer("http://localhost:8080/openid-connect-server/");
 			bean.setForceHttps(false);
-			bean.checkForHttps();
+			bean.checkConfigConsistency();
 		} catch (BeanCreationException e) {
 			fail("Unexpected BeanCreationException for http issuer with forceHttps=false, message:" + e.getMessage());
 		}
@@ -90,7 +90,7 @@ public class ConfigurationPropertiesBeanTest {
 		// set to true
 		bean.setIssuer("http://localhost:8080/openid-connect-server/");
 		bean.setForceHttps(true);
-		bean.checkForHttps();
+		bean.checkConfigConsistency();
 	}
 
 	@Test
@@ -100,7 +100,7 @@ public class ConfigurationPropertiesBeanTest {
 		// leave as default, which is unset/false
 		try {
 			bean.setIssuer("https://localhost:8080/openid-connect-server/");
-			bean.checkForHttps();
+			bean.checkConfigConsistency();
 		} catch (BeanCreationException e) {
 			fail("Unexpected BeanCreationException for https issuer with default forceHttps, message:" + e.getMessage());
 		}
@@ -114,7 +114,7 @@ public class ConfigurationPropertiesBeanTest {
 		try {
 			bean.setIssuer("https://localhost:8080/openid-connect-server/");
 			bean.setForceHttps(false);
-			bean.checkForHttps();
+			bean.checkConfigConsistency();
 		} catch (BeanCreationException e) {
 			fail("Unexpected BeanCreationException for https issuer with forceHttps=false, message:" + e.getMessage());
 		}
@@ -128,7 +128,7 @@ public class ConfigurationPropertiesBeanTest {
 		try {
 			bean.setIssuer("https://localhost:8080/openid-connect-server/");
 			bean.setForceHttps(true);
-			bean.checkForHttps();
+			bean.checkConfigConsistency();
 		} catch (BeanCreationException e) {
 			fail("Unexpected BeanCreationException for https issuer with forceHttps=true, message:" + e.getMessage());
 		}

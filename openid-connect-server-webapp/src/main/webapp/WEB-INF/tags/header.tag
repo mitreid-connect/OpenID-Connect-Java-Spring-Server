@@ -40,7 +40,12 @@
         $.i18n.init({
             fallbackLng: "en",
             lng: "${config.locale}",
-            resGetPath: "resources/js/locale/__lng__/messages.json"
+            resGetPath: "resources/js/locale/__lng__/__ns__.json",
+            ns: {
+            	namespaces: ${config.languageNamespacesString},
+            	defaultNs: '${config.defaultLanguageNamespace}'
+            },
+            fallbackNS: ${config.languageNamespacesString}
         });
         moment.locale("${config.locale}");
     	// safely set the title of the application

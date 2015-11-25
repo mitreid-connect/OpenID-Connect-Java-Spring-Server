@@ -16,6 +16,7 @@
  *******************************************************************************/
 package org.mitre.openid.connect.config;
 
+import java.util.List;
 import java.util.Locale;
 
 import javax.annotation.PostConstruct;
@@ -24,6 +25,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.util.StringUtils;
+
+import com.google.common.collect.Lists;
+import com.google.gson.Gson;
 
 
 
@@ -55,6 +59,8 @@ public class ConfigurationPropertiesBean {
 	private boolean forceHttps = false; // by default we just log a warning for HTTPS deployment
 
 	private Locale locale = Locale.ENGLISH; // we default to the english translation
+	
+	private List<String> languageNamespaces = Lists.newArrayList("messages");
 
     public boolean dualClient = false;
 
@@ -67,7 +73,7 @@ public class ConfigurationPropertiesBean {
 	 * @throws HttpsUrlRequiredException
 	 */
 	@PostConstruct
-	public void checkForHttps() {
+	public void checkConfigConsistency() {
 		if (!StringUtils.startsWithIgnoreCase(issuer, "https")) {
 			if (this.forceHttps) {
 				logger.error("Configured issuer url is not using https scheme. Server will be shut down!");
@@ -76,6 +82,10 @@ public class ConfigurationPropertiesBean {
 			else {
 				logger.warn("\n\n**\n** WARNING: Configured issuer url is not using https scheme.\n**\n\n");
 			}
+		}
+		
+		if (languageNamespaces == null || languageNamespaces.isEmpty()) {
+			logger.error("No configured language namespaces! Text rendering will fail!");
 		}
 	}
 
@@ -171,7 +181,21 @@ public class ConfigurationPropertiesBean {
 		this.locale = locale;
 	}
 
-    /**
+	/**
+	 * @return the languageNamespaces
+	 */
+	public List<String> getLanguageNamespaces() {
+		return languageNamespaces;
+	}
+
+	/**
+	 * @param languageNamespaces the languageNamespaces to set
+	 */
+	public void setLanguageNamespaces(List<String> languageNamespaces) {
+		this.languageNamespaces = languageNamespaces;
+	}
+
+	/**
      * @return true if dual client is configured, otherwise false
      */
     public boolean isDualClient() {
@@ -183,5 +207,20 @@ public class ConfigurationPropertiesBean {
      */
     public void setDualClient(boolean dualClient) {
         this.dualClient = dualClient;
+    }
+    
+    /**
+     * Get the list of namespaces as a JSON string
+     * @return
+     */
+    public String getLanguageNamespacesString() {
+    	return new Gson().toJson(getLanguageNamespaces());
+    }
+    
+    /**
+     * Get the default namespace (first in the nonempty list)
+     */
+    public String getDefaultLanguageNamespace() {
+    	return getLanguageNamespaces().get(0);
     }
 }

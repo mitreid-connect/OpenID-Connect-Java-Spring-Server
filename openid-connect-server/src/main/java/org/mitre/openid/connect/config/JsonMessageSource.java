@@ -21,13 +21,16 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.AbstractMessageSource;
 import org.springframework.core.io.Resource;
 
@@ -50,19 +53,22 @@ public class JsonMessageSource extends AbstractMessageSource {
 
 	private Locale fallbackLocale = new Locale("en"); // US English is the fallback language
 
-	private Map<Locale, JsonObject> languageMaps = new HashMap<>();
-
+	private Map<Locale, List<JsonObject>> languageMaps = new HashMap<>();
+	
+	@Autowired
+	private ConfigurationPropertiesBean config;
+	
 	@Override
 	protected MessageFormat resolveCode(String code, Locale locale) {
 
-		JsonObject lang = getLanguageMap(locale);
+		List<JsonObject> langs = getLanguageMap(locale);
 
-		String value = getValue(code, lang);
+		String value = getValue(code, langs);
 
 		if (value == null) {
 			// if we haven't found anything, try the default locale
-			lang = getLanguageMap(fallbackLocale);
-			value = getValue(code, lang);
+			langs = getLanguageMap(fallbackLocale);
+			value = getValue(code, langs);
 		}
 
 		if (value == null) {
@@ -76,6 +82,31 @@ public class JsonMessageSource extends AbstractMessageSource {
 	}
 
 	/**
+	 * Get a value from the set of maps, taking the first match in order
+	 * @param code
+	 * @param langs
+	 * @return
+	 */
+	private String getValue(String code, List<JsonObject> langs) {
+		if (langs == null || langs.isEmpty()) {
+			// no language maps, nothing to look up
+			return null;
+		}
+		
+		for (JsonObject lang : langs) {
+			String value = getValue(code, lang);
+			if (value != null) {
+				// short circuit out of here if we find a match, otherwise keep going through the list
+				return value;
+			}
+		}
+		
+		// if we didn't find anything return null
+		return null;
+	}
+	
+	/**
+	 * Get a value from a single map
 	 * @param code
 	 * @param locale
 	 * @param lang
@@ -126,20 +157,24 @@ public class JsonMessageSource extends AbstractMessageSource {
 	 * @param locale
 	 * @return
 	 */
-	private JsonObject getLanguageMap(Locale locale) {
+	private List<JsonObject> getLanguageMap(Locale locale) {
 
 		if (!languageMaps.containsKey(locale)) {
 			try {
-				String filename = locale.getLanguage() + File.separator + "messages.json";
-
-				Resource r = getBaseDirectory().createRelative(filename);
-
-				logger.info("No locale loaded, trying to load from " + r);
-
-				JsonParser parser = new JsonParser();
-				JsonObject obj = (JsonObject) parser.parse(new InputStreamReader(r.getInputStream(), "UTF-8"));
-
-				languageMaps.put(locale, obj);
+				List<JsonObject> set = new ArrayList<>();
+				for (String namespace : config.getLanguageNamespaces()) {
+					String filename = locale.getLanguage() + File.separator + namespace + ".json";
+					
+					Resource r = getBaseDirectory().createRelative(filename);
+					
+					logger.info("No locale loaded, trying to load from " + r);
+					
+					JsonParser parser = new JsonParser();
+					JsonObject obj = (JsonObject) parser.parse(new InputStreamReader(r.getInputStream(), "UTF-8"));
+					
+					set.add(obj);
+				}
+				languageMaps.put(locale, set);
 			} catch (JsonIOException | JsonSyntaxException | IOException e) {
 				logger.error("Unable to load locale", e);
 			}
