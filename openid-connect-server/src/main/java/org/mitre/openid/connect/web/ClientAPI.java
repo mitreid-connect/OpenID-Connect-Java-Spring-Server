@@ -24,7 +24,6 @@ import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.web.AuthenticationUtilities;
-import org.mitre.openid.connect.service.UserInfoService;
 import org.mitre.openid.connect.view.ClientEntityViewForAdmins;
 import org.mitre.openid.connect.view.ClientEntityViewForUsers;
 import org.mitre.openid.connect.view.HttpCodeView;
@@ -74,9 +73,6 @@ public class ClientAPI {
 
 	@Autowired
 	private ClientDetailsEntityService clientService;
-
-	@Autowired
-	private UserInfoService userInfoService;
 
 	private JsonParser parser = new JsonParser();
 
@@ -239,7 +235,7 @@ public class ClientAPI {
 		} catch (IllegalArgumentException e) {
 			logger.error("Unable to save client: {}", e.getMessage());
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
-			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Unable to save client");
+			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Unable to save client: " + e.getMessage());
 			return JsonErrorView.VIEWNAME;
 		}
 	}
@@ -340,7 +336,7 @@ public class ClientAPI {
 		} catch (IllegalArgumentException e) {
 			logger.error("Unable to save client: {}", e.getMessage());
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
-			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Unable to save client");
+			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Unable to save client: " + e.getMessage());
 			return JsonErrorView.VIEWNAME;
 		}
 	}
