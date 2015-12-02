@@ -155,7 +155,7 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 	@Override
 	public void clearExpiredSites() {
 
-		logger.info("Clearing expired approved sites");
+		logger.debug("Clearing expired approved sites");
 
 		Collection<ApprovedSite> expiredSites = getExpired();
 		if (expiredSites.size() > 0) {
