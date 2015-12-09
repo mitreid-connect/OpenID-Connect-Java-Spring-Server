@@ -22,8 +22,7 @@ INSERT INTO client_scope_TEMP (owner_id, scope) VALUES
 	('client', 'address'),
 	('client', 'phone'),
 	('client', 'offline_access'),
-	('rs', 'uma_protection'),
-	('c', 'uma_authorization');
+	('rs', 'uma_protection');
 
 INSERT INTO client_redirect_uri_TEMP (owner_id, redirect_uri) VALUES
 	('client', 'http://localhost/'),
@@ -36,8 +35,7 @@ INSERT INTO client_grant_type_TEMP (owner_id, grant_type) VALUES
 	('client', 'refresh_token'),
 	('rs', 'authorization_code'),
 	('rs', 'implicit'),
-	('c', 'authorization_code'),
-	('c', 'implicit');
+	('c', 'urn:ietf:params:oauth:grant_type:multiparty-delegation');
 	
 --
 -- Merge the temporary clients safely into the database. This is a two-step process to keep clients from being created on every startup with a persistent store.
