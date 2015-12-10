@@ -28,6 +28,10 @@ INSERT INTO client_redirect_uri_TEMP (owner_id, redirect_uri) VALUES
 	('client', 'http://localhost/'),
 	('client', 'http://localhost:8080/');
 	
+INSERT INTO client_claims_redirect_uri_TEMP (owner_id, redirect_uri) VALUES
+	('c', 'http://localhost/'),
+	('c', 'http://localhost:8080/');
+
 INSERT INTO client_grant_type_TEMP (owner_id, grant_type) VALUES
 	('client', 'authorization_code'),
 	('client', 'urn:ietf:params:oauth:grant_type:redelegate'),
@@ -56,6 +60,12 @@ MERGE INTO client_scope
 MERGE INTO client_redirect_uri 
   USING (SELECT id, redirect_uri FROM client_redirect_uri_TEMP, client_details WHERE client_details.client_id = client_redirect_uri_TEMP.owner_id) AS vals(id, redirect_uri)
   ON vals.id = client_redirect_uri.owner_id AND vals.redirect_uri = client_redirect_uri.redirect_uri
+  WHEN NOT MATCHED THEN 
+    INSERT (owner_id, redirect_uri) values (vals.id, vals.redirect_uri);
+
+MERGE INTO client_claims_redirect_uri 
+  USING (SELECT id, redirect_uri FROM client_claims_redirect_uri_TEMP, client_details WHERE client_details.client_id = client_claims_redirect_uri_TEMP.owner_id) AS vals(id, redirect_uri)
+  ON vals.id = client_claims_redirect_uri.owner_id AND vals.redirect_uri = client_claims_redirect_uri.redirect_uri
   WHEN NOT MATCHED THEN 
     INSERT (owner_id, redirect_uri) values (vals.id, vals.redirect_uri);
 
