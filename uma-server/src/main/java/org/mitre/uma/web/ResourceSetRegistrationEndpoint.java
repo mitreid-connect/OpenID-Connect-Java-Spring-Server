@@ -122,7 +122,7 @@ public class ResourceSetRegistrationEndpoint {
 
 		m.addAttribute(HttpCodeView.CODE, HttpStatus.CREATED);
 		m.addAttribute(JsonEntityView.ENTITY, saved);
-		m.addAttribute(ResourceSetEntityAbbreviatedView.LOCATION, config.getIssuer() + URL + "/" + rs.getId());
+		m.addAttribute(ResourceSetEntityAbbreviatedView.LOCATION, config.getIssuer() + URL + "/" + saved.getId());
 
 		return ResourceSetEntityAbbreviatedView.VIEWNAME;
 
