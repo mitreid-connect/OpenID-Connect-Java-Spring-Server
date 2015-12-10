@@ -218,69 +218,6 @@ public class RequestingPartyTokenGranter extends AbstractTokenGranter {
 			throw new InvalidTicketException();
 		}
 
-		
-		
-	
 	}
 
-	
-	@ExceptionHandler(NeedInfoException.class)
-	public ModelAndView handleUmaException(Exception e) {
-		// if we got here, the claim didn't match, forward the user to the claim gathering endpoint
-		
-		NeedInfoException nie = (NeedInfoException)e;
-		
-		JsonObject entity = new JsonObject();
-
-		entity.addProperty(JsonErrorView.ERROR, "need_info");
-		JsonObject details = new JsonObject();
-
-		JsonObject rpClaims = new JsonObject();
-		rpClaims.addProperty("redirect_user", true);
-		rpClaims.addProperty("ticket", nie.getTicketValue());
-		JsonArray req = new JsonArray();
-		for (Claim claim : nie.getUnmatched()) {
-			JsonObject c = new JsonObject();
-			c.addProperty("name", claim.getName());
-			c.addProperty("friendly_name", claim.getFriendlyName());
-			c.addProperty("claim_type", claim.getClaimType());
-			JsonArray f = new JsonArray();
-			for (String format : claim.getClaimTokenFormat()) {
-				f.add(new JsonPrimitive(format));
-			}
-			c.add("claim_token_format", f);
-			JsonArray i = new JsonArray();
-			for (String issuer : claim.getIssuer()) {
-				i.add(new JsonPrimitive(issuer));
-			}
-			c.add("issuer", i);
-			req.add(c);
-		}
-		rpClaims.add("required_claims", req);
-		details.add("requesting_party_claims", rpClaims);
-		entity.add("error_details", details);
-
-		Map<String, Object> m = new HashMap<>();
-		m.put(JsonEntityView.ENTITY, entity);
-		return new ModelAndView(JsonEntityView.VIEWNAME, m);
-	}
-
-	@ExceptionHandler(InvalidTicketException.class)
-	public ModelAndView handleInvalidTicketException(Exception e) {
-		// ticket wasn't found, return an error
-		Map<String, Object> m = new HashMap<>();
-		m.put(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
-		m.put(JsonErrorView.ERROR, "invalid_ticket");
-		return new ModelAndView(JsonErrorView.VIEWNAME, m);
-	}
-
-	@ExceptionHandler(NotAuthorizedException.class)
-	public ModelAndView handleNotAuthorizedException(Exception e) {
-		Map<String, Object> m = new HashMap<>();
-		m.put(JsonErrorView.ERROR, "not_authorized");
-		m.put(JsonErrorView.ERROR_MESSAGE, "This resource set can not be accessed.");
-		m.put(HttpCodeView.CODE, HttpStatus.FORBIDDEN);
-		return new ModelAndView(JsonErrorView.VIEWNAME, m);
-	}
-	
 }
