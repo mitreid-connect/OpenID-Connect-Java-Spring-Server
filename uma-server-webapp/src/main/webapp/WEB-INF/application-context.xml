@@ -218,6 +218,7 @@
 	<!-- Configure locale information -->
 	<bean id="messageSource" class="org.mitre.openid.connect.config.JsonMessageSource">
 		<property name="baseDirectory" value="/resources/js/locale/" />
+		<property name="useCodeAsDefaultMessage" value="true" />
 	</bean>
 
 	<!-- user services -->

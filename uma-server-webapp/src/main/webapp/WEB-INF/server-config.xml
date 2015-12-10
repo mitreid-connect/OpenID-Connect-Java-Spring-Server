@@ -49,6 +49,13 @@
 		<!-- This property sets the locale for server text -->
 		<!-- <property name="locale" value="sv" /> -->
 
+		<!-- This property sets the set of namespaces for language translation files. The default is "messages". These are checked in the order presented here. -->
+		<property name="languageNamespaces">
+			<list>
+				<value>uma</value>
+				<value>messages</value>
+			</list>
+		</property>
 	</bean>
 	
 </beans>
