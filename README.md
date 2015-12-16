@@ -30,4 +30,4 @@ The authors and key contributors of the project include:
 
 
 Copyright &copy;2015, [The MITRE Corporation](http://www.mitre.org/)
-  and the [MIT Kerberos and Internet Trust Consortium](http://kit.mit.edu/). Licensed under the Apache 2.0 license, for details see `LICENSE.txt`. 
+  and the [MIT Internet Trust Consortium](http://kit.mit.edu/). Licensed under the Apache 2.0 license, for details see `LICENSE.txt`. 
