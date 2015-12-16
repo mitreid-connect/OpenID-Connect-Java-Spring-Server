@@ -25,6 +25,7 @@ The authors and key contributors of the project include:
 * [Steve Moore](https://github.com/srmoore)
 * [Mike Derryberry](https://github.com/mtderryberry)
 * [William Kim](https://github.com/wikkim)
+* [Mark Janssen](https://github.com/praseodym)
 
 
 
