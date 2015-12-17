@@ -335,15 +335,13 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 
 		if (accessToken == null) {
 			throw new InvalidTokenException("Invalid access token: " + accessTokenValue);
-		}
-
-		if (accessToken.isExpired()) {
+		} else if (accessToken.isExpired()) {
 			//tokenRepository.removeAccessToken(accessToken);
 			revokeAccessToken(accessToken);
 			throw new InvalidTokenException("Expired access token: " + accessTokenValue);
+		} else {
+			return accessToken.getAuthenticationHolder().getAuthentication();
 		}
-
-		return accessToken.getAuthenticationHolder().getAuthentication();
 	}
 
 
@@ -355,8 +353,11 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		OAuth2AccessTokenEntity accessToken = tokenRepository.getAccessTokenByValue(accessTokenValue);
 		if (accessToken == null) {
 			throw new InvalidTokenException("Access token for value " + accessTokenValue + " was not found");
-		}
-		else {
+		} else if (accessToken.isExpired()) {
+			// immediately revoke the expired token
+			revokeAccessToken(accessToken);
+			throw new InvalidTokenException("Access token for value " + accessTokenValue + " is expired");
+		} else {
 			return accessToken;
 		}
 	}
