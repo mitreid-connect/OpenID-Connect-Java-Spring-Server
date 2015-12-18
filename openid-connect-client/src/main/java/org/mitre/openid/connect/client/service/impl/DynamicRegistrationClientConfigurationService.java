@@ -39,6 +39,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.google.common.cache.CacheBuilder;
@@ -191,15 +193,18 @@ public class DynamicRegistrationClientConfigurationService implements ClientConf
 
 				HttpEntity<String> entity = new HttpEntity<>(serializedClient, headers);
 
-				String registered = restTemplate.postForObject(serverConfig.getRegistrationEndpointUri(), entity, String.class);
-				// TODO: handle HTTP errors
-
-				RegisteredClient client = ClientDetailsEntityJsonProcessor.parseRegistered(registered);
-
-				// save this client for later
-				registeredClientService.save(serverConfig.getIssuer(), client);
-
-				return client;
+				try {
+					String registered = restTemplate.postForObject(serverConfig.getRegistrationEndpointUri(), entity, String.class);
+	
+					RegisteredClient client = ClientDetailsEntityJsonProcessor.parseRegistered(registered);
+	
+					// save this client for later
+					registeredClientService.save(serverConfig.getIssuer(), client);
+	
+					return client;
+				} catch (RestClientException rce) {
+					throw new InvalidClientException("Error registering client with server");
+				}
 			} else {
 
 				if (knownClient.getClientId() == null) {
@@ -211,12 +216,16 @@ public class DynamicRegistrationClientConfigurationService implements ClientConf
 
 					HttpEntity<String> entity = new HttpEntity<>(headers);
 
-					String registered = restTemplate.exchange(knownClient.getRegistrationClientUri(), HttpMethod.GET, entity, String.class).getBody();
-					// TODO: handle HTTP errors
-
-					RegisteredClient client = ClientDetailsEntityJsonProcessor.parseRegistered(registered);
-
-					return client;
+					try {
+						String registered = restTemplate.exchange(knownClient.getRegistrationClientUri(), HttpMethod.GET, entity, String.class).getBody();
+						// TODO: handle HTTP errors
+	
+						RegisteredClient client = ClientDetailsEntityJsonProcessor.parseRegistered(registered);
+	
+						return client;
+					} catch (RestClientException rce) {
+						throw new InvalidClientException("Error loading previously registered client information from server");
+					}
 				} else {
 					// it's got a client ID from the store, don't bother trying to load it
 					return knownClient;
