@@ -24,6 +24,8 @@ import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.web.AuthenticationUtilities;
+import org.mitre.openid.connect.model.CachedImage;
+import org.mitre.openid.connect.service.ClientLogoLoadingService;
 import org.mitre.openid.connect.view.ClientEntityViewForAdmins;
 import org.mitre.openid.connect.view.ClientEntityViewForUsers;
 import org.mitre.openid.connect.view.HttpCodeView;
@@ -32,8 +34,10 @@ import org.mitre.openid.connect.view.JsonErrorView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -73,6 +77,9 @@ public class ClientAPI {
 
 	@Autowired
 	private ClientDetailsEntityService clientService;
+
+	@Autowired
+	private ClientLogoLoadingService clientLogoLoadingService;
 
 	private JsonParser parser = new JsonParser();
 
@@ -393,5 +400,30 @@ public class ClientAPI {
 			return ClientEntityViewForUsers.VIEWNAME;
 		}
 	}
+	
+	/**
+	 * Get the logo image for a client
+	 * @param id
+	 */
+	 @RequestMapping(value = "/{id}/logo", method=RequestMethod.GET, produces = { MediaType.IMAGE_GIF_VALUE, MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE })
+	 public ResponseEntity<byte[]> getClientLogo(@PathVariable("id") Long id, Model model) {
+		 
+			ClientDetailsEntity client = clientService.getClientById(id);
+
+			if (client == null) {
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			} else if (Strings.isNullOrEmpty(client.getLogoUri())) {
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			} else {
+				// get the image from cache
+				CachedImage image = clientLogoLoadingService.getLogo(client);
+				
+				HttpHeaders headers = new HttpHeaders();
+				headers.setContentType(MediaType.parseMediaType(image.getContentType()));
+				headers.setContentLength(image.getLength());
+				
+				return new ResponseEntity<>(image.getData(), headers, HttpStatus.OK);
+			}
+	 }
 
 }

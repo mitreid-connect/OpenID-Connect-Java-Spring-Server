@@ -18,6 +18,8 @@ package org.mitre.openid.connect.client;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.utils.URIBuilder;
@@ -37,11 +39,15 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import com.google.common.base.Strings;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import com.google.common.util.concurrent.UncheckedExecutionException;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
- * Utility class to fetch userinfo from the userinfo endpoint, if available.
+ * Utility class to fetch userinfo from the userinfo endpoint, if available. Caches the results.
  * @author jricher
  *
  */
@@ -52,75 +58,95 @@ public class UserInfoFetcher {
 	 */
 	private static final Logger logger = LoggerFactory.getLogger(UserInfoFetcher.class);
 
+	private LoadingCache<PendingOIDCAuthenticationToken, UserInfo> cache;
+	
+	public UserInfoFetcher() {
+		cache = CacheBuilder.newBuilder()
+				.expireAfterWrite(1, TimeUnit.HOURS) // expires 1 hour after fetch
+				.maximumSize(100)
+				.build(new UserInfoLoader());
+	}
+	
 	public UserInfo loadUserInfo(final PendingOIDCAuthenticationToken token) {
-
-		ServerConfiguration serverConfiguration = token.getServerConfiguration();
-
-		if (serverConfiguration == null) {
-			logger.warn("No server configuration found.");
-			return null;
-		}
-
-		if (Strings.isNullOrEmpty(serverConfiguration.getUserInfoUri())) {
-			logger.warn("No userinfo endpoint, not fetching.");
-			return null;
-		}
-
 		try {
+			return cache.get(token);
+		} catch (UncheckedExecutionException | ExecutionException e) {
+			logger.warn("Couldn't load User Info from token: " + e.getMessage());
+			return null;
+		}
 
-			// if we got this far, try to actually get the userinfo
-			HttpClient httpClient = HttpClientBuilder.create()
-					.useSystemProperties()
-					.build();
-
-			HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
-
-			String userInfoString = null;
-
-			if (serverConfiguration.getUserInfoTokenMethod() == null || serverConfiguration.getUserInfoTokenMethod().equals(UserInfoTokenMethod.HEADER)) {
-				RestTemplate restTemplate = new RestTemplate(factory) {
-
-					@Override
-					protected ClientHttpRequest createRequest(URI url, HttpMethod method) throws IOException {
-						ClientHttpRequest httpRequest = super.createRequest(url, method);
-						httpRequest.getHeaders().add("Authorization", String.format("Bearer %s", token.getAccessTokenValue()));
-						return httpRequest;
-					}
-				};
-
-				userInfoString = restTemplate.getForObject(serverConfiguration.getUserInfoUri(), String.class);
-
-			} else if (serverConfiguration.getUserInfoTokenMethod().equals(UserInfoTokenMethod.FORM)) {
-				MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
-				form.add("access_token", token.getAccessTokenValue());
-
-				RestTemplate restTemplate = new RestTemplate(factory);
-				userInfoString = restTemplate.postForObject(serverConfiguration.getUserInfoUri(), form, String.class);
-			} else if (serverConfiguration.getUserInfoTokenMethod().equals(UserInfoTokenMethod.QUERY)) {
-				URIBuilder builder = new URIBuilder(serverConfiguration.getUserInfoUri());
-				builder.setParameter("access_token",  token.getAccessTokenValue());
-
-				RestTemplate restTemplate = new RestTemplate(factory);
-				userInfoString = restTemplate.getForObject(builder.toString(), String.class);
-			}
-
-
-			if (!Strings.isNullOrEmpty(userInfoString)) {
-
-				JsonObject userInfoJson = new JsonParser().parse(userInfoString).getAsJsonObject();
-
-				UserInfo userInfo = fromJson(userInfoJson);
-
-				return userInfo;
-			} else {
-				// didn't get anything, return null
+	}
+	
+	
+	private class UserInfoLoader extends CacheLoader<PendingOIDCAuthenticationToken, UserInfo> {
+		private HttpClient httpClient = HttpClientBuilder.create()
+				.useSystemProperties()
+				.build();
+		private HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
+	
+		public UserInfo load(final PendingOIDCAuthenticationToken token) {
+	
+			ServerConfiguration serverConfiguration = token.getServerConfiguration();
+	
+			if (serverConfiguration == null) {
+				logger.warn("No server configuration found.");
 				return null;
 			}
-		} catch (Exception e) {
-			logger.warn("Error fetching userinfo", e);
-			return null;
+	
+			if (Strings.isNullOrEmpty(serverConfiguration.getUserInfoUri())) {
+				logger.warn("No userinfo endpoint, not fetching.");
+				return null;
+			}
+	
+			try {
+	
+				String userInfoString = null;
+	
+				if (serverConfiguration.getUserInfoTokenMethod() == null || serverConfiguration.getUserInfoTokenMethod().equals(UserInfoTokenMethod.HEADER)) {
+					RestTemplate restTemplate = new RestTemplate(factory) {
+	
+						@Override
+						protected ClientHttpRequest createRequest(URI url, HttpMethod method) throws IOException {
+							ClientHttpRequest httpRequest = super.createRequest(url, method);
+							httpRequest.getHeaders().add("Authorization", String.format("Bearer %s", token.getAccessTokenValue()));
+							return httpRequest;
+						}
+					};
+	
+					userInfoString = restTemplate.getForObject(serverConfiguration.getUserInfoUri(), String.class);
+	
+				} else if (serverConfiguration.getUserInfoTokenMethod().equals(UserInfoTokenMethod.FORM)) {
+					MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
+					form.add("access_token", token.getAccessTokenValue());
+	
+					RestTemplate restTemplate = new RestTemplate(factory);
+					userInfoString = restTemplate.postForObject(serverConfiguration.getUserInfoUri(), form, String.class);
+				} else if (serverConfiguration.getUserInfoTokenMethod().equals(UserInfoTokenMethod.QUERY)) {
+					URIBuilder builder = new URIBuilder(serverConfiguration.getUserInfoUri());
+					builder.setParameter("access_token",  token.getAccessTokenValue());
+	
+					RestTemplate restTemplate = new RestTemplate(factory);
+					userInfoString = restTemplate.getForObject(builder.toString(), String.class);
+				}
+	
+	
+				if (!Strings.isNullOrEmpty(userInfoString)) {
+	
+					JsonObject userInfoJson = new JsonParser().parse(userInfoString).getAsJsonObject();
+	
+					UserInfo userInfo = fromJson(userInfoJson);
+	
+					return userInfo;
+				} else {
+					// didn't get anything, return null
+					return null;
+				}
+			} catch (Exception e) {
+				logger.warn("Error fetching userinfo", e);
+				return null;
+			}
+	
 		}
-
 	}
 
 	protected UserInfo fromJson(JsonObject userInfoJson) {

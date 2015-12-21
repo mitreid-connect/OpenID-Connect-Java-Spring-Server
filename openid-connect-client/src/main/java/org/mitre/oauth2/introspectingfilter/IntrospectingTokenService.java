@@ -298,6 +298,7 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 			validatedToken = restTemplate.postForObject(introspectionUrl, form, String.class);
 		} catch (RestClientException rce) {
 			logger.error("validateToken", rce);
+			return null;
 		}
 		if (validatedToken != null) {
 			// parse the json

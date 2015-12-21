@@ -1,6 +1,6 @@
 <!-- 
  Copyright 2015 The MITRE Corporation 
-   and the MIT Kerberos and Internet Trust Consortium
+   and the MIT Internet Trust Consortium
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -28,20 +28,29 @@
 	</td>
 
     <td>
-		<div>
-	        <span class="clientid-substring" title="<%- client.clientId %> (click to display client ID)"><%- client.clientName != null ? client.clientName : ( client.clientId.substr(0,8) + '...' ) %></span>
-		</div>
-		<div>
-			<input type="text" readonly style="cursor: text" class="clientid-full input-xxlarge" value="<%- client.clientId %>" />
-		</div>
-		<div>
-			<% if (client.dynamicallyRegistered) { %>
-				<span class="label label-inverse dynamically-registered"><i class="icon-globe icon-white"></i></span>
+
+		<div class="media">
+			<% if (client.logoUri) { %>
+				<span class="pull-left"><img class="media-object client-logo" src="api/clients/<%- client.id ->/logo"></span>
 			<% } %>
-			<% if (client.allowIntrospection) { %>
-				<span class="label allow-introspection"><i class="icon-eye-open icon-white"></i></span>
-			<% } %>
+
+			<div class="media-body">
+		        <span class="clientid-substring" title="<%- client.clientId %> (click to display client ID)"><%- client.clientName != null ? client.clientName : ( client.clientId.substr(0,8) + '...' ) %></span>
+			</div>
+			<div>
+				<input type="text" readonly style="cursor: text" class="clientid-full input-xxlarge" value="<%- client.clientId %>" />
+			</div>
+			<div>
+				<% if (client.dynamicallyRegistered) { %>
+					<span class="label label-inverse dynamically-registered"><i class="icon-globe icon-white"></i></span>
+				<% } %>
+				<% if (client.allowIntrospection) { %>
+					<span class="label allow-introspection"><i class="icon-eye-open icon-white"></i></span>
+				<% } %>
+			</div>
 		</div>
+
+
 		<div>
 			<small class="muted" title="<%- hoverCreationDate %>"><i class="icon-time"></i> <span data-i18n="client.client-table.registered">Registered</span> <%- displayCreationDate %></small>
 		</div>

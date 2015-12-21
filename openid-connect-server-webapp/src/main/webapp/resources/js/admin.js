@@ -1002,6 +1002,11 @@ $(function () {
     		    $.ajaxSetup({cache:false});
     		    app = new AppRouter();
 
+    		    app.on('route', function(name, args) {
+    		    	// scroll to top of page on new route selection
+    		    	$("html, body").animate({ scrollTop: 0 }, "slow");
+    		    });
+    		    
     		    // grab all hashed URLs and send them through the app router instead
     		    $(document).on('click', 'a[href^="manage/#"]', function(event) {
     		    	event.preventDefault();
