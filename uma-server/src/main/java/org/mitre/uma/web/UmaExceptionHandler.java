@@ -20,6 +20,7 @@ package org.mitre.uma.web;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.mitre.openid.connect.view.HttpCodeView;
 import org.mitre.openid.connect.view.JsonEntityView;
 import org.mitre.openid.connect.view.JsonErrorView;
@@ -27,6 +28,7 @@ import org.mitre.uma.exception.InvalidTicketException;
 import org.mitre.uma.exception.NeedInfoException;
 import org.mitre.uma.exception.NotAuthorizedException;
 import org.mitre.uma.model.Claim;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -42,6 +44,9 @@ import com.google.gson.JsonPrimitive;
  */
 @ControllerAdvice
 public class UmaExceptionHandler {
+	
+	@Autowired
+	private ConfigurationPropertiesBean config;
 	
 	@ExceptionHandler(NeedInfoException.class)
 	public ModelAndView handleUmaException(Exception e) {
@@ -78,6 +83,7 @@ public class UmaExceptionHandler {
 		rpClaims.add("required_claims", req);
 		details.add("requesting_party_claims", rpClaims);
 		entity.add("error_details", details);
+		entity.addProperty("claims_endpoint", config.getIssuer() + ClaimsCollectionEndpoint.URL);
 
 		Map<String, Object> m = new HashMap<>();
 		m.put(JsonEntityView.ENTITY, entity);
