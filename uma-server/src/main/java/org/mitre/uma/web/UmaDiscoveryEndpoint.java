@@ -66,7 +66,7 @@ public class UmaDiscoveryEndpoint {
 		m.put("authorization_endpoint", issuer + "authorize");
 		m.put("requesting_party_claims_endpoint", issuer + ClaimsCollectionEndpoint.URL);
 		m.put("introspection_endpoint", issuer + IntrospectionEndpoint.URL);
-		m.put("resource_set_registration_endpoint", issuer + ResourceSetRegistrationEndpoint.DISCOVERY_URL);
+		m.put("resource_set_registration_endpoint", issuer + ResourceSetRegistrationEndpoint.URL);
 		m.put("permission_registration_endpoint", issuer + PermissionRegistrationEndpoint.URL);
 		m.put("rpt_endpoint", issuer + AuthorizationRequestEndpoint.URL);
 

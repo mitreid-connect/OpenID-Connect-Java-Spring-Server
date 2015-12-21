@@ -65,8 +65,7 @@ public class ResourceSetRegistrationEndpoint {
 
 	private static final Logger logger = LoggerFactory.getLogger(ResourceSetRegistrationEndpoint.class);
 
-	public static final String DISCOVERY_URL = "resource_set";
-	public static final String URL = DISCOVERY_URL + "/resource_set";
+	public static final String URL = "/resource_set";
 
 	@Autowired
 	private ResourceSetService resourceSetService;
