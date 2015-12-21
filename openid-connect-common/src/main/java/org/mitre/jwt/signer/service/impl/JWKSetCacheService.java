@@ -32,12 +32,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.util.concurrent.UncheckedExecutionException;
+import com.google.gson.JsonParseException;
 import com.nimbusds.jose.jwk.JWKSet;
 
 /**
@@ -136,14 +138,18 @@ public class JWKSetCacheService {
 		 */
 		@Override
 		public JWTEncryptionAndDecryptionService load(String key) throws Exception {
-			String jsonString = restTemplate.getForObject(key, String.class);
-			JWKSet jwkSet = JWKSet.parse(jsonString);
-
-			JWKSetKeyStore keyStore = new JWKSetKeyStore(jwkSet);
-
-			JWTEncryptionAndDecryptionService service = new DefaultJWTEncryptionAndDecryptionService(keyStore);
-
-			return service;
+			try {
+				String jsonString = restTemplate.getForObject(key, String.class);
+				JWKSet jwkSet = JWKSet.parse(jsonString);
+	
+				JWKSetKeyStore keyStore = new JWKSetKeyStore(jwkSet);
+	
+				JWTEncryptionAndDecryptionService service = new DefaultJWTEncryptionAndDecryptionService(keyStore);
+	
+				return service;
+			} catch (JsonParseException | RestClientException e) {
+				throw new IllegalArgumentException("Unable to load JWK Set");
+			}
 		}
 	}
 
