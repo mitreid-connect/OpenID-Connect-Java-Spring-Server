@@ -15,7 +15,7 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.mitre.uma.token;
+package org.mitre.uma.web;
 
 import org.springframework.security.oauth2.provider.error.DefaultWebResponseExceptionTranslator;
 

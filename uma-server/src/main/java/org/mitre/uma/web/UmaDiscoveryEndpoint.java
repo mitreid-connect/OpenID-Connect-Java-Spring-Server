@@ -68,9 +68,6 @@ public class UmaDiscoveryEndpoint {
 		m.put("introspection_endpoint", issuer + IntrospectionEndpoint.URL);
 		m.put("resource_set_registration_endpoint", issuer + ResourceSetRegistrationEndpoint.URL);
 		m.put("permission_registration_endpoint", issuer + PermissionRegistrationEndpoint.URL);
-		m.put("rpt_endpoint", issuer + AuthorizationRequestEndpoint.URL);
-
-
 
 		model.addAttribute("entity", m);
 		return JsonEntityView.VIEWNAME;
