@@ -62,7 +62,7 @@ public class DefaultIntrospectionResultAssembler implements IntrospectionResultA
 				Map<String, Object> o = newLinkedHashMap();
 				o.put("resource_set_id", perm.getResourceSet().getId().toString());
 				Set<String> scopes = Sets.newHashSet(perm.getScopes());
-				o.put("scopes", scopes);
+				o.put("permission_scopes", scopes);
 				permissions.add(o);
 			}
 
