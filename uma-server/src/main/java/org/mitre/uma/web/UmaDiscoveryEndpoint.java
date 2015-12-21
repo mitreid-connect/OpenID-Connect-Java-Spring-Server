@@ -52,7 +52,6 @@ public class UmaDiscoveryEndpoint {
 		ImmutableSet<String> tokenProfiles = ImmutableSet.of("bearer");
 		ArrayList<String> grantTypes = Lists.newArrayList("authorization_code", "implicit", "urn:ietf:params:oauth:grant-type:jwt-bearer", "client_credentials", "urn:ietf:params:oauth:grant_type:redelegate");
 
-		m.put("version", "1.0");
 		m.put("issuer", issuer);
 		m.put("pat_profiles_supported", tokenProfiles);
 		m.put("aat_profiles_supported", tokenProfiles);
@@ -61,7 +60,7 @@ public class UmaDiscoveryEndpoint {
 		m.put("aat_grant_types_supported", grantTypes);
 		m.put("claim_token_profiles_supported", ImmutableSet.of());
 		m.put("uma_profiles_supported", ImmutableSet.of());
-		m.put("dynamic_client_endpoint", issuer + DynamicClientRegistrationEndpoint.URL);
+		m.put("registration_endpoint", issuer + DynamicClientRegistrationEndpoint.URL);
 		m.put("token_endpoint", issuer + "token");
 		m.put("authorization_endpoint", issuer + "authorize");
 		m.put("requesting_party_claims_endpoint", issuer + ClaimsCollectionEndpoint.URL);
