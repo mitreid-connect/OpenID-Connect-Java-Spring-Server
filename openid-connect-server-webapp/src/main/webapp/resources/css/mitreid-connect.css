@@ -186,3 +186,9 @@ h1,label {
 .user-profile dd, .user-profile dt {
     height: 20px;
 }
+
+/* Client table images */
+.client-logo {
+	max-width: 64px; 
+	max-height: 64px
+}
