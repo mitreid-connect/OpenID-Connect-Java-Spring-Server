@@ -31,7 +31,7 @@
 
 		<div class="media">
 			<% if (client.logoUri) { %>
-				<span class="pull-left"><img class="media-object client-logo" src="<%- client.logoUri %>"></span>
+				<span class="pull-left"><img class="media-object client-logo" src="api/clients/<%- client.id ->/logo"></span>
 			<% } %>
 
 			<div class="media-body">

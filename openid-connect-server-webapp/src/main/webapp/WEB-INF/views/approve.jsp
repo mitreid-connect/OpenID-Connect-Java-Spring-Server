@@ -84,7 +84,7 @@
 					<c:if test="${ not empty client.logoUri }">
 						<ul class="thumbnails">
 							<li class="span5">
-								<a class="thumbnail" data-toggle="modal" data-target="#logoModal"><img src="${ fn:escapeXml(client.logoUri) }" /></a>
+								<a class="thumbnail" data-toggle="modal" data-target="#logoModal"><img src="api/clients/${ client.id }/logo" /></a>
 							</li>
 						</ul>
 						<!-- Modal -->
@@ -103,7 +103,7 @@
 								</h3>
 							</div>
 							<div class="modal-body">
-								<img src="${ fn:escapeXml(client.logoUri) }" />
+								<img src="api/clients/${ client.id }/logo" />
 								<c:if test="${ not empty client.clientUri }">
 									<a href="<c:out value="${ client.clientUri }" />"><c:out value="${ client.clientUri }" /></a>
 								</c:if>
