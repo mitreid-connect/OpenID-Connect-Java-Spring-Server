@@ -166,10 +166,36 @@ public class RequestingPartyTokenGranter extends AbstractTokenGranter {
 
 					Set<String> ticketScopes = ticket.getPermission().getScopes();
 					Set<String> policyScopes = result.getMatched().getScopes();
+					Set<String> requestScopes = tokenRequest.getScope();
+					Set<String> clientScopes = clientEntity.getScope();
 
+					Set<String> permissionScopes = new HashSet<>();
+					
+					// start with the scopes the client requested
+					permissionScopes.addAll(requestScopes);
+					
+					if (permissionScopes.isEmpty()) {
+						// if none were requested by the client, see if the ticket has any
+						permissionScopes.addAll(ticketScopes);
+					}
+					
+					if (permissionScopes.isEmpty()) {
+						// if still none are requested, go with what the client is registered for by default
+						permissionScopes.addAll(clientScopes);
+					}
+					
+					if (permissionScopes.isEmpty()) {
+						// if still none are requested, just go with the matched policy set
+						permissionScopes.addAll(policyScopes);
+					} else {
+						// if there were some requested scopes, make sure the final result contains only the subset given by the fulfilled policy
+						permissionScopes.retainAll(policyScopes);
+					}
+					
+					
 					Permission perm = new Permission();
 					perm.setResourceSet(ticket.getPermission().getResourceSet());
-					perm.setScopes(new HashSet<>(Sets.intersection(ticketScopes, policyScopes)));
+					perm.setScopes(permissionScopes);
 
 					token.setPermissions(Sets.newHashSet(perm));
 
