@@ -107,7 +107,7 @@ public class TestDefaultIntrospectionResultAssembler {
 				.put("permissions", new ImmutableSet.Builder<>()
 						.add(new ImmutableMap.Builder<String, Object>()
 								.put("resource_set_id", "1") // note that the resource ID comes out as a string
-								.put("scopes", new ImmutableSet.Builder<>()
+								.put("permission_scopes", new ImmutableSet.Builder<>()
 										.add("bar")
 										.add("foo")
 										.build())
