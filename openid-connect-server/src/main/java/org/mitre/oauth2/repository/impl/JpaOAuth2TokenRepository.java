@@ -1,21 +1,23 @@
 /*******************************************************************************
- * Copyright 2014 The MITRE Corporation
- *   and the MIT Kerberos and Internet Trust Consortium
- * 
+ * Copyright 2015 The MITRE Corporation
+ *   and the MIT Internet Trust Consortium
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- ******************************************************************************/
+ *******************************************************************************/
 package org.mitre.oauth2.repository.impl;
 
+import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -23,43 +25,59 @@ import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
+import javax.persistence.criteria.Root;
 
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
+import org.mitre.uma.model.ResourceSet;
 import org.mitre.util.jpa.JpaUtil;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.nimbusds.jwt.JWT;
+import com.nimbusds.jwt.JWTParser;
 
 @Repository
 public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 
 	private static final int MAXEXPIREDRESULTS = 1000;
+	
+	private static final Logger logger = LoggerFactory.getLogger(JpaOAuth2TokenRepository.class);
 
-	@PersistenceContext
+	@PersistenceContext(unitName="defaultPersistenceUnit")
 	private EntityManager manager;
 
 	@Override
 	public Set<OAuth2AccessTokenEntity> getAllAccessTokens() {
-		TypedQuery<OAuth2AccessTokenEntity> query = manager.createNamedQuery("OAuth2AccessTokenEntity.getAll", OAuth2AccessTokenEntity.class);
-		return new LinkedHashSet<OAuth2AccessTokenEntity>(query.getResultList());
+		TypedQuery<OAuth2AccessTokenEntity> query = manager.createNamedQuery(OAuth2AccessTokenEntity.QUERY_ALL, OAuth2AccessTokenEntity.class);
+		return new LinkedHashSet<>(query.getResultList());
 	}
 
 	@Override
 	public Set<OAuth2RefreshTokenEntity> getAllRefreshTokens() {
-		TypedQuery<OAuth2RefreshTokenEntity> query = manager.createNamedQuery("OAuth2RefreshTokenEntity.getAll", OAuth2RefreshTokenEntity.class);
-		return new LinkedHashSet<OAuth2RefreshTokenEntity>(query.getResultList());
+		TypedQuery<OAuth2RefreshTokenEntity> query = manager.createNamedQuery(OAuth2RefreshTokenEntity.QUERY_ALL, OAuth2RefreshTokenEntity.class);
+		return new LinkedHashSet<>(query.getResultList());
 	}
 
 
 	@Override
 	public OAuth2AccessTokenEntity getAccessTokenByValue(String accessTokenValue) {
-		TypedQuery<OAuth2AccessTokenEntity> query = manager.createNamedQuery("OAuth2AccessTokenEntity.getByTokenValue", OAuth2AccessTokenEntity.class);
-		query.setParameter("tokenValue", accessTokenValue);
-		return JpaUtil.getSingleResult(query.getResultList());
+		try {
+			JWT jwt = JWTParser.parse(accessTokenValue);
+			TypedQuery<OAuth2AccessTokenEntity> query = manager.createNamedQuery(OAuth2AccessTokenEntity.QUERY_BY_TOKEN_VALUE, OAuth2AccessTokenEntity.class);
+			query.setParameter(OAuth2AccessTokenEntity.PARAM_TOKEN_VALUE, jwt);
+			return JpaUtil.getSingleResult(query.getResultList());
+		} catch (ParseException e) {
+			return null;
+		}
 	}
 
 	@Override
@@ -68,13 +86,13 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	}
 
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManager")
 	public OAuth2AccessTokenEntity saveAccessToken(OAuth2AccessTokenEntity token) {
 		return JpaUtil.saveOrUpdate(token.getId(), manager, token);
 	}
 
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManager")
 	public void removeAccessToken(OAuth2AccessTokenEntity accessToken) {
 		OAuth2AccessTokenEntity found = getAccessTokenByValue(accessToken.getValue());
 		if (found != null) {
@@ -85,10 +103,10 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	}
 
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManager")
 	public void clearAccessTokensForRefreshToken(OAuth2RefreshTokenEntity refreshToken) {
-		TypedQuery<OAuth2AccessTokenEntity> query = manager.createNamedQuery("OAuth2AccessTokenEntity.getByRefreshToken", OAuth2AccessTokenEntity.class);
-		query.setParameter("refreshToken", refreshToken);
+		TypedQuery<OAuth2AccessTokenEntity> query = manager.createNamedQuery(OAuth2AccessTokenEntity.QUERY_BY_REFRESH_TOKEN, OAuth2AccessTokenEntity.class);
+		query.setParameter(OAuth2AccessTokenEntity.PARAM_REFERSH_TOKEN, refreshToken);
 		List<OAuth2AccessTokenEntity> accessTokens = query.getResultList();
 		for (OAuth2AccessTokenEntity accessToken : accessTokens) {
 			removeAccessToken(accessToken);
@@ -97,9 +115,14 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 
 	@Override
 	public OAuth2RefreshTokenEntity getRefreshTokenByValue(String refreshTokenValue) {
-		TypedQuery<OAuth2RefreshTokenEntity> query = manager.createNamedQuery("OAuth2RefreshTokenEntity.getByTokenValue", OAuth2RefreshTokenEntity.class);
-		query.setParameter("tokenValue", refreshTokenValue);
-		return JpaUtil.getSingleResult(query.getResultList());
+		try {
+			JWT jwt = JWTParser.parse(refreshTokenValue);
+			TypedQuery<OAuth2RefreshTokenEntity> query = manager.createNamedQuery(OAuth2RefreshTokenEntity.QUERY_BY_TOKEN_VALUE, OAuth2RefreshTokenEntity.class);
+			query.setParameter(OAuth2RefreshTokenEntity.PARAM_TOKEN_VALUE, jwt);
+			return JpaUtil.getSingleResult(query.getResultList());
+		} catch (ParseException e) {
+			return null;
+		}
 	}
 
 	@Override
@@ -108,13 +131,13 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	}
 
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManager")
 	public OAuth2RefreshTokenEntity saveRefreshToken(OAuth2RefreshTokenEntity refreshToken) {
 		return JpaUtil.saveOrUpdate(refreshToken.getId(), manager, refreshToken);
 	}
 
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManager")
 	public void removeRefreshToken(OAuth2RefreshTokenEntity refreshToken) {
 		OAuth2RefreshTokenEntity found = getRefreshTokenByValue(refreshToken.getValue());
 		if (found != null) {
@@ -125,16 +148,16 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	}
 
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManager")
 	public void clearTokensForClient(ClientDetailsEntity client) {
-		TypedQuery<OAuth2AccessTokenEntity> queryA = manager.createNamedQuery("OAuth2AccessTokenEntity.getByClient", OAuth2AccessTokenEntity.class);
-		queryA.setParameter("client", client);
+		TypedQuery<OAuth2AccessTokenEntity> queryA = manager.createNamedQuery(OAuth2AccessTokenEntity.QUERY_BY_CLIENT, OAuth2AccessTokenEntity.class);
+		queryA.setParameter(OAuth2AccessTokenEntity.PARAM_CLIENT, client);
 		List<OAuth2AccessTokenEntity> accessTokens = queryA.getResultList();
 		for (OAuth2AccessTokenEntity accessToken : accessTokens) {
 			removeAccessToken(accessToken);
 		}
-		TypedQuery<OAuth2RefreshTokenEntity> queryR = manager.createNamedQuery("OAuth2RefreshTokenEntity.getByClient", OAuth2RefreshTokenEntity.class);
-		queryR.setParameter("client", client);
+		TypedQuery<OAuth2RefreshTokenEntity> queryR = manager.createNamedQuery(OAuth2RefreshTokenEntity.QUERY_BY_CLIENT, OAuth2RefreshTokenEntity.class);
+		queryR.setParameter(OAuth2RefreshTokenEntity.PARAM_CLIENT, client);
 		List<OAuth2RefreshTokenEntity> refreshTokens = queryR.getResultList();
 		for (OAuth2RefreshTokenEntity refreshToken : refreshTokens) {
 			removeRefreshToken(refreshToken);
@@ -146,8 +169,8 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	 */
 	@Override
 	public List<OAuth2AccessTokenEntity> getAccessTokensForClient(ClientDetailsEntity client) {
-		TypedQuery<OAuth2AccessTokenEntity> queryA = manager.createNamedQuery("OAuth2AccessTokenEntity.getByClient", OAuth2AccessTokenEntity.class);
-		queryA.setParameter("client", client);
+		TypedQuery<OAuth2AccessTokenEntity> queryA = manager.createNamedQuery(OAuth2AccessTokenEntity.QUERY_BY_CLIENT, OAuth2AccessTokenEntity.class);
+		queryA.setParameter(OAuth2AccessTokenEntity.PARAM_CLIENT, client);
 		List<OAuth2AccessTokenEntity> accessTokens = queryA.getResultList();
 		return accessTokens;
 	}
@@ -157,18 +180,10 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	 */
 	@Override
 	public List<OAuth2RefreshTokenEntity> getRefreshTokensForClient(ClientDetailsEntity client) {
-		TypedQuery<OAuth2RefreshTokenEntity> queryR = manager.createNamedQuery("OAuth2RefreshTokenEntity.getByClient", OAuth2RefreshTokenEntity.class);
-		queryR.setParameter("client", client);
+		TypedQuery<OAuth2RefreshTokenEntity> queryR = manager.createNamedQuery(OAuth2RefreshTokenEntity.QUERY_BY_CLIENT, OAuth2RefreshTokenEntity.class);
+		queryR.setParameter(OAuth2RefreshTokenEntity.PARAM_CLIENT, client);
 		List<OAuth2RefreshTokenEntity> refreshTokens = queryR.getResultList();
 		return refreshTokens;
-	}
-
-	@Override
-	public OAuth2AccessTokenEntity getByAuthentication(OAuth2Authentication auth) {
-		TypedQuery<OAuth2AccessTokenEntity> queryA = manager.createNamedQuery("OAuth2AccessTokenEntity.getByAuthentication", OAuth2AccessTokenEntity.class);
-		queryA.setParameter("authentication", auth);
-		List<OAuth2AccessTokenEntity> accessTokens = queryA.getResultList();
-		return JpaUtil.getSingleResult(accessTokens);
 	}
 
 	/* (non-Javadoc)
@@ -176,26 +191,86 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	 */
 	@Override
 	public OAuth2AccessTokenEntity getAccessTokenForIdToken(OAuth2AccessTokenEntity idToken) {
-		TypedQuery<OAuth2AccessTokenEntity> queryA = manager.createNamedQuery("OAuth2AccessTokenEntity.getByIdToken", OAuth2AccessTokenEntity.class);
-		queryA.setParameter("idToken", idToken);
+		TypedQuery<OAuth2AccessTokenEntity> queryA = manager.createNamedQuery(OAuth2AccessTokenEntity.QUERY_BY_ID_TOKEN, OAuth2AccessTokenEntity.class);
+		queryA.setParameter(OAuth2AccessTokenEntity.PARAM_ID_TOKEN, idToken);
 		List<OAuth2AccessTokenEntity> accessTokens = queryA.getResultList();
 		return JpaUtil.getSingleResult(accessTokens);
 	}
 
 	@Override
 	public Set<OAuth2AccessTokenEntity> getAllExpiredAccessTokens() {
-		TypedQuery<OAuth2AccessTokenEntity> query = manager.createNamedQuery("OAuth2AccessTokenEntity.getAllExpiredByDate", OAuth2AccessTokenEntity.class);
-		query.setParameter("date", new Date());
+		TypedQuery<OAuth2AccessTokenEntity> query = manager.createNamedQuery(OAuth2AccessTokenEntity.QUERY_EXPIRED_BY_DATE, OAuth2AccessTokenEntity.class);
+		query.setParameter(OAuth2AccessTokenEntity.PARAM_DATE, new Date());
 		query.setMaxResults(MAXEXPIREDRESULTS);
-		return new LinkedHashSet<OAuth2AccessTokenEntity>(query.getResultList());
+		return new LinkedHashSet<>(query.getResultList());
 	}
 
 	@Override
 	public Set<OAuth2RefreshTokenEntity> getAllExpiredRefreshTokens() {
-		TypedQuery<OAuth2RefreshTokenEntity> query = manager.createNamedQuery("OAuth2RefreshTokenEntity.getAllExpiredByDate", OAuth2RefreshTokenEntity.class);
-		query.setParameter("date", new Date());
+		TypedQuery<OAuth2RefreshTokenEntity> query = manager.createNamedQuery(OAuth2RefreshTokenEntity.QUERY_EXPIRED_BY_DATE, OAuth2RefreshTokenEntity.class);
+		query.setParameter(OAuth2RefreshTokenEntity.PARAM_DATE, new Date());
 		query.setMaxResults(MAXEXPIREDRESULTS);
-		return new LinkedHashSet<OAuth2RefreshTokenEntity>(query.getResultList());
+		return new LinkedHashSet<>(query.getResultList());
+	}
+
+	/* (non-Javadoc)
+	 * @see org.mitre.oauth2.repository.OAuth2TokenRepository#getAccessTokensForResourceSet(org.mitre.uma.model.ResourceSet)
+	 */
+	@Override
+	public Set<OAuth2AccessTokenEntity> getAccessTokensForResourceSet(ResourceSet rs) {
+		TypedQuery<OAuth2AccessTokenEntity> query = manager.createNamedQuery(OAuth2AccessTokenEntity.QUERY_BY_RESOURCE_SET, OAuth2AccessTokenEntity.class);
+		query.setParameter(OAuth2AccessTokenEntity.PARAM_RESOURCE_SET_ID, rs.getId());
+		return new LinkedHashSet<>(query.getResultList());
+	}
+
+	/* (non-Javadoc)
+	 * @see org.mitre.oauth2.repository.OAuth2TokenRepository#clearDuplicateAccessTokens()
+	 */
+	@Override
+	@Transactional(value="defaultTransactionManager")
+	public void clearDuplicateAccessTokens() {
+
+		Query query = manager.createQuery("select a.jwt, count(1) as c from OAuth2AccessTokenEntity a GROUP BY a.jwt HAVING c > 1");
+		@SuppressWarnings("unchecked")
+		List<Object[]> resultList = query.getResultList();
+		List<JWT> values = new ArrayList<>();
+		for (Object[] r : resultList) {
+			logger.warn("Found duplicate access tokens: {}, {}", ((JWT)r[0]).serialize(), r[1]);
+			values.add((JWT) r[0]);
+		}
+		if (values.size() > 0) {
+			CriteriaBuilder cb = manager.getCriteriaBuilder();
+			CriteriaDelete<OAuth2AccessTokenEntity> criteriaDelete = cb.createCriteriaDelete(OAuth2AccessTokenEntity.class);
+			Root<OAuth2AccessTokenEntity> root = criteriaDelete.from(OAuth2AccessTokenEntity.class);
+			criteriaDelete.where(root.get("jwt").in(values));
+			int result = manager.createQuery(criteriaDelete).executeUpdate();
+			logger.warn("Deleted {} duplicate access tokens", result);
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.mitre.oauth2.repository.OAuth2TokenRepository#clearDuplicateRefreshTokens()
+	 */
+	@Override
+	@Transactional(value="defaultTransactionManager")
+	public void clearDuplicateRefreshTokens() {
+		Query query = manager.createQuery("select a.jwt, count(1) as c from OAuth2RefreshTokenEntity a GROUP BY a.jwt HAVING c > 1");
+		@SuppressWarnings("unchecked")
+		List<Object[]> resultList = query.getResultList();
+		List<JWT> values = new ArrayList<>();
+		for (Object[] r : resultList) {
+			logger.warn("Found duplicate refresh tokens: {}, {}", ((JWT)r[0]).serialize(), r[1]);
+			values.add((JWT) r[0]);
+		}
+		if (values.size() > 0) {
+			CriteriaBuilder cb = manager.getCriteriaBuilder();
+			CriteriaDelete<OAuth2RefreshTokenEntity> criteriaDelete = cb.createCriteriaDelete(OAuth2RefreshTokenEntity.class);
+			Root<OAuth2RefreshTokenEntity> root = criteriaDelete.from(OAuth2RefreshTokenEntity.class);
+			criteriaDelete.where(root.get("jwt").in(values));
+			int result = manager.createQuery(criteriaDelete).executeUpdate();
+			logger.warn("Deleted {} duplicate refresh tokens", result);
+		}
+
 	}
 
 }

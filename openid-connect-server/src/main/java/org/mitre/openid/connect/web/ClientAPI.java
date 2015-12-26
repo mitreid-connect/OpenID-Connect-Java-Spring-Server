@@ -1,42 +1,45 @@
 /*******************************************************************************
- * Copyright 2014 The MITRE Corporation
- *   and the MIT Kerberos and Internet Trust Consortium
- * 
+ * Copyright 2015 The MITRE Corporation
+ *   and the MIT Internet Trust Consortium
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- ******************************************************************************/
+ *******************************************************************************/
 package org.mitre.openid.connect.web;
 
 import java.lang.reflect.Type;
+import java.text.ParseException;
 import java.util.Collection;
 
-import org.mitre.jose.JWEAlgorithmEmbed;
-import org.mitre.jose.JWEEncryptionMethodEmbed;
-import org.mitre.jose.JWSAlgorithmEmbed;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
-import org.mitre.openid.connect.service.UserInfoService;
+import org.mitre.oauth2.web.AuthenticationUtilities;
+import org.mitre.openid.connect.model.CachedImage;
+import org.mitre.openid.connect.service.ClientLogoLoadingService;
 import org.mitre.openid.connect.view.ClientEntityViewForAdmins;
 import org.mitre.openid.connect.view.ClientEntityViewForUsers;
 import org.mitre.openid.connect.view.HttpCodeView;
+import org.mitre.openid.connect.view.JsonEntityView;
 import org.mitre.openid.connect.view.JsonErrorView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -55,51 +58,72 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
+import com.nimbusds.jose.Algorithm;
+import com.nimbusds.jose.EncryptionMethod;
+import com.nimbusds.jose.JWEAlgorithm;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.jwk.JWKSet;
 
 /**
  * @author Michael Jett <mjett@mitre.org>
  */
 
 @Controller
-@RequestMapping("/api/clients")
+@RequestMapping("/" + ClientAPI.URL)
 @PreAuthorize("hasRole('ROLE_USER')")
 public class ClientAPI {
+
+	public static final String URL = RootController.API_URL + "/clients";
 
 	@Autowired
 	private ClientDetailsEntityService clientService;
 
 	@Autowired
-	private UserInfoService userInfoService;
+	private ClientLogoLoadingService clientLogoLoadingService;
 
 	private JsonParser parser = new JsonParser();
 
 	private Gson gson = new GsonBuilder()
 	.serializeNulls()
-	.registerTypeAdapter(JWSAlgorithmEmbed.class, new JsonDeserializer<JWSAlgorithmEmbed>() {
+	.registerTypeAdapter(JWSAlgorithm.class, new JsonDeserializer<Algorithm>() {
 		@Override
-		public JWSAlgorithmEmbed deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+		public JWSAlgorithm deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
 			if (json.isJsonPrimitive()) {
-				return JWSAlgorithmEmbed.getForAlgorithmName(json.getAsString());
+				return JWSAlgorithm.parse(json.getAsString());
 			} else {
 				return null;
 			}
 		}
 	})
-	.registerTypeAdapter(JWEAlgorithmEmbed.class, new JsonDeserializer<JWEAlgorithmEmbed>() {
+	.registerTypeAdapter(JWEAlgorithm.class, new JsonDeserializer<Algorithm>() {
 		@Override
-		public JWEAlgorithmEmbed deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+		public JWEAlgorithm deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
 			if (json.isJsonPrimitive()) {
-				return JWEAlgorithmEmbed.getForAlgorithmName(json.getAsString());
+				return JWEAlgorithm.parse(json.getAsString());
 			} else {
 				return null;
 			}
 		}
 	})
-	.registerTypeAdapter(JWEEncryptionMethodEmbed.class, new JsonDeserializer<JWEEncryptionMethodEmbed>() {
+	.registerTypeAdapter(EncryptionMethod.class, new JsonDeserializer<Algorithm>() {
 		@Override
-		public JWEEncryptionMethodEmbed deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+		public EncryptionMethod deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
 			if (json.isJsonPrimitive()) {
-				return JWEEncryptionMethodEmbed.getForAlgorithmName(json.getAsString());
+				return EncryptionMethod.parse(json.getAsString());
+			} else {
+				return null;
+			}
+		}
+	})
+	.registerTypeAdapter(JWKSet.class, new JsonDeserializer<JWKSet>() {
+		@Override
+		public JWKSet deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			if (json.isJsonObject()) {
+				try {
+					return JWKSet.parse(json.toString());
+				} catch (ParseException e) {
+					return null;
+				}
 			} else {
 				return null;
 			}
@@ -108,20 +132,23 @@ public class ClientAPI {
 	.setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
 	.create();
 
-	private static Logger logger = LoggerFactory.getLogger(ClientAPI.class);
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.getLogger(ClientAPI.class);
 
 	/**
 	 * Get a list of all clients
 	 * @param modelAndView
 	 * @return
 	 */
-	@RequestMapping(method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public String apiGetAllClients(Model model, Authentication auth) {
 
 		Collection<ClientDetailsEntity> clients = clientService.getAllClients();
-		model.addAttribute("entity", clients);
+		model.addAttribute(JsonEntityView.ENTITY, clients);
 
-		if (isAdmin(auth)) {
+		if (AuthenticationUtilities.isAdmin(auth)) {
 			return ClientEntityViewForAdmins.VIEWNAME;
 		} else {
 			return ClientEntityViewForUsers.VIEWNAME;
@@ -136,7 +163,7 @@ public class ClientAPI {
 	 * @return
 	 */
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	@RequestMapping(method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
+	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public String apiAddClient(@RequestBody String jsonString, Model m, Authentication auth) {
 
 		JsonObject json = null;
@@ -148,68 +175,75 @@ public class ClientAPI {
 		}
 		catch (JsonSyntaxException e) {
 			logger.error("apiAddClient failed due to JsonSyntaxException", e);
-			m.addAttribute("code", HttpStatus.BAD_REQUEST);
-			m.addAttribute("errorMessage", "Could not save new client. The server encountered a JSON syntax exception. Contact a system administrator for assistance.");
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
+			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Could not save new client. The server encountered a JSON syntax exception. Contact a system administrator for assistance.");
 			return JsonErrorView.VIEWNAME;
 		} catch (IllegalStateException e) {
 			logger.error("apiAddClient failed due to IllegalStateException", e);
-			m.addAttribute("code", HttpStatus.BAD_REQUEST);
-			m.addAttribute("errorMessage", "Could not save new client. The server encountered an IllegalStateException. Refresh and try again - if the problem persists, contact a system administrator for assistance.");
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
+			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Could not save new client. The server encountered an IllegalStateException. Refresh and try again - if the problem persists, contact a system administrator for assistance.");
 			return JsonErrorView.VIEWNAME;
 		}
 
 		// if they leave the client identifier empty, force it to be generated
 		if (Strings.isNullOrEmpty(client.getClientId())) {
 			client = clientService.generateClientId(client);
-		}		
-		
-		if (client.getTokenEndpointAuthMethod() == null || 
+		}
+
+		if (client.getTokenEndpointAuthMethod() == null ||
 				client.getTokenEndpointAuthMethod().equals(AuthMethod.NONE)) {
 			// we shouldn't have a secret for this client
-			
+
 			client.setClientSecret(null);
-			
-		} else if (client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_BASIC) 
-				|| client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_POST) 
+
+		} else if (client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_BASIC)
+				|| client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_POST)
 				|| client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_JWT)) {
-			
+
 			// if they've asked for us to generate a client secret (or they left it blank but require one), do so here
-			if (json.has("generateClientSecret") && json.get("generateClientSecret").getAsBoolean() 
+			if (json.has("generateClientSecret") && json.get("generateClientSecret").getAsBoolean()
 					|| Strings.isNullOrEmpty(client.getClientSecret())) {
 				client = clientService.generateClientSecret(client);
 			}
 
 		} else if (client.getTokenEndpointAuthMethod().equals(AuthMethod.PRIVATE_KEY)) {
 
-			if (Strings.isNullOrEmpty(client.getJwksUri())) {
+			if (Strings.isNullOrEmpty(client.getJwksUri()) && client.getJwks() == null) {
 				logger.error("tried to create client with private key auth but no private key");
-				m.addAttribute("code", HttpStatus.BAD_REQUEST);
-				m.addAttribute("errorMessage", "Can not create a client with private key authentication without registering a key via the JWS Set URI.");
+				m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
+				m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Can not create a client with private key authentication without registering a key via the JWK Set URI or JWK Set Value.");
 				return JsonErrorView.VIEWNAME;
 			}
-			
+
 			// otherwise we shouldn't have a secret for this client
 			client.setClientSecret(null);
-			
+
 		} else {
-			
+
 			logger.error("unknown auth method");
-			m.addAttribute("code", HttpStatus.BAD_REQUEST);
-			m.addAttribute("errorMessage", "Unknown auth method requested");
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
+			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Unknown auth method requested");
 			return JsonErrorView.VIEWNAME;
-			
-			
+
+
 		}
 
 		client.setDynamicallyRegistered(false);
 
-		ClientDetailsEntity newClient = clientService.saveNewClient(client);
-		m.addAttribute("entity", newClient);
+		try {
+			ClientDetailsEntity newClient = clientService.saveNewClient(client);
+			m.addAttribute(JsonEntityView.ENTITY, newClient);
 
-		if (isAdmin(auth)) {
-			return ClientEntityViewForAdmins.VIEWNAME;
-		} else {
-			return ClientEntityViewForUsers.VIEWNAME;
+			if (AuthenticationUtilities.isAdmin(auth)) {
+				return ClientEntityViewForAdmins.VIEWNAME;
+			} else {
+				return ClientEntityViewForUsers.VIEWNAME;
+			}
+		} catch (IllegalArgumentException e) {
+			logger.error("Unable to save client: {}", e.getMessage());
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
+			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Unable to save client: " + e.getMessage());
+			return JsonErrorView.VIEWNAME;
 		}
 	}
 
@@ -222,7 +256,7 @@ public class ClientAPI {
 	 * @return
 	 */
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	@RequestMapping(value="/{id}", method = RequestMethod.PUT, consumes = "application/json", produces = "application/json")
+	@RequestMapping(value="/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public String apiUpdateClient(@PathVariable("id") Long id, @RequestBody String jsonString, Model m, Authentication auth) {
 
 		JsonObject json = null;
@@ -235,13 +269,13 @@ public class ClientAPI {
 		}
 		catch (JsonSyntaxException e) {
 			logger.error("apiUpdateClient failed due to JsonSyntaxException", e);
-			m.addAttribute("code", HttpStatus.BAD_REQUEST);
-			m.addAttribute("errorMessage", "Could not update client. The server encountered a JSON syntax exception. Contact a system administrator for assistance.");
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
+			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Could not update client. The server encountered a JSON syntax exception. Contact a system administrator for assistance.");
 			return JsonErrorView.VIEWNAME;
 		} catch (IllegalStateException e) {
 			logger.error("apiUpdateClient failed due to IllegalStateException", e);
-			m.addAttribute("code", HttpStatus.BAD_REQUEST);
-			m.addAttribute("errorMessage", "Could not update client. The server encountered an IllegalStateException. Refresh and try again - if the problem persists, contact a system administrator for assistance.");
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
+			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Could not update client. The server encountered an IllegalStateException. Refresh and try again - if the problem persists, contact a system administrator for assistance.");
 			return JsonErrorView.VIEWNAME;
 		}
 
@@ -249,8 +283,8 @@ public class ClientAPI {
 
 		if (oldClient == null) {
 			logger.error("apiUpdateClient failed; client with id " + id + " could not be found.");
-			m.addAttribute("code", HttpStatus.NOT_FOUND);
-			m.addAttribute("errorMessage", "Could not update client. The requested client with id " + id + "could not be found.");
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
+			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Could not update client. The requested client with id " + id + "could not be found.");
 			return JsonErrorView.VIEWNAME;
 		}
 
@@ -262,48 +296,55 @@ public class ClientAPI {
 		if (client.getTokenEndpointAuthMethod() == null ||
 				client.getTokenEndpointAuthMethod().equals(AuthMethod.NONE)) {
 			// we shouldn't have a secret for this client
-			
+
 			client.setClientSecret(null);
-			
-		} else if (client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_BASIC) 
-				|| client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_POST) 
+
+		} else if (client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_BASIC)
+				|| client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_POST)
 				|| client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_JWT)) {
-			
+
 			// if they've asked for us to generate a client secret (or they left it blank but require one), do so here
-			if (json.has("generateClientSecret") && json.get("generateClientSecret").getAsBoolean() 
+			if (json.has("generateClientSecret") && json.get("generateClientSecret").getAsBoolean()
 					|| Strings.isNullOrEmpty(client.getClientSecret())) {
 				client = clientService.generateClientSecret(client);
 			}
 
 		} else if (client.getTokenEndpointAuthMethod().equals(AuthMethod.PRIVATE_KEY)) {
 
-			if (Strings.isNullOrEmpty(client.getJwksUri())) {
+			if (Strings.isNullOrEmpty(client.getJwksUri()) && client.getJwks() == null) {
 				logger.error("tried to create client with private key auth but no private key");
-				m.addAttribute("code", HttpStatus.BAD_REQUEST);
-				m.addAttribute("errorMessage", "Can not create a client with private key authentication without registering a key via the JWS Set URI.");
+				m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
+				m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Can not create a client with private key authentication without registering a key via the JWK Set URI or JWK Set Value.");
 				return JsonErrorView.VIEWNAME;
 			}
-			
+
 			// otherwise we shouldn't have a secret for this client
 			client.setClientSecret(null);
-			
+
 		} else {
-			
+
 			logger.error("unknown auth method");
-			m.addAttribute("code", HttpStatus.BAD_REQUEST);
-			m.addAttribute("errorMessage", "Unknown auth method requested");
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
+			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Unknown auth method requested");
 			return JsonErrorView.VIEWNAME;
-			
-			
+
+
 		}
 
-		ClientDetailsEntity newClient = clientService.updateClient(oldClient, client);
-		m.addAttribute("entity", newClient);
+		try {
+			ClientDetailsEntity newClient = clientService.updateClient(oldClient, client);
+			m.addAttribute(JsonEntityView.ENTITY, newClient);
 
-		if (isAdmin(auth)) {
-			return ClientEntityViewForAdmins.VIEWNAME;
-		} else {
-			return ClientEntityViewForUsers.VIEWNAME;
+			if (AuthenticationUtilities.isAdmin(auth)) {
+				return ClientEntityViewForAdmins.VIEWNAME;
+			} else {
+				return ClientEntityViewForUsers.VIEWNAME;
+			}
+		} catch (IllegalArgumentException e) {
+			logger.error("Unable to save client: {}", e.getMessage());
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
+			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Unable to save client: " + e.getMessage());
+			return JsonErrorView.VIEWNAME;
 		}
 	}
 
@@ -321,11 +362,11 @@ public class ClientAPI {
 
 		if (client == null) {
 			logger.error("apiDeleteClient failed; client with id " + id + " could not be found.");
-			modelAndView.getModelMap().put("code", HttpStatus.NOT_FOUND);
-			modelAndView.getModelMap().put("errorMessage", "Could not delete client. The requested client with id " + id + "could not be found.");
+			modelAndView.getModelMap().put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
+			modelAndView.getModelMap().put(JsonErrorView.ERROR_MESSAGE, "Could not delete client. The requested client with id " + id + "could not be found.");
 			return JsonErrorView.VIEWNAME;
 		} else {
-			modelAndView.getModelMap().put("code", HttpStatus.OK);
+			modelAndView.getModelMap().put(HttpCodeView.CODE, HttpStatus.OK);
 			clientService.deleteClient(client);
 		}
 
@@ -339,38 +380,50 @@ public class ClientAPI {
 	 * @param modelAndView
 	 * @return
 	 */
-	@RequestMapping(value="/{id}", method=RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value="/{id}", method=RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public String apiShowClient(@PathVariable("id") Long id, Model model, Authentication auth) {
 
 		ClientDetailsEntity client = clientService.getClientById(id);
 
 		if (client == null) {
 			logger.error("apiShowClient failed; client with id " + id + " could not be found.");
-			model.addAttribute("code", HttpStatus.NOT_FOUND);
-			model.addAttribute("errorMessage", "The requested client with id " + id + " could not be found.");
+			model.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
+			model.addAttribute(JsonErrorView.ERROR_MESSAGE, "The requested client with id " + id + " could not be found.");
 			return JsonErrorView.VIEWNAME;
 		}
 
-		model.addAttribute("entity", client);
+		model.addAttribute(JsonEntityView.ENTITY, client);
 
-		if (isAdmin(auth)) {
+		if (AuthenticationUtilities.isAdmin(auth)) {
 			return ClientEntityViewForAdmins.VIEWNAME;
 		} else {
 			return ClientEntityViewForUsers.VIEWNAME;
 		}
 	}
-
+	
 	/**
-	 * Check to see if the given auth object has ROLE_ADMIN assigned to it or not
-	 * @param auth
-	 * @return
+	 * Get the logo image for a client
+	 * @param id
 	 */
-	private boolean isAdmin(Authentication auth) {
-		for (GrantedAuthority grantedAuthority : auth.getAuthorities()) {
-			if (grantedAuthority.getAuthority().equals("ROLE_ADMIN")) {
-				return true;
+	 @RequestMapping(value = "/{id}/logo", method=RequestMethod.GET, produces = { MediaType.IMAGE_GIF_VALUE, MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE })
+	 public ResponseEntity<byte[]> getClientLogo(@PathVariable("id") Long id, Model model) {
+		 
+			ClientDetailsEntity client = clientService.getClientById(id);
+
+			if (client == null) {
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			} else if (Strings.isNullOrEmpty(client.getLogoUri())) {
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			} else {
+				// get the image from cache
+				CachedImage image = clientLogoLoadingService.getLogo(client);
+				
+				HttpHeaders headers = new HttpHeaders();
+				headers.setContentType(MediaType.parseMediaType(image.getContentType()));
+				headers.setContentLength(image.getLength());
+				
+				return new ResponseEntity<>(image.getData(), headers, HttpStatus.OK);
 			}
-		}
-		return false;
-	}
+	 }
+
 }

@@ -1,19 +1,19 @@
 /*******************************************************************************
- * Copyright 2014 The MITRE Corporation
- *   and the MIT Kerberos and Internet Trust Consortium
- * 
+ * Copyright 2015 The MITRE Corporation
+ *   and the MIT Internet Trust Consortium
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- ******************************************************************************/
+ *******************************************************************************/
 package org.mitre.openid.connect.view;
 
 import java.io.IOException;
@@ -31,6 +31,7 @@ import org.mitre.openid.connect.service.ScopeClaimTranslationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.servlet.view.AbstractView;
@@ -46,11 +47,19 @@ import com.google.gson.JsonParser;
 @Component(UserInfoView.VIEWNAME)
 public class UserInfoView extends AbstractView {
 
-	private static JsonParser jsonParser = new JsonParser();
+	public static final String REQUESTED_CLAIMS = "requestedClaims";
+	public static final String AUTHORIZED_CLAIMS = "authorizedClaims";
+	public static final String SCOPE = "scope";
+	public static final String USER_INFO = "userInfo";
 
 	public static final String VIEWNAME = "userInfoView";
-	
-	private static Logger logger = LoggerFactory.getLogger(UserInfoView.class);
+
+	private static JsonParser jsonParser = new JsonParser();
+
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.getLogger(UserInfoView.class);
 
 	@Autowired
 	private ScopeClaimTranslationService translator;
@@ -85,20 +94,20 @@ public class UserInfoView extends AbstractView {
 	@Override
 	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
 
-		UserInfo userInfo = (UserInfo) model.get("userInfo");
+		UserInfo userInfo = (UserInfo) model.get(USER_INFO);
 
-		Set<String> scope = (Set<String>) model.get("scope");
+		Set<String> scope = (Set<String>) model.get(SCOPE);
 
-		response.setContentType("application/json");
+		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
 
 		JsonObject authorizedClaims = null;
 		JsonObject requestedClaims = null;
-		if (model.get("authorizedClaims") != null) {
-			authorizedClaims = jsonParser.parse((String) model.get("authorizedClaims")).getAsJsonObject();
+		if (model.get(AUTHORIZED_CLAIMS) != null) {
+			authorizedClaims = jsonParser.parse((String) model.get(AUTHORIZED_CLAIMS)).getAsJsonObject();
 		}
-		if (model.get("requestedClaims") != null) {
-			requestedClaims = jsonParser.parse((String) model.get("requestedClaims")).getAsJsonObject();
+		if (model.get(REQUESTED_CLAIMS) != null) {
+			requestedClaims = jsonParser.parse((String) model.get(REQUESTED_CLAIMS)).getAsJsonObject();
 		}
 		JsonObject json = toJsonFromRequestObj(userInfo, scope, authorizedClaims, requestedClaims);
 
@@ -135,8 +144,8 @@ public class UserInfoView extends AbstractView {
 		JsonObject obj = ui.toJson();
 
 		Set<String> allowedByScope = translator.getClaimsForScopeSet(scope);
-		Set<String> authorizedByClaims = new HashSet<String>();
-		Set<String> requestedByClaims = new HashSet<String>();
+		Set<String> authorizedByClaims = new HashSet<>();
+		Set<String> requestedByClaims = new HashSet<>();
 
 		if (authorizedClaims != null) {
 			JsonObject userinfoAuthorized = authorizedClaims.getAsJsonObject().get("userinfo").getAsJsonObject();

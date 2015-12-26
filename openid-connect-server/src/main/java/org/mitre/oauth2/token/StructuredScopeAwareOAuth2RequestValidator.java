@@ -1,6 +1,6 @@
 /*******************************************************************************
- * Copyright 2014 The MITRE Corporation
- *   and the MIT Kerberos and Internet Trust Consortium
+ * Copyright 2015 The MITRE Corporation
+ *   and the MIT Internet Trust Consortium
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ public class StructuredScopeAwareOAuth2RequestValidator implements OAuth2Request
 		if (requestedScopes != null && !requestedScopes.isEmpty()) {
 			if (clientScopes != null && !clientScopes.isEmpty()) {
 				if (!scopeService.scopesMatch(clientScopes, requestedScopes)) {
-					throw new InvalidScopeException("Invalid scope", clientScopes);
+					throw new InvalidScopeException("Invalid scope; requested:" + requestedScopes, clientScopes);
 				}
 			}
 		}

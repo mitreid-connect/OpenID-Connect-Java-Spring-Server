@@ -1,19 +1,19 @@
 /*******************************************************************************
- * Copyright 2014 The MITRE Corporation 
- *   and the MIT Kerberos and Internet Trust Consortium
- * 
+ * Copyright 2015 The MITRE Corporation
+ *   and the MIT Internet Trust Consortium
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- ******************************************************************************/
+ *******************************************************************************/
 var WhiteListModel = Backbone.Model.extend({
 	
 	idAttribute: "id",
@@ -59,9 +59,10 @@ var WhiteListListView = Backbone.View.extend({
     	}
 
     	$('#loadingbox').sheet('show');
-    	$('#loading').html('<span class="label" id="loading-whitelist">Whitelist</span>' +
-    			'<span class="label" id="loading-clients">Clients</span>' + 
-    			'<span class="label" id="loading-scopes">Scopes</span>'
+    	$('#loading').html(
+                '<span class="label" id="loading-whitelist">' + $.t('whitelist.whitelist') + '</span> ' +
+                '<span class="label" id="loading-clients">' + $.t('common.clients') + '</span> ' +
+                '<span class="label" id="loading-scopes">' + $.t('common.scopes') + '</span> '
     			);
 
     	$.when(this.model.fetchIfNeeded({success:function(e) {$('#loading-whitelist').addClass('label-success');}}),
@@ -85,19 +86,19 @@ var WhiteListListView = Backbone.View.extend({
 		_.each(this.model.models, function (whiteList) {
 			
 			// look up client
-			var client = this.options.clientList.getByClientId(whiteList.get('clientId'));
+			var client = _self.options.clientList.getByClientId(whiteList.get('clientId'));
 			
 			// if there's no client ID, this is an error!
 			if (client != null) {
-				var view = new WhiteListView({model: whiteList, client: client, systemScopeList: this.options.systemScopeList});
+				var view = new WhiteListView({model: whiteList, client: client, systemScopeList: _self.options.systemScopeList});
 				view.parentView = _self;
-				$('#whitelist-table', this.el).append(view.render().el);
+				$('#whitelist-table', _self.el).append(view.render().el);
 			}
 			
 		}, this);
 
 		this.togglePlaceholder();
-		
+        $(this.el).i18n();
 		return this;
 	},
 
@@ -115,9 +116,10 @@ var WhiteListListView = Backbone.View.extend({
     	e.preventDefault();
     	var _self = this;
     	$('#loadingbox').sheet('show');
-    	$('#loading').html('<span class="label" id="loading-whitelist">Whitelist</span> ' +
-    			'<span class="label" id="loading-clients">Clients</span> ' + 
-    			'<span class="label" id="loading-scopes">Scopes</span> '
+    	$('#loading').html(
+    	        '<span class="label" id="loading-whitelist">' + $.t('whitelist.whitelist') + '</span> ' +
+                '<span class="label" id="loading-clients">' + $.t('common.clients') + '</span> ' +
+                '<span class="label" id="loading-scopes">' + $.t('common.scopes') + '</span> '
     			);
 
     	$.when(this.model.fetch({success:function(e) {$('#loading-whitelist').addClass('label-success');}}),
@@ -160,8 +162,9 @@ var WhiteListView = Backbone.View.extend({
         
         $('.client-more-info-block', this.el).html(this.moreInfoTemplate({client: this.options.client.toJSON()}));
         
-		this.$('.dynamically-registered').tooltip({title: 'This client was dynamically registered'});
+		this.$('.dynamically-registered').tooltip({title: $.t('common.dynamically-registered')});
 
+        $(this.el).i18n();
         return this;
 	},
 	
@@ -179,10 +182,11 @@ var WhiteListView = Backbone.View.extend({
 	deleteWhitelist:function(e) {
     	e.preventDefault();
 		
-		if (confirm("Are you sure you want to delete this whitelist entry?")) {
+		if (confirm($.t('whitelist.confirm'))) {
 			var _self = this;
 			
             this.model.destroy({
+            	dataType: false, processData: false,
                 success:function () {
                     _self.$el.fadeTo("fast", 0.00, function () { //fade
                         $(this).slideUp("fast", function () { //slide up
@@ -253,6 +257,73 @@ var WhiteListFormView = Backbone.View.extend({
 		
 	},
 
+	load:function(callback) {
+
+		if (this.options.client) {
+			// we know what client we're dealing with already
+	    	if (this.model.isFetched &&
+	    			this.options.client.isFetched) {
+	    		callback();
+	    		return;
+	    	}
+			
+	    	$('#loadingbox').sheet('show');
+	    	$('#loading').html(
+	                '<span class="label" id="loading-whitelist">' + $.t('whitelist.whitelist') + '</span> ' +
+	                '<span class="label" id="loading-clients">' + $.t('common.clients') + '</span> ' +
+	                '<span class="label" id="loading-scopes">' + $.t('common.scopes') + '</span> '
+	    			);
+
+	    	$.when(this.model.fetchIfNeeded({success:function(e) {$('#loading-whitelist').addClass('label-success');}}),
+	    			this.options.client.fetchIfNeeded({success:function(e) {$('#loading-clients').addClass('label-success');}}),
+	    			this.options.systemScopeList.fetchIfNeeded({success:function(e) {$('#loading-scopes').addClass('label-success');}}))
+	    			.done(function() {
+	    				$('#loadingbox').sheet('hide');
+	    	    		callback();
+	    			});    	
+			
+		} else {
+			// we need to get the client information from the list
+			
+	    	if (this.model.isFetched &&
+	    			this.options.clientList.isFetched &&
+	    			this.options.systemScopeList.isFetched) {
+	    		
+				var client = this.options.clientList.getByClientId(this.model.get('clientId'));
+				this.options.client = client;
+	    			
+	    		callback();
+	    		return;
+	    	}
+
+	    	$('#loadingbox').sheet('show');
+	    	$('#loading').html(
+	                '<span class="label" id="loading-whitelist">' + $.t('whitelist.whitelist') + '</span> ' +
+	                '<span class="label" id="loading-clients">' + $.t('common.clients') + '</span> ' +
+	                '<span class="label" id="loading-scopes">' + $.t('common.scopes') + '</span> '
+	    			);
+
+	    	var _self = this;
+	    	
+	    	$.when(this.model.fetchIfNeeded({success:function(e) {$('#loading-whitelist').addClass('label-success');}}),
+	    			this.options.clientList.fetchIfNeeded({success:function(e) {$('#loading-clients').addClass('label-success');}}),
+	    			this.options.systemScopeList.fetchIfNeeded({success:function(e) {$('#loading-scopes').addClass('label-success');}}))
+	    			.done(function() {
+	    				
+	    				var client = _self.options.clientList.getByClientId(_self.model.get('clientId'));
+	    				_self.options.client = client;
+	    				
+	    				$('#loadingbox').sheet('hide');
+	    	    		callback();
+	    			});    	
+			
+		}
+		
+    	
+
+    	
+	},
+	
 	events:{
 		'click .btn-save':'saveWhiteList',
 		'click .btn-cancel':'cancelWhiteList',
@@ -271,9 +342,7 @@ var WhiteListFormView = Backbone.View.extend({
 		// process allowed scopes
         var allowedScopes = this.scopeCollection.pluck("item");
 		
-        if (this.model.get('id') == null) {
-			this.model.set({clientId:$('#clientId input').val()});
-        }
+        this.model.set({clientId: this.options.client.get('clientId')}, {silent: true});
         
 		var valid = this.model.set({
 			allowedScopes: allowedScopes
@@ -336,13 +405,14 @@ var WhiteListFormView = Backbone.View.extend({
         });
 
         var scopeView = new ListWidgetView({
-        	placeholder: 'new scope here', 
-        	autocomplete: this.options.client.scope, 
+        	placeholder: $.t('whitelist.whitelist-form.scope-placeholder'),        	
+        	autocomplete: this.options.client.get("scope"), 
+        	helpBlockText: $.t('whitelist.whitelist-form.scope-help'),
         	collection: this.scopeCollection});
         $("#scope .controls",this.el).html(scopeView.render().el);
         this.listWidgetViews.push(scopeView);
 		
-		
+        $(this.el).i18n();
 		return this;
 
 	}

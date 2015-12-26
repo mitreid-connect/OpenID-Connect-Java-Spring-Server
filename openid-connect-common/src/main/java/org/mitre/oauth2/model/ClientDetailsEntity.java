@@ -1,19 +1,19 @@
 /*******************************************************************************
- * Copyright 2014 The MITRE Corporation
- *   and the MIT Kerberos and Internet Trust Consortium
- * 
+ * Copyright 2015 The MITRE Corporation
+ *   and the MIT Internet Trust Consortium
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- ******************************************************************************/
+ *******************************************************************************/
 /**
  * 
  */
@@ -25,13 +25,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
 import javax.persistence.Basic;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.ElementCollection;
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -49,15 +47,18 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
-import org.mitre.jose.JWEAlgorithmEmbed;
-import org.mitre.jose.JWEEncryptionMethodEmbed;
-import org.mitre.jose.JWSAlgorithmEmbed;
+import org.mitre.oauth2.model.convert.JWEAlgorithmStringConverter;
+import org.mitre.oauth2.model.convert.JWEEncryptionMethodStringConverter;
+import org.mitre.oauth2.model.convert.JWKSetStringConverter;
+import org.mitre.oauth2.model.convert.JWSAlgorithmStringConverter;
+import org.mitre.oauth2.model.convert.SimpleGrantedAuthorityStringConverter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.provider.ClientDetails;
 
 import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.jwk.JWKSet;
 
 /**
  * @author jricher
@@ -66,14 +67,16 @@ import com.nimbusds.jose.JWSAlgorithm;
 @Entity
 @Table(name = "client_details")
 @NamedQueries({
-	@NamedQuery(name = "ClientDetailsEntity.findAll", query = "SELECT c FROM ClientDetailsEntity c"),
-	@NamedQuery(name = "ClientDetailsEntity.getByClientId", query = "select c from ClientDetailsEntity c where c.clientId = :clientId")
+	@NamedQuery(name = ClientDetailsEntity.QUERY_ALL, query = "SELECT c FROM ClientDetailsEntity c"),
+	@NamedQuery(name = ClientDetailsEntity.QUERY_BY_CLIENT_ID, query = "select c from ClientDetailsEntity c where c.clientId = :" + ClientDetailsEntity.PARAM_CLIENT_ID)
 })
 public class ClientDetailsEntity implements ClientDetails {
 
-	/**
-	 * 
-	 */
+	public static final String QUERY_BY_CLIENT_ID = "ClientDetailsEntity.getByClientId";
+	public static final String QUERY_ALL = "ClientDetailsEntity.findAll";
+
+	public static final String PARAM_CLIENT_ID = "clientId";
+
 	private static final int DEFAULT_ID_TOKEN_VALIDITY_SECONDS = 600;
 
 	private static final long serialVersionUID = -1617727085733786296L;
@@ -83,51 +86,52 @@ public class ClientDetailsEntity implements ClientDetails {
 	/** Fields from the OAuth2 Dynamic Registration Specification */
 	private String clientId = null; // client_id
 	private String clientSecret = null; // client_secret
-	private Set<String> redirectUris = new HashSet<String>(); // redirect_uris
+	private Set<String> redirectUris = new HashSet<>(); // redirect_uris
 	private String clientName; // client_name
 	private String clientUri; // client_uri
 	private String logoUri; // logo_uri
 	private Set<String> contacts; // contacts
 	private String tosUri; // tos_uri
 	private AuthMethod tokenEndpointAuthMethod = AuthMethod.SECRET_BASIC; // token_endpoint_auth_method
-	private Set<String> scope = new HashSet<String>(); // scope
-	private Set<String> grantTypes = new HashSet<String>(); // grant_types
-	private Set<String> responseTypes = new HashSet<String>(); // response_types
+	private Set<String> scope = new HashSet<>(); // scope
+	private Set<String> grantTypes = new HashSet<>(); // grant_types
+	private Set<String> responseTypes = new HashSet<>(); // response_types
 	private String policyUri;
-	private String jwksUri;
+	private String jwksUri; // URI pointer to keys
+	private JWKSet jwks; // public key stored by value
 
 	/** Fields from OIDC Client Registration Specification **/
 	private AppType applicationType; // application_type
 	private String sectorIdentifierUri; // sector_identifier_uri
 	private SubjectType subjectType; // subject_type
 
-	private JWSAlgorithmEmbed requestObjectSigningAlg = null; // request_object_signing_alg
+	private JWSAlgorithm requestObjectSigningAlg = null; // request_object_signing_alg
 
-	private JWSAlgorithmEmbed userInfoSignedResponseAlg = null; // user_info_signed_response_alg
-	private JWEAlgorithmEmbed userInfoEncryptedResponseAlg = null; // user_info_encrypted_response_alg
-	private JWEEncryptionMethodEmbed userInfoEncryptedResponseEnc = null; // user_info_encrypted_response_enc
+	private JWSAlgorithm userInfoSignedResponseAlg = null; // user_info_signed_response_alg
+	private JWEAlgorithm userInfoEncryptedResponseAlg = null; // user_info_encrypted_response_alg
+	private EncryptionMethod userInfoEncryptedResponseEnc = null; // user_info_encrypted_response_enc
 
-	private JWSAlgorithmEmbed idTokenSignedResponseAlg = null; // id_token_signed_response_alg
-	private JWEAlgorithmEmbed idTokenEncryptedResponseAlg = null; // id_token_encrypted_response_alg
-	private JWEEncryptionMethodEmbed idTokenEncryptedResponseEnc = null; // id_token_encrypted_response_enc
+	private JWSAlgorithm idTokenSignedResponseAlg = null; // id_token_signed_response_alg
+	private JWEAlgorithm idTokenEncryptedResponseAlg = null; // id_token_encrypted_response_alg
+	private EncryptionMethod idTokenEncryptedResponseEnc = null; // id_token_encrypted_response_enc
 
-	private JWSAlgorithmEmbed tokenEndpointAuthSigningAlg = null; // token_endpoint_auth_signing_alg
+	private JWSAlgorithm tokenEndpointAuthSigningAlg = null; // token_endpoint_auth_signing_alg
 
 	private Integer defaultMaxAge; // default_max_age
 	private Boolean requireAuthTime; // require_auth_time
 	private Set<String> defaultACRvalues; // default_acr_values
 
 	private String initiateLoginUri; // initiate_login_uri
-	private String postLogoutRedirectUri; // post_logout_redirect_uri
+	private Set<String> postLogoutRedirectUris; // post_logout_redirect_uris
 
 	private Set<String> requestUris; // request_uris
 
 	/** Fields to support the ClientDetails interface **/
-	private Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
+	private Set<GrantedAuthority> authorities = new HashSet<>();
 	private Integer accessTokenValiditySeconds = 0; // in seconds
 	private Integer refreshTokenValiditySeconds = 0; // in seconds
-	private Set<String> resourceIds = new HashSet<String>();
-	private Map<String, Object> additionalInformation = new HashMap<String, Object>();
+	private Set<String> resourceIds = new HashSet<>();
+	private Map<String, Object> additionalInformation = new HashMap<>();
 
 	/** Our own fields **/
 	private String clientDescription = ""; // human-readable description
@@ -136,6 +140,10 @@ public class ClientDetailsEntity implements ClientDetails {
 	private boolean allowIntrospection = false; // do we let this client call the introspection endpoint?
 	private Integer idTokenValiditySeconds; //timeout for id tokens
 	private Date createdAt; // time the client was created
+	private boolean clearAccessTokensOnRefresh = true; // do we clear access tokens on refresh?
+
+	/** fields for UMA */
+	private Set<String> claimsRedirectUris;
 
 	public enum AuthMethod {
 		SECRET_POST("client_secret_post"),
@@ -147,7 +155,7 @@ public class ClientDetailsEntity implements ClientDetails {
 		private final String value;
 
 		// map to aid reverse lookup
-		private static final Map<String, AuthMethod> lookup = new HashMap<String, AuthMethod>();
+		private static final Map<String, AuthMethod> lookup = new HashMap<>();
 		static {
 			for (AuthMethod a : AuthMethod.values()) {
 				lookup.put(a.getValue(), a);
@@ -173,7 +181,7 @@ public class ClientDetailsEntity implements ClientDetails {
 		private final String value;
 
 		// map to aid reverse lookup
-		private static final Map<String, AppType> lookup = new HashMap<String, AppType>();
+		private static final Map<String, AppType> lookup = new HashMap<>();
 		static {
 			for (AppType a : AppType.values()) {
 				lookup.put(a.getValue(), a);
@@ -199,7 +207,7 @@ public class ClientDetailsEntity implements ClientDetails {
 		private final String value;
 
 		// map to aid reverse lookup
-		private static final Map<String, SubjectType> lookup = new HashMap<String, SubjectType>();
+		private static final Map<String, SubjectType> lookup = new HashMap<>();
 		static {
 			for (SubjectType u : SubjectType.values()) {
 				lookup.put(u.getValue(), u);
@@ -353,8 +361,8 @@ public class ClientDetailsEntity implements ClientDetails {
 	public boolean isSecretRequired() {
 		if (getTokenEndpointAuthMethod() != null &&
 				(getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_BASIC) ||
-				 getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_POST) ||
-				 getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_JWT))) {
+						getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_POST) ||
+						getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_JWT))) {
 			return true;
 		} else {
 			return false;
@@ -464,6 +472,7 @@ public class ClientDetailsEntity implements ClientDetails {
 			joinColumns=@JoinColumn(name="owner_id")
 			)
 	@Override
+	@Convert(converter = SimpleGrantedAuthorityStringConverter.class)
 	@Column(name="authority")
 	public Set<GrantedAuthority> getAuthorities() {
 		return authorities;
@@ -688,6 +697,23 @@ public class ClientDetailsEntity implements ClientDetails {
 		this.jwksUri = jwksUri;
 	}
 
+	/**
+	 * @return the jwks
+	 */
+	@Basic
+	@Column(name="jwks")
+	@Convert(converter = JWKSetStringConverter.class)
+	public JWKSet getJwks() {
+		return jwks;
+	}
+
+	/**
+	 * @param jwks the jwks to set
+	 */
+	public void setJwks(JWKSet jwks) {
+		this.jwks = jwks;
+	}
+
 	@Basic
 	@Column(name="sector_identifier_uri")
 	public String getSectorIdentifierUri() {
@@ -698,211 +724,93 @@ public class ClientDetailsEntity implements ClientDetails {
 		this.sectorIdentifierUri = sectorIdentifierUri;
 	}
 
-	@Embedded
-	@AttributeOverrides({
-		@AttributeOverride(name = "algorithmName", column=@Column(name="request_object_signing_alg"))
-	})
-	public JWSAlgorithmEmbed getRequestObjectSigningAlgEmbed() {
+	@Basic
+	@Column(name = "request_object_signing_alg")
+	@Convert(converter = JWSAlgorithmStringConverter.class)
+	public JWSAlgorithm getRequestObjectSigningAlg() {
 		return requestObjectSigningAlg;
 	}
 
-	public void setRequestObjectSigningAlgEmbed(JWSAlgorithmEmbed requestObjectSigningAlg) {
+	public void setRequestObjectSigningAlg(JWSAlgorithm requestObjectSigningAlg) {
 		this.requestObjectSigningAlg = requestObjectSigningAlg;
 	}
 
-	@Embedded
-	@AttributeOverrides({
-		@AttributeOverride(name = "algorithmName", column=@Column(name="user_info_signed_response_alg"))
-	})
-	public JWSAlgorithmEmbed getUserInfoSignedResponseAlgEmbed() {
+	@Basic
+	@Column(name = "user_info_signed_response_alg")
+	@Convert(converter = JWSAlgorithmStringConverter.class)
+	public JWSAlgorithm getUserInfoSignedResponseAlg() {
 		return userInfoSignedResponseAlg;
 	}
 
-	public void setUserInfoSignedResponseAlgEmbed(JWSAlgorithmEmbed userInfoSignedResponseAlg) {
+	public void setUserInfoSignedResponseAlg(JWSAlgorithm userInfoSignedResponseAlg) {
 		this.userInfoSignedResponseAlg = userInfoSignedResponseAlg;
 	}
 
-	@Embedded
-	@AttributeOverrides({
-		@AttributeOverride(name = "algorithmName", column=@Column(name="user_info_encrypted_response_alg"))
-	})
-	public JWEAlgorithmEmbed getUserInfoEncryptedResponseAlgEmbed() {
+	@Basic
+	@Column(name = "user_info_encrypted_response_alg")
+	@Convert(converter = JWEAlgorithmStringConverter.class)
+	public JWEAlgorithm getUserInfoEncryptedResponseAlg() {
 		return userInfoEncryptedResponseAlg;
 	}
 
-	public void setUserInfoEncryptedResponseAlgEmbed(JWEAlgorithmEmbed userInfoEncryptedResponseAlg) {
+	public void setUserInfoEncryptedResponseAlg(JWEAlgorithm userInfoEncryptedResponseAlg) {
 		this.userInfoEncryptedResponseAlg = userInfoEncryptedResponseAlg;
 	}
 
-	@Embedded
-	@AttributeOverrides({
-		@AttributeOverride(name = "algorithmName", column=@Column(name="user_info_encrypted_response_enc"))
-	})
-	public JWEEncryptionMethodEmbed getUserInfoEncryptedResponseEncEmbed() {
+	@Basic
+	@Column(name = "user_info_encrypted_response_enc")
+	@Convert(converter = JWEEncryptionMethodStringConverter.class)
+	public EncryptionMethod getUserInfoEncryptedResponseEnc() {
 		return userInfoEncryptedResponseEnc;
 	}
 
-	public void setUserInfoEncryptedResponseEncEmbed(JWEEncryptionMethodEmbed userInfoEncryptedResponseEnc) {
+	public void setUserInfoEncryptedResponseEnc(EncryptionMethod userInfoEncryptedResponseEnc) {
 		this.userInfoEncryptedResponseEnc = userInfoEncryptedResponseEnc;
 	}
 
-	@Embedded
-	@AttributeOverrides({
-		@AttributeOverride(name = "algorithmName", column=@Column(name="id_token_signed_response_alg"))
-	})
-	public JWSAlgorithmEmbed getIdTokenSignedResponseAlgEmbed() {
+	@Basic
+	@Column(name="id_token_signed_response_alg")
+	@Convert(converter = JWSAlgorithmStringConverter.class)
+	public JWSAlgorithm getIdTokenSignedResponseAlg() {
 		return idTokenSignedResponseAlg;
 	}
 
-	public void setIdTokenSignedResponseAlgEmbed(JWSAlgorithmEmbed idTokenSignedResponseAlg) {
+	public void setIdTokenSignedResponseAlg(JWSAlgorithm idTokenSignedResponseAlg) {
 		this.idTokenSignedResponseAlg = idTokenSignedResponseAlg;
 	}
 
-	@Embedded
-	@AttributeOverrides({
-		@AttributeOverride(name = "algorithmName", column=@Column(name="id_token_encrypted_response_alg"))
-	})
-	public JWEAlgorithmEmbed getIdTokenEncryptedResponseAlgEmbed() {
+	@Basic
+	@Column(name = "id_token_encrypted_response_alg")
+	@Convert(converter = JWEAlgorithmStringConverter.class)
+	public JWEAlgorithm getIdTokenEncryptedResponseAlg() {
 		return idTokenEncryptedResponseAlg;
 	}
 
-	public void setIdTokenEncryptedResponseAlgEmbed(JWEAlgorithmEmbed idTokenEncryptedResponseAlg) {
+	public void setIdTokenEncryptedResponseAlg(JWEAlgorithm idTokenEncryptedResponseAlg) {
 		this.idTokenEncryptedResponseAlg = idTokenEncryptedResponseAlg;
 	}
 
-	@Embedded
-	@AttributeOverrides({
-		@AttributeOverride(name = "algorithmName", column=@Column(name="id_token_encrypted_response_enc"))
-	})
-	public JWEEncryptionMethodEmbed getIdTokenEncryptedResponseEncEmbed() {
+	@Basic
+	@Column(name = "id_token_encrypted_response_enc")
+	@Convert(converter = JWEEncryptionMethodStringConverter.class)
+	public EncryptionMethod getIdTokenEncryptedResponseEnc() {
 		return idTokenEncryptedResponseEnc;
 	}
 
-	public void setIdTokenEncryptedResponseEncEmbed(JWEEncryptionMethodEmbed idTokenEncryptedResponseEnc) {
+	public void setIdTokenEncryptedResponseEnc(EncryptionMethod idTokenEncryptedResponseEnc) {
 		this.idTokenEncryptedResponseEnc = idTokenEncryptedResponseEnc;
 	}
 
-	@Embedded
-	@AttributeOverrides({
-		@AttributeOverride(name = "algorithmName", column=@Column(name="token_endpoint_auth_signing_alg"))
-	})
-	public JWSAlgorithmEmbed getTokenEndpointAuthSigningAlgEmbed() {
+	@Basic
+	@Column(name="token_endpoint_auth_signing_alg")
+	@Convert(converter = JWSAlgorithmStringConverter.class)
+	public JWSAlgorithm getTokenEndpointAuthSigningAlg() {
 		return tokenEndpointAuthSigningAlg;
 	}
 
-	public void setTokenEndpointAuthSigningAlgEmbed(JWSAlgorithmEmbed tokenEndpointAuthSigningAlgEmbed) {
-		this.tokenEndpointAuthSigningAlg = tokenEndpointAuthSigningAlgEmbed;
-	}
-
-	//
-	// Transient passthrough methods for JOSE elements
-	//
-
-	@Transient
-	public JWSAlgorithm getRequestObjectSigningAlg() {
-		if (requestObjectSigningAlg != null) {
-			return requestObjectSigningAlg.getAlgorithm();
-		} else {
-			return null;
-		}
-	}
-
-	public void setRequestObjectSigningAlg(JWSAlgorithm requestObjectSigningAlg) {
-		this.requestObjectSigningAlg = new JWSAlgorithmEmbed(requestObjectSigningAlg);
-	}
-
-	@Transient
-	public JWSAlgorithm getUserInfoSignedResponseAlg() {
-		if (userInfoSignedResponseAlg != null) {
-			return userInfoSignedResponseAlg.getAlgorithm();
-		} else {
-			return null;
-		}
-	}
-
-	public void setUserInfoSignedResponseAlg(JWSAlgorithm userInfoSignedResponseAlg) {
-		this.userInfoSignedResponseAlg = new JWSAlgorithmEmbed(userInfoSignedResponseAlg);
-	}
-
-	@Transient
-	public JWEAlgorithm getUserInfoEncryptedResponseAlg() {
-		if (userInfoEncryptedResponseAlg != null) {
-			return userInfoEncryptedResponseAlg.getAlgorithm();
-		} else {
-			return null;
-		}
-	}
-
-	public void setUserInfoEncryptedResponseAlg(JWEAlgorithm userInfoEncryptedResponseAlg) {
-		this.userInfoEncryptedResponseAlg = new JWEAlgorithmEmbed(userInfoEncryptedResponseAlg);
-	}
-
-	@Transient
-	public EncryptionMethod getUserInfoEncryptedResponseEnc() {
-		if (userInfoEncryptedResponseEnc != null) {
-			return userInfoEncryptedResponseEnc.getAlgorithm();
-		} else {
-			return null;
-		}
-	}
-
-	public void setUserInfoEncryptedResponseEnc(EncryptionMethod userInfoEncryptedResponseEnc) {
-		this.userInfoEncryptedResponseEnc = new JWEEncryptionMethodEmbed(userInfoEncryptedResponseEnc);
-	}
-
-	@Transient
-	public JWSAlgorithm getIdTokenSignedResponseAlg() {
-		if (idTokenSignedResponseAlg != null) {
-			return idTokenSignedResponseAlg.getAlgorithm();
-		} else {
-			return null;
-		}
-	}
-
-	public void setIdTokenSignedResponseAlg(JWSAlgorithm idTokenSignedResponseAlg) {
-		this.idTokenSignedResponseAlg = new JWSAlgorithmEmbed(idTokenSignedResponseAlg);
-	}
-
-	@Transient
-	public JWEAlgorithm getIdTokenEncryptedResponseAlg() {
-		if (idTokenEncryptedResponseAlg != null) {
-			return idTokenEncryptedResponseAlg.getAlgorithm();
-		} else {
-			return null;
-		}
-	}
-
-	public void setIdTokenEncryptedResponseAlg(JWEAlgorithm idTokenEncryptedResponseAlg) {
-		this.idTokenEncryptedResponseAlg = new JWEAlgorithmEmbed(idTokenEncryptedResponseAlg);
-	}
-
-	@Transient
-	public EncryptionMethod getIdTokenEncryptedResponseEnc() {
-		if (idTokenEncryptedResponseEnc != null) {
-			return idTokenEncryptedResponseEnc.getAlgorithm();
-		} else {
-			return null;
-		}
-	}
-
-	public void setIdTokenEncryptedResponseEnc(EncryptionMethod idTokenEncryptedResponseEnc) {
-		this.idTokenEncryptedResponseEnc = new JWEEncryptionMethodEmbed(idTokenEncryptedResponseEnc);
-	}
-
-	@Transient
-	public JWSAlgorithm getTokenEndpointAuthSigningAlg() {
-		if (tokenEndpointAuthSigningAlg != null) {
-			return tokenEndpointAuthSigningAlg.getAlgorithm();
-		} else {
-			return null;
-		}
-	}
-
 	public void setTokenEndpointAuthSigningAlg(JWSAlgorithm tokenEndpointAuthSigningAlg) {
-		this.tokenEndpointAuthSigningAlg = new JWSAlgorithmEmbed(tokenEndpointAuthSigningAlg);
+		this.tokenEndpointAuthSigningAlg = tokenEndpointAuthSigningAlg;
 	}
-
-	// END Transient JOSE methods
 
 	@Basic
 	@Column(name="default_max_age")
@@ -983,17 +891,21 @@ public class ClientDetailsEntity implements ClientDetails {
 	/**
 	 * @return the postLogoutRedirectUri
 	 */
-	@Basic
+	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(
+			name="client_post_logout_redirect_uri",
+			joinColumns=@JoinColumn(name="owner_id")
+			)
 	@Column(name="post_logout_redirect_uri")
-	public String getPostLogoutRedirectUri() {
-		return postLogoutRedirectUri;
+	public Set<String> getPostLogoutRedirectUris() {
+		return postLogoutRedirectUris;
 	}
 
 	/**
 	 * @param postLogoutRedirectUri the postLogoutRedirectUri to set
 	 */
-	public void setPostLogoutRedirectUri(String postLogoutRedirectUri) {
-		this.postLogoutRedirectUri = postLogoutRedirectUri;
+	public void setPostLogoutRedirectUris(Set<String> postLogoutRedirectUri) {
+		this.postLogoutRedirectUris = postLogoutRedirectUri;
 	}
 
 	/**
@@ -1038,6 +950,42 @@ public class ClientDetailsEntity implements ClientDetails {
 	@Override
 	public boolean isAutoApprove(String scope) {
 		return false;
+	}
+
+	/**
+	 * @return the clearAccessTokensOnRefresh
+	 */
+	@Basic
+	@Column(name = "clear_access_tokens_on_refresh")
+	public boolean isClearAccessTokensOnRefresh() {
+		return clearAccessTokensOnRefresh;
+	}
+
+	/**
+	 * @param clearAccessTokensOnRefresh the clearAccessTokensOnRefresh to set
+	 */
+	public void setClearAccessTokensOnRefresh(boolean clearAccessTokensOnRefresh) {
+		this.clearAccessTokensOnRefresh = clearAccessTokensOnRefresh;
+	}
+
+	/**
+	 * @return the claimsRedirectUris
+	 */
+	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(
+			name="client_claims_redirect_uri",
+			joinColumns=@JoinColumn(name="owner_id")
+			)
+	@Column(name="redirect_uri")
+	public Set<String> getClaimsRedirectUris() {
+		return claimsRedirectUris;
+	}
+
+	/**
+	 * @param claimsRedirectUris the claimsRedirectUris to set
+	 */
+	public void setClaimsRedirectUris(Set<String> claimsRedirectUris) {
+		this.claimsRedirectUris = claimsRedirectUris;
 	}
 
 }

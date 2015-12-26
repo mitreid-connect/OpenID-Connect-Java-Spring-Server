@@ -1,19 +1,19 @@
 /*******************************************************************************
- * Copyright 2014 The MITRE Corporation
- *   and the MIT Kerberos and Internet Trust Consortium
- * 
+ * Copyright 2015 The MITRE Corporation
+ *   and the MIT Internet Trust Consortium
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- ******************************************************************************/
+ *******************************************************************************/
 /**
  * 
  */
@@ -37,17 +37,22 @@ import javax.persistence.Transient;
 @Entity
 @Table(name = "system_scope")
 @NamedQueries({
-	@NamedQuery(name = "SystemScope.findAll", query = "select s from SystemScope s ORDER BY s.id"),
-	@NamedQuery(name = "SystemScope.getByValue", query = "select s from SystemScope s WHERE s.value = :value")
+	@NamedQuery(name = SystemScope.QUERY_ALL, query = "select s from SystemScope s ORDER BY s.id"),
+	@NamedQuery(name = SystemScope.QUERY_BY_VALUE, query = "select s from SystemScope s WHERE s.value = :" + SystemScope.PARAM_VALUE)
 })
 public class SystemScope {
+
+	public static final String QUERY_BY_VALUE = "SystemScope.getByValue";
+	public static final String QUERY_ALL = "SystemScope.findAll";
+
+	public static final String PARAM_VALUE = "value";
 
 	private Long id;
 	private String value; // scope value
 	private String description; // human-readable description
 	private String icon; // class of the icon to display on the auth page
-	private boolean allowDynReg = false; // can a dynamically registered client ask for this scope?
 	private boolean defaultScope = false; // is this a default scope for newly-registered clients?
+	private boolean restricted = false; // is this scope restricted to admin-only registration access?
 	private boolean structured = false; // is this a default scope for newly-registered clients?
 	private String structuredParamDescription;
 	private String structuredValue;
@@ -124,20 +129,6 @@ public class SystemScope {
 	public void setIcon(String icon) {
 		this.icon = icon;
 	}
-	/**
-	 * @return the allowDynReg
-	 */
-	@Basic
-	@Column(name = "allow_dyn_reg")
-	public boolean isAllowDynReg() {
-		return allowDynReg;
-	}
-	/**
-	 * @param allowDynReg the allowDynReg to set
-	 */
-	public void setAllowDynReg(boolean allowDynReg) {
-		this.allowDynReg = allowDynReg;
-	}
 
 	/**
 	 * @return the defaultScope
@@ -153,6 +144,22 @@ public class SystemScope {
 	 */
 	public void setDefaultScope(boolean defaultScope) {
 		this.defaultScope = defaultScope;
+	}
+
+	/**
+	 * @return the restricted
+	 */
+	@Basic
+	@Column(name = "restricted")
+	public boolean isRestricted() {
+		return restricted;
+	}
+
+	/**
+	 * @param restricted the restricted to set
+	 */
+	public void setRestricted(boolean restricted) {
+		this.restricted = restricted;
 	}
 
 	/**
@@ -208,14 +215,19 @@ public class SystemScope {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + (allowDynReg ? 1231 : 1237);
 		result = prime * result + (defaultScope ? 1231 : 1237);
-		result = prime * result + ((description == null) ? 0 : description.hashCode());
+		result = prime * result
+				+ ((description == null) ? 0 : description.hashCode());
 		result = prime * result + ((icon == null) ? 0 : icon.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + (restricted ? 1231 : 1237);
 		result = prime * result + (structured ? 1231 : 1237);
-		result = prime * result + ((structuredParamDescription == null) ? 0 : structuredParamDescription.hashCode());
-		result = prime * result + ((structuredValue == null) ? 0 : structuredValue.hashCode());
+		result = prime
+				* result
+				+ ((structuredParamDescription == null) ? 0
+						: structuredParamDescription.hashCode());
+		result = prime * result
+				+ ((structuredValue == null) ? 0 : structuredValue.hashCode());
 		result = prime * result + ((value == null) ? 0 : value.hashCode());
 		return result;
 	}
@@ -231,13 +243,10 @@ public class SystemScope {
 		if (obj == null) {
 			return false;
 		}
-		if (!(obj instanceof SystemScope)) {
+		if (getClass() != obj.getClass()) {
 			return false;
 		}
 		SystemScope other = (SystemScope) obj;
-		if (allowDynReg != other.allowDynReg) {
-			return false;
-		}
 		if (defaultScope != other.defaultScope) {
 			return false;
 		}
@@ -262,6 +271,9 @@ public class SystemScope {
 		} else if (!id.equals(other.id)) {
 			return false;
 		}
+		if (restricted != other.restricted) {
+			return false;
+		}
 		if (structured != other.structured) {
 			return false;
 		}
@@ -269,7 +281,8 @@ public class SystemScope {
 			if (other.structuredParamDescription != null) {
 				return false;
 			}
-		} else if (!structuredParamDescription.equals(other.structuredParamDescription)) {
+		} else if (!structuredParamDescription
+				.equals(other.structuredParamDescription)) {
 			return false;
 		}
 		if (structuredValue == null) {
@@ -294,7 +307,11 @@ public class SystemScope {
 	 */
 	@Override
 	public String toString() {
-		return "SystemScope [id=" + id + ", value=" + value + ", description=" + description + ", icon=" + icon + ", allowDynReg=" + allowDynReg + ", defaultScope=" + defaultScope + ", structured=" + structured + ", structuredParamDescription=" + structuredParamDescription + ", structuredValue="
+		return "SystemScope [id=" + id + ", value=" + value + ", description="
+				+ description + ", icon=" + icon + ", defaultScope="
+				+ defaultScope + ", restricted=" + restricted + ", structured="
+				+ structured + ", structuredParamDescription="
+				+ structuredParamDescription + ", structuredValue="
 				+ structuredValue + "]";
 	}
 

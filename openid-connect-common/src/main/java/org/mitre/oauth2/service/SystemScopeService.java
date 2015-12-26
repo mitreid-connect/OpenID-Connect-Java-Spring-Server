@@ -1,19 +1,19 @@
 /*******************************************************************************
- * Copyright 2014 The MITRE Corporation
- *   and the MIT Kerberos and Internet Trust Consortium
- * 
+ * Copyright 2015 The MITRE Corporation
+ *   and the MIT Internet Trust Consortium
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- ******************************************************************************/
+ *******************************************************************************/
 /**
  * 
  */
@@ -23,6 +23,8 @@ import java.util.Set;
 
 import org.mitre.oauth2.model.SystemScope;
 
+import com.google.common.collect.Sets;
+
 /**
  * @author jricher
  *
@@ -30,9 +32,19 @@ import org.mitre.oauth2.model.SystemScope;
 public interface SystemScopeService {
 
 	public static final String OFFLINE_ACCESS = "offline_access";
-	public static final String ID_TOKEN_SCOPE = "id-token";
-	public static final String REGISTRATION_TOKEN_SCOPE = "registration-token";
-	public static final String RESOURCE_TOKEN_SCOPE = "resource-token";
+	public static final String OPENID_SCOPE = "openid";
+	public static final String ID_TOKEN_SCOPE = "id-token"; // ID tokens are generated using this scope
+	public static final String REGISTRATION_TOKEN_SCOPE = "registration-token"; // this scope manages dynamic client registrations
+	public static final String RESOURCE_TOKEN_SCOPE = "resource-token"; // this scope manages client-style protected resources
+	public static final String UMA_PROTECTION_SCOPE = "uma_protection";
+	public static final String UMA_AUTHORIZATION_SCOPE = "uma_authorization";
+	
+	public static final Set<SystemScope> reservedScopes = 
+		Sets.newHashSet(
+			new SystemScope(ID_TOKEN_SCOPE),
+			new SystemScope(REGISTRATION_TOKEN_SCOPE),
+			new SystemScope(RESOURCE_TOKEN_SCOPE)
+		);
 
 	public Set<SystemScope> getAll();
 
@@ -43,10 +55,25 @@ public interface SystemScopeService {
 	public Set<SystemScope> getDefaults();
 
 	/**
-	 * Get all scopes that are allowed for dynamic registration on this system
+	 * Get all the reserved system scopes. These can't be used
+	 * by clients directly, but are instead tied to special system
+	 * tokens like id tokens and registration access tokens.
+	 * 
 	 * @return
 	 */
-	public Set<SystemScope> getDynReg();
+	public Set<SystemScope> getReserved();
+
+	/**
+	 * Get all the registered scopes that are restricted.
+	 * @return
+	 */
+	public Set<SystemScope> getRestricted();
+
+	/**
+	 * Get all the registered scopes that aren't restricted.
+	 * @return
+	 */
+	public Set<SystemScope> getUnrestricted();
 
 	public SystemScope getById(Long id);
 
@@ -81,9 +108,18 @@ public interface SystemScopeService {
 	public boolean scopesMatch(Set<String> expected, Set<String> actual);
 
 	/**
-	 * Remove any system-restricted scopes from the set and return the result.
+	 * Remove any system-reserved or registered restricted scopes from the
+	 * set and return the result.
 	 * @param scopes
 	 * @return
 	 */
-	public Set<String> removeRestrictedScopes(Set<String> scopes);
+	public Set<SystemScope> removeRestrictedAndReservedScopes(Set<SystemScope> scopes);
+
+	/**
+	 * Remove any system-reserved scopes from the set and return the result.
+	 * @param scopes
+	 * @return
+	 */
+	public Set<SystemScope> removeReservedScopes(Set<SystemScope> scopes);
+
 }

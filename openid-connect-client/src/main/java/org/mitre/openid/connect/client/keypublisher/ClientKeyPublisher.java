@@ -1,26 +1,26 @@
 /*******************************************************************************
- * Copyright 2014 The MITRE Corporation
- *   and the MIT Kerberos and Internet Trust Consortium
- * 
+ * Copyright 2015 The MITRE Corporation
+ *   and the MIT Internet Trust Consortium
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- ******************************************************************************/
+ *******************************************************************************/
 package org.mitre.openid.connect.client.keypublisher;
 
 import java.util.Map;
 import java.util.UUID;
 
-import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
-import org.mitre.openid.connect.view.JwkKeyListView;
+import org.mitre.jwt.signer.service.JWTSigningAndValidationService;
+import org.mitre.openid.connect.view.JWKSetView;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -37,13 +37,13 @@ import com.nimbusds.jose.jwk.JWK;
  */
 public class ClientKeyPublisher implements BeanDefinitionRegistryPostProcessor {
 
-	private JwtSigningAndValidationService signingAndValidationService;
+	private JWTSigningAndValidationService signingAndValidationService;
 
 	private String jwkPublishUrl;
 
 	private BeanDefinitionRegistry registry;
 
-	private String jwkViewName = JwkKeyListView.VIEWNAME;
+	private String jwkViewName = JWKSetView.VIEWNAME;
 
 	/**
 	 * If the jwkPublishUrl field is set on this bean, set up a listener on that URL to publish keys.
@@ -61,13 +61,13 @@ public class ClientKeyPublisher implements BeanDefinitionRegistryPostProcessor {
 				clientKeyMapping.addPropertyValue("jwkPublishUrl", getJwkPublishUrl());
 
 				// randomize view name to make sure it doesn't conflict with local views
-				jwkViewName = JwkKeyListView.VIEWNAME + "-" + UUID.randomUUID().toString();
+				jwkViewName = JWKSetView.VIEWNAME + "-" + UUID.randomUUID().toString();
 				viewResolver.addPropertyValue("jwkViewName", jwkViewName);
 
 				// view bean
-				BeanDefinitionBuilder jwkView = BeanDefinitionBuilder.rootBeanDefinition(JwkKeyListView.class);
-				registry.registerBeanDefinition(JwkKeyListView.VIEWNAME, jwkView.getBeanDefinition());
-				viewResolver.addPropertyReference("jwk", "jwkKeyList");
+				BeanDefinitionBuilder jwkView = BeanDefinitionBuilder.rootBeanDefinition(JWKSetView.class);
+				registry.registerBeanDefinition(JWKSetView.VIEWNAME, jwkView.getBeanDefinition());
+				viewResolver.addPropertyReference("jwk", JWKSetView.VIEWNAME);
 			}
 
 			registry.registerBeanDefinition("clientKeyMapping", clientKeyMapping.getBeanDefinition());
@@ -114,14 +114,14 @@ public class ClientKeyPublisher implements BeanDefinitionRegistryPostProcessor {
 	/**
 	 * @return the signingAndValidationService
 	 */
-	public JwtSigningAndValidationService getSigningAndValidationService() {
+	public JWTSigningAndValidationService getSigningAndValidationService() {
 		return signingAndValidationService;
 	}
 
 	/**
 	 * @param signingAndValidationService the signingAndValidationService to set
 	 */
-	public void setSigningAndValidationService(JwtSigningAndValidationService signingAndValidationService) {
+	public void setSigningAndValidationService(JWTSigningAndValidationService signingAndValidationService) {
 		this.signingAndValidationService = signingAndValidationService;
 	}
 

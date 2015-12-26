@@ -1,153 +1,137 @@
 <?xml version="1.0"?>
+<!--
+    Copyright 2015 The MITRE Corporation
+      and the MIT Internet Trust Consortium
+   
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+   
+      http://www.apache.org/licenses/LICENSE-2.0
+   
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+ -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.mitre</groupId>
-    <artifactId>openid-connect-parent</artifactId>
-    <version>1.2.0-SNAPSHOT</version>
-  </parent>
-  <artifactId>openid-connect-server-webapp</artifactId>
-  <packaging>war</packaging>
-  <name>OpenID Connect Server Webapp</name>
-  <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>${java-version}</source>
-                    <target>${java-version}</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <configuration>
-                    <warName>openid-connect-server-webapp</warName>
-					<nonFilteredFileExtensions>
-						<nonFilteredFileExtension>gif</nonFilteredFileExtension>
-						<nonFilteredFileExtension>ico</nonFilteredFileExtension>
-						<nonFilteredFileExtension>jpg</nonFilteredFileExtension>
-						<nonFilteredFileExtension>png</nonFilteredFileExtension>
-						<nonFilteredFileExtension>pdf</nonFilteredFileExtension>
-					</nonFilteredFileExtensions>
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.mitre</groupId>
+		<artifactId>openid-connect-parent</artifactId>
+		<version>1.2.4-SNAPSHOT</version>
+	</parent>
+	<artifactId>openid-connect-server-webapp</artifactId>
+	<packaging>war</packaging>
+	<name>OpenID Connect Server Webapp</name>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>${java-version}</source>
+					<target>${java-version}</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<configuration>
+					<warName>openid-connect-server-webapp</warName>
 					<webResources>
 						<resource>
 							<directory>src/main/webapp</directory>
 							<filtering>true</filtering>
+							<includes>
+								<include>**/*.tag</include>
+								<include>**/*.jsp</include>
+							</includes>
+						</resource>
+						<resource>
+							<directory>src/main/webapp</directory>
+							<filtering>false</filtering>
+							<excludes>
+								<exclude>**/*.tag</exclude>
+								<exclude>**/*.jsp</exclude>
+							</excludes>
 						</resource>
 					</webResources>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>install</id>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>sources</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-maven-plugin</artifactId>
-                <configuration>
-                	<webAppConfig>
-                	    <contextPath>/openid-connect-server-webapp</contextPath>
-                	</webAppConfig>
-                </configuration>
-            </plugin>
-        </plugins>
-  </build>
-  <dependencies>
-  	<dependency>
-  		<groupId>org.mitre</groupId>
-  		<artifactId>openid-connect-server</artifactId>
-  		<version>${project.version}</version>
-  	</dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-orm</artifactId>
-            <version>${org.springframework-version}</version>
-            <exclusions>
-                <!-- Exclude Commons Logging in favor of SLF4j -->
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-  	     <dependency>
-	         <groupId>org.slf4j</groupId>
-	         <artifactId>jcl-over-slf4j</artifactId>
-	         <version>${org.slf4j-version}</version>
-	         <scope>runtime</scope>
-	     </dependency>
-	 <dependency>
-         <groupId>org.slf4j</groupId>
-         <artifactId>slf4j-log4j12</artifactId>
-         <version>${org.slf4j-version}</version>
-         <scope>runtime</scope>
-     </dependency>
-     <dependency>
-         <groupId>log4j</groupId>
-         <artifactId>log4j</artifactId>
-         <version>1.2.15</version>
-         <exclusions>
-             <exclusion>
-                 <groupId>javax.mail</groupId>
-                 <artifactId>mail</artifactId>
-             </exclusion>
-             <exclusion>
-                 <groupId>javax.jms</groupId>
-                 <artifactId>jms</artifactId>
-             </exclusion>
-             <exclusion>
-                 <groupId>com.sun.jdmk</groupId>
-                 <artifactId>jmxtools</artifactId>
-             </exclusion>
-             <exclusion>
-                 <groupId>com.sun.jmx</groupId>
-                 <artifactId>jmxri</artifactId>
-             </exclusion>
-         </exclusions>
-         <scope>runtime</scope>
-     </dependency>
-  	<dependency>
-            <groupId>commons-dbcp</groupId>
-            <artifactId>commons-dbcp</artifactId>
-            <version>1.4</version>
-    </dependency>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>install</id>
+						<phase>install</phase>
+						<goals>
+							<goal>sources</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-maven-plugin</artifactId>
+				<configuration>
+					<war>${project.build.directory}/openid-connect-server-webapp.war</war>
+					<webAppConfig>
+						<contextPath>/openid-connect-server-webapp</contextPath>
+					</webAppConfig>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	<dependencies>
+		<dependency>
+			<groupId>org.mitre</groupId>
+			<artifactId>openid-connect-server</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-orm</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.hsqldb</groupId>
 			<artifactId>hsqldb</artifactId>
-			<version>2.2.9</version>
 		</dependency>
-  	    <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.jpa</artifactId>
-            <version>2.5.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-taglibs</artifactId>
-            <version>${spring.security.version}</version>
-            <exclusions>
-            	<exclusion>
-            		<groupId>org.springframework</groupId>
-            		<artifactId>*</artifactId>
-            	</exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>jstl</artifactId>
-            <version>1.2</version>
-        </dependency>
+		<dependency>
+			<groupId>org.eclipse.persistence</groupId>
+			<artifactId>org.eclipse.persistence.jpa</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-taglibs</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>jstl</artifactId>
+		</dependency>
 
-  </dependencies>
+		<dependency>
+			<groupId>com.zaxxer</groupId>
+			<artifactId>HikariCP</artifactId>
+		</dependency>
+	</dependencies>
 </project>

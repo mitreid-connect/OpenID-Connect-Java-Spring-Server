@@ -1,19 +1,19 @@
 /*******************************************************************************
- * Copyright 2014 The MITRE Corporation
- *   and the MIT Kerberos and Internet Trust Consortium
- * 
+ * Copyright 2015 The MITRE Corporation
+ *   and the MIT Internet Trust Consortium
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- ******************************************************************************/
+ *******************************************************************************/
 package org.mitre.oauth2.service.impl;
 
 import java.math.BigInteger;
@@ -22,23 +22,28 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.mitre.oauth2.model.ClientDetailsEntity;
+import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.repository.OAuth2ClientRepository;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.SystemScopeService;
+import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.mitre.openid.connect.model.WhitelistedSite;
 import org.mitre.openid.connect.service.ApprovedSiteService;
 import org.mitre.openid.connect.service.BlacklistedSiteService;
 import org.mitre.openid.connect.service.StatsService;
 import org.mitre.openid.connect.service.WhitelistedSiteService;
+import org.mitre.uma.model.ResourceSet;
+import org.mitre.uma.service.ResourceSetService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +64,10 @@ import com.google.gson.JsonParser;
 @Service
 public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEntityService {
 
-	private static Logger logger = LoggerFactory.getLogger(DefaultOAuth2ClientDetailsEntityService.class);
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.getLogger(DefaultOAuth2ClientDetailsEntityService.class);
 
 	@Autowired
 	private OAuth2ClientRepository clientRepository;
@@ -81,6 +89,12 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 
 	@Autowired
 	private StatsService statsService;
+
+	@Autowired
+	private ResourceSetService resourceSetService;
+
+	@Autowired
+	private ConfigurationPropertiesBean config;
 
 	// map of sector URI -> list of redirect URIs
 	private LoadingCache<String, List<String>> sectorRedirects = CacheBuilder.newBuilder()
@@ -108,8 +122,11 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 			client = generateClientId(client);
 		}
 
-		// for refresh tokens, ensure consistency between grant types and tokens
+		// make sure that clients with the "refresh_token" grant type have the "offline_access" scope, and vice versa
 		ensureRefreshTokenConsistency(client);
+
+		// make sure we don't have both a JWKS and a JWKS URI
+		ensureKeyConsistency(client);
 
 		// timestamp this to right now
 		client.setCreatedAt(new Date());
@@ -119,14 +136,32 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 		checkSectorIdentifierUri(client);
 
 
-		// make sure a client doesn't get any special system scopes
-		client.setScope(scopeService.removeRestrictedScopes(client.getScope()));
+		ensureNoReservedScopes(client);
 
 		ClientDetailsEntity c = clientRepository.saveClient(client);
 
 		statsService.resetCache();
 
 		return c;
+	}
+
+	/**
+	 * @param client
+	 */
+	private void ensureKeyConsistency(ClientDetailsEntity client) {
+		if (client.getJwksUri() != null && client.getJwks() != null) {
+			// a client can only have one key type or the other, not both
+			throw new IllegalArgumentException("A client cannot have both JWKS URI and JWKS value");
+		}
+	}
+
+	private void ensureNoReservedScopes(ClientDetailsEntity client) {
+		// make sure a client doesn't get any special system scopes
+		Set<SystemScope> requestedScope = scopeService.fromStrings(client.getScope());
+
+		requestedScope = scopeService.removeReservedScopes(requestedScope);
+
+		client.setScope(scopeService.toStrings(requestedScope));
 	}
 
 	private void checkSectorIdentifierUri(ClientDetailsEntity client) {
@@ -142,14 +177,14 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 					}
 				}
 
-			} catch (ExecutionException e) {
-				throw new IllegalArgumentException("Unable to load sector identifier URI: " + client.getSectorIdentifierUri());
+			} catch (UncheckedExecutionException | ExecutionException e) {
+				throw new IllegalArgumentException("Unable to load sector identifier URI " + client.getSectorIdentifierUri() + ": " + e.getMessage());
 			}
 		}
 	}
 
 	private void ensureRefreshTokenConsistency(ClientDetailsEntity client) {
-		if (client.getAuthorizedGrantTypes().contains("refresh_token") 
+		if (client.getAuthorizedGrantTypes().contains("refresh_token")
 				|| client.getScope().contains(SystemScopeService.OFFLINE_ACCESS)) {
 			client.getScope().add(SystemScopeService.OFFLINE_ACCESS);
 			client.getAuthorizedGrantTypes().add("refresh_token");
@@ -206,6 +241,12 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 			whitelistedSiteService.remove(whitelistedSite);
 		}
 
+		// clear out resource sets registered for this client
+		Collection<ResourceSet> resourceSets = resourceSetService.getAllForClient(client);
+		for (ResourceSet rs : resourceSets) {
+			resourceSetService.remove(rs);
+		}
+
 		// take care of the client itself
 		clientRepository.deleteClient(client);
 
@@ -239,12 +280,15 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 
 			// if the client is flagged to allow for refresh tokens, make sure it's got the right scope
 			ensureRefreshTokenConsistency(newClient);
-			
+
+			// make sure we don't have both a JWKS and a JWKS URI
+			ensureKeyConsistency(newClient);
+
 			// check the sector URI
 			checkSectorIdentifierUri(newClient);
 
 			// make sure a client doesn't get any special system scopes
-			newClient.setScope(scopeService.removeRestrictedScopes(newClient.getScope()));
+			ensureNoReservedScopes(newClient);
 
 			return clientRepository.updateClient(oldClient.getId(), newClient);
 		}
@@ -284,7 +328,7 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 	 *
 	 */
 	private class SectorIdentifierLoader extends CacheLoader<String, List<String>> {
-		private HttpClient httpClient = new DefaultHttpClient();
+		private HttpClient httpClient = HttpClientBuilder.create().useSystemProperties().build();
 		private HttpComponentsClientHttpRequestFactory httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
 		private RestTemplate restTemplate = new RestTemplate(httpFactory);
 		private JsonParser parser = new JsonParser();
@@ -293,7 +337,9 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 		public List<String> load(String key) throws Exception {
 
 			if (!key.startsWith("https")) {
-				// TODO: this should optionally throw an error (#506)
+				if (config.isForceHttps()) {
+					throw new IllegalArgumentException("Sector identifier must start with https: " + key);
+				}
 				logger.error("Sector identifier doesn't start with https, loading anyway...");
 			}
 
@@ -302,7 +348,7 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 			JsonElement json = parser.parse(jsonString);
 
 			if (json.isJsonArray()) {
-				List<String> redirectUris = new ArrayList<String>();
+				List<String> redirectUris = new ArrayList<>();
 				for (JsonElement el : json.getAsJsonArray()) {
 					redirectUris.add(el.getAsString());
 				}
@@ -311,7 +357,7 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 
 				return redirectUris;
 			} else {
-				return null;
+				throw new IllegalArgumentException("JSON Format Error");
 			}
 
 		}

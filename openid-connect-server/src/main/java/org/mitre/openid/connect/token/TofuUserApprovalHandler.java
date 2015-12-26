@@ -1,20 +1,25 @@
 /*******************************************************************************
- * Copyright 2014 The MITRE Corporation
- *   and the MIT Kerberos and Internet Trust Consortium
- * 
+ * Copyright 2015 The MITRE Corporation
+ *   and the MIT Internet Trust Consortium
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- ******************************************************************************/
+ *******************************************************************************/
 package org.mitre.openid.connect.token;
+
+import static org.mitre.openid.connect.request.ConnectRequestParameters.APPROVED_SITE;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.PROMPT;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.PROMPT_CONSENT;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.PROMPT_SEPARATOR;
 
 import java.util.Calendar;
 import java.util.Collection;
@@ -97,21 +102,8 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 			return true;
 		} else {
 			// if not, check to see if the user has approved it
-			if (Boolean.parseBoolean(authorizationRequest.getApprovalParameters().get("user_oauth_approval"))) {			// TODO: make parameter name configurable?
-
-				// check the value of the CSRF parameter
-
-				if (authorizationRequest.getExtensions().get("csrf") != null) {
-					if (authorizationRequest.getExtensions().get("csrf").equals(authorizationRequest.getApprovalParameters().get("csrf"))) {
-
-						// make sure the user is actually authenticated
-						return userAuthentication.isAuthenticated();
-					}
-				}
-			}
-
-			// if the above doesn't pass, it's not yet approved
-			return false;
+			// TODO: make parameter name configurable?
+			return Boolean.parseBoolean(authorizationRequest.getApprovalParameters().get("user_oauth_approval"));
 		}
 
 	}
@@ -139,9 +131,9 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 		boolean alreadyApproved = false;
 
 		// find out if we're supposed to force a prompt on the user or not
-		String prompt = (String) authorizationRequest.getExtensions().get("prompt");
-		List<String> prompts = Splitter.on(" ").splitToList(Strings.nullToEmpty(prompt));
-		if (!prompts.contains("consent")) {
+		String prompt = (String) authorizationRequest.getExtensions().get(PROMPT);
+		List<String> prompts = Splitter.on(PROMPT_SEPARATOR).splitToList(Strings.nullToEmpty(prompt));
+		if (!prompts.contains(PROMPT_CONSENT)) {
 			// if the prompt parameter is set to "consent" then we can't use approved sites or whitelisted sites
 			// otherwise, we need to check them below
 
@@ -157,7 +149,8 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 						ap.setAccessDate(new Date());
 						approvedSiteService.save(ap);
 
-						authorizationRequest.getExtensions().put("approved_site", ap.getId());
+						String apId = ap.getId().toString();
+						authorizationRequest.getExtensions().put(APPROVED_SITE, apId);
 						authorizationRequest.setApproved(true);
 						alreadyApproved = true;
 
@@ -169,10 +162,6 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 			if (!alreadyApproved) {
 				WhitelistedSite ws = whitelistedSiteService.getByClientId(clientId);
 				if (ws != null && systemScopes.scopesMatch(ws.getAllowedScopes(), authorizationRequest.getScope())) {
-
-					//Create an approved site
-					ApprovedSite newSite = approvedSiteService.createApprovedSite(clientId, userId, null, ws.getAllowedScopes(), ws);
-					authorizationRequest.getExtensions().put("approved_site", newSite.getId());
 					authorizationRequest.setApproved(true);
 
 					setAuthTime(authorizationRequest);
@@ -193,9 +182,7 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 		ClientDetails client = clientDetailsService.loadClientByClientId(clientId);
 
 		// This must be re-parsed here because SECOAUTH forces us to call things in a strange order
-		if (Boolean.parseBoolean(authorizationRequest.getApprovalParameters().get("user_oauth_approval"))
-				&& authorizationRequest.getExtensions().get("csrf") != null
-				&& authorizationRequest.getExtensions().get("csrf").equals(authorizationRequest.getApprovalParameters().get("csrf"))) {
+		if (Boolean.parseBoolean(authorizationRequest.getApprovalParameters().get("user_oauth_approval"))) {
 
 			authorizationRequest.setApproved(true);
 
@@ -246,8 +233,9 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 					timeout = cal.getTime();
 				}
 
-				ApprovedSite newSite = approvedSiteService.createApprovedSite(clientId, userId, timeout, allowedScopes, null);
-				authorizationRequest.getExtensions().put("approved_site", newSite.getId());
+				ApprovedSite newSite = approvedSiteService.createApprovedSite(clientId, userId, timeout, allowedScopes);
+				String newSiteId = newSite.getId().toString();
+				authorizationRequest.getExtensions().put(APPROVED_SITE, newSiteId);
 			}
 
 			setAuthTime(authorizationRequest);
@@ -272,16 +260,17 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 			if (session != null) {
 				Date authTime = (Date) session.getAttribute(AuthenticationTimeStamper.AUTH_TIMESTAMP);
 				if (authTime != null) {
-					authorizationRequest.getExtensions().put(AuthenticationTimeStamper.AUTH_TIMESTAMP, authTime);
+					String authTimeString = Long.toString(authTime.getTime());
+					authorizationRequest.getExtensions().put(AuthenticationTimeStamper.AUTH_TIMESTAMP, authTimeString);
 				}
 			}
 		}
 	}
-	
+
 	@Override
 	public Map<String, Object> getUserApprovalRequest(AuthorizationRequest authorizationRequest,
 			Authentication userAuthentication) {
-		Map<String, Object> model = new HashMap<String, Object>();
+		Map<String, Object> model = new HashMap<>();
 		// In case of a redirect we might want the request parameters to be included
 		model.putAll(authorizationRequest.getRequestParameters());
 		return model;

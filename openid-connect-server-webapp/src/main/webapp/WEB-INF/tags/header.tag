@@ -1,9 +1,10 @@
 <%@attribute name="title" required="false"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ tag import="com.google.gson.Gson" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="${pageContext.response.locale}">
 <head>
 
     <base href="${config.issuer}">
@@ -33,7 +34,20 @@
 
     <!-- Load jQuery up here so that we can use in-page functions -->
     <script type="text/javascript" src="resources/js/lib/jquery.js"></script>
+    <script type="text/javascript" charset="UTF-8" src="resources/js/lib/moment-with-locales.js"></script>
+    <script type="text/javascript" src="resources/js/lib/i18next.js"></script>
     <script type="text/javascript">
+        $.i18n.init({
+            fallbackLng: "en",
+            lng: "${config.locale}",
+            resGetPath: "resources/js/locale/__lng__/__ns__.json",
+            ns: {
+            	namespaces: ${config.languageNamespacesString},
+            	defaultNs: '${config.defaultLanguageNamespace}'
+            },
+            fallbackNS: ${config.languageNamespacesString}
+        });
+        moment.locale("${config.locale}");
     	// safely set the title of the application
     	function setPageTitle(title) {
     		document.title = "${config.topbarTitle} - " + title;

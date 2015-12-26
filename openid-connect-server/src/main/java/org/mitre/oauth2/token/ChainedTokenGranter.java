@@ -1,19 +1,19 @@
 /*******************************************************************************
- * Copyright 2014 The MITRE Corporation
- *   and the MIT Kerberos and Internet Trust Consortium
- * 
+ * Copyright 2015 The MITRE Corporation
+ *   and the MIT Internet Trust Consortium
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- ******************************************************************************/
+ *******************************************************************************/
 /**
  * 
  */
@@ -75,12 +75,12 @@ public class ChainedTokenGranter extends AbstractTokenGranter {
 		Set<String> requestedScopes = tokenRequest.getScope();
 
 		if (requestedScopes == null) {
-			requestedScopes = new HashSet<String>();
+			requestedScopes = new HashSet<>();
 		}
 
 		// do a check on the requested scopes -- if they exactly match the client scopes, they were probably shadowed by the token granter
 		if (client.getScope().equals(requestedScopes)) {
-			requestedScopes = new HashSet<String>();
+			requestedScopes = new HashSet<>();
 		}
 
 		// if our scopes are a valid subset of what's allowed, we can continue

@@ -1,19 +1,19 @@
 /*******************************************************************************
- * Copyright 2014 The MITRE Corporation
- *   and the MIT Kerberos and Internet Trust Consortium
- * 
+ * Copyright 2015 The MITRE Corporation
+ *   and the MIT Internet Trust Consortium
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- ******************************************************************************/
+ *******************************************************************************/
 package org.mitre.oauth2.web;
 
 import java.security.Principal;
@@ -40,10 +40,15 @@ public class RevocationEndpoint {
 	@Autowired
 	OAuth2TokenEntityService tokenServices;
 
-	private static Logger logger = LoggerFactory.getLogger(RevocationEndpoint.class);
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.getLogger(RevocationEndpoint.class);
+
+	public static final String URL = "revoke";
 
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_CLIENT')")
-	@RequestMapping("/revoke")
+	@RequestMapping("/" + URL)
 	public String revoke(@RequestParam("token") String tokenValue, @RequestParam(value = "token_type_hint", required = false) String tokenType, Principal principal, Model model) {
 
 		// This is the token as passed in from OAuth (in case we need it some day)
@@ -63,14 +68,14 @@ public class RevocationEndpoint {
 				// client acting on its own, make sure it owns the token
 				if (!accessToken.getClient().getClientId().equals(authRequest.getClientId())) {
 					// trying to revoke a token we don't own, throw a 403
-					model.addAttribute("code", HttpStatus.FORBIDDEN);
+					model.addAttribute(HttpCodeView.CODE, HttpStatus.FORBIDDEN);
 					return HttpCodeView.VIEWNAME;
 				}
 			}
 
 			// if we got this far, we're allowed to do this
 			tokenServices.revokeAccessToken(accessToken);
-			model.addAttribute("code", HttpStatus.OK);
+			model.addAttribute(HttpCodeView.CODE, HttpStatus.OK);
 			return HttpCodeView.VIEWNAME;
 
 		} catch (InvalidTokenException e) {
@@ -83,21 +88,21 @@ public class RevocationEndpoint {
 					// client acting on its own, make sure it owns the token
 					if (!refreshToken.getClient().getClientId().equals(authRequest.getClientId())) {
 						// trying to revoke a token we don't own, throw a 403
-						model.addAttribute("code", HttpStatus.FORBIDDEN);
+						model.addAttribute(HttpCodeView.CODE, HttpStatus.FORBIDDEN);
 						return HttpCodeView.VIEWNAME;
 					}
 				}
 
 				// if we got this far, we're allowed to do this
 				tokenServices.revokeRefreshToken(refreshToken);
-				model.addAttribute("code", HttpStatus.OK);
+				model.addAttribute(HttpCodeView.CODE, HttpStatus.OK);
 				return HttpCodeView.VIEWNAME;
 
 			} catch (InvalidTokenException e1) {
 
 				// neither token type was found, simply say "OK" and be on our way.
 
-				model.addAttribute("code", HttpStatus.OK);
+				model.addAttribute(HttpCodeView.CODE, HttpStatus.OK);
 				return HttpCodeView.VIEWNAME;
 			}
 		}

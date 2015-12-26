@@ -1,26 +1,20 @@
 /*******************************************************************************
- * Copyright 2014 The MITRE Corporation
- *   and the MIT Kerberos and Internet Trust Consortium
- * 
+ * Copyright 2015 The MITRE Corporation
+ *   and the MIT Internet Trust Consortium
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- ******************************************************************************/
+ *******************************************************************************/
 package org.mitre.oauth2.service.impl;
-
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -29,6 +23,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mitre.oauth2.model.ClientDetailsEntity;
+import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.repository.OAuth2ClientRepository;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
 import org.mitre.oauth2.service.SystemScopeService;
@@ -37,6 +32,9 @@ import org.mitre.openid.connect.service.ApprovedSiteService;
 import org.mitre.openid.connect.service.BlacklistedSiteService;
 import org.mitre.openid.connect.service.StatsService;
 import org.mitre.openid.connect.service.WhitelistedSiteService;
+import org.mitre.uma.model.ResourceSet;
+import org.mitre.uma.service.ResourceSetService;
+import org.mockito.AdditionalAnswers;
 import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
@@ -47,6 +45,13 @@ import org.mockito.stubbing.Answer;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 
 import com.google.common.collect.Sets;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 /**
  * @author wkim
@@ -74,6 +79,9 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 	private SystemScopeService scopeService;
 
 	@Mock
+	private ResourceSetService resourceSetService;
+
+	@Mock
 	private StatsService statsService;
 
 	@InjectMocks
@@ -82,31 +90,52 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 	@Before
 	public void prepare() {
 		Mockito.reset(clientRepository, tokenRepository, approvedSiteService, whitelistedSiteService, blacklistedSiteService, scopeService, statsService);
-		
-		Mockito.when(clientRepository.saveClient(Mockito.any(ClientDetailsEntity.class))).thenAnswer(new Answer<ClientDetailsEntity>() {
+
+		Mockito.when(clientRepository.saveClient(Matchers.any(ClientDetailsEntity.class))).thenAnswer(new Answer<ClientDetailsEntity>() {
 			@Override
 			public ClientDetailsEntity answer(InvocationOnMock invocation) throws Throwable {
 				Object[] args = invocation.getArguments();
 				return (ClientDetailsEntity) args[0];
 			}
 		});
-		
-		Mockito.when(clientRepository.updateClient(Mockito.anyLong(), Mockito.any(ClientDetailsEntity.class))).thenAnswer(new Answer<ClientDetailsEntity>() {
+
+		Mockito.when(clientRepository.updateClient(Matchers.anyLong(), Matchers.any(ClientDetailsEntity.class))).thenAnswer(new Answer<ClientDetailsEntity>() {
 			@Override
 			public ClientDetailsEntity answer(InvocationOnMock invocation) throws Throwable {
 				Object[] args = invocation.getArguments();
 				return (ClientDetailsEntity) args[1];
 			}
 		});
-		
-		Mockito.when(scopeService.removeRestrictedScopes(Mockito.anySet())).thenAnswer(new Answer<Set<String>>() {
+
+		Mockito.when(scopeService.fromStrings(Matchers.anySet())).thenAnswer(new Answer<Set<SystemScope>>() {
+			@Override
+			public Set<SystemScope> answer(InvocationOnMock invocation) throws Throwable {
+				Object[] args = invocation.getArguments();
+				Set<String> input = (Set<String>) args[0];
+				Set<SystemScope> output = new HashSet<>();
+				for (String scope : input) {
+					output.add(new SystemScope(scope));
+				}
+				return output;
+			}
+		});
+
+		Mockito.when(scopeService.toStrings(Matchers.anySet())).thenAnswer(new Answer<Set<String>>() {
 			@Override
 			public Set<String> answer(InvocationOnMock invocation) throws Throwable {
 				Object[] args = invocation.getArguments();
-				return (Set<String>) args[0];
+				Set<SystemScope> input = (Set<SystemScope>) args[0];
+				Set<String> output = new HashSet<>();
+				for (SystemScope scope : input) {
+					output.add(scope.getValue());
+				}
+				return output;
 			}
 		});
-		
+
+		// we're not testing reserved scopes here, just pass through when it's called
+		Mockito.when(scopeService.removeReservedScopes(Matchers.anySet())).then(AdditionalAnswers.returnsFirstArg());
+
 	}
 
 	/**
@@ -117,7 +146,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 
 		// Set up a mock client.
 		ClientDetailsEntity client = Mockito.mock(ClientDetailsEntity.class);
-		Mockito.when(client.getId()).thenReturn(12345L); // doesn't matter what id it returns
+		Mockito.when(client.getId()).thenReturn(12345L); // any non-null ID will work
 
 		service.saveNewClient(client);
 	}
@@ -158,8 +187,8 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 	public void saveNewClient_yesOfflineAccess() {
 
 		ClientDetailsEntity client = new ClientDetailsEntity();
-		
-		Set<String> grantTypes = new HashSet<String>();
+
+		Set<String> grantTypes = new HashSet<>();
 		grantTypes.add("refresh_token");
 		client.setGrantTypes(grantTypes);
 
@@ -175,8 +204,10 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 	public void saveNewClient_noOfflineAccess() {
 
 		ClientDetailsEntity client = new ClientDetailsEntity();
-		
+
 		client = service.saveNewClient(client);
+
+		Mockito.verify(scopeService, Mockito.atLeastOnce()).removeReservedScopes(Matchers.anySet());
 
 		assertThat(client.getScope().contains(SystemScopeService.OFFLINE_ACCESS), is(equalTo(false)));
 	}
@@ -238,6 +269,8 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		WhitelistedSite site = Mockito.mock(WhitelistedSite.class);
 		Mockito.when(whitelistedSiteService.getByClientId(clientId)).thenReturn(site);
 
+		Mockito.when(resourceSetService.getAllForClient(client)).thenReturn(new HashSet<ResourceSet>());
+
 		service.deleteClient(client);
 
 		Mockito.verify(tokenRepository).clearTokensForClient(client);
@@ -293,12 +326,14 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 
 		ClientDetailsEntity oldClient = new ClientDetailsEntity();
 		ClientDetailsEntity client = new ClientDetailsEntity();
-		
-		Set<String> grantTypes = new HashSet<String>();
+
+		Set<String> grantTypes = new HashSet<>();
 		grantTypes.add("refresh_token");
 		client.setGrantTypes(grantTypes);
 
 		client = service.updateClient(oldClient, client);
+
+		Mockito.verify(scopeService, Mockito.atLeastOnce()).removeReservedScopes(Matchers.anySet());
 
 		assertThat(client.getScope().contains(SystemScopeService.OFFLINE_ACCESS), is(equalTo(true)));
 	}
@@ -307,12 +342,14 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 	public void updateClient_noOfflineAccess() {
 
 		ClientDetailsEntity oldClient = new ClientDetailsEntity();
-		
+
 		oldClient.getScope().add(SystemScopeService.OFFLINE_ACCESS);
-		
+
 		ClientDetailsEntity client = new ClientDetailsEntity();
-		
+
 		client = service.updateClient(oldClient, client);
+
+		Mockito.verify(scopeService, Mockito.atLeastOnce()).removeReservedScopes(Matchers.anySet());
 
 		assertThat(client.getScope().contains(SystemScopeService.OFFLINE_ACCESS), is(equalTo(false)));
 	}

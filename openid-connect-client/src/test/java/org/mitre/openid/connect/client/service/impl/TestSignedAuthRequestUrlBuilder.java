@@ -1,24 +1,20 @@
 /*******************************************************************************
- * Copyright 2014 The MITRE Corporation
- *   and the MIT Kerberos and Internet Trust Consortium
- * 
+ * Copyright 2015 The MITRE Corporation
+ *   and the MIT Internet Trust Consortium
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- ******************************************************************************/
+ *******************************************************************************/
 package org.mitre.openid.connect.client.service.impl;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -31,7 +27,7 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mitre.jwt.signer.service.impl.DefaultJwtSigningAndValidationService;
+import org.mitre.jwt.signer.service.impl.DefaultJWTSigningAndValidationService;
 import org.mitre.oauth2.model.RegisteredClient;
 import org.mitre.openid.connect.config.ServerConfiguration;
 import org.mockito.Mockito;
@@ -47,8 +43,12 @@ import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.KeyUse;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.util.Base64URL;
-import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
+import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author wkim
@@ -82,8 +82,9 @@ public class TestSignedAuthRequestUrlBuilder {
 			"9Z4qwjwbsnn4j2WBii3RL-Us2lGVkY8fkFzme1z0HbIkfz0Y6mqnOYtqc0X4jfcKoAC8Q";
 	private String alg = "RS256";
 	private String kid = "2011-04-29";
+	private String loginHint = "bob";
 
-	private DefaultJwtSigningAndValidationService signingAndValidationService;
+	private DefaultJWTSigningAndValidationService signingAndValidationService;
 
 	private SignedAuthRequestUrlBuilder urlBuilder = new SignedAuthRequestUrlBuilder();
 
@@ -94,7 +95,7 @@ public class TestSignedAuthRequestUrlBuilder {
 		Map<String, JWK> keys = Maps.newHashMap();
 		keys.put("client", key);
 
-		signingAndValidationService = new DefaultJwtSigningAndValidationService(keys);
+		signingAndValidationService = new DefaultJWTSigningAndValidationService(keys);
 		signingAndValidationService.setDefaultSignerKeyId("client");
 		signingAndValidationService.setDefaultSigningAlgorithmName(alg);
 
@@ -116,7 +117,7 @@ public class TestSignedAuthRequestUrlBuilder {
 	@Test
 	public void buildAuthRequestUrl() {
 
-		String requestUri = urlBuilder.buildAuthRequestUrl(serverConfig, clientConfig, redirectUri, nonce, state, options);
+		String requestUri = urlBuilder.buildAuthRequestUrl(serverConfig, clientConfig, redirectUri, nonce, state, options, null);
 
 		// parsing the result
 		UriComponentsBuilder builder = null;
@@ -129,7 +130,7 @@ public class TestSignedAuthRequestUrlBuilder {
 
 		UriComponents components = builder.build();
 		String jwtString = components.getQueryParams().get("request").get(0);
-		ReadOnlyJWTClaimsSet claims = null;
+		JWTClaimsSet claims = null;
 
 		try {
 			SignedJWT jwt = SignedJWT.parse(jwtString);
@@ -152,20 +153,10 @@ public class TestSignedAuthRequestUrlBuilder {
 		}
 	}
 
-	@Test(expected = AuthenticationServiceException.class)
-	public void buildAuthRequestUrl_badUri() {
-
-		Mockito.when(serverConfig.getAuthorizationEndpointUri()).thenReturn("e=mc^2");
-
-		urlBuilder.buildAuthRequestUrl(serverConfig, clientConfig, "example.com", "", "", options);
-	}
-
 	@Test
-	public void buildAuthRequestUrl_withNoNonce() {
+	public void buildAuthRequestUrl_withLoginHint() {
 
-		Mockito.when(serverConfig.isNonceEnabled()).thenReturn(false);
-
-		String requestUri = urlBuilder.buildAuthRequestUrl(serverConfig, clientConfig, redirectUri, null, state, options);
+		String requestUri = urlBuilder.buildAuthRequestUrl(serverConfig, clientConfig, redirectUri, nonce, state, options, loginHint);
 
 		// parsing the result
 		UriComponentsBuilder builder = null;
@@ -178,7 +169,7 @@ public class TestSignedAuthRequestUrlBuilder {
 
 		UriComponents components = builder.build();
 		String jwtString = components.getQueryParams().get("request").get(0);
-		ReadOnlyJWTClaimsSet claims = null;
+		JWTClaimsSet claims = null;
 
 		try {
 			SignedJWT jwt = SignedJWT.parse(jwtString);
@@ -194,11 +185,19 @@ public class TestSignedAuthRequestUrlBuilder {
 		assertTrue(scopeList.containsAll(clientConfig.getScope()));
 
 		assertEquals(redirectUri, claims.getClaim("redirect_uri"));
-		assertEquals(null, claims.getClaim("nonce"));
+		assertEquals(nonce, claims.getClaim("nonce"));
 		assertEquals(state, claims.getClaim("state"));
 		for (String claim : options.keySet()) {
 			assertEquals(options.get(claim), claims.getClaim(claim));
 		}
+		assertEquals(loginHint, claims.getClaim("login_hint"));
 	}
 
+	@Test(expected = AuthenticationServiceException.class)
+	public void buildAuthRequestUrl_badUri() {
+
+		Mockito.when(serverConfig.getAuthorizationEndpointUri()).thenReturn("e=mc^2");
+
+		urlBuilder.buildAuthRequestUrl(serverConfig, clientConfig, "example.com", "", "", options, null);
+	}
 }

@@ -1,19 +1,19 @@
 /*******************************************************************************
- * Copyright 2014 The MITRE Corporation
- *   and the MIT Kerberos and Internet Trust Consortium
- * 
+ * Copyright 2015 The MITRE Corporation
+ *   and the MIT Internet Trust Consortium
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- ******************************************************************************/
+ *******************************************************************************/
 package org.mitre.openid.connect.model;
 
 import java.util.Date;
@@ -30,7 +30,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -45,12 +44,20 @@ import com.google.common.collect.Sets;
 @Entity
 @Table(name="approved_site")
 @NamedQueries({
-	@NamedQuery(name = "ApprovedSite.getAll", query = "select a from ApprovedSite a"),
-	@NamedQuery(name = "ApprovedSite.getByUserId", query = "select a from ApprovedSite a where a.userId = :userId"),
-	@NamedQuery(name = "ApprovedSite.getByClientId", query = "select a from ApprovedSite a where a.clientId = :clientId"),
-	@NamedQuery(name = "ApprovedSite.getByClientIdAndUserId", query = "select a from ApprovedSite a where a.clientId = :clientId and a.userId = :userId")
+	@NamedQuery(name = ApprovedSite.QUERY_ALL, query = "select a from ApprovedSite a"),
+	@NamedQuery(name = ApprovedSite.QUERY_BY_USER_ID, query = "select a from ApprovedSite a where a.userId = :" + ApprovedSite.PARAM_USER_ID),
+	@NamedQuery(name = ApprovedSite.QUERY_BY_CLIENT_ID, query = "select a from ApprovedSite a where a.clientId = :" + ApprovedSite.PARAM_CLIENT_ID),
+	@NamedQuery(name = ApprovedSite.QUERY_BY_CLIENT_ID_AND_USER_ID, query = "select a from ApprovedSite a where a.clientId = :" + ApprovedSite.PARAM_CLIENT_ID + " and a.userId = :" + ApprovedSite.PARAM_USER_ID)
 })
 public class ApprovedSite {
+
+	public static final String QUERY_BY_CLIENT_ID_AND_USER_ID = "ApprovedSite.getByClientIdAndUserId";
+	public static final String QUERY_BY_CLIENT_ID = "ApprovedSite.getByClientId";
+	public static final String QUERY_BY_USER_ID = "ApprovedSite.getByUserId";
+	public static final String QUERY_ALL = "ApprovedSite.getAll";
+
+	public static final String PARAM_CLIENT_ID = "clientId";
+	public static final String PARAM_USER_ID = "userId";
 
 	// unique id
 	private Long id;
@@ -73,9 +80,6 @@ public class ApprovedSite {
 	// what scopes have been allowed
 	// this should include all information for what data to access
 	private Set<String> allowedScopes;
-
-	// If this AP is a WS, link to the WS
-	private WhitelistedSite whitelistedSite;
 
 	//Link to any access tokens approved through this stored decision
 	private Set<OAuth2AccessTokenEntity> approvedAccessTokens = Sets.newHashSet();
@@ -208,26 +212,6 @@ public class ApprovedSite {
 	}
 
 	/**
-	 * Does this AP entry correspond to a WS?
-	 * @return
-	 */
-	@Transient
-	public Boolean getIsWhitelisted() {
-		return (whitelistedSite != null);
-	}
-
-
-	@ManyToOne
-	@JoinColumn(name="whitelisted_site_id")
-	public WhitelistedSite getWhitelistedSite() {
-		return whitelistedSite;
-	}
-
-	public void setWhitelistedSite(WhitelistedSite whitelistedSite) {
-		this.whitelistedSite = whitelistedSite;
-	}
-
-	/**
 	 * Has this approval expired?
 	 * @return
 	 */
@@ -245,7 +229,7 @@ public class ApprovedSite {
 		}
 	}
 
-	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER)
+	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
 	@JoinColumn(name="approved_site_id")
 	public Set<OAuth2AccessTokenEntity> getApprovedAccessTokens() {
 		return approvedAccessTokens;

@@ -1,19 +1,19 @@
 /*******************************************************************************
- * Copyright 2014 The MITRE Corporation
- *   and the MIT Kerberos and Internet Trust Consortium
- * 
+ * Copyright 2015 The MITRE Corporation
+ *   and the MIT Internet Trust Consortium
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- ******************************************************************************/
+ *******************************************************************************/
 /**
  * 
  */
@@ -24,7 +24,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.SystemDefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.mitre.oauth2.model.RegisteredClient;
 import org.mitre.openid.connect.ClientDetailsEntityJsonProcessor;
 import org.mitre.openid.connect.client.service.ClientConfigurationService;
@@ -39,6 +39,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.google.common.cache.CacheBuilder;
@@ -55,7 +57,10 @@ import com.google.gson.JsonObject;
  */
 public class DynamicRegistrationClientConfigurationService implements ClientConfigurationService {
 
-	private static Logger logger = LoggerFactory.getLogger(DynamicServerConfigurationService.class);
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.getLogger(DynamicRegistrationClientConfigurationService.class);
 
 	private LoadingCache<ServerConfiguration, RegisteredClient> clients;
 
@@ -63,8 +68,8 @@ public class DynamicRegistrationClientConfigurationService implements ClientConf
 
 	private RegisteredClient template;
 
-	private Set<String> whitelist = new HashSet<String>();
-	private Set<String> blacklist = new HashSet<String>();
+	private Set<String> whitelist = new HashSet<>();
+	private Set<String> blacklist = new HashSet<>();
 
 	public DynamicRegistrationClientConfigurationService() {
 		clients = CacheBuilder.newBuilder().build(new DynamicClientRegistrationLoader());
@@ -73,19 +78,16 @@ public class DynamicRegistrationClientConfigurationService implements ClientConf
 	@Override
 	public RegisteredClient getClientConfiguration(ServerConfiguration issuer) {
 		try {
-			if (!whitelist.isEmpty() && !whitelist.contains(issuer)) {
+			if (!whitelist.isEmpty() && !whitelist.contains(issuer.getIssuer())) {
 				throw new AuthenticationServiceException("Whitelist was nonempty, issuer was not in whitelist: " + issuer);
 			}
 
-			if (blacklist.contains(issuer)) {
+			if (blacklist.contains(issuer.getIssuer())) {
 				throw new AuthenticationServiceException("Issuer was in blacklist: " + issuer);
 			}
 
 			return clients.get(issuer);
-		} catch (UncheckedExecutionException ue) {
-			logger.warn("Unable to get client configuration", ue);
-			return null;
-		} catch (ExecutionException e) {
+		} catch (UncheckedExecutionException | ExecutionException e) {
 			logger.warn("Unable to get client configuration", e);
 			return null;
 		}
@@ -166,7 +168,10 @@ public class DynamicRegistrationClientConfigurationService implements ClientConf
 	 *
 	 */
 	public class DynamicClientRegistrationLoader extends CacheLoader<ServerConfiguration, RegisteredClient> {
-		private HttpClient httpClient = new SystemDefaultHttpClient();
+		private HttpClient httpClient = HttpClientBuilder.create()
+				.useSystemProperties()
+				.build();
+
 		private HttpComponentsClientHttpRequestFactory httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
 		private Gson gson = new Gson(); // note that this doesn't serialize nulls by default
 
@@ -186,34 +191,41 @@ public class DynamicRegistrationClientConfigurationService implements ClientConf
 				headers.setContentType(MediaType.APPLICATION_JSON);
 				headers.setAccept(Lists.newArrayList(MediaType.APPLICATION_JSON));
 
-				HttpEntity<String> entity = new HttpEntity<String>(serializedClient, headers);
+				HttpEntity<String> entity = new HttpEntity<>(serializedClient, headers);
 
-				String registered = restTemplate.postForObject(serverConfig.getRegistrationEndpointUri(), entity, String.class);
-				// TODO: handle HTTP errors
-
-				RegisteredClient client = ClientDetailsEntityJsonProcessor.parseRegistered(registered);
-
-				// save this client for later
-				registeredClientService.save(serverConfig.getIssuer(), client);
-
-				return client;
+				try {
+					String registered = restTemplate.postForObject(serverConfig.getRegistrationEndpointUri(), entity, String.class);
+	
+					RegisteredClient client = ClientDetailsEntityJsonProcessor.parseRegistered(registered);
+	
+					// save this client for later
+					registeredClientService.save(serverConfig.getIssuer(), client);
+	
+					return client;
+				} catch (RestClientException rce) {
+					throw new InvalidClientException("Error registering client with server");
+				}
 			} else {
 
 				if (knownClient.getClientId() == null) {
-				
+
 					// load this client's information from the server
 					HttpHeaders headers = new HttpHeaders();
 					headers.set("Authorization", String.format("%s %s", OAuth2AccessToken.BEARER_TYPE, knownClient.getRegistrationAccessToken()));
 					headers.setAccept(Lists.newArrayList(MediaType.APPLICATION_JSON));
+
+					HttpEntity<String> entity = new HttpEntity<>(headers);
+
+					try {
+						String registered = restTemplate.exchange(knownClient.getRegistrationClientUri(), HttpMethod.GET, entity, String.class).getBody();
+						// TODO: handle HTTP errors
 	
-					HttpEntity<String> entity = new HttpEntity<String>(headers);
+						RegisteredClient client = ClientDetailsEntityJsonProcessor.parseRegistered(registered);
 	
-					String registered = restTemplate.exchange(knownClient.getRegistrationClientUri(), HttpMethod.GET, entity, String.class).getBody();
-					// TODO: handle HTTP errors
-	
-					RegisteredClient client = ClientDetailsEntityJsonProcessor.parseRegistered(registered);
-	
-					return client;
+						return client;
+					} catch (RestClientException rce) {
+						throw new InvalidClientException("Error loading previously registered client information from server");
+					}
 				} else {
 					// it's got a client ID from the store, don't bother trying to load it
 					return knownClient;

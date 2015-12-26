@@ -1,19 +1,19 @@
 /*******************************************************************************
- * Copyright 2014 The MITRE Corporation
- *   and the MIT Kerberos and Internet Trust Consortium
- * 
+ * Copyright 2015 The MITRE Corporation
+ *   and the MIT Internet Trust Consortium
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- ******************************************************************************/
+ *******************************************************************************/
 package org.mitre.openid.connect.client;
 
 import static org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod.PRIVATE_KEY;
@@ -27,6 +27,7 @@ import java.security.SecureRandom;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -34,10 +35,11 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.SystemDefaultHttpClient;
-import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.mitre.jwt.signer.service.JWTSigningAndValidationService;
 import org.mitre.jwt.signer.service.impl.JWKSetCacheService;
-import org.mitre.jwt.signer.service.impl.SymmetricCacheService;
+import org.mitre.jwt.signer.service.impl.SymmetricKeyJWTValidatorCacheService;
 import org.mitre.oauth2.model.RegisteredClient;
 import org.mitre.openid.connect.client.model.IssuerServiceResponse;
 import org.mitre.openid.connect.client.service.AuthRequestOptionsService;
@@ -47,7 +49,7 @@ import org.mitre.openid.connect.client.service.IssuerService;
 import org.mitre.openid.connect.client.service.ServerConfigurationService;
 import org.mitre.openid.connect.client.service.impl.StaticAuthRequestOptionsService;
 import org.mitre.openid.connect.config.ServerConfiguration;
-import org.mitre.openid.connect.model.OIDCAuthenticationToken;
+import org.mitre.openid.connect.model.PendingOIDCAuthenticationToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
@@ -59,10 +61,12 @@ import org.springframework.security.web.authentication.AbstractAuthenticationPro
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriUtils;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -75,7 +79,6 @@ import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.JWTParser;
 import com.nimbusds.jwt.PlainJWT;
-import com.nimbusds.jwt.ReadOnlyJWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 
 /**
@@ -93,25 +96,36 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 	protected static final String TARGET_SESSION_VARIABLE = "target";
 	protected final static int HTTP_SOCKET_TIMEOUT = 30000;
 
-	protected final static String FILTER_PROCESSES_URL = "/openid_connect_login";
+	public final static String FILTER_PROCESSES_URL = "/openid_connect_login";
 
 	// Allow for time sync issues by having a window of X seconds.
 	private int timeSkewAllowance = 300;
 
-	@Autowired
+	// fetches and caches public keys for servers
+	@Autowired(required=false)
 	private JWKSetCacheService validationServices;
 
+	// creates JWT signer/validators for symmetric keys
 	@Autowired(required=false)
-	private SymmetricCacheService symmetricCacheService;
+	private SymmetricKeyJWTValidatorCacheService symmetricCacheService;
 
+	// signer based on keypair for this client (for outgoing auth requests)
 	@Autowired(required=false)
-	private JwtSigningAndValidationService authenticationSignerService;
+	private JWTSigningAndValidationService authenticationSignerService;
 
-	// modular services to build out client filter
-	private ServerConfigurationService servers;
-	private ClientConfigurationService clients;
+
+	/*
+	 * Modular services to build out client filter.
+	 */
+	// looks at the request and determines which issuer to use for lookup on the server
 	private IssuerService issuerService;
+	// holds server information (auth URI, token URI, etc.), indexed by issuer
+	private ServerConfigurationService servers;
+	// holds client information (client ID, redirect URI, etc.), indexed by issuer of the server
+	private ClientConfigurationService clients;
+	// provides extra options to inject into the outbound request
 	private AuthRequestOptionsService authOptions = new StaticAuthRequestOptionsService(); // initialize with an empty set of options
+	// builds the actual request URI based on input from all other services
 	private AuthRequestUrlBuilder authRequestBuilder;
 
 	// private helpers to handle target link URLs
@@ -140,7 +154,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 		}
 
 		if (symmetricCacheService == null) {
-			symmetricCacheService = new SymmetricCacheService();
+			symmetricCacheService = new SymmetricKeyJWTValidatorCacheService();
 		}
 
 	}
@@ -234,7 +248,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 			String redirectUri = null;
 			if (clientConfig.getRegisteredRedirectUri() != null && clientConfig.getRegisteredRedirectUri().size() == 1) {
 				// if there's a redirect uri configured (and only one), use that
-				redirectUri = clientConfig.getRegisteredRedirectUri().toArray(new String[] {})[0];
+				redirectUri = Iterables.getOnlyElement(clientConfig.getRegisteredRedirectUri());
 			} else {
 				// otherwise our redirect URI is this current URL, with no query parameters
 				redirectUri = request.getRequestURL().toString();
@@ -242,17 +256,14 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 			session.setAttribute(REDIRECT_URI_SESION_VARIABLE, redirectUri);
 
 			// this value comes back in the id token and is checked there
-			String nonce = null;
-			if (serverConfig.isNonceEnabled()) {
-				nonce = createNonce(session);
-			}
+			String nonce = createNonce(session);
 
 			// this value comes back in the auth code response
 			String state = createState(session);
 
 			Map<String, String> options = authOptions.getOptions(serverConfig, clientConfig, request);
 
-			String authRequest = authRequestBuilder.buildAuthRequestUrl(serverConfig, clientConfig, redirectUri, nonce, state, options);
+			String authRequest = authRequestBuilder.buildAuthRequestUrl(serverConfig, clientConfig, redirectUri, nonce, state, options, issResp.getLoginHint());
 
 			logger.debug("Auth Request:  " + authRequest);
 
@@ -275,11 +286,9 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 
 		// check for state, if it doesn't match we bail early
 		String storedState = getStoredState(session);
-		if (!Strings.isNullOrEmpty(storedState)) {
-			String state = request.getParameter("state");
-			if (!storedState.equals(state)) {
-				throw new AuthenticationServiceException("State parameter mismatch on return. Expected " + storedState + " got " + state);
-			}
+		String requestState = request.getParameter("state");
+		if (storedState == null || !storedState.equals(requestState)) {
+			throw new AuthenticationServiceException("State parameter mismatch on return. Expected " + storedState + " got " + requestState);
 		}
 
 		// look up the issuer that we set out to talk to
@@ -289,9 +298,10 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 		ServerConfiguration serverConfig = servers.getServerConfiguration(issuer);
 		final RegisteredClient clientConfig = clients.getClientConfiguration(serverConfig);
 
-		MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
+		MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
 		form.add("grant_type", "authorization_code");
 		form.add("code", authorizationCode);
+		form.setAll(authOptions.getTokenOptions(serverConfig, clientConfig, request));
 
 		String redirectUri = getStoredSessionString(session, REDIRECT_URI_SESION_VARIABLE);
 		if (redirectUri != null) {
@@ -299,9 +309,15 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 		}
 
 		// Handle Token Endpoint interaction
-		HttpClient httpClient = new SystemDefaultHttpClient();
 
-		httpClient.getParams().setParameter("http.socket.timeout", new Integer(httpSocketTimeout));
+		HttpClient httpClient = HttpClientBuilder.create()
+				.useSystemProperties()
+				.setDefaultRequestConfig(
+						RequestConfig.custom()
+						.setSocketTimeout(httpSocketTimeout)
+						.build()
+						)
+						.build();
 
 		HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
 
@@ -315,9 +331,9 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 				protected ClientHttpRequest createRequest(URI url, HttpMethod method) throws IOException {
 					ClientHttpRequest httpRequest = super.createRequest(url, method);
 					httpRequest.getHeaders().add("Authorization",
-							String.format("Basic %s", Base64.encode(String.format("%s:%s", clientConfig.getClientId(), clientConfig.getClientSecret())) ));
-
-
+							String.format("Basic %s", Base64.encode(String.format("%s:%s",
+									UriUtils.encodePathSegment(clientConfig.getClientId(), "UTF-8"),
+									UriUtils.encodePathSegment(clientConfig.getClientSecret(), "UTF-8")))));
 
 					return httpRequest;
 				}
@@ -330,7 +346,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 				// do a symmetric secret signed JWT for auth
 
 
-				JwtSigningAndValidationService signer = null;
+				JWTSigningAndValidationService signer = null;
 				JWSAlgorithm alg = clientConfig.getTokenEndpointAuthSigningAlg();
 
 				if (SECRET_JWT.equals(clientConfig.getTokenEndpointAuthMethod()) &&
@@ -345,7 +361,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 
 					// needs to be wired in to the bean
 					signer = authenticationSignerService;
-					
+
 					if (alg == null) {
 						alg = authenticationSignerService.getDefaultSigningAlgorithm();
 					}
@@ -355,21 +371,25 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 					throw new AuthenticationServiceException("Couldn't find required signer service for use with private key auth.");
 				}
 
-				JWTClaimsSet claimsSet = new JWTClaimsSet();
+				JWTClaimsSet.Builder claimsSet = new JWTClaimsSet.Builder();
 
-				claimsSet.setIssuer(clientConfig.getClientId());
-				claimsSet.setSubject(clientConfig.getClientId());
-				claimsSet.setAudience(Lists.newArrayList(serverConfig.getTokenEndpointUri()));
+				claimsSet.issuer(clientConfig.getClientId());
+				claimsSet.subject(clientConfig.getClientId());
+				claimsSet.audience(Lists.newArrayList(serverConfig.getTokenEndpointUri()));
+				claimsSet.jwtID(UUID.randomUUID().toString());
 
 				// TODO: make this configurable
 				Date exp = new Date(System.currentTimeMillis() + (60 * 1000)); // auth good for 60 seconds
-				claimsSet.setExpirationTime(exp);
+				claimsSet.expirationTime(exp);
 
 				Date now = new Date(System.currentTimeMillis());
-				claimsSet.setIssueTime(now);
-				claimsSet.setNotBeforeTime(now);
+				claimsSet.issueTime(now);
+				claimsSet.notBeforeTime(now);
 
-				SignedJWT jwt = new SignedJWT(new JWSHeader(alg), claimsSet);
+				JWSHeader header = new JWSHeader(alg, null, null, null, null, null, null, null, null, null,
+						signer.getDefaultSignerKeyId(),
+						null, null);
+				SignedJWT jwt = new SignedJWT(header, claimsSet.build());
 
 				signer.signJwt(jwt, alg);
 
@@ -390,15 +410,13 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 
 		try {
 			jsonString = restTemplate.postForObject(serverConfig.getTokenEndpointUri(), form, String.class);
-		} catch (HttpClientErrorException httpClientErrorException) {
+		} catch (RestClientException e) {
 
 			// Handle error
 
-			logger.error("Token Endpoint error response:  "
-					+ httpClientErrorException.getStatusText() + " : "
-					+ httpClientErrorException.getMessage());
+			logger.error("Token Endpoint error response:  " + e.getMessage());
 
-			throw new AuthenticationServiceException("Unable to obtain Access Token: " + httpClientErrorException.getMessage());
+			throw new AuthenticationServiceException("Unable to obtain Access Token: " + e.getMessage());
 		}
 
 		logger.debug("from TokenEndpoint jsonString = " + jsonString);
@@ -451,45 +469,45 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 				JWT idToken = JWTParser.parse(idTokenValue);
 
 				// validate our ID Token over a number of tests
-				ReadOnlyJWTClaimsSet idClaims = idToken.getJWTClaimsSet();
+				JWTClaimsSet idClaims = idToken.getJWTClaimsSet();
 
 				// check the signature
-				JwtSigningAndValidationService jwtValidator = null;
+				JWTSigningAndValidationService jwtValidator = null;
 
 				Algorithm tokenAlg = idToken.getHeader().getAlgorithm();
-				
+
 				Algorithm clientAlg = clientConfig.getIdTokenSignedResponseAlg();
-				
+
 				if (clientAlg != null) {
 					if (!clientAlg.equals(tokenAlg)) {
 						throw new AuthenticationServiceException("Token algorithm " + tokenAlg + " does not match expected algorithm " + clientAlg);
 					}
 				}
-				
+
 				if (idToken instanceof PlainJWT) {
-					
+
 					if (clientAlg == null) {
 						throw new AuthenticationServiceException("Unsigned ID tokens can only be used if explicitly configured in client.");
 					}
-					
-					if (tokenAlg != null && !tokenAlg.equals(JWSAlgorithm.NONE)) {
+
+					if (tokenAlg != null && !tokenAlg.equals(Algorithm.NONE)) {
 						throw new AuthenticationServiceException("Unsigned token received, expected signature with " + tokenAlg);
 					}
 				} else if (idToken instanceof SignedJWT) {
-				
+
 					SignedJWT signedIdToken = (SignedJWT)idToken;
-					
+
 					if (tokenAlg.equals(JWSAlgorithm.HS256)
-						|| tokenAlg.equals(JWSAlgorithm.HS384)
-						|| tokenAlg.equals(JWSAlgorithm.HS512)) {
-						
+							|| tokenAlg.equals(JWSAlgorithm.HS384)
+							|| tokenAlg.equals(JWSAlgorithm.HS512)) {
+
 						// generate one based on client secret
 						jwtValidator = symmetricCacheService.getSymmetricValidtor(clientConfig.getClient());
 					} else {
 						// otherwise load from the server's public key
 						jwtValidator = validationServices.getValidator(serverConfig.getJwksUri());
 					}
-					
+
 					if (jwtValidator != null) {
 						if(!jwtValidator.validateSignature(signedIdToken)) {
 							throw new AuthenticationServiceException("Signature validation failed");
@@ -546,39 +564,28 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 
 				// compare the nonce to our stored claim
 				String nonce = idClaims.getStringClaim("nonce");
-				
-				if (serverConfig.isNonceEnabled()) {
-					if (Strings.isNullOrEmpty(nonce)) {
-	
-						logger.error("ID token did not contain a nonce claim.");
-	
-						throw new AuthenticationServiceException("ID token did not contain a nonce claim.");
-					}
-	
-					String storedNonce = getStoredNonce(session);
-					if (!nonce.equals(storedNonce)) {
-						logger.error("Possible replay attack detected! The comparison of the nonce in the returned "
-								+ "ID Token to the session " + NONCE_SESSION_VARIABLE + " failed. Expected " + storedNonce + " got " + nonce + ".");
-	
-						throw new AuthenticationServiceException(
-								"Possible replay attack detected! The comparison of the nonce in the returned "
-										+ "ID Token to the session " + NONCE_SESSION_VARIABLE + " failed. Expected " + storedNonce + " got " + nonce + ".");
-					}
-				} else {
-					if (!Strings.isNullOrEmpty(nonce)) {
-						logger.error("Possible injection attack! The server returned a nonce value where none was sent or expected: " + nonce);
-						throw new AuthenticationServiceException(
-								"Possible injection attack! The server returned a nonce value where none was sent or expected: " + nonce);
-					}
+				if (Strings.isNullOrEmpty(nonce)) {
+
+					logger.error("ID token did not contain a nonce claim.");
+
+					throw new AuthenticationServiceException("ID token did not contain a nonce claim.");
 				}
 
-				// pull the subject (user id) out as a claim on the id_token
+				String storedNonce = getStoredNonce(session);
+				if (!nonce.equals(storedNonce)) {
+					logger.error("Possible replay attack detected! The comparison of the nonce in the returned "
+							+ "ID Token to the session " + NONCE_SESSION_VARIABLE + " failed. Expected " + storedNonce + " got " + nonce + ".");
 
-				String userId = idClaims.getSubject();
+					throw new AuthenticationServiceException(
+							"Possible replay attack detected! The comparison of the nonce in the returned "
+									+ "ID Token to the session " + NONCE_SESSION_VARIABLE + " failed. Expected " + storedNonce + " got " + nonce + ".");
+				}
 
-				// construct an OIDCAuthenticationToken and return a Authentication object w/the userId and the idToken
+				// construct an PendingOIDCAuthenticationToken and return a Authentication object w/the userId and the idToken
 
-				OIDCAuthenticationToken token = new OIDCAuthenticationToken(userId, idClaims.getIssuer(), serverConfig, idTokenValue, accessTokenValue, refreshTokenValue);
+				PendingOIDCAuthenticationToken token = new PendingOIDCAuthenticationToken(idClaims.getSubject(), idClaims.getIssuer(),
+						serverConfig,
+						idToken, accessTokenValue, refreshTokenValue);
 
 				Authentication authentication = this.getAuthenticationManager().authenticate(token);
 
@@ -811,11 +818,11 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 		this.authOptions = authOptions;
 	}
 
-	public SymmetricCacheService getSymmetricCacheService() {
+	public SymmetricKeyJWTValidatorCacheService getSymmetricCacheService() {
 		return symmetricCacheService;
 	}
 
-	public void setSymmetricCacheService(SymmetricCacheService symmetricCacheService) {
+	public void setSymmetricCacheService(SymmetricKeyJWTValidatorCacheService symmetricCacheService) {
 		this.symmetricCacheService = symmetricCacheService;
 	}
 

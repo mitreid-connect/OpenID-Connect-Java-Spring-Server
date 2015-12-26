@@ -1,25 +1,20 @@
 /*******************************************************************************
- * Copyright 2014 The MITRE Corporation
- *   and the MIT Kerberos and Internet Trust Consortium
- * 
+ * Copyright 2015 The MITRE Corporation
+ *   and the MIT Internet Trust Consortium
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- ******************************************************************************/
+ *******************************************************************************/
 package org.mitre.oauth2.service.impl;
-
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
 
 import java.util.Set;
 
@@ -37,6 +32,12 @@ import org.mockito.stubbing.Answer;
 
 import com.google.common.collect.Sets;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+
+import static org.junit.Assert.assertThat;
+
 /**
  * @author wkim
  *
@@ -50,7 +51,7 @@ public class TestDefaultSystemScopeService {
 	private SystemScope defaultScope1;
 	private SystemScope defaultScope2;
 	private SystemScope dynScope1;
-	private SystemScope extraScope1;
+	private SystemScope restrictedScope1;
 	private SystemScope structuredScope1;
 	private SystemScope structuredScope1Value;
 
@@ -59,12 +60,14 @@ public class TestDefaultSystemScopeService {
 	private String defaultScope1String = "defaultScope1";
 	private String defaultScope2String = "defaultScope2";
 	private String dynScope1String = "dynScope1";
-	private String extraScope1String = "extraScope1";
+	private String restrictedScope1String = "restrictedScope1";
 	private String structuredScope1String = "structuredScope1";
 	private String structuredValue = "structuredValue";
 
 	private Set<SystemScope> allScopes;
 	private Set<String> allScopeStrings;
+	private Set<SystemScope> allScopesWithValue;
+	private Set<String> allScopeStringsWithValue;
 
 	@Mock
 	private SystemScopeRepository repository;
@@ -80,26 +83,27 @@ public class TestDefaultSystemScopeService {
 
 		Mockito.reset(repository);
 
-		// two default and dynamically registerable scopes
+		// two default and dynamically registerable scopes (unrestricted)
 		defaultDynScope1 = new SystemScope(defaultDynScope1String);
 		defaultDynScope2 = new SystemScope(defaultDynScope2String);
-		defaultDynScope1.setAllowDynReg(true);
-		defaultDynScope2.setAllowDynReg(true);
 		defaultDynScope1.setDefaultScope(true);
 		defaultDynScope2.setDefaultScope(true);
 
-		// two strictly default scopes (isAllowDynReg false)
+		// two strictly default scopes (restricted)
 		defaultScope1 = new SystemScope(defaultScope1String);
 		defaultScope2 = new SystemScope(defaultScope2String);
+		defaultScope1.setRestricted(true);
+		defaultScope2.setRestricted(true);
 		defaultScope1.setDefaultScope(true);
 		defaultScope2.setDefaultScope(true);
 
 		// one strictly dynamically registerable scope (isDefault false)
 		dynScope1 = new SystemScope(dynScope1String);
-		dynScope1.setAllowDynReg(true);
 
-		// extraScope1 : extra scope that is neither (defaults to false/false)
-		extraScope1 = new SystemScope(extraScope1String);
+		// extraScope1 : extra scope that is neither restricted nor default (defaults to false/false)
+		restrictedScope1 = new SystemScope(restrictedScope1String);
+		restrictedScope1.setRestricted(true);
+
 
 		// structuredScope1 : structured scope
 		structuredScope1 = new SystemScope(structuredScope1String);
@@ -110,15 +114,18 @@ public class TestDefaultSystemScopeService {
 		structuredScope1Value.setStructured(true);
 		structuredScope1Value.setStructuredValue(structuredValue);
 
-		allScopes = Sets.newHashSet(defaultDynScope1, defaultDynScope2, defaultScope1, defaultScope2, dynScope1, extraScope1, structuredScope1, structuredScope1Value);
-		allScopeStrings = Sets.newHashSet(defaultDynScope1String, defaultDynScope2String, defaultScope1String, defaultScope2String, dynScope1String, extraScope1String, structuredScope1String, structuredScope1String + ":" + structuredValue);
+		allScopes = Sets.newHashSet(defaultDynScope1, defaultDynScope2, defaultScope1, defaultScope2, dynScope1, restrictedScope1, structuredScope1);
+		allScopeStrings = Sets.newHashSet(defaultDynScope1String, defaultDynScope2String, defaultScope1String, defaultScope2String, dynScope1String, restrictedScope1String, structuredScope1String);
+
+		allScopesWithValue = Sets.newHashSet(defaultDynScope1, defaultDynScope2, defaultScope1, defaultScope2, dynScope1, restrictedScope1, structuredScope1, structuredScope1Value);
+		allScopeStringsWithValue = Sets.newHashSet(defaultDynScope1String, defaultDynScope2String, defaultScope1String, defaultScope2String, dynScope1String, restrictedScope1String, structuredScope1String, structuredScope1String + ":" + structuredValue);
 
 		Mockito.when(repository.getByValue(defaultDynScope1String)).thenReturn(defaultDynScope1);
 		Mockito.when(repository.getByValue(defaultDynScope2String)).thenReturn(defaultDynScope2);
 		Mockito.when(repository.getByValue(defaultScope1String)).thenReturn(defaultScope1);
 		Mockito.when(repository.getByValue(defaultScope2String)).thenReturn(defaultScope2);
 		Mockito.when(repository.getByValue(dynScope1String)).thenReturn(dynScope1);
-		Mockito.when(repository.getByValue(extraScope1String)).thenReturn(extraScope1);
+		Mockito.when(repository.getByValue(restrictedScope1String)).thenReturn(restrictedScope1);
 		// we re-use this value so we've got to use thenAnswer instead
 		Mockito.when(repository.getByValue(structuredScope1String)).thenAnswer(new Answer<SystemScope>() {
 			@Override
@@ -148,11 +155,19 @@ public class TestDefaultSystemScopeService {
 	}
 
 	@Test
-	public void getDynReg() {
+	public void getUnrestricted() {
 
-		Set<SystemScope> dynReg = Sets.newHashSet(defaultDynScope1, defaultDynScope2, dynScope1);
+		Set<SystemScope> unrestricted = Sets.newHashSet(defaultDynScope1, defaultDynScope2, dynScope1, structuredScope1);
 
-		assertThat(service.getDynReg(), equalTo(dynReg));
+		assertThat(service.getUnrestricted(), equalTo(unrestricted));
+	}
+
+	@Test
+	public void getRestricted() {
+		Set<SystemScope> restricted = Sets.newHashSet(defaultScope1, defaultScope2, restrictedScope1);
+
+		assertThat(service.getRestricted(), equalTo(restricted));
+
 	}
 
 	@Test
@@ -162,6 +177,8 @@ public class TestDefaultSystemScopeService {
 		assertThat(service.fromStrings(null), is(nullValue()));
 
 		assertThat(service.fromStrings(allScopeStrings), equalTo(allScopes));
+
+		assertThat(service.fromStrings(allScopeStringsWithValue), equalTo(allScopesWithValue));
 	}
 
 	@Test
@@ -171,6 +188,8 @@ public class TestDefaultSystemScopeService {
 		assertThat(service.toStrings(null), is(nullValue()));
 
 		assertThat(service.toStrings(allScopes), equalTo(allScopeStrings));
+
+		assertThat(service.toStrings(allScopesWithValue), equalTo(allScopeStringsWithValue));
 	}
 
 	@Test

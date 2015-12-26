@@ -1,6 +1,6 @@
 /*******************************************************************************
- * Copyright 2014 The MITRE Corporation
- *   and the MIT Kerberos and Internet Trust Consortium
+ * Copyright 2015 The MITRE Corporation
+ *   and the MIT Internet Trust Consortium
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,5 @@ public interface ScopeClaimTranslationService {
 	public Set<String> getClaimsForScope(String scope);
 
 	public Set<String> getClaimsForScopeSet(Set<String> scopes);
-
-	public String getFieldNameForClaim(String claim);
 
 }

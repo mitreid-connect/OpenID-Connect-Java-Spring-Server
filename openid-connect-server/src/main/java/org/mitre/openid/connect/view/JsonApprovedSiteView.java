@@ -1,19 +1,19 @@
 /*******************************************************************************
- * Copyright 2014 The MITRE Corporation
- *   and the MIT Kerberos and Internet Trust Consortium
- * 
+ * Copyright 2015 The MITRE Corporation
+ *   and the MIT Internet Trust Consortium
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- ******************************************************************************/
+ *******************************************************************************/
 /**
  * 
  */
@@ -32,6 +32,7 @@ import org.mitre.openid.connect.model.WhitelistedSite;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.servlet.view.AbstractView;
@@ -52,10 +53,13 @@ import com.google.gson.JsonSerializer;
 @Component(JsonApprovedSiteView.VIEWNAME)
 public class JsonApprovedSiteView extends AbstractView {
 
-	private static Logger logger = LoggerFactory.getLogger(JsonApprovedSiteView.class);
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.getLogger(JsonApprovedSiteView.class);
 
 	public static final String VIEWNAME = "jsonApprovedSiteView";
-	
+
 	private Gson gson = new GsonBuilder()
 	.setExclusionStrategies(new ExclusionStrategy() {
 
@@ -95,10 +99,10 @@ public class JsonApprovedSiteView extends AbstractView {
 	@Override
 	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
 
-		response.setContentType("application/json");
+		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
 
-		HttpStatus code = (HttpStatus) model.get("code");
+		HttpStatus code = (HttpStatus) model.get(HttpCodeView.CODE);
 		if (code == null) {
 			code = HttpStatus.OK; // default to 200
 		}
@@ -108,7 +112,7 @@ public class JsonApprovedSiteView extends AbstractView {
 		try {
 
 			Writer out = response.getWriter();
-			Object obj = model.get("entity");
+			Object obj = model.get(JsonEntityView.ENTITY);
 			gson.toJson(obj, out);
 
 		} catch (IOException e) {

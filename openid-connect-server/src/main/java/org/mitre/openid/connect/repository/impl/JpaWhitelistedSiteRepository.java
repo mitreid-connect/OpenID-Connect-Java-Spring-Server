@@ -1,22 +1,20 @@
 /*******************************************************************************
- * Copyright 2014 The MITRE Corporation
- *   and the MIT Kerberos and Internet Trust Consortium
- * 
+ * Copyright 2015 The MITRE Corporation
+ *   and the MIT Internet Trust Consortium
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- ******************************************************************************/
+ *******************************************************************************/
 package org.mitre.openid.connect.repository.impl;
-
-import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
 
 import java.util.Collection;
 
@@ -30,6 +28,8 @@ import org.mitre.util.jpa.JpaUtil;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
+
 /**
  * JPA WhitelistedSite repository implementation
  * 
@@ -39,24 +39,24 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public class JpaWhitelistedSiteRepository implements WhitelistedSiteRepository {
 
-	@PersistenceContext
+	@PersistenceContext(unitName="defaultPersistenceUnit")
 	private EntityManager manager;
 
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManager")
 	public Collection<WhitelistedSite> getAll() {
-		TypedQuery<WhitelistedSite> query = manager.createNamedQuery("WhitelistedSite.getAll", WhitelistedSite.class);
+		TypedQuery<WhitelistedSite> query = manager.createNamedQuery(WhitelistedSite.QUERY_ALL, WhitelistedSite.class);
 		return query.getResultList();
 	}
 
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManager")
 	public WhitelistedSite getById(Long id) {
 		return manager.find(WhitelistedSite.class, id);
 	}
 
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManager")
 	public void remove(WhitelistedSite whitelistedSite) {
 		WhitelistedSite found = manager.find(WhitelistedSite.class, whitelistedSite.getId());
 
@@ -68,13 +68,13 @@ public class JpaWhitelistedSiteRepository implements WhitelistedSiteRepository {
 	}
 
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManager")
 	public WhitelistedSite save(WhitelistedSite whiteListedSite) {
 		return saveOrUpdate(whiteListedSite.getId(), manager, whiteListedSite);
 	}
 
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManager")
 	public WhitelistedSite update(WhitelistedSite oldWhitelistedSite, WhitelistedSite whitelistedSite) {
 		// sanity check
 		whitelistedSite.setId(oldWhitelistedSite.getId());
@@ -83,18 +83,18 @@ public class JpaWhitelistedSiteRepository implements WhitelistedSiteRepository {
 	}
 
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManager")
 	public WhitelistedSite getByClientId(String clientId) {
-		TypedQuery<WhitelistedSite> query = manager.createNamedQuery("WhitelistedSite.getByClientId", WhitelistedSite.class);
-		query.setParameter("clientId", clientId);
+		TypedQuery<WhitelistedSite> query = manager.createNamedQuery(WhitelistedSite.QUERY_BY_CLIENT_ID, WhitelistedSite.class);
+		query.setParameter(WhitelistedSite.PARAM_CLIENT_ID, clientId);
 		return JpaUtil.getSingleResult(query.getResultList());
 	}
 
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManager")
 	public Collection<WhitelistedSite> getByCreator(String creatorId) {
-		TypedQuery<WhitelistedSite> query = manager.createNamedQuery("WhitelistedSite.getByCreaterUserId", WhitelistedSite.class);
-		query.setParameter("userId", creatorId);
+		TypedQuery<WhitelistedSite> query = manager.createNamedQuery(WhitelistedSite.QUERY_BY_CREATOR, WhitelistedSite.class);
+		query.setParameter(WhitelistedSite.PARAM_USER_ID, creatorId);
 
 		return query.getResultList();
 	}

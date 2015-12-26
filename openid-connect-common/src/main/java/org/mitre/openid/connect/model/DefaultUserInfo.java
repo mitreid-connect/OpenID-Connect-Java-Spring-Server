@@ -1,23 +1,28 @@
 /*******************************************************************************
- * Copyright 2014 The MITRE Corporation
- *   and the MIT Kerberos and Internet Trust Consortium
- * 
+ * Copyright 2015 The MITRE Corporation
+ *   and the MIT Internet Trust Consortium
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- ******************************************************************************/
+ *******************************************************************************/
 package org.mitre.openid.connect.model;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -28,16 +33,26 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.mitre.openid.connect.model.convert.JsonObjectStringConverter;
+
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 @Entity
 @Table(name="user_info")
 @NamedQueries({
-	@NamedQuery(name="DefaultUserInfo.getAll", query = "select u from DefaultUserInfo u"),
-	@NamedQuery(name="DefaultUserInfo.getByUsername", query = "select u from DefaultUserInfo u WHERE u.preferredUsername = :username"),
-	@NamedQuery(name="DefaultUserInfo.getBySubject", query = "select u from DefaultUserInfo u WHERE u.sub = :sub")
+	@NamedQuery(name=DefaultUserInfo.QUERY_BY_USERNAME, query = "select u from DefaultUserInfo u WHERE u.preferredUsername = :" + DefaultUserInfo.PARAM_USERNAME),
+	@NamedQuery(name=DefaultUserInfo.QUERY_BY_EMAIL, query = "select u from DefaultUserInfo u WHERE u.email = :" + DefaultUserInfo.PARAM_EMAIL)
 })
 public class DefaultUserInfo implements UserInfo {
+
+	public static final String QUERY_BY_USERNAME = "DefaultUserInfo.getByUsername";
+	public static final String QUERY_BY_EMAIL = "DefaultUserInfo.getByEmailAddress";
+
+	public static final String PARAM_USERNAME = "username";
+	public static final String PARAM_EMAIL = "email";
+
+	private static final long serialVersionUID = 6078310513185681918L;
 
 	private Long id;
 	private String sub;
@@ -57,9 +72,10 @@ public class DefaultUserInfo implements UserInfo {
 	private String locale;
 	private String phoneNumber;
 	private Boolean phoneNumberVerified;
-	private Address address;
+	private DefaultAddress address;
 	private String updatedTime;
 	private String birthdate;
+	private transient JsonObject src; // source JSON if this is loaded remotely
 
 
 	/**
@@ -353,7 +369,7 @@ public class DefaultUserInfo implements UserInfo {
 	 * @see org.mitre.openid.connect.model.UserInfo#getAddress()
 	 */
 	@Override
-	@OneToOne
+	@OneToOne(targetEntity = DefaultAddress.class)
 	@JoinColumn(name="address_id")
 	public Address getAddress() {
 		return address;
@@ -363,7 +379,11 @@ public class DefaultUserInfo implements UserInfo {
 	 */
 	@Override
 	public void setAddress(Address address) {
-		this.address = address;
+		if (address != null) { 
+			this.address = new DefaultAddress(address);
+		} else {
+			this.address = null;
+		}
 	}
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.model.UserInfo#getUpdatedTime()
@@ -401,45 +421,51 @@ public class DefaultUserInfo implements UserInfo {
 
 	@Override
 	public JsonObject toJson() {
-		JsonObject obj = new JsonObject();
+		if (src == null) {
 
-		obj.addProperty("sub", this.getSub());
+			JsonObject obj = new JsonObject();
 
-		obj.addProperty("name", this.getName());
-		obj.addProperty("preferred_username", this.getPreferredUsername());
-		obj.addProperty("given_name", this.getGivenName());
-		obj.addProperty("family_name", this.getFamilyName());
-		obj.addProperty("middle_name", this.getMiddleName());
-		obj.addProperty("nickname", this.getNickname());
-		obj.addProperty("profile", this.getProfile());
-		obj.addProperty("picture", this.getPicture());
-		obj.addProperty("website", this.getWebsite());
-		obj.addProperty("gender", this.getGender());
-		obj.addProperty("zone_info", this.getZoneinfo());
-		obj.addProperty("locale", this.getLocale());
-		obj.addProperty("updated_time", this.getUpdatedTime());
-		obj.addProperty("birthdate", this.getBirthdate());
+			obj.addProperty("sub", this.getSub());
 
-		obj.addProperty("email", this.getEmail());
-		obj.addProperty("email_verified", this.getEmailVerified());
+			obj.addProperty("name", this.getName());
+			obj.addProperty("preferred_username", this.getPreferredUsername());
+			obj.addProperty("given_name", this.getGivenName());
+			obj.addProperty("family_name", this.getFamilyName());
+			obj.addProperty("middle_name", this.getMiddleName());
+			obj.addProperty("nickname", this.getNickname());
+			obj.addProperty("profile", this.getProfile());
+			obj.addProperty("picture", this.getPicture());
+			obj.addProperty("website", this.getWebsite());
+			obj.addProperty("gender", this.getGender());
+			obj.addProperty("zone_info", this.getZoneinfo());
+			obj.addProperty("locale", this.getLocale());
+			obj.addProperty("updated_at", this.getUpdatedTime());
+			obj.addProperty("birthdate", this.getBirthdate());
 
-		obj.addProperty("phone_number", this.getPhoneNumber());
-		obj.addProperty("phone_number_verified", this.getPhoneNumberVerified());
+			obj.addProperty("email", this.getEmail());
+			obj.addProperty("email_verified", this.getEmailVerified());
 
-		if (this.getAddress() != null) {
+			obj.addProperty("phone_number", this.getPhoneNumber());
+			obj.addProperty("phone_number_verified", this.getPhoneNumberVerified());
 
-			JsonObject addr = new JsonObject();
-			addr.addProperty("formatted", this.getAddress().getFormatted());
-			addr.addProperty("street_address", this.getAddress().getStreetAddress());
-			addr.addProperty("locality", this.getAddress().getLocality());
-			addr.addProperty("region", this.getAddress().getRegion());
-			addr.addProperty("postal_code", this.getAddress().getPostalCode());
-			addr.addProperty("country", this.getAddress().getCountry());
+			if (this.getAddress() != null) {
 
-			obj.add("address", addr);
+				JsonObject addr = new JsonObject();
+				addr.addProperty("formatted", this.getAddress().getFormatted());
+				addr.addProperty("street_address", this.getAddress().getStreetAddress());
+				addr.addProperty("locality", this.getAddress().getLocality());
+				addr.addProperty("region", this.getAddress().getRegion());
+				addr.addProperty("postal_code", this.getAddress().getPostalCode());
+				addr.addProperty("country", this.getAddress().getCountry());
+
+				obj.add("address", addr);
+			}
+
+			return obj;
+		} else {
+			return src;
 		}
 
-		return obj;
 	}
 
 	/**
@@ -449,6 +475,7 @@ public class DefaultUserInfo implements UserInfo {
 	 */
 	public static UserInfo fromJson(JsonObject obj) {
 		DefaultUserInfo ui = new DefaultUserInfo();
+		ui.setSource(obj);
 
 		ui.setSub(nullSafeGetString(obj, "sub"));
 
@@ -464,18 +491,15 @@ public class DefaultUserInfo implements UserInfo {
 		ui.setGender(nullSafeGetString(obj, "gender"));
 		ui.setZoneinfo(nullSafeGetString(obj, "zone_info"));
 		ui.setLocale(nullSafeGetString(obj, "locale"));
-		ui.setUpdatedTime(nullSafeGetString(obj, "updated_time"));
+		ui.setUpdatedTime(nullSafeGetString(obj, "updated_at"));
 		ui.setBirthdate(nullSafeGetString(obj, "birthdate"));
 
 		ui.setEmail(nullSafeGetString(obj, "email"));
 		ui.setEmailVerified(obj.has("email_verified") && obj.get("email_verified").isJsonPrimitive() ? obj.get("email_verified").getAsBoolean() : null);
 
-		ui.setPhoneNumber(nullSafeGetString(obj, "phone_number"));
-		ui.setPhoneNumberVerified(obj.has("phone_number_verified") && obj.get("phone_number_verified").isJsonPrimitive() ? obj.get("phone_number_verified").getAsBoolean() : null);
-
 		if (obj.has("address") && obj.get("address").isJsonObject()) {
 			JsonObject addr = obj.get("address").getAsJsonObject();
-			ui.setAddress(new Address());
+			ui.setAddress(new DefaultAddress());
 
 			ui.getAddress().setFormatted(nullSafeGetString(addr, "formatted"));
 			ui.getAddress().setStreetAddress(nullSafeGetString(addr, "street_address"));
@@ -490,6 +514,25 @@ public class DefaultUserInfo implements UserInfo {
 		return ui;
 
 	}
+	/**
+	 * @return the jsonString
+	 */
+	@Override
+	@Basic
+	@Column(name = "src")
+	@Convert(converter = JsonObjectStringConverter.class)
+	public JsonObject getSource() {
+		return src;
+	}
+
+	/**
+	 * @param jsonString the jsonString to set
+	 */
+	public void setSource(JsonObject src) {
+		this.src = src;
+	}
+
+
 	private static String nullSafeGetString(JsonObject obj, String field) {
 		return obj.has(field) && obj.get(field).isJsonPrimitive() ? obj.get(field).getAsString() : null;
 	}
@@ -688,6 +731,27 @@ public class DefaultUserInfo implements UserInfo {
 			return false;
 		}
 		return true;
+	}
+
+
+	/*
+	 * Custom serialization to handle the JSON object
+	 */
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		out.defaultWriteObject();
+		if (src == null) {
+			out.writeObject(null);
+		} else {
+			out.writeObject(src.toString());
+		}
+	}
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		in.defaultReadObject();
+		Object o = in.readObject();
+		if (o != null) {
+			JsonParser parser = new JsonParser();
+			src = parser.parse((String)o).getAsJsonObject();
+		}
 	}
 
 }

@@ -1,19 +1,19 @@
 /*******************************************************************************
- * Copyright 2014 The MITRE Corporation
- *   and the MIT Kerberos and Internet Trust Consortium
- * 
+ * Copyright 2015 The MITRE Corporation
+ *   and the MIT Internet Trust Consortium
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- ******************************************************************************/
+ *******************************************************************************/
 /**
  * 
  */
@@ -30,6 +30,7 @@ import org.mitre.openid.connect.config.ServerConfiguration;
 import org.springframework.security.authentication.AuthenticationServiceException;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 
 /**
  * 
@@ -44,7 +45,7 @@ public class PlainAuthRequestUrlBuilder implements AuthRequestUrlBuilder {
 	 * @see org.mitre.openid.connect.client.service.AuthRequestUrlBuilder#buildAuthRequest(javax.servlet.http.HttpServletRequest, org.mitre.openid.connect.config.ServerConfiguration, org.springframework.security.oauth2.provider.ClientDetails)
 	 */
 	@Override
-	public String buildAuthRequestUrl(ServerConfiguration serverConfig, RegisteredClient clientConfig, String redirectUri, String nonce, String state, Map<String, String> options) {
+	public String buildAuthRequestUrl(ServerConfiguration serverConfig, RegisteredClient clientConfig, String redirectUri, String nonce, String state, Map<String, String> options, String loginHint) {
 		try {
 
 			URIBuilder uriBuilder = new URIBuilder(serverConfig.getAuthorizationEndpointUri());
@@ -54,15 +55,18 @@ public class PlainAuthRequestUrlBuilder implements AuthRequestUrlBuilder {
 
 			uriBuilder.addParameter("redirect_uri", redirectUri);
 
-			if (nonce != null) {
-				uriBuilder.addParameter("nonce", nonce);
-			}
+			uriBuilder.addParameter("nonce", nonce);
 
 			uriBuilder.addParameter("state", state);
 
 			// Optional parameters:
 			for (Entry<String, String> option : options.entrySet()) {
 				uriBuilder.addParameter(option.getKey(), option.getValue());
+			}
+
+			// if there's a login hint, send it
+			if (!Strings.isNullOrEmpty(loginHint)) {
+				uriBuilder.addParameter("login_hint", loginHint);
 			}
 
 			return uriBuilder.build().toString();

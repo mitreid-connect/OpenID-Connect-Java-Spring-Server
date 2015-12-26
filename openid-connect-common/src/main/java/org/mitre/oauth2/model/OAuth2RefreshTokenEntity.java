@@ -1,29 +1,29 @@
 /*******************************************************************************
- * Copyright 2014 The MITRE Corporation
- *   and the MIT Kerberos and Internet Trust Consortium
- * 
+ * Copyright 2015 The MITRE Corporation
+ *   and the MIT Internet Trust Consortium
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- ******************************************************************************/
+ *******************************************************************************/
 /**
  * 
  */
 package org.mitre.oauth2.model;
 
-import java.text.ParseException;
 import java.util.Date;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -37,10 +37,10 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.Transient;
 
+import org.mitre.oauth2.model.convert.JWTStringConverter;
 import org.springframework.security.oauth2.common.OAuth2RefreshToken;
 
 import com.nimbusds.jwt.JWT;
-import com.nimbusds.jwt.JWTParser;
 
 /**
  * @author jricher
@@ -49,13 +49,21 @@ import com.nimbusds.jwt.JWTParser;
 @Entity
 @Table(name = "refresh_token")
 @NamedQueries({
-	@NamedQuery(name = "OAuth2RefreshTokenEntity.getAll", query = "select r from OAuth2RefreshTokenEntity r"),
-	@NamedQuery(name = "OAuth2RefreshTokenEntity.getAllExpiredByDate", query = "select r from OAuth2RefreshTokenEntity r where r.expiration <= :date"),
-	@NamedQuery(name = "OAuth2RefreshTokenEntity.getByClient", query = "select r from OAuth2RefreshTokenEntity r where r.client = :client"),
-	@NamedQuery(name = "OAuth2RefreshTokenEntity.getByTokenValue", query = "select r from OAuth2RefreshTokenEntity r where r.value = :tokenValue"),
-	@NamedQuery(name = "OAuth2RefreshTokenEntity.getByAuthentication", query = "select r from OAuth2RefreshTokenEntity r where r.authenticationHolder.authentication = :authentication")
+	@NamedQuery(name = OAuth2RefreshTokenEntity.QUERY_ALL, query = "select r from OAuth2RefreshTokenEntity r"),
+	@NamedQuery(name = OAuth2RefreshTokenEntity.QUERY_EXPIRED_BY_DATE, query = "select r from OAuth2RefreshTokenEntity r where r.expiration <= :" + OAuth2RefreshTokenEntity.PARAM_DATE),
+	@NamedQuery(name = OAuth2RefreshTokenEntity.QUERY_BY_CLIENT, query = "select r from OAuth2RefreshTokenEntity r where r.client = :" + OAuth2RefreshTokenEntity.PARAM_CLIENT),
+	@NamedQuery(name = OAuth2RefreshTokenEntity.QUERY_BY_TOKEN_VALUE, query = "select r from OAuth2RefreshTokenEntity r where r.jwt = :" + OAuth2RefreshTokenEntity.PARAM_TOKEN_VALUE)
 })
 public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
+
+	public static final String QUERY_BY_TOKEN_VALUE = "OAuth2RefreshTokenEntity.getByTokenValue";
+	public static final String QUERY_BY_CLIENT = "OAuth2RefreshTokenEntity.getByClient";
+	public static final String QUERY_EXPIRED_BY_DATE = "OAuth2RefreshTokenEntity.getAllExpiredByDate";
+	public static final String QUERY_ALL = "OAuth2RefreshTokenEntity.getAll";
+
+	public static final String PARAM_TOKEN_VALUE = "tokenValue";
+	public static final String PARAM_CLIENT = "client";
+	public static final String PARAM_DATE = "date";
 
 	private Long id;
 
@@ -116,19 +124,9 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
 	 * Get the JWT-encoded value of this token
 	 */
 	@Override
-	@Basic
-	@Column(name="token_value")
+	@Transient
 	public String getValue() {
 		return jwt.serialize();
-	}
-
-	/**
-	 * Set the value of this token as a string. Parses the string into a JWT.
-	 * @param value
-	 * @throws ParseException if the value is not a valid JWT string
-	 */
-	public void setValue(String value) throws ParseException {
-		setJwt(JWTParser.parse(value));
 	}
 
 	@Basic
@@ -175,7 +173,9 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
 	 * Get the JWT object directly
 	 * @return the jwt
 	 */
-	@Transient
+	@Basic
+	@Column(name="token_value")
+	@Convert(converter = JWTStringConverter.class)
 	public JWT getJwt() {
 		return jwt;
 	}

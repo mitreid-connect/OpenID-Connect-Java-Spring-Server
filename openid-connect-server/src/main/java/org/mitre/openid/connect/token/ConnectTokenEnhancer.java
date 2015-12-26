@@ -1,30 +1,31 @@
 /*******************************************************************************
- * Copyright 2014 The MITRE Corporation
- *   and the MIT Kerberos and Internet Trust Consortium
- * 
+ * Copyright 2015 The MITRE Corporation
+ *   and the MIT Internet Trust Consortium
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- ******************************************************************************/
+ *******************************************************************************/
 package org.mitre.openid.connect.token;
 
 import java.util.Date;
 import java.util.UUID;
 
-import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
+import org.mitre.jwt.signer.service.JWTSigningAndValidationService;
 import org.mitre.jwt.signer.service.impl.JWKSetCacheService;
-import org.mitre.jwt.signer.service.impl.SymmetricCacheService;
+import org.mitre.jwt.signer.service.impl.SymmetricKeyJWTValidatorCacheService;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
+import org.mitre.oauth2.service.SystemScopeService;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.service.ApprovedSiteService;
@@ -48,13 +49,16 @@ import com.nimbusds.jwt.SignedJWT;
 @Service
 public class ConnectTokenEnhancer implements TokenEnhancer {
 
-	Logger logger = LoggerFactory.getLogger(ConnectTokenEnhancer.class);
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.getLogger(ConnectTokenEnhancer.class);
 
 	@Autowired
 	private ConfigurationPropertiesBean configBean;
 
 	@Autowired
-	private JwtSigningAndValidationService jwtService;
+	private JWTSigningAndValidationService jwtService;
 
 	@Autowired
 	private ClientDetailsEntityService clientService;
@@ -72,7 +76,7 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 	private JWKSetCacheService encryptors;
 
 	@Autowired
-	private SymmetricCacheService symmetricCacheService;
+	private SymmetricKeyJWTValidatorCacheService symmetricCacheService;
 
 
 	@Override
@@ -84,21 +88,19 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 		String clientId = originalAuthRequest.getClientId();
 		ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
 
-		JWTClaimsSet claims = new JWTClaimsSet();
-
-		claims.setAudience(Lists.newArrayList(clientId));
-
-		claims.setIssuer(configBean.getIssuer());
-
-		claims.setIssueTime(new Date());
-
-		claims.setExpirationTime(token.getExpiration());
-
-		claims.setJWTID(UUID.randomUUID().toString()); // set a random NONCE in the middle of it
+		JWTClaimsSet claims = new JWTClaimsSet.Builder()
+				.audience(Lists.newArrayList(clientId))
+				.issuer(configBean.getIssuer())
+				.issueTime(new Date())
+				.expirationTime(token.getExpiration())
+				.jwtID(UUID.randomUUID().toString()) // set a random NONCE in the middle of it
+				.build();
 
 		JWSAlgorithm signingAlg = jwtService.getDefaultSigningAlgorithm();
-
-		SignedJWT signed = new SignedJWT(new JWSHeader(signingAlg), claims);
+		JWSHeader header = new JWSHeader(signingAlg, null, null, null, null, null, null, null, null, null,
+				jwtService.getDefaultSignerKeyId(),
+				null, null);
+		SignedJWT signed = new SignedJWT(header, claims);
 
 		jwtService.signJwt(signed);
 
@@ -113,7 +115,7 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 		 * Also, there must be a user authentication involved in the request for it to be considered
 		 * OIDC and not OAuth, so we check for that as well.
 		 */
-		if (originalAuthRequest.getScope().contains("openid")
+		if (originalAuthRequest.getScope().contains(SystemScopeService.OPENID_SCOPE)
 				&& !authentication.isClientOnly()) {
 
 			String username = authentication.getName();
@@ -144,11 +146,11 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 		this.configBean = configBean;
 	}
 
-	public JwtSigningAndValidationService getJwtService() {
+	public JWTSigningAndValidationService getJwtService() {
 		return jwtService;
 	}
 
-	public void setJwtService(JwtSigningAndValidationService jwtService) {
+	public void setJwtService(JWTSigningAndValidationService jwtService) {
 		this.jwtService = jwtService;
 	}
 

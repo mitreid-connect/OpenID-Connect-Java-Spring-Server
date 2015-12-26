@@ -3,7 +3,9 @@
 
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.mitre/openid-connect-parent/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.mitre/openid-connect-parent) [![Travis CI](https://travis-ci.org/mitreid-connect/OpenID-Connect-Java-Spring-Server.svg?branch=master)](https://travis-ci.org/mitreid-connect/OpenID-Connect-Java-Spring-Server)
 
-This project contains an OpenID Connect reference implementation in Java on the Spring platform, including a functioning [server library](openid-connect-server), [deployable server package](openid-connect-server-webapp), [client (RP) library](openid-connect-client), and general [utility libraries](openid-connect-common). The server can be used as an OpenID Connect Identity Provider as well as a general-purpose OAuth 2.0 Authorization Server.
+This project contains a certified OpenID Connect reference implementation in Java on the Spring platform, including a functioning [server library](openid-connect-server), [deployable server package](openid-connect-server-webapp), [client (RP) library](openid-connect-client), and general [utility libraries](openid-connect-common). The server can be used as an OpenID Connect Identity Provider as well as a general-purpose OAuth 2.0 Authorization Server.
+
+[![OpenID Certified](https://cloud.githubusercontent.com/assets/1454075/7611268/4d19de32-f97b-11e4-895b-31b2455a7ca6.png)](https://openid.net/certification/)
 
 More information about the project can be found:
 
@@ -23,9 +25,10 @@ The authors and key contributors of the project include:
 * [Steve Moore](https://github.com/srmoore)
 * [Mike Derryberry](https://github.com/mtderryberry)
 * [William Kim](https://github.com/wikkim)
+* [Mark Janssen](https://github.com/praseodym)
 
 
 
 
-Copyright &copy;2014, [The MITRE Corporation](http://www.mitre.org/)
-  and the [MIT Kerberos and Internet Trust Consortium](http://kit.mit.edu/). Licensed under the Apache 2.0 license, for details see `LICENSE.txt`. 
+Copyright &copy;2015, [The MITRE Corporation](http://www.mitre.org/)
+  and the [MIT Internet Trust Consortium](http://www.mit-trust.org/). Licensed under the Apache 2.0 license, for details see `LICENSE.txt`. 

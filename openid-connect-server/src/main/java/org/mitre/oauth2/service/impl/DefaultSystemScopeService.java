@@ -1,19 +1,19 @@
 /*******************************************************************************
- * Copyright 2014 The MITRE Corporation
- *   and the MIT Kerberos and Internet Trust Consortium
- * 
+ * Copyright 2015 The MITRE Corporation
+ *   and the MIT Internet Trust Consortium
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- ******************************************************************************/
+ *******************************************************************************/
 /**
  * 
  */
@@ -56,21 +56,17 @@ public class DefaultSystemScopeService implements SystemScopeService {
 		}
 	};
 
-
-	private Predicate<SystemScope> isDynReg = new Predicate<SystemScope>() {
+	private Predicate<SystemScope> isRestricted = new Predicate<SystemScope>() {
 		@Override
 		public boolean apply(SystemScope input) {
-			return (input != null && input.isAllowDynReg());
+			return (input != null && input.isRestricted());
 		}
 	};
 
-	private Predicate<String> isRestricted = new Predicate<String>() {
+	private Predicate<SystemScope> isReserved = new Predicate<SystemScope>() {
 		@Override
-		public boolean apply(String input) {
-			return (input != null &&
-					!input.equals(ID_TOKEN_SCOPE) &&
-					!input.equals(REGISTRATION_TOKEN_SCOPE) &&
-					!input.equals(RESOURCE_TOKEN_SCOPE));
+		public boolean apply(SystemScope input) {
+			return (input != null && getReserved().contains(input));
 		}
 	};
 
@@ -125,22 +121,6 @@ public class DefaultSystemScopeService implements SystemScopeService {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.mitre.oauth2.service.SystemScopeService#getDefaults()
-	 */
-	@Override
-	public Set<SystemScope> getDefaults() {
-		return Sets.filter(getAll(), isDefault);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.mitre.oauth2.service.SystemScopeService#getDynReg()
-	 */
-	@Override
-	public Set<SystemScope> getDynReg() {
-		return Sets.filter(getAll(), isDynReg);
-	}
-
-	/* (non-Javadoc)
 	 * @see org.mitre.oauth2.service.SystemScopeService#getById(java.lang.Long)
 	 */
 	@Override
@@ -170,7 +150,11 @@ public class DefaultSystemScopeService implements SystemScopeService {
 	 */
 	@Override
 	public SystemScope save(SystemScope scope) {
-		return repository.save(scope);
+		if (!isReserved.apply(scope)) { // don't allow saving of reserved scopes
+			return repository.save(scope);
+		} else {
+			return null;
+		}
 	}
 
 	/* (non-Javadoc)
@@ -181,7 +165,7 @@ public class DefaultSystemScopeService implements SystemScopeService {
 		if (scope == null) {
 			return null;
 		} else {
-			return new LinkedHashSet<SystemScope>(Collections2.filter(Collections2.transform(scope, stringToSystemScope), Predicates.notNull()));
+			return new LinkedHashSet<>(Collections2.filter(Collections2.transform(scope, stringToSystemScope), Predicates.notNull()));
 		}
 	}
 
@@ -193,7 +177,7 @@ public class DefaultSystemScopeService implements SystemScopeService {
 		if (scope == null) {
 			return null;
 		} else {
-			return new LinkedHashSet<String>(Collections2.filter(Collections2.transform(scope, systemScopeToString), Predicates.notNull()));
+			return new LinkedHashSet<>(Collections2.filter(Collections2.transform(scope, systemScopeToString), Predicates.notNull()));
 		}
 	}
 
@@ -241,10 +225,34 @@ public class DefaultSystemScopeService implements SystemScopeService {
 	}
 
 	@Override
-	public Set<String> removeRestrictedScopes(Set<String> scopes) {
-		return new LinkedHashSet<String>(Collections2.filter(scopes, isRestricted));
+	public Set<SystemScope> getDefaults() {
+		return Sets.filter(getAll(), isDefault);
 	}
 
 
+	@Override
+	public Set<SystemScope> getReserved() {
+		return reservedScopes;
+	}
+
+	@Override
+	public Set<SystemScope> getRestricted() {
+		return Sets.filter(getAll(), isRestricted);
+	}
+
+	@Override
+	public Set<SystemScope> getUnrestricted() {
+		return Sets.filter(getAll(), Predicates.not(isRestricted));
+	}
+
+	@Override
+	public Set<SystemScope> removeRestrictedAndReservedScopes(Set<SystemScope> scopes) {
+		return Sets.filter(scopes, Predicates.not(Predicates.or(isRestricted, isReserved)));
+	}
+
+	@Override
+	public Set<SystemScope> removeReservedScopes(Set<SystemScope> scopes) {
+		return Sets.filter(scopes, Predicates.not(isReserved));
+	}
 
 }

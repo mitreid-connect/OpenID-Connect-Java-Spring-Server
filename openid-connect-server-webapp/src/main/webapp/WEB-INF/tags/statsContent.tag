@@ -1,8 +1,8 @@
-<h2>Current Statistics</h2>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<h2><spring:message code="statistics.title"/></h2>
 
-<p>There have been 
-	<span class="label label-info">${statsSummary["userCount"]}</span> user${statsSummary["userCount"] == 1 ? "" : "s"} 
-	of this system who have logged in to 
-	<span class="label label-info">${statsSummary["clientCount"]}</span> total site${statsSummary["clientCount"] == 1 ? "" : "s"}, 
-	for a total of 
-	<span class="label label-info">${statsSummary["approvalCount"]}</span> site approval${statsSummary["approvalCount"] == 1 ? "" : "s"}.</p>
+<p>
+    <spring:message code="statistics.number_users" arguments='${statsSummary["userCount"]}'/>
+    <spring:message code="statistics.number_clients" arguments='${statsSummary["clientCount"]}'/>
+    <spring:message code="statistics.number_approvals" arguments='${statsSummary["approvalCount"]}'/>
+</p>

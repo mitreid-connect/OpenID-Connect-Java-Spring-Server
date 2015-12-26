@@ -1,6 +1,6 @@
 /*******************************************************************************
- * Copyright 2014 The MITRE Corporation
- *   and the MIT Kerberos and Internet Trust Consortium
+ * Copyright 2015 The MITRE Corporation
+ *   and the MIT Internet Trust Consortium
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,38 @@ import com.google.common.collect.Sets;
  *
  */
 public class HybridIssuerService implements IssuerService {
+
+	/**
+	 * @return
+	 * @see org.mitre.openid.connect.client.service.impl.ThirdPartyIssuerService#getAccountChooserUrl()
+	 */
+	public String getAccountChooserUrl() {
+		return thirdPartyIssuerService.getAccountChooserUrl();
+	}
+
+	/**
+	 * @param accountChooserUrl
+	 * @see org.mitre.openid.connect.client.service.impl.ThirdPartyIssuerService#setAccountChooserUrl(java.lang.String)
+	 */
+	public void setAccountChooserUrl(String accountChooserUrl) {
+		thirdPartyIssuerService.setAccountChooserUrl(accountChooserUrl);
+	}
+
+	/**
+	 * @return
+	 * @see org.mitre.openid.connect.client.service.impl.WebfingerIssuerService#isForceHttps()
+	 */
+	public boolean isForceHttps() {
+		return webfingerIssuerService.isForceHttps();
+	}
+
+	/**
+	 * @param forceHttps
+	 * @see org.mitre.openid.connect.client.service.impl.WebfingerIssuerService#setForceHttps(boolean)
+	 */
+	public void setForceHttps(boolean forceHttps) {
+		webfingerIssuerService.setForceHttps(forceHttps);
+	}
 
 	private ThirdPartyIssuerService thirdPartyIssuerService = new ThirdPartyIssuerService();
 	private WebfingerIssuerService webfingerIssuerService = new WebfingerIssuerService();

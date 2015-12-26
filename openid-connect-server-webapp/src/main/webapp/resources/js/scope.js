@@ -1,19 +1,19 @@
 /*******************************************************************************
- * Copyright 2014 The MITRE Corporation 
- *   and the MIT Kerberos and Internet Trust Consortium
- * 
+ * Copyright 2015 The MITRE Corporation
+ *   and the MIT Internet Trust Consortium
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- ******************************************************************************/
+ *******************************************************************************/
 var SystemScopeModel = Backbone.Model.extend({
 	idAttribute: 'id',
 
@@ -23,7 +23,7 @@ var SystemScopeModel = Backbone.Model.extend({
 		icon:null,
 		value:null,
 		defaultScope:false,
-		allowDynReg:false,
+		restricted:false,
 		structured:false,
 		structuredParamDescription:null,
 		structuredValue:null
@@ -46,18 +46,18 @@ var SystemScopeCollection = Backbone.Collection.extend({
 		return new SystemScopeCollection(filtered);
 	},
 	
-	dynRegScopes: function() {
+	unrestrictedScopes: function() {
 		filtered = this.filter(function(scope) {
-			return scope.get("allowDynReg") === true;
+			return scope.get("restricted") !== true;
 		});
 		return new SystemScopeCollection(filtered);
 	},
 	
-	defaultDynRegScopes: function() {
+	defaultUnrestrictedScopes: function() {
 		filtered = this.filter(function(scope) {
-			return scope.get("defaultScope") === true && scope.get("allowDynReg") === true;
+			return scope.get("defaultScope") === true && scope.get("restricted") !== true;
 		});
-		return new SystemScopeCollection(filtered);		
+		return new SystemScopeCollection(filtered);
 	},
 	
 	getByValue: function(value) {
@@ -99,18 +99,21 @@ var SystemScopeView = Backbone.View.extend({
     render:function (eventName) {
         this.$el.html(this.template(this.model.toJSON()));
 
-        this.$('.allow-dyn-reg').tooltip({title: 'This scope can be used by dynamically registered clients'});
+        $('.restricted', this.el).tooltip({title: $.t('scope.system-scope-table.tooltip-restricted')});
+        $('.default', this.el).tooltip({title: $.t('scope.system-scope-table.tooltip-default')});
         
         return this;
+        $(this.el).i18n();
     },
     
     deleteScope:function (e) {
     	e.preventDefault();
 
-        if (confirm("Are you sure sure you would like to delete this scope? Clients that have this scope will still be able to ask for it.")) {
+        if (confirm($.t("scope.system-scope-table.confirm"))) {
             var _self = this;
 
             this.model.destroy({
+            	dataType: false, processData: false,
                 success:function () {
                 	
                     _self.$el.fadeTo("fast", 0.00, function () { //fade
@@ -163,7 +166,9 @@ var SystemScopeListView = Backbone.View.extend({
     	}
 
     	$('#loadingbox').sheet('show');
-    	$('#loading').html('<span class="label" id="loading-scopes">Scopes</span> ');
+    	$('#loading').html(
+                '<span class="label" id="loading-scopes">' + $.t('common.scopes') + '</span> '
+    	        );
 
     	$.when(this.model.fetchIfNeeded({success:function(e) {$('#loading-scopes').addClass('label-success');}}))
     	.done(function() {
@@ -185,7 +190,9 @@ var SystemScopeListView = Backbone.View.extend({
 	refreshTable:function(e) {
 		var _self = this;
     	$('#loadingbox').sheet('show');
-    	$('#loading').html('<span class="label" id="loading-scopes">Scopes</span> ');
+    	$('#loading').html(
+                '<span class="label" id="loading-scopes">' + $.t('common.scopes') + '</span> '
+    	        );
 
     	$.when(this.model.fetch({success:function(e) {$('#loading-scopes').addClass('label-success');}}))
     	.done(function() {
@@ -218,7 +225,7 @@ var SystemScopeListView = Backbone.View.extend({
 		}, this);
 		
 		this.togglePlaceholder();
-		
+        $(this.el).i18n();
 		return this;
 	}
 });
@@ -278,6 +285,25 @@ var SystemScopeFormView = Backbone.View.extend({
 		'change #isStructured input':'toggleStructuredParamDescription'
 	},
 	
+	load:function(callback) {
+		if (this.model.isFetched) {
+			callback();
+			return;
+		}
+		
+    	$('#loadingbox').sheet('show');
+        $('#loading').html(
+                '<span class="label" id="loading-scopes">' + $.t("common.scopes") + '</span> '
+                );
+
+    	$.when(this.model.fetchIfNeeded({success:function(e) {$('#loading-scopes').addClass('label-success');}}))
+    			.done(function() {
+    	    		$('#loadingbox').sheet('hide');
+    	    		callback();
+    			});
+		
+	},
+	
 	toggleStructuredParamDescription:function(e) {
 		if ($('#isStructured input', this.el).is(':checked')) {
 			$('#structuredParamDescription', this.el).show();
@@ -301,7 +327,7 @@ var SystemScopeFormView = Backbone.View.extend({
 			description:$('#description textarea').val(),
 			icon:$('#iconDisplay input').val(),
 			defaultScope:$('#defaultScope input').is(':checked'),
-			allowDynReg:$('#allowDynReg input').is(':checked'),
+			restricted:$('#restricted input').is(':checked'),
 			structured:$('#isStructured input').is(':checked'),
 			structuredParamDescription:$('#structuredParamDescription input').val()
 		});
@@ -355,12 +381,11 @@ var SystemScopeFormView = Backbone.View.extend({
 		this.$el.html(this.template(this.model.toJSON()));
 		
 		_.each(this.bootstrapIcons, function (items) {
-			$(".modal-body", this.el).append(this.iconTemplate({items:items}));
+			$("#iconSelector .modal-body", this.el).append(this.iconTemplate({items:items}));
 		}, this);
 		
 		this.toggleStructuredParamDescription();
-		
+        $(this.el).i18n();
 		return this;
 	}
 });
-

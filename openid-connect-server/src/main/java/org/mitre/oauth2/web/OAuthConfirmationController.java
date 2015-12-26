@@ -1,24 +1,25 @@
 /*******************************************************************************
- * Copyright 2014 The MITRE Corporation
- *   and the MIT Kerberos and Internet Trust Consortium
- * 
+ * Copyright 2015 The MITRE Corporation
+ *   and the MIT Internet Trust Consortium
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- ******************************************************************************/
+ *******************************************************************************/
 /**
  * 
  */
 package org.mitre.oauth2.web;
 
+import java.net.URISyntaxException;
 import java.security.Principal;
 import java.util.Date;
 import java.util.HashMap;
@@ -27,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.http.client.utils.URIBuilder;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
@@ -43,6 +45,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
+import org.springframework.security.oauth2.provider.endpoint.RedirectResolver;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -54,6 +57,9 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonObject;
 
+import static org.mitre.openid.connect.request.ConnectRequestParameters.PROMPT;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.PROMPT_SEPARATOR;
+
 /**
  * @author jricher
  *
@@ -61,6 +67,7 @@ import com.google.gson.JsonObject;
 @Controller
 @SessionAttributes("authorizationRequest")
 public class OAuthConfirmationController {
+
 
 	@Autowired
 	private ClientDetailsEntityService clientService;
@@ -77,7 +84,13 @@ public class OAuthConfirmationController {
 	@Autowired
 	private StatsService statsService;
 
-	private static Logger logger = LoggerFactory.getLogger(OAuthConfirmationController.class);
+	@Autowired
+	private RedirectResolver redirectResolver;
+
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.getLogger(OAuthConfirmationController.class);
 
 	public OAuthConfirmationController() {
 
@@ -94,39 +107,48 @@ public class OAuthConfirmationController {
 
 		// Check the "prompt" parameter to see if we need to do special processing
 
-		String prompt = (String)authRequest.getExtensions().get("prompt");
-		List<String> prompts = Splitter.on(" ").splitToList(Strings.nullToEmpty(prompt));
-		if (prompts.contains("none")) {
-			// we're not supposed to prompt, so "return an error"
-			logger.info("Client requested no prompt, returning 403 from confirmation endpoint");
-			model.put("code", HttpStatus.FORBIDDEN);
-			return HttpCodeView.VIEWNAME;
-		}
-		
-		if (prompts.contains("consent")) {
-			model.put("consent", true);
-		}
-
-		//AuthorizationRequest clientAuth = (AuthorizationRequest) model.remove("authorizationRequest");
-
+		String prompt = (String)authRequest.getExtensions().get(PROMPT);
+		List<String> prompts = Splitter.on(PROMPT_SEPARATOR).splitToList(Strings.nullToEmpty(prompt));
 		ClientDetailsEntity client = null;
 
 		try {
 			client = clientService.loadClientByClientId(authRequest.getClientId());
 		} catch (OAuth2Exception e) {
 			logger.error("confirmAccess: OAuth2Exception was thrown when attempting to load client", e);
-			model.put("code", HttpStatus.BAD_REQUEST);
+			model.put(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 			return HttpCodeView.VIEWNAME;
 		} catch (IllegalArgumentException e) {
 			logger.error("confirmAccess: IllegalArgumentException was thrown when attempting to load client", e);
-			model.put("code", HttpStatus.BAD_REQUEST);
+			model.put(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 			return HttpCodeView.VIEWNAME;
 		}
 
 		if (client == null) {
 			logger.error("confirmAccess: could not find client " + authRequest.getClientId());
-			model.put("code", HttpStatus.NOT_FOUND);
+			model.put(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 			return HttpCodeView.VIEWNAME;
+		}
+
+		if (prompts.contains("none")) {
+			// if we've got a redirect URI then we'll send it
+
+			String url = redirectResolver.resolveRedirect(authRequest.getRedirectUri(), client);
+
+			try {
+				URIBuilder uriBuilder = new URIBuilder(url);
+
+				uriBuilder.addParameter("error", "interaction_required");
+				if (!Strings.isNullOrEmpty(authRequest.getState())) {
+					uriBuilder.addParameter("state", authRequest.getState()); // copy the state parameter if one was given
+				}
+
+				return "redirect:" + uriBuilder.toString();
+
+			} catch (URISyntaxException e) {
+				logger.error("Can't build redirect URI for prompt=none, sending error instead", e);
+				model.put("code", HttpStatus.FORBIDDEN);
+				return HttpCodeView.VIEWNAME;
+			}
 		}
 
 		model.put("auth_request", authRequest);
@@ -140,7 +162,7 @@ public class OAuthConfirmationController {
 		// pre-process the scopes
 		Set<SystemScope> scopes = scopeService.fromStrings(authRequest.getScope());
 
-		Set<SystemScope> sortedScopes = new LinkedHashSet<SystemScope>(scopes.size());
+		Set<SystemScope> sortedScopes = new LinkedHashSet<>(scopes.size());
 		Set<SystemScope> systemScopes = scopeService.getAll();
 
 		// sort scopes for display based on the inherent order of system scopes
@@ -157,13 +179,13 @@ public class OAuthConfirmationController {
 
 		// get the userinfo claims for each scope
 		UserInfo user = userInfoService.getByUsername(p.getName());
-		Map<String, Map<String, String>> claimsForScopes = new HashMap<String, Map<String, String>>();
+		Map<String, Map<String, String>> claimsForScopes = new HashMap<>();
 		if (user != null) {
 			JsonObject userJson = user.toJson();
-	
+
 			for (SystemScope systemScope : sortedScopes) {
-				Map<String, String> claimValues = new HashMap<String, String>();
-	
+				Map<String, String> claimValues = new HashMap<>();
+
 				Set<String> claims = scopeClaimTranslationService.getClaimsForScope(systemScope.getValue());
 				for (String claim : claims) {
 					if (userJson.has(claim) && userJson.get(claim).isJsonPrimitive()) {
@@ -171,7 +193,7 @@ public class OAuthConfirmationController {
 						claimValues.put(claim, userJson.get(claim).getAsString());
 					}
 				}
-	
+
 				claimsForScopes.put(systemScope.getValue(), claimValues);
 			}
 		}
@@ -190,16 +212,13 @@ public class OAuthConfirmationController {
 		}
 
 		// if the client is over a week old and has more than one registration, don't give such a big warning
-		// instead, tag as "Generally Recognized As Safe (gras)
+		// instead, tag as "Generally Recognized As Safe" (gras)
 		Date lastWeek = new Date(System.currentTimeMillis() - (60 * 60 * 24 * 7 * 1000));
 		if (count > 1 && client.getCreatedAt() != null && client.getCreatedAt().before(lastWeek)) {
 			model.put("gras", true);
 		} else {
 			model.put("gras", false);
 		}
-
-		// inject a random value for CSRF purposes
-		model.put("csrf", authRequest.getExtensions().get("csrf"));
 
 		return "approve";
 	}

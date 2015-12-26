@@ -1,25 +1,24 @@
 /*******************************************************************************
- * Copyright 2014 The MITRE Corporation
- *   and the MIT Kerberos and Internet Trust Consortium
- * 
+ * Copyright 2015 The MITRE Corporation
+ *   and the MIT Internet Trust Consortium
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- ******************************************************************************/
+ *******************************************************************************/
 /**
  * 
  */
 package org.mitre.oauth2.model;
 
-import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +28,7 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -36,14 +36,18 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.Transient;
 
+import org.mitre.oauth2.model.convert.JWTStringConverter;
+import org.mitre.uma.model.Permission;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2AccessTokenJackson1Deserializer;
 import org.springframework.security.oauth2.common.OAuth2AccessTokenJackson1Serializer;
@@ -52,7 +56,6 @@ import org.springframework.security.oauth2.common.OAuth2AccessTokenJackson2Seria
 import org.springframework.security.oauth2.common.OAuth2RefreshToken;
 
 import com.nimbusds.jwt.JWT;
-import com.nimbusds.jwt.JWTParser;
 
 /**
  * @author jricher
@@ -61,19 +64,34 @@ import com.nimbusds.jwt.JWTParser;
 @Entity
 @Table(name = "access_token")
 @NamedQueries({
-	@NamedQuery(name = "OAuth2AccessTokenEntity.getAll", query = "select a from OAuth2AccessTokenEntity a"),
-	@NamedQuery(name = "OAuth2AccessTokenEntity.getAllExpiredByDate", query = "select a from OAuth2AccessTokenEntity a where a.expiration <= :date"),
-	@NamedQuery(name = "OAuth2AccessTokenEntity.getByRefreshToken", query = "select a from OAuth2AccessTokenEntity a where a.refreshToken = :refreshToken"),
-	@NamedQuery(name = "OAuth2AccessTokenEntity.getByClient", query = "select a from OAuth2AccessTokenEntity a where a.client = :client"),
-	@NamedQuery(name = "OAuth2AccessTokenEntity.getByAuthentication", query = "select a from OAuth2AccessTokenEntity a where a.authenticationHolder.authentication = :authentication"),
-	@NamedQuery(name = "OAuth2AccessTokenEntity.getByIdToken", query = "select a from OAuth2AccessTokenEntity a where a.idToken = :idToken"),
-	@NamedQuery(name = "OAuth2AccessTokenEntity.getByTokenValue", query = "select a from OAuth2AccessTokenEntity a where a.value = :tokenValue")
+	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_ALL, query = "select a from OAuth2AccessTokenEntity a"),
+	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_EXPIRED_BY_DATE, query = "select a from OAuth2AccessTokenEntity a where a.expiration <= :" + OAuth2AccessTokenEntity.PARAM_DATE),
+	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_REFRESH_TOKEN, query = "select a from OAuth2AccessTokenEntity a where a.refreshToken = :" + OAuth2AccessTokenEntity.PARAM_REFERSH_TOKEN),
+	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_CLIENT, query = "select a from OAuth2AccessTokenEntity a where a.client = :" + OAuth2AccessTokenEntity.PARAM_CLIENT),
+	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_ID_TOKEN, query = "select a from OAuth2AccessTokenEntity a where a.idToken = :" + OAuth2AccessTokenEntity.PARAM_ID_TOKEN),
+	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_TOKEN_VALUE, query = "select a from OAuth2AccessTokenEntity a where a.jwt = :" + OAuth2AccessTokenEntity.PARAM_TOKEN_VALUE),
+	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_RESOURCE_SET, query = "select a from OAuth2AccessTokenEntity a join a.permissions p where p.resourceSet.id = :" + OAuth2AccessTokenEntity.PARAM_RESOURCE_SET_ID)
 })
 @org.codehaus.jackson.map.annotate.JsonSerialize(using = OAuth2AccessTokenJackson1Serializer.class)
 @org.codehaus.jackson.map.annotate.JsonDeserialize(using = OAuth2AccessTokenJackson1Deserializer.class)
 @com.fasterxml.jackson.databind.annotation.JsonSerialize(using = OAuth2AccessTokenJackson2Serializer.class)
 @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = OAuth2AccessTokenJackson2Deserializer.class)
 public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
+
+	public static final String QUERY_BY_TOKEN_VALUE = "OAuth2AccessTokenEntity.getByTokenValue";
+	public static final String QUERY_BY_ID_TOKEN = "OAuth2AccessTokenEntity.getByIdToken";
+	public static final String QUERY_BY_CLIENT = "OAuth2AccessTokenEntity.getByClient";
+	public static final String QUERY_BY_REFRESH_TOKEN = "OAuth2AccessTokenEntity.getByRefreshToken";
+	public static final String QUERY_EXPIRED_BY_DATE = "OAuth2AccessTokenEntity.getAllExpiredByDate";
+	public static final String QUERY_ALL = "OAuth2AccessTokenEntity.getAll";
+	public static final String QUERY_BY_RESOURCE_SET = "OAuth2AccessTokenEntity.getByResourceSet";
+
+	public static final String PARAM_TOKEN_VALUE = "tokenValue";
+	public static final String PARAM_ID_TOKEN = "idToken";
+	public static final String PARAM_CLIENT = "client";
+	public static final String PARAM_REFERSH_TOKEN = "refreshToken";
+	public static final String PARAM_DATE = "date";
+	public static final String PARAM_RESOURCE_SET_ID = "rsid";
 
 	public static String ID_TOKEN_FIELD_NAME = "id_token";
 
@@ -94,6 +112,8 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	private OAuth2RefreshTokenEntity refreshToken;
 
 	private Set<String> scope;
+
+	private Set<Permission> permissions;
 
 	/**
 	 * Create a new, blank access token
@@ -125,7 +145,7 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	@Override
 	@Transient
 	public Map<String, Object> getAdditionalInformation() {
-		Map<String, Object> map = new HashMap<String, Object>(); //super.getAdditionalInformation();
+		Map<String, Object> map = new HashMap<>(); //super.getAdditionalInformation();
 		if (getIdToken() != null) {
 			map.put(ID_TOKEN_FIELD_NAME, getIdTokenString());
 		}
@@ -169,20 +189,9 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	 * Get the string-encoded value of this access token.
 	 */
 	@Override
-	@Basic
-	@Column(name="token_value")
+	@Transient
 	public String getValue() {
 		return jwtValue.serialize();
-	}
-
-	/**
-	 * Set the "value" of this Access Token
-	 * 
-	 * @param value the JWT string
-	 * @throws ParseException if "value" is not a properly formatted JWT string
-	 */
-	public void setValue(String value) throws ParseException {
-		setJwt(JWTParser.parse(value));
 	}
 
 	@Override
@@ -278,7 +287,9 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	/**
 	 * @return the jwtValue
 	 */
-	@Transient
+	@Basic
+	@Column(name="token_value")
+	@Convert(converter = JWTStringConverter.class)
 	public JWT getJwt() {
 		return jwtValue;
 	}
@@ -304,6 +315,26 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 				return secondsRemaining;
 			}
 		}
+	}
+
+	/**
+	 * @return the permissions
+	 */
+	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@JoinTable(
+			name = "access_token_permissions",
+			joinColumns = @JoinColumn(name = "access_token_id"),
+			inverseJoinColumns = @JoinColumn(name = "permission_id")
+	)
+	public Set<Permission> getPermissions() {
+		return permissions;
+	}
+
+	/**
+	 * @param permissions the permissions to set
+	 */
+	public void setPermissions(Set<Permission> permissions) {
+		this.permissions = permissions;
 	}
 
 }

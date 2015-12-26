@@ -1,6 +1,6 @@
 /*******************************************************************************
- * Copyright 2014 The MITRE Corporation
- *   and the MIT Kerberos and Internet Trust Consortium
+ * Copyright 2015 The MITRE Corporation
+ *   and the MIT Internet Trust Consortium
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,8 @@ import org.mitre.openid.connect.config.ServerConfiguration;
 
 /**
  * 
- * This service provides any extra options that need to be passed to the authentication request.
+ * This service provides any extra options that need to be passed to the authentication request,
+ * either through the authorization endpoint (getOptions) or the token endpoint (getTokenOptions).
  * These options may depend on the server configuration, client configuration, or HTTP request.
  * 
  * @author jricher
@@ -36,6 +37,24 @@ import org.mitre.openid.connect.config.ServerConfiguration;
  */
 public interface AuthRequestOptionsService {
 
+	/**
+	 * The set of options needed at the authorization endpoint.
+	 * 
+	 * @param server
+	 * @param client
+	 * @param request
+	 * @return
+	 */
 	public Map<String, String> getOptions(ServerConfiguration server, RegisteredClient client, HttpServletRequest request);
+
+	/**
+	 * The set of options needed at the token endpoint.
+	 * 
+	 * @param server
+	 * @param client
+	 * @param request
+	 * @return
+	 */
+	public Map<String, String> getTokenOptions(ServerConfiguration server, RegisteredClient client, HttpServletRequest request);
 
 }

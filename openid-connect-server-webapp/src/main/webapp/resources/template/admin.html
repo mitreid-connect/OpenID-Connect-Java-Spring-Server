@@ -1,6 +1,6 @@
 <!-- 
- Copyright 2014 The MITRE Corporation 
-   and the MIT Kerberos and Internet Trust Consortium
+ Copyright 2015 The MITRE Corporation 
+   and the MIT Internet Trust Consortium
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -28,26 +28,42 @@
 <!-- list widget -->
 
 <script type="text/html" id="tmpl-list-widget-child">
-    <td><%-(item.length > 30) ? item.substr(0,27) + '...' : item %></td>
-   	<td><a class="btn btn-small btn-delete-list-item" href="#"><i class="icon-minus-sign"></i></a></td>
+    <td>
+		<span class="item-short"><%-(model.item.length > 30) ? model.item.substr(0,27) + '...' : model.item %></span>
+		<input type="text" readonly style="cursor: text" class="item-full input-xxlarge" value="<%- model.item %>" />
+	</td>
+   	<td>
+		<% if (!opt.toggle) { %>
+			<a class="btn btn-small btn-delete-list-item" href="#"><i class="icon-minus-sign"></i></a>
+		<% } else { %>
+			<input class="checkbox checkbox-list-item" type="checkbox" <%- opt.checked ? 'checked="checked"' : '' %> />
+		<% } %>
+	</td>
 </script>
 
 <script type="text/html" id="tmpl-list-widget-child-empty">
 	<tr class="info">
-		<td colspan="2">There are no items in this list.</td>
+		<td colspan="2" data-i18n="admin.list-widget.empty">There are no items in this list.</td>
 	</tr>
 </script>
 
 <script type="text/html" id="tmpl-list-widget">
-    <thead>
-    <tr>
-        <th class="control-group">
-            <input type="text" value="" placeholder="<%-(placeholder) ? placeholder : ''%>"></th>
-        <th><a class="btn btn-small btn-add-list-item" href="#"><i class="icon-plus-sign"></i></a></th>
-    </tr>
-    </thead>
-	<tbody>
-	</tbody>
+<div class="control-group">
+	<table class="table table-condensed table-hover table-striped span4">
+	    <thead>
+		    <tr>
+		        <th>
+            		<input type="text" value="" placeholder="<%-(placeholder) ? placeholder : ''%>"></th>
+        		<th><a class="btn btn-small btn-add-list-item" href="#"><i class="icon-plus-sign"></i></a></th>
+		    </tr>
+    	</thead>
+		<tbody>
+		</tbody>
+	</table>
+</div>
+<% if (typeof(helpBlockText) !== 'undefined') { %>
+	<p class="help-block"><%-helpBlockText%></p>
+<% } %>
 </script>
 
 
@@ -57,17 +73,17 @@
     <form class="form-horizontal">
         <fieldset>
             <div class="well well-small">
-				<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> Refresh</button>
+				<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> <span data-i18n="common.refresh">Refresh</span></button>
             </div>
 
             <div class="control-group" id="blacklist">
-                <label class="control-label">Blacklisted URIs</label>
+                <label class="control-label" data-i18n="admin.blacklist-form.blacklisted-uris">Blacklisted URIs</label>
                 <div class="controls">
                 </div>
             </div>
 
             <div class="well well-small">
-				<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> Refresh</button>
+				<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> <span data-i18n="common.refresh">Refresh</span></button>
             </div>
 
         </fieldset>
@@ -78,18 +94,19 @@
 <!-- user profile -->
 <script type="text/html" id="tmpl-user-profile">
 
-	<div>Your user profile has the following information:</div>
+	<div data-i18n="admin.user-profile.text">Your user profile has the following information:</div>
 
-    <dl class="dl-horizontal">
-		<dt><span class="text-info">Claim name:</span></dt>
-		<dd><span class="text-info">Claim value:</span></dt>
+    <dl class="dl-horizontal user-profile">
+		<dt><span class="text-info" data-i18n="admin.user-profile.claim">Claim name:</span></dt>
+		<dd><span class="text-info" data-i18n="admin.user-profile.value">Claim value:</span></dt>
     </dl>
 
 </script>
 
 <script type="text/html" id="tmpl-user-profile-element">
 
-            <dt><%- key %></dt>
+            <dt><% if (typeof(category) !== 'undefined') { %>
+				<small class="muted"><%- category %>.</small><% } %><%- key %></dt>
             <dd><%- value %></dd>
 
 </script>

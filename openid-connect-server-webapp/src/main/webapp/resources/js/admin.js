@@ -1,19 +1,19 @@
 /*******************************************************************************
- * Copyright 2014 The MITRE Corporation 
- *   and the MIT Kerberos and Internet Trust Consortium
- * 
+ * Copyright 2015 The MITRE Corporation
+ *   and the MIT Internet Trust Consortium
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- ******************************************************************************/
+ *******************************************************************************/
 
 Backbone.Model.prototype.fetchIfNeeded = function(options) {
 	var _self = this;
@@ -33,6 +33,7 @@ Backbone.Model.prototype.fetchIfNeeded = function(options) {
 		return options.success(this, null);
 	}
 };
+
 Backbone.Collection.prototype.fetchIfNeeded = function(options) {
 	var _self = this;
 	if (!options) {
@@ -82,7 +83,8 @@ var ListWidgetChildView = Backbone.View.extend({
     tagName: 'tr',
 
     events:{
-        "click .btn-delete-list-item":'deleteItem'
+        "click .btn-delete-list-item":'deleteItem',
+        "change .checkbox-list-item":'toggleCheckbox'
     },
     
     deleteItem:function (e) {
@@ -90,7 +92,8 @@ var ListWidgetChildView = Backbone.View.extend({
     	e.stopImmediatePropagation();
         //this.$el.tooltip('delete');
         
-        this.model.destroy({         
+        this.model.destroy({
+        	dataType: false, processData: false,
         	error:function (error, response) {
         		console.log("An error occurred when deleting from a list widget");
 
@@ -110,30 +113,57 @@ var ListWidgetChildView = Backbone.View.extend({
         });
         
     },
+    
+    toggleCheckbox:function(e) {
+    	e.preventDefault();
+    	e.stopImmediatePropagation();
+    	if ($(e.target).is(':checked')) {
+    		this.options.collection.add(this.model);
+    	} else {
+    		this.options.collection.remove(this.model);
+    	}
+    	
+    },
 
     initialize:function (options) {
-    	this.options = options;
+    	this.options = {toggle: false, checked: false};
+    	_.extend(this.options, options);
         if (!this.template) {
             this.template = _.template($('#tmpl-list-widget-child').html());
         }
-
     },
 
     render:function () {
-        this.$el.html(this.template(this.model.toJSON()));
+    	
+    	var data = {model: this.model.toJSON(), opt: this.options};
+    	
+        this.$el.html(this.template(data));
 
+        $('.item-full', this.el).hide();
+        
         if (this.model.get('item').length > 30) {
-            this.$el.tooltip({title:this.model.get('item')});
+            this.$el.tooltip({title:$.t('admin.list-widget.tooltip')});
+            
+            var _self = this;
+            
+            $(this.el).click(function(event) {
+            	event.preventDefault();
+            	$('.item-short', _self.el).hide();
+            	$('.item-full', _self.el).show();
+            	_self.$el.tooltip('destroy');
+            });
         }
+        
+        
+        
+        $(this.el).i18n();
         return this;
     }
 });
 
 var ListWidgetView = Backbone.View.extend({
 
-    tagName: "table",
-
-    childView:ListWidgetChildView,
+    tagName: "div",
 
     events:{
     	"click .btn-add-list-item":"addItem",
@@ -154,7 +184,6 @@ var ListWidgetView = Backbone.View.extend({
             this.template = _.template($('#tmpl-list-widget').html());
         }
 
-        this.$el.addClass("table table-condensed table-hover table-striped span4");
         this.collection.bind('add', this.render, this);
         this.collection.bind('remove', this.render, this);
     },
@@ -192,39 +221,57 @@ var ListWidgetView = Backbone.View.extend({
 
     render:function (eventName) {
 
-        this.$el.html(this.template({placeholder:this.options.placeholder}));
+        this.$el.html(this.template({placeholder:this.options.placeholder,
+        							helpBlockText:this.options.helpBlockText}));
 
-        // bind autocomplete options
-        if (this.options.autocomplete) {
-            $('input', this.$el).typeahead({source:this.options.autocomplete});
-        }
+        var _self = this;
 
-        _self = this;
-
-        if (_.size(this.collection.models) == 0) {
+        if (_.size(this.collection.models) == 0 && _.size(this.options.autocomplete) == 0) {
     		$("tbody", _self.el).html($('#tmpl-list-widget-child-empty').html());
         } else {
-        	_.each(this.collection.models, function (model) {
-        		var el = new this.childView({model:model}).render().el;
+        	
+        	// make a copy of our collection to work from
+        	var values = this.collection.clone();
+
+        	// look through our autocomplete values (if we have them) and render them all as checkboxes
+        	if (this.options.autocomplete) {
+        		_.each(this.options.autocomplete, function(option) {
+        			var found = _.find(values.models, function(element) {
+        				return element.get('item') == option;
+        			});
+        			
+        			var model = null;
+        			var checked = false;
+        			
+        			if (found) {
+        				// if we found the element, check the box
+        				model = found;
+        				checked = true;
+        				// and remove it from the list of items to be rendered later
+        				values.remove(found, {silent: true});
+        			} else {
+        				model = new Backbone.Model({item:option});
+        				checked = false;
+        			}
+        			
+        			var el = new ListWidgetChildView({model:model, toggle: true, checked: checked, collection: _self.collection}).render().el;
+        			$("tbody", _self.el).append(el);
+        			
+        		}, this);
+        	}
+        	
+        	
+        	// now render everything not in the autocomplete list
+        	_.each(values.models, function (model) {
+        		var el = new ListWidgetChildView({model:model, collection: _self.collection}).render().el;
         		$("tbody", _self.el).append(el);
         	}, this);
         }
 
+        $(this.el).i18n();
         return this;
     }
     
-});
-
-var BlackListModel = Backbone.Model.extend({
-	idAttribute: 'id',
-	
-	urlRoot: 'api/blacklist'
-});
-
-var BlackListCollection = Backbone.Collection.extend({
-	initialize: function() { },
-
-	url: "api/blacklist"
 });
 
 var BreadCrumbView = Backbone.View.extend({
@@ -262,123 +309,10 @@ var BreadCrumbView = Backbone.View.extend({
         }, this);
 
         $('#breadcrumbs').html(this.el);
+        $(this.el).i18n();
     }
 });
 
-
-var BlackListListView = Backbone.View.extend({
-	tagName: 'span',
-	
-	initialize:function(options) {
-    	this.options = options;
-		if (!this.template) {
-			this.template = _.template($('#tmpl-blacklist-form').html());
-		}
-	},
-
-	load:function(callback) {
-    	if (this.model.isFetched) {
-    		callback();
-    		return;
-    	}
-
-    	$('#loadingbox').sheet('show');
-    	$('#loading').html('<span class="label" id="loading-blacklist">Blacklist</span> ');
-
-    	$.when(this.model.fetchIfNeeded()).done(function() {
-    				$('#loading-blacklist').addClass('label-success');
-    	    		$('#loadingbox').sheet('hide');
-    	    		callback();
-    			});    	
-    },
-	
-	events: {
-        "click .refresh-table":"refreshTable"    		
-	},
-
-    refreshTable:function(e) {
-    	e.preventDefault();
-    	var _self = this;
-    	$('#loadingbox').sheet('show');
-    	$('#loading').html('<span class="label" id="loading-scopes">Blacklist</span> ');
-
-    	$.when(this.model.fetch()).done(function() {
-    	    		$('#loadingbox').sheet('hide');
-    	    		_self.render();
-    			});    	
-    },	
-	
-	render:function (eventName) {
-		
-		$(this.el).html(this.template(this.model.toJSON()));
-		
-		$('#blacklist .controls', this.el).html(new BlackListWidgetView({
-			type: 'uri',
-			placeholder: 'http://',
-			collection: this.model
-		}).render().el);
-		
-		return this;
-	}
-});
-
-var BlackListWidgetView = ListWidgetView.extend({
-	
-	childView: ListWidgetChildView.extend({
-		render:function(options) {
-	    	this.options = options;
-			var uri = this.model.get('uri');
-			
-			this.$el.html(this.template({item: uri}));
-
-            if (uri.length > 30) {
-                this.$el.tooltip({title:uri});
-            }
-            return this;
-			
-		}
-	}),
-	
-	addItem:function(e) {
-    	e.preventDefault();
-
-    	var input_value = $("input", this.el).val().trim();
-    	
-    	if (input_value === "") {
-    		return;
-    	}
-    	
-    	// TODO: URI/pattern validation, check against existing clients
-    	
-    	var item = new BlackListModel({
-    		uri: input_value
-    	});
-    	
-    	var _self = this; // closures...
-    	
-    	item.save({}, {
-    		success:function() {
-    			_self.collection.add(item);
-    		},
-    		error:function(error, response) {
-    			//Pull out the response text.
-				var responseJson = JSON.parse(response.responseText);
-        		
-        		//Display an alert with an error message
-				$('#modalAlert div.modal-header').html(responseJson.error);
-        		$('#modalAlert div.modal-body').html(responseJson.error_description);
-        		
-    			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
-    				 "backdrop" : "static",
-    				 "keyboard" : true,
-    				 "show" : true // ensure the modal is shown immediately
-    			 });
-    		}
-    	});
-
-	}
-	
-});
 
 // Stats table
 
@@ -401,15 +335,33 @@ var UserProfileView = Backbone.View.extend({
 	render:function() {
 		
         $(this.el).html($('#tmpl-user-profile').html());
+        
+        var t = this.template;
 
         _.each(this.model, function (value, key) {
         	if (key && value) {
-	            $('dl', this.el).append(
-	            		this.template({key: key, value: value})
-	            	);
+        		
+        		if (typeof(value) === 'object') {
+        			
+        			var el = this.el;
+        			var k = key;
+        			
+        			_.each(value, function (value, key) {
+        				$('dl', el).append(
+       	            		t({key: key, value: value, category: k})
+        				);
+        			});
+        		} else if (typeof(value) === 'array') {
+        			// TODO: handle array types
+        		} else {
+    	            $('dl', this.el).append(
+    	            		t({key: key, value: value})
+    	            	);
+        		}
         	}
         }, this);
 		
+        $(this.el).i18n();
 		return this;
 	}
 });
@@ -491,8 +443,8 @@ var AppRouter = Backbone.Router.extend({
     	
         this.breadCrumbView.collection.reset();
         this.breadCrumbView.collection.add([
-            {text:"Home", href:""},
-            {text:"Manage Clients", href:"manage/#admin/clients"}
+            {text:$.t('admin.home'), href:""},
+            {text:$.t('client.manage'), href:"manage/#admin/clients"}
         ]);
         
         this.updateSidebar('admin/clients');
@@ -502,7 +454,7 @@ var AppRouter = Backbone.Router.extend({
         view.load(function() {
         	$('#content').html(view.render().el);
         	view.delegateEvents();
-        	setPageTitle("Manage Clients");        	
+        	setPageTitle($.t('client.manage'));
         });
 
     },
@@ -516,9 +468,9 @@ var AppRouter = Backbone.Router.extend({
 
         this.breadCrumbView.collection.reset();
         this.breadCrumbView.collection.add([
-            {text:"Home", href:""},
-            {text:"Manage Clients", href:"manage/#admin/clients"},
-            {text:"New", href:""}
+            {text:$.t('admin.home'), href:""},
+            {text:$.t('client.manage'), href:"manage/#admin/clients"},
+            {text:$.t('client.client-form.new'), href:""}
         ]);
 
         this.updateSidebar('admin/clients');
@@ -546,12 +498,13 @@ var AppRouter = Backbone.Router.extend({
         		grantTypes: ["authorization_code"],
         		responseTypes: ["code"],
         		subjectType: "PUBLIC",
+        		jwksType: "URI",
         		contacts: contacts
         	}, { silent: true });
         	
         	
         	$('#content').html(view.render().el);
-        	setPageTitle("New Client");
+        	setPageTitle($.t('client.client-form.new'));
         });
     },
 
@@ -564,65 +517,44 @@ var AppRouter = Backbone.Router.extend({
 
         this.breadCrumbView.collection.reset();
         this.breadCrumbView.collection.add([
-            {text:"Home", href:""},
-            {text:"Manage Clients", href:"manage/#admin/clients"},
-            {text:"Edit", href:"manage/#admin/client/" + id}
+            {text:$.t('admin.home'), href:""},
+            {text:$.t('client.manage'), href:"manage/#admin/clients"},
+            {text:$.t('client.client-form.edit'), href:"manage/#admin/client/" + id}
         ]);
 
         this.updateSidebar('admin/clients');
 
         var client = this.clientList.get(id);
-        
-        if (client == null) {
-        	// it wasn't in the list, try loading the client directly
-        	client = new ClientModel({id: id});
+        if (!client) {
+        	client = new ClientModel({id:id});
         }
-
-    	$('#loadingbox').sheet('show');
-    	$('#loading').html('<span class="label" id="loading-scopes">Scopes</span> '
-    			+ '<span class="label" id="loading-client">Client</span> ');
-
-        // re-sync the client every time
-    	client.fetch({
-    			success: function(client, response, options) {
-    				$('#loading-client').addClass('label-success');
-    		        
-    		        if ($.inArray("refresh_token", client.get("grantTypes")) != -1) {
-    		        	client.set({
-    		        		allowRefresh: true
-    		        	}, { silent: true });
-    		        }
-    		        
-    		    	client.set({
-    		    		generateClientSecret:false,
-    		    		displayClientSecret:false
-    		    	}, { silent: true });
-    		        
-    		        var view = new ClientFormView({model:client, systemScopeList: app.systemScopeList});
-    		        view.load(function() {
-    		        	$('#content').html(view.render().el);
-    		        	setPageTitle("Edit Client");
-    		        });
-    		        
-    			
-    			},
-    			error: function(model, response, options) {
-            		
-					//Pull out the response text.
-					var responseJson = JSON.parse(response.responseText);
-            		
-            		//Display an alert with an error message
-					$('#modalAlert div.modal-header').html(responseJson.error);
-	        		$('#modalAlert div.modal-body').html(responseJson.error_description);
-            		
-        			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
-        				 "backdrop" : "static",
-        				 "keyboard" : true,
-        				 "show" : true // ensure the modal is shown immediately
-        			 });
-    				
-    			}
-    	});
+        
+        var view = new ClientFormView({model:client, systemScopeList: app.systemScopeList});
+        view.load(function() {
+	        if ($.inArray("refresh_token", client.get("grantTypes")) != -1) {
+	        	client.set({
+	        		allowRefresh: true
+	        	}, { silent: true });
+	        }
+	        
+	        if (client.get("jwks")) {
+	        	client.set({
+	        		jwksType: "VAL"
+	        	}, { silent: true });
+	        } else {
+	        	client.set({
+	        		jwksType: "URI"
+	        	}, { silent: true });
+	        }
+	        
+	    	client.set({
+	    		generateClientSecret:false,
+	    		displayClientSecret:false
+	    	}, { silent: true });
+	        
+        	$('#content').html(view.render().el);
+        	setPageTitle($.t('client.client-form.edit'));
+        });
 
     },
 
@@ -637,8 +569,8 @@ var AppRouter = Backbone.Router.extend({
 
         this.breadCrumbView.collection.reset();
         this.breadCrumbView.collection.add([
-            {text:"Home", href:""},
-            {text:"Manage Whitelisted Sites", href:"manage/#admin/whitelists"}
+            {text:$.t('admin.home'), href:""},
+            {text:$.t('whitelist.manage'), href:"manage/#admin/whitelists"}
         ]);
         
         var view = new WhiteListListView({model:this.whiteListList, clientList: this.clientList, systemScopeList: this.systemScopeList});
@@ -647,7 +579,7 @@ var AppRouter = Backbone.Router.extend({
         	function() {
         		$('#content').html(view.render().el);
         		view.delegateEvents();
-        		setPageTitle("Manage Whitelists");
+        		setPageTitle($.t('whitelist.manage'));
         	}
         );
         
@@ -661,33 +593,35 @@ var AppRouter = Backbone.Router.extend({
     		return;
     	}
 
+    	this.breadCrumbView.collection.reset();
+        this.breadCrumbView.collection.add([
+            {text:$.t('admin.home'), href:""},
+            {text:$.t('whitelist.manage'), href:"manage/#admin/whitelists"},
+            {text:$.t('whitelist.new'), href:"manage/#admin/whitelist/new/" + cid}
+        ]);
+
         this.updateSidebar('admin/whitelists');
+        
+        var whiteList = new WhiteListModel();
 
         var client = this.clientList.get(cid);
-
-        // if there's no client this is an error
-        if (client != null) {
-
-        	this.breadCrumbView.collection.reset();
-            this.breadCrumbView.collection.add([
-                {text:"Home", href:""},
-                {text:"Manage Whitelisted Sites", href:"manage/#admin/whitelists"},
-                {text:"Manage Whitelisted Sites", href:"manage/#admin/whitelist/new/" + cid}
-            ]);
-            
-            var whiteList = new WhiteListModel();
-            whiteList.set({
-            	clientId: client.get('clientId'),
-            	allowedScopes: client.get('scope')
-            }, { silent: true });
-            
-        	this.whiteListFormView = new WhiteListFormView({model: whiteList, client: client, systemScopeList: this.systemScopeList});
-        	$('#content').html(this.whiteListFormView.render().el);
-        	setPageTitle("Create New Whitelist");
-        } else {
-        	console.log('ERROR: no client found for ' + cid);
+        if (!client) {
+        	client = new ClientModel({id: cid});
         }
         
+        var view = new WhiteListFormView({model: whiteList, client: client, systemScopeList: this.systemScopeList});
+      
+        view.load(
+        	function() {
+        		
+        		// set the scopes on the model now that everything's loaded
+        		whiteList.set({allowedScopes: client.get('scope')}, {silent: true});
+        		
+        		$('#content').html(view.render().el);
+        		view.delegateEvents();
+        		setPageTitle($.t('whitelist.manage'));
+        	}
+        );        
     	
     },
     
@@ -700,46 +634,44 @@ var AppRouter = Backbone.Router.extend({
 
     	this.breadCrumbView.collection.reset();
         this.breadCrumbView.collection.add([
-            {text:"Home", href:""},
-            {text:"Manage Whitelisted Sites", href:"manage/#admin/whitelists"},
-            {text:"Manage Whitelisted Sites", href:"manage/#admin/whitelist/" + id}
+            {text:$.t('admin.home'), href:""},
+            {text:$.t('whitelist.manage'), href:"manage/#admin/whitelists"},
+            {text:$.t('whitelist.edit'), href:"manage/#admin/whitelist/" + id}
         ]);
         
         this.updateSidebar('admin/whitelists');
 
         var whiteList = this.whiteListList.get(id);
-        if (whiteList != null) {
-            var client = app.clientList.getByClientId(whiteList.get('clientId'));
-            
-            // if there's no client, this is an error
-            if (client != null) {
-            	this.whiteListFormView = new WhiteListFormView({model: whiteList, client: client, systemScopeList: this.systemScopeList});
-            	$('#content').html(this.whiteListFormView.render().el);
-            	setPageTitle("Edit Whitelist");
-
-            } else {
-            	console.log('ERROR: no client found for ' + whiteList.get('clientId'));
-            }
-        } else {
-        	console.error('ERROR: no whitelist found for id ' + id);
+        if (!whiteList) {
+        	whiteList = new WhiteListModel({id: id});
         }
+        
+        var view = new WhiteListFormView({model: whiteList, clientList: this.clientList, systemScopeList: this.systemScopeList});
+      
+        view.load(
+        	function() {
+        		$('#content').html(view.render().el);
+        		view.delegateEvents();
+        		setPageTitle($.t('whitelist.manage'));
+        	}
+        );
+
     },
     
     approvedSites:function() {
     	this.breadCrumbView.collection.reset();
         this.breadCrumbView.collection.add([
-            {text:"Home", href:""},
-            {text:"Manage Approved Sites", href:"manage/#user/approve"}
+            {text:$.t('admin.home'), href:""},
+            {text:$.t('grant.manage-approved-sites'), href:"manage/#user/approve"}
         ]);
 
         this.updateSidebar('user/approved');
 
         var view = new ApprovedSiteListView({model:this.approvedSiteList, clientList: this.clientList, systemScopeList: this.systemScopeList});
-    	
     	view.load( 
     		function(collection, response, options) {
     			$('#content').html(view.render().el);
-    	    	setPageTitle("Manage Approved Sites");
+    	    	setPageTitle($.t('grant.manage-approved-sites'));
     		}
     	);
     	
@@ -748,8 +680,8 @@ var AppRouter = Backbone.Router.extend({
     tokens:function() {
     	this.breadCrumbView.collection.reset();
         this.breadCrumbView.collection.add([
-            {text:"Home", href:""},
-            {text:"Manage Active Tokens", href:"manage/#user/tokens"}
+            {text:$.t('admin.home'), href:""},
+            {text:$.t('token.manage'), href:"manage/#user/tokens"}
         ]);
         
         this.updateSidebar('user/tokens');
@@ -759,7 +691,7 @@ var AppRouter = Backbone.Router.extend({
         view.load(
     		function(collection, response, options) {
 				$('#content').html(view.render().el);
-				setPageTitle("Manage Active Tokens");
+    	    	setPageTitle($.t('token.manage'));
     		}
         );
         
@@ -768,7 +700,7 @@ var AppRouter = Backbone.Router.extend({
     notImplemented:function(){
         this.breadCrumbView.collection.reset();
         this.breadCrumbView.collection.add([
-            {text:"Home", href:""}
+            {text:$.t('admin.home'), href:""}
         ]);
         
         this.updateSidebar('none');
@@ -785,18 +717,18 @@ var AppRouter = Backbone.Router.extend({
 
     	this.breadCrumbView.collection.reset();
         this.breadCrumbView.collection.add([
-            {text:"Home", href:""},
-            {text:"Manage Blacklisted Sites", href:"manage/#admin/blacklist"}
+            {text:$.t('admin.home'), href:""},
+            {text:$.t('admin.manage-blacklist'), href:"manage/#admin/blacklist"}
         ]);
         
         this.updateSidebar('admin/blacklist');
         
-        var view = new BlackListListView({model:this.blackListList});
+        var view = new BlackListListView({collection: this.blackListList});
         
         view.load(
         	function(collection, response, options) {
         		$('#content').html(view.render().el);
-            	setPageTitle("Manage Blacklist");
+            	setPageTitle($.t('admin.manage-blacklist'));
         	}
         );
     },
@@ -810,8 +742,8 @@ var AppRouter = Backbone.Router.extend({
 
     	this.breadCrumbView.collection.reset();
     	this.breadCrumbView.collection.add([
-             {text:"Home", href:""},
-             {text:"Manage System Scopes", href:"manage/#admin/scope"}
+             {text:$.t('admin.home'), href:""},
+             {text:$.t('scope.manage'), href:"manage/#admin/scope"}
         ]);
     	
         this.updateSidebar('admin/scope');
@@ -821,7 +753,7 @@ var AppRouter = Backbone.Router.extend({
     	view.load(function() {
     		$('#content').html(view.render().el);
     		view.delegateEvents();
-    		setPageTitle("Manage System Scopes");    		
+    		setPageTitle($.t('scope.manage'));    		
     	});
 
     },
@@ -835,18 +767,20 @@ var AppRouter = Backbone.Router.extend({
 
     	this.breadCrumbView.collection.reset();
     	this.breadCrumbView.collection.add([
-             {text:"Home", href:""},
-             {text:"Manage System Scopes", href:"manage/#admin/scope"},
-             {text:"New", href:"manage/#admin/scope/new"}
+             {text:$.t('admin.home'), href:""},
+             {text:$.t('scope.manage'), href:"manage/#admin/scope"},
+             {text:$.t('scope.system-scope-form.new'), href:"manage/#admin/scope/new"}
         ]);
     	
         this.updateSidebar('admin/scope');
         
     	var scope = new SystemScopeModel();
     	
-    	this.systemScopeFormView = new SystemScopeFormView({model:scope});
-    	$('#content').html(this.systemScopeFormView.render().el);
-    	setPageTitle("New System Scope");
+    	var view = new SystemScopeFormView({model:scope});
+    	view.load(function() {
+    		$('#content').html(view.render().el);
+    		setPageTitle($.t('scope.system-scope-form.new'));
+    	});
 
     },
     
@@ -859,26 +793,31 @@ var AppRouter = Backbone.Router.extend({
 
     	this.breadCrumbView.collection.reset();
     	this.breadCrumbView.collection.add([
-             {text:"Home", href:""},
-             {text:"Manage System Scopes", href:"manage/#admin/scope"},
-             {text:"Edit", href:"manage/#admin/scope/" + sid}
+             {text:$.t('admin.home'), href:""},
+             {text:$.t('scope.manage'), href:"manage/#admin/scope"},
+             {text:$.t('scope.system-scope-form.edit'), href:"manage/#admin/scope/" + sid}
         ]);
 
         this.updateSidebar('admin/scope');
         
     	var scope = this.systemScopeList.get(sid);
+    	if (!scope) {
+    		scope = new SystemScopeModel({id: sid});
+    	}
     	
-    	this.systemScopeFormView = new SystemScopeFormView({model:scope});
-    	$('#content').html(this.systemScopeFormView.render().el);
-    	setPageTitle("Edit System Scope");
+    	var view = new SystemScopeFormView({model:scope});
+    	view.load(function() {
+    		$('#content').html(view.render().el);
+    		setPageTitle($.t('scope.system-scope-form.new'));
+    	});
     	
     },
     
     dynReg:function() {
     	this.breadCrumbView.collection.reset();
     	this.breadCrumbView.collection.add([
-             {text:"Home", href:""},
-             {text:"Client Registration", href:"manage/#dev/dynreg"}
+             {text:$.t('admin.home'), href:""},
+             {text:$.t('admin.self-service-client'), href:"manage/#dev/dynreg"}
         ]);
     	
     	var view = new DynRegRootView({systemScopeList: this.systemScopeList});
@@ -888,7 +827,7 @@ var AppRouter = Backbone.Router.extend({
     	view.load(function() {
     			$('#content').html(view.render().el);
     			
-    			setPageTitle("Self-service Client Registration");
+    			setPageTitle($.t('admin.self-service-client'));
     	});
     	
     },
@@ -896,9 +835,9 @@ var AppRouter = Backbone.Router.extend({
     newDynReg:function() {
     	this.breadCrumbView.collection.reset();
     	this.breadCrumbView.collection.add([
-             {text:"Home", href:""},
-             {text:"Client Registration", href:"manage/#dev/dynreg"},
-             {text:"New", href:"manage/#dev/dynreg/new"}
+             {text:$.t('admin.home'), href:""},
+             {text:$.t('admin.self-service-client'), href:"manage/#dev/dynreg"},
+             {text:$.t('dynreg.new-client'), href:"manage/#dev/dynreg/new"}
         ]);
     	
         this.updateSidebar('dev/dynreg');
@@ -917,7 +856,7 @@ var AppRouter = Backbone.Router.extend({
     		client.set({
         		require_auth_time:true,
         		default_max_age:60000,
-        		scope: _.uniq(_.flatten(app.systemScopeList.defaultDynRegScopes().pluck("value"))).join(" "),
+        		scope: _.uniq(_.flatten(app.systemScopeList.defaultUnrestrictedScopes().pluck("value"))).join(" "),
         		token_endpoint_auth_method: 'client_secret_basic',
         		grant_types: ["authorization_code"],
         		response_types: ["code"],
@@ -927,7 +866,7 @@ var AppRouter = Backbone.Router.extend({
     	
     		$('#content').html(view.render().el);
     		view.delegateEvents();
-    		setPageTitle("Dynamically Register a New Client");
+    		setPageTitle($.t('dynreg.new-client'));
     		
     	});
     	
@@ -936,22 +875,22 @@ var AppRouter = Backbone.Router.extend({
     editDynReg:function() {
     	this.breadCrumbView.collection.reset();
     	this.breadCrumbView.collection.add([
-             {text:"Home", href:""},
-             {text:"Client Registration", href:"manage/#dev/dynreg"},
-             {text:"Edit", href:"manage/#dev/dynreg/edit"}
+             {text:$.t('admin.home'), href:""},
+             {text:$.t('admin.self-service-client'), href:"manage/#dev/dynreg"},
+             {text:$.t('dynreg.edit-existing'), href:"manage/#dev/dynreg/edit"}
         ]);
     	
         this.updateSidebar('dev/dynreg');
         
-    	setPageTitle("Edit a Dynamically Registered Client");
+    	setPageTitle($.t('dynreg.edit-existing'));
     	// note that this doesn't actually load the client, that's supposed to happen elsewhere...
     },
     
     resReg:function() {
     	this.breadCrumbView.collection.reset();
     	this.breadCrumbView.collection.add([
-             {text:"Home", href:""},
-             {text:"Protected Resource Registration", href:"manage/#dev/resource"}
+             {text:$.t('admin.home'), href:""},
+             {text:$.t('admin.self-service-resource'), href:"manage/#dev/resource"}
         ]);
     	
         this.updateSidebar('dev/resource');
@@ -960,7 +899,7 @@ var AppRouter = Backbone.Router.extend({
     	view.load(function() {
     			$('#content').html(view.render().el);
     			
-    			setPageTitle("Self-service Protected Resource Registration");
+    			setPageTitle($.t('admin.self-service-resource'));
     	});
     	
     },
@@ -968,9 +907,9 @@ var AppRouter = Backbone.Router.extend({
     newResReg:function() {
     	this.breadCrumbView.collection.reset();
     	this.breadCrumbView.collection.add([
-             {text:"Home", href:""},
-             {text:"Protected Resource Registration", href:"manage/#dev/resource"},
-             {text:"New", href:"manage/#dev/resource/new"}
+             {text:$.t('admin.home'), href:""},
+             {text:$.t('admin.self-service-resource'), href:"manage/#dev/resource"},
+             {text:$.t('rsreg.new'), href:"manage/#dev/resource/new"}
         ]);
     	
         this.updateSidebar('dev/resource');
@@ -987,14 +926,14 @@ var AppRouter = Backbone.Router.extend({
     		}
     		
     		client.set({
-        		scope: _.uniq(_.flatten(app.systemScopeList.defaultDynRegScopes().pluck("value"))).join(" "),
+        		scope: _.uniq(_.flatten(app.systemScopeList.defaultUnrestrictedScopes().pluck("value"))).join(" "),
         		token_endpoint_auth_method: 'client_secret_basic',
         		contacts: contacts
         	}, { silent: true });
     	
     		$('#content').html(view.render().el);
     		view.delegateEvents();
-    		setPageTitle("Dynamically Register a New Protected Resource");
+    		setPageTitle($.t('rsreg.new'));
     		
     	});
     	
@@ -1003,22 +942,22 @@ var AppRouter = Backbone.Router.extend({
     editResReg:function() {
     	this.breadCrumbView.collection.reset();
     	this.breadCrumbView.collection.add([
-             {text:"Home", href:""},
-             {text:"Protected Resource Registration", href:"manage/#dev/resource"},
-             {text:"Edit", href:"manage/#dev/resource/edit"}
+             {text:$.t('admin.home'), href:""},
+             {text:$.t('admin.self-service-resource'), href:"manage/#dev/resource"},
+             {text:$.t('rsreg.edit'), href:"manage/#dev/resource/edit"}
         ]);
     	
         this.updateSidebar('dev/resource');
         
-    	setPageTitle("Edit a Dynamically Registered Protected Resource");
+    	setPageTitle($.t('rsreg.edit'));
     	// note that this doesn't actually load the client, that's supposed to happen elsewhere...
     },
     
     profile:function() {
     	this.breadCrumbView.collection.reset();
     	this.breadCrumbView.collection.add([
-             {text:"Home", href:""},
-             {text:"Profile", href:"manage/#user/profile"}
+             {text:$.t('admin.home'), href:""},
+             {text:$.t('admin.user-profile.show'), href:"manage/#user/profile"}
         ]);
     
         this.updateSidebar('user/profile');
@@ -1026,7 +965,7 @@ var AppRouter = Backbone.Router.extend({
     	this.userProfileView = new UserProfileView({model: getUserInfo()});
     	$('#content').html(this.userProfileView.render().el);
     	
-    	setPageTitle("View User Profile");
+    	setPageTitle($.t('admin.user-profile.show'));
     	
     },
     
@@ -1057,11 +996,17 @@ $(function () {
     		$.get('resources/template/whitelist.html', _load),
     		$.get('resources/template/dynreg.html', _load),
     		$.get('resources/template/rsreg.html', _load),
-    		$.get('resources/template/token.html', _load)
+    		$.get('resources/template/token.html', _load),
+    		$.get('resources/template/blacklist.html', _load)
     		).done(function() {
     		    $.ajaxSetup({cache:false});
     		    app = new AppRouter();
 
+    		    app.on('route', function(name, args) {
+    		    	// scroll to top of page on new route selection
+    		    	$("html, body").animate({ scrollTop: 0 }, "slow");
+    		    });
+    		    
     		    // grab all hashed URLs and send them through the app router instead
     		    $(document).on('click', 'a[href^="manage/#"]', function(event) {
     		    	event.preventDefault();

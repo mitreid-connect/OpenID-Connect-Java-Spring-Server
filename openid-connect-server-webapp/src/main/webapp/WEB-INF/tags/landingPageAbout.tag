@@ -1,5 +1,6 @@
-<h2>About</h2>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<h2><spring:message code="home.about.title"/></h2>
 
-<p>This OpenID Connect service is built from the MITREid Connect Open Source project, from  <a href="http://www.mitre.org/">The MITRE Corporation</a> and the <a href="http://kit.mit.edu/">MIT Kerberos and Internet Trust Consortium</a>.</p>
+<p><spring:message code="home.about.body"/></p>
 
-<p><a class="btn" href="http://github.com/mitreid-connect/">More &raquo;</a></p>
+<p><a class="btn" href="http://github.com/mitreid-connect/"><spring:message code="home.more"/> &raquo;</a></p>

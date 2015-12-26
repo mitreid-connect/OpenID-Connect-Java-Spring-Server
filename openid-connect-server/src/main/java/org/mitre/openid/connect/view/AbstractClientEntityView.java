@@ -1,19 +1,19 @@
 /*******************************************************************************
- * Copyright 2014 The MITRE Corporation
- *   and the MIT Kerberos and Internet Trust Consortium
- * 
+ * Copyright 2015 The MITRE Corporation
+ *   and the MIT Internet Trust Consortium
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- ******************************************************************************/
+ *******************************************************************************/
 /**
  * 
  */
@@ -27,21 +27,24 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.mitre.jose.JWEAlgorithmEmbed;
-import org.mitre.jose.JWEEncryptionMethodEmbed;
-import org.mitre.jose.JWSAlgorithmEmbed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.servlet.view.AbstractView;
 
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import com.nimbusds.jose.EncryptionMethod;
+import com.nimbusds.jose.JWEAlgorithm;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.jwk.JWKSet;
 
 /**
  * 
@@ -54,35 +57,50 @@ import com.google.gson.JsonSerializer;
  *
  */
 public abstract class AbstractClientEntityView extends AbstractView {
-	private static Logger logger = LoggerFactory.getLogger(ClientEntityViewForAdmins.class);
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.getLogger(AbstractClientEntityView.class);
+
+	private JsonParser parser = new JsonParser();
 
 	private Gson gson = new GsonBuilder()
 	.setExclusionStrategies(getExclusionStrategy())
-	.registerTypeAdapter(JWSAlgorithmEmbed.class, new JsonSerializer<JWSAlgorithmEmbed>() {
+	.registerTypeAdapter(JWSAlgorithm.class, new JsonSerializer<JWSAlgorithm>() {
 		@Override
-		public JsonElement serialize(JWSAlgorithmEmbed src, Type typeOfSrc, JsonSerializationContext context) {
+		public JsonElement serialize(JWSAlgorithm src, Type typeOfSrc, JsonSerializationContext context) {
 			if (src != null) {
-				return new JsonPrimitive(src.getAlgorithmName());
+				return new JsonPrimitive(src.getName());
 			} else {
 				return null;
 			}
 		}
 	})
-	.registerTypeAdapter(JWEAlgorithmEmbed.class, new JsonSerializer<JWEAlgorithmEmbed>() {
+	.registerTypeAdapter(JWEAlgorithm.class, new JsonSerializer<JWEAlgorithm>() {
 		@Override
-		public JsonElement serialize(JWEAlgorithmEmbed src, Type typeOfSrc, JsonSerializationContext context) {
+		public JsonElement serialize(JWEAlgorithm src, Type typeOfSrc, JsonSerializationContext context) {
 			if (src != null) {
-				return new JsonPrimitive(src.getAlgorithmName());
+				return new JsonPrimitive(src.getName());
 			} else {
 				return null;
 			}
 		}
 	})
-	.registerTypeAdapter(JWEEncryptionMethodEmbed.class, new JsonSerializer<JWEEncryptionMethodEmbed>() {
+	.registerTypeAdapter(EncryptionMethod.class, new JsonSerializer<EncryptionMethod>() {
 		@Override
-		public JsonElement serialize(JWEEncryptionMethodEmbed src, Type typeOfSrc, JsonSerializationContext context) {
+		public JsonElement serialize(EncryptionMethod src, Type typeOfSrc, JsonSerializationContext context) {
 			if (src != null) {
-				return new JsonPrimitive(src.getAlgorithmName());
+				return new JsonPrimitive(src.getName());
+			} else {
+				return null;
+			}
+		}
+	})
+	.registerTypeAdapter(JWKSet.class, new JsonSerializer<JWKSet>() {
+		@Override
+		public JsonElement serialize(JWKSet src, Type typeOfSrc, JsonSerializationContext context) {
+			if (src != null) {
+				return parser.parse(src.toString());
 			} else {
 				return null;
 			}
@@ -102,10 +120,10 @@ public abstract class AbstractClientEntityView extends AbstractView {
 	@Override
 	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
 
-		response.setContentType("application/json");
+		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
 
-		HttpStatus code = (HttpStatus) model.get("code");
+		HttpStatus code = (HttpStatus) model.get(HttpCodeView.CODE);
 		if (code == null) {
 			code = HttpStatus.OK; // default to 200
 		}
@@ -115,7 +133,7 @@ public abstract class AbstractClientEntityView extends AbstractView {
 		try {
 
 			Writer out = response.getWriter();
-			Object obj = model.get("entity");
+			Object obj = model.get(JsonEntityView.ENTITY);
 			gson.toJson(obj, out);
 
 		} catch (IOException e) {

@@ -1,33 +1,35 @@
 /*******************************************************************************
- * Copyright 2014 The MITRE Corporation
- *   and the MIT Kerberos and Internet Trust Consortium
- * 
+ * Copyright 2015 The MITRE Corporation
+ *   and the MIT Internet Trust Consortium
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- ******************************************************************************/
+ *******************************************************************************/
 package org.mitre.openid.connect.web;
 
 import java.util.List;
 
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
+import org.mitre.oauth2.service.SystemScopeService;
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.service.UserInfoService;
 import org.mitre.openid.connect.view.HttpCodeView;
-import org.mitre.openid.connect.view.UserInfoJwtView;
+import org.mitre.openid.connect.view.UserInfoJWTView;
 import org.mitre.openid.connect.view.UserInfoView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -48,7 +50,10 @@ import com.google.common.base.Strings;
  *
  */
 @Controller
+@RequestMapping("/" + UserInfoEndpoint.URL)
 public class UserInfoEndpoint {
+
+	public static final String URL = "userinfo";
 
 	@Autowired
 	private UserInfoService userInfoService;
@@ -56,22 +61,23 @@ public class UserInfoEndpoint {
 	@Autowired
 	private ClientDetailsEntityService clientService;
 
-	private static Logger logger = LoggerFactory.getLogger(UserInfoEndpoint.class);
-
-	private static final MediaType JOSE_MEDIA_TYPE = new MediaType("application", "jwt");
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.getLogger(UserInfoEndpoint.class);
 
 	/**
 	 * Get information about the user as specified in the accessToken included in this request
 	 */
-	@PreAuthorize("hasRole('ROLE_USER') and #oauth2.hasScope('openid')")
-	@RequestMapping(value="/userinfo", method= {RequestMethod.GET, RequestMethod.POST}, produces = {"application/json", "application/jwt"})
+	@PreAuthorize("hasRole('ROLE_USER') and #oauth2.hasScope('" + SystemScopeService.OPENID_SCOPE + "')")
+	@RequestMapping(method= {RequestMethod.GET, RequestMethod.POST}, produces = {MediaType.APPLICATION_JSON_VALUE, UserInfoJWTView.JOSE_MEDIA_TYPE_VALUE})
 	public String getInfo(@RequestParam(value="claims", required=false) String claimsRequestJsonString,
-			@RequestHeader(value="Accept", required=false) String acceptHeader,
+			@RequestHeader(value=HttpHeaders.ACCEPT, required=false) String acceptHeader,
 			OAuth2Authentication auth, Model model) {
 
 		if (auth == null) {
 			logger.error("getInfo failed; no principal. Requester is not authorized.");
-			model.addAttribute("code", HttpStatus.FORBIDDEN);
+			model.addAttribute(HttpCodeView.CODE, HttpStatus.FORBIDDEN);
 			return HttpCodeView.VIEWNAME;
 		}
 
@@ -80,50 +86,50 @@ public class UserInfoEndpoint {
 
 		if (userInfo == null) {
 			logger.error("getInfo failed; user not found: " + username);
-			model.addAttribute("code", HttpStatus.NOT_FOUND);
+			model.addAttribute(HttpCodeView.CODE, HttpStatus.NOT_FOUND);
 			return HttpCodeView.VIEWNAME;
 		}
 
-		model.addAttribute("scope", auth.getOAuth2Request().getScope());
+		model.addAttribute(UserInfoView.SCOPE, auth.getOAuth2Request().getScope());
 
-		model.addAttribute("authorizedClaims", auth.getOAuth2Request().getExtensions().get("claims"));
+		model.addAttribute(UserInfoView.AUTHORIZED_CLAIMS, auth.getOAuth2Request().getExtensions().get("claims"));
 
 		if (!Strings.isNullOrEmpty(claimsRequestJsonString)) {
-			model.addAttribute("requestedClaims", claimsRequestJsonString);
+			model.addAttribute(UserInfoView.REQUESTED_CLAIMS, claimsRequestJsonString);
 		}
 
-		model.addAttribute("userInfo", userInfo);
+		model.addAttribute(UserInfoView.USER_INFO, userInfo);
 
 		// content negotiation
 
 		// start off by seeing if the client has registered for a signed/encrypted JWT from here
 		ClientDetailsEntity client = clientService.loadClientByClientId(auth.getOAuth2Request().getClientId());
-		model.addAttribute("client", client);
-		
+		model.addAttribute(UserInfoJWTView.CLIENT, client);
+
 		List<MediaType> mediaTypes = MediaType.parseMediaTypes(acceptHeader);
 		MediaType.sortBySpecificityAndQuality(mediaTypes);
-		
-		if (client.getUserInfoSignedResponseAlg() != null 
+
+		if (client.getUserInfoSignedResponseAlg() != null
 				|| client.getUserInfoEncryptedResponseAlg() != null
 				|| client.getUserInfoEncryptedResponseEnc() != null) {
 			// client has a preference, see if they ask for plain JSON specifically on this request
 			for (MediaType m : mediaTypes) {
-				if (!m.isWildcardType() && m.isCompatibleWith(JOSE_MEDIA_TYPE)) {
-					return UserInfoJwtView.VIEWNAME;
+				if (!m.isWildcardType() && m.isCompatibleWith(UserInfoJWTView.JOSE_MEDIA_TYPE)) {
+					return UserInfoJWTView.VIEWNAME;
 				} else if (!m.isWildcardType() && m.isCompatibleWith(MediaType.APPLICATION_JSON)) {
 					return UserInfoView.VIEWNAME;
 				}
 			}
-			
+
 			// otherwise return JWT
-			return UserInfoJwtView.VIEWNAME;
+			return UserInfoJWTView.VIEWNAME;
 		} else {
 			// client has no preference, see if they asked for JWT specifically on this request
 			for (MediaType m : mediaTypes) {
 				if (!m.isWildcardType() && m.isCompatibleWith(MediaType.APPLICATION_JSON)) {
 					return UserInfoView.VIEWNAME;
-				} else if (!m.isWildcardType() && m.isCompatibleWith(JOSE_MEDIA_TYPE)) {
-					return UserInfoJwtView.VIEWNAME;
+				} else if (!m.isWildcardType() && m.isCompatibleWith(UserInfoJWTView.JOSE_MEDIA_TYPE)) {
+					return UserInfoJWTView.VIEWNAME;
 				}
 			}
 

@@ -159,3 +159,36 @@ h1,label {
 	outline: 0;
 }
 
+.control-group .controls div {
+    display: block;
+}
+
+.control-group .controls div {
+    padding-top: 5px;
+    margin-bottom: 5px;
+}
+
+.control-group .controls div label.checkbox,
+.control-group .controls div label.radio {
+  display: inline-block;
+  padding: 0 5px 0 5px;
+  line-height: 20px;
+}
+
+.control-group .controls div input[type=checkbox],
+.control-group .controls div input[type=radio] {
+  line-height: 20px;
+  vertical-align: middle;
+  margin: 0;
+}
+
+/* User profile claims alignment */
+.user-profile dd, .user-profile dt {
+    height: 20px;
+}
+
+/* Client table images */
+.client-logo {
+	max-width: 64px; 
+	max-height: 64px
+}

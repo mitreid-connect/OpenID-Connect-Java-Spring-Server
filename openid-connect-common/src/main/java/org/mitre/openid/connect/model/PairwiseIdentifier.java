@@ -1,6 +1,6 @@
 /*******************************************************************************
- * Copyright 2014 The MITRE Corporation
- *   and the MIT Kerberos and Internet Trust Consortium
+ * Copyright 2015 The MITRE Corporation
+ *   and the MIT Internet Trust Consortium
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,10 +39,16 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "pairwise_identifier")
 @NamedQueries({
-	@NamedQuery(name="PairwiseIdentifier.getAll", query = "select p from PairwiseIdentifier p"),
-	@NamedQuery(name="PairwiseIdentifier.getBySectorIdentifier", query = "select p from PairwiseIdentifier p WHERE p.userSub = :sub AND p.sectorIdentifier = :sectorIdentifier")
+	@NamedQuery(name=PairwiseIdentifier.QUERY_ALL, query = "select p from PairwiseIdentifier p"),
+	@NamedQuery(name=PairwiseIdentifier.QUERY_BY_SECTOR_IDENTIFIER, query = "select p from PairwiseIdentifier p WHERE p.userSub = :" + PairwiseIdentifier.PARAM_SUB + " AND p.sectorIdentifier = :" + PairwiseIdentifier.PARAM_SECTOR_IDENTIFIER)
 })
 public class PairwiseIdentifier {
+
+	public static final String QUERY_BY_SECTOR_IDENTIFIER = "PairwiseIdentifier.getBySectorIdentifier";
+	public static final String QUERY_ALL = "PairwiseIdentifier.getAll";
+
+	public static final String PARAM_SECTOR_IDENTIFIER = "sectorIdentifier";
+	public static final String PARAM_SUB = "sub";
 
 	private Long id;
 	private String identifier;
@@ -86,7 +92,7 @@ public class PairwiseIdentifier {
 	 * @return the userSub
 	 */
 	@Basic
-	@Column(name = "sub")
+	@Column(name = PairwiseIdentifier.PARAM_SUB)
 	public String getUserSub() {
 		return userSub;
 	}

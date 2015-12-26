@@ -1,6 +1,6 @@
 /*******************************************************************************
- * Copyright 2014 The MITRE Corporation
- *   and the MIT Kerberos and Internet Trust Consortium
+ * Copyright 2015 The MITRE Corporation
+ *   and the MIT Internet Trust Consortium
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,6 @@
  */
 package org.mitre.openid.connect.repository.impl;
 
-import static org.mitre.util.jpa.JpaUtil.getSingleResult;
-import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -31,6 +28,9 @@ import org.mitre.openid.connect.repository.PairwiseIdentifierRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.mitre.util.jpa.JpaUtil.getSingleResult;
+import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
+
 /**
  * @author jricher
  *
@@ -38,7 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public class JpaPairwiseIdentifierRepository implements PairwiseIdentifierRepository {
 
-	@PersistenceContext
+	@PersistenceContext(unitName="defaultPersistenceUnit")
 	private EntityManager manager;
 
 	/* (non-Javadoc)
@@ -46,9 +46,9 @@ public class JpaPairwiseIdentifierRepository implements PairwiseIdentifierReposi
 	 */
 	@Override
 	public PairwiseIdentifier getBySectorIdentifier(String sub, String sectorIdentifierUri) {
-		TypedQuery<PairwiseIdentifier> query = manager.createNamedQuery("PairwiseIdentifier.getBySectorIdentifier", PairwiseIdentifier.class);
-		query.setParameter("sub", sub);
-		query.setParameter("sectorIdentifier", sectorIdentifierUri);
+		TypedQuery<PairwiseIdentifier> query = manager.createNamedQuery(PairwiseIdentifier.QUERY_BY_SECTOR_IDENTIFIER, PairwiseIdentifier.class);
+		query.setParameter(PairwiseIdentifier.PARAM_SUB, sub);
+		query.setParameter(PairwiseIdentifier.PARAM_SECTOR_IDENTIFIER, sectorIdentifierUri);
 
 		return getSingleResult(query.getResultList());
 	}
@@ -57,7 +57,7 @@ public class JpaPairwiseIdentifierRepository implements PairwiseIdentifierReposi
 	 * @see org.mitre.openid.connect.repository.PairwiseIdentifierRepository#save(org.mitre.openid.connect.model.PairwiseIdentifier)
 	 */
 	@Override
-	@Transactional
+	@Transactional(value="defaultTransactionManager")
 	public void save(PairwiseIdentifier pairwise) {
 		saveOrUpdate(pairwise.getId(), manager, pairwise);
 	}

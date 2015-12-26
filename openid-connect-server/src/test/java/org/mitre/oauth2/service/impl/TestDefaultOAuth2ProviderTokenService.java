@@ -1,30 +1,23 @@
 /*******************************************************************************
- * Copyright 2014 The MITRE Corporation
- *   and the MIT Kerberos and Internet Trust Consortium
- * 
+ * Copyright 2015 The MITRE Corporation
+ *   and the MIT Internet Trust Consortium
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- ******************************************************************************/
+ *******************************************************************************/
 package org.mitre.oauth2.service.impl;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Before;
@@ -34,6 +27,7 @@ import org.mitre.oauth2.model.AuthenticationHolderEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
+import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.repository.AuthenticationHolderRepository;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
@@ -56,6 +50,19 @@ import org.springframework.security.oauth2.provider.TokenRequest;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 
 import com.google.common.collect.Sets;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
+
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.when;
+
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author wkim
@@ -118,13 +125,17 @@ public class TestDefaultOAuth2ProviderTokenService {
 		client = Mockito.mock(ClientDetailsEntity.class);
 		Mockito.when(client.getClientId()).thenReturn(clientId);
 		Mockito.when(clientDetailsService.loadClientByClientId(clientId)).thenReturn(client);
+		Mockito.when(client.isReuseRefreshToken()).thenReturn(true);
 
 		// by default in tests, allow refresh tokens
 		Mockito.when(client.isAllowRefresh()).thenReturn(true);
-		
+
+		// by default, clear access tokens on refresh
+		Mockito.when(client.isClearAccessTokensOnRefresh()).thenReturn(true);
+
 		badClient = Mockito.mock(ClientDetailsEntity.class);
 		Mockito.when(badClient.getClientId()).thenReturn(badClientId);
-		Mockito.when(clientDetailsService.loadClientByClientId(badClientId)).thenReturn(badClient);		
+		Mockito.when(clientDetailsService.loadClientByClientId(badClientId)).thenReturn(badClient);
 
 		refreshToken = Mockito.mock(OAuth2RefreshTokenEntity.class);
 		Mockito.when(tokenRepository.getRefreshTokenByValue(refreshTokenValue)).thenReturn(refreshToken);
@@ -144,11 +155,39 @@ public class TestDefaultOAuth2ProviderTokenService {
 
 		Mockito.when(authenticationHolderRepository.save(Matchers.any(AuthenticationHolderEntity.class))).thenReturn(storedAuthHolder);
 
-		Mockito.when(scopeService.removeRestrictedScopes(Matchers.anySet())).then(AdditionalAnswers.returnsFirstArg());
+		Mockito.when(scopeService.fromStrings(Matchers.anySet())).thenAnswer(new Answer<Set<SystemScope>>() {
+			@Override
+			public Set<SystemScope> answer(InvocationOnMock invocation) throws Throwable {
+				Object[] args = invocation.getArguments();
+				Set<String> input = (Set<String>) args[0];
+				Set<SystemScope> output = new HashSet<>();
+				for (String scope : input) {
+					output.add(new SystemScope(scope));
+				}
+				return output;
+			}
+		});
+
+		Mockito.when(scopeService.toStrings(Matchers.anySet())).thenAnswer(new Answer<Set<String>>() {
+			@Override
+			public Set<String> answer(InvocationOnMock invocation) throws Throwable {
+				Object[] args = invocation.getArguments();
+				Set<SystemScope> input = (Set<SystemScope>) args[0];
+				Set<String> output = new HashSet<>();
+				for (SystemScope scope : input) {
+					output.add(scope.getValue());
+				}
+				return output;
+			}
+		});
+
+		// we're not testing restricted or reserved scopes here, just pass through
+		Mockito.when(scopeService.removeReservedScopes(Matchers.anySet())).then(AdditionalAnswers.returnsFirstArg());
+		Mockito.when(scopeService.removeRestrictedAndReservedScopes(Matchers.anySet())).then(AdditionalAnswers.returnsFirstArg());
 
 		Mockito.when(tokenEnhancer.enhance(Matchers.any(OAuth2AccessTokenEntity.class), Matchers.any(OAuth2Authentication.class)))
-			.thenAnswer(new Answer<OAuth2AccessTokenEntity>(){
-		  	@Override
+		.thenAnswer(new Answer<OAuth2AccessTokenEntity>(){
+			@Override
 			public OAuth2AccessTokenEntity answer(InvocationOnMock invocation) throws Throwable {
 				Object[] args = invocation.getArguments();
 				return (OAuth2AccessTokenEntity) args[0];
@@ -156,24 +195,24 @@ public class TestDefaultOAuth2ProviderTokenService {
 		});
 
 		Mockito.when(tokenRepository.saveAccessToken(Matchers.any(OAuth2AccessTokenEntity.class)))
-			.thenAnswer(new Answer<OAuth2AccessTokenEntity>() {
-				@Override
-				public OAuth2AccessTokenEntity answer(InvocationOnMock invocation) throws Throwable {
-					Object[] args = invocation.getArguments();
-					return (OAuth2AccessTokenEntity) args[0];
-				}
-				
-			});
+		.thenAnswer(new Answer<OAuth2AccessTokenEntity>() {
+			@Override
+			public OAuth2AccessTokenEntity answer(InvocationOnMock invocation) throws Throwable {
+				Object[] args = invocation.getArguments();
+				return (OAuth2AccessTokenEntity) args[0];
+			}
+
+		});
 
 		Mockito.when(tokenRepository.saveRefreshToken(Matchers.any(OAuth2RefreshTokenEntity.class)))
-			.thenAnswer(new Answer<OAuth2RefreshTokenEntity>() {
-				@Override
-				public OAuth2RefreshTokenEntity answer(InvocationOnMock invocation) throws Throwable {
-					Object[] args = invocation.getArguments();
-					return (OAuth2RefreshTokenEntity) args[0];
-				}
-			});
-		
+		.thenAnswer(new Answer<OAuth2RefreshTokenEntity>() {
+			@Override
+			public OAuth2RefreshTokenEntity answer(InvocationOnMock invocation) throws Throwable {
+				Object[] args = invocation.getArguments();
+				return (OAuth2RefreshTokenEntity) args[0];
+			}
+		});
+
 	}
 
 	/**
@@ -222,10 +261,12 @@ public class TestDefaultOAuth2ProviderTokenService {
 
 		Mockito.verify(clientDetailsService).loadClientByClientId(Matchers.anyString());
 		Mockito.verify(authenticationHolderRepository).save(Matchers.any(AuthenticationHolderEntity.class));
-		Mockito.verify(tokenEnhancer).enhance(Matchers.any(OAuth2AccessTokenEntity.class), Mockito.eq(authentication));
+		Mockito.verify(tokenEnhancer).enhance(Matchers.any(OAuth2AccessTokenEntity.class), Matchers.eq(authentication));
 		Mockito.verify(tokenRepository).saveAccessToken(Matchers.any(OAuth2AccessTokenEntity.class));
+		Mockito.verify(scopeService, Mockito.atLeastOnce()).removeReservedScopes(Matchers.anySet());
 
 		Mockito.verify(tokenRepository, Mockito.never()).saveRefreshToken(Matchers.any(OAuth2RefreshTokenEntity.class));
+
 		assertThat(token.getRefreshToken(), is(nullValue()));
 	}
 
@@ -243,6 +284,8 @@ public class TestDefaultOAuth2ProviderTokenService {
 
 		// Note: a refactor may be appropriate to only save refresh tokens once to the repository during creation.
 		Mockito.verify(tokenRepository, Mockito.atLeastOnce()).saveRefreshToken(Matchers.any(OAuth2RefreshTokenEntity.class));
+		Mockito.verify(scopeService, Mockito.atLeastOnce()).removeReservedScopes(Matchers.anySet());
+
 		assertThat(token.getRefreshToken(), is(notNullValue()));
 
 	}
@@ -269,6 +312,8 @@ public class TestDefaultOAuth2ProviderTokenService {
 		Date lowerBoundRefreshTokens = new Date(start + (refreshTokenValiditySeconds * 1000L) - DELTA);
 		Date upperBoundRefreshTokens = new Date(end + (refreshTokenValiditySeconds * 1000L) + DELTA);
 
+		Mockito.verify(scopeService, Mockito.atLeastOnce()).removeReservedScopes(Matchers.anySet());
+
 		assertTrue(token.getExpiration().after(lowerBoundAccessTokens) && token.getExpiration().before(upperBoundAccessTokens));
 		assertTrue(token.getRefreshToken().getExpiration().after(lowerBoundRefreshTokens) && token.getRefreshToken().getExpiration().before(upperBoundRefreshTokens));
 	}
@@ -278,6 +323,8 @@ public class TestDefaultOAuth2ProviderTokenService {
 
 		OAuth2AccessTokenEntity token = service.createAccessToken(authentication);
 
+		Mockito.verify(scopeService, Mockito.atLeastOnce()).removeReservedScopes(Matchers.anySet());
+
 		assertThat(token.getClient().getClientId(), equalTo(clientId));
 	}
 
@@ -285,6 +332,8 @@ public class TestDefaultOAuth2ProviderTokenService {
 	public void createAccessToken_checkScopes() {
 
 		OAuth2AccessTokenEntity token = service.createAccessToken(authentication);
+
+		Mockito.verify(scopeService, Mockito.atLeastOnce()).removeReservedScopes(Matchers.anySet());
 
 		assertThat(token.getScope(), equalTo(scope));
 	}
@@ -301,6 +350,8 @@ public class TestDefaultOAuth2ProviderTokenService {
 
 		assertThat(token.getAuthenticationHolder().getAuthentication(), equalTo(authentication));
 		Mockito.verify(authenticationHolderRepository).save(Matchers.any(AuthenticationHolderEntity.class));
+		Mockito.verify(scopeService, Mockito.atLeastOnce()).removeReservedScopes(Matchers.anySet());
+
 	}
 
 	@Test(expected = InvalidTokenException.class)
@@ -326,7 +377,7 @@ public class TestDefaultOAuth2ProviderTokenService {
 
 		service.refreshAccessToken(refreshTokenValue, tokenRequest);
 	}
-	
+
 	@Test(expected = InvalidTokenException.class)
 	public void refreshAccessToken_expired() {
 
@@ -348,12 +399,55 @@ public class TestDefaultOAuth2ProviderTokenService {
 
 		Mockito.verify(tokenEnhancer).enhance(token, storedAuthentication);
 		Mockito.verify(tokenRepository).saveAccessToken(token);
+		Mockito.verify(scopeService, Mockito.atLeastOnce()).removeReservedScopes(Matchers.anySet());
+
+	}
+
+	@Test
+	public void refreshAccessToken_rotateRefreshToken() {
+
+		when(client.isReuseRefreshToken()).thenReturn(false);
+
+		OAuth2AccessTokenEntity token = service.refreshAccessToken(refreshTokenValue, tokenRequest);
+
+		Mockito.verify(tokenRepository).clearAccessTokensForRefreshToken(refreshToken);
+
+		assertThat(token.getClient(), equalTo(client));
+		assertThat(token.getRefreshToken(), not(equalTo(refreshToken)));
+		assertThat(token.getAuthenticationHolder(), equalTo(storedAuthHolder));
+
+		Mockito.verify(tokenEnhancer).enhance(token, storedAuthentication);
+		Mockito.verify(tokenRepository).saveAccessToken(token);
+		Mockito.verify(tokenRepository).removeRefreshToken(refreshToken);
+		Mockito.verify(scopeService, Mockito.atLeastOnce()).removeReservedScopes(Matchers.anySet());
+
+	}
+
+	@Test
+	public void refreshAccessToken_keepAccessTokens() {
+
+		when(client.isClearAccessTokensOnRefresh()).thenReturn(false);
+
+		OAuth2AccessTokenEntity token = service.refreshAccessToken(refreshTokenValue, tokenRequest);
+
+		Mockito.verify(tokenRepository, never()).clearAccessTokensForRefreshToken(refreshToken);
+
+		assertThat(token.getClient(), equalTo(client));
+		assertThat(token.getRefreshToken(), equalTo(refreshToken));
+		assertThat(token.getAuthenticationHolder(), equalTo(storedAuthHolder));
+
+		Mockito.verify(tokenEnhancer).enhance(token, storedAuthentication);
+		Mockito.verify(tokenRepository).saveAccessToken(token);
+		Mockito.verify(scopeService, Mockito.atLeastOnce()).removeReservedScopes(Matchers.anySet());
+
 	}
 
 	@Test
 	public void refreshAccessToken_requestingSameScope() {
 
 		OAuth2AccessTokenEntity token = service.refreshAccessToken(refreshTokenValue, tokenRequest);
+
+		Mockito.verify(scopeService, Mockito.atLeastOnce()).removeReservedScopes(Matchers.anySet());
 
 		assertThat(token.getScope(), equalTo(storedScope));
 	}
@@ -366,6 +460,8 @@ public class TestDefaultOAuth2ProviderTokenService {
 		tokenRequest.setScope(lessScope);
 
 		OAuth2AccessTokenEntity token = service.refreshAccessToken(refreshTokenValue, tokenRequest);
+
+		Mockito.verify(scopeService, Mockito.atLeastOnce()).removeReservedScopes(Matchers.anySet());
 
 		assertThat(token.getScope(), equalTo(lessScope));
 	}
@@ -405,6 +501,8 @@ public class TestDefaultOAuth2ProviderTokenService {
 
 		OAuth2AccessTokenEntity token = service.refreshAccessToken(refreshTokenValue, tokenRequest);
 
+		Mockito.verify(scopeService, Mockito.atLeastOnce()).removeReservedScopes(Matchers.anySet());
+
 		assertThat(token.getScope(), equalTo(storedScope));
 	}
 
@@ -414,6 +512,8 @@ public class TestDefaultOAuth2ProviderTokenService {
 		tokenRequest.setScope(null);
 
 		OAuth2AccessTokenEntity token = service.refreshAccessToken(refreshTokenValue, tokenRequest);
+
+		Mockito.verify(scopeService, Mockito.atLeastOnce()).removeReservedScopes(Matchers.anySet());
 
 		assertThat(token.getScope(), equalTo(storedScope));
 
@@ -436,6 +536,8 @@ public class TestDefaultOAuth2ProviderTokenService {
 		// Accounting for some delta for time skew on either side.
 		Date lowerBoundAccessTokens = new Date(start + (accessTokenValiditySeconds * 1000L) - DELTA);
 		Date upperBoundAccessTokens = new Date(end + (accessTokenValiditySeconds * 1000L) + DELTA);
+
+		Mockito.verify(scopeService, Mockito.atLeastOnce()).removeReservedScopes(Matchers.anySet());
 
 		assertTrue(token.getExpiration().after(lowerBoundAccessTokens) && token.getExpiration().before(upperBoundAccessTokens));
 	}

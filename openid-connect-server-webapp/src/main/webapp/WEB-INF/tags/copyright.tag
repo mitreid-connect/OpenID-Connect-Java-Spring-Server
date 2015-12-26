@@ -1,1 +1,2 @@
-Powered by <a href="https://github.com/mitreid-connect/">MITREid Connect <span class="label">${project.version}</span></a> <span class="pull-right">&copy; 2014 The MITRE Corporation and MIT KIT.</span>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<spring:message code="copyright" arguments="${project.version}"/>

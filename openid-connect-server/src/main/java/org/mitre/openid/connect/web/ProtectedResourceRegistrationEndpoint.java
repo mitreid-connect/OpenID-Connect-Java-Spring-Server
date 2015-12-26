@@ -1,19 +1,19 @@
 /*******************************************************************************
- * Copyright 2014 The MITRE Corporation
- *   and the MIT Kerberos and Internet Trust Consortium
- * 
+ * Copyright 2015 The MITRE Corporation
+ *   and the MIT Internet Trust Consortium
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- ******************************************************************************/
+ *******************************************************************************/
 package org.mitre.openid.connect.web;
 
 import java.io.UnsupportedEncodingException;
@@ -22,7 +22,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.mitre.jwt.signer.service.JwtSigningAndValidationService;
+import org.mitre.jwt.signer.service.JWTSigningAndValidationService;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
@@ -43,6 +43,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
@@ -55,12 +56,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.util.UriUtils;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Sets;
 import com.google.gson.JsonSyntaxException;
 
 @Controller
-@RequestMapping(value = "resource")
+@RequestMapping(value = ProtectedResourceRegistrationEndpoint.URL)
 public class ProtectedResourceRegistrationEndpoint {
+
+	/**
+	 * 
+	 */
+	public static final String URL = "resource";
 
 	@Autowired
 	private ClientDetailsEntityService clientService;
@@ -69,7 +74,7 @@ public class ProtectedResourceRegistrationEndpoint {
 	private OAuth2TokenEntityService tokenService;
 
 	@Autowired
-	private JwtSigningAndValidationService jwtService;
+	private JWTSigningAndValidationService jwtService;
 
 	@Autowired
 	private SystemScopeService scopeService;
@@ -83,7 +88,10 @@ public class ProtectedResourceRegistrationEndpoint {
 	@Autowired
 	private OIDCTokenService connectTokenService;
 
-	private static Logger logger = LoggerFactory.getLogger(ProtectedResourceRegistrationEndpoint.class);
+	/**
+	 * Logger for this class
+	 */
+	private static final Logger logger = LoggerFactory.getLogger(ProtectedResourceRegistrationEndpoint.class);
 
 	/**
 	 * Create a new Client, issue a client ID, and create a registration access token.
@@ -92,7 +100,7 @@ public class ProtectedResourceRegistrationEndpoint {
 	 * @param p
 	 * @return
 	 */
-	@RequestMapping(method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
+	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public String registerNewProtectedResource(@RequestBody String jsonString, Model m) {
 
 		ClientDetailsEntity newClient = null;
@@ -102,7 +110,7 @@ public class ProtectedResourceRegistrationEndpoint {
 			// bad parse
 			// didn't parse, this is a bad request
 			logger.error("registerNewProtectedResource failed; submitted JSON is malformed");
-			m.addAttribute("code", HttpStatus.BAD_REQUEST); // http 400
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST); // http 400
 			return HttpCodeView.VIEWNAME;
 		}
 
@@ -123,9 +131,9 @@ public class ProtectedResourceRegistrationEndpoint {
 				newClient = validateAuth(newClient);
 			} catch (ValidationException ve) {
 				// validation failed, return an error
-				m.addAttribute("error", ve.getError());
-				m.addAttribute("errorMessage", ve.getErrorDescription());
-				m.addAttribute("code", ve.getStatus());
+				m.addAttribute(JsonErrorView.ERROR, ve.getError());
+				m.addAttribute(JsonErrorView.ERROR_MESSAGE, ve.getErrorDescription());
+				m.addAttribute(HttpCodeView.CODE, ve.getStatus());
 				return JsonErrorView.VIEWNAME;
 			}
 
@@ -147,7 +155,7 @@ public class ProtectedResourceRegistrationEndpoint {
 			newClient.setIdTokenEncryptedResponseEnc(null);
 			newClient.setIdTokenSignedResponseAlg(null);
 			newClient.setInitiateLoginUri(null);
-			newClient.setPostLogoutRedirectUri(null);
+			newClient.setPostLogoutRedirectUris(null);
 			newClient.setRequestObjectSigningAlg(null);
 			newClient.setRequireAuthTime(null);
 			newClient.setReuseRefreshToken(false);
@@ -175,26 +183,26 @@ public class ProtectedResourceRegistrationEndpoint {
 
 				RegisteredClient registered = new RegisteredClient(savedClient, token.getValue(), config.getIssuer() + "resource/" + UriUtils.encodePathSegment(savedClient.getClientId(), "UTF-8"));
 				m.addAttribute("client", registered);
-				m.addAttribute("code", HttpStatus.CREATED); // http 201
+				m.addAttribute(HttpCodeView.CODE, HttpStatus.CREATED); // http 201
 
 				return ClientInformationResponseView.VIEWNAME;
 			} catch (UnsupportedEncodingException e) {
 				logger.error("Unsupported encoding", e);
-				m.addAttribute("code", HttpStatus.INTERNAL_SERVER_ERROR);
+				m.addAttribute(HttpCodeView.CODE, HttpStatus.INTERNAL_SERVER_ERROR);
 				return HttpCodeView.VIEWNAME;
 			} catch (IllegalArgumentException e) {
 				logger.error("Couldn't save client", e);
-				
-				m.addAttribute("error", "invalid_client_metadata");
-				m.addAttribute("errorMessage", "Unable to save client due to invalid or inconsistent metadata.");
-				m.addAttribute("code", HttpStatus.BAD_REQUEST); // http 400
-				
+
+				m.addAttribute(JsonErrorView.ERROR, "invalid_client_metadata");
+				m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Unable to save client due to invalid or inconsistent metadata.");
+				m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST); // http 400
+
 				return JsonErrorView.VIEWNAME;
 			}
 		} else {
 			// didn't parse, this is a bad request
 			logger.error("registerNewClient failed; submitted JSON is malformed");
-			m.addAttribute("code", HttpStatus.BAD_REQUEST); // http 400
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST); // http 400
 
 			return HttpCodeView.VIEWNAME;
 		}
@@ -202,19 +210,19 @@ public class ProtectedResourceRegistrationEndpoint {
 	}
 
 	private ClientDetailsEntity validateScopes(ClientDetailsEntity newClient) throws ValidationException {
-
-		// note that protected resources can register for any scopes, even ones not used by the sysadmin
-		
 		// scopes that the client is asking for
 		Set<SystemScope> requestedScopes = scopeService.fromStrings(newClient.getScope());
 
+		// the scopes that the client can have must be a subset of the dynamically allowed scopes
+		Set<SystemScope> allowedScopes = scopeService.removeRestrictedAndReservedScopes(requestedScopes);
+
 		// if the client didn't ask for any, give them the defaults
-		if (requestedScopes == null || requestedScopes.isEmpty()) {
-			requestedScopes = scopeService.getDefaults();
+		if (allowedScopes == null || allowedScopes.isEmpty()) {
+			allowedScopes = scopeService.getDefaults();
 		}
 
-		newClient.setScope(scopeService.toStrings(requestedScopes));
-		
+		newClient.setScope(scopeService.toStrings(allowedScopes));
+
 		return newClient;
 	}
 
@@ -226,7 +234,7 @@ public class ProtectedResourceRegistrationEndpoint {
 	 * @return
 	 */
 	@PreAuthorize("hasRole('ROLE_CLIENT') and #oauth2.hasScope('" + SystemScopeService.RESOURCE_TOKEN_SCOPE + "')")
-	@RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public String readResourceConfiguration(@PathVariable("id") String clientId, Model m, OAuth2Authentication auth) {
 
 		ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
@@ -243,19 +251,19 @@ public class ProtectedResourceRegistrationEndpoint {
 
 				// send it all out to the view
 				m.addAttribute("client", registered);
-				m.addAttribute("code", HttpStatus.OK); // http 200
+				m.addAttribute(HttpCodeView.CODE, HttpStatus.OK); // http 200
 
 				return ClientInformationResponseView.VIEWNAME;
 			} catch (UnsupportedEncodingException e) {
 				logger.error("Unsupported encoding", e);
-				m.addAttribute("code", HttpStatus.INTERNAL_SERVER_ERROR);
+				m.addAttribute(HttpCodeView.CODE, HttpStatus.INTERNAL_SERVER_ERROR);
 				return HttpCodeView.VIEWNAME;
 			}
 		} else {
 			// client mismatch
 			logger.error("readResourceConfiguration failed, client ID mismatch: "
 					+ clientId + " and " + auth.getOAuth2Request().getClientId() + " do not match.");
-			m.addAttribute("code", HttpStatus.FORBIDDEN); // http 403
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.FORBIDDEN); // http 403
 
 			return HttpCodeView.VIEWNAME;
 		}
@@ -270,7 +278,7 @@ public class ProtectedResourceRegistrationEndpoint {
 	 * @return
 	 */
 	@PreAuthorize("hasRole('ROLE_CLIENT') and #oauth2.hasScope('" + SystemScopeService.RESOURCE_TOKEN_SCOPE + "')")
-	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = "application/json", consumes = "application/json")
+	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public String updateProtectedResource(@PathVariable("id") String clientId, @RequestBody String jsonString, Model m, OAuth2Authentication auth) {
 
 
@@ -281,7 +289,7 @@ public class ProtectedResourceRegistrationEndpoint {
 			// bad parse
 			// didn't parse, this is a bad request
 			logger.error("updateProtectedResource failed; submitted JSON is malformed");
-			m.addAttribute("code", HttpStatus.BAD_REQUEST); // http 400
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST); // http 400
 			return HttpCodeView.VIEWNAME;
 		}
 
@@ -314,7 +322,7 @@ public class ProtectedResourceRegistrationEndpoint {
 			newClient.setIdTokenEncryptedResponseEnc(null);
 			newClient.setIdTokenSignedResponseAlg(null);
 			newClient.setInitiateLoginUri(null);
-			newClient.setPostLogoutRedirectUri(null);
+			newClient.setPostLogoutRedirectUris(null);
 			newClient.setRequestObjectSigningAlg(null);
 			newClient.setRequireAuthTime(null);
 			newClient.setReuseRefreshToken(false);
@@ -336,9 +344,9 @@ public class ProtectedResourceRegistrationEndpoint {
 				newClient = validateAuth(newClient);
 			} catch (ValidationException ve) {
 				// validation failed, return an error
-				m.addAttribute("error", ve.getError());
-				m.addAttribute("errorMessage", ve.getErrorDescription());
-				m.addAttribute("code", ve.getStatus());
+				m.addAttribute(JsonErrorView.ERROR, ve.getError());
+				m.addAttribute(JsonErrorView.ERROR_MESSAGE, ve.getErrorDescription());
+				m.addAttribute(HttpCodeView.CODE, ve.getStatus());
 				return JsonErrorView.VIEWNAME;
 			}
 
@@ -354,20 +362,20 @@ public class ProtectedResourceRegistrationEndpoint {
 
 				// send it all out to the view
 				m.addAttribute("client", registered);
-				m.addAttribute("code", HttpStatus.OK); // http 200
+				m.addAttribute(HttpCodeView.CODE, HttpStatus.OK); // http 200
 
 				return ClientInformationResponseView.VIEWNAME;
 			} catch (UnsupportedEncodingException e) {
 				logger.error("Unsupported encoding", e);
-				m.addAttribute("code", HttpStatus.INTERNAL_SERVER_ERROR);
+				m.addAttribute(HttpCodeView.CODE, HttpStatus.INTERNAL_SERVER_ERROR);
 				return HttpCodeView.VIEWNAME;
 			} catch (IllegalArgumentException e) {
 				logger.error("Couldn't save client", e);
-				
-				m.addAttribute("error", "invalid_client_metadata");
-				m.addAttribute("errorMessage", "Unable to save client due to invalid or inconsistent metadata.");
-				m.addAttribute("code", HttpStatus.BAD_REQUEST); // http 400
-				
+
+				m.addAttribute(JsonErrorView.ERROR, "invalid_client_metadata");
+				m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Unable to save client due to invalid or inconsistent metadata.");
+				m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST); // http 400
+
 				return JsonErrorView.VIEWNAME;
 			}
 		} else {
@@ -375,7 +383,7 @@ public class ProtectedResourceRegistrationEndpoint {
 			logger.error("updateProtectedResource" +
 					" failed, client ID mismatch: "
 					+ clientId + " and " + auth.getOAuth2Request().getClientId() + " do not match.");
-			m.addAttribute("code", HttpStatus.FORBIDDEN); // http 403
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.FORBIDDEN); // http 403
 
 			return HttpCodeView.VIEWNAME;
 		}
@@ -389,7 +397,7 @@ public class ProtectedResourceRegistrationEndpoint {
 	 * @return
 	 */
 	@PreAuthorize("hasRole('ROLE_CLIENT') and #oauth2.hasScope('" + SystemScopeService.RESOURCE_TOKEN_SCOPE + "')")
-	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "application/json")
+	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public String deleteResource(@PathVariable("id") String clientId, Model m, OAuth2Authentication auth) {
 
 		ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
@@ -398,14 +406,14 @@ public class ProtectedResourceRegistrationEndpoint {
 
 			clientService.deleteClient(client);
 
-			m.addAttribute("code", HttpStatus.NO_CONTENT); // http 204
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.NO_CONTENT); // http 204
 
 			return HttpCodeView.VIEWNAME;
 		} else {
 			// client mismatch
 			logger.error("readClientConfiguration failed, client ID mismatch: "
 					+ clientId + " and " + auth.getOAuth2Request().getClientId() + " do not match.");
-			m.addAttribute("code", HttpStatus.FORBIDDEN); // http 403
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.FORBIDDEN); // http 403
 
 			return HttpCodeView.VIEWNAME;
 		}
@@ -425,10 +433,10 @@ public class ProtectedResourceRegistrationEndpoint {
 				newClient = clientService.generateClientSecret(newClient);
 			}
 		} else if (newClient.getTokenEndpointAuthMethod() == AuthMethod.PRIVATE_KEY) {
-			if (Strings.isNullOrEmpty(newClient.getJwksUri())) {
+			if (Strings.isNullOrEmpty(newClient.getJwksUri()) && newClient.getJwks() == null) {
 				throw new ValidationException("invalid_client_metadata", "JWK Set URI required when using private key authentication", HttpStatus.BAD_REQUEST);
 			}
-			
+
 			newClient.setClientSecret(null);
 		} else if (newClient.getTokenEndpointAuthMethod() == AuthMethod.NONE) {
 			newClient.setClientSecret(null);
@@ -437,14 +445,14 @@ public class ProtectedResourceRegistrationEndpoint {
 		}
 		return newClient;
 	}
-	
+
 	private OAuth2AccessTokenEntity fetchValidRegistrationToken(OAuth2Authentication auth, ClientDetailsEntity client) {
-		
+
 		OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
 		OAuth2AccessTokenEntity token = tokenService.readAccessToken(details.getTokenValue());
-		
+
 		if (config.getRegTokenLifeTime() != null) {
-		
+
 			try {
 				// Re-issue the token if it has been issued before [currentTime - validity]
 				Date validToDate = new Date(System.currentTimeMillis() - config.getRegTokenLifeTime() * 1000);
@@ -467,4 +475,5 @@ public class ProtectedResourceRegistrationEndpoint {
 			return token;
 		}
 	}
+
 }

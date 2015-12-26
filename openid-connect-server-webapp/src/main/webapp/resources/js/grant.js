@@ -1,19 +1,19 @@
 /*******************************************************************************
- * Copyright 2014 The MITRE Corporation 
- *   and the MIT Kerberos and Internet Trust Consortium
- * 
+ * Copyright 2015 The MITRE Corporation
+ *   and the MIT Internet Trust Consortium
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- ******************************************************************************/
+ *******************************************************************************/
 var ApprovedSiteModel = Backbone.Model.extend({
 	idAttribute: 'id',
 	
@@ -47,9 +47,10 @@ var ApprovedSiteListView = Backbone.View.extend({
     	}
 
     	$('#loadingbox').sheet('show');
-    	$('#loading').html('<span class="label" id="loading-grants">Approved Sites</span> ' +
-    			'<span class="label" id="loading-clients">Clients</span> ' + 
-    			'<span class="label" id="loading-scopes">Scopes</span> '
+    	$('#loading').html(
+    	        '<span class="label" id="loading-grants">' + $.t('grant.grant-table.approved-sites') + '</span> ' +
+    			'<span class="label" id="loading-clients">' + $.t('common.clients') + '</span> ' + 
+    			'<span class="label" id="loading-scopes">' + $.t('common.scopes') + '</span> '
     			);
 
     	$.when(this.model.fetchIfNeeded({success:function(e) {$('#loading-grants').addClass('label-success');}}),
@@ -69,7 +70,6 @@ var ApprovedSiteListView = Backbone.View.extend({
 		$(this.el).html($('#tmpl-grant-table').html());
 		
 		var approvedSiteCount = 0;
-		var whitelistCount = 0;
 		
 		var _self = this;
 		
@@ -79,47 +79,23 @@ var ApprovedSiteListView = Backbone.View.extend({
 			
 			if (client != null) {
 				
-				if (approvedSite.get('whitelistedSite') != null) {
-					var view = new ApprovedSiteView({model: approvedSite, client: client, systemScopeList: this.options.systemScopeList});
-					view.parentView = _self;
-					$('#grant-whitelist-table', this.el).append(view.render().el);
-					whitelistCount = whitelistCount + 1;
-				} else {
-					var view = new ApprovedSiteView({model: approvedSite, client: client, systemScopeList: this.options.systemScopeList});
-					view.parentView = _self;
-					$('#grant-table', this.el).append(view.render().el);
-					approvedSiteCount = approvedSiteCount + 1;
-				}
+				var view = new ApprovedSiteView({model: approvedSite, client: client, systemScopeList: this.options.systemScopeList});
+				view.parentView = _self;
+				$('#grant-table', this.el).append(view.render().el);
+				approvedSiteCount = approvedSiteCount + 1;
 				
 			}
 			
 		}, this);
 		
 		this.togglePlaceholder();
-		
+		$(this.el).i18n();
 		return this;
 	},
 	
 	togglePlaceholder:function() {
-		// count the whitelisted and non-whitelisted entries
-		var wl = 0;
-		var gr = 0;
-		for (var i = 0; i < this.model.length; i++) {
-			if (this.model.at(i).get('whitelistedSite') != null) {
-				wl += 1;
-			} else {
-				gr += 1;
-			}
-		}
-		
-		if (wl > 0) {
-			$('#grant-whitelist-table', this.el).show();
-			$('#grant-whitelist-table-empty', this.el).hide();
-		} else {
-			$('#grant-whitelist-table', this.el).hide();
-			$('#grant-whitelist-table-empty', this.el).show();
-		}
-		if (gr > 0) {
+		// count entries
+		if (this.model.length > 0) {
 			$('#grant-table', this.el).show();
 			$('#grant-table-empty', this.el).hide();
 		} else {
@@ -127,19 +103,16 @@ var ApprovedSiteListView = Backbone.View.extend({
 			$('#grant-table-empty', this.el).show();
 		}
 		
-		$('#approvde-site-count', this.el).html(gr);
-		$('#whitelist-count', this.el).html(wl);
-	
-		
 	},
 	
     refreshTable:function(e) {
     	e.preventDefault();
     	var _self = this;
     	$('#loadingbox').sheet('show');
-    	$('#loading').html('<span class="label" id="loading-grants">Approved Sites</span> ' +
-    			'<span class="label" id="loading-clients">Clients</span> ' + 
-    			'<span class="label" id="loading-scopes">Scopes</span> '
+    	$('#loading').html(
+                '<span class="label" id="loading-grants">' + $.t('grant.grant-table.approved-sites') + '</span> ' +
+                '<span class="label" id="loading-clients">' + $.t('common.clients') + '</span> ' + 
+                '<span class="label" id="loading-scopes">' + $.t('common.scopes') + '</span> '
     			);
 
     	$.when(this.model.fetch({success:function(e) {$('#loading-grants').addClass('label-success');}}),
@@ -177,52 +150,42 @@ var ApprovedSiteView = Backbone.View.extend({
 		var accessDate = this.model.get("accessDate");
 		var timeoutDate = this.model.get("timeoutDate");
 		
-		var displayCreationDate = "Unknown";
+		var displayCreationDate = $.t('grant.grant-table.unknown');
 		var hoverCreationDate = "";
-		if (creationDate == null || !moment(creationDate).isValid()) {
-			displayCreationDate = "Unknown";
-			hoverCreationDate = "";
-		} else {
+		if ((creationDate != null) && moment(creationDate).isValid()) {
 			creationDate = moment(creationDate);
 			if (moment().diff(creationDate, 'months') < 6) {
 				displayCreationDate = creationDate.fromNow();
 			} else {
-				displayCreationDate = creationDate.format("MMMM Do, YYYY");
+				displayCreationDate = creationDate.format("LL");
 			}
-			hoverCreationDate = creationDate.format("MMMM Do, YYYY [at] h:mmA");
+			hoverCreationDate = creationDate.format("LLL");
 		}
 
-		var displayAccessDate = "Unknown";
+		var displayAccessDate = $.t('grant.grant-table.unknown');
 		var hoverAccessDate = "";
-		if (accessDate == null || !moment(accessDate).isValid()) {
-			displayAccessDate = "Unknown";
-			hoverAccessDate = "";
-		} else {
+		if ((accessDate != null) && moment(accessDate).isValid()) {
 			accessDate = moment(accessDate);
 			if (moment().diff(accessDate, 'months') < 6) {
 				displayAccessDate = accessDate.fromNow();
 			} else {
-				displayAccessDate = accessDate.format("MMMM Do, YYYY");
+				displayAccessDate = accessDate.format("LL");
 			}
-			hoverAccessDate = accessDate.format("MMMM Do, YYYY [at] h:mmA");
+			hoverAccessDate = accessDate.format("LLL");
 		}
 
-		var displayTimeoutDate = "Unknown";
+		var displayTimeoutDate = $.t('grant.grant-table.unknown');
 		var hoverTimeoutDate = "";
 		if (timeoutDate == null) {
-			displayTimeoutDate = "Never";
-			hoverTimeoutDate = "";
-		} else if(!moment(timeoutDate).isValid()) {
-			displayTimeoutDate = "Unknown";
-			hoverTimeoutDate = "";
-		} else {
+			displayTimeoutDate = $.t('grant.grant-table.never');
+		} else if(moment(timeoutDate).isValid()) {
 			timeoutDate = moment(timeoutDate);
 			if (moment().diff(timeoutDate, 'months') < 6) {
 				displayTimeoutDate = timeoutDate.fromNow();
 			} else {
-				displayTimeoutDate = timeoutDate.format("MMMM Do, YYYY");
+				displayTimeoutDate = timeoutDate.format("LL");
 			}
-			hoverTimeoutDate = timeoutDate.format("MMMM Do, YYYY [at] h:mmA");
+			hoverTimeoutDate = timeoutDate.format("LLL");
 		}
 
 		
@@ -238,10 +201,9 @@ var ApprovedSiteView = Backbone.View.extend({
         
         $('.client-more-info-block', this.el).html(this.moreInfoTemplate({client: this.options.client.toJSON()}));
         
-        this.$('.dynamically-registered').tooltip({title: 'This client was dynamically registered'});
-        this.$('.whitelisted-site').tooltip({title: 'This site was whitelisted by an adminstrator'});
-        this.$('.tokens').tooltip({title: 'Number of currently active access tokens.'});
-        
+        this.$('.dynamically-registered').tooltip({title: $.t('grant.grant-table.dynamically-registered')});
+        this.$('.tokens').tooltip({title: $.t('grant.grant-table.active-tokens')});
+        $(this.el).i18n();
 		return this;
 	},
 	
@@ -256,6 +218,7 @@ var ApprovedSiteView = Backbone.View.extend({
 			var self = this;
 			
             this.model.destroy({
+            	dataType: false, processData: false,
                 success:function () {
                     self.$el.fadeTo("fast", 0.00, function () { //fade
                         $(this).slideUp("fast", function () { //slide up
