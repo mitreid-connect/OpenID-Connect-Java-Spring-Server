@@ -54,10 +54,8 @@ public class UmaDiscoveryEndpoint {
 
 		m.put("issuer", issuer);
 		m.put("pat_profiles_supported", tokenProfiles);
-		m.put("aat_profiles_supported", tokenProfiles);
 		m.put("rpt_profiles_supported", tokenProfiles);
 		m.put("pat_grant_types_supported", grantTypes);
-		m.put("aat_grant_types_supported", grantTypes);
 		m.put("claim_token_profiles_supported", ImmutableSet.of());
 		m.put("uma_profiles_supported", ImmutableSet.of());
 		m.put("registration_endpoint", issuer + DynamicClientRegistrationEndpoint.URL);

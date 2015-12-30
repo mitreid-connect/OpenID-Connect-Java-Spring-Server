@@ -65,7 +65,7 @@ public class ResourceSetRegistrationEndpoint {
 
 	private static final Logger logger = LoggerFactory.getLogger(ResourceSetRegistrationEndpoint.class);
 
-	public static final String URL = "/resource_set";
+	public static final String URL = "resource_set";
 
 	@Autowired
 	private ResourceSetService resourceSetService;
@@ -280,7 +280,7 @@ public class ResourceSetRegistrationEndpoint {
 				rs.setName(getAsString(o, "name"));
 				rs.setIconUri(getAsString(o, "icon_uri"));
 				rs.setType(getAsString(o, "type"));
-				rs.setScopes(getAsStringSet(o, "scopes"));
+				rs.setScopes(getAsStringSet(o, "resource_set_scopes"));
 				rs.setUri(getAsString(o, "uri"));
 
 				return rs;
