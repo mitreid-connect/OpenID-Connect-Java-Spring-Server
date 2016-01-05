@@ -1,21 +1,5 @@
-/*******************************************************************************
- * Copyright 2015 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.oauth2.service.impl;
 
@@ -26,72 +10,62 @@ import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.endpoint.DefaultRedirectResolver;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
-import com.google.common.base.Strings;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLStreamHandler;
 
 /**
- * 
- * A redirect resolver that knows how to check against the blacklisted URIs
- * for forbidden values. Can be configured to do strict string matching also.
- * 
  * @author jricher
- *
  */
 @Component("blacklistAwareRedirectResolver")
 public class BlacklistAwareRedirectResolver extends DefaultRedirectResolver {
 
-	@Autowired
-	private BlacklistedSiteService blacklistService;
+    @Autowired
+    private BlacklistedSiteService blacklistService;
 
-	private boolean strictMatch = false;
+    /* (non-Javadoc)
+     * @see org.springframework.security.oauth2.provider.endpoint.RedirectResolver#resolveRedirect(java.lang.String, org.springframework.security.oauth2.provider.ClientDetails)
+     */
+    @Override
+    public String resolveRedirect(String requestedRedirect, ClientDetails client) throws OAuth2Exception {
+        String redirect = super.resolveRedirect(requestedRedirect, client);
+        if (blacklistService.isBlacklisted(redirect)) {
+            // don't let it go through
+            throw new InvalidRequestException("The supplied redirect_uri is not allowed on this server.");
+        } else {
+            // not blacklisted, passed the parent test, we're fine
+            return redirect;
+        }
+    }
 
-	/* (non-Javadoc)
-	 * @see org.springframework.security.oauth2.provider.endpoint.RedirectResolver#resolveRedirect(java.lang.String, org.springframework.security.oauth2.provider.ClientDetails)
-	 */
-	@Override
-	public String resolveRedirect(String requestedRedirect, ClientDetails client) throws OAuth2Exception {
-		String redirect = super.resolveRedirect(requestedRedirect, client);
-		if (blacklistService.isBlacklisted(redirect)) {
-			// don't let it go through
-			throw new InvalidRequestException("The supplied redirect_uri is not allowed on this server.");
-		} else {
-			// not blacklisted, passed the parent test, we're fine
-			return redirect;
-		}
-	}
+    protected boolean redirectMatches(String requestedRedirect, String redirectUri) {
 
-	/* (non-Javadoc)
-	 * @see org.springframework.security.oauth2.provider.endpoint.DefaultRedirectResolver#redirectMatches(java.lang.String, java.lang.String)
-	 */
-	@Override
-	protected boolean redirectMatches(String requestedRedirect, String redirectUri) {
+        // otherwise do the prefix-match from the library
+        try {
+            URL req = new URL(null, requestedRedirect, new NullURLStreamHandler());
+            URL reg = new URL(null, redirectUri, new NullURLStreamHandler());
 
-		if (isStrictMatch()) {
-			// we're doing a strict string match for all clients
-			return Strings.nullToEmpty(requestedRedirect).equals(redirectUri);
-		} else {
-			// otherwise do the prefix-match from the library
-			return super.redirectMatches(requestedRedirect, redirectUri);
-		}
+            if (reg.getProtocol().equals(req.getProtocol()) && hostMatches(reg.getHost(), req.getHost())) {
+                return StringUtils.cleanPath(req.getPath()).startsWith(StringUtils.cleanPath(reg.getPath()));
+            }
+        } catch (MalformedURLException e) {
+        }
+        return requestedRedirect.equals(redirectUri);
+    }
 
-	}
-
-	/**
-	 * @return the strictMatch
-	 */
-	public boolean isStrictMatch() {
-		return strictMatch;
-	}
-
-	/**
-	 * Set this to true to require exact string matches for all redirect URIs. (Default is false)
-	 * 
-	 * @param strictMatch the strictMatch to set
-	 */
-	public void setStrictMatch(boolean strictMatch) {
-		this.strictMatch = strictMatch;
-	}
-
-
+    /**
+     * Default implementation that extends URLStreamHandler base class to prevent an error
+     * when instanciating an URL object with a scheme different from http, gopher, etc.
+     */
+    private class NullURLStreamHandler extends URLStreamHandler {
+        @Override
+        protected URLConnection openConnection(URL u) throws IOException {
+            return null;
+        }
+    }
 
 }
