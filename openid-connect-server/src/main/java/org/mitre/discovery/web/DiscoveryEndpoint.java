@@ -338,7 +338,7 @@ public class DiscoveryEndpoint {
 				"picture",
 				"website",
 				"gender",
-				"zone_info",
+				"zoneinfo",
 				"locale",
 				"updated_at",
 				"birthdate",
