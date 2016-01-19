@@ -89,7 +89,7 @@ public class PermissionRegistrationEndpoint {
 				Long rsid = getAsLong(o, "resource_set_id");
 				Set<String> scopes = getAsStringSet(o, "resource_set_scopes");
 
-				if (rsid == null || scopes == null || scopes.isEmpty()){
+				if (rsid == null || scopes == null){
 					// missing information
 					m.addAttribute("code", HttpStatus.BAD_REQUEST);
 					m.addAttribute("errorMessage", "Missing required component of permission registration request.");
