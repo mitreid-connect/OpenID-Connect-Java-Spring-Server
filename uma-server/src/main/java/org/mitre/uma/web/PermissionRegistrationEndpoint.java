@@ -87,7 +87,7 @@ public class PermissionRegistrationEndpoint {
 				JsonObject o = el.getAsJsonObject();
 
 				Long rsid = getAsLong(o, "resource_set_id");
-				Set<String> scopes = getAsStringSet(o, "scopes");
+				Set<String> scopes = getAsStringSet(o, "resource_set_scopes");
 
 				if (rsid == null || scopes == null || scopes.isEmpty()){
 					// missing information
