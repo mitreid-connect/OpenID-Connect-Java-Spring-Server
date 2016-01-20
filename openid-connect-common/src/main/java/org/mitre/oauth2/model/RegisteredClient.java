@@ -784,6 +784,22 @@ public class RegisteredClient {
 	}
 
 	/**
+	 * @return
+	 * @see org.mitre.oauth2.model.ClientDetailsEntity#getClaimsRedirectUris()
+	 */
+	public Set<String> getClaimsRedirectUris() {
+		return client.getClaimsRedirectUris();
+	}
+
+	/**
+	 * @param claimsRedirectUris
+	 * @see org.mitre.oauth2.model.ClientDetailsEntity#setClaimsRedirectUris(java.util.Set)
+	 */
+	public void setClaimsRedirectUris(Set<String> claimsRedirectUris) {
+		client.setClaimsRedirectUris(claimsRedirectUris);
+	}
+
+	/**
 	 * @return the src
 	 */
 	public JsonObject getSource() {
