@@ -20,24 +20,6 @@
 package org.mitre.openid.connect;
 
 
-import java.text.ParseException;
-
-import org.mitre.oauth2.model.ClientDetailsEntity;
-import org.mitre.oauth2.model.ClientDetailsEntity.AppType;
-import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
-import org.mitre.oauth2.model.ClientDetailsEntity.SubjectType;
-import org.mitre.oauth2.model.RegisteredClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
-import com.google.common.collect.Sets;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.nimbusds.jose.jwk.JWKSet;
-
 import static org.mitre.oauth2.model.RegisteredClientFields.APPLICATION_TYPE;
 import static org.mitre.oauth2.model.RegisteredClientFields.CLIENT_ID;
 import static org.mitre.oauth2.model.RegisteredClientFields.CLIENT_ID_ISSUED_AT;
@@ -65,7 +47,7 @@ import static org.mitre.oauth2.model.RegisteredClientFields.REQUEST_OBJECT_SIGNI
 import static org.mitre.oauth2.model.RegisteredClientFields.REQUEST_URIS;
 import static org.mitre.oauth2.model.RegisteredClientFields.REQUIRE_AUTH_TIME;
 import static org.mitre.oauth2.model.RegisteredClientFields.RESPONSE_TYPES;
-import static org.mitre.oauth2.model.RegisteredClientFields.SCOPE;
+import static org.mitre.oauth2.model.RegisteredClientFields.*;
 import static org.mitre.oauth2.model.RegisteredClientFields.SCOPE_SEPARATOR;
 import static org.mitre.oauth2.model.RegisteredClientFields.SECTOR_IDENTIFIER_URI;
 import static org.mitre.oauth2.model.RegisteredClientFields.SUBJECT_TYPE;
@@ -82,6 +64,24 @@ import static org.mitre.util.JsonUtils.getAsJweEncryptionMethod;
 import static org.mitre.util.JsonUtils.getAsJwsAlgorithm;
 import static org.mitre.util.JsonUtils.getAsString;
 import static org.mitre.util.JsonUtils.getAsStringSet;
+
+import java.text.ParseException;
+
+import org.mitre.oauth2.model.ClientDetailsEntity;
+import org.mitre.oauth2.model.ClientDetailsEntity.AppType;
+import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
+import org.mitre.oauth2.model.ClientDetailsEntity.SubjectType;
+import org.mitre.oauth2.model.RegisteredClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Sets;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.nimbusds.jose.jwk.JWKSet;
 
 /**
  * Utility class to handle the parsing and serialization of ClientDetails objects.
@@ -193,6 +193,8 @@ public class ClientDetailsEntityJsonProcessor {
 			c.setPostLogoutRedirectUris(getAsStringSet(o, POST_LOGOUT_REDIRECT_URIS));
 			c.setRequestUris(getAsStringSet(o, REQUEST_URIS));
 
+			c.setClaimsRedirectUris(getAsStringSet(o, CLAIMS_REDIRECT_URIS));
+			
 			return c;
 		} else {
 			return null;
@@ -313,6 +315,9 @@ public class ClientDetailsEntityJsonProcessor {
 			o.addProperty(INITIATE_LOGIN_URI, c.getInitiateLoginUri());
 			o.add(POST_LOGOUT_REDIRECT_URIS, getAsArray(c.getPostLogoutRedirectUris()));
 			o.add(REQUEST_URIS, getAsArray(c.getRequestUris()));
+			
+			o.add(CLAIMS_REDIRECT_URIS, getAsArray(c.getClaimsRedirectUris()));
+			
 			return o;
 		}
 
