@@ -49,6 +49,7 @@ import org.mitre.uma.service.UmaTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.common.util.OAuth2Utils;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -164,9 +165,12 @@ public class RequestingPartyTokenGranter extends AbstractTokenGranter {
 					ClientDetailsEntity clientEntity = clientService.loadClientByClientId(client.getClientId());
 					token.setClient(clientEntity);
 
+					// re-parse the incoming request
+					tokenRequest.setScope(OAuth2Utils.parseParameterList(tokenRequest.getRequestParameters().get(OAuth2Utils.SCOPE)));
+
+					Set<String> requestScopes = tokenRequest.getScope();
 					Set<String> ticketScopes = ticket.getPermission().getScopes();
 					Set<String> policyScopes = result.getMatched().getScopes();
-					Set<String> requestScopes = tokenRequest.getScope();
 					Set<String> clientScopes = clientEntity.getScope();
 
 					Set<String> permissionScopes = new HashSet<>();
@@ -179,10 +183,12 @@ public class RequestingPartyTokenGranter extends AbstractTokenGranter {
 						permissionScopes.addAll(ticketScopes);
 					}
 					
+					/*
 					if (permissionScopes.isEmpty()) {
 						// if still none are requested, go with what the client is registered for by default
 						permissionScopes.addAll(clientScopes);
 					}
+					*/
 					
 					if (permissionScopes.isEmpty()) {
 						// if still none are requested, just go with the matched policy set
