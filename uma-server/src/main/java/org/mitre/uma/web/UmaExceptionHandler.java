@@ -58,10 +58,11 @@ public class UmaExceptionHandler {
 
 		entity.addProperty(JsonErrorView.ERROR, "need_info");
 		JsonObject details = new JsonObject();
+		details.addProperty("redirect_user", true);
+		details.addProperty("ticket", nie.getTicketValue());
+		details.addProperty("claims_endpoint", config.getIssuer() + ClaimsCollectionEndpoint.URL);
 
 		JsonObject rpClaims = new JsonObject();
-		rpClaims.addProperty("redirect_user", true);
-		rpClaims.addProperty("ticket", nie.getTicketValue());
 		JsonArray req = new JsonArray();
 		for (Claim claim : nie.getUnmatched()) {
 			JsonObject c = new JsonObject();
@@ -83,7 +84,6 @@ public class UmaExceptionHandler {
 		rpClaims.add("required_claims", req);
 		details.add("requesting_party_claims", rpClaims);
 		entity.add("error_details", details);
-		entity.addProperty("claims_endpoint", config.getIssuer() + ClaimsCollectionEndpoint.URL);
 
 		Map<String, Object> m = new HashMap<>();
 		m.put(JsonEntityView.ENTITY, entity);
