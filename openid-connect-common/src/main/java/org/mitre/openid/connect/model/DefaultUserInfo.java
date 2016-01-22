@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015 The MITRE Corporation
+ * Copyright 2016 The MITRE Corporation
  *   and the MIT Internet Trust Consortium
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -437,7 +437,7 @@ public class DefaultUserInfo implements UserInfo {
 			obj.addProperty("picture", this.getPicture());
 			obj.addProperty("website", this.getWebsite());
 			obj.addProperty("gender", this.getGender());
-			obj.addProperty("zone_info", this.getZoneinfo());
+			obj.addProperty("zoneinfo", this.getZoneinfo());
 			obj.addProperty("locale", this.getLocale());
 			obj.addProperty("updated_at", this.getUpdatedTime());
 			obj.addProperty("birthdate", this.getBirthdate());
@@ -489,7 +489,7 @@ public class DefaultUserInfo implements UserInfo {
 		ui.setPicture(nullSafeGetString(obj, "picture"));
 		ui.setWebsite(nullSafeGetString(obj, "website"));
 		ui.setGender(nullSafeGetString(obj, "gender"));
-		ui.setZoneinfo(nullSafeGetString(obj, "zone_info"));
+		ui.setZoneinfo(nullSafeGetString(obj, "zoneinfo"));
 		ui.setLocale(nullSafeGetString(obj, "locale"));
 		ui.setUpdatedTime(nullSafeGetString(obj, "updated_at"));
 		ui.setBirthdate(nullSafeGetString(obj, "birthdate"));

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-    Copyright 2015 The MITRE Corporation
+    Copyright 2016 The MITRE Corporation
       and the MIT Internet Trust Consortium
    
     Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +20,7 @@
 	 <parent>
 		<groupId>org.mitre</groupId>
 		<artifactId>openid-connect-parent</artifactId>
-		<version>1.2.4-SNAPSHOT</version>
+		<version>1.2.5-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	 </parent>
 	 <artifactId>uma-server-webapp</artifactId>
