@@ -83,6 +83,8 @@ var ClientModel = Backbone.Model.extend({
         resourceIds:[],
         //additionalInformation?
         
+        claimsRedirectUris:[],
+        
         clientDescription:"",
         reuseRefreshToken:true,
         clearAccessTokensOnRefresh:true,
@@ -619,6 +621,7 @@ var ClientFormView = Backbone.View.extend({
         this.defaultAcrValuesCollection = new Backbone.Collection();
         this.requestUrisCollection = new Backbone.Collection();
         this.postLogoutRedirectUrisCollection = new Backbone.Collection();
+        this.claimsRedirectUrisCollection = new Backbone.Collection();
         // TODO: add Spring authorities collection and resource IDs collection?
         
         // collection of sub-views that need to be sync'd on save
@@ -988,6 +991,7 @@ var ClientFormView = Backbone.View.extend({
             sectorIdentifierUri: sectorIdentifierUri,
             initiateLoginUri: $('#initiateLoginUri input').val(),
             postLogoutRedirectUris: this.postLogoutRedirectUrisCollection.pluck('item'),
+            claimsRedirectUris: this.claimsRedirectUrisCollection.pluck('item'),
             reuseRefreshToken: $('#reuseRefreshToken').is(':checked'),
             clearAccessTokensOnRefresh: $('#clearAccessTokensOnRefresh').is(':checked'),
             requireAuthTime: $('#requireAuthTime input').is(':checked'),
@@ -1136,8 +1140,21 @@ var ClientFormView = Backbone.View.extend({
         	placeholder: 'https://',
         	helpBlockText: $.t('client.client-form.post-logout-help'),
         	collection: this.postLogoutRedirectUrisCollection});
-        $('#postLogoutRedirectUri .controls', this.el).html(postLogoutRedirectUrisView.render().el);
+        $('#postLogoutRedirectUris .controls', this.el).html(postLogoutRedirectUrisView.render().el);
         this.listWidgetViews.push(postLogoutRedirectUrisView);
+        
+        // build and bind claims redirect URIs
+        _.each(this.model.get('claimsRedirectUris'), function(claimsRedirectUri) {
+        	_self.claimsRedirectUrisCollection.add(new URIModel({item:claimsRedirectUri}));
+        });
+        
+        var claimsRedirectUrisView = new ListWidgetView({
+        	type: 'uri',
+        	placeholder: 'https://',
+        	helpBlockText: $.t('client.client-form.claims-redirect-uris-help'),
+        	collection: this.claimsRedirectUrisCollection});
+        $('#claimsRedirectUris .controls', this.el).html(claimsRedirectUrisView.render().el);
+        this.listWidgetViews.push(claimsRedirectUrisView);
         
         // build and bind request URIs
         _.each(this.model.get('requestUris'), function (requestUri) {

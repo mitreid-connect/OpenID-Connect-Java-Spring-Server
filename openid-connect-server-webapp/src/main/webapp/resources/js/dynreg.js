@@ -57,6 +57,8 @@ var DynRegClient = Backbone.Model.extend({
         initiate_login_uri:null,
         post_logout_redirect_uris:null,
         
+        claims_redirect_uris:[],
+        
         request_uris:[],
         
         registration_access_token:null,
@@ -191,6 +193,7 @@ var DynRegEditView = Backbone.View.extend({
         this.defaultAcrValuesCollection = new Backbone.Collection();
         this.requestUrisCollection = new Backbone.Collection();
         this.postLogoutRedirectUrisCollection = new Backbone.Collection();
+        this.claimsRedirectUrisCollection = new Backbone.Collection();
         
         this.listWidgetViews = [];
 	},
@@ -458,6 +461,7 @@ var DynRegEditView = Backbone.View.extend({
             sector_identifier_uri: sectorIdentifierUri,
             initiate_login_uri: $('#initiateLoginUri input').val(),
             post_logout_redirect_uris: this.postLogoutRedirectUrisCollection.pluck('item'),
+            claims_redirect_uris: this.claimsRedirectUrisCollection.pluck('item'),
             require_auth_time: $('#requireAuthTime input').is(':checked'),
             default_max_age: parseInt($('#defaultMaxAge input').val()),
             contacts: contacts,
@@ -592,9 +596,22 @@ var DynRegEditView = Backbone.View.extend({
         	placeholder: 'https://',
         	helpBlockText: $.t('client.client-form.post-logout-help'),
         	collection: this.postLogoutRedirectUrisCollection});
-        $('#postLogoutRedirectUri .controls', this.el).html(postLogoutRedirectUrisView.render().el);
+        $('#postLogoutRedirectUris .controls', this.el).html(postLogoutRedirectUrisView.render().el);
         this.listWidgetViews.push(postLogoutRedirectUrisView);
 
+        // build and bind claims redirect URIs
+        _.each(this.model.get('claimsRedirectUris'), function(claimsRedirectUri) {
+        	_self.claimsRedirectUrisCollection.add(new URIModel({item:claimsRedirectUri}));
+        });
+        
+        var claimsRedirectUrisView = new ListWidgetView({
+        	type: 'uri',
+        	placeholder: 'https://',
+        	helpBlockText: $.t('client.client-form.claims-redirect-uris-help'),
+        	collection: this.claimsRedirectUrisCollection});
+        $('#claimsRedirectUris .controls', this.el).html(claimsRedirectUrisView.render().el);
+        this.listWidgetViews.push(claimsRedirectUrisView);
+        
         // build and bind request URIs
         _.each(this.model.get('request_uris'), function (requestUri) {
         	_self.requestUrisCollection.add(new URIModel({item:requestUri}));

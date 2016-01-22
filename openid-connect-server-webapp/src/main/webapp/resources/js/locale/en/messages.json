@@ -103,6 +103,8 @@
             "redelegation": "redelegation",
             "redirect-uris": "Redirect URI(s)",
             "redirect-uris-help": "URIs that the client can be redirected to after the authorization page",
+            "claims-redirect-uris": "Claims Redirect URI(s)",
+            "claims-redirect-uris-help": "URIs that the client can be redirected to after the claims gathering flow",
             "refresh": "refresh",
             "refresh-tokens": "Refresh Tokens",
             "refresh-tokens-issued": "Refresh tokens are issued for this client",
