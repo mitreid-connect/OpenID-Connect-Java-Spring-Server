@@ -20,17 +20,18 @@
 
 <div class="row-fluid">
 
-<div class="span5 well">
-	<button class="btn btn-large" id="newreg" data-i18n="rsreg.new-resource">Register a new protected resource</button>
+<div class="span6 well">
+	<h2 data-i18n="rsreg.new-client">Register a new resource</h2>
+	<p data-i18n="rsreg.new-client-help">Use this form to register a new protected with the authorization server. You will be given a client ID and a registration access token to manage your resource.</p>
+	<button class="btn btn-success" id="newreg"><i class="icon-plus icon-white"></i> <span data-i18n="rsreg.new-client-button">New Resource</span></button>
 </div>
-<div class="span2 text-center">
-	<strong><span data-i18n="dynreg.or"> - OR - </span></strong>
-</div>
-<div class="span5 well">
-	<input type="text" id="clientId" placeholder="Enter Resource ID" data-i18n="[placeholder]rsreg.resource-id-placeholder"> 
+<div class="span6 well">
+	<h2 data-i18n="rsreg.edit-existing">Edit an existing protected resource</h2>
+	<p class="help-block" data-i18n="rsreg.edit-existing-help">Use this form to edit a previously-registered resource. Paste in your client ID and registration access token to access the resource.</p>
+
+	<input type="text" id="clientId" placeholder="Enter Client ID" data-i18n="[placeholder]rsreg.client-id-placeholder"> 
 	<input type="text" id="regtoken" placeholder="Enter Registration Access Token" data-i18n="[placeholder]rsreg.regtoken-placeholder"> 
-	<button class="btn btn-large" id="editreg" data-i18n="rsreg.edit-existing">Edit an existing protected resource</button>
-	<span class="help-block" data-i18n="rsreg.edit-existing-help">Paste in your ID and registration access token to access the resource's properties.</span>
+	<button class="btn btn-info" id="editreg"><i class="icon-edit icon-white"></i> <span data-i18n="rsreg.edit-existing-button">Edit Resource</span></button>
 </div>
 
 </script>
@@ -76,7 +77,8 @@
 				</div>
 
 			</div>
-
+			<% } %>
+		<div class="well">
             <div class="control-group" id="clientId">
                 <label class="control-label" data-i18n="client.client-form.client-id">Client ID</label>
                 <div class="controls">
@@ -135,8 +137,7 @@
                 </div>
             </div>
 
-			<% } %>
-
+		</div>
 
             <div class="control-group" id="clientName">
                 <label class="control-label" data-i18n="client.client-form.client-name">Client name</label>
