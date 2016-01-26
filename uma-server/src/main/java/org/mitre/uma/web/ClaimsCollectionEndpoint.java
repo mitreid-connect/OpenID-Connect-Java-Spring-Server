@@ -131,6 +131,7 @@ public class ClaimsCollectionEndpoint {
 
 		UriComponentsBuilder template = UriComponentsBuilder.fromUriString(redirectUri);
 		template.queryParam("authorization_state", "claims_submitted");
+		template.queryParam("ticket", updatedTicket.getTicket());
 		if (!Strings.isNullOrEmpty(state)) {
 			template.queryParam("state", state);
 		}

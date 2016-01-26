@@ -85,6 +85,8 @@ public class DefaultPermissionService implements PermissionService {
 	@Override
 	public PermissionTicket updateTicket(PermissionTicket ticket) {
 		if (ticket.getId() != null) {
+			// rotate the ticket value
+			ticket.setTicket(UUID.randomUUID().toString());
 			return repository.save(ticket);
 		} else {
 			return null;

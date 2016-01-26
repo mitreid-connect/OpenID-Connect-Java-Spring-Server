@@ -59,6 +59,7 @@ public class UmaExceptionHandler {
 		entity.addProperty(JsonErrorView.ERROR, "need_info");
 		JsonObject details = new JsonObject();
 		details.addProperty("requesting_party_claims_endpoint", config.getIssuer() + ClaimsCollectionEndpoint.URL);
+		details.addProperty("ticket", nie.getTicket().getTicket());
 
 		JsonObject rpClaims = new JsonObject();
 		JsonArray req = new JsonArray();

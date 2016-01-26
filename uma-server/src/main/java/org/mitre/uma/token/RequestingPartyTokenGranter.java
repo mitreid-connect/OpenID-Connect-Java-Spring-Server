@@ -1,6 +1,6 @@
 /*******************************************************************************
- * Copyright 2015 The MITRE Corporation
- *   and the MIT Kerberos and Internet Trust Consortium
+ * Copyright 2016 The MITRE Corporation
+ *   and the MIT Internet Trust Consortium
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -240,7 +240,10 @@ public class RequestingPartyTokenGranter extends AbstractTokenGranter {
 					return token;
 				} else {
 
-					throw new NeedInfoException(ticketValue, result.getUnmatched());
+					// first, update the ticket since we're sending it back
+					ticket = permissionService.updateTicket(ticket);
+					
+					throw new NeedInfoException(ticket, result.getUnmatched());
 					
 				}
 

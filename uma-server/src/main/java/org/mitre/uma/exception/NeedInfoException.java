@@ -20,6 +20,7 @@ package org.mitre.uma.exception;
 import java.util.Collection;
 
 import org.mitre.uma.model.Claim;
+import org.mitre.uma.model.PermissionTicket;
 
 /**
  * @author jricher
@@ -29,39 +30,30 @@ public class NeedInfoException extends RuntimeException {
 
 	private static final long serialVersionUID = -8886957523367481451L;
 
-	private String ticketValue;
+	private PermissionTicket ticket;
 	private Collection<Claim> unmatched;
-
-	/**
-	 * @param ticketValue
-	 * @param unmatched
-	 */
-	public NeedInfoException(String ticketValue, Collection<Claim> unmatched) {
-		this.setTicketValue(ticketValue);
-		this.setUnmatched(unmatched);
+	public NeedInfoException(PermissionTicket ticket, Collection<Claim> unmatched) {
+		this.ticket = ticket;
+		this.unmatched = unmatched;
 	}
-
 	/**
-	 * @return the ticketValue
+	 * @return the ticket
 	 */
-	public String getTicketValue() {
-		return ticketValue;
+	public PermissionTicket getTicket() {
+		return ticket;
 	}
-
 	/**
-	 * @param ticketValue the ticketValue to set
+	 * @param ticket the ticket to set
 	 */
-	public void setTicketValue(String ticketValue) {
-		this.ticketValue = ticketValue;
+	public void setTicket(PermissionTicket ticket) {
+		this.ticket = ticket;
 	}
-
 	/**
 	 * @return the unmatched
 	 */
 	public Collection<Claim> getUnmatched() {
 		return unmatched;
 	}
-
 	/**
 	 * @param unmatched the unmatched to set
 	 */
@@ -69,4 +61,6 @@ public class NeedInfoException extends RuntimeException {
 		this.unmatched = unmatched;
 	}
 
+	
+	
 }
