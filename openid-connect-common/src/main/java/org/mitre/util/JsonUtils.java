@@ -35,6 +35,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
@@ -61,14 +62,30 @@ public class JsonUtils {
 	private static Gson gson = new Gson();
 
 	/**
-	 * Translate a set of strings to a JSON array
+	 * Translate a set of strings to a JSON array, empty array returned as null
 	 * @param value
 	 * @return
 	 */
 	public static JsonElement getAsArray(Set<String> value) {
-		return gson.toJsonTree(value, new TypeToken<Set<String>>(){}.getType());
+		return getAsArray(value, false);
 	}
 
+
+	/**
+	 * Translate a set of strings to a JSON array, optionally preserving the empty array. Otherwise (default) empty array is returned as null.
+	 * @param value
+	 * @param preserveEmpty
+	 * @return
+	 */
+	public static JsonElement getAsArray(Set<String> value, boolean preserveEmpty) {
+		if (!preserveEmpty && value != null && value.isEmpty()) {
+			// if we're not preserving empty arrays and the value is empty, return null
+			return JsonNull.INSTANCE;
+		} else {
+			return gson.toJsonTree(value, new TypeToken<Set<String>>(){}.getType());
+		}
+	}
+	
 	/**
 	 * Gets the value of the given member (expressed as integer seconds since epoch) as a Date
 	 */
