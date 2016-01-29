@@ -101,10 +101,13 @@ public class DiscoveryEndpoint {
 		}
 	};
 
-	@RequestMapping(value={"/" + WEBFINGER_URL},
-			params={"resource", "rel=http://openid.net/specs/connect/1.0/issuer"}, produces = MediaType.APPLICATION_JSON_VALUE)
-	public String webfinger(@RequestParam("resource") String resource, Model model) {
+	@RequestMapping(value={"/" + WEBFINGER_URL}, produces = MediaType.APPLICATION_JSON_VALUE)
+	public String webfinger(@RequestParam("resource") String resource, @RequestParam(value = "rel", required = false) String rel, Model model) {
 
+		if (!Strings.isNullOrEmpty(rel) && !rel.equals("https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server/issues")) {
+			logger.warn("Responding to webfinger request for non-OIDC relation: " + rel);
+		}
+		
 		if (!resource.equals(config.getIssuer())) {
 			// it's not the issuer directly, need to check other methods
 
