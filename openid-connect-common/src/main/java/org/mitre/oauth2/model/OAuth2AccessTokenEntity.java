@@ -70,7 +70,8 @@ import com.nimbusds.jwt.JWT;
 	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_CLIENT, query = "select a from OAuth2AccessTokenEntity a where a.client = :" + OAuth2AccessTokenEntity.PARAM_CLIENT),
 	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_ID_TOKEN, query = "select a from OAuth2AccessTokenEntity a where a.idToken = :" + OAuth2AccessTokenEntity.PARAM_ID_TOKEN),
 	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_TOKEN_VALUE, query = "select a from OAuth2AccessTokenEntity a where a.jwt = :" + OAuth2AccessTokenEntity.PARAM_TOKEN_VALUE),
-	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_RESOURCE_SET, query = "select a from OAuth2AccessTokenEntity a join a.permissions p where p.resourceSet.id = :" + OAuth2AccessTokenEntity.PARAM_RESOURCE_SET_ID)
+	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_RESOURCE_SET, query = "select a from OAuth2AccessTokenEntity a join a.permissions p where p.resourceSet.id = :" + OAuth2AccessTokenEntity.PARAM_RESOURCE_SET_ID),
+        @NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_APPROVED_SITE, query = "select a from OAuth2AccessTokenEntity a where a.approvedSite = :" + OAuth2AccessTokenEntity.PARAM_APPROVED_SITE)
 })
 @org.codehaus.jackson.map.annotate.JsonSerialize(using = OAuth2AccessTokenJackson1Serializer.class)
 @org.codehaus.jackson.map.annotate.JsonDeserialize(using = OAuth2AccessTokenJackson1Deserializer.class)
@@ -85,6 +86,7 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	public static final String QUERY_EXPIRED_BY_DATE = "OAuth2AccessTokenEntity.getAllExpiredByDate";
 	public static final String QUERY_ALL = "OAuth2AccessTokenEntity.getAll";
 	public static final String QUERY_BY_RESOURCE_SET = "OAuth2AccessTokenEntity.getByResourceSet";
+	public static final String QUERY_BY_APPROVED_SITE = "OAuth2AccessTokenEntity.getByApprovedSite";
 
 	public static final String PARAM_TOKEN_VALUE = "tokenValue";
 	public static final String PARAM_ID_TOKEN = "idToken";
@@ -92,6 +94,7 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	public static final String PARAM_REFERSH_TOKEN = "refreshToken";
 	public static final String PARAM_DATE = "date";
 	public static final String PARAM_RESOURCE_SET_ID = "rsid";
+	public static final String PARAM_APPROVED_SITE = "approvedSite";
 
 	public static String ID_TOKEN_FIELD_NAME = "id_token";
 
@@ -114,6 +117,8 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	private Set<String> scope;
 
 	private Set<Permission> permissions;
+	
+	private ApprovedSite approvedSite;
 
 	/**
 	 * Create a new, blank access token
@@ -336,5 +341,15 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	public void setPermissions(Set<Permission> permissions) {
 		this.permissions = permissions;
 	}
+	
+	@ManyToOne(fetch=FetchType.LAZY)
+    	@JoinColumn(name="approved_site_id")
+    	public ApprovedSite getApprovedSite() {
+        	return approvedSite;
+    	}
+
+    	public void setApprovedSite(ApprovedSite approvedSite) {
+        	this.approvedSite = approvedSite;
+    	}
 
 }
