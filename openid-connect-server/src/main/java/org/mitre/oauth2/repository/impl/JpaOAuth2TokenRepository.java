@@ -95,7 +95,7 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public void removeAccessToken(OAuth2AccessTokenEntity accessToken) {
-		OAuth2AccessTokenEntity found = getAccessTokenByValue(accessToken.getValue());
+		OAuth2AccessTokenEntity found = getAccessTokenById(accessToken.getId());
 		if (found != null) {
 			manager.remove(found);
 		} else {
@@ -140,7 +140,7 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public void removeRefreshToken(OAuth2RefreshTokenEntity refreshToken) {
-		OAuth2RefreshTokenEntity found = getRefreshTokenByValue(refreshToken.getValue());
+		OAuth2RefreshTokenEntity found = getRefreshTokenById(refreshToken.getId());
 		if (found != null) {
 			manager.remove(found);
 		} else {
