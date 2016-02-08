@@ -114,6 +114,8 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	private Set<String> scope;
 
 	private Set<Permission> permissions;
+	
+	private Map<String, Object> additionalInformation = new HashMap<>();
 
 	/**
 	 * Create a new, blank access token
@@ -145,11 +147,10 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	@Override
 	@Transient
 	public Map<String, Object> getAdditionalInformation() {
-		Map<String, Object> map = new HashMap<>(); //super.getAdditionalInformation();
 		if (getIdToken() != null) {
-			map.put(ID_TOKEN_FIELD_NAME, getIdTokenString());
+			additionalInformation.put(ID_TOKEN_FIELD_NAME, getIdTokenString());
 		}
-		return map;
+		return additionalInformation;
 	}
 
 	/**
