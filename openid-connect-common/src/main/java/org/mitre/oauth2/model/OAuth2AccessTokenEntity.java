@@ -150,6 +150,9 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 		if (getIdToken() != null) {
 			additionalInformation.put(ID_TOKEN_FIELD_NAME, getIdTokenString());
 		}
+		else if (additionalInformation.containsKey(ID_TOKEN_FIELD_NAME)) {
+			additionalInformation.remove(ID_TOKEN_FIELD_NAME);
+		}
 		return additionalInformation;
 	}
 
