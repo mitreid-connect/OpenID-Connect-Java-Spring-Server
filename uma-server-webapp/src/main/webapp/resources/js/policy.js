@@ -406,11 +406,13 @@ var PolicyFormView = Backbone.View.extend({
 			this.template = _.template($('#tmpl-policy-form').html());
 		}
 		
-        this.scopeCollection = new Backbone.Collection();
+        this.issuerCollection = new Backbone.Collection();
+
 	},
 	
 	events:{
-		'click .btn-share': 'addClaim',
+		'click .btn-share': 'addWebfingerClaim',
+		'click .btn-share-advanced': 'addAdvancedClaim',
 		'click .btn-save': 'savePolicy',
 		'click .btn-cancel': 'cancel'
 	},
@@ -439,7 +441,7 @@ var PolicyFormView = Backbone.View.extend({
     			});    	
     },
 
-    addClaim:function(e) {
+    addWebfingerClaim:function(e) {
     	e.preventDefault();
     	
     	// post to the webfinger helper and get the response back
@@ -533,6 +535,13 @@ var PolicyFormView = Backbone.View.extend({
 		
 		this.$el.html(this.template({policy: json, rs: rs}));
 		
+        // build and bind issuer view
+        var issuerView = new ListWidgetView({
+        	placeholder: $.t('policy.policy-form.issuer-placeholder'), 
+        	helpBlockText: $.t('policy.policy-form.issuer-help'),
+            collection: this.issuerCollection});
+        $("#issuers .controls",this.el).html(issuerView.render().el);
+
         $(this.el).i18n();
 
 		return this;

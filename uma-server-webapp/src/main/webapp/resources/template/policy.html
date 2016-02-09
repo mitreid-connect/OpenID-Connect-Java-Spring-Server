@@ -151,14 +151,59 @@
 		<button class="btn btn-small btn-cancel"><i class="icon-ban-circle"></i> <span data-i18n="common.cancel">Cancel</span></button>
     </div>
 
-	<div id="add-required-claim">
-		<form class="form-horizontal">
-			<fieldset>
-				<input type="text" id="email" placeholder="email address" data-i18n="[placeholder]policy.policy-form.email-address" />
-				<button class="btn btn-info btn-share"><i class="icon-share icon-white"></i> <span data-i18n="policy.policy-form.share-email">Share with email address</span></button>
-			</fieldset>
-		</form>
+	<ul class="nav nav-tabs">
+		<li class="active"><a data-target="#policy-webfinger-tab" data-toggle="tab" href="#" data-i18n="policy.policy-form.webfinger">Webfinger</a></li>
+		<li><a data-target="#policy-advanced-tab" data-toggle="tab" href="#" data-i18n="policy.policy-form.advanced">Advanced</a></li>
+	</ul>
+	
+<div class="tab-content">
+	<div class="tab-pane active" id="policy-webfinger-tab">
+		<div id="add-required-claim" class="well">
+			<form class="form-horizontal">
+				<fieldset>
+					<input type="text" id="email" placeholder="email address" data-i18n="[placeholder]policy.policy-form.email-address" />
+					<button class="btn btn-info btn-share"><i class="icon-share icon-white"></i> <span data-i18n="policy.policy-form.share-email">Share with email address</span></button>
+				</fieldset>
+			</form>
+		</div>
 	</div>
+
+	<divdiv class="tab-pane" id="policy-advanced-tab">
+		<div class="well">
+			<form class="form-horizontal">
+				<fieldset>
+					<div id="issuers" class="control-group">
+						<div class="controls">
+						</div>
+					</div>
+					<div class="control-group">
+						<div class="controls">
+							<input type="text" id="name" placeholder="claim name" data-i18n="[placeholder]policy.policy-form.claim-name" />
+							<input type="text" id="friendly-name" placeholder="friendly claim name" data-i18n="[placeholder]policy.policy-form.friendly-claim-name" />
+						</div>
+					</div>
+					<div class="control-group">
+						<div class="controls">
+							<input type="text" id="value" placeholder="claim value" data-i18n="[placeholder]policy.policy-form.claim-value" />
+							<select id="value-type">
+								<option value="text" data-i18n="policy.policy-form.value-type-text">Text</option>
+								<option value="number" data-i18n="policy.policy-form.value-type-number">Number</option>
+								<option value="boolean" data-i18n="policy.policy-form.value-type-boolean">Boolean</option>
+								<option value="json" data-i18n="policy.policy-form.value-type-json">JSON</option>
+							</select>
+						</div>
+					</div>
+					<div class="control-group">
+						<div class="controls">
+							<button class="btn btn-info btn-share-advanced"><i class="icon-share icon-white"></i> <span data-i18n="policy.policy-form.share-advanced">Add to claim set</span></button>
+						</div>
+					</div>
+				</fieldset>
+			</form>
+		</div>
+
+	</div>
+</div>
 
 	<form class="form-horizontal">
 		<fieldset>
