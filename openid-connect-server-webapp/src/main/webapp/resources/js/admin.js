@@ -962,8 +962,8 @@ var AppRouter = Backbone.Router.extend({
     
         this.updateSidebar('user/profile');
         
-    	this.userProfileView = new UserProfileView({model: getUserInfo()});
-    	$('#content').html(this.userProfileView.render().el);
+    	var view = new UserProfileView({model: getUserInfo()});
+    	$('#content').html(view.render().el);
     	
     	setPageTitle($.t('admin.user-profile.show'));
     	
