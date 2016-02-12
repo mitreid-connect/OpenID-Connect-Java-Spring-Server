@@ -488,6 +488,84 @@ var PolicyFormView = Backbone.View.extend({
     	
     },
     
+    addAdvancedClaim:function(e) {
+    	e.preventDefault();
+    	
+    	var name = $('#name', this.el).val();
+    	var friendly = $('#friendly-name', this.el).val();
+    	var rawValue = $('#value', this.el).val();
+    	var valueType = $('#value-type', this.el).val();
+    	var value = null;
+    	if (valueType == 'number') {
+    		value = Number(rawValue);
+    	} else if (valueType == 'boolean') {
+    		value = (rawValue.toLowerCase() == 'true');
+    	} else if (valueType == 'json') {
+    		value = JSON.parse(rawValue);
+    	} else {
+    		// treat it as a string, the default
+    		value = rawValue;
+    	}
+
+    	var issuers = this.issuerCollection.pluck('item');
+    	
+    	console.log(name, friendly, rawValue, valueType, value, issuers);
+    	
+    	if (!_.isEmpty(issuers) 
+    			&& name
+    			&& value) {
+    		// we've got a valid claim, add it to our set
+    		// grab the current state of the scopes checkboxes just in case
+        	var scopes = $('#scopes input[type="checkbox"]:checked').map(function(idx, elem) { return $(elem).val(); }).get();
+        
+        	var claimsRequired = this.model.get('claimsRequired');
+        	if (!claimsRequired) {
+        		claimsRequired = [];
+        	}
+        	console.log(claimsRequired);
+        	claimsRequired.push({
+        		name: name,
+        		friendlyName: friendly,
+        		value: value,
+        		issuer: issuers
+        	});
+        	console.log(claimsRequired);
+        	
+        	this.model.set({
+        		scopes: scopes,
+    			claimsRequired: claimsRequired
+    		}, {trigger: false});
+
+        	$('#name', this.el).val('');
+        	$('#friendly-name', this.el).val('');
+        	$('#value', this.el).val('');
+        	$('#value-type', this.el).val('text');
+
+        	this.render();
+        	
+        	// re-select the advanced tab
+        	$('a[data-target="#policy-advanced-tab"]', this.el).tab('show')
+        	
+    	} else {
+    		// something is missing
+    		$('#loadingbox').sheet('hide');
+
+    		//Display an alert with an error message
+			$('#modalAlert div.modal-header').html($.t('policy.advanced-error'));
+    		$('#modalAlert div.modal-body').html($.t('policy.advanced-error-description'));
+    		
+			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
+				 "backdrop" : "static",
+				 "keyboard" : true,
+				 "show" : true // ensure the modal is shown immediately
+			 });
+   	}
+    	
+    	
+    	
+    	
+    },
+    
     savePolicy:function(e) {
     	e.preventDefault();
     	

@@ -38,9 +38,12 @@
     		"share-email": "Share with email address",
     		"new": "New Policy",
     		"edit": "Edit Policy"
+    		
     	},
     	"webfinger-error": "Error",
-    	"webfinger-error-description": "The server was unable to find an identity provider for <code>__email__</code>."
+    	"webfinger-error-description": "The server was unable to find an identity provider for <code>__email__</code>.",
+    	"advanced-error": "Error",
+    	"advanced-error-description": "There was an error saving your advanced claim. Did you fill in all required fields?"
     },
     "sidebar": {
     	"personal": {
