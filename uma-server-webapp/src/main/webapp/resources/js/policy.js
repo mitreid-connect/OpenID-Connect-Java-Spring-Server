@@ -450,7 +450,12 @@ var PolicyFormView = Backbone.View.extend({
     	
     	var email = $('#email', this.el).val();
     	
-        var base = $('base').attr('href');
+    	$('#loadingbox').sheet('show');
+    	$('#loading').html(
+                'Looking up identity provider...'
+    			);
+
+    	var base = $('base').attr('href');
     	$.getJSON(base + '/api/emailsearch?' + $.param({'identifier': email}), function(data) {
 
     		// grab the current state of the scopes checkboxes just in case
@@ -462,10 +467,14 @@ var PolicyFormView = Backbone.View.extend({
     		}, {trigger: false});
 
     		_self.render();
+
+    		$('#loadingbox').sheet('hide');
     		
     	}).error(function(jqXHR, textStatus, errorThrown) {
     		console.log("An error occurred when doing a webfinger lookup", errorThrown);
     	    
+    		$('#loadingbox').sheet('hide');
+
     		//Display an alert with an error message
 			$('#modalAlert div.modal-header').html($.t('policy.webfinger-error'));
     		$('#modalAlert div.modal-body').html($.t('policy.webfinger-error-description', {email: email}));
