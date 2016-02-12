@@ -413,6 +413,7 @@ var PolicyFormView = Backbone.View.extend({
 	events:{
 		'click .btn-share': 'addWebfingerClaim',
 		'click .btn-share-advanced': 'addAdvancedClaim',
+		'click .btn-clear': 'clearAllClaims',
 		'click .btn-save': 'savePolicy',
 		'click .btn-cancel': 'cancel'
 	},
@@ -522,14 +523,12 @@ var PolicyFormView = Backbone.View.extend({
         	if (!claimsRequired) {
         		claimsRequired = [];
         	}
-        	console.log(claimsRequired);
         	claimsRequired.push({
         		name: name,
         		friendlyName: friendly,
         		value: value,
         		issuer: issuers
         	});
-        	console.log(claimsRequired);
         	
         	this.model.set({
         		scopes: scopes,
@@ -559,11 +558,25 @@ var PolicyFormView = Backbone.View.extend({
 				 "keyboard" : true,
 				 "show" : true // ensure the modal is shown immediately
 			 });
-   	}
+    	}
+    },
+    
+    clearAllClaims:function(e) {
+    	e.preventDefault();
+
+    	if (confirm($.t('policy.policy-form.clear-all-confirm'))) {
     	
-    	
-    	
-    	
+	    	var scopes = $('#scopes input[type="checkbox"]:checked').map(function(idx, elem) { return $(elem).val(); }).get();
+	        
+	    	var claimsRequired = [];
+	    	
+	    	this.model.set({
+	    		scopes: scopes,
+				claimsRequired: claimsRequired
+			}, {trigger: false});
+	
+	    	this.render();
+    	}  	
     },
     
     savePolicy:function(e) {

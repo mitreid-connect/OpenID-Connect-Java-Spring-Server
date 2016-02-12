@@ -37,8 +37,14 @@
     		"email-address": "email address",
     		"share-email": "Share with email address",
     		"new": "New Policy",
-    		"edit": "Edit Policy"
-    		
+    		"edit": "Edit Policy",
+    		"claim-name": "claim name",
+    		"friendly-claim-name": "friendly claim name",
+    		"claim-value": "claim value",
+    		"value-type-text": "Text",
+    		"value-type-number": "Number",
+    		"clear-all": "Clear all claims",
+    		"clear-all-confirm": "Are you sure you want to clear all claims from this policy?"
     	},
     	"webfinger-error": "Error",
     	"webfinger-error-description": "The server was unable to find an identity provider for <code>__email__</code>.",
