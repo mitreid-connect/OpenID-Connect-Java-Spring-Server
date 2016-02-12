@@ -1141,6 +1141,18 @@ $(function () {
     		    });    		    
     		});
     
+    window.onerror = function ( message, filename, lineno, colno, error ){
+		//Display an alert with an error message
+		$('#modalAlert div.modal-header').html($.t('error.title'));
+		$('#modalAlert div.modal-body').html($.t('error.message') + ' <br /> ' [filename, lineno, colno, error]);
+		
+		 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
+			 "backdrop" : "static",
+			 "keyboard" : true,
+			 "show" : true // ensure the modal is shown immediately
+		 });
+
+    }
 });
 
 
