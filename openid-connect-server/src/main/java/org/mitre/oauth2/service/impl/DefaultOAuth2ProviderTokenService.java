@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import org.mitre.data.AbstractPageOperationTemplate;
+import org.mitre.data.DefaultPageCriteria;
 import org.mitre.oauth2.model.AuthenticationHolderEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
@@ -454,47 +456,41 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	public void clearExpiredTokens() {
 		logger.debug("Cleaning out all expired tokens");
 
-		Collection<OAuth2AccessTokenEntity> accessTokens = getExpiredAccessTokens();
-		if (accessTokens.size() > 0) {
-			logger.info("Found " + accessTokens.size() + " expired access tokens");
-		}
-		for (OAuth2AccessTokenEntity oAuth2AccessTokenEntity : accessTokens) {
-			try {
-				revokeAccessToken(oAuth2AccessTokenEntity);
-			} catch (IllegalArgumentException e) {
-				//An ID token is deleted with its corresponding access token, but then the ID token is on the list of expired tokens as well and there is
-				//nothing in place to distinguish it from any other.
-				//An attempt to delete an already deleted token returns an error, stopping the cleanup dead. We need it to keep going.
-			}
-		}
+        new AbstractPageOperationTemplate<OAuth2AccessTokenEntity>() {
+            @Override
+            public Collection<OAuth2AccessTokenEntity> fetchPage() {
+                return tokenRepository.getAllExpiredAccessTokens(new DefaultPageCriteria());
+            }
 
-		Collection<OAuth2RefreshTokenEntity> refreshTokens = getExpiredRefreshTokens();
-		if (refreshTokens.size() > 0) {
-			logger.info("Found " + refreshTokens.size() + " expired refresh tokens");
-		}
-		for (OAuth2RefreshTokenEntity oAuth2RefreshTokenEntity : refreshTokens) {
-			revokeRefreshToken(oAuth2RefreshTokenEntity);
-		}
+            @Override
+            public void doOperation(OAuth2AccessTokenEntity item) {
+                revokeAccessToken(item);
+            }
+        }.execute();
 
-		Collection<AuthenticationHolderEntity> authHolders = getOrphanedAuthenticationHolders();
-		if (authHolders.size() > 0) {
-			logger.info("Found " + authHolders.size() + " orphaned authentication holders");
-		}
-		for(AuthenticationHolderEntity authHolder : authHolders) {
-			authenticationHolderRepository.remove(authHolder);
-		}
-	}
+        new AbstractPageOperationTemplate<OAuth2RefreshTokenEntity>() {
+            @Override
+            public Collection<OAuth2RefreshTokenEntity> fetchPage() {
+                return tokenRepository.getAllExpiredRefreshTokens(new DefaultPageCriteria());
+            }
 
-	private Collection<OAuth2AccessTokenEntity> getExpiredAccessTokens() {
-		return Sets.newHashSet(tokenRepository.getAllExpiredAccessTokens());
-	}
+            @Override
+            public void doOperation(OAuth2RefreshTokenEntity item) {
+                revokeRefreshToken(item);
+            }
+        }.execute();
 
-	private Collection<OAuth2RefreshTokenEntity> getExpiredRefreshTokens() {
-		return Sets.newHashSet(tokenRepository.getAllExpiredRefreshTokens());
-	}
+        new AbstractPageOperationTemplate<AuthenticationHolderEntity>() {
+            @Override
+            public Collection<AuthenticationHolderEntity> fetchPage() {
+                return authenticationHolderRepository.getOrphanedAuthenticationHolders(new DefaultPageCriteria());
+            }
 
-	private Collection<AuthenticationHolderEntity> getOrphanedAuthenticationHolders() {
-		return Sets.newHashSet(authenticationHolderRepository.getOrphanedAuthenticationHolders());
+            @Override
+            public void doOperation(AuthenticationHolderEntity item) {
+                authenticationHolderRepository.remove(item);
+            }
+        }.execute();
 	}
 
 	/* (non-Javadoc)

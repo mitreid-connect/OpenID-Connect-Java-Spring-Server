@@ -22,6 +22,7 @@ package org.mitre.oauth2.service.impl;
 import java.util.Collection;
 import java.util.Date;
 
+import org.mitre.data.AbstractPageOperationTemplate;
 import org.mitre.oauth2.model.AuthenticationHolderEntity;
 import org.mitre.oauth2.model.AuthorizationCodeEntity;
 import org.mitre.oauth2.repository.AuthenticationHolderRepository;
@@ -115,15 +116,17 @@ public class DefaultOAuth2AuthorizationCodeService implements AuthorizationCodeS
 	@Transactional(value="defaultTransactionManager")
 	public void clearExpiredAuthorizationCodes() {
 
-		Collection<AuthorizationCodeEntity> codes = repository.getExpiredCodes();
+        new AbstractPageOperationTemplate<AuthorizationCodeEntity>(){
+            @Override
+            public Collection<AuthorizationCodeEntity> fetchPage() {
+                return repository.getExpiredCodes();
+            }
 
-		for (AuthorizationCodeEntity code : codes) {
-			repository.remove(code);
-		}
-
-		if (codes.size() > 0) {
-			logger.info("Removed " + codes.size() + " expired authorization codes.");
-		}
+            @Override
+            protected void doOperation(AuthorizationCodeEntity item) {
+                repository.remove(item);
+            }
+        }.execute();
 	}
 
 	/**
