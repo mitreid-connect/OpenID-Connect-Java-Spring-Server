@@ -19,7 +19,7 @@ public class AbstractPageOperationTemplateTest {
     public void setUp() throws Exception {
     }
 
-    @Test
+    @Test(timeout = 1000L)
     public void execute_zeropages() {
         CountingPageOperation op = new CountingPageOperation(0,Long.MAX_VALUE);
         op.execute();
@@ -27,7 +27,7 @@ public class AbstractPageOperationTemplateTest {
         assertEquals(0L, op.counter);
     }
 
-    @Test
+    @Test(timeout = 1000L)
     public void execute_singlepage() {
         CountingPageOperation op = new CountingPageOperation(1,Long.MAX_VALUE);
         op.execute();
@@ -35,7 +35,7 @@ public class AbstractPageOperationTemplateTest {
         assertEquals(10L, op.counter);
     }
 
-    @Test
+    @Test(timeout = 1000L)
     public void execute_negpage() {
         CountingPageOperation op = new CountingPageOperation(-1,Long.MAX_VALUE);
         op.execute();
@@ -43,7 +43,7 @@ public class AbstractPageOperationTemplateTest {
         assertEquals(0L, op.counter);
     }
 
-    @Test
+    @Test(timeout = 1000L)
     public void execute_npage(){
         int n = 7;
         CountingPageOperation op = new CountingPageOperation(n,Long.MAX_VALUE);
@@ -52,7 +52,7 @@ public class AbstractPageOperationTemplateTest {
         assertEquals(n*10L, op.counter);
     }
 
-    @Test
+    @Test(timeout = 1000L)
     public void execute_nullpage(){
         CountingPageOperation op = new NullPageCountingPageOperation(Integer.MAX_VALUE, Long.MAX_VALUE);
         op.execute();
@@ -60,7 +60,7 @@ public class AbstractPageOperationTemplateTest {
         assertEquals(0L, op.getCounter());
     }
 
-    @Test
+    @Test(timeout = 1000L)
     public void execute_emptypage(){
         CountingPageOperation op = new EmptyPageCountingPageOperation(Integer.MAX_VALUE, Long.MAX_VALUE);
         op.execute();
@@ -68,27 +68,30 @@ public class AbstractPageOperationTemplateTest {
         assertEquals(0L, op.getCounter());
     }
 
-    @Test
+    @Test(timeout = 1000L)
     public void execute_zerotime(){
         CountingPageOperation op = new CountingPageOperation(Integer.MAX_VALUE,0L);
         op.execute();
 
         assertEquals(0L, op.getCounter());
-        assertEquals(0L, op.getLastFetchTime());
+        assertEquals(0L, op.getLastFetchRequestTime());
     }
 
-    @Test
+    @Test(timeout = 1000L)
     public void execute_nonzerotime(){
-        Long timeMillis = 100L;
+        Long timeMillis = 200L;
         CountingPageOperation op = new CountingPageOperation(Integer.MAX_VALUE,timeMillis);
         op.execute();
 
         assertTrue("start time " + op.getStartTime() + "" +
-                " to last fetch time " + op.getLastFetchTime() +
-                " exceeds max time" + timeMillis, op.getLastFetchTime() - op.getStartTime() <= timeMillis);
+                " to last fetch time " + op.getLastFetchRequestTime() +
+                " or previous fetch time " + op.getPreviousFetchRequestTime() +
+                " exceeds max time" + timeMillis
+                , (op.getLastFetchRequestTime() - op.getStartTime() <= timeMillis)
+            || (op.getPreviousFetchRequestTime() - op.getStartTime() <= timeMillis));
     }
 
-    @Test
+    @Test(timeout = 1000L)
     public void execute_negtime(){
         Long timeMillis = -100L;
         CountingPageOperation op = new CountingPageOperation(Integer.MAX_VALUE,timeMillis);
@@ -97,7 +100,7 @@ public class AbstractPageOperationTemplateTest {
         assertEquals(0L, op.getCounter());
     }
 
-    @Test
+    @Test(timeout = 1000L)
     public void execute_swallowException(){
         CountingPageOperation op = new EvenExceptionCountingPageOperation(1, 1000L);
         op.execute();
@@ -125,7 +128,8 @@ public class AbstractPageOperationTemplateTest {
         private int pageSize = 10;
         private long counter = 0L;
         private long startTime;
-        private long lastFetchTime;
+        private long lastFetchRequestTime;
+        private long previousFetchRequestTime;
 
         private CountingPageOperation(int maxPages, long maxTime) {
             super(maxPages, maxTime);
@@ -134,8 +138,12 @@ public class AbstractPageOperationTemplateTest {
 
         @Override
         public Collection<String> fetchPage() {
-            lastFetchTime = System.currentTimeMillis();
-            List<String> page = new ArrayList<>(pageSize);
+            if(lastFetchRequestTime > 0){
+                previousFetchRequestTime = lastFetchRequestTime;
+            }
+
+            lastFetchRequestTime = System.currentTimeMillis();
+            List<String> page = new ArrayList<String>(pageSize);
             for(int i = 0; i < pageSize; i++ ) {
                 page.add("item " + currentPageFetch * pageSize + i);
             }
@@ -152,8 +160,12 @@ public class AbstractPageOperationTemplateTest {
             return counter;
         }
 
-        public long getLastFetchTime() {
-            return lastFetchTime;
+        public long getLastFetchRequestTime() {
+            return lastFetchRequestTime;
+        }
+
+        public long getPreviousFetchRequestTime() {
+            return previousFetchRequestTime;
         }
 
         public long getStartTime(){
