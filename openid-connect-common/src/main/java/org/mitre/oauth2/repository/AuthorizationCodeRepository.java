@@ -18,6 +18,7 @@ package org.mitre.oauth2.repository;
 
 import java.util.Collection;
 
+import org.mitre.data.PageCriteria;
 import org.mitre.oauth2.model.AuthorizationCodeEntity;
 
 /**
@@ -55,5 +56,11 @@ public interface AuthorizationCodeRepository {
 	 * @return A collection of all expired codes.
 	 */
 	public Collection<AuthorizationCodeEntity> getExpiredCodes();
+
+    /**
+     * @return A collection of all expired codes, limited by the given
+     * PageCriteria.
+     */
+    public Collection<AuthorizationCodeEntity> getExpiredCodes(PageCriteria pageCriteria);
 
 }

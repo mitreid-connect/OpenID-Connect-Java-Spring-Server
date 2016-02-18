@@ -22,6 +22,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
+import org.mitre.data.DefaultPageCriteria;
+import org.mitre.data.PageCriteria;
 import org.mitre.oauth2.model.AuthenticationHolderEntity;
 import org.mitre.oauth2.repository.AuthenticationHolderRepository;
 import org.mitre.util.jpa.JpaUtil;
@@ -68,10 +70,15 @@ public class JpaAuthenticationHolderRepository implements AuthenticationHolderRe
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public List<AuthenticationHolderEntity> getOrphanedAuthenticationHolders() {
-		TypedQuery<AuthenticationHolderEntity> query = manager.createNamedQuery(AuthenticationHolderEntity.QUERY_GET_UNUSED, AuthenticationHolderEntity.class);
-		query.setMaxResults(MAXEXPIREDRESULTS);
-		List<AuthenticationHolderEntity> unusedAuthenticationHolders = query.getResultList();
-		return unusedAuthenticationHolders;
+        DefaultPageCriteria pageCriteria = new DefaultPageCriteria(0,MAXEXPIREDRESULTS);
+        return getOrphanedAuthenticationHolders(pageCriteria);
 	}
+
+    @Override
+    @Transactional(value="defaultTransactionManager")
+    public List<AuthenticationHolderEntity> getOrphanedAuthenticationHolders(PageCriteria pageCriteria) {
+        TypedQuery<AuthenticationHolderEntity> query = manager.createNamedQuery(AuthenticationHolderEntity.QUERY_GET_UNUSED, AuthenticationHolderEntity.class);
+        return JpaUtil.getResultPage(query, pageCriteria);
+    }
 
 }

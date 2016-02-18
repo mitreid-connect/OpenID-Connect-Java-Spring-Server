@@ -31,6 +31,8 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.Root;
 
+import org.mitre.data.DefaultPageCriteria;
+import org.mitre.data.PageCriteria;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
@@ -189,19 +191,31 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 
 	@Override
 	public Set<OAuth2AccessTokenEntity> getAllExpiredAccessTokens() {
-		TypedQuery<OAuth2AccessTokenEntity> query = manager.createNamedQuery(OAuth2AccessTokenEntity.QUERY_EXPIRED_BY_DATE, OAuth2AccessTokenEntity.class);
-		query.setParameter(OAuth2AccessTokenEntity.PARAM_DATE, new Date());
-		query.setMaxResults(MAXEXPIREDRESULTS);
-		return new LinkedHashSet<>(query.getResultList());
+        DefaultPageCriteria pageCriteria = new DefaultPageCriteria(0, MAXEXPIREDRESULTS);
+        return getAllExpiredAccessTokens(pageCriteria);
 	}
+
+    @Override
+    public Set<OAuth2AccessTokenEntity> getAllExpiredAccessTokens(PageCriteria pageCriteria) {
+        TypedQuery<OAuth2AccessTokenEntity> query = manager.createNamedQuery(OAuth2AccessTokenEntity.QUERY_EXPIRED_BY_DATE, OAuth2AccessTokenEntity.class);
+        query.setParameter(OAuth2AccessTokenEntity.PARAM_DATE, new Date());
+        return new LinkedHashSet<>(JpaUtil.getResultPage(query, pageCriteria));
+    }
 
 	@Override
 	public Set<OAuth2RefreshTokenEntity> getAllExpiredRefreshTokens() {
-		TypedQuery<OAuth2RefreshTokenEntity> query = manager.createNamedQuery(OAuth2RefreshTokenEntity.QUERY_EXPIRED_BY_DATE, OAuth2RefreshTokenEntity.class);
-		query.setParameter(OAuth2RefreshTokenEntity.PARAM_DATE, new Date());
-		query.setMaxResults(MAXEXPIREDRESULTS);
-		return new LinkedHashSet<>(query.getResultList());
+        DefaultPageCriteria pageCriteria = new DefaultPageCriteria(0, MAXEXPIREDRESULTS);
+        return getAllExpiredRefreshTokens(pageCriteria);
 	}
+
+    @Override
+    public Set<OAuth2RefreshTokenEntity> getAllExpiredRefreshTokens(PageCriteria pageCriteria) {
+        TypedQuery<OAuth2RefreshTokenEntity> query = manager.createNamedQuery(OAuth2RefreshTokenEntity.QUERY_EXPIRED_BY_DATE, OAuth2RefreshTokenEntity.class);
+        query.setParameter(OAuth2AccessTokenEntity.PARAM_DATE, new Date());
+        return new LinkedHashSet<>(JpaUtil.getResultPage(query,pageCriteria));
+    }
+
+
 
 	/* (non-Javadoc)
 	 * @see org.mitre.oauth2.repository.OAuth2TokenRepository#getAccessTokensForResourceSet(org.mitre.uma.model.ResourceSet)
