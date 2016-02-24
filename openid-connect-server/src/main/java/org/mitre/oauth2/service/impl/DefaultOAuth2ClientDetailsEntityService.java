@@ -28,10 +28,12 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.http.MethodNotSupportedException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.SystemScope;
+import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
 import org.mitre.oauth2.repository.OAuth2ClientRepository;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
@@ -121,12 +123,15 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 		if (Strings.isNullOrEmpty(client.getClientId())) {
 			client = generateClientId(client);
 		}
-
+		
 		// make sure that clients with the "refresh_token" grant type have the "offline_access" scope, and vice versa
 		ensureRefreshTokenConsistency(client);
 
 		// make sure we don't have both a JWKS and a JWKS URI
 		ensureKeyConsistency(client);
+		
+		// check consistency when using HEART mode
+		checkHeartMode(client);
 
 		// timestamp this to right now
 		client.setCreatedAt(new Date());
@@ -146,6 +151,7 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 	}
 
 	/**
+	 * Make sure the client has only one type of key registered
 	 * @param client
 	 */
 	private void ensureKeyConsistency(ClientDetailsEntity client) {
@@ -155,6 +161,9 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 		}
 	}
 
+	/**
+	 * Make sure the client doesn't request any system reserved scopes
+	 */
 	private void ensureNoReservedScopes(ClientDetailsEntity client) {
 		// make sure a client doesn't get any special system scopes
 		Set<SystemScope> requestedScope = scopeService.fromStrings(client.getScope());
@@ -164,6 +173,10 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 		client.setScope(scopeService.toStrings(requestedScope));
 	}
 
+	/**
+	 * Load the sector identifier URI if it exists and check the redirect URIs against it
+	 * @param client
+	 */
 	private void checkSectorIdentifierUri(ClientDetailsEntity client) {
 		if (!Strings.isNullOrEmpty(client.getSectorIdentifierUri())) {
 			try {
@@ -183,11 +196,91 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 		}
 	}
 
+	/**
+	 * Make sure the client has the appropriate scope and grant type.
+	 * @param client
+	 */
 	private void ensureRefreshTokenConsistency(ClientDetailsEntity client) {
 		if (client.getAuthorizedGrantTypes().contains("refresh_token")
 				|| client.getScope().contains(SystemScopeService.OFFLINE_ACCESS)) {
 			client.getScope().add(SystemScopeService.OFFLINE_ACCESS);
 			client.getAuthorizedGrantTypes().add("refresh_token");
+		}
+	}
+
+	/**
+	 * If HEART mode is enabled, make sure the client meets the requirements:
+	 *  - Only one of authorization_code, implicit, or client_credentials can be used at a time
+	 *  - A redirect_uri must be registered with either authorization_code or implicit
+	 *  - A key must be registered
+	 *  - A client secret must not be generated
+	 *  - authorization_code and client_credentials must use the private_key authorization method 
+	 * @param client
+	 */
+	private void checkHeartMode(ClientDetailsEntity client) {
+		if (config.isHeartMode()) {
+			if (client.getGrantTypes().contains("authorization_code")) {
+				// make sure we don't have incompatible grant types
+				if (client.getGrantTypes().contains("implicit") || client.getGrantTypes().contains("client_credentials")) {
+					throw new IllegalArgumentException("[HEART mode] Incompatible grant types");
+				}
+				
+				// make sure we've got the right authentication method
+				if (client.getTokenEndpointAuthMethod() == null || client.getTokenEndpointAuthMethod().equals(AuthMethod.PRIVATE_KEY)) {
+					throw new IllegalArgumentException("[HEART mode] Authorization code clients must use the private_key authentication method");
+				}
+				
+				// make sure we've got a redirect URI
+				if (client.getRedirectUris().isEmpty()) {
+					throw new IllegalArgumentException("[HEART mode] Authorization code clients must register at least one redirect URI");
+				}
+			}
+			
+			if (client.getGrantTypes().contains("implicit")) {
+				// make sure we don't have incompatible grant types
+				if (client.getGrantTypes().contains("authorization_code") || client.getGrantTypes().contains("client_credentials") || client.getGrantTypes().contains("refresh_token")) {
+					throw new IllegalArgumentException("[HEART mode] Incompatible grant types");
+				}
+				
+				// make sure we've got the right authentication method
+				if (client.getTokenEndpointAuthMethod() == null || client.getTokenEndpointAuthMethod().equals(AuthMethod.NONE)) {
+					throw new IllegalArgumentException("[HEART mode] Implicit clients must use the none authentication method");
+				}
+				
+				// make sure we've got a redirect URI
+				if (client.getRedirectUris().isEmpty()) {
+					throw new IllegalArgumentException("[HEART mode] Implicit clients must register at least one redirect URI");
+				}
+			}
+			
+			if (client.getGrantTypes().contains("client_credentials")) {
+				// make sure we don't have incompatible grant types
+				if (client.getGrantTypes().contains("authorization_code") || client.getGrantTypes().contains("implicit") || client.getGrantTypes().contains("refresh_token")) {
+					throw new IllegalArgumentException("[HEART mode] Incompatible grant types");
+				}
+				
+				// make sure we've got the right authentication method
+				if (client.getTokenEndpointAuthMethod() == null || client.getTokenEndpointAuthMethod().equals(AuthMethod.PRIVATE_KEY)) {
+					throw new IllegalArgumentException("[HEART mode] Client credentials clients must use the private_key authentication method");
+				}
+				
+				// make sure we've got a redirect URI
+				if (!client.getRedirectUris().isEmpty()) {
+					throw new IllegalArgumentException("[HEART mode] Client credentials clients must not register a redirect URI");
+				}
+
+			}
+		
+			// make sure we don't have a client secret
+			if (!Strings.isNullOrEmpty(client.getClientSecret())) {
+				throw new IllegalArgumentException("[HEART mode] Client secrets are not allowed");
+			}
+
+			// make sure we've got a key registered
+			if (client.getJwks() == null && Strings.isNullOrEmpty(client.getJwksUri())) {
+				throw new IllegalArgumentException("[HEART mode] All clients must have a key registered");
+			}
+
 		}
 	}
 
@@ -283,6 +376,9 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 
 			// make sure we don't have both a JWKS and a JWKS URI
 			ensureKeyConsistency(newClient);
+			
+			// check consistency when using HEART mode
+			checkHeartMode(newClient);
 
 			// check the sector URI
 			checkSectorIdentifierUri(newClient);
@@ -317,7 +413,12 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 	 */
 	@Override
 	public ClientDetailsEntity generateClientSecret(ClientDetailsEntity client) {
-		client.setClientSecret(Base64.encodeBase64URLSafeString(new BigInteger(512, new SecureRandom()).toByteArray()).replace("=", ""));
+		if (config.isHeartMode()) {
+			logger.error("[HEART mode] Can't generate a client secret, skipping step; client won't be saved due to invalid configuration");
+			client.setClientSecret(null);
+		} else {
+			client.setClientSecret(Base64.encodeBase64URLSafeString(new BigInteger(512, new SecureRandom()).toByteArray()).replace("=", ""));
+		}
 		return client;
 	}
 
