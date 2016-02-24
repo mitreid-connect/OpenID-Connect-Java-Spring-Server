@@ -20,7 +20,7 @@
 	<parent>
 		<groupId>org.mitre</groupId>
 		<artifactId>openid-connect-parent</artifactId>
-		<version>1.2.5-SNAPSHOT</version>
+		<version>1.2.5</version>
 	</parent>
 	<artifactId>openid-connect-server-webapp</artifactId>
 	<packaging>war</packaging>
