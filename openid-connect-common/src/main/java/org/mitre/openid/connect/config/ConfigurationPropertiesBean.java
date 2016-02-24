@@ -201,7 +201,11 @@ public class ConfigurationPropertiesBean {
      * @return true if dual client is configured, otherwise false
      */
     public boolean isDualClient() {
-        return dualClient;
+    	if (isHeartMode()) {
+    		return false; // HEART mode is incompatible with dual client mode
+    	} else {
+    		return dualClient;
+    	}
     }
 
     /**
@@ -212,7 +216,7 @@ public class ConfigurationPropertiesBean {
     }
     
     /**
-     * Get the list of namespaces as a JSON string
+     * Get the list of namespaces as a JSON string, for injection into the JavaScript UI
      * @return
      */
     public String getLanguageNamespacesString() {
