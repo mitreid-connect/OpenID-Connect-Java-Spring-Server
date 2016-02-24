@@ -19,6 +19,7 @@
  */
 package org.mitre.oauth2.service.impl;
 
+import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.mitre.openid.connect.service.BlacklistedSiteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.exceptions.InvalidRequestException;
@@ -43,6 +44,9 @@ public class BlacklistAwareRedirectResolver extends DefaultRedirectResolver {
 	@Autowired
 	private BlacklistedSiteService blacklistService;
 
+	@Autowired
+	private ConfigurationPropertiesBean config;
+	
 	private boolean strictMatch = false;
 
 	/* (non-Javadoc)
@@ -80,7 +84,12 @@ public class BlacklistAwareRedirectResolver extends DefaultRedirectResolver {
 	 * @return the strictMatch
 	 */
 	public boolean isStrictMatch() {
-		return strictMatch;
+		if (config.isHeartMode()) {
+			// HEART mode enforces strict matching
+			return true;
+		} else {
+			return strictMatch;
+		}
 	}
 
 	/**
