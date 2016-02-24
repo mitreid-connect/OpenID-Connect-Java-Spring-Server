@@ -124,6 +124,11 @@ public class JWTBearerAuthenticationProvider implements AuthenticationProvider {
 								|| alg.equals(JWSAlgorithm.HS384)
 								|| alg.equals(JWSAlgorithm.HS512)))) {
 
+					// double-check the method is asymmetrical if we're in HEART mode
+					if (config.isHeartMode() && !client.getTokenEndpointAuthMethod().equals(AuthMethod.PRIVATE_KEY)) {
+						throw new AuthenticationServiceException("[HEART mode] Invalid authentication method");
+					}
+					
 					JWTSigningAndValidationService validator = validators.getValidator(client, alg);
 
 					if (validator == null) {
