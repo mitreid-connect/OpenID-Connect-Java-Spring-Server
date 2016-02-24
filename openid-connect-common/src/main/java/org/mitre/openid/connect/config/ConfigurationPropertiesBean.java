@@ -62,7 +62,9 @@ public class ConfigurationPropertiesBean {
 	
 	private List<String> languageNamespaces = Lists.newArrayList("messages");
 
-    public boolean dualClient = false;
+    private boolean dualClient = false;
+    
+    private boolean heartMode = false;
 
     public ConfigurationPropertiesBean() {
 
@@ -223,4 +225,18 @@ public class ConfigurationPropertiesBean {
     public String getDefaultLanguageNamespace() {
     	return getLanguageNamespaces().get(0);
     }
+
+	/**
+	 * @return the heartMode
+	 */
+	public boolean isHeartMode() {
+		return heartMode;
+	}
+
+	/**
+	 * @param heartMode the heartMode to set
+	 */
+	public void setHeartMode(boolean heartMode) {
+		this.heartMode = heartMode;
+	}
 }
