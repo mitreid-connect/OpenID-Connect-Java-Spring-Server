@@ -455,7 +455,7 @@ public class DynamicClientRegistrationEndpoint {
 
 			// don't allow refresh tokens in implicit clients
 			newClient.getGrantTypes().remove("refresh_token");
-			newClient.getScope().remove("offline_access");
+			newClient.getScope().remove(SystemScopeService.OFFLINE_ACCESS);
 		}
 
 		if (newClient.getGrantTypes().contains("client_credentials")) {
@@ -474,8 +474,8 @@ public class DynamicClientRegistrationEndpoint {
 
 			// don't allow refresh tokens or id tokens in client_credentials clients
 			newClient.getGrantTypes().remove("refresh_token");
-			newClient.getScope().remove("offline_access");
-			newClient.getScope().remove("openid");
+			newClient.getScope().remove(SystemScopeService.OFFLINE_ACCESS);
+			newClient.getScope().remove(SystemScopeService.OPENID_SCOPE);
 		}
 
 		if (newClient.getGrantTypes().isEmpty()) {
