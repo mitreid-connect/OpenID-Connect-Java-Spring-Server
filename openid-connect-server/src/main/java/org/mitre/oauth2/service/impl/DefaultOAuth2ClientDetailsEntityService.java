@@ -28,12 +28,11 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.http.MethodNotSupportedException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.mitre.oauth2.model.ClientDetailsEntity;
-import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
+import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.repository.OAuth2ClientRepository;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
@@ -54,6 +53,8 @@ import org.springframework.security.oauth2.common.exceptions.InvalidClientExcept
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.google.common.base.Strings;
 import com.google.common.cache.CacheBuilder;
@@ -281,6 +282,34 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 				throw new IllegalArgumentException("[HEART mode] All clients must have a key registered");
 			}
 
+			// make sure our redirect URIs each fit one of the allowed categories
+			if (client.getRedirectUris() != null) {
+				boolean localhost = false;
+				boolean remoteHttps = false;
+				boolean customScheme = false;
+				for (String uri : client.getRedirectUris()) {
+					UriComponents components = UriComponentsBuilder.fromUriString(uri).build();
+					if (components.getScheme().equals("http")) {
+						// http scheme, check for localhost
+						if (components.getHost().equals("localhost") || components.getHost().equals("127.0.0.1")) {
+							localhost = true;
+						} else {
+							throw new IllegalArgumentException("[HEART mode] Can't have an http redirect URI on non-local host");
+						}
+					} else if (components.getScheme().equals("https")) {
+						remoteHttps = true;
+					} else {
+						customScheme = true;
+					}
+				}
+				
+				// now we make sure the client has a URI in only one of each of the three categories
+				if (!((localhost ^ remoteHttps ^ customScheme)
+						&& !(localhost && remoteHttps && customScheme))) {
+					throw new IllegalArgumentException("[HEART mode] Can't have more than one class of redirect URI");
+				}
+			}
+			
 		}
 	}
 
