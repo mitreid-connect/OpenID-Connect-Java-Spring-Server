@@ -16,17 +16,22 @@
  *******************************************************************************/
 package org.mitre.oauth2.service.impl;
 
+import static org.mockito.Matchers.anyString;
+
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mitre.oauth2.model.ClientDetailsEntity;
+import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
 import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.repository.OAuth2ClientRepository;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
 import org.mitre.oauth2.service.SystemScopeService;
+import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.mitre.openid.connect.model.WhitelistedSite;
 import org.mitre.openid.connect.service.ApprovedSiteService;
 import org.mitre.openid.connect.service.BlacklistedSiteService;
@@ -46,9 +51,11 @@ import org.springframework.security.oauth2.common.exceptions.InvalidClientExcept
 
 import com.google.common.collect.Sets;
 
+import static org.hamcrest.CoreMatchers.any;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
 
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -83,6 +90,9 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 
 	@Mock
 	private StatsService statsService;
+	
+	@Mock
+	private ConfigurationPropertiesBean config;
 
 	@InjectMocks
 	private DefaultOAuth2ClientDetailsEntityService service;
@@ -135,6 +145,8 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 
 		// we're not testing reserved scopes here, just pass through when it's called
 		Mockito.when(scopeService.removeReservedScopes(Matchers.anySet())).then(AdditionalAnswers.returnsFirstArg());
+		
+		Mockito.when(config.isHeartMode()).thenReturn(false);
 
 	}
 
@@ -353,4 +365,203 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 
 		assertThat(client.getScope().contains(SystemScopeService.OFFLINE_ACCESS), is(equalTo(false)));
 	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void heartMode_authcode_invalidGrants() {
+		Mockito.when(config.isHeartMode()).thenReturn(true);
+
+		ClientDetailsEntity client = new ClientDetailsEntity();
+		Set<String> grantTypes = new LinkedHashSet<>();
+		grantTypes.add("authorization_code");
+		grantTypes.add("implicit");
+		grantTypes.add("client_credentials");
+		client.setGrantTypes(grantTypes);
+
+		service.saveNewClient(client);
+		
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void heartMode_implicit_invalidGrants() {
+		Mockito.when(config.isHeartMode()).thenReturn(true);
+
+		ClientDetailsEntity client = new ClientDetailsEntity();
+		Set<String> grantTypes = new LinkedHashSet<>();
+		grantTypes.add("implicit");
+		grantTypes.add("authorization_code");
+		grantTypes.add("client_credentials");
+		client.setGrantTypes(grantTypes);
+
+		service.saveNewClient(client);
+		
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void heartMode_clientcreds_invalidGrants() {
+		Mockito.when(config.isHeartMode()).thenReturn(true);
+
+		ClientDetailsEntity client = new ClientDetailsEntity();
+		Set<String> grantTypes = new LinkedHashSet<>();
+		grantTypes.add("client_credentials");
+		grantTypes.add("authorization_code");
+		grantTypes.add("implicit");
+		client.setGrantTypes(grantTypes);
+
+		service.saveNewClient(client);
+		
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void heartMode_authcode_authMethod() {
+		Mockito.when(config.isHeartMode()).thenReturn(true);
+
+		ClientDetailsEntity client = new ClientDetailsEntity();
+		Set<String> grantTypes = new LinkedHashSet<>();
+		grantTypes.add("authorization_code");
+		client.setGrantTypes(grantTypes);
+		
+		client.setTokenEndpointAuthMethod(AuthMethod.SECRET_POST);
+
+		service.saveNewClient(client);
+		
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void heartMode_implicit_authMethod() {
+		Mockito.when(config.isHeartMode()).thenReturn(true);
+
+		ClientDetailsEntity client = new ClientDetailsEntity();
+		Set<String> grantTypes = new LinkedHashSet<>();
+		grantTypes.add("implicit");
+		client.setGrantTypes(grantTypes);
+
+		client.setTokenEndpointAuthMethod(AuthMethod.PRIVATE_KEY);
+
+		service.saveNewClient(client);
+		
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void heartMode_clientcreds_authMethod() {
+		Mockito.when(config.isHeartMode()).thenReturn(true);
+
+		ClientDetailsEntity client = new ClientDetailsEntity();
+		Set<String> grantTypes = new LinkedHashSet<>();
+		grantTypes.add("client_credentials");
+		client.setGrantTypes(grantTypes);
+
+		client.setTokenEndpointAuthMethod(AuthMethod.SECRET_BASIC);
+
+		service.saveNewClient(client);
+		
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void heartMode_authcode_redirectUris() {
+		Mockito.when(config.isHeartMode()).thenReturn(true);
+
+		ClientDetailsEntity client = new ClientDetailsEntity();
+		Set<String> grantTypes = new LinkedHashSet<>();
+		grantTypes.add("authorization_code");
+		client.setGrantTypes(grantTypes);
+		
+		client.setTokenEndpointAuthMethod(AuthMethod.PRIVATE_KEY);
+
+		service.saveNewClient(client);
+		
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void heartMode_implicit_redirectUris() {
+		Mockito.when(config.isHeartMode()).thenReturn(true);
+
+		ClientDetailsEntity client = new ClientDetailsEntity();
+		Set<String> grantTypes = new LinkedHashSet<>();
+		grantTypes.add("implicit");
+		client.setGrantTypes(grantTypes);
+
+		client.setTokenEndpointAuthMethod(AuthMethod.NONE);
+
+		service.saveNewClient(client);
+		
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void heartMode_clientcreds_redirectUris() {
+		Mockito.when(config.isHeartMode()).thenReturn(true);
+
+		ClientDetailsEntity client = new ClientDetailsEntity();
+		Set<String> grantTypes = new LinkedHashSet<>();
+		grantTypes.add("client_credentials");
+		client.setGrantTypes(grantTypes);
+
+		client.setTokenEndpointAuthMethod(AuthMethod.PRIVATE_KEY);
+
+		client.setRedirectUris(Sets.newHashSet("http://foo.bar/"));
+
+		service.saveNewClient(client);
+		
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void heartMode_clientSecret() {
+		Mockito.when(config.isHeartMode()).thenReturn(true);
+
+		ClientDetailsEntity client = new ClientDetailsEntity();
+		Set<String> grantTypes = new LinkedHashSet<>();
+		grantTypes.add("authorization_code");
+		client.setGrantTypes(grantTypes);
+		
+		client.setTokenEndpointAuthMethod(AuthMethod.PRIVATE_KEY);
+		
+		client.setRedirectUris(Sets.newHashSet("http://foo.bar/"));
+
+		client.setClientSecret("secret!");
+		
+		service.saveNewClient(client);
+		
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void heartMode_noJwks() {
+		Mockito.when(config.isHeartMode()).thenReturn(true);
+
+		ClientDetailsEntity client = new ClientDetailsEntity();
+		Set<String> grantTypes = new LinkedHashSet<>();
+		grantTypes.add("authorization_code");
+		client.setGrantTypes(grantTypes);
+		
+		client.setTokenEndpointAuthMethod(AuthMethod.PRIVATE_KEY);
+		
+		client.setRedirectUris(Sets.newHashSet("https://foo.bar/"));
+
+		client.setJwks(null);
+		client.setJwksUri(null);
+		
+		service.saveNewClient(client);
+		
+	}
+	
+	@Test
+	public void heartMode_validAuthcodeClient() {
+		Mockito.when(config.isHeartMode()).thenReturn(true);
+
+		ClientDetailsEntity client = new ClientDetailsEntity();
+		Set<String> grantTypes = new LinkedHashSet<>();
+		grantTypes.add("authorization_code");
+		grantTypes.add("refresh_token");
+		client.setGrantTypes(grantTypes);
+		
+		client.setTokenEndpointAuthMethod(AuthMethod.PRIVATE_KEY);
+		
+		client.setRedirectUris(Sets.newHashSet("https://foo.bar/"));
+
+		client.setJwksUri("https://foo.bar/jwks");
+		
+		service.saveNewClient(client);
+		
+		assertThat(client.getClientId(), is(notNullValue(String.class)));
+		assertThat(client.getClientSecret(), is(nullValue()));
+	}
+	
 }

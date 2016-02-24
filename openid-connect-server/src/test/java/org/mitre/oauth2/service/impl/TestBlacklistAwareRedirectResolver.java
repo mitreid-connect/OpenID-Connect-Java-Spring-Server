@@ -20,6 +20,7 @@ package org.mitre.oauth2.service.impl;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.mitre.openid.connect.service.BlacklistedSiteService;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -51,6 +52,9 @@ public class TestBlacklistAwareRedirectResolver {
 	@Mock
 	private ClientDetails client;
 
+	@Mock
+	private ConfigurationPropertiesBean config;
+	
 	@InjectMocks
 	private BlacklistAwareRedirectResolver resolver;
 
@@ -72,6 +76,7 @@ public class TestBlacklistAwareRedirectResolver {
 		when(client.getAuthorizedGrantTypes()).thenReturn(ImmutableSet.of("authorization_code"));
 		when(client.getRegisteredRedirectUri()).thenReturn(ImmutableSet.of(goodUri, blacklistedUri));
 
+		when(config.isHeartMode()).thenReturn(false);
 	}
 
 	@Test
@@ -127,6 +132,21 @@ public class TestBlacklistAwareRedirectResolver {
 
 		assertThat(res2, is(true));
 
+	}
+	
+	@Test
+	public void testHeartMode() {
+		when(config.isHeartMode()).thenReturn(true);
+
+		// this is not an exact match
+		boolean res1 = resolver.redirectMatches(pathUri, goodUri);
+
+		assertThat(res1, is(false));
+
+		// this is an exact match
+		boolean res2 = resolver.redirectMatches(goodUri, goodUri);
+
+		assertThat(res2, is(true));
 	}
 
 }

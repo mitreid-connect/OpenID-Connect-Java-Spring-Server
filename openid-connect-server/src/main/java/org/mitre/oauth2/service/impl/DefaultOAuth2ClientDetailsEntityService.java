@@ -226,7 +226,7 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 				}
 				
 				// make sure we've got the right authentication method
-				if (client.getTokenEndpointAuthMethod() == null || client.getTokenEndpointAuthMethod().equals(AuthMethod.PRIVATE_KEY)) {
+				if (client.getTokenEndpointAuthMethod() == null || !client.getTokenEndpointAuthMethod().equals(AuthMethod.PRIVATE_KEY)) {
 					throw new IllegalArgumentException("[HEART mode] Authorization code clients must use the private_key authentication method");
 				}
 				
@@ -243,7 +243,7 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 				}
 				
 				// make sure we've got the right authentication method
-				if (client.getTokenEndpointAuthMethod() == null || client.getTokenEndpointAuthMethod().equals(AuthMethod.NONE)) {
+				if (client.getTokenEndpointAuthMethod() == null || !client.getTokenEndpointAuthMethod().equals(AuthMethod.NONE)) {
 					throw new IllegalArgumentException("[HEART mode] Implicit clients must use the none authentication method");
 				}
 				
@@ -260,7 +260,7 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 				}
 				
 				// make sure we've got the right authentication method
-				if (client.getTokenEndpointAuthMethod() == null || client.getTokenEndpointAuthMethod().equals(AuthMethod.PRIVATE_KEY)) {
+				if (client.getTokenEndpointAuthMethod() == null || !client.getTokenEndpointAuthMethod().equals(AuthMethod.PRIVATE_KEY)) {
 					throw new IllegalArgumentException("[HEART mode] Client credentials clients must use the private_key authentication method");
 				}
 				
