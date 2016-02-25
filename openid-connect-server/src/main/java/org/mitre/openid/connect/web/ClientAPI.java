@@ -19,6 +19,7 @@ package org.mitre.openid.connect.web;
 import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.util.Collection;
+import javax.persistence.PersistenceException;
 
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
@@ -244,6 +245,11 @@ public class ClientAPI {
 			m.addAttribute(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
 			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Unable to save client: " + e.getMessage());
 			return JsonErrorView.VIEWNAME;
+		} catch (PersistenceException e) {
+			logger.error("Unable to save client. Duplicate client id entry found: {}", e.getMessage());
+			m.addAttribute(HttpCodeView.CODE, HttpStatus.CONFLICT);
+			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Unable to save client. Duplicate client id entry found: " + client.getClientId());
+			return JsonErrorView.VIEWNAME;
 		}
 	}
 
@@ -400,14 +406,14 @@ public class ClientAPI {
 			return ClientEntityViewForUsers.VIEWNAME;
 		}
 	}
-	
+
 	/**
 	 * Get the logo image for a client
 	 * @param id
 	 */
 	 @RequestMapping(value = "/{id}/logo", method=RequestMethod.GET, produces = { MediaType.IMAGE_GIF_VALUE, MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE })
 	 public ResponseEntity<byte[]> getClientLogo(@PathVariable("id") Long id, Model model) {
-		 
+
 			ClientDetailsEntity client = clientService.getClientById(id);
 
 			if (client == null) {
@@ -417,11 +423,11 @@ public class ClientAPI {
 			} else {
 				// get the image from cache
 				CachedImage image = clientLogoLoadingService.getLogo(client);
-				
+
 				HttpHeaders headers = new HttpHeaders();
 				headers.setContentType(MediaType.parseMediaType(image.getContentType()));
 				headers.setContentLength(image.getLength());
-				
+
 				return new ResponseEntity<>(image.getData(), headers, HttpStatus.OK);
 			}
 	 }
