@@ -48,7 +48,9 @@ import com.google.common.collect.Sets;
 	@NamedQuery(name = "ApprovedSite.getAll", query = "select a from ApprovedSite a"),
 	@NamedQuery(name = "ApprovedSite.getByUserId", query = "select a from ApprovedSite a where a.userId = :userId"),
 	@NamedQuery(name = "ApprovedSite.getByClientId", query = "select a from ApprovedSite a where a.clientId = :clientId"),
-	@NamedQuery(name = "ApprovedSite.getByClientIdAndUserId", query = "select a from ApprovedSite a where a.clientId = :clientId and a.userId = :userId")
+	@NamedQuery(name = "ApprovedSite.getByClientIdAndUserId", query = "select a from ApprovedSite a where a.clientId = :clientId and a.userId = :userId"),
+	@NamedQuery(name = "ApprovedSite.stats.getAllClientIds", query = "select a.clientId, count(a) from ApprovedSite a group by a.clientId"),
+	@NamedQuery(name = "ApprovedSite.stats.getAllClientIdUserId", query = "select a.clientId, a.userId from ApprovedSite a")
 })
 public class ApprovedSite {
 

@@ -15,29 +15,24 @@
  * limitations under the License.
  ******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.openid.connect.service.impl;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.Vector;
 import java.util.concurrent.TimeUnit;
 
-import org.mitre.oauth2.model.ClientDetailsEntity;
-import org.mitre.oauth2.service.ClientDetailsEntityService;
-import org.mitre.openid.connect.model.ApprovedSite;
-import org.mitre.openid.connect.service.ApprovedSiteService;
+import org.mitre.openid.connect.repository.StatsRepository;
 import org.mitre.openid.connect.service.StatsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multiset;
 
 /**
  * @author jricher
@@ -47,10 +42,7 @@ import com.google.common.collect.Multiset;
 public class DefaultStatsService implements StatsService {
 
 	@Autowired
-	private ApprovedSiteService approvedSiteService;
-
-	@Autowired
-	private ClientDetailsEntityService clientService;
+	StatsRepository statsRepository;
 
 	// stats cache
 	private Supplier<Map<String, Integer>> summaryCache = createSummaryCache();
@@ -85,19 +77,19 @@ public class DefaultStatsService implements StatsService {
 	// do the actual computation
 	private Map<String, Integer> computeSummaryStats() {
 		// get all approved sites
-		Collection<ApprovedSite> allSites = approvedSiteService.getAll();
+		Vector<Object[]> result = statsRepository.getAllApprovedSitesClientIdAndUserId();
 
 		// process to find number of unique users and sites
 		Set<String> userIds = new HashSet<String>();
 		Set<String> clientIds = new HashSet<String>();
-		for (ApprovedSite approvedSite : allSites) {
-			userIds.add(approvedSite.getUserId());
-			clientIds.add(approvedSite.getClientId());
+		for (Object[] approvedSite : result) {
+			clientIds.add((String) approvedSite[0]);
+			userIds.add((String) approvedSite[1]);
 		}
 
 		Map<String, Integer> e = new HashMap<String, Integer>();
 
-		e.put("approvalCount", allSites.size());
+		e.put("approvalCount", result.size());
 		e.put("userCount", userIds.size());
 		e.put("clientCount", clientIds.size());
 		return e;
@@ -112,18 +104,16 @@ public class DefaultStatsService implements StatsService {
 	}
 
 	private Map<Long, Integer> computeByClientId() {
-		// get all approved sites
-		Collection<ApprovedSite> allSites = approvedSiteService.getAll();
-
-		Multiset<String> clientIds = HashMultiset.create();
-		for (ApprovedSite approvedSite : allSites) {
-			clientIds.add(approvedSite.getClientId());
-		}
-
 		Map<Long, Integer> counts = getEmptyClientCountMap();
-		for (String clientId : clientIds) {
-			ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
-			counts.put(client.getId(), clientIds.count(clientId));
+		Map<String, Long> clientIdSurrogateKeyMap = getClientIdSurrogateKeyMap();
+
+		// get all approved sites
+		Vector<Object[]> result = statsRepository.getAllApprovedSitesClientIdCount();
+
+		for(Object[] row: result) {
+			String clientId = (String) row[0];
+			Long id = clientIdSurrogateKeyMap.get(clientId);
+			counts.put(id, ((Long) row[1]).intValue());
 		}
 
 		return counts;
@@ -134,7 +124,6 @@ public class DefaultStatsService implements StatsService {
 	 */
 	@Override
 	public Integer getCountForClientId(Long id) {
-
 		Map<Long, Integer> counts = getByClientId();
 		return counts.get(id);
 
@@ -145,13 +134,25 @@ public class DefaultStatsService implements StatsService {
 	 * @return
 	 */
 	private Map<Long, Integer> getEmptyClientCountMap() {
-		Map<Long, Integer> counts = new HashMap<Long, Integer>();
-		Collection<ClientDetailsEntity> clients = clientService.getAllClients();
-		for (ClientDetailsEntity client : clients) {
-			counts.put(client.getId(), 0);
+		Map<Long, Integer> counts = new HashMap<>();
+		Vector<Object[]> result = statsRepository.getAllClientIds();
+		for (Object[] client : result) {
+			counts.put((Long) client[0], 0);
 		}
-
 		return counts;
+	}
+
+	/**
+	 * Create a new map mapping clientId with its surrogate key.
+	 * @return
+	 */
+	private Map<String, Long> getClientIdSurrogateKeyMap() {
+		Map<String, Long> retMap = new HashMap<>();
+		Vector<Object[]> result = statsRepository.getAllClientIds();
+		for (Object[] client : result) {
+			retMap.put((String) client[1], (Long) client[0]);
+		}
+		return retMap;
 	}
 
 	/**
