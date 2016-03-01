@@ -47,6 +47,12 @@
 			<artifactId>spring-tx</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<scope>test</scope>
+		</dependency>
+
 	</dependencies>
 	<description>OpenID Connect server libraries for Spring and Spring Security.</description>
 	<url />
