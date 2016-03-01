@@ -134,7 +134,7 @@ public class DefaultStatsService implements StatsService {
 	 * @return
 	 */
 	private Map<Long, Integer> getEmptyClientCountMap() {
-		Map<Long, Integer> counts = new HashMap<>();
+		Map<Long, Integer> counts = new HashMap<Long, Integer>();
 		Collection<Object[]> result = statsRepository.getAllClientIds();
 		for (Object[] client : result) {
 			counts.put((Long) client[0], 0);
@@ -147,7 +147,7 @@ public class DefaultStatsService implements StatsService {
 	 * @return
 	 */
 	private Map<String, Long> getClientIdSurrogateKeyMap() {
-		Map<String, Long> retMap = new HashMap<>();
+		Map<String, Long> retMap = new HashMap<String, Long>();
 		Collection<Object[]> result = statsRepository.getAllClientIds();
 		for (Object[] client : result) {
 			retMap.put((String) client[1], (Long) client[0]);
