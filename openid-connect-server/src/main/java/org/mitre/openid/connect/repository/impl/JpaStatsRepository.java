@@ -1,6 +1,6 @@
 package org.mitre.openid.connect.repository.impl;
 
-import java.util.Vector;
+import java.util.Collection;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -21,23 +21,23 @@ public class JpaStatsRepository implements StatsRepository {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public Vector<Object[]> getAllApprovedSitesClientIdAndUserId() {
+	public Collection<Object[]> getAllApprovedSitesClientIdAndUserId() {
 		Query query = manager.createNamedQuery("ApprovedSite.stats.getAllClientIdUserId");
-		return (Vector<Object[]>) query.getResultList();
+		return query.getResultList();
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public Vector<Object[]> getAllApprovedSitesClientIdCount() {
+	public Collection<Object[]> getAllApprovedSitesClientIdCount() {
 		Query query = manager.createNamedQuery("ApprovedSite.stats.getAllClientIds");
-		return (Vector<Object[]>) query.getResultList();
+		return query.getResultList();
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public Vector<Object[]> getAllClientIds() {
+	public Collection<Object[]> getAllClientIds() {
 		Query query = manager.createNamedQuery("ClientDetailsEntity.stats.findAllIds");
-		return (Vector<Object[]>) query.getResultList();
+		return query.getResultList();
 	}
 
 }

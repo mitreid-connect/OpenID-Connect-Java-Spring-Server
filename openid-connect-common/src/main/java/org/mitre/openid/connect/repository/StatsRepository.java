@@ -1,6 +1,6 @@
 package org.mitre.openid.connect.repository;
 
-import java.util.Vector;
+import java.util.Collection;
 
 /**
  * Repository that aggregates queries used to compute stats
@@ -17,7 +17,7 @@ public interface StatsRepository {
 	 *
 	 * @return
 	 */
-	Vector<Object[]> getAllApprovedSitesClientIdAndUserId();
+	Collection<Object[]> getAllApprovedSitesClientIdAndUserId();
 
 	/**
 	 * Return a collection of Object arrays. The first element of each array represents a clientId (String),
@@ -25,7 +25,7 @@ public interface StatsRepository {
 	 *
 	 * @return
 	 */
-	Vector<Object[]> getAllApprovedSitesClientIdCount();
+	Collection<Object[]> getAllApprovedSitesClientIdCount();
 
 	/**
 	 * Return a collection of Object[] containing the mapping between
@@ -33,5 +33,5 @@ public interface StatsRepository {
 	 *
 	 * @return
 	 */
-	Vector<Object[]> getAllClientIds();
+	Collection<Object[]> getAllClientIds();
 }

@@ -19,6 +19,7 @@ package org.mitre.openid.connect.service.impl;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Vector;
 
@@ -93,23 +94,23 @@ public class TestDefaultStatsService {
 		Mockito.when(ap6.getUserId()).thenReturn(userId1);
 		Mockito.when(ap6.getClientId()).thenReturn(clientId4);
 
-		Vector<Object[]> apList = new Vector<>(ImmutableList.of(
+		Collection<Object[]> apList = ImmutableList.of(
 				new Object[] { ap1.getClientId(), ap1.getUserId() },
 				new Object[] { ap2.getClientId(), ap2.getUserId() },
 				new Object[] { ap3.getClientId(), ap3.getUserId() },
 				new Object[] { ap4.getClientId(), ap4.getUserId() }
-				));
-		Vector<Object[]> apCount = new Vector<Object[]> (ImmutableList.of(
+				);
+		Collection<Object[]> apCount = ImmutableList.of(
 				new Object[] { clientId1, 2L },
 				new Object[] { clientId2, 1L },
 				new Object[] { clientId3, 1L }
-				));
-		Vector<Object[]> clientList = new Vector<>(ImmutableList.of(
+				);
+		Collection<Object[]> clientList = ImmutableList.of(
 				new Object[] { 1L, clientId1 },
 				new Object[] { 2L, clientId2 },
 				new Object[] { 3L, clientId3 },
 				new Object[] { 4L, clientId4 }
-				));
+				);
 
 		Mockito.when(statsRepository.getAllApprovedSitesClientIdAndUserId()).thenReturn(apList);
 		Mockito.when(statsRepository.getAllApprovedSitesClientIdCount()).thenReturn(apCount);
@@ -179,14 +180,14 @@ public class TestDefaultStatsService {
 		assertThat(stats.get("userCount"), is(2));
 		assertThat(stats.get("clientCount"), is(3));
 
-		Vector<Object[]> newList = new Vector<Object[]>(ImmutableList.of(
+		Collection<Object[]> newList = ImmutableList.of(
 				new Object[] { ap1.getClientId(), ap1.getUserId() },
 				new Object[] { ap2.getClientId(), ap2.getUserId() },
 				new Object[] { ap3.getClientId(), ap3.getUserId() },
 				new Object[] { ap4.getClientId(), ap4.getUserId() },
 				new Object[] { ap5.getClientId(), ap5.getUserId() },
 				new Object[] { ap6.getClientId(), ap6.getUserId() }
-				));
+				);
 
 		Mockito.when(statsRepository.getAllApprovedSitesClientIdAndUserId()).thenReturn(newList);
 		Map<String, Integer> stats2 = service.getSummaryStats();
