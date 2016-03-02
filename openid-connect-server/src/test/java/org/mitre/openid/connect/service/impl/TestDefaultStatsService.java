@@ -28,6 +28,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mitre.openid.connect.model.ApprovedSite;
 import org.mitre.openid.connect.repository.StatsRepository;
+import org.mitre.openid.connect.repository.StatsRepository.ApprovedSiteId;
+import org.mitre.openid.connect.repository.StatsRepository.ApprovedSitePerClientCount;
+import org.mitre.openid.connect.repository.StatsRepository.ClientDetailsEntityId;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -94,22 +97,22 @@ public class TestDefaultStatsService {
 		Mockito.when(ap6.getUserId()).thenReturn(userId1);
 		Mockito.when(ap6.getClientId()).thenReturn(clientId4);
 
-		Collection<Object[]> apList = ImmutableList.of(
-				new Object[] { ap1.getClientId(), ap1.getUserId() },
-				new Object[] { ap2.getClientId(), ap2.getUserId() },
-				new Object[] { ap3.getClientId(), ap3.getUserId() },
-				new Object[] { ap4.getClientId(), ap4.getUserId() }
+		Collection<ApprovedSiteId> apList = ImmutableList.of(
+				new ApprovedSiteId(1L, ap1.getClientId(), ap1.getUserId()),
+				new ApprovedSiteId(2L, ap2.getClientId(), ap2.getUserId()),
+				new ApprovedSiteId(3L, ap3.getClientId(), ap3.getUserId()),
+				new ApprovedSiteId(4L, ap4.getClientId(), ap4.getUserId())
 				);
-		Collection<Object[]> apCount = ImmutableList.of(
-				new Object[] { clientId1, 2L },
-				new Object[] { clientId2, 1L },
-				new Object[] { clientId3, 1L }
+		Collection<ApprovedSitePerClientCount> apCount = ImmutableList.of(
+				new ApprovedSitePerClientCount(clientId1, 2L),
+				new ApprovedSitePerClientCount(clientId2, 1L),
+				new ApprovedSitePerClientCount(clientId3, 1L)
 				);
-		Collection<Object[]> clientList = ImmutableList.of(
-				new Object[] { 1L, clientId1 },
-				new Object[] { 2L, clientId2 },
-				new Object[] { 3L, clientId3 },
-				new Object[] { 4L, clientId4 }
+		Collection<ClientDetailsEntityId> clientList = ImmutableList.of(
+				new ClientDetailsEntityId(1L, clientId1),
+				new ClientDetailsEntityId(2L, clientId2),
+				new ClientDetailsEntityId(3L, clientId3),
+				new ClientDetailsEntityId(4L, clientId4)
 				);
 
 		Mockito.when(statsRepository.getAllApprovedSitesClientIdAndUserId()).thenReturn(apList);
@@ -120,7 +123,7 @@ public class TestDefaultStatsService {
 	@Test
 	public void calculateSummaryStats_empty() {
 
-		Mockito.when(statsRepository.getAllApprovedSitesClientIdAndUserId()).thenReturn(new Vector<Object[]>());
+		Mockito.when(statsRepository.getAllApprovedSitesClientIdAndUserId()).thenReturn(new Vector<ApprovedSiteId>());
 
 		Map<String, Integer> stats = service.getSummaryStats();
 
@@ -141,7 +144,7 @@ public class TestDefaultStatsService {
 	@Test
 	public void calculateByClientId_empty() {
 
-		Mockito.when(statsRepository.getAllApprovedSitesClientIdCount()).thenReturn(new Vector<Object[]>());
+		Mockito.when(statsRepository.getAllApprovedSitesClientIdCount()).thenReturn(new Vector<ApprovedSitePerClientCount>());
 
 		Map<Long, Integer> stats = service.getByClientId();
 
@@ -180,13 +183,13 @@ public class TestDefaultStatsService {
 		assertThat(stats.get("userCount"), is(2));
 		assertThat(stats.get("clientCount"), is(3));
 
-		Collection<Object[]> newList = ImmutableList.of(
-				new Object[] { ap1.getClientId(), ap1.getUserId() },
-				new Object[] { ap2.getClientId(), ap2.getUserId() },
-				new Object[] { ap3.getClientId(), ap3.getUserId() },
-				new Object[] { ap4.getClientId(), ap4.getUserId() },
-				new Object[] { ap5.getClientId(), ap5.getUserId() },
-				new Object[] { ap6.getClientId(), ap6.getUserId() }
+		Collection<ApprovedSiteId> newList = ImmutableList.of(
+				new ApprovedSiteId(1L, ap1.getClientId(), ap1.getUserId()),
+				new ApprovedSiteId(2L, ap2.getClientId(), ap2.getUserId()),
+				new ApprovedSiteId(3L, ap3.getClientId(), ap3.getUserId()),
+				new ApprovedSiteId(4L, ap4.getClientId(), ap4.getUserId()),
+				new ApprovedSiteId(5L, ap5.getClientId(), ap5.getUserId()),
+				new ApprovedSiteId(6L, ap6.getClientId(), ap6.getUserId())
 				);
 
 		Mockito.when(statsRepository.getAllApprovedSitesClientIdAndUserId()).thenReturn(newList);

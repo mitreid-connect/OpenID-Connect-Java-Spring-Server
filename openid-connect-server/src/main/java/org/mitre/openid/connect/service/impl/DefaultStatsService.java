@@ -27,6 +27,9 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.mitre.openid.connect.repository.StatsRepository;
+import org.mitre.openid.connect.repository.StatsRepository.ApprovedSiteId;
+import org.mitre.openid.connect.repository.StatsRepository.ApprovedSitePerClientCount;
+import org.mitre.openid.connect.repository.StatsRepository.ClientDetailsEntityId;
 import org.mitre.openid.connect.service.StatsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -77,14 +80,14 @@ public class DefaultStatsService implements StatsService {
 	// do the actual computation
 	private Map<String, Integer> computeSummaryStats() {
 		// get all approved sites
-		Collection<Object[]> result = statsRepository.getAllApprovedSitesClientIdAndUserId();
+		Collection<ApprovedSiteId> result = statsRepository.getAllApprovedSitesClientIdAndUserId();
 
 		// process to find number of unique users and sites
 		Set<String> userIds = new HashSet<String>();
 		Set<String> clientIds = new HashSet<String>();
-		for (Object[] approvedSite : result) {
-			clientIds.add((String) approvedSite[0]);
-			userIds.add((String) approvedSite[1]);
+		for (ApprovedSiteId approvedSite : result) {
+			clientIds.add(approvedSite.getClientId());
+			userIds.add(approvedSite.getUserId());
 		}
 
 		Map<String, Integer> e = new HashMap<String, Integer>();
@@ -108,12 +111,11 @@ public class DefaultStatsService implements StatsService {
 		Map<String, Long> clientIdSurrogateKeyMap = getClientIdSurrogateKeyMap();
 
 		// get all approved sites
-		Collection<Object[]> result = statsRepository.getAllApprovedSitesClientIdCount();
+		Collection<ApprovedSitePerClientCount> result = statsRepository.getAllApprovedSitesClientIdCount();
 
-		for(Object[] row: result) {
-			String clientId = (String) row[0];
-			Long id = clientIdSurrogateKeyMap.get(clientId);
-			counts.put(id, ((Long) row[1]).intValue());
+		for(ApprovedSitePerClientCount row: result) {
+			Long id = clientIdSurrogateKeyMap.get(row.getClientId());
+			counts.put(id, row.getCount().intValue());
 		}
 
 		return counts;
@@ -135,9 +137,9 @@ public class DefaultStatsService implements StatsService {
 	 */
 	private Map<Long, Integer> getEmptyClientCountMap() {
 		Map<Long, Integer> counts = new HashMap<Long, Integer>();
-		Collection<Object[]> result = statsRepository.getAllClientIds();
-		for (Object[] client : result) {
-			counts.put((Long) client[0], 0);
+		Collection<ClientDetailsEntityId> result = statsRepository.getAllClientIds();
+		for (ClientDetailsEntityId client : result) {
+			counts.put(client.getId(), 0);
 		}
 		return counts;
 	}
@@ -148,9 +150,9 @@ public class DefaultStatsService implements StatsService {
 	 */
 	private Map<String, Long> getClientIdSurrogateKeyMap() {
 		Map<String, Long> retMap = new HashMap<String, Long>();
-		Collection<Object[]> result = statsRepository.getAllClientIds();
-		for (Object[] client : result) {
-			retMap.put((String) client[1], (Long) client[0]);
+		Collection<ClientDetailsEntityId> result = statsRepository.getAllClientIds();
+		for (ClientDetailsEntityId client : result) {
+			retMap.put(client.getClientId(), client.getId());
 		}
 		return retMap;
 	}

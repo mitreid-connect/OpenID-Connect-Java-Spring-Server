@@ -2,6 +2,9 @@ package org.mitre.openid.connect.repository;
 
 import java.util.Collection;
 
+import org.mitre.oauth2.model.ClientDetailsEntity;
+import org.mitre.openid.connect.model.ApprovedSite;
+
 /**
  * Repository that aggregates queries used to compute stats
  * in a more efficient way.
@@ -12,26 +15,101 @@ import java.util.Collection;
 public interface StatsRepository {
 
 	/**
-	 * Return a collection of Object[], one for each ApprovedSite.
-	 * The first element contains the clientId, the second contains the userId.
+	 * Return the subset of ApprovedSite entity fields needed to compute stats.
 	 *
 	 * @return
 	 */
-	Collection<Object[]> getAllApprovedSitesClientIdAndUserId();
+	Collection<ApprovedSiteId> getAllApprovedSitesClientIdAndUserId();
 
 	/**
-	 * Return a collection of Object arrays. The first element of each array represents a clientId (String),
-	 * the second is the number of ApprovedSites for that client (Long).
+	 * Counts the number of ApprovedSites per Client and return the count.
 	 *
 	 * @return
 	 */
-	Collection<Object[]> getAllApprovedSitesClientIdCount();
+	Collection<ApprovedSitePerClientCount> getAllApprovedSitesClientIdCount();
 
 	/**
-	 * Return a collection of Object[] containing the mapping between
-	 * the client PK (Long) and the clientId (String).
+	 * Return the subset of ClientDetailsEntity fields needed to compute stats.
 	 *
 	 * @return
 	 */
-	Collection<Object[]> getAllClientIds();
+	Collection<ClientDetailsEntityId> getAllClientIds();
+
+	/**
+	 * Result of a group by query with elements count.
+	 */
+	class ApprovedSitePerClientCount {
+
+		private final String clientId;
+		private final Long count;
+
+		public ApprovedSitePerClientCount(String clientId, Long count) {
+			this.clientId = clientId;
+			this.count = count;
+		}
+
+		public String getClientId() {
+			return clientId;
+		}
+		public Long getCount() {
+			return count;
+		}
+
+	}
+
+	/**
+	 * Subset of {@link ApprovedSite} entity fields:
+	 * <ul>
+	 *   <li>id</li>
+	 *   <li>clientId</li>
+	 *   <li>userId</li>
+	 *</ul>
+	 */
+	class ApprovedSiteId {
+		private final Long id;
+		private final String clientId;
+		private final String userId;
+
+		public ApprovedSiteId(Long id, String clientId, String userId) {
+			this.id = id;
+			this.clientId = clientId;
+			this.userId = userId;
+		}
+
+		public Long getId() {
+			return id;
+		}
+		public String getClientId() {
+			return clientId;
+		}
+		public String getUserId() {
+			return userId;
+		}
+
+	}
+
+	/**
+	 * Subset of {@link ClientDetailsEntity} entity fields:
+	 * <ul>
+	 *   <li>id</li>
+	 *   <li>clientId</li>
+	 *</ul>
+	 */
+	class ClientDetailsEntityId {
+		private final Long id;
+		private final String clientId;
+
+		public ClientDetailsEntityId(Long id, String clientId) {
+			this.id = id;
+			this.clientId = clientId;
+		}
+
+		public Long getId() {
+			return id;
+		}
+		public String getClientId() {
+			return clientId;
+		}
+
+	}
 }

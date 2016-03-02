@@ -1,5 +1,6 @@
 package org.mitre.openid.connect.repository.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.persistence.EntityManager;
@@ -21,23 +22,38 @@ public class JpaStatsRepository implements StatsRepository {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public Collection<Object[]> getAllApprovedSitesClientIdAndUserId() {
+	public Collection<ApprovedSiteId> getAllApprovedSitesClientIdAndUserId() {
 		Query query = manager.createNamedQuery("ApprovedSite.stats.getAllClientIdUserId");
-		return query.getResultList();
+		Collection<Object[]> result = query.getResultList();
+		Collection<ApprovedSiteId> retList = new ArrayList<>();
+		for(Object[] row: result) {
+			retList.add(new ApprovedSiteId((Long) row[0], (String) row[1], (String) row[2]));
+		}
+		return retList;
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public Collection<Object[]> getAllApprovedSitesClientIdCount() {
+	public Collection<ApprovedSitePerClientCount> getAllApprovedSitesClientIdCount() {
 		Query query = manager.createNamedQuery("ApprovedSite.stats.getAllClientIds");
-		return query.getResultList();
+		Collection<Object[]> result = query.getResultList();
+		Collection<ApprovedSitePerClientCount> retList = new ArrayList<>();
+		for(Object[] row: result) {
+			retList.add(new ApprovedSitePerClientCount((String) row[0], (Long) row[1]));
+		}
+		return retList;
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public Collection<Object[]> getAllClientIds() {
+	public Collection<ClientDetailsEntityId> getAllClientIds() {
 		Query query = manager.createNamedQuery("ClientDetailsEntity.stats.findAllIds");
-		return query.getResultList();
+		Collection<Object[]> result = query.getResultList();
+		Collection<ClientDetailsEntityId> retList = new ArrayList<>();
+		for(Object[] row: result) {
+			retList.add(new ClientDetailsEntityId((Long) row[0], (String) row[1]));
+		}
+		return retList;
 	}
 
 }
