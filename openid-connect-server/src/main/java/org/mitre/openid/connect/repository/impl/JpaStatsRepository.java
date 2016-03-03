@@ -25,7 +25,7 @@ public class JpaStatsRepository implements StatsRepository {
 	public Collection<ApprovedSiteId> getAllApprovedSitesClientIdAndUserId() {
 		Query query = manager.createNamedQuery("ApprovedSite.stats.getAllClientIdUserId");
 		Collection<Object[]> result = query.getResultList();
-		Collection<ApprovedSiteId> retList = new ArrayList<>();
+		Collection<ApprovedSiteId> retList = new ArrayList<ApprovedSiteId>();
 		for(Object[] row: result) {
 			retList.add(new ApprovedSiteId((Long) row[0], (String) row[1], (String) row[2]));
 		}
@@ -37,7 +37,7 @@ public class JpaStatsRepository implements StatsRepository {
 	public Collection<ApprovedSitePerClientCount> getAllApprovedSitesClientIdCount() {
 		Query query = manager.createNamedQuery("ApprovedSite.stats.getAllClientIds");
 		Collection<Object[]> result = query.getResultList();
-		Collection<ApprovedSitePerClientCount> retList = new ArrayList<>();
+		Collection<ApprovedSitePerClientCount> retList = new ArrayList<ApprovedSitePerClientCount>();
 		for(Object[] row: result) {
 			retList.add(new ApprovedSitePerClientCount((String) row[0], (Long) row[1]));
 		}
@@ -49,7 +49,7 @@ public class JpaStatsRepository implements StatsRepository {
 	public Collection<ClientDetailsEntityId> getAllClientIds() {
 		Query query = manager.createNamedQuery("ClientDetailsEntity.stats.findAllIds");
 		Collection<Object[]> result = query.getResultList();
-		Collection<ClientDetailsEntityId> retList = new ArrayList<>();
+		Collection<ClientDetailsEntityId> retList = new ArrayList<ClientDetailsEntityId>();
 		for(Object[] row: result) {
 			retList.add(new ClientDetailsEntityId((Long) row[0], (String) row[1]));
 		}
