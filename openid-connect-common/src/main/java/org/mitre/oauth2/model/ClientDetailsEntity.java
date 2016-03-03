@@ -67,7 +67,9 @@ import com.nimbusds.jose.JWSAlgorithm;
 @Table(name = "client_details")
 @NamedQueries({
 	@NamedQuery(name = "ClientDetailsEntity.findAll", query = "SELECT c FROM ClientDetailsEntity c"),
-	@NamedQuery(name = "ClientDetailsEntity.getByClientId", query = "select c from ClientDetailsEntity c where c.clientId = :clientId")
+	@NamedQuery(name = "ClientDetailsEntity.getByClientId", query = "select c from ClientDetailsEntity c where c.clientId = :clientId"),
+	@NamedQuery(name = "ClientDetailsEntity.getIdByClientId", query = "select c.id from ClientDetailsEntity c where c.clientId = :clientId"),
+	@NamedQuery(name = "ClientDetailsEntity.stats.findAllIds", query = "SELECT c.id, c.clientId FROM ClientDetailsEntity c")
 })
 public class ClientDetailsEntity implements ClientDetails {
 

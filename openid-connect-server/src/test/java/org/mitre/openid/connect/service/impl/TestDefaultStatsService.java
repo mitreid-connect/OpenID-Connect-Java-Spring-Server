@@ -19,22 +19,24 @@ package org.mitre.openid.connect.service.impl;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-import java.util.HashSet;
+import java.util.Collection;
 import java.util.Map;
+import java.util.Vector;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mitre.oauth2.model.ClientDetailsEntity;
-import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.openid.connect.model.ApprovedSite;
-import org.mitre.openid.connect.service.ApprovedSiteService;
+import org.mitre.openid.connect.repository.StatsRepository;
+import org.mitre.openid.connect.repository.StatsRepository.ApprovedSiteId;
+import org.mitre.openid.connect.repository.StatsRepository.ApprovedSitePerClientCount;
+import org.mitre.openid.connect.repository.StatsRepository.ClientDetailsEntityId;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import com.google.common.collect.Sets;
+import com.google.common.collect.ImmutableList;
 
 /**
  * @author wkim
@@ -62,16 +64,8 @@ public class TestDefaultStatsService {
 	private ApprovedSite ap5 = Mockito.mock(ApprovedSite.class);
 	private ApprovedSite ap6 = Mockito.mock(ApprovedSite.class);
 
-	private ClientDetailsEntity client1 = Mockito.mock(ClientDetailsEntity.class);
-	private ClientDetailsEntity client2 = Mockito.mock(ClientDetailsEntity.class);
-	private ClientDetailsEntity client3 = Mockito.mock(ClientDetailsEntity.class);
-	private ClientDetailsEntity client4 = Mockito.mock(ClientDetailsEntity.class);
-
 	@Mock
-	private ApprovedSiteService approvedSiteService;
-
-	@Mock
-	private ClientDetailsEntityService clientService;
+	private StatsRepository statsRepository;
 
 	@InjectMocks
 	private DefaultStatsService service = new DefaultStatsService();
@@ -83,7 +77,7 @@ public class TestDefaultStatsService {
 	@Before
 	public void prepare() {
 
-		Mockito.reset(approvedSiteService, clientService);
+		Mockito.reset(statsRepository);
 
 		Mockito.when(ap1.getUserId()).thenReturn(userId1);
 		Mockito.when(ap1.getClientId()).thenReturn(clientId1);
@@ -103,24 +97,33 @@ public class TestDefaultStatsService {
 		Mockito.when(ap6.getUserId()).thenReturn(userId1);
 		Mockito.when(ap6.getClientId()).thenReturn(clientId4);
 
-		Mockito.when(approvedSiteService.getAll()).thenReturn(Sets.newHashSet(ap1, ap2, ap3, ap4));
+		Collection<ApprovedSiteId> apList = ImmutableList.of(
+				new ApprovedSiteId(1L, ap1.getClientId(), ap1.getUserId()),
+				new ApprovedSiteId(2L, ap2.getClientId(), ap2.getUserId()),
+				new ApprovedSiteId(3L, ap3.getClientId(), ap3.getUserId()),
+				new ApprovedSiteId(4L, ap4.getClientId(), ap4.getUserId())
+				);
+		Collection<ApprovedSitePerClientCount> apCount = ImmutableList.of(
+				new ApprovedSitePerClientCount(clientId1, 2L),
+				new ApprovedSitePerClientCount(clientId2, 1L),
+				new ApprovedSitePerClientCount(clientId3, 1L)
+				);
+		Collection<ClientDetailsEntityId> clientList = ImmutableList.of(
+				new ClientDetailsEntityId(1L, clientId1),
+				new ClientDetailsEntityId(2L, clientId2),
+				new ClientDetailsEntityId(3L, clientId3),
+				new ClientDetailsEntityId(4L, clientId4)
+				);
 
-		Mockito.when(client1.getId()).thenReturn(1L);
-		Mockito.when(client2.getId()).thenReturn(2L);
-		Mockito.when(client3.getId()).thenReturn(3L);
-		Mockito.when(client4.getId()).thenReturn(4L);
-
-		Mockito.when(clientService.getAllClients()).thenReturn(Sets.newHashSet(client1, client2, client3, client4));
-		Mockito.when(clientService.loadClientByClientId(clientId1)).thenReturn(client1);
-		Mockito.when(clientService.loadClientByClientId(clientId2)).thenReturn(client2);
-		Mockito.when(clientService.loadClientByClientId(clientId3)).thenReturn(client3);
-		Mockito.when(clientService.loadClientByClientId(clientId4)).thenReturn(client4);
+		Mockito.when(statsRepository.getAllApprovedSitesClientIdAndUserId()).thenReturn(apList);
+		Mockito.when(statsRepository.getAllApprovedSitesClientIdCount()).thenReturn(apCount);
+		Mockito.when(statsRepository.getAllClientIds()).thenReturn(clientList);
 	}
 
 	@Test
 	public void calculateSummaryStats_empty() {
 
-		Mockito.when(approvedSiteService.getAll()).thenReturn(new HashSet<ApprovedSite>());
+		Mockito.when(statsRepository.getAllApprovedSitesClientIdAndUserId()).thenReturn(new Vector<ApprovedSiteId>());
 
 		Map<String, Integer> stats = service.getSummaryStats();
 
@@ -141,7 +144,7 @@ public class TestDefaultStatsService {
 	@Test
 	public void calculateByClientId_empty() {
 
-		Mockito.when(approvedSiteService.getAll()).thenReturn(new HashSet<ApprovedSite>());
+		Mockito.when(statsRepository.getAllApprovedSitesClientIdCount()).thenReturn(new Vector<ApprovedSitePerClientCount>());
 
 		Map<Long, Integer> stats = service.getByClientId();
 
@@ -180,8 +183,16 @@ public class TestDefaultStatsService {
 		assertThat(stats.get("userCount"), is(2));
 		assertThat(stats.get("clientCount"), is(3));
 
-		Mockito.when(approvedSiteService.getAll()).thenReturn(Sets.newHashSet(ap1, ap2, ap3, ap4, ap5, ap6));
+		Collection<ApprovedSiteId> newList = ImmutableList.of(
+				new ApprovedSiteId(1L, ap1.getClientId(), ap1.getUserId()),
+				new ApprovedSiteId(2L, ap2.getClientId(), ap2.getUserId()),
+				new ApprovedSiteId(3L, ap3.getClientId(), ap3.getUserId()),
+				new ApprovedSiteId(4L, ap4.getClientId(), ap4.getUserId()),
+				new ApprovedSiteId(5L, ap5.getClientId(), ap5.getUserId()),
+				new ApprovedSiteId(6L, ap6.getClientId(), ap6.getUserId())
+				);
 
+		Mockito.when(statsRepository.getAllApprovedSitesClientIdAndUserId()).thenReturn(newList);
 		Map<String, Integer> stats2 = service.getSummaryStats();
 
 		// cache should remain the same due to memoized functions
