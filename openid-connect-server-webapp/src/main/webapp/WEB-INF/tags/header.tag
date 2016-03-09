@@ -73,6 +73,9 @@
 				return false;
 			}
 		}
+		
+		var heartMode = ${config.heartMode};
+		
     </script>    
 </head>
 
