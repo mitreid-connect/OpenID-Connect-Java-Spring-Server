@@ -272,6 +272,10 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 
 			}
 		
+			if (client.getGrantTypes().contains("password")) {
+				throw new IllegalArgumentException("[HEART mode] Password grant type is forbidden");
+			}
+
 			// make sure we don't have a client secret
 			if (!Strings.isNullOrEmpty(client.getClientSecret())) {
 				throw new IllegalArgumentException("[HEART mode] Client secrets are not allowed");
