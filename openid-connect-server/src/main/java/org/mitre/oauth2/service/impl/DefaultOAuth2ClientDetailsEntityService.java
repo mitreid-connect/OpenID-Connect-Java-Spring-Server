@@ -287,13 +287,16 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 			}
 
 			// make sure our redirect URIs each fit one of the allowed categories
-			if (client.getRedirectUris() != null) {
+			if (client.getRedirectUris() != null && !client.getRedirectUris().isEmpty()) {
 				boolean localhost = false;
 				boolean remoteHttps = false;
 				boolean customScheme = false;
 				for (String uri : client.getRedirectUris()) {
 					UriComponents components = UriComponentsBuilder.fromUriString(uri).build();
-					if (components.getScheme().equals("http")) {
+					if (components.getScheme() == null) {
+						// this is a very unknown redirect URI
+						customScheme = true;
+					} else if (components.getScheme().equals("http")) {
 						// http scheme, check for localhost
 						if (components.getHost().equals("localhost") || components.getHost().equals("127.0.0.1")) {
 							localhost = true;
