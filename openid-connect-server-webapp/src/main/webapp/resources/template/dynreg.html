@@ -318,6 +318,7 @@
 			<div class="control-group" id="tokenEndpointAuthMethod">
 				<label class="control-label" data-i18n="client.client-form.authentication-method">Token Endpoint Authentication Method</label>
 				<div class="controls">
+					<% if (!heartMode) { %>
                     <div>
                         <input type="radio" id="tokenEndpointAuthMethodBasic" name="tokenEndpointAuthMethod" value="client_secret_basic" <%-(client.token_endpoint_auth_method == 'client_secret_basic' ? 'checked' : '')%>>
                         <label for="tokenEndpointAuthMethodBasic" class="radio" data-i18n="client.client-form.secret-http">Client Secret over HTTP Basic</label>
@@ -330,8 +331,9 @@
                         <input type="radio" id="tokenEndpointAuthMethodSymm" name="tokenEndpointAuthMethod" value="client_secret_jwt" <%-(client.token_endpoint_auth_method == 'client_secret_jwt' ? 'checked' : '')%>>
                         <label for="tokenEndpointAuthMethodSymm" class="radio" data-i18n="client.client-form.secret-symmetric-jwt">Client Secret via symmetrically-signed JWT assertion</label>
                     </div>
+					<% } %>
                     <div>
-                        <input type="radio" id="tokenEndpointAuthMethodAssym" name="tokenEndpointAuthMethod" value="private_key_jwt" <%-(client.token_endpoint_auth_method == 'private_key_jwt' ? 'checked' : '')%>>
+                        <input type="radio" id="tokenEndpointAuthMethodAssym" name="tokenEndpointAuthMethod" value="private_key_jwt" <%-((client.token_endpoint_auth_method == 'private_key_jwt')  || (heartMode && !tokenEndpointAuthMethod) ? 'checked' : '')%>>
                         <label for="tokenEndpointAuthMethodAssym" class="radio" data-i18n="client.client-form.secret-asymmetric-jwt">Asymmetrically-signed JWT assertion</label>
                     </div>
                     <div>

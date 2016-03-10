@@ -540,7 +540,8 @@ var DynRegEditView = Backbone.View.extend({
     },
 
     render:function() {
-		$(this.el).html(this.template({client: this.model.toJSON(), userInfo: getUserInfo()}));
+    	var data = {client: this.model.toJSON(), userInfo: getUserInfo(), heartMode: heartMode};
+		$(this.el).html(this.template(data));
 		
 		this.listWidgetViews = [];
 		

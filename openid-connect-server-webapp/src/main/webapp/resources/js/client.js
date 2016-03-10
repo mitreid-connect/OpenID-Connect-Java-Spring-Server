@@ -1083,8 +1083,9 @@ var ClientFormView = Backbone.View.extend({
     },
 
     render:function (eventName) {
-
-        $(this.el).html(this.template(this.model.toJSON()));
+    	
+    	var data = {client: this.model.toJSON(), heartMode: heartMode};
+        $(this.el).html(this.template(data));
         
         var _self = this;
 

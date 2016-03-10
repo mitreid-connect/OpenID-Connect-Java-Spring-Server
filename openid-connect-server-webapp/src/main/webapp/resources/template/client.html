@@ -176,7 +176,7 @@
 </script>
 
 <script type="text/html" id="tmpl-client-form">
-    <% if (id == null) { %>
+    <% if (client.id == null) { %>
         <h1 data-i18n="client.client-form.new"></h1>
     <% } else { %>
         <h1 data-i18n="client.client-form.edit"></h1>
@@ -204,8 +204,8 @@
 			<div class="control-group" id="createdAt">
 				<label class="control-label" data-i18n="client.client-form.registered">Registered at</label>
 				<div class="controls">
-					<% if (createdAt) { %>
-						<%-createdAt%>
+					<% if (client.createdAt) { %>
+						<%-client.createdAt%>
 					<% } else { %>
 						<span data-i18n="client.client-form.unknown">Unknown</span>
 					<% } %>
@@ -215,7 +215,7 @@
             <div class="control-group" id="clientName">
                 <label class="control-label" data-i18n="client.client-form.client-name">Client name</label>
                 <div class="controls">
-                    <input value="<%-clientName%>" maxlength="100" type="text" class="" placeholder="Type something" data-i18n="[placeholder]client.client-form.client-name-placeholder">
+                    <input value="<%-client.clientName%>" maxlength="100" type="text" class="" placeholder="Type something" data-i18n="[placeholder]client.client-form.client-name-placeholder">
                     <p class="help-block" data-i18n="client.client-form.client-name-help">Human-readable application name</p>
                 </div>
             </div>
@@ -223,7 +223,7 @@
             <div class="control-group" id="clientId">
                 <label class="control-label" data-i18n="client.client-form.client-id">Client ID</label>
                 <div class="controls">
-                    <input value="<%-clientId%>" maxlength="100" type="text" class="" placeholder="Type something" data-i18n="[placeholder]client.client-form.client-id-placeholder">
+                    <input value="<%-client.clientId%>" maxlength="100" type="text" class="" placeholder="Type something" data-i18n="[placeholder]client.client-form.client-id-placeholder">
                     <p class="help-block" data-i18n="client.client-form.client-id-help">Unique identifier. If you leave this blank it will be automatically generated.</p>
                 </div>
             </div>
@@ -238,7 +238,7 @@
                 <label class="control-label" data-i18n="client.client-form.description">Description</label>
                 <div class="controls">
                     <textarea class="input-xlarge" placeholder="Type a description" maxlength="200"
-                              rows="3" data-i18n="[placeholder]client.client-form.description-placeholder"><%-clientDescription%></textarea>
+                              rows="3" data-i18n="[placeholder]client.client-form.description-placeholder"><%-client.clientDescription%></textarea>
                     <p class="help-block" data-i18n="client.client-form.description-help">Human-readable text description</p>
                 </div>
             </div>
@@ -246,7 +246,7 @@
 			<div class="control-group" id="logoUri">
 				<label class="control-label" data-i18n="client.client-form.logo">Logo</label>
 				<div class="controls">
-					<input placeholder="https://" value="<%-logoUri%>" maxlength="1000" type="text" class=""/>
+					<input placeholder="https://" value="<%-client.logoUri%>" maxlength="1000" type="text" class=""/>
 					<p class="help-block" data-i18n="client.client-form.logo-help">URL that points to a logo image, will be displayed on approval page</p>
 				</div>
 			</div>
@@ -260,7 +260,7 @@
 			<div class="control-group" id="tosUri">
 				<label class="control-label" data-i18n="client.client-form.terms">Terms of Service</label>
 				<div class="controls">
-					<input placeholder="https://" value="<%-tosUri%>" maxlength="1000" type="text" class=""/>
+					<input placeholder="https://" value="<%-client.tosUri%>" maxlength="1000" type="text" class=""/>
 					<p class="help-block" data-i18n="client.client-form.terms-help">URL for the Terms of Service of this client, will be displayed to the user</p>
 				</div>
 			</div>
@@ -268,7 +268,7 @@
 			<div class="control-group" id="policyUri">
 				<label class="control-label" data-i18n="client.client-form.policy">Policy Statement</label>
 				<div class="controls">
-					<input placeholder="https://" value="<%-policyUri%>" maxlength="1000" type="text" class=""/>
+					<input placeholder="https://" value="<%-client.policyUri%>" maxlength="1000" type="text" class=""/>
 					<p class="help-block" data-i18n="client.client-form.policy-help">URL for the Policy Statement of this client, will be displayed to the user</p>
 				</div>
 			</div>
@@ -276,7 +276,7 @@
 			<div class="control-group" id="clientUri">
 				<label class="control-label" data-i18n="client.client-form.home">Home Page</label>
 				<div class="controls">
-					<input placeholder="https://" value="<%-clientUri%>" maxlength="1000" type="text" class=""/>
+					<input placeholder="https://" value="<%-client.clientUri%>" maxlength="1000" type="text" class=""/>
 					<p class="help-block" data-i18n="client.client-form.home-help">URL for the client's home page, will be displayed to the user</p>
 				</div>
 			</div>
@@ -285,9 +285,9 @@
 				<label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> <span data-i18n="client.client-form.type">Application Type</span></label>
 				<div class="controls">
                     <div>
-                    <input id="app-type-native" type="radio" name="applicationType" value="NATIVE" <%-(applicationType == 'NATIVE' ? 'checked' : '')%>>
+                    <input id="app-type-native" type="radio" name="applicationType" value="NATIVE" <%-(client.applicationType == 'NATIVE' ? 'checked' : '')%>>
                     <label for="app-type-native" class="radio inline" data-i18n="client.client-form.type-native">Native</label>
-                    <input id="app-type-web" type="radio" name="applicationType" value="WEB" <%-(applicationType == 'WEB' ? 'checked' : '')%>>
+                    <input id="app-type-web" type="radio" name="applicationType" value="WEB" <%-(client.applicationType == 'WEB' ? 'checked' : '')%>>
                     <label for="app-type-web" class="radio inline" data-i18n="client.client-form.type-web">Web</label>
                     </div>
 				</div>
@@ -313,38 +313,40 @@
 
                 <div class="controls">
                     <div>
-                        <input id="grantTypes-authorization_code" type="checkbox"
-                            <%-($.inArray("authorization_code", grantTypes) > -1 ? 'checked' : '')%>>
+                        <input id="grantTypes-authorization_code" <%= heartMode ? 'type="radio" name="grantType"' : 'type="checkbox"' %>
+                            <%-($.inArray("authorization_code", client.grantTypes) > -1 ? 'checked' : '')%>>
                         <label for="grantTypes-authorization_code" class="checkbox" data-i18n="client.client-form.authorization-code">authorization code</label>
                     </div>
 
                     <div>
-                        <input id="grantTypes-client_credentials" type="checkbox"
-                            <%-($.inArray("client_credentials", grantTypes) > -1 ? 'checked' : '')%>>
+                        <input id="grantTypes-client_credentials" <%= heartMode ? 'type="radio" name="grantType"' : 'type="checkbox"' %>
+                            <%-($.inArray("client_credentials", client.grantTypes) > -1 ? 'checked' : '')%>>
                         <label for="grantTypes-client_credentials" class="checkbox" data-i18n="client.client-form.client-credentials">client credentials</label>
                     </div>
 
+					<% if (!heartMode) { // disable password on heart mode %>
                     <div>
                         <input id="grantTypes-password" type="checkbox"
-                            <%-($.inArray("password", grantTypes) > -1 ? 'checked' : '')%>>
+                            <%-($.inArray("password", client.grantTypes) > -1 ? 'checked' : '')%>>
                         <label for="grantTypes-password" class="checkbox" data-i18n="client.client-form.password">password</label>
                     </div>
+					<% } %>
 
                     <div>
-                        <input id="grantTypes-implicit" type="checkbox"
-                            <%-($.inArray("implicit", grantTypes) > -1 ? 'checked' : '')%>> 
+                        <input id="grantTypes-implicit" <%= heartMode ? 'type="radio" name="grantType"' : 'type="checkbox"' %>
+                            <%-($.inArray("implicit", client.grantTypes) > -1 ? 'checked' : '')%>> 
                         <label for="grantTypes-implicit" class="checkbox" data-i18n="client.client-form.implicit">implicit</label>
                     </div>
 <!--
                     <div>
                         <input id="grantTypes-refresh_token" type="checkbox"
-                            <%-($.inArray("refresh_token", grantTypes) > -1 ? 'checked' : '')%>> 
+                            <%-($.inArray("refresh_token", client.grantTypes) > -1 ? 'checked' : '')%>> 
                         <label for="grantTypes-refresh_token" class="checkbox" data-i18n="client.client-form.refresh">refresh</label>
                     </div>
 -->
                     <div>
                         <input id="grantTypes-redelegate" type="checkbox"
-                            <%-($.inArray("urn:ietf:params:oauth:grant_type:redelegate", grantTypes) > -1 ? 'checked' : '')%>> 
+                            <%-($.inArray("urn:ietf:params:oauth:grant_type:redelegate", client.grantTypes) > -1 ? 'checked' : '')%>> 
                         <label for="grantTypes-redelegate" class="checkbox" data-i18n="client.client-form.redelegation">redelegate</label>
                     </div>
                 </div>
@@ -355,31 +357,31 @@
 
 				<div class="controls">
                     <div>
-                        <input id="responseTypes-code" type="checkbox" <%-($.inArray("code", responseTypes) > -1 ? 'checked' : '')%>>
+                        <input id="responseTypes-code" type="checkbox" <%-($.inArray("code", client.responseTypes) > -1 ? 'checked' : '')%>>
                         <label for="responseTypes-code" class="checkbox">code</label>
                     </div>
                     <div>
-                        <input id="responseTypes-token" type="checkbox" <%-($.inArray("token", responseTypes) > -1 ? 'checked' : '')%>>
+                        <input id="responseTypes-token" type="checkbox" <%-($.inArray("token", client.responseTypes) > -1 ? 'checked' : '')%>>
                         <label for="responseTypes-token" class="checkbox">token</label>
                     </div>
                     <div>
-                        <input id="responseTypes-idtoken" type="checkbox" <%-($.inArray("id_token", responseTypes) > -1 ? 'checked' : '')%>>
+                        <input id="responseTypes-idtoken" type="checkbox" <%-($.inArray("id_token", client.responseTypes) > -1 ? 'checked' : '')%>>
                         <label for="responseTypes-idtoken" class="checkbox">id_token</label>
                     </div>
                     <div>
-                        <input id="responseTypes-token-idtoken" type="checkbox" <%-($.inArray("token id_token", responseTypes) > -1 ? 'checked' : '')%>>
+                        <input id="responseTypes-token-idtoken" type="checkbox" <%-($.inArray("token id_token", client.responseTypes) > -1 ? 'checked' : '')%>>
                         <label for="responseTypes-token-idtoken" class="checkbox">token id_token</label>
                     </div>
                     <div>
-                        <input id="responseTypes-code-idtoken" type="checkbox" <%-($.inArray("code id_token", responseTypes) > -1 ? 'checked' : '')%>>
+                        <input id="responseTypes-code-idtoken" type="checkbox" <%-($.inArray("code id_token", client.responseTypes) > -1 ? 'checked' : '')%>>
                         <label for="responseTypes-code-idtoken" class="checkbox">code id_token</label>
                     </div>
                     <div>
-                        <input id="responseTypes-code-token" type="checkbox" <%-($.inArray("code token", responseTypes) > -1 ? 'checked' : '')%>>
+                        <input id="responseTypes-code-token" type="checkbox" <%-($.inArray("code token", client.responseTypes) > -1 ? 'checked' : '')%>>
                         <label for="responseTypes-code-token" class="checkbox">code token</label>
                     </div>
                     <div>
-                        <input id="responseTypes-code-token-idtoken" type="checkbox" <%-($.inArray("code token id_token", responseTypes) > -1 ? 'checked' : '')%>>
+                        <input id="responseTypes-code-token-idtoken" type="checkbox" <%-($.inArray("code token id_token", client.responseTypes) > -1 ? 'checked' : '')%>>
                         <label for="responseTypes-code-token-idtoken" class="checkbox">code token id_token</label>
                     </div>
 				</div>
@@ -390,7 +392,7 @@
 				<div class="controls">
                     <div>
                         <label class="checkbox" data-i18n="client.client-form.allow-introspection">Allow calls to the Introspection Endpoint?</label>
-                        <input type="checkbox" <%-(allowIntrospection == true ? 'checked' : '')%>>
+                        <input type="checkbox" <%-(client.allowIntrospection == true ? 'checked' : '')%>>
                     </div>
 				</div>
 			</div>
@@ -399,9 +401,9 @@
 				<label class="control-label" data-i18n="client.client-form.subject-type">Subject Type</label>
 				<div class="controls">
                     <div>
-                        <input id="control-label-public" type="radio" name="subjectType" value="PUBLIC" <%-(subjectType == 'PUBLIC' ? 'checked' : '')%>>
+                        <input id="control-label-public" type="radio" name="subjectType" value="PUBLIC" <%-(client.subjectType == 'PUBLIC' ? 'checked' : '')%>>
                         <label for="control-label-public" class="radio inline" data-i18n="client.client-form.public">Public</label>
-                        <input id="control-label-pairwise" type="radio" name="subjectType" value="PAIRWISE" <%-(subjectType == 'PAIRWISE' ? 'checked' : '')%>>
+                        <input id="control-label-pairwise" type="radio" name="subjectType" value="PAIRWISE" <%-(client.subjectType == 'PAIRWISE' ? 'checked' : '')%>>
                         <label for="control-label-pairwise" class="radio inline" data-i18n="client.client-form.pairwise">Pairwise</label>
                     </div>
 				</div>
@@ -410,7 +412,7 @@
 			<div class="control-group" id="sectorIdentifierUri">
 				<label class="control-label" data-i18n="client.client-form.sector-identifier">Sector Identifier URI</label>
 				<div class="controls">
-					<input placeholder="https://" value="<%-sectorIdentifierUri%>" maxlength="1000" type="text" class=""/>
+					<input placeholder="https://" value="<%-client.sectorIdentifierUri%>" maxlength="1000" type="text" class=""/>
 					<p class="help-block" data-i18n="client.client-form.sector-identifier-help">Sector Identifier for JavaScript</p>
 				</div>
 			</div>
@@ -422,24 +424,26 @@
 			<div class="control-group" id="tokenEndpointAuthMethod">
 				<label class="control-label" data-i18n="client.client-form.authentication-method">Token Endpoint Authentication Method</label>
 				<div class="controls">
+					<% if (!heartMode) { %>
                     <div>
-                        <input type="radio" id="tokenEndpointAuthMethodBasic" name="tokenEndpointAuthMethod" value="SECRET_BASIC" <%-((tokenEndpointAuthMethod == 'SECRET_BASIC') || (!tokenEndpointAuthMethod) ? 'checked' : '')%>>
+                        <input type="radio" id="tokenEndpointAuthMethodBasic" name="tokenEndpointAuthMethod" value="SECRET_BASIC" <%-((client.tokenEndpointAuthMethod == 'SECRET_BASIC') || (!tokenEndpointAuthMethod) ? 'checked' : '')%>>
                         <label for="tokenEndpointAuthMethodBasic" class="radio" data-i18n="client.client-form.secret-http">Client Secret over HTTP Basic</label>
                     </div>
                     <div>
-                        <input type="radio" id="tokenEndpointAuthMethodPost" name="tokenEndpointAuthMethod" value="SECRET_POST" <%-(tokenEndpointAuthMethod == 'SECRET_POST' ? 'checked' : '')%>>
+                        <input type="radio" id="tokenEndpointAuthMethodPost" name="tokenEndpointAuthMethod" value="SECRET_POST" <%-(client.tokenEndpointAuthMethod == 'SECRET_POST' ? 'checked' : '')%>>
                         <label for="tokenEndpointAuthMethodPost" class="radio" data-i18n="client.client-form.secret-post">Client Secret over HTTP POST</label>
                     </div>
                     <div>
-                        <input type="radio" id="tokenEndpointAuthMethodSymm" name="tokenEndpointAuthMethod" value="SECRET_JWT" <%-(tokenEndpointAuthMethod == 'SECRET_JWT' ? 'checked' : '')%>>
+                        <input type="radio" id="tokenEndpointAuthMethodSymm" name="tokenEndpointAuthMethod" value="SECRET_JWT" <%-(client.tokenEndpointAuthMethod == 'SECRET_JWT' ? 'checked' : '')%>>
                         <label for="tokenEndpointAuthMethodSymm" class="radio" data-i18n="client.client-form.secret-symmetric-jwt">Client Secret via symmetrically-signed JWT assertion</label>
                     </div>
+					<% } %>
                     <div>
-                        <input type="radio" id="tokenEndpointAuthMethodAssym" name="tokenEndpointAuthMethod" value="PRIVATE_KEY" <%-(tokenEndpointAuthMethod == 'PRIVATE_KEY' ? 'checked' : '')%>>
+                        <input type="radio" id="tokenEndpointAuthMethodAssym" name="tokenEndpointAuthMethod" value="PRIVATE_KEY" <%-((client.tokenEndpointAuthMethod == 'PRIVATE_KEY')  || (heartMode && !tokenEndpointAuthMethod) ? 'checked' : '')%>>
                         <label for="tokenEndpointAuthMethodAssym" class="radio" data-i18n="client.client-form.secret-asymmetric-jwt">Asymmetrically-signed JWT assertion</label>
                     </div>
                     <div>
-                        <input type="radio" id="tokenEndpointAuthMethodNone" name="tokenEndpointAuthMethod" value="NONE" <%-(tokenEndpointAuthMethod == 'NONE' ? 'checked' : '')%>>
+                        <input type="radio" id="tokenEndpointAuthMethodNone" name="tokenEndpointAuthMethod" value="NONE" <%-(client.tokenEndpointAuthMethod == 'NONE' ? 'checked' : '')%>>
                         <label for="tokenEndpointAuthMethodNone" class="radio" data-i18n="client.client-form.secret-none">No authentication</label>
                     </div>
 				</div>
@@ -451,7 +455,7 @@
 				<div class="control-group" id="generateClientSecret">
 					<div class="controls">
                         <div>
-                            <input id="clientSecretPanelInput" type="checkbox" <%-(generateClientSecret == true ? 'checked' : '')%>>
+                            <input id="clientSecretPanelInput" type="checkbox" <%-(client.generateClientSecret == true ? 'checked' : '')%>>
                             <label for="clientSecretPanelInput" class="checkbox" data-i18n="client.client-form.generate-new-secret">Generate a new client secret?</label>
                         </div>
 						<p class="help-block" data-i18n="client.client-form.generate-new-secret-help">New secret will be generated when you click 'Save'</p>
@@ -462,7 +466,7 @@
 					<div class="controls">
                         <div>
                             <label id="displayClientSecretInput" class="checkbox" data-i18n="client.client-form.display-secret">Display/edit client secret:</label>
-                            <input for="displayClientSecretInput" type="checkbox" <%-(displayClientSecret == true ? 'checked' : '')%>>
+                            <input for="displayClientSecretInput" type="checkbox" <%-(client.displayClientSecret == true ? 'checked' : '')%>>
                         </div>
 					</div>
 				</div>
@@ -470,7 +474,7 @@
     	        <div class="control-group">
             	    <div class="controls">
 						<div id="clientSecret" class="span3">
-                	    	<input value="<%-clientSecret%>" maxlength="100" type="text" placeholder="Type a secret" data-i18n="[placeholder]client.client-form.client-secret-placeholder">
+                	    	<input value="<%-client.clientSecret%>" maxlength="100" type="text" placeholder="Type a secret" data-i18n="[placeholder]client.client-form.client-secret-placeholder">
 						</div>
 						<div id="clientSecretGenerated" class="span3">
 							<span class="uneditable-input" data-i18n="client.client-form.generate-on-save">Generate on Save</span>
@@ -487,19 +491,19 @@
                 <label class="control-label" data-i18n="client.client-form.token-signing-algorithm">Token Endpoint Authentication Signing Algorithm</label>
                 <div class="controls">
 					<select>
-						<option value="default" <%-tokenEndpointAuthSigningAlg == null ? 'selected ' : ''%> data-i18n="client.client-form.signing.any">Any allowed</option>
-						<option value="HS256" <%-tokenEndpointAuthSigningAlg == "HS256" ? 'selected' : ''%> data-i18n="client.client-form.signing.hs256">HMAC using SHA-256 hash algorithm</option>
-						<option value="HS384" <%-tokenEndpointAuthSigningAlg == "HS384" ? 'selected' : ''%> data-i18n="client.client-form.signing.hs384">HMAC using SHA-384 hash algorithm</option>
-						<option value="HS512" <%-tokenEndpointAuthSigningAlg == "HS512" ? 'selected' : ''%> data-i18n="client.client-form.signing.hs512">HMAC using SHA-512 hash algorithm</option>
-						<option value="RS256" <%-tokenEndpointAuthSigningAlg == "RS256" ? 'selected' : ''%> data-i18n="client.client-form.signing.rs256">RSASSA using SHA-256 hash algorithm</option>
-						<option value="RS384" <%-tokenEndpointAuthSigningAlg == "RS384" ? 'selected' : ''%> data-i18n="client.client-form.signing.rs384">RSASSA using SHA-384 hash algorithm</option>
-						<option value="RS512" <%-tokenEndpointAuthSigningAlg == "RS512" ? 'selected' : ''%> data-i18n="client.client-form.signing.rs512">RSASSA using SHA-512 hash algorithm</option>
-						<option value="PS256" <%-tokenEndpointAuthSigningAlg == "PS256" ? 'selected' : ''%> data-i18n="client.client-form.signing.ps256">RSASSA-PSS using SHA-256 and MGF1 with SHA-256</option>
-						<option value="PS384" <%-tokenEndpointAuthSigningAlg == "PS384" ? 'selected' : ''%> data-i18n="client.client-form.signing.ps384">RSASSA-PSS using SHA-384 and MGF1 with SHA-384</option>
-						<option value="PS512" <%-tokenEndpointAuthSigningAlg == "PS512" ? 'selected' : ''%> data-i18n="client.client-form.signing.ps512">RSASSA-PSS using SHA-512 and MGF1 with SHA-512</option>
-						<option value="ES256" <%-tokenEndpointAuthSigningAlg == "ES256" ? 'selected' : ''%> data-i18n="client.client-form.signing.es256">ECDSA using P-256 curve and SHA-256 hash algorithm</option>
-						<option value="ES384" <%-tokenEndpointAuthSigningAlg == "ES384" ? 'selected' : ''%> data-i18n="client.client-form.signing.es384">ECDSA using P-384 curve and SHA-384 hash algorithm</option>
-						<option value="ES512" <%-tokenEndpointAuthSigningAlg == "ES512" ? 'selected' : ''%> data-i18n="client.client-form.signing.es512">ECDSA using P-512 curve and SHA-512 hash algorithm</option>
+						<option value="default" <%-client.tokenEndpointAuthSigningAlg == null ? 'selected ' : ''%> data-i18n="client.client-form.signing.any">Any allowed</option>
+						<option value="HS256" <%-client.tokenEndpointAuthSigningAlg == "HS256" ? 'selected' : ''%> data-i18n="client.client-form.signing.hs256">HMAC using SHA-256 hash algorithm</option>
+						<option value="HS384" <%-client.tokenEndpointAuthSigningAlg == "HS384" ? 'selected' : ''%> data-i18n="client.client-form.signing.hs384">HMAC using SHA-384 hash algorithm</option>
+						<option value="HS512" <%-client.tokenEndpointAuthSigningAlg == "HS512" ? 'selected' : ''%> data-i18n="client.client-form.signing.hs512">HMAC using SHA-512 hash algorithm</option>
+						<option value="RS256" <%-client.tokenEndpointAuthSigningAlg == "RS256" ? 'selected' : ''%> data-i18n="client.client-form.signing.rs256">RSASSA using SHA-256 hash algorithm</option>
+						<option value="RS384" <%-client.tokenEndpointAuthSigningAlg == "RS384" ? 'selected' : ''%> data-i18n="client.client-form.signing.rs384">RSASSA using SHA-384 hash algorithm</option>
+						<option value="RS512" <%-client.tokenEndpointAuthSigningAlg == "RS512" ? 'selected' : ''%> data-i18n="client.client-form.signing.rs512">RSASSA using SHA-512 hash algorithm</option>
+						<option value="PS256" <%-client.tokenEndpointAuthSigningAlg == "PS256" ? 'selected' : ''%> data-i18n="client.client-form.signing.ps256">RSASSA-PSS using SHA-256 and MGF1 with SHA-256</option>
+						<option value="PS384" <%-client.tokenEndpointAuthSigningAlg == "PS384" ? 'selected' : ''%> data-i18n="client.client-form.signing.ps384">RSASSA-PSS using SHA-384 and MGF1 with SHA-384</option>
+						<option value="PS512" <%-client.tokenEndpointAuthSigningAlg == "PS512" ? 'selected' : ''%> data-i18n="client.client-form.signing.ps512">RSASSA-PSS using SHA-512 and MGF1 with SHA-512</option>
+						<option value="ES256" <%-client.tokenEndpointAuthSigningAlg == "ES256" ? 'selected' : ''%> data-i18n="client.client-form.signing.es256">ECDSA using P-256 curve and SHA-256 hash algorithm</option>
+						<option value="ES384" <%-client.tokenEndpointAuthSigningAlg == "ES384" ? 'selected' : ''%> data-i18n="client.client-form.signing.es384">ECDSA using P-384 curve and SHA-384 hash algorithm</option>
+						<option value="ES512" <%-client.tokenEndpointAuthSigningAlg == "ES512" ? 'selected' : ''%> data-i18n="client.client-form.signing.es512">ECDSA using P-512 curve and SHA-512 hash algorithm</option>
 					</select>
                 </div>
             </div>
@@ -508,18 +512,18 @@
 				<label class="control-label" data-i18n="client.client-form.jwk-set">Public Key Set</label>
 				<div class="controls" id="jwkSelector">
 					<div>
-                        <input id="jwkstype-uri" type="radio" name="jwksType" value="URI" <%-(jwksType == 'URI' ? 'checked' : '')%>>
+                        <input id="jwkstype-uri" type="radio" name="jwksType" value="URI" <%-(client.jwksType == 'URI' ? 'checked' : '')%>>
                         <label for="jwkstype-uri" class="radio inline" data-i18n="client.client-form.jwks-by-uri">By URI</label>
-                        <input id="jwkstype-value" type="radio" name="jwksType" value="VAL" <%-(jwksType == 'VAL' ? 'checked' : '')%>>
+                        <input id="jwkstype-value" type="radio" name="jwksType" value="VAL" <%-(client.jwksType == 'VAL' ? 'checked' : '')%>>
                         <label for="jwkstype-value" class="radio inline" data-i18n="client.client-form.jwks-by-value">By Value</label>
 					</div>
 				</div>
 				<div class="controls" id="jwksUri">
-					<input placeholder="https://" value="<%-jwksUri%>" maxlength="1000" type="text" class=""/>
+					<input placeholder="https://" value="<%-client.jwksUri%>" maxlength="1000" type="text" class=""/>
 					<p class="help-block" data-i18n="client.client-form.jwk-set-help">URL for the client's JSON Web Key set (must be reachable by the server)</p>
 				</div>
 				<div class="controls" id="jwks">
-					<textarea  class="input-xlarge" placeholder="{ &quot;keys&quot: [ ] }" maxlength="4000" type="text" rows="8"><%- (jwks != null ? JSON.stringify(jwks, null, '  ') : "") %></textarea>
+					<textarea  class="input-xlarge" placeholder="{ &quot;keys&quot: [ ] }" maxlength="4000" type="text" rows="8"><%- (client.jwks != null ? JSON.stringify(client.jwks, null, '  ') : "") %></textarea>
 					<p class="help-block" data-i18n="client.client-form.jwk-set-value-help">Key set value (must be a valid JWK Set formatted key)</p>
 				</div>
 			</div>
@@ -530,11 +534,11 @@
                 <label class="control-label" data-i18n="client.client-form.access-token-timeout">Access Token Timeout</label>
                 <div class="controls">
 					<div>
-                        <input type="checkbox" id="disableAccessTokenTimeout" <%-(accessTokenValiditySeconds == null ? 'checked' : '')%>/>
+                        <input type="checkbox" id="disableAccessTokenTimeout" <%-(client.accessTokenValiditySeconds == null ? 'checked' : '')%>/>
                         <label for="disableAccessTokenTimeout" class="checkbox" data-i18n="client.client-form.access-token-no-timeout">Access tokens do not time out</label>
 					</div>
                     <div>
-                        <input type="text" class="" value="<%-(accessTokenValiditySeconds == null ? '' : accessTokenValiditySeconds)%>" id="access-token-timeout-time" size="16" style="width:8em;">
+                        <input type="text" class="" value="<%-(client.accessTokenValiditySeconds == null ? '' : client.accessTokenValiditySeconds)%>" id="access-token-timeout-time" size="16" style="width:8em;">
 						<select id="access-token-timeout-unit" style="width:8em;">
 							<option data-i18n="client.client-form.seconds">seconds</option>
 							<option data-i18n="client.client-form.minutes">minutes</option>
@@ -550,7 +554,7 @@
                 <label class="control-label" data-i18n="client.client-form.id-token-timeout">ID Token Timeout</label>
                 <div class="controls">
                     <div>
-                        <input type="text" class="" value="<%-(idTokenValiditySeconds == null ? '' : idTokenValiditySeconds)%>" id="id-token-timeout-time" size="16" style="width:8em;">
+                        <input type="text" class="" value="<%-(client.idTokenValiditySeconds == null ? '' : client.idTokenValiditySeconds)%>" id="id-token-timeout-time" size="16" style="width:8em;">
 						<select id="id-token-timeout-unit" style="width:8em;">
 							<option data-i18n="client.client-form.seconds">seconds</option>
 							<option data-i18n="client.client-form.minutes">minutes</option>
@@ -565,7 +569,7 @@
                 <label class="control-label" data-i18n="client.client-form.refresh-tokens">Refresh Tokens</label>
                 <div class="controls">
                     <div>
-                        <input type="checkbox" id="allowRefresh" <%-(allowRefresh == true ? 'checked' : '')%>>
+                        <input type="checkbox" id="allowRefresh" <%-(client.allowRefresh == true ? 'checked' : '')%>>
                         <label for="allowRefresh" class="checkbox" data-i18n="client.client-form.refresh-tokens-issued">Refresh tokens are issued for this client</label>
 	                    <p class="help-block" data-i18n="client.client-form.refresh-tokens-issued-help">This will add the offline_access scope to the client's scopes.</p>
                     </div>
@@ -575,19 +579,19 @@
             <div class="control-group" id="refreshTokenValidityTime">
                 <div class="controls">
 					<div>
-                        <input type="checkbox" id="reuseRefreshToken" <%-(reuseRefreshToken == true ? 'checked' : '')%>>
+                        <input type="checkbox" id="reuseRefreshToken" <%-(client.reuseRefreshToken == true ? 'checked' : '')%>>
                         <label for="reuseRefreshToken" class="checkbox" data-i18n="client.client-form.refresh-tokens-reused">Refresh tokens for this client are re-used</label>
 					</div>
 					<div>
-                        <input type="checkbox" id="clearAccessTokensOnRefresh" <%-(clearAccessTokensOnRefresh == true ? 'checked' : '')%>>
+                        <input type="checkbox" id="clearAccessTokensOnRefresh" <%-(client.clearAccessTokensOnRefresh == true ? 'checked' : '')%>>
                         <label for="clearAccessTokensOnRefresh" class="checkbox" data-i18n="client.client-form.clear-access-tokens">Active access tokens are revoked when the refresh token is used</label>
 					</div>
 					<div>
-                        <input type="checkbox" id="disableRefreshTokenTimeout" <%-(refreshTokenValiditySeconds == null ? 'checked' : '')%>/> 
+                        <input type="checkbox" id="disableRefreshTokenTimeout" <%-(client.refreshTokenValiditySeconds == null ? 'checked' : '')%>/> 
                         <label for="disableRefreshTokenTimeout" class="checkbox" data-i18n="client.client-form.refresh-tokens-no-expire">Refresh tokens do not time out</label>
 					</div>
                     <div>
-                        <input type="text" class="" value="<%-(refreshTokenValiditySeconds == null ? '' : refreshTokenValiditySeconds)%>" id="refresh-token-timeout-time" size="16" style="width:8em;">
+                        <input type="text" class="" value="<%-(client.refreshTokenValiditySeconds == null ? '' : refreshTokenValiditySeconds)%>" id="refresh-token-timeout-time" size="16" style="width:8em;">
 						<select id="refresh-token-timeout-unit" style="width:8em;">
 							<option data-i18n="client.client-form.seconds">seconds</option>
 							<option data-i18n="client.client-form.minutes">minutes</option>
@@ -604,20 +608,20 @@
                 <label class="control-label" data-i18n="client.client-form.request-object-signing-algorithm">Request Object Signing Algorithm</label>
                 <div class="controls">
 					<select>
-						<option value="default" <%-requestObjectSigningAlg == null ? 'selected ' : ''%> data-i18n="client.client-form.signing.default">Use server default</option>
-						<option value="none" <%-requestObjectSigningAlg == "none" ? 'selected' : ''%> data-i18n="client.client-form.signing.none">No digital signature</option>
-						<option value="HS256" <%-requestObjectSigningAlg == "HS256" ? 'selected' : ''%> data-i18n="client.client-form.signing.hs256">HMAC using SHA-256 hash algorithm</option>
-						<option value="HS384" <%-requestObjectSigningAlg == "HS384" ? 'selected' : ''%> data-i18n="client.client-form.signing.hs384">HMAC using SHA-384 hash algorithm</option>
-						<option value="HS512" <%-requestObjectSigningAlg == "HS512" ? 'selected' : ''%> data-i18n="client.client-form.signing.hs512">HMAC using SHA-512 hash algorithm</option>
-						<option value="RS256" <%-requestObjectSigningAlg == "RS256" ? 'selected' : ''%> data-i18n="client.client-form.signing.rs256">RSASSA using SHA-256 hash algorithm</option>
-						<option value="RS384" <%-requestObjectSigningAlg == "RS384" ? 'selected' : ''%> data-i18n="client.client-form.signing.rs384">RSASSA using SHA-384 hash algorithm</option>
-						<option value="RS512" <%-requestObjectSigningAlg == "RS512" ? 'selected' : ''%> data-i18n="client.client-form.signing.rs512">RSASSA using SHA-512 hash algorithm</option>
-						<option value="PS256" <%-requestObjectSigningAlg == "PS256" ? 'selected' : ''%> data-i18n="client.client-form.signing.ps256">RSASSA-PSS using SHA-256 and MGF1 with SHA-256</option>
-						<option value="PS384" <%-requestObjectSigningAlg == "PS384" ? 'selected' : ''%> data-i18n="client.client-form.signing.ps384">RSASSA-PSS using SHA-384 and MGF1 with SHA-384</option>
-						<option value="PS512" <%-requestObjectSigningAlg == "PS512" ? 'selected' : ''%> data-i18n="client.client-form.signing.ps512">RSASSA-PSS using SHA-512 and MGF1 with SHA-512</option>
-						<option value="ES256" <%-requestObjectSigningAlg == "ES256" ? 'selected' : ''%> data-i18n="client.client-form.signing.es256">ECDSA using P-256 curve and SHA-256 hash algorithm</option>
-						<option value="ES384" <%-requestObjectSigningAlg == "ES384" ? 'selected' : ''%> data-i18n="client.client-form.signing.es384">ECDSA using P-384 curve and SHA-384 hash algorithm</option>
-						<option value="ES512" <%-requestObjectSigningAlg == "ES512" ? 'selected' : ''%> data-i18n="client.client-form.signing.es512">ECDSA using P-512 curve and SHA-512 hash algorithm</option>
+						<option value="default" <%-client.requestObjectSigningAlg == null ? 'selected ' : ''%> data-i18n="client.client-form.signing.default">Use server default</option>
+						<option value="none" <%-client.requestObjectSigningAlg == "none" ? 'selected' : ''%> data-i18n="client.client-form.signing.none">No digital signature</option>
+						<option value="HS256" <%-client.requestObjectSigningAlg == "HS256" ? 'selected' : ''%> data-i18n="client.client-form.signing.hs256">HMAC using SHA-256 hash algorithm</option>
+						<option value="HS384" <%-client.requestObjectSigningAlg == "HS384" ? 'selected' : ''%> data-i18n="client.client-form.signing.hs384">HMAC using SHA-384 hash algorithm</option>
+						<option value="HS512" <%-client.requestObjectSigningAlg == "HS512" ? 'selected' : ''%> data-i18n="client.client-form.signing.hs512">HMAC using SHA-512 hash algorithm</option>
+						<option value="RS256" <%-client.requestObjectSigningAlg == "RS256" ? 'selected' : ''%> data-i18n="client.client-form.signing.rs256">RSASSA using SHA-256 hash algorithm</option>
+						<option value="RS384" <%-client.requestObjectSigningAlg == "RS384" ? 'selected' : ''%> data-i18n="client.client-form.signing.rs384">RSASSA using SHA-384 hash algorithm</option>
+						<option value="RS512" <%-client.requestObjectSigningAlg == "RS512" ? 'selected' : ''%> data-i18n="client.client-form.signing.rs512">RSASSA using SHA-512 hash algorithm</option>
+						<option value="PS256" <%-client.requestObjectSigningAlg == "PS256" ? 'selected' : ''%> data-i18n="client.client-form.signing.ps256">RSASSA-PSS using SHA-256 and MGF1 with SHA-256</option>
+						<option value="PS384" <%-client.requestObjectSigningAlg == "PS384" ? 'selected' : ''%> data-i18n="client.client-form.signing.ps384">RSASSA-PSS using SHA-384 and MGF1 with SHA-384</option>
+						<option value="PS512" <%-client.requestObjectSigningAlg == "PS512" ? 'selected' : ''%> data-i18n="client.client-form.signing.ps512">RSASSA-PSS using SHA-512 and MGF1 with SHA-512</option>
+						<option value="ES256" <%-client.requestObjectSigningAlg == "ES256" ? 'selected' : ''%> data-i18n="client.client-form.signing.es256">ECDSA using P-256 curve and SHA-256 hash algorithm</option>
+						<option value="ES384" <%-client.requestObjectSigningAlg == "ES384" ? 'selected' : ''%> data-i18n="client.client-form.signing.es384">ECDSA using P-384 curve and SHA-384 hash algorithm</option>
+						<option value="ES512" <%-client.requestObjectSigningAlg == "ES512" ? 'selected' : ''%> data-i18n="client.client-form.signing.es512">ECDSA using P-512 curve and SHA-512 hash algorithm</option>
 					</select>
                 </div>
             </div>
@@ -626,20 +630,20 @@
                 <label class="control-label" data-i18n="client.client-form.user-info-signing-algorithm">User Info Endpoint Signing Algorithm</label>
                 <div class="controls">
 					<select>
-						<option value="default" <%-userInfoSignedResponseAlg == null ? 'selected ' : ''%> data-i18n="client.client-form.signing.default">Use server default</option>
-						<option value="none" <%-userInfoSignedResponseAlg == "none" ? 'selected' : ''%> data-i18n="client.client-form.signing.none">No digital signature</option>
-						<option value="HS256" <%-userInfoSignedResponseAlg == "HS256" ? 'selected' : ''%> data-i18n="client.client-form.signing.hs256">HMAC using SHA-256 hash algorithm</option>
-						<option value="HS384" <%-userInfoSignedResponseAlg == "HS384" ? 'selected' : ''%> data-i18n="client.client-form.signing.hs384">HMAC using SHA-384 hash algorithm</option>
-						<option value="HS512" <%-userInfoSignedResponseAlg == "HS512" ? 'selected' : ''%> data-i18n="client.client-form.signing.hs512">HMAC using SHA-512 hash algorithm</option>
-						<option value="RS256" <%-userInfoSignedResponseAlg == "RS256" ? 'selected' : ''%> data-i18n="client.client-form.signing.rs256">RSASSA using SHA-256 hash algorithm</option>
-						<option value="RS384" <%-userInfoSignedResponseAlg == "RS384" ? 'selected' : ''%> data-i18n="client.client-form.signing.rs384">RSASSA using SHA-384 hash algorithm</option>
-						<option value="RS512" <%-userInfoSignedResponseAlg == "RS512" ? 'selected' : ''%> data-i18n="client.client-form.signing.rs512">RSASSA using SHA-512 hash algorithm</option>
-						<option value="PS256" <%-userInfoSignedResponseAlg == "PS256" ? 'selected' : ''%> data-i18n="client.client-form.signing.ps256">RSASSA-PSS using SHA-256 and MGF1 with SHA-256</option>
-						<option value="PS384" <%-userInfoSignedResponseAlg == "PS384" ? 'selected' : ''%> data-i18n="client.client-form.signing.ps384">RSASSA-PSS using SHA-384 and MGF1 with SHA-384</option>
-						<option value="PS512" <%-userInfoSignedResponseAlg == "PS512" ? 'selected' : ''%> data-i18n="client.client-form.signing.ps512">RSASSA-PSS using SHA-512 and MGF1 with SHA-512</option>
-						<option value="ES256" <%-userInfoSignedResponseAlg == "ES256" ? 'selected' : ''%> data-i18n="client.client-form.signing.es256">ECDSA using P-256 curve and SHA-256 hash algorithm</option>
-						<option value="ES384" <%-userInfoSignedResponseAlg == "ES384" ? 'selected' : ''%> data-i18n="client.client-form.signing.es384">ECDSA using P-384 curve and SHA-384 hash algorithm</option>
-						<option value="ES512" <%-userInfoSignedResponseAlg == "ES512" ? 'selected' : ''%> data-i18n="client.client-form.signing.es512">ECDSA using P-512 curve and SHA-512 hash algorithm</option>
+						<option value="default" <%-client.userInfoSignedResponseAlg == null ? 'selected ' : ''%> data-i18n="client.client-form.signing.default">Use server default</option>
+						<option value="none" <%-client.userInfoSignedResponseAlg == "none" ? 'selected' : ''%> data-i18n="client.client-form.signing.none">No digital signature</option>
+						<option value="HS256" <%-client.userInfoSignedResponseAlg == "HS256" ? 'selected' : ''%> data-i18n="client.client-form.signing.hs256">HMAC using SHA-256 hash algorithm</option>
+						<option value="HS384" <%-client.userInfoSignedResponseAlg == "HS384" ? 'selected' : ''%> data-i18n="client.client-form.signing.hs384">HMAC using SHA-384 hash algorithm</option>
+						<option value="HS512" <%-client.userInfoSignedResponseAlg == "HS512" ? 'selected' : ''%> data-i18n="client.client-form.signing.hs512">HMAC using SHA-512 hash algorithm</option>
+						<option value="RS256" <%-client.userInfoSignedResponseAlg == "RS256" ? 'selected' : ''%> data-i18n="client.client-form.signing.rs256">RSASSA using SHA-256 hash algorithm</option>
+						<option value="RS384" <%-client.userInfoSignedResponseAlg == "RS384" ? 'selected' : ''%> data-i18n="client.client-form.signing.rs384">RSASSA using SHA-384 hash algorithm</option>
+						<option value="RS512" <%-client.userInfoSignedResponseAlg == "RS512" ? 'selected' : ''%> data-i18n="client.client-form.signing.rs512">RSASSA using SHA-512 hash algorithm</option>
+						<option value="PS256" <%-client.userInfoSignedResponseAlg == "PS256" ? 'selected' : ''%> data-i18n="client.client-form.signing.ps256">RSASSA-PSS using SHA-256 and MGF1 with SHA-256</option>
+						<option value="PS384" <%-client.userInfoSignedResponseAlg == "PS384" ? 'selected' : ''%> data-i18n="client.client-form.signing.ps384">RSASSA-PSS using SHA-384 and MGF1 with SHA-384</option>
+						<option value="PS512" <%-client.userInfoSignedResponseAlg == "PS512" ? 'selected' : ''%> data-i18n="client.client-form.signing.ps512">RSASSA-PSS using SHA-512 and MGF1 with SHA-512</option>
+						<option value="ES256" <%-client.userInfoSignedResponseAlg == "ES256" ? 'selected' : ''%> data-i18n="client.client-form.signing.es256">ECDSA using P-256 curve and SHA-256 hash algorithm</option>
+						<option value="ES384" <%-client.userInfoSignedResponseAlg == "ES384" ? 'selected' : ''%> data-i18n="client.client-form.signing.es384">ECDSA using P-384 curve and SHA-384 hash algorithm</option>
+						<option value="ES512" <%-client.userInfoSignedResponseAlg == "ES512" ? 'selected' : ''%> data-i18n="client.client-form.signing.es512">ECDSA using P-512 curve and SHA-512 hash algorithm</option>
 					</select>
                 </div>
             </div>
@@ -648,16 +652,16 @@
                 <label class="control-label" data-i18n="client.client-form.user-info-crypto-algorithm">User Info Endpoint Encryption Algorithm</label>
                 <div class="controls">
 					<select>
-						<option value="default" <%-userInfoEncryptedResponseAlg == null ? 'selected ' : ''%> data-i18n="client.client-form.crypto.default">Use server default</option>
-						<option value="none" <%-userInfoEncryptedResponseAlg == "none" ? 'selected' : ''%> data-i18n="client.client-form.crypto.none">No encryption</option>
-						<option value="RSA1_5" <%-userInfoEncryptedResponseAlg == "RSA1_5" ? 'selected' : ''%> data-i18n="client.client-form.crypto.rsa1-5">RSAES-PKCS1-V1_5</option>
-						<option value="RSA-OAEP" <%-userInfoEncryptedResponseAlg == "RSA-OAEP" ? 'selected' : ''%> data-i18n="client.client-form.crypto.rsa-oaep">RSAES using Optimal Asymmetric Encryption Padding (OAEP)</option>
-						<option value="A128KW" <%-userInfoEncryptedResponseAlg == "A128KW" ? 'selected' : ''%> data-i18n="client.client-form.crypto.a128kw">AES Key Wrap Algorithm using 128 bit keys </option>
-						<option value="A256KW" <%-userInfoEncryptedResponseAlg == "A256KW" ? 'selected' : ''%> data-i18n="client.client-form.crypto.a256kw">AES Key Wrap Algorithm using 256 bit keys</option>
-						<option value="dir" <%-userInfoEncryptedResponseAlg == "dir" ? 'selected' : ''%> data-i18n="client.client-form.crypto.dir">Direct use of a shared symmetric key as the Content Master Key (CMK) for the block encryption step</option>
-						<option value="ECDH-ES" <%-userInfoEncryptedResponseAlg == "ECDH-ES" ? 'selected' : ''%> data-i18n="client.client-form.crypto.ecdh-es">Elliptic Curve Diffie-Hellman Ephemeral Static key agreement using the Concat KDF, with the agreed-upon key being used directly as the Content Master Key (CMK)</option>
-						<option value="ECDH-ES+A128KW" <%-userInfoEncryptedResponseAlg == "ECDH-ES+A128KW" ? 'selected' : ''%> data-i18n="client.client-form.crypto.ecdh-es-a128kw">Elliptic Curve Diffie-Hellman Ephemeral Static key agreement per ECDH-ES and Section 4.7, but where the agreed-upon key is used to wrap the Content Master Key (CMK) with the A128KW function</option>
-						<option value="ECDH-ES+A256KW" <%-userInfoEncryptedResponseAlg == "ECDH-ES+A256KW" ? 'selected' : ''%> data-i18n="client.client-form.crypto.ecdh-es-a256kw">Elliptic Curve Diffie-Hellman Ephemeral Static key agreement per ECDH-ES and Section 4.7, but where the agreed-upon key is used to wrap the Content Master Key (CMK) with the A256KW function</option>
+						<option value="default" <%-client.userInfoEncryptedResponseAlg == null ? 'selected ' : ''%> data-i18n="client.client-form.crypto.default">Use server default</option>
+						<option value="none" <%-client.userInfoEncryptedResponseAlg == "none" ? 'selected' : ''%> data-i18n="client.client-form.crypto.none">No encryption</option>
+						<option value="RSA1_5" <%-client.userInfoEncryptedResponseAlg == "RSA1_5" ? 'selected' : ''%> data-i18n="client.client-form.crypto.rsa1-5">RSAES-PKCS1-V1_5</option>
+						<option value="RSA-OAEP" <%-client.userInfoEncryptedResponseAlg == "RSA-OAEP" ? 'selected' : ''%> data-i18n="client.client-form.crypto.rsa-oaep">RSAES using Optimal Asymmetric Encryption Padding (OAEP)</option>
+						<option value="A128KW" <%-client.userInfoEncryptedResponseAlg == "A128KW" ? 'selected' : ''%> data-i18n="client.client-form.crypto.a128kw">AES Key Wrap Algorithm using 128 bit keys </option>
+						<option value="A256KW" <%-client.userInfoEncryptedResponseAlg == "A256KW" ? 'selected' : ''%> data-i18n="client.client-form.crypto.a256kw">AES Key Wrap Algorithm using 256 bit keys</option>
+						<option value="dir" <%-client.userInfoEncryptedResponseAlg == "dir" ? 'selected' : ''%> data-i18n="client.client-form.crypto.dir">Direct use of a shared symmetric key as the Content Master Key (CMK) for the block encryption step</option>
+						<option value="ECDH-ES" <%-client.userInfoEncryptedResponseAlg == "ECDH-ES" ? 'selected' : ''%> data-i18n="client.client-form.crypto.ecdh-es">Elliptic Curve Diffie-Hellman Ephemeral Static key agreement using the Concat KDF, with the agreed-upon key being used directly as the Content Master Key (CMK)</option>
+						<option value="ECDH-ES+A128KW" <%-client.userInfoEncryptedResponseAlg == "ECDH-ES+A128KW" ? 'selected' : ''%> data-i18n="client.client-form.crypto.ecdh-es-a128kw">Elliptic Curve Diffie-Hellman Ephemeral Static key agreement per ECDH-ES and Section 4.7, but where the agreed-upon key is used to wrap the Content Master Key (CMK) with the A128KW function</option>
+						<option value="ECDH-ES+A256KW" <%-client.userInfoEncryptedResponseAlg == "ECDH-ES+A256KW" ? 'selected' : ''%> data-i18n="client.client-form.crypto.ecdh-es-a256kw">Elliptic Curve Diffie-Hellman Ephemeral Static key agreement per ECDH-ES and Section 4.7, but where the agreed-upon key is used to wrap the Content Master Key (CMK) with the A256KW function</option>
 					</select>
 				</div>
 			</div>
@@ -666,12 +670,12 @@
                 <label class="control-label" data-i18n="client.client-form.user-info-crypto-method">User Info Endpoint Encryption Method</label>
                 <div class="controls">
 					<select>
-						<option value="default" <%-userInfoEncryptedResponseEnc == null ? 'selected ' : ''%> data-i18n="client.client-form.crypto.default">Use server default</option>
-						<option value="none" <%-userInfoEncryptedResponseEnc == "none" ? 'selected' : ''%> data-i18n="client.client-form.crypto.none">No encryption</option>
-						<option value="A128CBC+HS256" <%-userInfoEncryptedResponseEnc == "A128CBC+HS256" ? 'selected' : ''%> data-i18n="client.client-form.crypto.a128cbc-hs256">Composite Authenticated Encryption algorithm using AES in Cipher Block Chaining (CBC) mode with PKCS #5 padding with an integrity calculation using HMAC SHA-256, using a 256 bit CMK (and 128 bit CEK)</option>
-						<option value="A256CBC+HS512" <%-userInfoEncryptedResponseEnc == "A256CBC+HS512" ? 'selected' : ''%> data-i18n="client.client-form.crypto.a256cbc-hs512">Composite Authenticated Encryption algorithm using AES in CBC mode with PKCS #5 padding with an integrity calculation using HMAC SHA-512, using a 512 bit CMK (and 256 bit CEK)</option>
-						<option value="A128GCM" <%-userInfoEncryptedResponseEnc == "A128GCM" ? 'selected' : ''%> data-i18n="client.client-form.crypto.a128gcm">AES GCM using 128 bit keys</option>
-						<option value="A256GCM" <%-userInfoEncryptedResponseEnc == "A256GCM" ? 'selected' : ''%> data-i18n="client.client-form.crypto.a256gcm">AES GCM using 256 bit keys</option>
+						<option value="default" <%-client.userInfoEncryptedResponseEnc == null ? 'selected ' : ''%> data-i18n="client.client-form.crypto.default">Use server default</option>
+						<option value="none" <%-client.userInfoEncryptedResponseEnc == "none" ? 'selected' : ''%> data-i18n="client.client-form.crypto.none">No encryption</option>
+						<option value="A128CBC+HS256" <%-client.userInfoEncryptedResponseEnc == "A128CBC+HS256" ? 'selected' : ''%> data-i18n="client.client-form.crypto.a128cbc-hs256">Composite Authenticated Encryption algorithm using AES in Cipher Block Chaining (CBC) mode with PKCS #5 padding with an integrity calculation using HMAC SHA-256, using a 256 bit CMK (and 128 bit CEK)</option>
+						<option value="A256CBC+HS512" <%-client.userInfoEncryptedResponseEnc == "A256CBC+HS512" ? 'selected' : ''%> data-i18n="client.client-form.crypto.a256cbc-hs512">Composite Authenticated Encryption algorithm using AES in CBC mode with PKCS #5 padding with an integrity calculation using HMAC SHA-512, using a 512 bit CMK (and 256 bit CEK)</option>
+						<option value="A128GCM" <%-client.userInfoEncryptedResponseEnc == "A128GCM" ? 'selected' : ''%> data-i18n="client.client-form.crypto.a128gcm">AES GCM using 128 bit keys</option>
+						<option value="A256GCM" <%-client.userInfoEncryptedResponseEnc == "A256GCM" ? 'selected' : ''%> data-i18n="client.client-form.crypto.a256gcm">AES GCM using 256 bit keys</option>
 					</select>
 				</div>
 			</div>
@@ -680,20 +684,20 @@
                 <label class="control-label" data-i18n="client.client-form.id-token-signing-algorithm">ID Token Signing Algorithm</label>
                 <div class="controls">
 					<select>
-						<option value="default" <%-idTokenSignedResponseAlg == null ? 'selected ' : ''%> data-i18n="client.client-form.signing.default">Use server default</option>
-						<option value="none" <%-idTokenSignedResponseAlg == "none" ? 'selected' : ''%> data-i18n="client.client-form.signing.none">No digital signature</option>
-						<option value="HS256" <%-idTokenSignedResponseAlg == "HS256" ? 'selected' : ''%> data-i18n="client.client-form.signing.hs256">HMAC using SHA-256 hash algorithm</option>
-						<option value="HS384" <%-idTokenSignedResponseAlg == "HS384" ? 'selected' : ''%> data-i18n="client.client-form.signing.hs384">HMAC using SHA-384 hash algorithm</option>
-						<option value="HS512" <%-idTokenSignedResponseAlg == "HS512" ? 'selected' : ''%> data-i18n="client.client-form.signing.hs512">HMAC using SHA-512 hash algorithm</option>
-						<option value="RS256" <%-idTokenSignedResponseAlg == "RS256" ? 'selected' : ''%> data-i18n="client.client-form.signing.rs256">RSASSA using SHA-256 hash algorithm</option>
-						<option value="RS384" <%-idTokenSignedResponseAlg == "RS384" ? 'selected' : ''%> data-i18n="client.client-form.signing.rs384">RSASSA using SHA-384 hash algorithm</option>
-						<option value="RS512" <%-idTokenSignedResponseAlg == "RS512" ? 'selected' : ''%> data-i18n="client.client-form.signing.rs512">RSASSA using SHA-512 hash algorithm</option>
-						<option value="PS256" <%-idTokenSignedResponseAlg == "PS256" ? 'selected' : ''%> data-i18n="client.client-form.signing.ps256">RSASSA-PSS using SHA-256 and MGF1 with SHA-256</option>
-						<option value="PS384" <%-idTokenSignedResponseAlg == "PS384" ? 'selected' : ''%> data-i18n="client.client-form.signing.ps384">RSASSA-PSS using SHA-384 and MGF1 with SHA-384</option>
-						<option value="PS512" <%-idTokenSignedResponseAlg == "PS512" ? 'selected' : ''%> data-i18n="client.client-form.signing.ps512">RSASSA-PSS using SHA-512 and MGF1 with SHA-512</option>
-						<option value="ES256" <%-idTokenSignedResponseAlg == "ES256" ? 'selected' : ''%> data-i18n="client.client-form.signing.es256">ECDSA using P-256 curve and SHA-256 hash algorithm</option>
-						<option value="ES384" <%-idTokenSignedResponseAlg == "ES384" ? 'selected' : ''%> data-i18n="client.client-form.signing.es384">ECDSA using P-384 curve and SHA-384 hash algorithm</option>
-						<option value="ES512" <%-idTokenSignedResponseAlg == "ES512" ? 'selected' : ''%> data-i18n="client.client-form.signing.es512">ECDSA using P-512 curve and SHA-512 hash algorithm</option>
+						<option value="default" <%-client.idTokenSignedResponseAlg == null ? 'selected ' : ''%> data-i18n="client.client-form.signing.default">Use server default</option>
+						<option value="none" <%-client.idTokenSignedResponseAlg == "none" ? 'selected' : ''%> data-i18n="client.client-form.signing.none">No digital signature</option>
+						<option value="HS256" <%-client.idTokenSignedResponseAlg == "HS256" ? 'selected' : ''%> data-i18n="client.client-form.signing.hs256">HMAC using SHA-256 hash algorithm</option>
+						<option value="HS384" <%-client.idTokenSignedResponseAlg == "HS384" ? 'selected' : ''%> data-i18n="client.client-form.signing.hs384">HMAC using SHA-384 hash algorithm</option>
+						<option value="HS512" <%-client.idTokenSignedResponseAlg == "HS512" ? 'selected' : ''%> data-i18n="client.client-form.signing.hs512">HMAC using SHA-512 hash algorithm</option>
+						<option value="RS256" <%-client.idTokenSignedResponseAlg == "RS256" ? 'selected' : ''%> data-i18n="client.client-form.signing.rs256">RSASSA using SHA-256 hash algorithm</option>
+						<option value="RS384" <%-client.idTokenSignedResponseAlg == "RS384" ? 'selected' : ''%> data-i18n="client.client-form.signing.rs384">RSASSA using SHA-384 hash algorithm</option>
+						<option value="RS512" <%-client.idTokenSignedResponseAlg == "RS512" ? 'selected' : ''%> data-i18n="client.client-form.signing.rs512">RSASSA using SHA-512 hash algorithm</option>
+						<option value="PS256" <%-client.idTokenSignedResponseAlg == "PS256" ? 'selected' : ''%> data-i18n="client.client-form.signing.ps256">RSASSA-PSS using SHA-256 and MGF1 with SHA-256</option>
+						<option value="PS384" <%-client.idTokenSignedResponseAlg == "PS384" ? 'selected' : ''%> data-i18n="client.client-form.signing.ps384">RSASSA-PSS using SHA-384 and MGF1 with SHA-384</option>
+						<option value="PS512" <%-client.idTokenSignedResponseAlg == "PS512" ? 'selected' : ''%> data-i18n="client.client-form.signing.ps512">RSASSA-PSS using SHA-512 and MGF1 with SHA-512</option>
+						<option value="ES256" <%-client.idTokenSignedResponseAlg == "ES256" ? 'selected' : ''%> data-i18n="client.client-form.signing.es256">ECDSA using P-256 curve and SHA-256 hash algorithm</option>
+						<option value="ES384" <%-client.idTokenSignedResponseAlg == "ES384" ? 'selected' : ''%> data-i18n="client.client-form.signing.es384">ECDSA using P-384 curve and SHA-384 hash algorithm</option>
+						<option value="ES512" <%-client.idTokenSignedResponseAlg == "ES512" ? 'selected' : ''%> data-i18n="client.client-form.signing.es512">ECDSA using P-512 curve and SHA-512 hash algorithm</option>
 					</select>
                 </div>
             </div>
@@ -702,16 +706,16 @@
                 <label class="control-label" data-i18n="client.client-form.id-token-crypto-algorithm">ID Token Encryption Algorithm</label>
                 <div class="controls">
 					<select>
-						<option value="default" <%-idTokenEncryptedResponseAlg == null ? 'selected ' : ''%> data-i18n="client.client-form.crypto.default">Use server default</option>
-						<option value="none" <%-idTokenEncryptedResponseAlg == "none" ? 'selected' : ''%> data-i18n="client.client-form.crypto.none">No encryption</option>
-						<option value="RSA1_5" <%-idTokenEncryptedResponseAlg == "RSA1_5" ? 'selected' : ''%> data-i18n="client.client-form.crypto.rsa1-5">RSAES-PKCS1-V1_5</option>
-						<option value="RSA-OAEP" <%-idTokenEncryptedResponseAlg == "RSA-OAEP" ? 'selected' : ''%> data-i18n="client.client-form.crypto.rsa-oaep">RSAES using Optimal Asymmetric Encryption Padding (OAEP)</option>
-						<option value="A128KW" <%-idTokenEncryptedResponseAlg == "A128KW" ? 'selected' : ''%> data-i18n="client.client-form.crypto.a128kw">Advanced Encryption Standard (AES) Key Wrap Algorithm using 128 bit keys </option>
-						<option value="A256KW" <%-idTokenEncryptedResponseAlg == "A256KW" ? 'selected' : ''%> data-i18n="client.client-form.crypto.a256kw">AES Key Wrap Algorithm using 256 bit keys</option>
-						<option value="dir" <%-idTokenEncryptedResponseAlg == "dir" ? 'selected' : ''%> data-i18n="client.client-form.crypto.dir">Direct use of a shared symmetric key as the Content Master Key (CMK) for the block encryption step</option>
-						<option value="ECDH-ES" <%-idTokenEncryptedResponseAlg == "ECDH-ES" ? 'selected' : ''%> data-i18n="client.client-form.crypto.ecdh-es">Elliptic Curve Diffie-Hellman Ephemeral Static key agreement using the Concat KDF, with the agreed-upon key being used directly as the Content Master Key (CMK)</option>
-						<option value="ECDH-ES+A128KW" <%-idTokenEncryptedResponseAlg == "ECDH-ES+A128KW" ? 'selected' : ''%> data-i18n="client.client-form.crypto.ecdh-es-a128kw">Elliptic Curve Diffie-Hellman Ephemeral Static key agreement per ECDH-ES and Section 4.7, but where the agreed-upon key is used to wrap the Content Master Key (CMK) with the A128KW function</option>
-						<option value="ECDH-ES+A256KW" <%-idTokenEncryptedResponseAlg == "ECDH-ES+A256KW" ? 'selected' : ''%> data-i18n="client.client-form.crypto.ecdh-es-a256kw">Elliptic Curve Diffie-Hellman Ephemeral Static key agreement per ECDH-ES and Section 4.7, but where the agreed-upon key is used to wrap the Content Master Key (CMK) with the A256KW function</option>
+						<option value="default" <%-client.idTokenEncryptedResponseAlg == null ? 'selected ' : ''%> data-i18n="client.client-form.crypto.default">Use server default</option>
+						<option value="none" <%-client.idTokenEncryptedResponseAlg == "none" ? 'selected' : ''%> data-i18n="client.client-form.crypto.none">No encryption</option>
+						<option value="RSA1_5" <%-client.idTokenEncryptedResponseAlg == "RSA1_5" ? 'selected' : ''%> data-i18n="client.client-form.crypto.rsa1-5">RSAES-PKCS1-V1_5</option>
+						<option value="RSA-OAEP" <%-client.idTokenEncryptedResponseAlg == "RSA-OAEP" ? 'selected' : ''%> data-i18n="client.client-form.crypto.rsa-oaep">RSAES using Optimal Asymmetric Encryption Padding (OAEP)</option>
+						<option value="A128KW" <%-client.idTokenEncryptedResponseAlg == "A128KW" ? 'selected' : ''%> data-i18n="client.client-form.crypto.a128kw">Advanced Encryption Standard (AES) Key Wrap Algorithm using 128 bit keys </option>
+						<option value="A256KW" <%-client.idTokenEncryptedResponseAlg == "A256KW" ? 'selected' : ''%> data-i18n="client.client-form.crypto.a256kw">AES Key Wrap Algorithm using 256 bit keys</option>
+						<option value="dir" <%-client.idTokenEncryptedResponseAlg == "dir" ? 'selected' : ''%> data-i18n="client.client-form.crypto.dir">Direct use of a shared symmetric key as the Content Master Key (CMK) for the block encryption step</option>
+						<option value="ECDH-ES" <%-client.idTokenEncryptedResponseAlg == "ECDH-ES" ? 'selected' : ''%> data-i18n="client.client-form.crypto.ecdh-es">Elliptic Curve Diffie-Hellman Ephemeral Static key agreement using the Concat KDF, with the agreed-upon key being used directly as the Content Master Key (CMK)</option>
+						<option value="ECDH-ES+A128KW" <%-client.idTokenEncryptedResponseAlg == "ECDH-ES+A128KW" ? 'selected' : ''%> data-i18n="client.client-form.crypto.ecdh-es-a128kw">Elliptic Curve Diffie-Hellman Ephemeral Static key agreement per ECDH-ES and Section 4.7, but where the agreed-upon key is used to wrap the Content Master Key (CMK) with the A128KW function</option>
+						<option value="ECDH-ES+A256KW" <%-client.idTokenEncryptedResponseAlg == "ECDH-ES+A256KW" ? 'selected' : ''%> data-i18n="client.client-form.crypto.ecdh-es-a256kw">Elliptic Curve Diffie-Hellman Ephemeral Static key agreement per ECDH-ES and Section 4.7, but where the agreed-upon key is used to wrap the Content Master Key (CMK) with the A256KW function</option>
 					</select>
 				</div>
 			</div>
@@ -720,12 +724,12 @@
                 <label class="control-label" data-i18n="client.client-form.id-token-crypto-method">ID Token Encryption Method</label>
                 <div class="controls">
 					<select>
-						<option value="default" <%-idTokenEncryptedResponseEnc == null ? 'selected ' : ''%> data-i18n="client.client-form.crypto.default">Use server default</option>
-						<option value="none" <%-idTokenEncryptedResponseEnc == "none" ? 'selected' : ''%> data-i18n="client.client-form.crypto.none">No encryption</option>
-						<option value="A128CBC+HS256" <%-idTokenEncryptedResponseEnc == "A128CBC+HS256" ? 'selected' : ''%> data-i18n="client.client-form.crypto.a128cbc-hs256">Composite Authenticated Encryption algorithm using AES in Cipher Block Chaining (CBC) mode with PKCS #5 padding with an integrity calculation using HMAC SHA-256, using a 256 bit CMK (and 128 bit CEK)</option>
-						<option value="A256CBC+HS512" <%-idTokenEncryptedResponseEnc == "A256CBC+HS512" ? 'selected' : ''%> data-i18n="client.client-form.crypto.a256cbc-hs512">Composite Authenticated Encryption algorithm using AES in CBC mode with PKCS #5 padding with an integrity calculation using HMAC SHA-512, using a 512 bit CMK (and 256 bit CEK)</option>
-						<option value="A128GCM" <%-idTokenEncryptedResponseEnc == "A128GCM" ? 'selected' : ''%> data-i18n="client.client-form.crypto.a128gcm">AES GCM using 128 bit keys</option>
-						<option value="A256GCM" <%-idTokenEncryptedResponseEnc == "A256GCM" ? 'selected' : ''%> data-i18n="client.client-form.crypto.a256gcm">AES GCM using 256 bit keys</option>
+						<option value="default" <%-client.idTokenEncryptedResponseEnc == null ? 'selected ' : ''%> data-i18n="client.client-form.crypto.default">Use server default</option>
+						<option value="none" <%-client.idTokenEncryptedResponseEnc == "none" ? 'selected' : ''%> data-i18n="client.client-form.crypto.none">No encryption</option>
+						<option value="A128CBC+HS256" <%-client.idTokenEncryptedResponseEnc == "A128CBC+HS256" ? 'selected' : ''%> data-i18n="client.client-form.crypto.a128cbc-hs256">Composite Authenticated Encryption algorithm using AES in Cipher Block Chaining (CBC) mode with PKCS #5 padding with an integrity calculation using HMAC SHA-256, using a 256 bit CMK (and 128 bit CEK)</option>
+						<option value="A256CBC+HS512" <%-client.idTokenEncryptedResponseEnc == "A256CBC+HS512" ? 'selected' : ''%> data-i18n="client.client-form.crypto.a256cbc-hs512">Composite Authenticated Encryption algorithm using AES in CBC mode with PKCS #5 padding with an integrity calculation using HMAC SHA-512, using a 512 bit CMK (and 256 bit CEK)</option>
+						<option value="A128GCM" <%-client.idTokenEncryptedResponseEnc == "A128GCM" ? 'selected' : ''%> data-i18n="client.client-form.crypto.a128gcm">AES GCM using 128 bit keys</option>
+						<option value="A256GCM" <%-client.idTokenEncryptedResponseEnc == "A256GCM" ? 'selected' : ''%> data-i18n="client.client-form.crypto.a256gcm">AES GCM using 256 bit keys</option>
 					</select>
 				</div>
 			</div>
@@ -737,7 +741,7 @@
 			<div class="control-group" id="initiateLoginUri">
 				<label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> <span data-i18n="client.client-form.initiate-login">Initiate Login</span></label>
 				<div class="controls">
-					<input placeholder="https://" value="<%-initiateLoginUri%>" maxlength="1000" type="text" class=""/>
+					<input placeholder="https://" value="<%-client.initiateLoginUri%>" maxlength="1000" type="text" class=""/>
 					<p class="help-block" data-i18n="client.client-form.initiate-login-help">URL to initiate login on the client</p>
 				</div>
 			</div>
@@ -759,7 +763,7 @@
                 <label class="control-label" data-i18n="client.client-form.require-auth-time">Require Authentication Time</label>
                 <div class="controls">
                     <div>
-                        <input type="checkbox" <%-(requireAuthTime == true ? 'checked' : '')%>/>
+                        <input type="checkbox" <%-(client.requireAuthTime == true ? 'checked' : '')%>/>
                         <label class="checkbox" data-i18n="client.client-form.require-auth-time-label">Always require that the auth_time claim be sent in the id token</label>
                     </div>
                 </div>
@@ -768,7 +772,7 @@
 			<div class="control-group" id="defaultMaxAge">
 				<label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> <span data-i18n="client.client-form.max-age">Default Max Age</span></label>
 				<div class="controls">
-					<input placeholder="" value="<%-defaultMaxAge%>" maxlength="10" type="text" class=""/>
+					<input placeholder="" value="<%-client.defaultMaxAge%>" maxlength="10" type="text" class=""/>
 					<p class="help-block" data-i18n="client.client-form.max-age-help">Default maximum session age before re-prompting</p>
 				</div>
 			</div>
