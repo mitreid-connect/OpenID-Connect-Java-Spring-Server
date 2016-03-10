@@ -479,28 +479,47 @@ var AppRouter = Backbone.Router.extend({
     	
         var view = new ClientFormView({model:client, systemScopeList: this.systemScopeList});
         view.load(function() {
-        	// set up this new client to require a secret and have us autogenerate one
     		var userInfo = getUserInfo();
     		var contacts = [];
     		if (userInfo != null && userInfo.email != null) {
     			contacts.push(userInfo.email);
     		}
     		
-        	client.set({
-        		tokenEndpointAuthMethod: "SECRET_BASIC",
-        		generateClientSecret:true,
-        		displayClientSecret:false,
-        		requireAuthTime:true,
-        		defaultMaxAge:60000,
-        		scope: _.uniq(_.flatten(app.systemScopeList.defaultScopes().pluck("value"))),
-        		accessTokenValiditySeconds:3600,
-        		idTokenValiditySeconds:600,
-        		grantTypes: ["authorization_code"],
-        		responseTypes: ["code"],
-        		subjectType: "PUBLIC",
-        		jwksType: "URI",
-        		contacts: contacts
-        	}, { silent: true });
+    		// use a different set of defaults based on heart mode flag
+    		if (heartMode) {
+            	client.set({
+            		tokenEndpointAuthMethod: "PRIVATE_KEY",
+            		generateClientSecret:false,
+            		displayClientSecret:false,
+            		requireAuthTime:true,
+            		defaultMaxAge:60000,
+            		scope: _.uniq(_.flatten(app.systemScopeList.defaultScopes().pluck("value"))),
+            		accessTokenValiditySeconds:3600,
+            		idTokenValiditySeconds:600,
+            		grantTypes: ["authorization_code"],
+            		responseTypes: ["code"],
+            		subjectType: "PUBLIC",
+            		jwksType: "URI",
+            		contacts: contacts
+            	}, { silent: true });
+    		} else {
+    			// set up this new client to require a secret and have us autogenerate one
+            	client.set({
+            		tokenEndpointAuthMethod: "SECRET_BASIC",
+            		generateClientSecret:true,
+            		displayClientSecret:false,
+            		requireAuthTime:true,
+            		defaultMaxAge:60000,
+            		scope: _.uniq(_.flatten(app.systemScopeList.defaultScopes().pluck("value"))),
+            		accessTokenValiditySeconds:3600,
+            		idTokenValiditySeconds:600,
+            		grantTypes: ["authorization_code"],
+            		responseTypes: ["code"],
+            		subjectType: "PUBLIC",
+            		jwksType: "URI",
+            		contacts: contacts
+            	}, { silent: true });
+    		}
         	
         	
         	$('#content').html(view.render().el);
@@ -853,17 +872,30 @@ var AppRouter = Backbone.Router.extend({
     			contacts.push(userInfo.email);
     		}
     		
-    		client.set({
-        		require_auth_time:true,
-        		default_max_age:60000,
-        		scope: _.uniq(_.flatten(app.systemScopeList.defaultUnrestrictedScopes().pluck("value"))).join(" "),
-        		token_endpoint_auth_method: 'client_secret_basic',
-        		grant_types: ["authorization_code"],
-        		response_types: ["code"],
-        		subject_type: "public",
-        		contacts: contacts
-        	}, { silent: true });
-    	
+    		if (heartMode) {
+    			client.set({
+    				require_auth_time:true,
+    				default_max_age:60000,
+    				scope: _.uniq(_.flatten(app.systemScopeList.defaultUnrestrictedScopes().pluck("value"))).join(" "),
+    				token_endpoint_auth_method: 'private_key_jwt',
+    				grant_types: ["authorization_code"],
+    				response_types: ["code"],
+    				subject_type: "public",
+    				contacts: contacts
+    			}, { silent: true });
+    		} else {
+    			client.set({
+    				require_auth_time:true,
+    				default_max_age:60000,
+    				scope: _.uniq(_.flatten(app.systemScopeList.defaultUnrestrictedScopes().pluck("value"))).join(" "),
+    				token_endpoint_auth_method: 'client_secret_basic',
+    				grant_types: ["authorization_code"],
+    				response_types: ["code"],
+    				subject_type: "public",
+    				contacts: contacts
+    			}, { silent: true });
+    		}
+    		
     		$('#content').html(view.render().el);
     		view.delegateEvents();
     		setPageTitle($.t('dynreg.new-client'));
