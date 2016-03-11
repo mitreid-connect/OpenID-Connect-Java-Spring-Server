@@ -17,7 +17,7 @@
 package org.mitre.openid.connect.request;
 
 
-import static org.mitre.openid.connect.request.ConnectRequestParameters.CLAIMS;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.*;
 import static org.mitre.openid.connect.request.ConnectRequestParameters.CLIENT_ID;
 import static org.mitre.openid.connect.request.ConnectRequestParameters.DISPLAY;
 import static org.mitre.openid.connect.request.ConnectRequestParameters.LOGIN_HINT;
@@ -133,6 +133,11 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 			request.getExtensions().put(LOGIN_HINT, inputParams.get(LOGIN_HINT));
 		}
 
+		if (inputParams.containsKey(AUD)) {
+			request.getExtensions().put(AUD, inputParams.get(AUD));
+		}
+
+			
 		if (inputParams.containsKey(REQUEST)) {
 			request.getExtensions().put(REQUEST, inputParams.get(REQUEST));
 			processRequestObject(inputParams.get(REQUEST), request);

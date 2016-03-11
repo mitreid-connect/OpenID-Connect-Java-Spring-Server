@@ -43,5 +43,8 @@ public interface ConnectRequestParameters {
 	// responses
 	public String ERROR = "error";
 	public String LOGIN_REQUIRED = "login_required";
+	
+	// audience
+	public String AUD = "aud";
 
 }
