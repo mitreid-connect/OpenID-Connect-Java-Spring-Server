@@ -36,7 +36,7 @@
 		</h1>
 
 		<form name="confirmationForm"
-			action="<%=request.getContextPath()%>/authorize" method="post">
+			action="${request.getContextPath().endsWith('/') ? request.getContextPath() : request.getContextPath().concat('/') }authorize" method="post">
 
 			<div class="row">
 				<div class="span5 offset1 well-small" style="text-align: left">
