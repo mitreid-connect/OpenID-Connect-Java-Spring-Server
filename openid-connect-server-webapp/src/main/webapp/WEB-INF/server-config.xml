@@ -63,6 +63,9 @@
 		<!-- This property indicates if a dynamically registered client supports dual flows, such as client_credentials
 		at the same time with authorization_code or implicit -->
 		<!-- <property name="dualClient" value="true" /> -->
+		
+		<!-- This property turns on HEART compliance mode -->
+		<!-- <property name="heartMode" value="true" /> -->
 
 	</bean>
 	
