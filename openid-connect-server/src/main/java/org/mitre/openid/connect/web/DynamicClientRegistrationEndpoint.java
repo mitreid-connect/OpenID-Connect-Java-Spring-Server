@@ -153,9 +153,26 @@ public class DynamicClientRegistrationEndpoint {
 			}
 
 			// set some defaults for token timeouts
-			newClient.setAccessTokenValiditySeconds((int)TimeUnit.HOURS.toSeconds(1)); // access tokens good for 1hr
-			newClient.setIdTokenValiditySeconds((int)TimeUnit.MINUTES.toSeconds(10)); // id tokens good for 10min
-			newClient.setRefreshTokenValiditySeconds(null); // refresh tokens good until revoked
+			if (config.isHeartMode()) {
+				// heart mode has different defaults depending on primary grant type
+				if (newClient.getGrantTypes().contains("authorization_code")) {
+					newClient.setAccessTokenValiditySeconds((int)TimeUnit.HOURS.toSeconds(1)); // access tokens good for 1hr
+					newClient.setIdTokenValiditySeconds((int)TimeUnit.MINUTES.toSeconds(5)); // id tokens good for 5min
+					newClient.setRefreshTokenValiditySeconds((int)TimeUnit.HOURS.toSeconds(24)); // refresh tokens good for 24hr
+				} else if (newClient.getGrantTypes().contains("implicit")) {
+					newClient.setAccessTokenValiditySeconds((int)TimeUnit.MINUTES.toSeconds(15)); // access tokens good for 15min
+					newClient.setIdTokenValiditySeconds((int)TimeUnit.MINUTES.toSeconds(5)); // id tokens good for 5min
+					newClient.setRefreshTokenValiditySeconds(0); // no refresh tokens
+				} else if (newClient.getGrantTypes().contains("client_credentials")) {
+					newClient.setAccessTokenValiditySeconds((int)TimeUnit.HOURS.toSeconds(6)); // access tokens good for 6hr
+					newClient.setIdTokenValiditySeconds(0); // no id tokens
+					newClient.setRefreshTokenValiditySeconds(0); // no refresh tokens
+				}
+			} else {
+				newClient.setAccessTokenValiditySeconds((int)TimeUnit.HOURS.toSeconds(1)); // access tokens good for 1hr
+				newClient.setIdTokenValiditySeconds((int)TimeUnit.MINUTES.toSeconds(10)); // id tokens good for 10min
+				newClient.setRefreshTokenValiditySeconds(null); // refresh tokens good until revoked
+			}
 
 			// this client has been dynamically registered (obviously)
 			newClient.setDynamicallyRegistered(true);

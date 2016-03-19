@@ -426,7 +426,7 @@
 				<div class="controls">
 					<% if (!heartMode) { %>
                     <div>
-                        <input type="radio" id="tokenEndpointAuthMethodBasic" name="tokenEndpointAuthMethod" value="SECRET_BASIC" <%-((client.tokenEndpointAuthMethod == 'SECRET_BASIC') || (!tokenEndpointAuthMethod) ? 'checked' : '')%>>
+                        <input type="radio" id="tokenEndpointAuthMethodBasic" name="tokenEndpointAuthMethod" value="SECRET_BASIC" <%-((client.tokenEndpointAuthMethod == 'SECRET_BASIC') || (!client.tokenEndpointAuthMethod) ? 'checked' : '')%>>
                         <label for="tokenEndpointAuthMethodBasic" class="radio" data-i18n="client.client-form.secret-http">Client Secret over HTTP Basic</label>
                     </div>
                     <div>
@@ -439,7 +439,7 @@
                     </div>
 					<% } %>
                     <div>
-                        <input type="radio" id="tokenEndpointAuthMethodAssym" name="tokenEndpointAuthMethod" value="PRIVATE_KEY" <%-((client.tokenEndpointAuthMethod == 'PRIVATE_KEY')  || (heartMode && !tokenEndpointAuthMethod) ? 'checked' : '')%>>
+                        <input type="radio" id="tokenEndpointAuthMethodAssym" name="tokenEndpointAuthMethod" value="PRIVATE_KEY" <%-((client.tokenEndpointAuthMethod == 'PRIVATE_KEY')  || (heartMode && !client.tokenEndpointAuthMethod) ? 'checked' : '')%>>
                         <label for="tokenEndpointAuthMethodAssym" class="radio" data-i18n="client.client-form.secret-asymmetric-jwt">Asymmetrically-signed JWT assertion</label>
                     </div>
                     <div>
@@ -591,7 +591,7 @@
                         <label for="disableRefreshTokenTimeout" class="checkbox" data-i18n="client.client-form.refresh-tokens-no-expire">Refresh tokens do not time out</label>
 					</div>
                     <div>
-                        <input type="text" class="" value="<%-(client.refreshTokenValiditySeconds == null ? '' : refreshTokenValiditySeconds)%>" id="refresh-token-timeout-time" size="16" style="width:8em;">
+                        <input type="text" class="" value="<%-(client.refreshTokenValiditySeconds == null ? '' : client.refreshTokenValiditySeconds)%>" id="refresh-token-timeout-time" size="16" style="width:8em;">
 						<select id="refresh-token-timeout-unit" style="width:8em;">
 							<option data-i18n="client.client-form.seconds">seconds</option>
 							<option data-i18n="client.client-form.minutes">minutes</option>

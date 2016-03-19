@@ -333,7 +333,7 @@
                     </div>
 					<% } %>
                     <div>
-                        <input type="radio" id="tokenEndpointAuthMethodAssym" name="tokenEndpointAuthMethod" value="private_key_jwt" <%-((client.token_endpoint_auth_method == 'private_key_jwt')  || (heartMode && !tokenEndpointAuthMethod) ? 'checked' : '')%>>
+                        <input type="radio" id="tokenEndpointAuthMethodAssym" name="tokenEndpointAuthMethod" value="private_key_jwt" <%-((client.token_endpoint_auth_method == 'private_key_jwt')  || (heartMode && !client.tokenEndpointAuthMethod) ? 'checked' : '')%>>
                         <label for="tokenEndpointAuthMethodAssym" class="radio" data-i18n="client.client-form.secret-asymmetric-jwt">Asymmetrically-signed JWT assertion</label>
                     </div>
                     <div>
