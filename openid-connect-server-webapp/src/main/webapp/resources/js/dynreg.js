@@ -519,7 +519,7 @@ var DynRegEditView = Backbone.View.extend({
     			});
             },
             error:function (error, response) {
-        		console.log("An error occurred when deleting from a list widget");
+        		console.log("An error occurred when saving the client");
 
 				//Pull out the response text.
 				var responseJson = JSON.parse(response.responseText);
