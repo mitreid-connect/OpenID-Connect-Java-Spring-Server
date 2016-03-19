@@ -72,7 +72,7 @@
 				var uri = $.url(client.redirectUris[i]);
 				if (!uri.attr('protocol')) {
 					%><b class="text-error" title="unknown protocol scheme">?</b><%
-				} else if (uri.attr('protocol') == 'http' && uri.attr('host') != 'localhost') {
+				} else if (uri.attr('protocol') == 'http' && (uri.attr('host') != 'localhost' && uri.attr('host') != '127.0.0.1')) {
 					%><b class="text-error"><%- uri.attr('protocol') %></b>://<%
 				} else if (uri.attr('protocol') != 'https' && uri.attr('protocol') != 'http') {
 					%><span class="text-warning"><%- uri.attr('protocol') %></span>://<%
