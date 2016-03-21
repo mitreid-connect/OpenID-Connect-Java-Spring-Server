@@ -17,7 +17,8 @@
 package org.mitre.openid.connect.request;
 
 
-import static org.mitre.openid.connect.request.ConnectRequestParameters.*;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.AUD;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.CLAIMS;
 import static org.mitre.openid.connect.request.ConnectRequestParameters.CLIENT_ID;
 import static org.mitre.openid.connect.request.ConnectRequestParameters.DISPLAY;
 import static org.mitre.openid.connect.request.ConnectRequestParameters.LOGIN_HINT;
@@ -30,6 +31,7 @@ import static org.mitre.openid.connect.request.ConnectRequestParameters.RESPONSE
 import static org.mitre.openid.connect.request.ConnectRequestParameters.SCOPE;
 import static org.mitre.openid.connect.request.ConnectRequestParameters.STATE;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.util.Collections;
 import java.util.Map;
@@ -88,9 +90,8 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 
 	/**
 	 * Constructor with arguments
-	 * 
+	 *
 	 * @param clientDetailsService
-	 * @param nonceService
 	 */
 	@Autowired
 	public ConnectOAuth2RequestFactory(ClientDetailsEntityService clientDetailsService) {
@@ -137,7 +138,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 			request.getExtensions().put(AUD, inputParams.get(AUD));
 		}
 
-			
+
 		if (inputParams.containsKey(REQUEST)) {
 			request.getExtensions().put(REQUEST, inputParams.get(REQUEST));
 			processRequestObject(inputParams.get(REQUEST), request);
@@ -164,9 +165,10 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 	}
 
 	/**
-	 * @param inputParams
-	 * @return
-	 */
+	 *
+	 * @param jwtString
+	 * @param request
+     */
 	private void processRequestObject(String jwtString, AuthorizationRequest request) {
 
 		// parse the request object
@@ -267,7 +269,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 			JWTClaimsSet claims = jwt.getJWTClaimsSet();
 
 			Set<String> responseTypes = OAuth2Utils.parseParameterList(claims.getStringClaim(RESPONSE_TYPE));
-			if (responseTypes != null && !responseTypes.isEmpty()) {
+			if (!responseTypes.isEmpty()) {
 				if (!responseTypes.equals(request.getResponseTypes())) {
 					logger.info("Mismatch between request object and regular parameter for response_type, using request object");
 				}
@@ -315,7 +317,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 			}
 
 			Set<String> scope = OAuth2Utils.parseParameterList(claims.getStringClaim(SCOPE));
-			if (scope != null && !scope.isEmpty()) {
+			if (!scope.isEmpty()) {
 				if (!scope.equals(request.getScope())) {
 					logger.info("Mismatch between request object and regular parameter for scope, using request object");
 				}
@@ -324,7 +326,8 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 
 			JsonObject claimRequest = parseClaimRequest(claims.getStringClaim(CLAIMS));
 			if (claimRequest != null) {
-				if (!claimRequest.equals(parseClaimRequest(request.getExtensions().get(CLAIMS).toString()))) {
+				Serializable claimExtension = request.getExtensions().get(CLAIMS);
+				if (claimExtension == null || !claimRequest.equals(parseClaimRequest(claimExtension.toString()))) {
 					logger.info("Mismatch between request object and regular parameter for claims, using request object");
 				}
 				// we save the string because the object might not be a Java Serializable, and we can parse it easily enough anyway
