@@ -17,10 +17,12 @@
 package org.mitre.openid.connect.web;
 
 import java.lang.reflect.Type;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.text.ParseException;
 import java.util.Collection;
 import javax.persistence.PersistenceException;
 
+import org.eclipse.persistence.exceptions.DatabaseException;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
@@ -246,10 +248,17 @@ public class ClientAPI {
 			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Unable to save client: " + e.getMessage());
 			return JsonErrorView.VIEWNAME;
 		} catch (PersistenceException e) {
-			logger.error("Unable to save client. Duplicate client id entry found: {}", e.getMessage());
-			m.addAttribute(HttpCodeView.CODE, HttpStatus.CONFLICT);
-			m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Unable to save client. Duplicate client id entry found: " + client.getClientId());
-			return JsonErrorView.VIEWNAME;
+			Throwable cause = e.getCause();
+			if (cause instanceof DatabaseException) {
+				Throwable databaseExceptionCause = cause.getCause();
+				if(databaseExceptionCause instanceof SQLIntegrityConstraintViolationException) {
+					logger.error("apiAddClient failed; duplicate client id entry found: {}", client.getClientId());
+					m.addAttribute(HttpCodeView.CODE, HttpStatus.CONFLICT);
+					m.addAttribute(JsonErrorView.ERROR_MESSAGE, "Unable to save client. Duplicate client id entry found: " + client.getClientId());
+					return JsonErrorView.VIEWNAME;
+				}
+			}
+			throw e;
 		}
 	}
 
