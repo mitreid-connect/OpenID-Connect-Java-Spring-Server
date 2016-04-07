@@ -475,6 +475,9 @@
     },
     "login": {
 		"login_with_username_and_password": "請用您的用戶名和密碼登入",
+		"username": "用戶名",
+		"password": "密碼",
+		"login-button": "登入",
 		"error": "登入失敗，請重試。"
     }
 }
