@@ -1,3 +1,4 @@
+<%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
 <%@ page import="org.springframework.security.core.AuthenticationException"%>
 <%@ page import="org.springframework.security.oauth2.common.exceptions.UnapprovedClientAuthenticationException"%>
 <%@ page import="org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter"%>
