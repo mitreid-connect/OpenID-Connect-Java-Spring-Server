@@ -358,6 +358,13 @@
             "no-sites": "白名單列表為空。使用<strong>白名單</strong>按鈕在客戶端管理頁面創建一個。"
         }
     },
+    "blacklist": {
+        "text": "被拉黑的網站URI將無法用於註冊客戶端的重定向地址（無論是在管理介面中添加、還是動態註冊，都不行）。",
+        "blacklist-uri-placeholder": "要拉黑的網站URI",
+        "add": "將網站URI加入黑名單",
+        "empty": "當前黑名單為空",
+        "uri": "URI"
+    },
     "copyright": "基於<a href=\"https://github.com/mitreid-connect/\">MITREid Connect <span class=\"label\">{0}</span></a>技術構建 <span class=\"pull-right\">&copy; 2016 MITRE公司及MIT因特網信任聯盟</span>。",
     "about": {
         "title": "關於",
