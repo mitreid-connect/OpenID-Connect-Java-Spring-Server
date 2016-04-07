@@ -1,0 +1,59 @@
+{
+	"admin": {
+		"policies": "管理受保护资源的政策"
+	},
+	"policy" : {
+    	"resource-sets": "资源集",
+    	"edit-policies": "编辑政策",
+    	"new-policy": "新建政策",
+    	"edit-policy": "编辑政策",
+    	"loading-policies": "政策",
+    	"loading-policy": "政策",
+    	"loading-rs": "资源集",
+    	"rs-table": {
+    		"confirm": "确定要删除该资源？",
+    		"no-resource-sets": "尚未有已注册的资源集。您可在此授权服务器中注册一个。",
+    		"scopes": "范围",
+    		"shared-with": "共享给:",
+    		"shared-nobody": "不共享",
+    		"shared-nobody-tooltip": "此资源别人无法访问，请编辑政策使其与其他人共享。",
+    		"sharing": "共享政策"
+    	},
+    	"policy-table": {
+    		"new": "新建政策",
+    		"return": "返回到列表",
+    		"edit": "编辑政策",
+    		"confirm": "确定要删除该政策？",
+    		"delete": "删除",
+    		"no-policies": "此资源集尚未有政策：别人无法访问此资源集。",
+    		"required-claims": "必须的声明",
+    		"required-claims-info": "与您共享此资源的用户必须具备以下声明，才能访问该资源。",
+    		"remove": "移除",
+    		"issuers": "签发者",
+    		"claim": "声明项",
+    		"value": "值"
+    	},
+    	"policy-form": {
+    		"email-address": "email地址",
+    		"share-email": "连带email地址共享",
+    		"new": "新建政策",
+    		"edit": "编辑政策",
+    		"claim-name": "声明项名称",
+    		"friendly-claim-name": "声明的显示名",
+    		"claim-value": "声明的值",
+    		"value-type-text": "文本",
+    		"value-type-number": "数字",
+    		"clear-all": "清除全部声明",
+    		"clear-all-confirm": "您是否要从此政策中清除全部声明？"
+    	},
+    	"webfinger-error": "错误",
+    	"webfinger-error-description": "服务器无法找到<code>__email__</code>的身份提供者。",
+    	"advanced-error": "错误",
+    	"advanced-error-description": "保存高级声明时出错。您是否填写了全部必填项？"
+    },
+    "sidebar": {
+    	"personal": {
+    		"resource_policies": "管理受保护资源的政策"
+    	}
+    }
+}
