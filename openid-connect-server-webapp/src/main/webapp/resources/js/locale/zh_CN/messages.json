@@ -475,6 +475,9 @@
     },
     "login": {
 		"login_with_username_and_password": "请使用您的用户名及密码登录",
+		"username": "用户名",
+		"password": "密码",
+		"login-button": "登录",
 		"error": "登录失败。请重试。"
     }
 }
