@@ -358,6 +358,13 @@
             "no-sites": "白名单列表为空。使用<strong>白名单</strong>按钮在客户端管理页面创建一个。"
         }
     },
+    "blacklist": {
+        "text": "被拉黑的网站URI将无法用做注册客户端的重定向地址（无论是在管理界面中添加、还是动态注册，都不会成功）。",
+        "blacklist-uri-placeholder": "要拉黑的网站URI",
+        "add": "将网站URI加入黑名单",
+        "empty": "当前黑名单为空",
+        "uri": "URI"
+    },
     "copyright": "基于<a href=\"https://github.com/mitreid-connect/\">MITREid Connect <span class=\"label\">{0}</span></a>技术构建 <span class=\"pull-right\">&copy; 2016 MITRE公司及MIT因特网信任联盟</span>.",
     "about": {
         "title": "关于",
