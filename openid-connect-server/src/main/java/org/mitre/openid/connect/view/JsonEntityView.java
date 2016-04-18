@@ -82,6 +82,7 @@ public class JsonEntityView extends AbstractView {
 	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {
 
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+		response.setCharacterEncoding("UTF-8");
 
 
 		HttpStatus code = (HttpStatus) model.get(HttpCodeView.CODE);
