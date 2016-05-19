@@ -4,3 +4,7 @@ jdk:
   - oraclejdk7
   - openjdk7
 sudo: false
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
+
