@@ -149,8 +149,8 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	public Map<String, Object> getAdditionalInformation() {
 	  if (getIdToken() != null) {
 	    additionalInfo.put(ID_TOKEN_FIELD_NAME, getIdTokenString());
-	   }
-	   return additionalInfo;
+	  }
+	  return additionalInfo;
 	}
 
 	/**
