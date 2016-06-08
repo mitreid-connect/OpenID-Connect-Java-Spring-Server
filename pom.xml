@@ -19,7 +19,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.mitre</groupId>
 	<artifactId>openid-connect-parent</artifactId>
-	<version>1.2.7.cnaf-SNAPSHOT</version>
+	<version>1.2.7-SNAPSHOT</version>
 	<name>MITREid Connect</name>
 	<packaging>pom</packaging>
 	<parent>
@@ -204,19 +204,6 @@
 		<system>Travis CI</system>
 		<url>https://travis-ci.org/mitreid-connect/OpenID-Connect-Java-Spring-Server</url>
 	</ciManagement>
-	<distributionManagement>
-    	<repository>
-	    	<id>cnaf-releases</id>
-			<name>CNAF releases</name>
-			<url>http://radiohead.cnaf.infn.it:8081/nexus/content/repositories/cnaf-releases/</url>
-		</repository>
-
-		<snapshotRepository>
-			<id>cnaf-snapshots</id>
-		 	<name>CNAF snapshots</name>
-			<url>http://radiohead.cnaf.infn.it:8081/nexus/content/repositories/cnaf-snapshots/</url>
-		</snapshotRepository>
-	</distributionManagement>
 
 	<reporting>
 		<plugins>
