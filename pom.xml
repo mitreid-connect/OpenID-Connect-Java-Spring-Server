@@ -144,6 +144,7 @@
 					<windowtitle>MITREid Connect v. ${project.version}</windowtitle>
 					<doctitle>MITREid Connect v. ${project.version}</doctitle>
 					<overview>${basedir}/src/main/javadoc/overview.html</overview>
+					<additionalparam>-Xdoclint:none</additionalparam>
 				</configuration>
 				<executions>
 					<execution>
@@ -528,28 +529,5 @@
 			<artifactId>jsp-api</artifactId>
 		</dependency>
 	</dependencies>
-
-	<profiles>
-		<profile>
-			<!-- Turn off strict javadoc when building on 1.8 -->
-			<activation>
-				<jdk>1.8</jdk>
-			</activation>
-			<build>
-				<pluginManagement>
-					<plugins>
-						<plugin>
-							<groupId>org.apache.maven.plugins</groupId>
-							<artifactId>maven-javadoc-plugin</artifactId>
-							<version>2.9</version>
-							<configuration>
-								<additionalparam>-Xdoclint:none</additionalparam>
-							</configuration>
-						</plugin>
-					</plugins>
-				</pluginManagement>
-			</build>
-		</profile>
-	</profiles>
 
 </project>
