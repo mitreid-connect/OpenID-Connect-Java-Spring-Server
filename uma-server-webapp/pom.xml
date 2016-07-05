@@ -20,7 +20,7 @@
 	 <parent>
 		<groupId>org.mitre</groupId>
 		<artifactId>openid-connect-parent</artifactId>
-		<version>1.2.7-SNAPSHOT</version>
+		<version>1.3.0-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	 </parent>
 	 <artifactId>uma-server-webapp</artifactId>
