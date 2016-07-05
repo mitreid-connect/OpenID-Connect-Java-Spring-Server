@@ -49,6 +49,8 @@ public class ConfigurationPropertiesBean {
 	private String issuer;
 
 	private String topbarTitle;
+	
+	private String shortTopbarTitle;
 
 	private String logoImageUrl;
 
@@ -117,6 +119,17 @@ public class ConfigurationPropertiesBean {
 	 */
 	public void setTopbarTitle(String topbarTitle) {
 		this.topbarTitle = topbarTitle;
+	}
+	
+	/**
+	 * @return If shortTopbarTitle is undefined, returns topbarTitle. 
+	 */
+	public String getShortTopbarTitle() {
+		return shortTopbarTitle == null ? topbarTitle : shortTopbarTitle;
+	}
+	
+	public void setShortTopbarTitle(String shortTopbarTitle) {
+		this.shortTopbarTitle = shortTopbarTitle;
 	}
 
 	/**

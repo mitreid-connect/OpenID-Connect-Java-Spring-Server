@@ -134,5 +134,14 @@ public class ConfigurationPropertiesBeanTest {
 		}
 
 	}
+	
+	@Test
+	public void testShortTopbarTitle() {
+		ConfigurationPropertiesBean bean = new ConfigurationPropertiesBean();
+		bean.setTopbarTitle("LONG");
+		assertEquals("LONG", bean.getShortTopbarTitle());
+		bean.setShortTopbarTitle("SHORT");
+		assertEquals("SHORT", bean.getShortTopbarTitle());
+	}
 
 }
