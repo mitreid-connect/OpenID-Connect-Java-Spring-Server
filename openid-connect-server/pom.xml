@@ -46,6 +46,11 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-tx</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.eclipse.persistence</groupId>
+			<artifactId>org.eclipse.persistence.core</artifactId>
+			<version>2.5.1</version>
+		</dependency>
 
 	</dependencies>
 	<description>OpenID Connect server libraries for Spring and Spring Security.</description>
