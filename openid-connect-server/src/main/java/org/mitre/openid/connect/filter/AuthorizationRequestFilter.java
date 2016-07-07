@@ -15,7 +15,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.openid.connect.filter;
 
@@ -71,6 +71,7 @@ public class AuthorizationRequestFilter extends GenericFilterBean {
 
 	public final static String PROMPTED = "PROMPT_FILTER_PROMPTED";
 	public final static String PROMPT_REQUESTED = "PROMPT_FILTER_REQUESTED";
+	private static final String AUTHORIZE_URL = "/authorize";
 
 	@Autowired
 	private OAuth2RequestFactory authRequestFactory;
@@ -85,7 +86,7 @@ public class AuthorizationRequestFilter extends GenericFilterBean {
 	private LoginHintExtracter loginHintExtracter = new RemoveLoginHintsWithHTTP();
 
 	/**
-	 * 
+	 *
 	 */
 	@Override
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
@@ -95,7 +96,7 @@ public class AuthorizationRequestFilter extends GenericFilterBean {
 		HttpSession session = request.getSession();
 
 		// skip everything that's not an authorize URL
-		if (!request.getServletPath().startsWith("/authorize")) {
+		if (!isAuthorizeUrl(request)) {
 			chain.doFilter(req, res);
 			return;
 		}
@@ -227,6 +228,22 @@ public class AuthorizationRequestFilter extends GenericFilterBean {
 			// we couldn't find the client, move on and let the rest of the system catch the error
 			chain.doFilter(req, res);
 		}
+	}
+
+	/**
+	 * Checks is given request is a authentication request url
+	 *
+	 * @param request
+	 * @return
+	 */
+	private boolean isAuthorizeUrl(HttpServletRequest request) {
+		if (AUTHORIZE_URL.equals(request.getPathInfo())) {
+			return true;
+		}
+		if (request.getServletPath().startsWith(AUTHORIZE_URL)) {
+			return true;
+		}
+		return false;
 	}
 
 	/**
