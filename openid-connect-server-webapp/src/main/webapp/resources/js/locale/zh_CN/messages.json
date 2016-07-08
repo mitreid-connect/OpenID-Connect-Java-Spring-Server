@@ -1,0 +1,490 @@
+{
+    "admin": {
+        "blacklist": "黑名单",
+        "blacklist-form": {
+            "blacklisted-uris": "列入黑名单的URI"
+        },
+        "home": "首页",
+        "list-widget": {
+            "empty": "此列表为空。",
+            "tooltip": "单击显示全部值。"
+        },
+        "manage-blacklist": "管理列入黑名单的客户端",
+        "self-service-client": "自助服务-客户端注册",
+        "self-service-resource": "自助服务-受保护资源注册",
+        "user-profile": {
+            "claim": "声明项",
+            "show": "查看用户信息",
+            "text": "您的用户信息如下：",
+            "value": "内容"
+        }
+    },
+    "client": {
+        "client-form": {
+            "access": "访问",
+            "access-token-no-timeout": "访问令牌不时间",
+            "access-token-timeout": "访问令牌超时",
+            "access-token-timeout-help": "输入时间（秒、分钟或小时）。",
+            "acr-values": "默认ACR值",
+            "acr-values-placeholder": "新的ACR值",
+            "acr-values-help": "用于请求该客户端的默认身份验证上下文参考",
+            "allow-introspection": "允许调用内省端点？",
+            "authentication-method": "令牌端点认证方法",
+            "authorization-code": "授权码",
+            "client-credentials": "客户端凭证",
+            "client-description": "描述",
+            "client-description-help": "人类可读的文本描述",
+            "client-description-placeholder": "填入说明描述",
+            "client-id": "客户端ID",
+            "client-id-help": "唯一标识符。如果不填则系统会自动生成一个。",
+            "client-id-placeholder": "输入一些字符",
+            "client-name": "客户端名称",
+            "client-name-help": "人类可读的应用程序名称",
+            "client-name-placeholder": "输入一些字符",
+            "client-secret": "客户端密钥",
+            "client-secret-placeholder": "输入密钥",
+            "contacts": "联系人",
+            "contacts-help": "此客户端管理员的联系人名单。",
+            "contacts-placeholder": "新联系人",
+            "credentials": "凭据",
+            "crypto": {
+                "a128cbc-hs256": "复合认证加密算法，采用密码块链（CBC）模式AES，以PKCS #5填充，完整性计算使用HMAC SHA-256，并使用256位的CMK（和128位CEK）",
+                "a256cbc-hs512": "复合认证加密算法，采用密码块链（CBC）模式AES，以PKCS #5填充，完整性计算使用HMAC SHA-512，并使用512位的CMK（和256位CEK）",
+                "a128gcm": "AES GCM使用128位的密钥",
+                "a256gcm": "AES GCM使用256位的密钥",
+                "a128kw": "AES密钥封装算法使用128位的密钥",
+                "a256kw": "AES密钥封装算法使用256位的密钥",
+                "default": "使用服务器默认",
+                "dir": "直接使用一个共享对称密钥作为块加密的内容主密钥（CMK）",
+                "ecdh-es": "椭圆曲线Diffie-Hellman短时静态密钥协议（使用Concat KDF），商定的密钥被直接用作内容主密钥（CMK）",
+                "ecdh-es-a128kw": "椭圆曲线Diffie-Hellman短时静态密钥协议（使用ECDH-ES和第4.7小节），但商定的密钥是用以A128KW函数封装内容主密钥（CMK）",
+                "ecdh-es-a256kw": "椭圆曲线Diffie-Hellman短时静态密钥协议（使用ECDH-ES和第4.7小节），但商定的密钥是用以A256KW函数封装内容主密钥（CMK）",
+                "none": "不加密",
+                "rsa-oaep": "RSAES使用最优不对称加密填充（OAEP）",
+                "rsa1-5": "RSAES-PKCS1-V1_5"
+            },
+            "cryptography": "密码",
+            "display-secret": "显示/编辑客户端密钥：",
+            "edit": "编辑客户端",
+            "generate-new-secret": "生成一个新的客户端密钥吗？",
+            "generate-new-secret-help": "当点击“保存”时生成新的密钥",
+            "generate-on-save": "保存时生成",
+            "grant-types": "批准的类型",
+            "home": "主页",
+            "home-help": "客户端首页的URL，将显示给用户",
+            "hours": "小时",
+            "id": "ID：",
+            "id-token-crypto-algorithm": "身份令牌加密算法",
+            "id-token-crypto-method": "身份令牌加密方法",
+            "id-token-signing-algorithm": "身份令牌签名算法",
+            "id-token-timeout": "身份令牌超时",
+            "implicit": "隐式的",
+            "initiate-login": "初始化登录",
+            "initiate-login-help": "启动登录客户端的URL",
+            "introspection": "自省",
+            "jwk-set": "公钥集",
+            "jwk-set-help": "客户端JSON Web Key集的URL (须可被服务器访问)",
+            "jwk-set-value-help": "客户端JSON Web Key集的URL (须可被服务器访问)",
+            "logo": "标志（Logo)",
+            "logo-help": "标志（Logo）图像的URL，将显示在批准页",
+            "main": "首要",
+            "max-age": "默认最长有效时间",
+            "max-age-help": "再提示之前的默认最长会话有效时间",
+            "minutes": "分钟",
+            "new": "新客户端",
+            "other": "其它",
+            "pairwise": "Pairwise对",
+            "password": "密码",
+            "policy": "政策声明",
+            "policy-help": "此客户端的政策声明链接，将显示给用户",
+            "post-logout": "注销后重定向",
+            "post-logout-help": "客户端注销操作后的重定向URL",
+            "public": "公共",
+            "redelegation": "重新授权",
+            "redirect-uris": "重定向URI",
+            "redirect-uris-help": "在授权页面之后客户端重定向URI",
+            "claims-redirect-uris": "声明重定向URI",
+            "claims-redirect-uris-help": "在声明收集步骤之后浏览器跳转至的目的地址",
+            "refresh": "刷新",
+            "refresh-tokens": "刷新令牌",
+            "refresh-tokens-issued": "为此客户端发布的刷新令牌",
+            "refresh-tokens-issued-help": "这将把 offline_access 加入客户端的范围。",
+            "refresh-tokens-reused": "此客户端的刷新令牌被重用",
+            "clear-access-tokens": "当刷新令牌用过之后，已激活的访问令牌自动失效",
+            "refresh-tokens-no-expire": "刷新令牌尚未过期",
+            "registered": "注册于",
+            "registration-token": "注册令牌：",
+            "registration-access-token": "注册访问令牌",
+            "registration-token-error": "无法为此客户端下载注册访问令牌。",
+            "request-object-signing-algorithm": "请求对象签名算法",
+            "request-uri": "请求的URI",
+            "request-uri-help": "URI包含此客户端使用的请求对象",
+            "require-auth-time": "需要身份认证时间(auth_time)",
+            "require-auth-time-label": "总是需要在身份令牌中包含auth_time声明",
+            "response-types": "响应类型",
+            "rotate-registration-token": "旋转注册令牌",
+            "rotate-registration-token-confirm": "你确定你想旋转这个客户端的登录令牌？",
+            "rotate-registration-token-error": "无法旋转该客户端的注册访问令牌。",
+            "saved": {
+                "no-secret": "没有客户端密钥",
+                "saved": "客户端已保存",
+                "secret": "密钥：",
+                "show-secret": "显示密钥",
+                "unchanged": "不变"
+            },
+            "scope-placeholder": "新范围",
+            "scope-help": "OAuth范围允许客户端请求",
+            "seconds": "秒",
+            "secret-asymmetric-jwt": "非对称签名JWT断言",
+            "secret-http": "客户端密钥经由HTTP Basic",
+            "secret-none": "没有认证",
+            "secret-post": "客户端密钥经由HTTP POST",
+            "secret-symmetric-jwt": "客户端密钥经由对称签名JWT断言",
+            "sector-identifier": "扇区标识符URI",
+            "signing": {
+                "any": "允许",
+                "default": "使用服务器默认",
+                "es256": "ECDSA采用P-256曲线和SHA-256哈希算法",
+                "es384": "ECDSA采用P-384曲线及SHA-384哈希算法",
+                "es512": "ECDSA采用P-512曲线及SHA-512哈希算法",
+                "hs256": "HMAC使用SHA-256哈希算法",
+                "hs384": "HMAC使用SHA-384哈希算法",
+                "hs512": "HMAC使用SHA-512哈希算法",
+                "none": "没有数字签名",
+                "rs256": "RSASSA使用SHA-256哈希算法",
+                "rs384": "RSASSA采用SHA-384哈希算法",
+                "rs512": "RSASSA使用SHA-512哈希算法",
+                "ps256": "采用SHA-256和MGF1的RSASSA-PSS算法",
+                "ps384": "采用SHA-384和MGF1的RSASSA-PSS算法",
+                "ps512": "采用SHA-512和MGF1的RSASSA-PSS算法"
+            },
+            "subject-type": "主体类型",
+            "terms": "服务条款",
+            "terms-help": "此客户服务条款的URL，将向用户显示",
+            "token-signing-algorithm": "令牌端点认证签名算法",
+            "tokens": "令牌",
+            "type": "应用类型",
+            "type-native": "原生应用",
+            "type-web": "网络应用",
+            "unknown": "（未知）",
+            "user-info-crypto-algorithm": "用户信息端点加密算法",
+            "user-info-crypto-method": "用户信息端点加密方法",
+            "user-info-signing-algorithm": "用户信息端点签名算法"
+        },
+        "client-table": {
+            "allow-introspection-tooltip": "这个客户端可以执行令牌自省",
+            "confirm": "你确定要删除这个客户端？",
+            "dynamically-registered-tooltip": "这个客户端是动态注册的。点击查看注册访问令牌",
+            "match": {
+                "contacts": "联系人",
+                "description": "描述",
+                "homepage": "主页",
+                "id": "身份",
+                "logo": "标志",
+                "name": "名称",
+                "policy": "政策",
+                "redirect": "重定向URI",
+                "scope": "范围",
+                "terms": "服务条款"
+            },
+            "matched-search": "匹配搜索：",
+            "new": "新客户端",
+            "no-clients": "此服务器上没有注册的客户端。",
+            "no-matches": "没有匹配搜索条件的客户端。",
+            "no-redirect": "没有重定向URI",
+            "registered": "注册于",
+            "search": "搜索……",
+            "whitelist": "白名单",
+            "unknown": "一个未知的时间"
+        },
+        "manage": "管理客户端",
+        "more-info": {
+            "contacts": "管理员联系方式：",
+            "home": "主页",
+            "more": "更多信息",
+            "policy": "政策",
+            "terms": "服务条款："
+        },
+        "newClient": "新客户端"
+    },
+    "common": {
+        "cancel": "取消",
+        "client": "客户端",
+        "clients": "客户端",
+        "close": "关闭",
+        "delete": "删除",
+        "description": "描述",
+        "dynamically-registered": "这个客户端是动态注册的",
+        "edit": "编辑",
+        "expires": "到期：",
+        "information": "信息",
+        "new": "新建",
+        "not-yet-implemented": "未实现",
+        "not-yet-implemented-content": "这个字段的值将于客户端保存，但服务器目前不处理任何事情。服务器的未来库版本将利用它。",
+        "revoke": "撤销",
+        "save": "保存",
+        "scopes": "范围",
+        "statistics": "统计",
+        "refresh": "刷新",
+        "scope": "范围",
+        "users": "用户",
+        "user": "用户",
+        "roles": "角色",
+        "role": "角色",
+        "email": "电子邮箱",
+        "active": "已激活",
+        "inactive": "未激活"
+    },
+    "dynreg": {
+        "client-id-placeholder": "输入客户端ID",
+        "configuration-url": "客户端配置URL",
+        "edit-dynamically-registered": "编辑动态注册的客户端",
+        "edit-existing": "编辑一个现有的客户端",
+        "edit-existing-help": "用于编辑之前已注册的客户端。粘贴您的客户端ID和注册访问令牌，以便访问该客户端。",
+        "edit-existing-button": "编辑客户端",
+        "invalid-access-token": "无效的客户端或注册访问令牌。",
+        "new-client": "注册新客户端",
+        "new-client-help": "用于注册新的客户端。请提供客户端ID和注册访问令牌，以便管理您的客户端。",
+        "new-client-button": "新建客户端",
+        "regtoken-placeholder": "输入注册访问令牌",
+        "warning": "<strong>警告！</strong>你必须保护好<b>客户端ID </b>，<b>客户密钥（如果提供）</b>，以及您的<b>注册访问令牌</b>。如果你丢失了客户端ID或注册访问令牌，将无法访问您的客户端注册记录，你需要注册一个新客户端。",
+        "will-be-generated": "当保存客户端信息将由服务器生成"
+    },
+    "grant": {
+        "manage-approved-sites": "管理批准的网站",
+        "refresh": "刷新",
+        "grant-table": {
+            "active-tokens": "当前活跃的访问令牌数量",
+            "application": "应用程序",
+            "approved-sites": "许可站点",
+            "authorized": "授权：",
+            "dynamically-registered": "这个客户端是动态注册的",
+            "expires": "到期：",
+            "last-accessed": "上次访问：",
+            "never": "从未",
+            "no-sites": "还未批准任何网站。",
+            "no-whitelisted": "还未访问任何白名单的网站。",
+            "pre-approved": "这些都是预先由管理员批准的网站。",
+            "text": "这些都是您已经手动批准的网站。如果同一网站将来要进行同样的访问，它将直接通过、且没有提示。",
+            "unknown": "未知",
+            "whitelist-note": "<b>注：</b>如果你在此撤销它们，它们将在您下次访问时不经提示即被自动重新批准。",
+            "whitelisted-site": "这个网站由管理员列入白名单中",
+            "whitelisted-sites": "白名单的网站"
+        }
+    },
+    "rsreg": {
+        "resource-id-placeholder": "输入资源ID",
+        "configuration-url": "客户端配置URL",
+        "edit": "编辑受保护的资源",
+        "edit-existing": "编辑现有的保护资源",
+        "edit-existing-help": "用于编辑之前已注册的资源。请提供您的客戶端ID和注册访问令牌来访问资源的属性。",
+        "edit-existing-button": "编辑资源",
+        "invalid-access-token": "无效的客户端或注册访问令牌。",
+        "new-client": "注册新的受保护资源",
+        "new-client-help": "用于注册新的资源。请提供客户端ID和注册访问令牌，以便管理您的资源。",
+        "new-client-button": "新建资源",
+        "regtoken-placeholder": "输入注册访问令牌",
+        "will-be-generated": "当保存资源信息将由服务器生成",
+        "warning": "<strong>警告！</strong>你必须保护好<b>客户端ID </b>，<b>客户密钥（如果提供）</b>，以及<b>注册访问令牌</b>。如果丢失了客户端ID或注册访问令牌，将无法再次获得您的客户端注册记录，你需要注册一个新客户端。",
+        "client-form": {
+            "scope-help": "这个资源能够自省令牌的范围。"
+        }
+    },
+    "scope": {
+        "manage": "管理系统范围",
+        "scope-list": {
+            "no-scopes": "没有范围"
+        },
+        "system-scope-form": {
+            "default": "默认范围",
+            "default-help": "新创建的用户默认情况下获得这个范围？",
+            "description-help": "人类可读的文本描述",
+            "description-placeholder": "输入说明",
+            "restricted": "限制",
+            "restricted-help": "限制范围只能由系统管理员使用，可用动态注册客户和保护资源",
+            "edit": "编辑范围",
+            "icon": "图标",
+            "new": "新范围",
+            "select-icon": "选择图标",
+            "structured": "是一个结构化的范围",
+            "structured-help": "范围结构化是否包含如<code>base:extension</code>的结构化值？",
+            "structured-param-help": "人类可读的结构化参数描述",
+            "subject-type": "主体类型",
+            "value": "范围值",
+            "value-help": "不含空格的单个字符串",
+            "value-placeholder": "范围"
+        },
+        "system-scope-table": {
+            "confirm": "你确定要删除此范围？引用了此范围的客户端还需要它。",
+            "new": "新范围",
+            "text": "尚未定义系统范围。客户可自定义范围。",
+            "tooltip-restricted": "此范围只能由管理员使用。它不能用于动态注册。",
+            "tooltip-default": "这个范围将自动分配给新注册的客户。"
+        }
+    },
+    "token": {
+        "manage": "管理活动的令牌",
+        "token-table": {
+            "access-tokens": "访问令牌",
+            "associated-id": "这个访问令牌附带相关的身份令牌。",
+            "associated-refresh": "这个访问令牌附带相关的刷新令牌。",
+            "click-to-display": "点击显示完整的令牌值",
+            "confirm": "你确定要撤销这个令牌？",
+            "confirm-refresh": "你确定要撤销这个刷新令牌及其相关的访问令牌？",
+            "expires": "过期",
+            "no-access": "没有活动的访问令牌。",
+            "no-refresh": "没有活动的刷新令牌。",
+            "number-of-tokens": "关联的访问令牌数量",
+            "refresh-tokens": "刷新令牌",
+            "text": "访问令牌通常是短暂的，供客户端访问特定的资源。身份令牌是采用OpenID Connect协议登录的、专门的访问令牌。",
+            "text-refresh": "刷新令牌通常是长期的，以便客户端能无需用户介入即可获取新的访问令牌。",
+            "token-info": "令牌的信息"
+        }
+    },
+    "whitelist": {
+        "confirm": "你确定要删除这个白名单项？",
+        "edit": "编辑白名单",
+        "manage": "管理列入白名单的网站",
+        "new": "新白名单",
+        "whitelist": "白名单",
+        "whitelist-form": {
+            "allowed-scopes": "允许范围",
+            "edit": "编辑白名单的网站",
+            "new": "新增白名单网站",
+            "scope-help": "当客户端发出请求列表时将自动批准的范围",
+            "scope-placeholder": "新范围"
+        },
+        "whitelist-table": {
+            "no-sites": "白名单列表为空。使用<strong>白名单</strong>按钮在客户端管理页面创建一个。"
+        }
+    },
+    "blacklist": {
+        "text": "被拉黑的网站URI将无法用做注册客户端的重定向地址（无论是在管理界面中添加、还是动态注册，都不会成功）。",
+        "blacklist-uri-placeholder": "要拉黑的网站URI",
+        "add": "将网站URI加入黑名单",
+        "empty": "当前黑名单为空",
+        "uri": "URI"
+    },
+    "copyright": "基于<a href=\"https://github.com/mitreid-connect/\">MITREid Connect <span class=\"label\">{0}</span></a>技术构建 <span class=\"pull-right\">&copy; 2016 MITRE公司及MIT因特网信任联盟</span>.",
+    "about": {
+        "title": "关于",
+        "body": "\n此OpenID Connect服务基于开源的MITREid Connect项目，该项目来自 \n<a href=\"http://www.mitre.org/\">MITRE公司</a> 及 <a href=\"http://kit.mit.edu/\">MIT因特网信任联盟</a>。\n</p>\n<p>\n有关项目的更多信息可见 \n<a href=\"http://github.com/mitreid-connect/\">GitHub上的MITREid Connect项目</a>。 \n在那儿，您可以提交bug报告、提交反馈甚或提交代码补丁。"
+    },
+    "statistics": {
+        "title": "统计",
+        "number_users": "用户数: <span class=\"label label-info\" id=\"userCount\">{0}</span>",
+        "number_clients": "授权的客户端: <span class=\"label label-info\" id=\"clientCount\">{0}</span>",
+        "number_approvals": "已批准的站点: <span class=\"label label-info\" id=\"approvalCount\">{0}</span>"
+    },
+    "home": {
+        "title": "首页",
+        "welcome": {
+            "title": "欢迎！",
+			"body": "\nOpenID Connect是适于因特网部署的身份联邦认证服务器，基于OAuth2授权框架之上的OpenID Connect技术构建。\nOpenID Connect让您无需暴露自己的用户名、密码即可便捷登录网站。</p>\n<p><a class=\"btn btn-primary btn-large\" href=\"http://openid.net/connect/\">了解更多信息&raquo;</a>"
+        },
+        "more": "更多",
+        "about": {
+            "title": "关于",
+            "body": "本服务基于开源的MITREid Connect项目，该项目来自 \n<a href=\"http://www.mitre.org/\">MITRE公司</a> 及 <a href=\"http://kit.mit.edu/\">MIT因特网信任联盟</a>。"
+        },
+        "contact": {
+            "title": "联系方式",
+            "body": "\n如需更多的信息和支持，请联系本系统的管理员。</p>\n<p><a class=\"btn\" href=\"mailto:idp@example.com?Subject=OpenID Connect\">电子信箱 &raquo;</a>"
+        },
+        "statistics": {
+            "title": "当前统计",
+            "loading": "加载……",
+            "number_users": "用户数: <span class=\"label label-info\" id=\"userCount\">{0}</span>",
+            "number_clients": "授权的客户端: <span class=\"label label-info\" id=\"clientCount\">{0}</span>",
+            "number_approvals": "已批准的站点: <span class=\"label label-info\" id=\"approvalCount\">{0}</span>"
+        }
+    },
+    "contact": {
+        "title": "联系方式",
+        "body": "如果要报告有关MITREid Connect软件自身的bug，请访问\n<a href=\"https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server/issues\">GitHub issue追踪系统</a>。 \n有关当前服务器的问题，请联系服务器管理员。"
+    },
+    "topbar": {
+        "about": "关于",
+        "contact": "联系方式",
+        "statistics": "统计",
+        "home": "首页",
+        "login": "登录",
+        "logout": "注销"
+    },
+    "sidebar": {
+        "administrative": {
+            "title": "管理",
+            "manage_clients": "管理客户端",
+            "whitelisted_clients": "白名单",
+            "blacklisted_clients": "黑名单",
+            "system_scopes": "系统范围"
+        },
+        "personal": {
+            "title": "个人",
+            "approved_sites": "管理批准的网站",
+            "active_tokens": "管理活动的令牌",
+            "profile_information": "查看用户信息"
+        },
+        "developer": {
+            "title": "开发者自助服务",
+            "client_registration": "客户端注册",
+            "resource_registration": "保护资源注册"
+        }
+    },
+    "manage": {
+        "ok": "好的",
+        "loading": "加载",
+        "title": "管理控制台"
+    },
+    "approve": {
+        "dynamically-registered-unknown": "在一个未知的时间",
+        "title": "批准访问",
+        "error": {
+            "not_granted": "访问可能不获批准。"
+        },
+        "required_for": "有待批准",
+        "dynamically_registered": "此客户端已被动态注册了<span class=\"label label-info\" id=\"registrationTime\">{0}</span>次。",
+        "caution": {
+            "title": "注意",
+            "message": {
+                "none": "它之前<span class=\"label label-important\">从未</span>被批准。",
+                "singular": "它之前已被批准了<span class=\"label label-warning\">{0}</span>次。",
+                "plural": "它之前已被批准了<span class=\"label\">{0}</span>次。"
+            }
+        },
+        "more_information": "更多信息",
+        "home_page": "主页",
+        "policy": "政策",
+        "terms": "服务条款",
+        "contacts": "管理人员",
+        "warning": "警告",
+        "no_redirect_uri": "该客户端没有注册任何重定向URI，可能被使用恶意的URI。",
+        "redirect_uri": "如果点击批准，您将被重定向至如下页面: <code>{0}</code>",
+        "pairwise": "该客户端使用<b>pairwise</b>标识符，这使得在不同站点间关联身份变得稍加困难。",
+        "no_scopes": "该客户端没有注册任何范围，因此允许请求系统可用的<em>any</em>(任意)范围。请务必谨慎处理。",
+        "access_to": "访问",
+        "remember": {
+            "title": "记住这个决定",
+            "until_revoke": "记住这个决定直到我撤销",
+            "one_hour": "记住该决定一个小时",
+            "next_time": "下次再提醒我"
+        },
+        "do_authorize": "是否授权",
+        "label": {
+            "authorize": "授权",
+            "deny": "拒绝"
+        }
+    },
+    "error": {
+    	"title": "错误",
+		"header": "错误:",
+		"message": "在处理您的请求过程中发生了错误。服务器信息为:"
+    },
+    "login": {
+		"login_with_username_and_password": "请使用您的用户名及密码登录",
+		"username": "用户名",
+		"password": "密码",
+		"login-button": "登录",
+		"error": "登录失败。请重试。"
+    }
+}

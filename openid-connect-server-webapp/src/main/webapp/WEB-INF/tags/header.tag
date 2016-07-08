@@ -39,7 +39,7 @@
     <script type="text/javascript">
         $.i18n.init({
             fallbackLng: "en",
-            lng: "${config.locale}",
+            lng: "${pageContext.response.locale}",
             resGetPath: "resources/js/locale/__lng__/__ns__.json",
             ns: {
             	namespaces: ${config.languageNamespacesString},

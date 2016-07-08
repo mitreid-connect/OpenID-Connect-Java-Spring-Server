@@ -203,6 +203,9 @@
 		<property name="useCodeAsDefaultMessage" value="true" />
 	</bean>
 
+	<bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver">
+	</bean>
+
 	<!-- user services -->
 	<import resource="user-context.xml" />
 

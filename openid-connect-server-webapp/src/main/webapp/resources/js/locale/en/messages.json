@@ -349,6 +349,13 @@
             "no-sites": "There are no whitelisted sites. Use the <strong>whitelist</strong> button on the client management page to create one."
         }
     },
+    "blacklist": {
+    	"text": "Blacklisted URIs cannot be used as redirect URIs by any registered clients, whether in the admin interface or in dynamic registration.",
+    	"blacklist-uri-placeholder": "blacklist uri",
+    	"add": "Add URI to blacklist",
+    	"empty": "There are no blacklisted URIs on this server.",
+    	"uri": "URI"
+    },
 	"copyright": "Powered by <a href=\"https://github.com/mitreid-connect/\">MITREid Connect <span class=\"label\">{0}</span></a> <span class=\"pull-right\">&copy; 2016 The MITRE Corporation and MIT Internet Trust Consortium.</span>.",
 	"about": {
 		"title": "About",
@@ -466,6 +473,9 @@
 	},
 	"login": {
 		"login_with_username_and_password": "Login with Username and Password",
+		"username": "Username",
+		"password": "Password",
+		"login-button": "Login",
 		"error": "The system was unable to log you in. Please try again."
 	}
 	
