@@ -366,6 +366,50 @@ var UserProfileView = Backbone.View.extend({
 	}
 });
 
+// error handler
+var ErrorHandlerView = Backbone.View.extend({
+	
+	initialize:function(options) {
+    	this.options = options;
+        if (!this.template) {
+            this.template = _.template($('#tmpl-error-box').html());
+        }
+        if (!this.headerTemplate) {
+        	this.headerTemplate = _.template($('#tmpl-error-header').html());
+        }
+	},
+	
+	reloadPage:function(event) {
+		event.preventDefault();
+		window.location.reload(true);
+	},
+
+	handleError:function(message) {
+
+		if (message.log) {
+			console.log(message.log);
+		}
+		
+		var _self = this;
+		
+		return function(model, response, options) {
+			
+			$('#modalAlert').i18n();
+			$('#modalAlert div.modal-header').html(_self.headerTemplate({message: message, model: model, response: response, options: options}));
+			$('#modalAlert .modal-body').html(_self.template({message: message, model: model, response: response, options: options}));
+	
+			$('#modalAlert .modal-body .page-reload').on('click', _self.reloadPage);
+			
+			$('#modalAlert').modal({
+				'backdrop': 'static',
+				'keyboard': true,
+				'show': true
+			});
+		}
+	}
+});
+
+
 // Router
 var AppRouter = Backbone.Router.extend({
 
@@ -424,6 +468,8 @@ var AppRouter = Backbone.Router.extend({
         });
 
         this.breadCrumbView.render();
+        
+        this.errorHandlerView = new ErrorHandlerView();
 
         var base = $('base').attr('href');
         $.getJSON(base + '.well-known/openid-configuration', function(data) {
@@ -1013,47 +1059,6 @@ var AppRouter = Backbone.Router.extend({
 // this gets init after the templates load
 var app = null;
 
-var apiErrorHandler = function(msg) {
-	return function(model, response, options) {
-		if (msg.log) {
-			console.log(msg.log);
-		}
-		
-		var header = "";
-		var message = "";
-		
-		message += $.t('error.message');
-
-		if (response.responseJSON) {
-			header += response.responseJSON.error;
-			message += response.responseJSON.error_description;
-		}
-
-		if (msg.message) {
-			message += $.t(options.message);
-		}	
-		
-		if (response.status == 401) {
-			// unauthorized means the session probably timed out, prompt the user to reload the page
-			message += $('#tmpl-page-reload').html();
-		}
-		
-		$('#modalAlert').i18n();
-		$('#modalAlert div.modal-header').html(header);
-		$('#modalAlert .modal-body').html(message);
-
-		$('#modalAlert .modal-body .page-reload').on('click', function(event) {
-			event.preventDefault();
-			window.location.reload(true);
-		});
-
-		$('#modalAlert').modal({
-			'backdrop': 'static',
-			'keyboard': true,
-			'show': true
-		});
-	};
-};
 // main
 $(function () {
 
@@ -1089,9 +1094,10 @@ $(function () {
     		});
     
     window.onerror = function ( message, filename, lineno, colno, error ){
+    	console.log(message);
 		//Display an alert with an error message
 		$('#modalAlert div.modal-header').html($.t('error.title'));
-		$('#modalAlert div.modal-body').html($.t('error.message') + ' <br /> ' [filename, lineno, colno, error]);
+		$('#modalAlert div.modal-body').html($.t('error.message') + message + ' <br /> ' + [filename, lineno, colno, error]);
 		
 		 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
 			 "backdrop" : "static",

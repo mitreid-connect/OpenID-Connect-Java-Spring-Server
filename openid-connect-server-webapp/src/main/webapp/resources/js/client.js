@@ -1061,7 +1061,7 @@ var ClientFormView = Backbone.View.extend({
             	app.clientList.add(_self.model);
                 app.navigate('admin/clients', {trigger:true});
             },
-            error:apiErrorHandler({log: "An error occurred when saving a client"})
+            error:app.errorHandlerView.handleError({log: "An error occurred when saving a client"})
         });
 
         return false;

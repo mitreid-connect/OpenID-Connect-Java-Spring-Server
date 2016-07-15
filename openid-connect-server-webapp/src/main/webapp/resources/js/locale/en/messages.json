@@ -468,8 +468,9 @@
 	},
 	"error": {
 		"title": "Error",
-		"header": "Error:",
-		"message": "There was an error processing your request. The server''s message was:"
+		"header": "Error",
+		"header-with-message": "Error: ",
+		"message": "There was an error in the application: "
 	},
 	"login": {
 		"login_with_username_and_password": "Login with Username and Password",
