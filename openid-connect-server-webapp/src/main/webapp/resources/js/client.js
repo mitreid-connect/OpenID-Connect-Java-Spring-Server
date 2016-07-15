@@ -1061,22 +1061,7 @@ var ClientFormView = Backbone.View.extend({
             	app.clientList.add(_self.model);
                 app.navigate('admin/clients', {trigger:true});
             },
-            error:function (error, response) {
-        		console.log("An error occurred when saving a client");
-
-				//Pull out the response text.
-				var responseJson = JSON.parse(response.responseText);
-        		
-        		//Display an alert with an error message
-				$('#modalAlert div.modal-header').html(responseJson.error);
-        		$('#modalAlert div.modal-body').html(responseJson.error_description);
-        		
-    			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
-    				 "backdrop" : "static",
-    				 "keyboard" : true,
-    				 "show" : true // ensure the modal is shown immediately
-    			 });
-        	}
+            error:apiErrorHandler({log: "An error occurred when saving a client"})
         });
 
         return false;

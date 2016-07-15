@@ -1013,6 +1013,47 @@ var AppRouter = Backbone.Router.extend({
 // this gets init after the templates load
 var app = null;
 
+var apiErrorHandler = function(msg) {
+	return function(model, response, options) {
+		if (msg.log) {
+			console.log(msg.log);
+		}
+		
+		var header = "";
+		var message = "";
+		
+		message += $.t('error.message');
+
+		if (response.responseJSON) {
+			header += response.responseJSON.error;
+			message += response.responseJSON.error_description;
+		}
+
+		if (msg.message) {
+			message += $.t(options.message);
+		}	
+		
+		if (response.status == 401) {
+			// unauthorized means the session probably timed out, prompt the user to reload the page
+			message += $('#tmpl-page-reload').html();
+		}
+		
+		$('#modalAlert').i18n();
+		$('#modalAlert div.modal-header').html(header);
+		$('#modalAlert .modal-body').html(message);
+
+		$('#modalAlert .modal-body .page-reload').on('click', function(event) {
+			event.preventDefault();
+			window.location.reload(true);
+		});
+
+		$('#modalAlert').modal({
+			'backdrop': 'static',
+			'keyboard': true,
+			'show': true
+		});
+	};
+};
 // main
 $(function () {
 
