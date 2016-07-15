@@ -66,6 +66,7 @@ public class DefaultOAuth2AuthorizationCodeService implements AuthorizationCodeS
 	 * @return 					the authorization code
 	 */
 	@Override
+	@Transactional(value="defaultTransactionManager")
 	public String createAuthorizationCode(OAuth2Authentication authentication) {
 		String code = generator.generate();
 
