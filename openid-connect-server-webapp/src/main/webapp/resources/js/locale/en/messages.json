@@ -169,7 +169,13 @@
             "unknown": "(Unknown)",
             "user-info-crypto-algorithm": "User Info Endpoint Encryption Algorithm",
             "user-info-crypto-method": "User Info Endpoint Encryption Method",
-            "user-info-signing-algorithm": "User Info Endpoint Signing Algorithm"
+            "user-info-signing-algorithm": "User Info Endpoint Signing Algorithm",
+            "error": {
+            	"consistency": "Consistency error",
+            	"pairwise-sector": "Pairwise identifiers cannot be used with multiple redirect URIs unless a sector identifier URI is also registered.",
+            	"jwk-set": "JWK set error",
+            	"jwk-set-parse": "There was an error parsing the public key from the JSON Web Key set. Check the value and try again."
+            }
         },
         "client-table": {
             "allow-introspection-tooltip": "This client can perform token introspection",
@@ -470,7 +476,10 @@
 		"title": "Error",
 		"header": "Error",
 		"header-with-message": "Error: ",
-		"message": "There was an error in the application: "
+		"reload": "Additionally, it looks like you're not logged in. Reload the page to try again. You will likely lose any unsaved work.",
+		"reload-button": "Reload",
+		"message": "There was an error processing your request.",
+		"server-message": "The server said: "
 	},
 	"login": {
 		"login_with_username_and_password": "Login with Username and Password",
