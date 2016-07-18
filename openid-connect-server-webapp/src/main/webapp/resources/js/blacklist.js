@@ -44,7 +44,7 @@ var BlackListListView = Backbone.View.extend({
                 '<span class="label" id="loading-blacklist">' + $.t('admin.blacklist') + '</span> '
     	        );
 
-    	$.when(this.collection.fetchIfNeeded({success:function(e) {$('#loading-blacklist').addClass('label-success');}}))
+    	$.when(this.collection.fetchIfNeeded({success:function(e) {$('#loading-blacklist').addClass('label-success');}, error:app.errorHandlerView.handleError()}))
     		.done(function() {
     			$('#loadingbox').sheet('hide');
     			callback();
@@ -121,20 +121,7 @@ var BlackListListView = Backbone.View.extend({
     			_self.collection.add(item);
     			_self.render();
     		},
-    		error:function(error, response) {
-    			//Pull out the response text.
-				var responseJson = JSON.parse(response.responseText);
-        		
-        		//Display an alert with an error message
-				$('#modalAlert div.modal-header').html(responseJson.error);
-        		$('#modalAlert div.modal-body').html(responseJson.error_description);
-        		
-    			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
-    				 "backdrop" : "static",
-    				 "keyboard" : true,
-    				 "show" : true // ensure the modal is shown immediately
-    			 });
-    		}
+    		error:app.errorHandlerView.handleError()
     	});
 
 	}
@@ -182,23 +169,7 @@ var BlackListWidgetView = Backbone.View.extend({
                         });
                     });
                 },
-            	error:function (model, response) {
-					//Pull out the response text.
-            		var responseJson = {error: 'Error', error_description: 'Error.'};
-            		if (response) {
-    					responseJson = JSON.parse(response.responseText);
-            		}
-            		
-            		//Display an alert with an error message
-					$('#modalAlert div.modal-header').html(responseJson.error);
-	        		$('#modalAlert div.modal-body').html(responseJson.error_description);
-            		
-        			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
-        				 "backdrop" : "static",
-        				 "keyboard" : true,
-        				 "show" : true // ensure the modal is shown immediately
-        			 });
-            	}
+            	error:app.errorHandlerView.handleError()
             });
 
             _self.parentView.delegateEvents();
