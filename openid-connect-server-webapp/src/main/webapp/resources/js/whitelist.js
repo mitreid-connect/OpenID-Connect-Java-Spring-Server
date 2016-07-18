@@ -65,9 +65,9 @@ var WhiteListListView = Backbone.View.extend({
                 '<span class="label" id="loading-scopes">' + $.t('common.scopes') + '</span> '
     			);
 
-    	$.when(this.model.fetchIfNeeded({success:function(e) {$('#loading-whitelist').addClass('label-success');}}),
-    			this.options.clientList.fetchIfNeeded({success:function(e) {$('#loading-clients').addClass('label-success');}}),
-    			this.options.systemScopeList.fetchIfNeeded({success:function(e) {$('#loading-scopes').addClass('label-success');}}))
+    	$.when(this.model.fetchIfNeeded({success:function(e) {$('#loading-whitelist').addClass('label-success');}, error: app.errorHandlerView.handleError()}),
+    			this.options.clientList.fetchIfNeeded({success:function(e) {$('#loading-clients').addClass('label-success');}, error: app.errorHandlerView.handleError()}),
+    			this.options.systemScopeList.fetchIfNeeded({success:function(e) {$('#loading-scopes').addClass('label-success');}, error: app.errorHandlerView.handleError()}))
     			.done(function() {
     	    		$('#loadingbox').sheet('hide');
     	    		callback();
@@ -122,9 +122,9 @@ var WhiteListListView = Backbone.View.extend({
                 '<span class="label" id="loading-scopes">' + $.t('common.scopes') + '</span> '
     			);
 
-    	$.when(this.model.fetch({success:function(e) {$('#loading-whitelist').addClass('label-success');}}),
-    			this.options.clientList.fetch({success:function(e) {$('#loading-clients').addClass('label-success');}}),
-    			this.options.systemScopeList.fetch({success:function(e) {$('#loading-scopes').addClass('label-success');}}))
+    	$.when(this.model.fetch({success:function(e) {$('#loading-whitelist').addClass('label-success');}, error: app.errorHandlerView.handleError()}),
+    			this.options.clientList.fetch({success:function(e) {$('#loading-clients').addClass('label-success');}, error: app.errorHandlerView.handleError()}),
+    			this.options.systemScopeList.fetch({success:function(e) {$('#loading-scopes').addClass('label-success');}, error: app.errorHandlerView.handleError()}))
     			.done(function() {
     	    		$('#loadingbox').sheet('hide');
     	    		_self.render();
@@ -196,22 +196,7 @@ var WhiteListView = Backbone.View.extend({
                         });
                     });
                 },
-                error:function (error, response) {
-            		console.log("An error occurred when deleting a whitelist entry");
-
-    				//Pull out the response text.
-    				var responseJson = JSON.parse(response.responseText);
-            		
-            		//Display an alert with an error message
-    				$('#modalAlert div.modal-header').html(responseJson.error);
-            		$('#modalAlert div.modal-body').html(responseJson.error_description);
-            		
-        			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
-        				 "backdrop" : "static",
-        				 "keyboard" : true,
-        				 "show" : true // ensure the modal is shown immediately
-        			 });
-            	}
+                error:app.errorHandlerView.handleError()
             });
             
             _self.parentView.delegateEvents();
@@ -274,9 +259,9 @@ var WhiteListFormView = Backbone.View.extend({
 	                '<span class="label" id="loading-scopes">' + $.t('common.scopes') + '</span> '
 	    			);
 
-	    	$.when(this.model.fetchIfNeeded({success:function(e) {$('#loading-whitelist').addClass('label-success');}}),
-	    			this.options.client.fetchIfNeeded({success:function(e) {$('#loading-clients').addClass('label-success');}}),
-	    			this.options.systemScopeList.fetchIfNeeded({success:function(e) {$('#loading-scopes').addClass('label-success');}}))
+	    	$.when(this.model.fetchIfNeeded({success:function(e) {$('#loading-whitelist').addClass('label-success');}, error: app.errorHandlerView.handleError()}),
+	    			this.options.client.fetchIfNeeded({success:function(e) {$('#loading-clients').addClass('label-success');}, error: app.errorHandlerView.handleError()}),
+	    			this.options.systemScopeList.fetchIfNeeded({success:function(e) {$('#loading-scopes').addClass('label-success');}, error: app.errorHandlerView.handleError()}))
 	    			.done(function() {
 	    				$('#loadingbox').sheet('hide');
 	    	    		callback();
@@ -305,9 +290,9 @@ var WhiteListFormView = Backbone.View.extend({
 
 	    	var _self = this;
 	    	
-	    	$.when(this.model.fetchIfNeeded({success:function(e) {$('#loading-whitelist').addClass('label-success');}}),
-	    			this.options.clientList.fetchIfNeeded({success:function(e) {$('#loading-clients').addClass('label-success');}}),
-	    			this.options.systemScopeList.fetchIfNeeded({success:function(e) {$('#loading-scopes').addClass('label-success');}}))
+	    	$.when(this.model.fetchIfNeeded({success:function(e) {$('#loading-whitelist').addClass('label-success');}, error: app.errorHandlerView.handleError()}),
+	    			this.options.clientList.fetchIfNeeded({success:function(e) {$('#loading-clients').addClass('label-success');}, error: app.errorHandlerView.handleError()}),
+	    			this.options.systemScopeList.fetchIfNeeded({success:function(e) {$('#loading-scopes').addClass('label-success');}, error: app.errorHandlerView.handleError()}))
 	    			.done(function() {
 	    				
 	    				var client = _self.options.clientList.getByClientId(_self.model.get('clientId'));
@@ -355,22 +340,7 @@ var WhiteListFormView = Backbone.View.extend({
                     app.whiteListList.add(_self.model);
                     app.navigate('admin/whitelists', {trigger:true});
                 },
-                error:function (error, response) {
-            		console.log("An error occurred when deleting from a list widget");
-
-    				//Pull out the response text.
-    				var responseJson = JSON.parse(response.responseText);
-            		
-            		//Display an alert with an error message
-    				$('#modalAlert div.modal-header').html(responseJson.error);
-            		$('#modalAlert div.modal-body').html(responseJson.error_description);
-            		
-        			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
-        				 "backdrop" : "static",
-        				 "keyboard" : true,
-        				 "show" : true // ensure the modal is shown immediately
-        			 });
-            	}
+                error:app.errorHandlerView.handleError()
             });
         }
 
