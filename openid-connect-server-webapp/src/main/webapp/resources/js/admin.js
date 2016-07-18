@@ -94,22 +94,7 @@ var ListWidgetChildView = Backbone.View.extend({
         
         this.model.destroy({
         	dataType: false, processData: false,
-        	error:function (error, response) {
-        		console.log("An error occurred when deleting from a list widget");
-
-				//Pull out the response text.
-				var responseJson = JSON.parse(response.responseText);
-        		
-        		//Display an alert with an error message
-				$('#modalAlert div.modal-header').html(responseJson.error);
-        		$('#modalAlert div.modal-body').html(responseJson.error_description);
-        		
-    			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
-    				 "backdrop" : "static",
-    				 "keyboard" : true,
-    				 "show" : true // ensure the modal is shown immediately
-    			 });
-        	}
+        	error:app.errorHandlerView.handleError()
         });
         
     },
