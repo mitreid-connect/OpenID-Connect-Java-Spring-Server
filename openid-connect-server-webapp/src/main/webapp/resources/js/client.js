@@ -991,6 +991,8 @@ var ClientFormView = Backbone.View.extend({
             		secretChanged: secretChanged
             	};
             	
+        		$('#modalAlert div.modal-header').html($.t('client.client-form.saved.saved'));
+            	
             	$('#modalAlert .modal-body').html(_self.clientSavedTemplate(savedModel));
             	
             	$('#modalAlert .modal-body #savedClientSecret').hide();
