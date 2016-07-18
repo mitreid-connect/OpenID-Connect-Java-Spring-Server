@@ -192,3 +192,11 @@ h1,label {
 	max-width: 64px; 
 	max-height: 64px
 }
+
+/* Modal and sheet fight for the same z-index otherwise */
+.modal-backdrop {
+  z-index: 2040;
+}
+.modal {
+  z-index: 2050;
+}
