@@ -406,6 +406,19 @@ var ErrorHandlerView = Backbone.View.extend({
 				'show': true
 			});
 		}
+	}, 
+	
+	showErrorMessage:function(header, message) {
+		$('#modalAlert').i18n();
+		$('#modalAlert div.modal-header').html(header);
+		$('#modalAlert .modal-body').html(message);
+
+		$('#modalAlert').modal({
+			'backdrop': 'static',
+			'keyboard': true,
+			'show': true
+		});
+		
 	}
 });
 
