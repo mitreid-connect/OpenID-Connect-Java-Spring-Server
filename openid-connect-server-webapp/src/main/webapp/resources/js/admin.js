@@ -385,6 +385,10 @@ var ErrorHandlerView = Backbone.View.extend({
 	},
 
 	handleError:function(message) {
+		
+		if (!message) {
+			message = {};
+		}
 
 		if (message.log) {
 			console.log(message.log);
@@ -394,21 +398,20 @@ var ErrorHandlerView = Backbone.View.extend({
 		
 		return function(model, response, options) {
 			
-			$('#modalAlert').i18n();
-			$('#modalAlert div.modal-header').html(_self.headerTemplate({message: message, model: model, response: response, options: options}));
-			$('#modalAlert .modal-body').html(_self.template({message: message, model: model, response: response, options: options}));
+			_self.showErrorMessage(
+					_self.headerTemplate({message: message, model: model, response: response, options: options}),
+					_self.template({message: message, model: model, response: response, options: options})
+					);
 	
 			$('#modalAlert .modal-body .page-reload').on('click', _self.reloadPage);
-			
-			$('#modalAlert').modal({
-				'backdrop': 'static',
-				'keyboard': true,
-				'show': true
-			});
+
 		}
 	}, 
 	
 	showErrorMessage:function(header, message) {
+		// hide the sheet if it's visible
+		$('#loadingbox').sheet('hide');
+		
 		$('#modalAlert').i18n();
 		$('#modalAlert div.modal-header').html(header);
 		$('#modalAlert .modal-body').html(message);
