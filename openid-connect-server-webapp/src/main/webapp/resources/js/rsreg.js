@@ -75,7 +75,7 @@ var ResRegRootView = Backbone.View.extend({
     	$('#loadingbox').sheet('show');
     	$('#loading').html('<span class="label" id="loading-scopes">' + $.t('common.scopes') + '</span> ');
 
-    	$.when(this.options.systemScopeList.fetchIfNeeded({success:function(e) {$('#loading-scopes').addClass('label-success');}}))
+    	$.when(this.options.systemScopeList.fetchIfNeeded({success:function(e) {$('#loading-scopes').addClass('label-success');}, error:app.errorHandlerView.handleError()}))
     	.done(function() {
     	    		$('#loadingbox').sheet('hide');
     	    		callback();
@@ -106,37 +106,31 @@ var ResRegRootView = Backbone.View.extend({
 		
 		var self = this;
 		
-		client.fetch({success: function() {
+		client.fetch({
+			success: function() {
 			
-	        if (client.get("jwks")) {
-	        	client.set({
-	        		jwksType: "VAL"
-	        	}, { silent: true });
-	        } else {
-	        	client.set({
-	        		jwksType: "URI"
-	        	}, { silent: true });
-	        }
-			
-	    	var view = new ResRegEditView({model: client, systemScopeList: app.systemScopeList}); 
-	    	
-	    	view.load(function() {
-	    		$('#content').html(view.render().el);
-	    		view.delegateEvents();
-	    		setPageTitle($.t('rsreg.new'));
-	    		app.navigate('dev/resource/edit', {trigger: true});	    		
-	    		self.remove();
-	    	});
-		}, error: function() {
-    		$('#modalAlert div.modal-body').html("Invalid resource or registration access token.");
-    		
-			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
-				 "backdrop" : "static",
-				 "keyboard" : true,
-				 "show" : true // ensure the modal is shown immediately
-			 });
-
-		}});
+		        if (client.get("jwks")) {
+		        	client.set({
+		        		jwksType: "VAL"
+		        	}, { silent: true });
+		        } else {
+		        	client.set({
+		        		jwksType: "URI"
+		        	}, { silent: true });
+		        }
+				
+		    	var view = new ResRegEditView({model: client, systemScopeList: app.systemScopeList}); 
+		    	
+		    	view.load(function() {
+		    		$('#content').html(view.render().el);
+		    		view.delegateEvents();
+		    		setPageTitle($.t('rsreg.new'));
+		    		app.navigate('dev/resource/edit', {trigger: true});	    		
+		    		self.remove();
+		    	});
+			}, 
+			error:app.errorHandlerView.handleError({message: $.t('dynreg.invalid-access-token')})
+		});
 	}
 	
 });
@@ -169,7 +163,7 @@ var ResRegEditView = Backbone.View.extend({
     	$('#loadingbox').sheet('show');
     	$('#loading').html('<span class="label" id="loading-scopes">' + $.t('common.scopes') + '</span> ');
 
-    	$.when(this.options.systemScopeList.fetchIfNeeded({success:function(e) {$('#loading-scopes').addClass('label-success');}}))
+    	$.when(this.options.systemScopeList.fetchIfNeeded({success:function(e) {$('#loading-scopes').addClass('label-success');}, error:app.errorHandlerView.handleError()}))
     	.done(function() {
     	    		$('#loadingbox').sheet('hide');
     	    		callback();
@@ -202,22 +196,7 @@ var ResRegEditView = Backbone.View.extend({
                 	self.remove();
                 	app.navigate('dev/resource', {trigger: true});
                 },
-                error:function (error, response) {
-            		console.log("An error occurred when deleting a client");
-    
-					//Pull out the response text.
-					var responseJson = JSON.parse(response.responseText);
-            		
-            		//Display an alert with an error message
-					$('#modalAlert div.modal-header').html(responseJson.error);
-	        		$('#modalAlert div.modal-body').html(responseJson.error_description);
-            		
-        			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
-        				 "backdrop" : "static",
-        				 "keyboard" : true,
-        				 "show" : true // ensure the modal is shown immediately
-        			 });
-            	}
+                error:app.errorHandlerView.handleError()
             });
 
         }
@@ -332,16 +311,8 @@ var ResRegEditView = Backbone.View.extend({
         		console.log("An error occurred when parsing the JWK Set");
 
         		//Display an alert with an error message
-				$('#modalAlert div.modal-header').html("JWK Set Error");
-        		$('#modalAlert div.modal-body').html("There was an error parsing the public key from the JSON Web Key set. Check the value and try again.");
-        		
-    			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
-    				 "backdrop" : "static",
-    				 "keyboard" : true,
-    				 "show" : true // ensure the modal is shown immediately
-    			 });
-    			 
-    			 return false;
+            	app.errorHandlerView.showErrorMessage($.t("client.client-form.error.jwk-set"), $.t("client.client-form.error.jwk-set-parse"));
+            	return false;
     		}
     	} else {
     		jwksUri = null;
@@ -396,22 +367,7 @@ var ResRegEditView = Backbone.View.extend({
     				view.delegateEvents();
     			});
             },
-            error:function (error, response) {
-        		console.log("An error occurred when deleting from a list widget");
-
-				//Pull out the response text.
-				var responseJson = JSON.parse(response.responseText);
-        		
-        		//Display an alert with an error message
-				$('#modalAlert div.modal-header').html(responseJson.error);
-        		$('#modalAlert div.modal-body').html(responseJson.error_description);
-        		
-    			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
-    				 "backdrop" : "static",
-    				 "keyboard" : true,
-    				 "show" : true // ensure the modal is shown immediately
-    			 });
-        	}
+            error:app.errorHandlerView.handleError()
         });
 
         return false;
