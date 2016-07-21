@@ -169,6 +169,8 @@ CREATE TABLE IF NOT EXISTS client_details (
 	initiate_login_uri VARCHAR(2048),
 	clear_access_tokens_on_refresh BOOLEAN DEFAULT true NOT NULL,
 	
+	software_statement VARCHAR(4096),
+	
 	UNIQUE (client_id)
 );
 
