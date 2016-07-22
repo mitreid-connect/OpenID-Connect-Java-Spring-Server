@@ -102,7 +102,7 @@ public class DynamicClientRegistrationEndpoint {
 
 	@Autowired
 	@Qualifier("clientAssertionValidator")
-	private static AssertionValidator assertionValidator;
+	private AssertionValidator assertionValidator;
 
 	/**
 	 * Logger for this class
@@ -143,12 +143,12 @@ public class DynamicClientRegistrationEndpoint {
 
 			// do validation on the fields
 			try {
+				newClient = validateSoftwareStatement(newClient); // need to handle the software statement first because it might override requested values
 				newClient = validateScopes(newClient);
 				newClient = validateResponseTypes(newClient);
 				newClient = validateGrantTypes(newClient);
 				newClient = validateRedirectUris(newClient);
 				newClient = validateAuth(newClient);
-				newClient = validateSoftwareStatement(newClient);
 			} catch (ValidationException ve) {
 				// validation failed, return an error
 				m.addAttribute(JsonErrorView.ERROR, ve.getError());
@@ -321,6 +321,7 @@ public class DynamicClientRegistrationEndpoint {
 
 			// do validation on the fields
 			try {
+				newClient = validateSoftwareStatement(newClient); // need to handle the software statement first because it might override requested values
 				newClient = validateScopes(newClient);
 				newClient = validateResponseTypes(newClient);
 				newClient = validateGrantTypes(newClient);

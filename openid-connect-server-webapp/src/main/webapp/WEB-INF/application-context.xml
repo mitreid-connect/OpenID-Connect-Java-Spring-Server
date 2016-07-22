@@ -202,6 +202,9 @@
 
 	<!-- user services -->
 	<import resource="user-context.xml" />
+	
+	<!-- assertion processing -->
+	<import resource="assertion-config.xml" />
 
 	<!-- End Spring Security configuration -->
 
