@@ -63,10 +63,10 @@ public class DefaultJWTEncryptionAndDecryptionService implements JWTEncryptionAn
 	private static final Logger logger = LoggerFactory.getLogger(DefaultJWTEncryptionAndDecryptionService.class);
 
 	// map of identifier to encrypter
-	private Map<String, JWEEncrypter> encrypters = new HashMap<>();
+	private Map<String, JWEEncrypter> encrypters = new HashMap<String, JWEEncrypter>();
 
 	// map of identifier to decrypter
-	private Map<String, JWEDecrypter> decrypters = new HashMap<>();
+	private Map<String, JWEDecrypter> decrypters = new HashMap<String, JWEDecrypter>();
 
 	private String defaultEncryptionKeyId;
 
@@ -75,7 +75,7 @@ public class DefaultJWTEncryptionAndDecryptionService implements JWTEncryptionAn
 	private JWEAlgorithm defaultAlgorithm;
 
 	// map of identifier to key
-	private Map<String, JWK> keys = new HashMap<>();
+	private Map<String, JWK> keys = new HashMap<String, JWK>();
 
 	/**
 	 * Build this service based on the keys given. All public keys will be used to make encrypters,
@@ -275,7 +275,7 @@ public class DefaultJWTEncryptionAndDecryptionService implements JWTEncryptionAn
 
 	@Override
 	public Map<String, JWK> getAllPublicKeys() {
-		Map<String, JWK> pubKeys = new HashMap<>();
+		Map<String, JWK> pubKeys = new HashMap<String, JWK>();
 
 		// pull out all public keys
 		for (String keyId : keys.keySet()) {
@@ -291,7 +291,7 @@ public class DefaultJWTEncryptionAndDecryptionService implements JWTEncryptionAn
 
 	@Override
 	public Collection<JWEAlgorithm> getAllEncryptionAlgsSupported() {
-		Set<JWEAlgorithm> algs = new HashSet<>();
+		Set<JWEAlgorithm> algs = new HashSet<JWEAlgorithm>();
 
 		for (JWEEncrypter encrypter : encrypters.values()) {
 			algs.addAll(encrypter.supportedJWEAlgorithms());
@@ -309,7 +309,7 @@ public class DefaultJWTEncryptionAndDecryptionService implements JWTEncryptionAn
 	 */
 	@Override
 	public Collection<EncryptionMethod> getAllEncryptionEncsSupported() {
-		Set<EncryptionMethod> encs = new HashSet<>();
+		Set<EncryptionMethod> encs = new HashSet<EncryptionMethod>();
 
 		for (JWEEncrypter encrypter : encrypters.values()) {
 			encs.addAll(encrypter.supportedEncryptionMethods());

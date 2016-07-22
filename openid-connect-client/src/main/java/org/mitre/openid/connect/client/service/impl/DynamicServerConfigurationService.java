@@ -65,8 +65,8 @@ public class DynamicServerConfigurationService implements ServerConfigurationSer
 	// map of issuer -> server configuration, loaded dynamically from service discovery
 	private LoadingCache<String, ServerConfiguration> servers;
 
-	private Set<String> whitelist = new HashSet<>();
-	private Set<String> blacklist = new HashSet<>();
+	private Set<String> whitelist = new HashSet<String>();
+	private Set<String> blacklist = new HashSet<String>();
 
 	public DynamicServerConfigurationService() {
 		// initialize the cache
@@ -114,7 +114,10 @@ public class DynamicServerConfigurationService implements ServerConfigurationSer
 			}
 
 			return servers.get(issuer);
-		} catch (UncheckedExecutionException | ExecutionException e) {
+		} catch (ExecutionException e) {
+			logger.warn("Couldn't load configuration for " + issuer + ": " + e);
+			return null;
+		} catch (UncheckedExecutionException e) {
 			logger.warn("Couldn't load configuration for " + issuer + ": " + e);
 			return null;
 		}

@@ -42,7 +42,7 @@ public class ScopeBasedIntrospectionAuthoritiesGranter implements IntrospectionA
 	 */
 	@Override
 	public List<GrantedAuthority> getAuthorities(JsonObject introspectionResponse) {
-		List<GrantedAuthority> auth = new ArrayList<>(getAuthorities());
+		List<GrantedAuthority> auth = new ArrayList<GrantedAuthority>(getAuthorities());
 		
 		if (introspectionResponse.has("scope") && introspectionResponse.get("scope").isJsonPrimitive()) {
 			String scopeString = introspectionResponse.get("scope").getAsString();

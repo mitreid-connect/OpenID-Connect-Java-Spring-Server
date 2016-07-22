@@ -109,7 +109,10 @@ public class ClientKeyCacheService {
 
 				return null;
 			}
-		} catch (UncheckedExecutionException | ExecutionException e) {
+		} catch (ExecutionException e) {
+			logger.error("Problem loading client validator", e);
+			return null;
+		} catch (UncheckedExecutionException e) {
 			logger.error("Problem loading client validator", e);
 			return null;
 		}
@@ -126,7 +129,10 @@ public class ClientKeyCacheService {
 			} else {
 				return null;
 			}
-		} catch (UncheckedExecutionException | ExecutionException e) {
+		} catch (ExecutionException e) {
+			logger.error("Problem loading client encrypter", e);
+			return null;
+		} catch (UncheckedExecutionException e) {
 			logger.error("Problem loading client encrypter", e);
 			return null;
 		}

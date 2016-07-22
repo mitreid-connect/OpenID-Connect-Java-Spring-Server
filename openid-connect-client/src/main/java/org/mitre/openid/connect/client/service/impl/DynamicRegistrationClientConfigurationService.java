@@ -68,8 +68,8 @@ public class DynamicRegistrationClientConfigurationService implements ClientConf
 
 	private RegisteredClient template;
 
-	private Set<String> whitelist = new HashSet<>();
-	private Set<String> blacklist = new HashSet<>();
+	private Set<String> whitelist = new HashSet<String>();
+	private Set<String> blacklist = new HashSet<String>();
 
 	public DynamicRegistrationClientConfigurationService() {
 		clients = CacheBuilder.newBuilder().build(new DynamicClientRegistrationLoader());
@@ -87,7 +87,10 @@ public class DynamicRegistrationClientConfigurationService implements ClientConf
 			}
 
 			return clients.get(issuer);
-		} catch (UncheckedExecutionException | ExecutionException e) {
+		} catch (ExecutionException e) {
+			logger.warn("Unable to get client configuration", e);
+			return null;
+		} catch (UncheckedExecutionException e) {
 			logger.warn("Unable to get client configuration", e);
 			return null;
 		}
@@ -191,7 +194,7 @@ public class DynamicRegistrationClientConfigurationService implements ClientConf
 				headers.setContentType(MediaType.APPLICATION_JSON);
 				headers.setAccept(Lists.newArrayList(MediaType.APPLICATION_JSON));
 
-				HttpEntity<String> entity = new HttpEntity<>(serializedClient, headers);
+				HttpEntity<String> entity = new HttpEntity<String>(serializedClient, headers);
 
 				try {
 					String registered = restTemplate.postForObject(serverConfig.getRegistrationEndpointUri(), entity, String.class);
@@ -214,7 +217,7 @@ public class DynamicRegistrationClientConfigurationService implements ClientConf
 					headers.set("Authorization", String.format("%s %s", OAuth2AccessToken.BEARER_TYPE, knownClient.getRegistrationAccessToken()));
 					headers.setAccept(Lists.newArrayList(MediaType.APPLICATION_JSON));
 
-					HttpEntity<String> entity = new HttpEntity<>(headers);
+					HttpEntity<String> entity = new HttpEntity<String>(headers);
 
 					try {
 						String registered = restTemplate.exchange(knownClient.getRegistrationClientUri(), HttpMethod.GET, entity, String.class).getBody();

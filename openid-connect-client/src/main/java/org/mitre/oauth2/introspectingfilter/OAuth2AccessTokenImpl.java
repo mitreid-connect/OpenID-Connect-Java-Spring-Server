@@ -34,7 +34,7 @@ public class OAuth2AccessTokenImpl implements OAuth2AccessToken {
 
 	private JsonObject introspectionResponse;
 	private String tokenString;
-	private Set<String> scopes = new HashSet<>();
+	private Set<String> scopes = new HashSet<String>();
 	private Date expireDate;
 
 

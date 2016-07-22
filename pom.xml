@@ -69,7 +69,8 @@
 	</mailingLists>
 
 	<properties>
-		<java-version>1.7</java-version>
+		<java-version>1.6</java-version>
+		<java-compile>1.6</java-compile>
 		<org.slf4j-version>1.7.12</org.slf4j-version>
 	</properties>
 	<description>A reference implementation of OpenID Connect (http://openid.net/connect/), OAuth 2.0, and UMA built on top of Java, Spring, and Spring Security. The project contains a fully functioning server, client, and utility library.</description>
@@ -409,6 +410,18 @@
 				<version>1.9.5</version>
 				<scope>test</scope>
 			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-test</artifactId>
+				<version>4.1.9.RELEASE</version>
+				<scope>test</scope>
+				<exclusions>
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
 
 			<!-- MITREid Connect components -->
 			<dependency>
@@ -475,7 +488,8 @@
 			<dependency>
 				<groupId>com.nimbusds</groupId>
 				<artifactId>nimbus-jose-jwt</artifactId>
-				<version>4.3</version>
+				<classifier>jdk16</classifier>
+				<version>4.22</version>
 			</dependency>
 			<dependency>
 			    <groupId>org.bouncycastle</groupId>

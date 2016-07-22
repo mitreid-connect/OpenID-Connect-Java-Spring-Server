@@ -49,12 +49,12 @@ public class NamedAdminAuthoritiesMapper implements OIDCAuthoritiesMapper {
 	private static final SimpleGrantedAuthority ROLE_ADMIN = new SimpleGrantedAuthority("ROLE_ADMIN");
 	private static final SimpleGrantedAuthority ROLE_USER = new SimpleGrantedAuthority("ROLE_USER");
 
-	private Set<SubjectIssuerGrantedAuthority> admins = new HashSet<>();
+	private Set<SubjectIssuerGrantedAuthority> admins = new HashSet<SubjectIssuerGrantedAuthority>();
 
 	@Override
 	public Collection<? extends GrantedAuthority> mapAuthorities(JWT idToken, UserInfo userInfo) {
 
-		Set<GrantedAuthority> out = new HashSet<>();
+		Set<GrantedAuthority> out = new HashSet<GrantedAuthority>();
 		try {
 			JWTClaimsSet claims = idToken.getJWTClaimsSet();
 

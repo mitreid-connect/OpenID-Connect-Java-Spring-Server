@@ -79,7 +79,7 @@ public class DefaultClientUserDetailsService implements UserDetailsService {
 				boolean accountNonExpired = true;
 				boolean credentialsNonExpired = true;
 				boolean accountNonLocked = true;
-				Collection<GrantedAuthority> authorities = new HashSet<>(client.getAuthorities());
+				Collection<GrantedAuthority> authorities = new HashSet<GrantedAuthority>(client.getAuthorities());
 				authorities.add(ROLE_CLIENT);
 
 				return new User(clientId, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);

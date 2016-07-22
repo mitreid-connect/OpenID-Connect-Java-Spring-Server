@@ -222,7 +222,7 @@ public class JsonUtils {
 	public static List<JWSAlgorithm> getAsJwsAlgorithmList(JsonObject o, String member) {
 		List<String> strings = getAsStringList(o, member);
 		if (strings != null) {
-			List<JWSAlgorithm> algs = new ArrayList<>();
+			List<JWSAlgorithm> algs = new ArrayList<JWSAlgorithm>();
 			for (String alg : strings) {
 				algs.add(JWSAlgorithm.parse(alg));
 			}
@@ -238,7 +238,7 @@ public class JsonUtils {
 	public static List<JWEAlgorithm> getAsJweAlgorithmList(JsonObject o, String member) {
 		List<String> strings = getAsStringList(o, member);
 		if (strings != null) {
-			List<JWEAlgorithm> algs = new ArrayList<>();
+			List<JWEAlgorithm> algs = new ArrayList<JWEAlgorithm>();
 			for (String alg : strings) {
 				algs.add(JWEAlgorithm.parse(alg));
 			}
@@ -254,7 +254,7 @@ public class JsonUtils {
 	public static List<EncryptionMethod> getAsEncryptionMethodList(JsonObject o, String member) {
 		List<String> strings = getAsStringList(o, member);
 		if (strings != null) {
-			List<EncryptionMethod> algs = new ArrayList<>();
+			List<EncryptionMethod> algs = new ArrayList<EncryptionMethod>();
 			for (String alg : strings) {
 				algs.add(EncryptionMethod.parse(alg));
 			}
@@ -265,7 +265,7 @@ public class JsonUtils {
 	}
 
 	public static Map readMap(JsonReader reader) throws IOException {
-		Map map = new HashMap<>();
+		Map<String, Object> map = new HashMap<String, Object>();
 		reader.beginObject();
 		while(reader.hasNext()) {
 			String name = reader.nextName();
@@ -296,13 +296,13 @@ public class JsonUtils {
 		reader.beginArray();
 		switch (reader.peek()) {
 		case STRING:
-			arraySet = new HashSet<>();
+			arraySet = new HashSet<String>();
 			while (reader.hasNext()) {
 				arraySet.add(reader.nextString());
 			}
 			break;
 		case NUMBER:
-			arraySet = new HashSet<>();
+			arraySet = new HashSet<Long>();
 			while (reader.hasNext()) {
 				arraySet.add(reader.nextLong());
 			}

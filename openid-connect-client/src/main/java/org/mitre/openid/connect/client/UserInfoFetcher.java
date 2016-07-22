@@ -70,7 +70,10 @@ public class UserInfoFetcher {
 	public UserInfo loadUserInfo(final PendingOIDCAuthenticationToken token) {
 		try {
 			return cache.get(token);
-		} catch (UncheckedExecutionException | ExecutionException e) {
+		} catch (ExecutionException e) {
+			logger.warn("Couldn't load User Info from token: " + e.getMessage());
+			return null;
+		} catch (UncheckedExecutionException e) {
 			logger.warn("Couldn't load User Info from token: " + e.getMessage());
 			return null;
 		}
@@ -116,7 +119,7 @@ public class UserInfoFetcher {
 					userInfoString = restTemplate.getForObject(serverConfiguration.getUserInfoUri(), String.class);
 	
 				} else if (serverConfiguration.getUserInfoTokenMethod().equals(UserInfoTokenMethod.FORM)) {
-					MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
+					MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
 					form.add("access_token", token.getAccessTokenValue());
 	
 					RestTemplate restTemplate = new RestTemplate(factory);
