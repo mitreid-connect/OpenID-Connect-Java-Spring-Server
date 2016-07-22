@@ -31,13 +31,16 @@
 
 
 	<!-- validate client software statements for dynamic registration -->
-	<bean id="clientAssertionValidator" class="org.mitre.jwt.assertion.impl.WhitelistedIssuerAssertionValidator">
-		<property name="whitelist">
-			<map>
-				<entry key="http://artemesia.local" value="http://localhost:8080/openid-connect-server-webapp/jwk" />
-			</map>
-		</property>
-	</bean>
+	<bean id="clientAssertionValidator" class="org.mitre.jwt.assertion.impl.NullAssertionValidator" />
+	
+	<!-- this class will pass assertions signed by the issuers and keys in the whitelist -->
+<!-- 	<bean id="clientAssertionValidator" class="org.mitre.jwt.assertion.impl.WhitelistedIssuerAssertionValidator"> -->
+<!-- 		<property name="whitelist"> -->
+<!-- 			<map> -->
+<!-- 				<entry key="http://artemesia.local" value="http://localhost:8080/openid-connect-server-webapp/jwk" /> -->
+<!-- 			</map> -->
+<!-- 		</property> -->
+<!-- 	</bean> -->
 
 
 </beans>

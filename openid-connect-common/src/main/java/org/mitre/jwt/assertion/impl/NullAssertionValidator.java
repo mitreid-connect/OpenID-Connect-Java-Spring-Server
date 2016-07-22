@@ -22,14 +22,18 @@ import org.mitre.jwt.assertion.AssertionValidator;
 import com.nimbusds.jwt.JWT;
 
 /**
+ * Reject all assertions passed in.
+ * 
  * @author jricher
  *
  */
 public class NullAssertionValidator implements AssertionValidator {
 
+	/**
+	 * Reject all assertions passed in, always returns false.
+	 */
 	@Override
 	public boolean isValid(JWT assertion) {
-		// TODO Auto-generated method stub
 		return false;
 
 	}
