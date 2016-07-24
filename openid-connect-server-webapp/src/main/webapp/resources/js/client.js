@@ -936,6 +936,7 @@ var ClientFormView = Backbone.View.extend({
             jwksUri: jwksUri,
             jwks: jwks,
             subjectType: subjectType,
+            softwareStatement: $('#softwareStatement textarea').val(),
             tokenEndpointAuthMethod: tokenEndpointAuthMethod,
             responseTypes: responseTypes,
             sectorIdentifierUri: sectorIdentifierUri,
