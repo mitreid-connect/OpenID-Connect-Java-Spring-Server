@@ -416,6 +416,7 @@ var DynRegEditView = Backbone.View.extend({
             jwks_uri: jwksUri,
             jwks: jwks,
             subject_type: subjectType,
+            software_statement: $('#softwareStatement textarea').val(),
             token_endpoint_auth_method: $('#tokenEndpointAuthMethod input').filter(':checked').val(),
             response_types: responseTypes,
             sector_identifier_uri: sectorIdentifierUri,

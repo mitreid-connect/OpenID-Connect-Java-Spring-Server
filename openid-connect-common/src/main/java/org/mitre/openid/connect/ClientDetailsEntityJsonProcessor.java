@@ -339,6 +339,10 @@ public class ClientDetailsEntityJsonProcessor {
 			
 			o.add(CLAIMS_REDIRECT_URIS, getAsArray(c.getClaimsRedirectUris()));
 			
+			if (c.getSoftwareStatement() != null) {
+				o.addProperty(SOFTWARE_STATEMENT, c.getSoftwareStatement().serialize());
+			}
+			
 			return o;
 		}
 
