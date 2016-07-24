@@ -815,6 +815,22 @@ public class RegisteredClient {
 	public void setSoftwareStatement(JWT softwareStatement) {
 		client.setSoftwareStatement(softwareStatement);
 	}
+	
+	/**
+	 * @return
+	 * @see org.mitre.oauth2.model.ClientDetailsEntity#getCodeChallengeMethod()
+	 */
+	public PKCEAlgorithm getCodeChallengeMethod() {
+		return client.getCodeChallengeMethod();
+	}
+
+	/**
+	 * @param codeChallengeMethod
+	 * @see org.mitre.oauth2.model.ClientDetailsEntity#setCodeChallengeMethod(org.mitre.oauth2.model.PKCEAlgorithm)
+	 */
+	public void setCodeChallengeMethod(PKCEAlgorithm codeChallengeMethod) {
+		client.setCodeChallengeMethod(codeChallengeMethod);
+	}
 
 	/**
 	 * @return the src

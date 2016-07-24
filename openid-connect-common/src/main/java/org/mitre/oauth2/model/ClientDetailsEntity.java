@@ -56,6 +56,7 @@ import org.mitre.oauth2.model.convert.SimpleGrantedAuthorityStringConverter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.provider.ClientDetails;
 
+import com.nimbusds.jose.Algorithm;
 import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -149,6 +150,9 @@ public class ClientDetailsEntity implements ClientDetails {
 	
 	/** Software statement **/
 	private JWT softwareStatement;
+	
+	/** PKCE **/
+	private PKCEAlgorithm codeChallengeMethod;
 
 	public enum AuthMethod {
 		SECRET_POST("client_secret_post"),
@@ -231,7 +235,7 @@ public class ClientDetailsEntity implements ClientDetails {
 			return lookup.get(value);
 		}
 	}
-
+	
 	/**
 	 * Create a blank ClientDetailsEntity
 	 */
@@ -1008,6 +1012,20 @@ public class ClientDetailsEntity implements ClientDetails {
 	 */
 	public void setSoftwareStatement(JWT softwareStatement) {
 		this.softwareStatement = softwareStatement;
+	}
+
+	/**
+	 * @return the codeChallengeMethod
+	 */
+	public PKCEAlgorithm getCodeChallengeMethod() {
+		return codeChallengeMethod;
+	}
+
+	/**
+	 * @param codeChallengeMethod the codeChallengeMethod to set
+	 */
+	public void setCodeChallengeMethod(PKCEAlgorithm codeChallengeMethod) {
+		this.codeChallengeMethod = codeChallengeMethod;
 	}
 
 }
