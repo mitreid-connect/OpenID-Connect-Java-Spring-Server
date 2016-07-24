@@ -17,7 +17,7 @@
 package org.mitre.openid.connect.request;
 
 
-import static org.mitre.openid.connect.request.ConnectRequestParameters.AUD;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.*;
 import static org.mitre.openid.connect.request.ConnectRequestParameters.CLAIMS;
 import static org.mitre.openid.connect.request.ConnectRequestParameters.CLIENT_ID;
 import static org.mitre.openid.connect.request.ConnectRequestParameters.DISPLAY;
@@ -41,6 +41,7 @@ import org.mitre.jwt.encryption.service.JWTEncryptionAndDecryptionService;
 import org.mitre.jwt.signer.service.JWTSigningAndValidationService;
 import org.mitre.jwt.signer.service.impl.ClientKeyCacheService;
 import org.mitre.oauth2.model.ClientDetailsEntity;
+import org.mitre.oauth2.model.PKCEAlgorithm;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.SystemScopeService;
 import org.slf4j.Logger;
@@ -138,6 +139,16 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 			request.getExtensions().put(AUD, inputParams.get(AUD));
 		}
 
+		if (inputParams.containsKey(CODE_CHALLENGE)) {
+			request.getExtensions().put(CODE_CHALLENGE, inputParams.get(CODE_CHALLENGE));
+			if (inputParams.containsKey(CODE_CHALLENGE_METHOD)) {
+				request.getExtensions().put(CODE_CHALLENGE_METHOD, inputParams.get(CODE_CHALLENGE_METHOD));
+			} else {
+				// if the client doesn't specify a code challenge transformation method, it's "plain"
+				request.getExtensions().put(CODE_CHALLENGE_METHOD, PKCEAlgorithm.plain.getName());
+			}
+			
+		}
 
 		if (inputParams.containsKey(REQUEST)) {
 			request.getExtensions().put(REQUEST, inputParams.get(REQUEST));
