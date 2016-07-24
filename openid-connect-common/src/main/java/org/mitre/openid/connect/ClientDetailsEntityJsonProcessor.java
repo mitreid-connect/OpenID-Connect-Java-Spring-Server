@@ -82,6 +82,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -204,12 +205,14 @@ public class ClientDetailsEntityJsonProcessor {
 			c.setClaimsRedirectUris(getAsStringSet(o, CLAIMS_REDIRECT_URIS));
 			
 			String softwareStatement = getAsString(o,  SOFTWARE_STATEMENT);
-			try {
-				JWT softwareStatementJwt = JWTParser.parse(softwareStatement);
-				c.setSoftwareStatement(softwareStatementJwt);
-			} catch (ParseException e) {
-				logger.warn("Error parsing software statement", e);
-				return null;
+			if (!Strings.isNullOrEmpty(softwareStatement)) {
+				try {
+						JWT softwareStatementJwt = JWTParser.parse(softwareStatement);
+						c.setSoftwareStatement(softwareStatementJwt);
+				} catch (ParseException e) {
+					logger.warn("Error parsing software statement", e);
+					return null;
+				}
 			}
 			
 			
