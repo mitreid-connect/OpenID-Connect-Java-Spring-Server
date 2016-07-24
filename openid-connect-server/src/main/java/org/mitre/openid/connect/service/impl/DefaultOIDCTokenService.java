@@ -16,6 +16,9 @@
  *******************************************************************************/
 package org.mitre.openid.connect.service.impl;
 
+import static org.mitre.openid.connect.request.ConnectRequestParameters.MAX_AGE;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.NONCE;
+
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
@@ -58,7 +61,6 @@ import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.PlainJWT;
 import com.nimbusds.jwt.SignedJWT;
-
 /**
  * Default implementation of service to create specialty OpenID Connect tokens.
  * 
@@ -105,7 +107,7 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 		JWTClaimsSet.Builder idClaims = new JWTClaimsSet.Builder();
 
 		// if the auth time claim was explicitly requested OR if the client always wants the auth time, put it in
-		if (request.getExtensions().containsKey("max_age")
+		if (request.getExtensions().containsKey(MAX_AGE)
 				|| (request.getExtensions().containsKey("idtoken")) // TODO: parse the ID Token claims (#473) -- for now assume it could be in there
 				|| (client.getRequireAuthTime() != null && client.getRequireAuthTime())) {
 
@@ -134,7 +136,7 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 		idClaims.audience(Lists.newArrayList(client.getClientId()));
 		idClaims.jwtID(UUID.randomUUID().toString()); // set a random NONCE in the middle of it
 
-		String nonce = (String)request.getExtensions().get("nonce");
+		String nonce = (String)request.getExtensions().get(NONCE);
 		if (!Strings.isNullOrEmpty(nonce)) {
 			idClaims.claim("nonce", nonce);
 		}
