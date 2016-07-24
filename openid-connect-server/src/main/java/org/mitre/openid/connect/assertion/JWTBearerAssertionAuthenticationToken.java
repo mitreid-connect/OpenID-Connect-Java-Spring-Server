@@ -37,6 +37,7 @@ public class JWTBearerAssertionAuthenticationToken extends AbstractAuthenticatio
 	 * 
 	 */
 	private static final long serialVersionUID = -3138213539914074617L;
+	private String subject;
 	private JWT jwt;
 
 	/**
@@ -46,6 +47,13 @@ public class JWTBearerAssertionAuthenticationToken extends AbstractAuthenticatio
 	 */
 	public JWTBearerAssertionAuthenticationToken(JWT jwt) {
 		super(null);
+		try {
+			// save the subject of the JWT in case the credentials get erased later
+			this.subject = jwt.getJWTClaimsSet().getSubject();
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		this.jwt = jwt;
 		setAuthenticated(false);
 	}
@@ -58,6 +66,13 @@ public class JWTBearerAssertionAuthenticationToken extends AbstractAuthenticatio
 	 */
 	public JWTBearerAssertionAuthenticationToken(JWT jwt, Collection<? extends GrantedAuthority> authorities) {
 		super(authorities);
+		try {
+			// save the subject of the JWT in case the credentials get erased later
+			this.subject = jwt.getJWTClaimsSet().getSubject();
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		this.jwt = jwt;
 		setAuthenticated(true);
 	}
@@ -75,11 +90,7 @@ public class JWTBearerAssertionAuthenticationToken extends AbstractAuthenticatio
 	 */
 	@Override
 	public Object getPrincipal() {
-		try {
-			return jwt.getJWTClaimsSet().getSubject();
-		} catch (ParseException e) {
-			return null;
-		}
+		return subject;
 	}
 
 	/**

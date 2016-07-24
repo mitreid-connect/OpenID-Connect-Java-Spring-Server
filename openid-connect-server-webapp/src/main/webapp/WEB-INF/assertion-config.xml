@@ -32,6 +32,8 @@
 	<!-- validate incoming tokens for JWT assertions -->
 	<bean id="jwtAssertionValidator" class="org.mitre.jwt.assertion.impl.NullAssertionValidator" />
 
+	<bean id="jwtAssertionTokenFactory" class="org.mitre.oauth2.assertion.impl.DirectCopyRequestFactory" />
+
 	<!-- validate client software statements for dynamic registration -->
 	<bean id="clientAssertionValidator" class="org.mitre.jwt.assertion.impl.NullAssertionValidator" />
 	
