@@ -85,7 +85,7 @@ public class JWTBearerAuthenticationProvider implements AuthenticationProvider {
 
 
 		try {
-			ClientDetailsEntity client = clientService.loadClientByClientId(jwtAuth.getClientId());
+			ClientDetailsEntity client = clientService.loadClientByClientId(jwtAuth.getName());
 
 			JWT jwt = jwtAuth.getJwt();
 			JWTClaimsSet jwtClaims = jwt.getJWTClaimsSet();
@@ -191,10 +191,10 @@ public class JWTBearerAuthenticationProvider implements AuthenticationProvider {
 			Set<GrantedAuthority> authorities = new HashSet<>(client.getAuthorities());
 			authorities.add(ROLE_CLIENT);
 
-			return new JWTBearerAssertionAuthenticationToken(client.getClientId(), jwt, authorities);
+			return new JWTBearerAssertionAuthenticationToken(jwt, authorities);
 
 		} catch (InvalidClientException e) {
-			throw new UsernameNotFoundException("Could not find client: " + jwtAuth.getClientId());
+			throw new UsernameNotFoundException("Could not find client: " + jwtAuth.getName());
 		} catch (ParseException e) {
 
 			logger.error("Failure during authentication, error was: ", e);

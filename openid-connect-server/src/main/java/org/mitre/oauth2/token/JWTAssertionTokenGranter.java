@@ -20,24 +20,17 @@
 package org.mitre.oauth2.token;
 
 import java.text.ParseException;
-import java.util.Date;
-import java.util.UUID;
 
 import org.mitre.jwt.assertion.AssertionValidator;
 import org.mitre.jwt.signer.service.JWTSigningAndValidationService;
 import org.mitre.oauth2.assertion.AssertionOAuth2RequestFactory;
-import org.mitre.oauth2.model.ClientDetailsEntity;
-import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
-import org.mitre.oauth2.service.SystemScopeService;
+import org.mitre.openid.connect.assertion.JWTBearerAssertionAuthenticationToken;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.oauth2.common.OAuth2AccessToken;
-import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -46,11 +39,8 @@ import org.springframework.security.oauth2.provider.TokenRequest;
 import org.springframework.security.oauth2.provider.token.AbstractTokenGranter;
 import org.springframework.stereotype.Component;
 
-import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jwt.JWT;
-import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.JWTParser;
-import com.nimbusds.jwt.SignedJWT;
 
 /**
  * @author jricher
@@ -97,7 +87,8 @@ public class JWTAssertionTokenGranter extends AbstractTokenGranter {
 				
 				// our validator says it's OK, time to make a token from it
 				// the real work happens in the assertion factory and the token services
-				return new OAuth2Authentication(assertionFactory.createOAuth2Request(client, tokenRequest, assertion), null);
+				return new OAuth2Authentication(assertionFactory.createOAuth2Request(client, tokenRequest, assertion),
+						new JWTBearerAssertionAuthenticationToken(assertion, client.getAuthorities()));
 				
 			} else {
 				logger.warn("Incoming assertion did not pass validator, rejecting");

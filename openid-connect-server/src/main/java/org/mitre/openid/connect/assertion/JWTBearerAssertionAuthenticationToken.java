@@ -19,6 +19,7 @@
  */
 package org.mitre.openid.connect.assertion;
 
+import java.text.ParseException;
 import java.util.Collection;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
@@ -36,30 +37,27 @@ public class JWTBearerAssertionAuthenticationToken extends AbstractAuthenticatio
 	 * 
 	 */
 	private static final long serialVersionUID = -3138213539914074617L;
-	private String clientId;
 	private JWT jwt;
 
 	/**
-	 * Create an unauthenticated token with the given client ID and jwt
-	 * @param clientId
+	 * Create an unauthenticated token with the given subject and jwt
+	 * @param subject
 	 * @param jwt
 	 */
-	public JWTBearerAssertionAuthenticationToken(String clientId, JWT jwt) {
+	public JWTBearerAssertionAuthenticationToken(JWT jwt) {
 		super(null);
-		this.clientId = clientId;
 		this.jwt = jwt;
 		setAuthenticated(false);
 	}
 
 	/**
 	 * Create an authenticated token with the given clientID, jwt, and authorities set
-	 * @param clientId
+	 * @param subject
 	 * @param jwt
 	 * @param authorities
 	 */
-	public JWTBearerAssertionAuthenticationToken(String clientId, JWT jwt, Collection<? extends GrantedAuthority> authorities) {
+	public JWTBearerAssertionAuthenticationToken(JWT jwt, Collection<? extends GrantedAuthority> authorities) {
 		super(authorities);
-		this.clientId = clientId;
 		this.jwt = jwt;
 		setAuthenticated(true);
 	}
@@ -77,21 +75,11 @@ public class JWTBearerAssertionAuthenticationToken extends AbstractAuthenticatio
 	 */
 	@Override
 	public Object getPrincipal() {
-		return clientId;
-	}
-
-	/**
-	 * @return the clientId
-	 */
-	public String getClientId() {
-		return clientId;
-	}
-
-	/**
-	 * @param clientId the clientId to set
-	 */
-	public void setClientId(String clientId) {
-		this.clientId = clientId;
+		try {
+			return jwt.getJWTClaimsSet().getSubject();
+		} catch (ParseException e) {
+			return null;
+		}
 	}
 
 	/**
