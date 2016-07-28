@@ -17,6 +17,7 @@
 package org.mitre.oauth2.model;
 
 public interface RegisteredClientFields {
+	public String SOFTWARE_STATEMENT = "software_statement";
 	public String CLAIMS_REDIRECT_URIS = "claims_redirect_uris";
 	public String CLIENT_SECRET_EXPIRES_AT = "client_secret_expires_at";
 	public String CLIENT_ID_ISSUED_AT = "client_id_issued_at";

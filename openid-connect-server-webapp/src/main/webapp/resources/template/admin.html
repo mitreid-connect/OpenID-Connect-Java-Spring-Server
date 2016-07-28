@@ -110,3 +110,50 @@
             <dd><%- value %></dd>
 
 </script>
+
+<!-- error box -->
+
+<script type="text/html" id="tmpl-error-box">
+
+<p>
+	<span data-i18n="error.message">There was an error processing your request.</span>
+
+<% if (response.responseJSON) { %>
+	<span data-i18n="error.server-message">The server said: </span><span class="text-error"><%- response.responseJSON.error_description %></span>
+<% } %>
+
+</p>
+
+<p>
+
+<% if (message.message) { %>
+	<span class="text-info"><%- message.message %></span>
+<% } %>
+
+</p>
+	
+<% if (response.status == 401) { %>
+	<div>
+		<span data-i18n="error.reload">Additionally, it looks like you're not logged in. Reload the page to try again. You will likely lose any unsaved work.</span>
+		<p>
+			<button class="btn btn-inverse btn-mini page-reload"><i class="icon-refresh icon-white"></i> <span data-i18n="error.reload-button">Reload</span></button>
+		</p>
+	</div>
+<% } %>
+
+</script>
+
+<script type="text/html" id="tmpl-error-header">
+
+	<span class="label label-inverse"><%- response.status %>: <%- response.statusText %></span>
+			
+	<b>
+	<% if (response.responseJSON) { %>
+		<span data-i18n="error.header-with-message">Error: </span><%- response.responseJSON.error %>
+	<% } else { %>
+		<span data-i18n="error.header">Error</span>
+	<% } %>
+	</b>
+
+
+</script>

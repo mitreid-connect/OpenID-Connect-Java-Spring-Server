@@ -53,9 +53,9 @@ var ApprovedSiteListView = Backbone.View.extend({
     			'<span class="label" id="loading-scopes">' + $.t('common.scopes') + '</span> '
     			);
 
-    	$.when(this.model.fetchIfNeeded({success:function(e) {$('#loading-grants').addClass('label-success');}}),
-    			this.options.clientList.fetchIfNeeded({success:function(e) {$('#loading-clients').addClass('label-success');}}),
-    			this.options.systemScopeList.fetchIfNeeded({success:function(e) {$('#loading-scopes').addClass('label-success');}}))
+    	$.when(this.model.fetchIfNeeded({success:function(e) {$('#loading-grants').addClass('label-success');}, error:app.errorHandlerView.handleError()}),
+    			this.options.clientList.fetchIfNeeded({success:function(e) {$('#loading-clients').addClass('label-success');}, error:app.errorHandlerView.handleError()}),
+    			this.options.systemScopeList.fetchIfNeeded({success:function(e) {$('#loading-scopes').addClass('label-success');}, error:app.errorHandlerView.handleError()}))
     			.done(function() {
     	    		$('#loadingbox').sheet('hide');
     	    		callback();
@@ -115,9 +115,9 @@ var ApprovedSiteListView = Backbone.View.extend({
                 '<span class="label" id="loading-scopes">' + $.t('common.scopes') + '</span> '
     			);
 
-    	$.when(this.model.fetch({success:function(e) {$('#loading-grants').addClass('label-success');}}),
-    			this.options.clientList.fetch({success:function(e) {$('#loading-clients').addClass('label-success');}}),
-    			this.options.systemScopeList.fetch({success:function(e) {$('#loading-scopes').addClass('label-success');}}))
+    	$.when(this.model.fetch({success:function(e) {$('#loading-grants').addClass('label-success');}, error:app.errorHandlerView.handleError()}),
+    			this.options.clientList.fetch({success:function(e) {$('#loading-clients').addClass('label-success');}, error:app.errorHandlerView.handleError()}),
+    			this.options.systemScopeList.fetch({success:function(e) {$('#loading-scopes').addClass('label-success');}, error:app.errorHandlerView.handleError()}))
     			.done(function() {
     	    		$('#loadingbox').sheet('hide');
     	    		_self.render();
@@ -227,22 +227,7 @@ var ApprovedSiteView = Backbone.View.extend({
                         });
                     });
                 },
-                error:function (error, response) {
-            		
-					//Pull out the response text.
-					var responseJson = JSON.parse(response.responseText);
-            		
-            		//Display an alert with an error message
-					$('#modalAlert div.modal-header').html(responseJson.error);
-	        		$('#modalAlert div.modal-body').html(responseJson.error_description);
-            		
-        			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
-        				 "backdrop" : "static",
-        				 "keyboard" : true,
-        				 "show" : true // ensure the modal is shown immediately
-        			 });
-            	}
-            
+                error:app.errorHandlerView.handleError()
             });
             
             this.parentView.delegateEvents();

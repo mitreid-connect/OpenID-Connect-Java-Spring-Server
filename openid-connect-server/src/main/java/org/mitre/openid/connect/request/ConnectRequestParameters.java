@@ -46,5 +46,10 @@ public interface ConnectRequestParameters {
 	
 	// audience
 	public String AUD = "aud";
-
+	
+	// PKCE
+	public String CODE_CHALLENGE = "code_challenge";
+	public String CODE_CHALLENGE_METHOD = "code_challenge_method";
+	public String CODE_VERIFIER = "code_verifier";
+	
 }

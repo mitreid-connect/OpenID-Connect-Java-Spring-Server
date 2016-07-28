@@ -286,15 +286,7 @@ var ClientView = Backbone.View.extend({
 			    	        	console.log('token:' + token.get('value'));
 			    		        $('#modalAlert .modal-body #registrationToken').val(token.get('value'));
 			        		},
-			        		error: function() {
-			    	    		$('#modalAlert').i18n();
-			    	    		$('#modalAlert .modal-body').html($t('client.client-form.rotate-registration-token-error'));
-			    	    		$('#modalAlert').modal({
-			    	        		'backdrop': 'static',
-			    	        		'keyboard': true,
-			    	        		'show': true
-			    	        	});
-			        		}
+			        		error: app.errorHandlerView.handleError({message: $.t('client.client-form.rotate-registration-token-error')})
 			        	});
 	        		}
 	        	});
@@ -307,16 +299,7 @@ var ClientView = Backbone.View.extend({
 	        	});
 	        	
 	    	},
-	    	error:function() {
-	    		$('#modalAlert').i18n();
-	    		$('#modalAlert .modal-body').html($t('client.client-form.registration-token-error'));
-	    		$('#modalAlert').modal({
-	        		'backdrop': 'static',
-	        		'keyboard': true,
-	        		'show': true
-	        	});
-	        	
-	    	}
+	    	error:app.errorHandlerView.handleError({log: "An error occurred when fetching the registration token", message: $.t('client.client-form.registration-token-error')})
     	});
     	
     },
@@ -374,22 +357,7 @@ var ClientView = Backbone.View.extend({
                         });
                     });
                 },
-                error:function (error, response) {
-            		console.log("An error occurred when deleting a client");
-    
-					//Pull out the response text.
-					var responseJson = JSON.parse(response.responseText);
-            		
-            		//Display an alert with an error message
-					$('#modalAlert div.modal-header').html(responseJson.error);
-	        		$('#modalAlert div.modal-body').html(responseJson.error_description);
-            		
-        			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
-        				 "backdrop" : "static",
-        				 "keyboard" : true,
-        				 "show" : true // ensure the modal is shown immediately
-        			 });
-            	}
+                error:app.errorHandlerView.handleError({log: "An error occurred when deleting a client"})
             });
 
             _self.parentView.delegateEvents();
@@ -453,10 +421,10 @@ var ClientListView = Backbone.View.extend({
                 '<span class="label" id="loading-stats">' + $.t("common.statistics") + '</span> ' 
                 );
 
-    	$.when(this.model.fetchIfNeeded({success:function(e) {$('#loading-clients').addClass('label-success');}}),
-    			this.options.whiteListList.fetchIfNeeded({success:function(e) {$('#loading-whitelist').addClass('label-success');}}),
-    			this.options.stats.fetchIfNeeded({success:function(e) {$('#loading-stats').addClass('label-success');}}),
-    			this.options.systemScopeList.fetchIfNeeded({success:function(e) {$('#loading-scopes').addClass('label-success');}}))
+    	$.when(this.model.fetchIfNeeded({success:function(e) {$('#loading-clients').addClass('label-success');}, error:app.errorHandlerView.handleError()}),
+    			this.options.whiteListList.fetchIfNeeded({success:function(e) {$('#loading-whitelist').addClass('label-success');}, error:app.errorHandlerView.handleError()}),
+    			this.options.stats.fetchIfNeeded({success:function(e) {$('#loading-stats').addClass('label-success');}, error:app.errorHandlerView.handleError()}),
+    			this.options.systemScopeList.fetchIfNeeded({success:function(e) {$('#loading-scopes').addClass('label-success');}, error:app.errorHandlerView.handleError()}))
     			.done(function() {
     	    		$('#loadingbox').sheet('hide');
     	    		callback();
@@ -567,10 +535,10 @@ var ClientListView = Backbone.View.extend({
     			);
 
     	var _self = this;
-    	$.when(this.model.fetch({success:function(e) {$('#loading-clients').addClass('label-success');}}),
-    			this.options.whiteListList.fetch({success:function(e) {$('#loading-whitelist').addClass('label-success');}}),
-    			this.options.stats.fetch({success:function(e) {$('#loading-stats').addClass('label-success');}}),
-    			this.options.systemScopeList.fetch({success:function(e) {$('#loading-scopes').addClass('label-success');}}))
+    	$.when(this.model.fetch({success:function(e) {$('#loading-clients').addClass('label-success');}, error:app.errorHandlerView.handleError()}),
+    			this.options.whiteListList.fetch({success:function(e) {$('#loading-whitelist').addClass('label-success');}, error:app.errorHandlerView.handleError()}),
+    			this.options.stats.fetch({success:function(e) {$('#loading-stats').addClass('label-success');}, error:app.errorHandlerView.handleError()}),
+    			this.options.systemScopeList.fetch({success:function(e) {$('#loading-scopes').addClass('label-success');}, error:app.errorHandlerView.handleError()}))
     			.done(function() {
     	    		$('#loadingbox').sheet('hide');
     	    		_self.render();
@@ -667,8 +635,8 @@ var ClientFormView = Backbone.View.extend({
     			'<span class="label" id="loading-scopes">' + $.t("common.scopes") + '</span> '
     			);
     	
-    	$.when(this.options.systemScopeList.fetchIfNeeded({success:function(e) {$('#loading-scopes').addClass('label-success');}}),
-    		    			this.model.fetchIfNeeded({success:function(e) {$('#loading-clients').addClass('label-success');}}))
+    	$.when(this.options.systemScopeList.fetchIfNeeded({success:function(e) {$('#loading-scopes').addClass('label-success');}, error:app.errorHandlerView.handleError()}),
+    		    			this.model.fetchIfNeeded({success:function(e) {$('#loading-clients').addClass('label-success');}, error:app.errorHandlerView.handleError()}))
 	    	.done(function() {
     	    		$('#loadingbox').sheet('hide');
     	    		callback();
@@ -917,16 +885,8 @@ var ClientFormView = Backbone.View.extend({
         var sectorIdentifierUri = $('#sectorIdentifierUri input').val();
         if (subjectType == 'PAIRWISE' && redirectUris.length > 1 && sectorIdentifierUri == '') {
     		//Display an alert with an error message
-			$('#modalAlert div.modal-header').html("Consistency error");
-    		$('#modalAlert div.modal-body').html("Pairwise identifiers cannot be used with multiple redirect URIs unless a sector identifier URI is also registered.");
-    		
-			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
-				 "backdrop" : "static",
-				 "keyboard" : true,
-				 "show" : true // ensure the modal is shown immediately
-			 });
-			 
-			 return false;
+        	app.errorHandlerView.showErrorMessage($.t("client.client-form.error.consistency"), $.t("client.client-form.error.pairwise-sector"));
+			return false;
       	
         }
         
@@ -944,18 +904,8 @@ var ClientFormView = Backbone.View.extend({
     			jwks = JSON.parse($('#jwks textarea').val());
     		} catch (e) {
         		console.log("An error occurred when parsing the JWK Set");
-
-        		//Display an alert with an error message
-				$('#modalAlert div.modal-header').html("JWK Set Error");
-        		$('#modalAlert div.modal-body').html("There was an error parsing the public key from the JSON Web Key set. Check the value and try again.");
-        		
-    			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
-    				 "backdrop" : "static",
-    				 "keyboard" : true,
-    				 "show" : true // ensure the modal is shown immediately
-    			 });
-    			 
-    			 return false;
+            	app.errorHandlerView.showErrorMessage($.t("client.client-form.error.jwk-set"), $.t("client.client-form.error.jwk-set-parse"));
+            	return false;
     		}
     	} else {
     		jwksUri = null;
@@ -986,6 +936,7 @@ var ClientFormView = Backbone.View.extend({
             jwksUri: jwksUri,
             jwks: jwks,
             subjectType: subjectType,
+            softwareStatement: $('#softwareStatement textarea').val(),
             tokenEndpointAuthMethod: tokenEndpointAuthMethod,
             responseTypes: responseTypes,
             sectorIdentifierUri: sectorIdentifierUri,
@@ -1041,6 +992,8 @@ var ClientFormView = Backbone.View.extend({
             		secretChanged: secretChanged
             	};
             	
+        		$('#modalAlert div.modal-header').html($.t('client.client-form.saved.saved'));
+            	
             	$('#modalAlert .modal-body').html(_self.clientSavedTemplate(savedModel));
             	
             	$('#modalAlert .modal-body #savedClientSecret').hide();
@@ -1061,22 +1014,7 @@ var ClientFormView = Backbone.View.extend({
             	app.clientList.add(_self.model);
                 app.navigate('admin/clients', {trigger:true});
             },
-            error:function (error, response) {
-        		console.log("An error occurred when saving a client");
-
-				//Pull out the response text.
-				var responseJson = JSON.parse(response.responseText);
-        		
-        		//Display an alert with an error message
-				$('#modalAlert div.modal-header').html(responseJson.error);
-        		$('#modalAlert div.modal-body').html(responseJson.error_description);
-        		
-    			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
-    				 "backdrop" : "static",
-    				 "keyboard" : true,
-    				 "show" : true // ensure the modal is shown immediately
-    			 });
-        	}
+            error:app.errorHandlerView.handleError({log: "An error occurred when saving a client"})
         });
 
         return false;

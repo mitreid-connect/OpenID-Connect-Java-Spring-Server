@@ -21,6 +21,7 @@ package org.mitre.openid.connect;
 
 
 import static org.mitre.oauth2.model.RegisteredClientFields.APPLICATION_TYPE;
+import static org.mitre.oauth2.model.RegisteredClientFields.CLAIMS_REDIRECT_URIS;
 import static org.mitre.oauth2.model.RegisteredClientFields.CLIENT_ID;
 import static org.mitre.oauth2.model.RegisteredClientFields.CLIENT_ID_ISSUED_AT;
 import static org.mitre.oauth2.model.RegisteredClientFields.CLIENT_NAME;
@@ -47,9 +48,10 @@ import static org.mitre.oauth2.model.RegisteredClientFields.REQUEST_OBJECT_SIGNI
 import static org.mitre.oauth2.model.RegisteredClientFields.REQUEST_URIS;
 import static org.mitre.oauth2.model.RegisteredClientFields.REQUIRE_AUTH_TIME;
 import static org.mitre.oauth2.model.RegisteredClientFields.RESPONSE_TYPES;
-import static org.mitre.oauth2.model.RegisteredClientFields.*;
+import static org.mitre.oauth2.model.RegisteredClientFields.SCOPE;
 import static org.mitre.oauth2.model.RegisteredClientFields.SCOPE_SEPARATOR;
 import static org.mitre.oauth2.model.RegisteredClientFields.SECTOR_IDENTIFIER_URI;
+import static org.mitre.oauth2.model.RegisteredClientFields.SOFTWARE_STATEMENT;
 import static org.mitre.oauth2.model.RegisteredClientFields.SUBJECT_TYPE;
 import static org.mitre.oauth2.model.RegisteredClientFields.TOKEN_ENDPOINT_AUTH_METHOD;
 import static org.mitre.oauth2.model.RegisteredClientFields.TOKEN_ENDPOINT_AUTH_SIGNING_ALG;
@@ -67,6 +69,7 @@ import static org.mitre.util.JsonUtils.getAsStringSet;
 
 import java.text.ParseException;
 
+import org.mitre.jwt.assertion.AssertionValidator;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity.AppType;
 import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
@@ -74,14 +77,19 @@ import org.mitre.oauth2.model.ClientDetailsEntity.SubjectType;
 import org.mitre.oauth2.model.RegisteredClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jwt.JWT;
+import com.nimbusds.jwt.JWTParser;
 
 /**
  * Utility class to handle the parsing and serialization of ClientDetails objects.
@@ -94,7 +102,7 @@ public class ClientDetailsEntityJsonProcessor {
 	private static Logger logger = LoggerFactory.getLogger(ClientDetailsEntityJsonProcessor.class);
 
 	private static JsonParser parser = new JsonParser();
-
+	
 	/**
 	 * 
 	 * Create an unbound ClientDetailsEntity from the given JSON string.
@@ -148,6 +156,7 @@ public class ClientDetailsEntityJsonProcessor {
 					c.setJwks(jwks);
 				} catch (ParseException e) {
 					logger.error("Unable to parse JWK Set for client", e);
+					return null;
 				}
 			}
 
@@ -194,6 +203,18 @@ public class ClientDetailsEntityJsonProcessor {
 			c.setRequestUris(getAsStringSet(o, REQUEST_URIS));
 
 			c.setClaimsRedirectUris(getAsStringSet(o, CLAIMS_REDIRECT_URIS));
+			
+			String softwareStatement = getAsString(o,  SOFTWARE_STATEMENT);
+			if (!Strings.isNullOrEmpty(softwareStatement)) {
+				try {
+						JWT softwareStatementJwt = JWTParser.parse(softwareStatement);
+						c.setSoftwareStatement(softwareStatementJwt);
+				} catch (ParseException e) {
+					logger.warn("Error parsing software statement", e);
+					return null;
+				}
+			}
+			
 			
 			return c;
 		} else {
@@ -317,6 +338,10 @@ public class ClientDetailsEntityJsonProcessor {
 			o.add(REQUEST_URIS, getAsArray(c.getRequestUris()));
 			
 			o.add(CLAIMS_REDIRECT_URIS, getAsArray(c.getClaimsRedirectUris()));
+			
+			if (c.getSoftwareStatement() != null) {
+				o.addProperty(SOFTWARE_STATEMENT, c.getSoftwareStatement().serialize());
+			}
 			
 			return o;
 		}

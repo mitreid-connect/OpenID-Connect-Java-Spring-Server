@@ -16,6 +16,8 @@
  *******************************************************************************/
 package org.mitre.openid.connect.web;
 
+import static org.mitre.oauth2.model.RegisteredClientFields.*;
+
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.util.Date;
@@ -23,9 +25,12 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import org.mitre.jwt.assertion.AssertionValidator;
 import org.mitre.jwt.signer.service.JWTSigningAndValidationService;
 import org.mitre.oauth2.model.ClientDetailsEntity;
+import org.mitre.oauth2.model.ClientDetailsEntity.AppType;
 import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
+import org.mitre.oauth2.model.ClientDetailsEntity.SubjectType;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.RegisteredClient;
 import org.mitre.oauth2.model.SystemScope;
@@ -43,9 +48,11 @@ import org.mitre.openid.connect.view.JsonErrorView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.oauth2.common.util.OAuth2Utils;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.stereotype.Controller;
@@ -60,6 +67,11 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonSyntaxException;
+import com.nimbusds.jose.EncryptionMethod;
+import com.nimbusds.jose.JWEAlgorithm;
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jwt.JWTClaimsSet;
 
 @Controller
 @RequestMapping(value = DynamicClientRegistrationEndpoint.URL)
@@ -87,6 +99,10 @@ public class DynamicClientRegistrationEndpoint {
 
 	@Autowired
 	private OIDCTokenService connectTokenService;
+
+	@Autowired
+	@Qualifier("clientAssertionValidator")
+	private AssertionValidator assertionValidator;
 
 	/**
 	 * Logger for this class
@@ -127,6 +143,7 @@ public class DynamicClientRegistrationEndpoint {
 
 			// do validation on the fields
 			try {
+				newClient = validateSoftwareStatement(newClient); // need to handle the software statement first because it might override requested values
 				newClient = validateScopes(newClient);
 				newClient = validateResponseTypes(newClient);
 				newClient = validateGrantTypes(newClient);
@@ -234,7 +251,7 @@ public class DynamicClientRegistrationEndpoint {
 		if (client != null && client.getClientId().equals(auth.getOAuth2Request().getClientId())) {
 
 			try {
-				OAuth2AccessTokenEntity token = fetchValidRegistrationToken(auth, client);
+				OAuth2AccessTokenEntity token = rotateRegistrationTokenIfNecessary(auth, client);
 				RegisteredClient registered = new RegisteredClient(client, token.getValue(), config.getIssuer() + "register/" +  UriUtils.encodePathSegment(client.getClientId(), "UTF-8"));
 
 				// send it all out to the view
@@ -304,6 +321,7 @@ public class DynamicClientRegistrationEndpoint {
 
 			// do validation on the fields
 			try {
+				newClient = validateSoftwareStatement(newClient); // need to handle the software statement first because it might override requested values
 				newClient = validateScopes(newClient);
 				newClient = validateResponseTypes(newClient);
 				newClient = validateGrantTypes(newClient);
@@ -321,7 +339,7 @@ public class DynamicClientRegistrationEndpoint {
 				// save the client
 				ClientDetailsEntity savedClient = clientService.updateClient(oldClient, newClient);
 
-				OAuth2AccessTokenEntity token = fetchValidRegistrationToken(auth, savedClient);
+				OAuth2AccessTokenEntity token = rotateRegistrationTokenIfNecessary(auth, savedClient);
 
 				RegisteredClient registered = new RegisteredClient(savedClient, token.getValue(), config.getIssuer() + "register/" + UriUtils.encodePathSegment(savedClient.getClientId(), "UTF-8"));
 
@@ -553,7 +571,155 @@ public class DynamicClientRegistrationEndpoint {
 		return newClient;
 	}
 
-	private OAuth2AccessTokenEntity fetchValidRegistrationToken(OAuth2Authentication auth, ClientDetailsEntity client) {
+
+	/**
+	 * @param newClient
+	 * @return
+	 * @throws ValidationException 
+	 */
+	private ClientDetailsEntity validateSoftwareStatement(ClientDetailsEntity newClient) throws ValidationException {
+		if (newClient.getSoftwareStatement() != null) {
+			if (assertionValidator.isValid(newClient.getSoftwareStatement())) {
+				// we have a software statement and its envelope passed all the checks from our validator
+				
+				// swap out all of the client's fields for the associated parts of the software statement
+				try {
+					JWTClaimsSet claimSet = newClient.getSoftwareStatement().getJWTClaimsSet();
+					for (String claim : claimSet.getClaims().keySet()) {
+						switch (claim) {
+						case SOFTWARE_STATEMENT:
+							throw new ValidationException("invalid_client_metadata", "Software statement can't include another software statement", HttpStatus.BAD_REQUEST);
+						case CLAIMS_REDIRECT_URIS:
+							newClient.setClaimsRedirectUris(Sets.newHashSet(claimSet.getStringListClaim(claim)));
+							break;
+						case CLIENT_SECRET_EXPIRES_AT:
+							throw new ValidationException("invalid_client_metadata", "Software statement can't include a client secret expiration time", HttpStatus.BAD_REQUEST);
+						case CLIENT_ID_ISSUED_AT:
+							throw new ValidationException("invalid_client_metadata", "Software statement can't include a client ID issuance time", HttpStatus.BAD_REQUEST);
+						case REGISTRATION_CLIENT_URI:
+							throw new ValidationException("invalid_client_metadata", "Software statement can't include a client configuration endpoint", HttpStatus.BAD_REQUEST);
+						case REGISTRATION_ACCESS_TOKEN:
+							throw new ValidationException("invalid_client_metadata", "Software statement can't include a client registration access token", HttpStatus.BAD_REQUEST);
+						case REQUEST_URIS:
+							newClient.setRequestUris(Sets.newHashSet(claimSet.getStringListClaim(claim)));
+							break;
+						case POST_LOGOUT_REDIRECT_URIS:
+							newClient.setPostLogoutRedirectUris(Sets.newHashSet(claimSet.getStringListClaim(claim)));
+							break;
+						case INITIATE_LOGIN_URI:
+							newClient.setInitiateLoginUri(claimSet.getStringClaim(claim));
+							break;
+						case DEFAULT_ACR_VALUES:
+							newClient.setDefaultACRvalues(Sets.newHashSet(claimSet.getStringListClaim(claim)));
+							break;
+						case REQUIRE_AUTH_TIME:
+							newClient.setRequireAuthTime(claimSet.getBooleanClaim(claim));
+							break;
+						case DEFAULT_MAX_AGE:
+							newClient.setDefaultMaxAge(claimSet.getIntegerClaim(claim));
+							break;
+						case TOKEN_ENDPOINT_AUTH_SIGNING_ALG:
+							newClient.setTokenEndpointAuthSigningAlg(JWSAlgorithm.parse(claimSet.getStringClaim(claim)));
+							break;
+						case ID_TOKEN_ENCRYPTED_RESPONSE_ENC:
+							newClient.setIdTokenEncryptedResponseEnc(EncryptionMethod.parse(claimSet.getStringClaim(claim)));
+							break;
+						case ID_TOKEN_ENCRYPTED_RESPONSE_ALG:
+							newClient.setIdTokenEncryptedResponseAlg(JWEAlgorithm.parse(claimSet.getStringClaim(claim)));
+							break;
+						case ID_TOKEN_SIGNED_RESPONSE_ALG:
+							newClient.setIdTokenSignedResponseAlg(JWSAlgorithm.parse(claimSet.getStringClaim(claim)));
+							break;
+						case USERINFO_ENCRYPTED_RESPONSE_ENC:
+							newClient.setUserInfoEncryptedResponseEnc(EncryptionMethod.parse(claimSet.getStringClaim(claim)));
+							break;
+						case USERINFO_ENCRYPTED_RESPONSE_ALG:
+							newClient.setUserInfoEncryptedResponseAlg(JWEAlgorithm.parse(claimSet.getStringClaim(claim)));
+							break;
+						case USERINFO_SIGNED_RESPONSE_ALG:
+							newClient.setUserInfoSignedResponseAlg(JWSAlgorithm.parse(claimSet.getStringClaim(claim)));
+							break;
+						case REQUEST_OBJECT_SIGNING_ALG:
+							newClient.setRequestObjectSigningAlg(JWSAlgorithm.parse(claimSet.getStringClaim(claim)));
+							break;
+						case SUBJECT_TYPE:
+							newClient.setSubjectType(SubjectType.getByValue(claimSet.getStringClaim(claim)));
+							break;
+						case SECTOR_IDENTIFIER_URI:
+							newClient.setSectorIdentifierUri(claimSet.getStringClaim(claim));
+							break;
+						case APPLICATION_TYPE:
+							newClient.setApplicationType(AppType.getByValue(claimSet.getStringClaim(claim)));
+							break;
+						case JWKS_URI:
+							newClient.setJwksUri(claimSet.getStringClaim(claim));
+							break;
+						case JWKS:
+							newClient.setJwks(JWKSet.parse(claimSet.getStringClaim(claim)));
+							break;
+						case POLICY_URI:
+							newClient.setPolicyUri(claimSet.getStringClaim(claim));							
+							break;
+						case RESPONSE_TYPES:
+							newClient.setResponseTypes(Sets.newHashSet(claimSet.getStringListClaim(claim)));
+							break;
+						case GRANT_TYPES:
+							newClient.setGrantTypes(Sets.newHashSet(claimSet.getStringListClaim(claim)));
+							break;
+						case SCOPE:
+							newClient.setScope(OAuth2Utils.parseParameterList(claimSet.getStringClaim(claim)));
+							break;
+						case TOKEN_ENDPOINT_AUTH_METHOD:
+							newClient.setTokenEndpointAuthMethod(AuthMethod.getByValue(claimSet.getStringClaim(claim)));
+							break;
+						case TOS_URI:
+							newClient.setTosUri(claimSet.getStringClaim(claim));
+							break;
+						case CONTACTS:
+							newClient.setContacts(Sets.newHashSet(claimSet.getStringListClaim(claim)));
+							break;
+						case LOGO_URI:
+							newClient.setLogoUri(claimSet.getStringClaim(claim));
+							break;
+						case CLIENT_URI:
+							newClient.setClientUri(claimSet.getStringClaim(claim));
+							break;
+						case CLIENT_NAME:
+							newClient.setClientName(claimSet.getStringClaim(claim));
+							break;
+						case REDIRECT_URIS:
+							newClient.setRedirectUris(Sets.newHashSet(claimSet.getStringListClaim(claim)));
+							break;
+						case CLIENT_SECRET:
+							throw new ValidationException("invalid_client_metadata", "Software statement can't contain client secret", HttpStatus.BAD_REQUEST);
+						case CLIENT_ID:
+							throw new ValidationException("invalid_client_metadata", "Software statement can't contain client ID", HttpStatus.BAD_REQUEST);
+
+						default:
+							logger.warn("Software statement contained unknown field: " + claim + " with value " + claimSet.getClaim(claim));
+							break;
+						}
+					}
+					
+					return newClient;
+				} catch (ParseException e) {
+					throw new ValidationException("invalid_client_metadata", "Software statement claims didn't parse", HttpStatus.BAD_REQUEST);
+				}
+			} else {
+				throw new ValidationException("invalid_client_metadata", "Software statement rejected by validator", HttpStatus.BAD_REQUEST);
+			}
+		} else {
+			// nothing to see here, carry on
+			return newClient;
+		}
+	
+	}
+
+	
+	/*
+	 * Rotates the registration token if it's expired, otherwise returns it
+	 */
+	private OAuth2AccessTokenEntity rotateRegistrationTokenIfNecessary(OAuth2Authentication auth, ClientDetailsEntity client) {
 
 		OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
 		OAuth2AccessTokenEntity token = tokenService.readAccessToken(details.getTokenValue());

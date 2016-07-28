@@ -33,6 +33,7 @@ import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jwt.JWT;
 
 /**
  * @author jricher
@@ -797,6 +798,38 @@ public class RegisteredClient {
 	 */
 	public void setClaimsRedirectUris(Set<String> claimsRedirectUris) {
 		client.setClaimsRedirectUris(claimsRedirectUris);
+	}
+
+	/**
+	 * @return
+	 * @see org.mitre.oauth2.model.ClientDetailsEntity#getSoftwareStatement()
+	 */
+	public JWT getSoftwareStatement() {
+		return client.getSoftwareStatement();
+	}
+
+	/**
+	 * @param softwareStatement
+	 * @see org.mitre.oauth2.model.ClientDetailsEntity#setSoftwareStatement(com.nimbusds.jwt.JWT)
+	 */
+	public void setSoftwareStatement(JWT softwareStatement) {
+		client.setSoftwareStatement(softwareStatement);
+	}
+	
+	/**
+	 * @return
+	 * @see org.mitre.oauth2.model.ClientDetailsEntity#getCodeChallengeMethod()
+	 */
+	public PKCEAlgorithm getCodeChallengeMethod() {
+		return client.getCodeChallengeMethod();
+	}
+
+	/**
+	 * @param codeChallengeMethod
+	 * @see org.mitre.oauth2.model.ClientDetailsEntity#setCodeChallengeMethod(org.mitre.oauth2.model.PKCEAlgorithm)
+	 */
+	public void setCodeChallengeMethod(PKCEAlgorithm codeChallengeMethod) {
+		client.setCodeChallengeMethod(codeChallengeMethod);
 	}
 
 	/**

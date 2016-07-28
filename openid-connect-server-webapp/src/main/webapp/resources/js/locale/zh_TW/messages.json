@@ -1,0 +1,490 @@
+{
+    "admin": {
+        "blacklist": "黑名單",
+        "blacklist-form": {
+            "blacklisted-uris": "列入黑名單的URI"
+        },
+        "home": "首頁",
+        "list-widget": {
+            "empty": "此列表為空。",
+            "tooltip": "單擊顯示全部值。"
+        },
+        "manage-blacklist": "管理列入黑名單的客戶端",
+        "self-service-client": "自助服務-客戶端註冊",
+        "self-service-resource": "自助服務-受保護資源註冊",
+        "user-profile": {
+            "claim": "聲明項",
+            "show": "查看用戶資訊",
+            "text": "您的用戶資訊如下：",
+            "value": "內容"
+        }
+    },
+    "client": {
+        "client-form": {
+            "access": "訪問",
+            "access-token-no-timeout": "訪問令牌不時間",
+            "access-token-timeout": "訪問令牌超時",
+            "access-token-timeout-help": "輸入時間（秒、分鐘或小時）。",
+            "acr-values": "默認ACR值",
+            "acr-values-placeholder": "新的ACR值",
+            "acr-values-help": "用於請求該客戶端的默認身份驗證上下文參考",
+            "allow-introspection": "允許調用內省端點？",
+            "authentication-method": "令牌端點認證方法",
+            "authorization-code": "授權碼",
+            "client-credentials": "客戶端憑證",
+            "client-description": "描述",
+            "client-description-help": "人類可讀的文本描述",
+            "client-description-placeholder": "填入說明描述",
+            "client-id": "客戶端ID",
+            "client-id-help": "唯一標識符。如果不填則系統會自動生成一個。",
+            "client-id-placeholder": "輸入一些字符",
+            "client-name": "客戶端名稱",
+            "client-name-help": "人類可讀的應用程式名稱",
+            "client-name-placeholder": "輸入一些字符",
+            "client-secret": "客戶端密鑰",
+            "client-secret-placeholder": "輸入密鑰",
+            "contacts": "聯繫人",
+            "contacts-help": "此客戶端管理員的聯繫人名單。",
+            "contacts-placeholder": "新聯繫人",
+            "credentials": "憑據",
+            "crypto": {
+                "a128cbc-hs256": "複合認證加密算法，採用密碼塊鏈（CBC）模式AES，以PKCS #5填充，完整性計算使用HMAC SHA-256，並使用256位的CMK（和128位CEK）",
+                "a256cbc-hs512": "複合認證加密算法，採用密碼塊鏈（CBC）模式AES，以PKCS #5填充，完整性計算使用HMAC SHA-512，並使用512位的CMK（和256位CEK）",
+                "a128gcm": "AES GCM使用128位的密鑰",
+                "a256gcm": "AES GCM使用256位的密鑰",
+                "a128kw": "AES密鑰封裝算法使用128位的密鑰",
+                "a256kw": "AES密鑰封裝算法使用256位的密鑰",
+                "default": "使用伺服器默認",
+                "dir": "直接使用一個共享對稱密鑰作為塊加密的內容主密鑰（CMK）",
+                "ecdh-es": "橢圓曲線Diffie-Hellman短時靜態密鑰協議（使用Concat KDF），商定的密鑰被直接用作內容主密鑰（CMK）",
+                "ecdh-es-a128kw": "橢圓曲線Diffie-Hellman短時靜態密鑰協議（使用ECDH-ES和第4.7小節），但商定的密鑰是用以A128KW函數封裝內容主密鑰（CMK）",
+                "ecdh-es-a256kw": "橢圓曲線Diffie-Hellman短時靜態密鑰協議（使用ECDH-ES和第4.7小節），但商定的密鑰是用以A256KW函數封裝內容主密鑰（CMK）",
+                "none": "不加密",
+                "rsa-oaep": "RSAES使用最優不對稱加密填充（OAEP）",
+                "rsa1-5": "RSAES-PKCS1-V1_5"
+            },
+            "cryptography": "密碼",
+            "display-secret": "顯示/編輯客戶端密鑰：",
+            "edit": "編輯客戶端",
+            "generate-new-secret": "生成一個新的客戶端密鑰嗎？",
+            "generate-new-secret-help": "當點擊「保存」時生成新的密鑰",
+            "generate-on-save": "保存時生成",
+            "grant-types": "批准的類型",
+            "home": "主頁",
+            "home-help": "客戶端首頁的URL，將顯示給用戶",
+            "hours": "小時",
+            "id": "ID：",
+            "id-token-crypto-algorithm": "身份令牌加密算法",
+            "id-token-crypto-method": "身份令牌加密方法",
+            "id-token-signing-algorithm": "身份令牌簽名算法",
+            "id-token-timeout": "身份令牌超時",
+            "implicit": "隱式的",
+            "initiate-login": "初始化登入",
+            "initiate-login-help": "啟動登入客戶端的URL",
+            "introspection": "自省",
+            "jwk-set": "公鑰集",
+            "jwk-set-help": "客戶端JSON Web Key集的URL (須可被伺服器訪問)",
+            "jwk-set-value-help": "客戶端JSON Web Key集的URL (須可被伺服器訪問)",
+            "logo": "標誌（Logo)",
+            "logo-help": "標誌（Logo）圖像的URL，將顯示在批准頁",
+            "main": "首要",
+            "max-age": "默認最長有效時間",
+            "max-age-help": "再提示之前的默認最長會話有效時間",
+            "minutes": "分鐘",
+            "new": "新客戶端",
+            "other": "其它",
+            "pairwise": "Pairwise對",
+            "password": "密碼",
+            "policy": "政策聲明",
+            "policy-help": "此客戶端的政策聲明連接，將顯示給用戶",
+            "post-logout": "登出後重定向",
+            "post-logout-help": "客戶端登出操作後的重定向URL",
+            "public": "公共",
+            "redelegation": "重新授權",
+            "redirect-uris": "重定向URI",
+            "redirect-uris-help": "在授權頁面之後客戶端重定向URI",
+            "claims-redirect-uris": "聲明重定向URI",
+            "claims-redirect-uris-help": "在聲明採集步驟之後瀏覽器需重定向的目標URI",
+            "refresh": "刷新",
+            "refresh-tokens": "刷新令牌",
+            "refresh-tokens-issued": "為此客戶端發佈的刷新令牌",
+            "refresh-tokens-issued-help": "這將把 offline_access 加入客戶端的範圍。",
+            "refresh-tokens-reused": "此客戶端的刷新令牌被重用",
+            "clear-access-tokens": "當刷新令牌用過之後，已激活的訪問令牌自動失效",
+            "refresh-tokens-no-expire": "刷新令牌尚未過期",
+            "registered": "註冊於",
+            "registration-token": "註冊令牌：",
+            "registration-access-token": "註冊訪問令牌",
+            "registration-token-error": "無法為此客戶端下載註冊訪問令牌。",
+            "request-object-signing-algorithm": "請求對像簽名算法",
+            "request-uri": "請求的URI",
+            "request-uri-help": "URI包含此客戶端使用的請求對像",
+            "require-auth-time": "需要身份認證時間(auth_time)",
+            "require-auth-time-label": "總是需要在身份令牌中包含auth_time聲明",
+            "response-types": "回應類型",
+            "rotate-registration-token": "旋轉註冊令牌",
+            "rotate-registration-token-confirm": "你確定你想旋轉這個客戶端的登入令牌？",
+            "rotate-registration-token-error": "無法旋轉該客戶端的註冊訪問令牌。",
+            "saved": {
+                "no-secret": "沒有客戶端密鑰",
+                "saved": "客戶端已保存",
+                "secret": "密鑰：",
+                "show-secret": "顯示密鑰",
+                "unchanged": "不變"
+            },
+            "scope-placeholder": "新範圍",
+            "scope-help": "OAuth範圍允許客戶端請求",
+            "seconds": "秒",
+            "secret-asymmetric-jwt": "非對稱簽名JWT斷言",
+            "secret-http": "客戶端密鑰經由HTTP Basic",
+            "secret-none": "沒有認證",
+            "secret-post": "客戶端密鑰經由HTTP POST",
+            "secret-symmetric-jwt": "客戶端密鑰經由對稱簽名JWT斷言",
+            "sector-identifier": "扇區標識符URI",
+            "signing": {
+                "any": "允許",
+                "default": "使用伺服器默認",
+                "es256": "ECDSA採用P-256曲線和SHA-256哈希算法",
+                "es384": "ECDSA採用P-384曲線及SHA-384哈希算法",
+                "es512": "ECDSA採用P-512曲線及SHA-512哈希算法",
+                "hs256": "HMAC使用SHA-256哈希算法",
+                "hs384": "HMAC使用SHA-384哈希算法",
+                "hs512": "HMAC使用SHA-512哈希算法",
+                "none": "沒有數字簽名",
+                "rs256": "RSASSA使用SHA-256哈希算法",
+                "rs384": "RSASSA採用SHA-384哈希算法",
+                "rs512": "RSASSA使用SHA-512哈希算法",
+                "ps256": "採用SHA-256和MGF1的RSASSA-PSS算法",
+                "ps384": "採用SHA-384和MGF1的RSASSA-PSS算法",
+                "ps512": "採用SHA-512和MGF1的RSASSA-PSS算法"
+            },
+            "subject-type": "主體類型",
+            "terms": "服務條款",
+            "terms-help": "此客戶服務條款的URL，將向用戶顯示",
+            "token-signing-algorithm": "令牌端點認證簽名算法",
+            "tokens": "令牌",
+            "type": "應用類型",
+            "type-native": "原生應用",
+            "type-web": "網絡應用",
+            "unknown": "（未知）",
+            "user-info-crypto-algorithm": "用戶資訊端點加密算法",
+            "user-info-crypto-method": "用戶資訊端點加密方法",
+            "user-info-signing-algorithm": "用戶資訊端點簽名算法"
+        },
+        "client-table": {
+            "allow-introspection-tooltip": "這個客戶端可以執行令牌自省",
+            "confirm": "你確定要刪除這個客戶端？",
+            "dynamically-registered-tooltip": "這個客戶端是動態註冊的。點擊查看註冊訪問令牌",
+            "match": {
+                "contacts": "聯繫人",
+                "description": "描述",
+                "homepage": "主頁",
+                "id": "身分",
+                "logo": "標誌",
+                "name": "名稱",
+                "policy": "政策",
+                "redirect": "重定向URI",
+                "scope": "範圍",
+                "terms": "服務條款"
+            },
+            "matched-search": "匹配搜索：",
+            "new": "新客戶端",
+            "no-clients": "此伺服器上沒有註冊的客戶端。",
+            "no-matches": "沒有匹配搜索條件的客戶端。",
+            "no-redirect": "沒有重定向URI",
+            "registered": "註冊於",
+            "search": "搜索……",
+            "whitelist": "白名單",
+            "unknown": "一個未知的時間"
+        },
+        "manage": "管理客戶端",
+        "more-info": {
+            "contacts": "管理員聯繫方式：",
+            "home": "主頁",
+            "more": "更多資訊",
+            "policy": "政策",
+            "terms": "服務條款："
+        },
+        "newClient": "新客戶端"
+    },
+    "common": {
+        "cancel": "取消",
+        "client": "客戶端",
+        "clients": "客戶端",
+        "close": "關閉",
+        "delete": "刪除",
+        "description": "描述",
+        "dynamically-registered": "這個客戶端是動態註冊的",
+        "edit": "編輯",
+        "expires": "到期：",
+        "information": "資訊",
+        "new": "新建",
+        "not-yet-implemented": "未實現",
+        "not-yet-implemented-content": "這個字段的值將於客戶端保存，但伺服器目前不處理任何事情。伺服器的未來庫版本將利用它。",
+        "revoke": "撤銷",
+        "save": "保存",
+        "scopes": "範圍",
+        "statistics": "統計",
+        "refresh": "刷新",
+        "scope": "範圍",
+        "users": "用戶",
+        "user": "用戶",
+        "roles": "角色",
+        "role": "角色",
+        "email": "電子郵箱",
+        "active": "已激活",
+        "inactive": "未激活"
+    },
+    "dynreg": {
+        "client-id-placeholder": "輸入客戶端ID",
+        "configuration-url": "客戶端配置URL",
+        "edit-dynamically-registered": "編輯動態註冊的客戶端",
+        "edit-existing": "編輯一個現有的客戶端",
+        "edit-existing-help": "用於編輯之前已註冊的客戶端。粘貼您的客戶端ID和註冊訪問令牌，以便訪問該客戶端。",
+        "edit-existing-button": "編輯客戶端",
+        "invalid-access-token": "無效的客戶端或註冊訪問令牌。",
+        "new-client": "註冊新客戶端",
+        "new-client-help": "用於註冊新的客戶端。請提供客戶端ID和註冊訪問令牌，以便管理您的客戶端。",
+        "new-client-button": "新建客戶端",
+        "regtoken-placeholder": "輸入註冊訪問令牌",
+        "warning": "<strong>警告！</strong>你必須保護好<b>客戶端ID </b>，<b>客戶密鑰（如果提供）</b>，以及您的<b>註冊訪問令牌</b>。如果你丟失了客戶端ID或註冊訪問令牌，將無法訪問您的客戶端註冊記錄，你需要註冊一個新客戶端。",
+        "will-be-generated": "當存儲客戶端資訊時將由伺服器自動生成"
+    },
+    "grant": {
+        "manage-approved-sites": "管理批准的網站",
+        "refresh": "刷新",
+        "grant-table": {
+            "active-tokens": "當前活躍的訪問令牌數量",
+            "application": "應用程式",
+            "approved-sites": "許可站點",
+            "authorized": "授權：",
+            "dynamically-registered": "這個客戶端是動態註冊的",
+            "expires": "到期：",
+            "last-accessed": "上次訪問：",
+            "never": "從未",
+            "no-sites": "還未批准任何網站。",
+            "no-whitelisted": "還未訪問任何白名單的網站。",
+            "pre-approved": "這些都是預先由管理員批准的網站。",
+            "text": "這些都是您已經手動批准的網站。如果同一網站將來要進行同樣的訪問，它將直接通過、且沒有提示。",
+            "unknown": "未知",
+            "whitelist-note": "<b>註：</b>如果你在此撤銷它們，它們將在您下次訪問時不經提示即被自動重新批准。",
+            "whitelisted-site": "這個網站由管理員列入白名單中",
+            "whitelisted-sites": "白名單的網站"
+        }
+    },
+    "rsreg": {
+        "resource-id-placeholder": "輸入資源ID",
+        "configuration-url": "客戶端配置URL",
+        "edit": "編輯受保護的資源",
+        "edit-existing": "編輯現有的保護資源",
+        "edit-existing-help": "用於編輯之前已註冊的資源。請使用您的客戶端ID和註冊訪問令牌來訪問資源的屬性。",
+        "edit-existing-button": "編輯資源",
+        "invalid-access-token": "無效的客戶端或註冊訪問令牌。",
+        "new-client": "註冊新的受保護資源",
+        "new-client-help": "用於註冊新的資源。請提供客戶端ID和註冊訪問令牌，以便管理您的資源。",
+        "new-client-button": "新建資源",
+        "regtoken-placeholder": "輸入註冊訪問令牌",
+        "will-be-generated": "將生成",
+        "warning": "<strong>警告！</strong>你必須保護好<b>客戶端ID </b>，<b>客戶密鑰（如果提供）</b>，以及<b>註冊訪問令牌</b>。如果丟失了客戶端ID或註冊訪問令牌，將無法獲得您客戶端的登記記錄，你需要註冊一個新客戶端。",
+        "client-form": {
+            "scope-help": "這個資源能夠自省令牌的範圍。"
+        }
+    },
+    "scope": {
+        "manage": "管理系統範圍",
+        "scope-list": {
+            "no-scopes": "沒有範圍"
+        },
+        "system-scope-form": {
+            "default": "默認範圍",
+            "default-help": "新創建的用戶默認情況下獲得這個範圍？",
+            "description-help": "人類可讀的文本描述",
+            "description-placeholder": "輸入說明",
+            "restricted": "限制",
+            "restricted-help": "限制範圍衹能由系統管理員使用，可用動態註冊客戶和保護資源",
+            "edit": "編輯範圍",
+            "icon": "圖標",
+            "new": "新範圍",
+            "select-icon": "選擇圖標",
+            "structured": "是一個結構化的範圍",
+            "structured-help": "範圍結構化是否包含如<code>base:extension</code>的結構化值？",
+            "structured-param-help": "人類可讀的結構化參數描述",
+            "subject-type": "主體類型",
+            "value": "範圍值",
+            "value-help": "不含空格的單個字符串",
+            "value-placeholder": "範圍"
+        },
+        "system-scope-table": {
+            "confirm": "你確定要刪除此範圍？引用了此範圍的客戶端還需要它。",
+            "new": "新範圍",
+            "text": "尚未定義系統範圍。客戶還可自定義範圍。",
+            "tooltip-restricted": "此範圍衹能由管理員使用。它不能用於動態註冊。",
+            "tooltip-default": "這個範圍將自動分配給新註冊的客戶。"
+        }
+    },
+    "token": {
+        "manage": "管理活動的令牌",
+        "token-table": {
+            "access-tokens": "訪問令牌",
+            "associated-id": "這個訪問令牌附帶相關的身份令牌。",
+            "associated-refresh": "這個訪問令牌附帶相關的刷新令牌。",
+            "click-to-display": "點擊顯示完整的令牌值",
+            "confirm": "你確定要撤銷這個令牌？",
+            "confirm-refresh": "你確定要撤銷這個刷新令牌及其相關的訪問令牌？",
+            "expires": "過期",
+            "no-access": "沒有活動的訪問令牌。",
+            "no-refresh": "沒有活動的刷新令牌。",
+            "number-of-tokens": "關聯的訪問令牌數量",
+            "refresh-tokens": "刷新令牌",
+            "text": "訪問令牌通常是短暫的，供客戶端訪問特定的資源。身份令牌是採用OpenID Connect協議登入的、專門的訪問令牌。",
+            "text-refresh": "刷新令牌通常是長期的，以便客戶端能無需用戶介入即可獲取新的訪問令牌。",
+            "token-info": "令牌的資訊"
+        }
+    },
+    "whitelist": {
+        "confirm": "你確定要刪除這個白名單項？",
+        "edit": "編輯白名單",
+        "manage": "管理列入白名單的網站",
+        "new": "新白名單",
+        "whitelist": "白名單",
+        "whitelist-form": {
+            "allowed-scopes": "允許範圍",
+            "edit": "編輯白名單的網站",
+            "new": "新增白名單網站",
+            "scope-help": "當客戶端發出請求列表時將自動批准的範圍",
+            "scope-placeholder": "新範圍"
+        },
+        "whitelist-table": {
+            "no-sites": "白名單列表為空。使用<strong>白名單</strong>按鈕在客戶端管理頁面創建一個。"
+        }
+    },
+    "blacklist": {
+        "text": "被拉黑的網站URI將無法用於註冊客戶端的重定向地址（無論是在管理介面中添加、還是動態註冊，都不行）。",
+        "blacklist-uri-placeholder": "要拉黑的網站URI",
+        "add": "將網站URI加入黑名單",
+        "empty": "當前黑名單為空",
+        "uri": "URI"
+    },
+    "copyright": "基於<a href=\"https://github.com/mitreid-connect/\">MITREid Connect <span class=\"label\">{0}</span></a>技術構建 <span class=\"pull-right\">&copy; 2016 MITRE公司及MIT因特網信任聯盟</span>。",
+    "about": {
+        "title": "關於",
+        "body": "\n此OpenID Connect服務基於開源的MITREid Connect專案，該專案來自 \n<a href=\"http://www.mitre.org/\">MITRE公司</a> 及 <a href=\"http://kit.mit.edu/\">MIT因特網信任聯盟</a>。\n</p>\n<p>\n有關該專案的更多資訊可見 \n<a href=\"http://github.com/mitreid-connect/\">GitHub上的MITREid Connect專案</a>。 \n您可以在該網站報告bug、提交意見及代碼補丁。"
+    },
+    "statistics": {
+        "title": "統計",
+        "number_users": "用戶數: <span class=\"label label-info\" id=\"userCount\">{0}</span>",
+        "number_clients": "授權的客戶端: <span class=\"label label-info\" id=\"clientCount\">{0}</span>",
+        "number_approvals": "已批准的站點: <span class=\"label label-info\" id=\"approvalCount\">{0}</span>"
+    },
+    "home": {
+        "title": "首頁",
+        "welcome": {
+            "title": "歡迎！",
+			"body": "\nOpenID Connect是適於因特網部署的身分聯邦認證伺服器，基於OAuth2授權框架之上的OpenID Connect技術構建。\nOpenID Connect讓您無需暴露自己的用戶名、密碼即可便捷登入網站。</p>\n<p><a class=\"btn btn-primary btn-large\" href=\"http://openid.net/connect/\">在此瞭解更多詳情&raquo;</a>"
+        },
+        "more": "更多",
+        "about": {
+            "title": "關於",
+            "body": "本服務基於開源的MITREid Connect專案，該專案來自 \n<a href=\"http://www.mitre.org/\">MITRE公司</a> 及 <a href=\"http://kit.mit.edu/\">MIT因特網信任聯盟</a>。"
+        },
+        "contact": {
+            "title": "聯繫方式",
+            "body": "\n如需更多的資訊和支持，請聯繫本系統的管理員。</p>\n<p><a class=\"btn\" href=\"mailto:idp@example.com?Subject=OpenID Connect\">電子信箱 &raquo;</a>"
+        },
+        "statistics": {
+            "title": "當前統計",
+            "loading": "加載……",
+            "number_users": "用戶數: <span class=\"label label-info\" id=\"userCount\">{0}</span>",
+            "number_clients": "授權的客戶端: <span class=\"label label-info\" id=\"clientCount\">{0}</span>",
+            "number_approvals": "已批准的站點: <span class=\"label label-info\" id=\"approvalCount\">{0}</span>"
+        }
+    },
+    "contact": {
+        "title": "聯繫方式",
+        "body": "如果要報告有關MITREid Connect軟體自身的bug，請拜訪\n<a href=\"https://github.com/mitreid-connect/OpenID-Connect-Java-Spring-Server/issues\">GitHub issue追蹤系統</a>。 \n有關當前伺服器的問題，請聯繫伺服器的管理者。"
+    },
+    "topbar": {
+        "about": "關於",
+        "contact": "聯繫方式",
+        "statistics": "統計",
+        "home": "首頁",
+        "login": "登入",
+        "logout": "登出"
+    },
+    "sidebar": {
+        "administrative": {
+            "title": "管理",
+            "manage_clients": "管理客戶端",
+            "whitelisted_clients": "白名單",
+            "blacklisted_clients": "黑名單",
+            "system_scopes": "系統範圍"
+        },
+        "personal": {
+            "title": "個人",
+            "approved_sites": "管理批准的網站",
+            "active_tokens": "管理活動的令牌",
+            "profile_information": "查看用戶資訊"
+        },
+        "developer": {
+            "title": "開發者自助服務",
+            "client_registration": "客戶端註冊",
+            "resource_registration": "保護資源註冊"
+        }
+    },
+    "manage": {
+        "ok": "好的",
+        "loading": "加載",
+        "title": "管理控制檯"
+    },
+    "approve": {
+        "dynamically-registered-unknown": "在一個未知的時間",
+        "title": "批准訪問",
+        "error": {
+            "not_granted": "訪問可能不獲批准。"
+        },
+        "required_for": "有待批准",
+        "dynamically_registered": "此客戶端已被動態註冊了<span class=\"label label-info\" id=\"registrationTime\">{0}</span>次。",
+        "caution": {
+            "title": "注意",
+            "message": {
+                "none": "它之前<span class=\"label label-important\">從未</span>被批准。",
+                "singular": "它之前已被批准了<span class=\"label label-warning\">{0}</span>次。",
+                "plural": "它之前已被批准了<span class=\"label\">{0}</span>次。"
+            }
+        },
+        "more_information": "更多資訊",
+        "home_page": "主頁",
+        "policy": "政策",
+        "terms": "服務條款",
+        "contacts": "管理人員",
+        "warning": "警告",
+        "no_redirect_uri": "該客戶端沒有註冊任何重定向URI，可能被使用惡意的URI。",
+        "redirect_uri": "如果點擊批准，您將被重定向至如下頁面: <code>{0}</code>",
+        "pairwise": "該客戶端使用<b>pairwise</b>標識符，這使得在不同站點間關聯身份變得稍加困難。",
+        "no_scopes": "該客戶端沒有註冊任何範圍，因此允許請求系統可用的<em>any</em>(任意)範圍。請務必謹慎處理。",
+        "access_to": "訪問",
+        "remember": {
+            "title": "記住這個決定",
+            "until_revoke": "記住這個決定直到我撤銷",
+            "one_hour": "記住該決定一個小時",
+            "next_time": "下次再提醒我"
+        },
+        "do_authorize": "是否授權",
+        "label": {
+            "authorize": "授權",
+            "deny": "拒絕"
+        }
+    },
+    "error": {
+    	"title": "錯誤",
+		"header": "錯誤:",
+		"message": "在處理您的請求過程中發生了錯誤。伺服器日誌為:"
+    },
+    "login": {
+		"login_with_username_and_password": "請用您的用戶名和密碼登入",
+		"username": "用戶名",
+		"password": "密碼",
+		"login-button": "登入",
+		"error": "登入失敗，請重試。"
+    }
+}

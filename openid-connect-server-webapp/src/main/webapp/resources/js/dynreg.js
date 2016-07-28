@@ -102,7 +102,7 @@ var DynRegRootView = Backbone.View.extend({
     	$('#loadingbox').sheet('show');
     	$('#loading').html('<span class="label" id="loading-scopes">' + $.t('common.scopes') + '</span> ');
 
-    	$.when(this.options.systemScopeList.fetchIfNeeded({success:function(e) {$('#loading-scopes').addClass('label-success');}}))
+    	$.when(this.options.systemScopeList.fetchIfNeeded({success:function(e) {$('#loading-scopes').addClass('label-success');}, error:app.errorHandlerView.handleError()}))
     	.done(function() {
     	    		$('#loadingbox').sheet('hide');
     	    		callback();
@@ -133,46 +133,39 @@ var DynRegRootView = Backbone.View.extend({
 		
 		var self = this;
 		
-		client.fetch({success: function() {
+		client.fetch({
+			success: function() {
 
-    		var userInfo = getUserInfo();
-    		var contacts = client.get("contacts");
-    		if (userInfo != null && userInfo.email != null && ! _.contains(contacts, userInfo.email)) {
-    			contacts.push(userInfo.email);
-    		}
-    		client.set({
-    			contacts: contacts
-    		}, { silent: true });
-    		
-	        if (client.get("jwks")) {
-	        	client.set({
-	        		jwksType: "VAL"
-	        	}, { silent: true });
-	        } else {
-	        	client.set({
-	        		jwksType: "URI"
-	        	}, { silent: true });
-	        }
-			
-	    	var view = new DynRegEditView({model: client, systemScopeList: app.systemScopeList}); 
-	    	
-	    	view.load(function() {
-	    		$('#content').html(view.render().el);
-	    		view.delegateEvents();
-	    		setPageTitle($.t('dynreg.edit-dynamically-registered'));
-	    		app.navigate('dev/dynreg/edit', {trigger: true});	    		
-	    		self.remove();
-	    	});
-		}, error: function() {
-    		$('#modalAlert div.modal-body').html($.t('dynreg.invalid-access-token'));
-    		
-			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
-				 "backdrop" : "static",
-				 "keyboard" : true,
-				 "show" : true // ensure the modal is shown immediately
-			 });
-
-		}});
+	    		var userInfo = getUserInfo();
+	    		var contacts = client.get("contacts");
+	    		if (userInfo != null && userInfo.email != null && ! _.contains(contacts, userInfo.email)) {
+	    			contacts.push(userInfo.email);
+	    		}
+	    		client.set({
+	    			contacts: contacts
+	    		}, { silent: true });
+	    		
+		        if (client.get("jwks")) {
+		        	client.set({
+		        		jwksType: "VAL"
+		        	}, { silent: true });
+		        } else {
+		        	client.set({
+		        		jwksType: "URI"
+		        	}, { silent: true });
+		        }
+				
+		    	var view = new DynRegEditView({model: client, systemScopeList: app.systemScopeList}); 
+		    	
+		    	view.load(function() {
+		    		$('#content').html(view.render().el);
+		    		view.delegateEvents();
+		    		setPageTitle($.t('dynreg.edit-dynamically-registered'));
+		    		app.navigate('dev/dynreg/edit', {trigger: true});	    		
+		    		self.remove();
+		    	});
+			}, error:app.errorHandlerView.handleError({message: $.t('dynreg.invalid-access-token')})
+		});
 	}
 	
 });
@@ -207,7 +200,7 @@ var DynRegEditView = Backbone.View.extend({
     	$('#loadingbox').sheet('show');
     	$('#loading').html('<span class="label" id="loading-scopes">' + $.t('common.scopes') + '</span> ');
 
-    	$.when(this.options.systemScopeList.fetchIfNeeded({success:function(e) {$('#loading-scopes').addClass('label-success');}}))
+    	$.when(this.options.systemScopeList.fetchIfNeeded({success:function(e) {$('#loading-scopes').addClass('label-success');}, error:app.errorHandlerView.handleError()}))
     	.done(function() {
     	    		$('#loadingbox').sheet('hide');
     	    		callback();
@@ -240,22 +233,7 @@ var DynRegEditView = Backbone.View.extend({
                 	self.remove();
                 	app.navigate('dev/dynreg', {trigger: true});
                 },
-                error:function (error, response) {
-            		console.log("An error occurred when deleting a client");
-    
-					//Pull out the response text.
-					var responseJson = JSON.parse(response.responseText);
-            		
-            		//Display an alert with an error message
-					$('#modalAlert div.modal-header').html(responseJson.error);
-	        		$('#modalAlert div.modal-body').html(responseJson.error_description);
-            		
-        			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
-        				 "backdrop" : "static",
-        				 "keyboard" : true,
-        				 "show" : true // ensure the modal is shown immediately
-        			 });
-            	}
+                error:app.errorHandlerView.handleError({"log": "An error occurred when deleting a client"})
             });
 
         }
@@ -397,16 +375,8 @@ var DynRegEditView = Backbone.View.extend({
         var sectorIdentifierUri = $('#sectorIdentifierUri input').val();
         if (subjectType == 'PAIRWISE' && redirectUris.length > 1 && sectorIdentifierUri == '') {
     		//Display an alert with an error message
-			$('#modalAlert div.modal-header').html("Consistency error");
-    		$('#modalAlert div.modal-body').html("Pairwise identifiers cannot be used with multiple redirect URIs unless a sector identifier URI is also registered.");
-    		
-			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
-				 "backdrop" : "static",
-				 "keyboard" : true,
-				 "show" : true // ensure the modal is shown immediately
-			 });
-			 
-			 return false;
+        	app.errorHandlerView.showErrorMessage($.t("client.client-form.error.consistency"), $.t("client.client-form.error.pairwise-sector"));
+			return false;
       	
         }
         
@@ -424,18 +394,8 @@ var DynRegEditView = Backbone.View.extend({
     			jwks = JSON.parse($('#jwks textarea').val());
     		} catch (e) {
         		console.log("An error occurred when parsing the JWK Set");
-
-        		//Display an alert with an error message
-				$('#modalAlert div.modal-header').html("JWK Set Error");
-        		$('#modalAlert div.modal-body').html("There was an error parsing the public key from the JSON Web Key set. Check the value and try again.");
-        		
-    			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
-    				 "backdrop" : "static",
-    				 "keyboard" : true,
-    				 "show" : true // ensure the modal is shown immediately
-    			 });
-    			 
-    			 return false;
+            	app.errorHandlerView.showErrorMessage($.t("client.client-form.error.jwk-set"), $.t("client.client-form.error.jwk-set-parse"));
+    			return false;
     		}
     	} else {
     		jwksUri = null;
@@ -456,6 +416,7 @@ var DynRegEditView = Backbone.View.extend({
             jwks_uri: jwksUri,
             jwks: jwks,
             subject_type: subjectType,
+            software_statement: $('#softwareStatement textarea').val(),
             token_endpoint_auth_method: $('#tokenEndpointAuthMethod input').filter(':checked').val(),
             response_types: responseTypes,
             sector_identifier_uri: sectorIdentifierUri,
@@ -518,22 +479,7 @@ var DynRegEditView = Backbone.View.extend({
     				view.delegateEvents();
     			});
             },
-            error:function (error, response) {
-        		console.log("An error occurred when saving the client");
-
-				//Pull out the response text.
-				var responseJson = JSON.parse(response.responseText);
-        		
-        		//Display an alert with an error message
-				$('#modalAlert div.modal-header').html(responseJson.error);
-        		$('#modalAlert div.modal-body').html(responseJson.error_description);
-        		
-    			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
-    				 "backdrop" : "static",
-    				 "keyboard" : true,
-    				 "show" : true // ensure the modal is shown immediately
-    			 });
-        	}
+            error:app.errorHandlerView.handleError({log: "An error occurred when saving a client"})
         });
 
         return false;

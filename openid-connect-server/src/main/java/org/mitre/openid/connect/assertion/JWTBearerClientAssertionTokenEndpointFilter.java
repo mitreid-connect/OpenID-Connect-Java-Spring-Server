@@ -95,7 +95,7 @@ public class JWTBearerClientAssertionTokenEndpointFilter extends AbstractAuthent
 
 			String clientId = jwt.getJWTClaimsSet().getSubject();
 
-			Authentication authRequest = new JWTBearerAssertionAuthenticationToken(clientId, jwt);
+			Authentication authRequest = new JWTBearerAssertionAuthenticationToken(jwt);
 
 			return this.getAuthenticationManager().authenticate(authRequest);
 		} catch (ParseException e) {

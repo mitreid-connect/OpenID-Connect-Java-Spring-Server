@@ -20,33 +20,27 @@
 package org.mitre.oauth2.token;
 
 import java.text.ParseException;
-import java.util.Date;
-import java.util.UUID;
 
+import org.mitre.jwt.assertion.AssertionValidator;
 import org.mitre.jwt.signer.service.JWTSigningAndValidationService;
-import org.mitre.oauth2.model.ClientDetailsEntity;
-import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
+import org.mitre.oauth2.assertion.AssertionOAuth2RequestFactory;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
-import org.mitre.oauth2.service.SystemScopeService;
+import org.mitre.openid.connect.assertion.JWTBearerAssertionAuthenticationToken;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.oauth2.common.OAuth2AccessToken;
-import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.security.oauth2.provider.ClientDetails;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2RequestFactory;
 import org.springframework.security.oauth2.provider.TokenRequest;
 import org.springframework.security.oauth2.provider.token.AbstractTokenGranter;
 import org.springframework.stereotype.Component;
 
-import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jwt.JWT;
-import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.JWTParser;
-import com.nimbusds.jwt.SignedJWT;
 
 /**
  * @author jricher
@@ -65,6 +59,13 @@ public class JWTAssertionTokenGranter extends AbstractTokenGranter {
 
 	@Autowired
 	private ConfigurationPropertiesBean config;
+	
+	@Autowired
+	@Qualifier("jwtAssertionValidator")
+	private AssertionValidator validator;
+	
+	@Autowired
+	private AssertionOAuth2RequestFactory assertionFactory;
 
 	@Autowired
 	public JWTAssertionTokenGranter(OAuth2TokenEntityService tokenServices, ClientDetailsEntityService clientDetailsService, OAuth2RequestFactory requestFactory) {
@@ -76,128 +77,30 @@ public class JWTAssertionTokenGranter extends AbstractTokenGranter {
 	 * @see org.springframework.security.oauth2.provider.token.AbstractTokenGranter#getOAuth2Authentication(org.springframework.security.oauth2.provider.AuthorizationRequest)
 	 */
 	@Override
-	protected OAuth2AccessToken getAccessToken(ClientDetails client, TokenRequest tokenRequest) throws AuthenticationException, InvalidTokenException {
+	protected OAuth2Authentication getOAuth2Authentication(ClientDetails client, TokenRequest tokenRequest) throws AuthenticationException, InvalidTokenException {
 		// read and load up the existing token
-		String incomingTokenValue = tokenRequest.getRequestParameters().get("assertion");
-		OAuth2AccessTokenEntity incomingToken = tokenServices.readAccessToken(incomingTokenValue);
-
-		if (incomingToken.getScope().contains(SystemScopeService.ID_TOKEN_SCOPE)) {
-
-			if (!client.getClientId().equals(tokenRequest.getClientId())) {
-				throw new InvalidClientException("Not the right client for this token");
+		try {
+			String incomingAssertionValue = tokenRequest.getRequestParameters().get("assertion");
+			JWT assertion = JWTParser.parse(incomingAssertionValue);
+			
+			if (validator.isValid(assertion)) {
+				
+				// our validator says it's OK, time to make a token from it
+				// the real work happens in the assertion factory and the token services
+				return new OAuth2Authentication(assertionFactory.createOAuth2Request(client, tokenRequest, assertion),
+						new JWTBearerAssertionAuthenticationToken(assertion, client.getAuthorities()));
+				
+			} else {
+				logger.warn("Incoming assertion did not pass validator, rejecting");
+				return null;
 			}
-
-			// it's an ID token, process it accordingly
-
-			try {
-
-				// TODO: make this use a more specific idtoken class
-				JWT idToken = JWTParser.parse(incomingTokenValue);
-
-				OAuth2AccessTokenEntity accessToken = tokenServices.getAccessTokenForIdToken(incomingToken);
-
-				if (accessToken != null) {
-
-					//OAuth2AccessTokenEntity newIdToken = tokenServices.get
-
-					OAuth2AccessTokenEntity newIdTokenEntity = new OAuth2AccessTokenEntity();
-
-					// copy over all existing claims
-					JWTClaimsSet.Builder claims = new JWTClaimsSet.Builder(idToken.getJWTClaimsSet());
-
-					if (client instanceof ClientDetailsEntity) {
-
-						ClientDetailsEntity clientEntity = (ClientDetailsEntity) client;
-
-						// update expiration and issued-at claims
-						if (clientEntity.getIdTokenValiditySeconds() != null) {
-							Date expiration = new Date(System.currentTimeMillis() + (clientEntity.getIdTokenValiditySeconds() * 1000L));
-							claims.expirationTime(expiration);
-							newIdTokenEntity.setExpiration(expiration);
-						}
-
-					} else {
-						//This should never happen
-						logger.fatal("SEVERE: Client is not an instance of OAuth2AccessTokenEntity.");
-						throw new BadCredentialsException("SEVERE: Client is not an instance of ClientDetailsEntity; JwtAssertionTokenGranter cannot process this request.");
-					}
-
-					claims.issueTime(new Date());
-					claims.jwtID(UUID.randomUUID().toString()); // set a random NONCE in the middle of it
-
-
-					SignedJWT newIdToken = new SignedJWT((JWSHeader) idToken.getHeader(), claims.build());
-					jwtService.signJwt(newIdToken);
-
-					newIdTokenEntity.setJwt(newIdToken);
-					newIdTokenEntity.setAuthenticationHolder(incomingToken.getAuthenticationHolder());
-					newIdTokenEntity.setScope(incomingToken.getScope());
-					newIdTokenEntity.setClient(incomingToken.getClient());
-
-					newIdTokenEntity = tokenServices.saveAccessToken(newIdTokenEntity);
-
-					// attach the ID token to the access token entity
-					accessToken.setIdToken(newIdTokenEntity);
-					accessToken = tokenServices.saveAccessToken(accessToken);
-
-					// delete the old ID token
-					tokenServices.revokeAccessToken(incomingToken);
-
-					return newIdTokenEntity;
-
-				}
-			} catch (ParseException e) {
-				logger.warn("Couldn't parse id token", e);
-			}
-
+			
+		} catch (ParseException e) {
+			logger.warn("Unable to parse incoming assertion");
 		}
-
-		// if we got down here, we didn't actually create any tokens, so return null
-
+		
+		// if we had made a token, we'd have returned it by now, so return null here to close out with no created token
 		return null;
-
-		/*
-		 * Otherwise, process it like an access token assertion ... which we don't support yet so this is all commented out
-		 * /
-	    if (jwtService.validateSignature(incomingTokenValue)) {
-
-	    	Jwt jwt = Jwt.parse(incomingTokenValue);
-
-
-	    	if (oldToken.getScope().contains("id-token")) {
-	    		// TODO: things
-	    	}
-
-	    	// TODO: should any of these throw an exception instead of returning null?
-	    	JwtClaims claims = jwt.getClaims();
-	    	if (!config.getIssuer().equals(claims.getIssuer())) {
-	    		// issuer isn't us
-	    		return null;
-	    	}
-
-	    	if (!authorizationRequest.getClientId().equals(claims.getAudience())) {
-	    		// audience isn't the client
-	    		return null;
-	    	}
-
-	    	Date now = new Date();
-	    	if (!now.after(claims.getExpiration())) {
-	    		// token is expired
-	    		return null;
-	    	}
-
-	    	// FIXME
-	    	// This doesn't work. We need to look up the old token, figure out its scopes and bind it appropriately.
-	    	// In the case of an ID token, we need to look up its parent access token and change the reference, and revoke the old one, and
-	    	// that's tricky.
-	    	// we might need new calls on the token services layer to handle this, and we might
-	    	// need to handle id tokens separately.
-	    	return new OAuth2Authentication(authorizationRequest, null);
-
-	    } else {
-	    	return null; // throw error??
-	    }
-		 */
 
 	}
 

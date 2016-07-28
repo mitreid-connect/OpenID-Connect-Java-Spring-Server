@@ -51,6 +51,8 @@ import org.springframework.security.oauth2.common.exceptions.InvalidClientExcept
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.OAuth2RequestFactory;
 import org.springframework.security.oauth2.provider.endpoint.RedirectResolver;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
 
@@ -83,6 +85,8 @@ public class AuthorizationRequestFilter extends GenericFilterBean {
 
 	@Autowired(required = false)
 	private LoginHintExtracter loginHintExtracter = new RemoveLoginHintsWithHTTP();
+	
+	private RequestMatcher requestMatcher = new AntPathRequestMatcher("/authorize");
 
 	/**
 	 * 
@@ -95,7 +99,7 @@ public class AuthorizationRequestFilter extends GenericFilterBean {
 		HttpSession session = request.getSession();
 
 		// skip everything that's not an authorize URL
-		if (!request.getServletPath().startsWith("/authorize")) {
+		if (!requestMatcher.matches(request)) {
 			chain.doFilter(req, res);
 			return;
 		}
@@ -243,6 +247,20 @@ public class AuthorizationRequestFilter extends GenericFilterBean {
 		}
 
 		return requestMap;
+	}
+
+	/**
+	 * @return the requestMatcher
+	 */
+	public RequestMatcher getRequestMatcher() {
+		return requestMatcher;
+	}
+
+	/**
+	 * @param requestMatcher the requestMatcher to set
+	 */
+	public void setRequestMatcher(RequestMatcher requestMatcher) {
+		this.requestMatcher = requestMatcher;
 	}
 
 }

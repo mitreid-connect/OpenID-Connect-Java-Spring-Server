@@ -19,7 +19,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.mitre</groupId>
 	<artifactId>openid-connect-parent</artifactId>
-	<version>1.2.7.cnaf-SNAPSHOT</version>
+	<version>1.3.0.cnaf-SNAPSHOT</version>
 	<name>MITREid Connect</name>
 	<packaging>pom</packaging>
 	<parent>
@@ -69,7 +69,9 @@
 	</mailingLists>
 
 	<properties>
-		<java-version>1.7</java-version>
+		<java-version>1.8</java-version>
+		<org.springframework-version>4.1.1.RELEASE</org.springframework-version>
+		<spring.security.version>3.2.5.RELEASE</spring.security.version>
 		<org.slf4j-version>1.7.12</org.slf4j-version>
 	</properties>
 	<description>A reference implementation of OpenID Connect (http://openid.net/connect/), OAuth 2.0, and UMA built on top of Java, Spring, and Spring Security. The project contains a fully functioning server, client, and utility library.</description>
@@ -142,6 +144,7 @@
 					<windowtitle>MITREid Connect v. ${project.version}</windowtitle>
 					<doctitle>MITREid Connect v. ${project.version}</doctitle>
 					<overview>${basedir}/src/main/javadoc/overview.html</overview>
+					<additionalparam>-Xdoclint:none</additionalparam>
 				</configuration>
 				<executions>
 					<execution>
@@ -494,7 +497,12 @@
 			<dependency>
 			    <groupId>org.bouncycastle</groupId>
 			    <artifactId>bcprov-jdk15on</artifactId>
-			    <version>[1.52,]</version>
+			    <version>[1.52,)</version>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.persistence</groupId>
+				<artifactId>org.eclipse.persistence.core</artifactId>
+				<version>2.5.1</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -540,28 +548,5 @@
 			<artifactId>jsp-api</artifactId>
 		</dependency>
 	</dependencies>
-
-	<profiles>
-		<profile>
-			<!-- Turn off strict javadoc when building on 1.8 -->
-			<activation>
-				<jdk>1.8</jdk>
-			</activation>
-			<build>
-				<pluginManagement>
-					<plugins>
-						<plugin>
-							<groupId>org.apache.maven.plugins</groupId>
-							<artifactId>maven-javadoc-plugin</artifactId>
-							<version>2.9</version>
-							<configuration>
-								<additionalparam>-Xdoclint:none</additionalparam>
-							</configuration>
-						</plugin>
-					</plugins>
-				</pluginManagement>
-			</build>
-		</profile>
-	</profiles>
 
 </project>

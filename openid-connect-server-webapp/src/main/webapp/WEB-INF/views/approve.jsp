@@ -1,3 +1,4 @@
+<%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
 <%@ page import="org.springframework.security.core.AuthenticationException"%>
 <%@ page import="org.springframework.security.oauth2.common.exceptions.UnapprovedClientAuthenticationException"%>
 <%@ page import="org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter"%>
@@ -36,7 +37,7 @@
 		</h1>
 
 		<form name="confirmationForm"
-			action="<%=request.getContextPath()%>/authorize" method="post">
+			action="${pageContext.request.contextPath.endsWith('/') ? pageContext.request.contextPath : pageContext.request.contextPath.concat('/') }authorize" method="post">
 
 			<div class="row">
 				<div class="span5 offset1 well-small" style="text-align: left">

@@ -1,0 +1,59 @@
+{
+	"admin": {
+		"policies": "管理受保護資源的政策"
+	},
+	"policy" : {
+    	"resource-sets": "資源集",
+    	"edit-policies": "編輯政策",
+    	"new-policy": "新建政策",
+    	"edit-policy": "編輯政策",
+    	"loading-policies": "政策",
+    	"loading-policy": "政策",
+    	"loading-rs": "資源集",
+    	"rs-table": {
+    		"confirm": "確定要刪除該資源？",
+    		"no-resource-sets": "尚未有已注冊的資源集。您可在此授權伺服器中注冊一個。",
+    		"scopes": "范圍",
+    		"shared-with": "共享給:",
+    		"shared-nobody": "不共享",
+    		"shared-nobody-tooltip": "此資源別人無法訪問，請編輯政策使其與其他人共享。",
+    		"sharing": "共享政策"
+    	},
+    	"policy-table": {
+    		"new": "新建政策",
+    		"return": "返回到列表",
+    		"edit": "編輯政策",
+    		"confirm": "確定要刪除該政策？",
+    		"delete": "刪除",
+    		"no-policies": "此資源集尚未有政策：別人無法訪問此資源集。",
+    		"required-claims": "必須的聲明",
+    		"required-claims-info": "與您共享此資源的用戶必須具備以下聲明，才能訪問該資源。",
+    		"remove": "移除",
+    		"issuers": "簽發者",
+    		"claim": "聲明項",
+    		"value": "值"
+    	},
+    	"policy-form": {
+    		"email-address": "email地址",
+    		"share-email": "連帶email地址共享",
+    		"new": "新建政策",
+    		"edit": "編輯政策",
+    		"claim-name": "聲明項名稱",
+    		"friendly-claim-name": "聲明的顯示名",
+    		"claim-value": "聲明的值",
+    		"value-type-text": "文本",
+    		"value-type-number": "數字",
+    		"clear-all": "清除全部聲明",
+    		"clear-all-confirm": "您是否要從此政策中清除全部聲明？"
+    	},
+    	"webfinger-error": "錯誤",
+    	"webfinger-error-description": "伺服器無法找到<code>__email__</code>的身份提供者。",
+    	"advanced-error": "錯誤",
+    	"advanced-error-description": "保存高級聲明時出錯。您是否填寫了全部必填項？"
+    },
+    "sidebar": {
+    	"personal": {
+    		"resource_policies": "管理受保護資源的政策"
+    	}
+    }
+}

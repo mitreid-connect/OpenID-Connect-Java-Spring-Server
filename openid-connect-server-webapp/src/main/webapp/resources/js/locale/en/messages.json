@@ -158,6 +158,9 @@
 				"ps384": "RSASSA-PSS using SHA-384 and MGF1 with SHA-384",
 				"ps512": "RSASSA-PSS using SHA-512 and MGF1 with SHA-512"
             },
+            "software-statement": "Software Statement",
+            "software-statement-placeholder": "eyj0...",
+            "software-statement-help": "A software statement is issued by a trusted third party and locks certain elements of a client's registration",
             "subject-type": "Subject Type",
             "terms": "Terms of Service",
             "terms-help": "URL for the Terms of Service of this client, will be displayed to the user",
@@ -169,7 +172,13 @@
             "unknown": "(Unknown)",
             "user-info-crypto-algorithm": "User Info Endpoint Encryption Algorithm",
             "user-info-crypto-method": "User Info Endpoint Encryption Method",
-            "user-info-signing-algorithm": "User Info Endpoint Signing Algorithm"
+            "user-info-signing-algorithm": "User Info Endpoint Signing Algorithm",
+            "error": {
+            	"consistency": "Consistency error",
+            	"pairwise-sector": "Pairwise identifiers cannot be used with multiple redirect URIs unless a sector identifier URI is also registered.",
+            	"jwk-set": "JWK set error",
+            	"jwk-set-parse": "There was an error parsing the public key from the JSON Web Key set. Check the value and try again."
+            }
         },
         "client-table": {
             "allow-introspection-tooltip": "This client can perform token introspection",
@@ -349,6 +358,13 @@
             "no-sites": "There are no whitelisted sites. Use the <strong>whitelist</strong> button on the client management page to create one."
         }
     },
+    "blacklist": {
+    	"text": "Blacklisted URIs cannot be used as redirect URIs by any registered clients, whether in the admin interface or in dynamic registration.",
+    	"blacklist-uri-placeholder": "blacklist uri",
+    	"add": "Add URI to blacklist",
+    	"empty": "There are no blacklisted URIs on this server.",
+    	"uri": "URI"
+    },
 	"copyright": "Powered by <a href=\"https://github.com/mitreid-connect/\">MITREid Connect <span class=\"label\">{0}</span></a> <span class=\"pull-right\">&copy; 2016 The MITRE Corporation and MIT Internet Trust Consortium.</span>.",
 	"about": {
 		"title": "About",
@@ -461,11 +477,18 @@
 	},
 	"error": {
 		"title": "Error",
-		"header": "Error:",
-		"message": "There was an error processing your request. The server''s message was:"
+		"header": "Error",
+		"header-with-message": "Error: ",
+		"reload": "Additionally, it looks like you're not logged in. Reload the page to try again. You will likely lose any unsaved work.",
+		"reload-button": "Reload",
+		"message": "There was an error processing your request.",
+		"server-message": "The server said: "
 	},
 	"login": {
 		"login_with_username_and_password": "Login with Username and Password",
+		"username": "Username",
+		"password": "Password",
+		"login-button": "Login",
 		"error": "The system was unable to log you in. Please try again."
 	}
 	

@@ -163,9 +163,17 @@ public class JsonMessageSource extends AbstractMessageSource {
 			try {
 				List<JsonObject> set = new ArrayList<>();
 				for (String namespace : config.getLanguageNamespaces()) {
-					String filename = locale.getLanguage() + File.separator + namespace + ".json";
+					// full locale string, e.g. "en_US"
+					String filename = locale.getLanguage() + "_" + locale.getCountry() + File.separator + namespace + ".json";
 					
 					Resource r = getBaseDirectory().createRelative(filename);
+					
+					if (!r.exists()) {
+						// fallback to language only
+						logger.debug("Fallback locale to language only.");
+						filename = locale.getLanguage() + File.separator + namespace + ".json";
+						r = getBaseDirectory().createRelative(filename);
+					}
 					
 					logger.info("No locale loaded, trying to load from " + r);
 					

@@ -198,13 +198,13 @@
 	<bean id="clientAssertionAuthenticationProvider" class="org.mitre.openid.connect.assertion.JWTBearerAuthenticationProvider" />
 
 	<!-- Configure locale information -->
-	<bean id="messageSource" class="org.mitre.openid.connect.config.JsonMessageSource">
-		<property name="baseDirectory" value="/resources/js/locale/" />
-		<property name="useCodeAsDefaultMessage" value="true" />
-	</bean>
+	<import resource="locale-config.xml" />
 
 	<!-- user services -->
 	<import resource="user-context.xml" />
+	
+	<!-- assertion processing -->
+	<import resource="assertion-config.xml" />
 
 	<!-- End Spring Security configuration -->
 

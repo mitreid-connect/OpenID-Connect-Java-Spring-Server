@@ -24,6 +24,7 @@ import java.util.Map;
 import org.mitre.discovery.util.WebfingerURLNormalizer;
 import org.mitre.jwt.encryption.service.JWTEncryptionAndDecryptionService;
 import org.mitre.jwt.signer.service.JWTSigningAndValidationService;
+import org.mitre.oauth2.model.PKCEAlgorithm;
 import org.mitre.oauth2.service.SystemScopeService;
 import org.mitre.oauth2.web.IntrospectionEndpoint;
 import org.mitre.oauth2.web.RevocationEndpoint;
@@ -364,6 +365,9 @@ public class DiscoveryEndpoint {
 		m.put("introspection_endpoint", baseUrl + IntrospectionEndpoint.URL); // token introspection endpoint for verifying tokens
 		m.put("revocation_endpoint", baseUrl + RevocationEndpoint.URL); // token revocation endpoint
 
+		m.put("code_challenge_methods_supported", Lists.newArrayList(PKCEAlgorithm.plain.getName(), PKCEAlgorithm.S256.getName()));
+		
+		
 		model.addAttribute(JsonEntityView.ENTITY, m);
 
 		return JsonEntityView.VIEWNAME;

@@ -45,6 +45,7 @@ import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jwt.JWT;
 
 /**
  * 
@@ -105,6 +106,17 @@ public abstract class AbstractClientEntityView extends AbstractView {
 				return null;
 			}
 		}
+	})
+	.registerTypeAdapter(JWT.class, new JsonSerializer<JWT>() {
+		@Override
+		public JsonElement serialize(JWT src, Type typeOfSrc, JsonSerializationContext context) {
+			if (src != null) {
+				return new JsonPrimitive(src.serialize());
+			} else {
+				return null;
+			}
+		}
+		
 	})
 	.serializeNulls()
 	.setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")

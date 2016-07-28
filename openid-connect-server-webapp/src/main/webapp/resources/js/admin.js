@@ -94,22 +94,7 @@ var ListWidgetChildView = Backbone.View.extend({
         
         this.model.destroy({
         	dataType: false, processData: false,
-        	error:function (error, response) {
-        		console.log("An error occurred when deleting from a list widget");
-
-				//Pull out the response text.
-				var responseJson = JSON.parse(response.responseText);
-        		
-        		//Display an alert with an error message
-				$('#modalAlert div.modal-header').html(responseJson.error);
-        		$('#modalAlert div.modal-body').html(responseJson.error_description);
-        		
-    			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
-    				 "backdrop" : "static",
-    				 "keyboard" : true,
-    				 "show" : true // ensure the modal is shown immediately
-    			 });
-        	}
+        	error:app.errorHandlerView.handleError()
         });
         
     },
@@ -366,6 +351,66 @@ var UserProfileView = Backbone.View.extend({
 	}
 });
 
+// error handler
+var ErrorHandlerView = Backbone.View.extend({
+	
+	initialize:function(options) {
+    	this.options = options;
+        if (!this.template) {
+            this.template = _.template($('#tmpl-error-box').html());
+        }
+        if (!this.headerTemplate) {
+        	this.headerTemplate = _.template($('#tmpl-error-header').html());
+        }
+	},
+	
+	reloadPage:function(event) {
+		event.preventDefault();
+		window.location.reload(true);
+	},
+
+	handleError:function(message) {
+		
+		if (!message) {
+			message = {};
+		}
+
+		if (message.log) {
+			console.log(message.log);
+		}
+		
+		var _self = this;
+		
+		return function(model, response, options) {
+			
+			_self.showErrorMessage(
+					_self.headerTemplate({message: message, model: model, response: response, options: options}),
+					_self.template({message: message, model: model, response: response, options: options})
+					);
+	
+			$('#modalAlert .modal-body .page-reload').on('click', _self.reloadPage);
+
+		}
+	}, 
+	
+	showErrorMessage:function(header, message) {
+		// hide the sheet if it's visible
+		$('#loadingbox').sheet('hide');
+		
+		$('#modalAlert').i18n();
+		$('#modalAlert div.modal-header').html(header);
+		$('#modalAlert .modal-body').html(message);
+
+		$('#modalAlert').modal({
+			'backdrop': 'static',
+			'keyboard': true,
+			'show': true
+		});
+		
+	}
+});
+
+
 // Router
 var AppRouter = Backbone.Router.extend({
 
@@ -424,6 +469,8 @@ var AppRouter = Backbone.Router.extend({
         });
 
         this.breadCrumbView.render();
+        
+        this.errorHandlerView = new ErrorHandlerView();
 
         var base = $('base').attr('href');
         $.getJSON(base + '.well-known/openid-configuration', function(data) {
@@ -1048,9 +1095,10 @@ $(function () {
     		});
     
     window.onerror = function ( message, filename, lineno, colno, error ){
+    	console.log(message);
 		//Display an alert with an error message
 		$('#modalAlert div.modal-header').html($.t('error.title'));
-		$('#modalAlert div.modal-body').html($.t('error.message') + ' <br /> ' [filename, lineno, colno, error]);
+		$('#modalAlert div.modal-body').html($.t('error.message') + message + ' <br /> ' + [filename, lineno, colno, error]);
 		
 		 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
 			 "backdrop" : "static",

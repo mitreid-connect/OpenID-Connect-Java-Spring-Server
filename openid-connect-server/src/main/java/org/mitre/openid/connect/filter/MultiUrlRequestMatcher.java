@@ -17,11 +17,13 @@
 
 package org.mitre.openid.connect.filter;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.security.web.util.UrlUtils;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.Assert;
 
@@ -32,42 +34,26 @@ import com.google.common.collect.ImmutableSet;
  *
  */
 public class MultiUrlRequestMatcher implements RequestMatcher {
-	private final Set<String> filterProcessesUrls;
+	private final Set<RequestMatcher> matchers;
 
 	public MultiUrlRequestMatcher(Set<String> filterProcessesUrls) {
+		this.matchers = new HashSet<>(filterProcessesUrls.size());
 		for (String filterProcessesUrl : filterProcessesUrls) {
 			Assert.hasLength(filterProcessesUrl, "filterProcessesUrl must be specified");
-			Assert.isTrue(UrlUtils.isValidRedirectUrl(filterProcessesUrl), filterProcessesUrl + " isn't a valid redirect URL");
+			Assert.isTrue(UrlUtils.isValidRedirectUrl(filterProcessesUrl), filterProcessesUrl + " isn't a valid URL");
+			matchers.add(new AntPathRequestMatcher(filterProcessesUrl));
 		}
-		this.filterProcessesUrls = ImmutableSet.copyOf(filterProcessesUrls);
+		
 	}
 
 	@Override
 	public boolean matches(HttpServletRequest request) {
-		String uri = request.getRequestURI();
-		int pathParamIndex = uri.indexOf(';');
-
-		if (pathParamIndex > 0) {
-			// strip everything after the first semi-colon
-			uri = uri.substring(0, pathParamIndex);
-		}
-
-		if ("".equals(request.getContextPath())) {
-			// if any one of the URLs match, return true
-			for (String filterProcessesUrl : filterProcessesUrls) {
-				if (uri.endsWith(filterProcessesUrl)) {
-					return true;
-				}
-			}
-			return false;
-		}
-
-		for (String filterProcessesUrl : filterProcessesUrls) {
-			if (uri.endsWith(request.getContextPath() + filterProcessesUrl)) {
+		for (RequestMatcher matcher : matchers) {
+			if (matcher.matches(request)) {
 				return true;
 			}
 		}
-
+		
 		return false;
 	}
 
