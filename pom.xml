@@ -15,7 +15,8 @@
     See the License for the specific language governing permissions and
     limitations under the License.
  -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.mitre</groupId>
 	<artifactId>openid-connect-parent</artifactId>
@@ -72,7 +73,7 @@
 		<java-version>1.8</java-version>
 		<org.springframework-version>4.1.1.RELEASE</org.springframework-version>
 		<spring.security.version>3.2.5.RELEASE</spring.security.version>
-		<org.slf4j-version>1.7.12</org.slf4j-version>
+		<org.slf4j-version>1.7.21</org.slf4j-version>
 	</properties>
 	<description>A reference implementation of OpenID Connect (http://openid.net/connect/), OAuth 2.0, and UMA built on top of Java, Spring, and Spring Security. The project contains a fully functioning server, client, and utility library.</description>
 	<url>https://github.com/mitreid-connect</url>
@@ -87,7 +88,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-war-plugin</artifactId>
-					<version>2.2</version>
+					<version>2.6</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -129,6 +130,16 @@
 					<groupId>org.appfuse.plugins</groupId>
 					<artifactId>warpath-maven-plugin</artifactId>
 					<version>3.5.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-site-plugin</artifactId>
+					<version>3.3</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-project-info-reports-plugin</artifactId>
+					<version>2.9</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>
@@ -196,6 +207,96 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<configuration>
+					<reportPlugins>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-project-info-reports-plugin</artifactId>
+							<version>2.4</version>
+							<configuration>
+								<dependencyDetailsEnabled>false</dependencyDetailsEnabled>
+								<dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+							</configuration>
+							<reports>
+								<report>index</report>
+								<report>cim</report>
+								<report>dependencies</report>
+								<report>dependency-convergence</report>
+<!-- 								<report>dependency-info</report> -->
+								<report>dependency-management</report>
+								<report>help</report>
+								<report>issue-tracking</report>
+								<report>license</report>
+								<report>mailing-list</report>
+								<report>modules</report>
+								<report>plugin-management</report>
+								<report>plugins</report>
+								<report>project-team</report>
+								<report>scm</report>
+								<report>summary</report>
+							</reports>
+						</plugin>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-javadoc-plugin</artifactId>
+							<version>2.9</version>
+							<configuration>
+								<author>true</author>
+								<version>true</version>
+								<use>true</use>
+								<linksource>true</linksource>
+								<windowtitle>MITREid Connect ${project.name} v. ${project.version}</windowtitle>
+								<doctitle>MITREid Connect ${project.name} v. ${project.version}</doctitle>
+								<overview>${basedir}/src/main/javadoc/overview.html</overview>
+								<additionalparam>-Xdoclint:none</additionalparam>
+							</configuration>
+						</plugin>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-checkstyle-plugin</artifactId>
+							<version>2.10</version>
+							<configuration>
+								<configLocation>checkstyle.xml</configLocation>
+							</configuration>
+						</plugin>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-surefire-plugin</artifactId>
+							<configuration>
+								<junitArtifactName>junit:junit</junitArtifactName>
+								<excludes>
+									<exclude>**/*_Roo_*</exclude>
+								</excludes>
+							</configuration>
+						</plugin>
+						<plugin>
+							<groupId>org.codehaus.mojo</groupId>
+							<artifactId>cobertura-maven-plugin</artifactId>
+							<version>2.7</version>
+							<configuration>
+								<formats>
+									<format>html</format>
+									<format>xml</format>
+								</formats>
+							</configuration>
+<!--         <exclusions> -->
+<!--             <exclusion> -->
+<!--                 <groupId>asm</groupId> -->
+<!--                 <artifactId>asm</artifactId> -->
+<!--             </exclusion> -->
+<!--             <exclusion> -->
+<!--                 <groupId>asm</groupId> -->
+<!--                 <artifactId>asm-attrs</artifactId> -->
+<!--             </exclusion> -->
+<!--         </exclusions> -->
+ 
+        						</plugin>
+					</reportPlugins>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 	<issueManagement>
@@ -206,55 +307,6 @@
 		<system>Travis CI</system>
 		<url>https://travis-ci.org/mitreid-connect/OpenID-Connect-Java-Spring-Server</url>
 	</ciManagement>
-
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.9</version>
-				<configuration>
-					<author>true</author>
-					<version>true</version>
-					<use>true</use>
-					<linksource>true</linksource>
-					<windowtitle>MITREid Connect v. ${project.version}</windowtitle>
-					<doctitle>MITREid Connect v. ${project.version}</doctitle>
-					<overview>${basedir}/src/main/javadoc/overview.html</overview>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>2.10</version>
-				<configuration>
-					<configLocation>checkstyle.xml</configLocation>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<junitArtifactName>junit:junit</junitArtifactName>
-					<excludes>
-						<exclude>**/*_Roo_*</exclude>
-					</excludes>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>cobertura-maven-plugin</artifactId>
-				<version>2.5.2</version>
-				<configuration>
-					<formats>
-						<format>html</format>
-						<format>xml</format>
-					</formats>
-				</configuration>
-			</plugin>
-		</plugins>
-	</reporting>
-
 
 	<dependencyManagement>
 		<dependencies>
@@ -292,7 +344,7 @@
 				<artifactId>spring-security-oauth2</artifactId>
 				<version>2.0.3.RELEASE</version>
 			</dependency>
-			
+
 			<!-- Servlet -->
 			<dependency>
 				<groupId>javax.servlet</groupId>
@@ -412,6 +464,13 @@
 				<version>1.9.5</version>
 				<scope>test</scope>
 			</dependency>
+			<dependency>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>cobertura-maven-plugin</artifactId>
+				<version>2.7</version>
+				<scope>test</scope>
+				<type>maven-plugin</type>
+			</dependency>
 
 			<!-- MITREid Connect components -->
 			<dependency>
@@ -481,9 +540,9 @@
 				<version>4.3</version>
 			</dependency>
 			<dependency>
-			    <groupId>org.bouncycastle</groupId>
-			    <artifactId>bcprov-jdk15on</artifactId>
-			    <version>[1.52,)</version>
+				<groupId>org.bouncycastle</groupId>
+				<artifactId>bcprov-jdk15on</artifactId>
+				<version>[1.52,)</version>
 			</dependency>
 			<dependency>
 				<groupId>org.eclipse.persistence</groupId>
@@ -532,6 +591,11 @@
 		<dependency>
 			<groupId>javax.servlet.jsp</groupId>
 			<artifactId>jsp-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.mojo</groupId>
+			<artifactId>cobertura-maven-plugin</artifactId>
+			<type>maven-plugin</type>
 		</dependency>
 	</dependencies>
 
