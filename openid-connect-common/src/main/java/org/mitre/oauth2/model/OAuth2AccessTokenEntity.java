@@ -93,7 +93,7 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	public static final String PARAM_DATE = "date";
 	public static final String PARAM_RESOURCE_SET_ID = "rsid";
 
-	public static String ID_TOKEN_FIELD_NAME = "id_token";
+	public static final String ID_TOKEN_FIELD_NAME = "id_token";
 
 	private Long id;
 
