@@ -31,7 +31,7 @@ import org.mitre.jwt.signer.service.impl.SymmetricKeyJWTValidatorCacheService;
 import org.mitre.oauth2.model.AuthenticationHolderEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
-import org.mitre.oauth2.repository.AuthenticationHolderRepository;
+import org.mitre.oauth2.service.AuthenticationHolderEntityService;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
 import org.mitre.oauth2.service.SystemScopeService;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
@@ -41,7 +41,6 @@ import org.mitre.openid.connect.web.AuthenticationTimeStamper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
@@ -79,7 +78,7 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 	private JWTSigningAndValidationService jwtService;
 
 	@Autowired
-	private AuthenticationHolderRepository authenticationHolderRepository;
+	private AuthenticationHolderEntityService authenticationHolderService;
 
 	@Autowired
 	private ConfigurationPropertiesBean configBean;
@@ -279,9 +278,8 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 		token.setClient(client);
 		token.setScope(scope);
 
-		AuthenticationHolderEntity authHolder = new AuthenticationHolderEntity();
-		authHolder.setAuthentication(authentication);
-		authHolder = authenticationHolderRepository.save(authHolder);
+		AuthenticationHolderEntity authHolder = authenticationHolderService.create(authentication);	
+		
 		token.setAuthenticationHolder(authHolder);
 
 		JWTClaimsSet claims = new JWTClaimsSet.Builder()
@@ -336,16 +334,10 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 	/**
 	 * @return the authenticationHolderRepository
 	 */
-	public AuthenticationHolderRepository getAuthenticationHolderRepository() {
-		return authenticationHolderRepository;
+	public AuthenticationHolderEntityService getAuthenticationHolderService() {
+		return authenticationHolderService;
 	}
 
-	/**
-	 * @param authenticationHolderRepository the authenticationHolderRepository to set
-	 */
-	public void setAuthenticationHolderRepository(
-			AuthenticationHolderRepository authenticationHolderRepository) {
-		this.authenticationHolderRepository = authenticationHolderRepository;
-	}
+	
 
 }

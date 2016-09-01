@@ -39,8 +39,8 @@ import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
 import org.mitre.oauth2.model.PKCEAlgorithm;
 import org.mitre.oauth2.model.SystemScope;
-import org.mitre.oauth2.repository.AuthenticationHolderRepository;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
+import org.mitre.oauth2.service.AuthenticationHolderEntityService;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
 import org.mitre.oauth2.service.SystemScopeService;
@@ -83,7 +83,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	private OAuth2TokenRepository tokenRepository;
 
 	@Autowired
-	private AuthenticationHolderRepository authenticationHolderRepository;
+	private AuthenticationHolderEntityService authenticationHolderService;
 
 	@Autowired
 	private ClientDetailsEntityService clientDetailsService;
@@ -237,9 +237,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 			}
 
 			// attach the authorization so that we can look it up later
-			AuthenticationHolderEntity authHolder = new AuthenticationHolderEntity();
-			authHolder.setAuthentication(authentication);
-			authHolder = authenticationHolderRepository.save(authHolder);
+			AuthenticationHolderEntity authHolder = authenticationHolderService.create(authentication);
 
 			token.setAuthenticationHolder(authHolder);
 
@@ -524,7 +522,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 			logger.info("Found " + authHolders.size() + " orphaned authentication holders");
 		}
 		for(AuthenticationHolderEntity authHolder : authHolders) {
-			authenticationHolderRepository.remove(authHolder);
+		  authenticationHolderService.remove(authHolder);
 		}
 	}
 
@@ -537,7 +535,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	}
 
 	private Collection<AuthenticationHolderEntity> getOrphanedAuthenticationHolders() {
-		return Sets.newHashSet(authenticationHolderRepository.getOrphanedAuthenticationHolders());
+		return Sets.newHashSet(authenticationHolderService.getOrphanedAuthenticationHolders());
 	}
 
 	/* (non-Javadoc)

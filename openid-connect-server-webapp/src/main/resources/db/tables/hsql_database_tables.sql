@@ -96,6 +96,13 @@ CREATE TABLE IF NOT EXISTS saved_user_auth_authority (
 	authority VARCHAR(256)
 );
 
+CREATE TABLE IF NOT EXISTS saved_user_auth_info (
+  owner_id BIGINT,
+  info_key VARCHAR(256),
+  info_val VARCHAR(256),
+  UNIQUE(owner_id,info_key)
+);
+
 CREATE TABLE IF NOT EXISTS client_authority (
 	owner_id BIGINT,
 	authority VARCHAR(256)

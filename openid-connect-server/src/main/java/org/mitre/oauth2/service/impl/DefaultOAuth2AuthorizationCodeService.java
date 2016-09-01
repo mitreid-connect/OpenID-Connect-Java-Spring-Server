@@ -24,8 +24,8 @@ import java.util.Date;
 
 import org.mitre.oauth2.model.AuthenticationHolderEntity;
 import org.mitre.oauth2.model.AuthorizationCodeEntity;
-import org.mitre.oauth2.repository.AuthenticationHolderRepository;
 import org.mitre.oauth2.repository.AuthorizationCodeRepository;
+import org.mitre.oauth2.service.AuthenticationHolderEntityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +51,7 @@ public class DefaultOAuth2AuthorizationCodeService implements AuthorizationCodeS
 	private AuthorizationCodeRepository repository;
 
 	@Autowired
-	private AuthenticationHolderRepository authenticationHolderRepository;
+	private AuthenticationHolderEntityService authenticationHolderService;
 
 	private int authCodeExpirationSeconds = 60 * 5; // expire in 5 minutes by default
 
@@ -70,9 +70,7 @@ public class DefaultOAuth2AuthorizationCodeService implements AuthorizationCodeS
 		String code = generator.generate();
 
 		// attach the authorization so that we can look it up later
-		AuthenticationHolderEntity authHolder = new AuthenticationHolderEntity();
-		authHolder.setAuthentication(authentication);
-		authHolder = authenticationHolderRepository.save(authHolder);
+		AuthenticationHolderEntity authHolder = authenticationHolderService.create(authentication);
 
 		// set the auth code to expire
 		Date expiration = new Date(System.currentTimeMillis() + (getAuthCodeExpirationSeconds() * 1000L));

@@ -16,6 +16,17 @@
  *******************************************************************************/
 package org.mitre.oauth2.service.impl;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.when;
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -28,8 +39,8 @@ import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
 import org.mitre.oauth2.model.SystemScope;
-import org.mitre.oauth2.repository.AuthenticationHolderRepository;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
+import org.mitre.oauth2.service.AuthenticationHolderEntityService;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.SystemScopeService;
 import org.mockito.AdditionalAnswers;
@@ -50,19 +61,6 @@ import org.springframework.security.oauth2.provider.TokenRequest;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 
 import com.google.common.collect.Sets;
-
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
-
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.when;
-
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 /**
  * @author wkim
@@ -95,7 +93,7 @@ public class TestDefaultOAuth2ProviderTokenService {
 	private OAuth2TokenRepository tokenRepository;
 
 	@Mock
-	private AuthenticationHolderRepository authenticationHolderRepository;
+	private AuthenticationHolderEntityService authenticationHolderService;
 
 	@Mock
 	private ClientDetailsEntityService clientDetailsService;
@@ -114,7 +112,7 @@ public class TestDefaultOAuth2ProviderTokenService {
 	 */
 	@Before
 	public void prepare() {
-		Mockito.reset(tokenRepository, authenticationHolderRepository, clientDetailsService, tokenEnhancer);
+		Mockito.reset(tokenRepository, authenticationHolderService, clientDetailsService, tokenEnhancer);
 
 
 
@@ -153,7 +151,7 @@ public class TestDefaultOAuth2ProviderTokenService {
 		Mockito.when(storedAuthHolder.getAuthentication()).thenReturn(storedAuthentication);
 		Mockito.when(storedAuthentication.getOAuth2Request()).thenReturn(storedAuthRequest);
 
-		Mockito.when(authenticationHolderRepository.save(Matchers.any(AuthenticationHolderEntity.class))).thenReturn(storedAuthHolder);
+		Mockito.when(authenticationHolderService.create(Matchers.any(OAuth2Authentication.class))).thenReturn(storedAuthHolder);
 
 		Mockito.when(scopeService.fromStrings(Matchers.anySet())).thenAnswer(new Answer<Set<SystemScope>>() {
 			@Override
@@ -260,7 +258,7 @@ public class TestDefaultOAuth2ProviderTokenService {
 		OAuth2AccessTokenEntity token = service.createAccessToken(authentication);
 
 		Mockito.verify(clientDetailsService).loadClientByClientId(Matchers.anyString());
-		Mockito.verify(authenticationHolderRepository).save(Matchers.any(AuthenticationHolderEntity.class));
+		Mockito.verify(authenticationHolderService).create(Matchers.any(OAuth2Authentication.class));
 		Mockito.verify(tokenEnhancer).enhance(Matchers.any(OAuth2AccessTokenEntity.class), Matchers.eq(authentication));
 		Mockito.verify(tokenRepository).saveAccessToken(Matchers.any(OAuth2AccessTokenEntity.class));
 		Mockito.verify(scopeService, Mockito.atLeastOnce()).removeReservedScopes(Matchers.anySet());
@@ -344,12 +342,12 @@ public class TestDefaultOAuth2ProviderTokenService {
 		AuthenticationHolderEntity authHolder = Mockito.mock(AuthenticationHolderEntity.class);
 		Mockito.when(authHolder.getAuthentication()).thenReturn(authentication);
 
-		Mockito.when(authenticationHolderRepository.save(Matchers.any(AuthenticationHolderEntity.class))).thenReturn(authHolder);
+		Mockito.when(authenticationHolderService.create(Matchers.any(OAuth2Authentication.class))).thenReturn(authHolder);
 
 		OAuth2AccessTokenEntity token = service.createAccessToken(authentication);
 
 		assertThat(token.getAuthenticationHolder().getAuthentication(), equalTo(authentication));
-		Mockito.verify(authenticationHolderRepository).save(Matchers.any(AuthenticationHolderEntity.class));
+		Mockito.verify(authenticationHolderService).create(Matchers.any(OAuth2Authentication.class));
 		Mockito.verify(scopeService, Mockito.atLeastOnce()).removeReservedScopes(Matchers.anySet());
 
 	}
