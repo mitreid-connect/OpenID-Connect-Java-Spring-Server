@@ -74,6 +74,15 @@
 		<property name="password" value="oic" />
 	</bean>
 
+	<jdbc:initialize-database data-source="dataSource">
+		<jdbc:script location="classpath:/db/tables/psql_database_tables.sql"/>
+		<jdbc:script location="classpath:/db/tables/security-schema.sql"/>
+		<jdbc:script location="classpath:/db/tables/loading_temp_tables.sql"/>
+		<jdbc:script location="classpath:/db/psql/users.sql"/>
+		<jdbc:script location="classpath:/db/psql/clients.sql"/>
+		<jdbc:script location="classpath:/db/psql/scopes.sql"/>
+	</jdbc:initialize-database>
+
 	<bean id="jpaAdapter" class="org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter">
 		<property name="databasePlatform" value="org.eclipse.persistence.platform.database.PostgreSQLPlatform" />
 		<property name="showSql" value="true" />
