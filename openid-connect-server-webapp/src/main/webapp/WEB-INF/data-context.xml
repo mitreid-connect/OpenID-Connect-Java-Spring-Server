@@ -49,20 +49,26 @@
 
 	<!--  The following is for connecting to a MySQL database that has been initialized with 
 			src/main/resources/db/tables/mysql_database_tables.sql -->
-	<!-- 
-	<bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
-		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
-		<property name="jdbcUrl" value="jdbc:mysql://localhost/oic" />
+	<!--<bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+		<property name="driverClassName" value="com.mysql.cj.jdbc.Driver" />
+		<property name="jdbcUrl" value="jdbc:mysql://localhost:3306/oic" />
 		<property name="username" value="oic" />
-		<property name="password" value="oic" />		
+		<property name="password" value="oic" />
 	</bean>
+
+	<jdbc:initialize-database data-source="dataSource">
+		<jdbc:script location="classpath:/db/tables/mysql_database_tables.sql"/>
+		<jdbc:script location="classpath:/db/tables/security-schema.sql"/>
+		<jdbc:script location="classpath:/db/tables/loading_temp_tables.sql"/>
+		<jdbc:script location="classpath:/db/mysql/users.sql"/>
+		<jdbc:script location="classpath:/db/mysql/clients.sql"/>
+		<jdbc:script location="classpath:/db/mysql/scopes.sql"/>
+	</jdbc:initialize-database>
 
 	<bean id="jpaAdapter" class="org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter">
 		<property name="databasePlatform" value="org.eclipse.persistence.platform.database.MySQLPlatform" />
 		<property name="showSql" value="true" />
-	</bean>
-
-	-->
+	</bean> -->
 
 	<!--  The following is for connecting to a PostgreSQL database that has been initialized with
 			src/main/resources/db/tables/psql_database_tables.sql -->
