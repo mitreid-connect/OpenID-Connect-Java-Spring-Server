@@ -61,10 +61,14 @@ public class UserInfoFetcher {
 	private LoadingCache<PendingOIDCAuthenticationToken, UserInfo> cache;
 	
 	public UserInfoFetcher() {
+		this(HttpClientBuilder.create().useSystemProperties().build());
+	}
+
+	public UserInfoFetcher(HttpClient httpClient) {
 		cache = CacheBuilder.newBuilder()
 				.expireAfterWrite(1, TimeUnit.HOURS) // expires 1 hour after fetch
 				.maximumSize(100)
-				.build(new UserInfoLoader());
+				.build(new UserInfoLoader(httpClient));
 	}
 	
 	public UserInfo loadUserInfo(final PendingOIDCAuthenticationToken token) {
@@ -79,11 +83,12 @@ public class UserInfoFetcher {
 	
 	
 	private class UserInfoLoader extends CacheLoader<PendingOIDCAuthenticationToken, UserInfo> {
-		private HttpClient httpClient = HttpClientBuilder.create()
-				.useSystemProperties()
-				.build();
-		private HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
-	
+		private HttpComponentsClientHttpRequestFactory factory;
+
+		UserInfoLoader(HttpClient httpClient) {
+			this.factory = new HttpComponentsClientHttpRequestFactory(httpClient);
+		}
+
 		public UserInfo load(final PendingOIDCAuthenticationToken token) {
 	
 			ServerConfiguration serverConfiguration = token.getServerConfiguration();

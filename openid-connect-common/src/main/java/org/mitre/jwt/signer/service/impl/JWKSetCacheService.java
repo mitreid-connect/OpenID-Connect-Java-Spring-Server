@@ -68,11 +68,11 @@ public class JWKSetCacheService {
 		this.validators = CacheBuilder.newBuilder()
 				.expireAfterWrite(1, TimeUnit.HOURS) // expires 1 hour after fetch
 				.maximumSize(100)
-				.build(new JWKSetVerifierFetcher());
+				.build(new JWKSetVerifierFetcher(HttpClientBuilder.create().useSystemProperties().build()));
 		this.encrypters = CacheBuilder.newBuilder()
 				.expireAfterWrite(1, TimeUnit.HOURS) // expires 1 hour after fetch
 				.maximumSize(100)
-				.build(new JWKSetEncryptorFetcher());
+				.build(new JWKSetEncryptorFetcher(HttpClientBuilder.create().useSystemProperties().build()));
 	}
 
 	/**
@@ -104,9 +104,13 @@ public class JWKSetCacheService {
 	 *
 	 */
 	private class JWKSetVerifierFetcher extends CacheLoader<String, JWTSigningAndValidationService> {
-		private HttpClient httpClient = HttpClientBuilder.create().useSystemProperties().build();
-		private HttpComponentsClientHttpRequestFactory httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
-		private RestTemplate restTemplate = new RestTemplate(httpFactory);
+		private HttpComponentsClientHttpRequestFactory httpFactory;
+		private RestTemplate restTemplate;
+
+		JWKSetVerifierFetcher(HttpClient httpClient) {
+			this.httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
+			this.restTemplate = new RestTemplate(httpFactory);
+		}
 
 		/**
 		 * Load the JWK Set and build the appropriate signing service.
@@ -130,9 +134,14 @@ public class JWKSetCacheService {
 	 *
 	 */
 	private class JWKSetEncryptorFetcher extends CacheLoader<String, JWTEncryptionAndDecryptionService> {
-		private HttpClient httpClient = HttpClientBuilder.create().useSystemProperties().build();
-		private HttpComponentsClientHttpRequestFactory httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
-		private RestTemplate restTemplate = new RestTemplate(httpFactory);
+		private HttpComponentsClientHttpRequestFactory httpFactory;
+		private RestTemplate restTemplate;
+
+		public JWKSetEncryptorFetcher(HttpClient httpClient) {
+			this.httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
+			this.restTemplate = new RestTemplate(httpFactory);
+		}
+
 		/* (non-Javadoc)
 		 * @see com.google.common.cache.CacheLoader#load(java.lang.Object)
 		 */

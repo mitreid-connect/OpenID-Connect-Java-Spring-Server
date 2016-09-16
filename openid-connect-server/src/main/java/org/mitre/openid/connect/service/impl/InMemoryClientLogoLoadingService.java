@@ -48,17 +48,20 @@ import com.google.common.util.concurrent.UncheckedExecutionException;
 public class InMemoryClientLogoLoadingService implements ClientLogoLoadingService {
 
 	private LoadingCache<ClientDetailsEntity, CachedImage> cache;
-	
-	
+
+	public InMemoryClientLogoLoadingService() {
+		this(HttpClientBuilder.create().useSystemProperties().build());
+	}
+
 	/**
 	 * 
 	 */
-	public InMemoryClientLogoLoadingService() {
+	public InMemoryClientLogoLoadingService(HttpClient httpClient) {
 		
 		cache = CacheBuilder.newBuilder()
 				.maximumSize(100)
 				.expireAfterAccess(14, TimeUnit.DAYS)
-				.build(new ClientLogoFetcher());
+				.build(new ClientLogoFetcher(httpClient));
 		
 	}
 	
@@ -84,8 +87,15 @@ public class InMemoryClientLogoLoadingService implements ClientLogoLoadingServic
 	 *
 	 */
 	public class ClientLogoFetcher extends CacheLoader<ClientDetailsEntity, CachedImage> {
-		private HttpClient httpClient = HttpClientBuilder.create().useSystemProperties().build();
-		private HttpComponentsClientHttpRequestFactory httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
+		private HttpClient httpClient;
+
+		public ClientLogoFetcher() {
+			this(HttpClientBuilder.create().useSystemProperties().build());
+		}
+
+		public ClientLogoFetcher(HttpClient httpClient) {
+			this.httpClient = httpClient;
+		}
 
 		/* (non-Javadoc)
 		 * @see com.google.common.cache.CacheLoader#load(java.lang.Object)
