@@ -73,10 +73,15 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 	private boolean cacheNonExpiringTokens = false;
 	private boolean cacheTokens = true;
 
-	private HttpClient httpClient = HttpClientBuilder.create()
-			.useSystemProperties()
-			.build();
-	private HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
+	private HttpComponentsClientHttpRequestFactory factory;
+
+	public IntrospectingTokenService() {
+		this(HttpClientBuilder.create().useSystemProperties().build());
+	}
+
+	public IntrospectingTokenService(HttpClient httpClient) {
+		this.factory = new HttpComponentsClientHttpRequestFactory(httpClient);
+	}
 
 	// Inner class to store in the hash map
 	private class TokenCacheObject {

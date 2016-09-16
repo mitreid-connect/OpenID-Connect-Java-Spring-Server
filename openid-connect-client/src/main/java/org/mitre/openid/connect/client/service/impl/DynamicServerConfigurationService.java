@@ -69,8 +69,12 @@ public class DynamicServerConfigurationService implements ServerConfigurationSer
 	private Set<String> blacklist = new HashSet<>();
 
 	public DynamicServerConfigurationService() {
+		this(HttpClientBuilder.create().useSystemProperties().build());
+	}
+
+	public DynamicServerConfigurationService(HttpClient httpClient) {
 		// initialize the cache
-		servers = CacheBuilder.newBuilder().build(new OpenIDConnectServiceConfigurationFetcher());
+		servers = CacheBuilder.newBuilder().build(new OpenIDConnectServiceConfigurationFetcher(httpClient));
 	}
 
 	/**
@@ -126,11 +130,12 @@ public class DynamicServerConfigurationService implements ServerConfigurationSer
 	 *
 	 */
 	private class OpenIDConnectServiceConfigurationFetcher extends CacheLoader<String, ServerConfiguration> {
-		private HttpClient httpClient = HttpClientBuilder.create()
-				.useSystemProperties()
-				.build();
-		private HttpComponentsClientHttpRequestFactory httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
+		private HttpComponentsClientHttpRequestFactory httpFactory;
 		private JsonParser parser = new JsonParser();
+
+        OpenIDConnectServiceConfigurationFetcher(HttpClient httpClient) {
+            this.httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
+        }
 
 		@Override
 		public ServerConfiguration load(String issuer) throws Exception {

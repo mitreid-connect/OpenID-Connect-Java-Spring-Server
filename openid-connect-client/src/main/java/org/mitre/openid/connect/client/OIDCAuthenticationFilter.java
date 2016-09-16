@@ -119,6 +119,8 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 	@Autowired(required=false)
 	private JWTSigningAndValidationService authenticationSignerService;
 
+	@Autowired(required=false)
+	private HttpClient httpClient;
 
 	/*
 	 * Modular services to build out client filter.
@@ -341,14 +343,14 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 
 		// Handle Token Endpoint interaction
 
-		HttpClient httpClient = HttpClientBuilder.create()
-				.useSystemProperties()
-				.setDefaultRequestConfig(
-						RequestConfig.custom()
-						.setSocketTimeout(httpSocketTimeout)
-						.build()
-						)
-						.build();
+		if(httpClient == null) {
+			httpClient = HttpClientBuilder.create()
+										  .useSystemProperties()
+										  .setDefaultRequestConfig(RequestConfig.custom()
+																				.setSocketTimeout(httpSocketTimeout)
+																				.build())
+										  .build();
+		}
 
 		HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
 

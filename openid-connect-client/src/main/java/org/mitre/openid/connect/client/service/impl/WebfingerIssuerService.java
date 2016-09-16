@@ -94,7 +94,11 @@ public class WebfingerIssuerService implements IssuerService {
 	private boolean forceHttps = true;
 
 	public WebfingerIssuerService() {
-		issuers = CacheBuilder.newBuilder().build(new WebfingerIssuerFetcher());
+		this(HttpClientBuilder.create().useSystemProperties().build());
+	}
+
+	public WebfingerIssuerService(HttpClient httpClient) {
+		issuers = CacheBuilder.newBuilder().build(new WebfingerIssuerFetcher(httpClient));
 	}
 
 	/* (non-Javadoc)
@@ -203,11 +207,12 @@ public class WebfingerIssuerService implements IssuerService {
 	 *
 	 */
 	private class WebfingerIssuerFetcher extends CacheLoader<String, LoadingResult> {
-		private HttpClient httpClient = HttpClientBuilder.create()
-				.useSystemProperties()
-				.build();
-		private HttpComponentsClientHttpRequestFactory httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
+		private HttpComponentsClientHttpRequestFactory httpFactory;
 		private JsonParser parser = new JsonParser();
+
+		WebfingerIssuerFetcher(HttpClient httpClient) {
+			this.httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
+		}
 
 		@Override
 		public LoadingResult load(String identifier) throws Exception {
