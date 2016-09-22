@@ -42,6 +42,7 @@ import org.mitre.uma.model.Claim;
 import org.mitre.uma.model.ClaimProcessingResult;
 import org.mitre.uma.model.Permission;
 import org.mitre.uma.model.PermissionTicket;
+import org.mitre.uma.model.PersistedClaimsToken;
 import org.mitre.uma.model.ResourceSet;
 import org.mitre.uma.service.ClaimsProcessingService;
 import org.mitre.uma.service.PermissionService;
@@ -134,6 +135,12 @@ public class RequestingPartyTokenGranter extends AbstractTokenGranter {
 		if (!Strings.isNullOrEmpty(rptValue)) {
 			incomingRpt = tokenService.readAccessToken(rptValue);
 		}
+		
+		String pctValue = tokenRequest.getRequestParameters().get("pct");
+		PersistedClaimsToken pct = null;
+		if (!Strings.isNullOrEmpty(pctValue)) {
+			pct = umaTokenService.getPersistedClaimsTokenByValue(pctValue);
+		}
 
 		if (ticket != null) {
 			// found the ticket, see if it's any good
@@ -147,7 +154,7 @@ public class RequestingPartyTokenGranter extends AbstractTokenGranter {
 			} else {
 				// claims weren't empty or missing, we need to check against what we have
 
-				ClaimProcessingResult result = claimsProcessingService.claimsAreSatisfied(rs, ticket);
+				ClaimProcessingResult result = claimsProcessingService.claimsAreSatisfied(rs, ticket, pct);
 
 
 				if (result.isSatisfied()) {
@@ -236,7 +243,20 @@ public class RequestingPartyTokenGranter extends AbstractTokenGranter {
 					if (incomingRpt != null) {
 						tokenService.revokeAccessToken(incomingRpt);
 					}
+					
+					// create a PCT
+					PersistedClaimsToken newPct = new PersistedClaimsToken();
+					newPct.setClientId(client.getClientId());
+					newPct.setExpiration(null); // TODO: we'll make these not expire for now, should be configurable per-client like other token lifetimes
+					newPct.setValue(UUID.randomUUID().toString()); // make a random value
+					HashSet<Claim> claimsSupplied = new HashSet<>();
+					claimsSupplied.addAll(ticket.getClaimsSupplied());
+					if (pct != null && pct.getClaimsSupplied() != null) {
+						claimsSupplied.addAll(pct.getClaimsSupplied());
+					}
+					newPct.setClaimsSupplied(claimsSupplied);
 
+					// TODO: figure out how to return the PCT in the token response
 					return token;
 				} else {
 

@@ -32,7 +32,9 @@ import org.mitre.oauth2.service.OAuth2TokenEntityService;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.mitre.uma.model.Permission;
 import org.mitre.uma.model.PermissionTicket;
+import org.mitre.uma.model.PersistedClaimsToken;
 import org.mitre.uma.model.Policy;
+import org.mitre.uma.repository.PersistedClaimsTokenRepository;
 import org.mitre.uma.service.UmaTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -66,6 +68,9 @@ public class DefaultUmaTokenService implements UmaTokenService {
 
 	@Autowired
 	private JWTSigningAndValidationService jwtService;
+	
+	@Autowired
+	private PersistedClaimsTokenRepository pctRepository;
 
 
 	@Override
@@ -116,6 +121,25 @@ public class DefaultUmaTokenService implements UmaTokenService {
 		tokenService.saveAccessToken(token);
 
 		return token;
+	}
+
+
+	/* (non-Javadoc)
+	 * @see org.mitre.uma.service.UmaTokenService#getPersistedClaimsTokenByValue(java.lang.String)
+	 */
+	@Override
+	public PersistedClaimsToken getPersistedClaimsTokenByValue(String pctValue) {
+		return pctRepository.getByValue(pctValue);		
+	}
+
+
+	/* (non-Javadoc)
+	 * @see org.mitre.uma.service.UmaTokenService#savePersistedClaimsToken(org.mitre.uma.model.PersistedClaimsToken)
+	 */
+	@Override
+	public PersistedClaimsToken savePersistedClaimsToken(PersistedClaimsToken pct) {
+		return pctRepository.save(pct);
+		
 	}
 
 }

@@ -23,6 +23,7 @@ import java.util.HashSet;
 import org.mitre.uma.model.Claim;
 import org.mitre.uma.model.ClaimProcessingResult;
 import org.mitre.uma.model.PermissionTicket;
+import org.mitre.uma.model.PersistedClaimsToken;
 import org.mitre.uma.model.Policy;
 import org.mitre.uma.model.ResourceSet;
 import org.mitre.uma.service.ClaimsProcessingService;
@@ -42,10 +43,15 @@ public class MatchAllClaimsOnAnyPolicy implements ClaimsProcessingService {
 	 * @see org.mitre.uma.service.ClaimsProcessingService#claimsAreSatisfied(java.util.Collection, java.util.Collection)
 	 */
 	@Override
-	public ClaimProcessingResult claimsAreSatisfied(ResourceSet rs, PermissionTicket ticket) {
+	public ClaimProcessingResult claimsAreSatisfied(ResourceSet rs, PermissionTicket ticket, PersistedClaimsToken pct) {
 		Collection<Claim> allUnmatched = new HashSet<>();
+		Collection<Claim> claimsSupplied = new HashSet<>(ticket.getClaimsSupplied()); // copy the claims out of the ticket
+		if (pct != null && pct.getClaimsSupplied() != null) {
+			// add the claims from the PCT if available
+			claimsSupplied.addAll(pct.getClaimsSupplied());
+		}
 		for (Policy policy : rs.getPolicies()) {
-			Collection<Claim> unmatched = checkIndividualClaims(policy.getClaimsRequired(), ticket.getClaimsSupplied());
+			Collection<Claim> unmatched = checkIndividualClaims(policy.getClaimsRequired(), claimsSupplied);
 			if (unmatched.isEmpty()) {
 				// we found something that's satisfied the claims, let's go with it!
 				return new ClaimProcessingResult(policy);

@@ -15,34 +15,27 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.mitre.uma.service;
+package org.mitre.uma.repository;
 
-import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
-import org.mitre.uma.model.PermissionTicket;
 import org.mitre.uma.model.PersistedClaimsToken;
-import org.mitre.uma.model.Policy;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
 
 /**
- * Service to create special tokens for UMA.
- * 
  * @author jricher
  *
  */
-public interface UmaTokenService {
-
-	/**
-	 * Create the RPT from the given authentication and ticket.
-	 * 
-	 */
-	public OAuth2AccessTokenEntity createRequestingPartyToken(OAuth2Authentication o2auth, PermissionTicket ticket, Policy policy);
+public interface PersistedClaimsTokenRepository {
 
 	/**
 	 * @param pctValue
 	 * @return
 	 */
-	public PersistedClaimsToken getPersistedClaimsTokenByValue(String pctValue);
-	
-	public PersistedClaimsToken savePersistedClaimsToken(PersistedClaimsToken pct);
+	PersistedClaimsToken getByValue(String pctValue);
+
+	/**
+	 * @param pct
+	 * @return
+	 */
+	PersistedClaimsToken save(PersistedClaimsToken pct);
 
 }
+
