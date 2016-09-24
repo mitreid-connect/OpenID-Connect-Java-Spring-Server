@@ -381,9 +381,9 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 				JWSAlgorithm alg = clientConfig.getTokenEndpointAuthSigningAlg();
 
 				if (SECRET_JWT.equals(clientConfig.getTokenEndpointAuthMethod()) &&
-						(alg.equals(JWSAlgorithm.HS256)
-								|| alg.equals(JWSAlgorithm.HS384)
-								|| alg.equals(JWSAlgorithm.HS512))) {
+						(JWSAlgorithm.HS256.equals(alg)
+								|| JWSAlgorithm.HS384.equals(alg)
+								|| JWSAlgorithm.HS512.equals(alg))) {
 
 					// generate one based on client secret
 					signer = symmetricCacheService.getSymmetricValidtor(clientConfig.getClient());
