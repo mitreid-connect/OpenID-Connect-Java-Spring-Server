@@ -19,7 +19,6 @@ package org.mitre.uma.service;
 
 import org.mitre.uma.model.ClaimProcessingResult;
 import org.mitre.uma.model.PermissionTicket;
-import org.mitre.uma.model.PersistedClaimsToken;
 import org.mitre.uma.model.ResourceSet;
 
 /**
@@ -41,6 +40,6 @@ public interface ClaimsProcessingService {
 	 * @param ticket the supplied claims to test
 	 * @return the result of the claims processing action
 	 */
-	public ClaimProcessingResult claimsAreSatisfied(ResourceSet rs, PermissionTicket ticket, PersistedClaimsToken pct);
+	public ClaimProcessingResult claimsAreSatisfied(ResourceSet rs, PermissionTicket ticket);
 
 }

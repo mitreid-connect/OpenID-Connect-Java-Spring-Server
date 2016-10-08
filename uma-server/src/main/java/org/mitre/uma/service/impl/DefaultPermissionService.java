@@ -94,6 +94,14 @@ public class DefaultPermissionService implements PermissionService {
 
 	}
 
+	/* (non-Javadoc)
+	 * @see org.mitre.uma.service.PermissionService#removeTicket(org.mitre.uma.model.PermissionTicket)
+	 */
+	@Override
+	public void removeTicket(PermissionTicket ticket) {
+		repository.remove(ticket);
+	}
+
 
 
 }

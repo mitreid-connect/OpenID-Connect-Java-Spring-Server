@@ -55,4 +55,9 @@ public interface PermissionService {
 	 */
 	public PermissionTicket updateTicket(PermissionTicket ticket);
 
+	/**
+	 * @param ticket
+	 */
+	public void removeTicket(PermissionTicket ticket);
+
 }

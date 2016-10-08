@@ -43,7 +43,7 @@ public class UmaDiscoveryEndpoint {
 	@Autowired
 	private ConfigurationPropertiesBean config;
 
-	@RequestMapping(".well-known/multiparty-delegation-configuration")
+	@RequestMapping(".well-known/uma2-configuration")
 	public String umaConfiguration(Model model) {
 
 		Map<String, Object> m = new HashMap<>();

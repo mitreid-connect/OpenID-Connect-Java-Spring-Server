@@ -17,6 +17,7 @@
 
 package org.mitre.uma.token;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -153,8 +154,15 @@ public class RequestingPartyTokenGranter extends AbstractTokenGranter {
 				throw new NotAuthorizedException();
 			} else {
 				// claims weren't empty or missing, we need to check against what we have
+				
+				if (pct != null && pct.getClaimsSupplied() != null) {
+					// add the claims from the PCT if available
+					Collection<Claim> claimsSupplied = new HashSet<>(ticket.getClaimsSupplied()); // copy the claims out of the ticket
+					claimsSupplied.addAll(pct.getClaimsSupplied());
+					ticket.setClaimsSupplied(claimsSupplied);
+				}
 
-				ClaimProcessingResult result = claimsProcessingService.claimsAreSatisfied(rs, ticket, pct);
+				ClaimProcessingResult result = claimsProcessingService.claimsAreSatisfied(rs, ticket);
 
 
 				if (result.isSatisfied()) {
@@ -243,6 +251,9 @@ public class RequestingPartyTokenGranter extends AbstractTokenGranter {
 					if (incomingRpt != null) {
 						tokenService.revokeAccessToken(incomingRpt);
 					}
+					
+					// remove our ticket because it shouldn't be used again
+					permissionService.removeTicket(ticket);
 					
 					// create a PCT
 					PersistedClaimsToken newPct = new PersistedClaimsToken();
