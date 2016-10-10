@@ -101,6 +101,7 @@ public class ClaimsCollectionEndpoint {
 		session.setAttribute(TICKET, ticket);
 		session.setAttribute(CLIENT, client);
 		session.setAttribute(REDIRECT_URI, redirectUri);
+		session.setAttribute(STATE, state);
 		
 		return "redirect:" + URL + "/collect";
 	}
