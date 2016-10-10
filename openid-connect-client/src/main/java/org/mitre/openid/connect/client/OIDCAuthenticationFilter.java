@@ -759,7 +759,9 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 			if (!Strings.isNullOrEmpty(target)) {
 				session.removeAttribute(TARGET_SESSION_VARIABLE);
 
-				target = deepLinkFilter.filter(target);
+				if (deepLinkFilter != null) {
+					target = deepLinkFilter.filter(target);
+				}
 
 				response.sendRedirect(target);
 			} else {
