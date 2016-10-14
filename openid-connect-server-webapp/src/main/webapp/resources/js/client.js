@@ -586,7 +586,7 @@ var ClientFormView = Backbone.View.extend({
         this.redirectUrisCollection = new Backbone.Collection();
         this.scopeCollection = new Backbone.Collection();
         this.contactsCollection = new Backbone.Collection();
-        this.defaultAcrValuesCollection = new Backbone.Collection();
+        this.defaultACRvaluesCollection = new Backbone.Collection();
         this.requestUrisCollection = new Backbone.Collection();
         this.postLogoutRedirectUrisCollection = new Backbone.Collection();
         this.claimsRedirectUrisCollection = new Backbone.Collection();
@@ -949,7 +949,7 @@ var ClientFormView = Backbone.View.extend({
             defaultMaxAge: parseInt($('#defaultMaxAge input').val()),
             contacts: this.contactsCollection.pluck('item'),
             requestUris: this.requestUrisCollection.pluck('item'),
-            defaultAcrValues: this.defaultAcrValuesCollection.pluck('item'),
+            defaultACRvalues: this.defaultACRvaluesCollection.pluck('item'),
             requestObjectSigningAlg: this.defaultToNull($('#requestObjectSigningAlg select').val()),
             userInfoSignedResponseAlg: this.defaultToNull($('#userInfoSignedResponseAlg select').val()),
             userInfoEncryptedResponseAlg: this.defaultToNull($('#userInfoEncryptedResponseAlg select').val()),
@@ -1109,15 +1109,15 @@ var ClientFormView = Backbone.View.extend({
         this.listWidgetViews.push(requestUriView);
         
         // build and bind default ACR values
-        _.each(this.model.get('defaultAcrValues'), function (defaultAcrValue) {
-        	_self.defaultAcrValuesCollection.add(new Backbone.Model({item:defaultAcrValue}));
+        _.each(this.model.get('defaultACRvalues'), function (defaultACRvalue) {
+        	_self.defaultACRvaluesCollection.add(new Backbone.Model({item:defaultACRvalue}));
         });
         
         var defaultAcrView = new ListWidgetView({
         	placeholder: $.t('client.client-form.acr-values-placeholder'),
         	// TODO: autocomplete from spec
         	helpBlockText: $.t('client.client-form.acr-values-help'),
-        	collection: this.defaultAcrValuesCollection});
+        	collection: this.defaultACRvaluesCollection});
         $('#defaultAcrValues .controls', this.el).html(defaultAcrView.render().el);
         this.listWidgetViews.push(defaultAcrView);
         
