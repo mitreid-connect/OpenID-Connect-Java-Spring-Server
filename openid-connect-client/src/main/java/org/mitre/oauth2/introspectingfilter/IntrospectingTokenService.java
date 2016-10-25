@@ -235,8 +235,13 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 		return storedRequest;
 	}
 
-	private Authentication createAuthentication(JsonObject token) {
-		return new PreAuthenticatedAuthenticationToken(token.get("sub").getAsString(), token, introspectionAuthorityGranter.getAuthorities(token));
+	private Authentication createUserAuthentication(JsonObject token) {
+		JsonElement userId = token.get("user_id");
+		if(userId == null) {
+			return null;
+		}
+
+		return new PreAuthenticatedAuthenticationToken(userId.getAsString(), token, introspectionAuthorityGranter.getAuthorities(token));
 	}
 
 	private OAuth2AccessToken createAccessToken(final JsonObject token, final String tokenString) {
@@ -321,7 +326,7 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 				return null;
 			}
 			// create an OAuth2Authentication
-			OAuth2Authentication auth = new OAuth2Authentication(createStoredRequest(tokenResponse), createAuthentication(tokenResponse));
+			OAuth2Authentication auth = new OAuth2Authentication(createStoredRequest(tokenResponse), createUserAuthentication(tokenResponse));
 			// create an OAuth2AccessToken
 			OAuth2AccessToken token = createAccessToken(tokenResponse, accessToken);
 
