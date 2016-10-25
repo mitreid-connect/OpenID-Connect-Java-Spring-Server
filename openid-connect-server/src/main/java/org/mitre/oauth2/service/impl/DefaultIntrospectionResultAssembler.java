@@ -92,7 +92,9 @@ public class DefaultIntrospectionResultAssembler implements IntrospectionResultA
 			result.put(SUB, authentication.getName());
 		}
 
-		result.put(USER_ID, authentication.getName());
+		if(authentication.getUserAuthentication() != null) {
+			result.put(USER_ID, authentication.getUserAuthentication().getName());
+		}
 
 		result.put(CLIENT_ID, authentication.getOAuth2Request().getClientId());
 
@@ -131,7 +133,9 @@ public class DefaultIntrospectionResultAssembler implements IntrospectionResultA
 			result.put(SUB, authentication.getName());
 		}
 
-		result.put(USER_ID, authentication.getName());
+		if(authentication.getUserAuthentication() != null) {
+			result.put(USER_ID, authentication.getUserAuthentication().getName());
+		}
 
 		result.put(CLIENT_ID, authentication.getOAuth2Request().getClientId());
 
