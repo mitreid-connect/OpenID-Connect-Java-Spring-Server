@@ -179,6 +179,31 @@ public class TestDefaultIntrospectionResultAssembler {
 	}
 
 	@Test
+    public void shouldAssembleExpectedResultForAccessTokenWithoutUserAuthentication() throws ParseException {
+        // given
+        OAuth2AccessTokenEntity accessToken = accessToken(new Date(123 * 1000L), scopes("foo", "bar"), null, "Bearer",
+                oauth2Authentication(oauth2Request("clientId"), null));
+
+        Set<String> authScopes = scopes("foo", "bar", "baz");
+
+        // when
+        Map<String, Object> result = assembler.assembleFrom(accessToken, null, authScopes);
+
+
+        // then `user_id` should not be present
+        Map<String, Object> expected = new ImmutableMap.Builder<String, Object>()
+                .put("sub", "clientId")
+                .put("exp", 123L)
+                .put("expires_at", dateFormat.valueToString(new Date(123 * 1000L)))
+                .put("scope", "bar foo")
+                .put("active", Boolean.TRUE)
+                .put("client_id", "clientId")
+                .put("token_type", "Bearer")
+                .build();
+        assertThat(result, is(equalTo(expected)));
+    }
+
+	@Test
 	public void shouldAssembleExpectedResultForRefreshToken() throws ParseException {
 
 		// given
@@ -257,6 +282,30 @@ public class TestDefaultIntrospectionResultAssembler {
 				.build();
 		assertThat(result, is(equalTo(expected)));
 	}
+
+    @Test
+    public void shouldAssembleExpectedResultForRefreshTokenWithoutUserAuthentication() throws ParseException {
+        // given
+        OAuth2RefreshTokenEntity refreshToken = refreshToken(null,
+                oauth2Authentication(oauth2Request("clientId", scopes("foo",  "bar")), null));
+
+        Set<String> authScopes = scopes("foo", "bar", "baz");
+
+        // when
+        Map<String, Object> result = assembler.assembleFrom(refreshToken, null, authScopes);
+
+
+        // then `user_id` should not be present
+        Map<String, Object> expected = new ImmutableMap.Builder<String, Object>()
+                .put("sub", "clientId")
+                .put("scope", "bar foo")
+                .put("active", Boolean.TRUE)
+                .put("client_id", "clientId")
+                .build();
+        assertThat(result, is(equalTo(expected)));
+    }
+
+
 
 	private UserInfo userInfo(String sub) {
 		UserInfo userInfo = mock(UserInfo.class);
