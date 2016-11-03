@@ -94,4 +94,29 @@
 		<property name="showSql" value="true" />
 	</bean>
 	-->
+
+	<!--  The following is for connecting to a Oracle database that has been initialized with
+			src/main/resources/db/tables/oracle_database_tables.sql -->
+	<!--<bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+		<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
+		<property name="jdbcUrl" value="jdbc:oracle:thin:@localhost:1521:XE" />
+		<property name="username" value="oic" />
+		<property name="password" value="oic" />
+	</bean>-->
+
+	<!-- Use the following to set up the OIC tables in the Oracle DB
+		   Below scripts are intended to be run once at startup. -->
+	<!--<jdbc:initialize-database data-source="dataSource">
+		<jdbc:script location="classpath:/db/tables/oracle_database_tables.sql"/>
+		<jdbc:script location="classpath:/db/tables/security-schema_oracle.sql"/>
+		<jdbc:script location="classpath:/db/tables/loading_temp_tables_oracle.sql"/>
+		<jdbc:script location="classpath:/db/users_oracle.sql"/>
+		<jdbc:script location="classpath:/db/clients_oracle.sql"/>
+		<jdbc:script location="classpath:/db/scopes_oracle.sql"/>
+	</jdbc:initialize-database>-->
+
+	<!--<bean id="jpaAdapter" class="org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter">
+		<property name="databasePlatform" value="org.eclipse.persistence.platform.database.OraclePlatform" />
+		<property name="showSql" value="true" />
+	</bean>-->
 </beans>
