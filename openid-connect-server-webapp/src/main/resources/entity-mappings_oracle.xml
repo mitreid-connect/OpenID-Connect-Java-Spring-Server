@@ -1,0 +1,266 @@
+<entity-mappings xmlns="http://xmlns.jcp.org/xml/ns/persistence/orm"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence/orm http://xmlns.jcp.org/xml/ns/persistence/orm_2_0.xsd"
+                 version="2.1">
+
+    <description>OpenID Connect Server entities</description>
+
+    <entity class="org.mitre.oauth2.model.AuthenticationHolderEntity" name="AuthenticationHolderEntity">
+        <attributes>
+            <!-- changing generated value to sequence strategy (Oracle doesn't support identity) -->
+            <id name="id">
+                <generated-value strategy="SEQUENCE" generator="AuthenticationHolderSequenceGenerator"/>
+                <sequence-generator name="AuthenticationHolderSequenceGenerator" sequence-name="authentication_holder_seq" allocation-size="1"/>
+                <column name="id"/>
+            </id>
+            <!-- table name too long: authentication_holder_authority -->
+            <element-collection fetch="EAGER" name="authorities">
+                <collection-table name="auth_holder_authority">
+                    <join-column name="owner_id"/>
+                </collection-table>
+                <convert converter="org.mitre.oauth2.model.convert.SimpleGrantedAuthorityStringConverter"/>
+                <column name="authority"/>
+            </element-collection>
+            <!-- table name too long: authentication_holder_resource_id -->
+            <element-collection fetch="EAGER" name="resourceIds">
+                <collection-table name="auth_holder_resource_id">
+                    <join-column name="owner_id"/>
+                </collection-table>
+                <column name="resource_id"/>
+            </element-collection>
+            <!-- table name too long: authentication_holder_response_type -->
+            <element-collection fetch="EAGER" name="responseTypes">
+                <collection-table name="auth_holder_response_type">
+                    <join-column name="owner_id"/>
+                </collection-table>
+                <column name="response_type"/>
+            </element-collection>
+            <!-- table name too long: authentication_holder_extension -->
+            <element-collection fetch="EAGER" name="extensions">
+                <collection-table name="auth_holder_extension">
+                    <join-column name="owner_id"/>
+                </collection-table>
+                <column name="val"/>
+                <map-key-column name="extension"/>
+                <convert converter="org.mitre.oauth2.model.convert.SerializableStringConverter"/>
+            </element-collection>
+            <!-- table name too long: authentication_holder_request_parameter -->
+            <element-collection fetch="EAGER" name="requestParameters">
+                <collection-table name="auth_holder_request_parameter">
+                    <join-column name="owner_id"/>
+                </collection-table>
+                <column name="val"/>
+                <map-key-column name="param"/>
+            </element-collection>
+        </attributes>
+    </entity>
+
+    <entity class="org.mitre.oauth2.model.AuthorizationCodeEntity" name="AuthorizationCodeEntity">
+        <attributes>
+            <!-- changing generated value to sequence strategy (Oracle doesn't support identity) -->
+            <id name="id">
+                <generated-value strategy="SEQUENCE" generator="AuthorizationCodeSequenceGenerator"/>
+                <sequence-generator name="AuthorizationCodeSequenceGenerator" sequence-name="authorization_code_seq" allocation-size="1"/>
+                <column name="id"/>
+            </id>
+        </attributes>
+    </entity>
+
+    <entity class="org.mitre.oauth2.model.ClientDetailsEntity" name="ClientDetailsEntity">
+        <attributes>
+            <!-- changing generated value to sequence strategy (Oracle doesn't support identity) -->
+            <id name="id">
+                <generated-value strategy="SEQUENCE" generator="ClientDetailsSequenceGenerator"/>
+                <sequence-generator name="ClientDetailsSequenceGenerator" sequence-name="client_details_seq" allocation-size="1"/>
+                <column name="id"/>
+            </id>
+            <!-- column name too long: user_info_encrypted_response_alg -->
+            <basic name="userInfoEncryptedResponseAlg">
+                <column name="user_info_encrypted_resp_alg"/>
+                <convert converter="org.mitre.oauth2.model.convert.JWEAlgorithmStringConverter"/>
+            </basic>
+            <!-- column name too long: user_info_encrypted_response_enc -->
+            <basic name="userInfoEncryptedResponseEnc">
+                <column name="user_info_encrypted_resp_enc"/>
+                <convert converter="org.mitre.oauth2.model.convert.JWEEncryptionMethodStringConverter"/>
+            </basic>
+            <!-- column name too long: id_token_encrypted_response_alg -->
+            <basic name="idTokenEncryptedResponseAlg">
+                <column name="id_token_encrypted_resp_alg"/>
+                <convert converter="org.mitre.oauth2.model.convert.JWEAlgorithmStringConverter"/>
+            </basic>
+            <!-- column name too long: id_token_encrypted_response_enc -->
+            <basic name="idTokenEncryptedResponseEnc">
+                <column name="id_token_encrypted_resp_enc"/>
+                <convert converter="org.mitre.oauth2.model.convert.JWEEncryptionMethodStringConverter"/>
+            </basic>
+            <!-- column name too long: token_endpoint_auth_signing_alg -->
+            <basic name="tokenEndpointAuthSigningAlg">
+                <column name="token_endpoint_auth_sign_alg"/>
+                <convert converter="org.mitre.oauth2.model.convert.JWSAlgorithmStringConverter"/>
+            </basic>
+            <!-- table name too long: client_post_logout_redirect_uri -->
+            <element-collection fetch="EAGER" name="postLogoutRedirectUris">
+                <collection-table name="client_post_logout_redir_uri">
+                    <join-column name="owner_id"/>
+                </collection-table>
+                <column name="post_logout_redirect_uri"/>
+            </element-collection>
+        </attributes>
+    </entity>
+
+    <entity class="org.mitre.oauth2.model.OAuth2AccessTokenEntity" name="OAuth2AccessTokenEntity">
+        <attributes>
+            <!-- changing generated value to sequence strategy (Oracle doesn't support identity) -->
+            <id name="id">
+                <generated-value strategy="SEQUENCE" generator="OAuth2AccessTokenSequenceGenerator"/>
+                <sequence-generator name="OAuth2AccessTokenSequenceGenerator" sequence-name="access_token_seq" allocation-size="1"/>
+                <column name="id"/>
+            </id>
+        </attributes>
+    </entity>
+
+    <entity class="org.mitre.oauth2.model.OAuth2RefreshTokenEntity" name="OAuth2RefreshTokenEntity">
+        <attributes>
+            <!-- changing generated value to sequence strategy (Oracle doesn't support identity) -->
+            <id name="id">
+                <generated-value strategy="SEQUENCE" generator="OAuth2RefreshTokenSequenceGenerator"/>
+                <sequence-generator name="OAuth2RefreshTokenSequenceGenerator" sequence-name="refresh_token_seq" allocation-size="1"/>
+                <column name="id"/>
+            </id>
+        </attributes>
+    </entity>
+
+    <entity class="org.mitre.oauth2.model.SavedUserAuthentication" name="SavedUserAuthentication">
+        <attributes>
+            <!-- changing generated value to sequence strategy (Oracle doesn't support identity) -->
+            <id name="id">
+                <generated-value strategy="SEQUENCE" generator="SavedUserAuthenticationSequenceGenerator"/>
+                <sequence-generator name="SavedUserAuthenticationSequenceGenerator" sequence-name="saved_user_auth_seq" allocation-size="1"/>
+                <column name="id"/>
+            </id>
+        </attributes>
+    </entity>
+
+    <entity class="org.mitre.oauth2.model.SystemScope" name="SystemScope">
+        <attributes>
+            <!-- changing generated value to sequence strategy (Oracle doesn't support identity) -->
+            <id name="id">
+                <generated-value strategy="SEQUENCE" generator="SystemScopeSequenceGenerator"/>
+                <sequence-generator name="SystemScopeSequenceGenerator" sequence-name="system_scope_seq" allocation-size="1"/>
+                <column name="id"/>
+            </id>
+        </attributes>
+    </entity>
+
+    <entity class="org.mitre.openid.connect.model.ApprovedSite" name="ApprovedSite">
+        <attributes>
+            <!-- changing generated value to sequence strategy (Oracle doesn't support identity) -->
+            <id name="id">
+                <generated-value strategy="SEQUENCE" generator="ApprovedSiteSequenceGenerator"/>
+                <sequence-generator name="ApprovedSiteSequenceGenerator" sequence-name="approved_site_seq" allocation-size="1"/>
+                <column name="id"/>
+            </id>
+        </attributes>
+    </entity>
+
+    <entity class="org.mitre.openid.connect.model.BlacklistedSite" name="BlacklistedSite">
+        <attributes>
+            <!-- changing generated value to sequence strategy (Oracle doesn't support identity) -->
+            <id name="id">
+                <generated-value strategy="SEQUENCE" generator="BlacklistedSiteSequenceGenerator"/>
+                <sequence-generator name="BlacklistedSiteSequenceGenerator" sequence-name="blacklisted_site_seq" allocation-size="1"/>
+                <column name="id"/>
+            </id>
+        </attributes>
+    </entity>
+
+    <entity class="org.mitre.openid.connect.model.PairwiseIdentifier" name="PairwiseIdentifier">
+        <attributes>
+            <!-- changing generated value to sequence strategy (Oracle doesn't support identity) -->
+            <id name="id">
+                <generated-value strategy="SEQUENCE" generator="PairwiseIdentifierSequenceGenerator"/>
+                <sequence-generator name="PairwiseIdentifierSequenceGenerator" sequence-name="pairwise_identifier_seq" allocation-size="1"/>
+                <column name="id"/>
+            </id>
+        </attributes>
+    </entity>
+
+    <entity class="org.mitre.openid.connect.model.WhitelistedSite" name="WhitelistedSite">
+        <attributes>
+            <!-- changing generated value to sequence strategy (Oracle doesn't support identity) -->
+            <id name="id">
+                <generated-value strategy="SEQUENCE" generator="WhitelistedSiteSequenceGenerator"/>
+                <sequence-generator name="WhitelistedSiteSequenceGenerator" sequence-name="whitelisted_site_seq" allocation-size="1"/>
+                <column name="id"/>
+            </id>
+        </attributes>
+    </entity>
+
+    <entity class="org.mitre.uma.model.Claim" name="Claim">
+        <attributes>
+            <!-- changing generated value to sequence strategy (Oracle doesn't support identity) -->
+            <id name="id">
+                <generated-value strategy="SEQUENCE" generator="ClaimSequenceGenerator"/>
+                <sequence-generator name="ClaimSequenceGenerator" sequence-name="claim_seq" allocation-size="1"/>
+                <column name="id"/>
+            </id>
+        </attributes>
+    </entity>
+
+    <entity class="org.mitre.uma.model.Permission" name="Permission">
+        <attributes>
+            <!-- changing generated value to sequence strategy (Oracle doesn't support identity) -->
+            <id name="id">
+                <generated-value strategy="SEQUENCE" generator="PermissionSequenceGenerator"/>
+                <sequence-generator name="PermissionSequenceGenerator" sequence-name="permission_seq" allocation-size="1"/>
+                <column name="id"/>
+            </id>
+        </attributes>
+    </entity>
+
+    <entity class="org.mitre.uma.model.PermissionTicket" name="PermissionTicket">
+        <attributes>
+            <!-- changing generated value to sequence strategy (Oracle doesn't support identity) -->
+            <id name="id">
+                <generated-value strategy="SEQUENCE" generator="PermissionTicketSequenceGenerator"/>
+                <sequence-generator name="PermissionTicketSequenceGenerator" sequence-name="permission_ticket_seq" allocation-size="1"/>
+                <column name="id"/>
+            </id>
+        </attributes>
+    </entity>
+
+    <entity class="org.mitre.uma.model.Policy" name="Policy">
+        <attributes>
+            <!-- changing generated value to sequence strategy (Oracle doesn't support identity) -->
+            <id name="id">
+                <generated-value strategy="SEQUENCE" generator="PolicySequenceGenerator"/>
+                <sequence-generator name="PolicySequenceGenerator" sequence-name="policy_seq" allocation-size="1"/>
+                <column name="id"/>
+            </id>
+        </attributes>
+    </entity>
+
+    <entity class="org.mitre.uma.model.ResourceSet" name="ResourceSet">
+        <attributes>
+            <!-- changing generated value to sequence strategy (Oracle doesn't support identity) -->
+            <id name="id">
+                <generated-value strategy="SEQUENCE" generator="ResourceSetSequenceGenerator"/>
+                <sequence-generator name="ResourceSetSequenceGenerator" sequence-name="resource_set_seq" allocation-size="1"/>
+                <column name="id"/>
+            </id>
+        </attributes>
+    </entity>
+
+    <entity class="org.mitre.uma.model.SavedRegisteredClient" name="SavedRegisteredClient">
+        <attributes>
+            <!-- changing generated value to sequence strategy (Oracle doesn't support identity) -->
+            <id name="id">
+                <generated-value strategy="SEQUENCE" generator="SavedRegisteredClientSequenceGenerator"/>
+                <sequence-generator name="SavedRegisteredClientSequenceGenerator" sequence-name="saved_registered_client_seq" allocation-size="1"/>
+                <column name="id"/>
+            </id>
+        </attributes>
+    </entity>
+
+</entity-mappings>
