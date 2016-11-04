@@ -48,6 +48,8 @@
 			</map>
 		</property>
 		<property name="persistenceUnitName" value="defaultPersistenceUnit" />
+		<!-- uncomment for Oracle -->
+		<!--<property name="mappingResources" value="entity-mappings_oracle.xml" />-->
 	</bean>
 
 
