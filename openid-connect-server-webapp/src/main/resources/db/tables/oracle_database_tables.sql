@@ -52,7 +52,9 @@ CREATE TABLE authentication_holder (
   user_auth_id NUMBER(19),
   approved NUMBER(1),
   redirect_uri VARCHAR2(2048),
-  client_id VARCHAR2(256)
+  client_id VARCHAR2(256),
+
+  CONSTRAINT approved_check CHECK (approved in (1,0))
 );
 CREATE SEQUENCE authentication_holder_seq START WITH 1 INCREMENT BY 1 NOCACHE NOCYCLE;
 
@@ -92,7 +94,9 @@ CREATE TABLE saved_user_auth (
   id NUMBER(19) NOT NULL PRIMARY KEY,
   name VARCHAR2(1024),
   authenticated NUMBER(1),
-  source_class VARCHAR2(2048)
+  source_class VARCHAR2(2048),
+
+  CONSTRAINT authenticated_check CHECK (authenticated in (1,0))
 );
 CREATE SEQUENCE saved_user_auth_seq START WITH 1 INCREMENT BY 1 NOCACHE NOCYCLE;
 
@@ -178,9 +182,14 @@ CREATE TABLE client_details (
   
   software_statement VARCHAR2(4000),
 	
-	code_challenge_method VARCHAR2(256),
+  code_challenge_method VARCHAR2(256),
 
-  CONSTRAINT client_details_unique UNIQUE (client_id)
+  CONSTRAINT client_details_unique UNIQUE (client_id),
+  CONSTRAINT reuse_refresh_tokens_check CHECK (reuse_refresh_tokens in (1,0)),
+  CONSTRAINT dynamically_registered_check CHECK (dynamically_registered in (1,0)),
+  CONSTRAINT allow_introspection_check CHECK (allow_introspection in (1,0)),
+  CONSTRAINT require_auth_time_check CHECK (require_auth_time in (1,0)),
+  CONSTRAINT clear_acc_tok_on_refresh_check CHECK (clear_access_tokens_on_refresh in (1,0))
 );
 CREATE SEQUENCE client_details_seq START WITH 1 INCREMENT BY 1 NOCACHE NOCYCLE;
 
@@ -248,7 +257,10 @@ CREATE TABLE system_scope (
   structured NUMBER(1) DEFAULT 0 NOT NULL,
   structured_param_description VARCHAR2(256),
 
-  CONSTRAINT system_scope_unique UNIQUE (scope)
+  CONSTRAINT system_scope_unique UNIQUE (scope),
+  CONSTRAINT default_scope_check CHECK (default_scope in (1,0)),
+  CONSTRAINT restricted_check CHECK (restricted in (1,0)),
+  CONSTRAINT structured_check CHECK (structured in (1,0))
 );
 CREATE SEQUENCE system_scope_seq START WITH 1 INCREMENT BY 1 NOCACHE NOCYCLE;
 
@@ -274,7 +286,10 @@ CREATE TABLE user_info (
   address_id VARCHAR2(256),
   updated_time VARCHAR2(256),
   birthdate VARCHAR2(256),
-  src VARCHAR2(4000)
+  src VARCHAR2(4000),
+
+  CONSTRAINT email_verified_check CHECK (email_verified in (1,0)),
+  CONSTRAINT phone_number_verified_check CHECK (phone_number_verified in (1,0))
 );
 CREATE SEQUENCE user_info_seq START WITH 1 INCREMENT BY 1 NOCACHE NOCYCLE;
 
