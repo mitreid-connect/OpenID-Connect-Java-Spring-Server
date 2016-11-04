@@ -380,12 +380,11 @@
 				<artifactId>postgresql</artifactId>
 				<version>9.4-1201-jdbc4</version>
 			</dependency>
-			<!-- uncomment for Oracle (manually install driver in Maven prior) -->
-			<!--<dependency>
+			<dependency>
                 <groupId>com.oracle</groupId>
                 <artifactId>ojdbc6</artifactId>
                 <version>11.1.0.7.0</version>
-            </dependency>-->
+            </dependency>
 			<dependency>
 				<groupId>org.eclipse.persistence</groupId>
 				<artifactId>org.eclipse.persistence.jpa</artifactId>
