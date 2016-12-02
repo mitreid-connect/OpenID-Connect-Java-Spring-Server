@@ -58,13 +58,13 @@ public class ResourceSet {
 	private String name;
 	private String uri;
 	private String type;
-	private Set<String> scopes = new HashSet<>();
+	private Set<String> scopes = new HashSet<String>();
 	private String iconUri;
 
 	private String owner; // username of the person responsible for the registration (either directly or via OAuth token)
 	private String clientId; // client id of the protected resource that registered this resource set via OAuth token
 
-	private Collection<Policy> policies = new HashSet<>();
+	private Collection<Policy> policies = new HashSet<Policy>();
 
 	/**
 	 * @return the id

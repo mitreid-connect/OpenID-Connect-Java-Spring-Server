@@ -177,7 +177,7 @@ public class SavedUserAuthentication implements Authentication {
 	 */
 	public void setAuthorities(Collection<? extends GrantedAuthority> authorities) {
 		if (authorities != null) {
-			this.authorities = new HashSet<>(authorities);
+			this.authorities = new HashSet<GrantedAuthority>(authorities);
 		} else {
 			this.authorities = null;
 		}

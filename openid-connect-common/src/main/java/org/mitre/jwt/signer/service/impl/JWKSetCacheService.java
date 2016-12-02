@@ -84,7 +84,10 @@ public class JWKSetCacheService {
 	public JWTSigningAndValidationService getValidator(String jwksUri) {
 		try {
 			return validators.get(jwksUri);
-		} catch (UncheckedExecutionException | ExecutionException e) {
+		} catch (ExecutionException e) {
+			logger.warn("Couldn't load JWK Set from " + jwksUri + ": " + e.getMessage());
+			return null;
+		} catch (UncheckedExecutionException e) {
 			logger.warn("Couldn't load JWK Set from " + jwksUri + ": " + e.getMessage());
 			return null;
 		}
@@ -93,7 +96,10 @@ public class JWKSetCacheService {
 	public JWTEncryptionAndDecryptionService getEncrypter(String jwksUri) {
 		try {
 			return encrypters.get(jwksUri);
-		} catch (UncheckedExecutionException | ExecutionException e) {
+		} catch (ExecutionException e) {
+			logger.warn("Couldn't load JWK Set from " + jwksUri + ": " + e.getMessage());
+			return null;
+		} catch (UncheckedExecutionException e) {
 			logger.warn("Couldn't load JWK Set from " + jwksUri + ": " + e.getMessage());
 			return null;
 		}
@@ -147,7 +153,9 @@ public class JWKSetCacheService {
 				JWTEncryptionAndDecryptionService service = new DefaultJWTEncryptionAndDecryptionService(keyStore);
 	
 				return service;
-			} catch (JsonParseException | RestClientException e) {
+			} catch (RestClientException e) {
+				throw new IllegalArgumentException("Unable to load JWK Set");
+			} catch (JsonParseException e) {
 				throw new IllegalArgumentException("Unable to load JWK Set");
 			}
 		}

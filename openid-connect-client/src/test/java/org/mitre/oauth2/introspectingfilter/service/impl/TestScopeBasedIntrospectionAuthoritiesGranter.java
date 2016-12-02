@@ -54,7 +54,7 @@ public class TestScopeBasedIntrospectionAuthoritiesGranter {
 	public void testGetAuthoritiesJsonObject_withScopes() {
 		introspectionResponse.addProperty("scope", "foo bar baz batman");
 		
-		List<GrantedAuthority> expected = new ArrayList<>();
+		List<GrantedAuthority> expected = new ArrayList<GrantedAuthority>();
 		expected.add(new SimpleGrantedAuthority("ROLE_API"));
 		expected.add(new SimpleGrantedAuthority("OAUTH_SCOPE_foo"));
 		expected.add(new SimpleGrantedAuthority("OAUTH_SCOPE_bar"));
@@ -73,7 +73,7 @@ public class TestScopeBasedIntrospectionAuthoritiesGranter {
 	@Test
 	public void testGetAuthoritiesJsonObject_withoutScopes() {
 		
-		List<GrantedAuthority> expected = new ArrayList<>();
+		List<GrantedAuthority> expected = new ArrayList<GrantedAuthority>();
 		expected.add(new SimpleGrantedAuthority("ROLE_API"));
 		
 		List<GrantedAuthority> authorities = granter.getAuthorities(introspectionResponse);

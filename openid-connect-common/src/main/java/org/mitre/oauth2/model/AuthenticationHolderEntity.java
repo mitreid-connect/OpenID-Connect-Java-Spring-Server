@@ -168,7 +168,7 @@ public class AuthenticationHolderEntity {
 	 */
 	public void setAuthorities(Collection<? extends GrantedAuthority> authorities) {
 		if (authorities != null) {
-			this.authorities = new HashSet<>(authorities);
+			this.authorities = new HashSet<GrantedAuthority>(authorities);
 		} else {
 			this.authorities = null;
 		}
@@ -192,7 +192,7 @@ public class AuthenticationHolderEntity {
 	 */
 	public void setResourceIds(Set<String> resourceIds) {
 		if (resourceIds != null) {
-			this.resourceIds = new HashSet<>(resourceIds);
+			this.resourceIds = new HashSet<String>(resourceIds);
 		} else {
 			this.resourceIds = null;
 		}
@@ -248,7 +248,7 @@ public class AuthenticationHolderEntity {
 	 */
 	public void setResponseTypes(Set<String> responseTypes) {
 		if (responseTypes != null) {
-			this.responseTypes = new HashSet<>(responseTypes);
+			this.responseTypes = new HashSet<String>(responseTypes);
 		} else {
 			this.responseTypes = null;
 		}
@@ -274,7 +274,7 @@ public class AuthenticationHolderEntity {
 	 */
 	public void setExtensions(Map<String, Serializable> extensions) {
 		if (extensions != null) {
-			this.extensions = new HashMap<>(extensions);
+			this.extensions = new HashMap<String, Serializable>(extensions);
 		} else {
 			this.extensions = null;
 		}
@@ -314,7 +314,7 @@ public class AuthenticationHolderEntity {
 	 */
 	public void setScope(Set<String> scope) {
 		if (scope != null) {
-			this.scope = new HashSet<>(scope);
+			this.scope = new HashSet<String>(scope);
 		} else {
 			this.scope = null;
 		}
@@ -339,7 +339,7 @@ public class AuthenticationHolderEntity {
 	 */
 	public void setRequestParameters(Map<String, String> requestParameters) {
 		if (requestParameters != null) {
-			this.requestParameters = new HashMap<>(requestParameters);
+			this.requestParameters = new HashMap<String, String>(requestParameters);
 		} else {
 			this.requestParameters = null;
 		}

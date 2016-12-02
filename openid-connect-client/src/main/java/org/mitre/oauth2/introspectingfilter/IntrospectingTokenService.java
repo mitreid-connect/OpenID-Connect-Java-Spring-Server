@@ -101,7 +101,7 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 		}
 	}
 
-	private Map<String, TokenCacheObject> authCache = new HashMap<>();
+	private Map<String, TokenCacheObject> authCache = new HashMap<String, TokenCacheObject>();
 	/**
 	 * Logger for this class
 	 */
@@ -224,11 +224,11 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 
 	private OAuth2Request createStoredRequest(final JsonObject token) {
 		String clientId = token.get("client_id").getAsString();
-		Set<String> scopes = new HashSet<>();
+		Set<String> scopes = new HashSet<String>();
 		if (token.has("scope")) {
 			scopes.addAll(OAuth2Utils.parseParameterList(token.get("scope").getAsString()));
 		}
-		Map<String, String> parameters = new HashMap<>();
+		Map<String, String> parameters = new HashMap<String, String>();
 		parameters.put("client_id", clientId);
 		parameters.put("scope", OAuth2Utils.formatParameterList(scopes));
 		OAuth2Request storedRequest = new OAuth2Request(parameters, clientId, null, true, scopes, null, null, null, null);
@@ -268,7 +268,7 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 		String validatedToken = null;
 
 		RestTemplate restTemplate;
-		MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
+		MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
 
 		final String clientId = client.getClientId();
 		final String clientSecret = client.getClientSecret();

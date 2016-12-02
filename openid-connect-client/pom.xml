@@ -24,6 +24,9 @@
 		<version>1.2.7-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
+	<properties>
+		<maven.javadoc.skip>true</maven.javadoc.skip>
+	</properties>
 	<artifactId>openid-connect-client</artifactId>
 	<description>OpenID Connect Client filter for Spring Security</description>
 	<name>OpenID Connect Client</name>
@@ -31,6 +34,32 @@
 		<dependency>
 			<groupId>org.mitre</groupId>
 			<artifactId>openid-connect-common</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.nimbusds</groupId>
+			<artifactId>nimbus-jose-jwt</artifactId>
+			<classifier>jdk16</classifier>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security.oauth</groupId>
+			<artifactId>spring-security-oauth2</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 	<packaging>jar</packaging>
@@ -41,7 +70,7 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
 					<source>${java-version}</source>
-					<target>${java-version}</target>
+					<target>${java-compile}</target>
 				</configuration>
 			</plugin>
 			<!-- BUILD SOURCE FILES -->
@@ -53,19 +82,6 @@
 						<id>attach-sources</id>
 						<goals>
 							<goal>jar-no-fork</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<!-- BUILD JavaDoc FILES -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>attach-sources</id>
-						<goals>
-							<goal>jar</goal>
 						</goals>
 					</execution>
 				</executions>

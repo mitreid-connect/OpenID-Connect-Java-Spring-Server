@@ -75,8 +75,8 @@ public class WebfingerIssuerService implements IssuerService {
 		}
 	}
 	
-	private Set<String> whitelist = new HashSet<>();
-	private Set<String> blacklist = new HashSet<>();
+	private Set<String> whitelist = new HashSet<String>();
+	private Set<String> blacklist = new HashSet<String>();
 
 	/**
 	 * Name of the incoming parameter to check for discovery purposes.
@@ -116,7 +116,10 @@ public class WebfingerIssuerService implements IssuerService {
 				}
 
 				return new IssuerServiceResponse(lr.issuer, lr.loginHint, null);
-			} catch (UncheckedExecutionException | ExecutionException e) {
+			} catch (ExecutionException e) {
+				logger.warn("Issue fetching issuer for user input: " + identifier + ": " + e.getMessage());
+				return null;
+			} catch (UncheckedExecutionException e) {
 				logger.warn("Issue fetching issuer for user input: " + identifier + ": " + e.getMessage());
 				return null;
 			}
@@ -276,7 +279,9 @@ public class WebfingerIssuerService implements IssuerService {
 						}
 					}
 				}
-			} catch (JsonParseException | RestClientException e) {
+			} catch (RestClientException e) {
+				logger.warn("Failure in fetching webfinger input", e.getMessage());
+			} catch (JsonParseException e) {
 				logger.warn("Failure in fetching webfinger input", e.getMessage());
 			}
 

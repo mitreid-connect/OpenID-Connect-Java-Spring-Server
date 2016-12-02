@@ -85,14 +85,16 @@ public class UriEncodedClientUserDetailsService implements UserDetailsService {
 				boolean accountNonExpired = true;
 				boolean credentialsNonExpired = true;
 				boolean accountNonLocked = true;
-				Collection<GrantedAuthority> authorities = new HashSet<>(client.getAuthorities());
+				Collection<GrantedAuthority> authorities = new HashSet<GrantedAuthority>(client.getAuthorities());
 				authorities.add(ROLE_CLIENT);
 
 				return new User(decodedClientId, encodedPassword, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
 			} else {
 				throw new UsernameNotFoundException("Client not found: " + clientId);
 			}
-		} catch (UnsupportedEncodingException | InvalidClientException e) {
+		} catch (InvalidClientException e) {
+			throw new UsernameNotFoundException("Client not found: " + clientId);
+		} catch (UnsupportedEncodingException e) {
 			throw new UsernameNotFoundException("Client not found: " + clientId);
 		}
 

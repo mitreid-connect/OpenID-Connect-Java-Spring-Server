@@ -107,7 +107,9 @@ public class SymmetricKeyJWTValidatorCacheService {
 
 				return service;
 
-			} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+			} catch (InvalidKeySpecException e) {
+				logger.error("Couldn't create symmetric validator for client", e);
+			} catch (NoSuchAlgorithmException e) {
 				logger.error("Couldn't create symmetric validator for client", e);
 			}
 

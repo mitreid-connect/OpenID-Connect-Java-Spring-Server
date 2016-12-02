@@ -57,7 +57,7 @@ public class TestStaticClientConfigurationService {
 
 		service = new StaticClientConfigurationService();
 
-		Map<String, RegisteredClient> clients = new HashMap<>();
+		Map<String, RegisteredClient> clients = new HashMap<String, RegisteredClient>();
 		clients.put(issuer, mockClient);
 
 		service.setClients(clients);

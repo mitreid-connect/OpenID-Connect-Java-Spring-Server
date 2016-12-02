@@ -61,6 +61,7 @@
 		<dependency>
 			<groupId>com.nimbusds</groupId>
 			<artifactId>nimbus-jose-jwt</artifactId>
+			<classifier>jdk16</classifier>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.persistence</groupId>
@@ -97,7 +98,7 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
 					<source>${java-version}</source>
-					<target>${java-version}</target>
+					<target>${java-compile}</target>
 				</configuration>
 			</plugin>
 			<!-- BUILD SOURCE FILES -->
