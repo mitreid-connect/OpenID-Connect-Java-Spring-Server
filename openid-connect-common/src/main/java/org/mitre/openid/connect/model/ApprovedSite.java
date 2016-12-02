@@ -229,15 +229,25 @@ public class ApprovedSite {
 		}
 	}
 
-	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
-	@JoinColumn(name="approved_site_id")
+	/**
+	 * @deprecated should not be used for performance reasons also we don't maintain
+	 * the bi-directionality in the code so could lead to in memory inconsistencies
+	 * instead use {@code OAuth2TokenRepository.getAccessTokensForApprovedSite}.
+	 */
+	@Deprecated
+	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy = "approvedSite")
 	public Set<OAuth2AccessTokenEntity> getApprovedAccessTokens() {
 		return approvedAccessTokens;
 	}
 
 	/**
 	 * @param approvedAccessTokens the approvedAccessTokens to set
+	 * 
+	 * @deprecated should not be used for performance reasons also we don't maintain
+	 * the bi-directionality in the code so could lead to in memory inconsistencies
+	 * set the approvedSite on the relevant {@code OAuth2AccessTokenEntity}.
 	 */
+	@Deprecated
 	public void setApprovedAccessTokens(Set<OAuth2AccessTokenEntity> approvedAccessTokens) {
 		this.approvedAccessTokens = approvedAccessTokens;
 	}

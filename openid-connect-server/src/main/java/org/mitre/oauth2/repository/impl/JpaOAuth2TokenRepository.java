@@ -222,6 +222,16 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 		query.setParameter(OAuth2AccessTokenEntity.PARAM_RESOURCE_SET_ID, rs.getId());
 		return new LinkedHashSet<>(query.getResultList());
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.mitre.oauth2.repository.OAuth2TokenRepository#getAccessTokensForApprovedSite(org.mitre.openid.connect.model.ApprovedSite)
+	 */
+	@Override
+    	public Set<OAuth2AccessTokenEntity> getAccessTokensForApprovedSite(ApprovedSite approvedSite){
+        	TypedQuery<OAuth2AccessTokenEntity> queryA = manager.createNamedQuery(OAuth2AccessTokenEntity.QUERY_BY_APPROVED_SITE, OAuth2AccessTokenEntity.class);
+        	queryA.setParameter(OAuth2AccessTokenEntity.PARAM_APPROVED_SITE, approvedSite);
+        	return new LinkedHashSet<>(queryA.getResultList());
+    	}
 
 	/* (non-Javadoc)
 	 * @see org.mitre.oauth2.repository.OAuth2TokenRepository#clearDuplicateAccessTokens()
