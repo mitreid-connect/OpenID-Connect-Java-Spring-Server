@@ -29,6 +29,7 @@ import org.mitre.openid.connect.service.MITREidDataService;
 import org.mitre.openid.connect.service.impl.MITREidDataService_1_0;
 import org.mitre.openid.connect.service.impl.MITREidDataService_1_1;
 import org.mitre.openid.connect.service.impl.MITREidDataService_1_2;
+import org.mitre.openid.connect.service.impl.MITREidDataService_1_3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,6 +76,9 @@ public class DataAPI {
 
 	@Autowired
 	private MITREidDataService_1_2 dataService_1_2;
+	
+	@Autowired
+	private MITREidDataService_1_3 dataService_1_3;
 
 	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public String importData(Reader in, Model m) throws IOException {
@@ -94,6 +98,8 @@ public class DataAPI {
 					dataService_1_1.importData(reader);
 				} else if (name.equals(MITREidDataService.MITREID_CONNECT_1_2)) {
 					dataService_1_2.importData(reader);
+				} else if (name.equals(MITREidDataService.MITREID_CONNECT_1_3)) {
+					dataService_1_3.importData(reader);
 				} else {
 					// consume the next bit silently for now
 					logger.debug("Skipping value for " + name); // TODO: write these out?
@@ -134,7 +140,7 @@ public class DataAPI {
 			writer.value(prin.getName());
 
 			// delegate to the service to do the actual export
-			dataService_1_2.exportData(writer);
+			dataService_1_3.exportData(writer);
 
 			writer.endObject(); // end root
 			writer.close();
