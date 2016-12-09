@@ -66,7 +66,7 @@ public class AuthenticationHolderEntity {
 
 	private SavedUserAuthentication userAuth;
 
-	private Collection<? extends GrantedAuthority> authorities;
+	private Collection<GrantedAuthority> authorities;
 
 	private Set<String> resourceIds;
 
@@ -116,14 +116,14 @@ public class AuthenticationHolderEntity {
 
 		// pull apart the request and save its bits
 		OAuth2Request o2Request = authentication.getOAuth2Request();
-		setAuthorities(o2Request.getAuthorities());
+		setAuthorities(o2Request.getAuthorities() == null ? null : new HashSet<>(o2Request.getAuthorities()));
 		setClientId(o2Request.getClientId());
-		setExtensions(o2Request.getExtensions());
+		setExtensions(o2Request.getExtensions() == null ? null : new HashMap<>(o2Request.getExtensions()));
 		setRedirectUri(o2Request.getRedirectUri());
-		setRequestParameters(o2Request.getRequestParameters());
-		setResourceIds(o2Request.getResourceIds());
-		setResponseTypes(o2Request.getResponseTypes());
-		setScope(o2Request.getScope());
+		setRequestParameters(o2Request.getRequestParameters() == null ? null : new HashMap<>(o2Request.getRequestParameters()));
+		setResourceIds(o2Request.getResourceIds() == null ? null : new HashSet<>(o2Request.getResourceIds()));
+		setResponseTypes(o2Request.getResponseTypes() == null ? null : new HashSet<>(o2Request.getResponseTypes()));
+		setScope(o2Request.getScope() == null ? null : new HashSet<>(o2Request.getScope()));
 		setApproved(o2Request.isApproved());
 
 		if (authentication.getUserAuthentication() != null) {
@@ -159,19 +159,15 @@ public class AuthenticationHolderEntity {
 			)
 	@Convert(converter = SimpleGrantedAuthorityStringConverter.class)
 	@Column(name="authority")
-	public Collection<? extends GrantedAuthority> getAuthorities() {
+	public Collection<GrantedAuthority> getAuthorities() {
 		return authorities;
 	}
 
 	/**
 	 * @param authorities the authorities to set
 	 */
-	public void setAuthorities(Collection<? extends GrantedAuthority> authorities) {
-		if (authorities != null) {
-			this.authorities = new HashSet<>(authorities);
-		} else {
-			this.authorities = null;
-		}
+	public void setAuthorities(Collection<GrantedAuthority> authorities) {
+		this.authorities = authorities;
 	}
 
 	/**
@@ -191,11 +187,7 @@ public class AuthenticationHolderEntity {
 	 * @param resourceIds the resourceIds to set
 	 */
 	public void setResourceIds(Set<String> resourceIds) {
-		if (resourceIds != null) {
-			this.resourceIds = new HashSet<>(resourceIds);
-		} else {
-			this.resourceIds = null;
-		}
+		this.resourceIds = resourceIds;
 	}
 
 	/**
@@ -247,11 +239,7 @@ public class AuthenticationHolderEntity {
 	 * @param responseTypes the responseTypes to set
 	 */
 	public void setResponseTypes(Set<String> responseTypes) {
-		if (responseTypes != null) {
-			this.responseTypes = new HashSet<>(responseTypes);
-		} else {
-			this.responseTypes = null;
-		}
+		this.responseTypes = responseTypes;
 	}
 
 	/**
@@ -264,7 +252,7 @@ public class AuthenticationHolderEntity {
 			)
 	@Column(name="val")
 	@MapKeyColumn(name="extension")
-	@Convert(converter=SerializableStringConverter.class)
+	@Convert(attributeName="value", converter=SerializableStringConverter.class)
 	public Map<String, Serializable> getExtensions() {
 		return extensions;
 	}
@@ -273,11 +261,7 @@ public class AuthenticationHolderEntity {
 	 * @param extensions the extensions to set
 	 */
 	public void setExtensions(Map<String, Serializable> extensions) {
-		if (extensions != null) {
-			this.extensions = new HashMap<>(extensions);
-		} else {
-			this.extensions = null;
-		}
+		this.extensions = extensions;
 	}
 
 	/**
@@ -313,11 +297,7 @@ public class AuthenticationHolderEntity {
 	 * @param scope the scope to set
 	 */
 	public void setScope(Set<String> scope) {
-		if (scope != null) {
-			this.scope = new HashSet<>(scope);
-		} else {
-			this.scope = null;
-		}
+		this.scope = scope;
 	}
 
 	/**
@@ -338,11 +318,7 @@ public class AuthenticationHolderEntity {
 	 * @param requestParameters the requestParameters to set
 	 */
 	public void setRequestParameters(Map<String, String> requestParameters) {
-		if (requestParameters != null) {
-			this.requestParameters = new HashMap<>(requestParameters);
-		} else {
-			this.requestParameters = null;
-		}
+		this.requestParameters = requestParameters;
 	}
 
 

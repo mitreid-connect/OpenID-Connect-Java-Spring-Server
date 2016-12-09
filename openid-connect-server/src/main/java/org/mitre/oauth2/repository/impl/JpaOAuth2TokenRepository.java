@@ -97,7 +97,13 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	public void removeAccessToken(OAuth2AccessTokenEntity accessToken) {
 		OAuth2AccessTokenEntity found = getAccessTokenByValue(accessToken.getValue());
 		if (found != null) {
-			manager.remove(found);
+			OAuth2AccessTokenEntity accessTokenForIdToken = getAccessTokenForIdToken(found);
+			if (accessTokenForIdToken != null) {
+				accessTokenForIdToken.setIdToken(null);
+				JpaUtil.saveOrUpdate(accessTokenForIdToken.getId(), manager, accessTokenForIdToken);
+			} else {
+				manager.remove(found);
+			}
 		} else {
 			throw new IllegalArgumentException("Access token not found: " + accessToken);
 		}
@@ -231,7 +237,7 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	@Transactional(value="defaultTransactionManager")
 	public void clearDuplicateAccessTokens() {
 
-		Query query = manager.createQuery("select a.jwt, count(1) as c from OAuth2AccessTokenEntity a GROUP BY a.jwt HAVING c > 1");
+		Query query = manager.createQuery("select a.jwt, count(1) as c from OAuth2AccessTokenEntity a GROUP BY a.jwt HAVING count(1) > 1");
 		@SuppressWarnings("unchecked")
 		List<Object[]> resultList = query.getResultList();
 		List<JWT> values = new ArrayList<>();
@@ -255,7 +261,7 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public void clearDuplicateRefreshTokens() {
-		Query query = manager.createQuery("select a.jwt, count(1) as c from OAuth2RefreshTokenEntity a GROUP BY a.jwt HAVING c > 1");
+		Query query = manager.createQuery("select a.jwt, count(1) as c from OAuth2RefreshTokenEntity a GROUP BY a.jwt HAVING count(1) > 1");
 		@SuppressWarnings("unchecked")
 		List<Object[]> resultList = query.getResultList();
 		List<JWT> values = new ArrayList<>();
