@@ -252,7 +252,7 @@ public class AuthenticationHolderEntity {
 			)
 	@Column(name="val")
 	@MapKeyColumn(name="extension")
-	@Convert(attributeName="value", converter=SerializableStringConverter.class)
+	@Convert(converter=SerializableStringConverter.class)
 	public Map<String, Serializable> getExtensions() {
 		return extensions;
 	}
