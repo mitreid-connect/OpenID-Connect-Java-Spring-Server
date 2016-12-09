@@ -97,13 +97,7 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	public void removeAccessToken(OAuth2AccessTokenEntity accessToken) {
 		OAuth2AccessTokenEntity found = getAccessTokenByValue(accessToken.getValue());
 		if (found != null) {
-			OAuth2AccessTokenEntity accessTokenForIdToken = getAccessTokenForIdToken(found);
-			if (accessTokenForIdToken != null) {
-				accessTokenForIdToken.setIdToken(null);
-				JpaUtil.saveOrUpdate(accessTokenForIdToken.getId(), manager, accessTokenForIdToken);
-			} else {
-				manager.remove(found);
-			}
+			manager.remove(found);
 		} else {
 			throw new IllegalArgumentException("Access token not found: " + accessToken);
 		}
@@ -191,17 +185,6 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 		queryR.setParameter(OAuth2RefreshTokenEntity.PARAM_CLIENT, client);
 		List<OAuth2RefreshTokenEntity> refreshTokens = queryR.getResultList();
 		return refreshTokens;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.mitre.oauth2.repository.OAuth2TokenRepository#getAccessTokenForIdToken(org.mitre.oauth2.model.OAuth2AccessTokenEntity)
-	 */
-	@Override
-	public OAuth2AccessTokenEntity getAccessTokenForIdToken(OAuth2AccessTokenEntity idToken) {
-		TypedQuery<OAuth2AccessTokenEntity> queryA = manager.createNamedQuery(OAuth2AccessTokenEntity.QUERY_BY_ID_TOKEN, OAuth2AccessTokenEntity.class);
-		queryA.setParameter(OAuth2AccessTokenEntity.PARAM_ID_TOKEN, idToken);
-		List<OAuth2AccessTokenEntity> accessTokens = queryA.getResultList();
-		return JpaUtil.getSingleResult(accessTokens);
 	}
 
 	@Override

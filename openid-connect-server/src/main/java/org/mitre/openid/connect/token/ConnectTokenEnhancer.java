@@ -44,6 +44,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.JWTClaimsSet.Builder;
 import com.nimbusds.jwt.SignedJWT;
@@ -132,12 +133,12 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 
 			if (userInfo != null) {
 
-				OAuth2AccessTokenEntity idTokenEntity = connectTokenService.createIdToken(client,
+				JWT idToken = connectTokenService.createIdToken(client,
 						originalAuthRequest, claims.getIssueTime(),
 						userInfo.getSub(), token);
 
 				// attach the id token to the parent access token
-				token.setIdToken(idTokenEntity);
+				token.setIdToken(idToken);
 			} else {
 				// can't create an id token if we can't find the user
 				logger.warn("Request for ID token when no user is present.");

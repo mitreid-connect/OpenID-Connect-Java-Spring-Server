@@ -295,7 +295,6 @@ public class TestMITREidDataService_1_0 {
 		token2.setExpiration(expirationDate2);
 		token2.setJwt(JWTParser.parse("eyJhbGciOiJSUzI1NiJ9.eyJleHAiOjE0MTI3OTI5NjgsImF1ZCI6WyJjbGllbnQiXSwiaXNzIjoiaHR0cDpcL1wvbG9jYWxob3N0OjgwODBcL29wZW5pZC1jb25uZWN0LXNlcnZlci13ZWJhcHBcLyIsImp0aSI6IjBmZGE5ZmRiLTYyYzItNGIzZS05OTdiLWU0M2VhMDUwMzNiOSIsImlhdCI6MTQxMjc4OTM2OH0.xgaVpRLYE5MzbgXfE0tZt823tjAm6Oh3_kdR1P2I9jRLR6gnTlBQFlYi3Y_0pWNnZSerbAE8Tn6SJHZ9k-curVG0-ByKichV7CNvgsE5X_2wpEaUzejvKf8eZ-BammRY-ie6yxSkAarcUGMvGGOLbkFcz5CtrBpZhfd75J49BIQ"));
 		token2.setAuthenticationHolder(mockedAuthHolder2);
-		token2.setIdToken(token1);
 		token2.setRefreshToken(mockRefreshToken2);
 		token2.setScope(ImmutableSet.of("openid", "offline_access", "email", "profile"));
 		token2.setTokenType("Bearer");
@@ -365,8 +364,8 @@ public class TestMITREidDataService_1_0 {
 			}
 		});
 		dataService.importData(reader);
-		//2 times for token, 2 times to update client, 2 times to update authHolder, 2 times to update id token, 2 times to update refresh token
-		verify(tokenRepository, times(8)).saveAccessToken(capturedAccessTokens.capture());
+		//2 times for token, 2 times to update client, 2 times to update authHolder, 1 times to update refresh token
+		verify(tokenRepository, times(7)).saveAccessToken(capturedAccessTokens.capture());
 
 		List<OAuth2AccessTokenEntity> savedAccessTokens = new ArrayList(fakeDb.values()); //capturedAccessTokens.getAllValues();
 		Collections.sort(savedAccessTokens, new accessTokenIdComparator());

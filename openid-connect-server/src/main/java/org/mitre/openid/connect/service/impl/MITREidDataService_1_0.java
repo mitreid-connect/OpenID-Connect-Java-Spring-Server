@@ -223,7 +223,6 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 	private Map<Long, String> accessTokenToClientRefs = new HashMap<>();
 	private Map<Long, Long> accessTokenToAuthHolderRefs = new HashMap<>();
 	private Map<Long, Long> accessTokenToRefreshTokenRefs = new HashMap<>();
-	private Map<Long, Long> accessTokenToIdTokenRefs = new HashMap<>();
 	private Map<Long, Long> accessTokenOldToNewIdMap = new HashMap<>();
 
 	/**
@@ -243,7 +242,6 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 			String clientId = null;
 			Long authHolderId = null;
 			Long refreshTokenId = null;
-			Long idTokenId = null;
 			while (reader.hasNext()) {
 				switch (reader.peek()) {
 				case END_OBJECT:
@@ -271,8 +269,6 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 						authHolderId = reader.nextLong();
 					} else if (name.equals("refreshTokenId")) {
 						refreshTokenId = reader.nextLong();
-					} else if (name.equals("idTokenId")) {
-						idTokenId = reader.nextLong();
 					} else if (name.equals("scope")) {
 						Set<String> scope = readSet(reader);
 						token.setScope(scope);
@@ -295,9 +291,6 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 			accessTokenToAuthHolderRefs.put(currentId, authHolderId);
 			if (refreshTokenId != null) {
 				accessTokenToRefreshTokenRefs.put(currentId, refreshTokenId);
-			}
-			if (idTokenId != null) {
-				accessTokenToIdTokenRefs.put(currentId, idTokenId);
 			}
 			accessTokenOldToNewIdMap.put(currentId, newId);
 			logger.debug("Read access token {}", currentId);
@@ -883,16 +876,6 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 		}
 		accessTokenToRefreshTokenRefs.clear();
 		refreshTokenOldToNewIdMap.clear();
-		for (Long oldAccessTokenId : accessTokenToIdTokenRefs.keySet()) {
-			Long oldIdTokenId = accessTokenToIdTokenRefs.get(oldAccessTokenId);
-			Long newIdTokenId = accessTokenOldToNewIdMap.get(oldIdTokenId);
-			OAuth2AccessTokenEntity idToken = tokenRepository.getAccessTokenById(newIdTokenId);
-			Long newAccessTokenId = accessTokenOldToNewIdMap.get(oldAccessTokenId);
-			OAuth2AccessTokenEntity accessToken = tokenRepository.getAccessTokenById(newAccessTokenId);
-			accessToken.setIdToken(idToken);
-			tokenRepository.saveAccessToken(accessToken);
-		}
-		accessTokenToIdTokenRefs.clear();
 		whitelistedSiteOldToNewIdMap.clear();
 		for (Long oldGrantId : grantToAccessTokensRefs.keySet()) {
 			Set<Long> oldAccessTokenIds = grantToAccessTokensRefs.get(oldGrantId);

@@ -50,12 +50,6 @@ public interface OAuth2TokenEntityService extends AuthorizationServerTokenServic
 	@Override
 	public OAuth2AccessTokenEntity getAccessToken(OAuth2Authentication authentication);
 
-	/**
-	 * @param incomingToken
-	 * @return
-	 */
-	public OAuth2AccessTokenEntity getAccessTokenForIdToken(OAuth2AccessTokenEntity idToken);
-
 	public OAuth2AccessTokenEntity getAccessTokenById(Long id);
 
 	public OAuth2RefreshTokenEntity getRefreshTokenById(Long id);

@@ -33,7 +33,6 @@ public interface SystemScopeService {
 
 	public static final String OFFLINE_ACCESS = "offline_access";
 	public static final String OPENID_SCOPE = "openid";
-	public static final String ID_TOKEN_SCOPE = "id-token"; // ID tokens are generated using this scope
 	public static final String REGISTRATION_TOKEN_SCOPE = "registration-token"; // this scope manages dynamic client registrations
 	public static final String RESOURCE_TOKEN_SCOPE = "resource-token"; // this scope manages client-style protected resources
 	public static final String UMA_PROTECTION_SCOPE = "uma_protection";
@@ -41,7 +40,6 @@ public interface SystemScopeService {
 	
 	public static final Set<SystemScope> reservedScopes = 
 		Sets.newHashSet(
-			new SystemScope(ID_TOKEN_SCOPE),
 			new SystemScope(REGISTRATION_TOKEN_SCOPE),
 			new SystemScope(RESOURCE_TOKEN_SCOPE)
 		);

@@ -263,7 +263,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 
 			OAuth2AccessTokenEntity enhancedToken = (OAuth2AccessTokenEntity) tokenEnhancer.enhance(token, authentication);
 
-			OAuth2AccessTokenEntity savedToken = tokenRepository.saveAccessToken(enhancedToken);
+			OAuth2AccessTokenEntity savedToken = saveAccessToken(enhancedToken);
 
 			if (savedToken.getRefreshToken() != null) {
 				tokenRepository.saveRefreshToken(savedToken.getRefreshToken()); // make sure we save any changes that might have been enhanced
@@ -542,7 +542,14 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	 */
 	@Override
 	public OAuth2AccessTokenEntity saveAccessToken(OAuth2AccessTokenEntity accessToken) {
-		return tokenRepository.saveAccessToken(accessToken);
+		OAuth2AccessTokenEntity newToken = tokenRepository.saveAccessToken(accessToken);
+		
+		// if the old token has any additional information for the return from the token endpoint, carry it through here after save
+		if (accessToken.getAdditionalInformation() != null && !accessToken.getAdditionalInformation().isEmpty()) {
+			newToken.getAdditionalInformation().putAll(accessToken.getAdditionalInformation());
+		}
+		
+		return newToken;
 	}
 
 	/* (non-Javadoc)
@@ -566,15 +573,6 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	public void setTokenEnhancer(TokenEnhancer tokenEnhancer) {
 		this.tokenEnhancer = tokenEnhancer;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.mitre.oauth2.service.OAuth2TokenEntityService#getAccessTokenForIdToken(org.mitre.oauth2.model.OAuth2AccessTokenEntity)
-	 */
-	@Override
-	public OAuth2AccessTokenEntity getAccessTokenForIdToken(OAuth2AccessTokenEntity idToken) {
-		return tokenRepository.getAccessTokenForIdToken(idToken);
-	}
-
 
 	@Override
 	public OAuth2AccessTokenEntity getRegistrationAccessTokenForClient(ClientDetailsEntity client) {

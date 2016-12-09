@@ -69,7 +69,6 @@ import com.nimbusds.jwt.JWT;
 	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_EXPIRED_BY_DATE, query = "select a from OAuth2AccessTokenEntity a where a.expiration <= :" + OAuth2AccessTokenEntity.PARAM_DATE),
 	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_REFRESH_TOKEN, query = "select a from OAuth2AccessTokenEntity a where a.refreshToken = :" + OAuth2AccessTokenEntity.PARAM_REFERSH_TOKEN),
 	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_CLIENT, query = "select a from OAuth2AccessTokenEntity a where a.client = :" + OAuth2AccessTokenEntity.PARAM_CLIENT),
-	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_ID_TOKEN, query = "select a from OAuth2AccessTokenEntity a where a.idToken = :" + OAuth2AccessTokenEntity.PARAM_ID_TOKEN),
 	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_TOKEN_VALUE, query = "select a from OAuth2AccessTokenEntity a where a.jwt = :" + OAuth2AccessTokenEntity.PARAM_TOKEN_VALUE),
 	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_APPROVED_SITE, query = "select a from OAuth2AccessTokenEntity a where a.approvedSite = :" + OAuth2AccessTokenEntity.PARAM_APPROVED_SITE),
 	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_RESOURCE_SET, query = "select a from OAuth2AccessTokenEntity a join a.permissions p where p.resourceSet.id = :" + OAuth2AccessTokenEntity.PARAM_RESOURCE_SET_ID)
@@ -82,7 +81,6 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 
 	public static final String QUERY_BY_APPROVED_SITE = "OAuth2AccessTokenEntity.getByApprovedSite";
 	public static final String QUERY_BY_TOKEN_VALUE = "OAuth2AccessTokenEntity.getByTokenValue";
-	public static final String QUERY_BY_ID_TOKEN = "OAuth2AccessTokenEntity.getByIdToken";
 	public static final String QUERY_BY_CLIENT = "OAuth2AccessTokenEntity.getByClient";
 	public static final String QUERY_BY_REFRESH_TOKEN = "OAuth2AccessTokenEntity.getByRefreshToken";
 	public static final String QUERY_EXPIRED_BY_DATE = "OAuth2AccessTokenEntity.getAllExpiredByDate";
@@ -90,7 +88,6 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	public static final String QUERY_BY_RESOURCE_SET = "OAuth2AccessTokenEntity.getByResourceSet";
 
 	public static final String PARAM_TOKEN_VALUE = "tokenValue";
-	public static final String PARAM_ID_TOKEN = "idToken";
 	public static final String PARAM_CLIENT = "client";
 	public static final String PARAM_REFERSH_TOKEN = "refreshToken";
 	public static final String PARAM_DATE = "date";
@@ -107,8 +104,6 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 
 	private JWT jwtValue; // JWT-encoded access token value
 
-	private OAuth2AccessTokenEntity idToken; // JWT-encoded OpenID Connect IdToken
-
 	private Date expiration;
 
 	private String tokenType = OAuth2AccessToken.BEARER_TYPE;
@@ -120,6 +115,8 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	private Set<Permission> permissions;
 	
 	private ApprovedSite approvedSite;
+	
+	private Map<String, Object> additionalInformation = new HashMap<>(); // ephemeral map of items to be added to the OAuth token response
 
 	/**
 	 * Create a new, blank access token
@@ -146,16 +143,13 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	}
 
 	/**
-	 * Get all additional information to be sent to the serializer. Inserts a copy of the IdToken (in JWT String form).
+	 * Get all additional information to be sent to the serializer as part of the token response.
+	 * This map is not persisted to the database.
 	 */
 	@Override
 	@Transient
 	public Map<String, Object> getAdditionalInformation() {
-		Map<String, Object> map = new HashMap<>(); //super.getAdditionalInformation();
-		if (getIdToken() != null) {
-			map.put(ID_TOKEN_FIELD_NAME, getIdTokenString());
-		}
-		return map;
+		return additionalInformation;
 	}
 
 	/**
@@ -263,34 +257,6 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	}
 
 	/**
-	 * @return the idToken
-	 */
-	@OneToOne(cascade=CascadeType.ALL, orphanRemoval=true) // one-to-one mapping for now
-	@JoinColumn(name = "id_token_id")
-	public OAuth2AccessTokenEntity getIdToken() {
-		return idToken;
-	}
-
-	/**
-	 * @param idToken the idToken to set
-	 */
-	public void setIdToken(OAuth2AccessTokenEntity idToken) {
-		this.idToken = idToken;
-	}
-
-	/**
-	 * @return the idTokenString
-	 */
-	@Transient
-	public String getIdTokenString() {
-		if (idToken != null) {
-			return idToken.getValue(); // get the JWT string value of the id token entity
-		} else {
-			return null;
-		}
-	}
-
-	/**
 	 * @return the jwtValue
 	 */
 	@Basic
@@ -351,5 +317,16 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 
 	public void setApprovedSite(ApprovedSite approvedSite) {
 		this.approvedSite = approvedSite;
+	}
+
+	/**
+	 * Add the ID Token to the additionalInformation map for a token response.
+	 * @param idToken
+	 */
+	@Transient
+	public void setIdToken(JWT idToken) {
+		if (idToken != null) {
+			additionalInformation.put(ID_TOKEN_FIELD_NAME, idToken.serialize());
+		}
 	}
 }

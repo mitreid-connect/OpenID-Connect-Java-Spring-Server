@@ -442,8 +442,10 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 			.value((token.getAuthenticationHolder() != null) ? token.getAuthenticationHolder().getId() : null);
 			writer.name(REFRESH_TOKEN_ID)
 			.value((token.getRefreshToken() != null) ? token.getRefreshToken().getId() : null);
+/*
 			writer.name(ID_TOKEN_ID)
 			.value((token.getIdToken() != null) ? token.getIdToken().getId() : null);
+*/
 			writer.name(SCOPE);
 			writer.beginArray();
 			for (String s : token.getScope()) {
@@ -1780,16 +1782,6 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 		}
 		accessTokenToRefreshTokenRefs.clear();
 		refreshTokenOldToNewIdMap.clear();
-		for (Long oldAccessTokenId : accessTokenToIdTokenRefs.keySet()) {
-			Long oldIdTokenId = accessTokenToIdTokenRefs.get(oldAccessTokenId);
-			Long newIdTokenId = accessTokenOldToNewIdMap.get(oldIdTokenId);
-			OAuth2AccessTokenEntity idToken = tokenRepository.getAccessTokenById(newIdTokenId);
-			Long newAccessTokenId = accessTokenOldToNewIdMap.get(oldAccessTokenId);
-			OAuth2AccessTokenEntity accessToken = tokenRepository.getAccessTokenById(newAccessTokenId);
-			accessToken.setIdToken(idToken);
-			tokenRepository.saveAccessToken(accessToken);
-		}
-		accessTokenToIdTokenRefs.clear();
 		for (Long oldGrantId : grantToAccessTokensRefs.keySet()) {
 			Set<Long> oldAccessTokenIds = grantToAccessTokensRefs.get(oldGrantId);
 

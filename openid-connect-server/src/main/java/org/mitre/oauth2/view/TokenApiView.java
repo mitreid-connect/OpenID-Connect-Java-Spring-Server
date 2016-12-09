@@ -84,7 +84,6 @@ public class TokenApiView extends AbstractView {
 
 			o.addProperty("value", src.getValue());
 			o.addProperty("id", src.getId());
-			o.addProperty("idTokenId", src.getIdToken() != null ? src.getIdToken().getId() : null);
 			o.addProperty("refreshTokenId", src.getRefreshToken() != null ? src.getRefreshToken().getId() : null);
 
 			o.add("scopes", context.serialize(src.getScope()));

@@ -51,8 +51,6 @@ public interface OAuth2TokenRepository {
 
 	public List<OAuth2RefreshTokenEntity> getRefreshTokensForClient(ClientDetailsEntity client);
 
-	public OAuth2AccessTokenEntity getAccessTokenForIdToken(OAuth2AccessTokenEntity idToken);
-
 	public Set<OAuth2AccessTokenEntity> getAllAccessTokens();
 
 	public Set<OAuth2RefreshTokenEntity> getAllRefreshTokens();

@@ -139,7 +139,6 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 	private static final String REQUEST_PARAMETERS = "requestParameters";
 	private static final String TYPE = "type";
 	private static final String SCOPE = "scope";
-	private static final String ID_TOKEN_ID = "idTokenId";
 	private static final String REFRESH_TOKEN_ID = "refreshTokenId";
 	private static final String VALUE = "value";
 	private static final String AUTHENTICATION_HOLDER_ID = "authenticationHolderId";
@@ -257,8 +256,6 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 			.value((token.getAuthenticationHolder() != null) ? token.getAuthenticationHolder().getId() : null);
 			writer.name(REFRESH_TOKEN_ID)
 			.value((token.getRefreshToken() != null) ? token.getRefreshToken().getId() : null);
-			writer.name(ID_TOKEN_ID)
-			.value((token.getIdToken() != null) ? token.getIdToken().getId() : null);
 			writer.name(SCOPE);
 			writer.beginArray();
 			for (String s : token.getScope()) {
@@ -658,7 +655,6 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 	private Map<Long, String> accessTokenToClientRefs = new HashMap<Long, String>();
 	private Map<Long, Long> accessTokenToAuthHolderRefs = new HashMap<Long, Long>();
 	private Map<Long, Long> accessTokenToRefreshTokenRefs = new HashMap<Long, Long>();
-	private Map<Long, Long> accessTokenToIdTokenRefs = new HashMap<Long, Long>();
 	private Map<Long, Long> accessTokenOldToNewIdMap = new HashMap<Long, Long>();
 
 	/**
@@ -678,7 +674,6 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 			String clientId = null;
 			Long authHolderId = null;
 			Long refreshTokenId = null;
-			Long idTokenId = null;
 			while (reader.hasNext()) {
 				switch (reader.peek()) {
 				case END_OBJECT:
@@ -706,8 +701,6 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 						authHolderId = reader.nextLong();
 					} else if (name.equals(REFRESH_TOKEN_ID)) {
 						refreshTokenId = reader.nextLong();
-					} else if (name.equals(ID_TOKEN_ID)) {
-						idTokenId = reader.nextLong();
 					} else if (name.equals(SCOPE)) {
 						Set<String> scope = readSet(reader);
 						token.setScope(scope);
@@ -730,9 +723,6 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 			accessTokenToAuthHolderRefs.put(currentId, authHolderId);
 			if (refreshTokenId != null) {
 				accessTokenToRefreshTokenRefs.put(currentId, refreshTokenId);
-			}
-			if (idTokenId != null) {
-				accessTokenToIdTokenRefs.put(currentId, idTokenId);
 			}
 			accessTokenOldToNewIdMap.put(currentId, newId);
 			logger.debug("Read access token {}", currentId);
@@ -1263,16 +1253,6 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 		}
 		accessTokenToRefreshTokenRefs.clear();
 		refreshTokenOldToNewIdMap.clear();
-		for (Long oldAccessTokenId : accessTokenToIdTokenRefs.keySet()) {
-			Long oldIdTokenId = accessTokenToIdTokenRefs.get(oldAccessTokenId);
-			Long newIdTokenId = accessTokenOldToNewIdMap.get(oldIdTokenId);
-			OAuth2AccessTokenEntity idToken = tokenRepository.getAccessTokenById(newIdTokenId);
-			Long newAccessTokenId = accessTokenOldToNewIdMap.get(oldAccessTokenId);
-			OAuth2AccessTokenEntity accessToken = tokenRepository.getAccessTokenById(newAccessTokenId);
-			accessToken.setIdToken(idToken);
-			tokenRepository.saveAccessToken(accessToken);
-		}
-		accessTokenToIdTokenRefs.clear();
 		for (Long oldGrantId : grantToAccessTokensRefs.keySet()) {
 			Set<Long> oldAccessTokenIds = grantToAccessTokensRefs.get(oldGrantId);
 
