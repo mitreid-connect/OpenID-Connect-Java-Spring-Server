@@ -1153,8 +1153,8 @@ public class TestMITREidDataService_1_3 {
 		site1.setAccessDate(accessDate1);
 		site1.setUserId("user1");
 		site1.setAllowedScopes(ImmutableSet.of("openid", "phone"));
-		site1.setApprovedAccessTokens(ImmutableSet.of(mockToken1));
-
+		when(mockToken1.getApprovedSite()).thenReturn(site1);
+		
 		Date creationDate2 = formatter.parse("2014-09-11T18:49:44.090+0000", Locale.ENGLISH);
 		Date accessDate2 = formatter.parse("2014-09-11T20:49:44.090+0000", Locale.ENGLISH);
 		Date timeoutDate2 = formatter.parse("2014-10-01T20:49:44.090+0000", Locale.ENGLISH);
@@ -1246,16 +1246,6 @@ public class TestMITREidDataService_1_3 {
 				}
 				assertThat(site.get("userId").getAsString(), equalTo(compare.getUserId()));
 				assertThat(jsonArrayToStringSet(site.getAsJsonArray("allowedScopes")), equalTo(compare.getAllowedScopes()));
-				if (site.get("approvedAccessTokens").isJsonNull() || site.getAsJsonArray("approvedAccessTokens") == null) {
-					assertTrue(compare.getApprovedAccessTokens() == null || compare.getApprovedAccessTokens().isEmpty());
-				} else {
-					assertNotNull(compare.getApprovedAccessTokens());
-					Set<String> tokenIds = new HashSet<>();
-					for(OAuth2AccessTokenEntity entity : compare.getApprovedAccessTokens()) {
-						tokenIds.add(entity.getId().toString());
-					}
-					assertThat(jsonArrayToStringSet(site.getAsJsonArray("approvedAccessTokens")), equalTo(tokenIds));
-				}
 				checked.add(compare);
 			}
 		}
@@ -1278,7 +1268,7 @@ public class TestMITREidDataService_1_3 {
 		site1.setAccessDate(accessDate1);
 		site1.setUserId("user1");
 		site1.setAllowedScopes(ImmutableSet.of("openid", "phone"));
-		site1.setApprovedAccessTokens(ImmutableSet.of(mockToken1));
+		when(mockToken1.getApprovedSite()).thenReturn(site1);
 
 		Date creationDate2 = formatter.parse("2014-09-11T18:49:44.090+0000", Locale.ENGLISH);
 		Date accessDate2 = formatter.parse("2014-09-11T20:49:44.090+0000", Locale.ENGLISH);
@@ -1369,14 +1359,12 @@ public class TestMITREidDataService_1_3 {
 		assertThat(savedSites.get(0).getCreationDate(), equalTo(site1.getCreationDate()));
 		assertThat(savedSites.get(0).getAllowedScopes(), equalTo(site1.getAllowedScopes()));
 		assertThat(savedSites.get(0).getTimeoutDate(), equalTo(site1.getTimeoutDate()));
-		assertThat(savedSites.get(0).getApprovedAccessTokens().size(), equalTo(site1.getApprovedAccessTokens().size()));
 
 		assertThat(savedSites.get(1).getClientId(), equalTo(site2.getClientId()));
 		assertThat(savedSites.get(1).getAccessDate(), equalTo(site2.getAccessDate()));
 		assertThat(savedSites.get(1).getCreationDate(), equalTo(site2.getCreationDate()));
 		assertThat(savedSites.get(1).getAllowedScopes(), equalTo(site2.getAllowedScopes()));
 		assertThat(savedSites.get(1).getTimeoutDate(), equalTo(site2.getTimeoutDate()));
-		assertThat(savedSites.get(1).getApprovedAccessTokens().size(), equalTo(site2.getApprovedAccessTokens().size()));
 	}
 
 	@Test

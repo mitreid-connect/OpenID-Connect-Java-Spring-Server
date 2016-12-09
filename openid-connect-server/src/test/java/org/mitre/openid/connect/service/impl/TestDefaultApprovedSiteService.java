@@ -16,13 +16,17 @@
  *******************************************************************************/
 package org.mitre.openid.connect.service.impl;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mitre.oauth2.model.ClientDetailsEntity;
+import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
+import org.mitre.oauth2.repository.OAuth2TokenRepository;
 import org.mitre.openid.connect.model.ApprovedSite;
 import org.mitre.openid.connect.repository.ApprovedSiteRepository;
 import org.mitre.openid.connect.service.ApprovedSiteService;
@@ -33,6 +37,7 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.test.annotation.Rollback;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 
 import static org.mockito.Matchers.any;
@@ -53,6 +58,9 @@ public class TestDefaultApprovedSiteService {
 	@Mock
 	private ApprovedSiteRepository repository;
 
+	@Mock
+	private OAuth2TokenRepository tokenRepository;
+	
 	@Mock
 	private StatsService statsService;
 
@@ -97,6 +105,8 @@ public class TestDefaultApprovedSiteService {
 	public void clearApprovedSitesForClient_success() {
 		Set<ApprovedSite> setToReturn = Sets.newHashSet(site2, site3);
 		Mockito.when(repository.getByClientId(client.getClientId())).thenReturn(setToReturn);
+		List<OAuth2AccessTokenEntity> tokens = ImmutableList.of();
+		Mockito.when(tokenRepository.getAccessTokensForApprovedSite(any(ApprovedSite.class))).thenReturn(tokens);
 
 		service.clearApprovedSitesForClient(client);
 

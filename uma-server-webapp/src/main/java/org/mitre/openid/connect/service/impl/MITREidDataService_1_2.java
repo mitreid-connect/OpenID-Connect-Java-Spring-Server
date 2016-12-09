@@ -17,12 +17,17 @@ package org.mitre.openid.connect.service.impl;
  *******************************************************************************/
 
 
+import static org.mitre.util.JsonUtils.readMap;
+import static org.mitre.util.JsonUtils.readSet;
+import static org.mitre.util.JsonUtils.writeNullSafeArray;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -75,10 +80,6 @@ import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jwt.JWTParser;
-
-import static org.mitre.util.JsonUtils.readMap;
-import static org.mitre.util.JsonUtils.readSet;
-import static org.mitre.util.JsonUtils.writeNullSafeArray;
 
 /**
  *
@@ -567,7 +568,7 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 			writer.name(USER_ID).value(site.getUserId());
 			writer.name(ALLOWED_SCOPES);
 			writeNullSafeArray(writer, site.getAllowedScopes());
-			Set<OAuth2AccessTokenEntity> tokens = site.getApprovedAccessTokens();
+			List<OAuth2AccessTokenEntity> tokens = tokenRepository.getAccessTokensForApprovedSite(site);
 			writer.name(APPROVED_ACCESS_TOKENS);
 			writer.beginArray();
 			for (OAuth2AccessTokenEntity token : tokens) {
@@ -1791,14 +1792,17 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 		accessTokenToIdTokenRefs.clear();
 		for (Long oldGrantId : grantToAccessTokensRefs.keySet()) {
 			Set<Long> oldAccessTokenIds = grantToAccessTokensRefs.get(oldGrantId);
-			Set<OAuth2AccessTokenEntity> tokens = new HashSet<OAuth2AccessTokenEntity>();
-			for(Long oldTokenId : oldAccessTokenIds) {
-				Long newTokenId = accessTokenOldToNewIdMap.get(oldTokenId);
-				tokens.add(tokenRepository.getAccessTokenById(newTokenId));
-			}
+
 			Long newGrantId = grantOldToNewIdMap.get(oldGrantId);
 			ApprovedSite site = approvedSiteRepository.getById(newGrantId);
-			site.setApprovedAccessTokens(tokens);
+
+			for(Long oldTokenId : oldAccessTokenIds) {
+				Long newTokenId = accessTokenOldToNewIdMap.get(oldTokenId);
+				OAuth2AccessTokenEntity token = tokenRepository.getAccessTokenById(newTokenId);
+				token.setApprovedSite(site);
+				tokenRepository.saveAccessToken(token);
+			}
+			
 			approvedSiteRepository.save(site);
 		}
 		accessTokenOldToNewIdMap.clear();
