@@ -81,9 +81,6 @@ public class ApprovedSite {
 	// this should include all information for what data to access
 	private Set<String> allowedScopes;
 
-	//Link to any access tokens approved through this stored decision
-	private Set<OAuth2AccessTokenEntity> approvedAccessTokens = Sets.newHashSet();
-
 	/**
 	 * Empty constructor
 	 */
@@ -229,16 +226,4 @@ public class ApprovedSite {
 		}
 	}
 
-	@OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
-	@JoinColumn(name="approved_site_id")
-	public Set<OAuth2AccessTokenEntity> getApprovedAccessTokens() {
-		return approvedAccessTokens;
-	}
-
-	/**
-	 * @param approvedAccessTokens the approvedAccessTokens to set
-	 */
-	public void setApprovedAccessTokens(Set<OAuth2AccessTokenEntity> approvedAccessTokens) {
-		this.approvedAccessTokens = approvedAccessTokens;
-	}
 }

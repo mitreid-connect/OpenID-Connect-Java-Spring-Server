@@ -18,8 +18,10 @@ package org.mitre.openid.connect.service;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
+import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.openid.connect.model.ApprovedSite;
 import org.springframework.security.oauth2.provider.ClientDetails;
 
@@ -101,4 +103,11 @@ public interface ApprovedSiteService {
 	 * @return
 	 */
 	public void clearExpiredSites();
+
+	/**
+	 * Return all approved access tokens for the site.
+	 * @return
+	 */
+	public List<OAuth2AccessTokenEntity> getApprovedAccessTokens(ApprovedSite approvedSite);
+	
 }

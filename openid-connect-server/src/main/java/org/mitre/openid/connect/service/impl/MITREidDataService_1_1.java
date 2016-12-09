@@ -909,14 +909,17 @@ public class MITREidDataService_1_1 extends MITREidDataServiceSupport implements
 		accessTokenToIdTokenRefs.clear();
 		for (Long oldGrantId : grantToAccessTokensRefs.keySet()) {
 			Set<Long> oldAccessTokenIds = grantToAccessTokensRefs.get(oldGrantId);
-			Set<OAuth2AccessTokenEntity> tokens = new HashSet<>();
-			for(Long oldTokenId : oldAccessTokenIds) {
-				Long newTokenId = accessTokenOldToNewIdMap.get(oldTokenId);
-				tokens.add(tokenRepository.getAccessTokenById(newTokenId));
-			}
+
 			Long newGrantId = grantOldToNewIdMap.get(oldGrantId);
 			ApprovedSite site = approvedSiteRepository.getById(newGrantId);
-			site.setApprovedAccessTokens(tokens);
+
+			for(Long oldTokenId : oldAccessTokenIds) {
+				Long newTokenId = accessTokenOldToNewIdMap.get(oldTokenId);
+				OAuth2AccessTokenEntity token = tokenRepository.getAccessTokenById(newTokenId);
+				token.setApprovedSite(site);
+				tokenRepository.saveAccessToken(token);
+			}
+			
 			approvedSiteRepository.save(site);
 		}
 		accessTokenOldToNewIdMap.clear();

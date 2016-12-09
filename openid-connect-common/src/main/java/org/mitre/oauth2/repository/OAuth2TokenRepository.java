@@ -22,6 +22,7 @@ import java.util.Set;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
+import org.mitre.openid.connect.model.ApprovedSite;
 import org.mitre.uma.model.ResourceSet;
 
 public interface OAuth2TokenRepository {
@@ -65,5 +66,7 @@ public interface OAuth2TokenRepository {
 	public void clearDuplicateAccessTokens();
 
 	public void clearDuplicateRefreshTokens();
+	
+	public List<OAuth2AccessTokenEntity> getAccessTokensForApprovedSite(ApprovedSite approvedSite);
 
 }

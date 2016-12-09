@@ -35,6 +35,7 @@ import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
+import org.mitre.openid.connect.model.ApprovedSite;
 import org.mitre.uma.model.ResourceSet;
 import org.mitre.util.jpa.JpaUtil;
 import org.slf4j.Logger;
@@ -271,6 +272,14 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 			logger.warn("Deleted {} duplicate refresh tokens", result);
 		}
 
+	}
+	
+	@Override
+	public List<OAuth2AccessTokenEntity> getAccessTokensForApprovedSite(ApprovedSite approvedSite) {
+		TypedQuery<OAuth2AccessTokenEntity> queryA = manager.createNamedQuery(OAuth2AccessTokenEntity.QUERY_BY_APPROVED_SITE, OAuth2AccessTokenEntity.class);
+		queryA.setParameter(OAuth2AccessTokenEntity.PARAM_APPROVED_SITE, approvedSite);
+		List<OAuth2AccessTokenEntity> accessTokens = queryA.getResultList();
+		return accessTokens;
 	}
 
 }

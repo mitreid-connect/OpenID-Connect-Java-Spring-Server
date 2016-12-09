@@ -47,6 +47,7 @@ import javax.persistence.Temporal;
 import javax.persistence.Transient;
 
 import org.mitre.oauth2.model.convert.JWTStringConverter;
+import org.mitre.openid.connect.model.ApprovedSite;
 import org.mitre.uma.model.Permission;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2AccessTokenJackson1Deserializer;
@@ -70,6 +71,7 @@ import com.nimbusds.jwt.JWT;
 	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_CLIENT, query = "select a from OAuth2AccessTokenEntity a where a.client = :" + OAuth2AccessTokenEntity.PARAM_CLIENT),
 	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_ID_TOKEN, query = "select a from OAuth2AccessTokenEntity a where a.idToken = :" + OAuth2AccessTokenEntity.PARAM_ID_TOKEN),
 	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_TOKEN_VALUE, query = "select a from OAuth2AccessTokenEntity a where a.jwt = :" + OAuth2AccessTokenEntity.PARAM_TOKEN_VALUE),
+	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_APPROVED_SITE, query = "select a from OAuth2AccessTokenEntity a where a.approvedSite = :" + OAuth2AccessTokenEntity.PARAM_APPROVED_SITE),
 	@NamedQuery(name = OAuth2AccessTokenEntity.QUERY_BY_RESOURCE_SET, query = "select a from OAuth2AccessTokenEntity a join a.permissions p where p.resourceSet.id = :" + OAuth2AccessTokenEntity.PARAM_RESOURCE_SET_ID)
 })
 @org.codehaus.jackson.map.annotate.JsonSerialize(using = OAuth2AccessTokenJackson1Serializer.class)
@@ -78,6 +80,7 @@ import com.nimbusds.jwt.JWT;
 @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = OAuth2AccessTokenJackson2Deserializer.class)
 public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 
+	public static final String QUERY_BY_APPROVED_SITE = "OAuth2AccessTokenEntity.getByApprovedSite";
 	public static final String QUERY_BY_TOKEN_VALUE = "OAuth2AccessTokenEntity.getByTokenValue";
 	public static final String QUERY_BY_ID_TOKEN = "OAuth2AccessTokenEntity.getByIdToken";
 	public static final String QUERY_BY_CLIENT = "OAuth2AccessTokenEntity.getByClient";
@@ -92,6 +95,7 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	public static final String PARAM_REFERSH_TOKEN = "refreshToken";
 	public static final String PARAM_DATE = "date";
 	public static final String PARAM_RESOURCE_SET_ID = "rsid";
+	public static final String PARAM_APPROVED_SITE = "approvedSite";
 
 	public static final String ID_TOKEN_FIELD_NAME = "id_token";
 
@@ -114,6 +118,8 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	private Set<String> scope;
 
 	private Set<Permission> permissions;
+	
+	private ApprovedSite approvedSite;
 
 	/**
 	 * Create a new, blank access token
@@ -337,4 +343,13 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 		this.permissions = permissions;
 	}
 
+	@ManyToOne
+	@JoinColumn(name="approved_site_id")
+	public ApprovedSite getApprovedSite() {
+		return approvedSite;
+	}
+
+	public void setApprovedSite(ApprovedSite approvedSite) {
+		this.approvedSite = approvedSite;
+	}
 }
