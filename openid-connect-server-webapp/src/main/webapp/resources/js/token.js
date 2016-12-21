@@ -21,7 +21,6 @@ var AccessTokenModel = Backbone.Model.extend({
 	defaults:{
 		id:null,
 		value:null,
-		idTokenId:null,
 		refreshTokenId:null,
 		scopes:[],
 		clientId:null,
