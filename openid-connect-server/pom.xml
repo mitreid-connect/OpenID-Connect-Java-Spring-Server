@@ -51,6 +51,10 @@
 			<artifactId>org.eclipse.persistence.core</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-io</artifactId>
+		</dependency>
 	</dependencies>
 	<description>OpenID Connect server libraries for Spring and Spring Security.</description>
 	<url />
