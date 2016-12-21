@@ -10,7 +10,6 @@ CREATE TABLE access_token (
   refresh_token_id NUMBER(19),
   client_id NUMBER(19),
   auth_holder_id NUMBER(19),
-  id_token_id NUMBER(19),
   approved_site_id NUMBER(19)
 );
 CREATE SEQUENCE access_token_seq START WITH 1 INCREMENT BY 1 NOCACHE NOCYCLE;
