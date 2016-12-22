@@ -37,7 +37,7 @@
 		
 	<mvc:view-controller path="/login" view-name="login" />
 
-	<security:http disable-url-rewriting="true" authentication-manager-ref="authenticationManager"> 
+	<security:http authentication-manager-ref="authenticationManager"> 
 	
 		<security:intercept-url pattern="/authorize" access="hasRole('ROLE_USER')" />
 		<security:intercept-url pattern="/**" access="permitAll" />
