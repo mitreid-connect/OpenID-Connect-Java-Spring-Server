@@ -27,17 +27,17 @@ $(document).ready(function() {
 
 	<div class="row-fluid">
 		<div class="span6 offset1 well">
-			<form action="${ config.issuer }${ config.issuer.endsWith('/') ? '' : '/' }j_spring_security_check" method="POST">
+			<form action="${ config.issuer }${ config.issuer.endsWith('/') ? '' : '/' }login" method="POST">
 				<div>
 					<div class="input-prepend input-block-level">
 						<span class="add-on"><i class="icon-user"></i></span>
-						<input type="text" placeholder="<spring:message code="login.username"/>" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false" value="<c:out value="${ login_hint }" />" id="j_username" name="j_username">
+						<input type="text" placeholder="<spring:message code="login.username"/>" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false" value="<c:out value="${ login_hint }" />" id="j_username" name="username">
 					</div>
 				</div>
 				<div>
 					<div class="input-prepend input-block-level">
 						<span class="add-on"><i class="icon-lock"></i></span>
-						<input type="password" placeholder="<spring:message code="login.password"/>" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false" id="j_password" name="j_password">
+						<input type="password" placeholder="<spring:message code="login.password"/>" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false" id="j_password" name="password">
 					</div>
 				</div>
 				<div>

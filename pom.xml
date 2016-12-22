@@ -71,8 +71,6 @@
 
 	<properties>
 		<java-version>1.8</java-version>
-		<org.springframework-version>4.1.1.RELEASE</org.springframework-version>
-		<spring.security.version>3.2.5.RELEASE</spring.security.version>
 		<org.slf4j-version>1.7.21</org.slf4j-version>
 	</properties>
 	<description>A reference implementation of OpenID Connect (http://openid.net/connect/), OAuth 2.0, and UMA built on top of Java, Spring, and Spring Security. The project contains a fully functioning server, client, and utility library.</description>
@@ -314,7 +312,7 @@
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-framework-bom</artifactId>
-				<version>4.1.9.RELEASE</version>
+				<version>4.3.4.RELEASE</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -335,14 +333,14 @@
 			<dependency>
 				<groupId>org.springframework.security</groupId>
 				<artifactId>spring-security-bom</artifactId>
-				<version>3.2.9.RELEASE</version>
+				<version>4.2.0.RELEASE</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.security.oauth</groupId>
 				<artifactId>spring-security-oauth2</artifactId>
-				<version>2.0.3.RELEASE</version>
+				<version>2.0.12.RELEASE</version>
 			</dependency>
 
 			<!-- Servlet -->
@@ -373,7 +371,7 @@
 			<dependency>
 				<groupId>org.hsqldb</groupId>
 				<artifactId>hsqldb</artifactId>
-				<version>2.2.9</version>
+				<version>2.3.4</version>
 			</dependency>
 			<dependency>
 				<groupId>org.postgresql</groupId>
@@ -393,7 +391,7 @@
 			<dependency>
 				<groupId>org.eclipse.persistence</groupId>
 				<artifactId>javax.persistence</artifactId>
-				<version>2.1.0</version>
+				<version>2.1.1</version>
 			</dependency>
 			<dependency>
 				<groupId>com.zaxxer</groupId>
