@@ -375,13 +375,13 @@ var ErrorHandlerView = Backbone.View.extend({
 			message = {};
 		}
 
-		if (message.log) {
-			console.log(message.log);
-		}
-		
 		var _self = this;
 		
 		return function(model, response, options) {
+			
+			if (message.log) {
+				console.log(message.log);
+			}
 			
 			_self.showErrorMessage(
 					_self.headerTemplate({message: message, model: model, response: response, options: options}),
