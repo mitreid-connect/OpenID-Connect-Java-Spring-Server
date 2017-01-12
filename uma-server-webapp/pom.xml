@@ -53,12 +53,23 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
 				<configuration>
+					<warName>uma-server-webapp</warName>
 					<overlays>
 						<overlay>
 							<groupId>org.mitre</groupId>
 							<artifactId>openid-connect-server-webapp</artifactId>
 						</overlay>
 					</overlays>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-maven-plugin</artifactId>
+				<configuration>
+					<war>${project.build.directory}/uma-server-webapp.war</war>
+					<webAppConfig>
+						<contextPath>/uma-server-webapp</contextPath>
+					</webAppConfig>
 				</configuration>
 			</plugin>
 		</plugins>
