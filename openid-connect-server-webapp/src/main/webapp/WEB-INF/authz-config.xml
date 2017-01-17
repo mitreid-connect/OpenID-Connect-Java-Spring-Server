@@ -52,7 +52,7 @@
 
 	<bean id="oauthAccessDeniedHandler" class="org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHandler" />
 
-	<bean id="oauthRequestValidator" class="org.mitre.oauth2.token.StructuredScopeAwareOAuth2RequestValidator" />
+	<bean id="oauthRequestValidator" class="org.mitre.oauth2.token.ScopeServiceAwareOAuth2RequestValidator" />
 
 	<!-- Error page handler. -->
 	<mvc:view-controller path="/error" view-name="error" />

@@ -808,9 +808,9 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 					} else if (name.equals(ICON)) {
 						scope.setIcon(reader.nextString());
 					} else if (name.equals(STRUCTURED)) {
-						scope.setStructured(reader.nextBoolean());
+						logger.warn("Found a structured scope, ignoring structure");
 					} else if (name.equals(STRUCTURED_PARAMETER)) {
-						scope.setStructuredParamDescription(reader.nextString());
+						logger.warn("Found a structured scope, ignoring structure");
 					} else {
 						logger.debug("found unexpected entry");
 						reader.skipValue();

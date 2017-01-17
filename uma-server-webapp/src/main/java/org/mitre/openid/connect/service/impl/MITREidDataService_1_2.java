@@ -726,8 +726,6 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 				writer.name(ICON).value(sysScope.getIcon());
 				writer.name(VALUE).value(sysScope.getValue());
 				writer.name(RESTRICTED).value(sysScope.isRestricted());
-				writer.name(STRUCTURED).value(sysScope.isStructured());
-				writer.name(STRUCTURED_PARAMETER).value(sysScope.getStructuredParamDescription());
 				writer.name(DEFAULT_SCOPE).value(sysScope.isDefaultScope());
 				writer.endObject();
 				logger.debug("Wrote system scope {}", sysScope.getId());
@@ -1710,9 +1708,9 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 					} else if (name.equals(ICON)) {
 						scope.setIcon(reader.nextString());
 					} else if (name.equals(STRUCTURED)) {
-						scope.setStructured(reader.nextBoolean());
+						logger.debug("Found a structured scope, ignoring structure");
 					} else if (name.equals(STRUCTURED_PARAMETER)) {
-						scope.setStructuredParamDescription(reader.nextString());
+						logger.debug("Found a structured scope, ignoring structure");
 					} else {
 						logger.debug("found unexpected entry");
 						reader.skipValue();

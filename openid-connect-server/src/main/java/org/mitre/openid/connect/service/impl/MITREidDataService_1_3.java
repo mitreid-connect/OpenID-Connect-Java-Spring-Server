@@ -80,8 +80,6 @@ import com.nimbusds.jwt.JWTParser;
 public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements MITREidDataService {
 
 	private static final String DEFAULT_SCOPE = "defaultScope";
-	private static final String STRUCTURED_PARAMETER = "structuredParameter";
-	private static final String STRUCTURED = "structured";
 	private static final String RESTRICTED = "restricted";
 	private static final String ICON = "icon";
 	private static final String DYNAMICALLY_REGISTERED = "dynamicallyRegistered";
@@ -525,8 +523,6 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 				writer.name(ICON).value(sysScope.getIcon());
 				writer.name(VALUE).value(sysScope.getValue());
 				writer.name(RESTRICTED).value(sysScope.isRestricted());
-				writer.name(STRUCTURED).value(sysScope.isStructured());
-				writer.name(STRUCTURED_PARAMETER).value(sysScope.getStructuredParamDescription());
 				writer.name(DEFAULT_SCOPE).value(sysScope.isDefaultScope());
 				writer.endObject();
 				logger.debug("Wrote system scope {}", sysScope.getId());
@@ -1180,10 +1176,6 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 						scope.setDefaultScope(reader.nextBoolean());
 					} else if (name.equals(ICON)) {
 						scope.setIcon(reader.nextString());
-					} else if (name.equals(STRUCTURED)) {
-						scope.setStructured(reader.nextBoolean());
-					} else if (name.equals(STRUCTURED_PARAMETER)) {
-						scope.setStructuredParamDescription(reader.nextString());
 					} else {
 						logger.debug("found unexpected entry");
 						reader.skipValue();

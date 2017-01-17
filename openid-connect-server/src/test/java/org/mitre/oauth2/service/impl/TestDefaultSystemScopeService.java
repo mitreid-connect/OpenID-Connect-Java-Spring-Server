@@ -52,8 +52,6 @@ public class TestDefaultSystemScopeService {
 	private SystemScope defaultScope2;
 	private SystemScope dynScope1;
 	private SystemScope restrictedScope1;
-	private SystemScope structuredScope1;
-	private SystemScope structuredScope1Value;
 
 	private String defaultDynScope1String = "defaultDynScope1";
 	private String defaultDynScope2String = "defaultDynScope2";
@@ -61,8 +59,6 @@ public class TestDefaultSystemScopeService {
 	private String defaultScope2String = "defaultScope2";
 	private String dynScope1String = "dynScope1";
 	private String restrictedScope1String = "restrictedScope1";
-	private String structuredScope1String = "structuredScope1";
-	private String structuredValue = "structuredValue";
 
 	private Set<SystemScope> allScopes;
 	private Set<String> allScopeStrings;
@@ -105,20 +101,11 @@ public class TestDefaultSystemScopeService {
 		restrictedScope1.setRestricted(true);
 
 
-		// structuredScope1 : structured scope
-		structuredScope1 = new SystemScope(structuredScope1String);
-		structuredScope1.setStructured(true);
+		allScopes = Sets.newHashSet(defaultDynScope1, defaultDynScope2, defaultScope1, defaultScope2, dynScope1, restrictedScope1);
+		allScopeStrings = Sets.newHashSet(defaultDynScope1String, defaultDynScope2String, defaultScope1String, defaultScope2String, dynScope1String, restrictedScope1String);
 
-		// structuredScope1Value : structured scope with value
-		structuredScope1Value = new SystemScope(structuredScope1String);
-		structuredScope1Value.setStructured(true);
-		structuredScope1Value.setStructuredValue(structuredValue);
-
-		allScopes = Sets.newHashSet(defaultDynScope1, defaultDynScope2, defaultScope1, defaultScope2, dynScope1, restrictedScope1, structuredScope1);
-		allScopeStrings = Sets.newHashSet(defaultDynScope1String, defaultDynScope2String, defaultScope1String, defaultScope2String, dynScope1String, restrictedScope1String, structuredScope1String);
-
-		allScopesWithValue = Sets.newHashSet(defaultDynScope1, defaultDynScope2, defaultScope1, defaultScope2, dynScope1, restrictedScope1, structuredScope1, structuredScope1Value);
-		allScopeStringsWithValue = Sets.newHashSet(defaultDynScope1String, defaultDynScope2String, defaultScope1String, defaultScope2String, dynScope1String, restrictedScope1String, structuredScope1String, structuredScope1String + ":" + structuredValue);
+		allScopesWithValue = Sets.newHashSet(defaultDynScope1, defaultDynScope2, defaultScope1, defaultScope2, dynScope1, restrictedScope1);
+		allScopeStringsWithValue = Sets.newHashSet(defaultDynScope1String, defaultDynScope2String, defaultScope1String, defaultScope2String, dynScope1String, restrictedScope1String);
 
 		Mockito.when(repository.getByValue(defaultDynScope1String)).thenReturn(defaultDynScope1);
 		Mockito.when(repository.getByValue(defaultDynScope2String)).thenReturn(defaultDynScope2);
@@ -126,16 +113,6 @@ public class TestDefaultSystemScopeService {
 		Mockito.when(repository.getByValue(defaultScope2String)).thenReturn(defaultScope2);
 		Mockito.when(repository.getByValue(dynScope1String)).thenReturn(dynScope1);
 		Mockito.when(repository.getByValue(restrictedScope1String)).thenReturn(restrictedScope1);
-		// we re-use this value so we've got to use thenAnswer instead
-		Mockito.when(repository.getByValue(structuredScope1String)).thenAnswer(new Answer<SystemScope>() {
-			@Override
-			public SystemScope answer(InvocationOnMock invocation) throws Throwable {
-				SystemScope s = new SystemScope(structuredScope1String);
-				s.setStructured(true);
-				return s;
-			}
-
-		});
 
 		Mockito.when(repository.getAll()).thenReturn(allScopes);
 	}
@@ -157,7 +134,7 @@ public class TestDefaultSystemScopeService {
 	@Test
 	public void getUnrestricted() {
 
-		Set<SystemScope> unrestricted = Sets.newHashSet(defaultDynScope1, defaultDynScope2, dynScope1, structuredScope1);
+		Set<SystemScope> unrestricted = Sets.newHashSet(defaultDynScope1, defaultDynScope2, dynScope1);
 
 		assertThat(service.getUnrestricted(), equalTo(unrestricted));
 	}
@@ -210,25 +187,4 @@ public class TestDefaultSystemScopeService {
 		assertThat(service.scopesMatch(expected, actualBad), is(false));
 	}
 
-	@Test
-	public void scopesMatch_structured() {
-		Set<String> expected = Sets.newHashSet("foo", "bar", "baz");
-		Set<String> actualGood = Sets.newHashSet("foo:value", "baz", "bar");
-		Set<String> actualBad = Sets.newHashSet("foo:value", "bar:value");
-
-		// note: we have to use "thenAnswer" here to mimic the repository not serializing the structuredValue field
-		Mockito.when(repository.getByValue("foo")).thenAnswer(new Answer<SystemScope>() {
-			@Override
-			public SystemScope answer(InvocationOnMock invocation) throws Throwable {
-				SystemScope foo = new SystemScope("foo");
-				foo.setStructured(true);
-				return foo;
-			}
-
-		});
-
-		assertThat(service.scopesMatch(expected, actualGood), is(true));
-
-		assertThat(service.scopesMatch(expected, actualBad), is(false));
-	}
 }

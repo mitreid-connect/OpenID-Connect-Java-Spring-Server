@@ -23,10 +23,7 @@ var SystemScopeModel = Backbone.Model.extend({
 		icon:null,
 		value:null,
 		defaultScope:false,
-		restricted:false,
-		structured:false,
-		structuredParamDescription:null,
-		structuredValue:null
+		restricted:false
 	},
 	
 	urlRoot: 'api/scopes'
@@ -267,8 +264,7 @@ var SystemScopeFormView = Backbone.View.extend({
 	events:{
 		'click .btn-save':'saveScope',
 		'click .btn-cancel': function() {app.navigate('admin/scope', {trigger: true}); },
-		'click .btn-icon':'selectIcon',
-		'change #isStructured input':'toggleStructuredParamDescription'
+		'click .btn-icon':'selectIcon'
 	},
 	
 	load:function(callback) {
@@ -290,14 +286,6 @@ var SystemScopeFormView = Backbone.View.extend({
 		
 	},
 	
-	toggleStructuredParamDescription:function(e) {
-		if ($('#isStructured input', this.el).is(':checked')) {
-			$('#structuredParamDescription', this.el).show();
-		} else {
-			$('#structuredParamDescription', this.el).hide();
-		}
-	},
-	
 	saveScope:function(e) {
     	e.preventDefault();
 		
@@ -313,9 +301,7 @@ var SystemScopeFormView = Backbone.View.extend({
 			description:$('#description textarea').val(),
 			icon:$('#iconDisplay input').val(),
 			defaultScope:$('#defaultScope input').is(':checked'),
-			restricted:$('#restricted input').is(':checked'),
-			structured:$('#isStructured input').is(':checked'),
-			structuredParamDescription:$('#structuredParamDescription input').val()
+			restricted:$('#restricted input').is(':checked')
 		});
 		
 		if (valid) {
@@ -356,7 +342,6 @@ var SystemScopeFormView = Backbone.View.extend({
 			$("#iconSelector .modal-body", this.el).append(this.iconTemplate({items:items}));
 		}, this);
 		
-		this.toggleStructuredParamDescription();
         $(this.el).i18n();
 		return this;
 	}

@@ -96,12 +96,7 @@ public interface SystemScopeService {
 	public Set<String> toStrings(Set<SystemScope> scope);
 
 	/**
-	 * Test whether the scopes in both sets are compatible, with special
-	 * processing for structured scopes. All scopes in "actual" must exist in
-	 * "expected". If a scope in "expected" is structured and has a value, it
-	 * must be matched exactly by its corresponding scope in "actual". If a
-	 * scope in "expected" is structured but has no value, it may be matched by
-	 * a scope with or without a value in "actual".
+	 * Test whether the scopes in both sets are compatible. All scopes in "actual" must exist in "expected".
 	 */
 	public boolean scopesMatch(Set<String> expected, Set<String> actual);
 

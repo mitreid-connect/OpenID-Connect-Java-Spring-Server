@@ -10,7 +10,8 @@ CREATE TABLE IF NOT EXISTS access_token (
 	refresh_token_id BIGINT,
 	client_id BIGINT,
 	auth_holder_id BIGINT,
-	approved_site_id BIGINT
+	approved_site_id BIGINT,
+	UNIQUE(token_value)
 );
 
 CREATE TABLE IF NOT EXISTS access_token_permissions (
@@ -235,8 +236,6 @@ CREATE TABLE IF NOT EXISTS system_scope (
 	icon VARCHAR(256),
 	restricted BOOLEAN DEFAULT false NOT NULL,
 	default_scope BOOLEAN DEFAULT false NOT NULL,
-	structured BOOLEAN DEFAULT false NOT NULL,
-	structured_param_description VARCHAR(256),
 	UNIQUE (scope)
 );
 

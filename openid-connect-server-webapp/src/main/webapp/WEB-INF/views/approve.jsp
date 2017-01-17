@@ -218,10 +218,6 @@
 									</span>
 								</c:if>
 								
-								<c:if test="${ scope.structured }">
-									<input name="scopeparam_${ fn:escapeXml(scope.value) }" type="text" value="${ fn:escapeXml(scope.structuredValue) }" placeholder="${ fn:escapeXml(scope.structuredParamDescription) }">
-								</c:if>
-								
 							</label>
 
 						</c:forEach>

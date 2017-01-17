@@ -32,12 +32,12 @@ import org.springframework.security.oauth2.provider.TokenRequest;
 /**
  * 
  * Validates the scopes on a request by comparing them against a client's
- * allowed scopes, but allow structured scopes to function.
+ * allowed scopes, but allow custom scopes to function through the system scopes
  * 
  * @author jricher
  * 
  */
-public class StructuredScopeAwareOAuth2RequestValidator implements OAuth2RequestValidator {
+public class ScopeServiceAwareOAuth2RequestValidator implements OAuth2RequestValidator {
 
 	@Autowired
 	private SystemScopeService scopeService;
