@@ -30,5 +30,5 @@ The authors and key contributors of the project include:
 
 
 
-Copyright &copy;2016, [The MITRE Corporation](http://www.mitre.org/)
+Copyright &copy;2017, [The MITRE Corporation](http://www.mitre.org/)
   and the [MIT Internet Trust Consortium](http://www.mit-trust.org/). Licensed under the Apache 2.0 license, for details see `LICENSE.txt`. 
