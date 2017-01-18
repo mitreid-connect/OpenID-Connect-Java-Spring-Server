@@ -26,6 +26,7 @@ import javax.persistence.TypedQuery;
 import org.mitre.oauth2.model.RegisteredClient;
 import org.mitre.openid.connect.client.service.RegisteredClientService;
 import org.mitre.uma.model.SavedRegisteredClient;
+import org.mitre.uma.service.SavedRegisteredClientService;
 import org.mitre.util.jpa.JpaUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
  *
  */
 @Service
-public class JpaRegisteredClientService implements RegisteredClientService {
+public class JpaRegisteredClientService implements RegisteredClientService, SavedRegisteredClientService{
 
 	@PersistenceContext(unitName="defaultPersistenceUnit")
 	private EntityManager em;
@@ -86,6 +87,7 @@ public class JpaRegisteredClientService implements RegisteredClientService {
 	/**
 	 * @return
 	 */
+	@Override
 	public Collection<SavedRegisteredClient> getAll() {
 		TypedQuery<SavedRegisteredClient> query = em.createQuery("SELECT c from SavedRegisteredClient c", SavedRegisteredClient.class);
 		return query.getResultList();

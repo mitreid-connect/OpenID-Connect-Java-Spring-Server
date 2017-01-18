@@ -19,9 +19,11 @@ package org.mitre.openid.connect.service.impl;
 import java.io.IOException;
 import java.io.Serializable;
 import java.text.ParseException;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -46,6 +48,7 @@ import org.mitre.openid.connect.repository.ApprovedSiteRepository;
 import org.mitre.openid.connect.repository.BlacklistedSiteRepository;
 import org.mitre.openid.connect.repository.WhitelistedSiteRepository;
 import org.mitre.openid.connect.service.MITREidDataService;
+import org.mitre.openid.connect.service.MITREidDataServiceExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -162,6 +165,15 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 	private OAuth2TokenRepository tokenRepository;
 	@Autowired
 	private SystemScopeRepository sysScopeRepository;
+	@Autowired(required = false)
+	private List<MITREidDataServiceExtension> extensions = Collections.emptyList();
+
+	private static final String THIS_VERSION = MITREID_CONNECT_1_2;
+	
+	@Override
+	public boolean supportsVersion(String version) {
+		return THIS_VERSION.equals(version);
+	}
 
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.service.MITREidDataService#export(com.google.gson.stream.JsonWriter)
@@ -206,6 +218,14 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 				} else if (name.equals(SYSTEMSCOPES)) {
 					readSystemScopes(reader);
 				} else {
+					for (MITREidDataServiceExtension extension : extensions) {
+						if (extension.supportsVersion(THIS_VERSION)) {
+							if (extension.canImport(name)) {
+								extension.importExtensionData(reader);
+								break;
+							}
+						}
+					}
 					// unknown token, skip it
 					reader.skipValue();
 				}
@@ -221,6 +241,12 @@ public class MITREidDataService_1_2 extends MITREidDataServiceSupport implements
 			}
 		}
 		fixObjectReferences();
+		for (MITREidDataServiceExtension extension : extensions) {
+			if (extension.supportsVersion(THIS_VERSION)) {
+				extension.fixExtensionObjectReferences();
+				break;
+			}
+		}
 	}
 	private Map<Long, String> refreshTokenToClientRefs = new HashMap<Long, String>();
 	private Map<Long, Long> refreshTokenToAuthHolderRefs = new HashMap<Long, Long>();

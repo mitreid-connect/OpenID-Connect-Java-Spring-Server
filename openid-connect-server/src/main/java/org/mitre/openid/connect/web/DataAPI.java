@@ -21,6 +21,7 @@ import java.io.Reader;
 import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -40,6 +41,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.google.common.collect.ImmutableList;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
@@ -69,16 +71,16 @@ public class DataAPI {
 	private ConfigurationPropertiesBean config;
 
 	@Autowired
-	private MITREidDataService_1_0 dataService_1_0;
-
-	@Autowired
-	private MITREidDataService_1_1 dataService_1_1;
-
-	@Autowired
-	private MITREidDataService_1_2 dataService_1_2;
+	private List<MITREidDataService> importers;
+	
+	private List<String> supportedVersions = ImmutableList.of(
+		MITREidDataService.MITREID_CONNECT_1_0, 
+		MITREidDataService.MITREID_CONNECT_1_1, 
+		MITREidDataService.MITREID_CONNECT_1_2,
+		MITREidDataService.MITREID_CONNECT_1_3);
 	
 	@Autowired
-	private MITREidDataService_1_3 dataService_1_3;
+	private MITREidDataService_1_3 exporter;
 
 	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
 	public String importData(Reader in, Model m) throws IOException {
@@ -92,14 +94,16 @@ public class DataAPI {
 			switch (tok) {
 			case NAME:
 				String name = reader.nextName();
-				if (name.equals(MITREidDataService.MITREID_CONNECT_1_0)) {
-					dataService_1_0.importData(reader);
-				} else if (name.equals(MITREidDataService.MITREID_CONNECT_1_1)) {
-					dataService_1_1.importData(reader);
-				} else if (name.equals(MITREidDataService.MITREID_CONNECT_1_2)) {
-					dataService_1_2.importData(reader);
-				} else if (name.equals(MITREidDataService.MITREID_CONNECT_1_3)) {
-					dataService_1_3.importData(reader);
+
+				if (supportedVersions.contains(name)) {
+					// we're working with a known data version tag
+					for (MITREidDataService dataService : importers) {
+						// dispatch to the correct service
+						if (dataService.supportsVersion(name)) {
+							dataService.importData(reader);
+							break;
+						}
+					}
 				} else {
 					// consume the next bit silently for now
 					logger.debug("Skipping value for " + name); // TODO: write these out?
@@ -140,7 +144,7 @@ public class DataAPI {
 			writer.value(prin.getName());
 
 			// delegate to the service to do the actual export
-			dataService_1_3.exportData(writer);
+			exporter.exportData(writer);
 
 			writer.endObject(); // end root
 			writer.close();

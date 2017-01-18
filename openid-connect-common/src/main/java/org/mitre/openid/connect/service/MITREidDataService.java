@@ -60,4 +60,13 @@ public interface MITREidDataService {
 	 */
 	void importData(JsonReader reader) throws IOException;
 
+	/**
+	 * Return true if the this data service supports the given version. This is called before 
+	 * handing the service the reader through its importData function.
+	 * 
+	 * @param version
+	 * @return
+	 */
+	boolean supportsVersion(String version);
+
 }

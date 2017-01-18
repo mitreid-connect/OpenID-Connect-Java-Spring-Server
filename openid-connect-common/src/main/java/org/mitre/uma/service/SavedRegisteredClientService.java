@@ -14,36 +14,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-/**
- * 
- */
-package org.mitre.openid.connect.client.service;
 
-import java.util.List;
+package org.mitre.uma.service;
+
+import java.util.Collection;
 
 import org.mitre.oauth2.model.RegisteredClient;
+import org.mitre.uma.model.SavedRegisteredClient;
 
 /**
  * @author jricher
  *
  */
-public interface RegisteredClientService {
-
+public interface SavedRegisteredClientService {
+	
 	/**
-	 * Get a remembered client (if one exists) to talk to the given issuer. This
-	 * client likely doesn't have its full configuration information but contains
-	 * the information needed to fetch it.
-	 * @param issuer
+	 * Get a list of all the registered clients that we know about.
+	 * 
 	 * @return
 	 */
-	RegisteredClient getByIssuer(String issuer);
+	Collection<SavedRegisteredClient> getAll();
 
 	/**
-	 * Save this client's information for talking to the given issuer. This will
-	 * save only enough information to fetch the client's full configuration from
-	 * the server.
+	 * @param issuer
 	 * @param client
 	 */
 	void save(String issuer, RegisteredClient client);
+
 
 }
