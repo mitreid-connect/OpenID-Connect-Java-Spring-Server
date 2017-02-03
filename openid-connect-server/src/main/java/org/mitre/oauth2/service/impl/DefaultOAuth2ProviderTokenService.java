@@ -26,6 +26,7 @@ import static org.mitre.openid.connect.request.ConnectRequestParameters.CODE_VER
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -204,8 +205,12 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 				} else if (alg.equals(PKCEAlgorithm.S256)) {
 					// hash the verifier
 					try {
+						
 						MessageDigest digest = MessageDigest.getInstance("SHA-256");
-						String hash = Base64URL.encode(digest.digest(verifier.getBytes(StandardCharsets.US_ASCII))).toString();
+						digest.update(verifier.getBytes(StandardCharsets.US_ASCII));
+						byte[] bytes = digest.digest();
+						String hash = Base64.getUrlEncoder().encodeToString(bytes);
+						
 						if (!challenge.equals(hash)) {
 							throw new InvalidRequestException("Code challenge and verifier do not match");
 						}
