@@ -70,7 +70,7 @@
 
 	<!-- Spring Security configuration -->
 
-	<oauth:resource-server id="resourceServerFilter" token-services-ref="defaultOAuth2ProviderTokenService" />
+	<oauth:resource-server id="resourceServerFilter" token-services-ref="defaultOAuth2ProviderTokenService" stateless="false" />
 
 	<security:http pattern="/token" 
 		create-session="stateless"
@@ -110,7 +110,7 @@
 	
 	<!-- OAuth-protect API and other endpoints -->
 	<security:http pattern="/#{T(org.mitre.openid.connect.web.DynamicClientRegistrationEndpoint).URL}/**" use-expressions="true" entry-point-ref="oauthAuthenticationEntryPoint" create-session="stateless">
-		<security:custom-filter ref="resourceServerFilter" after="CHANNEL_FILTER" />
+		<security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
 		<security:custom-filter ref="corsFilter" after="SECURITY_CONTEXT_FILTER" />
 		<security:expression-handler ref="oauthWebExpressionHandler" />
 		<security:intercept-url pattern="/register/**" access="permitAll"/>
@@ -118,7 +118,7 @@
 	</security:http>
 
 	<security:http pattern="/#{T(org.mitre.openid.connect.web.ProtectedResourceRegistrationEndpoint).URL}/**" use-expressions="true" entry-point-ref="oauthAuthenticationEntryPoint" create-session="stateless">
-		<security:custom-filter ref="resourceServerFilter" after="CHANNEL_FILTER" />
+		<security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
 		<security:custom-filter ref="corsFilter" after="SECURITY_CONTEXT_FILTER" />
 		<security:expression-handler ref="oauthWebExpressionHandler" />
 		<security:intercept-url pattern="/resource/**" access="permitAll"/>
@@ -126,14 +126,14 @@
 	</security:http>
 
 	<security:http pattern="/#{T(org.mitre.openid.connect.web.UserInfoEndpoint).URL}**" use-expressions="true" entry-point-ref="oauthAuthenticationEntryPoint" create-session="stateless">
-		<security:custom-filter ref="resourceServerFilter" after="CHANNEL_FILTER" />
+		<security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
 		<security:custom-filter ref="corsFilter" after="SECURITY_CONTEXT_FILTER" />
 		<security:expression-handler ref="oauthWebExpressionHandler" />
 		<security:csrf disabled="true"/>
 	</security:http>
 
  	<security:http pattern="/#{T(org.mitre.openid.connect.web.RootController).API_URL}/**" use-expressions="true" entry-point-ref="oauthAuthenticationEntryPoint" create-session="never">
-		<security:custom-filter ref="resourceServerFilter" after="CHANNEL_FILTER" />
+		<security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
 		<security:expression-handler ref="oauthWebExpressionHandler" />
 		<security:csrf disabled="true"/>
 	</security:http>
@@ -144,7 +144,7 @@
 			create-session="stateless"
 			authentication-manager-ref="clientAuthenticationManager">
 		<security:http-basic entry-point-ref="oauthAuthenticationEntryPoint" />
-<!-- 		<security:custom-filter ref="resourceServerFilter" after="CHANNEL_FILTER" /> -->
+<!-- 		<security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" /> -->
 		<security:custom-filter ref="clientAssertionEndpointFilter" after="PRE_AUTH_FILTER" /> <!-- this one has to go first -->
 		<security:custom-filter ref="corsFilter" after="SECURITY_CONTEXT_FILTER" />
 		<security:custom-filter ref="clientCredentialsEndpointFilter" after="BASIC_AUTH_FILTER" />
@@ -157,7 +157,7 @@
 			create-session="stateless"
 			authentication-manager-ref="clientAuthenticationManager">
 		<security:http-basic entry-point-ref="oauthAuthenticationEntryPoint" />
-<!-- 		<security:custom-filter ref="resourceServerFilter" after="CHANNEL_FILTER" /> -->
+<!-- 		<security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" /> -->
 		<security:custom-filter ref="clientAssertionEndpointFilter" after="PRE_AUTH_FILTER" /> <!-- this one has to go first -->
 		<security:custom-filter ref="corsFilter" after="SECURITY_CONTEXT_FILTER" />
 		<security:custom-filter ref="clientCredentialsEndpointFilter" after="BASIC_AUTH_FILTER" />
