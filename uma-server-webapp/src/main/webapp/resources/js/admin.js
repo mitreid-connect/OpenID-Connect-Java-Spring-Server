@@ -94,22 +94,7 @@ var ListWidgetChildView = Backbone.View.extend({
         
         this.model.destroy({
         	dataType: false, processData: false,
-        	error:function (error, response) {
-        		console.log("An error occurred when deleting from a list widget");
-
-				//Pull out the response text.
-				var responseJson = JSON.parse(response.responseText);
-        		
-        		//Display an alert with an error message
-				$('#modalAlert div.modal-header').html(responseJson.error);
-        		$('#modalAlert div.modal-body').html(responseJson.error_description);
-        		
-    			 $("#modalAlert").modal({ // wire up the actual modal functionality and show the dialog
-    				 "backdrop" : "static",
-    				 "keyboard" : true,
-    				 "show" : true // ensure the modal is shown immediately
-    			 });
-        	}
+        	error:app.errorHandlerView.handleError()
         });
         
     },
@@ -390,14 +375,14 @@ var ErrorHandlerView = Backbone.View.extend({
 			message = {};
 		}
 
-		if (message.log) {
-			console.log(message.log);
-		}
-
 		var _self = this;
 
 		return function(model, response, options) {
-
+			
+			if (message.log) {
+				console.log(message.log);
+			}
+			
 			_self.showErrorMessage(
 					_self.headerTemplate({message: message, model: model, response: response, options: options}),
 					_self.template({message: message, model: model, response: response, options: options})
@@ -406,8 +391,8 @@ var ErrorHandlerView = Backbone.View.extend({
 			$('#modalAlert .modal-body .page-reload').on('click', _self.reloadPage);
 
 		}
-	},
-
+	}, 
+	
 	showErrorMessage:function(header, message) {
 		// hide the sheet if it's visible
 		$('#loadingbox').sheet('hide');
@@ -554,21 +539,42 @@ var AppRouter = Backbone.Router.extend({
     			contacts.push(userInfo.email);
     		}
     		
-        	client.set({
-        		tokenEndpointAuthMethod: "SECRET_BASIC",
-        		generateClientSecret:true,
-        		displayClientSecret:false,
-        		requireAuthTime:true,
-        		defaultMaxAge:60000,
-        		scope: _.uniq(_.flatten(app.systemScopeList.defaultScopes().pluck("value"))),
-        		accessTokenValiditySeconds:3600,
-        		idTokenValiditySeconds:600,
-        		grantTypes: ["authorization_code"],
-        		responseTypes: ["code"],
-        		subjectType: "PUBLIC",
-        		jwksType: "URI",
-        		contacts: contacts
-        	}, { silent: true });
+    		// use a different set of defaults based on heart mode flag
+    		if (heartMode) {
+            	client.set({
+            		tokenEndpointAuthMethod: "PRIVATE_KEY",
+            		generateClientSecret:false,
+            		displayClientSecret:false,
+            		requireAuthTime:true,
+            		defaultMaxAge:60000,
+            		scope: _.uniq(_.flatten(app.systemScopeList.defaultScopes().pluck("value"))),
+            		accessTokenValiditySeconds:3600,
+            		refreshTokenValiditySeconds:24*3600,
+            		idTokenValiditySeconds:300,
+            		grantTypes: ["authorization_code"],
+            		responseTypes: ["code"],
+            		subjectType: "PUBLIC",
+            		jwksType: "URI",
+            		contacts: contacts
+            	}, { silent: true });
+    		} else {
+    			// set up this new client to require a secret and have us autogenerate one
+            	client.set({
+            		tokenEndpointAuthMethod: "SECRET_BASIC",
+            		generateClientSecret:true,
+            		displayClientSecret:false,
+            		requireAuthTime:true,
+            		defaultMaxAge:60000,
+            		scope: _.uniq(_.flatten(app.systemScopeList.defaultScopes().pluck("value"))),
+            		accessTokenValiditySeconds:3600,
+            		idTokenValiditySeconds:600,
+            		grantTypes: ["authorization_code"],
+            		responseTypes: ["code"],
+            		subjectType: "PUBLIC",
+            		jwksType: "URI",
+            		contacts: contacts
+            	}, { silent: true });
+    		}
         	
         	
         	$('#content').html(view.render().el);
@@ -921,17 +927,30 @@ var AppRouter = Backbone.Router.extend({
     			contacts.push(userInfo.email);
     		}
     		
-    		client.set({
-        		require_auth_time:true,
-        		default_max_age:60000,
-        		scope: _.uniq(_.flatten(app.systemScopeList.defaultUnrestrictedScopes().pluck("value"))).join(" "),
-        		token_endpoint_auth_method: 'client_secret_basic',
-        		grant_types: ["authorization_code"],
-        		response_types: ["code"],
-        		subject_type: "public",
-        		contacts: contacts
-        	}, { silent: true });
-    	
+    		if (heartMode) {
+    			client.set({
+    				require_auth_time:true,
+    				default_max_age:60000,
+    				scope: _.uniq(_.flatten(app.systemScopeList.defaultUnrestrictedScopes().pluck("value"))).join(" "),
+    				token_endpoint_auth_method: 'private_key_jwt',
+    				grant_types: ["authorization_code"],
+    				response_types: ["code"],
+    				subject_type: "public",
+    				contacts: contacts
+    			}, { silent: true });
+    		} else {
+    			client.set({
+    				require_auth_time:true,
+    				default_max_age:60000,
+    				scope: _.uniq(_.flatten(app.systemScopeList.defaultUnrestrictedScopes().pluck("value"))).join(" "),
+    				token_endpoint_auth_method: 'client_secret_basic',
+    				grant_types: ["authorization_code"],
+    				response_types: ["code"],
+    				subject_type: "public",
+    				contacts: contacts
+    			}, { silent: true });
+    		}
+    		
     		$('#content').html(view.render().el);
     		view.delegateEvents();
     		setPageTitle($.t('dynreg.new-client'));
