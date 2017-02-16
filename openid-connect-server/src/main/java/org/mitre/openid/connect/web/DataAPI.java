@@ -111,12 +111,13 @@ public class DataAPI {
 				}
 				break;
 			case END_OBJECT:
-				reader.endObject();
 				break;
 			case END_DOCUMENT:
 				break;
 			}
 		}
+		
+		reader.endObject();
 
 		return "httpCodeView";
 	}
