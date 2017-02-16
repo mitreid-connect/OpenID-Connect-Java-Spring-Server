@@ -25,10 +25,8 @@ import java.io.Serializable;
 import java.text.ParseException;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -54,6 +52,7 @@ import org.mitre.openid.connect.repository.BlacklistedSiteRepository;
 import org.mitre.openid.connect.repository.WhitelistedSiteRepository;
 import org.mitre.openid.connect.service.MITREidDataService;
 import org.mitre.openid.connect.service.MITREidDataServiceExtension;
+import org.mitre.openid.connect.service.MITREidDataServiceMaps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,7 +71,7 @@ import com.nimbusds.jwt.JWTParser;
 
 /**
  *
- * Data service to import and export MITREid 1.2 configuration.
+ * Data service to import and export MITREid 1.3 configuration.
  *
  * @author jricher
  * @author arielak
@@ -172,6 +171,8 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 	
 	private static final String THIS_VERSION = MITREID_CONNECT_1_3;
 	
+	private MITREidDataServiceMaps maps = new MITREidDataServiceMaps(); 
+	
 	@Override
 	public boolean supportsVersion(String version) {
 		return THIS_VERSION.equals(version);
@@ -236,7 +237,7 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 			}
 		}
 
-		writer.endObject(); // end mitreid-connect-1.2
+		writer.endObject(); // end mitreid-connect-1.3
 	}
 
 	/**
@@ -557,7 +558,7 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 	@Override
 	public void importData(JsonReader reader) throws IOException {
 
-		logger.info("Reading configuration for 1.2");
+		logger.info("Reading configuration for 1.3");
 
 		// this *HAS* to start as an object
 		reader.beginObject();
@@ -585,17 +586,21 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 				} else if (name.equals(SYSTEMSCOPES)) {
 					readSystemScopes(reader);
 				} else {
+					boolean processed = false;
 					for (MITREidDataServiceExtension extension : extensions) {
 						if (extension.supportsVersion(THIS_VERSION)) {							
-							if (extension.importExtensionData(name, reader)) {
+							processed = extension.importExtensionData(name, reader);
+							if (processed) {
 								// if the extension processed data, break out of this inner loop
 								// (only the first extension to claim an extension point gets it)
 								break;
 							}
 						}
 					}
-					// unknown token, skip it
-					reader.skipValue();
+					if (!processed) {
+						// unknown token, skip it
+						reader.skipValue();
+					}
 				}
 				break;
 			case END_OBJECT:
@@ -611,15 +616,13 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 		fixObjectReferences();
 		for (MITREidDataServiceExtension extension : extensions) {
 			if (extension.supportsVersion(THIS_VERSION)) {
-				extension.fixExtensionObjectReferences();
+				extension.fixExtensionObjectReferences(maps);
 				break;
 			}
 		}
+		maps.clearAll();
 	}
-	private Map<Long, String> refreshTokenToClientRefs = new HashMap<Long, String>();
-	private Map<Long, Long> refreshTokenToAuthHolderRefs = new HashMap<Long, Long>();
-	private Map<Long, Long> refreshTokenOldToNewIdMap = new HashMap<Long, Long>();
-
+	
 	/**
 	 * @param reader
 	 * @throws IOException
@@ -673,19 +676,14 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 			}
 			reader.endObject();
 			Long newId = tokenRepository.saveRefreshToken(token).getId();
-			refreshTokenToClientRefs.put(currentId, clientId);
-			refreshTokenToAuthHolderRefs.put(currentId, authHolderId);
-			refreshTokenOldToNewIdMap.put(currentId, newId);
+			maps.getRefreshTokenToClientRefs().put(currentId, clientId);
+			maps.getRefreshTokenToAuthHolderRefs().put(currentId, authHolderId);
+			maps.getRefreshTokenOldToNewIdMap().put(currentId, newId);
 			logger.debug("Read refresh token {}", currentId);
 		}
 		reader.endArray();
 		logger.info("Done reading refresh tokens");
 	}
-	private Map<Long, String> accessTokenToClientRefs = new HashMap<Long, String>();
-	private Map<Long, Long> accessTokenToAuthHolderRefs = new HashMap<Long, Long>();
-	private Map<Long, Long> accessTokenToRefreshTokenRefs = new HashMap<Long, Long>();
-	private Map<Long, Long> accessTokenOldToNewIdMap = new HashMap<Long, Long>();
-
 	/**
 	 * @param reader
 	 * @throws IOException
@@ -748,19 +746,17 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 			}
 			reader.endObject();
 			Long newId = tokenRepository.saveAccessToken(token).getId();
-			accessTokenToClientRefs.put(currentId, clientId);
-			accessTokenToAuthHolderRefs.put(currentId, authHolderId);
+			maps.getAccessTokenToClientRefs().put(currentId, clientId);
+			maps.getAccessTokenToAuthHolderRefs().put(currentId, authHolderId);
 			if (refreshTokenId != null) {
-				accessTokenToRefreshTokenRefs.put(currentId, refreshTokenId);
+				maps.getAccessTokenToRefreshTokenRefs().put(currentId, refreshTokenId);
 			}
-			accessTokenOldToNewIdMap.put(currentId, newId);
+			maps.getAccessTokenOldToNewIdMap().put(currentId, newId);
 			logger.debug("Read access token {}", currentId);
 		}
 		reader.endArray();
 		logger.info("Done reading access tokens");
 	}
-	private Map<Long, Long> authHolderOldToNewIdMap = new HashMap<Long, Long>();
-
 	/**
 	 * @param reader
 	 * @throws IOException
@@ -820,7 +816,7 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 			}
 			reader.endObject();
 			Long newId = authHolderRepository.save(ahe).getId();
-			authHolderOldToNewIdMap.put(currentId, newId);
+			maps.getAuthHolderOldToNewIdMap().put(currentId, newId);
 			logger.debug("Read authentication holder {}", currentId);
 		}
 		reader.endArray();
@@ -874,9 +870,6 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 		return savedUserAuth;
 	}
 
-	private Map<Long, Long> grantOldToNewIdMap = new HashMap<>();
-	private Map<Long, Set<Long>> grantToAccessTokensRefs = new HashMap<>();
-
 	/**
 	 * @param reader
 	 * @throws IOException
@@ -929,9 +922,9 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 			}
 			reader.endObject();
 			Long newId = approvedSiteRepository.save(site).getId();
-			grantOldToNewIdMap.put(currentId, newId);
+			maps.getGrantOldToNewIdMap().put(currentId, newId);
 			if (tokenIds != null) {
-				grantToAccessTokensRefs.put(currentId, tokenIds);
+				maps.getGrantToAccessTokensRefs().put(currentId, tokenIds);
 			}
 			logger.debug("Read grant {}", currentId);
 		}
@@ -939,8 +932,6 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 		logger.info("Done reading grants");
 	}
 	
-	private Map<Long, Long> whitelistedSiteOldToNewIdMap = new HashMap<Long, Long>();
-
 	/**
 	 * @param reader
 	 * @throws IOException
@@ -979,7 +970,7 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 			}
 			reader.endObject();
 			Long newId = wlSiteRepository.save(wlSite).getId();
-			whitelistedSiteOldToNewIdMap.put(currentId, newId);
+			maps.getWhitelistedSiteOldToNewIdMap().put(currentId, newId);
 		}
 		reader.endArray();
 		logger.info("Done reading whitelisted sites");
@@ -1230,63 +1221,57 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 
 	private void fixObjectReferences() {
 		logger.info("Fixing object references...");
-		for (Long oldRefreshTokenId : refreshTokenToClientRefs.keySet()) {
-			String clientRef = refreshTokenToClientRefs.get(oldRefreshTokenId);
+		for (Long oldRefreshTokenId : maps.getRefreshTokenToClientRefs().keySet()) {
+			String clientRef = maps.getRefreshTokenToClientRefs().get(oldRefreshTokenId);
 			ClientDetailsEntity client = clientRepository.getClientByClientId(clientRef);
-			Long newRefreshTokenId = refreshTokenOldToNewIdMap.get(oldRefreshTokenId);
+			Long newRefreshTokenId = maps.getRefreshTokenOldToNewIdMap().get(oldRefreshTokenId);
 			OAuth2RefreshTokenEntity refreshToken = tokenRepository.getRefreshTokenById(newRefreshTokenId);
 			refreshToken.setClient(client);
 			tokenRepository.saveRefreshToken(refreshToken);
 		}
-		refreshTokenToClientRefs.clear();
-		for (Long oldRefreshTokenId : refreshTokenToAuthHolderRefs.keySet()) {
-			Long oldAuthHolderId = refreshTokenToAuthHolderRefs.get(oldRefreshTokenId);
-			Long newAuthHolderId = authHolderOldToNewIdMap.get(oldAuthHolderId);
+		for (Long oldRefreshTokenId : maps.getRefreshTokenToAuthHolderRefs().keySet()) {
+			Long oldAuthHolderId = maps.getRefreshTokenToAuthHolderRefs().get(oldRefreshTokenId);
+			Long newAuthHolderId = maps.getAuthHolderOldToNewIdMap().get(oldAuthHolderId);
 			AuthenticationHolderEntity authHolder = authHolderRepository.getById(newAuthHolderId);
-			Long newRefreshTokenId = refreshTokenOldToNewIdMap.get(oldRefreshTokenId);
+			Long newRefreshTokenId = maps.getRefreshTokenOldToNewIdMap().get(oldRefreshTokenId);
 			OAuth2RefreshTokenEntity refreshToken = tokenRepository.getRefreshTokenById(newRefreshTokenId);
 			refreshToken.setAuthenticationHolder(authHolder);
 			tokenRepository.saveRefreshToken(refreshToken);
 		}
-		refreshTokenToAuthHolderRefs.clear();
-		for (Long oldAccessTokenId : accessTokenToClientRefs.keySet()) {
-			String clientRef = accessTokenToClientRefs.get(oldAccessTokenId);
+		for (Long oldAccessTokenId : maps.getAccessTokenToClientRefs().keySet()) {
+			String clientRef = maps.getAccessTokenToClientRefs().get(oldAccessTokenId);
 			ClientDetailsEntity client = clientRepository.getClientByClientId(clientRef);
-			Long newAccessTokenId = accessTokenOldToNewIdMap.get(oldAccessTokenId);
+			Long newAccessTokenId = maps.getAccessTokenOldToNewIdMap().get(oldAccessTokenId);
 			OAuth2AccessTokenEntity accessToken = tokenRepository.getAccessTokenById(newAccessTokenId);
 			accessToken.setClient(client);
 			tokenRepository.saveAccessToken(accessToken);
 		}
-		accessTokenToClientRefs.clear();
-		for (Long oldAccessTokenId : accessTokenToAuthHolderRefs.keySet()) {
-			Long oldAuthHolderId = accessTokenToAuthHolderRefs.get(oldAccessTokenId);
-			Long newAuthHolderId = authHolderOldToNewIdMap.get(oldAuthHolderId);
+		for (Long oldAccessTokenId : maps.getAccessTokenToAuthHolderRefs().keySet()) {
+			Long oldAuthHolderId = maps.getAccessTokenToAuthHolderRefs().get(oldAccessTokenId);
+			Long newAuthHolderId = maps.getAuthHolderOldToNewIdMap().get(oldAuthHolderId);
 			AuthenticationHolderEntity authHolder = authHolderRepository.getById(newAuthHolderId);
-			Long newAccessTokenId = accessTokenOldToNewIdMap.get(oldAccessTokenId);
+			Long newAccessTokenId = maps.getAccessTokenOldToNewIdMap().get(oldAccessTokenId);
 			OAuth2AccessTokenEntity accessToken = tokenRepository.getAccessTokenById(newAccessTokenId);
 			accessToken.setAuthenticationHolder(authHolder);
 			tokenRepository.saveAccessToken(accessToken);
 		}
-		accessTokenToAuthHolderRefs.clear();
-		for (Long oldAccessTokenId : accessTokenToRefreshTokenRefs.keySet()) {
-			Long oldRefreshTokenId = accessTokenToRefreshTokenRefs.get(oldAccessTokenId);
-			Long newRefreshTokenId = refreshTokenOldToNewIdMap.get(oldRefreshTokenId);
+		for (Long oldAccessTokenId : maps.getAccessTokenToRefreshTokenRefs().keySet()) {
+			Long oldRefreshTokenId = maps.getAccessTokenToRefreshTokenRefs().get(oldAccessTokenId);
+			Long newRefreshTokenId = maps.getRefreshTokenOldToNewIdMap().get(oldRefreshTokenId);
 			OAuth2RefreshTokenEntity refreshToken = tokenRepository.getRefreshTokenById(newRefreshTokenId);
-			Long newAccessTokenId = accessTokenOldToNewIdMap.get(oldAccessTokenId);
+			Long newAccessTokenId = maps.getAccessTokenOldToNewIdMap().get(oldAccessTokenId);
 			OAuth2AccessTokenEntity accessToken = tokenRepository.getAccessTokenById(newAccessTokenId);
 			accessToken.setRefreshToken(refreshToken);
 			tokenRepository.saveAccessToken(accessToken);
 		}
-		accessTokenToRefreshTokenRefs.clear();
-		refreshTokenOldToNewIdMap.clear();
-		for (Long oldGrantId : grantToAccessTokensRefs.keySet()) {
-			Set<Long> oldAccessTokenIds = grantToAccessTokensRefs.get(oldGrantId);
+		for (Long oldGrantId : maps.getGrantToAccessTokensRefs().keySet()) {
+			Set<Long> oldAccessTokenIds = maps.getGrantToAccessTokensRefs().get(oldGrantId);
 
-			Long newGrantId = grantOldToNewIdMap.get(oldGrantId);
+			Long newGrantId = maps.getGrantOldToNewIdMap().get(oldGrantId);
 			ApprovedSite site = approvedSiteRepository.getById(newGrantId);
 
 			for(Long oldTokenId : oldAccessTokenIds) {
-				Long newTokenId = accessTokenOldToNewIdMap.get(oldTokenId);
+				Long newTokenId = maps.getAccessTokenOldToNewIdMap().get(oldTokenId);
 				OAuth2AccessTokenEntity token = tokenRepository.getAccessTokenById(newTokenId);
 				token.setApprovedSite(site);
 				tokenRepository.saveAccessToken(token);
@@ -1294,8 +1279,16 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 			
 			approvedSiteRepository.save(site);
 		}
+		/*
+		refreshTokenToClientRefs.clear();
+		refreshTokenToAuthHolderRefs.clear();
+		accessTokenToClientRefs.clear();
+		accessTokenToAuthHolderRefs.clear();
+		accessTokenToRefreshTokenRefs.clear();
+		refreshTokenOldToNewIdMap.clear();
 		accessTokenOldToNewIdMap.clear();
 		grantOldToNewIdMap.clear();
+		*/
 		logger.info("Done fixing object references.");
 	}
 

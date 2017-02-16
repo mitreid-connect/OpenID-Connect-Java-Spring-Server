@@ -17,7 +17,7 @@
 
 package org.mitre.uma.service.impl;
 
-import static org.mitre.util.JsonUtils.*;
+import static org.mitre.util.JsonUtils.readSet;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -25,10 +25,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.RegisteredClient;
+import org.mitre.oauth2.repository.OAuth2TokenRepository;
 import org.mitre.openid.connect.ClientDetailsEntityJsonProcessor;
 import org.mitre.openid.connect.service.MITREidDataService;
 import org.mitre.openid.connect.service.MITREidDataServiceExtension;
+import org.mitre.openid.connect.service.MITREidDataServiceMaps;
 import org.mitre.openid.connect.service.impl.MITREidDataServiceSupport;
 import org.mitre.uma.model.Claim;
 import org.mitre.uma.model.Permission;
@@ -42,6 +45,7 @@ import org.mitre.uma.service.SavedRegisteredClientService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
@@ -53,6 +57,7 @@ import com.google.gson.stream.JsonWriter;
  * @author jricher
  *
  */
+@Service("umaDataExtension_1_3")
 public class UmaDataServiceExtension_1_3 extends MITREidDataServiceSupport implements MITREidDataServiceExtension {
 	
 	private static final String THIS_VERSION = MITREidDataService.MITREID_CONNECT_1_3;
@@ -142,8 +147,12 @@ public class UmaDataServiceExtension_1_3 extends MITREidDataServiceSupport imple
 	private static final String CLAIMS_SUPPLIED = "claimsSupplied";
 	private static final String SAVED_REGISTERED_CLIENTS = "savedRegisteredClients";
 	private static final String RESOURCE_SETS = "resourceSets";
+	private static final String TOKEN_PERMISSIONS = "tokenPermissions";
+	private static final String TOKEN_ID = "tokenId";
 
 	private static final Logger logger = LoggerFactory.getLogger(UmaDataServiceExtension_1_3.class);
+
+
 	
 	@Autowired
 	private SavedRegisteredClientService registeredClientService;
@@ -151,6 +160,10 @@ public class UmaDataServiceExtension_1_3 extends MITREidDataServiceSupport imple
 	private ResourceSetRepository resourceSetRepository;
 	@Autowired
 	private PermissionRepository permissionRepository;
+	@Autowired
+	private OAuth2TokenRepository tokenRepository;
+
+	private Map<Long, Set<Long>> tokenToPermissionRefs = new HashMap<>();
 
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.service.MITREidDataServiceExtension#supportsVersion(java.lang.String)
@@ -180,6 +193,40 @@ public class UmaDataServiceExtension_1_3 extends MITREidDataServiceSupport imple
 		writer.beginArray();
 		writePermissionTickets(writer);
 		writer.endArray();
+		
+		writer.name(TOKEN_PERMISSIONS);
+		writer.beginArray();
+		writeTokenPermissions(writer);
+		writer.endArray();
+	}
+
+	/**
+	 * @param writer
+	 * @throws IOException 
+	 */
+	private void writeTokenPermissions(JsonWriter writer) throws IOException {
+		for (OAuth2AccessTokenEntity token : tokenRepository.getAllAccessTokens()) {
+			if (!token.getPermissions().isEmpty()) { // skip tokens that don't have the permissions structure attached
+				writer.beginObject();
+				writer.name(TOKEN_ID).value(token.getId());
+				writer.name(PERMISSIONS);
+				writer.beginArray();
+				for (Permission p : token.getPermissions()) {
+					writer.beginObject();
+					writer.name(RESOURCE_SET).value(p.getResourceSet().getId());
+					writer.name(SCOPES);
+					writer.beginArray();
+					for (String s : p.getScopes()) {
+						writer.value(s);
+					}
+					writer.endArray();
+					writer.endObject();
+				}
+				writer.endArray();
+	
+				writer.endObject();
+			}
+		}		
 	}
 
 	/**
@@ -329,11 +376,83 @@ public class UmaDataServiceExtension_1_3 extends MITREidDataServiceSupport imple
 		} else if (name.equals(PERMISSION_TICKETS)) {
 			readPermissionTickets(reader);
 			return true;
+		} else if (name.equals(TOKEN_PERMISSIONS)) {
+			readTokenPermissions(reader);
+			return true;
 		} else {
 			return false;
 		}
 	}
 	
+	/**
+	 * @param reader
+	 */
+	private void readTokenPermissions(JsonReader reader) throws IOException {
+		reader.beginArray();
+		while(reader.hasNext()) {
+			reader.beginObject();
+			Long tokenId = null;
+			Set<Long> permissions = new HashSet<>();
+			while (reader.hasNext()) {
+				switch(reader.peek()) {
+					case END_OBJECT:
+						continue;
+					case NAME:
+						String name = reader.nextName();
+						if (name.equals(TOKEN_ID)) {
+							tokenId = reader.nextLong();
+						} else if (name.equals(PERMISSIONS)) {
+							reader.beginArray();
+							while (reader.hasNext()) {
+								Permission p = new Permission();
+								Long rsid = null;
+								Set<String> scope = new HashSet<>();
+								reader.beginObject();
+								while (reader.hasNext()) {
+									switch (reader.peek()) {
+									case END_OBJECT:
+										continue;
+									case NAME:
+										String pname = reader.nextName();
+										if (reader.peek() == JsonToken.NULL) {
+											reader.skipValue();
+										} else if (pname.equals(RESOURCE_SET)) {
+											rsid = reader.nextLong();
+										} else if (pname.equals(SCOPES)) {
+											scope = readSet(reader);
+										} else {
+											logger.debug("Found unexpected entry");
+											reader.skipValue();
+										}
+										break;
+									default:
+										logger.debug("Found unexpected entry");
+										reader.skipValue();
+										continue;
+									}
+								}
+								reader.endObject();
+								p.setScopes(scope);
+								Permission saved = permissionRepository.saveRawPermission(p);
+								permissionToResourceRefs.put(saved.getId(), rsid);
+								permissions.add(saved.getId());
+							}
+							reader.endArray();
+						}
+						break;
+					default:
+						logger.debug("Found unexpected entry");
+						reader.skipValue();
+						continue;
+				}
+			}
+			reader.endObject();
+			tokenToPermissionRefs.put(tokenId, permissions);
+		}
+		reader.endArray();
+		
+	}
+
 	private Map<Long, Long> permissionToResourceRefs = new HashMap<>();
 
 	/**
@@ -626,7 +745,7 @@ public class UmaDataServiceExtension_1_3 extends MITREidDataServiceSupport imple
 	 * @see org.mitre.openid.connect.service.MITREidDataServiceExtension#fixExtensionObjectReferences()
 	 */
 	@Override
-	public void fixExtensionObjectReferences() {
+	public void fixExtensionObjectReferences(MITREidDataServiceMaps maps) {
 		for (Long permissionId : permissionToResourceRefs.keySet()) {
 			Long oldResourceId = permissionToResourceRefs.get(permissionId);
 			Long newResourceId = resourceSetOldToNewIdMap.get(oldResourceId);
@@ -636,8 +755,22 @@ public class UmaDataServiceExtension_1_3 extends MITREidDataServiceSupport imple
 			permissionRepository.saveRawPermission(p);
 			logger.debug("Mapping rsid " + oldResourceId + " to " + newResourceId + " for permission " + permissionId);
 		}
+		for (Long tokenId : tokenToPermissionRefs.keySet()) {
+			Long newTokenId = maps.getAccessTokenOldToNewIdMap().get(tokenId);
+			OAuth2AccessTokenEntity token = tokenRepository.getAccessTokenById(newTokenId);
+			
+			Set<Permission> permissions = new HashSet<>();
+			for (Long permissionId : tokenToPermissionRefs.get(tokenId)) {
+				Permission p = permissionRepository.getById(permissionId);
+				permissions.add(p);
+			}
+			
+			token.setPermissions(permissions);
+			tokenRepository.saveAccessToken(token);
+		}
 		permissionToResourceRefs.clear();
 		resourceSetOldToNewIdMap.clear();
+		tokenToPermissionRefs.clear();
 	}
 
 }

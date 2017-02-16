@@ -56,7 +56,7 @@ public interface MITREidDataServiceExtension {
 	/**
 	 * Signal the extension to wrap up all object processing and finalize its  
 	 */
-	void fixExtensionObjectReferences();
+	void fixExtensionObjectReferences(MITREidDataServiceMaps maps);
 
 	/**
 	 * Return 
