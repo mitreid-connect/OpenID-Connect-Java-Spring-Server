@@ -258,6 +258,9 @@
 
 	<!--Import scheduled task configuration -->
 	<import resource="task-config.xml" />
+	
+	<!-- Import configuration for front-end (JavaScript) UI components -->
+	<import resource="ui-config.xml" />
 
 	<!-- import application-local configuration information (such as bean definitions) -->
 	<import resource="local-config.xml" />

@@ -15,6 +15,16 @@
 <!-- javascript
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->
+<script type="text/javascript">
+
+	// set up a global variable for UI components to hang extensions off of
+	
+	var ui = {
+		templates: [],
+		routes: []
+	};
+
+</script>
 <script type="text/javascript" src="resources/bootstrap2/js/bootstrap.js"></script>
 <script type="text/javascript" src="resources/js/lib/underscore.js"></script>
 <script type="text/javascript" src="resources/js/lib/backbone.js"></script>
@@ -22,17 +32,12 @@
 <script type="text/javascript" src="resources/js/lib/bootstrapx-clickover.js"></script>
 <script type="text/javascript" src="resources/js/lib/bootstrap-sheet.js"></script>
 <script type="text/javascript" src="resources/js/lib/bootpag.js"></script>
+<script type="text/javascript" src="resources/js/lib/retina.js"></script>
 <c:if test="${js != null && js != ''}">
-	<script type="text/javascript" src="resources/js/client.js"></script>
-	<script type="text/javascript" src="resources/js/grant.js"></script>
-	<script type="text/javascript" src="resources/js/scope.js"></script>
-	<script type="text/javascript" src="resources/js/whitelist.js"></script>
-	<script type="text/javascript" src="resources/js/dynreg.js"></script>
-	<script type="text/javascript" src="resources/js/rsreg.js"></script>
-	<script type="text/javascript" src="resources/js/token.js"></script>
-	<script type="text/javascript" src="resources/js/blacklist.js"></script>
+	<c:forEach var="file" items="${ ui.jsFiles }">
+		<script type="text/javascript" src="<c:out value="${ file }" />" ></script>
+	</c:forEach>
 	<script type="text/javascript" src="resources/js/admin.js"></script>
 </c:if>
-<script type="text/javascript" src="resources/js/lib/retina.js"></script>
 </body>
 </html>
