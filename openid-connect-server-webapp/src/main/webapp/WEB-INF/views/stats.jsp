@@ -14,7 +14,13 @@
         <o:sidebar/>
         <div class="span10">
             <div class="hero-unit">
-				<o:statsContent/>
+				<h2><spring:message code="statistics.title"/></h2>
+				
+				<p>
+				    <spring:message code="statistics.number_users" arguments='${statsSummary["userCount"]}'/>
+				    <spring:message code="statistics.number_clients" arguments='${statsSummary["clientCount"]}'/>
+				    <spring:message code="statistics.number_approvals" arguments='${statsSummary["approvalCount"]}'/>
+				</p>
             </div>
         </div>
     </div>

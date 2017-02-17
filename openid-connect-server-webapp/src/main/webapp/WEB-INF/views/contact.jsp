@@ -15,7 +15,10 @@
 		<div class="span10">
 			<div class="hero-unit">
 
-				<o:contactContent />
+				<h2><spring:message code="contact.title"/></h2>
+				<p>
+				<spring:message code="contact.body"/>
+				</p>
 
 			</div>
 
