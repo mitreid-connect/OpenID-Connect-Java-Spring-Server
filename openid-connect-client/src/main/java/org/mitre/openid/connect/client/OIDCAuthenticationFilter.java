@@ -649,7 +649,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 		String errorDescription = request.getParameter("error_description");
 		String errorURI = request.getParameter("error_uri");
 
-		throw new AuthenticationServiceException("Error from Authorization Endpoint: " + error + " " + errorDescription + " " + errorURI);
+		throw new AuthorizationEndpointException(error, errorDescription, errorURI);
 	}
 
 	/**
