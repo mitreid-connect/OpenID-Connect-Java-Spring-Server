@@ -1165,3 +1165,160 @@ var ClientFormView = Backbone.View.extend({
 });
 
 
+// add routes to the app
+/*
+"admin/clients":"listClients",
+"admin/client/new":"newClient",
+"admin/client/:id":"editClient",
+*/
+
+ui.routes.push({path: "admin/clients", name: "listClients", callback: 
+    function () {
+
+    	if (!isAdmin()) {
+    		this.root();
+    		return;
+    	}
+    	
+        this.breadCrumbView.collection.reset();
+        this.breadCrumbView.collection.add([
+            {text:$.t('admin.home'), href:""},
+            {text:$.t('client.manage'), href:"manage/#admin/clients"}
+        ]);
+        
+        this.updateSidebar('admin/clients');
+
+        var view = new ClientListView({model:this.clientList, stats: this.clientStats, systemScopeList: this.systemScopeList, whiteListList: this.whiteListList});
+        
+        view.load(function() {
+        	$('#content').html(view.render().el);
+        	view.delegateEvents();
+        	setPageTitle($.t('client.manage'));
+        });
+
+    }
+
+});
+
+ui.routes.push({path: "admin/client/new", name: "newClient", callback: 
+	function() {
+		console.log("newClient");
+		if (!isAdmin()) {
+			this.root();
+			return;
+		}
+	
+	    this.breadCrumbView.collection.reset();
+	    this.breadCrumbView.collection.add([
+	        {text:$.t('admin.home'), href:""},
+	        {text:$.t('client.manage'), href:"manage/#admin/clients"},
+	        {text:$.t('client.client-form.new'), href:""}
+	    ]);
+	
+	    this.updateSidebar('admin/clients');
+	
+	    var client = new ClientModel();
+		
+	    var view = new ClientFormView({model:client, systemScopeList: this.systemScopeList});
+	    view.load(function() {
+			var userInfo = getUserInfo();
+			var contacts = [];
+			if (userInfo != null && userInfo.email != null) {
+				contacts.push(userInfo.email);
+			}
+			
+			// use a different set of defaults based on heart mode flag
+			if (heartMode) {
+	        	client.set({
+	        		tokenEndpointAuthMethod: "PRIVATE_KEY",
+	        		generateClientSecret:false,
+	        		displayClientSecret:false,
+	        		requireAuthTime:true,
+	        		defaultMaxAge:60000,
+	        		scope: _.uniq(_.flatten(app.systemScopeList.defaultScopes().pluck("value"))),
+	        		accessTokenValiditySeconds:3600,
+	        		refreshTokenValiditySeconds:24*3600,
+	        		idTokenValiditySeconds:300,
+	        		grantTypes: ["authorization_code"],
+	        		responseTypes: ["code"],
+	        		subjectType: "PUBLIC",
+	        		jwksType: "URI",
+	        		contacts: contacts
+	        	}, { silent: true });
+			} else {
+				// set up this new client to require a secret and have us autogenerate one
+	        	client.set({
+	        		tokenEndpointAuthMethod: "SECRET_BASIC",
+	        		generateClientSecret:true,
+	        		displayClientSecret:false,
+	        		requireAuthTime:true,
+	        		defaultMaxAge:60000,
+	        		scope: _.uniq(_.flatten(app.systemScopeList.defaultScopes().pluck("value"))),
+	        		accessTokenValiditySeconds:3600,
+	        		idTokenValiditySeconds:600,
+	        		grantTypes: ["authorization_code"],
+	        		responseTypes: ["code"],
+	        		subjectType: "PUBLIC",
+	        		jwksType: "URI",
+	        		contacts: contacts
+	        	}, { silent: true });
+			}
+	    	
+	    	
+	    	$('#content').html(view.render().el);
+	    	setPageTitle($.t('client.client-form.new'));
+	    });
+	}
+});
+
+ui.routes.push({path: "admin/client/:id", name: "editClient", callback:
+	function(id) {
+		console.log("editClient " + id);
+		if (!isAdmin()) {
+			this.root();
+			return;
+		}
+	
+	    this.breadCrumbView.collection.reset();
+	    this.breadCrumbView.collection.add([
+	        {text:$.t('admin.home'), href:""},
+	        {text:$.t('client.manage'), href:"manage/#admin/clients"},
+	        {text:$.t('client.client-form.edit'), href:"manage/#admin/client/" + id}
+	    ]);
+	
+	    this.updateSidebar('admin/clients');
+	
+	    var client = this.clientList.get(id);
+	    if (!client) {
+	    	client = new ClientModel({id:id});
+	    }
+	    
+	    var view = new ClientFormView({model:client, systemScopeList: app.systemScopeList});
+	    view.load(function() {
+	        if ($.inArray("refresh_token", client.get("grantTypes")) != -1) {
+	        	client.set({
+	        		allowRefresh: true
+	        	}, { silent: true });
+	        }
+	        
+	        if (client.get("jwks")) {
+	        	client.set({
+	        		jwksType: "VAL"
+	        	}, { silent: true });
+	        } else {
+	        	client.set({
+	        		jwksType: "URI"
+	        	}, { silent: true });
+	        }
+	        
+	    	client.set({
+	    		generateClientSecret:false,
+	    		displayClientSecret:false
+	    	}, { silent: true });
+	        
+	    	$('#content').html(view.render().el);
+	    	setPageTitle($.t('client.client-form.edit'));
+	    });
+	
+	}
+});
