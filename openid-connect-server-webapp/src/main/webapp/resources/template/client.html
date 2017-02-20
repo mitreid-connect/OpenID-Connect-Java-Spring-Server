@@ -744,6 +744,17 @@
 				</div>
 			</div>
 
+            <div class="control-group" id="codeChallengeMethod">
+                <label class="control-label" data-i18n="client.client-form.code-challenge-method">Proof Key for Code Exchange (PKCE) Code Challenge Method</label>
+                <div class="controls">
+					<select>
+						<option value="default" <%-client.codeChallengeMethod == null ? 'selected ' : ''%> data-i18n="client.client-form.code-challenge-none">No code challenge</option>
+						<option value="plain" <%-client.codeChallengeMethod == "plain" ? 'selected' : ''%> data-i18n="client.client-form.code-challenge-plain">Plain code challenge</option>
+						<option value="S256" <%-client.codeChallengeMethod == "S256" ? 'selected' : ''%> data-i18n="client.client-form.code-challenge-s256">SHA-256 hash algorithm</option>
+					</select>
+                </div>
+            </div>
+			
 	</div>
 
 	<div class="tab-pane" id="client-other-tab">

@@ -20,6 +20,36 @@
 package org.mitre.openid.connect;
 
 
+import static org.mitre.util.JsonUtils.getAsArray;
+import static org.mitre.util.JsonUtils.getAsDate;
+import static org.mitre.util.JsonUtils.getAsJweAlgorithm;
+import static org.mitre.util.JsonUtils.getAsJweEncryptionMethod;
+import static org.mitre.util.JsonUtils.getAsJwsAlgorithm;
+import static org.mitre.util.JsonUtils.getAsPkceAlgorithm;
+import static org.mitre.util.JsonUtils.getAsString;
+import static org.mitre.util.JsonUtils.getAsStringSet;
+
+import java.text.ParseException;
+
+import org.mitre.oauth2.model.ClientDetailsEntity;
+import org.mitre.oauth2.model.ClientDetailsEntity.AppType;
+import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
+import org.mitre.oauth2.model.ClientDetailsEntity.SubjectType;
+import org.mitre.oauth2.model.RegisteredClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jwt.JWT;
+import com.nimbusds.jwt.JWTParser;
+
 import static org.mitre.oauth2.model.RegisteredClientFields.APPLICATION_TYPE;
 import static org.mitre.oauth2.model.RegisteredClientFields.CLAIMS_REDIRECT_URIS;
 import static org.mitre.oauth2.model.RegisteredClientFields.CLIENT_ID;
@@ -28,6 +58,7 @@ import static org.mitre.oauth2.model.RegisteredClientFields.CLIENT_NAME;
 import static org.mitre.oauth2.model.RegisteredClientFields.CLIENT_SECRET;
 import static org.mitre.oauth2.model.RegisteredClientFields.CLIENT_SECRET_EXPIRES_AT;
 import static org.mitre.oauth2.model.RegisteredClientFields.CLIENT_URI;
+import static org.mitre.oauth2.model.RegisteredClientFields.CODE_CHALLENGE_METHOD;
 import static org.mitre.oauth2.model.RegisteredClientFields.CONTACTS;
 import static org.mitre.oauth2.model.RegisteredClientFields.DEFAULT_ACR_VALUES;
 import static org.mitre.oauth2.model.RegisteredClientFields.DEFAULT_MAX_AGE;
@@ -59,37 +90,6 @@ import static org.mitre.oauth2.model.RegisteredClientFields.TOS_URI;
 import static org.mitre.oauth2.model.RegisteredClientFields.USERINFO_ENCRYPTED_RESPONSE_ALG;
 import static org.mitre.oauth2.model.RegisteredClientFields.USERINFO_ENCRYPTED_RESPONSE_ENC;
 import static org.mitre.oauth2.model.RegisteredClientFields.USERINFO_SIGNED_RESPONSE_ALG;
-import static org.mitre.util.JsonUtils.getAsArray;
-import static org.mitre.util.JsonUtils.getAsDate;
-import static org.mitre.util.JsonUtils.getAsJweAlgorithm;
-import static org.mitre.util.JsonUtils.getAsJweEncryptionMethod;
-import static org.mitre.util.JsonUtils.getAsJwsAlgorithm;
-import static org.mitre.util.JsonUtils.getAsString;
-import static org.mitre.util.JsonUtils.getAsStringSet;
-
-import java.text.ParseException;
-
-import org.mitre.jwt.assertion.AssertionValidator;
-import org.mitre.oauth2.model.ClientDetailsEntity;
-import org.mitre.oauth2.model.ClientDetailsEntity.AppType;
-import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
-import org.mitre.oauth2.model.ClientDetailsEntity.SubjectType;
-import org.mitre.oauth2.model.RegisteredClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
-import com.google.common.collect.Sets;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.nimbusds.jose.jwk.JWKSet;
-import com.nimbusds.jwt.JWT;
-import com.nimbusds.jwt.JWTParser;
 
 /**
  * Utility class to handle the parsing and serialization of ClientDetails objects.
@@ -204,6 +204,9 @@ public class ClientDetailsEntityJsonProcessor {
 
 			c.setClaimsRedirectUris(getAsStringSet(o, CLAIMS_REDIRECT_URIS));
 			
+			c.setCodeChallengeMethod(getAsPkceAlgorithm(o, CODE_CHALLENGE_METHOD));
+			
+			// note that this does not process or validate the software statement, that's handled in other components
 			String softwareStatement = getAsString(o,  SOFTWARE_STATEMENT);
 			if (!Strings.isNullOrEmpty(softwareStatement)) {
 				try {
@@ -214,6 +217,7 @@ public class ClientDetailsEntityJsonProcessor {
 					return null;
 				}
 			}
+			
 			
 			
 			return c;
@@ -338,6 +342,8 @@ public class ClientDetailsEntityJsonProcessor {
 			o.add(REQUEST_URIS, getAsArray(c.getRequestUris()));
 			
 			o.add(CLAIMS_REDIRECT_URIS, getAsArray(c.getClaimsRedirectUris()));
+			
+			o.addProperty(CODE_CHALLENGE_METHOD, c.getCodeChallengeMethod() != null ? c.getCodeChallengeMethod().getName() : null);
 			
 			if (c.getSoftwareStatement() != null) {
 				o.addProperty(SOFTWARE_STATEMENT, c.getSoftwareStatement().serialize());

@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.mitre.oauth2.model.PKCEAlgorithm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -133,6 +134,21 @@ public class JsonUtils {
 		String s = getAsString(o, member);
 		if (s != null) {
 			return JWSAlgorithm.parse(s);
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * Gets the value of the given member as a PKCE Algorithm, null if it doesn't exist
+	 * @param o
+	 * @param member
+	 * @return
+	 */
+	public static PKCEAlgorithm getAsPkceAlgorithm(JsonObject o, String member) {
+		String s = getAsString(o, member);
+		if (s != null) {
+			return PKCEAlgorithm.parse(s);
 		} else {
 			return null;
 		}

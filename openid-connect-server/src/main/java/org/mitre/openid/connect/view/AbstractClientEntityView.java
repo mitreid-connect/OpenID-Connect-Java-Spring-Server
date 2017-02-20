@@ -27,6 +27,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.mitre.oauth2.model.PKCEAlgorithm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -36,11 +37,15 @@ import org.springframework.web.servlet.view.AbstractView;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import com.nimbusds.jose.Algorithm;
 import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -117,6 +122,15 @@ public abstract class AbstractClientEntityView extends AbstractView {
 			}
 		}
 		
+	})
+	.registerTypeAdapter(PKCEAlgorithm.class, new JsonSerializer<PKCEAlgorithm>() {
+		public JsonPrimitive serialize(PKCEAlgorithm src, Type typeOfSrc, JsonSerializationContext context) {
+			if (src != null) {
+				return new JsonPrimitive(src.getName());
+			} else {
+				return null;
+			}
+		}
 	})
 	.serializeNulls()
 	.setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")

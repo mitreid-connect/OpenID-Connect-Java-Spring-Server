@@ -61,6 +61,8 @@ var DynRegClient = Backbone.Model.extend({
         
         request_uris:[],
         
+        code_challenge_method:null,
+
         registration_access_token:null,
         registration_client_uri:null
     },
@@ -435,7 +437,8 @@ var DynRegEditView = Backbone.View.extend({
             id_token_signed_response_alg: this.defaultToNull($('#idTokenSignedResponseAlg select').val()),
             id_token_encrypted_response_alg: this.defaultToNull($('#idTokenEncryptedResponseAlg select').val()),
             id_token_encrypted_response_enc: this.defaultToNull($('#idTokenEncryptedResponseEnc select').val()),
-            token_endpoint_auth_signing_alg: this.defaultToNull($('#tokenEndpointAuthSigningAlg select').val())
+            token_endpoint_auth_signing_alg: this.defaultToNull($('#tokenEndpointAuthSigningAlg select').val()),
+            code_challenge_method: this.defaultToNull($('#codeChallengeMethod select').val())
         };
 
         // set all empty strings to nulls

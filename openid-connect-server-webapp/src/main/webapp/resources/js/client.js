@@ -77,6 +77,8 @@ var ClientModel = Backbone.Model.extend({
         
         requestUris:[],
         
+        codeChallengeMethod:null,
+        
         authorities:[],
         accessTokenValiditySeconds: null,
         refreshTokenValiditySeconds: null,
@@ -957,7 +959,8 @@ var ClientFormView = Backbone.View.extend({
             idTokenSignedResponseAlg: this.defaultToNull($('#idTokenSignedResponseAlg select').val()),
             idTokenEncryptedResponseAlg: this.defaultToNull($('#idTokenEncryptedResponseAlg select').val()),
             idTokenEncryptedResponseEnc: this.defaultToNull($('#idTokenEncryptedResponseEnc select').val()),
-            tokenEndpointAuthSigningAlg: this.defaultToNull($('#tokenEndpointAuthSigningAlg select').val())
+            tokenEndpointAuthSigningAlg: this.defaultToNull($('#tokenEndpointAuthSigningAlg select').val()),
+            codeChallengeMethod: this.defaultToNull($('#codeChallengeMethod select').val())
         };
 
         // post-validate
@@ -1164,13 +1167,6 @@ var ClientFormView = Backbone.View.extend({
     }
 });
 
-
-// add routes to the app
-/*
-"admin/clients":"listClients",
-"admin/client/new":"newClient",
-"admin/client/:id":"editClient",
-*/
 
 ui.routes.push({path: "admin/clients", name: "listClients", callback: 
     function () {

@@ -29,6 +29,7 @@ import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity.AppType;
 import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
 import org.mitre.oauth2.model.ClientDetailsEntity.SubjectType;
+import org.mitre.oauth2.model.PKCEAlgorithm;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.web.AuthenticationUtilities;
 import org.mitre.openid.connect.exception.ValidationException;
@@ -68,9 +69,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
 import com.google.gson.JsonSyntaxException;
 import com.nimbusds.jose.Algorithm;
 import com.nimbusds.jose.EncryptionMethod;
@@ -198,6 +196,15 @@ public class ClientAPI {
 				} catch (ParseException e) {
 					return null;
 				}
+			} else {
+				return null;
+			}
+		}
+	})
+	.registerTypeAdapter(PKCEAlgorithm.class, new JsonDeserializer<Algorithm>() {
+		public PKCEAlgorithm deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			if (json.isJsonPrimitive()) {
+				return PKCEAlgorithm.parse(json.getAsString());
 			} else {
 				return null;
 			}
