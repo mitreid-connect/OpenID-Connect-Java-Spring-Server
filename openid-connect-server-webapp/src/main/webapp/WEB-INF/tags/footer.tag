@@ -20,7 +20,7 @@
 	// set up a global variable for UI components to hang extensions off of
 	
 	var ui = {
-		templates: [],
+		templates: ["resources/template/admin.html"],
 		routes: []
 	};
 
@@ -39,5 +39,6 @@
 	</c:forEach>
 	<script type="text/javascript" src="resources/js/admin.js"></script>
 </c:if>
+<div id="templates" class="hide"></div>
 </body>
 </html>

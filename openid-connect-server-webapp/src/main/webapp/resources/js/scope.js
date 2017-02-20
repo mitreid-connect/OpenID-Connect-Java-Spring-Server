@@ -433,3 +433,5 @@ ui.routes.push({path: "admin/scope/:id", name: "editScope", callback:
 		
 	}
 });
+
+ui.templates.push('resources/template/scope.html');

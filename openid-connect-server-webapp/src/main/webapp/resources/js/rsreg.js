@@ -503,3 +503,5 @@ ui.routes.push({path: "dev/resource/edit", name: "editResReg", callback:
 		// note that this doesn't actually load the client, that's supposed to happen elsewhere...
 	}
 });
+
+ui.templates.push('resources/template/rsreg.html');

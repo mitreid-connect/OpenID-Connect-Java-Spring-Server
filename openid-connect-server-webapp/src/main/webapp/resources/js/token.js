@@ -500,3 +500,5 @@ ui.routes.push({path: "user/tokens", name: "tokens", callback:
 	    
 	}
 });
+
+ui.templates.push('resources/template/token.html');

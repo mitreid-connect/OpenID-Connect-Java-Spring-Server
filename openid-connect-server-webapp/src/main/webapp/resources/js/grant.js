@@ -278,3 +278,5 @@ ui.routes.push({path: "user/approved", name: "approvedSites", callback:
 		);
 	}
 });
+
+ui.templates.push('resources/template/grant.html');

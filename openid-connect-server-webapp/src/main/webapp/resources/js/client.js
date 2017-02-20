@@ -1322,3 +1322,5 @@ ui.routes.push({path: "admin/client/:id", name: "editClient", callback:
 	
 	}
 });
+
+ui.templates.push('resources/template/client.html');

@@ -474,22 +474,18 @@ var app = null;
 // main
 $(function () {
 
-    var _load = function (templates) {
-        $('body').append(templates);
+    var loader = function(source) {
+    	return $.get(source, function (templates) {
+    		console.log('Loading file: ' + source);
+    		$('#templates').append(templates);
+    	});
     };
-
+    
     // load templates and append them to the body
-    $.when(
-    		$.get('resources/template/admin.html', _load),
-    		$.get('resources/template/client.html', _load),
-    		$.get('resources/template/grant.html', _load),
-    		$.get('resources/template/scope.html', _load),
-    		$.get('resources/template/whitelist.html', _load),
-    		$.get('resources/template/dynreg.html', _load),
-    		$.get('resources/template/rsreg.html', _load),
-    		$.get('resources/template/token.html', _load),
-    		$.get('resources/template/blacklist.html', _load)
+    $.when.apply(null,
+    		ui.templates.map(loader)
     		).done(function() {
+    			console.log('done');
     		    $.ajaxSetup({cache:false});
     		    app = new AppRouter();
 

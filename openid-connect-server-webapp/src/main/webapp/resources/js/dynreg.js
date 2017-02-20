@@ -706,3 +706,5 @@ ui.routes.push({path: "dev/dynreg/edit", name: "editDynReg", callback:
 		// note that this doesn't actually load the client, that's supposed to happen elsewhere...
 	}
 });
+
+ui.templates.push('resources/template/dynreg.html');

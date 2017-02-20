@@ -498,3 +498,5 @@ ui.routes.push({path: "admin/whitelist/:id", name: "editWhitelist", callback:
 	}
 	
 });
+
+ui.templates.push('resources/template/whitelist.html');
