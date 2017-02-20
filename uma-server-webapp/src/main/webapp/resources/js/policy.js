@@ -647,3 +647,141 @@ var PolicyFormView = Backbone.View.extend({
 		return this;
 	}
 });
+
+
+ui.routes.push({path: "user/policy", name: "policy", callback:
+	function() {
+
+		this.breadCrumbView.collection.reset();
+		this.breadCrumbView.collection.add([
+	        {text:$.t('admin.home'), href:""},
+	        {text:$.t('policy.resource-sets'), href:"manage/#user/policy"}
+		]);
+		
+		this.updateSidebar('user/policy');
+		
+		var view = new ResourceSetListView({model: this.resourceSetList, clientList: this.clientList, systemScopeList: this.systemScopeList});
+	
+		view.load(function() {
+			$('#content').html(view.render().el);
+			setPageTitle($.t('policy.resource-sets'));
+		});
+		
+	}
+});
+
+ui.routes.push({path: "user/policy/:rsid", name: "editPolicies", callback:
+	function(rsid) {
+
+		this.breadCrumbView.collection.reset();
+		this.breadCrumbView.collection.add([
+	        {text:$.t('admin.home'), href:""},
+	        {text:$.t('policy.resource-sets'), href:"manage/#user/policy"},
+	        {text:$.t('policy.edit-policies'), href:"manage/#user/policy/" + rsid}
+		]);
+		
+		this.updateSidebar('user/policy');
+		
+		var rs = this.resourceSetList.get(rsid);
+		var policies = null;
+		if (rs == null) {
+			// need to load it directly
+			policies = new PolicyCollection([], {rsid: rsid});
+			rs = new ResourceSetModel({id: rsid});
+			this.resourceSetList.add(rs); // it will be loaded below, don't need to load it again in the future
+		} else {
+			// the resource set is loaded, preload the claims
+			policies = new PolicyCollection(rs.get('policies'), {rsid: rsid});
+			policies.isFetched = true;
+		}
+		
+		var view = new PolicyListView({model: policies, rs: rs, systemScopeList: this.systemScopeList});
+		
+		view.load(function() {
+			$('#content').html(view.render().el);
+			setPageTitle($.t('policy.edit-policy'));
+		});
+		
+	}
+});
+
+ui.routes.push({path: "user/policy/:rsid/new", name: "newPolicy", callback:
+	function(rsid) {
+
+		this.breadCrumbView.collection.reset();
+		this.breadCrumbView.collection.add([
+	        {text:$.t('admin.home'), href:""},
+	        {text:$.t('policy.resource-sets'), href:"manage/#user/policy"},
+	        {text:$.t('policy.edit-policies'), href:"manage/#user/policy/" + rsid},
+	        {text:$.t('policy.new-policy'), href:"manage/#user/policy/" + rsid + "/new"}
+		]);
+		
+		this.updateSidebar('user/policy');
+		
+		var policy = policy = new PolicyModel({}, {rsid: rsid});
+	
+		var rs = this.resourceSetList.get(rsid);
+		if (rs == null) {
+			// need to load it directly
+			rs = new ResourceSetModel({id: rsid});
+			this.resourceSetList.add(rs); // it will be loaded below, don't need to load it again in the future
+		}
+		
+		var view = new PolicyFormView({model: policy, rs: rs, systemScopeList: this.systemScopeList});
+		
+		view.load(function() {
+			$('#content').html(view.render().el);
+			setPageTitle($.t('policy.edit-policy'));
+		});
+	}
+});
+
+ui.routes.push({path: "user/policy/:rsid/:pid", name: "editPolicy", callback:
+	function(rsid, pid) {
+		this.breadCrumbView.collection.reset();
+		this.breadCrumbView.collection.add([
+	        {text:$.t('admin.home'), href:""},
+	        {text:$.t('policy.resource-sets'), href:"manage/#user/policy"},
+	        {text:$.t('policy.edit-policies'), href:"manage/#user/policy/" + rsid},
+	        {text:$.t('policy.edit-policy'), href:"manage/#user/policy/" + rsid + "/" + pid}
+		]);
+		
+		this.updateSidebar('user/policy');
+		
+		var rs = this.resourceSetList.get(rsid);
+		var policy = null;
+		if (rs == null) {
+			// need to load it directly
+			policy = new PolicyModel({id: pid}, {rsid: rsid});
+			rs = new ResourceSetModel({id: rsid});
+			this.resourceSetList.add(rs); // it will be loaded below, don't need to load it again in the future
+		} else {
+			// the resource set is loaded, preload the claims
+			_.each(rs.get('policies'), function(p) {
+				if (p.id == pid) {
+					policy = new PolicyModel(p, {rsid: rsid});
+					policy.isFetched = true;
+				}
+			});
+			if (policy == null) {
+	    		// need to load it directly
+	    		policy = new PolicyModel({id: pid}, {rsid: rsid});
+			}
+		}
+		
+		var view = new PolicyFormView({model: policy, rs: rs, systemScopeList: this.systemScopeList});
+		
+		view.load(function() {
+			$('#content').html(view.render().el);
+			setPageTitle($.t('policy.edit-policy'));
+		});
+		
+		
+	}
+});
+
+ui.templates.push('resources/template/policy.html');
+
+ui.init.push(function(app) {
+	app.resourceSetList = new ResourceSetCollection();
+});
