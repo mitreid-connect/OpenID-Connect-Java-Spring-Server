@@ -368,7 +368,7 @@
     "copyright": "基於<a href=\"https://github.com/mitreid-connect/\">MITREid Connect <span class=\"label\">{0}</span></a>技術構建 <span class=\"pull-right\">&copy; 2016 MITRE公司及MIT因特網信任聯盟</span>。",
     "about": {
         "title": "關於",
-        "body": "\n此OpenID Connect服務基於開源的MITREid Connect專案，該專案來自 \n<a href=\"http://www.mitre.org/\">MITRE公司</a> 及 <a href=\"http://kit.mit.edu/\">MIT因特網信任聯盟</a>。\n</p>\n<p>\n有關該專案的更多資訊可見 \n<a href=\"http://github.com/mitreid-connect/\">GitHub上的MITREid Connect專案</a>。 \n您可以在該網站報告bug、提交意見及代碼補丁。"
+        "body": "\n此OpenID Connect服務基於開源的MITREid Connect專案，該專案來自 \n<a href=\"http://www.mitre.org/\">MITRE公司</a> 及 <a href=\"http://www.trust.mit.edu/\">MIT因特網信任聯盟</a>。\n</p>\n<p>\n有關該專案的更多資訊可見 \n<a href=\"http://github.com/mitreid-connect/\">GitHub上的MITREid Connect專案</a>。 \n您可以在該網站報告bug、提交意見及代碼補丁。"
     },
     "statistics": {
         "title": "統計",
@@ -385,7 +385,7 @@
         "more": "更多",
         "about": {
             "title": "關於",
-            "body": "本服務基於開源的MITREid Connect專案，該專案來自 \n<a href=\"http://www.mitre.org/\">MITRE公司</a> 及 <a href=\"http://kit.mit.edu/\">MIT因特網信任聯盟</a>。"
+            "body": "本服務基於開源的MITREid Connect專案，該專案來自 \n<a href=\"http://www.mitre.org/\">MITRE公司</a> 及 <a href=\"http://www.trust.mit.edu/\">MIT因特網信任聯盟</a>。"
         },
         "contact": {
             "title": "聯繫方式",

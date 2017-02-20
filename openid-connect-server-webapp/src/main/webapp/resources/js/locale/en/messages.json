@@ -365,7 +365,7 @@
 	"copyright": "Powered by <a href=\"https://github.com/mitreid-connect/\">MITREid Connect <span class=\"label\">{0}</span></a> <span class=\"pull-right\">&copy; 2017 The MITRE Corporation and MIT Internet Trust Consortium.</span>.",
 	"about": {
 		"title": "About",
-		"body": "\nThis OpenID Connect service is built from the MITREid Connect Open Source project, from \n<a href=\"http://www.mitre.org/\">The MITRE Corporation</a> and the <a href=\"http://kit.mit.edu/\">MIT Internet Trust Consortium</a>.\n</p>\n<p>\nMore information about the project can be found at \n<a href=\"http://github.com/mitreid-connect/\">MITREid Connect on GitHub</a>. \nThere, you can submit bug reports, give feedback, or even contribute code patches for additional features you'd like to see."
+		"body": "\nThis OpenID Connect service is built from the MITREid Connect Open Source project, from \n<a href=\"http://www.mitre.org/\">The MITRE Corporation</a> and the <a href=\"http://www.trust.mit.edu/\">MIT Internet Trust Consortium</a>.\n</p>\n<p>\nMore information about the project can be found at \n<a href=\"http://github.com/mitreid-connect/\">MITREid Connect on GitHub</a>. \nThere, you can submit bug reports, give feedback, or even contribute code patches for additional features you'd like to see."
 	},
 	"statistics": {
 		"title": "Statistics",
@@ -382,7 +382,7 @@
 		"more": "More",
 		"about": {
 			"title": "About",
-			"body": "This OpenID Connect service is built from the MITREid Connect Open Source project, from \n<a href=\"http://www.mitre.org/\">The MITRE Corporation</a> and the <a href=\"http://kit.mit.edu/\">MIT Internet Trust Consortium</a>."
+			"body": "This OpenID Connect service is built from the MITREid Connect Open Source project, from \n<a href=\"http://www.mitre.org/\">The MITRE Corporation</a> and the <a href=\"http://www.trust.mit.edu/\">MIT Internet Trust Consortium</a>."
 		},
 		"contact": {
 			"title": "Contact",
