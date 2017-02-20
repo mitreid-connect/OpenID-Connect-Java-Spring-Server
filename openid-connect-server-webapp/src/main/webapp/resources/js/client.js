@@ -1324,3 +1324,7 @@ ui.routes.push({path: "admin/client/:id", name: "editClient", callback:
 });
 
 ui.templates.push('resources/template/client.html');
+
+ui.init.push(function(app) {
+    app.clientList = new ClientCollection();
+});

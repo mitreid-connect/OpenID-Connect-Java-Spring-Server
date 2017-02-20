@@ -20,8 +20,9 @@
 	// set up a global variable for UI components to hang extensions off of
 	
 	var ui = {
-		templates: ["resources/template/admin.html"],
-		routes: []
+		templates: ["resources/template/admin.html"], // template files to load for UI
+		routes: [], // routes to add to the UI {path: URI to map to, name: unique name for internal use, callback: function to call when route is activated}
+		init: [] // functions to call after initialization is complete
 	};
 
 </script>

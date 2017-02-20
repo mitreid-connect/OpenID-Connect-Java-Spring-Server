@@ -280,3 +280,7 @@ ui.routes.push({path: "user/approved", name: "approvedSites", callback:
 });
 
 ui.templates.push('resources/template/grant.html');
+
+ui.init.push(function(app) {
+    app.approvedSiteList = new ApprovedSiteCollection();
+});

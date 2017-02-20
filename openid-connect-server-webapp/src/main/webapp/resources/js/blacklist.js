@@ -210,3 +210,7 @@ ui.routes.push({path: "admin/blacklist", name: "blackList", callback:
 });	
 
 ui.templates.push('resources/template/blacklist.html');
+
+ui.init.push(function(app) {
+    app.blackListList = new BlackListCollection();
+});

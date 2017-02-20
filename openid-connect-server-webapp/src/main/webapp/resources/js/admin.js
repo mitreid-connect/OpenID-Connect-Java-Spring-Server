@@ -430,14 +430,7 @@ var AppRouter = Backbone.Router.extend({
     
     initialize:function () {
 
-        this.clientList = new ClientCollection();
-        this.whiteListList = new WhiteListCollection();
-        this.blackListList = new BlackListCollection();
-        this.approvedSiteList = new ApprovedSiteCollection();
-        this.systemScopeList = new SystemScopeCollection();
         this.clientStats = new StatsModel(); 
-        this.accessTokensList = new AccessTokenCollection();
-        this.refreshTokensList = new RefreshTokenCollection();
                 
         this.breadCrumbView = new BreadCrumbView({
             collection:new Backbone.Collection()
@@ -446,6 +439,12 @@ var AppRouter = Backbone.Router.extend({
         this.breadCrumbView.render();
         
         this.errorHandlerView = new ErrorHandlerView();
+
+        // call all the extra initialization functions
+        var app = this;
+        _.each(ui.init, function(fn) {
+        	fn(app);
+        });
 
     },
 
@@ -482,8 +481,7 @@ $(function () {
     };
     
     // load templates and append them to the body
-    $.when.apply(null,
-    		ui.templates.map(loader)
+    $.when.apply(null, ui.templates.map(loader)
     		).done(function() {
     			console.log('done');
     		    $.ajaxSetup({cache:false});

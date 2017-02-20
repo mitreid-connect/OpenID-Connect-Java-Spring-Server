@@ -502,3 +502,8 @@ ui.routes.push({path: "user/tokens", name: "tokens", callback:
 });
 
 ui.templates.push('resources/template/token.html');
+
+ui.init.push(function(app) {
+    app.accessTokensList = new AccessTokenCollection();
+    app.refreshTokensList = new RefreshTokenCollection();
+});

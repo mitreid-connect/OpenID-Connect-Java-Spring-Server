@@ -435,3 +435,7 @@ ui.routes.push({path: "admin/scope/:id", name: "editScope", callback:
 });
 
 ui.templates.push('resources/template/scope.html');
+
+ui.init.push(function(app) {
+    app.systemScopeList = new SystemScopeCollection();
+});
