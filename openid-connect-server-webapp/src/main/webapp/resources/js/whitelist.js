@@ -389,3 +389,112 @@ var WhiteListFormView = Backbone.View.extend({
 
 });
 
+
+ui.routes.push({path: "admin/whitelists", name: "whiteList", callback:
+	function () {
+
+		if (!isAdmin()) {
+			this.root();
+			return;
+		}
+	
+	    this.updateSidebar('admin/whitelists');
+	
+	    this.breadCrumbView.collection.reset();
+	    this.breadCrumbView.collection.add([
+	        {text:$.t('admin.home'), href:""},
+	        {text:$.t('whitelist.manage'), href:"manage/#admin/whitelists"}
+	    ]);
+	    
+	    var view = new WhiteListListView({model:this.whiteListList, clientList: this.clientList, systemScopeList: this.systemScopeList});
+	    
+	    view.load(
+	    	function() {
+	    		$('#content').html(view.render().el);
+	    		view.delegateEvents();
+	    		setPageTitle($.t('whitelist.manage'));
+	    	}
+	    );
+	    
+	
+	}
+});
+
+ui.routes.push({path: "admin/whitelist/new/:cid", name: "newWhitelist", callback:
+	function(cid) {
+
+
+		if (!isAdmin()) {
+			this.root();
+			return;
+		}
+	
+		this.breadCrumbView.collection.reset();
+	    this.breadCrumbView.collection.add([
+	        {text:$.t('admin.home'), href:""},
+	        {text:$.t('whitelist.manage'), href:"manage/#admin/whitelists"},
+	        {text:$.t('whitelist.new'), href:"manage/#admin/whitelist/new/" + cid}
+	    ]);
+	
+	    this.updateSidebar('admin/whitelists');
+	    
+	    var whiteList = new WhiteListModel();
+	
+	    var client = this.clientList.get(cid);
+	    if (!client) {
+	    	client = new ClientModel({id: cid});
+	    }
+	    
+	    var view = new WhiteListFormView({model: whiteList, client: client, systemScopeList: this.systemScopeList});
+	  
+	    view.load(
+	    	function() {
+	    		
+	    		// set the scopes on the model now that everything's loaded
+	    		whiteList.set({allowedScopes: client.get('scope')}, {silent: true});
+	    		
+	    		$('#content').html(view.render().el);
+	    		view.delegateEvents();
+	    		setPageTitle($.t('whitelist.manage'));
+	    	}
+	    );        
+		
+	}
+});
+
+
+ui.routes.push({path: "admin/whitelist/:id", name: "editWhitelist", callback:
+	function(id) {
+
+		if (!isAdmin()) {
+			this.root();
+			return;
+		}
+	
+		this.breadCrumbView.collection.reset();
+	    this.breadCrumbView.collection.add([
+	        {text:$.t('admin.home'), href:""},
+	        {text:$.t('whitelist.manage'), href:"manage/#admin/whitelists"},
+	        {text:$.t('whitelist.edit'), href:"manage/#admin/whitelist/" + id}
+	    ]);
+	    
+	    this.updateSidebar('admin/whitelists');
+	
+	    var whiteList = this.whiteListList.get(id);
+	    if (!whiteList) {
+	    	whiteList = new WhiteListModel({id: id});
+	    }
+	    
+	    var view = new WhiteListFormView({model: whiteList, clientList: this.clientList, systemScopeList: this.systemScopeList});
+	  
+	    view.load(
+	    	function() {
+	    		$('#content').html(view.render().el);
+	    		view.delegateEvents();
+	    		setPageTitle($.t('whitelist.manage'));
+	    	}
+	    );
+	
+	}
+	
+});

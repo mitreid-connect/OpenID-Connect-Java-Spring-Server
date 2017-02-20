@@ -258,3 +258,23 @@ var ApprovedSiteView = Backbone.View.extend({
 	}
 });
 
+ui.routes.push({path: "user/approved", name: "approvedSites", callback:
+	
+	function() {
+		this.breadCrumbView.collection.reset();
+	    this.breadCrumbView.collection.add([
+	        {text:$.t('admin.home'), href:""},
+	        {text:$.t('grant.manage-approved-sites'), href:"manage/#user/approve"}
+	    ]);
+	
+	    this.updateSidebar('user/approved');
+	
+	    var view = new ApprovedSiteListView({model:this.approvedSiteList, clientList: this.clientList, systemScopeList: this.systemScopeList});
+		view.load( 
+			function(collection, response, options) {
+				$('#content').html(view.render().el);
+		    	setPageTitle($.t('grant.manage-approved-sites'));
+			}
+		);
+	}
+});

@@ -611,3 +611,98 @@ var DynRegEditView = Backbone.View.extend({
 	}
 	
 });
+
+ui.routes.push({path: "dev/dynreg", name: "dynReg", callback: 
+	function() {
+	
+		this.breadCrumbView.collection.reset();
+		this.breadCrumbView.collection.add([
+	         {text:$.t('admin.home'), href:""},
+	         {text:$.t('admin.self-service-client'), href:"manage/#dev/dynreg"}
+	    ]);
+		
+		var view = new DynRegRootView({systemScopeList: this.systemScopeList});
+		
+	    this.updateSidebar('dev/dynreg');
+	    
+		view.load(function() {
+				$('#content').html(view.render().el);
+				
+				setPageTitle($.t('admin.self-service-client'));
+		});
+		
+	}
+});
+
+ui.routes.push({path: "dev/dynreg/new", name: "newDynReg", callback:
+	function() {
+
+		this.breadCrumbView.collection.reset();
+		this.breadCrumbView.collection.add([
+	         {text:$.t('admin.home'), href:""},
+	         {text:$.t('admin.self-service-client'), href:"manage/#dev/dynreg"},
+	         {text:$.t('dynreg.new-client'), href:"manage/#dev/dynreg/new"}
+	    ]);
+		
+	    this.updateSidebar('dev/dynreg');
+	    
+		var client = new DynRegClient();
+		var view = new DynRegEditView({model: client, systemScopeList:this.systemScopeList});
+		
+		view.load(function() {
+	
+			var userInfo = getUserInfo();
+			var contacts = [];
+			if (userInfo != null && userInfo.email != null) {
+				contacts.push(userInfo.email);
+			}
+			
+			if (heartMode) {
+				client.set({
+					require_auth_time:true,
+					default_max_age:60000,
+					scope: _.uniq(_.flatten(app.systemScopeList.defaultUnrestrictedScopes().pluck("value"))).join(" "),
+					token_endpoint_auth_method: 'private_key_jwt',
+					grant_types: ["authorization_code"],
+					response_types: ["code"],
+					subject_type: "public",
+					contacts: contacts
+				}, { silent: true });
+			} else {
+				client.set({
+					require_auth_time:true,
+					default_max_age:60000,
+					scope: _.uniq(_.flatten(app.systemScopeList.defaultUnrestrictedScopes().pluck("value"))).join(" "),
+					token_endpoint_auth_method: 'client_secret_basic',
+					grant_types: ["authorization_code"],
+					response_types: ["code"],
+					subject_type: "public",
+					contacts: contacts
+				}, { silent: true });
+			}
+			
+			$('#content').html(view.render().el);
+			view.delegateEvents();
+			setPageTitle($.t('dynreg.new-client'));
+			
+		});
+		
+	}
+});
+
+ui.routes.push({path: "dev/dynreg/edit", name: "editDynReg", callback:
+	function() {
+
+		this.breadCrumbView.collection.reset();
+		this.breadCrumbView.collection.add([
+	         {text:$.t('admin.home'), href:""},
+	         {text:$.t('admin.self-service-client'), href:"manage/#dev/dynreg"},
+	         {text:$.t('dynreg.edit-existing'), href:"manage/#dev/dynreg/edit"}
+	    ]);
+		
+	    this.updateSidebar('dev/dynreg');
+	    
+		setPageTitle($.t('dynreg.edit-existing'));
+		// note that this doesn't actually load the client, that's supposed to happen elsewhere...
+	}
+});

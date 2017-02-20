@@ -427,3 +427,79 @@ var ResRegEditView = Backbone.View.extend({
 	}
 	
 });
+
+ui.routes.push({path: "dev/resource", name: "resReg", callback:
+	function() {
+
+		this.breadCrumbView.collection.reset();
+		this.breadCrumbView.collection.add([
+	         {text:$.t('admin.home'), href:""},
+	         {text:$.t('admin.self-service-resource'), href:"manage/#dev/resource"}
+	    ]);
+		
+	    this.updateSidebar('dev/resource');
+	    
+		var view = new ResRegRootView({systemScopeList: this.systemScopeList});
+		view.load(function() {
+				$('#content').html(view.render().el);
+				
+				setPageTitle($.t('admin.self-service-resource'));
+		});
+		
+	}
+});
+
+ui.routes.push({path: "dev/resource/new", name: "newResReg", callback:
+	function() {
+	
+		this.breadCrumbView.collection.reset();
+		this.breadCrumbView.collection.add([
+	         {text:$.t('admin.home'), href:""},
+	         {text:$.t('admin.self-service-resource'), href:"manage/#dev/resource"},
+	         {text:$.t('rsreg.new'), href:"manage/#dev/resource/new"}
+	    ]);
+		
+	    this.updateSidebar('dev/resource');
+	    
+		var client = new ResRegClient();
+		var view = new ResRegEditView({model: client, systemScopeList:this.systemScopeList});
+		
+		view.load(function() {
+	
+			var userInfo = getUserInfo();
+			var contacts = [];
+			if (userInfo != null && userInfo.email != null) {
+				contacts.push(userInfo.email);
+			}
+			
+			client.set({
+	    		scope: _.uniq(_.flatten(app.systemScopeList.defaultUnrestrictedScopes().pluck("value"))).join(" "),
+	    		token_endpoint_auth_method: 'client_secret_basic',
+	    		contacts: contacts
+	    	}, { silent: true });
+		
+			$('#content').html(view.render().el);
+			view.delegateEvents();
+			setPageTitle($.t('rsreg.new'));
+			
+		});
+		
+	}
+});
+
+ui.routes.push({path: "dev/resource/edit", name: "editResReg", callback:
+	function() {
+
+		this.breadCrumbView.collection.reset();
+		this.breadCrumbView.collection.add([
+	         {text:$.t('admin.home'), href:""},
+	         {text:$.t('admin.self-service-resource'), href:"manage/#dev/resource"},
+	         {text:$.t('rsreg.edit'), href:"manage/#dev/resource/edit"}
+	    ]);
+		
+	    this.updateSidebar('dev/resource');
+	    
+		setPageTitle($.t('rsreg.edit'));
+		// note that this doesn't actually load the client, that's supposed to happen elsewhere...
+	}
+});

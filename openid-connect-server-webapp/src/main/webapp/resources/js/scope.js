@@ -99,8 +99,8 @@ var SystemScopeView = Backbone.View.extend({
         $('.restricted', this.el).tooltip({title: $.t('scope.system-scope-table.tooltip-restricted')});
         $('.default', this.el).tooltip({title: $.t('scope.system-scope-table.tooltip-default')});
         
-        return this;
         $(this.el).i18n();
+        return this;
     },
     
     deleteScope:function (e) {
@@ -344,5 +344,92 @@ var SystemScopeFormView = Backbone.View.extend({
 		
         $(this.el).i18n();
 		return this;
+	}
+});
+
+ui.routes.push({path: "admin/scope", name: "siteScope", callback:
+	function() {
+	
+		if (!isAdmin()) {
+			this.root();
+			return;
+		}
+	
+		this.breadCrumbView.collection.reset();
+		this.breadCrumbView.collection.add([
+	         {text:$.t('admin.home'), href:""},
+	         {text:$.t('scope.manage'), href:"manage/#admin/scope"}
+	    ]);
+		
+	    this.updateSidebar('admin/scope');
+	    
+		var view = new SystemScopeListView({model:this.systemScopeList});
+		
+		view.load(function() {
+			$('#content').html(view.render().el);
+			view.delegateEvents();
+			setPageTitle($.t('scope.manage'));    		
+		});
+	
+	}
+});
+
+ui.routes.push({path: "admin/scope/new", name:"newScope", callback:
+	function() {
+	
+	
+		if (!isAdmin()) {
+			this.root();
+			return;
+		}
+	
+		this.breadCrumbView.collection.reset();
+		this.breadCrumbView.collection.add([
+	         {text:$.t('admin.home'), href:""},
+	         {text:$.t('scope.manage'), href:"manage/#admin/scope"},
+	         {text:$.t('scope.system-scope-form.new'), href:"manage/#admin/scope/new"}
+	    ]);
+		
+	    this.updateSidebar('admin/scope');
+	    
+		var scope = new SystemScopeModel();
+		
+		var view = new SystemScopeFormView({model:scope});
+		view.load(function() {
+			$('#content').html(view.render().el);
+			setPageTitle($.t('scope.system-scope-form.new'));
+		});
+	
+	}
+});
+
+ui.routes.push({path: "admin/scope/:id", name: "editScope", callback:
+	function(sid) {
+
+		if (!isAdmin()) {
+			this.root();
+			return;
+		}
+	
+		this.breadCrumbView.collection.reset();
+		this.breadCrumbView.collection.add([
+	         {text:$.t('admin.home'), href:""},
+	         {text:$.t('scope.manage'), href:"manage/#admin/scope"},
+	         {text:$.t('scope.system-scope-form.edit'), href:"manage/#admin/scope/" + sid}
+	    ]);
+	
+	    this.updateSidebar('admin/scope');
+	    
+		var scope = this.systemScopeList.get(sid);
+		if (!scope) {
+			scope = new SystemScopeModel({id: sid});
+		}
+		
+		var view = new SystemScopeFormView({model:scope});
+		view.load(function() {
+			$('#content').html(view.render().el);
+			setPageTitle($.t('scope.system-scope-form.new'));
+		});
+		
 	}
 });

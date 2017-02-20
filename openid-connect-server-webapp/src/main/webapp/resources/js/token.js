@@ -477,3 +477,26 @@ var TokenListView = Backbone.View.extend({
 		return this;
 	}
 });
+
+
+ui.routes.push({path: "user/tokens", name: "tokens", callback:
+	function() {
+		this.breadCrumbView.collection.reset();
+	    this.breadCrumbView.collection.add([
+	        {text:$.t('admin.home'), href:""},
+	        {text:$.t('token.manage'), href:"manage/#user/tokens"}
+	    ]);
+	    
+	    this.updateSidebar('user/tokens');
+	
+	    var view = new TokenListView({model: {access: this.accessTokensList, refresh: this.refreshTokensList}, clientList: this.clientList, systemScopeList: this.systemScopeList});
+	    
+	    view.load(
+			function(collection, response, options) {
+				$('#content').html(view.render().el);
+		    	setPageTitle($.t('token.manage'));
+			}
+	    );
+	    
+	}
+});

@@ -43,6 +43,7 @@
 				<value>resources/js/rsreg.js</value>
 				<value>resources/js/token.js</value>
 				<value>resources/js/blacklist.js</value>
+				<value>resources/js/profile.js</value>
 			</set>
 		</property>
 		

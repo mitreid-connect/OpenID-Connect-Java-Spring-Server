@@ -180,3 +180,31 @@ var BlackListWidgetView = Backbone.View.extend({
 
 });
 
+
+ui.routes.push({path: "admin/blacklist", name: "blackList", callback:
+	function() {
+	
+		if (!isAdmin()) {
+			this.root();
+			return;
+		}
+	
+		this.breadCrumbView.collection.reset();
+	    this.breadCrumbView.collection.add([
+	        {text:$.t('admin.home'), href:""},
+	        {text:$.t('admin.manage-blacklist'), href:"manage/#admin/blacklist"}
+	    ]);
+	    
+	    this.updateSidebar('admin/blacklist');
+	    
+	    var view = new BlackListListView({collection: this.blackListList});
+	    
+	    view.load(
+	    	function(collection, response, options) {
+	    		$('#content').html(view.render().el);
+	        	setPageTitle($.t('admin.manage-blacklist'));
+	    	}
+	    );
+	}
+
+});	
