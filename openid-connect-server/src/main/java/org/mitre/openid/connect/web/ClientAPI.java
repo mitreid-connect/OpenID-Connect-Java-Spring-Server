@@ -513,6 +513,10 @@ public class ClientAPI {
 			} else {
 				// get the image from cache
 				CachedImage image = clientLogoLoadingService.getLogo(client);
+				
+				if (image == null){
+				  return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+				}
 
 				HttpHeaders headers = new HttpHeaders();
 				headers.setContentType(MediaType.parseMediaType(image.getContentType()));
