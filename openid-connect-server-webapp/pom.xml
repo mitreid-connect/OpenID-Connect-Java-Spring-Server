@@ -83,6 +83,26 @@
 					</webAppConfig>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.lesscss</groupId>
+				<artifactId>lesscss-maven-plugin</artifactId>
+				<configuration>
+					<sourceDirectory>${project.basedir}/src/main/less</sourceDirectory>
+					<outputDirectory>${project.build.directory}/${project.build.finalName}/resources/bootstrap2/css</outputDirectory>
+					<compress>false</compress>
+					<includes>
+						<include>bootstrap.less</include>
+						<include>bootstrap-responsive.less</include>
+					</includes>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 	<dependencies>
