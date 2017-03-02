@@ -85,7 +85,7 @@ public class UserInfoView extends AbstractView {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.springframework.web.servlet.view.AbstractView#renderMergedOutputModel
 	 * (java.util.Map, javax.servlet.http.HttpServletRequest,
@@ -129,10 +129,10 @@ public class UserInfoView extends AbstractView {
 
 	/**
 	 * Build a JSON response according to the request object received.
-	 * 
+	 *
 	 * Claims requested in requestObj.userinfo.claims are added to any
 	 * claims corresponding to requested scopes, if any.
-	 * 
+	 *
 	 * @param ui the UserInfo to filter
 	 * @param scope the allowed scopes to filter by
 	 * @param authorizedClaims the claims authorized by the client or user
@@ -148,18 +148,8 @@ public class UserInfoView extends AbstractView {
 		Set<String> authorizedByClaims = new HashSet<>();
 		Set<String> requestedByClaims = new HashSet<>();
 
-		if (authorizedClaims != null) {
-			JsonObject userinfoAuthorized = authorizedClaims.getAsJsonObject().get("userinfo").getAsJsonObject();
-			for (Entry<String, JsonElement> entry : userinfoAuthorized.getAsJsonObject().entrySet()) {
-				authorizedByClaims.add(entry.getKey());
-			}
-		}
-		if (requestedClaims != null) {
-			JsonObject userinfoRequested = requestedClaims.getAsJsonObject().get("userinfo").getAsJsonObject();
-			for (Entry<String, JsonElement> entry : userinfoRequested.getAsJsonObject().entrySet()) {
-				requestedByClaims.add(entry.getKey());
-			}
-		}
+		extractUserInfoClaimsIntoSet(authorizedClaims, authorizedByClaims);
+		extractUserInfoClaimsIntoSet(requestedClaims, requestedByClaims);
 
 		// Filter claims by performing a manual intersection of claims that are allowed by the given scope, requested, and authorized.
 		// We cannot use Sets.intersection() or similar because Entry<> objects will evaluate to being unequal if their values are
@@ -179,5 +169,16 @@ public class UserInfoView extends AbstractView {
 		}
 
 		return result;
+	}
+
+	private void extractUserInfoClaimsIntoSet(JsonObject claims, Set<String> target) {
+		if (claims != null) {
+			JsonObject userinfoAuthorized = claims.getAsJsonObject("userinfo");
+			if (userinfoAuthorized != null) {
+				for (Entry<String, JsonElement> entry : userinfoAuthorized.entrySet()) {
+					target.add(entry.getKey());
+				}
+			}
+		}
 	}
 }
