@@ -30,4 +30,12 @@ public class AuthorizationEndpointException extends AuthenticationServiceExcepti
 	public String getErrorURI() {
 		return errorURI;
 	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "AuthorizationEndpointException [error=" + error + ", errorDescription=" + errorDescription + ", errorURI=" + errorURI + "]";
+	}
 }
