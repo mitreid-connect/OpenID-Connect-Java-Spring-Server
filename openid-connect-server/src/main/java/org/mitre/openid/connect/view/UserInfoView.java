@@ -145,11 +145,8 @@ public class UserInfoView extends AbstractView {
 		JsonObject obj = ui.toJson();
 
 		Set<String> allowedByScope = translator.getClaimsForScopeSet(scope);
-		Set<String> authorizedByClaims = new HashSet<>();
-		Set<String> requestedByClaims = new HashSet<>();
-
-		extractUserInfoClaimsIntoSet(authorizedClaims, authorizedByClaims);
-		extractUserInfoClaimsIntoSet(requestedClaims, requestedByClaims);
+		Set<String> authorizedByClaims = extractUserInfoClaimsIntoSet(authorizedClaims);
+		Set<String> requestedByClaims = extractUserInfoClaimsIntoSet(requestedClaims);
 
 		// Filter claims by performing a manual intersection of claims that are allowed by the given scope, requested, and authorized.
 		// We cannot use Sets.intersection() or similar because Entry<> objects will evaluate to being unequal if their values are
@@ -171,7 +168,13 @@ public class UserInfoView extends AbstractView {
 		return result;
 	}
 
-	private void extractUserInfoClaimsIntoSet(JsonObject claims, Set<String> target) {
+	/**
+	 * Pull the claims that have been targeted into a set for processing. 
+	 * Returns an empty set if the input is null.
+	 * @param claims the claims request to process
+	 */
+	private Set<String> extractUserInfoClaimsIntoSet(JsonObject claims) {
+		Set<String> target = new HashSet<>();
 		if (claims != null) {
 			JsonObject userinfoAuthorized = claims.getAsJsonObject("userinfo");
 			if (userinfoAuthorized != null) {
@@ -180,5 +183,6 @@ public class UserInfoView extends AbstractView {
 				}
 			}
 		}
+		return target;
 	}
 }
