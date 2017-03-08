@@ -45,7 +45,7 @@ import com.google.common.collect.Sets;
 @Component("chainedTokenGranter")
 public class ChainedTokenGranter extends AbstractTokenGranter {
 
-	private static final String grantType = "urn:ietf:params:oauth:grant_type:redelegate";
+	public static final String GRANT_TYPE = "urn:ietf:params:oauth:grant_type:redelegate";
 
 	// keep down-cast versions so we can get to the right queries
 	private OAuth2TokenEntityService tokenServices;
@@ -53,11 +53,11 @@ public class ChainedTokenGranter extends AbstractTokenGranter {
 	/**
 	 * @param tokenServices
 	 * @param clientDetailsService
-	 * @param grantType
+	 * @param GRANT_TYPE
 	 */
 	@Autowired
 	public ChainedTokenGranter(OAuth2TokenEntityService tokenServices, ClientDetailsEntityService clientDetailsService, OAuth2RequestFactory requestFactory) {
-		super(tokenServices, clientDetailsService, requestFactory, grantType);
+		super(tokenServices, clientDetailsService, requestFactory, GRANT_TYPE);
 		this.tokenServices = tokenServices;
 	}
 
