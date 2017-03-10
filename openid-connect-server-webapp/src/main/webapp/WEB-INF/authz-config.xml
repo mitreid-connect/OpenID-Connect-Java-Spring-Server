@@ -47,6 +47,7 @@
 		<oauth:client-credentials/>
 		<oauth:custom-grant token-granter-ref="chainedTokenGranter" />
 		<oauth:custom-grant token-granter-ref="jwtAssertionTokenGranter" />
+		<oauth:custom-grant token-granter-ref="deviceTokenGranter" />
 
 	</oauth:authorization-server>
 

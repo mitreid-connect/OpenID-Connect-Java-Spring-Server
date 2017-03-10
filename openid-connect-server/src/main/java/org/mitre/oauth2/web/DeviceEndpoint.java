@@ -23,6 +23,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.servlet.http.HttpSession;
+
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.DeviceCode;
 import org.mitre.oauth2.model.SystemScope;
@@ -40,10 +42,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.oauth2.common.util.OAuth2Utils;
 import org.springframework.security.oauth2.common.util.RandomValueStringGenerator;
+import org.springframework.security.oauth2.provider.AuthorizationRequest;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.OAuth2Request;
+import org.springframework.security.oauth2.provider.OAuth2RequestFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -64,7 +71,8 @@ import com.google.common.collect.Sets;
 @Controller
 public class DeviceEndpoint {
 
-	public static final String URL = "/device";
+	public static final String URL = "device";
+	public static final String USER_URL = "device-user";
 	
 	public static final Logger logger = LoggerFactory.getLogger(DeviceEndpoint.class);
 	
@@ -80,9 +88,12 @@ public class DeviceEndpoint {
 	@Autowired
 	private DeviceCodeService deviceCodeService;
 	
+	@Autowired
+	private OAuth2RequestFactory oAuth2RequestFactory;
+	
 	private RandomValueStringGenerator randomGenerator = new RandomValueStringGenerator();
 	
-	@RequestMapping(value = URL, method = RequestMethod.POST, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/" + URL, method = RequestMethod.POST, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public String requestDeviceCode(@RequestParam("client_id") String clientId, @RequestParam(name="scope", required=false) String scope, Map<String, String> parameters, ModelMap model) {
 		
 		ClientDetailsEntity client;
@@ -150,7 +161,7 @@ public class DeviceEndpoint {
 	}
 
 	@PreAuthorize("hasRole('ROLE_USER')")
-	@RequestMapping(value = URL, method = RequestMethod.GET)
+	@RequestMapping(value = "/" + USER_URL, method = RequestMethod.GET)
 	public String requestUserCode(ModelMap model) {
 		
 		// print out a page that asks the user to enter their user code
@@ -160,8 +171,8 @@ public class DeviceEndpoint {
 	}
 	
 	@PreAuthorize("hasRole('ROLE_USER')")
-	@RequestMapping(value = URL + "/verify", method = RequestMethod.POST)
-	public String readUserCode(@RequestParam("userCode") String userCode, ModelMap model) {
+	@RequestMapping(value = "/" + USER_URL + "/verify", method = RequestMethod.POST)
+	public String readUserCode(@RequestParam("user_code") String userCode, ModelMap model, HttpSession session) {
 
 		// look up the request based on the user code
 		DeviceCode dc = deviceCodeService.lookUpByUserCode(userCode);
@@ -189,17 +200,30 @@ public class DeviceEndpoint {
 
 		model.put("scopes", sortedScopes);
 
+		AuthorizationRequest authorizationRequest = oAuth2RequestFactory.createAuthorizationRequest(dc.getRequestParameters());
+
+		session.setAttribute("authorizationRequest", authorizationRequest);
+		session.setAttribute("deviceCode", dc);
+		
 		return "approveDevice";
 	}
 	
 	@PreAuthorize("hasRole('ROLE_USER')")
-	@RequestMapping(value = URL + "/approve", method = RequestMethod.POST)
-	public String approveDevice(@RequestParam("userCode") String userCode, @RequestParam(value = "approve", required = false) String approve, ModelMap model) {
+	@RequestMapping(value = "/" + USER_URL + "/approve", method = RequestMethod.POST)
+	public String approveDevice(@RequestParam("user_code") String userCode, @RequestParam(value = "user_oauth_approval") String approve, ModelMap model, Authentication auth, HttpSession session) {
 		
+		AuthorizationRequest authorizationRequest = (AuthorizationRequest) session.getAttribute("authorizationRequest");
+		DeviceCode dc = (DeviceCode) session.getAttribute("deviceCode");
 		
-		DeviceCode dc = deviceCodeService.lookUpByUserCode(userCode);
+		if (!dc.getUserCode().equals(userCode)) {
+			// TODO: return an error
+			return "error";
+		}
 
-		DeviceCode approvedCode = deviceCodeService.approveDeviceCode(dc);
+		OAuth2Request o2req = oAuth2RequestFactory.createOAuth2Request(authorizationRequest);
+		OAuth2Authentication o2Auth = new OAuth2Authentication(o2req, auth);
+		
+		DeviceCode approvedCode = deviceCodeService.approveDeviceCode(dc, o2Auth);
 		
 		ClientDetailsEntity client = clientService.loadClientByClientId(dc.getClientId());
 		

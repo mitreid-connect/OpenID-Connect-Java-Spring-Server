@@ -17,6 +17,7 @@
 
 package org.mitre.oauth2.token;
 
+import org.mitre.oauth2.exception.AuthorizationPendingException;
 import org.mitre.oauth2.model.DeviceCode;
 import org.mitre.oauth2.service.DeviceCodeService;
 import org.mitre.oauth2.web.DeviceEndpoint;
@@ -29,6 +30,7 @@ import org.springframework.security.oauth2.provider.OAuth2RequestFactory;
 import org.springframework.security.oauth2.provider.TokenRequest;
 import org.springframework.security.oauth2.provider.token.AbstractTokenGranter;
 import org.springframework.security.oauth2.provider.token.AuthorizationServerTokenServices;
+import org.springframework.stereotype.Component;
 
 /**
  * Implements https://tools.ietf.org/html/draft-ietf-oauth-device-flow
@@ -38,6 +40,7 @@ import org.springframework.security.oauth2.provider.token.AuthorizationServerTok
  * @author jricher
  *
  */
+@Component("deviceTokenGranter")
 public class DeviceTokenGranter extends AbstractTokenGranter {
 
 	public static final String GRANT_TYPE = "urn:ietf:params:oauth:grant-type:device_code";
@@ -67,12 +70,20 @@ public class DeviceTokenGranter extends AbstractTokenGranter {
 		DeviceCode dc = deviceCodeService.consumeDeviceCode(deviceCode, client);
 		
 		if (dc != null) {
-			// inherit the (approved) scopes from the original request
-			tokenRequest.setScope(dc.getScope());
 			
-			OAuth2Authentication auth = new OAuth2Authentication(getRequestFactory().createOAuth2Request(client, tokenRequest), dc.getAuthenticationHolder().getUserAuth());
+			if (dc.isApproved()) {
 			
-			return auth;
+				// inherit the (approved) scopes from the original request
+				tokenRequest.setScope(dc.getScope());
+				
+				OAuth2Authentication auth = new OAuth2Authentication(getRequestFactory().createOAuth2Request(client, tokenRequest), dc.getAuthenticationHolder().getUserAuth());
+				
+				return auth;
+			} else {
+				
+				// still waiting for approval
+				throw new AuthorizationPendingException("Authorization pending for code " + deviceCode);
+			}
 		} else {
 			throw new InvalidGrantException("Invalid device code: " + deviceCode);
 		}

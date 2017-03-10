@@ -487,6 +487,13 @@
 		"password": "Password",
 		"login-button": "Login",
 		"error": "The system was unable to log you in. Please try again."
+	},
+	"device": {
+		"request_code": {
+			"title": "Enter Code",
+			"header": "Enter code for ",
+			"description": "Enter the code displayed on your device into the box below and press submit",
+			"submit": "Submit"
+		}
 	}
-	
 }

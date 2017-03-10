@@ -15,41 +15,36 @@
  * limitations under the License.
  *******************************************************************************/
 
-package org.mitre.oauth2.service;
+package org.mitre.oauth2.exception;
 
-import org.mitre.oauth2.model.DeviceCode;
-import org.springframework.security.oauth2.provider.ClientDetails;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
-import org.springframework.security.oauth2.provider.OAuth2Request;
+import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 
 /**
  * @author jricher
  *
  */
-public interface DeviceCodeService {
+public class AuthorizationPendingException extends OAuth2Exception {
 
 	/**
-	 * @param dc
+	 * @param msg
 	 */
-	public DeviceCode save(DeviceCode dc);
+	public AuthorizationPendingException(String msg) {
+		super(msg);
+	}
 
 	/**
-	 * @param userCode
-	 * @return
+	 * 
 	 */
-	public DeviceCode lookUpByUserCode(String userCode);
+	private static final long serialVersionUID = -7078098692596870940L;
 
-	/**
-	 * @param dc
-	 * @param o2Auth 
+	/* (non-Javadoc)
+	 * @see org.springframework.security.oauth2.common.exceptions.OAuth2Exception#getOAuth2ErrorCode()
 	 */
-	public DeviceCode approveDeviceCode(DeviceCode dc, OAuth2Authentication o2Auth);
+	@Override
+	public String getOAuth2ErrorCode() {
+		return "authorization_pending";
+	}
 
-	/**
-	 * @param deviceCode
-	 * @param client
-	 * @return
-	 */
-	public DeviceCode consumeDeviceCode(String deviceCode, ClientDetails client);
-
+	
+	
 }

@@ -28,6 +28,7 @@ INSERT INTO client_redirect_uri_TEMP (owner_id, redirect_uri) VALUES
 INSERT INTO client_grant_type_TEMP (owner_id, grant_type) VALUES
 	('client', 'authorization_code'),
 	('client', 'urn:ietf:params:oauth:grant_type:redelegate'),
+	('client', 'urn:ietf:params:oauth:grant-type:device_code'),
 	('client', 'implicit'),
 	('client', 'refresh_token');
 	
