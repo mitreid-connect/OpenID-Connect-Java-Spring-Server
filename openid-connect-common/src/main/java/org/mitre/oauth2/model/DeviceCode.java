@@ -17,6 +17,7 @@
 
 package org.mitre.oauth2.model;
 
+import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
@@ -33,6 +34,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
 
 /**
  * @author jricher
@@ -46,6 +48,7 @@ public class DeviceCode {
 	private String deviceCode;
 	private String userCode;
 	private Set<String> scope;
+	private Date expiration;
 	private String clientId;
 	private Map<String, String> requestParameters;
 	private boolean approved;
@@ -61,7 +64,6 @@ public class DeviceCode {
 		this.scope = scope;
 		this.clientId = clientId;
 		this.requestParameters = params;
-		this.setApproved(false);
 	}
 
 	/**
@@ -131,6 +133,17 @@ public class DeviceCode {
 	 */
 	public void setScope(Set<String> scope) {
 		this.scope = scope;
+	}
+
+	@Basic
+	@Temporal(javax.persistence.TemporalType.TIMESTAMP)
+	@Column(name = "expiration")
+	public Date getExpiration() {
+		return expiration;
+	}
+
+	public void setExpiration(Date expiration) {
+		this.expiration = expiration;
 	}
 
 	/**

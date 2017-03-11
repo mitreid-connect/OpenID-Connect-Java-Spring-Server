@@ -17,7 +17,10 @@
 
 package org.mitre.oauth2.token;
 
+import java.util.Date;
+
 import org.mitre.oauth2.exception.AuthorizationPendingException;
+import org.mitre.oauth2.exception.DeviceCodeExpiredException;
 import org.mitre.oauth2.model.DeviceCode;
 import org.mitre.oauth2.service.DeviceCodeService;
 import org.mitre.oauth2.web.DeviceEndpoint;
@@ -71,18 +74,23 @@ public class DeviceTokenGranter extends AbstractTokenGranter {
 		
 		if (dc != null) {
 			
-			if (dc.isApproved()) {
+			// make sure the code hasn't expired yet
+			if (dc.getExpiration() != null && dc.getExpiration().before(new Date())) {
+				// TODO: return an error
+				throw new DeviceCodeExpiredException("Device code has expired " + deviceCode);
+				
+			} else if (!dc.isApproved()) {
+				
+				// still waiting for approval
+				throw new AuthorizationPendingException("Authorization pending for code " + deviceCode);
 			
+			} else {
 				// inherit the (approved) scopes from the original request
 				tokenRequest.setScope(dc.getScope());
 				
 				OAuth2Authentication auth = new OAuth2Authentication(getRequestFactory().createOAuth2Request(client, tokenRequest), dc.getAuthenticationHolder().getUserAuth());
 				
 				return auth;
-			} else {
-				
-				// still waiting for approval
-				throw new AuthorizationPendingException("Authorization pending for code " + deviceCode);
 			}
 		} else {
 			throw new InvalidGrantException("Invalid device code: " + deviceCode);

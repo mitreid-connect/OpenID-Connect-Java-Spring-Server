@@ -17,6 +17,10 @@
 
 package org.mitre.oauth2.service;
 
+import java.util.Map;
+import java.util.Set;
+
+import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.DeviceCode;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -27,11 +31,6 @@ import org.springframework.security.oauth2.provider.OAuth2Request;
  *
  */
 public interface DeviceCodeService {
-
-	/**
-	 * @param dc
-	 */
-	public DeviceCode save(DeviceCode dc);
 
 	/**
 	 * @param userCode
@@ -52,4 +51,14 @@ public interface DeviceCodeService {
 	 */
 	public DeviceCode consumeDeviceCode(String deviceCode, ClientDetails client);
 
+	/**
+	 * @param deviceCode
+	 * @param userCode
+	 * @param requestedScopes
+	 * @param client
+	 * @param parameters
+	 * @return
+	 */
+	public DeviceCode createNewDeviceCode(String deviceCode, String userCode, Set<String> requestedScopes, ClientDetailsEntity client, Map<String, String> parameters);
+	
 }

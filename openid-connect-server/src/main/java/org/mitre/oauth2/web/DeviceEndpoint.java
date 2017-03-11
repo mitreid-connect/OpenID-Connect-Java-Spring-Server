@@ -18,6 +18,7 @@
 package org.mitre.oauth2.web;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -144,17 +145,15 @@ public class DeviceEndpoint {
 		// create a user code, should be random but small and typable
 		String userCode = randomGenerator.generate();
 
-		// TODO: expiration
+		DeviceCode dc = deviceCodeService.createNewDeviceCode(deviceCode, userCode, requestedScopes, client, parameters);
+		
 		model.put(JsonEntityView.ENTITY, ImmutableMap.of(
 				"device_code", deviceCode,
 				"user_code", userCode,
-				"verification_uri", config.getIssuer() + URL
+				"verification_uri", config.getIssuer() + URL,
+				"expires_in", client.getDeviceCodeValiditySeconds()
 				));
 
-		DeviceCode dc = new DeviceCode(deviceCode, userCode, requestedScopes, clientId, parameters);
-		
-		
-		deviceCodeService.save(dc);
 		
 		return JsonEntityView.VIEWNAME;
 		
@@ -176,6 +175,24 @@ public class DeviceEndpoint {
 
 		// look up the request based on the user code
 		DeviceCode dc = deviceCodeService.lookUpByUserCode(userCode);
+		
+		// we couldn't find the device code
+		if (dc == null) {
+			// TODO: return error
+			return "error";
+		}
+		
+		// make sure the code hasn't expired yet
+		if (dc.getExpiration() != null && dc.getExpiration().before(new Date())) {
+			// TODO: return an error
+			return "error";
+		}
+
+		// make sure the device code hasn't already been approved
+		if (dc.isApproved()) {
+			// TODO: return an error
+			return "error";
+		}
 		
 		ClientDetailsEntity client = clientService.loadClientByClientId(dc.getClientId());
 		
@@ -210,16 +227,30 @@ public class DeviceEndpoint {
 	
 	@PreAuthorize("hasRole('ROLE_USER')")
 	@RequestMapping(value = "/" + USER_URL + "/approve", method = RequestMethod.POST)
-	public String approveDevice(@RequestParam("user_code") String userCode, @RequestParam(value = "user_oauth_approval") String approve, ModelMap model, Authentication auth, HttpSession session) {
+	public String approveDevice(@RequestParam("user_code") String userCode, @RequestParam(value = "user_oauth_approval") Boolean approve, ModelMap model, Authentication auth, HttpSession session) {
 		
 		AuthorizationRequest authorizationRequest = (AuthorizationRequest) session.getAttribute("authorizationRequest");
 		DeviceCode dc = (DeviceCode) session.getAttribute("deviceCode");
 		
+		// make sure the form that was submitted is the one that we were expecting
 		if (!dc.getUserCode().equals(userCode)) {
 			// TODO: return an error
 			return "error";
 		}
 
+		// make sure the code hasn't expired yet
+		if (dc.getExpiration() != null && dc.getExpiration().before(new Date())) {
+			// TODO: return an error
+			return "error";
+		}
+		
+		// user did not approve
+		if (!approve) {
+			// TODO: return an error
+			return "error";
+		}
+
+		// create an OAuth request for storage
 		OAuth2Request o2req = oAuth2RequestFactory.createOAuth2Request(authorizationRequest);
 		OAuth2Authentication o2Auth = new OAuth2Authentication(o2req, auth);
 		
