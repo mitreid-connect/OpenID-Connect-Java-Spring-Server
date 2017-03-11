@@ -110,10 +110,6 @@ public class DeviceEndpoint {
 				throw new InvalidClientException("Unauthorized grant type: " + DeviceTokenGranter.GRANT_TYPE);
 			}
 			
-		} catch (OAuth2Exception e) {
-			logger.error("OAuth2Exception was thrown when attempting to load client", e);
-			model.put(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
-			return HttpCodeView.VIEWNAME;
 		} catch (IllegalArgumentException e) {
 			logger.error("IllegalArgumentException was thrown when attempting to load client", e);
 			model.put(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
