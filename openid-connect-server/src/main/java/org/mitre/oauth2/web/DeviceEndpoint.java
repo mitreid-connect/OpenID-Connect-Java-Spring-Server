@@ -19,6 +19,7 @@ package org.mitre.oauth2.web;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -147,12 +148,15 @@ public class DeviceEndpoint {
 
 		DeviceCode dc = deviceCodeService.createNewDeviceCode(deviceCode, userCode, requestedScopes, client, parameters);
 		
-		model.put(JsonEntityView.ENTITY, ImmutableMap.of(
-				"device_code", deviceCode,
-				"user_code", userCode,
-				"verification_uri", config.getIssuer() + URL,
-				"expires_in", client.getDeviceCodeValiditySeconds()
-				));
+		Map<String, Object> response = new HashMap<>();
+		response.put("device_code", deviceCode);
+		response.put("user_code", userCode);
+		response.put("verification_uri", config.getIssuer() + USER_URL);
+		if (client.getDeviceCodeValiditySeconds() != null) {
+			response.put("expires_in", client.getDeviceCodeValiditySeconds());
+		}
+		
+		model.put(JsonEntityView.ENTITY, response);
 
 		
 		return JsonEntityView.VIEWNAME;

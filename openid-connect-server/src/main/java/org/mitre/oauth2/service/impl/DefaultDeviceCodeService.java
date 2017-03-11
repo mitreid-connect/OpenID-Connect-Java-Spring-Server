@@ -18,15 +18,15 @@
 package org.mitre.oauth2.service.impl;
 
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import org.mitre.oauth2.model.AuthenticationHolderEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.DeviceCode;
+import org.mitre.oauth2.repository.impl.DeviceCodeRepository;
 import org.mitre.oauth2.service.DeviceCodeService;
-import org.springframework.security.core.Authentication;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Service;
@@ -35,10 +35,11 @@ import org.springframework.stereotype.Service;
  * @author jricher
  *
  */
-@Service
-public class InMemoryDeviceCodeService implements DeviceCodeService {
+@Service("defaultDeviceCodeService")
+public class DefaultDeviceCodeService implements DeviceCodeService {
 	
-	private Set<DeviceCode> codes = new HashSet<>();
+	@Autowired
+	private DeviceCodeRepository repository;
 	
 	/* (non-Javadoc)
 	 * @see org.mitre.oauth2.service.DeviceCodeService#save(org.mitre.oauth2.model.DeviceCode)
@@ -54,8 +55,7 @@ public class InMemoryDeviceCodeService implements DeviceCodeService {
 		
 		dc.setApproved(false);
 		
-		codes.add(dc);
-		return dc;
+		return repository.save(dc);
 	}
 
 	/* (non-Javadoc)
@@ -63,12 +63,7 @@ public class InMemoryDeviceCodeService implements DeviceCodeService {
 	 */
 	@Override
 	public DeviceCode lookUpByUserCode(String userCode) {
-		for (DeviceCode dc : codes) {
-			if (dc.getUserCode().equals(userCode)) {
-				return dc;
-			}
-		}
-		return null;
+		return repository.getByUserCode(userCode);
 	}
 
 	/* (non-Javadoc)
@@ -76,13 +71,16 @@ public class InMemoryDeviceCodeService implements DeviceCodeService {
 	 */
 	@Override
 	public DeviceCode approveDeviceCode(DeviceCode dc, OAuth2Authentication auth) {
-		dc.setApproved(true);
+		DeviceCode found = repository.getById(dc.getId());
+		
+		found.setApproved(true);
 		
 		AuthenticationHolderEntity authHolder = new AuthenticationHolderEntity();
 		authHolder.setAuthentication(auth);
-		dc.setAuthenticationHolder(authHolder);
+		
+		found.setAuthenticationHolder(authHolder);
 
-		return dc;
+		return repository.save(found);
 	}
 
 	/* (non-Javadoc)
@@ -90,13 +88,19 @@ public class InMemoryDeviceCodeService implements DeviceCodeService {
 	 */
 	@Override
 	public DeviceCode consumeDeviceCode(String deviceCode, ClientDetails client) {
-		for (DeviceCode dc : codes) {
-			if (dc.getDeviceCode().equals(deviceCode) && dc.getClientId().equals(client.getClientId())) {
-				codes.remove(dc);
-				return dc;
-			}
+		DeviceCode found = repository.getByDeviceCode(deviceCode);
+		
+		// make sure it's not used twice
+		repository.remove(found);
+		
+		if (found.getClientId().equals(client.getClientId())) {
+			// make sure the client matches, if so, we're good
+			return found;
+		} else {
+			// if the clients don't match, pretend the code wasn't found
+			return null;
 		}
-		return null;
+		
 	}
 
 }

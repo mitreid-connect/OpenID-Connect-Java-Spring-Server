@@ -33,6 +33,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapKeyColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 
@@ -42,8 +44,21 @@ import javax.persistence.Temporal;
  */
 @Entity
 @Table(name = "device_code")
+@NamedQueries({
+	@NamedQuery(name = DeviceCode.QUERY_BY_USER_CODE, query = "select d from DeviceCode d where d.userCode = :" + DeviceCode.PARAM_USER_CODE),
+	@NamedQuery(name = DeviceCode.QUERY_BY_DEVICE_CODE, query = "select d from DeviceCode d where d.deviceCode = :" + DeviceCode.PARAM_DEVICE_CODE),
+	@NamedQuery(name = DeviceCode.QUERY_EXPIRED_BY_DATE, query = "select d from DeviceCode d where d.expiration <= :" + DeviceCode.PARAM_DATE)
+})
 public class DeviceCode {
 
+	public static final String QUERY_BY_USER_CODE = "DeviceCode.queryByUserCode";
+	public static final String QUERY_BY_DEVICE_CODE = "DeviceCode.queryByDeviceCode";
+	public static final String QUERY_EXPIRED_BY_DATE = "DeviceCode.queryExpiredByDate";
+	
+	public static final String PARAM_USER_CODE = "userCode";
+	public static final String PARAM_DEVICE_CODE = "deviceCode";
+	public static final String PARAM_DATE = "date";
+	
 	private Long id;
 	private String deviceCode;
 	private String userCode;
