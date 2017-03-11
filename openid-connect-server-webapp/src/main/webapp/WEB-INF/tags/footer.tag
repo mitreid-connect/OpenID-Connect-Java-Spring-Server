@@ -15,17 +15,6 @@
 <!-- javascript
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->
-<script type="text/javascript">
-
-	// set up a global variable for UI components to hang extensions off of
-	
-	var ui = {
-		templates: ["resources/template/admin.html"], // template files to load for UI
-		routes: [], // routes to add to the UI {path: URI to map to, name: unique name for internal use, callback: function to call when route is activated}
-		init: [] // functions to call after initialization is complete
-	};
-
-</script>
 <script type="text/javascript" src="resources/bootstrap2/js/bootstrap.js"></script>
 <script type="text/javascript" src="resources/js/lib/underscore.js"></script>
 <script type="text/javascript" src="resources/js/lib/backbone.js"></script>
@@ -35,6 +24,17 @@
 <script type="text/javascript" src="resources/js/lib/bootpag.js"></script>
 <script type="text/javascript" src="resources/js/lib/retina.js"></script>
 <c:if test="${js != null && js != ''}">
+	<script type="text/javascript">
+	
+		// set up a global variable for UI components to hang extensions off of
+		
+		var ui = {
+			templates: ["resources/template/admin.html"], // template files to load for UI
+			routes: [], // routes to add to the UI {path: URI to map to, name: unique name for internal use, callback: function to call when route is activated}
+			init: [] // functions to call after initialization is complete
+		};
+	
+	</script>
 	<c:forEach var="file" items="${ ui.jsFiles }">
 		<script type="text/javascript" src="<c:out value="${ file }" />" ></script>
 	</c:forEach>
