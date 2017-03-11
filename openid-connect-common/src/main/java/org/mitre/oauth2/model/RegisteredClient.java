@@ -846,6 +846,22 @@ public class RegisteredClient {
 		this.src = src;
 	}
 
+	/**
+	 * @return
+	 * @see org.mitre.oauth2.model.ClientDetailsEntity#getDeviceCodeValiditySeconds()
+	 */
+	public Integer getDeviceCodeValiditySeconds() {
+		return client.getDeviceCodeValiditySeconds();
+	}
+
+	/**
+	 * @param deviceCodeValiditySeconds
+	 * @see org.mitre.oauth2.model.ClientDetailsEntity#setDeviceCodeValiditySeconds(java.lang.Integer)
+	 */
+	public void setDeviceCodeValiditySeconds(Integer deviceCodeValiditySeconds) {
+		client.setDeviceCodeValiditySeconds(deviceCodeValiditySeconds);
+	}
+
 
 
 }

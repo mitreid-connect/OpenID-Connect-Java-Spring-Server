@@ -117,6 +117,7 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 	private static final String REFRESH_TOKEN_VALIDITY_SECONDS = "refreshTokenValiditySeconds";
 	private static final String ACCESS_TOKEN_VALIDITY_SECONDS = "accessTokenValiditySeconds";
 	private static final String ID_TOKEN_VALIDITY_SECONDS = "idTokenValiditySeconds";
+	private static final String DEVICE_CODE_VALIDITY_SECONDS = "deviceCodeValiditySeconds";
 	private static final String SECRET = "secret";
 	private static final String URI = "uri";
 	private static final String CREATOR_USER_ID = "creatorUserId";
@@ -452,6 +453,7 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 				writer.name(ACCESS_TOKEN_VALIDITY_SECONDS).value(client.getAccessTokenValiditySeconds());
 				writer.name(REFRESH_TOKEN_VALIDITY_SECONDS).value(client.getRefreshTokenValiditySeconds());
 				writer.name(ID_TOKEN_VALIDITY_SECONDS).value(client.getIdTokenValiditySeconds());
+				writer.name(DEVICE_CODE_VALIDITY_SECONDS).value(client.getDeviceCodeValiditySeconds());
 				writer.name(REDIRECT_URIS);
 				writeNullSafeArray(writer, client.getRedirectUris());
 				writer.name(CLAIMS_REDIRECT_URIS);
@@ -1056,6 +1058,8 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 						client.setRefreshTokenValiditySeconds(reader.nextInt());
 					} else if (name.equals(ID_TOKEN_VALIDITY_SECONDS)) {
 						client.setIdTokenValiditySeconds(reader.nextInt());
+					} else if (name.equals(DEVICE_CODE_VALIDITY_SECONDS)) {
+						client.setDeviceCodeValiditySeconds(reader.nextInt());
 					} else if (name.equals(REDIRECT_URIS)) {
 						Set<String> redirectUris = readSet(reader);
 						client.setRedirectUris(redirectUris);

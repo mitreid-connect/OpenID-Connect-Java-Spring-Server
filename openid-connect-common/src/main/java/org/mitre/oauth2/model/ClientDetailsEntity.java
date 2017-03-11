@@ -145,6 +145,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	private Integer idTokenValiditySeconds; //timeout for id tokens
 	private Date createdAt; // time the client was created
 	private boolean clearAccessTokensOnRefresh = true; // do we clear access tokens on refresh?
+	private Integer deviceCodeValiditySeconds; // timeout for device codes
 
 	/** fields for UMA */
 	private Set<String> claimsRedirectUris;
@@ -1030,6 +1031,22 @@ public class ClientDetailsEntity implements ClientDetails {
 	 */
 	public void setCodeChallengeMethod(PKCEAlgorithm codeChallengeMethod) {
 		this.codeChallengeMethod = codeChallengeMethod;
+	}
+
+	/**
+	 * @return the deviceCodeValiditySeconds
+	 */
+	@Basic
+	@Column(name="device_code_validity_seconds")
+	public Integer getDeviceCodeValiditySeconds() {
+		return deviceCodeValiditySeconds;
+	}
+
+	/**
+	 * @param deviceCodeValiditySeconds the deviceCodeValiditySeconds to set
+	 */
+	public void setDeviceCodeValiditySeconds(Integer deviceCodeValiditySeconds) {
+		this.deviceCodeValiditySeconds = deviceCodeValiditySeconds;
 	}
 
 }
