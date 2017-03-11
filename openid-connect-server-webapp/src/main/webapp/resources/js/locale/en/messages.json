@@ -64,6 +64,8 @@
                 "rsa1-5": "RSAES-PKCS1-V1_5"
             },
             "cryptography": "Crypto",
+            "device": "device",
+            "device-code-timeout": "Device Code Timeout",
             "display-secret": "Display/edit client secret:",
             "edit": "Edit Client",
             "generate-new-secret": "Generate a new client secret?",

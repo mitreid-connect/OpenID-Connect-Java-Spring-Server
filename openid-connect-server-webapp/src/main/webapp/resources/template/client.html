@@ -359,7 +359,13 @@
                             <%-($.inArray("urn:ietf:params:oauth:grant_type:redelegate", client.grantTypes) > -1 ? 'checked' : '')%>> 
                         <label for="grantTypes-redelegate" class="checkbox" data-i18n="client.client-form.redelegation">redelegate</label>
                     </div>
-                </div>
+ 
+                    <div>
+                        <input id="grantTypes-device" type="checkbox"
+                            <%-($.inArray("urn:ietf:params:oauth:grant-type:device_code", client.grantTypes) > -1 ? 'checked' : '')%>> 
+                        <label for="grantTypes-device" class="checkbox" data-i18n="client.client-form.device">device</label>
+                    </div>
+               </div>
             </div>
 
 			<div class="control-group" id="responseTypes">
@@ -611,6 +617,22 @@
                     <p class="help-block" data-i18n="client.client-form.token-timeout-help">Enter this time in seconds, minutes, or hours.</p>
                 </div>
             </div>
+
+            <div class="control-group" id="deviceCodeValidityTime">
+                <label class="control-label" data-i18n="client.client-form.device-code-timeout">Device Code Timeout</label>
+                <div class="controls">
+                    <div>
+                        <input type="text" class="" value="<%-(client.deviceCodeValiditySeconds == null ? '' : client.deviceCodeValiditySeconds)%>" id="device-code-timeout-time" size="16" style="width:8em;">
+						<select id="device-code-timeout-unit" style="width:8em;">
+							<option data-i18n="client.client-form.seconds">seconds</option>
+							<option data-i18n="client.client-form.minutes">minutes</option>
+							<option data-i18n="client.client-form.hours">hours</option>
+						</select>
+                    </div>
+                    <p class="help-block" data-i18n="client.client-form.token-timeout-help">Enter this time in seconds, minutes, or hours.</p>
+                </div>
+            </div>
+
 	</div>
 
 	<div class="tab-pane" id="client-crypto-tab">

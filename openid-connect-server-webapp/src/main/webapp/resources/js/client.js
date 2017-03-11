@@ -93,6 +93,7 @@ var ClientModel = Backbone.Model.extend({
         dynamicallyRegistered:false,
         allowIntrospection:false,
         idTokenValiditySeconds: null,
+        deviceCodeValiditySeconds: null,
         createdAt:null,
 
         allowRefresh:false,
@@ -790,7 +791,8 @@ var ClientFormView = Backbone.View.extend({
     	'implicit': 'implicit',
     	'client_credentials': 'client_credentials',
     	'redelegate': 'urn:ietf:params:oauth:grant_type:redelegate',
-    	'refresh_token': 'refresh_token'
+    	'refresh_token': 'refresh_token',
+    	'device': 'urn:ietf:params:oauth:grant-type:device_code'
     },
     
     // maps from a form-friendly name to the real response type parameter name
@@ -863,7 +865,9 @@ var ClientFormView = Backbone.View.extend({
         	accessTokenValiditySeconds = this.getFormTokenNumberValue($('#accessTokenValidityTime input[type=text]').val(), $('#accessTokenValidityTime select').val()); 
         }
         
-        var idTokenValiditySeconds = this.getFormTokenNumberValue($('#idTokenValidityTime input[type=text]').val(), $('#idTokenValidityTime select').val()); 
+        var idTokenValiditySeconds = this.getFormTokenNumberValue($('#idTokenValidityTime input[type=text]').val(), $('#idTokenValidityTime select').val());
+        
+        var deviceCodeValiditySeconds = this.getFormTokenNumberValue($('#deviceCodeValidityTime input[type=text]').val, $('#deviceCodeValidityTime select').val());
         
         var refreshTokenValiditySeconds = null;
         if ($('#allowRefresh').is(':checked')) {
@@ -928,6 +932,7 @@ var ClientFormView = Backbone.View.extend({
             accessTokenValiditySeconds: accessTokenValiditySeconds,
             refreshTokenValiditySeconds: refreshTokenValiditySeconds,
             idTokenValiditySeconds: idTokenValiditySeconds,
+            deviceCodeValiditySeconds: deviceCodeValiditySeconds,
             allowRefresh: $('#allowRefresh').is(':checked'),
             allowIntrospection: $('#allowIntrospection input').is(':checked'), // <-- And here? --^
             scope: scopes,
@@ -1235,6 +1240,7 @@ ui.routes.push({path: "admin/client/new", name: "newClient", callback:
 	        		accessTokenValiditySeconds:3600,
 	        		refreshTokenValiditySeconds:24*3600,
 	        		idTokenValiditySeconds:300,
+	        		deviceCodeValiditySeconds:30*60,
 	        		grantTypes: ["authorization_code"],
 	        		responseTypes: ["code"],
 	        		subjectType: "PUBLIC",
@@ -1252,6 +1258,7 @@ ui.routes.push({path: "admin/client/new", name: "newClient", callback:
 	        		scope: _.uniq(_.flatten(app.systemScopeList.defaultScopes().pluck("value"))),
 	        		accessTokenValiditySeconds:3600,
 	        		idTokenValiditySeconds:600,
+	        		deviceCodeValiditySeconds:30*60,
 	        		grantTypes: ["authorization_code"],
 	        		responseTypes: ["code"],
 	        		subjectType: "PUBLIC",
