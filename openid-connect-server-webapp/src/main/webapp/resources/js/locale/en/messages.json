@@ -493,9 +493,20 @@
 	"device": {
 		"request_code": {
 			"title": "Enter Code",
-			"header": "Enter code for ",
+			"header": "Enter Code",
 			"description": "Enter the code displayed on your device into the box below and press submit",
 			"submit": "Submit"
+		},
+		"error": {
+			"noUserCode": "The code that you entered was not found.",
+			"expiredUserCode": "The code that you entered has expired. Return to your device and request a new code.",
+			"userCodeAlreadyApproved": "The code that you entered has already been used.",
+			"userCodeMismatch": "There was an error processing the code you entered. Try refreshing the page and returning to your device to request a new code.",
+			"error": "There was an error processing the code you entered. Return to your device adn request a new code."
+		},
+		"approve": {
+			"approved": "The device has been approved.",
+			"notApproved": "The device has not been approved."
 		}
 	}
 }

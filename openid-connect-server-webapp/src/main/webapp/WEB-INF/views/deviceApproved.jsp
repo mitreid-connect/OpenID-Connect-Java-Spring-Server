@@ -23,10 +23,9 @@
 					<em><c:out value="${client.clientName}" /></em>
 				</c:otherwise>
 			</c:choose>
-			<spring:message code="device.has-been-approved" />
 		</h1>
 
-		<div><spring:message code="device.approved" /></div>
+		<div><spring:message code="${ approved ? 'device.approve.approved' : 'device.approve.notApproved' }" /></div>
 
 	</div>
 </div>

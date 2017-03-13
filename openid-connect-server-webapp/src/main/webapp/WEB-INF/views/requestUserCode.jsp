@@ -15,29 +15,38 @@
 <div class="container main">
 
 	<div class="well" style="text-align: center">
-		<h1><spring:message code="device.request_code.header"/>&nbsp;
-			<c:choose>
-				<c:when test="${empty client.clientName}">
-					<em><c:out value="${client.clientId}" /></em>
-				</c:when>
-				<c:otherwise>
-					<em><c:out value="${client.clientName}" /></em>
-				</c:otherwise>
-			</c:choose>
 
-		</h1>
+		<h1><spring:message code="device.request_code.header"/>&nbsp;</h1>
+
+	<c:if test="${ error != null }">
+		<c:choose>
+			<c:when test="${ error == 'noUserCode' }">
+				<div class="alert alert-error"><spring:message code="device.error.noUserCode"/></div>
+			</c:when>
+			<c:when test="${ error == 'expiredUserCode' }">
+				<div class="alert alert-error"><spring:message code="device.error.expiredUserCode"/></div>
+			</c:when>
+			<c:when test="${ error == 'userCodeAlreadyApproved' }">
+				<div class="alert alert-error"><spring:message code="device.error.userCodeAlreadyApproved"/></div>
+			</c:when>
+			<c:when test="${ error == 'userCodeMismatch' }">
+				<div class="alert alert-error"><spring:message code="device.error.userCodeMismatch"/></div>
+			</c:when>
+			<c:otherwise>
+				<div class="alert alert-error"><spring:message code="device.error.error"/></div>	
+			</c:otherwise>
+		</c:choose>				
+	</c:if>
+
 
 		<form action="${ config.issuer }${ config.issuer.endsWith('/') ? '' : '/' }device-user/verify" method="POST">
 
 			<div class="row">
 				<div class="span12">
-	                <spring:message code="approve.label.authorize" var="authorize_label"/>
-	                <spring:message code="approve.label.deny" var="deny_label"/>
-	                <input type="text" name="user_code" />
+	                <spring:message code="device.request_code.submit" var="authorize_label"/>
+	                <input type="text" name="user_code" class="input-block-level" />
 					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
-					<input name="approve" value="${authorize_label}" type="submit" class="btn btn-success btn-large" /> 
-					&nbsp; 
-					<input name="deny" value="${deny_label}" type="submit" class="btn btn-secondary btn-large" />
+					<input name="approve" value="${authorize_label}" type="submit" class="btn btn-info btn-large" /> 
 				</div>
 			</div>
 

@@ -178,20 +178,20 @@ public class DeviceEndpoint {
 		
 		// we couldn't find the device code
 		if (dc == null) {
-			// TODO: return error
-			return "error";
+			model.addAttribute("error", "noUserCode");
+			return "requestUserCode";
 		}
 		
 		// make sure the code hasn't expired yet
 		if (dc.getExpiration() != null && dc.getExpiration().before(new Date())) {
-			// TODO: return an error
-			return "error";
+			model.addAttribute("error", "expiredUserCode");
+			return "requestUserCode";
 		}
 
 		// make sure the device code hasn't already been approved
 		if (dc.isApproved()) {
-			// TODO: return an error
-			return "error";
+			model.addAttribute("error", "userCodeAlreadyApproved");
+			return "requestUserCode";
 		}
 		
 		ClientDetailsEntity client = clientService.loadClientByClientId(dc.getClientId());
@@ -234,20 +234,20 @@ public class DeviceEndpoint {
 		
 		// make sure the form that was submitted is the one that we were expecting
 		if (!dc.getUserCode().equals(userCode)) {
-			// TODO: return an error
-			return "error";
+			model.addAttribute("error", "userCodeMismatch");
+			return "requestUserCode";
 		}
 
 		// make sure the code hasn't expired yet
 		if (dc.getExpiration() != null && dc.getExpiration().before(new Date())) {
-			// TODO: return an error
-			return "error";
+			model.addAttribute("error", "expiredUserCode");
+			return "requestUserCode";
 		}
 		
 		// user did not approve
 		if (!approve) {
-			// TODO: return an error
-			return "error";
+			model.addAttribute("approved", false);
+			return "deviceApproved";
 		}
 
 		// create an OAuth request for storage
@@ -277,7 +277,7 @@ public class DeviceEndpoint {
 		sortedScopes.addAll(Sets.difference(scopes, systemScopes));
 
 		model.put("scopes", sortedScopes);
-		
+		model.put("approved", true);
 		
 		return "deviceApproved";
 	}
