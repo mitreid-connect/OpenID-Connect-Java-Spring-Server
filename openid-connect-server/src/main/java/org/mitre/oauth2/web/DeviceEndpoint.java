@@ -244,6 +244,10 @@ public class DeviceEndpoint {
 			return "requestUserCode";
 		}
 		
+		ClientDetailsEntity client = clientService.loadClientByClientId(dc.getClientId());
+		
+		model.put("client", client);
+		
 		// user did not approve
 		if (!approve) {
 			model.addAttribute("approved", false);
@@ -255,10 +259,6 @@ public class DeviceEndpoint {
 		OAuth2Authentication o2Auth = new OAuth2Authentication(o2req, auth);
 		
 		DeviceCode approvedCode = deviceCodeService.approveDeviceCode(dc, o2Auth);
-		
-		ClientDetailsEntity client = clientService.loadClientByClientId(dc.getClientId());
-		
-		model.put("client", client);
 		
 		// pre-process the scopes
 		Set<SystemScope> scopes = scopeService.fromStrings(dc.getScope());

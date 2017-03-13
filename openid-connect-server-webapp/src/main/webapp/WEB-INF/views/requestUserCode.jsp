@@ -41,10 +41,14 @@
 
 		<form action="${ config.issuer }${ config.issuer.endsWith('/') ? '' : '/' }device-user/verify" method="POST">
 
-			<div class="row">
+			<div class="row-fluid">
 				<div class="span12">
 	                <spring:message code="device.request_code.submit" var="authorize_label"/>
-	                <input type="text" name="user_code" class="input-block-level" />
+	                <div>
+		                <div class="input-block-level input-xlarge">
+			                <input type="text" name="user_code" placeholder="code" autocorrect="off" autocapitalize="off" autocomplete="off" spellcheck="false" value="" />
+		                </div>
+	                </div>
 					<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
 					<input name="approve" value="${authorize_label}" type="submit" class="btn btn-info btn-large" /> 
 				</div>

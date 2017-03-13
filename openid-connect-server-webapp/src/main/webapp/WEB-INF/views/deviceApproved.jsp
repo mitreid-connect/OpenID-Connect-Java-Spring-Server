@@ -25,7 +25,14 @@
 			</c:choose>
 		</h1>
 
-		<div><spring:message code="${ approved ? 'device.approve.approved' : 'device.approve.notApproved' }" /></div>
+		<c:choose>
+			<c:when test="${ approved }">
+				<div class="text-success"><i class="icon-ok"></i> <spring:message code="device.approve.approved" /></div>
+			</c:when>
+			<c:otherwise>
+				<div class="text-error"><i class="icon-remove"></i> <spring:message code="device.approve.notApproved" /></div>
+			</c:otherwise>
+		</c:choose>
 
 	</div>
 </div>
