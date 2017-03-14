@@ -40,6 +40,11 @@ public abstract class AbstractPageOperationTemplate<T> {
      * swallowed during execution default true.
      */
     private boolean swallowExceptions = true;
+    
+    /**
+     * String that is used for logging in final tallies.
+     */
+    private String operationName = "";
 
 
     /**
@@ -47,10 +52,9 @@ public abstract class AbstractPageOperationTemplate<T> {
      * maxPages and maxTime to DEFAULT_MAX_PAGES and
      * DEFAULT_MAX_TIME_MILLIS respectively
      */
-    public AbstractPageOperationTemplate(){
-        this(DEFAULT_MAX_PAGES, DEFAULT_MAX_TIME_MILLIS);
+    public AbstractPageOperationTemplate(String operationName){
+        this(DEFAULT_MAX_PAGES, DEFAULT_MAX_TIME_MILLIS, operationName);
     }
-
 
     /**
      * Instantiates a new AbstractPageOperationTemplate with the
@@ -59,11 +63,11 @@ public abstract class AbstractPageOperationTemplate<T> {
      * @param maxPages the maximum number of pages to fetch.
      * @param maxTime the maximum execution time.
      */
-    public AbstractPageOperationTemplate(int maxPages, long maxTime){
+    public AbstractPageOperationTemplate(int maxPages, long maxTime, String operationName){
         this.maxPages = maxPages;
         this.maxTime = maxTime;
+        this.operationName = operationName;
     }
-
 
     /**
      * Execute the operation on each member of a page of results
@@ -74,8 +78,7 @@ public abstract class AbstractPageOperationTemplate<T> {
      * swallowException (default true) field is set true.
      */
     public void execute(){
-        logger.info("Starting execution of paged operation. maximum time: " + maxTime
-                + " maximum pages: " + maxPages);
+        logger.debug("[" + getOperationName() +  "] Starting execution of paged operation. maximum time: " + maxTime + ", maximum pages: " + maxPages);
 
         long startTime = System.currentTimeMillis();
         long executionTime = 0;
@@ -112,11 +115,10 @@ public abstract class AbstractPageOperationTemplate<T> {
             executionTime = System.currentTimeMillis() - startTime;
         }
 
-        logger.info("Paged operation run completed " + operationsCompleted + " swallowed " + exceptionsSwallowedCount + " exceptions");
-        for(String className:  exceptionsSwallowedClasses) {
-            logger.warn("Paged operation swallowed at least one exception of type " + className);
-        }
+        finalReport(operationsCompleted, exceptionsSwallowedCount, exceptionsSwallowedClasses);
     }
+
+
 
     /**
      * method responsible for fetching
@@ -133,6 +135,19 @@ public abstract class AbstractPageOperationTemplate<T> {
      * @param item the item
      */
     protected abstract void doOperation(T item);
+    
+    /**
+     * Method responsible for final report of progress.
+     * @return
+     */
+    protected void finalReport(int operationsCompleted, int exceptionsSwallowedCount, Set<String> exceptionsSwallowedClasses) {
+    	if (operationsCompleted > 0 || exceptionsSwallowedCount > 0) {
+    		logger.info("[" + getOperationName() +  "] Paged operation run: completed " + operationsCompleted + "; swallowed " + exceptionsSwallowedCount + " exceptions");
+    	}
+    	for(String className:  exceptionsSwallowedClasses) {
+    		logger.warn("[" + getOperationName() +  "] Paged operation swallowed at least one exception of type " + className);
+    	}
+    }
 
     public int getMaxPages() {
         return maxPages;
@@ -157,4 +172,20 @@ public abstract class AbstractPageOperationTemplate<T> {
     public void setSwallowExceptions(boolean swallowExceptions) {
         this.swallowExceptions = swallowExceptions;
     }
+
+
+	/**
+	 * @return the operationName
+	 */
+	public String getOperationName() {
+		return operationName;
+	}
+
+
+	/**
+	 * @param operationName the operationName to set
+	 */
+	public void setOperationName(String operationName) {
+		this.operationName = operationName;
+	}
 }

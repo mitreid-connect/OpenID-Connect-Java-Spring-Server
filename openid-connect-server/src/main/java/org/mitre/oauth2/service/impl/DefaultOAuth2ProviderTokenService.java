@@ -492,7 +492,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	public void clearExpiredTokens() {
 		logger.debug("Cleaning out all expired tokens");
 
-        new AbstractPageOperationTemplate<OAuth2AccessTokenEntity>() {
+        new AbstractPageOperationTemplate<OAuth2AccessTokenEntity>("clearExpiredAccessTokens") {
             @Override
             public Collection<OAuth2AccessTokenEntity> fetchPage() {
                 return tokenRepository.getAllExpiredAccessTokens(new DefaultPageCriteria());
@@ -504,7 +504,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
             }
         }.execute();
 
-        new AbstractPageOperationTemplate<OAuth2RefreshTokenEntity>() {
+        new AbstractPageOperationTemplate<OAuth2RefreshTokenEntity>("clearExpiredRefreshTokens") {
             @Override
             public Collection<OAuth2RefreshTokenEntity> fetchPage() {
                 return tokenRepository.getAllExpiredRefreshTokens(new DefaultPageCriteria());
@@ -516,7 +516,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
             }
         }.execute();
 
-        new AbstractPageOperationTemplate<AuthenticationHolderEntity>() {
+        new AbstractPageOperationTemplate<AuthenticationHolderEntity>("clearExpiredAuthenticationHolders") {
             @Override
             public Collection<AuthenticationHolderEntity> fetchPage() {
                 return authenticationHolderRepository.getOrphanedAuthenticationHolders(new DefaultPageCriteria());

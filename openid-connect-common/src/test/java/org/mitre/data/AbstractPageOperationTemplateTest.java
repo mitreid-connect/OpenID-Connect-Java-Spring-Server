@@ -138,7 +138,7 @@ public class AbstractPageOperationTemplateTest {
         private long timeToPreviousFetch;
 
         private CountingPageOperation(int maxPages, long maxTime) {
-            super(maxPages, maxTime);
+            super(maxPages, maxTime, "CountingPageOperation");
             startTime = System.currentTimeMillis();
         }
 

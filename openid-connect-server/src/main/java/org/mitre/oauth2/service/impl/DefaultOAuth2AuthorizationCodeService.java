@@ -117,7 +117,7 @@ public class DefaultOAuth2AuthorizationCodeService implements AuthorizationCodeS
 	@Transactional(value="defaultTransactionManager")
 	public void clearExpiredAuthorizationCodes() {
 
-        new AbstractPageOperationTemplate<AuthorizationCodeEntity>(){
+        new AbstractPageOperationTemplate<AuthorizationCodeEntity>("clearExpiredAuthorizationCodes"){
             @Override
             public Collection<AuthorizationCodeEntity> fetchPage() {
                 return repository.getExpiredCodes();
