@@ -17,6 +17,7 @@
 
 package org.mitre.oauth2.repository.impl;
 
+import java.util.Collection;
 import java.util.Set;
 
 import org.mitre.oauth2.model.DeviceCode;
@@ -55,5 +56,10 @@ public interface DeviceCodeRepository {
 	 * @return
 	 */
 	public DeviceCode getByUserCode(String userCode);
+
+	/**
+	 * @return
+	 */
+	public Collection<DeviceCode> getExpiredCodes();
 
 }

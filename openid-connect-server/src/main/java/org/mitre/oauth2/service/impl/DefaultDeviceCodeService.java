@@ -17,11 +17,14 @@
 
 package org.mitre.oauth2.service.impl;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
+import org.mitre.data.AbstractPageOperationTemplate;
 import org.mitre.oauth2.model.AuthenticationHolderEntity;
+import org.mitre.oauth2.model.AuthorizationCodeEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.DeviceCode;
 import org.mitre.oauth2.repository.impl.DeviceCodeRepository;
@@ -30,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author jricher
@@ -101,6 +105,26 @@ public class DefaultDeviceCodeService implements DeviceCodeService {
 			return null;
 		}
 		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.mitre.oauth2.service.DeviceCodeService#clearExpiredDeviceCodes()
+	 */
+	@Override
+	@Transactional(value="defaultTransactionManager")
+	public void clearExpiredDeviceCodes() {
+		
+        new AbstractPageOperationTemplate<DeviceCode>("clearExpiredDeviceCodes"){
+            @Override
+            public Collection<DeviceCode> fetchPage() {
+                return repository.getExpiredCodes();
+            }
+
+            @Override
+            protected void doOperation(DeviceCode item) {
+                repository.remove(item);
+            }
+        }.execute();
 	}
 
 }

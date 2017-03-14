@@ -22,6 +22,8 @@ package org.mitre.oauth2.repository.impl;
 import static org.mitre.util.jpa.JpaUtil.getSingleResult;
 import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
 
+import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -91,6 +93,17 @@ public class JpaDeviceCodeRepository implements DeviceCodeRepository {
 	@Transactional(value="defaultTransactionManager")
 	public DeviceCode save(DeviceCode scope) {
 		return saveOrUpdate(scope.getId(), em, scope);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.mitre.oauth2.repository.impl.DeviceCodeRepository#getExpiredCodes()
+	 */
+	@Override
+	@Transactional(value="defaultTransactionManager")
+	public Collection<DeviceCode> getExpiredCodes() {
+		TypedQuery<DeviceCode> query = em.createNamedQuery(DeviceCode.QUERY_EXPIRED_BY_DATE, DeviceCode.class);
+		query.setParameter(DeviceCode.PARAM_DATE, new Date());
+		return query.getResultList();
 	}
 
 }
