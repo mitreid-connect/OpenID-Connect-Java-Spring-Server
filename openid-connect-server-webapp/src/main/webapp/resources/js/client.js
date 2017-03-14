@@ -867,7 +867,7 @@ var ClientFormView = Backbone.View.extend({
         
         var idTokenValiditySeconds = this.getFormTokenNumberValue($('#idTokenValidityTime input[type=text]').val(), $('#idTokenValidityTime select').val());
         
-        var deviceCodeValiditySeconds = this.getFormTokenNumberValue($('#deviceCodeValidityTime input[type=text]').val, $('#deviceCodeValidityTime select').val());
+        var deviceCodeValiditySeconds = this.getFormTokenNumberValue($('#deviceCodeValidityTime input[type=text]').val(), $('#deviceCodeValidityTime select').val());
         
         var refreshTokenValiditySeconds = null;
         if ($('#allowRefresh').is(':checked')) {
