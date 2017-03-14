@@ -73,8 +73,8 @@ import com.google.common.collect.Sets;
 @Controller
 public class DeviceEndpoint {
 
-	public static final String URL = "device";
-	public static final String USER_URL = "device-user";
+	public static final String URL = "devicecode";
+	public static final String USER_URL = "device";
 	
 	public static final Logger logger = LoggerFactory.getLogger(DeviceEndpoint.class);
 	

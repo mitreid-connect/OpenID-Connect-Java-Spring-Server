@@ -26,6 +26,7 @@ import org.mitre.jwt.encryption.service.JWTEncryptionAndDecryptionService;
 import org.mitre.jwt.signer.service.JWTSigningAndValidationService;
 import org.mitre.oauth2.model.PKCEAlgorithm;
 import org.mitre.oauth2.service.SystemScopeService;
+import org.mitre.oauth2.web.DeviceEndpoint;
 import org.mitre.oauth2.web.IntrospectionEndpoint;
 import org.mitre.oauth2.web.RevocationEndpoint;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
@@ -301,7 +302,7 @@ public class DiscoveryEndpoint {
 				JWSAlgorithm.ES256, JWSAlgorithm.ES384, JWSAlgorithm.ES512, 
 				JWSAlgorithm.PS256, JWSAlgorithm.PS384, JWSAlgorithm.PS512, 
 				Algorithm.NONE);
-		ArrayList<String> grantTypes = Lists.newArrayList("authorization_code", "implicit", "urn:ietf:params:oauth:grant-type:jwt-bearer", "client_credentials", "urn:ietf:params:oauth:grant_type:redelegate");
+		ArrayList<String> grantTypes = Lists.newArrayList("authorization_code", "implicit", "urn:ietf:params:oauth:grant-type:jwt-bearer", "client_credentials", "urn:ietf:params:oauth:grant_type:redelegate", "urn:ietf:params:oauth:grant-type:device_code");
 
 		Map<String, Object> m = new HashMap<>();
 		m.put("issuer", config.getIssuer());
@@ -366,7 +367,8 @@ public class DiscoveryEndpoint {
 		m.put("revocation_endpoint", baseUrl + RevocationEndpoint.URL); // token revocation endpoint
 
 		m.put("code_challenge_methods_supported", Lists.newArrayList(PKCEAlgorithm.plain.getName(), PKCEAlgorithm.S256.getName()));
-		
+
+		m.put("device_authorization_endpoint", DeviceEndpoint.URL);
 		
 		model.addAttribute(JsonEntityView.ENTITY, m);
 
