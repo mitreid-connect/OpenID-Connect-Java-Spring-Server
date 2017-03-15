@@ -191,18 +191,22 @@
 				</div>
 			</div>
 
-			<div class="control-group" id="applicationType">
-				<label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> <span data-i18n="client.client-form.type">Application Type</span></label>
-				<div class="controls">
-					<label class="radio inline">
-						<input type="radio" name="applicationType" value="NATIVE" <%-(client.application_type == 'NATIVE' ? 'checked' : '')%>> <span data-i18n="client.client-form.type-native">Native</span>
-					</label>
-					<label class="radio inline">
-						<input type="radio" name="applicationType" value="WEB" <%-(client.application_type == 'WEB' ? 'checked' : '')%>> <span data-i18n="client.client-form.type-web">Web</span>
-					</label>
-				</div>
-			</div>
-			
+           <div class="control-group" id="softwareId">
+                <label class="control-label" data-i18n="client.client-form.software-id">Software ID</label>
+                <div class="controls">
+                    <input value="<%-client.software_id ? client.software_id : '' %>" maxlength="100" type="text" class="" placeholder="Type something" data-i18n="[placeholder]client.client-form.software-id-placeholder">
+                    <p class="help-block" data-i18n="client.client-form.software-id-help">Identifier for the software in this client</p>
+                </div>
+            </div>
+
+            <div class="control-group" id="softwareVersion">
+                <label class="control-label" data-i18n="client.client-form.software-version">Software Version</label>
+                <div class="controls">
+                    <input value="<%-client.software_version ? client.sofware_version : ''%>" maxlength="100" type="text" class="" placeholder="Type something" data-i18n="[placeholder]client.client-form.software-version-placeholder">
+                    <p class="help-block" data-i18n="client.client-form.software-version-help">Version of the software in this client</p>
+                </div>
+            </div>
+
             <div class="control-group" id="contacts">
                 <label class="control-label" data-i18n="client.client-form.contacts">Contacts</label>
                 <div class="controls">
@@ -578,7 +582,17 @@
                 </div>
             </div>
 
-			
+			<div class="control-group" id="applicationType">
+				<label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> <span data-i18n="client.client-form.type">Application Type</span></label>
+				<div class="controls">
+					<label class="radio inline">
+						<input type="radio" name="applicationType" value="NATIVE" <%-(client.application_type == 'NATIVE' ? 'checked' : '')%>> <span data-i18n="client.client-form.type-native">Native</span>
+					</label>
+					<label class="radio inline">
+						<input type="radio" name="applicationType" value="WEB" <%-(client.application_type == 'WEB' ? 'checked' : '')%>> <span data-i18n="client.client-form.type-web">Web</span>
+					</label>
+				</div>
+			</div>			
 
 	</div>
 

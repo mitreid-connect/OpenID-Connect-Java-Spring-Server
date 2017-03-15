@@ -37,7 +37,7 @@
             "client-description-placeholder": "Type a description",
             "client-id": "Client ID",
             "client-id-help": "Unique identifier. If you leave this blank it will be automatically generated.",
-            "client-id-placeholder": "Type something",
+            "client-id-placeholder": "Client ID will be automatically generated",
             "client-name": "Client name",
             "client-name-help": "Human-readable application name",
             "client-name-placeholder": "Type something",

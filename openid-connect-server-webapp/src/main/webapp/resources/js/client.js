@@ -34,26 +34,26 @@ var ClientModel = Backbone.Model.extend({
     defaults:{
         id:null,
         
-        clientId:"",
-        clientSecret:"",
+        clientId:null,
+        clientSecret:null,
         redirectUris:[],
         clientName:null,
-        clientUri:"",
-        logoUri:"",
+        clientUri:null,
+        logoUri:null,
         contacts:[],
-        tosUri:"",
+        tosUri:null,
         tokenEndpointAuthMethod:null,
         scope:[],
         grantTypes:[],
         responseTypes:[],
-        policyUri:"",
+        policyUri:null,
         
-        jwksUri:"",
+        jwksUri:null,
         jwks:null,
         jwksType:"URI",
         
         applicationType:null,
-        sectorIdentifierUri:"",
+        sectorIdentifierUri:null,
         subjectType:null,
         
         requestObjectSigningAlg:null,
@@ -72,10 +72,14 @@ var ClientModel = Backbone.Model.extend({
         requireAuthTime:false,
         defaultACRvalues:null,
         
-        initiateLoginUri:"",
+        initiateLoginUri:null,
         postLogoutRedirectUris:[],
         
         requestUris:[],
+        
+        softwareStatement:null,
+        softwareId:null,
+        softwareVersion:null,
         
         codeChallengeMethod:null,
         
@@ -87,7 +91,7 @@ var ClientModel = Backbone.Model.extend({
         
         claimsRedirectUris:[],
         
-        clientDescription:"",
+        clientDescription:null,
         reuseRefreshToken:true,
         clearAccessTokensOnRefresh:true,
         dynamicallyRegistered:false,
@@ -769,6 +773,15 @@ var ClientFormView = Backbone.View.extend({
     	}
     },
     
+    // returns "null" if the given value is falsy
+    emptyToNull:function(value) {
+    	if (value) {
+    		return value;
+    	} else {
+    		return null;
+    	}
+    },
+    
     disableUnsupportedJOSEItems:function(serverSupported, query) {
         var supported = ['default'];
         if (serverSupported) {
@@ -921,33 +934,35 @@ var ClientFormView = Backbone.View.extend({
         
         
         var attrs = {
-            clientName:$('#clientName input').val(),
-            clientId:$('#clientId input').val(),
+            clientName:this.emptyToNull($('#clientName input').val()),
+            clientId:this.emptyToNull($('#clientId input').val()),
             clientSecret: clientSecret,
             generateClientSecret:generateClientSecret,
             redirectUris: redirectUris,
-            clientDescription:$('#clientDescription textarea').val(),
-            logoUri:$('#logoUri input').val(),
+            clientDescription:this.emptyToNull($('#clientDescription textarea').val()),
+            logoUri:this.emptyToNull($('#logoUri input').val()),
             grantTypes: grantTypes,
             accessTokenValiditySeconds: accessTokenValiditySeconds,
             refreshTokenValiditySeconds: refreshTokenValiditySeconds,
             idTokenValiditySeconds: idTokenValiditySeconds,
             deviceCodeValiditySeconds: deviceCodeValiditySeconds,
             allowRefresh: $('#allowRefresh').is(':checked'),
-            allowIntrospection: $('#allowIntrospection input').is(':checked'), // <-- And here? --^
+            allowIntrospection: $('#allowIntrospection input').is(':checked'),
             scope: scopes,
-            tosUri: $('#tosUri input').val(),
-            policyUri: $('#policyUri input').val(),
-            clientUri: $('#clientUri input').val(),
+            tosUri: this.emptyToNull($('#tosUri input').val()),
+            policyUri: this.emptyToNull($('#policyUri input').val()),
+            clientUri: this.emptyToNull($('#clientUri input').val()),
             applicationType: $('#applicationType input').filter(':checked').val(),
             jwksUri: jwksUri,
             jwks: jwks,
             subjectType: subjectType,
-            softwareStatement: $('#softwareStatement textarea').val(),
+            softwareStatement: this.emptyToNull($('#softwareStatement textarea').val()),
+            softwareId: this.emptyToNull($('#softwareId input').val()),
+            softwareVersion: this.emptyToNull($('#softwareVersion input').val()),
             tokenEndpointAuthMethod: tokenEndpointAuthMethod,
             responseTypes: responseTypes,
             sectorIdentifierUri: sectorIdentifierUri,
-            initiateLoginUri: $('#initiateLoginUri input').val(),
+            initiateLoginUri: this.emptyToNull($('#initiateLoginUri input').val()),
             postLogoutRedirectUris: this.postLogoutRedirectUrisCollection.pluck('item'),
             claimsRedirectUris: this.claimsRedirectUrisCollection.pluck('item'),
             reuseRefreshToken: $('#reuseRefreshToken').is(':checked'),

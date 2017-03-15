@@ -61,6 +61,10 @@ var DynRegClient = Backbone.Model.extend({
         
         request_uris:[],
         
+        software_statement:null,
+        software_id:null,
+        software_version:null,
+        
         code_challenge_method:null,
 
         registration_access_token:null,
@@ -313,6 +317,15 @@ var DynRegEditView = Backbone.View.extend({
     	}
     },
 
+    // returns "null" if the given value is falsy
+    emptyToNull:function(value) {
+    	if (value) {
+    		return value;
+    	} else {
+    		return null;
+    	}
+    },
+
     // maps from a form-friendly name to the real grant parameter name
     grantMap:{
     	'authorization_code': 'authorization_code',
@@ -405,24 +418,26 @@ var DynRegEditView = Backbone.View.extend({
     	}
 
     	var attrs = {
-            client_name:$('#clientName input').val(),
+            client_name:this.emptyToNull($('#clientName input').val()),
             redirect_uris: redirectUris,
-            logo_uri:$('#logoUri input').val(),
+            logo_uri:this.emptyToNull($('#logoUri input').val()),
             grant_types: grantTypes,
             scope: scopes,
             client_secret: null, // never send a client secret
-            tos_uri: $('#tosUri input').val(),
-            policy_uri: $('#policyUri input').val(),
-            client_uri: $('#clientUri input').val(),
+            tos_uri: this.emptyToNull($('#tosUri input').val()),
+            policy_uri: this.emptyToNull($('#policyUri input').val()),
+            client_uri: this.emptyToNull($('#clientUri input').val()),
             application_type: $('#applicationType input').filter(':checked').val(),
             jwks_uri: jwksUri,
             jwks: jwks,
             subject_type: subjectType,
-            software_statement: $('#softwareStatement textarea').val(),
+            software_statement: this.emptyToNull($('#softwareStatement textarea').val()),
+            softwareId: this.emptyToNull($('#softwareId input').val()),
+            softwareVersion: this.emptyToNull($('#softwareVersion input').val()),
             token_endpoint_auth_method: $('#tokenEndpointAuthMethod input').filter(':checked').val(),
             response_types: responseTypes,
             sector_identifier_uri: sectorIdentifierUri,
-            initiate_login_uri: $('#initiateLoginUri input').val(),
+            initiate_login_uri: this.emptyToNull($('#initiateLoginUri input').val()),
             post_logout_redirect_uris: this.postLogoutRedirectUrisCollection.pluck('item'),
             claims_redirect_uris: this.claimsRedirectUrisCollection.pluck('item'),
             require_auth_time: $('#requireAuthTime input').is(':checked'),
