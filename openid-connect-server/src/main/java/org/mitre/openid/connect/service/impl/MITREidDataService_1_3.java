@@ -149,6 +149,8 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 	private static final String ID = "id";
 	private static final String CODE_CHALLENGE_METHOD = "codeChallengeMethod";
 	private static final String SOFTWARE_STATEMENT = "softwareStatement";
+	private static final String SOFTWARE_VERSION = "softwareVersion";
+	private static final String SOFTWARE_ID = "softwareId";
 
 	/**
 	 * Logger for this class
@@ -524,6 +526,8 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 				writer.name(CLEAR_ACCESS_TOKENS_ON_REFRESH).value(client.isClearAccessTokensOnRefresh());
 				writer.name(DYNAMICALLY_REGISTERED).value(client.isDynamicallyRegistered());
 				writer.name(CODE_CHALLENGE_METHOD).value(client.getCodeChallengeMethod() != null ? client.getCodeChallengeMethod().getName() : null);
+				writer.name(SOFTWARE_ID).value(client.getSoftwareId());
+				writer.name(SOFTWARE_VERSION).value(client.getSoftwareVersion());
 				writer.name(SOFTWARE_STATEMENT).value(client.getSoftwareStatement() != null ? client.getSoftwareStatement().serialize() : null);
 				writer.endObject();
 				logger.debug("Wrote client {}", client.getId());
@@ -1155,6 +1159,10 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 						client.setDynamicallyRegistered(reader.nextBoolean());
 					} else if (name.equals(CODE_CHALLENGE_METHOD)) {
 						client.setCodeChallengeMethod(PKCEAlgorithm.parse(reader.nextString()));
+					} else if (name.equals(SOFTWARE_ID)) {
+						client.setSoftwareId(reader.nextString());
+					} else if (name.equals(SOFTWARE_VERSION)) {
+						client.setSoftwareVersion(reader.nextString());
 					} else if (name.equals(SOFTWARE_STATEMENT)) {
 						try {
 							client.setSoftwareStatement(JWTParser.parse(reader.nextString()));
