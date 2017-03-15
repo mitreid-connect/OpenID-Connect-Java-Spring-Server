@@ -82,7 +82,9 @@ import static org.mitre.oauth2.model.RegisteredClientFields.RESPONSE_TYPES;
 import static org.mitre.oauth2.model.RegisteredClientFields.SCOPE;
 import static org.mitre.oauth2.model.RegisteredClientFields.SCOPE_SEPARATOR;
 import static org.mitre.oauth2.model.RegisteredClientFields.SECTOR_IDENTIFIER_URI;
+import static org.mitre.oauth2.model.RegisteredClientFields.SOFTWARE_ID;
 import static org.mitre.oauth2.model.RegisteredClientFields.SOFTWARE_STATEMENT;
+import static org.mitre.oauth2.model.RegisteredClientFields.SOFTWARE_VERSION;
 import static org.mitre.oauth2.model.RegisteredClientFields.SUBJECT_TYPE;
 import static org.mitre.oauth2.model.RegisteredClientFields.TOKEN_ENDPOINT_AUTH_METHOD;
 import static org.mitre.oauth2.model.RegisteredClientFields.TOKEN_ENDPOINT_AUTH_SIGNING_ALG;
@@ -205,6 +207,9 @@ public class ClientDetailsEntityJsonProcessor {
 			c.setClaimsRedirectUris(getAsStringSet(o, CLAIMS_REDIRECT_URIS));
 			
 			c.setCodeChallengeMethod(getAsPkceAlgorithm(o, CODE_CHALLENGE_METHOD));
+			
+			c.setSoftwareId(getAsString(o, SOFTWARE_ID));
+			c.setSoftwareVersion(getAsString(o, SOFTWARE_VERSION));
 			
 			// note that this does not process or validate the software statement, that's handled in other components
 			String softwareStatement = getAsString(o,  SOFTWARE_STATEMENT);
@@ -344,6 +349,9 @@ public class ClientDetailsEntityJsonProcessor {
 			o.add(CLAIMS_REDIRECT_URIS, getAsArray(c.getClaimsRedirectUris()));
 			
 			o.addProperty(CODE_CHALLENGE_METHOD, c.getCodeChallengeMethod() != null ? c.getCodeChallengeMethod().getName() : null);
+			
+			o.addProperty(SOFTWARE_ID, c.getSoftwareId());
+			o.addProperty(SOFTWARE_VERSION, c.getSoftwareVersion());
 			
 			if (c.getSoftwareStatement() != null) {
 				o.addProperty(SOFTWARE_STATEMENT, c.getSoftwareStatement().serialize());

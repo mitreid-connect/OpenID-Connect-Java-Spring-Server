@@ -171,6 +171,8 @@ CREATE TABLE IF NOT EXISTS client_details (
 	clear_access_tokens_on_refresh BOOLEAN DEFAULT true NOT NULL,
 	
 	software_statement VARCHAR(4096),
+	software_id VARCHAR(2048),
+	software_version VARCHAR(2048),
 	
 	code_challenge_method VARCHAR(256),
 	

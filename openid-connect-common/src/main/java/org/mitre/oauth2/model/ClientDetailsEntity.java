@@ -103,6 +103,8 @@ public class ClientDetailsEntity implements ClientDetails {
 	private String policyUri;
 	private String jwksUri; // URI pointer to keys
 	private JWKSet jwks; // public key stored by value
+	private String softwareId;
+	private String softwareVersion;
 
 	/** Fields from OIDC Client Registration Specification **/
 	private AppType applicationType; // application_type
@@ -1047,6 +1049,38 @@ public class ClientDetailsEntity implements ClientDetails {
 	 */
 	public void setDeviceCodeValiditySeconds(Integer deviceCodeValiditySeconds) {
 		this.deviceCodeValiditySeconds = deviceCodeValiditySeconds;
+	}
+
+	/**
+	 * @return the softwareId
+	 */
+	@Basic
+	@Column(name="software_id")
+	public String getSoftwareId() {
+		return softwareId;
+	}
+
+	/**
+	 * @param softwareId the softwareId to set
+	 */
+	public void setSoftwareId(String softwareId) {
+		this.softwareId = softwareId;
+	}
+
+	/**
+	 * @return the softwareVersion
+	 */
+	@Basic
+	@Column(name="software_version")
+	public String getSoftwareVersion() {
+		return softwareVersion;
+	}
+
+	/**
+	 * @param softwareVersion the softwareVersion to set
+	 */
+	public void setSoftwareVersion(String softwareVersion) {
+		this.softwareVersion = softwareVersion;
 	}
 
 }

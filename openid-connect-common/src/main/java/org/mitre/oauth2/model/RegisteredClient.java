@@ -862,6 +862,38 @@ public class RegisteredClient {
 		client.setDeviceCodeValiditySeconds(deviceCodeValiditySeconds);
 	}
 
+	/**
+	 * @return
+	 * @see org.mitre.oauth2.model.ClientDetailsEntity#getSoftwareId()
+	 */
+	public String getSoftwareId() {
+		return client.getSoftwareId();
+	}
+
+	/**
+	 * @param softwareId
+	 * @see org.mitre.oauth2.model.ClientDetailsEntity#setSoftwareId(java.lang.String)
+	 */
+	public void setSoftwareId(String softwareId) {
+		client.setSoftwareId(softwareId);
+	}
+
+	/**
+	 * @return
+	 * @see org.mitre.oauth2.model.ClientDetailsEntity#getSoftwareVersion()
+	 */
+	public String getSoftwareVersion() {
+		return client.getSoftwareVersion();
+	}
+
+	/**
+	 * @param softwareVersion
+	 * @see org.mitre.oauth2.model.ClientDetailsEntity#setSoftwareVersion(java.lang.String)
+	 */
+	public void setSoftwareVersion(String softwareVersion) {
+		client.setSoftwareVersion(softwareVersion);
+	}
+
 
 
 }
