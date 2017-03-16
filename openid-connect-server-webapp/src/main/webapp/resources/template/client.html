@@ -17,14 +17,8 @@
 <!-- client -->
 
 <script type="text/html" id="tmpl-client-table-item">
-	<td>
-		<% if (count == 0) { %>
-			<span class="label label-important">0</span>
-		<% } else if (count != null) { %>
-			<span class="label label-info"><%- count %></span>
-		<% } else { %>
-			<span class="label label-warning">?</span>
-		<% } %>
+	<td class="count">
+
 	</td>
 
     <td>
@@ -899,4 +893,14 @@
 		<button class="btn btn-warning" id="rotate-token"><i class="icon-retweet icon-white"></i> <span data-i18n="client.client-form.rotate-registration-token">Rotate registration token</span></button>
 	</div>
 
+</script>
+
+<script type="text/html" id="tmpl-client-count">
+		<% if (count == 0) { %>
+			<span class="label label-important">0</span>
+		<% } else if (count != null) { %>
+			<span class="label label-info"><%- count %></span>
+		<% } else { %>
+			<span class="label label-warning">?</span>
+		<% } %>
 </script>

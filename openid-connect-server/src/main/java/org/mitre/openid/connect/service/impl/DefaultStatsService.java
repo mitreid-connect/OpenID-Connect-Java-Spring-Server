@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.openid.connect.model.ApprovedSite;
+import org.mitre.openid.connect.model.ClientStat;
 import org.mitre.openid.connect.service.ApprovedSiteService;
 import org.mitre.openid.connect.service.StatsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,12 +66,12 @@ public class DefaultStatsService implements StatsService {
 		}, 10, TimeUnit.MINUTES);
 	}
 
-	private Supplier<Map<Long, Integer>> byClientIdCache = createByClientIdCache();
+	private Supplier<Map<String, Integer>> byClientIdCache = createByClientIdCache();
 
-	private Supplier<Map<Long, Integer>> createByClientIdCache() {
-		return Suppliers.memoizeWithExpiration(new Supplier<Map<Long, Integer>>() {
+	private Supplier<Map<String, Integer>> createByClientIdCache() {
+		return Suppliers.memoizeWithExpiration(new Supplier<Map<String, Integer>>() {
 			@Override
-			public Map<Long, Integer> get() {
+			public Map<String, Integer> get() {
 				return computeByClientId();
 			}
 
@@ -107,11 +108,11 @@ public class DefaultStatsService implements StatsService {
 	 * @see org.mitre.openid.connect.service.StatsService#calculateByClientId()
 	 */
 	@Override
-	public Map<Long, Integer> getByClientId() {
+	public Map<String, Integer> getByClientId() {
 		return byClientIdCache.get();
 	}
 
-	private Map<Long, Integer> computeByClientId() {
+	private Map<String, Integer> computeByClientId() {
 		// get all approved sites
 		Collection<ApprovedSite> allSites = approvedSiteService.getAll();
 
@@ -120,10 +121,10 @@ public class DefaultStatsService implements StatsService {
 			clientIds.add(approvedSite.getClientId());
 		}
 
-		Map<Long, Integer> counts = getEmptyClientCountMap();
+		Map<String, Integer> counts = getEmptyClientCountMap();
 		for (String clientId : clientIds) {
 			ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
-			counts.put(client.getId(), clientIds.count(clientId));
+			counts.put(client.getClientId(), clientIds.count(clientId));
 		}
 
 		return counts;
@@ -133,22 +134,24 @@ public class DefaultStatsService implements StatsService {
 	 * @see org.mitre.openid.connect.service.StatsService#countForClientId(java.lang.String)
 	 */
 	@Override
-	public Integer getCountForClientId(Long id) {
+	public ClientStat getCountForClientId(String id) {
 
-		Map<Long, Integer> counts = getByClientId();
-		return counts.get(id);
-
+		Map<String, Integer> counts = getByClientId();
+		ClientStat stat = new ClientStat();
+		stat.setApprovedSiteCount(counts.get(id));
+		
+		return stat;
 	}
 
 	/**
 	 * Create a new map of all client ids set to zero
 	 * @return
 	 */
-	private Map<Long, Integer> getEmptyClientCountMap() {
-		Map<Long, Integer> counts = new HashMap<>();
+	private Map<String, Integer> getEmptyClientCountMap() {
+		Map<String, Integer> counts = new HashMap<>();
 		Collection<ClientDetailsEntity> clients = clientService.getAllClients();
 		for (ClientDetailsEntity client : clients) {
-			counts.put(client.getId(), 0);
+			counts.put(client.getClientId(), 0);
 		}
 
 		return counts;

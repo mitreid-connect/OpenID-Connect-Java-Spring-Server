@@ -194,6 +194,10 @@ var RegistrationTokenModel = Backbone.Model.extend({
 	urlRoot: 'api/tokens/registration'
 });
 
+var ClientStatsModel = Backbone.Model.extend({
+	urlRoot: 'api/stats/byclientid' 
+});
+
 var ClientCollection = Backbone.Collection.extend({
 
     initialize: function() {
@@ -216,6 +220,8 @@ var ClientCollection = Backbone.Collection.extend({
 var ClientView = Backbone.View.extend({
 
     tagName: 'tr',
+    
+    isRendered: false,
 
     initialize:function (options) {
     	this.options = options;
@@ -234,6 +240,10 @@ var ClientView = Backbone.View.extend({
         
         if (!this.registrationTokenTemplate) {
         	this.registrationTokenTemplate = _.template($('#tmpl-client-registration-token').html());
+        }
+        
+        if (!this.countTemplate) {
+        	this.countTemplate = _.template($('#tmpl-client-count').html());
         }
         
         this.model.bind('change', this.render, this);
@@ -259,7 +269,7 @@ var ClientView = Backbone.View.extend({
 		}
 
     	
-    	var json = {client: this.model.toJSON(), count: this.options.count, whiteList: this.options.whiteList, 
+    	var json = {client: this.model.toJSON(), whiteList: this.options.whiteList, 
     			displayCreationDate: displayCreationDate, hoverCreationDate: hoverCreationDate};
         this.$el.html(this.template(json));
 
@@ -273,8 +283,17 @@ var ClientView = Backbone.View.extend({
         this.$('.allow-introspection').tooltip({title: $.t('client.client-table.allow-introspection-tooltip')});
         
         this.updateMatched();
+        this.updateStats();
+        
         $(this.el).i18n();
+        
+        this.isRendered = true;
+        
         return this;
+    },
+    
+    updateStats:function(eventName) {
+    	$('.count', this.el).html(this.countTemplate({count: this.options.clientStat.get('approvedSiteCount')}));
     },
     
     showRegistrationToken:function(e) {
@@ -412,6 +431,8 @@ var ClientListView = Backbone.View.extend({
 
     tagName: 'span',
 
+    stats: {},
+    
     initialize:function (options) {
     	this.options = options;
     	this.filteredModel = this.model;
@@ -420,7 +441,6 @@ var ClientListView = Backbone.View.extend({
     load:function(callback) {
     	if (this.model.isFetched &&
     			this.options.whiteListList.isFetched &&
-    			this.options.stats.isFetched &&
     			this.options.systemScopeList.isFetched) {
     		callback();
     		return;
@@ -430,13 +450,11 @@ var ClientListView = Backbone.View.extend({
         $('#loading').html(
                 '<span class="label" id="loading-clients">' + $.t("common.clients") + '</span> ' +
                 '<span class="label" id="loading-whitelist">' + $.t("whitelist.whitelist") + '</span> ' + 
-                '<span class="label" id="loading-scopes">' + $.t("common.scopes") + '</span> ' + 
-                '<span class="label" id="loading-stats">' + $.t("common.statistics") + '</span> ' 
+                '<span class="label" id="loading-scopes">' + $.t("common.scopes") + '</span> '
                 );
 
     	$.when(this.model.fetchIfNeeded({success:function(e) {$('#loading-clients').addClass('label-success');}, error:app.errorHandlerView.handleError()}),
     			this.options.whiteListList.fetchIfNeeded({success:function(e) {$('#loading-whitelist').addClass('label-success');}, error:app.errorHandlerView.handleError()}),
-    			this.options.stats.fetchIfNeeded({success:function(e) {$('#loading-stats').addClass('label-success');}, error:app.errorHandlerView.handleError()}),
     			this.options.systemScopeList.fetchIfNeeded({success:function(e) {$('#loading-scopes').addClass('label-success');}, error:app.errorHandlerView.handleError()}))
     			.done(function() {
     	    		$('#loadingbox').sheet('hide');
@@ -471,26 +489,43 @@ var ClientListView = Backbone.View.extend({
     
     renderInner:function(eventName) {
 
-        // render the rows
+        // set up the rows to render 
+    	//   (note that this doesn't render until visibility is determined in togglePlaceholder)
+    	
     	_.each(this.filteredModel.models, function (client, index) {
+    		var clientStat = this.getStat(client.get('clientId'));
     		var view = new ClientView({
-				model:client, 
-				count:this.options.stats.get(client.get('id')),
+				model:client,
+				clientStat:clientStat,
 				systemScopeList: this.options.systemScopeList,
 				whiteList: this.options.whiteListList.getByClientId(client.get('clientId'))
 			});
     		view.parentView = this;
-    		var element = view.render().el;
+    		//var element = view.render().el;
+    		var element = view.el;
             $("#client-table",this.el).append(element);
-            if (Math.ceil((index + 1) / 10) != 1) {
-            	$(element).hide();
-            }
+            this.addView(client.get('id'), view);
         }, this);
 
         this.togglePlaceholder();
-
-        
     },
+    
+    views:{},
+    
+    addView:function(index, view) {
+    	this.views[index] = view;
+    },
+    
+    getView:function(index) {
+    	return this.views[index];
+    },
+    
+    getStat:function(index) {
+		if (!this.stats[index]) {
+			this.stats[index] = new ClientStatsModel({id: index});
+		}
+		return this.stats[index];
+	},
     
 	togglePlaceholder:function() {
         // set up pagination
@@ -508,6 +543,7 @@ var ClientListView = Backbone.View.extend({
         }
 
 		if (this.filteredModel.length > 0) {
+			this.changePage(undefined, 1);
 			$('#client-table', this.el).show();
 			$('#client-table-empty', this.el).hide();
 			$('#client-table-search-empty', this.el).hide();
@@ -527,14 +563,54 @@ var ClientListView = Backbone.View.extend({
 	},
 	
 	changePage:function(event, num) {
+		console.log('Page changed: ' + num);
+		
 		$('.paginator', this.el).bootpag({page:num});
+		var _self = this;
+		
+    	_.each(this.filteredModel.models, function (client, index) {
+    		var view = _self.getView(client.get('id'));
+    		if (!view) {
+    			console.log('Error: no view for client ' + client.get('id'));
+    			return;
+    		}
+
+    		// only show/render clients on the current page
+    		
+    		console.log(':: ' + index + ' ' + num + ' ' + Math.ceil((index + 1) / 10) != num);
+    		
+    		if (Math.ceil((index + 1) / 10) != num) {
+    			$(view.el).hide();
+    		} else {
+    			if (!view.isRendered) {
+    				view.render();
+    				var clientStat = view.options.clientStat;
+    				
+    				// load and display the stats
+    				$.when(clientStat.fetchIfNeeded({
+    					success:function(e) {
+    						
+    					}, 
+    					error:app.errorHandlerView.handleError()}))
+    					.done(function(e) {
+    						view.updateStats();
+    					});
+    			}
+    			$(view.el).show();
+    		}
+    	});
+		
+		/*
 		$('#client-table tbody tr', this.el).each(function(index, element) {
 			if (Math.ceil((index + 1) / 10) != num) {
+				// hide the element
             	$(element).hide();
             } else {
+            	// show the element
             	$(element).show();
             }
 		});
+		*/
 	},
 	
     refreshTable:function(e) {
@@ -543,14 +619,12 @@ var ClientListView = Backbone.View.extend({
     	$('#loading').html(
     	        '<span class="label" id="loading-clients">' + $.t("common.clients") + '</span> ' +
     			'<span class="label" id="loading-whitelist">' + $.t("whitelist.whitelist") + '</span> ' + 
-    			'<span class="label" id="loading-scopes">' + $.t("common.scopes") + '</span> ' + 
-    			'<span class="label" id="loading-stats">' + $.t("common.statistics") + '</span> ' 
+    			'<span class="label" id="loading-scopes">' + $.t("common.scopes") + '</span> '
     			);
 
     	var _self = this;
     	$.when(this.model.fetch({success:function(e) {$('#loading-clients').addClass('label-success');}, error:app.errorHandlerView.handleError()}),
     			this.options.whiteListList.fetch({success:function(e) {$('#loading-whitelist').addClass('label-success');}, error:app.errorHandlerView.handleError()}),
-    			this.options.stats.fetch({success:function(e) {$('#loading-stats').addClass('label-success');}, error:app.errorHandlerView.handleError()}),
     			this.options.systemScopeList.fetch({success:function(e) {$('#loading-scopes').addClass('label-success');}, error:app.errorHandlerView.handleError()}))
     			.done(function() {
     	    		$('#loadingbox').sheet('hide');
@@ -1210,8 +1284,7 @@ ui.routes.push({path: "admin/clients", name: "listClients", callback:
         
         this.updateSidebar('admin/clients');
 
-        var view = new ClientListView({model:this.clientList, stats: this.clientStats, systemScopeList: this.systemScopeList, whiteListList: this.whiteListList});
-        
+        var view = new ClientListView({model:this.clientList, systemScopeList: this.systemScopeList, whiteListList: this.whiteListList});
         view.load(function() {
         	$('#content').html(view.render().el);
         	view.delegateEvents();

@@ -299,12 +299,6 @@ var BreadCrumbView = Backbone.View.extend({
 });
 
 
-// Stats table
-
-var StatsModel = Backbone.Model.extend({
-	url: "api/stats/byclientid"
-});
-
 // User Profile
 
 var UserProfileView = Backbone.View.extend({
@@ -430,8 +424,6 @@ var AppRouter = Backbone.Router.extend({
     
     initialize:function () {
 
-        this.clientStats = new StatsModel(); 
-                
         this.breadCrumbView = new BreadCrumbView({
             collection:new Backbone.Collection()
         });

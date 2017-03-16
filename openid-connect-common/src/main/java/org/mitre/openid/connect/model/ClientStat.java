@@ -14,49 +14,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-/**
- * 
- */
-package org.mitre.openid.connect.service;
 
-import java.util.Map;
-
-import org.mitre.openid.connect.model.ClientStat;
+package org.mitre.openid.connect.model;
 
 /**
  * @author jricher
  *
  */
-public interface StatsService {
+public class ClientStat {
+
+	private Integer approvedSiteCount;
 
 	/**
-	 * Calculate summary statistics
-	 *     	approvalCount: total approved sites
-	 *      userCount: unique users
-	 *      clientCount: unique clients
-	 * 
-	 * @return
+	 * @return the count
 	 */
-	public Map<String, Integer> getSummaryStats();
+	public Integer getApprovedSiteCount() {
+		return approvedSiteCount;
+	}
 
 	/**
-	 * Calculate usage count for all clients
-	 * 
-	 * @return a map of id of client object to number of approvals
+	 * @param count the count to set
 	 */
-	public Map<String, Integer> getByClientId();
-
-	/**
-	 * Calculate the usage count for a single client
-	 * 
-	 * @param clientId the id of the client to search on
-	 * @return
-	 */
-	public ClientStat getCountForClientId(String clientId);
-
-	/**
-	 * Trigger the stats to be recalculated upon next update.
-	 */
-	public void resetCache();
-
+	public void setApprovedSiteCount(Integer count) {
+		this.approvedSiteCount = count;
+	}
+	
 }
