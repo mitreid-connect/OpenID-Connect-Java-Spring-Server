@@ -40,13 +40,6 @@ public interface StatsService {
 	public Map<String, Integer> getSummaryStats();
 
 	/**
-	 * Calculate usage count for all clients
-	 * 
-	 * @return a map of id of client object to number of approvals
-	 */
-	public Map<String, Integer> getByClientId();
-
-	/**
 	 * Calculate the usage count for a single client
 	 * 
 	 * @param clientId the id of the client to search on

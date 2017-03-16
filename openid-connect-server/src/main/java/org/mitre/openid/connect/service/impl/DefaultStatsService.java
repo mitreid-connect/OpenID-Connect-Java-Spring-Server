@@ -50,9 +50,6 @@ public class DefaultStatsService implements StatsService {
 	@Autowired
 	private ApprovedSiteService approvedSiteService;
 
-	@Autowired
-	private ClientDetailsEntityService clientService;
-
 	// stats cache
 	private Supplier<Map<String, Integer>> summaryCache = createSummaryCache();
 
@@ -61,18 +58,6 @@ public class DefaultStatsService implements StatsService {
 			@Override
 			public Map<String, Integer> get() {
 				return computeSummaryStats();
-			}
-
-		}, 10, TimeUnit.MINUTES);
-	}
-
-	private Supplier<Map<String, Integer>> byClientIdCache = createByClientIdCache();
-
-	private Supplier<Map<String, Integer>> createByClientIdCache() {
-		return Suppliers.memoizeWithExpiration(new Supplier<Map<String, Integer>>() {
-			@Override
-			public Map<String, Integer> get() {
-				return computeByClientId();
 			}
 
 		}, 10, TimeUnit.MINUTES);
@@ -105,56 +90,17 @@ public class DefaultStatsService implements StatsService {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.mitre.openid.connect.service.StatsService#calculateByClientId()
-	 */
-	@Override
-	public Map<String, Integer> getByClientId() {
-		return byClientIdCache.get();
-	}
-
-	private Map<String, Integer> computeByClientId() {
-		// get all approved sites
-		Collection<ApprovedSite> allSites = approvedSiteService.getAll();
-
-		Multiset<String> clientIds = HashMultiset.create();
-		for (ApprovedSite approvedSite : allSites) {
-			clientIds.add(approvedSite.getClientId());
-		}
-
-		Map<String, Integer> counts = getEmptyClientCountMap();
-		for (String clientId : clientIds) {
-			ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
-			counts.put(client.getClientId(), clientIds.count(clientId));
-		}
-
-		return counts;
-	}
-
-	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.service.StatsService#countForClientId(java.lang.String)
 	 */
 	@Override
-	public ClientStat getCountForClientId(String id) {
+	public ClientStat getCountForClientId(String clientId) {
 
-		Map<String, Integer> counts = getByClientId();
+		Collection<ApprovedSite> approvedSites = approvedSiteService.getByClientId(clientId);
+		
 		ClientStat stat = new ClientStat();
-		stat.setApprovedSiteCount(counts.get(id));
+		stat.setApprovedSiteCount(approvedSites.size());
 		
 		return stat;
-	}
-
-	/**
-	 * Create a new map of all client ids set to zero
-	 * @return
-	 */
-	private Map<String, Integer> getEmptyClientCountMap() {
-		Map<String, Integer> counts = new HashMap<>();
-		Collection<ClientDetailsEntity> clients = clientService.getAllClients();
-		for (ClientDetailsEntity client : clients) {
-			counts.put(client.getClientId(), 0);
-		}
-
-		return counts;
 	}
 
 	/**
@@ -163,7 +109,6 @@ public class DefaultStatsService implements StatsService {
 	@Override
 	public void resetCache() {
 		summaryCache = createSummaryCache();
-		byClientIdCache = createByClientIdCache();
 	}
 
 }
