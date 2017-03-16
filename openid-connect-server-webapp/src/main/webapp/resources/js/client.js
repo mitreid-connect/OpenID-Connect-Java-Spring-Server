@@ -157,6 +157,12 @@ var ClientModel = Backbone.Model.extend({
 					matches.push($.t('client.client-table.match.scope'));
 				}
 			}
+			if (this.get('softwareId') != null && this.get('softwareId').toLowerCase().indexOf(term.toLowerCase()) != -1) {
+				matches.push($.t('client.client-table.match.software-id'));
+			}
+			if (this.get('softwareVersion') != null && this.get('softwareVersion').toLowerCase().indexOf(term.toLowerCase()) != -1) {
+				matches.push($.t('client.client-table.match.software-version'));
+			}
     	} else {
     		// there's no search term, we always match
     		

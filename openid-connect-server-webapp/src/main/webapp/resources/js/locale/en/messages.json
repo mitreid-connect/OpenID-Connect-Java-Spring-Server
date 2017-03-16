@@ -202,7 +202,9 @@
                 "policy": "policy",
                 "redirect": "redirect uri",
                 "scope": "scope",
-                "terms": "terms of service"
+                "terms": "terms of service",
+                "software-id": "software ID",
+                "software-version": "version"
             },
             "matched-search": "Matched search:",
             "new": "New Client",
