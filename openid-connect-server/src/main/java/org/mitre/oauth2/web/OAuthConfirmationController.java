@@ -201,7 +201,7 @@ public class OAuthConfirmationController {
 		model.put("claims", claimsForScopes);
 
 		// client stats
-		Integer count = statsService.getCountForClientId(client.getId());
+		Integer count = statsService.getCountForClientId(client.getClientId()).getApprovedSiteCount();
 		model.put("count", count);
 
 
