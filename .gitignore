@@ -11,3 +11,5 @@ bin
 /target
 .springBeans
 nb-configuration.xml
+openid-connect-server-webapp/src/main/webapp/resources/bootstrap2/css/bootstrap-responsive.css
+openid-connect-server-webapp/src/main/webapp/resources/bootstrap2/css/bootstrap.css
