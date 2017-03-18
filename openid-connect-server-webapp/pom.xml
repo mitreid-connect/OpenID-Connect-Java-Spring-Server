@@ -96,7 +96,7 @@
 					</execution>
 				</executions>
 				<configuration>
-					<targetGroups>bootstrap</targetGroups>
+					<targetGroups>bootstrap,bootstrap-responsive</targetGroups>
 					<destinationFolder>${project.build.directory}/${project.build.finalName}</destinationFolder>
 					<cssDestinationFolder>${project.build.directory}/${project.build.finalName}/resources/bootstrap2/css/</cssDestinationFolder>
 					<jsDestinationFolder>${project.build.directory}/${project.build.finalName}/js/</jsDestinationFolder>
