@@ -263,4 +263,26 @@
         </attributes>
     </entity>
 
+    <entity class="org.mitre.openid.connect.model.DefaultAddress" name="DefaultAddress">
+        <attributes>
+            <!-- changing generated value to sequence strategy (Oracle doesn't support identity) -->
+            <id name="id">
+                <column name="id"/>
+                <generated-value strategy="SEQUENCE" generator="DefaultAddressSequenceGenerator"/>
+                <sequence-generator name="DefaultAddressSequenceGenerator" sequence-name="address_seq" allocation-size="1"/>
+            </id>
+        </attributes>
+    </entity>
+
+    <entity class="org.mitre.openid.connect.model.DefaultUserInfo" name="DefaultUserInfo">
+        <attributes>
+            <!-- changing generated value to sequence strategy (Oracle doesn't support identity) -->
+            <id name="id">
+                <column name="id"/>
+                <generated-value strategy="SEQUENCE" generator="DefaultUserInfoSequenceGenerator"/>
+                <sequence-generator name="DefaultUserInfoSequenceGenerator" sequence-name="user_info_seq" allocation-size="1"/>
+            </id>
+        </attributes>
+    </entity>
+
 </entity-mappings>
