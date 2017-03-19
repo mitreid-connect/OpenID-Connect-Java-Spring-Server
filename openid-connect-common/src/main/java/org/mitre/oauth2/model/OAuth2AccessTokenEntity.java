@@ -237,7 +237,7 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	}
 
 	@Override
-	@ElementCollection(fetch=FetchType.EAGER)
+	@ElementCollection
 	@CollectionTable(
 			joinColumns=@JoinColumn(name="owner_id"),
 			name="token_scope"

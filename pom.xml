@@ -71,6 +71,7 @@
 	<properties>
 		<java-version>1.8</java-version>
 		<org.slf4j-version>1.7.21</org.slf4j-version>
+		<eclipselink.version>2.5.1</eclipselink.version>
 	</properties>
 	<description>A reference implementation of OpenID Connect (http://openid.net/connect/), OAuth 2.0, and UMA built on top of Java, Spring, and Spring Security. The project contains a fully functioning server, client, and utility library.</description>
 	<url>https://github.com/mitreid-connect</url>
@@ -301,8 +302,7 @@
 <!--                 <artifactId>asm-attrs</artifactId> -->
 <!--             </exclusion> -->
 <!--         </exclusions> -->
- 
-        						</plugin>
+						</plugin>
 					</reportPlugins>
 				</configuration>
 			</plugin>
@@ -397,7 +397,7 @@
 			<dependency>
 				<groupId>org.eclipse.persistence</groupId>
 				<artifactId>org.eclipse.persistence.jpa</artifactId>
-				<version>2.5.1</version>
+				<version>${eclipselink.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.eclipse.persistence</groupId>

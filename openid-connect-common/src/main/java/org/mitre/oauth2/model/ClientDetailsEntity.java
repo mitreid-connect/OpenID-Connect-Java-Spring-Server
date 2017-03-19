@@ -57,7 +57,6 @@ import org.mitre.oauth2.model.convert.SimpleGrantedAuthorityStringConverter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.provider.ClientDetails;
 
-import com.nimbusds.jose.Algorithm;
 import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -426,7 +425,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	/**
 	 * @return the scope
 	 */
-	@ElementCollection(fetch = FetchType.EAGER)
+	@ElementCollection
 	@CollectionTable(
 			name="client_scope",
 			joinColumns=@JoinColumn(name="owner_id")
@@ -447,7 +446,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	/**
 	 * @return the authorizedGrantTypes
 	 */
-	@ElementCollection(fetch = FetchType.EAGER)
+	@ElementCollection
 	@CollectionTable(
 			name="client_grant_type",
 			joinColumns=@JoinColumn(name="owner_id")
@@ -476,7 +475,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	/**
 	 * @return the authorities
 	 */
-	@ElementCollection(fetch = FetchType.EAGER)
+	@ElementCollection
 	@CollectionTable(
 			name="client_authority",
 			joinColumns=@JoinColumn(name="owner_id")
@@ -526,7 +525,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	/**
 	 * @return the registeredRedirectUri
 	 */
-	@ElementCollection(fetch = FetchType.EAGER)
+	@ElementCollection
 	@CollectionTable(
 			name="client_redirect_uri",
 			joinColumns=@JoinColumn(name="owner_id")
@@ -556,7 +555,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	 * @return the resourceIds
 	 */
 	@Override
-	@ElementCollection(fetch = FetchType.EAGER)
+	@ElementCollection
 	@CollectionTable(
 			name="client_resource",
 			joinColumns=@JoinColumn(name="owner_id")
@@ -631,7 +630,7 @@ public class ClientDetailsEntity implements ClientDetails {
 		this.subjectType = subjectType;
 	}
 
-	@ElementCollection(fetch = FetchType.EAGER)
+	@ElementCollection
 	@CollectionTable(
 			name="client_contact",
 			joinColumns=@JoinColumn(name="owner_id")
@@ -845,7 +844,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	/**
 	 * @return the responseTypes
 	 */
-	@ElementCollection(fetch = FetchType.EAGER)
+	@ElementCollection
 	@CollectionTable(
 			name="client_response_type",
 			joinColumns=@JoinColumn(name="owner_id")
@@ -865,7 +864,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	/**
 	 * @return the defaultACRvalues
 	 */
-	@ElementCollection(fetch = FetchType.EAGER)
+	@ElementCollection
 	@CollectionTable(
 			name="client_default_acr_value",
 			joinColumns=@JoinColumn(name="owner_id")
@@ -901,7 +900,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	/**
 	 * @return the postLogoutRedirectUri
 	 */
-	@ElementCollection(fetch = FetchType.EAGER)
+	@ElementCollection
 	@CollectionTable(
 			name="client_post_logout_redirect_uri",
 			joinColumns=@JoinColumn(name="owner_id")
@@ -921,7 +920,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	/**
 	 * @return the requestUris
 	 */
-	@ElementCollection(fetch = FetchType.EAGER)
+	@ElementCollection
 	@CollectionTable(
 			name="client_request_uri",
 			joinColumns=@JoinColumn(name="owner_id")
@@ -981,7 +980,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	/**
 	 * @return the claimsRedirectUris
 	 */
-	@ElementCollection(fetch = FetchType.EAGER)
+	@ElementCollection
 	@CollectionTable(
 			name="client_claims_redirect_uri",
 			joinColumns=@JoinColumn(name="owner_id")
