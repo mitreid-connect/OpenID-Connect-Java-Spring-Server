@@ -47,7 +47,7 @@ public interface MITREidDataService {
 
 	/**
 	 * Write out the current server state to the given JSON writer as a JSON object
-	 * 
+	 *
 	 * @param writer
 	 * @throws IOException
 	 */
@@ -55,15 +55,15 @@ public interface MITREidDataService {
 
 	/**
 	 * Read in the current server state from the given JSON reader as a JSON object
-	 * 
+	 *
 	 * @param reader
 	 */
 	void importData(JsonReader reader) throws IOException;
 
 	/**
-	 * Return true if the this data service supports the given version. This is called before 
+	 * Return true if the this data service supports the given version. This is called before
 	 * handing the service the reader through its importData function.
-	 * 
+	 *
 	 * @param version
 	 * @return
 	 */

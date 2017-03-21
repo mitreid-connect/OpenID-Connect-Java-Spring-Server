@@ -58,38 +58,38 @@ public interface OAuth2TokenRepository {
 
 	public Set<OAuth2AccessTokenEntity> getAllExpiredAccessTokens();
 
-    public Set<OAuth2AccessTokenEntity> getAllExpiredAccessTokens(PageCriteria pageCriteria);
+	public Set<OAuth2AccessTokenEntity> getAllExpiredAccessTokens(PageCriteria pageCriteria);
 
 	public Set<OAuth2RefreshTokenEntity> getAllExpiredRefreshTokens();
 
-    public Set<OAuth2RefreshTokenEntity> getAllExpiredRefreshTokens(PageCriteria pageCriteria);
+	public Set<OAuth2RefreshTokenEntity> getAllExpiredRefreshTokens(PageCriteria pageCriteria);
 
 	public Set<OAuth2AccessTokenEntity> getAccessTokensForResourceSet(ResourceSet rs);
 
-    /**
-     * removes duplicate access tokens.
-     *
-     * @deprecated this method was added to return the remove duplicate access tokens values
-     * so that {code removeAccessToken(OAuth2AccessTokenEntity o)} would not to fail. the
-     * removeAccessToken method has been updated so as it will not fail in the event that an
-     * accessToken has been duplicated, so this method is unnecessary.
-     *
-     */
-    @Deprecated
+	/**
+	 * removes duplicate access tokens.
+	 *
+	 * @deprecated this method was added to return the remove duplicate access tokens values
+	 * so that {code removeAccessToken(OAuth2AccessTokenEntity o)} would not to fail. the
+	 * removeAccessToken method has been updated so as it will not fail in the event that an
+	 * accessToken has been duplicated, so this method is unnecessary.
+	 *
+	 */
+	@Deprecated
 	public void clearDuplicateAccessTokens();
 
-    /**
-     * removes duplicate refresh tokens.
-     *
-     * @deprecated this method was added to return the remove duplicate refresh token value
-     * so that {code removeRefreshToken(OAuth2RefreshTokenEntity o)} would not to fail. the
-     * removeRefreshToken method has been updated so as it will not fail in the event that
-     * refreshToken has been duplicated, so this method is unnecessary.
-     *
-     */
-    @Deprecated
+	/**
+	 * removes duplicate refresh tokens.
+	 *
+	 * @deprecated this method was added to return the remove duplicate refresh token value
+	 * so that {code removeRefreshToken(OAuth2RefreshTokenEntity o)} would not to fail. the
+	 * removeRefreshToken method has been updated so as it will not fail in the event that
+	 * refreshToken has been duplicated, so this method is unnecessary.
+	 *
+	 */
+	@Deprecated
 	public void clearDuplicateRefreshTokens();
-	
+
 	public List<OAuth2AccessTokenEntity> getAccessTokensForApprovedSite(ApprovedSite approvedSite);
 
 }

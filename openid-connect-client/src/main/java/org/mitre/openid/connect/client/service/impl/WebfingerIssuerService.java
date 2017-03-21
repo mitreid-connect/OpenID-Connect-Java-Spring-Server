@@ -15,7 +15,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.openid.connect.client.service.impl;
 
@@ -74,7 +74,7 @@ public class WebfingerIssuerService implements IssuerService {
 			this.issuer = issuer;
 		}
 	}
-	
+
 	private Set<String> whitelist = new HashSet<>();
 	private Set<String> blacklist = new HashSet<>();
 
@@ -118,7 +118,7 @@ public class WebfingerIssuerService implements IssuerService {
 				if (blacklist.contains(lr.issuer)) {
 					throw new AuthenticationServiceException("Issuer was in blacklist: " + lr.issuer);
 				}
-				
+
 				return new IssuerServiceResponse(lr.issuer, lr.loginHint, request.getParameter("target_link_uri"));
 			} catch (UncheckedExecutionException | ExecutionException e) {
 				logger.warn("Issue fetching issuer for user input: " + identifier + ": " + e.getMessage());
@@ -218,7 +218,7 @@ public class WebfingerIssuerService implements IssuerService {
 		public LoadingResult load(String identifier) throws Exception {
 
 			UriComponents key = WebfingerURLNormalizer.normalizeResource(identifier);
-			
+
 			RestTemplate restTemplate = new RestTemplate(httpFactory);
 			// construct the URL to go to
 
@@ -268,7 +268,7 @@ public class WebfingerIssuerService implements IssuerService {
 
 								// we found the issuer, return it
 								String href = linkObj.get("href").getAsString();
-								
+
 								if (identifier.equals(href)
 										|| identifier.startsWith("http")) {
 									// try to avoid sending a URL as the login hint

@@ -15,7 +15,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.oauth2.model;
 
@@ -78,7 +78,7 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
 	private Date expiration;
 
 	/**
-	 * 
+	 *
 	 */
 	public OAuth2RefreshTokenEntity() {
 
@@ -104,7 +104,7 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
 	/**
 	 * The authentication in place when the original access token was
 	 * created
-	 * 
+	 *
 	 * @return the authentication
 	 */
 	@ManyToOne

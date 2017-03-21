@@ -15,11 +15,9 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.openid.connect.client.service;
-
-import java.util.List;
 
 import org.mitre.oauth2.model.RegisteredClient;
 

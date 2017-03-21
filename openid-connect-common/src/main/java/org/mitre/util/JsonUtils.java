@@ -15,7 +15,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.util;
 
@@ -48,7 +48,7 @@ import com.nimbusds.jose.JWSAlgorithm;
 
 /**
  * A collection of null-safe converters from common classes and JSON elements, using GSON.
- * 
+ *
  * @author jricher
  *
  */
@@ -86,7 +86,7 @@ public class JsonUtils {
 			return gson.toJsonTree(value, new TypeToken<Set<String>>(){}.getType());
 		}
 	}
-	
+
 	/**
 	 * Gets the value of the given member (expressed as integer seconds since epoch) as a Date
 	 */
@@ -287,19 +287,19 @@ public class JsonUtils {
 			String name = reader.nextName();
 			Object value = null;
 			switch(reader.peek()) {
-			case STRING:
-				value = reader.nextString();
-				break;
-			case BOOLEAN:
-				value = reader.nextBoolean();
-				break;
-			case NUMBER:
-				value = reader.nextLong();
-				break;
-			default:
-				logger.debug("Found unexpected entry");
-				reader.skipValue();
-				continue;
+				case STRING:
+					value = reader.nextString();
+					break;
+				case BOOLEAN:
+					value = reader.nextBoolean();
+					break;
+				case NUMBER:
+					value = reader.nextLong();
+					break;
+				default:
+					logger.debug("Found unexpected entry");
+					reader.skipValue();
+					continue;
 			}
 			map.put(name, value);
 		}
@@ -311,21 +311,21 @@ public class JsonUtils {
 		Set arraySet = null;
 		reader.beginArray();
 		switch (reader.peek()) {
-		case STRING:
-			arraySet = new HashSet<>();
-			while (reader.hasNext()) {
-				arraySet.add(reader.nextString());
-			}
-			break;
-		case NUMBER:
-			arraySet = new HashSet<>();
-			while (reader.hasNext()) {
-				arraySet.add(reader.nextLong());
-			}
-			break;
-		default:
-			arraySet = new HashSet();
-			break;
+			case STRING:
+				arraySet = new HashSet<>();
+				while (reader.hasNext()) {
+					arraySet.add(reader.nextString());
+				}
+				break;
+			case NUMBER:
+				arraySet = new HashSet<>();
+				while (reader.hasNext()) {
+					arraySet.add(reader.nextLong());
+				}
+				break;
+			default:
+				arraySet = new HashSet();
+				break;
 		}
 		reader.endArray();
 		return arraySet;

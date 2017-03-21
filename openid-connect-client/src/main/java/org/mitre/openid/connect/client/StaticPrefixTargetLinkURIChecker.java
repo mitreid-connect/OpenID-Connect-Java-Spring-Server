@@ -19,7 +19,7 @@ package org.mitre.openid.connect.client;
 /**
  * Simple target URI checker, checks whether the string in question starts
  * with a configured prefix. Returns "/" if the match fails.
- * 
+ *
  * @author jricher
  *
  */

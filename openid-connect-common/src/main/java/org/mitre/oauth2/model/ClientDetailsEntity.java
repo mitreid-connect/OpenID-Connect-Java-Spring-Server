@@ -15,7 +15,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.oauth2.model;
 
@@ -57,7 +57,6 @@ import org.mitre.oauth2.model.convert.SimpleGrantedAuthorityStringConverter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.provider.ClientDetails;
 
-import com.nimbusds.jose.Algorithm;
 import com.nimbusds.jose.EncryptionMethod;
 import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWSAlgorithm;
@@ -66,7 +65,7 @@ import com.nimbusds.jwt.JWT;
 
 /**
  * @author jricher
- * 
+ *
  */
 @Entity
 @Table(name = "client_details")
@@ -151,10 +150,10 @@ public class ClientDetailsEntity implements ClientDetails {
 
 	/** fields for UMA */
 	private Set<String> claimsRedirectUris;
-	
+
 	/** Software statement **/
 	private JWT softwareStatement;
-	
+
 	/** PKCE **/
 	private PKCEAlgorithm codeChallengeMethod;
 
@@ -239,7 +238,7 @@ public class ClientDetailsEntity implements ClientDetails {
 			return lookup.get(value);
 		}
 	}
-	
+
 	/**
 	 * Create a blank ClientDetailsEntity
 	 */
@@ -267,7 +266,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param id the id to set
 	 */
 	public void setId(Long id) {
@@ -314,7 +313,7 @@ public class ClientDetailsEntity implements ClientDetails {
 
 	/**
 	 * Number of seconds ID token is valid for. MUST be a positive integer, can not be null.
-	 * 
+	 *
 	 * @return the idTokenValiditySeconds
 	 */
 	@Basic
@@ -367,7 +366,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	@Override
 	@Transient
@@ -580,9 +579,9 @@ public class ClientDetailsEntity implements ClientDetails {
 	/**
 	 * This library does not make use of this field, so it is not
 	 * stored using our persistence layer.
-	 * 
+	 *
 	 * However, it's somehow required by SECOUATH.
-	 * 
+	 *
 	 * @return an empty map
 	 */
 	@Override

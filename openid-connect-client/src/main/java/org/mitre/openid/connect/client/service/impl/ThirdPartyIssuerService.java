@@ -15,7 +15,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.openid.connect.client.service.impl;
 
@@ -34,9 +34,9 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import com.google.common.base.Strings;
 
 /**
- * 
+ *
  * Determines the issuer using an account chooser or other third-party-initiated login
- * 
+ *
  * @author jricher
  *
  */

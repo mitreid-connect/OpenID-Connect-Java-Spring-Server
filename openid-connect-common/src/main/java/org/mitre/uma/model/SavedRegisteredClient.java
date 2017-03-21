@@ -52,7 +52,7 @@ public class SavedRegisteredClient {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param id the id to set
 	 */
 	public void setId(Long id) {

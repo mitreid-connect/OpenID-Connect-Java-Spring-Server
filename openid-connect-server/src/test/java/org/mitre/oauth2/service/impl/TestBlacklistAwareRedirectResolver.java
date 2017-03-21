@@ -17,6 +17,8 @@
 
 package org.mitre.oauth2.service.impl;
 
+import static org.mockito.Matchers.anyString;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,8 +34,6 @@ import com.google.common.collect.ImmutableSet;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
-
-import static org.mockito.Matchers.anyString;
 
 import static org.mockito.Mockito.when;
 
@@ -54,7 +54,7 @@ public class TestBlacklistAwareRedirectResolver {
 
 	@Mock
 	private ConfigurationPropertiesBean config;
-	
+
 	@InjectMocks
 	private BlacklistAwareRedirectResolver resolver;
 
@@ -133,7 +133,7 @@ public class TestBlacklistAwareRedirectResolver {
 		assertThat(res2, is(true));
 
 	}
-	
+
 	@Test
 	public void testHeartMode() {
 		when(config.isHeartMode()).thenReturn(true);

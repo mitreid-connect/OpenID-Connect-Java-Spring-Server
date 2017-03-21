@@ -17,6 +17,11 @@
 package org.mitre.uma.web;
 
 
+import static org.mitre.oauth2.web.AuthenticationUtilities.ensureOAuthScope;
+import static org.mitre.util.JsonUtils.getAsLong;
+import static org.mitre.util.JsonUtils.getAsString;
+import static org.mitre.util.JsonUtils.getAsStringSet;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -52,11 +57,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
-
-import static org.mitre.oauth2.web.AuthenticationUtilities.ensureOAuthScope;
-import static org.mitre.util.JsonUtils.getAsLong;
-import static org.mitre.util.JsonUtils.getAsString;
-import static org.mitre.util.JsonUtils.getAsStringSet;
 
 @Controller
 @RequestMapping("/" + ResourceSetRegistrationEndpoint.URL)
@@ -298,9 +298,9 @@ public class ResourceSetRegistrationEndpoint {
 
 
 	/**
-	 * 
+	 *
 	 * Make sure the resource set doesn't have any restricted or reserved scopes.
-	 * 
+	 *
 	 * @param rs
 	 */
 	private ResourceSet validateScopes(ResourceSet rs) {

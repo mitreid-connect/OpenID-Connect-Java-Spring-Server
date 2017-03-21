@@ -52,7 +52,7 @@ import static org.junit.Assert.fail;
 
 /**
  * @author wkim
- * 
+ *
  */
 public class TestSignedAuthRequestUrlBuilder {
 

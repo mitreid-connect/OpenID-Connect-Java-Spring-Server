@@ -48,7 +48,7 @@ import com.google.gson.Gson;
 
 /**
  * API for managing policies on resource sets.
- * 
+ *
  * @author jricher
  *
  */

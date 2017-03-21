@@ -20,7 +20,7 @@ import org.mitre.openid.connect.model.UserInfo;
 
 /**
  * UserInfo repository interface
- * 
+ *
  * @author Michael Joseph Walsh
  *
  */
@@ -34,9 +34,9 @@ public interface UserInfoRepository {
 	public UserInfo getByUsername(String username);
 
 	/**
-	 * 
+	 *
 	 * Get the UserInfo object by its email field
-	 * 
+	 *
 	 * @param email
 	 * @return
 	 */

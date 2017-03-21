@@ -45,7 +45,7 @@ import com.google.common.base.Strings;
 
 /**
  * OpenID Connect UserInfo endpoint, as specified in Standard sec 5 and Messages sec 2.4.
- * 
+ *
  * @author AANGANES
  *
  */

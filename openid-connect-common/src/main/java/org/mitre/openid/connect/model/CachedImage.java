@@ -22,11 +22,11 @@ package org.mitre.openid.connect.model;
  *
  */
 public class CachedImage {
-	
+
 	private byte[] data;
 	private String contentType;
 	private long length;
-	
+
 	/**
 	 * @return the data
 	 */

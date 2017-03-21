@@ -70,15 +70,15 @@ public class JpaAuthenticationHolderRepository implements AuthenticationHolderRe
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public List<AuthenticationHolderEntity> getOrphanedAuthenticationHolders() {
-        DefaultPageCriteria pageCriteria = new DefaultPageCriteria(0,MAXEXPIREDRESULTS);
-        return getOrphanedAuthenticationHolders(pageCriteria);
+		DefaultPageCriteria pageCriteria = new DefaultPageCriteria(0,MAXEXPIREDRESULTS);
+		return getOrphanedAuthenticationHolders(pageCriteria);
 	}
 
-    @Override
-    @Transactional(value="defaultTransactionManager")
-    public List<AuthenticationHolderEntity> getOrphanedAuthenticationHolders(PageCriteria pageCriteria) {
-        TypedQuery<AuthenticationHolderEntity> query = manager.createNamedQuery(AuthenticationHolderEntity.QUERY_GET_UNUSED, AuthenticationHolderEntity.class);
-        return JpaUtil.getResultPage(query, pageCriteria);
-    }
+	@Override
+	@Transactional(value="defaultTransactionManager")
+	public List<AuthenticationHolderEntity> getOrphanedAuthenticationHolders(PageCriteria pageCriteria) {
+		TypedQuery<AuthenticationHolderEntity> query = manager.createNamedQuery(AuthenticationHolderEntity.QUERY_GET_UNUSED, AuthenticationHolderEntity.class);
+		return JpaUtil.getResultPage(query, pageCriteria);
+	}
 
 }

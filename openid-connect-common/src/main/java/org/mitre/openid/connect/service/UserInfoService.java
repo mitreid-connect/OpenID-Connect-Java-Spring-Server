@@ -20,9 +20,9 @@ import org.mitre.openid.connect.model.UserInfo;
 
 /**
  * Interface for UserInfo service
- * 
+ *
  * @author Michael Joseph Walsh
- * 
+ *
  */
 public interface UserInfoService {
 
@@ -46,7 +46,7 @@ public interface UserInfoService {
 
 	/**
 	 * Get the user registered at this server with the given email address.
-	 * 
+	 *
 	 * @param email
 	 * @return
 	 */

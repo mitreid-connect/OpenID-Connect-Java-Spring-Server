@@ -17,19 +17,17 @@
 package org.mitre.openid.connect.service.impl;
 
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import org.mitre.openid.connect.service.ScopeClaimTranslationService;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Maps;
 import com.google.common.collect.SetMultimap;
 
 /**
  * Service to map scopes to claims, and claims to Java field names
- * 
+ *
  * @author Amanda Anganes
  *
  */

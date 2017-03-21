@@ -52,7 +52,7 @@ import com.nimbusds.jwt.JWTParser;
 public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 
 	private static final int MAXEXPIREDRESULTS = 1000;
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(JpaOAuth2TokenRepository.class);
 
 	@PersistenceContext(unitName="defaultPersistenceUnit")
@@ -191,29 +191,29 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 
 	@Override
 	public Set<OAuth2AccessTokenEntity> getAllExpiredAccessTokens() {
-        DefaultPageCriteria pageCriteria = new DefaultPageCriteria(0, MAXEXPIREDRESULTS);
-        return getAllExpiredAccessTokens(pageCriteria);
+		DefaultPageCriteria pageCriteria = new DefaultPageCriteria(0, MAXEXPIREDRESULTS);
+		return getAllExpiredAccessTokens(pageCriteria);
 	}
 
-    @Override
-    public Set<OAuth2AccessTokenEntity> getAllExpiredAccessTokens(PageCriteria pageCriteria) {
-        TypedQuery<OAuth2AccessTokenEntity> query = manager.createNamedQuery(OAuth2AccessTokenEntity.QUERY_EXPIRED_BY_DATE, OAuth2AccessTokenEntity.class);
-        query.setParameter(OAuth2AccessTokenEntity.PARAM_DATE, new Date());
-        return new LinkedHashSet<>(JpaUtil.getResultPage(query, pageCriteria));
-    }
+	@Override
+	public Set<OAuth2AccessTokenEntity> getAllExpiredAccessTokens(PageCriteria pageCriteria) {
+		TypedQuery<OAuth2AccessTokenEntity> query = manager.createNamedQuery(OAuth2AccessTokenEntity.QUERY_EXPIRED_BY_DATE, OAuth2AccessTokenEntity.class);
+		query.setParameter(OAuth2AccessTokenEntity.PARAM_DATE, new Date());
+		return new LinkedHashSet<>(JpaUtil.getResultPage(query, pageCriteria));
+	}
 
 	@Override
 	public Set<OAuth2RefreshTokenEntity> getAllExpiredRefreshTokens() {
-        DefaultPageCriteria pageCriteria = new DefaultPageCriteria(0, MAXEXPIREDRESULTS);
-        return getAllExpiredRefreshTokens(pageCriteria);
+		DefaultPageCriteria pageCriteria = new DefaultPageCriteria(0, MAXEXPIREDRESULTS);
+		return getAllExpiredRefreshTokens(pageCriteria);
 	}
 
-    @Override
-    public Set<OAuth2RefreshTokenEntity> getAllExpiredRefreshTokens(PageCriteria pageCriteria) {
-        TypedQuery<OAuth2RefreshTokenEntity> query = manager.createNamedQuery(OAuth2RefreshTokenEntity.QUERY_EXPIRED_BY_DATE, OAuth2RefreshTokenEntity.class);
-        query.setParameter(OAuth2AccessTokenEntity.PARAM_DATE, new Date());
-        return new LinkedHashSet<>(JpaUtil.getResultPage(query,pageCriteria));
-    }
+	@Override
+	public Set<OAuth2RefreshTokenEntity> getAllExpiredRefreshTokens(PageCriteria pageCriteria) {
+		TypedQuery<OAuth2RefreshTokenEntity> query = manager.createNamedQuery(OAuth2RefreshTokenEntity.QUERY_EXPIRED_BY_DATE, OAuth2RefreshTokenEntity.class);
+		query.setParameter(OAuth2AccessTokenEntity.PARAM_DATE, new Date());
+		return new LinkedHashSet<>(JpaUtil.getResultPage(query,pageCriteria));
+	}
 
 
 
@@ -276,7 +276,7 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 		}
 
 	}
-	
+
 	@Override
 	public List<OAuth2AccessTokenEntity> getAccessTokensForApprovedSite(ApprovedSite approvedSite) {
 		TypedQuery<OAuth2AccessTokenEntity> queryA = manager.createNamedQuery(OAuth2AccessTokenEntity.QUERY_BY_APPROVED_SITE, OAuth2AccessTokenEntity.class);

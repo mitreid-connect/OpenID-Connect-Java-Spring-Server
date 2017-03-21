@@ -81,9 +81,9 @@ public class Permission {
 	@ElementCollection(fetch = FetchType.EAGER)
 	@Column(name = "scope")
 	@CollectionTable(
-		name = "permission_scope",
-		joinColumns = @JoinColumn(name = "owner_id")
-	)
+			name = "permission_scope",
+			joinColumns = @JoinColumn(name = "owner_id")
+			)
 	public Set<String> getScopes() {
 		return scopes;
 	}

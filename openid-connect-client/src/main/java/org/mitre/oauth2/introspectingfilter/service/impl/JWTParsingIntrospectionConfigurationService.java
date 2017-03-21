@@ -15,7 +15,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.oauth2.introspectingfilter.service.impl;
 
@@ -32,11 +32,11 @@ import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTParser;
 
 /**
- * 
+ *
  * Parses the incoming accesstoken as a JWT and determines the issuer based on
  * the "iss" field inside the JWT. Uses the ServerConfigurationService to determine
  * the introspection URL for that issuer.
- * 
+ *
  * @author jricher
  *
  */

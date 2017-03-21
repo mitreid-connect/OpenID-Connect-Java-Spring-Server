@@ -15,7 +15,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.oauth2.introspectingfilter.service.impl;
 
@@ -28,9 +28,9 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import com.google.gson.JsonObject;
 
 /**
- * 
+ *
  * Grants the same set of authorities no matter what's passed in.
- * 
+ *
  * @author jricher
  *
  */

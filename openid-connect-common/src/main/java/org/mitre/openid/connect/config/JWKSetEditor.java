@@ -25,7 +25,7 @@ import com.nimbusds.jose.jwk.JWKSet;
 
 /**
  * Allows JWK Set strings to be used in XML configurations.
- * 
+ *
  * @author jricher
  *
  */

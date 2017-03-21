@@ -27,10 +27,10 @@ import org.mitre.uma.model.SavedRegisteredClient;
  *
  */
 public interface SavedRegisteredClientService {
-	
+
 	/**
 	 * Get a list of all the registered clients that we know about.
-	 * 
+	 *
 	 * @return
 	 */
 	Collection<SavedRegisteredClient> getAll();

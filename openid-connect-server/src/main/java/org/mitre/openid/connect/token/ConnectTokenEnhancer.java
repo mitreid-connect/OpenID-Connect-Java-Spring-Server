@@ -20,15 +20,12 @@ import java.util.Date;
 import java.util.UUID;
 
 import org.mitre.jwt.signer.service.JWTSigningAndValidationService;
-import org.mitre.jwt.signer.service.impl.JWKSetCacheService;
-import org.mitre.jwt.signer.service.impl.SymmetricKeyJWTValidatorCacheService;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.SystemScopeService;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.mitre.openid.connect.model.UserInfo;
-import org.mitre.openid.connect.service.ApprovedSiteService;
 import org.mitre.openid.connect.service.OIDCTokenService;
 import org.mitre.openid.connect.service.UserInfoService;
 import org.slf4j.Logger;
@@ -67,20 +64,10 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 	private ClientDetailsEntityService clientService;
 
 	@Autowired
-	private ApprovedSiteService approvedSiteService;
-
-	@Autowired
 	private UserInfoService userInfoService;
 
 	@Autowired
 	private OIDCTokenService connectTokenService;
-
-	@Autowired
-	private JWKSetCacheService encryptors;
-
-	@Autowired
-	private SymmetricKeyJWTValidatorCacheService symmetricCacheService;
-
 
 	@Override
 	public OAuth2AccessToken enhance(OAuth2AccessToken accessToken,	OAuth2Authentication authentication) {
@@ -98,12 +85,12 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 				.expirationTime(token.getExpiration())
 				.subject(authentication.getName())
 				.jwtID(UUID.randomUUID().toString()); // set a random NONCE in the middle of it
-		
+
 		String audience = (String) authentication.getOAuth2Request().getExtensions().get("aud");
 		if (!Strings.isNullOrEmpty(audience)) {
 			builder.audience(Lists.newArrayList(audience));
 		}
-		
+
 		JWTClaimsSet claims = builder.build();
 
 		JWSAlgorithm signingAlg = jwtService.getDefaultSigningAlgorithm();
@@ -121,7 +108,7 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 		 * may or may not include the scope parameter. As long as the AuthorizationRequest
 		 * has the proper scope, we can consider this a valid OpenID Connect request. Otherwise,
 		 * we consider it to be a vanilla OAuth2 request.
-		 * 
+		 *
 		 * Also, there must be a user authentication involved in the request for it to be considered
 		 * OIDC and not OAuth, so we check for that as well.
 		 */
@@ -171,6 +158,6 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 	public void setClientService(ClientDetailsEntityService clientService) {
 		this.clientService = clientService;
 	}
-	
+
 
 }

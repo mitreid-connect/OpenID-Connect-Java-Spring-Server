@@ -33,7 +33,7 @@ public class AuthorizationPendingException extends OAuth2Exception {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = -7078098692596870940L;
 
@@ -45,6 +45,6 @@ public class AuthorizationPendingException extends OAuth2Exception {
 		return "authorization_pending";
 	}
 
-	
-	
+
+
 }

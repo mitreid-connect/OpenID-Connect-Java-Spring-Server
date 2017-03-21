@@ -15,14 +15,14 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.openid.connect.client.model;
 
 /**
- * 
+ *
  * Data container to facilitate returns from the IssuerService API.
- * 
+ *
  * @author jricher
  *
  */

@@ -15,7 +15,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.openid.connect.client;
 
@@ -24,9 +24,9 @@ import org.springframework.security.core.GrantedAuthority;
 import com.google.common.base.Strings;
 
 /**
- * 
+ *
  * Simple authority representing a user at an issuer.
- * 
+ *
  * @author jricher
  *
  */
@@ -51,9 +51,9 @@ public class SubjectIssuerGrantedAuthority implements GrantedAuthority {
 
 	/**
 	 * Returns a string formed by concatenating the subject with the issuer, separated by _ and prepended with OIDC_
-	 * 
+	 *
 	 * For example, the user "bob" from issuer "http://id.example.com/" would return the authority string of:
-	 * 
+	 *
 	 * OIDC_bob_http://id.example.com/
 	 */
 	@Override

@@ -15,7 +15,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.openid.connect.client.service.impl;
 
@@ -28,7 +28,7 @@ import org.mitre.openid.connect.config.ServerConfiguration;
 
 /**
  * Statically configured server configuration service that maps issuer URLs to server configurations to use at that issuer.
- * 
+ *
  * @author jricher
  *
  */

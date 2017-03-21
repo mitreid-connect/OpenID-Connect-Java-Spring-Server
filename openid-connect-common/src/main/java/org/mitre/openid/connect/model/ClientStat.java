@@ -38,5 +38,5 @@ public class ClientStat {
 	public void setApprovedSiteCount(Integer count) {
 		this.approvedSiteCount = count;
 	}
-	
+
 }

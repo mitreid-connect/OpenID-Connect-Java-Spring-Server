@@ -15,7 +15,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.openid.connect.web;
 
@@ -37,7 +37,7 @@ import org.springframework.stereotype.Component;
 /**
  * This class sets a timestamp on the current HttpSession
  * when someone successfully authenticates.
- * 
+ *
  * @author jricher
  *
  */

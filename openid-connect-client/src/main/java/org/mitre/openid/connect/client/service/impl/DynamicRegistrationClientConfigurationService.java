@@ -15,7 +15,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.openid.connect.client.service.impl;
 
@@ -164,10 +164,10 @@ public class DynamicRegistrationClientConfigurationService implements ClientConf
 
 	/**
 	 * Loader class that fetches the client information.
-	 * 
+	 *
 	 * If a client has been registered (ie, it's known to the RegisteredClientService), then this
 	 * will fetch the client's configuration from the server.
-	 * 
+	 *
 	 * @author jricher
 	 *
 	 */
@@ -203,12 +203,12 @@ public class DynamicRegistrationClientConfigurationService implements ClientConf
 
 				try {
 					String registered = restTemplate.postForObject(serverConfig.getRegistrationEndpointUri(), entity, String.class);
-	
+
 					RegisteredClient client = ClientDetailsEntityJsonProcessor.parseRegistered(registered);
-	
+
 					// save this client for later
 					registeredClientService.save(serverConfig.getIssuer(), client);
-	
+
 					return client;
 				} catch (RestClientException rce) {
 					throw new InvalidClientException("Error registering client with server");
@@ -227,9 +227,9 @@ public class DynamicRegistrationClientConfigurationService implements ClientConf
 					try {
 						String registered = restTemplate.exchange(knownClient.getRegistrationClientUri(), HttpMethod.GET, entity, String.class).getBody();
 						// TODO: handle HTTP errors
-	
+
 						RegisteredClient client = ClientDetailsEntityJsonProcessor.parseRegistered(registered);
-	
+
 						return client;
 					} catch (RestClientException rce) {
 						throw new InvalidClientException("Error loading previously registered client information from server");

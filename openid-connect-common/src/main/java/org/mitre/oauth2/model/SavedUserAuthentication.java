@@ -40,7 +40,7 @@ import org.springframework.security.core.GrantedAuthority;
 
 /**
  * This class stands in for an original Authentication object.
- * 
+ *
  * @author jricher
  *
  */

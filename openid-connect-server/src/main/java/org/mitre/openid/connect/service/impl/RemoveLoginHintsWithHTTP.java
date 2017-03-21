@@ -23,7 +23,7 @@ import com.google.common.base.Strings;
 
 /**
  * Passes login hints that don't start with "http"
- * 
+ *
  * @author jricher
  *
  */

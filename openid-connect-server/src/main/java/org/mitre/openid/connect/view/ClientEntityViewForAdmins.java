@@ -15,7 +15,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.openid.connect.view;
 
@@ -29,9 +29,9 @@ import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 
 /**
- * 
+ *
  * View bean for full view of client entity, for admins.
- * 
+ *
  * @see ClientEntityViewForUsers
  * @author jricher
  *

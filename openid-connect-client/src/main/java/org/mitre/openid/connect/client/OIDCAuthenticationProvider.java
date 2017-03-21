@@ -34,7 +34,7 @@ import com.nimbusds.jwt.JWT;
 
 /**
  * @author nemonik, Justin Richer
- * 
+ *
  */
 public class OIDCAuthenticationProvider implements AuthenticationProvider {
 
@@ -46,7 +46,7 @@ public class OIDCAuthenticationProvider implements AuthenticationProvider {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.springframework.security.authentication.AuthenticationProvider#
 	 * authenticate(org.springframework.security.core.Authentication)
 	 */
@@ -86,7 +86,7 @@ public class OIDCAuthenticationProvider implements AuthenticationProvider {
 	/**
 	 * Override this function to return a different kind of Authentication, processes the authorities differently,
 	 * or do post-processing based on the UserInfo object.
-	 * 
+	 *
 	 * @param token
 	 * @param authorities
 	 * @param userInfo
@@ -115,7 +115,7 @@ public class OIDCAuthenticationProvider implements AuthenticationProvider {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.springframework.security.authentication.AuthenticationProvider#supports
 	 * (java.lang.Class)

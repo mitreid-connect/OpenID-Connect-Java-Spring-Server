@@ -15,7 +15,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.oauth2.web;
 
@@ -30,11 +30,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
- * 
+ *
  * Implements Cross-Origin Resource Sharing (CORS) headers. This filter adds the CORS
  * headers to all requests that pass through it, and as such it should be used only
  * on endpoints that require CORS support.
- * 
+ *
  * @author jricher
  *
  */

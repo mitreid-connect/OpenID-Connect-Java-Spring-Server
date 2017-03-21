@@ -15,7 +15,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.oauth2.repository.impl;
 
@@ -35,7 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * JPA AuthorizationCodeRepository implementation.
- * 
+ *
  * @author aanganes
  *
  */
@@ -92,12 +92,12 @@ public class JpaAuthorizationCodeRepository implements AuthorizationCodeReposito
 	}
 
 
-    @Override
-    public Collection<AuthorizationCodeEntity> getExpiredCodes(PageCriteria pageCriteria) {
-        TypedQuery<AuthorizationCodeEntity> query = manager.createNamedQuery(AuthorizationCodeEntity.QUERY_EXPIRATION_BY_DATE, AuthorizationCodeEntity.class);
-        query.setParameter(AuthorizationCodeEntity.PARAM_DATE, new Date()); // this gets anything that's already expired
-        return JpaUtil.getResultPage(query, pageCriteria);
-    }
+	@Override
+	public Collection<AuthorizationCodeEntity> getExpiredCodes(PageCriteria pageCriteria) {
+		TypedQuery<AuthorizationCodeEntity> query = manager.createNamedQuery(AuthorizationCodeEntity.QUERY_EXPIRATION_BY_DATE, AuthorizationCodeEntity.class);
+		query.setParameter(AuthorizationCodeEntity.PARAM_DATE, new Date()); // this gets anything that's already expired
+		return JpaUtil.getResultPage(query, pageCriteria);
+	}
 
 
 

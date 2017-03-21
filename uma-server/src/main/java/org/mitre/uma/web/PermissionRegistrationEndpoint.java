@@ -17,6 +17,10 @@
 
 package org.mitre.uma.web;
 
+import static org.mitre.oauth2.web.AuthenticationUtilities.ensureOAuthScope;
+import static org.mitre.util.JsonUtils.getAsLong;
+import static org.mitre.util.JsonUtils.getAsStringSet;
+
 import java.util.Set;
 
 import org.mitre.oauth2.model.SystemScope;
@@ -44,10 +48,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
-
-import static org.mitre.oauth2.web.AuthenticationUtilities.ensureOAuthScope;
-import static org.mitre.util.JsonUtils.getAsLong;
-import static org.mitre.util.JsonUtils.getAsStringSet;
 
 /**
  * @author jricher

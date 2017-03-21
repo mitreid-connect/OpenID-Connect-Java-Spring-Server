@@ -57,9 +57,9 @@ import com.nimbusds.jose.Algorithm;
 import com.nimbusds.jose.JWSAlgorithm;
 
 /**
- * 
+ *
  * Handle OpenID Connect Discovery.
- * 
+ *
  * @author jricher
  *
  */
@@ -109,7 +109,7 @@ public class DiscoveryEndpoint {
 		if (!Strings.isNullOrEmpty(rel) && !rel.equals("http://openid.net/specs/connect/1.0/issuer")) {
 			logger.warn("Responding to webfinger request for non-OIDC relation: " + rel);
 		}
-		
+
 		if (!resource.equals(config.getIssuer())) {
 			// it's not the issuer directly, need to check other methods
 
@@ -291,16 +291,16 @@ public class DiscoveryEndpoint {
 			baseUrl = baseUrl.concat("/");
 		}
 
-		Collection<JWSAlgorithm> serverSigningAlgs = signService.getAllSigningAlgsSupported();
-		Collection<JWSAlgorithm> clientSymmetricSigningAlgs = Lists.newArrayList(JWSAlgorithm.HS256, JWSAlgorithm.HS384, JWSAlgorithm.HS512);
-		Collection<JWSAlgorithm> clientSymmetricAndAsymmetricSigningAlgs = Lists.newArrayList(JWSAlgorithm.HS256, JWSAlgorithm.HS384, JWSAlgorithm.HS512, 
-				JWSAlgorithm.RS256, JWSAlgorithm.RS384, JWSAlgorithm.RS512, 
-				JWSAlgorithm.ES256, JWSAlgorithm.ES384, JWSAlgorithm.ES512, 
+		signService.getAllSigningAlgsSupported();
+		Lists.newArrayList(JWSAlgorithm.HS256, JWSAlgorithm.HS384, JWSAlgorithm.HS512);
+		Collection<JWSAlgorithm> clientSymmetricAndAsymmetricSigningAlgs = Lists.newArrayList(JWSAlgorithm.HS256, JWSAlgorithm.HS384, JWSAlgorithm.HS512,
+				JWSAlgorithm.RS256, JWSAlgorithm.RS384, JWSAlgorithm.RS512,
+				JWSAlgorithm.ES256, JWSAlgorithm.ES384, JWSAlgorithm.ES512,
 				JWSAlgorithm.PS256, JWSAlgorithm.PS384, JWSAlgorithm.PS512);
-		Collection<Algorithm> clientSymmetricAndAsymmetricSigningAlgsWithNone = Lists.newArrayList(JWSAlgorithm.HS256, JWSAlgorithm.HS384, JWSAlgorithm.HS512, 
-				JWSAlgorithm.RS256, JWSAlgorithm.RS384, JWSAlgorithm.RS512, 
-				JWSAlgorithm.ES256, JWSAlgorithm.ES384, JWSAlgorithm.ES512, 
-				JWSAlgorithm.PS256, JWSAlgorithm.PS384, JWSAlgorithm.PS512, 
+		Collection<Algorithm> clientSymmetricAndAsymmetricSigningAlgsWithNone = Lists.newArrayList(JWSAlgorithm.HS256, JWSAlgorithm.HS384, JWSAlgorithm.HS512,
+				JWSAlgorithm.RS256, JWSAlgorithm.RS384, JWSAlgorithm.RS512,
+				JWSAlgorithm.ES256, JWSAlgorithm.ES384, JWSAlgorithm.ES512,
+				JWSAlgorithm.PS256, JWSAlgorithm.PS384, JWSAlgorithm.PS512,
 				Algorithm.NONE);
 		ArrayList<String> grantTypes = Lists.newArrayList("authorization_code", "implicit", "urn:ietf:params:oauth:grant-type:jwt-bearer", "client_credentials", "urn:ietf:params:oauth:grant_type:redelegate", "urn:ietf:params:oauth:grant-type:device_code");
 
@@ -369,7 +369,7 @@ public class DiscoveryEndpoint {
 		m.put("code_challenge_methods_supported", Lists.newArrayList(PKCEAlgorithm.plain.getName(), PKCEAlgorithm.S256.getName()));
 
 		m.put("device_authorization_endpoint", DeviceEndpoint.URL);
-		
+
 		model.addAttribute(JsonEntityView.ENTITY, m);
 
 		return JsonEntityView.VIEWNAME;

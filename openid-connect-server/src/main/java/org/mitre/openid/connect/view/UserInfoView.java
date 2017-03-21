@@ -85,7 +85,7 @@ public class UserInfoView extends AbstractView {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.springframework.web.servlet.view.AbstractView#renderMergedOutputModel
 	 * (java.util.Map, javax.servlet.http.HttpServletRequest,
@@ -129,10 +129,10 @@ public class UserInfoView extends AbstractView {
 
 	/**
 	 * Build a JSON response according to the request object received.
-	 * 
+	 *
 	 * Claims requested in requestObj.userinfo.claims are added to any
 	 * claims corresponding to requested scopes, if any.
-	 * 
+	 *
 	 * @param ui the UserInfo to filter
 	 * @param scope the allowed scopes to filter by
 	 * @param authorizedClaims the claims authorized by the client or user
@@ -169,7 +169,7 @@ public class UserInfoView extends AbstractView {
 	}
 
 	/**
-	 * Pull the claims that have been targeted into a set for processing. 
+	 * Pull the claims that have been targeted into a set for processing.
 	 * Returns an empty set if the input is null.
 	 * @param claims the claims request to process
 	 */

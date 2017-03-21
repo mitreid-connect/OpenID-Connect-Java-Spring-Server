@@ -15,7 +15,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.openid.connect;
 
@@ -95,7 +95,7 @@ import static org.mitre.oauth2.model.RegisteredClientFields.USERINFO_SIGNED_RESP
 
 /**
  * Utility class to handle the parsing and serialization of ClientDetails objects.
- * 
+ *
  * @author jricher
  *
  */
@@ -104,11 +104,11 @@ public class ClientDetailsEntityJsonProcessor {
 	private static Logger logger = LoggerFactory.getLogger(ClientDetailsEntityJsonProcessor.class);
 
 	private static JsonParser parser = new JsonParser();
-	
+
 	/**
-	 * 
+	 *
 	 * Create an unbound ClientDetailsEntity from the given JSON string.
-	 * 
+	 *
 	 * @param jsonString
 	 * @return the entity if successful, null otherwise
 	 */
@@ -205,26 +205,26 @@ public class ClientDetailsEntityJsonProcessor {
 			c.setRequestUris(getAsStringSet(o, REQUEST_URIS));
 
 			c.setClaimsRedirectUris(getAsStringSet(o, CLAIMS_REDIRECT_URIS));
-			
+
 			c.setCodeChallengeMethod(getAsPkceAlgorithm(o, CODE_CHALLENGE_METHOD));
-			
+
 			c.setSoftwareId(getAsString(o, SOFTWARE_ID));
 			c.setSoftwareVersion(getAsString(o, SOFTWARE_VERSION));
-			
+
 			// note that this does not process or validate the software statement, that's handled in other components
 			String softwareStatement = getAsString(o,  SOFTWARE_STATEMENT);
 			if (!Strings.isNullOrEmpty(softwareStatement)) {
 				try {
-						JWT softwareStatementJwt = JWTParser.parse(softwareStatement);
-						c.setSoftwareStatement(softwareStatementJwt);
+					JWT softwareStatementJwt = JWTParser.parse(softwareStatement);
+					c.setSoftwareStatement(softwareStatementJwt);
 				} catch (ParseException e) {
 					logger.warn("Error parsing software statement", e);
 					return null;
 				}
 			}
-			
-			
-			
+
+
+
 			return c;
 		} else {
 			return null;
@@ -345,18 +345,18 @@ public class ClientDetailsEntityJsonProcessor {
 			o.addProperty(INITIATE_LOGIN_URI, c.getInitiateLoginUri());
 			o.add(POST_LOGOUT_REDIRECT_URIS, getAsArray(c.getPostLogoutRedirectUris()));
 			o.add(REQUEST_URIS, getAsArray(c.getRequestUris()));
-			
+
 			o.add(CLAIMS_REDIRECT_URIS, getAsArray(c.getClaimsRedirectUris()));
-			
+
 			o.addProperty(CODE_CHALLENGE_METHOD, c.getCodeChallengeMethod() != null ? c.getCodeChallengeMethod().getName() : null);
-			
+
 			o.addProperty(SOFTWARE_ID, c.getSoftwareId());
 			o.addProperty(SOFTWARE_VERSION, c.getSoftwareVersion());
-			
+
 			if (c.getSoftwareStatement() != null) {
 				o.addProperty(SOFTWARE_STATEMENT, c.getSoftwareStatement().serialize());
 			}
-			
+
 			return o;
 		}
 

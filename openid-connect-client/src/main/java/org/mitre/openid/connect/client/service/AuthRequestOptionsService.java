@@ -15,7 +15,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.openid.connect.client.service;
 
@@ -27,11 +27,11 @@ import org.mitre.oauth2.model.RegisteredClient;
 import org.mitre.openid.connect.config.ServerConfiguration;
 
 /**
- * 
+ *
  * This service provides any extra options that need to be passed to the authentication request,
  * either through the authorization endpoint (getOptions) or the token endpoint (getTokenOptions).
  * These options may depend on the server configuration, client configuration, or HTTP request.
- * 
+ *
  * @author jricher
  *
  */
@@ -39,7 +39,7 @@ public interface AuthRequestOptionsService {
 
 	/**
 	 * The set of options needed at the authorization endpoint.
-	 * 
+	 *
 	 * @param server
 	 * @param client
 	 * @param request
@@ -49,7 +49,7 @@ public interface AuthRequestOptionsService {
 
 	/**
 	 * The set of options needed at the token endpoint.
-	 * 
+	 *
 	 * @param server
 	 * @param client
 	 * @param request

@@ -26,8 +26,13 @@ import com.nimbusds.jose.Requirement;
  */
 public final class PKCEAlgorithm extends Algorithm {
 
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 7752852583210088925L;
+
 	public static final PKCEAlgorithm plain = new PKCEAlgorithm("plain", Requirement.REQUIRED);
-	
+
 	public static final PKCEAlgorithm S256 = new PKCEAlgorithm("S256", Requirement.OPTIONAL);
 
 	public PKCEAlgorithm(String name, Requirement req) {
@@ -37,7 +42,7 @@ public final class PKCEAlgorithm extends Algorithm {
 	public PKCEAlgorithm(String name) {
 		super(name, null);
 	}
-	
+
 	public static PKCEAlgorithm parse(final String s) {
 		if (s.equals(plain.getName())) {
 			return plain;
@@ -47,7 +52,7 @@ public final class PKCEAlgorithm extends Algorithm {
 			return new PKCEAlgorithm(s);
 		}
 	}
-	
-	
-	
+
+
+
 }

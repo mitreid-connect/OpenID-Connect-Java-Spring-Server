@@ -15,7 +15,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.openid.connect.view;
 
@@ -99,11 +99,11 @@ public class UserInfoJWTView extends UserInfoView {
 			response.setContentType(JOSE_MEDIA_TYPE_VALUE);
 
 			JWTClaimsSet claims = new JWTClaimsSet.Builder(JWTClaimsSet.parse(writer.toString()))
-				.audience(Lists.newArrayList(client.getClientId()))
-				.issuer(config.getIssuer())
-				.issueTime(new Date())
-				.jwtID(UUID.randomUUID().toString()) // set a random NONCE in the middle of it
-				.build();
+					.audience(Lists.newArrayList(client.getClientId()))
+					.issuer(config.getIssuer())
+					.issueTime(new Date())
+					.jwtID(UUID.randomUUID().toString()) // set a random NONCE in the middle of it
+					.build();
 
 
 			if (client.getUserInfoEncryptedResponseAlg() != null && !client.getUserInfoEncryptedResponseAlg().equals(Algorithm.NONE)

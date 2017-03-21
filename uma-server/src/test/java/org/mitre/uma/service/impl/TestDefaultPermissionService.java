@@ -17,6 +17,8 @@
 
 package org.mitre.uma.service.impl;
 
+import static org.mockito.Matchers.anySetOf;
+
 import java.util.Set;
 import java.util.UUID;
 
@@ -40,8 +42,6 @@ import com.google.common.collect.ImmutableSet;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
-
-import static org.mockito.Matchers.anySetOf;
 
 import static org.mockito.Mockito.when;
 

@@ -15,7 +15,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.oauth2.service.impl;
 
@@ -31,10 +31,10 @@ import org.springframework.stereotype.Component;
 import com.google.common.base.Strings;
 
 /**
- * 
+ *
  * A redirect resolver that knows how to check against the blacklisted URIs
  * for forbidden values. Can be configured to do strict string matching also.
- * 
+ *
  * @author jricher
  *
  */
@@ -46,7 +46,7 @@ public class BlacklistAwareRedirectResolver extends DefaultRedirectResolver {
 
 	@Autowired
 	private ConfigurationPropertiesBean config;
-	
+
 	private boolean strictMatch = false;
 
 	/* (non-Javadoc)
@@ -94,7 +94,7 @@ public class BlacklistAwareRedirectResolver extends DefaultRedirectResolver {
 
 	/**
 	 * Set this to true to require exact string matches for all redirect URIs. (Default is false)
-	 * 
+	 *
 	 * @param strictMatch the strictMatch to set
 	 */
 	public void setStrictMatch(boolean strictMatch) {

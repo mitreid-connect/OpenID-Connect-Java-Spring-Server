@@ -64,7 +64,7 @@ import com.nimbusds.jwt.PlainJWT;
 import com.nimbusds.jwt.SignedJWT;
 /**
  * Default implementation of service to create specialty OpenID Connect tokens.
- * 
+ *
  * @author Amanda Anganes
  *
  */
@@ -271,12 +271,12 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 		token.setAuthenticationHolder(authHolder);
 
 		JWTClaimsSet claims = new JWTClaimsSet.Builder()
-			.audience(Lists.newArrayList(client.getClientId()))
-			.issuer(configBean.getIssuer())
-			.issueTime(new Date())
-			.expirationTime(token.getExpiration())
-			.jwtID(UUID.randomUUID().toString()) // set a random NONCE in the middle of it
-			.build();
+				.audience(Lists.newArrayList(client.getClientId()))
+				.issuer(configBean.getIssuer())
+				.issueTime(new Date())
+				.expirationTime(token.getExpiration())
+				.jwtID(UUID.randomUUID().toString()) // set a random NONCE in the middle of it
+				.build();
 
 		JWSAlgorithm signingAlg = jwtService.getDefaultSigningAlgorithm();
 		JWSHeader header = new JWSHeader(signingAlg, null, null, null, null, null, null, null, null, null,

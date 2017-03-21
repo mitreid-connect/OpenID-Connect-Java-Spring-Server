@@ -15,7 +15,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.openid.connect.client.service.impl;
 
@@ -29,11 +29,11 @@ import org.mitre.openid.connect.config.ServerConfiguration;
  * Houses both a static server configuration and a dynamic server configuration
  * service in one object. Checks the static service first, then falls through to
  * the dynamic service.
- * 
+ *
  * Provides configuration passthrough to the dynamic service's whitelist and blacklist,
  * and to the static service's server map.
- * 
- * 
+ *
+ *
  * @author jricher
  *
  */

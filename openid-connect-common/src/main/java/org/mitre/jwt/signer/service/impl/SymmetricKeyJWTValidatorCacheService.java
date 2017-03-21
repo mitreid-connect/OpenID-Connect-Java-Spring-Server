@@ -41,7 +41,7 @@ import com.nimbusds.jose.util.Base64URL;
 
 /**
  * Creates and caches symmetrical validators for clients based on client secrets.
- * 
+ *
  * @author jricher
  *
  */
@@ -66,7 +66,7 @@ public class SymmetricKeyJWTValidatorCacheService {
 
 	/**
 	 * Create a symmetric signing and validation service for the given client
-	 * 
+	 *
 	 * @param client
 	 * @return
 	 */

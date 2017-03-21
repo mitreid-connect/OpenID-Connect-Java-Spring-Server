@@ -16,6 +16,8 @@
  *******************************************************************************/
 package org.mitre.openid.connect.repository.impl;
 
+import static org.mitre.util.jpa.JpaUtil.getSingleResult;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -25,11 +27,9 @@ import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.repository.UserInfoRepository;
 import org.springframework.stereotype.Repository;
 
-import static org.mitre.util.jpa.JpaUtil.getSingleResult;
-
 /**
  * JPA UserInfo repository implementation
- * 
+ *
  * @author Michael Joseph Walsh
  *
  */

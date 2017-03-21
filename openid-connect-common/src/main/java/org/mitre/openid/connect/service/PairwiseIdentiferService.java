@@ -15,7 +15,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.openid.connect.service;
 
@@ -30,9 +30,9 @@ public interface PairwiseIdentiferService {
 
 	/**
 	 * Calcualtes the pairwise identifier for the given userinfo object and client.
-	 * 
+	 *
 	 * Returns 'null' if no identifer could be calculated.
-	 * 
+	 *
 	 * @param userInfo
 	 * @param client
 	 * @return

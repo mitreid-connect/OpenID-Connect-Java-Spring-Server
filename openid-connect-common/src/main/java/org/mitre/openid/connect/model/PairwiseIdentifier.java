@@ -15,7 +15,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.openid.connect.model;
 
@@ -30,9 +30,9 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 /**
- * 
+ *
  * Holds the generated pairwise identifiers for a user. Can be tied to either a client ID or a sector identifier URL.
- * 
+ *
  * @author jricher
  *
  */

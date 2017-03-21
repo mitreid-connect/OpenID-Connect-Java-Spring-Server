@@ -54,10 +54,10 @@ public class JsonMessageSource extends AbstractMessageSource {
 	private Locale fallbackLocale = new Locale("en"); // US English is the fallback language
 
 	private Map<Locale, List<JsonObject>> languageMaps = new HashMap<>();
-	
+
 	@Autowired
 	private ConfigurationPropertiesBean config;
-	
+
 	@Override
 	protected MessageFormat resolveCode(String code, Locale locale) {
 
@@ -78,7 +78,7 @@ public class JsonMessageSource extends AbstractMessageSource {
 			// otherwise format the message
 			return new MessageFormat(value, locale);
 		}
-	
+
 	}
 
 	/**
@@ -92,7 +92,7 @@ public class JsonMessageSource extends AbstractMessageSource {
 			// no language maps, nothing to look up
 			return null;
 		}
-		
+
 		for (JsonObject lang : langs) {
 			String value = getValue(code, lang);
 			if (value != null) {
@@ -100,11 +100,11 @@ public class JsonMessageSource extends AbstractMessageSource {
 				return value;
 			}
 		}
-		
+
 		// if we didn't find anything return null
 		return null;
 	}
-	
+
 	/**
 	 * Get a value from a single map
 	 * @param code
@@ -165,21 +165,21 @@ public class JsonMessageSource extends AbstractMessageSource {
 				for (String namespace : config.getLanguageNamespaces()) {
 					// full locale string, e.g. "en_US"
 					String filename = locale.getLanguage() + "_" + locale.getCountry() + File.separator + namespace + ".json";
-					
+
 					Resource r = getBaseDirectory().createRelative(filename);
-					
+
 					if (!r.exists()) {
 						// fallback to language only
 						logger.debug("Fallback locale to language only.");
 						filename = locale.getLanguage() + File.separator + namespace + ".json";
 						r = getBaseDirectory().createRelative(filename);
 					}
-					
+
 					logger.info("No locale loaded, trying to load from " + r);
-					
+
 					JsonParser parser = new JsonParser();
 					JsonObject obj = (JsonObject) parser.parse(new InputStreamReader(r.getInputStream(), "UTF-8"));
-					
+
 					set.add(obj);
 				}
 				languageMaps.put(locale, set);

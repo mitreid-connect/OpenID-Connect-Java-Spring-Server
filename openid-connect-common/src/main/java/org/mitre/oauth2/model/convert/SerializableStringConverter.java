@@ -30,9 +30,9 @@ import org.slf4j.LoggerFactory;
  * Translates a Serializable object of certain primitive types
  * into a String for storage in the database, for use with the
  * OAuth2Request extensions map.
- * 
+ *
  * This class does allow some extension data to be lost.
- * 
+ *
  * @author jricher
  *
  */

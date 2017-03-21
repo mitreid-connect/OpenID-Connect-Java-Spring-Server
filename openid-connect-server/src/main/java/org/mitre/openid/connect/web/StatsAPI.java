@@ -54,16 +54,16 @@ public class StatsAPI {
 
 	}
 
-//	@PreAuthorize("hasRole('ROLE_USER')")
-//	@RequestMapping(value = "byclientid", produces = MediaType.APPLICATION_JSON_VALUE)
-//	public String statsByClient(ModelMap m) {
-//		Map<Long, Integer> e = statsService.getByClientId();
-//
-//		m.put(JsonEntityView.ENTITY, e);
-//
-//		return JsonEntityView.VIEWNAME;
-//	}
-//
+	//	@PreAuthorize("hasRole('ROLE_USER')")
+	//	@RequestMapping(value = "byclientid", produces = MediaType.APPLICATION_JSON_VALUE)
+	//	public String statsByClient(ModelMap m) {
+	//		Map<Long, Integer> e = statsService.getByClientId();
+	//
+	//		m.put(JsonEntityView.ENTITY, e);
+	//
+	//		return JsonEntityView.VIEWNAME;
+	//	}
+	//
 	@PreAuthorize("hasRole('ROLE_USER')")
 	@RequestMapping(value = "byclientid/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public String statsByClientId(@PathVariable("id") String clientId, ModelMap m) {

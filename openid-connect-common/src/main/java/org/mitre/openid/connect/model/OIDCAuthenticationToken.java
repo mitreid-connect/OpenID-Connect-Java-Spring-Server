@@ -30,9 +30,9 @@ import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTParser;
 
 /**
- * 
+ *
  * @author Michael Walsh, Justin Richer
- * 
+ *
  */
 public class OIDCAuthenticationToken extends AbstractAuthenticationToken {
 
@@ -49,9 +49,9 @@ public class OIDCAuthenticationToken extends AbstractAuthenticationToken {
 
 	/**
 	 * Constructs OIDCAuthenticationToken with a full set of authorities, marking this as authenticated.
-	 * 
+	 *
 	 * Set to authenticated.
-	 * 
+	 *
 	 * Constructs a Principal out of the subject and issuer.
 	 * @param subject
 	 * @param authorities
@@ -78,7 +78,7 @@ public class OIDCAuthenticationToken extends AbstractAuthenticationToken {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.springframework.security.core.Authentication#getCredentials()
 	 */
 	@Override

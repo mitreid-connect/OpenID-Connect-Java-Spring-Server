@@ -39,7 +39,7 @@ import com.google.common.base.Strings;
 
 /**
  * Shim layer to convert a ClientDetails service into a UserDetails service
- * 
+ *
  * @author AANGANES
  *
  */
@@ -53,7 +53,7 @@ public class DefaultClientUserDetailsService implements UserDetailsService {
 
 	@Autowired
 	private ConfigurationPropertiesBean config;
-	
+
 	@Override
 	public UserDetails loadUserByUsername(String clientId) throws  UsernameNotFoundException {
 
@@ -66,7 +66,7 @@ public class DefaultClientUserDetailsService implements UserDetailsService {
 
 				if (config.isHeartMode() || // if we're running HEART mode turn off all client secrets
 						(client.getTokenEndpointAuthMethod() != null &&
-							(client.getTokenEndpointAuthMethod().equals(AuthMethod.PRIVATE_KEY) ||
+						(client.getTokenEndpointAuthMethod().equals(AuthMethod.PRIVATE_KEY) ||
 								client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_JWT)))) {
 
 					// Issue a random password each time to prevent password auth from being used (or skipped)

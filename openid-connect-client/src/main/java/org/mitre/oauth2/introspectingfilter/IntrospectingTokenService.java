@@ -16,6 +16,8 @@
  *******************************************************************************/
 package org.mitre.oauth2.introspectingfilter;
 
+import static org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod.SECRET_BASIC;
+
 import java.io.IOException;
 import java.net.URI;
 import java.util.Calendar;
@@ -53,8 +55,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.nimbusds.jose.util.Base64;
-
-import static org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod.SECRET_BASIC;
 
 /**
  * This ResourceServerTokenServices implementation introspects incoming tokens at a

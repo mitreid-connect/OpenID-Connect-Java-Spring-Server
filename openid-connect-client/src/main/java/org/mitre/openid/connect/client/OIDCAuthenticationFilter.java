@@ -88,9 +88,9 @@ import com.nimbusds.jwt.SignedJWT;
 
 /**
  * OpenID Connect Authentication Filter class
- * 
+ *
  * @author nemonik, jricher
- * 
+ *
  */
 public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
@@ -169,9 +169,9 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 
 	/*
 	 * This is the main entry point for the filter.
-	 * 
+	 *
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.springframework.security.web.authentication.
 	 * AbstractAuthenticationProcessingFilter
 	 * #attemptAuthentication(javax.servlet.http.HttpServletRequest,
@@ -204,7 +204,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 
 	/**
 	 * Initiate an Authorization request
-	 * 
+	 *
 	 * @param request
 	 *            The request from which to extract parameters and perform the
 	 *            authentication
@@ -270,7 +270,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 			String state = createState(session);
 
 			Map<String, String> options = authOptions.getOptions(serverConfig, clientConfig, request);
-			
+
 			// if we're using PKCE, handle the challenge here
 			if (clientConfig.getCodeChallengeMethod() != null) {
 				String codeVerifier = createCodeVerifier(session);
@@ -287,7 +287,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 						e.printStackTrace();
 					}
 
-					
+
 				}
 			}
 
@@ -330,7 +330,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 		form.add("grant_type", "authorization_code");
 		form.add("code", authorizationCode);
 		form.setAll(authOptions.getTokenOptions(serverConfig, clientConfig, request));
-		
+
 		String codeVerifier = getStoredCodeVerifier(session);
 		if (codeVerifier != null) {
 			form.add("code_verifier", codeVerifier);
@@ -345,11 +345,11 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 
 		if(httpClient == null) {
 			httpClient = HttpClientBuilder.create()
-										  .useSystemProperties()
-										  .setDefaultRequestConfig(RequestConfig.custom()
-																				.setSocketTimeout(httpSocketTimeout)
-																				.build())
-										  .build();
+					.useSystemProperties()
+					.setDefaultRequestConfig(RequestConfig.custom()
+							.setSocketTimeout(httpSocketTimeout)
+							.build())
+					.build();
 		}
 
 		HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
@@ -634,7 +634,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 
 	/**
 	 * Handle Authorization Endpoint error
-	 * 
+	 *
 	 * @param request
 	 *            The request from which to extract parameters and handle the
 	 *            error
@@ -708,7 +708,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 	protected static String getStoredState(HttpSession session) {
 		return getStoredSessionString(session, STATE_SESSION_VARIABLE);
 	}
-	
+
 	/**
 	 * Create a random code challenge and store it in the session
 	 * @param session
@@ -719,7 +719,7 @@ public class OIDCAuthenticationFilter extends AbstractAuthenticationProcessingFi
 		session.setAttribute(CODE_VERIFIER_SESSION_VARIABLE, challenge);
 		return challenge;
 	}
-	
+
 	/**
 	 * Retrieve the stored challenge from our session
 	 * @param session

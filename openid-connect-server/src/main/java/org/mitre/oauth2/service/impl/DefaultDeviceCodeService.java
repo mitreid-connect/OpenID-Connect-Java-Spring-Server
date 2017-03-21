@@ -24,7 +24,6 @@ import java.util.Set;
 
 import org.mitre.data.AbstractPageOperationTemplate;
 import org.mitre.oauth2.model.AuthenticationHolderEntity;
-import org.mitre.oauth2.model.AuthorizationCodeEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.DeviceCode;
 import org.mitre.oauth2.repository.impl.DeviceCodeRepository;
@@ -41,24 +40,24 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service("defaultDeviceCodeService")
 public class DefaultDeviceCodeService implements DeviceCodeService {
-	
+
 	@Autowired
 	private DeviceCodeRepository repository;
-	
+
 	/* (non-Javadoc)
 	 * @see org.mitre.oauth2.service.DeviceCodeService#save(org.mitre.oauth2.model.DeviceCode)
 	 */
 	@Override
 	public DeviceCode createNewDeviceCode(String deviceCode, String userCode, Set<String> requestedScopes, ClientDetailsEntity client, Map<String, String> parameters) {
-		
+
 		DeviceCode dc = new DeviceCode(deviceCode, userCode, requestedScopes, client.getClientId(), parameters);
-		
+
 		if (client.getDeviceCodeValiditySeconds() != null) {
 			dc.setExpiration(new Date(System.currentTimeMillis() + client.getDeviceCodeValiditySeconds() * 1000L));
 		}
-		
+
 		dc.setApproved(false);
-		
+
 		return repository.save(dc);
 	}
 
@@ -76,12 +75,12 @@ public class DefaultDeviceCodeService implements DeviceCodeService {
 	@Override
 	public DeviceCode approveDeviceCode(DeviceCode dc, OAuth2Authentication auth) {
 		DeviceCode found = repository.getById(dc.getId());
-		
+
 		found.setApproved(true);
-		
+
 		AuthenticationHolderEntity authHolder = new AuthenticationHolderEntity();
 		authHolder.setAuthentication(auth);
-		
+
 		found.setAuthenticationHolder(authHolder);
 
 		return repository.save(found);
@@ -93,10 +92,10 @@ public class DefaultDeviceCodeService implements DeviceCodeService {
 	@Override
 	public DeviceCode consumeDeviceCode(String deviceCode, ClientDetails client) {
 		DeviceCode found = repository.getByDeviceCode(deviceCode);
-		
+
 		// make sure it's not used twice
 		repository.remove(found);
-		
+
 		if (found.getClientId().equals(client.getClientId())) {
 			// make sure the client matches, if so, we're good
 			return found;
@@ -104,7 +103,7 @@ public class DefaultDeviceCodeService implements DeviceCodeService {
 			// if the clients don't match, pretend the code wasn't found
 			return null;
 		}
-		
+
 	}
 
 	/* (non-Javadoc)
@@ -113,18 +112,18 @@ public class DefaultDeviceCodeService implements DeviceCodeService {
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public void clearExpiredDeviceCodes() {
-		
-        new AbstractPageOperationTemplate<DeviceCode>("clearExpiredDeviceCodes"){
-            @Override
-            public Collection<DeviceCode> fetchPage() {
-                return repository.getExpiredCodes();
-            }
 
-            @Override
-            protected void doOperation(DeviceCode item) {
-                repository.remove(item);
-            }
-        }.execute();
+		new AbstractPageOperationTemplate<DeviceCode>("clearExpiredDeviceCodes"){
+			@Override
+			public Collection<DeviceCode> fetchPage() {
+				return repository.getExpiredCodes();
+			}
+
+			@Override
+			protected void doOperation(DeviceCode item) {
+				repository.remove(item);
+			}
+		}.execute();
 	}
 
 }

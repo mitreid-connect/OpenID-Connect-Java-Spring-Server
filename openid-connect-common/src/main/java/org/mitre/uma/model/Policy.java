@@ -37,7 +37,7 @@ import javax.persistence.Table;
 
 /**
  * A set of claims required to fulfill a given permission.
- * 
+ *
  * @author jricher
  *
  */
@@ -109,9 +109,9 @@ public class Policy {
 	@ElementCollection(fetch = FetchType.EAGER)
 	@Column(name = "scope")
 	@CollectionTable(
-		name = "policy_scope",
-		joinColumns = @JoinColumn(name = "owner_id")
-	)
+			name = "policy_scope",
+			joinColumns = @JoinColumn(name = "owner_id")
+			)
 	public Set<String> getScopes() {
 		return scopes;
 	}

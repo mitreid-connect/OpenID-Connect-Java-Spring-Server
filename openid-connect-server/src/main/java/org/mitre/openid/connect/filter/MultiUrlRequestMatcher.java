@@ -27,8 +27,6 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.Assert;
 
-import com.google.common.collect.ImmutableSet;
-
 /**
  * @author jricher
  *
@@ -43,7 +41,7 @@ public class MultiUrlRequestMatcher implements RequestMatcher {
 			Assert.isTrue(UrlUtils.isValidRedirectUrl(filterProcessesUrl), filterProcessesUrl + " isn't a valid URL");
 			matchers.add(new AntPathRequestMatcher(filterProcessesUrl));
 		}
-		
+
 	}
 
 	@Override
@@ -53,7 +51,7 @@ public class MultiUrlRequestMatcher implements RequestMatcher {
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
 

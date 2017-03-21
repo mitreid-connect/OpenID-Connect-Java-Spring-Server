@@ -15,7 +15,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.openid.connect.client.service.impl;
 
@@ -29,9 +29,9 @@ import org.mitre.openid.connect.client.service.AuthRequestOptionsService;
 import org.mitre.openid.connect.config.ServerConfiguration;
 
 /**
- * 
+ *
  * Always returns the same set of options.
- * 
+ *
  * @author jricher
  *
  */

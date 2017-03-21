@@ -33,7 +33,7 @@ public class MatchLoginHintsAgainstUsers implements LoginHintExtracter {
 
 	@Autowired
 	private UserInfoService userInfoService;
-	
+
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.service.LoginHintTester#useHint(java.lang.String)
 	 */

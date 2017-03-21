@@ -18,7 +18,6 @@
 package org.mitre.oauth2.assertion.impl;
 
 import java.text.ParseException;
-import java.util.List;
 import java.util.Set;
 
 import org.mitre.oauth2.assertion.AssertionOAuth2RequestFactory;
@@ -33,10 +32,10 @@ import com.nimbusds.jwt.JWTClaimsSet;
 
 /**
  * Takes an assertion from a trusted source, looks for the fields:
- * 
+ *
  *  - scope, space-separated list of strings
  *  - aud, array of audience IDs
- * 
+ *
  * @author jricher
  *
  */
@@ -51,14 +50,14 @@ public class DirectCopyRequestFactory implements AssertionOAuth2RequestFactory {
 		try {
 			JWTClaimsSet claims = assertion.getJWTClaimsSet();
 			Set<String> scope = OAuth2Utils.parseParameterList(claims.getStringClaim("scope"));
-			
+
 			Set<String> resources = Sets.newHashSet(claims.getAudience());
-			
+
 			return new OAuth2Request(tokenRequest.getRequestParameters(), client.getClientId(), client.getAuthorities(), true, scope, resources, null, null, null);
 		} catch (ParseException e) {
 			return null;
 		}
-		
+
 	}
 
 }

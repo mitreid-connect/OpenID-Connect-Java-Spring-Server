@@ -15,7 +15,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.openid.connect.client.service.impl;
 
@@ -29,9 +29,9 @@ import org.mitre.openid.connect.config.ServerConfiguration;
 
 /**
  * Client configuration service that holds a static map from issuer URL to a ClientDetails object to use at that issuer.
- * 
+ *
  * Designed to be configured as a bean.
- * 
+ *
  * @author jricher
  *
  */
@@ -56,7 +56,7 @@ public class StaticClientConfigurationService implements ClientConfigurationServ
 
 	/**
 	 * Get the client configured for this issuer
-	 * 
+	 *
 	 * @see org.mitre.openid.connect.client.service.ClientConfigurationService#getClientConfiguration(java.lang.String)
 	 */
 	@Override

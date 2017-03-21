@@ -15,7 +15,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.openid.connect.client;
 
@@ -34,13 +34,13 @@ import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTClaimsSet;
 
 /**
- * 
+ *
  * Simple mapper that adds ROLE_USER to the authorities map for all queries,
  * plus adds ROLE_ADMIN if the subject and issuer pair are found in the
  * configurable "admins" set.
- * 
+ *
  * @author jricher
- * 
+ *
  */
 public class NamedAdminAuthoritiesMapper implements OIDCAuthoritiesMapper {
 

@@ -25,7 +25,7 @@ import com.nimbusds.jwt.JWT;
 
 /**
  * Take in an assertion and token request and generate an OAuth2Request from it, including scopes and other important components
- * 
+ *
  * @author jricher
  *
  */

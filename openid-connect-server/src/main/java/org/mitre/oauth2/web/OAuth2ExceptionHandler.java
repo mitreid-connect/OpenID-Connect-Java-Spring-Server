@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 /**
  * Controller helper that handles OAuth2 exceptions and propagates them as JSON errors.
- * 
+ *
  * @author jricher
  *
  */

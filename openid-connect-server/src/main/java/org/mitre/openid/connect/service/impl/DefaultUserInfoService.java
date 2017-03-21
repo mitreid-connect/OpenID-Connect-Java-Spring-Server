@@ -28,9 +28,9 @@ import org.springframework.stereotype.Service;
 
 /**
  * Implementation of the UserInfoService
- * 
+ *
  * @author Michael Joseph Walsh, jricher
- * 
+ *
  */
 @Service
 public class DefaultUserInfoService implements UserInfoService {

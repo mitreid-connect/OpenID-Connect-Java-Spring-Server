@@ -21,7 +21,7 @@ import java.util.Collection;
 
 /**
  * Data shuttle to return results of the claims processing service.
- * 
+ *
  * @author jricher
  *
  */

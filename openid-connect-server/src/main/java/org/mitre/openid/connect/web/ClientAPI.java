@@ -134,7 +134,7 @@ public class ClientAPI {
 
 	@Autowired
 	private ClientLogoLoadingService clientLogoLoadingService;
-	
+
 	@Autowired
 	@Qualifier("clientAssertionValidator")
 	private AssertionValidator assertionValidator;
@@ -142,76 +142,77 @@ public class ClientAPI {
 	private JsonParser parser = new JsonParser();
 
 	private Gson gson = new GsonBuilder()
-	.serializeNulls()
-	.registerTypeAdapter(JWSAlgorithm.class, new JsonDeserializer<Algorithm>() {
-		@Override
-		public JWSAlgorithm deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-			if (json.isJsonPrimitive()) {
-				return JWSAlgorithm.parse(json.getAsString());
-			} else {
-				return null;
-			}
-		}
-	})
-	.registerTypeAdapter(JWEAlgorithm.class, new JsonDeserializer<Algorithm>() {
-		@Override
-		public JWEAlgorithm deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-			if (json.isJsonPrimitive()) {
-				return JWEAlgorithm.parse(json.getAsString());
-			} else {
-				return null;
-			}
-		}
-	})
-	.registerTypeAdapter(EncryptionMethod.class, new JsonDeserializer<Algorithm>() {
-		@Override
-		public EncryptionMethod deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-			if (json.isJsonPrimitive()) {
-				return EncryptionMethod.parse(json.getAsString());
-			} else {
-				return null;
-			}
-		}
-	})
-	.registerTypeAdapter(JWKSet.class, new JsonDeserializer<JWKSet>() {
-		@Override
-		public JWKSet deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-			if (json.isJsonObject()) {
-				try {
-					return JWKSet.parse(json.toString());
-				} catch (ParseException e) {
-					return null;
+			.serializeNulls()
+			.registerTypeAdapter(JWSAlgorithm.class, new JsonDeserializer<Algorithm>() {
+				@Override
+				public JWSAlgorithm deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+					if (json.isJsonPrimitive()) {
+						return JWSAlgorithm.parse(json.getAsString());
+					} else {
+						return null;
+					}
 				}
-			} else {
-				return null;
-			}
-		}
-	})
-	.registerTypeAdapter(JWT.class, new JsonDeserializer<JWT>() {
-		@Override
-		public JWT deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-			if (json.isJsonPrimitive()) {
-				try {
-					return JWTParser.parse(json.getAsString());
-				} catch (ParseException e) {
-					return null;
+			})
+			.registerTypeAdapter(JWEAlgorithm.class, new JsonDeserializer<Algorithm>() {
+				@Override
+				public JWEAlgorithm deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+					if (json.isJsonPrimitive()) {
+						return JWEAlgorithm.parse(json.getAsString());
+					} else {
+						return null;
+					}
 				}
-			} else {
-				return null;
-			}
-		}
-	})
-	.registerTypeAdapter(PKCEAlgorithm.class, new JsonDeserializer<Algorithm>() {
-		public PKCEAlgorithm deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-			if (json.isJsonPrimitive()) {
-				return PKCEAlgorithm.parse(json.getAsString());
-			} else {
-				return null;
-			}
-		}
-	})
-	.setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
-	.create();
+			})
+			.registerTypeAdapter(EncryptionMethod.class, new JsonDeserializer<Algorithm>() {
+				@Override
+				public EncryptionMethod deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+					if (json.isJsonPrimitive()) {
+						return EncryptionMethod.parse(json.getAsString());
+					} else {
+						return null;
+					}
+				}
+			})
+			.registerTypeAdapter(JWKSet.class, new JsonDeserializer<JWKSet>() {
+				@Override
+				public JWKSet deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+					if (json.isJsonObject()) {
+						try {
+							return JWKSet.parse(json.toString());
+						} catch (ParseException e) {
+							return null;
+						}
+					} else {
+						return null;
+					}
+				}
+			})
+			.registerTypeAdapter(JWT.class, new JsonDeserializer<JWT>() {
+				@Override
+				public JWT deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+					if (json.isJsonPrimitive()) {
+						try {
+							return JWTParser.parse(json.getAsString());
+						} catch (ParseException e) {
+							return null;
+						}
+					} else {
+						return null;
+					}
+				}
+			})
+			.registerTypeAdapter(PKCEAlgorithm.class, new JsonDeserializer<Algorithm>() {
+				@Override
+				public PKCEAlgorithm deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+					if (json.isJsonPrimitive()) {
+						return PKCEAlgorithm.parse(json.getAsString());
+					} else {
+						return null;
+					}
+				}
+			})
+			.setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+			.create();
 
 	/**
 	 * Logger for this class
@@ -508,37 +509,37 @@ public class ClientAPI {
 	 * Get the logo image for a client
 	 * @param id
 	 */
-	 @RequestMapping(value = "/{id}/logo", method=RequestMethod.GET, produces = { MediaType.IMAGE_GIF_VALUE, MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE })
-	 public ResponseEntity<byte[]> getClientLogo(@PathVariable("id") Long id, Model model) {
+	@RequestMapping(value = "/{id}/logo", method=RequestMethod.GET, produces = { MediaType.IMAGE_GIF_VALUE, MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE })
+	public ResponseEntity<byte[]> getClientLogo(@PathVariable("id") Long id, Model model) {
 
-			ClientDetailsEntity client = clientService.getClientById(id);
+		ClientDetailsEntity client = clientService.getClientById(id);
 
-			if (client == null) {
-				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-			} else if (Strings.isNullOrEmpty(client.getLogoUri())) {
-				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-			} else {
-				// get the image from cache
-				CachedImage image = clientLogoLoadingService.getLogo(client);
+		if (client == null) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		} else if (Strings.isNullOrEmpty(client.getLogoUri())) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		} else {
+			// get the image from cache
+			CachedImage image = clientLogoLoadingService.getLogo(client);
 
-				HttpHeaders headers = new HttpHeaders();
-				headers.setContentType(MediaType.parseMediaType(image.getContentType()));
-				headers.setContentLength(image.getLength());
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.parseMediaType(image.getContentType()));
+			headers.setContentLength(image.getLength());
 
-				return new ResponseEntity<>(image.getData(), headers, HttpStatus.OK);
-			}
-	 }
+			return new ResponseEntity<>(image.getData(), headers, HttpStatus.OK);
+		}
+	}
 
-		private ClientDetailsEntity validateSoftwareStatement(ClientDetailsEntity newClient) throws ValidationException {
-			if (newClient.getSoftwareStatement() != null) {
-				if (assertionValidator.isValid(newClient.getSoftwareStatement())) {
-					// we have a software statement and its envelope passed all the checks from our validator
-					
-					// swap out all of the client's fields for the associated parts of the software statement
-					try {
-						JWTClaimsSet claimSet = newClient.getSoftwareStatement().getJWTClaimsSet();
-						for (String claim : claimSet.getClaims().keySet()) {
-							switch (claim) {
+	private ClientDetailsEntity validateSoftwareStatement(ClientDetailsEntity newClient) throws ValidationException {
+		if (newClient.getSoftwareStatement() != null) {
+			if (assertionValidator.isValid(newClient.getSoftwareStatement())) {
+				// we have a software statement and its envelope passed all the checks from our validator
+
+				// swap out all of the client's fields for the associated parts of the software statement
+				try {
+					JWTClaimsSet claimSet = newClient.getSoftwareStatement().getJWTClaimsSet();
+					for (String claim : claimSet.getClaims().keySet()) {
+						switch (claim) {
 							case SOFTWARE_STATEMENT:
 								throw new ValidationException("invalid_client_metadata", "Software statement can't include another software statement", HttpStatus.BAD_REQUEST);
 							case CLAIMS_REDIRECT_URIS:
@@ -610,7 +611,7 @@ public class ClientAPI {
 								newClient.setJwks(JWKSet.parse(claimSet.getStringClaim(claim)));
 								break;
 							case POLICY_URI:
-								newClient.setPolicyUri(claimSet.getStringClaim(claim));							
+								newClient.setPolicyUri(claimSet.getStringClaim(claim));
 								break;
 							case RESPONSE_TYPES:
 								newClient.setResponseTypes(Sets.newHashSet(claimSet.getStringListClaim(claim)));
@@ -650,21 +651,21 @@ public class ClientAPI {
 							default:
 								logger.warn("Software statement contained unknown field: " + claim + " with value " + claimSet.getClaim(claim));
 								break;
-							}
 						}
-						
-						return newClient;
-					} catch (ParseException e) {
-						throw new ValidationException("invalid_client_metadata", "Software statement claims didn't parse", HttpStatus.BAD_REQUEST);
 					}
-				} else {
-					throw new ValidationException("invalid_client_metadata", "Software statement rejected by validator", HttpStatus.BAD_REQUEST);
+
+					return newClient;
+				} catch (ParseException e) {
+					throw new ValidationException("invalid_client_metadata", "Software statement claims didn't parse", HttpStatus.BAD_REQUEST);
 				}
 			} else {
-				// nothing to see here, carry on
-				return newClient;
+				throw new ValidationException("invalid_client_metadata", "Software statement rejected by validator", HttpStatus.BAD_REQUEST);
 			}
-		
+		} else {
+			// nothing to see here, carry on
+			return newClient;
 		}
+
+	}
 
 }

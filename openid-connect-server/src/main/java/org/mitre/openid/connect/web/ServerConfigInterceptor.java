@@ -15,7 +15,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.openid.connect.web;
 
@@ -28,10 +28,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 /**
- * 
+ *
  * Injects the server configuration bean into the request context.
  * This allows JSPs and the like to call "config.logoUrl" among others.
- * 
+ *
  * @author jricher
  *
  */
@@ -39,7 +39,7 @@ public class ServerConfigInterceptor extends HandlerInterceptorAdapter {
 
 	@Autowired
 	private ConfigurationPropertiesBean config;
-	
+
 	@Autowired
 	private UIConfiguration ui;
 

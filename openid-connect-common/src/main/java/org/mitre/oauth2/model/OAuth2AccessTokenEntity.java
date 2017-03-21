@@ -15,7 +15,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.oauth2.model;
 
@@ -41,7 +41,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.Transient;
@@ -113,9 +112,9 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	private Set<String> scope;
 
 	private Set<Permission> permissions;
-	
+
 	private ApprovedSite approvedSite;
-	
+
 	private Map<String, Object> additionalInformation = new HashMap<>(); // ephemeral map of items to be added to the OAuth token response
 
 	/**
@@ -297,7 +296,7 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 			name = "access_token_permissions",
 			joinColumns = @JoinColumn(name = "access_token_id"),
 			inverseJoinColumns = @JoinColumn(name = "permission_id")
-	)
+			)
 	public Set<Permission> getPermissions() {
 		return permissions;
 	}

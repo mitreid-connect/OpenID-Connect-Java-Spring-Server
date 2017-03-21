@@ -15,7 +15,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.openid.connect.service.impl;
 
@@ -26,8 +26,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import org.mitre.oauth2.model.ClientDetailsEntity;
-import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.openid.connect.model.ApprovedSite;
 import org.mitre.openid.connect.model.ClientStat;
 import org.mitre.openid.connect.service.ApprovedSiteService;
@@ -37,8 +35,6 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multiset;
 
 /**
  * @author jricher
@@ -96,10 +92,10 @@ public class DefaultStatsService implements StatsService {
 	public ClientStat getCountForClientId(String clientId) {
 
 		Collection<ApprovedSite> approvedSites = approvedSiteService.getByClientId(clientId);
-		
+
 		ClientStat stat = new ClientStat();
 		stat.setApprovedSiteCount(approvedSites.size());
-		
+
 		return stat;
 	}
 

@@ -24,7 +24,7 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 
 /**
  * Service to create special tokens for UMA.
- * 
+ *
  * @author jricher
  *
  */
@@ -32,7 +32,7 @@ public interface UmaTokenService {
 
 	/**
 	 * Create the RPT from the given authentication and ticket.
-	 * 
+	 *
 	 */
 	public OAuth2AccessTokenEntity createRequestingPartyToken(OAuth2Authentication o2auth, PermissionTicket ticket, Policy policy);
 

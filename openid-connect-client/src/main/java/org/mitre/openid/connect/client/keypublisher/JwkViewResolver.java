@@ -15,7 +15,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.openid.connect.client.keypublisher;
 
@@ -26,9 +26,9 @@ import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 
 /**
- * 
+ *
  * Simple view resolver to map JWK view names to appropriate beans
- * 
+ *
  * @author jricher
  *
  */

@@ -33,7 +33,7 @@ public class DeviceCodeExpiredException extends OAuth2Exception {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = -7078098692596870940L;
 

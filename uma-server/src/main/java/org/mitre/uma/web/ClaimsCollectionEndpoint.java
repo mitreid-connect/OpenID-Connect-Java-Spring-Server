@@ -46,9 +46,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 
 /**
- * 
+ *
  * Collect claims interactively from the end user.
- * 
+ *
  * @author jricher
  *
  */

@@ -15,14 +15,13 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.openid.connect.web;
 
 import java.security.Principal;
 import java.util.Collection;
 
-import org.mitre.oauth2.service.OAuth2TokenEntityService;
 import org.mitre.openid.connect.model.ApprovedSite;
 import org.mitre.openid.connect.service.ApprovedSiteService;
 import org.mitre.openid.connect.view.HttpCodeView;
@@ -55,9 +54,6 @@ public class ApprovedSiteAPI {
 	@Autowired
 	private ApprovedSiteService approvedSiteService;
 
-	@Autowired
-	private OAuth2TokenEntityService tokenServices;
-
 	/**
 	 * Logger for this class
 	 */
@@ -80,7 +76,7 @@ public class ApprovedSiteAPI {
 
 	/**
 	 * Delete an approved site
-	 * 
+	 *
 	 */
 	@RequestMapping(value="/{id}", method = RequestMethod.DELETE)
 	public String deleteApprovedSite(@PathVariable("id") Long id, ModelMap m, Principal p) {

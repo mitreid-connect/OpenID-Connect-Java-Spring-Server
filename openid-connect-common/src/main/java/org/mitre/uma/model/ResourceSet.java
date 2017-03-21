@@ -137,9 +137,9 @@ public class ResourceSet {
 	@ElementCollection(fetch = FetchType.EAGER)
 	@Column(name = "scope")
 	@CollectionTable(
-		name = "resource_set_scope",
-		joinColumns = @JoinColumn(name = "owner_id")
-	)
+			name = "resource_set_scope",
+			joinColumns = @JoinColumn(name = "owner_id")
+			)
 	public Set<String> getScopes() {
 		return scopes;
 	}

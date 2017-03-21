@@ -56,28 +56,28 @@ public class ResourceSetEntityAbbreviatedView extends AbstractView {
 	private ConfigurationPropertiesBean config;
 
 	private Gson gson = new GsonBuilder()
-	.setExclusionStrategies(new ExclusionStrategy() {
+			.setExclusionStrategies(new ExclusionStrategy() {
 
-		@Override
-		public boolean shouldSkipField(FieldAttributes f) {
+				@Override
+				public boolean shouldSkipField(FieldAttributes f) {
 
-			return false;
-		}
+					return false;
+				}
 
-		@Override
-		public boolean shouldSkipClass(Class<?> clazz) {
-			// skip the JPA binding wrapper
-			if (clazz.equals(BeanPropertyBindingResult.class)) {
-				return true;
-			}
-			return false;
-		}
+				@Override
+				public boolean shouldSkipClass(Class<?> clazz) {
+					// skip the JPA binding wrapper
+					if (clazz.equals(BeanPropertyBindingResult.class)) {
+						return true;
+					}
+					return false;
+				}
 
-	})
-	.serializeNulls()
-	.setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
-	.setLongSerializationPolicy(LongSerializationPolicy.STRING)
-	.create();
+			})
+			.serializeNulls()
+			.setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+			.setLongSerializationPolicy(LongSerializationPolicy.STRING)
+			.create();
 
 	@Override
 	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {

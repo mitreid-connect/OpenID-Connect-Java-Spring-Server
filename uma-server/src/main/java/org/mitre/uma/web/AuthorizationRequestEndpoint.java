@@ -23,7 +23,6 @@ import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
 import org.mitre.oauth2.service.SystemScopeService;
 import org.mitre.oauth2.web.AuthenticationUtilities;
-import org.mitre.openid.connect.service.OIDCTokenService;
 import org.mitre.openid.connect.view.HttpCodeView;
 import org.mitre.openid.connect.view.JsonEntityView;
 import org.mitre.openid.connect.view.JsonErrorView;
@@ -73,9 +72,6 @@ public class AuthorizationRequestEndpoint {
 
 	@Autowired
 	private OAuth2TokenEntityService tokenService;
-
-	@Autowired
-	private OIDCTokenService oidcTokenService;
 
 	@Autowired
 	private ClaimsProcessingService claimsProcessingService;

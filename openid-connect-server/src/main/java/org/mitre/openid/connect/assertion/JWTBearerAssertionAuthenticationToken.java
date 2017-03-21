@@ -15,7 +15,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.openid.connect.assertion;
 
@@ -34,7 +34,7 @@ import com.nimbusds.jwt.JWT;
 public class JWTBearerAssertionAuthenticationToken extends AbstractAuthenticationToken {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = -3138213539914074617L;
 	private String subject;

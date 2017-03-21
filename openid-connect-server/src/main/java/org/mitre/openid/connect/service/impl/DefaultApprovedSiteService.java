@@ -39,7 +39,7 @@ import com.google.common.collect.Collections2;
 
 /**
  * Implementation of the ApprovedSiteService
- * 
+ *
  * @author Michael Joseph Walsh, aanganes
  *
  */
@@ -184,8 +184,8 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 	@Override
 	public List<OAuth2AccessTokenEntity> getApprovedAccessTokens(
 			ApprovedSite approvedSite) {
-		return tokenRepository.getAccessTokensForApprovedSite(approvedSite); 
+		return tokenRepository.getAccessTokensForApprovedSite(approvedSite);
 
 	}
-	
+
 }

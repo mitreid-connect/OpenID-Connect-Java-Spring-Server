@@ -15,7 +15,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.openid.connect.service;
 
@@ -34,14 +34,14 @@ public interface StatsService {
 	 *     	approvalCount: total approved sites
 	 *      userCount: unique users
 	 *      clientCount: unique clients
-	 * 
+	 *
 	 * @return
 	 */
 	public Map<String, Integer> getSummaryStats();
 
 	/**
 	 * Calculate the usage count for a single client
-	 * 
+	 *
 	 * @param clientId the id of the client to search on
 	 * @return
 	 */

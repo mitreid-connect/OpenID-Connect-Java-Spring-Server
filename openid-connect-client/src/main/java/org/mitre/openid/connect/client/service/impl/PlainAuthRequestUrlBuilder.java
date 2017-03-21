@@ -15,7 +15,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.openid.connect.client.service.impl;
 
@@ -33,9 +33,9 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 
 /**
- * 
+ *
  * Builds an auth request redirect URI with normal query parameters.
- * 
+ *
  * @author jricher
  *
  */

@@ -59,74 +59,14 @@ import com.google.gson.stream.JsonWriter;
  */
 @Service("umaDataExtension_1_3")
 public class UmaDataServiceExtension_1_3 extends MITREidDataServiceSupport implements MITREidDataServiceExtension {
-	
+
 	private static final String THIS_VERSION = MITREidDataService.MITREID_CONNECT_1_3;
 
 	private static final String REGISTERED_CLIENT = "registeredClient";
-	private static final String DEFAULT_SCOPE = "defaultScope";
-	private static final String STRUCTURED_PARAMETER = "structuredParameter";
-	private static final String STRUCTURED = "structured";
-	private static final String RESTRICTED = "restricted";
-	private static final String ICON = "icon";
-	private static final String DYNAMICALLY_REGISTERED = "dynamicallyRegistered";
-	private static final String CLEAR_ACCESS_TOKENS_ON_REFRESH = "clearAccessTokensOnRefresh";
-	private static final String REUSE_REFRESH_TOKEN = "reuseRefreshToken";
-	private static final String ALLOW_INTROSPECTION = "allowIntrospection";
-	private static final String DESCRIPTION = "description";
-	private static final String REQUEST_URIS = "requestUris";
-	private static final String POST_LOGOUT_REDIRECT_URI = "postLogoutRedirectUri";
-	private static final String INTITATE_LOGIN_URI = "intitateLoginUri";
-	private static final String DEFAULT_ACR_VALUES = "defaultACRValues";
-	private static final String REQUIRE_AUTH_TIME = "requireAuthTime";
-	private static final String DEFAULT_MAX_AGE = "defaultMaxAge";
-	private static final String TOKEN_ENDPOINT_AUTH_SIGNING_ALG = "tokenEndpointAuthSigningAlg";
-	private static final String USER_INFO_ENCRYPTED_RESPONSE_ENC = "userInfoEncryptedResponseEnc";
-	private static final String USER_INFO_ENCRYPTED_RESPONSE_ALG = "userInfoEncryptedResponseAlg";
-	private static final String USER_INFO_SIGNED_RESPONSE_ALG = "userInfoSignedResponseAlg";
-	private static final String ID_TOKEN_ENCRYPTED_RESPONSE_ENC = "idTokenEncryptedResponseEnc";
-	private static final String ID_TOKEN_ENCRYPTED_RESPONSE_ALG = "idTokenEncryptedResponseAlg";
-	private static final String ID_TOKEN_SIGNED_RESPONSE_ALG = "idTokenSignedResponseAlg";
-	private static final String REQUEST_OBJECT_SIGNING_ALG = "requestObjectSigningAlg";
-	private static final String SUBJECT_TYPE = "subjectType";
-	private static final String SECTOR_IDENTIFIER_URI = "sectorIdentifierUri";
-	private static final String APPLICATION_TYPE = "applicationType";
-	private static final String JWKS = "jwks";
-	private static final String JWKS_URI = "jwksUri";
-	private static final String POLICY_URI = "policyUri";
-	private static final String GRANT_TYPES = "grantTypes";
-	private static final String TOKEN_ENDPOINT_AUTH_METHOD = "tokenEndpointAuthMethod";
-	private static final String TOS_URI = "tosUri";
-	private static final String CONTACTS = "contacts";
-	private static final String LOGO_URI = "logoUri";
-	private static final String REDIRECT_URIS = "redirectUris";
-	private static final String REFRESH_TOKEN_VALIDITY_SECONDS = "refreshTokenValiditySeconds";
-	private static final String ACCESS_TOKEN_VALIDITY_SECONDS = "accessTokenValiditySeconds";
-	private static final String SECRET = "secret";
 	private static final String URI = "uri";
-	private static final String CREATOR_USER_ID = "creatorUserId";
-	private static final String APPROVED_ACCESS_TOKENS = "approvedAccessTokens";
-	private static final String ALLOWED_SCOPES = "allowedScopes";
-	private static final String USER_ID = "userId";
-	private static final String TIMEOUT_DATE = "timeoutDate";
-	private static final String CREATION_DATE = "creationDate";
-	private static final String ACCESS_DATE = "accessDate";
-	private static final String AUTHENTICATED = "authenticated";
-	private static final String SOURCE_CLASS = "sourceClass";
 	private static final String NAME = "name";
-	private static final String SAVED_USER_AUTHENTICATION = "savedUserAuthentication";
-	private static final String EXTENSIONS = "extensions";
-	private static final String RESPONSE_TYPES = "responseTypes";
-	private static final String REDIRECT_URI = "redirectUri";
-	private static final String APPROVED = "approved";
-	private static final String AUTHORITIES = "authorities";
-	private static final String RESOURCE_IDS = "resourceIds";
-	private static final String REQUEST_PARAMETERS = "requestParameters";
 	private static final String TYPE = "type";
-	private static final String SCOPE = "scope";
-	private static final String ID_TOKEN_ID = "idTokenId";
-	private static final String REFRESH_TOKEN_ID = "refreshTokenId";
 	private static final String VALUE = "value";
-	private static final String AUTHENTICATION_HOLDER_ID = "authenticationHolderId";
 	private static final String CLIENT_ID = "clientId";
 	private static final String EXPIRATION = "expiration";
 	private static final String ID = "id";
@@ -153,7 +93,7 @@ public class UmaDataServiceExtension_1_3 extends MITREidDataServiceSupport imple
 	private static final Logger logger = LoggerFactory.getLogger(UmaDataServiceExtension_1_3.class);
 
 
-	
+
 	@Autowired
 	private SavedRegisteredClientService registeredClientService;
 	@Autowired
@@ -193,7 +133,7 @@ public class UmaDataServiceExtension_1_3 extends MITREidDataServiceSupport imple
 		writer.beginArray();
 		writePermissionTickets(writer);
 		writer.endArray();
-		
+
 		writer.name(TOKEN_PERMISSIONS);
 		writer.beginArray();
 		writeTokenPermissions(writer);
@@ -202,7 +142,7 @@ public class UmaDataServiceExtension_1_3 extends MITREidDataServiceSupport imple
 
 	/**
 	 * @param writer
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	private void writeTokenPermissions(JsonWriter writer) throws IOException {
 		for (OAuth2AccessTokenEntity token : tokenRepository.getAllAccessTokens()) {
@@ -223,10 +163,10 @@ public class UmaDataServiceExtension_1_3 extends MITREidDataServiceSupport imple
 					writer.endObject();
 				}
 				writer.endArray();
-	
+
 				writer.endObject();
 			}
-		}		
+		}
 	}
 
 	/**
@@ -383,7 +323,7 @@ public class UmaDataServiceExtension_1_3 extends MITREidDataServiceSupport imple
 			return false;
 		}
 	}
-	
+
 	/**
 	 * @param reader
 	 */
@@ -410,25 +350,25 @@ public class UmaDataServiceExtension_1_3 extends MITREidDataServiceSupport imple
 								reader.beginObject();
 								while (reader.hasNext()) {
 									switch (reader.peek()) {
-									case END_OBJECT:
-										continue;
-									case NAME:
-										String pname = reader.nextName();
-										if (reader.peek() == JsonToken.NULL) {
-											reader.skipValue();
-										} else if (pname.equals(RESOURCE_SET)) {
-											rsid = reader.nextLong();
-										} else if (pname.equals(SCOPES)) {
-											scope = readSet(reader);
-										} else {
+										case END_OBJECT:
+											continue;
+										case NAME:
+											String pname = reader.nextName();
+											if (reader.peek() == JsonToken.NULL) {
+												reader.skipValue();
+											} else if (pname.equals(RESOURCE_SET)) {
+												rsid = reader.nextLong();
+											} else if (pname.equals(SCOPES)) {
+												scope = readSet(reader);
+											} else {
+												logger.debug("Found unexpected entry");
+												reader.skipValue();
+											}
+											break;
+										default:
 											logger.debug("Found unexpected entry");
 											reader.skipValue();
-										}
-										break;
-									default:
-										logger.debug("Found unexpected entry");
-										reader.skipValue();
-										continue;
+											continue;
 									}
 								}
 								reader.endObject();
@@ -450,7 +390,7 @@ public class UmaDataServiceExtension_1_3 extends MITREidDataServiceSupport imple
 			tokenToPermissionRefs.put(tokenId, permissions);
 		}
 		reader.endArray();
-		
+
 	}
 
 	private Map<Long, Long> permissionToResourceRefs = new HashMap<>();
@@ -466,99 +406,99 @@ public class UmaDataServiceExtension_1_3 extends MITREidDataServiceSupport imple
 			reader.beginObject();
 			while (reader.hasNext()) {
 				switch (reader.peek()) {
-				case END_OBJECT:
-					continue;
-				case NAME:
-					String name = reader.nextName();
-					if (reader.peek() == JsonToken.NULL) {
-						reader.skipValue();
-					} else if (name.equals(CLAIMS_SUPPLIED)) {
-						Set<Claim> claimsSupplied = new HashSet<>();
-						reader.beginArray();
-						while (reader.hasNext()) {
-							Claim c = new Claim();
+					case END_OBJECT:
+						continue;
+					case NAME:
+						String name = reader.nextName();
+						if (reader.peek() == JsonToken.NULL) {
+							reader.skipValue();
+						} else if (name.equals(CLAIMS_SUPPLIED)) {
+							Set<Claim> claimsSupplied = new HashSet<>();
+							reader.beginArray();
+							while (reader.hasNext()) {
+								Claim c = new Claim();
+								reader.beginObject();
+								while (reader.hasNext()) {
+									switch (reader.peek()) {
+										case END_OBJECT:
+											continue;
+										case NAME:
+											String cname = reader.nextName();
+											if (reader.peek() == JsonToken.NULL) {
+												reader.skipValue();
+											} else if (cname.equals(ISSUER)) {
+												c.setIssuer(readSet(reader));
+											} else if (cname.equals(CLAIM_TOKEN_FORMAT)) {
+												c.setClaimTokenFormat(readSet(reader));
+											} else if (cname.equals(CLAIM_TYPE)) {
+												c.setClaimType(reader.nextString());
+											} else if (cname.equals(FRIENDLY_NAME)) {
+												c.setFriendlyName(reader.nextString());
+											} else if (cname.equals(NAME)) {
+												c.setName(reader.nextString());
+											} else if (cname.equals(VALUE)) {
+												JsonElement e = parser.parse(reader.nextString());
+												c.setValue(e);
+											} else {
+												logger.debug("Found unexpected entry");
+												reader.skipValue();
+											}
+											break;
+										default:
+											logger.debug("Found unexpected entry");
+											reader.skipValue();
+											continue;
+									}
+								}
+								reader.endObject();
+								claimsSupplied.add(c);
+							}
+							reader.endArray();
+							ticket.setClaimsSupplied(claimsSupplied);
+						} else if (name.equals(EXPIRATION)) {
+							ticket.setExpiration(utcToDate(reader.nextString()));
+						} else if (name.equals(PERMISSION)) {
+							Permission p = new Permission();
+							Long rsid = null;
 							reader.beginObject();
 							while (reader.hasNext()) {
 								switch (reader.peek()) {
-								case END_OBJECT:
-									continue;
-								case NAME:
-									String cname = reader.nextName();
-									if (reader.peek() == JsonToken.NULL) {
-										reader.skipValue();
-									} else if (cname.equals(ISSUER)) {
-										c.setIssuer(readSet(reader));
-									} else if (cname.equals(CLAIM_TOKEN_FORMAT)) {
-										c.setClaimTokenFormat(readSet(reader));
-									} else if (cname.equals(CLAIM_TYPE)) {
-										c.setClaimType(reader.nextString());
-									} else if (cname.equals(FRIENDLY_NAME)) {
-										c.setFriendlyName(reader.nextString());
-									} else if (cname.equals(NAME)) {
-										c.setName(reader.nextString());
-									} else if (cname.equals(VALUE)) {
-										JsonElement e = parser.parse(reader.nextString());
-										c.setValue(e);
-									} else {
+									case END_OBJECT:
+										continue;
+									case NAME:
+										String pname = reader.nextName();
+										if (reader.peek() == JsonToken.NULL) {
+											reader.skipValue();
+										} else if (pname.equals(RESOURCE_SET)) {
+											rsid = reader.nextLong();
+										} else if (pname.equals(SCOPES)) {
+											p.setScopes(readSet(reader));
+										} else {
+											logger.debug("Found unexpected entry");
+											reader.skipValue();
+										}
+										break;
+									default:
 										logger.debug("Found unexpected entry");
 										reader.skipValue();
-									}
-									break;
-								default:
-									logger.debug("Found unexpected entry");
-									reader.skipValue();
-									continue;
+										continue;
 								}
 							}
 							reader.endObject();
-							claimsSupplied.add(c);
+							Permission saved = permissionRepository.saveRawPermission(p);
+							permissionToResourceRefs.put(saved.getId(), rsid);
+							ticket.setPermission(saved);
+						} else if (name.equals(TICKET)) {
+							ticket.setTicket(reader.nextString());
+						} else {
+							logger.debug("Found unexpected entry");
+							reader.skipValue();
 						}
-						reader.endArray();
-						ticket.setClaimsSupplied(claimsSupplied);
-					} else if (name.equals(EXPIRATION)) {
-						ticket.setExpiration(utcToDate(reader.nextString()));
-					} else if (name.equals(PERMISSION)) {
-						Permission p = new Permission();
-						Long rsid = null;
-						reader.beginObject();
-						while (reader.hasNext()) {
-							switch (reader.peek()) {
-							case END_OBJECT:
-								continue;
-							case NAME:
-								String pname = reader.nextName();
-								if (reader.peek() == JsonToken.NULL) {
-									reader.skipValue();
-								} else if (pname.equals(RESOURCE_SET)) {
-									rsid = reader.nextLong();
-								} else if (pname.equals(SCOPES)) {
-									p.setScopes(readSet(reader));
-								} else {
-									logger.debug("Found unexpected entry");
-									reader.skipValue();
-								}
-								break;
-							default:
-								logger.debug("Found unexpected entry");
-								reader.skipValue();
-								continue;
-							}
-						}
-						reader.endObject();
-						Permission saved = permissionRepository.saveRawPermission(p);
-						permissionToResourceRefs.put(saved.getId(), rsid);
-						ticket.setPermission(saved);
-					} else if (name.equals(TICKET)) {
-						ticket.setTicket(reader.nextString());
-					} else {
+						break;
+					default:
 						logger.debug("Found unexpected entry");
 						reader.skipValue();
-					}
-					break;
-				default:
-					logger.debug("Found unexpected entry");
-					reader.skipValue();
-					continue;
+						continue;
 				}
 			}
 			reader.endObject();
@@ -582,114 +522,114 @@ public class UmaDataServiceExtension_1_3 extends MITREidDataServiceSupport imple
 			reader.beginObject();
 			while (reader.hasNext()) {
 				switch (reader.peek()) {
-				case END_OBJECT:
-					continue;
-				case NAME:
-					String name = reader.nextName();
-					if (reader.peek() == JsonToken.NULL) {
-						reader.skipValue();
-					} else if (name.equals(ID)) {
-						oldId = reader.nextLong();
-					} else if (name.equals(CLIENT_ID)) {
-						rs.setClientId(reader.nextString());
-					} else if (name.equals(ICON_URI)) {
-						rs.setIconUri(reader.nextString());
-					} else if (name.equals(NAME)) {
-						rs.setName(reader.nextString());
-					} else if (name.equals(TYPE)) {
-						rs.setType(reader.nextString());
-					} else if (name.equals(URI)) {
-						rs.setUri(reader.nextString());
-					} else if (name.equals(OWNER)) {
-						rs.setOwner(reader.nextString());
-					} else if (name.equals(POLICIES)) {
-						Set<Policy> policies = new HashSet<>();
-						reader.beginArray();
-						while (reader.hasNext()) {
-							Policy p = new Policy();
-							reader.beginObject();
+					case END_OBJECT:
+						continue;
+					case NAME:
+						String name = reader.nextName();
+						if (reader.peek() == JsonToken.NULL) {
+							reader.skipValue();
+						} else if (name.equals(ID)) {
+							oldId = reader.nextLong();
+						} else if (name.equals(CLIENT_ID)) {
+							rs.setClientId(reader.nextString());
+						} else if (name.equals(ICON_URI)) {
+							rs.setIconUri(reader.nextString());
+						} else if (name.equals(NAME)) {
+							rs.setName(reader.nextString());
+						} else if (name.equals(TYPE)) {
+							rs.setType(reader.nextString());
+						} else if (name.equals(URI)) {
+							rs.setUri(reader.nextString());
+						} else if (name.equals(OWNER)) {
+							rs.setOwner(reader.nextString());
+						} else if (name.equals(POLICIES)) {
+							Set<Policy> policies = new HashSet<>();
+							reader.beginArray();
 							while (reader.hasNext()) {
-								switch (reader.peek()) {
-								case END_OBJECT:
-									continue;
-								case NAME:
-									String pname = reader.nextName();
-									if (reader.peek() == JsonToken.NULL) {
-										reader.skipValue();
-									} else if (pname.equals(NAME)) {
-										p.setName(reader.nextString());
-									} else if (pname.equals(SCOPES)) {
-										p.setScopes(readSet(reader));
-									} else if (pname.equals(CLAIMS_REQUIRED)) {
-										Set<Claim> claimsRequired = new HashSet<>();
-										reader.beginArray();
-										while (reader.hasNext()) {
-											Claim c = new Claim();
-											reader.beginObject();
-											while (reader.hasNext()) {
-												switch (reader.peek()) {
-												case END_OBJECT:
-													continue;
-												case NAME:
-													String cname = reader.nextName();
-													if (reader.peek() == JsonToken.NULL) {
-														reader.skipValue();
-													} else if (cname.equals(ISSUER)) {
-														c.setIssuer(readSet(reader));
-													} else if (cname.equals(CLAIM_TOKEN_FORMAT)) {
-														c.setClaimTokenFormat(readSet(reader));
-													} else if (cname.equals(CLAIM_TYPE)) {
-														c.setClaimType(reader.nextString());
-													} else if (cname.equals(FRIENDLY_NAME)) {
-														c.setFriendlyName(reader.nextString());
-													} else if (cname.equals(NAME)) {
-														c.setName(reader.nextString());
-													} else if (cname.equals(VALUE)) {
-														JsonElement e = parser.parse(reader.nextString());
-														c.setValue(e);
-													} else {
-														logger.debug("Found unexpected entry");
-														reader.skipValue();
+								Policy p = new Policy();
+								reader.beginObject();
+								while (reader.hasNext()) {
+									switch (reader.peek()) {
+										case END_OBJECT:
+											continue;
+										case NAME:
+											String pname = reader.nextName();
+											if (reader.peek() == JsonToken.NULL) {
+												reader.skipValue();
+											} else if (pname.equals(NAME)) {
+												p.setName(reader.nextString());
+											} else if (pname.equals(SCOPES)) {
+												p.setScopes(readSet(reader));
+											} else if (pname.equals(CLAIMS_REQUIRED)) {
+												Set<Claim> claimsRequired = new HashSet<>();
+												reader.beginArray();
+												while (reader.hasNext()) {
+													Claim c = new Claim();
+													reader.beginObject();
+													while (reader.hasNext()) {
+														switch (reader.peek()) {
+															case END_OBJECT:
+																continue;
+															case NAME:
+																String cname = reader.nextName();
+																if (reader.peek() == JsonToken.NULL) {
+																	reader.skipValue();
+																} else if (cname.equals(ISSUER)) {
+																	c.setIssuer(readSet(reader));
+																} else if (cname.equals(CLAIM_TOKEN_FORMAT)) {
+																	c.setClaimTokenFormat(readSet(reader));
+																} else if (cname.equals(CLAIM_TYPE)) {
+																	c.setClaimType(reader.nextString());
+																} else if (cname.equals(FRIENDLY_NAME)) {
+																	c.setFriendlyName(reader.nextString());
+																} else if (cname.equals(NAME)) {
+																	c.setName(reader.nextString());
+																} else if (cname.equals(VALUE)) {
+																	JsonElement e = parser.parse(reader.nextString());
+																	c.setValue(e);
+																} else {
+																	logger.debug("Found unexpected entry");
+																	reader.skipValue();
+																}
+																break;
+															default:
+																logger.debug("Found unexpected entry");
+																reader.skipValue();
+																continue;
+														}
 													}
-													break;
-												default:
-													logger.debug("Found unexpected entry");
-													reader.skipValue();
-													continue;
+													reader.endObject();
+													claimsRequired.add(c);
 												}
+												reader.endArray();
+												p.setClaimsRequired(claimsRequired);
+											} else {
+												logger.debug("Found unexpected entry");
+												reader.skipValue();
 											}
-											reader.endObject();
-											claimsRequired.add(c);
-										}
-										reader.endArray();
-										p.setClaimsRequired(claimsRequired);
-									} else {
-										logger.debug("Found unexpected entry");
-										reader.skipValue();
+											break;
+										default:
+											logger.debug("Found unexpected entry");
+											reader.skipValue();
+											continue;
 									}
-									break;
-								default:
-									logger.debug("Found unexpected entry");
-									reader.skipValue();
-									continue;
 								}
+								reader.endObject();
+								policies.add(p);
 							}
-							reader.endObject();
-							policies.add(p);
+							reader.endArray();
+							rs.setPolicies(policies);
+						} else if (name.equals(SCOPES)) {
+							rs.setScopes(readSet(reader));
+						} else {
+							logger.debug("Found unexpected entry");
+							reader.skipValue();
 						}
-						reader.endArray();
-						rs.setPolicies(policies);
-					} else if (name.equals(SCOPES)) {
-						rs.setScopes(readSet(reader));
-					} else {
+						break;
+					default:
 						logger.debug("Found unexpected entry");
 						reader.skipValue();
-					}
-					break;
-				default:
-					logger.debug("Found unexpected entry");
-					reader.skipValue();
-					continue;
+						continue;
 				}
 			}
 			reader.endObject();
@@ -711,25 +651,25 @@ public class UmaDataServiceExtension_1_3 extends MITREidDataServiceSupport imple
 			reader.beginObject();
 			while (reader.hasNext()) {
 				switch (reader.peek()) {
-				case END_OBJECT:
-					continue;
-				case NAME:
-					String name = reader.nextName();
-					if (reader.peek() == JsonToken.NULL) {
-						reader.skipValue();
-					} else if (name.equals(ISSUER)) {
-						issuer = reader.nextString();
-					} else if (name.equals(REGISTERED_CLIENT)) {
-						clientString = reader.nextString();
-					} else {
+					case END_OBJECT:
+						continue;
+					case NAME:
+						String name = reader.nextName();
+						if (reader.peek() == JsonToken.NULL) {
+							reader.skipValue();
+						} else if (name.equals(ISSUER)) {
+							issuer = reader.nextString();
+						} else if (name.equals(REGISTERED_CLIENT)) {
+							clientString = reader.nextString();
+						} else {
+							logger.debug("Found unexpected entry");
+							reader.skipValue();
+						}
+						break;
+					default:
 						logger.debug("Found unexpected entry");
 						reader.skipValue();
-					}
-					break;
-				default:
-					logger.debug("Found unexpected entry");
-					reader.skipValue();
-					continue;
+						continue;
 				}
 			}
 			reader.endObject();
@@ -758,13 +698,13 @@ public class UmaDataServiceExtension_1_3 extends MITREidDataServiceSupport imple
 		for (Long tokenId : tokenToPermissionRefs.keySet()) {
 			Long newTokenId = maps.getAccessTokenOldToNewIdMap().get(tokenId);
 			OAuth2AccessTokenEntity token = tokenRepository.getAccessTokenById(newTokenId);
-			
+
 			Set<Permission> permissions = new HashSet<>();
 			for (Long permissionId : tokenToPermissionRefs.get(tokenId)) {
 				Permission p = permissionRepository.getById(permissionId);
 				permissions.add(p);
 			}
-			
+
 			token.setPermissions(permissions);
 			tokenRepository.saveAccessToken(token);
 		}

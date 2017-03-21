@@ -379,7 +379,7 @@ public class DefaultUserInfo implements UserInfo {
 	 */
 	@Override
 	public void setAddress(Address address) {
-		if (address != null) { 
+		if (address != null) {
 			this.address = new DefaultAddress(address);
 		} else {
 			this.address = null;
@@ -499,7 +499,7 @@ public class DefaultUserInfo implements UserInfo {
 
 		ui.setPhoneNumber(nullSafeGetString(obj, "phone_number"));
 		ui.setPhoneNumberVerified(obj.has("phone_number_verified") && obj.get("phone_number_verified").isJsonPrimitive() ? obj.get("phone_number_verified").getAsBoolean() : null);
-		
+
 		if (obj.has("address") && obj.get("address").isJsonObject()) {
 			JsonObject addr = obj.get("address").getAsJsonObject();
 			ui.setAddress(new DefaultAddress());

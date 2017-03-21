@@ -26,7 +26,7 @@ import com.nimbusds.jwt.JWT;
 
 /**
  * Service to create specialty OpenID Connect tokens.
- * 
+ *
  * @author Amanda Anganes
  *
  */
@@ -34,7 +34,7 @@ public interface OIDCTokenService {
 
 	/**
 	 * Create an id token with the information provided.
-	 * 
+	 *
 	 * @param client
 	 * @param request
 	 * @param issueTime
@@ -49,7 +49,7 @@ public interface OIDCTokenService {
 
 	/**
 	 * Create a registration access token for the given client.
-	 * 
+	 *
 	 * @param client
 	 * @return
 	 */
@@ -57,7 +57,7 @@ public interface OIDCTokenService {
 
 	/**
 	 * Create a resource access token for the given client (protected resource).
-	 * 
+	 *
 	 * @param client
 	 * @return
 	 */

@@ -22,9 +22,9 @@ import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.uma.model.ResourceSet;
 
 /**
- * 
+ *
  * Manage registered resource sets at this authorization server.
- * 
+ *
  * @author jricher
  *
  */

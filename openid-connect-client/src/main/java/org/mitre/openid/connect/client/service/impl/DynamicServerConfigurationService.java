@@ -15,9 +15,16 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.openid.connect.client.service.impl;
+
+import static org.mitre.util.JsonUtils.getAsBoolean;
+import static org.mitre.util.JsonUtils.getAsEncryptionMethodList;
+import static org.mitre.util.JsonUtils.getAsJweAlgorithmList;
+import static org.mitre.util.JsonUtils.getAsJwsAlgorithmList;
+import static org.mitre.util.JsonUtils.getAsString;
+import static org.mitre.util.JsonUtils.getAsStringList;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -41,17 +48,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import static org.mitre.util.JsonUtils.getAsBoolean;
-import static org.mitre.util.JsonUtils.getAsEncryptionMethodList;
-import static org.mitre.util.JsonUtils.getAsJweAlgorithmList;
-import static org.mitre.util.JsonUtils.getAsJwsAlgorithmList;
-import static org.mitre.util.JsonUtils.getAsString;
-import static org.mitre.util.JsonUtils.getAsStringList;
-
 /**
- * 
+ *
  * Dynamically fetches OpenID Connect server configurations based on the issuer. Caches the server configurations.
- * 
+ *
  * @author jricher
  *
  */
@@ -133,9 +133,9 @@ public class DynamicServerConfigurationService implements ServerConfigurationSer
 		private HttpComponentsClientHttpRequestFactory httpFactory;
 		private JsonParser parser = new JsonParser();
 
-        OpenIDConnectServiceConfigurationFetcher(HttpClient httpClient) {
-            this.httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
-        }
+		OpenIDConnectServiceConfigurationFetcher(HttpClient httpClient) {
+			this.httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
+		}
 
 		@Override
 		public ServerConfiguration load(String issuer) throws Exception {

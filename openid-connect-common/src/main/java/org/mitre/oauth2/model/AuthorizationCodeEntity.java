@@ -33,7 +33,7 @@ import javax.persistence.Temporal;
 
 /**
  * Entity class for authorization codes
- * 
+ *
  * @author aanganes
  *
  */
@@ -67,7 +67,7 @@ public class AuthorizationCodeEntity {
 
 	/**
 	 * Create a new AuthorizationCodeEntity with the given code and AuthorizationRequestHolder.
-	 * 
+	 *
 	 * @param code 			the authorization code
 	 * @param authRequest	the AuthoriztionRequestHolder associated with the original code request
 	 */

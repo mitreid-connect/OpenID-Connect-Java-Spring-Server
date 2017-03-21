@@ -25,9 +25,9 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import com.google.common.collect.ImmutableSet;
 
 /**
- * 
+ *
  * Utility class to enforce OAuth scopes in authenticated requests.
- * 
+ *
  * @author jricher
  *
  */

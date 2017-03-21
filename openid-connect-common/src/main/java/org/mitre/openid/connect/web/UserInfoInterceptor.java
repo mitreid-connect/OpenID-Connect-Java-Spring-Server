@@ -15,7 +15,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.openid.connect.web;
 
@@ -44,24 +44,24 @@ import com.google.gson.JsonSerializer;
 
 /**
  * Injects the UserInfo object for the current user into the current model's context, if both exist. Allows JSPs and the like to call "userInfo.name" and other fields.
- * 
+ *
  * @author jricher
  *
  */
 public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 
 	private Gson gson = new GsonBuilder()
-	.registerTypeHierarchyAdapter(GrantedAuthority.class, new JsonSerializer<GrantedAuthority>() {
-		@Override
-		public JsonElement serialize(GrantedAuthority src, Type typeOfSrc, JsonSerializationContext context) {
-			return new JsonPrimitive(src.getAuthority());
-		}
-	})
-	.create();
+			.registerTypeHierarchyAdapter(GrantedAuthority.class, new JsonSerializer<GrantedAuthority>() {
+				@Override
+				public JsonElement serialize(GrantedAuthority src, Type typeOfSrc, JsonSerializationContext context) {
+					return new JsonPrimitive(src.getAuthority());
+				}
+			})
+			.create();
 
 	@Autowired (required = false)
 	private UserInfoService userInfoService;
-	
+
 	private AuthenticationTrustResolver trustResolver = new AuthenticationTrustResolverImpl();
 
 	@Override
@@ -72,7 +72,7 @@ public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 		if (auth instanceof Authentication){
 			request.setAttribute("userAuthorities", gson.toJson(auth.getAuthorities()));
 		}
-		
+
 		if (!trustResolver.isAnonymous(auth)) { // skip lookup on anonymous logins
 			if (auth instanceof OIDCAuthenticationToken) {
 				// if they're logging into this server from a remote OIDC server, pass through their user info
@@ -87,10 +87,10 @@ public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 			} else {
 				// don't bother checking if we don't have a principal or a userInfoService to work with
 				if (auth != null && auth.getName() != null && userInfoService != null) {
-	
+
 					// try to look up a user based on the principal's name
 					UserInfo user = userInfoService.getByUsername(auth.getName());
-	
+
 					// if we have one, inject it so views can use it
 					if (user != null) {
 						request.setAttribute("userInfo", user);

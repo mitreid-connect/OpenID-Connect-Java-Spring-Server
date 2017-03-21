@@ -27,9 +27,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.mitre.openid.connect.service.MITREidDataService;
-import org.mitre.openid.connect.service.impl.MITREidDataService_1_0;
-import org.mitre.openid.connect.service.impl.MITREidDataService_1_1;
-import org.mitre.openid.connect.service.impl.MITREidDataService_1_2;
 import org.mitre.openid.connect.service.impl.MITREidDataService_1_3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,9 +46,9 @@ import com.google.gson.stream.JsonWriter;
 /**
  * API endpoint for importing and exporting the current state of a server.
  * Includes all tokens, grants, whitelists, blacklists, and clients.
- * 
+ *
  * @author jricher
- * 
+ *
  */
 @Controller
 @RequestMapping("/" + DataAPI.URL)
@@ -72,13 +69,13 @@ public class DataAPI {
 
 	@Autowired
 	private List<MITREidDataService> importers;
-	
+
 	private List<String> supportedVersions = ImmutableList.of(
-		MITREidDataService.MITREID_CONNECT_1_0, 
-		MITREidDataService.MITREID_CONNECT_1_1, 
-		MITREidDataService.MITREID_CONNECT_1_2,
-		MITREidDataService.MITREID_CONNECT_1_3);
-	
+			MITREidDataService.MITREID_CONNECT_1_0,
+			MITREidDataService.MITREID_CONNECT_1_1,
+			MITREidDataService.MITREID_CONNECT_1_2,
+			MITREidDataService.MITREID_CONNECT_1_3);
+
 	@Autowired
 	private MITREidDataService_1_3 exporter;
 
@@ -92,31 +89,31 @@ public class DataAPI {
 		while (reader.hasNext()) {
 			JsonToken tok = reader.peek();
 			switch (tok) {
-			case NAME:
-				String name = reader.nextName();
+				case NAME:
+					String name = reader.nextName();
 
-				if (supportedVersions.contains(name)) {
-					// we're working with a known data version tag
-					for (MITREidDataService dataService : importers) {
-						// dispatch to the correct service
-						if (dataService.supportsVersion(name)) {
-							dataService.importData(reader);
-							break;
+					if (supportedVersions.contains(name)) {
+						// we're working with a known data version tag
+						for (MITREidDataService dataService : importers) {
+							// dispatch to the correct service
+							if (dataService.supportsVersion(name)) {
+								dataService.importData(reader);
+								break;
+							}
 						}
+					} else {
+						// consume the next bit silently for now
+						logger.debug("Skipping value for " + name); // TODO: write these out?
+						reader.skipValue();
 					}
-				} else {
-					// consume the next bit silently for now
-					logger.debug("Skipping value for " + name); // TODO: write these out?
-					reader.skipValue();
-				}
-				break;
-			case END_OBJECT:
-				break;
-			case END_DOCUMENT:
-				break;
+					break;
+				case END_OBJECT:
+					break;
+				case END_DOCUMENT:
+					break;
 			}
 		}
-		
+
 		reader.endObject();
 
 		return "httpCodeView";

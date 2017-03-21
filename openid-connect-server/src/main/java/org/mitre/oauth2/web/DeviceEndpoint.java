@@ -46,7 +46,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
-import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.oauth2.common.util.OAuth2Utils;
 import org.springframework.security.oauth2.common.util.RandomValueStringGenerator;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
@@ -59,7 +58,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 
 /**
@@ -75,41 +73,41 @@ public class DeviceEndpoint {
 
 	public static final String URL = "devicecode";
 	public static final String USER_URL = "device";
-	
+
 	public static final Logger logger = LoggerFactory.getLogger(DeviceEndpoint.class);
-	
+
 	@Autowired
 	private ClientDetailsEntityService clientService;
-	
+
 	@Autowired
 	private SystemScopeService scopeService;
-	
+
 	@Autowired
 	private ConfigurationPropertiesBean config;
-	
+
 	@Autowired
 	private DeviceCodeService deviceCodeService;
-	
+
 	@Autowired
 	private OAuth2RequestFactory oAuth2RequestFactory;
-	
+
 	private RandomValueStringGenerator randomGenerator = new RandomValueStringGenerator();
-	
+
 	@RequestMapping(value = "/" + URL, method = RequestMethod.POST, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public String requestDeviceCode(@RequestParam("client_id") String clientId, @RequestParam(name="scope", required=false) String scope, Map<String, String> parameters, ModelMap model) {
-		
+
 		ClientDetailsEntity client;
 		try {
 			client = clientService.loadClientByClientId(clientId);
-			
+
 			// make sure this client can do the device flow
-			
+
 			Collection<String> authorizedGrantTypes = client.getAuthorizedGrantTypes();
 			if (authorizedGrantTypes != null && !authorizedGrantTypes.isEmpty()
 					&& !authorizedGrantTypes.contains(DeviceTokenGranter.GRANT_TYPE)) {
 				throw new InvalidClientException("Unauthorized grant type: " + DeviceTokenGranter.GRANT_TYPE);
 			}
-			
+
 		} catch (IllegalArgumentException e) {
 			logger.error("IllegalArgumentException was thrown when attempting to load client", e);
 			model.put(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
@@ -125,7 +123,7 @@ public class DeviceEndpoint {
 		// make sure the client is allowed to ask for those scopes
 		Set<String> requestedScopes = OAuth2Utils.parseParameterList(scope);
 		Set<String> allowedScopes = client.getScope();
-		
+
 		if (!scopeService.scopesMatch(allowedScopes, requestedScopes)) {
 			// client asked for scopes it can't have
 			logger.error("Client asked for " + requestedScopes + " but is allowed " + allowedScopes);
@@ -133,17 +131,17 @@ public class DeviceEndpoint {
 			model.put(JsonErrorView.ERROR, "invalid_scope");
 			return JsonErrorView.VIEWNAME;
 		}
-		
+
 		// if we got here the request is legit
-		
+
 		// create a device code, should be big and random
 		String deviceCode = UUID.randomUUID().toString();
-		
+
 		// create a user code, should be random but small and typable
 		String userCode = randomGenerator.generate();
 
-		DeviceCode dc = deviceCodeService.createNewDeviceCode(deviceCode, userCode, requestedScopes, client, parameters);
-		
+		deviceCodeService.createNewDeviceCode(deviceCode, userCode, requestedScopes, client, parameters);
+
 		Map<String, Object> response = new HashMap<>();
 		response.put("device_code", deviceCode);
 		response.put("user_code", userCode);
@@ -151,37 +149,37 @@ public class DeviceEndpoint {
 		if (client.getDeviceCodeValiditySeconds() != null) {
 			response.put("expires_in", client.getDeviceCodeValiditySeconds());
 		}
-		
+
 		model.put(JsonEntityView.ENTITY, response);
 
-		
+
 		return JsonEntityView.VIEWNAME;
-		
+
 	}
 
 	@PreAuthorize("hasRole('ROLE_USER')")
 	@RequestMapping(value = "/" + USER_URL, method = RequestMethod.GET)
 	public String requestUserCode(ModelMap model) {
-		
+
 		// print out a page that asks the user to enter their user code
 		// user must be logged in
-		
+
 		return "requestUserCode";
 	}
-	
+
 	@PreAuthorize("hasRole('ROLE_USER')")
 	@RequestMapping(value = "/" + USER_URL + "/verify", method = RequestMethod.POST)
 	public String readUserCode(@RequestParam("user_code") String userCode, ModelMap model, HttpSession session) {
 
 		// look up the request based on the user code
 		DeviceCode dc = deviceCodeService.lookUpByUserCode(userCode);
-		
+
 		// we couldn't find the device code
 		if (dc == null) {
 			model.addAttribute("error", "noUserCode");
 			return "requestUserCode";
 		}
-		
+
 		// make sure the code hasn't expired yet
 		if (dc.getExpiration() != null && dc.getExpiration().before(new Date())) {
 			model.addAttribute("error", "expiredUserCode");
@@ -193,12 +191,12 @@ public class DeviceEndpoint {
 			model.addAttribute("error", "userCodeAlreadyApproved");
 			return "requestUserCode";
 		}
-		
+
 		ClientDetailsEntity client = clientService.loadClientByClientId(dc.getClientId());
-		
+
 		model.put("client", client);
 		model.put("dc", dc);
-		
+
 		// pre-process the scopes
 		Set<SystemScope> scopes = scopeService.fromStrings(dc.getScope());
 
@@ -221,17 +219,17 @@ public class DeviceEndpoint {
 
 		session.setAttribute("authorizationRequest", authorizationRequest);
 		session.setAttribute("deviceCode", dc);
-		
+
 		return "approveDevice";
 	}
-	
+
 	@PreAuthorize("hasRole('ROLE_USER')")
 	@RequestMapping(value = "/" + USER_URL + "/approve", method = RequestMethod.POST)
 	public String approveDevice(@RequestParam("user_code") String userCode, @RequestParam(value = "user_oauth_approval") Boolean approve, ModelMap model, Authentication auth, HttpSession session) {
-		
+
 		AuthorizationRequest authorizationRequest = (AuthorizationRequest) session.getAttribute("authorizationRequest");
 		DeviceCode dc = (DeviceCode) session.getAttribute("deviceCode");
-		
+
 		// make sure the form that was submitted is the one that we were expecting
 		if (!dc.getUserCode().equals(userCode)) {
 			model.addAttribute("error", "userCodeMismatch");
@@ -243,11 +241,11 @@ public class DeviceEndpoint {
 			model.addAttribute("error", "expiredUserCode");
 			return "requestUserCode";
 		}
-		
+
 		ClientDetailsEntity client = clientService.loadClientByClientId(dc.getClientId());
-		
+
 		model.put("client", client);
-		
+
 		// user did not approve
 		if (!approve) {
 			model.addAttribute("approved", false);
@@ -278,7 +276,7 @@ public class DeviceEndpoint {
 
 		model.put("scopes", sortedScopes);
 		model.put("approved", true);
-		
+
 		return "deviceApproved";
 	}
 }

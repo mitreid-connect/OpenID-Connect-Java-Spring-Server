@@ -15,11 +15,19 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.openid.connect.filter;
 
-import static org.mitre.openid.connect.request.ConnectRequestParameters.*;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.ERROR;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.LOGIN_HINT;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.LOGIN_REQUIRED;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.MAX_AGE;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.PROMPT;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.PROMPT_LOGIN;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.PROMPT_NONE;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.PROMPT_SEPARATOR;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.STATE;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -85,11 +93,11 @@ public class AuthorizationRequestFilter extends GenericFilterBean {
 
 	@Autowired(required = false)
 	private LoginHintExtracter loginHintExtracter = new RemoveLoginHintsWithHTTP();
-	
+
 	private RequestMatcher requestMatcher = new AntPathRequestMatcher("/authorize");
 
 	/**
-	 * 
+	 *
 	 */
 	@Override
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {

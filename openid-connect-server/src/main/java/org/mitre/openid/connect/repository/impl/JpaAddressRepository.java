@@ -26,9 +26,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * JPA Address repository implementation
- * 
+ *
  * @author Michael Joseph Walsh
- * 
+ *
  */
 @Repository
 public class JpaAddressRepository implements AddressRepository {

@@ -23,7 +23,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -31,7 +30,6 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.openid.connect.model.CachedImage;
 import org.mitre.openid.connect.service.ClientLogoLoadingService;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Strings;
@@ -54,18 +52,18 @@ public class InMemoryClientLogoLoadingService implements ClientLogoLoadingServic
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public InMemoryClientLogoLoadingService(HttpClient httpClient) {
-		
+
 		cache = CacheBuilder.newBuilder()
 				.maximumSize(100)
 				.expireAfterAccess(14, TimeUnit.DAYS)
 				.build(new ClientLogoFetcher(httpClient));
-		
+
 	}
-	
-	
+
+
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.service.ClientLogoLoadingService#getLogo(org.mitre.oauth2.model.ClientDetailsEntity)
 	 */
@@ -104,15 +102,15 @@ public class InMemoryClientLogoLoadingService implements ClientLogoLoadingServic
 		public CachedImage load(ClientDetailsEntity key) throws Exception {
 			try {
 				HttpResponse response = httpClient.execute(new HttpGet(key.getLogoUri()));
-				
+
 				HttpEntity entity = response.getEntity();
-				
+
 				CachedImage image = new CachedImage();
-				
+
 				image.setContentType(entity.getContentType().getValue());
 				image.setLength(entity.getContentLength());
 				image.setData(IOUtils.toByteArray(entity.getContent()));
-				
+
 				return image;
 			} catch (IOException e) {
 				throw new IllegalArgumentException("Unable to load client image.");

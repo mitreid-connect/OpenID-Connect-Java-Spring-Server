@@ -54,11 +54,11 @@ public class DeviceCode {
 	public static final String QUERY_BY_USER_CODE = "DeviceCode.queryByUserCode";
 	public static final String QUERY_BY_DEVICE_CODE = "DeviceCode.queryByDeviceCode";
 	public static final String QUERY_EXPIRED_BY_DATE = "DeviceCode.queryExpiredByDate";
-	
+
 	public static final String PARAM_USER_CODE = "userCode";
 	public static final String PARAM_DEVICE_CODE = "deviceCode";
 	public static final String PARAM_DATE = "date";
-	
+
 	private Long id;
 	private String deviceCode;
 	private String userCode;
@@ -68,11 +68,11 @@ public class DeviceCode {
 	private Map<String, String> requestParameters;
 	private boolean approved;
 	private AuthenticationHolderEntity authenticationHolder;
-	
+
 	public DeviceCode() {
-		
+
 	}
-	
+
 	public DeviceCode(String deviceCode, String userCode, Set<String> scope, String clientId, Map<String, String> params) {
 		this.deviceCode = deviceCode;
 		this.userCode = userCode;
@@ -213,7 +213,7 @@ public class DeviceCode {
 	public void setApproved(boolean approved) {
 		this.approved = approved;
 	}
-	
+
 	/**
 	 * The authentication in place when this token was created.
 	 * @return the authentication
@@ -231,5 +231,5 @@ public class DeviceCode {
 		this.authenticationHolder = authenticationHolder;
 	}
 
-	
+
 }

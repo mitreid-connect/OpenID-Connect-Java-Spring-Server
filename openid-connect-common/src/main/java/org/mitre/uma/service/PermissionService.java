@@ -39,9 +39,9 @@ public interface PermissionService {
 	public PermissionTicket createTicket(ResourceSet resourceSet, Set<String> scopes);
 
 	/**
-	 * 
+	 *
 	 * Read the permission associated with the given ticket.
-	 * 
+	 *
 	 * @param the ticket value to search on
 	 * @return the permission object, or null if none is found
 	 */
@@ -49,7 +49,7 @@ public interface PermissionService {
 
 	/**
 	 * Save the updated permission ticket to the database. Does not create a new ticket.
-	 * 
+	 *
 	 * @param ticket
 	 * @return
 	 */

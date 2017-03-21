@@ -34,7 +34,7 @@ import com.google.gson.JsonObject;
  *
  */
 public class ScopeBasedIntrospectionAuthoritiesGranter implements IntrospectionAuthorityGranter {
-	
+
 	private List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList("ROLE_API");
 
 	/* (non-Javadoc)
@@ -43,7 +43,7 @@ public class ScopeBasedIntrospectionAuthoritiesGranter implements IntrospectionA
 	@Override
 	public List<GrantedAuthority> getAuthorities(JsonObject introspectionResponse) {
 		List<GrantedAuthority> auth = new ArrayList<>(getAuthorities());
-		
+
 		if (introspectionResponse.has("scope") && introspectionResponse.get("scope").isJsonPrimitive()) {
 			String scopeString = introspectionResponse.get("scope").getAsString();
 			Set<String> scopes = OAuth2Utils.parseParameterList(scopeString);
@@ -51,7 +51,7 @@ public class ScopeBasedIntrospectionAuthoritiesGranter implements IntrospectionA
 				auth.add(new SimpleGrantedAuthority("OAUTH_SCOPE_" + scope));
 			}
 		}
-		
+
 		return auth;
 	}
 

@@ -7,9 +7,9 @@ public class AuthorizationEndpointException extends AuthenticationServiceExcepti
 	private static final long serialVersionUID = 6953119789654778380L;
 
 	private String error;
-	
+
 	private String errorDescription;
-	
+
 	private String errorURI;
 
 	public AuthorizationEndpointException(String error, String errorDescription, String errorURI) {

@@ -41,12 +41,12 @@ import com.nimbusds.jwt.SignedJWT;
 public class WhitelistedIssuerAssertionValidator implements AssertionValidator {
 
 	private static Logger logger = LoggerFactory.getLogger(WhitelistedIssuerAssertionValidator.class);
-	
+
 	/**
 	 * Map of issuer -> JWKSetUri
 	 */
 	private Map<String, String> whitelist = new HashMap<>();
-	
+
 	/**
 	 * @return the whitelist
 	 */
@@ -63,15 +63,15 @@ public class WhitelistedIssuerAssertionValidator implements AssertionValidator {
 
 	@Autowired
 	private JWKSetCacheService jwkCache;
-	
+
 	@Override
 	public boolean isValid(JWT assertion) {
-		
+
 		if (!(assertion instanceof SignedJWT)) {
 			// unsigned assertion
 			return false;
 		}
-		
+
 		JWTClaimsSet claims;
 		try {
 			claims = assertion.getJWTClaimsSet();
@@ -79,21 +79,21 @@ public class WhitelistedIssuerAssertionValidator implements AssertionValidator {
 			logger.debug("Invalid assertion claims");
 			return false;
 		}
-		
+
 		if (Strings.isNullOrEmpty(claims.getIssuer())) {
 			logger.debug("No issuer for assertion, rejecting");
 			return false;
 		}
-		
+
 		if (!whitelist.containsKey(claims.getIssuer())) {
 			logger.debug("Issuer is not in whitelist, rejecting");
 			return false;
 		}
-		
+
 		String jwksUri = whitelist.get(claims.getIssuer());
-		
+
 		JWTSigningAndValidationService validator = jwkCache.getValidator(jwksUri);
-		
+
 		if (validator.validateSignature((SignedJWT) assertion)) {
 			return true;
 		} else {

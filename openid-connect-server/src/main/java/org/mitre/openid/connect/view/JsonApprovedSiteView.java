@@ -15,7 +15,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.openid.connect.view;
 
@@ -61,40 +61,40 @@ public class JsonApprovedSiteView extends AbstractView {
 	public static final String VIEWNAME = "jsonApprovedSiteView";
 
 	private Gson gson = new GsonBuilder()
-	.setExclusionStrategies(new ExclusionStrategy() {
+			.setExclusionStrategies(new ExclusionStrategy() {
 
-		@Override
-		public boolean shouldSkipField(FieldAttributes f) {
+				@Override
+				public boolean shouldSkipField(FieldAttributes f) {
 
-			return false;
-		}
+					return false;
+				}
 
-		@Override
-		public boolean shouldSkipClass(Class<?> clazz) {
-			// skip the JPA binding wrapper
-			if (clazz.equals(BeanPropertyBindingResult.class)) {
-				return true;
-			}
-			return false;
-		}
+				@Override
+				public boolean shouldSkipClass(Class<?> clazz) {
+					// skip the JPA binding wrapper
+					if (clazz.equals(BeanPropertyBindingResult.class)) {
+						return true;
+					}
+					return false;
+				}
 
-	})
-	.registerTypeAdapter(OAuth2AccessTokenEntity.class, new JsonSerializer<OAuth2AccessTokenEntity>() {
-		@Override
-		public JsonElement serialize(OAuth2AccessTokenEntity src,
-				Type typeOfSrc, JsonSerializationContext context) {
-			return new JsonPrimitive(src.getId());
-		}
-	})
-	.registerTypeAdapter(WhitelistedSite.class, new JsonSerializer<WhitelistedSite>() {
-		@Override
-		public JsonElement serialize(WhitelistedSite src, Type typeOfSrc, JsonSerializationContext context) {
-			return new JsonPrimitive(src.getId());
-		}
-	})
-	.serializeNulls()
-	.setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
-	.create();
+			})
+			.registerTypeAdapter(OAuth2AccessTokenEntity.class, new JsonSerializer<OAuth2AccessTokenEntity>() {
+				@Override
+				public JsonElement serialize(OAuth2AccessTokenEntity src,
+						Type typeOfSrc, JsonSerializationContext context) {
+					return new JsonPrimitive(src.getId());
+				}
+			})
+			.registerTypeAdapter(WhitelistedSite.class, new JsonSerializer<WhitelistedSite>() {
+				@Override
+				public JsonElement serialize(WhitelistedSite src, Type typeOfSrc, JsonSerializationContext context) {
+					return new JsonPrimitive(src.getId());
+				}
+			})
+			.serializeNulls()
+			.setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+			.create();
 
 	@Override
 	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {

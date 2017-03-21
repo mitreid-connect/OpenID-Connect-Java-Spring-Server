@@ -30,7 +30,7 @@ import com.nimbusds.jwt.JWT;
 /**
  * Utility class to map all external logins to the ROLE_EXTERNAL_USER authority
  * to prevent them from accessing other parts of the server.
- * 
+ *
  * @author jricher
  *
  */

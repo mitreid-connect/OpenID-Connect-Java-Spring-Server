@@ -15,7 +15,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.oauth2.service.impl;
 
@@ -71,7 +71,7 @@ import com.nimbusds.jwt.PlainJWT;
 
 /**
  * @author jricher
- * 
+ *
  */
 @Service("defaultOAuth2ProviderTokenService")
 public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityService {
@@ -157,7 +157,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 			return token;
 		}
 	}
-	
+
 	/**
 	 * Utility function to delete a refresh token that's expired before returning it.
 	 * @param token the token to check
@@ -175,7 +175,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 			return token;
 		}
 	}
-	
+
 	@Override
 	public OAuth2AccessTokenEntity createAccessToken(OAuth2Authentication authentication) throws AuthenticationException, InvalidClientException {
 		if (authentication != null && authentication.getOAuth2Request() != null) {
@@ -188,14 +188,14 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 				throw new InvalidClientException("Client not found: " + request.getClientId());
 			}
 
-			
+
 			// handle the PKCE code challenge if present
 			if (request.getExtensions().containsKey(CODE_CHALLENGE)) {
 				String challenge = (String) request.getExtensions().get(CODE_CHALLENGE);
 				PKCEAlgorithm alg = PKCEAlgorithm.parse((String) request.getExtensions().get(CODE_CHALLENGE_METHOD));
-				
+
 				String verifier = request.getRequestParameters().get(CODE_VERIFIER);
-				
+
 				if (alg.equals(PKCEAlgorithm.plain)) {
 					// do a direct string comparison
 					if (!challenge.equals(verifier)) {
@@ -213,10 +213,10 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 						logger.error("Unknown algorithm for PKCE digest", e);
 					}
 				}
-				
+
 			}
 
-			
+
 			OAuth2AccessTokenEntity token = new OAuth2AccessTokenEntity();//accessTokenFactory.createNewAccessToken();
 
 			// attach the client
@@ -492,41 +492,41 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	public void clearExpiredTokens() {
 		logger.debug("Cleaning out all expired tokens");
 
-        new AbstractPageOperationTemplate<OAuth2AccessTokenEntity>("clearExpiredAccessTokens") {
-            @Override
-            public Collection<OAuth2AccessTokenEntity> fetchPage() {
-                return tokenRepository.getAllExpiredAccessTokens(new DefaultPageCriteria());
-            }
+		new AbstractPageOperationTemplate<OAuth2AccessTokenEntity>("clearExpiredAccessTokens") {
+			@Override
+			public Collection<OAuth2AccessTokenEntity> fetchPage() {
+				return tokenRepository.getAllExpiredAccessTokens(new DefaultPageCriteria());
+			}
 
-            @Override
-            public void doOperation(OAuth2AccessTokenEntity item) {
-                revokeAccessToken(item);
-            }
-        }.execute();
+			@Override
+			public void doOperation(OAuth2AccessTokenEntity item) {
+				revokeAccessToken(item);
+			}
+		}.execute();
 
-        new AbstractPageOperationTemplate<OAuth2RefreshTokenEntity>("clearExpiredRefreshTokens") {
-            @Override
-            public Collection<OAuth2RefreshTokenEntity> fetchPage() {
-                return tokenRepository.getAllExpiredRefreshTokens(new DefaultPageCriteria());
-            }
+		new AbstractPageOperationTemplate<OAuth2RefreshTokenEntity>("clearExpiredRefreshTokens") {
+			@Override
+			public Collection<OAuth2RefreshTokenEntity> fetchPage() {
+				return tokenRepository.getAllExpiredRefreshTokens(new DefaultPageCriteria());
+			}
 
-            @Override
-            public void doOperation(OAuth2RefreshTokenEntity item) {
-                revokeRefreshToken(item);
-            }
-        }.execute();
+			@Override
+			public void doOperation(OAuth2RefreshTokenEntity item) {
+				revokeRefreshToken(item);
+			}
+		}.execute();
 
-        new AbstractPageOperationTemplate<AuthenticationHolderEntity>("clearExpiredAuthenticationHolders") {
-            @Override
-            public Collection<AuthenticationHolderEntity> fetchPage() {
-                return authenticationHolderRepository.getOrphanedAuthenticationHolders(new DefaultPageCriteria());
-            }
+		new AbstractPageOperationTemplate<AuthenticationHolderEntity>("clearExpiredAuthenticationHolders") {
+			@Override
+			public Collection<AuthenticationHolderEntity> fetchPage() {
+				return authenticationHolderRepository.getOrphanedAuthenticationHolders(new DefaultPageCriteria());
+			}
 
-            @Override
-            public void doOperation(AuthenticationHolderEntity item) {
-                authenticationHolderRepository.remove(item);
-            }
-        }.execute();
+			@Override
+			public void doOperation(AuthenticationHolderEntity item) {
+				authenticationHolderRepository.remove(item);
+			}
+		}.execute();
 	}
 
 	/* (non-Javadoc)
@@ -535,12 +535,12 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	@Override
 	public OAuth2AccessTokenEntity saveAccessToken(OAuth2AccessTokenEntity accessToken) {
 		OAuth2AccessTokenEntity newToken = tokenRepository.saveAccessToken(accessToken);
-		
+
 		// if the old token has any additional information for the return from the token endpoint, carry it through here after save
 		if (accessToken.getAdditionalInformation() != null && !accessToken.getAdditionalInformation().isEmpty()) {
 			newToken.getAdditionalInformation().putAll(accessToken.getAdditionalInformation());
 		}
-		
+
 		return newToken;
 	}
 

@@ -16,7 +16,8 @@
  *******************************************************************************/
 package org.mitre.openid.connect.service.impl;
 
-import java.util.ArrayList;
+import static org.mockito.Matchers.any;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -40,8 +41,6 @@ import org.springframework.test.annotation.Rollback;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 
-import static org.mockito.Matchers.any;
-
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 
@@ -60,7 +59,7 @@ public class TestDefaultApprovedSiteService {
 
 	@Mock
 	private OAuth2TokenRepository tokenRepository;
-	
+
 	@Mock
 	private StatsService statsService;
 

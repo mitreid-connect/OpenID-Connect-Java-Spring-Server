@@ -37,9 +37,9 @@ import org.springframework.stereotype.Component;
 
 /**
  * Implements https://tools.ietf.org/html/draft-ietf-oauth-device-flow
- * 
+ *
  * @see DeviceEndpoint
- * 
+ *
  * @author jricher
  *
  */
@@ -47,7 +47,7 @@ import org.springframework.stereotype.Component;
 public class DeviceTokenGranter extends AbstractTokenGranter {
 
 	public static final String GRANT_TYPE = "urn:ietf:params:oauth:grant-type:device_code";
-	
+
 	@Autowired
 	private DeviceCodeService deviceCodeService;
 
@@ -68,37 +68,37 @@ public class DeviceTokenGranter extends AbstractTokenGranter {
 	protected OAuth2Authentication getOAuth2Authentication(ClientDetails client, TokenRequest tokenRequest) {
 
 		String deviceCode = tokenRequest.getRequestParameters().get("device_code");
-		
+
 		// look up the device code and consume it
 		DeviceCode dc = deviceCodeService.consumeDeviceCode(deviceCode, client);
-		
+
 		if (dc != null) {
-			
+
 			// make sure the code hasn't expired yet
 			if (dc.getExpiration() != null && dc.getExpiration().before(new Date())) {
 				// TODO: return an error
 				throw new DeviceCodeExpiredException("Device code has expired " + deviceCode);
-				
+
 			} else if (!dc.isApproved()) {
-				
+
 				// still waiting for approval
 				throw new AuthorizationPendingException("Authorization pending for code " + deviceCode);
-			
+
 			} else {
 				// inherit the (approved) scopes from the original request
 				tokenRequest.setScope(dc.getScope());
-				
+
 				OAuth2Authentication auth = new OAuth2Authentication(getRequestFactory().createOAuth2Request(client, tokenRequest), dc.getAuthenticationHolder().getUserAuth());
-				
+
 				return auth;
 			}
 		} else {
 			throw new InvalidGrantException("Invalid device code: " + deviceCode);
 		}
-		
+
 	}
 
-	
-	
-	
+
+
+
 }

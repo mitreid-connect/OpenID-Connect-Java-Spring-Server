@@ -34,7 +34,7 @@ import com.nimbusds.jwt.JWTParser;
 import static org.junit.Assert.assertEquals;
 
 /**
- * 
+ *
  * @author wkim
  *
  */

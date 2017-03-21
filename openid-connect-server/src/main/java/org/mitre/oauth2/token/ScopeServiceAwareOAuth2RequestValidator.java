@@ -15,7 +15,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.oauth2.token;
 
@@ -30,12 +30,12 @@ import org.springframework.security.oauth2.provider.OAuth2RequestValidator;
 import org.springframework.security.oauth2.provider.TokenRequest;
 
 /**
- * 
+ *
  * Validates the scopes on a request by comparing them against a client's
  * allowed scopes, but allow custom scopes to function through the system scopes
- * 
+ *
  * @author jricher
- * 
+ *
  */
 public class ScopeServiceAwareOAuth2RequestValidator implements OAuth2RequestValidator {
 

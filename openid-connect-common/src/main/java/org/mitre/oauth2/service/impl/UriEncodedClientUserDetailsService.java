@@ -41,9 +41,9 @@ import com.google.common.base.Strings;
 
 /**
  * Loads client details based on URI encoding as passed in from basic auth.
- * 
+ *
  *  Should only get called if non-encoded provider fails.
- * 
+ *
  * @author AANGANES
  *
  */
@@ -57,7 +57,7 @@ public class UriEncodedClientUserDetailsService implements UserDetailsService {
 
 	@Autowired
 	private ConfigurationPropertiesBean config;
-	
+
 	@Override
 	public UserDetails loadUserByUsername(String clientId) throws  UsernameNotFoundException {
 

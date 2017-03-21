@@ -24,7 +24,6 @@ import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.DeviceCode;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
-import org.springframework.security.oauth2.provider.OAuth2Request;
 
 /**
  * @author jricher
@@ -40,7 +39,7 @@ public interface DeviceCodeService {
 
 	/**
 	 * @param dc
-	 * @param o2Auth 
+	 * @param o2Auth
 	 */
 	public DeviceCode approveDeviceCode(DeviceCode dc, OAuth2Authentication o2Auth);
 

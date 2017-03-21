@@ -16,6 +16,11 @@
  *******************************************************************************/
 package org.mitre.openid.connect.service.impl;
 
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Matchers.isNull;
+
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -83,18 +88,12 @@ import com.nimbusds.jwt.JWTParser;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.isA;
-import static org.mockito.Matchers.isNull;
-
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -1147,7 +1146,7 @@ public class TestMITREidDataService_1_3 {
 		site1.setUserId("user1");
 		site1.setAllowedScopes(ImmutableSet.of("openid", "phone"));
 		when(mockToken1.getApprovedSite()).thenReturn(site1);
-		
+
 		Date creationDate2 = formatter.parse("2014-09-11T18:49:44.090+0000", Locale.ENGLISH);
 		Date accessDate2 = formatter.parse("2014-09-11T20:49:44.090+0000", Locale.ENGLISH);
 		Date timeoutDate2 = formatter.parse("2014-10-01T20:49:44.090+0000", Locale.ENGLISH);

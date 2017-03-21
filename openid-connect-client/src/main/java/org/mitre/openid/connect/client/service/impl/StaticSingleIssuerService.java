@@ -15,7 +15,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.openid.connect.client.service.impl;
 
@@ -51,7 +51,7 @@ public class StaticSingleIssuerService implements IssuerService {
 
 	/**
 	 * Always returns the configured issuer URL
-	 * 
+	 *
 	 * @see org.mitre.openid.connect.client.service.IssuerService#getIssuer(javax.servlet.http.HttpServletRequest)
 	 */
 	@Override

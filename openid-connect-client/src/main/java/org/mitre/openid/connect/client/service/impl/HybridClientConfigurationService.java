@@ -15,7 +15,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.openid.connect.client.service.impl;
 
@@ -31,12 +31,12 @@ import org.mitre.openid.connect.config.ServerConfiguration;
  * Houses both a static client configuration and a dynamic client configuration
  * service in one object. Checks the static service first, then falls through to
  * the dynamic service.
- * 
+ *
  * Provides configuration passthrough for the template, registered client service, whitelist,
  * and blacklist for the dynamic service, and to the static service's client map.
- * 
+ *
  * @author jricher
- * 
+ *
  */
 public class HybridClientConfigurationService implements ClientConfigurationService {
 

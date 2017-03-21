@@ -15,7 +15,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.openid.connect.assertion;
 
@@ -44,7 +44,7 @@ import com.nimbusds.jwt.JWTParser;
 
 /**
  * Filter to check client authentication via JWT Bearer assertions.
- * 
+ *
  * @author jricher
  *
  */

@@ -27,9 +27,9 @@ import org.springframework.security.oauth2.provider.ClientDetails;
 
 /**
  * Interface for ApprovedSite service
- * 
+ *
  * @author Michael Joseph Walsh, aanganes
- * 
+ *
  */
 public interface ApprovedSiteService {
 
@@ -38,7 +38,7 @@ public interface ApprovedSiteService {
 
 	/**
 	 * Return a collection of all ApprovedSites
-	 * 
+	 *
 	 * @return the ApprovedSite collection, or null
 	 */
 	public Collection<ApprovedSite> getAll();
@@ -46,7 +46,7 @@ public interface ApprovedSiteService {
 	/**
 	 * Return a collection of ApprovedSite managed by this repository matching the
 	 * provided client ID and user ID
-	 * 
+	 *
 	 * @param clientId
 	 * @param userId
 	 * @return
@@ -55,7 +55,7 @@ public interface ApprovedSiteService {
 
 	/**
 	 * Save an ApprovedSite
-	 * 
+	 *
 	 * @param approvedSite
 	 *            the ApprovedSite to be saved
 	 */
@@ -63,7 +63,7 @@ public interface ApprovedSiteService {
 
 	/**
 	 * Get ApprovedSite for id
-	 * 
+	 *
 	 * @param id
 	 *            id for ApprovedSite
 	 * @return ApprovedSite for id, or null
@@ -72,7 +72,7 @@ public interface ApprovedSiteService {
 
 	/**
 	 * Remove the ApprovedSite
-	 * 
+	 *
 	 * @param approvedSite
 	 *            the ApprovedSite to remove
 	 */
@@ -109,5 +109,5 @@ public interface ApprovedSiteService {
 	 * @return
 	 */
 	public List<OAuth2AccessTokenEntity> getApprovedAccessTokens(ApprovedSite approvedSite);
-	
+
 }

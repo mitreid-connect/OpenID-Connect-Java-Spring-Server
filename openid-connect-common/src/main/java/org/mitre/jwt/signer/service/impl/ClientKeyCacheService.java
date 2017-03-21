@@ -39,10 +39,10 @@ import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.jwk.JWKSet;
 
 /**
- * 
+ *
  * Takes in a client and returns the appropriate validator or encrypter for
  * that client's registered key types.
- * 
+ *
  * @author jricher
  *
  */

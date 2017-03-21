@@ -16,6 +16,11 @@
  *******************************************************************************/
 package org.mitre.openid.connect.service.impl;
 
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Matchers.isNull;
+
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -71,11 +76,6 @@ import com.nimbusds.jwt.JWTParser;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
-
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.isA;
-import static org.mockito.Matchers.isNull;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;

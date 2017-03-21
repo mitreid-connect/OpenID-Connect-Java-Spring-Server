@@ -15,7 +15,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.oauth2.introspectingfilter.service.impl;
 
@@ -23,10 +23,10 @@ import org.mitre.oauth2.introspectingfilter.service.IntrospectionConfigurationSe
 import org.mitre.oauth2.model.RegisteredClient;
 
 /**
- * 
+ *
  * Always provides the (configured) IntrospectionURL and RegisteredClient regardless
  * of token. Useful for talking to a single, trusted authorization server.
- * 
+ *
  * @author jricher
  *
  */

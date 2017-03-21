@@ -15,7 +15,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.openid.connect.config;
 
@@ -134,7 +134,7 @@ public class ConfigurationPropertiesBeanTest {
 		}
 
 	}
-	
+
 	@Test
 	public void testShortTopbarTitle() {
 		ConfigurationPropertiesBean bean = new ConfigurationPropertiesBean();

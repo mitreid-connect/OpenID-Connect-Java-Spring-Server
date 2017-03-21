@@ -16,6 +16,8 @@
  *******************************************************************************/
 package org.mitre.oauth2.web;
 
+import static org.mitre.oauth2.web.AuthenticationUtilities.ensureOAuthScope;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
@@ -49,13 +51,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 
-import static org.mitre.oauth2.web.AuthenticationUtilities.ensureOAuthScope;
-
 @Controller
 public class IntrospectionEndpoint {
 
 	/**
-	 * 
+	 *
 	 */
 	public static final String URL = "introspect";
 

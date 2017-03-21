@@ -31,9 +31,9 @@ import com.nimbusds.jose.util.Base64URL;
 /**
  * Utility class for generating hashes for access tokens and authorization codes
  * to be included in an ID Token.
- * 
+ *
  * @author Amanda Anganes
- * 
+ *
  */
 public class IdTokenHashUtils {
 
@@ -44,7 +44,7 @@ public class IdTokenHashUtils {
 
 	/**
 	 * Compute the SHA hash of an authorization code
-	 * 
+	 *
 	 * @param signingAlg
 	 * @param code
 	 * @return
@@ -55,7 +55,7 @@ public class IdTokenHashUtils {
 
 	/**
 	 * Compute the SHA hash of a token
-	 * 
+	 *
 	 * @param signingAlg
 	 * @param token
 	 * @return

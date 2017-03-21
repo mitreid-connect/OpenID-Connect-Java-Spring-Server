@@ -15,7 +15,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.openid.connect.view;
 
@@ -40,10 +40,10 @@ import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
 
 /**
- * 
+ *
  * Provides representation of a client's registration metadata, to be shown from the dynamic registration endpoint
  * on the client_register and rotate_secret operations.
- * 
+ *
  * @author jricher
  *
  */

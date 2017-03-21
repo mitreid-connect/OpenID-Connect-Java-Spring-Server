@@ -31,7 +31,7 @@ import org.springframework.stereotype.Service;
 /**
  * Tests if all the claims in the required set have a matching
  * value in the supplied set.
- * 
+ *
  * @author jricher
  *
  */

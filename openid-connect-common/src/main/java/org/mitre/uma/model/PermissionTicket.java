@@ -39,9 +39,9 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 /**
- * 
+ *
  * An UMA permission, used in the protection API.
- * 
+ *
  * @author jricher
  *
  */
@@ -141,7 +141,7 @@ public class PermissionTicket {
 			name = "claim_to_permission_ticket",
 			joinColumns = @JoinColumn(name = "permission_ticket_id"),
 			inverseJoinColumns = @JoinColumn(name = "claim_id")
-	)
+			)
 	public Collection<Claim> getClaimsSupplied() {
 		return claimsSupplied;
 	}

@@ -26,11 +26,11 @@ import org.mitre.openid.connect.client.service.IssuerService;
 import com.google.common.collect.Sets;
 
 /**
- * 
+ *
  * Issuer service that tries to parse input from the inputs from a third-party
  * account chooser service (if possible), but falls back to webfinger discovery
  * if not.
- * 
+ *
  * @author jricher
  *
  */

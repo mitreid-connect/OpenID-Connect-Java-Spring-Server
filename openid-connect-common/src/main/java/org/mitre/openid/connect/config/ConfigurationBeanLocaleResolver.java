@@ -15,7 +15,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.openid.connect.config;
 
@@ -28,13 +28,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContext;
 import org.springframework.context.i18n.TimeZoneAwareLocaleContext;
-import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.i18n.AbstractLocaleContextResolver;
 
 /**
- * 
+ *
  * Resolve the server's locale from the injected ConfigurationPropertiesBean.
- * 
+ *
  * @author jricher
  *
  */

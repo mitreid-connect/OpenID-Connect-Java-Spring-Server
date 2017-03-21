@@ -32,5 +32,5 @@ public interface AuthenticationHolderRepository {
 
 	public List<AuthenticationHolderEntity> getOrphanedAuthenticationHolders();
 
-    public List<AuthenticationHolderEntity> getOrphanedAuthenticationHolders(PageCriteria pageCriteria);
+	public List<AuthenticationHolderEntity> getOrphanedAuthenticationHolders(PageCriteria pageCriteria);
 }

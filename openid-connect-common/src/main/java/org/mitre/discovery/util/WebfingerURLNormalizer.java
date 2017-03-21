@@ -29,7 +29,7 @@ import com.google.common.base.Strings;
 
 /**
  * Provides utility methods for normalizing and parsing URIs for use with Webfinger Discovery.
- * 
+ *
  * @author wkim
  *
  */

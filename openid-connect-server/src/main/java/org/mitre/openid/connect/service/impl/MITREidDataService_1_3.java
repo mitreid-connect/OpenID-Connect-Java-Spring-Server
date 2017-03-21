@@ -172,11 +172,11 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 	private SystemScopeRepository sysScopeRepository;
 	@Autowired(required = false)
 	private List<MITREidDataServiceExtension> extensions = Collections.emptyList();
-	
+
 	private static final String THIS_VERSION = MITREID_CONNECT_1_3;
-	
-	private MITREidDataServiceMaps maps = new MITREidDataServiceMaps(); 
-	
+
+	private MITREidDataServiceMaps maps = new MITREidDataServiceMaps();
+
 	@Override
 	public boolean supportsVersion(String version) {
 		return THIS_VERSION.equals(version);
@@ -233,7 +233,7 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 		writer.beginArray();
 		writeSystemScopes(writer);
 		writer.endArray();
-		
+
 		for (MITREidDataServiceExtension extension : extensions) {
 			if (extension.supportsVersion(THIS_VERSION)) {
 				extension.exportExtensionData(writer);
@@ -574,51 +574,51 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 		while (reader.hasNext()) {
 			JsonToken tok = reader.peek();
 			switch (tok) {
-			case NAME:
-				String name = reader.nextName();
-				// find out which member it is
-				if (name.equals(CLIENTS)) {
-					readClients(reader);
-				} else if (name.equals(GRANTS)) {
-					readGrants(reader);
-				} else if (name.equals(WHITELISTEDSITES)) {
-					readWhitelistedSites(reader);
-				} else if (name.equals(BLACKLISTEDSITES)) {
-					readBlacklistedSites(reader);
-				} else if (name.equals(AUTHENTICATIONHOLDERS)) {
-					readAuthenticationHolders(reader);
-				} else if (name.equals(ACCESSTOKENS)) {
-					readAccessTokens(reader);
-				} else if (name.equals(REFRESHTOKENS)) {
-					readRefreshTokens(reader);
-				} else if (name.equals(SYSTEMSCOPES)) {
-					readSystemScopes(reader);
-				} else {
-					boolean processed = false;
-					for (MITREidDataServiceExtension extension : extensions) {
-						if (extension.supportsVersion(THIS_VERSION)) {							
-							processed = extension.importExtensionData(name, reader);
-							if (processed) {
-								// if the extension processed data, break out of this inner loop
-								// (only the first extension to claim an extension point gets it)
-								break;
+				case NAME:
+					String name = reader.nextName();
+					// find out which member it is
+					if (name.equals(CLIENTS)) {
+						readClients(reader);
+					} else if (name.equals(GRANTS)) {
+						readGrants(reader);
+					} else if (name.equals(WHITELISTEDSITES)) {
+						readWhitelistedSites(reader);
+					} else if (name.equals(BLACKLISTEDSITES)) {
+						readBlacklistedSites(reader);
+					} else if (name.equals(AUTHENTICATIONHOLDERS)) {
+						readAuthenticationHolders(reader);
+					} else if (name.equals(ACCESSTOKENS)) {
+						readAccessTokens(reader);
+					} else if (name.equals(REFRESHTOKENS)) {
+						readRefreshTokens(reader);
+					} else if (name.equals(SYSTEMSCOPES)) {
+						readSystemScopes(reader);
+					} else {
+						boolean processed = false;
+						for (MITREidDataServiceExtension extension : extensions) {
+							if (extension.supportsVersion(THIS_VERSION)) {
+								processed = extension.importExtensionData(name, reader);
+								if (processed) {
+									// if the extension processed data, break out of this inner loop
+									// (only the first extension to claim an extension point gets it)
+									break;
+								}
 							}
 						}
+						if (!processed) {
+							// unknown token, skip it
+							reader.skipValue();
+						}
 					}
-					if (!processed) {
-						// unknown token, skip it
-						reader.skipValue();
-					}
-				}
-				break;
-			case END_OBJECT:
-				// the object ended, we're done here
-				reader.endObject();
-				continue;
-			default:
-				logger.debug("Found unexpected entry");
-				reader.skipValue();
-				continue;
+					break;
+				case END_OBJECT:
+					// the object ended, we're done here
+					reader.endObject();
+					continue;
+				default:
+					logger.debug("Found unexpected entry");
+					reader.skipValue();
+					continue;
 			}
 		}
 		fixObjectReferences();
@@ -630,7 +630,7 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 		}
 		maps.clearAll();
 	}
-	
+
 	/**
 	 * @param reader
 	 * @throws IOException
@@ -649,37 +649,37 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 			Long authHolderId = null;
 			while (reader.hasNext()) {
 				switch (reader.peek()) {
-				case END_OBJECT:
-					continue;
-				case NAME:
-					String name = reader.nextName();
-					if (reader.peek() == JsonToken.NULL) {
-						reader.skipValue();
-					} else if (name.equals(ID)) {
-						currentId = reader.nextLong();
-					} else if (name.equals(EXPIRATION)) {
-						Date date = utcToDate(reader.nextString());
-						token.setExpiration(date);
-					} else if (name.equals(VALUE)) {
-						String value = reader.nextString();
-						try {
-							token.setJwt(JWTParser.parse(value));
-						} catch (ParseException ex) {
-							logger.error("Unable to set refresh token value to {}", value, ex);
+					case END_OBJECT:
+						continue;
+					case NAME:
+						String name = reader.nextName();
+						if (reader.peek() == JsonToken.NULL) {
+							reader.skipValue();
+						} else if (name.equals(ID)) {
+							currentId = reader.nextLong();
+						} else if (name.equals(EXPIRATION)) {
+							Date date = utcToDate(reader.nextString());
+							token.setExpiration(date);
+						} else if (name.equals(VALUE)) {
+							String value = reader.nextString();
+							try {
+								token.setJwt(JWTParser.parse(value));
+							} catch (ParseException ex) {
+								logger.error("Unable to set refresh token value to {}", value, ex);
+							}
+						} else if (name.equals(CLIENT_ID)) {
+							clientId = reader.nextString();
+						} else if (name.equals(AUTHENTICATION_HOLDER_ID)) {
+							authHolderId = reader.nextLong();
+						} else {
+							logger.debug("Found unexpected entry");
+							reader.skipValue();
 						}
-					} else if (name.equals(CLIENT_ID)) {
-						clientId = reader.nextString();
-					} else if (name.equals(AUTHENTICATION_HOLDER_ID)) {
-						authHolderId = reader.nextLong();
-					} else {
+						break;
+					default:
 						logger.debug("Found unexpected entry");
 						reader.skipValue();
-					}
-					break;
-				default:
-					logger.debug("Found unexpected entry");
-					reader.skipValue();
-					continue;
+						continue;
 				}
 			}
 			reader.endObject();
@@ -711,45 +711,45 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 			Long refreshTokenId = null;
 			while (reader.hasNext()) {
 				switch (reader.peek()) {
-				case END_OBJECT:
-					continue;
-				case NAME:
-					String name = reader.nextName();
-					if (reader.peek() == JsonToken.NULL) {
-						reader.skipValue();
-					} else if (name.equals(ID)) {
-						currentId = reader.nextLong();
-					} else if (name.equals(EXPIRATION)) {
-						Date date = utcToDate(reader.nextString());
-						token.setExpiration(date);
-					} else if (name.equals(VALUE)) {
-						String value = reader.nextString();
-						try {
-							// all tokens are JWTs
-							token.setJwt(JWTParser.parse(value));
-						} catch (ParseException ex) {
-							logger.error("Unable to set refresh token value to {}", value, ex);
+					case END_OBJECT:
+						continue;
+					case NAME:
+						String name = reader.nextName();
+						if (reader.peek() == JsonToken.NULL) {
+							reader.skipValue();
+						} else if (name.equals(ID)) {
+							currentId = reader.nextLong();
+						} else if (name.equals(EXPIRATION)) {
+							Date date = utcToDate(reader.nextString());
+							token.setExpiration(date);
+						} else if (name.equals(VALUE)) {
+							String value = reader.nextString();
+							try {
+								// all tokens are JWTs
+								token.setJwt(JWTParser.parse(value));
+							} catch (ParseException ex) {
+								logger.error("Unable to set refresh token value to {}", value, ex);
+							}
+						} else if (name.equals(CLIENT_ID)) {
+							clientId = reader.nextString();
+						} else if (name.equals(AUTHENTICATION_HOLDER_ID)) {
+							authHolderId = reader.nextLong();
+						} else if (name.equals(REFRESH_TOKEN_ID)) {
+							refreshTokenId = reader.nextLong();
+						} else if (name.equals(SCOPE)) {
+							Set<String> scope = readSet(reader);
+							token.setScope(scope);
+						} else if (name.equals(TYPE)) {
+							token.setTokenType(reader.nextString());
+						} else {
+							logger.debug("Found unexpected entry");
+							reader.skipValue();
 						}
-					} else if (name.equals(CLIENT_ID)) {
-						clientId = reader.nextString();
-					} else if (name.equals(AUTHENTICATION_HOLDER_ID)) {
-						authHolderId = reader.nextLong();
-					} else if (name.equals(REFRESH_TOKEN_ID)) {
-						refreshTokenId = reader.nextLong();
-					} else if (name.equals(SCOPE)) {
-						Set<String> scope = readSet(reader);
-						token.setScope(scope);
-					} else if (name.equals(TYPE)) {
-						token.setTokenType(reader.nextString());
-					} else {
+						break;
+					default:
 						logger.debug("Found unexpected entry");
 						reader.skipValue();
-					}
-					break;
-				default:
-					logger.debug("Found unexpected entry");
-					reader.skipValue();
-					continue;
+						continue;
 				}
 			}
 			reader.endObject();
@@ -777,49 +777,49 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 			Long currentId = null;
 			while (reader.hasNext()) {
 				switch (reader.peek()) {
-				case END_OBJECT:
-					continue;
-				case NAME:
-					String name = reader.nextName();
-					if (reader.peek() == JsonToken.NULL) {
-						reader.skipValue();
-					} else if (name.equals(ID)) {
-						currentId = reader.nextLong();
-					} else if (name.equals(REQUEST_PARAMETERS)) {
-						ahe.setRequestParameters(readMap(reader));
-					} else if (name.equals(CLIENT_ID)) {
-						ahe.setClientId(reader.nextString());
-					} else if (name.equals(SCOPE)) {
-						ahe.setScope(readSet(reader));
-					} else if (name.equals(RESOURCE_IDS)) {
-						ahe.setResourceIds(readSet(reader));
-					} else if (name.equals(AUTHORITIES)) {
-						Set<String> authorityStrs = readSet(reader);
-						Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
-						for (String s : authorityStrs) {
-							GrantedAuthority ga = new SimpleGrantedAuthority(s);
-							authorities.add(ga);
+					case END_OBJECT:
+						continue;
+					case NAME:
+						String name = reader.nextName();
+						if (reader.peek() == JsonToken.NULL) {
+							reader.skipValue();
+						} else if (name.equals(ID)) {
+							currentId = reader.nextLong();
+						} else if (name.equals(REQUEST_PARAMETERS)) {
+							ahe.setRequestParameters(readMap(reader));
+						} else if (name.equals(CLIENT_ID)) {
+							ahe.setClientId(reader.nextString());
+						} else if (name.equals(SCOPE)) {
+							ahe.setScope(readSet(reader));
+						} else if (name.equals(RESOURCE_IDS)) {
+							ahe.setResourceIds(readSet(reader));
+						} else if (name.equals(AUTHORITIES)) {
+							Set<String> authorityStrs = readSet(reader);
+							Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
+							for (String s : authorityStrs) {
+								GrantedAuthority ga = new SimpleGrantedAuthority(s);
+								authorities.add(ga);
+							}
+							ahe.setAuthorities(authorities);
+						} else if (name.equals(APPROVED)) {
+							ahe.setApproved(reader.nextBoolean());
+						} else if (name.equals(REDIRECT_URI)) {
+							ahe.setRedirectUri(reader.nextString());
+						} else if (name.equals(RESPONSE_TYPES)) {
+							ahe.setResponseTypes(readSet(reader));
+						} else if (name.equals(EXTENSIONS)) {
+							ahe.setExtensions(readMap(reader));
+						} else if (name.equals(SAVED_USER_AUTHENTICATION)) {
+							ahe.setUserAuth(readSavedUserAuthentication(reader));
+						} else {
+							logger.debug("Found unexpected entry");
+							reader.skipValue();
 						}
-						ahe.setAuthorities(authorities);
-					} else if (name.equals(APPROVED)) {
-						ahe.setApproved(reader.nextBoolean());
-					} else if (name.equals(REDIRECT_URI)) {
-						ahe.setRedirectUri(reader.nextString());
-					} else if (name.equals(RESPONSE_TYPES)) {
-						ahe.setResponseTypes(readSet(reader));
-					} else if (name.equals(EXTENSIONS)) {
-						ahe.setExtensions(readMap(reader));
-					} else if (name.equals(SAVED_USER_AUTHENTICATION)) {
-						ahe.setUserAuth(readSavedUserAuthentication(reader));
-					} else {
+						break;
+					default:
 						logger.debug("Found unexpected entry");
 						reader.skipValue();
-					}
-					break;
-				default:
-					logger.debug("Found unexpected entry");
-					reader.skipValue();
-					continue;
+						continue;
 				}
 			}
 			reader.endObject();
@@ -842,35 +842,35 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 
 		while (reader.hasNext()) {
 			switch(reader.peek()) {
-			case END_OBJECT:
-				continue;
-			case NAME:
-				String name = reader.nextName();
-				if (reader.peek() == JsonToken.NULL) {
-					reader.skipValue();
-				} else if (name.equals(NAME)) {
-					savedUserAuth.setName(reader.nextString());
-				} else if (name.equals(SOURCE_CLASS)) {
-					savedUserAuth.setSourceClass(reader.nextString());
-				} else if (name.equals(AUTHENTICATED)) {
-					savedUserAuth.setAuthenticated(reader.nextBoolean());
-				} else if (name.equals(AUTHORITIES)) {
-					Set<String> authorityStrs = readSet(reader);
-					Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
-					for (String s : authorityStrs) {
-						GrantedAuthority ga = new SimpleGrantedAuthority(s);
-						authorities.add(ga);
+				case END_OBJECT:
+					continue;
+				case NAME:
+					String name = reader.nextName();
+					if (reader.peek() == JsonToken.NULL) {
+						reader.skipValue();
+					} else if (name.equals(NAME)) {
+						savedUserAuth.setName(reader.nextString());
+					} else if (name.equals(SOURCE_CLASS)) {
+						savedUserAuth.setSourceClass(reader.nextString());
+					} else if (name.equals(AUTHENTICATED)) {
+						savedUserAuth.setAuthenticated(reader.nextBoolean());
+					} else if (name.equals(AUTHORITIES)) {
+						Set<String> authorityStrs = readSet(reader);
+						Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
+						for (String s : authorityStrs) {
+							GrantedAuthority ga = new SimpleGrantedAuthority(s);
+							authorities.add(ga);
+						}
+						savedUserAuth.setAuthorities(authorities);
+					} else {
+						logger.debug("Found unexpected entry");
+						reader.skipValue();
 					}
-					savedUserAuth.setAuthorities(authorities);
-				} else {
+					break;
+				default:
 					logger.debug("Found unexpected entry");
 					reader.skipValue();
-				}
-				break;
-			default:
-				logger.debug("Found unexpected entry");
-				reader.skipValue();
-				continue;
+					continue;
 			}
 		}
 
@@ -891,41 +891,41 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 			reader.beginObject();
 			while (reader.hasNext()) {
 				switch (reader.peek()) {
-				case END_OBJECT:
-					continue;
-				case NAME:
-					String name = reader.nextName();
-					if (reader.peek() == JsonToken.NULL) {
-						reader.skipValue();
-					} else if (name.equals(ID)) {
-						currentId = reader.nextLong();
-					} else if (name.equals(ACCESS_DATE)) {
-						Date date = utcToDate(reader.nextString());
-						site.setAccessDate(date);
-					} else if (name.equals(CLIENT_ID)) {
-						site.setClientId(reader.nextString());
-					} else if (name.equals(CREATION_DATE)) {
-						Date date = utcToDate(reader.nextString());
-						site.setCreationDate(date);
-					} else if (name.equals(TIMEOUT_DATE)) {
-						Date date = utcToDate(reader.nextString());
-						site.setTimeoutDate(date);
-					} else if (name.equals(USER_ID)) {
-						site.setUserId(reader.nextString());
-					} else if (name.equals(ALLOWED_SCOPES)) {
-						Set<String> allowedScopes = readSet(reader);
-						site.setAllowedScopes(allowedScopes);
-					} else if (name.equals(APPROVED_ACCESS_TOKENS)) {
-						tokenIds = readSet(reader);
-					} else {
+					case END_OBJECT:
+						continue;
+					case NAME:
+						String name = reader.nextName();
+						if (reader.peek() == JsonToken.NULL) {
+							reader.skipValue();
+						} else if (name.equals(ID)) {
+							currentId = reader.nextLong();
+						} else if (name.equals(ACCESS_DATE)) {
+							Date date = utcToDate(reader.nextString());
+							site.setAccessDate(date);
+						} else if (name.equals(CLIENT_ID)) {
+							site.setClientId(reader.nextString());
+						} else if (name.equals(CREATION_DATE)) {
+							Date date = utcToDate(reader.nextString());
+							site.setCreationDate(date);
+						} else if (name.equals(TIMEOUT_DATE)) {
+							Date date = utcToDate(reader.nextString());
+							site.setTimeoutDate(date);
+						} else if (name.equals(USER_ID)) {
+							site.setUserId(reader.nextString());
+						} else if (name.equals(ALLOWED_SCOPES)) {
+							Set<String> allowedScopes = readSet(reader);
+							site.setAllowedScopes(allowedScopes);
+						} else if (name.equals(APPROVED_ACCESS_TOKENS)) {
+							tokenIds = readSet(reader);
+						} else {
+							logger.debug("Found unexpected entry");
+							reader.skipValue();
+						}
+						break;
+					default:
 						logger.debug("Found unexpected entry");
 						reader.skipValue();
-					}
-					break;
-				default:
-					logger.debug("Found unexpected entry");
-					reader.skipValue();
-					continue;
+						continue;
 				}
 			}
 			reader.endObject();
@@ -939,7 +939,7 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 		reader.endArray();
 		logger.info("Done reading grants");
 	}
-	
+
 	/**
 	 * @param reader
 	 * @throws IOException
@@ -952,28 +952,28 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 			reader.beginObject();
 			while (reader.hasNext()) {
 				switch (reader.peek()) {
-				case END_OBJECT:
-					continue;
-				case NAME:
-					String name = reader.nextName();
-					if (name.equals(ID)) {
-						currentId = reader.nextLong();
-					} else if (name.equals(CLIENT_ID)) {
-						wlSite.setClientId(reader.nextString());
-					} else if (name.equals(CREATOR_USER_ID)) {
-						wlSite.setCreatorUserId(reader.nextString());
-					} else if (name.equals(ALLOWED_SCOPES)) {
-						Set<String> allowedScopes = readSet(reader);
-						wlSite.setAllowedScopes(allowedScopes);
-					} else {
+					case END_OBJECT:
+						continue;
+					case NAME:
+						String name = reader.nextName();
+						if (name.equals(ID)) {
+							currentId = reader.nextLong();
+						} else if (name.equals(CLIENT_ID)) {
+							wlSite.setClientId(reader.nextString());
+						} else if (name.equals(CREATOR_USER_ID)) {
+							wlSite.setCreatorUserId(reader.nextString());
+						} else if (name.equals(ALLOWED_SCOPES)) {
+							Set<String> allowedScopes = readSet(reader);
+							wlSite.setAllowedScopes(allowedScopes);
+						} else {
+							logger.debug("Found unexpected entry");
+							reader.skipValue();
+						}
+						break;
+					default:
 						logger.debug("Found unexpected entry");
 						reader.skipValue();
-					}
-					break;
-				default:
-					logger.debug("Found unexpected entry");
-					reader.skipValue();
-					continue;
+						continue;
 				}
 			}
 			reader.endObject();
@@ -995,23 +995,23 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 			reader.beginObject();
 			while (reader.hasNext()) {
 				switch (reader.peek()) {
-				case END_OBJECT:
-					continue;
-				case NAME:
-					String name = reader.nextName();
-					if (name.equals(ID)) {
-						reader.skipValue();
-					} else if (name.equals(URI)) {
-						blSite.setUri(reader.nextString());
-					} else {
+					case END_OBJECT:
+						continue;
+					case NAME:
+						String name = reader.nextName();
+						if (name.equals(ID)) {
+							reader.skipValue();
+						} else if (name.equals(URI)) {
+							blSite.setUri(reader.nextString());
+						} else {
+							logger.debug("Found unexpected entry");
+							reader.skipValue();
+						}
+						break;
+					default:
 						logger.debug("Found unexpected entry");
 						reader.skipValue();
-					}
-					break;
-				default:
-					logger.debug("Found unexpected entry");
-					reader.skipValue();
-					continue;
+						continue;
 				}
 			}
 			reader.endObject();
@@ -1032,152 +1032,152 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 			reader.beginObject();
 			while (reader.hasNext()) {
 				switch (reader.peek()) {
-				case END_OBJECT:
-					continue;
-				case NAME:
-					String name = reader.nextName();
-					if (reader.peek() == JsonToken.NULL) {
-						reader.skipValue();
-					} else if (name.equals(CLIENT_ID)) {
-						client.setClientId(reader.nextString());
-					} else if (name.equals(RESOURCE_IDS)) {
-						Set<String> resourceIds = readSet(reader);
-						client.setResourceIds(resourceIds);
-					} else if (name.equals(SECRET)) {
-						client.setClientSecret(reader.nextString());
-					} else if (name.equals(SCOPE)) {
-						Set<String> scope = readSet(reader);
-						client.setScope(scope);
-					} else if (name.equals(AUTHORITIES)) {
-						Set<String> authorityStrs = readSet(reader);
-						Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
-						for (String s : authorityStrs) {
-							GrantedAuthority ga = new SimpleGrantedAuthority(s);
-							authorities.add(ga);
+					case END_OBJECT:
+						continue;
+					case NAME:
+						String name = reader.nextName();
+						if (reader.peek() == JsonToken.NULL) {
+							reader.skipValue();
+						} else if (name.equals(CLIENT_ID)) {
+							client.setClientId(reader.nextString());
+						} else if (name.equals(RESOURCE_IDS)) {
+							Set<String> resourceIds = readSet(reader);
+							client.setResourceIds(resourceIds);
+						} else if (name.equals(SECRET)) {
+							client.setClientSecret(reader.nextString());
+						} else if (name.equals(SCOPE)) {
+							Set<String> scope = readSet(reader);
+							client.setScope(scope);
+						} else if (name.equals(AUTHORITIES)) {
+							Set<String> authorityStrs = readSet(reader);
+							Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
+							for (String s : authorityStrs) {
+								GrantedAuthority ga = new SimpleGrantedAuthority(s);
+								authorities.add(ga);
+							}
+							client.setAuthorities(authorities);
+						} else if (name.equals(ACCESS_TOKEN_VALIDITY_SECONDS)) {
+							client.setAccessTokenValiditySeconds(reader.nextInt());
+						} else if (name.equals(REFRESH_TOKEN_VALIDITY_SECONDS)) {
+							client.setRefreshTokenValiditySeconds(reader.nextInt());
+						} else if (name.equals(ID_TOKEN_VALIDITY_SECONDS)) {
+							client.setIdTokenValiditySeconds(reader.nextInt());
+						} else if (name.equals(DEVICE_CODE_VALIDITY_SECONDS)) {
+							client.setDeviceCodeValiditySeconds(reader.nextInt());
+						} else if (name.equals(REDIRECT_URIS)) {
+							Set<String> redirectUris = readSet(reader);
+							client.setRedirectUris(redirectUris);
+						} else if (name.equals(CLAIMS_REDIRECT_URIS)) {
+							Set<String> claimsRedirectUris = readSet(reader);
+							client.setClaimsRedirectUris(claimsRedirectUris);
+						} else if (name.equals(NAME)) {
+							client.setClientName(reader.nextString());
+						} else if (name.equals(URI)) {
+							client.setClientUri(reader.nextString());
+						} else if (name.equals(LOGO_URI)) {
+							client.setLogoUri(reader.nextString());
+						} else if (name.equals(CONTACTS)) {
+							Set<String> contacts = readSet(reader);
+							client.setContacts(contacts);
+						} else if (name.equals(TOS_URI)) {
+							client.setTosUri(reader.nextString());
+						} else if (name.equals(TOKEN_ENDPOINT_AUTH_METHOD)) {
+							AuthMethod am = AuthMethod.getByValue(reader.nextString());
+							client.setTokenEndpointAuthMethod(am);
+						} else if (name.equals(GRANT_TYPES)) {
+							Set<String> grantTypes = readSet(reader);
+							client.setGrantTypes(grantTypes);
+						} else if (name.equals(RESPONSE_TYPES)) {
+							Set<String> responseTypes = readSet(reader);
+							client.setResponseTypes(responseTypes);
+						} else if (name.equals(POLICY_URI)) {
+							client.setPolicyUri(reader.nextString());
+						} else if (name.equals(APPLICATION_TYPE)) {
+							AppType appType = AppType.getByValue(reader.nextString());
+							client.setApplicationType(appType);
+						} else if (name.equals(SECTOR_IDENTIFIER_URI)) {
+							client.setSectorIdentifierUri(reader.nextString());
+						} else if (name.equals(SUBJECT_TYPE)) {
+							SubjectType st = SubjectType.getByValue(reader.nextString());
+							client.setSubjectType(st);
+						} else if (name.equals(JWKS_URI)) {
+							client.setJwksUri(reader.nextString());
+						} else if (name.equals(JWKS)) {
+							try {
+								client.setJwks(JWKSet.parse(reader.nextString()));
+							} catch (ParseException e) {
+								logger.error("Couldn't parse JWK Set", e);
+							}
+						} else if (name.equals(REQUEST_OBJECT_SIGNING_ALG)) {
+							JWSAlgorithm alg = JWSAlgorithm.parse(reader.nextString());
+							client.setRequestObjectSigningAlg(alg);
+						} else if (name.equals(USER_INFO_ENCRYPTED_RESPONSE_ALG)) {
+							JWEAlgorithm alg = JWEAlgorithm.parse(reader.nextString());
+							client.setUserInfoEncryptedResponseAlg(alg);
+						} else if (name.equals(USER_INFO_ENCRYPTED_RESPONSE_ENC)) {
+							EncryptionMethod alg = EncryptionMethod.parse(reader.nextString());
+							client.setUserInfoEncryptedResponseEnc(alg);
+						} else if (name.equals(USER_INFO_SIGNED_RESPONSE_ALG)) {
+							JWSAlgorithm alg = JWSAlgorithm.parse(reader.nextString());
+							client.setUserInfoSignedResponseAlg(alg);
+						} else if (name.equals(ID_TOKEN_SIGNED_RESPONSE_ALG)) {
+							JWSAlgorithm alg = JWSAlgorithm.parse(reader.nextString());
+							client.setIdTokenSignedResponseAlg(alg);
+						} else if (name.equals(ID_TOKEN_ENCRYPTED_RESPONSE_ALG)) {
+							JWEAlgorithm alg = JWEAlgorithm.parse(reader.nextString());
+							client.setIdTokenEncryptedResponseAlg(alg);
+						} else if (name.equals(ID_TOKEN_ENCRYPTED_RESPONSE_ENC)) {
+							EncryptionMethod alg = EncryptionMethod.parse(reader.nextString());
+							client.setIdTokenEncryptedResponseEnc(alg);
+						} else if (name.equals(TOKEN_ENDPOINT_AUTH_SIGNING_ALG)) {
+							JWSAlgorithm alg = JWSAlgorithm.parse(reader.nextString());
+							client.setTokenEndpointAuthSigningAlg(alg);
+						} else if (name.equals(DEFAULT_MAX_AGE)) {
+							client.setDefaultMaxAge(reader.nextInt());
+						} else if (name.equals(REQUIRE_AUTH_TIME)) {
+							client.setRequireAuthTime(reader.nextBoolean());
+						} else if (name.equals(DEFAULT_ACR_VALUES)) {
+							Set<String> defaultACRvalues = readSet(reader);
+							client.setDefaultACRvalues(defaultACRvalues);
+						} else if (name.equals("initiateLoginUri")) {
+							client.setInitiateLoginUri(reader.nextString());
+						} else if (name.equals(POST_LOGOUT_REDIRECT_URI)) {
+							Set<String> postLogoutUris = readSet(reader);
+							client.setPostLogoutRedirectUris(postLogoutUris);
+						} else if (name.equals(REQUEST_URIS)) {
+							Set<String> requestUris = readSet(reader);
+							client.setRequestUris(requestUris);
+						} else if (name.equals(DESCRIPTION)) {
+							client.setClientDescription(reader.nextString());
+						} else if (name.equals(ALLOW_INTROSPECTION)) {
+							client.setAllowIntrospection(reader.nextBoolean());
+						} else if (name.equals(REUSE_REFRESH_TOKEN)) {
+							client.setReuseRefreshToken(reader.nextBoolean());
+						} else if (name.equals(CLEAR_ACCESS_TOKENS_ON_REFRESH)) {
+							client.setClearAccessTokensOnRefresh(reader.nextBoolean());
+						} else if (name.equals(DYNAMICALLY_REGISTERED)) {
+							client.setDynamicallyRegistered(reader.nextBoolean());
+						} else if (name.equals(CODE_CHALLENGE_METHOD)) {
+							client.setCodeChallengeMethod(PKCEAlgorithm.parse(reader.nextString()));
+						} else if (name.equals(SOFTWARE_ID)) {
+							client.setSoftwareId(reader.nextString());
+						} else if (name.equals(SOFTWARE_VERSION)) {
+							client.setSoftwareVersion(reader.nextString());
+						} else if (name.equals(SOFTWARE_STATEMENT)) {
+							try {
+								client.setSoftwareStatement(JWTParser.parse(reader.nextString()));
+							} catch (ParseException e) {
+								logger.error("Couldn't parse software statement", e);
+							}
+						} else {
+							logger.debug("Found unexpected entry");
+							reader.skipValue();
 						}
-						client.setAuthorities(authorities);
-					} else if (name.equals(ACCESS_TOKEN_VALIDITY_SECONDS)) {
-						client.setAccessTokenValiditySeconds(reader.nextInt());
-					} else if (name.equals(REFRESH_TOKEN_VALIDITY_SECONDS)) {
-						client.setRefreshTokenValiditySeconds(reader.nextInt());
-					} else if (name.equals(ID_TOKEN_VALIDITY_SECONDS)) {
-						client.setIdTokenValiditySeconds(reader.nextInt());
-					} else if (name.equals(DEVICE_CODE_VALIDITY_SECONDS)) {
-						client.setDeviceCodeValiditySeconds(reader.nextInt());
-					} else if (name.equals(REDIRECT_URIS)) {
-						Set<String> redirectUris = readSet(reader);
-						client.setRedirectUris(redirectUris);
-					} else if (name.equals(CLAIMS_REDIRECT_URIS)) {
-						Set<String> claimsRedirectUris = readSet(reader);
-						client.setClaimsRedirectUris(claimsRedirectUris);
-					} else if (name.equals(NAME)) {
-						client.setClientName(reader.nextString());
-					} else if (name.equals(URI)) {
-						client.setClientUri(reader.nextString());
-					} else if (name.equals(LOGO_URI)) {
-						client.setLogoUri(reader.nextString());
-					} else if (name.equals(CONTACTS)) {
-						Set<String> contacts = readSet(reader);
-						client.setContacts(contacts);
-					} else if (name.equals(TOS_URI)) {
-						client.setTosUri(reader.nextString());
-					} else if (name.equals(TOKEN_ENDPOINT_AUTH_METHOD)) {
-						AuthMethod am = AuthMethod.getByValue(reader.nextString());
-						client.setTokenEndpointAuthMethod(am);
-					} else if (name.equals(GRANT_TYPES)) {
-						Set<String> grantTypes = readSet(reader);
-						client.setGrantTypes(grantTypes);
-					} else if (name.equals(RESPONSE_TYPES)) {
-						Set<String> responseTypes = readSet(reader);
-						client.setResponseTypes(responseTypes);
-					} else if (name.equals(POLICY_URI)) {
-						client.setPolicyUri(reader.nextString());
-					} else if (name.equals(APPLICATION_TYPE)) {
-						AppType appType = AppType.getByValue(reader.nextString());
-						client.setApplicationType(appType);
-					} else if (name.equals(SECTOR_IDENTIFIER_URI)) {
-						client.setSectorIdentifierUri(reader.nextString());
-					} else if (name.equals(SUBJECT_TYPE)) {
-						SubjectType st = SubjectType.getByValue(reader.nextString());
-						client.setSubjectType(st);
-					} else if (name.equals(JWKS_URI)) {
-						client.setJwksUri(reader.nextString());
-					} else if (name.equals(JWKS)) {
-						try {
-							client.setJwks(JWKSet.parse(reader.nextString()));
-						} catch (ParseException e) {
-							logger.error("Couldn't parse JWK Set", e);
-						}
-					} else if (name.equals(REQUEST_OBJECT_SIGNING_ALG)) {
-						JWSAlgorithm alg = JWSAlgorithm.parse(reader.nextString());
-						client.setRequestObjectSigningAlg(alg);
-					} else if (name.equals(USER_INFO_ENCRYPTED_RESPONSE_ALG)) {
-						JWEAlgorithm alg = JWEAlgorithm.parse(reader.nextString());
-						client.setUserInfoEncryptedResponseAlg(alg);
-					} else if (name.equals(USER_INFO_ENCRYPTED_RESPONSE_ENC)) {
-						EncryptionMethod alg = EncryptionMethod.parse(reader.nextString());
-						client.setUserInfoEncryptedResponseEnc(alg);
-					} else if (name.equals(USER_INFO_SIGNED_RESPONSE_ALG)) {
-						JWSAlgorithm alg = JWSAlgorithm.parse(reader.nextString());
-						client.setUserInfoSignedResponseAlg(alg);
-					} else if (name.equals(ID_TOKEN_SIGNED_RESPONSE_ALG)) {
-						JWSAlgorithm alg = JWSAlgorithm.parse(reader.nextString());
-						client.setIdTokenSignedResponseAlg(alg);
-					} else if (name.equals(ID_TOKEN_ENCRYPTED_RESPONSE_ALG)) {
-						JWEAlgorithm alg = JWEAlgorithm.parse(reader.nextString());
-						client.setIdTokenEncryptedResponseAlg(alg);
-					} else if (name.equals(ID_TOKEN_ENCRYPTED_RESPONSE_ENC)) {
-						EncryptionMethod alg = EncryptionMethod.parse(reader.nextString());
-						client.setIdTokenEncryptedResponseEnc(alg);
-					} else if (name.equals(TOKEN_ENDPOINT_AUTH_SIGNING_ALG)) {
-						JWSAlgorithm alg = JWSAlgorithm.parse(reader.nextString());
-						client.setTokenEndpointAuthSigningAlg(alg);
-					} else if (name.equals(DEFAULT_MAX_AGE)) {
-						client.setDefaultMaxAge(reader.nextInt());
-					} else if (name.equals(REQUIRE_AUTH_TIME)) {
-						client.setRequireAuthTime(reader.nextBoolean());
-					} else if (name.equals(DEFAULT_ACR_VALUES)) {
-						Set<String> defaultACRvalues = readSet(reader);
-						client.setDefaultACRvalues(defaultACRvalues);
-					} else if (name.equals("initiateLoginUri")) {
-						client.setInitiateLoginUri(reader.nextString());
-					} else if (name.equals(POST_LOGOUT_REDIRECT_URI)) {
-						Set<String> postLogoutUris = readSet(reader);
-						client.setPostLogoutRedirectUris(postLogoutUris);
-					} else if (name.equals(REQUEST_URIS)) {
-						Set<String> requestUris = readSet(reader);
-						client.setRequestUris(requestUris);
-					} else if (name.equals(DESCRIPTION)) {
-						client.setClientDescription(reader.nextString());
-					} else if (name.equals(ALLOW_INTROSPECTION)) {
-						client.setAllowIntrospection(reader.nextBoolean());
-					} else if (name.equals(REUSE_REFRESH_TOKEN)) {
-						client.setReuseRefreshToken(reader.nextBoolean());
-					} else if (name.equals(CLEAR_ACCESS_TOKENS_ON_REFRESH)) {
-						client.setClearAccessTokensOnRefresh(reader.nextBoolean());
-					} else if (name.equals(DYNAMICALLY_REGISTERED)) {
-						client.setDynamicallyRegistered(reader.nextBoolean());
-					} else if (name.equals(CODE_CHALLENGE_METHOD)) {
-						client.setCodeChallengeMethod(PKCEAlgorithm.parse(reader.nextString()));
-					} else if (name.equals(SOFTWARE_ID)) {
-						client.setSoftwareId(reader.nextString());
-					} else if (name.equals(SOFTWARE_VERSION)) {
-						client.setSoftwareVersion(reader.nextString());
-					} else if (name.equals(SOFTWARE_STATEMENT)) {
-						try {
-							client.setSoftwareStatement(JWTParser.parse(reader.nextString()));
-						} catch (ParseException e) {
-							logger.error("Couldn't parse software statement", e);
-						}
-					} else {
+						break;
+					default:
 						logger.debug("Found unexpected entry");
 						reader.skipValue();
-					}
-					break;
-				default:
-					logger.debug("Found unexpected entry");
-					reader.skipValue();
-					continue;
+						continue;
 				}
 			}
 			reader.endObject();
@@ -1201,31 +1201,31 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 			reader.beginObject();
 			while (reader.hasNext()) {
 				switch (reader.peek()) {
-				case END_OBJECT:
-					continue;
-				case NAME:
-					String name = reader.nextName();
-					if (reader.peek() == JsonToken.NULL) {
+					case END_OBJECT:
+						continue;
+					case NAME:
+						String name = reader.nextName();
+						if (reader.peek() == JsonToken.NULL) {
+							reader.skipValue();
+						} else if (name.equals(VALUE)) {
+							scope.setValue(reader.nextString());
+						} else if (name.equals(DESCRIPTION)) {
+							scope.setDescription(reader.nextString());
+						} else if (name.equals(RESTRICTED)) {
+							scope.setRestricted(reader.nextBoolean());
+						} else if (name.equals(DEFAULT_SCOPE)) {
+							scope.setDefaultScope(reader.nextBoolean());
+						} else if (name.equals(ICON)) {
+							scope.setIcon(reader.nextString());
+						} else {
+							logger.debug("found unexpected entry");
+							reader.skipValue();
+						}
+						break;
+					default:
+						logger.debug("Found unexpected entry");
 						reader.skipValue();
-					} else if (name.equals(VALUE)) {
-						scope.setValue(reader.nextString());
-					} else if (name.equals(DESCRIPTION)) {
-						scope.setDescription(reader.nextString());
-					} else if (name.equals(RESTRICTED)) {
-						scope.setRestricted(reader.nextBoolean());
-					} else if (name.equals(DEFAULT_SCOPE)) {
-						scope.setDefaultScope(reader.nextBoolean());
-					} else if (name.equals(ICON)) {
-						scope.setIcon(reader.nextString());
-					} else {
-						logger.debug("found unexpected entry");
-						reader.skipValue();
-					}
-					break;
-				default:
-					logger.debug("Found unexpected entry");
-					reader.skipValue();
-					continue;
+						continue;
 				}
 			}
 			reader.endObject();
@@ -1292,7 +1292,7 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 				token.setApprovedSite(site);
 				tokenRepository.saveAccessToken(token);
 			}
-			
+
 			approvedSiteRepository.save(site);
 		}
 		/*
@@ -1304,7 +1304,7 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 		refreshTokenOldToNewIdMap.clear();
 		accessTokenOldToNewIdMap.clear();
 		grantOldToNewIdMap.clear();
-		*/
+		 */
 		logger.info("Done fixing object references.");
 	}
 

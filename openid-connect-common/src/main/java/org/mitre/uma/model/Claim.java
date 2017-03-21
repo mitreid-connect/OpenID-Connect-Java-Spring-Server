@@ -118,9 +118,9 @@ public class Claim {
 	@ElementCollection(fetch = FetchType.EAGER)
 	@Column(name = "claim_token_format")
 	@CollectionTable(
-		name = "claim_token_format",
-		joinColumns = @JoinColumn(name = "owner_id")
-	)
+			name = "claim_token_format",
+			joinColumns = @JoinColumn(name = "owner_id")
+			)
 	public Set<String> getClaimTokenFormat() {
 		return claimTokenFormat;
 	}
@@ -137,9 +137,9 @@ public class Claim {
 	@ElementCollection(fetch = FetchType.EAGER)
 	@Column(name = "issuer")
 	@CollectionTable(
-		name = "claim_issuer",
-		joinColumns = @JoinColumn(name = "owner_id")
-	)
+			name = "claim_issuer",
+			joinColumns = @JoinColumn(name = "owner_id")
+			)
 	public Set<String> getIssuer() {
 		return issuer;
 	}

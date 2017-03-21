@@ -17,9 +17,11 @@
 package org.mitre.openid.connect.request;
 
 
-import static org.mitre.openid.connect.request.ConnectRequestParameters.*;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.AUD;
 import static org.mitre.openid.connect.request.ConnectRequestParameters.CLAIMS;
 import static org.mitre.openid.connect.request.ConnectRequestParameters.CLIENT_ID;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.CODE_CHALLENGE;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.CODE_CHALLENGE_METHOD;
 import static org.mitre.openid.connect.request.ConnectRequestParameters.DISPLAY;
 import static org.mitre.openid.connect.request.ConnectRequestParameters.LOGIN_HINT;
 import static org.mitre.openid.connect.request.ConnectRequestParameters.MAX_AGE;
@@ -43,7 +45,6 @@ import org.mitre.jwt.signer.service.impl.ClientKeyCacheService;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.PKCEAlgorithm;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
-import org.mitre.oauth2.service.SystemScopeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,9 +81,6 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 
 	@Autowired
 	private ClientKeyCacheService validators;
-
-	@Autowired
-	private SystemScopeService systemScopes;
 
 	@Autowired
 	private JWTEncryptionAndDecryptionService encryptionService;
@@ -147,7 +145,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 				// if the client doesn't specify a code challenge transformation method, it's "plain"
 				request.getExtensions().put(CODE_CHALLENGE_METHOD, PKCEAlgorithm.plain.getName());
 			}
-			
+
 		}
 
 		if (inputParams.containsKey(REQUEST)) {
@@ -179,7 +177,7 @@ public class ConnectOAuth2RequestFactory extends DefaultOAuth2RequestFactory {
 	 *
 	 * @param jwtString
 	 * @param request
-     */
+	 */
 	private void processRequestObject(String jwtString, AuthorizationRequest request) {
 
 		// parse the request object

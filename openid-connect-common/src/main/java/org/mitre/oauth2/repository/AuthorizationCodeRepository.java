@@ -23,7 +23,7 @@ import org.mitre.oauth2.model.AuthorizationCodeEntity;
 
 /**
  * Interface for saving and consuming OAuth2 authorization codes as AuthorizationCodeEntitys.
- * 
+ *
  * @author aanganes
  *
  */
@@ -31,7 +31,7 @@ public interface AuthorizationCodeRepository {
 
 	/**
 	 * Save an AuthorizationCodeEntity to the repository
-	 * 
+	 *
 	 * @param authorizationCode the AuthorizationCodeEntity to save
 	 * @return					the saved AuthorizationCodeEntity
 	 */
@@ -39,7 +39,7 @@ public interface AuthorizationCodeRepository {
 
 	/**
 	 * Get an authorization code from the repository by value.
-	 * 
+	 *
 	 * @param code						the authorization code value
 	 * @return							the authentication associated with the code
 	 */
@@ -47,7 +47,7 @@ public interface AuthorizationCodeRepository {
 
 	/**
 	 * Remove an authorization code from the repository
-	 * 
+	 *
 	 * @param authorizationCodeEntity
 	 */
 	public void remove(AuthorizationCodeEntity authorizationCodeEntity);
@@ -57,10 +57,10 @@ public interface AuthorizationCodeRepository {
 	 */
 	public Collection<AuthorizationCodeEntity> getExpiredCodes();
 
-    /**
-     * @return A collection of all expired codes, limited by the given
-     * PageCriteria.
-     */
-    public Collection<AuthorizationCodeEntity> getExpiredCodes(PageCriteria pageCriteria);
+	/**
+	 * @return A collection of all expired codes, limited by the given
+	 * PageCriteria.
+	 */
+	public Collection<AuthorizationCodeEntity> getExpiredCodes(PageCriteria pageCriteria);
 
 }

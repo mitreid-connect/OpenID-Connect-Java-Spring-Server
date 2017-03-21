@@ -16,6 +16,8 @@
  *******************************************************************************/
 package org.mitre.openid.connect.repository.impl;
 
+import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
+
 import java.util.Collection;
 
 import javax.persistence.EntityManager;
@@ -28,11 +30,9 @@ import org.mitre.util.jpa.JpaUtil;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
-
 /**
  * JPA WhitelistedSite repository implementation
- * 
+ *
  * @author Michael Joseph Walsh, aanganes
  *
  */

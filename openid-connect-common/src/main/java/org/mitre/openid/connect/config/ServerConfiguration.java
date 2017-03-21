@@ -25,16 +25,16 @@ import com.nimbusds.jose.JWSAlgorithm;
 
 
 /**
- * 
+ *
  * Container class for a client's view of a server's configuration
- * 
+ *
  * @author nemonik, jricher
- * 
+ *
  */
 public class ServerConfiguration {
 
 	/*
-	 * 
+	 *
     issuer
         REQUIRED. URL using the https scheme with no query or fragment component that the OP asserts as its Issuer Identifier.
     authorization_endpoint

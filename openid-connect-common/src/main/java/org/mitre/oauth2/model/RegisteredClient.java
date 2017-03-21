@@ -15,7 +15,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.oauth2.model;
 
@@ -50,7 +50,7 @@ public class RegisteredClient {
 	private JsonObject src;
 
 	/**
-	 * 
+	 *
 	 */
 	public RegisteredClient() {
 		this.client = new ClientDetailsEntity();
@@ -815,7 +815,7 @@ public class RegisteredClient {
 	public void setSoftwareStatement(JWT softwareStatement) {
 		client.setSoftwareStatement(softwareStatement);
 	}
-	
+
 	/**
 	 * @return
 	 * @see org.mitre.oauth2.model.ClientDetailsEntity#getCodeChallengeMethod()
