@@ -1,0 +1,28 @@
+<persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence
+             http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
+             version="2.1">
+	<persistence-unit name="static-weaver">
+		<class>org.mitre.oauth2.model.convert.JWKSetStringConverter</class>
+		<class>org.mitre.oauth2.model.convert.JWSAlgorithmStringConverter</class>
+		<class>org.mitre.oauth2.model.convert.JWEAlgorithmStringConverter</class>
+		<class>org.mitre.oauth2.model.convert.JWTStringConverter</class>
+		<class>org.mitre.oauth2.model.convert.JWEEncryptionMethodStringConverter</class>
+		<class>org.mitre.oauth2.model.convert.PKCEAlgorithmStringConverter</class>
+		<class>org.mitre.oauth2.model.convert.SimpleGrantedAuthorityStringConverter</class>
+		<class>org.mitre.oauth2.model.ClientDetailsEntity</class>
+
+		<class>org.mitre.oauth2.model.convert.SerializableStringConverter</class>
+		<class>org.mitre.oauth2.model.convert.JsonElementStringConverter</class>
+		<class>org.mitre.oauth2.model.OAuth2AccessTokenEntity</class>
+		<class>org.mitre.oauth2.model.AuthenticationHolderEntity</class>
+		<class>org.mitre.oauth2.model.SavedUserAuthentication</class>
+		<class>org.mitre.oauth2.model.OAuth2RefreshTokenEntity</class>
+		<class>org.mitre.openid.connect.model.ApprovedSite</class>
+		<class>org.mitre.uma.model.Permission</class>
+		<class>org.mitre.uma.model.ResourceSet</class>
+		<class>org.mitre.uma.model.Policy</class>
+		<class>org.mitre.uma.model.Claim</class>
+	</persistence-unit>
+</persistence>
