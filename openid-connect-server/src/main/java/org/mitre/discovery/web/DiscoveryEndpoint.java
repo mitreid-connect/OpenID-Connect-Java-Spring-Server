@@ -287,7 +287,7 @@ public class DiscoveryEndpoint {
 		String baseUrl = config.getIssuer();
 
 		if (!baseUrl.endsWith("/")) {
-			logger.warn("Configured issuer doesn't end in /, adding for discovery: " + baseUrl);
+			logger.debug("Configured issuer doesn't end in /, adding for discovery: {}", baseUrl);
 			baseUrl = baseUrl.concat("/");
 		}
 
