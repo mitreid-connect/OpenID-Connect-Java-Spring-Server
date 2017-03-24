@@ -21,6 +21,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -369,7 +370,7 @@ public class DefaultUserInfo implements UserInfo {
 	 * @see org.mitre.openid.connect.model.UserInfo#getAddress()
 	 */
 	@Override
-	@OneToOne(targetEntity = DefaultAddress.class)
+	@OneToOne(targetEntity = DefaultAddress.class, cascade = CascadeType.ALL)
 	@JoinColumn(name="address_id")
 	public Address getAddress() {
 		return address;
