@@ -10,7 +10,8 @@ CREATE TABLE IF NOT EXISTS access_token (
 	refresh_token_id BIGINT,
 	client_id BIGINT,
 	auth_holder_id BIGINT,
-	approved_site_id BIGINT
+	approved_site_id BIGINT,
+	UNIQUE(token_value)
 );
 
 CREATE TABLE IF NOT EXISTS access_token_permissions (
@@ -130,6 +131,7 @@ CREATE TABLE IF NOT EXISTS client_details (
 	dynamically_registered BOOLEAN DEFAULT false NOT NULL,
 	allow_introspection BOOLEAN DEFAULT false NOT NULL,
 	id_token_validity_seconds BIGINT DEFAULT 600 NOT NULL,
+	device_code_validity_seconds BIGINT,
 	
 	client_id VARCHAR(256),
 	client_secret VARCHAR(2048),
@@ -169,6 +171,8 @@ CREATE TABLE IF NOT EXISTS client_details (
 	clear_access_tokens_on_refresh BOOLEAN DEFAULT true NOT NULL,
 	
 	software_statement VARCHAR(4096),
+	software_id VARCHAR(2048),
+	software_version VARCHAR(2048),
 	
 	code_challenge_method VARCHAR(256),
 	
@@ -235,8 +239,6 @@ CREATE TABLE IF NOT EXISTS system_scope (
 	icon VARCHAR(256),
 	restricted BOOLEAN DEFAULT false NOT NULL,
 	default_scope BOOLEAN DEFAULT false NOT NULL,
-	structured BOOLEAN DEFAULT false NOT NULL,
-	structured_param_description VARCHAR(256),
 	UNIQUE (scope)
 );
 
@@ -360,18 +362,38 @@ CREATE TABLE IF NOT EXISTS saved_registered_client (
 	registered_client VARCHAR(8192)
 );
 
+CREATE TABLE IF NOT EXISTS device_code (
+	id BIGINT AUTO_INCREMENT PRIMARY KEY,
+	device_code VARCHAR(1024),
+	user_code VARCHAR(1024),
+	expiration TIMESTAMP NULL,
+	client_id VARCHAR(256),
+	approved BOOLEAN,
+	auth_holder_id BIGINT	
+);
 
-CREATE INDEX at_tv_idx ON access_token(token_value(767));
-CREATE INDEX ts_oi_idx ON token_scope(owner_id);
-CREATE INDEX at_exp_idx ON access_token(expiration);
-CREATE INDEX rf_ahi_idx ON refresh_token(auth_holder_id);
-CREATE INDEX cd_ci_idx ON client_details(client_id);
-CREATE INDEX at_ahi_idx ON access_token(auth_holder_id);
-CREATE INDEX aha_oi_idx ON authentication_holder_authority(owner_id);
-CREATE INDEX ahe_oi_idx ON authentication_holder_extension(owner_id);
-CREATE INDEX ahrp_oi_idx ON authentication_holder_request_parameter(owner_id);
-CREATE INDEX ahri_oi_idx ON authentication_holder_resource_id(owner_id);
-CREATE INDEX ahrt_oi_idx ON authentication_holder_response_type(owner_id);
-CREATE INDEX ahs_oi_idx ON authentication_holder_scope(owner_id);
-CREATE INDEX ac_ahi_idx ON authorization_code(auth_holder_id);
-CREATE INDEX suaa_oi_idx ON saved_user_auth_authority(owner_id);
+CREATE TABLE IF NOT EXISTS device_code_scope (
+	owner_id BIGINT NOT NULL,
+	scope VARCHAR(256) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS device_code_request_parameter (
+	owner_id BIGINT,
+	param VARCHAR(2048),
+	val VARCHAR(2048)
+);
+
+CREATE INDEX IF NOT EXISTS at_tv_idx ON access_token(token_value(767));
+CREATE INDEX IF NOT EXISTS ts_oi_idx ON token_scope(owner_id);
+CREATE INDEX IF NOT EXISTS at_exp_idx ON access_token(expiration);
+CREATE INDEX IF NOT EXISTS rf_ahi_idx ON refresh_token(auth_holder_id);
+CREATE INDEX IF NOT EXISTS cd_ci_idx ON client_details(client_id);
+CREATE INDEX IF NOT EXISTS at_ahi_idx ON access_token(auth_holder_id);
+CREATE INDEX IF NOT EXISTS aha_oi_idx ON authentication_holder_authority(owner_id);
+CREATE INDEX IF NOT EXISTS ahe_oi_idx ON authentication_holder_extension(owner_id);
+CREATE INDEX IF NOT EXISTS ahrp_oi_idx ON authentication_holder_request_parameter(owner_id);
+CREATE INDEX IF NOT EXISTS ahri_oi_idx ON authentication_holder_resource_id(owner_id);
+CREATE INDEX IF NOT EXISTS ahrt_oi_idx ON authentication_holder_response_type(owner_id);
+CREATE INDEX IF NOT EXISTS ahs_oi_idx ON authentication_holder_scope(owner_id);
+CREATE INDEX IF NOT EXISTS ac_ahi_idx ON authorization_code(auth_holder_id);
+CREATE INDEX IF NOT EXISTS suaa_oi_idx ON saved_user_auth_authority(owner_id);

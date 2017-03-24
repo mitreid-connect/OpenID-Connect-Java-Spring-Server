@@ -146,6 +146,7 @@ CREATE TABLE client_details (
   client_secret VARCHAR2(2048),
   access_token_validity_seconds NUMBER(19),
   refresh_token_validity_seconds NUMBER(19),
+  device_code_validity_seconds NUMBER(19),
 
   application_type VARCHAR2(256),
   client_name VARCHAR2(256),
@@ -179,6 +180,8 @@ CREATE TABLE client_details (
   initiate_login_uri VARCHAR2(2048),
   clear_access_tokens_on_refresh NUMBER(1) DEFAULT 1 NOT NULL,
   
+  software_statement VARCHAR(4096),
+  software_id VARCHAR(2048),
   software_statement VARCHAR2(4000),
 	
   code_challenge_method VARCHAR2(256),
@@ -394,6 +397,27 @@ CREATE TABLE saved_registered_client (
   registered_client CLOB
 );
 CREATE SEQUENCE saved_registered_client_seq START WITH 1 INCREMENT BY 1 NOCACHE NOCYCLE;
+
+CREATE TABLE IF NOT EXISTS device_code (
+	id NUMBER(19) NOT NULL PRIMARY KEY,
+	device_code VARCHAR2(1024),
+	user_code VARCHAR2(1024),
+	expiration TIMESTAMP,
+	client_id VARCHAR2(256),
+	approved BOOLEAN,
+	auth_holder_id NUMBER(19)	
+);
+
+CREATE TABLE IF NOT EXISTS device_code_scope (
+	owner_id NUMBER(19) NOT NULL,
+	scope VARCHAR2(256) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS device_code_request_parameter (
+	owner_id NUMBER(19),
+	param VARCHAR2(2048),
+	val VARCHAR2(2048)
+);
 
 CREATE INDEX at_tv_idx ON access_token(token_value);
 CREATE INDEX ts_oi_idx ON token_scope(owner_id);
