@@ -94,13 +94,6 @@
 					<jsDestinationFolder>${project.build.directory}/${project.build.finalName}/js/</jsDestinationFolder>
 					<wroManagerFactory>ro.isdc.wro.maven.plugin.manager.factory.ConfigurableWroManagerFactory</wroManagerFactory>
 				</configuration>
-				<dependencies>
-				  <dependency>
-				    <groupId>ro.isdc.wro4j</groupId>
-				    <artifactId>wro4j-extensions</artifactId>
-				    <version>1.8.0</version>
-				  </dependency>
-				</dependencies>
 			</plugin>
 			
 		</plugins>
