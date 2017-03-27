@@ -48,8 +48,16 @@ public interface DeviceCodeService {
 	 * @param client
 	 * @return
 	 */
-	public DeviceCode consumeDeviceCode(String deviceCode, ClientDetails client);
+	public DeviceCode findDeviceCode(String deviceCode, ClientDetails client);
 
+
+	/**
+	 * 
+	 * @param deviceCode
+	 * @param client
+	 */
+	public void clearDeviceCode(String deviceCode, ClientDetails client);
+	
 	/**
 	 * @param deviceCode
 	 * @param userCode

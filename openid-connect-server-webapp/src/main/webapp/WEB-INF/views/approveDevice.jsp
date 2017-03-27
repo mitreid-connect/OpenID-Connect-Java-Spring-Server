@@ -37,7 +37,7 @@
 		</h1>
 
 		<form name="confirmationForm"
-			action="${pageContext.request.contextPath.endsWith('/') ? pageContext.request.contextPath : pageContext.request.contextPath.concat('/') }device-user/approve" method="post">
+			action="${pageContext.request.contextPath.endsWith('/') ? pageContext.request.contextPath : pageContext.request.contextPath.concat('/') }device/approve" method="post">
 
 			<div class="row">
 				<div class="span5 offset1 well-small" style="text-align: left">
@@ -163,8 +163,9 @@
 								</div>
 						</c:if>
 
+						<ul>
 						<c:forEach var="scope" items="${ scopes }">
-
+							<li>
 								<c:if test="${ not empty scope.icon }">
 									<i class="icon-${ fn:escapeXml(scope.icon) }"></i>
 								</c:if> 
@@ -199,9 +200,9 @@
 										
 									</span>
 								</c:if>
-								
+								</li>
 						</c:forEach>
-
+						</ul>
 					</fieldset>
 
 				</div>

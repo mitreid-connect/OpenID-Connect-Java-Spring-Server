@@ -90,22 +90,26 @@ public class DefaultDeviceCodeService implements DeviceCodeService {
 	 * @see org.mitre.oauth2.service.DeviceCodeService#consumeDeviceCode(java.lang.String, org.springframework.security.oauth2.provider.ClientDetails)
 	 */
 	@Override
-	public DeviceCode consumeDeviceCode(String deviceCode, ClientDetails client) {
+	public DeviceCode findDeviceCode(String deviceCode, ClientDetails client) {
 		DeviceCode found = repository.getByDeviceCode(deviceCode);
 
-		// make sure it's not used twice
-		repository.remove(found);
-
-		if (found.getClientId().equals(client.getClientId())) {
-			// make sure the client matches, if so, we're good
-			return found;
+		if (found != null) {
+			if (found.getClientId().equals(client.getClientId())) {
+				// make sure the client matches, if so, we're good
+				return found;
+			} else {
+				// if the clients don't match, pretend the code wasn't found
+				return null;
+			}
 		} else {
-			// if the clients don't match, pretend the code wasn't found
+			// didn't find the code, return null
 			return null;
 		}
 
 	}
 
+	
+	
 	/* (non-Javadoc)
 	 * @see org.mitre.oauth2.service.DeviceCodeService#clearExpiredDeviceCodes()
 	 */
@@ -124,6 +128,20 @@ public class DefaultDeviceCodeService implements DeviceCodeService {
 				repository.remove(item);
 			}
 		}.execute();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.mitre.oauth2.service.DeviceCodeService#clearDeviceCode(java.lang.String, org.springframework.security.oauth2.provider.ClientDetails)
+	 */
+	@Override
+	public void clearDeviceCode(String deviceCode, ClientDetails client) {
+		DeviceCode found = findDeviceCode(deviceCode, client);
+		
+		if (found != null) {
+			// make sure it's not used twice
+			repository.remove(found);
+		}
+
 	}
 
 }

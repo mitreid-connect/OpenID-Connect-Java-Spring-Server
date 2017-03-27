@@ -70,13 +70,15 @@ public class DeviceTokenGranter extends AbstractTokenGranter {
 		String deviceCode = tokenRequest.getRequestParameters().get("device_code");
 
 		// look up the device code and consume it
-		DeviceCode dc = deviceCodeService.consumeDeviceCode(deviceCode, client);
+		DeviceCode dc = deviceCodeService.findDeviceCode(deviceCode, client);
 
 		if (dc != null) {
 
 			// make sure the code hasn't expired yet
 			if (dc.getExpiration() != null && dc.getExpiration().before(new Date())) {
-				// TODO: return an error
+				
+				deviceCodeService.clearDeviceCode(deviceCode, client);
+				
 				throw new DeviceCodeExpiredException("Device code has expired " + deviceCode);
 
 			} else if (!dc.isApproved()) {
@@ -90,6 +92,8 @@ public class DeviceTokenGranter extends AbstractTokenGranter {
 
 				OAuth2Authentication auth = new OAuth2Authentication(getRequestFactory().createOAuth2Request(client, tokenRequest), dc.getAuthenticationHolder().getUserAuth());
 
+				deviceCodeService.clearDeviceCode(deviceCode, client);
+				
 				return auth;
 			}
 		} else {

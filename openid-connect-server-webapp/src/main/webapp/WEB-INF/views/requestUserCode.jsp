@@ -39,7 +39,7 @@
 	</c:if>
 
 
-		<form action="${ config.issuer }${ config.issuer.endsWith('/') ? '' : '/' }device-user/verify" method="POST">
+		<form action="${ config.issuer }${ config.issuer.endsWith('/') ? '' : '/' }device/verify" method="POST">
 
 			<div class="row-fluid">
 				<div class="span12">
