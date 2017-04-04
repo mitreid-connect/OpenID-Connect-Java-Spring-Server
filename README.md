@@ -1,7 +1,7 @@
 # MITREid Connect
 ---
 
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.mitre/openid-connect-parent/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.mitre/openid-connect-parent) [![Travis CI](https://travis-ci.org/mitreid-connect/OpenID-Connect-Java-Spring-Server.svg?branch=master)](https://travis-ci.org/mitreid-connect/OpenID-Connect-Java-Spring-Server)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.mitre/openid-connect-parent/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.mitre/openid-connect-parent) [![Travis CI](https://travis-ci.org/mitreid-connect/OpenID-Connect-Java-Spring-Server.svg?branch=master)](https://travis-ci.org/mitreid-connect/OpenID-Connect-Java-Spring-Server)  [![Codecov](https://codecov.io/github/mitreid-connect/OpenID-Connect-Java-Spring-Server/coverage.svg?branch=master)](https://codecov.io/github/mitreid-connect/OpenID-Connect-Java-Spring-Server)
 
 This project contains a certified OpenID Connect reference implementation in Java on the Spring platform, including a functioning [server library](openid-connect-server), [deployable server package](openid-connect-server-webapp), [client (RP) library](openid-connect-client), and general [utility libraries](openid-connect-common). The server can be used as an OpenID Connect Identity Provider as well as a general-purpose OAuth 2.0 Authorization Server.
 
