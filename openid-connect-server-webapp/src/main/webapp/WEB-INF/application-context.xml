@@ -45,7 +45,12 @@
 
 	<mvc:interceptors>
 		<!-- Inject the UserInfo into the response -->
-		<bean id="userInfoInterceptor" class="org.mitre.openid.connect.web.UserInfoInterceptor" />
+		<mvc:interceptor>
+			<mvc:mapping path="/**"/>
+			<!-- introspection endpoint don't need this info, exclude it -->
+			<mvc:exclude-mapping path="/#{T(org.mitre.oauth2.web.IntrospectionEndpoint).URL}**"/>
+			<bean id="userInfoInterceptor" class="org.mitre.openid.connect.web.UserInfoInterceptor" />
+		</mvc:interceptor>
 		<!-- Inject the server configuration into the response -->
 		<bean id="serverConfigInterceptor" class="org.mitre.openid.connect.web.ServerConfigInterceptor" />
 	</mvc:interceptors>
