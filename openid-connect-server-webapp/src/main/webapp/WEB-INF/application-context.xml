@@ -44,10 +44,41 @@
 	</mvc:annotation-driven>
 
 	<mvc:interceptors>
-		<!-- Inject the UserInfo into the response -->
-		<bean id="userInfoInterceptor" class="org.mitre.openid.connect.web.UserInfoInterceptor" />
-		<!-- Inject the server configuration into the response -->
-		<bean id="serverConfigInterceptor" class="org.mitre.openid.connect.web.ServerConfigInterceptor" />
+		<mvc:interceptor>
+			<!-- Exclude APIs and other machine-facing endpoints from these interceptors -->
+			<mvc:mapping path="/**" />
+			<mvc:exclude-mapping path="/#{T(org.mitre.openid.connect.web.JWKSetPublishingEndpoint).URL}**" />
+			<mvc:exclude-mapping path="/#{T(org.mitre.discovery.web.DiscoveryEndpoint).WELL_KNOWN_URL}/**" />
+			<mvc:exclude-mapping path="/resources/**" />
+			<mvc:exclude-mapping path="/token**"/>
+			<mvc:exclude-mapping path="/#{T(org.mitre.openid.connect.web.DynamicClientRegistrationEndpoint).URL}/**" />
+			<mvc:exclude-mapping path="/#{T(org.mitre.openid.connect.web.ProtectedResourceRegistrationEndpoint).URL}/**" />
+			<mvc:exclude-mapping path="/#{T(org.mitre.openid.connect.web.UserInfoEndpoint).URL}**" />
+			<mvc:exclude-mapping path="/#{T(org.mitre.openid.connect.web.RootController).API_URL}/**" />
+			<mvc:exclude-mapping path="/#{T(org.mitre.oauth2.web.DeviceEndpoint).URL}/**" />
+			<mvc:exclude-mapping path="/#{T(org.mitre.oauth2.web.IntrospectionEndpoint).URL}**" />
+			<mvc:exclude-mapping path="/#{T(org.mitre.oauth2.web.RevocationEndpoint).URL}**" />
+					 
+			<!-- Inject the UserInfo into the response -->
+			<bean id="userInfoInterceptor" class="org.mitre.openid.connect.web.UserInfoInterceptor" />
+		</mvc:interceptor>
+		<mvc:interceptor>
+			<!-- Exclude APIs and other machine-facing endpoints from these interceptors -->
+			<mvc:mapping path="/**" />
+			<mvc:exclude-mapping path="/#{T(org.mitre.openid.connect.web.JWKSetPublishingEndpoint).URL}**" />
+			<mvc:exclude-mapping path="/#{T(org.mitre.discovery.web.DiscoveryEndpoint).WELL_KNOWN_URL}/**" />
+			<mvc:exclude-mapping path="/resources/**" />
+			<mvc:exclude-mapping path="/token**"/>
+			<mvc:exclude-mapping path="/#{T(org.mitre.openid.connect.web.DynamicClientRegistrationEndpoint).URL}/**" />
+			<mvc:exclude-mapping path="/#{T(org.mitre.openid.connect.web.ProtectedResourceRegistrationEndpoint).URL}/**" />
+			<mvc:exclude-mapping path="/#{T(org.mitre.openid.connect.web.UserInfoEndpoint).URL}**" />
+			<mvc:exclude-mapping path="/#{T(org.mitre.openid.connect.web.RootController).API_URL}/**" />
+			<mvc:exclude-mapping path="/#{T(org.mitre.oauth2.web.DeviceEndpoint).URL}/**" />
+			<mvc:exclude-mapping path="/#{T(org.mitre.oauth2.web.IntrospectionEndpoint).URL}**" />
+			<mvc:exclude-mapping path="/#{T(org.mitre.oauth2.web.RevocationEndpoint).URL}**" />
+			<!-- Inject the server configuration into the response -->
+			<bean id="serverConfigInterceptor" class="org.mitre.openid.connect.web.ServerConfigInterceptor" />
+		</mvc:interceptor>
 	</mvc:interceptors>
 
 	<mvc:default-servlet-handler />
