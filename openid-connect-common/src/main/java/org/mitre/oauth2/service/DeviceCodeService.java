@@ -66,7 +66,7 @@ public interface DeviceCodeService {
 	 * @param parameters
 	 * @return
 	 */
-	public DeviceCode createNewDeviceCode(String deviceCode, String userCode, Set<String> requestedScopes, ClientDetailsEntity client, Map<String, String> parameters);
+	public DeviceCode createNewDeviceCode(Set<String> requestedScopes, ClientDetailsEntity client, Map<String, String> parameters);
 
 
 	public void clearExpiredDeviceCodes();

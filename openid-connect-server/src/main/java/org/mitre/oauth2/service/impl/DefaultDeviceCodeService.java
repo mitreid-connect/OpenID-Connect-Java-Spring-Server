@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.mitre.data.AbstractPageOperationTemplate;
 import org.mitre.oauth2.model.AuthenticationHolderEntity;
@@ -29,6 +30,7 @@ import org.mitre.oauth2.model.DeviceCode;
 import org.mitre.oauth2.repository.impl.DeviceCodeRepository;
 import org.mitre.oauth2.service.DeviceCodeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.oauth2.common.util.RandomValueStringGenerator;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Service;
@@ -44,11 +46,19 @@ public class DefaultDeviceCodeService implements DeviceCodeService {
 	@Autowired
 	private DeviceCodeRepository repository;
 
+	private RandomValueStringGenerator randomGenerator = new RandomValueStringGenerator();
+
 	/* (non-Javadoc)
 	 * @see org.mitre.oauth2.service.DeviceCodeService#save(org.mitre.oauth2.model.DeviceCode)
 	 */
 	@Override
-	public DeviceCode createNewDeviceCode(String deviceCode, String userCode, Set<String> requestedScopes, ClientDetailsEntity client, Map<String, String> parameters) {
+	public DeviceCode createNewDeviceCode(Set<String> requestedScopes, ClientDetailsEntity client, Map<String, String> parameters) {
+
+		// create a device code, should be big and random
+		String deviceCode = UUID.randomUUID().toString();
+
+		// create a user code, should be random but small and typable
+		String userCode = randomGenerator.generate();
 
 		DeviceCode dc = new DeviceCode(deviceCode, userCode, requestedScopes, client.getClientId(), parameters);
 

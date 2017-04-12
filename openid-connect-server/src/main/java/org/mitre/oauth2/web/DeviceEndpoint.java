@@ -91,8 +91,6 @@ public class DeviceEndpoint {
 	@Autowired
 	private OAuth2RequestFactory oAuth2RequestFactory;
 
-	private RandomValueStringGenerator randomGenerator = new RandomValueStringGenerator();
-
 	@RequestMapping(value = "/" + URL, method = RequestMethod.POST, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public String requestDeviceCode(@RequestParam("client_id") String clientId, @RequestParam(name="scope", required=false) String scope, Map<String, String> parameters, ModelMap model) {
 
@@ -134,17 +132,11 @@ public class DeviceEndpoint {
 
 		// if we got here the request is legit
 
-		// create a device code, should be big and random
-		String deviceCode = UUID.randomUUID().toString();
-
-		// create a user code, should be random but small and typable
-		String userCode = randomGenerator.generate();
-
-		deviceCodeService.createNewDeviceCode(deviceCode, userCode, requestedScopes, client, parameters);
+		DeviceCode dc = deviceCodeService.createNewDeviceCode(requestedScopes, client, parameters);
 
 		Map<String, Object> response = new HashMap<>();
-		response.put("device_code", deviceCode);
-		response.put("user_code", userCode);
+		response.put("device_code", dc.getDeviceCode());
+		response.put("user_code", dc.getUserCode());
 		response.put("verification_uri", config.getIssuer() + USER_URL);
 		if (client.getDeviceCodeValiditySeconds() != null) {
 			response.put("expires_in", client.getDeviceCodeValiditySeconds());
