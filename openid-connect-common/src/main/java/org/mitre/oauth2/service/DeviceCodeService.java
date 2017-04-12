@@ -20,6 +20,7 @@ package org.mitre.oauth2.service;
 import java.util.Map;
 import java.util.Set;
 
+import org.mitre.oauth2.exception.DeviceCodeCreationException;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.DeviceCode;
 import org.springframework.security.oauth2.provider.ClientDetails;
@@ -66,7 +67,7 @@ public interface DeviceCodeService {
 	 * @param parameters
 	 * @return
 	 */
-	public DeviceCode createNewDeviceCode(Set<String> requestedScopes, ClientDetailsEntity client, Map<String, String> parameters);
+	public DeviceCode createNewDeviceCode(Set<String> requestedScopes, ClientDetailsEntity client, Map<String, String> parameters) throws DeviceCodeCreationException;
 
 
 	public void clearExpiredDeviceCodes();

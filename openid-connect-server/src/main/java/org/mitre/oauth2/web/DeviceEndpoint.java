@@ -27,6 +27,7 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpSession;
 
+import org.mitre.oauth2.exception.DeviceCodeCreationException;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.DeviceCode;
 import org.mitre.oauth2.model.SystemScope;
@@ -132,20 +133,29 @@ public class DeviceEndpoint {
 
 		// if we got here the request is legit
 
-		DeviceCode dc = deviceCodeService.createNewDeviceCode(requestedScopes, client, parameters);
-
-		Map<String, Object> response = new HashMap<>();
-		response.put("device_code", dc.getDeviceCode());
-		response.put("user_code", dc.getUserCode());
-		response.put("verification_uri", config.getIssuer() + USER_URL);
-		if (client.getDeviceCodeValiditySeconds() != null) {
-			response.put("expires_in", client.getDeviceCodeValiditySeconds());
+		try {
+			DeviceCode dc = deviceCodeService.createNewDeviceCode(requestedScopes, client, parameters);
+	
+			Map<String, Object> response = new HashMap<>();
+			response.put("device_code", dc.getDeviceCode());
+			response.put("user_code", dc.getUserCode());
+			response.put("verification_uri", config.getIssuer() + USER_URL);
+			if (client.getDeviceCodeValiditySeconds() != null) {
+				response.put("expires_in", client.getDeviceCodeValiditySeconds());
+			}
+	
+			model.put(JsonEntityView.ENTITY, response);
+	
+	
+			return JsonEntityView.VIEWNAME;
+		} catch (DeviceCodeCreationException dcce) {
+			
+			model.put(HttpCodeView.CODE, HttpStatus.BAD_REQUEST);
+			model.put(JsonErrorView.ERROR, dcce.getError());
+			model.put(JsonErrorView.ERROR_MESSAGE, dcce.getMessage());
+			
+			return JsonErrorView.VIEWNAME;
 		}
-
-		model.put(JsonEntityView.ENTITY, response);
-
-
-		return JsonEntityView.VIEWNAME;
 
 	}
 
