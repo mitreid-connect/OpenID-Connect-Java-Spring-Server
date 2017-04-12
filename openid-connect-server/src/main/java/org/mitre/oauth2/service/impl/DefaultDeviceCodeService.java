@@ -57,8 +57,8 @@ public class DefaultDeviceCodeService implements DeviceCodeService {
 		// create a device code, should be big and random
 		String deviceCode = UUID.randomUUID().toString();
 
-		// create a user code, should be random but small and typable
-		String userCode = randomGenerator.generate();
+		// create a user code, should be random but small and typable, and always uppercase (lookup is case insensitive)
+		String userCode = randomGenerator.generate().toUpperCase();
 
 		DeviceCode dc = new DeviceCode(deviceCode, userCode, requestedScopes, client.getClientId(), parameters);
 
@@ -76,7 +76,8 @@ public class DefaultDeviceCodeService implements DeviceCodeService {
 	 */
 	@Override
 	public DeviceCode lookUpByUserCode(String userCode) {
-		return repository.getByUserCode(userCode);
+		// always up-case the code for lookup
+		return repository.getByUserCode(userCode.toUpperCase());
 	}
 
 	/* (non-Javadoc)
