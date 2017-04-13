@@ -529,6 +529,7 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 				writer.name(SOFTWARE_ID).value(client.getSoftwareId());
 				writer.name(SOFTWARE_VERSION).value(client.getSoftwareVersion());
 				writer.name(SOFTWARE_STATEMENT).value(client.getSoftwareStatement() != null ? client.getSoftwareStatement().serialize() : null);
+				writer.name(CREATION_DATE).value(toUTCString(client.getCreatedAt()));
 				writer.endObject();
 				logger.debug("Wrote client {}", client.getId());
 			} catch (IOException ex) {
@@ -1169,6 +1170,9 @@ public class MITREidDataService_1_3 extends MITREidDataServiceSupport implements
 							} catch (ParseException e) {
 								logger.error("Couldn't parse software statement", e);
 							}
+						} else if (name.equals(CREATION_DATE)) {
+							Date date = utcToDate(reader.nextString());
+							client.setCreatedAt(date);
 						} else {
 							logger.debug("Found unexpected entry");
 							reader.skipValue();
