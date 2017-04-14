@@ -608,7 +608,7 @@ public class ClientAPI {
 								newClient.setJwksUri(claimSet.getStringClaim(claim));
 								break;
 							case JWKS:
-								newClient.setJwks(JWKSet.parse(claimSet.getStringClaim(claim)));
+								newClient.setJwks(JWKSet.parse(claimSet.getJSONObjectClaim(claim).toJSONString()));
 								break;
 							case POLICY_URI:
 								newClient.setPolicyUri(claimSet.getStringClaim(claim));
