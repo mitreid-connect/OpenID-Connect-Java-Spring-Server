@@ -62,6 +62,7 @@ import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.security.oauth2.provider.TokenRequest;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Sets;
 import com.nimbusds.jose.util.Base64URL;
@@ -177,6 +178,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	}
 
 	@Override
+	@Transactional(value="defaultTransactionManager")
 	public OAuth2AccessTokenEntity createAccessToken(OAuth2Authentication authentication) throws AuthenticationException, InvalidClientException {
 		if (authentication != null && authentication.getOAuth2Request() != null) {
 			// look up our client
@@ -310,6 +312,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	}
 
 	@Override
+	@Transactional(value="defaultTransactionManager")
 	public OAuth2AccessTokenEntity refreshAccessToken(String refreshTokenValue, TokenRequest authRequest) throws AuthenticationException {
 
 		OAuth2RefreshTokenEntity refreshToken = clearExpiredRefreshToken(tokenRepository.getRefreshTokenByValue(refreshTokenValue));
@@ -455,6 +458,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	 * Revoke a refresh token and all access tokens issued to it.
 	 */
 	@Override
+	@Transactional(value="defaultTransactionManager")
 	public void revokeRefreshToken(OAuth2RefreshTokenEntity refreshToken) {
 		tokenRepository.clearAccessTokensForRefreshToken(refreshToken);
 		tokenRepository.removeRefreshToken(refreshToken);
@@ -464,6 +468,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	 * Revoke an access token.
 	 */
 	@Override
+	@Transactional(value="defaultTransactionManager")
 	public void revokeAccessToken(OAuth2AccessTokenEntity accessToken) {
 		tokenRepository.removeAccessToken(accessToken);
 	}
@@ -533,6 +538,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	 * @see org.mitre.oauth2.service.OAuth2TokenEntityService#saveAccessToken(org.mitre.oauth2.model.OAuth2AccessTokenEntity)
 	 */
 	@Override
+	@Transactional(value="defaultTransactionManager")
 	public OAuth2AccessTokenEntity saveAccessToken(OAuth2AccessTokenEntity accessToken) {
 		OAuth2AccessTokenEntity newToken = tokenRepository.saveAccessToken(accessToken);
 
@@ -548,6 +554,7 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	 * @see org.mitre.oauth2.service.OAuth2TokenEntityService#saveRefreshToken(org.mitre.oauth2.model.OAuth2RefreshTokenEntity)
 	 */
 	@Override
+	@Transactional(value="defaultTransactionManager")
 	public OAuth2RefreshTokenEntity saveRefreshToken(OAuth2RefreshTokenEntity refreshToken) {
 		return tokenRepository.saveRefreshToken(refreshToken);
 	}
