@@ -35,6 +35,7 @@ import org.mitre.openid.connect.service.UserInfoService;
 import org.mitre.openid.connect.view.HttpCodeView;
 import org.mitre.openid.connect.view.JsonEntityView;
 import org.mitre.openid.connect.web.DynamicClientRegistrationEndpoint;
+import org.mitre.openid.connect.web.EndSessionEndpoint;
 import org.mitre.openid.connect.web.JWKSetPublishingEndpoint;
 import org.mitre.openid.connect.web.UserInfoEndpoint;
 import org.slf4j.Logger;
@@ -310,7 +311,7 @@ public class DiscoveryEndpoint {
 		m.put("token_endpoint", baseUrl + "token");
 		m.put("userinfo_endpoint", baseUrl + UserInfoEndpoint.URL);
 		//check_session_iframe
-		//end_session_endpoint
+		m.put("end_session_endpoint", baseUrl + EndSessionEndpoint.URL);
 		m.put("jwks_uri", baseUrl + JWKSetPublishingEndpoint.URL);
 		m.put("registration_endpoint", baseUrl + DynamicClientRegistrationEndpoint.URL);
 		m.put("scopes_supported", scopeService.toStrings(scopeService.getUnrestricted())); // these are the scopes that you can dynamically register for, which is what matters for discovery
