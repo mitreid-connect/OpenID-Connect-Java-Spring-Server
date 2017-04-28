@@ -16,7 +16,7 @@
 
 	<div class="well" style="text-align: center">
 
-		<h1><spring:message code="device.request_code.header"/>&nbsp;</h1>
+		<h1><spring:message code="device.request_code.header"/></h1>
 
 	<c:if test="${ error != null }">
 		<c:choose>

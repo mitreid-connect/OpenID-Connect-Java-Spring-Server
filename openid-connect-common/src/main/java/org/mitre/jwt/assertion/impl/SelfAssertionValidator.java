@@ -25,6 +25,7 @@ import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
 import com.nimbusds.jwt.JWT;
@@ -37,6 +38,7 @@ import com.nimbusds.jwt.SignedJWT;
  * @author jricher
  *
  */
+@Component("selfAssertionValidator")
 public class SelfAssertionValidator implements AssertionValidator {
 
 	private static Logger logger = LoggerFactory.getLogger(SelfAssertionValidator.class);
@@ -62,16 +64,19 @@ public class SelfAssertionValidator implements AssertionValidator {
 			return false;
 		}
 
+		// make sure the issuer exists
 		if (Strings.isNullOrEmpty(claims.getIssuer())) {
 			logger.debug("No issuer for assertion, rejecting");
 			return false;
 		}
 
-		if (claims.getIssuer().equals(config.getIssuer())) {
+		// make sure the issuer is us
+		if (!claims.getIssuer().equals(config.getIssuer())) {
 			logger.debug("Issuer is not the same as this server, rejecting");
 			return false;
 		}
 
+		// validate the signature based on our public key
 		if (jwtService.validateSignature((SignedJWT) assertion)) {
 			return true;
 		} else {
