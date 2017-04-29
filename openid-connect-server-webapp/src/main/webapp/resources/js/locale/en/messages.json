@@ -516,5 +516,21 @@
 			"approved": "The device has been approved.",
 			"notApproved": "The device has not been approved."
 		}
+	},
+	"logout": {
+		"confirmation": {
+			"title": "Logout requested",
+			"header": "Logout Requested",
+			"requested": "Logout has been requested by ",
+			"explanation": "Do you wan to log out of the identity provider? This will not affect your session at any other systems.",
+			"submit": "Log Out",
+			"deny": "Stay Logged In"
+		},
+		"post": {
+			"title": "Log out",
+			"header": "Log Out",
+			"notLoggedOut": "You have not been logged out of the identity server. You may close this browser or log in again.",
+			"loggedOut": "You have been logged out of the identity server."
+		}
 	}
 }

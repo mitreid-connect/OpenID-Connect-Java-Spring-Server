@@ -13,7 +13,7 @@
 <div class="container main">
 
 	<div class="well" style="text-align: center">
-		<h1><spring:message code="logout.post.title" /></h1>
+		<h1><spring:message code="logout.post.header" /></h1>
 
 		<security:authorize access="hasRole('ROLE_USER')">
 			<div class=""><spring:message code="logout.post.notLoggedOut" /></div>

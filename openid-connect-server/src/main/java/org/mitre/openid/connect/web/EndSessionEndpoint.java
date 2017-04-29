@@ -52,6 +52,8 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.JWTParser;
 
 /**
+ * Implementation of the End Session Endpoint from OIDC session management
+ * 
  * @author jricher
  *
  */
