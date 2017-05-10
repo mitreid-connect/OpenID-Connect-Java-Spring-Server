@@ -47,7 +47,7 @@ public class BlacklistAwareRedirectResolver extends DefaultRedirectResolver {
 	@Autowired
 	private ConfigurationPropertiesBean config;
 
-	private boolean strictMatch = false;
+	private boolean strictMatch = true;
 
 	/* (non-Javadoc)
 	 * @see org.springframework.security.oauth2.provider.endpoint.RedirectResolver#resolveRedirect(java.lang.String, org.springframework.security.oauth2.provider.ClientDetails)

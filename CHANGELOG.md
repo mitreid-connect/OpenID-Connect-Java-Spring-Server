@@ -1,5 +1,7 @@
 Unreleased:
 	- Added changelog
+	- Set default redirect URI resolver strict matching to true
+	- Fixed XSS vulnerability on redirect URI display on approval page
 
 *1.3.1*:
 	- Added End Session endpoint
