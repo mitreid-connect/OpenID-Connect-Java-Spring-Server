@@ -148,11 +148,11 @@
 										<i class="icon-info-sign"></i> <spring:message code="approve.warning"/>:
 									</h4>
 									<spring:message code="approve.no_redirect_uri"/>
-									<spring:message code="approve.redirect_uri" arguments="${redirect_uri}"/>
+									<spring:message code="approve.redirect_uri" arguments="${ fn:escapeXml(redirect_uri) }"/>
 								</div>
 							</c:when>
 							<c:otherwise>
-                                <spring:message code="approve.redirect_uri" arguments="${redirect_uri}" />
+                                <spring:message code="approve.redirect_uri" arguments="${ fn:escapeXml(redirect_uri) }" />
 							</c:otherwise>
 						</c:choose>
 					</div>
