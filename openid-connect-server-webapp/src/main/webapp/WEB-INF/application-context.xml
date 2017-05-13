@@ -259,6 +259,9 @@
 	<!-- Configure locale information -->
 	<import resource="locale-config.xml" />
 
+	<bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver">
+	</bean>
+
 	<!-- user services -->
 	<import resource="user-context.xml" />
 	
