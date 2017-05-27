@@ -46,11 +46,6 @@
 			</set>
 		</property>
 		
-		<property name="templateFiles">
-			<set>
-			
-			</set>		
-		</property>
 	</bean>
 
 

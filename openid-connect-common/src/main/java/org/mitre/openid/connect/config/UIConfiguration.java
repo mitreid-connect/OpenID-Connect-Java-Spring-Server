@@ -28,7 +28,6 @@ import java.util.Set;
 public class UIConfiguration {
 
 	private Set<String> jsFiles;
-	private Set<String> templateFiles;
 
 	/**
 	 * @return the jsFiles
@@ -41,18 +40,6 @@ public class UIConfiguration {
 	 */
 	public void setJsFiles(Set<String> jsFiles) {
 		this.jsFiles = jsFiles;
-	}
-	/**
-	 * @return the templateFiles
-	 */
-	public Set<String> getTemplateFiles() {
-		return templateFiles;
-	}
-	/**
-	 * @param templateFiles the templateFiles to set
-	 */
-	public void setTemplateFiles(Set<String> templateFiles) {
-		this.templateFiles = templateFiles;
 	}
 
 }
