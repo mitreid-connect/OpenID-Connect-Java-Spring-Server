@@ -65,6 +65,7 @@ import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import com.nimbusds.jose.util.Base64URL;
 import com.nimbusds.jwt.JWTClaimsSet;
@@ -315,10 +316,16 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public OAuth2AccessTokenEntity refreshAccessToken(String refreshTokenValue, TokenRequest authRequest) throws AuthenticationException {
+		
+		if (Strings.isNullOrEmpty(refreshTokenValue)) {
+			// throw an invalid token exception if there's no refresh token value at all
+			throw new InvalidTokenException("Invalid refresh token: " + refreshTokenValue);
+		}
 
 		OAuth2RefreshTokenEntity refreshToken = clearExpiredRefreshToken(tokenRepository.getRefreshTokenByValue(refreshTokenValue));
 
 		if (refreshToken == null) {
+			// throw an invalid token exception if we couldn't find the token
 			throw new InvalidTokenException("Invalid refresh token: " + refreshTokenValue);
 		}
 
