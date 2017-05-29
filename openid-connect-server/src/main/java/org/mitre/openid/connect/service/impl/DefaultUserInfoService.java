@@ -53,11 +53,13 @@ public class DefaultUserInfoService implements UserInfoService {
 	@Override
 	public UserInfo getByUsernameAndClientId(String username, String clientId) {
 
-		ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
-
 		UserInfo userInfo = getByUsername(username);
+		if (userInfo == null) {
+			return null;
+		}
 
-		if (client == null || userInfo == null) {
+		ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
+		if (client == null) {
 			return null;
 		}
 
