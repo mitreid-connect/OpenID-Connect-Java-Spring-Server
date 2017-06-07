@@ -365,7 +365,7 @@ CREATE TABLE IF NOT EXISTS saved_registered_client (
 );
 
 CREATE TABLE IF NOT EXISTS device_code (
-	id BIGINT AUTO_INCREMENT PRIMARY KEY,
+	id SERIAL PRIMARY KEY,
 	device_code VARCHAR(1024),
 	user_code VARCHAR(1024),
 	expiration TIMESTAMP NULL,
