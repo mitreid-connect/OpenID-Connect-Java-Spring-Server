@@ -42,6 +42,7 @@ import com.google.common.collect.ImmutableSet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
 
 /**
  * @author jricher
@@ -193,9 +194,10 @@ public class TestUUIDPairwiseIdentiferService {
 
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void testGetIdentifier_multipleRedirectError() {
+	@Test
+	public void testGetIdentifier_multipleRedirects() {
 		String pairwise5 = service.getIdentifier(userInfoRegular, pairwiseClient5);
+		UUID.fromString(pairwise5);
 	}
 
 }

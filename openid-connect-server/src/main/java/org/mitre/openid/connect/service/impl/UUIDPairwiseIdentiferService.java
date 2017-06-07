@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -57,13 +58,13 @@ public class UUIDPairwiseIdentiferService implements PairwiseIdentiferService {
 	public String getIdentifier(UserInfo userInfo, ClientDetailsEntity client) {
 
 		String sectorIdentifier = null;
+		Set<String> redirectUris = client.getRedirectUris();
 
 		if (!Strings.isNullOrEmpty(client.getSectorIdentifierUri())) {
 			UriComponents uri = UriComponentsBuilder.fromUriString(client.getSectorIdentifierUri()).build();
 			sectorIdentifier = uri.getHost(); // calculate based on the host component only
-		} else {
-			Set<String> redirectUris = client.getRedirectUris();
-			UriComponents uri = UriComponentsBuilder.fromUriString(Iterables.getOnlyElement(redirectUris)).build();
+		} else if (!CollectionUtils.isEmpty(redirectUris)) {
+			UriComponents uri = UriComponentsBuilder.fromUriString(redirectUris.iterator().next()).build();
 			sectorIdentifier = uri.getHost(); // calculate based on the host of the only redirect URI
 		}
 
@@ -84,7 +85,7 @@ public class UUIDPairwiseIdentiferService implements PairwiseIdentiferService {
 
 			return pairwise.getIdentifier();
 		} else {
-
+			logger.warn("Could not calculate a pairwise subject identifier for userInfo {} and client {}", userInfo.getPreferredUsername(), client.getClientId());
 			return null;
 		}
 	}
