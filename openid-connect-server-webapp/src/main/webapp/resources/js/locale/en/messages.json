@@ -337,7 +337,7 @@
             "associated-refresh": "This access token was issued with an associated refresh token.",
             "click-to-display": "Click to display full token value",
             "confirm": "Are you sure sure you would like to revoke this token?",
-            "confirm-refresh": "Are you sure sure you would like to revoke this refresh token and its associated access tokens?",
+            "confirm-refresh": "Are you sure you would like to revoke this refresh token and its associated access tokens?",
             "expires": "Expires",
             "no-access": "There are no active access tokens.",
             "no-refresh": "There are no active refresh tokens.",
