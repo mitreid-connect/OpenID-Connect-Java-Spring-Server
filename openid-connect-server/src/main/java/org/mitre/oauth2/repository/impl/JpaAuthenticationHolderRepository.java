@@ -27,6 +27,8 @@ import org.mitre.data.DefaultPageCriteria;
 import org.mitre.data.PageCriteria;
 import org.mitre.oauth2.model.AuthenticationHolderEntity;
 import org.mitre.oauth2.repository.AuthenticationHolderRepository;
+import org.mitre.openid.connect.datasource.DbSource;
+import org.mitre.openid.connect.datasource.DbType;
 import org.mitre.util.jpa.JpaUtil;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,12 +43,14 @@ public class JpaAuthenticationHolderRepository implements AuthenticationHolderRe
 	private EntityManager manager;
 
 	@Override
+	@DbSource(DbType.READ_REPLICA)
 	public List<AuthenticationHolderEntity> getAll() {
 		TypedQuery<AuthenticationHolderEntity> query = manager.createNamedQuery(AuthenticationHolderEntity.QUERY_ALL, AuthenticationHolderEntity.class);
 		return query.getResultList();
 	}
 
 	@Override
+	@DbSource(DbType.READ_REPLICA)
 	public AuthenticationHolderEntity getById(Long id) {
 		return manager.find(AuthenticationHolderEntity.class, id);
 	}
@@ -70,6 +74,7 @@ public class JpaAuthenticationHolderRepository implements AuthenticationHolderRe
 
 	@Override
 	@Transactional(value="defaultTransactionManager")
+	@DbSource(DbType.READ_REPLICA)
 	public List<AuthenticationHolderEntity> getOrphanedAuthenticationHolders() {
 		DefaultPageCriteria pageCriteria = new DefaultPageCriteria(0,MAXEXPIREDRESULTS);
 		return getOrphanedAuthenticationHolders(pageCriteria);
@@ -77,6 +82,7 @@ public class JpaAuthenticationHolderRepository implements AuthenticationHolderRe
 
 	@Override
 	@Transactional(value="defaultTransactionManager")
+	@DbSource(DbType.READ_REPLICA)
 	public List<AuthenticationHolderEntity> getOrphanedAuthenticationHolders(PageCriteria pageCriteria) {
 		TypedQuery<AuthenticationHolderEntity> query = manager.createNamedQuery(AuthenticationHolderEntity.QUERY_GET_UNUSED, AuthenticationHolderEntity.class);
 		return JpaUtil.getResultPage(query, pageCriteria);

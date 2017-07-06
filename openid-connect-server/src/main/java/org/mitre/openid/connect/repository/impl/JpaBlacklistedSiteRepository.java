@@ -28,6 +28,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
+import org.mitre.openid.connect.datasource.DbSource;
+import org.mitre.openid.connect.datasource.DbType;
 import org.mitre.openid.connect.model.BlacklistedSite;
 import org.mitre.openid.connect.repository.BlacklistedSiteRepository;
 import org.springframework.stereotype.Repository;
@@ -48,6 +50,7 @@ public class JpaBlacklistedSiteRepository implements BlacklistedSiteRepository {
 	 */
 	@Override
 	@Transactional(value="defaultTransactionManager")
+	@DbSource(DbType.READ_REPLICA)
 	public Collection<BlacklistedSite> getAll() {
 		TypedQuery<BlacklistedSite> query = manager.createNamedQuery(BlacklistedSite.QUERY_ALL, BlacklistedSite.class);
 		return query.getResultList();
@@ -58,6 +61,7 @@ public class JpaBlacklistedSiteRepository implements BlacklistedSiteRepository {
 	 */
 	@Override
 	@Transactional(value="defaultTransactionManager")
+	@DbSource(DbType.READ_REPLICA)
 	public BlacklistedSite getById(Long id) {
 		return manager.find(BlacklistedSite.class, id);
 	}

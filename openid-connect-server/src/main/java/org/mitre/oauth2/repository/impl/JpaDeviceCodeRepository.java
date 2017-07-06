@@ -29,6 +29,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
 import org.mitre.oauth2.model.DeviceCode;
+import org.mitre.openid.connect.datasource.DbSource;
+import org.mitre.openid.connect.datasource.DbType;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,6 +48,7 @@ public class JpaDeviceCodeRepository implements DeviceCodeRepository {
 	 */
 	@Override
 	@Transactional(value="defaultTransactionManager")
+	@DbSource(DbType.READ_REPLICA)
 	public DeviceCode getById(Long id) {
 		return em.find(DeviceCode.class, id);
 	}
@@ -54,6 +57,7 @@ public class JpaDeviceCodeRepository implements DeviceCodeRepository {
 	 */
 	@Override
 	@Transactional(value="defaultTransactionManager")
+	@DbSource(DbType.READ_REPLICA)
 	public DeviceCode getByUserCode(String value) {
 		TypedQuery<DeviceCode> query = em.createNamedQuery(DeviceCode.QUERY_BY_USER_CODE, DeviceCode.class);
 		query.setParameter(DeviceCode.PARAM_USER_CODE, value);
@@ -64,6 +68,7 @@ public class JpaDeviceCodeRepository implements DeviceCodeRepository {
 	 */
 	@Override
 	@Transactional(value="defaultTransactionManager")
+	@DbSource(DbType.READ_REPLICA)
 	public DeviceCode getByDeviceCode(String value) {
 		TypedQuery<DeviceCode> query = em.createNamedQuery(DeviceCode.QUERY_BY_DEVICE_CODE, DeviceCode.class);
 		query.setParameter(DeviceCode.PARAM_DEVICE_CODE, value);
@@ -97,6 +102,7 @@ public class JpaDeviceCodeRepository implements DeviceCodeRepository {
 	 */
 	@Override
 	@Transactional(value="defaultTransactionManager")
+	@DbSource(DbType.READ_REPLICA)
 	public Collection<DeviceCode> getExpiredCodes() {
 		TypedQuery<DeviceCode> query = em.createNamedQuery(DeviceCode.QUERY_EXPIRED_BY_DATE, DeviceCode.class);
 		query.setParameter(DeviceCode.PARAM_DATE, new Date());

@@ -607,6 +607,23 @@
 				<artifactId>wro4j-extensions</artifactId>
 				<version>1.8.0</version>
 			</dependency>
+
+			<!-- Aspects -->
+			<dependency>
+				<groupId>org.aspectj</groupId>
+				<artifactId>aspectjweaver</artifactId>
+				<version>1.8.7</version>
+			</dependency>
+			<dependency>
+				<groupId>org.aspectj</groupId>
+				<artifactId>aspectjrt</artifactId>
+				<version>1.8.7</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-jdbc</artifactId>
+				<version>4.3.7.RELEASE</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 

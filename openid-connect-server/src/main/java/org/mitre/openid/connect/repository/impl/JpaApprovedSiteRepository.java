@@ -25,6 +25,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
+import org.mitre.openid.connect.datasource.DbSource;
+import org.mitre.openid.connect.datasource.DbType;
 import org.mitre.openid.connect.model.ApprovedSite;
 import org.mitre.openid.connect.repository.ApprovedSiteRepository;
 import org.springframework.stereotype.Repository;
@@ -44,6 +46,7 @@ public class JpaApprovedSiteRepository implements ApprovedSiteRepository {
 
 	@Override
 	@Transactional(value="defaultTransactionManager")
+	@DbSource(DbType.READ_REPLICA)
 	public Collection<ApprovedSite> getAll() {
 		TypedQuery<ApprovedSite> query = manager.createNamedQuery(ApprovedSite.QUERY_ALL, ApprovedSite.class);
 		return query.getResultList();
@@ -51,6 +54,7 @@ public class JpaApprovedSiteRepository implements ApprovedSiteRepository {
 
 	@Override
 	@Transactional(value="defaultTransactionManager")
+	@DbSource(DbType.READ_REPLICA)
 	public ApprovedSite getById(Long id) {
 		return manager.find(ApprovedSite.class, id);
 	}
@@ -74,6 +78,7 @@ public class JpaApprovedSiteRepository implements ApprovedSiteRepository {
 	}
 
 	@Override
+	@DbSource(DbType.READ_REPLICA)
 	public Collection<ApprovedSite> getByClientIdAndUserId(String clientId, String userId) {
 
 		TypedQuery<ApprovedSite> query = manager.createNamedQuery(ApprovedSite.QUERY_BY_CLIENT_ID_AND_USER_ID, ApprovedSite.class);
@@ -85,6 +90,7 @@ public class JpaApprovedSiteRepository implements ApprovedSiteRepository {
 
 	@Override
 	@Transactional(value="defaultTransactionManager")
+	@DbSource(DbType.READ_REPLICA)
 	public Collection<ApprovedSite> getByUserId(String userId) {
 		TypedQuery<ApprovedSite> query = manager.createNamedQuery(ApprovedSite.QUERY_BY_USER_ID, ApprovedSite.class);
 		query.setParameter(ApprovedSite.PARAM_USER_ID, userId);
@@ -95,6 +101,7 @@ public class JpaApprovedSiteRepository implements ApprovedSiteRepository {
 
 	@Override
 	@Transactional(value="defaultTransactionManager")
+	@DbSource(DbType.READ_REPLICA)
 	public Collection<ApprovedSite> getByClientId(String clientId) {
 		TypedQuery<ApprovedSite> query = manager.createNamedQuery(ApprovedSite.QUERY_BY_CLIENT_ID, ApprovedSite.class);
 		query.setParameter(ApprovedSite.PARAM_CLIENT_ID, clientId);

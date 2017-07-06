@@ -25,6 +25,8 @@ import javax.persistence.TypedQuery;
 
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.repository.OAuth2ClientRepository;
+import org.mitre.openid.connect.datasource.DbSource;
+import org.mitre.openid.connect.datasource.DbType;
 import org.mitre.util.jpa.JpaUtil;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,6 +51,7 @@ public class JpaOAuth2ClientRepository implements OAuth2ClientRepository {
 	}
 
 	@Override
+	@DbSource(DbType.READ_REPLICA)
 	public ClientDetailsEntity getById(Long id) {
 		return manager.find(ClientDetailsEntity.class, id);
 	}
@@ -57,6 +60,7 @@ public class JpaOAuth2ClientRepository implements OAuth2ClientRepository {
 	 * @see org.mitre.oauth2.repository.OAuth2ClientRepository#getClientById(java.lang.String)
 	 */
 	@Override
+	@DbSource(DbType.READ_REPLICA)
 	public ClientDetailsEntity getClientByClientId(String clientId) {
 		TypedQuery<ClientDetailsEntity> query = manager.createNamedQuery(ClientDetailsEntity.QUERY_BY_CLIENT_ID, ClientDetailsEntity.class);
 		query.setParameter(ClientDetailsEntity.PARAM_CLIENT_ID, clientId);
@@ -93,6 +97,7 @@ public class JpaOAuth2ClientRepository implements OAuth2ClientRepository {
 	}
 
 	@Override
+	@DbSource(DbType.READ_REPLICA)
 	public Collection<ClientDetailsEntity> getAllClients() {
 		TypedQuery<ClientDetailsEntity> query = manager.createNamedQuery(ClientDetailsEntity.QUERY_ALL, ClientDetailsEntity.class);
 		return query.getResultList();
