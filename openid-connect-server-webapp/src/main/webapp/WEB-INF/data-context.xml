@@ -57,7 +57,7 @@
       <property name="jdbcUrl" value="${jdbc.url}" />
 			<property name="username" value="${jdbc.username}" />
 			<property name="password" value="${jdbc.password}" />
-    </bean> -->
+    </bean>
 
     <bean id="jpaAdapter" class="org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter">
       <property name="databasePlatform" value="org.eclipse.persistence.platform.database.MySQLPlatform" />
@@ -66,7 +66,7 @@
 
 	<!-- You can optionally initialize the database with test values here,
 		but this is not recommended for real systems -->
-		<jdbc:initialize-database data-source="dataSource"> -->
+		<jdbc:initialize-database data-source="dataSource">
 			<jdbc:script location="classpath:/db/tables/mysql_database_tables.sql"/>
 			<jdbc:script location="classpath:/db/tables/security-schema.sql"/>
 			<jdbc:script location="classpath:/db/tables/loading_temp_tables.sql"/>
