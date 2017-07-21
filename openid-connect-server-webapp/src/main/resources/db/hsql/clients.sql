@@ -11,7 +11,7 @@ START TRANSACTION;
 -- 
 
 INSERT INTO client_details_TEMP (client_id, client_secret, client_name, dynamically_registered, refresh_token_validity_seconds, access_token_validity_seconds, id_token_validity_seconds, allow_introspection) VALUES
-	('client', 'secret', 'Test Client', false, null, 3600, 600, true);
+	('client', 'secret', 'Facebook', false, null, 3600, 600, true);
 
 INSERT INTO client_scope_TEMP (owner_id, scope) VALUES
 	('client', 'openid'),
@@ -23,7 +23,8 @@ INSERT INTO client_scope_TEMP (owner_id, scope) VALUES
 
 INSERT INTO client_redirect_uri_TEMP (owner_id, redirect_uri) VALUES
 	('client', 'http://localhost/'),
-	('client', 'http://localhost:8080/');
+	('client', 'http://localhost:8080/'),
+        ('client', 'http://localhost/jsApp/popup.html');
 	
 INSERT INTO client_grant_type_TEMP (owner_id, grant_type) VALUES
 	('client', 'authorization_code'),
@@ -31,6 +32,52 @@ INSERT INTO client_grant_type_TEMP (owner_id, grant_type) VALUES
 	('client', 'urn:ietf:params:oauth:grant-type:device_code'),
 	('client', 'implicit'),
 	('client', 'refresh_token');
+
+INSERT INTO client_details_TEMP (client_id, client_secret, client_name, dynamically_registered, refresh_token_validity_seconds, access_token_validity_seconds, id_token_validity_seconds, allow_introspection) VALUES
+	('client2', 'secret2', 'Twitter', false, null, 3600, 600, true);
+
+INSERT INTO client_scope_TEMP (owner_id, scope) VALUES
+	('client2', 'openid'),
+	('client2', 'profile'),
+	('client2', 'email'),
+	('client2', 'address'),
+	('client2', 'phone'),
+	('client2', 'offline_access');
+
+INSERT INTO client_redirect_uri_TEMP (owner_id, redirect_uri) VALUES
+	('client2', 'http://localhost/'),
+	('client2', 'http://localhost:8080/'),
+        ('client2', 'http://localhost/jsApp/popup.html');
+	
+INSERT INTO client_grant_type_TEMP (owner_id, grant_type) VALUES
+	('client2', 'authorization_code'),
+	('client2', 'urn:ietf:params:oauth:grant_type:redelegate'),
+	('client2', 'urn:ietf:params:oauth:grant-type:device_code'),
+	('client2', 'implicit'),
+	('client2', 'refresh_token');
+
+INSERT INTO client_details_TEMP (client_id, client_secret, client_name, dynamically_registered, refresh_token_validity_seconds, access_token_validity_seconds, id_token_validity_seconds, allow_introspection) VALUES
+	('client3', 'secret3', 'IOS', false, null, 3600, 600, true);
+
+INSERT INTO client_scope_TEMP (owner_id, scope) VALUES
+	('client3', 'openid'),
+	('client3', 'profile'),
+	('client3', 'email'),
+	('client3', 'address'),
+	('client3', 'phone'),
+	('client3', 'offline_access');
+
+INSERT INTO client_redirect_uri_TEMP (owner_id, redirect_uri) VALUES
+	('client3', 'http://localhost/'),
+	('client3', 'http://localhost:8080/'),
+        ('client3', 'http://localhost/jsApp/popup.html');
+	
+INSERT INTO client_grant_type_TEMP (owner_id, grant_type) VALUES
+	('client3', 'authorization_code'),
+	('client3', 'urn:ietf:params:oauth:grant_type:redelegate'),
+	('client3', 'urn:ietf:params:oauth:grant-type:device_code'),
+	('client3', 'implicit'),
+	('client3', 'refresh_token');
 	
 --
 -- Merge the temporary clients safely into the database. This is a two-step process to keep clients from being created on every startup with a persistent store.
