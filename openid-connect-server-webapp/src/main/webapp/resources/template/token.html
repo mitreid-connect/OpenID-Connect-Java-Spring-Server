@@ -13,132 +13,219 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
- 
- <script type="text/html" id="tmpl-token-table">
+
+<script type="text/html" id="tmpl-token-table">
     <div class="well well-small">
-		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> <span data-i18n="common.refresh">Refresh</span></button> &nbsp;
+        <button class="btn btn-small refresh-table"><i class="icon-refresh"></i> <span data-i18n="common.refresh">Refresh</span></button> &nbsp;
     </div>
 
-	<div class="tabbable">
-
- 		<ul class="nav nav-tabs">
-			<li class="active"><a data-target="#token-access-tab" data-toggle="tab" href="#"><span data-i18n="token.token-table.access-tokens">Access Tokens</span> <span class="label label-info" id="access-token-count">?</span></a></li>
-			<li><a data-target="#token-refresh-tab" data-toggle="tab" href="#"><span data-i18n="token.token-table.refresh-tokens">Refresh Tokens</span> <span class="label label-info" id="refresh-token-count">?</span></a></li>
-		</ul>
-
-	<div class="tab-content">
-
-	<div class="tab-pane active" id="token-access-tab">
-
-	<div><p data-i18n="token.token-table.text">Access tokens are usually short-lived and provide clients with access to specific resources. 
-			ID Tokens are specialized access tokens to facilitate log on using OpenID Connect.</p></div>
-
-	<div id="access-token-table-empty" class="alert alert-info" data-i18n="token.token-table.no-access">
-		There are no active access tokens.
-	</div>
-
-	<div class="pagination paginator-access"></div>
-
-    <table id="access-token-table" class="table table-hover table-striped">
+    <!-- Twitter like Table for Clients and their Tokens-->
+    <table id="twitter-table" class="table table-hover table-striped">
         <thead>
-        <tr>
-            <th data-i18n="common.client">Client</th>
-            <th data-i18n="token.token-table.token-info">Token Information</th>
-			<th data-i18n="common.expires">Expires</th>
-            <th></th>
-        </tr>
+            <tr>
+            </tr>
         </thead>
         <tbody>
         </tbody>
     </table>
 
-	<div class="pagination paginator-access"></div>
 
-	</div>
+    <!-- -----------------Useful information--------------------- -->
+    <!--    <div><p data-i18n="token.token-table.text-refresh">Refresh tokens are usually long-lived and provide clients with the ability to get new access tokens without end-user involvement.</p></div>
+        <div><p data-i18n="token.token-table.text">Access tokens are usually short-lived and provide clients with access to specific resources. 
+                ID Tokens are specialized access tokens to facilitate log on using OpenID Connect.</p></div>-->
 
-	<div class="tab-pane" id="token-refresh-tab">
+    <div id="refresh-token-table-empty" class="alert alert-info" data-i18n="token.token-table.no-refresh">
+        There are no active refresh tokens.
+    </div>
 
-	<div><p data-i18n="token.token-table.text-refresh">Refresh tokens are usually long-lived and provide clients with the ability to get new access tokens without end-user involvement.</p></div>
+    <!-- -----------------REFRESH TOKENS TABLE--------------------- -->
+    <!--    <div class="pagination paginator-refresh"></div>
+        <table id="refresh-token-table" class="table table-hover table-striped">
+            <thead>
+                <tr>
+                    <th data-i18n="common.client"></th>
+                     <th data-i18n="token.token-table.token-info">Token Information</th>
+                     <th data-i18n="common.expires">Expires</th>
+                     <th></th>  
+            </thead>
+            <tbody>
+            </tbody>
+        </table>-->
+    <!-- -----------------ACCESS TOKENS--------------------- -->
 
-	<div id="refresh-token-table-empty" class="alert alert-info" data-i18n="token.token-table.no-refresh">
-		There are no active refresh tokens.
-	</div>
 
-	<div class="pagination paginator-refresh"></div>
+    <div id="access-token-table-empty" class="alert alert-info" data-i18n="token.token-table.no-access">
+        There are no active access tokens.
+    </div> 
 
-    <table id="refresh-token-table" class="table table-hover table-striped">
-        <thead>
-        <tr>
-            <th data-i18n="common.client">Client</th>
-            <th data-i18n="token.token-table.token-info">Token Information</th>
-            <th data-i18n="common.expires">Expires</th>
-            <th></th>
-        </tr>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>
-
-	<div class="pagination paginator-refresh"></div>
-
-	</div>
-	</div>
+    <!-- -----------------ACCESS TOKENS TABLE--------------------- -->
+    <!--    <div class="pagination paginator-access"></div>
+        <table id="access-token-table" class="table table-hover table-striped table-responsive">
+            <thead>
+                <tr>
+                    <th data-i18n="common.client"></th>
+                     <th data-i18n="token.token-table.token-info">Token Information</th>
+                     <th data-i18n="common.expires">Expires</th>
+                     <th></th>          
+                </tr>
+            </thead>
+            <tbody>
+    
+            </tbody>
+        </table>-->
 
     <div class="well well-small">
-		<button class="btn btn-small refresh-table"><i class="icon-refresh"></i> <span data-i18n="common.refresh">Refresh</span></button> &nbsp; 
+        <button class="btn btn-small refresh-table"><i class="icon-refresh"></i> <span data-i18n="common.refresh">Refresh</span></button> &nbsp; 
     </div>
 </script>
 
-<script type="text/html" id="tmpl-access-token">
-    <td>
-        <span title="<%- client.clientId %>"><%- client.clientName != null ? client.clientName : ( client.clientId.substr(0,8) + '...' ) %></span>
-		<div class="client-more-info-block"></div>
-		<% if (token.refreshTokenId != null) { %>
-		<br />
-		<span class="label label-important" title="This access token was issued with an associated refresh token." data-i18n="[title]token.token-table.associated-refresh">+ <i class="icon-time icon-white"></i> Refresh</span>
-		<% } %>
-    </td>
 
-    <td>
-		<div class="token-value">
-			<code class="token-substring" style="cursor: pointer" data-i18n="[title]token.token-table.click-to-display" title="Click to display full token value"><%- token.value.substr(0,27) %> ...</code>
-			<input type="text" readonly style="cursor: text" class="token-full input-xxlarge" value="<%- token.value %>" />
-		</div>
-		<div class="scope-list"></div>
-    </td>
 
-	<td>
-		<%- formattedExpiration %>
-	</td>
-	
-    <td>
-		<button class="btn btn-danger btn-delete pull-right"><i class="icon-trash icon-white"></i> <span data-i18n="common.revoke">Revoke</span></button>
-    </td>
+<!------------- BOTH REFRESH AND ACCESS TOKEN TABLE SCRIPTS ------------>
+<script type="text/html" id="tmpl-twitter-table-tokens">
+    <% var refreshCounter = 0;
+    _.each(refresh.models,function (refreshToken,index){ 
+    if(refreshToken.get('clientId') === client.clientId )
+    ++refreshCounter;          
+    });
 
+    var accessTokenCounter = 0;
+    _ .each(access.models,function (accessToken,index){ 
+    if(accessToken.get('clientId') === client.clientId )
+    ++accessTokenCounter;
+    });
+    %>
+
+    <!-- Show Client only if he has Tokens -->
+    <% if(accessTokenCounter !=0 || refreshCounter!=0 ) %>   
+    <td>   
+        <div class="row-fluid">
+            <div class="span12" >
+                <button class="btn btn-danger btn-revokeAll btn-md pull-right"><i class="icon-trash icon-white"></i><span>Revoke All</span></button> 
+
+                <!-- Add the user image --->
+                <img src=" <%- client.logoUri != null ? client.logoUri : 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/300px-No_image_available.svg.png' %>" class="img-rounded" width="75" height="75"> 
+
+
+                <b><%- client.clientName != null ? client.clientName : ( client.clientId.substr(0,8) + '...' ) %></b>
+
+
+                <!-- Total Refresh and Access Tokens -->
+                <span class="label label-important"><%- refreshCounter %> </span> 
+                <span class="label label-success"><%- accessTokenCounter %> </span>   
+
+
+
+                <!-- Client Description -->   
+                <h6 style="margin-left:7%"><%- client.clientDescription != null ? client.clientDescription : 'No description provided for this user'%></h6>
+
+
+                <!-- Show more Button -->
+                <% if(accessTokenCounter !=0 || refreshCounter!=0 ) %>
+                <button type="button" style="margin-left:1%" class="btn btn-info" data-toggle="collapse" data-target="#<%- client.clientId %>">More<i class="icon-arrow-down icon-white"></i></button>
+                <div id="<%- client.clientId %>" class="collapse">
+                    <div class="card card-block">
+                        <!-- Table that holds the access tokens -->
+                        <table id="client<%- client.clientId %>-token-table" class="table table-hover table-striped">
+                            <thead>
+                                <tr>
+                                    <!--                                <th> Refresh Token</th>
+                                                                    <th data-i18n="token.token-table.token-info">Token Information</th>
+                                                                    <th data-i18n="common.expires">Expires</th>
+                                                                    <th></th>-->
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <%  %>
+            </div>
+        </div>
+    </td>
 </script>
 
+
+<!------------- REFRESH TOKEN SCRIPTS ------------>
 <script type="text/html" id="tmpl-refresh-token">
     <td>
-        <span title="<%- client.clientId %>"><%- client.clientName != null ? client.clientName : ( client.clientId.substr(0,8) + '...' ) %></span>
-		<div class="client-more-info-block"></div>
-		<span class="label label-info" title="Number of associated access tokens" data-i18n="[title]token.token-table.number-of-tokens"><%- accessTokenCount %></span>
-    </td>
+        <div class="row-fluid">
+            <div class="span12" >
+                <span class="label label-important" title="This is a refresh token"><i class="icon-time icon-white"></i>Refresh Token</span>
+                <span class="badge badge-success" title="Number of associated access tokens"><%- accessTokenCount %></span>
 
-    <td>
-		<div class="token-value">
-			<code class="token-substring" style="cursor: pointer" data-i18n="[title]token.token-table.click-to-display" title="Click to display full token value"><%- token.value.substr(0,27) %> ...</code>
-			<input type="text" readonly style="cursor: text" class="token-full input-xxlarge" value="<%- token.value %>" />
-		</div>
-		<div class="scope-list"></div>
-    </td>
+                <!-- Revoke Button -->
+                <button class="btn btn-danger btn-delete pull-right"><i class="icon-trash icon-white"></i> <span data-i18n="common.revoke">Revoke</span></button>
 
-	<td>
-		<%- formattedExpiration %>
-	</td>
-	
-    <td>
-		<button class="btn btn-danger btn-delete pull-right"><i class="icon-trash icon-white"></i> <span data-i18n="common.revoke">Revoke</span></button>
-    </td>
+                <!-- Show Token Value -->        
+                <div class="token-value input-append">
+                    <input type="text" readonly style="cursor:text; width:25%" class="tokener-full input-xxlarge js-copytextarea" value="<%- token.value %>" />
+                    <button style="cursor: pointer" class="btn btn-copy"><i class="icon-file"></i> Copy</button>
+                </div>
 
+                <!-- When it expires -->
+                Expires : <%- formattedExpiration %>
+
+                <!-- Scope List-->
+                <div class="scope-list pull-right"></div>
+                <!--If it has any access tokens create the table else not-->
+                <% if(accessTokenCount > 0 ) %>
+                <button type="button" class="btn btn-success btn-sm" data-toggle="collapse" data-target="#<%- token.id %>" style="margin-left:41%;">Tokens<i class="icon-arrow-down icon-white"></i></button>      
+                <%  %>
+            </div>
+        </div>
+        <div id="<%- token.id %>" class="collapse" style="padding-left:40px;">
+            <!-- Table that holds the access tokens -->
+            <table id="refresh<%- client.clientId %><%- token.id %>-token-table" class="table table-hover table-striped">
+                <thead>
+                    <tr>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </td>
 </script>
 
+
+<!--- ---------- ACCESS TOKEN SCRIPTS ---------- -->
+<script type="text/html" id="tmpl-access-token">
+    <td>
+        <!--<span title="<%- client.clientId %>" style="font-weight:bold"><%- client.clientName != null ? client.clientName : ( client.clientId.substr(0,8) + '...' ) %></span>-->
+        <!--<div class="client-more-info-block"> More Client Info</div>-->        
+        <!--        <div>
+                    <span class="label label-info"> Token id = <%- token.id %></span>   
+                </div>-->
+
+        <span class="label label-success" title="This is an access token"><i class="icon-bookmark icon-white"></i>Access Token</span>
+        <!--<span class="label label-important" title="This is an access token">ID = <%- token.id %></span>-->
+
+
+
+        <!--        <% if (token.refreshTokenId != null) { %>
+                <br />
+                <span class="label label-important" title="This access token was issued with an associated refresh token." data-i18n="[title]token.token-table.associated-refresh">+ <i class="icon-time icon-white"></i> Refresh Token </span>
+                <% } %>-->
+    </td>
+
+    <td>
+        <div class="token-value input-append">
+            <input type="text" readonly style="cursor:text; width:40%" class="tokener-full input-xxlarge js-copytextarea" value="<%- token.value %>" />
+            <button style="cursor: pointer" class="btn btn-copy"><i class="icon-file"></i> Copy</button>
+        </div>
+        <div class="scope-list"></div>
+    </td>
+
+    <td>
+        <%- formattedExpiration %>
+        <br>
+        <%- formattedIssuedDate %>
+    </td>
+
+    <td>
+        <button class="btn btn-danger btn-delete pull-right"><i class="icon-trash icon-white"></i> <span data-i18n="common.revoke">Revoke</span></button>
+    </td> 
+</script>

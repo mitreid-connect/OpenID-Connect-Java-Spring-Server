@@ -10,8 +10,9 @@ START TRANSACTION;
 -- Insert client information into the temporary tables. To add clients to the HSQL database, edit things here.
 -- 
 
-INSERT INTO client_details_TEMP (client_id, client_secret, client_name, dynamically_registered, refresh_token_validity_seconds, access_token_validity_seconds, id_token_validity_seconds, allow_introspection) VALUES
-	('client', 'secret', 'Test Client', false, null, 3600, 600, true);
+------------ CREATE CLIENT 1------------------------
+INSERT INTO client_details_TEMP (client_id, client_secret, client_name, dynamically_registered, refresh_token_validity_seconds, access_token_validity_seconds, id_token_validity_seconds, allow_introspection,client_description,logo_uri) VALUES
+	('client', 'secret', 'Facebook', false, 54321, 4800, 15, true,'I am Facebook Client','https://www.facebook.com/images/fb_icon_325x325.png');
 
 INSERT INTO client_scope_TEMP (owner_id, scope) VALUES
 	('client', 'openid'),
@@ -23,7 +24,8 @@ INSERT INTO client_scope_TEMP (owner_id, scope) VALUES
 
 INSERT INTO client_redirect_uri_TEMP (owner_id, redirect_uri) VALUES
 	('client', 'http://localhost/'),
-	('client', 'http://localhost:8080/');
+	('client', 'http://localhost:8080/'),
+        ('client', 'http://localhost/jsApp/popup.html');
 	
 INSERT INTO client_grant_type_TEMP (owner_id, grant_type) VALUES
 	('client', 'authorization_code'),
@@ -31,16 +33,65 @@ INSERT INTO client_grant_type_TEMP (owner_id, grant_type) VALUES
 	('client', 'urn:ietf:params:oauth:grant-type:device_code'),
 	('client', 'implicit'),
 	('client', 'refresh_token');
+
+------------ CREATE CLIENT 2------------------------
+INSERT INTO client_details_TEMP (client_id, client_secret, client_name, dynamically_registered, refresh_token_validity_seconds, access_token_validity_seconds, id_token_validity_seconds, allow_introspection,client_description,logo_uri) VALUES
+	('client2', 'secret2', 'Twitter', false, 54321 , 4800, 600, true,'I am Twitter Client','http://1000miglia.it/attach/Content/Interna/2293/t/twitter_social.png');
+
+INSERT INTO client_scope_TEMP (owner_id, scope) VALUES
+	('client2', 'openid'),
+	('client2', 'profile'),
+	('client2', 'email'),
+	('client2', 'address'),
+	('client2', 'phone'),
+	('client2', 'offline_access');
+
+INSERT INTO client_redirect_uri_TEMP (owner_id, redirect_uri) VALUES
+	('client2', 'http://localhost/'),
+	('client2', 'http://localhost:8080/'),
+        ('client2', 'http://localhost/jsApp/popup.html');
+	
+INSERT INTO client_grant_type_TEMP (owner_id, grant_type) VALUES
+	('client2', 'authorization_code'),
+	('client2', 'urn:ietf:params:oauth:grant_type:redelegate'),
+	('client2', 'urn:ietf:params:oauth:grant-type:device_code'),
+	('client2', 'implicit'),
+	('client2', 'refresh_token');
+
+
+------------ CREATE CLIENT 3------------------------
+INSERT INTO client_details_TEMP (client_id, client_secret, client_name, dynamically_registered, refresh_token_validity_seconds, access_token_validity_seconds, id_token_validity_seconds, allow_introspection,client_description,logo_uri) VALUES
+	('client3', 'secret3', 'IOS', false, 54321, 4800, 600, true,'I am IOS Client','http://www.iconarchive.com/download/i75801/martz90/circle/apple-2.ico');
+
+INSERT INTO client_scope_TEMP (owner_id, scope) VALUES
+	('client3', 'openid'),
+	('client3', 'profile'),
+	('client3', 'email'),
+	('client3', 'address'),
+	('client3', 'phone'),
+	('client3', 'offline_access');
+
+INSERT INTO client_redirect_uri_TEMP (owner_id, redirect_uri) VALUES
+	('client3', 'http://localhost/'),
+	('client3', 'http://localhost:8080/'),
+        ('client3', 'http://localhost/jsApp/popup.html');
+	
+INSERT INTO client_grant_type_TEMP (owner_id, grant_type) VALUES
+	('client3', 'authorization_code'),
+	('client3', 'urn:ietf:params:oauth:grant_type:redelegate'),
+	('client3', 'urn:ietf:params:oauth:grant-type:device_code'),
+	('client3', 'implicit'),
+	('client3', 'refresh_token');
 	
 --
 -- Merge the temporary clients safely into the database. This is a two-step process to keep clients from being created on every startup with a persistent store.
 --
 
 MERGE INTO client_details 
-  USING (SELECT client_id, client_secret, client_name, dynamically_registered, refresh_token_validity_seconds, access_token_validity_seconds, id_token_validity_seconds, allow_introspection FROM client_details_TEMP) AS vals(client_id, client_secret, client_name, dynamically_registered, refresh_token_validity_seconds, access_token_validity_seconds, id_token_validity_seconds, allow_introspection)
+  USING (SELECT client_id, client_secret, client_name, dynamically_registered, refresh_token_validity_seconds, access_token_validity_seconds, id_token_validity_seconds, allow_introspection,client_description,logo_uri FROM client_details_TEMP) AS vals(client_id, client_secret, client_name, dynamically_registered, refresh_token_validity_seconds, access_token_validity_seconds, id_token_validity_seconds, allow_introspection,client_description,logo_uri)
   ON vals.client_id = client_details.client_id
   WHEN NOT MATCHED THEN 
-    INSERT (client_id, client_secret, client_name, dynamically_registered, refresh_token_validity_seconds, access_token_validity_seconds, id_token_validity_seconds, allow_introspection) VALUES(client_id, client_secret, client_name, dynamically_registered, refresh_token_validity_seconds, access_token_validity_seconds, id_token_validity_seconds, allow_introspection);
+    INSERT (client_id, client_secret, client_name, dynamically_registered, refresh_token_validity_seconds, access_token_validity_seconds, id_token_validity_seconds, allow_introspection,client_description,logo_uri) VALUES(client_id, client_secret, client_name, dynamically_registered, refresh_token_validity_seconds, access_token_validity_seconds, id_token_validity_seconds, allow_introspection,client_description,logo_uri);
 
 MERGE INTO client_scope 
   USING (SELECT id, scope FROM client_scope_TEMP, client_details WHERE client_details.client_id = client_scope_TEMP.owner_id) AS vals(id, scope)

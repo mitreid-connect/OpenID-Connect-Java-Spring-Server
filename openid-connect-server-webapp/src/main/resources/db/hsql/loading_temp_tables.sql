@@ -39,7 +39,8 @@ CREATE TEMPORARY TABLE IF NOT EXISTS client_details_TEMP (
 	client_description VARCHAR(256),
 	dynamically_registered BOOLEAN,
 	id_token_validity_seconds BIGINT,
-	
+        logo_uri VARCHAR(2048),
+      	
 	client_id VARCHAR(256),
 	client_secret VARCHAR(2048),
 	access_token_validity_seconds BIGINT,

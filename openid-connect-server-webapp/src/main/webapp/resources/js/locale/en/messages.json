@@ -185,7 +185,11 @@
             	"consistency": "Consistency error",
             	"pairwise-sector": "Pairwise identifiers cannot be used with multiple redirect URIs unless a sector identifier URI is also registered.",
             	"jwk-set": "JWK set error",
-            	"jwk-set-parse": "There was an error parsing the public key from the JSON Web Key set. Check the value and try again."
+            	"jwk-set-parse": "There was an error parsing the public key from the JSON Web Key set. Check the value and try again.",
+                "timeout-bound": "Out of Bounds",
+                "access-token-duration": "The duration of access token is out of bounds. Max duration: 12 months, or 8.760 hours or 525.600 minutes or 31.536.000 seconds",
+                "refresh-token-duration": "The duration of refresh token is out of bounds. Max duration: 12 months, or 8.760 hours or 525.600 minutes or 31.536.000 seconds"
+                
             }
         },
         "client-table": {

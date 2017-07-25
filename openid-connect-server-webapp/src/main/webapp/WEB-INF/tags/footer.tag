@@ -23,6 +23,8 @@
 <script type="text/javascript" src="resources/js/lib/bootstrap-sheet.js"></script>
 <script type="text/javascript" src="resources/js/lib/bootpag.js"></script>
 <script type="text/javascript" src="resources/js/lib/retina.js"></script>
+<script type="text/javascript" src="resources/js/lib/jwt-decode.js"></script>
+<script type="text/javascript" src="resources/js/lib/bootstrap-notify.js"></script>
 <c:if test="${js != null && js != ''}">
 	<script type="text/javascript">
 	
