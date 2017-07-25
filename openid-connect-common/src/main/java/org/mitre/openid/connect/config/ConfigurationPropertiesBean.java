@@ -1,4 +1,4 @@
-/*******************************************************************************
+/** *****************************************************************************
  * Copyright 2017 The MIT Internet Trust Consortium
  *
  * Portions copyright 2011-2013 The MITRE Corporation
@@ -14,7 +14,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *******************************************************************************/
+ ****************************************************************************** */
 package org.mitre.openid.connect.config;
 
 import java.util.List;
@@ -30,231 +30,263 @@ import org.springframework.util.StringUtils;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 
-
-
 /**
- * Bean to hold configuration information that must be injected into various parts
- * of our application. Set all of the properties here, and autowire a reference
- * to this bean if you need access to any configuration properties.
+ * Bean to hold configuration information that must be injected into various
+ * parts of our application. Set all of the properties here, and autowire a
+ * reference to this bean if you need access to any configuration properties.
  *
  * @author AANGANES
  *
  */
 public class ConfigurationPropertiesBean {
 
-	/**
-	 * Logger for this class
-	 */
-	private static final Logger logger = LoggerFactory.getLogger(ConfigurationPropertiesBean.class);
+    /**
+     * Logger for this class
+     */
+    private static final Logger logger = LoggerFactory.getLogger(ConfigurationPropertiesBean.class);
 
-	private String issuer;
+    private String issuer;
 
-	private String topbarTitle;
+    private String topbarTitle;
 
-	private String shortTopbarTitle;
+    private String shortTopbarTitle;
 
-	private String logoImageUrl;
+    private String logoImageUrl;
 
-	private Long regTokenLifeTime;
+    private Long maximumRefreshTokenLifeTime;
 
-	private Long rqpTokenLifeTime;
+    private Long maximumAccessTokenLifeTime;
 
-	private boolean forceHttps = false; // by default we just log a warning for HTTPS deployment
+    private Long regTokenLifeTime;
 
-	private Locale locale = Locale.ENGLISH; // we default to the english translation
+    private Long rqpTokenLifeTime;
 
-	private List<String> languageNamespaces = Lists.newArrayList("messages");
+    private boolean forceHttps = false; // by default we just log a warning for HTTPS deployment
 
-	private boolean dualClient = false;
+    private Locale locale = Locale.ENGLISH; // we default to the english translation
 
-	private boolean heartMode = false;
+    private List<String> languageNamespaces = Lists.newArrayList("messages");
 
-	public ConfigurationPropertiesBean() {
+    private boolean dualClient = false;
 
-	}
+    private boolean heartMode = false;
 
-	/**
-	 * Endpoints protected by TLS must have https scheme in the URI.
-	 * @throws HttpsUrlRequiredException
-	 */
-	@PostConstruct
-	public void checkConfigConsistency() {
-		if (!StringUtils.startsWithIgnoreCase(issuer, "https")) {
-			if (this.forceHttps) {
-				logger.error("Configured issuer url is not using https scheme. Server will be shut down!");
-				throw new BeanCreationException("Issuer is not using https scheme as required: " + issuer);
-			}
-			else {
-				logger.warn("\n\n**\n** WARNING: Configured issuer url is not using https scheme.\n**\n\n");
-			}
-		}
+    public ConfigurationPropertiesBean() {
 
-		if (languageNamespaces == null || languageNamespaces.isEmpty()) {
-			logger.error("No configured language namespaces! Text rendering will fail!");
-		}
-	}
+    }
 
-	/**
-	 * @return the issuer baseUrl
-	 */
-	public String getIssuer() {
-		return issuer;
-	}
+    /**
+     * Endpoints protected by TLS must have https scheme in the URI.
+     *
+     * @throws HttpsUrlRequiredException
+     */
+    @PostConstruct
+    public void checkConfigConsistency() {
+        if (!StringUtils.startsWithIgnoreCase(issuer, "https")) {
+            if (this.forceHttps) {
+                logger.error("Configured issuer url is not using https scheme. Server will be shut down!");
+                throw new BeanCreationException("Issuer is not using https scheme as required: " + issuer);
+            } else {
+                logger.warn("\n\n**\n** WARNING: Configured issuer url is not using https scheme.\n**\n\n");
+            }
+        }
 
-	/**
-	 * @param iss the issuer to set
-	 */
-	public void setIssuer(String iss) {
-		issuer = iss;
-	}
+        if (languageNamespaces == null || languageNamespaces.isEmpty()) {
+            logger.error("No configured language namespaces! Text rendering will fail!");
+        }
+    }
 
-	/**
-	 * @return the topbarTitle
-	 */
-	public String getTopbarTitle() {
-		return topbarTitle;
-	}
+    /**
+     * @return the issuer baseUrl
+     */
+    public String getIssuer() {
+        return issuer;
+    }
 
-	/**
-	 * @param topbarTitle the topbarTitle to set
-	 */
-	public void setTopbarTitle(String topbarTitle) {
-		this.topbarTitle = topbarTitle;
-	}
+    /**
+     * @param iss the issuer to set
+     */
+    public void setIssuer(String iss) {
+        issuer = iss;
+    }
 
-	/**
-	 * @return If shortTopbarTitle is undefined, returns topbarTitle.
-	 */
-	public String getShortTopbarTitle() {
-		return shortTopbarTitle == null ? topbarTitle : shortTopbarTitle;
-	}
+    /**
+     * @return the topbarTitle
+     */
+    public String getTopbarTitle() {
+        return topbarTitle;
+    }
 
-	public void setShortTopbarTitle(String shortTopbarTitle) {
-		this.shortTopbarTitle = shortTopbarTitle;
-	}
+    /**
+     * @param topbarTitle the topbarTitle to set
+     */
+    public void setTopbarTitle(String topbarTitle) {
+        this.topbarTitle = topbarTitle;
+    }
 
-	/**
-	 * @return the logoImageUrl
-	 */
-	public String getLogoImageUrl() {
-		return logoImageUrl;
-	}
+    /**
+     * @return If shortTopbarTitle is undefined, returns topbarTitle.
+     */
+    public String getShortTopbarTitle() {
+        return shortTopbarTitle == null ? topbarTitle : shortTopbarTitle;
+    }
 
-	/**
-	 * @param logoImageUrl the logoImageUrl to set
-	 */
-	public void setLogoImageUrl(String logoImageUrl) {
-		this.logoImageUrl = logoImageUrl;
-	}
+    public void setShortTopbarTitle(String shortTopbarTitle) {
+        this.shortTopbarTitle = shortTopbarTitle;
+    }
 
-	/**
-	 * @return the regTokenLifeTime
-	 */
-	public Long getRegTokenLifeTime() {
-		return regTokenLifeTime;
-	}
+    /**
+     * @return the logoImageUrl
+     */
+    public String getLogoImageUrl() {
+        return logoImageUrl;
+    }
 
-	/**
-	 * @param regTokenLifeTime the registration token lifetime to set in seconds
-	 */
-	public void setRegTokenLifeTime(Long regTokenLifeTime) {
-		this.regTokenLifeTime = regTokenLifeTime;
-	}
+    /**
+     * @param logoImageUrl the logoImageUrl to set
+     */
+    public void setLogoImageUrl(String logoImageUrl) {
+        this.logoImageUrl = logoImageUrl;
+    }
 
-	/**
-	 * @return the rqpTokenLifeTime
-	 */
-	public Long getRqpTokenLifeTime() {
-		return rqpTokenLifeTime;
-	}
+    /**
+     * @return the regTokenLifeTime
+     */
+    public Long getRegTokenLifeTime() {
+        return regTokenLifeTime;
+    }
 
-	/**
-	 * @param rqpTokenLifeTime the rqpTokenLifeTime to set
-	 */
-	public void setRqpTokenLifeTime(Long rqpTokenLifeTime) {
-		this.rqpTokenLifeTime = rqpTokenLifeTime;
-	}
+    /**
+     * @param regTokenLifeTime the registration token lifetime to set in seconds
+     */
+    public void setRegTokenLifeTime(Long regTokenLifeTime) {
+        this.regTokenLifeTime = regTokenLifeTime;
+    }
 
-	public boolean isForceHttps() {
-		return forceHttps;
-	}
+    /**
+     * @return the rqpTokenLifeTime
+     */
+    public Long getRqpTokenLifeTime() {
+        return rqpTokenLifeTime;
+    }
 
-	public void setForceHttps(boolean forceHttps) {
-		this.forceHttps = forceHttps;
-	}
+    /**
+     * @param rqpTokenLifeTime the rqpTokenLifeTime to set
+     */
+    public void setRqpTokenLifeTime(Long rqpTokenLifeTime) {
+        this.rqpTokenLifeTime = rqpTokenLifeTime;
+    }
 
-	/**
-	 * @return the locale
-	 */
-	public Locale getLocale() {
-		return locale;
-	}
+    public boolean isForceHttps() {
+        return forceHttps;
+    }
 
-	/**
-	 * @param locale the locale to set
-	 */
-	public void setLocale(Locale locale) {
-		this.locale = locale;
-	}
+    public void setForceHttps(boolean forceHttps) {
+        this.forceHttps = forceHttps;
+    }
 
-	/**
-	 * @return the languageNamespaces
-	 */
-	public List<String> getLanguageNamespaces() {
-		return languageNamespaces;
-	}
+    /**
+     * @return the locale
+     */
+    public Locale getLocale() {
+        return locale;
+    }
 
-	/**
-	 * @param languageNamespaces the languageNamespaces to set
-	 */
-	public void setLanguageNamespaces(List<String> languageNamespaces) {
-		this.languageNamespaces = languageNamespaces;
-	}
+    /**
+     * @param locale the locale to set
+     */
+    public void setLocale(Locale locale) {
+        this.locale = locale;
+    }
 
-	/**
-	 * @return true if dual client is configured, otherwise false
-	 */
-	public boolean isDualClient() {
-		if (isHeartMode()) {
-			return false; // HEART mode is incompatible with dual client mode
-		} else {
-			return dualClient;
-		}
-	}
+    /**
+     * @return the languageNamespaces
+     */
+    public List<String> getLanguageNamespaces() {
+        return languageNamespaces;
+    }
 
-	/**
-	 * @param dualClient the dual client configuration
-	 */
-	public void setDualClient(boolean dualClient) {
-		this.dualClient = dualClient;
-	}
+    /**
+     * @param languageNamespaces the languageNamespaces to set
+     */
+    public void setLanguageNamespaces(List<String> languageNamespaces) {
+        this.languageNamespaces = languageNamespaces;
+    }
 
-	/**
-	 * Get the list of namespaces as a JSON string, for injection into the JavaScript UI
-	 * @return
-	 */
-	public String getLanguageNamespacesString() {
-		return new Gson().toJson(getLanguageNamespaces());
-	}
+    /**
+     * @return true if dual client is configured, otherwise false
+     */
+    public boolean isDualClient() {
+        if (isHeartMode()) {
+            return false; // HEART mode is incompatible with dual client mode
+        } else {
+            return dualClient;
+        }
+    }
 
-	/**
-	 * Get the default namespace (first in the nonempty list)
-	 */
-	public String getDefaultLanguageNamespace() {
-		return getLanguageNamespaces().get(0);
-	}
+    /**
+     * @param dualClient the dual client configuration
+     */
+    public void setDualClient(boolean dualClient) {
+        this.dualClient = dualClient;
+    }
 
-	/**
-	 * @return the heartMode
-	 */
-	public boolean isHeartMode() {
-		return heartMode;
-	}
+    /**
+     * Get the list of namespaces as a JSON string, for injection into the
+     * JavaScript UI
+     *
+     * @return
+     */
+    public String getLanguageNamespacesString() {
+        return new Gson().toJson(getLanguageNamespaces());
+    }
 
-	/**
-	 * @param heartMode the heartMode to set
-	 */
-	public void setHeartMode(boolean heartMode) {
-		this.heartMode = heartMode;
-	}
+    /**
+     * Get the default namespace (first in the nonempty list)
+     */
+    public String getDefaultLanguageNamespace() {
+        return getLanguageNamespaces().get(0);
+    }
+
+    /**
+     * @return the heartMode
+     */
+    public boolean isHeartMode() {
+        return heartMode;
+    }
+
+    /**
+     * @param heartMode the heartMode to set
+     */
+    public void setHeartMode(boolean heartMode) {
+        this.heartMode = heartMode;
+    }
+
+    /**
+     * @return the maximumRefreshTokenLifeTime
+     */
+    public Long getMaximumRefreshTokenLifeTime() {
+        return maximumRefreshTokenLifeTime;
+    }
+
+    /**
+     * @param maximumRefreshTokenLifeTime the maximumRefreshTokenLifeTime to set
+     */
+    public void setMaximumRefreshTokenLifeTime(Long maximumRefreshTokenLifeTime) {
+        this.maximumRefreshTokenLifeTime = maximumRefreshTokenLifeTime;
+    }
+
+    /**
+     * @return the maximumAccessTokenLifeTime
+     */
+    public Long getMaximumAccessTokenLifeTime() {
+        return maximumAccessTokenLifeTime;
+    }
+
+    /**
+     * @param maximumAccessTokenLifeTime the maximumAccessTokenLifeTime to set
+     */
+    public void setMaximumAccessTokenLifeTime(Long maximumAccessTokenLifeTime) {
+        this.maximumAccessTokenLifeTime = maximumAccessTokenLifeTime;
+    }
 }

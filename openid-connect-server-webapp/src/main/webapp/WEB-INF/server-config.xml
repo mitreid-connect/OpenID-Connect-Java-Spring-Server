@@ -34,21 +34,25 @@
 	    
         <!-- This property sets the root URL of the server, known as the issuer -->
         <property name="issuer" value="http://localhost:8080/openid-connect-server-webapp/" />
-                
-                
-        <!-- Allow Cross Origin Access Control -->
-        <!--<property name="Access-Control-Allow-Origin" value="*" />-->
-               
 		
         <!-- This property is a URL pointing to a logo image 24px high to be used in the top bar -->
         <property name="logoImageUrl" value="resources/images/openid_connect_small.png" />
- 		
+
         <!-- This property sets the display name of the server, displayed in the topbar and page title -->
         <property name="topbarTitle" value="OpenID Connect Server" />
+        
+        <!--        <property name="MaximumTokenValueInSeconds" value="31536000"/>-->
  		
         <!-- This property sets the lifetime of registration access tokens, in seconds. Leave it unset (null) for no rotation. -->
-        <!-- <property name="regTokenLifeTime" value="172800" /> -->
-		
+<!--        <property name="regTokenLifeTime" value="44" /> -->
+        
+        <!--The maximum amount of time a Refresh Token is allowed to live-->
+        <property name="maximumRefreshTokenLifeTime" value="50" />       
+        
+        <!--The maximum amount of time an Access Token is allowed to live-->
+        <property name="maximumAccessTokenLifeTime" value="20" /> 
+        
+        	
         <!-- This property forces the issuer value to start with "https", recommended on production servers -->
         <!-- <property name="forceHttps" value="true" /> -->
 		

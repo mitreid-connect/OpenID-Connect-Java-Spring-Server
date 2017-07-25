@@ -15,14 +15,6 @@
  *******************************************************************************/
 
 //----------------  ClientModel  ---------------------------------------------
-//var ClientModel = Backbone.Model.extend({
-//    idAttribute: 'id',
-//
-//    defaults: {
-//    },
-//
-//    urlRoot: 'api/clients/'
-//});
 
 var ClientModelView = Backbone.View.extend({
 
@@ -160,48 +152,31 @@ var ClientModelView = Backbone.View.extend({
             _.each(_.clone(this.options.access.models), function (model) {
                 //alert("Model ClientId is : " + model.get('clientId') + " , ClientId is : " + clientId);
                 if (model.get('clientId') == clientId) {
-                    model.destroy();
+                    model.destroy({
+                        dataType: false,
+                        processData: false
+                    });
                     //_self.parentView.delegateEvents();
                 }
             });
 
-            _self.parentView.delegateEvents(); //not exactly soore about this method what is extacly is doing yet , i think it calls JQuery remove 
-            this.parentView.refreshTable();
+//            _self.parentView.delegateEvents(); //not exactly soore about this method what is extacly is doing yet , i think it calls JQuery remove 
+//            this.parentView.refreshTable();
 
             //Clear all the refresh Tokens for this Client
             _.each(_.clone(this.options.refresh.models), function (model) {
                 //alert("Model ClientId is : " + model.get('clientId') + " , ClientId is : " + clientId);
                 if (model.get('clientId') == clientId) {
-                    model.destroy();
+                    model.destroy({
+                        dataType: false,
+                        processData: false
+                    });
                     //_self.parentView.delegateEvents();
                 }
             });
 
-            _self.parentView.delegateEvents();
-            this.parentView.refreshTable();
 
-            //------------------Pass one more time to be sure that tokens are removed---------------
-
-            //Clear all the access Tokens for this Client
-            _.each(_.clone(this.options.access.models), function (model) {
-                if (model.get('clientId') == clientId) {
-                    model.destroy();
-                    //_self.parentView.delegateEvents();
-                }
-            });
-
-            _self.parentView.delegateEvents();
-            this.parentView.refreshTable();
-
-            //Clear all the refresh Tokens for this Client
-            _.each(_.clone(this.options.refresh.models), function (model) {
-                if (model.get('clientId') == clientId) {
-                    model.destroy();
-                    //_self.parentView.delegateEvents();
-                }
-            });
-
-            _self.parentView.delegateEvents();
+//            _self.parentView.delegateEvents();
             this.parentView.refreshTable();
 
 
@@ -259,7 +234,7 @@ var AccessTokenView = Backbone.View.extend({
         }
 
         this.model.bind('change', this.render, this);
-
+        this.listenTo(this.model, 'destroy', this.remove);
     },
 
     events: {
@@ -316,6 +291,32 @@ var AccessTokenView = Backbone.View.extend({
         return this;
     },
 
+    remove: function () {
+
+        var _self = this;
+
+//        this.model.destroy({
+//            dataType: false,
+//            processData: false,
+//            success: function () {
+//
+//                _self.$el.fadeTo("fast", 0.00, function () { // fade
+//                    $(this).slideUp("fast", function () { // slide up
+        $(this).remove(); // then remove from the DOM
+//                        // refresh the table in case we removed an id token,
+//                        // too
+//        _self.parentView.refreshTable();
+//                    });
+//                });
+//            },
+//            error: app.errorHandlerView.handleError()
+//        });
+
+        this.parentView.delegateEvents();
+
+        return false;
+    },
+
     deleteToken: function (e) {
         e.preventDefault();
 
@@ -341,6 +342,9 @@ var AccessTokenView = Backbone.View.extend({
             });
 
             this.parentView.delegateEvents();
+
+            this.parentView.delegateEvents();
+
         }
 
         return false;
@@ -387,7 +391,7 @@ var AccessTokenView = Backbone.View.extend({
                 // settings
                 type: 'success',
                 placement: {
-                    from: "center",
+                    from: "top",
                     align: "center"
                 },
             }, {
@@ -471,7 +475,7 @@ var RefreshTokenView = Backbone.View.extend({
         }
 
         this.model.bind('change', this.render, this);
-
+        this.listenTo(this.model, 'destroy', this.remove);
     },
 
     events: {
@@ -523,10 +527,35 @@ var RefreshTokenView = Backbone.View.extend({
 
     },
 
+    remove: function () {
+        var _self = this;
+
+//        this.model.destroy({
+//            dataType: false,
+//            processData: false,
+//            success: function () {
+//
+//                _self.$el.fadeTo("fast", 0.00, function () { // fade
+//                    $(this).slideUp("fast", function () { // slide up
+        $(this).remove(); // then remove from the DOM
+//                        // refresh the table in case we removed an id token,
+//                        // too
+//        _self.parentView.refreshTable();
+//                    });
+//                });
+//            },
+//            error: app.errorHandlerView.handleError()
+//        });
+
+        this.parentView.delegateEvents();
+
+        return false;
+    },
+
     deleteToken: function (e) {
         e.preventDefault();
 
-        if (confirm($.t('token.token-table.confirm-refresh'))) {
+        if (confirm($.t("token.token-table.confirm"))) {
 
             var _self = this;
 
@@ -538,8 +567,8 @@ var RefreshTokenView = Backbone.View.extend({
                     _self.$el.fadeTo("fast", 0.00, function () { // fade
                         $(this).slideUp("fast", function () { // slide up
                             $(this).remove(); // then remove from the DOM
-                            // refresh the table in case the access tokens have
-                            // changed, too
+                            // refresh the table in case we removed an id token,
+                            // too
                             _self.parentView.refreshTable();
                         });
                     });
@@ -547,7 +576,10 @@ var RefreshTokenView = Backbone.View.extend({
                 error: app.errorHandlerView.handleError()
             });
 
-            _self.parentView.delegateEvents();
+            this.parentView.delegateEvents();
+
+            this.parentView.delegateEvents();
+
         }
 
         return false;

@@ -59,6 +59,25 @@
                 return ${userInfoJson};
             }
 
+            function getRefreshTokenMaximumValidityTime() {
+                return parseInt(${config.maximumRefreshTokenLifeTime});
+            }
+
+            function getRefreshTokenMinimumValidityTime() {
+                return 0;
+            }
+
+
+            function getAccessTokenMaximumValidityTime() {
+                return parseInt(${config.maximumAccessTokenLifeTime});
+            }
+
+
+            function getAccessTokenMinimumValidityTime() {
+                return 0;
+            }
+
+
             // get the authorities of the current user, if available (null otherwise)
             function getUserAuthorities() {
                 return ${userAuthorities};

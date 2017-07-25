@@ -1018,12 +1018,19 @@ var ClientFormView = Backbone.View.extend({
 
         var accessTokenValiditySeconds = null;
         if (!$('disableAccessTokenTimeout').is(':checked')) {
-            accessTokenValiditySeconds = this.getFormTokenNumberValue($('#accessTokenValidityTime input[type=text]').val(), $('#accessTokenValidityTime select').val());
+            accessTokenValiditySeconds = this.getFormTokenNumberValue($('#accessTokenValidityTime input[type=number]').val(), $('#accessTokenValidityTime select').val());
         }
 
-        var idTokenValiditySeconds = this.getFormTokenNumberValue($('#idTokenValidityTime input[type=text]').val(), $('#idTokenValidityTime select').val());
 
-        var deviceCodeValiditySeconds = this.getFormTokenNumberValue($('#deviceCodeValidityTime input[type=text]').val(), $('#deviceCodeValidityTime select').val());
+        //==== Here is some Code ============      
+//        if (accessTokenValiditySeconds > getTokenMaximumValidityTime() || accessTokenValiditySeconds < getTokenMinimumValidityTime()) {
+//            app.errorHandlerView.showErrorMessage($.t("client.client-form.error.timeout-bound"), $.t("client.client-form.error.access-token-duration"));
+//            return false;
+//        }
+
+        var idTokenValiditySeconds = this.getFormTokenNumberValue($('#idTokenValidityTime input[type=number]').val(), $('#idTokenValidityTime select').val());
+
+        var deviceCodeValiditySeconds = this.getFormTokenNumberValue($('#deviceCodeValidityTime input[type=number]').val(), $('#deviceCodeValidityTime select').val());
 
         var refreshTokenValiditySeconds = null;
         if ($('#allowRefresh').is(':checked')) {
@@ -1037,9 +1044,18 @@ var ClientFormView = Backbone.View.extend({
             }
 
             if (!$('disableRefreshTokenTimeout').is(':checked')) {
-                refreshTokenValiditySeconds = this.getFormTokenNumberValue($('#refreshTokenValidityTime input[type=text]').val(), $('#refreshTokenValidityTime select').val());
+                refreshTokenValiditySeconds = this.getFormTokenNumberValue($('#refreshTokenValidityTime input[type=number]').val(), $('#refreshTokenValidityTime select').val());
             }
+
+//            if (refreshTokenValiditySeconds > getTokenMaximumValidityTime() || refreshTokenValiditySeconds < getTokenMinimumValidityTime()) {
+//                app.errorHandlerView.showErrorMessage($.t("client.client-form.error.timeout-bound"), $.t("client.client-form.error.refresh-token-duration"));
+//                return false;
+//            }
         }
+
+        alert("Refresh Max Validity : " + getRefreshTokenMaximumValidityTime() + "\n Current Refresh Token Value: " + refreshTokenValiditySeconds
+                + "\n Access Max :" + getAccessTokenMaximumValidityTime() + "\n Current Access Token Value: " + accessTokenValiditySeconds);
+
 
         // make sure that the subject identifier is consistent with the redirect
         // URIs
@@ -1129,15 +1145,15 @@ var ClientFormView = Backbone.View.extend({
         if (attrs["allowRefresh"] == false) {
             attrs["refreshTokenValiditySeconds"] = null;
         }
-
-        if ($('#disableAccessTokenTimeout').is(':checked')) {
-            attrs["accessTokenValiditySeconds"] = null;
-        }
-
-        if ($('#disableRefreshTokenTimeout').is(':checked')) {
-            attrs["refreshTokenValiditySeconds"] = null;
-        }
-
+        /*
+         if ($('#disableAccessTokenTimeout').is(':checked')) {
+         attrs["accessTokenValiditySeconds"] = null;
+         }
+         
+         if ($('#disableRefreshTokenTimeout').is(':checked')) {
+         attrs["refreshTokenValiditySeconds"] = null;
+         }
+         */
         // set all empty strings to nulls
         for (var key in attrs) {
             if (attrs[key] === "") {
@@ -1324,12 +1340,12 @@ var ClientFormView = Backbone.View.extend({
             $("#access-token-timeout-time", this.$el).prop('disabled', true);
             $("#access-token-timeout-unit", this.$el).prop('disabled', true);
         }
-
-        if (this.model.get("refreshTokenValiditySeconds") == null) {
-            $("#refresh-token-timeout-time", this.$el).prop('disabled', true);
-            $("#refresh-token-timeout-unit", this.$el).prop('disabled', true);
-        }
-
+        /*
+         if (this.model.get("refreshTokenValiditySeconds") == null) {
+         $("#refresh-token-timeout-time", this.$el).prop('disabled', true);
+         $("#refresh-token-timeout-unit", this.$el).prop('disabled', true);
+         }
+         */
         // toggle other dynamic fields
         this.toggleClientCredentials();
         this.previewLogo();

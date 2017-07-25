@@ -548,12 +548,12 @@
                     <div class="control-group" id="accessTokenValidityTime">
                         <label class="control-label" data-i18n="client.client-form.access-token-timeout">Access Token Timeout</label>
                         <div class="controls">
-                            <div>
+                                <div>
                                 <input type="checkbox" id="disableAccessTokenTimeout" <%-(client.accessTokenValiditySeconds == null ? 'checked' : '')%>/>
-                                       <label for="disableAccessTokenTimeout" class="checkbox" data-i18n="client.client-form.access-token-no-timeout">Access tokens do not time out</label>
+                                       <label for="disableAccessTokenTimeout" class="checkbox" data-i18n="client.client-form.access-token-no-timeout" unchecked>Access tokens do not time out</label>
                             </div>
                             <div>
-                                <input type="text" class="" value="<%-(client.accessTokenValiditySeconds == null ? '' : client.accessTokenValiditySeconds)%>" id="access-token-timeout-time" size="16" style="width:8em;">
+                                <input type="number" min="0" maxlength="10" class="" value="<%-(client.accessTokenValiditySeconds == null ? '' : client.accessTokenValiditySeconds)%>" id="access-token-timeout-time" size="16" style="width:8em;">
                                 <select id="access-token-timeout-unit" style="width:8em;">
                                     <option data-i18n="client.client-form.seconds">seconds</option>
                                     <option data-i18n="client.client-form.minutes">minutes</option>
@@ -569,7 +569,7 @@
                         <label class="control-label" data-i18n="client.client-form.id-token-timeout">ID Token Timeout</label>
                         <div class="controls">
                             <div>
-                                <input type="text" class="" value="<%-(client.idTokenValiditySeconds == null ? '' : client.idTokenValiditySeconds)%>" id="id-token-timeout-time" size="16" style="width:8em;">
+                                <input type="number" maxlength="10" min="0" class="" value="<%-(client.idTokenValiditySeconds == null ? '' : client.idTokenValiditySeconds)%>" id="id-token-timeout-time" size="16" style="width:8em;">
                                 <select id="id-token-timeout-unit" style="width:8em;">
                                     <option data-i18n="client.client-form.seconds">seconds</option>
                                     <option data-i18n="client.client-form.minutes">minutes</option>
@@ -603,10 +603,10 @@
                             </div>
                             <div>
                                 <input type="checkbox" id="disableRefreshTokenTimeout" <%-(client.refreshTokenValiditySeconds == null ? 'checked' : '')%>/> 
-                                       <label for="disableRefreshTokenTimeout" class="checkbox" data-i18n="client.client-form.refresh-tokens-no-expire">Refresh tokens do not time out</label>
+                                       <label for="disableRefreshTokenTimeout" class="checkbox" data-i18n="client.client-form.refresh-tokens-no-expire" unchecked>Refresh tokens do not time out</label>
                             </div>
                             <div>
-                                <input type="text" class="" value="<%-(client.refreshTokenValiditySeconds == null ? '' : client.refreshTokenValiditySeconds)%>" id="refresh-token-timeout-time" size="16" style="width:8em;">
+                                <input type="number" maxlength="10" min="0" class="" value="<%-(client.refreshTokenValiditySeconds == null ? '' : client.refreshTokenValiditySeconds)%>" id="refresh-token-timeout-time" size="16" style="width:8em;">
                                 <select id="refresh-token-timeout-unit" style="width:8em;">
                                     <option data-i18n="client.client-form.seconds">seconds</option>
                                     <option data-i18n="client.client-form.minutes">minutes</option>
@@ -621,7 +621,7 @@
                         <label class="control-label" data-i18n="client.client-form.device-code-timeout">Device Code Timeout</label>
                         <div class="controls">
                             <div>
-                                <input type="text" class="" value="<%-(client.deviceCodeValiditySeconds == null ? '' : client.deviceCodeValiditySeconds)%>" id="device-code-timeout-time" size="16" style="width:8em;">
+                                <input type="number" min="0" class="" value="<%-(client.deviceCodeValiditySeconds == null ? '' : client.deviceCodeValiditySeconds)%>" id="device-code-timeout-time" size="16" style="width:8em;">
                                 <select id="device-code-timeout-unit" style="width:8em;">
                                     <option data-i18n="client.client-form.seconds">seconds</option>
                                     <option data-i18n="client.client-form.minutes">minutes</option>
