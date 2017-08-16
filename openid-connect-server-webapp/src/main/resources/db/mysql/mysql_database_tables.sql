@@ -108,7 +108,7 @@ CREATE TABLE IF NOT EXISTS authorization_code (
 );
 
 CREATE TABLE IF NOT EXISTS client_grant_type (
-	owner_id BIGINT,
+	owner_id VARCHAR(256),
 	grant_type VARCHAR(2000)
 );
 
@@ -199,7 +199,7 @@ CREATE TABLE IF NOT EXISTS client_contact (
 );
 
 CREATE TABLE IF NOT EXISTS client_redirect_uri (
-	owner_id BIGINT, 
+	owner_id VARCHAR(256),
 	redirect_uri VARCHAR(2048) 
 );
 
@@ -222,7 +222,7 @@ CREATE TABLE IF NOT EXISTS client_resource (
 );
 
 CREATE TABLE IF NOT EXISTS client_scope (
-	owner_id BIGINT,
+	owner_id VARCHAR(256),
 	scope VARCHAR(2048)
 );
 
@@ -238,6 +238,8 @@ CREATE TABLE IF NOT EXISTS system_scope (
 	icon VARCHAR(256),
 	restricted BOOLEAN DEFAULT false NOT NULL,
 	default_scope BOOLEAN DEFAULT false NOT NULL,
+	structured BOOLEAN DEFAULT false NOT NULL,
+	structured_param_description VARCHAR(256),
 	UNIQUE (scope)
 );
 
