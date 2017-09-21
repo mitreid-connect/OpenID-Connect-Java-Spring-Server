@@ -326,7 +326,7 @@
 	"copyright": "Levererat av <a href=\"https://github.com/mitreid-connect/\">MITREid Connect <span class=\"label\">{0}</span></a> <span class=\"pull-right\">&copy; 2016 MITRE Corporation och MIT Internet Trust Consortium.</span>.",
 	"about": {
 		"title": "Om&nbsp;tjänsten",
-		"body": "\nDenna OpenID Connect-tjänst är baserad på öppen källkod ifrån projektet MITREid, skapat av \n<a href=\"http://www.mitre.org/\">MITRE Corporation</a> och <a href=\"http://kit.mit.edu/\">MIT Internet Trust Consortium</a>.\n</p>\n<p>\nMer information om projektet kan finns i projektet \n<a href=\"http://github.com/mitreid-connect/\">MITREid Connect på GitHub</a>. \nDär kan du skicka in felrapporter, komma med återkoppling, eller till och med bidra med kodtillägg för ytterligare funktioner du skulle vilja ha."
+		"body": "\nDenna OpenID Connect-tjänst är baserad på öppen källkod ifrån projektet MITREid, skapat av \n<a href=\"http://www.mitre.org/\">MITRE Corporation</a> och <a href=\"http://www.trust.mit.edu/\">MIT Internet Trust Consortium</a>.\n</p>\n<p>\nMer information om projektet kan finns i projektet \n<a href=\"http://github.com/mitreid-connect/\">MITREid Connect på GitHub</a>. \nDär kan du skicka in felrapporter, komma med återkoppling, eller till och med bidra med kodtillägg för ytterligare funktioner du skulle vilja ha."
 	},
 	"statistics": {
 		"title": "Statistik",
@@ -343,7 +343,7 @@
 		"more": "Mer",
 		"about": {
 			"title": "Om&nbsp;tjänsten",
-			"body": "\nDenna OpenID Connect-tjänst är byggd från det öpnna källkodsprojektet MITREid, av \n<a href=\"http://www.mitre.org/\">MITRE Corporation</a> och <a href=\"http://kit.mit.edu/\">MIT Internet Trust Consortium</a>."
+			"body": "\nDenna OpenID Connect-tjänst är byggd från det öpnna källkodsprojektet MITREid, av \n<a href=\"http://www.mitre.org/\">MITRE Corporation</a> och <a href=\"http://www.trust.mit.edu/\">MIT Internet Trust Consortium</a>."
 		},
 		"contact": {
 			"title": "Kontakt",

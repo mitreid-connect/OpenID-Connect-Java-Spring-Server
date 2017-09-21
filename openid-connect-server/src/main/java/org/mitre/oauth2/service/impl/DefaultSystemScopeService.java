@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
+ *
+ * Portions copyright 2011-2013 The MITRE Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +16,11 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.oauth2.service.impl;
 
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.mitre.oauth2.model.SystemScope;
@@ -30,13 +30,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Function;
-import com.google.common.base.Joiner;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
-import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Collections2;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 /**
@@ -76,20 +73,11 @@ public class DefaultSystemScopeService implements SystemScopeService {
 			if (Strings.isNullOrEmpty(input)) {
 				return null;
 			} else {
-				List<String> parts = parseStructuredScopeValue(input);
-				String base = parts.get(0); // the first part is the base
 				// get the real scope if it's available
-				SystemScope s = getByValue(base);
+				SystemScope s = getByValue(input);
 				if (s == null) {
 					// make a fake one otherwise
-					s = new SystemScope(base);
-					if (parts.size() > 1) {
-						s.setStructured(true);
-					}
-				}
-
-				if (s.isStructured() && parts.size() > 1) {
-					s.setStructuredValue(parts.get(1));
+					s = new SystemScope(input);
 				}
 
 				return s;
@@ -103,11 +91,7 @@ public class DefaultSystemScopeService implements SystemScopeService {
 			if (input == null) {
 				return null;
 			} else {
-				if (input.isStructured() && !Strings.isNullOrEmpty(input.getStructuredValue())) {
-					return Joiner.on(":").join(input.getValue(), input.getStructuredValue());
-				} else {
-					return input.getValue();
-				}
+				return input.getValue();
 			}
 		}
 	};
@@ -181,11 +165,6 @@ public class DefaultSystemScopeService implements SystemScopeService {
 		}
 	}
 
-	// parse a structured scope string into its components
-	private List<String> parseStructuredScopeValue(String value) {
-		return Lists.newArrayList(Splitter.on(":").split(value));
-	}
-
 	/* (non-Javadoc)
 	 * @see org.mitre.oauth2.service.SystemScopeService#scopesMatch(java.util.Set, java.util.Set)
 	 */
@@ -198,22 +177,7 @@ public class DefaultSystemScopeService implements SystemScopeService {
 		for (SystemScope actScope : act) {
 			// first check to see if there's an exact match
 			if (!ex.contains(actScope)) {
-				// we didn't find an exact match
-				if (actScope.isStructured() && !Strings.isNullOrEmpty(actScope.getStructuredValue())) {
-					// if we didn't get an exact match but the actual scope is structured, we need to check further
-
-					// first, find the "base" scope for this
-					SystemScope base = getByValue(actScope.getValue());
-					if (!ex.contains(base)) {
-						// if the expected doesn't contain the base scope, fail
-						return false;
-					} else {
-						// we did find an exact match, need to check the rest
-					}
-				} else {
-					// the scope wasn't structured, fail now
-					return false;
-				}
+				return false;
 			} else {
 				// if we did find an exact match, we need to check the rest
 			}

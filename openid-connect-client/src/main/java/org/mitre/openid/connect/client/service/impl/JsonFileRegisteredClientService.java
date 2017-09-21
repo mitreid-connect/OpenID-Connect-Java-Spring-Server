@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
+ *
+ * Portions copyright 2011-2013 The MITRE Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +16,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.openid.connect.client.service.impl;
 
@@ -55,20 +56,20 @@ public class JsonFileRegisteredClientService implements RegisteredClientService 
 	private static final Logger logger = LoggerFactory.getLogger(JsonFileRegisteredClientService.class);
 
 	private Gson gson = new GsonBuilder()
-	.registerTypeAdapter(RegisteredClient.class, new JsonSerializer<RegisteredClient>() {
-		@Override
-		public JsonElement serialize(RegisteredClient src, Type typeOfSrc, JsonSerializationContext context) {
-			return ClientDetailsEntityJsonProcessor.serialize(src);
-		}
-	})
-	.registerTypeAdapter(RegisteredClient.class, new JsonDeserializer<RegisteredClient>() {
-		@Override
-		public RegisteredClient deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-			return ClientDetailsEntityJsonProcessor.parseRegistered(json);
-		}
-	})
-	.setPrettyPrinting()
-	.create();
+			.registerTypeAdapter(RegisteredClient.class, new JsonSerializer<RegisteredClient>() {
+				@Override
+				public JsonElement serialize(RegisteredClient src, Type typeOfSrc, JsonSerializationContext context) {
+					return ClientDetailsEntityJsonProcessor.serialize(src);
+				}
+			})
+			.registerTypeAdapter(RegisteredClient.class, new JsonDeserializer<RegisteredClient>() {
+				@Override
+				public RegisteredClient deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+					return ClientDetailsEntityJsonProcessor.parseRegistered(json);
+				}
+			})
+			.setPrettyPrinting()
+			.create();
 
 	private File file;
 

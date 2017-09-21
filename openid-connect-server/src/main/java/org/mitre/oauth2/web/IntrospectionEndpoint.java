@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
+ *
+ * Portions copyright 2011-2013 The MITRE Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +16,8 @@
  * limitations under the License.
  *******************************************************************************/
 package org.mitre.oauth2.web;
+
+import static org.mitre.oauth2.web.AuthenticationUtilities.ensureOAuthScope;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -49,13 +52,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 
-import static org.mitre.oauth2.web.AuthenticationUtilities.ensureOAuthScope;
-
 @Controller
 public class IntrospectionEndpoint {
 
 	/**
-	 * 
+	 *
 	 */
 	public static final String URL = "introspect";
 

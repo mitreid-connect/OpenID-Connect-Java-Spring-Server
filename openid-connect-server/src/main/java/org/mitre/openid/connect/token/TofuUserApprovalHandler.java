@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
+ *
+ * Portions copyright 2011-2013 The MITRE Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +32,6 @@ import java.util.Set;
 
 import javax.servlet.http.HttpSession;
 
-import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.service.SystemScopeService;
 import org.mitre.openid.connect.model.ApprovedSite;
 import org.mitre.openid.connect.model.WhitelistedSite;
@@ -55,13 +55,13 @@ import com.google.common.collect.Sets;
 /**
  * Custom User Approval Handler implementation which uses a concept of a whitelist,
  * blacklist, and greylist.
- * 
+ *
  * Blacklisted sites will be caught and handled before this
  * point.
- * 
+ *
  * Whitelisted sites will be automatically approved, and an ApprovedSite entry will
  * be created for the site the first time a given user access it.
- * 
+ *
  * All other sites fall into the greylist - the user will be presented with the user
  * approval page upon their first visit
  * @author aanganes
@@ -85,12 +85,12 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 	/**
 	 * Check if the user has already stored a positive approval decision for this site; or if the
 	 * site is whitelisted, approve it automatically.
-	 * 
+	 *
 	 * Otherwise, return false so that the user will see the approval page and can make their own decision.
-	 * 
+	 *
 	 * @param authorizationRequest	the incoming authorization request
 	 * @param userAuthentication	the Principal representing the currently-logged-in user
-	 * 
+	 *
 	 * @return 						true if the site is approved, false otherwise
 	 */
 	@Override
@@ -111,12 +111,12 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 	/**
 	 * Check if the user has already stored a positive approval decision for this site; or if the
 	 * site is whitelisted, approve it automatically.
-	 * 
+	 *
 	 * Otherwise the user will be directed to the approval page and can make their own decision.
-	 * 
+	 *
 	 * @param authorizationRequest	the incoming authorization request
 	 * @param userAuthentication	the Principal representing the currently-logged-in user
-	 * 
+	 *
 	 * @return 						the updated AuthorizationRequest
 	 */
 	@Override
@@ -204,15 +204,7 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 					//Make sure this scope is allowed for the given client
 					if (systemScopes.scopesMatch(client.getScope(), approveSet)) {
 
-						// If it's structured, assign the user-specified parameter
-						SystemScope systemScope = systemScopes.getByValue(scope);
-						if (systemScope != null && systemScope.isStructured()){
-							String paramValue = approvalParams.get("scopeparam_" + scope);
-							allowedScopes.add(scope + ":"+paramValue);
-							// .. and if it's unstructured, we're all set
-						} else {
-							allowedScopes.add(scope);
-						}
+						allowedScopes.add(scope);
 					}
 
 				}
@@ -249,7 +241,7 @@ public class TofuUserApprovalHandler implements UserApprovalHandler {
 	/**
 	 * Get the auth time out of the current session and add it to the
 	 * auth request in the extensions map.
-	 * 
+	 *
 	 * @param authorizationRequest
 	 */
 	private void setAuthTime(AuthorizationRequest authorizationRequest) {

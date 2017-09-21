@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +14,8 @@
  * limitations under the License.
  *******************************************************************************/
 package org.mitre.oauth2.service.impl;
+
+import static com.google.common.collect.Maps.newLinkedHashMap;
 
 import java.text.ParseException;
 import java.util.Map;
@@ -32,8 +33,6 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Sets;
-
-import static com.google.common.collect.Maps.newLinkedHashMap;
 
 /**
  * Default implementation of the {@link IntrospectionResultAssembler} interface.
@@ -92,7 +91,9 @@ public class DefaultIntrospectionResultAssembler implements IntrospectionResultA
 			result.put(SUB, authentication.getName());
 		}
 
-		result.put(USER_ID, authentication.getName());
+		if(authentication.getUserAuthentication() != null) {
+			result.put(USER_ID, authentication.getUserAuthentication().getName());
+		}
 
 		result.put(CLIENT_ID, authentication.getOAuth2Request().getClientId());
 
@@ -131,7 +132,9 @@ public class DefaultIntrospectionResultAssembler implements IntrospectionResultA
 			result.put(SUB, authentication.getName());
 		}
 
-		result.put(USER_ID, authentication.getName());
+		if(authentication.getUserAuthentication() != null) {
+			result.put(USER_ID, authentication.getUserAuthentication().getName());
+		}
 
 		result.put(CLIENT_ID, authentication.getOAuth2Request().getClientId());
 

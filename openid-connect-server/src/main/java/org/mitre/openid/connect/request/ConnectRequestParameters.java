@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,13 +42,13 @@ public interface ConnectRequestParameters {
 	// responses
 	public String ERROR = "error";
 	public String LOGIN_REQUIRED = "login_required";
-	
+
 	// audience
 	public String AUD = "aud";
-	
+
 	// PKCE
 	public String CODE_CHALLENGE = "code_challenge";
 	public String CODE_CHALLENGE_METHOD = "code_challenge_method";
 	public String CODE_VERIFIER = "code_verifier";
-	
+
 }

@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
+ *
+ * Portions copyright 2011-2013 The MITRE Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +19,7 @@ package org.mitre.openid.connect.service.impl;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
@@ -38,7 +40,7 @@ import com.google.common.collect.Collections2;
 
 /**
  * Implementation of the ApprovedSiteService
- * 
+ *
  * @author Michael Joseph Walsh, aanganes
  *
  */
@@ -82,7 +84,7 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 	public void remove(ApprovedSite approvedSite) {
 
 		//Remove any associated access and refresh tokens
-		Set<OAuth2AccessTokenEntity> accessTokens = approvedSite.getApprovedAccessTokens();
+		List<OAuth2AccessTokenEntity> accessTokens = getApprovedAccessTokens(approvedSite);
 
 		for (OAuth2AccessTokenEntity token : accessTokens) {
 			if (token.getRefreshToken() != null) {
@@ -178,6 +180,13 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 
 	private Collection<ApprovedSite> getExpired() {
 		return Collections2.filter(approvedSiteRepository.getAll(), isExpired);
+	}
+
+	@Override
+	public List<OAuth2AccessTokenEntity> getApprovedAccessTokens(
+			ApprovedSite approvedSite) {
+		return tokenRepository.getAccessTokensForApprovedSite(approvedSite);
+
 	}
 
 }

@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
+ *
+ * Portions copyright 2011-2013 The MITRE Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +16,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.openid.connect.client;
 
@@ -34,13 +35,13 @@ import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTClaimsSet;
 
 /**
- * 
+ *
  * Simple mapper that adds ROLE_USER to the authorities map for all queries,
  * plus adds ROLE_ADMIN if the subject and issuer pair are found in the
  * configurable "admins" set.
- * 
+ *
  * @author jricher
- * 
+ *
  */
 public class NamedAdminAuthoritiesMapper implements OIDCAuthoritiesMapper {
 

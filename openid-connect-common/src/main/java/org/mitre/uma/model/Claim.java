@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -118,9 +117,9 @@ public class Claim {
 	@ElementCollection(fetch = FetchType.EAGER)
 	@Column(name = "claim_token_format")
 	@CollectionTable(
-		name = "claim_token_format",
-		joinColumns = @JoinColumn(name = "owner_id")
-	)
+			name = "claim_token_format",
+			joinColumns = @JoinColumn(name = "owner_id")
+			)
 	public Set<String> getClaimTokenFormat() {
 		return claimTokenFormat;
 	}
@@ -137,9 +136,9 @@ public class Claim {
 	@ElementCollection(fetch = FetchType.EAGER)
 	@Column(name = "issuer")
 	@CollectionTable(
-		name = "claim_issuer",
-		joinColumns = @JoinColumn(name = "owner_id")
-	)
+			name = "claim_issuer",
+			joinColumns = @JoinColumn(name = "owner_id")
+			)
 	public Set<String> getIssuer() {
 		return issuer;
 	}

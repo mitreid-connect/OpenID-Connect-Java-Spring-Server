@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
+ *
+ * Portions copyright 2011-2013 The MITRE Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +16,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.oauth2.repository.impl;
 
@@ -26,6 +27,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
+import org.mitre.data.PageCriteria;
 import org.mitre.oauth2.model.AuthorizationCodeEntity;
 import org.mitre.oauth2.repository.AuthorizationCodeRepository;
 import org.mitre.util.jpa.JpaUtil;
@@ -34,7 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 /**
  * JPA AuthorizationCodeRepository implementation.
- * 
+ *
  * @author aanganes
  *
  */
@@ -88,6 +90,14 @@ public class JpaAuthorizationCodeRepository implements AuthorizationCodeReposito
 		TypedQuery<AuthorizationCodeEntity> query = manager.createNamedQuery(AuthorizationCodeEntity.QUERY_EXPIRATION_BY_DATE, AuthorizationCodeEntity.class);
 		query.setParameter(AuthorizationCodeEntity.PARAM_DATE, new Date()); // this gets anything that's already expired
 		return query.getResultList();
+	}
+
+
+	@Override
+	public Collection<AuthorizationCodeEntity> getExpiredCodes(PageCriteria pageCriteria) {
+		TypedQuery<AuthorizationCodeEntity> query = manager.createNamedQuery(AuthorizationCodeEntity.QUERY_EXPIRATION_BY_DATE, AuthorizationCodeEntity.class);
+		query.setParameter(AuthorizationCodeEntity.PARAM_DATE, new Date()); // this gets anything that's already expired
+		return JpaUtil.getResultPage(query, pageCriteria);
 	}
 
 

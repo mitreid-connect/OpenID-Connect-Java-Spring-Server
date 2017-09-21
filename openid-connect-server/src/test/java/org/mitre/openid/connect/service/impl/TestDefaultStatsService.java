@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
+ *
+ * Portions copyright 2011-2013 The MITRE Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +24,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mitre.oauth2.model.ClientDetailsEntity;
-import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.openid.connect.model.ApprovedSite;
 import org.mitre.openid.connect.service.ApprovedSiteService;
 import org.mockito.InjectMocks;
@@ -71,9 +71,6 @@ public class TestDefaultStatsService {
 	@Mock
 	private ApprovedSiteService approvedSiteService;
 
-	@Mock
-	private ClientDetailsEntityService clientService;
-
 	@InjectMocks
 	private DefaultStatsService service = new DefaultStatsService();
 
@@ -84,7 +81,7 @@ public class TestDefaultStatsService {
 	@Before
 	public void prepare() {
 
-		Mockito.reset(approvedSiteService, clientService);
+		Mockito.reset(approvedSiteService);
 
 		Mockito.when(ap1.getUserId()).thenReturn(userId1);
 		Mockito.when(ap1.getClientId()).thenReturn(clientId1);
@@ -111,11 +108,10 @@ public class TestDefaultStatsService {
 		Mockito.when(client3.getId()).thenReturn(3L);
 		Mockito.when(client4.getId()).thenReturn(4L);
 
-		Mockito.when(clientService.getAllClients()).thenReturn(Sets.newHashSet(client1, client2, client3, client4));
-		Mockito.when(clientService.loadClientByClientId(clientId1)).thenReturn(client1);
-		Mockito.when(clientService.loadClientByClientId(clientId2)).thenReturn(client2);
-		Mockito.when(clientService.loadClientByClientId(clientId3)).thenReturn(client3);
-		Mockito.when(clientService.loadClientByClientId(clientId4)).thenReturn(client4);
+		Mockito.when(approvedSiteService.getByClientId(clientId1)).thenReturn(Sets.newHashSet(ap1, ap2));
+		Mockito.when(approvedSiteService.getByClientId(clientId2)).thenReturn(Sets.newHashSet(ap3));
+		Mockito.when(approvedSiteService.getByClientId(clientId3)).thenReturn(Sets.newHashSet(ap4));
+		Mockito.when(approvedSiteService.getByClientId(clientId4)).thenReturn(Sets.newHashSet());
 	}
 
 	@Test
@@ -140,36 +136,12 @@ public class TestDefaultStatsService {
 	}
 
 	@Test
-	public void calculateByClientId_empty() {
-
-		Mockito.when(approvedSiteService.getAll()).thenReturn(new HashSet<ApprovedSite>());
-
-		Map<Long, Integer> stats = service.getByClientId();
-
-		assertThat(stats.get(1L), is(0));
-		assertThat(stats.get(2L), is(0));
-		assertThat(stats.get(3L), is(0));
-		assertThat(stats.get(4L), is(0));
-	}
-
-	@Test
-	public void calculateByClientId() {
-
-		Map<Long, Integer> stats = service.getByClientId();
-
-		assertThat(stats.get(1L), is(2));
-		assertThat(stats.get(2L), is(1));
-		assertThat(stats.get(3L), is(1));
-		assertThat(stats.get(4L), is(0));
-	}
-
-	@Test
 	public void countForClientId() {
-
-		assertThat(service.getCountForClientId(1L), is(2));
-		assertThat(service.getCountForClientId(2L), is(1));
-		assertThat(service.getCountForClientId(3L), is(1));
-		assertThat(service.getCountForClientId(4L), is(0));
+		// stats for ap1..ap4
+		assertThat(service.getCountForClientId(clientId1).getApprovedSiteCount(), is(2));
+		assertThat(service.getCountForClientId(clientId2).getApprovedSiteCount(), is(1));
+		assertThat(service.getCountForClientId(clientId3).getApprovedSiteCount(), is(1));
+		assertThat(service.getCountForClientId(clientId4).getApprovedSiteCount(), is(0));
 	}
 
 	@Test

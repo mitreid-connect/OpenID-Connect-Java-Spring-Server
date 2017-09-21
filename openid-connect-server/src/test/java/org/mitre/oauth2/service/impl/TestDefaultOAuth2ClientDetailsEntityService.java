@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
+ *
+ * Portions copyright 2011-2013 The MITRE Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +16,6 @@
  * limitations under the License.
  *******************************************************************************/
 package org.mitre.oauth2.service.impl;
-
-import static org.mockito.Matchers.anyString;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -51,7 +50,6 @@ import org.springframework.security.oauth2.common.exceptions.InvalidClientExcept
 
 import com.google.common.collect.Sets;
 
-import static org.hamcrest.CoreMatchers.any;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -90,7 +88,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 
 	@Mock
 	private StatsService statsService;
-	
+
 	@Mock
 	private ConfigurationPropertiesBean config;
 
@@ -145,7 +143,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 
 		// we're not testing reserved scopes here, just pass through when it's called
 		Mockito.when(scopeService.removeReservedScopes(Matchers.anySet())).then(AdditionalAnswers.returnsFirstArg());
-		
+
 		Mockito.when(config.isHeartMode()).thenReturn(false);
 
 	}
@@ -365,7 +363,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 
 		assertThat(client.getScope().contains(SystemScopeService.OFFLINE_ACCESS), is(equalTo(false)));
 	}
-	
+
 	@Test(expected = IllegalArgumentException.class)
 	public void heartMode_authcode_invalidGrants() {
 		Mockito.when(config.isHeartMode()).thenReturn(true);
@@ -378,15 +376,15 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		client.setGrantTypes(grantTypes);
 
 		client.setTokenEndpointAuthMethod(AuthMethod.PRIVATE_KEY);
-		
+
 		client.setRedirectUris(Sets.newHashSet("https://foo.bar/"));
 
 		client.setJwksUri("https://foo.bar/jwks");
-		
+
 		service.saveNewClient(client);
-		
+
 	}
-	
+
 	@Test(expected = IllegalArgumentException.class)
 	public void heartMode_implicit_invalidGrants() {
 		Mockito.when(config.isHeartMode()).thenReturn(true);
@@ -399,13 +397,13 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		client.setGrantTypes(grantTypes);
 
 		client.setTokenEndpointAuthMethod(AuthMethod.NONE);
-		
+
 		client.setRedirectUris(Sets.newHashSet("https://foo.bar/"));
 
 		client.setJwksUri("https://foo.bar/jwks");
-		
+
 		service.saveNewClient(client);
-		
+
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -420,11 +418,11 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		client.setGrantTypes(grantTypes);
 
 		client.setTokenEndpointAuthMethod(AuthMethod.PRIVATE_KEY);
-		
+
 		client.setJwksUri("https://foo.bar/jwks");
-		
+
 		service.saveNewClient(client);
-		
+
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -435,17 +433,17 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		Set<String> grantTypes = new LinkedHashSet<>();
 		grantTypes.add("authorization_code");
 		client.setGrantTypes(grantTypes);
-		
+
 		client.setTokenEndpointAuthMethod(AuthMethod.SECRET_POST);
 
 		client.setRedirectUris(Sets.newHashSet("https://foo.bar/"));
 
 		client.setJwksUri("https://foo.bar/jwks");
-		
+
 		service.saveNewClient(client);
-		
+
 	}
-	
+
 	@Test(expected = IllegalArgumentException.class)
 	public void heartMode_implicit_authMethod() {
 		Mockito.when(config.isHeartMode()).thenReturn(true);
@@ -460,9 +458,9 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		client.setRedirectUris(Sets.newHashSet("https://foo.bar/"));
 
 		client.setJwksUri("https://foo.bar/jwks");
-		
+
 		service.saveNewClient(client);
-		
+
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -475,13 +473,13 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		client.setGrantTypes(grantTypes);
 
 		client.setTokenEndpointAuthMethod(AuthMethod.SECRET_BASIC);
-		
+
 		client.setRedirectUris(Sets.newHashSet("https://foo.bar/"));
 
 		client.setJwksUri("https://foo.bar/jwks");
 
 		service.saveNewClient(client);
-		
+
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -492,13 +490,13 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		Set<String> grantTypes = new LinkedHashSet<>();
 		grantTypes.add("authorization_code");
 		client.setGrantTypes(grantTypes);
-		
+
 		client.setTokenEndpointAuthMethod(AuthMethod.PRIVATE_KEY);
 
 		service.saveNewClient(client);
-		
+
 	}
-	
+
 	@Test(expected = IllegalArgumentException.class)
 	public void heartMode_implicit_redirectUris() {
 		Mockito.when(config.isHeartMode()).thenReturn(true);
@@ -511,7 +509,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		client.setTokenEndpointAuthMethod(AuthMethod.NONE);
 
 		service.saveNewClient(client);
-		
+
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -528,7 +526,7 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		client.setRedirectUris(Sets.newHashSet("http://foo.bar/"));
 
 		service.saveNewClient(client);
-		
+
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -539,15 +537,15 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		Set<String> grantTypes = new LinkedHashSet<>();
 		grantTypes.add("authorization_code");
 		client.setGrantTypes(grantTypes);
-		
+
 		client.setTokenEndpointAuthMethod(AuthMethod.PRIVATE_KEY);
-		
+
 		client.setRedirectUris(Sets.newHashSet("http://foo.bar/"));
 
 		client.setClientSecret("secret!");
-		
+
 		service.saveNewClient(client);
-		
+
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -558,18 +556,18 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		Set<String> grantTypes = new LinkedHashSet<>();
 		grantTypes.add("authorization_code");
 		client.setGrantTypes(grantTypes);
-		
+
 		client.setTokenEndpointAuthMethod(AuthMethod.PRIVATE_KEY);
-		
+
 		client.setRedirectUris(Sets.newHashSet("https://foo.bar/"));
 
 		client.setJwks(null);
 		client.setJwksUri(null);
-		
+
 		service.saveNewClient(client);
-		
+
 	}
-	
+
 	@Test
 	public void heartMode_validAuthcodeClient() {
 		Mockito.when(config.isHeartMode()).thenReturn(true);
@@ -579,19 +577,19 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		grantTypes.add("authorization_code");
 		grantTypes.add("refresh_token");
 		client.setGrantTypes(grantTypes);
-		
+
 		client.setTokenEndpointAuthMethod(AuthMethod.PRIVATE_KEY);
-		
+
 		client.setRedirectUris(Sets.newHashSet("https://foo.bar/"));
 
 		client.setJwksUri("https://foo.bar/jwks");
-		
+
 		service.saveNewClient(client);
-		
+
 		assertThat(client.getClientId(), is(notNullValue(String.class)));
 		assertThat(client.getClientSecret(), is(nullValue()));
 	}
-	
+
 	@Test(expected = IllegalArgumentException.class)
 	public void heartMode_nonLocalHttpRedirect() {
 		Mockito.when(config.isHeartMode()).thenReturn(true);
@@ -601,17 +599,17 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		grantTypes.add("authorization_code");
 		grantTypes.add("refresh_token");
 		client.setGrantTypes(grantTypes);
-		
+
 		client.setTokenEndpointAuthMethod(AuthMethod.PRIVATE_KEY);
-		
+
 		client.setRedirectUris(Sets.newHashSet("http://foo.bar/"));
 
 		client.setJwksUri("https://foo.bar/jwks");
-		
+
 		service.saveNewClient(client);
-		
+
 	}
-	
+
 	@Test(expected = IllegalArgumentException.class)
 	public void heartMode_multipleRedirectClass() {
 		Mockito.when(config.isHeartMode()).thenReturn(true);
@@ -621,14 +619,14 @@ public class TestDefaultOAuth2ClientDetailsEntityService {
 		grantTypes.add("authorization_code");
 		grantTypes.add("refresh_token");
 		client.setGrantTypes(grantTypes);
-		
+
 		client.setTokenEndpointAuthMethod(AuthMethod.PRIVATE_KEY);
-		
+
 		client.setRedirectUris(Sets.newHashSet("http://localhost/", "https://foo.bar", "foo://bar"));
 
 		client.setJwksUri("https://foo.bar/jwks");
-		
+
 		service.saveNewClient(client);
-		
+
 	}
 }

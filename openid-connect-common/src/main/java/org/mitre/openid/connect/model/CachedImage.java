@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,11 +21,11 @@ package org.mitre.openid.connect.model;
  *
  */
 public class CachedImage {
-	
+
 	private byte[] data;
 	private String contentType;
 	private long length;
-	
+
 	/**
 	 * @return the data
 	 */

@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
+ *
+ * Portions copyright 2011-2013 The MITRE Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,15 +66,15 @@ import static org.junit.Assert.assertTrue;
  */
 
 public class TestDefaultJWTEncryptionAndDecryptionService {
-	
-	private static Logger logger = LoggerFactory.getLogger(TestDefaultJWTEncryptionAndDecryptionService.class); 
+
+	private static Logger logger = LoggerFactory.getLogger(TestDefaultJWTEncryptionAndDecryptionService.class);
 
 	private String plainText = "The true sign of intelligence is not knowledge but imagination.";
 
 	private String issuer = "www.example.net";
 	private String subject = "example_user";
 	private JWTClaimsSet claimsSet = null;
-	
+
 	@Rule
 	public ExpectedException exception = ExpectedException.none();
 
@@ -93,41 +94,41 @@ public class TestDefaultJWTEncryptionAndDecryptionService {
 	private String RSAkid = "rsa321";
 	private JWK RSAjwk = new RSAKey(
 			new Base64URL("oahUIoWw0K0usKNuOR6H4wkf4oBUXHTxRvgb48E-BVvxkeDNjbC4he8rUW" +
-				"cJoZmds2h7M70imEVhRU5djINXtqllXI4DFqcI1DgjT9LewND8MW2Krf3S" +
-				"psk_ZkoFnilakGygTwpZ3uesH-PFABNIUYpOiN15dsQRkgr0vEhxN92i2a" +
-				"sbOenSZeyaxziK72UwxrrKoExv6kc5twXTq4h-QChLOln0_mtUZwfsRaMS" +
-				"tPs6mS6XrgxnxbWhojf663tuEQueGC-FCMfra36C9knDFGzKsNa7LZK2dj" +
-				"YgyD3JR_MB_4NUJW_TqOQtwHYbxevoJArm-L5StowjzGy-_bq6Gw"), // n
+					"cJoZmds2h7M70imEVhRU5djINXtqllXI4DFqcI1DgjT9LewND8MW2Krf3S" +
+					"psk_ZkoFnilakGygTwpZ3uesH-PFABNIUYpOiN15dsQRkgr0vEhxN92i2a" +
+					"sbOenSZeyaxziK72UwxrrKoExv6kc5twXTq4h-QChLOln0_mtUZwfsRaMS" +
+					"tPs6mS6XrgxnxbWhojf663tuEQueGC-FCMfra36C9knDFGzKsNa7LZK2dj" +
+					"YgyD3JR_MB_4NUJW_TqOQtwHYbxevoJArm-L5StowjzGy-_bq6Gw"), // n
 			new Base64URL("AQAB"), // e
 			new Base64URL("kLdtIj6GbDks_ApCSTYQtelcNttlKiOyPzMrXHeI-yk1F7-kpDxY4-WY5N" +
-				"WV5KntaEeXS1j82E375xxhWMHXyvjYecPT9fpwR_M9gV8n9Hrh2anTpTD9" +
-				"3Dt62ypW3yDsJzBnTnrYu1iwWRgBKrEYY46qAZIrA2xAwnm2X7uGR1hghk" +
-				"qDp0Vqj3kbSCz1XyfCs6_LehBwtxHIyh8Ripy40p24moOAbgxVw3rxT_vl" +
-				"t3UVe4WO3JkJOzlpUf-KTVI2Ptgm-dARxTEtE-id-4OJr0h-K-VFs3VSnd" +
-				"VTIznSxfyrj8ILL6MG_Uv8YAu7VILSB3lOW085-4qE3DzgrTjgyQ"), // d
-			KeyUse.ENCRYPTION, null, JWEAlgorithm.RSA_OAEP, RSAkid, null, null, null);
+					"WV5KntaEeXS1j82E375xxhWMHXyvjYecPT9fpwR_M9gV8n9Hrh2anTpTD9" +
+					"3Dt62ypW3yDsJzBnTnrYu1iwWRgBKrEYY46qAZIrA2xAwnm2X7uGR1hghk" +
+					"qDp0Vqj3kbSCz1XyfCs6_LehBwtxHIyh8Ripy40p24moOAbgxVw3rxT_vl" +
+					"t3UVe4WO3JkJOzlpUf-KTVI2Ptgm-dARxTEtE-id-4OJr0h-K-VFs3VSnd" +
+					"VTIznSxfyrj8ILL6MG_Uv8YAu7VILSB3lOW085-4qE3DzgrTjgyQ"), // d
+			KeyUse.ENCRYPTION, null, JWEAlgorithm.RSA_OAEP, RSAkid, null, null, null, null);
 
 	private String RSAkid_2 = "rsa3210";
 	private JWK RSAjwk_2 = new RSAKey(
 			new Base64URL("oahUIoWw0K0usKNuOR6H4wkf4oBUXHTxRvgb48E-BVvxkeDNjbC4he8rUW" +
-				"cJoZmds2h7M70imEVhRU5djINXtqllXI4DFqcI1DgjT9LewND8MW2Krf3S" +
-				"psk_ZkoFnilakGygTwpZ3uesH-PFABNIUYpOiN15dsQRkgr0vEhxN92i2a" +
-				"sbOenSZeyaxziK72UwxrrKoExv6kc5twXTq4h-QChLOln0_mtUZwfsRaMS" +
-				"tPs6mS6XrgxnxbWhojf663tuEQueGC-FCMfra36C9knDFGzKsNa7LZK2dj" +
-				"YgyD3JR_MB_4NUJW_TqOQtwHYbxevoJArm-L5StowjzGy-_bq6Gw"), // n
+					"cJoZmds2h7M70imEVhRU5djINXtqllXI4DFqcI1DgjT9LewND8MW2Krf3S" +
+					"psk_ZkoFnilakGygTwpZ3uesH-PFABNIUYpOiN15dsQRkgr0vEhxN92i2a" +
+					"sbOenSZeyaxziK72UwxrrKoExv6kc5twXTq4h-QChLOln0_mtUZwfsRaMS" +
+					"tPs6mS6XrgxnxbWhojf663tuEQueGC-FCMfra36C9knDFGzKsNa7LZK2dj" +
+					"YgyD3JR_MB_4NUJW_TqOQtwHYbxevoJArm-L5StowjzGy-_bq6Gw"), // n
 			new Base64URL("AQAB"), // e
 			new Base64URL("kLdtIj6GbDks_ApCSTYQtelcNttlKiOyPzMrXHeI-yk1F7-kpDxY4-WY5N" +
-				"WV5KntaEeXS1j82E375xxhWMHXyvjYecPT9fpwR_M9gV8n9Hrh2anTpTD9" +
-				"3Dt62ypW3yDsJzBnTnrYu1iwWRgBKrEYY46qAZIrA2xAwnm2X7uGR1hghk" +
-				"qDp0Vqj3kbSCz1XyfCs6_LehBwtxHIyh8Ripy40p24moOAbgxVw3rxT_vl" +
-				"t3UVe4WO3JkJOzlpUf-KTVI2Ptgm-dARxTEtE-id-4OJr0h-K-VFs3VSnd" +
-				"VTIznSxfyrj8ILL6MG_Uv8YAu7VILSB3lOW085-4qE3DzgrTjgyQ"), // d
-			KeyUse.ENCRYPTION, null, JWEAlgorithm.RSA1_5, RSAkid_2, null, null, null);
+					"WV5KntaEeXS1j82E375xxhWMHXyvjYecPT9fpwR_M9gV8n9Hrh2anTpTD9" +
+					"3Dt62ypW3yDsJzBnTnrYu1iwWRgBKrEYY46qAZIrA2xAwnm2X7uGR1hghk" +
+					"qDp0Vqj3kbSCz1XyfCs6_LehBwtxHIyh8Ripy40p24moOAbgxVw3rxT_vl" +
+					"t3UVe4WO3JkJOzlpUf-KTVI2Ptgm-dARxTEtE-id-4OJr0h-K-VFs3VSnd" +
+					"VTIznSxfyrj8ILL6MG_Uv8YAu7VILSB3lOW085-4qE3DzgrTjgyQ"), // d
+			KeyUse.ENCRYPTION, null, JWEAlgorithm.RSA1_5, RSAkid_2, null, null, null, null);
 
 	private String AESkid = "aes123";
-	private JWK AESjwk = new OctetSequenceKey( new Base64URL("GawgguFyGrWKav7AX4VKUg"),
+	private JWK AESjwk = new OctetSequenceKey(new Base64URL("GawgguFyGrWKav7AX4VKUg"),
 			KeyUse.ENCRYPTION, null, JWEAlgorithm.A128KW,
-			AESkid, null, null, null);
+			AESkid, null, null, null, null);
 
 
 	private Map<String, JWK> keys = new ImmutableMap.Builder<String, JWK>()
@@ -165,9 +166,9 @@ public class TestDefaultJWTEncryptionAndDecryptionService {
 		service_4 = new DefaultJWTEncryptionAndDecryptionService(keys_4);
 
 		claimsSet = new JWTClaimsSet.Builder()
-			.issuer(issuer)
-			.subject(subject)
-			.build();
+				.issuer(issuer)
+				.subject(subject)
+				.build();
 
 		// Key Store
 
@@ -186,7 +187,7 @@ public class TestDefaultJWTEncryptionAndDecryptionService {
 		Assume.assumeTrue(JCASupport.isSupported(JWEAlgorithm.RSA_OAEP) // check for algorithm support
 				&& JCASupport.isSupported(EncryptionMethod.A256GCM)
 				&& Cipher.getMaxAllowedKeyLength("RC5") >= 256); // check for unlimited crypto strength
-		
+
 		service.setDefaultDecryptionKeyId(RSAkid);
 		service.setDefaultEncryptionKeyId(RSAkid);
 
@@ -207,7 +208,7 @@ public class TestDefaultJWTEncryptionAndDecryptionService {
 		Assume.assumeTrue(JCASupport.isSupported(JWEAlgorithm.RSA_OAEP) // check for algorithm support
 				&& JCASupport.isSupported(EncryptionMethod.A256GCM)
 				&& Cipher.getMaxAllowedKeyLength("RC5") >= 256); // check for unlimited crypto strength
-		
+
 		service.setDefaultDecryptionKeyId(RSAkid);
 		service.setDefaultEncryptionKeyId(RSAkid);
 
@@ -235,11 +236,11 @@ public class TestDefaultJWTEncryptionAndDecryptionService {
 	// The same as encryptThenDecrypt_RSA() but relies on the key from the map
 	@Test
 	public void encryptThenDecrypt_nullID() throws ParseException, NoSuchAlgorithmException {
-		
+
 		Assume.assumeTrue(JCASupport.isSupported(JWEAlgorithm.RSA_OAEP) // check for algorithm support
 				&& JCASupport.isSupported(EncryptionMethod.A256GCM)
 				&& Cipher.getMaxAllowedKeyLength("RC5") >= 256); // check for unlimited crypto strength
-		
+
 		service.setDefaultDecryptionKeyId(null);
 		service.setDefaultEncryptionKeyId(null);
 
@@ -272,7 +273,7 @@ public class TestDefaultJWTEncryptionAndDecryptionService {
 				&& Cipher.getMaxAllowedKeyLength("RC5") >= 256); // check for unlimited crypto strength
 
 		exception.expect(IllegalStateException.class);
-		
+
 		service_2.setDefaultEncryptionKeyId(null);
 		assertEquals(null, service_2.getDefaultEncryptionKeyId());
 
@@ -291,10 +292,10 @@ public class TestDefaultJWTEncryptionAndDecryptionService {
 		Assume.assumeTrue(JCASupport.isSupported(JWEAlgorithm.RSA_OAEP) // check for algorithm support
 				&& JCASupport.isSupported(EncryptionMethod.A256GCM)
 				&& Cipher.getMaxAllowedKeyLength("RC5") >= 256); // check for unlimited crypto strength
-		
+
 
 		exception.expect(IllegalStateException.class);
-		
+
 		service_2.setDefaultEncryptionKeyId(RSAkid);
 		service_2.setDefaultDecryptionKeyId(null);
 

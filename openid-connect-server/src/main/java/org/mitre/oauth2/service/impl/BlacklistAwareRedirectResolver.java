@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +14,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.oauth2.service.impl;
 
@@ -31,10 +30,10 @@ import org.springframework.stereotype.Component;
 import com.google.common.base.Strings;
 
 /**
- * 
+ *
  * A redirect resolver that knows how to check against the blacklisted URIs
  * for forbidden values. Can be configured to do strict string matching also.
- * 
+ *
  * @author jricher
  *
  */
@@ -46,8 +45,8 @@ public class BlacklistAwareRedirectResolver extends DefaultRedirectResolver {
 
 	@Autowired
 	private ConfigurationPropertiesBean config;
-	
-	private boolean strictMatch = false;
+
+	private boolean strictMatch = true;
 
 	/* (non-Javadoc)
 	 * @see org.springframework.security.oauth2.provider.endpoint.RedirectResolver#resolveRedirect(java.lang.String, org.springframework.security.oauth2.provider.ClientDetails)
@@ -94,7 +93,7 @@ public class BlacklistAwareRedirectResolver extends DefaultRedirectResolver {
 
 	/**
 	 * Set this to true to require exact string matches for all redirect URIs. (Default is false)
-	 * 
+	 *
 	 * @param strictMatch the strictMatch to set
 	 */
 	public void setStrictMatch(boolean strictMatch) {

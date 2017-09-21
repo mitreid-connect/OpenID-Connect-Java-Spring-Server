@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
+ *
+ * Portions copyright 2011-2013 The MITRE Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,9 +31,9 @@ import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTParser;
 
 /**
- * 
+ *
  * @author Michael Walsh, Justin Richer
- * 
+ *
  */
 public class OIDCAuthenticationToken extends AbstractAuthenticationToken {
 
@@ -49,9 +50,9 @@ public class OIDCAuthenticationToken extends AbstractAuthenticationToken {
 
 	/**
 	 * Constructs OIDCAuthenticationToken with a full set of authorities, marking this as authenticated.
-	 * 
+	 *
 	 * Set to authenticated.
-	 * 
+	 *
 	 * Constructs a Principal out of the subject and issuer.
 	 * @param subject
 	 * @param authorities
@@ -78,7 +79,7 @@ public class OIDCAuthenticationToken extends AbstractAuthenticationToken {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.springframework.security.core.Authentication#getCredentials()
 	 */
 	@Override

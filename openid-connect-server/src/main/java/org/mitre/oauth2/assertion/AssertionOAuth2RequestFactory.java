@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +24,7 @@ import com.nimbusds.jwt.JWT;
 
 /**
  * Take in an assertion and token request and generate an OAuth2Request from it, including scopes and other important components
- * 
+ *
  * @author jricher
  *
  */

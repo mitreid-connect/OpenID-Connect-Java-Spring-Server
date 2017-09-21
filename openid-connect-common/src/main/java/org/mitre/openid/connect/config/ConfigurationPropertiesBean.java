@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
+ *
+ * Portions copyright 2011-2013 The MITRE Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +36,7 @@ import com.google.gson.Gson;
  * Bean to hold configuration information that must be injected into various parts
  * of our application. Set all of the properties here, and autowire a reference
  * to this bean if you need access to any configuration properties.
- * 
+ *
  * @author AANGANES
  *
  */
@@ -49,7 +50,7 @@ public class ConfigurationPropertiesBean {
 	private String issuer;
 
 	private String topbarTitle;
-	
+
 	private String shortTopbarTitle;
 
 	private String logoImageUrl;
@@ -61,14 +62,14 @@ public class ConfigurationPropertiesBean {
 	private boolean forceHttps = false; // by default we just log a warning for HTTPS deployment
 
 	private Locale locale = Locale.ENGLISH; // we default to the english translation
-	
+
 	private List<String> languageNamespaces = Lists.newArrayList("messages");
 
-    private boolean dualClient = false;
-    
-    private boolean heartMode = false;
+	private boolean dualClient = false;
 
-    public ConfigurationPropertiesBean() {
+	private boolean heartMode = false;
+
+	public ConfigurationPropertiesBean() {
 
 	}
 
@@ -87,7 +88,7 @@ public class ConfigurationPropertiesBean {
 				logger.warn("\n\n**\n** WARNING: Configured issuer url is not using https scheme.\n**\n\n");
 			}
 		}
-		
+
 		if (languageNamespaces == null || languageNamespaces.isEmpty()) {
 			logger.error("No configured language namespaces! Text rendering will fail!");
 		}
@@ -120,14 +121,14 @@ public class ConfigurationPropertiesBean {
 	public void setTopbarTitle(String topbarTitle) {
 		this.topbarTitle = topbarTitle;
 	}
-	
+
 	/**
-	 * @return If shortTopbarTitle is undefined, returns topbarTitle. 
+	 * @return If shortTopbarTitle is undefined, returns topbarTitle.
 	 */
 	public String getShortTopbarTitle() {
 		return shortTopbarTitle == null ? topbarTitle : shortTopbarTitle;
 	}
-	
+
 	public void setShortTopbarTitle(String shortTopbarTitle) {
 		this.shortTopbarTitle = shortTopbarTitle;
 	}
@@ -211,37 +212,37 @@ public class ConfigurationPropertiesBean {
 	}
 
 	/**
-     * @return true if dual client is configured, otherwise false
-     */
-    public boolean isDualClient() {
-    	if (isHeartMode()) {
-    		return false; // HEART mode is incompatible with dual client mode
-    	} else {
-    		return dualClient;
-    	}
-    }
+	 * @return true if dual client is configured, otherwise false
+	 */
+	public boolean isDualClient() {
+		if (isHeartMode()) {
+			return false; // HEART mode is incompatible with dual client mode
+		} else {
+			return dualClient;
+		}
+	}
 
-    /**
-     * @param dualClient the dual client configuration
-     */
-    public void setDualClient(boolean dualClient) {
-        this.dualClient = dualClient;
-    }
-    
-    /**
-     * Get the list of namespaces as a JSON string, for injection into the JavaScript UI
-     * @return
-     */
-    public String getLanguageNamespacesString() {
-    	return new Gson().toJson(getLanguageNamespaces());
-    }
-    
-    /**
-     * Get the default namespace (first in the nonempty list)
-     */
-    public String getDefaultLanguageNamespace() {
-    	return getLanguageNamespaces().get(0);
-    }
+	/**
+	 * @param dualClient the dual client configuration
+	 */
+	public void setDualClient(boolean dualClient) {
+		this.dualClient = dualClient;
+	}
+
+	/**
+	 * Get the list of namespaces as a JSON string, for injection into the JavaScript UI
+	 * @return
+	 */
+	public String getLanguageNamespacesString() {
+		return new Gson().toJson(getLanguageNamespaces());
+	}
+
+	/**
+	 * Get the default namespace (first in the nonempty list)
+	 */
+	public String getDefaultLanguageNamespace() {
+		return getLanguageNamespaces().get(0);
+	}
 
 	/**
 	 * @return the heartMode

@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +15,10 @@
  *******************************************************************************/
 
 package org.mitre.uma.web;
+
+import static org.mitre.oauth2.web.AuthenticationUtilities.ensureOAuthScope;
+import static org.mitre.util.JsonUtils.getAsLong;
+import static org.mitre.util.JsonUtils.getAsStringSet;
 
 import java.util.Set;
 
@@ -44,10 +47,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
-
-import static org.mitre.oauth2.web.AuthenticationUtilities.ensureOAuthScope;
-import static org.mitre.util.JsonUtils.getAsLong;
-import static org.mitre.util.JsonUtils.getAsStringSet;
 
 /**
  * @author jricher

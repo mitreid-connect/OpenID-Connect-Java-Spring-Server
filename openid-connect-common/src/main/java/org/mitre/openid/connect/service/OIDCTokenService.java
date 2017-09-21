@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
+ *
+ * Portions copyright 2011-2013 The MITRE Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +23,11 @@ import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 
+import com.nimbusds.jwt.JWT;
+
 /**
  * Service to create specialty OpenID Connect tokens.
- * 
+ *
  * @author Amanda Anganes
  *
  */
@@ -32,7 +35,7 @@ public interface OIDCTokenService {
 
 	/**
 	 * Create an id token with the information provided.
-	 * 
+	 *
 	 * @param client
 	 * @param request
 	 * @param issueTime
@@ -41,13 +44,13 @@ public interface OIDCTokenService {
 	 * @param accessToken
 	 * @return
 	 */
-	public OAuth2AccessTokenEntity createIdToken(
+	public JWT createIdToken(
 			ClientDetailsEntity client, OAuth2Request request, Date issueTime,
 			String sub, OAuth2AccessTokenEntity accessToken);
 
 	/**
 	 * Create a registration access token for the given client.
-	 * 
+	 *
 	 * @param client
 	 * @return
 	 */
@@ -55,7 +58,7 @@ public interface OIDCTokenService {
 
 	/**
 	 * Create a resource access token for the given client (protected resource).
-	 * 
+	 *
 	 * @param client
 	 * @return
 	 */

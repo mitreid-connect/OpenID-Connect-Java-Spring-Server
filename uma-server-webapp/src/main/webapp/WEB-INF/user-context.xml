@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-    Copyright 2016 The MITRE Corporation
-      and the MIT Internet Trust Consortium
+    Copyright 2017 The MIT Internet Trust Consortium
    
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -23,11 +22,11 @@
 	xmlns:security="http://www.springframework.org/schema/security"
 	xmlns:oauth="http://www.springframework.org/schema/security/oauth2"
 	xsi:schemaLocation="http://www.springframework.org/schema/security/oauth2 http://www.springframework.org/schema/security/spring-security-oauth2-2.0.xsd
-		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.1.xsd
-		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd
-		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
-		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd">
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
 
 
 	<!-- Support for external OIDC logins for claims gathering -->
@@ -47,7 +46,7 @@
 	</security:http>	
 
 	<bean id="externalAuthenticationEntryPoint" class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
-		<property name="loginFormUrl" value="/openid_connect_login" />
+		<constructor-arg type="java.lang.String" value="/openid_connect_login"/>
 	</bean>
 
 	<security:authentication-manager id="externalAuthenticationManager">
@@ -110,7 +109,7 @@
 
 	<!-- Standard configuration -->
 
-	<security:authentication-manager alias="authenticationManager">
+	<security:authentication-manager id="authenticationManager">
 		<security:authentication-provider>
 			<security:jdbc-user-service data-source-ref="dataSource"/>
 		</security:authentication-provider>
@@ -119,19 +118,25 @@
 	<mvc:view-controller path="/login" view-name="login" />
 	
 	
-	<security:http pattern="/login**" use-expressions="true" entry-point-ref="http403EntryPoint">
+	<!--<security:http pattern="/login**" use-expressions="true" entry-point-ref="http403EntryPoint">
 		<security:intercept-url pattern="/login**" access="permitAll"/>	
-	</security:http>
+	</security:http>-->
 
-	<security:http disable-url-rewriting="true" use-expressions="true"> 
-		<security:form-login login-page="/login" authentication-failure-url="/login?error=failure" authentication-success-handler-ref="authenticationTimeStamper" />
+	<security:http authentication-manager-ref="authenticationManager">
+
 		<security:intercept-url pattern="/authorize" access="hasRole('ROLE_USER')" />
 		<security:intercept-url pattern="/**" access="permitAll" />
+
+		<security:form-login login-page="/login" authentication-failure-url="/login?error=failure" authentication-success-handler-ref="authenticationTimeStamper" />
 		<security:custom-filter before="PRE_AUTH_FILTER" ref="externalAuthenticationFilter" />
 		<security:custom-filter ref="authRequestFilter" after="SECURITY_CONTEXT_FILTER" />
 		<security:logout logout-url="/logout" />
 		<security:anonymous />
 		<security:expression-handler ref="oauthWebExpressionHandler" />
-	</security:http>	
+		<security:headers>
+			<security:frame-options policy="DENY" />
+		</security:headers>
+		<security:csrf />
+	</security:http>
 
 </beans>

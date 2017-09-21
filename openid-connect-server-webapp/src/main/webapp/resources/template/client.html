@@ -1,6 +1,7 @@
 <!-- 
- Copyright 2016 The MITRE Corporation 
-   and the MIT Internet Trust Consortium
+ Copyright 2017 The MIT Internet Trust Consortium
+ 
+ Portions copyright 2011-2013 The MITRE Corporation
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -17,14 +18,8 @@
 <!-- client -->
 
 <script type="text/html" id="tmpl-client-table-item">
-	<td>
-		<% if (count == 0) { %>
-			<span class="label label-important">0</span>
-		<% } else if (count != null) { %>
-			<span class="label label-info"><%- count %></span>
-		<% } else { %>
-			<span class="label label-warning">?</span>
-		<% } %>
+	<td class="count">
+
 	</td>
 
     <td>
@@ -215,7 +210,7 @@
             <div class="control-group" id="clientName">
                 <label class="control-label" data-i18n="client.client-form.client-name">Client name</label>
                 <div class="controls">
-                    <input value="<%-client.clientName%>" maxlength="100" type="text" class="" placeholder="Type something" data-i18n="[placeholder]client.client-form.client-name-placeholder">
+                    <input value="<%-client.clientName ? client.clientName : ''%>" maxlength="100" type="text" class="" placeholder="Type something" data-i18n="[placeholder]client.client-form.client-name-placeholder">
                     <p class="help-block" data-i18n="client.client-form.client-name-help">Human-readable application name</p>
                 </div>
             </div>
@@ -223,7 +218,7 @@
             <div class="control-group" id="clientId">
                 <label class="control-label" data-i18n="client.client-form.client-id">Client ID</label>
                 <div class="controls">
-                    <input value="<%-client.clientId%>" maxlength="100" type="text" class="" placeholder="Type something" data-i18n="[placeholder]client.client-form.client-id-placeholder">
+                    <input value="<%-client.clientId ? client.clientId : ''%>" maxlength="100" type="text" class="" placeholder="Client ID will be generated automatically" data-i18n="[placeholder]client.client-form.client-id-placeholder">
                     <p class="help-block" data-i18n="client.client-form.client-id-help">Unique identifier. If you leave this blank it will be automatically generated.</p>
                 </div>
             </div>
@@ -246,7 +241,7 @@
 			<div class="control-group" id="logoUri">
 				<label class="control-label" data-i18n="client.client-form.logo">Logo</label>
 				<div class="controls">
-					<input placeholder="https://" value="<%-client.logoUri%>" maxlength="1000" type="text" class=""/>
+					<input placeholder="https://" value="<%-client.logoUri ? client.logoUri : ''%>" maxlength="1000" type="text" class=""/>
 					<p class="help-block" data-i18n="client.client-form.logo-help">URL that points to a logo image, will be displayed on approval page</p>
 				</div>
 			</div>
@@ -260,7 +255,7 @@
 			<div class="control-group" id="tosUri">
 				<label class="control-label" data-i18n="client.client-form.terms">Terms of Service</label>
 				<div class="controls">
-					<input placeholder="https://" value="<%-client.tosUri%>" maxlength="1000" type="text" class=""/>
+					<input placeholder="https://" value="<%-client.tosUri ? client.tosUri : ''%>" maxlength="1000" type="text" class=""/>
 					<p class="help-block" data-i18n="client.client-form.terms-help">URL for the Terms of Service of this client, will be displayed to the user</p>
 				</div>
 			</div>
@@ -268,7 +263,7 @@
 			<div class="control-group" id="policyUri">
 				<label class="control-label" data-i18n="client.client-form.policy">Policy Statement</label>
 				<div class="controls">
-					<input placeholder="https://" value="<%-client.policyUri%>" maxlength="1000" type="text" class=""/>
+					<input placeholder="https://" value="<%-client.policyUri ? client.policyUri : ''%>" maxlength="1000" type="text" class=""/>
 					<p class="help-block" data-i18n="client.client-form.policy-help">URL for the Policy Statement of this client, will be displayed to the user</p>
 				</div>
 			</div>
@@ -276,23 +271,27 @@
 			<div class="control-group" id="clientUri">
 				<label class="control-label" data-i18n="client.client-form.home">Home Page</label>
 				<div class="controls">
-					<input placeholder="https://" value="<%-client.clientUri%>" maxlength="1000" type="text" class=""/>
+					<input placeholder="https://" value="<%-client.clientUri ? client.clientUri : ''%>" maxlength="1000" type="text" class=""/>
 					<p class="help-block" data-i18n="client.client-form.home-help">URL for the client's home page, will be displayed to the user</p>
 				</div>
 			</div>
 
-			<div class="control-group" id="applicationType">
-				<label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> <span data-i18n="client.client-form.type">Application Type</span></label>
-				<div class="controls">
-                    <div>
-                    <input id="app-type-native" type="radio" name="applicationType" value="NATIVE" <%-(client.applicationType == 'NATIVE' ? 'checked' : '')%>>
-                    <label for="app-type-native" class="radio inline" data-i18n="client.client-form.type-native">Native</label>
-                    <input id="app-type-web" type="radio" name="applicationType" value="WEB" <%-(client.applicationType == 'WEB' ? 'checked' : '')%>>
-                    <label for="app-type-web" class="radio inline" data-i18n="client.client-form.type-web">Web</label>
-                    </div>
-				</div>
-			</div>
-			
+           <div class="control-group" id="softwareId">
+                <label class="control-label" data-i18n="client.client-form.software-id">Software ID</label>
+                <div class="controls">
+                    <input value="<%-client.softwareId ? client.softwareId : ''%>" maxlength="100" type="text" class="" placeholder="Type something" data-i18n="[placeholder]client.client-form.software-id-placeholder">
+                    <p class="help-block" data-i18n="client.client-form.software-id-help">Identifier for the software in this client</p>
+                </div>
+            </div>
+
+            <div class="control-group" id="softwareVersion">
+                <label class="control-label" data-i18n="client.client-form.software-version">Software Version</label>
+                <div class="controls">
+                    <input value="<%-client.softwareVersion ? client.softwareVersion : ''%>" maxlength="100" type="text" class="" placeholder="Type something" data-i18n="[placeholder]client.client-form.software-version-placeholder">
+                    <p class="help-block" data-i18n="client.client-form.software-version-help">Version of the software in this client</p>
+                </div>
+            </div>
+
             <div class="control-group" id="contacts">
                 <label class="control-label" data-i18n="client.client-form.contacts">Contacts</label>
                 <div class="controls">
@@ -359,7 +358,13 @@
                             <%-($.inArray("urn:ietf:params:oauth:grant_type:redelegate", client.grantTypes) > -1 ? 'checked' : '')%>> 
                         <label for="grantTypes-redelegate" class="checkbox" data-i18n="client.client-form.redelegation">redelegate</label>
                     </div>
-                </div>
+ 
+                    <div>
+                        <input id="grantTypes-device" type="checkbox"
+                            <%-($.inArray("urn:ietf:params:oauth:grant-type:device_code", client.grantTypes) > -1 ? 'checked' : '')%>> 
+                        <label for="grantTypes-device" class="checkbox" data-i18n="client.client-form.device">device</label>
+                    </div>
+               </div>
             </div>
 
 			<div class="control-group" id="responseTypes">
@@ -422,7 +427,7 @@
 			<div class="control-group" id="sectorIdentifierUri">
 				<label class="control-label" data-i18n="client.client-form.sector-identifier">Sector Identifier URI</label>
 				<div class="controls">
-					<input placeholder="https://" value="<%-client.sectorIdentifierUri%>" maxlength="1000" type="text" class=""/>
+					<input placeholder="https://" value="<%-client.sectorIdentifierUri ? client.sectorIdentifierUri : ''%>" maxlength="1000" type="text" class=""/>
 					<p class="help-block" data-i18n="client.client-form.sector-identifier-help">Sector Identifier for JavaScript</p>
 				</div>
 			</div>
@@ -484,7 +489,7 @@
     	        <div class="control-group">
             	    <div class="controls">
 						<div id="clientSecret" class="span3">
-                	    	<input value="<%-client.clientSecret%>" maxlength="100" type="text" placeholder="Type a secret" data-i18n="[placeholder]client.client-form.client-secret-placeholder">
+                	    	<input value="<%-client.clientSecret ? client.clientSecret : ''%>" maxlength="100" type="text" placeholder="Type a secret" data-i18n="[placeholder]client.client-form.client-secret-placeholder">
 						</div>
 						<div id="clientSecretGenerated" class="span3">
 							<span class="uneditable-input" data-i18n="client.client-form.generate-on-save">Generate on Save</span>
@@ -529,11 +534,11 @@
 					</div>
 				</div>
 				<div class="controls" id="jwksUri">
-					<input placeholder="https://" value="<%-client.jwksUri%>" maxlength="1000" type="text" class=""/>
+					<input placeholder="https://" value="<%-client.jwksUri ? client.jwksUri : ''%>" maxlength="1000" type="text" class=""/>
 					<p class="help-block" data-i18n="client.client-form.jwk-set-help">URL for the client's JSON Web Key set (must be reachable by the server)</p>
 				</div>
 				<div class="controls" id="jwks">
-					<textarea  class="input-xlarge" placeholder="{ &quot;keys&quot: [ ] }" maxlength="4000" type="text" rows="8"><%- (client.jwks != null ? JSON.stringify(client.jwks, null, '  ') : "") %></textarea>
+					<textarea  class="input-xlarge" placeholder="{ &quot;keys&quot: [ ] }" maxlength="4000" type="text" rows="8"><%- (client.jwks ? JSON.stringify(client.jwks, null, '  ') : "") %></textarea>
 					<p class="help-block" data-i18n="client.client-form.jwk-set-value-help">Key set value (must be a valid JWK Set formatted key)</p>
 				</div>
 			</div>
@@ -611,6 +616,22 @@
                     <p class="help-block" data-i18n="client.client-form.token-timeout-help">Enter this time in seconds, minutes, or hours.</p>
                 </div>
             </div>
+
+            <div class="control-group" id="deviceCodeValidityTime">
+                <label class="control-label" data-i18n="client.client-form.device-code-timeout">Device Code Timeout</label>
+                <div class="controls">
+                    <div>
+                        <input type="text" class="" value="<%-(client.deviceCodeValiditySeconds == null ? '' : client.deviceCodeValiditySeconds)%>" id="device-code-timeout-time" size="16" style="width:8em;">
+						<select id="device-code-timeout-unit" style="width:8em;">
+							<option data-i18n="client.client-form.seconds">seconds</option>
+							<option data-i18n="client.client-form.minutes">minutes</option>
+							<option data-i18n="client.client-form.hours">hours</option>
+						</select>
+                    </div>
+                    <p class="help-block" data-i18n="client.client-form.token-timeout-help">Enter this time in seconds, minutes, or hours.</p>
+                </div>
+            </div>
+
 	</div>
 
 	<div class="tab-pane" id="client-crypto-tab">
@@ -744,6 +765,17 @@
 				</div>
 			</div>
 
+            <div class="control-group" id="codeChallengeMethod">
+                <label class="control-label" data-i18n="client.client-form.code-challenge-method">Proof Key for Code Exchange (PKCE) Code Challenge Method</label>
+                <div class="controls">
+					<select>
+						<option value="default" <%-client.codeChallengeMethod == null ? 'selected ' : ''%> data-i18n="client.client-form.code-challenge-none">No code challenge</option>
+						<option value="plain" <%-client.codeChallengeMethod == "plain" ? 'selected' : ''%> data-i18n="client.client-form.code-challenge-plain">Plain code challenge</option>
+						<option value="S256" <%-client.codeChallengeMethod == "S256" ? 'selected' : ''%> data-i18n="client.client-form.code-challenge-s256">SHA-256 hash algorithm</option>
+					</select>
+                </div>
+            </div>
+			
 	</div>
 
 	<div class="tab-pane" id="client-other-tab">
@@ -751,7 +783,7 @@
 			<div class="control-group" id="initiateLoginUri">
 				<label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> <span data-i18n="client.client-form.initiate-login">Initiate Login</span></label>
 				<div class="controls">
-					<input placeholder="https://" value="<%-client.initiateLoginUri%>" maxlength="1000" type="text" class=""/>
+					<input placeholder="https://" value="<%-client.initiateLoginUri ? client.initiateLoginUri : ''%>" maxlength="1000" type="text" class=""/>
 					<p class="help-block" data-i18n="client.client-form.initiate-login-help">URL to initiate login on the client</p>
 				</div>
 			</div>
@@ -782,7 +814,7 @@
 			<div class="control-group" id="defaultMaxAge">
 				<label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> <span data-i18n="client.client-form.max-age">Default Max Age</span></label>
 				<div class="controls">
-					<input placeholder="" value="<%-client.defaultMaxAge%>" maxlength="10" type="text" class=""/>
+					<input placeholder="" value="<%-client.defaultMaxAge ? client.defaultMaxAge : ''%>" maxlength="10" type="text" class=""/>
 					<p class="help-block" data-i18n="client.client-form.max-age-help">Default maximum session age before re-prompting</p>
 				</div>
 			</div>
@@ -799,7 +831,19 @@
                 </div>
             </div>			
 
-	</div>
+			<div class="control-group" id="applicationType">
+				<label class="control-label"><span class="label label-default nyi"><i class="icon-road icon-white"></i> NYI </span> <span data-i18n="client.client-form.type">Application Type</span></label>
+				<div class="controls">
+                    <div>
+                    <input id="app-type-native" type="radio" name="applicationType" value="NATIVE" <%-(client.applicationType == 'NATIVE' ? 'checked' : '')%>>
+                    <label for="app-type-native" class="radio inline" data-i18n="client.client-form.type-native">Native</label>
+                    <input id="app-type-web" type="radio" name="applicationType" value="WEB" <%-(client.applicationType == 'WEB' ? 'checked' : '')%>>
+                    <label for="app-type-web" class="radio inline" data-i18n="client.client-form.type-web">Web</label>
+                    </div>
+				</div>
+			</div>
+			
+ 	</div>
 
 
 
@@ -850,4 +894,14 @@
 		<button class="btn btn-warning" id="rotate-token"><i class="icon-retweet icon-white"></i> <span data-i18n="client.client-form.rotate-registration-token">Rotate registration token</span></button>
 	</div>
 
+</script>
+
+<script type="text/html" id="tmpl-client-count">
+		<% if (count == 0) { %>
+			<span class="label label-important">0</span>
+		<% } else if (count != null) { %>
+			<span class="label label-info"><%- count %></span>
+		<% } else { %>
+			<span class="label label-warning">?</span>
+		<% } %>
 </script>

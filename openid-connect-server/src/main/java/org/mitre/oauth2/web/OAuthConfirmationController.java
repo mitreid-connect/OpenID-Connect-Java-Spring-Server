@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
+ *
+ * Portions copyright 2011-2013 The MITRE Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +16,12 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.oauth2.web;
+
+import static org.mitre.openid.connect.request.ConnectRequestParameters.PROMPT;
+import static org.mitre.openid.connect.request.ConnectRequestParameters.PROMPT_SEPARATOR;
 
 import java.net.URISyntaxException;
 import java.security.Principal;
@@ -56,9 +60,6 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonObject;
-
-import static org.mitre.openid.connect.request.ConnectRequestParameters.PROMPT;
-import static org.mitre.openid.connect.request.ConnectRequestParameters.PROMPT_SEPARATOR;
 
 /**
  * @author jricher
@@ -201,7 +202,7 @@ public class OAuthConfirmationController {
 		model.put("claims", claimsForScopes);
 
 		// client stats
-		Integer count = statsService.getCountForClientId(client.getId());
+		Integer count = statsService.getCountForClientId(client.getClientId()).getApprovedSiteCount();
 		model.put("count", count);
 
 

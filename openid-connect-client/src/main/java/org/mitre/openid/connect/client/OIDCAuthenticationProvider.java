@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
+ *
+ * Portions copyright 2011-2013 The MITRE Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +35,7 @@ import com.nimbusds.jwt.JWT;
 
 /**
  * @author nemonik, Justin Richer
- * 
+ *
  */
 public class OIDCAuthenticationProvider implements AuthenticationProvider {
 
@@ -46,7 +47,7 @@ public class OIDCAuthenticationProvider implements AuthenticationProvider {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.springframework.security.authentication.AuthenticationProvider#
 	 * authenticate(org.springframework.security.core.Authentication)
 	 */
@@ -86,7 +87,7 @@ public class OIDCAuthenticationProvider implements AuthenticationProvider {
 	/**
 	 * Override this function to return a different kind of Authentication, processes the authorities differently,
 	 * or do post-processing based on the UserInfo object.
-	 * 
+	 *
 	 * @param token
 	 * @param authorities
 	 * @param userInfo
@@ -115,7 +116,7 @@ public class OIDCAuthenticationProvider implements AuthenticationProvider {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.springframework.security.authentication.AuthenticationProvider#supports
 	 * (java.lang.Class)

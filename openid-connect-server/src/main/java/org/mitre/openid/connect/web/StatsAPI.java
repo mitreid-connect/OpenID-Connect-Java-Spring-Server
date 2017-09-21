@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
+ *
+ * Portions copyright 2011-2013 The MITRE Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +19,7 @@ package org.mitre.openid.connect.web;
 
 import java.util.Map;
 
+import org.mitre.openid.connect.model.ClientStat;
 import org.mitre.openid.connect.service.StatsService;
 import org.mitre.openid.connect.view.JsonEntityView;
 import org.slf4j.Logger;
@@ -53,20 +55,20 @@ public class StatsAPI {
 
 	}
 
-	@PreAuthorize("hasRole('ROLE_USER')")
-	@RequestMapping(value = "byclientid", produces = MediaType.APPLICATION_JSON_VALUE)
-	public String statsByClient(ModelMap m) {
-		Map<Long, Integer> e = statsService.getByClientId();
-
-		m.put(JsonEntityView.ENTITY, e);
-
-		return JsonEntityView.VIEWNAME;
-	}
-
+	//	@PreAuthorize("hasRole('ROLE_USER')")
+	//	@RequestMapping(value = "byclientid", produces = MediaType.APPLICATION_JSON_VALUE)
+	//	public String statsByClient(ModelMap m) {
+	//		Map<Long, Integer> e = statsService.getByClientId();
+	//
+	//		m.put(JsonEntityView.ENTITY, e);
+	//
+	//		return JsonEntityView.VIEWNAME;
+	//	}
+	//
 	@PreAuthorize("hasRole('ROLE_USER')")
 	@RequestMapping(value = "byclientid/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public String statsByClientId(@PathVariable("id") Long id, ModelMap m) {
-		Integer e = statsService.getCountForClientId(id);
+	public String statsByClientId(@PathVariable("id") String clientId, ModelMap m) {
+		ClientStat e = statsService.getCountForClientId(clientId);
 
 		m.put(JsonEntityView.ENTITY, e);
 

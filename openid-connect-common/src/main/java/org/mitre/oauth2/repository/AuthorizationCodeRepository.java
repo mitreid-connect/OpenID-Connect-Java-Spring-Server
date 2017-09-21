@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
+ *
+ * Portions copyright 2011-2013 The MITRE Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +19,12 @@ package org.mitre.oauth2.repository;
 
 import java.util.Collection;
 
+import org.mitre.data.PageCriteria;
 import org.mitre.oauth2.model.AuthorizationCodeEntity;
 
 /**
  * Interface for saving and consuming OAuth2 authorization codes as AuthorizationCodeEntitys.
- * 
+ *
  * @author aanganes
  *
  */
@@ -30,7 +32,7 @@ public interface AuthorizationCodeRepository {
 
 	/**
 	 * Save an AuthorizationCodeEntity to the repository
-	 * 
+	 *
 	 * @param authorizationCode the AuthorizationCodeEntity to save
 	 * @return					the saved AuthorizationCodeEntity
 	 */
@@ -38,7 +40,7 @@ public interface AuthorizationCodeRepository {
 
 	/**
 	 * Get an authorization code from the repository by value.
-	 * 
+	 *
 	 * @param code						the authorization code value
 	 * @return							the authentication associated with the code
 	 */
@@ -46,7 +48,7 @@ public interface AuthorizationCodeRepository {
 
 	/**
 	 * Remove an authorization code from the repository
-	 * 
+	 *
 	 * @param authorizationCodeEntity
 	 */
 	public void remove(AuthorizationCodeEntity authorizationCodeEntity);
@@ -55,5 +57,11 @@ public interface AuthorizationCodeRepository {
 	 * @return A collection of all expired codes.
 	 */
 	public Collection<AuthorizationCodeEntity> getExpiredCodes();
+
+	/**
+	 * @return A collection of all expired codes, limited by the given
+	 * PageCriteria.
+	 */
+	public Collection<AuthorizationCodeEntity> getExpiredCodes(PageCriteria pageCriteria);
 
 }

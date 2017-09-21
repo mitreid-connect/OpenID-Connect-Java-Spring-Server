@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +22,6 @@ import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
 import org.mitre.oauth2.service.SystemScopeService;
 import org.mitre.oauth2.web.AuthenticationUtilities;
-import org.mitre.openid.connect.service.OIDCTokenService;
 import org.mitre.openid.connect.view.HttpCodeView;
 import org.mitre.openid.connect.view.JsonEntityView;
 import org.mitre.openid.connect.view.JsonErrorView;
@@ -73,9 +71,6 @@ public class AuthorizationRequestEndpoint {
 
 	@Autowired
 	private OAuth2TokenEntityService tokenService;
-
-	@Autowired
-	private OIDCTokenService oidcTokenService;
 
 	@Autowired
 	private ClaimsProcessingService claimsProcessingService;

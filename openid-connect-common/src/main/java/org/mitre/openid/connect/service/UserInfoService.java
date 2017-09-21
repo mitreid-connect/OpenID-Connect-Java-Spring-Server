@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
+ *
+ * Portions copyright 2011-2013 The MITRE Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +21,9 @@ import org.mitre.openid.connect.model.UserInfo;
 
 /**
  * Interface for UserInfo service
- * 
+ *
  * @author Michael Joseph Walsh
- * 
+ *
  */
 public interface UserInfoService {
 
@@ -46,7 +47,7 @@ public interface UserInfoService {
 
 	/**
 	 * Get the user registered at this server with the given email address.
-	 * 
+	 *
 	 * @param email
 	 * @return
 	 */

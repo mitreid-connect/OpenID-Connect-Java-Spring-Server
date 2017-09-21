@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,9 +38,9 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 /**
- * 
+ *
  * An UMA permission, used in the protection API.
- * 
+ *
  * @author jricher
  *
  */
@@ -141,7 +140,7 @@ public class PermissionTicket {
 			name = "claim_to_permission_ticket",
 			joinColumns = @JoinColumn(name = "permission_ticket_id"),
 			inverseJoinColumns = @JoinColumn(name = "claim_id")
-	)
+			)
 	public Collection<Claim> getClaimsSupplied() {
 		return claimsSupplied;
 	}

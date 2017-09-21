@@ -15,7 +15,10 @@
 			<!-- Main hero unit for a primary marketing message or call to action -->
 			<div class="hero-unit">
 
-				<o:aboutContent />
+				<h2><spring:message code="about.title"/></h2>
+				<p>
+				<spring:message code="about.body"/>
+				</p>
 
 			</div>
 

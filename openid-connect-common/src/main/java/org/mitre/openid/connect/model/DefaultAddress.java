@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +14,6 @@
  * limitations under the License.
  *******************************************************************************/
 package org.mitre.openid.connect.model;
-
-import java.io.Serializable;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -63,6 +60,7 @@ public class DefaultAddress implements Address {
 	/**
 	 * @return the formatted address string
 	 */
+	@Override
 	@Basic
 	@Column(name = "formatted")
 	public String getFormatted() {
@@ -71,12 +69,14 @@ public class DefaultAddress implements Address {
 	/**
 	 * @param formatted the formatted address to set
 	 */
+	@Override
 	public void setFormatted(String formatted) {
 		this.formatted = formatted;
 	}
 	/**
 	 * @return the streetAddress
 	 */
+	@Override
 	@Basic
 	@Column(name="street_address")
 	public String getStreetAddress() {
@@ -85,12 +85,14 @@ public class DefaultAddress implements Address {
 	/**
 	 * @param streetAddress the streetAddress to set
 	 */
+	@Override
 	public void setStreetAddress(String streetAddress) {
 		this.streetAddress = streetAddress;
 	}
 	/**
 	 * @return the locality
 	 */
+	@Override
 	@Basic
 	@Column(name = "locality")
 	public String getLocality() {
@@ -99,12 +101,14 @@ public class DefaultAddress implements Address {
 	/**
 	 * @param locality the locality to set
 	 */
+	@Override
 	public void setLocality(String locality) {
 		this.locality = locality;
 	}
 	/**
 	 * @return the region
 	 */
+	@Override
 	@Basic
 	@Column(name = "region")
 	public String getRegion() {
@@ -113,12 +117,14 @@ public class DefaultAddress implements Address {
 	/**
 	 * @param region the region to set
 	 */
+	@Override
 	public void setRegion(String region) {
 		this.region = region;
 	}
 	/**
 	 * @return the postalCode
 	 */
+	@Override
 	@Basic
 	@Column(name="postal_code")
 	public String getPostalCode() {
@@ -127,12 +133,14 @@ public class DefaultAddress implements Address {
 	/**
 	 * @param postalCode the postalCode to set
 	 */
+	@Override
 	public void setPostalCode(String postalCode) {
 		this.postalCode = postalCode;
 	}
 	/**
 	 * @return the country
 	 */
+	@Override
 	@Basic
 	@Column(name = "country")
 	public String getCountry() {
@@ -141,6 +149,7 @@ public class DefaultAddress implements Address {
 	/**
 	 * @param country the country to set
 	 */
+	@Override
 	public void setCountry(String country) {
 		this.country = country;
 	}
@@ -148,6 +157,7 @@ public class DefaultAddress implements Address {
 	/**
 	 * @return the id
 	 */
+	@Override
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name = "id")

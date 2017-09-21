@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
+ *
+ * Portions copyright 2011-2013 The MITRE Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,19 +16,17 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.oauth2.token;
 
 import java.text.ParseException;
 
 import org.mitre.jwt.assertion.AssertionValidator;
-import org.mitre.jwt.signer.service.JWTSigningAndValidationService;
 import org.mitre.oauth2.assertion.AssertionOAuth2RequestFactory;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
 import org.mitre.openid.connect.assertion.JWTBearerAssertionAuthenticationToken;
-import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.AuthenticationException;
@@ -51,26 +50,16 @@ public class JWTAssertionTokenGranter extends AbstractTokenGranter {
 
 	private static final String grantType = "urn:ietf:params:oauth:grant-type:jwt-bearer";
 
-	// keep down-cast versions so we can get to the right queries
-	private OAuth2TokenEntityService tokenServices;
-
-	@Autowired
-	private JWTSigningAndValidationService jwtService;
-
-	@Autowired
-	private ConfigurationPropertiesBean config;
-	
 	@Autowired
 	@Qualifier("jwtAssertionValidator")
 	private AssertionValidator validator;
-	
+
 	@Autowired
 	private AssertionOAuth2RequestFactory assertionFactory;
 
 	@Autowired
 	public JWTAssertionTokenGranter(OAuth2TokenEntityService tokenServices, ClientDetailsEntityService clientDetailsService, OAuth2RequestFactory requestFactory) {
 		super(tokenServices, clientDetailsService, requestFactory, grantType);
-		this.tokenServices = tokenServices;
 	}
 
 	/* (non-Javadoc)
@@ -82,23 +71,23 @@ public class JWTAssertionTokenGranter extends AbstractTokenGranter {
 		try {
 			String incomingAssertionValue = tokenRequest.getRequestParameters().get("assertion");
 			JWT assertion = JWTParser.parse(incomingAssertionValue);
-			
+
 			if (validator.isValid(assertion)) {
-				
+
 				// our validator says it's OK, time to make a token from it
 				// the real work happens in the assertion factory and the token services
 				return new OAuth2Authentication(assertionFactory.createOAuth2Request(client, tokenRequest, assertion),
 						new JWTBearerAssertionAuthenticationToken(assertion, client.getAuthorities()));
-				
+
 			} else {
 				logger.warn("Incoming assertion did not pass validator, rejecting");
 				return null;
 			}
-			
+
 		} catch (ParseException e) {
 			logger.warn("Unable to parse incoming assertion");
 		}
-		
+
 		// if we had made a token, we'd have returned it by now, so return null here to close out with no created token
 		return null;
 

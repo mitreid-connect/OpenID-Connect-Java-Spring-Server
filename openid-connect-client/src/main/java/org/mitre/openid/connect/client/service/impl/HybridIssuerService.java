@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
+ *
+ * Portions copyright 2011-2013 The MITRE Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,11 +27,11 @@ import org.mitre.openid.connect.client.service.IssuerService;
 import com.google.common.collect.Sets;
 
 /**
- * 
+ *
  * Issuer service that tries to parse input from the inputs from a third-party
  * account chooser service (if possible), but falls back to webfinger discovery
  * if not.
- * 
+ *
  * @author jricher
  *
  */
