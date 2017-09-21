@@ -41,9 +41,6 @@
 		<module>openid-connect-common</module>
 		<module>openid-connect-client</module>
 		<module>openid-connect-server</module>
-		<module>openid-connect-server-webapp</module>
-		<module>uma-server</module>
-		<module>uma-server-webapp</module>
 	</modules>
 
 	<scm>

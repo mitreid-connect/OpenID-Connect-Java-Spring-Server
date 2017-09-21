@@ -308,7 +308,6 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	public void setPermissions(Set<Permission> permissions) {
 		this.permissions = permissions;
 	}
->>>>>>> mitre/master
 
 	@ManyToOne
 	@JoinColumn(name="approved_site_id")
