@@ -22,7 +22,6 @@ import org.mitre.oauth2.exception.AuthorizationPendingException;
 import org.mitre.oauth2.exception.DeviceCodeExpiredException;
 import org.mitre.oauth2.model.DeviceCode;
 import org.mitre.oauth2.service.DeviceCodeService;
-import org.mitre.oauth2.web.DeviceEndpoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.exceptions.InvalidGrantException;
 import org.springframework.security.oauth2.provider.ClientDetails;
@@ -100,8 +99,5 @@ public class DeviceTokenGranter extends AbstractTokenGranter {
 		}
 
 	}
-
-
-
 
 }
