@@ -357,17 +357,17 @@
 		<url>https://travis-ci.org/mitreid-connect/OpenID-Connect-Java-Spring-Server</url>
 	</ciManagement>
 	<distributionManagement>
-    	<repository>
-	    	<id>cnaf-releases</id>
-			<name>CNAF releases</name>
-			<url>http://radiohead.cnaf.infn.it:8081/nexus/content/repositories/cnaf-releases/</url>
-		</repository>
+	    <repository>
+		<id>cnaf-releases</id>
+		<name>CNAF releases</name>
+		<url>https://repo.cloud.cnaf.infn.it/repository/cnaf-releases/</url>
+	    </repository>
 
-		<snapshotRepository>
-			<id>cnaf-snapshots</id>
-		 	<name>CNAF snapshots</name>
-			<url>http://radiohead.cnaf.infn.it:8081/nexus/content/repositories/cnaf-snapshots/</url>
-		</snapshotRepository>
+	    <snapshotRepository>
+		<id>cnaf-snapshots</id>
+		<name>CNAF snapshots</name>
+		<url>https://repo.cloud.cnaf.infn.it/repository/cnaf-snapshots/</url>
+	    </snapshotRepository>
 	</distributionManagement>
 
 	<dependencyManagement>
