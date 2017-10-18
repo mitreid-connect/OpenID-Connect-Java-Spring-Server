@@ -19,7 +19,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.mitre</groupId>
 	<artifactId>openid-connect-parent</artifactId>
-	<version>1.2.6</version>
+	<version>1.2.7-SNAPSHOT</version>
 	<name>MITREid Connect</name>
 	<packaging>pom</packaging>
 	<parent>
@@ -41,8 +41,8 @@
 		<module>openid-connect-client</module>
 		<module>openid-connect-server</module>
 		<module>openid-connect-server-webapp</module>
-		<module>uma-server</module>
-		<module>uma-server-webapp</module>
+		<!--<module>uma-server</module>
+		<module>uma-server-webapp</module>-->
 	</modules>
 
 	<scm>
@@ -231,6 +231,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.19.1</version>
 				<configuration>
 					<junitArtifactName>junit:junit</junitArtifactName>
 					<excludes>
