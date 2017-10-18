@@ -17,17 +17,25 @@
 package org.mitre.openid.connect.repository.impl;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.Path;
 
+import com.google.common.primitives.Ints;
 import org.mitre.openid.connect.model.ApprovedSite;
 import org.mitre.openid.connect.repository.ApprovedSiteRepository;
+import org.springframework.security.oauth2.common.AuthenticationScheme;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.mitre.util.jpa.JpaUtil.saveOrUpdate;
+import static org.springframework.security.oauth2.common.AuthenticationScheme.query;
 
 /**
  * JPA ApprovedSite repository implementation
@@ -47,6 +55,7 @@ public class JpaApprovedSiteRepository implements ApprovedSiteRepository {
 		TypedQuery<ApprovedSite> query = manager.createNamedQuery(ApprovedSite.QUERY_ALL, ApprovedSite.class);
 		return query.getResultList();
 	}
+
 
 	@Override
 	@Transactional(value="defaultTransactionManager")
@@ -99,5 +108,29 @@ public class JpaApprovedSiteRepository implements ApprovedSiteRepository {
 		query.setParameter(ApprovedSite.PARAM_CLIENT_ID, clientId);
 
 		return query.getResultList();
+	}
+
+	@Override
+	public Map<String, Integer> getCountByClientId() {
+		Map<String, Integer> result = new HashMap<>();
+		Query query = manager.createNamedQuery(ApprovedSite.QUERY_COUNT_BY_CLIENT_ID);
+		List resultList = query.getResultList();
+		if (resultList != null) {
+			for (Object p : resultList) {
+				Object[] row = (Object[]) p;
+				int count = ((Long) row[1]).intValue();
+				result.put((String) row[0], new Integer(count));
+			}
+		}
+		return result;
+
+
+	}
+
+	@Override
+	public int getCountUniqueUser() {
+		Query query = manager.createNamedQuery(ApprovedSite.QUERY_COUNT_UNIQUE_USER);
+		Long l = (Long) query.getSingleResult();
+		return l.intValue();
 	}
 }

@@ -16,6 +16,7 @@
  *******************************************************************************/
 package org.mitre.openid.connect.service.impl;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
@@ -48,20 +49,10 @@ public class TestDefaultStatsService {
 	// Currently tests 4 approved sites with a total of 2 users and 3 clients for those sites.
 	// There is an extra client in the system to make sure the stats only count for approved sites.
 
-	private String userId1 = "batman";
-	private String userId2 = "alfred";
-
 	private String clientId1 = "bar";
 	private String clientId2 = "pawnshop";
 	private String clientId3 = "pizzastore";
 	private String clientId4 = "gasstation";
-
-	private ApprovedSite ap1 = Mockito.mock(ApprovedSite.class);
-	private ApprovedSite ap2 = Mockito.mock(ApprovedSite.class);
-	private ApprovedSite ap3 = Mockito.mock(ApprovedSite.class);
-	private ApprovedSite ap4 = Mockito.mock(ApprovedSite.class);
-	private ApprovedSite ap5 = Mockito.mock(ApprovedSite.class);
-	private ApprovedSite ap6 = Mockito.mock(ApprovedSite.class);
 
 	private ClientDetailsEntity client1 = Mockito.mock(ClientDetailsEntity.class);
 	private ClientDetailsEntity client2 = Mockito.mock(ClientDetailsEntity.class);
@@ -86,25 +77,13 @@ public class TestDefaultStatsService {
 
 		Mockito.reset(approvedSiteService, clientService);
 
-		Mockito.when(ap1.getUserId()).thenReturn(userId1);
-		Mockito.when(ap1.getClientId()).thenReturn(clientId1);
+        HashMap<String, Integer> countByClient = new HashMap<>();
+        countByClient.put(clientId1, 2);
+        countByClient.put(clientId2, 1);
+        countByClient.put(clientId3, 1);
 
-		Mockito.when(ap2.getUserId()).thenReturn(userId1);
-		Mockito.when(ap2.getClientId()).thenReturn(clientId1);
-
-		Mockito.when(ap3.getUserId()).thenReturn(userId2);
-		Mockito.when(ap3.getClientId()).thenReturn(clientId2);
-
-		Mockito.when(ap4.getUserId()).thenReturn(userId2);
-		Mockito.when(ap4.getClientId()).thenReturn(clientId3);
-
-		Mockito.when(ap5.getUserId()).thenReturn(userId2);
-		Mockito.when(ap5.getClientId()).thenReturn(clientId1);
-
-		Mockito.when(ap6.getUserId()).thenReturn(userId1);
-		Mockito.when(ap6.getClientId()).thenReturn(clientId4);
-
-		Mockito.when(approvedSiteService.getAll()).thenReturn(Sets.newHashSet(ap1, ap2, ap3, ap4));
+        Mockito.when(approvedSiteService.getCountByClientId()).thenReturn(countByClient);
+		Mockito.when(approvedSiteService.getCountUniqueUser()).thenReturn(2);
 
 		Mockito.when(client1.getId()).thenReturn(1L);
 		Mockito.when(client2.getId()).thenReturn(2L);
@@ -121,7 +100,8 @@ public class TestDefaultStatsService {
 	@Test
 	public void calculateSummaryStats_empty() {
 
-		Mockito.when(approvedSiteService.getAll()).thenReturn(new HashSet<ApprovedSite>());
+		Mockito.when(approvedSiteService.getCountByClientId()).thenReturn(new HashMap<String, Integer>());
+		Mockito.when(approvedSiteService.getCountUniqueUser()).thenReturn(0);
 
 		Map<String, Integer> stats = service.getSummaryStats();
 
@@ -142,7 +122,8 @@ public class TestDefaultStatsService {
 	@Test
 	public void calculateByClientId_empty() {
 
-		Mockito.when(approvedSiteService.getAll()).thenReturn(new HashSet<ApprovedSite>());
+        Mockito.when(approvedSiteService.getCountByClientId()).thenReturn(new HashMap<String, Integer>());
+        Mockito.when(approvedSiteService.getCountUniqueUser()).thenReturn(0);
 
 		Map<Long, Integer> stats = service.getByClientId();
 
@@ -181,7 +162,12 @@ public class TestDefaultStatsService {
 		assertThat(stats.get("userCount"), is(2));
 		assertThat(stats.get("clientCount"), is(3));
 
-		Mockito.when(approvedSiteService.getAll()).thenReturn(Sets.newHashSet(ap1, ap2, ap3, ap4, ap5, ap6));
+        HashMap<String, Integer> countByClient = new HashMap<>();
+        countByClient.put(clientId1, 2);
+        countByClient.put(clientId2, 1);
+        countByClient.put(clientId3, 1);
+        countByClient.put(clientId4, 2);
+        Mockito.when(approvedSiteService.getCountByClientId()).thenReturn(countByClient);
 
 		Map<String, Integer> stats2 = service.getSummaryStats();
 

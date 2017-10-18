@@ -18,6 +18,7 @@ package org.mitre.openid.connect.service;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.Map;
 import java.util.Set;
 
 import org.mitre.openid.connect.model.ApprovedSite;
@@ -40,6 +41,14 @@ public interface ApprovedSiteService {
 	 * @return the ApprovedSite collection, or null
 	 */
 	public Collection<ApprovedSite> getAll();
+
+	/**
+	 * Return a map of approved Site for each client
+	 * @return
+	 */
+	public Map<String, Integer> getCountByClientId();
+
+    public int getCountUniqueUser();
 
 	/**
 	 * Return a collection of ApprovedSite managed by this repository matching the

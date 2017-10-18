@@ -57,14 +57,68 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 
 	@Override
 	public Set<OAuth2AccessTokenEntity> getAllAccessTokens() {
-		TypedQuery<OAuth2AccessTokenEntity> query = manager.createNamedQuery(OAuth2AccessTokenEntity.QUERY_ALL, OAuth2AccessTokenEntity.class);
+		TypedQuery<OAuth2AccessTokenEntity> query = manager.createNamedQuery(OAuth2AccessTokenEntity.QUERY_ALL, OAuth2AccessTokenEntity.class)
+				.setHint("eclipselink.read-only","true");
+		return new LinkedHashSet<>(query.getResultList());
+	}
+
+    @Override
+    public Set<OAuth2AccessTokenEntity> getAllAccessTokensForUser(String id) {
+        TypedQuery<OAuth2AccessTokenEntity> query = manager.createNamedQuery(OAuth2AccessTokenEntity.QUERY_BY_USER, OAuth2AccessTokenEntity.class)
+                .setHint("eclipselink.read-only","true");
+        query.setParameter(OAuth2AccessTokenEntity.PARAM_USERID, id);
+        List<OAuth2AccessTokenEntity> resultList = query.getResultList();
+        if (resultList == null) {
+            return new LinkedHashSet<>();
+        }
+        return new LinkedHashSet<>(resultList);
+    }
+
+	@Override
+	public Set<OAuth2RefreshTokenEntity> getAllRefreshTokens() {
+		TypedQuery<OAuth2RefreshTokenEntity> query = manager.createNamedQuery(OAuth2RefreshTokenEntity.QUERY_ALL, OAuth2RefreshTokenEntity.class)
+				.setHint("eclipselink.read-only","true");
 		return new LinkedHashSet<>(query.getResultList());
 	}
 
 	@Override
-	public Set<OAuth2RefreshTokenEntity> getAllRefreshTokens() {
+	public Set<OAuth2RefreshTokenEntity> getAllRefreshTokensForUser(String id) {
+		TypedQuery<OAuth2RefreshTokenEntity> query = manager.createNamedQuery(OAuth2RefreshTokenEntity.QUERY_BY_USER, OAuth2RefreshTokenEntity.class);
+		query.setParameter(OAuth2RefreshTokenEntity.PARAM_USERID, id);
+        List<OAuth2RefreshTokenEntity> resultList = query.getResultList();
+        if (resultList == null) {
+            return new LinkedHashSet<>();
+        }
+        return new LinkedHashSet<>(resultList);
+
+
+		/*
 		TypedQuery<OAuth2RefreshTokenEntity> query = manager.createNamedQuery(OAuth2RefreshTokenEntity.QUERY_ALL, OAuth2RefreshTokenEntity.class);
-		return new LinkedHashSet<>(query.getResultList());
+		query.setHint("eclipselink.read-only","true");
+		int pageSize = 500; query.setMaxResults(pageSize);
+		int firstResult = 0; query.setFirstResult(firstResult);
+		List<OAuth2RefreshTokenEntity> tokens = query.getResultList();
+		boolean done = false;
+		LinkedHashSet<OAuth2RefreshTokenEntity> results = new LinkedHashSet<>();
+		while (!done) {
+			if (tokens.size() < pageSize) {
+				done = true;
+			}
+
+			for (OAuth2RefreshTokenEntity token : tokens) {
+				if (token.getAuthenticationHolder().getAuthentication().getName().equals(id)) {
+					results.add(token);
+				}
+			}
+
+			firstResult = firstResult + pageSize;
+			if (!done) {
+				query.setFirstResult(firstResult);
+				tokens = query.getResultList();
+			}
+		}
+		return results;
+		*/
 	}
 
 

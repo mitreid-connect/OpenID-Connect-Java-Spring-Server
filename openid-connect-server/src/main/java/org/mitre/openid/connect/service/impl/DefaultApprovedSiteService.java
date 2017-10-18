@@ -18,6 +18,7 @@ package org.mitre.openid.connect.service.impl;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.Map;
 import java.util.Set;
 
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
@@ -180,4 +181,13 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 		return Collections2.filter(approvedSiteRepository.getAll(), isExpired);
 	}
 
+	@Override
+	public Map<String, Integer> getCountByClientId() {
+		return approvedSiteRepository.getCountByClientId();
+	}
+
+    @Override
+    public int getCountUniqueUser() {
+        return approvedSiteRepository.getCountUniqueUser();
+    }
 }
