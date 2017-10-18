@@ -17,6 +17,7 @@
 package org.mitre.openid.connect.repository;
 
 import java.util.Collection;
+import java.util.Map;
 
 import org.mitre.openid.connect.model.ApprovedSite;
 
@@ -57,7 +58,7 @@ public interface ApprovedSiteRepository {
 	/**
 	 * Removes the given ApprovedSite from the repository
 	 * 
-	 * @param aggregator
+	 * @param approvedSite
 	 *            the ApprovedSite object to remove
 	 */
 	public void remove(ApprovedSite approvedSite);
@@ -65,7 +66,7 @@ public interface ApprovedSiteRepository {
 	/**
 	 * Persists an ApprovedSite
 	 * 
-	 * @param aggregator
+	 * @param approvedSite
 	 *            valid ApprovedSite instance
 	 * @return the persisted entity
 	 */
@@ -85,4 +86,16 @@ public interface ApprovedSiteRepository {
 	 */
 	public Collection<ApprovedSite> getByClientId(String clientId);
 
+
+	/**
+	 * Return a map of approved Site for each client
+	 * @return
+	 */
+	public Map<String, Integer> getCountByClientId();
+
+	/**
+	 * Number of unique user having approved a site
+	 * @return
+     */
+	public int getCountUniqueUser();
 }

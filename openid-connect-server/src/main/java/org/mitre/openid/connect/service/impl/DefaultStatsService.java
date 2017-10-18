@@ -84,22 +84,21 @@ public class DefaultStatsService implements StatsService {
 
 	// do the actual computation
 	private Map<String, Integer> computeSummaryStats() {
-		// get all approved sites
-		Collection<ApprovedSite> allSites = approvedSiteService.getAll();
 
-		// process to find number of unique users and sites
-		Set<String> userIds = new HashSet<>();
-		Set<String> clientIds = new HashSet<>();
-		for (ApprovedSite approvedSite : allSites) {
-			userIds.add(approvedSite.getUserId());
-			clientIds.add(approvedSite.getClientId());
-		}
+        Map<String, Integer> countByClientId = approvedSiteService.getCountByClientId();
+        int approvalCount = 0;
+        for (Map.Entry<String, Integer> entry : countByClientId.entrySet())
+        {
+            approvalCount += entry.getValue();
+        }
 
-		Map<String, Integer> e = new HashMap<>();
+        Map<String, Integer> e = new HashMap<>();
+        e.put("approvalCount", approvalCount );
+        e.put("userCount", approvedSiteService.getCountUniqueUser());
+        // cf. https://docs.oracle.com/javase/7/docs/api/java/util/Map.html#size()
+        // Size returns the number of key, so the number of used client
+        e.put("clientCount", countByClientId.size());
 
-		e.put("approvalCount", allSites.size());
-		e.put("userCount", userIds.size());
-		e.put("clientCount", clientIds.size());
 		return e;
 	}
 
@@ -112,18 +111,13 @@ public class DefaultStatsService implements StatsService {
 	}
 
 	private Map<Long, Integer> computeByClientId() {
-		// get all approved sites
-		Collection<ApprovedSite> allSites = approvedSiteService.getAll();
 
-		Multiset<String> clientIds = HashMultiset.create();
-		for (ApprovedSite approvedSite : allSites) {
-			clientIds.add(approvedSite.getClientId());
-		}
+		Map<String, Integer> countByClientId = approvedSiteService.getCountByClientId();
 
 		Map<Long, Integer> counts = getEmptyClientCountMap();
-		for (String clientId : clientIds) {
+		for (String clientId : countByClientId.keySet()) {
 			ClientDetailsEntity client = clientService.loadClientByClientId(clientId);
-			counts.put(client.getId(), clientIds.count(clientId));
+			counts.put(client.getId(), countByClientId.get(clientId));
 		}
 
 		return counts;

@@ -47,7 +47,9 @@ import com.google.common.collect.Sets;
 	@NamedQuery(name = ApprovedSite.QUERY_ALL, query = "select a from ApprovedSite a"),
 	@NamedQuery(name = ApprovedSite.QUERY_BY_USER_ID, query = "select a from ApprovedSite a where a.userId = :" + ApprovedSite.PARAM_USER_ID),
 	@NamedQuery(name = ApprovedSite.QUERY_BY_CLIENT_ID, query = "select a from ApprovedSite a where a.clientId = :" + ApprovedSite.PARAM_CLIENT_ID),
-	@NamedQuery(name = ApprovedSite.QUERY_BY_CLIENT_ID_AND_USER_ID, query = "select a from ApprovedSite a where a.clientId = :" + ApprovedSite.PARAM_CLIENT_ID + " and a.userId = :" + ApprovedSite.PARAM_USER_ID)
+	@NamedQuery(name = ApprovedSite.QUERY_BY_CLIENT_ID_AND_USER_ID, query = "select a from ApprovedSite a where a.clientId = :" + ApprovedSite.PARAM_CLIENT_ID + " and a.userId = :" + ApprovedSite.PARAM_USER_ID),
+	@NamedQuery(name = ApprovedSite.QUERY_COUNT_BY_CLIENT_ID, query = "SELECT a.clientId, COUNT(a) from ApprovedSite a GROUP BY a.clientId"),
+	@NamedQuery(name = ApprovedSite.QUERY_COUNT_UNIQUE_USER, query = "SELECT COUNT(DISTINCT a.userId) from ApprovedSite a")
 })
 public class ApprovedSite {
 
@@ -55,6 +57,8 @@ public class ApprovedSite {
 	public static final String QUERY_BY_CLIENT_ID = "ApprovedSite.getByClientId";
 	public static final String QUERY_BY_USER_ID = "ApprovedSite.getByUserId";
 	public static final String QUERY_ALL = "ApprovedSite.getAll";
+	public static final String QUERY_COUNT_BY_CLIENT_ID = "ApprovedSite.getCountByClientId";
+	public static final String QUERY_COUNT_UNIQUE_USER = "ApprovedSite.getCountUniqueUser";
 
 	public static final String PARAM_CLIENT_ID = "clientId";
 	public static final String PARAM_USER_ID = "userId";

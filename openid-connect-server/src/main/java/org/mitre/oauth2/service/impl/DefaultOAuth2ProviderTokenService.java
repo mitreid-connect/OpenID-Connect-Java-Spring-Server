@@ -92,11 +92,11 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	@Override
 	public Set<OAuth2AccessTokenEntity> getAllAccessTokensForUser(String id) {
 
-		Set<OAuth2AccessTokenEntity> all = tokenRepository.getAllAccessTokens();
+		Set<OAuth2AccessTokenEntity> all = tokenRepository.getAllAccessTokensForUser(id);
 		Set<OAuth2AccessTokenEntity> results = Sets.newLinkedHashSet();
 
 		for (OAuth2AccessTokenEntity token : all) {
-			if (clearExpiredAccessToken(token) != null && token.getAuthenticationHolder().getAuthentication().getName().equals(id)) {
+			if (clearExpiredAccessToken(token) != null ) {
 				results.add(token);
 			}
 		}
@@ -107,11 +107,11 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 
 	@Override
 	public Set<OAuth2RefreshTokenEntity> getAllRefreshTokensForUser(String id) {
-		Set<OAuth2RefreshTokenEntity> all = tokenRepository.getAllRefreshTokens();
+		Set<OAuth2RefreshTokenEntity> all = tokenRepository.getAllRefreshTokensForUser(id);
 		Set<OAuth2RefreshTokenEntity> results = Sets.newLinkedHashSet();
 
 		for (OAuth2RefreshTokenEntity token : all) {
-			if (clearExpiredRefreshToken(token) != null && token.getAuthenticationHolder().getAuthentication().getName().equals(id)) {
+			if (clearExpiredRefreshToken(token) != null) {
 				results.add(token);
 			}
 		}
