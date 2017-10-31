@@ -180,7 +180,6 @@ CREATE TABLE client_details (
   initiate_login_uri VARCHAR2(2048),
   clear_access_tokens_on_refresh NUMBER(1) DEFAULT 1 NOT NULL,
   
-  software_statement VARCHAR(4096),
   software_id VARCHAR(2048),
   software_statement VARCHAR2(4000),
 	
