@@ -522,7 +522,7 @@
 			"title": "Logout requested",
 			"header": "Logout Requested",
 			"requested": "Logout has been requested by ",
-			"explanation": "Do you wan to log out of the identity provider? This will not affect your session at any other systems.",
+			"explanation": "Do you want to log out of the identity provider? This will not affect your session at any other systems.",
 			"submit": "Log Out",
 			"deny": "Stay Logged In"
 		},
