@@ -109,8 +109,9 @@ CREATE TABLE IF NOT EXISTS authorization_code (
 );
 
 CREATE TABLE IF NOT EXISTS client_grant_type (
-	owner_id BIGINT,
-	grant_type VARCHAR(2000)
+	owner_id BIGINT NOT NULL,
+	grant_type VARCHAR(2000),
+        UNIQUE (owner_id, grant_type)
 );
 
 CREATE TABLE IF NOT EXISTS client_response_type (
@@ -200,8 +201,9 @@ CREATE TABLE IF NOT EXISTS client_contact (
 );
 
 CREATE TABLE IF NOT EXISTS client_redirect_uri (
-	owner_id BIGINT,
-	redirect_uri VARCHAR(2048)
+	owner_id BIGINT NOT NULL,
+	redirect_uri VARCHAR(2048),
+        UNIQUE (owner_id, redirect_uri)
 );
 
 CREATE TABLE IF NOT EXISTS client_claims_redirect_uri (
@@ -223,8 +225,9 @@ CREATE TABLE IF NOT EXISTS client_resource (
 );
 
 CREATE TABLE IF NOT EXISTS client_scope (
-	owner_id BIGINT,
-	scope VARCHAR(2048)
+	owner_id BIGINT NOT NULL,
+	scope VARCHAR(2048),
+        UNIQUE (owner_id, scope)
 );
 
 CREATE TABLE IF NOT EXISTS token_scope (
