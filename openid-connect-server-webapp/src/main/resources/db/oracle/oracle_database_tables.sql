@@ -397,22 +397,22 @@ CREATE TABLE saved_registered_client (
 );
 CREATE SEQUENCE saved_registered_client_seq START WITH 1 INCREMENT BY 1 NOCACHE NOCYCLE;
 
-CREATE TABLE IF NOT EXISTS device_code (
+CREATE TABLE device_code (
 	id NUMBER(19) NOT NULL PRIMARY KEY,
 	device_code VARCHAR2(1024),
 	user_code VARCHAR2(1024),
 	expiration TIMESTAMP,
 	client_id VARCHAR2(256),
-	approved BOOLEAN,
+	approved NUMBER(1),
 	auth_holder_id NUMBER(19)	
 );
 
-CREATE TABLE IF NOT EXISTS device_code_scope (
+CREATE TABLE device_code_scope (
 	owner_id NUMBER(19) NOT NULL,
 	scope VARCHAR2(256) NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS device_code_request_parameter (
+CREATE TABLE device_code_request_parameter (
 	owner_id NUMBER(19),
 	param VARCHAR2(2048),
 	val VARCHAR2(2048)
