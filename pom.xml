@@ -360,13 +360,13 @@
 	    <repository>
 		<id>cnaf-releases</id>
 		<name>CNAF releases</name>
-		<url>https://repo.cloud.cnaf.infn.it/repository/cnaf-releases/</url>
+		<url>https://repo.cloud.ba.infn.it/repository/cnaf-releases/</url>
 	    </repository>
 
 	    <snapshotRepository>
 		<id>cnaf-snapshots</id>
 		<name>CNAF snapshots</name>
-		<url>https://repo.cloud.cnaf.infn.it/repository/cnaf-snapshots/</url>
+		<url>https://repo.cloud.ba.infn.it/repository/cnaf-snapshots/</url>
 	    </snapshotRepository>
 	</distributionManagement>
 
