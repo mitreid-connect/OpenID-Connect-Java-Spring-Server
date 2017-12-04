@@ -19,7 +19,12 @@ package org.mitre.oauth2.service.impl;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -424,9 +429,7 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 			ensureNoReservedScopes(newClient);
 			
 			// encode password
-            if (!hasOldClientSamePasswordAsNewClient(oldClient, newClient)) {
-                newClient.setClientSecret(encodePassword(newClient));
-            }
+            newClient.setClientSecret(encodePassword(newClient));
 
 			return clientRepository.updateClient(oldClient.getId(), newClient);
 		}
@@ -463,26 +466,6 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 		}
 		return client;
 	}
-	
-	/**
-	 * Compares client secrets between old and new client. 
-	 * @param oldClient {@link ClientDetailsEntity} with old client data
-	 * @param newClient {@link ClientDetailsEntity} with new client data
-	 * @return returns true if both client secrets are equals and returns false if they are different
-	 */
-	private boolean hasOldClientSamePasswordAsNewClient(ClientDetailsEntity oldClient, ClientDetailsEntity newClient) {
-
-        final String oldClientSecret = oldClient.getClientSecret();
-        final String newClientSecret = oldClient.getClientSecret();
-        
-        if (oldClientSecret == null && newClientSecret == null) {
-            return Boolean.TRUE;
-        } else if (oldClientSecret == null || newClientSecret == null) {
-            return Boolean.FALSE;
-        } 
-	    
-        return oldClientSecret.equals(newClientSecret);
-    }
 	
 	/**
 	 * Returns client secret encoded by configured password encoder.
