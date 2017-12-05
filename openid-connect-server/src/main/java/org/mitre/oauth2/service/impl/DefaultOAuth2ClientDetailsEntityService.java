@@ -429,7 +429,9 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 			ensureNoReservedScopes(newClient);
 			
 			// encode password
-            newClient.setClientSecret(encodePassword(newClient));
+            if (!hasOldClientSamePasswordAsNewClient(oldClient, newClient)) {
+                newClient.setClientSecret(encodePassword(newClient));
+            }
 
 			return clientRepository.updateClient(oldClient.getId(), newClient);
 		}
@@ -466,6 +468,26 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 		}
 		return client;
 	}
+	
+	/**
+     * Compares client secrets between old and new client. 
+     * @param oldClient {@link ClientDetailsEntity} with old client data
+     * @param newClient {@link ClientDetailsEntity} with new client data
+     * @return returns true if both client secrets are equals and returns false if they are different
+     */
+    private boolean hasOldClientSamePasswordAsNewClient(ClientDetailsEntity oldClient, ClientDetailsEntity newClient) {
+
+        final String oldClientSecret = oldClient.getClientSecret();
+        final String newClientSecret = newClient.getClientSecret();
+        
+        if (oldClientSecret == null && newClientSecret == null) {
+            return Boolean.TRUE;
+        } else if (oldClientSecret == null || newClientSecret == null) {
+            return Boolean.FALSE;
+        } 
+        
+        return oldClientSecret.equals(newClientSecret);
+    }
 	
 	/**
 	 * Returns client secret encoded by configured password encoder.
