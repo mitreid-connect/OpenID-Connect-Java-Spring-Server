@@ -247,7 +247,9 @@
 	</bean>
 
 	<security:authentication-manager id="clientAuthenticationManager">
-		<security:authentication-provider user-service-ref="clientUserDetailsService" />
+		<security:authentication-provider user-service-ref="clientUserDetailsService">
+            <security:password-encoder ref="clientPasswordEncoder"/>
+        </security:authentication-provider>
 		<security:authentication-provider user-service-ref="uriEncodedClientUserDetailsService" />
 	</security:authentication-manager>
 
