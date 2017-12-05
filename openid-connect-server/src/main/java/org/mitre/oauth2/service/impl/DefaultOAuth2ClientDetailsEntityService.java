@@ -428,7 +428,13 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 			// make sure a client doesn't get any special system scopes
 			ensureNoReservedScopes(newClient);
 			
-			// encode password
+            /**
+             * Password is encoded only when the password of the new client is different
+             * from the password of the previous client. This method avoids, in the case of
+             * using any encryption algorithm, that the client's password is constantly
+             * being encrypted each time the customer's data is updated and therefore its
+             * real value is being changed when, in reality, it has not been changed
+             */
             if (!hasOldClientSamePasswordAsNewClient(oldClient, newClient)) {
                 newClient.setClientSecret(encodePassword(newClient));
             }
