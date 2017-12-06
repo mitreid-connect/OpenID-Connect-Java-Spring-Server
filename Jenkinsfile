@@ -10,16 +10,21 @@ pipeline {
 
   triggers { cron('@daily') }
 
-  parameters {
-    string(name: 'BRANCH', defaultValue: 'devel', description: '' )
-  }
-
   stages {
 
     stage('deploy'){
       steps {
-        sh "mvn -U -B clean deploy"
-        script { currentBuild.result = 'SUCCESS' }
+        container('maven-runner'){
+          sh "mvn -U -B clean deploy"
+        }
+      }
+    }
+    
+    stage('result'){
+      steps {
+        script { 
+          currentBuild.result = 'SUCCESS' 
+        }
       }
     }
   }
