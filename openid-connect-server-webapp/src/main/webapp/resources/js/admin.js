@@ -548,6 +548,9 @@ $(function() {
 		});
 
 		var base = $('base').attr('href');
+		if (base.substr(-1) !== '/') {
+			base += '/';
+		}
 		$.getJSON(base + '.well-known/openid-configuration', function(data) {
 			app.serverConfiguration = data;
 			var baseUrl = $.url(app.serverConfiguration.issuer);

@@ -64,7 +64,10 @@
 
 $(document).ready(function() {
 		$('#stats').hide();
-	    var base = $('base').attr('href');
+		var base = $('base').attr('href');
+		if (base.substr(-1) !== '/') {
+			base += '/';
+		}
 
         $.getJSON(base + 'api/stats/summary', function(data) {
         	var stats = data;
