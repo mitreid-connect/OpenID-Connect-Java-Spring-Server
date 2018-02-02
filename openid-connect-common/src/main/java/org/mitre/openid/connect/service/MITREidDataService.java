@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
+ *
+ * Portions copyright 2011-2013 The MITRE Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +34,7 @@ public interface MITREidDataService {
 	public static final String MITREID_CONNECT_1_0 = "mitreid-connect-1.0";
 	public static final String MITREID_CONNECT_1_1 = "mitreid-connect-1.1";
 	public static final String MITREID_CONNECT_1_2 = "mitreid-connect-1.2";
+	public static final String MITREID_CONNECT_1_3 = "mitreid-connect-1.3";
 
 	// member names
 	public static final String REFRESHTOKENS = "refreshTokens";
@@ -46,7 +48,7 @@ public interface MITREidDataService {
 
 	/**
 	 * Write out the current server state to the given JSON writer as a JSON object
-	 * 
+	 *
 	 * @param writer
 	 * @throws IOException
 	 */
@@ -54,9 +56,18 @@ public interface MITREidDataService {
 
 	/**
 	 * Read in the current server state from the given JSON reader as a JSON object
-	 * 
+	 *
 	 * @param reader
 	 */
 	void importData(JsonReader reader) throws IOException;
+
+	/**
+	 * Return true if the this data service supports the given version. This is called before
+	 * handing the service the reader through its importData function.
+	 *
+	 * @param version
+	 * @return
+	 */
+	boolean supportsVersion(String version);
 
 }

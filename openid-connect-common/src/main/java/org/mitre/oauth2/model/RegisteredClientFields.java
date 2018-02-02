@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +16,8 @@
 package org.mitre.oauth2.model;
 
 public interface RegisteredClientFields {
+	public String SOFTWARE_ID = "software_id";
+	public String SOFTWARE_VERSION = "software_version";
 	public String SOFTWARE_STATEMENT = "software_statement";
 	public String CLAIMS_REDIRECT_URIS = "claims_redirect_uris";
 	public String CLIENT_SECRET_EXPIRES_AT = "client_secret_expires_at";
@@ -56,5 +57,5 @@ public interface RegisteredClientFields {
 	public String REDIRECT_URIS = "redirect_uris";
 	public String CLIENT_SECRET = "client_secret";
 	public String CLIENT_ID = "client_id";
-
+	public String CODE_CHALLENGE_METHOD = "code_challenge_method";
 }

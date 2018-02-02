@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
+ *
+ * Portions copyright 2011-2013 The MITRE Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +16,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.oauth2.model;
 
@@ -28,7 +29,6 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 /**
  * @author jricher
@@ -53,9 +53,6 @@ public class SystemScope {
 	private String icon; // class of the icon to display on the auth page
 	private boolean defaultScope = false; // is this a default scope for newly-registered clients?
 	private boolean restricted = false; // is this scope restricted to admin-only registration access?
-	private boolean structured = false; // is this a default scope for newly-registered clients?
-	private String structuredParamDescription;
-	private String structuredValue;
 
 	/**
 	 * Make a blank system scope with no value
@@ -162,52 +159,6 @@ public class SystemScope {
 		this.restricted = restricted;
 	}
 
-	/**
-	 * @return the isStructured status
-	 */
-	@Basic
-	@Column(name = "structured")
-	public boolean isStructured() {
-		return structured;
-	}
-
-	/**
-	 * @param structured the structured to set
-	 */
-	public void setStructured(boolean structured) {
-		this.structured = structured;
-	}
-
-	@Basic
-	@Column(name = "structured_param_description")
-	public String getStructuredParamDescription() {
-		return structuredParamDescription;
-	}
-
-	/**
-	 * @param isStructured the isStructured to set
-	 */
-	public void setStructuredParamDescription(String d) {
-		this.structuredParamDescription = d;
-	}
-
-
-	/**
-	 * @return the structuredValue
-	 */
-	@Transient // we don't save the value of a system scope separately
-	public String getStructuredValue() {
-		return structuredValue;
-	}
-
-	/**
-	 * @param structuredValue the structuredValue to set
-	 */
-	public void setStructuredValue(String structuredValue) {
-		this.structuredValue = structuredValue;
-	}
-
-
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
@@ -221,13 +172,6 @@ public class SystemScope {
 		result = prime * result + ((icon == null) ? 0 : icon.hashCode());
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		result = prime * result + (restricted ? 1231 : 1237);
-		result = prime * result + (structured ? 1231 : 1237);
-		result = prime
-				* result
-				+ ((structuredParamDescription == null) ? 0
-						: structuredParamDescription.hashCode());
-		result = prime * result
-				+ ((structuredValue == null) ? 0 : structuredValue.hashCode());
 		result = prime * result + ((value == null) ? 0 : value.hashCode());
 		return result;
 	}
@@ -274,24 +218,6 @@ public class SystemScope {
 		if (restricted != other.restricted) {
 			return false;
 		}
-		if (structured != other.structured) {
-			return false;
-		}
-		if (structuredParamDescription == null) {
-			if (other.structuredParamDescription != null) {
-				return false;
-			}
-		} else if (!structuredParamDescription
-				.equals(other.structuredParamDescription)) {
-			return false;
-		}
-		if (structuredValue == null) {
-			if (other.structuredValue != null) {
-				return false;
-			}
-		} else if (!structuredValue.equals(other.structuredValue)) {
-			return false;
-		}
 		if (value == null) {
 			if (other.value != null) {
 				return false;
@@ -309,10 +235,7 @@ public class SystemScope {
 	public String toString() {
 		return "SystemScope [id=" + id + ", value=" + value + ", description="
 				+ description + ", icon=" + icon + ", defaultScope="
-				+ defaultScope + ", restricted=" + restricted + ", structured="
-				+ structured + ", structuredParamDescription="
-				+ structuredParamDescription + ", structuredValue="
-				+ structuredValue + "]";
+				+ defaultScope + ", restricted=" + restricted + "]";
 	}
 
 }

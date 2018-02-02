@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,9 +29,9 @@ import org.mitre.uma.model.ResourceSet;
 public interface PermissionRepository {
 
 	/**
-	 * 
+	 *
 	 * Save a permission ticket.
-	 * 
+	 *
 	 * @param p
 	 * @return
 	 */
@@ -40,7 +39,7 @@ public interface PermissionRepository {
 
 	/**
 	 * Get the permission indicated by its ticket value.
-	 * 
+	 *
 	 * @param ticket
 	 * @return
 	 */
@@ -48,14 +47,14 @@ public interface PermissionRepository {
 
 	/**
 	 * Get all the tickets in the system (used by the import/export API)
-	 * 
+	 *
 	 * @return
 	 */
 	public Collection<PermissionTicket> getAll();
 
 	/**
 	 * Save a permission object with no associated ticket (used by the import/export API)
-	 * 
+	 *
 	 * @param p
 	 * @return
 	 */
@@ -63,7 +62,7 @@ public interface PermissionRepository {
 
 	/**
 	 * Get a permission object by its ID (used by the import/export API)
-	 * 
+	 *
 	 * @param permissionId
 	 * @return
 	 */
@@ -71,7 +70,7 @@ public interface PermissionRepository {
 
 	/**
 	 * Get all permission tickets issued against a resource set (called when RS is deleted)
-	 * 
+	 *
 	 * @param rs
 	 * @return
 	 */
@@ -79,7 +78,7 @@ public interface PermissionRepository {
 
 	/**
 	 * Remove the specified ticket.
-	 * 
+	 *
 	 * @param ticket
 	 */
 	public void remove(PermissionTicket ticket);

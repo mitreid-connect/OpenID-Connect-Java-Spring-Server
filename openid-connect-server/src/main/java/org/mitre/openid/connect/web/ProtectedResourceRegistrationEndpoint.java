@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +21,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.mitre.jwt.signer.service.JWTSigningAndValidationService;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
@@ -34,7 +32,6 @@ import org.mitre.oauth2.service.SystemScopeService;
 import org.mitre.openid.connect.ClientDetailsEntityJsonProcessor;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
 import org.mitre.openid.connect.exception.ValidationException;
-import org.mitre.openid.connect.service.BlacklistedSiteService;
 import org.mitre.openid.connect.service.OIDCTokenService;
 import org.mitre.openid.connect.view.ClientInformationResponseView;
 import org.mitre.openid.connect.view.HttpCodeView;
@@ -63,7 +60,7 @@ import com.google.gson.JsonSyntaxException;
 public class ProtectedResourceRegistrationEndpoint {
 
 	/**
-	 * 
+	 *
 	 */
 	public static final String URL = "resource";
 
@@ -74,13 +71,7 @@ public class ProtectedResourceRegistrationEndpoint {
 	private OAuth2TokenEntityService tokenService;
 
 	@Autowired
-	private JWTSigningAndValidationService jwtService;
-
-	@Autowired
 	private SystemScopeService scopeService;
-
-	@Autowired
-	private BlacklistedSiteService blacklistService;
 
 	@Autowired
 	private ConfigurationPropertiesBean config;

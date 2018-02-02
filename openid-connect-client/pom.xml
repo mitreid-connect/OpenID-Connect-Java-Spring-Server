@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-    Copyright 2016 The MITRE Corporation
-      and the MIT Internet Trust Consortium
+    Copyright 2017 The MIT Internet Trust Consortium
+   
+    Portions copyright 2011-2013 The MITRE Corporation
    
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -21,7 +22,7 @@
 	<parent>
 		<artifactId>openid-connect-parent</artifactId>
 		<groupId>org.mitre</groupId>
-		<version>1.3.0-SNAPSHOT</version>
+		<version>1.3.2-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	</parent>
 	<artifactId>openid-connect-client</artifactId>

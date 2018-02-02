@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
+ *
+ * Portions copyright 2011-2013 The MITRE Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,7 +86,7 @@ public class UserInfoView extends AbstractView {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * org.springframework.web.servlet.view.AbstractView#renderMergedOutputModel
 	 * (java.util.Map, javax.servlet.http.HttpServletRequest,
@@ -99,6 +100,7 @@ public class UserInfoView extends AbstractView {
 		Set<String> scope = (Set<String>) model.get(SCOPE);
 
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+		response.setCharacterEncoding("UTF-8");
 
 
 		JsonObject authorizedClaims = null;
@@ -128,10 +130,10 @@ public class UserInfoView extends AbstractView {
 
 	/**
 	 * Build a JSON response according to the request object received.
-	 * 
+	 *
 	 * Claims requested in requestObj.userinfo.claims are added to any
 	 * claims corresponding to requested scopes, if any.
-	 * 
+	 *
 	 * @param ui the UserInfo to filter
 	 * @param scope the allowed scopes to filter by
 	 * @param authorizedClaims the claims authorized by the client or user
@@ -144,21 +146,8 @@ public class UserInfoView extends AbstractView {
 		JsonObject obj = ui.toJson();
 
 		Set<String> allowedByScope = translator.getClaimsForScopeSet(scope);
-		Set<String> authorizedByClaims = new HashSet<>();
-		Set<String> requestedByClaims = new HashSet<>();
-
-		if (authorizedClaims != null) {
-			JsonObject userinfoAuthorized = authorizedClaims.getAsJsonObject().get("userinfo").getAsJsonObject();
-			for (Entry<String, JsonElement> entry : userinfoAuthorized.getAsJsonObject().entrySet()) {
-				authorizedByClaims.add(entry.getKey());
-			}
-		}
-		if (requestedClaims != null) {
-			JsonObject userinfoRequested = requestedClaims.getAsJsonObject().get("userinfo").getAsJsonObject();
-			for (Entry<String, JsonElement> entry : userinfoRequested.getAsJsonObject().entrySet()) {
-				requestedByClaims.add(entry.getKey());
-			}
-		}
+		Set<String> authorizedByClaims = extractUserInfoClaimsIntoSet(authorizedClaims);
+		Set<String> requestedByClaims = extractUserInfoClaimsIntoSet(requestedClaims);
 
 		// Filter claims by performing a manual intersection of claims that are allowed by the given scope, requested, and authorized.
 		// We cannot use Sets.intersection() or similar because Entry<> objects will evaluate to being unequal if their values are
@@ -178,5 +167,23 @@ public class UserInfoView extends AbstractView {
 		}
 
 		return result;
+	}
+
+	/**
+	 * Pull the claims that have been targeted into a set for processing.
+	 * Returns an empty set if the input is null.
+	 * @param claims the claims request to process
+	 */
+	private Set<String> extractUserInfoClaimsIntoSet(JsonObject claims) {
+		Set<String> target = new HashSet<>();
+		if (claims != null) {
+			JsonObject userinfoAuthorized = claims.getAsJsonObject("userinfo");
+			if (userinfoAuthorized != null) {
+				for (Entry<String, JsonElement> entry : userinfoAuthorized.entrySet()) {
+					target.add(entry.getKey());
+				}
+			}
+		}
+		return target;
 	}
 }

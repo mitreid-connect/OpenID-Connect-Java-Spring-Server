@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
+ *
+ * Portions copyright 2011-2013 The MITRE Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +16,13 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.openid.connect.service;
 
 import java.util.Map;
+
+import org.mitre.openid.connect.model.ClientStat;
 
 /**
  * @author jricher
@@ -32,25 +35,18 @@ public interface StatsService {
 	 *     	approvalCount: total approved sites
 	 *      userCount: unique users
 	 *      clientCount: unique clients
-	 * 
+	 *
 	 * @return
 	 */
 	public Map<String, Integer> getSummaryStats();
 
 	/**
-	 * Calculate usage count for all clients
-	 * 
-	 * @return a map of id of client object to number of approvals
-	 */
-	public Map<Long, Integer> getByClientId();
-
-	/**
 	 * Calculate the usage count for a single client
-	 * 
-	 * @param id the id of the client to search on
+	 *
+	 * @param clientId the id of the client to search on
 	 * @return
 	 */
-	public Integer getCountForClientId(Long id);
+	public ClientStat getCountForClientId(String clientId);
 
 	/**
 	 * Trigger the stats to be recalculated upon next update.

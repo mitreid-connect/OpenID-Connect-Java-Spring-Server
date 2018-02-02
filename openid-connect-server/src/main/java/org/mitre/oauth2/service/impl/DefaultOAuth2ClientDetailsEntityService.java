@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
+ *
+ * Portions copyright 2011-2013 The MITRE Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -103,7 +104,7 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 	private LoadingCache<String, List<String>> sectorRedirects = CacheBuilder.newBuilder()
 			.expireAfterAccess(1, TimeUnit.HOURS)
 			.maximumSize(100)
-			.build(new SectorIdentifierLoader());
+			.build(new SectorIdentifierLoader(HttpClientBuilder.create().useSystemProperties().build()));
 
 	@Override
 	public ClientDetailsEntity saveNewClient(ClientDetailsEntity client) {
@@ -124,13 +125,13 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 		if (Strings.isNullOrEmpty(client.getClientId())) {
 			client = generateClientId(client);
 		}
-		
+
 		// make sure that clients with the "refresh_token" grant type have the "offline_access" scope, and vice versa
 		ensureRefreshTokenConsistency(client);
 
 		// make sure we don't have both a JWKS and a JWKS URI
 		ensureKeyConsistency(client);
-		
+
 		// check consistency when using HEART mode
 		checkHeartMode(client);
 
@@ -215,7 +216,7 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 	 *  - A redirect_uri must be registered with either authorization_code or implicit
 	 *  - A key must be registered
 	 *  - A client secret must not be generated
-	 *  - authorization_code and client_credentials must use the private_key authorization method 
+	 *  - authorization_code and client_credentials must use the private_key authorization method
 	 * @param client
 	 */
 	private void checkHeartMode(ClientDetailsEntity client) {
@@ -225,53 +226,53 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 				if (client.getGrantTypes().contains("implicit") || client.getGrantTypes().contains("client_credentials")) {
 					throw new IllegalArgumentException("[HEART mode] Incompatible grant types");
 				}
-				
+
 				// make sure we've got the right authentication method
 				if (client.getTokenEndpointAuthMethod() == null || !client.getTokenEndpointAuthMethod().equals(AuthMethod.PRIVATE_KEY)) {
 					throw new IllegalArgumentException("[HEART mode] Authorization code clients must use the private_key authentication method");
 				}
-				
+
 				// make sure we've got a redirect URI
 				if (client.getRedirectUris().isEmpty()) {
 					throw new IllegalArgumentException("[HEART mode] Authorization code clients must register at least one redirect URI");
 				}
 			}
-			
+
 			if (client.getGrantTypes().contains("implicit")) {
 				// make sure we don't have incompatible grant types
 				if (client.getGrantTypes().contains("authorization_code") || client.getGrantTypes().contains("client_credentials") || client.getGrantTypes().contains("refresh_token")) {
 					throw new IllegalArgumentException("[HEART mode] Incompatible grant types");
 				}
-				
+
 				// make sure we've got the right authentication method
 				if (client.getTokenEndpointAuthMethod() == null || !client.getTokenEndpointAuthMethod().equals(AuthMethod.NONE)) {
 					throw new IllegalArgumentException("[HEART mode] Implicit clients must use the none authentication method");
 				}
-				
+
 				// make sure we've got a redirect URI
 				if (client.getRedirectUris().isEmpty()) {
 					throw new IllegalArgumentException("[HEART mode] Implicit clients must register at least one redirect URI");
 				}
 			}
-			
+
 			if (client.getGrantTypes().contains("client_credentials")) {
 				// make sure we don't have incompatible grant types
 				if (client.getGrantTypes().contains("authorization_code") || client.getGrantTypes().contains("implicit") || client.getGrantTypes().contains("refresh_token")) {
 					throw new IllegalArgumentException("[HEART mode] Incompatible grant types");
 				}
-				
+
 				// make sure we've got the right authentication method
 				if (client.getTokenEndpointAuthMethod() == null || !client.getTokenEndpointAuthMethod().equals(AuthMethod.PRIVATE_KEY)) {
 					throw new IllegalArgumentException("[HEART mode] Client credentials clients must use the private_key authentication method");
 				}
-				
+
 				// make sure we've got a redirect URI
 				if (!client.getRedirectUris().isEmpty()) {
 					throw new IllegalArgumentException("[HEART mode] Client credentials clients must not register a redirect URI");
 				}
 
 			}
-		
+
 			if (client.getGrantTypes().contains("password")) {
 				throw new IllegalArgumentException("[HEART mode] Password grant type is forbidden");
 			}
@@ -309,14 +310,14 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 						customScheme = true;
 					}
 				}
-				
+
 				// now we make sure the client has a URI in only one of each of the three categories
 				if (!((localhost ^ remoteHttps ^ customScheme)
 						&& !(localhost && remoteHttps && customScheme))) {
 					throw new IllegalArgumentException("[HEART mode] Can't have more than one class of redirect URI");
 				}
 			}
-			
+
 		}
 	}
 
@@ -386,16 +387,16 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 	/**
 	 * Update the oldClient with information from the newClient. The
 	 * id from oldClient is retained.
-	 * 
+	 *
 	 * Checks to make sure the refresh grant type and
 	 * the scopes are set appropriately.
-	 * 
+	 *
 	 * Checks to make sure the redirect URIs aren't blacklisted.
-	 * 
+	 *
 	 * Attempts to load the redirect URI (possibly cached) to check the
 	 * sector identifier against the contents there.
-	 * 
-	 * 
+	 *
+	 *
 	 */
 	@Override
 	public ClientDetailsEntity updateClient(ClientDetailsEntity oldClient, ClientDetailsEntity newClient) throws IllegalArgumentException {
@@ -412,7 +413,7 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 
 			// make sure we don't have both a JWKS and a JWKS URI
 			ensureKeyConsistency(newClient);
-			
+
 			// check consistency when using HEART mode
 			checkHeartMode(newClient);
 
@@ -460,15 +461,19 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 
 	/**
 	 * Utility class to load a sector identifier's set of authorized redirect URIs.
-	 * 
+	 *
 	 * @author jricher
 	 *
 	 */
 	private class SectorIdentifierLoader extends CacheLoader<String, List<String>> {
-		private HttpClient httpClient = HttpClientBuilder.create().useSystemProperties().build();
-		private HttpComponentsClientHttpRequestFactory httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
-		private RestTemplate restTemplate = new RestTemplate(httpFactory);
+		private HttpComponentsClientHttpRequestFactory httpFactory;
+		private RestTemplate restTemplate;
 		private JsonParser parser = new JsonParser();
+
+		SectorIdentifierLoader(HttpClient httpClient) {
+			this.httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
+			this.restTemplate = new RestTemplate(httpFactory);
+		}
 
 		@Override
 		public List<String> load(String key) throws Exception {

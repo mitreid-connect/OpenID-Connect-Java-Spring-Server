@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
+ *
+ * Portions copyright 2011-2013 The MITRE Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +16,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.openid.connect.client.service.impl;
 
@@ -29,11 +30,11 @@ import org.mitre.openid.connect.config.ServerConfiguration;
  * Houses both a static server configuration and a dynamic server configuration
  * service in one object. Checks the static service first, then falls through to
  * the dynamic service.
- * 
+ *
  * Provides configuration passthrough to the dynamic service's whitelist and blacklist,
  * and to the static service's server map.
- * 
- * 
+ *
+ *
  * @author jricher
  *
  */

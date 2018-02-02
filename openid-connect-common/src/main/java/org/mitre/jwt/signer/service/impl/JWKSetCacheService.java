@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
+ *
+ * Portions copyright 2011-2013 The MITRE Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +16,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.jwt.signer.service.impl;
 
@@ -43,12 +44,12 @@ import com.google.gson.JsonParseException;
 import com.nimbusds.jose.jwk.JWKSet;
 
 /**
- * 
+ *
  * Creates a caching map of JOSE signers/validators and encrypters/decryptors
  * keyed on the JWK Set URI. Dynamically loads JWK Sets to create the services.
- * 
+ *
  * @author jricher
- * 
+ *
  */
 @Service
 public class JWKSetCacheService {
@@ -68,11 +69,11 @@ public class JWKSetCacheService {
 		this.validators = CacheBuilder.newBuilder()
 				.expireAfterWrite(1, TimeUnit.HOURS) // expires 1 hour after fetch
 				.maximumSize(100)
-				.build(new JWKSetVerifierFetcher());
+				.build(new JWKSetVerifierFetcher(HttpClientBuilder.create().useSystemProperties().build()));
 		this.encrypters = CacheBuilder.newBuilder()
 				.expireAfterWrite(1, TimeUnit.HOURS) // expires 1 hour after fetch
 				.maximumSize(100)
-				.build(new JWKSetEncryptorFetcher());
+				.build(new JWKSetEncryptorFetcher(HttpClientBuilder.create().useSystemProperties().build()));
 	}
 
 	/**
@@ -104,9 +105,13 @@ public class JWKSetCacheService {
 	 *
 	 */
 	private class JWKSetVerifierFetcher extends CacheLoader<String, JWTSigningAndValidationService> {
-		private HttpClient httpClient = HttpClientBuilder.create().useSystemProperties().build();
-		private HttpComponentsClientHttpRequestFactory httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
-		private RestTemplate restTemplate = new RestTemplate(httpFactory);
+		private HttpComponentsClientHttpRequestFactory httpFactory;
+		private RestTemplate restTemplate;
+
+		JWKSetVerifierFetcher(HttpClient httpClient) {
+			this.httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
+			this.restTemplate = new RestTemplate(httpFactory);
+		}
 
 		/**
 		 * Load the JWK Set and build the appropriate signing service.
@@ -130,9 +135,14 @@ public class JWKSetCacheService {
 	 *
 	 */
 	private class JWKSetEncryptorFetcher extends CacheLoader<String, JWTEncryptionAndDecryptionService> {
-		private HttpClient httpClient = HttpClientBuilder.create().useSystemProperties().build();
-		private HttpComponentsClientHttpRequestFactory httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
-		private RestTemplate restTemplate = new RestTemplate(httpFactory);
+		private HttpComponentsClientHttpRequestFactory httpFactory;
+		private RestTemplate restTemplate;
+
+		public JWKSetEncryptorFetcher(HttpClient httpClient) {
+			this.httpFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
+			this.restTemplate = new RestTemplate(httpFactory);
+		}
+
 		/* (non-Javadoc)
 		 * @see com.google.common.cache.CacheLoader#load(java.lang.Object)
 		 */
@@ -141,11 +151,11 @@ public class JWKSetCacheService {
 			try {
 				String jsonString = restTemplate.getForObject(key, String.class);
 				JWKSet jwkSet = JWKSet.parse(jsonString);
-	
+
 				JWKSetKeyStore keyStore = new JWKSetKeyStore(jwkSet);
-	
+
 				JWTEncryptionAndDecryptionService service = new DefaultJWTEncryptionAndDecryptionService(keyStore);
-	
+
 				return service;
 			} catch (JsonParseException | RestClientException e) {
 				throw new IllegalArgumentException("Unable to load JWK Set");

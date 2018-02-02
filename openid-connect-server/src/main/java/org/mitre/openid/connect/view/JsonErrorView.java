@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
+ *
+ * Portions copyright 2011-2013 The MITRE Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,12 +47,12 @@ import com.google.gson.JsonObject;
 public class JsonErrorView extends AbstractView {
 
 	/**
-	 * 
+	 *
 	 */
 	public static final String ERROR_MESSAGE = "errorMessage";
 
 	/**
-	 * 
+	 *
 	 */
 	public static final String ERROR = "error";
 
@@ -63,27 +64,27 @@ public class JsonErrorView extends AbstractView {
 	public static final String VIEWNAME = "jsonErrorView";
 
 	private Gson gson = new GsonBuilder()
-	.setExclusionStrategies(new ExclusionStrategy() {
+			.setExclusionStrategies(new ExclusionStrategy() {
 
-		@Override
-		public boolean shouldSkipField(FieldAttributes f) {
+				@Override
+				public boolean shouldSkipField(FieldAttributes f) {
 
-			return false;
-		}
+					return false;
+				}
 
-		@Override
-		public boolean shouldSkipClass(Class<?> clazz) {
-			// skip the JPA binding wrapper
-			if (clazz.equals(BeanPropertyBindingResult.class)) {
-				return true;
-			}
-			return false;
-		}
+				@Override
+				public boolean shouldSkipClass(Class<?> clazz) {
+					// skip the JPA binding wrapper
+					if (clazz.equals(BeanPropertyBindingResult.class)) {
+						return true;
+					}
+					return false;
+				}
 
-	})
-	.serializeNulls()
-	.setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
-	.create();
+			})
+			.serializeNulls()
+			.setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+			.create();
 
 	@Override
 	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-    Copyright 2016 The MITRE Corporation
-      and the MIT Internet Trust Consortium
+    Copyright 2017 The MIT Internet Trust Consortium
    
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -20,7 +19,7 @@
 	 <parent>
 		<groupId>org.mitre</groupId>
 		<artifactId>openid-connect-parent</artifactId>
-		<version>1.3.0-SNAPSHOT</version>
+		<version>1.3.2-SNAPSHOT</version>
 		<relativePath>..</relativePath>
 	 </parent>
 	 <artifactId>uma-server-webapp</artifactId>
@@ -53,50 +52,27 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
 				<configuration>
+					<warName>uma-server-webapp</warName>
 					<overlays>
 						<overlay>
 							<groupId>org.mitre</groupId>
 							<artifactId>openid-connect-server-webapp</artifactId>
 						</overlay>
 					</overlays>
+					<failOnMissingWebXml>false</failOnMissingWebXml>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-maven-plugin</artifactId>
+				<configuration>
+					<war>${project.build.directory}/uma-server-webapp.war</war>
+					<webAppConfig>
+						<contextPath>/uma-server-webapp</contextPath>
+					</webAppConfig>
 				</configuration>
 			</plugin>
 		</plugins>
-		<pluginManagement>
-			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>
-											org.appfuse.plugins
-										</groupId>
-										<artifactId>
-											warpath-maven-plugin
-										</artifactId>
-										<versionRange>
-											[3.5.0,)
-										</versionRange>
-										<goals>
-											<goal>add-classes</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<execute />
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
 	</build>
 	<dependencies>
 		<dependency>

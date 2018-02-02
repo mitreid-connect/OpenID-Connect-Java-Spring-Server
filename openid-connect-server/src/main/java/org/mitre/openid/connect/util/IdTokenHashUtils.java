@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
+ *
+ * Portions copyright 2011-2013 The MITRE Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,9 +32,9 @@ import com.nimbusds.jose.util.Base64URL;
 /**
  * Utility class for generating hashes for access tokens and authorization codes
  * to be included in an ID Token.
- * 
+ *
  * @author Amanda Anganes
- * 
+ *
  */
 public class IdTokenHashUtils {
 
@@ -44,7 +45,7 @@ public class IdTokenHashUtils {
 
 	/**
 	 * Compute the SHA hash of an authorization code
-	 * 
+	 *
 	 * @param signingAlg
 	 * @param code
 	 * @return
@@ -55,7 +56,7 @@ public class IdTokenHashUtils {
 
 	/**
 	 * Compute the SHA hash of a token
-	 * 
+	 *
 	 * @param signingAlg
 	 * @param token
 	 * @return

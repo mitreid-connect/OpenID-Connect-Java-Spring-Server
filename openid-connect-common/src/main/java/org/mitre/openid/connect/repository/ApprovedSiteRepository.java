@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
+ *
+ * Portions copyright 2011-2013 The MITRE Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +31,7 @@ public interface ApprovedSiteRepository {
 
 	/**
 	 * Returns the ApprovedSite for the given id
-	 * 
+	 *
 	 * @param id
 	 *            id the id of the ApprovedSite
 	 * @return a valid ApprovedSite if it exists, null otherwise
@@ -39,7 +40,7 @@ public interface ApprovedSiteRepository {
 
 	/**
 	 * Return a collection of all ApprovedSites managed by this repository
-	 * 
+	 *
 	 * @return the ApprovedSite collection, or null
 	 */
 	public Collection<ApprovedSite> getAll();
@@ -47,7 +48,7 @@ public interface ApprovedSiteRepository {
 	/**
 	 * Return a collection of ApprovedSite managed by this repository matching the
 	 * provided client ID and user ID
-	 * 
+	 *
 	 * @param clientId
 	 * @param userId
 	 * @return
@@ -56,7 +57,7 @@ public interface ApprovedSiteRepository {
 
 	/**
 	 * Removes the given ApprovedSite from the repository
-	 * 
+	 *
 	 * @param aggregator
 	 *            the ApprovedSite object to remove
 	 */
@@ -64,7 +65,7 @@ public interface ApprovedSiteRepository {
 
 	/**
 	 * Persists an ApprovedSite
-	 * 
+	 *
 	 * @param aggregator
 	 *            valid ApprovedSite instance
 	 * @return the persisted entity

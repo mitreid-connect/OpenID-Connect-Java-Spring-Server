@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-    Copyright 2016 The MITRE Corporation
-      and the MIT Internet Trust Consortium
+    Copyright 2017 The MIT Internet Trust Consortium
+   
+    Portions copyright 2011-2013 The MITRE Corporation
    
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -18,8 +19,8 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:task="http://www.springframework.org/schema/task"
-	xsi:schemaLocation="http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.1.xsd
-		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd">
+	xsi:schemaLocation="http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd">
 
 	<!-- Configuration for scheduled tasks -->
 	<task:scheduler id="taskScheduler" pool-size="10" /> 
@@ -31,6 +32,7 @@
 	    <task:scheduled ref="defaultOAuth2ProviderTokenService" method="clearExpiredTokens" fixed-delay="300000" initial-delay="600000"/>
 	    <task:scheduled ref="defaultApprovedSiteService" method="clearExpiredSites" fixed-delay="300000" initial-delay="600000"/>
 	    <task:scheduled ref="defaultOAuth2AuthorizationCodeService" method="clearExpiredAuthorizationCodes" fixed-delay="300000" initial-delay="600000"/>
+	    <task:scheduled ref="defaultDeviceCodeService" method="clearExpiredDeviceCodes" fixed-delay="300000" initial-delay="600000"/>
 	</task:scheduled-tasks>
 
 </beans>

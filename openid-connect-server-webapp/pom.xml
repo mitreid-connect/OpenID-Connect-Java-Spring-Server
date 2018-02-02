@@ -1,7 +1,8 @@
 <?xml version="1.0"?>
 <!--
-    Copyright 2016 The MITRE Corporation
-      and the MIT Internet Trust Consortium
+    Copyright 2017 The MIT Internet Trust Consortium
+   
+    Portions copyright 2011-2013 The MITRE Corporation
    
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -20,7 +21,7 @@
 	<parent>
 		<groupId>org.mitre</groupId>
 		<artifactId>openid-connect-parent</artifactId>
-		<version>1.3.0-SNAPSHOT</version>
+		<version>1.3.2-SNAPSHOT</version>
 	</parent>
 	<artifactId>openid-connect-server-webapp</artifactId>
 	<packaging>war</packaging>
@@ -58,6 +59,7 @@
 							</excludes>
 						</resource>
 					</webResources>
+					<packagingExcludes>less/**</packagingExcludes>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -83,10 +85,22 @@
 					</webAppConfig>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>ro.isdc.wro4j</groupId>
+				<artifactId>wro4j-maven-plugin</artifactId>
+				<configuration>
+					<targetGroups>bootstrap,bootstrap-responsive</targetGroups>
+					<destinationFolder>${project.build.directory}/${project.build.finalName}</destinationFolder>
+					<cssDestinationFolder>${project.build.directory}/${project.build.finalName}/resources/bootstrap2/css/</cssDestinationFolder>
+					<jsDestinationFolder>${project.build.directory}/${project.build.finalName}/js/</jsDestinationFolder>
+					<wroManagerFactory>ro.isdc.wro.maven.plugin.manager.factory.ConfigurableWroManagerFactory</wroManagerFactory>
+				</configuration>
+			</plugin>
+			
 		</plugins>
 	</build>
 	<dependencies>
-		<dependency>
+  		<dependency>
 			<groupId>org.mitre</groupId>
 			<artifactId>openid-connect-server</artifactId>
 		</dependency>

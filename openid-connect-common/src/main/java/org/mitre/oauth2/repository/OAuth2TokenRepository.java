@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
+ *
+ * Portions copyright 2011-2013 The MITRE Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +20,11 @@ package org.mitre.oauth2.repository;
 import java.util.List;
 import java.util.Set;
 
+import org.mitre.data.PageCriteria;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.OAuth2RefreshTokenEntity;
+import org.mitre.openid.connect.model.ApprovedSite;
 import org.mitre.uma.model.ResourceSet;
 
 public interface OAuth2TokenRepository {
@@ -50,20 +53,44 @@ public interface OAuth2TokenRepository {
 
 	public List<OAuth2RefreshTokenEntity> getRefreshTokensForClient(ClientDetailsEntity client);
 
-	public OAuth2AccessTokenEntity getAccessTokenForIdToken(OAuth2AccessTokenEntity idToken);
-
 	public Set<OAuth2AccessTokenEntity> getAllAccessTokens();
 
 	public Set<OAuth2RefreshTokenEntity> getAllRefreshTokens();
 
 	public Set<OAuth2AccessTokenEntity> getAllExpiredAccessTokens();
 
+	public Set<OAuth2AccessTokenEntity> getAllExpiredAccessTokens(PageCriteria pageCriteria);
+
 	public Set<OAuth2RefreshTokenEntity> getAllExpiredRefreshTokens();
+
+	public Set<OAuth2RefreshTokenEntity> getAllExpiredRefreshTokens(PageCriteria pageCriteria);
 
 	public Set<OAuth2AccessTokenEntity> getAccessTokensForResourceSet(ResourceSet rs);
 
+	/**
+	 * removes duplicate access tokens.
+	 *
+	 * @deprecated this method was added to return the remove duplicate access tokens values
+	 * so that {code removeAccessToken(OAuth2AccessTokenEntity o)} would not to fail. the
+	 * removeAccessToken method has been updated so as it will not fail in the event that an
+	 * accessToken has been duplicated, so this method is unnecessary.
+	 *
+	 */
+	@Deprecated
 	public void clearDuplicateAccessTokens();
 
+	/**
+	 * removes duplicate refresh tokens.
+	 *
+	 * @deprecated this method was added to return the remove duplicate refresh token value
+	 * so that {code removeRefreshToken(OAuth2RefreshTokenEntity o)} would not to fail. the
+	 * removeRefreshToken method has been updated so as it will not fail in the event that
+	 * refreshToken has been duplicated, so this method is unnecessary.
+	 *
+	 */
+	@Deprecated
 	public void clearDuplicateRefreshTokens();
+
+	public List<OAuth2AccessTokenEntity> getAccessTokensForApprovedSite(ApprovedSite approvedSite);
 
 }

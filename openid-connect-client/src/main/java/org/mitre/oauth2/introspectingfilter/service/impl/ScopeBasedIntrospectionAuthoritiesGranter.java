@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +33,7 @@ import com.google.gson.JsonObject;
  *
  */
 public class ScopeBasedIntrospectionAuthoritiesGranter implements IntrospectionAuthorityGranter {
-	
+
 	private List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList("ROLE_API");
 
 	/* (non-Javadoc)
@@ -43,7 +42,7 @@ public class ScopeBasedIntrospectionAuthoritiesGranter implements IntrospectionA
 	@Override
 	public List<GrantedAuthority> getAuthorities(JsonObject introspectionResponse) {
 		List<GrantedAuthority> auth = new ArrayList<>(getAuthorities());
-		
+
 		if (introspectionResponse.has("scope") && introspectionResponse.get("scope").isJsonPrimitive()) {
 			String scopeString = introspectionResponse.get("scope").getAsString();
 			Set<String> scopes = OAuth2Utils.parseParameterList(scopeString);
@@ -51,7 +50,7 @@ public class ScopeBasedIntrospectionAuthoritiesGranter implements IntrospectionA
 				auth.add(new SimpleGrantedAuthority("OAUTH_SCOPE_" + scope));
 			}
 		}
-		
+
 		return auth;
 	}
 

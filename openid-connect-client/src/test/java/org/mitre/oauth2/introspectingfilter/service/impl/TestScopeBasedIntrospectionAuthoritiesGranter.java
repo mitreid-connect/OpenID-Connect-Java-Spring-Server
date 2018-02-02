@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +37,7 @@ public class TestScopeBasedIntrospectionAuthoritiesGranter {
 	private JsonObject introspectionResponse;
 
 	private ScopeBasedIntrospectionAuthoritiesGranter granter = new ScopeBasedIntrospectionAuthoritiesGranter();
-	
+
 	/**
 	 * @throws java.lang.Exception
 	 */
@@ -53,16 +52,16 @@ public class TestScopeBasedIntrospectionAuthoritiesGranter {
 	@Test
 	public void testGetAuthoritiesJsonObject_withScopes() {
 		introspectionResponse.addProperty("scope", "foo bar baz batman");
-		
+
 		List<GrantedAuthority> expected = new ArrayList<>();
 		expected.add(new SimpleGrantedAuthority("ROLE_API"));
 		expected.add(new SimpleGrantedAuthority("OAUTH_SCOPE_foo"));
 		expected.add(new SimpleGrantedAuthority("OAUTH_SCOPE_bar"));
 		expected.add(new SimpleGrantedAuthority("OAUTH_SCOPE_baz"));
 		expected.add(new SimpleGrantedAuthority("OAUTH_SCOPE_batman"));
-		
+
 		List<GrantedAuthority> authorities = granter.getAuthorities(introspectionResponse);
-		
+
 		assertTrue(authorities.containsAll(expected));
 		assertTrue(expected.containsAll(authorities));
 	}
@@ -72,12 +71,12 @@ public class TestScopeBasedIntrospectionAuthoritiesGranter {
 	 */
 	@Test
 	public void testGetAuthoritiesJsonObject_withoutScopes() {
-		
+
 		List<GrantedAuthority> expected = new ArrayList<>();
 		expected.add(new SimpleGrantedAuthority("ROLE_API"));
-		
+
 		List<GrantedAuthority> authorities = granter.getAuthorities(introspectionResponse);
-		
+
 		assertTrue(authorities.containsAll(expected));
 		assertTrue(expected.containsAll(authorities));
 	}

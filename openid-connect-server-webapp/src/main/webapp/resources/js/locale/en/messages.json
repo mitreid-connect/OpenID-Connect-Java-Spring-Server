@@ -37,7 +37,7 @@
             "client-description-placeholder": "Type a description",
             "client-id": "Client ID",
             "client-id-help": "Unique identifier. If you leave this blank it will be automatically generated.",
-            "client-id-placeholder": "Type something",
+            "client-id-placeholder": "Client ID will be automatically generated",
             "client-name": "Client name",
             "client-name-help": "Human-readable application name",
             "client-name-placeholder": "Type something",
@@ -64,6 +64,8 @@
                 "rsa1-5": "RSAES-PKCS1-V1_5"
             },
             "cryptography": "Crypto",
+            "device": "device",
+            "device-code-timeout": "Device Code Timeout",
             "display-secret": "Display/edit client secret:",
             "edit": "Edit Client",
             "generate-new-secret": "Generate a new client secret?",
@@ -158,9 +160,15 @@
 				"ps384": "RSASSA-PSS using SHA-384 and MGF1 with SHA-384",
 				"ps512": "RSASSA-PSS using SHA-512 and MGF1 with SHA-512"
             },
+            "software-id": "Software ID",
+            "software-id-placeholder": "software ID...",
+            "software-id-help": "Identifier for the software in this client",
             "software-statement": "Software Statement",
             "software-statement-placeholder": "eyj0...",
             "software-statement-help": "A software statement is issued by a trusted third party and locks certain elements of a client's registration",
+            "software-version": "Software Version",
+            "software-version-placeholder": "1.0...",
+            "software-version-help": "Version of the software in this client",
             "subject-type": "Subject Type",
             "terms": "Terms of Service",
             "terms-help": "URL for the Terms of Service of this client, will be displayed to the user",
@@ -194,7 +202,9 @@
                 "policy": "policy",
                 "redirect": "redirect uri",
                 "scope": "scope",
-                "terms": "terms of service"
+                "terms": "terms of service",
+                "software-id": "software ID",
+                "software-version": "version"
             },
             "matched-search": "Matched search:",
             "new": "New Client",
@@ -306,9 +316,6 @@
             "icon": "Icon",
             "new": "New Scope",
             "select-icon": "Select an icon",
-            "structured": "is a structured scope",
-            "structured-help": "Is the scope structured with structured values like <code>base:extension</code>?",
-            "structured-param-help": "Human-readable description of the structured parameter",
             "subject-type": "Subject Type",
             "value": "Scope value",
             "value-help": "Single string with no spaces",
@@ -318,7 +325,7 @@
             "confirm": "Are you sure sure you would like to delete this scope? Clients that have this scope will still be able to ask for it.",
             "new": "New Scope",
             "text": "There are no system scopes defined. Clients may still have custom scopes.",
-            "tooltip-restricted": "This scope can be used only by adminisrtators. It is not available for dynamic registration.",
+            "tooltip-restricted": "This scope can be used only by administrators. It is not available for dynamic registration.",
             "tooltip-default": "This scope is automatically assigned to newly registered clients."
         }
     },
@@ -330,7 +337,7 @@
             "associated-refresh": "This access token was issued with an associated refresh token.",
             "click-to-display": "Click to display full token value",
             "confirm": "Are you sure sure you would like to revoke this token?",
-            "confirm-refresh": "Are you sure sure you would like to revoke this refresh token and its associated access tokens?",
+            "confirm-refresh": "Are you sure you would like to revoke this refresh token and its associated access tokens?",
             "expires": "Expires",
             "no-access": "There are no active access tokens.",
             "no-refresh": "There are no active refresh tokens.",
@@ -365,10 +372,10 @@
     	"empty": "There are no blacklisted URIs on this server.",
     	"uri": "URI"
     },
-	"copyright": "Powered by <a href=\"https://github.com/mitreid-connect/\">MITREid Connect <span class=\"label\">{0}</span></a> <span class=\"pull-right\">&copy; 2016 The MITRE Corporation and MIT Internet Trust Consortium.</span>.",
+	"copyright": "Powered by <a href=\"https://github.com/mitreid-connect/\">MITREid Connect <span class=\"label\">{0}</span></a> <span class=\"pull-right\">&copy; 2017 The MIT Internet Trust Consortium.</span>.",
 	"about": {
 		"title": "About",
-		"body": "\nThis OpenID Connect service is built from the MITREid Connect Open Source project, from \n<a href=\"http://www.mitre.org/\">The MITRE Corporation</a> and the <a href=\"http://kit.mit.edu/\">MIT Internet Trust Consortium</a>.\n</p>\n<p>\nMore information about the project can be found at \n<a href=\"http://github.com/mitreid-connect/\">MITREid Connect on GitHub</a>. \nThere, you can submit bug reports, give feedback, or even contribute code patches for additional features you'd like to see."
+		"body": "\nThis OpenID Connect service is built from the MITREid Connect Open Source project, from \nthe <a href=\"http://www.trust.mit.edu/\">MIT Internet Trust Consortium</a>.\n</p>\n<p>\nMore information about the project can be found at \n<a href=\"http://github.com/mitreid-connect/\">MITREid Connect on GitHub</a>. \nThere, you can submit bug reports, give feedback, or even contribute code patches for additional features you'd like to see."
 	},
 	"statistics": {
 		"title": "Statistics",
@@ -385,7 +392,7 @@
 		"more": "More",
 		"about": {
 			"title": "About",
-			"body": "This OpenID Connect service is built from the MITREid Connect Open Source project, from \n<a href=\"http://www.mitre.org/\">The MITRE Corporation</a> and the <a href=\"http://kit.mit.edu/\">MIT Internet Trust Consortium</a>."
+			"body": "This OpenID Connect service is built from the MITREid Connect Open Source project, from \nthe <a href=\"http://www.trust.mit.edu/\">MIT Internet Trust Consortium</a>."
 		},
 		"contact": {
 			"title": "Contact",
@@ -490,6 +497,40 @@
 		"password": "Password",
 		"login-button": "Login",
 		"error": "The system was unable to log you in. Please try again."
+	},
+	"device": {
+		"request_code": {
+			"title": "Enter Code",
+			"header": "Enter Code",
+			"description": "Enter the code displayed on your device into the box below and press submit",
+			"submit": "Submit"
+		},
+		"error": {
+			"noUserCode": "The code that you entered was not found.",
+			"expiredUserCode": "The code that you entered has expired. Return to your device and request a new code.",
+			"userCodeAlreadyApproved": "The code that you entered has already been used.",
+			"userCodeMismatch": "There was an error processing the code you entered. Try refreshing the page and returning to your device to request a new code.",
+			"error": "There was an error processing the code you entered. Return to your device adn request a new code."
+		},
+		"approve": {
+			"approved": "The device has been approved.",
+			"notApproved": "The device has not been approved."
+		}
+	},
+	"logout": {
+		"confirmation": {
+			"title": "Logout requested",
+			"header": "Logout Requested",
+			"requested": "Logout has been requested by ",
+			"explanation": "Do you want to log out of the identity provider? This will not affect your session at any other systems.",
+			"submit": "Log Out",
+			"deny": "Stay Logged In"
+		},
+		"post": {
+			"title": "Log out",
+			"header": "Log Out",
+			"notLoggedOut": "You have not been logged out of the identity server. You may close this browser or log in again.",
+			"loggedOut": "You have been logged out of the identity server."
+		}
 	}
-	
 }

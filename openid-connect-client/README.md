@@ -2,7 +2,7 @@
 
 ## Overview ##
 
-This project contains an OpenID Connect Client implemented as a Spring Security AuthenticationFilter.  The client facilitates a user's authentication into the secured application to an OpenID Connect Java Spring Server following the OpenID Connect Standard protocol.
+This project contains an OpenID Connect Client implemented as a Spring Security AuthenticationFilter.  The client facilitates a user's authentication into the secured application to an OpenID Connect Server following the OpenID Connect standard protocol.
 
 ## Configuring ##
 

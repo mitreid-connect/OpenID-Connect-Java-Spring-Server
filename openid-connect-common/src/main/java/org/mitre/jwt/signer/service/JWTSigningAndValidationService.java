@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
+ *
+ * Portions copyright 2011-2013 The MITRE Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +35,7 @@ public interface JWTSigningAndValidationService {
 	/**
 	 * Checks the signature of the given JWT against all configured signers,
 	 * returns true if at least one of the signers validates it.
-	 * 
+	 *
 	 * @param jwtString
 	 *            the string representation of the JWT as sent on the wire
 	 * @return true if the signature is valid, false if not
@@ -45,7 +46,7 @@ public interface JWTSigningAndValidationService {
 	/**
 	 * Called to sign a jwt in place for a client that hasn't registered a preferred signing algorithm.
 	 * Use the default algorithm to sign.
-	 * 
+	 *
 	 * @param jwt the jwt to sign
 	 * @return the signed jwt
 	 * @throws NoSuchAlgorithmException
@@ -67,7 +68,7 @@ public interface JWTSigningAndValidationService {
 	/**
 	 * Sign a jwt using the selected algorithm. The algorithm is selected using the String parameter values specified
 	 * in the JWT spec, section 6. I.E., "HS256" means HMAC with SHA-256 and corresponds to our HmacSigner class.
-	 * 
+	 *
 	 * @param jwt the jwt to sign
 	 * @param alg the name of the algorithm to use, as specified in JWS s.6
 	 * @return the signed jwt

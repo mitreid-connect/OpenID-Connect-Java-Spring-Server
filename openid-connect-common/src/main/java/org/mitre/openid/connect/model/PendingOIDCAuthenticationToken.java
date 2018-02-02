@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +32,7 @@ import com.nimbusds.jwt.JWTParser;
 
 /**
  * AuthenticationToken for use as a data shuttle from the filter to the auth provider.
- * 
+ *
  * @author jricher
  *
  */
@@ -52,9 +51,9 @@ public class PendingOIDCAuthenticationToken extends AbstractAuthenticationToken 
 
 	/**
 	 * Constructs OIDCAuthenticationToken for use as a data shuttle from the filter to the auth provider.
-	 * 
+	 *
 	 * Set to not-authenticated.
-	 * 
+	 *
 	 * Constructs a Principal out of the subject and issuer.
 	 * @param sub
 	 * @param idToken
@@ -80,7 +79,7 @@ public class PendingOIDCAuthenticationToken extends AbstractAuthenticationToken 
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.springframework.security.core.Authentication#getCredentials()
 	 */
 	@Override

@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
+ *
+ * Portions copyright 2011-2013 The MITRE Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,6 +54,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.nimbusds.jose.Algorithm;
 import com.nimbusds.jose.JWEHeader;
+import com.nimbusds.jose.JWEObject;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.util.Base64URL;
@@ -63,7 +65,7 @@ import com.nimbusds.jwt.PlainJWT;
 import com.nimbusds.jwt.SignedJWT;
 /**
  * Default implementation of service to create specialty OpenID Connect tokens.
- * 
+ *
  * @author Amanda Anganes
  *
  */
@@ -94,7 +96,7 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 	private OAuth2TokenEntityService tokenService;
 
 	@Override
-	public OAuth2AccessTokenEntity createIdToken(ClientDetailsEntity client, OAuth2Request request, Date issueTime, String sub, OAuth2AccessTokenEntity accessToken) {
+	public JWT createIdToken(ClientDetailsEntity client, OAuth2Request request, Date issueTime, String sub, OAuth2AccessTokenEntity accessToken) {
 
 		JWSAlgorithm signingAlg = jwtService.getDefaultSigningAlgorithm();
 
@@ -103,7 +105,8 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 		}
 
 
-		OAuth2AccessTokenEntity idTokenEntity = new OAuth2AccessTokenEntity();
+		JWT idToken = null;
+
 		JWTClaimsSet.Builder idClaims = new JWTClaimsSet.Builder();
 
 		// if the auth time claim was explicitly requested OR if the client always wants the auth time, put it in
@@ -128,7 +131,6 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 		if (client.getIdTokenValiditySeconds() != null) {
 			Date expiration = new Date(System.currentTimeMillis() + (client.getIdTokenValiditySeconds() * 1000L));
 			idClaims.expirationTime(expiration);
-			idTokenEntity.setExpiration(expiration);
 		}
 
 		idClaims.issuer(configBean.getIssuer());
@@ -157,19 +159,15 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 
 			if (encrypter != null) {
 
-				EncryptedJWT idToken = new EncryptedJWT(new JWEHeader(client.getIdTokenEncryptedResponseAlg(), client.getIdTokenEncryptedResponseEnc()), idClaims.build());
+				idToken = new EncryptedJWT(new JWEHeader(client.getIdTokenEncryptedResponseAlg(), client.getIdTokenEncryptedResponseEnc()), idClaims.build());
 
-				encrypter.encryptJwt(idToken);
-
-				idTokenEntity.setJwt(idToken);
+				encrypter.encryptJwt((JWEObject) idToken);
 
 			} else {
 				logger.error("Couldn't find encrypter for client: " + client.getClientId());
 			}
 
 		} else {
-
-			JWT idToken;
 
 			if (signingAlg.equals(Algorithm.NONE)) {
 				// unsigned ID token
@@ -206,20 +204,9 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 				}
 			}
 
-
-			idTokenEntity.setJwt(idToken);
 		}
 
-		idTokenEntity.setAuthenticationHolder(accessToken.getAuthenticationHolder());
-
-		// create a scope set with just the special "id-token" scope
-		//Set<String> idScopes = new HashSet<String>(token.getScope()); // this would copy the original token's scopes in, we don't really want that
-		Set<String> idScopes = Sets.newHashSet(SystemScopeService.ID_TOKEN_SCOPE);
-		idTokenEntity.setScope(idScopes);
-
-		idTokenEntity.setClient(accessToken.getClient());
-
-		return idTokenEntity;
+		return idToken;
 	}
 
 	/**
@@ -285,12 +272,12 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 		token.setAuthenticationHolder(authHolder);
 
 		JWTClaimsSet claims = new JWTClaimsSet.Builder()
-			.audience(Lists.newArrayList(client.getClientId()))
-			.issuer(configBean.getIssuer())
-			.issueTime(new Date())
-			.expirationTime(token.getExpiration())
-			.jwtID(UUID.randomUUID().toString()) // set a random NONCE in the middle of it
-			.build();
+				.audience(Lists.newArrayList(client.getClientId()))
+				.issuer(configBean.getIssuer())
+				.issueTime(new Date())
+				.expirationTime(token.getExpiration())
+				.jwtID(UUID.randomUUID().toString()) // set a random NONCE in the middle of it
+				.build();
 
 		JWSAlgorithm signingAlg = jwtService.getDefaultSigningAlgorithm();
 		JWSHeader header = new JWSHeader(signingAlg, null, null, null, null, null, null, null, null, null,

@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
+ *
+ * Portions copyright 2011-2013 The MITRE Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +16,11 @@
  * limitations under the License.
  *******************************************************************************/
 package org.mitre.openid.connect.service.impl;
+
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Matchers.isNull;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -71,11 +77,6 @@ import com.nimbusds.jwt.JWTParser;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
-
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.isA;
-import static org.mockito.Matchers.isNull;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -299,7 +300,6 @@ public class TestMITREidDataService_1_1 {
 		token2.setExpiration(expirationDate2);
 		token2.setJwt(JWTParser.parse("eyJhbGciOiJSUzI1NiJ9.eyJleHAiOjE0MTI3OTI5NjgsImF1ZCI6WyJjbGllbnQiXSwiaXNzIjoiaHR0cDpcL1wvbG9jYWxob3N0OjgwODBcL29wZW5pZC1jb25uZWN0LXNlcnZlci13ZWJhcHBcLyIsImp0aSI6IjBmZGE5ZmRiLTYyYzItNGIzZS05OTdiLWU0M2VhMDUwMzNiOSIsImlhdCI6MTQxMjc4OTM2OH0.xgaVpRLYE5MzbgXfE0tZt823tjAm6Oh3_kdR1P2I9jRLR6gnTlBQFlYi3Y_0pWNnZSerbAE8Tn6SJHZ9k-curVG0-ByKichV7CNvgsE5X_2wpEaUzejvKf8eZ-BammRY-ie6yxSkAarcUGMvGGOLbkFcz5CtrBpZhfd75J49BIQ"));
 		token2.setAuthenticationHolder(mockedAuthHolder2);
-		token2.setIdToken(token1);
 		token2.setRefreshToken(mockRefreshToken2);
 		token2.setScope(ImmutableSet.of("openid", "offline_access", "email", "profile"));
 		token2.setTokenType("Bearer");
@@ -369,8 +369,8 @@ public class TestMITREidDataService_1_1 {
 			}
 		});
 		dataService.importData(reader);
-		//2 times for token, 2 times to update client, 2 times to update authHolder, 2 times to update id token, 2 times to update refresh token
-		verify(tokenRepository, times(8)).saveAccessToken(capturedAccessTokens.capture());
+		//2 times for token, 2 times to update client, 2 times to update authHolder, 1 times to update refresh token
+		verify(tokenRepository, times(7)).saveAccessToken(capturedAccessTokens.capture());
 
 		List<OAuth2AccessTokenEntity> savedAccessTokens = new ArrayList(fakeDb.values()); //capturedAccessTokens.getAllValues();
 		Collections.sort(savedAccessTokens, new accessTokenIdComparator());
@@ -592,7 +592,7 @@ public class TestMITREidDataService_1_1 {
 		site1.setAccessDate(accessDate1);
 		site1.setUserId("user1");
 		site1.setAllowedScopes(ImmutableSet.of("openid", "phone"));
-		site1.setApprovedAccessTokens(ImmutableSet.of(mockToken1));
+		when(mockToken1.getApprovedSite()).thenReturn(site1);
 
 		Date creationDate2 = formatter.parse("2014-09-11T18:49:44.090+0000", Locale.ENGLISH);
 		Date accessDate2 = formatter.parse("2014-09-11T20:49:44.090+0000", Locale.ENGLISH);
@@ -683,14 +683,12 @@ public class TestMITREidDataService_1_1 {
 		assertThat(savedSites.get(0).getCreationDate(), equalTo(site1.getCreationDate()));
 		assertThat(savedSites.get(0).getAllowedScopes(), equalTo(site1.getAllowedScopes()));
 		assertThat(savedSites.get(0).getTimeoutDate(), equalTo(site1.getTimeoutDate()));
-		assertThat(savedSites.get(0).getApprovedAccessTokens().size(), equalTo(site1.getApprovedAccessTokens().size()));
 
 		assertThat(savedSites.get(1).getClientId(), equalTo(site2.getClientId()));
 		assertThat(savedSites.get(1).getAccessDate(), equalTo(site2.getAccessDate()));
 		assertThat(savedSites.get(1).getCreationDate(), equalTo(site2.getCreationDate()));
 		assertThat(savedSites.get(1).getAllowedScopes(), equalTo(site2.getAllowedScopes()));
 		assertThat(savedSites.get(1).getTimeoutDate(), equalTo(site2.getTimeoutDate()));
-		assertThat(savedSites.get(1).getApprovedAccessTokens().size(), equalTo(site2.getApprovedAccessTokens().size()));
 	}
 
 	@Test
@@ -785,8 +783,6 @@ public class TestMITREidDataService_1_1 {
 		scope3.setRestricted(false);
 		scope3.setDefaultScope(true);
 		scope3.setIcon("road");
-		scope3.setStructured(true);
-		scope3.setStructuredParamDescription("Structured Parameter");
 
 		String configJson = "{" +
 				"\"" + MITREidDataService.CLIENTS + "\": [], " +
@@ -800,7 +796,7 @@ public class TestMITREidDataService_1_1 {
 
 				"{\"id\":1,\"description\":\"Scope 1\",\"icon\":\"glass\",\"value\":\"scope1\",\"allowDynReg\":false,\"defaultScope\":false}," +
 				"{\"id\":2,\"description\":\"Scope 2\",\"icon\":\"ball\",\"value\":\"scope2\",\"allowDynReg\":true,\"defaultScope\":false}," +
-				"{\"id\":3,\"description\":\"Scope 3\",\"icon\":\"road\",\"value\":\"scope3\",\"allowDynReg\":true,\"defaultScope\":true,\"structured\":true,\"structuredParameter\":\"Structured Parameter\"}" +
+				"{\"id\":3,\"description\":\"Scope 3\",\"icon\":\"road\",\"value\":\"scope3\",\"allowDynReg\":true,\"defaultScope\":true}" +
 
 				"  ]" +
 				"}";
@@ -820,24 +816,18 @@ public class TestMITREidDataService_1_1 {
 		assertThat(savedScopes.get(0).getIcon(), equalTo(scope1.getIcon()));
 		assertThat(savedScopes.get(0).isDefaultScope(), equalTo(scope1.isDefaultScope()));
 		assertThat(savedScopes.get(0).isRestricted(), equalTo(scope1.isRestricted()));
-		assertThat(savedScopes.get(0).isStructured(), equalTo(scope1.isStructured()));
-		assertThat(savedScopes.get(0).getStructuredParamDescription(), equalTo(scope1.getStructuredParamDescription()));
 
 		assertThat(savedScopes.get(1).getValue(), equalTo(scope2.getValue()));
 		assertThat(savedScopes.get(1).getDescription(), equalTo(scope2.getDescription()));
 		assertThat(savedScopes.get(1).getIcon(), equalTo(scope2.getIcon()));
 		assertThat(savedScopes.get(1).isDefaultScope(), equalTo(scope2.isDefaultScope()));
 		assertThat(savedScopes.get(1).isRestricted(), equalTo(scope2.isRestricted()));
-		assertThat(savedScopes.get(1).isStructured(), equalTo(scope2.isStructured()));
-		assertThat(savedScopes.get(1).getStructuredParamDescription(), equalTo(scope2.getStructuredParamDescription()));
 
 		assertThat(savedScopes.get(2).getValue(), equalTo(scope3.getValue()));
 		assertThat(savedScopes.get(2).getDescription(), equalTo(scope3.getDescription()));
 		assertThat(savedScopes.get(2).getIcon(), equalTo(scope3.getIcon()));
 		assertThat(savedScopes.get(2).isDefaultScope(), equalTo(scope3.isDefaultScope()));
 		assertThat(savedScopes.get(2).isRestricted(), equalTo(scope3.isRestricted()));
-		assertThat(savedScopes.get(2).isStructured(), equalTo(scope3.isStructured()));
-		assertThat(savedScopes.get(2).getStructuredParamDescription(), equalTo(scope3.getStructuredParamDescription()));
 
 	}
 

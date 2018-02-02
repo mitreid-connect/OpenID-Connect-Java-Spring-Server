@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
+ *
+ * Portions copyright 2011-2013 The MITRE Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +27,7 @@ import org.mitre.jwt.encryption.service.JWTEncryptionAndDecryptionService;
 import org.mitre.jwt.signer.service.JWTSigningAndValidationService;
 import org.mitre.oauth2.model.PKCEAlgorithm;
 import org.mitre.oauth2.service.SystemScopeService;
+import org.mitre.oauth2.web.DeviceEndpoint;
 import org.mitre.oauth2.web.IntrospectionEndpoint;
 import org.mitre.oauth2.web.RevocationEndpoint;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
@@ -34,6 +36,7 @@ import org.mitre.openid.connect.service.UserInfoService;
 import org.mitre.openid.connect.view.HttpCodeView;
 import org.mitre.openid.connect.view.JsonEntityView;
 import org.mitre.openid.connect.web.DynamicClientRegistrationEndpoint;
+import org.mitre.openid.connect.web.EndSessionEndpoint;
 import org.mitre.openid.connect.web.JWKSetPublishingEndpoint;
 import org.mitre.openid.connect.web.UserInfoEndpoint;
 import org.slf4j.Logger;
@@ -56,9 +59,9 @@ import com.nimbusds.jose.Algorithm;
 import com.nimbusds.jose.JWSAlgorithm;
 
 /**
- * 
+ *
  * Handle OpenID Connect Discovery.
- * 
+ *
  * @author jricher
  *
  */
@@ -108,7 +111,7 @@ public class DiscoveryEndpoint {
 		if (!Strings.isNullOrEmpty(rel) && !rel.equals("http://openid.net/specs/connect/1.0/issuer")) {
 			logger.warn("Responding to webfinger request for non-OIDC relation: " + rel);
 		}
-		
+
 		if (!resource.equals(config.getIssuer())) {
 			// it's not the issuer directly, need to check other methods
 
@@ -286,22 +289,22 @@ public class DiscoveryEndpoint {
 		String baseUrl = config.getIssuer();
 
 		if (!baseUrl.endsWith("/")) {
-			logger.warn("Configured issuer doesn't end in /, adding for discovery: " + baseUrl);
+			logger.debug("Configured issuer doesn't end in /, adding for discovery: {}", baseUrl);
 			baseUrl = baseUrl.concat("/");
 		}
 
-		Collection<JWSAlgorithm> serverSigningAlgs = signService.getAllSigningAlgsSupported();
-		Collection<JWSAlgorithm> clientSymmetricSigningAlgs = Lists.newArrayList(JWSAlgorithm.HS256, JWSAlgorithm.HS384, JWSAlgorithm.HS512);
-		Collection<JWSAlgorithm> clientSymmetricAndAsymmetricSigningAlgs = Lists.newArrayList(JWSAlgorithm.HS256, JWSAlgorithm.HS384, JWSAlgorithm.HS512, 
-				JWSAlgorithm.RS256, JWSAlgorithm.RS384, JWSAlgorithm.RS512, 
-				JWSAlgorithm.ES256, JWSAlgorithm.ES384, JWSAlgorithm.ES512, 
+		signService.getAllSigningAlgsSupported();
+		Lists.newArrayList(JWSAlgorithm.HS256, JWSAlgorithm.HS384, JWSAlgorithm.HS512);
+		Collection<JWSAlgorithm> clientSymmetricAndAsymmetricSigningAlgs = Lists.newArrayList(JWSAlgorithm.HS256, JWSAlgorithm.HS384, JWSAlgorithm.HS512,
+				JWSAlgorithm.RS256, JWSAlgorithm.RS384, JWSAlgorithm.RS512,
+				JWSAlgorithm.ES256, JWSAlgorithm.ES384, JWSAlgorithm.ES512,
 				JWSAlgorithm.PS256, JWSAlgorithm.PS384, JWSAlgorithm.PS512);
-		Collection<Algorithm> clientSymmetricAndAsymmetricSigningAlgsWithNone = Lists.newArrayList(JWSAlgorithm.HS256, JWSAlgorithm.HS384, JWSAlgorithm.HS512, 
-				JWSAlgorithm.RS256, JWSAlgorithm.RS384, JWSAlgorithm.RS512, 
-				JWSAlgorithm.ES256, JWSAlgorithm.ES384, JWSAlgorithm.ES512, 
-				JWSAlgorithm.PS256, JWSAlgorithm.PS384, JWSAlgorithm.PS512, 
+		Collection<Algorithm> clientSymmetricAndAsymmetricSigningAlgsWithNone = Lists.newArrayList(JWSAlgorithm.HS256, JWSAlgorithm.HS384, JWSAlgorithm.HS512,
+				JWSAlgorithm.RS256, JWSAlgorithm.RS384, JWSAlgorithm.RS512,
+				JWSAlgorithm.ES256, JWSAlgorithm.ES384, JWSAlgorithm.ES512,
+				JWSAlgorithm.PS256, JWSAlgorithm.PS384, JWSAlgorithm.PS512,
 				Algorithm.NONE);
-		ArrayList<String> grantTypes = Lists.newArrayList("authorization_code", "implicit", "urn:ietf:params:oauth:grant-type:jwt-bearer", "client_credentials", "urn:ietf:params:oauth:grant_type:redelegate");
+		ArrayList<String> grantTypes = Lists.newArrayList("authorization_code", "implicit", "urn:ietf:params:oauth:grant-type:jwt-bearer", "client_credentials", "urn:ietf:params:oauth:grant_type:redelegate", "urn:ietf:params:oauth:grant-type:device_code");
 
 		Map<String, Object> m = new HashMap<>();
 		m.put("issuer", config.getIssuer());
@@ -309,7 +312,7 @@ public class DiscoveryEndpoint {
 		m.put("token_endpoint", baseUrl + "token");
 		m.put("userinfo_endpoint", baseUrl + UserInfoEndpoint.URL);
 		//check_session_iframe
-		//end_session_endpoint
+		m.put("end_session_endpoint", baseUrl + EndSessionEndpoint.URL);
 		m.put("jwks_uri", baseUrl + JWKSetPublishingEndpoint.URL);
 		m.put("registration_endpoint", baseUrl + DynamicClientRegistrationEndpoint.URL);
 		m.put("scopes_supported", scopeService.toStrings(scopeService.getUnrestricted())); // these are the scopes that you can dynamically register for, which is what matters for discovery
@@ -366,8 +369,9 @@ public class DiscoveryEndpoint {
 		m.put("revocation_endpoint", baseUrl + RevocationEndpoint.URL); // token revocation endpoint
 
 		m.put("code_challenge_methods_supported", Lists.newArrayList(PKCEAlgorithm.plain.getName(), PKCEAlgorithm.S256.getName()));
-		
-		
+
+		m.put("device_authorization_endpoint", baseUrl + DeviceEndpoint.URL);
+
 		model.addAttribute(JsonEntityView.ENTITY, m);
 
 		return JsonEntityView.VIEWNAME;

@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
+ *
+ * Portions copyright 2011-2013 The MITRE Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,16 +19,18 @@ package org.mitre.openid.connect.service;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
+import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.openid.connect.model.ApprovedSite;
 import org.springframework.security.oauth2.provider.ClientDetails;
 
 /**
  * Interface for ApprovedSite service
- * 
+ *
  * @author Michael Joseph Walsh, aanganes
- * 
+ *
  */
 public interface ApprovedSiteService {
 
@@ -36,7 +39,7 @@ public interface ApprovedSiteService {
 
 	/**
 	 * Return a collection of all ApprovedSites
-	 * 
+	 *
 	 * @return the ApprovedSite collection, or null
 	 */
 	public Collection<ApprovedSite> getAll();
@@ -44,7 +47,7 @@ public interface ApprovedSiteService {
 	/**
 	 * Return a collection of ApprovedSite managed by this repository matching the
 	 * provided client ID and user ID
-	 * 
+	 *
 	 * @param clientId
 	 * @param userId
 	 * @return
@@ -53,7 +56,7 @@ public interface ApprovedSiteService {
 
 	/**
 	 * Save an ApprovedSite
-	 * 
+	 *
 	 * @param approvedSite
 	 *            the ApprovedSite to be saved
 	 */
@@ -61,7 +64,7 @@ public interface ApprovedSiteService {
 
 	/**
 	 * Get ApprovedSite for id
-	 * 
+	 *
 	 * @param id
 	 *            id for ApprovedSite
 	 * @return ApprovedSite for id, or null
@@ -70,7 +73,7 @@ public interface ApprovedSiteService {
 
 	/**
 	 * Remove the ApprovedSite
-	 * 
+	 *
 	 * @param approvedSite
 	 *            the ApprovedSite to remove
 	 */
@@ -101,4 +104,11 @@ public interface ApprovedSiteService {
 	 * @return
 	 */
 	public void clearExpiredSites();
+
+	/**
+	 * Return all approved access tokens for the site.
+	 * @return
+	 */
+	public List<OAuth2AccessTokenEntity> getApprovedAccessTokens(ApprovedSite approvedSite);
+
 }

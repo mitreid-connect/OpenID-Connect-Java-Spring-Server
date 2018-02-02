@@ -12,15 +12,29 @@
 		<o:sidebar />
 		<div class="span10">
 			<div class="hero-unit">
-				<o:landingPageWelcome />
+				<div class="row-fluid">
+					<div class="span2 visible-desktop"><img src="resources/images/openid_connect_large.png"/></div>
+					
+					<div class="span10">
+						<h1><spring:message code="home.welcome.title"/></h1>
+						<p><spring:message code="home.welcome.body"/></p>
+					</div>
+				</div>
 			</div>
 			<!-- Example row of columns -->
 			<div class="row-fluid">
 				<div class="span6">
-					<o:landingPageAbout />
+					<h2><spring:message code="home.about.title"/></h2>
+					
+					<p><spring:message code="home.about.body"/></p>
+					
+					<p><a class="btn" href="http://github.com/mitreid-connect/"><spring:message code="home.more"/> &raquo;</a></p>
 				</div>
 				<div class="span6">
-					<o:landingPageContact />
+					<h2><spring:message code="home.contact.title"/></h2>
+					<p>
+					<spring:message code="home.contact.body"/>
+					</p>
 				</div>
 
 			</div>
@@ -28,11 +42,43 @@
 			<!-- Example row of columns -->
 			<div class="row-fluid">
 				<div class="span12">
-					<o:landingPageStats />
+					<h2><spring:message code="home.statistics.title"/></h2>
+					
+					<p id="statsloader" class="muted"><spring:message code="home.statistics.loading"/></p>
+					
+					<p id="stats">
+					    <spring:message code="home.statistics.number_users" arguments="?"/>
+					    <spring:message code="home.statistics.number_clients" arguments="?"/>
+					    <spring:message code="home.statistics.number_approvals" arguments="?"/>
+					</p>
 				</div>
 			</div>
 
 		</div>
 	</div>
 </div>
+
+
+<script type="text/javascript">
+// load stats dynamically to make main page render faster
+
+$(document).ready(function() {
+		$('#stats').hide();
+		var base = $('base').attr('href');
+		if (base.substr(-1) !== '/') {
+			base += '/';
+		}
+
+        $.getJSON(base + 'api/stats/summary', function(data) {
+        	var stats = data;
+        	$('#userCount').html(stats.userCount);
+        	$('#clientCount').html(stats.clientCount);
+        	$('#approvalCount').html(stats.approvalCount);
+        	$('#statsloader').hide();
+        	$('#stats').show();
+        	
+        });
+});
+</script>
+
 <o:footer />

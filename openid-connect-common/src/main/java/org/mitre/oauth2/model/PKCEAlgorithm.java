@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +25,13 @@ import com.nimbusds.jose.Requirement;
  */
 public final class PKCEAlgorithm extends Algorithm {
 
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 7752852583210088925L;
+
 	public static final PKCEAlgorithm plain = new PKCEAlgorithm("plain", Requirement.REQUIRED);
-	
+
 	public static final PKCEAlgorithm S256 = new PKCEAlgorithm("S256", Requirement.OPTIONAL);
 
 	public PKCEAlgorithm(String name, Requirement req) {
@@ -37,7 +41,7 @@ public final class PKCEAlgorithm extends Algorithm {
 	public PKCEAlgorithm(String name) {
 		super(name, null);
 	}
-	
+
 	public static PKCEAlgorithm parse(final String s) {
 		if (s.equals(plain.getName())) {
 			return plain;
@@ -47,7 +51,7 @@ public final class PKCEAlgorithm extends Algorithm {
 			return new PKCEAlgorithm(s);
 		}
 	}
-	
-	
-	
+
+
+
 }

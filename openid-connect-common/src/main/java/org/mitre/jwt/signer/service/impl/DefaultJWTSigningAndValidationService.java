@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
+ *
+ * Portions copyright 2011-2013 The MITRE Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +18,6 @@
 package org.mitre.jwt.signer.service.impl;
 
 import java.security.NoSuchAlgorithmException;
-import java.security.interfaces.ECPrivateKey;
-import java.security.interfaces.ECPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -72,10 +71,10 @@ public class DefaultJWTSigningAndValidationService implements JWTSigningAndValid
 	/**
 	 * Build this service based on the keys given. All public keys will be used
 	 * to make verifiers, all private keys will be used to make signers.
-	 * 
+	 *
 	 * @param keys
 	 *            A map of key identifier to key
-	 * 
+	 *
 	 * @throws InvalidKeySpecException
 	 *             If the keys in the JWKs are not valid
 	 * @throws NoSuchAlgorithmException
@@ -89,10 +88,10 @@ public class DefaultJWTSigningAndValidationService implements JWTSigningAndValid
 	/**
 	 * Build this service based on the given keystore. All keys must have a key
 	 * id ({@code kid}) field in order to be used.
-	 * 
+	 *
 	 * @param keyStore
 	 *            the keystore to load all keys from
-	 * 
+	 *
 	 * @throws InvalidKeySpecException
 	 *             If the keys in the JWKs are not valid
 	 * @throws NoSuchAlgorithmException
@@ -165,37 +164,37 @@ public class DefaultJWTSigningAndValidationService implements JWTSigningAndValid
 			try {
 				if (jwk instanceof RSAKey) {
 					// build RSA signers & verifiers
-	
+
 					if (jwk.isPrivate()) { // only add the signer if there's a private key
 						RSASSASigner signer = new RSASSASigner((RSAKey) jwk);
 						signers.put(id, signer);
 					}
-	
+
 					RSASSAVerifier verifier = new RSASSAVerifier((RSAKey) jwk);
 					verifiers.put(id, verifier);
-	
+
 				} else if (jwk instanceof ECKey) {
 					// build EC signers & verifiers
-	
+
 					if (jwk.isPrivate()) {
 						ECDSASigner signer = new ECDSASigner((ECKey) jwk);
 						signers.put(id, signer);
 					}
-	
+
 					ECDSAVerifier verifier = new ECDSAVerifier((ECKey) jwk);
 					verifiers.put(id, verifier);
-	
+
 				} else if (jwk instanceof OctetSequenceKey) {
 					// build HMAC signers & verifiers
-	
+
 					if (jwk.isPrivate()) { // technically redundant check because all HMAC keys are private
 						MACSigner signer = new MACSigner((OctetSequenceKey) jwk);
 						signers.put(id, signer);
 					}
-	
+
 					MACVerifier verifier = new MACVerifier((OctetSequenceKey) jwk);
 					verifiers.put(id, verifier);
-	
+
 				} else {
 					logger.warn("Unknown key type: " + jwk);
 				}

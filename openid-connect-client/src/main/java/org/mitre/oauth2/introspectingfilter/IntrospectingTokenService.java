@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
+ *
+ * Portions copyright 2011-2013 The MITRE Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +16,8 @@
  * limitations under the License.
  *******************************************************************************/
 package org.mitre.oauth2.introspectingfilter;
+
+import static org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod.SECRET_BASIC;
 
 import java.io.IOException;
 import java.net.URI;
@@ -54,8 +57,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.nimbusds.jose.util.Base64;
 
-import static org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod.SECRET_BASIC;
-
 /**
  * This ResourceServerTokenServices implementation introspects incoming tokens at a
  * server's introspection endpoint URL and passes an Authentication object along
@@ -73,10 +74,15 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 	private boolean cacheNonExpiringTokens = false;
 	private boolean cacheTokens = true;
 
-	private HttpClient httpClient = HttpClientBuilder.create()
-			.useSystemProperties()
-			.build();
-	private HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
+	private HttpComponentsClientHttpRequestFactory factory;
+
+	public IntrospectingTokenService() {
+		this(HttpClientBuilder.create().useSystemProperties().build());
+	}
+
+	public IntrospectingTokenService(HttpClient httpClient) {
+		this.factory = new HttpComponentsClientHttpRequestFactory(httpClient);
+	}
 
 	// Inner class to store in the hash map
 	private class TokenCacheObject {
@@ -235,8 +241,13 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 		return storedRequest;
 	}
 
-	private Authentication createAuthentication(JsonObject token) {
-		return new PreAuthenticatedAuthenticationToken(token.get("sub").getAsString(), token, introspectionAuthorityGranter.getAuthorities(token));
+	private Authentication createUserAuthentication(JsonObject token) {
+		JsonElement userId = token.get("user_id");
+		if(userId == null) {
+			return null;
+		}
+
+		return new PreAuthenticatedAuthenticationToken(userId.getAsString(), token, introspectionAuthorityGranter.getAuthorities(token));
 	}
 
 	private OAuth2AccessToken createAccessToken(final JsonObject token, final String tokenString) {
@@ -321,7 +332,7 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 				return null;
 			}
 			// create an OAuth2Authentication
-			OAuth2Authentication auth = new OAuth2Authentication(createStoredRequest(tokenResponse), createAuthentication(tokenResponse));
+			OAuth2Authentication auth = new OAuth2Authentication(createStoredRequest(tokenResponse), createUserAuthentication(tokenResponse));
 			// create an OAuth2AccessToken
 			OAuth2AccessToken token = createAccessToken(tokenResponse, accessToken);
 

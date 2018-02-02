@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,72 +55,71 @@ public class TokenApiView extends AbstractView {
 	private static final Logger logger = LoggerFactory.getLogger(TokenApiView.class);
 
 	private Gson gson = new GsonBuilder()
-	.setExclusionStrategies(new ExclusionStrategy() {
+			.setExclusionStrategies(new ExclusionStrategy() {
 
-		@Override
-		public boolean shouldSkipField(FieldAttributes f) {
-			return false;
-		}
+				@Override
+				public boolean shouldSkipField(FieldAttributes f) {
+					return false;
+				}
 
-		@Override
-		public boolean shouldSkipClass(Class<?> clazz) {
-			// skip the JPA binding wrapper
-			if (clazz.equals(BeanPropertyBindingResult.class)) {
-				return true;
-			}
-			return false;
-		}
+				@Override
+				public boolean shouldSkipClass(Class<?> clazz) {
+					// skip the JPA binding wrapper
+					if (clazz.equals(BeanPropertyBindingResult.class)) {
+						return true;
+					}
+					return false;
+				}
 
-	})
-	.registerTypeAdapter(OAuth2AccessTokenEntity.class, new JsonSerializer<OAuth2AccessTokenEntity>() {
+			})
+			.registerTypeAdapter(OAuth2AccessTokenEntity.class, new JsonSerializer<OAuth2AccessTokenEntity>() {
 
-		@Override
-		public JsonElement serialize(OAuth2AccessTokenEntity src,
-				Type typeOfSrc, JsonSerializationContext context) {
+				@Override
+				public JsonElement serialize(OAuth2AccessTokenEntity src,
+						Type typeOfSrc, JsonSerializationContext context) {
 
 
-			JsonObject o = new JsonObject();
+					JsonObject o = new JsonObject();
 
-			o.addProperty("value", src.getValue());
-			o.addProperty("id", src.getId());
-			o.addProperty("idTokenId", src.getIdToken() != null ? src.getIdToken().getId() : null);
-			o.addProperty("refreshTokenId", src.getRefreshToken() != null ? src.getRefreshToken().getId() : null);
+					o.addProperty("value", src.getValue());
+					o.addProperty("id", src.getId());
+					o.addProperty("refreshTokenId", src.getRefreshToken() != null ? src.getRefreshToken().getId() : null);
 
-			o.add("scopes", context.serialize(src.getScope()));
+					o.add("scopes", context.serialize(src.getScope()));
 
-			o.addProperty("clientId", src.getClient().getClientId());
-			o.addProperty("userId", src.getAuthenticationHolder().getAuthentication().getName());
+					o.addProperty("clientId", src.getClient().getClientId());
+					o.addProperty("userId", src.getAuthenticationHolder().getAuthentication().getName());
 
-			o.add("expiration", context.serialize(src.getExpiration()));
+					o.add("expiration", context.serialize(src.getExpiration()));
 
-			return o;
-		}
+					return o;
+				}
 
-	})
-	.registerTypeAdapter(OAuth2RefreshTokenEntity.class, new JsonSerializer<OAuth2RefreshTokenEntity>() {
+			})
+			.registerTypeAdapter(OAuth2RefreshTokenEntity.class, new JsonSerializer<OAuth2RefreshTokenEntity>() {
 
-		@Override
-		public JsonElement serialize(OAuth2RefreshTokenEntity src,
-				Type typeOfSrc, JsonSerializationContext context) {
-			JsonObject o = new JsonObject();
+				@Override
+				public JsonElement serialize(OAuth2RefreshTokenEntity src,
+						Type typeOfSrc, JsonSerializationContext context) {
+					JsonObject o = new JsonObject();
 
-			o.addProperty("value", src.getValue());
-			o.addProperty("id", src.getId());
+					o.addProperty("value", src.getValue());
+					o.addProperty("id", src.getId());
 
-			o.add("scopes", context.serialize(src.getAuthenticationHolder().getAuthentication().getOAuth2Request().getScope()));
+					o.add("scopes", context.serialize(src.getAuthenticationHolder().getAuthentication().getOAuth2Request().getScope()));
 
-			o.addProperty("clientId", src.getClient().getClientId());
-			o.addProperty("userId", src.getAuthenticationHolder().getAuthentication().getName());
+					o.addProperty("clientId", src.getClient().getClientId());
+					o.addProperty("userId", src.getAuthenticationHolder().getAuthentication().getName());
 
-			o.add("expiration", context.serialize(src.getExpiration()));
+					o.add("expiration", context.serialize(src.getExpiration()));
 
-			return o;
-		}
+					return o;
+				}
 
-	})
-	.serializeNulls()
-	.setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
-	.create();
+			})
+			.serializeNulls()
+			.setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+			.create();
 
 	@Override
 	protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) {

@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
+ *
+ * Portions copyright 2011-2013 The MITRE Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +16,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.openid.connect.view;
 
@@ -27,6 +28,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.mitre.oauth2.model.PKCEAlgorithm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -48,12 +50,12 @@ import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jwt.JWT;
 
 /**
- * 
+ *
  * Abstract superclass for client entity view, used with the ClientApi.
- * 
+ *
  * @see ClientEntityViewForUsers
  * @see ClientEntityViewForAdmins
- * 
+ *
  * @author jricher
  *
  */
@@ -66,61 +68,71 @@ public abstract class AbstractClientEntityView extends AbstractView {
 	private JsonParser parser = new JsonParser();
 
 	private Gson gson = new GsonBuilder()
-	.setExclusionStrategies(getExclusionStrategy())
-	.registerTypeAdapter(JWSAlgorithm.class, new JsonSerializer<JWSAlgorithm>() {
-		@Override
-		public JsonElement serialize(JWSAlgorithm src, Type typeOfSrc, JsonSerializationContext context) {
-			if (src != null) {
-				return new JsonPrimitive(src.getName());
-			} else {
-				return null;
-			}
-		}
-	})
-	.registerTypeAdapter(JWEAlgorithm.class, new JsonSerializer<JWEAlgorithm>() {
-		@Override
-		public JsonElement serialize(JWEAlgorithm src, Type typeOfSrc, JsonSerializationContext context) {
-			if (src != null) {
-				return new JsonPrimitive(src.getName());
-			} else {
-				return null;
-			}
-		}
-	})
-	.registerTypeAdapter(EncryptionMethod.class, new JsonSerializer<EncryptionMethod>() {
-		@Override
-		public JsonElement serialize(EncryptionMethod src, Type typeOfSrc, JsonSerializationContext context) {
-			if (src != null) {
-				return new JsonPrimitive(src.getName());
-			} else {
-				return null;
-			}
-		}
-	})
-	.registerTypeAdapter(JWKSet.class, new JsonSerializer<JWKSet>() {
-		@Override
-		public JsonElement serialize(JWKSet src, Type typeOfSrc, JsonSerializationContext context) {
-			if (src != null) {
-				return parser.parse(src.toString());
-			} else {
-				return null;
-			}
-		}
-	})
-	.registerTypeAdapter(JWT.class, new JsonSerializer<JWT>() {
-		@Override
-		public JsonElement serialize(JWT src, Type typeOfSrc, JsonSerializationContext context) {
-			if (src != null) {
-				return new JsonPrimitive(src.serialize());
-			} else {
-				return null;
-			}
-		}
-		
-	})
-	.serializeNulls()
-	.setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
-	.create();
+			.setExclusionStrategies(getExclusionStrategy())
+			.registerTypeAdapter(JWSAlgorithm.class, new JsonSerializer<JWSAlgorithm>() {
+				@Override
+				public JsonElement serialize(JWSAlgorithm src, Type typeOfSrc, JsonSerializationContext context) {
+					if (src != null) {
+						return new JsonPrimitive(src.getName());
+					} else {
+						return null;
+					}
+				}
+			})
+			.registerTypeAdapter(JWEAlgorithm.class, new JsonSerializer<JWEAlgorithm>() {
+				@Override
+				public JsonElement serialize(JWEAlgorithm src, Type typeOfSrc, JsonSerializationContext context) {
+					if (src != null) {
+						return new JsonPrimitive(src.getName());
+					} else {
+						return null;
+					}
+				}
+			})
+			.registerTypeAdapter(EncryptionMethod.class, new JsonSerializer<EncryptionMethod>() {
+				@Override
+				public JsonElement serialize(EncryptionMethod src, Type typeOfSrc, JsonSerializationContext context) {
+					if (src != null) {
+						return new JsonPrimitive(src.getName());
+					} else {
+						return null;
+					}
+				}
+			})
+			.registerTypeAdapter(JWKSet.class, new JsonSerializer<JWKSet>() {
+				@Override
+				public JsonElement serialize(JWKSet src, Type typeOfSrc, JsonSerializationContext context) {
+					if (src != null) {
+						return parser.parse(src.toString());
+					} else {
+						return null;
+					}
+				}
+			})
+			.registerTypeAdapter(JWT.class, new JsonSerializer<JWT>() {
+				@Override
+				public JsonElement serialize(JWT src, Type typeOfSrc, JsonSerializationContext context) {
+					if (src != null) {
+						return new JsonPrimitive(src.serialize());
+					} else {
+						return null;
+					}
+				}
+
+			})
+			.registerTypeAdapter(PKCEAlgorithm.class, new JsonSerializer<PKCEAlgorithm>() {
+				@Override
+				public JsonPrimitive serialize(PKCEAlgorithm src, Type typeOfSrc, JsonSerializationContext context) {
+					if (src != null) {
+						return new JsonPrimitive(src.getName());
+					} else {
+						return null;
+					}
+				}
+			})
+			.serializeNulls()
+			.setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+			.create();
 
 
 	/**

@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,9 +29,9 @@ import org.slf4j.LoggerFactory;
  * Translates a Serializable object of certain primitive types
  * into a String for storage in the database, for use with the
  * OAuth2Request extensions map.
- * 
+ *
  * This class does allow some extension data to be lost.
- * 
+ *
  * @author jricher
  *
  */

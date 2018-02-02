@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
+ *
+ * Portions copyright 2011-2013 The MITRE Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +16,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.openid.connect.web;
 
@@ -23,14 +24,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
+import org.mitre.openid.connect.config.UIConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 /**
- * 
+ *
  * Injects the server configuration bean into the request context.
  * This allows JSPs and the like to call "config.logoUrl" among others.
- * 
+ *
  * @author jricher
  *
  */
@@ -39,9 +41,13 @@ public class ServerConfigInterceptor extends HandlerInterceptorAdapter {
 	@Autowired
 	private ConfigurationPropertiesBean config;
 
+	@Autowired
+	private UIConfiguration ui;
+
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 		request.setAttribute("config", config);
+		request.setAttribute("ui", ui);
 		return true;
 	}
 

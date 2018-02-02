@@ -1,6 +1,5 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,9 +38,9 @@ public interface PermissionService {
 	public PermissionTicket createTicket(ResourceSet resourceSet, Set<String> scopes);
 
 	/**
-	 * 
+	 *
 	 * Read the permission associated with the given ticket.
-	 * 
+	 *
 	 * @param the ticket value to search on
 	 * @return the permission object, or null if none is found
 	 */
@@ -49,7 +48,7 @@ public interface PermissionService {
 
 	/**
 	 * Save the updated permission ticket to the database. Does not create a new ticket.
-	 * 
+	 *
 	 * @param ticket
 	 * @return
 	 */

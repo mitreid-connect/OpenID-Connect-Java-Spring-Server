@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
+ *
+ * Portions copyright 2011-2013 The MITRE Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +16,7 @@
  * limitations under the License.
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.mitre.oauth2.model;
 
@@ -50,7 +51,7 @@ public class RegisteredClient {
 	private JsonObject src;
 
 	/**
-	 * 
+	 *
 	 */
 	public RegisteredClient() {
 		this.client = new ClientDetailsEntity();
@@ -815,7 +816,7 @@ public class RegisteredClient {
 	public void setSoftwareStatement(JWT softwareStatement) {
 		client.setSoftwareStatement(softwareStatement);
 	}
-	
+
 	/**
 	 * @return
 	 * @see org.mitre.oauth2.model.ClientDetailsEntity#getCodeChallengeMethod()
@@ -844,6 +845,54 @@ public class RegisteredClient {
 	 */
 	public void setSource(JsonObject src) {
 		this.src = src;
+	}
+
+	/**
+	 * @return
+	 * @see org.mitre.oauth2.model.ClientDetailsEntity#getDeviceCodeValiditySeconds()
+	 */
+	public Integer getDeviceCodeValiditySeconds() {
+		return client.getDeviceCodeValiditySeconds();
+	}
+
+	/**
+	 * @param deviceCodeValiditySeconds
+	 * @see org.mitre.oauth2.model.ClientDetailsEntity#setDeviceCodeValiditySeconds(java.lang.Integer)
+	 */
+	public void setDeviceCodeValiditySeconds(Integer deviceCodeValiditySeconds) {
+		client.setDeviceCodeValiditySeconds(deviceCodeValiditySeconds);
+	}
+
+	/**
+	 * @return
+	 * @see org.mitre.oauth2.model.ClientDetailsEntity#getSoftwareId()
+	 */
+	public String getSoftwareId() {
+		return client.getSoftwareId();
+	}
+
+	/**
+	 * @param softwareId
+	 * @see org.mitre.oauth2.model.ClientDetailsEntity#setSoftwareId(java.lang.String)
+	 */
+	public void setSoftwareId(String softwareId) {
+		client.setSoftwareId(softwareId);
+	}
+
+	/**
+	 * @return
+	 * @see org.mitre.oauth2.model.ClientDetailsEntity#getSoftwareVersion()
+	 */
+	public String getSoftwareVersion() {
+		return client.getSoftwareVersion();
+	}
+
+	/**
+	 * @param softwareVersion
+	 * @see org.mitre.oauth2.model.ClientDetailsEntity#setSoftwareVersion(java.lang.String)
+	 */
+	public void setSoftwareVersion(String softwareVersion) {
+		client.setSoftwareVersion(softwareVersion);
 	}
 
 

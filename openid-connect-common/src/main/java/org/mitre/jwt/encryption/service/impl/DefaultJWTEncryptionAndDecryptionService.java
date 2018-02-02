@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright 2016 The MITRE Corporation
- *   and the MIT Internet Trust Consortium
+ * Copyright 2017 The MIT Internet Trust Consortium
+ *
+ * Portions copyright 2011-2013 The MITRE Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +46,6 @@ import com.nimbusds.jose.crypto.ECDHEncrypter;
 import com.nimbusds.jose.crypto.RSADecrypter;
 import com.nimbusds.jose.crypto.RSAEncrypter;
 import com.nimbusds.jose.crypto.bc.BouncyCastleProviderSingleton;
-import com.nimbusds.jose.jca.JCAContext;
 import com.nimbusds.jose.jwk.ECKey;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.OctetSequenceKey;
@@ -80,7 +80,7 @@ public class DefaultJWTEncryptionAndDecryptionService implements JWTEncryptionAn
 	/**
 	 * Build this service based on the keys given. All public keys will be used to make encrypters,
 	 * all private keys will be used to make decrypters.
-	 * 
+	 *
 	 * @param keys
 	 * @throws NoSuchAlgorithmException
 	 * @throws InvalidKeySpecException
@@ -94,7 +94,7 @@ public class DefaultJWTEncryptionAndDecryptionService implements JWTEncryptionAn
 	/**
 	 * Build this service based on the given keystore. All keys must have a key
 	 * id ({@code kid}) field in order to be used.
-	 * 
+	 *
 	 * @param keyStore
 	 * @throws NoSuchAlgorithmException
 	 * @throws InvalidKeySpecException
@@ -240,13 +240,13 @@ public class DefaultJWTEncryptionAndDecryptionService implements JWTEncryptionAn
 					logger.warn("No private key for key #" + jwk.getKeyID());
 				}
 			} else if (jwk instanceof ECKey) {
-				
+
 				// build EC Encrypters and decrypters
-				
+
 				ECDHEncrypter encrypter = new ECDHEncrypter((ECKey) jwk);
 				encrypter.getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());
 				encrypters.put(id, encrypter);
-				
+
 				if (jwk.isPrivate()) { // we can decrypt too
 					ECDHDecrypter decrypter = new ECDHDecrypter((ECKey) jwk);
 					decrypter.getJCAContext().setProvider(BouncyCastleProviderSingleton.getInstance());

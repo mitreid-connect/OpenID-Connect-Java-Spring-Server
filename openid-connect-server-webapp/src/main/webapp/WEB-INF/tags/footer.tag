@@ -22,17 +22,24 @@
 <script type="text/javascript" src="resources/js/lib/bootstrapx-clickover.js"></script>
 <script type="text/javascript" src="resources/js/lib/bootstrap-sheet.js"></script>
 <script type="text/javascript" src="resources/js/lib/bootpag.js"></script>
+<script type="text/javascript" src="resources/js/lib/retina.js"></script>
 <c:if test="${js != null && js != ''}">
-	<script type="text/javascript" src="resources/js/client.js"></script>
-	<script type="text/javascript" src="resources/js/grant.js"></script>
-	<script type="text/javascript" src="resources/js/scope.js"></script>
-	<script type="text/javascript" src="resources/js/whitelist.js"></script>
-	<script type="text/javascript" src="resources/js/dynreg.js"></script>
-	<script type="text/javascript" src="resources/js/rsreg.js"></script>
-	<script type="text/javascript" src="resources/js/token.js"></script>
-	<script type="text/javascript" src="resources/js/blacklist.js"></script>
+	<script type="text/javascript">
+	
+		// set up a global variable for UI components to hang extensions off of
+		
+		var ui = {
+			templates: ["resources/template/admin.html"], // template files to load for UI
+			routes: [], // routes to add to the UI {path: URI to map to, name: unique name for internal use, callback: function to call when route is activated}
+			init: [] // functions to call after initialization is complete
+		};
+	
+	</script>
+	<c:forEach var="file" items="${ ui.jsFiles }">
+		<script type="text/javascript" src="<c:out value="${ file }" />" ></script>
+	</c:forEach>
 	<script type="text/javascript" src="resources/js/admin.js"></script>
 </c:if>
-<script type="text/javascript" src="resources/js/lib/retina.js"></script>
+<div id="templates" class="hide"></div>
 </body>
 </html>
