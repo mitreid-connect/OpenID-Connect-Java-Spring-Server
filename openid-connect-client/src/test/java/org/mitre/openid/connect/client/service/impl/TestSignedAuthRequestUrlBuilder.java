@@ -92,7 +92,7 @@ public class TestSignedAuthRequestUrlBuilder {
 	@Before
 	public void prepare() throws NoSuchAlgorithmException, InvalidKeySpecException {
 
-		RSAKey key = new RSAKey(new Base64URL(n), new Base64URL(e), new Base64URL(d), KeyUse.SIGNATURE, null, new Algorithm(alg), kid, null, null, null, null);
+		RSAKey key = new RSAKey(new Base64URL(n), new Base64URL(e), new Base64URL(d), KeyUse.SIGNATURE, null, new Algorithm(alg), kid, null, null, null, null, null);
 		Map<String, JWK> keys = Maps.newHashMap();
 		keys.put("client", key);
 

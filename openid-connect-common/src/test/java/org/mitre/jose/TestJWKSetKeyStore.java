@@ -61,7 +61,7 @@ public class TestJWKSetKeyStore {
 					"qDp0Vqj3kbSCz1XyfCs6_LehBwtxHIyh8Ripy40p24moOAbgxVw3rxT_vl" +
 					"t3UVe4WO3JkJOzlpUf-KTVI2Ptgm-dARxTEtE-id-4OJr0h-K-VFs3VSnd" +
 					"VTIznSxfyrj8ILL6MG_Uv8YAu7VILSB3lOW085-4qE3DzgrTjgyQ"), // d
-			KeyUse.ENCRYPTION, null, JWEAlgorithm.RSA_OAEP, RSAkid, null, null, null, null);
+			KeyUse.ENCRYPTION, null, JWEAlgorithm.RSA_OAEP, RSAkid, null, null, null, null, null);
 
 	private String RSAkid_rsa2 = "rsa_2";
 	private JWK RSAjwk_rsa2 = new RSAKey(
@@ -78,7 +78,7 @@ public class TestJWKSetKeyStore {
 					"qDp0Vqj3kbSCz1XyfCs6_LehBwtxHIyh8Ripy40p24moOAbgxVw3rxT_vl" +
 					"t3UVe4WO3JkJOzlpUf-KTVI2Ptgm-dARxTEtE-id-4OJr0h-K-VFs3VSnd" +
 					"VTIznSxfyrj8ILL6MG_Uv8YAu7VILSB3lOW085-4qE3DzgrTjgyQ"), // d
-			KeyUse.ENCRYPTION, null, JWEAlgorithm.RSA1_5, RSAkid_rsa2, null, null, null, null);
+			KeyUse.ENCRYPTION, null, JWEAlgorithm.RSA1_5, RSAkid_rsa2, null, null, null, null, null);
 
 
 	List<JWK> keys_list = new LinkedList<>();
