@@ -99,8 +99,10 @@ public class SymmetricKeyJWTValidatorCacheService {
 			try {
 
 				String id = "SYMMETRIC-KEY";
-
-				JWK jwk = new OctetSequenceKey(Base64URL.encode(key), KeyUse.SIGNATURE, null, null, id, null, null, null, null);
+				JWK jwk = new OctetSequenceKey.Builder(Base64URL.encode(key))
+					.keyUse(KeyUse.SIGNATURE)
+					.keyID(id)
+					.build();
 				Map<String, JWK> keys = ImmutableMap.of(id, jwk);
 				JWTSigningAndValidationService service = new DefaultJWTSigningAndValidationService(keys);
 

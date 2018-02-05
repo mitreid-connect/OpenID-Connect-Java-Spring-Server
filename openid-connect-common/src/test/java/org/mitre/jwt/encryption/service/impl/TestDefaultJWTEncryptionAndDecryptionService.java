@@ -106,7 +106,7 @@ public class TestDefaultJWTEncryptionAndDecryptionService {
 					"qDp0Vqj3kbSCz1XyfCs6_LehBwtxHIyh8Ripy40p24moOAbgxVw3rxT_vl" +
 					"t3UVe4WO3JkJOzlpUf-KTVI2Ptgm-dARxTEtE-id-4OJr0h-K-VFs3VSnd" +
 					"VTIznSxfyrj8ILL6MG_Uv8YAu7VILSB3lOW085-4qE3DzgrTjgyQ"), // d
-			KeyUse.ENCRYPTION, null, JWEAlgorithm.RSA_OAEP, RSAkid, null, null, null, null);
+			KeyUse.ENCRYPTION, null, JWEAlgorithm.RSA_OAEP, RSAkid, null, null, null, null, null);
 
 	private String RSAkid_2 = "rsa3210";
 	private JWK RSAjwk_2 = new RSAKey(
@@ -123,12 +123,12 @@ public class TestDefaultJWTEncryptionAndDecryptionService {
 					"qDp0Vqj3kbSCz1XyfCs6_LehBwtxHIyh8Ripy40p24moOAbgxVw3rxT_vl" +
 					"t3UVe4WO3JkJOzlpUf-KTVI2Ptgm-dARxTEtE-id-4OJr0h-K-VFs3VSnd" +
 					"VTIznSxfyrj8ILL6MG_Uv8YAu7VILSB3lOW085-4qE3DzgrTjgyQ"), // d
-			KeyUse.ENCRYPTION, null, JWEAlgorithm.RSA1_5, RSAkid_2, null, null, null, null);
+			KeyUse.ENCRYPTION, null, JWEAlgorithm.RSA1_5, RSAkid_2, null, null, null, null, null);
 
 	private String AESkid = "aes123";
 	private JWK AESjwk = new OctetSequenceKey(new Base64URL("GawgguFyGrWKav7AX4VKUg"),
 			KeyUse.ENCRYPTION, null, JWEAlgorithm.A128KW,
-			AESkid, null, null, null, null);
+			AESkid, null, null, null, null, null);
 
 
 	private Map<String, JWK> keys = new ImmutableMap.Builder<String, JWK>()
