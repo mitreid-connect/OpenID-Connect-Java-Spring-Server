@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
     Copyright 2017 The MIT Internet Trust Consortium
-   
+
     Portions copyright 2011-2013 The MITRE Corporation
    
     Licensed under the Apache License, Version 2.0 (the "License");
@@ -62,7 +62,7 @@
 <!-- 		<property name="showSql" value="true" /> -->
 <!-- 	</bean> -->
 
-	<!-- You can optionally initialize the database with test values here, 
+	<!-- You can optionally initialize the database with test values here,
 		but this is not recommended for real systems -->
 <!-- 	<jdbc:initialize-database data-source="dataSource"> -->
 <!-- 		<jdbc:script location="classpath:/db/tables/mysql_database_tables.sql"/> -->
@@ -89,8 +89,8 @@
 		<property name="showSql" value="true" />
 	</bean>
 	-->
-	
-	<!-- You can optionally initialize the database with test values here, 
+
+	<!-- You can optionally initialize the database with test values here,
 		but this is not recommended for real systems -->
 <!-- 	<jdbc:initialize-database data-source="dataSource"> -->
 <!-- 		<jdbc:script location="classpath:/db/psql/psql_database_tables.sql"/> -->
