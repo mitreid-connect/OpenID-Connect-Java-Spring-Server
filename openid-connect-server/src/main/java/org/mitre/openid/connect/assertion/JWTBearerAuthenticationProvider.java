@@ -46,6 +46,7 @@ import org.springframework.security.oauth2.common.exceptions.InvalidClientExcept
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.PlainJWT;
 import com.nimbusds.jwt.SignedJWT;
 
 /**
@@ -91,15 +92,20 @@ public class JWTBearerAuthenticationProvider implements AuthenticationProvider {
 			JWT jwt = jwtAuth.getJwt();
 			JWTClaimsSet jwtClaims = jwt.getJWTClaimsSet();
 
-			// check the signature with nimbus
-			if (jwt instanceof SignedJWT) {
+			if (jwt instanceof PlainJWT) {
+				if (!AuthMethod.NONE.equals(client.getTokenEndpointAuthMethod())) {
+					throw new AuthenticationServiceException("Client does not support this authentication method.");
+				}
+			} else if (jwt instanceof SignedJWT) {
+				// check the signature with nimbus
 				SignedJWT jws = (SignedJWT)jwt;
 
 				JWSAlgorithm alg = jws.getHeader().getAlgorithm();
 
 				if (client.getTokenEndpointAuthSigningAlg() != null &&
 						!client.getTokenEndpointAuthSigningAlg().equals(alg)) {
-					throw new InvalidClientException("Client's registered request object signing algorithm (" + client.getRequestObjectSigningAlg() + ") does not match request object's actual algorithm (" + alg.getName() + ")");
+					throw new AuthenticationServiceException("Client's registered token endpoint signing algorithm (" + client.getTokenEndpointAuthSigningAlg()
+							+ ") does not match token's actual algorithm (" + alg.getName() + ")");
 				}
 
 				if (client.getTokenEndpointAuthMethod() == null ||
@@ -142,6 +148,8 @@ public class JWTBearerAuthenticationProvider implements AuthenticationProvider {
 				} else {
 					throw new AuthenticationServiceException("Unable to create signature validator for method " + client.getTokenEndpointAuthMethod() + " and algorithm " + alg);
 				}
+			} else {
+				throw new AuthenticationServiceException("Unsupported JWT type: " + jwt.getClass().getName());
 			}
 
 			// check the issuer
