@@ -92,6 +92,8 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 			builder.audience(Lists.newArrayList(audience));
 		}
 
+		addCustomAccessTokenClaims(builder, token, authentication);
+
 		JWTClaimsSet claims = builder.build();
 
 		JWSAlgorithm signingAlg = jwtService.getDefaultSigningAlgorithm();
@@ -160,5 +162,15 @@ public class ConnectTokenEnhancer implements TokenEnhancer {
 		this.clientService = clientService;
 	}
 
+
+	/**
+	 * Hook for subclasses that allows adding custom claims to the JWT that will be used as access token.
+	 * @param builder the builder holding the current claims
+	 * @param token the un-enhanced token
+	 * @param authentication current authentication
+	 */
+    protected void addCustomAccessTokenClaims(JWTClaimsSet.Builder builder, OAuth2AccessTokenEntity token,
+	    OAuth2Authentication authentication) {
+	}
 
 }
