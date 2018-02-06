@@ -211,7 +211,7 @@
             "no-clients": "There are no registered clients on this server.",
             "no-matches": "There are no clients that match your search criteria.",
             "no-redirect": "NO REDIRECT URI",
-            "registered": "Registrered",
+            "registered": "Registered",
             "search": "Search...",
             "whitelist": "Whitelist",
             "unknown": "at an unknown time"
