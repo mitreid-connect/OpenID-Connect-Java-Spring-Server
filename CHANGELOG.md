@@ -1,4 +1,6 @@
 Unreleased:
+
+*1.3.2:
 - Added changelog
 - Set default redirect URI resolver strict matching to true
 - Fixed XSS vulnerability on redirect URI display on approval page
