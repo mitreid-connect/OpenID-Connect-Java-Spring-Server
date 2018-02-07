@@ -7,6 +7,7 @@ Unreleased:
 - Upgraded Nimbus revision
 - Added French translation
 - Added hooks for custom JWT claims
+- Removed "Not Yet Implemented" tag from post-logout redirect URI
 
 *1.3.1*:
 - Added End Session endpoint
