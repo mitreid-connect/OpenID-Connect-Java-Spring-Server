@@ -46,7 +46,6 @@ import org.springframework.security.oauth2.common.exceptions.InvalidClientExcept
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.PlainJWT;
 import com.nimbusds.jwt.SignedJWT;
 
 /**
@@ -92,64 +91,60 @@ public class JWTBearerAuthenticationProvider implements AuthenticationProvider {
 			JWT jwt = jwtAuth.getJwt();
 			JWTClaimsSet jwtClaims = jwt.getJWTClaimsSet();
 
-			if (jwt instanceof PlainJWT) {
-				if (!AuthMethod.NONE.equals(client.getTokenEndpointAuthMethod())) {
-					throw new AuthenticationServiceException("Client does not support this authentication method.");
+			if (!(jwt instanceof SignedJWT)) {
+				throw new AuthenticationServiceException("Unsupported JWT type: " + jwt.getClass().getName());
+			}
+
+			// check the signature with nimbus
+			SignedJWT jws = (SignedJWT) jwt;
+
+			JWSAlgorithm alg = jws.getHeader().getAlgorithm();
+
+			if (client.getTokenEndpointAuthSigningAlg() != null &&
+					!client.getTokenEndpointAuthSigningAlg().equals(alg)) {
+				throw new AuthenticationServiceException("Client's registered token endpoint signing algorithm (" + client.getTokenEndpointAuthSigningAlg()
+						+ ") does not match token's actual algorithm (" + alg.getName() + ")");
+			}
+
+			if (client.getTokenEndpointAuthMethod() == null ||
+					client.getTokenEndpointAuthMethod().equals(AuthMethod.NONE) ||
+					client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_BASIC) ||
+					client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_POST)) {
+
+				// this client doesn't support this type of authentication
+				throw new AuthenticationServiceException("Client does not support this authentication method.");
+
+			} else if ((client.getTokenEndpointAuthMethod().equals(AuthMethod.PRIVATE_KEY) &&
+					(alg.equals(JWSAlgorithm.RS256)
+							|| alg.equals(JWSAlgorithm.RS384)
+							|| alg.equals(JWSAlgorithm.RS512)
+							|| alg.equals(JWSAlgorithm.ES256)
+							|| alg.equals(JWSAlgorithm.ES384)
+							|| alg.equals(JWSAlgorithm.ES512)
+							|| alg.equals(JWSAlgorithm.PS256)
+							|| alg.equals(JWSAlgorithm.PS384)
+							|| alg.equals(JWSAlgorithm.PS512)))
+					|| (client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_JWT) &&
+					(alg.equals(JWSAlgorithm.HS256)
+							|| alg.equals(JWSAlgorithm.HS384)
+							|| alg.equals(JWSAlgorithm.HS512)))) {
+
+				// double-check the method is asymmetrical if we're in HEART mode
+				if (config.isHeartMode() && !client.getTokenEndpointAuthMethod().equals(AuthMethod.PRIVATE_KEY)) {
+					throw new AuthenticationServiceException("[HEART mode] Invalid authentication method");
 				}
-			} else if (jwt instanceof SignedJWT) {
-				// check the signature with nimbus
-				SignedJWT jws = (SignedJWT)jwt;
 
-				JWSAlgorithm alg = jws.getHeader().getAlgorithm();
+				JWTSigningAndValidationService validator = validators.getValidator(client, alg);
 
-				if (client.getTokenEndpointAuthSigningAlg() != null &&
-						!client.getTokenEndpointAuthSigningAlg().equals(alg)) {
-					throw new AuthenticationServiceException("Client's registered token endpoint signing algorithm (" + client.getTokenEndpointAuthSigningAlg()
-							+ ") does not match token's actual algorithm (" + alg.getName() + ")");
+				if (validator == null) {
+					throw new AuthenticationServiceException("Unable to create signature validator for client " + client + " and algorithm " + alg);
 				}
 
-				if (client.getTokenEndpointAuthMethod() == null ||
-						client.getTokenEndpointAuthMethod().equals(AuthMethod.NONE) ||
-						client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_BASIC) ||
-						client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_POST)) {
-
-					// this client doesn't support this type of authentication
-					throw new AuthenticationServiceException("Client does not support this authentication method.");
-
-				} else if ((client.getTokenEndpointAuthMethod().equals(AuthMethod.PRIVATE_KEY) &&
-						(alg.equals(JWSAlgorithm.RS256)
-								|| alg.equals(JWSAlgorithm.RS384)
-								|| alg.equals(JWSAlgorithm.RS512)
-								|| alg.equals(JWSAlgorithm.ES256)
-								|| alg.equals(JWSAlgorithm.ES384)
-								|| alg.equals(JWSAlgorithm.ES512)
-								|| alg.equals(JWSAlgorithm.PS256)
-								|| alg.equals(JWSAlgorithm.PS384)
-								|| alg.equals(JWSAlgorithm.PS512)))
-						|| (client.getTokenEndpointAuthMethod().equals(AuthMethod.SECRET_JWT) &&
-								(alg.equals(JWSAlgorithm.HS256)
-										|| alg.equals(JWSAlgorithm.HS384)
-										|| alg.equals(JWSAlgorithm.HS512)))) {
-
-					// double-check the method is asymmetrical if we're in HEART mode
-					if (config.isHeartMode() && !client.getTokenEndpointAuthMethod().equals(AuthMethod.PRIVATE_KEY)) {
-						throw new AuthenticationServiceException("[HEART mode] Invalid authentication method");
-					}
-
-					JWTSigningAndValidationService validator = validators.getValidator(client, alg);
-
-					if (validator == null) {
-						throw new AuthenticationServiceException("Unable to create signature validator for client " + client + " and algorithm " + alg);
-					}
-
-					if (!validator.validateSignature(jws)) {
-						throw new AuthenticationServiceException("Signature did not validate for presented JWT authentication.");
-					}
-				} else {
-					throw new AuthenticationServiceException("Unable to create signature validator for method " + client.getTokenEndpointAuthMethod() + " and algorithm " + alg);
+				if (!validator.validateSignature(jws)) {
+					throw new AuthenticationServiceException("Signature did not validate for presented JWT authentication.");
 				}
 			} else {
-				throw new AuthenticationServiceException("Unsupported JWT type: " + jwt.getClass().getName());
+				throw new AuthenticationServiceException("Unable to create signature validator for method " + client.getTokenEndpointAuthMethod() + " and algorithm " + alg);
 			}
 
 			// check the issuer
