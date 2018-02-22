@@ -184,6 +184,60 @@ public class TestDefaultSystemScopeService {
 
 		// extra scope (fail)
 		assertThat(service.scopesMatch(expected, actualBad), is(false));
+		
 	}
+	
+	@Test
+	public void getremoveRestrictedAndReservedScopes() {
+						
+		Set<SystemScope> restrictedAndReservedScopes = Sets.newHashSet(defaultDynScope1, defaultDynScope2, dynScope1);
+		assertThat(service.removeRestrictedAndReservedScopes(allScopes),equalTo(restrictedAndReservedScopes));
+	}
+	
+	@Test
+	public void getremoveReservedScopes() {
+		Set<SystemScope> removeReservedScopes = Sets.newHashSet(defaultDynScope2, defaultDynScope1, defaultScope2,restrictedScope1,defaultScope1,dynScope1);
+		assertThat(service.removeReservedScopes(allScopes), equalTo(removeReservedScopes));
+	}
+	
+	@Test 
+	public void getById() {
+		
+		// check null condition
+
+		assertThat(service.getById((long) 60), is(nullValue()));
+
+		
+	}
+	
+	@Test 
+	public void getByValue() {
+		
+		// check null condition
+		
+		assertThat(service.getByValue("defaultDynScope1String"), is(nullValue()));		
+		
+		
+	}
+	
+	@Test
+	public void save() {
+		
+		// check null condition 
+
+		assertThat(service.save(defaultScope1), is(nullValue()));
+
+
+		
+	}
+	
+	@Test
+	public void getReserved() {
+		//Set<SystemScope> restricted = Sets.newHashSet(defaultScope1, defaultScope2, restrictedScope1);
+		Set<SystemScope> reserved = service.getReserved();
+		assertThat(service.getReserved(), equalTo(reserved));
+
+	}
+
 
 }

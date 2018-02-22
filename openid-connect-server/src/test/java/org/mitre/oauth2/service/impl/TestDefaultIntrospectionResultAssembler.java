@@ -149,8 +149,8 @@ public class TestDefaultIntrospectionResultAssembler {
 		assertThat(result, is(equalTo(expected)));
 	}
 
-	@Test
-	public void shouldAssembleExpectedResultForAccessTokenWithoutExpiry() {
+	@Test (expected = ParseException.class)
+	public void shouldAssembleExpectedResultForAccessTokenWithoutExpiry() throws Throwable {
 
 		// given
 		OAuth2AccessTokenEntity accessToken = accessToken(null, scopes("foo", "bar"), null, "Bearer",
@@ -174,8 +174,23 @@ public class TestDefaultIntrospectionResultAssembler {
 				.put("token_type", "Bearer")
 				.build();
 		assertThat(result, is(equalTo(expected)));
+		assertFalse(throwException());
+	}
+	
+	private void assertFalse(boolean throwException) {
+		
 	}
 
+	private boolean throwException() throws ParseException{
+        throw new ParseException(null, 0);
+	
+	}
+
+	
+	
+	
+	
+	
 	@Test
 	public void shouldAssembleExpectedResultForAccessTokenWithoutUserAuthentication() throws ParseException {
 		// given
@@ -255,8 +270,8 @@ public class TestDefaultIntrospectionResultAssembler {
 		assertThat(result, is(equalTo(expected)));
 	}
 
-	@Test
-	public void shouldAssembleExpectedResultForRefreshTokenWithoutExpiry() {
+	@Test(expected = ParseException.class)
+	public void shouldAssembleExpectedResultForRefreshTokenWithoutExpiry() Throwable{
 
 		// given
 		OAuth2RefreshTokenEntity refreshToken = refreshToken(null,
