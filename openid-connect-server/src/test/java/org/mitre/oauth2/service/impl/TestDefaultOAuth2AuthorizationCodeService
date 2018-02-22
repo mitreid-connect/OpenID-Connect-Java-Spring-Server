@@ -1,0 +1,53 @@
+package org.mitre.oauth2.service.impl;
+
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
+import org.junit.Test;
+import org.mitre.oauth2.model.AuthenticationHolderEntity;
+import org.mitre.oauth2.model.AuthorizationCodeEntity;
+import org.mitre.oauth2.repository.AuthorizationCodeRepository;
+import org.mitre.oauth2.repository.impl.JpaAuthenticationHolderRepository;
+import org.mitre.oauth2.repository.impl.JpaAuthorizationCodeRepository;
+import org.mockito.Matchers;
+import org.mockito.Mockito;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
+
+public class TestDefaultOAuth2AuthorizationCodeService {
+
+	@Test
+	public void testConsumeAuthorizationCode()
+	{
+
+DefaultOAuth2AuthorizationCodeService defaultAuth = new DefaultOAuth2AuthorizationCodeService();
+AuthenticationHolderEntity authHolder = Mockito.mock(AuthenticationHolderEntity.class);
+OAuth2Authentication authentication = Mockito.mock(OAuth2Authentication.class);
+JpaAuthenticationHolderRepository authRepo = Mockito.mock(JpaAuthenticationHolderRepository.class);
+
+doNothing().when(authHolder).setAuthentication(Matchers.isA(OAuth2Authentication.class));
+when(authRepo.save(Matchers.isA(AuthenticationHolderEntity.class))).thenReturn(authHolder);
+AuthorizationCodeRepository repository = Mockito.mock(AuthorizationCodeRepository.class);
+AuthorizationCodeEntity entity = Mockito.mock(AuthorizationCodeEntity.class);
+when(repository.save(Matchers.isA(AuthorizationCodeEntity.class))).thenReturn(entity);
+String code = defaultAuth.createAuthorizationCode(authentication);
+assertEquals(repository.getByCode(code),entity);
+
+	}
+	
+	
+	@Test
+	public void testRespositoryGetAndSet() {
+		AuthorizationCodeRepository repository = new JpaAuthorizationCodeRepository() ;
+		DefaultOAuth2AuthorizationCodeService defaultAuth = new DefaultOAuth2AuthorizationCodeService();
+		defaultAuth.setRepository(repository);
+		assertEquals(defaultAuth.getRepository(), repository);			
+	}
+	
+	@Test
+	public void testExpirationSecond() {
+		DefaultOAuth2AuthorizationCodeService defaultAuth = new DefaultOAuth2AuthorizationCodeService();
+		defaultAuth.setAuthCodeExpirationSeconds(10);
+		assertEquals(defaultAuth.getAuthCodeExpirationSeconds(), 10);			
+	}
+	
+}
