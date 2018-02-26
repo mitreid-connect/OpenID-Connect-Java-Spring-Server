@@ -36,6 +36,7 @@ import org.mitre.oauth2.service.AuthenticationHolderEntityService;
 import org.mitre.oauth2.service.OAuth2TokenEntityService;
 import org.mitre.oauth2.service.SystemScopeService;
 import org.mitre.openid.connect.config.ConfigurationPropertiesBean;
+import org.mitre.openid.connect.service.IDTokenClaimsEnhancer;
 import org.mitre.openid.connect.service.OIDCTokenService;
 import org.mitre.openid.connect.util.IdTokenHashUtils;
 import org.mitre.openid.connect.web.AuthenticationTimeStamper;
@@ -94,6 +95,9 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 	@Autowired
 	private OAuth2TokenEntityService tokenService;
 
+	@Autowired
+	private IDTokenClaimsEnhancer idTokenClaimsEnhancer;
+
 	@Override
 	public JWT createIdToken(ClientDetailsEntity client, OAuth2Request request, Date issueTime, String sub, OAuth2AccessTokenEntity accessToken) {
 
@@ -141,6 +145,8 @@ public class DefaultOIDCTokenService implements OIDCTokenService {
 		if (!Strings.isNullOrEmpty(nonce)) {
 			idClaims.claim("nonce", nonce);
 		}
+
+		idTokenClaimsEnhancer.enhanceIdTokenClaims(idClaims, request, issueTime, sub, accessToken);
 
 		Set<String> responseTypes = request.getResponseTypes();
 
