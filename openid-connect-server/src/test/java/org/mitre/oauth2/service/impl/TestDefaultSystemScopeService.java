@@ -201,7 +201,7 @@ public class TestDefaultSystemScopeService {
 	}
 	
 	@Test 
-	public void getById() {
+	public void getById_notfound() {
 		
 		// check null condition
 
@@ -211,7 +211,7 @@ public class TestDefaultSystemScopeService {
 	}
 	
 	@Test 
-	public void getByValue() {
+	public void getByValue_notfound() {
 		
 		// check null condition
 		
@@ -221,20 +221,20 @@ public class TestDefaultSystemScopeService {
 	}
 	
 	@Test
-	public void save() {
+	public void save_scope() {
 		
 		// check null condition 
 
 		assertThat(service.save(defaultScope1), is(nullValue()));
+		assertThat(service.save(mySystemScope), equalTo(mySystemScope));
 
 
 		
 	}
 	
 	@Test
-	public void getReserved() {
-		//Set<SystemScope> restricted = Sets.newHashSet(defaultScope1, defaultScope2, restrictedScope1);
-		Set<SystemScope> reserved = service.getReserved();
+	public void getReserveScopes() {
+		Set<SystemScope> reserved = SystemScopeService.reservedScopes;
 		assertThat(service.getReserved(), equalTo(reserved));
 
 	}
