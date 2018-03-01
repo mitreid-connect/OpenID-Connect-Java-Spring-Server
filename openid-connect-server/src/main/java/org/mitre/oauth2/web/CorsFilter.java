@@ -53,8 +53,10 @@ public class CorsFilter extends OncePerRequestFilter {
 			// CORS "pre-flight" request
 			response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
 			response.addHeader("Access-Control-Allow-Headers", "X-Requested-With,Origin,Content-Type, Accept, Authorization");
+			response.setStatus(HttpServletResponse.SC_OK);
+		}else {
+			filterChain.doFilter(request, response);
 		}
-		filterChain.doFilter(request, response);
 	}
 
 }
