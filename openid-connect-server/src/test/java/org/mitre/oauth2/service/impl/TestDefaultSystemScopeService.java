@@ -221,21 +221,21 @@ public class TestDefaultSystemScopeService {
 	}
 	
 	@Test
-	public void save_scope() {
+	public void save_null() {
 		
 		// check null condition 
 
 		assertThat(service.save(defaultScope1), is(nullValue()));
-		assertThat(service.save(mySystemScope), equalTo(mySystemScope));
-
-
+	}
 		
+	@Test
+	public void save_value(){
+		assertThat(service.save(mySystemScope), equalTo(mySystemScope))	
 	}
 	
 	@Test
 	public void getReserveScopes() {
-		Set<SystemScope> reserved = SystemScopeService.reservedScopes;
-		assertThat(service.getReserved(), equalTo(reserved));
+		assertThat(service.getReserved(), equalTo(SystemScopeService.reservedScopes));
 
 	}
 
