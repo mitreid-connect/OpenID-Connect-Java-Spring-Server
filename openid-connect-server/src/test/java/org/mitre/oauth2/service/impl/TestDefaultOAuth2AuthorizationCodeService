@@ -46,13 +46,6 @@ public class TestDefaultOAuth2AuthorizationCodeService {
 		Mockito.when(repository.getByCode(codeNotFound)).thenReturn(null);
 	}
 	
-
-	@Test
-	public void testCreateDeviceCode() {
-		
-		// TO DO
-		
-	}
 	
 	
 	@Test
