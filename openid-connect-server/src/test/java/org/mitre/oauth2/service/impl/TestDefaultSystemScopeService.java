@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2017 The MIT Internet Trust Consortium
+ * Copyright 2018 The MIT Internet Trust Consortium
  *
  * Portions copyright 2011-2013 The MITRE Corporation
  *
@@ -184,60 +184,6 @@ public class TestDefaultSystemScopeService {
 
 		// extra scope (fail)
 		assertThat(service.scopesMatch(expected, actualBad), is(false));
-		
 	}
-	
-	@Test
-	public void getremoveRestrictedAndReservedScopes() {
-						
-		Set<SystemScope> restrictedAndReservedScopes = Sets.newHashSet(defaultDynScope1, defaultDynScope2, dynScope1);
-		assertThat(service.removeRestrictedAndReservedScopes(allScopes),equalTo(restrictedAndReservedScopes));
-	}
-	
-	@Test
-	public void getremoveReservedScopes() {
-		Set<SystemScope> removeReservedScopes = Sets.newHashSet(defaultDynScope2, defaultDynScope1, defaultScope2,restrictedScope1,defaultScope1,dynScope1);
-		assertThat(service.removeReservedScopes(allScopes), equalTo(removeReservedScopes));
-	}
-	
-	@Test 
-	public void getById_notfound() {
-		
-		// check null condition
-
-		assertThat(service.getById((long) 60), is(nullValue()));
-
-		
-	}
-	
-	@Test 
-	public void getByValue_notfound() {
-		
-		// check null condition
-		
-		assertThat(service.getByValue("defaultDynScope1String"), is(nullValue()));		
-		
-		
-	}
-	
-	@Test
-	public void save_null() {
-		
-		// check null condition 
-
-		assertThat(service.save(defaultScope1), is(nullValue()));
-	}
-		
-	@Test
-	public void save_value(){
-		assertThat(service.save(mySystemScope), equalTo(mySystemScope))	
-	}
-	
-	@Test
-	public void getReserveScopes() {
-		assertThat(service.getReserved(), equalTo(SystemScopeService.reservedScopes));
-
-	}
-
 
 }
