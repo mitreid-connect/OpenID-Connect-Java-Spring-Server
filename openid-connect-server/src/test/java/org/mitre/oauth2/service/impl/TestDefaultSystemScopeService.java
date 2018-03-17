@@ -90,6 +90,7 @@ public class TestDefaultSystemScopeService {
 		defaultDynScope1.setDefaultScope(true);
 		defaultDynScope2.setDefaultScope(true);
 	    mySystemScope = new SystemScope();
+	    myrSystemScope = new SystemScope();
 
 		
 		// two strictly default scopes (restricted)
