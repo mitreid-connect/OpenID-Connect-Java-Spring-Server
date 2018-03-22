@@ -3,58 +3,91 @@ package org.mitre.oauth2.service.impl;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
+
+import java.util.Date;
+import java.util.HashMap;
+
 import org.easymock.Mock;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mitre.oauth2.model.AuthenticationHolderEntity;
 import org.mitre.oauth2.model.AuthorizationCodeEntity;
+import org.mitre.oauth2.model.ClientDetailsEntity;
+import org.mitre.oauth2.model.DeviceCode;
+import org.mitre.oauth2.repository.AuthenticationHolderRepository;
 import org.mitre.oauth2.repository.AuthorizationCodeRepository;
 import org.mitre.oauth2.repository.impl.JpaAuthenticationHolderRepository;
 import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.common.util.RandomValueStringGenerator;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.OAuth2Request;
+
 
 
 @RunWith(MockitoJUnitRunner.class)
 public class TestDefaultOAuth2AuthorizationCodeService {
 	
 	
-	OAuth2Authentication authentication = Mockito.mock(OAuth2Authentication.class);
-	JpaAuthenticationHolderRepository authRepo = Mockito.mock(JpaAuthenticationHolderRepository.class);
-	
 	private String codeNotFound;
 	
+	private AuthenticationHolderEntity authHolder;
 	
+	private AuthorizationCodeEntity entity;
+	
+	//are these 3 mocks important?
 	@Mock
 	private AuthorizationCodeRepository repository;
 	
+	@Mock
+	private AuthenticationHolderRepository authenticationHolderRepository;
+	
+	
+	//following two mock suggested by justin
+	@Mock
+	private JpaAuthenticationHolderRepository  authRepo;
 	
 	@Mock
-	private AuthenticationHolderEntity authHolder;
+	private OAuth2Authentication authentication;
 	
-	@Mock
-	private AuthorizationCodeEntity entity;
+	
 
 	@InjectMocks
 	private DefaultOAuth2AuthorizationCodeService service;
+	
+	
 
 	@Before
-	public void reset() {
+	public void setUp() {
 		
 		Mockito.reset(repository);
+		Mockito.reset(authenticationHolderRepository);
 		codeNotFound = "codeNotFound";
 		Mockito.when(repository.getByCode(codeNotFound)).thenReturn(null);
+		authHolder = new AuthenticationHolderEntity();
+		authHolder.setAuthentication(authentication);
+		authenticationHolderRepository.save(authHolder);
+		entity = new AuthorizationCodeEntity();
+
 	}
 	
 	@Test
 	public void testCreateAuthorizationCode(){
-	
-	//todo
+		
+		OAuth2Request auth2Request = Mockito.mock(OAuth2Request.class);
+		Authentication authObj = Mockito.mock(Authentication.class);
+		OAuth2Authentication authentication = new OAuth2Authentication(auth2Request, authObj);
+		String code = service.createAuthorizationCode(authentication);
+		ArgumentCaptor<AuthorizationCodeEntity> argumentCaptor = ArgumentCaptor.forClass(AuthorizationCodeEntity.class);
+		Mockito.verify(repository).save(argumentCaptor.capture());
+		assertThat(argumentCaptor.getValue(), equalTo(code));
 	
 		}
 
@@ -62,7 +95,7 @@ public class TestDefaultOAuth2AuthorizationCodeService {
 	public void testConsumeAuthorizationCodeFound() {
 		
 		String code = service.createAuthorizationCode(authentication);
-		assertEquals(repository.getByCode(code),entity);
+		assertEquals(repository.getByCode(code),authHolder);
 		when(repository.save(Matchers.isA(AuthorizationCodeEntity.class))).thenReturn(entity);
 		
 	}
@@ -82,8 +115,6 @@ public class TestDefaultOAuth2AuthorizationCodeService {
 	
 	@Test
 	public void testRespositoryGetAndSet() {
-	
-		
 		service.setRepository(repository);
 		assertEquals(service.getRepository(), repository);			
 	}
