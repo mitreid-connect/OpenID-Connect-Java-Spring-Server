@@ -303,8 +303,18 @@ public class TestDefaultIntrospectionResultAssembler {
 				.build();
 		assertThat(result, is(equalTo(expected)));
 	}
+	
+	@Test(expected = ParseException.class)
+	public void testAssembleFrom_refresh() {
 
+				OAuth2RefreshTokenEntity refreshToken = refreshToken(null,
+						oauth2AuthenticationWithUser(oauth2Request("clientId", scopes("foo",  "bar")), "name"));
 
+				Set<String> authScopes = scopes("foo", "bar", "baz");
+		// this should fail with an error
+		assembler.assembleFrom(refreshToken, null , authScopes);
+
+	}
 
 	private UserInfo userInfo(String sub) {
 		UserInfo userInfo = mock(UserInfo.class);
