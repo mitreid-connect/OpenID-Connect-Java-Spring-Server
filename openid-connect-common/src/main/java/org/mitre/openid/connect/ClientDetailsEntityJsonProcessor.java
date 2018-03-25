@@ -29,6 +29,7 @@ import static org.mitre.util.JsonUtils.getAsJwsAlgorithm;
 import static org.mitre.util.JsonUtils.getAsPkceAlgorithm;
 import static org.mitre.util.JsonUtils.getAsString;
 import static org.mitre.util.JsonUtils.getAsStringSet;
+import static org.mitre.util.JsonUtils.getAsBoolean;
 
 import java.text.ParseException;
 
@@ -225,6 +226,7 @@ public class ClientDetailsEntityJsonProcessor {
 			}
 
 
+			c.setAllowIntrospection(getAsBoolean(o, "allow_introspection"));
 
 			return c;
 		} else {
