@@ -352,6 +352,7 @@ public class DynamicClientRegistrationEndpoint {
 			newClient.setClientDescription(oldClient.getClientDescription());
 			newClient.setCreatedAt(oldClient.getCreatedAt());
 			newClient.setReuseRefreshToken(oldClient.isReuseRefreshToken());
+			newClient.setAllowIntrospection(oldClient.isAllowIntrospection());
 
 			// do validation on the fields
 			try {
