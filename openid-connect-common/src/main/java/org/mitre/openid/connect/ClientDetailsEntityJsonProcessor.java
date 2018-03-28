@@ -225,8 +225,7 @@ public class ClientDetailsEntityJsonProcessor {
 				}
 			}
 
-
-			c.setAllowIntrospection(getAsBoolean(o, "allow_introspection"));
+			c.setAllowIntrospection(getAsBoolean(o, "allow_introspection") == Boolean.TRUE);
 
 			return c;
 		} else {
@@ -267,8 +266,6 @@ public class ClientDetailsEntityJsonProcessor {
 
 	/**
 	 * @param c
-	 * @param token
-	 * @param registrationUri
 	 * @return
 	 */
 	public static JsonObject serialize(RegisteredClient c) {
