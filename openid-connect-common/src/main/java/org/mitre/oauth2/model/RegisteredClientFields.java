@@ -58,4 +58,6 @@ public interface RegisteredClientFields {
 	public String CLIENT_SECRET = "client_secret";
 	public String CLIENT_ID = "client_id";
 	public String CODE_CHALLENGE_METHOD = "code_challenge_method";
+	public String CLIENT_DESCRIPTION = "client_description";
+	public String ALLOWS_INTROSPECTION = "allows_introspection";
 }

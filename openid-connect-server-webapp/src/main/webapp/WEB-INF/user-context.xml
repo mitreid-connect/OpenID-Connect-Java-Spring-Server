@@ -17,34 +17,47 @@
     limitations under the License.
  -->
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:mvc="http://www.springframework.org/schema/mvc"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:tx="http://www.springframework.org/schema/tx"
-	xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:security="http://www.springframework.org/schema/security"
-	xmlns:oauth="http://www.springframework.org/schema/security/oauth2"
-	xsi:schemaLocation="http://www.springframework.org/schema/security/oauth2 http://www.springframework.org/schema/security/spring-security-oauth2-2.0.xsd
+	   xmlns:mvc="http://www.springframework.org/schema/mvc"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:tx="http://www.springframework.org/schema/tx"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:security="http://www.springframework.org/schema/security"
+	   xmlns:oauth="http://www.springframework.org/schema/security/oauth2"
+	   xmlns:util="http://www.springframework.org/schema/util"
+	   xsi:schemaLocation="http://www.springframework.org/schema/security/oauth2 http://www.springframework.org/schema/security/spring-security-oauth2-2.0.xsd
 		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
 		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.2.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.3.xsd">
+
+	<context:component-scan annotation-config="true" base-package="org.opal" />
+
+	<bean id="ExternalAuthorizationFilter" class="org.opal.ExternalAuthorizationFilter" />
+	<bean id="ExternalAuthenticationProvider" class="org.opal.ExternalAuthenticationProvider" />
+
+	<!--util:properties id="applicationProps"  location="classpath:application.yml"/>
+	<context:property-placeholder  properties-ref="applicationProps" /-->
+
 
 	<security:authentication-manager id="authenticationManager">
+		<security:authentication-provider ref="ExternalAuthenticationProvider" />
 		<security:authentication-provider>
 			<security:jdbc-user-service data-source-ref="dataSource"/>
 		</security:authentication-provider>
 	</security:authentication-manager>
-		
+
 	<mvc:view-controller path="/login" view-name="login" />
 
-	<security:http authentication-manager-ref="authenticationManager"> 
-	
+	<security:http authentication-manager-ref="authenticationManager">
+
 		<security:intercept-url pattern="/authorize" access="hasRole('ROLE_USER')" />
 		<security:intercept-url pattern="/**" access="permitAll" />
-		
+
 		<security:form-login login-page="/login" authentication-failure-url="/login?error=failure" authentication-success-handler-ref="authenticationTimeStamper" />
 		<security:custom-filter ref="authRequestFilter" after="SECURITY_CONTEXT_FILTER" />
+		<security:custom-filter ref="ExternalAuthorizationFilter"  after="CONCURRENT_SESSION_FILTER" />
 		<security:logout logout-url="/logout" />
 		<security:anonymous />
 		<security:expression-handler ref="oauthWebExpressionHandler" />
@@ -52,6 +65,6 @@
 			<security:frame-options policy="DENY" />
 		</security:headers>
 		<security:csrf />
-	</security:http>	
+	</security:http>
 
 </beans>

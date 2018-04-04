@@ -3,6 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="o" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+
 <o:header title="Log In" />
 <script type="text/javascript">
 <!--
@@ -44,6 +45,10 @@ $(document).ready(function() {
 					<input type="submit" class="btn" value="<spring:message code="login.login-button"/>" name="submit">
 				</div>
 			</form>
+		</div>
+		<div class="span6 well">
+
+			<a href="https://github.com/login/oauth/authorize?scope=user:email&client_id=">Click here</a> to begin!</a>
 		</div>
 	</div>
 </div>
