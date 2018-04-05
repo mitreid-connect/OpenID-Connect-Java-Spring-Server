@@ -20,6 +20,7 @@ package org.mitre.oauth2.repository.impl;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -188,6 +189,22 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 		queryR.setParameter(OAuth2RefreshTokenEntity.PARAM_CLIENT, client);
 		List<OAuth2RefreshTokenEntity> refreshTokens = queryR.getResultList();
 		return refreshTokens;
+	}
+	
+	@Override
+	public Set<OAuth2AccessTokenEntity> getAccessTokensBySub(String sub) {
+		TypedQuery<OAuth2AccessTokenEntity> query = manager.createNamedQuery(OAuth2AccessTokenEntity.QUERY_BY_SUB, OAuth2AccessTokenEntity.class);
+	    query.setParameter(OAuth2AccessTokenEntity.PARAM_SUB, sub);
+	    List<OAuth2AccessTokenEntity> results = query.getResultList();
+	    return results != null ? new HashSet<>(query.getResultList()) : new HashSet<>();
+	}
+	
+	@Override
+	public Set<OAuth2RefreshTokenEntity> getRefreshTokensBySub(String sub) {
+		TypedQuery<OAuth2RefreshTokenEntity> query = manager.createNamedQuery(OAuth2RefreshTokenEntity.QUERY_BY_SUB, OAuth2RefreshTokenEntity.class);
+	    query.setParameter(OAuth2RefreshTokenEntity.PARAM_SUB, sub);
+	    List<OAuth2RefreshTokenEntity> results = query.getResultList();
+	    return results != null ? new HashSet<>(query.getResultList()) : new HashSet<>();
 	}
 
 	@Override
