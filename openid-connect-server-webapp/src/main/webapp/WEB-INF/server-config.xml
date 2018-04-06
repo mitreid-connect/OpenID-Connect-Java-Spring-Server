@@ -33,7 +33,7 @@
 	<bean id="configBean" class="org.mitre.openid.connect.config.ConfigurationPropertiesBean">
 	    
 	    <!-- This property sets the root URL of the server, known as the issuer -->
-		<property name="issuer" value="http://localhost:8080/openid-connect-server-webapp/" />
+		<property name="issuer" value="http://localhost:8080" />
 		
 		<!-- This property is a URL pointing to a logo image 24px high to be used in the top bar -->
  		<property name="logoImageUrl" value="resources/images/openid_connect_small.png" />

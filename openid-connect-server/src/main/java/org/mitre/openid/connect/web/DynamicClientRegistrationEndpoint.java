@@ -229,7 +229,7 @@ public class DynamicClientRegistrationEndpoint {
 			newClient.setDynamicallyRegistered(true);
 
 			// this client can't do token introspection
-			newClient.setAllowIntrospection(false);
+			//newClient.setAllowIntrospection(false);
 
 			// now save it
 			try {
