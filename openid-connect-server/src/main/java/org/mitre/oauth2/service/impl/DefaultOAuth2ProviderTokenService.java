@@ -170,7 +170,6 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 				throw new InvalidClientException("Client not found: " + request.getClientId());
 			}
 
-
 			// handle the PKCE code challenge if present
 			if (request.getExtensions().containsKey(CODE_CHALLENGE)) {
 				String challenge = (String) request.getExtensions().get(CODE_CHALLENGE);
@@ -197,7 +196,6 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 				}
 
 			}
-
 
 			OAuth2AccessTokenEntity token = new OAuth2AccessTokenEntity();//accessTokenFactory.createNewAccessToken();
 
@@ -283,8 +281,6 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		//Add the authentication
 		refreshToken.setAuthenticationHolder(authHolder);
 		refreshToken.setClient(client);
-
-
 
 		// save the token first so that we can set it to a member of the access token (NOTE: is this step necessary?)
 		OAuth2RefreshTokenEntity savedRefreshToken = tokenRepository.saveRefreshToken(refreshToken);
@@ -388,12 +384,10 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		tokenRepository.saveAccessToken(token);
 
 		return token;
-
 	}
 
 	@Override
 	public OAuth2Authentication loadAuthentication(String accessTokenValue) throws AuthenticationException {
-
 		OAuth2AccessTokenEntity accessToken = clearExpiredAccessToken(tokenRepository.getAccessTokenByValue(accessTokenValue));
 
 		if (accessToken == null) {
@@ -459,18 +453,11 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 		tokenRepository.removeAccessToken(accessToken);
 	}
 
-
-	/* (non-Javadoc)
-	 * @see org.mitre.oauth2.service.OAuth2TokenEntityService#getAccessTokensForClient(org.mitre.oauth2.model.ClientDetailsEntity)
-	 */
 	@Override
 	public List<OAuth2AccessTokenEntity> getAccessTokensForClient(ClientDetailsEntity client) {
 		return tokenRepository.getAccessTokensForClient(client);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.mitre.oauth2.service.OAuth2TokenEntityService#getRefreshTokensForClient(org.mitre.oauth2.model.ClientDetailsEntity)
-	 */
 	@Override
 	public List<OAuth2RefreshTokenEntity> getRefreshTokensForClient(ClientDetailsEntity client) {
 		return tokenRepository.getRefreshTokensForClient(client);
@@ -573,7 +560,4 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 
 		return null;
 	}
-
-
-
 }
