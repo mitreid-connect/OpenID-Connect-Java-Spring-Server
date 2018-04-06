@@ -102,13 +102,13 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	private ApprovedSiteService approvedSiteService;
 
 	@Override
-	public Set<OAuth2AccessTokenEntity> getAllAccessTokensForUser(String sub) {
-		return tokenRepository.getAccessTokensBySub(sub);
+	public Set<OAuth2AccessTokenEntity> getAllAccessTokensForUser(String userName) {
+		return tokenRepository.getAccessTokensByUserName(userName);
 	}
 
 	@Override
-	public Set<OAuth2RefreshTokenEntity> getAllRefreshTokensForUser(String sub) {
-		return tokenRepository.getRefreshTokensBySub(sub);
+	public Set<OAuth2RefreshTokenEntity> getAllRefreshTokensForUser(String userName) {
+		return tokenRepository.getRefreshTokensByUserName(userName);
 	}
 
 	@Override
