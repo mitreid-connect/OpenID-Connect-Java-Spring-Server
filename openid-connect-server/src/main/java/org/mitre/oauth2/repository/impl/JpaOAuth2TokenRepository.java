@@ -186,17 +186,17 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	}
 	
 	@Override
-	public Set<OAuth2AccessTokenEntity> getAccessTokensBySub(String sub) {
-		TypedQuery<OAuth2AccessTokenEntity> query = manager.createNamedQuery(OAuth2AccessTokenEntity.QUERY_BY_SUB, OAuth2AccessTokenEntity.class);
-	    query.setParameter(OAuth2AccessTokenEntity.PARAM_SUB, sub);
+	public Set<OAuth2AccessTokenEntity> getAccessTokensByUserName(String name) {
+		TypedQuery<OAuth2AccessTokenEntity> query = manager.createNamedQuery(OAuth2AccessTokenEntity.QUERY_BY_NAME, OAuth2AccessTokenEntity.class);
+	    query.setParameter(OAuth2AccessTokenEntity.PARAM_NAME, name);
 	    List<OAuth2AccessTokenEntity> results = query.getResultList();
 	    return results != null ? new HashSet<>(query.getResultList()) : new HashSet<>();
 	}
 	
 	@Override
-	public Set<OAuth2RefreshTokenEntity> getRefreshTokensBySub(String sub) {
-		TypedQuery<OAuth2RefreshTokenEntity> query = manager.createNamedQuery(OAuth2RefreshTokenEntity.QUERY_BY_SUB, OAuth2RefreshTokenEntity.class);
-	    query.setParameter(OAuth2RefreshTokenEntity.PARAM_SUB, sub);
+	public Set<OAuth2RefreshTokenEntity> getRefreshTokensByUserName(String name) {
+		TypedQuery<OAuth2RefreshTokenEntity> query = manager.createNamedQuery(OAuth2RefreshTokenEntity.QUERY_BY_NAME, OAuth2RefreshTokenEntity.class);
+	    query.setParameter(OAuth2RefreshTokenEntity.PARAM_NAME, name);
 	    List<OAuth2RefreshTokenEntity> results = query.getResultList();
 	    return results != null ? new HashSet<>(query.getResultList()) : new HashSet<>();
 	}

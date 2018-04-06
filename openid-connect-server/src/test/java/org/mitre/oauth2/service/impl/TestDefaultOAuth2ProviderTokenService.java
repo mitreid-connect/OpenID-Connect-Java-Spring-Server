@@ -21,7 +21,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -63,7 +62,6 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -88,7 +86,7 @@ public class TestDefaultOAuth2ProviderTokenService {
 	private OAuth2RefreshTokenEntity refreshToken;
 	private OAuth2AccessTokenEntity accessToken;
 	private String refreshTokenValue = "refresh_token_value";
-	private String userSub = "6a50ac11786d402a9591d3e592ac770f";
+	private String userName = "6a50ac11786d402a9591d3e592ac770f";
 	private TokenRequest tokenRequest;
 
 	// for use when refreshing access tokens
@@ -552,18 +550,18 @@ public class TestDefaultOAuth2ProviderTokenService {
 	
 	@Test
 	public void getAllAccessTokensForUser(){
-		Mockito.when(tokenRepository.getAccessTokensBySub(userSub)).thenReturn(newHashSet(accessToken));
+		Mockito.when(tokenRepository.getAccessTokensByUserName(userName)).thenReturn(newHashSet(accessToken));
 		
-		Set<OAuth2AccessTokenEntity> tokens = service.getAllAccessTokensForUser(userSub);
+		Set<OAuth2AccessTokenEntity> tokens = service.getAllAccessTokensForUser(userName);
 		assertEquals(1, tokens.size());
 		assertTrue(tokens.contains(accessToken));
 	}
 	
 	@Test
 	public void getAllRefreshTokensForUser(){
-		Mockito.when(tokenRepository.getRefreshTokensBySub(userSub)).thenReturn(newHashSet(refreshToken));
+		Mockito.when(tokenRepository.getRefreshTokensByUserName(userName)).thenReturn(newHashSet(refreshToken));
 		
-		Set<OAuth2RefreshTokenEntity> tokens = service.getAllRefreshTokensForUser(userSub);
+		Set<OAuth2RefreshTokenEntity> tokens = service.getAllRefreshTokensForUser(userName);
 		assertEquals(1, tokens.size());
 		assertTrue(tokens.contains(refreshToken));
 	}
