@@ -66,7 +66,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Sets;
 import com.nimbusds.jose.util.Base64URL;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.PlainJWT;
@@ -102,35 +101,14 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 	@Autowired
 	private ApprovedSiteService approvedSiteService;
 
-
 	@Override
-	public Set<OAuth2AccessTokenEntity> getAllAccessTokensForUser(String id) {
-
-		Set<OAuth2AccessTokenEntity> all = tokenRepository.getAllAccessTokens();
-		Set<OAuth2AccessTokenEntity> results = Sets.newLinkedHashSet();
-
-		for (OAuth2AccessTokenEntity token : all) {
-			if (clearExpiredAccessToken(token) != null && token.getAuthenticationHolder().getAuthentication().getName().equals(id)) {
-				results.add(token);
-			}
-		}
-
-		return results;
+	public Set<OAuth2AccessTokenEntity> getAllAccessTokensForUser(String sub) {
+		return tokenRepository.getAccessTokensBySub(sub);
 	}
 
-
 	@Override
-	public Set<OAuth2RefreshTokenEntity> getAllRefreshTokensForUser(String id) {
-		Set<OAuth2RefreshTokenEntity> all = tokenRepository.getAllRefreshTokens();
-		Set<OAuth2RefreshTokenEntity> results = Sets.newLinkedHashSet();
-
-		for (OAuth2RefreshTokenEntity token : all) {
-			if (clearExpiredRefreshToken(token) != null && token.getAuthenticationHolder().getAuthentication().getName().equals(id)) {
-				results.add(token);
-			}
-		}
-
-		return results;
+	public Set<OAuth2RefreshTokenEntity> getAllRefreshTokensForUser(String sub) {
+		return tokenRepository.getRefreshTokensBySub(sub);
 	}
 
 	@Override
