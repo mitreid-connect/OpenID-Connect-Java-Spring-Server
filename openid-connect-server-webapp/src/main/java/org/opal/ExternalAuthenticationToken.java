@@ -18,6 +18,7 @@ public class ExternalAuthenticationToken extends UsernamePasswordAuthenticationT
 	private String code;
 	private String state;
 	private String issuer;
+	private String clientId;
 	
 	public Boolean isExternalAuthentication() {
 		return this.externalAuthentication;
@@ -46,5 +47,14 @@ public class ExternalAuthenticationToken extends UsernamePasswordAuthenticationT
 	public void setIssuer(String issuer) {
 		this.issuer = issuer;
 	}
+
+	public String getClientId() {
+		return clientId;
+	}
+
+	public void setClientId(String clientId) {
+		this.clientId = clientId;
+	}
+	
 
 }

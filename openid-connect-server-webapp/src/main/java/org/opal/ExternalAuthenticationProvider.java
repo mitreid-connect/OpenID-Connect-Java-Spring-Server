@@ -1,6 +1,7 @@
 package org.opal;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import org.mitre.openid.connect.model.DefaultUserInfo;
 import org.mitre.openid.connect.model.UserInfo;
@@ -45,6 +46,7 @@ public class ExternalAuthenticationProvider implements AuthenticationProvider {
 			String code = t.getCode();
 			String state = t.getState();
 			String issuer = t.getIssuer();
+			String clientId = t.getClientId();
 			
 			// 1. Get Access Token
 			JsonObject respParams = authManager.getAccessToken(issuer, code, state);
@@ -76,10 +78,23 @@ public class ExternalAuthenticationProvider implements AuthenticationProvider {
 			}
 			
 			// 4. Store FIAccess
-			FIAccess fAccess = new FIAccess();
-			fAccess.setClientId(issuer);
-			fAccess.setCreatorUserId(user.getSub());
-			fAccess.setSessionInfo(respParams.toString());
+			FIAccess fAccess = crudRepository.getFIAccess(username, clientId, issuer);
+			if(fAccess == null) {
+				fAccess = new FIAccess();
+				fAccess.setIssuer(issuer);
+				fAccess.setClientId(clientId);
+				fAccess.setCreatorUserId(username);
+			}
+			fAccess.setAccessToken(access_token);
+			//Let's comment it for now
+			//fAccess.setSessionInfo(respParams.toString());
+			if(respParams.has("refresh_token")) {
+				fAccess.setRefreshToken(respParams.getAsJsonPrimitive("refresh_token").getAsString());
+			}
+			if(respParams.has("expiration")) {
+				fAccess.setExpiration(new Date(respParams.getAsJsonPrimitive("expiration").getAsLong()));	
+			}
+			//respParams.getAsJsonPrimitive("access_token").getAsString();
 			crudRepository.saveFIAccess(fAccess);
 			
 			ArrayList<GrantedAuthority> grantedAuthorities = new ArrayList<>();

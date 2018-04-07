@@ -2,6 +2,8 @@ package org.opal.web;
 
 import java.util.List;
 
+import javax.servlet.http.HttpSession;
+
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.service.ClientDetailsEntityService;
 import org.mitre.oauth2.service.SystemScopeService;
@@ -21,6 +23,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -56,9 +59,9 @@ public class FIAccessEndpoint {
 	 */
 	@PreAuthorize("hasRole('ROLE_USER') and #oauth2.hasScope('" + SystemScopeService.OPENID_SCOPE + "')")
 	@RequestMapping(method= {RequestMethod.GET, RequestMethod.POST}, produces = {MediaType.APPLICATION_JSON_VALUE})
-	public String getFIAccess(@RequestParam(value="issuer", required=false) String issuer,
+	public String getFIAccess(@RequestParam(value="issuer", required=true) String issuer,
 			@RequestHeader(value=HttpHeaders.ACCEPT, required=false) String acceptHeader,
-			AbstractAuthenticationToken authentication) {
+			AbstractAuthenticationToken authentication, HttpSession session) {
 
 		OAuth2Authentication auth = null;
 		JsonObject model = new JsonObject();
@@ -79,7 +82,14 @@ public class FIAccessEndpoint {
 		}
 
 		String username = auth.getName();
-		String clientId = auth.getOAuth2Request().getClientId();
+		OAuth2Request oauth2Req = auth.getOAuth2Request();
+		if(oauth2Req == null) {
+			message = "FIAccess failed. no OAuth2Request.";
+			logger.error(message);
+			model.addProperty("error", message);
+			return model.toString();
+		}
+		String clientId = oauth2Req.getClientId();
 		UserInfo userInfo = userInfoService.getByUsernameAndClientId(username, clientId);
 
 		if (userInfo == null) {
@@ -93,9 +103,18 @@ public class FIAccessEndpoint {
 		model.add(UserInfoView.USER_INFO, userInfo.toJson());
 		model.addProperty(UserInfoJWTView.CLIENT, clientId);
 
-		FIAccess fiAccess = crudRepository.getFIAccessByUsernameAndClientId(username, clientId);
-		if(fiAccess!=null) {
-			model.addProperty("SESSION_INFO", fiAccess.getSessionInfo());
+		try {
+			FIAccess lastAccess = crudRepository.getFIAccess(username, clientId, issuer);
+			if(lastAccess!=null) {
+				model.addProperty("FI_ACCESS_TOKEN", lastAccess.getAccessToken());
+				model.addProperty("FI_REFRESH_TOKEN", lastAccess.getRefreshToken());
+				if(lastAccess.getExpiration()!=null) {
+					model.addProperty("FI_EXPIRATION", lastAccess.getExpiration().getTime());
+				}
+				model.addProperty("FI_SESSION_INFO", lastAccess.getSessionInfo());
+			}
+		}catch(IllegalStateException isEx) {
+			model.addProperty("FI_SESSION_INFO", "Error; multiple records.");
 		}
 		return model.toString();
 	}
