@@ -94,7 +94,9 @@ public class FIAccessEndpoint {
 		model.addProperty(UserInfoJWTView.CLIENT, clientId);
 
 		FIAccess fiAccess = crudRepository.getFIAccessByUsernameAndClientId(username, clientId);
-		model.addProperty("SESSION_INFO", fiAccess.getSessionInfo());
+		if(fiAccess!=null) {
+			model.addProperty("SESSION_INFO", fiAccess.getSessionInfo());
+		}
 		return model.toString();
 	}
 }
