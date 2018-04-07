@@ -23,28 +23,67 @@
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:security="http://www.springframework.org/schema/security"
 	xmlns:oauth="http://www.springframework.org/schema/security/oauth2"
+	xmlns:util="http://www.springframework.org/schema/util"
 	xsi:schemaLocation="http://www.springframework.org/schema/security/oauth2 http://www.springframework.org/schema/security/spring-security-oauth2-2.0.xsd
 		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
 		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.2.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.3.xsd">
 
+	<context:component-scan annotation-config="true" base-package="org.opal" />
+	<bean id="githubAuthority" class="org.opal.config.ExternalAuthorities">
+		<property name="client_id" value="cd3196686dbc4c64915d" />
+		<property name="client_secret" value="666b173ef1ebfd48faf12265d6c6f7f8a611d64d" />
+		<property name="access_token_uri" value="https://github.com/login/oauth/access_token" />
+		<property name="user_info_uri" value="https://api.github.com/user" />
+		<property name="user_authorization_uri" value="https://github.com/login/oauth/authorize"/>
+		<property name="client_authentication_scheme" value="form"/>
+	</bean>
+	<bean id="externalAuthenticationManager" class="org.opal.config.ExternalAuthenticationManager">
+		<property name="authorities">
+			<map>
+				<entry key="github" value-ref="githubAuthority"/>
+			</map>
+		</property>
+	</bean>
+	<bean id="crudUserInfo" class="org.opal.data.CrudRepository" />
+	<bean id="githubMatcher" class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
+		<constructor-arg name="pattern" value="/login/github"/>
+		<constructor-arg name="httpMethod" value="GET"/>
+		<constructor-arg name="caseSensitive" value="true"/>
+	</bean>
+	
+	<bean id="ExternalAuthorizationFilter" class="org.opal.ExternalAuthorizationFilter" >
+		<constructor-arg name="requestMatcher" ref="githubMatcher" />
+		<constructor-arg name="issuer" value="github"/>
+	</bean>
+	<bean id="ExternalAuthenticationProvider" class="org.opal.ExternalAuthenticationProvider" />
+  
 	<security:authentication-manager id="authenticationManager">
+		<security:authentication-provider ref="ExternalAuthenticationProvider" />
 		<security:authentication-provider>
 			<security:jdbc-user-service data-source-ref="dataSource"/>
 		</security:authentication-provider>
 	</security:authentication-manager>
 		
 	<mvc:view-controller path="/login" view-name="login" />
+	<security:http pattern="/#{T(org.opal.web.FIAccessEndpoint).VIEWNAME}**" use-expressions="true" entry-point-ref="oauthAuthenticationEntryPoint" create-session="stateless">
+		<security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER" />
+		<security:custom-filter ref="corsFilter" after="SECURITY_CONTEXT_FILTER" />
+		<security:expression-handler ref="oauthWebExpressionHandler" />
+		<security:csrf disabled="true"/>
+	</security:http>
 
 	<security:http authentication-manager-ref="authenticationManager"> 
 	
 		<security:intercept-url pattern="/authorize" access="hasRole('ROLE_USER')" />
 		<security:intercept-url pattern="/**" access="permitAll" />
-		
+
 		<security:form-login login-page="/login" authentication-failure-url="/login?error=failure" authentication-success-handler-ref="authenticationTimeStamper" />
 		<security:custom-filter ref="authRequestFilter" after="SECURITY_CONTEXT_FILTER" />
+		<security:custom-filter ref="ExternalAuthorizationFilter"  after="CONCURRENT_SESSION_FILTER" />
 		<security:logout logout-url="/logout" />
 		<security:anonymous />
 		<security:expression-handler ref="oauthWebExpressionHandler" />

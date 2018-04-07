@@ -29,6 +29,7 @@ import static org.mitre.util.JsonUtils.getAsJwsAlgorithm;
 import static org.mitre.util.JsonUtils.getAsPkceAlgorithm;
 import static org.mitre.util.JsonUtils.getAsString;
 import static org.mitre.util.JsonUtils.getAsStringSet;
+import static org.mitre.util.JsonUtils.getAsBoolean;
 
 import java.text.ParseException;
 
@@ -56,6 +57,8 @@ import static org.mitre.oauth2.model.RegisteredClientFields.CLAIMS_REDIRECT_URIS
 import static org.mitre.oauth2.model.RegisteredClientFields.CLIENT_ID;
 import static org.mitre.oauth2.model.RegisteredClientFields.CLIENT_ID_ISSUED_AT;
 import static org.mitre.oauth2.model.RegisteredClientFields.CLIENT_NAME;
+import static org.mitre.oauth2.model.RegisteredClientFields.CLIENT_DESCRIPTION;
+import static org.mitre.oauth2.model.RegisteredClientFields.ALLOWS_INTROSPECTION;
 import static org.mitre.oauth2.model.RegisteredClientFields.CLIENT_SECRET;
 import static org.mitre.oauth2.model.RegisteredClientFields.CLIENT_SECRET_EXPIRES_AT;
 import static org.mitre.oauth2.model.RegisteredClientFields.CLIENT_URI;
@@ -128,6 +131,8 @@ public class ClientDetailsEntityJsonProcessor {
 			c.setClientId(getAsString(o, CLIENT_ID));
 			c.setClientSecret(getAsString(o, CLIENT_SECRET));
 
+			// other client fields
+			c.setClientDescription(getAsString(o, CLIENT_DESCRIPTION));
 			// OAuth DynReg
 			c.setRedirectUris(getAsStringSet(o, REDIRECT_URIS));
 			c.setClientName(getAsString(o, CLIENT_NAME));
@@ -224,7 +229,7 @@ public class ClientDetailsEntityJsonProcessor {
 				}
 			}
 
-
+			c.setAllowIntrospection(getAsBoolean(o, ALLOWS_INTROSPECTION) == Boolean.TRUE);
 
 			return c;
 		} else {
@@ -265,8 +270,6 @@ public class ClientDetailsEntityJsonProcessor {
 
 	/**
 	 * @param c
-	 * @param token
-	 * @param registrationUri
 	 * @return
 	 */
 	public static JsonObject serialize(RegisteredClient c) {
