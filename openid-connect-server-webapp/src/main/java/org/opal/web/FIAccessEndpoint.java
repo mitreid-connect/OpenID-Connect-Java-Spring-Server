@@ -54,7 +54,7 @@ public class FIAccessEndpoint {
 	/**
 	 * Get information about the user as specified in the accessToken included in this request
 	 */
-	@PreAuthorize("hasRole('ROLE_USER')") // and #oauth2.hasScope('" + SystemScopeService.OPENID_SCOPE + "')")
+	@PreAuthorize("hasRole('ROLE_USER') and #oauth2.hasScope('" + SystemScopeService.OPENID_SCOPE + "')")
 	@RequestMapping(method= {RequestMethod.GET, RequestMethod.POST}, produces = {MediaType.APPLICATION_JSON_VALUE})
 	public String getFIAccess(@RequestParam(value="issuer", required=false) String issuer,
 			@RequestHeader(value=HttpHeaders.ACCEPT, required=false) String acceptHeader,
