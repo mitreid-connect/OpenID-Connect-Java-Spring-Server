@@ -55,7 +55,7 @@ public class TestDefaultSystemScopeService {
 	private SystemScope dynScope1;
 	private SystemScope restrictedScope1;
 	private SystemScope mySystemScope;
-	private SystemScope myrSystemScope;
+	private SystemScope mysavedSystemScope;
 	
 	private String defaultDynScope1String = "defaultDynScope1";
 	private String defaultDynScope2String = "defaultDynScope2";
@@ -63,6 +63,7 @@ public class TestDefaultSystemScopeService {
 	private String defaultScope2String = "defaultScope2";
 	private String dynScope1String = "dynScope1";
 	private String restrictedScope1String = "restrictedScope1";
+	private String mysavedSystemScopeString = "mysavedSystemScope";
 
 	private Set<SystemScope> allScopes;
 	private Set<String> allScopeStrings;
@@ -90,7 +91,7 @@ public class TestDefaultSystemScopeService {
 		defaultDynScope1.setDefaultScope(true);
 		defaultDynScope2.setDefaultScope(true);
 	    mySystemScope = new SystemScope();
-	    myrSystemScope = new SystemScope();
+	    mysavedSystemScope = new SystemScope(mysavedSystemScopeString);
 
 		
 		// two strictly default scopes (restricted)
@@ -123,7 +124,7 @@ public class TestDefaultSystemScopeService {
 		Mockito.when(repository.getByValue(restrictedScope1String)).thenReturn(restrictedScope1);
 
 		Mockito.when(repository.getAll()).thenReturn(allScopes);
-		Mockito.when(repository.save(mySystemScope)).thenReturn(myrSystemScope);
+		Mockito.when(repository.save(mySystemScope)).thenReturn(mysavedSystemScope);
 
 	}
 
@@ -239,7 +240,7 @@ public class TestDefaultSystemScopeService {
 	
 	@Test
 	public void save_value() {
-		assertThat(service.save(mySystemScope), equalTo(myrSystemScope));
+		assertThat(service.save(mySystemScope), equalTo(mysavedSystemScope));
 	}
 	
 	@Test
