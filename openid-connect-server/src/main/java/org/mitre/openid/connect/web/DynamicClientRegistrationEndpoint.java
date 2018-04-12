@@ -17,6 +17,45 @@
  *******************************************************************************/
 package org.mitre.openid.connect.web;
 
+import static org.mitre.oauth2.model.RegisteredClientFields.APPLICATION_TYPE;
+import static org.mitre.oauth2.model.RegisteredClientFields.CLAIMS_REDIRECT_URIS;
+import static org.mitre.oauth2.model.RegisteredClientFields.CLIENT_ID;
+import static org.mitre.oauth2.model.RegisteredClientFields.CLIENT_ID_ISSUED_AT;
+import static org.mitre.oauth2.model.RegisteredClientFields.CLIENT_NAME;
+import static org.mitre.oauth2.model.RegisteredClientFields.CLIENT_SECRET;
+import static org.mitre.oauth2.model.RegisteredClientFields.CLIENT_SECRET_EXPIRES_AT;
+import static org.mitre.oauth2.model.RegisteredClientFields.CLIENT_URI;
+import static org.mitre.oauth2.model.RegisteredClientFields.CONTACTS;
+import static org.mitre.oauth2.model.RegisteredClientFields.DEFAULT_ACR_VALUES;
+import static org.mitre.oauth2.model.RegisteredClientFields.DEFAULT_MAX_AGE;
+import static org.mitre.oauth2.model.RegisteredClientFields.GRANT_TYPES;
+import static org.mitre.oauth2.model.RegisteredClientFields.ID_TOKEN_ENCRYPTED_RESPONSE_ALG;
+import static org.mitre.oauth2.model.RegisteredClientFields.ID_TOKEN_ENCRYPTED_RESPONSE_ENC;
+import static org.mitre.oauth2.model.RegisteredClientFields.ID_TOKEN_SIGNED_RESPONSE_ALG;
+import static org.mitre.oauth2.model.RegisteredClientFields.INITIATE_LOGIN_URI;
+import static org.mitre.oauth2.model.RegisteredClientFields.JWKS;
+import static org.mitre.oauth2.model.RegisteredClientFields.JWKS_URI;
+import static org.mitre.oauth2.model.RegisteredClientFields.LOGO_URI;
+import static org.mitre.oauth2.model.RegisteredClientFields.POLICY_URI;
+import static org.mitre.oauth2.model.RegisteredClientFields.POST_LOGOUT_REDIRECT_URIS;
+import static org.mitre.oauth2.model.RegisteredClientFields.REDIRECT_URIS;
+import static org.mitre.oauth2.model.RegisteredClientFields.REGISTRATION_ACCESS_TOKEN;
+import static org.mitre.oauth2.model.RegisteredClientFields.REGISTRATION_CLIENT_URI;
+import static org.mitre.oauth2.model.RegisteredClientFields.REQUEST_OBJECT_SIGNING_ALG;
+import static org.mitre.oauth2.model.RegisteredClientFields.REQUEST_URIS;
+import static org.mitre.oauth2.model.RegisteredClientFields.REQUIRE_AUTH_TIME;
+import static org.mitre.oauth2.model.RegisteredClientFields.RESPONSE_TYPES;
+import static org.mitre.oauth2.model.RegisteredClientFields.SCOPE;
+import static org.mitre.oauth2.model.RegisteredClientFields.SECTOR_IDENTIFIER_URI;
+import static org.mitre.oauth2.model.RegisteredClientFields.SOFTWARE_STATEMENT;
+import static org.mitre.oauth2.model.RegisteredClientFields.SUBJECT_TYPE;
+import static org.mitre.oauth2.model.RegisteredClientFields.TOKEN_ENDPOINT_AUTH_METHOD;
+import static org.mitre.oauth2.model.RegisteredClientFields.TOKEN_ENDPOINT_AUTH_SIGNING_ALG;
+import static org.mitre.oauth2.model.RegisteredClientFields.TOS_URI;
+import static org.mitre.oauth2.model.RegisteredClientFields.USERINFO_ENCRYPTED_RESPONSE_ALG;
+import static org.mitre.oauth2.model.RegisteredClientFields.USERINFO_ENCRYPTED_RESPONSE_ENC;
+import static org.mitre.oauth2.model.RegisteredClientFields.USERINFO_SIGNED_RESPONSE_ALG;
+
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 import java.util.Date;
@@ -71,45 +110,6 @@ import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jwt.JWTClaimsSet;
 
-import static org.mitre.oauth2.model.RegisteredClientFields.APPLICATION_TYPE;
-import static org.mitre.oauth2.model.RegisteredClientFields.CLAIMS_REDIRECT_URIS;
-import static org.mitre.oauth2.model.RegisteredClientFields.CLIENT_ID;
-import static org.mitre.oauth2.model.RegisteredClientFields.CLIENT_ID_ISSUED_AT;
-import static org.mitre.oauth2.model.RegisteredClientFields.CLIENT_NAME;
-import static org.mitre.oauth2.model.RegisteredClientFields.CLIENT_SECRET;
-import static org.mitre.oauth2.model.RegisteredClientFields.CLIENT_SECRET_EXPIRES_AT;
-import static org.mitre.oauth2.model.RegisteredClientFields.CLIENT_URI;
-import static org.mitre.oauth2.model.RegisteredClientFields.CONTACTS;
-import static org.mitre.oauth2.model.RegisteredClientFields.DEFAULT_ACR_VALUES;
-import static org.mitre.oauth2.model.RegisteredClientFields.DEFAULT_MAX_AGE;
-import static org.mitre.oauth2.model.RegisteredClientFields.GRANT_TYPES;
-import static org.mitre.oauth2.model.RegisteredClientFields.ID_TOKEN_ENCRYPTED_RESPONSE_ALG;
-import static org.mitre.oauth2.model.RegisteredClientFields.ID_TOKEN_ENCRYPTED_RESPONSE_ENC;
-import static org.mitre.oauth2.model.RegisteredClientFields.ID_TOKEN_SIGNED_RESPONSE_ALG;
-import static org.mitre.oauth2.model.RegisteredClientFields.INITIATE_LOGIN_URI;
-import static org.mitre.oauth2.model.RegisteredClientFields.JWKS;
-import static org.mitre.oauth2.model.RegisteredClientFields.JWKS_URI;
-import static org.mitre.oauth2.model.RegisteredClientFields.LOGO_URI;
-import static org.mitre.oauth2.model.RegisteredClientFields.POLICY_URI;
-import static org.mitre.oauth2.model.RegisteredClientFields.POST_LOGOUT_REDIRECT_URIS;
-import static org.mitre.oauth2.model.RegisteredClientFields.REDIRECT_URIS;
-import static org.mitre.oauth2.model.RegisteredClientFields.REGISTRATION_ACCESS_TOKEN;
-import static org.mitre.oauth2.model.RegisteredClientFields.REGISTRATION_CLIENT_URI;
-import static org.mitre.oauth2.model.RegisteredClientFields.REQUEST_OBJECT_SIGNING_ALG;
-import static org.mitre.oauth2.model.RegisteredClientFields.REQUEST_URIS;
-import static org.mitre.oauth2.model.RegisteredClientFields.REQUIRE_AUTH_TIME;
-import static org.mitre.oauth2.model.RegisteredClientFields.RESPONSE_TYPES;
-import static org.mitre.oauth2.model.RegisteredClientFields.SCOPE;
-import static org.mitre.oauth2.model.RegisteredClientFields.SECTOR_IDENTIFIER_URI;
-import static org.mitre.oauth2.model.RegisteredClientFields.SOFTWARE_STATEMENT;
-import static org.mitre.oauth2.model.RegisteredClientFields.SUBJECT_TYPE;
-import static org.mitre.oauth2.model.RegisteredClientFields.TOKEN_ENDPOINT_AUTH_METHOD;
-import static org.mitre.oauth2.model.RegisteredClientFields.TOKEN_ENDPOINT_AUTH_SIGNING_ALG;
-import static org.mitre.oauth2.model.RegisteredClientFields.TOS_URI;
-import static org.mitre.oauth2.model.RegisteredClientFields.USERINFO_ENCRYPTED_RESPONSE_ALG;
-import static org.mitre.oauth2.model.RegisteredClientFields.USERINFO_ENCRYPTED_RESPONSE_ENC;
-import static org.mitre.oauth2.model.RegisteredClientFields.USERINFO_SIGNED_RESPONSE_ALG;
-
 @Controller
 @RequestMapping(value = DynamicClientRegistrationEndpoint.URL)
 public class DynamicClientRegistrationEndpoint {
@@ -143,6 +143,10 @@ public class DynamicClientRegistrationEndpoint {
 	 */
 	private static final Logger logger = LoggerFactory.getLogger(DynamicClientRegistrationEndpoint.class);
 
+	public static final ImmutableSet<String> ALLOWED_GRANT_TYPES = ImmutableSet.of(
+	    "authorization_code", "implicit", "client_credentials", "refresh_token", 
+	    "urn:ietf:params:oauth:grant_type:redelegate", 
+	    "urn:ietf:params:oauth:grant-type:device_code");
 	/**
 	 * Create a new Client, issue a client ID, and create a registration access token.
 	 * @param jsonString
@@ -175,6 +179,10 @@ public class DynamicClientRegistrationEndpoint {
 			newClient.setClientId(null);
 			newClient.setClientSecret(null);
 
+			Set<String> requestedGrantTypes = newClient.getGrantTypes();
+            requestedGrantTypes.retainAll(ALLOWED_GRANT_TYPES);
+            newClient.setGrantTypes(requestedGrantTypes);
+            
 			// do validation on the fields
 			try {
 				newClient = validateSoftwareStatement(newClient); // need to handle the software statement first because it might override requested values
@@ -353,6 +361,13 @@ public class DynamicClientRegistrationEndpoint {
 			newClient.setCreatedAt(oldClient.getCreatedAt());
 			newClient.setReuseRefreshToken(oldClient.isReuseRefreshToken());
 
+			Set<String> requestedGrantTypes = newClient.getGrantTypes();
+			requestedGrantTypes.retainAll(ALLOWED_GRANT_TYPES);
+			newClient.setGrantTypes(requestedGrantTypes);
+			
+			Set<String> oldClientGrantedGrantTypes = oldClient.getGrantTypes();
+			oldClientGrantedGrantTypes.removeAll(ALLOWED_GRANT_TYPES);
+			
 			// do validation on the fields
 			try {
 				newClient = validateSoftwareStatement(newClient); // need to handle the software statement first because it might override requested values
@@ -370,6 +385,11 @@ public class DynamicClientRegistrationEndpoint {
 			}
 
 			try {
+			  
+			    if (!oldClientGrantedGrantTypes.isEmpty()) {
+			      newClient.getGrantTypes().addAll(oldClientGrantedGrantTypes);
+			    }
+			    
 				// save the client
 				ClientDetailsEntity savedClient = clientService.updateClient(oldClient, newClient);
 
@@ -459,7 +479,8 @@ public class DynamicClientRegistrationEndpoint {
 		return newClient;
 	}
 
-	private ClientDetailsEntity validateGrantTypes(ClientDetailsEntity newClient) throws ValidationException {
+	private ClientDetailsEntity validateGrantTypes(ClientDetailsEntity newClient) 
+	    throws ValidationException {
 		// set default grant types if needed
 		if (newClient.getGrantTypes() == null || newClient.getGrantTypes().isEmpty()) {
 			if (newClient.getScope().contains("offline_access")) { // client asked for offline access
@@ -473,14 +494,6 @@ public class DynamicClientRegistrationEndpoint {
 				newClient.setGrantTypes(extendedGrandTypes);
 			}
 		}
-
-		// filter out unknown grant types
-		// TODO: make this a pluggable service
-		Set<String> requestedGrantTypes = new HashSet<>(newClient.getGrantTypes());
-		requestedGrantTypes.retainAll(
-				ImmutableSet.of("authorization_code", "implicit",
-						"password", "client_credentials", "refresh_token",
-						"urn:ietf:params:oauth:grant_type:redelegate"));
 
 		// don't allow "password" grant type for dynamic registration
 		if (newClient.getGrantTypes().contains("password")) {
