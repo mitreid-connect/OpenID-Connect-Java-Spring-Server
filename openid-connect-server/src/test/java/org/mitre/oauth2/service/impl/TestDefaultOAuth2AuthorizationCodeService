@@ -19,9 +19,9 @@ import org.mitre.oauth2.repository.impl.JpaAuthenticationHolderRepository;
 import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.common.exceptions.InvalidGrantException;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 
@@ -30,7 +30,7 @@ import org.springframework.security.oauth2.provider.OAuth2Request;
 @RunWith(MockitoJUnitRunner.class)
 public class TestDefaultOAuth2AuthorizationCodeService {
 	
-	
+	public int counter = 0;
 	private String codeNotFound;
 	
 	private AuthenticationHolderEntity authHolder;
@@ -39,22 +39,15 @@ public class TestDefaultOAuth2AuthorizationCodeService {
 	
 	private JpaAuthenticationHolderRepository  authRepo;
 	
-	//are these 3 mocks important?
+
 	@Mock
 	private AuthorizationCodeRepository repository;
 	
 	@Mock
 	private AuthenticationHolderRepository authenticationHolderRepository;
 	
-	
-	//following two mock suggested by justin
-	
-	
-	
 	@Mock
 	private OAuth2Authentication authentication;
-	
-	
 
 	@InjectMocks
 	private DefaultOAuth2AuthorizationCodeService service;
@@ -72,7 +65,6 @@ public class TestDefaultOAuth2AuthorizationCodeService {
 		authHolder.setAuthentication(authentication);
 		authenticationHolderRepository.save(authHolder);
 		entity = new AuthorizationCodeEntity();
-		MockitoAnnotations.initMocks(this);
 
 	}
 	
@@ -92,11 +84,9 @@ public class TestDefaultOAuth2AuthorizationCodeService {
 
 	@Test
 	public void testConsumeAuthorizationCodeFound() {
-		
-		 String code = service.createAuthorizationCode(authentication);
+		String code = service.createAuthorizationCode(authentication);
 		assertEquals(repository.getByCode(code),authHolder);
 		when(repository.save(Matchers.isA(AuthorizationCodeEntity.class))).thenReturn(entity);
-		
 		}
 
 	@Test
@@ -104,18 +94,12 @@ public class TestDefaultOAuth2AuthorizationCodeService {
 		assertThat(null, equalTo(service.consumeAuthorizationCode(codeNotFound)));	
 		}
 	
-	@Test
+	@Test(expected = InvalidGrantException.class)
 	public void testCanNotConsumeTwice() {
-//		add another test that shows an authorization code
-//		can't be consumed twice; try it twice and expect an error on the second one
-		
-		
-		//TODO
-		
+		String code = service.createAuthorizationCode(authentication);
+		service.consumeAuthorizationCode(code);
+		service.consumeAuthorizationCode(code);
 		}
-	
-	
-	
 
 	@Test
 	public void testConsumeAuthorizationCode(){
@@ -126,6 +110,7 @@ public class TestDefaultOAuth2AuthorizationCodeService {
 	
 	@Test
 	public void testRespositoryGetAndSet() {
+		
 		service.setRepository(repository);
 		assertEquals(service.getRepository(), repository);			
 		}
@@ -139,26 +124,12 @@ public class TestDefaultOAuth2AuthorizationCodeService {
 	
 	@Test
 	public void testCodeAppropiateSecond() {
-//      		your suggestion
-//			Add another test that checks whether the authorization code that is saved is set with the appropriate seconds.
-//			
-//			service.setAuthCodeExpiration(99)
-//			verify(respository.save(argumentCaptor))
-//			assertThat(argumentcaptor.expiration().isEqualTo(Date.now() + 99seconds)
 		
-//			can you explain me what exactly you are suggesting me in above line as in" argumentcaptor.expiration() 
-//			" what is .expiration()?
-// 			I have tried like this.
-		
-		Calendar calendar = Calendar.getInstance(); // gets a calendar using the default time zone and locale.
+		Calendar calendar = Calendar.getInstance(); 
 		calendar.add(Calendar.SECOND, 99);
-		service.setAuthCodeExpirationSeconds(99);
+		service.setAuthCodeExpirationSeconds(100);
 		ArgumentCaptor<AuthorizationCodeEntity> argumentCaptor = ArgumentCaptor.forClass(AuthorizationCodeEntity.class);
 		Mockito.verify(repository).save(argumentCaptor.capture());
-		assertThat(argumentCaptor.capture(), is(equalTo(calendar.getTime()))); //(actual, expected)
-		
-		}
-	
+		assertThat(argumentCaptor.capture(), is(equalTo(calendar.getTime())));
 
-	
-}
+		}
