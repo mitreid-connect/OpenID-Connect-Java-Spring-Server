@@ -37,7 +37,7 @@ import org.springframework.stereotype.Repository;
 @Repository("jpaUserInfoRepository")
 public class JpaUserInfoRepository implements UserInfoRepository {
 
-	@PersistenceContext(unitName="defaultPersistenceUnit")
+	@PersistenceContext(unitName = "defaultPersistenceUnit")
 	private EntityManager manager;
 
 	/**
@@ -47,8 +47,9 @@ public class JpaUserInfoRepository implements UserInfoRepository {
 	public UserInfo getByUsername(String username) {
 		TypedQuery<DefaultUserInfo> query = manager.createNamedQuery(DefaultUserInfo.QUERY_BY_USERNAME, DefaultUserInfo.class);
 		query.setParameter(DefaultUserInfo.PARAM_USERNAME, username);
-
-		return getSingleResult(query.getResultList());
+		// Update for Cleison Melo(Date: 21/04/2018), if you restart you server, the script users.sql will to create one more user_info,
+		// and because that, we have a error using the method of the class JpaUtil, I update to just get the firt data of the list
+		return query.getResultList().get(0);
 
 	}
 
