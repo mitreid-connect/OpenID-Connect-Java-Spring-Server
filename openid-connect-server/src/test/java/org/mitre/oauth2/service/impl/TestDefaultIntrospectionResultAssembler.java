@@ -304,16 +304,32 @@ public class TestDefaultIntrospectionResultAssembler {
 		assertThat(result, is(equalTo(expected)));
 	}
 	
-	@Test(expected = ParseException.class)
-	public void testAssembleFrom_refresh() {
+	@Test(expected=ParseException.class)
+	public void testAssembleFrom_OAuth2AccessTokenEntityExpiration() {
+		
+		// given
+				OAuth2AccessTokenEntity accessToken = accessToken(null, scopes("foo", "bar"), null, "Bearer",
+						oauth2AuthenticationWithUser(oauth2Request("clientId"), "name"));
 
-				OAuth2RefreshTokenEntity refreshToken = refreshToken(null,
-						oauth2AuthenticationWithUser(oauth2Request("clientId", scopes("foo",  "bar")), "name"));
+				UserInfo userInfo = userInfo("sub");
 
 				Set<String> authScopes = scopes("foo", "bar", "baz");
-		// this should fail with an error
-		assembler.assembleFrom(refreshToken, null , authScopes);
 
+				// when
+				Map<String, Object> result = assembler.assembleFrom(accessToken, userInfo, authScopes);
+
+
+				// then
+				Map<String, Object> expected = new ImmutableMap.Builder<String, Object>()
+						.put("sub", "sub")
+						.put("scope", "bar foo")
+						.put("active", Boolean.TRUE)
+						.put("user_id", "name")
+						.put("client_id", "clientId")
+						.put("token_type", "Bearer")
+						.build();
+				
+				assertThat(result, is(not(equalTo(expected))));
 	}
 
 	private UserInfo userInfo(String sub) {
