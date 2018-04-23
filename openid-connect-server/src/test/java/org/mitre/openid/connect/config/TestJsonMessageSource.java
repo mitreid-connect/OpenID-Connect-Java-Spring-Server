@@ -1,22 +1,28 @@
 package org.mitre.openid.connect.config;
 
-import com.google.gson.JsonObject;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Spy;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 import java.text.MessageFormat;
-import java.util.List;
 import java.util.Locale;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+@RunWith(MockitoJUnitRunner.class)
 public class TestJsonMessageSource {
 
+	@InjectMocks
 	private JsonMessageSource jsonMessageSource;
+
+	@Spy
+	private ConfigurationPropertiesBean config;
 
 	private Locale localeThatHasAFile = new Locale("en");
 
@@ -24,24 +30,9 @@ public class TestJsonMessageSource {
 
 	@Before
 	public void setup() {
-		ConfigurationPropertiesBean config = new ConfigurationPropertiesBean();
-		jsonMessageSource = new JsonMessageSource(config);
-
 		//test message files are located in test/resources/js/locale/
 		Resource resource = new ClassPathResource("/resources/js/locale/");
 		jsonMessageSource.setBaseDirectory(resource);
-	}
-
-	@Test
-	public void verifyWhenLocaleExists_languageMapIsLoaded() {
-		List<JsonObject> languageMap = jsonMessageSource.getLanguageMap(localeThatHasAFile);
-		assertNotNull(languageMap);
-	}
-
-	@Test
-	public void verifyWhenLocaleDoesNotExist_languageMapIsNotLoaded() {
-		List<JsonObject> languageMap = jsonMessageSource.getLanguageMap(localeThatDoesNotHaveAFile);
-		assertNull(languageMap);
 	}
 
 	@Test
