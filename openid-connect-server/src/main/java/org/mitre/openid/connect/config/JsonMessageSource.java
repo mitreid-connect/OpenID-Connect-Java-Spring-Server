@@ -17,6 +17,7 @@
 package org.mitre.openid.connect.config;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.MessageFormat;
@@ -42,10 +43,9 @@ import com.google.gson.JsonSyntaxException;
 
 /**
  * @author jricher
- *
  */
 public class JsonMessageSource extends AbstractMessageSource {
-	// Logger for this class
+
 	private static final Logger logger = LoggerFactory.getLogger(JsonMessageSource.class);
 
 	private Resource baseDirectory;
@@ -107,7 +107,6 @@ public class JsonMessageSource extends AbstractMessageSource {
 	/**
 	 * Get a value from a single map
 	 * @param code
-	 * @param locale
 	 * @param lang
 	 * @return
 	 */
@@ -147,9 +146,7 @@ public class JsonMessageSource extends AbstractMessageSource {
 			}
 		}
 
-
 		return value;
-
 	}
 
 	/**
@@ -174,7 +171,7 @@ public class JsonMessageSource extends AbstractMessageSource {
 						r = getBaseDirectory().createRelative(filename);
 					}
 
-					logger.info("No locale loaded, trying to load from " + r);
+					logger.info("No locale loaded, trying to load from {}", r);
 
 					JsonParser parser = new JsonParser();
 					JsonObject obj = (JsonObject) parser.parse(new InputStreamReader(r.getInputStream(), "UTF-8"));
@@ -182,15 +179,15 @@ public class JsonMessageSource extends AbstractMessageSource {
 					set.add(obj);
 				}
 				languageMaps.put(locale, set);
+			} catch (FileNotFoundException e) {
+				logger.info("Unable to load locale because no messages file was found for locale {}", locale.getDisplayName());
+				languageMaps.put(locale, null);
 			} catch (JsonIOException | JsonSyntaxException | IOException e) {
 				logger.error("Unable to load locale", e);
 			}
 		}
 
 		return languageMaps.get(locale);
-
-
-
 	}
 
 	/**
