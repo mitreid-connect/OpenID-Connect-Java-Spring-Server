@@ -304,11 +304,11 @@ public class TestDefaultIntrospectionResultAssembler {
 		assertThat(result, is(equalTo(expected)));
 	}
 	
-	@Test(expected=ParseException.class)
-	public void testAssembleFrom_OAuth2AccessTokenEntityExpiration() {
+	@Test(expected= ParseException.class)
+	public void testAssembleFrom_OAuth2AccessTokenEntityExpiration() throws ParseException{
 		
 		// given
-				OAuth2AccessTokenEntity accessToken = accessToken(null, scopes("foo", "bar"), null, "Bearer",
+				OAuth2AccessTokenEntity accessToken = accessToken(new Date(123 * 1000L), scopes("foo", "bar"), null, "Bearer",
 						oauth2AuthenticationWithUser(oauth2Request("clientId"), "name"));
 
 				UserInfo userInfo = userInfo("sub");
@@ -322,6 +322,7 @@ public class TestDefaultIntrospectionResultAssembler {
 				// then
 				Map<String, Object> expected = new ImmutableMap.Builder<String, Object>()
 						.put("sub", "sub")
+						.put("exp",123L)
 						.put("scope", "bar foo")
 						.put("active", Boolean.TRUE)
 						.put("user_id", "name")
@@ -329,7 +330,44 @@ public class TestDefaultIntrospectionResultAssembler {
 						.put("token_type", "Bearer")
 						.build();
 				
+				
+				doThrow(ParseException.class).when(accessToken).getExpiration();
+				accessToken.getExpiration();
+				
+				//not reachable
 				assertThat(result, is(not(equalTo(expected))));
+	}
+	
+	@Test(expected=ParseException.class)
+	public void testAssembleFrom_OAuth2RefreshTokenEntityExpiration() throws ParseException{
+
+		// given
+		OAuth2RefreshTokenEntity refreshToken = refreshToken(null,
+				oauth2AuthenticationWithUser(oauth2Request("clientId", scopes("foo",  "bar")), "name"));
+
+		UserInfo userInfo = userInfo("sub");
+
+		Set<String> authScopes = scopes("foo", "bar", "baz");
+
+		// when
+		Map<String, Object> result = assembler.assembleFrom(refreshToken, userInfo, authScopes);
+
+
+		// then
+		Map<String, Object> expected = new ImmutableMap.Builder<String, Object>()
+				.put("sub", "sub")
+				.put("exp", 123L)
+				.put("scope", "bar foo")
+				.put("active", Boolean.TRUE)
+				.put("user_id", "name")
+				.put("client_id", "clientId")
+				.build();
+		
+		doThrow(ParseException.class).when(refreshToken).getExpiration();
+		refreshToken.getExpiration();
+		
+		//not reachable
+		assertThat(result, is(not(equalTo(expected))));
 	}
 
 	private UserInfo userInfo(String sub) {
