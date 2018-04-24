@@ -37,13 +37,16 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 
+
+
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
-
+import static org.hamcrest.CoreMatchers.not;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
 import static org.junit.Assert.assertThat;
@@ -176,6 +179,20 @@ public class TestDefaultIntrospectionResultAssembler {
 		assertThat(result, is(equalTo(expected)));
 	}
 	
+//	
+//	@Test(expected = ParseException.class)
+//	public void ABC() {
+//
+//		// given
+//		OAuth2AccessTokenEntity accessToken = accessToken(new Date(123 * 1000L), scopes("foo", "bar"), null, "Bearer",
+//				oauth2AuthenticationWithUser(oauth2Request("clientId"), "name"));
+//
+//		UserInfo userInfo = userInfo("sub");
+//
+//		Set<String> authScopes = scopes("foo", "bar", "baz");
+//
+//		assembler.assembleFrom(accessToken, userInfo, authScopes);}
+//	
 	
 	@Test
 	public void shouldAssembleExpectedResultForAccessTokenWithoutUserAuthentication() throws ParseException {
@@ -304,6 +321,7 @@ public class TestDefaultIntrospectionResultAssembler {
 		assertThat(result, is(equalTo(expected)));
 	}
 	
+	
 	@Test(expected= ParseException.class)
 	public void testAssembleFrom_OAuth2AccessTokenEntityExpiration() throws ParseException{
 		
@@ -369,6 +387,9 @@ public class TestDefaultIntrospectionResultAssembler {
 		//not reachable
 		assertThat(result, is(not(equalTo(expected))));
 	}
+
+		
+
 
 	private UserInfo userInfo(String sub) {
 		UserInfo userInfo = mock(UserInfo.class);
