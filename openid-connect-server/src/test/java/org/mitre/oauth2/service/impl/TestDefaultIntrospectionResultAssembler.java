@@ -179,20 +179,6 @@ public class TestDefaultIntrospectionResultAssembler {
 		assertThat(result, is(equalTo(expected)));
 	}
 	
-//	
-//	@Test(expected = ParseException.class)
-//	public void ABC() {
-//
-//		// given
-//		OAuth2AccessTokenEntity accessToken = accessToken(new Date(123 * 1000L), scopes("foo", "bar"), null, "Bearer",
-//				oauth2AuthenticationWithUser(oauth2Request("clientId"), "name"));
-//
-//		UserInfo userInfo = userInfo("sub");
-//
-//		Set<String> authScopes = scopes("foo", "bar", "baz");
-//
-//		assembler.assembleFrom(accessToken, userInfo, authScopes);}
-//	
 	
 	@Test
 	public void shouldAssembleExpectedResultForAccessTokenWithoutUserAuthentication() throws ParseException {
@@ -326,7 +312,7 @@ public class TestDefaultIntrospectionResultAssembler {
 	public void testAssembleFrom_OAuth2AccessTokenEntityExpiration() throws ParseException{
 		
 		// given
-				OAuth2AccessTokenEntity accessToken = accessToken(new Date(123 * 1000L), scopes("foo", "bar"), null, "Bearer",
+				OAuth2AccessTokenEntity accessToken = accessToken(null, scopes("foo", "bar"), null, "Bearer",
 						oauth2AuthenticationWithUser(oauth2Request("clientId"), "name"));
 
 				UserInfo userInfo = userInfo("sub");
