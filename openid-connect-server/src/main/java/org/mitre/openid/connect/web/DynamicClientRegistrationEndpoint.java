@@ -232,7 +232,11 @@ public class DynamicClientRegistrationEndpoint {
 				newClient.setIdTokenValiditySeconds((int)TimeUnit.MINUTES.toSeconds(10)); // id tokens good for 10min
 				newClient.setRefreshTokenValiditySeconds(null); // refresh tokens good until revoked
 			}
-
+			
+			if (newClient.getGrantTypes().contains("urn:ietf:params:oauth:grant-type:device_code")) {
+			  newClient.setDeviceCodeValiditySeconds(600);
+			}
+			
 			// this client has been dynamically registered (obviously)
 			newClient.setDynamicallyRegistered(true);
 
@@ -354,6 +358,7 @@ public class DynamicClientRegistrationEndpoint {
 			newClient.setAccessTokenValiditySeconds(oldClient.getAccessTokenValiditySeconds());
 			newClient.setIdTokenValiditySeconds(oldClient.getIdTokenValiditySeconds());
 			newClient.setRefreshTokenValiditySeconds(oldClient.getRefreshTokenValiditySeconds());
+			newClient.setDeviceCodeValiditySeconds(oldClient.getDeviceCodeValiditySeconds());
 			newClient.setDynamicallyRegistered(true); // it's still dynamically registered
 			newClient.setAllowIntrospection(false); // dynamically registered clients can't do introspection -- use the resource registration instead
 			newClient.setAuthorities(oldClient.getAuthorities());
@@ -389,6 +394,7 @@ public class DynamicClientRegistrationEndpoint {
 			    if (!oldClientGrantedGrantTypes.isEmpty()) {
 			      newClient.getGrantTypes().addAll(oldClientGrantedGrantTypes);
 			    }
+			    
 			    
 				// save the client
 				ClientDetailsEntity savedClient = clientService.updateClient(oldClient, newClient);
