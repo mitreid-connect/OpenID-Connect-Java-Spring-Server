@@ -16,6 +16,8 @@
 
 package org.mitre.oauth2.web;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -26,6 +28,7 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpSession;
 
+import org.apache.http.client.utils.URIBuilder;
 import org.mitre.oauth2.exception.DeviceCodeCreationException;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.DeviceCode;
@@ -134,11 +137,16 @@ public class DeviceEndpoint {
 
 		try {
 			DeviceCode dc = deviceCodeService.createNewDeviceCode(requestedScopes, client, parameters);
-	
+
+			URI verificationUriComplete  = new URIBuilder(config.getIssuer() + USER_URL)
+				.addParameter("user_code", dc.getUserCode())
+				.build();
+
 			Map<String, Object> response = new HashMap<>();
 			response.put("device_code", dc.getDeviceCode());
 			response.put("user_code", dc.getUserCode());
 			response.put("verification_uri", config.getIssuer() + USER_URL);
+			response.put("verification_uri_complete", verificationUriComplete);
 			if (client.getDeviceCodeValiditySeconds() != null) {
 				response.put("expires_in", client.getDeviceCodeValiditySeconds());
 			}
@@ -154,18 +162,31 @@ public class DeviceEndpoint {
 			model.put(JsonErrorView.ERROR_MESSAGE, dcce.getMessage());
 			
 			return JsonErrorView.VIEWNAME;
+		} catch (URISyntaxException use) {
+			logger.error("unable to build verification_uri_complete due to wrong syntax of uri components");
+			model.put(HttpCodeView.CODE, HttpStatus.INTERNAL_SERVER_ERROR);
+
+			return HttpCodeView.VIEWNAME;
 		}
 
 	}
 
 	@PreAuthorize("hasRole('ROLE_USER')")
 	@RequestMapping(value = "/" + USER_URL, method = RequestMethod.GET)
-	public String requestUserCode(ModelMap model) {
+	public String requestUserCode(@RequestParam(value = "user_code", required = false) String userCode, ModelMap model, HttpSession session) {
 
-		// print out a page that asks the user to enter their user code
-		// user must be logged in
+		if (userCode == null) {
 
-		return "requestUserCode";
+			// print out a page that asks the user to enter their user code
+			// user must be logged in
+			return "requestUserCode";
+		} else {
+
+			// complete verification uri was used, we received user code directly
+			// skip requesting code page
+			// user must be logged in
+			return readUserCode(userCode, model, session);
+		}
 	}
 
 	@PreAuthorize("hasRole('ROLE_USER')")
