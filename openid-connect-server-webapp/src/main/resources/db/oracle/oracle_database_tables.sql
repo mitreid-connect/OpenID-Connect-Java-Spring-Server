@@ -147,6 +147,7 @@ CREATE TABLE client_details (
   access_token_validity_seconds NUMBER(19),
   refresh_token_validity_seconds NUMBER(19),
   device_code_validity_seconds NUMBER(19),
+	verification_uri_complete_enabled NUMBER(1) DEFAULT 1 NOT NULL,
 
   application_type VARCHAR2(256),
   client_name VARCHAR2(256),

@@ -148,6 +148,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	private Date createdAt; // time the client was created
 	private boolean clearAccessTokensOnRefresh = true; // do we clear access tokens on refresh?
 	private Integer deviceCodeValiditySeconds; // timeout for device codes
+	private boolean verificationUriCompleteEnabled = true; // device code optional feature
 
 	/** fields for UMA */
 	private Set<String> claimsRedirectUris;
@@ -1049,6 +1050,22 @@ public class ClientDetailsEntity implements ClientDetails {
 	 */
 	public void setDeviceCodeValiditySeconds(Integer deviceCodeValiditySeconds) {
 		this.deviceCodeValiditySeconds = deviceCodeValiditySeconds;
+	}
+
+	/**
+	 * @return true if verification uri complete in device code flow is enabled, false otherwise
+	 */
+	@Basic
+	@Column(name="verification_uri_complete_enabled")
+	public boolean isVerificationUriCompleteEnabled() {
+		return verificationUriCompleteEnabled;
+	}
+
+	/**
+	 * @param verificationUriCompleteEnabled true/false to enable/disable verification uri complete functionality in device code flow
+	 */
+	public void setVerificationUriCompleteEnabled(boolean verificationUriCompleteEnabled) {
+		this.verificationUriCompleteEnabled = verificationUriCompleteEnabled;
 	}
 
 	/**
