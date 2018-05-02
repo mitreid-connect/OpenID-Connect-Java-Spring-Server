@@ -1,13 +1,13 @@
-
 package org.mitre.oauth2.service.impl;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.atLeast;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
 import java.util.Set;
+import java.util.concurrent.ArrayBlockingQueue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -47,9 +47,6 @@ public class TestDefaultDeviceCodeService {
 	private String clientId1;
 	private String clientId2;
 
-	private Set<DeviceCode> expiredDeviceCodes1;
-	private Set<DeviceCode> expiredDeviceCodes2;
-
 	private Set<String> requestedScopes;
 
 	@Mock
@@ -86,16 +83,16 @@ public class TestDefaultDeviceCodeService {
 
 		userCodeNotFound = "userCodeNotFound";
 
-		requestedScopes = Sets.newHashSet("scope1", "scope2");		
+		requestedScopes = Sets.newHashSet("scope1", "scope2");
 
 		Mockito.when(repository.getByDeviceCode(deviceCodeFound)).thenReturn(deviceCode1);
 		Mockito.when(repository.getByDeviceCode(deviceCodeClientNotMatch)).thenReturn(deviceCode2);
-		Mockito.when(repository.getByDeviceCode(deviceCodeNotFound)).thenReturn(null);		
+		Mockito.when(repository.getByDeviceCode(deviceCodeNotFound)).thenReturn(null);
 		Mockito.when(repository.getByUserCode(userCodeFound.toLowerCase().toUpperCase())).thenReturn(deviceCode1);
 		Mockito.when(repository.getByUserCode(userCodeNotFound)).thenReturn(null);
 		deviceCode1.setId(new Long(1001));
 		Mockito.when(repository.getById(new Long(1001))).thenReturn(deviceCode1);
-	
+
 		Mockito.when(repository.save(Matchers.any(DeviceCode.class))).thenAnswer(new Answer<DeviceCode>() {
 
 			@Override
@@ -161,22 +158,31 @@ public class TestDefaultDeviceCodeService {
 		assertThat(null, equalTo(service.findDeviceCode(deviceCodeClientNotMatch, clientDetailsEntity2)));
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
-	public void testClearExpiredDeviceCodes() {		
-		expiredDeviceCodes1 = Sets.newHashSet(deviceCode1, deviceCode2);
-		expiredDeviceCodes2 = Sets.newHashSet();
+	public void testClearExpiredDeviceCodes() {
 
-		Mockito.when(repository.getExpiredCodes()).thenReturn(expiredDeviceCodes1, expiredDeviceCodes1,expiredDeviceCodes2);
-		service.clearExpiredDeviceCodes();
+
+		java.util.concurrent.ArrayBlockingQueue<DeviceCode> deviceCodesList = new ArrayBlockingQueue<>(2);
+		deviceCodesList.add(deviceCode1);
+		deviceCodesList.add(deviceCode2);
 		
-		Mockito.verify(repository, atLeast(2)).remove(Matchers.any(DeviceCode.class));	
-		Mockito.verify(repository,times(4)).getExpiredCodes();
+		when(repository.getExpiredCodes()).thenReturn(deviceCodesList);
+		Answer<java.util.concurrent.ArrayBlockingQueue<DeviceCode>> answer = new Answer<java.util.concurrent.ArrayBlockingQueue<DeviceCode>>() {
+			@Override
+			public java.util.concurrent.ArrayBlockingQueue<DeviceCode> answer(InvocationOnMock invocation) throws Throwable {
+				deviceCodesList.remove();
+				return deviceCodesList;
+			}
+		};
+		doAnswer(answer).when(repository).remove(Matchers.any(DeviceCode.class));
+		service.clearExpiredDeviceCodes();	
+		assertThat(0, equalTo(deviceCodesList.size()));
+		
 	}
 
 	@Test
 	public void testClearDeviceCode() {
-		service.clearDeviceCode(deviceCodeFound, clientDetailsEntity1);		
-		Mockito.verify(repository).remove(Matchers.any(DeviceCode.class));
+		service.clearDeviceCode(deviceCodeFound, clientDetailsEntity1);
+		Mockito.verify(repository).remove(deviceCode1);
 	}
 }
