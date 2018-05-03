@@ -24,11 +24,11 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.servlet.http.HttpSession;
 
 import org.apache.http.client.utils.URIBuilder;
-import org.mitre.oauth2.exception.CompleteVerificationUriDisabledException;
 import org.mitre.oauth2.exception.DeviceCodeCreationException;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.DeviceCode;
@@ -50,6 +50,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.common.exceptions.InvalidClientException;
 import org.springframework.security.oauth2.common.util.OAuth2Utils;
+import org.springframework.security.oauth2.common.util.RandomValueStringGenerator;
 import org.springframework.security.oauth2.provider.AuthorizationRequest;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
@@ -137,16 +138,15 @@ public class DeviceEndpoint {
 		try {
 			DeviceCode dc = deviceCodeService.createNewDeviceCode(requestedScopes, client, parameters);
 
+			URI verificationUriComplete  = new URIBuilder(config.getIssuer() + USER_URL)
+				.addParameter("user_code", dc.getUserCode())
+				.build();
+
 			Map<String, Object> response = new HashMap<>();
 			response.put("device_code", dc.getDeviceCode());
 			response.put("user_code", dc.getUserCode());
 			response.put("verification_uri", config.getIssuer() + USER_URL);
-			if (client.isVerificationUriCompleteEnabled()) {
-				URI verificationUriComplete  = new URIBuilder(config.getIssuer() + USER_URL)
-					.addParameter("user_code", dc.getUserCode())
-					.build();
-				response.put("verification_uri_complete", verificationUriComplete);
-			}
+			response.put("verification_uri_complete", verificationUriComplete);
 			if (client.getDeviceCodeValiditySeconds() != null) {
 				response.put("expires_in", client.getDeviceCodeValiditySeconds());
 			}
@@ -185,7 +185,6 @@ public class DeviceEndpoint {
 			// complete verification uri was used, we received user code directly
 			// skip requesting code page
 			// user must be logged in
-			model.addAttribute("completeVerificationUriUsed", true);
 			return readUserCode(userCode, model, session);
 		}
 	}
@@ -216,10 +215,6 @@ public class DeviceEndpoint {
 		}
 
 		ClientDetailsEntity client = clientService.loadClientByClientId(dc.getClientId());
-
-		if (!client.isVerificationUriCompleteEnabled() && Boolean.TRUE.equals(model.get("completeVerificationUriUsed"))) {
-			throw new CompleteVerificationUriDisabledException(client.getClientId());
-		}
 
 		model.put("client", client);
 		model.put("dc", dc);

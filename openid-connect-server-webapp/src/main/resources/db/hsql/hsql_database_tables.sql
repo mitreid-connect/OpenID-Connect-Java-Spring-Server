@@ -132,7 +132,6 @@ CREATE TABLE IF NOT EXISTS client_details (
 	allow_introspection BOOLEAN DEFAULT false NOT NULL,
 	id_token_validity_seconds BIGINT DEFAULT 600 NOT NULL,
 	device_code_validity_seconds BIGINT,
-	verification_uri_complete_enabled BOOLEAN DEFAULT true NOT NULL,
 	
 	client_id VARCHAR(256),
 	client_secret VARCHAR(2048),
