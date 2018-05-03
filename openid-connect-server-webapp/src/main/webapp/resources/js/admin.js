@@ -137,7 +137,8 @@ var ListWidgetChildView = Backbone.View.extend({
 
 			var _self = this;
 
-			$(this.el).click(function(event) {
+			// added span to enable checkbox also
+			$(this.el).find('span').click(function(event) {
 				event.preventDefault();
 				$('.item-short', _self.el).hide();
 				$('.item-full', _self.el).show();
