@@ -138,17 +138,20 @@ public class DeviceEndpoint {
 		try {
 			DeviceCode dc = deviceCodeService.createNewDeviceCode(requestedScopes, client, parameters);
 
-			URI verificationUriComplete  = new URIBuilder(config.getIssuer() + USER_URL)
-				.addParameter("user_code", dc.getUserCode())
-				.build();
-
 			Map<String, Object> response = new HashMap<>();
 			response.put("device_code", dc.getDeviceCode());
 			response.put("user_code", dc.getUserCode());
 			response.put("verification_uri", config.getIssuer() + USER_URL);
-			response.put("verification_uri_complete", verificationUriComplete);
 			if (client.getDeviceCodeValiditySeconds() != null) {
 				response.put("expires_in", client.getDeviceCodeValiditySeconds());
+			}
+			
+			if (config.isAllowCompleteDeviceCodeUri()) {
+				URI verificationUriComplete  = new URIBuilder(config.getIssuer() + USER_URL)
+					.addParameter("user_code", dc.getUserCode())
+					.build();
+
+				response.put("verification_uri_complete", verificationUriComplete.toString());
 			}
 	
 			model.put(JsonEntityView.ENTITY, response);
@@ -175,8 +178,8 @@ public class DeviceEndpoint {
 	@RequestMapping(value = "/" + USER_URL, method = RequestMethod.GET)
 	public String requestUserCode(@RequestParam(value = "user_code", required = false) String userCode, ModelMap model, HttpSession session) {
 
-		if (userCode == null) {
-
+		if (!config.isAllowCompleteDeviceCodeUri() || userCode == null) {
+			// if we don't allow the complete URI or we didn't get a user code on the way in,
 			// print out a page that asks the user to enter their user code
 			// user must be logged in
 			return "requestUserCode";
