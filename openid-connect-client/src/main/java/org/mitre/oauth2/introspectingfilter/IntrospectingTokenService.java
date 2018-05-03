@@ -244,7 +244,10 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 	private Authentication createUserAuthentication(JsonObject token) {
 		JsonElement userId = token.get("user_id");
 		if(userId == null) {
-			return null;
+			userId = token.get("sub");
+			if (userId == null) {
+				return null;
+			}
 		}
 
 		return new PreAuthenticatedAuthenticationToken(userId.getAsString(), token, introspectionAuthorityGranter.getAuthorities(token));
