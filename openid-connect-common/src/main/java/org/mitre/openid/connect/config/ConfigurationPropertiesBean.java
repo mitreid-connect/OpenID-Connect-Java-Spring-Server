@@ -68,6 +68,8 @@ public class ConfigurationPropertiesBean {
 	private boolean dualClient = false;
 
 	private boolean heartMode = false;
+	
+	private boolean allowCompleteDeviceCodeUri = false;
 
 	public ConfigurationPropertiesBean() {
 
@@ -256,5 +258,19 @@ public class ConfigurationPropertiesBean {
 	 */
 	public void setHeartMode(boolean heartMode) {
 		this.heartMode = heartMode;
+	}
+
+	/**
+	 * @return the allowCompleteDeviceCodeUri
+	 */
+	public boolean isAllowCompleteDeviceCodeUri() {
+		return allowCompleteDeviceCodeUri;
+	}
+
+	/**
+	 * @param allowCompleteDeviceCodeUri the allowCompleteDeviceCodeUri to set
+	 */
+	public void setAllowCompleteDeviceCodeUri(boolean allowCompleteDeviceCodeUri) {
+		this.allowCompleteDeviceCodeUri = allowCompleteDeviceCodeUri;
 	}
 }

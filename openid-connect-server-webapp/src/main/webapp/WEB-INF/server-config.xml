@@ -68,6 +68,10 @@
 		<!-- This property turns on HEART compliance mode -->
 		<!-- <property name="heartMode" value="true" /> -->
 
+        <!-- This property allows the server to create and accept fully-composed 
+        user URIs (with the user-code emebedded) for the device flow -->
+        <!-- <property name="allowCompleteDeviceCodeUri" value="true" /> -->
+
 	</bean>
 	
 </beans>
