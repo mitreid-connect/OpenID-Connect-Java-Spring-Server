@@ -3,7 +3,7 @@
 --
 
 CREATE TABLE IF NOT EXISTS access_token (
-	id SERIAL PRIMARY KEY,
+	id BIGSERIAL PRIMARY KEY,
 	token_value VARCHAR(4096),
 	expiration TIMESTAMP,
 	token_type VARCHAR(256),
@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS access_token_permissions (
 );
 
 CREATE TABLE IF NOT EXISTS address (
-	id SERIAL PRIMARY KEY,
+	id BIGSERIAL PRIMARY KEY,
 	formatted VARCHAR(256),
 	street_address VARCHAR(256),
 	locality VARCHAR(256),
@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS address (
 );
 
 CREATE TABLE IF NOT EXISTS approved_site (
-	id SERIAL PRIMARY KEY,
+	id BIGSERIAL PRIMARY KEY,
 	user_id VARCHAR(256),
 	client_id VARCHAR(256),
 	creation_date TIMESTAMP,
@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS approved_site_scope (
 );
 
 CREATE TABLE IF NOT EXISTS authentication_holder (
-	id SERIAL PRIMARY KEY,
+	id BIGSERIAL PRIMARY KEY,
 	user_auth_id BIGINT,
 	approved BOOLEAN,
 	redirect_uri VARCHAR(2048),
@@ -85,7 +85,7 @@ CREATE TABLE IF NOT EXISTS authentication_holder_request_parameter (
 );
 
 CREATE TABLE IF NOT EXISTS saved_user_auth (
-	id SERIAL PRIMARY KEY,
+	id BIGSERIAL PRIMARY KEY,
 	name VARCHAR(1024),
 	authenticated BOOLEAN,
 	source_class VARCHAR(2048)
@@ -102,7 +102,7 @@ CREATE TABLE IF NOT EXISTS client_authority (
 );
 
 CREATE TABLE IF NOT EXISTS authorization_code (
-	id SERIAL PRIMARY KEY,
+	id BIGSERIAL PRIMARY KEY,
 	code VARCHAR(256),
 	auth_holder_id BIGINT,
 	expiration TIMESTAMP
@@ -119,12 +119,12 @@ CREATE TABLE IF NOT EXISTS client_response_type (
 );
 
 CREATE TABLE IF NOT EXISTS blacklisted_site (
-	id SERIAL PRIMARY KEY,
+	id BIGSERIAL PRIMARY KEY,
 	uri VARCHAR(2048)
 );
 
 CREATE TABLE IF NOT EXISTS client_details (
-	id SERIAL PRIMARY KEY,
+	id BIGSERIAL PRIMARY KEY,
 
 	client_description VARCHAR(1024),
 	reuse_refresh_tokens BOOLEAN DEFAULT true NOT NULL,
@@ -132,17 +132,17 @@ CREATE TABLE IF NOT EXISTS client_details (
 	allow_introspection BOOLEAN DEFAULT false NOT NULL,
 	id_token_validity_seconds BIGINT DEFAULT 600 NOT NULL,
 	device_code_validity_seconds BIGINT,
-	
+
 	client_id VARCHAR(256),
 	client_secret VARCHAR(2048),
 	access_token_validity_seconds BIGINT,
 	refresh_token_validity_seconds BIGINT,
-	
+
 	application_type VARCHAR(256),
 	client_name VARCHAR(256),
 	token_endpoint_auth_method VARCHAR(256),
 	subject_type VARCHAR(256),
-	
+
 	logo_uri VARCHAR(2048),
 	policy_uri VARCHAR(2048),
 	client_uri VARCHAR(2048),
@@ -151,31 +151,31 @@ CREATE TABLE IF NOT EXISTS client_details (
 	jwks_uri VARCHAR(2048),
 	jwks VARCHAR(8192),
 	sector_identifier_uri VARCHAR(2048),
-	
+
 	request_object_signing_alg VARCHAR(256),
-	
+
 	user_info_signed_response_alg VARCHAR(256),
 	user_info_encrypted_response_alg VARCHAR(256),
 	user_info_encrypted_response_enc VARCHAR(256),
-	
+
 	id_token_signed_response_alg VARCHAR(256),
 	id_token_encrypted_response_alg VARCHAR(256),
 	id_token_encrypted_response_enc VARCHAR(256),
-	
+
 	token_endpoint_auth_signing_alg VARCHAR(256),
-	
+
 	default_max_age BIGINT,
 	require_auth_time BOOLEAN,
 	created_at TIMESTAMP,
 	initiate_login_uri VARCHAR(2048),
 	clear_access_tokens_on_refresh BOOLEAN DEFAULT true NOT NULL,
-	
+
 	software_statement VARCHAR(4096),
 	software_id VARCHAR(2048),
 	software_version VARCHAR(2048),
-	
+
 	code_challenge_method VARCHAR(256),
-	
+
 	UNIQUE (client_id)
 );
 
@@ -200,17 +200,17 @@ CREATE TABLE IF NOT EXISTS client_contact (
 );
 
 CREATE TABLE IF NOT EXISTS client_redirect_uri (
-	owner_id BIGINT, 
-	redirect_uri VARCHAR(2048) 
+	owner_id BIGINT,
+	redirect_uri VARCHAR(2048)
 );
 
 CREATE TABLE IF NOT EXISTS client_claims_redirect_uri (
-	owner_id BIGINT, 
-	redirect_uri VARCHAR(2048) 
+	owner_id BIGINT,
+	redirect_uri VARCHAR(2048)
 );
 
 CREATE TABLE IF NOT EXISTS refresh_token (
-	id SERIAL PRIMARY KEY,
+	id BIGSERIAL PRIMARY KEY,
 	token_value VARCHAR(4096),
 	expiration TIMESTAMP,
 	auth_holder_id BIGINT,
@@ -218,8 +218,8 @@ CREATE TABLE IF NOT EXISTS refresh_token (
 );
 
 CREATE TABLE IF NOT EXISTS client_resource (
-	owner_id BIGINT, 
-	resource_id VARCHAR(256) 
+	owner_id BIGINT,
+	resource_id VARCHAR(256)
 );
 
 CREATE TABLE IF NOT EXISTS client_scope (
@@ -233,7 +233,7 @@ CREATE TABLE IF NOT EXISTS token_scope (
 );
 
 CREATE TABLE IF NOT EXISTS system_scope (
-	id SERIAL PRIMARY KEY,
+	id BIGSERIAL PRIMARY KEY,
 	scope VARCHAR(256) NOT NULL,
 	description VARCHAR(4096),
 	icon VARCHAR(256),
@@ -245,7 +245,7 @@ CREATE TABLE IF NOT EXISTS system_scope (
 );
 
 CREATE TABLE IF NOT EXISTS user_info (
-	id SERIAL PRIMARY KEY,
+	id BIGSERIAL PRIMARY KEY,
 	sub VARCHAR(256),
 	preferred_username VARCHAR(256),
 	name VARCHAR(256),
@@ -270,7 +270,7 @@ CREATE TABLE IF NOT EXISTS user_info (
 );
 
 CREATE TABLE IF NOT EXISTS whitelisted_site (
-	id SERIAL PRIMARY KEY,
+	id BIGSERIAL PRIMARY KEY,
 	creator_user_id VARCHAR(256),
 	client_id VARCHAR(256)
 );
@@ -281,14 +281,14 @@ CREATE TABLE IF NOT EXISTS whitelisted_site_scope (
 );
 
 CREATE TABLE IF NOT EXISTS pairwise_identifier (
-	id SERIAL PRIMARY KEY,
+	id BIGSERIAL PRIMARY KEY,
 	identifier VARCHAR(256),
 	sub VARCHAR(256),
 	sector_identifier VARCHAR(2048)
 );
 
 CREATE TABLE IF NOT EXISTS resource_set (
-	id SERIAL PRIMARY KEY,
+	id BIGSERIAL PRIMARY KEY,
 	name VARCHAR(1024) NOT NULL,
 	uri VARCHAR(1024),
 	icon_uri VARCHAR(1024),
@@ -303,14 +303,14 @@ CREATE TABLE IF NOT EXISTS resource_set_scope (
 );
 
 CREATE TABLE IF NOT EXISTS permission_ticket (
-	id SERIAL PRIMARY KEY,
+	id BIGSERIAL PRIMARY KEY,
 	ticket VARCHAR(256) NOT NULL,
 	permission_id BIGINT NOT NULL,
 	expiration TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS permission (
-	id SERIAL PRIMARY KEY,
+	id BIGSERIAL PRIMARY KEY,
 	resource_set_id BIGINT
 );
 
@@ -320,7 +320,7 @@ CREATE TABLE IF NOT EXISTS permission_scope (
 );
 
 CREATE TABLE IF NOT EXISTS claim (
-	id SERIAL PRIMARY KEY,
+	id BIGSERIAL PRIMARY KEY,
 	name VARCHAR(256),
 	friendly_name VARCHAR(1024),
 	claim_type VARCHAR(1024),
@@ -338,7 +338,7 @@ CREATE TABLE IF NOT EXISTS claim_to_permission_ticket (
 );
 
 CREATE TABLE IF NOT EXISTS policy (
-	id SERIAL PRIMARY KEY,
+	id BIGSERIAL PRIMARY KEY,
 	name VARCHAR(1024),
 	resource_set_id BIGINT
 );
@@ -359,19 +359,19 @@ CREATE TABLE IF NOT EXISTS claim_issuer (
 );
 
 CREATE TABLE IF NOT EXISTS saved_registered_client (
-	id SERIAL PRIMARY KEY,
+	id BIGSERIAL PRIMARY KEY,
 	issuer VARCHAR(1024),
 	registered_client VARCHAR(8192)
 );
 
 CREATE TABLE IF NOT EXISTS device_code (
-	id BIGINT AUTO_INCREMENT PRIMARY KEY,
+	id BIGSERIAL PRIMARY KEY,
 	device_code VARCHAR(1024),
 	user_code VARCHAR(1024),
 	expiration TIMESTAMP NULL,
 	client_id VARCHAR(256),
 	approved BOOLEAN,
-	auth_holder_id BIGINT	
+	auth_holder_id BIGINT
 );
 
 CREATE TABLE IF NOT EXISTS device_code_scope (

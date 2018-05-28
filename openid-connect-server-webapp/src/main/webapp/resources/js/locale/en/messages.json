@@ -211,7 +211,7 @@
             "no-clients": "There are no registered clients on this server.",
             "no-matches": "There are no clients that match your search criteria.",
             "no-redirect": "NO REDIRECT URI",
-            "registered": "Registrered",
+            "registered": "Registered",
             "search": "Search...",
             "whitelist": "Whitelist",
             "unknown": "at an unknown time"
@@ -325,7 +325,7 @@
             "confirm": "Are you sure sure you would like to delete this scope? Clients that have this scope will still be able to ask for it.",
             "new": "New Scope",
             "text": "There are no system scopes defined. Clients may still have custom scopes.",
-            "tooltip-restricted": "This scope can be used only by adminisrtators. It is not available for dynamic registration.",
+            "tooltip-restricted": "This scope can be used only by administrators. It is not available for dynamic registration.",
             "tooltip-default": "This scope is automatically assigned to newly registered clients."
         }
     },
@@ -337,7 +337,7 @@
             "associated-refresh": "This access token was issued with an associated refresh token.",
             "click-to-display": "Click to display full token value",
             "confirm": "Are you sure sure you would like to revoke this token?",
-            "confirm-refresh": "Are you sure sure you would like to revoke this refresh token and its associated access tokens?",
+            "confirm-refresh": "Are you sure you would like to revoke this refresh token and its associated access tokens?",
             "expires": "Expires",
             "no-access": "There are no active access tokens.",
             "no-refresh": "There are no active refresh tokens.",
@@ -522,7 +522,7 @@
 			"title": "Logout requested",
 			"header": "Logout Requested",
 			"requested": "Logout has been requested by ",
-			"explanation": "Do you wan to log out of the identity provider? This will not affect your session at any other systems.",
+			"explanation": "Do you want to log out of the identity provider? This will not affect your session at any other systems.",
 			"submit": "Log Out",
 			"deny": "Stay Logged In"
 		},
