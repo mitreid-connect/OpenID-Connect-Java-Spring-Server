@@ -23,7 +23,7 @@ pipeline {
 				sh "mvn versions:set -DnewVersion=1.3.3.GRESHAM-SNAPSHOT"
 				sh "mvn -N versions:update-child-modules"
 				timeout(time: 10, unit: 'MINUTES') {
-                	sh "mvn -B -V -U -T4 clean deploy -DaltSnapshotDeploymentRepository=snapshots::default::https://nexus.greshamtech.com/content/repositories/snapshots/"
+                	sh "mvn -B -V -U -T4 clean deploy -DaltSnapshotDeploymentRepository=snapshots::default::https://nexus.greshamtech.com/content/repositories/third-party-snapshots/"
                 }
 			}
 			post {
