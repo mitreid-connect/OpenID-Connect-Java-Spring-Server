@@ -21,6 +21,7 @@ pipeline {
 		stage ('Build') {
 			steps {
 				sh "mvn versions:set -DnewVersion=1.3.3.${env.BUILD_NUMBER}.RELEASE"
+				sh "mvn -N versions:update-child-modules"
 				timeout(time: 10, unit: 'MINUTES') {
                 	sh "mvn -B -V -U -T4 clean deploy -DaltDeploymentRepository=releases::default::https://nexus.greshamtech.com/content/repositories/thirdparty"
                 }
