@@ -20,11 +20,9 @@ pipeline {
 	stages {
 		stage ('Build') {
 			steps {
-				timeout(time: 20, unit: 'MINUTES') {
-					sh 'mvn versions:set -DnewVersion=1.3.3-${env.BUILD_NUMBER}'
-				}
-				timeout(time: 20, unit: 'MINUTES') {
-                	sh 'mvn -B -V -U -T4 clean deploy -DaltDeploymentRepository=releases::default::https://nexus.greshamtech.com/content/repositories/thirdparty'
+				sh "mvn versions:set -DnewVersion=1.3.3-${env.BUILD_NUMBER}"
+				timeout(time: 10, unit: 'MINUTES') {
+                	sh "mvn -B -V -U -T4 clean deploy -DaltDeploymentRepository=releases::default::https://nexus.greshamtech.com/content/repositories/thirdparty"
                 }
 			}
 			post {
