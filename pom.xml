@@ -365,7 +365,7 @@
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-framework-bom</artifactId>
-				<version>4.3.7.RELEASE</version>
+				<version>4.3.17.RELEASE</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -386,14 +386,14 @@
 			<dependency>
 				<groupId>org.springframework.security</groupId>
 				<artifactId>spring-security-bom</artifactId>
-				<version>4.2.4.RELEASE</version>
+				<version>4.2.6.RELEASE</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.security.oauth</groupId>
 				<artifactId>spring-security-oauth2</artifactId>
-				<version>2.1.0.RELEASE</version>
+				<version>2.1.2.RELEASE</version>
 			</dependency>
 
 			<!-- Servlet -->
@@ -590,7 +590,7 @@
 			<dependency>
 				<groupId>org.bouncycastle</groupId>
 				<artifactId>bcprov-jdk15on</artifactId>
-				<version>[1.52,)</version>
+				<version>[1.59,)</version>
 			</dependency>
 			<dependency>
 				<groupId>org.eclipse.persistence</groupId>

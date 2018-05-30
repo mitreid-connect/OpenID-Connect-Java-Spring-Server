@@ -32,7 +32,7 @@ import com.google.common.base.Strings;
 /**
  *
  * A redirect resolver that knows how to check against the blacklisted URIs
- * for forbidden values. Can be configured to do strict string matching also.
+ * for forbidden values.
  *
  * @author jricher
  *
@@ -45,8 +45,6 @@ public class BlacklistAwareRedirectResolver extends DefaultRedirectResolver {
 
 	@Autowired
 	private ConfigurationPropertiesBean config;
-
-	private boolean strictMatch = true;
 
 	/* (non-Javadoc)
 	 * @see org.springframework.security.oauth2.provider.endpoint.RedirectResolver#resolveRedirect(java.lang.String, org.springframework.security.oauth2.provider.ClientDetails)
@@ -62,44 +60,4 @@ public class BlacklistAwareRedirectResolver extends DefaultRedirectResolver {
 			return redirect;
 		}
 	}
-
-	/* (non-Javadoc)
-	 * @see org.springframework.security.oauth2.provider.endpoint.DefaultRedirectResolver#redirectMatches(java.lang.String, java.lang.String)
-	 */
-	@Override
-	protected boolean redirectMatches(String requestedRedirect, String redirectUri) {
-
-		if (isStrictMatch()) {
-			// we're doing a strict string match for all clients
-			return Strings.nullToEmpty(requestedRedirect).equals(redirectUri);
-		} else {
-			// otherwise do the prefix-match from the library
-			return super.redirectMatches(requestedRedirect, redirectUri);
-		}
-
-	}
-
-	/**
-	 * @return the strictMatch
-	 */
-	public boolean isStrictMatch() {
-		if (config.isHeartMode()) {
-			// HEART mode enforces strict matching
-			return true;
-		} else {
-			return strictMatch;
-		}
-	}
-
-	/**
-	 * Set this to true to require exact string matches for all redirect URIs. (Default is false)
-	 *
-	 * @param strictMatch the strictMatch to set
-	 */
-	public void setStrictMatch(boolean strictMatch) {
-		this.strictMatch = strictMatch;
-	}
-
-
-
 }
