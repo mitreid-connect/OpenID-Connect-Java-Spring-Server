@@ -255,14 +255,11 @@ CREATE TABLE system_scope (
   description VARCHAR2(4000),
   icon VARCHAR2(256),
   restricted NUMBER(1) DEFAULT 0 NOT NULL,
-  default_scope NUMBER(1) DEFAULT 0 NOT NULL,
-  structured NUMBER(1) DEFAULT 0 NOT NULL,
-  structured_param_description VARCHAR2(256),
+  default_scope NUMBER(1) DEFAULT 0 NOT NULL
 
   CONSTRAINT system_scope_unique UNIQUE (scope),
   CONSTRAINT default_scope_check CHECK (default_scope in (1,0)),
-  CONSTRAINT restricted_check CHECK (restricted in (1,0)),
-  CONSTRAINT structured_check CHECK (structured in (1,0))
+  CONSTRAINT restricted_check CHECK (restricted in (1,0))
 );
 CREATE SEQUENCE system_scope_seq START WITH 1 INCREMENT BY 1 NOCACHE NOCYCLE;
 
