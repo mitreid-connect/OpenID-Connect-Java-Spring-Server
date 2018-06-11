@@ -239,8 +239,6 @@ CREATE TABLE IF NOT EXISTS system_scope (
 	icon VARCHAR(256),
 	restricted BOOLEAN DEFAULT false NOT NULL,
 	default_scope BOOLEAN DEFAULT false NOT NULL,
-	structured BOOLEAN DEFAULT false NOT NULL,
-	structured_param_description VARCHAR(256),
 	UNIQUE (scope)
 );
 
