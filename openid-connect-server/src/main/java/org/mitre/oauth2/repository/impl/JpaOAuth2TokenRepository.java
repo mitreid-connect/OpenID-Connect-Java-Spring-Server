@@ -190,7 +190,7 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 		TypedQuery<OAuth2AccessTokenEntity> query = manager.createNamedQuery(OAuth2AccessTokenEntity.QUERY_BY_NAME, OAuth2AccessTokenEntity.class);
 	    query.setParameter(OAuth2AccessTokenEntity.PARAM_NAME, name);
 	    List<OAuth2AccessTokenEntity> results = query.getResultList();
-	    return results != null ? new HashSet<>(query.getResultList()) : new HashSet<>();
+	    return results != null ? new HashSet<>(results) : new HashSet<>();
 	}
 	
 	@Override
@@ -198,7 +198,7 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 		TypedQuery<OAuth2RefreshTokenEntity> query = manager.createNamedQuery(OAuth2RefreshTokenEntity.QUERY_BY_NAME, OAuth2RefreshTokenEntity.class);
 	    query.setParameter(OAuth2RefreshTokenEntity.PARAM_NAME, name);
 	    List<OAuth2RefreshTokenEntity> results = query.getResultList();
-	    return results != null ? new HashSet<>(query.getResultList()) : new HashSet<>();
+	    return results != null ? new HashSet<>(results) : new HashSet<>();
 	}
 
 	@Override
