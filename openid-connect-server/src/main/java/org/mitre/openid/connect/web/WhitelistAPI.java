@@ -73,7 +73,7 @@ public class WhitelistAPI {
 	 * @param m
 	 * @return
 	 */
-	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String getAllWhitelistedSites(ModelMap m) {
 
 		Collection<WhitelistedSite> all = whitelistService.getAll();
@@ -91,7 +91,7 @@ public class WhitelistAPI {
 	 * @return
 	 */
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String addNewWhitelistedSite(@RequestBody String jsonString, ModelMap m, Principal p) {
 
 		JsonObject json;
@@ -128,7 +128,7 @@ public class WhitelistAPI {
 	 * Update an existing whitelisted site
 	 */
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	@RequestMapping(value="/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value="/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String updateWhitelistedSite(@PathVariable("id") Long id, @RequestBody String jsonString, ModelMap m, Principal p) {
 
 		JsonObject json;
@@ -192,7 +192,7 @@ public class WhitelistAPI {
 	/**
 	 * Get a single whitelisted site
 	 */
-	@RequestMapping(value="/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value="/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String getWhitelistedSite(@PathVariable("id") Long id, ModelMap m) {
 		WhitelistedSite whitelist = whitelistService.getById(id);
 		if (whitelist == null) {

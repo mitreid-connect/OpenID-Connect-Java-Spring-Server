@@ -225,7 +225,7 @@ public class ClientAPI {
 	 * @param modelAndView
 	 * @return
 	 */
-	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String apiGetAllClients(Model model, Authentication auth) {
 
 		Collection<ClientDetailsEntity> clients = clientService.getAllClients();
@@ -246,7 +246,7 @@ public class ClientAPI {
 	 * @return
 	 */
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String apiAddClient(@RequestBody String jsonString, Model m, Authentication auth) {
 
 		JsonObject json = null;
@@ -356,7 +356,7 @@ public class ClientAPI {
 	 * @return
 	 */
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	@RequestMapping(value="/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value="/{id}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String apiUpdateClient(@PathVariable("id") Long id, @RequestBody String jsonString, Model m, Authentication auth) {
 
 		JsonObject json = null;
@@ -485,7 +485,7 @@ public class ClientAPI {
 	 * @param modelAndView
 	 * @return
 	 */
-	@RequestMapping(value="/{id}", method=RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value="/{id}", method=RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String apiShowClient(@PathVariable("id") Long id, Model model, Authentication auth) {
 
 		ClientDetailsEntity client = clientService.getClientById(id);

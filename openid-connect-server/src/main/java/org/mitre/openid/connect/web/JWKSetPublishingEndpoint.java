@@ -37,7 +37,7 @@ public class JWKSetPublishingEndpoint {
 	@Autowired
 	private JWTSigningAndValidationService jwtService;
 
-	@RequestMapping(value = "/" + URL, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/" + URL, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String getJwk(Model m) {
 
 		// map from key id to key

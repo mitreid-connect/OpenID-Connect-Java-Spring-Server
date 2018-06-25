@@ -44,7 +44,7 @@ public class StatsAPI {
 	@Autowired
 	private StatsService statsService;
 
-	@RequestMapping(value = "summary", produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "summary", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String statsSummary(ModelMap m) {
 
 		Map<String, Integer> e = statsService.getSummaryStats();
@@ -56,7 +56,7 @@ public class StatsAPI {
 	}
 
 	//	@PreAuthorize("hasRole('ROLE_USER')")
-	//	@RequestMapping(value = "byclientid", produces = MediaType.APPLICATION_JSON_VALUE)
+	//	@RequestMapping(value = "byclientid", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	//	public String statsByClient(ModelMap m) {
 	//		Map<Long, Integer> e = statsService.getByClientId();
 	//
@@ -66,7 +66,7 @@ public class StatsAPI {
 	//	}
 	//
 	@PreAuthorize("hasRole('ROLE_USER')")
-	@RequestMapping(value = "byclientid/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "byclientid/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String statsByClientId(@PathVariable("id") String clientId, ModelMap m) {
 		ClientStat e = statsService.getCountForClientId(clientId);
 
