@@ -175,6 +175,7 @@ public class TestDefaultSystemScopeService {
 		Set<String> actualGood = Sets.newHashSet("foo", "baz", "bar");
 		Set<String> actualGood2 = Sets.newHashSet("foo", "bar");
 		Set<String> actualBad = Sets.newHashSet("foo", "bob", "bar");
+		Set<String> noScopes = Sets.newHashSet();
 
 		// same scopes, different order
 		assertThat(service.scopesMatch(expected, actualGood), is(true));
@@ -184,6 +185,9 @@ public class TestDefaultSystemScopeService {
 
 		// extra scope (fail)
 		assertThat(service.scopesMatch(expected, actualBad), is(false));
+
+		// no  scopes
+		assertThat(service.scopesMatch(noScopes, noScopes), is(true));
 	}
 
 }

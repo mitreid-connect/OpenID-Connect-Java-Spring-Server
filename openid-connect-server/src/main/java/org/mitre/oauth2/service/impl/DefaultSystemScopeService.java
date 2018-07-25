@@ -171,21 +171,14 @@ public class DefaultSystemScopeService implements SystemScopeService {
 	@Override
 	public boolean scopesMatch(Set<String> expected, Set<String> actual) {
 
-		Set<SystemScope> ex = fromStrings(expected);
-		Set<SystemScope> act = fromStrings(actual);
-
-		for (SystemScope actScope : act) {
-			// first check to see if there's an exact match
-			if (!ex.contains(actScope)) {
+		for (String actScopeName : actual) {
+			if (! expected.contains(actScopeName)) {
 				return false;
-			} else {
-				// if we did find an exact match, we need to check the rest
 			}
 		}
 
 		// if we got all the way down here, the setup passed
 		return true;
-
 	}
 
 	@Override
