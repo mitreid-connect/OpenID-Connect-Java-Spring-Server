@@ -62,12 +62,13 @@
 <!-- 		<property name="showSql" value="true" /> -->
 <!-- 	</bean> -->
 
+<!-- 	<jdbc:initialize-database data-source="dataSource"> -->
+<!-- 		<jdbc:script location="classpath:/db/mysql/mysql_database_tables.sql"/> -->
+<!-- 		<jdbc:script location="classpath:/db/mysql/security-schema.sql"/> -->
+<!-- 		<jdbc:script location="classpath:/db/mysql/loading_temp_tables.sql"/> -->
 	<!-- You can optionally initialize the database with test values here, 
 		but this is not recommended for real systems -->
-<!-- 	<jdbc:initialize-database data-source="dataSource"> -->
-<!-- 		<jdbc:script location="classpath:/db/tables/mysql_database_tables.sql"/> -->
-<!-- 		<jdbc:script location="classpath:/db/tables/security-schema.sql"/> -->
-<!-- 		<jdbc:script location="classpath:/db/tables/loading_temp_tables.sql"/> -->
+	<!-- You need run loading_temp_tables.sql, mysql_database_index.sql, clients.sql, scopes.sql, users.sql manually after deployment -->
 <!-- 		<jdbc:script location="classpath:/db/mysql/users.sql"/> -->
 <!-- 		<jdbc:script location="classpath:/db/mysql/clients.sql"/> -->
 <!-- 		<jdbc:script location="classpath:/db/mysql/scopes.sql"/> -->
@@ -90,12 +91,13 @@
 	</bean>
 	-->
 	
-	<!-- You can optionally initialize the database with test values here, 
-		but this is not recommended for real systems -->
 <!-- 	<jdbc:initialize-database data-source="dataSource"> -->
 <!-- 		<jdbc:script location="classpath:/db/psql/psql_database_tables.sql"/> -->
 <!-- 		<jdbc:script location="classpath:/db/psql/security-schema.sql"/> -->
 <!-- 		<jdbc:script location="classpath:/db/psql/loading_temp_tables.sql"/> -->
+	<!-- You can optionally initialize the database with test values here, 
+		but this is not recommended for real systems -->
+	<!-- You need run loading_temp_tables.sql, psql_database_index.sql, clients.sql, scopes.sql, users.sql manually after deployment -->
 <!-- 		<jdbc:script location="classpath:/db/psql/users.sql"/> -->
 <!-- 		<jdbc:script location="classpath:/db/psql/clients.sql"/> -->
 <!-- 		<jdbc:script location="classpath:/db/psql/scopes.sql"/> -->
