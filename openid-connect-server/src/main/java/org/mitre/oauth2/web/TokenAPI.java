@@ -73,7 +73,7 @@ public class TokenAPI {
 	@RequestMapping(value = "/access", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public String getAllAccessTokens(ModelMap m, Principal p) {
 
-		Set<OAuth2AccessTokenEntity> allTokens = tokenService.getAllAccessTokensForUser(p.getName());
+		List<OAuth2AccessTokenEntity> allTokens = tokenService.getAllAccessTokensForUser(p.getName());
 		m.put(JsonEntityView.ENTITY, allTokens);
 		return TokenApiView.VIEWNAME;
 	}
@@ -194,7 +194,7 @@ public class TokenAPI {
 	@RequestMapping(value = "/refresh", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public String getAllRefreshTokens(ModelMap m, Principal p) {
 
-		Set<OAuth2RefreshTokenEntity> allTokens = tokenService.getAllRefreshTokensForUser(p.getName());
+		List<OAuth2RefreshTokenEntity> allTokens = tokenService.getAllRefreshTokensForUser(p.getName());
 		m.put(JsonEntityView.ENTITY, allTokens);
 		return TokenApiView.VIEWNAME;
 

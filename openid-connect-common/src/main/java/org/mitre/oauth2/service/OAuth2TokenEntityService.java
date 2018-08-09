@@ -55,9 +55,9 @@ public interface OAuth2TokenEntityService extends AuthorizationServerTokenServic
 
 	public OAuth2RefreshTokenEntity getRefreshTokenById(Long id);
 
-	public Set<OAuth2AccessTokenEntity> getAllAccessTokensForUser(String name);
+	public List<OAuth2AccessTokenEntity> getAllAccessTokensForUser(String name);
 
-	public Set<OAuth2RefreshTokenEntity> getAllRefreshTokensForUser(String name);
+	public List<OAuth2RefreshTokenEntity> getAllRefreshTokensForUser(String name);
 
 	public OAuth2AccessTokenEntity getRegistrationAccessTokenForClient(ClientDetailsEntity client);
 }

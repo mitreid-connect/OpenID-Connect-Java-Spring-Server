@@ -191,6 +191,24 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	}
 
 	@Override
+	public List<OAuth2AccessTokenEntity> getAccessTokensForUser(String username) {
+		TypedQuery<OAuth2AccessTokenEntity> queryA = manager.createNamedQuery(OAuth2AccessTokenEntity.QUERY_BY_USERNAME, OAuth2AccessTokenEntity.class);
+		queryA.setParameter(OAuth2AccessTokenEntity.PARAM_USERNAME, username);
+		List<OAuth2AccessTokenEntity> accessTokens = queryA.getResultList();
+		return accessTokens;
+
+	}
+
+	@Override
+	public List<OAuth2RefreshTokenEntity> getRefreshTokensForUser(String username) {
+		TypedQuery<OAuth2RefreshTokenEntity> queryR = manager.createNamedQuery(OAuth2RefreshTokenEntity.QUERY_BY_USERNAME, OAuth2RefreshTokenEntity.class);
+		queryR.setParameter(OAuth2RefreshTokenEntity.PARAM_USERNAME, username);
+		List<OAuth2RefreshTokenEntity> refreshTokens = queryR.getResultList();
+		return refreshTokens;
+
+	}
+
+	@Override
 	public Set<OAuth2AccessTokenEntity> getAllExpiredAccessTokens() {
 		DefaultPageCriteria pageCriteria = new DefaultPageCriteria(0, MAXEXPIREDRESULTS);
 		return getAllExpiredAccessTokens(pageCriteria);
