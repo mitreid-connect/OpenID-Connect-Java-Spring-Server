@@ -104,17 +104,33 @@ public class DefaultOAuth2ProviderTokenService implements OAuth2TokenEntityServi
 
 
 	@Override
-	public List<OAuth2AccessTokenEntity> getAllAccessTokensForUser(String username) {
+	public Set<OAuth2AccessTokenEntity> getAllAccessTokensForUser(String id) {
 
-		return tokenRepository.getAccessTokensForUser(username);
+		Set<OAuth2AccessTokenEntity> all = tokenRepository.getAllAccessTokens();
+		Set<OAuth2AccessTokenEntity> results = Sets.newLinkedHashSet();
+
+		for (OAuth2AccessTokenEntity token : all) {
+			if (clearExpiredAccessToken(token) != null && token.getAuthenticationHolder().getAuthentication().getName().equals(id)) {
+				results.add(token);
+			}
+		}
+
+		return results;
 	}
 
 
 	@Override
-	public List<OAuth2RefreshTokenEntity> getAllRefreshTokensForUser(String username) {
+	public Set<OAuth2RefreshTokenEntity> getAllRefreshTokensForUser(String id) {
+		Set<OAuth2RefreshTokenEntity> all = tokenRepository.getAllRefreshTokens();
+		Set<OAuth2RefreshTokenEntity> results = Sets.newLinkedHashSet();
 
-		return tokenRepository.getRefreshTokensForUser(username);
+		for (OAuth2RefreshTokenEntity token : all) {
+			if (clearExpiredRefreshToken(token) != null && token.getAuthenticationHolder().getAuthentication().getName().equals(id)) {
+				results.add(token);
+			}
+		}
 
+		return results;
 	}
 
 	@Override

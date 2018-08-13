@@ -53,10 +53,6 @@ public interface OAuth2TokenRepository {
 
 	public List<OAuth2RefreshTokenEntity> getRefreshTokensForClient(ClientDetailsEntity client);
 
-	public List<OAuth2AccessTokenEntity> getAccessTokensForUser(String username);
-
-	public List<OAuth2RefreshTokenEntity> getRefreshTokensForUser(String username);
-
 	public Set<OAuth2AccessTokenEntity> getAllAccessTokens();
 
 	public Set<OAuth2RefreshTokenEntity> getAllRefreshTokens();
