@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
+<%@ page import="org.mitre.openid.connect.web.SessionStateManagementController" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -9,7 +10,7 @@
             enabled: ${config.sessionStateEnabled},
             cookieName: "${config.sessionStateCookieName}",
             reValidateSeconds: ${config.sessionStateRevalidationInterval},
-            validationUrl: "${ config.issuer }${ config.issuer.endsWith('/') ? '' : '/' }${SessionStateManagementController.VALIDATION_URL}"
+            validationUrl: "${ config.issuer }${ config.issuer.endsWith('/') ? '' : '/' }${ SessionStateManagementController.VALIDATION_URL }"
         };
 
 /*
