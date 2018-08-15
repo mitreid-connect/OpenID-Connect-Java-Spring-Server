@@ -69,6 +69,12 @@ public class ConfigurationPropertiesBean {
 
 	private boolean heartMode = false;
 
+	private String sessionStateCookieName = "OPSS";
+
+	private boolean sessionStateEnabled = true;
+
+	private Long sessionStateRevalidationInterval = 60L; // defaults to 1 minute
+
 	public ConfigurationPropertiesBean() {
 
 	}
@@ -256,5 +262,70 @@ public class ConfigurationPropertiesBean {
 	 */
 	public void setHeartMode(boolean heartMode) {
 		this.heartMode = heartMode;
+	}
+
+	/**
+	 * The name of the cookie which is used by the login page to store the subject (end-user) session ID.
+	 * This cookie is used by the session management iframe to check for changes.
+	 * Only used if sessionStateEnabled is set to true.
+	 *
+	 * @return the cookie name
+	 */
+	public String getSessionStateCookieName() {
+		return sessionStateCookieName;
+	}
+
+	/**
+	 * The name of the cookie which is used by the login page to store the subject (end-user) session ID.
+	 * This cookie is used by the session management iframe to check for changes.
+	 * Only used if sessionStateEnabled is set to true.
+	 *
+	 * @param sessionStateCookieName the cookie name
+	 */
+	public void setSessionStateCookieName(String sessionStateCookieName) {
+		this.sessionStateCookieName = sessionStateCookieName;
+	}
+
+	/**
+	 * Session Management Extensions state.
+	 *
+	 * @return true if session management is enabled
+	 */
+
+	public boolean isSessionStateEnabled() {
+		return sessionStateEnabled;
+	}
+
+	/**
+	 * Configure Session Management Extensions.
+	 *
+	 * @see "http://openid.net/specs/openid-connect-session-1_0.html"
+	 * @param sessionStateEnabled session management enabled state
+	 */
+	public void setSessionStateEnabled(boolean sessionStateEnabled) {
+		this.sessionStateEnabled = sessionStateEnabled;
+	}
+
+
+	/**
+	 * Get the minimum delay between session state re-validation against the backend.
+	 *
+	 * @return The minimum re-validation delay
+	 */
+	public Long getSessionStateRevalidationInterval() {
+		return sessionStateRevalidationInterval;
+	}
+
+	/**
+	 * Set the minimum delay between session state re-validation against the backend.
+	 * Normally the session state is only checked in the frontend based on the session state cookie,
+	 * in order to refresh / maintain the session at the openid connect server a backend call is done
+	 * when the IFrame receives a postMessage and the last check against the backend is more than
+	 * the configured seconds ago.
+	 *
+	 * @param sessionStateRevalidationInterval The minimum re-validation delay
+	 */
+	public void setSessionStateRevalidationInterval(Long sessionStateRevalidationInterval) {
+		this.sessionStateRevalidationInterval = sessionStateRevalidationInterval;
 	}
 }
