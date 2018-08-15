@@ -68,6 +68,15 @@
 		<!-- This property turns on HEART compliance mode -->
 		<!-- <property name="heartMode" value="true" /> -->
 
+		<!-- This property turns on the session management extensions -->
+		<property name="sessionStateEnabled" value="true" />
+
+		<!-- This property defines the cookie name for the session management extensions -->
+		<!-- <property name="sessionStateCookieName" value="OPSS" /> -->
+
+		<!-- This property defines the minimum time between re-validations against the backend for the session management extensions -->
+		<!-- <property name="sessionStateRevalidationInterval" value="300" /> -->
+
 	</bean>
 	
 </beans>

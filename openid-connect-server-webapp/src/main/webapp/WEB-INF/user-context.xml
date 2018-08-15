@@ -45,7 +45,8 @@
 		
 		<security:form-login login-page="/login" authentication-failure-url="/login?error=failure" authentication-success-handler-ref="authenticationTimeStamper" />
 		<security:custom-filter ref="authRequestFilter" after="SECURITY_CONTEXT_FILTER" />
-		<security:logout logout-url="/logout" />
+		<security:custom-filter ref="sessionStateManagementFilter" before="SESSION_MANAGEMENT_FILTER" />
+		<security:logout logout-url="/logout" success-handler-ref="sessionStateLogoutSuccessHandler"  />
 		<security:anonymous />
 		<security:expression-handler ref="oauthWebExpressionHandler" />
 		<security:headers>
