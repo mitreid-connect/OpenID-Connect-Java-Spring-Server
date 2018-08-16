@@ -24,16 +24,18 @@ public class SessionStateAuthorizationInterceptor extends HandlerInterceptorAdap
 	@Override
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
 		// Only on redirects...
-		if (sessionStateManagementService.isEnabled() && (modelAndView.getView() instanceof RedirectView)) {
+		if (sessionStateManagementService.isEnabled() && modelAndView != null && (modelAndView.getView() instanceof RedirectView)) {
 			// Parse the returned url
 			RedirectView view = (RedirectView) modelAndView.getView();
 			UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromUriString(view.getUrl());
 			MultiValueMap<String, String> parameters = uriComponentsBuilder.build().getQueryParams();
 			// Only if a code or token is returned
 			if (parameters.containsKey("code") || parameters.containsKey("access_token")) {
+				// get the current session state value
 				String sessionState = sessionStateManagementService.getSessionState(request);
 				if (sessionState != null) {
-					String stateParam = sessionStateManagementService.getSessionStateParam(sessionState, request.getParameter(OAuth2Utils.CLIENT_ID), view.getUrl());
+					// and append it to the query parameters
+					String stateParam = sessionStateManagementService.buildSessionStateParam(sessionState, request.getParameter(OAuth2Utils.CLIENT_ID), view.getUrl());
 					uriComponentsBuilder.queryParam(SessionStateManagementService.SESSION_STATE_PARAM, stateParam);
 					view.setUrl(uriComponentsBuilder.build().toUriString());
 				}

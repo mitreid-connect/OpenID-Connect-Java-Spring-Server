@@ -106,7 +106,7 @@ public class SessionStateManagementService {
 		}
 	}
 
-	public String getSessionStateParam(String sessionState, String clientId, String url) throws NoSuchAlgorithmException {
+	public String buildSessionStateParam(String sessionState, String clientId, String url) throws NoSuchAlgorithmException {
 		SecureRandom random = new SecureRandom();
 		byte[] salt = new byte[32];
 		random.nextBytes(salt);
