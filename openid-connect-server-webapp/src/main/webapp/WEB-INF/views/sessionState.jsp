@@ -9,7 +9,7 @@
         var sessionStateConfig = {
             enabled: ${config.sessionStateEnabled},
             cookieName: "${config.sessionStateCookieName}",
-            reValidateSeconds: ${config.sessionStateRevalidationInterval},
+            revalidate: ${config.sessionStateRevalidationInterval},
             validationUrl: "${ config.issuer }${ config.issuer.endsWith('/') ? '' : '/' }${ SessionStateManagementController.VALIDATION_URL }"
         };
 
@@ -45,14 +45,21 @@ new m,new m,new m,new m,new m,new m];break;case "SHA-512":a=[new m,new m,new m,n
 
         (function (config) {
 
-            // configuration defaults (if not set, normally assigned already in sessionState.jsp)
+            /* configuration defaults (if not set, normally assigned already in sessionState.jsp) */
             if (!config) {
                 config = {
                     enabled: true, // Enabled by default
                     cookieName: "OPSS",
-                    reValidateSeconds: 60, // re-validate every minute
-                    validationUrl: "../../sessionState/validate"
+                    revalidate: 60, // re-validate every minute
+                    validationUrl: "sessionState/validate"
                 }
+            }
+
+            /* revalidation may be overwritten by an iframe parameter*/
+            var revalidate = parseInt(getQueryParameterByName("revalidate"));
+            if (revalidate) {
+                config.revalidate = revalidate;
+                logMessage("Revalidation is now set to " + revalidate + " seconds.");
             }
 
             /* log a message to the console if defined*/
@@ -75,12 +82,24 @@ new m,new m,new m,new m,new m,new m];break;case "SHA-512":a=[new m,new m,new m,n
                     .replace(/=/g, '')
             }
 
-            var lastCheck = Date.now();
+            /* Get a query string parameter by name */
+            function getQueryParameterByName(name, url) {
+                if (!url) url = window.location.href;
+                name = name.replace(/[\[\]]/g, '\\$&');
+                var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+                    results = regex.exec(url);
+                if (!results) return null;
+                if (!results[2]) return '';
+                return decodeURIComponent(results[2].replace(/\+/g, ' '));
+            }
+
             /* Checks the session ID with the MITREid server backend */
+            // Force backend call on first check
+            var lastCheck = 0;
             function checkSessionWithBackend(sid, targetWindow, eventOrigin) {
                 var current = Date.now();
                 // only re-validate against backend after configured time
-                if (current - lastCheck >= config.reValidateSeconds * 1000) {
+                if (current - lastCheck >= config.revalidate * 1000) {
                     lastCheck = current;
                     // re-validate
                     var oReq = new XMLHttpRequest();
