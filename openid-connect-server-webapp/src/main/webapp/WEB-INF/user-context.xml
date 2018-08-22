@@ -46,13 +46,28 @@
 		<security:form-login login-page="/login" authentication-failure-url="/login?error=failure" authentication-success-handler-ref="authenticationTimeStamper" />
 		<security:custom-filter ref="authRequestFilter" after="SECURITY_CONTEXT_FILTER" />
 		<security:custom-filter ref="sessionStateManagementFilter" before="SESSION_MANAGEMENT_FILTER" />
-		<security:logout logout-url="/logout" success-handler-ref="sessionStateLogoutSuccessHandler"  />
+		<security:custom-filter ref="logoutFilter" position="LOGOUT_FILTER"/>
 		<security:anonymous />
 		<security:expression-handler ref="oauthWebExpressionHandler" />
 		<security:headers>
 			<security:frame-options policy="DENY" />
 		</security:headers>
 		<security:csrf />
-	</security:http>	
+	</security:http>
+
+	<!-- Logout Filter including SessionStateManagement
+		@Todo Move to Java Config to allow Csrf Logout Handler processing
+	-->
+	<bean id="logoutFilter" class="org.springframework.security.web.authentication.logout.LogoutFilter">
+		<constructor-arg index="0" value="/login?logout" />
+		<constructor-arg index="1">
+			<list>
+				<bean id="securityContextLogoutHandler"
+					  class="org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler" />
+				<ref bean="sessionStateManagementService" />
+			</list>
+		</constructor-arg>
+		<property name="filterProcessesUrl" value="/logout" />
+	</bean>
 
 </beans>

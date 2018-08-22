@@ -36,7 +36,7 @@ public class SessionStateManagementController {
 		HttpServletRequest request,
 		ModelMap m) {
 		try {
-			if (sessionStateManagementService.isSessionStateChanged(request, session)) {
+			if (sessionStateManagementService.isSessionStateChanged(request)) {
 				m.put(JsonEntityView.ENTITY, "changed");
 			} else {
 				m.put(JsonEntityView.ENTITY, "unchanged");
