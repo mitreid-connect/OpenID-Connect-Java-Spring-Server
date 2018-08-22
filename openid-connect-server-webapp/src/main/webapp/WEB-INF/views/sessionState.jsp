@@ -93,6 +93,14 @@ new m,new m,new m,new m,new m,new m];break;case "SHA-512":a=[new m,new m,new m,n
                 return decodeURIComponent(results[2].replace(/\+/g, ' '));
             }
 
+            // Gets the origin from a uri */
+            function getOrigin(uri) {
+                var e = uri.indexOf('/', 8);
+                return e !== -1 ? uri.substring(0, uri.indexOf('/', 8)) : uri;
+            }
+
+            var sourceOrigin = getOrigin(document.referrer);
+
             /* Checks the session ID with the MITREid server backend */
             // Force backend call on first check
             var lastCheck = 0;
@@ -122,6 +130,11 @@ new m,new m,new m,new m,new m,new m];break;case "SHA-512":a=[new m,new m,new m,n
                     // session state iframe is disabled, return error to client
                     logMessage("Session state endpoint is disabled");
                     event.source.postMessage("error", event.origin);
+                    return;
+                }
+
+                if (event.origin !== sourceOrigin) {
+                    logMessage("Received message from wrong origin!");
                     return;
                 }
 

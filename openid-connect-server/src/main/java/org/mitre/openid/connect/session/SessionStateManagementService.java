@@ -6,6 +6,8 @@ import org.mitre.openid.connect.filter.SessionStateManagementFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.WebUtils;
 
@@ -22,7 +24,7 @@ import java.security.SecureRandom;
 import java.util.UUID;
 
 @Component("sessionStateManagementService")
-public class SessionStateManagementService {
+public class SessionStateManagementService implements LogoutHandler {
 
 	public static final String SESSION_STATE_PARAM = "session_state";
 	/**
@@ -66,18 +68,18 @@ public class SessionStateManagementService {
 
 	}
 
-	public boolean isSessionStateChanged(HttpServletRequest request, HttpSession session) {
+	public boolean isSessionStateChanged(HttpServletRequest request) {
 		if (!isEnabled()) return false;
+		// get the session state cookie
 		Cookie sessionStateCookie = WebUtils.getCookie(request, config.getSessionStateCookieName());
+		// get the stored session state value
+		String sessionState = getSessionState(request);
 		if (sessionStateCookie != null) {
-			// no current session but session state cookie, state changed!
-			if (session == null) return true;
-			// session state cookie found, get the stored session state value
-			String sessionState = getSessionState(request);
-			// if no state is stored or the value does not match the cookie value, force a change
-			// Session state change detected
-			return sessionState == null || !sessionStateCookie.getValue().equals(sessionState);
-		} else return session != null;
+			// return false if session state is equal
+			return !sessionStateCookie.getValue().equals(sessionState);
+		}
+		// return true if cookie is not found but session state is stored in session
+		return sessionState != null;
 	}
 
 	public void processSessionStateCookie(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
@@ -129,4 +131,8 @@ public class SessionStateManagementService {
 		return e != -1 ? uri.substring(0, uri.indexOf('/', 8)) : uri;
 	}
 
+	@Override
+	public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
+		processSessionStateCookie(request, response, request.getSession(false));
+	}
 }
