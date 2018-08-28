@@ -38,7 +38,7 @@ import org.mitre.openid.connect.view.JsonEntityView;
 import org.mitre.openid.connect.web.DynamicClientRegistrationEndpoint;
 import org.mitre.openid.connect.web.EndSessionEndpoint;
 import org.mitre.openid.connect.web.JWKSetPublishingEndpoint;
-import org.mitre.openid.connect.web.SessionStateManagementController;
+import org.mitre.openid.connect.web.sessionstate.SessionStateManagementController;
 import org.mitre.openid.connect.web.UserInfoEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -386,6 +386,7 @@ public class DiscoveryEndpoint {
 
 		m.put("device_authorization_endpoint", baseUrl + DeviceEndpoint.URL);
 
+		// Session management endpoints as defined in the specification
 		if (config.isSessionStateEnabled()) {
 			m.put("check_session_iframe", baseUrl + SessionStateManagementController.FRAME_URL);
 			m.put("end_session_endpoint", baseUrl + EndSessionEndpoint.URL);

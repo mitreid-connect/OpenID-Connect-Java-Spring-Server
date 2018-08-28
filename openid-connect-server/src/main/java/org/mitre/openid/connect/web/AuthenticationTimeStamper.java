@@ -29,7 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.mitre.openid.connect.filter.AuthorizationRequestFilter;
-import org.mitre.openid.connect.session.SessionStateManagementService;
+import org.mitre.openid.connect.web.sessionstate.SessionStateManagementService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,7 +81,7 @@ public class AuthenticationTimeStamper extends SavedRequestAwareAuthenticationSu
 		}
 
 		// Set additional session state cookie for tracking session changes with session management extensions
-		sessionStateManagementService.processSessionStateCookie(request, response, session);
+		sessionStateManagementService.writeSessionStateCookie(request, response, session);
 
 		logger.info("Successful Authentication of " + authentication.getName() + " at " + authTimestamp.toString());
 

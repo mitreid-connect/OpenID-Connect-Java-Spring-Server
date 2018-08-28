@@ -1,5 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
-<%@ page import="org.mitre.openid.connect.web.SessionStateManagementController" %>
+<%@ page import="org.mitre.openid.connect.web.sessionstate.SessionStateManagementController" %>
 <!DOCTYPE html>
 <html>
 <head>
