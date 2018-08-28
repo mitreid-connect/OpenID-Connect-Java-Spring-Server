@@ -372,7 +372,7 @@
     	"empty": "Il n'y a pas d'URIs sur liste noire sur ce serveur.",
     	"uri": "URI"
     },
-	"copyright": "Propulsé par <a href=\"https://github.com/mitreid-connect/\">MITREid Connect <span class=\"label\">{0}</span></a> <span class=\"pull-right\">&copy; 2017 The MIT Internet Trust Consortium.</span>.",
+	"copyright": "Propulsé par <a href=\"https://github.com/mitreid-connect/\">MITREid Connect <span class=\"label\">{0}</span></a> <span class=\"pull-right\">&copy; 2018 The MIT Internet Trust Consortium.</span>.",
 	"about": {
 		"title": "A Propos",
 		"body": "\nCe Service OpenID Connect est construit à partir du projet Open Source MITREid Connect, du \n<a href=\"http://www.trust.mit.edu/\">MIT Internet Trust Consortium</a>.\n</p>\n<p>\nPour plus d'informations sur le projet, voir \n<a href=\"http://github.com/mitreid-connect/\">MITREid Connect sur GitHub</a>. \nVous pouvez y soumettre des rapports de bogues, donner des retours d'informations ou même contribuer à des correctifs de code pour des fonctionnalités supplémentaires que vous aimeriez voir apparaître."

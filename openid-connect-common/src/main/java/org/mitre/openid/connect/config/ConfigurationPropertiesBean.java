@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2017 The MIT Internet Trust Consortium
+ * Copyright 2018 The MIT Internet Trust Consortium
  *
  * Portions copyright 2011-2013 The MITRE Corporation
  *
@@ -68,6 +68,8 @@ public class ConfigurationPropertiesBean {
 	private boolean dualClient = false;
 
 	private boolean heartMode = false;
+
+	private boolean allowCompleteDeviceCodeUri = false;
 
 	private String sessionStateCookieName = "OPSS";
 
@@ -262,6 +264,20 @@ public class ConfigurationPropertiesBean {
 	 */
 	public void setHeartMode(boolean heartMode) {
 		this.heartMode = heartMode;
+	}
+
+	/**
+	 * @return the allowCompleteDeviceCodeUri
+	 */
+	public boolean isAllowCompleteDeviceCodeUri() {
+		return allowCompleteDeviceCodeUri;
+	}
+
+	/**
+	 * @param allowCompleteDeviceCodeUri the allowCompleteDeviceCodeUri to set
+	 */
+	public void setAllowCompleteDeviceCodeUri(boolean allowCompleteDeviceCodeUri) {
+		this.allowCompleteDeviceCodeUri = allowCompleteDeviceCodeUri;
 	}
 
 	/**

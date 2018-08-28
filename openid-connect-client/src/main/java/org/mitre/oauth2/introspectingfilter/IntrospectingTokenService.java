@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2017 The MIT Internet Trust Consortium
+ * Copyright 2018 The MIT Internet Trust Consortium
  *
  * Portions copyright 2011-2013 The MITRE Corporation
  *
@@ -244,7 +244,10 @@ public class IntrospectingTokenService implements ResourceServerTokenServices {
 	private Authentication createUserAuthentication(JsonObject token) {
 		JsonElement userId = token.get("user_id");
 		if(userId == null) {
-			return null;
+			userId = token.get("sub");
+			if (userId == null) {
+				return null;
+			}
 		}
 
 		return new PreAuthenticatedAuthenticationToken(userId.getAsString(), token, introspectionAuthorityGranter.getAuthorities(token));

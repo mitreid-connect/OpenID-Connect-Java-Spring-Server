@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2017 The MIT Internet Trust Consortium
+ * Copyright 2018 The MIT Internet Trust Consortium
  *
  * Portions copyright 2011-2013 The MITRE Corporation
  *
@@ -57,7 +57,7 @@ public class DefaultOAuth2AuthorizationCodeService implements AuthorizationCodeS
 
 	private int authCodeExpirationSeconds = 60 * 5; // expire in 5 minutes by default
 
-	private RandomValueStringGenerator generator = new RandomValueStringGenerator();
+	private RandomValueStringGenerator generator = new RandomValueStringGenerator(22);
 
 	/**
 	 * Generate a random authorization code and create an AuthorizationCodeEntity,

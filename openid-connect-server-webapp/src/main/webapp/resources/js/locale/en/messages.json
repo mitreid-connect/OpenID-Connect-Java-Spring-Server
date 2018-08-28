@@ -211,7 +211,7 @@
             "no-clients": "There are no registered clients on this server.",
             "no-matches": "There are no clients that match your search criteria.",
             "no-redirect": "NO REDIRECT URI",
-            "registered": "Registrered",
+            "registered": "Registered",
             "search": "Search...",
             "whitelist": "Whitelist",
             "unknown": "at an unknown time"
@@ -372,7 +372,7 @@
     	"empty": "There are no blacklisted URIs on this server.",
     	"uri": "URI"
     },
-	"copyright": "Powered by <a href=\"https://github.com/mitreid-connect/\">MITREid Connect <span class=\"label\">{0}</span></a> <span class=\"pull-right\">&copy; 2017 The MIT Internet Trust Consortium.</span>.",
+	"copyright": "Powered by <a href=\"https://github.com/mitreid-connect/\">MITREid Connect <span class=\"label\">{0}</span></a> <span class=\"pull-right\">&copy; 2018 The MIT Internet Trust Consortium.</span>.",
 	"about": {
 		"title": "About",
 		"body": "\nThis OpenID Connect service is built from the MITREid Connect Open Source project, from \nthe <a href=\"http://www.trust.mit.edu/\">MIT Internet Trust Consortium</a>.\n</p>\n<p>\nMore information about the project can be found at \n<a href=\"http://github.com/mitreid-connect/\">MITREid Connect on GitHub</a>. \nThere, you can submit bug reports, give feedback, or even contribute code patches for additional features you'd like to see."
@@ -510,7 +510,7 @@
 			"expiredUserCode": "The code that you entered has expired. Return to your device and request a new code.",
 			"userCodeAlreadyApproved": "The code that you entered has already been used.",
 			"userCodeMismatch": "There was an error processing the code you entered. Try refreshing the page and returning to your device to request a new code.",
-			"error": "There was an error processing the code you entered. Return to your device adn request a new code."
+			"error": "There was an error processing the code you entered. Return to your device and request a new code."
 		},
 		"approve": {
 			"approved": "The device has been approved.",
