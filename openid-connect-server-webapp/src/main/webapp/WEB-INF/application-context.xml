@@ -83,7 +83,7 @@
 		<mvc:interceptor>
 			<mvc:mapping path="/authorize"/>
 			<!-- Inject the session state into the response -->
-			<bean id="sessionStateAuthorizationInterceptor" class="org.mitre.openid.connect.web.SessionStateAuthorizationInterceptor" />
+			<bean id="sessionStateAuthorizationInterceptor" class="org.mitre.openid.connect.web.sessionstate.SessionStateAuthorizationInterceptor" />
 		</mvc:interceptor>
 	</mvc:interceptors>
 
@@ -215,11 +215,11 @@
 		<security:csrf disabled="true"/>
 	</security:http>
 
-	<security:http pattern="/#{T(org.mitre.openid.connect.web.SessionStateManagementController).URL}**"
+	<security:http pattern="/#{T(org.mitre.openid.connect.web.sessionstate.SessionStateManagementController).URL}**"
 				   create-session="always"
 				   use-expressions="true"
 				   entry-point-ref="http403EntryPoint" >
-		<security:intercept-url pattern="/#{T(org.mitre.openid.connect.web.SessionStateManagementController).URL}**" access="permitAll"/>
+		<security:intercept-url pattern="/#{T(org.mitre.openid.connect.web.sessionstate.SessionStateManagementController).URL}**" access="permitAll"/>
 		<security:custom-filter ref="corsFilter" after="SECURITY_CONTEXT_FILTER" />
 		<security:csrf disabled="true"/>
 		<security:headers disabled="false">
