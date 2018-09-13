@@ -651,5 +651,39 @@
 			<artifactId>jsp-api</artifactId>
 		</dependency>
 	</dependencies>
+	
+	<repositories>
+		<repository>
+			<id>central</id>
+			<url>http://nexus.systeminventors.com/repository/maven-central/</url>
+		</repository>
+		<repository>
+			<id>maven-releases</id>
+			<url>http://nexus.systeminventors.com/repository/maven-releases/</url>
+		</repository>
+		<repository>
+			<id>maven-snapshots</id>
+			<url>http://nexus.systeminventors.com/repository/maven-snapshots/</url>
+		</repository>
+		<repository>
+			<id>spring-repo-release</id>
+			<url>http://nexus.systeminventors.com/repository/spring-repo-release/</url>
+		</repository>
+		<repository>
+			<id>spring-repo-snapshot</id>
+			<url>http://nexus.systeminventors.com/repository/spring-repo-snapshot/</url>
+		</repository>
+	</repositories>
+
+	<distributionManagement>
+		<repository>
+			<id>maven-releases</id>
+			<url>http://nexus.systeminventors.com/repository/maven-releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>maven-snapshots</id>
+			<url>http://nexus.systeminventors.com/repository/maven-snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
 
 </project>
