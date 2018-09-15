@@ -10,19 +10,23 @@ START TRANSACTION;
 -- Insert user information into the temporary tables. To add users to the HSQL database, edit things here.
 -- 
 
+CREATE TEMPORARY TABLE users_TEMP SELECT CONVERT('admin', CHAR(255) CHARACTER SET utf8) as username, CONVERT('password', CHAR(255) CHARACTER SET utf8) as password, true as enabled;
+
 INSERT INTO users_TEMP (username, password, enabled) VALUES
-  ('admin','password',true),
   ('user','password',true);
 
+  
+CREATE TEMPORARY TABLE authorities_TEMP SELECT CONVERT('admin', CHAR(255) CHARACTER SET utf8) as username, CONVERT('ROLE_ADMIN', CHAR(255) CHARACTER SET utf8) as authority;
 
 INSERT INTO authorities_TEMP (username, authority) VALUES
-  ('admin','ROLE_ADMIN'),
   ('admin','ROLE_USER'),
   ('user','ROLE_USER');
     
+  
+CREATE TEMPORARY TABLE user_info_TEMP SELECT CONVERT('90342.ASDFJWFA', CHAR(255) CHARACTER SET utf8) as sub, CONVERT('admin', CHAR(255) CHARACTER SET utf8) as preferred_username, CONVERT('Demo Admin', CHAR(255) CHARACTER SET utf8) as name, CONVERT('admin@example.com', CHAR(255) CHARACTER SET utf8) as email, true as email_verified;
+
 -- By default, the username column here has to match the username column in the users table, above
 INSERT INTO user_info_TEMP (sub, preferred_username, name, email, email_verified) VALUES
-  ('90342.ASDFJWFA','admin','Demo Admin','admin@example.com', true),
   ('01921.FLANRJQW','user','Demo User','user@example.com', true);
 
  
@@ -45,8 +49,14 @@ INSERT INTO user_info (sub, preferred_username, name, email, email_verified)
 -- 
 -- Close the transaction and turn autocommit back on
 -- 
-    
+
+
 COMMIT;
 
 SET AUTOCOMMIT = 1;
 
+DROP TEMPORARY TABLE users_TEMP;
+    
+DROP TEMPORARY TABLE authorities_TEMP;
+
+DROP TEMPORARY TABLE user_info_TEMP;

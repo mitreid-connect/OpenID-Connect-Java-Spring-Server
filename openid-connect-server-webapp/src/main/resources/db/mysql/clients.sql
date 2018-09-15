@@ -10,23 +10,28 @@ START TRANSACTION;
 -- Insert client information into the temporary tables. To add clients to the HSQL database, edit things here.
 -- 
 
-INSERT INTO client_details_TEMP (client_id, client_secret, client_name, dynamically_registered, refresh_token_validity_seconds, access_token_validity_seconds, id_token_validity_seconds, allow_introspection) VALUES
-	('client', 'secret', 'Test Client', false, null, 3600, 600, true);
+CREATE TEMPORARY TABLE client_details_TEMP SELECT CONVERT('client', CHAR(255) CHARACTER SET utf8) as client_id, CONVERT('secret', CHAR(255) CHARACTER SET utf8) as client_secret, CONVERT('Test Client', CHAR(255) CHARACTER SET utf8) as client_name, false as dynamically_registered, null as refresh_token_validity_seconds, 3600 as access_token_validity_seconds, 600 as id_token_validity_seconds, true as allow_introspection;
+
+CREATE TEMPORARY TABLE client_scope_TEMP SELECT CONVERT('client', CHAR(255) CHARACTER SET utf8) as owner_id, CONVERT('openid', CHAR(255) CHARACTER SET utf8) as scope;
 
 INSERT INTO client_scope_TEMP (owner_id, scope) VALUES
-	('client', 'openid'),
 	('client', 'profile'),
 	('client', 'email'),
 	('client', 'address'),
 	('client', 'phone'),
 	('client', 'offline_access');
 
+
+CREATE TEMPORARY TABLE 	client_redirect_uri_TEMP SELECT CONVERT('client', CHAR(255) CHARACTER SET utf8) AS owner_id, CONVERT('http://localhost/', CHAR(255) CHARACTER SET utf8) AS redirect_uri;
+
 INSERT INTO client_redirect_uri_TEMP (owner_id, redirect_uri) VALUES
-	('client', 'http://localhost/'),
 	('client', 'http://localhost:8080/');
 	
+	
+CREATE TEMPORARY TABLE client_grant_type_TEMP SELECT  CONVERT('client', CHAR(255) CHARACTER SET utf8) as owner_id,  CONVERT('authorization_code', CHAR(255) CHARACTER SET utf8) as grant_type;
+
+
 INSERT INTO client_grant_type_TEMP (owner_id, grant_type) VALUES
-	('client', 'authorization_code'),
 	('client', 'urn:ietf:params:oauth:grant_type:redelegate'),
 	('client', 'implicit'),
 	('client', 'refresh_token');
@@ -55,7 +60,13 @@ INSERT INTO client_grant_type (owner_id, grant_type)
 -- Close the transaction and turn autocommit back on
 -- 
     
+
 COMMIT;
 
 SET AUTOCOMMIT = 1;
 
+
+DROP TEMPORARY TABLE client_details_TEMP;
+DROP TEMPORARY TABLE client_scope_TEMP;
+DROP TEMPORARY TABLE client_redirect_uri_TEMP;
+DROP TEMPORARY TABLE client_grant_type_TEMP;
