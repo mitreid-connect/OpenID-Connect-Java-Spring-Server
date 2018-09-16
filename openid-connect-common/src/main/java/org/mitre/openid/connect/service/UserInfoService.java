@@ -33,7 +33,7 @@ public interface UserInfoService {
 	 * @param username
 	 * @return
 	 */
-	public UserInfo getByUsername(String username);
+	public UserInfo getByUsername(String domain, String username);
 
 	/**
 	 * Get the UserInfo for the given username (usually maps to the
@@ -43,7 +43,7 @@ public interface UserInfoService {
 	 * @param clientId
 	 * @return
 	 */
-	public UserInfo getByUsernameAndClientId(String username, String clientId);
+	public UserInfo getByUsernameAndClientId(String domain, String username, String clientId);
 
 	/**
 	 * Get the user registered at this server with the given email address.
@@ -51,6 +51,6 @@ public interface UserInfoService {
 	 * @param email
 	 * @return
 	 */
-	public UserInfo getByEmailAddress(String email);
+	public UserInfo getByEmailAddress(String domain, String email);
 
 }

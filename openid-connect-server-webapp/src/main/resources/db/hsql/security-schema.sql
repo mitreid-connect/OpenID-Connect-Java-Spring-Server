@@ -2,13 +2,19 @@
 -- Tables for Spring Security's user details service
 --
   
-create table IF NOT EXISTS users(
-      username varchar(50) not null primary key,
-      password varchar(50) not null,
-      enabled boolean not null);
+CREATE TABLE IF NOT EXISTS users(
+	  uuid VARCHAR(64) PRIMARY KEY,
+	  host_uuid VARCHAR(64),
+      username VARCHAR(255) not null,
+      password VARCHAR(255) not null,
+      enabled BOOLEAN not null)           
+;
 
-  create table IF NOT EXISTS authorities (
-      username varchar(50) not null,
-      authority varchar(50) not null,
-      constraint fk_authorities_users foreign key(username) references users(username),
-      constraint ix_authority unique (username,authority));
+CREATE TABLE IF NOT EXISTS authorities (
+      uuid VARCHAR(64) PRIMARY not null,
+      host_id BIGINT,
+      user_uuid VARCHAR(64) PRIMARY not null,
+      authority VARCHAR(255) not null,
+      UNIQUE KEY ix_authorities (uuid, authority),
+      CONSTRAINT authorities_users_FK FOREIGN KEY (user_uuid) REFERENCES users (uuid)
+;

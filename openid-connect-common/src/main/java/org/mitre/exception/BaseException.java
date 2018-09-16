@@ -15,32 +15,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package org.mitre.openid.connect.repository;
+package org.mitre.exception;
 
-import org.mitre.openid.connect.model.UserInfo;
+public abstract class BaseException extends RuntimeException {
 
-/**
- * UserInfo repository interface
- *
- * @author Michael Joseph Walsh
- *
- */
-public interface UserInfoRepository {
 
-	/**
-	 * Get a UserInfo object by its preferred_username field
-	 * @param username
-	 * @return
-	 */
-	public UserInfo getByUsername(String host, String username);
+	private static final long serialVersionUID = 239940323516659771L;
 
-	/**
-	 *
-	 * Get the UserInfo object by its email field
-	 *
-	 * @param email
-	 * @return
-	 */
-	public UserInfo getByEmailAddress(String host, String email);
+	public BaseException() {
+		super();
+	}
 
+	public BaseException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
+	public BaseException(String message) {
+		super(message);
+	}
+
+	public BaseException(Throwable cause) {
+		super(cause);
+	}
+
+	
 }

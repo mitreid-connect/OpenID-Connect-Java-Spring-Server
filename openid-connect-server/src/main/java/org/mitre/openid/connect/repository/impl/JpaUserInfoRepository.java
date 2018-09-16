@@ -32,6 +32,7 @@ import org.springframework.stereotype.Repository;
  * JPA UserInfo repository implementation
  *
  * @author Michael Joseph Walsh
+ * @author Nasim Kabiliravi
  *
  */
 @Repository("jpaUserInfoRepository")
@@ -41,10 +42,10 @@ public class JpaUserInfoRepository implements UserInfoRepository {
 	private EntityManager manager;
 
 	/**
-	 * Get a single UserInfo object by its username
+	 * Get a single UserInfo object by its username for a specific host
 	 */
 	@Override
-	public UserInfo getByUsername(String username) {
+	public UserInfo getByUsername(String host, String username) {
 		TypedQuery<DefaultUserInfo> query = manager.createNamedQuery(DefaultUserInfo.QUERY_BY_USERNAME, DefaultUserInfo.class);
 		query.setParameter(DefaultUserInfo.PARAM_USERNAME, username);
 
@@ -53,10 +54,10 @@ public class JpaUserInfoRepository implements UserInfoRepository {
 	}
 
 	/**
-	 * Get a single UserInfo object by its email address
+	 * Get a single UserInfo object by its email address for a specific host
 	 */
 	@Override
-	public UserInfo getByEmailAddress(String email) {
+	public UserInfo getByEmailAddress(String host, String email) {
 		TypedQuery<DefaultUserInfo> query = manager.createNamedQuery(DefaultUserInfo.QUERY_BY_EMAIL, DefaultUserInfo.class);
 		query.setParameter(DefaultUserInfo.PARAM_EMAIL, email);
 

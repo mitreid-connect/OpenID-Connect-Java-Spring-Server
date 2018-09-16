@@ -15,32 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package org.mitre.openid.connect.repository;
 
-import org.mitre.openid.connect.model.UserInfo;
+package org.mitre.discovery.repository;
 
-/**
- * UserInfo repository interface
- *
- * @author Michael Joseph Walsh
- *
- */
-public interface UserInfoRepository {
-
-	/**
-	 * Get a UserInfo object by its preferred_username field
-	 * @param username
-	 * @return
-	 */
-	public UserInfo getByUsername(String host, String username);
-
-	/**
-	 *
-	 * Get the UserInfo object by its email field
-	 *
-	 * @param email
-	 * @return
-	 */
-	public UserInfo getByEmailAddress(String host, String email);
+public interface HostInfoRepository {
+	
+	
 
 }

@@ -21,6 +21,7 @@
 package org.mitre.openid.connect.web;
 
 import java.lang.reflect.Type;
+import java.net.URL;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -28,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.mitre.openid.connect.model.OIDCAuthenticationToken;
 import org.mitre.openid.connect.model.UserInfo;
 import org.mitre.openid.connect.service.UserInfoService;
+import org.mitre.util.HttpUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationTrustResolver;
 import org.springframework.security.authentication.AuthenticationTrustResolverImpl;
@@ -68,6 +70,8 @@ public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
+		URL url = HttpUtils.getHost(request);
+		
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
 		if (auth instanceof Authentication){
@@ -90,7 +94,7 @@ public class UserInfoInterceptor extends HandlerInterceptorAdapter {
 				if (auth != null && auth.getName() != null && userInfoService != null) {
 
 					// try to look up a user based on the principal's name
-					UserInfo user = userInfoService.getByUsername(auth.getName());
+					UserInfo user = userInfoService.getByUsername(url.getHost(), auth.getName());
 
 					// if we have one, inject it so views can use it
 					if (user != null) {

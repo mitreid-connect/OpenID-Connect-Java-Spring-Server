@@ -6,47 +6,21 @@ SET AUTOCOMMIT FALSE;
 
 START TRANSACTION;
 
---
--- Insert user information into the temporary tables. To add users to the HSQL database, edit things here.
--- 
 
-INSERT INTO users_TEMP (username, password, enabled) VALUES
-  ('admin','password',true),
-  ('user','password',true);
+INSERT INTO users (uuid, host_uuid, username, password, enabled) VALUES
+  ('3e75c5f0-c26f-4f48-b871-d4b7ec3c03c1', '0629d968-4eb4-467d-b45f-f4b1a1d3e7f0', 'admin','password',true),
+  ('85b9306b-5c3e-4297-b35b-b84dcbd158a7', '0629d968-4eb4-467d-b45f-f4b1a1d3e7f0', 'user','password',true);
 
 
-INSERT INTO authorities_TEMP (username, authority) VALUES
-  ('admin','ROLE_ADMIN'),
-  ('admin','ROLE_USER'),
-  ('user','ROLE_USER');
+INSERT INTO authorities (uuid, host_uuid, user_uuid, username, authority) VALUES
+  ('55ada8e5-0562-4dee-9fda-9ca6fffaf831', '0629d968-4eb4-467d-b45f-f4b1a1d3e7f0', '3e75c5f0-c26f-4f48-b871-d4b7ec3c03c1', 'ROLE_ADMIN'),
+  ('cbf4ee35-3a2c-413f-913b-04b06b9a5826', '0629d968-4eb4-467d-b45f-f4b1a1d3e7f0', '3e75c5f0-c26f-4f48-b871-d4b7ec3c03c1', 'ROLE_USER'),
+  ('15796fcd-91dc-4c73-be0d-0b7af608c0ab', '0629d968-4eb4-467d-b45f-f4b1a1d3e7f0', '85b9306b-5c3e-4297-b35b-b84dcbd158a7', 'ROLE_USER');
     
 -- By default, the username column here has to match the username column in the users table, above
-INSERT INTO user_info_TEMP (sub, preferred_username, name, email, email_verified) VALUES
-  ('90342.ASDFJWFA','admin','Demo Admin','admin@example.com', true),
-  ('01921.FLANRJQW','user','Demo User','user@example.com', true);
-
- 
---
--- Merge the temporary users safely into the database. This is a two-step process to keep users from being created on every startup with a persistent store.
---
-
-MERGE INTO users 
-  USING (SELECT username, password, enabled FROM users_TEMP) AS vals(username, password, enabled)
-  ON vals.username = users.username
-  WHEN NOT MATCHED THEN 
-    INSERT (username, password, enabled) VALUES(vals.username, vals.password, vals.enabled);
-
-MERGE INTO authorities 
-  USING (SELECT username, authority FROM authorities_TEMP) AS vals(username, authority)
-  ON vals.username = authorities.username AND vals.authority = authorities.authority
-  WHEN NOT MATCHED THEN 
-    INSERT (username,authority) values (vals.username, vals.authority);
-
-MERGE INTO user_info 
-  USING (SELECT sub, preferred_username, name, email, email_verified FROM user_info_TEMP) AS vals(sub, preferred_username, name, email, email_verified)
-  ON vals.preferred_username = user_info.preferred_username
-  WHEN NOT MATCHED THEN 
-    INSERT (sub, preferred_username, name, email, email_verified) VALUES (vals.sub, vals.preferred_username, vals.name, vals.email, vals.email_verified);
+INSERT INTO user_info (user_uuid, host_uuid, sub, name, email, email_verified) VALUES
+  ('3e75c5f0-c26f-4f48-b871-d4b7ec3c03c1', '0629d968-4eb4-467d-b45f-f4b1a1d3e7f0', '90342.ASDFJWFA', 'Demo Admin','admin@example.com', true),
+  ('85b9306b-5c3e-4297-b35b-b84dcbd158a7', '0629d968-4eb4-467d-b45f-f4b1a1d3e7f0', '01921.FLANRJQW', 'Demo User','user@example.com', true);
 
     
 -- 

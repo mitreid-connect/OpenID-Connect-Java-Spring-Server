@@ -1,0 +1,41 @@
+{
+    "databases": {
+        "hsql-mem": {
+            "driverClassName": "org.hsqldb.jdbcDriver",
+            "jdbcUrl": "jdbc:hsqldb:mem:oic;sql.syntax_mys=true",
+            "username": "oic",
+            "password": "oic",
+            "initScripts": [
+                "classpath:/db/hsql/hsql_database_tables.sql",
+                "classpath:/db/hsql/security-schema.sql",
+                "classpath:/db/hsql/loading_temp_tables.sql",
+                "classpath:/db/hsql/users.sql",
+                "classpath:/db/hsql/clients.sql",
+                "classpath:/db/hsql/scopes.sql"
+            ]
+        },
+        "mysql-localhost": {
+            "driverClassName": "com.mysql.jdbc.Driver",
+            "jdbcUrl": "jdbc:mysql://127.0.0.1:3306/kopenid",
+            "username": "kerp",
+            "password": "12345678"
+        }
+    },
+    "restApiHosts": {
+        "dev": {
+            "host": "http://localhost:8320"
+        },
+        "qa": {
+            "host": "https://kopenid.api-np.systeminventors.com"
+        },
+        "prod": {
+            "host": "https://kopenid.api.systeminventors.com"
+        }
+    },
+    "repositories": {
+        "userInfoRepository": {
+            "type": "DB",
+            "database": "hsql-mem"
+        }
+    }
+}

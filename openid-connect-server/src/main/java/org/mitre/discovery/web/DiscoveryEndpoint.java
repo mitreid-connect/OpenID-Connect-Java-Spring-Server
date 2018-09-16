@@ -17,10 +17,13 @@
  *******************************************************************************/
 package org.mitre.discovery.web;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.mitre.discovery.util.WebfingerURLNormalizer;
 import org.mitre.jwt.encryption.service.JWTEncryptionAndDecryptionService;
@@ -39,6 +42,7 @@ import org.mitre.openid.connect.web.DynamicClientRegistrationEndpoint;
 import org.mitre.openid.connect.web.EndSessionEndpoint;
 import org.mitre.openid.connect.web.JWKSetPublishingEndpoint;
 import org.mitre.openid.connect.web.UserInfoEndpoint;
+import org.mitre.util.HttpUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,8 +110,10 @@ public class DiscoveryEndpoint {
 	};
 
 	@RequestMapping(value={"/" + WEBFINGER_URL}, produces = MediaType.APPLICATION_JSON_VALUE)
-	public String webfinger(@RequestParam("resource") String resource, @RequestParam(value = "rel", required = false) String rel, Model model) {
+	public String webfinger(HttpServletRequest request, @RequestParam("resource") String resource, @RequestParam(value = "rel", required = false) String rel, Model model) {
 
+		URL url = HttpUtils.getHost(request);
+		
 		if (!Strings.isNullOrEmpty(rel) && !rel.equals("http://openid.net/specs/connect/1.0/issuer")) {
 			logger.warn("Responding to webfinger request for non-OIDC relation: " + rel);
 		}
@@ -122,12 +128,12 @@ public class DiscoveryEndpoint {
 				// acct: URI (email address format)
 
 				// check on email addresses first
-				UserInfo user = userService.getByEmailAddress(resourceUri.getUserInfo() + "@" + resourceUri.getHost());
+				UserInfo user = userService.getByEmailAddress(url.getHost(), resourceUri.getUserInfo() + "@" + resourceUri.getHost());
 
 				if (user == null) {
 					// user wasn't found, see if the local part of the username matches, plus our issuer host
 
-					user = userService.getByUsername(resourceUri.getUserInfo()); // first part is the username
+					user = userService.getByUsername(url.getHost(), resourceUri.getUserInfo()); // first part is the username
 
 					if (user != null) {
 						// username matched, check the host component
