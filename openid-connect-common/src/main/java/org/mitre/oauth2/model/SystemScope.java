@@ -20,6 +20,8 @@
  */
 package org.mitre.oauth2.model;
 
+import java.util.UUID;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -37,53 +39,55 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "system_scope")
 @NamedQueries({
-	@NamedQuery(name = SystemScope.QUERY_ALL, query = "select s from SystemScope s ORDER BY s.id"),
-	@NamedQuery(name = SystemScope.QUERY_BY_VALUE, query = "select s from SystemScope s WHERE s.value = :" + SystemScope.PARAM_VALUE)
-})
+		@NamedQuery(name = SystemScope.QUERY_ALL, query = "select s from SystemScope s where s.hostUuid = :"
+				+ SystemScope.PARAM_HOST_UUID + " ORDER BY s.value"),
+		@NamedQuery(name = SystemScope.QUERY_BY_VALUE, query = "select s from SystemScope s WHERE s.value = :"
+				+ SystemScope.PARAM_VALUE) })
 public class SystemScope {
 
 	public static final String QUERY_BY_VALUE = "SystemScope.getByValue";
 	public static final String QUERY_ALL = "SystemScope.findAll";
 
 	public static final String PARAM_VALUE = "value";
+	public static final String PARAM_HOST_UUID = "value";
 
-	private Long id;
+	private String uuid;
 	private String value; // scope value
 	private String description; // human-readable description
 	private String icon; // class of the icon to display on the auth page
 	private boolean defaultScope = false; // is this a default scope for newly-registered clients?
 	private boolean restricted = false; // is this scope restricted to admin-only registration access?
 
-	/**
-	 * Make a blank system scope with no value
-	 */
-	public SystemScope() {
 
+	public SystemScope() {
+		this.uuid = UUID.randomUUID().toString();
+	}
+
+	public SystemScope(String uuid) {
+		this.uuid = uuid;
 	}
 
 	/**
 	 * Make a system scope with the given scope value
+	 * 
 	 * @param value
 	 */
-	public SystemScope(String value) {
+	public SystemScope(String uuid, String value) {
+		this(uuid);
 		this.value = value;
 	}
 
-	/**
-	 * @return the id
-	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
-	public Long getId() {
-		return id;
+	@Column(name = "uuid")
+	public String getUuid() {
+		return uuid;
 	}
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(Long id) {
-		this.id = id;
+
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
 	}
+
 	/**
 	 * @return the value
 	 */
@@ -92,12 +96,14 @@ public class SystemScope {
 	public String getValue() {
 		return value;
 	}
+
 	/**
 	 * @param value the value to set
 	 */
 	public void setValue(String value) {
 		this.value = value;
 	}
+
 	/**
 	 * @return the description
 	 */
@@ -106,12 +112,14 @@ public class SystemScope {
 	public String getDescription() {
 		return description;
 	}
+
 	/**
 	 * @param description the description to set
 	 */
 	public void setDescription(String description) {
 		this.description = description;
 	}
+
 	/**
 	 * @return the icon
 	 */
@@ -120,6 +128,7 @@ public class SystemScope {
 	public String getIcon() {
 		return icon;
 	}
+
 	/**
 	 * @param icon the icon to set
 	 */
@@ -159,7 +168,9 @@ public class SystemScope {
 		this.restricted = restricted;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
@@ -167,16 +178,17 @@ public class SystemScope {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + (defaultScope ? 1231 : 1237);
-		result = prime * result
-				+ ((description == null) ? 0 : description.hashCode());
+		result = prime * result + ((description == null) ? 0 : description.hashCode());
 		result = prime * result + ((icon == null) ? 0 : icon.hashCode());
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((uuid == null) ? 0 : uuid.hashCode());
 		result = prime * result + (restricted ? 1231 : 1237);
 		result = prime * result + ((value == null) ? 0 : value.hashCode());
 		return result;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
@@ -208,11 +220,11 @@ public class SystemScope {
 		} else if (!icon.equals(other.icon)) {
 			return false;
 		}
-		if (id == null) {
-			if (other.id != null) {
+		if (uuid == null) {
+			if (other.uuid != null) {
 				return false;
 			}
-		} else if (!id.equals(other.id)) {
+		} else if (!uuid.equals(other.uuid)) {
 			return false;
 		}
 		if (restricted != other.restricted) {
@@ -228,14 +240,15 @@ public class SystemScope {
 		return true;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
-		return "SystemScope [id=" + id + ", value=" + value + ", description="
-				+ description + ", icon=" + icon + ", defaultScope="
-				+ defaultScope + ", restricted=" + restricted + "]";
+		return "SystemScope [uuid=" + uuid + ", value=" + value + ", description=" + description + ", icon=" + icon
+				+ ", defaultScope=" + defaultScope + ", restricted=" + restricted + "]";
 	}
 
 }

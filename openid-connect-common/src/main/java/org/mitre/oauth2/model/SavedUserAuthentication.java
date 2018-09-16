@@ -18,6 +18,7 @@ package org.mitre.oauth2.model;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.UUID;
 
 import javax.persistence.Basic;
 import javax.persistence.CollectionTable;
@@ -26,8 +27,6 @@ import javax.persistence.Convert;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
@@ -49,7 +48,7 @@ public class SavedUserAuthentication implements Authentication {
 
 	private static final long serialVersionUID = -1804249963940323488L;
 
-	private Long id;
+	private String uuid;
 
 	private String name;
 
@@ -74,29 +73,23 @@ public class SavedUserAuthentication implements Authentication {
 			setSourceClass(src.getClass().getName());
 		}
 	}
-
-	/**
-	 * Create an empty saved auth
-	 */
+	
 	public SavedUserAuthentication() {
-
+		this.uuid = UUID.randomUUID().toString();
 	}
 
-	/**
-	 * @return the id
-	 */
+	public SavedUserAuthentication(String uuid) {
+		this.uuid = uuid;
+	}
+	
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
-	public Long getId() {
-		return id;
+	@Column(name = "uuid")
+	public String getUuid() {
+		return uuid;
 	}
 
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(Long id) {
-		this.id = id;
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
 	}
 
 	@Override
@@ -110,7 +103,7 @@ public class SavedUserAuthentication implements Authentication {
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(
 			name="saved_user_auth_authority",
-			joinColumns=@JoinColumn(name="owner_id")
+			joinColumns=@JoinColumn(name="user_auth_uuid")
 			)
 	@Convert(converter = SimpleGrantedAuthorityStringConverter.class)
 	@Column(name="authority")

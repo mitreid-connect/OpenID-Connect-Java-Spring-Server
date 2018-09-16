@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.persistence.Basic;
 import javax.persistence.CollectionTable;
@@ -85,7 +86,7 @@ public class ClientDetailsEntity implements ClientDetails {
 
 	private static final long serialVersionUID = -1617727085733786296L;
 
-	private Long id;
+	private String uuid;
 
 	/** Fields from the OAuth2 Dynamic Registration Specification */
 	private String clientId = null; // client_id
@@ -240,11 +241,12 @@ public class ClientDetailsEntity implements ClientDetails {
 		}
 	}
 
-	/**
-	 * Create a blank ClientDetailsEntity
-	 */
 	public ClientDetailsEntity() {
+		this.uuid = UUID.randomUUID().toString();
+	}
 
+	public ClientDetailsEntity(String uuid) {
+		this.uuid = uuid;
 	}
 
 	@PrePersist
@@ -256,24 +258,16 @@ public class ClientDetailsEntity implements ClientDetails {
 		}
 	}
 
-	/**
-	 * @return the id
-	 */
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
-	public Long getId() {
-		return id;
+	@Column(name = "uuid")
+	public String getUuid() {
+		return uuid;
 	}
 
-	/**
-	 *
-	 * @param id the id to set
-	 */
-	public void setId(Long id) {
-		this.id = id;
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
 	}
-
+	
 	/**
 	 * @return the clientDescription
 	 */
@@ -432,7 +426,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(
 			name="client_scope",
-			joinColumns=@JoinColumn(name="owner_id")
+			joinColumns=@JoinColumn(name="client_uuid")
 			)
 	@Override
 	@Column(name="scope")
@@ -453,7 +447,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(
 			name="client_grant_type",
-			joinColumns=@JoinColumn(name="owner_id")
+			joinColumns=@JoinColumn(name="client_uuid")
 			)
 	@Column(name="grant_type")
 	public Set<String> getGrantTypes() {
@@ -482,7 +476,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(
 			name="client_authority",
-			joinColumns=@JoinColumn(name="owner_id")
+			joinColumns=@JoinColumn(name="client_uuid")
 			)
 	@Override
 	@Convert(converter = SimpleGrantedAuthorityStringConverter.class)
@@ -532,7 +526,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(
 			name="client_redirect_uri",
-			joinColumns=@JoinColumn(name="owner_id")
+			joinColumns=@JoinColumn(name="client_uuid")
 			)
 	@Column(name="redirect_uri")
 	public Set<String> getRedirectUris() {
@@ -562,7 +556,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(
 			name="client_resource",
-			joinColumns=@JoinColumn(name="owner_id")
+			joinColumns=@JoinColumn(name="client_uuid")
 			)
 	@Column(name="resource_id")
 	public Set<String> getResourceIds() {
@@ -637,7 +631,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(
 			name="client_contact",
-			joinColumns=@JoinColumn(name="owner_id")
+			joinColumns=@JoinColumn(name="client_uuid")
 			)
 	@Column(name="contact")
 	public Set<String> getContacts() {
@@ -851,7 +845,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(
 			name="client_response_type",
-			joinColumns=@JoinColumn(name="owner_id")
+			joinColumns=@JoinColumn(name="client_uuid")
 			)
 	@Column(name="response_type")
 	public Set<String> getResponseTypes() {
@@ -871,7 +865,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(
 			name="client_default_acr_value",
-			joinColumns=@JoinColumn(name="owner_id")
+			joinColumns=@JoinColumn(name="client_uuid")
 			)
 	@Column(name="default_acr_value")
 	public Set<String> getDefaultACRvalues() {
@@ -907,7 +901,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(
 			name="client_post_logout_redirect_uri",
-			joinColumns=@JoinColumn(name="owner_id")
+			joinColumns=@JoinColumn(name="client_uuid")
 			)
 	@Column(name="post_logout_redirect_uri")
 	public Set<String> getPostLogoutRedirectUris() {
@@ -927,7 +921,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(
 			name="client_request_uri",
-			joinColumns=@JoinColumn(name="owner_id")
+			joinColumns=@JoinColumn(name="client_uuid")
 			)
 	@Column(name="request_uri")
 	public Set<String> getRequestUris() {
@@ -987,7 +981,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(
 			name="client_claims_redirect_uri",
-			joinColumns=@JoinColumn(name="owner_id")
+			joinColumns=@JoinColumn(name="client_uuid")
 			)
 	@Column(name="redirect_uri")
 	public Set<String> getClaimsRedirectUris() {

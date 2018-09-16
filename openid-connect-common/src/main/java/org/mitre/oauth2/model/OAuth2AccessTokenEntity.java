@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -99,7 +100,9 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 
 	public static final String ID_TOKEN_FIELD_NAME = "id_token";
 
-	private Long id;
+	private String uuid;
+	
+	private String hostUuid;
 
 	private ClientDetailsEntity client;
 
@@ -120,29 +123,34 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	private ApprovedSite approvedSite;
 
 	private Map<String, Object> additionalInformation = new HashMap<>(); // ephemeral map of items to be added to the OAuth token response
+	
 
-	/**
-	 * Create a new, blank access token
-	 */
 	public OAuth2AccessTokenEntity() {
-
+		this.uuid = UUID.randomUUID().toString();
 	}
 
-	/**
-	 * @return the id
-	 */
+	public OAuth2AccessTokenEntity(String uuid) {
+		this.uuid = uuid;
+	}
+
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
-	public Long getId() {
-		return id;
+	@Column(name = "uuid")
+	public String getUuid() {
+		return uuid;
 	}
 
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(Long id) {
-		this.id = id;
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
+	}	
+
+	@Basic
+	@Column(name="host_uuid")
+	public String getHostUuid() {
+		return hostUuid;
+	}
+
+	public void setHostUuid(String hostUuid) {
+		this.hostUuid = hostUuid;
 	}
 
 	/**
@@ -160,7 +168,7 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	 * @return the authentication
 	 */
 	@ManyToOne
-	@JoinColumn(name = "auth_holder_id")
+	@JoinColumn(name = "auth_holder_uuid")
 	public AuthenticationHolderEntity getAuthenticationHolder() {
 		return authenticationHolder;
 	}
@@ -176,7 +184,7 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	 * @return the client
 	 */
 	@ManyToOne
-	@JoinColumn(name = "client_id")
+	@JoinColumn(name = "client_uuid")
 	public ClientDetailsEntity getClient() {
 		return client;
 	}
@@ -222,7 +230,7 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 
 	@Override
 	@ManyToOne
-	@JoinColumn(name="refresh_token_id")
+	@JoinColumn(name="refresh_token_uuid")
 	public OAuth2RefreshTokenEntity getRefreshToken() {
 		return refreshToken;
 	}
@@ -242,7 +250,7 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 	@Override
 	@ElementCollection(fetch=FetchType.EAGER)
 	@CollectionTable(
-			joinColumns=@JoinColumn(name="owner_id"),
+			joinColumns=@JoinColumn(name="access_token_uuid"),
 			name="token_scope"
 			)
 	public Set<String> getScope() {
@@ -292,28 +300,22 @@ public class OAuth2AccessTokenEntity implements OAuth2AccessToken {
 		}
 	}
 
-	/**
-	 * @return the permissions
-	 */
 	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinTable(
 			name = "access_token_permissions",
-			joinColumns = @JoinColumn(name = "access_token_id"),
-			inverseJoinColumns = @JoinColumn(name = "permission_id")
+			joinColumns = @JoinColumn(name = "access_token_uuid"),
+			inverseJoinColumns = @JoinColumn(name = "permission_uuid")
 			)
 	public Set<Permission> getPermissions() {
 		return permissions;
 	}
 
-	/**
-	 * @param permissions the permissions to set
-	 */
 	public void setPermissions(Set<Permission> permissions) {
 		this.permissions = permissions;
 	}
 
 	@ManyToOne
-	@JoinColumn(name="approved_site_id")
+	@JoinColumn(name="approved_site_uuid")
 	public ApprovedSite getApprovedSite() {
 		return approvedSite;
 	}

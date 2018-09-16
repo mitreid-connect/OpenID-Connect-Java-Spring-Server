@@ -18,6 +18,7 @@
 package org.mitre.oauth2.model;
 
 import java.util.Date;
+import java.util.UUID;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -51,7 +52,7 @@ public class AuthorizationCodeEntity {
 
 	public static final String PARAM_DATE = "date";
 
-	private Long id;
+	private String uuid;
 
 	private String code;
 
@@ -59,13 +60,14 @@ public class AuthorizationCodeEntity {
 
 	private Date expiration;
 
-	/**
-	 * Default constructor.
-	 */
 	public AuthorizationCodeEntity() {
-
+		this.uuid = UUID.randomUUID().toString();
 	}
-
+	
+	public AuthorizationCodeEntity(String uuid) {
+		this.uuid = uuid;
+	}
+	
 	/**
 	 * Create a new AuthorizationCodeEntity with the given code and AuthorizationRequestHolder.
 	 *
@@ -73,26 +75,20 @@ public class AuthorizationCodeEntity {
 	 * @param authRequest	the AuthoriztionRequestHolder associated with the original code request
 	 */
 	public AuthorizationCodeEntity(String code, AuthenticationHolderEntity authenticationHolder, Date expiration) {
+		this.uuid = UUID.randomUUID().toString();
 		this.code = code;
 		this.authenticationHolder = authenticationHolder;
 		this.expiration = expiration;
 	}
-
-	/**
-	 * @return the id
-	 */
+	
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
-	public Long getId() {
-		return id;
+	@Column(name = "uuid")
+	public String getUuid() {
+		return uuid;
 	}
 
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(Long id) {
-		this.id = id;
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
 	}
 
 	/**

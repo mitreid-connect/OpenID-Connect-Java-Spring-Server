@@ -15,23 +15,19 @@ CREATE TABLE IF NOT EXISTS access_token (
 	token_value VARCHAR(4096),
 	expiration TIMESTAMP,
 	token_type VARCHAR(256),
-	refresh_token_id BIGINT,
-	client_id BIGINT,
-	auth_holder_id BIGINT,
-	approved_site_id BIGINT,
+	refresh_token_uuid VARCHAR(64),
+	client_uuid VARCHAR(64),
+	auth_holder_uuid VARCHAR(64),
+	approved_site_uuid VARCHAR(64)
 	UNIQUE(token_value)
 );
 
 CREATE TABLE IF NOT EXISTS access_token_permissions (
-	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),
 	access_token_uuid BIGINT NOT NULL,
 	permission_uuid BIGINT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS token_scope (
-	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),
 	access_token_uuid VARCHAR(64),
 	scope VARCHAR(2048)
 );
@@ -68,7 +64,7 @@ CREATE TABLE IF NOT EXISTS approved_site_scope (
 CREATE TABLE IF NOT EXISTS authentication_holder (
 	uuid VARCHAR(64) PRIMARY KEY,
 	host_uuid VARCHAR(64),
-	user_auth_id BIGINT,
+	user_auth_uuid VARCHAR(64),
 	approved BOOLEAN,
 	redirect_uri VARCHAR(2048),
 	client_id VARCHAR(256)
@@ -127,9 +123,7 @@ CREATE TABLE IF NOT EXISTS saved_user_auth (
 );
 
 CREATE TABLE IF NOT EXISTS saved_user_auth_authority (
-	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),
-	saved_user_auth_uuid BIGINT,
+	user_auth_uuid VARCHAR(64),
 	authority VARCHAR(256)
 );
 
@@ -206,65 +200,47 @@ CREATE TABLE IF NOT EXISTS client_details (
 );
 
 CREATE TABLE IF NOT EXISTS client_authority (
-	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),
 	client_uuid VARCHAR(64),
 	authority VARCHAR(256)
 );
 
 CREATE TABLE IF NOT EXISTS client_grant_type (
-	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),
 	client_uuid VARCHAR(64),
 	grant_type VARCHAR(2000)
 );
 
 CREATE TABLE IF NOT EXISTS client_response_type (
-	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),
 	client_uuid VARCHAR(64),
 	response_type VARCHAR(2000)
 );
 
 
 CREATE TABLE IF NOT EXISTS client_request_uri (
-	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),
 	client_uuid VARCHAR(64),
 	request_uri VARCHAR(2000)
 );
 
 CREATE TABLE IF NOT EXISTS client_post_logout_redirect_uri (
-	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),
 	client_uuid VARCHAR(64),
 	post_logout_redirect_uri VARCHAR(2000)
 );
 
 CREATE TABLE IF NOT EXISTS client_default_acr_value (
-	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),
 	client_uuid VARCHAR(64),
 	default_acr_value VARCHAR(2000)
 );
 
 CREATE TABLE IF NOT EXISTS client_contact (
-	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),
 	client_uuid VARCHAR(64),
 	contact VARCHAR(256)
 );
 
 CREATE TABLE IF NOT EXISTS client_redirect_uri (
-	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),
 	client_uuid VARCHAR(64),
 	redirect_uri VARCHAR(2048) 
 );
 
 CREATE TABLE IF NOT EXISTS client_claims_redirect_uri (
-	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),
 	client_uuid VARCHAR(64),
 	redirect_uri VARCHAR(2048) 
 );
@@ -279,15 +255,11 @@ CREATE TABLE IF NOT EXISTS refresh_token (
 );
 
 CREATE TABLE IF NOT EXISTS client_resource (
-	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),
 	client_uuid VARCHAR(64),
 	resource_id VARCHAR(256) 
 );
 
 CREATE TABLE IF NOT EXISTS client_scope (
-	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),
 	client_uuid VARCHAR(64),
 	scope VARCHAR(2048)
 );
@@ -461,15 +433,11 @@ CREATE TABLE IF NOT EXISTS device_code (
 );
 
 CREATE TABLE IF NOT EXISTS device_code_scope (
-	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),
 	device_code_uuid VARCHAR(64) NOT NULL,
 	scope VARCHAR(256) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS device_code_request_parameter (
-	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),
 	device_code_uuid VARCHAR(64) NOT NULL,
 	param VARCHAR(2048),
 	val VARCHAR(2048)

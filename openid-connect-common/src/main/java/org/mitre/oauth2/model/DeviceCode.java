@@ -19,6 +19,7 @@ package org.mitre.oauth2.model;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.persistence.Basic;
 import javax.persistence.CollectionTable;
@@ -58,7 +59,7 @@ public class DeviceCode {
 	public static final String PARAM_DEVICE_CODE = "deviceCode";
 	public static final String PARAM_DATE = "date";
 
-	private Long id;
+	private String uuid;
 	private String deviceCode;
 	private String userCode;
 	private Set<String> scope;
@@ -69,10 +70,15 @@ public class DeviceCode {
 	private AuthenticationHolderEntity authenticationHolder;
 
 	public DeviceCode() {
-
+		this.uuid = UUID.randomUUID().toString();
 	}
 
+	public DeviceCode(String uuid) {
+		this.uuid = uuid;
+	}
+	
 	public DeviceCode(String deviceCode, String userCode, Set<String> scope, String clientId, Map<String, String> params) {
+		this.uuid = UUID.randomUUID().toString();
 		this.deviceCode = deviceCode;
 		this.userCode = userCode;
 		this.scope = scope;
@@ -84,17 +90,13 @@ public class DeviceCode {
 	 * @return the id
 	 */
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
-	public Long getId() {
-		return id;
+	@Column(name = "uuid")	
+	public String getUuid() {
+		return uuid;
 	}
 
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(Long id) {
-		this.id = id;
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
 	}
 
 	/**
@@ -135,7 +137,7 @@ public class DeviceCode {
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(
 			name="device_code_scope",
-			joinColumns=@JoinColumn(name="owner_id")
+			joinColumns=@JoinColumn(name="device_code_uuid")
 			)
 	@Column(name="scope")
 	public Set<String> getScope() {
@@ -182,7 +184,7 @@ public class DeviceCode {
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(
 			name="device_code_request_parameter",
-			joinColumns=@JoinColumn(name="owner_id")
+			joinColumns=@JoinColumn(name="device_code_uuid")
 			)
 	@Column(name="val")
 	@MapKeyColumn(name="param")
@@ -218,7 +220,7 @@ public class DeviceCode {
 	 * @return the authentication
 	 */
 	@ManyToOne
-	@JoinColumn(name = "auth_holder_id")
+	@JoinColumn(name = "auth_holder_uuid")
 	public AuthenticationHolderEntity getAuthenticationHolder() {
 		return authenticationHolder;
 	}

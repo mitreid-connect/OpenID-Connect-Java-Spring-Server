@@ -27,8 +27,6 @@ import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -69,7 +67,7 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
 	public static final String PARAM_DATE = "date";
 	public static final String PARAM_NAME = "name";
 
-	private Long id;
+	private String uuid;
 
 	private AuthenticationHolderEntity authenticationHolder;
 
@@ -88,21 +86,14 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
 
 	}
 
-	/**
-	 * @return the id
-	 */
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
-	public Long getId() {
-		return id;
+	@Column(name = "uuid")
+	public String getUuid() {
+		return uuid;
 	}
 
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(Long id) {
-		this.id = id;
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
 	}
 
 	/**
@@ -112,7 +103,7 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
 	 * @return the authentication
 	 */
 	@ManyToOne
-	@JoinColumn(name = "auth_holder_id")
+	@JoinColumn(name = "auth_holder_uuid")
 	public AuthenticationHolderEntity getAuthenticationHolder() {
 		return authenticationHolder;
 	}
@@ -161,7 +152,7 @@ public class OAuth2RefreshTokenEntity implements OAuth2RefreshToken {
 	 * @return the client
 	 */
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "client_id")
+	@JoinColumn(name = "client_uuid")
 	public ClientDetailsEntity getClient() {
 		return client;
 	}
