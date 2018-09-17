@@ -23,8 +23,6 @@ import java.util.UUID;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -42,17 +40,23 @@ import javax.persistence.Temporal;
 @Entity
 @Table(name = "authorization_code")
 @NamedQueries({
-	@NamedQuery(name = AuthorizationCodeEntity.QUERY_BY_VALUE, query = "select a from AuthorizationCodeEntity a where a.code = :code"),
-	@NamedQuery(name = AuthorizationCodeEntity.QUERY_EXPIRATION_BY_DATE, query = "select a from AuthorizationCodeEntity a where a.expiration <= :" + AuthorizationCodeEntity.PARAM_DATE)
-})
+		@NamedQuery(name = AuthorizationCodeEntity.QUERY_BY_VALUE, query = "select a from AuthorizationCodeEntity a where a.hostUuid = :"
+				+ AuthorizationCodeEntity.PARAM_HOST_UUID + " and a.code = :" + AuthorizationCodeEntity.PARAM_CODE),
+		@NamedQuery(name = AuthorizationCodeEntity.QUERY_EXPIRATION_BY_DATE, query = "select a from AuthorizationCodeEntity a where a.hostUuid = :"
+				+ AuthorizationCodeEntity.PARAM_HOST_UUID + " and a.expiration <= :"
+				+ AuthorizationCodeEntity.PARAM_DATE) })
 public class AuthorizationCodeEntity {
 
 	public static final String QUERY_BY_VALUE = "AuthorizationCodeEntity.getByValue";
 	public static final String QUERY_EXPIRATION_BY_DATE = "AuthorizationCodeEntity.expirationByDate";
 
+	public static final String PARAM_HOST_UUID = "hostUuid";
+	public static final String PARAM_CODE = "code";
 	public static final String PARAM_DATE = "date";
 
 	private String uuid;
+
+	private String hostUuid;
 
 	private String code;
 
@@ -63,16 +67,18 @@ public class AuthorizationCodeEntity {
 	public AuthorizationCodeEntity() {
 		this.uuid = UUID.randomUUID().toString();
 	}
-	
+
 	public AuthorizationCodeEntity(String uuid) {
 		this.uuid = uuid;
 	}
-	
+
 	/**
-	 * Create a new AuthorizationCodeEntity with the given code and AuthorizationRequestHolder.
+	 * Create a new AuthorizationCodeEntity with the given code and
+	 * AuthorizationRequestHolder.
 	 *
-	 * @param code 			the authorization code
-	 * @param authRequest	the AuthoriztionRequestHolder associated with the original code request
+	 * @param code        the authorization code
+	 * @param authRequest the AuthoriztionRequestHolder associated with the original
+	 *                    code request
 	 */
 	public AuthorizationCodeEntity(String code, AuthenticationHolderEntity authenticationHolder, Date expiration) {
 		this.uuid = UUID.randomUUID().toString();
@@ -80,7 +86,7 @@ public class AuthorizationCodeEntity {
 		this.authenticationHolder = authenticationHolder;
 		this.expiration = expiration;
 	}
-	
+
 	@Id
 	@Column(name = "uuid")
 	public String getUuid() {
@@ -89,6 +95,16 @@ public class AuthorizationCodeEntity {
 
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
+	}
+
+	@Basic
+	@Column(name = "host_uuid")
+	public String getHostUuid() {
+		return hostUuid;
+	}
+
+	public void setHostUuid(String hostUuid) {
+		this.hostUuid = hostUuid;
 	}
 
 	/**
@@ -109,6 +125,7 @@ public class AuthorizationCodeEntity {
 
 	/**
 	 * The authentication in place when this token was created.
+	 * 
 	 * @return the authentication
 	 */
 	@ManyToOne

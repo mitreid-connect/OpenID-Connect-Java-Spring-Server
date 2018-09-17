@@ -30,6 +30,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
+import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.model.SystemScope;
 import org.mitre.oauth2.repository.SystemScopeRepository;
 import org.springframework.stereotype.Repository;
@@ -50,9 +51,9 @@ public class JpaSystemScopeRepository implements SystemScopeRepository {
 	 */
 	@Override
 	@Transactional(value="defaultTransactionManager")
-	public Set<SystemScope> getAll() {
+	public Set<SystemScope> getAll(String hostUuid) {
 		TypedQuery<SystemScope> query = em.createNamedQuery(SystemScope.QUERY_ALL, SystemScope.class);
-
+		query.setParameter(OAuth2AccessTokenEntity.PARAM_HOST_UUID, hostUuid);
 		return new LinkedHashSet<>(query.getResultList());
 	}
 
@@ -61,8 +62,8 @@ public class JpaSystemScopeRepository implements SystemScopeRepository {
 	 */
 	@Override
 	@Transactional(value="defaultTransactionManager")
-	public SystemScope getById(Long id) {
-		return em.find(SystemScope.class, id);
+	public SystemScope getById(String uuid) {
+		return em.find(SystemScope.class, uuid);
 	}
 
 	/* (non-Javadoc)
@@ -70,8 +71,9 @@ public class JpaSystemScopeRepository implements SystemScopeRepository {
 	 */
 	@Override
 	@Transactional(value="defaultTransactionManager")
-	public SystemScope getByValue(String value) {
+	public SystemScope getByValue(String hostUuid, String value) {
 		TypedQuery<SystemScope> query = em.createNamedQuery(SystemScope.QUERY_BY_VALUE, SystemScope.class);
+		query.setParameter(OAuth2AccessTokenEntity.PARAM_HOST_UUID, hostUuid);
 		query.setParameter(SystemScope.PARAM_VALUE, value);
 		return getSingleResult(query.getResultList());
 	}
@@ -82,7 +84,7 @@ public class JpaSystemScopeRepository implements SystemScopeRepository {
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public void remove(SystemScope scope) {
-		SystemScope found = getById(scope.getId());
+		SystemScope found = getById(scope.getUuid());
 
 		if (found != null) {
 			em.remove(found);
@@ -96,7 +98,7 @@ public class JpaSystemScopeRepository implements SystemScopeRepository {
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public SystemScope save(SystemScope scope) {
-		return saveOrUpdate(scope.getId(), em, scope);
+		return saveOrUpdate(scope.getUuid(), em, scope);
 	}
 
 }

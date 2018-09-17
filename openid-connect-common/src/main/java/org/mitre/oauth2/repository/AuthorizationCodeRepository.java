@@ -44,7 +44,7 @@ public interface AuthorizationCodeRepository {
 	 * @param code						the authorization code value
 	 * @return							the authentication associated with the code
 	 */
-	public AuthorizationCodeEntity getByCode(String code);
+	public AuthorizationCodeEntity getByCode(String hostUuid, String code);
 
 	/**
 	 * Remove an authorization code from the repository
@@ -56,12 +56,12 @@ public interface AuthorizationCodeRepository {
 	/**
 	 * @return A collection of all expired codes.
 	 */
-	public Collection<AuthorizationCodeEntity> getExpiredCodes();
+	public Collection<AuthorizationCodeEntity> getExpiredCodes(String hostUuid);
 
 	/**
 	 * @return A collection of all expired codes, limited by the given
 	 * PageCriteria.
 	 */
-	public Collection<AuthorizationCodeEntity> getExpiredCodes(PageCriteria pageCriteria);
+	public Collection<AuthorizationCodeEntity> getExpiredCodes(String hostUuid, PageCriteria pageCriteria);
 
 }

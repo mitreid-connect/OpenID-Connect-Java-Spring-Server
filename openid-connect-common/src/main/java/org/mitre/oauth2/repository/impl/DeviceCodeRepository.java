@@ -30,13 +30,13 @@ public interface DeviceCodeRepository {
 	 * @param id
 	 * @return
 	 */
-	public DeviceCode getById(Long id);
+	public DeviceCode getById(String uuid);
 
 	/**
 	 * @param deviceCode
 	 * @return
 	 */
-	public DeviceCode getByDeviceCode(String deviceCode);
+	public DeviceCode getByDeviceCode(String hostUuid, String deviceCode);
 
 	/**
 	 * @param scope
@@ -53,11 +53,11 @@ public interface DeviceCodeRepository {
 	 * @param userCode
 	 * @return
 	 */
-	public DeviceCode getByUserCode(String userCode);
+	public DeviceCode getByUserCode(String hostUuid, String userCode);
 
 	/**
 	 * @return
 	 */
-	public Collection<DeviceCode> getExpiredCodes();
+	public Collection<DeviceCode> getExpiredCodes(String hostUuid);
 
 }

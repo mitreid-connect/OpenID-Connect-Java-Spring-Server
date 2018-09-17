@@ -23,9 +23,9 @@ import org.mitre.data.PageCriteria;
 import org.mitre.oauth2.model.AuthenticationHolderEntity;
 
 public interface AuthenticationHolderRepository {
-	public List<AuthenticationHolderEntity> getAll();
+	public List<AuthenticationHolderEntity> getAll(String hostUuid);
 
-	public AuthenticationHolderEntity getById(Long id);
+	public AuthenticationHolderEntity getById(String uuid);
 
 	public void remove(AuthenticationHolderEntity a);
 

@@ -26,6 +26,7 @@ import javax.persistence.TypedQuery;
 import org.mitre.data.DefaultPageCriteria;
 import org.mitre.data.PageCriteria;
 import org.mitre.oauth2.model.AuthenticationHolderEntity;
+import org.mitre.oauth2.model.AuthorizationCodeEntity;
 import org.mitre.oauth2.repository.AuthenticationHolderRepository;
 import org.mitre.util.jpa.JpaUtil;
 import org.springframework.stereotype.Repository;
@@ -41,20 +42,21 @@ public class JpaAuthenticationHolderRepository implements AuthenticationHolderRe
 	private EntityManager manager;
 
 	@Override
-	public List<AuthenticationHolderEntity> getAll() {
+	public List<AuthenticationHolderEntity> getAll(String hostUuid) {
 		TypedQuery<AuthenticationHolderEntity> query = manager.createNamedQuery(AuthenticationHolderEntity.QUERY_ALL, AuthenticationHolderEntity.class);
+		query.setParameter(AuthorizationCodeEntity.PARAM_HOST_UUID, hostUuid);
 		return query.getResultList();
 	}
 
 	@Override
-	public AuthenticationHolderEntity getById(Long id) {
-		return manager.find(AuthenticationHolderEntity.class, id);
+	public AuthenticationHolderEntity getById(String uuid) {
+		return manager.find(AuthenticationHolderEntity.class, uuid);
 	}
 
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public void remove(AuthenticationHolderEntity a) {
-		AuthenticationHolderEntity found = getById(a.getId());
+		AuthenticationHolderEntity found = getById(a.getUuid());
 		if (found != null) {
 			manager.remove(found);
 		} else {
@@ -65,7 +67,7 @@ public class JpaAuthenticationHolderRepository implements AuthenticationHolderRe
 	@Override
 	@Transactional(value="defaultTransactionManager")
 	public AuthenticationHolderEntity save(AuthenticationHolderEntity a) {
-		return JpaUtil.saveOrUpdate(a.getId(), manager, a);
+		return JpaUtil.saveOrUpdate(a.getUuid(), manager, a);
 	}
 
 	@Override

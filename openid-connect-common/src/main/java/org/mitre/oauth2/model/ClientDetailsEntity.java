@@ -36,8 +36,6 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
@@ -72,8 +70,8 @@ import com.nimbusds.jwt.JWT;
 @Entity
 @Table(name = "client_details")
 @NamedQueries({
-	@NamedQuery(name = ClientDetailsEntity.QUERY_ALL, query = "SELECT c FROM ClientDetailsEntity c"),
-	@NamedQuery(name = ClientDetailsEntity.QUERY_BY_CLIENT_ID, query = "select c from ClientDetailsEntity c where c.clientId = :" + ClientDetailsEntity.PARAM_CLIENT_ID)
+	@NamedQuery(name = ClientDetailsEntity.QUERY_ALL, query = "select c from ClientDetailsEntity c where c.hostUuid = :" + ClientDetailsEntity.PARAM_HOST_UUID),
+	@NamedQuery(name = ClientDetailsEntity.QUERY_BY_CLIENT_ID, query = "select c from ClientDetailsEntity c where c.hostUuid = :" + ClientDetailsEntity.PARAM_HOST_UUID + " and c.clientId = :" + ClientDetailsEntity.PARAM_CLIENT_ID)
 })
 public class ClientDetailsEntity implements ClientDetails {
 
@@ -81,12 +79,15 @@ public class ClientDetailsEntity implements ClientDetails {
 	public static final String QUERY_ALL = "ClientDetailsEntity.findAll";
 
 	public static final String PARAM_CLIENT_ID = "clientId";
+	public static final String PARAM_HOST_UUID = "hostUuid";
 
 	private static final int DEFAULT_ID_TOKEN_VALIDITY_SECONDS = 600;
 
 	private static final long serialVersionUID = -1617727085733786296L;
 
 	private String uuid;
+
+	private String hostUuid;
 
 	/** Fields from the OAuth2 Dynamic Registration Specification */
 	private String clientId = null; // client_id
@@ -268,6 +269,16 @@ public class ClientDetailsEntity implements ClientDetails {
 		this.uuid = uuid;
 	}
 	
+	@Basic
+	@Column(name = "hostUuid")	
+	public String getHostUuid() {
+		return hostUuid;
+	}
+
+	public void setHostUuid(String hostUuid) {
+		this.hostUuid = hostUuid;
+	}
+
 	/**
 	 * @return the clientDescription
 	 */

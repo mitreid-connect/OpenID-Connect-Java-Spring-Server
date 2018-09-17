@@ -33,8 +33,6 @@ import javax.persistence.Convert;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.MapKeyColumn;
@@ -53,18 +51,22 @@ import org.springframework.security.oauth2.provider.OAuth2Request;
 @Entity
 @Table(name = "authentication_holder")
 @NamedQueries ({
-	@NamedQuery(name = AuthenticationHolderEntity.QUERY_ALL, query = "select a from AuthenticationHolderEntity a"),
-	@NamedQuery(name = AuthenticationHolderEntity.QUERY_GET_UNUSED, query = "select a from AuthenticationHolderEntity a where " +
+	@NamedQuery(name = AuthenticationHolderEntity.QUERY_ALL, query = "select a from AuthenticationHolderEntity a where a.hostUuid = :" + AuthenticationHolderEntity.PARAM_HOST_UUID),
+	@NamedQuery(name = AuthenticationHolderEntity.QUERY_GET_UNUSED, query = "select a from AuthenticationHolderEntity a where a.hostUuid = :" + AuthenticationHolderEntity.PARAM_HOST_UUID +
 			"a.uuid not in (select t.authenticationHolder.uuid from OAuth2AccessTokenEntity t) and " +
 			"a.uuid not in (select r.authenticationHolder.uuid from OAuth2RefreshTokenEntity r) and " +
-			"a.uuid not in (select c.authenticationHolder.uuid from AuthorizationCodeEntity c)")
+			"a.uuid not in (select c.authenticationHolder.uuid from AuthorizationCodeEntity c) ")
 })
 public class AuthenticationHolderEntity {
 
 	public static final String QUERY_GET_UNUSED = "AuthenticationHolderEntity.getUnusedAuthenticationHolders";
 	public static final String QUERY_ALL = "AuthenticationHolderEntity.getAll";
+	
+	public static final String PARAM_HOST_UUID = "hostUuid";
 
 	private String uuid;
+	
+	private String hostUuid;
 
 	private SavedUserAuthentication userAuth;
 
@@ -105,6 +107,16 @@ public class AuthenticationHolderEntity {
 		this.uuid = uuid;
 	}
 	
+	@Basic
+	@Column(name = "host_uuid")
+	public String getHostUuid() {
+		return hostUuid;
+	}
+
+	public void setHostUuid(String hostUuid) {
+		this.hostUuid = hostUuid;
+	}
+
 	@Transient
 	public OAuth2Authentication getAuthentication() {
 		// TODO: memoize this
@@ -161,7 +173,7 @@ public class AuthenticationHolderEntity {
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(
 			name="authentication_holder_authority",
-			joinColumns=@JoinColumn(name="auth_holder_uuid")
+			joinColumns=@JoinColumn(name="user_auth_uuid")
 			)
 	@Convert(converter = SimpleGrantedAuthorityStringConverter.class)
 	@Column(name="authority")

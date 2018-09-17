@@ -31,45 +31,45 @@ public interface OAuth2TokenRepository {
 
 	public OAuth2AccessTokenEntity saveAccessToken(OAuth2AccessTokenEntity token);
 
-	public OAuth2RefreshTokenEntity getRefreshTokenByValue(String refreshTokenValue);
+	public OAuth2RefreshTokenEntity getRefreshTokenByValue(String hostUuid, String refreshTokenValue);
 
-	public OAuth2RefreshTokenEntity getRefreshTokenById(Long Id);
+	public OAuth2RefreshTokenEntity getRefreshTokenById(String uuid);
 
-	public void clearAccessTokensForRefreshToken(OAuth2RefreshTokenEntity refreshToken);
+	public void clearAccessTokensForRefreshToken(String hostUuid, OAuth2RefreshTokenEntity refreshToken);
 
 	public void removeRefreshToken(OAuth2RefreshTokenEntity refreshToken);
 
 	public OAuth2RefreshTokenEntity saveRefreshToken(OAuth2RefreshTokenEntity refreshToken);
 
-	public OAuth2AccessTokenEntity getAccessTokenByValue(String accessTokenValue);
+	public OAuth2AccessTokenEntity getAccessTokenByValue(String hostUuid, String accessTokenValue);
 
-	public OAuth2AccessTokenEntity getAccessTokenById(Long id);
+	public OAuth2AccessTokenEntity getAccessTokenById(String uuid);
 
 	public void removeAccessToken(OAuth2AccessTokenEntity accessToken);
 
-	public void clearTokensForClient(ClientDetailsEntity client);
+	public void clearTokensForClient(String hostUuid, ClientDetailsEntity client);
 
-	public List<OAuth2AccessTokenEntity> getAccessTokensForClient(ClientDetailsEntity client);
+	public List<OAuth2AccessTokenEntity> getAccessTokensForClient(String hostUuid, ClientDetailsEntity client);
 
-	public List<OAuth2RefreshTokenEntity> getRefreshTokensForClient(ClientDetailsEntity client);
+	public List<OAuth2RefreshTokenEntity> getRefreshTokensForClient(String hostUuid, ClientDetailsEntity client);
 	
-	public Set<OAuth2AccessTokenEntity> getAccessTokensByUserName(String name);
+	public Set<OAuth2AccessTokenEntity> getAccessTokensByUserName(String hostUuid, String name);
 	
-	public Set<OAuth2RefreshTokenEntity> getRefreshTokensByUserName(String name);
+	public Set<OAuth2RefreshTokenEntity> getRefreshTokensByUserName(String hostUuid, String name);
 
-	public Set<OAuth2AccessTokenEntity> getAllAccessTokens();
+	public Set<OAuth2AccessTokenEntity> getAllAccessTokens(String hostUuid);
 
-	public Set<OAuth2RefreshTokenEntity> getAllRefreshTokens();
+	public Set<OAuth2RefreshTokenEntity> getAllRefreshTokens(String hostUuidz);
 
-	public Set<OAuth2AccessTokenEntity> getAllExpiredAccessTokens();
+	public Set<OAuth2AccessTokenEntity> getAllExpiredAccessTokens(String hostUuid);
 
-	public Set<OAuth2AccessTokenEntity> getAllExpiredAccessTokens(PageCriteria pageCriteria);
+	public Set<OAuth2AccessTokenEntity> getAllExpiredAccessTokens(String hostUuid, PageCriteria pageCriteria);
 
-	public Set<OAuth2RefreshTokenEntity> getAllExpiredRefreshTokens();
+	public Set<OAuth2RefreshTokenEntity> getAllExpiredRefreshTokens(String hostUuid);
 
-	public Set<OAuth2RefreshTokenEntity> getAllExpiredRefreshTokens(PageCriteria pageCriteria);
+	public Set<OAuth2RefreshTokenEntity> getAllExpiredRefreshTokens(String hostUuid, PageCriteria pageCriteria);
 
-	public Set<OAuth2AccessTokenEntity> getAccessTokensForResourceSet(ResourceSet rs);
+	public Set<OAuth2AccessTokenEntity> getAccessTokensForResourceSet(String hostUuid, ResourceSet rs);
 
 	/**
 	 * removes duplicate access tokens.
@@ -81,7 +81,7 @@ public interface OAuth2TokenRepository {
 	 *
 	 */
 	@Deprecated
-	public void clearDuplicateAccessTokens();
+	public void clearDuplicateAccessTokens(String hostUuid);
 
 	/**
 	 * removes duplicate refresh tokens.
@@ -93,8 +93,8 @@ public interface OAuth2TokenRepository {
 	 *
 	 */
 	@Deprecated
-	public void clearDuplicateRefreshTokens();
+	public void clearDuplicateRefreshTokens(String hostUuid);
 
-	public List<OAuth2AccessTokenEntity> getAccessTokensForApprovedSite(ApprovedSite approvedSite);
+	public List<OAuth2AccessTokenEntity> getAccessTokensForApprovedSite(String hostUuid, ApprovedSite approvedSite);
 
 }

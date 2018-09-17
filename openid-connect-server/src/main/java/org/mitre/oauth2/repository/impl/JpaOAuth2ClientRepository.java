@@ -23,6 +23,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
+import org.mitre.oauth2.model.AuthorizationCodeEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.repository.OAuth2ClientRepository;
 import org.mitre.util.jpa.JpaUtil;
@@ -49,16 +50,17 @@ public class JpaOAuth2ClientRepository implements OAuth2ClientRepository {
 	}
 
 	@Override
-	public ClientDetailsEntity getById(Long id) {
-		return manager.find(ClientDetailsEntity.class, id);
+	public ClientDetailsEntity getById(String uuid) {
+		return manager.find(ClientDetailsEntity.class, uuid);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.mitre.oauth2.repository.OAuth2ClientRepository#getClientById(java.lang.String)
 	 */
 	@Override
-	public ClientDetailsEntity getClientByClientId(String clientId) {
+	public ClientDetailsEntity getClientByClientId(String hostUuid, String clientId) {
 		TypedQuery<ClientDetailsEntity> query = manager.createNamedQuery(ClientDetailsEntity.QUERY_BY_CLIENT_ID, ClientDetailsEntity.class);
+		query.setParameter(AuthorizationCodeEntity.PARAM_HOST_UUID, hostUuid);
 		query.setParameter(ClientDetailsEntity.PARAM_CLIENT_ID, clientId);
 		return JpaUtil.getSingleResult(query.getResultList());
 	}
@@ -76,7 +78,7 @@ public class JpaOAuth2ClientRepository implements OAuth2ClientRepository {
 	 */
 	@Override
 	public void deleteClient(ClientDetailsEntity client) {
-		ClientDetailsEntity found = getById(client.getId());
+		ClientDetailsEntity found = getById(client.getUuid());
 		if (found != null) {
 			manager.remove(found);
 		} else {
@@ -85,16 +87,17 @@ public class JpaOAuth2ClientRepository implements OAuth2ClientRepository {
 	}
 
 	@Override
-	public ClientDetailsEntity updateClient(Long id, ClientDetailsEntity client) {
+	public ClientDetailsEntity updateClient(String uuid, ClientDetailsEntity client) {
 		// sanity check
-		client.setId(id);
+		client.setUuid(uuid);
 
-		return JpaUtil.saveOrUpdate(id, manager, client);
+		return JpaUtil.saveOrUpdate(uuid, manager, client);
 	}
 
 	@Override
-	public Collection<ClientDetailsEntity> getAllClients() {
+	public Collection<ClientDetailsEntity> getAllClients(String hostUuid) {
 		TypedQuery<ClientDetailsEntity> query = manager.createNamedQuery(ClientDetailsEntity.QUERY_ALL, ClientDetailsEntity.class);
+		query.setParameter(AuthorizationCodeEntity.PARAM_HOST_UUID, hostUuid);
 		return query.getResultList();
 	}
 

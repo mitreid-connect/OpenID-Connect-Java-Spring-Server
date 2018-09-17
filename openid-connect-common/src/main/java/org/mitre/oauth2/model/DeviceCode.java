@@ -27,8 +27,6 @@ import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -45,9 +43,9 @@ import javax.persistence.Temporal;
 @Entity
 @Table(name = "device_code")
 @NamedQueries({
-	@NamedQuery(name = DeviceCode.QUERY_BY_USER_CODE, query = "select d from DeviceCode d where d.userCode = :" + DeviceCode.PARAM_USER_CODE),
-	@NamedQuery(name = DeviceCode.QUERY_BY_DEVICE_CODE, query = "select d from DeviceCode d where d.deviceCode = :" + DeviceCode.PARAM_DEVICE_CODE),
-	@NamedQuery(name = DeviceCode.QUERY_EXPIRED_BY_DATE, query = "select d from DeviceCode d where d.expiration <= :" + DeviceCode.PARAM_DATE)
+	@NamedQuery(name = DeviceCode.QUERY_BY_USER_CODE, query = "select d from DeviceCode d where d.hostUuid = :" + ClientDetailsEntity.PARAM_HOST_UUID + " and d.userCode = :" + DeviceCode.PARAM_USER_CODE),
+	@NamedQuery(name = DeviceCode.QUERY_BY_DEVICE_CODE, query = "select d from DeviceCode d where d.hostUuid = :" + ClientDetailsEntity.PARAM_HOST_UUID + " and d.deviceCode = :" + DeviceCode.PARAM_DEVICE_CODE),
+	@NamedQuery(name = DeviceCode.QUERY_EXPIRED_BY_DATE, query = "select d from DeviceCode d where d.hostUuid = :" + ClientDetailsEntity.PARAM_HOST_UUID + " and d.expiration <= :" + DeviceCode.PARAM_DATE)
 })
 public class DeviceCode {
 
@@ -60,6 +58,7 @@ public class DeviceCode {
 	public static final String PARAM_DATE = "date";
 
 	private String uuid;
+	private String hostUuid;
 	private String deviceCode;
 	private String userCode;
 	private Set<String> scope;
@@ -97,6 +96,16 @@ public class DeviceCode {
 
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
+	}
+
+	@Basic
+	@Column(name = "host_uuid")
+	public String getHostUuid() {
+		return hostUuid;
+	}
+
+	public void setHostUuid(String hostUuid) {
+		this.hostUuid = hostUuid;
 	}
 
 	/**
