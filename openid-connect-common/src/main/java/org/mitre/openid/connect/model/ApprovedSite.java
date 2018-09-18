@@ -19,6 +19,7 @@ package org.mitre.openid.connect.model;
 
 import java.util.Date;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.persistence.Basic;
 import javax.persistence.CollectionTable;
@@ -39,10 +40,10 @@ import javax.persistence.Transient;
 @Entity
 @Table(name="approved_site")
 @NamedQueries({
-	@NamedQuery(name = ApprovedSite.QUERY_ALL, query = "select a from ApprovedSite a"),
-	@NamedQuery(name = ApprovedSite.QUERY_BY_USER_ID, query = "select a from ApprovedSite a where a.userId = :" + ApprovedSite.PARAM_USER_ID),
-	@NamedQuery(name = ApprovedSite.QUERY_BY_CLIENT_ID, query = "select a from ApprovedSite a where a.clientId = :" + ApprovedSite.PARAM_CLIENT_ID),
-	@NamedQuery(name = ApprovedSite.QUERY_BY_CLIENT_ID_AND_USER_ID, query = "select a from ApprovedSite a where a.clientId = :" + ApprovedSite.PARAM_CLIENT_ID + " and a.userId = :" + ApprovedSite.PARAM_USER_ID)
+	@NamedQuery(name = ApprovedSite.QUERY_ALL, query = "select a from ApprovedSite a where a.hostUuid = :hostUuid"),
+	@NamedQuery(name = ApprovedSite.QUERY_BY_USER_ID, query = "select a from ApprovedSite a where a.hostUuid = :hostUuid and a.userId = :" + ApprovedSite.PARAM_USER_ID),
+	@NamedQuery(name = ApprovedSite.QUERY_BY_CLIENT_ID, query = "select a from ApprovedSite a where a.hostUuid = :hostUuid and a.clientId = :" + ApprovedSite.PARAM_CLIENT_ID),
+	@NamedQuery(name = ApprovedSite.QUERY_BY_CLIENT_ID_AND_USER_ID, query = "select a from ApprovedSite a where a.hostUuid = :hostUuid and a.clientId = :" + ApprovedSite.PARAM_CLIENT_ID + " and a.userId = :" + ApprovedSite.PARAM_USER_ID)
 })
 public class ApprovedSite {
 
@@ -55,7 +56,9 @@ public class ApprovedSite {
 	public static final String PARAM_USER_ID = "userId";
 
 	// unique id
-	private Long id;
+	private String uuid;
+	
+	private String hostUuid;
 
 	// which user made the approval
 	private String userId;
@@ -76,28 +79,33 @@ public class ApprovedSite {
 	// this should include all information for what data to access
 	private Set<String> allowedScopes;
 
-	/**
-	 * Empty constructor
-	 */
+
 	public ApprovedSite() {
-
+		this.uuid = UUID.randomUUID().toString();
+	}
+	
+	public ApprovedSite(String uuid) {
+		this.uuid = uuid;
 	}
 
-	/**
-	 * @return the id
-	 */
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
-	public Long getId() {
-		return id;
+	public String getUuid() {
+		return uuid;
 	}
 
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(Long id) {
-		this.id = id;
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
+	}
+
+	@Basic
+	@Column(name = "host_uuid")
+	public String getHostUuid() {
+		return hostUuid;
+	}
+
+	public void setHostUuid(String hostUuid) {
+		this.hostUuid = hostUuid;
 	}
 
 	/**
@@ -172,7 +180,7 @@ public class ApprovedSite {
 	@ElementCollection(fetch = FetchType.EAGER)
 	@CollectionTable(
 			name="approved_site_scope",
-			joinColumns=@JoinColumn(name="owner_id")
+			joinColumns=@JoinColumn(name="approved_site_uuid")
 			)
 	@Column(name="scope")
 	public Set<String> getAllowedScopes() {

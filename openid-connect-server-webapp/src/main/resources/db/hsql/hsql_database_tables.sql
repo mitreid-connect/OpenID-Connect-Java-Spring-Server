@@ -55,8 +55,6 @@ CREATE TABLE IF NOT EXISTS approved_site (
 );
 
 CREATE TABLE IF NOT EXISTS approved_site_scope (
-	uuid VARCHAR(64) PRIMARY KEY,
-	host_uuid VARCHAR(64),
 	approved_site_uuid VARCHAR(64),
 	scope VARCHAR(256)
 );
