@@ -31,7 +31,7 @@ public interface AuthenticationHolderRepository {
 
 	public AuthenticationHolderEntity save(AuthenticationHolderEntity a);
 
-	public List<AuthenticationHolderEntity> getOrphanedAuthenticationHolders();
+	public List<AuthenticationHolderEntity> getOrphanedAuthenticationHolders(String hostUuid);
 
-	public List<AuthenticationHolderEntity> getOrphanedAuthenticationHolders(PageCriteria pageCriteria);
+	public List<AuthenticationHolderEntity> getOrphanedAuthenticationHolders(String hostUuid, PageCriteria pageCriteria);
 }

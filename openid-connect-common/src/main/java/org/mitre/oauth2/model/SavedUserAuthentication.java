@@ -49,6 +49,8 @@ public class SavedUserAuthentication implements Authentication {
 	private static final long serialVersionUID = -1804249963940323488L;
 
 	private String uuid;
+	
+	private String hostUuid;
 
 	private String name;
 
@@ -90,6 +92,16 @@ public class SavedUserAuthentication implements Authentication {
 
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
+	}
+	
+	@Basic
+	@Column(name = "host_uuid")
+	public String getHostUuid() {
+		return hostUuid;
+	}
+
+	public void setHostUuid(String hostUuid) {
+		this.hostUuid = hostUuid;
 	}
 
 	@Override

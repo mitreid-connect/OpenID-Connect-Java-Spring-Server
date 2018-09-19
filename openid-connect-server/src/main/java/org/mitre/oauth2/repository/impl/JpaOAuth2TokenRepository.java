@@ -245,7 +245,7 @@ public class JpaOAuth2TokenRepository implements OAuth2TokenRepository {
 	public Set<OAuth2AccessTokenEntity> getAccessTokensForResourceSet(String hostUuid, ResourceSet rs) {
 		TypedQuery<OAuth2AccessTokenEntity> query = manager.createNamedQuery(OAuth2AccessTokenEntity.QUERY_BY_RESOURCE_SET, OAuth2AccessTokenEntity.class);
 		query.setParameter(OAuth2AccessTokenEntity.PARAM_HOST_UUID, hostUuid);
-		query.setParameter(OAuth2AccessTokenEntity.PARAM_RESOURCE_SET_ID, rs.getId());
+		query.setParameter(OAuth2AccessTokenEntity.PARAM_RESOURCE_SET_ID, rs.getUuid());
 		return new LinkedHashSet<>(query.getResultList());
 	}
 

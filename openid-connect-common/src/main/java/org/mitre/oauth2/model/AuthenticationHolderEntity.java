@@ -155,7 +155,7 @@ public class AuthenticationHolderEntity {
 	 * @return the userAuth
 	 */
 	@OneToOne(cascade=CascadeType.ALL)
-	@JoinColumn(name = "user_auth_id")
+	@JoinColumn(name = "user_auth_uuid")
 	public SavedUserAuthentication getUserAuth() {
 		return userAuth;
 	}

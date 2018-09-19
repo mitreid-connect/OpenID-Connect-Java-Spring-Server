@@ -16,6 +16,8 @@
 
 package org.mitre.uma.model;
 
+import java.util.UUID;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -41,6 +43,14 @@ public class SavedRegisteredClient {
 	private String issuer;
 	private RegisteredClient registeredClient;
 
+	public SavedRegisteredClient() {
+		this.uuid = UUID.randomUUID().toString();
+	}
+	
+	public SavedRegisteredClient(String uuid) {
+		this.uuid = uuid;
+	}	
+	
 	@Id
 	@Column(name = "uuid")
 	public String getUuid() {
