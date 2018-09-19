@@ -18,6 +18,7 @@ package org.mitre.uma.model;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.UUID;
 
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -60,27 +61,39 @@ public class PermissionTicket {
 	public static final String PARAM_TICKET = "ticket";
 	public static final String PARAM_RESOURCE_SET_ID = "rsid";
 
-	private Long id;
+	private String uuid;
+	private String hostUuid;
 	private Permission permission;
 	private String ticket;
 	private Date expiration;
 	private Collection<Claim> claimsSupplied;
-
-	/**
-	 * @return the id
-	 */
+	
+	public PermissionTicket() {
+		this.uuid = UUID.randomUUID().toString();
+	}
+	
+	public PermissionTicket(String uuid) {
+		this.uuid = uuid;
+	}	
+	
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
-	public Long getId() {
-		return id;
+	@Column(name = "uuid")
+	public String getUuid() {
+		return uuid;
 	}
 
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(Long id) {
-		this.id = id;
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
+	}
+
+	@Basic
+	@Column(name = "host_uuid")
+	public String getHostUuid() {
+		return hostUuid;
+	}
+
+	public void setHostUuid(String hostUuid) {
+		this.hostUuid = hostUuid;
 	}
 
 	/**

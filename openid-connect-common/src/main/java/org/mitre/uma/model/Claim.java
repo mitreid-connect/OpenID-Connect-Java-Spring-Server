@@ -17,6 +17,7 @@
 package org.mitre.uma.model;
 
 import java.util.Set;
+import java.util.UUID;
 
 import javax.persistence.Basic;
 import javax.persistence.CollectionTable;
@@ -25,8 +26,6 @@ import javax.persistence.Convert;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
@@ -43,7 +42,8 @@ import com.google.gson.JsonElement;
 @Table(name = "claim")
 public class Claim {
 
-	private Long id;
+	private String uuid;
+	private String hostUuid;
 	private String name;
 	private String friendlyName;
 	private String claimType;
@@ -51,21 +51,34 @@ public class Claim {
 	private Set<String> claimTokenFormat;
 	private Set<String> issuer;
 
-	/**
-	 * @return the id
-	 */
+	public Claim() {
+		this.uuid = UUID.randomUUID().toString();
+	}
+	
+	public Claim(String uuid) {
+		this.uuid = uuid;
+	}
+	
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
-	public Long getId() {
-		return id;
+	@Column(name = "uuid")
+	public String getUuid() {
+		return uuid;
 	}
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(Long id) {
-		this.id = id;
+	
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
 	}
+	
+	@Id
+	@Column(name = "host_uuid")
+	public String getHostUuid() {
+		return hostUuid;
+	}
+	
+	public void setHostUuid(String hostUuid) {
+		this.hostUuid = hostUuid;
+	}
+	
 	/**
 	 * @return the name
 	 */
@@ -169,7 +182,7 @@ public class Claim {
 	 */
 	@Override
 	public String toString() {
-		return "Claim [id=" + id + ", name=" + name + ", friendlyName=" + friendlyName + ", claimType=" + claimType + ", value=" + value + ", claimTokenFormat=" + claimTokenFormat + ", issuer=" + issuer + "]";
+		return "Claim [uuid=" + uuid + ", name=" + name + ", friendlyName=" + friendlyName + ", claimType=" + claimType + ", value=" + value + ", claimTokenFormat=" + claimTokenFormat + ", issuer=" + issuer + "]";
 	}
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
@@ -181,7 +194,7 @@ public class Claim {
 		result = prime * result + ((claimTokenFormat == null) ? 0 : claimTokenFormat.hashCode());
 		result = prime * result + ((claimType == null) ? 0 : claimType.hashCode());
 		result = prime * result + ((friendlyName == null) ? 0 : friendlyName.hashCode());
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((uuid == null) ? 0 : uuid.hashCode());
 		result = prime * result + ((issuer == null) ? 0 : issuer.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + ((value == null) ? 0 : value.hashCode());
@@ -223,11 +236,11 @@ public class Claim {
 		} else if (!friendlyName.equals(other.friendlyName)) {
 			return false;
 		}
-		if (id == null) {
-			if (other.id != null) {
+		if (uuid == null) {
+			if (other.uuid != null) {
 				return false;
 			}
-		} else if (!id.equals(other.id)) {
+		} else if (!uuid.equals(other.uuid)) {
 			return false;
 		}
 		if (issuer == null) {

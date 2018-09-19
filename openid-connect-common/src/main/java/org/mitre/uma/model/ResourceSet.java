@@ -18,6 +18,7 @@ package org.mitre.uma.model;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -26,8 +27,6 @@ import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
@@ -38,10 +37,10 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "resource_set")
 @NamedQueries ({
-	@NamedQuery(name = ResourceSet.QUERY_BY_OWNER, query = "select r from ResourceSet r where r.owner = :" + ResourceSet.PARAM_OWNER),
-	@NamedQuery(name = ResourceSet.QUERY_BY_OWNER_AND_CLIENT, query = "select r from ResourceSet r where r.owner = :" + ResourceSet.PARAM_OWNER + " and r.clientId = :" + ResourceSet.PARAM_CLIENTID),
-	@NamedQuery(name = ResourceSet.QUERY_BY_CLIENT, query = "select r from ResourceSet r where r.clientId = :" + ResourceSet.PARAM_CLIENTID),
-	@NamedQuery(name = ResourceSet.QUERY_ALL, query = "select r from ResourceSet r")
+	@NamedQuery(name = ResourceSet.QUERY_BY_OWNER, query = "select r from ResourceSet r where r.hostUuid = :hostUuid and r.owner = :" + ResourceSet.PARAM_OWNER),
+	@NamedQuery(name = ResourceSet.QUERY_BY_OWNER_AND_CLIENT, query = "select r from ResourceSet r where r.hostUuid = :hostUuid and r.owner = :" + ResourceSet.PARAM_OWNER + " and r.clientId = :" + ResourceSet.PARAM_CLIENTID),
+	@NamedQuery(name = ResourceSet.QUERY_BY_CLIENT, query = "select r from ResourceSet r where r.hostUuid = :hostUuid and r.clientId = :" + ResourceSet.PARAM_CLIENTID),
+	@NamedQuery(name = ResourceSet.QUERY_ALL, query = "select r from ResourceSet r where r.hostUuid = :hostUuid")
 })
 public class ResourceSet {
 
@@ -53,7 +52,8 @@ public class ResourceSet {
 	public static final String PARAM_OWNER = "owner";
 	public static final String PARAM_CLIENTID = "clientId";
 
-	private Long id;
+	private String uuid;
+	private String hostUuid;
 	private String name;
 	private String uri;
 	private String type;
@@ -65,21 +65,32 @@ public class ResourceSet {
 
 	private Collection<Policy> policies = new HashSet<>();
 
-	/**
-	 * @return the id
-	 */
+	public ResourceSet() {
+		this.uuid = UUID.randomUUID().toString();
+	}
+	
+	public ResourceSet(String uuid) {
+		this.uuid = uuid;
+	}	
+
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
-	public Long getId() {
-		return id;
+	@Column(name = "uuid")	
+	public String getUuid() {
+		return uuid;
 	}
 
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(Long id) {
-		this.id = id;
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
+	}
+
+	@Basic
+	@Column(name = "host_uuid")	
+	public String getHostUuid() {
+		return hostUuid;
+	}
+
+	public void setHostUuid(String hostUuid) {
+		this.hostUuid = hostUuid;
 	}
 
 	/**
@@ -219,7 +230,7 @@ public class ResourceSet {
 	 */
 	@Override
 	public String toString() {
-		return "ResourceSet [id=" + id + ", name=" + name + ", uri=" + uri + ", type=" + type + ", scopes=" + scopes + ", iconUri=" + iconUri + ", owner=" + owner + ", clientId=" + clientId + ", policies=" + policies + "]";
+		return "ResourceSet [uuid=" + uuid + ", name=" + name + ", uri=" + uri + ", type=" + type + ", scopes=" + scopes + ", iconUri=" + iconUri + ", owner=" + owner + ", clientId=" + clientId + ", policies=" + policies + "]";
 	}
 
 	/* (non-Javadoc)
@@ -231,7 +242,7 @@ public class ResourceSet {
 		int result = 1;
 		result = prime * result + ((clientId == null) ? 0 : clientId.hashCode());
 		result = prime * result + ((iconUri == null) ? 0 : iconUri.hashCode());
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((uuid == null) ? 0 : uuid.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + ((owner == null) ? 0 : owner.hashCode());
 		result = prime * result + ((policies == null) ? 0 : policies.hashCode());
@@ -270,11 +281,11 @@ public class ResourceSet {
 		} else if (!iconUri.equals(other.iconUri)) {
 			return false;
 		}
-		if (id == null) {
-			if (other.id != null) {
+		if (uuid == null) {
+			if (other.uuid != null) {
 				return false;
 			}
-		} else if (!id.equals(other.id)) {
+		} else if (!uuid.equals(other.uuid)) {
 			return false;
 		}
 		if (name == null) {

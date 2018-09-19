@@ -15,6 +15,8 @@
  *******************************************************************************/
 package org.mitre.openid.connect.model;
 
+import java.util.UUID;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -36,13 +38,13 @@ public class DefaultAddress implements Address {
 	private String postalCode;
 	private String country;
 
-	/**
-	 * Empty constructor
-	 */
 	public DefaultAddress() {
-
+		this.uuid = UUID.randomUUID().toString();
 	}
-
+	
+	public DefaultAddress(String uuid) {
+		this.uuid = uuid;
+	}
 	/**
 	 * Copy constructor from an existing address.
 	 * @param address

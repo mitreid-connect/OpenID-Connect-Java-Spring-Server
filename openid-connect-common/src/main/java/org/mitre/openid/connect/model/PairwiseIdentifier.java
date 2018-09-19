@@ -20,6 +20,8 @@
  */
 package org.mitre.openid.connect.model;
 
+import java.util.UUID;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -40,8 +42,8 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "pairwise_identifier")
 @NamedQueries({
-	@NamedQuery(name=PairwiseIdentifier.QUERY_ALL, query = "select p from PairwiseIdentifier p"),
-	@NamedQuery(name=PairwiseIdentifier.QUERY_BY_SECTOR_IDENTIFIER, query = "select p from PairwiseIdentifier p WHERE p.userSub = :" + PairwiseIdentifier.PARAM_SUB + " AND p.sectorIdentifier = :" + PairwiseIdentifier.PARAM_SECTOR_IDENTIFIER)
+	@NamedQuery(name=PairwiseIdentifier.QUERY_ALL, query = "select p from PairwiseIdentifier p where u.hostUuid = :hostUuid"),
+	@NamedQuery(name=PairwiseIdentifier.QUERY_BY_SECTOR_IDENTIFIER, query = "select p from PairwiseIdentifier p WHERE u.hostUuid = :hostUuid and p.userSub = :" + PairwiseIdentifier.PARAM_SUB + " AND p.sectorIdentifier = :" + PairwiseIdentifier.PARAM_SECTOR_IDENTIFIER)
 })
 public class PairwiseIdentifier {
 
@@ -51,26 +53,38 @@ public class PairwiseIdentifier {
 	public static final String PARAM_SECTOR_IDENTIFIER = "sectorIdentifier";
 	public static final String PARAM_SUB = "sub";
 
-	private Long id;
+	private String uuid;
+	private String hostUuid;
 	private String identifier;
 	private String userSub;
 	private String sectorIdentifier;
 
-	/**
-	 * @return the id
-	 */
+	public PairwiseIdentifier() {
+		this.uuid = UUID.randomUUID().toString();
+	}
+	
+	public PairwiseIdentifier(String uuid) {
+		this.uuid = uuid;
+	}	
+	
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name = "id")
-	public Long getId() {
-		return id;
+	@Column(name = "uuid")	
+	public String getUuid() {
+		return uuid;
 	}
 
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(Long id) {
-		this.id = id;
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
+	}
+
+	@Basic
+	@Column(name = "host_uuid")
+	public String getHostUuid() {
+		return hostUuid;
+	}
+
+	public void setHostUuid(String hostUuid) {
+		this.hostUuid = hostUuid;
 	}
 
 	/**

@@ -17,14 +17,14 @@
 package org.mitre.uma.model;
 
 import java.util.Set;
+import java.util.UUID;
 
+import javax.persistence.Basic;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -37,25 +37,37 @@ import javax.persistence.Table;
 @Table(name = "permission")
 public class Permission {
 
-	private Long id;
+	private String uuid;
+	private String hostUuid;
 	private ResourceSet resourceSet;
 	private Set<String> scopes;
 
-	/**
-	 * @return the id
-	 */
+	public Permission() {
+		this.uuid = UUID.randomUUID().toString();
+	}
+	
+	public Permission(String uuid) {
+		this.uuid = uuid;
+	}	
+	
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
-	public Long getId() {
-		return id;
+	@Column(name = "uuid")	
+	public String getUuid() {
+		return uuid;
 	}
 
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(Long id) {
-		this.id = id;
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
+	}
+
+	@Basic
+	@Column(name = "host_uuid")	
+	public String getHostUuid() {
+		return hostUuid;
+	}
+
+	public void setHostUuid(String hostUuid) {
+		this.hostUuid = hostUuid;
 	}
 
 	/**

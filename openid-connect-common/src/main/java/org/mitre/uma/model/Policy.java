@@ -18,6 +18,7 @@ package org.mitre.uma.model;
 
 import java.util.Collection;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -26,8 +27,6 @@ import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -44,26 +43,38 @@ import javax.persistence.Table;
 @Table(name = "policy")
 public class Policy {
 
-	private Long id;
+	private String uuid;
+	private String hostUuid;
 	private String name;
 	private Collection<Claim> claimsRequired;
 	private Set<String> scopes;
+	
+	public Policy() {
+		this.uuid = UUID.randomUUID().toString();
+	}
+	
+	public Policy(String uuid) {
+		this.uuid = uuid;
+	}	
 
-	/**
-	 * @return the id
-	 */
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
-	public Long getId() {
-		return id;
+	@Column(name = "uuid")
+	public String getUuid() {
+		return uuid;
 	}
 
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(Long id) {
-		this.id = id;
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
+	}
+
+	@Basic
+	@Column(name = "host_uuid")
+	public String getHostUuid() {
+		return hostUuid;
+	}
+
+	public void setHostUuid(String hostUuid) {
+		this.hostUuid = hostUuid;
 	}
 
 	/**
@@ -127,7 +138,7 @@ public class Policy {
 	 */
 	@Override
 	public String toString() {
-		return "Policy [id=" + id + ", name=" + name + ", claimsRequired=" + claimsRequired + ", scopes=" + scopes + "]";
+		return "Policy [uuid=" + uuid + ", name=" + name + ", claimsRequired=" + claimsRequired + ", scopes=" + scopes + "]";
 	}
 
 	/* (non-Javadoc)
@@ -138,7 +149,7 @@ public class Policy {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((claimsRequired == null) ? 0 : claimsRequired.hashCode());
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((uuid == null) ? 0 : uuid.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		result = prime * result + ((scopes == null) ? 0 : scopes.hashCode());
 		return result;
@@ -166,11 +177,11 @@ public class Policy {
 		} else if (!claimsRequired.equals(other.claimsRequired)) {
 			return false;
 		}
-		if (id == null) {
-			if (other.id != null) {
+		if (uuid == null) {
+			if (other.uuid != null) {
 				return false;
 			}
-		} else if (!id.equals(other.id)) {
+		} else if (!uuid.equals(other.uuid)) {
 			return false;
 		}
 		if (name == null) {

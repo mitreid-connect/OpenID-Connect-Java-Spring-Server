@@ -42,9 +42,9 @@ import javax.persistence.Table;
 @Entity
 @Table(name="whitelisted_site")
 @NamedQueries({
-	@NamedQuery(name = WhitelistedSite.QUERY_ALL, query = "select w from WhitelistedSite w"),
-	@NamedQuery(name = WhitelistedSite.QUERY_BY_CLIENT_ID, query = "select w from WhitelistedSite w where w.clientId = :" + WhitelistedSite.PARAM_CLIENT_ID),
-	@NamedQuery(name = WhitelistedSite.QUERY_BY_CREATOR, query = "select w from WhitelistedSite w where w.creatorUserId = :" + WhitelistedSite.PARAM_USER_ID)
+	@NamedQuery(name = WhitelistedSite.QUERY_ALL, query = "select w from WhitelistedSite w where w.hostUuid = :hostUuid"),
+	@NamedQuery(name = WhitelistedSite.QUERY_BY_CLIENT_ID, query = "select w from WhitelistedSite w where w.hostUuid = :hostUuid and w.clientId = :" + WhitelistedSite.PARAM_CLIENT_ID),
+	@NamedQuery(name = WhitelistedSite.QUERY_BY_CREATOR, query = "select w from WhitelistedSite w where w.hostUuid = :hostUuid and w.creatorUserId = :" + WhitelistedSite.PARAM_USER_ID)
 })
 public class WhitelistedSite {
 
@@ -56,7 +56,8 @@ public class WhitelistedSite {
 	public static final String PARAM_CLIENT_ID = "clientId";
 
 	// unique id
-	private Long id;
+	private String uuid;
+	private String hostUuid;
 
 	// Reference to the admin user who created this entry
 	private String creatorUserId;
@@ -75,21 +76,24 @@ public class WhitelistedSite {
 
 	}
 
-	/**
-	 * @return the id
-	 */
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
-	public Long getId() {
-		return id;
+	@Column(name = "uuid")
+	public String getUuid() {
+		return uuid;
 	}
 
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(Long id) {
-		this.id = id;
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
+	}
+	
+	@Basic
+	@Column(name = "host_uuid")
+	public String getHostUuid() {
+		return hostUuid;
+	}
+
+	public void setHostUuid(String hostUuid) {
+		this.hostUuid = hostUuid;
 	}
 
 	/**

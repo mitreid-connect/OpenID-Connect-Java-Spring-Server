@@ -20,6 +20,7 @@ package org.mitre.openid.connect.model;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.UUID;
 
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -43,8 +44,8 @@ import com.google.gson.JsonParser;
 @Entity
 @Table(name="user_info")
 @NamedQueries({
-	@NamedQuery(name=DefaultUserInfo.QUERY_BY_USERNAME, query = "select u from DefaultUserInfo u WHERE u.preferredUsername = :" + DefaultUserInfo.PARAM_USERNAME),
-	@NamedQuery(name=DefaultUserInfo.QUERY_BY_EMAIL, query = "select u from DefaultUserInfo u WHERE u.email = :" + DefaultUserInfo.PARAM_EMAIL)
+	@NamedQuery(name=DefaultUserInfo.QUERY_BY_USERNAME, query = "select u from DefaultUserInfo u WHERE u.hostUuid = :hostUuid and u.preferredUsername = :" + DefaultUserInfo.PARAM_USERNAME),
+	@NamedQuery(name=DefaultUserInfo.QUERY_BY_EMAIL, query = "select u from DefaultUserInfo u WHERE u.hostUuid = :hostUuid and u.email = :" + DefaultUserInfo.PARAM_EMAIL)
 })
 public class DefaultUserInfo implements UserInfo {
 
@@ -56,7 +57,8 @@ public class DefaultUserInfo implements UserInfo {
 
 	private static final long serialVersionUID = 6078310513185681918L;
 
-	private Long id;
+	private String uuid;
+	private String hostUuid;
 	private String sub;
 	private String preferredUsername;
 	private String name;
@@ -80,21 +82,34 @@ public class DefaultUserInfo implements UserInfo {
 	private transient JsonObject src; // source JSON if this is loaded remotely
 
 
-	/**
-	 * @return the id
-	 */
+	public DefaultUserInfo() {
+		this.uuid = UUID.randomUUID().toString();
+	}
+	
+	public DefaultUserInfo(String uuid) {
+		this.uuid = uuid;
+	}	
+	
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name = "id")
-	public Long getId() {
-		return id;
+	@Column(name = "uuid")
+	public String getUuid() {
+		return uuid;
 	}
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(Long id) {
-		this.id = id;
+	
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
 	}
+	
+	@Basic
+	@Column(name = "host_uuid")
+	public String getHostUuid() {
+		return hostUuid;
+	}
+	
+	public void setHostUuid(String hostUuid) {
+		this.hostUuid = hostUuid;
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.mitre.openid.connect.model.UserInfo#getUserId()
 	 */
@@ -477,8 +492,10 @@ public class DefaultUserInfo implements UserInfo {
 	 */
 	public static UserInfo fromJson(JsonObject obj) {
 		DefaultUserInfo ui = new DefaultUserInfo();
+		
 		ui.setSource(obj);
 
+		ui.setUuid(nullSafeGetString(obj, "uuid"));
 		ui.setSub(nullSafeGetString(obj, "sub"));
 
 		ui.setName(nullSafeGetString(obj, "name"));
@@ -556,7 +573,7 @@ public class DefaultUserInfo implements UserInfo {
 		result = prime * result + ((familyName == null) ? 0 : familyName.hashCode());
 		result = prime * result + ((gender == null) ? 0 : gender.hashCode());
 		result = prime * result + ((givenName == null) ? 0 : givenName.hashCode());
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((uuid == null) ? 0 : uuid.hashCode());
 		result = prime * result + ((locale == null) ? 0 : locale.hashCode());
 		result = prime * result + ((middleName == null) ? 0 : middleName.hashCode());
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
@@ -637,11 +654,11 @@ public class DefaultUserInfo implements UserInfo {
 		} else if (!givenName.equals(other.givenName)) {
 			return false;
 		}
-		if (id == null) {
-			if (other.id != null) {
+		if (uuid == null) {
+			if (other.uuid != null) {
 				return false;
 			}
-		} else if (!id.equals(other.id)) {
+		} else if (!uuid.equals(other.uuid)) {
 			return false;
 		}
 		if (locale == null) {

@@ -36,26 +36,29 @@ import org.mitre.uma.model.convert.RegisteredClientStringConverter;
 @Table(name = "saved_registered_client")
 public class SavedRegisteredClient {
 
-	private Long id;
+	private String uuid;
+	private String hostUuid;
 	private String issuer;
 	private RegisteredClient registeredClient;
 
-	/**
-	 * @return the id
-	 */
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
-	public Long getId() {
-		return id;
+	@Column(name = "uuid")
+	public String getUuid() {
+		return uuid;
 	}
 
-	/**
-	 *
-	 * @param id the id to set
-	 */
-	public void setId(Long id) {
-		this.id = id;
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
+	}
+
+	@Basic
+	@Column(name = "uuid")
+	public String getHostUuid() {
+		return hostUuid;
+	}
+
+	public void setHostUuid(String hostUuid) {
+		this.hostUuid = hostUuid;
 	}
 
 	/**

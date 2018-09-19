@@ -270,7 +270,7 @@ public class ClientDetailsEntity implements ClientDetails {
 	}
 	
 	@Basic
-	@Column(name = "hostUuid")	
+	@Column(name = "host_uuid")	
 	public String getHostUuid() {
 		return hostUuid;
 	}
