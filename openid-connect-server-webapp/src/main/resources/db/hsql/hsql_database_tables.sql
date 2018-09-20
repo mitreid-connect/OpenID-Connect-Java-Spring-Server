@@ -50,8 +50,7 @@ CREATE TABLE IF NOT EXISTS approved_site (
 	client_id VARCHAR(256),
 	creation_date TIMESTAMP,
 	access_date TIMESTAMP,
-	timeout_date TIMESTAMP,
-	whitelisted_site_id BIGINT
+	timeout_date TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS approved_site_scope (

@@ -46,8 +46,8 @@ public class DefaultUserInfoService implements UserInfoService {
 	private PairwiseIdentiferService pairwiseIdentifierService;
 
 	@Override
-	public UserInfo getByUsername(String host, String username) {
-		return userInfoRepository.getByUsername(host, username);
+	public UserInfo getByUsername(String hostUuid, String username) {
+		return userInfoRepository.getByUsername(hostUuid, username);
 	}
 
 	@Override

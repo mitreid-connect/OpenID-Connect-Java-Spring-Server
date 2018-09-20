@@ -52,6 +52,7 @@ public class DefaultUserInfo implements UserInfo {
 	public static final String QUERY_BY_USERNAME = "DefaultUserInfo.getByUsername";
 	public static final String QUERY_BY_EMAIL = "DefaultUserInfo.getByEmailAddress";
 
+	public static final String PARAM_HOST_UUID = "hostUuid";
 	public static final String PARAM_USERNAME = "username";
 	public static final String PARAM_EMAIL = "email";
 

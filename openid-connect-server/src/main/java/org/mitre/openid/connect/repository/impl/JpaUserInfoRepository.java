@@ -45,8 +45,9 @@ public class JpaUserInfoRepository implements UserInfoRepository {
 	 * Get a single UserInfo object by its username for a specific host
 	 */
 	@Override
-	public UserInfo getByUsername(String host, String username) {
+	public UserInfo getByUsername(String hostUuid, String username) {
 		TypedQuery<DefaultUserInfo> query = manager.createNamedQuery(DefaultUserInfo.QUERY_BY_USERNAME, DefaultUserInfo.class);
+		query.setParameter(DefaultUserInfo.PARAM_HOST_UUID, hostUuid);
 		query.setParameter(DefaultUserInfo.PARAM_USERNAME, username);
 
 		return getSingleResult(query.getResultList());
@@ -57,8 +58,9 @@ public class JpaUserInfoRepository implements UserInfoRepository {
 	 * Get a single UserInfo object by its email address for a specific host
 	 */
 	@Override
-	public UserInfo getByEmailAddress(String host, String email) {
+	public UserInfo getByEmailAddress(String hostUuid, String email) {
 		TypedQuery<DefaultUserInfo> query = manager.createNamedQuery(DefaultUserInfo.QUERY_BY_EMAIL, DefaultUserInfo.class);
+		query.setParameter(DefaultUserInfo.PARAM_HOST_UUID, hostUuid);
 		query.setParameter(DefaultUserInfo.PARAM_EMAIL, email);
 
 		return getSingleResult(query.getResultList());

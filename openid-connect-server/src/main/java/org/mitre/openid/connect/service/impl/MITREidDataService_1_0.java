@@ -177,7 +177,7 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 					reader.skipValue();
 					continue;			}
 		}
-		fixObjectReferences();
+		fixObjectReferences(ho);
 		for (MITREidDataServiceExtension extension : extensions) {
 			if (extension.supportsVersion(THIS_VERSION)) {
 				extension.fixExtensionObjectReferences(maps);
@@ -199,9 +199,9 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 		while (reader.hasNext()) {
 			OAuth2RefreshTokenEntity token = new OAuth2RefreshTokenEntity();
 			reader.beginObject();
-			Long currentId = null;
+			String currentUuid = null;
 			String clientId = null;
-			Long authHolderId = null;
+			String authHolderUuid = null;
 			while (reader.hasNext()) {
 				switch (reader.peek()) {
 					case END_OBJECT:
@@ -210,8 +210,8 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 						String name = reader.nextName();
 						if (reader.peek() == JsonToken.NULL) {
 							reader.skipValue();
-						} else if (name.equals("id")) {
-							currentId = reader.nextLong();
+						} else if (name.equals("uuid")) {
+							currentUuid = reader.nextString();
 						} else if (name.equals("expiration")) {
 							Date date = utcToDate(reader.nextString());
 							token.setExpiration(date);
@@ -224,8 +224,8 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 							}
 						} else if (name.equals("clientId")) {
 							clientId = reader.nextString();
-						} else if (name.equals("authenticationHolderId")) {
-							authHolderId = reader.nextLong();
+						} else if (name.equals("authenticationHolderUuid")) {
+							authHolderUuid = reader.nextString();
 						} else {
 							logger.debug("Found unexpected entry");
 							reader.skipValue();
@@ -238,11 +238,11 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 				}
 			}
 			reader.endObject();
-			Long newId = tokenRepository.saveRefreshToken(token).getId();
-			maps.getRefreshTokenToClientRefs().put(currentId, clientId);
-			maps.getRefreshTokenToAuthHolderRefs().put(currentId, authHolderId);
-			maps.getRefreshTokenOldToNewIdMap().put(currentId, newId);
-			logger.debug("Read refresh token {}", currentId);
+			String newUuid = tokenRepository.saveRefreshToken(token).getUuid();
+			maps.getRefreshTokenToClientRefs().put(currentUuid, clientId);
+			maps.getRefreshTokenToAuthHolderRefs().put(currentUuid, authHolderUuid);
+			maps.getRefreshTokenOldToNewIdMap().put(currentUuid, newUuid);
+			logger.debug("Read refresh token {}", currentUuid);
 		}
 		reader.endArray();
 		logger.info("Done reading refresh tokens");
@@ -260,10 +260,10 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 		while (reader.hasNext()) {
 			OAuth2AccessTokenEntity token = new OAuth2AccessTokenEntity();
 			reader.beginObject();
-			Long currentId = null;
+			String currentUuid = null;
 			String clientId = null;
-			Long authHolderId = null;
-			Long refreshTokenId = null;
+			String authHolderUuid = null;
+			String refreshTokenUuid = null;
 			while (reader.hasNext()) {
 				switch (reader.peek()) {
 					case END_OBJECT:
@@ -272,8 +272,8 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 						String name = reader.nextName();
 						if (reader.peek() == JsonToken.NULL) {
 							reader.skipValue();
-						} else if (name.equals("id")) {
-							currentId = reader.nextLong();
+						} else if (name.equals("uiid")) {
+							currentUuid = reader.nextString();
 						} else if (name.equals("expiration")) {
 							Date date = utcToDate(reader.nextString());
 							token.setExpiration(date);
@@ -287,10 +287,10 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 							}
 						} else if (name.equals("clientId")) {
 							clientId = reader.nextString();
-						} else if (name.equals("authenticationHolderId")) {
-							authHolderId = reader.nextLong();
-						} else if (name.equals("refreshTokenId")) {
-							refreshTokenId = reader.nextLong();
+						} else if (name.equals("authenticationHolderUuid")) {
+							authHolderUuid = reader.nextString();
+						} else if (name.equals("refreshTokenUuid")) {
+							refreshTokenUuid = reader.nextString();
 						} else if (name.equals("scope")) {
 							Set<String> scope = readSet(reader);
 							token.setScope(scope);
@@ -308,14 +308,14 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 				}
 			}
 			reader.endObject();
-			Long newId = tokenRepository.saveAccessToken(token).getId();
-			maps.getAccessTokenToClientRefs().put(currentId, clientId);
-			maps.getAccessTokenToAuthHolderRefs().put(currentId, authHolderId);
-			if (refreshTokenId != null) {
-				maps.getAccessTokenToRefreshTokenRefs().put(currentId, refreshTokenId);
+			String newUuid = tokenRepository.saveAccessToken(token).getUuid();
+			maps.getAccessTokenToClientRefs().put(currentUuid, clientId);
+			maps.getAccessTokenToAuthHolderRefs().put(currentUuid, authHolderUuid);
+			if (refreshTokenUuid != null) {
+				maps.getAccessTokenToRefreshTokenRefs().put(currentUuid, refreshTokenUuid);
 			}
-			maps.getAccessTokenOldToNewIdMap().put(currentId, newId);
-			logger.debug("Read access token {}", currentId);
+			maps.getAccessTokenOldToNewIdMap().put(currentUuid, newUuid);
+			logger.debug("Read access token {}", currentUuid);
 		}
 		reader.endArray();
 		logger.info("Done reading access tokens");
@@ -329,7 +329,7 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 		while (reader.hasNext()) {
 			AuthenticationHolderEntity ahe = new AuthenticationHolderEntity();
 			reader.beginObject();
-			Long currentId = null;
+			String currentUuid = null;
 			while (reader.hasNext()) {
 				switch (reader.peek()) {
 					case END_OBJECT:
@@ -338,8 +338,8 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 						String name = reader.nextName();
 						if (reader.peek() == JsonToken.NULL) {
 							reader.skipValue();
-						} else if (name.equals("id")) {
-							currentId = reader.nextLong();
+						} else if (name.equals("uuid")) {
+							currentUuid = reader.nextString();
 						} else if (name.equals("ownerId")) {
 							//not needed
 							reader.skipValue();
@@ -390,9 +390,9 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 				}
 			}
 			reader.endObject();
-			Long newId = authHolderRepository.save(ahe).getId();
-			maps.getAuthHolderOldToNewIdMap().put(currentId, newId);
-			logger.debug("Read authentication holder {}", currentId);
+			String newUuid = authHolderRepository.save(ahe).getUuid();
+			maps.getAuthHolderOldToNewIdMap().put(currentUuid, newUuid);
+			logger.debug("Read authentication holder {}", currentUuid);
 		}
 		reader.endArray();
 		logger.info("Done reading authentication holders");
@@ -513,9 +513,8 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 		reader.beginArray();
 		while (reader.hasNext()) {
 			ApprovedSite site = new ApprovedSite();
-			Long currentId = null;
-			Long whitelistedSiteId = null;
-			Set<Long> tokenIds = null;
+			String currentUuid = null;
+			Set<String> tokenIds = null;
 			reader.beginObject();
 			while (reader.hasNext()) {
 				switch (reader.peek()) {
@@ -525,8 +524,8 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 						String name = reader.nextName();
 						if (reader.peek() == JsonToken.NULL) {
 							reader.skipValue();
-						} else if (name.equals("id")) {
-							currentId = reader.nextLong();
+						} else if (name.equals("uuid")) {
+							currentUuid = reader.nextString();
 						} else if (name.equals("accessDate")) {
 							Date date = utcToDate(reader.nextString());
 							site.setAccessDate(date);
@@ -543,8 +542,6 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 						} else if (name.equals("allowedScopes")) {
 							Set<String> allowedScopes = readSet(reader);
 							site.setAllowedScopes(allowedScopes);
-						} else if (name.equals("whitelistedSiteId")) {
-							whitelistedSiteId = reader.nextLong();
 						} else if (name.equals("approvedAccessTokens")) {
 							tokenIds = readSet(reader);
 						} else {
@@ -559,15 +556,13 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 				}
 			}
 			reader.endObject();
-			Long newId = approvedSiteRepository.save(site).getId();
-			maps.getGrantOldToNewIdMap().put(currentId, newId);
-			if (whitelistedSiteId != null) {
-				logger.debug("Ignoring whitelisted site marker on approved site.");
-			}
+			String newUuid = approvedSiteRepository.save(site).getUuid();
+			maps.getGrantOldToNewIdMap().put(currentUuid, newUuid);
+
 			if (tokenIds != null) {
-				maps.getGrantToAccessTokensRefs().put(currentId, tokenIds);
+				maps.getGrantToAccessTokensRefs().put(currentUuid, tokenIds);
 			}
-			logger.debug("Read grant {}", currentId);
+			logger.debug("Read grant {}", currentUuid);
 		}
 		reader.endArray();
 		logger.info("Done reading grants");
@@ -580,7 +575,7 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 		reader.beginArray();
 		while (reader.hasNext()) {
 			WhitelistedSite wlSite = new WhitelistedSite();
-			Long currentId = null;
+			String currentUuid = null;
 			reader.beginObject();
 			while (reader.hasNext()) {
 				switch (reader.peek()) {
@@ -589,7 +584,7 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 					case NAME:
 						String name = reader.nextName();
 						if (name.equals("id")) {
-							currentId = reader.nextLong();
+							currentUuid = reader.nextString();
 						} else if (name.equals("clientId")) {
 							wlSite.setClientId(reader.nextString());
 						} else if (name.equals("creatorUserId")) {
@@ -609,8 +604,8 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 				}
 			}
 			reader.endObject();
-			Long newId = wlSiteRepository.save(wlSite).getId();
-			maps.getWhitelistedSiteOldToNewIdMap().put(currentId, newId);
+			String newUuid = wlSiteRepository.save(wlSite).getUuid();
+			maps.getWhitelistedSiteOldToNewIdMap().put(currentUuid, newUuid);
 		}
 		reader.endArray();
 		logger.info("Done reading whitelisted sites");
@@ -841,59 +836,59 @@ public class MITREidDataService_1_0 extends MITREidDataServiceSupport implements
 		logger.info("Done reading system scopes");
 	}
 
-	private void fixObjectReferences() {
-		for (Long oldRefreshTokenId : maps.getRefreshTokenToClientRefs().keySet()) {
+	private void fixObjectReferences(String hostUuid) {
+		for (String oldRefreshTokenId : maps.getRefreshTokenToClientRefs().keySet()) {
 			String clientRef = maps.getRefreshTokenToClientRefs().get(oldRefreshTokenId);
-			ClientDetailsEntity client = clientRepository.getClientByClientId(clientRef);
-			Long newRefreshTokenId = maps.getRefreshTokenOldToNewIdMap().get(oldRefreshTokenId);
+			ClientDetailsEntity client = clientRepository.getClientByClientId(hostUuid, clientRef);
+			String newRefreshTokenId = maps.getRefreshTokenOldToNewIdMap().get(oldRefreshTokenId);
 			OAuth2RefreshTokenEntity refreshToken = tokenRepository.getRefreshTokenById(newRefreshTokenId);
 			refreshToken.setClient(client);
 			tokenRepository.saveRefreshToken(refreshToken);
 		}
-		for (Long oldRefreshTokenId : maps.getRefreshTokenToAuthHolderRefs().keySet()) {
-			Long oldAuthHolderId = maps.getRefreshTokenToAuthHolderRefs().get(oldRefreshTokenId);
-			Long newAuthHolderId = maps.getAuthHolderOldToNewIdMap().get(oldAuthHolderId);
+		for (String oldRefreshTokenId : maps.getRefreshTokenToAuthHolderRefs().keySet()) {
+			String oldAuthHolderId = maps.getRefreshTokenToAuthHolderRefs().get(oldRefreshTokenId);
+			String newAuthHolderId = maps.getAuthHolderOldToNewIdMap().get(oldAuthHolderId);
 			AuthenticationHolderEntity authHolder = authHolderRepository.getById(newAuthHolderId);
-			Long newRefreshTokenId = maps.getRefreshTokenOldToNewIdMap().get(oldRefreshTokenId);
+			String newRefreshTokenId = maps.getRefreshTokenOldToNewIdMap().get(oldRefreshTokenId);
 			OAuth2RefreshTokenEntity refreshToken = tokenRepository.getRefreshTokenById(newRefreshTokenId);
 			refreshToken.setAuthenticationHolder(authHolder);
 			tokenRepository.saveRefreshToken(refreshToken);
 		}
-		for (Long oldAccessTokenId : maps.getAccessTokenToClientRefs().keySet()) {
+		for (String oldAccessTokenId : maps.getAccessTokenToClientRefs().keySet()) {
 			String clientRef = maps.getAccessTokenToClientRefs().get(oldAccessTokenId);
-			ClientDetailsEntity client = clientRepository.getClientByClientId(clientRef);
-			Long newAccessTokenId = maps.getAccessTokenOldToNewIdMap().get(oldAccessTokenId);
+			ClientDetailsEntity client = clientRepository.getClientByClientId(hostUuid, clientRef);
+			String newAccessTokenId = maps.getAccessTokenOldToNewIdMap().get(oldAccessTokenId);
 			OAuth2AccessTokenEntity accessToken = tokenRepository.getAccessTokenById(newAccessTokenId);
 			accessToken.setClient(client);
 			tokenRepository.saveAccessToken(accessToken);
 		}
-		for (Long oldAccessTokenId : maps.getAccessTokenToAuthHolderRefs().keySet()) {
-			Long oldAuthHolderId = maps.getAccessTokenToAuthHolderRefs().get(oldAccessTokenId);
-			Long newAuthHolderId = maps.getAuthHolderOldToNewIdMap().get(oldAuthHolderId);
+		for (String oldAccessTokenId : maps.getAccessTokenToAuthHolderRefs().keySet()) {
+			String oldAuthHolderId = maps.getAccessTokenToAuthHolderRefs().get(oldAccessTokenId);
+			String newAuthHolderId = maps.getAuthHolderOldToNewIdMap().get(oldAuthHolderId);
 			AuthenticationHolderEntity authHolder = authHolderRepository.getById(newAuthHolderId);
-			Long newAccessTokenId = maps.getAccessTokenOldToNewIdMap().get(oldAccessTokenId);
+			String newAccessTokenId = maps.getAccessTokenOldToNewIdMap().get(oldAccessTokenId);
 			OAuth2AccessTokenEntity accessToken = tokenRepository.getAccessTokenById(newAccessTokenId);
 			accessToken.setAuthenticationHolder(authHolder);
 			tokenRepository.saveAccessToken(accessToken);
 		}
 		maps.getAccessTokenToAuthHolderRefs().clear();
-		for (Long oldAccessTokenId : maps.getAccessTokenToRefreshTokenRefs().keySet()) {
-			Long oldRefreshTokenId = maps.getAccessTokenToRefreshTokenRefs().get(oldAccessTokenId);
-			Long newRefreshTokenId = maps.getRefreshTokenOldToNewIdMap().get(oldRefreshTokenId);
+		for (String oldAccessTokenId : maps.getAccessTokenToRefreshTokenRefs().keySet()) {
+			String oldRefreshTokenId = maps.getAccessTokenToRefreshTokenRefs().get(oldAccessTokenId);
+			String newRefreshTokenId = maps.getRefreshTokenOldToNewIdMap().get(oldRefreshTokenId);
 			OAuth2RefreshTokenEntity refreshToken = tokenRepository.getRefreshTokenById(newRefreshTokenId);
-			Long newAccessTokenId = maps.getAccessTokenOldToNewIdMap().get(oldAccessTokenId);
+			String newAccessTokenId = maps.getAccessTokenOldToNewIdMap().get(oldAccessTokenId);
 			OAuth2AccessTokenEntity accessToken = tokenRepository.getAccessTokenById(newAccessTokenId);
 			accessToken.setRefreshToken(refreshToken);
 			tokenRepository.saveAccessToken(accessToken);
 		}
-		for (Long oldGrantId : maps.getGrantToAccessTokensRefs().keySet()) {
-			Set<Long> oldAccessTokenIds = maps.getGrantToAccessTokensRefs().get(oldGrantId);
+		for (String oldGrantId : maps.getGrantToAccessTokensRefs().keySet()) {
+			Set<String> oldAccessTokenIds = maps.getGrantToAccessTokensRefs().get(oldGrantId);
 
-			Long newGrantId = maps.getGrantOldToNewIdMap().get(oldGrantId);
+			String newGrantId = maps.getGrantOldToNewIdMap().get(oldGrantId);
 			ApprovedSite site = approvedSiteRepository.getById(newGrantId);
 
-			for(Long oldTokenId : oldAccessTokenIds) {
-				Long newTokenId = maps.getAccessTokenOldToNewIdMap().get(oldTokenId);
+			for(String oldTokenId : oldAccessTokenIds) {
+				String newTokenId = maps.getAccessTokenOldToNewIdMap().get(oldTokenId);
 				OAuth2AccessTokenEntity token = tokenRepository.getAccessTokenById(newTokenId);
 				token.setApprovedSite(site);
 				tokenRepository.saveAccessToken(token);

@@ -76,8 +76,9 @@ public class DeviceCode {
 		this.uuid = uuid;
 	}
 	
-	public DeviceCode(String deviceCode, String userCode, Set<String> scope, String clientId, Map<String, String> params) {
+	public DeviceCode(String hostUuid, String deviceCode, String userCode, Set<String> scope, String clientId, Map<String, String> params) {
 		this.uuid = UUID.randomUUID().toString();
+		this.hostUuid = hostUuid;
 		this.deviceCode = deviceCode;
 		this.userCode = userCode;
 		this.scope = scope;

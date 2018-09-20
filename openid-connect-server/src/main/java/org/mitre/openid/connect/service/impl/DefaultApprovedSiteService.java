@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import org.mitre.discovery.repository.HostInfoRepository;
 import org.mitre.oauth2.model.OAuth2AccessTokenEntity;
 import org.mitre.oauth2.repository.OAuth2TokenRepository;
 import org.mitre.openid.connect.model.ApprovedSite;
@@ -53,6 +54,9 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 	private static final Logger logger = LoggerFactory.getLogger(DefaultApprovedSiteService.class);
 
 	@Autowired
+	private HostInfoRepository hostInfoRepository; 
+
+	@Autowired
 	private ApprovedSiteRepository approvedSiteRepository;
 
 	@Autowired
@@ -62,29 +66,29 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 	private StatsService statsService;
 
 	@Override
-	public Collection<ApprovedSite> getAll() {
-		return approvedSiteRepository.getAll();
+	public Collection<ApprovedSite> getAll(String host) {
+		return approvedSiteRepository.getAll(host);
 	}
 
 	@Override
 	@Transactional(value="defaultTransactionManager")
-	public ApprovedSite save(ApprovedSite approvedSite) {
+	public ApprovedSite save(String host, ApprovedSite approvedSite) {
 		ApprovedSite a = approvedSiteRepository.save(approvedSite);
 		statsService.resetCache();
 		return a;
 	}
 
 	@Override
-	public ApprovedSite getById(Long id) {
-		return approvedSiteRepository.getById(id);
+	public ApprovedSite getById(String host, String uuid) {
+		return approvedSiteRepository.getById(uuid);
 	}
 
 	@Override
 	@Transactional(value="defaultTransactionManager")
-	public void remove(ApprovedSite approvedSite) {
+	public void remove(String host, ApprovedSite approvedSite) {
 
 		//Remove any associated access and refresh tokens
-		List<OAuth2AccessTokenEntity> accessTokens = getApprovedAccessTokens(approvedSite);
+		List<OAuth2AccessTokenEntity> accessTokens = getApprovedAccessTokens(approvedSite.getHostUuid(), approvedSite);
 
 		for (OAuth2AccessTokenEntity token : accessTokens) {
 			if (token.getRefreshToken() != null) {
@@ -100,11 +104,12 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 
 	@Override
 	@Transactional(value="defaultTransactionManager")
-	public ApprovedSite createApprovedSite(String clientId, String userId, Date timeoutDate, Set<String> allowedScopes) {
+	public ApprovedSite createApprovedSite(String hostUuid, String clientId, String userId, Date timeoutDate, Set<String> allowedScopes) {
 
 		ApprovedSite as = approvedSiteRepository.save(new ApprovedSite());
 
 		Date now = new Date();
+		as.setHostUuid(hostUuid);
 		as.setCreationDate(now);
 		as.setAccessDate(now);
 		as.setClientId(clientId);
@@ -117,9 +122,9 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 	}
 
 	@Override
-	public Collection<ApprovedSite> getByClientIdAndUserId(String clientId, String userId) {
+	public Collection<ApprovedSite> getByClientIdAndUserId(String hostUuid, String clientId, String userId) {
 
-		return approvedSiteRepository.getByClientIdAndUserId(clientId, userId);
+		return approvedSiteRepository.getByClientIdAndUserId(hostUuid, clientId, userId);
 
 	}
 
@@ -129,8 +134,8 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 	 * @see org.mitre.openid.connect.repository.ApprovedSiteRepository#getByUserId(java.lang.String)
 	 */
 	@Override
-	public Collection<ApprovedSite> getByUserId(String userId) {
-		return approvedSiteRepository.getByUserId(userId);
+	public Collection<ApprovedSite> getByUserId(String hostUuid, String userId) {
+		return approvedSiteRepository.getByUserId(hostUuid, userId);
 	}
 
 	/**
@@ -139,14 +144,14 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 	 * @see org.mitre.openid.connect.repository.ApprovedSiteRepository#getByClientId(java.lang.String)
 	 */
 	@Override
-	public Collection<ApprovedSite> getByClientId(String clientId) {
-		return approvedSiteRepository.getByClientId(clientId);
+	public Collection<ApprovedSite> getByClientId(String hostUuid, String clientId) {
+		return approvedSiteRepository.getByClientId(hostUuid, clientId);
 	}
 
 
 	@Override
-	public void clearApprovedSitesForClient(ClientDetails client) {
-		Collection<ApprovedSite> approvedSites = approvedSiteRepository.getByClientId(client.getClientId());
+	public void clearApprovedSitesForClient(String hostUuid, ClientDetails client) {
+		Collection<ApprovedSite> approvedSites = approvedSiteRepository.getByClientId(hostUuid, client.getClientId());
 		if (approvedSites != null) {
 			for (ApprovedSite approvedSite : approvedSites) {
 				remove(approvedSite);
@@ -155,11 +160,11 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 	}
 
 	@Override
-	public void clearExpiredSites() {
+	public void clearExpiredSites(String hostUuid) {
 
 		logger.debug("Clearing expired approved sites");
 
-		Collection<ApprovedSite> expiredSites = getExpired();
+		Collection<ApprovedSite> expiredSites = getExpired(hostUuid);
 		if (expiredSites.size() > 0) {
 			logger.info("Found " + expiredSites.size() + " expired approved sites.");
 		}
@@ -178,14 +183,14 @@ public class DefaultApprovedSiteService implements ApprovedSiteService {
 		}
 	};
 
-	private Collection<ApprovedSite> getExpired() {
-		return Collections2.filter(approvedSiteRepository.getAll(), isExpired);
+	private Collection<ApprovedSite> getExpired(String hostUuid) {
+		return Collections2.filter(approvedSiteRepository.getAll(hostUuid), isExpired);
 	}
 
 	@Override
-	public List<OAuth2AccessTokenEntity> getApprovedAccessTokens(
+	public List<OAuth2AccessTokenEntity> getApprovedAccessTokens(String hostUuid,
 			ApprovedSite approvedSite) {
-		return tokenRepository.getAccessTokensForApprovedSite(approvedSite);
+		return tokenRepository.getAccessTokensForApprovedSite(hostUuid, approvedSite);
 
 	}
 

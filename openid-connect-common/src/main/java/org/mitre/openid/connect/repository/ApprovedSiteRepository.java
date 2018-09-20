@@ -36,14 +36,14 @@ public interface ApprovedSiteRepository {
 	 *            id the id of the ApprovedSite
 	 * @return a valid ApprovedSite if it exists, null otherwise
 	 */
-	public ApprovedSite getById(Long id);
+	public ApprovedSite getById(String uuid);
 
 	/**
 	 * Return a collection of all ApprovedSites managed by this repository
 	 *
 	 * @return the ApprovedSite collection, or null
 	 */
-	public Collection<ApprovedSite> getAll();
+	public Collection<ApprovedSite> getAll(String hostUuid);
 
 	/**
 	 * Return a collection of ApprovedSite managed by this repository matching the
@@ -53,7 +53,7 @@ public interface ApprovedSiteRepository {
 	 * @param userId
 	 * @return
 	 */
-	public Collection<ApprovedSite> getByClientIdAndUserId(String clientId, String userId);
+	public Collection<ApprovedSite> getByClientIdAndUserId(String hostUuid, String clientId, String userId);
 
 	/**
 	 * Removes the given ApprovedSite from the repository
@@ -77,13 +77,13 @@ public interface ApprovedSiteRepository {
 	 * @param userId
 	 * @return
 	 */
-	public Collection<ApprovedSite> getByUserId(String userId);
+	public Collection<ApprovedSite> getByUserId(String hostUuid, String userId);
 
 	/**
 	 * Get all sites associated with this client
 	 * @param clientId
 	 * @return
 	 */
-	public Collection<ApprovedSite> getByClientId(String clientId);
+	public Collection<ApprovedSite> getByClientId(String hostUuid, String clientId);
 
 }

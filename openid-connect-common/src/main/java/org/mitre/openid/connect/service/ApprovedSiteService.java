@@ -35,14 +35,14 @@ import org.springframework.security.oauth2.provider.ClientDetails;
 public interface ApprovedSiteService {
 
 
-	public ApprovedSite createApprovedSite(String clientId, String userId, Date timeoutDate, Set<String> allowedScopes);
+	public ApprovedSite createApprovedSite(String host, String clientId, String userId, Date timeoutDate, Set<String> allowedScopes);
 
 	/**
 	 * Return a collection of all ApprovedSites
 	 *
 	 * @return the ApprovedSite collection, or null
 	 */
-	public Collection<ApprovedSite> getAll();
+	public Collection<ApprovedSite> getAll(String host);
 
 	/**
 	 * Return a collection of ApprovedSite managed by this repository matching the
@@ -52,7 +52,7 @@ public interface ApprovedSiteService {
 	 * @param userId
 	 * @return
 	 */
-	public Collection<ApprovedSite> getByClientIdAndUserId(String clientId, String userId);
+	public Collection<ApprovedSite> getByClientIdAndUserId(String host, String clientId, String userId);
 
 	/**
 	 * Save an ApprovedSite
@@ -60,7 +60,7 @@ public interface ApprovedSiteService {
 	 * @param approvedSite
 	 *            the ApprovedSite to be saved
 	 */
-	public ApprovedSite save(ApprovedSite approvedSite);
+	public ApprovedSite save(String host, ApprovedSite approvedSite);
 
 	/**
 	 * Get ApprovedSite for id
@@ -69,7 +69,7 @@ public interface ApprovedSiteService {
 	 *            id for ApprovedSite
 	 * @return ApprovedSite for id, or null
 	 */
-	public ApprovedSite getById(Long id);
+	public ApprovedSite getById(String host, String uuid);
 
 	/**
 	 * Remove the ApprovedSite
@@ -77,38 +77,38 @@ public interface ApprovedSiteService {
 	 * @param approvedSite
 	 *            the ApprovedSite to remove
 	 */
-	public void remove(ApprovedSite approvedSite);
+	public void remove(String host, ApprovedSite approvedSite);
 
 	/**
 	 * Get all sites approved by this user
 	 * @param userId
 	 * @return
 	 */
-	public Collection<ApprovedSite> getByUserId(String userId);
+	public Collection<ApprovedSite> getByUserId(String host, String userId);
 
 	/**
 	 * Get all sites associated with this client
 	 * @param clientId
 	 * @return
 	 */
-	public Collection<ApprovedSite> getByClientId(String clientId);
+	public Collection<ApprovedSite> getByClientId(String host, String clientId);
 
 	/**
 	 * Clear out any approved sites for a given client.
 	 * @param client
 	 */
-	public void clearApprovedSitesForClient(ClientDetails client);
+	public void clearApprovedSitesForClient(String host, ClientDetails client);
 
 	/**
 	 * Remove all expired approved sites fromt he data store.
 	 * @return
 	 */
-	public void clearExpiredSites();
+	public void clearExpiredSites(String host);
 
 	/**
 	 * Return all approved access tokens for the site.
 	 * @return
 	 */
-	public List<OAuth2AccessTokenEntity> getApprovedAccessTokens(ApprovedSite approvedSite);
+	public List<OAuth2AccessTokenEntity> getApprovedAccessTokens(String host, ApprovedSite approvedSite);
 
 }

@@ -26,81 +26,81 @@ import java.util.Set;
  */
 public class MITREidDataServiceMaps {
 
-	private Map<Long, Long> accessTokenOldToNewIdMap = new HashMap<Long, Long>();
-	private Map<Long, Long> accessTokenToAuthHolderRefs = new HashMap<Long, Long>();
-	private Map<Long, String> accessTokenToClientRefs = new HashMap<Long, String>();
-	private Map<Long, Long> accessTokenToRefreshTokenRefs = new HashMap<Long, Long>();
-	private Map<Long, Long> authHolderOldToNewIdMap = new HashMap<Long, Long>();
-	private Map<Long, Long> grantOldToNewIdMap = new HashMap<>();
-	private Map<Long, Set<Long>> grantToAccessTokensRefs = new HashMap<>();
-	private Map<Long, Long> refreshTokenOldToNewIdMap = new HashMap<Long, Long>();
-	private Map<Long, Long> refreshTokenToAuthHolderRefs = new HashMap<Long, Long>();
-	private Map<Long, String> refreshTokenToClientRefs = new HashMap<Long, String>();
-	private Map<Long, Long> whitelistedSiteOldToNewIdMap = new HashMap<Long, Long>();
+	private Map<String, String> accessTokenOldToNewIdMap = new HashMap<String, String>();
+	private Map<String, String> accessTokenToAuthHolderRefs = new HashMap<String, String>();
+	private Map<String, String> accessTokenToClientRefs = new HashMap<String, String>();
+	private Map<String, String> accessTokenToRefreshTokenRefs = new HashMap<String, String>();
+	private Map<String, String> authHolderOldToNewIdMap = new HashMap<String, String>();
+	private Map<String, String> grantOldToNewIdMap = new HashMap<>();
+	private Map<String, Set<String>> grantToAccessTokensRefs = new HashMap<>();
+	private Map<String, String> refreshTokenOldToNewIdMap = new HashMap<String, String>();
+	private Map<String, String> refreshTokenToAuthHolderRefs = new HashMap<String, String>();
+	private Map<String, String> refreshTokenToClientRefs = new HashMap<String, String>();
+	private Map<String, String> whitelistedSiteOldToNewIdMap = new HashMap<String, String>();
 	/**
 	 * @return the accessTokenOldToNewIdMap
 	 */
-	public Map<Long, Long> getAccessTokenOldToNewIdMap() {
+	public Map<String, String> getAccessTokenOldToNewIdMap() {
 		return accessTokenOldToNewIdMap;
 	}
 	/**
 	 * @return the accessTokenToAuthHolderRefs
 	 */
-	public Map<Long, Long> getAccessTokenToAuthHolderRefs() {
+	public Map<String, String> getAccessTokenToAuthHolderRefs() {
 		return accessTokenToAuthHolderRefs;
 	}
 	/**
 	 * @return the accessTokenToClientRefs
 	 */
-	public Map<Long, String> getAccessTokenToClientRefs() {
+	public Map<String, String> getAccessTokenToClientRefs() {
 		return accessTokenToClientRefs;
 	}
 	/**
 	 * @return the accessTokenToRefreshTokenRefs
 	 */
-	public Map<Long, Long> getAccessTokenToRefreshTokenRefs() {
+	public Map<String, String> getAccessTokenToRefreshTokenRefs() {
 		return accessTokenToRefreshTokenRefs;
 	}
 	/**
 	 * @return the authHolderOldToNewIdMap
 	 */
-	public Map<Long, Long> getAuthHolderOldToNewIdMap() {
+	public Map<String, String> getAuthHolderOldToNewIdMap() {
 		return authHolderOldToNewIdMap;
 	}
 	/**
 	 * @return the grantOldToNewIdMap
 	 */
-	public Map<Long, Long> getGrantOldToNewIdMap() {
+	public Map<String, String> getGrantOldToNewIdMap() {
 		return grantOldToNewIdMap;
 	}
 	/**
 	 * @return the grantToAccessTokensRefs
 	 */
-	public Map<Long, Set<Long>> getGrantToAccessTokensRefs() {
+	public Map<String, Set<String>> getGrantToAccessTokensRefs() {
 		return grantToAccessTokensRefs;
 	}
 	/**
 	 * @return the refreshTokenOldToNewIdMap
 	 */
-	public Map<Long, Long> getRefreshTokenOldToNewIdMap() {
+	public Map<String, String> getRefreshTokenOldToNewIdMap() {
 		return refreshTokenOldToNewIdMap;
 	}
 	/**
 	 * @return the refreshTokenToAuthHolderRefs
 	 */
-	public Map<Long, Long> getRefreshTokenToAuthHolderRefs() {
+	public Map<String, String> getRefreshTokenToAuthHolderRefs() {
 		return refreshTokenToAuthHolderRefs;
 	}
 	/**
 	 * @return the refreshTokenToClientRefs
 	 */
-	public Map<Long, String> getRefreshTokenToClientRefs() {
+	public Map<String, String> getRefreshTokenToClientRefs() {
 		return refreshTokenToClientRefs;
 	}
 	/**
 	 * @return the whitelistedSiteOldToNewIdMap
 	 */
-	public Map<Long, Long> getWhitelistedSiteOldToNewIdMap() {
+	public Map<String, String> getWhitelistedSiteOldToNewIdMap() {
 		return whitelistedSiteOldToNewIdMap;
 	}
 

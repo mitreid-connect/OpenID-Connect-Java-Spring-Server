@@ -18,8 +18,12 @@
 
 package org.mitre.discovery.repository;
 
+import org.mitre.discovery.model.HostInfo;
+
 public interface HostInfoRepository {
 	
+	HostInfo getByUuid(String uuid);
 	
+	HostInfo getByHost(String host);
 
 }
