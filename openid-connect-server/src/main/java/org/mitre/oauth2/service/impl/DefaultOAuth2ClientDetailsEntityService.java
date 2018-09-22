@@ -31,6 +31,8 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.mitre.discovery.model.HostInfo;
+import org.mitre.discovery.repository.HostInfoRepository;
 import org.mitre.oauth2.model.ClientDetailsEntity;
 import org.mitre.oauth2.model.ClientDetailsEntity.AuthMethod;
 import org.mitre.oauth2.model.SystemScope;
@@ -74,6 +76,9 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 	private static final Logger logger = LoggerFactory.getLogger(DefaultOAuth2ClientDetailsEntityService.class);
 
 	@Autowired
+	private HostInfoRepository hostInfoRepository;
+	
+	@Autowired
 	private OAuth2ClientRepository clientRepository;
 
 	@Autowired
@@ -107,14 +112,16 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 			.build(new SectorIdentifierLoader(HttpClientBuilder.create().useSystemProperties().build()));
 
 	@Override
-	public ClientDetailsEntity saveNewClient(ClientDetailsEntity client) {
-		if (client.getId() != null) { // if it's not null, it's already been saved, this is an error
-			throw new IllegalArgumentException("Tried to save a new client with an existing ID: " + client.getId());
+	public ClientDetailsEntity saveNewClient(String host, ClientDetailsEntity client) {
+		HostInfo hostInfo = hostInfoRepository.getByHost(host);
+		
+		if (client.getUuid() != null) { // if it's not null, it's already been saved, this is an error
+			throw new IllegalArgumentException("Tried to save a new client with an existing ID: " + client.getUuid());
 		}
 
 		if (client.getRegisteredRedirectUri() != null) {
 			for (String uri : client.getRegisteredRedirectUri()) {
-				if (blacklistedSiteService.isBlacklisted(uri)) {
+				if (blacklistedSiteService.isBlacklisted(host, uri)) {
 					throw new IllegalArgumentException("Client URI is blacklisted: " + uri);
 				}
 			}
@@ -123,7 +130,7 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 		// assign a random clientid if it's empty
 		// NOTE: don't assign a random client secret without asking, since public clients have no secret
 		if (Strings.isNullOrEmpty(client.getClientId())) {
-			client = generateClientId(client);
+			client = generateClientId(host, client);
 		}
 
 		// make sure that clients with the "refresh_token" grant type have the "offline_access" scope, and vice versa
@@ -144,8 +151,10 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 
 
 		ensureNoReservedScopes(client);
+		
+		client.setHostUuid(hostInfo.getUuid());
 
-		ClientDetailsEntity c = clientRepository.saveClient(client);
+		ClientDetailsEntity c = clientRepository.saveClient(hostInfo.getUuid(), client);
 
 		statsService.resetCache();
 
@@ -325,8 +334,10 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 	 * Get the client by its internal ID
 	 */
 	@Override
-	public ClientDetailsEntity getClientById(Long id) {
-		ClientDetailsEntity client = clientRepository.getById(id);
+	public ClientDetailsEntity getClientById(String host, String uuid) {
+		HostInfo hostInfo = hostInfoRepository.getByHost(host);
+
+		ClientDetailsEntity client = clientRepository.getById(hostInfo.getUuid(), uuid);
 
 		return client;
 	}
@@ -337,7 +348,12 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 	@Override
 	public ClientDetailsEntity loadClientByClientId(String clientId) throws OAuth2Exception, InvalidClientException, IllegalArgumentException {
 		if (!Strings.isNullOrEmpty(clientId)) {
-			ClientDetailsEntity client = clientRepository.getClientByClientId(clientId);
+			if(!clientId.contains("@")) {
+				throw new InvalidClientException("Client with id " + clientId + " does not have host");
+			}
+			String[] clientIdTokens = clientId.split("@");
+			HostInfo hostInfo = hostInfoRepository.getByHost(clientIdTokens[1]);
+			ClientDetailsEntity client = clientRepository.getClientByClientId(hostInfo.getUuid(), clientIdTokens[0]);
 			if (client == null) {
 				throw new InvalidClientException("Client with id " + clientId + " was not found");
 			}
@@ -353,32 +369,32 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 	 * Delete a client and all its associated tokens
 	 */
 	@Override
-	public void deleteClient(ClientDetailsEntity client) throws InvalidClientException {
-
-		if (clientRepository.getById(client.getId()) == null) {
+	public void deleteClient(String host, ClientDetailsEntity client) throws InvalidClientException {
+		HostInfo hostInfo = hostInfoRepository.getByHost(host);
+		if (clientRepository.getById(hostInfo.getUuid(), client.getUuid()) == null) {
 			throw new InvalidClientException("Client with id " + client.getClientId() + " was not found");
 		}
 
 		// clean out any tokens that this client had issued
-		tokenRepository.clearTokensForClient(client);
+		tokenRepository.clearTokensForClient(hostInfo.getUuid(), client);
 
 		// clean out any approved sites for this client
-		approvedSiteService.clearApprovedSitesForClient(client);
+		approvedSiteService.clearApprovedSitesForClient(host, client);
 
 		// clear out any whitelisted sites for this client
-		WhitelistedSite whitelistedSite = whitelistedSiteService.getByClientId(client.getClientId());
+		WhitelistedSite whitelistedSite = whitelistedSiteService.getByClientId(host, client.getClientId());
 		if (whitelistedSite != null) {
-			whitelistedSiteService.remove(whitelistedSite);
+			whitelistedSiteService.remove(host, whitelistedSite);
 		}
 
 		// clear out resource sets registered for this client
-		Collection<ResourceSet> resourceSets = resourceSetService.getAllForClient(client);
+		Collection<ResourceSet> resourceSets = resourceSetService.getAllForClient(host, client);
 		for (ResourceSet rs : resourceSets) {
-			resourceSetService.remove(rs);
+			resourceSetService.remove(host, rs);
 		}
 
 		// take care of the client itself
-		clientRepository.deleteClient(client);
+		clientRepository.deleteClient(hostInfo.getUuid(), client);
 
 		statsService.resetCache();
 
@@ -399,11 +415,13 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 	 *
 	 */
 	@Override
-	public ClientDetailsEntity updateClient(ClientDetailsEntity oldClient, ClientDetailsEntity newClient) throws IllegalArgumentException {
+	public ClientDetailsEntity updateClient(String host, ClientDetailsEntity oldClient, ClientDetailsEntity newClient) throws IllegalArgumentException {
+		HostInfo hostInfo = hostInfoRepository.getByHost(host);
+		
 		if (oldClient != null && newClient != null) {
 
 			for (String uri : newClient.getRegisteredRedirectUri()) {
-				if (blacklistedSiteService.isBlacklisted(uri)) {
+				if (blacklistedSiteService.isBlacklisted(host, uri)) {
 					throw new IllegalArgumentException("Client URI is blacklisted: " + uri);
 				}
 			}
@@ -423,7 +441,7 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 			// make sure a client doesn't get any special system scopes
 			ensureNoReservedScopes(newClient);
 
-			return clientRepository.updateClient(oldClient.getId(), newClient);
+			return clientRepository.updateClient(hostInfo.getUuid(), oldClient.getUuid(), newClient);
 		}
 		throw new IllegalArgumentException("Neither old client or new client can be null!");
 	}
@@ -432,15 +450,20 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 	 * Get all clients in the system
 	 */
 	@Override
-	public Collection<ClientDetailsEntity> getAllClients() {
-		return clientRepository.getAllClients();
+	public Collection<ClientDetailsEntity> getAllClients(String host) {
+		HostInfo hostInfo = hostInfoRepository.getByHost(host);
+		return clientRepository.getAllClients(hostInfo.getUuid());
 	}
 
 	/**
 	 * Generates a clientId for the given client and sets it to the client's clientId field. Returns the client that was passed in, now with id set.
 	 */
 	@Override
-	public ClientDetailsEntity generateClientId(ClientDetailsEntity client) {
+	public ClientDetailsEntity generateClientId(String host, ClientDetailsEntity client) {
+		HostInfo hostInfo = hostInfoRepository.getByHost(host);
+		if(!hostInfo.getUuid().equals(client.getHostUuid())) {
+			throw new IllegalArgumentException("Invalid host. Client host does not match with requester host");
+		}
 		client.setClientId(UUID.randomUUID().toString());
 		return client;
 	}
@@ -449,7 +472,11 @@ public class DefaultOAuth2ClientDetailsEntityService implements ClientDetailsEnt
 	 * Generates a new clientSecret for the given client and sets it to the client's clientSecret field. Returns the client that was passed in, now with secret set.
 	 */
 	@Override
-	public ClientDetailsEntity generateClientSecret(ClientDetailsEntity client) {
+	public ClientDetailsEntity generateClientSecret(String host, ClientDetailsEntity client) {
+		HostInfo hostInfo = hostInfoRepository.getByHost(host);
+		if(!hostInfo.getUuid().equals(client.getHostUuid())) {
+			throw new IllegalArgumentException("Invalid host. Client host does not match with requester host");
+		}
 		if (config.isHeartMode()) {
 			logger.error("[HEART mode] Can't generate a client secret, skipping step; client won't be saved due to invalid configuration");
 			client.setClientSecret(null);

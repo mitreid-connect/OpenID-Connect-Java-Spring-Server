@@ -34,7 +34,7 @@ public interface WhitelistedSiteService {
 	 *
 	 * @return the WhitelistedSite collection, or null
 	 */
-	public Collection<WhitelistedSite> getAll();
+	public Collection<WhitelistedSite> getAll(String host);
 
 	/**
 	 * Returns the WhitelistedSite for the given id
@@ -43,7 +43,7 @@ public interface WhitelistedSiteService {
 	 *            id the id of the WhitelistedSite
 	 * @return a valid WhitelistedSite if it exists, null otherwise
 	 */
-	public WhitelistedSite getById(Long id);
+	public WhitelistedSite getById(String host, String uuid);
 
 	/**
 	 * Find a WhitelistedSite by its associated ClientDetails reference
@@ -51,7 +51,7 @@ public interface WhitelistedSiteService {
 	 * @param client	the Relying Party
 	 * @return			the corresponding WhitelistedSite if one exists for the RP, or null
 	 */
-	public WhitelistedSite getByClientId(String clientId);
+	public WhitelistedSite getByClientId(String host, String clientId);
 
 
 
@@ -61,7 +61,7 @@ public interface WhitelistedSiteService {
 	 * @param address
 	 *            the WhitelistedSite object to remove
 	 */
-	public void remove(WhitelistedSite whitelistedSite);
+	public void remove(String host, WhitelistedSite whitelistedSite);
 
 	/**
 	 * Persists a new WhitelistedSite
@@ -70,11 +70,11 @@ public interface WhitelistedSiteService {
 	 *            the WhitelistedSite to be saved
 	 * @return
 	 */
-	public WhitelistedSite saveNew(WhitelistedSite whitelistedSite);
+	public WhitelistedSite saveNew(String host, WhitelistedSite whitelistedSite);
 
 	/**
 	 * Updates an existing whitelisted site
 	 */
-	public WhitelistedSite update(WhitelistedSite oldWhitelistedSite, WhitelistedSite whitelistedSite);
+	public WhitelistedSite update(String host, WhitelistedSite oldWhitelistedSite, WhitelistedSite whitelistedSite);
 
 }

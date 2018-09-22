@@ -36,7 +36,7 @@ public interface AuthorizationCodeRepository {
 	 * @param authorizationCode the AuthorizationCodeEntity to save
 	 * @return					the saved AuthorizationCodeEntity
 	 */
-	public AuthorizationCodeEntity save(AuthorizationCodeEntity authorizationCode);
+	public AuthorizationCodeEntity save(String hostUuid, AuthorizationCodeEntity authorizationCode);
 
 	/**
 	 * Get an authorization code from the repository by value.
@@ -51,7 +51,7 @@ public interface AuthorizationCodeRepository {
 	 *
 	 * @param authorizationCodeEntity
 	 */
-	public void remove(AuthorizationCodeEntity authorizationCodeEntity);
+	public void remove(String hostUuid, AuthorizationCodeEntity authorizationCodeEntity);
 
 	/**
 	 * @return A collection of all expired codes.

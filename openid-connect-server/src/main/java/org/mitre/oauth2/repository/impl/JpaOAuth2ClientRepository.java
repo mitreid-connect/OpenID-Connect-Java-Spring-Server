@@ -50,8 +50,12 @@ public class JpaOAuth2ClientRepository implements OAuth2ClientRepository {
 	}
 
 	@Override
-	public ClientDetailsEntity getById(String uuid) {
-		return manager.find(ClientDetailsEntity.class, uuid);
+	public ClientDetailsEntity getById(String hostUuid, String uuid) {
+		ClientDetailsEntity entity = manager.find(ClientDetailsEntity.class, uuid);
+		if(entity.getHostUuid().equals(hostUuid)) {
+			throw new IllegalArgumentException("Entity not found: " + uuid);
+		}
+		return entity;
 	}
 
 	/* (non-Javadoc)
@@ -69,7 +73,7 @@ public class JpaOAuth2ClientRepository implements OAuth2ClientRepository {
 	 * @see org.mitre.oauth2.repository.OAuth2ClientRepository#saveClient(org.mitre.oauth2.model.ClientDetailsEntity)
 	 */
 	@Override
-	public ClientDetailsEntity saveClient(ClientDetailsEntity client) {
+	public ClientDetailsEntity saveClient(String hostUuid, ClientDetailsEntity client) {
 		return JpaUtil.saveOrUpdate(client.getClientId(), manager, client);
 	}
 
@@ -77,8 +81,8 @@ public class JpaOAuth2ClientRepository implements OAuth2ClientRepository {
 	 * @see org.mitre.oauth2.repository.OAuth2ClientRepository#deleteClient(org.mitre.oauth2.model.ClientDetailsEntity)
 	 */
 	@Override
-	public void deleteClient(ClientDetailsEntity client) {
-		ClientDetailsEntity found = getById(client.getUuid());
+	public void deleteClient(String hostUuid, ClientDetailsEntity client) {
+		ClientDetailsEntity found = getById(hostUuid, client.getUuid());
 		if (found != null) {
 			manager.remove(found);
 		} else {
@@ -87,9 +91,11 @@ public class JpaOAuth2ClientRepository implements OAuth2ClientRepository {
 	}
 
 	@Override
-	public ClientDetailsEntity updateClient(String uuid, ClientDetailsEntity client) {
+	public ClientDetailsEntity updateClient(String hostUuid, String uuid, ClientDetailsEntity client) {
 		// sanity check
 		client.setUuid(uuid);
+		
+		client.setHostUuid(hostUuid);
 
 		return JpaUtil.saveOrUpdate(uuid, manager, client);
 	}

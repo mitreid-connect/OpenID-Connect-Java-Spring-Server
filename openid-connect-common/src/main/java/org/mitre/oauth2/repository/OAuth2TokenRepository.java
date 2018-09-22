@@ -29,23 +29,23 @@ import org.mitre.uma.model.ResourceSet;
 
 public interface OAuth2TokenRepository {
 
-	public OAuth2AccessTokenEntity saveAccessToken(OAuth2AccessTokenEntity token);
+	public OAuth2AccessTokenEntity saveAccessToken(String hostUuid, OAuth2AccessTokenEntity token);
 
 	public OAuth2RefreshTokenEntity getRefreshTokenByValue(String hostUuid, String refreshTokenValue);
 
-	public OAuth2RefreshTokenEntity getRefreshTokenById(String uuid);
+	public OAuth2RefreshTokenEntity getRefreshTokenById(String hostUuid, String uuid);
 
 	public void clearAccessTokensForRefreshToken(String hostUuid, OAuth2RefreshTokenEntity refreshToken);
 
-	public void removeRefreshToken(OAuth2RefreshTokenEntity refreshToken);
+	public void removeRefreshToken(String hostUuid, OAuth2RefreshTokenEntity refreshToken);
 
-	public OAuth2RefreshTokenEntity saveRefreshToken(OAuth2RefreshTokenEntity refreshToken);
+	public OAuth2RefreshTokenEntity saveRefreshToken(String hostUuid, OAuth2RefreshTokenEntity refreshToken);
 
 	public OAuth2AccessTokenEntity getAccessTokenByValue(String hostUuid, String accessTokenValue);
 
-	public OAuth2AccessTokenEntity getAccessTokenById(String uuid);
+	public OAuth2AccessTokenEntity getAccessTokenById(String hostUuid, String uuid);
 
-	public void removeAccessToken(OAuth2AccessTokenEntity accessToken);
+	public void removeAccessToken(String hostUuid, OAuth2AccessTokenEntity accessToken);
 
 	public void clearTokensForClient(String hostUuid, ClientDetailsEntity client);
 

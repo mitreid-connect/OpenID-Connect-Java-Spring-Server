@@ -32,12 +32,12 @@ public interface SystemScopeRepository {
 
 	public Set<SystemScope> getAll(String hostUuid);
 
-	public SystemScope getById(String uuid);
+	public SystemScope getById(String hostUuid, String uuid);
 
 	public SystemScope getByValue(String hostUuid, String value);
 
-	public void remove(SystemScope scope);
+	public void remove(String hostUuid, SystemScope scope);
 
-	public SystemScope save(SystemScope scope);
+	public SystemScope save(String hostUuid, SystemScope scope);
 
 }

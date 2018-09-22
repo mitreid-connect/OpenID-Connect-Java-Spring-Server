@@ -25,11 +25,11 @@ import org.mitre.oauth2.model.AuthenticationHolderEntity;
 public interface AuthenticationHolderRepository {
 	public List<AuthenticationHolderEntity> getAll(String hostUuid);
 
-	public AuthenticationHolderEntity getById(String uuid);
+	public AuthenticationHolderEntity getById(String hostUuid, String uuid);
 
-	public void remove(AuthenticationHolderEntity a);
+	public void remove(String hostUuid, AuthenticationHolderEntity a);
 
-	public AuthenticationHolderEntity save(AuthenticationHolderEntity a);
+	public AuthenticationHolderEntity save(String hostUuid, AuthenticationHolderEntity a);
 
 	public List<AuthenticationHolderEntity> getOrphanedAuthenticationHolders(String hostUuid);
 
